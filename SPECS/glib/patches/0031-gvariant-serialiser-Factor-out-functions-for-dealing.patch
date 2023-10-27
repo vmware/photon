@@ -1,0 +1,206 @@
+From d51c16a7c8c3a57f1bad4305363ad85914ecab2e Mon Sep 17 00:00:00 2001
+From: William Manley <will@stb-tester.com>
+Date: Thu, 25 Jun 2020 17:08:21 +0100
+Subject: [PATCH 31/49] gvariant-serialiser: Factor out functions for dealing
+ with framing offsets
+
+This introduces no functional changes.
+
+Helps: #2121
+---
+ glib/gvariant-serialiser.c | 108 +++++++++++++++++++------------------
+ 1 file changed, 57 insertions(+), 51 deletions(-)
+
+diff --git a/glib/gvariant-serialiser.c b/glib/gvariant-serialiser.c
+index 06f419fe4..ab6a56eb6 100644
+--- a/glib/gvariant-serialiser.c
++++ b/glib/gvariant-serialiser.c
+@@ -633,30 +633,62 @@ gvs_calculate_total_size (gsize body_size,
+   return body_size + 8 * offsets;
+ }
+ 
++struct Offsets
++{
++  gsize     data_size;
++
++  guchar   *array;
++  gsize     length;
++  guint     offset_size;
++
++  gboolean  is_normal;
++};
++
+ static gsize
+-gvs_variable_sized_array_n_children (GVariantSerialised value)
++gvs_offsets_get_offset_n (struct Offsets *offsets,
++                          gsize           n)
++{
++  return gvs_read_unaligned_le (
++      offsets->array + (offsets->offset_size * n), offsets->offset_size);
++}
++
++static struct Offsets
++gvs_variable_sized_array_get_frame_offsets (GVariantSerialised value)
+ {
++  struct Offsets out = { 0, };
+   gsize offsets_array_size;
+-  gsize offset_size;
+   gsize last_end;
+ 
+   if (value.size == 0)
+-    return 0;
+-
+-  offset_size = gvs_get_offset_size (value.size);
++    {
++      out.is_normal = TRUE;
++      return out;
++    }
+ 
+-  last_end = gvs_read_unaligned_le (value.data + value.size -
+-                                    offset_size, offset_size);
++  out.offset_size = gvs_get_offset_size (value.size);
++  last_end = gvs_read_unaligned_le (value.data + value.size - out.offset_size,
++                                    out.offset_size);
+ 
+   if (last_end > value.size)
+-    return 0;
++    return out;  /* offsets not normal */
+ 
+   offsets_array_size = value.size - last_end;
+ 
+-  if (offsets_array_size % offset_size)
+-    return 0;
++  if (offsets_array_size % out.offset_size)
++    return out;  /* offsets not normal */
++
++  out.data_size = last_end;
++  out.array = value.data + last_end;
++  out.length = offsets_array_size / out.offset_size;
++  out.is_normal = TRUE;
+ 
+-  return offsets_array_size / offset_size;
++  return out;
++}
++
++static gsize
++gvs_variable_sized_array_n_children (GVariantSerialised value)
++{
++  return gvs_variable_sized_array_get_frame_offsets (value).length;
+ }
+ 
+ static GVariantSerialised
+@@ -664,8 +696,9 @@ gvs_variable_sized_array_get_child (GVariantSerialised value,
+                                     gsize              index_)
+ {
+   GVariantSerialised child = { 0, };
+-  gsize offset_size;
+-  gsize last_end;
++
++  struct Offsets offsets = gvs_variable_sized_array_get_frame_offsets (value);
++
+   gsize start;
+   gsize end;
+ 
+@@ -673,18 +706,11 @@ gvs_variable_sized_array_get_child (GVariantSerialised value,
+   g_variant_type_info_ref (child.type_info);
+   child.depth = value.depth + 1;
+ 
+-  offset_size = gvs_get_offset_size (value.size);
+-
+-  last_end = gvs_read_unaligned_le (value.data + value.size -
+-                                    offset_size, offset_size);
+-
+   if (index_ > 0)
+     {
+       guint alignment;
+ 
+-      start = gvs_read_unaligned_le (value.data + last_end +
+-                                     (offset_size * (index_ - 1)),
+-                                     offset_size);
++      start = gvs_offsets_get_offset_n (&offsets, index_ - 1);
+ 
+       g_variant_type_info_query (child.type_info, &alignment, NULL);
+       start += (-start) & alignment;
+@@ -692,11 +718,9 @@ gvs_variable_sized_array_get_child (GVariantSerialised value,
+   else
+     start = 0;
+ 
+-  end = gvs_read_unaligned_le (value.data + last_end +
+-                               (offset_size * index_),
+-                               offset_size);
++  end = gvs_offsets_get_offset_n (&offsets, index_);
+ 
+-  if (start < end && end <= value.size && end <= last_end)
++  if (start < end && end <= value.size && end <= offsets.data_size)
+     {
+       child.data = value.data + start;
+       child.size = end - start;
+@@ -768,34 +792,16 @@ static gboolean
+ gvs_variable_sized_array_is_normal (GVariantSerialised value)
+ {
+   GVariantSerialised child = { 0, };
+-  gsize offsets_array_size;
+-  guchar *offsets_array;
+-  guint offset_size;
+   guint alignment;
+-  gsize last_end;
+-  gsize length;
+   gsize offset;
+   gsize i;
+ 
+-  if (value.size == 0)
+-    return TRUE;
+-
+-  offset_size = gvs_get_offset_size (value.size);
+-  last_end = gvs_read_unaligned_le (value.data + value.size -
+-                                    offset_size, offset_size);
++  struct Offsets offsets = gvs_variable_sized_array_get_frame_offsets (value);
+ 
+-  if (last_end > value.size)
++  if (!offsets.is_normal)
+     return FALSE;
+ 
+-  offsets_array_size = value.size - last_end;
+-
+-  if (offsets_array_size % offset_size)
+-    return FALSE;
+-
+-  offsets_array = value.data + value.size - offsets_array_size;
+-  length = offsets_array_size / offset_size;
+-
+-  if (length == 0)
++  if (value.size != 0 && offsets.length == 0)
+     return FALSE;
+ 
+   child.type_info = g_variant_type_info_element (value.type_info);
+@@ -803,14 +809,14 @@ gvs_variable_sized_array_is_normal (GVariantSerialised value)
+   child.depth = value.depth + 1;
+   offset = 0;
+ 
+-  for (i = 0; i < length; i++)
++  for (i = 0; i < offsets.length; i++)
+     {
+       gsize this_end;
+ 
+-      this_end = gvs_read_unaligned_le (offsets_array + offset_size * i,
+-                                        offset_size);
++      this_end = gvs_read_unaligned_le (offsets.array + offsets.offset_size * i,
++                                        offsets.offset_size);
+ 
+-      if (this_end < offset || this_end > last_end)
++      if (this_end < offset || this_end > offsets.data_size)
+         return FALSE;
+ 
+       while (offset & alignment)
+@@ -832,7 +838,7 @@ gvs_variable_sized_array_is_normal (GVariantSerialised value)
+       offset = this_end;
+     }
+ 
+-  g_assert (offset == last_end);
++  g_assert (offset == offsets.data_size);
+ 
+   return TRUE;
+ }
+-- 
+2.35.6
+

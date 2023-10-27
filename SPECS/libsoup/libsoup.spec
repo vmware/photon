@@ -3,7 +3,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         8%{?dist}
+Release:         9%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -18,7 +18,7 @@ Patch0: libsoup-fix-make-check.patch
 Patch1: libsoup-issue-120.patch
 %endif
 
-BuildRequires:   glib-devel
+BuildRequires:   glib-devel >= 2.68.4
 BuildRequires:   gobject-introspection
 BuildRequires:   libxml2-devel
 BuildRequires:   intltool
@@ -50,7 +50,7 @@ libsoup is HTTP client/server library for GNOME
 Summary:         Header files for libsoup
 Group:           System Environment/Development
 Requires:        %{name} = %{version}-%{release}
-Requires:        glib-devel
+Requires:        glib-devel >= 2.68.4
 Requires:        libxml2-devel
 Requires:        sqlite-devel
 Requires:        libpsl-devel
@@ -112,6 +112,8 @@ These are the additional language files of libsoup.
 %defattr(-,root,root)
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.72.0-9
+- Bump version as part of glib upgrade
 * Thu May 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.72.0-8
 - Use meson macros for building
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-7

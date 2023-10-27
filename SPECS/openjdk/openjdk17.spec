@@ -5,7 +5,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.8
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
@@ -25,7 +25,7 @@ BuildRequires: chkconfig
 BuildRequires: freetype2
 BuildRequires: fontconfig-devel
 BuildRequires: freetype2-devel
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.68.4
 BuildRequires: harfbuzz-devel
 BuildRequires: elfutils-libelf-devel
 
@@ -236,6 +236,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.8-6
+- Bump version as part of glib upgrade
 * Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 17.0.8-5
 - Version bump as a part of cups upgrade
 * Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.8-4

@@ -1,7 +1,7 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
 Version:       0.120
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
@@ -16,7 +16,7 @@ Patch1: CVE-2021-4115.patch
 
 BuildRequires: autoconf
 BuildRequires: expat-devel
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.68.4
 BuildRequires: gobject-introspection
 BuildRequires: intltool
 BuildRequires: mozjs-devel
@@ -25,7 +25,7 @@ BuildRequires: systemd-devel
 
 Requires: mozjs
 Requires: expat
-Requires: glib
+Requires: glib >= 2.68.4
 Requires: Linux-PAM
 Requires: systemd
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
@@ -106,6 +106,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.120-5
+- Bump version as part of glib upgrade
 * Tue Aug 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.120-4
 - Bump version as a part of mozjs upgrade
 * Mon Feb 07 2022 Siju Maliakkal <smaliakkal@vmware.com> 0.120-3

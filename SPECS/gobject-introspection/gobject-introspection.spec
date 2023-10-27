@@ -1,7 +1,7 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.66.0
-Release:        23%{?dist}
+Release:        24%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
@@ -16,7 +16,7 @@ BuildRequires:  intltool
 BuildRequires:  flex
 BuildRequires:  bison
 BuildRequires:  which
-BuildRequires:  glib-devel >= 2.58.0
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  libffi-devel
 BuildRequires:  go
 BuildRequires:  autoconf-archive
@@ -26,7 +26,7 @@ BuildRequires:  python3-xml
 BuildRequires:  meson
 
 Requires:       libffi
-Requires:       glib >= 2.58.0
+Requires:       glib >= 2.68.4
 
 %description
 GObject Introspection can scan C header and source files in order to
@@ -51,7 +51,7 @@ Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3-gobject-introspection = %{version}-%{release}
 Requires:       libffi-devel
-Requires:       glib-devel
+Requires:       glib-devel >= 2.68.4
 
 %description devel
 Libraries and headers for gobject-introspection.
@@ -101,6 +101,8 @@ meson test
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+* Mon Oct 16 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.66.0-24
+- Bump version as part of glib upgrade
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.66.0-23
 - Bump up version to compile with new go
 * Fri Aug 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.66.0-22

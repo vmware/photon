@@ -1,0 +1,25 @@
+From ecde1b75d0faed276a4e20fc2df0803d8f25acee Mon Sep 17 00:00:00 2001
+From: Michael Catanzaro <mcatanzaro@redhat.com>
+Date: Tue, 12 Oct 2021 15:52:18 -0500
+Subject: [PATCH 08/49] gspawn: use close_and_invalidate more
+
+---
+ glib/gspawn.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/glib/gspawn.c b/glib/gspawn.c
+index a15fb1ca1..5d8422869 100644
+--- a/glib/gspawn.c
++++ b/glib/gspawn.c
+@@ -1710,7 +1710,7 @@ do_exec (gint                  child_err_report_fd,
+                 child_err_report_fd = safe_dup (child_err_report_fd);
+ 
+               safe_dup2 (source_fds[i], target_fds[i]);
+-              (void) close (source_fds[i]);
++              close_and_invalidate (&source_fds[i]);
+             }
+         }
+     }
+-- 
+2.35.6
+

@@ -1,0 +1,30 @@
+From 6d0c0be0319bb35b7ee22ad5d924378275374d60 Mon Sep 17 00:00:00 2001
+From: Benjamin Berg <bberg@redhat.com>
+Date: Fri, 23 Oct 2020 18:20:01 +0200
+Subject: [PATCH 03/49] tests: Iterate mainloop during launch test
+
+When launching an application, we wait for the DBus response from
+systemd before executing the binary. Because of this the main loop needs
+to be iterated for spawning to completed and the file to be created.
+
+Without this the test will time out if GLib was able to connect to the
+session bus.
+---
+ gio/tests/desktop-app-info.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/gio/tests/desktop-app-info.c b/gio/tests/desktop-app-info.c
+index fcc29c579..743230cbb 100644
+--- a/gio/tests/desktop-app-info.c
++++ b/gio/tests/desktop-app-info.c
+@@ -334,6 +334,7 @@ wait_for_file (const gchar *want_this,
+    */
+   while (access (want_this, F_OK) != 0)
+     {
++      g_main_context_iteration (NULL, FALSE);
+       g_usleep (100000); /* 100ms */
+       g_assert_cmpuint (retries, >, 0);
+       retries--;
+-- 
+2.35.6
+

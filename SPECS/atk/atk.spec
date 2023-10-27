@@ -1,7 +1,7 @@
 Summary:        Accessibility interfaces to have full access to view and control running applications.
 Name:           atk
 Version:        2.38.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnome.org
 Group:          System Environment/Libraries
@@ -13,9 +13,9 @@ Source0:        http://ftp.gnome.org/pub/gnome/sources/%{name}/2.16/%{name}-%{ve
 
 BuildRequires:  cmake
 BuildRequires:  meson
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  gobject-introspection-devel
-Requires:       glib
+Requires:       glib >= 2.68.4
 
 %description
 ATK provides the set of accessibility interfaces that are implemented by other toolkits and applications. Using the ATK interfaces, accessibility tools have full access to view and control running applications.
@@ -59,7 +59,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig
 
 %changelog
-*   Fri Aug 19 2022 Shivani Agarwal <shivania2@vmware.com> 2.38.0-1
--   Upgrade version 2.38.0
-*   Thu May 21 2015 Alexey Makhalov <amakhalov@vmware.com> 2.16.0-1
--   initial version
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.38.0-2
+- Bump version as part of glib upgrade
+* Fri Aug 19 2022 Shivani Agarwal <shivania2@vmware.com> 2.38.0-1
+- Upgrade version 2.38.0
+* Thu May 21 2015 Alexey Makhalov <amakhalov@vmware.com> 2.16.0-1
+- initial version

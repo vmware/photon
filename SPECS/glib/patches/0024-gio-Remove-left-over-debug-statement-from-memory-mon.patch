@@ -1,0 +1,25 @@
+From 01514cf7245537752d4a8feb6056432cf0b16888 Mon Sep 17 00:00:00 2001
+From: Bastien Nocera <hadess@hadess.net>
+Date: Wed, 11 Aug 2021 15:37:40 +0200
+Subject: [PATCH 24/49] gio: Remove left-over debug statement from memory
+ monitor portal test
+
+---
+ gio/tests/memory-monitor-portal.py.in | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/gio/tests/memory-monitor-portal.py.in b/gio/tests/memory-monitor-portal.py.in
+index cb4a960eb..f5fd2283f 100755
+--- a/gio/tests/memory-monitor-portal.py.in
++++ b/gio/tests/memory-monitor-portal.py.in
+@@ -31,7 +31,6 @@ try:
+ 
+     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+ 
+-    # XDG_DESKTOP_PORTAL_PATH = os.path.expanduser("~/.cache/jhbuild/build/xdg-desktop-portal/xdg-desktop-portal")
+     XDG_DESKTOP_PORTAL_PATH = "@libexecdir@/xdg-desktop-portal"
+ 
+     class TestLowMemoryMonitorPortal(dbusmock.DBusTestCase):
+-- 
+2.35.6
+

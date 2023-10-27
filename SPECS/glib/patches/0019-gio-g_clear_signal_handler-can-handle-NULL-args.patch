@@ -1,0 +1,36 @@
+From 99520dd6e0c9ab5b661414f8e74fa5c8fe136cc8 Mon Sep 17 00:00:00 2001
+From: Bastien Nocera <hadess@hadess.net>
+Date: Wed, 28 Jul 2021 15:10:16 +0200
+Subject: [PATCH 19/49] gio: g_clear_signal_handler() can handle NULL args
+
+---
+ gio/gmemorymonitordbus.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/gio/gmemorymonitordbus.c b/gio/gmemorymonitordbus.c
+index a34a58d3b..08dc53df1 100644
+--- a/gio/gmemorymonitordbus.c
++++ b/gio/gmemorymonitordbus.c
+@@ -115,8 +115,7 @@ lmm_vanished_cb (GDBusConnection *connection,
+ {
+   GMemoryMonitorDBus *dbus = user_data;
+ 
+-  if (dbus->proxy != NULL)
+-    g_clear_signal_handler (&dbus->signal_id, dbus->proxy);
++  g_clear_signal_handler (&dbus->signal_id, dbus->proxy);
+   g_clear_object (&dbus->proxy);
+ }
+ 
+@@ -143,8 +142,7 @@ g_memory_monitor_dbus_finalize (GObject *object)
+ {
+   GMemoryMonitorDBus *dbus = G_MEMORY_MONITOR_DBUS (object);
+ 
+-  if (dbus->proxy != NULL)
+-    g_clear_signal_handler (&dbus->signal_id, dbus->proxy);
++  g_clear_signal_handler (&dbus->signal_id, dbus->proxy);
+   g_clear_object (&dbus->proxy);
+   g_clear_handle_id (&dbus->watch_id, g_bus_unwatch_name);
+ 
+-- 
+2.35.6
+

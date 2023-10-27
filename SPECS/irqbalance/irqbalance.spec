@@ -1,7 +1,7 @@
 Summary:    Irqbalance daemon
 Name:       irqbalance
 Version:    1.7.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2
 URL:        https://github.com/Irqbalance/irqbalance
 Group:      System Environment/Services
@@ -10,14 +10,14 @@ Distribution:   Photon
 
 #%%https://github.com/Irqbalance/%{name}/archive/v%{version}.tar.gz
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}=21a330214be3c578748dced6173fd545ca75d2c9
+%define sha512 %{name}-%{version}=2fa29c738275dda2fac38d78ca0ec4619826b72529e8eda7ad8ddcda5768bbf282e2260dddc16a8b46d4296289b25dc59684575ae1badca0c6c6ae30b1e9b5ea
 
 BuildRequires:  systemd-devel
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  libnuma-devel
 
 Requires:  systemd
-Requires:  glib
+Requires:  glib >= 2.68.4
 Requires:  libnuma
 
 %description
@@ -64,6 +64,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/*
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.7.0-4
+- Bump version as part of glib upgrade
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-3
 - Exclude debug symbols properly
 * Thu Oct 29 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.7.0-2

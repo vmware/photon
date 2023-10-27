@@ -1,7 +1,7 @@
 Summary:        A general purpose TCP-IP emulator
 Name:           libslirp
 Version:        4.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and MIT
 URL:            https://gitlab.freedesktop.org/slirp/%{name}
 Group:          Development/Libraries
@@ -13,9 +13,9 @@ Source0:        https://gitlab.com/qemu-project/libslirp/-/archive/v%{version}/%
 
 BuildRequires: meson
 BuildRequires: gcc
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.68.4
 
-Requires: glib
+Requires: glib >= 2.68.4
 
 %description
 A general purpose TCP-IP emulator used by virtual machine hypervisors
@@ -24,7 +24,7 @@ to provide virtual networking services.
 %package        devel
 Summary:        Development files for %{name}
 Requires:       %{name} = %{version}-%{release}
-Requires:       glib-devel
+Requires:       glib-devel >= 2.68.4
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -62,5 +62,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/slirp.pc
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.7.0-2
+- Bump version as part of glib upgrade
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.7.0-1
 - Introduce libslirp. Needed for rootlesskit

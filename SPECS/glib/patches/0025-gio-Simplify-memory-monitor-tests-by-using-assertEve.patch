@@ -1,0 +1,122 @@
+From 63d0e9750e16e62b1c928ba15eac22cb9d03ed43 Mon Sep 17 00:00:00 2001
+From: Bastien Nocera <hadess@hadess.net>
+Date: Wed, 11 Aug 2021 15:38:12 +0200
+Subject: [PATCH 25/49] gio: Simplify memory monitor tests by using
+ assertEventually() helper
+
+assertEventually is a helper used in a number of projects that use
+dbusmock.
+
+See https://github.com/martinpitt/python-dbusmock/issues/82
+---
+ gio/tests/memory-monitor-dbus.py.in   | 31 ++++++++++++++++-----------
+ gio/tests/memory-monitor-portal.py.in | 31 ++++++++++++++++-----------
+ 2 files changed, 38 insertions(+), 24 deletions(-)
+
+diff --git a/gio/tests/memory-monitor-dbus.py.in b/gio/tests/memory-monitor-dbus.py.in
+index 7823e7309..e8ac28faf 100755
+--- a/gio/tests/memory-monitor-dbus.py.in
++++ b/gio/tests/memory-monitor-dbus.py.in
+@@ -66,6 +66,23 @@ try:
+             self.p_mock.terminate()
+             self.p_mock.wait()
+ 
++        def assertEventually(self, condition, message=None, timeout=50):
++            '''Assert that condition function eventually returns True.
++
++            Timeout is in deciseconds, defaulting to 50 (5 seconds). message is
++            printed on failure.
++            '''
++            while timeout >= 0:
++                context = GLib.MainContext.default()
++                while context.iteration(False):
++                    pass
++                if condition():
++                    break
++                timeout -= 1
++                time.sleep(0.1)
++            else:
++                self.fail(message or 'timed out waiting for ' + str(condition))
++
+         def memory_warning_cb(self, monitor, level):
+             self.last_warning = level
+             self.main_context.wakeup()
+@@ -82,21 +99,11 @@ try:
+ 
+             self.dbusmock.EmitWarning(100)
+             # Wait 2 seconds or until warning
+-            timeout = 2
+-            while timeout > 0 and self.last_warning != 100:
+-                time.sleep(0.5)
+-                timeout -= 0.5
+-                self.main_context.iteration(False)
+-            self.assertEqual(self.last_warning, 100)
++            self.assertEventually(self.last_warning == 100, "'100' low-memory warning not received", 20)
+ 
+             self.dbusmock.EmitWarning(255)
+             # Wait 2 seconds or until warning
+-            timeout = 2
+-            while timeout > 0 and self.last_warning != 255:
+-                time.sleep(0.5)
+-                timeout -= 0.5
+-                self.main_context.iteration(False)
+-            self.assertEqual(self.last_warning, 255)
++            self.assertEventually(self.last_warning == 255, "'255' low-memory warning not received", 20)
+ 
+ except ImportError as e:
+     @unittest.skip("Cannot import %s" % e.name)
+diff --git a/gio/tests/memory-monitor-portal.py.in b/gio/tests/memory-monitor-portal.py.in
+index f5fd2283f..36d5094d3 100755
+--- a/gio/tests/memory-monitor-portal.py.in
++++ b/gio/tests/memory-monitor-portal.py.in
+@@ -84,6 +84,23 @@ try:
+             self.p_mock.terminate()
+             self.p_mock.wait()
+ 
++        def assertEventually(self, condition, message=None, timeout=50):
++            '''Assert that condition function eventually returns True.
++
++            Timeout is in deciseconds, defaulting to 50 (5 seconds). message is
++            printed on failure.
++            '''
++            while timeout >= 0:
++                context = GLib.MainContext.default()
++                while context.iteration(False):
++                    pass
++                if condition():
++                    break
++                timeout -= 1
++                time.sleep(0.1)
++            else:
++                self.fail(message or 'timed out waiting for ' + str(condition))
++
+         def portal_memory_warning_cb(self, monitor, level):
+             self.last_warning = level
+             self.main_context.wakeup()
+@@ -100,21 +117,11 @@ try:
+ 
+             self.dbusmock.EmitWarning(100)
+             # Wait 2 seconds or until warning
+-            timeout = 2
+-            while timeout > 0 and self.last_warning != 100:
+-                time.sleep(0.5)
+-                timeout -= 0.5
+-                self.main_context.iteration(False)
+-            self.assertEqual(self.last_warning, 100)
++            self.assertEventually(self.last_warning == 100, "'100' low-memory warning not received", 20)
+ 
+             self.dbusmock.EmitWarning(255)
+             # Wait 2 seconds or until warning
+-            timeout = 2
+-            while timeout > 0 and self.last_warning != 255:
+-                time.sleep(0.5)
+-                timeout -= 0.5
+-                self.main_context.iteration(False)
+-            self.assertEqual(self.last_warning, 255)
++            self.assertEventually(self.last_warning == 255, "'255' low-memory warning not received", 20)
+ 
+ except ImportError as e:
+     @unittest.skip("Cannot import %s" % e.name)
+-- 
+2.35.6
+

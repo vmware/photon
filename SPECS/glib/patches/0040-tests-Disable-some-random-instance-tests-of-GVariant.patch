@@ -1,0 +1,76 @@
+From 24ac75fab0b869fbf7e2cb970974ba59bc1a8a10 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Mon, 24 Oct 2022 16:43:23 +0100
+Subject: [PATCH 40/49] tests: Disable some random instance tests of GVariants
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Building a `GVariant` using entirely random data may result in a
+non-normally-formed `GVariant`. It’s always possible to read these
+`GVariant`s, but the API might return default values for some or all of
+their components.
+
+In particular, this can easily happen when randomly generating the
+offset tables for non-fixed-width container types.
+
+If it does happen, bytewise comparison of the parsed `GVariant` with the
+original bytes will not always match. So skip those checks.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+
+Helps: #2121
+---
+ glib/tests/gvariant.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/glib/tests/gvariant.c b/glib/tests/gvariant.c
+index 965aa98af..f3b975652 100644
+--- a/glib/tests/gvariant.c
++++ b/glib/tests/gvariant.c
+@@ -1231,6 +1231,7 @@ random_instance_assert (RandomInstance *instance,
+   GRand *rand;
+   gsize i;
+ 
++  g_assert_true (size == 0 || buffer != NULL);
+   g_assert_cmpint ((gsize) buffer & ALIGN_BITS & instance->alignment, ==, 0);
+   g_assert_cmpint (size, ==, instance->size);
+ 
+@@ -1457,10 +1458,13 @@ test_maybe (void)
+         g_variant_serialiser_serialise (serialised,
+                                         random_instance_filler,
+                                         (gpointer *) &instance, 1);
++
+         child = g_variant_serialised_get_child (serialised, 0);
+         g_assert_true (child.type_info == instance->type_info);
+-        random_instance_assert (instance, child.data, child.size);
++        if (child.data != NULL)  /* could be NULL if element is non-normal */
++          random_instance_assert (instance, child.data, child.size);
+         g_variant_type_info_unref (child.type_info);
++
+         flavoured_free (serialised.data, flavour);
+       }
+   }
+@@ -1593,7 +1597,8 @@ test_array (void)
+ 
+             child = g_variant_serialised_get_child (serialised, i);
+             g_assert_true (child.type_info == instances[i]->type_info);
+-            random_instance_assert (instances[i], child.data, child.size);
++            if (child.data != NULL)  /* could be NULL if element is non-normal */
++              random_instance_assert (instances[i], child.data, child.size);
+             g_variant_type_info_unref (child.type_info);
+           }
+ 
+@@ -1759,7 +1764,8 @@ test_tuple (void)
+ 
+             child = g_variant_serialised_get_child (serialised, i);
+             g_assert_true (child.type_info == instances[i]->type_info);
+-            random_instance_assert (instances[i], child.data, child.size);
++            if (child.data != NULL)  /* could be NULL if element is non-normal */
++              random_instance_assert (instances[i], child.data, child.size);
+             g_variant_type_info_unref (child.type_info);
+           }
+ 
+-- 
+2.35.6
+

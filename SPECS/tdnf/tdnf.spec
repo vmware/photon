@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.3.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -36,7 +36,7 @@ BuildRequires:  python3-setuptools
 
 %if 0%{?with_check}
 BuildRequires:  createrepo_c
-BuildRequires:  glib
+BuildRequires:  glib >= 2.68.4
 BuildRequires:  python3-pip
 BuildRequires:  photon-release
 BuildRequires:  photon-repos
@@ -227,6 +227,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Thu Oct 19 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.3.9-3
+- Version bump for updated glib
 * Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 3.3.9-2
 - Version bump to use curl 8.1.1
 * Fri Apr 28 2023 Oliver Kurth <okurth@vmware.com> 3.3.9-1

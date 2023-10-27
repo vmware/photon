@@ -2,16 +2,16 @@
 Summary:        QEMU disk image utility
 Name:           qemu-img
 Version:        5.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GNU GPLv2
 URL:            https://www.qemu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://download.qemu.org/qemu-%{version}.tar.xz
-%define sha1    qemu=8c70ce2b65349e9b42bd20c9dec2c90f8e7b960a
+%define sha512  qemu=e213edb71d93d5167ddce7546220ecb7b52a7778586a4f476f65bd1e510c9cfc6d1876238a7b501d9cc3fd31cc2ae4b7fb9e753bc3f12cc17cd16dfce2a96ba3
 BuildRequires:  python3-devel
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  pixman-devel
 
 %description
@@ -148,9 +148,11 @@ make %{?_smp_mflags} check
 /usr/local/share/qemu
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.1.0-2
--   Bump up to compile with python 3.10
-*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1
--   Automatic Version Bump
-*   Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 4.2.0-1
--   Initial build.  First version
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.1.0-3
+- Bump version as part of glib upgrade
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.1.0-2
+- Bump up to compile with python 3.10
+* Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1
+- Automatic Version Bump
+* Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 4.2.0-1
+- Initial build.  First version

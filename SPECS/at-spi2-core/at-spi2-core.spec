@@ -1,7 +1,7 @@
 Summary:        Service Provider Interface for the Assistive Technologies.
 Name:           at-spi2-core
 Version:        2.45.91
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            http://www.linuxfoundation.org/en/AT-SPI_on_D-Bus
 Group:          System Environment/Libraries
@@ -14,7 +14,7 @@ Source0:        http://ftp.gnome.org/pub/gnome/sources/%{name}/2.45/%{name}-%{ve
 BuildRequires:  meson >= 0.50
 BuildRequires:  libxml2-devel
 BuildRequires:  intltool
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  dbus-devel
 BuildRequires:  libX11-devel
 BuildRequires:  libXtst-devel
@@ -22,7 +22,7 @@ BuildRequires:  libXext-devel
 BuildRequires:  libXi-devel
 
 Requires:       dbus
-Requires:       glib
+Requires:       glib >= 2.68.4
 Requires:       libX11
 Requires:       libXtst
 Requires:       libXext
@@ -35,12 +35,13 @@ The At-Spi2 Core package is a part of the GNOME Accessibility Project. It provid
 %package        devel
 Summary:        Header and development files
 Requires:       %{name} = %{version}
-Requires:       glib-devel
+Requires:       glib-devel >= 2.68.4
 Requires:       dbus-devel
 Requires:       libX11-devel
 Requires:       libXtst-devel
 Requires:       libXext-devel
 Requires:       libXi-devel
+Requires:       atk-devel
 
 %description    devel
 It contains the libraries and header files to create applications
@@ -91,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.45.91-4
+- Bump version as part of glib upgrade
 * Thu Jun 22 2023 Kuntal Nayak <nkuntal@vmware.com> 2.45.91-3
 - Bump version as a part of libXi upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 2.45.91-2

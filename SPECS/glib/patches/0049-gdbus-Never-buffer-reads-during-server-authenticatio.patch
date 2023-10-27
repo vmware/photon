@@ -1,0 +1,141 @@
+From 059f4f3999f1de506417611318c6f27db57fb689 Mon Sep 17 00:00:00 2001
+From: Marius Vollmer <mvollmer@redhat.com>
+Date: Mon, 13 Feb 2023 14:12:52 +0200
+Subject: [PATCH 49/49] gdbus: Never buffer reads during server authentication
+
+Otherwise, the content of the buffer is thrown away when switching
+from reading via a GDataInputStream to unbuffered reads when waiting
+for the "BEGIN" line.
+
+(The code already tried to protect against over-reading like this by
+using unbuffered reads for the last few lines of the auth protocol,
+but it might already be too late at that point.  The buffer of the
+GDataInputStream might already contain the "BEGIN" line for example.)
+
+This matters when connecting a sd-bus client directly to a GDBus
+client.  A sd-bus client optimistically sends the whole auth
+conversation in one go without waiting for intermediate replies.  This
+is done to improve performance for the many short-lived connections
+that are typically made.
+---
+ gio/gdbusauth.c | 50 ++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 31 insertions(+), 19 deletions(-)
+
+diff --git a/gio/gdbusauth.c b/gio/gdbusauth.c
+index c430f0cf0..17c7d47b7 100644
+--- a/gio/gdbusauth.c
++++ b/gio/gdbusauth.c
+@@ -933,7 +933,6 @@ _g_dbus_auth_run_server (GDBusAuth              *auth,
+ {
+   gboolean ret;
+   ServerState state;
+-  GDataInputStream *dis;
+   GDataOutputStream *dos;
+   GError *local_error;
+   gchar *line;
+@@ -949,7 +948,6 @@ _g_dbus_auth_run_server (GDBusAuth              *auth,
+   _g_dbus_auth_add_mechs (auth, observer);
+ 
+   ret = FALSE;
+-  dis = NULL;
+   dos = NULL;
+   mech = NULL;
+   negotiated_capabilities = 0;
+@@ -965,13 +963,18 @@ _g_dbus_auth_run_server (GDBusAuth              *auth,
+       goto out;
+     }
+ 
+-  dis = G_DATA_INPUT_STREAM (g_data_input_stream_new (g_io_stream_get_input_stream (auth->priv->stream)));
++  /* We use an extremely slow (but reliable) line reader for input
++   * instead of something buffered - this basically does a recvfrom()
++   * system call per character
++   *
++   * (the problem with using GDataInputStream's read_line is that
++   * because of buffering it might start reading into the first D-Bus
++   * message that appears after "BEGIN\r\n"....)
++   */
++
+   dos = G_DATA_OUTPUT_STREAM (g_data_output_stream_new (g_io_stream_get_output_stream (auth->priv->stream)));
+-  g_filter_input_stream_set_close_base_stream (G_FILTER_INPUT_STREAM (dis), FALSE);
+   g_filter_output_stream_set_close_base_stream (G_FILTER_OUTPUT_STREAM (dos), FALSE);
+ 
+-  g_data_input_stream_set_newline_type (dis, G_DATA_STREAM_NEWLINE_TYPE_CR_LF);
+-
+   /* read the NUL-byte, possibly with credentials attached */
+ #ifdef G_OS_UNIX
+ #ifndef G_CREDENTIALS_PREFER_MESSAGE_PASSING
+@@ -1010,11 +1013,22 @@ _g_dbus_auth_run_server (GDBusAuth              *auth,
+     }
+   else
+     {
++      gchar c;
++      gssize num_read;
++
+       local_error = NULL;
+-      (void)g_data_input_stream_read_byte (dis, cancellable, &local_error);
+-      if (local_error != NULL)
++      num_read = g_input_stream_read (g_io_stream_get_input_stream (auth->priv->stream),
++                                      &c, 1,
++                                      cancellable, &local_error);
++      if (num_read != 1 || local_error != NULL)
+         {
+-          g_propagate_error (error, local_error);
++          if (local_error == NULL)
++            g_set_error_literal (error,
++                                 G_IO_ERROR,
++                                 G_IO_ERROR_FAILED,
++                                 _ ("Unexpected lack of content trying to read a byte"));
++          else
++            g_propagate_error (error, local_error);
+           goto out;
+         }
+     }
+@@ -1050,7 +1064,10 @@ _g_dbus_auth_run_server (GDBusAuth              *auth,
+         {
+         case SERVER_STATE_WAITING_FOR_AUTH:
+           debug_print ("SERVER: WaitingForAuth");
+-          line = _my_g_data_input_stream_read_line (dis, &line_length, cancellable, error);
++          line = _my_g_input_stream_read_line_safe (g_io_stream_get_input_stream (auth->priv->stream),
++                                                    &line_length,
++                                                    cancellable,
++                                                    error);
+           debug_print ("SERVER: WaitingForAuth, read '%s'", line);
+           if (line == NULL)
+             goto out;
+@@ -1260,7 +1277,10 @@ _g_dbus_auth_run_server (GDBusAuth              *auth,
+ 
+         case SERVER_STATE_WAITING_FOR_DATA:
+           debug_print ("SERVER: WaitingForData");
+-          line = _my_g_data_input_stream_read_line (dis, &line_length, cancellable, error);
++          line = _my_g_input_stream_read_line_safe (g_io_stream_get_input_stream (auth->priv->stream),
++                                                    &line_length,
++                                                    cancellable,
++                                                    error);
+           debug_print ("SERVER: WaitingForData, read '%s'", line);
+           if (line == NULL)
+             goto out;
+@@ -1299,13 +1319,6 @@ _g_dbus_auth_run_server (GDBusAuth              *auth,
+ 
+         case SERVER_STATE_WAITING_FOR_BEGIN:
+           debug_print ("SERVER: WaitingForBegin");
+-          /* Use extremely slow (but reliable) line reader - this basically
+-           * does a recvfrom() system call per character
+-           *
+-           * (the problem with using GDataInputStream's read_line is that because of
+-           * buffering it might start reading into the first D-Bus message that
+-           * appears after "BEGIN\r\n"....)
+-           */
+           line = _my_g_input_stream_read_line_safe (g_io_stream_get_input_stream (auth->priv->stream),
+                                                     &line_length,
+                                                     cancellable,
+@@ -1364,7 +1377,6 @@ _g_dbus_auth_run_server (GDBusAuth              *auth,
+ 
+  out:
+   g_clear_object (&mech);
+-  g_clear_object (&dis);
+   g_clear_object (&dos);
+   g_clear_object (&own_credentials);
+ 
+-- 
+2.35.6
+

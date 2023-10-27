@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.2.0
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -16,9 +16,9 @@ Patch0: fix-section-name-parsing-logic.patch
 BuildRequires: autoconf
 BuildRequires: check-devel
 BuildRequires: docker >= 1.12
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.68.4
 
-Requires:      glib
+Requires:      glib >= 2.68.4
 Requires:      iputils
 Requires:      libgcc
 Requires:      ntp
@@ -84,6 +84,8 @@ export CFLAGS
 %{_libdir}/libnetmgrcli.so
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.2.0-5
+- Bump version as part of glib upgrade
 * Tue Oct 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.0-4
 - Fix network file section name parsing logic
 * Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-3

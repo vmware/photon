@@ -1,0 +1,99 @@
+From b4ae1179cbcb91992adc0d5d4fa13341bbcd6c28 Mon Sep 17 00:00:00 2001
+From: William Manley <will@stb-tester.com>
+Date: Tue, 23 Jun 2020 22:59:58 +0100
+Subject: [PATCH 30/49] gvariant-core: Consolidate construction of
+ `GVariantSerialised`
+
+So I only need to change it in one place.
+
+This introduces no functional changes.
+
+Helps: #2121
+---
+ glib/gvariant-core.c | 49 ++++++++++++++++++++++----------------------
+ 1 file changed, 25 insertions(+), 24 deletions(-)
+
+diff --git a/glib/gvariant-core.c b/glib/gvariant-core.c
+index b34ba8d8e..cd6a88768 100644
+--- a/glib/gvariant-core.c
++++ b/glib/gvariant-core.c
+@@ -349,6 +349,27 @@ g_variant_ensure_size (GVariant *value)
+     }
+ }
+ 
++/* < private >
++ * g_variant_to_serialised:
++ * @value: a #GVariant
++ *
++ * Gets a GVariantSerialised for a GVariant in state STATE_SERIALISED.
++ */
++inline static GVariantSerialised
++g_variant_to_serialised (GVariant *value)
++{
++  g_assert (value->state & STATE_SERIALISED);
++  {
++    GVariantSerialised serialised = {
++      value->type_info,
++      (gpointer) value->contents.serialised.data,
++      value->size,
++      value->depth,
++    };
++    return serialised;
++  }
++}
++
+ /* < private >
+  * g_variant_serialise:
+  * @value: a #GVariant
+@@ -1007,16 +1028,8 @@ g_variant_n_children (GVariant *value)
+   g_variant_lock (value);
+ 
+   if (value->state & STATE_SERIALISED)
+-    {
+-      GVariantSerialised serialised = {
+-        value->type_info,
+-        (gpointer) value->contents.serialised.data,
+-        value->size,
+-        value->depth,
+-      };
+-
+-      n_children = g_variant_serialised_n_children (serialised);
+-    }
++    n_children = g_variant_serialised_n_children (
++        g_variant_to_serialised (value));
+   else
+     n_children = value->contents.tree.n_children;
+ 
+@@ -1083,12 +1096,7 @@ g_variant_get_child_value (GVariant *value,
+     }
+ 
+   {
+-    GVariantSerialised serialised = {
+-      value->type_info,
+-      (gpointer) value->contents.serialised.data,
+-      value->size,
+-      value->depth,
+-    };
++    GVariantSerialised serialised = g_variant_to_serialised (value);
+     GVariantSerialised s_child;
+     GVariant *child;
+ 
+@@ -1201,14 +1209,7 @@ g_variant_is_normal_form (GVariant *value)
+ 
+   if (value->state & STATE_SERIALISED)
+     {
+-      GVariantSerialised serialised = {
+-        value->type_info,
+-        (gpointer) value->contents.serialised.data,
+-        value->size,
+-        value->depth
+-      };
+-
+-      if (g_variant_serialised_is_normal (serialised))
++      if (g_variant_serialised_is_normal (g_variant_to_serialised (value)))
+         value->state |= STATE_TRUSTED;
+     }
+   else
+-- 
+2.35.6
+

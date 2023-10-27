@@ -1,0 +1,65 @@
+From 98d5b84c2cdff1431084909b47d1a7f6d0dd60b5 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Fri, 7 Jan 2022 16:42:14 +0000
+Subject: [PATCH 37/49] =?UTF-8?q?gvariant:=20Don=E2=80=99t=20allow=20child?=
+ =?UTF-8?q?=20elements=20of=20a=20tuple=20to=20overlap=20each=20other?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is similar to the earlier commit which prevents child elements of a
+variable-sized array from overlapping each other, but this time for
+tuples. It is based heavily on ideas by William Manley.
+
+Tuples are slightly different from variable-sized arrays in that they
+contain a mixture of fixed and variable sized elements. All but one of
+the variable sized elements have an entry in the frame offsets table.
+This means that if we were to just check the ordering of the frame
+offsets table, the variable sized elements could still overlap
+interleaving fixed sized elements, which would be bad.
+
+Therefore we have to check the elements rather than the frame offsets.
+
+The logic of checking the elements up to the index currently being
+requested, and caching the result in `ordered_offsets_up_to`, means that
+the algorithmic cost implications are the same for this commit as for
+variable-sized arrays: an O(N) cost for these checks is amortised out
+over N accesses to O(1) per access.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+
+Fixes: #2121
+---
+ glib/gvariant-core.c  | 2 ++
+ glib/tests/gvariant.c | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/glib/gvariant-core.c b/glib/gvariant-core.c
+index 9b268d977..c6c50a6ff 100644
+--- a/glib/gvariant-core.c
++++ b/glib/gvariant-core.c
+@@ -3,6 +3,8 @@
+  * Copyright © 2010 Codethink Limited
+  * Copyright © 2022 Endless OS Foundation, LLC
+  *
++ * SPDX-License-Identifier: LGPL-2.1-or-later
++ *
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Lesser General Public
+  * License as published by the Free Software Foundation; either
+diff --git a/glib/tests/gvariant.c b/glib/tests/gvariant.c
+index 9ed56d66d..a565ea69a 100644
+--- a/glib/tests/gvariant.c
++++ b/glib/tests/gvariant.c
+@@ -3,6 +3,8 @@
+  * Copyright © 2020 William Manley
+  * Copyright © 2022 Endless OS Foundation, LLC
+  *
++ * SPDX-License-Identifier: LGPL-2.1-or-later
++ *
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Lesser General Public
+  * License as published by the Free Software Foundation; either
+-- 
+2.35.6
+

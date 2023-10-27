@@ -1,0 +1,79 @@
+From 44ae51d04615867fe3bcb2842b93c059e764f8f7 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Fri, 7 Jan 2022 16:37:29 +0000
+Subject: [PATCH 35/49] gvariant-serialiser: Rework child size calculation
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This reduces a few duplicate calls to `g_variant_type_info_query()` and
+explains why they’re needed.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+
+Helps: #2121
+---
+ glib/gvariant-serialiser.c | 31 +++++++++----------------------
+ 1 file changed, 9 insertions(+), 22 deletions(-)
+
+diff --git a/glib/gvariant-serialiser.c b/glib/gvariant-serialiser.c
+index cf4d2a2a5..7ba7aed1a 100644
+--- a/glib/gvariant-serialiser.c
++++ b/glib/gvariant-serialiser.c
+@@ -1007,14 +1007,18 @@ gvs_tuple_get_child (GVariantSerialised value,
+   child.depth = value.depth + 1;
+   offset_size = gvs_get_offset_size (value.size);
+ 
++  /* Ensure the size is set for fixed-sized children, or
++   * g_variant_serialised_check() will fail, even if we return
++   * (child.data == NULL) to indicate an error. */
++  if (member_info->ending_type == G_VARIANT_MEMBER_ENDING_FIXED)
++    g_variant_type_info_query (child.type_info, NULL, &child.size);
++
+   /* tuples are the only (potentially) fixed-sized containers, so the
+    * only ones that have to deal with the possibility of having %NULL
+    * data with a non-zero %size if errors occurred elsewhere.
+    */
+   if G_UNLIKELY (value.data == NULL && value.size != 0)
+     {
+-      g_variant_type_info_query (child.type_info, NULL, &child.size);
+-
+       /* this can only happen in fixed-sized tuples,
+        * so the child must also be fixed sized.
+        */
+@@ -1032,29 +1036,12 @@ gvs_tuple_get_child (GVariantSerialised value,
+   else
+     {
+       if (offset_size * (member_info->i + 1) > value.size)
+-        {
+-          /* if the child is fixed size, return its size.
+-           * if child is not fixed-sized, return size = 0.
+-           */
+-          g_variant_type_info_query (child.type_info, NULL, &child.size);
+-
+-          return child;
+-        }
++        return child;
+     }
+ 
+-  gvs_tuple_get_member_bounds (value, index_, offset_size, &start, &end);
+-
+   /* The child should not extend into the offset table. */
+-  if (index_ != g_variant_type_info_n_members (value.type_info) - 1)
+-    {
+-      GVariantSerialised last_child;
+-      last_child = gvs_tuple_get_child (value,
+-                                        g_variant_type_info_n_members (value.type_info) - 1);
+-      last_end = last_child.data + last_child.size - value.data;
+-      g_variant_type_info_unref (last_child.type_info);
+-    }
+-  else
+-    last_end = end;
++  gvs_tuple_get_member_bounds (value, index_, offset_size, &start, &end);
++  gvs_tuple_get_member_bounds (value, g_variant_type_info_n_members (value.type_info) - 1, offset_size, NULL, &last_end);
+ 
+   if (start < end && end <= value.size && end <= last_end)
+     {
+-- 
+2.35.6
+

@@ -1,7 +1,7 @@
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
 Version:        1.6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 Group:          Development/Libraries
 URL:            http://live.gnome.org/JsonGlib
@@ -9,23 +9,23 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
-%define sha1    %{name}=7f0d55cc5b9644b2aaeb9995e85427ce545b15c2
+%define sha512    %{name}=0025f913c54a223e6c5f7e65c081afc8ea65ab5a30ed9f30d2d2bb28d17c5695f6e308c64dfdf128e47ddc99d3178421204b5273e78305a096c0b7dfe67dd406
 
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  python3-gobject-introspection
 BuildRequires:  gobject-introspection-devel
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  libtool
 BuildRequires:  which
-BuildRequires:	meson
-BuildRequires:	python3
-BuildRequires:	python3-libs
+BuildRequires:  meson
+BuildRequires:  python3
+BuildRequires:  python3-libs
 BuildRequires:  gtk-doc
 
-Requires:	glib
+Requires:       glib >= 2.68.4
 
-Provides:	pkgconfig(json-glib-1.4)
+Provides:       pkgconfig(json-glib-1.4)
 
 %description
 JSON-GLib is a library providing serialization and deserialization
@@ -36,7 +36,7 @@ RFC 4627.
 Summary:        Header files for the json-glib library
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-Requires:       glib-devel
+Requires:       glib-devel >= 2.68.4
 Requires:       gobject-introspection-devel
 
 %description    devel
@@ -88,6 +88,8 @@ rm -rf %{buildroot}
 %{_datadir}/gtk-doc/html/json-glib/*
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.6.0-3
+- Bump version as part of glib upgrade
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.0-2
 - Bump up to compile with python 3.10
 * Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
@@ -110,4 +112,4 @@ rm -rf %{buildroot}
 * Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-3
 - Added more requirements for devel subpackage.
 * Fri Jun 26 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-2
-- Added Provides:	pkgconfig(json-glib-1.0)
+- Added Provides: pkgconfig(json-glib-1.0)

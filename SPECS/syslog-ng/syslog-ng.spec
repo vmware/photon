@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org
 Group:          System Environment/Daemons
@@ -14,7 +14,7 @@ Source0: https://github.com/balabit/%{name}/releases/download/%{name}-%{version}
 Source1:        60-%{name}-journald.conf
 Source2:        %{name}.service
 
-Requires:       glib
+Requires:       glib >= 2.68.4
 Requires:       openssl
 Requires:       glibc
 Requires:       json-glib
@@ -26,7 +26,7 @@ Requires:       pcre2-libs
 
 BuildRequires:  pcre2-devel
 BuildRequires:  which
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  json-glib-devel
 BuildRequires:  json-c-devel
 BuildRequires:  openssl-devel
@@ -170,6 +170,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Thu Oct 19 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.3.1-2
+- Bump version as part of glib upgrade
 * Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-1
 - Upgrade to v4.3.1
 * Thu Jul 28 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-2

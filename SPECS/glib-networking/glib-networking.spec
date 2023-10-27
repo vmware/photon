@@ -1,7 +1,7 @@
 Summary:        Glib networking modules
 Name:           glib-networking
 Version:        2.66.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://wiki.gnome.org/glib-networking
 Group:          System Environment/Development
@@ -18,8 +18,8 @@ BuildRequires:  ca-certificates
 BuildRequires:  gnutls-devel
 BuildRequires:  openssl-devel
 BuildRequires:  intltool
-BuildRequires:  glib
-BuildRequires:  glib-devel
+BuildRequires:  glib >= 2.68.4
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  glib-schemas
 BuildRequires:  meson
 BuildRequires:  gnome-common
@@ -74,6 +74,8 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.66.0-6
+- Bump version as part of glib upgrade
 * Fri Oct 28 2022 Michelle Wang <michellew@vmware.com> 2.66.0-5
 - Update meson build parameters after meson bump up to 0.60.2
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.66.0-4

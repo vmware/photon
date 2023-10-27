@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -35,7 +35,7 @@ Requires:       bzip2
 Requires:       curl
 Requires:       elfutils
 Requires:       filesystem >= 1.1
-Requires:       glib
+Requires:       glib >= 2.68.4
 Requires:       gnutls
 Requires:       kmod
 Requires:       %{name}-pam = %{version}-%{release}
@@ -58,7 +58,7 @@ BuildRequires:  curl-devel
 BuildRequires:  docbook-xml
 BuildRequires:  docbook-xsl
 BuildRequires:  gettext
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  gnutls-devel
 BuildRequires:  gperf
 BuildRequires:  intltool
@@ -137,7 +137,7 @@ Just the definitions of rpm macros.
 Summary:        Development headers for systemd
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       %{name}-pam = %{version}-%{release}
-Requires:       glib-devel
+Requires:       glib-devel >= 2.68.4
 Provides:       libudev-devel = %{version}-%{release}
 
 %description devel
@@ -682,6 +682,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Fri Oct 20 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 247.13-8
+- Bump version as part of glib upgrade
 * Mon Oct 09 2023 Susant Sahani <ssahani@vmware.com> 247.13-7
 - Backport sd-netlink: make the default timeout configurable
 * Wed Sep 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 247.13-6

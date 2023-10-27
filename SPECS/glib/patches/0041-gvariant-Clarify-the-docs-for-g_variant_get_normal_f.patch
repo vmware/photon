@@ -1,0 +1,31 @@
+From 88bbf60b61e4aada5b8ebd7deb91fff1f25e60c2 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Mon, 24 Oct 2022 18:14:57 +0100
+Subject: [PATCH 41/49] gvariant: Clarify the docs for
+ g_variant_get_normal_form()
+
+Document how non-normal parts of the `GVariant` are handled.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+---
+ glib/gvariant.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/glib/gvariant.c b/glib/gvariant.c
+index 3e1adffaa..2a6aaa1f4 100644
+--- a/glib/gvariant.c
++++ b/glib/gvariant.c
+@@ -5879,7 +5879,9 @@ g_variant_deep_copy (GVariant *value)
+  * marked as trusted and a new reference to it is returned.
+  *
+  * If @value is found not to be in normal form then a new trusted
+- * #GVariant is created with the same value as @value.
++ * #GVariant is created with the same value as @value. The non-normal parts of
++ * @value will be replaced with default values which are guaranteed to be in
++ * normal form.
+  *
+  * It makes sense to call this function if you've received #GVariant
+  * data from untrusted sources and you want to ensure your serialised
+-- 
+2.35.6
+

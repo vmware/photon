@@ -1,41 +1,41 @@
-Summary:	Scripts to bring up network interfaces and legacy utilities
-Name:		initscripts
-Version:	10.04
-License:	GPLv2
-Group:		System Environment/Base
-Release:	1%{?dist}
-URL:		https://github.com/fedora-sysv/initscripts
-Source0:	https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
-%define sha1 initscripts=b9e707441d4be947cd1c75c3733671900cfa11df
-Source1:        adjtime
-Patch0:         service.patch
-Vendor:     	VMware, Inc.
-Distribution:   Photon
-Requires:	systemd
-Requires:	iproute2
-Requires:       util-linux
-Requires:       findutils
-BuildRequires:	glib-devel
-BuildRequires:	python3
-BuildRequires:	python3-libs
-BuildRequires:	popt-devel
-BuildRequires:	gettext
-BuildRequires:	pkg-config
-BuildRequires:	systemd
-Provides:	/sbin/service
+Summary:       Scripts to bring up network interfaces and legacy utilities
+Name:          initscripts
+Version:       10.04
+License:       GPLv2
+Group:         System Environment/Base
+Release:       2%{?dist}
+URL:           https://github.com/fedora-sysv/initscripts
+Source0:       https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
+%define sha512 initscripts=d761b743403002d5eaf93a0222bd1303c5e9bd5b0202eb87d6651778d3f8fe3f626b99be9518696cb82891f13b228bec3c3c068b30f14b005dd18247e35c8d30
+Source1:       adjtime
+Patch0:        service.patch
+Vendor:        VMware, Inc.
+Distribution:  Photon
+Requires:      systemd
+Requires:      iproute2
+Requires:      util-linux
+Requires:      findutils
+BuildRequires: glib-devel >= 2.68.4
+BuildRequires: python3
+BuildRequires: python3-libs
+BuildRequires: popt-devel
+BuildRequires: gettext
+BuildRequires: pkg-config
+BuildRequires: systemd
+Provides:      /sbin/service
 
 %description
 This package contains the script that activates and deactivates most
 network interfaces, some utilities, and other legacy files.
 
 %package -n netconsole-service
-Summary:          Service for initializing of network console logging
-Requires:         %{name} = %{version}-%{release}
-BuildArch:        noarch
+Summary:       Service for initializing of network console logging
+Requires:      %{name} = %{version}-%{release}
+BuildArch:     noarch
 
-Requires:         iputils
-Requires:         kmod
-Requires:         sed
+Requires:      iputils
+Requires:      kmod
+Requires:      sed
 
 %description -n netconsole-service
 This packages provides a 'netconsole' service for loading of netconsole kernel
@@ -43,21 +43,21 @@ module with the configured parameters. The netconsole kernel module itself then
 allows logging of kernel messages over the network.
 
 %package -n readonly-root
-Summary:          Service for configuring read-only root support
-Requires:         %{name} = %{version}-%{release}
-BuildArch:        noarch
+Summary:       Service for configuring read-only root support
+Requires:      %{name} = %{version}-%{release}
+BuildArch:     noarch
 
-Requires:         cpio
+Requires:      cpio
 
 %description -n readonly-root
 This package provides script & configuration file for setting up read-only root
 support. Additional configuration is required after installation.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
+# make doesn't support _smp_mflags
 make PYTHON=/usr/bin/python3
 
 %install
@@ -203,21 +203,23 @@ EOF
 %{_prefix}/lib/systemd/system/readonly-root.service
 
 %changelog
-*   Wed Jul 22 2020 Ankit Jain <ankitja@vmware.com> 10.04-1
--   Updated to 10.04
-*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 9.70-4
--   Build using python3
-*   Sat Jan 05 2019 Ankit Jain <ankitja@vmware.com> 9.70-3
--   Added network configuration to fix "service --status-all"
-*   Tue Dec 26 2017 Divya Thaluru <dthaluru@vmware.com> 9.70-2
--   Fixed return code in /etc/init.d/functions bash script
-*   Mon Apr 3 2017 Dheeraj Shetty <dheerajs@vmware.com> 9.70-1
--   Updated to version 9.70
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.65-2
--   GA - Bump release of all rpms
-*   Fri Feb 12 2016 Divya Thaluru <dthaluru@vmware.com> 9.65-2
--   Fixing service script to start services using systemctl by default
-*   Tue Jan 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.65-1
--   Updated to version 9.65
-*   Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 9.63-1
--   Got Spec file from source tar ball and modified it to be compatible to build in Photon
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 10.04-2
+- Bump version as part of glib upgrade
+* Wed Jul 22 2020 Ankit Jain <ankitja@vmware.com> 10.04-1
+- Updated to 10.04
+* Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 9.70-4
+- Build using python3
+* Sat Jan 05 2019 Ankit Jain <ankitja@vmware.com> 9.70-3
+- Added network configuration to fix "service --status-all"
+* Tue Dec 26 2017 Divya Thaluru <dthaluru@vmware.com> 9.70-2
+- Fixed return code in /etc/init.d/functions bash script
+* Mon Apr 3 2017 Dheeraj Shetty <dheerajs@vmware.com> 9.70-1
+- Updated to version 9.70
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.65-2
+- GA - Bump release of all rpms
+* Fri Feb 12 2016 Divya Thaluru <dthaluru@vmware.com> 9.65-2
+- Fixing service script to start services using systemctl by default
+* Tue Jan 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.65-1
+- Updated to version 9.65
+* Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 9.63-1
+- Got Spec file from source tar ball and modified it to be compatible to build in Photon

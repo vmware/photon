@@ -1,0 +1,27 @@
+From 1e1002469cdfa9bd8f7b183ac2dada14c1d662d2 Mon Sep 17 00:00:00 2001
+From: Michael Catanzaro <mcatanzaro@redhat.com>
+Date: Thu, 14 Oct 2021 10:43:52 -0500
+Subject: [PATCH 09/49] gspawn: Improve error message when dup fails
+
+This error message is no longer accurate now that we allow arbitrary fd
+remapping.
+---
+ glib/gspawn.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/glib/gspawn.c b/glib/gspawn.c
+index 5d8422869..e214a3998 100644
+--- a/glib/gspawn.c
++++ b/glib/gspawn.c
+@@ -2363,7 +2363,7 @@ fork_exec (gboolean              intermediate_child,
+               g_set_error (error,
+                            G_SPAWN_ERROR,
+                            G_SPAWN_ERROR_FAILED,
+-                           _("Failed to redirect output or input of child process (%s)"),
++                           _("Failed to duplicate file descriptor for child process (%s)"),
+                            g_strerror (buf[1]));
+ 
+               break;
+-- 
+2.35.6
+

@@ -1,0 +1,130 @@
+From cbb72948f69c7cbcc23f4def5959f8a5b6ba3e20 Mon Sep 17 00:00:00 2001
+From: Michael Catanzaro <mcatanzaro@redhat.com>
+Date: Thu, 14 Oct 2021 11:01:33 -0500
+Subject: [PATCH 14/49] gspawn: Check from errors from safe_dup2() and
+ dupfd_cloexec()
+
+Although unlikely, these functions can fail, e.g. if we run out of file
+descriptors. Check for errors to improve robustness. This is especially
+important now that I changed our use of dupfd_cloexec() to avoid
+returning fds smaller than the largest fd in target_fds. An application
+that attempts to remap to the highest-allowed fd value deserves at least
+some sort of attempt at error reporting, not silent failure.
+---
+ glib/gspawn.c | 40 +++++++++++++++++++++++++++++-----------
+ 1 file changed, 29 insertions(+), 11 deletions(-)
+
+diff --git a/glib/gspawn.c b/glib/gspawn.c
+index 9ef78dbe1..7ef678047 100644
+--- a/glib/gspawn.c
++++ b/glib/gspawn.c
+@@ -1572,7 +1572,6 @@ do_exec (gint                  child_err_report_fd,
+   /* Redirect pipes as required */
+   if (stdin_fd >= 0)
+     {
+-      /* dup2 can't actually fail here I don't think */
+       if (safe_dup2 (stdin_fd, 0) < 0)
+         write_err_and_exit (child_err_report_fd,
+                             CHILD_DUP2_FAILED);
+@@ -1588,13 +1587,14 @@ do_exec (gint                  child_err_report_fd,
+       if (read_null < 0)
+         write_err_and_exit (child_err_report_fd,
+                             CHILD_DUP2_FAILED);
+-      safe_dup2 (read_null, 0);
++      if (safe_dup2 (read_null, 0) < 0)
++        write_err_and_exit (child_err_report_fd,
++                            CHILD_DUP2_FAILED);
+       close_and_invalidate (&read_null);
+     }
+ 
+   if (stdout_fd >= 0)
+     {
+-      /* dup2 can't actually fail here I don't think */
+       if (safe_dup2 (stdout_fd, 1) < 0)
+         write_err_and_exit (child_err_report_fd,
+                             CHILD_DUP2_FAILED);
+@@ -1609,13 +1609,14 @@ do_exec (gint                  child_err_report_fd,
+       if (write_null < 0)
+         write_err_and_exit (child_err_report_fd,
+                             CHILD_DUP2_FAILED);
+-      safe_dup2 (write_null, 1);
++      if (safe_dup2 (write_null, 1) < 0)
++        write_err_and_exit (child_err_report_fd,
++                            CHILD_DUP2_FAILED);
+       close_and_invalidate (&write_null);
+     }
+ 
+   if (stderr_fd >= 0)
+     {
+-      /* dup2 can't actually fail here I don't think */
+       if (safe_dup2 (stderr_fd, 2) < 0)
+         write_err_and_exit (child_err_report_fd,
+                             CHILD_DUP2_FAILED);
+@@ -1630,7 +1631,9 @@ do_exec (gint                  child_err_report_fd,
+       if (write_null < 0)
+         write_err_and_exit (child_err_report_fd,
+                             CHILD_DUP2_FAILED);
+-      safe_dup2 (write_null, 2);
++      if (safe_dup2 (write_null, 2) < 0)
++        write_err_and_exit (child_err_report_fd,
++                            CHILD_DUP2_FAILED);
+       close_and_invalidate (&write_null);
+     }
+ 
+@@ -1643,7 +1646,8 @@ do_exec (gint                  child_err_report_fd,
+     {
+       if (child_setup == NULL && n_fds == 0)
+         {
+-          safe_dup2 (child_err_report_fd, 3);
++          if (safe_dup2 (child_err_report_fd, 3) < 0)
++            write_err_and_exit (child_err_report_fd, CHILD_DUP2_FAILED);
+           set_cloexec (GINT_TO_POINTER (0), 3);
+           safe_closefrom (4);
+           child_err_report_fd = 3;
+@@ -1682,7 +1686,11 @@ do_exec (gint                  child_err_report_fd,
+       for (i = 0; i < n_fds; i++)
+         {
+           if (source_fds[i] != target_fds[i])
+-            source_fds[i] = dupfd_cloexec (source_fds[i], max_target_fd + 1);
++            {
++              source_fds[i] = dupfd_cloexec (source_fds[i], max_target_fd + 1);
++              if (source_fds[i] < 0)
++                write_err_and_exit (child_err_report_fd, CHILD_DUP2_FAILED);
++            }
+         }
+ 
+       for (i = 0; i < n_fds; i++)
+@@ -1700,9 +1708,15 @@ do_exec (gint                  child_err_report_fd,
+                * dup it so it doesn’t get conflated.
+                */
+               if (target_fds[i] == child_err_report_fd)
+-                child_err_report_fd = dupfd_cloexec (child_err_report_fd, max_target_fd + 1);
++                {
++                  child_err_report_fd = dupfd_cloexec (child_err_report_fd, max_target_fd + 1);
++                  if (child_err_report_fd < 0)
++                    write_err_and_exit (child_err_report_fd, CHILD_DUP2_FAILED);
++                }
++
++              if (safe_dup2 (source_fds[i], target_fds[i]) < 0)
++                write_err_and_exit (child_err_report_fd, CHILD_DUP2_FAILED);
+ 
+-              safe_dup2 (source_fds[i], target_fds[i]);
+               close_and_invalidate (&source_fds[i]);
+             }
+         }
+@@ -1945,7 +1959,11 @@ do_posix_spawn (const gchar * const *argv,
+ 
+   duped_source_fds = g_new (gint, n_fds);
+   for (i = 0; i < n_fds; i++)
+-    duped_source_fds[i] = dupfd_cloexec (source_fds[i], max_target_fd + 1);
++    {
++      duped_source_fds[i] = dupfd_cloexec (source_fds[i], max_target_fd + 1);
++      if (duped_source_fds[i] < 0)
++        goto out_close_fds;
++    }
+ 
+   for (i = 0; i < n_fds; i++)
+     {
+-- 
+2.35.6
+

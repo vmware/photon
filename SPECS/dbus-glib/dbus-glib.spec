@@ -1,20 +1,21 @@
 Summary:        Glib interfaces to D-Bus API
 Name:           dbus-glib
 Version:        0.110
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        AFL and GPLv2+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+URL:            https://gitlab.freedesktop.org/dbus/dbus-glib
 
 Source0: http://dbus.freedesktop.org/releases/dbus-glib/%{name}-%{version}.tar.gz
 %define sha512  %{name}=c40ccf7118d4951f0e09082216ccd26f21ee906bdf96d912611d3cd29badd7ef446bea74e19f26c28ebceb9e19bb659d11c643c3e712dac499df12907be88a54
 
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  dbus-devel
 BuildRequires:  systemd-devel
 
-Requires:       glib
+Requires:       glib >= 2.68.4
 Requires:       dbus
 Requires:       libffi
 Requires:       systemd
@@ -25,7 +26,7 @@ The D-Bus GLib package contains GLib interfaces to the D-Bus API.
 
 %package devel
 Summary:    Libraries and headers for the D-Bus GLib bindings
-Requires:   glib-devel
+Requires:   glib-devel >= 2.68.4
 Requires:   dbus-devel
 Requires:   %{name} = %{version}
 
@@ -67,6 +68,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.110-4
+- Bump version as part of glib upgrade
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.110-3
 - Remove .la files
 * Mon Dec 14 2020 Susant Sahani<ssahani@vmware.com> 0.110-2

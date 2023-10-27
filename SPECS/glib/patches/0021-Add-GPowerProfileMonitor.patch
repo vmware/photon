@@ -1,0 +1,750 @@
+From 4e12236ea42a86d1e105d6f5529457509b616a36 Mon Sep 17 00:00:00 2001
+From: Patrick Griffis <pgriffis@igalia.com>
+Date: Tue, 20 Jul 2021 16:04:31 -0500
+Subject: [PATCH 21/49] Add GPowerProfileMonitor
+
+---
+ docs/reference/gio/gio-docs.xml            |   1 +
+ docs/reference/gio/gio-sections-common.txt |  18 ++
+ docs/reference/gio/meson.build             |   1 +
+ gio/gio.h                                  |   1 +
+ gio/giomodule.c                            |   7 +
+ gio/gpowerprofilemonitor.c                 | 141 ++++++++++++
+ gio/gpowerprofilemonitor.h                 |  63 ++++++
+ gio/gpowerprofilemonitordbus.c             | 240 +++++++++++++++++++++
+ gio/gpowerprofilemonitordbus.h             |  32 +++
+ gio/meson.build                            |   3 +
+ gio/tests/meson.build                      |   1 +
+ gio/tests/power-profile-monitor.c          |  79 +++++++
+ 12 files changed, 587 insertions(+)
+ create mode 100644 gio/gpowerprofilemonitor.c
+ create mode 100644 gio/gpowerprofilemonitor.h
+ create mode 100644 gio/gpowerprofilemonitordbus.c
+ create mode 100644 gio/gpowerprofilemonitordbus.h
+ create mode 100644 gio/tests/power-profile-monitor.c
+
+diff --git a/docs/reference/gio/gio-docs.xml b/docs/reference/gio/gio-docs.xml
+index a09d6d31d..b01133900 100644
+--- a/docs/reference/gio/gio-docs.xml
++++ b/docs/reference/gio/gio-docs.xml
+@@ -238,6 +238,7 @@
+         <xi:include href="xml/gmenuexporter.xml"/>
+         <xi:include href="xml/gdbusmenumodel.xml"/>
+         <xi:include href="xml/gnotification.xml"/>
++        <xi:include href="xml/gpowerprofilemonitor.xml"/>
+     </chapter>
+     <chapter id="extending">
+         <title>Extending GIO</title>
+diff --git a/docs/reference/gio/gio-sections-common.txt b/docs/reference/gio/gio-sections-common.txt
+index 945c26ade..99b0c4799 100644
+--- a/docs/reference/gio/gio-sections-common.txt
++++ b/docs/reference/gio/gio-sections-common.txt
+@@ -4229,6 +4229,24 @@ G_NETWORK_MONITOR_GET_INTERFACE
+ g_network_connectivity_get_type
+ </SECTION>
+ 
++<SECTION>
++<FILE>gpowerprofilemonitor</FILE>
++<TITLE>GPowerProfileMonitor</TITLE>
++GPowerProfileMonitor
++GPowerProfileMonitorInterface
++G_POWER_PROFILE_MONITOR_EXTENSION_POINT_NAME
++g_power_profile_monitor_dup_default
++g_power_profile_monitor_get_power_saver_enabled
++<SUBSECTION Standard>
++g_power_profile_monitor_get_type
++G_TYPE_POWER_PROFILE_MONITOR
++G_POWER_PROFILE_MONITOR
++G_IS_POWER_PROFILE_MONITOR
++G_POWER_PROFILE_MONITOR_GET_INTERFACE
++G_TYPE_POWER_PROFILE_LEVEL
++g_power_profile_level_get_type
++</SECTION>
++
+ <SECTION>
+ <FILE>gmenuexporter</FILE>
+ g_dbus_connection_export_menu_model
+diff --git a/docs/reference/gio/meson.build b/docs/reference/gio/meson.build
+index 4d0364819..fbabd25ca 100644
+--- a/docs/reference/gio/meson.build
++++ b/docs/reference/gio/meson.build
+@@ -65,6 +65,7 @@ if get_option('gtk_doc')
+     'gopenuriportal.h',
+     'gpollfilemonitor.h',
+     'gportalsupport.h',
++    'gpowerprofilemonitordbus.h',
+     'gproxyresolverportal.h',
+     'gregistrysettingsbackend.h',
+     'gresourcefile.h',
+diff --git a/gio/gio.h b/gio/gio.h
+index f5d2dd5a3..e9afab666 100644
+--- a/gio/gio.h
++++ b/gio/gio.h
+@@ -120,6 +120,7 @@
+ #include <gio/gpollableinputstream.h>
+ #include <gio/gpollableoutputstream.h>
+ #include <gio/gpollableutils.h>
++#include <gio/gpowerprofilemonitor.h>
+ #include <gio/gpropertyaction.h>
+ #include <gio/gproxy.h>
+ #include <gio/gproxyaddress.h>
+diff --git a/gio/giomodule.c b/gio/giomodule.c
+index a2909a8ef..2fad7072d 100644
+--- a/gio/giomodule.c
++++ b/gio/giomodule.c
+@@ -48,6 +48,8 @@
+ #include "gmemorymonitor.h"
+ #include "gmemorymonitorportal.h"
+ #include "gmemorymonitordbus.h"
++#include "gpowerprofilemonitor.h"
++#include "gpowerprofilemonitordbus.h"
+ #ifdef G_OS_WIN32
+ #include "gregistrysettingsbackend.h"
+ #include "giowin32-priv.h"
+@@ -1073,6 +1075,7 @@ extern GType _g_network_monitor_nm_get_type (void);
+ 
+ extern GType g_memory_monitor_dbus_get_type (void);
+ extern GType g_memory_monitor_portal_get_type (void);
++extern GType g_power_profile_monitor_dbus_get_type (void);
+ 
+ #ifdef G_OS_UNIX
+ extern GType g_fdo_notification_backend_get_type (void);
+@@ -1183,6 +1186,9 @@ _g_io_modules_ensure_extension_points_registered (void)
+ 
+       ep = g_io_extension_point_register (G_MEMORY_MONITOR_EXTENSION_POINT_NAME);
+       g_io_extension_point_set_required_type (ep, G_TYPE_MEMORY_MONITOR);
++
++      ep = g_io_extension_point_register (G_POWER_PROFILE_MONITOR_EXTENSION_POINT_NAME);
++      g_io_extension_point_set_required_type (ep, G_TYPE_POWER_PROFILE_MONITOR);
+     }
+   
+   G_UNLOCK (registered_extensions);
+@@ -1268,6 +1274,7 @@ _g_io_modules_ensure_loaded (void)
+       g_type_ensure (g_null_settings_backend_get_type ());
+       g_type_ensure (g_memory_settings_backend_get_type ());
+       g_type_ensure (g_keyfile_settings_backend_get_type ());
++      g_type_ensure (g_power_profile_monitor_dbus_get_type ());
+ #if defined(HAVE_INOTIFY_INIT1)
+       g_type_ensure (g_inotify_file_monitor_get_type ());
+ #endif
+diff --git a/gio/gpowerprofilemonitor.c b/gio/gpowerprofilemonitor.c
+new file mode 100644
+index 000000000..f5028b3e8
+--- /dev/null
++++ b/gio/gpowerprofilemonitor.c
+@@ -0,0 +1,141 @@
++/* GIO - GLib Input, Output and Streaming Library
++ *
++ * Copyright 2019 Red Hat, Inc
++ * Copyright 2021 Igalia S.L.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General
++ * Public License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "config.h"
++#include "glib.h"
++#include "glibintl.h"
++
++#include "gpowerprofilemonitor.h"
++#include "ginetaddress.h"
++#include "ginetsocketaddress.h"
++#include "ginitable.h"
++#include "gioenumtypes.h"
++#include "giomodule-priv.h"
++#include "gtask.h"
++
++/**
++ * SECTION:gpowerprofilemonitor
++ * @title: GPowerProfileMonitor
++ * @short_description: Power profile monitor
++ * @include: gio/gio.h
++ *
++ * #GPowerProfileMonitor makes it possible for applications as well as OS components
++ * to monitor system power profiles and act upon them. It currently only exports
++ * whether the system is in “Power Saver” mode (known as “Low Power” mode on
++ * some systems).
++ *
++ * When in “Low Power” mode, it is recommended that applications:
++ * - disabling automatic downloads
++ * - reduce the rate of refresh from online sources such as calendar or
++ *   email synchronisation
++ * - if the application has expensive visual effects, reduce them
++ *
++ * It is also likely that OS components providing services to applications will
++ * lower their own background activity, for the sake of the system.
++ *
++ * There are a variety of tools that exist for power consumption analysis, but those
++ * usually depend on the OS and hardware used. On Linux, one could use `upower` to
++ * monitor the battery discharge rate, `powertop` to check on the background activity
++ * or activity at all), `sysprof` to inspect CPU usage, and `intel_gpu_time` to
++ * profile GPU usage.
++ *
++ * Don't forget to disconnect the #GPowerProfileMonitor::notify::power-saver-enabled
++ * signal, and unref the #GPowerProfileMonitor itself when exiting.
++ *
++ * Since: 2.70
++ */
++
++/**
++ * GPowerProfileMonitor:
++ *
++ * #GPowerProfileMonitor monitors system power profile and notifies on
++ * changes.
++ *
++ * Since: 2.70
++ */
++
++/**
++ * GPowerProfileMonitorInterface:
++ * @g_iface: The parent interface.
++ *
++ * The virtual function table for #GPowerProfileMonitor.
++ *
++ * Since: 2.70
++ */
++
++G_DEFINE_INTERFACE_WITH_CODE (GPowerProfileMonitor, g_power_profile_monitor, G_TYPE_OBJECT,
++                              g_type_interface_add_prerequisite (g_define_type_id, G_TYPE_INITABLE))
++
++
++/**
++ * g_power_profile_monitor_dup_default:
++ *
++ * Gets a reference to the default #GPowerProfileMonitor for the system.
++ *
++ * Returns: (not nullable) (transfer full): a new reference to the default #GPowerProfileMonitor
++ *
++ * Since: 2.70
++ */
++GPowerProfileMonitor *
++g_power_profile_monitor_dup_default (void)
++{
++  return g_object_ref (_g_io_module_get_default (G_POWER_PROFILE_MONITOR_EXTENSION_POINT_NAME,
++                                                 "GIO_USE_POWER_PROFILE_MONITOR",
++                                                 NULL));
++}
++
++/**
++ * g_power_profile_monitor_get_power_saver_enabled:
++ * @monitor: a #GPowerProfileMonitor
++ *
++ * Gets whether the system is in “Power Saver” mode.
++ *
++ * You are expected to listen to the
++ * #GPowerProfileMonitor::notify::power-saver-enabled signal to know when the profile has
++ * changed.
++ *
++ * Returns: Whether the system is in “Power Saver” mode.
++ *
++ * Since: 2.70
++ */
++gboolean
++g_power_profile_monitor_get_power_saver_enabled (GPowerProfileMonitor *monitor)
++{
++  gboolean enabled;
++  g_object_get (monitor, "power-saver-enabled", &enabled, NULL);
++  return enabled;
++}
++
++static void
++g_power_profile_monitor_default_init (GPowerProfileMonitorInterface *iface)
++{
++  /**
++   * GPowerProfileMonitor:power-saver-enabled:
++   *
++   * Whether “Power Saver” mode is enabled on the system.
++   *
++   * Since: 2.70
++   */
++  g_object_interface_install_property (iface,
++                                       g_param_spec_boolean ("power-saver-enabled",
++                                                             "power-saver-enabled",
++                                                             "Power Saver Enabled",
++                                                             FALSE,
++                                                             G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY));
++}
+diff --git a/gio/gpowerprofilemonitor.h b/gio/gpowerprofilemonitor.h
+new file mode 100644
+index 000000000..0891fc3dc
+--- /dev/null
++++ b/gio/gpowerprofilemonitor.h
+@@ -0,0 +1,63 @@
++/* GIO - GLib Input, Output and Streaming Library
++ *
++ * Copyright 2019 Red Hat, Inc.
++ * Copyright 2021 Igalia S.L.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General
++ * Public License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifndef __G_POWER_PROFILE_MONITOR_H__
++#define __G_POWER_PROFILE_MONITOR_H__
++
++#if !defined (__GIO_GIO_H_INSIDE__) && !defined (GIO_COMPILATION)
++#error "Only <gio/gio.h> can be included directly."
++#endif
++
++#include <gio/giotypes.h>
++
++G_BEGIN_DECLS
++
++/**
++ * G_POWER_PROFILE_MONITOR_EXTENSION_POINT_NAME:
++ *
++ * Extension point for power profile usage monitoring functionality.
++ * See [Extending GIO][extending-gio].
++ *
++ * Since: 2.70
++ */
++#define G_POWER_PROFILE_MONITOR_EXTENSION_POINT_NAME "gio-power-profile-monitor"
++
++#define G_TYPE_POWER_PROFILE_MONITOR             (g_power_profile_monitor_get_type ())
++GLIB_AVAILABLE_IN_2_70
++G_DECLARE_INTERFACE (GPowerProfileMonitor, g_power_profile_monitor, g, power_profile_monitor, GObject)
++
++#define G_POWER_PROFILE_MONITOR(o)               (G_TYPE_CHECK_INSTANCE_CAST ((o), G_TYPE_POWER_PROFILE_MONITOR, GPowerProfileMonitor))
++#define G_IS_POWER_PROFILE_MONITOR(o)            (G_TYPE_CHECK_INSTANCE_TYPE ((o), G_TYPE_POWER_PROFILE_MONITOR))
++#define G_POWER_PROFILE_MONITOR_GET_INTERFACE(o) (G_TYPE_INSTANCE_GET_INTERFACE ((o), G_TYPE_POWER_PROFILE_MONITOR, GPowerProfileMonitorInterface))
++
++struct _GPowerProfileMonitorInterface
++{
++  /*< private >*/
++  GTypeInterface g_iface;
++};
++
++GLIB_AVAILABLE_IN_2_70
++GPowerProfileMonitor      *g_power_profile_monitor_dup_default              (void);
++
++GLIB_AVAILABLE_IN_2_70
++gboolean                   g_power_profile_monitor_get_power_saver_enabled  (GPowerProfileMonitor *monitor);
++
++G_END_DECLS
++
++#endif /* __G_POWER_PROFILE_MONITOR_H__ */
+diff --git a/gio/gpowerprofilemonitordbus.c b/gio/gpowerprofilemonitordbus.c
+new file mode 100644
+index 000000000..8bbfe3acc
+--- /dev/null
++++ b/gio/gpowerprofilemonitordbus.c
+@@ -0,0 +1,240 @@
++/* GIO - GLib Input, Output and Streaming Library
++ *
++ * Copyright 2019 Red Hat, Inc.
++ * Copyrgith 2021 Igalia S.L.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General
++ * Public License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "config.h"
++
++#include "gpowerprofilemonitor.h"
++#include "gpowerprofilemonitordbus.h"
++#include "gioerror.h"
++#include "ginitable.h"
++#include "giomodule-priv.h"
++#include "glibintl.h"
++#include "glib/gstdio.h"
++#include "gcancellable.h"
++#include "gdbusproxy.h"
++#include "gdbusnamewatching.h"
++
++#define G_POWER_PROFILE_MONITOR_DBUS_GET_INITABLE_IFACE(o) (G_TYPE_INSTANCE_GET_INTERFACE ((o), G_TYPE_INITABLE, GInitable))
++
++static void g_power_profile_monitor_dbus_iface_init (GPowerProfileMonitorInterface *iface);
++static void g_power_profile_monitor_dbus_initable_iface_init (GInitableIface *iface);
++
++struct _GPowerProfileMonitorDBus
++{
++  GObject parent_instance;
++
++  guint watch_id;
++  GCancellable *cancellable;
++  GDBusProxy *proxy;
++  gulong signal_id;
++
++  gboolean power_saver_enabled;
++};
++
++typedef enum
++{
++  PROP_POWER_SAVER_ENABLED = 1,
++} GPowerProfileMonitorDBusProperty;
++
++#define POWERPROFILES_DBUS_NAME "net.hadess.PowerProfiles"
++#define POWERPROFILES_DBUS_IFACE "net.hadess.PowerProfiles"
++#define POWERPROFILES_DBUS_PATH "/net/hadess/PowerProfiles"
++
++G_DEFINE_TYPE_WITH_CODE (GPowerProfileMonitorDBus, g_power_profile_monitor_dbus, G_TYPE_OBJECT,
++                         G_IMPLEMENT_INTERFACE (G_TYPE_INITABLE,
++                                                g_power_profile_monitor_dbus_initable_iface_init)
++                         G_IMPLEMENT_INTERFACE (G_TYPE_POWER_PROFILE_MONITOR,
++                                                g_power_profile_monitor_dbus_iface_init)
++                         _g_io_modules_ensure_extension_points_registered ();
++                         g_io_extension_point_implement (G_POWER_PROFILE_MONITOR_EXTENSION_POINT_NAME,
++                                                         g_define_type_id,
++                                                         "dbus",
++                                                         30))
++
++static void
++g_power_profile_monitor_dbus_init (GPowerProfileMonitorDBus *dbus)
++{
++  dbus->power_saver_enabled = FALSE;
++}
++
++static void
++ppd_properties_changed_cb (GDBusProxy *proxy,
++                           GVariant   *changed_properties,
++                           GStrv      *invalidated_properties,
++                           gpointer    user_data)
++{
++  GPowerProfileMonitorDBus *dbus = user_data;
++  const char *active_profile;
++  gboolean enabled;
++
++  if (!g_variant_lookup (changed_properties, "ActiveProfile", "&s", &active_profile))
++    return;
++
++  enabled = g_strcmp0 (active_profile, "power-saver") == 0;
++  if (enabled == dbus->power_saver_enabled)
++    return;
++
++  dbus->power_saver_enabled = enabled;
++  g_object_notify (G_OBJECT (dbus), "power-saver-enabled");
++}
++
++static void
++ppd_proxy_cb (GObject      *source_object,
++              GAsyncResult *res,
++              gpointer      user_data)
++{
++  GPowerProfileMonitorDBus *dbus = user_data;
++  GVariant *active_profile_variant;
++  GDBusProxy *proxy;
++  GError *error = NULL;
++  const char *active_profile;
++  gboolean power_saver_enabled;
++
++  proxy = g_dbus_proxy_new_finish (res, &error);
++  if (!proxy)
++    {
++      g_debug ("GPowerProfileMonitorDBus: Failed to create PowerProfiles D-Bus proxy: %s",
++               error->message);
++      g_error_free (error);
++      return;
++    }
++
++  active_profile_variant = g_dbus_proxy_get_cached_property (proxy, "ActiveProfile");
++  if (g_variant_is_of_type (active_profile_variant, G_VARIANT_TYPE_STRING))
++    {
++      active_profile = g_variant_get_string (active_profile_variant, NULL);
++      power_saver_enabled = g_strcmp0 (active_profile, "power-saver") == 0;
++      if (power_saver_enabled != dbus->power_saver_enabled)
++        {
++          dbus->power_saver_enabled = power_saver_enabled;
++          g_object_notify (G_OBJECT (dbus), "power-saver-enabled");
++        }
++    }
++
++  dbus->signal_id = g_signal_connect (G_OBJECT (proxy), "g-properties-changed",
++                                      G_CALLBACK (ppd_properties_changed_cb), dbus);
++  dbus->proxy = g_steal_pointer (&proxy);
++}
++
++static void
++ppd_appeared_cb (GDBusConnection *connection,
++                 const gchar     *name,
++                 const gchar     *name_owner,
++                 gpointer         user_data)
++{
++  GPowerProfileMonitorDBus *dbus = user_data;
++
++  g_dbus_proxy_new (connection,
++                    G_DBUS_PROXY_FLAGS_NONE,
++                    NULL,
++                    POWERPROFILES_DBUS_NAME,
++                    POWERPROFILES_DBUS_PATH,
++                    POWERPROFILES_DBUS_IFACE,
++                    dbus->cancellable,
++                    ppd_proxy_cb,
++                    dbus);
++}
++
++static void
++ppd_vanished_cb (GDBusConnection *connection,
++                 const gchar     *name,
++                 gpointer         user_data)
++{
++  GPowerProfileMonitorDBus *dbus = user_data;
++
++  g_clear_signal_handler (&dbus->signal_id, dbus->proxy);
++  g_clear_object (&dbus->proxy);
++
++  dbus->power_saver_enabled = FALSE;
++  g_object_notify (G_OBJECT (dbus), "power-saver-enabled");
++}
++
++static void
++g_power_profile_monitor_dbus_get_property (GObject    *object,
++                                           guint       prop_id,
++                                           GValue     *value,
++                                           GParamSpec *pspec)
++{
++  GPowerProfileMonitorDBus *dbus = G_POWER_PROFILE_MONITOR_DBUS (object);
++
++  switch ((GPowerProfileMonitorDBusProperty) prop_id)
++    {
++    case PROP_POWER_SAVER_ENABLED:
++      g_value_set_boolean (value, dbus->power_saver_enabled);
++      break;
++
++    default:
++      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++    }
++}
++
++static gboolean
++g_power_profile_monitor_dbus_initable_init (GInitable     *initable,
++                                            GCancellable  *cancellable,
++                                            GError       **error)
++{
++  GPowerProfileMonitorDBus *dbus = G_POWER_PROFILE_MONITOR_DBUS (initable);
++
++  dbus->cancellable = g_cancellable_new ();
++  dbus->watch_id = g_bus_watch_name (G_BUS_TYPE_SYSTEM,
++                                     POWERPROFILES_DBUS_NAME,
++                                     G_BUS_NAME_WATCHER_FLAGS_AUTO_START,
++                                     ppd_appeared_cb,
++                                     ppd_vanished_cb,
++                                     dbus,
++                                     NULL);
++
++  return TRUE;
++}
++
++static void
++g_power_profile_monitor_dbus_finalize (GObject *object)
++{
++  GPowerProfileMonitorDBus *dbus = G_POWER_PROFILE_MONITOR_DBUS (object);
++
++  g_cancellable_cancel (dbus->cancellable);
++  g_clear_object (&dbus->cancellable);
++  g_clear_signal_handler (&dbus->signal_id, dbus->proxy);
++  g_clear_object (&dbus->proxy);
++  g_clear_handle_id (&dbus->watch_id, g_bus_unwatch_name);
++
++  G_OBJECT_CLASS (g_power_profile_monitor_dbus_parent_class)->finalize (object);
++}
++
++static void
++g_power_profile_monitor_dbus_class_init (GPowerProfileMonitorDBusClass *nl_class)
++{
++  GObjectClass *gobject_class = G_OBJECT_CLASS (nl_class);
++
++  gobject_class->get_property = g_power_profile_monitor_dbus_get_property;
++  gobject_class->finalize = g_power_profile_monitor_dbus_finalize;
++
++  g_object_class_override_property (gobject_class, PROP_POWER_SAVER_ENABLED, "power-saver-enabled");
++}
++
++static void
++g_power_profile_monitor_dbus_iface_init (GPowerProfileMonitorInterface *monitor_iface)
++{
++}
++
++static void
++g_power_profile_monitor_dbus_initable_iface_init (GInitableIface *iface)
++{
++  iface->init = g_power_profile_monitor_dbus_initable_init;
++}
+diff --git a/gio/gpowerprofilemonitordbus.h b/gio/gpowerprofilemonitordbus.h
+new file mode 100644
+index 000000000..ecf7246d1
+--- /dev/null
++++ b/gio/gpowerprofilemonitordbus.h
+@@ -0,0 +1,32 @@
++/* GIO - GLib Input, Output and Streaming Library
++ *
++ * Copyright 2019 Red Hat, Inc.
++ * Copyright 2021 Igalia S.L.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General
++ * Public License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifndef __G_POWER_PROFILE_MONITOR_DBUS_H__
++#define __G_POWER_PROFILE_MONITOR_DBUS_H__
++
++#include <glib-object.h>
++
++G_BEGIN_DECLS
++
++#define G_TYPE_POWER_PROFILE_MONITOR_DBUS         (g_power_profile_monitor_dbus_get_type ())
++G_DECLARE_FINAL_TYPE (GPowerProfileMonitorDBus, g_power_profile_monitor_dbus, G, POWER_PROFILE_MONITOR_DBUS, GObject)
++
++G_END_DECLS
++
++#endif /* __G_POWER_PROFILE_MONITOR_DBUS_H__ */
+diff --git a/gio/meson.build b/gio/meson.build
+index 49a37a7bd..d5838ed8a 100644
+--- a/gio/meson.build
++++ b/gio/meson.build
+@@ -533,6 +533,8 @@ gio_sources = files(
+   'gpollableoutputstream.c',
+   'gpollableutils.c',
+   'gpollfilemonitor.c',
++  'gpowerprofilemonitor.c',
++  'gpowerprofilemonitordbus.c',
+   'gproxy.c',
+   'gproxyaddress.c',
+   'gproxyaddressenumerator.c',
+@@ -673,6 +675,7 @@ gio_headers = files(
+   'gpollableinputstream.h',
+   'gpollableoutputstream.h',
+   'gpollableutils.h',
++  'gpowerprofilemonitor.h',
+   'gproxy.h',
+   'gproxyaddress.h',
+   'gproxyaddressenumerator.h',
+diff --git a/gio/tests/meson.build b/gio/tests/meson.build
+index a926ae01a..ae51b2a39 100644
+--- a/gio/tests/meson.build
++++ b/gio/tests/meson.build
+@@ -75,6 +75,7 @@ gio_tests = {
+   'network-monitor-race' : {},
+   'permission' : {},
+   'pollable' : {'dependencies' : [libdl_dep]},
++  'power-profile-monitor' : {},
+   'proxy-test' : {},
+   'readwrite' : {},
+   'simple-async-result' : {},
+diff --git a/gio/tests/power-profile-monitor.c b/gio/tests/power-profile-monitor.c
+new file mode 100644
+index 000000000..bb32f181f
+--- /dev/null
++++ b/gio/tests/power-profile-monitor.c
+@@ -0,0 +1,79 @@
++/* GIO - GLib Input, Output and Streaming Library
++ *
++ * Copyright 2021 Igalia S.L.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General
++ * Public License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <gio/gio.h>
++
++static void
++test_dup_default (void)
++{
++  GPowerProfileMonitor *monitor;
++
++  monitor = g_power_profile_monitor_dup_default ();
++  g_assert_nonnull (monitor);
++  g_object_unref (monitor);
++}
++
++static void
++power_saver_enabled_cb (GPowerProfileMonitor *monitor,
++                        GParamSpec           *pspec,
++                        gpointer              user_data)
++{
++  gboolean enabled;
++
++  enabled = g_power_profile_monitor_get_power_saver_enabled (monitor);
++  g_debug ("Power Saver %s (%d)", enabled ? "enabled" : "disabled", enabled);
++}
++
++static void
++do_watch_power_profile (void)
++{
++  GPowerProfileMonitor *monitor;
++  GMainLoop *loop;
++  gulong signal_id;
++
++  monitor = g_power_profile_monitor_dup_default ();
++  signal_id = g_signal_connect (G_OBJECT (monitor), "notify::power-saver-enabled",
++		                G_CALLBACK (power_saver_enabled_cb), NULL);
++
++  loop = g_main_loop_new (NULL, TRUE);
++  g_main_loop_run (loop);
++
++  g_signal_handler_disconnect (monitor, signal_id);
++  g_object_unref (monitor);
++  g_main_loop_unref (loop);
++}
++
++int
++main (int argc, char **argv)
++{
++  int ret;
++
++  if (argc == 2 && !strcmp (argv[1], "--watch"))
++    {
++      do_watch_power_profile ();
++      return 0;
++    }
++
++  g_test_init (&argc, &argv, NULL);
++
++  g_test_add_func ("/power-profile-monitor/default", test_dup_default);
++
++  ret = g_test_run ();
++
++  return ret;
++}
+-- 
+2.35.6
+

@@ -2,13 +2,13 @@
 
 Name:           dbus-python3
 Version:        1.2.16
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Python bindings for D-Bus
 License:        MIT
 Group:          Development/Libraries/Python
 Url:            http://www.freedesktop.org/wiki/Software/DBusBindings/
 Source0:        http://dbus.freedesktop.org/releases/dbus-python/dbus-python-%{version}.tar.gz
-%define         sha1 dbus-python=de05308c75baa2ce5434de73d60428c005ac0cc1
+%define         sha512 dbus-python=e76c00c5fd3fe6884e4c24f258987fd3b80d21bd4e0f96aa8fda152078a860b62321324f6efcbfe7226d5ab2521a14b5bda7cf2468d2cae5f376c124a71aa05c
 Patch0:         fix-deprecated-collections.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,7 +18,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-docutils
 BuildRequires:  dbus-devel
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  python3-setuptools
 BuildRequires:  systemd-devel
 
@@ -67,11 +67,13 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/dbus-python.pc
 
 %changelog
-*   Thu Jan 13 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.16-4
--   Add patch to replace deprecated Sequence from collection to collections.abc
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.16-3
--   Bump up to compile with python 3.10
-*   Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com> 1.2.16-2
--   Add build requires
-*   Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 1.2.16-1
--   Initial release
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.2.16-5
+- Bump version as part of glib upgrade
+* Thu Jan 13 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.16-4
+- Add patch to replace deprecated Sequence from collection to collections.abc
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.16-3
+- Bump up to compile with python 3.10
+* Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com> 1.2.16-2
+- Add build requires
+* Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 1.2.16-1
+- Initial release

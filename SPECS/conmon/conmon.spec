@@ -1,7 +1,7 @@
 Summary:        A container monitor utility
 Name:           conmon
 Version:        2.1.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        conmon-%{version}.tar.gz
@@ -12,7 +12,7 @@ Distribution:   Photon
 
 BuildRequires:  go-md2man
 BuildRequires:  git
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  libseccomp-devel
 BuildRequires:  systemd-devel
 
@@ -44,6 +44,8 @@ make %{?_smp_mflags} PREFIX=%{buildroot}%{_prefix} -C docs install
 %{_mandir}/man8/%{name}.8.gz
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.1.7-2
+- Bump version as part of glib upgrade
 * Fri Jun 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.1.7-1
 - Upgrade to v2.1.7
 * Fri Sep 02 2022 Nitesh Kumar <kunitesh@vmware.com> 2.1.4-1

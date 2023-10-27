@@ -1,7 +1,7 @@
 Summary:        Round Robin Database Tool to store and display time-series data
 Name:           rrdtool
 Version:        1.7.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://oss.oetiker.ch/rrdtool/
 Group:          System Environment/Libraries
@@ -19,7 +19,7 @@ BuildRequires:  pixman-devel
 BuildRequires:  freetype2-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  cairo-devel
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  systemd
 
 Requires:       systemd
@@ -83,6 +83,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.7.2-3
+- Bump version as part of glib upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.7.2-2
 - Bump version as a part of freetype2 upgrade
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.2-1

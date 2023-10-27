@@ -1,0 +1,287 @@
+From cb7e31d5cada7b497e7cdfc2a8b5a4000ba464e0 Mon Sep 17 00:00:00 2001
+From: Bastien Nocera <hadess@hadess.net>
+Date: Mon, 9 Aug 2021 23:19:17 +0200
+Subject: [PATCH 22/49] gio: Add portal version of GPowerProfileMonitor
+
+---
+ docs/reference/gio/meson.build   |   1 +
+ gio/giomodule.c                  |   2 +
+ gio/gpowerprofilemonitorportal.c | 182 +++++++++++++++++++++++++++++++
+ gio/gpowerprofilemonitorportal.h |  31 ++++++
+ gio/meson.build                  |   1 +
+ 5 files changed, 217 insertions(+)
+ create mode 100644 gio/gpowerprofilemonitorportal.c
+ create mode 100644 gio/gpowerprofilemonitorportal.h
+
+diff --git a/docs/reference/gio/meson.build b/docs/reference/gio/meson.build
+index fbabd25ca..9aaafeed5 100644
+--- a/docs/reference/gio/meson.build
++++ b/docs/reference/gio/meson.build
+@@ -66,6 +66,7 @@ if get_option('gtk_doc')
+     'gpollfilemonitor.h',
+     'gportalsupport.h',
+     'gpowerprofilemonitordbus.h',
++    'gpowerprofilemonitorportal.h',
+     'gproxyresolverportal.h',
+     'gregistrysettingsbackend.h',
+     'gresourcefile.h',
+diff --git a/gio/giomodule.c b/gio/giomodule.c
+index 2fad7072d..f714d6f8d 100644
+--- a/gio/giomodule.c
++++ b/gio/giomodule.c
+@@ -50,6 +50,7 @@
+ #include "gmemorymonitordbus.h"
+ #include "gpowerprofilemonitor.h"
+ #include "gpowerprofilemonitordbus.h"
++#include "gpowerprofilemonitorportal.h"
+ #ifdef G_OS_WIN32
+ #include "gregistrysettingsbackend.h"
+ #include "giowin32-priv.h"
+@@ -1301,6 +1302,7 @@ _g_io_modules_ensure_loaded (void)
+       g_type_ensure (g_memory_monitor_dbus_get_type ());
+       g_type_ensure (g_memory_monitor_portal_get_type ());
+       g_type_ensure (g_network_monitor_portal_get_type ());
++      g_type_ensure (g_power_profile_monitor_portal_get_type ());
+       g_type_ensure (g_proxy_resolver_portal_get_type ());
+ #endif
+ #if MAC_OS_X_VERSION_MIN_REQUIRED >= 1090
+diff --git a/gio/gpowerprofilemonitorportal.c b/gio/gpowerprofilemonitorportal.c
+new file mode 100644
+index 000000000..bb1b4fd15
+--- /dev/null
++++ b/gio/gpowerprofilemonitorportal.c
+@@ -0,0 +1,182 @@
++/* GIO - GLib Input, Output and Streaming Library
++ *
++ * Copyright 2021 Red Hat, Inc.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General
++ * Public License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "config.h"
++
++#include "gpowerprofilemonitor.h"
++#include "gpowerprofilemonitorportal.h"
++#include "gdbuserror.h"
++#include "gdbusproxy.h"
++#include "ginitable.h"
++#include "gioerror.h"
++#include "giomodule-priv.h"
++#include "gportalsupport.h"
++
++#define G_POWER_PROFILE_MONITOR_PORTAL_GET_INITABLE_IFACE(o) (G_TYPE_INSTANCE_GET_INTERFACE ((o), G_TYPE_INITABLE, GInitable))
++
++static void g_power_profile_monitor_portal_iface_init (GPowerProfileMonitorInterface *iface);
++static void g_power_profile_monitor_portal_initable_iface_init (GInitableIface *iface);
++
++typedef enum
++{
++  PROP_POWER_SAVER_ENABLED = 1,
++} GPowerProfileMonitorPortalProperty;
++
++struct _GPowerProfileMonitorPortal
++{
++  GObject parent_instance;
++
++  GDBusProxy *proxy;
++  gulong signal_id;
++  gboolean power_saver_enabled;
++};
++
++G_DEFINE_TYPE_WITH_CODE (GPowerProfileMonitorPortal, g_power_profile_monitor_portal, G_TYPE_OBJECT,
++                         G_IMPLEMENT_INTERFACE (G_TYPE_INITABLE,
++                                                g_power_profile_monitor_portal_initable_iface_init)
++                         G_IMPLEMENT_INTERFACE (G_TYPE_POWER_PROFILE_MONITOR,
++                                                g_power_profile_monitor_portal_iface_init)
++                         _g_io_modules_ensure_extension_points_registered ();
++                         g_io_extension_point_implement (G_POWER_PROFILE_MONITOR_EXTENSION_POINT_NAME,
++                                                         g_define_type_id,
++                                                         "portal",
++                                                         40))
++
++static void
++g_power_profile_monitor_portal_init (GPowerProfileMonitorPortal *portal)
++{
++}
++
++static void
++proxy_properties_changed (GDBusProxy *proxy,
++                          GVariant   *changed_properties,
++                          GStrv       invalidated_properties,
++                          gpointer    user_data)
++{
++  GPowerProfileMonitorPortal *ppm = user_data;
++  gboolean power_saver_enabled;
++
++  if (!g_variant_lookup (changed_properties, "power-saver-enabled", "b", &power_saver_enabled))
++    return;
++
++  if (power_saver_enabled == ppm->power_saver_enabled)
++    return;
++
++  ppm->power_saver_enabled = power_saver_enabled;
++  g_object_notify (G_OBJECT (ppm), "power-saver-enabled");
++}
++
++static void
++g_power_profile_monitor_portal_get_property (GObject    *object,
++                                             guint       prop_id,
++                                             GValue     *value,
++                                             GParamSpec *pspec)
++{
++  GPowerProfileMonitorPortal *ppm = G_POWER_PROFILE_MONITOR_PORTAL (object);
++
++  switch ((GPowerProfileMonitorPortalProperty) prop_id)
++    {
++    case PROP_POWER_SAVER_ENABLED:
++      g_value_set_boolean (value, ppm->power_saver_enabled);
++      break;
++
++    default:
++      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++    }
++}
++
++static gboolean
++g_power_profile_monitor_portal_initable_init (GInitable     *initable,
++                                              GCancellable  *cancellable,
++                                              GError       **error)
++{
++  GPowerProfileMonitorPortal *ppm = G_POWER_PROFILE_MONITOR_PORTAL (initable);
++  GDBusProxy *proxy;
++  gchar *name_owner;
++
++  if (!glib_should_use_portal ())
++    {
++      g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED, "Not using portals");
++      return FALSE;
++    }
++
++  proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
++                                         G_DBUS_PROXY_FLAGS_NONE,
++                                         NULL,
++                                         "org.freedesktop.portal.Desktop",
++                                         "/org/freedesktop/portal/desktop",
++                                         "org.freedesktop.portal.PowerProfileMonitor",
++                                         cancellable,
++                                         error);
++  if (!proxy)
++    return FALSE;
++
++  name_owner = g_dbus_proxy_get_name_owner (proxy);
++
++  if (name_owner == NULL)
++    {
++      g_object_unref (proxy);
++      g_set_error (error,
++                   G_DBUS_ERROR,
++                   G_DBUS_ERROR_NAME_HAS_NO_OWNER,
++                   "Desktop portal not found");
++      return FALSE;
++    }
++
++  g_free (name_owner);
++
++  ppm->signal_id = g_signal_connect (proxy, "g-properties-changed",
++                                     G_CALLBACK (proxy_properties_changed), ppm);
++
++  ppm->proxy = g_steal_pointer (&proxy);
++
++  return TRUE;
++}
++
++static void
++g_power_profile_monitor_portal_finalize (GObject *object)
++{
++  GPowerProfileMonitorPortal *ppm = G_POWER_PROFILE_MONITOR_PORTAL (object);
++
++  g_clear_signal_handler (&ppm->signal_id, ppm->proxy);
++  g_clear_object (&ppm->proxy);
++
++  G_OBJECT_CLASS (g_power_profile_monitor_portal_parent_class)->finalize (object);
++}
++
++static void
++g_power_profile_monitor_portal_class_init (GPowerProfileMonitorPortalClass *nl_class)
++{
++  GObjectClass *gobject_class = G_OBJECT_CLASS (nl_class);
++
++  gobject_class->get_property = g_power_profile_monitor_portal_get_property;
++  gobject_class->finalize  = g_power_profile_monitor_portal_finalize;
++
++  g_object_class_override_property (gobject_class, PROP_POWER_SAVER_ENABLED, "power-saver-enabled");
++}
++
++static void
++g_power_profile_monitor_portal_iface_init (GPowerProfileMonitorInterface *monitor_iface)
++{
++}
++
++static void
++g_power_profile_monitor_portal_initable_iface_init (GInitableIface *iface)
++{
++  iface->init = g_power_profile_monitor_portal_initable_init;
++}
+diff --git a/gio/gpowerprofilemonitorportal.h b/gio/gpowerprofilemonitorportal.h
+new file mode 100644
+index 000000000..b91a14610
+--- /dev/null
++++ b/gio/gpowerprofilemonitorportal.h
+@@ -0,0 +1,31 @@
++/* GIO - GLib Input, Output and Streaming Library
++ *
++ * Copyright 2021 Red Hat, Inc.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General
++ * Public License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifndef __G_POWER_PROFILE_MONITOR_PORTAL_H__
++#define __G_POWER_PROFILE_MONITOR_PORTAL_H__
++
++#include <glib-object.h>
++
++G_BEGIN_DECLS
++
++#define G_TYPE_POWER_PROFILE_MONITOR_PORTAL         (g_power_profile_monitor_portal_get_type ())
++G_DECLARE_FINAL_TYPE (GPowerProfileMonitorPortal, g_power_profile_monitor_portal, G, POWER_PROFILE_MONITOR_PORTAL, GObject)
++
++G_END_DECLS
++
++#endif /* __G_POWER_PROFILE_MONITOR_PORTAL_H__ */
+diff --git a/gio/meson.build b/gio/meson.build
+index d5838ed8a..ac3373f2b 100644
+--- a/gio/meson.build
++++ b/gio/meson.build
+@@ -383,6 +383,7 @@ if host_system != 'windows'
+     'gopenuriportal.c',
+     'gmemorymonitorportal.c',
+     'gnetworkmonitorportal.c',
++    'gpowerprofilemonitorportal.c',
+     'gproxyresolverportal.c',
+     'gtrashportal.c',
+     'gportalsupport.c',
+-- 
+2.35.6
+

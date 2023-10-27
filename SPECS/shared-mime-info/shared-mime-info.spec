@@ -1,7 +1,7 @@
 Summary:        MIME database
 Name:           shared-mime-info
 Version:        2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://freedesktop.org
 Group:          Applications/Internet
@@ -14,11 +14,11 @@ Source0: http://freedesktop.org/~hadess/%{name}-%{version}.tar.gz
 BuildRequires:  meson
 BuildRequires:  cmake
 BuildRequires:  intltool
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  libxml2-devel
 
 Requires:       gettext
-Requires:       glib
+Requires:       glib >= 2.68.4
 Requires:       libxml2
 
 %description
@@ -49,6 +49,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.2-2
+- Bump version as part of glib upgrade
 * Mon Aug 22 2022 Shivani Agarwal <shivania2@vmware.com> 2.2-1
 - Upgrade to version 2.2
 * Wed Jun 3 2015 Alexey Makhalov <amakhalov@vmware.com> 1.4-1

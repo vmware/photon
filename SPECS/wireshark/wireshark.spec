@@ -1,7 +1,7 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
 Version:        4.0.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
 Group:          Networking
@@ -15,7 +15,7 @@ BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
 BuildRequires:  elfutils-devel
 BuildRequires:  gcc
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  gnutls-devel
 BuildRequires:  ninja-build
 BuildRequires:  cmake
@@ -36,7 +36,7 @@ Requires:       c-ares
 Requires:       libcap
 Requires:       libnl
 Requires:       gnutls
-Requires:       glib
+Requires:       glib >= 2.68.4
 
 %description
 Wireshark is a network protocol analyzer. It allows examining data
@@ -99,6 +99,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Oct 11 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.0.10-2
+- Bump version as part of glib upgrade
 * Tue Oct 10 2023 Susant Sahani <ssahani@vmware.com> 4.0.10-1
 - Update version and fix CVE-2023-5371
 * Mon Aug 28 2023 Susant Sahani <ssahani@vmware.com> 4.0.8-1

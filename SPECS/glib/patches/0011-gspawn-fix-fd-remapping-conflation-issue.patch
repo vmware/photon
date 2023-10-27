@@ -1,0 +1,117 @@
+From 87257f1f4646b2cd93d11397caa5fed0a941d655 Mon Sep 17 00:00:00 2001
+From: Michael Catanzaro <mcatanzaro@redhat.com>
+Date: Thu, 14 Oct 2021 10:44:57 -0500
+Subject: [PATCH 11/49] gspawn: fix fd remapping conflation issue
+
+We currently dup all source fds to avoid possible conflation with the
+target fds, but fail to consider that the result of a dup might itself
+conflict with one of the target fds. Solve this the easy way by duping
+all source_fds to values that are greater than the largest fd in
+target_fds.
+
+Fixes #2503
+---
+ glib/gspawn.c | 43 +++++++++++++++++++++++++------------------
+ 1 file changed, 25 insertions(+), 18 deletions(-)
+
+diff --git a/glib/gspawn.c b/glib/gspawn.c
+index 8bbe573f7..2b48b5600 100644
+--- a/glib/gspawn.c
++++ b/glib/gspawn.c
+@@ -1258,13 +1258,13 @@ unset_cloexec (int fd)
+ /* This function is called between fork() and exec() and hence must be
+  * async-signal-safe (see signal-safety(7)). */
+ static int
+-dupfd_cloexec (int parent_fd)
++dupfd_cloexec (int old_fd, int new_fd_min)
+ {
+   int fd, errsv;
+ #ifdef F_DUPFD_CLOEXEC
+   do
+     {
+-      fd = fcntl (parent_fd, F_DUPFD_CLOEXEC, 3);
++      fd = fcntl (old_fd, F_DUPFD_CLOEXEC, new_fd_min);
+       errsv = errno;
+     }
+   while (fd == -1 && errsv == EINTR);
+@@ -1275,7 +1275,7 @@ dupfd_cloexec (int parent_fd)
+   int result, flags;
+   do
+     {
+-      fd = fcntl (parent_fd, F_DUPFD, 3);
++      fd = fcntl (old_fd, F_DUPFD, new_fd_min);
+       errsv = errno;
+     }
+   while (fd == -1 && errsv == EINTR);
+@@ -1563,6 +1563,7 @@ do_exec (gint                  child_err_report_fd,
+          gpointer              user_data)
+ {
+   gsize i;
++  gint max_target_fd = 0;
+ 
+   if (working_directory && chdir (working_directory) < 0)
+     write_err_and_exit (child_err_report_fd,
+@@ -1661,39 +1662,45 @@ do_exec (gint                  child_err_report_fd,
+   /*
+    * Work through the @source_fds and @target_fds mapping.
+    *
+-   * Based on code derived from
++   * Based on code originally derived from
+    * gnome-terminal:src/terminal-screen.c:terminal_screen_child_setup(),
+-   * used under the LGPLv2+ with permission from author.
++   * used under the LGPLv2+ with permission from author. (The code has
++   * since migrated to vte:src/spawn.cc:SpawnContext::exec and is no longer
++   * terribly similar to what we have here.)
+    */
+ 
+-  /* Basic fd assignments (where source == target) we can just unset FD_CLOEXEC
+-   *
+-   * If we're doing remapping fd assignments, we need to handle
+-   * the case where the user has specified e.g.:
+-   * 5 -> 4, 4 -> 6
+-   *
+-   * We do this by duping the source fds temporarily in a first pass.
+-   *
+-   * If any of the @target_fds conflict with @child_err_report_fd, dup the
+-   * latter so it doesn’t get conflated.
+-   */
+   if (n_fds > 0)
+     {
++      for (i = 0; i < n_fds; i++)
++        max_target_fd = MAX (max_target_fd, target_fds[i]);
++
++      /* If we're doing remapping fd assignments, we need to handle
++       * the case where the user has specified e.g. 5 -> 4, 4 -> 6.
++       * We do this by duping all source fds, taking care to ensure the new
++       * fds are larger than any target fd to avoid introducing new conflicts.
++       */
+       for (i = 0; i < n_fds; i++)
+         {
+           if (source_fds[i] != target_fds[i])
+-            source_fds[i] = dupfd_cloexec (source_fds[i]);
++            source_fds[i] = dupfd_cloexec (source_fds[i], max_target_fd + 1);
+         }
++
+       for (i = 0; i < n_fds; i++)
+         {
++          /* For basic fd assignments (where source == target), we can just
++           * unset FD_CLOEXEC.
++           */
+           if (source_fds[i] == target_fds[i])
+             {
+               unset_cloexec (source_fds[i]);
+             }
+           else
+             {
++              /* If any of the @target_fds conflict with @child_err_report_fd,
++               * dup it so it doesn’t get conflated.
++               */
+               if (target_fds[i] == child_err_report_fd)
+-                child_err_report_fd = dupfd_cloexec (child_err_report_fd);
++                child_err_report_fd = dupfd_cloexec (child_err_report_fd, max_target_fd + 1);
+ 
+               safe_dup2 (source_fds[i], target_fds[i]);
+               close_and_invalidate (&source_fds[i]);
+-- 
+2.35.6
+

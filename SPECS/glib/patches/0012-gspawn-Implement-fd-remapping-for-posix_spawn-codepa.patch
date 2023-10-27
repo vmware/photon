@@ -1,0 +1,131 @@
+From 59da3753d170ca981e229de7210c4d509f8a8394 Mon Sep 17 00:00:00 2001
+From: Michael Catanzaro <mcatanzaro@gnome.org>
+Date: Thu, 25 Feb 2021 12:20:39 -0600
+Subject: [PATCH 12/49] gspawn: Implement fd remapping for posix_spawn codepath
+
+This means that GSubprocess will (sometimes) be able to use the
+optimized posix_spawn codepath instead of having to fall back to
+fork/exec.
+---
+ glib/gspawn.c | 65 +++++++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 58 insertions(+), 7 deletions(-)
+
+diff --git a/glib/gspawn.c b/glib/gspawn.c
+index 2b48b5600..9ef78dbe1 100644
+--- a/glib/gspawn.c
++++ b/glib/gspawn.c
+@@ -1786,9 +1786,14 @@ do_posix_spawn (const gchar * const *argv,
+                 gint       *child_close_fds,
+                 gint        stdin_fd,
+                 gint        stdout_fd,
+-                gint        stderr_fd)
++                gint        stderr_fd,
++                const gint *source_fds,
++                const gint *target_fds,
++                gsize       n_fds)
+ {
+   pid_t pid;
++  gint *duped_source_fds = NULL;
++  gint max_target_fd = 0;
+   const gchar * const *argv_pass;
+   posix_spawnattr_t attr;
+   posix_spawn_file_actions_t file_actions;
+@@ -1797,7 +1802,8 @@ do_posix_spawn (const gchar * const *argv,
+   GSList *child_close = NULL;
+   GSList *elem;
+   sigset_t mask;
+-  int i, r;
++  size_t i;
++  int r;
+ 
+   if (*argv[0] == '\0')
+     {
+@@ -1911,6 +1917,43 @@ do_posix_spawn (const gchar * const *argv,
+         goto out_close_fds;
+     }
+ 
++  /* If source_fds[i] != target_fds[i], we need to handle the case
++   * where the user has specified, e.g., 5 -> 4, 4 -> 6. We do this
++   * by duping the source fds, taking care to ensure the new fds are
++   * larger than any target fd to avoid introducing new conflicts.
++   *
++   * If source_fds[i] == target_fds[i], then we just need to leak
++   * the fd into the child process, which we *could* do by temporarily
++   * unsetting CLOEXEC and then setting it again after we spawn if
++   * it was originally set. POSIX requires that the addup2 action unset
++   * CLOEXEC if source and target are identical, so you'd think doing it
++   * manually wouldn't be needed, but unfortunately as of 2021 many
++   * libcs still don't do so. Example nonconforming libcs:
++   *  Bionic: https://android.googlesource.com/platform/bionic/+/f6e5b582604715729b09db3e36a7aeb8c24b36a4/libc/bionic/spawn.cpp#71
++   *  uclibc-ng: https://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/tree/librt/spawn.c?id=7c36bcae09d66bbaa35cbb02253ae0556f42677e#n88
++   *
++   * Anyway, unsetting CLOEXEC ourselves would open a small race window
++   * where the fd could be inherited into a child process if another
++   * thread spawns something at the same time, because we have not
++   * called fork() and are multithreaded here. This race is avoidable by
++   * using dupfd_cloexec, which we already have to do to handle the
++   * source_fds[i] != target_fds[i] case. So let's always do it!
++   */
++
++  for (i = 0; i < n_fds; i++)
++    max_target_fd = MAX (max_target_fd, target_fds[i]);
++
++  duped_source_fds = g_new (gint, n_fds);
++  for (i = 0; i < n_fds; i++)
++    duped_source_fds[i] = dupfd_cloexec (source_fds[i], max_target_fd + 1);
++
++  for (i = 0; i < n_fds; i++)
++    {
++      r = posix_spawn_file_actions_adddup2 (&file_actions, duped_source_fds[i], target_fds[i]);
++      if (r != 0)
++        goto out_close_fds;
++    }
++
+   /* Intentionally close the fds in the child as the last file action,
+    * having been careful not to add the same fd to this list twice.
+    *
+@@ -1940,9 +1983,16 @@ do_posix_spawn (const gchar * const *argv,
+     *child_pid = pid;
+ 
+ out_close_fds:
+-  for (i = 0; i < num_parent_close_fds; i++)
++  for (i = 0; i < (size_t) num_parent_close_fds; i++)
+     close_and_invalidate (&parent_close_fds [i]);
+ 
++  if (duped_source_fds != NULL)
++    {
++      for (i = 0; i < n_fds; i++)
++        close_and_invalidate (&duped_source_fds[i]);
++      g_free (duped_source_fds);
++    }
++
+   posix_spawn_file_actions_destroy (&file_actions);
+ out_free_spawnattr:
+   posix_spawnattr_destroy (&attr);
+@@ -2030,10 +2080,8 @@ fork_exec (gboolean              intermediate_child,
+   child_close_fds[n_child_close_fds++] = -1;
+ 
+ #ifdef POSIX_SPAWN_AVAILABLE
+-  /* FIXME: Handle @source_fds and @target_fds in do_posix_spawn() using the
+-   * file actions API. */
+   if (!intermediate_child && working_directory == NULL && !close_descriptors &&
+-      !search_path_from_envp && child_setup == NULL && n_fds == 0)
++      !search_path_from_envp && child_setup == NULL)
+     {
+       g_trace_mark (G_TRACE_CURRENT_TIME, 0,
+                     "GLib", "posix_spawn",
+@@ -2050,7 +2098,10 @@ fork_exec (gboolean              intermediate_child,
+                                child_close_fds,
+                                stdin_fd,
+                                stdout_fd,
+-                               stderr_fd);
++                               stderr_fd,
++                               source_fds,
++                               target_fds,
++                               n_fds);
+       if (status == 0)
+         goto success;
+ 
+-- 
+2.35.6
+

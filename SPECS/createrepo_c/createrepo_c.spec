@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.16.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -17,7 +17,7 @@ BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  expat-devel
 BuildRequires:  file-devel
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  libffi-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  rpm-devel
@@ -90,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.16.0-8
+- Bump version as part of glib upgrade
 * Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-7
 - Use cmake macros
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-6

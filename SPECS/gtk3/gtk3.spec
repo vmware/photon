@@ -1,7 +1,7 @@
 Summary:        GUI library.
 Name:           gtk3
 Version:        3.23.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        LGPLv2+
 URL:            http://www.gtk.org
 Group:          System Environment/Libraries
@@ -19,8 +19,8 @@ BuildRequires:  libXi-devel
 BuildRequires:  libglvnd-devel
 BuildRequires:  libepoxy-devel
 BuildRequires:  at-spi2-core-devel
-BuildRequires:  glib-devel >= 2.68.0
-BuildRequires:  glib-schemas >= 2.68.0
+BuildRequires:  glib-devel >= 2.68.4
+BuildRequires:  glib-schemas >= 2.68.4
 BuildRequires:  fontconfig-devel
 BuildRequires:  libpng-devel
 BuildRequires:  harfbuzz-devel
@@ -48,7 +48,7 @@ Requires:       libXdamage
 Requires:       libXcomposite
 Requires:       libXinerama
 Requires:       gobject-introspection
-Requires:       glib >= 2.68.0
+Requires:       glib >= 2.68.4
 Requires:       cairo
 Requires:       cups
 Requires:       harfbuzz
@@ -161,6 +161,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/gtk-3.0/
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.23.3-10
+- Bump version as part of glib upgrade
 * Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 3.23.3-9
 - Version bump as a part of cups upgrade
 * Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.23.3-8

@@ -1,0 +1,54 @@
+From 56e6e247f6d34f8ac6f7e5e0620d830daad559a2 Mon Sep 17 00:00:00 2001
+From: Julian Andres Klode <julian.klode@canonical.com>
+Date: Tue, 12 Oct 2021 17:31:42 +0200
+Subject: [PATCH 28/49] gnetworkmonitornm: Do not re-update cached property
+
+GDBusProxy already takes care of updating the cached property
+before emitting the signal, so there is no need to do this
+a second time ourselves.
+---
+ gio/gnetworkmonitornm.c | 22 ----------------------
+ 1 file changed, 22 deletions(-)
+
+diff --git a/gio/gnetworkmonitornm.c b/gio/gnetworkmonitornm.c
+index 6a6d1d666..a8040fb36 100644
+--- a/gio/gnetworkmonitornm.c
++++ b/gio/gnetworkmonitornm.c
+@@ -252,34 +252,12 @@ sync_properties (GNetworkMonitorNM *nm,
+     }
+ }
+ 
+-static void
+-update_cached_property (GDBusProxy   *proxy,
+-                        const char   *property_name,
+-                        GVariantDict *dict)
+-{
+-  GVariant *v;
+-
+-  v = g_variant_dict_lookup_value (dict, property_name, NULL);
+-  if (!v)
+-    return;
+-  g_dbus_proxy_set_cached_property (proxy, property_name, v);
+-  g_variant_unref (v);
+-}
+-
+ static void
+ proxy_properties_changed_cb (GDBusProxy        *proxy,
+                              GVariant          *changed_properties,
+                              GStrv              invalidated_properties,
+                              GNetworkMonitorNM *nm)
+ {
+-  GVariantDict *dict;
+-
+-  dict = g_variant_dict_new (changed_properties);
+-
+-  update_cached_property (nm->priv->proxy, "Connectivity", dict);
+-
+-  g_variant_dict_unref (dict);
+-
+   sync_properties (nm, TRUE);
+ }
+ 
+-- 
+2.35.6
+

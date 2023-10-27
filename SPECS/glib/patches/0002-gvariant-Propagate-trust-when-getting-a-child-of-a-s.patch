@@ -1,0 +1,45 @@
+From 4d0bed8c4690f7a2692474ef6a570bd99ef45ef1 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Thu, 15 Dec 2022 16:49:28 +0000
+Subject: [PATCH 2/2] gvariant: Propagate trust when getting a child of a
+ serialised variant
+
+If a variant is trusted, that means all its children are trusted, so
+ensure that their checked offsets are set as such.
+
+This allows a lot of the offset table checks to be avoided when getting
+children from trusted serialised tuples, which speeds things up.
+
+No unit test is included because this is just a performance fix. If
+there are other slownesses, or regressions, in serialised `GVariant`
+performance, the fuzzing setup will catch them like it did this one.
+
+This change does reduce the time to run the oss-fuzz reproducer from 80s
+to about 0.7s on my machine.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+
+Fixes: #2841
+oss-fuzz#54314
+---
+ glib/gvariant-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/glib/gvariant-core.c b/glib/gvariant-core.c
+index 75d23f39a..57bbf88cc 100644
+--- a/glib/gvariant-core.c
++++ b/glib/gvariant-core.c
+@@ -1198,8 +1198,8 @@ g_variant_get_child_value (GVariant *value,
+     child->contents.serialised.bytes =
+       g_bytes_ref (value->contents.serialised.bytes);
+     child->contents.serialised.data = s_child.data;
+-    child->contents.serialised.ordered_offsets_up_to = s_child.ordered_offsets_up_to;
+-    child->contents.serialised.checked_offsets_up_to = s_child.checked_offsets_up_to;
++    child->contents.serialised.ordered_offsets_up_to = (value->state & STATE_TRUSTED) ? G_MAXSIZE : s_child.ordered_offsets_up_to;
++    child->contents.serialised.checked_offsets_up_to = (value->state & STATE_TRUSTED) ? G_MAXSIZE : s_child.checked_offsets_up_to;
+ 
+     return child;
+   }
+-- 
+2.41.0
+

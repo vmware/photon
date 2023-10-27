@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
 Version:        0.6.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -23,7 +23,7 @@ BuildRequires:  nftables-devel
 Requires:       json-c
 Requires:       libyaml
 Requires:       systemd
-Requires:       glib
+Requires:       glib >= 2.68.4
 Requires:       libmnl
 Requires:       nftables
 
@@ -43,7 +43,7 @@ Requires:       libnftnl-devel
 Requires:       nftables-devel
 Requires:       systemd-devel
 Requires:       libyaml-devel
-Requires:       glib-devel
+Requires:       glib-devel >= 2.68.4
 
 %description devel
 This package contains the headers necessary for building.
@@ -78,6 +78,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.6.4-2
+- Bump version as part of glib upgrade
 * Thu Sep 14 2023 Susant Sahani <ssahani@vmware.com> 0.6.4-1
 - Update to v0.6.4
 * Fri Jun 09 2023 Susant Sahani <ssahani@vmware.com> 0.6.3-1

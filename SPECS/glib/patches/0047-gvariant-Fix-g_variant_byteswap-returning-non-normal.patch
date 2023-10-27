@@ -1,0 +1,96 @@
+From 5ebfcae9b5e409cc2ad0c1e73175af2bdab455ac Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Thu, 27 Oct 2022 16:13:54 +0100
+Subject: [PATCH 47/49] gvariant: Fix g_variant_byteswap() returning non-normal
+ data sometimes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+If `g_variant_byteswap()` was called on a non-normal variant of a type
+which doesn’t need byteswapping, it would return a non-normal output.
+
+That contradicts the documentation, which says that the return value is
+always in normal form.
+
+Fix the code so it matches the documentation.
+
+Includes a unit test.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+
+Helps: #2797
+---
+ glib/gvariant.c       |  8 +++++---
+ glib/tests/gvariant.c | 24 ++++++++++++++++++++++++
+ 2 files changed, 29 insertions(+), 3 deletions(-)
+
+diff --git a/glib/gvariant.c b/glib/gvariant.c
+index 63c134839..9388c529d 100644
+--- a/glib/gvariant.c
++++ b/glib/gvariant.c
+@@ -6026,14 +6026,16 @@ g_variant_byteswap (GVariant *value)
+       g_variant_serialised_byteswap (serialised);
+ 
+       bytes = g_bytes_new_take (serialised.data, serialised.size);
+-      new = g_variant_new_from_bytes (g_variant_get_type (value), bytes, TRUE);
++      new = g_variant_ref_sink (g_variant_new_from_bytes (g_variant_get_type (value), bytes, TRUE));
+       g_bytes_unref (bytes);
+     }
+   else
+     /* contains no multi-byte data */
+-    new = value;
++    new = g_variant_get_normal_form (value);
+ 
+-  return g_variant_ref_sink (new);
++  g_assert (g_variant_is_trusted (new));
++
++  return g_steal_pointer (&new);
+ }
+ 
+ /**
+diff --git a/glib/tests/gvariant.c b/glib/tests/gvariant.c
+index 028543833..871a6dab0 100644
+--- a/glib/tests/gvariant.c
++++ b/glib/tests/gvariant.c
+@@ -3826,6 +3826,29 @@ test_gv_byteswap (void)
+   g_free (string);
+ }
+ 
++static void
++test_gv_byteswap_non_normal_non_aligned (void)
++{
++  const guint8 data[] = { 0x02 };
++  GVariant *v = NULL;
++  GVariant *v_byteswapped = NULL;
++
++  g_test_summary ("Test that calling g_variant_byteswap() on a variant which "
++                  "is in non-normal form and doesn’t need byteswapping returns "
++                  "the same variant in normal form.");
++
++  v = g_variant_new_from_data (G_VARIANT_TYPE_BOOLEAN, data, sizeof (data), FALSE, NULL, NULL);
++  g_assert_false (g_variant_is_normal_form (v));
++
++  v_byteswapped = g_variant_byteswap (v);
++  g_assert_true (g_variant_is_normal_form (v_byteswapped));
++
++  g_assert_cmpvariant (v, v_byteswapped);
++
++  g_variant_unref (v);
++  g_variant_unref (v_byteswapped);
++}
++
+ static void
+ test_parser (void)
+ {
+@@ -5594,6 +5617,7 @@ main (int argc, char **argv)
+   g_test_add_func ("/gvariant/builder-memory", test_builder_memory);
+   g_test_add_func ("/gvariant/hashing", test_hashing);
+   g_test_add_func ("/gvariant/byteswap", test_gv_byteswap);
++  g_test_add_func ("/gvariant/byteswap/non-normal-non-aligned", test_gv_byteswap_non_normal_non_aligned);
+   g_test_add_func ("/gvariant/parser", test_parses);
+   g_test_add_func ("/gvariant/parser/integer-bounds", test_parser_integer_bounds);
+   g_test_add_func ("/gvariant/parser/recursion", test_parser_recursion);
+-- 
+2.35.6
+

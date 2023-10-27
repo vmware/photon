@@ -1,7 +1,7 @@
 Summary:        TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
 Name:           tpm2-abrmd
 Version:        2.3.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-abrmd
 Group:          System Environment/Security
@@ -13,11 +13,11 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires: which
 BuildRequires: dbus-devel
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.68.4
 BuildRequires: tpm2-tss-devel
 
 Requires: dbus
-Requires: glib
+Requires: glib >= 2.68.4
 Requires: tpm2-tss
 
 %description
@@ -66,6 +66,8 @@ make %{?_smp_mflags}
 %{_mandir}/man7
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.3.3-3
+- Bump version as part of glib upgrade
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.3-2
 - Remove .la files
 * Tue Aug 18 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.3-1

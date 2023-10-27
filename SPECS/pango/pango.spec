@@ -1,7 +1,7 @@
 Summary:        library for laying out and rendering of text.
 Name:           pango
 Version:        1.41.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://pango.org
 Group:          System Environment/Libraries
@@ -15,13 +15,13 @@ BuildRequires:  libX11-devel
 BuildRequires:  libXext-devel
 BuildRequires:  fribidi-devel
 BuildRequires:  gobject-introspection-devel
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  cairo-devel
 BuildRequires:  libpng-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  harfbuzz-devel
 
-Requires:       glib
+Requires:       glib >= 2.68.4
 Requires:       cairo
 Requires:       libpng
 Requires:       fontconfig
@@ -35,7 +35,7 @@ Pango can be used anywhere that text layout is needed, though most of the work o
 %package        devel
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
-Requires:       glib-devel
+Requires:       glib-devel >= 2.68.4
 Requires:       cairo-devel
 Requires:       libpng-devel
 Requires:       fontconfig-devel
@@ -81,6 +81,8 @@ make %{?_smp_mflags} check
 %{_datadir}/man/*
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.41.1-5
+- Bump version as part of glib upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.41.1-4
 - Bump version as a part of libX11 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.41.1-3

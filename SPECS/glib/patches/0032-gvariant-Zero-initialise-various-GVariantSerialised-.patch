@@ -1,0 +1,94 @@
+From fd215233ae37ce20cd84eb128c86b90c4dd610fa Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Tue, 25 Oct 2022 18:05:52 +0100
+Subject: [PATCH 32/49] gvariant: Zero-initialise various GVariantSerialised
+ objects
+
+The following few commits will add a couple of new fields to
+`GVariantSerialised`, and they should be zero-filled by default.
+
+Try and pre-empt that a bit by zero-filling `GVariantSerialised` by
+default in a few places.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+
+Helps: #2121
+---
+ glib/gvariant.c       |  2 +-
+ glib/tests/gvariant.c | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/glib/gvariant.c b/glib/gvariant.c
+index e48dec1ad..8ebbaa662 100644
+--- a/glib/gvariant.c
++++ b/glib/gvariant.c
+@@ -5944,7 +5944,7 @@ g_variant_byteswap (GVariant *value)
+   if (alignment)
+     /* (potentially) contains multi-byte numeric data */
+     {
+-      GVariantSerialised serialised;
++      GVariantSerialised serialised = { 0, };
+       GVariant *trusted;
+       GBytes *bytes;
+ 
+diff --git a/glib/tests/gvariant.c b/glib/tests/gvariant.c
+index 35434cae9..ebd617639 100644
+--- a/glib/tests/gvariant.c
++++ b/glib/tests/gvariant.c
+@@ -1438,7 +1438,7 @@ test_maybe (void)
+ 
+     for (flavour = 0; flavour < 8; flavour += alignment)
+       {
+-        GVariantSerialised serialised;
++        GVariantSerialised serialised = { 0, };
+         GVariantSerialised child;
+ 
+         serialised.type_info = type_info;
+@@ -1562,7 +1562,7 @@ test_array (void)
+ 
+     for (flavour = 0; flavour < 8; flavour += alignment)
+       {
+-        GVariantSerialised serialised;
++        GVariantSerialised serialised = { 0, };
+ 
+         serialised.type_info = array_info;
+         serialised.data = flavoured_malloc (needed_size, flavour);
+@@ -1726,7 +1726,7 @@ test_tuple (void)
+ 
+     for (flavour = 0; flavour < 8; flavour += alignment)
+       {
+-        GVariantSerialised serialised;
++        GVariantSerialised serialised = { 0, };
+ 
+         serialised.type_info = type_info;
+         serialised.data = flavoured_malloc (needed_size, flavour);
+@@ -1821,7 +1821,7 @@ test_variant (void)
+ 
+     for (flavour = 0; flavour < 8; flavour += alignment)
+       {
+-        GVariantSerialised serialised;
++        GVariantSerialised serialised = { 0, };
+         GVariantSerialised child;
+ 
+         serialised.type_info = type_info;
+@@ -2268,7 +2268,7 @@ serialise_tree (TreeInstance       *tree,
+ static void
+ test_byteswap (void)
+ {
+-  GVariantSerialised one, two;
++  GVariantSerialised one = { 0, }, two = { 0, };
+   TreeInstance *tree;
+ 
+   tree = tree_instance_new (NULL, 3);
+@@ -2342,7 +2342,7 @@ test_serialiser_children (void)
+ static void
+ test_fuzz (gdouble *fuzziness)
+ {
+-  GVariantSerialised serialised;
++  GVariantSerialised serialised = { 0, };
+   TreeInstance *tree;
+ 
+   /* make an instance */
+-- 
+2.35.6
+

@@ -1,7 +1,7 @@
 Summary:        Liberty Alliance Single Sign On
 Name:           lasso
 Version:        2.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 Group:          Development/Libraries/C++
 Vendor:         VMware, Inc.
@@ -10,12 +10,13 @@ Url:            https://lasso.entrouvert.org/
 Source0:        http://dev.entrouvert.org/lasso/lasso-%{version}.tar.gz
 %define sha512 lasso=d1b26608ea7cd08e4e2c40cec0ddc41e3235fd5c2cee64d989ae752bbbc276fe056455e3943a778abcc7f8e8596c85beada75df4290579e6af15e82d0e2fb5ca
 BuildRequires: libxml2-devel
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.68.4
 BuildRequires: openssl-devel
 BuildRequires: python3-six
 BuildRequires: which
 BuildRequires: xmlsec1-devel
 Requires:      xmlsec1
+Requires:      glib >= 2.68.4
 
 %description
 Lasso is a library that implements the Liberty Alliance Single Sign On
@@ -27,6 +28,7 @@ for multiple languages.
 Summary: Lasso development headers and documentation
 Group: Development/Libraries/C++
 Requires: %{name} = %{version}-%{release}
+Requires: glib-devel >= 2.68.4
 
 %description devel
 This package contains the header files, static libraries and development
@@ -69,5 +71,7 @@ find %{buildroot} -name '*.a' -delete
 %{_defaultdocdir}/%{name}
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.8.0-2
+- Bump version as part of glib upgrade
 * Mon Apr 04 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.8.0-1
 - lasso initial build

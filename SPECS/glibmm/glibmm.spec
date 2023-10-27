@@ -1,7 +1,7 @@
 Summary:    C++ interface to the glib
 Name:       glibmm
 Version:    2.65.3
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    LGPLv2+
 URL:        http://ftp.gnome.org/pub/GNOME/sources/glibmm
 Group:      Applications/System
@@ -13,13 +13,13 @@ Source0: http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.53/%{name}-%{version}.t
 
 BuildRequires:  python3-devel
 BuildRequires:  libsigc++ >= 2.10.0
-BuildRequires:  glib-devel glib-schemas
-%if %{with_check}
+BuildRequires:  glib-devel >= 2.68.4 glib-schemas
+%if 0%{?with_check}
 BuildRequires:  glib-networking
 %endif
 
 Requires:   libsigc++ >= 2.10.0
-Requires:   glib >= 2.50.0
+Requires:   glib >= 2.68.4
 Requires:   gobject-introspection >= 1.50.0
 Requires:   XML-Parser
 
@@ -32,7 +32,7 @@ a comprehensive set of widget classes that can be freely combined to quickly cre
 Summary:        Header files for glibmm
 Group:          Applications/System
 Requires:       %{name} = %{version}
-Requires:   glib-devel libsigc++
+Requires:   glib-devel >= 2.68.4 libsigc++
 
 %description    devel
 These are the header files of glibmm.
@@ -48,9 +48,11 @@ make %{?_smp_mflags}
 %make_install %{?_smp_mflags}
 
 %check
+%if 0%{?with_check}
 #need read content from /etc/fstab, which couldn't be empty
 echo '#test' > /etc/fstab
 export GIO_EXTRA_MODULES=/usr/lib/gio/modules; make check
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -70,6 +72,8 @@ export GIO_EXTRA_MODULES=/usr/lib/gio/modules; make check
 %{_datadir}/*
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.65.3-3
+- Bump version as part of glib upgrade
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.65.3-2
 - Remove .la files
 * Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.65.3-1

@@ -1,0 +1,57 @@
+From dc4e25832c246551eda6ab44a1599cdf73c628e1 Mon Sep 17 00:00:00 2001
+From: Michael Catanzaro <mcatanzaro@redhat.com>
+Date: Tue, 12 Oct 2021 15:33:59 -0500
+Subject: [PATCH 10/49] gspawn: fix hangs when duping child_err_report_fd
+
+In case child_err_report_fd conflicts with one of the target_fds, the
+code here is careful to dup child_err_report_fd in order to avoid
+conflating the two. It was a good idea, but evidently was not tested,
+because the newly-created fd is not created with CLOEXEC set. This means
+it stays open in the child process, causing the parent to hang forever
+waiting to read from the other end of the pipe. Oops!
+
+The fix is simple: just set CLOEXEC. This removes our only usage of the
+safe_dup() function, so it can be dropped.
+
+Fixes #2506
+---
+ glib/gspawn.c | 16 +---------------
+ 1 file changed, 1 insertion(+), 15 deletions(-)
+
+diff --git a/glib/gspawn.c b/glib/gspawn.c
+index e214a3998..8bbe573f7 100644
+--- a/glib/gspawn.c
++++ b/glib/gspawn.c
+@@ -1500,20 +1500,6 @@ safe_closefrom (int lowfd)
+ #endif
+ }
+ 
+-/* This function is called between fork() and exec() and hence must be
+- * async-signal-safe (see signal-safety(7)). */
+-static gint
+-safe_dup (gint fd)
+-{
+-  gint ret;
+-
+-  do
+-    ret = dup (fd);
+-  while (ret < 0 && (errno == EINTR || errno == EBUSY));
+-
+-  return ret;
+-}
+-
+ /* This function is called between fork() and exec() and hence must be
+  * async-signal-safe (see signal-safety(7)). */
+ static gint
+@@ -1707,7 +1693,7 @@ do_exec (gint                  child_err_report_fd,
+           else
+             {
+               if (target_fds[i] == child_err_report_fd)
+-                child_err_report_fd = safe_dup (child_err_report_fd);
++                child_err_report_fd = dupfd_cloexec (child_err_report_fd);
+ 
+               safe_dup2 (source_fds[i], target_fds[i]);
+               close_and_invalidate (&source_fds[i]);
+-- 
+2.35.6
+

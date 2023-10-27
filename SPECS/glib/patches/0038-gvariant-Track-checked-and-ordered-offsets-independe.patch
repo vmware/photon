@@ -1,0 +1,391 @@
+From b53b26c5596a57d06bcc3947b9c8316526d9e70b Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Tue, 25 Oct 2022 15:14:14 +0100
+Subject: [PATCH 38/49] gvariant: Track checked and ordered offsets
+ independently
+
+The past few commits introduced the concept of known-good offsets in the
+offset table (which is used for variable-width arrays and tuples).
+Good offsets are ones which are non-overlapping with all the previous
+offsets in the table.
+
+If a bad offset is encountered when indexing into the array or tuple,
+the cached known-good offset index will not be increased. In this way,
+all child variants at and beyond the first bad offset can be returned as
+default values rather than dereferencing potentially invalid data.
+
+In this case, there was no information about the fact that the indexes
+between the highest known-good index and the requested one had been
+checked already. That could lead to a pathological case where an offset
+table with an invalid first offset is repeatedly checked in full when
+trying to access higher-indexed children.
+
+Avoid that by storing the index of the highest checked offset in the
+table, as well as the index of the highest good/ordered offset.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+
+Helps: #2121
+---
+ glib/gvariant-core.c       | 28 ++++++++++++++++++++++++
+ glib/gvariant-serialiser.c | 44 +++++++++++++++++++++++++++-----------
+ glib/gvariant-serialiser.h |  9 ++++++++
+ glib/gvariant.c            |  1 +
+ glib/tests/gvariant.c      |  5 +++++
+ 5 files changed, 75 insertions(+), 12 deletions(-)
+
+diff --git a/glib/gvariant-core.c b/glib/gvariant-core.c
+index c6c50a6ff..1efcf200f 100644
+--- a/glib/gvariant-core.c
++++ b/glib/gvariant-core.c
+@@ -69,6 +69,7 @@ struct _GVariant
+       GBytes *bytes;
+       gconstpointer data;
+       gsize ordered_offsets_up_to;
++      gsize checked_offsets_up_to;
+     } serialised;
+ 
+     struct
+@@ -184,6 +185,24 @@ struct _GVariant
+  *                             This field is only relevant for arrays of non
+  *                             fixed width types and for tuples.
+  *
++ *     .checked_offsets_up_to: Similarly to .ordered_offsets_up_to, this stores
++ *                             the index of the highest element, n, whose frame
++ *                             offsets (and all the preceding frame offsets)
++ *                             have been checked for validity.
++ *
++ *                             It is always the case that
++ *                             .checked_offsets_up_to ≥ .ordered_offsets_up_to.
++ *
++ *                             If .checked_offsets_up_to == .ordered_offsets_up_to,
++ *                             then a bad offset has not been found so far.
++ *
++ *                             If .checked_offsets_up_to > .ordered_offsets_up_to,
++ *                             then a bad offset has been found at
++ *                             (.ordered_offsets_up_to + 1).
++ *
++ *                             This field is only relevant for arrays of non
++ *                             fixed width types and for tuples.
++ *
+  *   .tree: Only valid when the instance is in tree form.
+  *
+  *          Note that accesses from other threads could result in
+@@ -388,6 +407,7 @@ g_variant_to_serialised (GVariant *value)
+       value->size,
+       value->depth,
+       value->contents.serialised.ordered_offsets_up_to,
++      value->contents.serialised.checked_offsets_up_to,
+     };
+     return serialised;
+   }
+@@ -420,6 +440,7 @@ g_variant_serialise (GVariant *value,
+   serialised.data = data;
+   serialised.depth = value->depth;
+   serialised.ordered_offsets_up_to = 0;
++  serialised.checked_offsets_up_to = 0;
+ 
+   children = (gpointer *) value->contents.tree.children;
+   n_children = value->contents.tree.n_children;
+@@ -466,10 +487,12 @@ g_variant_fill_gvs (GVariantSerialised *serialised,
+   if (value->state & STATE_SERIALISED)
+     {
+       serialised->ordered_offsets_up_to = value->contents.serialised.ordered_offsets_up_to;
++      serialised->checked_offsets_up_to = value->contents.serialised.checked_offsets_up_to;
+     }
+   else
+     {
+       serialised->ordered_offsets_up_to = 0;
++      serialised->checked_offsets_up_to = 0;
+     }
+ 
+   if (serialised->data)
+@@ -515,6 +538,7 @@ g_variant_ensure_serialised (GVariant *value)
+       value->contents.serialised.data = g_bytes_get_data (bytes, NULL);
+       value->contents.serialised.bytes = bytes;
+       value->contents.serialised.ordered_offsets_up_to = G_MAXSIZE;
++      value->contents.serialised.checked_offsets_up_to = G_MAXSIZE;
+       value->state |= STATE_SERIALISED;
+     }
+ }
+@@ -596,6 +620,7 @@ g_variant_new_from_bytes (const GVariantType *type,
+   serialised.data = (guchar *) g_bytes_get_data (bytes, &serialised.size);
+   serialised.depth = 0;
+   serialised.ordered_offsets_up_to = trusted ? G_MAXSIZE : 0;
++  serialised.checked_offsets_up_to = trusted ? G_MAXSIZE : 0;
+ 
+   if (!g_variant_serialised_check (serialised))
+     {
+@@ -647,6 +672,7 @@ g_variant_new_from_bytes (const GVariantType *type,
+     }
+ 
+   value->contents.serialised.ordered_offsets_up_to = trusted ? G_MAXSIZE : 0;
++  value->contents.serialised.checked_offsets_up_to = trusted ? G_MAXSIZE : 0;
+ 
+   g_clear_pointer (&owned_bytes, g_bytes_unref);
+ 
+@@ -1144,6 +1170,7 @@ g_variant_get_child_value (GVariant *value,
+ 
+     /* Update the cached ordered_offsets_up_to, since @serialised will be thrown away when this function exits */
+     value->contents.serialised.ordered_offsets_up_to = MAX (value->contents.serialised.ordered_offsets_up_to, serialised.ordered_offsets_up_to);
++    value->contents.serialised.checked_offsets_up_to = MAX (value->contents.serialised.checked_offsets_up_to, serialised.checked_offsets_up_to);
+ 
+     /* Check whether this would cause nesting too deep. If so, return a fake
+      * child. The only situation we expect this to happen in is with a variant,
+@@ -1171,6 +1198,7 @@ g_variant_get_child_value (GVariant *value,
+       g_bytes_ref (value->contents.serialised.bytes);
+     child->contents.serialised.data = s_child.data;
+     child->contents.serialised.ordered_offsets_up_to = s_child.ordered_offsets_up_to;
++    child->contents.serialised.checked_offsets_up_to = s_child.checked_offsets_up_to;
+ 
+     return child;
+   }
+diff --git a/glib/gvariant-serialiser.c b/glib/gvariant-serialiser.c
+index 470e21919..8e01ab53e 100644
+--- a/glib/gvariant-serialiser.c
++++ b/glib/gvariant-serialiser.c
+@@ -120,6 +120,8 @@
+  *
+  * @depth has no restrictions; the depth of a top-level serialised #GVariant is
+  * zero, and it increases for each level of nested child.
++ *
++ * @checked_offsets_up_to is always ≥ @ordered_offsets_up_to
+  */
+ 
+ /* < private >
+@@ -147,6 +149,9 @@ g_variant_serialised_check (GVariantSerialised serialised)
+            !(serialised.size == 0 || serialised.data != NULL))
+     return FALSE;
+ 
++  if (serialised.ordered_offsets_up_to > serialised.checked_offsets_up_to)
++    return FALSE;
++
+   /* Depending on the native alignment requirements of the machine, the
+    * compiler will insert either 3 or 7 padding bytes after the char.
+    * This will result in the sizeof() the struct being 12 or 16.
+@@ -266,6 +271,7 @@ gvs_fixed_sized_maybe_get_child (GVariantSerialised value,
+   g_variant_type_info_ref (value.type_info);
+   value.depth++;
+   value.ordered_offsets_up_to = 0;
++  value.checked_offsets_up_to = 0;
+ 
+   return value;
+ }
+@@ -297,7 +303,7 @@ gvs_fixed_sized_maybe_serialise (GVariantSerialised        value,
+ {
+   if (n_children)
+     {
+-      GVariantSerialised child = { NULL, value.data, value.size, value.depth + 1, 0 };
++      GVariantSerialised child = { NULL, value.data, value.size, value.depth + 1, 0, 0 };
+ 
+       gvs_filler (&child, children[0]);
+     }
+@@ -320,6 +326,7 @@ gvs_fixed_sized_maybe_is_normal (GVariantSerialised value)
+       value.type_info = g_variant_type_info_element (value.type_info);
+       value.depth++;
+       value.ordered_offsets_up_to = 0;
++      value.checked_offsets_up_to = 0;
+ 
+       return g_variant_serialised_is_normal (value);
+     }
+@@ -362,6 +369,7 @@ gvs_variable_sized_maybe_get_child (GVariantSerialised value,
+ 
+   value.depth++;
+   value.ordered_offsets_up_to = 0;
++  value.checked_offsets_up_to = 0;
+ 
+   return value;
+ }
+@@ -392,7 +400,7 @@ gvs_variable_sized_maybe_serialise (GVariantSerialised        value,
+ {
+   if (n_children)
+     {
+-      GVariantSerialised child = { NULL, value.data, value.size - 1, value.depth + 1, 0 };
++      GVariantSerialised child = { NULL, value.data, value.size - 1, value.depth + 1, 0, 0 };
+ 
+       /* write the data for the child.  */
+       gvs_filler (&child, children[0]);
+@@ -413,6 +421,7 @@ gvs_variable_sized_maybe_is_normal (GVariantSerialised value)
+   value.size--;
+   value.depth++;
+   value.ordered_offsets_up_to = 0;
++  value.checked_offsets_up_to = 0;
+ 
+   return g_variant_serialised_is_normal (value);
+ }
+@@ -739,39 +748,46 @@ gvs_variable_sized_array_get_child (GVariantSerialised value,
+ 
+   /* If the requested @index_ is beyond the set of indices whose framing offsets
+    * have been checked, check the remaining offsets to see whether they’re
+-   * normal (in order, no overlapping array elements). */
+-  if (index_ > value.ordered_offsets_up_to)
++   * normal (in order, no overlapping array elements).
++   *
++   * Don’t bother checking if the highest known-good offset is lower than the
++   * highest checked offset, as that means there’s an invalid element at that
++   * index, so there’s no need to check further. */
++  if (index_ > value.checked_offsets_up_to &&
++      value.ordered_offsets_up_to == value.checked_offsets_up_to)
+     {
+       switch (offsets.offset_size)
+         {
+         case 1:
+           {
+             value.ordered_offsets_up_to = find_unordered_guint8 (
+-                offsets.array, value.ordered_offsets_up_to, index_ + 1);
++                offsets.array, value.checked_offsets_up_to, index_ + 1);
+             break;
+           }
+         case 2:
+           {
+             value.ordered_offsets_up_to = find_unordered_guint16 (
+-                offsets.array, value.ordered_offsets_up_to, index_ + 1);
++                offsets.array, value.checked_offsets_up_to, index_ + 1);
+             break;
+           }
+         case 4:
+           {
+             value.ordered_offsets_up_to = find_unordered_guint32 (
+-                offsets.array, value.ordered_offsets_up_to, index_ + 1);
++                offsets.array, value.checked_offsets_up_to, index_ + 1);
+             break;
+           }
+         case 8:
+           {
+             value.ordered_offsets_up_to = find_unordered_guint64 (
+-                offsets.array, value.ordered_offsets_up_to, index_ + 1);
++                offsets.array, value.checked_offsets_up_to, index_ + 1);
+             break;
+           }
+         default:
+           /* gvs_get_offset_size() only returns maximum 8 */
+           g_assert_not_reached ();
+         }
++
++      value.checked_offsets_up_to = index_;
+     }
+ 
+   if (index_ > value.ordered_offsets_up_to)
+@@ -916,6 +932,7 @@ gvs_variable_sized_array_is_normal (GVariantSerialised value)
+ 
+   /* All offsets have now been checked. */
+   value.ordered_offsets_up_to = G_MAXSIZE;
++  value.checked_offsets_up_to = G_MAXSIZE;
+ 
+   return TRUE;
+ }
+@@ -1040,14 +1057,15 @@ gvs_tuple_get_child (GVariantSerialised value,
+    * all the tuple *elements* here, not just all the framing offsets, since
+    * tuples contain a mix of elements which use framing offsets and ones which
+    * don’t. None of them are allowed to overlap. */
+-  if (index_ > value.ordered_offsets_up_to)
++  if (index_ > value.checked_offsets_up_to &&
++      value.ordered_offsets_up_to == value.checked_offsets_up_to)
+     {
+       gsize i, prev_i_end = 0;
+ 
+-      if (value.ordered_offsets_up_to > 0)
+-        gvs_tuple_get_member_bounds (value, value.ordered_offsets_up_to - 1, offset_size, NULL, &prev_i_end);
++      if (value.checked_offsets_up_to > 0)
++        gvs_tuple_get_member_bounds (value, value.checked_offsets_up_to - 1, offset_size, NULL, &prev_i_end);
+ 
+-      for (i = value.ordered_offsets_up_to; i <= index_; i++)
++      for (i = value.checked_offsets_up_to; i <= index_; i++)
+         {
+           gsize i_start, i_end;
+ 
+@@ -1060,6 +1078,7 @@ gvs_tuple_get_child (GVariantSerialised value,
+         }
+ 
+       value.ordered_offsets_up_to = i - 1;
++      value.checked_offsets_up_to = index_;
+     }
+ 
+   if (index_ > value.ordered_offsets_up_to)
+@@ -1257,6 +1276,7 @@ gvs_tuple_is_normal (GVariantSerialised value)
+ 
+   /* All element bounds have been checked above. */
+   value.ordered_offsets_up_to = G_MAXSIZE;
++  value.checked_offsets_up_to = G_MAXSIZE;
+ 
+   {
+     gsize fixed_size;
+diff --git a/glib/gvariant-serialiser.h b/glib/gvariant-serialiser.h
+index 765bd43b9..113df2ccc 100644
+--- a/glib/gvariant-serialiser.h
++++ b/glib/gvariant-serialiser.h
+@@ -41,6 +41,15 @@ typedef struct
+    * Even when dealing with tuples, @ordered_offsets_up_to is an element index,
+    * rather than an index into the frame offsets. */
+   gsize             ordered_offsets_up_to;
++
++  /* Similar to @ordered_offsets_up_to. This gives the index of the child element
++   * whose frame offset is the highest in the offset table which has been
++   * checked so far.
++   *
++   * This is always ≥ @ordered_offsets_up_to. It is always an element index.
++   *
++   * See documentation in gvariant-core.c for `struct GVariant` for details. */
++  gsize             checked_offsets_up_to;
+ } GVariantSerialised;
+ 
+ /* deserialisation */
+diff --git a/glib/gvariant.c b/glib/gvariant.c
+index 5f6eb63ee..3e1adffaa 100644
+--- a/glib/gvariant.c
++++ b/glib/gvariant.c
+@@ -5954,6 +5954,7 @@ g_variant_byteswap (GVariant *value)
+       serialised.data = g_malloc (serialised.size);
+       serialised.depth = g_variant_get_depth (trusted);
+       serialised.ordered_offsets_up_to = G_MAXSIZE;  /* operating on the normal form */
++      serialised.checked_offsets_up_to = G_MAXSIZE;
+       g_variant_store (trusted, serialised.data);
+       g_variant_unref (trusted);
+ 
+diff --git a/glib/tests/gvariant.c b/glib/tests/gvariant.c
+index a565ea69a..a13655eef 100644
+--- a/glib/tests/gvariant.c
++++ b/glib/tests/gvariant.c
+@@ -1284,6 +1284,7 @@ random_instance_filler (GVariantSerialised *serialised,
+ 
+   serialised->depth = 0;
+   serialised->ordered_offsets_up_to = 0;
++  serialised->checked_offsets_up_to = 0;
+ 
+   g_assert_true (serialised->type_info == instance->type_info);
+   g_assert_cmpuint (serialised->size, ==, instance->size);
+@@ -1451,6 +1452,7 @@ test_maybe (void)
+         serialised.size = needed_size;
+         serialised.depth = 0;
+         serialised.ordered_offsets_up_to = 0;
++        serialised.checked_offsets_up_to = 0;
+ 
+         g_variant_serialiser_serialise (serialised,
+                                         random_instance_filler,
+@@ -1575,6 +1577,7 @@ test_array (void)
+         serialised.size = needed_size;
+         serialised.depth = 0;
+         serialised.ordered_offsets_up_to = 0;
++        serialised.checked_offsets_up_to = 0;
+ 
+         g_variant_serialiser_serialise (serialised, random_instance_filler,
+                                         (gpointer *) instances, n_children);
+@@ -1740,6 +1743,7 @@ test_tuple (void)
+         serialised.size = needed_size;
+         serialised.depth = 0;
+         serialised.ordered_offsets_up_to = 0;
++        serialised.checked_offsets_up_to = 0;
+ 
+         g_variant_serialiser_serialise (serialised, random_instance_filler,
+                                         (gpointer *) instances, n_children);
+@@ -1837,6 +1841,7 @@ test_variant (void)
+         serialised.size = needed_size;
+         serialised.depth = 0;
+         serialised.ordered_offsets_up_to = 0;
++        serialised.checked_offsets_up_to = 0;
+ 
+         g_variant_serialiser_serialise (serialised, random_instance_filler,
+                                         (gpointer *) &instance, 1);
+-- 
+2.35.6
+

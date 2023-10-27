@@ -1,0 +1,302 @@
+From e787f30cccc47c88957054b7f0923b29393f059a Mon Sep 17 00:00:00 2001
+From: Bastien Nocera <hadess@hadess.net>
+Date: Tue, 10 Aug 2021 10:58:53 +0200
+Subject: [PATCH 23/49] gio: Add GPowerProfileMonitor tests
+
+Tests both the portal and direct D-Bus variants.
+---
+ gio/tests/meson.build                        |  14 ++-
+ gio/tests/power-profile-monitor-dbus.py.in   | 107 ++++++++++++++++
+ gio/tests/power-profile-monitor-portal.py.in | 126 +++++++++++++++++++
+ 3 files changed, 241 insertions(+), 6 deletions(-)
+ create mode 100755 gio/tests/power-profile-monitor-dbus.py.in
+ create mode 100755 gio/tests/power-profile-monitor-portal.py.in
+
+diff --git a/gio/tests/meson.build b/gio/tests/meson.build
+index ae51b2a39..e1f583c70 100644
+--- a/gio/tests/meson.build
++++ b/gio/tests/meson.build
+@@ -541,27 +541,29 @@ if installed_tests_enabled
+   install_subdir('static-link', install_dir : installed_tests_execdir)
+   install_data('static-link.py', install_dir : installed_tests_execdir)
+ 
+-  memory_monitor_tests = [
++  monitor_tests = [
+     'memory-monitor-dbus',
+     'memory-monitor-portal',
++    'power-profile-monitor-dbus',
++    'power-profile-monitor-portal'
+   ]
+ 
+-  foreach memory_monitor_test : memory_monitor_tests
++  foreach monitor_test : monitor_tests
+     cdata = configuration_data()
+     cdata.set('installed_tests_dir', installed_tests_execdir)
+-    cdata.set('program', memory_monitor_test + '.py')
++    cdata.set('program', monitor_test + '.py')
+     cdata.set('env', '')
+     configure_file(
+       input: installed_tests_template_tap,
+-      output: memory_monitor_test + '.test',
++      output: monitor_test + '.test',
+       install_dir: installed_tests_metadir,
+       configuration: cdata
+     )
+     cdata = configuration_data()
+     cdata.set('libexecdir', join_paths(glib_prefix, get_option('libexecdir')))
+     configure_file(
+-      input: memory_monitor_test + '.py.in',
+-      output: memory_monitor_test + '.py',
++      input: monitor_test + '.py.in',
++      output: monitor_test + '.py',
+       install_dir : installed_tests_execdir,
+       configuration: cdata,
+     )
+diff --git a/gio/tests/power-profile-monitor-dbus.py.in b/gio/tests/power-profile-monitor-dbus.py.in
+new file mode 100755
+index 000000000..06e594f4a
+--- /dev/null
++++ b/gio/tests/power-profile-monitor-dbus.py.in
+@@ -0,0 +1,107 @@
++#!/usr/bin/python3
++
++# This program is free software; you can redistribute it and/or modify it under
++# the terms of the GNU Lesser General Public License as published by the Free
++# Software Foundation; either version 3 of the License, or (at your option) any
++# later version.  See http://www.gnu.org/copyleft/lgpl.html for the full text
++# of the license.
++
++__author__ = 'Bastien Nocera'
++__email__ = 'hadess@hadess.net'
++__copyright__ = '(c) 2019, 2021 Red Hat Inc.'
++__license__ = 'LGPL 3+'
++
++import unittest
++import sys
++import subprocess
++import fcntl
++import os
++import time
++
++import taptestrunner
++
++try:
++    # Do all non-standard imports here so we can skip the tests if any
++    # needed packages are not available.
++    import dbus
++    import dbus.mainloop.glib
++    import dbusmock
++    from gi.repository import GLib
++    from gi.repository import Gio
++
++    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
++
++    class TestPowerProfileMonitor(dbusmock.DBusTestCase):
++        '''Test GPowerProfileMonitorDBus'''
++
++        @classmethod
++        def setUpClass(klass):
++            klass.start_system_bus()
++            klass.dbus_con = klass.get_dbus(True)
++
++        def setUp(self):
++            try:
++                Gio.PowerProfileMonitor
++            except AttributeError:
++                raise unittest.SkipTest('Power Profile Monitor not in '
++                                        'introspection data. Requires '
++                                        'GObject-Introspection ≥ 1.63.2') # FIXME version
++            try:
++                (self.p_mock, self.obj_ppd) = self.spawn_server_template(
++                    'power_profiles_daemon', {}, stdout=subprocess.PIPE)
++            except ModuleNotFoundError:
++                raise unittest.SkipTest("power-profiles-daemon dbusmock template not "
++                                        "found. Requires dbusmock > 0.23.1.") # FIXME version
++            # set log to nonblocking
++            flags = fcntl.fcntl(self.p_mock.stdout, fcntl.F_GETFL)
++            fcntl.fcntl(self.p_mock.stdout, fcntl.F_SETFL, flags | os.O_NONBLOCK)
++            self.power_saver_enabled = False
++            self.dbus_props = dbus.Interface(self.obj_ppd, dbus.PROPERTIES_IFACE)
++            self.power_profile_monitor = Gio.PowerProfileMonitor.dup_default()
++            self.power_profile_monitor.connect("notify::power-saver-enabled", self.power_saver_enabled_cb)
++            self.mainloop = GLib.MainLoop()
++            self.main_context = self.mainloop.get_context()
++
++        def tearDown(self):
++            self.p_mock.terminate()
++            self.p_mock.wait()
++
++        def assertEventually(self, condition, message=None, timeout=50):
++            '''Assert that condition function eventually returns True.
++
++            Timeout is in deciseconds, defaulting to 50 (5 seconds). message is
++            printed on failure.
++            '''
++            while timeout >= 0:
++                context = GLib.MainContext.default()
++                while context.iteration(False):
++                    pass
++                if condition():
++                    break
++                timeout -= 1
++                time.sleep(0.1)
++            else:
++                self.fail(message or 'timed out waiting for ' + str(condition))
++
++        def power_saver_enabled_cb(self, spec, data):
++            self.power_saver_enabled = self.power_profile_monitor.get_power_saver_enabled()
++            self.main_context.wakeup()
++
++        def test_power_profile_power_saver_enabled(self):
++            '''power-saver-enabled property'''
++
++            self.assertEqual(self.power_profile_monitor.get_power_saver_enabled(), False)
++            self.dbus_props.Set('net.hadess.PowerProfiles', 'ActiveProfile', dbus.String('power-saver', variant_level=1))
++            self.assertEventually(lambda: self.power_saver_enabled == True, "power-saver didn't become enabled", 10)
++
++            self.dbus_props.Set('net.hadess.PowerProfiles', 'ActiveProfile', dbus.String('balanced', variant_level=1))
++            self.assertEventually(lambda: self.power_saver_enabled == False, "power-saver didn't become disabled", 10)
++
++except ImportError as e:
++    @unittest.skip("Cannot import %s" % e.name)
++    class TestPowerProfileMonitor(unittest.TestCase):
++        def test_power_profile_power_saver_enabled(self):
++            pass
++
++if __name__ == '__main__':
++    unittest.main(testRunner=taptestrunner.TAPTestRunner())
+diff --git a/gio/tests/power-profile-monitor-portal.py.in b/gio/tests/power-profile-monitor-portal.py.in
+new file mode 100755
+index 000000000..960a62232
+--- /dev/null
++++ b/gio/tests/power-profile-monitor-portal.py.in
+@@ -0,0 +1,126 @@
++#!/usr/bin/python3
++
++# This program is free software; you can redistribute it and/or modify it under
++# the terms of the GNU Lesser General Public License as published by the Free
++# Software Foundation; either version 3 of the License, or (at your option) any
++# later version.  See http://www.gnu.org/copyleft/lgpl.html for the full text
++# of the license.
++
++__author__ = 'Bastien Nocera'
++__email__ = 'hadess@hadess.net'
++__copyright__ = '(c) 2021 Red Hat Inc.'
++__license__ = 'LGPL 3+'
++
++import unittest
++import sys
++import subprocess
++import fcntl
++import os
++import time
++
++import taptestrunner
++
++try:
++    # Do all non-standard imports here so we can skip the tests if any
++    # needed packages are not available.
++    import dbus
++    import dbus.mainloop.glib
++    import dbusmock
++    from gi.repository import GLib
++    from gi.repository import Gio
++
++    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
++
++    # XDG_DESKTOP_PORTAL_PATH = os.path.expanduser("~/.cache/jhbuild/build/xdg-desktop-portal/xdg-desktop-portal")
++    XDG_DESKTOP_PORTAL_PATH = "@libexecdir@/xdg-desktop-portal"
++
++    class TestPowerProfileMonitorPortal(dbusmock.DBusTestCase):
++        '''Test GPowerProfileMonitorPortal'''
++
++        @classmethod
++        def setUpClass(klass):
++            klass.start_system_bus()
++            klass.dbus_con = klass.get_dbus(True)
++            # Start session bus so that xdg-desktop-portal can run on it
++            klass.start_session_bus()
++
++        def setUp(self):
++            try:
++                Gio.PowerProfileMonitor
++            except AttributeError:
++                raise unittest.SkipTest('Power Profile Monitor not in '
++                                        'introspection data. Requires '
++                                        'GObject-Introspection > 1.69.0')
++            try:
++                (self.p_mock, self.obj_ppd) = self.spawn_server_template(
++                    'power_profiles_daemon', {}, stdout=subprocess.PIPE)
++            except ModuleNotFoundError:
++                raise unittest.SkipTest("power-profiles-daemon dbusmock template not "
++                                        "found. Requires dbusmock > 0.23.1.")
++            # set log to nonblocking
++            flags = fcntl.fcntl(self.p_mock.stdout, fcntl.F_GETFL)
++            fcntl.fcntl(self.p_mock.stdout, fcntl.F_SETFL, flags | os.O_NONBLOCK)
++            self.power_saver_enabled = False
++            self.dbus_props = dbus.Interface(self.obj_ppd, dbus.PROPERTIES_IFACE)
++            try:
++                self.xdp = subprocess.Popen([XDG_DESKTOP_PORTAL_PATH])
++            except FileNotFoundError:
++                raise unittest.SkipTest("xdg-desktop-portal not available")
++
++            try:
++                self.wait_for_bus_object('org.freedesktop.portal.Desktop',
++                                        '/org/freedesktop/portal/desktop')
++            except:
++                raise
++            # subprocess.Popen(['gdbus', 'monitor', '--session', '--dest', 'org.freedesktop.portal.Desktop'])
++
++            os.environ['GTK_USE_PORTAL'] = "1"
++            self.power_profile_monitor = Gio.PowerProfileMonitor.dup_default()
++            assert("GPowerProfileMonitorPortal" in str(self.power_profile_monitor))
++            self.power_profile_monitor.connect("notify::power-saver-enabled", self.power_saver_enabled_cb)
++            self.mainloop = GLib.MainLoop()
++            self.main_context = self.mainloop.get_context()
++
++        def tearDown(self):
++            self.p_mock.terminate()
++            self.p_mock.wait()
++
++        def assertEventually(self, condition, message=None, timeout=50):
++            '''Assert that condition function eventually returns True.
++
++            Timeout is in deciseconds, defaulting to 50 (5 seconds). message is
++            printed on failure.
++            '''
++            while timeout >= 0:
++                context = GLib.MainContext.default()
++                while context.iteration(False):
++                    pass
++                if condition():
++                    break
++                timeout -= 1
++                time.sleep(0.1)
++            else:
++                self.fail(message or 'timed out waiting for ' + str(condition))
++
++        def power_saver_enabled_cb(self, spec, data):
++            self.power_saver_enabled = self.power_profile_monitor.get_power_saver_enabled()
++            self.main_context.wakeup()
++
++        def test_power_profile_power_saver_enabled_portal(self):
++            '''power-saver-enabled property'''
++
++            self.assertEqual(self.power_profile_monitor.get_power_saver_enabled(), False)
++            self.dbus_props.Set('net.hadess.PowerProfiles', 'ActiveProfile', dbus.String('power-saver', variant_level=1))
++            self.assertEventually(lambda: self.power_saver_enabled == True, "power-saver didn't become enabled", 10)
++
++            self.dbus_props.Set('net.hadess.PowerProfiles', 'ActiveProfile', dbus.String('balanced', variant_level=1))
++            self.assertEventually(lambda: self.power_saver_enabled == False, "power-saver didn't become disabled", 10)
++
++except ImportError as e:
++    @unittest.skip("Cannot import %s" % e.name)
++    class TestPowerProfileMonitorPortal(unittest.TestCase):
++        def test_power_profile_power_saver_enabled_portal(self):
++            pass
++
++if __name__ == '__main__':
++    unittest.main(testRunner=taptestrunner.TAPTestRunner())
+-- 
+2.35.6
+

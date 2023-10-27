@@ -7,7 +7,7 @@
 Summary:    OpenJDK
 Name:       openjdk8
 Version:    1.8.0.382
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GNU GPL
 URL:        https://wiki.openjdk.org/display/jdk8u
 Group:      Development/Tools
@@ -34,7 +34,7 @@ BuildRequires: chkconfig
 BuildRequires: libjpeg-turbo-devel
 BuildRequires: fontconfig-devel
 BuildRequires: freetype2-devel
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.68.4
 BuildRequires: harfbuzz-devel
 
 Requires: openjre8 = %{version}-%{release}
@@ -282,6 +282,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.0.382-4
+- Bump version as part of glib upgrade
 * Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 1.8.0.382-3
 - Version bump as a part of cups upgrade
 * Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.8.0.382-2

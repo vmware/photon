@@ -1,0 +1,56 @@
+From eea325b4efd4a0b8710fd8e9550115fd19999ba0 Mon Sep 17 00:00:00 2001
+From: Benjamin Berg <bberg@redhat.com>
+Date: Thu, 17 Sep 2020 17:35:58 +0200
+Subject: [PATCH 06/49] gdesktopappinfo: Add SourcePath= to transient systemd
+ units
+
+systemd allows setting a SourcePath= which shows the file that the unit
+has been generated from. KDE is starting to set this and it seems like a
+good idea, so do the same here.
+
+See https://invent.kde.org/frameworks/kio/-/merge_requests/124
+---
+ gio/gdesktopappinfo.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/gio/gdesktopappinfo.c b/gio/gdesktopappinfo.c
+index 8d0f1688e..a833de4e6 100644
+--- a/gio/gdesktopappinfo.c
++++ b/gio/gdesktopappinfo.c
+@@ -2777,6 +2777,7 @@ create_systemd_scope (GDBusConnection    *session_bus,
+ {
+   GVariantBuilder builder;
+   const char *app_name = g_get_application_name ();
++  const char *source_path = NULL;
+   char *appid = NULL;
+   char *appid_escaped = NULL;
+   char *snid_escaped = NULL;
+@@ -2802,6 +2803,8 @@ create_systemd_scope (GDBusConnection    *session_bus,
+    */
+   unit_name = g_strdup_printf ("app-glib-%s-%d.scope", appid_escaped, pid);
+ 
++  source_path = g_desktop_app_info_get_filename (info);
++
+   g_variant_builder_init (&builder, G_VARIANT_TYPE ("(ssa(sv)a(sa(sv)))"));
+   g_variant_builder_add (&builder, "s", unit_name);
+   g_variant_builder_add (&builder, "s", "fail");
+@@ -2815,6 +2818,16 @@ create_systemd_scope (GDBusConnection    *session_bus,
+                            "Description",
+                            g_variant_new_take_string (g_strdup_printf ("Application launched by %s",
+                                                                        app_name)));
++
++  /* If we have a .desktop file, document that the scope has been "generated"
++   * from it.
++   */
++  if (source_path && g_utf8_validate (source_path, -1, NULL))
++    g_variant_builder_add (&builder,
++                           "(sv)",
++                           "SourcePath",
++                           g_variant_new_string (source_path));
++
+   g_variant_builder_add (&builder,
+                          "(sv)",
+                          "PIDs",
+-- 
+2.35.6
+

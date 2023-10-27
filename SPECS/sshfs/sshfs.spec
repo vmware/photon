@@ -1,7 +1,7 @@
 Summary:    fuse filesystem to access remote ssh servers
 Name:       sshfs
 Version:    3.7.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2
 Url:        https://github.com/libfuse/sshfs
 Group:      Filesystemd tools
@@ -9,11 +9,11 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    https://github.com/libfuse/sshfs/archive/%{name}-%{version}.tar.gz
-%define sha1 %{name}=4efb70f498020b6169adf18aa1dd746ff15ad42a
+%define sha512 %{name}=8ce33e6f29a8d372a43a52c2e3cb3a08419bf9943d3a20425e9c8bec4ec6ec419c32bb5e5a86c67e1f8593505645a1d1d41ce638a35bb0aa24db0264812f8a40
 
-Requires:	fuse >= 2.3
-Requires:	fuse3 >= 3.0.0
-Requires:	glib > 2.0
+Requires:   fuse >= 2.3
+Requires:   fuse3 >= 3.0.0
+Requires:   glib >= 2.68.4
 
 BuildRequires:  fuse3-devel >= 3.0.0
 BuildRequires:  meson >= 0.38.0
@@ -45,6 +45,8 @@ DESTDIR=%{buildroot} ninja install
 %exclude %dir %{_prefix}/src
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.7.0-4
+- Bump version as part of glib upgrade
 * Thu Mar 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.0-3
 - Exclude debug symbols properly
 * Tue Mar 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.0-2

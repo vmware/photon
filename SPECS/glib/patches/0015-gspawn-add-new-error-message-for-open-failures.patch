@@ -1,0 +1,69 @@
+From 3e1d6e9e5826953a92a3453fb01031a205f3910f Mon Sep 17 00:00:00 2001
+From: Michael Catanzaro <mcatanzaro@redhat.com>
+Date: Wed, 20 Oct 2021 16:51:44 -0500
+Subject: [PATCH 15/49] gspawn: add new error message for open() failures
+
+Reporting these as dup2() failures is bogus.
+---
+ glib/gspawn.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/glib/gspawn.c b/glib/gspawn.c
+index 7ef678047..c2fe306dc 100644
+--- a/glib/gspawn.c
++++ b/glib/gspawn.c
+@@ -1532,6 +1532,7 @@ enum
+ {
+   CHILD_CHDIR_FAILED,
+   CHILD_EXEC_FAILED,
++  CHILD_OPEN_FAILED,
+   CHILD_DUP2_FAILED,
+   CHILD_FORK_FAILED
+ };
+@@ -1586,7 +1587,7 @@ do_exec (gint                  child_err_report_fd,
+       gint read_null = safe_open ("/dev/null", O_RDONLY);
+       if (read_null < 0)
+         write_err_and_exit (child_err_report_fd,
+-                            CHILD_DUP2_FAILED);
++                            CHILD_OPEN_FAILED);
+       if (safe_dup2 (read_null, 0) < 0)
+         write_err_and_exit (child_err_report_fd,
+                             CHILD_DUP2_FAILED);
+@@ -1608,7 +1609,7 @@ do_exec (gint                  child_err_report_fd,
+       gint write_null = safe_open ("/dev/null", O_WRONLY);
+       if (write_null < 0)
+         write_err_and_exit (child_err_report_fd,
+-                            CHILD_DUP2_FAILED);
++                            CHILD_OPEN_FAILED);
+       if (safe_dup2 (write_null, 1) < 0)
+         write_err_and_exit (child_err_report_fd,
+                             CHILD_DUP2_FAILED);
+@@ -1630,7 +1631,7 @@ do_exec (gint                  child_err_report_fd,
+       gint write_null = safe_open ("/dev/null", O_WRONLY);
+       if (write_null < 0)
+         write_err_and_exit (child_err_report_fd,
+-                            CHILD_DUP2_FAILED);
++                            CHILD_OPEN_FAILED);
+       if (safe_dup2 (write_null, 2) < 0)
+         write_err_and_exit (child_err_report_fd,
+                             CHILD_DUP2_FAILED);
+@@ -2420,7 +2421,15 @@ fork_exec (gboolean              intermediate_child,
+                            g_strerror (buf[1]));
+ 
+               break;
+-              
++
++            case CHILD_OPEN_FAILED:
++              g_set_error (error,
++                           G_SPAWN_ERROR,
++                           G_SPAWN_ERROR_FAILED,
++                           _("Failed to open file to remap file descriptor (%s)"),
++                           g_strerror (buf[1]));
++              break;
++
+             case CHILD_DUP2_FAILED:
+               g_set_error (error,
+                            G_SPAWN_ERROR,
+-- 
+2.35.6
+

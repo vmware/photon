@@ -1,0 +1,132 @@
+From a879d08e912a4421786b44af479f94f7b4503f5a Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Mon, 17 Jan 2022 15:27:24 +0000
+Subject: [PATCH 29/49] gspawn: Report errors with closing file descriptors
+ between fork/exec
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+If a seccomp policy is set up incorrectly so that it returns `EPERM` for
+`close_range()` rather than `ENOSYS` due to it not being recognised, no
+error would previously be reported from GLib, but some file descriptors
+wouldn’t be closed, and that would cause a hung zombie process. The
+zombie process would be waiting for one half of a socket to be closed.
+
+Fix that by correctly propagating errors from `close_range()` back to the
+parent process so they can be reported correctly.
+
+Distributions which aren’t yet carrying the Docker fix to correctly
+return `ENOSYS` from unrecognised syscalls may want to temporarily carry
+an additional patch to fall back to `safe_fdwalk()` if `close_range()`
+fails with `EPERM`. This change will not be accepted upstream as `EPERM`
+is not the right error for `close_range()` to be returning.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+
+Fixes: #2580
+---
+ glib/gspawn.c | 35 ++++++++++++++++++++++++++---------
+ 1 file changed, 26 insertions(+), 9 deletions(-)
+
+diff --git a/glib/gspawn.c b/glib/gspawn.c
+index c2fe306dc..9c2f7ba7b 100644
+--- a/glib/gspawn.c
++++ b/glib/gspawn.c
+@@ -1457,8 +1457,10 @@ safe_fdwalk (int (*cb)(void *data, int fd), void *data)
+ }
+ 
+ /* This function is called between fork() and exec() and hence must be
+- * async-signal-safe (see signal-safety(7)). */
+-static void
++ * async-signal-safe (see signal-safety(7)).
++ *
++ * On failure, `-1` will be returned and errno will be set. */
++static int
+ safe_closefrom (int lowfd)
+ {
+ #if defined(__FreeBSD__) || defined(__OpenBSD__)
+@@ -1472,6 +1474,7 @@ safe_closefrom (int lowfd)
+    * should be safe to use.
+    */
+   (void) closefrom (lowfd);
++  return 0;
+ #elif defined(__DragonFly__)
+   /* It is unclear whether closefrom function included in DragonFlyBSD libc_r
+    * is safe to use because it calls a lot of library functions. It is also
+@@ -1479,12 +1482,13 @@ safe_closefrom (int lowfd)
+    * direct system call here ourselves to avoid possible issues.
+    */
+   (void) syscall (SYS_closefrom, lowfd);
++  return 0;
+ #elif defined(F_CLOSEM)
+   /* NetBSD and AIX have a special fcntl command which does the same thing as
+    * closefrom. NetBSD also includes closefrom function, which seems to be a
+    * simple wrapper of the fcntl command.
+    */
+-  (void) fcntl (lowfd, F_CLOSEM);
++  return fcntl (lowfd, F_CLOSEM);
+ #else
+ 
+ #if defined(HAVE_CLOSE_RANGE)
+@@ -1494,9 +1498,11 @@ safe_closefrom (int lowfd)
+    *
+    * Handle ENOSYS in case it’s supported in libc but not the kernel; if so,
+    * fall back to safe_fdwalk(). */
+-  if (close_range (lowfd, G_MAXUINT, 0) != 0 && errno == ENOSYS)
++  int ret = close_range (lowfd, G_MAXUINT, 0);
++  if (ret == 0 || errno != ENOSYS)
++    return ret;
+ #endif  /* HAVE_CLOSE_RANGE */
+-  (void) safe_fdwalk (close_func, GINT_TO_POINTER (lowfd));
++  return safe_fdwalk (close_func, GINT_TO_POINTER (lowfd));
+ #endif
+ }
+ 
+@@ -1534,7 +1540,8 @@ enum
+   CHILD_EXEC_FAILED,
+   CHILD_OPEN_FAILED,
+   CHILD_DUP2_FAILED,
+-  CHILD_FORK_FAILED
++  CHILD_FORK_FAILED,
++  CHILD_CLOSE_FAILED,
+ };
+ 
+ /* This function is called between fork() and exec() and hence must be
+@@ -1650,12 +1657,14 @@ do_exec (gint                  child_err_report_fd,
+           if (safe_dup2 (child_err_report_fd, 3) < 0)
+             write_err_and_exit (child_err_report_fd, CHILD_DUP2_FAILED);
+           set_cloexec (GINT_TO_POINTER (0), 3);
+-          safe_closefrom (4);
++          if (safe_closefrom (4) < 0)
++            write_err_and_exit (child_err_report_fd, CHILD_CLOSE_FAILED);
+           child_err_report_fd = 3;
+         }
+       else
+         {
+-          safe_fdwalk (set_cloexec, GINT_TO_POINTER (3));
++          if (safe_fdwalk (set_cloexec, GINT_TO_POINTER (3)) < 0)
++            write_err_and_exit (child_err_report_fd, CHILD_CLOSE_FAILED);
+         }
+     }
+   else
+@@ -2446,7 +2455,15 @@ fork_exec (gboolean              intermediate_child,
+                            _("Failed to fork child process (%s)"),
+                            g_strerror (buf[1]));
+               break;
+-              
++
++            case CHILD_CLOSE_FAILED:
++              g_set_error (error,
++                           G_SPAWN_ERROR,
++                           G_SPAWN_ERROR_FAILED,
++                           _("Failed to close file descriptor for child process (%s)"),
++                           g_strerror (buf[1]));
++              break;
++
+             default:
+               g_set_error (error,
+                            G_SPAWN_ERROR,
+-- 
+2.35.6
+

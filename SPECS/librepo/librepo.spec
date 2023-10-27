@@ -1,7 +1,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.14.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -14,7 +14,7 @@ Source0: https://github.com/rpm-software-management/librepo/archive/%{name}-%{ve
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  check-devel
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.68.4
 BuildRequires:  gpgme-devel
 BuildRequires:  attr-devel
 BuildRequires:  curl-devel
@@ -25,8 +25,11 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-sphinx
 
 Requires:   curl-libs
+Requires:   glib >= 2.68.4
+Requires:   libxml2
 Requires:   gpgme
 Requires:   zchunk
+Requires:   openssl
 
 %description
 A library providing C and Python (libcURL like) API to downloading repository
@@ -36,6 +39,8 @@ metadata.
 Summary:        Repodata downloading library
 Requires:       curl-libs
 Requires:       curl-devel
+Requires:       libxml2-devel
+Requires:       glib-devel >= 2.68.4
 Requires:       %{name} = %{version}-%{release}
 
 %description devel
@@ -93,6 +98,8 @@ pip3 install pygpgme xattr
 %{python3_sitearch}/%{name}/
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.14.2-7
+- Bump version as part of glib upgrade
 * Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 1.14.2-6
 - Version bump to use curl 8.1.1
 * Fri Mar 24 2023 Harinadh D <hdommaraju@vmware.com> 1.14.2-5

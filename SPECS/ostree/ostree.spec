@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2022.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -23,7 +23,7 @@ BuildRequires: automake
 BuildRequires: libtool
 BuildRequires: which
 BuildRequires: gtk-doc
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.68.4
 BuildRequires: gobject-introspection
 BuildRequires: gobject-introspection-devel
 BuildRequires: xz-devel
@@ -162,6 +162,8 @@ install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}/remotes.d
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2022.7-2
+- Bump version as part of glib upgrade
 * Mon Jul 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.7-1
 - Upgrade to v2022.7
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.3-4
