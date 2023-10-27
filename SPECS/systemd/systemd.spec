@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -31,6 +31,7 @@ Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
 Patch2: use-bfq-scheduler.patch
 Patch3: execute-suppress-credentials-mount-if-empty.patch
+Patch4: fix-lvrename-unmount.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -709,6 +710,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri Oct 27 2023 Harinadh D <hdommaraju@vmware.com> 253.12-2
+- fix for lvrename unmounts the mount point
 * Wed Oct 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 253.12-1
 - Upgrade to v253.12
 * Wed Sep 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 253-9
