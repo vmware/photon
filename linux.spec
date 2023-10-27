@@ -29,8 +29,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.56
-Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.60
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -41,7 +41,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=4f03c0991f6d2985411885b6026b76ce0bdaccb94edf3a0352f8be31cc5056bee9729089af2be4e946b1405d922afc5d6fbda6b1117eef35fd4a0cac6dcb51ec
+%define sha512 linux=cef40235428a09e5f7807a8be83af9a5ab90e841049a04f9f851e69e602aeab5a50f523cae5d5928d345c11b728608eba7754b173be0c023c7ee564cfaf4b20a
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -808,6 +808,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 29 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.60-1
+- Upgrade to 6.1.60
 * Wed Nov 29 2023 Alexey Makhalov <amakhalov@vmware.com> 6.1.56-9
 - Add .sbat section for bzImage
 - Introduce SBAT verificaion in addition to signature on kexec
