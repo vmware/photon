@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        254.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -30,6 +30,7 @@ Source14:       sysusers.generate-pre.sh
 Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
 Patch2: use-bfq-scheduler.patch
+Patch3: fix-lvrename-unmount.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -765,6 +766,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Sun Oct 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-5
+- Fix lvrename unmount issue
 * Wed Sep 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 254.1-4
 - Add kbd in Requires for systemd-udev
 * Wed Sep 13 2023 Srish Srinivasan <ssrish@vmware.com> 254.1-3
