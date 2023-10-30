@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+#set -x
 
 echoerr() {
   echo -ne "\n$*\n" 1>&2
@@ -80,11 +80,12 @@ popd # _tmp_
 
 rm -rf _tmp_
 
+git clean -xxfd
 popd # depot_tools
 
 find depot_tools -name '.git' -type d | xargs rm -rf
 
-tar -I 'xz -9' -cpf depot_tools-$commit_hash.tar.gz depot_tools
+tar -I 'xz -9' -cpf depot_tools-$commit_hash.tar.xz depot_tools
 [ $? -ne 0 ] && abort 1 "ERROR: depot_tools tar creation error"
 
 rm -rf depot_tools
