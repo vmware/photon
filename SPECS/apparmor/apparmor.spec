@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        3.1.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -335,6 +335,8 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-9
+- Bump version as a part of httpd v2.4.58 upgrade
 * Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-8
 - Bump version as a part of apr-util v1.6.3 upgrade
 * Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 3.1.2-7
