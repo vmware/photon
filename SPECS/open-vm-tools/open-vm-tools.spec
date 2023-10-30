@@ -3,8 +3,8 @@
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        12.3.0
-Release:        3%{?dist}
+Version:        12.3.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=c10e0aad49c1ca604ac738f985cca944659ac01206d3652c0ca72c693dc231e0547b8298e427f0ad460a9fb50799032813de15d628c26531b0bbcc80c93dfeb3
+%define sha512 %{name}=e2a485d7bc5a26717c1e93ff174403fa8a93132d8bd6fc0f78b65ad200927398c88b6d97895da38b0c28bf3f0edfd501b9ec6ed8a84efd2f697d7b66e582a4ee
 
 Source1: https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
 %define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
@@ -29,9 +29,6 @@ Patch1: gosc-root-password-update.patch
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
 Patch3: ovt-unknown-ioctl.patch
 %endif
-
-Patch4: CVE-2023-34058.patch
-Patch5: CVE-2023-34059.patch
 
 BuildRequires: glib-devel >= 2.68.4
 BuildRequires: libxml2-devel
@@ -178,6 +175,8 @@ fi
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Mon Oct 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.3.5-1
+- Upgrade to v12.3.5
 * Fri Oct 27 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 12.3.0-3
 - Bump version as part of glib upgrade
 * Fri Oct 20 2023 Shivani Agarwal <shivania2@vmware.com> 12.3.0-2
