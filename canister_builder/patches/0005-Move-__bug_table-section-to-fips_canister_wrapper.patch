@@ -23,12 +23,12 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
  crypto/gcm.c                       |  26 +++----
  crypto/hmac.c                      |   4 +-
  crypto/rsa-pkcs1pad.c              |   6 +-
+ crypto/seqiv.c                     |   3 +-
  crypto/sha1_generic.c              |   5 +-
  crypto/sha512_generic.c            |   5 +-
  crypto/testmgr.c                   | 110 ++++++++++++++---------------
- crypto/xts.c                       |   2 +-
  lib/crypto/sha256.c                |  10 +++
- 22 files changed, 176 insertions(+), 161 deletions(-)
+ 22 files changed, 177 insertions(+), 161 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index 0628c2bca..6a4378bac 100644
@@ -867,7 +867,7 @@ index 7c289df3b..b3e099505 100644
  	for (i = 0; i < bs; i++) {
  		ipad[i] ^= HMAC_IPAD_VALUE;
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index 1c9d29552..ab144392a 100644
+index e3a77b398..f8983636f 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
 @@ -166,7 +166,7 @@ static void pkcs1pad_sg_set_buf(struct scatterlist *sg, void *buf, size_t len,
@@ -897,6 +897,27 @@ index 1c9d29552..ab144392a 100644
  	    !ctx->key_size || sig_size != ctx->key_size)
  		return -EINVAL;
  
+diff --git a/crypto/seqiv.c b/crypto/seqiv.c
+index b1bcfe537..c593c2947 100644
+--- a/crypto/seqiv.c
++++ b/crypto/seqiv.c
+@@ -17,6 +17,7 @@
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
++#include "fips_canister_wrapper.h"
+ 
+ static void seqiv_aead_encrypt_complete2(struct aead_request *req, int err)
+ {
+@@ -30,7 +31,7 @@ static void seqiv_aead_encrypt_complete2(struct aead_request *req, int err)
+ 		goto out;
+ 
+ 	geniv = crypto_aead_reqtfm(req);
+-	memcpy(req->iv, subreq->iv, crypto_aead_ivsize(geniv));
++	fcw_memcpy(req->iv, subreq->iv, crypto_aead_ivsize(geniv));
+ 
+ out:
+ 	kfree_sensitive(subreq->iv);
 diff --git a/crypto/sha1_generic.c b/crypto/sha1_generic.c
 index 325b57fe2..193345133 100644
 --- a/crypto/sha1_generic.c
@@ -958,7 +979,7 @@ index be70e76d6..07e27910c 100644
  }
  EXPORT_SYMBOL(crypto_sha512_finup);
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 783c006d0..7899ab3cd 100644
+index 322f40897..22f4ec725 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -587,7 +587,7 @@ static int build_test_sglist(struct test_sglist *tsgl,
@@ -1191,7 +1212,7 @@ index 783c006d0..7899ab3cd 100644
  		       template[i].dt, template[i].dtlen);
  
  		err = crypto_rng_reset(tfm, seed, seedsize);
-@@ -3929,14 +3929,14 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3930,14 +3930,14 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  
  	if (vec->genkey) {
  		/* Save party A's public key */
@@ -1208,7 +1229,7 @@ index 783c006d0..7899ab3cd 100644
  			   vec->expected_a_public_size)) {
  			pr_err("alg: %s: Party A: generate public key test failed. Invalid output\n",
  			       alg);
-@@ -3967,7 +3967,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3969,7 +3969,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  
  	if (vec->genkey) {
  		/* Save the shared secret obtained by party A */
@@ -1217,7 +1238,7 @@ index 783c006d0..7899ab3cd 100644
  		if (!a_ss) {
  			err = -ENOMEM;
  			goto free_all;
-@@ -4005,7 +4005,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -4007,7 +4007,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  	 * verify shared secret from which the user will derive
  	 * secret key by executing whatever hash it has chosen
  	 */
@@ -1226,7 +1247,7 @@ index 783c006d0..7899ab3cd 100644
  		   vec->expected_ss_size)) {
  		pr_err("alg: %s: compute shared secret test failed. Invalid output\n",
  		       alg);
-@@ -4061,7 +4061,7 @@ static int alg_test_kpp(const struct alg_test_desc *desc, const char *driver,
+@@ -4063,7 +4063,7 @@ static int alg_test_kpp(const struct alg_test_desc *desc, const char *driver,
  
  static u8 *test_pack_u32(u8 *dst, u32 val)
  {
@@ -1235,7 +1256,7 @@ index 783c006d0..7899ab3cd 100644
  	return dst + sizeof(val);
  }
  
-@@ -4094,11 +4094,11 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4096,11 +4096,11 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  		      GFP_KERNEL);
  	if (!key)
  		goto free_req;
@@ -1249,7 +1270,7 @@ index 783c006d0..7899ab3cd 100644
  
  	if (vecs->public_key_vec)
  		err = crypto_akcipher_set_pub_key(tfm, key, vecs->key_len);
-@@ -4135,18 +4135,18 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4137,18 +4137,18 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  	}
  
  	err = -E2BIG;
@@ -1275,7 +1296,7 @@ index 783c006d0..7899ab3cd 100644
  		akcipher_request_set_crypt(req, src_tab, NULL, m_size, c_size);
  	} else {
  		sg_init_one(&dst, outbuf_enc, out_len_max);
-@@ -4203,9 +4203,9 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4205,9 +4205,9 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  
  	err = -E2BIG;
  	op = vecs->siggen_sigver_test ? "sign" : "decrypt";
@@ -1287,7 +1308,7 @@ index 783c006d0..7899ab3cd 100644
  
  	sg_init_one(&src, xbuf[0], c_size);
  	sg_init_one(&dst, outbuf_dec, out_len_max);
-@@ -5829,13 +5829,13 @@ static void alg_check_test_descs_order(void)
+@@ -5834,13 +5834,13 @@ static void alg_check_test_descs_order(void)
  		int diff = strcmp(alg_test_descs[i - 1].alg,
  				  alg_test_descs[i].alg);
  
@@ -1303,7 +1324,7 @@ index 783c006d0..7899ab3cd 100644
  			pr_warn("testmgr: duplicate alg_test_descs entry: '%s'\n",
  				alg_test_descs[i].alg);
  		}
-@@ -5847,12 +5847,12 @@ static void alg_check_testvec_configs(void)
+@@ -5852,12 +5852,12 @@ static void alg_check_testvec_configs(void)
  	int i;
  
  	for (i = 0; i < ARRAY_SIZE(default_cipher_testvec_configs); i++)
@@ -1320,7 +1341,7 @@ index 783c006d0..7899ab3cd 100644
  }
  
  static void testmgr_onetime_init(void)
-@@ -5968,7 +5968,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5973,7 +5973,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  		}
  		pr_warn("alg: self-tests for %s using %s failed (rc=%d)",
  			alg, driver, rc);
