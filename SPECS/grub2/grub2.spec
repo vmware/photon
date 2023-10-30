@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    10%{?dist}
+Release:    11%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -42,6 +42,14 @@ Patch20: CVE-2021-3697.patch
 Patch21: CVE-2022-28736-prep-1.patch
 Patch22: CVE-2022-28736-prep-2.patch
 Patch23: CVE-2022-28736.patch
+
+# CVE-2023-4692, CVE-2023-4693
+Patch24: 0001-fs-ntfs-Fix-an-OOB-write-when-parsing-the-ATTRIBUTE_.patch
+Patch25: 0002-fs-ntfs-Fix-an-OOB-read-when-reading-data-from-the-r.patch
+Patch26: 0003-fs-ntfs-Fix-an-OOB-read-when-parsing-directory-entri.patch
+Patch27: 0004-fs-ntfs-Fix-an-OOB-read-when-parsing-bitmaps-for-ind.patch
+Patch28: 0005-fs-ntfs-Fix-an-OOB-read-when-parsing-a-volume-label.patch
+Patch29: 0006-fs-ntfs-Make-code-more-readable.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
@@ -231,6 +239,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Wed Oct 25 2023 Ajay Kaher <akaher@vmware.com> 2.06-11
+- Fix for CVE-2023-4692, CVE-2023-4693
 * Fri Sep 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.06-10
 - Upon reconsideration additional patch to fix CVE-2022-28736 is included.
 - Fixes changes made in 2.06-9
