@@ -23,7 +23,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c |  73 ++++++++++---------
- crypto/Makefile                    |  84 ++++++++++++++++++++++
+ crypto/Makefile                    |  86 +++++++++++++++++++++++
  crypto/algboss.c                   |   5 +-
  crypto/ccm.c                       |   7 +-
  crypto/cmac.c                      |   3 +-
@@ -36,10 +36,11 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
  crypto/gcm.c                       |  11 +--
  crypto/hmac.c                      |   3 +-
  crypto/rsa-pkcs1pad.c              |  13 ++--
+ crypto/sha3_generic.c              |   5 +-
  crypto/testmgr.c                   | 108 ++++++++++++++++-------------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 17 files changed, 252 insertions(+), 130 deletions(-)
+ 18 files changed, 257 insertions(+), 132 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index a5b0cb3ef..10420b2aa 100644
@@ -321,10 +322,21 @@ index a5b0cb3ef..10420b2aa 100644
  		err = skcipher_walk_done(&walk, 0);
  	}
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 1c6775c9a..7f7957e8f 100644
+index 19bf4080d..d3df694c0 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -44,6 +44,7 @@ rsa_generic-y += rsaprivkey.asn1.o
+@@ -18,8 +18,10 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
+ obj-$(CONFIG_CRYPTO_ALGAPI2) += crypto_algapi.o
+ 
+ obj-$(CONFIG_CRYPTO_AEAD2) += aead.o
++canister += geniv.o
+ 
+ obj-$(CONFIG_CRYPTO_SKCIPHER2) += skcipher.o
++canister += seqiv.o
+ obj-$(CONFIG_CRYPTO_ECHAINIV) += echainiv.o
+ 
+ crypto_hash-y += ahash.o
+@@ -42,6 +44,7 @@ rsa_generic-y += rsaprivkey.asn1.o
  rsa_generic-y += rsa.o
  rsa_generic-y += rsa_helper.o
  rsa_generic-y += rsa-pkcs1pad.o
@@ -332,7 +344,7 @@ index 1c6775c9a..7f7957e8f 100644
  
  $(obj)/sm2signature.asn1.o: $(obj)/sm2signature.asn1.c $(obj)/sm2signature.asn1.h
  $(obj)/sm2.o: $(obj)/sm2signature.asn1.h
-@@ -57,22 +58,30 @@ $(obj)/ecdsasignature.asn1.o: $(obj)/ecdsasignature.asn1.c $(obj)/ecdsasignature
+@@ -55,22 +58,30 @@ $(obj)/ecdsasignature.asn1.o: $(obj)/ecdsasignature.asn1.c $(obj)/ecdsasignature
  $(obj)/ecdsa.o: $(obj)/ecdsasignature.asn1.h
  ecdsa_generic-y += ecdsa.o
  ecdsa_generic-y += ecdsasignature.asn1.o
@@ -363,7 +375,7 @@ index 1c6775c9a..7f7957e8f 100644
  obj-$(CONFIG_CRYPTO_SM3) += sm3.o
  obj-$(CONFIG_CRYPTO_SM3_GENERIC) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -81,13 +90,21 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
+@@ -79,13 +90,21 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105930
  obj-$(CONFIG_CRYPTO_GF128MUL) += gf128mul.o
@@ -385,7 +397,7 @@ index 1c6775c9a..7f7957e8f 100644
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -122,6 +139,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -120,6 +139,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -393,7 +405,7 @@ index 1c6775c9a..7f7957e8f 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -165,11 +183,14 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -163,11 +183,14 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
@@ -408,7 +420,7 @@ index 1c6775c9a..7f7957e8f 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -193,6 +214,69 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -191,6 +214,69 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -1005,9 +1017,39 @@ index 1cf267bc6..e3a77b398 100644
 +	inst = fcw_kzalloc(sizeof(*inst) + sizeof(*ctx), GFP_KERNEL);
  	if (!inst)
  		return -ENOMEM;
+
+diff --git a/crypto/sha3_generic.c b/crypto/sha3_generic.c
+index 3e4069935..7d107460b 100644
+--- a/crypto/sha3_generic.c
++++ b/crypto/sha3_generic.c
+@@ -14,6 +14,7 @@
+ #include <linux/types.h>
+ #include <crypto/sha3.h>
+ #include <asm/unaligned.h>
++#include "fips_canister_wrapper.h"
  
+ /*
+  * On some 32-bit architectures (h8300), GCC ends up using
+@@ -185,7 +186,7 @@ int crypto_sha3_update(struct shash_desc *desc, const u8 *data,
+ 	if ((sctx->partial + len) > (sctx->rsiz - 1)) {
+ 		if (sctx->partial) {
+ 			done = -sctx->partial;
+-			memcpy(sctx->buf + sctx->partial, data,
++			fcw_memcpy(sctx->buf + sctx->partial, data,
+ 			       done + sctx->rsiz);
+ 			src = sctx->buf;
+ 		}
+@@ -203,7 +204,7 @@ int crypto_sha3_update(struct shash_desc *desc, const u8 *data,
+ 
+ 		sctx->partial = 0;
+ 	}
+-	memcpy(sctx->buf + sctx->partial, src, len - done);
++	fcw_memcpy(sctx->buf + sctx->partial, src, len - done);
+ 	sctx->partial += (len - done);
+ 
+ 	return 0;
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 5e4be63ba..5fb27ae33 100644
+index af31ff549..322f40897 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -37,6 +37,7 @@
@@ -1339,7 +1381,7 @@ index 5e4be63ba..5fb27ae33 100644
  	if (!output_buf) {
  		err = -ENOMEM;
  		goto free_req;
-@@ -4083,13 +4084,13 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4085,13 +4086,13 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  	if (testmgr_alloc_buf(xbuf))
  		return err;
  
@@ -1355,7 +1397,7 @@ index 5e4be63ba..5fb27ae33 100644
  		      GFP_KERNEL);
  	if (!key)
  		goto free_req;
-@@ -4112,7 +4113,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4114,7 +4115,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  	 */
  	err = -ENOMEM;
  	out_len_max = crypto_akcipher_maxsize(tfm);
@@ -1364,7 +1406,7 @@ index 5e4be63ba..5fb27ae33 100644
  	if (!outbuf_enc)
  		goto free_key;
  
-@@ -4189,7 +4190,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4191,7 +4192,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  		err = 0;
  		goto free_all;
  	}
@@ -1373,7 +1415,7 @@ index 5e4be63ba..5fb27ae33 100644
  	if (!outbuf_dec) {
  		err = -ENOMEM;
  		goto free_all;
-@@ -5885,13 +5886,22 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5906,13 +5907,22 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  	int i;
  	int j;
  	int rc;
@@ -1398,7 +1440,7 @@ index 5e4be63ba..5fb27ae33 100644
  	if ((type & CRYPTO_ALG_TYPE_MASK) == CRYPTO_ALG_TYPE_CIPHER) {
  		char nalg[CRYPTO_MAX_ALG_NAME];
 diff --git a/crypto/xts.c b/crypto/xts.c
-index de6cbcf69..f548992c2 100644
+index b05020657..7c926f7bb 100644
 --- a/crypto/xts.c
 +++ b/crypto/xts.c
 @@ -20,6 +20,7 @@

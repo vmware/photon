@@ -66,6 +66,7 @@
 #include <crypto/sha1_base.h>
 #include <crypto/sha512_base.h>
 #include <crypto/sha3.h>
+#include <crypto/internal/geniv.h>
 
 static __ro_after_init bool alg_request_report = false;
 
@@ -611,4 +612,7 @@ EXPORT_SYMBOL(sha256);
 EXPORT_SYMBOL(crypto_sha3_init);
 EXPORT_SYMBOL(crypto_sha3_update);
 EXPORT_SYMBOL(crypto_sha3_final);
+EXPORT_SYMBOL_GPL(aead_geniv_alloc);
+EXPORT_SYMBOL_GPL(aead_init_geniv);
+EXPORT_SYMBOL_GPL(aead_exit_geniv);
 /* End of Exports */

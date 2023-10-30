@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -163,7 +163,7 @@ Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 6.1.56-3-0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.1.60-2-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0002-FIPS-canister-creation.patch
@@ -332,25 +332,6 @@ cp %{SOURCE28} crypto/
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
 
 %if 0%{?canister_build}
-sed -i "s/CONFIG_DEBUG_LIST=y/# CONFIG_DEBUG_LIST is not set/" .config
-sed -i "s/CONFIG_BUG_ON_DATA_CORRUPTION=y/# CONFIG_BUG_ON_DATA_CORRUPTION is not set/" .config
-sed -i "s/CONFIG_CRYPTO_AEAD=m/CONFIG_CRYPTO_AEAD=y/" .config
-sed -i "s/CONFIG_CRYPTO_SIMD=m/CONFIG_CRYPTO_SIMD=y/" .config
-sed -i "s/CONFIG_CRYPTO_AES_NI_INTEL=m/CONFIG_CRYPTO_AES_NI_INTEL=y/" .config
-sed -i "s/CONFIG_CRYPTO_CMAC=m/CONFIG_CRYPTO_CMAC=y/" .config
-sed -i "s/CONFIG_CRYPTO_CTS=m/CONFIG_CRYPTO_CTS=y/" .config
-sed -i "s/CONFIG_CRYPTO_CCM=m/CONFIG_CRYPTO_CCM=y/" .config
-sed -i "s/CONFIG_CRYPTO_GHASH=m/CONFIG_CRYPTO_GHASH=y/" .config
-sed -i "s/CONFIG_CRYPTO_GF128MUL=m/CONFIG_CRYPTO_GF128MUL=y/" .config
-sed -i "s/CONFIG_CRYPTO_NULL=m/CONFIG_CRYPTO_NULL=y/" .config
-sed -i "s/CONFIG_CRYPTO_GCM=m/CONFIG_CRYPTO_GCM=y/" .config
-# Disable JUMP_LABEL, PRINTK_INDEX in canister
-sed -i "/# CONFIG_STATIC_KEYS_SELFTEST is not set/d" .config
-sed -i "s/CONFIG_JUMP_LABEL=y/# CONFIG_JUMP_LABEL is not set/" .config
-sed -i "/CONFIG_DRM_USE_DYNAMIC_DEBUG=y/d" .config
-sed -i "/# CONFIG_KFENCE_STATIC_KEYS is not set/d" .config
-sed -i "s/CONFIG_PRINTK_INDEX=y/# CONFIG_PRINTK_INDEX is not set/" .config
-
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
 sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
 
@@ -479,6 +460,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Dec 05 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-3
+- Include seqiv and geniv into canister
+- Add missing rsa, drbg_nopr_sha1, rfc4106(gcm(aes)) self-test
 * Wed Nov 29 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.62-2
 - Fix for CVE-2023-2176
 * Wed Nov 29 2023 Ankit Jain <ankitja@vmware.com> 6.1.62-1
