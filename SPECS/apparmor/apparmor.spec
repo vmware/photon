@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        2.13
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -8,43 +8,43 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
 
-Source0:        https://launchpad.net/apparmor/%{version}/%{version}.0/+download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=f98914713153d4c823a3ea7e96291cc4528bf7c8d3a139286ae0ecd806613e9c34b0ad81f2b258df2193cf6f3157d3252ef72d32d339427948a3fd8ba5651827
+Source0: https://launchpad.net/apparmor/%{version}/%{version}.0/+download/%{name}-%{version}.tar.gz
+%define sha512 %{name}=f98914713153d4c823a3ea7e96291cc4528bf7c8d3a139286ae0ecd806613e9c34b0ad81f2b258df2193cf6f3157d3252ef72d32d339427948a3fd8ba5651827
 
-Patch0:         %{name}-set-profiles-complain-mode.patch
-Patch1:         %{name}-service-start-fix.patch
-Patch2:         %{name}-fix-make-check.patch
-Patch3:         %{name}-fix-build-with-make-4.3.patch
+Patch0: %{name}-set-profiles-complain-mode.patch
+Patch1: %{name}-service-start-fix.patch
+Patch2: %{name}-fix-make-check.patch
+Patch3: %{name}-fix-build-with-make-4.3.patch
 
-BuildRequires:  python3
-BuildRequires:  perl
-BuildRequires:  python3-devel
-BuildRequires:  swig
-BuildRequires:  make
-BuildRequires:  gawk
-BuildRequires:  which
-BuildRequires:  libstdc++
-BuildRequires:  libstdc++-devel
-BuildRequires:  gcc
-BuildRequires:  libgcc
-BuildRequires:  libgcc-devel
-BuildRequires:  glibc
-BuildRequires:  glibc-devel
-BuildRequires:  autoconf
-BuildRequires:  automake
-BuildRequires:  libtool
-BuildRequires:  httpd
-BuildRequires:  httpd-devel
-BuildRequires:  httpd-tools
-BuildRequires:  apr
-BuildRequires:  apr-util-devel
-BuildRequires:  Linux-PAM
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  dejagnu
-BuildRequires:  openssl-devel
-BuildRequires:  curl-devel
-BuildRequires:  python3-setuptools, python3-xml
-BuildRequires:  bison
+BuildRequires: python3
+BuildRequires: perl
+BuildRequires: python3-devel
+BuildRequires: swig
+BuildRequires: make
+BuildRequires: gawk
+BuildRequires: which
+BuildRequires: libstdc++
+BuildRequires: libstdc++-devel
+BuildRequires: gcc
+BuildRequires: libgcc
+BuildRequires: libgcc-devel
+BuildRequires: glibc
+BuildRequires: glibc-devel
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
+BuildRequires: httpd
+BuildRequires: httpd-devel
+BuildRequires: httpd-tools
+BuildRequires: apr
+BuildRequires: apr-util-devel
+BuildRequires: Linux-PAM
+BuildRequires: Linux-PAM-devel
+BuildRequires: dejagnu
+BuildRequires: openssl-devel
+BuildRequires: curl-devel
+BuildRequires: python3-setuptools, python3-xml
+BuildRequires: bison
 
 %description
 AppArmor is a file and network mandatory access control
@@ -354,6 +354,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.13-16
+- Bump version as a part of httpd v2.4.58 upgrade
 * Tue Apr 11 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.13-15
 - Added apparmor-parser dependency on apparmor-profiles
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.13-14

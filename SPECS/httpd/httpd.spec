@@ -1,42 +1,42 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.56
-Release:        2%{?dist}
+Version:        2.4.58
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=5f12cd9878d822384b1bb163fea4d8edee5e7a0dd8b2389264387971268145cccc6a5a27ddf0436c5f1f631acc5fdc4874da2a47911483e421ca40bf783e0e12
+Source0: https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=d6e73bf413a507ec16b621ff635e178206207a9e9810ce3944b3dc98d39cde8f225307110167fc9da5822175796c8cb66f98be5b9f0d8b76dcd83a401d39b2c1
 
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
-Patch0:         %{name}-%{version}-blfs_layout-1.patch
-Patch1:         %{name}-uncomment-ServerName.patch
+Patch0: %{name}-%{version}-blfs_layout-1.patch
+Patch1: %{name}-uncomment-ServerName.patch
 
-BuildRequires:  openssl
-BuildRequires:  openssl-devel
-BuildRequires:  pcre-devel
-BuildRequires:  apr
-BuildRequires:  apr-util
-BuildRequires:  apr-util-devel
-BuildRequires:  openldap
-BuildRequires:  expat-devel
-BuildRequires:  lua-devel
-BuildRequires:  nghttp2-devel
+BuildRequires: openssl
+BuildRequires: openssl-devel
+BuildRequires: pcre-devel
+BuildRequires: apr
+BuildRequires: apr-util
+BuildRequires: apr-util-devel
+BuildRequires: openldap
+BuildRequires: expat-devel
+BuildRequires: lua-devel
+BuildRequires: nghttp2-devel
 
-Requires:       nghttp2
-Requires:       pcre
-Requires:       apr-util
-Requires:       openssl
-Requires:       openldap
-Requires:       lua
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires: nghttp2
+Requires: pcre
+Requires: apr-util
+Requires: openssl
+Requires: openldap
+Requires: lua
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
-Provides:       apache2
+Provides: apache2
 
 %define _confdir %{_sysconfdir}
 
@@ -204,6 +204,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.58-1
+- Version upgrade to v2.4.58 to fix CVE-2023-31122
 * Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.4.56-2
 - Version bump as part of nghtttp2 upgrade
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.56-1

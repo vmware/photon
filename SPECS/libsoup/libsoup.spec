@@ -1,40 +1,40 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.64.0
-Release:         8%{?dist}
+Release:         9%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
 Distribution:    Photon
 
-Source0:         http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
-%define sha512   %{name}=4ff3d16898bad5481d6abc4a7d2cdccc559e3d2a675128ccb61fba09a39c5c1736aeb7bda77dfd73f97a8660d11e25e88901fb6b957ab47b1e9e8a0fd6740424
-Patch0:          %{name}-fix-make-check.patch
+Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
+%define sha512 %{name}=4ff3d16898bad5481d6abc4a7d2cdccc559e3d2a675128ccb61fba09a39c5c1736aeb7bda77dfd73f97a8660d11e25e88901fb6b957ab47b1e9e8a0fd6740424
+Patch0: %{name}-fix-make-check.patch
 
-BuildRequires:   glib-devel
-BuildRequires:   gobject-introspection
-BuildRequires:   libxml2-devel
-BuildRequires:   intltool
-BuildRequires:   python2
-BuildRequires:   python2-libs
-BuildRequires:   python2-devel
-BuildRequires:   python2-tools
-BuildRequires:   glib-networking
-BuildRequires:   autogen
-BuildRequires:   sqlite-devel
-BuildRequires:   libpsl-devel
-BuildRequires:   krb5-devel
-BuildRequires:   httpd
-BuildRequires:   icu-devel
+BuildRequires: glib-devel
+BuildRequires: gobject-introspection
+BuildRequires: libxml2-devel
+BuildRequires: intltool
+BuildRequires: python2
+BuildRequires: python2-libs
+BuildRequires: python2-devel
+BuildRequires: python2-tools
+BuildRequires: glib-networking
+BuildRequires: autogen
+BuildRequires: sqlite-devel
+BuildRequires: libpsl-devel
+BuildRequires: krb5-devel
+BuildRequires: httpd
+BuildRequires: icu-devel
 
 %if 0%{?with_check}
-BuildRequires:   krb5-devel
+BuildRequires: krb5-devel
 %endif
 
-Requires:        libxml2
-Requires:        glib-networking
-Requires:        libpsl
+Requires: libxml2
+Requires: glib-networking
+Requires: libpsl
 
 %description
 libsoup is HTTP client/server library for GNOME
@@ -104,6 +104,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.64.0-9
+- Bump version as a part of httpd v2.4.58 upgrade
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.64.0-8
 - Bump version as a part of httpd v2.4.56 upgrade
 * Mon Jan 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.64.0-7
