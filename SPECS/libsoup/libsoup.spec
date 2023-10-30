@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         3.2.1
-Release:         8%{?dist}
+Release:         9%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -11,29 +11,29 @@ Distribution:    Photon
 Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/3.2/%{name}-%{version}.tar.xz
 %define sha512 %{name}=e5f60fd700f4cda041d869eec50e787b2fbe9323949b90710405cff296e108bab6d1323ab96e89855c5396ce73c7b7574b424dbe957ae10b48740b272889be51
 
-BuildRequires:   glib-devel
-BuildRequires:   libxml2-devel
-BuildRequires:   intltool
-BuildRequires:   python3-devel
-BuildRequires:   python3-tools
-BuildRequires:   glib-networking
-BuildRequires:   autogen
-BuildRequires:   sqlite-devel
-BuildRequires:   libpsl-devel
-BuildRequires:   krb5-devel
-BuildRequires:   httpd
-BuildRequires:   meson
-BuildRequires:   cmake
-BuildRequires:   nghttp2-devel
-BuildRequires:   gobject-introspection-devel
-BuildRequires:   gnutls-devel
+BuildRequires: glib-devel
+BuildRequires: libxml2-devel
+BuildRequires: intltool
+BuildRequires: python3-devel
+BuildRequires: python3-tools
+BuildRequires: glib-networking
+BuildRequires: autogen
+BuildRequires: sqlite-devel
+BuildRequires: libpsl-devel
+BuildRequires: krb5-devel
+BuildRequires: httpd
+BuildRequires: meson
+BuildRequires: cmake
+BuildRequires: nghttp2-devel
+BuildRequires: gobject-introspection-devel
+BuildRequires: gnutls-devel
 
-Requires:        libxml2
-Requires:        glib-networking
-Requires:        sqlite-libs
-Requires:        libpsl
-Requires:        krb5
-Requires:        nghttp2
+Requires: libxml2
+Requires: glib-networking
+Requires: sqlite-libs
+Requires: libpsl
+Requires: krb5
+Requires: nghttp2
 
 %description
 libsoup is HTTP client/server library for GNOME
@@ -95,6 +95,8 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
+* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 3.2.1-9
+- Bump version as a part of httpd v2.4.58 upgrade
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 3.2.1-8
 - Bump version as a part of krb5 upgrade
 * Wed Jul 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.1-7
