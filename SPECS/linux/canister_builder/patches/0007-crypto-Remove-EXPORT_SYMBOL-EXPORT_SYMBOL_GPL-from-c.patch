@@ -9,6 +9,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  crypto/aes_generic.c    |  5 -----
  crypto/ecc.c            | 20 --------------------
  crypto/ecdh_helper.c    |  5 +----
+ crypto/geniv.c          |  3 ---
  crypto/rsa_helper.c     |  2 --
  crypto/sha1_generic.c   |  3 ---
  crypto/sha256_generic.c |  4 ----
@@ -18,7 +19,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  lib/crypto/aes.c        |  6 ------
  lib/crypto/sha1.c       |  2 --
  lib/crypto/sha256.c     |  5 -----
- 12 files changed, 1 insertion(+), 60 deletions(-)
+ 13 files changed, 1 insertion(+), 63 deletions(-)
 
 diff --git a/crypto/aes_generic.c b/crypto/aes_generic.c
 index 27ab27931..f73022bed 100644
@@ -234,6 +235,34 @@ index 5dac6b348..78cd5252f 100644
 -EXPORT_SYMBOL_GPL(crypto_ecdh_decode_key);
 +}
 \ No newline at end of file
+diff --git a/crypto/geniv.c b/crypto/geniv.c
+index bee4621b4..2ac9bc761 100644
+--- a/crypto/geniv.c
++++ b/crypto/geniv.c
+@@ -104,7 +104,6 @@ struct aead_instance *aead_geniv_alloc(struct crypto_template *tmpl,
+ 	inst = ERR_PTR(err);
+ 	goto out;
+ }
+-EXPORT_SYMBOL_GPL(aead_geniv_alloc);
+ 
+ int aead_init_geniv(struct crypto_aead *aead)
+ {
+@@ -148,7 +147,6 @@ int aead_init_geniv(struct crypto_aead *aead)
+ 	crypto_put_default_null_skcipher();
+ 	goto out;
+ }
+-EXPORT_SYMBOL_GPL(aead_init_geniv);
+ 
+ void aead_exit_geniv(struct crypto_aead *tfm)
+ {
+@@ -157,7 +155,6 @@ void aead_exit_geniv(struct crypto_aead *tfm)
+ 	crypto_free_aead(ctx->child);
+ 	crypto_put_default_null_skcipher();
+ }
+-EXPORT_SYMBOL_GPL(aead_exit_geniv);
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Shared IV generator code");
 diff --git a/crypto/rsa_helper.c b/crypto/rsa_helper.c
 index 94266f290..9deb71e13 100644
 --- a/crypto/rsa_helper.c
@@ -380,10 +409,10 @@ index 07e27910c..32ff5a0b1 100644
  static struct shash_alg sha512_algs[2] = { {
  	.digestsize	=	SHA512_DIGEST_SIZE,
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 7899ab3cd..94279afed 100644
+index 22f4ec725..91325e2a8 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -5976,5 +5976,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5996,5 +5996,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  }
  
  #endif /* CONFIG_CRYPTO_MANAGER_DISABLE_TESTS */
