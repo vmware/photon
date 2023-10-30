@@ -3,7 +3,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         9%{?dist}
+Release:         10%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -18,30 +18,30 @@ Patch0: libsoup-fix-make-check.patch
 Patch1: libsoup-issue-120.patch
 %endif
 
-BuildRequires:   glib-devel >= 2.68.4
-BuildRequires:   gobject-introspection
-BuildRequires:   libxml2-devel
-BuildRequires:   intltool
-BuildRequires:   python3
-BuildRequires:   python3-libs
-BuildRequires:   python3-devel
-BuildRequires:   python3-tools
-BuildRequires:   glib-networking
-BuildRequires:   autogen
-BuildRequires:   sqlite-devel
-BuildRequires:   libpsl-devel
-BuildRequires:   krb5-devel
-BuildRequires:   httpd
-BuildRequires:   meson >= 0.50
-BuildRequires:   ninja-build
-BuildRequires:   gtk-doc
-BuildRequires:   cmake
+BuildRequires: glib-devel >= 2.68.4
+BuildRequires: gobject-introspection
+BuildRequires: libxml2-devel
+BuildRequires: intltool
+BuildRequires: python3
+BuildRequires: python3-libs
+BuildRequires: python3-devel
+BuildRequires: python3-tools
+BuildRequires: glib-networking
+BuildRequires: autogen
+BuildRequires: sqlite-devel
+BuildRequires: libpsl-devel
+BuildRequires: krb5-devel
+BuildRequires: httpd
+BuildRequires: meson >= 0.50
+BuildRequires: ninja-build
+BuildRequires: gtk-doc
+BuildRequires: cmake
 
-Requires:        libxml2
-Requires:        glib-networking
-Requires:        sqlite-libs
-Requires:        libpsl
-Requires:        krb5
+Requires: libxml2
+Requires: glib-networking
+Requires: sqlite-libs
+Requires: libpsl
+Requires: krb5
 
 %description
 libsoup is HTTP client/server library for GNOME
@@ -112,6 +112,8 @@ These are the additional language files of libsoup.
 %defattr(-,root,root)
 
 %changelog
+* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-10
+- Bump version as a part of httpd v2.4.58 upgrade
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.72.0-9
 - Bump version as part of glib upgrade
 * Thu May 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.72.0-8

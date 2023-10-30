@@ -1,54 +1,56 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.20
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2 with exceptions
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/unbit/uwsgi
-Source0:        http://projects.unbit.it/downloads/uwsgi-%{version}.tar.gz
-%define sha512  uwsgi=22677a8ad1ea886e1a3a153f486474ce064a55e5b12515322345116980f699f4e2e73267f991c300d904284e06f265ea821e71ba3c97832b6f25705475b498ff
-Source1:        photon.ini
-Source2:        uwsgi.service
-Source3:        uwsgi.ini
-Patch0:         CVE-2023-27522.patch
 
-BuildRequires:  python3-devel
-BuildRequires:  jansson-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  curl-devel
-BuildRequires:  libyaml-devel
-BuildRequires:  libedit-devel
-BuildRequires:  krb5-devel
-BuildRequires:  openssl-devel
-BuildRequires:  bzip2-devel
-BuildRequires:  gmp-devel
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  sqlite-devel
-BuildRequires:  libcap-devel
-BuildRequires:  httpd-devel
-BuildRequires:  curl-libs
-BuildRequires:  libstdc++-devel
-BuildRequires:  openldap
-BuildRequires:  boost-devel
-BuildRequires:  attr-devel
-BuildRequires:  libxslt-devel
-BuildRequires:  systemd-devel
-BuildRequires:  tcp_wrappers-devel
-BuildRequires:  ruby
+Source0: http://projects.unbit.it/downloads/uwsgi-%{version}.tar.gz
+%define sha512 uwsgi=22677a8ad1ea886e1a3a153f486474ce064a55e5b12515322345116980f699f4e2e73267f991c300d904284e06f265ea821e71ba3c97832b6f25705475b498ff
+Source1: photon.ini
+Source2: uwsgi.service
+Source3: uwsgi.ini
 
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires:       jansson
-Requires:       libstdc++
-Requires:       libxslt
-Requires:       libyaml
-Requires:       openldap
-Requires:       pcre
-Requires:       python3
-Requires:       ruby
-Requires:       util-linux
-Requires:       tcp_wrappers
+Patch0: CVE-2023-27522.patch
+
+BuildRequires: python3-devel
+BuildRequires: jansson-devel
+BuildRequires: libxml2-devel
+BuildRequires: curl-devel
+BuildRequires: libyaml-devel
+BuildRequires: libedit-devel
+BuildRequires: krb5-devel
+BuildRequires: openssl-devel
+BuildRequires: bzip2-devel
+BuildRequires: gmp-devel
+BuildRequires: Linux-PAM-devel
+BuildRequires: sqlite-devel
+BuildRequires: libcap-devel
+BuildRequires: httpd-devel
+BuildRequires: curl-libs
+BuildRequires: libstdc++-devel
+BuildRequires: openldap
+BuildRequires: boost-devel
+BuildRequires: attr-devel
+BuildRequires: libxslt-devel
+BuildRequires: systemd-devel
+BuildRequires: tcp_wrappers-devel
+BuildRequires: ruby
+
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+Requires: jansson
+Requires: libstdc++
+Requires: libxslt
+Requires: libyaml
+Requires: openldap
+Requires: pcre
+Requires: python3
+Requires: ruby
+Requires: util-linux
+Requires: tcp_wrappers
 
 %description
 The uWSGI project aims at developing a full stack for building hosting services.
@@ -234,6 +236,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.20-7
+- Bump version as a part of httpd v2.4.58 upgrade
 * Tue Aug 29 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.20-6
 - Fix CVE-2023-27522.
 * Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 2.0.20-5

@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        3.0.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -11,33 +11,33 @@ Group:          Productivity/Security
 Source0: https://launchpad.net/apparmor/3.0/3.0/+download/%{name}-%{version}.tar.gz
 %define sha512  %{name}=2465a8bc400e24e548b0589b7b022fb8325c53858429b9c54204f989d5589d7bd99c9507bde88a48f9965a55edcbac98efeeb6b93aeefe6a27afa0b7e851aea6
 
-Patch0:         fix-build-failure-in-apparmor.patch
-Patch1:         remove-distutils.patch
+Patch0: fix-build-failure-in-apparmor.patch
+Patch1: remove-distutils.patch
 
-BuildRequires:  perl
-BuildRequires:  python3-devel
-BuildRequires:  swig
-BuildRequires:  make
-BuildRequires:  gawk
-BuildRequires:  which
-BuildRequires:  libstdc++-devel
-BuildRequires:  gcc
-BuildRequires:  libgcc-devel
-BuildRequires:  glibc-devel
-BuildRequires:  autoconf
-BuildRequires:  automake
-BuildRequires:  libtool
-BuildRequires:  httpd-devel
-BuildRequires:  httpd-tools
-BuildRequires:  apr
-BuildRequires:  apr-util-devel
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  dejagnu
-BuildRequires:  openssl-devel
-BuildRequires:  curl-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  bison
+BuildRequires: perl
+BuildRequires: python3-devel
+BuildRequires: swig
+BuildRequires: make
+BuildRequires: gawk
+BuildRequires: which
+BuildRequires: libstdc++-devel
+BuildRequires: gcc
+BuildRequires: libgcc-devel
+BuildRequires: glibc-devel
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
+BuildRequires: httpd-devel
+BuildRequires: httpd-tools
+BuildRequires: apr
+BuildRequires: apr-util-devel
+BuildRequires: Linux-PAM-devel
+BuildRequires: dejagnu
+BuildRequires: openssl-devel
+BuildRequires: curl-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
+BuildRequires: bison
 
 %description
 AppArmor is a file and network mandatory access control
@@ -356,6 +356,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 3.0.0-14
+- Bump version as a part of httpd v2.4.58 upgrade
 * Tue Apr 11 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 3.0.0-13
 - Added apparmor-parser dependency on apparmor-profiles
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 3.0.0-12
