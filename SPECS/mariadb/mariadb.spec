@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.9.4
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -11,19 +11,19 @@ Url:              https://mariadb.org
 Source0: https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9fc5d71c08cb07efc777ef3ebd97dc4953de8aa46750f52c2dabea5af63b52938ca4b54221184f1b4fbb71b94dade27c90756123ddef51959a7b5d43c3b8d986
 
-BuildRequires:    cmake
-BuildRequires:    Linux-PAM-devel
-BuildRequires:    openssl-devel
-BuildRequires:    zlib-devel
-BuildRequires:    krb5-devel
-BuildRequires:    e2fsprogs-devel
-BuildRequires:    systemd-devel
-BuildRequires:    curl-devel
-BuildRequires:    libxml2-devel
-BuildRequires:    libaio-devel
-BuildRequires:    gnutls-devel
+BuildRequires: cmake
+BuildRequires: Linux-PAM-devel
+BuildRequires: openssl-devel
+BuildRequires: zlib-devel
+BuildRequires: krb5-devel
+BuildRequires: e2fsprogs-devel
+BuildRequires: systemd-devel
+BuildRequires: curl-devel
+BuildRequires: libxml2-devel
+BuildRequires: libaio-devel
+BuildRequires: gnutls-devel
 
-Conflicts:        mysql
+Conflicts: mysql
 
 Requires: openssl
 Requires: systemd
@@ -64,6 +64,8 @@ It is available on Linux only, and only supports the XtraDB/InnoDB storage engin
 %package devel
 Summary:    Development headers for mariadb
 Requires:   %{name} = %{version}-%{release}
+Requires:   openssl-devel
+Requires:   zlib-devel
 
 %description devel
 Development headers for developing applications linking to maridb
@@ -454,6 +456,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Tue Oct 31 2023 Nitesh Kumar <kunitesh@vmware.com> 10.9.4-2
+- Fix devel package requires
 * Thu Feb 02 2023 Nitesh Kumar <kunitesh@vmware.com> 10.9.4-1
 - Upgrade to v10.9.4 to fix CVE-2022-47015
 * Thu Aug 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.5-1
