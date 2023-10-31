@@ -1,7 +1,7 @@
 Summary:        Compressed file format
 Name:           zchunk
 Version:        1.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause AND MIT
 URL:            https://github.com/zchunk/zchunk
 Group:          Applications/System
@@ -16,6 +16,8 @@ BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 
 Requires:       %{name}-libs = %{version}-%{release}
+
+Patch0: 0001-Handle-overflow-errors-in-malformed-zchunk-files.patch
 
 %description
 zchunk is a compressed file format that splits the file into independent
@@ -54,7 +56,7 @@ This package contains the headers necessary for building against the zchunk
 library, libzck.
 
 %prep
-%autosetup
+%autosetup -p1
 # Remove bundled sha libraries
 rm -rf src/lib/hash/sha*
 
@@ -103,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*.gz
 
 %changelog
+* Tue Oct 31 2023 Ankit Jain <ankitja@vmware.com> 1.2.3-2
+- Fix for CVE-2023-46228
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.3-1
 - Upgrade to v1.2.3
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.7-2
