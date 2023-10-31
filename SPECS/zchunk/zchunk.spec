@@ -1,18 +1,20 @@
 Summary:        Compressed file format
 Name:           zchunk
 Version:        1.1.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-2-Clause AND MIT
 URL:            https://github.com/zchunk/zchunk
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/zchunk/zchunk/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=92a940280b2e9981f5d8547158a6c80aa3bfa6be
+%define sha512  %{name}-%{version}=03c06190639521ed39827d8cbfed630e9077236ad6cc9fa1843f27518ea2b11fe97bdd7421271531f59b9e4f160e7aa711eb9097d941ae4f2795961ad9665d5e
 BuildRequires:  meson
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 Requires:       %{name}-libs = %{version}-%{release}
+
+Patch0: 0001-Handle-overflow-errors-in-malformed-zchunk-files.patch
 
 %description
 zchunk is a compressed file format that splits the file into independent
@@ -50,7 +52,7 @@ This package contains the headers necessary for building against the zchunk
 library, libzck.
 
 %prep
-%autosetup
+%autosetup -p1
 # Remove bundled sha libraries
 rm -rf src/lib/hash/sha*
 
@@ -84,6 +86,8 @@ DESTDIR=%{buildroot}/ ninja install
 %{_mandir}/man1/*.gz
 
 %changelog
+*   Tue Oct 31 2023 Ankit Jain <ankitja@vmware.com> 1.1.7-3
+-   Fix for CVE-2023-46228
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.7-2
 -   Bump up release for openssl
 *   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.7-1
