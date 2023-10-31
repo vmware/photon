@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
 Version:        1.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -19,6 +19,7 @@ BuildRequires:  curl
 BuildRequires:  make
 BuildRequires:  unzip
 Requires:       protobuf
+Patch0:         CVE-2022-48468.patch
 
 %description
 Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data. You can find protobuf's documentation on the Google Developers site. This is the C implementation.
@@ -71,6 +72,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_libdir}/libprotobuf-c.a
 
 %changelog
+* Tue Oct 31 2023 Mukul Sikka <msikka@vmware.com> 1.3.1-3
+- Fix for CVE-2022-48468
 * Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1-2
 - Remove .la files
 * Wed Sep 19 2018 Tapas Kundu <tkundu@vmware.com> 1.3.1-1
