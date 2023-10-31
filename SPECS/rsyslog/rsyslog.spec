@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2306.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
@@ -53,7 +53,9 @@ sed -i 's/libsystemd-journal/libsystemd/' configure
     --enable-impstats \
     --enable-imptcp \
     --enable-imtcp \
-    --enable-openssl
+    --enable-openssl \
+    --enable-imfile \
+    --enable-omstdout
 
 make %{?_smp_mflags}
 
@@ -96,6 +98,8 @@ make %{?_smp_mflags} check
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 
 %changelog
+* Tue Oct 31 2023 Harinadh D <hdommaraju@vmware.com> 8.2306.0-2
+- enable imfile and omstdout modules
 * Sun Aug 13 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 8.2306.0-1
 - Update to 8.2306.0
 * Mon Jan 16 2023 Tapas Kundu <tkundu@vmware.com> 8.2212.0-1
