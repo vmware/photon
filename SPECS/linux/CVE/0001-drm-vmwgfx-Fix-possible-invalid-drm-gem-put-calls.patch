@@ -1,0 +1,151 @@
+From f9e96bf1905479f18e83a3a4c314a8dfa56ede2c Mon Sep 17 00:00:00 2001
+From: Zack Rusin <zackr@vmware.com>
+Date: Fri, 18 Aug 2023 00:13:01 -0400
+Subject: [PATCH 1/2] drm/vmwgfx: Fix possible invalid drm gem put calls
+
+[ upstream commit f9e96bf1905479f18e83a3a4c314a8dfa56ede2c ]
+
+vmw_bo_unreference sets the input buffer to null on exit, resulting in
+null ptr deref's on the subsequent drm gem put calls.
+
+This went unnoticed because only very old userspace would be exercising
+those paths but it wouldn't be hard to hit on old distros with brand
+new kernels.
+
+Introduce a new function that abstracts unrefing of user bo's to make
+the code cleaner and more explicit.
+
+Signed-off-by: Zack Rusin <zackr@vmware.com>
+Reported-by: Ian Forbes <iforbes@vmware.com>
+Fixes: 9ef8d83e8e25 ("drm/vmwgfx: Do not drop the reference to the handle too soon")
+Cc: <stable@vger.kernel.org> # v6.4+
+Reviewed-by: Maaz Mombasawala<mombasawalam@vmware.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20230818041301.407636-1-zack@kde.org
+Signed-off-by: Kuntal Nayak <nkuntal@vmware.com>
+---
+ drivers/gpu/drm/vmwgfx/vmwgfx_bo.c      | 7 ++-----
+ drivers/gpu/drm/vmwgfx/vmwgfx_drv.h     | 9 +++++++++
+ drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c | 6 ++----
+ drivers/gpu/drm/vmwgfx/vmwgfx_kms.c     | 6 ++----
+ drivers/gpu/drm/vmwgfx/vmwgfx_overlay.c | 3 +--
+ drivers/gpu/drm/vmwgfx/vmwgfx_shader.c  | 3 +--
+ 6 files changed, 17 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_bo.c b/drivers/gpu/drm/vmwgfx/vmwgfx_bo.c
+index ae01d22b8..5560eb750 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_bo.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_bo.c
+@@ -595,10 +595,8 @@ static int vmw_user_bo_synccpu_release(struct drm_file *filp,
+ 		if (!(flags & drm_vmw_synccpu_allow_cs)) {
+ 			atomic_dec(&vmw_bo->cpu_writers);
+ 		}
+-		ttm_bo_put(&vmw_bo->base);
++		vmw_user_bo_unref(vmw_bo);
+ 	}
+-
+-	drm_gem_object_put(&vmw_bo->base.base);
+ 	return ret;
+ }
+ 
+@@ -638,8 +636,7 @@ int vmw_user_bo_synccpu_ioctl(struct drm_device *dev, void *data,
+ 			return ret;
+ 
+ 		ret = vmw_user_bo_synccpu_grab(vbo, arg->flags);
+-		vmw_bo_unreference(&vbo);
+-		drm_gem_object_put(&vbo->base.base);
++		vmw_user_bo_unref(vbo);
+ 		if (unlikely(ret != 0)) {
+ 			if (ret == -ERESTARTSYS || ret == -EBUSY)
+ 				return -EBUSY;
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
+index 8459fab9d..5cb6bd5d6 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
+@@ -1600,6 +1600,15 @@ vmw_bo_reference(struct vmw_buffer_object *buf)
+ 	return buf;
+ }
+ 
++static inline void vmw_user_bo_unref(struct vmw_bo *vbo)
++{
++	if (vbo) {
++		ttm_bo_put(&vbo->tbo);
++		drm_gem_object_put(&vbo->tbo.base);
++	}
++}
++
++
+ static inline void vmw_fifo_resource_inc(struct vmw_private *dev_priv)
+ {
+ 	atomic_inc(&dev_priv->num_fifo_resources);
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
+index 7e59469e1..5a8b18761 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
+@@ -1159,8 +1159,7 @@ static int vmw_translate_mob_ptr(struct vmw_private *dev_priv,
+ 		return PTR_ERR(vmw_bo);
+ 	}
+ 	ret = vmw_validation_add_bo(sw_context->ctx, vmw_bo, true, false);
+-	ttm_bo_put(&vmw_bo->base);
+-	drm_gem_object_put(&vmw_bo->base.base);
++	vmw_user_bo_unref(vmw_bo);
+ 	if (unlikely(ret != 0))
+ 		return ret;
+ 
+@@ -1214,8 +1213,7 @@ static int vmw_translate_guest_ptr(struct vmw_private *dev_priv,
+ 		return PTR_ERR(vmw_bo);
+ 	}
+ 	ret = vmw_validation_add_bo(sw_context->ctx, vmw_bo, false, false);
+-	ttm_bo_put(&vmw_bo->base);
+-	drm_gem_object_put(&vmw_bo->base.base);
++	vmw_user_bo_unref(vmw_bo);
+ 	if (unlikely(ret != 0))
+ 		return ret;
+ 
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
+index aab6389cb..e4b2d11f2 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
+@@ -1599,10 +1599,8 @@ static struct drm_framebuffer *vmw_kms_fb_create(struct drm_device *dev,
+ 
+ err_out:
+ 	/* vmw_user_lookup_handle takes one ref so does new_fb */
+-	if (bo) {
+-		vmw_bo_unreference(&bo);
+-		drm_gem_object_put(&bo->base.base);
+-	}
++	if (bo)
++		vmw_user_bo_unref(bo);
+ 	if (surface)
+ 		vmw_surface_unreference(&surface);
+ 
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_overlay.c b/drivers/gpu/drm/vmwgfx/vmwgfx_overlay.c
+index b5b311f2a..327330055 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_overlay.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_overlay.c
+@@ -457,8 +457,7 @@ int vmw_overlay_ioctl(struct drm_device *dev, void *data,
+ 
+ 	ret = vmw_overlay_update_stream(dev_priv, buf, arg, true);
+ 
+-	vmw_bo_unreference(&buf);
+-	drm_gem_object_put(&buf->base.base);
++	vmw_user_bo_unref(buf);
+ 
+ out_unlock:
+ 	mutex_unlock(&overlay->mutex);
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_shader.c b/drivers/gpu/drm/vmwgfx/vmwgfx_shader.c
+index 51e83dfa1..6fd4264d6 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_shader.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_shader.c
+@@ -806,8 +806,7 @@ static int vmw_shader_define(struct drm_device *dev, struct drm_file *file_priv,
+ 				    shader_type, num_input_sig,
+ 				    num_output_sig, tfile, shader_handle);
+ out_bad_arg:
+-	vmw_bo_unreference(&buffer);
+-	drm_gem_object_put(&buffer->base.base);
++	vmw_user_bo_unref(buffer);
+ 	return ret;
+ }
+ 
+-- 
+2.39.0
+
