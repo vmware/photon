@@ -1,18 +1,20 @@
 Summary:        Compressed file format
 Name:           zchunk
 Version:        1.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-2-Clause AND MIT
 URL:            https://github.com/zchunk/zchunk
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/zchunk/zchunk/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=13f895beded2e13884f0138fa1081f989c8dd43f
+%define sha512  %{name}-%{version}=7b1d80dddb45f56c2c821599dcd2b5dd9fd971eae0b5fbc3b982450e6a17880ac4cec0889bc584311a8fdd7fb96c698d748c840399b7d714a949e1f06e2e51cf
 BuildRequires:  meson
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 Requires:       %{name}-libs = %{version}-%{release}
+
+Patch0: 0001-Handle-overflow-errors-in-malformed-zchunk-files.patch
 
 %description
 zchunk is a compressed file format that splits the file into independent
@@ -50,7 +52,7 @@ This package contains the headers necessary for building against the zchunk
 library, libzck.
 
 %prep
-%setup -q
+%autosetup -p1
 # Remove bundled sha libraries
 rm -rf src/lib/hash/sha*
 
@@ -83,6 +85,8 @@ DESTDIR=%{buildroot}/ ninja install
 %{_includedir}/zck.h
 
 %changelog
+*   Tue Oct 31 2023 Ankit Jain <ankitja@vmware.com> 1.1.1-3
+-   Fix for CVE-2023-46228
 *   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.1.1-2
 -   Added for ARM Build
 *   Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.1.1-1
