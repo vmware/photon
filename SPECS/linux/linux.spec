@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.198
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -80,9 +80,9 @@ Source22:       %{name}-dracut-%{_arch}.conf
 
 %ifarch x86_64
 %define jent_major_version 3.4.1
-%define jent_ph_version 3
+%define jent_ph_version 4
 Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
-%define sha512 jitterentropy=b5aa389d331e0a8b22e696e83cccaddb17f98da06fe9592e75cd7efb24877e1cb65b24c2f909e82d247e0dcbb77043b0235f8df94d40d6cb4c4f9a7c113b4f18
+%define sha512 jitterentropy=37a9380b14d5e56eb3a16b8e46649bc5182813aadb5ec627c31910e4cc622269dfd29359789cb4c13112182f4f8d3c084a6b9c576df06dae9689da44e4735dd2
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
@@ -310,6 +310,7 @@ Patch10107:       0008-crypto-AF_ALG-add-ECC-support.patch
 Patch10108:       0009-kernels-net-Export-sock_getsockopt.patch
 Patch10109:       0010-DRBG-Fix-issues-with-DRBG.patch
 Patch10110:       0011-Added-jitterentropy-implementation-of-SHA3-256.patch
+Patch10111:       0012-jitterentropy-Support-for-sample-collection.patch
 %endif
 
 BuildRequires:  bc
@@ -538,7 +539,7 @@ popd
 %if 0%{?acvp_build:1} && 0%{?fips}
 #ACVP test harness patches.
 #Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
-%autopatch -p1 -m10100 -M10110
+%autopatch -p1 -m10100 -M10111
 %endif
 
 %build
@@ -899,6 +900,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Oct 31 2023 Srinidhi Rao <srinidhir@vmware.com> 5.10.198-4
+- Jitterentropy sample collection support in ACVP Build.
 * Thu Oct 26 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-3
 - Upgrade canister to 5.0.0-6.1.56-6
 * Fri Oct 13 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-2

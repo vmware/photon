@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.198
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -47,9 +47,9 @@ Source22:       %{name}-dracut.conf
 
 %ifarch x86_64
 %define jent_major_version 3.4.1
-%define jent_ph_version 3
+%define jent_ph_version 4
 Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
-%define sha512 jitterentropy=b5aa389d331e0a8b22e696e83cccaddb17f98da06fe9592e75cd7efb24877e1cb65b24c2f909e82d247e0dcbb77043b0235f8df94d40d6cb4c4f9a7c113b4f18
+%define sha512 jitterentropy=37a9380b14d5e56eb3a16b8e46649bc5182813aadb5ec627c31910e4cc622269dfd29359789cb4c13112182f4f8d3c084a6b9c576df06dae9689da44e4735dd2
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
@@ -507,6 +507,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Oct 31 2023 Srinidhi Rao <srinidhir@vmware.com> 5.10.198-4
+- Jitterentropy sample collection support in ACVP Build.
 * Thu Oct 26 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-3
 - Upgrade canister to 5.0.0-6.1.56-6
 * Fri Oct 13 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-2
