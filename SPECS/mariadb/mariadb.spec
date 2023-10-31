@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.9.4
-Release:          6%{?dist}
+Release:          7%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -68,6 +68,8 @@ It is available on Linux only, and only supports the XtraDB/InnoDB storage engin
 %package devel
 Summary:    Development headers for mariadb
 Requires:   %{name} = %{version}-%{release}
+Requires:   openssl-devel
+Requires:   zlib-devel
 
 %description devel
 Development headers for developing applications linking to maridb
@@ -457,6 +459,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Tue Oct 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.9.4-7
+- Fix devel package requires
 * Sat Oct 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.9.4-6
 - Fix error in post install
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 10.9.4-5
