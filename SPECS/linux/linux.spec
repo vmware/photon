@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.70
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -180,6 +180,9 @@ Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2023-2176
 Patch105: RDMA-core-Refactor-rdma_bind_addr.patch
 Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
+# Fix CVE-2023-5633
+Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
+Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -836,6 +839,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-2
+- Fix CVE-2023-5633
 * Mon Apr 29 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.70-1
 - Update to version 6.1.70
 * Mon Apr 29 2024 Srish Srinivasan <ssrish@vmware.com> 6.1.62-13

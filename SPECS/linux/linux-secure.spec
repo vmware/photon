@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.70
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -149,6 +149,9 @@ Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2023-2176
 Patch105: RDMA-core-Refactor-rdma_bind_addr.patch
 Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
+# Fix CVE-2023-5633
+Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
+Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -477,6 +480,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-3
+- Fix CVE-2023-5633
 * Mon Apr 29 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.70-2
 - Fix hunk failure in Broken Test patch
 * Mon Apr 29 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.70-1
