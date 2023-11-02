@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -115,6 +115,7 @@ Provides:       nss-myhostname = 0.4
 Requires(post): (coreutils or coreutils-selinux or toybox)
 Requires(post): sed
 Requires(post): grep
+Conflicts: %{name} < 247
 
 %description libs
 Libraries for systemd and udev.
@@ -122,6 +123,7 @@ Libraries for systemd and udev.
 %package pam
 Summary:        systemd PAM module
 Requires:       %{name} = %{version}-%{release}
+Conflicts: %{name} < 247
 
 %description pam
 Systemd PAM module registers the session with systemd-logind.
@@ -155,6 +157,7 @@ Requires(post):   grep
 Requires:         kmod
 Requires:         kbd
 Provides:         udev = %{version}-%{release}
+Conflicts: %{name} < 247
 
 %description udev
 This package contains systemd-udev and the rules and hardware database
@@ -184,6 +187,7 @@ Requires(preun):  %{name} = %{version}-%{release}
 Requires(postun): %{name} = %{version}-%{release}
 Requires:         libmicrohttpd
 Provides:         %{name}-journal-gateway = %{version}-%{release}
+Conflicts: %{name} < 247
 
 %description journal-remote
 Programs to forward journal entries over the network, using encrypted HTTP,
@@ -682,6 +686,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Thu Nov 2 2023 Oliver Kurth  <okurth@vmware.com> 247.13-9
+- make split out packages conflict with older non-split 3.0 package
 * Fri Oct 20 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 247.13-8
 - Bump version as part of glib upgrade
 * Mon Oct 09 2023 Susant Sahani <ssahani@vmware.com> 247.13-7
