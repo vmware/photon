@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.70
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -80,6 +80,8 @@ Source39: fips_canister_wrapper_common.h
 Source40: fips_canister_wrapper_internal.h
 Source41: fips_canister_wrapper_internal.c
 %endif
+# CVE
+Source42: CVE-2023-39191.patches
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -148,6 +150,8 @@ Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 # Fix CVE-2023-5633
 Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
 Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
+# Fix CVE-2023-39191
+%include %{SOURCE42}
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -470,6 +474,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-3
+- Fix CVE-2023-39191
 * Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-2
 - Fix CVE-2023-5633
 * Mon Apr 29 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.70-1

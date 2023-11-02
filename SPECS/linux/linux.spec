@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.70
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -108,6 +108,9 @@ Source49: check_kernel_struct_in_canister.inc
 %endif
 %endif
 
+# CVE
+Source50: CVE-2023-39191.patches
+
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
 Patch1: net-Double-tcp_mem-limits.patch
@@ -183,6 +186,8 @@ Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 # Fix CVE-2023-5633
 Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
 Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
+# Fix CVE-2023-39191
+%include %{SOURCE50}
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -839,6 +844,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-3
+- Fix CVE-2023-39191
 * Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-2
 - Fix CVE-2023-5633
 * Mon Apr 29 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.70-1

@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.70
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -85,6 +85,9 @@ Source36: jitterentropy_canister_wrapper.h
 Source37: jitterentropy_canister_wrapper_asm.S
 %endif
 
+# CVE
+Source40: CVE-2023-39191.patches
+
 # common
 Patch0:  net-Double-tcp_mem-limits.patch
 Patch1:  SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
@@ -152,6 +155,8 @@ Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 # Fix CVE-2023-5633
 Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
 Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
+# Fix CVE-2023-39191
+%include %{SOURCE40}
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -480,6 +485,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-4
+- Fix CVE-2023-39191
 * Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-3
 - Fix CVE-2023-5633
 * Mon Apr 29 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.70-2
