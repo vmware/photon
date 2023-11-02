@@ -3,7 +3,7 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        9.0.2010
+Version:        9.0.2068
 Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=817039ff4836b37179744e4907050ae372fce46d236b62c9490d3c86bbf7f76049ef60bd561ee6982a73cdef62b51a394788204456a143e74e734c40c17b0240
+%define sha512 %{name}=77208d477b9223fa029444c6d14f5ba67145ecaf8281f4b66a685660695a6b643cb8376ea5656cc5ae57ba206313e30ed2d15e8d6f88b66d68de082443afd60d
 
 Source1:        vimrc
 
@@ -176,6 +176,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Thu Nov 02 2023 Srish Srinivasan <ssrish@vmware.com> 9.0.2068-1
+- Update to v9.0.2068 to fix CVE-2023-46246
 * Tue Oct 10 2023 Srish Srinivasan <ssrish@vmware.com> 9.0.2010-1
 - Update to v9.0.2010 to fix multiple CVEs
 * Wed Sep 06 2023 Mukul Sikka <msikka@vmware.com> 9.0.1876-1
