@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.62
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -80,6 +80,9 @@ Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
 %endif
+
+# CVE
+Source40: CVE-2023-39191.patches
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -180,6 +183,8 @@ Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 # Fix CVE-2023-5633
 Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
 Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
+# Fix CVE-2023-39191
+%include %{SOURCE40}
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -552,6 +557,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Dec 12 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.62-11
+- Fix CVE-2023-39191
 * Fri Dec 08 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.62-10
 - Added self-tests for rsa-pkcs1pad in combination with sha1, sha224, sha384 and sha512
 * Tue Dec 5 2023 Albert Guo <aguo@vmware.com> 6.1.62-9

@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.62
-Release:        7%{?acvp_build:.acvp}%{?dist}
+Release:        8%{?acvp_build:.acvp}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -91,6 +91,9 @@ Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
 %endif
+
+# CVE
+Source40: CVE-2023-39191.patches
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -160,6 +163,8 @@ Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 # Fix CVE-2023-5633
 Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
 Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
+# Fix CVE-2023-39191
+%include %{SOURCE40}
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -801,6 +806,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Dec 12 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.62-8
+- Fix CVE-2023-39191
 * Fri Dec 08 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.62-7
 - Added self-tests for rsa-pkcs1pad in combination with sha1, sha224, sha384 and sha512
 * Mon Nov 27 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.62-6

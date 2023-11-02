@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -74,6 +74,9 @@ Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
 %endif
+
+# CVE
+Source40: CVE-2023-39191.patches
 
 # common
 Patch0:  net-Double-tcp_mem-limits.patch
@@ -140,6 +143,8 @@ Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 # Fix CVE-2023-5633
 Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
 Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
+# Fix CVE-2023-39191
+%include %{SOURCE40}
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -469,6 +474,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Dec 12 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.62-12
+- Fix CVE-2023-39191
 * Fri Dec 08 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.62-11
 - Added self-tests for rsa-pkcs1pad in combination with sha1, sha224, sha384 and sha512
 * Thu Dec 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.62-10
