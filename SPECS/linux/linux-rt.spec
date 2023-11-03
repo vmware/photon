@@ -7,17 +7,12 @@
 # Set this flag to 0 to build without canister
 %global fips 1
 
-# If kat_build is enabled, canister is not used.
-%if 0%{?kat_build}
-%global fips 0
-%endif
-
 %endif
 
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.198
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -559,10 +554,6 @@ Patch1006: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 Patch1008: 0001-FIPS-canister-binary-usage.patch
 Patch1009: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch1010: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
-%else
-%if 0%{?kat_build}
-Patch1011: 0003-FIPS-broken-kattest.patch
-%endif
 %endif
 
 #Patches for i40e driver
@@ -697,10 +688,6 @@ The Linux package contains the Linux kernel doc files
 
 %if 0%{?fips}
 %autopatch -p1 -m1008 -M1010
-%else
-%if 0%{?kat_build}
-%patch1011 -p1
-%endif
 %endif
 
 #Patches for i40e driver
@@ -767,10 +754,6 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .config
-
-%if 0%{?kat_build}
-sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
-%endif
 
 %include %{SOURCE5}
 
@@ -934,6 +917,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 27 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-7
+- Remove kat_build and its associated spec changes
 * Sat Nov 25 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-6
 - Update canister to 5.0.0-6.1.62-7
 * Tue Nov 21 2023 Keerthana K <keerthanak@vmware.com> 5.10.198-5

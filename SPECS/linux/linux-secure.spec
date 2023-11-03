@@ -3,15 +3,14 @@
 # Set this flag to 0 to build without canister
 %global fips 1
 
-# If kat_build is enabled, canister is not used.
-%if 0%{?kat_build}
-%global fips 0
+%if 0%{?kat_build} == 1
+%global fips 1
 %endif
 
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.198
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -31,10 +30,16 @@ Source4:        check_for_config_applicability.inc
 
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
-
+%if 0%{?kat_build} == 1
+%define fips_canister_version 5.0.0-6.1.62-8.kat.ph5-secure
+Source16:       fips-canister-%{fips_canister_version}.tar.bz2
+%define sha512 fips-canister=7c1dd0d82db0773613c8e227f7a3d27c8ae92638694e30682e4705ee1ec1aac0d37d8d1a289e2d43a98ac71a8503106dbf9cf983f01071892c40bc52de5fac96
+%endif
+%if 0%{?kat_build} == 0
 %define fips_canister_version 5.0.0-6.1.62-7.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=e63f5200a669cc40952fc1cfea499d4bc029999098f8252d2c5ffac08392aefe3d57aa68226079dffa4e0f5ddd26c83f85fcebcb21bfd0935aecc8a02f1714a9
+%endif
 %endif
 
 Source21:       spec_install_post.inc
@@ -183,15 +188,14 @@ Patch506: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
-%else
-%if 0%{?kat_build}
-Patch511: 0001-Skip-rap-plugin-for-aesni-intel-modules.patch
-Patch512: 0003-FIPS-broken-kattest.patch
-%endif
 %endif
 
 %if 0%{?fips} == 0
 Patch513: 0001-Skip-rap-plugin-for-aesni-intel-modules.patch
+%endif
+
+%if 0%{?kat_build}
+Patch514: 0001-fail-canister-integrity-check-for-cmvp-demo.patch
 %endif
 
 #Patches for vmci driver
@@ -300,14 +304,14 @@ The Linux package contains the Linux kernel doc files
 
 %if 0%{?fips}
 %autopatch -p1 -m508 -M510
-%else
-%if 0%{?kat_build}
-%autopatch -p1 -m511 -M512
-%endif
 %endif
 
 %if 0%{?fips} == 0
 %autopatch -p1 -m513 -M513
+%endif
+
+%if 0%{?kat_build}
+%autopatch -p1 -m514 -M514
 %endif
 
 # vmci
@@ -355,10 +359,6 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
-
-%if 0%{?kat_build}
-sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
-%endif
 
 %include %{SOURCE4}
 
@@ -448,6 +448,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 27 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-7
+- When kat_build is enabled, make use of a non-production canister
+  to build the kernel for performing Broken-KAT
 * Sat Nov 25 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-6
 - Update canister to 5.0.0-6.1.62-7
 * Tue Nov 21 2023 Keerthana K <keerthanak@vmware.com> 5.10.198-5

@@ -6,11 +6,6 @@
 # Set this flag to 0 to build without canister
 %global fips 1
 
-# If kat_build is enabled, canister is not used.
-%if 0%{?kat_build}
-%global fips 0
-%endif
-
 %endif
 
 %ifarch aarch64
@@ -22,7 +17,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.198
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -244,13 +239,6 @@ Patch506: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
-
-%else
-
-%if 0%{?kat_build}
-Patch511: 0003-FIPS-broken-kattest.patch
-%endif
-
 %endif
 
 %ifarch x86_64
@@ -488,10 +476,6 @@ manipulation of eBPF programs and maps.
 
 %if 0%{?fips}
 %autopatch -p1 -m508 -M510
-%else
-%if 0%{?kat_build}
-%patch511 -p1
-%endif
 %endif
 
 %ifarch x86_64
@@ -583,10 +567,6 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
-
-%if 0%{?kat_build}
-sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
-%endif
 
 %include %{SOURCE7}
 
@@ -900,6 +880,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Nov 27 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-7
+- Remove kat_build and its associated spec changes
 * Sat Nov 25 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-6
 - Update canister to 5.0.0-6.1.62-7
 * Tue Nov 21 2023 Keerthana K <keerthanak@vmware.com> 5.10.198-5
