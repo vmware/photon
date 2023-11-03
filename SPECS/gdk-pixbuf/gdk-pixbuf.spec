@@ -1,7 +1,7 @@
 Summary:        toolkit for image loading and pixel buffer manipulation.
 Name:           gdk-pixbuf
 Version:        2.42.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            http://www.gt.org
 Group:          System Environment/Libraries
@@ -11,6 +11,8 @@ Distribution:   Photon
 Source0: http://ftp.gnome.org/pub/gnome/sources/%{name}/2.42/%{name}-%{version}.tar.xz
 %define sha512 %{name}=c9962d42e5bf13514091234342e259be1e06b2c4dea2936e16104a3b58f0b6837f070224c04be9541d75f5ea34d1da398f178a1eed1f9059f6429faf5c223e34
 Patch0:         gdk-pixbuf-CVE-2021-46829.patch
+Patch1: CVE-2021-44648.patch
+Patch2: CVE-2020-29385.patch
 
 BuildRequires:  meson
 BuildRequires:  cmake
@@ -82,6 +84,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig
 
 %changelog
+* Fri Nov 03 2023 Kuntal Nayak <nkuntal@vmware.com> 2.42.0-6
+- Fix CVE-2021-44648 and CVE-2020-29385
 * Tue Jul 04 2023 Harinadh D <hdommaraju@vmware.com> 2.42.0-5
 - Fix CVE-2021-46829
 * Mon Jun 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.42.0-4
