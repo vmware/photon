@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -22,6 +22,7 @@ Patch2: CVE-2023-24329.patch
 Patch3: CVE-2022-45061.patch
 Patch4: CVE-2023-40217.patch
 Patch5: CVE-2023-41105.patch
+Patch6: CVE-2007-4559.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -325,6 +326,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Fri Nov 03 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.0-10
+- Fix CVE-2007-4559
 * Mon Sep 11 2023 Prashant S Chauhan <psingchauha@vmware.com> 3.11.0-9
 - Fix CVE-2023-24329, CVE-2022-45061, CVE-2023-41105, CVE-2023-40217
 * Fri Sep 08 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.0-8
