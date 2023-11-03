@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.295
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.297
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=44516637440f8e7474a7126162ec664f2d44d51cce5bc570424b37169a7073ffcd851a1e46dba478a4dfe8478d535e470fcc6ec5a8717671381af526a290b253
+%define sha512 linux=fd63ed21739e0e5081263c0c18ce80dd72fcff6a0a08791da4fe5831ca9d1f56bb5e6705a33b59652a6d4145351ac06f2d69a4cfeb069622c293e9636a1f6e75
 
 %ifarch x86_64
 Source1: config
@@ -575,9 +575,6 @@ Patch1565: 0001-memcg-enable-accounting-of-ipc-resources.patch
 #Fix for CVE-2023-2124
 Patch1566: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
-#Fix for CVE-2023-42754
-Patch1567: ipv4-fix-null-deref-in-ipv4_link_failure.patch
-
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -777,7 +774,7 @@ popd
 %autopatch -p1 -m1545 -M1549
 
 # CVE Patches
-%autopatch -p1 -m1550 -M1567
+%autopatch -p1 -m1550 -M1566
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1164,6 +1161,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Fri Nov 03 2023 Ankit Jain <ankitja@vmware.com> 4.19.297-1
+- Update to version 4.19.297
 * Mon Oct 09 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.295-4
 - Remove patch to fix compilation issues in ice, iavf and i40e drivers
 - Replace ice-1.12.6 with ice-1.12.7

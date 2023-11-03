@@ -1,0 +1,51 @@
+From 8b6eb5f5d507accc2256596bfe2cb6d8332bd204 Mon Sep 17 00:00:00 2001
+From: Ben Hutchings <ben@decadent.org.uk>
+Date: Sat, 10 Dec 2022 00:06:17 +0100
+Subject: [PATCH 351/353] Revert "percpu: include irqflags.h for
+ raw_local_irq_save()"
+
+This reverts commit 0d796a9e6a93608b4dd84fbd09f01e912ae34bdc.
+
+After merging stable release 4.19.266 into the -rt branch, an x86
+build will fail with the following error:
+
+    .../include/linux/percpu-defs.h:49:34: error: 'PER_CPU_BASE_SECTION' undeclared here (not in a function); did you mean 'PER_CPU_FIRST_SECTION'?
+
+This is due to an #include loop:
+
+    <asm/percpu.h>
+     -> <linux/irqflags.h>
+         -> <asm/irqflags.h>
+             -> <asm/nospec-branch.h>
+                 -> <asm/percpu.h>
+
+which appears after the merge because:
+
+- The reverted commit added <asm/percpu.h> -> <linux/irqflags.h>
+- 4.19.266 added <asm/nospec-branch.h> -> <asm/percpu.h>
+
+Neither upstream nor any other maintained stable-rt branch has this
+include, and my build succeeded without it.  Revert it here as well.
+
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Link: https://lore.kernel.org/r/Y5O/aVw/zHKqmpu7@decadent.org.uk
+Signed-off-by: Daniel Wagner <wagi@monom.org>
+---
+ include/asm-generic/percpu.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/include/asm-generic/percpu.h b/include/asm-generic/percpu.h
+index 942d64c0476e..1817a8415a5e 100644
+--- a/include/asm-generic/percpu.h
++++ b/include/asm-generic/percpu.h
+@@ -5,7 +5,6 @@
+ #include <linux/compiler.h>
+ #include <linux/threads.h>
+ #include <linux/percpu-defs.h>
+-#include <linux/irqflags.h>
+ 
+ #ifdef CONFIG_SMP
+ 
+-- 
+2.41.0
+

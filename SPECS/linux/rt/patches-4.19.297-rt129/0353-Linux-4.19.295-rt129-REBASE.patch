@@ -1,0 +1,20 @@
+From 01b12b44a1f8c7e7e40d3c755d8be3972a850165 Mon Sep 17 00:00:00 2001
+From: Daniel Wagner <wagi@monom.org>
+Date: Sat, 30 Sep 2023 12:12:09 +0200
+Subject: [PATCH 353/353] Linux 4.19.295-rt129 REBASE
+
+Signed-off-by: Daniel Wagner <wagi@monom.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 1199ebade17b..90303f5aabcf 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt16
++-rt129
+-- 
+2.41.0
+

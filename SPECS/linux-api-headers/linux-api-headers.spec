@@ -1,6 +1,6 @@
 Summary:        Linux API header files
 Name:           linux-api-headers
-Version:        4.19.295
+Version:        4.19.297
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -8,7 +8,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=44516637440f8e7474a7126162ec664f2d44d51cce5bc570424b37169a7073ffcd851a1e46dba478a4dfe8478d535e470fcc6ec5a8717671381af526a290b253
+%define sha512 linux=fd63ed21739e0e5081263c0c18ce80dd72fcff6a0a08791da4fe5831ca9d1f56bb5e6705a33b59652a6d4145351ac06f2d69a4cfeb069622c293e9636a1f6e75
 
 # Support for PTP_SYS_OFFSET_EXTENDED ioctl
 Patch0:         0001-ptp-reorder-declarations-in-ptp_ioctl.patch
@@ -36,6 +36,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+* Fri Nov 03 2023 Ankit Jain <ankitja@vmware.com> 4.19.297-1
+- Update to version 4.19.297
 * Mon Sep 25 2023 Keerthana K <keerthanak@vmware.com> 4.19.295-1
 - Update to version 4.19.295
 * Fri Aug 25 2023 Srish Srinivasan <ssrish@vmware.com> 4.19.292-1

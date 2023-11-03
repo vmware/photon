@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.295
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.297
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=44516637440f8e7474a7126162ec664f2d44d51cce5bc570424b37169a7073ffcd851a1e46dba478a4dfe8478d535e470fcc6ec5a8717671381af526a290b253
+%define sha512 linux=fd63ed21739e0e5081263c0c18ce80dd72fcff6a0a08791da4fe5831ca9d1f56bb5e6705a33b59652a6d4145351ac06f2d69a4cfeb069622c293e9636a1f6e75
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -485,9 +485,6 @@ Patch712: 0001-memcg-enable-accounting-of-ipc-resources.patch
 #Fix for CVE-2023-2124
 Patch713: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
-#Fix for CVE-2023-42754
-Patch714: ipv4-fix-null-deref-in-ipv4_link_failure.patch
-
 # Patches for i40e driver
 Patch803: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
 Patch804: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
@@ -610,7 +607,7 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m540 -M554
 
 # CVE Fixes
-%autopatch -p1 -m700 -M714
+%autopatch -p1 -m700 -M713
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -844,6 +841,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Fri Nov 03 2023 Ankit Jain <ankitja@vmware.com> 4.19.297-1
+- Update to version 4.19.297
 * Mon Oct 09 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.295-4
 - Remove patch to fix compilation issues in ice, iavf and i40e drivers
 - Replace ice-1.12.6 with ice-1.12.7

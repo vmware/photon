@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.295
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.297
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -19,7 +19,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=44516637440f8e7474a7126162ec664f2d44d51cce5bc570424b37169a7073ffcd851a1e46dba478a4dfe8478d535e470fcc6ec5a8717671381af526a290b253
+%define sha512 linux=fd63ed21739e0e5081263c0c18ce80dd72fcff6a0a08791da4fe5831ca9d1f56bb5e6705a33b59652a6d4145351ac06f2d69a4cfeb069622c293e9636a1f6e75
 
 %ifarch x86_64
 Source1: config-aws
@@ -250,9 +250,6 @@ Patch312: 0001-memcg-enable-accounting-of-ipc-resources.patch
 #Fix for CVE-2023-2124
 Patch313: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
-#Fix for CVE-2023-42754
-Patch314: ipv4-fix-null-deref-in-ipv4_link_failure.patch
-
 # Usermode helper fixes
 Patch400: 0001-umh-Add-command-line-to-user-mode-helpers.patch
 Patch401: 0002-umh-add-exit-routine-for-UMH-process.patch
@@ -364,7 +361,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m191 -M194
 
 # CVE fixes
-%autopatch -p1 -m300 -M314
+%autopatch -p1 -m300 -M313
 
 # Usermode helper patches
 %autopatch -p1 -m400 -M401
@@ -569,6 +566,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Nov 03 2023 Ankit Jain <ankitja@vmware.com> 4.19.297-1
+- Update to version 4.19.297
 * Sun Oct 01 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.19.295-3
 - Fix for CVE-2023-42754
 * Tue Sep 26 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.19.295-2
