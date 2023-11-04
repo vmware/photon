@@ -18,3 +18,7 @@ SYM_FUNC_START(fcw_printk)
         jmp _printk
 #endif
 SYM_FUNC_END(fcw_printk)
+
+SYM_FUNC_START(fcw_warn_printk)
+	jmp __warn_printk
+SYM_FUNC_END(fcw_warn_printk)

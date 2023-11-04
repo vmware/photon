@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -46,6 +46,7 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %endif
 
 %if 0%{?canister_build}
+Source17: check_kernel_struct_in_canister.inc
 Source18: fips_canister_wrapper.c
 Source19: fips_canister_wrapper.h
 Source20: fips_integrity.c
@@ -163,7 +164,7 @@ Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 6.1.60-2-0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.1.60-6-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0002-FIPS-canister-creation.patch
@@ -174,9 +175,10 @@ Patch10007: 0006-crypto-Add-prandom-module_kthread_exit-to-canister-w.patch
 Patch10008: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
 Patch10009: 0008-Move-kernel-structures-usage.patch
 Patch10010: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
+Patch10011: 0001-List-canister-objs-in-a-file.patch
 
 %if 0%{?kat_build}
-Patch10011: 0003-FIPS-broken-kattest.patch
+Patch10012: 0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
@@ -285,10 +287,10 @@ The kernel fips-canister
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10000 -M10010
+%autopatch -p1 -m10000 -M10011
 
 %if 0%{?kat_build}
-%autopatch -p1 -m10011 -M10011
+%autopatch -p1 -m10012 -M10012
 %endif
 %endif
 
@@ -355,6 +357,10 @@ make V=1 KBUILD_BUILD_VERSION="1-photon" \
 
 %if 0%{?fips}
 %include %{SOURCE9}
+%endif
+
+%if 0%{?canister_build}
+%include %{SOURCE17}
 %endif
 
 %install
@@ -460,6 +466,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-4
+- Add wrapper for task_struct, spinlock etc structures in seqiv and geniv
+- Include a script to fail canister build if common kernel structures found
+- Disable RSA test vectors added in previous commit due to test failure
+- Skip PCT for ECDH p192 curve.
+- Fix fcw_warn wrapper API
 * Tue Dec 05 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-3
 - Include seqiv and geniv into canister
 - Add missing rsa, drbg_nopr_sha1, rfc4106(gcm(aes)) self-test
