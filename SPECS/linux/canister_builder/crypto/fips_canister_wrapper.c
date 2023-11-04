@@ -11,6 +11,7 @@
 #include <linux/gfp.h>
 #include <linux/slab.h>
 #include <linux/mutex.h>
+#include <linux/spinlock.h>
 #include <linux/version.h>
 #include <linux/printk.h>
 
@@ -142,6 +143,13 @@ void fcw_mutex_lock(void *m)
 	mutex_lock((struct mutex *)m);
 }
 
+void *fcw_spin_lock_init(void)
+{
+	spinlock_t *lock = kzalloc(sizeof(struct spinlock), GFP_KERNEL);
+	if (lock)
+		spin_lock_init(lock);
+	return (void *)lock;
+}
 void fcw_mutex_unlock(void *m)
 {
 	mutex_unlock((struct mutex *)m);
@@ -276,12 +284,14 @@ int fcw_warn_on_once(int cond)
 	return unlikely(__ret_warn_on);
 }
 
-int fcw_warn(int cond, const char *fmt, ...)
+int fcw_is_warn_true(int cond)
 {
 	int __ret_warn_on = !!(cond);
-	if(unlikely(__ret_warn_on))
-		__WARN_printf(TAINT_WARN, fmt);
 	return unlikely(__ret_warn_on);
+}
+void fcw_warn(void)
+{
+	__WARN_FLAGS(BUGFLAG_NO_CUT_HERE | BUGFLAG_TAINT(TAINT_WARN));
 }
 
 void *fcw_memcpy(void *dst, const void *src, size_t len)
@@ -495,6 +505,7 @@ static int __init fcw_subsys_initcall(void)
 {
 	rsa_init();
 	crypto_ecb_module_init();
+	seqiv_module_init();
 	sha1_generic_mod_init();
 	sha256_generic_mod_init();
 	sha512_generic_mod_init();
@@ -526,6 +537,7 @@ late_initcall(fcw_late_initcall);
 static void __exit fcw_module_exit(void)
 {
 	cryptomgr_exit();
+	seqiv_module_exit();
 	crypto_cbc_module_exit();
 	crypto_ccm_module_exit();
 	crypto_cfb_module_exit();
