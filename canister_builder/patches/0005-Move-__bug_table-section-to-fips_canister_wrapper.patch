@@ -6,11 +6,11 @@ Subject: [PATCH 5/8] Move __bug_table section to fips_canister_wrapper
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
- arch/x86/crypto/aesni-intel_glue.c |  16 +++--
+ arch/x86/crypto/aesni-intel_glue.c |  16 ++--
  crypto/algboss.c                   |  10 +--
  crypto/cbc.c                       |  11 +--
- crypto/ccm.c                       |  28 ++++----
- crypto/cfb.c                       |   9 +--
+ crypto/ccm.c                       |  28 +++----
+ crypto/cfb.c                       |   9 ++-
  crypto/cmac.c                      |   6 +-
  crypto/ctr.c                       |   6 +-
  crypto/cts.c                       |   4 +-
@@ -26,9 +26,9 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
  crypto/seqiv.c                     |   3 +-
  crypto/sha1_generic.c              |   5 +-
  crypto/sha512_generic.c            |   5 +-
- crypto/testmgr.c                   | 110 ++++++++++++++---------------
+ crypto/testmgr.c                   | 116 +++++++++++++++--------------
  lib/crypto/sha256.c                |  10 +++
- 22 files changed, 177 insertions(+), 161 deletions(-)
+ 22 files changed, 181 insertions(+), 163 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index 0628c2bca..6a4378bac 100644
@@ -979,7 +979,7 @@ index be70e76d6..07e27910c 100644
  }
  EXPORT_SYMBOL(crypto_sha512_finup);
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 322f40897..22f4ec725 100644
+index 322f40897..8aa769682 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -587,7 +587,7 @@ static int build_test_sglist(struct test_sglist *tsgl,
@@ -1341,15 +1341,21 @@ index 322f40897..22f4ec725 100644
  }
  
  static void testmgr_onetime_init(void)
-@@ -5973,7 +5973,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5973,9 +5973,11 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  		}
  		pr_warn("alg: self-tests for %s using %s failed (rc=%d)",
  			alg, driver, rc);
 -		WARN(rc != -ENOENT,
-+		fcw_warn(rc != -ENOENT,
- 		     "alg: self-tests for %s using %s failed (rc=%d)",
- 		     alg, driver, rc);
+-		     "alg: self-tests for %s using %s failed (rc=%d)",
+-		     alg, driver, rc);
++		if (fcw_is_warn_true(rc != -ENOENT)) {
++			fcw_warn_printk("alg: self-tests for %s using %s failed (rc=%d)",
++					alg, driver, rc);
++			fcw_warn();
++		}
  	} else {
+ 		if (fips_enabled)
+ 			pr_info("alg: self-tests for %s (%s) passed\n",
 diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
 index 72a4b0b1d..555ba2070 100644
 --- a/lib/crypto/sha256.c

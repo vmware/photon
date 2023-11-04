@@ -55,6 +55,7 @@ extern void *fcw_kthread_run(int (*threadfn)(void *data), void *data, const char
 extern void *fcw_mutex_init(void);
 extern void fcw_mutex_lock(void *m);
 extern void fcw_mutex_unlock(void *m);
+extern void *fcw_spin_lock_init(void);
 
 extern bool fcw_schedule_work(struct work_struct *work);
 extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
@@ -71,7 +72,9 @@ extern void fcw_bug(void);
 extern void fcw_bug_on(int cond);
 extern int fcw_warn_on(int cond);
 extern int fcw_warn_on_once(int cond);
-extern int fcw_warn(int cond, const char *fmt, ...);
+extern void fcw_warn(void);
+extern int fcw_is_warn_true(int cond);
+extern int fcw_warn_printk(const char *fmt, ...);
 extern void fcw_sg_assign_page(struct scatterlist *sg, struct page *page);
 extern void fcw_sg_set_buf(struct scatterlist *sg, const void *buf,
 			      unsigned int buflen);

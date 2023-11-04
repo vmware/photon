@@ -411,10 +411,11 @@ diff --git a/crypto/testmgr.h b/crypto/testmgr.h
 index d6088e26f..4f5b35671 100644
 --- a/crypto/testmgr.h
 +++ b/crypto/testmgr.h
-@@ -444,6 +444,830 @@ static const struct akcipher_testvec rsa_tv_template[] = {
+@@ -444,6 +444,832 @@ static const struct akcipher_testvec rsa_tv_template[] = {
  	.m_size = 8,
  	.c_size = 256,
  	.public_key_vec = true,
++#if 0
 +	}, {
 +	.key =
 +	"\x30\x82\x08\x62\x02\x01\x00\x02"
@@ -1239,6 +1240,7 @@ index d6088e26f..4f5b35671 100644
 +	"\x20\x68\x11\x8c\x3b\x2d\xd9\xcb"
 +	"\x13\xe1\x1c\xe3\x2c\x80\xbb\x9a",
 +	.c_size = 512,
++#endif
  #ifndef CONFIG_CRYPTO_FIPS
  	}, {
  	.key =
