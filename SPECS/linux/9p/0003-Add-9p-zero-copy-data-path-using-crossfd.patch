@@ -1,4 +1,4 @@
-From acb541ca13f31c3cb3f5339998ef3dc366f136a9 Mon Sep 17 00:00:00 2001
+From b7b54446d4170f77e66cc606e91bae2d013adb07 Mon Sep 17 00:00:00 2001
 From: Kamal Charan <kcharan@vmware.com>
 Date: Sat, 4 Apr 2020 08:22:29 -0700
 Subject: [PATCH 03/10] Add 9p zero copy data path using crossfd
@@ -55,14 +55,25 @@ module directly.
 7)Changed implementation of dotx_can_zc():
 iter_is_iovec(iter) =>
 (!iov_iter_is_kvec(iter) && !iov_iter_is_discard(iter))
+8) iov_iter_get_pages2() will advance the iov, we're now need to use
+iov_iter_revert() to fix the iov on error cases. p9_client_write() also use
+the same mechanism.
+9) Retry forever if the error is ENXIO in p9_client_read_once()
+Ocationally the DOM owner may transfer for multiple times, as a result,
+ENXIO may be returned for multiple times for the same IO. ENXIO is
+an indication that zero copy IO is sent for remote object or
+the first no zero copy IO for a local object is sent to VDFS proxy.
+In this case, retrying twice won't be enough.
+Now we retry for ever if the errno is ENXIO. The behavior is the same
+as that in photon3.
 ---
  include/net/9p/9p.h     |   8 +
  include/net/9p/client.h |   6 +
- net/9p/client.c         |  59 +++++--
- net/9p/client_dotx.c    | 367 ++++++++++++++++++++++++++++++++++++++++
+ net/9p/client.c         |  66 +++++--
+ net/9p/client_dotx.c    | 388 ++++++++++++++++++++++++++++++++++++++++
  net/9p/client_dotx.h    |  32 ++++
  net/9p/protocol.c       |  20 ++-
- 6 files changed, 480 insertions(+), 12 deletions(-)
+ 6 files changed, 506 insertions(+), 14 deletions(-)
  create mode 100644 net/9p/client_dotx.c
  create mode 100644 net/9p/client_dotx.h
 
@@ -130,7 +141,7 @@ index 78ebcf782..e4beaac3d 100644
  	struct p9_trans_module *trans_mod;
  	enum p9_trans_status status;
 diff --git a/net/9p/client.c b/net/9p/client.c
-index af59c3f2e..b9637af6a 100644
+index af59c3f2e..ba8bc4dfc 100644
 --- a/net/9p/client.c
 +++ b/net/9p/client.c
 @@ -24,6 +24,7 @@
@@ -240,18 +251,30 @@ index af59c3f2e..b9637af6a 100644
  
  	client_id = utsname()->nodename;
  	memcpy(clnt->name, client_id, strlen(client_id) + 1);
-@@ -1505,8 +1540,8 @@ int p9_client_unlinkat(struct p9_fid *dfid, const char *name, int flags)
+@@ -1505,8 +1540,11 @@ int p9_client_unlinkat(struct p9_fid *dfid, const char *name, int flags)
  }
  EXPORT_SYMBOL(p9_client_unlinkat);
  
 -int
 -p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
 +static int
++p9_client_read_once_generic(struct p9_fid *fid, u64 offset, struct iov_iter *to,
++			    int *err);
++static int
 +p9_client_read_generic(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
  {
  	int total = 0;
  	*err = 0;
-@@ -1524,9 +1559,9 @@ p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
+@@ -1514,7 +1552,7 @@ p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
+ 	while (iov_iter_count(to)) {
+ 		int count;
+ 
+-		count = p9_client_read_once(fid, offset, to, err);
++		count = p9_client_read_once_generic(fid, offset, to, err);
+ 		if (!count || *err)
+ 			break;
+ 		offset += count;
+@@ -1524,9 +1562,9 @@ p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
  }
  EXPORT_SYMBOL(p9_client_read);
  
@@ -264,7 +287,16 @@ index af59c3f2e..b9637af6a 100644
  {
  	struct p9_client *clnt = fid->clnt;
  	struct p9_req_t *req;
-@@ -1597,8 +1632,8 @@ p9_client_read_once(struct p9_fid *fid, u64 offset, struct iov_iter *to,
+@@ -1579,7 +1617,7 @@ p9_client_read_once(struct p9_fid *fid, u64 offset, struct iov_iter *to,
+ 		received = rsize;
+ 	}
+ 
+-	p9_debug(P9_DEBUG_9P, "<<< RREAD count %d\n", count);
++	p9_debug(P9_DEBUG_9P, "<<< RREAD count %d\n", received);
+ 
+ 	if (non_zc) {
+ 		int n = copy_to_iter(dataptr, received, to);
+@@ -1597,8 +1635,8 @@ p9_client_read_once(struct p9_fid *fid, u64 offset, struct iov_iter *to,
  }
  EXPORT_SYMBOL(p9_client_read_once);
  
@@ -275,7 +307,7 @@ index af59c3f2e..b9637af6a 100644
  {
  	struct p9_client *clnt = fid->clnt;
  	struct p9_req_t *req;
-@@ -1791,7 +1826,8 @@ static int p9_client_statsize(struct p9_wstat *wst, int proto_version)
+@@ -1791,7 +1829,8 @@ static int p9_client_statsize(struct p9_wstat *wst, int proto_version)
  		ret += strlen(wst->muid);
  
  	if (proto_version == p9_proto_2000u ||
@@ -285,7 +317,7 @@ index af59c3f2e..b9637af6a 100644
  		/* extension[s] n_uid[4] n_gid[4] n_muid[4] */
  		ret += 2 + 4 + 4 + 4;
  		if (wst->extension)
-@@ -2272,3 +2308,6 @@ void __exit p9_client_exit(void)
+@@ -2272,3 +2311,6 @@ void __exit p9_client_exit(void)
  {
  	kmem_cache_destroy(p9_req_cache);
  }
@@ -294,10 +326,10 @@ index af59c3f2e..b9637af6a 100644
 +
 diff --git a/net/9p/client_dotx.c b/net/9p/client_dotx.c
 new file mode 100644
-index 000000000..892770187
+index 000000000..774f41d38
 --- /dev/null
 +++ b/net/9p/client_dotx.c
-@@ -0,0 +1,367 @@
+@@ -0,0 +1,388 @@
 +/* SPDX-License-Identifier: GPL-2.0-only */
 +/*
 + *  Zero copy support for VDFS (VMware Distributed File System)
@@ -317,7 +349,7 @@ index 000000000..892770187
 +{
 +       struct p9_client *clnt = fid->clnt;
 +       struct p9_req_t *req = NULL;
-+       int total = 0;
++       int received = 0;
 +       int count = iov_iter_count(to);
 +       int rsize;
 +       size_t off;
@@ -359,27 +391,29 @@ index 000000000..892770187
 +               goto put_pages;
 +       }
 +
-+       *err = p9pdu_readf(&req->rc, clnt->proto_version, "d", &count);
++       *err = p9pdu_readf(&req->rc, clnt->proto_version, "d", &received);
 +       if (*err) {
++	       received = 0;
 +               p9_debug(P9_DEBUG_9P, "          ret err %d \n", *err);
 +               trace_9p_protocol_dump(clnt, &req->rc);
 +               goto put_pages;
 +       }
-+       if (rsize < count) {
-+               pr_err("bogus RREADX count (%d > %d)\n", count, rsize);
++       if (rsize < received) {
++               pr_err("bogus RREADX count (%d > %d)\n", received, rsize);
++	       received = rsize;
 +               goto put_pages;
 +       }
 +
-+       if (count == 0) {
++       p9_debug(P9_DEBUG_9P, "<<< DOTX RREAD  count %d\n", received);
++
++       if (received == 0) {
 +               goto put_pages;
 +       }
-+
-+       iov_iter_advance(to, count);
-+       total = count;
 +
 +put_pages:
-+       if (req && !IS_ERR(req))
++       if (req && !IS_ERR(req)) {
 +               p9_req_put(clnt, req);
++       }
 +
 +       for (i = 0; i < maxpages; i++) {
 +               put_page(pages[i]);
@@ -389,7 +423,15 @@ index 000000000..892770187
 +       kfree(pages);
 +       kfree(ppns);
 +
-+       return total;
++       /* In normal cases, this is a non-op as
++	* received == count - iov_iter_count(to)
++	* When some error like -ENXIO is returned, received is 0,
++	* but the iter of iov may have been changed by
++	* iov_iter_get_pages2(), we need to revert the iter in
++	* this case.
++	*/
++       iov_iter_revert(to, count - received - iov_iter_count(to));
++       return received;
 +}
 +
 +/*
@@ -405,16 +447,16 @@ index 000000000..892770187
 +	int count, retry = 0;
 +	bool is_dotx = p9_is_proto_dotx(fid->clnt);
 +	/*
-+	 * The zero copy state (is_dotx_ok) may change,
-+         * so one retry might be needed.
++	 * The zero copy state (is_dotx_ok) may change for multiple
++	 * times, so we keep retrying if we receive ENXIO error.
 +         */
-+	while (retry < 2) {
++	while (++retry < 100) {
 +		if (is_dotx && dotx_can_zc(to, fid->clnt)) {
 +			count = p9_client_read_once_dotx(fid, offset, to, err);
 +			if (*err == -ENXIO) {
-+				pr_warn("Disabling dotx: No zero copy device\n");
++				pr_warn("%s: Disabling dotx: No zero copy "
++					"device\n", __func__);
 +				fid->clnt->is_dotx_ok = 0;
-+				retry++;
 +				continue;
 +			} else {
 +				break;
@@ -422,9 +464,9 @@ index 000000000..892770187
 +		} else {
 +			count = p9_client_read_once_generic(fid, offset, to, err);
 +			if (is_dotx && *err == -ENXIO) {
-+				pr_warn("Enabling dotx: Zero copy device available\n");
++				pr_warn("%s: Enabling dotx: Zero copy device "
++					"available\n", __func__);
 +				fid->clnt->is_dotx_ok = 1;
-+				retry++;
 +				continue;
 +			} else {
 +				break;
@@ -443,7 +485,7 @@ index 000000000..892770187
 +	int total = 0;
 +	*err = 0;
 +
-+	p9_debug(P9_DEBUG_9P, ">>> TREAD fid %d offset %llu count %zd\n",
++	p9_debug(P9_DEBUG_9P, ">>> DOTX TREAD fid %d offset %llu count %zd\n",
 +		 fid->fid, (unsigned long long) offset, iov_iter_count(to));
 +
 +	while (iov_iter_count(to)) {
@@ -452,14 +494,16 @@ index 000000000..892770187
 +		if (dotx_can_zc(to, fid->clnt)) {
 +			count = p9_client_read_once_dotx(fid, offset, to, err);
 +			if (*err == -ENXIO) {
-+				pr_warn("Disabling dotx: No zero copy device\n");
++				pr_warn("%s: Disabling dotx: No zero copy "
++					"device\n", __func__);
 +				fid->clnt->is_dotx_ok = 0;
 +				continue;
 +			}
 +		} else {
 +			count = p9_client_read_once_generic(fid, offset, to, err);
 +			if (*err == -ENXIO) {
-+				pr_warn("Enabling dotx: Zero copy device available\n");
++				pr_warn("%s: Enabling dotx: Zero copy device "
++					"available\n", __func__);
 +				fid->clnt->is_dotx_ok = 1;
 +				continue;
 +			}
@@ -469,7 +513,6 @@ index 000000000..892770187
 +			break;
 +		}
 +
-+		p9_debug(P9_DEBUG_9P, "<<< RREAD  count %d\n", count);
 +
 +		total += count;
 +		offset += count;
@@ -492,7 +535,7 @@ index 000000000..892770187
 +	struct p9_req_t *req;
 +	int count = iov_iter_count(from);
 +	int rsize = fid->iounit;
-+	int written;
++	int written = 0;
 +
 +	if (!rsize || rsize > clnt->msize - P9_IOHDRSZ)
 +		rsize = clnt->msize - P9_IOHDRSZ;
@@ -539,7 +582,7 @@ index 000000000..892770187
 +{
 +       struct p9_client *clnt = fid->clnt;
 +       struct p9_req_t *req = NULL;
-+       int total = 0;
++       int written = 0;
 +       int count = iov_iter_count(from);
 +       int rsize;
 +       size_t off;
@@ -579,19 +622,20 @@ index 000000000..892770187
 +               *err = PTR_ERR(req);
 +               goto put_pages;
 +       }
-+       *err = p9pdu_readf(&req->rc, clnt->proto_version, "d", &count);
++       *err = p9pdu_readf(&req->rc, clnt->proto_version, "d", &written);
 +       if (*err) {
++	       written = 0;
 +               p9_debug(P9_DEBUG_9P, "          ret err %d \n", *err);
 +               trace_9p_protocol_dump(clnt, &req->rc);
 +               goto put_pages;
 +       }
-+       if (rsize < count) {
-+               pr_err("bogus RWRITEX count (%d > %d)\n", count, rsize);
++       if (rsize < written) {
++               pr_err("bogus RWRITEX count (%d > %d)\n", written, rsize);
++	       written = rsize;
 +               goto put_pages;
 +       }
 +
-+       iov_iter_advance(from, count);
-+       total = count;
++       p9_debug(P9_DEBUG_9P, "<<< DOTX RWRITE count %d\n", written);
 +put_pages:
 +       if (req && !IS_ERR(req))
 +               p9_req_put(clnt, req);
@@ -603,7 +647,15 @@ index 000000000..892770187
 +       kfree(pages);
 +       kfree(ppns);
 +
-+       return total;
++       /* In normal cases, this is a non-op as
++	* written == count - iov_iter_count(to)
++	* When some error like -ENXIO is returned, written is 0,
++	* but the iter of iov may have been changed by
++	* iov_iter_get_pages2(), we need to revert the iter in
++	* this case.
++	*/
++       iov_iter_revert(from, count - written - iov_iter_count(from));
++       return written;
 +}
 +
 +/*
@@ -615,7 +667,7 @@ index 000000000..892770187
 +	int total = 0;
 +	*err = 0;
 +
-+	p9_debug(P9_DEBUG_9P, ">>> TWRITE fid %d offset %llu count %zd\n",
++	p9_debug(P9_DEBUG_9P, ">>> DOTX TWRITE fid %d offset %llu count %zd\n",
 +		 fid->fid, offset, iov_iter_count(from));
 +
 +	while (iov_iter_count(from)) {
@@ -623,22 +675,23 @@ index 000000000..892770187
 +		if (dotx_can_zc(from, fid->clnt)) {
 +			count = p9_client_write_once_dotx(fid, offset, from, err);
 +			if (*err == -ENXIO) {
-+				pr_warn("Disabling dotx: No zero copy device\n");
++				pr_warn("%s: Disabling dotx: No zero copy "
++					"device\n", __func__);
 +				fid->clnt->is_dotx_ok = 0;
 +				continue;
 +			}
 +		} else {
 +			count = p9_client_write_once_generic(fid, offset, from, err);
 +			if (*err == -ENXIO) {
-+				pr_warn("Enabling dotx: Zero copy device available\n");
++				pr_warn("%s: Enabling dotx: Zero copy device "
++					"available\n", __func__);
 +				fid->clnt->is_dotx_ok = 1;
 +				continue;
 +			}
 +		}
-+		if (*err || count == 0)
++		if (*err || count == 0) {
 +			break;
-+
-+		p9_debug(P9_DEBUG_9P, "<<< RWRITE count %d\n", count);
++		}
 +
 +		total += count;
 +		offset += count;
