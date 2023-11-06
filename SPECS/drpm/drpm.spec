@@ -1,15 +1,15 @@
 Name:            drpm
 Summary:         A library for making, reading and applying deltarpm packages
-Version:         0.5.1
-Release:         6%{?dist}
+Version:         0.5.2
+Release:         1%{?dist}
 License:         LGPLv2+ and BSD
 URL:             https://github.com/rpm-software-management/%{name}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Base
 
-Source0:         https://github.com/rpm-software-management/drpm/releases/download/%{version}/drpm-%{version}.tar.bz2
-%define sha512   %{name}=8c87165fa43bcc5e518a6d60eaadbc43b12643233eb0cb29633f0fdf8a516c24581f5f5bad06779f8c851d6200aec41b50998ab8040e8145391b686ae6be8c48
+Source0: https://github.com/rpm-software-management/drpm/releases/download/%{version}/drpm-%{version}.tar.bz2
+%define sha512 %{name}=bda395d9dd34d67351cab2758a14a7fe358ee2a4b86b7b020338ef868c04f248d63cf599295087222a658710f80c80f832c5c347c5803fa3afb869249853204f
 
 BuildRequires:   cmake
 BuildRequires:   gcc
@@ -36,22 +36,20 @@ The drpm-devel package provides a C interface (drpm.h) for the drpm library.
 %autosetup -p1
 
 %build
-%cmake \
+%{cmake} \
     -DWITH_ZSTD:BOOL=yes \
     -DHAVE_LZLIB_DEVEL:BOOL=0 \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DCMAKE_BUILD_TYPE=Debug
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 
-%if 0%{?with_check}
 %check
 cd %{__cmake_builddir}
-%ctest
-%endif
+%{ctest}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -67,6 +65,8 @@ cd %{__cmake_builddir}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Sat Nov 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.5.2-1
+- Upgrade to v0.5.2
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.5.1-6
 - Bump version as a part of zlib upgrade
 * Fri Jan 06 2023 Oliver Kurth <okurth@vmware.com> 0.5.1-5

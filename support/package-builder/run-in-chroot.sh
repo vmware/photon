@@ -37,6 +37,7 @@ $CHROOT_CMD "${BUILDROOT}" \
   PS1='\u:\w\$ ' \
   PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
   SHELL=/bin/bash \
+  LC_ALL=en_US.UTF-8 \
   /bin/bash --login +h -c "$*"
 
 exit 0

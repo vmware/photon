@@ -1,24 +1,31 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.5.9
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/etcd-io/etcd/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 etcd=c71c8bb532f0f7d7f2bb63f3eed0a2a0f05e3299a9dd7b7fd5a4ca7c0acb89ea0259797306053c7dc5ca3ad735711df6540bf134ce15975330a2fe1754bb27d5
-Source1:        etcd.service
+
+Source0: https://github.com/etcd-io/etcd/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=c71c8bb532f0f7d7f2bb63f3eed0a2a0f05e3299a9dd7b7fd5a4ca7c0acb89ea0259797306053c7dc5ca3ad735711df6540bf134ce15975330a2fe1754bb27d5
+
+Source1:        %{name}.service
 %ifarch aarch64
-Source2:        etcd.sysconfig
+Source2:        %{name}.sysconfig
 %endif
-Source3:        etcd.sysusers
+Source3:        %{name}.sysusers
+
 BuildRequires:  go
 BuildRequires:  git
 BuildRequires:  systemd-devel
-Requires(pre):  systemd-rpm-macros
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+
+Requires: systemd
+
+Requires(pre): shadow
+Requires(pre): systemd-rpm-macros
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 A highly-available key value store for shared configuration and service discovery.
@@ -37,14 +44,14 @@ install -vdm755 %{buildroot}%{_unitdir}
 %ifarch aarch64
 install -vdm 0755 %{buildroot}%{_sysconfdir}/sysconfig
 %endif
-install -vdm 0755 %{buildroot}%{_sysconfdir}/etcd
-install -vpm 0755 -T etcd.conf.yml.sample %{buildroot}%{_sysconfdir}/etcd/etcd-default-conf.yml
+install -vdm 0755 %{buildroot}%{_sysconfdir}/%{name}
+install -vpm 0755 -T %{name}.conf.yml.sample %{buildroot}%{_sysconfdir}/%{name}/%{name}-default-conf.yml
 install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 chown -R root:root %{buildroot}%{_bindir}
 chown -R root:root %{buildroot}/%{_docdir}/%{name}-%{version}
 
-mv %{_builddir}/%{name}-%{version}/bin/etcd \
+mv %{_builddir}/%{name}-%{version}/bin/%{name} \
    %{_builddir}/%{name}-%{version}/bin/etcdctl \
    %{buildroot}%{_bindir}
 
@@ -53,18 +60,19 @@ mv %{_builddir}/%{name}-%{version}/etcdctl/README.md %{buildroot}/%{_docdir}/%{n
 mv %{_builddir}/%{name}-%{version}/etcdctl/READMEv2.md %{buildroot}/%{_docdir}/%{name}-%{version}/READMEv2-etcdctl.md
 
 install -vdm755 %{buildroot}%{_presetdir}
-echo "disable etcd.service" > %{buildroot}%{_presetdir}/50-etcd.preset
+echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 
 cp %{SOURCE1} %{buildroot}%{_unitdir}
 %ifarch aarch64
-cp %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/etcd
+cp %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 %endif
-install -vdm755 %{buildroot}%{_sharedstatedir}/etcd
+install -vdm755 %{buildroot}%{_sharedstatedir}/%{name}
 
 %pre
 %sysusers_create_compat %{SOURCE3}
 
-%post -p /sbin/ldconfig
+%post
+/sbin/ldconfig
 
 %postun
 /sbin/ldconfig
@@ -73,18 +81,20 @@ install -vdm755 %{buildroot}%{_sharedstatedir}/etcd
 rm -rf %{buildroot}/*
 
 %files
-%{_bindir}/etcd*
+%{_bindir}/%{name}*
 %{_docdir}/%{name}-%{version}/*
-%{_unitdir}/etcd.service
-%{_presetdir}/50-etcd.preset
-%attr(0700,%{name},%{name}) %dir %{_sharedstatedir}/etcd
-%config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
+%{_unitdir}/%{name}.service
+%{_presetdir}/50-%{name}.preset
+%attr(0700,%{name},%{name}) %dir %{_sharedstatedir}/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}-default-conf.yml
 %{_sysusersdir}/%{name}.sysusers
 %ifarch aarch64
-%config(noreplace) %{_sysconfdir}/sysconfig/etcd
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %endif
 
 %changelog
+* Sun Nov 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.9-6
+- Fix requires
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.9-5
 - Bump up version to compile with new go
 * Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.9-4

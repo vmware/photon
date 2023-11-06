@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -128,6 +128,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Mon Nov 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 36.5-6
+- Bump version as a part of rpm upgrade
 * Tue Oct 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 36.5-5
 - Fix devel package requires
 * Fri Feb 17 2023 Shivani Agarwal <shivania2@vmware.com> 36.5-4

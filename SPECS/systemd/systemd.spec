@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        254.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -23,7 +23,6 @@ Source5:        10-rdrand-rng.conf
 Source6:        10-defaults.preset
 
 Source11:       macros.sysusers
-Source12:       sysusers.attr
 Source13:       sysusers.prov
 Source14:       sysusers.generate-pre.sh
 
@@ -382,7 +381,6 @@ install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
 %endif
 
 install -m 0644 -D -t %{buildroot}%{_rpmmacrodir}/ %{SOURCE11}
-install -m 0644 -D -t %{buildroot}%{_rpmconfigdir}/fileattrs/ %{SOURCE12}
 install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE13}
 install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE14}
 
@@ -766,6 +764,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Sun Nov 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-6
+- Remove sysusers.attr, provided by rpm-4.19.0 now.
 * Sun Oct 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-5
 - Fix lvrename unmount issue
 * Wed Sep 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 254.1-4

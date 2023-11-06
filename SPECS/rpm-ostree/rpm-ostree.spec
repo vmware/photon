@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
-Version:        2022.19
-Release:        6%{?dist}
+Version:        2023.10
+Release:        1%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -9,13 +9,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha512 %{name}=0afec5019ab3d2e94578acadcf62b698b3f5880b8755575bf12300368d9e3b0e9e94492d4a311af282d0535dc6df30dd4e3fa58e2f671c30dbfdc788c96a3d7e
+%define sha512 %{name}=835a3c03fb8d65386aff4163d95ef1ccc717bb810d3f9f00f4a37ae456178c0f6964bac52a04cf2fc5329f602866807a45ec6fac4ea8ce47bff5df8f4a1ed1a2
+
 Source1:        mk-ostree-host.sh
 Source2:        function.inc
 Source3:        mkostreerepo
 
 Patch0:         rpm-ostree-libdnf-build.patch
-Patch1:         rpm-ostree-use-a-socket-in-run.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -41,7 +41,7 @@ BuildRequires:  librepo-devel
 BuildRequires:  attr-devel
 BuildRequires:  python3-devel
 BuildRequires:  autogen
-BuildRequires:  libsolv-devel >= 0.7.22
+BuildRequires:  libsolv-devel
 BuildRequires:  systemd-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  gperf
@@ -71,7 +71,6 @@ Requires:       libgcc
 Requires:       librepo
 Requires:       openssl
 Requires:       ostree
-Requires:       ostree-libs
 Requires:       ostree-grub2
 Requires:       json-glib
 Requires:       bubblewrap
@@ -163,6 +162,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Mon Nov 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.10-1
+- Upgrade to v2023.10
 * Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 2022.19-6
 - Bump version as a part of rust upgrade.
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2022.19-5

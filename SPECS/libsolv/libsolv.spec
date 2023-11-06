@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
-Version:        0.7.22
-Release:        4%{?dist}
+Version:        0.7.25
+Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
@@ -9,14 +9,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=be375e9cd60728683d08587abd5405eb9b8522dff092c76eabec8d5f1608225335639b2b247429619df1b5c493d1edbd5ad4f14755cb6e2eb120f0ba162e3bb5
+%define sha512 %{name}=46e2ab352831add489aab19ff67821530fcb43c3edcbb824ee1afc7c8e802d86d6ac6491eb5520e5f44dcd01ea01fc4fe8adb4de356a2892fe77574f02611ff3
 
 Requires:       rpm-libs >= 4.16.1.3
 Requires:       expat-libs
 Requires:       zlib
 
 BuildRequires:  cmake
-BuildRequires:  rpm-devel >= 4.16.1.3
+BuildRequires:  rpm-devel
 BuildRequires:  expat-devel
 BuildRequires:  zlib-devel
 
@@ -30,6 +30,7 @@ Requires:       %{name} = %{version}-%{release}
 Requires:       expat-devel
 Provides:       pkgconfig(libsolv)
 Provides:       pkgconfig(libsolvext)
+
 %description devel
 The libsolv-devel package contains libraries, header files and documentation
 for developing applications that use libsolv.
@@ -38,26 +39,24 @@ for developing applications that use libsolv.
 %autosetup -p1
 
 %build
-%cmake \
+%{cmake} \
     -DENABLE_RPMDB=ON \
     -DENABLE_COMPLEX_DEPS=ON \
+    -DENABLE_RPMPKG_LIBRPM=ON \
     -DENABLE_RPMDB_BYRPMHEADER=ON \
     -DENABLE_RPMDB_LIBRPM=ON \
     -DENABLE_RPMMD=ON \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-    -DCMAKE_BUILD_TYPE=Debug
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
-find %{buildroot} -name '*.la' -delete
+%{cmake_install}
 
-%if 0%{?with_check}
 %check
 cd %{__cmake_builddir}
-make %{?_smp_mflags} test
-%endif
+%make_build test
 
 %files
 %defattr(-,root,root)
@@ -76,6 +75,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Sat Nov 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.7.25-1
+- Upgrade to v0.7.25
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.7.22-4
 - Bump version as a part of zlib upgrade
 * Tue Jan 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.7.22-3
