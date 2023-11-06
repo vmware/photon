@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.60
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -545,6 +545,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 29 2023 Albert Guo <aguo@vmware.com> 6.1.60-5
+- Use iov_iter_revert() to fix offset of iov.
 * Wed Nov 29 2023 Ankit Jain <ankitja@vmware.com> 6.1.60-4
 - Fix for CVE-2023-0597
 * Wed Nov 29 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.60-3
