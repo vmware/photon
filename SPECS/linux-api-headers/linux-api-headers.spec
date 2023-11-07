@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Summary:        Linux API header files
 Name:           linux-api-headers
-Version:        6.1.53
+Version:        6.1.60
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=270f8e9102740edda3510aa5e8da5943f9831a87d6e9f0f6aa590a5a2fab09b1a91b54413ce936dc3695bea8bfdd8df0721bd9c5fb834b9c7a95653401b2652a
+%define sha512 linux=cef40235428a09e5f7807a8be83af9a5ab90e841049a04f9f851e69e602aeab5a50f523cae5d5928d345c11b728608eba7754b173be0c023c7ee564cfaf4b20a
 BuildArch:      noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
@@ -39,6 +39,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %{_includedir}/*
 
 %changelog
+* Fri Oct 27 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.60-1
+- Upgrade to 6.1.60
 * Thu Sep 14 2023 Roye Eshed <eshedr@vmware.com> 6.1.53-1
 - Update to version 6.1.53
 * Mon Aug 14 2023 Ajay Kaher <akaher@vmware.com> 6.1.45-1
