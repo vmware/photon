@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -135,7 +135,7 @@ sudo -u test -s /bin/bash -c "PATH=$PATH make tests -j$(nproc)"
 %post server
 /sbin/ldconfig
 if [ $1 -eq 1 ]; then
-    chown -v root:sys %{privsep_path}
+  chown -v root:sys %{privsep_path}
 fi
 %systemd_post %{sshd_services}
 
@@ -195,6 +195,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Tue Nov 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-2
+- Fix sshd.socket failure issue upon graceful session exit
 * Wed Aug 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-1
 - Upgrade to v9.3p2
 - Keyscan fips mode fix
