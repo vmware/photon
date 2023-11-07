@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -111,7 +111,6 @@ install -p -D -m 0644 %{SOURCE5} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %{_fixperms} %{buildroot}/*
 
-%if 0%{?with_check}
 %check
 if ! getent passwd sshd >/dev/null; then
    useradd sshd
@@ -124,7 +123,6 @@ cp %{buildroot}%{_bindir}/scp %{_bindir}
 chmod g+w . -R
 useradd test -G root -m
 sudo -u test -s /bin/bash -c "PATH=$PATH make tests -j$(nproc)"
-%endif
 
 %pre server
 %sysusers_create_compat %{SOURCE5}
@@ -135,7 +133,7 @@ sudo -u test -s /bin/bash -c "PATH=$PATH make tests -j$(nproc)"
 %post server
 /sbin/ldconfig
 if [ $1 -eq 1 ]; then
-    chown -v root:sys %{privsep_path}
+  chown -v root:sys %{privsep_path}
 fi
 %systemd_post %{sshd_services}
 
@@ -195,6 +193,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Tue Nov 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-4
+- Fix sshd.socket failure issue upon graceful session exit
 * Wed Aug 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-3
 - Keyscan fips mode fix
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 9.3p2-2
