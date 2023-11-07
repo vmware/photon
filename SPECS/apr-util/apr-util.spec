@@ -1,17 +1,19 @@
 %define apuver 1
 
-Summary:    The Apache Portable Runtime Utility Library
-Name:       apr-util
-Version:    1.6.1
-Release:    4%{?dist}
-License:    Apache License 2.0
-URL:        https://apr.apache.org
-Group:      System Environment/Libraries
-Vendor:     VMware, Inc.
+Summary:      The Apache Portable Runtime Utility Library
+Name:         apr-util
+Version:      1.6.1
+Release:      5%{?dist}
+License:      Apache License 2.0
+URL:          https://apr.apache.org
+Group:        System Environment/Libraries
+Vendor:       VMware, Inc.
 Distribution: Photon
 
 Source0: http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
 %define sha512 %{name}=84da76e9b64da2de0996d4d6f3ab3f23db3724eb6352d218e0e8196bcc0b0a5d4fe791f41b4cc350ce3d04cce3bb3cf8bfb513d777d0cd030928368e6b55a536
+
+Patch0: CVE-2022-25147.patch
 
 BuildRequires: apr-devel
 BuildRequires: sqlite-devel
@@ -21,10 +23,10 @@ BuildRequires: expat-devel
 BuildRequires: postgresql10-devel
 BuildRequires: openldap
 
-Requires:   apr
-Requires:   openssl
-Requires:   expat
-Requires:   nss
+Requires: apr
+Requires: openssl
+Requires: expat
+Requires: nss
 
 %description
 The Apache Portable Runtime Utility Library.
@@ -34,6 +36,8 @@ Group:      Development/Libraries
 Summary:    APR utility library development kit
 Requires:   apr-devel
 Requires:   expat-devel
+Requires:   util-linux-devel
+Requires:   openldap
 Requires:   %{name} = %{version}-%{release}
 
 %description devel
@@ -127,6 +131,9 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Tue Oct 31 2023 Nitesh Kumar <kunitesh@vmware.com> 1.6.1-5
+- Patched for CVE-2022-25147
+- Fix devel package requires
 * Fri Nov 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-4
 - Require psql or psql13
 * Fri Mar 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-3
