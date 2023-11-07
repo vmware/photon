@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.9p1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -63,7 +63,7 @@ Requires:   Linux-PAM
 Requires:   shadow
 Requires:   ncurses-terminfo
 Requires:   e2fsprogs-libs
-Requires:   openssh-clients = %{version}-%{release}
+Requires:   %{name}-clients = %{version}-%{release}
 Requires(post): /usr/bin/chown
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
@@ -114,7 +114,6 @@ install -m644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
 
 %{_fixperms} %{buildroot}/*
 
-%if 0%{?with_check}
 %check
 if ! getent passwd sshd >/dev/null; then
    useradd sshd
@@ -127,7 +126,6 @@ cp %{buildroot}%{_bindir}/scp %{_bindir}
 chmod g+w . -R
 useradd test -G root -m
 sudo -u test -s /bin/bash -c "PATH=$PATH make tests -j$(nproc)"
-%endif
 
 %pre server
 getent group sshd >/dev/null || groupadd -g 50 sshd
@@ -139,8 +137,8 @@ getent passwd sshd >/dev/null || \
 
 %post server
 /sbin/ldconfig
-if [ $1 -eq 1 ] ; then
-    chown -v root:sys %{privsep_path}
+if [ $1 -eq 1 ]; then
+  chown -v root:sys %{privsep_path}
 fi
 %systemd_post %{sshd_services}
 
@@ -199,6 +197,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Tue Nov 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.9p1-4
+- Fix sshd.socket failure issue upon graceful session exit
 * Wed Aug 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.9p1-3
 - Keyscan fips mode fix
 * Tue Aug 01 2023 Shivani Agarwal <shivania2@vmware.com> 8.9p1-2
