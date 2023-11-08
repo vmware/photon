@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.34
-Release:        2%{?dist}
+Version:        8.0.35
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=e5e79ac6870c214cf62c8e2830106d60e09d2e6df30654b84bb5d26864b4eabe777468a223e6ee4c1e22b7f6ec086c73e85e3f4c1fa66912b0e59b606ab46cd6
+%define sha512 %{name}-boost=2936f7a84aa5f96633b239d1dba3613462d88f3a2ea493a7d05aa9a9b590e9e36a30857f44fcdb11360242375d6106e80cd1b32e0c6cb14502c1518ad1a720b2
 
 Source1: %{name}.sysusers
 
@@ -175,6 +175,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Nov 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-1
+- Upgrade to v8.0.35
 * Sun Oct 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.34-2
 - Add systemd service files for mysql-server
 * Sun Jul 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.34-1
