@@ -576,13 +576,12 @@ class CleanUp:
         rpm_path = constants.rpmPath
         ph_path = configdict["photon-path"]
 
-        cmd = (
-            f"cd {ph_path} && test -n "
-            f"\"$(git diff --name-only @~1 @ | grep '^support/\(package-builder\|pullpublishrpms\)')\""
-            f" && {{ echo 'Remove all staged RPMs'; rm -rf {rpm_path}; }} || :"
-        )
+        cmd = f"git -C {ph_path} diff --name-only @~1 @"
+        out, _, _ = runBashCmd(cmd, capture=True)
+        if ("support/package-builder" in out) or ("support/pullpublishrpms" in out):
+            print("Remove all staged RPMs")
+            runBashCmd(f"rm -rf {rpm_path}")
 
-        runBashCmd(cmd)
         if not os.path.exists(rpm_path):
             print(f"{rpm_path} is empty, return ...")
             return
@@ -595,8 +594,8 @@ class CleanUp:
             return
 
         cmd = (
-            f"cd {ph_path} && echo `git diff --name-only {basecommit} | grep '\.spec'"
-            f" | xargs -n1 basename 2>/dev/null` | tr ' ' :"
+            f"echo $(git -C {ph_path} diff --name-only {basecommit} | grep '.spec$' | "
+            "xargs -n1 basename 2>/dev/null) | tr ' ' :"
         )
 
         spec_fns, _, _ = runBashCmd(cmd, capture=True)
@@ -681,7 +680,7 @@ class RpmBuildTarget:
             return
 
         createrepo_cmd = configdict["createrepo-cmd"]
-        runBashCmd(f"{createrepo_cmd} --update {constants.rpmPath}")
+        runBashCmd(f"{createrepo_cmd} --general-compress-type=gz --update {constants.rpmPath}")
         check_prerequesite["create-repo"] = True
 
     @staticmethod
