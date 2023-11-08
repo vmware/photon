@@ -76,7 +76,7 @@ class PackageBuilder(object):
                 logFileName = os.path.join(self.logPath, f"{self.package}-test.log")
             else:
                 logFileName = os.path.join(self.logPath, f"{self.package}.log")
-            fileLog = os.popen(f"tail -n 100 {logFileName}").read()
+            fileLog, _, _ = self.cmdUtils.runBashCmd(f"tail -n 100 {logFileName}", capture=True)
             self.logger.info(fileLog)
             raise e
         if self.sandbox:

@@ -12,7 +12,6 @@ import traceback
 
 from argparse import ArgumentParser
 from pathlib import PurePath
-from subprocess import PIPE, Popen
 from urllib.parse import urlparse
 
 # photon imports
@@ -113,6 +112,7 @@ check_prerequesite = {}
 cmdUtils = CommandUtils()
 runCommandInShell = cmdUtils.runCommandInShell
 runShellCmd = cmdUtils.runShellCmd
+runBashCmd = cmdUtils.runBashCmd
 
 curDir = os.getcwd()
 photonDir = os.path.dirname(os.path.realpath(__file__))
@@ -580,32 +580,24 @@ class CleanUp:
         ph_path = configdict["photon-path"]
         basecommit = configdict["photon-build-param"]["base-commit"]
 
-        command = (
-            "cd {} && test -n "
-            "\"$(git diff --name-only @~1 @ | grep '^support/\(make\|package-builder\|pullpublishrpms\)')\""
-            " && {{ echo 'Remove all staged RPMs'; rm -rf {}; }} || :"
-        )
-        command = command.format(ph_path, rpm_path)
-
-        if runCommandInShell(command):
-            raise Exception("Not able to run clean_stage_for_incremental_build")
+        command = f"git -C {ph_path} diff --name-only @~1 @"
+        out, _, _ = runBashCmd(command, capture=True)
+        if ("support/package-builder" in out) or ("support/pullpublishrpms" in out):
+            print("Remove all staged RPMs")
+            runCommandInShell(f"rm -rf {rpm_path}")
 
         if not os.path.exists(rpm_path):
             print(f"{rpm_path} is empty, return ...")
             return
 
         command = (
-            "cd {} && echo `git diff --name-only {} | grep '\.spec' | "
-            "xargs -n1 basename 2>/dev/null` | tr ' ' :"
+            "echo $(git -C {} diff --name-only {} | grep '.spec$' | "
+            "xargs -n1 basename 2>/dev/null) | tr ' ' :"
         )
         command = command.format(ph_path, basecommit)
 
-        with Popen(command, stdout=PIPE, stderr=None,
-                   shell=True, executable="/bin/bash") as process:
-            spec_fns = process.communicate()[0].decode("utf-8")
-            if process.returncode:
-                raise Exception("Error in clean_stage_for_incremental_build")
-
+        spec_fns, _, _ = runBashCmd(command, capture=True)
+        spec_fns = spec_fns.strip()
         if not spec_fns:
             print("No spec files were changed in this incremental build")
             return
@@ -687,7 +679,7 @@ class RpmBuildTarget:
             return
 
         createrepo_cmd = configdict["createrepo-cmd"]
-        runShellCmd(f"{createrepo_cmd} --update {constants.rpmPath}")
+        runShellCmd(f"{createrepo_cmd} --update --general-compress-type=gz {constants.rpmPath}")
         check_prerequesite["create-repo"] = True
 
     @staticmethod
@@ -996,13 +988,8 @@ class CheckTools:
             if commit_id:
                 command = f"git diff --name-only {commit_id}"
 
-        with Popen(command,
-                   stdout=PIPE, stderr=None,
-                   shell=True, executable="/bin/bash") as process:
-            files = process.communicate()[0].decode("utf-8").splitlines()
-            if process.returncode:
-                raise Exception("Something went wrong in check_spec_files")
-
+        files, _, _ = runBashCmd(command, capture=True)
+        files = files.splitlines()
         if check_specs(files):
             raise Exception("Spec file check failed")
 
@@ -1010,37 +997,32 @@ class CheckTools:
 
     def check_photon_installer():
         url = "https://github.com/vmware/photon-os-installer.git"
-        cmd = "pip3 install git+%s" % url
+        cmd = f"pip3 install git+{url}"
 
         def install_from_url(cmd):
             if runCommandInShell(cmd):
-                raise Exception("Failed to run: %s" % cmd)
-            print("%s - Success" % cmd)
+                raise Exception(f"Failed to run: {cmd}")
+            print(f"{cmd} - Success")
 
         try:
             import photon_installer
         except Exception as e:
-            print("Warning: %s" % e)
+            print(f"Warning: {e}")
             install_from_url(cmd)
             return
 
         key = "SKIP_INSTALLER_UPDATE"
         if key in os.environ and cmdUtils.strtobool(os.environ[key]):
-            print("%s is enabled, not checking for updates" % key)
+            print(f"{key} is enabled, not checking for updates")
             return
 
         if hasattr(photon_installer, "__version__"):
             local_hash = photon_installer.__version__.split("+")[1]
 
-            remote_hash = "git ls-remote %s HEAD | cut -f1" % url
-            with Popen(remote_hash, stdout=PIPE, stderr=None,
-                       shell=True, executable="/bin/bash") as p:
-                remote_hash = p.communicate()[0].decode("utf-8")
-                if p.returncode:
-                    raise Exception("Something went wrong in check_photon_installer")
-
+            remote_hash = f"git ls-remote {url} HEAD | cut -f1"
+            remote_hash, _, _ = runBashCmd(remote_hash, capture=True)
             if not remote_hash.startswith(local_hash):
-                print("Upstream photon-installer is updated, updating local copy ..")
+                print("Upstream photon-installer is updated, updating local copy ...")
                 install_from_url(cmd)
         else:
             install_from_url(cmd)
