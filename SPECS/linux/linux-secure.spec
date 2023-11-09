@@ -10,7 +10,7 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.198
+Version:        5.10.200
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=3ccfbaff9b45d3239024e6c29e3a33af05460997971d767293e45f22c4db66f99595285d5dac1071f19926f35cdd90d323bd6e57809b57954f4988152ebe6342
+%define sha512 linux=f591a85cd505acb682771c191d2df34643dd337a3d8b514738af39d5d52db5e6447a39d9b20cca22c0159f9c3cda3b766b5f529ee6eaa4b0e156453f3d54ede6
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -447,6 +447,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 09 2023 Ankit Jain <ankitja@vmware.com> 5.10.200-1
+- Update to version 5.10.200
 * Fri Oct 13 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-1
 - Update to version 5.10.198
 - Fix CVE-2023-4244

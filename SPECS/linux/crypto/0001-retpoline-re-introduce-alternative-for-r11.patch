@@ -1,4 +1,4 @@
-From 7f17302b1a63c7602763102b6e898e07aac03ae5 Mon Sep 17 00:00:00 2001
+From 785c4ffd4ee46d9651f5e4eff6c4ad0319d8fd4a Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhir@vmware.com>
 Date: Wed, 14 Sep 2022 04:58:20 +0000
 Subject: [PATCH] retpoline: re-introduce alternative for r11
@@ -14,7 +14,7 @@ Signed-off-by: srinidhira0 <srinidhir@vmware.com>
  2 files changed, 20 insertions(+)
 
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index a44c3b22370a..f270cf9f847b 100644
+index d58621f0f..b1a274307 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
 @@ -416,6 +416,10 @@ static void __init_or_module noinline optimize_nops(u8 *instr, size_t len)
@@ -28,7 +28,7 @@ index a44c3b22370a..f270cf9f847b 100644
  void __init_or_module noinline apply_alternatives(struct alt_instr *start,
  						  struct alt_instr *end)
  {
-@@ -490,6 +494,18 @@ void __init_or_module noinline apply_alternatives(struct alt_instr *start,
+@@ -501,6 +505,18 @@ void __init_or_module noinline apply_alternatives(struct alt_instr *start,
  
  next:
  		optimize_nops(instr, a->instrlen);
@@ -45,13 +45,13 @@ index a44c3b22370a..f270cf9f847b 100644
 +			a < &__canister_ealtinstructions)
 +			a = (struct alt_instr *)((char *)a + 1);
  	}
- }
  
+ 	kasan_enable_current();
 diff --git a/arch/x86/lib/retpoline.S b/arch/x86/lib/retpoline.S
-index 1221bb099afb..32f4f3794dba 100644
+index 6f5321b36..940de8b79 100644
 --- a/arch/x86/lib/retpoline.S
 +++ b/arch/x86/lib/retpoline.S
-@@ -38,6 +38,10 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\reg, SYM_L_GLOBAL)
+@@ -39,6 +39,10 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\reg, SYM_L_GLOBAL)
  
  .endm
  
@@ -63,5 +63,5 @@ index 1221bb099afb..32f4f3794dba 100644
   * Despite being an assembler file we can't just use .irp here
   * because __KSYM_DEPS__ only uses the C preprocessor and would
 -- 
-2.23.3
+2.23.1
 
