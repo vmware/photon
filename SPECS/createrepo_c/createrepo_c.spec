@@ -1,20 +1,19 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.20.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/rpm-software-management/createrepo_c
 
-Source0:        https://github.com/rpm-software-management/createrepo_c/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=54a2cc7c7cd3f3b9a0c23cd8c136ae1331e7fa7cc995189088e7e6f2276c78b2b84e21c2a2b93f4528b5e9e4018dd6525262c8aaba3bc8a1412a51dfafd101f7
+Source0: https://github.com/rpm-software-management/createrepo_c/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=54a2cc7c7cd3f3b9a0c23cd8c136ae1331e7fa7cc995189088e7e6f2276c78b2b84e21c2a2b93f4528b5e9e4018dd6525262c8aaba3bc8a1412a51dfafd101f7
 
 BuildRequires:  bzip2-devel
 BuildRequires:  cmake
 BuildRequires:  curl-devel
-BuildRequires:  expat-devel
 BuildRequires:  file-devel
 BuildRequires:  glib-devel
 BuildRequires:  libffi-devel
@@ -25,12 +24,23 @@ BuildRequires:  sqlite-devel
 BuildRequires:  python3-devel
 BuildRequires:  drpm-devel
 BuildRequires:  zchunk-devel
-%if 0%{?with_check}
-BuildRequires:  libxml2
-%endif
+BuildRequires:  rpm-devel
+BuildRequires:  zlib-devel
 
+Requires:       zlib
 Requires:       drpm
 Requires:       zchunk-libs
+Requires:       rpm-libs
+Requires:       curl-libs
+Requires:       openssl-libs
+Requires:       xz-libs
+Requires:       file-libs
+Requires:       sqlite-libs
+Requires:       zchunk-libs
+Requires:       bzip2-libs
+Requires:       glib
+Requires:       popt
+Requires:       libxml2
 
 Obsoletes:      createrepo
 
@@ -48,30 +58,29 @@ Requires:   glib-devel
 Requires:   sqlite-devel
 Requires:   libxml2-devel
 
+Provides:   createrepo-devel
+
 %description devel
 headers and libraries for createrepo_c
 
 %prep
 %autosetup -p1
-sed -e '/find_package(GTHREAD2/ s/^#*/#/' -i CMakeLists.txt
-sed -i 's|g_thread_init|//g_thread_init|'  src/createrepo_c.c
-sed -i 's|g_thread_init|//g_thread_init|'  src/mergerepo_c.c
-sed -i 's|g_thread_init|//g_thread_init|'  src/modifyrepo_c.c
-sed -i 's|g_thread_init|//g_thread_init|'  src/sqliterepo_c.c
 
 %build
-%cmake \
+%{cmake} \
     -DWITH_LIBMODULEMD=OFF \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-    -DCMAKE_BUILD_TYPE=Debug
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
-ln -sfv createrepo_c %{buildroot}%{_bindir}/createrepo
-ln -sfv mergerepo_c %{buildroot}%{_bindir}/mergerepo
-ln -sfv modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
+%{cmake_install}
+pushd %{buildroot}%{_bindir}
+for b in createrepo mergerepo modifyrepo; do
+  test -e ${b}_c && ln -srv ${b}_c ${b} || exit 1
+done
+popd
 
 %clean
 rm -rf %{buildroot}
@@ -90,6 +99,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Nov 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.20.1-7
+- Bump version as a part of rpm upgrade
 * Mon Sep 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.20.1-6
 - Fix devel package requires
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.20.1-5
