@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.34
+Version:        8.0.35
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -9,7 +9,9 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=e5e79ac6870c214cf62c8e2830106d60e09d2e6df30654b84bb5d26864b4eabe777468a223e6ee4c1e22b7f6ec086c73e85e3f4c1fa66912b0e59b606ab46cd6
+%define sha512 %{name}-boost=2936f7a84aa5f96633b239d1dba3613462d88f3a2ea493a7d05aa9a9b590e9e36a30857f44fcdb11360242375d6106e80cd1b32e0c6cb14502c1518ad1a720b2
+
+Source1: %{name}.sysusers
 
 BuildRequires: cmake
 BuildRequires: rpcsvc-proto-devel
@@ -25,6 +27,8 @@ BuildRequires: libtirpc-devel
 BuildRequires: ncurses-devel
 BuildRequires: libnuma-devel
 BuildRequires: libfido2-devel
+BuildRequires: systemd-devel
+BuildRequires: libaio-devel
 
 Requires: icu
 Requires: libedit
@@ -39,6 +43,7 @@ Requires: perl
 Requires: ncurses-libs
 Requires: libnuma
 Requires: libfido2
+Requires: libaio
 
 %description
 MySQL is a free, widely used SQL engine.
@@ -62,57 +67,108 @@ This package contains ICU data files needed by MySQL regular expressions.
 
 %build
 %{cmake} \
-  -DCMAKE_INSTALL_PREFIX=%{_usr} \
+  -DBUILD_CONFIG="mysql_release" \
+  -DCMAKE_INSTALL_PREFIX="%{_prefix}" \
+  -DINSTALL_LIBDIR="lib" \
+  -DINSTALL_PLUGINDIR="lib/plugin" \
+  -DINSTALL_SUPPORTFILESDIR="share/support-files" \
+  -DINSTALL_LAYOUT=RPM \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+  -DTMPDIR=%{_var}/tmp \
   -DWITH_BOOST=boost \
-  -DINSTALL_MANDIR=%{_mandir} \
-  -DINSTALL_DOCDIR=%{_docdir} \
-  -DINSTALL_DOCREADMEDIR=%{_docdir} \
-  -DINSTALL_SUPPORTFILESDIR=share/support-files \
-  -DCMAKE_BUILD_TYPE=RELEASE \
   -DCMAKE_C_FLAGS=-fPIC \
   -DCMAKE_CXX_FLAGS=-fPIC \
   -DWITH_EMBEDDED_SERVER=OFF \
   -DFORCE_INSOURCE_BUILD=1 \
   -DWITH_UNIT_TESTS=OFF \
   -DWITH_ROUTER=OFF \
-  -DWITH_SYSTEM_LIBS=ON
+  -DWITH_SYSTEM_LIBS=ON \
+  -DMYSQL_UNIX_ADDR="%{_sharedstatedir}/%{name}/%{name}.sock" \
+  -DDAEMON_NAME="mysqld" \
+  -DNICE_PROJECT_NAME="MySQL" \
+  -DWITH_SYSTEMD=1 \
+  -DSYSTEMD_SERVICE_NAME="mysqld" \
+  -DSYSTEMD_PID_DIR="/run/mysqld"
 
 %{cmake_build}
 
 %install
 %{cmake_install}
 
-%if 0%{?with_check}
+# Ensure that needed directories exist
+install -d -m 0751 %{buildroot}%{_sharedstatedir}/%{name}
+install -d -m 0755 %{buildroot}/run/mysqld
+install -d -m 0750 %{buildroot}%{_sharedstatedir}/%{name}-files
+install -d -m 0750 %{buildroot}%{_sharedstatedir}/%{name}-keyring
+
+pushd %{__cmake_builddir}
+# Install config and logrotate
+install -D -m 0644 packaging/rpm-common/%{name}.logrotate \
+            %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+
+install -D -m 0644 packaging/rpm-common/my.cnf \
+            %{buildroot}%{_sysconfdir}/my.cnf
+
+install -d %{buildroot}%{_sysconfdir}/my.cnf.d
+popd
+
+rm -rf %{buildroot}%{_datadir}/%{name}-test \
+       %{buildroot}%{_libdir}/*.a
+
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+
 %check
-pushd %{__cmake_builddir}/mysql-test
-./mysql-test-run.pl --parallel=$(nproc) \
+pushd %{__cmake_builddir}/%{name}-test
+./%{name}-test-run.pl --parallel=$(nproc) \
                     --force --retry=2 \
                     --max-test-fail=9999 \
                     --summary-report=test-summary.log ||:
-[ $(grep -w "Completed:" var/test-summary.log | cut -d ' ' -f5 | cut -d '.' -f1) -gt 95 ]
+test $(grep -w "Completed:" var/test-summary.log | cut -d' ' -f5 | cut -d. -f1) -gt 95
 popd
-%endif
-
-%{ldconfig_scriptlets}
 
 %clean
 rm -rf %{buildroot}/*
 
+%pre
+if [ $1 -eq 1 ]; then
+  %sysusers_create_compat %{SOURCE1}
+fi
+
+%post
+/sbin/ldconfig
+[ -e /var/log/mysqld.log ] || \
+  install -m0640 -omysql -gmysql /dev/null /var/log/mysqld.log >/dev/null 2>&1 || :
+
+%systemd_post mysqld.service
+
+%preun
+%systemd_preun mysqld.service
+
+%postun
+/sbin/ldconfig
+%systemd_postun_with_restart mysqld.service
+
 %files
 %defattr(-,root,root)
-%{_libdir}/plugin/*
-%{_libdir}/*.so.*
+%dir %attr(751,mysql,mysql) %{_sharedstatedir}/mysql
+%dir %attr(755,mysql,mysql) /run/mysqld
+%dir %attr(750,mysql,mysql) %{_sharedstatedir}/mysql-files
+%dir %attr(750,mysql,mysql) %{_sharedstatedir}/mysql-keyring
+%config(noreplace) %{_sysconfdir}/my.cnf
+%dir %{_sysconfdir}/my.cnf.d
+%{_sysusersdir}/%{name}.sysusers
 %{_bindir}/*
-%{_mandir}/man1/*
-%{_mandir}/man8/*
-%{_datadir}/support-files/*
-%exclude %{_usr}/mysql-test
-%exclude %{_datadir}
+%{_sbindir}/*
+%{_libdir}/*.so.*
+%{_libdir}/plugin/*
+%{_datadir}/*
+%{_unitdir}/*.service
+%{_tmpfilesdir}/%{name}.conf
+%{_sysconfdir}/logrotate.d/%{name}
 
 %files devel
 %defattr(-,root,root)
 %{_libdir}/*.so
-%{_libdir}/*.a
 %{_includedir}/*
 %{_libdir}/pkgconfig/mysqlclient.pc
 
@@ -120,6 +176,9 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Wed Nov 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-1
+- Upgrade to v8.0.35
+- Add systemd service files for mysql-server
 * Sun Jul 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.34-1
 - Upgrade to v8.0.34
 * Mon Jul 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.33-4
