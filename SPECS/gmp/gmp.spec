@@ -1,14 +1,16 @@
 Summary:         Math libraries
 Name:            gmp
 Version:         6.2.1
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         LGPLv3+
 URL:             http://www.gnu.org/software/gmp
 Group:           Applications/System
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Source0:         http://ftp.gnu.org/gnu/gmp/%{name}-%{version}.tar.xz
-%define sha1 gmp=0578d48607ec0e272177d175fd1807c30b00fdf2
+%define sha512   %{name}=c99be0950a1d05a0297d65641dd35b75b74466f7bf03c9e8a99895a3b2f9a0856cd17887738fa51cf7499781b65c049769271cbcb77d057d2e9f1ec52e07dd84
+
+Patch0: mpz-inp_raw-avoid-bit-size-overflows.patch
 
 %description
 The GMP package contains math libraries. These have useful functions
@@ -23,7 +25,7 @@ It contains the libraries and header files to create applications
 for handling compiled objects.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 
@@ -41,7 +43,7 @@ cp -v configfsf.sub config.sub
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cp -v doc/{isa_abi_headache,configuration} doc/*.html %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 find %{buildroot}%{_libdir} -name '*.la' -delete
@@ -68,6 +70,8 @@ make %{?_smp_mflags} check
 %{_docdir}/%{name}-%{version}/isa_abi_headache
 
 %changelog
+*   Mon Nov 13 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.2.1-2
+-   Add patch to fix CVE-2021-43618
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 6.2.1-1
 -   Automatic Version Bump
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 6.2.0-1
