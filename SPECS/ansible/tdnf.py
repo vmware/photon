@@ -289,6 +289,9 @@ def convert_to_list(input_list):
     """Convert nested list into flat list"""
     flat_list = []
 
+    if not input_list:
+      return flat_list
+  
     for sublist in input_list:
         if not isinstance(sublist, list):
             flat_list.append(sublist)
