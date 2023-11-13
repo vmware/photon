@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -35,6 +35,7 @@ Requires: python3-PyYAML
 Requires: python3-xml
 Requires: python3-paramiko
 Requires: python3-resolvelib
+Requires: python3-curses
 
 %description
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
@@ -71,6 +72,9 @@ touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 %{_rpmconfigdir}/%{name}_collection.py
 
 %changelog
+* Mon Nov 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.14.2-2
+- Fix requires
+- Fix an issue in upgrade using playbook.
 * Wed Feb 22 2023 Nitesh Kumar <kunitesh@vmware.com> 2.14.2-1
 - Version upgrade to v2.14.2
 * Fri Dec 16 2022 Nitesh Kumar <kunitesh@vmware.com> 2.14.1-1
