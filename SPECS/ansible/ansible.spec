@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.12.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -12,8 +12,7 @@ Source0: https://github.com/ansible/ansible/archive/refs/tags/%{name}-%{version}
 %define sha512 %{name}=8600fc96950ec1c0490bf3cbed88a1729bf4505b82879192ea9560ac6a90d27a382072e5d4aa92072f21e804867932c37ec7e5e75ffd08a383c4bf7d0e030607
 
 Source1: macros.ansible
-
-Patch0: Add-Photon-OS-tdnf-support.patch
+Source: tdnf.py
 
 BuildArch: noarch
 
@@ -27,6 +26,7 @@ Requires: python3-PyYAML
 Requires: python3-xml
 Requires: python3-paramiko
 Requires: python3-resolvelib
+Requires: python3-curses
 
 %description
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
@@ -40,6 +40,7 @@ Development files for ansible packages
 
 %prep
 %autosetup -p1
+cp -vp %{SOURCE2} lib/%{name}/modules/
 
 %build
 %{py3_build}
@@ -59,6 +60,9 @@ touch -r %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Mon Nov 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.12.7-2
+- Fix requires
+- Fix an issue in upgrade using playbook.
 * Thu Nov 24 2022 Nitesh Kumar <kunitesh@vmware.com> 2.12.7-1
 - Version upgrade to v2.12.7
 * Wed Sep 28 2022 Nitesh Kumar <kunitesh@vmware.com> 2.12.1-2
