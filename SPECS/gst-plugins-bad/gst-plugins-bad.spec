@@ -1,7 +1,7 @@
 Summary:        The GStreamer Bad Plug-ins package contains a set a set of plug-ins that aren't up to par compared to the rest
 Name:           gst-plugins-bad
 Version:        1.17.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2
 URL:            http://gstreamer.freedesktop.org/
 Group:          Applications/Multimedia
@@ -13,6 +13,8 @@ Source0: http://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
 
 Patch0:         CVE-2021-3185.patch
 Patch1:         CVE-2023-37329.patch
+Patch2:         CVE-2023-40474.patch
+Patch3:         CVE-2023-40475.patch
 
 BuildRequires:  meson
 BuildRequires:  cmake
@@ -72,6 +74,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0
 
 %changelog
+* Tue Nov 14 2023 Kuntal Nayak <nkuntal@vmware.com> 1.17.1-4
+- Fix CVE-2023-40474
 * Thu Sep 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.17.1-3
 - Fix CVE-2023-37329
 * Tue Mar 21 2023 Shivani Agarwal <shivania2@vmware.com> 1.17.1-2
