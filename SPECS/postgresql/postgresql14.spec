@@ -11,7 +11,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.9
+Version:        14.10
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -20,7 +20,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=8a7f74c5fd1ec5339085f357b3044dd0d763e3368bd42b5d68497eba5cbf71e9c76a329580d8aa3145aa98a157f28df548c4a6dc2d880db5c0156baa231f5d24
+%define sha512 %{srcname}=f546e62eb158efdeecf091271ee60945604ca7f3683f0b259ee18eb682431158e282bf4f81d8df304c956919788f8077e72aa47c467d32d6aef1ccfe470862a5
 
 BuildRequires:  diffutils
 BuildRequires:  gcc
@@ -275,6 +275,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.10-1
+- Upgrade to v14.10
 * Sun Aug 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.9-1
 - Upgrade to v14.9
 * Mon Jul 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.8-2
