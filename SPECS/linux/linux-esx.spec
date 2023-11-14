@@ -20,8 +20,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.60
-Release:        5%{?dist}
+Version:        6.1.62
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -32,7 +32,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=cef40235428a09e5f7807a8be83af9a5ab90e841049a04f9f851e69e602aeab5a50f523cae5d5928d345c11b728608eba7754b173be0c023c7ee564cfaf4b20a
+%define sha512 linux=3d0ba0200fb2337e4c2a0fd417adff32dffa1d24048a457be527556d6d6321e92c7dd80a75f13e2279e1facd4784a3a4e79e1b1ea45b6dd08824a6ab7c0ea0bc
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -545,6 +545,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Nov 14 2023 Ankit Jain <ankitja@vmware.com> 6.1.62-1
+- Update to version 6.1.62
 * Mon Nov 6 2023 Albert Guo <aguo@vmware.com> 6.1.60-5
 - Use iov_iter_revert() to fix offset of iov.
 * Fri Oct 27 2023 Ankit Jain <ankitja@vmware.com> 6.1.60-4

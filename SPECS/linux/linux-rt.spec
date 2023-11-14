@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.60
-Release:        4%{?dist}
+Version:        6.1.62
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,48 +27,51 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=cef40235428a09e5f7807a8be83af9a5ab90e841049a04f9f851e69e602aeab5a50f523cae5d5928d345c11b728608eba7754b173be0c023c7ee564cfaf4b20a
+%define sha512 linux=3d0ba0200fb2337e4c2a0fd417adff32dffa1d24048a457be527556d6d6321e92c7dd80a75f13e2279e1facd4784a3a4e79e1b1ea45b6dd08824a6ab7c0ea0bc
 
 %ifarch x86_64
-Source1:    config-rt
+Source1: config-rt
 %endif
 
-Source2:    initramfs.trigger
+Source2: initramfs.trigger
 # contains pre, postun, filetriggerun tasks
-Source4:    scriptlets.inc
-Source5:    check_for_config_applicability.inc
+Source4: scriptlets.inc
+Source5: check_for_config_applicability.inc
+# Real-Time kernel (PREEMPT_RT patches)
+# Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
+Source6: preempt_rt.patches
 
 %ifarch x86_64
 %define i40e_version 2.22.18
-Source6:    https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
+Source7: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
 
 %define iavf_version 4.8.2
-Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
+Source8: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
 %define sha512 iavf=5406b86e61f6528adfd7bc3a5f330cec8bb3b4d6c67395961cc6ab78ec3bd325c3a8655b8f42bf56fb47c62a85fb7dbb0c1aa3ecb6fa069b21acb682f6f578cf
 
 %define ice_version 1.11.14
-Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
+Source9: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha512 ice=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
 %endif
 
 %if 0%{?fips}
-Source9:        check_fips_canister_struct_compatibility.inc
+Source10: check_fips_canister_struct_compatibility.inc
 
 %define fips_canister_version 5.0.0-6.1.56-6%{?dist}-secure
-Source16:       fips-canister-%{fips_canister_version}.tar.bz2
+Source16: fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=7e1dc80c5eecf2a8cf5e5fc964b5fa56dbcaff9d11a97393d0d57ab8f63ea343f0d164a4354d011c2dc946abd3fd6f772905f1a8e355b22ee318adcdd2fe6b26
 %endif
 
-Source19:        spec_install_post.inc
+Source19: spec_install_post.inc
 
-Source20:       %{name}-dracut.conf
+Source20: %{name}-dracut.conf
 
-Source21:       photon_sb2020.pem
+Source21: photon_sb2020.pem
 
 %ifarch x86_64
 # Secure Boot
-Source25:       linux-sbat.csv.in
+Source25: linux-sbat.csv.in
 
 %define jent_major_version 3.4.1
 %define jent_ph_version 4
@@ -141,68 +144,7 @@ Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
-Patch301: 0001-vduse-Remove-include-of-rwlock.h.patch
-Patch302: 0002-signal-Don-t-disable-preemption-in-ptrace_stop-on-PR.patch
-Patch303: 0003-sched-Consider-task_struct-saved_state-in-wait_task_.patch
-Patch304: 0004-spi-Remove-the-obsolte-u64_stats_fetch_-_irq-users.patch
-Patch305: 0005-net-Remove-the-obsolte-u64_stats_fetch_-_irq-users-d.patch
-Patch306: 0006-net-Remove-the-obsolte-u64_stats_fetch_-_irq-users-n.patch
-Patch307: 0007-bpf-Remove-the-obsolte-u64_stats_fetch_-_irq-users.patch
-Patch308: 0008-u64_stat-Remove-the-obsolete-fetch_irq-variants.patch
-Patch309: 0009-net-Avoid-the-IPI-to-free-the.patch
-Patch310: 0010-x86-Allow-to-enable-RT.patch
-Patch311: 0011-x86-Enable-RT-also-on-32bit.patch
-Patch312: 0012-softirq-Use-a-dedicated-thread-for-timer-wakeups.patch
-Patch313: 0013-rcutorture-Also-force-sched-priority-to-timersd-on-b.patch
-Patch314: 0014-tick-Fix-timer-storm-since-introduction-of-timersd.patch
-Patch315: 0015-softirq-Wake-ktimers-thread-also-in-softirq.patch
-Patch316: 0016-tpm_tis-fix-stall-after-iowrite-s.patch
-Patch317: 0017-zram-Replace-bit-spinlocks-with-spinlock_t-for-PREEM.patch
-Patch318: 0018-locking-lockdep-Remove-lockdep_init_map_crosslock.patch
-Patch319: 0019-printk-Bring-back-the-RT-bits.patch
-Patch320: 0020-printk-add-infrastucture-for-atomic-consoles.patch
-Patch321: 0021-serial-8250-implement-write_atomic.patch
-Patch322: 0022-printk-avoid-preempt_disable-for-PREEMPT_RT.patch
-Patch323: 0023-drm-i915-Use-preempt_disable-enable_rt-where-recomme.patch
-Patch324: 0024-drm-i915-Don-t-disable-interrupts-on-PREEMPT_RT-duri.patch
-Patch325: 0025-drm-i915-Don-t-check-for-atomic-context-on-PREEMPT_R.patch
-Patch326: 0026-drm-i915-Disable-tracing-points-on-PREEMPT_RT.patch
-Patch327: 0027-drm-i915-skip-DRM_I915_LOW_LEVEL_TRACEPOINTS-with-NO.patch
-Patch328: 0028-drm-i915-gt-Queue-and-wait-for-the-irq_work-item.patch
-Patch329: 0029-drm-i915-gt-Use-spin_lock_irq-instead-of-local_irq_d.patch
-Patch330: 0030-drm-i915-Drop-the-irqs_disabled-check.patch
-Patch331: 0031-Revert-drm-i915-Depend-on-PREEMPT_RT.patch
-Patch332: 0032-sched-Add-support-for-lazy-preemption.patch
-Patch333: 0033-x86-entry-Use-should_resched-in-idtentry_exit_cond_r.patch
-Patch334: 0034-x86-Support-for-lazy-preemption.patch
-Patch335: 0035-entry-Fix-the-preempt-lazy-fallout.patch
-Patch336: 0036-arm-Add-support-for-lazy-preemption.patch
-Patch337: 0037-powerpc-Add-support-for-lazy-preemption.patch
-Patch338: 0038-arch-arm64-Add-lazy-preempt-support.patch
-Patch339: 0039-arm-Disable-jump-label-on-PREEMPT_RT.patch
-Patch340: 0040-ARM-enable-irq-in-translation-section-permission-fau.patch
-Patch341: 0041-tty-serial-omap-Make-the-locking-RT-aware.patch
-Patch342: 0042-tty-serial-pl011-Make-the-locking-work-on-RT.patch
-Patch343: 0043-ARM-Allow-to-enable-RT.patch
-Patch344: 0044-ARM64-Allow-to-enable-RT.patch
-Patch345: 0045-powerpc-traps-Use-PREEMPT_RT.patch
-Patch346: 0046-powerpc-pseries-iommu-Use-a-locallock-instead-local_.patch
-Patch347: 0047-powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch
-Patch348: 0048-powerpc-stackprotector-work-around-stack-guard-init-.patch
-Patch349: 0049-POWERPC-Allow-to-enable-RT.patch
-Patch350: 0050-sysfs-Add-sys-kernel-realtime-entry.patch
-Patch351: 0051-Add-localversion-for-RT-release.patch
-Patch352: 0052-Linux-6.1.46-rt13-REBASE.patch
-Patch353: 0053-io-mapping-don-t-disable-preempt-on-RT-in-io_mapping.patch
-Patch354: 0054-locking-rwbase-Mitigate-indefinite-writer-starvation.patch
-Patch355: 0055-revert-softirq-Let-ksoftirqd-do-its-job.patch
-Patch356: 0056-debugobjects-locking-Annotate-debug_object_fill_pool.patch
-Patch357: 0057-sched-avoid-false-lockdep-splat-in-put_task_struct.patch
-Patch358: 0058-mm-page_alloc-Use-write_seqlock_irqsave-instead-writ.patch
-Patch359: 0059-bpf-Remove-in_atomic-from-bpf_link_put.patch
-Patch360: 0060-posix-timers-Ensure-timer-ID-search-loop-limit-is-va.patch
-Patch361: 0061-drm-i915-Do-not-disable-preemption-for-resets.patch
-Patch362: 0062-Linux-6.1.59-rt16-REBASE.patch
+%include %{SOURCE6}
 
 # Ignore reading localversion-rt
 Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
@@ -319,11 +261,11 @@ The Linux package contains the Linux kernel doc files
 %setup -q -n linux-%{version}
 %ifarch x86_64
 # Using autosetup is not feasible
-%setup -q -T -D -b 6 -n linux-%{version}
-# Using autosetup is not feasible
 %setup -q -T -D -b 7 -n linux-%{version}
 # Using autosetup is not feasible
 %setup -q -T -D -b 8 -n linux-%{version}
+# Using autosetup is not feasible
+%setup -q -T -D -b 9 -n linux-%{version}
 %endif
 %if 0%{?fips}
 # Using autosetup is not feasible
@@ -417,7 +359,7 @@ sed -e "s,@@NAME@@,%{name},g" \
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{?arch} %{?_smp_mflags}
 
 %if 0%{?fips}
-%include %{SOURCE9}
+%include %{SOURCE10}
 %endif
 
 %ifarch x86_64
@@ -563,6 +505,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Nov 14 2023 Ankit Jain <ankitja@vmware.com> 6.1.62-1
+- Update to version 6.1.62
 * Fri Oct 27 2023 Ankit Jain <ankitja@vmware.com> 6.1.60-4
 - Fix for CVE-2023-0597
 * Fri Oct 27 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.60-3
