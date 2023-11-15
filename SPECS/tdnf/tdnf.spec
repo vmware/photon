@@ -3,7 +3,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.1.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -24,6 +24,7 @@ BuildRequires:  rpm-devel
 BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
+BuildRequires:  glib-devel >= 2.58.3
 BuildRequires:  libmetalink-devel
 BuildRequires:  systemd
 #plugin repogpgcheck
@@ -33,7 +34,7 @@ BuildRequires:  python3-devel
 
 %if 0%{?with_check}
 BuildRequires:  createrepo_c
-BuildRequires:  glib
+BuildRequires:  glib >= 2.58.3
 BuildRequires:  libxml2
 BuildRequires:  python3-pip
 BuildRequires:  photon-release
@@ -232,6 +233,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.1.15-2
+- Version bump due to glib change
 * Mon Jun 05 2023 Oliver Kurth <okurth@vmware.com> 3.1.15-1
 - update to 3.1.15
 - fix reinstall conflicts PR #428

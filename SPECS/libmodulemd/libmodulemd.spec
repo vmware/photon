@@ -1,7 +1,7 @@
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
 Version:        2.4.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
@@ -14,7 +14,7 @@ Source0:        https://github.com/fedora-modularity/libmodulemd/archive/%{name}
 BuildRequires:  meson
 BuildRequires:  clang-devel
 BuildRequires:  gcc
-BuildRequires:  glib
+BuildRequires:  glib-devel >= 2.58.3
 BuildRequires:  valgrind
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  python3-pygobject
@@ -24,6 +24,7 @@ BuildRequires:  gtk-doc
 BuildRequires:  libyaml-devel
 
 Requires:       libyaml
+Requires:       glib >= 2.58.3
 
 %description
 C Library for manipulating module metadata files
@@ -31,6 +32,7 @@ C Library for manipulating module metadata files
 %package        devel
 Summary:        Header and development files for libmodulemd
 Requires:       libyaml-devel
+Requires:       glib-devel >= 2.58.3
 Requires:       %{name} = %{version}-%{release}
 %description    devel
 It contains the libraries and header files.
@@ -73,6 +75,8 @@ DESTDIR=%{buildroot}/ ninja install
 %{_includedir}/modulemd/*
 
 %changelog
+* Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.4.0-5
+- Version bump due to glib change
 * Wed Jul 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.4.0-4
 - Remove clang from Requires
 * Tue Jul 27 2021 Tapas Kundu <tkundu@vmware.com> 2.4.0-3

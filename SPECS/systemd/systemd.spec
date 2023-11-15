@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          48%{?dist}
+Release:          49%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -83,7 +83,7 @@ Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
 Requires:         kmod
-Requires:         glib
+Requires:         glib >= 2.58.3
 Requires:         libgcrypt
 Requires:         filesystem >= 1.1
 Requires:         elfutils
@@ -102,7 +102,7 @@ BuildRequires:    util-linux-devel >= 2.30
 BuildRequires:    libxslt
 BuildRequires:    docbook-xsl
 BuildRequires:    docbook-xml
-BuildRequires:    glib-devel
+BuildRequires:    glib-devel >= 2.58.3
 BuildRequires:    meson
 BuildRequires:    gettext
 BuildRequires:    shadow
@@ -344,6 +344,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 239-49
+- Version bump due to glib change
 * Wed Aug 16 2023 Roye Eshed <eshedr@vmware.com> 239-48
 - Add noreplace for 99-vmware-hotplug.rules
 * Wed Mar 01 2023 Shivani Agarwal <shivania2@vmware.com> 239-47

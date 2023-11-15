@@ -1,7 +1,7 @@
 Summary:          OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:             tpm2-tss
 Version:          2.4.5
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          BSD 2-Clause
 URL:              https://github.com/tpm2-software/tpm2-tss
 Group:            System Environment/Security
@@ -9,6 +9,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-%{version}.tar.gz
 %define sha512 tpm2=2c92af07ed1cc3665c19479c00ce5608883081f311192a264a4f7d9119c75ac582596c53b910534c4b66dbb60de2ffd3d6218169748332609c2e0fc89f519259
+Patch0:           0001-Fix-cflags-for-tss2.patch
 BuildRequires:    openssl-devel
 Requires:         openssl
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
@@ -68,6 +69,8 @@ fi
 %{_mandir}/man7
 
 %changelog
+* Mon Nov 20 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.4.5-3
+- Fix include dir in pkgconfig
 * Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.4.5-2
 - Remove .la files
 * Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.5-1

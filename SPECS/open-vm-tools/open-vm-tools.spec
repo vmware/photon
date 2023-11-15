@@ -7,7 +7,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        12.2.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -38,7 +38,7 @@ Patch4: ovt-unknown-ioctl.patch
 Patch5: CVE-2023-34058.patch
 Patch6: CVE-2023-34059.patch
 
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.58.3
 BuildRequires: libxml2-devel
 BuildRequires: xmlsec1-devel
 BuildRequires: libltdl-devel
@@ -53,7 +53,7 @@ BuildRequires: libtirpc-devel
 
 Requires: fuse
 Requires: libmspack
-Requires: glib
+Requires: glib >= 2.58.3
 Requires: openssl
 Requires: libstdc++
 Requires: libtirpc
@@ -171,6 +171,8 @@ fi
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
 
 %changelog
+* Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 12.2.0-5
+- Version bump due to glib change
 * Fri Oct 20 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.0-4
 - Fix CVE-2023-34058, CVE-2023-34059
 * Tue Aug 29 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.0-3

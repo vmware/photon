@@ -1,7 +1,7 @@
 Summary:        TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
 Name:           tpm2-abrmd
 Version:        2.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-abrmd
 Group:          System Environment/Security
@@ -13,13 +13,13 @@ Source0:        https://github.com/tpm2-software/tpm2-abrmd/releases/download/2.
 
 BuildRequires:  which
 BuildRequires:  dbus-devel
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.58.3
 BuildRequires:  tpm2-tss-devel
 BuildRequires:  systemd-devel
 
 Requires: systemd
 Requires: dbus
-Requires: glib
+Requires: glib >= 2.58.3
 Requires: tpm2-tss
 
 %description
@@ -69,6 +69,8 @@ The libraries and header files needed for TSS2 ABRMD development.
 %{_mandir}/man7
 
 %changelog
+* Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>  2.4.1-2
+- Version bump due to glib change
 * Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.4.1-1
 - Remove .la files
 * Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1.1-1

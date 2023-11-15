@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.2.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -9,14 +9,14 @@ URL:           http://www.vmware.com
 Distribution:  Photon
 
 Source0:       %{name}-%{version}.tar.gz
-%define sha1 netmgmt=e08b88b8c9b11a226d5483a6d978e70e96ef7464
+%define sha512 netmgmt=345c83eb8635d96c66d2926ae543ad872798036a3b68cd07f6c68d42537b71585692ce30f2537ec732143f506bac40e3e1a126aa19c8647627d6ca26899b74a8
 
 BuildRequires: autoconf
 BuildRequires: check >= 0.9.4
 BuildRequires: docker >= 1.12
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.58.3
 
-Requires:      glib
+Requires:      glib >= 2.58.3
 Requires:      iputils
 Requires:      libgcc
 Requires:      ntp
@@ -48,7 +48,7 @@ header files and libraries for netmgmt cli
 %build
 autoreconf -mif
 %configure \
-	--libdir=%{_lib64dir}
+        --libdir=%{_lib64dir}
 %make_build
 
 %install
@@ -79,6 +79,8 @@ find %{buildroot} -name '*.la' -delete
 #%%doc ChangeLog README COPYING
 
 %changelog
+* Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.2.0-3
+- Version bump due to glib change
 * Tue Sep 3 2019 Michelle Wang <michellew@vmware.com> 1.2.0-2
 - Remove make check for netmgmt since those are package tests instead of unit tests.
 * Thu Dec 06 2018 Michelle Wang <michellew@vmware.com> 1.2.0-1

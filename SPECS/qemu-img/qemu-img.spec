@@ -2,7 +2,7 @@
 Summary:       QEMU disk image utility
 Name:          qemu-img
 Version:       4.2.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GNU GPLv2
 URL:           https://www.qemu.org
 Group:         Development/Tools
@@ -11,10 +11,10 @@ Distribution:  Photon
 Source0:       https://download.qemu.org/qemu-%{version}.tar.xz
 %define sha512 qemu=30af46fd47d353bb692df85fe28b867604a7476348106210b747c608b585f3c19c0cfb7e394d0911c310d46fecc86685661dcde726d732c8de33bec592c16891
 BuildRequires: python3-devel
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.58.3
 BuildRequires: pixman-devel
 Requires:      libstdc++
-Requires:      glib
+Requires:      glib >= 2.58.3
 Requires:      glibc
 Requires:      zlib
 
@@ -160,9 +160,11 @@ popd
 %{_datadir}/qemu
 
 %changelog
-*   Tue May 24 2022 Piyush Gupta <gpiyush@vmware.com> 4.2.1-2
--   Added libstdc++ in Requires.
-*   Thu Dec 17 2020 Gerrit Photon <photon-checkins@vmware.com> 4.2.1-1
--   Automatic Version Bump
-*   Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 4.2.0-1
--   Initial build.  First version
+* Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.2.1-3
+- Version bump due to glib change
+* Tue May 24 2022 Piyush Gupta <gpiyush@vmware.com> 4.2.1-2
+- Added libstdc++ in Requires.
+* Thu Dec 17 2020 Gerrit Photon <photon-checkins@vmware.com> 4.2.1-1
+- Automatic Version Bump
+* Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 4.2.0-1
+- Initial build.  First version

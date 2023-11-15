@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.37.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -12,7 +12,7 @@ Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{v
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
 Patch0:         fix_autogen_issue.patch
-Requires:       glib
+Requires:       glib >= 2.58.3
 Requires:       openssl
 Requires:       glibc
 Requires:       json-glib
@@ -26,7 +26,7 @@ BuildRequires:  autoconf-archive
 BuildRequires:  automake
 BuildRequires:  libtool
 BuildRequires:  eventlog
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.58.3
 BuildRequires:  json-glib-devel
 BuildRequires:  json-c-devel
 BuildRequires:  openssl-devel
@@ -168,45 +168,47 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
-*   Thu Jun 30 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-1
--   Bump version
-*   Mon Mar 21 2022 Oliver Kurth <okurth@vmware.com> 3.36.1-1
--   Bump version, add MQTT support
-*   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 3.17.2-2
--   Fix build with updated python symlink changes
-*   Wed Oct 10 2018 Ankit Jain <ankitja@vmware.com> 3.17.2-1
--   Update to version 3.17.2
-*   Mon Sep 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-3
--   Obsolete eventlog.
-*   Mon Sep 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-2
--   Use old service file.
-*   Fri Aug 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-1
--   Update to version 3.11.1
-*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  3.9.1-3
--   Disabled syslog-ng service by default
-*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 3.9.1-2
--   Move python2 requires to python2 subpackage and added python3 binding.
-*   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.9.1-1
--   Update to version 3.9.1
-*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.6.4-6
--   Modified %check
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  3.6.4-5
--   Fixed logic to restart the active services after upgrade
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.4-4
--   GA - Bump release of all rpms
-*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  3.6.4-3
--   Fix for upgrade issues
-*   Wed Feb 17 2016 Anish Swaminathan <anishs@vmware.com>  3.6.4-2
--   Add journald conf file.
-*   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 3.6.4-1
--   Upgrade version.
-*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  3.6.2-5
--   Change config file attributes.
-*   Wed Dec 09 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.6.2-4
--   Moving files from devel rpm to the main package.
-*   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.6.2-3
--   Adding preun section.
-*   Sat Jul 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-2
--   Split headers and unshared libs over to devel package.
-*   Thu Jun 4 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-1
--   Add syslog-ng support to photon.
+* Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.37.1-2
+- Version bump due to glib change
+* Thu Jun 30 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-1
+- Bump version
+* Mon Mar 21 2022 Oliver Kurth <okurth@vmware.com> 3.36.1-1
+- Bump version, add MQTT support
+* Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 3.17.2-2
+- Fix build with updated python symlink changes
+* Wed Oct 10 2018 Ankit Jain <ankitja@vmware.com> 3.17.2-1
+- Update to version 3.17.2
+* Mon Sep 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-3
+- Obsolete eventlog.
+* Mon Sep 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-2
+- Use old service file.
+* Fri Aug 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-1
+- Update to version 3.11.1
+* Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  3.9.1-3
+- Disabled syslog-ng service by default
+* Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 3.9.1-2
+- Move python2 requires to python2 subpackage and added python3 binding.
+* Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.9.1-1
+- Update to version 3.9.1
+* Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.6.4-6
+- Modified %check
+* Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  3.6.4-5
+- Fixed logic to restart the active services after upgrade
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.4-4
+- GA - Bump release of all rpms
+* Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  3.6.4-3
+- Fix for upgrade issues
+* Wed Feb 17 2016 Anish Swaminathan <anishs@vmware.com>  3.6.4-2
+- Add journald conf file.
+* Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 3.6.4-1
+- Upgrade version.
+* Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  3.6.2-5
+- Change config file attributes.
+* Wed Dec 09 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.6.2-4
+- Moving files from devel rpm to the main package.
+* Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.6.2-3
+- Adding preun section.
+* Sat Jul 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-2
+- Split headers and unshared libs over to devel package.
+* Thu Jun 4 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-1
+- Add syslog-ng support to photon.

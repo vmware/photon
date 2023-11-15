@@ -1,7 +1,7 @@
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
 Version:        1.4.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 Group:          Development/Libraries
 URL:            http://live.gnome.org/JsonGlib
@@ -17,14 +17,14 @@ BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  gobject-introspection-python
 BuildRequires:  gobject-introspection-devel
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.58.3
 BuildRequires:  libtool
 BuildRequires:  which
 BuildRequires:  meson
 BuildRequires:  python3-devel
 BuildRequires:  gtk-doc
 
-Requires:   glib
+Requires:   glib >= 2.58.3
 
 Provides:   pkgconfig(json-glib-1.4)
 
@@ -86,6 +86,8 @@ rm -rf %{buildroot}
 %{_datadir}/installed-tests/*
 
 %changelog
+* Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.4.4-3
+- Version bump due to glib change
 * Tue Aug 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.4-2
 - Fix meson test usages
 * Fri Sep 21 2018 Ankit Jain <ankitja@vmware.com> 1.4.4-1

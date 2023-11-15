@@ -1,7 +1,7 @@
 Summary:    Glib networking modules
 Name:       glib-networking
 Version:    2.59.1
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/glib-networking
 Group:      System Environment/Development
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/glib-networking/2.50/%{name}-%{version}.tar.xz
-%define sha1 %{name}=91b9c594712be28e4e3b2d7c60b06c20b62667ee
+%define sha512 %{name}=558fe6280394b8656464717c3962cf3e10c97e5cb1967f729809dcdd251b53cc2f775bbb308bb1dda951429480110c0f3b50fd8ba37c2088e169f790372b79bb
 
 Patch0:     CVE-2020-13645.patch
 
@@ -20,8 +20,8 @@ BuildRequires:  ca-certificates
 BuildRequires:  gnutls-devel
 BuildRequires:  openssl-devel
 BuildRequires:  intltool
-BuildRequires:  glib
-BuildRequires:  glib-devel
+BuildRequires:  glib >= 2.58.3
+BuildRequires:  glib-devel >= 2.58.3
 BuildRequires:  glib-schemas
 BuildRequires:  meson
 BuildRequires:  gnome-common
@@ -77,6 +77,8 @@ cd build && ninja test
 %defattr(-,root,root)
 
 %changelog
+* Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.59.1-6
+- Version bump due to glib change
 * Fri Mar 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.59.1-5
 - Exclude debug symbols properly
 * Sat Apr 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.59.1-4

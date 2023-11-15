@@ -1,7 +1,7 @@
 Summary:    File manager
 Name:       mc
 Version:    4.8.25
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv3+
 URL:        https://www.midnight-commander.org
 Group:      Applications/System
@@ -9,15 +9,15 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    http://ftp.midnight-commander.orgtar/%{name}-%{version}.tar.xz
-%define sha1 %{name}=4082ae830f09e919112aa3fc1d7e5333921a6a33
+%define sha512 %{name}=51913fd41df18b49498b97ad8e13aa4365cec24ab24169b1abe93209263e4cfea4b52e0faccaf934182c84e8eb5dc49336c885358b4b66c48d38900f890fde5e
 
 Patch0:     disable-extfs-test.patch
 
-Requires: glib
+Requires: glib >= 2.58.3
 Requires: pcre
 Requires: slang
 
-BuildRequires: glib-devel
+BuildRequires: glib-devel >= 2.58.3
 BuildRequires: pcre-devel
 BuildRequires: slang-devel
 
@@ -49,6 +49,8 @@ make %{?_smp_mflags} -k check
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.8.25-3
+- Version bump due to glib change
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.8.25-2
 - Exclude debug symbols properly
 * Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.25-1

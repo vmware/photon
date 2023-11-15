@@ -1,0 +1,113 @@
+From 8d393f5db774c224ea4df012c5a787c5a35071ec Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Date: Mon, 20 Nov 2023 10:28:25 +0000
+Subject: [PATCH] Fix cflags for tss2.
+
+Refer
+1. https://github.com/tpm2-software/tpm2-tss/commit/
+61589323ef650f51db131f96f1fcf7c2dbf4bfb4
+2. https://github.com/tpm2-software/tpm2-tss/issues/1876
+---
+ lib/tss2-esys.pc.in        | 2 +-
+ lib/tss2-fapi.pc.in        | 2 +-
+ lib/tss2-mu.pc.in          | 2 +-
+ lib/tss2-rc.pc.in          | 2 +-
+ lib/tss2-sys.pc.in         | 2 +-
+ lib/tss2-tcti-device.pc.in | 2 +-
+ lib/tss2-tcti-mssim.pc.in  | 2 +-
+ lib/tss2-tctildr.pc.in     | 2 +-
+ 8 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/lib/tss2-esys.pc.in b/lib/tss2-esys.pc.in
+index 919dd90..7e1bb80 100644
+--- a/lib/tss2-esys.pc.in
++++ b/lib/tss2-esys.pc.in
+@@ -8,6 +8,6 @@ Description: TPM2 Enhanced System API library.
+ URL: https://github.com/tpm2-software/tpm2-tss
+ Version: @VERSION@
+ Requires.private: tss2-mu tss2-sys
+-Cflags: -I${includedir}
++Cflags: -I${includedir} -I${includedir}/tss2
+ Libs: -ltss2-esys -L${libdir}
+ Libs.private: @LIBADD_DL@ @LIBSOCKET_LDFLAGS@ @TSS2_ESYS_LDFLAGS_CRYPTO@
+diff --git a/lib/tss2-fapi.pc.in b/lib/tss2-fapi.pc.in
+index 3ef6f6a..39532ec 100644
+--- a/lib/tss2-fapi.pc.in
++++ b/lib/tss2-fapi.pc.in
+@@ -8,5 +8,5 @@ Description: TPM2 Feature API library.
+ URL: https://github.com/tpm2-software/tpm2-tss
+ Version: @VERSION@
+ Requires.private: tss2-mu tss2-esys tss2-tctildr libcurl libcrypto json-c
+-Cflags: -I${includedir}
++Cflags: -I${includedir} -I${includedir}/tss2
+ Libs: -ltss2-fapi -L${libdir}
+diff --git a/lib/tss2-mu.pc.in b/lib/tss2-mu.pc.in
+index a5689f3..a3c121a 100644
+--- a/lib/tss2-mu.pc.in
++++ b/lib/tss2-mu.pc.in
+@@ -7,5 +7,5 @@ Name: tss2-mu
+ Description: TPM2 type marshaling and unmarshaling library.
+ URL: https://github.com/tpm2-software/tpm2-tss
+ Version: @VERSION@
+-Cflags: -I${includedir}
++Cflags: -I${includedir} -I${includedir}/tss2
+ Libs: -ltss2-mu -L${libdir}
+diff --git a/lib/tss2-rc.pc.in b/lib/tss2-rc.pc.in
+index f4230f2..5af9d1f 100644
+--- a/lib/tss2-rc.pc.in
++++ b/lib/tss2-rc.pc.in
+@@ -7,5 +7,5 @@ Name: tss2-rc
+ Description: TPM2 error decoding library.
+ URL: https://github.com/tpm2-software/tpm2-tss
+ Version: @VERSION@
+-Cflags: -I${includedir}
++Cflags: -I${includedir} -I${includedir}/tss2
+ Libs: -ltss2-rc -L${libdir}
+diff --git a/lib/tss2-sys.pc.in b/lib/tss2-sys.pc.in
+index a388b82..a91caad 100644
+--- a/lib/tss2-sys.pc.in
++++ b/lib/tss2-sys.pc.in
+@@ -8,6 +8,6 @@ Description: TPM2 System API library.
+ URL: https://github.com/tpm2-software/tpm2-tss
+ Version: @VERSION@
+ Requires.private: tss2-mu
+-Cflags: -I${includedir}
++Cflags: -I${includedir} -I${includedir}/tss2
+ Libs: -ltss2-sys -L${libdir}
+ Libs.private: @LIBSOCKET_LDFLAGS@
+diff --git a/lib/tss2-tcti-device.pc.in b/lib/tss2-tcti-device.pc.in
+index 8a4cfcd..74f80a8 100644
+--- a/lib/tss2-tcti-device.pc.in
++++ b/lib/tss2-tcti-device.pc.in
+@@ -8,5 +8,5 @@ Description: TCTI library for communicating with a TPM device node.
+ URL: https://github.com/tpm2-software/tpm2-tss
+ Version: @VERSION@
+ Requires.private: tss2-mu
+-Cflags: -I${includedir}
++Cflags: -I${includedir} -I${includedir}/tss2
+ Libs: -ltss2-tcti-device -L${libdir}
+diff --git a/lib/tss2-tcti-mssim.pc.in b/lib/tss2-tcti-mssim.pc.in
+index c393a84..de8e140 100644
+--- a/lib/tss2-tcti-mssim.pc.in
++++ b/lib/tss2-tcti-mssim.pc.in
+@@ -8,5 +8,5 @@ Description: TCTI library for communicating with the Microsoft TPM2 simulator.
+ URL: https://github.com/tpm2-software/tpm2-tss
+ Version: @VERSION@
+ Requires.private: tss2-mu
+-Cflags: -I${includedir}
++Cflags: -I${includedir} -I${includedir}/tss2
+ Libs: -ltss2-tcti-mssim -L${libdir}
+diff --git a/lib/tss2-tctildr.pc.in b/lib/tss2-tctildr.pc.in
+index 0f18b75..fa47081 100644
+--- a/lib/tss2-tctildr.pc.in
++++ b/lib/tss2-tctildr.pc.in
+@@ -7,5 +7,5 @@ Name: tss2-tctildr
+ Description: Library to simplify management of TCTIs.
+ URL: https://github.com/tpm2-software/tpm2-tss
+ Version: @VERSION@
+-Cflags: -I@includedir@
++Cflags: -I@includedir@ -I${includedir}/tss2
+ Libs: -ltss2-tctildr -L@libdir@
+-- 
+2.35.6
+
