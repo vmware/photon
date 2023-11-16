@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.62
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -141,6 +141,9 @@ Patch101: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
 # Fix CVE-2023-0597
 Patch102: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
+# Fix CVE-2023-2176
+Patch105: RDMA-core-Refactor-rdma_bind_addr.patch
+Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -505,6 +508,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 22 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.62-4
+- Fix for CVE-2023-2176
 * Tue Nov 21 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-3
 - Update canister to 5.0.0-6.1.62-2
 * Sat Nov 18 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.62-2
