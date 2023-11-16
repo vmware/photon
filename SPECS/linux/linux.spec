@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.62
-Release:        1%{?acvp_build:.acvp}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -154,6 +154,9 @@ Patch102: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
 # Fix CVE-2023-0597
 Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
+# Fix CVE-2023-2176
+Patch105: RDMA-core-Refactor-rdma_bind_addr.patch
+Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -796,6 +799,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 29 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.62-2
+- Fix for CVE-2023-2176
 * Wed Nov 29 2023 Ankit Jain <ankitja@vmware.com> 6.1.62-1
 - Update to version 6.1.62
 * Wed Nov 29 2023 Ankit Jain <ankitja@vmware.com> 6.1.60-4
