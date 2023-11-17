@@ -1,11 +1,12 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.26.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  calico=2571bbae94ca0c80b11a347ffc4601e7ab5feba3bd9fb93e78e0b3ec9998a2871ba7abf3fe8029f8738ed9cf616b4e0a7ddb6a0556b08873045fefe1c2656d99
+Patch0:         CVE-2023-41378.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -51,7 +52,7 @@ Provides:       %{name}-confd = %{version}-%{release}
 This is a Calico-specific version of confd. It is heavily modified from the original and only supports a single backend type - namely a Calico datastore. It has a single purpose which is to monitor Calico BGP configuration and to autogenerate bird BGP templates from that config.
 
 %prep
-%autosetup -n calico-%{version}
+%autosetup -p1 -n calico-%{version}
 
 %build
 #node
@@ -133,6 +134,8 @@ cp -r confd/etc/ %{buildroot}%{_sysconfdir}
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
+* Fri Nov 17 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.26.1-5
+- Fix CVE-2023-41378
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 3.26.1-4
 - Bump up version to compile with new go
 * Tue Sep 26 2023 Piyush Gupta <gpiyush@vmware.com> 3.26.1-3
