@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.20.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -28,9 +28,20 @@ BuildRequires:  zchunk-devel
 
 Requires:       drpm
 Requires:       zchunk-libs
-%if 0%{?with_check}
+Requires:       zlib
+Requires:       drpm
+Requires:       zchunk-libs
+Requires:       rpm-libs
+Requires:       curl-libs
+Requires:       openssl-libs
+Requires:       xz-libs
+Requires:       file-libs
+Requires:       sqlite-libs
+Requires:       zchunk-libs
+Requires:       bzip2-libs
+Requires:       glib
+Requires:       popt
 Requires:       libxml2
-%endif
 
 Obsoletes:      createrepo
 
@@ -44,31 +55,33 @@ C implementation of the createrepo.
 %package devel
 Summary:    Library for repodata manipulation
 Requires:   %{name} = %{version}-%{release}
+Requires:   glib-devel
+Requires:   sqlite-devel
+Requires:   libxml2-devel
+
+Provides:   createrepo-devel
 
 %description devel
 headers and libraries for createrepo_c
 
 %prep
 %autosetup -p1
-sed -e '/find_package(GTHREAD2/ s/^#*/#/' -i CMakeLists.txt
-sed -i 's|g_thread_init|//g_thread_init|'  src/createrepo_c.c
-sed -i 's|g_thread_init|//g_thread_init|'  src/mergerepo_c.c
-sed -i 's|g_thread_init|//g_thread_init|'  src/modifyrepo_c.c
-sed -i 's|g_thread_init|//g_thread_init|'  src/sqliterepo_c.c
 
 %build
-%cmake \
+%{cmake} \
     -DWITH_LIBMODULEMD=OFF \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-    -DCMAKE_BUILD_TYPE=Debug
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
-ln -sfv createrepo_c %{buildroot}%{_bindir}/createrepo
-ln -sfv mergerepo_c %{buildroot}%{_bindir}/mergerepo
-ln -sfv modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
+%{cmake_install}
+pushd %{buildroot}%{_bindir}
+for b in createrepo mergerepo modifyrepo; do
+  test -e ${b}_c && ln -srv ${b}_c ${b} || exit 1
+done
+popd
 
 %clean
 rm -rf %{buildroot}
@@ -87,6 +100,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.20.1-6
+- Bump version as a part of rpm upgrade
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.20.1-5
 - Bump version as a part of libxml2 upgrade
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 0.20.1-4

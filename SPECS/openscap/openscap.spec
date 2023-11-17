@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.6
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
@@ -122,6 +122,8 @@ Python bindings.
 %{_libdir}/python%{python3_version}/*
 
 %changelog
+* Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.6-13
+- Bump version as a part of rpm upgrade
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.6-12
 - Bump version as a part of libxml2 upgrade
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.3.6-11

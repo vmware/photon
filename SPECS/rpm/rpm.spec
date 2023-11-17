@@ -2,8 +2,8 @@
 
 Summary:    Package manager
 Name:       rpm
-Version:    4.18.0
-Release:    14%{?dist}
+Version:    4.18.2
+Release:    1%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -11,7 +11,7 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=c218b811c0c2db368a2919f60742904a4a5abf09dc20804d649eb42f1853d1c21d121086d6014cd210b2040643c37b5d86b53052958cf702ae2e54fe65f1c0ec
+%define sha512 %{name}=1544efef04190299ac988f52c4f6e58ba9ff8943fe1f3e1353fb2bf4d73248935dac65a8a73b32c5d2d96f6875ce25c5196a78ed645d9504465cf1e89e0a268a
 
 Source1:    macros
 Source2:    macros.php
@@ -182,15 +182,12 @@ sh autogen.sh --noconfigure
 
 %make_build
 
-pushd python
-%py3_build
-popd
-
 %install
 %make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
-ln -sfv %{_bindir}/find-debuginfo %{buildroot}%{rpmhome}/find-debuginfo.sh
+ln -sfrv %{buildroot}%{_bindir}/find-debuginfo \
+       %{buildroot}%{rpmhome}/find-debuginfo.sh
 
 %find_lang %{name}
 
@@ -202,12 +199,8 @@ install -vm644 %{SOURCE3} %{buildroot}%{_rpmmacrodir}
 install -vm644 %{SOURCE4} %{buildroot}%{_rpmmacrodir}
 install -vm644 %{SOURCE5} %{buildroot}%{_rpmmacrodir}
 
-pushd python
-%py3_install
-popd
-
 %check
-make check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
+%make_build check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
 %make_build clean
 
 %post libs -p /sbin/ldconfig
@@ -334,6 +327,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.2-1
+- Upgrade to v4.18.2
+- Drop setup.py-based Python build
 * Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-14
 - Add build-libs, sign-libs sub packages
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-13

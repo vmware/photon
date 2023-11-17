@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2022.19
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -84,6 +84,7 @@ repository.  At the moment, it is intended for use on build servers.
 Summary: Development headers for %{name}
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
+Requires: glib-devel
 
 %description devel
 Includes the header files for the %{name} library.
@@ -163,6 +164,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.19-7
+- Bump version as a part of rpm upgrade
 * Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 2022.19-6
 - Bump version as a part of rust upgrade.
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2022.19-5
