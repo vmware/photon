@@ -22,9 +22,9 @@ REPO_DIR = os.path.join(STAGE_DIR, "RPMS")
 ARCH_MAP = {'x86_64': "amd64", 'aarch64': "arm64"}
 
 if THIS_ARCH == "x86_64":
-    POI_IMAGE = "projects.registry.vmware.com/photon/installer:ob-22704994"
+    POI_IMAGE = "projects.registry.vmware.com/photon/installer:ob-22815435"
 elif THIS_ARCH == "aarch64":
-    POI_IMAGE = "projects.registry.vmware.com/photon/installer-arm64:ob-22705318"
+    POI_IMAGE = "projects.registry.vmware.com/photon/installer-arm64:ob-22815437"
 else:
     raise Exception(f"unknown arch {THIS_ARCH}")
 
@@ -430,7 +430,7 @@ def main():
 
     poi = Poi(arch=arch, poi_image=poi_image, stage_dir=stage_dir, repo_dir=repo_dir)
 
-    if target in ["ova", "azure", "ami", "gce", "rpi"]:
+    if target in ["ova", "ova-stig", "azure", "ami", "gce", "rpi"]:
         assert target != "rpi" or arch == "aarch64", "arch must be aarch64 to build RPi image"
 
         poi.create_config(target)
@@ -443,6 +443,8 @@ def main():
 
         if target == "ova":
             poi.create_ova(raw_image_file)
+        if target == "ova-stig":
+            poi.create_ova(raw_image_file, subdir="ova-stig")
         elif target == "azure":
             poi.create_azure(raw_image_file)
         elif target == "ami":

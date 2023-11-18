@@ -1,0 +1,28 @@
+live: false
+
+hostname: photon-machine
+
+disks:
+    default:
+        filename: !param imgfile=photon.img
+        size: 16384
+
+packagelist_file: packages_stig.json
+
+password:
+  age: 0
+  crypted: false
+  text: changeme
+
+public_key: ""
+
+linux_flavor: linux-esx
+
+ansible:
+    - playbook: /usr/share/ansible/stig-hardening/playbook.yml
+      logfile: ansible-stig-skip.log
+      verbosity: 2
+      extra-vars: "@/usr/share/ansible/stig-hardening/vars-chroot.yml"
+      skip-tags:
+          - PHTN-50-000245
+          - PHTN-50-000013

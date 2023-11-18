@@ -1,0 +1,18 @@
+{
+    "packages": [
+        "minimal",
+        "linux",
+        "linux-esx",
+        "initramfs",
+        "lvm2",
+        "less",
+        "sudo",
+        "aide",
+        "audit",
+        "libgcrypt",
+        "libselinux-utils",
+        "ntp",
+        "rsyslog",
+        "selinux-policy"
+    ]
+}
