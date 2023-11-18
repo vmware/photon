@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.62
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -548,6 +548,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Dec 20 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.62-4
+- Fix RSA self tests
 * Wed Nov 29 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.62-3
 - Fix for CVE-2023-2176
 * Wed Nov 29 2023 Ajay Kaher <akaher@vmware.com> 6.1.62-2
