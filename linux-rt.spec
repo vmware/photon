@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.28
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -506,6 +506,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.28-4
+- Bump version as a part of openssl upgrade
 * Tue Oct 03 2023 Kuntal Nayak <nkunal@vmware.com> 6.1.28-3
 - Kconfig to lockdown kernel in UEFI Secure Boot
 * Sat Sep 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.1.28-2
