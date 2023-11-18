@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.62
-Release:        1%{?acvp_build:.acvp}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -795,6 +795,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Sat Nov 18 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.62-2
+- Fix RSA self tests
 * Tue Nov 14 2023 Ankit Jain <ankitja@vmware.com> 6.1.62-1
 - Update to version 6.1.62
 * Fri Oct 27 2023 Ankit Jain <ankitja@vmware.com> 6.1.60-4

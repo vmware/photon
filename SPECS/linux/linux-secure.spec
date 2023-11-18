@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -461,6 +461,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sat Nov 18 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.62-2
+- Fix RSA self tests
 * Tue Nov 14 2023 Ankit Jain <ankitja@vmware.com> 6.1.62-1
 - Update to version 6.1.62
 * Fri Nov 03 2023 Keerthana K <keerthanak@vmware.com> 6.1.60-6
