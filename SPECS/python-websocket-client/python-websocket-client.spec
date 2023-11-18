@@ -1,6 +1,6 @@
 Name:           python3-websocket-client
 Version:        1.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        WebSocket client for python
 License:        LGPL
 Group:          Development/Languages/Python
@@ -46,6 +46,8 @@ python3 setup.py test
 %{_bindir}/wsdump
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.4.1-2
+- Bump version as a part of openssl upgrade
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.1-1
 - Update release to compile with python 3.11
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.57.0-2

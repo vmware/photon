@@ -1,7 +1,7 @@
 Summary:      Glib networking modules
 Name:         glib-networking
 Version:      2.74.0
-Release:      2%{?dist}
+Release:      3%{?dist}
 License:      GPLv2
 URL:          http://wiki.gnome.org/glib-networking
 Group:        System Environment/Development
@@ -80,6 +80,8 @@ CONFIGURE_OPTS=(
 %defattr(-,root,root)
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.74.0-3
+- Bump version as a part of openssl upgrade
 * Wed May 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.74.0-2
 - Package lang properly
 * Tue Nov 01 2022 Susant Sahani <sshedi@vmware.com> 2.74.0-1

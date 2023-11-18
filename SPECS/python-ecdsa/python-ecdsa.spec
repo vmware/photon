@@ -1,7 +1,7 @@
 Summary:        ECDSA cryptographic signature library (pure python)
 Name:           python3-ecdsa
 Version:        0.18.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -54,6 +54,8 @@ tox -e coverage
 %{python3_sitelib}/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.18.0-2
+- Bump version as a part of openssl upgrade
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 0.18.0-1
 - Automatic Version Bump.
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.17.0-2

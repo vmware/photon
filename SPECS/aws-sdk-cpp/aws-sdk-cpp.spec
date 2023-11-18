@@ -4,7 +4,7 @@ Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
 Version:        1.11.117
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -218,6 +218,8 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/*.a
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.11.117-3
+- Bump version as a part of openssl upgrade
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.11.117-2
 - Build CRT deps
 * Wed Jul 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.11.117-1

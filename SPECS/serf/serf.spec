@@ -1,7 +1,7 @@
 Summary:        A high performance C-based HTTP client library built upon the Apache Portable Runtime (APR) library
 Name:           serf
 Version:        1.3.9
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        Apache License 2.0
 URL:            https://serf.apache.org
 Group:          System Environment/Libraries
@@ -64,6 +64,8 @@ scons check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.9-12
+- Bump version as a part of openssl upgrade
 * Wed Oct 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.9-11
 - Fix devel package requires
 * Tue Oct 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.9-10

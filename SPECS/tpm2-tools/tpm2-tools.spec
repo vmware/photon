@@ -1,7 +1,7 @@
 Summary:        The source repository for the TPM (Trusted Platform Module) 2 tools
 Name:           tpm2-tools
 Version:        5.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-tools
 Group:          System Environment/Security
@@ -55,6 +55,8 @@ make %{?_smp_mflags} check
 %{_datadir}/bash-completion/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3-3
+- Bump version as a part of openssl upgrade
 * Sun Oct 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3-2
 - Bump version as a part of ibmtpm upgrade
 * Wed Oct 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3-1

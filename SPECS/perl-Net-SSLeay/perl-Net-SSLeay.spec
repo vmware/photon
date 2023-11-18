@@ -1,7 +1,7 @@
 Summary:        Perl extension for using OpenSSL
 Name:           perl-Net-SSLeay
 Version:        1.92
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 URL:            https://metacpan.org/pod/Net::SSLeay
@@ -53,6 +53,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man?/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.92-2
+- Bump version as a part of openssl upgrade
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.92-1
 - Automatic Version Bump
 * Fri Jan 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.90-1

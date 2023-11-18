@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -78,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1.2-3
+- Bump version as a part of openssl upgrade
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 3.1.2-2
 - Bump release as a part of readline upgrade
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.1.2-1

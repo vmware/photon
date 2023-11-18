@@ -1,27 +1,28 @@
 Name:           python3-six
 Version:        1.16.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Development/Languages/Python
 Url:            https://pypi.org/project/six
-Source0:        https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
-%define sha512  six=076fe31c8f03b0b52ff44346759c7dc8317da0972403b84dfe5898179f55acdba6c78827e0f8a53ff20afe8b76432c6fe0d655a75c24259d9acbaa4d9e8015c0
 
-BuildRequires:  python3
+Source0: https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
+%define sha512 six=076fe31c8f03b0b52ff44346759c7dc8317da0972403b84dfe5898179f55acdba6c78827e0f8a53ff20afe8b76432c6fe0d655a75c24259d9acbaa4d9e8015c0
+
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 %endif
+
 Requires:       python3
-Requires:       python3-libs
+
 Provides:       python%{python3_version}dist(six)
+
 BuildArch:      noarch
 
 %description
@@ -36,16 +37,13 @@ Six is a Python 2 and 3 compatibility library. It provides utility functions for
 %install
 %py3_install
 
-%check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pytest
-python3 test_six.py
-
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.16.0-2
+- Bump version as a part of openssl upgrade
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.16.0-1
 - Update release to compile with python 3.11
 * Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.15.0-3

@@ -1,7 +1,7 @@
 Summary:       advanced key-value store
 Name:          redis
 Version:       7.2.2
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       BSD
 URL:           http://redis.io
 Group:         Applications/Databases
@@ -90,6 +90,8 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.2.2-2
+- Bump version as a part of openssl upgrade
 * Wed Oct 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.2.2-1
 - Upgrade to v7.2.2
 * Mon Sep 11 2023 Nitesh Kumar <kunitesh@vmware.com> 7.0.13-1

@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.21.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21.3-5
+- Bump version as a part of openssl upgrade
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.21.3-4
 - Conflicting with toybox was a mishap, undo it.
 * Fri Sep 16 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.21.3-3

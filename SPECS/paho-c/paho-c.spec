@@ -1,6 +1,6 @@
 Name:          paho-c
 Version:       1.3.11
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       MQTT C Client
 License:       BSD and EPL
 Vendor:        VMware, Inc.
@@ -55,6 +55,8 @@ Development files for the the Paho MQTT C Client.
 %{_libdir}/cmake/eclipse-paho-mqtt-c/
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.11-2
+- Bump version as a part of openssl upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.11-1
 - Automatic Version Bump
 * Wed Jul 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.10-2

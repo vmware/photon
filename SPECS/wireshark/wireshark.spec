@@ -1,7 +1,7 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
 Version:        4.0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
 Group:          Networking
@@ -100,6 +100,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.8-2
+- Bump version as a part of openssl upgrade
 * Mon Aug 28 2023 Susant Sahani <ssahani@vmware.com> 4.0.8-1
 - Update version and fix CVE-2023-4513
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.6-2

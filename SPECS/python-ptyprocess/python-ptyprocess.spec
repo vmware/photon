@@ -1,7 +1,7 @@
 Summary:        Run a subprocess in a pseudo terminal.
 Name:           python3-ptyprocess
 Version:        0.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/ptyprocess
 Group:          Development/Languages/Python
@@ -12,7 +12,7 @@ Source0:        https://files.pythonhosted.org/packages/source/p/ptyprocess/ptyp
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-pytest
@@ -21,8 +21,8 @@ BuildRequires:  python3-attrs
 BuildRequires:  python3-xml
 BuildRequires:  python3-pip
 %endif
+
 Requires:       python3
-Requires:       python3-libs
 
 BuildArch:      noarch
 
@@ -45,9 +45,12 @@ LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python3_sitelib} \
 py.test3
 
 %files
+%defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.7.0-3
+- Bump version as a part of openssl upgrade
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.7.0-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.7.0-1

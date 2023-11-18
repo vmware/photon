@@ -4,7 +4,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.25.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -115,6 +115,8 @@ rm -rf %{buildroot}
 %{_var}/log/%{name}
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25.2-3
+- Bump version as a part of openssl upgrade
 * Thu Oct 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25.2-2
 - Fix CVE-2023-44487
 * Tue Oct 10 2023 Harinadh D <hdommaraju@vmware.com> 1.25.2-1

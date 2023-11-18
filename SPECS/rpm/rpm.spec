@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.19.0
-Release:    1%{?dist}
+Release:    3%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -259,6 +259,7 @@ rm -rf %{buildroot}
 %{rpmhome}/rpm2cpio.sh
 %{rpmhome}/tgpg
 %{rpmhome}/platform
+%{rpmhome}/sysusers.sh
 %exclude %{_libdir}/%{name}-plugins/syslog.so
 %exclude %{_libdir}/%{name}-plugins/prioreset.so
 %exclude %{_libdir}/%{name}-plugins/fapolicyd.so
@@ -320,7 +321,6 @@ rm -rf %{buildroot}
 %{rpmhome}/find-debuginfo.sh
 %{rpmhome}/rpm_macros_provides.sh
 %{rpmhome}/rpmuncompress
-%{rpmhome}/sysusers.sh
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
 %{_mandir}/man8/rpmdeps.8*
@@ -367,6 +367,10 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}/*.md
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.19.0-3
+- Bump version as a part of openssl upgrade
+* Sat Nov 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.19.0-2
+- Move sysusers.sh out of rpm-build to rpm
 * Sun Sep 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.19.0-1
 - Upgrade to v4.19.0
 * Fri Aug 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-16

@@ -1,22 +1,21 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.12.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/libfuse/libfuse/archive/%{name}-%{version}.tar.gz
-%define sha512  fuse3=70acaa11ba976f4fb83ce25017725aa486d490ba8f7c1cdf9f98e93e6e0a331b5e3fd78c746d1b4dbb783987397ff30ccc5f6e49e150e34c5b2dfc977fc22d01
 
-BuildRequires:  meson >= 0.38.0
+Source0: https://github.com/libfuse/libfuse/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=70acaa11ba976f4fb83ce25017725aa486d490ba8f7c1cdf9f98e93e6e0a331b5e3fd78c746d1b4dbb783987397ff30ccc5f6e49e150e34c5b2dfc977fc22d01
+
+BuildRequires:  meson
 BuildRequires:  systemd-devel
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-devel
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:	python3-setuptools
+BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
@@ -35,7 +34,7 @@ userspace program.
 Summary:        Header and development files
 Group:          Development/Libraries
 Requires:       %{name} = %{version}
-Requires:	systemd-devel
+Requires:       systemd-devel
 
 %description    devel
 It contains the libraries and header files to create fuse applications.
@@ -60,8 +59,6 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 DESTDIR=%{buildroot}/ ninja -C build install
 
-find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
-
 # change from 4755 to 0755 to allow stripping -- fixed later in files
 chmod 0755 %{buildroot}/%{_bindir}/fusermount3
 
@@ -70,11 +67,6 @@ rm -f %{buildroot}/%{_libdir}/*.a
 
 # No need to create init-script
 rm -f %{buildroot}%{_sysconfdir}/init.d/fuse3
-
-%check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pluggy more_itertools
-python3 -m pytest test/
 
 %files
 %defattr(-, root, root)
@@ -91,23 +83,25 @@ python3 -m pytest test/
 %{_libdir}/libfuse3.so*
 
 %changelog
-*   Wed Nov 30 2022 Piyush Gupta <gpiyush@vmware.com> 3.12.0-1
--   Upgrade to 3.12.0.
-*   Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 3.11.0-1
--   Automatic Version Bump
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9.4-3
--   openssl 1.1.1
-*   Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com> 3.9.4-2
--   Use meson and ninja build system
-*   Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9.4-1
--   Automatic Version Bump
-*   Tue Apr 07 2020 Susant Sahani <ssahani@vmware.com> 3.9.1-1
--   Update to 3.9.1
-*   Fri Nov 23 2018 Ashwin H <ashwinh@vmware.com> 3.2.6-2
--   Fix %check
-*   Mon Sep 24 2018 Srinidhi Rao <srinidhir@vmware.com> 3.2.6-1
--   Update to version 3.2.6.
-*   Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.0.1-2
--   Move pkgconfig folder to devel package.
-*   Mon Apr 17 2017 Danut Moraru <dmoraru@vmware.com> 3.0.1-1
--   Initial version.
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.12.0-2
+- Bump version as a part of openssl upgrade
+* Wed Nov 30 2022 Piyush Gupta <gpiyush@vmware.com> 3.12.0-1
+- Upgrade to 3.12.0.
+* Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 3.11.0-1
+- Automatic Version Bump
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9.4-3
+- openssl 1.1.1
+* Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com> 3.9.4-2
+- Use meson and ninja build system
+* Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9.4-1
+- Automatic Version Bump
+* Tue Apr 07 2020 Susant Sahani <ssahani@vmware.com> 3.9.1-1
+- Update to 3.9.1
+* Fri Nov 23 2018 Ashwin H <ashwinh@vmware.com> 3.2.6-2
+- Fix %check
+* Mon Sep 24 2018 Srinidhi Rao <srinidhir@vmware.com> 3.2.6-1
+- Update to version 3.2.6.
+* Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.0.1-2
+- Move pkgconfig folder to devel package.
+* Mon Apr 17 2017 Danut Moraru <dmoraru@vmware.com> 3.0.1-1
+- Initial version.

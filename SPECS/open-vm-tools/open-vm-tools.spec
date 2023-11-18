@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        12.3.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -179,6 +179,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.3.5-2
+- Bump version as a part of openssl upgrade
 * Mon Oct 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.3.5-1
 - Upgrade to v12.3.5
 * Thu Sep 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.3.0-1

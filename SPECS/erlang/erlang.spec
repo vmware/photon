@@ -1,7 +1,7 @@
 Name:          erlang
 Summary:       erlang
 Version:       25.1.2
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -48,6 +48,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 25.1.2-3
+- Bump version as a part of openssl upgrade
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 25.1.2-2
 - Bump version as a part of ncurses upgrade to v6.4
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 25.1.2-1

@@ -1,7 +1,7 @@
 Summary:        This project is an implementation of the TCG TPM 2.0 specification.
 Name:           ibmtpm
 Version:        1682
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause
 URL:            https://sourceforge.net/projects/ibmswtpm2/files
 Group:          System Environment/Security
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0: %{name}%{version}.tar.gz
 %define sha512 %{name}=564c2154e5459cbbf4ec052bea7909d1eaff0aa07b291c7de44b1204ecfda3c4156fa18da4499e4202b8772b54ae30d0c7c89bd12cd415f3882d17c8d340686d
+
+Patch0: support-openssl-3.2.x-builds.patch
 
 BuildRequires: openssl-devel
 BuildRequires: systemd-devel
@@ -25,19 +27,20 @@ It is based on the TPM specification Parts 3 and 4 source code donated by Micros
 with additional files to complete the implementation.
 
 %prep
-%autosetup -p1 -cn %{name}-%{version}
+%autosetup -p1 -c
 
 %build
-cd src
-GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
-$(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
+pushd src
 %make_build
+popd
 
 %install
-cd src
+pushd src
 %make_install %{?_smp_mflags}
+popd
+
 mkdir -p %{buildroot}%{_unitdir}
-cat << EOF >> %{buildroot}%{_unitdir}/ibmtpm_server.service
+cat << EOF > %{buildroot}%{_unitdir}/ibmtpm_server.service
 [Unit]
 Description=ibmtpm_server
 
@@ -52,6 +55,8 @@ EOF
 %{_unitdir}/ibmtpm_server.service
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1682-2
+- Bump version as a part of openssl upgrade
 * Sun Oct 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 1682-1
 - Upgrade to v1682
 * Thu Jun 03 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1661-2

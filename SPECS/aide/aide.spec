@@ -1,7 +1,7 @@
 Summary:        Intrusion detection environment
 Name:           aide
 Version:        0.17.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/aide/aide
 License:        GPLv2+
 Group:          System Environment/Base
@@ -96,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_var}/log/%{name}
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.17.4-6
+- Bump version as a part of openssl upgrade
 * Wed Aug 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.17.4-5
 - Use database_in inplace of database in aide.conf
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.17.4-4

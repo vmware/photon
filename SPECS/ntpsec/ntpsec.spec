@@ -1,7 +1,7 @@
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-2-Clause AND NTP AND BSD-3-Clause AND MIT
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
@@ -128,6 +128,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/ntp*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.2-3
+- Bump version as a part of openssl upgrade
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.2.2-2
 - Use systemd-rpm-macros for user creation
 * Fri May 27 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.2-1

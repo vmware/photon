@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -167,6 +167,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-2
+- Bump version as a part of openssl upgrade
 * Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-1
 - Upgrade to v4.3.1
 * Thu Jul 28 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-2

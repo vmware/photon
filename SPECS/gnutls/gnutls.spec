@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -101,6 +101,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-4
+- Bump version as a part of openssl upgrade
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-3
 - Fix CVE-2023-0361
 * Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-2

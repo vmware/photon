@@ -1,22 +1,22 @@
 # once certified fips-provider rpm is published, with_certified_fips switch should be turned off
 # with_certified_fips & with_latest_fips can't be 1 at same time, we can have any one at a time
 %define with_certified_fips     0
-%define with_latest_fips        0
+%define with_latest_fips        1
 %define fips_provider_version   3.0.8
 %define fips_provider_srcname   fips-provider-%{fips_provider_version}
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.9
-Release:        2%{?dist}
+Version:        3.2.0
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=86c99146b37236419b110db77dd3ac3992e6bed78c258f0cc3434ca233460b4e17c0ac81d7058547fe9cb72a9fd80ee56d4b4916bb731dbe2bbcf1c3d46bf31a
+Source0: http://www.openssl.org/source/%{name}-%{version}-beta1.tar.gz
+%define sha512 %{name}=07ce7d1c5c84371a1aeb64a208fbc74f89275765f9bb00a0e3262fcae7ecb83cdd73cba30a01fe44b60a0616b9c6bb4c9c42c43fc42ecf0b6fdde57a621813c6
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
@@ -114,7 +114,7 @@ exit 1
 %if 0%{?with_certified_fips}
 %autosetup -p1 -a0 -a7
 %else
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{version}-beta1
 %endif
 
 %build
@@ -262,6 +262,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Sat Nov 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-1
+- Upgrade to v3.2.0-beta1
 * Thu Aug 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.9-2
 - Re-enable fips in distro.cnf if fips is enabled
 * Fri Jun 23 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-1

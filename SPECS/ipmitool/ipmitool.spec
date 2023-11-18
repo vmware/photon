@@ -4,7 +4,7 @@
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.19
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
@@ -73,6 +73,8 @@ rm -rf %{buildroot}
 %{_datadir}/misc/enterprise-numbers
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-4
+- Bump version as a part of openssl upgrade
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-3
 - Bump version as a part of readline upgrade
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-2

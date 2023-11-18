@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 License:        BSD
 Group:          Applications/System
@@ -204,6 +204,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.13-4
+- Bump version as a part of openssl upgrade
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.13-3
 - Exclude passwd from main package
 * Mon Jan 02 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.13-2

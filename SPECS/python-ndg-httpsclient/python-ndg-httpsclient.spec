@@ -1,6 +1,6 @@
 Name:           python3-ndg-httpsclient
 Version:        0.5.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Enhanced HTTPS support for httplib and urllib2 using PyOpenSSL.
 License:        BSD
 Group:          Development/Languages/Python
@@ -75,6 +75,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.5.1-6
+- Bump version as a part of openssl upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.5.1-5
 - Update release to compile with python 3.11
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.5.1-4

@@ -1,20 +1,20 @@
-Summary:	C++ XML Signature and Encryption library.
-Name:		xml-security-c
-Version:	2.0.4
-Release:	2%{?dist}
-License:	Apache Software License
-URL:		https://santuario.apache.org/cindex.html
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:    C++ XML Signature and Encryption library.
+Name:       xml-security-c
+Version:    2.0.4
+Release:    3%{?dist}
+License:    Apache Software License
+URL:        https://santuario.apache.org/cindex.html
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution:   Photon
 
-Source0:	https://www.apache.org/dyn/closer.lua/santuario/c-library/%{name}-%{version}.tar.bz2
+Source0: https://www.apache.org/dyn/closer.lua/santuario/c-library/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=a27d76686cc97f7ac60101c562b04b1091b026ac71ed557284cfd91f5b722db97bdc04d7cab65f932c4e34022d15911b0a7cbc7e4c7f3ec1a5860c3f298e1c66
 
 Patch0:     Allow-use-of-md5-in-fips-mode.patch
 
-Requires:	openssl
-Requires:	xerces-c
+Requires:   openssl
+Requires:   xerces-c
 
 BuildRequires:  make
 BuildRequires:  autoconf
@@ -22,7 +22,7 @@ BuildRequires:  automake
 BuildRequires:  gcc
 BuildRequires:  libtool
 BuildRequires:  openssl-devel
-BuildRequires:  xerces-c-devel >= 3.1
+BuildRequires:  xerces-c-devel
 
 %description
 XML-Security-C is the C++ XML Signature and Encryption library from the Apache Software Foundation.
@@ -41,10 +41,10 @@ This package contains development headers and static library for xml security.
 %build
 autoreconf -fiv
 %configure \
-	--disable-debug \
-	--disable-static \
-	--without-nss \
-	--with-openssl
+    --disable-debug \
+    --disable-static \
+    --without-nss \
+    --with-openssl
 
 make %{?_smp_mflags}
 
@@ -69,6 +69,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{_libdir}/libxml-security-c.la
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.4-3
+- Bump version as a part of openssl upgrade
 * Tue Oct 25 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.4-2
 - Bump version as part of xerces-c upgrade
 * Wed Jan 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.4-1

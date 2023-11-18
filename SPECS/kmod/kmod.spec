@@ -1,7 +1,7 @@
 Summary:        Utilities for loading kernel modules
 Name:           kmod
 Version:        30
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2.1+ and GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:          Applications/System
@@ -67,6 +67,8 @@ done
 %{_libdir}/*.so
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 30-5
+- Bump version as a part of openssl upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 30-4
 - Bump version as a part of zlib upgrade
 * Mon Mar 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 30-3

@@ -4,7 +4,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -715,6 +715,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.9-6
+- Bump version as a part of openssl upgrade
 * Fri Jul 28 2023 Oliver Kurth <okurth@vmware.com> 0.8.9-5
 - enable httpd
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.9-4

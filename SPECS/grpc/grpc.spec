@@ -7,7 +7,7 @@
 Summary:        Google RPC
 Name:           grpc
 Version:        1.54.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
 Group:          Development/Libraries
@@ -114,6 +114,8 @@ rm -rf %{buildroot}%{_lib64dir}
 %{_libdir}/*.so
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.54.2-2
+- Bump version as a part of openssl upgrade
 * Wed Aug 09 2023 Mukul Sikka <msikka@vmware.com> 1.54.2-1
 - Updated to latest version
 * Sat Jun 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.48.1-3

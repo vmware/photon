@@ -1,7 +1,7 @@
 Summary:          WPA client
 Name:             wpa_supplicant
 Version:          2.10
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
@@ -103,6 +103,8 @@ EOF
 %{_sysconfdir}/%{name}/%{name}-wlan0.conf
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.10-3
+- Bump version as a part of openssl upgrade
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.10-2
 - Bump version as a part of readline upgrade
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2.10-1

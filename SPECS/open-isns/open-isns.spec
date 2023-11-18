@@ -1,7 +1,7 @@
 Summary:        iSNS server and client for Linux
 Name:           open-isns
 Version:        0.101
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2.1
 URL:            https://github.com/open-iscsi/open-isns
 Group:          Applications/System
@@ -59,6 +59,8 @@ export CFLAGS="-Werror=unused-result"
 %{_includedir}/libisns/*.h
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.101-4
+- Bump version as a part of openssl upgrade
 * Thu Oct 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.101-3
 - Fix spec issues
 * Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.101-2

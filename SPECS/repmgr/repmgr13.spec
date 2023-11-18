@@ -5,7 +5,7 @@
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr13
 Version:        5.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU Public License (GPL) v3
 URL:            https://repmgr.org
 Group:          Applications/Databases
@@ -57,5 +57,7 @@ rm -rf %{buildroot}
 %{_pg13basedir}/share/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.3-2
+- Bump version as a part of openssl upgrade
 * Thu Aug 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.3-1
 - repmgr13 for pgsql13

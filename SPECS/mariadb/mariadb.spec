@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.9.4
-Release:          7%{?dist}
+Release:          8%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -459,6 +459,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.9.4-8
+- Bump version as a part of openssl upgrade
 * Tue Oct 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.9.4-7
 - Fix devel package requires
 * Sat Oct 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.9.4-6

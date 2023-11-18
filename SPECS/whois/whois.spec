@@ -1,7 +1,7 @@
 Summary:      Improved WHOIS client
 Name:         whois
 Version:      5.5.15
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      GPLv2+
 URL:          https://github.com/rfc1036/whois
 Group:        Productivity/Networking/Other
@@ -69,5 +69,7 @@ using a given salt.
 %{_mandir}/man1/mkpasswd.*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.5.15-2
+- Bump version as a part of openssl upgrade
 * Tue Feb 14 2023 Nitesh Kumar <kunitesh@vmware.com> 5.5.15-1
 - Initial version, needed by fail2ban.

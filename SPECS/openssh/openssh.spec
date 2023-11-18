@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -195,6 +195,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-3
+- Bump version as a part of openssl upgrade
 * Tue Nov 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-2
 - Fix sshd.socket failure issue upon graceful session exit
 * Wed Aug 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-1

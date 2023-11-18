@@ -2,7 +2,7 @@
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python3-pyinstaller
 Version:        5.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
@@ -70,6 +70,8 @@ python3 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.5-3
+- Bump version as a part of openssl upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.5-2
 - Bump version as a part of zlib upgrade
 * Wed Nov 30 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.5-1

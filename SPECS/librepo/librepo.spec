@@ -1,7 +1,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.14.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -101,6 +101,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/%{name}/
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.14.5-5
+- Bump version as a part of openssl upgrade
 * Fri Sep 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.14.5-4
 - Fix devel package requires
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.14.5-3

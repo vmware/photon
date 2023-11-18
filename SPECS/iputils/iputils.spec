@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20221126
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
@@ -54,6 +54,8 @@ ln -sf tracepath %{buildroot}%{_bindir}/tracepath6
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/ping
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 20221126-3
+- Bump version as a part of openssl upgrade
 * Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 20221126-2
 - Use relative path for ping6 symlink
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 20221126-1

@@ -1,7 +1,7 @@
 Summary:        Liberty Alliance Single Sign On
 Name:           lasso
 Version:        2.8.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 Group:          Development/Libraries/C++
 Vendor:         VMware, Inc.
@@ -71,6 +71,8 @@ find %{buildroot} -name '*.a' -delete
 %{_docdir}/%{name}
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.8.0-6
+- Bump version as a part of openssl upgrade
 * Mon Sep 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.8.0-5
 - Fix devel package requires
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.0-4

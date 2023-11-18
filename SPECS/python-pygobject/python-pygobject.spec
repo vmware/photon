@@ -1,6 +1,6 @@
 Name:           python3-pygobject
 Version:        3.42.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 License:        LGPLv2+
@@ -74,6 +74,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.42.2-3
+- Bump version as a part of openssl upgrade
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.42.2-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.42.2-1

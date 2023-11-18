@@ -1,23 +1,23 @@
 Summary:        Library for building powerful interactive command lines in Python.
 Name:           python3-prompt_toolkit
 Version:        3.0.30
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/prompt_toolkit
-Source0:        https://files.pythonhosted.org/packages/source/p/prompt_toolkit/prompt_toolkit-%{version}.tar.gz
-%define sha512  prompt_toolkit=cb0b9d71b09c353f2674052d75ec16a1803e0868ff5dd5625eefae767d45699b1b6bb99e4d98d3bca7ced7b60f52806ec10ed7ccab8a830c62d51baeeace23f7
+
+Source0: https://files.pythonhosted.org/packages/source/p/prompt_toolkit/prompt_toolkit-%{version}.tar.gz
+%define sha512 prompt_toolkit=cb0b9d71b09c353f2674052d75ec16a1803e0868ff5dd5625eefae767d45699b1b6bb99e4d98d3bca7ced7b60f52806ec10ed7ccab8a830c62d51baeeace23f7
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-Pygments
 BuildRequires:  python3-wcwidth
 BuildRequires:  python3-six
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 BuildRequires:  python3-atomicwrites
@@ -26,7 +26,6 @@ BuildRequires:  python3-pytest
 %endif
 
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-Pygments
 Requires:       python3-six
 Requires:       python3-wcwidth
@@ -44,14 +43,13 @@ prompt_toolkit is a library for building powerful interactive command lines and 
 %install
 %py3_install
 
-%check
-#make check failing for 3.7 so skipping for python3
-
 %files
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.30-2
+- Bump version as a part of openssl upgrade
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.30-1
 - Automatic Version Bump
 * Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.8-1

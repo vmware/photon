@@ -1,7 +1,7 @@
 Summary:        Reliable PostgreSQL Backup & Restore
 Name:           pgbackrest
 Version:        2.48
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pgbackrest.org
 License:        MIT
 Group:          Development/Languages/Python
@@ -61,5 +61,7 @@ cp %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
 %config(noreplace) %attr(0640,root,root) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.48-2
+- Bump version as a part of openssl upgrade
 * Thu Nov 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.48-1
 - Initial version.

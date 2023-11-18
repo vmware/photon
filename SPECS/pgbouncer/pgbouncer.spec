@@ -1,7 +1,7 @@
 Summary:          Connection pooler for PostgreSQL.
 Name:             pgbouncer
 Version:          1.17.0
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          BSD
 URL:              https://wiki.postgresql.org/wiki/PgBouncer
 Source0:          https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
@@ -74,6 +74,8 @@ fi
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.17.0-4
+- Bump version as a part of openssl upgrade
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-3
 - Resolving systemd-rpm-macros for group creation
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-2

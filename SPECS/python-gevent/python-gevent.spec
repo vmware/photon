@@ -3,7 +3,7 @@
 Summary:        Coroutine-based network library
 Name:           python3-gevent
 Version:        23.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -64,6 +64,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.7.0-2
+- Bump version as a part of openssl upgrade
 * Wed Aug 30 2023 Nitesh Kumar <kunitesh@vmware.com> 23.7.0-1
 - Version upgrade to v23.7.0 to fix following CVE's:
 - CVE-2023-31130, CVE-2023-31147, CVE-2023-32067, CVE-2023-31124

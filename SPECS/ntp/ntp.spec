@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p17
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NTP
 URL:            http://www.ntp.org
 Group:          System Environment/NetworkingPrograms
@@ -189,6 +189,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.2.8p17-2
+- Bump version as a part of openssl upgrade
 * Tue Jun 27 2023 Michelle Wang <michellew@vmware.com> 4.2.8p17-1
 - Upgrade to 4.2.8p17 for CVE-2023-26551 ~ CVE-2023-26555
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.2.8p15-8

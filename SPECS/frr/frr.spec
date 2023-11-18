@@ -3,7 +3,7 @@
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        8.5.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
@@ -214,6 +214,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.5.2-3
+- Bump version as a part of openssl upgrade
 * Tue Sep 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.5.2-2
 - Remove systemd_postun from postun section
 * Wed Aug 09 2023 Mukul Sikka <msikka@vmware.com> 8.5.2-1

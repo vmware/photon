@@ -1,7 +1,7 @@
 Summary:        Very secure and very small FTP daemon.
 Name:           vsftpd
 Version:        3.0.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2 with exceptions
 URL:            https://security.appspot.com/vsftpd.html
 Group:          System Environment/Daemons
@@ -78,6 +78,8 @@ fi
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.5-5
+- Bump version as a part of openssl upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.0.5-4
 - Use systemd-rpm-macros for user creation
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.5-3

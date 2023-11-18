@@ -1,7 +1,7 @@
 Summary:        Multi-format archive and compression library
 Name:           libarchive
 Version:        3.6.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD 2-Clause License
 URL:            http://www.libarchive.org
 Group:          System Environment/Development
@@ -63,6 +63,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.1-6
+- Bump version as a part of openssl upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.1-5
 - Bump version as a part of zstd upgrade
 * Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 3.6.1-4

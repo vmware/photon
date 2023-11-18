@@ -1,7 +1,7 @@
 Summary:        Compressed file format
 Name:           zchunk
 Version:        1.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause AND MIT
 URL:            https://github.com/zchunk/zchunk
 Group:          Applications/System
@@ -103,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*.gz
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.3-2
+- Bump version as a part of openssl upgrade
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.3-1
 - Upgrade to v1.2.3
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.7-2

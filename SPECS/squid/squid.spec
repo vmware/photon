@@ -4,7 +4,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        5.7
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -232,6 +232,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.7-11
+- Bump version as a part of openssl upgrade
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 5.7-10
 - Bump version as a part of openldap v2.6.4 upgrade
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 5.7-9

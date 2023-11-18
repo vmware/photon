@@ -1,7 +1,7 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
 Version:        3.2.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org
 Group:          Appication/Internet
@@ -86,6 +86,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.7-3
+- Bump version as a part of openssl upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.7-2
 - Bump version as a part of zlib upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.7-1

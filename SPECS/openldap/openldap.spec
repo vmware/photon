@@ -4,7 +4,7 @@
 Summary:        OpenLdap-2.6.4
 Name:           openldap
 Version:        2.6.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenLDAP
 URL:            https://www.openldap.org
 Group:          System Environment/Security
@@ -118,6 +118,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.6.4-2
+- Bump version as a part of openssl upgrade
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.6.4-1
 - Version upgrade to v2.6.4 to fix CVE-2023-2953
 * Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.6.3-1

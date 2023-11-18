@@ -1,6 +1,6 @@
 Name:           python3-netaddr
 Version:        0.8.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A network address manipulation library for Python
 License:        BSD
 Group:          Development/Languages/Python
@@ -53,6 +53,8 @@ LANG=en_US.UTF-8 PYTHONPATH=./ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.0-3
+- Bump version as a part of openssl upgrade
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.0-2
 - openssl 1.1.1
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8.0-1

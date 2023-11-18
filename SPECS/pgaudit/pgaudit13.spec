@@ -6,7 +6,7 @@
 
 Name:       pgaudit13
 Version:    1.5.2
-Release:    3%{?dist}
+Release:    4%{?dist}
 Summary:    PostgreSQL Audit Extension
 License:    PostgreSQL
 URL:        http://pgaudit.org
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/bitcode/%{srcname}/%{srcname}.bc
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-4
+- Bump version as a part of openssl upgrade
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.5.2-3
 - Bump version as a part of krb5 upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.5.2-2

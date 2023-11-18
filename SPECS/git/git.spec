@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.39.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -139,6 +139,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.39.0-4
+- Bump version as a part of openssl upgrade
 * Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-3
 - Moving bash-completion to main package
 * Tue Feb 28 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-2

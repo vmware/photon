@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.35
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -175,6 +175,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-2
+- Bump version as a part of openssl upgrade
 * Wed Nov 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-1
 - Upgrade to v8.0.35
 * Sun Oct 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.34-2

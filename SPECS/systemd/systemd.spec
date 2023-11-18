@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        254.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -764,6 +764,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-7
+- Bump version as a part of openssl upgrade
 * Sun Nov 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-6
 - Remove sysusers.attr, provided by rpm-4.19.0 now.
 * Sun Oct 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-5

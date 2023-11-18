@@ -1,7 +1,7 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        38.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -68,6 +68,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 38.0.1-2
+- Bump version as a part of openssl upgrade
 * Mon Oct 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 38.0.1-1
 - Update to 38.0.1
 * Sat Nov 13 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.3.2-1

@@ -1,7 +1,7 @@
 Summary:        Tool to manage UEFI Secure Boot MoK Keys
 Name:           mokutil
 Version:        0.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/lcp/mokutil
 License:        GPLv3
 Group:          Applications/System
@@ -49,5 +49,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.6.0-2
+- Bump version as a part of openssl upgrade
 * Fri Sep 29 2023 Kuntal Nayak <nkuntal@vmware.com> 0.6.0-1
 - Initial independent package

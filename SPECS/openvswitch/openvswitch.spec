@@ -1,31 +1,30 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        3.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha512  openvswitch=875f043fcd80dabdba5d7a35e950c804926ef307977d8bec10c9f2f225d4cc7c851f1b65f6c9af838950344c0b103531c266738e61da16900966ff8da0ba76aa
+
+Source0: http://openvswitch.org/releases/%{name}-%{version}.tar.gz
+%define sha512 %{name}=875f043fcd80dabdba5d7a35e950c804926ef307977d8bec10c9f2f225d4cc7c851f1b65f6c9af838950344c0b103531c266738e61da16900966ff8da0ba76aa
+
 BuildRequires:  gcc
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
 BuildRequires:  make
-BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  systemd
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-six
 BuildRequires:  python3-xml
+
 Requires:       libgcc-atomic
 Requires:       libcap-ng
 Requires:       openssl
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-six
 Requires:       python3-xml
 Requires:       gawk
@@ -37,21 +36,20 @@ support for the OpenFlow protocol for remote per-flow control of traffic.
 %package -n     python3-openvswitch
 Summary:        python3-openvswitch
 Requires:       python3
-Requires:       python3-libs
 
 %description -n python3-openvswitch
 Python 3 version.
 
 %package        devel
 Summary:        Header and development files for openvswitch
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 openvswitch-devel package contains header files and libs.
 
 %package        devel-static
 Summary:        Static libs for openvswitch
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel-static
 openvswitch-devel-static package contains static libs.
@@ -70,20 +68,20 @@ It contains the documentation and manpages for openvswitch.
 export PYTHON2=no
 
 %configure --enable-ssl --enable-shared
-make %{_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{_smp_mflags}
-find %{buildroot}/%{_libdir} -name '*.la' -delete
+%make_install
 mkdir -p %{buildroot}/%{python3_sitelib}
 cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs %{buildroot}/%{python3_sitelib}
 
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 install -p -D -m 0644 rhel/usr_share_openvswitch_scripts_systemd_sysconfig.template %{buildroot}/%{_sysconfdir}/sysconfig/openvswitch
 
-/usr/bin/python3 build-aux/dpdkstrip.py --nodpdk < rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > rhel/usr_lib_systemd_system_ovs-vswitchd.service
+%python3 build-aux/dpdkstrip.py --nodpdk < rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > rhel/usr_lib_systemd_system_ovs-vswitchd.service
+
 for service in openvswitch ovsdb-server ovs-vswitchd; do
-	install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
+  install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
 done
 
 mkdir -p %{buildroot}/%{_sysconfdir}/openvswitch
@@ -91,7 +89,7 @@ install -p -D -m 0644 rhel/etc_openvswitch_default.conf %{buildroot}/%{_sysconfd
 sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}/%{_sysconfdir}/openvswitch/default.conf
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{_smp_mflags}
+%make_build check
 
 %preun
 %systemd_preun %{name}.service
@@ -144,6 +142,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{_smp_mflags}
 %{_mandir}/man5/ovsdb.local-config.5.gz
 
 %changelog
+* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.2-2
+- Bump version as a part of openssl upgrade
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.2-1
 - Automatic Version Bump
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.0-2
