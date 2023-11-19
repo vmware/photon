@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -21,6 +21,7 @@ Source4:        99-dhcp-en.network
 Source5:        10-rdrand-rng.conf
 %endif
 Source6:        10-defaults.preset
+Source7:        60-ioschedulers.rules
 
 Source11:       macros.sysusers
 Source12:       sysusers.attr
@@ -333,6 +334,7 @@ ln -sfr %{buildroot}%{_var}/opt/journal/log %{buildroot}%{_var}/log/journal
 
 find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/udev/rules.d
+install -Dm 0644 %{SOURCE7} %{buildroot}%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 install -dm 0755 %{buildroot}/boot/
 install -m 0644 %{SOURCE3} %{buildroot}/boot/
@@ -551,6 +553,7 @@ fi
 %defattr(-,root,root)
 %dir %{_sysconfdir}/udev
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
+%{_sysconfdir}/udev/rules.d/60-ioschedulers.rules
 %dir %{_sysconfdir}/kernel
 %dir %{_sysconfdir}/modules-load.d
 %{_sysconfdir}/%{name}/pstore.conf
@@ -710,6 +713,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Nov 20 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253.12-3
+- Make mq-deadline default IO scheduler
 * Fri Oct 27 2023 Harinadh D <hdommaraju@vmware.com> 253.12-2
 - fix for lvrename unmounts the mount point
 * Wed Oct 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 253.12-1
