@@ -1,0 +1,1 @@
+ACTION=="add|change", SUBSYSTEM=="block", ATTR{queue/scheduler}="mq-deadline"

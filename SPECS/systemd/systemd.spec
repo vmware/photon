@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -21,6 +21,7 @@ Source4:        99-dhcp-en.network
 Source5:        10-rdrand-rng.conf
 %endif
 Source6:        10-defaults.preset
+Source7:        60-ioschedulers.rules
 
 Patch0:         systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:         systemd-247-default-dns-from-env.patch
@@ -323,6 +324,7 @@ ln -sfr %{buildroot}%{_var}/opt/journal/log %{buildroot}%{_var}/log/journal
 
 find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/udev/rules.d
+install -Dm 0644 %{SOURCE7} %{buildroot}%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 install -dm 0755 %{buildroot}/boot/
 install -m 0644 %{SOURCE3} %{buildroot}/boot/
@@ -519,6 +521,7 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 %dir %{_sysconfdir}/udev
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
+%{_sysconfdir}/udev/rules.d/60-ioschedulers.rules
 %dir %{_sysconfdir}/kernel
 %dir %{_sysconfdir}/modules-load.d
 %{_sysconfdir}/%{name}/pstore.conf
@@ -686,6 +689,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Mon Nov 20 2023  <bguruswamy@vmware.com> 247.13-10
+- Make mq-deadline default IO scheduler
 * Thu Nov 2 2023 Oliver Kurth  <okurth@vmware.com> 247.13-9
 - make split out packages conflict with older non-split 3.0 package
 * Fri Oct 20 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 247.13-8
