@@ -4,7 +4,7 @@
 Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python-urllib3
 Version:        1.25.11
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/urllib3
 License:        MIT
 Group:          Development/Languages/Python
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/shazow/urllib3/archive/urllib3-%{version}.tar.gz
-%define sha1    urllib3=fb096161db7025d6fefd716f7da878e887f91082
+%define sha512    urllib3=58f77edb9ced62cbac7b0baf2651c07f9f413267f103730ee25f08c5d4d0bf52a2ace02f58841bcd55652db677c7a1dc9a756681e7e32d590bc69d8b93e8f173
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -26,7 +26,7 @@ BuildRequires:  python3-xml
 
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
-BuildRequires:	python-psutil
+BuildRequires:  python-psutil
 BuildRequires:  python3-pip
 BuildRequires:  python-pip
 
@@ -35,6 +35,7 @@ Requires:       python2-libs
 Requires:       ca-certificates
 BuildArch:      noarch
 Patch0:         CVE-2021-33503.patch
+Patch1:         CVE-2023-43804.patch
 
 %description
 urllib3 is a powerful, sanity-friendly HTTP client for Python. Much of the Python ecosystem already uses urllib3 and you should too.
@@ -102,6 +103,8 @@ ulimit -n $nofiles
 %{python3_sitelib}/*
 
 %changelog
+* Mon Nov 20 2023 Mukul Sikka <msikka@vmware.com> 1.25.11-4
+- Fix CVE-2023-43804
 * Sat Jul 10 2021 Tapas Kundu <tkundu@vmware.com> 1.25.11-3
 - Add ca-certificates in requires
 * Wed Jul 07 2021 Sujay G <gsujay@vmware.com> 1.25.11-2
