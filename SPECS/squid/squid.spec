@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        4.17
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -21,6 +21,8 @@ Patch0:         openssl-3.0.0-support.patch
 Patch1:         CVE-2021-46784.patch
 Patch2:         CVE-2022-41318.patch
 Patch3:         CVE-2022-41317.patch
+Patch4:         CVE-2023-46724.patch
+Patch5:         CVE-2023-46847.patch
 
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  autoconf
@@ -218,6 +220,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Fri Nov 17 2023 Srish Srinivasan <ssrish@vmware.com> 4.17-3
+- Patched CVE-2023-46724, CVE-2023-46847
 * Mon Jan 09 2023 Srish Srinivasan <ssrish@vmware.com> 4.17-2
 - fix CVE-2022-41318 and CVE-2022-41317
 * Mon Aug 01 2022 Susant Sahani <ssahani@vmware.com> 4.17-1
