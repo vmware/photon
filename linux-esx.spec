@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.62
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -545,6 +545,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 29 2023 Ajay Kaher <akaher@vmware.com> 6.1.62-2
+- Enabling VFIO, UIO and IOMMU support
 * Wed Nov 29 2023 Ankit Jain <ankitja@vmware.com> 6.1.62-1
 - Update to version 6.1.62
 * Wed Nov 29 2023 Albert Guo <aguo@vmware.com> 6.1.60-5
