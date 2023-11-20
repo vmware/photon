@@ -27,7 +27,8 @@ class CommandUtils:
 
     @staticmethod
     def runCommandInShell(cmd, logfile=None, logfn=None):
-        CommandUtils.runBashCmd(cmd, logfn=logfn, logfile=logfile)
+        retval, _, _ = CommandUtils.runBashCmd(cmd, logfn=logfn, logfile=logfile, ignore_rc=True)
+        return retval
 
     @staticmethod
     def runShellCmd(cmd):
