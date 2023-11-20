@@ -85,12 +85,14 @@ popd # depot_tools
 
 find depot_tools -name '.git' -type d | xargs rm -rf
 
-tar -I 'xz -9' -cpf depot_tools-$commit_hash.tar.xz depot_tools
+depot_tools_tarball="depot_tools-$commit_hash.tar.xz"
+
+tar -I 'xz -9' -cpf $depot_tools_tarball depot_tools
 [ $? -ne 0 ] && abort 1 "ERROR: depot_tools tar creation error"
 
 rm -rf depot_tools
 
-mv depot_tools-$commit_hash.tar.gz $outputdir/
+mv $depot_tools_tarball $outputdir/
 [ $? -ne 0 ] && abort 1 "ERROR: mv depot_tools"
 
 popd # top
