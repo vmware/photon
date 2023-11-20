@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.62
-Release:        12%{?acvp_build:.acvp}%{?dist}
+Release:        13%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -265,6 +265,9 @@ Patch520:       0009-kernels-net-Export-sock_getsockopt.patch
 Patch521:       0010-DRBG-Fix-issues-with-DRBG.patch
 Patch522:       0011-Added-jitterentropy-implementation-of-SHA3-256.patch
 Patch523:       0012-jitterentropy-Support-for-sample-collection.patch
+%if 0%{?kat_build:1}
+Patch524:       0013-crypto-api-return-status-prints-for-LKCM5-demo.patch
+%endif
 %endif
 
 %ifarch x86_64
@@ -475,6 +478,9 @@ The kernel fips-canister
 #ACVP test harness patches.
 #Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
 %autopatch -p1 -m512 -M523
+%if 0%{?kat_build:1}
+%autopatch -p1 -m524 -M524
+%endif
 %endif
 
 %ifarch x86_64
@@ -832,6 +838,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Srish Srinivasan <ssrish@vmware.com> 6.1.62-13
+- print kernel crypto API return status for LKCM5 demo
+- move all the ACVP related patches under a dedicated directory called
+  acvp_patches
 * Mon Apr 22 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.62-12
 - Port secure kernel changes to generic
 * Tue Mar 26 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.1.62-11
