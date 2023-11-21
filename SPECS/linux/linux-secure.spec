@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -40,9 +40,9 @@ Source5:        linux-sbat.csv.in
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.56-6%{dist}-secure
+%define fips_canister_version 5.0.0-6.1.62-2%{dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=7e1dc80c5eecf2a8cf5e5fc964b5fa56dbcaff9d11a97393d0d57ab8f63ea343f0d164a4354d011c2dc946abd3fd6f772905f1a8e355b22ee318adcdd2fe6b26
+%define sha512 fips-canister=212844b76c93cb7b07d630c558a2968740ab1eec80209ea7f407f3f32a21135e6be74fd5622a252601495d4b3e2fe952c2a17f8501724ea1c804ca6078eef4f8
 %endif
 
 %if 0%{?canister_build}
@@ -152,7 +152,7 @@ Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508: 6.1.56-3-0001-FIPS-canister-binary-usage.patch
+Patch508: 6.1.62-2-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
@@ -161,7 +161,7 @@ Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 6.1.60-6-0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.1.62-2-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0002-FIPS-canister-creation.patch
@@ -461,6 +461,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 21 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-3
+- Update canister to 5.0.0-6.1.62-2
 * Sat Nov 18 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.62-2
 - Fix RSA self tests
 * Tue Nov 14 2023 Ankit Jain <ankitja@vmware.com> 6.1.62-1
