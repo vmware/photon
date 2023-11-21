@@ -1,0 +1,116 @@
+From c971d99ffc43df89ca4e15cd81f9e44f4139ba91 Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Mon, 31 Aug 2020 19:37:13 +0200
+Subject: [PATCH] pager: set $LESSSECURE whenver we invoke a pager
+
+Some extra safety when invoked via "sudo". With this we address a
+genuine design flaw of sudo, and we shouldn't need to deal with this.
+But it's still a good idea to disable this surface given how exotic it
+is.
+
+Prompted by #5666
+
+(cherry picked from commit 612ebf6c913dd0e4197c44909cb3157f5c51a2f0)
+
+Related: #2175624
+---
+ man/less-variables.xml |  8 ++++++++
+ man/systemctl.xml      |  1 +
+ man/systemd.xml        |  2 ++
+ src/basic/pager.c      | 23 +++++++++++++++++++++--
+ 4 files changed, 32 insertions(+), 2 deletions(-)
+
+diff --git a/man/less-variables.xml b/man/less-variables.xml
+index a3faa38997..9dad4247da 100644
+--- a/man/less-variables.xml
++++ b/man/less-variables.xml
+@@ -36,5 +36,13 @@
+       the invoking terminal is determined to be UTF-8 compatible).</para></listitem>
+     </varlistentry>
+ 
++    <varlistentry id='lesssecure'>
++      <term><varname>$SYSTEMD_LESSSECURE</varname></term>
++
++      <listitem><para>Takes a boolean argument. Overrides the <varname>$LESSSECURE</varname> environment
++      variable when invoking the pager, which controls the "secure" mode of less (which disables commands
++      such as <literal>|</literal> which allow to easily shell out to external command lines). By default
++      less secure mode is enabled, with this setting it may be disabled.</para></listitem>
++    </varlistentry>
+     </variablelist>
+ </refsect1>
+diff --git a/man/systemctl.xml b/man/systemctl.xml
+index a71e6c7c4f..abc386e6fb 100644
+--- a/man/systemctl.xml
++++ b/man/systemctl.xml
+@@ -2010,6 +2010,7 @@ Jan 12 10:46:45 example.com bluetoothd[8900]: gatt-time-server: Input/output err
+     <xi:include href="less-variables.xml" xpointer="pager"/>
+     <xi:include href="less-variables.xml" xpointer="less"/>
+     <xi:include href="less-variables.xml" xpointer="lesscharset"/>
++    <xi:include href="less-variables.xml" xpointer="lesssecure"/>
+   </refsect1>
+ 
+   <refsect1>
+diff --git a/man/systemd.xml b/man/systemd.xml
+index 17ab59beb5..66ae4d841d 100644
+--- a/man/systemd.xml
++++ b/man/systemd.xml
+@@ -862,6 +862,8 @@
+         </listitem>
+       </varlistentry>
+ 
++      <xi:include href="less-variables.xml" xpointer="lesssecure"/>
++
+       <varlistentry>
+         <term><varname>$LISTEN_PID</varname></term>
+         <term><varname>$LISTEN_FDS</varname></term>
+diff --git a/src/basic/pager.c b/src/basic/pager.c
+index f241261119..4efb01c483 100644
+--- a/src/basic/pager.c
++++ b/src/basic/pager.c
+@@ -11,6 +11,7 @@
+ #include <unistd.h>
+ 
+ #include "copy.h"
++#include "env-util.h"
+ #include "fd-util.h"
+ #include "locale-util.h"
+ #include "log.h"
+@@ -94,8 +95,7 @@ int pager_open(bool no_pager, bool jump_to_end) {
+                 if (setenv("LESS", less_opts, 1) < 0)
+                         _exit(EXIT_FAILURE);
+ 
+-                /* Initialize a good charset for less. This is
+-                 * particularly important if we output UTF-8
++                /* Initialize a good charset for less. This is particularly important if we output UTF-8
+                  * characters. */
+                 less_charset = getenv("SYSTEMD_LESSCHARSET");
+                 if (!less_charset && is_locale_utf8())
+@@ -104,6 +104,25 @@ int pager_open(bool no_pager, bool jump_to_end) {
+                     setenv("LESSCHARSET", less_charset, 1) < 0)
+                         _exit(EXIT_FAILURE);
+ 
++                /* People might invoke us from sudo, don't needlessly allow less to be a way to shell out
++                 * privileged stuff. */
++                r = getenv_bool("SYSTEMD_LESSSECURE");
++                if (r == 0) { /* Remove env var if off */
++                        if (unsetenv("LESSSECURE") < 0) {
++                                log_error_errno(errno, "Failed to uset environment variable LESSSECURE: %m");
++                                _exit(EXIT_FAILURE);
++                        }
++                } else {
++                        /* Set env var otherwise */
++                        if (r < 0)
++                                log_warning_errno(r, "Unable to parse $SYSTEMD_LESSSECURE, ignoring: %m");
++
++                        if (setenv("LESSSECURE", "1", 1) < 0) {
++                                log_error_errno(errno, "Failed to set environment variable LESSSECURE: %m");
++                                _exit(EXIT_FAILURE);
++                        }
++                }
++
+                 if (pager) {
+                         execlp(pager, pager, NULL);
+                         execl("/bin/sh", "sh", "-c", pager, NULL);
+-- 
+2.35.6
+
