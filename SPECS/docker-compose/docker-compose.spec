@@ -2,7 +2,7 @@
 
 Name:           docker-compose
 Version:        2.20.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
 Vendor:         VMware, Inc.
@@ -50,6 +50,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 2.20.2-3
+- Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.20.2-2
 - Bump up version to compile with new go
 * Fri Aug 18 2023 Piyush Gupta <gpiyush@vmware.com> 2.20.2-1
