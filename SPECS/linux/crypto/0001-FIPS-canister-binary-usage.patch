@@ -15,11 +15,11 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
  arch/x86/crypto/Makefile |   4 --
- crypto/Makefile          | 105 +++++++++++++++++++++++++++++++--------
+ crypto/Makefile          | 113 +++++++++++++++++++++++++++++++--------
  init/main.c              |   3 ++
  lib/Makefile             |   2 +-
  lib/crypto/Makefile      |   6 ---
- 5 files changed, 88 insertions(+), 32 deletions(-)
+ 5 files changed, 94 insertions(+), 34 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
 index 66f25c293..1d39b6e49 100644
@@ -37,10 +37,21 @@ index 66f25c293..1d39b6e49 100644
  sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
  sha1-ssse3-$(CONFIG_AS_SHA1_NI) += sha1_ni_asm.o
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 644cfa3b4..e2fb23b6b 100644
+index 51e10aecb..d5d3cfb0b 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -44,7 +44,6 @@ rsa_generic-y += rsaprivkey.asn1.o
+@@ -18,10 +18,8 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
+ obj-$(CONFIG_CRYPTO_ALGAPI2) += crypto_algapi.o
+ 
+ obj-$(CONFIG_CRYPTO_AEAD2) += aead.o
+-obj-$(CONFIG_CRYPTO_AEAD2) += geniv.o
+ 
+ obj-$(CONFIG_CRYPTO_SKCIPHER2) += skcipher.o
+-obj-$(CONFIG_CRYPTO_SEQIV) += seqiv.o
+ obj-$(CONFIG_CRYPTO_ECHAINIV) += echainiv.o
+ 
+ crypto_hash-y += ahash.o
+@@ -44,7 +42,6 @@ rsa_generic-y += rsaprivkey.asn1.o
  rsa_generic-y += rsa.o
  rsa_generic-y += rsa_helper.o
  rsa_generic-y += rsa-pkcs1pad.o
@@ -48,7 +59,7 @@ index 644cfa3b4..e2fb23b6b 100644
  
  $(obj)/sm2signature.asn1.o: $(obj)/sm2signature.asn1.c $(obj)/sm2signature.asn1.h
  $(obj)/sm2.o: $(obj)/sm2signature.asn1.h
-@@ -53,7 +52,6 @@ sm2_generic-y += sm2signature.asn1.o
+@@ -53,7 +50,6 @@ sm2_generic-y += sm2signature.asn1.o
  sm2_generic-y += sm2.o
  
  obj-$(CONFIG_CRYPTO_SM2) += sm2_generic.o
@@ -56,7 +67,7 @@ index 644cfa3b4..e2fb23b6b 100644
  
  crypto_acompress-y := acompress.o
  crypto_acompress-y += scompress.o
-@@ -61,12 +59,9 @@ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
+@@ -61,12 +57,9 @@ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
  
  cryptomgr-y := algboss.o testmgr.o
  
@@ -69,7 +80,7 @@ index 644cfa3b4..e2fb23b6b 100644
  obj-$(CONFIG_CRYPTO_VMAC) += vmac.o
  obj-$(CONFIG_CRYPTO_XCBC) += xcbc.o
  obj-$(CONFIG_CRYPTO_NULL2) += crypto_null.o
-@@ -76,10 +71,6 @@ obj-$(CONFIG_CRYPTO_RMD128) += rmd128.o
+@@ -76,10 +69,6 @@ obj-$(CONFIG_CRYPTO_RMD128) += rmd128.o
  obj-$(CONFIG_CRYPTO_RMD160) += rmd160.o
  obj-$(CONFIG_CRYPTO_RMD256) += rmd256.o
  obj-$(CONFIG_CRYPTO_RMD320) += rmd320.o
@@ -80,7 +91,7 @@ index 644cfa3b4..e2fb23b6b 100644
  obj-$(CONFIG_CRYPTO_SM3) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
  obj-$(CONFIG_CRYPTO_WP512) += wp512.o
-@@ -88,19 +79,11 @@ obj-$(CONFIG_CRYPTO_TGR192) += tgr192.o
+@@ -88,19 +77,11 @@ obj-$(CONFIG_CRYPTO_TGR192) += tgr192.o
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  obj-$(CONFIG_CRYPTO_BLAKE2S) += blake2s_generic.o
  obj-$(CONFIG_CRYPTO_GF128MUL) += gf128mul.o
@@ -100,7 +111,7 @@ index 644cfa3b4..e2fb23b6b 100644
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -133,7 +116,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -133,7 +114,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -108,7 +119,7 @@ index 644cfa3b4..e2fb23b6b 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4_generic.o
  obj-$(CONFIG_CRYPTO_AES_TI) += aes_ti.o
-@@ -162,7 +144,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+@@ -162,7 +142,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
  obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
@@ -116,7 +127,7 @@ index 644cfa3b4..e2fb23b6b 100644
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
  UBSAN_SANITIZE_jitterentropy.o = n
-@@ -175,13 +156,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -175,13 +154,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
@@ -130,7 +141,7 @@ index 644cfa3b4..e2fb23b6b 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -200,3 +179,87 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
+@@ -200,3 +177,93 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
  obj-$(CONFIG_CRYPTO_HASH_INFO) += hash_info.o
  crypto_simd-y := simd.o
  obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
@@ -144,6 +155,12 @@ index 644cfa3b4..e2fb23b6b 100644
 +endif
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_AEAD)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_AEAD=y)
++endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_AEAD2)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_AEAD2=y)
++endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_SEQIV)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_SEQIV=y)
 +endif
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_RSA)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_RSA=y)
@@ -219,7 +236,7 @@ index 644cfa3b4..e2fb23b6b 100644
 +endif
 +endif
 diff --git a/init/main.c b/init/main.c
-index d8bfe61b5..65b9b8015 100644
+index 298989b0d..f181dae81 100644
 --- a/init/main.c
 +++ b/init/main.c
 @@ -838,6 +838,8 @@ static void __init mm_init(void)
@@ -253,7 +270,7 @@ index a803e1527..fc6c915a3 100644
  	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
  	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
 diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index 26be2bbe0..280b9ce13 100644
+index 26be2bbe0..9822c55c0 100644
 --- a/lib/crypto/Makefile
 +++ b/lib/crypto/Makefile
 @@ -4,9 +4,6 @@

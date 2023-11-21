@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.198
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -37,9 +37,9 @@ Source4:    check_for_config_applicability.inc
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.56-6.ph5-secure
+%define fips_canister_version 5.0.0-6.1.62-2.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=7e1dc80c5eecf2a8cf5e5fc964b5fa56dbcaff9d11a97393d0d57ab8f63ea343f0d164a4354d011c2dc946abd3fd6f772905f1a8e355b22ee318adcdd2fe6b26
+%define sha512 fips-canister=212844b76c93cb7b07d630c558a2968740ab1eec80209ea7f407f3f32a21135e6be74fd5622a252601495d4b3e2fe952c2a17f8501724ea1c804ca6078eef4f8
 %endif
 
 Source21:       spec_install_post.inc
@@ -507,6 +507,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 21 2023 Keerthana K <keerthanak@vmware.com> 5.10.198-5
+- Update canister to 5.0.0-6.1.62-2
 * Tue Oct 31 2023 Srinidhi Rao <srinidhir@vmware.com> 5.10.198-4
 - Jitterentropy sample collection support in ACVP Build.
 * Thu Oct 26 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-3
