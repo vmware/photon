@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        2.7.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Group:          Development/Tools
@@ -71,6 +71,8 @@ cp -pr ./dist/amd64/locale_conf.json ./dist/amd64/public \
 /opt/k8dashboard/public/*
 
 %changelog
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-11
+- Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-10
 - Bump up version to compile with new go
 * Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-9
