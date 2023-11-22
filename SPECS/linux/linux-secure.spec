@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -178,7 +178,7 @@ Patch10010: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
 Patch10011: 0001-List-canister-objs-in-a-file.patch
 
 %if 0%{?kat_build}
-Patch10012: 0003-FIPS-broken-kattest.patch
+Patch10012: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
 %endif
 %endif
 
@@ -336,7 +336,7 @@ sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VER
 sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
 
 %if 0%{?kat_build}
-sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
+sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_TAMPER_TEST=y' .config
 %endif
 %endif
 
@@ -464,6 +464,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Nov 22 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-5
+- Added tamper KAT, PCT and integrity test for CMVP demo
 * Wed Nov 22 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.62-4
 - Fix for CVE-2023-2176
 * Tue Nov 21 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-3

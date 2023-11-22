@@ -1,41 +1,39 @@
-From 45091a04ba2778c2f133067384201961e0b03721 Mon Sep 17 00:00:00 2001
+From cc521bf50581c6adef9b5fafa1ffb20b4f965a3a Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
-Date: Mon, 20 Dec 2021 14:25:41 +0000
-Subject: [PATCH] crypto: kattest - break KAT fips intentionally
+Date: Wed, 22 Nov 2023 08:47:46 +0000
+Subject: [PATCH] Crypto: Tamper KAT, PCT and Integrity Test
 
-1. Modified Kernel crypto testmgr to break KAT fips tests for
-   algorithms supported in photon.
-2. Added a new module kattest to tamper the testmgr tests.
-3. Added kernel cmdline parameter "katbuild". This parameter is used
-   to break a particular algorithm in fips power on self tests.
-   you can specify values [1,2,3...18]. each value corresponds to
-   an algorithm for which the test vectors are tampered.
-4. Extended test coverage for newly included algorithms LKCM 5.0
+- Introduced new kernel command line parameter(tampertest) to tamper KAT,
+  PCT and integrity test for FIPS CMVP testing.
+- tampertest parameter takes values [-2,-1,1,2,...60]. Each corresponds to
+  breaking a test.
+- Value of -2 tampers Pairwise Consistency Test and simulate a failure.
+- Value of -1 tampers Canister Integrity test.
+- Values [1,..60] tampers KAT test for the supported algorithms
+  in LKCM 5.0.
 
-   * newly included algorithms: gcm, gcm-rfc4106, ccm, cfb, cts, cmac, ecdsa, sha3, hmac-sha3, and
-     rsa-pkcs1pad (earlier missed out combinations)
-
-   * kernel cmdline parameter "katbuild" now ranges from [1,2,3,...60]
-
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
- crypto/Kconfig   |  28 ++++++++++++
- crypto/Makefile  |   1 +
- crypto/kattest.c | 114 +++++++++++++++++++++++++++++++++++++++++++++++
- crypto/testmgr.c |  72 ++++++++++++++++++++++++++++++
- 4 files changed, 215 insertions(+)
- create mode 100644 crypto/kattest.c
+ crypto/Kconfig              |  29 +++++++++
+ crypto/Makefile             |   1 +
+ crypto/crypto_tamper_test.c | 118 ++++++++++++++++++++++++++++++++++++
+ crypto/ecc.c                |  11 ++++
+ crypto/testmgr.c            |  72 ++++++++++++++++++++++
+ init/main.c                 |  10 +++
+ 6 files changed, 241 insertions(+)
+ create mode 100644 crypto/crypto_tamper_test.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
-index aa15d8ee0..d720dc794 100644
+index c849bb918..93bcc5ae7 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -250,6 +250,34 @@ config CRYPTO_SELF_TEST
+@@ -250,6 +250,35 @@ config CRYPTO_SELF_TEST
  	help
  	  Crypto self test module for FIPS.
  
-+config CRYPTO_BROKEN_KAT
-+	bool "Broken Known Answer Test module"
++config CRYPTO_TAMPER_TEST
++	bool "Tamper KAT, PCT and Integrity Test module"
 +	select CRYPTO_MANAGER
 +	select CRYPTO_FIPS
 +	select CRYPTO_AES
@@ -60,54 +58,57 @@ index aa15d8ee0..d720dc794 100644
 +	select CRYPTO_SHA512
 +	select CRYPTO_SHA3
 +	help
-+	  Crypto Broken Known Answer Test for FIPS testing
++	  Tamper Known Answer Test, Pairwise Consistency
++	  Test and Integrity Test for FIPS CMVP testing.
 +
  config CRYPTO_SIMD
  	tristate
  	select CRYPTO_CRYPTD
 diff --git a/crypto/Makefile b/crypto/Makefile
-index b4d3850f2..875bf89e7 100644
+index 1fd7da7f4..ec0bbdd4c 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -232,6 +232,7 @@ crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORC
- 	$(call if_changed_rule,cc_o_c)
+@@ -235,6 +235,7 @@ crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORC
+ 	@$(foreach obj,$(lib-crypto-y),echo lib-crypto-$(obj) >> objs;)
  
  canister += crypto_self_test.o
-+canister += kattest.o
++canister += crypto_tamper_test.o
  
  canister += fips_integrity.o
  
-diff --git a/crypto/kattest.c b/crypto/kattest.c
+diff --git a/crypto/crypto_tamper_test.c b/crypto/crypto_tamper_test.c
 new file mode 100644
-index 000000000..e2a9eb893
+index 000000000..30693f134
 --- /dev/null
-+++ b/crypto/kattest.c
-@@ -0,0 +1,114 @@
++++ b/crypto/crypto_tamper_test.c
+@@ -0,0 +1,118 @@
 +/*
-+ * kattest module
++ * Tamper test module
 + *
-+ * Copyright (c) 2020 VMware
++ * Copyright (c) 2020-2023 VMware
 + *
 + */
 +#include <linux/module.h>
 +#include <linux/init.h>
 +#include <linux/kernel.h>
 +#include <linux/export.h>
++#include <linux/fips.h>
 +#include "fips_canister_wrapper.h"
 +
-+int kat_testbuild;
++int tamper_testbuild;
 +/* Process kernel command-line parameter at boot time.
-++ * katbuild=1 katbuild=2 etc
+++ * tampertest=1 tampertest=2 etc
 ++ */
-+static int kat_test(char *str)
++static int tamper_test(char *str)
 +{
-+	kat_testbuild = simple_strtol(str, NULL, 0);
-+	fcw_printk(KERN_INFO "kat build : %d\n", kat_testbuild);
++	tamper_testbuild = simple_strtol(str, NULL, 0);
++	fcw_printk(KERN_INFO "Broken KAT, PCT and Integrity test : %d\n", tamper_testbuild);
 +	return 1;
 +}
 +
-+__setup("katbuild=", kat_test);
++__setup("tampertest=", tamper_test);
 +
++extern void tamper_ecc_static_keypairs(void);
 +
 +static const char * const alg_list[] = {
 +	"cbc(aes)",
@@ -174,10 +175,10 @@ index 000000000..e2a9eb893
 +
 +void tamper_input_vector(const char *alg, const char *driver, const char *vector)
 +{
-+	int idx = kat_testbuild - 1;
++	int idx = tamper_testbuild - 1;
 +	char *test = "\x23\x32\x23\x32\x23\x32\x23\x32";
 +
-+	switch (kat_testbuild) {
++	switch (tamper_testbuild) {
 +		case 1 ... 60:
 +			if (strcmp(alg, alg_list[idx]) && strcmp(driver, alg_list[idx]))
 +				break;
@@ -187,18 +188,42 @@ index 000000000..e2a9eb893
 +	}
 +}
 +
-+static int __init kattest_init(void)
++static int __init crypto_tamper_test_init(void)
 +{
-+	fcw_printk(KERN_INFO "Kattest Init\n");
++	if (fips_enabled && tamper_testbuild == -2)
++		tamper_ecc_static_keypairs();
++
 +	return 1;
 +}
 +
-+static void __exit kattest_exit(void) {}
++static void __exit crypto_tamper_test_exit(void) {}
 +
-+subsys_initcall(kattest_init);
-+module_exit(kattest_exit);
++subsys_initcall(crypto_tamper_test_init);
++module_exit(crypto_tamper_test_exit);
+diff --git a/crypto/ecc.c b/crypto/ecc.c
+index 6805210a8..5ab88d2ac 100644
+--- a/crypto/ecc.c
++++ b/crypto/ecc.c
+@@ -1645,6 +1645,17 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
+ 	return ret;
+ }
+ 
++void tamper_ecc_static_keypairs(void)
++{
++	u64 *test = fcw_kmalloc(sizeof(u64), GFP_KERNEL);
++	u64 *p256_priv_key = ecc_p256.priv_key;
++	u64 *p384_priv_key = ecc_p384.priv_key;
++	memset(test, 0, sizeof(u64));
++	memcpy(p256_priv_key, test, sizeof(u64));
++	memcpy(p384_priv_key, test, sizeof(u64));
++	kfree(test);
++}
++
+ /* SP800-56A section 5.6.2.3.4 partial verification: ephemeral keys only */
+ int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
+ 				struct ecc_point *pk)
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index b505d0286..7f59f18a6 100644
+index 2e1e6dab9..ea26eae64 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -39,11 +39,79 @@
@@ -207,7 +232,7 @@ index b505d0286..7f59f18a6 100644
  
 +#include "testmgr.h"
 +
-+extern int kat_testbuild;
++extern int tamper_testbuild;
 +const char ** poison_alg_strs[] = {
 +   (const char **)&aes_cbc_tv_template[2].ctext,
 +   (const char **)&aes_tv_template[3].ctext,
@@ -285,12 +310,47 @@ index b505d0286..7f59f18a6 100644
  			goto non_fips_alg;
  	}
  
-+	if (fips_enabled && kat_testbuild > 0 && kat_testbuild < 61) {
-+		tamper_input_vector(alg, driver, *poison_alg_strs[kat_testbuild-1]);
++	if (fips_enabled && tamper_testbuild > 0 && tamper_testbuild < 61) {
++		tamper_input_vector(alg, driver, *poison_alg_strs[tamper_testbuild-1]);
 +	}
 +
  	rc = 0;
  	if (i >= 0)
  		rc |= alg_test_descs[i].test(alg_test_descs + i, driver,
+diff --git a/init/main.c b/init/main.c
+index 962edcc54..14836bd5f 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -20,6 +20,7 @@
+ #include <linux/kernel.h>
+ #include <linux/syscalls.h>
+ #include <linux/stackprotector.h>
++#include <linux/fips.h>
+ #include <linux/string.h>
+ #include <linux/ctype.h>
+ #include <linux/delay.h>
+@@ -883,6 +884,8 @@ early_param("randomize_kstack_offset", early_randomize_kstack_offset);
+ #endif
+ 
+ extern int fips_integrity_init(void);
++extern int tamper_testbuild;
++extern char canister_sections[];
+ 
+ void __init __weak arch_call_rest_init(void)
+ {
+@@ -985,6 +988,13 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 	/* Architectural and non-timekeeping rng init, before allocator init */
+ 	random_init_early(command_line);
+ 
++	if (fips_enabled && tamper_testbuild == -1) {
++		unsigned long *p = kallsyms_lookup_name(canister_sections);
++		printk("Simulating broken Integrity test... corrupting canister section\n");
++		p+=2;
++		*p = 0;
++	}
++
+ 	fips_integrity_init();
+ 	/*
+ 	 * These use large bootmem allocations and must precede
 -- 
-2.35.6
+2.19.0
