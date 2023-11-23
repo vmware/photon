@@ -1,7 +1,7 @@
 diff --git a/src/app/rpmostree-compose-builtin-rojig.c b/src/app/rpmostree-compose-builtin-rojig.c
-index 02f0e03..10b0059 100644
---- src/app/rpmostree-compose-builtin-rojig.c
-+++ src/app/rpmostree-compose-builtin-rojig.c
+index 02f0e03e..10b0059a 100644
+--- a/src/app/rpmostree-compose-builtin-rojig.c
++++ b/src/app/rpmostree-compose-builtin-rojig.c
 @@ -206,6 +206,7 @@ install_packages (RpmOstreeRojigCompose  *self,
    if (!rpmostree_context_assemble (self->corectx, cancellable, error))
      return FALSE;
@@ -20,9 +20,9 @@ index 02f0e03..10b0059 100644
      *out_unmodified = FALSE;
    *out_new_inputhash = g_steal_pointer (&ret_new_inputhash);
 diff --git a/src/app/rpmostree-compose-builtin-tree.c b/src/app/rpmostree-compose-builtin-tree.c
-index a2b6131..96530c1 100644
---- src/app/rpmostree-compose-builtin-tree.c
-+++ src/app/rpmostree-compose-builtin-tree.c
+index a2b61311..96530c14 100644
+--- a/src/app/rpmostree-compose-builtin-tree.c
++++ b/src/app/rpmostree-compose-builtin-tree.c
 @@ -287,9 +287,10 @@ install_packages (RpmOstreeTreeComposeContext  *self,
        return FALSE;
    }
@@ -52,9 +52,9 @@ index a2b6131..96530c1 100644
    else
      {
 diff --git a/src/daemon/rpmostree-sysroot-upgrader.c b/src/daemon/rpmostree-sysroot-upgrader.c
-index 27551a1..95a416f 100644
---- src/daemon/rpmostree-sysroot-upgrader.c
-+++ src/daemon/rpmostree-sysroot-upgrader.c
+index 27551a10..95a416f0 100644
+--- a/src/daemon/rpmostree-sysroot-upgrader.c
++++ b/src/daemon/rpmostree-sysroot-upgrader.c
 @@ -906,13 +906,14 @@ prepare_context_for_assembly (RpmOstreeSysrootUpgrader *self,
                                                 self->cfg_merge_deployment);
  
@@ -72,9 +72,9 @@ index 27551a1..95a416f 100644
      rpmostree_context_set_pkgcache_only (self->ctx, TRUE);
  
 diff --git a/src/daemon/rpmostreed-transaction-livefs.c b/src/daemon/rpmostreed-transaction-livefs.c
-index b8e2a1b..0c881f2 100644
---- src/daemon/rpmostreed-transaction-livefs.c
-+++ src/daemon/rpmostreed-transaction-livefs.c
+index b8e2a1b4..0c881f27 100644
+--- a/src/daemon/rpmostreed-transaction-livefs.c
++++ b/src/daemon/rpmostreed-transaction-livefs.c
 @@ -189,10 +189,11 @@ copy_new_config_files (OstreeRepo          *repo,
     */
    OstreeRepoCheckoutAtOptions etc_co_opts = { .force_copy = TRUE,
@@ -100,9 +100,9 @@ index b8e2a1b..0c881f2 100644
        const char *sub_etc_relpath = etc_path + strlen ("/etc/");
        /* We keep track of added subdirectories and skip children of it, since
 diff --git a/src/libpriv/rpmostree-core.c b/src/libpriv/rpmostree-core.c
-index 1d1b87c..75551f9 100644
---- src/libpriv/rpmostree-core.c
-+++ src/libpriv/rpmostree-core.c
+index 1d1b87cc..75551f95 100644
+--- a/src/libpriv/rpmostree-core.c
++++ b/src/libpriv/rpmostree-core.c
 @@ -804,6 +804,7 @@ rpmostree_context_setup (RpmOstreeContext    *self,
  
    gboolean selinux;
@@ -201,9 +201,9 @@ index 1d1b87c..75551f9 100644
      commit_modifier = ostree_repo_commit_modifier_new (modflags, NULL, NULL, NULL);
      if (final_sepolicy)
 diff --git a/src/libpriv/rpmostree-importer.c b/src/libpriv/rpmostree-importer.c
-index adcc7e9..4dd80d4 100644
---- src/libpriv/rpmostree-importer.c
-+++ src/libpriv/rpmostree-importer.c
+index adcc7e9f..4dd80d42 100644
+--- a/src/libpriv/rpmostree-importer.c
++++ b/src/libpriv/rpmostree-importer.c
 @@ -450,6 +450,7 @@ build_metadata_variant (RpmOstreeImporter *self,
                                          headerGetString (self->hdr, RPMTAG_RELEASE),
                                          headerGetString (self->hdr, RPMTAG_ARCH)));
@@ -232,9 +232,9 @@ index adcc7e9..4dd80d4 100644
  
    OstreeRepoImportArchiveOptions opts = { 0 };
 diff --git a/src/libpriv/rpmostree-postprocess.c b/src/libpriv/rpmostree-postprocess.c
-index d6c7328..72ae916 100644
---- src/libpriv/rpmostree-postprocess.c
-+++ src/libpriv/rpmostree-postprocess.c
+index d6c73280..72ae9162 100644
+--- a/src/libpriv/rpmostree-postprocess.c
++++ b/src/libpriv/rpmostree-postprocess.c
 @@ -978,6 +978,7 @@ rpmostree_postprocess_final (int            rootfs_dfd,
    if (!ror_compose_postprocess_final (rootfs_dfd, error))
      return FALSE;

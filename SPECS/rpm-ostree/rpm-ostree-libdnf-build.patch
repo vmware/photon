@@ -1,9 +1,12 @@
---- libdnf/CMakeLists.txt
-+++ libdnf/CMakeLists.txt
-@@ -45,7 +45,8 @@ endif()
-
+diff --git a/libdnf/CMakeLists.txt b/libdnf/CMakeLists.txt
+index 16b63308..410a862e 100644
+--- a/libdnf/CMakeLists.txt
++++ b/libdnf/CMakeLists.txt
+@@ -45,6 +45,7 @@ endif()
+ 
  # build dependencies
  find_package(Gpgme REQUIRED)
 +set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};/usr/share/cmake/Modules/)
  find_package(LibSolv 0.6.30 REQUIRED COMPONENTS ext)
  find_package(OpenSSL REQUIRED)
+ 

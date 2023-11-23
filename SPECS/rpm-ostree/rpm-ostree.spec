@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2019.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -10,16 +10,13 @@ Group:          Applications/System
 
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
 %define sha512  %{name}=3960fea97b0716746f9d9f8748244d3abe258f4f04c1120c807284cfc82c260a5bdc836b47df41c2a510d3a4af2b347454c8a3a34cf4d43a96bd04142ae8eeaa
-Source1:        libglnx-470af87.tar.gz
-%define sha512  libglnx=b3695c1f34be59921ba8cd86a662ae2866169967b81536f0360966af64e52d25d51d6b2a0160c7a21583af6e6ff0a13b1d0a1675395b152546e551efe66b75f7
-Source2:        libdnf-d8e481b.tar.gz
-%define sha512  libdnf=785e6b21d31d359f25c39a912c42dcb54a6dff2631b91140d84d99fd3b736cf29e9075af39027269b2983aef8fca967809ec850565bf96d6ce36b26834a106bb
 Source3:        mk-ostree-host.sh
 Source4:        function.inc
 Source5:        mkostreerepo
 
 Patch0:         rpm-ostree-libdnf-build.patch
 Patch1:         rpm-ostree-disable-selinux.patch
+Patch2:         0001-rust-vendor-Fix-for-uninitialized-mem.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -105,20 +102,15 @@ Requires: %{name} = %{version}-%{release}
 Includes the scripts for rpm-ostree repo creation to act as server
 
 %prep
-# Using autosetup is not feasible
-%setup -q
-tar xf /usr/src/photon/SOURCES/libglnx-470af87.tar.gz --no-same-owner
-tar xf /usr/src/photon/SOURCES/libdnf-d8e481b.tar.gz --no-same-owner
-%patch0 -p0
-%patch1 -p0
+%autosetup -p1
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
 %configure --disable-silent-rules --enable-gtk-doc
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=%{buildroot} INSTALL="install -p -c" %{?_smp_mflags}
+%make_install
 find %{buildroot} -name '*.la' -delete
 install -d %{buildroot}%{_bindir}/rpm-ostree-host
 install -d %{buildroot}%{_bindir}/rpm-ostree-server
@@ -159,6 +151,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Thu Nov 23 2023 Ankit Jain <ankitja@vmware.com> 2019.3-10
+-   Updated vendor/rayor to fix unitialized mem issue
 *   Sun Jun 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2019.3-9
 -   Bump version as a part of libxslt upgrade
 *   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2019.3-8
