@@ -21,14 +21,13 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  crypto/ecdsa.c                     |   6 +-
  crypto/gcm.c                       |  26 +++----
  crypto/hmac.c                      |   4 +-
- crypto/jitterentropy-kcapi.c       |   2 +-
  crypto/rsa-pkcs1pad.c              |   6 +-
  crypto/sha1_generic.c              |   5 +-
  crypto/sha512_generic.c            |   5 +-
  crypto/testmgr.c                   | 110 ++++++++++++++---------------
  crypto/xts.c                       |   2 +-
- lib/crypto/sha256.c                |   6 +-
- 23 files changed, 171 insertions(+), 164 deletions(-)
+ lib/crypto/sha256.c                |  10 +++
+ 22 files changed, 176 insertions(+), 161 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index 0628c2bca..6a4378bac 100644
@@ -465,7 +464,7 @@ index 2d4998793..e3ca27455 100644
  }
  
 diff --git a/crypto/drbg.c b/crypto/drbg.c
-index 04624249a..e294af604 100644
+index d51275071..693579b52 100644
 --- a/crypto/drbg.c
 +++ b/crypto/drbg.c
 @@ -259,7 +259,7 @@ static int drbg_fips_continuous_test(struct drbg_state *drbg,
@@ -866,21 +865,8 @@ index 7c289df3b..b3e099505 100644
  
  	for (i = 0; i < bs; i++) {
  		ipad[i] ^= HMAC_IPAD_VALUE;
-diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
-index 56e8a80aa..381b82530 100644
---- a/crypto/jitterentropy-kcapi.c
-+++ b/crypto/jitterentropy-kcapi.c
-@@ -67,7 +67,7 @@ void jent_panic(char *s)
- 
- void jent_memcpy(void *dest, const void *src, unsigned int n)
- {
--	memcpy(dest, src, n);
-+	fcw_memcpy(dest, src, n);
- }
- 
- /*
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index 826dd0833..f15e2bff2 100644
+index 1c9d29552..ab144392a 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
 @@ -166,7 +166,7 @@ static void pkcs1pad_sg_set_buf(struct scatterlist *sg, void *buf, size_t len,
@@ -892,7 +878,7 @@ index 826dd0833..f15e2bff2 100644
  
  	if (next)
  		sg_chain(sg, nsegs, next);
-@@ -413,7 +413,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
+@@ -410,7 +410,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
  	req_ctx->in_buf[ps_end] = 0x00;
  
  	if (digest_info)
@@ -901,7 +887,7 @@ index 826dd0833..f15e2bff2 100644
  		       digest_info->size);
  
  	pkcs1pad_sg_set_buf(req_ctx->in_sg, req_ctx->in_buf,
-@@ -542,7 +542,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
+@@ -538,7 +538,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
  	const unsigned int digest_size = req->dst_len;
  	int err;
  
@@ -971,7 +957,7 @@ index be70e76d6..07e27910c 100644
  }
  EXPORT_SYMBOL(crypto_sha512_finup);
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 98422b8da..65fcb40b4 100644
+index 783c006d0..7899ab3cd 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -587,7 +587,7 @@ static int build_test_sglist(struct test_sglist *tsgl,
@@ -1058,7 +1044,7 @@ index 98422b8da..65fcb40b4 100644
  	}
  	*keybuf_ret = keybuf;
  	*keyptr_ret = keyptr;
-@@ -1104,7 +1104,7 @@ static void generate_random_testvec_config(struct testvec_config *cfg,
+@@ -1147,7 +1147,7 @@ static void generate_random_testvec_config(struct rnd_state *rng,
  		p += scnprintf(p, end - p, " key_offset=%u", cfg->key_offset);
  	}
  
@@ -1067,7 +1053,7 @@ index 98422b8da..65fcb40b4 100644
  }
  
  static void crypto_disable_simd_for_test(void)
-@@ -1149,7 +1149,7 @@ static int build_generic_driver_name(const char *algname,
+@@ -1192,7 +1192,7 @@ static int build_generic_driver_name(const char *algname,
  			len += 8;
  			if (len >= CRYPTO_MAX_ALG_NAME)
  				goto too_long;
@@ -1076,7 +1062,7 @@ index 98422b8da..65fcb40b4 100644
  			out += 8;
  		}
  	} while ((*out++ = *in++) != '\0');
-@@ -1273,7 +1273,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
+@@ -1316,7 +1316,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
  			return 0;
  		if (cfg->nosimd)
  			crypto_disable_simd_for_test();
@@ -1085,7 +1071,7 @@ index 98422b8da..65fcb40b4 100644
  					  tsgl->sgl[0].length, result);
  		if (cfg->nosimd)
  			crypto_reenable_simd_for_test();
-@@ -1309,7 +1309,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
+@@ -1352,7 +1352,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
  		    cfg->finalization_type == FINALIZATION_TYPE_FINUP) {
  			if (divs[i]->nosimd)
  				crypto_disable_simd_for_test();
@@ -1094,7 +1080,7 @@ index 98422b8da..65fcb40b4 100644
  						 tsgl->sgl[i].length, result);
  			if (divs[i]->nosimd)
  				crypto_reenable_simd_for_test();
-@@ -1321,7 +1321,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
+@@ -1364,7 +1364,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
  		}
  		if (divs[i]->nosimd)
  			crypto_disable_simd_for_test();
@@ -1103,7 +1089,7 @@ index 98422b8da..65fcb40b4 100644
  					  tsgl->sgl[i].length);
  		if (divs[i]->nosimd)
  			crypto_reenable_simd_for_test();
-@@ -2026,10 +2026,10 @@ static int test_aead_vec_cfg(int enc, const struct aead_testvec *vec,
+@@ -2077,10 +2077,10 @@ static int test_aead_vec_cfg(int enc, const struct aead_testvec *vec,
  		return 0;
  
  	/* The IV must be copied to a buffer, as the algorithm may modify it */
@@ -1116,23 +1102,23 @@ index 98422b8da..65fcb40b4 100644
  	else
  		memset(iv, 0, ivsize);
  
-@@ -2256,7 +2256,7 @@ static void generate_aead_message(struct aead_request *req,
- 	generate_random_bytes((u8 *)vec->assoc, vec->alen);
+@@ -2315,7 +2315,7 @@ static void generate_aead_message(struct rnd_state *rng,
+ 	generate_random_bytes(rng, (u8 *)vec->assoc, vec->alen);
  	if (suite->aad_iv && vec->alen >= ivsize)
  		/* Avoid implementation-defined behavior. */
 -		memcpy((u8 *)vec->assoc + vec->alen - ivsize, vec->iv, ivsize);
 +		fcw_memcpy((u8 *)vec->assoc + vec->alen - ivsize, vec->iv, ivsize);
  
- 	if (inauthentic && prandom_u32_max(2) == 0) {
+ 	if (inauthentic && prandom_bool(rng)) {
  		/* Generate a random ciphertext. */
-@@ -2270,13 +2270,13 @@ static void generate_aead_message(struct aead_request *req,
+@@ -2329,13 +2329,13 @@ static void generate_aead_message(struct rnd_state *rng,
  		/* Generate a random plaintext and encrypt it. */
  		sg_init_table(src, 2);
  		if (vec->alen)
 -			sg_set_buf(&src[i++], vec->assoc, vec->alen);
 +			fcw_sg_set_buf(&src[i++], vec->assoc, vec->alen);
  		if (vec->plen) {
- 			generate_random_bytes((u8 *)vec->ptext, vec->plen);
+ 			generate_random_bytes(rng, (u8 *)vec->ptext, vec->plen);
 -			sg_set_buf(&src[i++], vec->ptext, vec->plen);
 +			fcw_sg_set_buf(&src[i++], vec->ptext, vec->plen);
  		}
@@ -1142,8 +1128,8 @@ index 98422b8da..65fcb40b4 100644
  		aead_request_set_callback(req, 0, crypto_req_done, &wait);
  		aead_request_set_crypt(req, src, &dst, vec->plen, iv);
  		aead_request_set_ad(req, vec->alen);
-@@ -2336,7 +2336,7 @@ static void generate_random_aead_testvec(struct aead_request *req,
- 		authsize = prandom_u32_max(maxauthsize + 1);
+@@ -2396,7 +2396,7 @@ static void generate_random_aead_testvec(struct rnd_state *rng,
+ 		authsize = prandom_u32_below(rng, maxauthsize + 1);
  	if (prefer_inauthentic && authsize < MIN_COLLISION_FREE_AUTHSIZE)
  		authsize = MIN_COLLISION_FREE_AUTHSIZE;
 -	if (WARN_ON(authsize > maxdatasize))
@@ -1151,7 +1137,7 @@ index 98422b8da..65fcb40b4 100644
  		authsize = maxdatasize;
  	maxdatasize -= authsize;
  	vec->setauthsize_error = crypto_aead_setauthsize(tfm, authsize);
-@@ -2680,11 +2680,11 @@ static int test_cipher(struct crypto_cipher *tfm, int enc,
+@@ -2743,11 +2743,11 @@ static int test_cipher(struct crypto_cipher *tfm, int enc,
  		j++;
  
  		ret = -EINVAL;
@@ -1165,7 +1151,7 @@ index 98422b8da..65fcb40b4 100644
  
  		crypto_cipher_clear_flags(tfm, ~0);
  		if (template[i].wk)
-@@ -2779,12 +2779,12 @@ static int test_skcipher_vec_cfg(int enc, const struct cipher_testvec *vec,
+@@ -2842,12 +2842,12 @@ static int test_skcipher_vec_cfg(int enc, const struct cipher_testvec *vec,
  
  	/* The IV must be copied to a buffer, as the algorithm may modify it */
  	if (ivsize) {
@@ -1181,7 +1167,7 @@ index 98422b8da..65fcb40b4 100644
  		else
  			memset(iv, 0, ivsize);
  	} else {
-@@ -2978,7 +2978,7 @@ static void generate_random_cipher_testvec(struct skcipher_request *req,
+@@ -3045,7 +3045,7 @@ static void generate_random_cipher_testvec(struct rnd_state *rng,
  	/* Ciphertext */
  	sg_init_one(&src, vec->ptext, vec->len);
  	sg_init_one(&dst, vec->ctext, vec->len);
@@ -1190,7 +1176,7 @@ index 98422b8da..65fcb40b4 100644
  	skcipher_request_set_callback(req, 0, crypto_req_done, &wait);
  	skcipher_request_set_crypt(req, &src, &dst, vec->len, iv);
  	vec->crypt_error = crypto_wait_req(crypto_skcipher_encrypt(req), &wait);
-@@ -3541,10 +3541,10 @@ static int test_cprng(struct crypto_rng *tfm,
+@@ -3613,10 +3613,10 @@ static int test_cprng(struct crypto_rng *tfm,
  	for (i = 0; i < tcount; i++) {
  		memset(result, 0, 32);
  
@@ -1204,7 +1190,7 @@ index 98422b8da..65fcb40b4 100644
  		       template[i].dt, template[i].dtlen);
  
  		err = crypto_rng_reset(tfm, seed, seedsize);
-@@ -3857,14 +3857,14 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3929,14 +3929,14 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  
  	if (vec->genkey) {
  		/* Save party A's public key */
@@ -1221,7 +1207,7 @@ index 98422b8da..65fcb40b4 100644
  			   vec->expected_a_public_size)) {
  			pr_err("alg: %s: Party A: generate public key test failed. Invalid output\n",
  			       alg);
-@@ -3895,7 +3895,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3967,7 +3967,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  
  	if (vec->genkey) {
  		/* Save the shared secret obtained by party A */
@@ -1230,7 +1216,7 @@ index 98422b8da..65fcb40b4 100644
  		if (!a_ss) {
  			err = -ENOMEM;
  			goto free_all;
-@@ -3933,7 +3933,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -4005,7 +4005,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  	 * verify shared secret from which the user will derive
  	 * secret key by executing whatever hash it has chosen
  	 */
@@ -1239,7 +1225,7 @@ index 98422b8da..65fcb40b4 100644
  		   vec->expected_ss_size)) {
  		pr_err("alg: %s: compute shared secret test failed. Invalid output\n",
  		       alg);
-@@ -3989,7 +3989,7 @@ static int alg_test_kpp(const struct alg_test_desc *desc, const char *driver,
+@@ -4061,7 +4061,7 @@ static int alg_test_kpp(const struct alg_test_desc *desc, const char *driver,
  
  static u8 *test_pack_u32(u8 *dst, u32 val)
  {
@@ -1248,7 +1234,7 @@ index 98422b8da..65fcb40b4 100644
  	return dst + sizeof(val);
  }
  
-@@ -4022,11 +4022,11 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4094,11 +4094,11 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  		      GFP_KERNEL);
  	if (!key)
  		goto free_req;
@@ -1262,7 +1248,7 @@ index 98422b8da..65fcb40b4 100644
  
  	if (vecs->public_key_vec)
  		err = crypto_akcipher_set_pub_key(tfm, key, vecs->key_len);
-@@ -4063,18 +4063,18 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4135,18 +4135,18 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  	}
  
  	err = -E2BIG;
@@ -1288,7 +1274,7 @@ index 98422b8da..65fcb40b4 100644
  		akcipher_request_set_crypt(req, src_tab, NULL, m_size, c_size);
  	} else {
  		sg_init_one(&dst, outbuf_enc, out_len_max);
-@@ -4131,9 +4131,9 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4203,9 +4203,9 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  
  	err = -E2BIG;
  	op = vecs->siggen_sigver_test ? "sign" : "decrypt";
@@ -1300,7 +1286,7 @@ index 98422b8da..65fcb40b4 100644
  
  	sg_init_one(&src, xbuf[0], c_size);
  	sg_init_one(&dst, outbuf_dec, out_len_max);
-@@ -5742,13 +5742,13 @@ static void alg_check_test_descs_order(void)
+@@ -5814,13 +5814,13 @@ static void alg_check_test_descs_order(void)
  		int diff = strcmp(alg_test_descs[i - 1].alg,
  				  alg_test_descs[i].alg);
  
@@ -1316,7 +1302,7 @@ index 98422b8da..65fcb40b4 100644
  			pr_warn("testmgr: duplicate alg_test_descs entry: '%s'\n",
  				alg_test_descs[i].alg);
  		}
-@@ -5760,12 +5760,12 @@ static void alg_check_testvec_configs(void)
+@@ -5832,12 +5832,12 @@ static void alg_check_testvec_configs(void)
  	int i;
  
  	for (i = 0; i < ARRAY_SIZE(default_cipher_testvec_configs); i++)
@@ -1333,7 +1319,7 @@ index 98422b8da..65fcb40b4 100644
  }
  
  static void testmgr_onetime_init(void)
-@@ -5881,7 +5881,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5953,7 +5953,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  		}
  		pr_warn("alg: self-tests for %s using %s failed (rc=%d)",
  			alg, driver, rc);
@@ -1343,7 +1329,7 @@ index 98422b8da..65fcb40b4 100644
  		     alg, driver, rc);
  	} else {
 diff --git a/crypto/xts.c b/crypto/xts.c
-index 8224b1283..afa61de1c 100644
+index f548992c2..12edd6525 100644
 --- a/crypto/xts.c
 +++ b/crypto/xts.c
 @@ -399,7 +399,7 @@ static int xts_create(struct crypto_template *tmpl, struct rtattr **tb)
@@ -1356,7 +1342,7 @@ index 8224b1283..afa61de1c 100644
  			goto err_free_inst;
  
 diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
-index 72a4b0b1d..12fb96b0f 100644
+index 72a4b0b1d..555ba2070 100644
 --- a/lib/crypto/sha256.c
 +++ b/lib/crypto/sha256.c
 @@ -37,6 +37,8 @@ static const u32 SHA256_K[] = {
@@ -1368,24 +1354,30 @@ index 72a4b0b1d..12fb96b0f 100644
  static inline u32 Ch(u32 x, u32 y, u32 z)
  {
  	return z ^ (x & (y ^ z));
-@@ -133,7 +135,7 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
+@@ -133,7 +135,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
  	if ((partial + len) > 63) {
  		if (partial) {
  			done = -partial;
--			memcpy(sctx->buf + partial, data, done + 64);
++#ifdef FIPS_CANISTER
 +			fcw_memcpy(sctx->buf + partial, data, done + 64);
++#else
+ 			memcpy(sctx->buf + partial, data, done + 64);
++#endif
  			src = sctx->buf;
  		}
  
-@@ -147,7 +149,7 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
+@@ -147,7 +153,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
  
  		partial = 0;
  	}
--	memcpy(sctx->buf + partial, src, len - done);
++#ifdef FIPS_CANISTER
 +	fcw_memcpy(sctx->buf + partial, src, len - done);
++#else
+ 	memcpy(sctx->buf + partial, src, len - done);
++#endif
  }
  EXPORT_SYMBOL(sha256_update);
  
 -- 
-2.41.0
+2.19.0
 

@@ -403,10 +403,10 @@ index 07e27910c..32ff5a0b1 100644
  static struct shash_alg sha512_algs[2] = { {
  	.digestsize	=	SHA512_DIGEST_SIZE,
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 65fcb40b4..b8d9fe797 100644
+index 7899ab3cd..94279afed 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -5904,5 +5904,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5976,5 +5976,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  }
  
  #endif /* CONFIG_CRYPTO_MANAGER_DISABLE_TESTS */
@@ -470,12 +470,12 @@ index 1aebe7be9..9b2f423f0 100644
  
  MODULE_LICENSE("GPL");
 diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
-index 12fb96b0f..9e14f49b5 100644
+index 555ba2070..c0656c6f3 100644
 --- a/lib/crypto/sha256.c
 +++ b/lib/crypto/sha256.c
-@@ -151,13 +151,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
- 	}
- 	fcw_memcpy(sctx->buf + partial, src, len - done);
+@@ -159,13 +159,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
+ 	memcpy(sctx->buf + partial, src, len - done);
+ #endif
  }
 -EXPORT_SYMBOL(sha256_update);
  
@@ -487,7 +487,7 @@ index 12fb96b0f..9e14f49b5 100644
  
  static void __sha256_final(struct sha256_state *sctx, u8 *out, int digest_words)
  {
-@@ -190,13 +188,11 @@ void sha256_final(struct sha256_state *sctx, u8 *out)
+@@ -198,13 +196,11 @@ void sha256_final(struct sha256_state *sctx, u8 *out)
  {
  	__sha256_final(sctx, out, 8);
  }
@@ -501,7 +501,7 @@ index 12fb96b0f..9e14f49b5 100644
  
  void sha256(const u8 *data, unsigned int len, u8 *out)
  {
-@@ -206,6 +202,5 @@ void sha256(const u8 *data, unsigned int len, u8 *out)
+@@ -214,6 +210,5 @@ void sha256(const u8 *data, unsigned int len, u8 *out)
  	sha256_update(&sctx, data, len);
  	sha256_final(&sctx, out);
  }
@@ -509,4 +509,5 @@ index 12fb96b0f..9e14f49b5 100644
  
  MODULE_LICENSE("GPL");
 -- 
-2.41.0
+2.19.0
+
