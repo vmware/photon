@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.62
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -204,6 +204,7 @@ Patch306: 0007-Don-t-use-writeback-fid-for-cache-when-enabled-for-V.patch
 Patch307: 0008-fscache-Only-fetch-attr-from-inode-cache-when-cache-.patch
 Patch308: 0009-9p-fscache-Make-dcache-work-with-case-insensitive-vo.patch
 Patch309: 0010-9p-fscache-Ensure-consistent-blksize-is-returned-fro.patch
+Patch310: 0001-9p-Fix-race-condition-in-v9fs_dentry_release.patch
 
 # Crypto: [500..529]
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -337,7 +338,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 # 9P
-%autopatch -p1 -m300 -M309
+%autopatch -p1 -m300 -M310
 
 # crypto
 %autopatch -p1 -m500 -M504
@@ -551,6 +552,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Dec 5 2023 Albert Guo <aguo@vmware.com> 6.1.62-9
+- Fix race condition in v9fs_dentry_release
 * Mon Nov 27 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.62-8
 - Fix CVE-2023-5633
 * Sat Nov 25 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.62-7

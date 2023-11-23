@@ -1,0 +1,73 @@
+From f27f3685c9b296f65f4b46205e4fdbbeb5a8bc02 Mon Sep 17 00:00:00 2001
+From: Albert Guo <aguo@vmware.com>
+Date: Fri, 1 Dec 2023 16:11:43 +0000
+Subject: [PATCH] [9p] Fix race condition in v9fs_dentry_release
+
+Both dcache and v9fs_remove() calls d_release()
+https://elixir.bootlin.com/linux/v6.1.60/source/fs/9p/vfs_inode.c#L594
+The implementation is v9fs_dentry_release()
+
+In the dentry, 9P maintains a list of fids that are cached for fast
+lookup. When an entry is removed, v9fs_dentry_release() will be called
+explicitly. This was added to fix create-unlink-getattr idiom:
+https://github.com/torvalds/linux/commit/154372e67d4053e56591245eb413686621941333
+
+The problem is v9fs_dentry_release() doesn't hold d_lock() when calling
+p9_fid_put(). So the below race exists:
+
+Thread 1 remove a file, while thread 2 stat a file, thread 2 might get a fid with
+refcount equals 0. Details sequence:
+
+ 1. T1 calls v9fs_remove, it then calls v9fs_dentry_release(), which will calls
+   p9_fid_put() to release fid1.
+ 2. T1: the dcache holds the last reference, so it calls p9_client_clunk() to clunk
+   the fid.
+ 3. T1 free the p9_fid after it's clunked.
+ 4. T2 issues stat command, it will call into v9fs_fid_find() to find a fid from
+   dcache. As the fid list is still in the dentry, it finds the fid successfully.
+   However, the refcount of the fid has reached 0. When this fid is sent to 9P server,
+   it will be an unknown fid because it has been clunked.
+ 5. T1 set d_fsdata to NULL which clear the fid list.
+
+The order of step 2,3,4 can be in any order. And when T2 gets a freed p9_fid, it may
+clunk the fid and free the p9_fid again, which will cause double free.
+
+Fix:
+ In v9fs_dentry_release(), we copy the fid list head, and set d_fsdata to NULL within
+ dentry->d_lock. The time window for holding the d_lock is super small. The p9_client_clunk()
+ doesn't need to be done within the d_lock.
+ The v9fs_fid_find() has already held dentry->d_lock when iterating the fid list.
+---
+ fs/9p/vfs_dentry.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/fs/9p/vfs_dentry.c b/fs/9p/vfs_dentry.c
+index b2f2590b9..40cc44399 100644
+--- a/fs/9p/vfs_dentry.c
++++ b/fs/9p/vfs_dentry.c
+@@ -52,12 +52,20 @@ static int v9fs_cached_dentry_delete(const struct dentry *dentry)
+ static void v9fs_dentry_release(struct dentry *dentry)
+ {
+ 	struct hlist_node *p, *n;
++	struct hlist_head fid_list_head;
+ 
+ 	p9_debug(P9_DEBUG_VFS, " dentry: %pd (%p)\n",
+ 		 dentry, dentry);
+-	hlist_for_each_safe(p, n, (struct hlist_head *)&dentry->d_fsdata)
+-		p9_fid_put(hlist_entry(p, struct p9_fid, dlist));
++	spin_lock(&dentry->d_lock);
++	fid_list_head.first = dentry->d_fsdata;
++	/*
++	 * Set fid list head to NULL so that v9fs_fid_find() won't be able to
++	 * find any fid from this dentry
++	 */
+ 	dentry->d_fsdata = NULL;
++	spin_unlock(&dentry->d_lock);
++	hlist_for_each_safe(p, n, &fid_list_head)
++		p9_fid_put(hlist_entry(p, struct p9_fid, dlist));
+ }
+ 
+ static int v9fs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
+-- 
+2.39.0
+
