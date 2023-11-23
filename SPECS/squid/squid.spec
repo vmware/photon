@@ -3,8 +3,8 @@
 
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
-Version:        5.7
-Release:        11%{?dist}
+Version:        6.5
+Release:        1%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.squid-cache.org/Versions/v5/%{name}-%{version}.tar.xz
-%define sha512 %{name}=624a39041a6ceda6c470dc0937616f1aa67200f3db02b4d74095d8d706ed31d6df5e0417dcacde45f6be40b617bee018849793d52c96a626aab32a2b182972aa
+%define sha512 %{name}=d3a40f5f390f0042a8e981ca28755a90dd520230a06b4246ba7bec0c98025ce1cdc7426797a666f769addd60238e28e1f04d2c701ea2ef2d7329dbe87b830d70
 
 Source1: %{name}.sysconfig
 Source2: %{name}.pam
@@ -48,6 +48,11 @@ Requires: perl
 Requires: Linux-PAM
 Requires: cyrus-sasl
 Requires: openldap
+Requires: libcap
+Requires: libecap
+Requires: expat-libs
+Requires: libgcc
+Requires: libstdc++
 Requires(pre): systemd-rpm-macros
 
 %description
@@ -232,6 +237,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Wed Nov 22 2023 Srish Srinivasan <ssrish@vmware.com> 6.5-1
+- Update to v6.5 to fix multiple CVEs
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.7-11
 - Bump version as a part of openssl upgrade
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 5.7-10
