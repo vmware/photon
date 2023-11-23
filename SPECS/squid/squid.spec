@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
-Version:        4.17
-Release:        3%{?dist}
+Version:        6.5
+Release:        1%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -9,20 +9,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.squid-cache.org/Versions/v4/%{name}-%{version}.tar.xz
-%define sha512 %{name}=cea36de10f128f5beb51bdc89604c16af3a820a5ac27284b2aa181ac87144930489688e1d85ce357fe1ed8a4e96e300277b95034a2475cbf86c9d6923ddf7c0a
+%define sha512 %{name}=d3a40f5f390f0042a8e981ca28755a90dd520230a06b4246ba7bec0c98025ce1cdc7426797a666f769addd60238e28e1f04d2c701ea2ef2d7329dbe87b830d70
 
 Source1:        squid.sysconfig
 Source2:        squid.pam
 Source3:        squid.service
 Source4:        cache_swap.sh
 Source5:        squid.logrotate
-
-Patch0:         openssl-3.0.0-support.patch
-Patch1:         CVE-2021-46784.patch
-Patch2:         CVE-2022-41318.patch
-Patch3:         CVE-2022-41317.patch
-Patch4:         CVE-2023-46724.patch
-Patch5:         CVE-2023-46847.patch
 
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  autoconf
@@ -45,10 +38,20 @@ BuildRequires:  openssl-devel
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
 
-Requires:       openssl
-Requires:       shadow
-Requires:       perl-URI
-Requires:       systemd
+Requires: openssl
+Requires: shadow
+Requires: perl-URI
+Requires: systemd
+Requires: libxml2
+Requires: perl
+Requires: Linux-PAM
+Requires: cyrus-sasl
+Requires: openldap
+Requires: libcap
+Requires: libecap
+Requires: expat-libs
+Requires: libgcc
+Requires: libstdc++
 
 %description
 Squid is a high-performance proxy caching server for Web clients,
@@ -220,6 +223,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Wed Nov 22 2023 Srish Srinivasan <ssrish@vmware.com> 6.5-1
+- Update to v6.5 to fix multiple CVEs
 * Fri Nov 17 2023 Srish Srinivasan <ssrish@vmware.com> 4.17-3
 - Patched CVE-2023-46724, CVE-2023-46847
 * Mon Jan 09 2023 Srish Srinivasan <ssrish@vmware.com> 4.17-2
