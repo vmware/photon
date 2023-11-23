@@ -1,0 +1,28 @@
+From 27a924c0c0e5bea7cc72d338fb93de428c2c5033 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Thu, 23 Nov 2023 23:05:49 +0530
+Subject: [PATCH] use systemctl to manage services
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ usr/sbin/service | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/usr/sbin/service b/usr/sbin/service
+index 5909934..58bde1a 100755
+--- a/usr/sbin/service
++++ b/usr/sbin/service
+@@ -83,7 +83,9 @@ while [ $# -gt 0 ]; do
+     esac
+ done
+ 
+-if [ -f "${SERVICEDIR}/${SERVICE}" ]; then
++if [[ $ACTION =~ ^(start|stop|restart|try-restart|reload|force-reload|status|condrestart)$ ]]; then
++   exec /bin/systemctl "${ACTION}" ${OPTIONS} "${SERVICE}".service
++elif [ -f "${SERVICEDIR}/${SERVICE}" ]; then
+     # LSB daemons that dies abnormally in systemd looks alive in systemd's eyes due to RemainAfterExit=yes
+     # lets reap them before next start
+     if [ "${ACTION}" = 'start' ] && \
+-- 
+2.42.0
+

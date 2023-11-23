@@ -1,9 +1,9 @@
 Summary:        Scripts to bring up network interfaces and legacy utilities
 Name:           initscripts
 Version:        10.17
+Release:        3%{?dist}
 License:        GPLv2
 Group:          System Environment/Base
-Release:        2%{?dist}
 URL:            https://github.com/fedora-sysv/initscripts
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,21 +11,24 @@ Distribution:   Photon
 Source0: https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=6c99a7b52b5bc0ced1877a7b2a280b885778bb12e89dc0d606a5b5eda1aa87feecdea6c19803afab01953c9d352c409e59665914832f7107b6b3816d4740594c
 
-Source1:        adjtime
+Source1: adjtime
+Source2: networks
 
-Requires:       systemd
-Requires:       iproute2
-Requires:       util-linux
-Requires:       findutils
+Patch0: 0001-use-systemctl-to-manage-services.patch
 
-BuildRequires:  glib-devel
-BuildRequires:  python3-devel
-BuildRequires:  popt-devel
-BuildRequires:  gettext-devel
-BuildRequires:  pkg-config
-BuildRequires:  systemd
+Requires: systemd
+Requires: iproute2
+Requires: util-linux
+Requires: findutils
 
-Provides:       /sbin/service
+BuildRequires: glib-devel
+BuildRequires: python3-devel
+BuildRequires: popt-devel
+BuildRequires: gettext
+BuildRequires: pkg-config
+BuildRequires: systemd-devel
+
+Provides: /sbin/service
 
 %description
 This package contains the script that activates and deactivates most
@@ -34,10 +37,11 @@ network interfaces, some utilities, and other legacy files.
 %package -n     netconsole-service
 Summary:        Service for initializing of network console logging
 Requires:       %{name} = %{version}-%{release}
-BuildArch:      noarch
 Requires:       iputils
 Requires:       kmod
 Requires:       sed
+
+BuildArch:      noarch
 
 %description -n netconsole-service
 This packages provides a 'netconsole' service for loading of netconsole kernel
@@ -47,15 +51,16 @@ allows logging of kernel messages over the network.
 %package -n     readonly-root
 Summary:        Service for configuring read-only root support
 Requires:       %{name} = %{version}-%{release}
-BuildArch:      noarch
 Requires:       cpio
+
+BuildArch:      noarch
 
 %description -n readonly-root
 This package provides script & configuration file for setting up read-only root
 support. Additional configuration is required after installation.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %make_build PYTHON=%{python3}
@@ -70,36 +75,16 @@ rm -f %{buildroot}%{_sysconfdir}/sysconfig/network-scripts/ifup-ctc
 # Additional ways to access documentation:
 install -m 0755 -d %{buildroot}%{_docdir}/network-scripts
 
-ln -s %{_docdir}/%{name}/sysconfig.txt %{buildroot}%{_docdir}/network-scripts/
-ln -sr %{_mandir}/man8/ifup.8 %{buildroot}%{_mandir}/man8/ifdown.8
+ln -srv %{buildroot}%{_docdir}/%{name}-%{version}/sysconfig.txt \
+       %{buildroot}%{_docdir}/network-scripts/
 
-cp -r %{SOURCE1} %{buildroot}%{_sysconfdir}/
+ln -srv %{buildroot}%{_mandir}/man8/ifup.8 \
+       %{buildroot}%{_mandir}/man8/ifdown.8
 
-mkdir -p %{buildroot}%{_sysconfdir}/rwtab.d \
-         %{buildroot}%{_sysconfdir}/statetab.d \
+cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/
+
+mkdir -p %{buildroot}%{_sysconfdir}/{rwtab.d,statetab.d} \
          %{buildroot}%{_sysconfdir}/NetworkManager/dispatcher.d
-
-cat >> %{buildroot}%{_sysconfdir}/sysconfig/network <<- "EOF"
-###
-# This file is used to specify information about the desired network configuration.
-# By default, it contains the following options:
-#
-
-# A boolean yes or no to Configure networking or not to configure networking.
-# NETWORKING=boolean
-
-# Hostname of your machine
-# HOSTNAME=value
-
-# where gwip is the IP address of the remote network gateway -if available.
-# GATEWAY=gwip
-EOF
-
-cat >> %{buildroot}%{_sysconfdir}/networks <<- "EOF"
-default 0.0.0.0
-loopback 127.0.0.0
-link-local 169.254.0.0
-EOF
 
 %post
 %systemd_post import-state.service loadmodules.service
@@ -129,6 +114,7 @@ EOF
 %systemd_postun readonly-root.service
 
 %files -f %{name}.lang
+%defattr(-,root,root)
 %license COPYING
 %doc doc/sysconfig.txt
 
@@ -164,11 +150,7 @@ EOF
 %dir %{_sysconfdir}/sysconfig/network-scripts
 %{_sysconfdir}/rc.d/init.d/network
 %{_sysconfdir}/sysconfig/network-scripts/*
-%config(noreplace)    %{_sysconfdir}/sysconfig/network-scripts/ifcfg-lo
-%ifarch s390 s390x
-%{_sysconfdir}/sysconfig/network-scripts/ifup-ctc
-%endif
-%config(noreplace) %{_sysconfdir}/sysconfig/network
+%config(noreplace) %{_sysconfdir}/sysconfig/network-scripts/ifcfg-lo
 %config(noreplace) %{_sysconfdir}/networks
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/adjtime
 
@@ -182,11 +164,13 @@ EOF
 %dir %{_sysconfdir}/NetworkManager/dispatcher.d
 
 %files -n netconsole-service
+%defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/sysconfig/netconsole
 %{_libexecdir}/netconsole
 %{_unitdir}/netconsole.service
 
 %files -n readonly-root
+%defattr(-,root,root)
 %dir %{_sharedstatedir}/stateless
 %dir %{_sharedstatedir}/stateless/state
 %dir %{_sharedstatedir}/stateless/writable
@@ -199,6 +183,9 @@ EOF
 %{_unitdir}/readonly-root.service
 
 %changelog
+* Thu Nov 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.17-3
+- Spec clanups
+- Add patch to manage services using systemctl.
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 10.17-2
 - Bump version as a part of gettext upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 10.17-1
