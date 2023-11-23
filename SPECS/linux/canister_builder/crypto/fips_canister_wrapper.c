@@ -371,7 +371,6 @@ static char *canister_algs[] = {
 	"drbg_nopr_hmac_sha384",
 	"drbg_nopr_hmac_sha512",
 	"drbg_nopr_hmac_sha256",
-	"jitterentropy_rng",
 	"ecdh-generic",
 	"cbc(aes-generic)",
 	"ecb(aes-generic)",
@@ -482,7 +481,6 @@ static int __init fcw_subsys_initcall(void)
 	crypto_ctr_module_init();
 	hmac_module_init();
 	drbg_init();
-	jent_mod_init();
 	ecdh_init();
 	crypto_cbc_module_init();
 	xts_module_init();
@@ -518,7 +516,6 @@ static void __exit fcw_module_exit(void)
 	ecdsa_exit();
 	crypto_gcm_module_exit();
 	hmac_module_exit();
-	jent_mod_exit();
 	rsa_exit();
 	sha1_generic_mod_fini();
 	sha256_generic_mod_fini();
