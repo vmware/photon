@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.200
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -405,7 +405,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m201 -M202
 
 # GPUs support for DriverVM
-%patch300 -p1
+%autopatch -p1 -m300 -M300
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -414,7 +414,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m508 -M509
 %else
 %if 0%{?kat_build}
-%patch510 -p1
+%autopatch -p1 -m510 -M510
 %endif
 %endif
 
@@ -433,35 +433,17 @@ popd
 
 #Patches for iavf driver
 pushd ../iavf-%{iavf_version}
-%patch1512 -p1
+%autopatch -p1 -m1512 -M1512
 popd
 
 #Patches for ice driver
 pushd ../ice-%{ice_version}
-%patch1513 -p1
-%patch1514 -p1
+%autopatch -p1 -m1513 -M1514
 popd
 %endif
 
 # vmci
-%patch1521 -p1
-%patch1522 -p1
-%patch1523 -p1
-%patch1524 -p1
-%patch1531 -p1
-%patch1532 -p1
-%patch1533 -p1
-%patch1534 -p1
-%patch1535 -p1
-%patch1536 -p1
-%patch1537 -p1
-%patch1538 -p1
-%patch1539 -p1
-%patch1540 -p1
-%patch1541 -p1
-%patch1542 -p1
-%patch1543 -p1
-%patch1544 -p1
+%autopatch -p1 -m1521 -M1544
 
 %ifarch x86_64
 # Patches for i915 backport
@@ -666,6 +648,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 23 2023 Ankit Jain <ankitja@vmware.com> 5.10.200-3
+- tarfs: Fixes file permission and buffer overflow issue
 * Wed Nov 15 2023 Kuntal Nayak <nkuntal@vmware.com> 5.10.200-2
 - Kconfig to lockdown kernel in UEFI Secure Boot
 * Thu Nov 09 2023 Ankit Jain <ankitja@vmware.com> 5.10.200-1

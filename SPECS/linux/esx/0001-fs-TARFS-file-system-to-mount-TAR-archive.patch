@@ -1,4 +1,4 @@
-From 160309a94d16ce525a6f41604179c46866ac679e Mon Sep 17 00:00:00 2001
+From a0c2c7e4795f37fdb4699063f9c70ee3577c4228 Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Sun, 14 Nov 2021 19:38:28 +0000
 Subject: [PATCH] fs: TARFS file system to mount TAR archive
@@ -29,9 +29,9 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  fs/tarfs/Makefile             |  15 +
  fs/tarfs/README.md            |  64 +++
  fs/tarfs/tarfs.h              | 184 +++++++++
- fs/tarfs/tarfs_file_dir_ops.c | 563 +++++++++++++++++++++++++++
- fs/tarfs/tarfs_inode.c        | 714 ++++++++++++++++++++++++++++++++++
- 8 files changed, 1560 insertions(+)
+ fs/tarfs/tarfs_file_dir_ops.c | 561 +++++++++++++++++++++++++++
+ fs/tarfs/tarfs_inode.c        | 712 ++++++++++++++++++++++++++++++++++
+ 8 files changed, 1556 insertions(+)
  create mode 100644 fs/tarfs/Kconfig
  create mode 100644 fs/tarfs/Makefile
  create mode 100644 fs/tarfs/README.md
@@ -52,10 +52,10 @@ index f8c49af41138..9cd075475d2a 100644
  endif # MISC_FILESYSTEMS
  
 diff --git a/fs/Makefile b/fs/Makefile
-index 1adf9981a0ca..e9f161bb4357 100644
+index 3b5fa1e2a4b7..ebf1c96a0a7d 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
-@@ -138,3 +138,4 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
+@@ -136,3 +136,4 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
  obj-$(CONFIG_ZONEFS_FS)		+= zonefs/
  obj-$(CONFIG_VTAR)		+= vtar/
  obj-$(CONFIG_VTARFS)		+= vtarfs/
@@ -367,10 +367,10 @@ index 000000000000..c841af3437ad
 +#endif
 diff --git a/fs/tarfs/tarfs_file_dir_ops.c b/fs/tarfs/tarfs_file_dir_ops.c
 new file mode 100644
-index 000000000000..954a206390a4
+index 000000000000..c0cbeaddc1e1
 --- /dev/null
 +++ b/fs/tarfs/tarfs_file_dir_ops.c
-@@ -0,0 +1,563 @@
+@@ -0,0 +1,561 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -395,8 +395,6 @@ index 000000000000..954a206390a4
 +#include <linux/mpage.h>
 +
 +#include "tarfs.h"
-+
-+#define WRITE_MASK (0222)
 +
 +mode_t tar_type_to_posix(int typeflag)
 +{
@@ -428,7 +426,7 @@ index 000000000000..954a206390a4
 + */
 +mode_t tarfs_entry_mode(struct tarfs_entry *entry)
 +{
-+    mode_t mode = entry->mode & ~WRITE_MASK;
++    mode_t mode = entry->mode;
 +    mode |= tar_type_to_posix(entry->header.typeflag);
 +    return mode;
 +}
@@ -936,10 +934,10 @@ index 000000000000..954a206390a4
 +EXPORT_SYMBOL_GPL(tarfs_bmap);
 diff --git a/fs/tarfs/tarfs_inode.c b/fs/tarfs/tarfs_inode.c
 new file mode 100644
-index 000000000000..eedb638c335c
+index 000000000000..efef1c39e091
 --- /dev/null
 +++ b/fs/tarfs/tarfs_inode.c
-@@ -0,0 +1,714 @@
+@@ -0,0 +1,712 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -1112,17 +1110,15 @@ index 000000000000..eedb638c335c
 +    } else {
 +        name_end = memchr(header->name, 0, sizeof(header->name));
 +        if (!name_end) {
-+            tarfs_debug("Header name is not proper [%s][%ld][%ld], name_end is NULL!!",
-+                    header->name, sizeof(header->name),strlen(header->name));
 +            /*
-+             * Handle the case where header->name is exact 100 bytes long and
-+             * thus there is no '\0' char and mode bytes gets appended to header->name
++             * Handle the case where header->name is exact 100 bytes long or more
 +             */
-+            if ((strlen(header->name) > sizeof(header->name)) &&
-+                    (memcmp(header->name + sizeof(header->name), header->mode, sizeof(header->mode)) == 0)) {
++            if (strnlen(header->name, sizeof(header->name)) == sizeof(header->name)) {
 +                tarfs_debug("Header name is exact 100 bytes long!! Handling it properly!!");
 +                name_end = header->name + sizeof(header->name);
 +            } else {
++                tarfs_err("Header name is not proper [%s][%ld][%ld], name_end is NULL!!",
++                        header->name, sizeof(header->name), strnlen(header->name, sizeof(header->name)));
 +                return NULL;
 +            }
 +        }
