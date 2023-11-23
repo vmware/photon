@@ -1,4 +1,4 @@
-From d0196e01e76746a41a923631837cb087fa9c81a9 Mon Sep 17 00:00:00 2001
+From 9763ecab4980bc6422280a736c8ecaa86ebf0575 Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Sun, 14 Nov 2021 19:38:28 +0000
 Subject: [PATCH] fs: TARFS file system to mount TAR archive
@@ -30,9 +30,9 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  fs/tarfs/Makefile             |  15 +
  fs/tarfs/README.md            |  64 +++
  fs/tarfs/tarfs.h              | 183 +++++++++
- fs/tarfs/tarfs_file_dir_ops.c | 588 ++++++++++++++++++++++++++++
+ fs/tarfs/tarfs_file_dir_ops.c | 586 ++++++++++++++++++++++++++++
  fs/tarfs/tarfs_inode.c        | 714 ++++++++++++++++++++++++++++++++++
- 8 files changed, 1584 insertions(+)
+ 8 files changed, 1582 insertions(+)
  create mode 100644 fs/tarfs/Kconfig
  create mode 100644 fs/tarfs/Makefile
  create mode 100644 fs/tarfs/README.md
@@ -41,7 +41,7 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  create mode 100644 fs/tarfs/tarfs_inode.c
 
 diff --git a/fs/Kconfig b/fs/Kconfig
-index 055c4d5f1..4450042f0 100644
+index 1b808e4c38dc..a9a8ac42f86b 100644
 --- a/fs/Kconfig
 +++ b/fs/Kconfig
 @@ -321,6 +321,7 @@ source "fs/erofs/Kconfig"
@@ -53,17 +53,17 @@ index 055c4d5f1..4450042f0 100644
  endif # MISC_FILESYSTEMS
  
 diff --git a/fs/Makefile b/fs/Makefile
-index b675a2067..75aed184b 100644
+index 73f893133f86..7e148a36486d 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
-@@ -139,3 +139,4 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
+@@ -136,3 +136,4 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
  obj-$(CONFIG_ZONEFS_FS)		+= zonefs/
  obj-$(CONFIG_VTAR)		+= vtar/
  obj-$(CONFIG_VTARFS)		+= vtarfs/
 +obj-$(CONFIG_TARFS)		+= tarfs/
 diff --git a/fs/tarfs/Kconfig b/fs/tarfs/Kconfig
 new file mode 100644
-index 000000000..ff60b7e09
+index 000000000000..ff60b7e091d8
 --- /dev/null
 +++ b/fs/tarfs/Kconfig
 @@ -0,0 +1,18 @@
@@ -87,7 +87,7 @@ index 000000000..ff60b7e09
 +       module will be called tarfs. If unsure, say N.
 diff --git a/fs/tarfs/Makefile b/fs/tarfs/Makefile
 new file mode 100644
-index 000000000..592e207bb
+index 000000000000..592e207bb3b5
 --- /dev/null
 +++ b/fs/tarfs/Makefile
 @@ -0,0 +1,15 @@
@@ -108,7 +108,7 @@ index 000000000..592e207bb
 +	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 diff --git a/fs/tarfs/README.md b/fs/tarfs/README.md
 new file mode 100644
-index 000000000..2a816e9ff
+index 000000000000..2a816e9ff7e1
 --- /dev/null
 +++ b/fs/tarfs/README.md
 @@ -0,0 +1,64 @@
@@ -178,7 +178,7 @@ index 000000000..2a816e9ff
 +
 diff --git a/fs/tarfs/tarfs.h b/fs/tarfs/tarfs.h
 new file mode 100644
-index 000000000..911bd20fb
+index 000000000000..911bd20fbc21
 --- /dev/null
 +++ b/fs/tarfs/tarfs.h
 @@ -0,0 +1,183 @@
@@ -367,10 +367,10 @@ index 000000000..911bd20fb
 +#endif
 diff --git a/fs/tarfs/tarfs_file_dir_ops.c b/fs/tarfs/tarfs_file_dir_ops.c
 new file mode 100644
-index 000000000..41fa448a0
+index 000000000000..fd9ff0142144
 --- /dev/null
 +++ b/fs/tarfs/tarfs_file_dir_ops.c
-@@ -0,0 +1,588 @@
+@@ -0,0 +1,586 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Filesystem to directly mount tar archive.
@@ -395,8 +395,6 @@ index 000000000..41fa448a0
 +#include <linux/mpage.h>
 +
 +#include "tarfs.h"
-+
-+#define WRITE_MASK (0222)
 +
 +mode_t tar_type_to_posix(int typeflag)
 +{
@@ -427,7 +425,7 @@ index 000000000..41fa448a0
 + */
 +mode_t tarfs_entry_mode(struct tarfs_entry *entry)
 +{
-+	mode_t mode = entry->mode & ~WRITE_MASK;
++	mode_t mode = entry->mode;
 +
 +	mode |= tar_type_to_posix(entry->header.typeflag);
 +	return mode;
@@ -961,7 +959,7 @@ index 000000000..41fa448a0
 +EXPORT_SYMBOL_GPL(tarfs_bmap);
 diff --git a/fs/tarfs/tarfs_inode.c b/fs/tarfs/tarfs_inode.c
 new file mode 100644
-index 000000000..4231476f3
+index 000000000000..4231476f329b
 --- /dev/null
 +++ b/fs/tarfs/tarfs_inode.c
 @@ -0,0 +1,714 @@

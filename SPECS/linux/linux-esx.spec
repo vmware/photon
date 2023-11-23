@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.62
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -548,6 +548,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 23 2023 Ankit Jain <ankitja@vmware.com> 6.1.62-6
+- tarfs: Fixes file permission
 * Wed Nov 22 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.62-5
 - Fix for CVE-2023-2176
 * Tue Nov 21 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-4
