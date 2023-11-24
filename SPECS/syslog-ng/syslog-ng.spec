@@ -1,17 +1,21 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.37.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha512    %{name}=beebd89c54a415469dc58630ac1900d632ef351f6a13fad4a95ce7bb1760b16d6cfdcede02225a35e97ebce7dae151c6aa228f3d378463e8b873c4f71ed86ab7
+%define sha512  %{name}=beebd89c54a415469dc58630ac1900d632ef351f6a13fad4a95ce7bb1760b16d6cfdcede02225a35e97ebce7dae151c6aa228f3d378463e8b873c4f71ed86ab7
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
+Source3:        cve-2022-38725.patches
 Patch0:         fix_autogen_issue.patch
+# cve-2022-38725: [1]..[9]
+%include        %{SOURCE3}
+
 Requires:       glib >= 2.58.3
 Requires:       openssl
 Requires:       glibc
@@ -168,6 +172,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Fri Nov 24 2023 Ankit Jain <ankitja@vmware.com> 3.37.1-3
+- Fix for CVE-2022-38725
 * Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.37.1-2
 - Version bump due to glib change
 * Thu Jun 30 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-1
