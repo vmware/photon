@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -22,7 +22,9 @@ Requires:       json-c
 Requires:       systemd
 Requires:       ivykis
 Requires:       paho-c
+Requires:       pcre2-libs >= 10.42-2
 
+BuildRequires:  pcre2-devel
 BuildRequires:  which
 BuildRequires:  glib-devel
 BuildRequires:  json-glib-devel
@@ -97,7 +99,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
    --enable-dynamic-linking \
    --disable-cpp \
    PYTHON=%{python3} \
-   PKG_CONFIG_PATH={%_libdir}/pkgconfig/
+   PKG_CONFIG_PATH=%{_libdir}/pkgconfig/
 
 %make_build
 
@@ -167,6 +169,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-3
+- Rebuild with jit enabled pcre2
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-2
 - Bump version as a part of openssl upgrade
 * Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-1

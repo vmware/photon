@@ -1,7 +1,7 @@
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
 Version:        10.42
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2
 License:        BSD
 Group:          Development/Tools
@@ -23,7 +23,7 @@ BuildRequires:  glibc
 Requires:       libgcc
 Requires:       readline
 Requires:       libstdc++
-Requires:       %{name}-libs = %{version}
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       bzip2-libs
 
 %description
@@ -61,18 +61,15 @@ This package contains minimal set of shared pcre libraries.
     --enable-pcretest-libreadline \
     --enable-shared \
     --disable-static \
-    ..
+    --enable-jit
 
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-find %{buildroot} -name '*.a' -delete
 
-%if 0%{?with_check}
 %check
-make check %{?_smp_mflags}
-%endif
+%make_build check
 
 %post   libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -100,6 +97,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 
 %changelog
+* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.42-2
+- Enable jit support, needed by syslog-ng
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 10.42-1
 - Update to latest version, fix minor CVE
 * Tue Jan 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.40-3
