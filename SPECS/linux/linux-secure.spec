@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -464,6 +464,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Nov 24 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-6
+- Fix initcall for crypto_tamper_test module
 * Wed Nov 22 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-5
 - Added tamper KAT, PCT and integrity test for CMVP demo
 * Wed Nov 22 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.62-4
