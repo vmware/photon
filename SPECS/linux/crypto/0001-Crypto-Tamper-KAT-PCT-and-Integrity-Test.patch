@@ -5,11 +5,11 @@ Subject: [PATCH] Crypto: Tamper KAT, PCT and Integrity Test
 
 - Introduced new kernel command line parameter(tampertest) to tamper KAT,
   PCT and integrity test for FIPS CMVP testing.
-- tampertest parameter takes values [-2,-1,1,2,...60]. Each corresponds to
+- tampertest parameter takes values [-2,-1,1,2,...56]. Each corresponds to
   breaking a test.
 - Value of -2 tampers Pairwise Consistency Test and simulate a failure.
 - Value of -1 tampers Canister Integrity test.
-- Values [1,..60] tampers KAT test for the supported algorithms
+- Values [1,..56] tampers KAT test for the supported algorithms
   in LKCM 5.0.
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
@@ -17,11 +17,11 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
  crypto/Kconfig              |  29 +++++++++
  crypto/Makefile             |   1 +
- crypto/crypto_tamper_test.c | 118 ++++++++++++++++++++++++++++++++++++
+ crypto/crypto_tamper_test.c | 114 ++++++++++++++++++++++++++++++++++++
  crypto/ecc.c                |  11 ++++
- crypto/testmgr.c            |  72 ++++++++++++++++++++++
- init/main.c                 |  10 +++
- 6 files changed, 241 insertions(+)
+ crypto/testmgr.c            |  68 +++++++++++++++++++++
+ init/main.c                 |  10 ++++
+ 6 files changed, 233 insertions(+)
  create mode 100644 crypto/crypto_tamper_test.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
@@ -78,10 +78,10 @@ index 1fd7da7f4..ec0bbdd4c 100644
  
 diff --git a/crypto/crypto_tamper_test.c b/crypto/crypto_tamper_test.c
 new file mode 100644
-index 000000000..30693f134
+index 000000000..a6cfbf627
 --- /dev/null
 +++ b/crypto/crypto_tamper_test.c
-@@ -0,0 +1,118 @@
+@@ -0,0 +1,114 @@
 +/*
 + * Tamper test module
 + *
@@ -121,11 +121,7 @@ index 000000000..30693f134
 +	"hmac(sha384)",
 +	"hmac(sha512)",
 +	"rsa",
-+	"pkcs1pad(rsa,sha1)",
-+	"pkcs1pad(rsa,sha224)",
 +	"pkcs1pad(rsa,sha256)",
-+	"pkcs1pad(rsa,sha384)",
-+	"pkcs1pad(rsa,sha512)",
 +	"drbg_pr_ctr_aes128",
 +	"drbg_pr_ctr_aes192",
 +	"drbg_pr_ctr_aes256",
@@ -179,7 +175,7 @@ index 000000000..30693f134
 +	char *test = "\x23\x32\x23\x32\x23\x32\x23\x32";
 +
 +	switch (tamper_testbuild) {
-+		case 1 ... 60:
++		case 1 ... 56:
 +			if (strcmp(alg, alg_list[idx]) && strcmp(driver, alg_list[idx]))
 +				break;
 +
@@ -223,10 +219,10 @@ index 6805210a8..5ab88d2ac 100644
  int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
  				struct ecc_point *pk)
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 2e1e6dab9..ea26eae64 100644
+index 1ee694edb..a5a18a456 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -39,11 +39,79 @@
+@@ -39,11 +39,75 @@
  #include "fips_canister_wrapper.h"
  #include "fips_canister_wrapper_internal.h"
  
@@ -244,11 +240,7 @@ index 2e1e6dab9..ea26eae64 100644
 +   (const char **)&hmac_sha384_tv_template[0].digest,
 +   (const char **)&hmac_sha512_tv_template[0].digest,
 +   (const char **)&rsa_tv_template[0].c,
-+   (const char **)&pkcs1pad_rsa_sha1_tv_template[0].c,
-+   (const char **)&pkcs1pad_rsa_sha224_tv_template[0].c,
 +   (const char **)&pkcs1pad_rsa_tv_template[0].c,
-+   (const char **)&pkcs1pad_rsa_sha384_tv_template[0].c,
-+   (const char **)&pkcs1pad_rsa_sha512_tv_template[0].c,
 +   (const char **)&drbg_pr_ctr_aes128_tv_template[0].expected,
 +   (const char **)&drbg_pr_ctr_aes192_tv_template[0].expected,
 +   (const char **)&drbg_pr_ctr_aes256_tv_template[0].expected,
@@ -306,11 +298,11 @@ index 2e1e6dab9..ea26eae64 100644
  #ifdef CONFIG_CRYPTO_MANAGER_DISABLE_TESTS
  
  /* a perfect nop */
-@@ -5650,6 +5718,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5622,6 +5686,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  			goto non_fips_alg;
  	}
  
-+	if (fips_enabled && tamper_testbuild > 0 && tamper_testbuild < 61) {
++	if (fips_enabled && tamper_testbuild > 0 && tamper_testbuild < 57) {
 +		tamper_input_vector(alg, driver, *poison_alg_strs[tamper_testbuild-1]);
 +	}
 +
@@ -353,4 +345,4 @@ index 962edcc54..14836bd5f 100644
  	/*
  	 * These use large bootmem allocations and must precede
 -- 
-2.19.0
+2.42.0
