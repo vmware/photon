@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org
 Group:          System Environment/Daemons
@@ -22,11 +22,11 @@ Requires:       json-c
 Requires:       systemd
 Requires:       ivykis
 Requires:       paho-c
-Requires:       pcre2-libs
+Requires:       pcre2-libs >= 10.40-4
 
 BuildRequires:  pcre2-devel
 BuildRequires:  which
-BuildRequires:  glib-devel >= 2.68.4
+BuildRequires:  glib-devel
 BuildRequires:  json-glib-devel
 BuildRequires:  json-c-devel
 BuildRequires:  openssl-devel
@@ -99,7 +99,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
   --disable-cpp \
   --enable-dynamic-linking \
   PYTHON=%{python3} \
-  PKG_CONFIG_PATH={%_libdir}/pkgconfig/
+  PKG_CONFIG_PATH=%{_libdir}/pkgconfig/
 
 %make_build
 
@@ -114,7 +114,7 @@ install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}
 
-sed -i 's/eventlog//g'  %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
+sed -i 's/eventlog//g' %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
@@ -170,6 +170,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-3
+- Rebuild with jit enabled pcre2
 * Thu Oct 19 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.3.1-2
 - Bump version as part of glib upgrade
 * Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-1

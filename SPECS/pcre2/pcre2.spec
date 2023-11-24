@@ -1,15 +1,17 @@
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
 Version:        10.40
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2/
 License:        BSD
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/PhilipHazel/pcre2/releases/download/pcre2-%{version}/pcre2-%{version}.tar.gz
-%define sha512  %{name}=679c6f540571850adec880934812e4f26f08ad858c776f10d1ed68ed3c0d4f91f6e1b53d781b53340af43a22c521e585cfc908f3659013c630a320e4fb246dc2
+Source0: https://github.com/PhilipHazel/pcre2/releases/download/pcre2-%{version}/pcre2-%{version}.tar.gz
+%define sha512 %{name}=679c6f540571850adec880934812e4f26f08ad858c776f10d1ed68ed3c0d4f91f6e1b53d781b53340af43a22c521e585cfc908f3659013c630a320e4fb246dc2
+
+Patch0: diagnose-negative-repeat-value-in-pcre2test-subj-line.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -23,10 +25,8 @@ BuildRequires:  glibc
 Requires:       libgcc
 Requires:       readline
 Requires:       libstdc++
-Requires:       pcre2-libs = %{version}
+Requires:       %{name}-libs = %{version}-%{release}
 Requires:       bzip2-libs
-
-Patch0:         diagnose-negative-repeat-value-in-pcre2test-subj-line.patch
 
 %description
 The PCRE2 library is a set of C functions that implement regular expression pattern matching using the same syntax and semantics as Perl 5.
@@ -52,28 +52,26 @@ This package contains minimal set of shared pcre libraries.
 
 %build
 %configure \
-            --docdir=/usr/share/doc/pcre2-%{version} \
-            --enable-unicode-properties \
-            --enable-utf \
-            --enable-pcre2-8  \
-            --enable-pcre2-16 \
-            --enable-pcre2-32 \
-            --enable-pcregrep-libz \
-            --enable-pcregrep-libbz2 \
-            --enable-pcretest-libreadline \
-            --enable-shared \
-            --disable-static \
-            ..
-make %{?_smp_mflags}
+    --docdir=%{_docdir}/%{name}-%{version} \
+    --enable-unicode-properties \
+    --enable-utf \
+    --enable-pcre2-8  \
+    --enable-pcre2-16 \
+    --enable-pcre2-32 \
+    --enable-pcregrep-libz \
+    --enable-pcregrep-libbz2 \
+    --enable-pcretest-libreadline \
+    --enable-shared \
+    --disable-static \
+    --enable-jit
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.a' -delete
+%make_install %{?_smp_mflags}
 
 %check
-%if 0%{?with_check}
-make check %{?_smp_mflags}
-%endif
+%make_build check
 
 %post   libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -98,6 +96,8 @@ make check %{?_smp_mflags}
 %{_libdir}/*.so*
 
 %changelog
+* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.40-4
+- Enable jit support, needed by syslog-ng
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 10.40-3
 - Fix for CVE-2022-41409
 * Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 10.40-2
