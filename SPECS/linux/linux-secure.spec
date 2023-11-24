@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -176,9 +176,11 @@ Patch10008: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
 Patch10009: 0008-Move-kernel-structures-usage.patch
 Patch10010: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
 Patch10011: 0001-List-canister-objs-in-a-file.patch
+# Patch for RSA FIPS 186-5 compliance
+Patch10012: 0001-crypto-rsa-allow-only-odd-e-and-restrict-value-in-FI.patch
 
 %if 0%{?kat_build}
-Patch10012: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
+Patch10013: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
 %endif
 %endif
 
@@ -287,10 +289,10 @@ The kernel fips-canister
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10000 -M10011
+%autopatch -p1 -m10000 -M10012
 
 %if 0%{?kat_build}
-%autopatch -p1 -m10012 -M10012
+%autopatch -p1 -m10013 -M10013
 %endif
 %endif
 
@@ -466,6 +468,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-9
+- Include a RSA patch to canister that verifies whether public exponent is in prescribed range
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-8
 - Fix initcall for crypto_tamper_test module
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-7
