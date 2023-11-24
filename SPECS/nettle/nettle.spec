@@ -1,6 +1,6 @@
 Summary:    Low level cryptographic libraries
 Name:       nettle
-Version:    3.8.1
+Version:    3.9.1
 Release:    1%{?dist}
 License:    LGPLv3+ or GPLv2+
 URL:        http://www.lysator.liu.se/~nisse/nettle
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a405da3438d185d96917b03b00abb9ab43e04f58f770f657f716c25d64bb258ee170a71328e74736caa7121f50c0c89d3cc840c1201d2a92cfaf1357d24bdc6a
+%define sha512 %{name}=5939c4b43cf9ff6c6272245b85f123c81f8f4e37089fa4f39a00a570016d837f6e706a33226e4bbfc531b02a55b2756ff312461225ed88de338a73069e031ced
 
 Provides:   libhogweed.so.6()(64bit)
 Provides:   libhogweed.so.6(HOGWEED_6)(64bit)
@@ -17,6 +17,7 @@ Provides:   libhogweed.so.6(HOGWEED_INTERNAL_6_0)(64bit)
 Provides:   libnettle.so.8()(64bit)
 Provides:   libnettle.so.8(NETTLE_8)(64bit)
 Provides:   libnettle.so.8(NETTLE_INTERNAL_8_0)(64bit)
+
 Requires:   gmp
 
 %description
@@ -27,7 +28,7 @@ kernel space.
 
 %package    devel
 Summary:    Development libraries and header files for nettle
-Requires:   nettle
+Requires:   %{name} = %{version}-%{release}
 Provides:   pkgconfig(hogweed)
 Provides:   pkgconfig(nettle)
 
@@ -46,10 +47,8 @@ developing applications that use nettle.
 %make_install %{?_smp_mflags}
 rm %{buildroot}%{_infodir}/*
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -66,6 +65,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-1
+- Upgrade to v3.9.1
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.8.1-1
 - Upgrade to v3.8.1
 * Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.3-1

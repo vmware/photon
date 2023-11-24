@@ -1,7 +1,7 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.88
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
@@ -93,6 +93,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.88-2
+- Bump version as a part of nettle upgrade
 * Wed Dec 07 2022 Susant Sahai <ssahani@vmware.com> 2.88-1
 - Version bump
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.87-1

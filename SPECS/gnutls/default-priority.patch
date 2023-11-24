@@ -1,0 +1,35 @@
+From d1c2181514b74880a0afada1ba5388d28f56c6fd Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 28 Nov 2023 16:59:31 +0530
+Subject: [PATCH] default priority
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ lib/priority.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/lib/priority.c b/lib/priority.c
+index efa4d90..9728c67 100644
+--- a/lib/priority.c
++++ b/lib/priority.c
+@@ -3021,11 +3021,16 @@ gnutls_priority_init(gnutls_priority_t * priority_cache,
+ 		priorities = "@" LEVEL_SYSTEM;
+ 	}
+ 	if (priorities == NULL) {
+-		priorities = _gnutls_default_priority_string;
++        priorities = "@SYSTEM";
+ 		resolved_match = 0;
+ 	}
+ 
+ 	darg = _gnutls_resolve_priorities(priorities);
++    if (!darg && !resolved_match) {
++        priorities = "NORMAL";
++        darg = _gnutls_resolve_priorities(priorities);
++    }
++
+ 	if (darg == NULL) {
+ 		gnutls_assert();
+ 		goto error;
+-- 
+2.43.0
+

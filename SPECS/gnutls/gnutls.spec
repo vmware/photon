@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.7.7
-Release:        4%{?dist}
+Version:        3.8.2
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -9,10 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
-%define sha512 %{name}=ba00b20126379ec7e96c6bfa606cfb7bb0d9a5853318b29b5278a42a85ae40d39d8442778938e1f165debcdb1adaf9c63bcec59a4eb3387dd1ac99b08bcc5c08
+%define sha512 %{name}=b3aa6e0fa7272cfca0bb0d364fe5dc9ca70cfd41878631d57271ba0a597cf6020a55a19e97a2c02f13a253455b119d296cf6f701be2b4e6880ebeeb07c93ef38
 
-Patch0: CVE-2023-0361-1.patch
-Patch1: CVE-2023-0361-2.patch
+Patch0: default-priority.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -66,18 +65,15 @@ developing applications that use gnutls.
 %make_install %{?_smp_mflags}
 
 rm %{buildroot}%{_infodir}/*
-find %{buildroot}%{_libdir} -name '*.la' -delete
-mkdir -p %{buildroot}/etc/%{name}
-chmod 755 %{buildroot}/etc/%{name}
-cat > %{buildroot}/etc/%{name}/default-priorities << "EOF"
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}
+chmod 755 %{buildroot}%{_sysconfdir}/%{name}
+cat > %{buildroot}%{_sysconfdir}/%{name}/default-priorities << "EOF"
 SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
 EOF
 
-%if 0%{?with_check}
 %check
 sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
-make check %{?_smp_mflags}
-%endif
+%make_build check
 
 %ldconfig_scriptlets
 
@@ -88,9 +84,6 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/*
 %{_datadir}/locale/*
 %{_docdir}/%{name}/*.png
-%{_libdir}/guile/2.2/extensions/*.so*
-%{_libdir}/guile/2.2/site-ccache/%{name}*
-%{_datadir}/guile/site/2.2/%{name}*
 %config(noreplace) %{_sysconfdir}/%{name}/default-priorities
 
 %files devel
@@ -101,6 +94,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8.2-1
+- Upgrade to v3.8.2
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-4
 - Bump version as a part of openssl upgrade
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-3

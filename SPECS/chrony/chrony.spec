@@ -1,6 +1,6 @@
 Name:           chrony
 Version:        4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An NTP client/server
 License:        GPLv2
 Vendor:         VMware, Inc.
@@ -115,6 +115,8 @@ rm -rf %{buildroot}
 %dir %attr(-,root,root) %{_localstatedir}/log/chrony
 
 %changelog
+* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3-2
+- Bump version as a part of nettle upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 4.3-1
 - Automatic Version Bump
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.2-2

@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        254.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -764,6 +764,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-8
+- Bump version as a part of gnutls upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-7
 - Bump version as a part of openssl upgrade
 * Sun Nov 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-6

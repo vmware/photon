@@ -1,18 +1,19 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2306.0
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha512  %{name}=4012ea18d49efa75438aa225fec1daafcaadc216cd5c0ecceccdc34688940bbdca9eb19bd9c401e834b023d9b9a5a0870529f7b855bb64c796a55538639dadfc
-Source1:        rsyslog.service
-Source2:        50-rsyslog-journald.conf
-Source3:        rsyslog.conf
+Source0: http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
+%define sha512 %{name}=4012ea18d49efa75438aa225fec1daafcaadc216cd5c0ecceccdc34688940bbdca9eb19bd9c401e834b023d9b9a5a0870529f7b855bb64c796a55538639dadfc
+
+Source1:        %{name}.service
+Source2:        50-%{name}-journald.conf
+Source3:        %{name}.conf
 
 BuildRequires:  systemd-devel
 BuildRequires:  libestr-devel
@@ -56,49 +57,50 @@ sed -i 's/libsystemd-journal/libsystemd/' configure
     --enable-impstats \
     --enable-imptcp \
     --enable-imtcp \
-    --enable-openssl
-
+    --enable-openssl \
+    --enable-imfile \
+    --enable-omstdout
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 install -vd %{buildroot}%{_unitdir}
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d
-install -vd %{buildroot}%{_sysconfdir}/rsyslog.d
-rm -f %{buildroot}%{_unitdir}/rsyslog.service
+install -vd %{buildroot}%{_sysconfdir}/%{name}.d
+rm -f %{buildroot}%{_unitdir}/%{name}.service
 install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d
-install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rsyslog.conf
-find %{buildroot} -name '*.la' -delete
+install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/%{name}.conf
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %post
 /sbin/ldconfig
-%systemd_post rsyslog.service
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun rsyslog.service
+%systemd_preun %{name}.service
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart rsyslog.service
+%systemd_postun_with_restart %{name}.service
 
 %files
 %defattr(-,root,root)
 %{_sbindir}/*
-%{_libdir}/rsyslog/*.so
+%{_libdir}/%{name}/*.so
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-%{_unitdir}/rsyslog.service
-%dir %{_sysconfdir}/rsyslog.d
+%{_unitdir}/%{name}.service
+%dir %{_sysconfdir}/%{name}.d
 %{_sysconfdir}/systemd/journald.conf.d/*
-%config(noreplace) %{_sysconfdir}/rsyslog.conf
+%config(noreplace) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.2306.0-3
+- Enable imfile and omstdout modules
+- Bump version as a part of gnutls upgrade
 * Thu Aug 24 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 8.2306.0-1
 - Update to 8.2306.0
 * Tue Jan 03 2023 Gerrit Photon <photon-checkins@vmware.com> 8.2212.0-1
