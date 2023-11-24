@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.2.5169
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -91,6 +91,12 @@ Patch72: CVE-2023-5344.patch
 Patch73: CVE-2023-5441.patch
 Patch74: CVE-2023-5535.patch
 Patch75: CVE-2023-46246.patch
+Patch76: CVE-2023-48231.patch
+Patch77: CVE-2023-48233.patch
+Patch78: CVE-2023-48234.patch
+Patch79: CVE-2023-48235.patch
+Patch80: CVE-2023-48236.patch
+Patch81: CVE-2023-48237.patch
 
 BuildRequires:  ncurses-devel >= 6.1-4
 Requires:       ncurses-libs >= 6.1-4
@@ -252,6 +258,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Thu Nov 23 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-14
+- Patched multiple CVEs
 * Mon Nov 06 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-13
 - patched CVE-2023-46246
 * Tue Oct 10 2023 Srish Srinivasan <ssrish@vmware.com> 8.2.5169-12
