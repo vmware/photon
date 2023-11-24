@@ -198,7 +198,7 @@ index 000000000..30693f134
 +
 +static void __exit crypto_tamper_test_exit(void) {}
 +
-+subsys_initcall(crypto_tamper_test_init);
++arch_initcall(crypto_tamper_test_init);
 +module_exit(crypto_tamper_test_exit);
 diff --git a/crypto/ecc.c b/crypto/ecc.c
 index 6805210a8..5ab88d2ac 100644
