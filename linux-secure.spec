@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -40,9 +40,9 @@ Source5:        linux-sbat.csv.in
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.62-2%{dist}-secure
+%define fips_canister_version 5.0.0-6.1.62-7%{dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=212844b76c93cb7b07d630c558a2968740ab1eec80209ea7f407f3f32a21135e6be74fd5622a252601495d4b3e2fe952c2a17f8501724ea1c804ca6078eef4f8
+%define sha512 fips-canister=e63f5200a669cc40952fc1cfea499d4bc029999098f8252d2c5ffac08392aefe3d57aa68226079dffa4e0f5ddd26c83f85fcebcb21bfd0935aecc8a02f1714a9
 %endif
 
 %if 0%{?canister_build}
@@ -155,7 +155,7 @@ Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508: 6.1.62-2-0001-FIPS-canister-binary-usage.patch
+Patch508: 6.1.62-7-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
@@ -164,7 +164,7 @@ Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 6.1.62-2-0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.1.62-7-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0002-FIPS-canister-creation.patch
@@ -468,6 +468,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-10
+- Update canister to 5.0.0-6.1.62-7
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-9
 - Include a RSA patch to canister that verifies whether public exponent is in prescribed range
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-8
