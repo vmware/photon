@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.62
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -57,9 +57,9 @@ Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_v
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.62-2%{?dist}-secure
+%define fips_canister_version 5.0.0-6.1.62-7%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=212844b76c93cb7b07d630c558a2968740ab1eec80209ea7f407f3f32a21135e6be74fd5622a252601495d4b3e2fe952c2a17f8501724ea1c804ca6078eef4f8
+%define sha512 fips-canister=e63f5200a669cc40952fc1cfea499d4bc029999098f8252d2c5ffac08392aefe3d57aa68226079dffa4e0f5ddd26c83f85fcebcb21bfd0935aecc8a02f1714a9
 
 Source18:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
@@ -219,7 +219,7 @@ Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508: 6.1.62-2-0001-FIPS-canister-binary-usage.patch
+Patch508: 6.1.62-7-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
@@ -548,6 +548,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sat Nov 25 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.62-7
+- Update canister to 5.0.0-6.1.62-7
 * Thu Nov 23 2023 Ankit Jain <ankitja@vmware.com> 6.1.62-6
 - tarfs: Fixes file permission
 * Wed Nov 22 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.1.62-5
