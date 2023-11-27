@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.6.3
-Release:          8%{?dist}
+Release:          9%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
@@ -20,6 +20,7 @@ Patch2: CVE-2021-41990.patch
 Patch3: CVE-2021-41991.patch
 Patch4: CVE-2021-45079.patch
 Patch5: CVE-2022-40617.patch
+Patch6: CVE-2023-41913.patch
 
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
@@ -84,6 +85,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Mon Nov 27 2023 Keerthana K <keerthanak@vmware.com> 5.6.3-9
+- Fix CVE-2023-41913
 * Tue Apr 18 2023 Srish Srinivasan <ssrish@vmware.com> 5.6.3-8
 - enable OpenSSL and GCM plugin
 * Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.6.3-7
