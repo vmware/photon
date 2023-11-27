@@ -1,7 +1,7 @@
 Summary:        GStreamer streaming media framework plug-ins
 Name:           gstreamer-plugins-base
-Version:        1.17.1
-Release:        4%{?dist}
+Version:        1.22.7
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://gstreamer.freedesktop.org
 Group:          Applications/Multimedia
@@ -9,10 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-%{version}.tar.xz
-%define sha512 gst-plugins-base=4b03e508d2e8de00690d47018aede46d1896bc19c829e4f3ad673c37ad33edb53da88b196b995bb7fb68076c0e47e0953a6a610519ae57edaf8294e41d94f2ee
-
-Patch0:         CVE-2023-37327.patch
-Patch1:         CVE-2023-37328.patch
+%define sha512 gst-plugins-base=a33d332aebf5e209380c2740e0fc6762e49b78a9921822adfc07efdd4780cbe038867d9924a2df334c8a624e8be49b5d46e276538d6d77ff8ac9f002ced052e3
 
 BuildRequires:  meson
 BuildRequires:  cmake
@@ -95,6 +92,8 @@ rm -rf %{buildroot}
 %{_datadir}/*
 
 %changelog
+*   Mon Nov 27 2023 Shivani Agarwal <shivania2@vmware.com> 1.22.7-1
+-   Upgrade version
 *   Thu Sep 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.17.1-4
 -   Fix CVE-2023-37327, CVE-2023-37328
 *   Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.17.1-3

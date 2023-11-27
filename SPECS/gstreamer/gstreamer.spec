@@ -1,7 +1,7 @@
 Summary:        A streaming media framework
 Name:           gstreamer
-Version:        1.21.90
-Release:        2%{?dist}
+Version:        1.22.7
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://gstreamer.freedesktop.org/
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
-%define sha512  gstreamer=c363143685f022ac405147c11348957375b07de2d411fced0552999aebaed3c6885c03e7925f1e8451540ba2adaa659da1efc6b181e5c6fb053191ee81267f38
+%define sha512  gstreamer=50799014b976644334e1d7880ed38e2e34286c80a27dd4c6f1580990beefd28a9cf67ee3aac1d8f52d611b86271204cb5f43cb7a14fccc23a7bd7e95ec4c7790
 
 BuildRequires:  meson
 BuildRequires:  cmake
@@ -80,8 +80,10 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
-* Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.21.90-2
-- Bump version as part of glib upgrade
+*   Mon Nov 27 2023 Shivani Agarwal <shivania2@vmware.com> 1.22.7-1
+-   Upgrade version
+*   Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.21.90-2
+-   Bump version as part of glib upgrade
 *   Mon Jan 16 2023 Shivani Agarwal <shivania2@vmware.com> 1.21.90-1
 -   Upgrade version to fix CVE-2021-3497, CVE-2021-3498, CVE-2021-3522, CVE-2021-2122, CVE-2021-1925, CVE-2021-1924, CVE-2021-1923, CVE-2021-1922, CVE-2021-1921, CVE-2021-1920
 *   Tue Sep 06 2022 Shivani Agarwal <shivania2@vmware.com> 1.17.1-1
