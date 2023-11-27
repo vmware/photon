@@ -1,67 +1,57 @@
 # set for Photon OS 5.0 upgrade
 TO_VERSION='5.0'
 
-declare -a deprecated_packages_arr=(
-  asciidoc bzr c-rest-engine c-rest-engine-devel
-  ca-certificates-nxtgn-openssl ca-certificates-nxtgn-openssl-pki
-  cgroup-utils compat-gdbm debugmode dejavu-fonts ebtables-nft elasticsearch fcgi
-  fcgi-devel fipsify glog-docs gmock-static gtest-static hawkey js json_spirit
-  json_spirit-devel kaigen-gothic-cjk kibana kube-controllers libdb-docs libgsystem libnss-ato
-  lightstep-tracer-cpp lightwave lightwave-client lightwave-client-libs
-  lightwave-devel lightwave-post lightwave-samples lightwave-server
-  likewise-open likewise-open-devel linux-aws linux-aws-docs
-  linux-drivers-intel-sgx linux-esx-hmacgen linux-hmacgen linux-oprofile
-  linux-rt-drivers-intel-i40e-2.15.9 linux-rt-drivers-intel-i40e-2.16.11
-  linux-rt-drivers-intel-i40e-2.22.18 linux-rt-drivers-intel-iavf-4.2.7
-  linux-rt-drivers-intel-iavf-4.4.2 linux-rt-drivers-intel-iavf-4.5.3
-  linux-rt-drivers-intel-iavf-4.8.2 linux-rt-drivers-intel-ice-1.11.14
-  linux-rt-drivers-intel-ice-1.6.4 linux-rt-drivers-intel-ice-1.8.3
-  linux-rt-drivers-intel-ice-1.9.11 linux-secure-hmacgen linux-secure-lkcm
-  liota logstash mozjs60 ndsend netmgmt nxtgn-openssl openjdk8
-  openjre8 ovn-central ovn-common ovn-controller-vtep ovn-doc ovn-docker
-  ovn-host photon-checksum-generator pmd pmd-cli pmd-devel pmd-libs
-  pmd-python3 pygobject-devel python-certifi python-lockfile
-  python-vcversioner python2 python2-libs python3-backports_abc python3-cgroup-utils
-  python3-future python3-lvm2-libs python3-macholib python3-PyPAM
-  python3-setproctitle  python3-stevedore python3-terminaltables
-  rubygem-connection_pool rubygem-net-http-persistent rubygem-zeitwerk salt3
-  sqlite2 sshfs tiptop ulogd uriparser urw-fonts xtrans-devel
-  yarn zsh-html
-  # recently deprecated packages
-  libcalico libsoup-doc python3-m2r
-)
+read -d "\n" -a deprecated_packages_arr < "$PHOTON_UPGRADE_UTILS_DIR/ph3-to-ph5-deprecated-pkgs.txt"
 
-# This hashtable maps package name changes
+# This hashtable maps package name changes between source and target Photon OS
+# Examples:
+#   [p1]=p2
+#   [p3]="p4 p5"     where p3 is replaced by either p4 or p5
 # we do not expect any core packages here
 declare -A replaced_pkgs_map=(
-  [ansible]=ansible   # Added for workaround pertaining to python3-pycrypto
-  [ansible-posix]=ansible-posix   # This & next 2 lines handle ansible removal
-  [ansible-community-general]=ansible-community-general  # handle ansible removal
-  [stig-hardening]=stig-hardening                        # handle ansible removal
-  [apache-tomcat]=apache-tomcat10
+  [apache-tomcat]="apache-tomcat10 apache-tomcat9"
+  [autoconf213]=autoconf
   [gcc-10]=gcc
   [iptraf]=iptraf-ng
-  [openjdk8]=openjdk11
-  [openjdk8-doc]=openjdk11-doc
-  [openjdk8-src]=openjdk11-src
-  [openjre8]=openjdk11
-  [openjdk10]=openjdk11
-  [openjdk10-doc]=openjdk11-doc
-  [openjdk10-src]=openjdk11-src
-  [openjre10]=openjdk11
-  [postgresql]=postgresql15
-  [postgresql-libs]=postgresql15-libs
-  [postgresql-devel]=postgresql15-devel
-  [python3-gcovr]=gcovr
-  [python3-google-compute-engine]=google-compute-engine
+  [mozjs60]=mozjs
+  [mozjs60-devel]=mozjs-devel
+  [netmgmt]=network-config-manager
+  [nxtgn-openssl]=openssl
+  [nxtgn-openssl-c_rehash]=openssl-c_rehash
+  [nxtgn-openssl-devel]=openssl-devel
+  [nxtgn-openssl-perl]=openssl-perl
+  [openjdk8]="openjdk17 openjdk11"
+  [openjdk8-doc]="openjdk17-doc openjdk11-doc"
+  [openjdk8-src]="openjdk17-src openjdk11-src"
+  [openjre8]="openjdk17 openjdk11"
+  [openjdk10]="openjdk17 openjdk11"
+  [openjdk10-doc]="openjdk17-doc openjdk11-doc"
+  [openjdk10-src]="openjdk17-src openjdk11-src"
+  [openjre10]="openjdk17 openjdk11"
+  [pmd]=pmd-ng
+  [postgresql]="postgresql15 postgresql14 postgresql13"
+  [postgresql-libs]="postgresql15-libs postgresql14-libs postgresql13-libs"
+  [postgresql-devel]="postgresql15-devel postgresql14-devel postgresql13-devel"
+  [postgresql13]="postgresql15 postgresql14 postgresql13"
+  [postgresql13-libs]="postgresql15-libs postgresql14-libs postgresql13-libs"
+  [postgresql13-devel]="postgresql15-devel postgresql14-devel postgresql13-devel"
+  [pgaudit13]="pgaudit15 pgaudit14 pgaudit13"
   [python3-pycrypto]=python3-pycryptodome
-  [repmgr]=repmgr15
+  [repmgr]="repmgr15 repmgr14 repmgr13"
+  [repmgr13]="repmgr15 repmgr14 repmgr13"
 )
 
 # Residual pkgs to remove post upgrade
 declare -a residual_pkgs_arr=(
-  libmetalink libdb libdb-docs
+  libmetalink libdb
 )
+
+# Hash keys are paths in source OS mapping to paths (as values) in target OS
+declare -A conf_path_map=(
+  # config of apache-tomcat in 3.0 will be restored for apache-tomcat-9 in 5.0
+  [/var/opt/apache-tomcat/conf]=/var/opt/apache-tomcat9/conf
+)
+
 
 # Take care of post upgrade config changes
 function fix_post_upgrade_config() {
@@ -107,42 +97,4 @@ function relocate_rpmdb() {
     rc=$?
     abort $rc "Error: Relocated rpmdb is corrupt ($nnew RPMs found < expected $nold RPMs)"
   fi
-}
-
-# Usage: backup_configs backup_root_path pkg1 pkg2 ...
-# backs up the config of apache-tomcat, if it is being upgraded to apache-tomcat9
-# Post upgrade this configuration will be restored in restore_configs()
-function backup_configs() {
-  local backup_root_path=$1
-  shift
-  local srcpath='/var/opt/apache-tomcat/conf'
-  local target_path="$backup_root_path/$srcpath"
-  local pkg
-  for pkg in $*; do
-    if [ "$pkg" = "apache-tomcat" ]; then
-      if [ -e "$srcpath" ]; then
-        echo "Backing up $pkg config to be restored after upgrade."
-        mkdir -p "$target_path"
-        ${CP} -ra $srcpath/* $target_path
-      fi
-    fi
-  done
-}
-
-# Usage: restore_configs backup_root_path pkg1 pkg2 ...
-# Restores the config of apache-tomcat to apache-tomcat9 in 5.0
-function restore_configs() {
-  local backup_root_path=$1
-  shift
-  local srcpath="$backup_root_path/var/opt/apache-tomcat/conf"
-  local target_path="/var/opt/apache-tomcat9/conf"
-  local pkg
-  for pkg in $*; do
-    if [ "$pkg" = "apache-tomcat9" ]; then
-      if [ -e "$srcpath" ]; then
-        echo "Restoring config for $pkg."
-        ${RPM} -q --quiet $pkg && ${CP} -ra $srcpath/* $target_path
-      fi
-    fi
-  done
 }

@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -14,6 +14,8 @@ Source2:        ph3-to-ph4-upgrade.sh
 Source3:        ph3-to-ph5-upgrade.sh
 Source4:        utils.sh
 Source5:        common.sh
+Source6:        ph3-to-ph4-deprecated-pkgs.txt
+Source7:        ph3-to-ph5-deprecated-pkgs.txt
 
 BuildArch:      noarch
 
@@ -23,6 +25,8 @@ Requires:       coreutils
 Requires:       gawk
 Requires:       sed
 Requires:       photon-release
+Requires:       findutils
+Requires:       util-linux
 
 %description
 Photon major upgrade scripts.
@@ -40,6 +44,8 @@ install -m440 %{SOURCE2} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE3} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE4} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE5} %{buildroot}%{_libdir}/%{name}
+install -m440 %{SOURCE6} %{buildroot}%{_libdir}/%{name}
+install -m440 %{SOURCE7} %{buildroot}%{_libdir}/%{name}
 
 %clean
 rm -rf %{buildroot}
@@ -50,6 +56,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Mon Nov 27 2023 Dweep Advani <dadvani@vmware.com> 1.0-17
+- Enhance handling of extra removed packages and config backup
 * Wed Oct 25 2023 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.0-16
 - Change default tomcat upgrade target to apache-tomcat10
 - Rename apache-tomcat-9 to apache-tomcat9

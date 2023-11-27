@@ -1,6 +1,8 @@
 #!/bin/bash
 
+trap '' SIGINT SIGQUIT
 PROG="$(basename $0)"
+CMDLINE="$0 $@ # PID: $$"
 
 PHOTON_UPGRADE_UTILS_DIR="/usr/lib/photon-upgrade"
 
@@ -19,11 +21,15 @@ RM_PKGS_POST=''     # Comma separated list of packages to remove afer upgrade
 INSTALL_ALL=''      # non-empty value signifies that all packages from provided
                     # repos mentioned in --repos option needs to be installed
 UPGRADE_OS='n'      # y denotes OS upgrade operation, otherwise package update
+PRECHECK_ONLY='n'   # When set to y, it indicates that pre upgrade checks to
+                    # find anomalies need to be be performed. Those anomalies
+                    # will impact the upgrade. Exits after performing checks.
 
 declare -a enabled_services_arr=()     # list of enabled services
 declare -a disabled_services_arr=()    # list of disabled serfices
-declare -a depreated_pkgs_to_remove_arr=()  # tracks installed deprecated pkgs
-declare -A installed_pkgs_map=()       # installed and replacement pkgs map
+declare -a deprecated_pkgs_to_remove_arr=()  # tracks installed deprecated pkgs
+declare -a extra_erased_pkgs_arr=()    # extra packages which got removed while
+                                       # removing deprecated and replaed pkgs
 
 TMP_BACKUP_LOC=''                   # temp location for 'rpm -qa' & rpm db copy
 
@@ -47,12 +53,15 @@ This script upgrades or updates Photon OS based upon the options provided.
 --to-ver       : The Photon OS version to upgrade to, can be 4.0 or 5.0, where
                  default value of --to-ver is 4.0
 --assume-yes   : Runs the script non-interactively and assumes yes for responses
---skip-update  : Skip updating tdnf & packages before upgrading (for appliances)
+--skip-update  : Skip updating tdnf and installed packages in existing system
+                 before proceeding with upgrading the Photon OS (for appliances)
 --install-all  : Install all packages from provided repos from --repos option,
                  --repos must be specified for --install-all. This option works
                  from Photon OS 4.0 and later)
 --rm-pkgs-pre  : Comma separated list of packages to remove before upgrade
 --rm-pkgs-post : Comma separated list of packages to remove afer upgrade
+--precheck-only: Performs checks for anomalies that will impact the OS upgrade
+                 and warns the user about found anomalies and exits
 "
   exit $rc
 }
@@ -87,12 +96,12 @@ function reset_enabled_disabled_services() {
 
 # Remove all debuginfo packages as they may hamper during upgrade
 function remove_debuginfo_packages() {
-  local installed_debuginfo_pkgs="$(${RPM} -qa | ${GREP} -- -debuginfo-)"
+  local installed_debuginfo_pkgs="$(${RPM} -qa | ${GREP} -- '-debuginfo$')"
   local rc=0
   [ -z "$installed_debuginfo_pkgs" ] && return 0
   echo "Following debuginfo packages will be removed - $installed_debuginfo_pkgs"
 
-  ${TDNF} -q --disablerepo=* $ASSUME_YES_OPT erase $installed_debuginfo_pkgs
+  erase_pkgs $installed_debuginfo_pkgs
   rc=$?
   if [ $rc -ne 0 ]; then
     abort $ERETRY_EAGAIN "Error removing debuginfo packages (tdnf error: $rc)"
@@ -100,47 +109,236 @@ function remove_debuginfo_packages() {
   echo "All debuginfo packages were successfully removed."
 }
 
-# The replacing packages correspoinding to any of the installed packages will
-# be installed with the call to this method
-function install_replacement_packages() {
+function is_precheck_running() {
+  [ $PRECHECK_ONLY = 'y' ]
+  return $?
+}
+
+# Usage: is_package_removed_before_upgrade pkg
+# Checks if the package is marked for removal before upgrade when pkg is
+# specified in --rm-pkgs-pre
+# Returns: 0, when package is removed before upgrade, otherwise, 1
+function is_package_removed_before_upgrade() {
+  local p
+
+  for p in $(builtin echo "$RM_PKGS_PRE" | ${TR} , ' ') ${residual_pkgs_arr[@]}; do
+    if [ "$p" = "$1" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Usage: check_installed_packages_in_target_repo p1 p2 p3
+# Finds out if the packages stated in arguments are available in the target
+# repo used for upgrade
+function check_installed_packages_in_target_repo() {
+  local -a rpms_arr=(
+    $(
+        $PRINTF "%s\n" \
+          $(
+            ${RPM} -q --queryformat "%{NAME}\n" \
+            $(
+              ${RPM} -qa | ${GREP} "\\.$PH3RPMTAG\\."
+            )
+        ) ${deprecated_pkgs_to_remove_arr[@]} ${!replaced_pkgs_map[@]} | \
+        $SORT | $UNIQ -u
+    )
+  )
+  local -a missings_arr=()
+  local i
+  local n
+
+  missings_arr+=($(check_packages_in_target_repo ${rpms_arr[@]}))
+  n=${#missings_arr[@]}
+  for ((i=0; i<$n; i++)); do
+    is_package_removed_before_upgrade "${missings_arr[$i]}" && \
+      unset missings_arr[$i]
+  done
+  if [ ${#missings_arr[@]} -gt 0 ]; then
+    echoerr "Error: Packages - ${missings_arr[@]} - are not" \
+          "available in the target repo for OS upgrade. Please provide" \
+          "the correct repo having the required packages."
+    is_precheck_running || abort $ERETRY_EINVAL
+    return $ERETRY_EINVAL
+  fi
+  return 0
+}
+
+# Usage: check_packages_in_target_repo p1 p2 p3 ...
+# Checks that provided packages as arguments are all available in $TO_VERSION
+# repo and returns 0 when it finds all, returns count of packages which it
+# could not find (error) and also prints the names of packages that it could
+# not find in the target repo
+function check_packages_in_target_repo() {
+  local -a missing_pkgs_arr=()
+  local ptgt=''
+  local -A providing_pkgs_map=(
+    [coreutils]="coreutils-selinux coreutils"
+  )
+
+  for ptgt in $*; do
+    [ ${#ptgt} -gt 10 -a "${ptgt: -10}" = '-debuginfo' ] && continue
+    ${TDNF} $REPOS_OPT "--releasever=$TO_VERSION" list available \
+      ${providing_pkgs_map[$ptgt]:-$ptgt} > /dev/null 2>&1 && \
+        continue
+    missing_pkgs_arr+=($ptgt)
+  done
+  builtin echo ${missing_pkgs_arr[@]}
+  return ${#missing_pkgs_arr[@]}
+}
+
+# Usage: find_installed_replaced_packages
+# First determines which of the replaced or renamed packages are installed
+# and then resets the replaced_pkgs_map[package_name] to the first available
+# package in the statically stated list of packages
+function find_installed_replaced_packages() {
+  local psrc=''
+  local ptgt=''
+  local errstr=''
+  local replacing_pkgs=''
+  local i=0
+  local n=0
+  local found_in_target=n
+  local -a missing_exp_pkgs_arr=()
+
+  for psrc in ${!replaced_pkgs_map[@]}; do
+    if ${RPM} -q --quiet $psrc; then
+      found_in_target=n
+      replacing_pkgs="${replaced_pkgs_map[$psrc]}"
+      # set replaced_pkgs_map[$psrc] to the first package available in the
+      # stated list of packages in the below for loop
+      for ptgt in $replacing_pkgs; do
+        if check_packages_in_target_repo $ptgt 1>/dev/null 2>/dev/null; then
+          if [ "$psrc" = "$ptgt" ]; then
+            # The replacing pkg $ptgt is the same as the installed pkg $psrc
+            # This can happen for some packages, openjre8, for example
+            # Where multiple pkgs can replace the installed pkg in target os
+            # here we found the same package in the target OS, so del entry
+            unset replaced_pkgs_map[$psrc]
+          else
+            replaced_pkgs_map[$psrc]=$ptgt
+          fi
+          found_in_target=y
+          break
+        fi
+      done
+      if [ "$found_in_target" = 'n' ]; then
+        # The replacing packages were not found in the target repo.
+        missing_exp_pkgs_arr+=($psrc)
+      fi
+    else
+      unset replaced_pkgs_map[$psrc]
+    fi
+  done
+
+  n=${#missing_exp_pkgs_arr[@]}
+  for ((i=0; i<$n; i++)); do
+    # Check if those packages which were not found in the target repo were
+    # marked for removal before upgrade, if not, the upgrade will fail due to
+    # those missing packages in the target repo
+    is_package_removed_before_upgrade "${missing_exp_pkgs_arr[$i]}" && \
+      unset missing_exp_pkgs_arr[$i]
+  done
+
+  if [ ${#missing_exp_pkgs_arr[@]} -gt 0 ]; then
+    errstr="ERROR: Following installed packages do not have their corresponding replacing packages available in the target repo.\n"
+    for p in ${missing_exp_pkgs_arr[@]}; do
+      errstr="${errstr}   - $p needs any of following packages in target repo - ${replaced_pkgs_map[$p]}\n"
+    done
+    echoerr $errstr
+    is_precheck_running || abort $ERETRY_EINVAL
+    return $ERETRY_EINVAL
+  fi
+  return 0
+}
+
+# The all other packages, which includes the replacement packages correspoinding
+# to any of the installed packages which were removed earlier and also any etra
+# erased packages which got removed due removal of other package
+function install_other_packages() {
   local rc=0
 
-  if [ ${#installed_pkgs_map[@]} -gt 0 ]; then
-    echo "Installing following packages which are replacing removed" \
-             "packages -\n${installed_pkgs_map[@]}"
-    ${TDNF} $REPOS_OPT -y install ${installed_pkgs_map[@]}
+  if [ ${#replaced_pkgs_map[@]} -gt 0 -o ${#extra_erased_pkgs_arr[@]} -gt 0 ]; then
+    [ ${#replaced_pkgs_map[@]} -gt 0 ] && \
+      echo "Installing following packages which are replacing removed"\
+           "packages -\n    - ${replaced_pkgs_map[@]}"
+    [ ${#extra_erased_pkgs_arr[@]} -gt 0 ] && \
+      echo "Installing following other packages which were originally"\
+           "installed -\n    - ${extra_erased_pkgs_arr[@]}"
+    ${TDNF} $REPOS_OPT -y install ${replaced_pkgs_map[@]} \
+                                  ${extra_erased_pkgs_arr[@]}
     rc=$?
     if [ $rc -ne 0 ]; then
-      abort $rc "Error installing replacement packages '${installed_pkgs_map[@]}'."
+      abort $rc "Error installing replacement and earlier removed packages."
     fi
-    echo "Replacement packages '${installed_pkgs_map[@]}' are successfully installed"
-    restore_configs $TMP_BACKUP_LOC ${installed_pkgs_map[@]} apache-tomcat9
+    echo "All following packages installed successfully -\n"\
+         "    - ${replaced_pkgs_map[@]} ${extra_erased_pkgs_arr[@]}"
   fi
 }
 
 # Installed packges which were replaced by other packages or installed packages
 # which were renamed will be removed by this method. The replacing package gets
-# installed in install_replacement_packages()
+# installed in install_other_packages()
 function remove_replaced_packages() {
-  local pkgs="${!replaced_pkgs_map[@]}"
-  local p=''
-  local rc=0
-
-  for p in $pkgs; do
-    ${RPM} -q --quiet $p && installed_pkgs_map+=([$p]=${replaced_pkgs_map[$p]})
-  done
-
-  if [ ${#installed_pkgs_map[@]} -gt 0 ]; then
-    backup_configs $TMP_BACKUP_LOC ${!installed_pkgs_map[@]}
+  if [ ${#replaced_pkgs_map[@]} -gt 0 ]; then
     echo "Removing following packages which will be replaced by other "\
-             "packages -\n${!installed_pkgs_map[@]}"
-    ${TDNF} $REPOS_OPT -y erase ${!installed_pkgs_map[@]}
+             "packages -\n${!replaced_pkgs_map[@]}"
+    erase_pkgs ${!replaced_pkgs_map[@]}
     rc=$?
     if [ $rc -ne 0 ]; then
-      abort $rc "Error removing replaced packages '${!installed_pkgs_map[@]}'."
+      abort $rc "Error removing replaced packages '${!replaced_pkgs_map[@]}'."
     fi
-    echo "Removal of replaced packages '${!installed_pkgs_map[@]}' succeeded."
+    echo "Removal of replaced packages '${!replaced_pkgs_map[@]}' succeeded."
   fi
+}
+
+# Usage: find_extra_erased_pkgs p1 p2 p3 ...
+# Finds packages which will be removed when the packages in argument are removed
+# Returns:
+#   0 - success, when the erased packages are only of Photon OS (*.ph3.*rpm)
+#   $ERETRY_EAGAIN - fail, when the erased package(s) include those packages
+#                    which are not provided by Photon OS
+function find_extra_erased_pkgs() {
+  local -a expected_pkgs_arr=()
+  local -a unexpected_pkgs_arr=()
+  local pname=''
+  local arch=''
+  local version=''
+  local repo=''
+  local szhuman=''
+  local szbytes=''
+  local f="$TMP_BACKUP_LOC/find_extra_erased_pkgs.txt"
+  local rc=0
+
+  [ $# -eq 0 ] && builtin echo '' && return 0
+  $STDBUF -o L $TDNF --assumeno '--disablerepo=*' erase $* > $f 2>&1
+  rc=$?
+  [ $rc -ne $EC_TDNF_ASSUMENO ] && echo "Unexpected return code $rc from tdnf, expected code was $EC_TDNF_ASSUMENO" && return $rc
+  while read pname arch version repo szhuman szbytes; do
+    if [ "$pname" = "Removing:" ]; then
+      while read pname arch version repo szhuman szbytes; do
+        if [ -z "$pname" ]; then
+          break
+        fi
+        if [ "${version: -4}" != ".$PH3RPMTAG" ]; then
+          unexpected_pkgs_arr+=($pname)
+        elif ! is_package_removed_before_upgrade $pname; then
+          expected_pkgs_arr+=($pname)
+        fi
+      done
+      break
+    fi
+  done < $f
+  $RM -f $f
+  if [ ${#unexpected_pkgs_arr[@]} -gt 0 ]; then
+    echoerr "Following packages will get removed which were not installed by Photon OS -\n"\
+            "    ---- ${unexpected_pkgs_arr[@]} ----\nAbove listed non-Photon OS packages will"\
+            "also get removed while removing below list of Photon OS packages during the"\
+            "process of OS upgrade -\n    ---- ${expected_pkgs_arr[@]} ----"
+  fi
+  printf '%s\n' ${expected_pkgs_arr[@]} $* | $SORT | $UNIQ -u
+  return ${#unexpected_pkgs_arr[@]}
 }
 
 #Some packages are deprecaed in 4.0 or 5.0, lets remove them before upgrading
@@ -148,7 +346,7 @@ function remove_unsupported_packages() {
   local rc=0
 
   if [ ${#deprecated_pkgs_to_remove_arr[@]} -gt 0 ]; then
-    ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase ${deprecated_pkgs_to_remove_arr[@]}
+    erase_pkgs ${deprecated_pkgs_to_remove_arr[@]}
     rc=$?
     if [ $rc -ne 0 ]; then
       abort $ERETRY_EAGAIN "Could not erase all unsupported packages (tdnf error code: $rc)."
@@ -159,13 +357,15 @@ function remove_unsupported_packages() {
 }
 
 function tdnf_makecache() {
-  echo "Generating tdnf cache on Photon OS $(/usr/bin/lsb_release -s -r)"
-  ${TDNF} $REPOS_OPT makecache
+  local v="${1:-$(/usr/bin/lsb_release -s -r)}"
+  echo "Generating tdnf cache on Photon OS $v"
+  ${TDNF} $REPOS_OPT --releasever=$v --refresh makecache
 }
 
 function distro_upgrade() {
   local ver="$1"
   local rc=0
+  local p
 
   if [ "$ver" = "$FROM_VERSION" ]; then
     echo "Upgrading all installed Photon OS $FROM_VERSION packages to latest" \
@@ -177,6 +377,12 @@ function distro_upgrade() {
   if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --releasever=$ver --refresh; then
       echo "All packages were upgraded to latest versions successfully."
       if [ "$ver" = "$TO_VERSION" ]; then
+        echo "The OS has been upgraded to $TO_VERSION."
+        if [ "$TO_VERSION" = "5.0" ]; then
+          relocate_rpmdb
+        else
+          rebuilddb
+        fi
         ${TDNF} $REPOS_OPT $ASSUME_YES_OPT reinstall photon-release --releasever=$ver --refresh
         tdnf_makecache
         ${TDNF} $REPOS_OPT $ASSUME_YES_OPT install systemd-udev
@@ -199,8 +405,9 @@ function remove_residual_pkgs() {
 
   for p in ${residual_pkgs_arr[@]}; do
     if $RPM -q --quiet $p; then
-      if ! ${TDNF} -q --disablerepo=* -y erase $p; then
-        rc=$?
+      erase_pkgs $p
+      rc=$?
+      if [ $rc -ne 0 ]; then
         err_rm_pkg_list="$err_rm_pkg_list $p"
         echo "Warning: Could not remove package '$p' post upgrade, error code: $rc."
       fi
@@ -251,7 +458,7 @@ function pre_upgrade_rm_pkgs()
 
   for p in $(builtin echo "$RM_PKGS_PRE" | ${TR} , ' '); do
     if ${RPM} -q --quiet $p; then
-      if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase $p; then
+      if erase_pkgs $p; then
         echo "Successfully removed user named pacakge $p."
       else
         pkglist="$pkglist $p"
@@ -277,7 +484,7 @@ function post_upgrade_rm_pkgs()
 
   for p in $(builtin echo "$RM_PKGS_POST" | ${TR} , ' '); do
     if ${RPM} -q --quiet $p; then
-      if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT erase $p; then
+      if erase_pkgs $p; then
         echo "Successfully removed user named pacakge $p."
       else
         pkglist="$pkglist $p"
@@ -306,10 +513,16 @@ function backup_rpms_list_n_db() {
 
 # This will cleanup the backup created by backup_rpms_list_n_db()
 function cleanup_and_exit() {
-  if [ -n "$TMP_BACKUP_LOC" ] && [ -e "$TMP_BACKUP_LOC" ]; then
-    rm -rf "$TMP_BACKUP_LOC"
+  if [ "$1" = "0" ] && ! is_precheck_running; then
+    if [ -n "$TMP_BACKUP_LOC" ] && [ -e "$TMP_BACKUP_LOC" ]; then
+      rm -rf "$TMP_BACKUP_LOC"
+    fi
+    write_to_syslog "photon-upgrade completed successfully."
+  else
+    is_precheck_running || \
+      write_to_syslog "photon-upgrade terminated with exit code $rc."
   fi
-  exit $1
+  exit ${1:-0}
 }
 
 #must reboot after an upgrade
@@ -329,8 +542,8 @@ function ask_for_reboot() {
   fi
 }
 
-#if the current install has packages deprecated in the target version,
-#there is no clean upgrade path. confirm if it is okay to remove.
+# if the current installed OS has packages deprecated in the target version,
+# so there is no clean upgrade path for those packages. They get removed.
 function find_installed_deprecated_packages() {
   local pkg=''
   local yn=''
@@ -371,9 +584,9 @@ function update_solv_to_support_complex_deps() {
 function is_repo_config_valid_for_release() {
   local r=$1   # release number 3.0, 4.0 etc.
   local -A tag_to_rel_map=(
-    [ph3]=3.0
-    [ph4]=4.0
-    [ph5]=5.0
+    [$PH3RPMTAG]=3.0
+    [$PH4RPMTAG]=4.0
+    [$PH5RPMTAG]=5.0
   )
   local t
   local phrel_pkgs_tags="$(
@@ -395,6 +608,7 @@ function is_repo_config_valid_for_release() {
 
 function verify_version_and_upgrade() {
   local yn=''
+  local rc=0
 
   if [ $FROM_VERSION = $TO_VERSION ]; then
     echo "Your current version $FROM_VERSION is the latest version. Nothing to do."
@@ -405,22 +619,27 @@ function verify_version_and_upgrade() {
     echo "You are about to upgrade PhotonOS from $FROM_VERSION to $TO_VERSION."
     echo "Please backup your data before proceeding. Continue (y/n)?"
     read yn
-  else
+  elif ! is_precheck_running ; then
     # -y or --assume-yes was given on command line; non-interactive invocation
     echo "Upgrading Photon OS from $FROM_VERSION to $TO_VERSION." \
          "Assuming that data backup has already been done."
     yn=y    # script is run non-interactively to do upgrade
+  else
+    yn=y
   fi
 
   builtin echo ''
   case "$yn" in
     [Yy]*)
+      is_precheck_running || \
+        write_to_syslog "Starting OS upgrade with command line: $CMDLINE"
       is_repo_config_valid_for_release $TO_VERSION
-      find_wrongly_enabled_services # Terminates upgrade on finding any regular
-                                    # file in multi-user.target.wants under /etc
-      backup_rpms_list_n_db $RPM_DB_LOC
-      tdnf_makecache
-      if [ "$UPDATE_PKGS" = 'y' ]; then
+      find_incorrect_units
+      rc=$?
+      is_precheck_running || backup_rpms_list_n_db $RPM_DB_LOC
+      find_files_for_review
+      tdnf_makecache $FROM_VERSION
+      if [ "$UPDATE_PKGS" = 'y' ] && ! is_precheck_running; then
         # Vanilla Photon OS would want to update package manager and other
         # packages. Appliances may not need this.
         update_solv_to_support_complex_deps
@@ -428,26 +647,41 @@ function verify_version_and_upgrade() {
         distro_upgrade $FROM_VERSION
       fi
       find_installed_deprecated_packages
+      tdnf_makecache $TO_VERSION
+      find_installed_replaced_packages
+      check_installed_packages_in_target_repo
+      ((rc+=$?))
+      tdnf_makecache $FROM_VERSION
+      extra_erased_pkgs_arr+=(
+        $(
+          find_extra_erased_pkgs ${deprecated_pkgs_to_remove_arr[@]} \
+                                 ${!replaced_pkgs_map[@]}
+        )
+      )
+      if is_precheck_running; then
+        echo "Prechecks done, exiting."
+        exit $rc
+      fi
+      remove_debuginfo_packages
+      backup_configs $TMP_BACKUP_LOC \
+                     ${!replaced_pkgs_map[@]} \
+                     ${extra_erased_pkgs_arr[@]}
+      record_enabled_disabled_services
       remove_unsupported_packages
       pre_upgrade_rm_pkgs
       rebuilddb
-      record_enabled_disabled_services
       remove_replaced_packages
       fix_pre_upgrade_config
       distro_upgrade $TO_VERSION
-      if [ "$TO_VERSION" = "5.0" ]; then
-        relocate_rpmdb
-      else
-        rebuilddb
-      fi
+      install_other_packages
       fix_post_upgrade_config
-      install_replacement_packages
       rebuilddb
       remove_residual_pkgs
-      reset_enabled_disabled_services
       if [ -n "$INSTALL_ALL" ]; then
         install_all_from_repo
       fi
+      restore_configs $TMP_BACKUP_LOC
+      reset_enabled_disabled_services
       post_upgrade_rm_pkgs
       rebuilddb
       ask_for_reboot
@@ -458,7 +692,7 @@ function verify_version_and_upgrade() {
 
 CMD_ARGS=$(
   getopt --long \
-  'assume-yes,help,install-all,repos:,rm-pkgs-pre:,rm-pkgs-post:,to-ver:,skip-update,upgrade-os' \
+  'assume-yes,help,install-all,precheck-only,repos:,rm-pkgs-pre:,rm-pkgs-post:,to-ver:,skip-update,upgrade-os' \
   -- -- "$@"
 )
 if [ $? -ne 0 ]; then
@@ -475,6 +709,11 @@ while [ $# -gt 0 ]; do
       ;;
     --install-all)
       INSTALL_ALL='y' # install all packages from provided repos by --repos
+      ;;
+    --precheck-only )
+      PRECHECK_ONLY='y'
+      ASSUME_YES_OPT='-y'
+      echo "Prechecks for OS upgrade will be performed."
       ;;
     --repos )
       repos_csv="$2"
@@ -512,8 +751,7 @@ while [ $# -gt 0 ]; do
       shift
       ;;
     --upgrade-os )
-      TO_VERSION=4.0   # default Photon OS version to upgrade to, --to-ver
-                       # must be used to upgrade to Photon OS 5.0
+      TO_VERSION=${TO_VERSION:-4.0}   # default Photon OS version for OS upgrade
       UPGRADE_OS='y'   # mark for OS upgrade
       ;;
     -- )
@@ -554,13 +792,14 @@ if [ -n "$INSTALL_ALL" ] && [ -z "$REPOS_OPT" ]; then
   show_help $ERETRY_EINVAL
 fi
 
-remove_debuginfo_packages
 if [ "$UPGRADE_OS" = "y" ]; then
   # The script is run with --upgrade-os option, upgrading Photon OS
   verify_version_and_upgrade
 elif [ "$UPDATE_PKGS" = 'y' ]; then
   # The script is run without --upgrade-os option.
   # Upgrading all installed RPMs to latest versions.
+  write_to_syslog "Starting update of packages with command line: $CMDLINE"
+  remove_debuginfo_packages
   backup_rpms_list_n_db $RPM_DB_LOC
   pre_upgrade_rm_pkgs
   tdnf_makecache
