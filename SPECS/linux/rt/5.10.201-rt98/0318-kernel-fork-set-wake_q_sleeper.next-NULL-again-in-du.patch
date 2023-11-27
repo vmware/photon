@@ -1,0 +1,60 @@
+From 1736b1bcab5e159f61d3023fc1ab797f8f26da8a Mon Sep 17 00:00:00 2001
+From: Steffen Dirkwinkel <s.dirkwinkel@beckhoff.com>
+Date: Mon, 20 Mar 2023 09:03:47 +0100
+Subject: [PATCH 318/322] kernel: fork: set wake_q_sleeper.next=NULL again in
+ dup_task_struct
+
+Without this we get system hangs within a couple of days.
+It's also reproducible in minutes with "stress-ng --exec 20".
+
+Example error in dmesg:
+INFO: task stress-ng:163916 blocked for more than 120 seconds.
+      Not tainted 5.10.168-rt83 #2
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:stress-ng       state:D stack:    0 pid:163916 ppid: 72833 flags:0x00004000
+Call Trace:
+ __schedule+0x2bd/0x940
+ preempt_schedule_lock+0x23/0x50
+ rt_spin_lock_slowlock_locked+0x117/0x2c0
+ rt_spin_lock_slowlock+0x51/0x80
+ rt_write_lock+0x1e/0x1c0
+ do_exit+0x3ac/0xb20
+ do_group_exit+0x39/0xb0
+ get_signal+0x145/0x960
+ ? wake_up_new_task+0x21f/0x3c0
+ arch_do_signal_or_restart+0xf1/0x830
+ ? __x64_sys_futex+0x146/0x1d0
+ exit_to_user_mode_prepare+0x116/0x1a0
+ syscall_exit_to_user_mode+0x28/0x190
+ entry_SYSCALL_64_after_hwframe+0x61/0xc6
+RIP: 0033:0x7f738d9074a7
+RSP: 002b:00007ffdafda3cb0 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
+RAX: fffffffffffffe00 RBX: 00000000000000ca RCX: 00007f738d9074a7
+RDX: 0000000000028051 RSI: 0000000000000000 RDI: 00007f738be949d0
+RBP: 00007ffdafda3d88 R08: 0000000000000000 R09: 00007f738be94700
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000028051
+R13: 00007f738be949d0 R14: 00007ffdafda51e0 R15: 00007f738be94700
+
+Fixes: 1ba44dcf789d ("Merge tag 'v5.10.162' into v5.10-rt")
+Acked-by: Joe Korty <joe.korty@concurrent-rt.com>
+Signed-off-by: Steffen Dirkwinkel <s.dirkwinkel@beckhoff.com>
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ kernel/fork.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/fork.c b/kernel/fork.c
+index dfefb6e7e082b..5dc7abedf08f0 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -960,6 +960,7 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
+ 	tsk->splice_pipe = NULL;
+ 	tsk->task_frag.page = NULL;
+ 	tsk->wake_q.next = NULL;
++	tsk->wake_q_sleeper.next = NULL;
+ 	tsk->pf_io_worker = NULL;
+ 
+ 	account_kernel_stack(tsk, 1);
+-- 
+2.42.0
+

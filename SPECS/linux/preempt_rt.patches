@@ -321,4 +321,4 @@ Patch618: 0318-kernel-fork-set-wake_q_sleeper.next-NULL-again-in-du.patch
 Patch619: 0319-Revert-mm-page_alloc-fix-potential-deadlock-on-zonel.patch
 Patch620: 0320-Revert-printk-declare-printk_deferred_-enter-safe-in.patch
 Patch621: 0321-arm64-signal-Use-ARCH_RT_DELAYS_SIGNAL_SEND.patch
-Patch622: 0322-Linux-5.10.197-rt96-REBASE.patch
+Patch622: 0322-Linux-5.10.201-rt98-REBASE.patch

@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.200
-Release:        2%{?dist}
+Version:        5.10.201
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:    http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=f591a85cd505acb682771c191d2df34643dd337a3d8b514738af39d5d52db5e6447a39d9b20cca22c0159f9c3cda3b766b5f529ee6eaa4b0e156453f3d54ede6
+%define sha512 linux=6335fb4f13400f8c61f34de221b4d2807619e2b555ef0884e5ab12e0243be34f6802d46a4df7460b7960e4bf1474a29f8b5ccbb8535120b2b1c9aac1935545d7
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -508,6 +508,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Nov 27 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.201-1
+- Update to version 5.10.201
 * Wed Nov 15 2023 Kuntal Nayak <nkuntal@vmware.com> 5.10.200-2
 - Kconfig to lockdown kernel in UEFI Secure Boot
 * Thu Nov 09 2023 Ankit Jain <ankitja@vmware.com> 5.10.200-1
