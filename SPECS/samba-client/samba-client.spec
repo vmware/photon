@@ -5,8 +5,8 @@
 
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.18.5
-Release:        2%{?dist}
+Version:        4.18.8
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -14,7 +14,7 @@ Distribution:   Photon
 URL:            https://www.samba.org
 
 Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha512 samba=c12b7cd7aba0941bf178c89604f926347bee4f5bb6ea651930cc93bcd8a2cfa983b1f10a0ccb55f99c5b34b9f158d1059d06d7f39f7bc261c7dd0d8c89c5a6f5
+%define sha512 samba=2924c360f6299129527457547b13c1b282e2907a0ecde1036dbca894c752935d693914b4846a9eab436b33798c53c9974692e51fd071301b1174598be944a246
 
 Source1: smb.conf.vendor
 
@@ -583,6 +583,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Mon Nov 27 2023 Harinadh D <hdommaraju@vmwrae.com> 4.18.8-1
+- fix CVE-2023-3961
 * Mon Jul 31 2023 Mukul Sikka <msikka@vmwrae.com> 4.18.5-2
 - Bump version as a part of sudo upgrade
 * Thu Jul 27 2023 Oliver Kurth <okurth@vmware.com> 4.18.5-1
