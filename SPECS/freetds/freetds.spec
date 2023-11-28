@@ -1,17 +1,20 @@
 Summary:       ODBC driver manager
 Name:          freetds
 Version:       1.2.5
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.unixodbc.org/
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Source0:       ftp://ftp.%{name}.org/pub/%{name}/stable/%{name}-%{version}.tar.gz
-%define sha1   freetds=94d5e5ae0d671cbf6c1dfc4ab0a86a76f1fb67fa
+
+Source0: https://www.freetds.org/files/stable/%{name}-%{version}.tar.gz
+%define sha512 %{name}=5e228c0f8f3e102d1a414ef55eb0d11023218c709dfa7d9bfe70832c86f604b1fced979933491feb78570be44be5b2b08d9693ca1d3c5df0762816e772395a67
+
 BuildRequires: unixODBC-devel
 BuildRequires: gnutls-devel
 BuildRequires: nettle-devel
+
 Requires:      gnutls
 Requires:      unixODBC
 Requires:      nettle
@@ -48,20 +51,20 @@ The freetds-doc package contains the userguide and reference of FreeTDS
 and can be installed even if FreeTDS main package is not installed
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
     --enable-static=no \
     --with-tdsver=auto \
     --with-unixodbc \
-    --with-gnutls
-make
+    --with-gnutls \
+    --disable-static
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
-find %{buildroot} -name '*.a'  -delete
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -105,7 +108,9 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 %{_docdir}/%{name}/*
 
 %changelog
-*   Mon May 31 2021 Shreenidhi Shedi<sshedi@vmware.com> 1.2.5-2
--   Bump version to fix nettle dependancy issue.
-*   Thu Oct 01 2020 Dweep Advani <dadvani@vmware.com> 1.2.5-1
--   Adding package freetds
+* Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.5-3
+- Bump version as a part of gnutls upgrade
+* Mon May 31 2021 Shreenidhi Shedi<sshedi@vmware.com> 1.2.5-2
+- Bump version to fix nettle dependancy issue.
+* Thu Oct 01 2020 Dweep Advani <dadvani@vmware.com> 1.2.5-1
+- Adding package freetds

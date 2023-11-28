@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -689,6 +689,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 247.13-11
+- Bump version as a part of gnutls upgrade
 * Mon Nov 20 2023  <bguruswamy@vmware.com> 247.13-10
 - Make mq-deadline default IO scheduler
 * Thu Nov 2 2023 Oliver Kurth  <okurth@vmware.com> 247.13-9

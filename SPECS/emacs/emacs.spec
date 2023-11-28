@@ -1,7 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
 Version:        27.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+ and CC0-1.0
 URL:            http://www.gnu.org/software/emacs/
 Group:          Applications/Editors
@@ -79,6 +79,8 @@ rm %{buildroot}%{_datadir}/applications/emacs.desktop
 %{_datadir}/metainfo/emacs.appdata.xml
 
 %changelog
+*  Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 27.1-5
+-  Bump version as a part of gnutls upgrade
 *  Fri Mar 03 2023 Srish Srinivasan <ssrish@vmware.com> 27.1-4
 -  Fix CVE-2022-48338, CVE-2022-48339, CVE-2022-48337
 *  Mon Dec 05 2022 Srish Srinivasan <ssrish@vmware.com> 27.1-3

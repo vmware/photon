@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.7.1
-Release:        5%{?dist}
+Version:        3.7.10
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -9,13 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
-%define sha512 gnutls=0fe801f03676c3bd970387f94578c8be7ba6030904989e7d21dffdc726209bab44c8096fbcb6d51fed2de239537bd00df2338ee9c8d984a1c386826b91062a95
+%define sha512 %{name}=23e0890abd00c433f11c2d4ceb328fe4ac0a0b765de89dff52f16e7d20694a7c61a6acb084d9f58f15c1a9609d70efdac489ac4759963c0ff1d1b8bb7183269e
 
-Patch0:     gnutls-3.6.9-default-priority.patch
-Patch1:     CVE-2022-2509.patch
-Patch2:     CVE-2021-4209.patch
-Patch3:     CVE-2023-0361-1.patch
-Patch4:     CVE-2023-0361-2.patch
+Patch0: default-priority.patch
+Patch1: CVE-2023-5981.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -41,7 +38,7 @@ PKCS #12, OpenPGP and other required structures. It is aimed to be portable and 
 
 %package devel
 Summary:    Development libraries and header files for gnutls
-Requires:   gnutls = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
 Requires:   libtasn1-devel
 Requires:   nettle-devel
 
@@ -51,7 +48,6 @@ developing applications that use gnutls.
 
 %prep
 %autosetup -p1
-autoreconf -fiv
 
 %build
 # check for trust store file presence
@@ -61,7 +57,7 @@ autoreconf -fiv
     --without-p11-kit \
     --disable-openssl-compatibility \
     --with-included-unistring \
-    --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
+    --with-system-priority-file=%{_sysconfdir}/%{name}/default-priorities \
     --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
 %make_build
@@ -69,16 +65,15 @@ autoreconf -fiv
 %install
 %make_install %{?_smp_mflags}
 rm %{buildroot}%{_infodir}/*
-find %{buildroot}%{_libdir} -name '*.la' -delete
-mkdir -p %{buildroot}/etc/%{name}
-chmod 755 %{buildroot}/etc/%{name}
-cat > %{buildroot}/etc/%{name}/default-priorities << "EOF"
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}
+chmod 755 %{buildroot}%{_sysconfdir}/%{name}
+cat > %{buildroot}%{_sysconfdir}/%{name}/default-priorities << "EOF"
 SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
 EOF
 
 %check
 sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
-make check %{?_smp_mflags}
+%make_build check
 
 %post
 /sbin/ldconfig
@@ -92,11 +87,11 @@ make check %{?_smp_mflags}
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_datadir}/locale/*
-%{_docdir}/gnutls/*.png
+%{_docdir}/%{name}/*.png
 %{_libdir}/guile/2.0/extensions/*.so*
-%{_libdir}/guile/2.0/site-ccache/gnutls*
-%{_datadir}/guile/site/2.0/gnutls*
-%config(noreplace) %{_sysconfdir}/gnutls/default-priorities
+%{_libdir}/guile/2.0/site-ccache/%{name}*
+%{_datadir}/guile/site/2.0/%{name}*
+%config(noreplace) %{_sysconfdir}/%{name}/default-priorities
 
 %files devel
 %defattr(-,root,root)
@@ -106,6 +101,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.10-1
+- Upgrade to v3.7.10
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.1-5
 - Fix CVE-2023-0361
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.1-4
