@@ -1,7 +1,7 @@
 Summary:        Nmap (“Network Mapper”) is a utility for network discovery and security auditing
 Name:           nmap
 Version:        7.91
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Nmap
 URL:            http://nmap.org/
 Group:          Networking
@@ -24,10 +24,14 @@ BuildRequires: openssh
 BuildRequires: pcre-devel
 BuildRequires: zlib-devel
 BuildRequires: lua-devel
+BuildRequires: libssh2-devel
 
 Requires: libpcap
 Requires: pcre
 Requires: gnupg
+Requires: lua
+Requires: openssl
+Requires: zlib
 
 %description
 nmap is a utility for network exploration or security auditing. It supports
@@ -56,11 +60,13 @@ uses.
 
 %prep
 %autosetup -p1
+rm -rf libpcap libpcre macosx mswin32 libssh2 libz
 
 %build
 %configure \
     --with-libpcap=%{_usr} \
     --with-liblua=%{_usr} \
+    --with-libssh2=%{_usr} \
     --without-zenmap \
     --without-ndiff \
     --enable-dbus
@@ -85,6 +91,8 @@ rm -rf %{buildroot}%{_datadir}/man/
 %{_bindir}/ncat
 
 %changelog
+* Mon Nov 27 2023 Prashant S Chauhan <sshedi@vmware.com> 7.91-5
+- Use system provided libssh2
 * Fri Nov 10 2023 Prashant S Chauhan <sshedi@vmware.com> 7.91-4
 - Use system provided lua
 * Fri Jul 28 2023 Shivani Agarwal <shivania2@vmware.com> 7.91-3
