@@ -24,7 +24,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
@@ -1019,6 +1019,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Wed Nov 29 2023 Harinadh D <hdommaraju@vmware.com> 2.8.1-12
+- Bump up version as a part of samba upgrade
 * Tue Oct 31 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.8.1-11
 - Remove autoconfiguration on post install/uninstall as this can
 - compromise user settings if not properly checked.
