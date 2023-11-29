@@ -1020,6 +1020,9 @@ finalize() {
         error "$ARCH not supported"
     fi
 
+    disk_name=$(blkid -t PARTUUID="${_ROOT[0]}" | cut -d ":" -f 1) || error
+    disk_name=${disk_name//[0-9]/}
+
     # if BIOS, update MBR by installing grub
     # if EFI, update efi boot entries
     # if both, update both
@@ -1029,9 +1032,6 @@ finalize() {
     fi
 
     if [[ $BOOT_TYPE == "BIOS" ]] || [[ $BOOT_TYPE == "BOTH" ]]; then
-        disk_name=$(blkid -t PARTUUID="${_ROOT[0]}" | cut -d ":" -f 1) || error
-        disk_name=${disk_name//[0-9]/}
-
         rpm -q grub2-pc &> /dev/null || error "grub2-pc not installed. Install with \"tdnf install grub2-pc\""
 
         # try to get platform type, if wrong this could brick at least this partition, but potentially the whole machine by messing up the MBR
@@ -1043,23 +1043,6 @@ finalize() {
 
         # overwrite MBR by grub2-install
         grub2-install "$disk_name" --target="$PLATFORM" || error "Failed to update MBR. Is grub2-pc package installed?"
-
-    elif [[ $BOOT_TYPE == "EFI" ]]; then
-        # install grub into this partition, otherwise it will use same bootloader as other partition set
-        # and that will just boot into the other partition set (in some situations)
-        disk_name=$(blkid -t PARTUUID="${EFI[0]}" | cut -d ":" -f 1) || error
-        disk_name=${disk_name//[0-9]/}
-
-        rpm -q --quiet grub2-efi || error "grub2-efi not installed. Install with \"tdnf install grub2-efi\""
-
-        if [[ -z "$PLATFORM" && $(find /usr/lib/grub/* -prune -name "*" | wc -l) -gt 1 ]]; then
-            error "Multiple platforms detected in /usr/lib/grub. Please specify correct platform for grub by setting PLATFORM in /etc/abupdate.conf"
-        elif [[ -z "$PLATFORM" ]]; then
-            PLATFORM=$(ls /usr/lib/grub) || error
-        fi
-
-        # install new grub bootloader for this partition set
-        grub2-install "$disk_name" --target="$PLATFORM" || error "Failed to install new grub bootloader. Is grub2-efi package installed?"
     fi
 
     if [[ $BOOT_TYPE == "EFI" ]] || [[ $BOOT_TYPE == "BOTH" ]]; then
@@ -1068,7 +1051,7 @@ finalize() {
 
         # find which entry is the grub entry
         local bootnum
-        bootnum=$(efibootmgr | grep -E "(^|\s)grub(\s|$)")
+        bootnum=$(efibootmgr | grep -E "(^|\s)grub(\s|$)" | awk '{print $1}')
 
         # if no grub entry, then we have to do this a bit differently
         # probably, grub is not installed
@@ -1093,9 +1076,9 @@ finalize() {
             partition_num="${partition_num//[!0-9]/}"
 
             # create new Photon boot entry
-            bootnum=$(efibootmgr | grep -E "(^|\s)Photon(\s|$)")
+            bootnum=$(efibootmgr | grep -E "(^|\s)Photon(\s|$)" | awk '{print $1}')
             bootnum="${bootnum//[!0-9]/}"
-            efibootmgr -c -d "$disk_name" -p "$partition_num" -L Photon -l "$bootloader_efi"  &> /dev/null || error "Failed to create new efi boot entry (Photon)"
+            efibootmgr -c -d "$disk_name" -p "$partition_num" -L Photon -l "$bootloader_efi" &> /dev/null || error "Failed to create new efi boot entry (Photon)"
             [[ -n $bootnum ]] && (efibootmgr -b "$bootnum" -B &> /dev/null || error "Failed to delete existing Photon boot entry")
         fi
     fi

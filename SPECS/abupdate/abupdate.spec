@@ -3,7 +3,8 @@
 Name:           abupdate
 Summary:        A/B partition set update and rollback
 Version:        1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
+URL:            http://github.com/vmware/photon
 License:        GPLv2
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -51,6 +52,8 @@ cp %{SOURCE3} %{buildroot}%{_docdir}
 %{_unitdir}/abupdate.service
 
 %changelog
+* Tue Nov 28 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.0-4
+- Don't reinstall grub on EFI
 * Thu Feb 23 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.0-3
 - Enable kexec for ARM, don't replace abupdate.conf. Edit abupdate
 - to support aarch64.
