@@ -1,7 +1,7 @@
 Summary:       ODBC driver manager
 Name:          freetds
 Version:       1.3.10
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPLv2
 URL:           http://www.unixodbc.org
 Group:         System Environment/Libraries
@@ -105,6 +105,8 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 %{_docdir}/%{name}/*
 
 %changelog
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.10-4
+- Bump version as a part of gnutls upgrade
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.10-3
 - Bump version as a part of readline upgrade
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.10-2
