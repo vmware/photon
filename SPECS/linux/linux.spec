@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.198
-Release:        7%{?acvp_build:.acvp}%{?dist}
+Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -299,6 +299,9 @@ Patch10108:       0009-kernels-net-Export-sock_getsockopt.patch
 Patch10109:       0010-DRBG-Fix-issues-with-DRBG.patch
 Patch10110:       0011-Added-jitterentropy-implementation-of-SHA3-256.patch
 Patch10111:       0012-jitterentropy-Support-for-sample-collection.patch
+%if 0%{?kat_build:1}
+Patch10112:       0013-crypto-api-return-status-prints-for-LKCM5-demo.patch
+%endif
 %endif
 
 BuildRequires:  bc
@@ -524,6 +527,9 @@ popd
 #ACVP test harness patches.
 #Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
 %autopatch -p1 -m10100 -M10111
+%if 0%{?kat_build:1}
+%autopatch -p1 -m10112 -M10112
+%endif
 %endif
 
 %build
@@ -880,6 +886,14 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 29 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-8
+- print kernel crypto API return status for LKCM5 demo
+  these prints appear only when both ACVP_BUILD and KAT_BUILD
+  are enabled during build
+- Handle allocation of cipher inside algif_ecc for curves other than
+  nist_p256 and nist_p384
+- Move all the ACVP related patches under a dedicated directory called
+  acvp_patches
 * Mon Nov 27 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-7
 - Remove kat_build and its associated spec changes
 * Sat Nov 25 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-6

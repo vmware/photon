@@ -29,27 +29,29 @@ Added support for LKCM 5.0:
    keyVer and keyGen respectively.
  * Also made some inclusions in ecc.h, ecc_curve_defs.h, ecdh.h, asymmetric-type.h and
    asymmetric-type.h to accomodate the nist_p384 curve.
+ * Make allocation of cipher handle fail if a curve other than nist_p256 and nist_p384
+   is sent from user-space.
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: srinidhira0 <srinidhir@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmwae.com>
 ---
- crypto/Kconfig                 |   8 ++
+ crypto/Kconfig                 |   8 +
  crypto/Makefile                |   1 +
- crypto/algif_ecc.c             | 253 +++++++++++++++++++++++++++++++++
+ crypto/algif_ecc.c             | 273 +++++++++++++++++++++++++++++++++
  crypto/ecc.h                   |  26 ++++
- crypto/ecc_curve_defs.h        |  49 +++++++
+ crypto/ecc_curve_defs.h        |  49 ++++++
  include/crypto/ecdh.h          |   1 +
  include/keys/asymmetric-type.h |   6 +
  include/linux/oid_registry.h   |  10 +-
- 8 files changed, 353 insertions(+), 1 deletion(-)
+ 8 files changed, 373 insertions(+), 1 deletion(-)
  create mode 100644 crypto/algif_ecc.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
 index 9f068f95cb32..2671bc52ea5c 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -1968,6 +1968,14 @@ config CRYPTO_USER_API_KPP
+@@ -1975,6 +1975,14 @@ config CRYPTO_USER_API_KPP
  	  primitives algorithms. This covers Diffie-Hellman and EC
  	  Diffie-Hellman.
  
@@ -68,7 +70,7 @@ diff --git a/crypto/Makefile b/crypto/Makefile
 index 3ea05f3..38fd14e 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -152,6 +152,7 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -154,6 +154,7 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_USER_API_AKCIPHER) += algif_akcipher.o
  obj-$(CONFIG_CRYPTO_USER_API_KPP) += algif_kpp.o
@@ -81,7 +83,7 @@ new file mode 100644
 index 000000000000..1f5defa98b5f
 --- /dev/null
 +++ b/crypto/algif_ecc.c
-@@ -0,0 +1,253 @@
+@@ -0,0 +1,273 @@
 +/*
 + * algif_ecc: User-space interface for ECC routines
 + *
@@ -137,9 +139,9 @@ index 000000000000..1f5defa98b5f
 +	const struct iovec *iov;
 +	int ret;
 +	/* FIPS supported curves: nist_p256 and nist_p384 */
-+	const struct ecc_curve *curve = &nist_p256;
++	const struct ecc_curve *curve = NULL;
 +	u8 x_buf[48] = {0}, y_buf[48] = {0}, hash_buf[64] = {0};
-+	int curve_id = 2;
++	int curve_id = 0;
 +
 +	if (!iter_is_iovec(&msg->msg_iter))
 +		return -ENOTSUPP;
@@ -149,8 +151,16 @@ index 000000000000..1f5defa98b5f
 +		iov = msg->msg_iter.iov;
 +		struct ecc_point pk;
 +
-+		if(iov[2].iov_len == 384)
++		if(iov[2].iov_len == 256) {
++			curve = &nist_p256;
++			curve_id = 2;
++		}
++		if(iov[2].iov_len == 384) {
 +			curve = &nist_p384;
++			curve_id = 3;
++		}
++		else
++			return -EINVAL;
 +
 +		if (iov[0].iov_len != curve->g.ndigits * sizeof(u64) ||
 +	    		iov[1].iov_len != curve->g.ndigits * sizeof(u64))
@@ -209,9 +219,9 @@ index 000000000000..1f5defa98b5f
 +        u64 pubkey[12];
 +        int ret;
 +        /* FIPS supported curves: nist_p256 and nist_p384 */
-+        struct ecc_curve *curve = &nist_p256;
++        struct ecc_curve *curve = NULL;
 +        u8 d_buf[48] = {0};
-+        int curve_id = 2;
++        int curve_id = 0;
 +
 +        if (!iter_is_iovec(&msg->msg_iter))
 +                return -ENOTSUPP;
@@ -221,10 +231,16 @@ index 000000000000..1f5defa98b5f
 +
 +        iov = msg->msg_iter.iov;
 +
-+        if(iov[3].iov_len == 384){
-+                curve = &nist_p384;
-+                curve_id = 3;
-+        }
++	if(iov[3].iov_len == 256) {
++		curve = &nist_p256;
++		curve_id = 2;
++	}
++	else if(iov[3].iov_len == 384) {
++		curve = &nist_p384;
++		curve_id = 3;
++	}
++	else
++		return -EINVAL;
 +
 +        if (iov[0].iov_len != curve->g.ndigits * sizeof(u64) ||
 +            iov[1].iov_len != curve->g.ndigits * sizeof(u64) ||
@@ -285,7 +301,13 @@ index 000000000000..1f5defa98b5f
 +
 +static void *ecc_bind(const char *name, u32 type, u32 mask)
 +{
-+	return 0;
++	if(!strcmp(name, "ecdh-nist-p256")  ||
++	   !strcmp(name, "ecdh-nist-p384")  ||
++	   !strcmp(name, "ecdsa-nist-p256") ||
++	   !strcmp(name, "ecdsa-nist-p384")) {
++		return 0;
++	}
++	return -EINVAL;
 +}
 +
 +static void ecc_release(void *private)
