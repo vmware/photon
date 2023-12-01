@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.198
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -886,6 +886,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Dec 01 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-9
+- Fix algif_ecc support patch for ECDSA KeyVerification
 * Wed Nov 29 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-8
 - print kernel crypto API return status for LKCM5 demo
   these prints appear only when both ACVP_BUILD and KAT_BUILD

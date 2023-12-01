@@ -155,7 +155,7 @@ index 000000000000..1f5defa98b5f
 +			curve = &nist_p256;
 +			curve_id = 2;
 +		}
-+		if(iov[2].iov_len == 384) {
++		else if(iov[2].iov_len == 384) {
 +			curve = &nist_p384;
 +			curve_id = 3;
 +		}
