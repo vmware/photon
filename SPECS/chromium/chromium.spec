@@ -7,7 +7,7 @@ Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
 Version:        119.0.6045.176
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 3
 URL:            https://chromium.googlesource.com/chromium/src
 Group:          System Utility
@@ -77,11 +77,16 @@ cp -pr %{builddir}/headless_lib_data.pak \
        %{builddir}/vk_swiftshader_icd.json \
        %{buildroot}%{chromium_path}
 
+> %{SOURCE0}
+
 %files
 %defattr(-,root,root)
 %{chromium_path}
 
 %changelog
+* Fri Dec 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 119.0.6045.176-2
+- Ignore chromium source tarball while creating src rpm.
+- If packages, it results in a huge src rpm & will cause signing issues
 * Mon Nov 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 119.0.6045.176-1
 - Upgrade to v119.0.6045.176
 * Thu Aug 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 116.0.5845.96-1
