@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.6.16
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -16,8 +16,9 @@ Patch1: CVE-2021-4209.patch
 Patch2: CVE-2022-2509.patch
 Patch3: CVE-2023-0361-1.patch
 Patch4: CVE-2023-0361-2.patch
+Patch5: CVE-2023-5981.patch
 
-BuildRequires:  nettle-devel >= 3.4.1
+BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
 BuildRequires:  ca-certificates
@@ -39,7 +40,7 @@ GnuTLS is a secure communications library implementing the SSL, TLS and DTLS pro
 
 %package devel
 Summary:    Development libraries and header files for gnutls
-Requires:   gnutls = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
 Requires:   libtasn1-devel
 Requires:   nettle-devel >= 3.4.1
 
@@ -61,10 +62,10 @@ developing applications that use gnutls.
     --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
     --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 rm %{buildroot}%{_infodir}/*
 find %{buildroot}%{_libdir} -name '*.la' -delete
 mkdir -p %{buildroot}/etc/%{name}
@@ -74,10 +75,8 @@ cat > %{buildroot}/etc/%{name}/default-priorities << "EOF"
 SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
 EOF
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %post
 /sbin/ldconfig
@@ -105,6 +104,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+* Fri Dec 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.16-5
+- Fix CVE-2023-5981
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.16-4
 - Fix CVE-2023-0361
 * Tue Aug 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.6.16-3
