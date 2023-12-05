@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          50%{?dist}
+Release:          51%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -79,6 +79,7 @@ Patch54:          CVE-2022-4415-2.patch
 Patch55:          CVE-2022-4415-3.patch
 Patch56:          timedated-add-back-support-for-ntp-units.d.patch
 Patch57:          pager-set-LESSSECURE-whenver-we-invoke-a-pager.patch
+Patch58:          pager-make-pager-secure-when-under-euid-is-changed-o.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -345,6 +346,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+* Mon Dec 04 2023 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 239-51
+- Improvement to CVE-2023-26604 Fix
 * Tue Nov 21 2023 Susant Sahani <ssahani@vmware.com> 239-50
 - Fix CVE-2023-26604
 * Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 239-49
