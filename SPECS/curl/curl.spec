@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        8.1.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -15,6 +15,9 @@ Patch0:        CVE-2023-32001.patch
 Patch1:        curl-CVE-2023-38039.patch
 Patch2:        curl-CVE-2023-38545.patch
 Patch3:        curl-CVE-2023-38546.patch
+Patch4:        curl-CVE-2023-46218.patch
+Patch5:        better-random-strings.patch
+Patch6:        curl-CVE-2023-46219.patch
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
@@ -109,6 +112,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Tue Dec 05 2023 Harinadh D <hdommaraju@vmware.com> 8.1.2-5
+- Fix of CVE-2023-46218,CVE-2023-46219
 * Fri Oct 06 2023 Harinadh D <hdommaraju@vmware.com> 8.1.2-4
 - Fix for CVE-2023-38545,CVE-2023-38456
 * Tue Sep 12 2023 Dweep Advani <dadvani@vmware.com> 8.1.2-3
