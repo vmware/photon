@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -56,6 +56,9 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Wed Dec 06 2023 Dweep Advani <dadvani@vmware.com> 1.0-18
+- Only backup and restore modified config files of erased and reinstalled packages
+- Remove pycrypto from replaced packages map
 * Mon Nov 27 2023 Dweep Advani <dadvani@vmware.com> 1.0-17
 - Enhance handling of extra removed packages and config backup
 * Wed Oct 25 2023 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.0-16

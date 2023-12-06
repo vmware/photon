@@ -36,7 +36,6 @@ declare -A replaced_pkgs_map=(
   [postgresql13-libs]="postgresql15-libs postgresql14-libs postgresql13-libs"
   [postgresql13-devel]="postgresql15-devel postgresql14-devel postgresql13-devel"
   [pgaudit13]="pgaudit15 pgaudit14 pgaudit13"
-  [python3-pycrypto]=python3-pycryptodome
   [repmgr]="repmgr15 repmgr14 repmgr13"
   [repmgr13]="repmgr15 repmgr14 repmgr13"
 )

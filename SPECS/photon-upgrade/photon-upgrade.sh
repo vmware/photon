@@ -149,6 +149,7 @@ function check_installed_packages_in_target_repo() {
   local i
   local n
 
+  echo "Finding packages in the target repo. This may take several minutes."
   missings_arr+=($(check_packages_in_target_repo ${rpms_arr[@]}))
   n=${#missings_arr[@]}
   for ((i=0; i<$n; i++)); do
@@ -156,13 +157,12 @@ function check_installed_packages_in_target_repo() {
       unset missings_arr[$i]
   done
   if [ ${#missings_arr[@]} -gt 0 ]; then
-    echoerr "Error: Packages - ${missings_arr[@]} - are not" \
+    abort $ERETRY_EINVAL "Error: Packages - ${missings_arr[@]} - are not" \
           "available in the target repo for OS upgrade. Please provide" \
           "the correct repo having the required packages."
-    is_precheck_running || abort $ERETRY_EINVAL
-    return $ERETRY_EINVAL
+  else
+    return 0
   fi
-  return 0
 }
 
 # Usage: check_packages_in_target_repo p1 p2 p3 ...
@@ -175,6 +175,7 @@ function check_packages_in_target_repo() {
   local ptgt=''
   local -A providing_pkgs_map=(
     [coreutils]="coreutils-selinux coreutils"
+    [python3-pycrypto]="python3-pycryptodome"
   )
 
   for ptgt in $*; do
@@ -246,11 +247,10 @@ function find_installed_replaced_packages() {
     for p in ${missing_exp_pkgs_arr[@]}; do
       errstr="${errstr}   - $p needs any of following packages in target repo - ${replaced_pkgs_map[$p]}\n"
     done
-    echoerr $errstr
-    is_precheck_running || abort $ERETRY_EINVAL
-    return $ERETRY_EINVAL
+    abort $ERETRY_EINVAL $errstr
+  else
+    return 0
   fi
-  return 0
 }
 
 # The all other packages, which includes the replacement packages correspoinding
@@ -634,8 +634,9 @@ function verify_version_and_upgrade() {
       is_precheck_running || \
         write_to_syslog "Starting OS upgrade with command line: $CMDLINE"
       is_repo_config_valid_for_release $TO_VERSION
-      find_incorrect_units
       rc=$?
+      find_incorrect_units
+      ((rc+=$?))
       is_precheck_running || backup_rpms_list_n_db $RPM_DB_LOC
       find_files_for_review
       tdnf_makecache $FROM_VERSION
@@ -713,7 +714,9 @@ while [ $# -gt 0 ]; do
     --precheck-only )
       PRECHECK_ONLY='y'
       ASSUME_YES_OPT='-y'
-      echo "Prechecks for OS upgrade will be performed."
+      # Below 2 values are set just to let prechecks run with minimum set of args
+      TO_VERSION=${TO_VERSION:-4.0}
+      UPGRADE_OS='y'
       ;;
     --repos )
       repos_csv="$2"
@@ -794,6 +797,7 @@ fi
 
 if [ "$UPGRADE_OS" = "y" ]; then
   # The script is run with --upgrade-os option, upgrading Photon OS
+  is_precheck_running && echo "Prechecks for OS upgrade will be performed."
   verify_version_and_upgrade
 elif [ "$UPDATE_PKGS" = 'y' ]; then
   # The script is run without --upgrade-os option.

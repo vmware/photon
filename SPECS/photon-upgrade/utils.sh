@@ -14,6 +14,10 @@ function abort() {
   local rc=$1
   shift
 
+  if is_precheck_running; then
+    echoerr $*
+    return $rc
+  fi
   echoerr "$*\nOriginal list of RPMs and RPM DB are stored in $TMP_BACKUP_LOC,"\
           " please provide contents of that folder along with system journal "\
           " logs for analysis; these logs can be captured using command-\n"\
@@ -50,13 +54,9 @@ function find_incorrect_units() {
     )
   )
   [ ${#wes_arr[@]} -eq 0 ] && return 0
-  echo "Error: Found incorrect filetypes for following systemd unit files"\
+  abort $ERETRY_EAGAIN "Error: Found incorrect filetypes for following systemd unit files"\
        "which need to be reviewed by the administrator as these files may "\
        "interfere in the OS upgrade - ${wes_arr[@]}."
-  if [ "$PRECHECK_ONLY" = 'n' ]; then
-    abort $ERETRY_EAGAIN
-  fi
-  return $ERETRY_EAGAIN
 }
 
 # Usage: find_files_for_review
@@ -153,7 +153,13 @@ function backup_configs() {
   [ $# -eq 0 ] && echo "No package configurations needed to be backed up."
   for p in $*; do
     rc=0
-    f_arr=( $(${RPM} -qc $p) )
+    # while verifying package file, check for differences in size (S........)
+    # or checksum (..5......). Refer RPM src: rpmVerifyString() in lib/verify.c
+    f_arr=(
+      $(
+        ${RPM} -V $p | ${SED} -nE 's#^((S..)|(..5)).{6}\s+[c]?\s+(/.*)$#\4#p'
+      )
+    )
     [ ${#f_arr[@]} -gt 0 ] && echo "Backing up configuration of $p."
     for f in ${f_arr[@]}; do
       if [ -d "$f" ]; then

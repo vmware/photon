@@ -15,7 +15,6 @@ declare -A replaced_pkgs_map=(
   [nxtgn-openssl-c_rehash]=openssl-c_rehash
   [nxtgn-openssl-devel]=openssl-devel
   [nxtgn-openssl-perl]=openssl-perl
-  [python3-pycrypto]=python3-pycryptodome
   [openjdk8]="openjdk17 openjdk11 openjdk8"
   [openjdk8-doc]="openjdk17-doc openjdk11-doc openjdk8-doc"
   [openjdk8-src]="openjdk17-src openjdk11-src openjdk8-src"
