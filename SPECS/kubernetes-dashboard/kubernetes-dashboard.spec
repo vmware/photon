@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        2.7.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Group:          Development/Tools
@@ -10,8 +10,8 @@ Distribution:   Photon
 
 Source0: https://github.com/kubernetes/dashboard/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=bd5567bd5a8163cf13de5b935ce90aafb4acba58acc07740eb1ed22ae761c68a7d160a22cfe3d49a9e700a4139c3cc1bef6a76a1bebd88caabef909cd85607b3
-Source1: dashboard-dist-%{version}.tar.gz
-%define sha512 dashboard-dist=e31051bef71d85f553bd26af94bd698d3e417f596d9a1bfe46aafee175c5ccaf8e1fb754364672b395444c0a67cd24392f2f3aee99b3e3fd9ec325b8dc21c7d0
+Source1: dashboard-dist-%{version}.v1.tar.gz
+%define sha512 dashboard-dist=1ade7bdbdce573027f3e94f1ef0614e04cc72762671d225bb67f22c3b3f0ecbfc83f6744aba179d153c1800611a07348a6cd901d31981f6951f038f806b1cf1d
 
 BuildArch:      x86_64
 
@@ -46,9 +46,9 @@ export PATH=${PATH}:%{_bindir}
 # inside it. so did below steps to create the tar
 # 1) git clone git@github.com:kubernetes/dashboard.git dashboard-%{version}
 # 2) cd dashboard-%{version}
-# 3) git checkout tags/v2.0.3 -b 2.0.3
+# 3) git checkout tags/v%{version} -b %{version}
 # 4) cd ..
-# 5) tar -zcvf kubernetes-dashboard-2.0.3.tar.gz dashboard-%{version}
+# 5) tar -zcvf kubernetes-dashboard-%{version}.tar.gz dashboard-%{version}
 
 #download npm sources in node_modules
 #npm ci --unsafe-perm
@@ -71,6 +71,8 @@ cp -pr ./dist/amd64/locale_conf.json ./dist/amd64/public \
 /opt/k8dashboard/public/*
 
 %changelog
+* Fri Dec 22 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.0-12
+- Bump up as part of nodejs
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-11
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-10
