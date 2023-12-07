@@ -1,7 +1,7 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.46.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
@@ -10,7 +10,7 @@ Distribution:   Photon
 
 Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
 %define sha512  %{name}=1a3496cb6ac575c7a5c523cc4eede39bc77c313a6d1fea2d303fc967792d75d94e42d7821e1a61b7513509320aae4a7170506decf5753ddbd1dda9d304cc392e
-
+Patch0:         CVE-2022-1304.patch
 Requires:       %{name}-libs = %{version}-%{release}
 
 Conflicts:      toybox < 0.8.2-2
@@ -140,6 +140,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 06 2023 Roye Eshed <reshed@vmware.com> 1.46.5-2
+- Fix for CVE-2022-1304.
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.46.5-1
 - Automatic Version Bump
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.46.2-1
