@@ -979,7 +979,7 @@ index be70e76d6..07e27910c 100644
  }
  EXPORT_SYMBOL(crypto_sha512_finup);
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 322f40897..8aa769682 100644
+index 832bdbcde..cef1e92a4 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -587,7 +587,7 @@ static int build_test_sglist(struct test_sglist *tsgl,
@@ -1308,7 +1308,7 @@ index 322f40897..8aa769682 100644
  
  	sg_init_one(&src, xbuf[0], c_size);
  	sg_init_one(&dst, outbuf_dec, out_len_max);
-@@ -5834,13 +5834,13 @@ static void alg_check_test_descs_order(void)
+@@ -5806,13 +5806,13 @@ static void alg_check_test_descs_order(void)
  		int diff = strcmp(alg_test_descs[i - 1].alg,
  				  alg_test_descs[i].alg);
  
@@ -1324,7 +1324,7 @@ index 322f40897..8aa769682 100644
  			pr_warn("testmgr: duplicate alg_test_descs entry: '%s'\n",
  				alg_test_descs[i].alg);
  		}
-@@ -5852,12 +5852,12 @@ static void alg_check_testvec_configs(void)
+@@ -5824,12 +5824,12 @@ static void alg_check_testvec_configs(void)
  	int i;
  
  	for (i = 0; i < ARRAY_SIZE(default_cipher_testvec_configs); i++)
@@ -1341,7 +1341,7 @@ index 322f40897..8aa769682 100644
  }
  
  static void testmgr_onetime_init(void)
-@@ -5973,9 +5973,11 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5945,9 +5945,11 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  		}
  		pr_warn("alg: self-tests for %s using %s failed (rc=%d)",
  			alg, driver, rc);
@@ -1394,5 +1394,4 @@ index 72a4b0b1d..555ba2070 100644
  EXPORT_SYMBOL(sha256_update);
  
 -- 
-2.19.0
-
+2.43.0

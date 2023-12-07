@@ -40,7 +40,7 @@ index 328e000e6..757e5222f 100644
  
  static int cryptomgr_schedule_test(struct crypto_alg *alg)
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index f15e2bff2..979472edf 100644
+index f8983636f..82e5eb5e2 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
 @@ -254,7 +254,7 @@ static int pkcs1pad_encrypt(struct akcipher_request *req)
@@ -53,4 +53,4 @@ index f15e2bff2..979472edf 100644
  
  	pkcs1pad_sg_set_buf(req_ctx->in_sg, req_ctx->in_buf,
 -- 
-2.41.0
+2.43.0

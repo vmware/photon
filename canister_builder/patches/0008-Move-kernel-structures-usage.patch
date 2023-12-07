@@ -39,6 +39,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  crypto/ecdsa.c                     |  16 +-
  crypto/gcm.c                       |  15 +-
  crypto/geniv.c                     |  12 +-
+ crypto/ghash-generic.c             |  13 +-
  crypto/hmac.c                      |  11 +-
  crypto/internal.h                  |   7 +-
  crypto/rsa-pkcs1pad.c              |   1 -
@@ -63,7 +64,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  include/linux/crypto.h             |   8 +
  include/linux/rtattr.h             |   6 +
  include/linux/swait.h              |   4 +
- 41 files changed, 385 insertions(+), 841 deletions(-)
+ 42 files changed, 387 insertions(+), 852 deletions(-)
  create mode 100644 include/linux/rtattr.h
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
@@ -1286,6 +1287,41 @@ index 2ac9bc761..90fd326f6 100644
  
 -MODULE_LICENSE("GPL");
 -MODULE_DESCRIPTION("Shared IV generator code");
+diff --git a/crypto/ghash-generic.c b/crypto/ghash-generic.c
+index 81ae2cc2c..050fa7d93 100644
+--- a/crypto/ghash-generic.c
++++ b/crypto/ghash-generic.c
+@@ -41,7 +41,6 @@
+ #include <linux/crypto.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+-#include <linux/module.h>
+ #include "fips_canister_wrapper.h"
+ 
+ static int ghash_init(struct shash_desc *desc)
+@@ -166,20 +165,12 @@ static struct shash_alg ghash_alg = {
+ 	},
+ };
+ 
+-static int __init ghash_mod_init(void)
++int __init ghash_mod_init(void)
+ {
+ 	return crypto_register_shash(&ghash_alg);
+ }
+ 
+-static void __exit ghash_mod_exit(void)
++void __exit ghash_mod_exit(void)
+ {
+ 	crypto_unregister_shash(&ghash_alg);
+ }
+-
+-subsys_initcall(ghash_mod_init);
+-module_exit(ghash_mod_exit);
+-
+-MODULE_LICENSE("GPL");
+-MODULE_DESCRIPTION("GHASH hash function");
+-MODULE_ALIAS_CRYPTO("ghash");
+-MODULE_ALIAS_CRYPTO("ghash-generic");
 diff --git a/crypto/hmac.c b/crypto/hmac.c
 index b3e099505..e9116ae4c 100644
 --- a/crypto/hmac.c
@@ -1612,7 +1648,7 @@ index 32ff5a0b1..845c40f7e 100644
 -MODULE_ALIAS_CRYPTO("sha512");
 -MODULE_ALIAS_CRYPTO("sha512-generic");
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 280b82ec4..2e1e6dab9 100644
+index 866d7ed86..1ee694edb 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -21,7 +21,6 @@
@@ -3166,7 +3202,7 @@ index 280b82ec4..2e1e6dab9 100644
  		       driver, PTR_ERR(tfm));
  		return PTR_ERR(tfm);
  	}
-@@ -5835,13 +5535,13 @@ static void alg_check_test_descs_order(void)
+@@ -5807,13 +5507,13 @@ static void alg_check_test_descs_order(void)
  				  alg_test_descs[i].alg);
  
  		if (fcw_warn_on(diff > 0)) {
@@ -3182,7 +3218,7 @@ index 280b82ec4..2e1e6dab9 100644
  				alg_test_descs[i].alg);
  		}
  	}
-@@ -5866,7 +5566,7 @@ static void testmgr_onetime_init(void)
+@@ -5838,7 +5538,7 @@ static void testmgr_onetime_init(void)
  	alg_check_testvec_configs();
  
  #ifdef CONFIG_CRYPTO_MANAGER_EXTRA_TESTS
@@ -3191,7 +3227,7 @@ index 280b82ec4..2e1e6dab9 100644
  #endif
  }
  
-@@ -5897,7 +5597,7 @@ static int alg_find_test(const char *alg)
+@@ -5869,7 +5569,7 @@ static int alg_find_test(const char *alg)
  
  static int alg_fips_disabled(const char *driver, const char *alg)
  {
@@ -3200,7 +3236,7 @@ index 280b82ec4..2e1e6dab9 100644
  
  	return -ECANCELED;
  }
-@@ -5909,11 +5609,6 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5881,11 +5581,6 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  	int rc;
  	static bool done = false;
  
@@ -3212,7 +3248,7 @@ index 280b82ec4..2e1e6dab9 100644
  	/* Replace DO_ONCE by this. As DO_ONCE generates jump labels entry
  	 * and its data (__once_key) get changed at early boot time at
  	 * jump_label_init() from setup_arch(). We cannot run
-@@ -5965,13 +5660,12 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5937,13 +5632,12 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  
  test_done:
  	if (rc) {
@@ -3230,7 +3266,7 @@ index 280b82ec4..2e1e6dab9 100644
  			alg, driver, rc);
  		if (fcw_is_warn_true(rc != -ENOENT)) {
  			fcw_warn_printk("alg: self-tests for %s using %s failed (rc=%d)",
-@@ -5980,14 +5674,14 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5952,14 +5646,14 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  		}
  	} else {
  		if (fips_enabled)
@@ -3248,7 +3284,7 @@ index 280b82ec4..2e1e6dab9 100644
  	if (type & CRYPTO_ALG_FIPS_INTERNAL)
  		return alg_fips_disabled(driver, alg);
 diff --git a/crypto/testmgr.h b/crypto/testmgr.h
-index efb0977cc..a25b06f6c 100644
+index 2afbdbbf2..c4ace5395 100644
 --- a/crypto/testmgr.h
 +++ b/crypto/testmgr.h
 @@ -20,32 +20,11 @@
@@ -3500,5 +3536,4 @@ index 6a8c22b8c..d4faea8b0 100644
  };
  
 -- 
-2.19.0
-
+2.43.0

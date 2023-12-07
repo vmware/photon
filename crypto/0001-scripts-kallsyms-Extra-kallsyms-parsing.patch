@@ -13,12 +13,12 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 [Ajay: Regenerated the patch for v6.1.45]
 Signed-off-by: Ajay Kaher <akaher@vmware.com>
 ---
- scripts/kallsyms.c      | 111 ++++++++++++++++++++++++++++++++++++++++++------
+ scripts/kallsyms.c      | 111 +++++++++++++++++++++++++++++++++++-----
  scripts/link-vmlinux.sh |   2 +
  2 files changed, 101 insertions(+), 12 deletions(-)
 
 diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index 80aab2a..5b2aa41 100644
+index ff8cce175..cf37d2351 100644
 --- a/scripts/kallsyms.c
 +++ b/scripts/kallsyms.c
 @@ -26,6 +26,8 @@
@@ -137,7 +137,7 @@ index 80aab2a..5b2aa41 100644
  		if (symbol_in_range(s, text_ranges,
  				    ARRAY_SIZE(text_ranges)) == 0)
  			return 0;
-@@ -883,26 +947,48 @@ static void record_relative_base(void)
+@@ -886,26 +950,48 @@ static void record_relative_base(void)
  
  int main(int argc, char **argv)
  {
@@ -197,7 +197,7 @@ index 80aab2a..5b2aa41 100644
  	read_map(argv[optind]);
  	shrink_table();
  	if (absolute_percpu)
-@@ -913,5 +999,6 @@ int main(int argc, char **argv)
+@@ -916,5 +1002,6 @@ int main(int argc, char **argv)
  	optimize_token_table();
  	write_src();
  
@@ -205,7 +205,7 @@ index 80aab2a..5b2aa41 100644
  	return 0;
  }
 diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 32e5739..85d9115 100755
+index 32e573943..85d9115ad 100755
 --- a/scripts/link-vmlinux.sh
 +++ b/scripts/link-vmlinux.sh
 @@ -160,6 +160,8 @@ kallsyms()
@@ -218,4 +218,4 @@ index 32e5739..85d9115 100755
  	scripts/kallsyms ${kallsymopt} ${1} > ${2}
  }
 -- 
-2.41.0
+2.43.0

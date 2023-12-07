@@ -409,10 +409,10 @@ index 07e27910c..32ff5a0b1 100644
  static struct shash_alg sha512_algs[2] = { {
  	.digestsize	=	SHA512_DIGEST_SIZE,
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 22f4ec725..91325e2a8 100644
+index cef1e92a4..866d7ed86 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -5996,5 +5996,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5970,5 +5970,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  }
  
  #endif /* CONFIG_CRYPTO_MANAGER_DISABLE_TESTS */
@@ -515,5 +515,4 @@ index 555ba2070..c0656c6f3 100644
  
  MODULE_LICENSE("GPL");
 -- 
-2.19.0
-
+2.43.0
