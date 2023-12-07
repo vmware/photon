@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.62
-Release:        6%{?acvp_build:.acvp}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -90,6 +90,20 @@ Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
+%endif
+
+%if 0%{?fips}
+Source36: fips_canister_wrapper.c
+Source37: fips_canister_wrapper.h
+Source38: fips_canister_wrapper_asm.S
+Source39: fips_canister_wrapper_common.h
+# fips_canister_wrapper_internal{.c,.h} is the latest released
+# wrapper files. These files may differ between 2 canister versions.
+# During canister binary update, rename
+# %{fips_canister_version}-fips_canister_wrapper_internal{.c,.h}
+# files to fips_canister_wrapper_internal{.c,.h}
+Source40: fips_canister_wrapper_internal.h
+Source41: fips_canister_wrapper_internal.c
 %endif
 
 # common [0..49]
@@ -223,7 +237,6 @@ Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 # FIPS canister usage patch
 Patch508: 6.1.62-7-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
-Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
 
 %if 0%{?acvp_build:1}
@@ -425,7 +438,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M510
+%autopatch -p1 -m508 -M509
 %endif
 
 %if 0%{?acvp_build:1}
@@ -494,14 +507,15 @@ sed -i '/# end of Userspace interface/{G;}' .config
 
 cp %{SOURCE20} photon_sb2020.pem
 %if 0%{?fips}
+cp %{SOURCE36} crypto/
+cp %{SOURCE37} crypto/
+cp %{SOURCE38} crypto/
+cp %{SOURCE39} crypto/
+cp %{SOURCE40} crypto/
+cp %{SOURCE41} crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_asm.S \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_internal.h \
-   ../fips-canister-%{fips_canister_version}/aesni-intel_glue_fips_canister_wrapper.c \
-   ../fips-canister-%{fips_canister_version}/testmgr_fips_canister_wrapper.c \
    crypto/
 %endif
 
@@ -799,6 +813,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-7
+- FIPS: Add log messages for approved and non-approved services
+- Remove fips=2 logic
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-6
 - Added self-tests for rsa-pkcs1pad in combination with sha1, sha224, sha384 and sha512
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-5
