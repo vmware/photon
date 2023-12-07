@@ -1648,7 +1648,7 @@ index 32ff5a0b1..845c40f7e 100644
 -MODULE_ALIAS_CRYPTO("sha512");
 -MODULE_ALIAS_CRYPTO("sha512-generic");
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 866d7ed86..1ee694edb 100644
+index 0e501bddd..082937372 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -21,7 +21,6 @@
@@ -1672,7 +1672,7 @@ index 866d7ed86..1ee694edb 100644
 -
 -static bool panic_on_fail;
 -module_param(panic_on_fail, bool, 0444);
-+#include "fips_canister_wrapper_internal.h"
++#include "fips_canister_wrapper_common.h"
  
  #ifdef CONFIG_CRYPTO_MANAGER_EXTRA_TESTS
  static bool noextratests;
@@ -3063,7 +3063,7 @@ index 866d7ed86..1ee694edb 100644
  			       i, driver);
  			err = -EINVAL;
  			break;
-@@ -3922,11 +3622,11 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3922,12 +3622,12 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  	/* Compute party A's public key */
  	err = crypto_wait_req(crypto_kpp_generate_public_key(req), &wait);
  	if (err) {
@@ -3072,12 +3072,13 @@ index 866d7ed86..1ee694edb 100644
  		       alg, err);
  		goto free_output;
  	}
--	printk(KERN_INFO "alg: %s: Party A: generate public key test passed.", alg);
-+	fcw_printk(KERN_INFO pr_fmt() "alg: %s: Party A: generate public key test passed.", alg);
+ 	if (fips_enabled)
+-		printk(KERN_INFO "alg: %s: Party A: generate public key test passed.", alg);
++		fcw_printk(KERN_INFO "alg: %s: Party A: generate public key test passed.", alg);
  
  	if (vec->genkey) {
  		/* Save party A's public key */
-@@ -3939,12 +3639,12 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3940,13 +3640,13 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  		/* Verify calculated public key */
  		if (memcmp(vec->expected_a_public, fcw_sg_virt(req->dst),
  			   vec->expected_a_public_size)) {
@@ -3087,12 +3088,13 @@ index 866d7ed86..1ee694edb 100644
  			err = -EINVAL;
  			goto free_output;
  		}
--		printk(KERN_INFO "alg: %s: Party A: verify public key test passed.", alg);
-+		fcw_printk(KERN_INFO pr_fmt() "alg: %s: Party A: verify public key test passed.", alg);
+ 		if (fips_enabled)
+-			printk(KERN_INFO "alg: %s: Party A: verify public key test passed.", alg);
++			fcw_printk(KERN_INFO "alg: %s: Party A: verify public key test passed.", alg);
  	}
  
  	/* Calculate shared secret key by using counter part (b) public key. */
-@@ -3962,7 +3662,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3964,7 +3664,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  				 crypto_req_done, &wait);
  	err = crypto_wait_req(crypto_kpp_compute_shared_secret(req), &wait);
  	if (err) {
@@ -3101,7 +3103,7 @@ index 866d7ed86..1ee694edb 100644
  		       alg, err);
  		goto free_all;
  	}
-@@ -3993,7 +3693,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3995,7 +3695,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  		err = crypto_wait_req(crypto_kpp_compute_shared_secret(req),
  				      &wait);
  		if (err) {
@@ -3110,7 +3112,7 @@ index 866d7ed86..1ee694edb 100644
  			       alg, err);
  			goto free_all;
  		}
-@@ -4009,7 +3709,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -4011,7 +3711,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  	 */
  	if (memcmp(shared_secret, fcw_sg_virt(req->dst),
  		   vec->expected_ss_size)) {
@@ -3119,7 +3121,7 @@ index 866d7ed86..1ee694edb 100644
  		       alg);
  		err = -EINVAL;
  	}
-@@ -4033,7 +3733,7 @@ static int test_kpp(struct crypto_kpp *tfm, const char *alg,
+@@ -4035,7 +3735,7 @@ static int test_kpp(struct crypto_kpp *tfm, const char *alg,
  	for (i = 0; i < tcount; i++) {
  		ret = do_test_kpp(tfm, vecs++, alg);
  		if (ret) {
@@ -3128,7 +3130,7 @@ index 866d7ed86..1ee694edb 100644
  			       alg, i + 1, ret);
  			return ret;
  		}
-@@ -4049,7 +3749,7 @@ static int alg_test_kpp(const struct alg_test_desc *desc, const char *driver,
+@@ -4051,7 +3751,7 @@ static int alg_test_kpp(const struct alg_test_desc *desc, const char *driver,
  
  	tfm = crypto_alloc_kpp(driver, type, mask);
  	if (IS_ERR(tfm)) {
@@ -3137,7 +3139,7 @@ index 866d7ed86..1ee694edb 100644
  		       driver, PTR_ERR(tfm));
  		return PTR_ERR(tfm);
  	}
-@@ -4164,19 +3864,19 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4166,19 +3866,19 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  			      /* Run asymmetric encrypt */
  			      crypto_akcipher_encrypt(req), &wait);
  	if (err) {
@@ -3160,7 +3162,7 @@ index 866d7ed86..1ee694edb 100644
  			       op);
  			hexdump(outbuf_enc, c_size);
  			err = -EINVAL;
-@@ -4220,12 +3920,12 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4222,12 +3922,12 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  			      /* Run asymmetric decrypt */
  			      crypto_akcipher_decrypt(req), &wait);
  	if (err) {
@@ -3175,7 +3177,7 @@ index 866d7ed86..1ee694edb 100644
  		       op, out_len);
  		err = -EINVAL;
  		goto free_all;
-@@ -4233,7 +3933,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4235,7 +3935,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  	/* verify that decrypted message is equal to the original msg */
  	if (memchr_inv(outbuf_dec, 0, out_len - m_size) ||
  	    memcmp(m, outbuf_dec + out_len - m_size, m_size)) {
@@ -3184,7 +3186,7 @@ index 866d7ed86..1ee694edb 100644
  		hexdump(outbuf_dec, out_len);
  		err = -EINVAL;
  	}
-@@ -4262,7 +3962,7 @@ static int test_akcipher(struct crypto_akcipher *tfm, const char *alg,
+@@ -4264,7 +3964,7 @@ static int test_akcipher(struct crypto_akcipher *tfm, const char *alg,
  		if (!ret)
  			continue;
  
@@ -3193,7 +3195,7 @@ index 866d7ed86..1ee694edb 100644
  		       i + 1, algo, ret);
  		return ret;
  	}
-@@ -4277,7 +3977,7 @@ static int alg_test_akcipher(const struct alg_test_desc *desc,
+@@ -4279,7 +3979,7 @@ static int alg_test_akcipher(const struct alg_test_desc *desc,
  
  	tfm = crypto_alloc_akcipher(driver, type, mask);
  	if (IS_ERR(tfm)) {
@@ -3202,7 +3204,7 @@ index 866d7ed86..1ee694edb 100644
  		       driver, PTR_ERR(tfm));
  		return PTR_ERR(tfm);
  	}
-@@ -5807,13 +5507,13 @@ static void alg_check_test_descs_order(void)
+@@ -5837,13 +5537,13 @@ static void alg_check_test_descs_order(void)
  				  alg_test_descs[i].alg);
  
  		if (fcw_warn_on(diff > 0)) {
@@ -3218,7 +3220,7 @@ index 866d7ed86..1ee694edb 100644
  				alg_test_descs[i].alg);
  		}
  	}
-@@ -5838,7 +5538,7 @@ static void testmgr_onetime_init(void)
+@@ -5868,7 +5568,7 @@ static void testmgr_onetime_init(void)
  	alg_check_testvec_configs();
  
  #ifdef CONFIG_CRYPTO_MANAGER_EXTRA_TESTS
@@ -3227,7 +3229,7 @@ index 866d7ed86..1ee694edb 100644
  #endif
  }
  
-@@ -5869,7 +5569,7 @@ static int alg_find_test(const char *alg)
+@@ -5899,7 +5599,7 @@ static int alg_find_test(const char *alg)
  
  static int alg_fips_disabled(const char *driver, const char *alg)
  {
@@ -3236,7 +3238,7 @@ index 866d7ed86..1ee694edb 100644
  
  	return -ECANCELED;
  }
-@@ -5881,11 +5581,6 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5911,11 +5611,6 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  	int rc;
  	static bool done = false;
  
@@ -3248,7 +3250,7 @@ index 866d7ed86..1ee694edb 100644
  	/* Replace DO_ONCE by this. As DO_ONCE generates jump labels entry
  	 * and its data (__once_key) get changed at early boot time at
  	 * jump_label_init() from setup_arch(). We cannot run
-@@ -5937,13 +5632,12 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5967,13 +5662,12 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  
  test_done:
  	if (rc) {
@@ -3266,7 +3268,7 @@ index 866d7ed86..1ee694edb 100644
  			alg, driver, rc);
  		if (fcw_is_warn_true(rc != -ENOENT)) {
  			fcw_warn_printk("alg: self-tests for %s using %s failed (rc=%d)",
-@@ -5952,14 +5646,14 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5982,14 +5676,14 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  		}
  	} else {
  		if (fips_enabled)
@@ -3284,7 +3286,7 @@ index 866d7ed86..1ee694edb 100644
  	if (type & CRYPTO_ALG_FIPS_INTERNAL)
  		return alg_fips_disabled(driver, alg);
 diff --git a/crypto/testmgr.h b/crypto/testmgr.h
-index 2afbdbbf2..c4ace5395 100644
+index 4ca21b56b..bbd7173dc 100644
 --- a/crypto/testmgr.h
 +++ b/crypto/testmgr.h
 @@ -20,32 +20,11 @@

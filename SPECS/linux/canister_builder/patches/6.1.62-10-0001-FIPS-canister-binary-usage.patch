@@ -157,7 +157,7 @@ index 515ca3a4c..851fbc4fb 100644
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
 +obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_asm.o fips_canister_wrapper.o fips_canister.o
-+obj-$(CONFIG_CRYPTO_FIPS) += testmgr_fips_canister_wrapper.o aesni-intel_glue_fips_canister_wrapper.o
++obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_internal.o
 +
 +ifdef CONFIG_CRYPTO_FIPS
 +ifneq ($(CONFIG_CRYPTO_FIPS),y)
