@@ -515,6 +515,7 @@ static int __init fcw_subsys_initcall(void)
 	hmac_module_init();
 	drbg_init();
 	ecdh_init();
+	ghash_mod_init();
 	crypto_cbc_module_init();
 	xts_module_init();
 	crypto_cfb_module_init();
@@ -549,6 +550,7 @@ static void __exit fcw_module_exit(void)
 	ecdh_exit();
 	ecdsa_exit();
 	crypto_gcm_module_exit();
+	ghash_mod_exit();
 	hmac_module_exit();
 	rsa_exit();
 	sha1_generic_mod_fini();

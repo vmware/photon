@@ -195,3 +195,5 @@ extern int __init sha3_generic_mod_init(void);
 extern void __exit sha3_generic_mod_fini(void);
 extern int seqiv_module_init(void);
 extern void seqiv_module_exit(void);
+extern int __init ghash_mod_init(void);
+extern void __exit ghash_mod_exit(void);

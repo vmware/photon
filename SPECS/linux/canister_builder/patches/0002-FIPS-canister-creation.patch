@@ -23,7 +23,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c |  73 ++++++++++---------
- crypto/Makefile                    |  86 +++++++++++++++++++++++
+ crypto/Makefile                    |  87 +++++++++++++++++++++++
  crypto/algboss.c                   |   5 +-
  crypto/ccm.c                       |   7 +-
  crypto/cmac.c                      |   3 +-
@@ -34,13 +34,14 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
  crypto/ecdh.c                      |   5 +-
  crypto/ecdsa.c                     |   3 +-
  crypto/gcm.c                       |  11 +--
+ crypto/ghash-generic.c             |   5 +-
  crypto/hmac.c                      |   3 +-
  crypto/rsa-pkcs1pad.c              |  13 ++--
  crypto/sha3_generic.c              |   5 +-
  crypto/testmgr.c                   | 108 ++++++++++++++++-------------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 18 files changed, 257 insertions(+), 132 deletions(-)
+ 19 files changed, 261 insertions(+), 134 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index a5b0cb3ef..10420b2aa 100644
@@ -322,7 +323,7 @@ index a5b0cb3ef..10420b2aa 100644
  		err = skcipher_walk_done(&walk, 0);
  	}
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 19bf4080d..d3df694c0 100644
+index 851fbc4fb..15d75b62c 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -18,8 +18,10 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -405,7 +406,15 @@ index 19bf4080d..d3df694c0 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -163,11 +183,14 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -154,6 +174,7 @@ CFLAGS_jitterentropy.o = -O0
+ KASAN_SANITIZE_jitterentropy.o = n
+ UBSAN_SANITIZE_jitterentropy.o = n
+ obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
++canister += ghash-generic.o
+ obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
+ obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
+ obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
+@@ -162,11 +183,14 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
@@ -420,7 +429,7 @@ index 19bf4080d..d3df694c0 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -191,6 +214,69 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -190,6 +214,69 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -931,6 +940,36 @@ index 338ee0769..ae81153a3 100644
  	if (!gcm_zeroes)
  		return -ENOMEM;
  
+diff --git a/crypto/ghash-generic.c b/crypto/ghash-generic.c
+index c70d163c1..81ae2cc2c 100644
+--- a/crypto/ghash-generic.c
++++ b/crypto/ghash-generic.c
+@@ -42,6 +42,7 @@
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include "fips_canister_wrapper.h"
+ 
+ static int ghash_init(struct shash_desc *desc)
+ {
+@@ -65,7 +66,7 @@ static int ghash_setkey(struct crypto_shash *tfm,
+ 		gf128mul_free_4k(ctx->gf128);
+ 
+ 	BUILD_BUG_ON(sizeof(k) != GHASH_BLOCK_SIZE);
+-	memcpy(&k, key, GHASH_BLOCK_SIZE); /* avoid violating alignment rules */
++	fcw_memcpy(&k, key, GHASH_BLOCK_SIZE); /* avoid violating alignment rules */
+ 	ctx->gf128 = gf128mul_init_4k_lle(&k);
+ 	memzero_explicit(&k, GHASH_BLOCK_SIZE);
+ 
+@@ -135,7 +136,7 @@ static int ghash_final(struct shash_desc *desc, u8 *dst)
+ 	u8 *buf = dctx->buffer;
+ 
+ 	ghash_flush(ctx, dctx);
+-	memcpy(dst, buf, GHASH_BLOCK_SIZE);
++	fcw_memcpy(dst, buf, GHASH_BLOCK_SIZE);
+ 
+ 	return 0;
+ }
 diff --git a/crypto/hmac.c b/crypto/hmac.c
 index 3610ff0b6..7c289df3b 100644
 --- a/crypto/hmac.c
@@ -1049,7 +1088,7 @@ index 3e4069935..a18bf7046 100644
  
  	return 0;
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index af31ff549..322f40897 100644
+index 38aaa6aaf..832bdbcde 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -37,6 +37,7 @@
@@ -1415,7 +1454,7 @@ index af31ff549..322f40897 100644
  	if (!outbuf_dec) {
  		err = -ENOMEM;
  		goto free_all;
-@@ -5906,13 +5907,22 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5878,13 +5879,22 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  	int i;
  	int j;
  	int rc;
@@ -1482,5 +1521,4 @@ index af5ad51d3..f3e132d6f 100644
  	unsigned char *Vbuf;
  	/* hash: static value 10.1.1.1 1b) hmac / ctr: key */
 -- 
-2.19.0
-
+2.43.0
