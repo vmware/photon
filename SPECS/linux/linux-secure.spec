@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -45,34 +45,44 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=e63f5200a669cc40952fc1cfea499d4bc029999098f8252d2c5ffac08392aefe3d57aa68226079dffa4e0f5ddd26c83f85fcebcb21bfd0935aecc8a02f1714a9
 %endif
 
-%if 0%{?canister_build}
-Source17: check_kernel_struct_in_canister.inc
-Source18: fips_canister_wrapper.c
-Source19: fips_canister_wrapper.h
-Source20: fips_integrity.c
-Source21: fips_integrity.h
-Source22: update_canister_hmac.sh
-Source23: canister_combine.lds
-Source24: gen_canister_relocs.c
-Source25: fips_canister_wrapper_asm.S
-Source26: fips_canister_wrapper_internal.h
-Source27: aesni-intel_glue_fips_canister_wrapper.c
-Source28: testmgr_fips_canister_wrapper.c
+Source17: fips_canister_wrapper.c
+Source18: fips_canister_wrapper.h
+Source19: fips_canister_wrapper_asm.S
+Source20: fips_canister_wrapper_common.h
+# fips_canister_wrapper_internal{.c,.h} is the latest released
+# wrapper files. These files may differ between 2 canister versions.
+# During canister binary update, rename
+# %{fips_canister_version}-fips_canister_wrapper_internal{.c,.h}
+# files to fips_canister_wrapper_internal{.c,.h}
+%if 0%{?fips}
+Source21: fips_canister_wrapper_internal.h
+Source22: fips_canister_wrapper_internal.c
 %endif
 
-Source29: spec_install_post.inc
-Source30: %{name}-dracut.conf
+%if 0%{?canister_build}
+Source23: 5.0.0-6.1.62-10-fips_canister_wrapper_internal.h
+Source24: 5.0.0-6.1.62-10-fips_canister_wrapper_internal.c
+Source25: fips_integrity.c
+Source26: fips_integrity.h
+Source27: update_canister_hmac.sh
+Source28: canister_combine.lds
+Source29: gen_canister_relocs.c
+Source30: check_kernel_struct_in_canister.inc
+%endif
 
-Source31:       photon_sb2020.pem
+Source31: spec_install_post.inc
+Source32: %{name}-dracut.conf
+
+Source33:       photon_sb2020.pem
 
 %ifarch x86_64
 %define jent_major_version 3.4.1
 %define jent_ph_version 4
-Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
+Source34: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
 %define sha512 jitterentropy=37a9380b14d5e56eb3a16b8e46649bc5182813aadb5ec627c31910e4cc622269dfd29359789cb4c13112182f4f8d3c084a6b9c576df06dae9689da44e4735dd2
-Source33: jitterentropy_canister_wrapper.c
-Source34: jitterentropy_canister_wrapper.h
-Source35: jitterentropy_canister_wrapper_asm.S
+Source35: jitterentropy_canister_wrapper.c
+Source36: jitterentropy_canister_wrapper.h
+Source37: jitterentropy_canister_wrapper_asm.S
 %endif
 
 # CVE
@@ -165,7 +175,6 @@ Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 # FIPS canister usage patch
 Patch508: 6.1.62-7-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
-Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
 
 %if 0%{?canister_build}
@@ -186,9 +195,10 @@ Patch10010: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
 Patch10011: 0001-List-canister-objs-in-a-file.patch
 # Patch for RSA FIPS 186-5 compliance
 Patch10012: 0001-crypto-rsa-allow-only-odd-e-and-restrict-value-in-FI.patch
+Patch10013: 0001-Handle-approved-and-non-approved-services.patch
 
 %if 0%{?kat_build}
-Patch10013: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
+Patch10014: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
 %endif
 %endif
 
@@ -262,7 +272,7 @@ The kernel fips-canister
 
 %ifarch x86_64
 # Using autosetup is not feasible
-%setup -q -T -D -b 32 -n linux-%{version}
+%setup -q -T -D -b 34 -n linux-%{version}
 %endif
 
 %autopatch -p1 -m0 -M33
@@ -291,52 +301,54 @@ The kernel fips-canister
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M510
+%autopatch -p1 -m508 -M509
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10000 -M10012
+%autopatch -p1 -m10000 -M10013
 
 %if 0%{?kat_build}
-%autopatch -p1 -m10013 -M10013
+%autopatch -p1 -m10014 -M10014
 %endif
 %endif
 
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
       crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE33} crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
 cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
+cp %{SOURCE36} crypto/jitterentropy-%{jent_major_version}/
+cp %{SOURCE37} crypto/jitterentropy-%{jent_major_version}/
 %endif
 
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
-cp %{SOURCE31} photon_sb2020.pem
-%if 0%{?fips}
-cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
-   ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
-   ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_asm.S \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_internal.h \
-   ../fips-canister-%{fips_canister_version}/aesni-intel_glue_fips_canister_wrapper.c \
-   ../fips-canister-%{fips_canister_version}/testmgr_fips_canister_wrapper.c \
-   crypto/
-%endif
+cp %{SOURCE33} photon_sb2020.pem
 
-%if 0%{?canister_build}
+%if 0%{?fips}
+cp %{SOURCE17} crypto/
 cp %{SOURCE18} crypto/
 cp %{SOURCE19} crypto/
 cp %{SOURCE20} crypto/
 cp %{SOURCE21} crypto/
 cp %{SOURCE22} crypto/
-cp %{SOURCE23} crypto/
-cp %{SOURCE24} crypto/
+cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
+   ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
+   ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
+   crypto/
+%endif
+
+%if 0%{?canister_build}
+cp %{SOURCE17} crypto/
+cp %{SOURCE18} crypto/
+cp %{SOURCE19} crypto/
+cp %{SOURCE20} crypto/
+cp %{SOURCE23} crypto/fips_canister_wrapper_internal.h
+cp %{SOURCE24} crypto/fips_canister_wrapper_internal.c
 cp %{SOURCE25} crypto/
 cp %{SOURCE26} crypto/
 cp %{SOURCE27} crypto/
 cp %{SOURCE28} crypto/
+cp %{SOURCE29} crypto/
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
@@ -368,7 +380,7 @@ make V=1 KBUILD_BUILD_VERSION="1-photon" \
 %endif
 
 %if 0%{?canister_build}
-%include %{SOURCE17}
+%include %{SOURCE30}
 %endif
 
 %install
@@ -378,11 +390,6 @@ pushd crypto/
 mkdir fips-canister-%{lkcm_version}-%{version}-%{release}-secure
 cp fips_canister.o \
    fips_canister-kallsyms \
-   fips_canister_wrapper_asm.S \
-   fips_canister_wrapper.c \
-   fips_canister_wrapper_internal.h \
-   aesni-intel_glue_fips_canister_wrapper.c \
-   testmgr_fips_canister_wrapper.c \
    .fips_canister.o.cmd \
    fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
 tar -cvjf fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
@@ -436,11 +443,11 @@ cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 ln -sf %{_usrsrc}/linux-headers-%{uname_r} %{buildroot}%{_modulesdir}/build
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
-cp -p %{SOURCE30} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+cp -p %{SOURCE32} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %include %{SOURCE2}
 %include %{SOURCE3}
-%include %{SOURCE29}
+%include %{SOURCE31}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -474,6 +481,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-13
+- FIPS: Handle approved and non-approved services
+- Remove fips=2 logic
 * Tue Dec 12 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.62-12
 - Fix CVE-2023-39191
 * Fri Dec 08 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.62-11

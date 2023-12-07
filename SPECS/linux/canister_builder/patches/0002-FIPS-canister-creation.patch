@@ -497,7 +497,7 @@ index 851fbc4fb..15d75b62c 100644
 +	$(call if_changed,update_hmac)
 +
  obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_asm.o fips_canister_wrapper.o fips_canister.o
- obj-$(CONFIG_CRYPTO_FIPS) += testmgr_fips_canister_wrapper.o aesni-intel_glue_fips_canister_wrapper.o
+ obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_internal.o
  
 diff --git a/crypto/algboss.c b/crypto/algboss.c
 index eb5fe84ef..62bb3eb18 100644

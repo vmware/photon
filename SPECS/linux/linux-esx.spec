@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.62
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -81,9 +81,22 @@ Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
 %endif
 
-# CVE
-Source40: CVE-2023-39191.patches
+%if 0%{?fips}
+Source36: fips_canister_wrapper.c
+Source37: fips_canister_wrapper.h
+Source38: fips_canister_wrapper_asm.S
+Source39: fips_canister_wrapper_common.h
+# fips_canister_wrapper_internal{.c,.h} is the latest released
+# wrapper files. These files may differ between 2 canister versions.
+# During canister binary update, rename
+# %{fips_canister_version}-fips_canister_wrapper_internal{.c,.h}
+# files to fips_canister_wrapper_internal{.c,.h}
+Source40: fips_canister_wrapper_internal.h
+Source41: fips_canister_wrapper_internal.c
+%endif
 
+# CVE
+Source42: CVE-2023-39191.patches
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
 Patch1: net-Double-tcp_mem-limits.patch
@@ -184,7 +197,7 @@ Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
 Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
 # Fix CVE-2023-39191
-%include %{SOURCE40}
+%include %{SOURCE42}
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -230,7 +243,6 @@ Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 # FIPS canister usage patch
 Patch508: 6.1.62-7-0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
-Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
 
 %ifarch x86_64
@@ -353,7 +365,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M510
+%autopatch -p1 -m508 -M509
 %endif
 
 %ifarch x86_64
@@ -387,14 +399,15 @@ cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
+cp %{SOURCE36} crypto/
+cp %{SOURCE37} crypto/
+cp %{SOURCE38} crypto/
+cp %{SOURCE39} crypto/
+cp %{SOURCE40} crypto/
+cp %{SOURCE41} crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_asm.S \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_internal.h \
-   ../fips-canister-%{fips_canister_version}/aesni-intel_glue_fips_canister_wrapper.c \
-   ../fips-canister-%{fips_canister_version}/testmgr_fips_canister_wrapper.c \
    crypto/
 # Patch canister wrapper
 patch -p1 < %{SOURCE18}
@@ -557,6 +570,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-12
+- FIPS: Add log messages for approved and non-approved services
+- Remove fips=2 logic
 * Tue Dec 12 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.62-11
 - Fix CVE-2023-39191
 * Fri Dec 08 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.62-10

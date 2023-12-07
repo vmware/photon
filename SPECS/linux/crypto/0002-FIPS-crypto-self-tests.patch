@@ -19,9 +19,9 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
  crypto/Kconfig            |   21 +
  crypto/Makefile           |    1 +
  crypto/crypto_self_test.c |  123 ++
- crypto/testmgr.c          |   91 +-
+ crypto/testmgr.c          |   93 +-
  crypto/testmgr.h          | 2341 ++++++++++++++++++++++++++++++++++++-
- 5 files changed, 2560 insertions(+), 17 deletions(-)
+ 5 files changed, 2562 insertions(+), 17 deletions(-)
  create mode 100644 crypto/crypto_self_test.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
@@ -57,10 +57,10 @@ index d77966767..c849bb918 100644
  	tristate
  	select CRYPTO_CRYPTD
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 303b21c43..d7fcab76d 100644
+index 70f13d445..515ca3a4c 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -49,6 +49,7 @@ sm2_generic-y += sm2signature.asn1.o
+@@ -53,6 +53,7 @@ sm2_generic-y += sm2signature.asn1.o
  sm2_generic-y += sm2.o
  
  obj-$(CONFIG_CRYPTO_SM2) += sm2_generic.o
@@ -198,26 +198,28 @@ index 000000000..eb4ed8bdb
 +}
 +module_init(crypto_self_test_init);
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 56c39a0c9..38aaa6aaf 100644
+index 56c39a0c9..285f5af91 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -3925,6 +3925,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3925,6 +3925,8 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  		       alg, err);
  		goto free_output;
  	}
-+	printk(KERN_INFO "alg: %s: Party A: generate public key test passed.", alg);
++	if (fips_enabled)
++		printk(KERN_INFO "alg: %s: Party A: generate public key test passed.", alg);
  
  	if (vec->genkey) {
  		/* Save party A's public key */
-@@ -3942,6 +3943,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3942,6 +3944,8 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  			err = -EINVAL;
  			goto free_output;
  		}
-+		printk(KERN_INFO "alg: %s: Party A: verify public key test passed.", alg);
++		if (fips_enabled)
++			printk(KERN_INFO "alg: %s: Party A: verify public key test passed.", alg);
  	}
  
  	/* Calculate shared secret key by using counter part (b) public key. */
-@@ -4837,7 +4839,10 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4837,7 +4841,10 @@ static const struct alg_test_desc alg_test_descs[] = {
  		 */
  		.alg = "drbg_nopr_hmac_sha1",
  		.fips_allowed = 1,
@@ -229,7 +231,7 @@ index 56c39a0c9..38aaa6aaf 100644
  	}, {
  		.alg = "drbg_nopr_hmac_sha256",
  		.test = alg_test_drbg,
-@@ -4849,7 +4854,10 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4849,7 +4856,10 @@ static const struct alg_test_desc alg_test_descs[] = {
  		/* covered by drbg_nopr_hmac_sha256 test */
  		.alg = "drbg_nopr_hmac_sha384",
  		.fips_allowed = 1,
@@ -241,7 +243,7 @@ index 56c39a0c9..38aaa6aaf 100644
  	}, {
  		.alg = "drbg_nopr_hmac_sha512",
  		.test = alg_test_drbg,
-@@ -4860,7 +4868,10 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4860,7 +4870,10 @@ static const struct alg_test_desc alg_test_descs[] = {
  	}, {
  		.alg = "drbg_nopr_sha1",
  		.fips_allowed = 1,
@@ -253,7 +255,7 @@ index 56c39a0c9..38aaa6aaf 100644
  	}, {
  		.alg = "drbg_nopr_sha256",
  		.test = alg_test_drbg,
-@@ -4872,11 +4883,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4872,11 +4885,17 @@ static const struct alg_test_desc alg_test_descs[] = {
  		/* covered by drbg_nopr_sha256 test */
  		.alg = "drbg_nopr_sha384",
  		.fips_allowed = 1,
@@ -273,7 +275,7 @@ index 56c39a0c9..38aaa6aaf 100644
  	}, {
  		.alg = "drbg_pr_ctr_aes128",
  		.test = alg_test_drbg,
-@@ -4888,15 +4905,24 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4888,15 +4907,24 @@ static const struct alg_test_desc alg_test_descs[] = {
  		/* covered by drbg_pr_ctr_aes128 test */
  		.alg = "drbg_pr_ctr_aes192",
  		.fips_allowed = 1,
@@ -301,7 +303,7 @@ index 56c39a0c9..38aaa6aaf 100644
  	}, {
  		.alg = "drbg_pr_hmac_sha256",
  		.test = alg_test_drbg,
-@@ -4908,15 +4934,24 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4908,15 +4936,24 @@ static const struct alg_test_desc alg_test_descs[] = {
  		/* covered by drbg_pr_hmac_sha256 test */
  		.alg = "drbg_pr_hmac_sha384",
  		.fips_allowed = 1,
@@ -329,7 +331,7 @@ index 56c39a0c9..38aaa6aaf 100644
  	}, {
  		.alg = "drbg_pr_sha256",
  		.test = alg_test_drbg,
-@@ -4928,11 +4963,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4928,11 +4965,17 @@ static const struct alg_test_desc alg_test_descs[] = {
  		/* covered by drbg_pr_sha256 test */
  		.alg = "drbg_pr_sha384",
  		.fips_allowed = 1,
@@ -349,7 +351,7 @@ index 56c39a0c9..38aaa6aaf 100644
  	}, {
  		.alg = "ecb(aes)",
  		.test = alg_test_skcipher,
-@@ -5101,12 +5142,14 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -5101,12 +5144,14 @@ static const struct alg_test_desc alg_test_descs[] = {
  	}, {
  		.alg = "ecdsa-nist-p256",
  		.test = alg_test_akcipher,
@@ -364,7 +366,7 @@ index 56c39a0c9..38aaa6aaf 100644
  		.suite = {
  			.akcipher = __VECS(ecdsa_nist_p384_tv_template)
  		}
-@@ -5433,10 +5476,20 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -5433,10 +5478,20 @@ static const struct alg_test_desc alg_test_descs[] = {
  		.suite = {
  			.cipher = __VECS(fcrypt_pcbc_tv_template)
  		}
@@ -386,7 +388,7 @@ index 56c39a0c9..38aaa6aaf 100644
  	}, {
  		.alg = "pkcs1pad(rsa,sha256)",
  		.test = alg_test_akcipher,
-@@ -5446,12 +5499,18 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -5446,12 +5501,18 @@ static const struct alg_test_desc alg_test_descs[] = {
  		}
  	}, {
  		.alg = "pkcs1pad(rsa,sha384)",
@@ -408,7 +410,7 @@ index 56c39a0c9..38aaa6aaf 100644
  		.alg = "poly1305",
  		.test = alg_test_hash,
 diff --git a/crypto/testmgr.h b/crypto/testmgr.h
-index d6088e26f..2afbdbbf2 100644
+index d6088e26f..4ca21b56b 100644
 --- a/crypto/testmgr.h
 +++ b/crypto/testmgr.h
 @@ -1228,6 +1228,727 @@ static const struct akcipher_testvec ecrdsa_tv_template[] = {

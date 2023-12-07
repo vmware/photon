@@ -6,11 +6,11 @@ Subject: [PATCH] ecc: Add pairwise consistency test for every generated ECC
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
- crypto/ecc.c | 113 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 113 insertions(+)
+ crypto/ecc.c | 116 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 116 insertions(+)
 
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index fe3792c41..d2dee9323 100644
+index fe3792c41..095d2032c 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -1492,6 +1492,119 @@ int ecc_gen_privkey(unsigned int curve_id, unsigned int ndigits, u64 *privkey)
@@ -133,11 +133,12 @@ index fe3792c41..d2dee9323 100644
  int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
  		     const u64 *private_key, u64 *public_key)
  {
-@@ -1524,6 +1635,8 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
+@@ -1524,6 +1637,9 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
  	ecc_swap_digits(pk->x, public_key, ndigits);
  	ecc_swap_digits(pk->y, &public_key[ndigits], ndigits);
  
-+	ret = ecc_pct(curve_id, ndigits, private_key, public_key);
++	if (fips_enabled)
++		ret = ecc_pct(curve_id, ndigits, private_key, public_key);
 +
  err_free_point:
  	ecc_free_point(pk);
