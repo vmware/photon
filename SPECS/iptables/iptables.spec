@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -84,9 +84,12 @@ for target in %{name} \
     --slave %{_sbindir}/${target}-restore ${target}-restore %{_sbindir}/${target}-nft-restore
 done
 
-alternatives --install %{_sbindir}/%{name} %{name} %{_sbindir}/%{name}-legacy 30000 \
-  --slave %{_sbindir}/%{name}-save %{name}-save %{_sbindir}/%{name}-legacy-save \
-  --slave %{_sbindir}/%{name}-restore %{name}-restore %{_sbindir}/%{name}-legacy-restore
+for target in %{name} \
+              ip6tables; do
+  alternatives --install %{_sbindir}/${target} ${target} %{_sbindir}/${target}-legacy 30000 \
+    --slave %{_sbindir}/${target}-save ${target}-save %{_sbindir}/${target}-legacy-save \
+    --slave %{_sbindir}/${target}-restore ${target}-restore %{_sbindir}/${target}-legacy-restore
+done
 
 /sbin/ldconfig
 %systemd_post %{name}.service
@@ -104,6 +107,7 @@ if [ $1 -eq 0 ]; then
     alternatives --remove ${target} %{_sbindir}/${target}-nft
   done
   alternatives --remove %{name} %{_sbindir}/%{name}-legacy
+  alternatives --remove ip6tables %{_sbindir}/ip6tables-legacy
 fi
 /sbin/ldconfig
 %systemd_postun_with_restart %{name}.service
@@ -138,6 +142,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.9-3
+- Fix alternatives for ip6tables-legacy
 * Fri Oct 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.9-2
 - Remove dead symlink iptables-xml from libdir
 * Thu Jul 27 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.9-1
