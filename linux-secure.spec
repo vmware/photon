@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -468,6 +468,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-12
+- Added self-tests for rsa-pkcs1pad in combination with sha1, sha224, sha384 and sha512
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-11
 - Add ghash to canister
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-10
