@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -23,6 +23,8 @@ Requires:       sed
 Requires:       rpm
 Requires:       tdnf
 Requires:       photon-release
+Requires:       findutils
+Requires:       util-linux
 
 %description
 Photon upgrade scripts for updating the packages and
@@ -50,6 +52,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Wed Dec 06 2023 Dweep Advani <dadvani@vmware.com> 1.0-12
+- Enhance handling of extra removed packages and config backup
 * Mon Oct 16 2023 Dweep Advani <dadvani@vmware.com> 1.0-11
 - Validates repo correctness, timestamp logs and restores config to apache-tomcat-9
 * Tue Oct 10 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.0-10

@@ -1,21 +1,37 @@
 read -d "\n" -a deprecated_packages_arr < "$1/ph4-to-ph5-deprecated-pkgs.txt"
 
-# This hashtable maps package name changes
+# This hashtable maps package name changes between source and target Photon OS
+# Examples:
+#   [p1]=p2
+#   [p3]="p4 p5"     where p3 is replaced by either p4 or p5
+# we do not expect any core packages here
 declare -A replaced_pkgs_map=(
-  [ansible]=ansible               # This & next 4 lines handle ansible removal
-  [ansible-community-general]=ansible-community-general
-  [ansible-devel]=ansible-devel
-  [ansible-posix]=ansible-posix
-  [stig-hardening]=stig-hardening
-  [postgresql]=postgresql14
-  [postgresql-libs]=postgresql14-libs
-  [postgresql-devel]=postgresql14-devel
-  [postgresql10]=postgresql15
-  [postgresql10-libs]=postgresql15-libs
-  [postgresql10-devel]=postgresql15-devel
-  [repmgr]=repmgr14
-  [repmgr10]=repmgr15
-  [apache-tomcat]=apache-tomcat10
+  [apache-tomcat]="apache-tomcat10 apache-tomcat9"
+  [netmgmt]=network-config-manager
+  [openjdk8]="openjdk17 openjdk11"
+  [openjdk8-doc]="openjdk17-doc openjdk11-doc"
+  [openjdk8-src]="openjdk17-src openjdk11-src"
+  [openjdk11]="openjdk17 openjdk11"
+  [openjdk11-doc]="openjdk17-doc openjdk11-doc"
+  [openjdk11-src]="openjdk17-src openjdk11-src"
+  [openjre8]="openjdk17-jre openjdk11-jre openjdk17 openjdk11"
+  [openjdk11-jre]="openjdk17-jre openjdk11-jre openjdk17 openjdk11"
+  [pgaudit13]="pgaudit15 pgaudit14 pgaudit13"
+  [pgaudit14]="pgaudit15 pgaudit14"
+  [pmd]=pmd-ng
+  [postgresql10]="postgresql15 postgresql14 postgresql13"
+  [postgresql10-libs]="postgresql15-libs postgresql14-libs postgresql13-libs"
+  [postgresql10-devel]="postgresql15-devel postgresql14-devel postgresql13-devel"
+  [postgresql13]="postgresql15 postgresql14 postgresql13"
+  [postgresql13-libs]="postgresql15-libs postgresql14-libs postgresql13-libs"
+  [postgresql13-devel]="postgresql15-devel postgresql14-devel postgresql13-devel"
+  [postgresql14]="postgresql15 postgresql14"
+  [postgresql14-libs]="postgresql15-libs postgresql14-libs"
+  [postgresql14-devel]="postgresql15-devel postgresql14-devel"
+  [repmgr]="repmgr15 repmgr14 repmgr13"
+  [repmgr10]="repmgr15 repmgr14 repmgr13"
+  [repmgr13]="repmgr15 repmgr14 repmgr13"
+  [repmgr14]="repmgr15 repmgr14"
 )
 
 # Hash keys are paths in source OS mapping to paths as values in target OS
@@ -26,7 +42,7 @@ declare -A conf_path_map=(
 
 # Residual pkgs to remove post upgrade
 declare -a residual_pkgs_arr=(
-  libdb libmetalink nasm-rdoff zsh-html
+  libdb libmetalink
 )
 
 function relocate_rpmdb() {

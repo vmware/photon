@@ -14,6 +14,7 @@ gmock-static
 gtest-static
 json_spirit
 json_spirit-devel
+kaigen-gothic-cjk
 libcalico
 libnss-ato
 libsoup-doc
@@ -35,17 +36,11 @@ linux-aws-oprofile
 linux-aws-sound
 linux-drivers-intel-sgx
 linux-oprofile
+nasm-rdoff
 ndsend
-netmgmt
 netmgmt-cli-devel
 netmgmt-devel
-openjdk8
-openjdk8-doc
 openjdk8-sample
-openjdk8-src
-openjre8
-openjre8
-pmd
 pmd-cli
 pmd-devel
 pmd-gssapi-unix
@@ -55,6 +50,7 @@ python3-PyPAM
 python3-backports_abc
 python3-m2r
 python3-subprocess32
+python3-portalocker
 salt3
 salt3-api
 salt3-cloud
@@ -72,3 +68,7 @@ ulogd
 ulogd-mysql
 ulogd-pcap
 ulogd-sqlite
+uriparser
+uriparser-devel
+urw-fonts
+zsh-html
