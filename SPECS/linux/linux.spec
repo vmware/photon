@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.62
-Release:        5%{?acvp_build:.acvp}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -799,6 +799,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-6
+- Added self-tests for rsa-pkcs1pad in combination with sha1, sha224, sha384 and sha512
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-5
 - Update canister to 5.0.0-6.1.62-7
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-4
