@@ -1,21 +1,20 @@
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        2.10.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.paramiko.org
 
-Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define         sha512 paramiko=e1fce2ad33ee2942b519458d53497671e66d4777c23877954b135cf9bb8ec43357156147c7e012956ccf6198de800835a617b541a4b0faf54df00f936128514b
+Source0: https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
+%define sha512 paramiko=e1fce2ad33ee2942b519458d53497671e66d4777c23877954b135cf9bb8ec43357156147c7e012956ccf6198de800835a617b541a4b0faf54df00f936128514b
 
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-ecdsa > 0.11
-BuildRequires:  python3-pycryptodome
+BuildRequires:  python3-ecdsa
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
@@ -37,15 +36,12 @@ Requires:       python3-bcrypt
 %{py3_build}
 
 %install
-rm -rf %{buildroot}
 python3 setup.py install -O1 --skip-build \
     --root "%{buildroot}" \
     --single-version-externally-managed
 
 %check
-%if 0%{?with_check}
 LANG=en_US.UTF-8 python3 test.py
-%endif
 
 %clean
 rm -rf %{buildroot}
@@ -55,6 +51,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.10.3-3
+- Remove pycryptodome dependency
 * Tue Aug 01 2023 Prashant S Chauhan <psingchauha@vmware.com> 2.10.3-2
 - Bump up to compile with latest python3-cryptography
 * Tue Apr 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.10.3-1
