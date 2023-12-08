@@ -1,7 +1,7 @@
 Summary:        The GStreamer Bad Plug-ins package contains a set a set of plug-ins that aren't up to par compared to the rest
 Name:           gst-plugins-bad
-Version:        1.21.3
-Release:        4%{?dist}
+Version:        1.22.7
+Release:        1%{?dist}
 License:        LGPLv2
 URL:            http://gstreamer.freedesktop.org/
 Group:          Applications/Multimedia
@@ -9,13 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
-%define sha512  %{name}=706b77adcb9d73cbfa5148eacc5c9efc4ad904d25a23b70b5bd80b0891c94ac5c5400416de1cf9aa86558e606d1928af9bae7acc68491ca7414f63604fa6cf71
-
-Patch0:         CVE-2023-37329.patch
-Patch1:         CVE-2023-40474.patch
-Patch2:         CVE-2023-40475.patch
-Patch3:         CVE-2023-44429.patch
-Patch4:         CVE-2023-44446.patch
+%define sha512  %{name}=0854ae604014278958d4f5d149ddd1a5d3004e2c3b9386d7711312f4993002ae18ddf82d152c78092f23d15dd9b5c83d2798ea5ae80626599df0bf61d05a0b6e
 
 BuildRequires:  meson
 BuildRequires:  cmake
@@ -74,6 +68,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0
 
 %changelog
+* Fri Dec 08 2023 Shivani Agarwal <shivania2@vmware.com> 1.22.7-1
+- Upgrade version and Fix CVE-2023-40475 and CVE-2023-40476
 * Fri Nov 24 2023 Shivani Agarwal <shivania2@vmware.com> 1.21.3-4
 - Fix CVE-2023-44429 and CVE-2023-44446
 * Thu Nov 16 2023 Shivani Agarwal <shivania2@vmware.com> 1.21.3-3
