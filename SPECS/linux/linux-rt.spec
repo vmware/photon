@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.62
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -511,6 +511,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Dec 08 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.62-7
+- Added self-tests for rsa-pkcs1pad in combination with sha1, sha224, sha384 and sha512
 * Mon Nov 27 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.62-6
 - Fix CVE-2023-5633
 * Sat Nov 25 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 6.1.62-5

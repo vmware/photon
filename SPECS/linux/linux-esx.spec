@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.62
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -552,6 +552,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Dec 08 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.62-10
+- Added self-tests for rsa-pkcs1pad in combination with sha1, sha224, sha384 and sha512
 * Tue Dec 5 2023 Albert Guo <aguo@vmware.com> 6.1.62-9
 - Fix race condition in v9fs_dentry_release
 * Mon Nov 27 2023 Kuntal Nayak <nkuntal@vmware.com> 6.1.62-8
