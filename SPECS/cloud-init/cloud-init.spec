@@ -1,7 +1,7 @@
-%define cl_services cloud-config.service cloud-config.target cloud-final.service cloud-init.service cloud-init.target cloud-init-local.service
+%define cl_services cloud-config.service cloud-config.target cloud-final.service %{name}.service %{name}.target %{name}-local.service
 
 Name:           cloud-init
-Version:        23.3.2
+Version:        23.4
 Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a91313fce1e3387dd68113da9eea9bd24be092177f5e1028755d72c28521bb8046ac3ff6a62dffb5dc0d243075720fb9988485f9e2ac7cb790cef61304a70844
+%define sha512 %{name}=e425a957cb38f2be2fcb83693696d0177ad84150f8a55759226d8696344ddd75e33e23a7230c492087784ef96ddd71305bc3462479e2c1a3ed0e704ac0f2d879
 
 Patch0: 0001-azure-ds.patch
 Patch1: 0002-Change-default-policy.patch
@@ -21,6 +21,8 @@ Patch3: 0004-Add-default-DS-list-few-other-changes-to-cloud.cfg.patch
 %if 0%{?with_check}
 Patch4: 0005-test_vmware.py-fix-pkg-test-failure.patch
 %endif
+
+Patch5: 0006-Change-log-level-to-info-to-make-GOSC-regression-tes.patch
 
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
@@ -94,7 +96,7 @@ find systemd -name "cloud*.service*" | \
 %install
 %py3_install -- --init-system=systemd
 
-%{python3} tools/render-cloudcfg --variant photon > \
+%{python3} tools/render-template --variant photon > \
         %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 
 %if "%{_arch}" == "aarch64"
@@ -139,12 +141,14 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
 %{_unitdir}/*
-%{_systemdgeneratordir}/cloud-init-generator
+%{_systemdgeneratordir}/%{name}-generator
 %{_udevrulesdir}/66-azure-ephemeral.rules
-%{_datadir}/bash-completion/completions/cloud-init
-%{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
+%{_datadir}/bash-completion/completions/%{name}
+%{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 
 %changelog
+* Thu Dec 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.4-1
+- Upgrade to v23.4
 * Tue Oct 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.3.2-1
 - Upgrade to v23.3.2
 * Thu Sep 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.3.1-1

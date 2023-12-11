@@ -1,0 +1,28 @@
+From b58c221e87ab23962addeb78786797051f188ddb Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Mon, 11 Dec 2023 16:52:27 +0530
+Subject: [PATCH] Change log level to info to make GOSC regression tests happy
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cloudinit/subp.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/cloudinit/subp.py b/cloudinit/subp.py
+index 85a970f..13099e8 100644
+--- a/cloudinit/subp.py
++++ b/cloudinit/subp.py
+@@ -406,8 +406,8 @@ def runparts(dirp, skip_no_exist=True, exe_prefix=None):
+                 LOG.debug(e)
+                 failed.append(exe_name)
+         else:
+-            LOG.warning(
+-                "skipping %s as its not executable "
++            LOG.info(
++                "WARNING: skipping %s as its not executable "
+                 "or the underlying file system is mounted without "
+                 "executable permissions.",
+                 exe_path,
+-- 
+2.25.1
+

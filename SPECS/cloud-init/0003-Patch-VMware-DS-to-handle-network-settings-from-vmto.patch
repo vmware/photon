@@ -1,46 +1,51 @@
-From 133930012096c20c3baa958b87a843ba76a555bf Mon Sep 17 00:00:00 2001
+From 3a5ccd68c905d805ee89e9d29ae2b58b280b4b68 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Thu, 17 Feb 2022 11:47:22 +0530
-Subject: [PATCH 3/5] Patch VMware DS to handle network settings from vmtoolsd
+Subject: [PATCH] Patch VMware DS to handle network settings from vmtoolsd
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- cloudinit/sources/DataSourceVMware.py | 132 +++++++++++++++++++++++++-
- 1 file changed, 129 insertions(+), 3 deletions(-)
+ cloudinit/sources/DataSourceVMware.py | 142 +++++++++++++++++++++++++-
+ 1 file changed, 139 insertions(+), 3 deletions(-)
 
 diff --git a/cloudinit/sources/DataSourceVMware.py b/cloudinit/sources/DataSourceVMware.py
-index 616a08f..5677631 100644
+index 1591121..f6ce9ab 100644
 --- a/cloudinit/sources/DataSourceVMware.py
 +++ b/cloudinit/sources/DataSourceVMware.py
-@@ -75,6 +75,7 @@ import netifaces
- 
- from cloudinit import atomic_helper, dmi
- from cloudinit import log as logging
-+from cloudinit.net import network_state
- from cloudinit import net, sources, util
+@@ -77,6 +77,7 @@ import netifaces
+ from cloudinit import atomic_helper, dmi, log, net, sources, util
  from cloudinit.sources.helpers.vmware.imc import guestcust_util
  from cloudinit.subp import ProcessExecutionError, subp, which
-@@ -88,6 +89,7 @@ NOVAL = "No value found"
++from cloudinit.net import network_state
+ 
+ PRODUCT_UUID_FILE_PATH = "/sys/class/dmi/id/product_uuid"
+ 
+@@ -87,6 +88,7 @@ NOVAL = "No value found"
  DATA_ACCESS_METHOD_ENVVAR = "envvar"
  DATA_ACCESS_METHOD_GUESTINFO = "guestinfo"
  DATA_ACCESS_METHOD_IMC = "imc"
 +DATA_ACCESS_METHOD_VMTOOLSD = "vmtoolsd-guestinfo"
  
- VMWARE_RPCTOOL = which("vmware-rpctool")
  REDACT = "redact"
-@@ -161,6 +163,110 @@ class DataSourceVMware(sources.DataSource):
+ CLEANUP_GUESTINFO = "cleanup-guestinfo"
+@@ -160,6 +162,115 @@ class DataSourceVMware(sources.DataSource):
              (DATA_ACCESS_METHOD_IMC, self.get_imc_data_fn, True),
          ]
  
++
 +    def get_nwk_cfgs_from_guestinfo(self):
 +        net_cfg = {'version': 2, 'ethernets': {}}
 +        eth_cfg = net_cfg['ethernets']
++
++        self.get_guestinfo_data_fn()
++        def get_val_from_key(key):
++            return guestinfo(key, self.rpctool, self.rpctool_fn)
 +
 +        dev_index = 0
 +        while True:
 +            key_prefix = f"interface.{dev_index}"
 +
-+            iface_name = guestinfo(f"{key_prefix}.name")
++            iface_name = get_val_from_key(f"{key_prefix}.name")
 +            if not iface_name:
 +                break
 +
@@ -48,12 +53,12 @@ index 616a08f..5677631 100644
 +            iface_cfg = eth_cfg[iface_name]
 +            iface_cfg['match'].update({'name': iface_name})
 +
-+            mac = guestinfo(f"{key_prefix}.mac")
++            mac = get_val_from_key(f"{key_prefix}.mac")
 +            if mac:
 +                iface_cfg['match'].update({'macaddress': mac})
 +
 +            key_proto = f"{key_prefix}.dhcp"
-+            dhcp_val = guestinfo(key_proto)
++            dhcp_val = get_val_from_key(key_proto)
 +
 +            dhcp_cfg_map = {
 +                'yes': {'dhcp4': True, 'dhcp6': True},
@@ -62,13 +67,13 @@ index 616a08f..5677631 100644
 +                'no': {'dhcp4': False, 'dhcp6': False},
 +            }
 +
-+            address = guestinfo(f"{key_prefix}.address")
++            address = get_val_from_key(f"{key_prefix}.address")
 +            if dhcp_val and dhcp_val in {'yes', 'ipv4', 'ipv6', 'no'}:
 +                iface_cfg.update(dhcp_cfg_map[dhcp_val])
 +
 +            if (dhcp_val and dhcp_val == 'no') or address:
 +                if address:
-+                    netmask = guestinfo(f"{key_prefix}.netmask")
++                    netmask = get_val_from_key(f"{key_prefix}.netmask")
 +                    if netmask:
 +                        netmask = network_state.mask_to_net_prefix(netmask)
 +                        address = f"{address}/{netmask}"
@@ -81,14 +86,14 @@ index 616a08f..5677631 100644
 +                LOG.warning("No static IP/DHCP given, using DHCP as default")
 +                iface_cfg.update(dhcp_cfg_map['yes'])
 +
-+            dnsserver = guestinfo('dns.servers')
++            dnsserver = get_val_from_key('dns.servers')
 +            if dnsserver:
 +                iface_cfg['nameservers'] = {'addresses': []}
 +                dnsdomain = [x.strip() for x in dnsserver.split(',')]
 +                for d in dnsdomain:
 +                    iface_cfg['nameservers']['addresses'].append(d)
 +
-+            dnsdomain = guestinfo('dns.domains')
++            dnsdomain = get_val_from_key('dns.domains')
 +            if dnsdomain:
 +                if 'nameservers' in iface_cfg:
 +                    iface_cfg['nameservers'].update({'search': []})
@@ -102,7 +107,7 @@ index 616a08f..5677631 100644
 +            default_destination_set = False
 +            while True:
 +                key_route = f"{key_prefix}.route.{route_index}"
-+                route = guestinfo(key_route)
++                route = get_val_from_key(key_route)
 +                if not route:
 +                    break
 +                if 'routes' not in iface_cfg:
@@ -139,14 +144,15 @@ index 616a08f..5677631 100644
      def __str__(self):
          root = sources.DataSource.__str__(self)
          return "%s [seed=%s]" % (root, self.data_access_method)
-@@ -197,6 +303,24 @@ class DataSourceVMware(sources.DataSource):
+@@ -196,6 +307,25 @@ class DataSourceVMware(sources.DataSource):
                  self.data_access_method = data_access_method
                  break
  
 +        if not self.data_access_method:
 +            md = {}
 +            key = 'local-hostname'
-+            hostname = guestinfo('hostname')
++            self.get_guestinfo_data_fn()
++            hostname = guestinfo('hostname', self.rpctool, self.rpctool_fn)
 +            if hostname:
 +                LOG.info('Setting local-hostname: %s', hostname)
 +                md[key] = hostname
@@ -164,7 +170,7 @@ index 616a08f..5677631 100644
          if not self.data_access_method:
              LOG.error("failed to find a valid data access method")
              return False
-@@ -204,7 +328,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -203,7 +333,8 @@ class DataSourceVMware(sources.DataSource):
          LOG.info("using data access method %s", self._get_subplatform())
  
          # Get the metadata.
@@ -174,7 +180,7 @@ index 616a08f..5677631 100644
  
          # Get the user data.
          self.userdata_raw = ud
-@@ -219,8 +344,7 @@ class DataSourceVMware(sources.DataSource):
+@@ -218,8 +349,7 @@ class DataSourceVMware(sources.DataSource):
          # userdata, or vendordata.
          if self.metadata or self.userdata_raw or self.vendordata_raw:
              return True
@@ -184,7 +190,7 @@ index 616a08f..5677631 100644
  
      def setup(self, is_new_instance):
          """setup(is_new_instance)
-@@ -258,6 +382,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -257,6 +387,8 @@ class DataSourceVMware(sources.DataSource):
              get_key_name_fn = get_guestinfo_key_name
          elif self.data_access_method == DATA_ACCESS_METHOD_IMC:
              get_key_name_fn = get_imc_key_name
@@ -193,6 +199,17 @@ index 616a08f..5677631 100644
          else:
              return sources.METADATA_UNKNOWN
  
+@@ -600,6 +732,10 @@ def guestinfo_get_value(key, rpctool, rpctool_fn):
+     """
+     LOG.debug("Getting guestinfo value for key %s", key)
+ 
++    if not rpctool_fn or not rpctool:
++        LOG.error("One of rpctool or rpctool_fn is none")
++        return None
++
+     try:
+         (stdout, stderr) = rpctool_fn(
+             rpctool, "info-get " + get_guestinfo_key_name(key)
 -- 
 2.25.1
 
