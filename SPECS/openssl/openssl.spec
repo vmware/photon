@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.9
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -50,6 +50,9 @@ Requires: glibc
 Requires: libgcc
 Requires: %{name}-libs = %{version}-%{release}
 
+Provides: nxtgn-openssl
+Obsoletes: nxtgn-openssl
+
 %description
 The OpenSSL package contains management tools and libraries relating
 to cryptography. These are useful for providing cryptography
@@ -67,6 +70,8 @@ Conflicts: %{name} < 3.0.8-1
 Summary:    Development Libraries for openssl
 Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
+Provides:   nxtgn-openssl-devel
+Obsoletes:  nxtgn-openssl-devel
 
 %description devel
 Header files for doing development with openssl.
@@ -91,6 +96,8 @@ Summary:    openssl perl scripts
 Group:      Applications/Internet
 Requires:   perl
 Requires:   %{name} = %{version}-%{release}
+Provides:   nxtgn-openssl-perl
+Obsoletes:  nxtgn-openssl-perl
 
 %description perl
 Perl scripts that convert certificates and keys to various formats.
@@ -99,6 +106,8 @@ Perl scripts that convert certificates and keys to various formats.
 Summary:    rehash script for ca certificates
 Group:      Applications/Internet
 Requires:   %{name} = %{version}-%{release}
+Provides:   nxtgn-openssl-c_rehash
+Obsoletes:  nxtgn-openssl-c_rehash
 
 %description c_rehash
 Shell scripts that convert certificates and keys to various formats.
@@ -268,6 +277,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.9-9
+- Add provides & obsoletes for nxtgn-openssl
 * Fri Nov 17 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-8
 - Fix for CVE-2023-5678
 * Mon Oct 16 2023 Srinidhi Rao <srinidhir@vmware.com> 3.0.9-7

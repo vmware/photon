@@ -1,7 +1,7 @@
 Summary:        The package automatically configure source code
 Name:           autoconf
 Version:        2.71
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.gnu.org/software/autoconf
 Group:          System Environment/Base
@@ -17,6 +17,9 @@ Requires:       m4
 BuildRequires:  m4
 
 BuildArch:      noarch
+
+Provides: autoconf213
+Obsoletes: autoconf213
 
 %description
 The package contains programs for producing shell scripts that can
@@ -40,9 +43,11 @@ make -k check %{?_smp_mflags} TESTSUITEFLAGS="1-500"
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/*/*
-%{_datarootdir}/autoconf/*
+%{_datadir}/autoconf/*
 
 %changelog
+* Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.71-3
+- Add provides & obsoletes autoconf213
 * Thu Nov 10 2022 Dweep Advani <dadvani@vmware.com> 2.71-2
 - Rebuild with perl 5.36.0
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2.71-1

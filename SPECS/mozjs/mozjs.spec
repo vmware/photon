@@ -3,7 +3,7 @@
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
 Version:       102.12.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -35,6 +35,7 @@ BuildRequires: nss-devel
 Requires:      icu >= 70.1
 Requires:      python3
 
+Provides:      mozjs60
 Obsoletes:     mozjs60
 Obsoletes:     js
 
@@ -46,6 +47,8 @@ that provide host environments for JavaScript.
 %package       devel
 Summary:       mozjs devel
 Group:         Development/Tools
+Provides:      mozjs60-devel
+Obsoletes:     mozjs60-devel
 Requires:      %{name} = %{version}-%{release}
 
 %description   devel
@@ -134,6 +137,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 102.12.0-4
+- Add provides & obsoletes for mozjs60
 * Wed Sep 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 102.12.0-3
 - Remove autoconf-2.13 dependency
 * Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 102.12.0-2

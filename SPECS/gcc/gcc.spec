@@ -4,7 +4,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -26,6 +26,9 @@ Requires:       gmp
 BuildRequires:  autogen
 BuildRequires:  dejagnu
 %endif
+
+Provides: gcc-10
+Obsoletes: gcc-10
 
 # bison from publish RPMs will be used.
 # We can't use BuildRequires here, as bison might not yet been built.
@@ -239,6 +242,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
+* Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.2.0-2
+- Add provides & obsolets gcc-10
 * Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 12.2.0-1
 - Version update
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.2.0-2
