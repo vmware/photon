@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.5
-Release:        3%{?dist}
+Version:        3.5.6
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0: https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=83ea7823684df34e8b11995ffddcc9937ef2725ab1682de4aa15b2fe8c1a33d8a4277d61d566791ac36cfc082fc62fab93884c7b25ce80e8b67f23f8c8b0bada
+%define sha512  %{name}=e7c371cabf094c417fe7f11f8bd81dc201b9750b3dbe8ea5626288c66d39bee7f5c71133cd0b2465a14284313abf1afd096d09ecbd9d26c61874b2b7a9416d9d
 
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 Patch1: rpm-keyring-API-calls-1.patch
@@ -297,6 +297,9 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Dec 12 2023 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.6-1
+- update to 3.5.6
+- adds --rpmdefine option and fixes
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.5-3
 - Bump version as a part of openssl upgrade
 * Mon Nov 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.5-2
