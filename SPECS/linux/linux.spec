@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.201
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -893,6 +893,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Feb 15 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.201-3
+- Tweak CMVP API demo return status prints
 * Mon Feb 12 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.201-2
 - Update canister version to 5.0.0-6.1.75-2
 * Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 5.10.201-1
