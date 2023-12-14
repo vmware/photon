@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.62
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -58,9 +58,9 @@ Source9: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version
 %if 0%{?fips}
 Source10: check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.62-7%{?dist}-secure
+%define fips_canister_version 5.0.0-6.1.62-13%{?dist}-secure
 Source16: fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=e63f5200a669cc40952fc1cfea499d4bc029999098f8252d2c5ffac08392aefe3d57aa68226079dffa4e0f5ddd26c83f85fcebcb21bfd0935aecc8a02f1714a9
+%define sha512 fips-canister=51f09934bf41186f5e6a6dd06df84ffc9718f5aaea59eaeb887b639c8f0e8f98caac1339ce51139ab8064c1797631024b10fd92f2c65c35d38b88a17857b96b3
 %endif
 
 Source19: spec_install_post.inc
@@ -87,11 +87,6 @@ Source36: fips_canister_wrapper.c
 Source37: fips_canister_wrapper.h
 Source38: fips_canister_wrapper_asm.S
 Source39: fips_canister_wrapper_common.h
-# fips_canister_wrapper_internal{.c,.h} is the latest released
-# wrapper files. These files may differ between 2 canister versions.
-# During canister binary update, rename
-# %{fips_canister_version}-fips_canister_wrapper_internal{.c,.h}
-# files to fips_canister_wrapper_internal{.c,.h}
 Source40: fips_canister_wrapper_internal.h
 Source41: fips_canister_wrapper_internal.c
 %endif
@@ -205,7 +200,7 @@ Patch1005: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch1008: 6.1.62-7-0001-FIPS-canister-binary-usage.patch
+Patch1008: 0001-FIPS-canister-binary-usage.patch
 Patch1009: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %endif
 
@@ -529,6 +524,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-10
+- Update canister to 5.0.0-6.1.62-13
 * Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-9
 - FIPS: Add log messages for approved and non-approved services
 - Remove fips=2 logic
