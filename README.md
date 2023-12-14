@@ -29,11 +29,11 @@ Photon OS binaries are available in a number of formats, including ISO, OVA and 
 
 For download instructions and links to Photon OS binaries, go to the [Download Guide](https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
 
-*Photon OS 4.0 GA is here!*
+*Photon OS 5.0 GA is here!*
 --------------------------
-Photon OS 4.0 provides support for the Real Time flavor of kernel linux-rt, SELinux , installer improvements, PMD role management improvements and critical updates to OSS packages including linux kernel, systemd, and glibc.
+Photon OS 5.0 provides enhancements in Network Configuration Manager, PMD-nextgen, Container Runtime Security, Linux Real-Time Kernel, and TDNF Features. The release introduces the Photon OS Container Builder tool. This release of Photon OS also supports XFS and BTRFS filesystems, Control Group V2, ARM64 on Linux-esx kernel, PostgreSQL. It contains installer improvements and critical updates to the OSS packages including Linux kernel version updates.
 
-For an overview of changes, see [What's New in Photon OS 4.0](https://github.com/vmware/photon/wiki/What-is-New-in-Photon-OS-4.0).
+For an overview of changes, see [What's New in Photon OS 5.0](https://github.com/vmware/photon/wiki/What-is-New-in-Photon-OS-5.0).
 
 ## Getting Started
 Begin your Photon OS journey by browsing our extensive guides on getting started in the [Photon OS Wiki](https://github.com/vmware/photon/wiki).
