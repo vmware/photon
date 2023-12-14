@@ -1,0 +1,20 @@
+From 6982fba24247aeceee214afc67096d015336eb30 Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Tue, 21 Nov 2023 21:46:48 -0300
+Subject: [PATCH 322/322] Linux 5.10.201-rt98 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 21988f9ad53f1..8de253240c161 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt34
++-rt98
+-- 
+2.42.0
+

@@ -1,4 +1,4 @@
-From d108884d7e140faeb620ab9ea8c8cc5b27e9a8bb Mon Sep 17 00:00:00 2001
+From 33b43eb61c69bbc0d40bbf4ad4308b968b7e421d Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Tue, 4 Jul 2023 12:58:03 +0000
 Subject: [PATCH] FIPS canister binary usage
@@ -15,11 +15,11 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
  arch/x86/crypto/Makefile |   4 --
- crypto/Makefile          | 113 +++++++++++++++++++++++++++++++--------
- init/main.c              |   3 ++
+ crypto/Makefile          | 117 +++++++++++++++++++++++++++++++--------
+ init/main.c              |   3 +
  lib/Makefile             |   2 +-
- lib/crypto/Makefile      |   6 ---
- 5 files changed, 94 insertions(+), 34 deletions(-)
+ lib/crypto/Makefile      |   6 --
+ 5 files changed, 97 insertions(+), 35 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
 index 66f25c293..1d39b6e49 100644
@@ -37,7 +37,7 @@ index 66f25c293..1d39b6e49 100644
  sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
  sha1-ssse3-$(CONFIG_AS_SHA1_NI) += sha1_ni_asm.o
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 51e10aecb..d5d3cfb0b 100644
+index 51e10aecb..8173a0a8a 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -18,10 +18,8 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -119,7 +119,7 @@ index 51e10aecb..d5d3cfb0b 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4_generic.o
  obj-$(CONFIG_CRYPTO_AES_TI) += aes_ti.o
-@@ -162,7 +142,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+@@ -162,12 +142,10 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
  obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
@@ -127,7 +127,12 @@ index 51e10aecb..d5d3cfb0b 100644
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
  UBSAN_SANITIZE_jitterentropy.o = n
-@@ -175,13 +154,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+ obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
+-obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
+ obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
+ obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
+ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
+@@ -175,13 +153,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
@@ -141,13 +146,13 @@ index 51e10aecb..d5d3cfb0b 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -200,3 +177,93 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
+@@ -200,3 +176,96 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
  obj-$(CONFIG_CRYPTO_HASH_INFO) += hash_info.o
  crypto_simd-y := simd.o
  obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
 +
 +obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_asm.o fips_canister_wrapper.o fips_canister.o
-+obj-$(CONFIG_CRYPTO_FIPS) += testmgr_fips_canister_wrapper.o aesni-intel_glue_fips_canister_wrapper.o
++obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_internal.o
 +
 +ifdef CONFIG_CRYPTO_FIPS
 +ifneq ($(CONFIG_CRYPTO_FIPS),y)
@@ -234,6 +239,9 @@ index 51e10aecb..d5d3cfb0b 100644
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_SHA3)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_SHA3=y)
 +endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_GHASH)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_GHASH=y)
++endif
 +endif
 diff --git a/init/main.c b/init/main.c
 index 298989b0d..f181dae81 100644
@@ -295,3 +303,4 @@ index 26be2bbe0..9822c55c0 100644
  libchacha20poly1305-y				+= chacha20poly1305-selftest.o
 -- 
 2.19.0
+

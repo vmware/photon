@@ -5,8 +5,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.198
-Release:        7%{?dist}
+Version:        5.10.201
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -17,7 +17,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=3ccfbaff9b45d3239024e6c29e3a33af05460997971d767293e45f22c4db66f99595285d5dac1071f19926f35cdd90d323bd6e57809b57954f4988152ebe6342
+%define sha512 linux=6335fb4f13400f8c61f34de221b4d2807619e2b555ef0884e5ab12e0243be34f6802d46a4df7460b7960e4bf1474a29f8b5ccbb8535120b2b1c9aac1935545d7
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -41,15 +41,20 @@ Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_v
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.62-7.ph5-secure
+%define fips_canister_version 5.0.0-6.1.62-13.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=e63f5200a669cc40952fc1cfea499d4bc029999098f8252d2c5ffac08392aefe3d57aa68226079dffa4e0f5ddd26c83f85fcebcb21bfd0935aecc8a02f1714a9
-
-Source18:       speedup-algos-registration-in-non-fips-mode.patch
+%define sha512 fips-canister=51f09934bf41186f5e6a6dd06df84ffc9718f5aaea59eaeb887b639c8f0e8f98caac1339ce51139ab8064c1797631024b10fd92f2c65c35d38b88a17857b96b3
+Source17:       fips_canister_wrapper.c
+Source18:       fips_canister_wrapper.h
+Source19:       fips_canister_wrapper_asm.S
+Source20:       fips_canister_wrapper_common.h
+Source21:       fips_canister_wrapper_internal.h
+Source22:       fips_canister_wrapper_internal.c
+Source23:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
 
-Source22:       spec_install_post.inc
-Source23:       %{name}-dracut.conf
+Source24:       spec_install_post.inc
+Source25:       %{name}-dracut.conf
 
 %ifarch x86_64
 %define jent_major_version 3.4.1
@@ -234,7 +239,7 @@ Patch506: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
-Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
+Patch510: 0001-crypto-api-allow-algs.patch
 %endif
 
 # SEV:
@@ -438,16 +443,17 @@ make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_asm.S \
-   ../fips-canister-%{fips_canister_version}/fips_canister_wrapper_internal.h \
-   ../fips-canister-%{fips_canister_version}/aesni-intel_glue_fips_canister_wrapper.c \
-   ../fips-canister-%{fips_canister_version}/testmgr_fips_canister_wrapper.c \
    crypto/
+cp %{SOURCE17} crypto/
+cp %{SOURCE18} crypto/
+cp %{SOURCE19} crypto/
+cp %{SOURCE20} crypto/
+cp %{SOURCE21} crypto/
+cp %{SOURCE22} crypto/
 # Patch canister wrapper
-patch -p1 < %{SOURCE18}
+patch -p1 < %{SOURCE23}
 %endif
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
 
@@ -538,7 +544,7 @@ photon_initrd=initrd.img-%{uname_r}
 EOF
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
-cp -p %{SOURCE23} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
+cp -p %{SOURCE25} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
 # cleanup dangling symlinks
 rm -f %{buildroot}%{_modulesdir}/source \
@@ -563,7 +569,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %include %{SOURCE2}
 %include %{SOURCE3}
-%include %{SOURCE22}
+%include %{SOURCE24}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -599,6 +605,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 5.10.201-1
+- Update to version 5.10.201
+- Update canister version to 5.0.0-6.1.62-13
 * Mon Nov 27 2023 Srish Srinivasan <ssrish@vmware.com> 5.10.198-7
 - Remove kat_build and its associated spec changes
 * Sat Nov 25 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.198-6
