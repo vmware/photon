@@ -997,17 +997,19 @@ class CheckTools:
 
     def check_photon_installer():
         url = "https://github.com/vmware/photon-os-installer.git"
-        cmd = f"pip3 install git+{url}"
+        tag = "v2.4"
+        cmd = f"pip3 install git+{url}@{tag}"
 
         def install_from_url(cmd):
+            print(f"Installing 'photon_installer' with '{cmd}'")
             if runCommandInShell(cmd):
                 raise Exception(f"Failed to run: {cmd}")
-            print(f"{cmd} - Success")
+            print("Success")
 
         try:
             import photon_installer
-        except Exception as e:
-            print(f"Warning: {e}")
+        except ModuleNotFoundError as e:
+            print(f"Module 'photon_installer' not found: {e}")
             install_from_url(cmd)
             return
 
@@ -1019,7 +1021,7 @@ class CheckTools:
         if hasattr(photon_installer, "__version__"):
             local_hash = photon_installer.__version__.split("+")[1]
 
-            remote_hash = f"git ls-remote {url} HEAD | cut -f1"
+            remote_hash = f"git ls-remote {url} {tag} | cut -f1"
             remote_hash, _, _ = runBashCmd(remote_hash, capture=True)
             if not remote_hash.startswith(local_hash):
                 print("Upstream photon-installer is updated, updating local copy ...")
