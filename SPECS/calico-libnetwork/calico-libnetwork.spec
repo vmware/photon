@@ -1,15 +1,15 @@
 Summary:       Docker libnetwork plugin for Calico
 Name:          calico-libnetwork
 Version:       1.1.3
-Release:       14%{?dist}
+Release:       15%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/projectcalico/libnetwork-plugin
 Source0:       https://github.com/projectcalico/libnetwork-plugin/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 calico-libnetwork=40b7b0962e58fced7a02fa743b0f92aae2c6d1e43046cd0d59153f4022ad22ca0b29ac3a9cbc6e67218a35dce3306a1a88194d22248a2f589ee385d0c1ce3852
-Source1:       glide-cache-for-calico-libnetwork-%{version}.tar.xz
-%define sha512 glide-cache-for-%{name}=6e852994910b3ab31dd453f641b939a10a9bdee4f7122445322a4ce4e6673d4a959b9e6a8fad050abe644e993d510a09e26975b47349521a4247f6d2f3dc274a
+Source1:       glide-cache-for-calico-libnetwork-%{version}-15.tar.xz
+%define sha512 glide-cache-for-%{name}=9e8bc36c77f939e4c8a87e3461e0de8e9fe6b59235109f627b743b9c7317a1cf79d1b7fd41f6c89b8edb116d94912e658b3689a95bd14149487350f91bd919c4
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: glide
@@ -50,6 +50,8 @@ install -vpm 0755 -t %{buildroot}%{_datadir}/calico/docker/ dist/libnetwork-plug
 %{_datadir}/calico/docker/libnetwork-plugin
 
 %changelog
+* Fri Dec 15 2023 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1.3-15
+- Use latest glide cache
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.3-14
 - Bump up version to compile with new go
 * Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.3-13
