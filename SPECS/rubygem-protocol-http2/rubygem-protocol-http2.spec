@@ -2,9 +2,9 @@
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name protocol-http2
 
-Name: rubygem-protocol-http2
+Name:           rubygem-protocol-http2
 Version:        0.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A low level implementation of the HTTP/2 protocol.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -13,10 +13,14 @@ License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512    protocol-http2=4ab78fdf626939a1e95b2c231da50f449ab53889204cd5bfbf0316b8ed28eb0c8046c5805c23962594abe0959d5f743ee60efd42e093ff822eaf81e74f62bb10
+
 BuildRequires:  ruby
 
 Requires: rubygem-protocol-hpack >= 1.4.0, rubygem-protocol-hpack < 2.0.0
 Requires: rubygem-protocol-http >= 0.2.0, rubygem-protocol-http < 1.0.0
+Requires: rubygem-async-io
+Requires: rubygem-io-event
+Requires: ruby
 
 BuildArch: noarch
 
@@ -36,6 +40,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 0.14.2-2
+-   Fix requires
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 0.14.2-1
 -   Automatic Version Bump
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.14.1-1

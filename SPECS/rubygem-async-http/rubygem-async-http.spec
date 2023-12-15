@@ -4,7 +4,7 @@
 
 Name: rubygem-async-http
 Version:        0.59.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A HTTP client and server library.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -20,6 +20,10 @@ Requires: rubygem-async-io >= 1.25.0, rubygem-async-io < 2.0.4
 Requires: rubygem-protocol-http >= 0.20.1
 Requires: rubygem-protocol-http1 >= 0.13.1
 Requires: rubygem-protocol-http2 >= 0.14.1
+Requires: rubygem-fiber-local
+Requires: rubygem-traces
+Requires: rubygem-async-pool
+Requires: ruby
 
 BuildArch: noarch
 
@@ -41,6 +45,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 0.59.2-2
+-   Fix requires
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 0.59.2-1
 -   Automatic Version Bump
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.52.5-1

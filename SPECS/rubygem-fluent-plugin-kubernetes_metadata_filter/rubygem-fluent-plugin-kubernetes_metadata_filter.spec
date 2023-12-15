@@ -3,7 +3,7 @@
 %global gem_name fluent-plugin-kubernetes_metadata_filter
 
 Name:           rubygem-fluent-plugin-kubernetes_metadata_filter
-Version:        3.1.2
+Version:        3.4.0
 Release:        1%{?dist}
 Summary:        Fluentd Filter plugin to add Kubernetes metadata.
 Group:          Development/Libraries
@@ -12,12 +12,19 @@ Distribution:   Photon
 License:        Apache-2.0
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512  fluent-plugin-kubernetes_metadata_filter=57c9fb1dc0d970550c5b16afcaf1d54d82a1d8666801818d36f6437a01025722e9112b35614c56fe8615561a5ff594708d16a41c8559e110bc587f6ca4781b96
-BuildRequires:  ruby >= 2.1
+%define sha512 %{gem_name}=6383590639aab9a81aa87a191dcd5b7058e360dcf0ee7744e1a91b36e1c8b92f82a2f7de731883e208bb8e49d2dcc45285a714341e3fc226f1dfe4a8916c8bbf
+
+BuildRequires:  ruby
 BuildRequires:  findutils
+
 Requires:       rubygem-fluentd >= 0.14.0, rubygem-fluentd < 2.0.0
 Requires:       rubygem-kubeclient < 5.0
+Requires:       rubygem-http-accept >= 1.7.0, rubygem-http-accept < 2.0
+Requires:       rubygem-http >= 3.0, rubygem-http < 5.0
 Requires:       rubygem-lru_redux
+Requires:       rubygem-jsonpath
+Requires:       ruby
+
 BuildArch:      noarch
 
 %description
@@ -38,13 +45,15 @@ proper log isolation.
 
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
-[ -d %{buildroot}/usr/lib ] && find %{buildroot}/usr/lib -type f -perm /022 -exec chmod go-w {} \;
+[ -d %{buildroot}%{_libdir} ] && find %{buildroot}%{_libdir} -type f -perm /022 -exec chmod go-w {} \;
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Fri Dec 15 2023 Shivani Agrwal <shivania2@vmware.com> 3.4.0-1
+-   Upgrade to v3.4.0
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.1.2-1
 -   Automatic Version Bump
 *   Thu Oct 14 2021 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.5.2-3
