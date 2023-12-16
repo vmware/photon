@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        5.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Source0:        http://www.squid-cache.org/Versions/v4/%{name}-%{version}.tar.xz
@@ -21,6 +21,9 @@ Patch1:         CVE-2023-46847.patch
 Patch2:         CVE-2023-46846.patch
 Patch3:         CVE-2023-46728-workaround.patch
 Patch4:         CVE-2023-46848.patch
+Patch5:         CVE-2023-49285.patch
+Patch6:         backport-CVE-2023-49286.patch
+Patch7:         CVE-2023-49286.patch
 
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  autoconf
@@ -228,6 +231,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Sat Dec 16 2023 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.9-3
+- Patched CVE-2023-49285, CVE-2023-49286
 * Fri Dec 08 2023 Srish Srinivasan <ssrish@vmware.com> 5.9-2
 - Patched CVE-2023-46848
 * Wed Nov 22 2023 Srish Srinivasan <ssrish@vmware.com> 5.9-1
