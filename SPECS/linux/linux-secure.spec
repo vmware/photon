@@ -10,7 +10,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.201
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -31,9 +31,9 @@ Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 %if 0%{?kat_build} == 1
-%define fips_canister_version 5.0.0-6.1.62-8.kat.ph5-secure
+%define fips_canister_version 5.0.0-6.1.75-3.kat.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=7c1dd0d82db0773613c8e227f7a3d27c8ae92638694e30682e4705ee1ec1aac0d37d8d1a289e2d43a98ac71a8503106dbf9cf983f01071892c40bc52de5fac96
+%define sha512 fips-canister=316ef345fc3bb1c8aa8d26cdb6eee382592c7ef171a8b25267c1d50c31fecd9f88e0dfbbe8c68a792b21a26921a8e69e5a07d92abbb9aa5276982e12a6008cc2
 %endif
 %if 0%{?kat_build} == 0
 %define fips_canister_version 5.0.0-6.1.75-2.ph5-secure
@@ -455,6 +455,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 12 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.201-3
+- canister version update for broken-kat kernel
 * Mon Feb 12 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.201-2
 - Update canister version to 5.0.0-6.1.75-2
 * Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 5.10.201-1
