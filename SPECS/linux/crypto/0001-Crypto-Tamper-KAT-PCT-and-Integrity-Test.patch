@@ -200,7 +200,7 @@ diff --git a/crypto/ecc.c b/crypto/ecc.c
 index 6805210a8..5ab88d2ac 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
-@@ -1645,6 +1645,17 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
+@@ -1646,6 +1646,17 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
  	return ret;
  }
  
@@ -224,7 +224,7 @@ index 1ee694edb..a5a18a456 100644
 +++ b/crypto/testmgr.c
 @@ -39,11 +39,75 @@
  #include "fips_canister_wrapper.h"
- #include "fips_canister_wrapper_internal.h"
+ #include "fips_canister_wrapper_common.h"
  
 +#include "testmgr.h"
 +
@@ -298,7 +298,7 @@ index 1ee694edb..a5a18a456 100644
  #ifdef CONFIG_CRYPTO_MANAGER_DISABLE_TESTS
  
  /* a perfect nop */
-@@ -5622,6 +5686,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5646,6 +5710,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  			goto non_fips_alg;
  	}
  
