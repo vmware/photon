@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.70
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -479,6 +479,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jan 10 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.70-2
+- Fix hunk failure in Broken Test patch
 * Mon Jan 01 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.70-1
 - Update to version 6.1.70
 * Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-14
