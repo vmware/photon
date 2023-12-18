@@ -1,0 +1,95 @@
+From a549c0dff2a1a3b11b40abc969358d8cb367871d Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Fri, 4 Feb 2022 16:01:17 +0106
+Subject: [PATCH 22/62] printk: avoid preempt_disable() for PREEMPT_RT
+
+During non-normal operation, printk() calls will attempt to
+write the messages directly to the consoles. This involves
+using console_trylock() to acquire @console_sem.
+
+Preemption is disabled while directly printing to the consoles
+in order to ensure that the printing task is not scheduled away
+while holding @console_sem, thus blocking all other printers
+and causing delays in printing.
+
+Commit fd5f7cde1b85 ("printk: Never set console_may_schedule in
+console_trylock()") specifically reverted a previous attempt at
+allowing preemption while printing.
+
+However, on PREEMPT_RT systems, disabling preemption while
+printing is not allowed because console drivers typically
+acquire a spin lock (which under PREEMPT_RT is an rtmutex).
+Since direct printing is only used during early boot and
+non-panic dumps, the risks of delayed print output for these
+scenarios will be accepted under PREEMPT_RT.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 73b1727087c7..3d0ff49cca29 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -1981,6 +1981,7 @@ static int console_lock_spinning_disable_and_check(void)
+ 	return 1;
+ }
+ 
++#if !IS_ENABLED(CONFIG_PREEMPT_RT)
+ /**
+  * console_trylock_spinning - try to get console_lock by busy waiting
+  *
+@@ -2054,6 +2055,7 @@ static int console_trylock_spinning(void)
+ 
+ 	return 1;
+ }
++#endif /* CONFIG_PREEMPT_RT */
+ 
+ /*
+  * Call the specified console driver, asking it to write out the specified
+@@ -2393,6 +2395,18 @@ asmlinkage int vprintk_emit(int facility, int level,
+ 
+ 	/* If called from the scheduler, we can not call up(). */
+ 	if (!in_sched && allow_direct_printing()) {
++#if IS_ENABLED(CONFIG_PREEMPT_RT)
++		/*
++		 * Use the non-spinning trylock since PREEMPT_RT does not
++		 * support console lock handovers.
++		 *
++		 * Direct printing will most likely involve taking spinlocks.
++		 * For PREEMPT_RT, this is only allowed if in a preemptible
++		 * context.
++		 */
++		if (preemptible() && console_trylock())
++			console_unlock();
++#else
+ 		/*
+ 		 * The caller may be holding system-critical or
+ 		 * timing-sensitive locks. Disable preemption during direct
+@@ -2410,6 +2424,7 @@ asmlinkage int vprintk_emit(int facility, int level,
+ 		if (console_trylock_spinning())
+ 			console_unlock();
+ 		preempt_enable();
++#endif
+ 	}
+ 
+ 	if (in_sched)
+@@ -3119,8 +3134,12 @@ static bool console_emit_next_record_transferable(struct console *con, char *tex
+ 	/*
+ 	 * Handovers are only supported if threaded printers are atomically
+ 	 * blocked. The context taking over the console_lock may be atomic.
++	 *
++	 * PREEMPT_RT also does not support handovers because the spinning
++	 * waiter can cause large latencies.
+ 	 */
+-	if (!console_kthreads_atomically_blocked()) {
++	if (!console_kthreads_atomically_blocked() ||
++	    IS_ENABLED(CONFIG_PREEMPT_RT)) {
+ 		*handover = false;
+ 		handover = NULL;
+ 	}
+-- 
+2.43.0
+

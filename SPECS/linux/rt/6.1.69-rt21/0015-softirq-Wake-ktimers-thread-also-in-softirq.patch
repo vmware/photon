@@ -1,0 +1,49 @@
+From ca98adaa69af0a5f3bb28cccb6543ee3e0c4a23f Mon Sep 17 00:00:00 2001
+From: Junxiao Chang <junxiao.chang@intel.com>
+Date: Mon, 20 Feb 2023 09:12:20 +0100
+Subject: [PATCH 15/62] softirq: Wake ktimers thread also in softirq.
+
+If the hrtimer is raised while a softirq is processed then it does not
+wake the corresponding ktimers thread. This is due to the optimisation in the
+irq-exit path which is also used to wake the ktimers thread. For the other
+softirqs, this is okay because the additional softirq bits will be handled by
+the currently running softirq handler.
+The timer related softirq bits are added to a different variable and rely on
+the ktimers thread.
+As a consuequence the wake up of ktimersd is delayed until the next timer tick.
+
+Always wake the ktimers thread if a timer related softirq is pending.
+
+Reported-by: Peh, Hock Zhang <hock.zhang.peh@intel.com>
+Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/softirq.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index ab1fe34326ba..82f3e68fbe22 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -664,13 +664,12 @@ static inline void __irq_exit_rcu(void)
+ #endif
+ 	account_hardirq_exit(current);
+ 	preempt_count_sub(HARDIRQ_OFFSET);
+-	if (!in_interrupt()) {
+-		if (local_softirq_pending())
+-			invoke_softirq();
++	if (!in_interrupt() && local_softirq_pending())
++		invoke_softirq();
+ 
+-		if (IS_ENABLED(CONFIG_PREEMPT_RT) && local_pending_timers())
+-			wake_timersd();
+-	}
++	if (IS_ENABLED(CONFIG_PREEMPT_RT) && local_pending_timers() &&
++	    !(in_nmi() | in_hardirq()))
++		wake_timersd();
+ 
+ 	tick_irq_exit();
+ }
+-- 
+2.43.0
+

@@ -1,0 +1,41 @@
+From b908a7b47d95003c498f2f575285f528148602d6 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 25 Aug 2022 16:43:46 +0200
+Subject: [PATCH 08/62] u64_stat: Remove the obsolete fetch_irq() variants.
+
+Now that the 32bit UP oddity is gone and 32bit uses always a sequence
+count, there is no need for the fetch_irq() variants anymore.
+
+Delete the obsolete interfaces.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+---
+ include/linux/u64_stats_sync.h | 12 ------------
+ 1 file changed, 12 deletions(-)
+
+diff --git a/include/linux/u64_stats_sync.h b/include/linux/u64_stats_sync.h
+index 46040d66334a..ffe48e69b3f3 100644
+--- a/include/linux/u64_stats_sync.h
++++ b/include/linux/u64_stats_sync.h
+@@ -213,16 +213,4 @@ static inline bool u64_stats_fetch_retry(const struct u64_stats_sync *syncp,
+ 	return __u64_stats_fetch_retry(syncp, start);
+ }
+ 
+-/* Obsolete interfaces */
+-static inline unsigned int u64_stats_fetch_begin_irq(const struct u64_stats_sync *syncp)
+-{
+-	return u64_stats_fetch_begin(syncp);
+-}
+-
+-static inline bool u64_stats_fetch_retry_irq(const struct u64_stats_sync *syncp,
+-					     unsigned int start)
+-{
+-	return u64_stats_fetch_retry(syncp, start);
+-}
+-
+ #endif /* _LINUX_U64_STATS_SYNC_H */
+-- 
+2.43.0
+

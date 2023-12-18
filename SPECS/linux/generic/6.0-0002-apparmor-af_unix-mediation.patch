@@ -1,4 +1,4 @@
-From ea750d2ff117a8c43af79cfeb7830d4d813a534c Mon Sep 17 00:00:00 2001
+From dfb1f70c4584ce16d060a8ee70c12879500d14c4 Mon Sep 17 00:00:00 2001
 From: John Johansen <john.johansen@canonical.com>
 Date: Thu, 26 Mar 2020 02:25:34 -0700
 Subject: [PATCH 2/3] apparmor: af_unix mediation
@@ -8,6 +8,7 @@ of tree patch
 
 Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+
 ---
  security/apparmor/Makefile          |   3 +-
  security/apparmor/af_unix.c         | 652 ++++++++++++++++++++++++++++
@@ -25,7 +26,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  create mode 100644 security/apparmor/include/af_unix.h
 
 diff --git a/security/apparmor/Makefile b/security/apparmor/Makefile
-index ff23fcfefe19..fad407f6f62c 100644
+index 065f4e346553..5f8a0968ccdc 100644
 --- a/security/apparmor/Makefile
 +++ b/security/apparmor/Makefile
 @@ -5,7 +5,8 @@ obj-$(CONFIG_SECURITY_APPARMOR) += apparmor.o
@@ -37,7 +38,7 @@ index ff23fcfefe19..fad407f6f62c 100644
 +              af_unix.o
  apparmor-$(CONFIG_SECURITY_APPARMOR_HASH) += crypto.o
  
- clean-files := capability_names.h rlim_names.h net_names.h
+ obj-$(CONFIG_SECURITY_APPARMOR_KUNIT_TEST) += apparmor_policy_unpack_test.o
 diff --git a/security/apparmor/af_unix.c b/security/apparmor/af_unix.c
 new file mode 100644
 index 000000000000..54b3796f63d0
@@ -697,10 +698,10 @@ index 000000000000..54b3796f63d0
 +	return error;
 +}
 diff --git a/security/apparmor/apparmorfs.c b/security/apparmor/apparmorfs.c
-index 47af420c1187..d841890a93ff 100644
+index 83bec6fe6046..15940864d8c7 100644
 --- a/security/apparmor/apparmorfs.c
 +++ b/security/apparmor/apparmorfs.c
-@@ -2358,6 +2358,11 @@ static struct aa_sfs_entry aa_sfs_entry_ns[] = {
+@@ -2360,6 +2360,11 @@ static struct aa_sfs_entry aa_sfs_entry_ns[] = {
  	{ }
  };
  
@@ -712,7 +713,7 @@ index 47af420c1187..d841890a93ff 100644
  static struct aa_sfs_entry aa_sfs_entry_query_label[] = {
  	AA_SFS_FILE_STRING("perms", "allow deny audit quiet"),
  	AA_SFS_FILE_BOOLEAN("data",		1),
-@@ -2382,6 +2387,7 @@ static struct aa_sfs_entry aa_sfs_entry_features[] = {
+@@ -2384,6 +2389,7 @@ static struct aa_sfs_entry aa_sfs_entry_features[] = {
  	AA_SFS_DIR("caps",			aa_sfs_entry_caps),
  	AA_SFS_DIR("ptrace",			aa_sfs_entry_ptrace),
  	AA_SFS_DIR("signal",			aa_sfs_entry_signal),
@@ -918,7 +919,7 @@ index 668b5b5c84f2..4f93f82c5881 100644
  
  /**
 diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-index e29cade7b662..1a2faede007e 100644
+index 1e2f40db15c5..bcb2cb2b30d0 100644
 --- a/security/apparmor/lsm.c
 +++ b/security/apparmor/lsm.c
 @@ -23,8 +23,10 @@
@@ -1169,10 +1170,10 @@ index cfd2f2a8c651..50e17fb0a0ff 100644
  
  #ifdef CONFIG_NETWORK_SECMARK
 diff --git a/security/apparmor/policy_unpack.c b/security/apparmor/policy_unpack.c
-index 6b4815152924..b9d188301765 100644
+index e4224f75633e..c9df10b05907 100644
 --- a/security/apparmor/policy_unpack.c
 +++ b/security/apparmor/policy_unpack.c
-@@ -325,11 +325,11 @@ static bool unpack_u16(struct aa_ext *e, u16 *data, const char *name)
+@@ -293,11 +293,11 @@ static bool unpack_u16(struct aa_ext *e, u16 *data, const char *name)
  		if (data)
  			*data = le16_to_cpu(get_unaligned((__le16 *) e->pos));
  		e->pos += sizeof(u16);
@@ -1185,7 +1186,7 @@ index 6b4815152924..b9d188301765 100644
 +	return false;
  }
  
- static bool unpack_u32(struct aa_ext *e, u32 *data, const char *name)
+ VISIBLE_IF_KUNIT bool aa_unpack_u32(struct aa_ext *e, u32 *data, const char *name)
 -- 
-2.25.1
+2.39.0
 

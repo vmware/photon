@@ -1,4 +1,4 @@
-From d431723d6caf568f46ed7f4ec5e507682b3fb6f4 Mon Sep 17 00:00:00 2001
+From c52456dc299734876f40f9200a39a180ca5134ff Mon Sep 17 00:00:00 2001
 From: John Johansen <john.johansen@canonical.com>
 Date: Fri, 4 Oct 2019 11:31:30 +0530
 Subject: [PATCH 1/3] apparmor: patch to provide compatibility with v2.x net
@@ -21,14 +21,14 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  security/apparmor/include/policy.h   |  2 +
  security/apparmor/net.c              | 31 +++++++++++----
  security/apparmor/policy.c           |  1 +
- security/apparmor/policy_unpack.c    | 58 +++++++++++++++++++++++++++-
- 7 files changed, 96 insertions(+), 10 deletions(-)
+ security/apparmor/policy_unpack.c    | 57 +++++++++++++++++++++++++++-
+ 7 files changed, 95 insertions(+), 10 deletions(-)
 
 diff --git a/security/apparmor/apparmorfs.c b/security/apparmor/apparmorfs.c
-index d066ccc219e2..47af420c1187 100644
+index 7160e7aa58b9..83bec6fe6046 100644
 --- a/security/apparmor/apparmorfs.c
 +++ b/security/apparmor/apparmorfs.c
-@@ -2374,6 +2374,7 @@ static struct aa_sfs_entry aa_sfs_entry_features[] = {
+@@ -2376,6 +2376,7 @@ static struct aa_sfs_entry aa_sfs_entry_features[] = {
  	AA_SFS_DIR("domain",			aa_sfs_entry_domain),
  	AA_SFS_DIR("file",			aa_sfs_entry_file),
  	AA_SFS_DIR("network_v8",		aa_sfs_entry_network),
@@ -149,10 +149,10 @@ index 7efe4d17273d..cfd2f2a8c651 100644
  
  	return aa_check_perms(profile, &perms, request, sa, audit_net_cb);
 diff --git a/security/apparmor/policy.c b/security/apparmor/policy.c
-index 499c0209b6a4..c95af17cc9b7 100644
+index c7b84fb56841..2a9cde407f67 100644
 --- a/security/apparmor/policy.c
 +++ b/security/apparmor/policy.c
-@@ -222,6 +222,7 @@ void aa_free_profile(struct aa_profile *profile)
+@@ -223,6 +223,7 @@ void aa_free_profile(struct aa_profile *profile)
  	aa_free_file_rules(&profile->file);
  	aa_free_cap_rules(&profile->caps);
  	aa_free_rlimit_rules(&profile->rlimits);
@@ -161,10 +161,10 @@ index 499c0209b6a4..c95af17cc9b7 100644
  	for (i = 0; i < profile->xattr_count; i++)
  		kfree_sensitive(profile->xattrs[i]);
 diff --git a/security/apparmor/policy_unpack.c b/security/apparmor/policy_unpack.c
-index 55d31bac4f35..6b4815152924 100644
+index 7012fd82f1bb..e4224f75633e 100644
 --- a/security/apparmor/policy_unpack.c
 +++ b/security/apparmor/policy_unpack.c
-@@ -34,7 +34,7 @@
+@@ -35,7 +35,7 @@
  
  #define v5	5	/* base version */
  #define v6	6	/* per entry policydb mediation check */
@@ -172,8 +172,8 @@ index 55d31bac4f35..6b4815152924 100644
 +#define v7	7	/* v2 compat networking */
  #define v8	8	/* full network masking */
  
- /*
-@@ -315,6 +315,23 @@ static bool unpack_u8(struct aa_ext *e, u8 *data, const char *name)
+ /* audit callback for unpack fields */
+@@ -283,6 +283,23 @@ static bool unpack_u8(struct aa_ext *e, u8 *data, const char *name)
  	return false;
  }
  
@@ -181,8 +181,8 @@ index 55d31bac4f35..6b4815152924 100644
 +{
 +	void *pos = e->pos;
 +
-+	if (unpack_nameX(e, AA_U16, name)) {
-+		if (!inbounds(e, sizeof(u16)))
++	if (aa_unpack_nameX(e, AA_U16, name)) {
++		if (!aa_inbounds(e, sizeof(u16)))
 +			goto fail;
 +		if (data)
 +			*data = le16_to_cpu(get_unaligned((__le16 *) e->pos));
@@ -194,23 +194,23 @@ index 55d31bac4f35..6b4815152924 100644
 +	return 0;
 +}
 +
- static bool unpack_u32(struct aa_ext *e, u32 *data, const char *name)
+ VISIBLE_IF_KUNIT bool aa_unpack_u32(struct aa_ext *e, u32 *data, const char *name)
  {
  	void *pos = e->pos;
-@@ -680,7 +697,7 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
+@@ -654,7 +671,7 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
  	struct aa_profile *profile = NULL;
  	const char *tmpname, *tmpns = NULL, *name = NULL;
  	const char *info = "failed to unpack profile";
 -	size_t ns_len;
 +	size_t size = 0, ns_len;
  	struct rhashtable_params params = { 0 };
- 	char *key = NULL;
+ 	char *key = NULL, *disconnected = NULL;
  	struct aa_data *data;
-@@ -833,6 +850,43 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
+@@ -808,6 +825,42 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
  		goto fail;
  	}
  
-+	size = unpack_array(e, "net_allowed_af");
++	size = aa_unpack_array(e, "net_allowed_af");
 +	if (size || VERSION_LT(e->version, v8)) {
 +		profile->net_compat = kzalloc(sizeof(struct aa_net_compat), GFP_KERNEL);
 +		if (!profile->net_compat) {
@@ -237,7 +237,7 @@ index 55d31bac4f35..6b4815152924 100644
 +			if (!unpack_u16(e, &profile->net_compat->quiet[i], NULL))
 +				goto fail;
 +		}
-+		if (size && !unpack_nameX(e, AA_ARRAYEND, NULL))
++		if (size && !aa_unpack_nameX(e, AA_ARRAYEND, NULL))
 +			goto fail;
 +		if (VERSION_LT(e->version, v7)) {
 +			/* pre v7 policy always allowed these */
@@ -246,10 +246,9 @@ index 55d31bac4f35..6b4815152924 100644
 +		}
 +	}
 +
-+
- 	if (unpack_nameX(e, AA_STRUCT, "policydb")) {
+ 	if (aa_unpack_nameX(e, AA_STRUCT, "policydb")) {
  		/* generic policy dfa - optional and may be NULL */
  		info = "failed to unpack policydb";
--- 
-2.25.1
+--
+2.39.0
 
