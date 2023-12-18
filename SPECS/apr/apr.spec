@@ -4,7 +4,7 @@
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org/
 Group:          System Environment/Libraries
@@ -18,12 +18,16 @@ Source0: http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
 Patch0:         apr-skip-getservbyname-test.patch
 %endif
 
+Requires:       util-linux-libs
+
 %description
 The Apache Portable Runtime.
 
 %package        devel
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
+Requires:       util-linux-devel
+
 %description    devel
 It contains the libraries and header files to create applications.
 
@@ -42,9 +46,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
-%if 0%{?with_check}
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -66,6 +68,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig
 
 %changelog
+* Mon Dec 18 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.7.2-2
+- Fix devel package requires
 * Thu Feb 09 2023 Ankit Jain <ankitja@vmware.com> 1.7.2-1
 - Fix CVE-2022-24963
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-5
