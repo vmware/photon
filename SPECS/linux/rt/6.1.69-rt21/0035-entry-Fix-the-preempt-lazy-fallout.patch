@@ -1,0 +1,48 @@
+From d37c604152cbded61a8e107918d3b9950725d897 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 13 Jul 2021 07:52:52 +0200
+Subject: [PATCH 35/62] entry: Fix the preempt lazy fallout
+
+Common code needs common defines....
+
+Fixes: f2f9e496208c ("x86: Support for lazy preemption")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/include/asm/thread_info.h | 2 --
+ include/linux/entry-common.h       | 6 ++++++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/thread_info.h
+index 0da06a9b5f72..fd8fb76f324f 100644
+--- a/arch/x86/include/asm/thread_info.h
++++ b/arch/x86/include/asm/thread_info.h
+@@ -151,8 +151,6 @@ struct thread_info {
+ 
+ #define _TIF_WORK_CTXSW_NEXT	(_TIF_WORK_CTXSW)
+ 
+-#define _TIF_NEED_RESCHED_MASK	(_TIF_NEED_RESCHED | _TIF_NEED_RESCHED_LAZY)
+-
+ #define STACK_WARN		(THREAD_SIZE/8)
+ 
+ /*
+diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+index 93cc1ae12125..3dc3704a3cdb 100644
+--- a/include/linux/entry-common.h
++++ b/include/linux/entry-common.h
+@@ -57,6 +57,12 @@
+ # define ARCH_EXIT_TO_USER_MODE_WORK		(0)
+ #endif
+ 
++#ifdef CONFIG_PREEMPT_LAZY
++# define _TIF_NEED_RESCHED_MASK	(_TIF_NEED_RESCHED | _TIF_NEED_RESCHED_LAZY)
++#else
++# define _TIF_NEED_RESCHED_MASK	(_TIF_NEED_RESCHED)
++#endif
++
+ #define EXIT_TO_USER_MODE_WORK						\
+ 	(_TIF_SIGPENDING | _TIF_NOTIFY_RESUME | _TIF_UPROBE |		\
+ 	 _TIF_NEED_RESCHED_MASK | _TIF_PATCH_PENDING | _TIF_NOTIFY_SIGNAL |	\
+-- 
+2.43.0
+

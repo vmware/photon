@@ -1,0 +1,50 @@
+From b8cff7d0320e3b39f098d9562373e1c16c54c46c Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 25 Aug 2022 16:17:57 +0200
+Subject: [PATCH 07/62] bpf: Remove the obsolte u64_stats_fetch_*_irq() users.
+
+Now that the 32bit UP oddity is gone and 32bit uses always a sequence
+count, there is no need for the fetch_irq() variants anymore.
+
+Convert to the regular interface.
+
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andrii Nakryiko <andrii@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Hao Luo <haoluo@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: KP Singh <kpsingh@kernel.org>
+Cc: Martin KaFai Lau <martin.lau@linux.dev>
+Cc: Song Liu <song@kernel.org>
+Cc: Stanislav Fomichev <sdf@google.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: bpf@vger.kernel.org
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+---
+ kernel/bpf/syscall.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 0c8b7733573e..c0915e2424f1 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2115,11 +2115,11 @@ static void bpf_prog_get_stats(const struct bpf_prog *prog,
+ 
+ 		st = per_cpu_ptr(prog->stats, cpu);
+ 		do {
+-			start = u64_stats_fetch_begin_irq(&st->syncp);
++			start = u64_stats_fetch_begin(&st->syncp);
+ 			tnsecs = u64_stats_read(&st->nsecs);
+ 			tcnt = u64_stats_read(&st->cnt);
+ 			tmisses = u64_stats_read(&st->misses);
+-		} while (u64_stats_fetch_retry_irq(&st->syncp, start));
++		} while (u64_stats_fetch_retry(&st->syncp, start));
+ 		nsecs += tnsecs;
+ 		cnt += tcnt;
+ 		misses += tmisses;
+-- 
+2.43.0
+

@@ -1,0 +1,151 @@
+From e4742fc784660e012dc23090a72614bf1f9a0ca1 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 22 Jun 2022 12:27:05 +0200
+Subject: [PATCH 03/62] sched: Consider task_struct::saved_state in
+ wait_task_inactive().
+
+Ptrace is using wait_task_inactive() to wait for the tracee to reach a
+certain task state. On PREEMPT_RT that state may be stored in
+task_struct::saved_state while the tracee blocks on a sleeping lock and
+task_struct::__state is set to TASK_RTLOCK_WAIT.
+It is not possible to check only for TASK_RTLOCK_WAIT to be sure that the task
+is blocked on a sleeping lock because during wake up (after the sleeping lock
+has been acquired) the task state is set TASK_RUNNING. After the task in on CPU
+and acquired the pi_lock it will reset the state accordingly but until then
+TASK_RUNNING will be observed (with the desired state saved in saved_state).
+
+Check also for task_struct::saved_state if the desired match was not found in
+task_struct::__state on PREEMPT_RT. If the state was found in saved_state, wait
+until the task is idle and state is visible in task_struct::__state.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+Link: https://lkml.kernel.org/r/Yt%2FpQAFQ1xKNK0RY@linutronix.de
+---
+ kernel/sched/core.c | 81 ++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 76 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 18a4f8f28a25..6bd06122850a 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3281,6 +3281,76 @@ int migrate_swap(struct task_struct *cur, struct task_struct *p,
+ }
+ #endif /* CONFIG_NUMA_BALANCING */
+ 
++#ifdef CONFIG_PREEMPT_RT
++
++/*
++ * Consider:
++ *
++ *  set_special_state(X);
++ *
++ *  do_things()
++ *    // Somewhere in there is an rtlock that can be contended:
++ *    current_save_and_set_rtlock_wait_state();
++ *    [...]
++ *    schedule_rtlock(); (A)
++ *    [...]
++ *    current_restore_rtlock_saved_state();
++ *
++ *  schedule(); (B)
++ *
++ * If p->saved_state is anything else than TASK_RUNNING, then p blocked on an
++ * rtlock (A) *before* voluntarily calling into schedule() (B) after setting its
++ * state to X. For things like ptrace (X=TASK_TRACED), the task could have more
++ * work to do upon acquiring the lock in do_things() before whoever called
++ * wait_task_inactive() should return. IOW, we have to wait for:
++ *
++ *   p.saved_state = TASK_RUNNING
++ *   p.__state     = X
++ *
++ * which implies the task isn't blocked on an RT lock and got to schedule() (B).
++ *
++ * Also see comments in ttwu_state_match().
++ */
++
++static __always_inline bool state_mismatch(struct task_struct *p, unsigned int match_state)
++{
++	unsigned long flags;
++	bool mismatch;
++
++	raw_spin_lock_irqsave(&p->pi_lock, flags);
++	if (READ_ONCE(p->__state) & match_state)
++		mismatch = false;
++	else if (READ_ONCE(p->saved_state) & match_state)
++		mismatch = false;
++	else
++		mismatch = true;
++
++	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
++	return mismatch;
++}
++static __always_inline bool state_match(struct task_struct *p, unsigned int match_state,
++					bool *wait)
++{
++	if (READ_ONCE(p->__state) & match_state)
++		return true;
++	if (READ_ONCE(p->saved_state) & match_state) {
++		*wait = true;
++		return true;
++	}
++	return false;
++}
++#else
++static __always_inline bool state_mismatch(struct task_struct *p, unsigned int match_state)
++{
++	return !(READ_ONCE(p->__state) & match_state);
++}
++static __always_inline bool state_match(struct task_struct *p, unsigned int match_state,
++					bool *wait)
++{
++	return (READ_ONCE(p->__state) & match_state);
++}
++#endif
++
+ /*
+  * wait_task_inactive - wait for a thread to unschedule.
+  *
+@@ -3299,7 +3369,7 @@ int migrate_swap(struct task_struct *cur, struct task_struct *p,
+  */
+ unsigned long wait_task_inactive(struct task_struct *p, unsigned int match_state)
+ {
+-	int running, queued;
++	bool running, wait;
+ 	struct rq_flags rf;
+ 	unsigned long ncsw;
+ 	struct rq *rq;
+@@ -3325,7 +3395,7 @@ unsigned long wait_task_inactive(struct task_struct *p, unsigned int match_state
+ 		 * is actually now running somewhere else!
+ 		 */
+ 		while (task_on_cpu(rq, p)) {
+-			if (!(READ_ONCE(p->__state) & match_state))
++			if (state_mismatch(p, match_state))
+ 				return 0;
+ 			cpu_relax();
+ 		}
+@@ -3338,9 +3408,10 @@ unsigned long wait_task_inactive(struct task_struct *p, unsigned int match_state
+ 		rq = task_rq_lock(p, &rf);
+ 		trace_sched_wait_task(p);
+ 		running = task_on_cpu(rq, p);
+-		queued = task_on_rq_queued(p);
++		wait = task_on_rq_queued(p);
+ 		ncsw = 0;
+-		if (READ_ONCE(p->__state) & match_state)
++
++		if (state_match(p, match_state, &wait))
+ 			ncsw = p->nvcsw | LONG_MIN; /* sets MSB */
+ 		task_rq_unlock(rq, p, &rf);
+ 
+@@ -3370,7 +3441,7 @@ unsigned long wait_task_inactive(struct task_struct *p, unsigned int match_state
+ 		 * running right now), it's preempted, and we should
+ 		 * yield - it could be a while.
+ 		 */
+-		if (unlikely(queued)) {
++		if (unlikely(wait)) {
+ 			ktime_t to = NSEC_PER_SEC / HZ;
+ 
+ 			set_current_state(TASK_UNINTERRUPTIBLE);
+-- 
+2.43.0
+

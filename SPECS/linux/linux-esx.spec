@@ -20,8 +20,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.62
-Release:        12%{?dist}
+Version:        6.1.70
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -32,7 +32,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=3d0ba0200fb2337e4c2a0fd417adff32dffa1d24048a457be527556d6d6321e92c7dd80a75f13e2279e1facd4784a3a4e79e1b1ea45b6dd08824a6ab7c0ea0bc
+%define sha512 linux=e5ad2477005291d21168d9417f329b3ddee47d0af5ada3e7325490f2a673c9546458e84829aff0728f23a07d693470a7650ae64106e46aa76af4cbf92c22cd36
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -168,8 +168,6 @@ Patch85: 0001-Adding-SBX-kernel-driver.patch
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-#Fix CVE-2023-28464
-Patch102: 0001-Bluetooth-Fix-double-free-in-hci_conn_cleanup.patch
 # Fix CVE-2023-0597
 Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
@@ -453,6 +451,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 29 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.70-1
+- Update to version 6.1.70
 * Mon Apr 29 2024 Keerthana K <keerthanak@vmware.com> 6.1.62-12
 - Increase CONFIG_LOG_BUF_SHIFT to 18
 - Decrease CONFIG_LOG_CPU_MAX_BUF_SHIFT to 12
