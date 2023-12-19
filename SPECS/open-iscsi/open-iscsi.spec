@@ -1,7 +1,7 @@
 Summary:        iSCSI tools for Linux
 Name:           open-iscsi
 Version:        2.1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            https://github.com/open-iscsi/open-iscsi
 Group:          Applications/System
@@ -39,12 +39,7 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
-install -d %{buildroot}%{_unitdir}
-install -pm 644 etc/systemd/iscsi.service %{buildroot}%{_unitdir}
-install -pm 644 etc/systemd/iscsid.service %{buildroot}%{_unitdir}
-install -pm 644 etc/systemd/iscsid.socket %{buildroot}%{_unitdir}
-install -pm 644 etc/systemd/iscsiuio.service %{buildroot}%{_unitdir}
-install -pm 644 etc/systemd/iscsiuio.socket %{buildroot}%{_unitdir}
+make DESTDIR=%{buildroot} install_systemd %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -64,6 +59,7 @@ install -pm 644 etc/systemd/iscsiuio.socket %{buildroot}%{_unitdir}
 /sbin/iscsistart
 /sbin/iscsiuio
 %{_unitdir}/iscsi.service
+%{_unitdir}/iscsi-init.service
 %{_unitdir}/iscsid.service
 %{_unitdir}/iscsid.socket
 %{_unitdir}/iscsiuio.service
@@ -89,6 +85,8 @@ install -pm 644 etc/systemd/iscsiuio.socket %{buildroot}%{_unitdir}
 %{_libdir}/pkgconfig/libopeniscsiusr.pc
 
 %changelog
+* Mon Dec 18 2023 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.1.6-2
+- Fix for https://github.com/vmware/photon/issues/1491
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.6-1
 - Automatic Version Bump
 * Wed Nov 24 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.4-2
