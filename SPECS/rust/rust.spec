@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.71.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0: https://static.rust-lang.org/dist/%{name}c-%{version}-src.tar.xz
 %define sha512 %{name}c-%{version}-src=fd0e5a16bdbeb539184513583089e55f681cb772810df357b6b1464853f7022ac02edab3dd155b2262ed0047e2a25dea3808dd078dcdfce9d399384465009db4
+
+Patch0: 0001-Convert-valid-feature-name-warning-to-an-error.patch
 
 BuildRequires: git
 BuildRequires: cmake
@@ -38,7 +40,12 @@ Requires: zlib
 Rust Programming Language
 
 %prep
-%autosetup -p1 -n %{name}c-%{version}-src
+# Using autosetup is not feasible
+%setup -q -n %{name}c-%{version}-src
+
+pushd src/tools/cargo
+%autopatch -p1 -M0
+popd
 
 rm -rf src/llvm-project/
 mkdir -p src/llvm-project/libunwind/
@@ -101,6 +108,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Tue Dec 19 2023 Ankit Jain <ankitja@vmware.com> 1.71.1-3
+- Fix CVE-2023-40030
 * Thu Sep 07 2023 Harinadh D <hdommaraju@vmware.com> 1.71.1-2
 - version bump to use libssh2 1.11.0
 * Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.71.1-1
