@@ -1,7 +1,7 @@
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        2.12.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -19,6 +19,10 @@ BuildRequires:  python3-pycryptodome
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+%if 0%{?with_check}
+BuildRequires:  python3-pytest
+BuildRequires:  python3-pip
+%endif
 
 Requires:       python3
 Requires:       python3-ecdsa > 0.11
@@ -38,12 +42,11 @@ Patch0:         CVE-2023-48795.patch
 %{py3_build}
 
 %install
-python3 setup.py install -O1 --skip-build \
-    --root "%{buildroot}" \
-    --single-version-externally-managed
+%py3_install -- --single-version-externally-managed
 
 %check
-LANG=en_US.UTF-8 python3 test.py
+pip3 install mock pytest_relaxed PyNaCl bcrypt
+%{pytest}
 
 %clean
 rm -rf %{buildroot}
@@ -53,6 +56,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 26 2023 Prashant S Chauhan <psingchauha@vmware.com> 2.12.0-5
+- Bump up to compile with latest python3-cryptography, Fix makecheck
 * Fri Dec 22 2023 Mukul Sikka <msikka@vmware.com> 2.12.0-4
 - Fix for CVE-2023-48795
 * Fri Dec 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.12.0-3

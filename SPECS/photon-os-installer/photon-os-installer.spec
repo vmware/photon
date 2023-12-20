@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.4
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -62,6 +62,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Tue Dec 26 2023 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4-3
+- Bump up as part of python3-pyOpenSSL update
 * Wed Oct 25 2023 Ankit Jain <ankitja@vmware.com> 2.4-2
 - Fix tmpfs mount issue
 * Mon Oct 09 2023 Oliver Kurth <okurth@vmware.com> 2.4-1

@@ -2,7 +2,7 @@
 
 Name:           python3-requests-toolbelt
 Version:        0.10.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Utility belt for advanced users of python-requests
 License:        Apache-2.0
 Group:          Development/Languages/Python
@@ -57,5 +57,7 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/requests_toolbelt-*.egg-info/
 
 %changelog
+* Tue Dec 26 2023 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.10.1-2
+- Bump up as part of python3-pyOpenSSL update
 * Thu Aug 25 2022 Mukul Sikka <msikka@vmware.com> 0.10.1-1
 - Initial version of python-requests-toolbelt package for Photon.

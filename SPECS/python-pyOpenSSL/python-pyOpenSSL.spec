@@ -1,21 +1,20 @@
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python3-pyOpenSSL
-Version:        22.0.0
-Release:        2%{?dist}
+Version:        23.3.0
+Release:        1%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/pyOpenSSL/pyOpenSSL-%{version}.tar.gz
-%define sha512  pyOpenSSL=3d7695f27b7909eb82f05527ab7551fe90a85a70f20ea980293b59672a62f9b015966180407fa0786e94b01ad1d1acfaa7d40426bb63410efd24a144e559e2f0
+%define sha512  pyOpenSSL=bc1ccfa4fc5d7f48ba23ee2cdfbad2636ecab8e3989e8ab88136cba92fa08bb21920c0ce7198591837597a14f392dcd21de05697fd5abd7c31f6dcbed398dd47
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  openssl
+%if 0%{?with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-cryptography
@@ -27,6 +26,8 @@ BuildRequires:  python3-pyasn1
 BuildRequires:  python3-six
 BuildRequires:  python3-packaging
 BuildRequires:  python3-asn1crypto
+BuildRequires:  python3-pip
+BuildRequires:  python3-pytest
 %endif
 Requires:       python3
 Requires:       python3-libs
@@ -39,7 +40,7 @@ BuildArch:      noarch
 High-level wrapper around a subset of the OpenSSL library.
 
 %prep
-%autosetup -n pyOpenSSL-%{version}
+%autosetup -p1 -n pyopenssl-%{version}
 
 %build
 %py3_build
@@ -48,21 +49,16 @@ High-level wrapper around a subset of the OpenSSL library.
 %py3_install
 
 %check
-pushd ../p3dir
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pretend
-$easy_install_3 flaky
-$easy_install_3 pytest
-PATH=%{buildroot}%{_bindir}:${PATH} \
-LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python3_sitelib} \
-    pytest
-popd
+pip3 install pretend flaky tomli
+%pytest
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 19 2023 Prashant S Chauhan <psingchauha@vmware.com> 23.3.0-1
+- Update to 23.3.0 to compile with latest python3-cryptography
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.0.0-2
 - Update release to compile with python 3.11
 * Tue Nov 29 2022 Ankit Jain <ankitja@vmware.com> 22.0.0-1
