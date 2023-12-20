@@ -1,7 +1,7 @@
 Summary:    Archiving program
 Name:       tar
-Version:    1.34
-Release:    3%{?dist}
+Version:    1.35
+Release:    1%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/tar
 Group:      Applications/System
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/tar/%{name}-%{version}.tar.xz
-%define sha512 %{name}=5e77c4a7b49983ad7d15238c2bce28be7a8aa437b4b1815fc00abd13096da308b6bba196cc6e3ed79d85e62823d520ae0d8fcda2d93873842cf84dc3369fc902
+%define sha512 %{name}=8b84ed661e6c878fa33eb5c1808d20351e6f40551ac63f96014fb0d0b9c72d5d94d8865d39e36bcb184fd250f84778a3b271bbd8bd2ceb69eece0c3568577510
 
 Patch0: CVE-2022-48303.patch
 
@@ -50,6 +50,8 @@ rm -rf %{buildroot}{%{_infodir},%{_mandir}}
 %{_libexecdir}/rmt
 
 %changelog
+* Wed Dec 20 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.35-1
+- Update to version 1.35
 * Tue Jul 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.34-3
 - Add acl support
 - Fix CVE-2022-48303
