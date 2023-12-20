@@ -1,0 +1,174 @@
+From c25e0933ee6ed22df3fabd4a33cacc318f82940b Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Fri, 14 May 2021 21:30:41 +0200
+Subject: [PATCH] nas: fix "Temperature" sign in "Common Info" TLV in "Swi Get
+ Status"
+
+The "Temperature" field in the "Common Info" TLV should be parsed as a
+signed integer (gint8) instead of unsigned (guint8).
+
+The TLV is renamed to "Common Info V2" and compat methods are given to
+avoid breaking API/ABI.
+
+[msikka: Backported patch to 1.26.10]
+Signed-off-by: Mukul Sikka <msikka@vmware.com>
+
+Fixes https://gitlab.freedesktop.org/mobile-broadband/libqmi/-/issues/65
+---
+ data/qmi-service-nas.json                     |  6 ++--
+ .../libqmi-glib/libqmi-glib-common.sections   |  1 +
+ src/libqmi-glib/qmi-compat.c                  | 32 +++++++++++++++++++
+ src/libqmi-glib/qmi-compat.h                  | 31 ++++++++++++++++++
+ src/qmicli/qmicli-nas.c                       |  6 ++--
+ 6 files changed, 91 insertions(+), 6 deletions(-)
+
+diff -Naur a/data/qmi-service-nas.json b/data/qmi-service-nas.json
+--- a/data/qmi-service-nas.json	2021-02-15 14:23:51.000000000 +0000
++++ b/data/qmi-service-nas.json	2023-12-20 04:50:17.077906350 +0000
+@@ -3622,13 +3622,13 @@
+      "vendor"  : "0x1199",
+      "since"   : "1.24",
+      "output"  : [ { "common-ref" : "Operation Result" },
+-                   { "name"       : "Common Info",
++                   { "name"       : "Common Info v2",
+                      "id"         : "0x01",
+                      "type"       : "TLV",
+-                     "since"      : "1.24",
++                     "since"      : "1.30",
+                      "format"     : "sequence",
+                      "contents"   : [ { "name"   : "Temperature",
+-                                        "format" : "guint8"},
++                                        "format" : "gint8"},
+                                       { "name"          : "Modem Mode",
+                                         "format"        : "guint8",
+                                         "public-format" : "QmiNasSwiModemMode"},
+diff -Naur a/docs/reference/libqmi-glib/libqmi-glib-common.sections b/docs/reference/libqmi-glib/libqmi-glib-common.sections
+--- a/docs/reference/libqmi-glib/libqmi-glib-common.sections	2021-02-15 14:23:51.000000000 +0000
++++ b/docs/reference/libqmi-glib/libqmi-glib-common.sections	2023-12-20 04:51:10.311689103 +0000
+@@ -1563,6 +1563,7 @@
+ qmi_message_nas_get_cell_location_info_output_get_umts_info
+ QmiMessageNasGetCellLocationInfoOutputIntrafrequencyLteInfoCellElement
+ qmi_message_nas_get_cell_location_info_output_get_intrafrequency_lte_info
++qmi_message_nas_swi_get_status_output_get_common_info
+ <SUBSECTION Symbols>
+ QMI_NAS_SIM_REJECT_STATE_SIM_VAILABLE
+ QMI_WDS_CDMA_CAUSE_CODE_NETWORK_ADDRESS_VACANT
+@@ -1681,4 +1682,4 @@
+ HAVE_QMI_SERVICE_WDA
+ HAVE_QMI_SERVICE_WDS
+ HAVE_QMI_SERVICE_WMS
+-</SECTION>
+\ No newline at end of file
++</SECTION>
+diff -Naur a/src/libqmi-glib/qmi-compat.c b/src/libqmi-glib/qmi-compat.c
+--- a/src/libqmi-glib/qmi-compat.c	2021-02-15 14:23:51.000000000 +0000
++++ b/src/libqmi-glib/qmi-compat.c	2023-12-20 04:38:15.697748073 +0000
+@@ -1248,4 +1248,36 @@
+ 
+ #endif /* HAVE_QMI_MESSAGE_NAS_GET_CELL_LOCATION_INFO */
+ 
++#if defined HAVE_QMI_MESSAGE_NAS_SWI_GET_STATUS
++
++gboolean
++qmi_message_nas_swi_get_status_output_get_common_info (
++    QmiMessageNasSwiGetStatusOutput *self,
++    guint8 *value_common_info_temperature,
++    QmiNasSwiModemMode *value_common_info_modem_mode,
++    QmiNasSwiSystemMode *value_common_info_system_mode,
++    QmiNasSwiImsRegState *value_common_info_ims_registration_state,
++    QmiNasSwiPsState *value_common_info_packet_service_state,
++    GError **error)
++{
++    gint8 signed_temperature;
++
++    if (!qmi_message_nas_swi_get_status_output_get_common_info_v2 (
++            self,
++            &signed_temperature,
++            value_common_info_modem_mode,
++            value_common_info_system_mode,
++            value_common_info_ims_registration_state,
++            value_common_info_packet_service_state,
++            error))
++      return FALSE;
++
++    if (value_common_info_temperature)
++      memcpy (value_common_info_temperature, &signed_temperature, sizeof (guint8));
++
++    return TRUE;
++}
++
++#endif /* HAVE_QMI_MESSAGE_NAS_SWI_GET_STATUS */
++
+ #endif /* QMI_DISABLE_DEPRECATED */
+diff -Naur a/src/libqmi-glib/qmi-compat.h b/src/libqmi-glib/qmi-compat.h
+--- a/src/libqmi-glib/qmi-compat.h	2021-02-15 14:23:51.000000000 +0000
++++ b/src/libqmi-glib/qmi-compat.h	2023-12-20 04:38:58.483180925 +0000
+@@ -2282,6 +2282,38 @@
+ 
+ #endif /* HAVE_QMI_MESSAGE_NAS_GET_CELL_LOCATION_INFO */
+ 
++
++#if defined HAVE_QMI_MESSAGE_NAS_SWI_GET_STATUS
++
++/**
++ * qmi_message_nas_swi_get_status_output_get_common_info:
++ * @self: a #QmiMessageNasSwiGetStatusOutput.
++ * @value_common_info_temperature: (out)(optional): a placeholder for the output #guint8, or %NULL if not required.
++ * @value_common_info_modem_mode: (out)(optional): a placeholder for the output #QmiNasSwiModemMode, or %NULL if not required.
++ * @value_common_info_system_mode: (out)(optional): a placeholder for the output #QmiNasSwiSystemMode, or %NULL if not required.
++ * @value_common_info_ims_registration_state: (out)(optional): a placeholder for the output #QmiNasSwiImsRegState, or %NULL if not required.
++ * @value_common_info_packet_service_state: (out)(optional): a placeholder for the output #QmiNasSwiPsState, or %NULL if not required.
++ * @error: Return location for error or %NULL.
++ *
++ * Get the 'Common Info' field from @self.
++ *
++ * Returns: (skip): %TRUE if the field is found, %FALSE otherwise.
++ *
++ * Since: 1.24
++ * Deprecated: 1.30: Use qmi_message_nas_swi_get_status_output_get_common_info_v2() instead.
++ */
++G_DEPRECATED_FOR (qmi_message_nas_swi_get_status_output_get_common_info_v2)
++gboolean qmi_message_nas_swi_get_status_output_get_common_info (
++    QmiMessageNasSwiGetStatusOutput *self,
++    guint8 *value_common_info_temperature,
++    QmiNasSwiModemMode *value_common_info_modem_mode,
++    QmiNasSwiSystemMode *value_common_info_system_mode,
++    QmiNasSwiImsRegState *value_common_info_ims_registration_state,
++    QmiNasSwiPsState *value_common_info_packet_service_state,
++    GError **error);
++
++#endif /* HAVE_QMI_MESSAGE_NAS_SWI_GET_STATUS */
++
+ #endif /* QMI_DISABLE_DEPRECATED */
+ 
+ #endif /* _LIBQMI_GLIB_QMI_COMPAT_H_ */
+diff -Naur a/src/qmicli/qmicli-nas.c b/src/qmicli/qmicli-nas.c
+--- a/src/qmicli/qmicli-nas.c	2021-02-15 14:23:51.000000000 +0000
++++ b/src/qmicli/qmicli-nas.c	2023-12-20 04:41:17.327830685 +0000
+@@ -3587,7 +3587,7 @@
+     QmiMessageNasSwiGetStatusOutput *output;
+     GError *error = NULL;
+ 
+-    guint8 temperature;
++    gint8 temperature;
+     QmiNasSwiModemMode modem_mode;
+     QmiNasSwiSystemMode system_mode;
+     QmiNasSwiImsRegState ims_reg_state;
+@@ -3620,7 +3620,7 @@
+     g_print ("[%s] Successfully got status:\n",
+              qmi_device_get_path_display (ctx->device));
+ 
+-    if (qmi_message_nas_swi_get_status_output_get_common_info (
++    if (qmi_message_nas_swi_get_status_output_get_common_info_v2 (
+             output,
+             &temperature,
+             &modem_mode,
+@@ -3629,7 +3629,7 @@
+             &ps_state,
+             NULL)) {
+         g_print ("Common Info:\n"
+-                "\tTemperature: '%u'\n"
++                "\tTemperature: '%d'\n"
+                 "\tModem mode: '%s'\n"
+                 "\tSystem mode: '%s'\n"
+                 "\tIMS registration state: '%s'\n"

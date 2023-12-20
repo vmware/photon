@@ -1,7 +1,7 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.14.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/mm-glib.pc
 
 %changelog
+* Thu Dec 21 2023 Mukul Sikka <msikka@vmware.com> 1.14.2-6
+- Bump release as a part of libqmi upgrade
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-5
 - Remove .la files
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-4
