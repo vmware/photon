@@ -18,7 +18,7 @@
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.11.18
+Version:       3.12.4
 Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
@@ -28,7 +28,7 @@ URL:           https://github.com/rabbitmq/rabbitmq-server
 
 # use only .xz bundle from release page of github
 Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 rabbitmq=ba8583fa27151c679449aafd8dc5e944aa12f24c2ae8e80404aa410c26ade5c0252860f49bb72edeb6858abf49d0978dba07b43c9013528a12c141e1bd7200be
+%define sha512 rabbitmq=8e01b258f0ec8345b767d6974e94a3cad64bdb29590fc0f82b5c2abae875cf55bdcfd8306ce52a41114bf548917affa30491d249c93f3c123e58057cd461414d
 
 Source1: %{name}.tmpfiles
 Source2: %{name}.logrotate
@@ -150,6 +150,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Wed Dec 20 2023 Harinadh D <hdommaraju@vmware.com> 3.12.4-1
+- Upgrade to v3.12.4
 * Thu Dec 07 2023 Harinadh D <hdommaraju@vmware.com> 3.11.18-1
 - Upgrade to v3.11.18
 - Modified spec similar to below page
