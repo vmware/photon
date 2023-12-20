@@ -1,7 +1,7 @@
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python3-requests
 Version:        2.26.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://python-requests.org
 
 Source0:        http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
-%define sha1    requests=8c7a89d183d3e9b70bf91ba5b75eccf7111b9d8d
+%define sha512  requests=c3397d77f0d2f1afb05661c4b98adad6c1ddaf360906254150b33ab0d9479fd306905bd6d61b8cf8becd9a40bdcf9b03542e8267c644ef19f03f44bfca0bc461
 
 %if 0%{?with_check}
 Patch0:         fix_makecheck.patch
@@ -91,6 +91,8 @@ pytest3 -v -k "not test_https_warnings"
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 22 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.26.0-2
+- Bump up as part of python-certifi update
 * Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.26.0-1
 - Upgrade to 2.26.0 to be compatible with chardet-4.0.0
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.24.0-2

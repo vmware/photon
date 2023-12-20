@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        23.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -148,6 +148,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 
 %changelog
+* Fri Dec 22 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.4-2
+- Bump up as part of python-certifi update
 * Thu Dec 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.4-1
 - Upgrade to v23.4
 * Tue Oct 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.3.2-1
