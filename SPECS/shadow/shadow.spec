@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.6
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            https://github.com/shadow-maint
 License:        BSD
 Group:          Applications/System
@@ -27,6 +27,8 @@ Patch0:         chkname-allowcase.patch
 Patch1:         fix-segfault-PR2430117.patch
 Patch2:         CVE-2023-29383.patch
 Patch3:         CVE-2023-29383.1.patch
+Patch4:         CVE-2023-4641.patch
+
 BuildRequires:  cracklib
 BuildRequires:  cracklib-devel
 Requires:       cracklib
@@ -179,6 +181,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Thu Dec 21 2023 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.6-8
+- Patched CVE-2023-4641
 * Thu May 04 2023 Anmol Jain <anmolja@vmware.com> 4.6-7
 - Fix for CVE-2023-29383.patch
 * Fri Jul 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.6-6
