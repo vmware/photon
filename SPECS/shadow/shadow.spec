@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 License:        BSD
 Group:          Applications/System
@@ -23,6 +23,10 @@ Source9: system-auth
 Source10: system-password
 Source11: system-session
 Source12: useradd
+
+Patch0:         CVE-2023-29383.patch
+Patch1:         CVE-2023-29383.1.patch
+Patch2:         CVE-2023-4641.patch
 
 BuildRequires: cracklib-devel
 BuildRequires: Linux-PAM-devel
@@ -204,6 +208,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Thu Dec 21 2023 Srish Srinivasan <ssrish@vmware.com> 4.13-5
+- Patched CVE-2023-29383, CVE-2023-4641
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.13-4
 - Bump version as a part of openssl upgrade
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.13-3
