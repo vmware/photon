@@ -3,8 +3,8 @@
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.3.4
-Release:        2%{?dist}
+Version:        7.3.10
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -20,7 +20,7 @@ Group:          shells
 # git checkout -b v7.2.0 tags/v7.2.0
 # cd .. && tar czf powershell-7.2.0.tar.gz PowerShell-7.2.0
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=ecaa83a8b66d98549baac8cdf592382d23a63560a27158eb99bcf82b4618b4346cee6ac6dbce6bac520fdbf206637de4823b7def4913c5ee1bf4877885f2b56a
+%define sha512 %{name}=233c5e57bbac4f7a5f29922f0650fbb0350a3a11112f6e350204b9c5c3e89c3c8326619d772d1e293511d75c0fe360375c76c299569f471612b1d124a6d53c76
 
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
@@ -32,7 +32,7 @@ Source1: %{name}-native-%{ps_native_ver}.tar.gz
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
 Source2: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}-%{version}-linux=19529e64379886f4017b26cf72112751f73aa22a8a2405b666dd39a2595f42666c102cd70ef3ad9a85e76cdfd18ab6dcc0deb624a20a07951baa8ce4b14e47e0
+%define sha512 %{name}-%{version}-linux=be4f33de51b6bd8838168cf72a607160411288bd081fc84d19e07f9e57ccf8288103b5160a94a72d479242246a044a408119fbf88731d2d642e5b00ccf8e08b2
 
 Source3: build.sh
 Source4: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
@@ -46,8 +46,8 @@ Source5: omi-%{libmi_tag}.tar.gz
 
 BuildArch:      x86_64
 
-BuildRequires:  dotnet-sdk = 7.0.203
-BuildRequires:  dotnet-runtime = 7.0.5
+BuildRequires:  dotnet-sdk = 7.0.404
+BuildRequires:  dotnet-runtime = 7.0.14
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -154,6 +154,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Thu Dec 21 2023 Anmol Jain <anmolja@vmware.com> 7.3.10-1
+- Version update to fix CVE-2023-36013
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 7.3.4-2
 - Bump version as a part of krb5 upgrade
 * Thu Jun 08 2023 Anmol Jain <anmolja@vmware.com> 7.3.4-1
