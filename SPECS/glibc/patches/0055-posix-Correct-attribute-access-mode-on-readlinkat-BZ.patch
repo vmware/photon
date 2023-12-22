@@ -1,0 +1,27 @@
+From 5c77e0cca9090cd99c2055249b46c2282672b5c0 Mon Sep 17 00:00:00 2001
+From: Martin Sebor <msebor@redhat.com>
+Date: Sun, 10 Jan 2021 13:45:39 -0700
+Subject: [PATCH 055/124] posix: Correct attribute access mode on readlinkat
+ [BZ #27024].
+
+(cherry picked from commit 2cd361b5114ff3f2f55684458d8bf9836c624b90)
+---
+ posix/unistd.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/posix/unistd.h b/posix/unistd.h
+index 32b8161619e6cf3081b9e8c6d2f38120a378f9a5..aac164dc9c4c473d603d9ef1cc67dac42d9339c2 100644
+--- a/posix/unistd.h
++++ b/posix/unistd.h
+@@ -831,7 +831,7 @@ extern int symlinkat (const char *__from, int __tofd,
+ /* Like readlink but a relative PATH is interpreted relative to FD.  */
+ extern ssize_t readlinkat (int __fd, const char *__restrict __path,
+ 			   char *__restrict __buf, size_t __len)
+-     __THROW __nonnull ((2, 3)) __wur __attr_access ((__read_only__, 3, 4));
++     __THROW __nonnull ((2, 3)) __wur __attr_access ((__write_only__, 3, 4));
+ #endif
+ 
+ /* Remove the link NAME.  */
+-- 
+2.41.0
+

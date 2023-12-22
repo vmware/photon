@@ -1,0 +1,70 @@
+From ac0a6929c5d370952557aded97c2dd073a28773b Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Wed, 25 Nov 2020 15:00:44 -0300
+Subject: [PATCH 022/124] sh: Add sh4 fpu Implies folder
+
+The commit 605f38177db (sh: Split BE/LE abilist) did not take in
+consideration the SH4 fpu support.
+
+Checked with a build for sh4-linux-gnu and manually checked that
+the implementations at sysdeps/sh/sh4/fpu/ are selected.
+
+John Paul Adrian Glaubitz also confirmed it fixes the build issues
+he encontered.
+
+(cherry-picked from 9ff2674ef82eccd5ae5dfa6bb733c0e3613764c6)
+---
+ NEWS                                          | 1 +
+ sysdeps/sh/be/sh4/fpu/Implies                 | 1 +
+ sysdeps/sh/le/sh4/fpu/Implies                 | 1 +
+ sysdeps/unix/sysv/linux/sh/be/sh4/fpu/Implies | 1 +
+ sysdeps/unix/sysv/linux/sh/le/sh4/fpu/Implies | 1 +
+ 5 files changed, 5 insertions(+)
+ create mode 100644 sysdeps/sh/be/sh4/fpu/Implies
+ create mode 100644 sysdeps/sh/le/sh4/fpu/Implies
+ create mode 100644 sysdeps/unix/sysv/linux/sh/be/sh4/fpu/Implies
+ create mode 100644 sysdeps/unix/sysv/linux/sh/le/sh4/fpu/Implies
+
+diff --git a/NEWS b/NEWS
+index 1c1f270784eddc772b933a8f56b01f837e3d67c0..8b186756833de020b8ca3f6e18b5299f2be734c4 100644
+--- a/NEWS
++++ b/NEWS
+@@ -17,6 +17,7 @@ The following bugs are resolved with this release:
+     by the caller to the kernel
+   [26639] libc: msgctl IPC_INFO and MSG_INFO return garbage
+   [26853] aarch64: Missing unwind information in statically linked startup code
++  [26932] libc: sh: Multiple floating point functions defined as stubs only
+ 
+ Version 2.32
+ 
+diff --git a/sysdeps/sh/be/sh4/fpu/Implies b/sysdeps/sh/be/sh4/fpu/Implies
+new file mode 100644
+index 0000000000000000000000000000000000000000..71b28ee1a41b3ae70195d87725c010e1709b2df0
+--- /dev/null
++++ b/sysdeps/sh/be/sh4/fpu/Implies
+@@ -0,0 +1 @@
++sh/sh4/fpu
+diff --git a/sysdeps/sh/le/sh4/fpu/Implies b/sysdeps/sh/le/sh4/fpu/Implies
+new file mode 100644
+index 0000000000000000000000000000000000000000..71b28ee1a41b3ae70195d87725c010e1709b2df0
+--- /dev/null
++++ b/sysdeps/sh/le/sh4/fpu/Implies
+@@ -0,0 +1 @@
++sh/sh4/fpu
+diff --git a/sysdeps/unix/sysv/linux/sh/be/sh4/fpu/Implies b/sysdeps/unix/sysv/linux/sh/be/sh4/fpu/Implies
+new file mode 100644
+index 0000000000000000000000000000000000000000..7eeaf15a5a2987e413a442fcbcff35c00b30e314
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/sh/be/sh4/fpu/Implies
+@@ -0,0 +1 @@
++unix/sysv/linux/sh/sh4/fpu
+diff --git a/sysdeps/unix/sysv/linux/sh/le/sh4/fpu/Implies b/sysdeps/unix/sysv/linux/sh/le/sh4/fpu/Implies
+new file mode 100644
+index 0000000000000000000000000000000000000000..7eeaf15a5a2987e413a442fcbcff35c00b30e314
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/sh/le/sh4/fpu/Implies
+@@ -0,0 +1 @@
++unix/sysv/linux/sh/sh4/fpu
+-- 
+2.41.0
+

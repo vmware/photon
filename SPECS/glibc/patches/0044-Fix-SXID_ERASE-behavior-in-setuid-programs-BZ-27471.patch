@@ -1,0 +1,171 @@
+From 0e49f103adc199ad6e9664d6d8e99bc5463766f6 Mon Sep 17 00:00:00 2001
+From: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Date: Tue, 16 Mar 2021 12:37:55 +0530
+Subject: [PATCH 044/124] Fix SXID_ERASE behavior in setuid programs (BZ
+ #27471)
+
+When parse_tunables tries to erase a tunable marked as SXID_ERASE for
+setuid programs, it ends up setting the envvar string iterator
+incorrectly, because of which it may parse the next tunable
+incorrectly.  Given that currently the implementation allows malformed
+and unrecognized tunables pass through, it may even allow SXID_ERASE
+tunables to go through.
+
+This change revamps the SXID_ERASE implementation so that:
+
+- Only valid tunables are written back to the tunestr string, because
+  of which children of SXID programs will only inherit a clean list of
+  identified tunables that are not SXID_ERASE.
+
+- Unrecognized tunables get scrubbed off from the environment and
+  subsequently from the child environment.
+
+- This has the side-effect that a tunable that is not identified by
+  the setxid binary, will not be passed on to a non-setxid child even
+  if the child could have identified that tunable.  This may break
+  applications that expect this behaviour but expecting such tunables
+  to cross the SXID boundary is wrong.
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+
+(cherry picked from commit 2ed18c5b534d9e92fc006202a5af0df6b72e7aca)
+---
+ elf/dl-tunables.c             | 56 ++++++++++++++++-------------------
+ elf/tst-env-setuid-tunables.c | 26 ++++++++++++++++
+ 2 files changed, 52 insertions(+), 30 deletions(-)
+
+diff --git a/elf/dl-tunables.c b/elf/dl-tunables.c
+index 26e6e266120596b8041e2ce133d057f8dc7838a8..15b29bcb90face6e282f67a9cf0fef51c41d541f 100644
+--- a/elf/dl-tunables.c
++++ b/elf/dl-tunables.c
+@@ -177,6 +177,7 @@ parse_tunables (char *tunestr, char *valstring)
+     return;
+ 
+   char *p = tunestr;
++  size_t off = 0;
+ 
+   while (true)
+     {
+@@ -190,7 +191,11 @@ parse_tunables (char *tunestr, char *valstring)
+       /* If we reach the end of the string before getting a valid name-value
+ 	 pair, bail out.  */
+       if (p[len] == '\0')
+-	return;
++	{
++	  if (__libc_enable_secure)
++	    tunestr[off] = '\0';
++	  return;
++	}
+ 
+       /* We did not find a valid name-value pair before encountering the
+ 	 colon.  */
+@@ -216,35 +221,28 @@ parse_tunables (char *tunestr, char *valstring)
+ 
+ 	  if (tunable_is_name (cur->name, name))
+ 	    {
+-	      /* If we are in a secure context (AT_SECURE) then ignore the tunable
+-		 unless it is explicitly marked as secure.  Tunable values take
+-		 precedence over their envvar aliases.  */
++	      /* If we are in a secure context (AT_SECURE) then ignore the
++		 tunable unless it is explicitly marked as secure.  Tunable
++		 values take precedence over their envvar aliases.  We write
++		 the tunables that are not SXID_ERASE back to TUNESTR, thus
++		 dropping all SXID_ERASE tunables and any invalid or
++		 unrecognized tunables.  */
+ 	      if (__libc_enable_secure)
+ 		{
+-		  if (cur->security_level == TUNABLE_SECLEVEL_SXID_ERASE)
++		  if (cur->security_level != TUNABLE_SECLEVEL_SXID_ERASE)
+ 		    {
+-		      if (p[len] == '\0')
+-			{
+-			  /* Last tunable in the valstring.  Null-terminate and
+-			     return.  */
+-			  *name = '\0';
+-			  return;
+-			}
+-		      else
+-			{
+-			  /* Remove the current tunable from the string.  We do
+-			     this by overwriting the string starting from NAME
+-			     (which is where the current tunable begins) with
+-			     the remainder of the string.  We then have P point
+-			     to NAME so that we continue in the correct
+-			     position in the valstring.  */
+-			  char *q = &p[len + 1];
+-			  p = name;
+-			  while (*q != '\0')
+-			    *name++ = *q++;
+-			  name[0] = '\0';
+-			  len = 0;
+-			}
++		      if (off > 0)
++			tunestr[off++] = ':';
++
++		      const char *n = cur->name;
++
++		      while (*n != '\0')
++			tunestr[off++] = *n++;
++
++		      tunestr[off++] = '=';
++
++		      for (size_t j = 0; j < len; j++)
++			tunestr[off++] = value[j];
+ 		    }
+ 
+ 		  if (cur->security_level != TUNABLE_SECLEVEL_NONE)
+@@ -257,9 +255,7 @@ parse_tunables (char *tunestr, char *valstring)
+ 	    }
+ 	}
+ 
+-      if (p[len] == '\0')
+-	return;
+-      else
++      if (p[len] != '\0')
+ 	p += len + 1;
+     }
+ }
+diff --git a/elf/tst-env-setuid-tunables.c b/elf/tst-env-setuid-tunables.c
+index 91db3d755549646f1edc40b3dd158985ca2f21ef..ca0c8c245c41f6ff065364c980dfc0e84df46b51 100644
+--- a/elf/tst-env-setuid-tunables.c
++++ b/elf/tst-env-setuid-tunables.c
+@@ -45,11 +45,37 @@
+ const char *teststrings[] =
+ {
+   "glibc.malloc.check=2:glibc.malloc.mmap_threshold=4096",
++  "glibc.malloc.check=2:glibc.malloc.check=2:glibc.malloc.mmap_threshold=4096",
++  "glibc.malloc.check=2:glibc.malloc.mmap_threshold=4096:glibc.malloc.check=2",
++  "glibc.malloc.perturb=0x800",
++  "glibc.malloc.perturb=0x800:glibc.malloc.mmap_threshold=4096",
++  "glibc.malloc.perturb=0x800:not_valid.malloc.check=2:glibc.malloc.mmap_threshold=4096",
++  "glibc.not_valid.check=2:glibc.malloc.mmap_threshold=4096",
++  "not_valid.malloc.check=2:glibc.malloc.mmap_threshold=4096",
++  "glibc.malloc.garbage=2:glibc.maoc.mmap_threshold=4096:glibc.malloc.check=2",
++  "glibc.malloc.check=4:glibc.malloc.garbage=2:glibc.maoc.mmap_threshold=4096",
++  ":glibc.malloc.garbage=2:glibc.malloc.check=1",
++  "glibc.malloc.check=1:glibc.malloc.check=2",
++  "not_valid.malloc.check=2",
++  "glibc.not_valid.check=2",
+ };
+ 
+ const char *resultstrings[] =
+ {
+   "glibc.malloc.mmap_threshold=4096",
++  "glibc.malloc.mmap_threshold=4096",
++  "glibc.malloc.mmap_threshold=4096",
++  "glibc.malloc.perturb=0x800",
++  "glibc.malloc.perturb=0x800:glibc.malloc.mmap_threshold=4096",
++  "glibc.malloc.perturb=0x800:glibc.malloc.mmap_threshold=4096",
++  "glibc.malloc.mmap_threshold=4096",
++  "glibc.malloc.mmap_threshold=4096",
++  "",
++  "",
++  "",
++  "",
++  "",
++  "",
+ };
+ 
+ static int
+-- 
+2.41.0
+

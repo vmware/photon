@@ -1,0 +1,85 @@
+From ede8acfdee2f91b121f7fd46361a0bcabafe864d Mon Sep 17 00:00:00 2001
+From: Paul Zimmermann <Paul.Zimmermann@inria.fr>
+Date: Tue, 8 Dec 2020 20:26:32 +0530
+Subject: [PATCH 104/124] Fix typos in "NEWS for version 2.32"
+
+(cherry picked from commit 4d3a77c73594c3704992f8d5b779c8be053cff35)
+---
+ NEWS | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 084434b869c67f41879d78b54389cf9d2e434f2f..9998d471f5a4dad6b5d5a14f844c6ddb625425a4 100644
+--- a/NEWS
++++ b/NEWS
+@@ -50,14 +50,14 @@ Major new features:
+      - arc-linux-gnuhf
+      - arceb-linux-gnu
+ 
+-  The arc* ABI is little-endian while arceb is big-endian. All ABIs use
++  The arc* ABIs are little-endian while arceb is big-endian.  All ABIs use
+   64-bit time (y2038 safe) and 64-bit file offsets (LFS default).
+ 
+ * The GNU C Library now loads audit modules listed in the DT_AUDIT and
+   DT_DEPAUDIT dynamic section entries of the main executable.
+ 
+ * powerpc64le supports IEEE128 long double libm/libc redirects when
+-  using the -mabi=ieeelongdouble to compile C code on supported GCC
++  using -mabi=ieeelongdouble to compile C code on supported GCC
+   toolchains.  It is recommended to use GCC 8 or newer when testing
+   this option.
+ 
+@@ -65,7 +65,7 @@ Major new features:
+   several APIs have been annotated with GCC 'access' attribute.  This
+   should help GCC 10 issue better warnings.
+ 
+-* On Linux, functions the pthread_attr_setsigmask_np and
++* On Linux, functions pthread_attr_setsigmask_np and
+   pthread_attr_getsigmask_np have been added.  They allow applications
+   to specify the signal mask of a thread created with pthread_create.
+ 
+@@ -76,9 +76,9 @@ Major new features:
+   libpthread.
+ 
+ * The functions sigabbrev_np and sigdescr_np have been added.  The
+-  sigabbrev_np returns the abbreviated signal name (e.g. "HUP" for SIGHUP)
+-  while sigdescr_np returns a string describing the signal number (e.g
+-  "Hangup" for SIGHUP).  Different than strsignal, sigdescr_np does not
++  sigabbrev_np function returns the abbreviated signal name (e.g. "HUP" for
++  SIGHUP) while sigdescr_np returns a string describing the signal number
++  (e.g "Hangup" for SIGHUP).  Different than strsignal, sigdescr_np does not
+   attempt to translate the return description, both functions return
+   NULL for an invalid signal number.
+ 
+@@ -86,8 +86,8 @@ Major new features:
+   are both thread and async-signal safe.  These functions are GNU extensions.
+ 
+ * The functions strerrorname_np and strerrordesc_np have been added.  The
+-  strerroname_np returns error number name (e.g. "EINVAL" for EINVAL) while
+-  strerrordesc_np returns string describing error number
++  strerroname_np function returns error number name (e.g. "EINVAL" for EINVAL)
++  while strerrordesc_np returns a string describing the error number
+   (e.g "Invalid argument" for EINVAL).  Different than strerror,
+   strerrordesc_np does not attempt to translate the return description, both
+   functions return NULL for an invalid error number.
+@@ -125,7 +125,7 @@ Deprecated and removed features, and other changes affecting compatibility:
+   that have been added in or before version 2.28.  Replacement
+   implementations based on TI-RPC, which additionally support IPv6, are
+   available from <https://github.com/thkukuk/>.  This change does not
+-  affect the "compat" NSS module, which does not depended on libnsl
++  affect the "compat" NSS module, which does not depend on libnsl
+   since 2.27 and thus can be used without NIS.
+ 
+ * The deprecated <sys/sysctl.h> header and the sysctl function have been
+@@ -154,7 +154,7 @@ Deprecated and removed features, and other changes affecting compatibility:
+ 
+ * The deprecated symbols sys_errlist, _sys_errlist, sys_nerr, and _sys_nerr
+   are no longer available to newly linked binaries, and their declarations
+-  have been removed from from <stdio.h>.  They are exported solely as
++  have been removed from <stdio.h>.  They are exported solely as
+   compatibility symbols to support old binaries.  All programs should use
+   strerror or strerror_r instead.
+ 
+-- 
+2.41.0
+

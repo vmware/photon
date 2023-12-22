@@ -1,0 +1,110 @@
+From 737efa27fca5c97f566a2005687fda7d6659cd2e Mon Sep 17 00:00:00 2001
+From: Fangrui Song <maskray@google.com>
+Date: Thu, 8 Jul 2021 14:26:22 -0700
+Subject: [PATCH 050/124] x86_64: Remove unneeded static PIE check for
+ undefined weak diagnostic
+
+https://sourceware.org/bugzilla/show_bug.cgi?id=21782 dropped an ld
+diagnostic for R_X86_64_PC32 referencing an undefined weak symbol in
+-pie links.  Arguably keeping the diagnostic like other ports is more
+correct, since statically resolving movl foo(%rip), %eax to the
+link-time zero address produces a corrupted output.
+
+It turns out that --enable-static-pie builds do not depend on the ld
+behavior. GCC generates GOT indirection for weak declarations for
+-fPIE/-fPIC, so what ld does with the PC-relative relocation doesn't
+really matter.
+
+Reviewed-by: H.J. Lu <hjl.tools@gmail.com>
+(cherry picked from commit 115d242456de158e698ffb0f9a5fee3118e9e825)
+---
+ sysdeps/x86_64/configure    | 33 ---------------------------------
+ sysdeps/x86_64/configure.ac | 25 -------------------------
+ 2 files changed, 58 deletions(-)
+ mode change 100644 => 100755 sysdeps/x86_64/configure
+
+diff --git a/sysdeps/x86_64/configure b/sysdeps/x86_64/configure
+old mode 100644
+new mode 100755
+index 84f82c24068ef04b9ea55ad9bdc92cf1a70da0cf..fc1840e23faaef644701d8fc481b55456034289f
+--- a/sysdeps/x86_64/configure
++++ b/sysdeps/x86_64/configure
+@@ -107,39 +107,6 @@ if test x"$build_mathvec" = xnotset; then
+   build_mathvec=yes
+ fi
+ 
+-if test "$static_pie" = yes; then
+-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker static PIE support" >&5
+-$as_echo_n "checking for linker static PIE support... " >&6; }
+-if ${libc_cv_ld_static_pie+:} false; then :
+-  $as_echo_n "(cached) " >&6
+-else
+-  cat > conftest.s <<\EOF
+-	.text
+-	.global _start
+-	.weak foo
+-_start:
+-	leaq	foo(%rip), %rax
+-EOF
+-  libc_cv_pie_option="-Wl,-pie"
+-  if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -nostartfiles -nostdlib $no_ssp $libc_cv_pie_option -o conftest conftest.s 1>&5'
+-  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+-  (eval $ac_try) 2>&5
+-  ac_status=$?
+-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+-  test $ac_status = 0; }; }; then
+-    libc_cv_ld_static_pie=yes
+-  else
+-    libc_cv_ld_static_pie=no
+-  fi
+-rm -f conftest*
+-fi
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv_ld_static_pie" >&5
+-$as_echo "$libc_cv_ld_static_pie" >&6; }
+-  if test "$libc_cv_ld_static_pie" != yes; then
+-    as_fn_error $? "linker support for static PIE needed" "$LINENO" 5
+-  fi
+-fi
+-
+ $as_echo "#define PI_STATIC_AND_HIDDEN 1" >>confdefs.h
+ 
+ 
+diff --git a/sysdeps/x86_64/configure.ac b/sysdeps/x86_64/configure.ac
+index cdaba0c075abfb2cca89d812cae32dd3e391dc16..611a7d9ba3fdfb8f1317e3713f695783745719d1 100644
+--- a/sysdeps/x86_64/configure.ac
++++ b/sysdeps/x86_64/configure.ac
+@@ -53,31 +53,6 @@ if test x"$build_mathvec" = xnotset; then
+   build_mathvec=yes
+ fi
+ 
+-dnl Check if linker supports static PIE with the fix for
+-dnl
+-dnl https://sourceware.org/bugzilla/show_bug.cgi?id=21782
+-dnl
+-if test "$static_pie" = yes; then
+-  AC_CACHE_CHECK(for linker static PIE support, libc_cv_ld_static_pie, [dnl
+-cat > conftest.s <<\EOF
+-	.text
+-	.global _start
+-	.weak foo
+-_start:
+-	leaq	foo(%rip), %rax
+-EOF
+-  libc_cv_pie_option="-Wl,-pie"
+-  if AC_TRY_COMMAND(${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -nostartfiles -nostdlib $no_ssp $libc_cv_pie_option -o conftest conftest.s 1>&AS_MESSAGE_LOG_FD); then
+-    libc_cv_ld_static_pie=yes
+-  else
+-    libc_cv_ld_static_pie=no
+-  fi
+-rm -f conftest*])
+-  if test "$libc_cv_ld_static_pie" != yes; then
+-    AC_MSG_ERROR([linker support for static PIE needed])
+-  fi
+-fi
+-
+ dnl It is always possible to access static and hidden symbols in an
+ dnl position independent way.
+ AC_DEFINE(PI_STATIC_AND_HIDDEN)
+-- 
+2.41.0
+

@@ -1,0 +1,304 @@
+From 0b9460d22e285432d232f42c7442a3226e1bf830 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Tue, 29 Sep 2020 14:51:36 -0300
+Subject: [PATCH 010/124] sysvipc: Fix IPC_INFO and SHM_INFO handling [BZ
+ #26636]
+
+Both commands are Linux extensions where the third argument is either
+a 'struct shminfo' (IPC_INFO) or a 'struct shm_info' (SHM_INFO) instead
+of 'struct shmid_ds'.  And their information does not contain any time
+related fields, so there is no need to extra conversion for __IPC_TIME64.
+
+The regression testcase checks for Linux specifix SysV ipc message
+control extension.  For SHM_INFO it tries to match the values against the
+tunable /proc values and for MSG_STAT/MSG_STAT_ANY it check if the create\
+shared memory is within the global list returned by the kernel.
+
+Checked on x86_64-linux-gnu and on i686-linux-gnu (Linux v5.4 and on
+Linux v4.15).
+
+(cherry picked from commit  a49d7fd4f764e97ccaf922e433046590ae52fce9)
+---
+ NEWS                                        |   2 +
+ sysdeps/unix/sysv/linux/Makefile            |   2 +-
+ sysdeps/unix/sysv/linux/shmctl.c            |  24 ++-
+ sysdeps/unix/sysv/linux/tst-sysvshm-linux.c | 185 ++++++++++++++++++++
+ 4 files changed, 206 insertions(+), 7 deletions(-)
+ create mode 100644 sysdeps/unix/sysv/linux/tst-sysvshm-linux.c
+
+diff --git a/NEWS b/NEWS
+index 15c0299dd029266700984098624f77b800c07c36..303073583995108b4686fd3f35feab7af9fb26a0 100644
+--- a/NEWS
++++ b/NEWS
+@@ -10,6 +10,8 @@ The following bugs are resolved with this release:
+   [26534] libm.so 2.32 SIGILL in pow() due to FMA4 instruction on non-FMA4
+     system
+   [26555] string: strerrorname_np does not return the documented value
++  [26636] libc: 32-bit shmctl(IPC_INFO) crashes when shminfo struct is
++    at the end of a memory mapping
+   [26637] libc: semctl SEM_STAT_ANY fails to pass the buffer specified
+     by the caller to the kernel
+   [26639] libc: msgctl IPC_INFO and MSG_INFO return garbage
+diff --git a/sysdeps/unix/sysv/linux/Makefile b/sysdeps/unix/sysv/linux/Makefile
+index 6ea615ab00ed7c0a1c54635a6e464c4cb2a2578d..34748ffcd11aff5e505dd1830a40db00e0c4da47 100644
+--- a/sysdeps/unix/sysv/linux/Makefile
++++ b/sysdeps/unix/sysv/linux/Makefile
+@@ -100,7 +100,7 @@ tests += tst-clone tst-clone2 tst-clone3 tst-fanotify tst-personality \
+ 	 tst-quota tst-sync_file_range tst-sysconf-iov_max tst-ttyname \
+ 	 test-errno-linux tst-memfd_create tst-mlock2 tst-pkey \
+ 	 tst-rlimit-infinity tst-ofdlocks tst-gettid tst-gettid-kill \
+-	 tst-tgkill tst-sysvsem-linux tst-sysvmsg-linux
++	 tst-tgkill tst-sysvsem-linux tst-sysvmsg-linux tst-sysvshm-linux
+ tests-internal += tst-ofdlocks-compat tst-sigcontext-get_pc
+ 
+ CFLAGS-tst-sigcontext-get_pc.c = -fasynchronous-unwind-tables
+diff --git a/sysdeps/unix/sysv/linux/shmctl.c b/sysdeps/unix/sysv/linux/shmctl.c
+index 76d88441f131ac00124296e55c1c950ee212827e..1d19a798b19bb706ed184c67b18b8e1a2bbf07ac 100644
+--- a/sysdeps/unix/sysv/linux/shmctl.c
++++ b/sysdeps/unix/sysv/linux/shmctl.c
+@@ -90,8 +90,15 @@ __shmctl64 (int shmid, int cmd, struct __shmid64_ds *buf)
+   struct kernel_shmid64_ds kshmid, *arg = NULL;
+   if (buf != NULL)
+     {
+-      shmid64_to_kshmid64 (buf, &kshmid);
+-      arg = &kshmid;
++      /* This is a Linux extension where kernel expects either a
++	 'struct shminfo' (IPC_INFO) or 'struct shm_info' (SHM_INFO).  */
++      if (cmd == IPC_INFO || cmd == SHM_INFO)
++	arg = (struct kernel_shmid64_ds *) buf;
++      else
++	{
++	  shmid64_to_kshmid64 (buf, &kshmid);
++	  arg = &kshmid;
++	}
+     }
+ # ifdef __ASSUME_SYSVIPC_BROKEN_MODE_T
+   if (cmd == IPC_SET)
+@@ -107,7 +114,6 @@ __shmctl64 (int shmid, int cmd, struct __shmid64_ds *buf)
+ 
+   switch (cmd)
+     {
+-      case IPC_INFO:
+       case IPC_STAT:
+       case SHM_STAT:
+       case SHM_STAT_ANY:
+@@ -168,8 +174,15 @@ __shmctl (int shmid, int cmd, struct shmid_ds *buf)
+   struct __shmid64_ds shmid64, *buf64 = NULL;
+   if (buf != NULL)
+     {
+-      shmid_to_shmid64 (&shmid64, buf);
+-      buf64 = &shmid64;
++      /* This is a Linux extension where kernel expects either a
++	 'struct shminfo' (IPC_INFO) or 'struct shm_info' (SHM_INFO).  */
++      if (cmd == IPC_INFO || cmd == SHM_INFO)
++	buf64 = (struct __shmid64_ds *) buf;
++      else
++	{
++	  shmid_to_shmid64 (&shmid64, buf);
++	  buf64 = &shmid64;
++	}
+     }
+ 
+   int ret = __shmctl64 (shmid, cmd, buf64);
+@@ -178,7 +191,6 @@ __shmctl (int shmid, int cmd, struct shmid_ds *buf)
+ 
+   switch (cmd)
+     {
+-      case IPC_INFO:
+       case IPC_STAT:
+       case SHM_STAT:
+       case SHM_STAT_ANY:
+diff --git a/sysdeps/unix/sysv/linux/tst-sysvshm-linux.c b/sysdeps/unix/sysv/linux/tst-sysvshm-linux.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..7128ae2e14db5ad8111849ada5841a1e89f2ceb5
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/tst-sysvshm-linux.c
+@@ -0,0 +1,185 @@
++/* Basic tests for Linux SYSV shared memory extensions.
++   Copyright (C) 2020 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sys/ipc.h>
++#include <sys/shm.h>
++#include <errno.h>
++#include <stdlib.h>
++#include <stdbool.h>
++#include <stdio.h>
++#include <unistd.h>
++#include <inttypes.h>
++#include <limits.h>
++
++#include <support/check.h>
++#include <support/temp_file.h>
++
++#define SHM_MODE 0644
++
++/* These are for the temporary file we generate.  */
++static char *name;
++static int shmid;
++static long int pgsz;
++
++static void
++remove_shm (void)
++{
++  /* Enforce message queue removal in case of early test failure.
++     Ignore error since the shm may already have being removed.  */
++  shmctl (shmid, IPC_RMID, NULL);
++}
++
++static void
++do_prepare (int argc, char *argv[])
++{
++  TEST_VERIFY_EXIT (create_temp_file ("tst-sysvshm.", &name) != -1);
++}
++
++#define PREPARE do_prepare
++
++struct test_shminfo
++{
++  unsigned long int shmall;
++  unsigned long int shmmax;
++  unsigned long int shmmni;
++};
++
++/* It tries to obtain some system-wide SysV shared memory information from
++   /proc to check against IPC_INFO/SHM_INFO.  The /proc only returns the
++   tunables value of SHMALL, SHMMAX, and SHMMNI.  */
++
++static uint64_t
++read_proc_file (const char *file)
++{
++  FILE *f = fopen (file, "r");
++  if (f == NULL)
++    FAIL_UNSUPPORTED ("/proc is not mounted or %s is not available", file);
++
++  /* Handle 32-bit binaries running on 64-bit kernels.  */
++  uint64_t v;
++  int r = fscanf (f, "%" SCNu64, &v);
++  TEST_VERIFY_EXIT (r == 1);
++
++  fclose (f);
++  return v;
++}
++
++
++/* Check if the message queue with IDX (index into the kernel's internal
++   array) matches the one with KEY.  The CMD is either SHM_STAT or
++   SHM_STAT_ANY.  */
++
++static bool
++check_shminfo (int idx, key_t key, int cmd)
++{
++  struct shmid_ds shminfo;
++  int sid = shmctl (idx, cmd, &shminfo);
++  /* Ignore unused array slot returned by the kernel or information from
++     unknown message queue.  */
++  if ((sid == -1 && errno == EINVAL) || sid != shmid)
++    return false;
++
++  if (sid == -1)
++    FAIL_EXIT1 ("shmctl with %s failed: %m",
++		cmd == SHM_STAT ? "SHM_STAT" : "SHM_STAT_ANY");
++
++  TEST_COMPARE (shminfo.shm_perm.__key, key);
++  TEST_COMPARE (shminfo.shm_perm.mode, SHM_MODE);
++  TEST_COMPARE (shminfo.shm_segsz, pgsz);
++
++  return true;
++}
++
++static int
++do_test (void)
++{
++  atexit (remove_shm);
++
++  pgsz = sysconf (_SC_PAGESIZE);
++  if (pgsz == -1)
++    FAIL_EXIT1 ("sysconf (_SC_PAGESIZE) failed: %m");
++
++  key_t key = ftok (name, 'G');
++  if (key == -1)
++    FAIL_EXIT1 ("ftok failed: %m");
++
++  shmid = shmget (key, pgsz, IPC_CREAT | IPC_EXCL | SHM_MODE);
++  if (shmid == -1)
++    FAIL_EXIT1 ("shmget failed: %m");
++
++  struct test_shminfo tipcinfo;
++  {
++    uint64_t v = read_proc_file ("/proc/sys/kernel/shmmax");
++#if LONG_MAX == INT_MAX
++    /* Kernel explicit clamp the value for shmmax on compat symbol (32-bit
++       binaries running on 64-bit kernels).  */
++    if (v > INT_MAX)
++      v = INT_MAX;
++#endif
++    tipcinfo.shmmax = v;
++  }
++  tipcinfo.shmall = read_proc_file ("/proc/sys/kernel/shmall");
++  tipcinfo.shmmni = read_proc_file ("/proc/sys/kernel/shmmni");
++
++  int shmidx;
++
++  /* Note: SHM_INFO does not return a shminfo, but rather a 'struct shm_info'.
++     It is tricky to verify its values since the syscall returns system wide
++     resources consumed by shared memory.  The shmctl implementation handles
++     SHM_INFO as IPC_INFO, so the IPC_INFO test should validate SHM_INFO as
++     well.  */
++
++  {
++    struct shminfo ipcinfo;
++    shmidx = shmctl (shmid, IPC_INFO, (struct shmid_ds *) &ipcinfo);
++    if (shmidx == -1)
++      FAIL_EXIT1 ("shmctl with IPC_INFO failed: %m");
++
++    TEST_COMPARE (ipcinfo.shmall, tipcinfo.shmall);
++    TEST_COMPARE (ipcinfo.shmmax, tipcinfo.shmmax);
++    TEST_COMPARE (ipcinfo.shmmni, tipcinfo.shmmni);
++  }
++
++  /* We check if the created shared memory shows in the global list.  */
++  bool found = false;
++  for (int i = 0; i <= shmidx; i++)
++    {
++      /* We can't tell apart if SHM_STAT_ANY is not supported (kernel older
++	 than 4.17) or if the index used is invalid.  So it just check if
++	 value returned from a valid call matches the created message
++	 queue.  */
++      check_shminfo (i, key, SHM_STAT_ANY);
++
++      if (check_shminfo (i, key, SHM_STAT))
++	{
++	  found = true;
++	  break;
++	}
++    }
++
++  if (!found)
++    FAIL_EXIT1 ("shmctl with SHM_STAT/SHM_STAT_ANY could not find the "
++		"created shared memory");
++
++  if (shmctl (shmid, IPC_RMID, NULL) == -1)
++    FAIL_EXIT1 ("shmctl failed");
++
++  return 0;
++}
++
++#include <support/test-driver.c>
+-- 
+2.41.0
+

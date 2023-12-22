@@ -1,0 +1,168 @@
+From 9d1cd8bd7a8c6c8b7c4bfb3e566f711494cc12db Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Thu, 8 Jul 2021 16:13:17 -0400
+Subject: [PATCH 093/124] x86-64: Test strlen and wcslen with 0 in the RSI
+ register [BZ #28064]
+
+commit 6f573a27b6c8b4236445810a44660612323f5a73
+Author: Noah Goldstein <goldstein.w.n@gmail.com>
+Date:   Wed Jun 23 01:19:34 2021 -0400
+
+    x86-64: Add wcslen optimize for sse4.1
+
+added wcsnlen-sse4.1 to the wcslen ifunc implementation list.  Since the
+random value in the the RSI register is larger than the wide-character
+string length in the existing wcslen test, it didn't trigger the wcslen
+test failure.  Add a test to force 0 into the RSI register before calling
+wcslen.
+
+(cherry picked from commit a6e7c3745d73ff876b4ba6991fb00768a938aef5)
+---
+ sysdeps/x86_64/Makefile         |  7 +++
+ sysdeps/x86_64/tst-rsi-strlen.c | 81 +++++++++++++++++++++++++++++++++
+ sysdeps/x86_64/tst-rsi-wcslen.c | 20 ++++++++
+ 3 files changed, 108 insertions(+)
+ create mode 100644 sysdeps/x86_64/tst-rsi-strlen.c
+ create mode 100644 sysdeps/x86_64/tst-rsi-wcslen.c
+
+diff --git a/sysdeps/x86_64/Makefile b/sysdeps/x86_64/Makefile
+index 42b97c5cc73892ccb050d585c612d825c829a120..020044da80e97973fe470385d1a83066836706b9 100644
+--- a/sysdeps/x86_64/Makefile
++++ b/sysdeps/x86_64/Makefile
+@@ -20,6 +20,8 @@ endif
+ ifeq ($(subdir),string)
+ sysdep_routines += strcasecmp_l-nonascii strncase_l-nonascii
+ gen-as-const-headers += locale-defines.sym
++tests += \
++  tst-rsi-strlen
+ endif
+ 
+ ifeq ($(subdir),elf)
+@@ -150,6 +152,11 @@ ifeq ($(subdir),csu)
+ gen-as-const-headers += tlsdesc.sym rtld-offsets.sym
+ endif
+ 
++ifeq ($(subdir),wcsmbs)
++tests += \
++  tst-rsi-wcslen
++endif
++
+ $(objpfx)x86_64/tst-x86_64mod-1.os: $(objpfx)tst-x86_64mod-1.os
+ 	$(make-target-directory)
+ 	rm -f $@
+diff --git a/sysdeps/x86_64/tst-rsi-strlen.c b/sysdeps/x86_64/tst-rsi-strlen.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..a80c4f85c210a5b5b91b2bf48a1f99800530aa46
+--- /dev/null
++++ b/sysdeps/x86_64/tst-rsi-strlen.c
+@@ -0,0 +1,81 @@
++/* Test strlen with 0 in the RSI register.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#ifdef WIDE
++# define TEST_NAME "wcslen"
++#else
++# define TEST_NAME "strlen"
++#endif /* WIDE */
++
++#define TEST_MAIN
++#include <string/test-string.h>
++
++#ifdef WIDE
++# include <wchar.h>
++# define STRLEN wcslen
++# define CHAR wchar_t
++#else
++# define STRLEN strlen
++# define CHAR char
++#endif /* WIDE */
++
++IMPL (STRLEN, 1)
++
++typedef size_t (*proto_t) (const CHAR *);
++
++typedef struct
++{
++  void (*fn) (void);
++} parameter_t;
++
++size_t
++__attribute__ ((weak, noinline, noclone))
++do_strlen (parameter_t *a, int zero, const CHAR *str)
++{
++  return CALL (a, str);
++}
++
++static int
++test_main (void)
++{
++  test_init ();
++
++  size_t size = page_size / sizeof (CHAR) - 1;
++  CHAR *buf = (CHAR *) buf2;
++  buf[size] = 0;
++
++  parameter_t a;
++
++  int ret = 0;
++  FOR_EACH_IMPL (impl, 0)
++    {
++      a.fn = impl->fn;
++      /* NB: Pass 0 in RSI.  */
++      size_t res = do_strlen (&a, 0, buf);
++      if (res != size)
++	{
++	  error (0, 0, "Wrong result in function %s: %zu != %zu",
++		 impl->name, res, size);
++	  ret = 1;
++	}
++    }
++
++  return ret ? EXIT_FAILURE : EXIT_SUCCESS;
++}
++
++#include <support/test-driver.c>
+diff --git a/sysdeps/x86_64/tst-rsi-wcslen.c b/sysdeps/x86_64/tst-rsi-wcslen.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..f45a7dfb5147d89c81f477c81fcb0217a7183daf
+--- /dev/null
++++ b/sysdeps/x86_64/tst-rsi-wcslen.c
+@@ -0,0 +1,20 @@
++/* Test wcslen with 0 in the RSI register.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#define WIDE 1
++#include "tst-rsi-strlen.c"
+-- 
+2.41.0
+

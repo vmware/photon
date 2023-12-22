@@ -1,0 +1,143 @@
+From 1d49bede4d8a5448067e8579b14fedf437e75aee Mon Sep 17 00:00:00 2001
+From: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Date: Thu, 24 Dec 2020 11:20:15 +0530
+Subject: [PATCH 024/124] tests-mcheck: New variable to run tests with
+ MALLOC_CHECK_=3
+
+This new variable allows various subsystems in glibc to run all or
+some of their tests with MALLOC_CHECK_=3.  This patch adds
+infrastructure support for this variable as well as an implementation
+in malloc/Makefile to allow running some of the tests with
+MALLOC_CHECK_=3.
+
+At present some tests in malloc/ have been excluded from the mcheck
+tests either because they're specifically testing MALLOC_CHECK_ or
+they are failing in master even without the Memory Tagging patches
+that prompted this work.  Some tests were reviewed and found to need
+specific error points that MALLOC_CHECK_ defeats by terminating early
+but a thorough review of all tests is needed to bring them into mcheck
+coverage.
+
+Backported from 4f969166ce4ab535fa798dcbaa5de4c4e05773ec.
+---
+ Rules           | 19 ++++++++++++++++++-
+ malloc/Makefile | 20 ++++++++++++++++++++
+ 2 files changed, 38 insertions(+), 1 deletion(-)
+
+diff --git a/Rules b/Rules
+index 8b771f6095b5a0ca77a2b25b32d17cb21728d833..beab969fde711c9ad30c6d5d4ffda3af65f640c3 100644
+--- a/Rules
++++ b/Rules
+@@ -155,6 +155,7 @@ xtests: tests $(xtests-special)
+ else
+ tests: $(tests:%=$(objpfx)%.out) $(tests-internal:%=$(objpfx)%.out) \
+        $(tests-container:%=$(objpfx)%.out) \
++       $(tests-mcheck:%=$(objpfx)%-mcheck.out) \
+        $(tests-special) $(tests-printers-out)
+ xtests: tests $(xtests:%=$(objpfx)%.out) $(xtests-special)
+ endif
+@@ -165,7 +166,7 @@ ifeq ($(run-built-tests),no)
+ tests-expected =
+ else
+ tests-expected = $(tests) $(tests-internal) $(tests-printers) \
+-	$(tests-container)
++	$(tests-container) $(tests-mcheck:%=%-mcheck)
+ endif
+ tests:
+ 	$(..)scripts/merge-test-results.sh -s $(objpfx) $(subdir) \
+@@ -191,6 +192,7 @@ else
+ binaries-pie-tests =
+ binaries-pie-notests =
+ endif
++binaries-mcheck-tests = $(tests-mcheck:%=%-mcheck)
+ else
+ binaries-all-notests =
+ binaries-all-tests = $(tests) $(tests-internal) $(xtests) $(test-srcs)
+@@ -200,6 +202,7 @@ binaries-static-tests =
+ binaries-static =
+ binaries-pie-tests =
+ binaries-pie-notests =
++binaries-mcheck-tests =
+ endif
+ 
+ binaries-pie = $(binaries-pie-tests) $(binaries-pie-notests)
+@@ -223,6 +226,14 @@ $(addprefix $(objpfx),$(binaries-shared-tests)): %: %.o \
+ 	$(+link-tests)
+ endif
+ 
++ifneq "$(strip $(binaries-mcheck-tests))" ""
++$(addprefix $(objpfx),$(binaries-mcheck-tests)): %-mcheck: %.o \
++  $(link-extra-libs-tests) \
++  $(sort $(filter $(common-objpfx)lib%,$(link-libc))) \
++  $(addprefix $(csu-objpfx),start.o) $(+preinit) $(+postinit)
++	$(+link-tests)
++endif
++
+ ifneq "$(strip $(binaries-pie-tests))" ""
+ $(addprefix $(objpfx),$(binaries-pie-tests)): %: %.o \
+   $(link-extra-libs-tests) \
+@@ -253,6 +264,12 @@ $(addprefix $(objpfx),$(binaries-static-tests)): %: %.o \
+ 	$(+link-static-tests)
+ endif
+ 
++# All mcheck tests will be run with MALLOC_CHECK_=3
++define mcheck-ENVS
++$(1)-mcheck-ENV = MALLOC_CHECK_=3
++endef
++$(foreach t,$(tests-mcheck),$(eval $(call mcheck-ENVS,$(t))))
++
+ ifneq "$(strip $(tests) $(tests-internal) $(xtests) $(test-srcs))" ""
+ # These are the implicit rules for making test outputs
+ # from the test programs and whatever input files are present.
+diff --git a/malloc/Makefile b/malloc/Makefile
+index e22cbde22d4aa29f12e2778a2e4f3258d8a0636b..5093e8730ed0f61afc1d9350fc054483cad0e5fb 100644
+--- a/malloc/Makefile
++++ b/malloc/Makefile
+@@ -62,6 +62,16 @@ endif
+ tests += $(tests-static)
+ test-srcs = tst-mtrace
+ 
++# These tests either are run with MALLOC_CHECK_=3 by default or do not work
++# with MALLOC_CHECK_=3 because they expect a specific failure.
++tests-exclude-mcheck = tst-mcheck tst-malloc-usable \
++	tst-interpose-nothread tst-interpose-static-nothread \
++	tst-interpose-static-thread tst-malloc-too-large \
++	tst-mxfast tst-safe-linking
++
++# Run all tests with MALLOC_CHECK_=3
++tests-mcheck = $(filter-out $(tests-exclude-mcheck),$(tests))
++
+ routines = malloc morecore mcheck mtrace obstack reallocarray \
+   scratch_buffer_grow scratch_buffer_grow_preserve \
+   scratch_buffer_set_array_size \
+@@ -100,6 +110,11 @@ $(objpfx)tst-malloc-thread-exit: $(shared-thread-library)
+ $(objpfx)tst-malloc-thread-fail: $(shared-thread-library)
+ $(objpfx)tst-malloc-fork-deadlock: $(shared-thread-library)
+ $(objpfx)tst-malloc-stats-cancellation: $(shared-thread-library)
++$(objpfx)tst-malloc-backtrace-mcheck: $(shared-thread-library)
++$(objpfx)tst-malloc-thread-exit-mcheck: $(shared-thread-library)
++$(objpfx)tst-malloc-thread-fail-mcheck: $(shared-thread-library)
++$(objpfx)tst-malloc-fork-deadlock-mcheck: $(shared-thread-library)
++$(objpfx)tst-malloc-stats-cancellation-mcheck: $(shared-thread-library)
+ 
+ # Export the __malloc_initialize_hook variable to libc.so.
+ LDFLAGS-tst-mallocstate = -rdynamic
+@@ -239,6 +254,8 @@ $(tests:%=$(objpfx)%.o): CPPFLAGS += -DTEST_NO_MALLOPT
+ $(objpfx)tst-interpose-nothread: $(objpfx)tst-interpose-aux-nothread.o
+ $(objpfx)tst-interpose-thread: \
+   $(objpfx)tst-interpose-aux-thread.o $(shared-thread-library)
++$(objpfx)tst-interpose-thread-mcheck: \
++  $(objpfx)tst-interpose-aux-thread.o $(shared-thread-library)
+ $(objpfx)tst-interpose-static-nothread: $(objpfx)tst-interpose-aux-nothread.o
+ $(objpfx)tst-interpose-static-thread: \
+   $(objpfx)tst-interpose-aux-thread.o $(static-thread-library)
+@@ -256,3 +273,6 @@ $(objpfx)tst-dynarray-fail-mem.out: $(objpfx)tst-dynarray-fail.out
+ $(objpfx)tst-malloc-tcache-leak: $(shared-thread-library)
+ $(objpfx)tst-malloc_info: $(shared-thread-library)
+ $(objpfx)tst-mallocfork2: $(shared-thread-library)
++$(objpfx)tst-malloc-tcache-leak-mcheck: $(shared-thread-library)
++$(objpfx)tst-malloc_info-mcheck: $(shared-thread-library)
++$(objpfx)tst-mallocfork2-mcheck: $(shared-thread-library)
+-- 
+2.41.0
+

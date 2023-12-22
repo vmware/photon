@@ -1,0 +1,67 @@
+From b1fcaf14fe91a35a21a184623c4f08352f566297 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Fri, 14 Jan 2022 14:48:01 -0800
+Subject: [PATCH 091/124] x86: Black list more Intel CPUs for TSX [BZ #27398]
+
+Disable TSX and enable RTM_ALWAYS_ABORT for Intel CPUs listed in:
+
+https://www.intel.com/content/www/us/en/support/articles/000059422/processors.html
+
+This fixes BZ #27398.
+
+Reviewed-by: Noah Goldstein <goldstein.w.n@gmail.com>
+(cherry picked from commit 1e000d3d33211d5a954300e2a69b90f93f18a1a1)
+---
+ sysdeps/x86/cpu-features.c | 34 +++++++++++++++++++++++++++++++---
+ 1 file changed, 31 insertions(+), 3 deletions(-)
+
+diff --git a/sysdeps/x86/cpu-features.c b/sysdeps/x86/cpu-features.c
+index ad135a122b9732af43c7d6cab0507e4c8717d02b..484efe7a0f2371f702a50c4169982e42924b8cd4 100644
+--- a/sysdeps/x86/cpu-features.c
++++ b/sysdeps/x86/cpu-features.c
+@@ -518,11 +518,39 @@ init_cpu_features (struct cpu_features *cpu_features)
+ 	      break;
+ 	    }
+ 
+-	 /* Disable TSX on some Haswell processors to avoid TSX on kernels that
+-	    weren't updated with the latest microcode package (which disables
+-	    broken feature by default).  */
++	 /* Disable TSX on some processors to avoid TSX on kernels that
++	    weren't updated with the latest microcode package (which
++	    disables broken feature by default).  */
+ 	 switch (model)
+ 	    {
++	    case 0x55:
++	      if (stepping <= 5)
++		goto disable_tsx;
++	      break;
++	    case 0x8e:
++	      /* NB: Although the errata documents that for model == 0x8e,
++		 only 0xb stepping or lower are impacted, the intention of
++		 the errata was to disable TSX on all client processors on
++		 all steppings.  Include 0xc stepping which is an Intel
++		 Core i7-8665U, a client mobile processor.  */
++	    case 0x9e:
++	      if (stepping > 0xc)
++		break;
++	      /* Fall through.  */
++	    case 0x4e:
++	    case 0x5e:
++	      {
++		/* Disable Intel TSX and enable RTM_ALWAYS_ABORT for
++		   processors listed in:
++
++https://www.intel.com/content/www/us/en/support/articles/000059422/processors.html
++		 */
++disable_tsx:
++		CPU_FEATURE_UNSET (cpu_features, HLE);
++		CPU_FEATURE_UNSET (cpu_features, RTM);
++		CPU_FEATURE_SET (cpu_features, RTM_ALWAYS_ABORT);
++	      }
++	      break;
+ 	    case 0x3f:
+ 	      /* Xeon E7 v3 with stepping >= 4 has working TSX.  */
+ 	      if (stepping >= 4)
+-- 
+2.41.0
+

@@ -1,0 +1,53 @@
+From f996f678b908a4a0e73816da89d47869e50c370f Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Mon, 19 Apr 2021 07:07:21 -0700
+Subject: [PATCH 089/124] x86-64: Require BMI2 for __strlen_evex and
+ __strnlen_evex
+
+Since __strlen_evex and __strnlen_evex added by
+
+commit 1fd8c163a83d96ace1ff78fa6bac7aee084f6f77
+Author: H.J. Lu <hjl.tools@gmail.com>
+Date:   Fri Mar 5 06:24:52 2021 -0800
+
+    x86-64: Add ifunc-avx2.h functions with 256-bit EVEX
+
+use sarx:
+
+c4 e2 6a f7 c0       	sarx   %edx,%eax,%eax
+
+require BMI2 for __strlen_evex and __strnlen_evex in ifunc-impl-list.c.
+ifunc-avx2.h already requires BMI2 for EVEX implementation.
+
+(cherry picked from commit 55bf411b451c13f0fb7ff3d3bf9a820020b45df1)
+---
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index 11e9e258209c71703de59044b83a2a5ed1f10101..e5af769869b8ab57033608870bd32747f538b9b6 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -295,7 +295,8 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      __strlen_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strlen,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+-			       && CPU_FEATURE_USABLE (AVX512BW)),
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __strlen_evex)
+ 	      IFUNC_IMPL_ADD (array, i, strlen, 1, __strlen_sse2))
+ 
+@@ -312,7 +313,8 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      __strnlen_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strnlen,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+-			       && CPU_FEATURE_USABLE (AVX512BW)),
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __strnlen_evex)
+ 	      IFUNC_IMPL_ADD (array, i, strnlen, 1, __strnlen_sse2))
+ 
+-- 
+2.41.0
+

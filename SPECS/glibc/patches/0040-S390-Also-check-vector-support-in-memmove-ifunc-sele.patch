@@ -1,0 +1,109 @@
+From 778b8d37865a1d6689155c23802724bf11e4bc75 Mon Sep 17 00:00:00 2001
+From: Stefan Liebler <stli@linux.ibm.com>
+Date: Tue, 23 Mar 2021 17:29:26 +0100
+Subject: [PATCH 040/124] S390: Also check vector support in memmove
+ ifunc-selector [BZ #27511]
+
+The arch13 memmove variant is currently selected by the ifunc selector
+if the Miscellaneous-Instruction-Extensions Facility 3 facility bit
+is present, but the function is also using vector instructions.
+If the vector support is not present, one is receiving an operation
+exception.
+
+Therefore this patch also checks for vector support in the ifunc
+selector and in ifunc-impl-list.c.
+
+Just to be sure, the configure check is now also testing an arch13
+vector instruction and an arch13 Miscellaneous-Instruction-Extensions
+Facility 3 instruction.
+
+(cherry picked from commit 7759be2593b689cb1eafc0f52ee7f59c639e5d2f)
+---
+ sysdeps/s390/configure                   | 8 ++++++--
+ sysdeps/s390/configure.ac                | 8 ++++++--
+ sysdeps/s390/memmove.c                   | 2 +-
+ sysdeps/s390/multiarch/ifunc-impl-list.c | 3 ++-
+ 4 files changed, 15 insertions(+), 6 deletions(-)
+
+diff --git a/sysdeps/s390/configure b/sysdeps/s390/configure
+index fa46e9e351e37e551e95884932b26f12a4587e4b..e7f576338d89012dda99be8401d01c14554bc57b 100644
+--- a/sysdeps/s390/configure
++++ b/sysdeps/s390/configure
+@@ -123,7 +123,9 @@ void testinsn (char *buf)
+     __asm__ (".machine \"arch13\" \n\t"
+ 	     ".machinemode \"zarch_nohighgprs\" \n\t"
+ 	     "lghi %%r0,16 \n\t"
+-	     "mvcrl 0(%0),32(%0)" : : "a" (buf) : "memory", "r0");
++	     "mvcrl 0(%0),32(%0) \n\t"
++	     "vstrs %%v20,%%v20,%%v20,%%v20,0,2"
++	     : : "a" (buf) : "memory", "r0");
+ }
+ EOF
+ if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS --shared conftest.c
+@@ -271,7 +273,9 @@ else
+ void testinsn (char *buf)
+ {
+     __asm__ ("lghi %%r0,16 \n\t"
+-	     "mvcrl 0(%0),32(%0)" : : "a" (buf) : "memory", "r0");
++	     "mvcrl 0(%0),32(%0) \n\t"
++	     "vstrs %%v20,%%v20,%%v20,%%v20,0,2"
++	     : : "a" (buf) : "memory", "r0");
+ }
+ EOF
+ if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS --shared conftest.c
+diff --git a/sysdeps/s390/configure.ac b/sysdeps/s390/configure.ac
+index 3ed5a8ef87f9694b62d37c4746a60f5810d09dcf..5c3479e8cf1fd4f17538665d615df166917cf696 100644
+--- a/sysdeps/s390/configure.ac
++++ b/sysdeps/s390/configure.ac
+@@ -88,7 +88,9 @@ void testinsn (char *buf)
+     __asm__ (".machine \"arch13\" \n\t"
+ 	     ".machinemode \"zarch_nohighgprs\" \n\t"
+ 	     "lghi %%r0,16 \n\t"
+-	     "mvcrl 0(%0),32(%0)" : : "a" (buf) : "memory", "r0");
++	     "mvcrl 0(%0),32(%0) \n\t"
++	     "vstrs %%v20,%%v20,%%v20,%%v20,0,2"
++	     : : "a" (buf) : "memory", "r0");
+ }
+ EOF
+ dnl test, if assembler supports S390 arch13 instructions
+@@ -195,7 +197,9 @@ cat > conftest.c <<\EOF
+ void testinsn (char *buf)
+ {
+     __asm__ ("lghi %%r0,16 \n\t"
+-	     "mvcrl 0(%0),32(%0)" : : "a" (buf) : "memory", "r0");
++	     "mvcrl 0(%0),32(%0) \n\t"
++	     "vstrs %%v20,%%v20,%%v20,%%v20,0,2"
++	     : : "a" (buf) : "memory", "r0");
+ }
+ EOF
+ dnl test, if assembler supports S390 arch13 zarch instructions as default
+diff --git a/sysdeps/s390/memmove.c b/sysdeps/s390/memmove.c
+index 5fc85e129fdefd9e095e4aeb6b63b514d117f6ce..ee59b5de14b9bd37d9bfbf48a6e34c6dfd506dd8 100644
+--- a/sysdeps/s390/memmove.c
++++ b/sysdeps/s390/memmove.c
+@@ -43,7 +43,7 @@ extern __typeof (__redirect_memmove) MEMMOVE_ARCH13 attribute_hidden;
+ s390_libc_ifunc_expr (__redirect_memmove, memmove,
+ 		      ({
+ 			s390_libc_ifunc_expr_stfle_init ();
+-			(HAVE_MEMMOVE_ARCH13
++			(HAVE_MEMMOVE_ARCH13 && (hwcap & HWCAP_S390_VXRS_EXT2)
+ 			 && S390_IS_ARCH13_MIE3 (stfle_bits))
+ 			  ? MEMMOVE_ARCH13
+ 			  : (HAVE_MEMMOVE_Z13 && (hwcap & HWCAP_S390_VX))
+diff --git a/sysdeps/s390/multiarch/ifunc-impl-list.c b/sysdeps/s390/multiarch/ifunc-impl-list.c
+index e6195c6e261efcbd0a253aa451a69a830cdec8df..17c0cc3952d873ead76ccc2ca58b63918049d768 100644
+--- a/sysdeps/s390/multiarch/ifunc-impl-list.c
++++ b/sysdeps/s390/multiarch/ifunc-impl-list.c
+@@ -171,7 +171,8 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+     IFUNC_IMPL (i, name, memmove,
+ # if HAVE_MEMMOVE_ARCH13
+ 		IFUNC_IMPL_ADD (array, i, memmove,
+-				S390_IS_ARCH13_MIE3 (stfle_bits),
++				((dl_hwcap & HWCAP_S390_VXRS_EXT2)
++				 && S390_IS_ARCH13_MIE3 (stfle_bits)),
+ 				MEMMOVE_ARCH13)
+ # endif
+ # if HAVE_MEMMOVE_Z13
+-- 
+2.41.0
+

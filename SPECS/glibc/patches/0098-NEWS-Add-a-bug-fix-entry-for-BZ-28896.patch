@@ -1,0 +1,25 @@
+From 443e146ce7aa1df0aa29fc0775451a4d933fcfbb Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Fri, 18 Feb 2022 19:10:42 -0800
+Subject: [PATCH 098/124] NEWS: Add a bug fix entry for BZ #28896
+
+---
+ NEWS | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/NEWS b/NEWS
+index d138a45519f2a6595825243a4289140a069276a9..48edda1390b6b459d2e881cb65bceafe25b4c45a 100644
+--- a/NEWS
++++ b/NEWS
+@@ -28,6 +28,8 @@ The following bugs are resolved with this release:
+   [28524] Conversion from ISO-2022-JP-3 with iconv may emit spurious NULs
+   [28607] Masked signals are delivered on thread exit
+   [28755] overflow bug in wcsncmp_avx2 and wcsncmp_evex
++  [28896] strncmp-avx2-rtm and wcsncmp-avx2-rtm fallback on non-rtm
++    variants when avoiding overflow
+ 
+ Version 2.32
+ 
+-- 
+2.41.0
+

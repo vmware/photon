@@ -1,0 +1,62 @@
+From c6090dcebd1fc2a39a95b6fd420e072a2039a81b Mon Sep 17 00:00:00 2001
+From: Szabolcs Nagy <szabolcs.nagy@arm.com>
+Date: Tue, 1 Dec 2020 10:12:32 +0000
+Subject: [PATCH 031/124] aarch64: align address for BTI protection [BZ #26988]
+
+Handle unaligned executable load segments (the bfd linker is not
+expected to produce such binaries, but other linkers may).
+
+Computing the mapping bounds follows _dl_map_object_from_fd more
+closely now.
+
+Fixes bug 26988.
+
+Reviewed-by: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+(cherry picked from commit 8b8f616e6a594b91d0afb152384bf2a9f72b7288)
+---
+ sysdeps/aarch64/dl-bti.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/sysdeps/aarch64/dl-bti.c b/sysdeps/aarch64/dl-bti.c
+index 56c097210ad4968ba40e1366f5925a845f15d4a0..779d0fe48879eaccd1283efdf1bf2e36be3226c9 100644
+--- a/sysdeps/aarch64/dl-bti.c
++++ b/sysdeps/aarch64/dl-bti.c
+@@ -20,19 +20,22 @@
+ #include <libintl.h>
+ #include <ldsodefs.h>
+ 
+-static int
++static void
+ enable_bti (struct link_map *map, const char *program)
+ {
++  const size_t pagesz = GLRO(dl_pagesize);
+   const ElfW(Phdr) *phdr;
+-  unsigned prot;
+ 
+   for (phdr = map->l_phdr; phdr < &map->l_phdr[map->l_phnum]; ++phdr)
+     if (phdr->p_type == PT_LOAD && (phdr->p_flags & PF_X))
+       {
+-	void *start = (void *) (phdr->p_vaddr + map->l_addr);
+-	size_t len = phdr->p_memsz;
++	size_t vstart = ALIGN_DOWN (phdr->p_vaddr, pagesz);
++	size_t vend = ALIGN_UP (phdr->p_vaddr + phdr->p_filesz, pagesz);
++	off_t off = ALIGN_DOWN (phdr->p_offset, pagesz);
++	void *start = (void *) (vstart + map->l_addr);
++	size_t len = vend - vstart;
+ 
+-	prot = PROT_EXEC | PROT_BTI;
++	unsigned prot = PROT_EXEC | PROT_BTI;
+ 	if (phdr->p_flags & PF_R)
+ 	  prot |= PROT_READ;
+ 	if (phdr->p_flags & PF_W)
+@@ -48,7 +51,6 @@ enable_bti (struct link_map *map, const char *program)
+ 				N_("mprotect failed to turn on BTI"));
+ 	  }
+       }
+-  return 0;
+ }
+ 
+ /* Enable BTI for L and its dependencies.  */
+-- 
+2.41.0
+

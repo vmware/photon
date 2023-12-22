@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        2.7.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Group:          Development/Tools
@@ -12,7 +12,7 @@ Source0: %{name}-%{version}.tar.gz
 %define sha512 %{name}=bd5567bd5a8163cf13de5b935ce90aafb4acba58acc07740eb1ed22ae761c68a7d160a22cfe3d49a9e700a4139c3cc1bef6a76a1bebd88caabef909cd85607b3
 
 Source1: dashboard-dist-%{version}.tar.gz
-%define sha512 dashboard-dist=e31051bef71d85f553bd26af94bd698d3e417f596d9a1bfe46aafee175c5ccaf8e1fb754364672b395444c0a67cd24392f2f3aee99b3e3fd9ec325b8dc21c7d0
+%define sha512 dashboard-dist=73d974e87792a93c33760ddc07c49231111f333a60bd38311bfa6c00ef993e9ef64e4a20aed5476821c513d2ada3417798d2497c0ce9a53d547c4788b6af25e0
 
 BuildArch:      x86_64
 
@@ -70,6 +70,8 @@ popd
 /opt/k8dashboard/public/*
 
 %changelog
+* Sat Dec 23 2023 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.7.0-6
+- Fix dist shasum
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-5
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-4

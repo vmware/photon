@@ -1,0 +1,72 @@
+From ff75390ef59823193351ae77584c397c503b7b58 Mon Sep 17 00:00:00 2001
+From: Andreas Schwab <schwab@linux-m68k.org>
+Date: Thu, 27 May 2021 12:49:47 +0200
+Subject: [PATCH 047/124] Use __pthread_attr_copy in mq_notify (bug 27896)
+
+Make a deep copy of the pthread attribute object to remove a potential
+use-after-free issue.
+
+(cherry picked from commit 42d359350510506b87101cf77202fefcbfc790cb)
+---
+ NEWS                                |  4 ++++
+ sysdeps/unix/sysv/linux/mq_notify.c | 15 ++++++++++-----
+ 2 files changed, 14 insertions(+), 5 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index f2780415121fd9d4b8673e38a9384e13345ebae1..2afe250ccf48923402f09dd5f81570f57d6f31a0 100644
+--- a/NEWS
++++ b/NEWS
+@@ -208,6 +208,10 @@ Security related changes:
+   invoked with input containing redundant shift sequences in the IBM1364,
+   IBM1371, IBM1388, IBM1390, or IBM1399 character sets.
+ 
++  CVE-2021-33574: The mq_notify function has a potential use-after-free
++  issue when using a notification type of SIGEV_THREAD and a thread
++  attribute with a non-default affinity mask.
++
+ The following bugs are resolved with this release:
+ 
+   [9809] localedata: ckb_IQ: new Kurdish Sorani locale
+diff --git a/sysdeps/unix/sysv/linux/mq_notify.c b/sysdeps/unix/sysv/linux/mq_notify.c
+index 61bbb03b646aff64004637f0042bb12fa7517c5b..f404acfdfe5109338a754ef3dbc6b2f845c6be2c 100644
+--- a/sysdeps/unix/sysv/linux/mq_notify.c
++++ b/sysdeps/unix/sysv/linux/mq_notify.c
+@@ -133,8 +133,11 @@ helper_thread (void *arg)
+ 	    (void) __pthread_barrier_wait (&notify_barrier);
+ 	}
+       else if (data.raw[NOTIFY_COOKIE_LEN - 1] == NOTIFY_REMOVED)
+-	/* The only state we keep is the copy of the thread attributes.  */
+-	free (data.attr);
++	{
++	  /* The only state we keep is the copy of the thread attributes.  */
++	  pthread_attr_destroy (data.attr);
++	  free (data.attr);
++	}
+     }
+   return NULL;
+ }
+@@ -255,8 +258,7 @@ mq_notify (mqd_t mqdes, const struct sigevent *notification)
+       if (data.attr == NULL)
+ 	return -1;
+ 
+-      memcpy (data.attr, notification->sigev_notify_attributes,
+-	      sizeof (pthread_attr_t));
++      __pthread_attr_copy (data.attr, notification->sigev_notify_attributes);
+     }
+ 
+   /* Construct the new request.  */
+@@ -270,7 +272,10 @@ mq_notify (mqd_t mqdes, const struct sigevent *notification)
+ 
+   /* If it failed, free the allocated memory.  */
+   if (__glibc_unlikely (retval != 0))
+-    free (data.attr);
++    {
++      pthread_attr_destroy (data.attr);
++      free (data.attr);
++    }
+ 
+   return retval;
+ }
+-- 
+2.41.0
+

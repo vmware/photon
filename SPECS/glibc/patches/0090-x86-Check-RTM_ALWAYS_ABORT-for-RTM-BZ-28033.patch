@@ -1,0 +1,116 @@
+From 77317b3b0df3170575e135be01e9554261c43b8a Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Wed, 30 Jun 2021 10:47:06 -0700
+Subject: [PATCH 090/124] x86: Check RTM_ALWAYS_ABORT for RTM [BZ #28033]
+
+From
+
+https://www.intel.com/content/www/us/en/support/articles/000059422/processors.html
+
+* Intel TSX will be disabled by default.
+* The processor will force abort all Restricted Transactional Memory (RTM)
+  transactions by default.
+* A new CPUID bit CPUID.07H.0H.EDX[11](RTM_ALWAYS_ABORT) will be enumerated,
+  which is set to indicate to updated software that the loaded microcode is
+  forcing RTM abort.
+* On processors that enumerate support for RTM, the CPUID enumeration bits
+  for Intel TSX (CPUID.07H.0H.EBX[11] and CPUID.07H.0H.EBX[4]) continue to
+  be set by default after microcode update.
+* Workloads that were benefited from Intel TSX might experience a change
+  in performance.
+* System software may use a new bit in Model-Specific Register (MSR) 0x10F
+  TSX_FORCE_ABORT[TSX_CPUID_CLEAR] functionality to clear the Hardware Lock
+  Elision (HLE) and RTM bits to indicate to software that Intel TSX is
+  disabled.
+
+1. Add RTM_ALWAYS_ABORT to CPUID features.
+2. Set RTM usable only if RTM_ALWAYS_ABORT isn't set.  This skips the
+string/tst-memchr-rtm etc. testcases on the affected processors, which
+always fail after a microcde update.
+3. Check RTM feature, instead of usability, against /proc/cpuinfo.
+
+This fixes BZ #28033.
+
+(cherry picked from commit ea8e465a6b8d0f26c72bcbe453a854de3abf68ec)
+---
+ sysdeps/x86/cpu-features.c         | 4 +++-
+ sysdeps/x86/cpu-features.h         | 6 +++---
+ sysdeps/x86/tst-get-cpu-features.c | 2 ++
+ 3 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/sysdeps/x86/cpu-features.c b/sysdeps/x86/cpu-features.c
+index eb554b6d141676715bcc41348ede73ac1a06de80..ad135a122b9732af43c7d6cab0507e4c8717d02b 100644
+--- a/sysdeps/x86/cpu-features.c
++++ b/sysdeps/x86/cpu-features.c
+@@ -71,7 +71,6 @@ update_usable (struct cpu_features *cpu_features)
+   CPU_FEATURE_UNSET (cpu_features, INDEX_7_EDX_6);
+   CPU_FEATURE_UNSET (cpu_features, INDEX_7_EDX_7);
+   CPU_FEATURE_UNSET (cpu_features, INDEX_7_EDX_9);
+-  CPU_FEATURE_UNSET (cpu_features, INDEX_7_EDX_11);
+   CPU_FEATURE_UNSET (cpu_features, INDEX_7_EDX_12);
+   CPU_FEATURE_UNSET (cpu_features, INDEX_7_EDX_13);
+   CPU_FEATURE_UNSET (cpu_features, INDEX_7_EDX_17);
+@@ -318,6 +317,9 @@ update_usable (struct cpu_features *cpu_features)
+   /* Determine if PKU is usable.  */
+   if (CPU_FEATURES_CPU_P (cpu_features, OSPKE))
+     CPU_FEATURE_SET (cpu_features, PKU);
++
++  if (CPU_FEATURES_CPU_P (cpu_features, RTM_ALWAYS_ABORT))
++    CPU_FEATURE_UNSET (cpu_features, RTM);
+ }
+ 
+ static void
+diff --git a/sysdeps/x86/cpu-features.h b/sysdeps/x86/cpu-features.h
+index 72ea74d083e6e2d026b3f7f5172a58b7c5a1e389..8995a15f09871c3604a8f8a9ac5c0961ef32fe55 100644
+--- a/sysdeps/x86/cpu-features.h
++++ b/sysdeps/x86/cpu-features.h
+@@ -295,7 +295,7 @@ extern const struct cpu_features *__get_cpu_features (void)
+ #define bit_cpu_AVX512_VP2INTERSECT (1u << 8)
+ #define bit_cpu_INDEX_7_EDX_9	(1u << 9)
+ #define bit_cpu_MD_CLEAR	(1u << 10)
+-#define bit_cpu_INDEX_7_EDX_11	(1u << 11)
++#define bit_cpu_RTM_ALWAYS_ABORT (1u << 11)
+ #define bit_cpu_INDEX_7_EDX_12	(1u << 12)
+ #define bit_cpu_INDEX_7_EDX_13	(1u << 13)
+ #define bit_cpu_SERIALIZE	(1u << 14)
+@@ -508,7 +508,7 @@ extern const struct cpu_features *__get_cpu_features (void)
+ #define index_cpu_AVX512_VP2INTERSECT COMMON_CPUID_INDEX_7
+ #define index_cpu_INDEX_7_EDX_9	COMMON_CPUID_INDEX_7
+ #define index_cpu_MD_CLEAR	COMMON_CPUID_INDEX_7
+-#define index_cpu_INDEX_7_EDX_11 COMMON_CPUID_INDEX_7
++#define index_cpu_RTM_ALWAYS_ABORT COMMON_CPUID_INDEX_7
+ #define index_cpu_INDEX_7_EDX_12 COMMON_CPUID_INDEX_7
+ #define index_cpu_INDEX_7_EDX_13 COMMON_CPUID_INDEX_7
+ #define index_cpu_SERIALIZE	COMMON_CPUID_INDEX_7
+@@ -721,7 +721,7 @@ extern const struct cpu_features *__get_cpu_features (void)
+ #define reg_AVX512_VP2INTERSECT	edx
+ #define reg_INDEX_7_EDX_9	edx
+ #define reg_MD_CLEAR		edx
+-#define reg_INDEX_7_EDX_11	edx
++#define reg_RTM_ALWAYS_ABORT	edx
+ #define reg_INDEX_7_EDX_12	edx
+ #define reg_INDEX_7_EDX_13	edx
+ #define reg_SERIALIZE		edx
+diff --git a/sysdeps/x86/tst-get-cpu-features.c b/sysdeps/x86/tst-get-cpu-features.c
+index 080c58e70bc420737c800ff222928fbe7539caa6..527de3b5d9edf8cbee7d55548063f91117f88383 100644
+--- a/sysdeps/x86/tst-get-cpu-features.c
++++ b/sysdeps/x86/tst-get-cpu-features.c
+@@ -183,6 +183,7 @@ do_test (void)
+   CHECK_CPU_FEATURE (FSRM);
+   CHECK_CPU_FEATURE (AVX512_VP2INTERSECT);
+   CHECK_CPU_FEATURE (MD_CLEAR);
++  CHECK_CPU_FEATURE (RTM_ALWAYS_ABORT);
+   CHECK_CPU_FEATURE (SERIALIZE);
+   CHECK_CPU_FEATURE (HYBRID);
+   CHECK_CPU_FEATURE (TSXLDTRK);
+@@ -336,6 +337,7 @@ do_test (void)
+   CHECK_CPU_FEATURE_USABLE (FSRM);
+   CHECK_CPU_FEATURE_USABLE (AVX512_VP2INTERSECT);
+   CHECK_CPU_FEATURE_USABLE (MD_CLEAR);
++  CHECK_CPU_FEATURE_USABLE (RTM_ALWAYS_ABORT);
+   CHECK_CPU_FEATURE_USABLE (SERIALIZE);
+   CHECK_CPU_FEATURE_USABLE (HYBRID);
+   CHECK_CPU_FEATURE_USABLE (TSXLDTRK);
+-- 
+2.41.0
+

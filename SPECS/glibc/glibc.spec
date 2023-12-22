@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -17,31 +17,25 @@ Source0: http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
 Source3:        nsswitch.conf
+Source4:        v2.32.patches
 
 # Patch0 taken from:
 # http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
-Patch0:         glibc-2.31-fhs-1.patch
-Patch1:         0002-malloc-arena-fix.patch
-Patch2:         Fix_FMA4_detection_in_ifunc.patch
-Patch3:         CVE-2019-25013.patch
-Patch4:         CVE-2021-3326.patch
-Patch5:         CVE-2020-29562.patch
-Patch6:         CVE-2020-27618.patch
-Patch7:         0001-CVE-2021-33574.patch
-Patch8:         0002-CVE-2021-33574.patch
-Patch9:         0001-elf-Refactor-_dl_update_slotinfo-to-avoid-use-after-.patch
-Patch10:        0002-elf-Fix-data-races-in-pthread_create-and-TLS-access-.patch
-Patch11:        0003-elf-Use-relaxed-atomics-for-racy-accesses-BZ-19329.patch
-Patch12:        0004-elf-Fix-DTV-gap-reuse-logic-BZ-27135.patch
-Patch13:        0005-elf-Add-test-case-for-BZ-19329.patch
-Patch14:        CVE-2021-35942.patch
-Patch15:        CVE-2021-38604.patch
-Patch16:        0006-glibc-fix-for-semctl-ltp.patch
-Patch17:        0001-socket_Add_the__sockaddr_un_set_function.patch
-Patch18:        CVE-2022-23218.patch
-Patch19:        CVE-2022-23219.patch
-# CVE-2023-4813
-Patch20:        0001-Simplify-allocations-and-fix-merge-and-continue-acti.patch
+Patch0:       glibc-2.31-fhs-1.patch
+Patch1:       0002-malloc-arena-fix.patch
+Patch9:       0001-elf-Refactor-_dl_update_slotinfo-to-avoid-use-after-.patch
+Patch10:      0002-elf-Fix-data-races-in-pthread_create-and-TLS-access-.patch
+Patch11:      0003-elf-Use-relaxed-atomics-for-racy-accesses-BZ-19329.patch
+Patch12:      0004-elf-Fix-DTV-gap-reuse-logic-BZ-27135.patch
+Patch13:      0005-elf-Add-test-case-for-BZ-19329.patch
+
+#release branch patches
+#generate using ./tools/scripts/generate-glibc-release-patches.sh %{version}
+%include %{SOURCE4}
+
+#Additional patches
+Patch300:     CVE-2023-4806_CVE-2023-5156.patch
+Patch301:     CVE-2023-4813.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -100,27 +94,13 @@ Name Service Cache Daemon
 # Using autosetup is not feasible
 %setup -q
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
+%autopatch -p1 -m0 -M19
+# Release branch patches
+%autopatch -p1 -m101 -M224
+
+# Additional patches
+%autopatch -p1 -m300 -M301
+
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -187,7 +167,8 @@ rm -rf %{buildroot}%{_infodir}
 
 # Spaces should not be used in nsswitch.conf in the begining of new line
 # Only tab should be used as it expects the same in source code.
-# Otherwise "altfiles" will not be added. which may cause dbus.service failure
+# Otherwise "altfiles" will not be added. which may cause dbus.service failure.
+# 'file' and 'files' are valid syntax. However using file for shadow breaks PAM.
 cp -pv %{SOURCE3} %{buildroot}%{_sysconfdir}
 
 cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
@@ -336,6 +317,9 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Dec 22 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.32-14
+- Update patches from release branch
+- Fix CVE-2023-4806, CVE-2023-5156
 * Thu Dec 21 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.32-13
 - Fix nsswitch.conf permissions
 * Fri Oct 13 2023 Ajay Kaher <akaher@vmware.com> 2.32-12

@@ -1,0 +1,62 @@
+From 7a9e8a984a32ccaf8947d116fca63ad406452bfa Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Tue, 9 Mar 2021 21:07:24 +0100
+Subject: [PATCH 117/124] <shlib-compat.h>: Support compat_symbol_reference for
+ _ISOMAC
+
+This is helpful for testing compat symbols in cases where _ISOMAC
+is activated implicitly due to -DMODULE_NAME=testsuite and cannot
+be disabled easily.
+
+(cherry picked from commit 36f6e408845c8c539128f3fb9cb132bf1845a2c8)
+---
+ include/libc-symbols.h | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/include/libc-symbols.h b/include/libc-symbols.h
+index 60153bb50d3dcf5aeff9303403300ae3609e2bbe..8ac99fec1598b09290dd2ed45b7938d72cc4fb6e 100644
+--- a/include/libc-symbols.h
++++ b/include/libc-symbols.h
+@@ -59,6 +59,19 @@
+ # define IN_MODULE (-1)
+ #endif
+ 
++/* Use symbol_version_reference to specify the version a symbol
++   reference should link to.  Use symbol_version or
++   default_symbol_version for the definition of a versioned symbol.
++   The difference is that the latter is a no-op in non-shared
++   builds.  */
++#ifdef __ASSEMBLER__
++# define symbol_version_reference(real, name, version) \
++     .symver real, name##@##version
++#else  /* !__ASSEMBLER__ */
++# define symbol_version_reference(real, name, version) \
++  __asm__ (".symver " #real "," #name "@" #version)
++#endif
++
+ #ifndef _ISOMAC
+ 
+ /* This is defined for the compilation of all C library code.  features.h
+@@ -396,19 +409,6 @@ for linking")
+    past the last element in SET.  */
+ #define symbol_set_end_p(set, ptr) ((ptr) >= (void *const *) &__stop_##set)
+ 
+-/* Use symbol_version_reference to specify the version a symbol
+-   reference should link to.  Use symbol_version or
+-   default_symbol_version for the definition of a versioned symbol.
+-   The difference is that the latter is a no-op in non-shared
+-   builds.  */
+-#ifdef __ASSEMBLER__
+-# define symbol_version_reference(real, name, version) \
+-     .symver real, name##@##version
+-#else  /* !__ASSEMBLER__ */
+-# define symbol_version_reference(real, name, version) \
+-  __asm__ (".symver " #real "," #name "@" #version)
+-#endif
+-
+ #ifdef SHARED
+ # define symbol_version(real, name, version) \
+   symbol_version_reference(real, name, version)
+-- 
+2.41.0
+

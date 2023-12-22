@@ -1,0 +1,57 @@
+From c6e794640c324db37038c6a8606f3f5f8903250b Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Mon, 9 Nov 2020 11:31:04 +0100
+Subject: [PATCH 014/124] aarch64: Add unwind information to _start (bug 26853)
+
+This adds CFI directives which communicate that the stack ends
+with this function.
+
+Fixes bug 26853.
+
+(cherry picked from commit 5edf3d9fd6efe06fda37b2a460e60690a90457a4)
+---
+ NEWS                    | 1 +
+ sysdeps/aarch64/start.S | 7 +++----
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 303073583995108b4686fd3f35feab7af9fb26a0..d2a484462bf4215c11cef2b335d41f512cdb7ae2 100644
+--- a/NEWS
++++ b/NEWS
+@@ -15,6 +15,7 @@ The following bugs are resolved with this release:
+   [26637] libc: semctl SEM_STAT_ANY fails to pass the buffer specified
+     by the caller to the kernel
+   [26639] libc: msgctl IPC_INFO and MSG_INFO return garbage
++  [26853] aarch64: Missing unwind information in statically linked startup code
+ 
+ Version 2.32
+ 
+diff --git a/sysdeps/aarch64/start.S b/sysdeps/aarch64/start.S
+index 75393e1c1809a36b5784878d91670bc3672f56b2..108f602721b42cac527a0be4f7e2733aec1dc59d 100644
+--- a/sysdeps/aarch64/start.S
++++ b/sysdeps/aarch64/start.S
+@@ -43,11 +43,9 @@
+  */
+ 
+ 	.text
+-	.globl _start
+-	.type _start,#function
+-_start:
+-	BTI_C
++ENTRY(_start)
+ 	/* Create an initial frame with 0 LR and FP */
++	cfi_undefined (x30)
+ 	mov	x29, #0
+ 	mov	x30, #0
+ 
+@@ -103,6 +101,7 @@ _start:
+ __wrap_main:
+ 	b	main
+ #endif
++END(_start)
+ 
+ 	/* Define a symbol for the first piece of initialized data.  */
+ 	.data
+-- 
+2.41.0
+

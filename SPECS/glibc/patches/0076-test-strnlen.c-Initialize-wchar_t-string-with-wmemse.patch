@@ -1,0 +1,45 @@
+From e218418d4925972ab7979b1712ec15d0cb645b76 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Sat, 27 Mar 2021 09:15:00 -0700
+Subject: [PATCH 076/124] test-strnlen.c: Initialize wchar_t string with
+ wmemset [BZ #27655]
+
+Use wmemset to initialize wchar_t string.
+
+(cherry picked from commit 86859b7e58d8670b186c5209ba25f0fbd6612fb7)
+---
+ string/test-strnlen.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/string/test-strnlen.c b/string/test-strnlen.c
+index 80ac9e8602b3a78cae371b5c304a3f2e74b6c164..2a56d16c177047d66ae92aafc1ea336e450fa67f 100644
+--- a/string/test-strnlen.c
++++ b/string/test-strnlen.c
+@@ -27,6 +27,7 @@
+ 
+ #ifndef WIDE
+ # define STRNLEN strnlen
++# define MEMSET memset
+ # define CHAR char
+ # define BIG_CHAR CHAR_MAX
+ # define MIDDLE_CHAR 127
+@@ -34,6 +35,7 @@
+ #else
+ # include <wchar.h>
+ # define STRNLEN wcsnlen
++# define MEMSET wmemset
+ # define CHAR wchar_t
+ # define BIG_CHAR WCHAR_MAX
+ # define MIDDLE_CHAR 1121
+@@ -153,7 +155,7 @@ do_page_tests (void)
+   size_t last_offset = (page_size / sizeof (CHAR)) - 1;
+ 
+   CHAR *s = (CHAR *) buf2;
+-  memset (s, 65, (last_offset - 1));
++  MEMSET (s, 65, (last_offset - 1));
+   s[last_offset] = 0;
+ 
+   /* Place short strings ending at page boundary.  */
+-- 
+2.41.0
+

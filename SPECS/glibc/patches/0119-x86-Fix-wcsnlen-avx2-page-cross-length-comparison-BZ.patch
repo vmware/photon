@@ -1,0 +1,131 @@
+From 0a888ff9bd83bbad572e6cdf188006408b9aa9b1 Mon Sep 17 00:00:00 2001
+From: Noah Goldstein <goldstein.w.n@gmail.com>
+Date: Tue, 20 Sep 2022 17:58:04 -0700
+Subject: [PATCH 119/124] x86: Fix wcsnlen-avx2 page cross length comparison
+ [BZ #29591]
+
+Previous implementation was adjusting length (rsi) to match
+bytes (eax), but since there is no bound to length this can cause
+overflow.
+
+Fix is to just convert the byte-count (eax) to length by dividing by
+sizeof (wchar_t) before the comparison.
+
+Full check passes on x86-64 and build succeeds w/ and w/o multiarch.
+
+(cherry picked from commit b0969fa53a28b4ab2159806bf6c99a98999502ee)
+---
+ string/test-strnlen.c                  | 64 +++++++++++++++++---------
+ sysdeps/x86_64/multiarch/strlen-avx2.S |  7 +--
+ 2 files changed, 43 insertions(+), 28 deletions(-)
+
+diff --git a/string/test-strnlen.c b/string/test-strnlen.c
+index a1a6746cc948f0a30801a5255dc799ea275c6c49..ca34352b0dc91b5d070aca4fc34341af3d36ca64 100644
+--- a/string/test-strnlen.c
++++ b/string/test-strnlen.c
+@@ -75,7 +75,7 @@ do_test (size_t align, size_t len, size_t maxlen, int max_char)
+ {
+   size_t i;
+ 
+-  align &= 63;
++  align &= (getpagesize () / sizeof (CHAR) - 1);
+   if ((align + len) * sizeof (CHAR) >= page_size)
+     return;
+ 
+@@ -92,32 +92,50 @@ do_test (size_t align, size_t len, size_t maxlen, int max_char)
+ static void
+ do_overflow_tests (void)
+ {
+-  size_t i, j, len;
++  size_t i, j, al_idx, repeats, len;
+   const size_t one = 1;
+   uintptr_t buf_addr = (uintptr_t) buf1;
++  const size_t alignments[] = { 0, 1, 7, 9, 31, 33, 63, 65, 95, 97, 127, 129 };
+ 
+-  for (i = 0; i < 750; ++i)
++  for (al_idx = 0; al_idx < sizeof (alignments) / sizeof (alignments[0]);
++       al_idx++)
+     {
+-      do_test (0, i, SIZE_MAX - i, BIG_CHAR);
+-      do_test (0, i, i - buf_addr, BIG_CHAR);
+-      do_test (0, i, -buf_addr - i, BIG_CHAR);
+-      do_test (0, i, SIZE_MAX - buf_addr - i, BIG_CHAR);
+-      do_test (0, i, SIZE_MAX - buf_addr + i, BIG_CHAR);
+-
+-      len = 0;
+-      for (j = 8 * sizeof(size_t) - 1; j ; --j)
+-        {
+-          len |= one << j;
+-          do_test (0, i, len - i, BIG_CHAR);
+-          do_test (0, i, len + i, BIG_CHAR);
+-          do_test (0, i, len - buf_addr - i, BIG_CHAR);
+-          do_test (0, i, len - buf_addr + i, BIG_CHAR);
+-
+-          do_test (0, i, ~len - i, BIG_CHAR);
+-          do_test (0, i, ~len + i, BIG_CHAR);
+-          do_test (0, i, ~len - buf_addr - i, BIG_CHAR);
+-          do_test (0, i, ~len - buf_addr + i, BIG_CHAR);
+-        }
++      for (repeats = 0; repeats < 2; ++repeats)
++	{
++	  size_t align = repeats ? (getpagesize () - alignments[al_idx])
++				 : alignments[al_idx];
++	  align /= sizeof (CHAR);
++	  for (i = 0; i < 750; ++i)
++	    {
++	      do_test (align, i, SIZE_MAX, BIG_CHAR);
++
++	      do_test (align, i, SIZE_MAX - i, BIG_CHAR);
++	      do_test (align, i, i - buf_addr, BIG_CHAR);
++	      do_test (align, i, -buf_addr - i, BIG_CHAR);
++	      do_test (align, i, SIZE_MAX - buf_addr - i, BIG_CHAR);
++	      do_test (align, i, SIZE_MAX - buf_addr + i, BIG_CHAR);
++
++	      len = 0;
++	      for (j = 8 * sizeof (size_t) - 1; j; --j)
++		{
++		  len |= one << j;
++		  do_test (align, i, len, BIG_CHAR);
++		  do_test (align, i, len - i, BIG_CHAR);
++		  do_test (align, i, len + i, BIG_CHAR);
++		  do_test (align, i, len - buf_addr - i, BIG_CHAR);
++		  do_test (align, i, len - buf_addr + i, BIG_CHAR);
++
++		  do_test (align, i, ~len - i, BIG_CHAR);
++		  do_test (align, i, ~len + i, BIG_CHAR);
++		  do_test (align, i, ~len - buf_addr - i, BIG_CHAR);
++		  do_test (align, i, ~len - buf_addr + i, BIG_CHAR);
++
++		  do_test (align, i, -buf_addr, BIG_CHAR);
++		  do_test (align, i, j - buf_addr, BIG_CHAR);
++		  do_test (align, i, -buf_addr - j, BIG_CHAR);
++		}
++	    }
++	}
+     }
+ }
+ 
+diff --git a/sysdeps/x86_64/multiarch/strlen-avx2.S b/sysdeps/x86_64/multiarch/strlen-avx2.S
+index 45e08e64d6dfed30a38e47de1b8fc8ddbb051838..8cfb7391b0afff39344e3b00ea4110063f0aaecb 100644
+--- a/sysdeps/x86_64/multiarch/strlen-avx2.S
++++ b/sysdeps/x86_64/multiarch/strlen-avx2.S
+@@ -542,14 +542,11 @@ L(return_vzeroupper):
+ L(cross_page_less_vec):
+ 	tzcntl	%eax, %eax
+ #  ifdef USE_AS_WCSLEN
+-	/* NB: Multiply length by 4 to get byte count.  */
+-	sall	$2, %esi
++	/* NB: Divide by 4 to convert from byte-count to length.  */
++	shrl	$2, %eax
+ #  endif
+ 	cmpq	%rax, %rsi
+ 	cmovb	%esi, %eax
+-#  ifdef USE_AS_WCSLEN
+-	shrl	$2, %eax
+-#  endif
+ 	VZEROUPPER_RETURN
+ # endif
+ 
+-- 
+2.41.0
+

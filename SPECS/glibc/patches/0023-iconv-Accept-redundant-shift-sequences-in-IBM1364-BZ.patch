@@ -1,0 +1,110 @@
+From 050022910be1d1f5c11cd5168f1685ad4f9580d2 Mon Sep 17 00:00:00 2001
+From: Arjun Shankar <arjun@redhat.com>
+Date: Wed, 4 Nov 2020 12:19:38 +0100
+Subject: [PATCH 023/124] iconv: Accept redundant shift sequences in IBM1364
+ [BZ #26224]
+
+The IBM1364, IBM1371, IBM1388, IBM1390 and IBM1399 character sets
+share converter logic (iconvdata/ibm1364.c) which would reject
+redundant shift sequences when processing input in these character
+sets.  This led to a hang in the iconv program (CVE-2020-27618).
+
+This commit adjusts the converter to ignore redundant shift sequences
+and adds test cases for iconv_prog hangs that would be triggered upon
+their rejection.  This brings the implementation in line with other
+converters that also ignore redundant shift sequences (e.g. IBM930
+etc., fixed in commit 692de4b3960d).
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 9a99c682144bdbd40792ebf822fe9264e0376fb5)
+---
+ NEWS                    |  6 ++++++
+ iconv/tst-iconv_prog.sh | 16 ++++++++++------
+ iconvdata/ibm1364.c     | 14 ++------------
+ 3 files changed, 18 insertions(+), 18 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 8b186756833de020b8ca3f6e18b5299f2be734c4..4da2a0cbda66b67a9cbbe1681452d275598ea935 100644
+--- a/NEWS
++++ b/NEWS
+@@ -7,6 +7,8 @@ using `glibc' in the "product" field.
+ 
+ The following bugs are resolved with this release:
+ 
++  [26224] iconv hangs when converting some invalid inputs from several IBM
++    character sets (CVE-2020-27618)
+   [26534] libm.so 2.32 SIGILL in pow() due to FMA4 instruction on non-FMA4
+     system
+   [26555] string: strerrorname_np does not return the documented value
+@@ -199,6 +201,10 @@ Security related changes:
+   Dytrych of the Cisco Security Assessment and Penetration Team (See
+   TALOS-2020-1019).
+ 
++  CVE-2020-27618: An infinite loop has been fixed in the iconv program when
++  invoked with input containing redundant shift sequences in the IBM1364,
++  IBM1371, IBM1388, IBM1390, or IBM1399 character sets.
++
+ The following bugs are resolved with this release:
+ 
+   [9809] localedata: ckb_IQ: new Kurdish Sorani locale
+diff --git a/iconv/tst-iconv_prog.sh b/iconv/tst-iconv_prog.sh
+index 8298136b7f45d8554ca074825e306be08d18a008..d8db7b335c1fcca23e71b320510711379c3e9637 100644
+--- a/iconv/tst-iconv_prog.sh
++++ b/iconv/tst-iconv_prog.sh
+@@ -102,12 +102,16 @@ hangarray=(
+ "\x00\x80;-c;IBM1161;UTF-8//TRANSLIT//IGNORE"
+ "\x00\xdb;-c;IBM1162;UTF-8//TRANSLIT//IGNORE"
+ "\x00\x70;-c;IBM12712;UTF-8//TRANSLIT//IGNORE"
+-# These are known hangs that are yet to be fixed:
+-# "\x00\x0f;-c;IBM1364;UTF-8"
+-# "\x00\x0f;-c;IBM1371;UTF-8"
+-# "\x00\x0f;-c;IBM1388;UTF-8"
+-# "\x00\x0f;-c;IBM1390;UTF-8"
+-# "\x00\x0f;-c;IBM1399;UTF-8"
++"\x00\x0f;-c;IBM1364;UTF-8"
++"\x0e\x0e;-c;IBM1364;UTF-8"
++"\x00\x0f;-c;IBM1371;UTF-8"
++"\x0e\x0e;-c;IBM1371;UTF-8"
++"\x00\x0f;-c;IBM1388;UTF-8"
++"\x0e\x0e;-c;IBM1388;UTF-8"
++"\x00\x0f;-c;IBM1390;UTF-8"
++"\x0e\x0e;-c;IBM1390;UTF-8"
++"\x00\x0f;-c;IBM1399;UTF-8"
++"\x0e\x0e;-c;IBM1399;UTF-8"
+ "\x00\x53;-c;IBM16804;UTF-8//TRANSLIT//IGNORE"
+ "\x00\x41;-c;IBM274;UTF-8//TRANSLIT//IGNORE"
+ "\x00\x41;-c;IBM275;UTF-8//TRANSLIT//IGNORE"
+diff --git a/iconvdata/ibm1364.c b/iconvdata/ibm1364.c
+index 49e7267ab4507226aac12c47b561a2699c0a6fd2..521f0825b7fba350b5b1cf110e92c779cc866f38 100644
+--- a/iconvdata/ibm1364.c
++++ b/iconvdata/ibm1364.c
+@@ -158,24 +158,14 @@ enum
+ 									      \
+     if (__builtin_expect (ch, 0) == SO)					      \
+       {									      \
+-	/* Shift OUT, change to DBCS converter.  */			      \
+-	if (curcs == db)						      \
+-	  {								      \
+-	    result = __GCONV_ILLEGAL_INPUT;				      \
+-	    break;							      \
+-	  }								      \
++	/* Shift OUT, change to DBCS converter (redundant escape okay).  */   \
+ 	curcs = db;							      \
+ 	++inptr;							      \
+ 	continue;							      \
+       }									      \
+     if (__builtin_expect (ch, 0) == SI)					      \
+       {									      \
+-	/* Shift IN, change to SBCS converter.  */			      \
+-	if (curcs == sb)						      \
+-	  {								      \
+-	    result = __GCONV_ILLEGAL_INPUT;				      \
+-	    break;							      \
+-	  }								      \
++	/* Shift IN, change to SBCS converter (redundant escape okay).  */    \
+ 	curcs = sb;							      \
+ 	++inptr;							      \
+ 	continue;							      \
+-- 
+2.41.0
+

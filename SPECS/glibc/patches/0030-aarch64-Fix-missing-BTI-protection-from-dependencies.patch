@@ -1,0 +1,54 @@
+From 610e2c515045a5924f28d8c4fb0a5ddacc90980a Mon Sep 17 00:00:00 2001
+From: Szabolcs Nagy <szabolcs.nagy@arm.com>
+Date: Fri, 20 Nov 2020 15:27:06 +0000
+Subject: [PATCH 030/124] aarch64: Fix missing BTI protection from dependencies
+ [BZ #26926]
+
+The _dl_open_check and _rtld_main_check hooks are not called on the
+dependencies of a loaded module, so BTI protection was missed on
+every module other than the main executable and directly dlopened
+libraries.
+
+The fix just iterates over dependencies to enable BTI.
+
+Fixes bug 26926.
+
+(cherry picked from commit 72739c79f61989a76b7dd719f34fcfb7b8eadde9)
+---
+ sysdeps/aarch64/dl-bti.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/sysdeps/aarch64/dl-bti.c b/sysdeps/aarch64/dl-bti.c
+index 196e462520e0dc49bac57996eaaac5972635204e..56c097210ad4968ba40e1366f5925a845f15d4a0 100644
+--- a/sysdeps/aarch64/dl-bti.c
++++ b/sysdeps/aarch64/dl-bti.c
+@@ -51,11 +51,24 @@ enable_bti (struct link_map *map, const char *program)
+   return 0;
+ }
+ 
+-/* Enable BTI for L if required.  */
++/* Enable BTI for L and its dependencies.  */
+ 
+ void
+ _dl_bti_check (struct link_map *l, const char *program)
+ {
+-  if (GLRO(dl_aarch64_cpu_features).bti && l->l_mach.bti)
++  if (!GLRO(dl_aarch64_cpu_features).bti)
++    return;
++
++  if (l->l_mach.bti)
+     enable_bti (l, program);
++
++  unsigned int i = l->l_searchlist.r_nlist;
++  while (i-- > 0)
++    {
++      struct link_map *dep = l->l_initfini[i];
++      if (dep->l_init_called)
++	continue;
++      if (dep->l_mach.bti)
++	enable_bti (dep, program);
++    }
+ }
+-- 
+2.41.0
+

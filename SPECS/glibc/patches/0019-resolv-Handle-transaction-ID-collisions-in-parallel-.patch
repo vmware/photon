@@ -1,0 +1,466 @@
+From 2dfa659a66f20facc4082207884c20e986ddecee Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Wed, 14 Oct 2020 10:54:39 +0200
+Subject: [PATCH 019/124] resolv: Handle transaction ID collisions in parallel
+ queries (bug 26600)
+
+If the transaction IDs are equal, the old check attributed both
+responses to the first query, not recognizing the second response.
+This fixes bug 26600.
+
+(cherry picked from commit f1f00c072138af90ae6da180f260111f09afe7a3)
+---
+ NEWS                                |   1 +
+ resolv/Makefile                     |   7 +
+ resolv/res_send.c                   |  40 ++--
+ resolv/tst-resolv-txnid-collision.c | 329 ++++++++++++++++++++++++++++
+ 4 files changed, 357 insertions(+), 20 deletions(-)
+ create mode 100644 resolv/tst-resolv-txnid-collision.c
+
+diff --git a/NEWS b/NEWS
+index d2a484462bf4215c11cef2b335d41f512cdb7ae2..1c1f270784eddc772b933a8f56b01f837e3d67c0 100644
+--- a/NEWS
++++ b/NEWS
+@@ -10,6 +10,7 @@ The following bugs are resolved with this release:
+   [26534] libm.so 2.32 SIGILL in pow() due to FMA4 instruction on non-FMA4
+     system
+   [26555] string: strerrorname_np does not return the documented value
++  [26600] Transaction ID collisions cause slow DNS lookups in getaddrinfo
+   [26636] libc: 32-bit shmctl(IPC_INFO) crashes when shminfo struct is
+     at the end of a memory mapping
+   [26637] libc: semctl SEM_STAT_ANY fails to pass the buffer specified
+diff --git a/resolv/Makefile b/resolv/Makefile
+index b61c0c3e0c616da9a9cc9ea43c5c306e07ec0481..dbd8f8bf4f05235e9244ad3ca0b51b92a41ecb90 100644
+--- a/resolv/Makefile
++++ b/resolv/Makefile
+@@ -61,6 +61,11 @@ tests += \
+   tst-resolv-search \
+   tst-resolv-trailing \
+ 
++# This test calls __res_context_send directly, which is not exported
++# from libresolv.
++tests-internal += tst-resolv-txnid-collision
++tests-static += tst-resolv-txnid-collision
++
+ # These tests need libdl.
+ ifeq (yes,$(build-shared))
+ tests += \
+@@ -191,6 +196,8 @@ $(objpfx)tst-resolv-search: $(objpfx)libresolv.so $(shared-thread-library)
+ $(objpfx)tst-resolv-trailing: $(objpfx)libresolv.so $(shared-thread-library)
+ $(objpfx)tst-resolv-threads: \
+   $(libdl) $(objpfx)libresolv.so $(shared-thread-library)
++$(objpfx)tst-resolv-txnid-collision: $(objpfx)libresolv.a \
++  $(static-thread-library)
+ $(objpfx)tst-resolv-canonname: \
+   $(libdl) $(objpfx)libresolv.so $(shared-thread-library)
+ $(objpfx)tst-resolv-trustad: $(objpfx)libresolv.so $(shared-thread-library)
+diff --git a/resolv/res_send.c b/resolv/res_send.c
+index 7e5fec66466e16f88fe950baed55b371721abac0..70e5066031bee996a6fbe3acee5b55a4a0ea3c20 100644
+--- a/resolv/res_send.c
++++ b/resolv/res_send.c
+@@ -1342,15 +1342,6 @@ send_dg(res_state statp,
+ 			*terrno = EMSGSIZE;
+ 			return close_and_return_error (statp, resplen2);
+ 		}
+-		if ((recvresp1 || hp->id != anhp->id)
+-		    && (recvresp2 || hp2->id != anhp->id)) {
+-			/*
+-			 * response from old query, ignore it.
+-			 * XXX - potential security hazard could
+-			 *	 be detected here.
+-			 */
+-			goto wait;
+-		}
+ 
+ 		/* Paranoia check.  Due to the connected UDP socket,
+ 		   the kernel has already filtered invalid addresses
+@@ -1360,15 +1351,24 @@ send_dg(res_state statp,
+ 
+ 		/* Check for the correct header layout and a matching
+ 		   question.  */
+-		if ((recvresp1 || !res_queriesmatch(buf, buf + buflen,
+-						       *thisansp,
+-						       *thisansp
+-						       + *thisanssizp))
+-		    && (recvresp2 || !res_queriesmatch(buf2, buf2 + buflen2,
+-						       *thisansp,
+-						       *thisansp
+-						       + *thisanssizp)))
+-		  goto wait;
++		int matching_query = 0; /* Default to no matching query.  */
++		if (!recvresp1
++		    && anhp->id == hp->id
++		    && res_queriesmatch (buf, buf + buflen,
++					 *thisansp, *thisansp + *thisanssizp))
++		  matching_query = 1;
++		if (!recvresp2
++		    && anhp->id == hp2->id
++		    && res_queriesmatch (buf2, buf2 + buflen2,
++					 *thisansp, *thisansp + *thisanssizp))
++		  matching_query = 2;
++		if (matching_query == 0)
++		  /* Spurious UDP packet.  Drop it and continue
++		     waiting.  */
++		  {
++		    need_recompute = 1;
++		    goto wait;
++		  }
+ 
+ 		if (anhp->rcode == SERVFAIL ||
+ 		    anhp->rcode == NOTIMP ||
+@@ -1383,7 +1383,7 @@ send_dg(res_state statp,
+ 			    /* No data from the first reply.  */
+ 			    resplen = 0;
+ 			    /* We are waiting for a possible second reply.  */
+-			    if (hp->id == anhp->id)
++			    if (matching_query == 1)
+ 			      recvresp1 = 1;
+ 			    else
+ 			      recvresp2 = 1;
+@@ -1414,7 +1414,7 @@ send_dg(res_state statp,
+ 			return (1);
+ 		}
+ 		/* Mark which reply we received.  */
+-		if (recvresp1 == 0 && hp->id == anhp->id)
++		if (matching_query == 1)
+ 			recvresp1 = 1;
+ 		else
+ 			recvresp2 = 1;
+diff --git a/resolv/tst-resolv-txnid-collision.c b/resolv/tst-resolv-txnid-collision.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..611d37362f3e5e89b92766f0790459340cc071b3
+--- /dev/null
++++ b/resolv/tst-resolv-txnid-collision.c
+@@ -0,0 +1,329 @@
++/* Test parallel queries with transaction ID collisions.
++   Copyright (C) 2020 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <arpa/nameser.h>
++#include <array_length.h>
++#include <resolv-internal.h>
++#include <resolv_context.h>
++#include <stdbool.h>
++#include <stdio.h>
++#include <string.h>
++#include <support/check.h>
++#include <support/check_nss.h>
++#include <support/resolv_test.h>
++#include <support/support.h>
++#include <support/test-driver.h>
++
++/* Result of parsing a DNS question name.
++
++   A question name has the form reorder-N-M-rcode-C.example.net, where
++   N and M are either 0 and 1, corresponding to the reorder member,
++   and C is a number that will be stored in the rcode field.
++
++   Also see parse_qname below.  */
++struct parsed_qname
++{
++  /* The DNS response code requested from the first server.  The
++     second server always responds with RCODE zero.  */
++  int rcode;
++
++  /* Indicates whether to perform reordering in the responses from the
++     respective server.  */
++  bool reorder[2];
++};
++
++/* Fills *PARSED based on QNAME.  */
++static void
++parse_qname (struct parsed_qname *parsed, const char *qname)
++{
++  int reorder0;
++  int reorder1;
++  int rcode;
++  char *suffix;
++  if (sscanf (qname, "reorder-%d-%d.rcode-%d.%ms",
++              &reorder0, &reorder1, &rcode, &suffix) == 4)
++    {
++      if (reorder0 != 0)
++        TEST_COMPARE (reorder0, 1);
++      if (reorder1 != 0)
++        TEST_COMPARE (reorder1, 1);
++      TEST_VERIFY (rcode >= 0 && rcode <= 15);
++      TEST_COMPARE_STRING (suffix, "example.net");
++      free (suffix);
++
++      parsed->rcode = rcode;
++      parsed->reorder[0] = reorder0;
++      parsed->reorder[1] = reorder1;
++    }
++  else
++    FAIL_EXIT1 ("unexpected query: %s", qname);
++}
++
++/* Used to construct a response. The first server responds with an
++   error, the second server succeeds.  */
++static void
++build_response (const struct resolv_response_context *ctx,
++                struct resolv_response_builder *b,
++                const char *qname, uint16_t qclass, uint16_t qtype)
++{
++  struct parsed_qname parsed;
++  parse_qname (&parsed, qname);
++
++  switch (ctx->server_index)
++    {
++    case 0:
++      {
++        struct resolv_response_flags flags = { 0 };
++        if (parsed.rcode == 0)
++          /* Simulate a delegation in case a NODATA (RCODE zero)
++             response is requested.  */
++          flags.clear_ra = true;
++        else
++          flags.rcode = parsed.rcode;
++
++        resolv_response_init (b, flags);
++        resolv_response_add_question (b, qname, qclass, qtype);
++      }
++      break;
++
++    case 1:
++      {
++        struct resolv_response_flags flags = { 0, };
++        resolv_response_init (b, flags);
++        resolv_response_add_question (b, qname, qclass, qtype);
++
++        resolv_response_section (b, ns_s_an);
++        resolv_response_open_record (b, qname, qclass, qtype, 0);
++        if (qtype == T_A)
++          {
++            char ipv4[4] = { 192, 0, 2, 1 };
++            resolv_response_add_data (b, &ipv4, sizeof (ipv4));
++          }
++        else
++          {
++            char ipv6[16]
++              = { 0x20, 0x01, 0xd, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
++            resolv_response_add_data (b, &ipv6, sizeof (ipv6));
++          }
++        resolv_response_close_record (b);
++      }
++      break;
++    }
++}
++
++/* Used to reorder responses.  */
++struct resolv_response_context *previous_query;
++
++/* Used to keep track of the queries received.  */
++static int previous_server_index = -1;
++static uint16_t previous_qtype;
++
++/* For each server, buffer the first query and then send both answers
++   to the second query, reordered if requested.  */
++static void
++response (const struct resolv_response_context *ctx,
++          struct resolv_response_builder *b,
++          const char *qname, uint16_t qclass, uint16_t qtype)
++{
++  TEST_VERIFY (qtype == T_A || qtype == T_AAAA);
++  if (ctx->server_index != 0)
++    TEST_COMPARE (ctx->server_index, 1);
++
++  struct parsed_qname parsed;
++  parse_qname (&parsed, qname);
++
++  if (previous_query == NULL)
++    {
++      /* No buffered query.  Record this query and do not send a
++         response.  */
++      TEST_COMPARE (previous_qtype, 0);
++      previous_query = resolv_response_context_duplicate (ctx);
++      previous_qtype = qtype;
++      resolv_response_drop (b);
++      previous_server_index = ctx->server_index;
++
++      if (test_verbose)
++        printf ("info: buffering first query for: %s\n", qname);
++    }
++  else
++    {
++      TEST_VERIFY (previous_query != 0);
++      TEST_COMPARE (ctx->server_index, previous_server_index);
++      TEST_VERIFY (previous_qtype != qtype); /* Not a duplicate.  */
++
++      /* If reordering, send a response for this query explicitly, and
++         then skip the implicit send.  */
++      if (parsed.reorder[ctx->server_index])
++        {
++          if (test_verbose)
++            printf ("info: sending reordered second response for: %s\n",
++                    qname);
++          build_response (ctx, b, qname, qclass, qtype);
++          resolv_response_send_udp (ctx, b);
++          resolv_response_drop (b);
++        }
++
++      /* Build a response for the previous query and send it, thus
++         reordering the two responses.  */
++      {
++        if (test_verbose)
++          printf ("info: sending first response for: %s\n", qname);
++        struct resolv_response_builder *btmp
++          = resolv_response_builder_allocate (previous_query->query_buffer,
++                                              previous_query->query_length);
++        build_response (ctx, btmp, qname, qclass, previous_qtype);
++        resolv_response_send_udp (ctx, btmp);
++        resolv_response_builder_free (btmp);
++      }
++
++      /* If not reordering, send the reply as usual.  */
++      if (!parsed.reorder[ctx->server_index])
++        {
++          if (test_verbose)
++            printf ("info: sending non-reordered second response for: %s\n",
++                    qname);
++          build_response (ctx, b, qname, qclass, qtype);
++        }
++
++      /* Unbuffer the response and prepare for the next query.  */
++      resolv_response_context_free (previous_query);
++      previous_query = NULL;
++      previous_qtype = 0;
++      previous_server_index = -1;
++    }
++}
++
++/* Runs a query for QNAME and checks for the expected reply.  See
++   struct parsed_qname for the expected format for QNAME.  */
++static void
++test_qname (const char *qname, int rcode)
++{
++  struct resolv_context *ctx = __resolv_context_get ();
++  TEST_VERIFY_EXIT (ctx != NULL);
++
++  unsigned char q1[512];
++  int q1len = res_mkquery (QUERY, qname, C_IN, T_A, NULL, 0, NULL,
++                           q1, sizeof (q1));
++  TEST_VERIFY_EXIT (q1len > 12);
++
++  unsigned char q2[512];
++  int q2len = res_mkquery (QUERY, qname, C_IN, T_AAAA, NULL, 0, NULL,
++                           q2, sizeof (q2));
++  TEST_VERIFY_EXIT (q2len > 12);
++
++  /* Produce a transaction ID collision.  */
++  memcpy (q2, q1, 2);
++
++  unsigned char ans1[512];
++  unsigned char *ans1p = ans1;
++  unsigned char *ans2p = NULL;
++  int nans2p = 0;
++  int resplen2 = 0;
++  int ans2p_malloced = 0;
++
++  /* Perform a parallel A/AAAA query.  */
++  int resplen1 = __res_context_send (ctx, q1, q1len, q2, q2len,
++                                     ans1, sizeof (ans1), &ans1p,
++                                     &ans2p, &nans2p,
++                                     &resplen2, &ans2p_malloced);
++
++  TEST_VERIFY (resplen1 > 12);
++  TEST_VERIFY (resplen2 > 12);
++  if (resplen1 <= 12 || resplen2 <= 12)
++    return;
++
++  if (rcode == 1 || rcode == 3)
++    {
++      /* Format Error and Name Error responses does not trigger
++         switching to the next server.  */
++      TEST_COMPARE (ans1p[3] & 0x0f, rcode);
++      TEST_COMPARE (ans2p[3] & 0x0f, rcode);
++      return;
++    }
++
++  /* The response should be successful.  */
++  TEST_COMPARE (ans1p[3] & 0x0f, 0);
++  TEST_COMPARE (ans2p[3] & 0x0f, 0);
++
++  /* Due to bug 19691, the answer may not be in the slot matching the
++     query.  Assume that the AAAA response is the longer one.  */
++  unsigned char *a_answer;
++  int a_answer_length;
++  unsigned char *aaaa_answer;
++  int aaaa_answer_length;
++  if (resplen2 > resplen1)
++    {
++      a_answer = ans1p;
++      a_answer_length = resplen1;
++      aaaa_answer = ans2p;
++      aaaa_answer_length = resplen2;
++    }
++  else
++    {
++      a_answer = ans2p;
++      a_answer_length = resplen2;
++      aaaa_answer = ans1p;
++      aaaa_answer_length = resplen1;
++    }
++
++  {
++    char *expected = xasprintf ("name: %s\n"
++                                "address: 192.0.2.1\n",
++                                qname);
++    check_dns_packet (qname, a_answer, a_answer_length, expected);
++    free (expected);
++  }
++  {
++    char *expected = xasprintf ("name: %s\n"
++                                "address: 2001:db8::1\n",
++                                qname);
++    check_dns_packet (qname, aaaa_answer, aaaa_answer_length, expected);
++    free (expected);
++  }
++
++  if (ans2p_malloced)
++    free (ans2p);
++
++  __resolv_context_put (ctx);
++}
++
++static int
++do_test (void)
++{
++  struct resolv_test *aux = resolv_test_start
++    ((struct resolv_redirect_config)
++     {
++       .response_callback = response,
++     });
++
++  for (int rcode = 0; rcode <= 5; ++rcode)
++    for (int do_reorder_0 = 0; do_reorder_0 < 2; ++do_reorder_0)
++      for (int do_reorder_1 = 0; do_reorder_1 < 2; ++do_reorder_1)
++        {
++          char *qname = xasprintf ("reorder-%d-%d.rcode-%d.example.net",
++                                   do_reorder_0, do_reorder_1, rcode);
++          test_qname (qname, rcode);
++          free (qname);
++        }
++
++  resolv_test_end (aux);
++
++  return 0;
++}
++
++#include <support/test-driver.c>
+-- 
+2.41.0
+

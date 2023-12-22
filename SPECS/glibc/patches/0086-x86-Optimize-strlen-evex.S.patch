@@ -1,0 +1,745 @@
+From 7dbd7af692575a906a8bfcc9f1f0b3534858d533 Mon Sep 17 00:00:00 2001
+From: Noah Goldstein <goldstein.w.n@gmail.com>
+Date: Mon, 19 Apr 2021 19:36:06 -0400
+Subject: [PATCH 086/124] x86: Optimize strlen-evex.S
+
+No bug. This commit optimizes strlen-evex.S. The
+optimizations are mostly small things but they add up to roughly
+10-30% performance improvement for strlen. The results for strnlen are
+bit more ambiguous. test-strlen, test-strnlen, test-wcslen, and
+test-wcsnlen are all passing.
+
+Signed-off-by: Noah Goldstein <goldstein.w.n@gmail.com>
+(cherry picked from commit 4ba65586847751372520a36757c17f114588794e)
+---
+ sysdeps/x86_64/multiarch/strlen-evex.S | 581 ++++++++++++++-----------
+ 1 file changed, 317 insertions(+), 264 deletions(-)
+
+diff --git a/sysdeps/x86_64/multiarch/strlen-evex.S b/sysdeps/x86_64/multiarch/strlen-evex.S
+index 05838190788b2153247e945d211deb840d993f72..4bf6874b823355196933922a19e5fe59eacc03e8 100644
+--- a/sysdeps/x86_64/multiarch/strlen-evex.S
++++ b/sysdeps/x86_64/multiarch/strlen-evex.S
+@@ -29,11 +29,13 @@
+ # ifdef USE_AS_WCSLEN
+ #  define VPCMP		vpcmpd
+ #  define VPMINU	vpminud
+-#  define SHIFT_REG	r9d
++#  define SHIFT_REG ecx
++#  define CHAR_SIZE	4
+ # else
+ #  define VPCMP		vpcmpb
+ #  define VPMINU	vpminub
+-#  define SHIFT_REG	ecx
++#  define SHIFT_REG edx
++#  define CHAR_SIZE	1
+ # endif
+ 
+ # define XMMZERO	xmm16
+@@ -46,132 +48,165 @@
+ # define YMM6		ymm22
+ 
+ # define VEC_SIZE 32
++# define PAGE_SIZE 4096
++# define CHAR_PER_VEC (VEC_SIZE / CHAR_SIZE)
+ 
+ 	.section .text.evex,"ax",@progbits
+ ENTRY (STRLEN)
+ # ifdef USE_AS_STRNLEN
+-	/* Check for zero length.  */
++	/* Check zero length.  */
+ 	test	%RSI_LP, %RSI_LP
+ 	jz	L(zero)
+-#  ifdef USE_AS_WCSLEN
+-	shl	$2, %RSI_LP
+-#  elif defined __ILP32__
++#  ifdef __ILP32__
+ 	/* Clear the upper 32 bits.  */
+ 	movl	%esi, %esi
+ #  endif
+ 	mov	%RSI_LP, %R8_LP
+ # endif
+-	movl	%edi, %ecx
+-	movq	%rdi, %rdx
++	movl	%edi, %eax
+ 	vpxorq	%XMMZERO, %XMMZERO, %XMMZERO
+-
++	/* Clear high bits from edi. Only keeping bits relevant to page
++	   cross check.  */
++	andl	$(PAGE_SIZE - 1), %eax
+ 	/* Check if we may cross page boundary with one vector load.  */
+-	andl	$(2 * VEC_SIZE - 1), %ecx
+-	cmpl	$VEC_SIZE, %ecx
+-	ja	L(cros_page_boundary)
++	cmpl	$(PAGE_SIZE - VEC_SIZE), %eax
++	ja	L(cross_page_boundary)
+ 
+ 	/* Check the first VEC_SIZE bytes.  Each bit in K0 represents a
+ 	   null byte.  */
+ 	VPCMP	$0, (%rdi), %YMMZERO, %k0
+ 	kmovd	%k0, %eax
+-	testl	%eax, %eax
+-
+ # ifdef USE_AS_STRNLEN
+-	jnz	L(first_vec_x0_check)
+-	/* Adjust length and check the end of data.  */
+-	subq	$VEC_SIZE, %rsi
+-	jbe	L(max)
+-# else
+-	jnz	L(first_vec_x0)
++	/* If length < CHAR_PER_VEC handle special.  */
++	cmpq	$CHAR_PER_VEC, %rsi
++	jbe	L(first_vec_x0)
+ # endif
+-
+-	/* Align data for aligned loads in the loop.  */
+-	addq	$VEC_SIZE, %rdi
+-	andl	$(VEC_SIZE - 1), %ecx
+-	andq	$-VEC_SIZE, %rdi
+-
++	testl	%eax, %eax
++	jz	L(aligned_more)
++	tzcntl	%eax, %eax
++	ret
+ # ifdef USE_AS_STRNLEN
+-	/* Adjust length.  */
+-	addq	%rcx, %rsi
++L(zero):
++	xorl	%eax, %eax
++	ret
+ 
+-	subq	$(VEC_SIZE * 4), %rsi
+-	jbe	L(last_4x_vec_or_less)
++	.p2align 4
++L(first_vec_x0):
++	/* Set bit for max len so that tzcnt will return min of max len
++	   and position of first match.  */
++	btsq	%rsi, %rax
++	tzcntl	%eax, %eax
++	ret
+ # endif
+-	jmp	L(more_4x_vec)
+ 
+ 	.p2align 4
+-L(cros_page_boundary):
+-	andl	$(VEC_SIZE - 1), %ecx
+-	andq	$-VEC_SIZE, %rdi
+-
+-# ifdef USE_AS_WCSLEN
+-	/* NB: Divide shift count by 4 since each bit in K0 represent 4
+-	   bytes.  */
+-	movl	%ecx, %SHIFT_REG
+-	sarl	$2, %SHIFT_REG
++L(first_vec_x1):
++	tzcntl	%eax, %eax
++	/* Safe to use 32 bit instructions as these are only called for
++	   size = [1, 159].  */
++# ifdef USE_AS_STRNLEN
++	/* Use ecx which was computed earlier to compute correct value.
++	 */
++	leal	-(CHAR_PER_VEC * 4 + 1)(%rcx, %rax), %eax
++# else
++	subl	%edx, %edi
++#  ifdef USE_AS_WCSLEN
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarl	$2, %edi
++#  endif
++	leal	CHAR_PER_VEC(%rdi, %rax), %eax
+ # endif
+-	VPCMP	$0, (%rdi), %YMMZERO, %k0
+-	kmovd	%k0, %eax
++	ret
+ 
+-	/* Remove the leading bytes.  */
+-	sarxl	%SHIFT_REG, %eax, %eax
+-	testl	%eax, %eax
+-	jz	L(aligned_more)
++	.p2align 4
++L(first_vec_x2):
+ 	tzcntl	%eax, %eax
+-# ifdef USE_AS_WCSLEN
+-	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
+-	sall	$2, %eax
+-# endif
++	/* Safe to use 32 bit instructions as these are only called for
++	   size = [1, 159].  */
+ # ifdef USE_AS_STRNLEN
+-	/* Check the end of data.  */
+-	cmpq	%rax, %rsi
+-	jbe	L(max)
+-# endif
+-	addq	%rdi, %rax
+-	addq	%rcx, %rax
+-	subq	%rdx, %rax
+-# ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
++	/* Use ecx which was computed earlier to compute correct value.
++	 */
++	leal	-(CHAR_PER_VEC * 3 + 1)(%rcx, %rax), %eax
++# else
++	subl	%edx, %edi
++#  ifdef USE_AS_WCSLEN
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarl	$2, %edi
++#  endif
++	leal	(CHAR_PER_VEC * 2)(%rdi, %rax), %eax
+ # endif
+ 	ret
+ 
+ 	.p2align 4
+-L(aligned_more):
++L(first_vec_x3):
++	tzcntl	%eax, %eax
++	/* Safe to use 32 bit instructions as these are only called for
++	   size = [1, 159].  */
+ # ifdef USE_AS_STRNLEN
+-        /* "rcx" is less than VEC_SIZE.  Calculate "rdx + rcx - VEC_SIZE"
+-	    with "rdx - (VEC_SIZE - rcx)" instead of "(rdx + rcx) - VEC_SIZE"
+-	    to void possible addition overflow.  */
+-	negq	%rcx
+-	addq	$VEC_SIZE, %rcx
+-
+-	/* Check the end of data.  */
+-	subq	%rcx, %rsi
+-	jbe	L(max)
++	/* Use ecx which was computed earlier to compute correct value.
++	 */
++	leal	-(CHAR_PER_VEC * 2 + 1)(%rcx, %rax), %eax
++# else
++	subl	%edx, %edi
++#  ifdef USE_AS_WCSLEN
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarl	$2, %edi
++#  endif
++	leal	(CHAR_PER_VEC * 3)(%rdi, %rax), %eax
+ # endif
++	ret
+ 
+-	addq	$VEC_SIZE, %rdi
+-
++	.p2align 4
++L(first_vec_x4):
++	tzcntl	%eax, %eax
++	/* Safe to use 32 bit instructions as these are only called for
++	   size = [1, 159].  */
+ # ifdef USE_AS_STRNLEN
+-	subq	$(VEC_SIZE * 4), %rsi
+-	jbe	L(last_4x_vec_or_less)
++	/* Use ecx which was computed earlier to compute correct value.
++	 */
++	leal	-(CHAR_PER_VEC + 1)(%rcx, %rax), %eax
++# else
++	subl	%edx, %edi
++#  ifdef USE_AS_WCSLEN
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarl	$2, %edi
++#  endif
++	leal	(CHAR_PER_VEC * 4)(%rdi, %rax), %eax
+ # endif
++	ret
+ 
+-L(more_4x_vec):
++	.p2align 5
++L(aligned_more):
++	movq	%rdi, %rdx
++	/* Align data to VEC_SIZE.  */
++	andq	$-(VEC_SIZE), %rdi
++L(cross_page_continue):
+ 	/* Check the first 4 * VEC_SIZE.  Only one VEC_SIZE at a time
+ 	   since data is only aligned to VEC_SIZE.  */
+-	VPCMP	$0, (%rdi), %YMMZERO, %k0
+-	kmovd	%k0, %eax
+-	testl	%eax, %eax
+-	jnz	L(first_vec_x0)
+-
++# ifdef USE_AS_STRNLEN
++	/* + CHAR_SIZE because it simplies the logic in
++	   last_4x_vec_or_less.  */
++	leaq	(VEC_SIZE * 5 + CHAR_SIZE)(%rdi), %rcx
++	subq	%rdx, %rcx
++#  ifdef USE_AS_WCSLEN
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarl	$2, %ecx
++#  endif
++# endif
++	/* Load first VEC regardless.  */
+ 	VPCMP	$0, VEC_SIZE(%rdi), %YMMZERO, %k0
++# ifdef USE_AS_STRNLEN
++	/* Adjust length. If near end handle specially.  */
++	subq	%rcx, %rsi
++	jb	L(last_4x_vec_or_less)
++# endif
+ 	kmovd	%k0, %eax
+ 	testl	%eax, %eax
+ 	jnz	L(first_vec_x1)
+ 
+ 	VPCMP	$0, (VEC_SIZE * 2)(%rdi), %YMMZERO, %k0
+ 	kmovd	%k0, %eax
+-	testl	%eax, %eax
++	test	%eax, %eax
+ 	jnz	L(first_vec_x2)
+ 
+ 	VPCMP	$0, (VEC_SIZE * 3)(%rdi), %YMMZERO, %k0
+@@ -179,258 +214,276 @@ L(more_4x_vec):
+ 	testl	%eax, %eax
+ 	jnz	L(first_vec_x3)
+ 
+-	addq	$(VEC_SIZE * 4), %rdi
+-
+-# ifdef USE_AS_STRNLEN
+-	subq	$(VEC_SIZE * 4), %rsi
+-	jbe	L(last_4x_vec_or_less)
+-# endif
+-
+-	/* Align data to 4 * VEC_SIZE.  */
+-	movq	%rdi, %rcx
+-	andl	$(4 * VEC_SIZE - 1), %ecx
+-	andq	$-(4 * VEC_SIZE), %rdi
++	VPCMP	$0, (VEC_SIZE * 4)(%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x4)
+ 
++	addq	$VEC_SIZE, %rdi
+ # ifdef USE_AS_STRNLEN
+-	/* Adjust length.  */
++	/* Check if at last VEC_SIZE * 4 length.  */
++	cmpq	$(CHAR_PER_VEC * 4 - 1), %rsi
++	jbe	L(last_4x_vec_or_less_load)
++	movl	%edi, %ecx
++	andl	$(VEC_SIZE * 4 - 1), %ecx
++#  ifdef USE_AS_WCSLEN
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarl	$2, %ecx
++#  endif
++	/* Readjust length.  */
+ 	addq	%rcx, %rsi
+ # endif
++	/* Align data to VEC_SIZE * 4.  */
++	andq	$-(VEC_SIZE * 4), %rdi
+ 
++	/* Compare 4 * VEC at a time forward.  */
+ 	.p2align 4
+ L(loop_4x_vec):
+-	/* Compare 4 * VEC at a time forward.  */
+-	VMOVA	(%rdi), %YMM1
+-	VMOVA	VEC_SIZE(%rdi), %YMM2
+-	VMOVA	(VEC_SIZE * 2)(%rdi), %YMM3
+-	VMOVA	(VEC_SIZE * 3)(%rdi), %YMM4
+-
+-	VPMINU	%YMM1, %YMM2, %YMM5
+-	VPMINU	%YMM3, %YMM4, %YMM6
++	/* Load first VEC regardless.  */
++	VMOVA	(VEC_SIZE * 4)(%rdi), %YMM1
++# ifdef USE_AS_STRNLEN
++	/* Break if at end of length.  */
++	subq	$(CHAR_PER_VEC * 4), %rsi
++	jb	L(last_4x_vec_or_less_cmpeq)
++# endif
++	/* Save some code size by microfusing VPMINU with the load. Since
++	   the matches in ymm2/ymm4 can only be returned if there where no
++	   matches in ymm1/ymm3 respectively there is no issue with overlap.
++	 */
++	VPMINU	(VEC_SIZE * 5)(%rdi), %YMM1, %YMM2
++	VMOVA	(VEC_SIZE * 6)(%rdi), %YMM3
++	VPMINU	(VEC_SIZE * 7)(%rdi), %YMM3, %YMM4
++
++	VPCMP	$0, %YMM2, %YMMZERO, %k0
++	VPCMP	$0, %YMM4, %YMMZERO, %k1
++	subq	$-(VEC_SIZE * 4), %rdi
++	kortestd	%k0, %k1
++	jz	L(loop_4x_vec)
++
++	/* Check if end was in first half.  */
++	kmovd	%k0, %eax
++	subq	%rdx, %rdi
++# ifdef USE_AS_WCSLEN
++	shrq	$2, %rdi
++# endif
++	testl	%eax, %eax
++	jz	L(second_vec_return)
+ 
+-	VPMINU	%YMM5, %YMM6, %YMM5
+-	VPCMP	$0, %YMM5, %YMMZERO, %k0
+-	ktestd	%k0, %k0
+-	jnz	L(4x_vec_end)
++	VPCMP	$0, %YMM1, %YMMZERO, %k2
++	kmovd	%k2, %edx
++	/* Combine VEC1 matches (edx) with VEC2 matches (eax).  */
++# ifdef USE_AS_WCSLEN
++	sall	$CHAR_PER_VEC, %eax
++	orl	%edx, %eax
++	tzcntl	%eax, %eax
++# else
++	salq	$CHAR_PER_VEC, %rax
++	orq	%rdx, %rax
++	tzcntq	%rax, %rax
++# endif
++	addq	%rdi, %rax
++	ret
+ 
+-	addq	$(VEC_SIZE * 4), %rdi
+ 
+-# ifndef USE_AS_STRNLEN
+-	jmp	L(loop_4x_vec)
+-# else
+-	subq	$(VEC_SIZE * 4), %rsi
+-	ja	L(loop_4x_vec)
++# ifdef USE_AS_STRNLEN
+ 
++L(last_4x_vec_or_less_load):
++	/* Depending on entry adjust rdi / prepare first VEC in YMM1.  */
++	VMOVA	(VEC_SIZE * 4)(%rdi), %YMM1
++L(last_4x_vec_or_less_cmpeq):
++	VPCMP	$0, %YMM1, %YMMZERO, %k0
++	addq	$(VEC_SIZE * 3), %rdi
+ L(last_4x_vec_or_less):
+-	/* Less than 4 * VEC and aligned to VEC_SIZE.  */
+-	addl	$(VEC_SIZE * 2), %esi
+-	jle	L(last_2x_vec)
+-
+-	VPCMP	$0, (%rdi), %YMMZERO, %k0
+ 	kmovd	%k0, %eax
++	/* If remaining length > VEC_SIZE * 2. This works if esi is off by
++	   VEC_SIZE * 4.  */
++	testl	$(CHAR_PER_VEC * 2), %esi
++	jnz	L(last_4x_vec)
++
++	/* length may have been negative or positive by an offset of
++	   CHAR_PER_VEC * 4 depending on where this was called from. This
++	   fixes that.  */
++	andl	$(CHAR_PER_VEC * 4 - 1), %esi
+ 	testl	%eax, %eax
+-	jnz	L(first_vec_x0)
++	jnz	L(last_vec_x1_check)
+ 
+-	VPCMP	$0, VEC_SIZE(%rdi), %YMMZERO, %k0
+-	kmovd	%k0, %eax
+-	testl	%eax, %eax
+-	jnz	L(first_vec_x1)
++	/* Check the end of data.  */
++	subl	$CHAR_PER_VEC, %esi
++	jb	L(max)
+ 
+ 	VPCMP	$0, (VEC_SIZE * 2)(%rdi), %YMMZERO, %k0
+ 	kmovd	%k0, %eax
+-	testl	%eax, %eax
+-	jnz	L(first_vec_x2_check)
+-	subl	$VEC_SIZE, %esi
+-	jle	L(max)
++	tzcntl	%eax, %eax
++	/* Check the end of data.  */
++	cmpl	%eax, %esi
++	jb	L(max)
+ 
+-	VPCMP	$0, (VEC_SIZE * 3)(%rdi), %YMMZERO, %k0
+-	kmovd	%k0, %eax
+-	testl	%eax, %eax
+-	jnz	L(first_vec_x3_check)
++	subq	%rdx, %rdi
++#  ifdef USE_AS_WCSLEN
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarq	$2, %rdi
++#  endif
++	leaq	(CHAR_PER_VEC * 2)(%rdi, %rax), %rax
++	ret
++L(max):
+ 	movq	%r8, %rax
++	ret
++# endif
++
++	/* Placed here in strnlen so that the jcc L(last_4x_vec_or_less)
++	   in the 4x VEC loop can use 2 byte encoding.  */
++	.p2align 4
++L(second_vec_return):
++	VPCMP	$0, %YMM3, %YMMZERO, %k0
++	/* Combine YMM3 matches (k0) with YMM4 matches (k1).  */
++# ifdef USE_AS_WCSLEN
++	kunpckbw	%k0, %k1, %k0
++	kmovd	%k0, %eax
++	tzcntl	%eax, %eax
++# else
++	kunpckdq	%k0, %k1, %k0
++	kmovq	%k0, %rax
++	tzcntq	%rax, %rax
++# endif
++	leaq	(CHAR_PER_VEC * 2)(%rdi, %rax), %rax
++	ret
++
++
++# ifdef USE_AS_STRNLEN
++L(last_vec_x1_check):
++	tzcntl	%eax, %eax
++	/* Check the end of data.  */
++	cmpl	%eax, %esi
++	jb	L(max)
++	subq	%rdx, %rdi
+ #  ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarq	$2, %rdi
+ #  endif
++	leaq	(CHAR_PER_VEC)(%rdi, %rax), %rax
+ 	ret
+ 
+ 	.p2align 4
+-L(last_2x_vec):
+-	addl	$(VEC_SIZE * 2), %esi
++L(last_4x_vec):
++	/* Test first 2x VEC normally.  */
++	testl	%eax, %eax
++	jnz	L(last_vec_x1)
+ 
+-	VPCMP	$0, (%rdi), %YMMZERO, %k0
++	VPCMP	$0, (VEC_SIZE * 2)(%rdi), %YMMZERO, %k0
+ 	kmovd	%k0, %eax
+ 	testl	%eax, %eax
+-	jnz	L(first_vec_x0_check)
+-	subl	$VEC_SIZE, %esi
+-	jle	L(max)
++	jnz	L(last_vec_x2)
+ 
+-	VPCMP	$0, VEC_SIZE(%rdi), %YMMZERO, %k0
++	/* Normalize length.  */
++	andl	$(CHAR_PER_VEC * 4 - 1), %esi
++	VPCMP	$0, (VEC_SIZE * 3)(%rdi), %YMMZERO, %k0
+ 	kmovd	%k0, %eax
+ 	testl	%eax, %eax
+-	jnz	L(first_vec_x1_check)
+-	movq	%r8, %rax
+-#  ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
+-#  endif
+-	ret
++	jnz	L(last_vec_x3)
+ 
+-	.p2align 4
+-L(first_vec_x0_check):
++	/* Check the end of data.  */
++	subl	$(CHAR_PER_VEC * 3), %esi
++	jb	L(max)
++
++	VPCMP	$0, (VEC_SIZE * 4)(%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
+ 	tzcntl	%eax, %eax
+-#  ifdef USE_AS_WCSLEN
+-	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
+-	sall	$2, %eax
+-#  endif
+ 	/* Check the end of data.  */
+-	cmpq	%rax, %rsi
+-	jbe	L(max)
+-	addq	%rdi, %rax
+-	subq	%rdx, %rax
++	cmpl	%eax, %esi
++	jb	L(max_end)
++
++	subq	%rdx, %rdi
+ #  ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarq	$2, %rdi
+ #  endif
++	leaq	(CHAR_PER_VEC * 4)(%rdi, %rax), %rax
+ 	ret
+ 
+ 	.p2align 4
+-L(first_vec_x1_check):
++L(last_vec_x1):
+ 	tzcntl	%eax, %eax
++	subq	%rdx, %rdi
+ #  ifdef USE_AS_WCSLEN
+-	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
+-	sall	$2, %eax
+-#  endif
+-	/* Check the end of data.  */
+-	cmpq	%rax, %rsi
+-	jbe	L(max)
+-	addq	$VEC_SIZE, %rax
+-	addq	%rdi, %rax
+-	subq	%rdx, %rax
+-#  ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarq	$2, %rdi
+ #  endif
++	leaq	(CHAR_PER_VEC)(%rdi, %rax), %rax
+ 	ret
+ 
+ 	.p2align 4
+-L(first_vec_x2_check):
++L(last_vec_x2):
+ 	tzcntl	%eax, %eax
++	subq	%rdx, %rdi
+ #  ifdef USE_AS_WCSLEN
+-	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
+-	sall	$2, %eax
+-#  endif
+-	/* Check the end of data.  */
+-	cmpq	%rax, %rsi
+-	jbe	L(max)
+-	addq	$(VEC_SIZE * 2), %rax
+-	addq	%rdi, %rax
+-	subq	%rdx, %rax
+-#  ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarq	$2, %rdi
+ #  endif
++	leaq	(CHAR_PER_VEC * 2)(%rdi, %rax), %rax
+ 	ret
+ 
+ 	.p2align 4
+-L(first_vec_x3_check):
++L(last_vec_x3):
+ 	tzcntl	%eax, %eax
+-#  ifdef USE_AS_WCSLEN
+-	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
+-	sall	$2, %eax
+-#  endif
++	subl	$(CHAR_PER_VEC * 2), %esi
+ 	/* Check the end of data.  */
+-	cmpq	%rax, %rsi
+-	jbe	L(max)
+-	addq	$(VEC_SIZE * 3), %rax
+-	addq	%rdi, %rax
+-	subq	%rdx, %rax
++	cmpl	%eax, %esi
++	jb	L(max_end)
++	subq	%rdx, %rdi
+ #  ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
++	/* NB: Divide bytes by 4 to get the wchar_t count.  */
++	sarq	$2, %rdi
+ #  endif
++	leaq	(CHAR_PER_VEC * 3)(%rdi, %rax), %rax
+ 	ret
+-
+-	.p2align 4
+-L(max):
++L(max_end):
+ 	movq	%r8, %rax
+-#  ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
+-#  endif
+-	ret
+-
+-	.p2align 4
+-L(zero):
+-	xorl	%eax, %eax
+ 	ret
+ # endif
+ 
++	/* Cold case for crossing page with first load.	 */
+ 	.p2align 4
+-L(first_vec_x0):
+-	tzcntl	%eax, %eax
+-# ifdef USE_AS_WCSLEN
+-	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
+-	sall	$2, %eax
+-# endif
+-	addq	%rdi, %rax
+-	subq	%rdx, %rax
++L(cross_page_boundary):
++	movq	%rdi, %rdx
++	/* Align data to VEC_SIZE.  */
++	andq	$-VEC_SIZE, %rdi
++	VPCMP	$0, (%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	/* Remove the leading bytes.  */
+ # ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
++	/* NB: Divide shift count by 4 since each bit in K0 represent 4
++	   bytes.  */
++	movl	%edx, %ecx
++	shrl	$2, %ecx
++	andl	$(CHAR_PER_VEC - 1), %ecx
+ # endif
+-	ret
+-
+-	.p2align 4
+-L(first_vec_x1):
++	/* SHIFT_REG is ecx for USE_AS_WCSLEN and edx otherwise.  */
++	sarxl	%SHIFT_REG, %eax, %eax
++	testl	%eax, %eax
++# ifndef USE_AS_STRNLEN
++	jz	L(cross_page_continue)
+ 	tzcntl	%eax, %eax
+-# ifdef USE_AS_WCSLEN
+-	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
+-	sall	$2, %eax
+-# endif
+-	addq	$VEC_SIZE, %rax
+-	addq	%rdi, %rax
+-	subq	%rdx, %rax
+-# ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
+-# endif
+ 	ret
+-
+-	.p2align 4
+-L(first_vec_x2):
+-	tzcntl	%eax, %eax
+-# ifdef USE_AS_WCSLEN
+-	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
+-	sall	$2, %eax
+-# endif
+-	addq	$(VEC_SIZE * 2), %rax
+-	addq	%rdi, %rax
+-	subq	%rdx, %rax
+-# ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
+-# endif
++# else
++	jnz	L(cross_page_less_vec)
++#  ifndef USE_AS_WCSLEN
++	movl	%edx, %ecx
++	andl	$(CHAR_PER_VEC - 1), %ecx
++#  endif
++	movl	$CHAR_PER_VEC, %eax
++	subl	%ecx, %eax
++	/* Check the end of data.  */
++	cmpq	%rax, %rsi
++	ja	L(cross_page_continue)
++	movl	%esi, %eax
+ 	ret
+-
+-	.p2align 4
+-L(4x_vec_end):
+-	VPCMP	$0, %YMM1, %YMMZERO, %k0
+-	kmovd	%k0, %eax
+-	testl	%eax, %eax
+-	jnz	L(first_vec_x0)
+-	VPCMP	$0, %YMM2, %YMMZERO, %k1
+-	kmovd	%k1, %eax
+-	testl	%eax, %eax
+-	jnz	L(first_vec_x1)
+-	VPCMP	$0, %YMM3, %YMMZERO, %k2
+-	kmovd	%k2, %eax
+-	testl	%eax, %eax
+-	jnz	L(first_vec_x2)
+-	VPCMP	$0, %YMM4, %YMMZERO, %k3
+-	kmovd	%k3, %eax
+-L(first_vec_x3):
++L(cross_page_less_vec):
+ 	tzcntl	%eax, %eax
+-# ifdef USE_AS_WCSLEN
+-	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
+-	sall	$2, %eax
+-# endif
+-	addq	$(VEC_SIZE * 3), %rax
+-	addq	%rdi, %rax
+-	subq	%rdx, %rax
+-# ifdef USE_AS_WCSLEN
+-	shrq	$2, %rax
+-# endif
++	/* Select min of length and position of first null.  */
++	cmpq	%rax, %rsi
++	cmovb	%esi, %eax
+ 	ret
++# endif
+ 
+ END (STRLEN)
+ #endif
+-- 
+2.41.0
+

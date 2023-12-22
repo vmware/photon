@@ -1,0 +1,32 @@
+From bf4a99baedf5277185f9fe215ed9636490d251f8 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Thu, 20 Jul 2023 18:31:48 +0200
+Subject: [PATCH 120/124] debug: Mark libSegFault.so as NODELETE
+
+The signal handler installed in the ELF constructor cannot easily
+be removed again (because the program may have changed handlers
+in the meantime).  Mark the object as NODELETE so that the registered
+handler function is never unloaded.
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 23ee92deea4c99d0e6a5f48fa7b942909b123ec5)
+---
+ debug/Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/debug/Makefile b/debug/Makefile
+index 0036edd1872eff2f8b634ad26a235cd9a60d0a31..75584027b0ff2626e30c6a7df92acd04e3fe7f3f 100644
+--- a/debug/Makefile
++++ b/debug/Makefile
+@@ -168,6 +168,8 @@ extra-libs-others = $(extra-libs)
+ 
+ libSegFault-routines = segfault
+ libSegFault-inhibit-o = $(filter-out .os,$(object-suffixes))
++# libSegFault.so installs a signal handler in its ELF constructor.
++LDFLAGS-SegFault.so = -Wl,--enable-new-dtags,-z,nodelete
+ 
+ libpcprofile-routines = pcprofile
+ libpcprofile-inhibit-o = $(filter-out .os,$(object-suffixes))
+-- 
+2.41.0
+

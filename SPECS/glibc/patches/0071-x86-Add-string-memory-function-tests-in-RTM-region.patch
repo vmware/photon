@@ -1,0 +1,736 @@
+From c42821ec053da5d42868dd49f91f335bc3a331f5 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Tue, 23 Feb 2021 06:33:10 -0800
+Subject: [PATCH 071/124] x86: Add string/memory function tests in RTM region
+
+At function exit, AVX optimized string/memory functions have VZEROUPPER
+which triggers RTM abort.   When such functions are called inside a
+transactionally executing RTM region, RTM abort causes severe performance
+degradation.  Add tests to verify that string/memory functions won't
+cause RTM abort in RTM region.
+
+(cherry picked from commit 4bd660be40967cd69072f69ebc2ad32bfcc1f206)
+---
+ sysdeps/x86/Makefile          | 23 +++++++++++
+ sysdeps/x86/tst-memchr-rtm.c  | 54 ++++++++++++++++++++++++++
+ sysdeps/x86/tst-memcmp-rtm.c  | 52 +++++++++++++++++++++++++
+ sysdeps/x86/tst-memmove-rtm.c | 53 ++++++++++++++++++++++++++
+ sysdeps/x86/tst-memrchr-rtm.c | 54 ++++++++++++++++++++++++++
+ sysdeps/x86/tst-memset-rtm.c  | 45 ++++++++++++++++++++++
+ sysdeps/x86/tst-strchr-rtm.c  | 54 ++++++++++++++++++++++++++
+ sysdeps/x86/tst-strcpy-rtm.c  | 53 ++++++++++++++++++++++++++
+ sysdeps/x86/tst-string-rtm.h  | 72 +++++++++++++++++++++++++++++++++++
+ sysdeps/x86/tst-strlen-rtm.c  | 53 ++++++++++++++++++++++++++
+ sysdeps/x86/tst-strncmp-rtm.c | 52 +++++++++++++++++++++++++
+ sysdeps/x86/tst-strrchr-rtm.c | 53 ++++++++++++++++++++++++++
+ 12 files changed, 618 insertions(+)
+ create mode 100644 sysdeps/x86/tst-memchr-rtm.c
+ create mode 100644 sysdeps/x86/tst-memcmp-rtm.c
+ create mode 100644 sysdeps/x86/tst-memmove-rtm.c
+ create mode 100644 sysdeps/x86/tst-memrchr-rtm.c
+ create mode 100644 sysdeps/x86/tst-memset-rtm.c
+ create mode 100644 sysdeps/x86/tst-strchr-rtm.c
+ create mode 100644 sysdeps/x86/tst-strcpy-rtm.c
+ create mode 100644 sysdeps/x86/tst-string-rtm.h
+ create mode 100644 sysdeps/x86/tst-strlen-rtm.c
+ create mode 100644 sysdeps/x86/tst-strncmp-rtm.c
+ create mode 100644 sysdeps/x86/tst-strrchr-rtm.c
+
+diff --git a/sysdeps/x86/Makefile b/sysdeps/x86/Makefile
+index 9736a13e7be0f15c9b43e1ccc4bc8fe685e1c1f4..e821d95fa33a3720ea58b6a8141035f7e6621721 100644
+--- a/sysdeps/x86/Makefile
++++ b/sysdeps/x86/Makefile
+@@ -22,6 +22,29 @@ endif
+ 
+ ifeq ($(subdir),string)
+ sysdep_routines += cacheinfo
++
++tests += \
++  tst-memchr-rtm \
++  tst-memcmp-rtm \
++  tst-memmove-rtm \
++  tst-memrchr-rtm \
++  tst-memset-rtm \
++  tst-strchr-rtm \
++  tst-strcpy-rtm \
++  tst-strlen-rtm \
++  tst-strncmp-rtm \
++  tst-strrchr-rtm
++
++CFLAGS-tst-memchr-rtm.c += -mrtm
++CFLAGS-tst-memcmp-rtm.c += -mrtm
++CFLAGS-tst-memmove-rtm.c += -mrtm
++CFLAGS-tst-memrchr-rtm.c += -mrtm
++CFLAGS-tst-memset-rtm.c += -mrtm
++CFLAGS-tst-strchr-rtm.c += -mrtm
++CFLAGS-tst-strcpy-rtm.c += -mrtm
++CFLAGS-tst-strlen-rtm.c += -mrtm
++CFLAGS-tst-strncmp-rtm.c += -mrtm
++CFLAGS-tst-strrchr-rtm.c += -mrtm
+ endif
+ 
+ ifneq ($(enable-cet),no)
+diff --git a/sysdeps/x86/tst-memchr-rtm.c b/sysdeps/x86/tst-memchr-rtm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..e47494011e66a105b6d5117e06ecc8883b60d333
+--- /dev/null
++++ b/sysdeps/x86/tst-memchr-rtm.c
+@@ -0,0 +1,54 @@
++/* Test case for memchr inside a transactionally executing RTM region.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <tst-string-rtm.h>
++
++#define LOOP 3000
++#define STRING_SIZE 1024
++char string1[STRING_SIZE];
++
++__attribute__ ((noinline, noclone))
++static int
++prepare (void)
++{
++  memset (string1, 'a', STRING_SIZE);
++  string1[100] = 'c';
++  string1[STRING_SIZE - 100] = 'c';
++  char *p = memchr (string1, 'c', STRING_SIZE);
++  if (p == &string1[100])
++    return EXIT_SUCCESS;
++  else
++    return EXIT_FAILURE;
++}
++
++__attribute__ ((noinline, noclone))
++static int
++function (void)
++{
++  char *p = memchr (string1, 'c', STRING_SIZE);
++  if (p == &string1[100])
++    return 0;
++  else
++    return 1;
++}
++
++static int
++do_test (void)
++{
++  return do_test_1 ("memchr", LOOP, prepare, function);
++}
+diff --git a/sysdeps/x86/tst-memcmp-rtm.c b/sysdeps/x86/tst-memcmp-rtm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..e4c8a623bbf771d2a639004f0fb6ce4a5fde28d4
+--- /dev/null
++++ b/sysdeps/x86/tst-memcmp-rtm.c
+@@ -0,0 +1,52 @@
++/* Test case for memcmp inside a transactionally executing RTM region.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <tst-string-rtm.h>
++
++#define LOOP 3000
++#define STRING_SIZE 1024
++char string1[STRING_SIZE];
++char string2[STRING_SIZE];
++
++__attribute__ ((noinline, noclone))
++static int
++prepare (void)
++{
++  memset (string1, 'a', STRING_SIZE);
++  memset (string2, 'a', STRING_SIZE);
++  if (memcmp (string1, string2, STRING_SIZE) == 0)
++    return EXIT_SUCCESS;
++  else
++    return EXIT_FAILURE;
++}
++
++__attribute__ ((noinline, noclone))
++static int
++function (void)
++{
++  if (memcmp (string1, string2, STRING_SIZE) == 0)
++    return 0;
++  else
++    return 1;
++}
++
++static int
++do_test (void)
++{
++  return do_test_1 ("memcmp", LOOP, prepare, function);
++}
+diff --git a/sysdeps/x86/tst-memmove-rtm.c b/sysdeps/x86/tst-memmove-rtm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..4bf97ef1e38c527f427a9b1d0c4cb93909d35b7a
+--- /dev/null
++++ b/sysdeps/x86/tst-memmove-rtm.c
+@@ -0,0 +1,53 @@
++/* Test case for memmove inside a transactionally executing RTM region.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <tst-string-rtm.h>
++
++#define LOOP 3000
++#define STRING_SIZE 1024
++char string1[STRING_SIZE];
++char string2[STRING_SIZE];
++
++__attribute__ ((noinline, noclone))
++static int
++prepare (void)
++{
++  memset (string1, 'a', STRING_SIZE);
++  if (memmove (string2, string1, STRING_SIZE) == string2
++      && memcmp (string2, string1, STRING_SIZE) == 0)
++    return EXIT_SUCCESS;
++  else
++    return EXIT_FAILURE;
++}
++
++__attribute__ ((noinline, noclone))
++static int
++function (void)
++{
++  if (memmove (string2, string1, STRING_SIZE) == string2
++      && memcmp (string2, string1, STRING_SIZE) == 0)
++    return 0;
++  else
++    return 1;
++}
++
++static int
++do_test (void)
++{
++  return do_test_1 ("memmove", LOOP, prepare, function);
++}
+diff --git a/sysdeps/x86/tst-memrchr-rtm.c b/sysdeps/x86/tst-memrchr-rtm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..a57a5a8eb9da877b4f10d66104c22ec93c4de2e5
+--- /dev/null
++++ b/sysdeps/x86/tst-memrchr-rtm.c
+@@ -0,0 +1,54 @@
++/* Test case for memrchr inside a transactionally executing RTM region.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <tst-string-rtm.h>
++
++#define LOOP 3000
++#define STRING_SIZE 1024
++char string1[STRING_SIZE];
++
++__attribute__ ((noinline, noclone))
++static int
++prepare (void)
++{
++  memset (string1, 'a', STRING_SIZE);
++  string1[100] = 'c';
++  string1[STRING_SIZE - 100] = 'c';
++  char *p = memrchr (string1, 'c', STRING_SIZE);
++  if (p == &string1[STRING_SIZE - 100])
++    return EXIT_SUCCESS;
++  else
++    return EXIT_FAILURE;
++}
++
++__attribute__ ((noinline, noclone))
++static int
++function (void)
++{
++  char *p = memrchr (string1, 'c', STRING_SIZE);
++  if (p == &string1[STRING_SIZE - 100])
++    return 0;
++  else
++    return 1;
++}
++
++static int
++do_test (void)
++{
++  return do_test_1 ("memrchr", LOOP, prepare, function);
++}
+diff --git a/sysdeps/x86/tst-memset-rtm.c b/sysdeps/x86/tst-memset-rtm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..bf343a4dadbc9e467f7366bfba9ff0dd85a2ac19
+--- /dev/null
++++ b/sysdeps/x86/tst-memset-rtm.c
+@@ -0,0 +1,45 @@
++/* Test case for memset inside a transactionally executing RTM region.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <tst-string-rtm.h>
++
++#define LOOP 3000
++#define STRING_SIZE 1024
++char string1[STRING_SIZE];
++
++__attribute__ ((noinline, noclone))
++static int
++prepare (void)
++{
++  memset (string1, 'a', STRING_SIZE);
++  return EXIT_SUCCESS;
++}
++
++__attribute__ ((noinline, noclone))
++static int
++function (void)
++{
++  memset (string1, 'a', STRING_SIZE);
++  return 0;
++}
++
++static int
++do_test (void)
++{
++  return do_test_1 ("memset", LOOP, prepare, function);
++}
+diff --git a/sysdeps/x86/tst-strchr-rtm.c b/sysdeps/x86/tst-strchr-rtm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..a82e29c07290de117a65e2b7fa9352a22a917ebe
+--- /dev/null
++++ b/sysdeps/x86/tst-strchr-rtm.c
+@@ -0,0 +1,54 @@
++/* Test case for strchr inside a transactionally executing RTM region.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <tst-string-rtm.h>
++
++#define LOOP 3000
++#define STRING_SIZE 1024
++char string1[STRING_SIZE];
++
++__attribute__ ((noinline, noclone))
++static int
++prepare (void)
++{
++  memset (string1, 'a', STRING_SIZE - 1);
++  string1[100] = 'c';
++  string1[STRING_SIZE - 100] = 'c';
++  char *p = strchr (string1, 'c');
++  if (p == &string1[100])
++    return EXIT_SUCCESS;
++  else
++    return EXIT_FAILURE;
++}
++
++__attribute__ ((noinline, noclone))
++static int
++function (void)
++{
++  char *p = strchr (string1, 'c');
++  if (p == &string1[100])
++    return 0;
++  else
++    return 1;
++}
++
++static int
++do_test (void)
++{
++  return do_test_1 ("strchr", LOOP, prepare, function);
++}
+diff --git a/sysdeps/x86/tst-strcpy-rtm.c b/sysdeps/x86/tst-strcpy-rtm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..2b2a583fb46b0d7493ad9fdcee16bdfaaa01ef61
+--- /dev/null
++++ b/sysdeps/x86/tst-strcpy-rtm.c
+@@ -0,0 +1,53 @@
++/* Test case for strcpy inside a transactionally executing RTM region.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <tst-string-rtm.h>
++
++#define LOOP 3000
++#define STRING_SIZE 1024
++char string1[STRING_SIZE];
++char string2[STRING_SIZE];
++
++__attribute__ ((noinline, noclone))
++static int
++prepare (void)
++{
++  memset (string1, 'a', STRING_SIZE - 1);
++  if (strcpy (string2, string1) == string2
++      && strcmp (string2, string1) == 0)
++    return EXIT_SUCCESS;
++  else
++    return EXIT_FAILURE;
++}
++
++__attribute__ ((noinline, noclone))
++static int
++function (void)
++{
++  if (strcpy (string2, string1) == string2
++      && strcmp (string2, string1) == 0)
++    return 0;
++  else
++    return 1;
++}
++
++static int
++do_test (void)
++{
++  return do_test_1 ("strcpy", LOOP, prepare, function);
++}
+diff --git a/sysdeps/x86/tst-string-rtm.h b/sysdeps/x86/tst-string-rtm.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..6ed9eca017e6d12001f5634ad76bdeff4300e21d
+--- /dev/null
++++ b/sysdeps/x86/tst-string-rtm.h
+@@ -0,0 +1,72 @@
++/* Test string function in a transactionally executing RTM region.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <string.h>
++#include <x86intrin.h>
++#include <cpu-features.h>
++#include <support/check.h>
++#include <support/test-driver.h>
++
++static int
++do_test_1 (const char *name, unsigned int loop, int (*prepare) (void),
++	   int (*function) (void))
++{
++  if (!CPU_FEATURE_USABLE (RTM))
++    return EXIT_UNSUPPORTED;
++
++  int status = prepare ();
++  if (status != EXIT_SUCCESS)
++    return status;
++
++  unsigned int i;
++  unsigned int naborts = 0;
++  unsigned int failed = 0;
++  for (i = 0; i < loop; i++)
++    {
++      failed |= function ();
++      if (_xbegin() == _XBEGIN_STARTED)
++	{
++	  failed |= function ();
++	  _xend();
++	}
++      else
++	{
++	  failed |= function ();
++	  ++naborts;
++	}
++    }
++
++  if (failed)
++    FAIL_EXIT1 ("%s() failed", name);
++
++  if (naborts)
++    {
++      /* NB: Low single digit (<= 5%) noise-level aborts are normal for
++	 TSX.  */
++      double rate = 100 * ((double) naborts) / ((double) loop);
++      if (rate > 5)
++	FAIL_EXIT1 ("TSX abort rate: %.2f%% (%d out of %d)",
++		    rate, naborts, loop);
++    }
++
++  return EXIT_SUCCESS;
++}
++
++static int do_test (void);
++
++#include <support/test-driver.c>
+diff --git a/sysdeps/x86/tst-strlen-rtm.c b/sysdeps/x86/tst-strlen-rtm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..0dcf14db87806e5b78d6a6b12459bb4af65eaf76
+--- /dev/null
++++ b/sysdeps/x86/tst-strlen-rtm.c
+@@ -0,0 +1,53 @@
++/* Test case for strlen inside a transactionally executing RTM region.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <tst-string-rtm.h>
++
++#define LOOP 3000
++#define STRING_SIZE 1024
++char string1[STRING_SIZE];
++
++__attribute__ ((noinline, noclone))
++static int
++prepare (void)
++{
++  memset (string1, 'a', STRING_SIZE - 1);
++  string1[STRING_SIZE - 100] = '\0';
++  size_t len = strlen (string1);
++  if (len == STRING_SIZE - 100)
++    return EXIT_SUCCESS;
++  else
++    return EXIT_FAILURE;
++}
++
++__attribute__ ((noinline, noclone))
++static int
++function (void)
++{
++  size_t len = strlen (string1);
++  if (len == STRING_SIZE - 100)
++    return 0;
++  else
++    return 1;
++}
++
++static int
++do_test (void)
++{
++  return do_test_1 ("strlen", LOOP, prepare, function);
++}
+diff --git a/sysdeps/x86/tst-strncmp-rtm.c b/sysdeps/x86/tst-strncmp-rtm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..236ad951b5b59cd1624c7033616dd9c2e6f97656
+--- /dev/null
++++ b/sysdeps/x86/tst-strncmp-rtm.c
+@@ -0,0 +1,52 @@
++/* Test case for strncmp inside a transactionally executing RTM region.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <tst-string-rtm.h>
++
++#define LOOP 3000
++#define STRING_SIZE 1024
++char string1[STRING_SIZE];
++char string2[STRING_SIZE];
++
++__attribute__ ((noinline, noclone))
++static int
++prepare (void)
++{
++  memset (string1, 'a', STRING_SIZE - 1);
++  memset (string2, 'a', STRING_SIZE - 1);
++  if (strncmp (string1, string2, STRING_SIZE) == 0)
++    return EXIT_SUCCESS;
++  else
++    return EXIT_FAILURE;
++}
++
++__attribute__ ((noinline, noclone))
++static int
++function (void)
++{
++  if (strncmp (string1, string2, STRING_SIZE) == 0)
++    return 0;
++  else
++    return 1;
++}
++
++static int
++do_test (void)
++{
++  return do_test_1 ("strncmp", LOOP, prepare, function);
++}
+diff --git a/sysdeps/x86/tst-strrchr-rtm.c b/sysdeps/x86/tst-strrchr-rtm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..e32bfaf5f50db9d18731bf2f0cc15efcef69a9da
+--- /dev/null
++++ b/sysdeps/x86/tst-strrchr-rtm.c
+@@ -0,0 +1,53 @@
++/* Test case for strrchr inside a transactionally executing RTM region.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <tst-string-rtm.h>
++
++#define LOOP 3000
++#define STRING_SIZE 1024
++char string1[STRING_SIZE];
++
++__attribute__ ((noinline, noclone))
++static int
++prepare (void)
++{
++  memset (string1, 'a', STRING_SIZE - 1);
++  string1[STRING_SIZE - 100] = 'c';
++  char *p = strrchr (string1, 'c');
++  if (p == &string1[STRING_SIZE - 100])
++    return EXIT_SUCCESS;
++  else
++    return EXIT_FAILURE;
++}
++
++__attribute__ ((noinline, noclone))
++static int
++function (void)
++{
++  char *p = strrchr (string1, 'c');
++  if (p == &string1[STRING_SIZE - 100])
++    return 0;
++  else
++    return 1;
++}
++
++static int
++do_test (void)
++{
++  return do_test_1 ("strrchr", LOOP, prepare, function);
++}
+-- 
+2.41.0
+

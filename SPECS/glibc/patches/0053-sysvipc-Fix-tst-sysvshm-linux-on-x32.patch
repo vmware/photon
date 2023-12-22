@@ -1,0 +1,47 @@
+From cc6ff883a63ef0f8e2dad8f97a5784c30acd2d49 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Thu, 15 Oct 2020 15:45:26 -0300
+Subject: [PATCH 053/124] sysvipc: Fix tst-sysvshm-linux on x32
+
+The Linux shminfo fields are '__syscall_ulong_t' (which is 64-bit
+for x32).  This patch fixes the test to compare againt the correct
+type and to only clamp the value if '__syscall_ulong_t' is the same
+size of 'unsigned long int'.
+
+Checked on x86_64-linux-gnu-x32.
+
+(cherry picked from commit 602da9de696099f543ee2bb3c1520bc178f42fc9)
+---
+ sysdeps/unix/sysv/linux/tst-sysvshm-linux.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/sysdeps/unix/sysv/linux/tst-sysvshm-linux.c b/sysdeps/unix/sysv/linux/tst-sysvshm-linux.c
+index 7128ae2e14db5ad8111849ada5841a1e89f2ceb5..cb32bd522effbc7ae69589d633a4bd20928ef49d 100644
+--- a/sysdeps/unix/sysv/linux/tst-sysvshm-linux.c
++++ b/sysdeps/unix/sysv/linux/tst-sysvshm-linux.c
+@@ -54,9 +54,9 @@ do_prepare (int argc, char *argv[])
+ 
+ struct test_shminfo
+ {
+-  unsigned long int shmall;
+-  unsigned long int shmmax;
+-  unsigned long int shmmni;
++  __syscall_ulong_t shmall;
++  __syscall_ulong_t shmmax;
++  __syscall_ulong_t shmmni;
+ };
+ 
+ /* It tries to obtain some system-wide SysV shared memory information from
+@@ -128,7 +128,8 @@ do_test (void)
+ #if LONG_MAX == INT_MAX
+     /* Kernel explicit clamp the value for shmmax on compat symbol (32-bit
+        binaries running on 64-bit kernels).  */
+-    if (v > INT_MAX)
++    if (sizeof (__syscall_ulong_t) == sizeof (unsigned long int)
++        && v > INT_MAX)
+       v = INT_MAX;
+ #endif
+     tipcinfo.shmmax = v;
+-- 
+2.41.0
+

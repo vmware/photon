@@ -1,0 +1,201 @@
+From 4c619b3eed558172198790f842740abb9af1989d Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Mon, 28 Dec 2020 05:28:49 -0800
+Subject: [PATCH 029/124] x86: Check IFUNC definition in unrelocated executable
+ [BZ #20019]
+
+Calling an IFUNC function defined in unrelocated executable also leads to
+segfault.  Issue a fatal error message when calling IFUNC function defined
+in the unrelocated executable from a shared library.
+
+On x86, ifuncmain6pie failed with:
+
+[hjl@gnu-cfl-2 build-i686-linux]$ ./elf/ifuncmain6pie --direct
+./elf/ifuncmain6pie: IFUNC symbol 'foo' referenced in '/export/build/gnu/tools-build/glibc-32bit/build-i686-linux/elf/ifuncmod6.so' is defined in the executable and creates an unsatisfiable circular dependency.
+[hjl@gnu-cfl-2 build-i686-linux]$ readelf -rW elf/ifuncmod6.so | grep foo
+00003ff4  00000706 R_386_GLOB_DAT         0000400c   foo_ptr
+00003ff8  00000406 R_386_GLOB_DAT         00000000   foo
+0000400c  00000401 R_386_32               00000000   foo
+[hjl@gnu-cfl-2 build-i686-linux]$
+
+Remove non-JUMP_SLOT relocations against foo in ifuncmod6.so, which
+trigger the circular IFUNC dependency, and build ifuncmain6pie with
+-Wl,-z,lazy.
+
+(cherry picked from commits 6ea5b57afa5cdc9ce367d2b69a2cebfb273e4617
+ and 7137d682ebfcb6db5dfc5f39724718699922f06c)
+---
+ NEWS                        |  1 +
+ elf/Makefile                |  2 ++
+ elf/ifuncmain6pie.c         | 14 +++-----------
+ elf/ifuncmod6.c             |  8 ++++----
+ sysdeps/i386/dl-machine.h   | 16 +++++++++++-----
+ sysdeps/x86_64/dl-machine.h | 16 +++++++++++-----
+ 6 files changed, 32 insertions(+), 25 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 8b589b175b0a59d638de06128ebdf780cb385503..f2780415121fd9d4b8673e38a9384e13345ebae1 100644
+--- a/NEWS
++++ b/NEWS
+@@ -7,6 +7,7 @@ using `glibc' in the "product" field.
+ 
+ The following bugs are resolved with this release:
+ 
++  [20019] NULL pointer dereference in libc.so.6 IFUNC due to uninitialized GOT
+   [26224] iconv hangs when converting some invalid inputs from several IBM
+     character sets (CVE-2020-27618)
+   [26534] libm.so 2.32 SIGILL in pow() due to FMA4 instruction on non-FMA4
+diff --git a/elf/Makefile b/elf/Makefile
+index 0b78721848b9317b6c542da965f847282ea29af1..355e70037b5b6ed2130841f4b80c0cc06db36903 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -1381,6 +1381,8 @@ CFLAGS-ifuncmain7pie.c += $(pie-ccflag)
+ CFLAGS-ifuncmain9pie.c += $(pie-ccflag)
+ CFLAGS-tst-ifunc-textrel.c += $(pic-ccflag)
+ 
++LDFLAGS-ifuncmain6pie = -Wl,-z,lazy
++
+ $(objpfx)ifuncmain1pie: $(objpfx)ifuncmod1.so
+ $(objpfx)ifuncmain1staticpie: $(objpfx)ifuncdep1pic.o
+ $(objpfx)ifuncmain1vispie: $(objpfx)ifuncmod1.so
+diff --git a/elf/ifuncmain6pie.c b/elf/ifuncmain6pie.c
+index 04faeb86ef999019f42fa1843d52edaecd9ca00d..4a01906836173e3a2e1a5a87b1d20dc793f48beb 100644
+--- a/elf/ifuncmain6pie.c
++++ b/elf/ifuncmain6pie.c
+@@ -9,7 +9,6 @@
+ #include "ifunc-sel.h"
+ 
+ typedef int (*foo_p) (void);
+-extern foo_p foo_ptr;
+ 
+ static int
+ one (void)
+@@ -28,20 +27,17 @@ foo_ifunc (void)
+ }
+ 
+ extern int foo (void);
+-extern foo_p get_foo (void);
++extern int call_foo (void);
+ extern foo_p get_foo_p (void);
+ 
+-foo_p my_foo_ptr = foo;
++foo_p foo_ptr = foo;
+ 
+ int
+ main (void)
+ {
+   foo_p p;
+ 
+-  p = get_foo ();
+-  if (p != foo)
+-    abort ();
+-  if ((*p) () != -30)
++  if (call_foo () != -30)
+     abort ();
+ 
+   p = get_foo_p ();
+@@ -52,12 +48,8 @@ main (void)
+ 
+   if (foo_ptr != foo)
+     abort ();
+-  if (my_foo_ptr != foo)
+-    abort ();
+   if ((*foo_ptr) () != -30)
+     abort ();
+-  if ((*my_foo_ptr) () != -30)
+-    abort ();
+   if (foo () != -30)
+     abort ();
+ 
+diff --git a/elf/ifuncmod6.c b/elf/ifuncmod6.c
+index 2e16c1d06d065aa071352376a1338488ab01d344..2f6d0715e6e9ff992323ca436c12ac5037d51055 100644
+--- a/elf/ifuncmod6.c
++++ b/elf/ifuncmod6.c
+@@ -4,7 +4,7 @@ extern int foo (void);
+ 
+ typedef int (*foo_p) (void);
+ 
+-foo_p foo_ptr = foo;
++extern foo_p foo_ptr;
+ 
+ foo_p
+ get_foo_p (void)
+@@ -12,8 +12,8 @@ get_foo_p (void)
+   return foo_ptr;
+ }
+ 
+-foo_p
+-get_foo (void)
++int
++call_foo (void)
+ {
+-  return foo;
++  return foo ();
+ }
+diff --git a/sysdeps/i386/dl-machine.h b/sysdeps/i386/dl-machine.h
+index 0f08079e48a296ed10f19639ddf1a18874c1c589..672d8f27cef4b51502f14537edc529f9a0e4a209 100644
+--- a/sysdeps/i386/dl-machine.h
++++ b/sysdeps/i386/dl-machine.h
+@@ -338,16 +338,22 @@ elf_machine_rel (struct link_map *map, const Elf32_Rel *reloc,
+ 	{
+ # ifndef RTLD_BOOTSTRAP
+ 	  if (sym_map != map
+-	      && sym_map->l_type != lt_executable
+ 	      && !sym_map->l_relocated)
+ 	    {
+ 	      const char *strtab
+ 		= (const char *) D_PTR (map, l_info[DT_STRTAB]);
+-	      _dl_error_printf ("\
++	      if (sym_map->l_type == lt_executable)
++		_dl_fatal_printf ("\
++%s: IFUNC symbol '%s' referenced in '%s' is defined in the executable \
++and creates an unsatisfiable circular dependency.\n",
++				  RTLD_PROGNAME, strtab + refsym->st_name,
++				  map->l_name);
++	      else
++		_dl_error_printf ("\
+ %s: Relink `%s' with `%s' for IFUNC symbol `%s'\n",
+-				RTLD_PROGNAME, map->l_name,
+-				sym_map->l_name,
+-				strtab + refsym->st_name);
++				  RTLD_PROGNAME, map->l_name,
++				  sym_map->l_name,
++				  strtab + refsym->st_name);
+ 	    }
+ # endif
+ 	  value = ((Elf32_Addr (*) (void)) value) ();
+diff --git a/sysdeps/x86_64/dl-machine.h b/sysdeps/x86_64/dl-machine.h
+index ca73d8fef9c11aa814d0f89acbb064e770caec95..363a749cb2f20426467a99a85ee46ffa75c4eedc 100644
+--- a/sysdeps/x86_64/dl-machine.h
++++ b/sysdeps/x86_64/dl-machine.h
+@@ -315,16 +315,22 @@ elf_machine_rela (struct link_map *map, const ElfW(Rela) *reloc,
+ 	{
+ # ifndef RTLD_BOOTSTRAP
+ 	  if (sym_map != map
+-	      && sym_map->l_type != lt_executable
+ 	      && !sym_map->l_relocated)
+ 	    {
+ 	      const char *strtab
+ 		= (const char *) D_PTR (map, l_info[DT_STRTAB]);
+-	      _dl_error_printf ("\
++	      if (sym_map->l_type == lt_executable)
++		_dl_fatal_printf ("\
++%s: IFUNC symbol '%s' referenced in '%s' is defined in the executable \
++and creates an unsatisfiable circular dependency.\n",
++				  RTLD_PROGNAME, strtab + refsym->st_name,
++				  map->l_name);
++	      else
++		_dl_error_printf ("\
+ %s: Relink `%s' with `%s' for IFUNC symbol `%s'\n",
+-				RTLD_PROGNAME, map->l_name,
+-				sym_map->l_name,
+-				strtab + refsym->st_name);
++				  RTLD_PROGNAME, map->l_name,
++				  sym_map->l_name,
++				  strtab + refsym->st_name);
+ 	    }
+ # endif
+ 	  value = ((ElfW(Addr) (*) (void)) value) ();
+-- 
+2.41.0
+

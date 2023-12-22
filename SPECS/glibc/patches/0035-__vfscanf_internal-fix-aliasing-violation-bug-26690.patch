@@ -1,0 +1,93 @@
+From 082798622d888e2d1b39b0758a0a5f8530a558b2 Mon Sep 17 00:00:00 2001
+From: Andreas Schwab <schwab@suse.de>
+Date: Thu, 1 Oct 2020 13:59:13 +0200
+Subject: [PATCH 035/124] __vfscanf_internal: fix aliasing violation (bug
+ 26690)
+
+As noted in <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97264>, the cast
+in the call to the read_int function is an aliasing violation.  Change the
+type of local variable f to a pointer to unsigned, which allows to
+eliminate most casts while only adding three new ones.
+
+(cherry picked from commit c0e9ddf59e73e21afe15fca4e94cf7b4b7359bf2)
+---
+ stdio-common/vfscanf-internal.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/stdio-common/vfscanf-internal.c b/stdio-common/vfscanf-internal.c
+index 95b46dcbeb55b1724b396f02a940f3047259b926..3a323547f9934088ab75729a3e6ff65fef445293 100644
+--- a/stdio-common/vfscanf-internal.c
++++ b/stdio-common/vfscanf-internal.c
+@@ -277,7 +277,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
+ #endif
+ {
+   va_list arg;
+-  const CHAR_T *f = format;
++  const UCHAR_T *f = (const UCHAR_T *) format;
+   UCHAR_T fc;	/* Current character of the format.  */
+   WINT_T done = 0;	/* Assignments done.  */
+   size_t read_in = 0;	/* Chars read in.  */
+@@ -415,10 +415,11 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
+ #endif
+ 
+ #ifndef COMPILE_WSCANF
+-      if (!isascii ((unsigned char) *f))
++      if (!isascii (*f))
+ 	{
+ 	  /* Non-ASCII, may be a multibyte.  */
+-	  int len = __mbrlen (f, strlen (f), &state);
++	  int len = __mbrlen ((const char *) f, strlen ((const char *) f),
++			      &state);
+ 	  if (len > 0)
+ 	    {
+ 	      do
+@@ -426,7 +427,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
+ 		  c = inchar ();
+ 		  if (__glibc_unlikely (c == EOF))
+ 		    input_error ();
+-		  else if (c != (unsigned char) *f++)
++		  else if (c != *f++)
+ 		    {
+ 		      ungetc_not_eof (c, s);
+ 		      conv_error ();
+@@ -484,9 +485,9 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
+       char_buffer_rewind (&charbuf);
+ 
+       /* Check for a positional parameter specification.  */
+-      if (ISDIGIT ((UCHAR_T) *f))
++      if (ISDIGIT (*f))
+ 	{
+-	  argpos = read_int ((const UCHAR_T **) &f);
++	  argpos = read_int (&f);
+ 	  if (*f == L_('$'))
+ 	    ++f;
+ 	  else
+@@ -521,8 +522,8 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
+ 
+       /* Find the maximum field width.  */
+       width = 0;
+-      if (ISDIGIT ((UCHAR_T) *f))
+-	width = read_int ((const UCHAR_T **) &f);
++      if (ISDIGIT (*f))
++	width = read_int (&f);
+     got_width:
+       if (width == 0)
+ 	width = -1;
+@@ -2522,12 +2523,11 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
+ 	    }
+ 
+ 	  while ((fc = *f++) != '\0' && fc != ']')
+-	    if (fc == '-' && *f != '\0' && *f != ']'
+-		&& (unsigned char) f[-2] <= (unsigned char) *f)
++	    if (fc == '-' && *f != '\0' && *f != ']' && f[-2] <= *f)
+ 	      {
+ 		/* Add all characters from the one before the '-'
+ 		   up to (but not including) the next format char.  */
+-		for (fc = (unsigned char) f[-2]; fc < (unsigned char) *f; ++fc)
++		for (fc = f[-2]; fc < *f; ++fc)
+ 		  ((char *)charbuf.scratch.data)[fc] = 1;
+ 	      }
+ 	    else
+-- 
+2.41.0
+

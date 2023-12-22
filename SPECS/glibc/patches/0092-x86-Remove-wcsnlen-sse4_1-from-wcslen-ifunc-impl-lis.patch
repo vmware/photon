@@ -1,0 +1,51 @@
+From d528cb51651ad47fb3222362c6a40278e33afe67 Mon Sep 17 00:00:00 2001
+From: Noah Goldstein <goldstein.w.n@gmail.com>
+Date: Thu, 8 Jul 2021 16:13:19 -0400
+Subject: [PATCH 092/124] x86: Remove wcsnlen-sse4_1 from wcslen
+ ifunc-impl-list [BZ #28064]
+
+The following commit
+
+commit 6f573a27b6c8b4236445810a44660612323f5a73
+Author: Noah Goldstein <goldstein.w.n@gmail.com>
+Date:   Wed Jun 23 01:19:34 2021 -0400
+
+    x86-64: Add wcslen optimize for sse4.1
+
+Added wcsnlen-sse4.1 to the wcslen ifunc implementation list and did
+not add wcslen-sse4.1 to wcslen ifunc implementation list. This commit
+fixes that by removing wcsnlen-sse4.1 from the wcslen ifunc
+implementation list and adding wcslen-sse4.1 to the ifunc
+implementation list.
+
+Testing:
+test-wcslen.c, test-rsi-wcslen.c, and test-rsi-strlen.c are passing as
+well as all other tests in wcsmbs and string.
+
+Signed-off-by: Noah Goldstein <goldstein.w.n@gmail.com>
+Reviewed-by: H.J. Lu <hjl.tools@gmail.com>
+Reviewed-by: H.J. Lu <hjl.tools@gmail.com>
+(cherry picked from commit 0679442defedf7e52a94264975880ab8674736b2)
+---
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index e5af769869b8ab57033608870bd32747f538b9b6..920e64241e91950242178fd2a964c556f9b101e2 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -657,9 +657,9 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+ 			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __wcslen_evex)
+-	      IFUNC_IMPL_ADD (array, i, wcsnlen,
++	      IFUNC_IMPL_ADD (array, i, wcslen,
+ 			      CPU_FEATURE_USABLE (SSE4_1),
+-			      __wcsnlen_sse4_1)
++			      __wcslen_sse4_1)
+ 	      IFUNC_IMPL_ADD (array, i, wcslen, 1, __wcslen_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/wcsnlen.c.  */
+-- 
+2.41.0
+

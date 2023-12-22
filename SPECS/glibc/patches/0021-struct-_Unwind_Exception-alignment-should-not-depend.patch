@@ -1,0 +1,59 @@
+From 3ea24955bff835f1c5bbfd7674208e25fa795c1a Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Wed, 11 Nov 2020 11:59:11 +0100
+Subject: [PATCH 021/124] struct _Unwind_Exception alignment should not depend
+ on compiler flags
+
+__attribute__((__aligned__)) selects an alignment that depends on
+the micro-architecture selected by GCC flags.  Enabling vector
+extensions may increase the allignment.  This is a problem when
+building glibc as a collection of ELF multilibs with different
+GCC flags because ld.so and libc.so/libpthread.so/&c may end up
+with a different layout of struct pthread because of the
+changing offset of its struct _Unwind_Exception field.
+
+Tested-By: Matheus Castanho <msc@linux.ibm.com>
+
+(cherry picked from commit 30af7c7fa13e17d82c3f1f91536384715844f432)
+---
+ sysdeps/generic/unwind.h | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
+
+diff --git a/sysdeps/generic/unwind.h b/sysdeps/generic/unwind.h
+index b667a5b6522a32e82ad26654dc70d86777564d5e..c229603af38091ee1a3060d9cb095b1b97d572bf 100644
+--- a/sysdeps/generic/unwind.h
++++ b/sysdeps/generic/unwind.h
+@@ -75,15 +75,21 @@ typedef void (*_Unwind_Exception_Cleanup_Fn) (_Unwind_Reason_Code,
+ 
+ struct _Unwind_Exception
+ {
+-  _Unwind_Exception_Class exception_class;
+-  _Unwind_Exception_Cleanup_Fn exception_cleanup;
+-  _Unwind_Word private_1;
+-  _Unwind_Word private_2;
+-
+-  /* @@@ The IA-64 ABI says that this structure must be double-word aligned.
+-     Taking that literally does not make much sense generically.  Instead we
+-     provide the maximum alignment required by any type for the machine.  */
+-} __attribute__((__aligned__));
++  union
++  {
++    struct
++    {
++      _Unwind_Exception_Class exception_class;
++      _Unwind_Exception_Cleanup_Fn exception_cleanup;
++      _Unwind_Word private_1;
++      _Unwind_Word private_2;
++    };
++
++    /* The IA-64 ABI says that this structure must be double-word aligned.  */
++    _Unwind_Word unwind_exception_align[2]
++      __attribute__ ((__aligned__ (2 * sizeof (_Unwind_Word))));
++  };
++};
+ 
+ 
+ /* The ACTIONS argument to the personality routine is a bitwise OR of one
+-- 
+2.41.0
+

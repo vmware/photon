@@ -1,0 +1,62 @@
+From 81c5484d93a7768a8acc4cfdc228d925d60cd906 Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wdijkstr@arm.com>
+Date: Wed, 14 Oct 2020 13:56:21 +0100
+Subject: [PATCH 007/124] AArch64: Use __memcpy_simd on Neoverse N2/V1
+
+Add CPU detection of Neoverse N2 and Neoverse V1, and select __memcpy_simd as
+the memcpy/memmove ifunc.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit e11ed9d2b4558eeacff81557dc9557001af42a6b)
+---
+ sysdeps/aarch64/multiarch/memcpy.c             | 3 ++-
+ sysdeps/aarch64/multiarch/memmove.c            | 3 ++-
+ sysdeps/unix/sysv/linux/aarch64/cpu-features.h | 4 ++++
+ 3 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/sysdeps/aarch64/multiarch/memcpy.c b/sysdeps/aarch64/multiarch/memcpy.c
+index 7cf5f033e8fcdcbfdfbfe73e6ad24d8b3fc79b66..799d60c98cfadfe0966a451d7e00af4040f719b8 100644
+--- a/sysdeps/aarch64/multiarch/memcpy.c
++++ b/sysdeps/aarch64/multiarch/memcpy.c
+@@ -41,7 +41,8 @@ libc_ifunc (__libc_memcpy,
+ 		? __memcpy_falkor
+ 		: (IS_THUNDERX2 (midr) || IS_THUNDERX2PA (midr)
+ 		  ? __memcpy_thunderx2
+-		  : (IS_NEOVERSE_N1 (midr)
++		  : (IS_NEOVERSE_N1 (midr) || IS_NEOVERSE_N2 (midr)
++		     || IS_NEOVERSE_V1 (midr)
+ 		     ? __memcpy_simd
+ 		     : __memcpy_generic)))));
+ 
+diff --git a/sysdeps/aarch64/multiarch/memmove.c b/sysdeps/aarch64/multiarch/memmove.c
+index ad10aa8ac6fba884ffb3736ed6e73d16b6eaa60c..46a4cb3a54c73c7c64d26ff8d022947e485d82b7 100644
+--- a/sysdeps/aarch64/multiarch/memmove.c
++++ b/sysdeps/aarch64/multiarch/memmove.c
+@@ -41,7 +41,8 @@ libc_ifunc (__libc_memmove,
+ 		? __memmove_falkor
+ 		: (IS_THUNDERX2 (midr) || IS_THUNDERX2PA (midr)
+ 		  ? __memmove_thunderx2
+-		  : (IS_NEOVERSE_N1 (midr)
++		  : (IS_NEOVERSE_N1 (midr) || IS_NEOVERSE_N2 (midr)
++		     || IS_NEOVERSE_V1 (midr)
+ 		     ? __memmove_simd
+ 		     : __memmove_generic)))));
+ 
+diff --git a/sysdeps/unix/sysv/linux/aarch64/cpu-features.h b/sysdeps/unix/sysv/linux/aarch64/cpu-features.h
+index fc688450ee0e0f7cf58e73920263631a0ea7c8d6..00a4d0c8e75f5554120da6da9c079ed65904d394 100644
+--- a/sysdeps/unix/sysv/linux/aarch64/cpu-features.h
++++ b/sysdeps/unix/sysv/linux/aarch64/cpu-features.h
+@@ -54,6 +54,10 @@
+                         && MIDR_PARTNUM(midr) == 0x000)
+ #define IS_NEOVERSE_N1(midr) (MIDR_IMPLEMENTOR(midr) == 'A'		      \
+ 			      && MIDR_PARTNUM(midr) == 0xd0c)
++#define IS_NEOVERSE_N2(midr) (MIDR_IMPLEMENTOR(midr) == 'A'		      \
++			      && MIDR_PARTNUM(midr) == 0xd49)
++#define IS_NEOVERSE_V1(midr) (MIDR_IMPLEMENTOR(midr) == 'A'		      \
++			      && MIDR_PARTNUM(midr) == 0xd40)
+ 
+ #define IS_EMAG(midr) (MIDR_IMPLEMENTOR(midr) == 'P'			      \
+                        && MIDR_PARTNUM(midr) == 0x000)
+-- 
+2.41.0
+

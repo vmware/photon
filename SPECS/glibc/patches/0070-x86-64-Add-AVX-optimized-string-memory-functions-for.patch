@@ -1,0 +1,2565 @@
+From 2a7cef79d5da8a2b3b1c4b368efb81c69c8403b9 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Fri, 5 Mar 2021 07:26:42 -0800
+Subject: [PATCH 070/124] x86-64: Add AVX optimized string/memory functions for
+ RTM
+
+Since VZEROUPPER triggers RTM abort while VZEROALL won't, select AVX
+optimized string/memory functions with
+
+	xtest
+	jz	1f
+	vzeroall
+	ret
+1:
+	vzeroupper
+	ret
+
+at function exit on processors with usable RTM, but without 256-bit EVEX
+instructions to avoid VZEROUPPER inside a transactionally executing RTM
+region.
+
+(cherry picked from commit 7ebba91361badf7531d4e75050627a88d424872f)
+---
+ sysdeps/x86_64/multiarch/Makefile             |  27 +++
+ sysdeps/x86_64/multiarch/ifunc-avx2.h         |   4 +
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c    | 170 ++++++++++++++++++
+ sysdeps/x86_64/multiarch/ifunc-memcmp.h       |   4 +
+ sysdeps/x86_64/multiarch/ifunc-memmove.h      |  12 ++
+ sysdeps/x86_64/multiarch/ifunc-memset.h       |  12 ++
+ sysdeps/x86_64/multiarch/ifunc-strcpy.h       |   4 +
+ sysdeps/x86_64/multiarch/ifunc-wmemset.h      |   5 +
+ sysdeps/x86_64/multiarch/memchr-avx2-rtm.S    |  12 ++
+ sysdeps/x86_64/multiarch/memchr-avx2.S        |  45 +++--
+ .../x86_64/multiarch/memcmp-avx2-movbe-rtm.S  |  12 ++
+ sysdeps/x86_64/multiarch/memcmp-avx2-movbe.S  |  28 ++-
+ .../memmove-avx-unaligned-erms-rtm.S          |  17 ++
+ .../multiarch/memmove-vec-unaligned-erms.S    |  33 ++--
+ sysdeps/x86_64/multiarch/memrchr-avx2-rtm.S   |  12 ++
+ sysdeps/x86_64/multiarch/memrchr-avx2.S       |  53 +++---
+ .../memset-avx2-unaligned-erms-rtm.S          |  10 ++
+ .../multiarch/memset-avx2-unaligned-erms.S    |  12 +-
+ .../multiarch/memset-vec-unaligned-erms.S     |  41 ++---
+ sysdeps/x86_64/multiarch/rawmemchr-avx2-rtm.S |   4 +
+ sysdeps/x86_64/multiarch/stpcpy-avx2-rtm.S    |   3 +
+ sysdeps/x86_64/multiarch/stpncpy-avx2-rtm.S   |   4 +
+ sysdeps/x86_64/multiarch/strcat-avx2-rtm.S    |  12 ++
+ sysdeps/x86_64/multiarch/strcat-avx2.S        |   6 +-
+ sysdeps/x86_64/multiarch/strchr-avx2-rtm.S    |  12 ++
+ sysdeps/x86_64/multiarch/strchr-avx2.S        |  22 +--
+ sysdeps/x86_64/multiarch/strchr.c             |   4 +
+ sysdeps/x86_64/multiarch/strchrnul-avx2-rtm.S |   3 +
+ sysdeps/x86_64/multiarch/strcmp-avx2-rtm.S    |  12 ++
+ sysdeps/x86_64/multiarch/strcmp-avx2.S        |  55 +++---
+ sysdeps/x86_64/multiarch/strcmp.c             |   4 +
+ sysdeps/x86_64/multiarch/strcpy-avx2-rtm.S    |  12 ++
+ sysdeps/x86_64/multiarch/strcpy-avx2.S        |  85 ++++-----
+ sysdeps/x86_64/multiarch/strlen-avx2-rtm.S    |  12 ++
+ sysdeps/x86_64/multiarch/strlen-avx2.S        |  43 ++---
+ sysdeps/x86_64/multiarch/strncat-avx2-rtm.S   |   3 +
+ sysdeps/x86_64/multiarch/strncmp-avx2-rtm.S   |   3 +
+ sysdeps/x86_64/multiarch/strncmp.c            |   4 +
+ sysdeps/x86_64/multiarch/strncpy-avx2-rtm.S   |   3 +
+ sysdeps/x86_64/multiarch/strnlen-avx2-rtm.S   |   4 +
+ sysdeps/x86_64/multiarch/strrchr-avx2-rtm.S   |  12 ++
+ sysdeps/x86_64/multiarch/strrchr-avx2.S       |  19 +-
+ sysdeps/x86_64/multiarch/wcschr-avx2-rtm.S    |   3 +
+ sysdeps/x86_64/multiarch/wcscmp-avx2-rtm.S    |   4 +
+ sysdeps/x86_64/multiarch/wcslen-avx2-rtm.S    |   4 +
+ sysdeps/x86_64/multiarch/wcsncmp-avx2-rtm.S   |   5 +
+ sysdeps/x86_64/multiarch/wcsnlen-avx2-rtm.S   |   5 +
+ sysdeps/x86_64/multiarch/wcsnlen.c            |   4 +
+ sysdeps/x86_64/multiarch/wcsrchr-avx2-rtm.S   |   3 +
+ sysdeps/x86_64/multiarch/wmemchr-avx2-rtm.S   |   4 +
+ .../x86_64/multiarch/wmemcmp-avx2-movbe-rtm.S |   4 +
+ sysdeps/x86_64/sysdep.h                       |  22 +++
+ 52 files changed, 668 insertions(+), 244 deletions(-)
+ create mode 100644 sysdeps/x86_64/multiarch/memchr-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/memcmp-avx2-movbe-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/memmove-avx-unaligned-erms-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/memrchr-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/memset-avx2-unaligned-erms-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/rawmemchr-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/stpcpy-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/stpncpy-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/strcat-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/strchr-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/strchrnul-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/strcmp-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/strcpy-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/strlen-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/strncat-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/strncmp-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/strncpy-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/strnlen-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/strrchr-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcschr-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcscmp-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcslen-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcsncmp-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcsnlen-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcsrchr-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/wmemchr-avx2-rtm.S
+ create mode 100644 sysdeps/x86_64/multiarch/wmemcmp-avx2-movbe-rtm.S
+
+diff --git a/sysdeps/x86_64/multiarch/Makefile b/sysdeps/x86_64/multiarch/Makefile
+index e4ec344d2ca91d9d5496f80f950b9e1e0e8ee22b..cf7379038081c6a21b1286fc59ab4d88dc9cdeec 100644
+--- a/sysdeps/x86_64/multiarch/Makefile
++++ b/sysdeps/x86_64/multiarch/Makefile
+@@ -44,6 +44,25 @@ sysdep_routines += strncat-c stpncpy-c strncpy-c \
+ 		   memset-sse2-unaligned-erms \
+ 		   memset-avx2-unaligned-erms \
+ 		   memset-avx512-unaligned-erms \
++		   memchr-avx2-rtm \
++		   memcmp-avx2-movbe-rtm \
++		   memmove-avx-unaligned-erms-rtm \
++		   memrchr-avx2-rtm \
++		   memset-avx2-unaligned-erms-rtm \
++		   rawmemchr-avx2-rtm \
++		   strchr-avx2-rtm \
++		   strcmp-avx2-rtm \
++		   strchrnul-avx2-rtm \
++		   stpcpy-avx2-rtm \
++		   stpncpy-avx2-rtm \
++		   strcat-avx2-rtm \
++		   strcpy-avx2-rtm \
++		   strlen-avx2-rtm \
++		   strncat-avx2-rtm \
++		   strncmp-avx2-rtm \
++		   strncpy-avx2-rtm \
++		   strnlen-avx2-rtm \
++		   strrchr-avx2-rtm \
+ 		   memchr-evex \
+ 		   memcmp-evex-movbe \
+ 		   memmove-evex-unaligned-erms \
+@@ -80,6 +99,14 @@ sysdep_routines += wmemcmp-sse4 wmemcmp-ssse3 wmemcmp-c \
+ 		   wcsrchr-sse2 wcsrchr-avx2 \
+ 		   wcsnlen-sse4_1 wcsnlen-c \
+ 		   wcslen-sse2 wcslen-avx2 wcsnlen-avx2 \
++		   wcschr-avx2-rtm \
++		   wcscmp-avx2-rtm \
++		   wcslen-avx2-rtm \
++		   wcsncmp-avx2-rtm \
++		   wcsnlen-avx2-rtm \
++		   wcsrchr-avx2-rtm \
++		   wmemchr-avx2-rtm \
++		   wmemcmp-avx2-movbe-rtm \
+ 		   wcschr-evex \
+ 		   wcscmp-evex \
+ 		   wcslen-evex \
+diff --git a/sysdeps/x86_64/multiarch/ifunc-avx2.h b/sysdeps/x86_64/multiarch/ifunc-avx2.h
+index a2f18c26170f4f5648e7015546be2f3ff0001143..f450c786f007f297e6b41d1548ea30d81f8b5fda 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-avx2.h
++++ b/sysdeps/x86_64/multiarch/ifunc-avx2.h
+@@ -21,6 +21,7 @@
+ 
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_rtm) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+ 
+ static inline void *
+@@ -36,6 +37,9 @@ IFUNC_SELECTOR (void)
+ 	  && CPU_FEATURE_USABLE_P (cpu_features, BMI2))
+ 	return OPTIMIZE (evex);
+ 
++      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	return OPTIMIZE (avx2_rtm);
++
+       if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+ 	return OPTIMIZE (avx2);
+     }
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index 483e84362b1c0d0adf7cd2deee55e64780af22b2..f78318e01a1950183c7dd238ba4a9132ddc94873 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -43,6 +43,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, memchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __memchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, memchr,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, memchr,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -56,6 +60,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      (CPU_FEATURE_USABLE (AVX2)
+ 			       && CPU_FEATURE_USABLE (MOVBE)),
+ 			      __memcmp_avx2_movbe)
++	      IFUNC_IMPL_ADD (array, i, memcmp,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (MOVBE)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memcmp_avx2_movbe_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, memcmp,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -85,6 +94,14 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, __memmove_chk,
+ 			      CPU_FEATURE_USABLE (AVX),
+ 			      __memmove_chk_avx_unaligned_erms)
++	      IFUNC_IMPL_ADD (array, i, __memmove_chk,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memmove_chk_avx_unaligned_rtm)
++	      IFUNC_IMPL_ADD (array, i, __memmove_chk,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memmove_chk_avx_unaligned_erms_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, __memmove_chk,
+ 			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memmove_chk_evex_unaligned)
+@@ -113,6 +130,14 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, memmove,
+ 			      CPU_FEATURE_USABLE (AVX),
+ 			      __memmove_avx_unaligned_erms)
++	      IFUNC_IMPL_ADD (array, i, memmove,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memmove_avx_unaligned_rtm)
++	      IFUNC_IMPL_ADD (array, i, memmove,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memmove_avx_unaligned_erms_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, memmove,
+ 			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memmove_evex_unaligned)
+@@ -143,6 +168,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, memrchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __memrchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, memrchr,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memrchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, memrchr,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -165,6 +194,14 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, __memset_chk,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __memset_chk_avx2_unaligned_erms)
++	      IFUNC_IMPL_ADD (array, i, __memset_chk,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memset_chk_avx2_unaligned_rtm)
++	      IFUNC_IMPL_ADD (array, i, __memset_chk,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memset_chk_avx2_unaligned_erms_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, __memset_chk,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -198,6 +235,14 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, memset,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __memset_avx2_unaligned_erms)
++	      IFUNC_IMPL_ADD (array, i, memset,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memset_avx2_unaligned_rtm)
++	      IFUNC_IMPL_ADD (array, i, memset,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memset_avx2_unaligned_erms_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, memset,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -222,6 +267,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, rawmemchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __rawmemchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, rawmemchr,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __rawmemchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, rawmemchr,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -234,6 +283,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strlen,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strlen_avx2)
++	      IFUNC_IMPL_ADD (array, i, strlen,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __strlen_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strlen,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -245,6 +298,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strnlen,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strnlen_avx2)
++	      IFUNC_IMPL_ADD (array, i, strnlen,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __strnlen_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strnlen,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -257,6 +314,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      __stpncpy_ssse3)
+ 	      IFUNC_IMPL_ADD (array, i, stpncpy, CPU_FEATURE_USABLE (AVX2),
+ 			      __stpncpy_avx2)
++	      IFUNC_IMPL_ADD (array, i, stpncpy,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __stpncpy_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, stpncpy,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -271,6 +332,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      __stpcpy_ssse3)
+ 	      IFUNC_IMPL_ADD (array, i, stpcpy, CPU_FEATURE_USABLE (AVX2),
+ 			      __stpcpy_avx2)
++	      IFUNC_IMPL_ADD (array, i, stpcpy,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __stpcpy_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, stpcpy,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -309,6 +374,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   IFUNC_IMPL (i, name, strcat,
+ 	      IFUNC_IMPL_ADD (array, i, strcat, CPU_FEATURE_USABLE (AVX2),
+ 			      __strcat_avx2)
++	      IFUNC_IMPL_ADD (array, i, strcat,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __strcat_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strcat,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -323,6 +392,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, strchr,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __strchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strchr,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -336,6 +409,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strchrnul,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strchrnul_avx2)
++	      IFUNC_IMPL_ADD (array, i, strchrnul,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __strchrnul_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strchrnul,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -348,6 +425,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strrchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strrchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, strrchr,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __strrchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strrchr,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -359,6 +440,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strcmp,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strcmp_avx2)
++	      IFUNC_IMPL_ADD (array, i, strcmp,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __strcmp_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strcmp,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -375,6 +460,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   IFUNC_IMPL (i, name, strcpy,
+ 	      IFUNC_IMPL_ADD (array, i, strcpy, CPU_FEATURE_USABLE (AVX2),
+ 			      __strcpy_avx2)
++	      IFUNC_IMPL_ADD (array, i, strcpy,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __strcpy_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strcpy,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -422,6 +511,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   IFUNC_IMPL (i, name, strncat,
+ 	      IFUNC_IMPL_ADD (array, i, strncat, CPU_FEATURE_USABLE (AVX2),
+ 			      __strncat_avx2)
++	      IFUNC_IMPL_ADD (array, i, strncat,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __strncat_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strncat,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -436,6 +529,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   IFUNC_IMPL (i, name, strncpy,
+ 	      IFUNC_IMPL_ADD (array, i, strncpy, CPU_FEATURE_USABLE (AVX2),
+ 			      __strncpy_avx2)
++	      IFUNC_IMPL_ADD (array, i, strncpy,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __strncpy_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strncpy,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+@@ -469,6 +566,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcschr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcschr_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcschr,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __wcschr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wcschr,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -481,6 +582,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcsrchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcsrchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcsrchr,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __wcsrchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wcsrchr,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -493,6 +598,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcscmp,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcscmp_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcscmp,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __wcscmp_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wcscmp,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -505,6 +614,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcsncmp,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcsncmp_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcsncmp,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __wcsncmp_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wcsncmp,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -523,6 +636,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcslen,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcslen_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcslen,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __wcslen_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wcslen,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -535,6 +652,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcsnlen,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcsnlen_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcsnlen,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __wcsnlen_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wcsnlen,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -550,6 +671,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wmemchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wmemchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, wmemchr,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __wmemchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wmemchr,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -563,6 +688,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      (CPU_FEATURE_USABLE (AVX2)
+ 			       && CPU_FEATURE_USABLE (MOVBE)),
+ 			      __wmemcmp_avx2_movbe)
++	      IFUNC_IMPL_ADD (array, i, wmemcmp,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (MOVBE)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __wmemcmp_avx2_movbe_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wmemcmp,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+@@ -581,6 +711,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wmemset,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wmemset_avx2_unaligned)
++	      IFUNC_IMPL_ADD (array, i, wmemset,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __wmemset_avx2_unaligned_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wmemset,
+ 			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __wmemset_evex_unaligned)
+@@ -606,6 +740,14 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, __memcpy_chk,
+ 			      CPU_FEATURE_USABLE (AVX),
+ 			      __memcpy_chk_avx_unaligned_erms)
++	      IFUNC_IMPL_ADD (array, i, __memcpy_chk,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memcpy_chk_avx_unaligned_rtm)
++	      IFUNC_IMPL_ADD (array, i, __memcpy_chk,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memcpy_chk_avx_unaligned_erms_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, __memcpy_chk,
+ 			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memcpy_chk_evex_unaligned)
+@@ -634,6 +776,14 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, memcpy,
+ 			      CPU_FEATURE_USABLE (AVX),
+ 			      __memcpy_avx_unaligned_erms)
++	      IFUNC_IMPL_ADD (array, i, memcpy,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memcpy_avx_unaligned_rtm)
++	      IFUNC_IMPL_ADD (array, i, memcpy,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __memcpy_avx_unaligned_erms_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, memcpy,
+ 			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memcpy_evex_unaligned)
+@@ -676,6 +826,14 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, __mempcpy_chk,
+ 			      CPU_FEATURE_USABLE (AVX),
+ 			      __mempcpy_chk_avx_unaligned_erms)
++	      IFUNC_IMPL_ADD (array, i, __mempcpy_chk,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __mempcpy_chk_avx_unaligned_rtm)
++	      IFUNC_IMPL_ADD (array, i, __mempcpy_chk,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __mempcpy_chk_avx_unaligned_erms_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, __mempcpy_chk,
+ 			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __mempcpy_chk_evex_unaligned)
+@@ -713,6 +871,14 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, mempcpy,
+ 			      CPU_FEATURE_USABLE (AVX),
+ 			      __mempcpy_avx_unaligned_erms)
++	      IFUNC_IMPL_ADD (array, i, mempcpy,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __mempcpy_avx_unaligned_rtm)
++	      IFUNC_IMPL_ADD (array, i, mempcpy,
++			      (CPU_FEATURE_USABLE (AVX)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __mempcpy_avx_unaligned_erms_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, mempcpy,
+ 			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __mempcpy_evex_unaligned)
+@@ -734,6 +900,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strncmp,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strncmp_avx2)
++	      IFUNC_IMPL_ADD (array, i, strncmp,
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (RTM)),
++			      __strncmp_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strncmp,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+ 			       && CPU_FEATURE_USABLE (AVX512BW)),
+diff --git a/sysdeps/x86_64/multiarch/ifunc-memcmp.h b/sysdeps/x86_64/multiarch/ifunc-memcmp.h
+index 7e7cf0560d4b4566f679f64b716032c7ab2ef780..4f96c2764a6b7be0a22691f28e0d5eaa87b22d2d 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-memcmp.h
++++ b/sysdeps/x86_64/multiarch/ifunc-memcmp.h
+@@ -23,6 +23,7 @@ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (ssse3) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse4_1) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_movbe) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_movbe_rtm) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex_movbe) attribute_hidden;
+ 
+ static inline void *
+@@ -38,6 +39,9 @@ IFUNC_SELECTOR (void)
+ 	  && CPU_FEATURE_USABLE_P (cpu_features, AVX512BW))
+ 	return OPTIMIZE (evex_movbe);
+ 
++      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	return OPTIMIZE (avx2_movbe_rtm);
++
+       if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+ 	return OPTIMIZE (avx2_movbe);
+     }
+diff --git a/sysdeps/x86_64/multiarch/ifunc-memmove.h b/sysdeps/x86_64/multiarch/ifunc-memmove.h
+index ffb97080cde23b4b20b3d53c9e29bec1d4ce255c..4c7bb64cb826e914be2dbd50c7d158f5296295ce 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-memmove.h
++++ b/sysdeps/x86_64/multiarch/ifunc-memmove.h
+@@ -29,6 +29,10 @@ extern __typeof (REDIRECT_NAME) OPTIMIZE (ssse3_back) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx_unaligned) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx_unaligned_erms)
+   attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx_unaligned_rtm)
++  attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx_unaligned_erms_rtm)
++  attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex_unaligned)
+   attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex_unaligned_erms)
+@@ -71,6 +75,14 @@ IFUNC_SELECTOR (void)
+ 	  return OPTIMIZE (evex_unaligned);
+ 	}
+ 
++      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	{
++	  if (CPU_FEATURE_USABLE_P (cpu_features, ERMS))
++	    return OPTIMIZE (avx_unaligned_erms_rtm);
++
++	  return OPTIMIZE (avx_unaligned_rtm);
++	}
++
+       if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+ 	{
+ 	  if (CPU_FEATURE_USABLE_P (cpu_features, ERMS))
+diff --git a/sysdeps/x86_64/multiarch/ifunc-memset.h b/sysdeps/x86_64/multiarch/ifunc-memset.h
+index ceea7e5e58fc20d052b95bb35a8bf94dea34b6de..c5eb92121bcd1e37b73dea3772699c7f12f301bd 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-memset.h
++++ b/sysdeps/x86_64/multiarch/ifunc-memset.h
+@@ -27,6 +27,10 @@ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2_unaligned_erms)
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_unaligned) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_unaligned_erms)
+   attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_unaligned_rtm)
++  attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_unaligned_erms_rtm)
++  attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex_unaligned)
+   attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex_unaligned_erms)
+@@ -69,6 +73,14 @@ IFUNC_SELECTOR (void)
+ 	  return OPTIMIZE (evex_unaligned);
+ 	}
+ 
++      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	{
++	  if (CPU_FEATURE_USABLE_P (cpu_features, ERMS))
++	    return OPTIMIZE (avx2_unaligned_erms_rtm);
++
++	  return OPTIMIZE (avx2_unaligned_rtm);
++	}
++
+       if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+ 	{
+ 	  if (CPU_FEATURE_USABLE_P (cpu_features, ERMS))
+diff --git a/sysdeps/x86_64/multiarch/ifunc-strcpy.h b/sysdeps/x86_64/multiarch/ifunc-strcpy.h
+index 65434e021ad367fa8ab647d513fac1f797abbf67..35741f3ec87d4f1ec969befca6396d4a5a38fa50 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-strcpy.h
++++ b/sysdeps/x86_64/multiarch/ifunc-strcpy.h
+@@ -25,6 +25,7 @@ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2_unaligned)
+   attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (ssse3) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_rtm) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+ 
+ static inline void *
+@@ -39,6 +40,9 @@ IFUNC_SELECTOR (void)
+ 	  && CPU_FEATURE_USABLE_P (cpu_features, AVX512BW))
+ 	return OPTIMIZE (evex);
+ 
++      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	return OPTIMIZE (avx2_rtm);
++
+       if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+ 	return OPTIMIZE (avx2);
+     }
+diff --git a/sysdeps/x86_64/multiarch/ifunc-wmemset.h b/sysdeps/x86_64/multiarch/ifunc-wmemset.h
+index edf126707b605035df4c40344fc2c44c54075286..e81b96c69fe38f7c4ea8b71510adddbc60e1cd3f 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-wmemset.h
++++ b/sysdeps/x86_64/multiarch/ifunc-wmemset.h
+@@ -20,6 +20,8 @@
+ 
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2_unaligned) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_unaligned) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_unaligned_rtm)
++  attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex_unaligned) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx512_unaligned) attribute_hidden;
+ 
+@@ -39,6 +41,9 @@ IFUNC_SELECTOR (void)
+       if (CPU_FEATURE_USABLE_P (cpu_features, AVX512VL))
+ 	return OPTIMIZE (evex_unaligned);
+ 
++      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	return OPTIMIZE (avx2_unaligned_rtm);
++
+       if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+ 	return OPTIMIZE (avx2_unaligned);
+     }
+diff --git a/sysdeps/x86_64/multiarch/memchr-avx2-rtm.S b/sysdeps/x86_64/multiarch/memchr-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..87b076c7c403ba856d0639b819c52ff421655383
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/memchr-avx2-rtm.S
+@@ -0,0 +1,12 @@
++#ifndef MEMCHR
++# define MEMCHR __memchr_avx2_rtm
++#endif
++
++#define ZERO_UPPER_VEC_REGISTERS_RETURN \
++  ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST
++
++#define VZEROUPPER_RETURN jmp	 L(return_vzeroupper)
++
++#define SECTION(p) p##.avx.rtm
++
++#include "memchr-avx2.S"
+diff --git a/sysdeps/x86_64/multiarch/memchr-avx2.S b/sysdeps/x86_64/multiarch/memchr-avx2.S
+index e5a9abd211533227f12df8dc9be53bc18459f2ba..d9cb59a9df28776a1bf10874de5a16afc1b0dedd 100644
+--- a/sysdeps/x86_64/multiarch/memchr-avx2.S
++++ b/sysdeps/x86_64/multiarch/memchr-avx2.S
+@@ -34,9 +34,13 @@
+ #  define VZEROUPPER	vzeroupper
+ # endif
+ 
++# ifndef SECTION
++#  define SECTION(p)	p##.avx
++# endif
++
+ # define VEC_SIZE 32
+ 
+-	.section .text.avx,"ax",@progbits
++	.section SECTION(.text),"ax",@progbits
+ ENTRY (MEMCHR)
+ # ifndef USE_AS_RAWMEMCHR
+ 	/* Check for zero length.  */
+@@ -107,8 +111,8 @@ L(cros_page_boundary):
+ # endif
+ 	addq	%rdi, %rax
+ 	addq	%rcx, %rax
+-	VZEROUPPER
+-	ret
++L(return_vzeroupper):
++	ZERO_UPPER_VEC_REGISTERS_RETURN
+ 
+ 	.p2align 4
+ L(aligned_more):
+@@ -224,8 +228,7 @@ L(last_4x_vec_or_less):
+ 
+ 	jnz	L(first_vec_x3_check)
+ 	xorl	%eax, %eax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(last_2x_vec):
+@@ -243,8 +246,7 @@ L(last_2x_vec):
+ 	testl	%eax, %eax
+ 	jnz	L(first_vec_x1_check)
+ 	xorl	%eax, %eax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x0_check):
+@@ -253,8 +255,7 @@ L(first_vec_x0_check):
+ 	cmpq	%rax, %rdx
+ 	jbe	L(zero)
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x1_check):
+@@ -264,8 +265,7 @@ L(first_vec_x1_check):
+ 	jbe	L(zero)
+ 	addq	$VEC_SIZE, %rax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x2_check):
+@@ -275,8 +275,7 @@ L(first_vec_x2_check):
+ 	jbe	L(zero)
+ 	addq	$(VEC_SIZE * 2), %rax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x3_check):
+@@ -286,12 +285,14 @@ L(first_vec_x3_check):
+ 	jbe	L(zero)
+ 	addq	$(VEC_SIZE * 3), %rax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(zero):
+-	VZEROUPPER
++	xorl	%eax, %eax
++	jmp     L(return_vzeroupper)
++
++	.p2align 4
+ L(null):
+ 	xorl	%eax, %eax
+ 	ret
+@@ -301,24 +302,21 @@ L(null):
+ L(first_vec_x0):
+ 	tzcntl	%eax, %eax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x1):
+ 	tzcntl	%eax, %eax
+ 	addq	$VEC_SIZE, %rax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x2):
+ 	tzcntl	%eax, %eax
+ 	addq	$(VEC_SIZE * 2), %rax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(4x_vec_end):
+@@ -337,8 +335,7 @@ L(first_vec_x3):
+ 	tzcntl	%eax, %eax
+ 	addq	$(VEC_SIZE * 3), %rax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ END (MEMCHR)
+ #endif
+diff --git a/sysdeps/x86_64/multiarch/memcmp-avx2-movbe-rtm.S b/sysdeps/x86_64/multiarch/memcmp-avx2-movbe-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..cf4eff5d4a918f6c8d96ae692ba6af5d2d2f486d
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/memcmp-avx2-movbe-rtm.S
+@@ -0,0 +1,12 @@
++#ifndef MEMCMP
++# define MEMCMP __memcmp_avx2_movbe_rtm
++#endif
++
++#define ZERO_UPPER_VEC_REGISTERS_RETURN \
++  ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST
++
++#define VZEROUPPER_RETURN jmp	 L(return_vzeroupper)
++
++#define SECTION(p) p##.avx.rtm
++
++#include "memcmp-avx2-movbe.S"
+diff --git a/sysdeps/x86_64/multiarch/memcmp-avx2-movbe.S b/sysdeps/x86_64/multiarch/memcmp-avx2-movbe.S
+index 67fc575b5967fedd46954e4a788e180a0daaeaef..87f9478eafc49a93a253819bbef4b5eb4eac8d79 100644
+--- a/sysdeps/x86_64/multiarch/memcmp-avx2-movbe.S
++++ b/sysdeps/x86_64/multiarch/memcmp-avx2-movbe.S
+@@ -47,6 +47,10 @@
+ #  define VZEROUPPER	vzeroupper
+ # endif
+ 
++# ifndef SECTION
++#  define SECTION(p)	p##.avx
++# endif
++
+ # define VEC_SIZE 32
+ # define VEC_MASK ((1 << VEC_SIZE) - 1)
+ 
+@@ -55,7 +59,7 @@
+            memcmp has to use UNSIGNED comparison for elemnts.
+ */
+ 
+-	.section .text.avx,"ax",@progbits
++	.section SECTION(.text),"ax",@progbits
+ ENTRY (MEMCMP)
+ # ifdef USE_AS_WMEMCMP
+ 	shl	$2, %RDX_LP
+@@ -123,8 +127,8 @@ ENTRY (MEMCMP)
+ 	vptest	%ymm0, %ymm5
+ 	jnc	L(4x_vec_end)
+ 	xorl	%eax, %eax
+-	VZEROUPPER
+-	ret
++L(return_vzeroupper):
++	ZERO_UPPER_VEC_REGISTERS_RETURN
+ 
+ 	.p2align 4
+ L(last_2x_vec):
+@@ -144,8 +148,7 @@ L(last_vec):
+ 	vpmovmskb %ymm2, %eax
+ 	subl    $VEC_MASK, %eax
+ 	jnz	L(first_vec)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec):
+@@ -164,8 +167,7 @@ L(wmemcmp_return):
+ 	movzbl	(%rsi, %rcx), %edx
+ 	sub	%edx, %eax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ # ifdef USE_AS_WMEMCMP
+ 	.p2align 4
+@@ -367,8 +369,7 @@ L(last_4x_vec):
+ 	vpmovmskb %ymm2, %eax
+ 	subl    $VEC_MASK, %eax
+ 	jnz	L(first_vec)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(4x_vec_end):
+@@ -394,8 +395,7 @@ L(4x_vec_end):
+ 	movzbl	(VEC_SIZE * 3)(%rsi, %rcx), %edx
+ 	sub	%edx, %eax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x1):
+@@ -410,8 +410,7 @@ L(first_vec_x1):
+ 	movzbl	VEC_SIZE(%rsi, %rcx), %edx
+ 	sub	%edx, %eax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x2):
+@@ -426,7 +425,6 @@ L(first_vec_x2):
+ 	movzbl	(VEC_SIZE * 2)(%rsi, %rcx), %edx
+ 	sub	%edx, %eax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ END (MEMCMP)
+ #endif
+diff --git a/sysdeps/x86_64/multiarch/memmove-avx-unaligned-erms-rtm.S b/sysdeps/x86_64/multiarch/memmove-avx-unaligned-erms-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..1ec1962e861dbf6327a7ae2879c1be47f8fa6587
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/memmove-avx-unaligned-erms-rtm.S
+@@ -0,0 +1,17 @@
++#if IS_IN (libc)
++# define VEC_SIZE	32
++# define VEC(i)		ymm##i
++# define VMOVNT		vmovntdq
++# define VMOVU		vmovdqu
++# define VMOVA		vmovdqa
++
++# define ZERO_UPPER_VEC_REGISTERS_RETURN \
++  ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST
++
++# define VZEROUPPER_RETURN jmp	 L(return)
++
++# define SECTION(p)		p##.avx.rtm
++# define MEMMOVE_SYMBOL(p,s)	p##_avx_##s##_rtm
++
++# include "memmove-vec-unaligned-erms.S"
++#endif
+diff --git a/sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S b/sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+index c2e405519ea71e008475acb1d1fa2860fd05d85d..f71c343ecbec2279fbeb7ee1e2a639f6f67c7722 100644
+--- a/sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
++++ b/sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+@@ -147,11 +147,12 @@ L(last_2x_vec):
+ 	VMOVU	-VEC_SIZE(%rsi,%rdx), %VEC(1)
+ 	VMOVU	%VEC(0), (%rdi)
+ 	VMOVU	%VEC(1), -VEC_SIZE(%rdi,%rdx)
+-	VZEROUPPER
+ #if !defined USE_MULTIARCH || !IS_IN (libc)
+ L(nop):
+-#endif
+ 	ret
++#else
++	VZEROUPPER_RETURN
++#endif
+ #if defined USE_MULTIARCH && IS_IN (libc)
+ END (MEMMOVE_SYMBOL (__memmove, unaligned))
+ 
+@@ -244,8 +245,11 @@ L(last_2x_vec):
+ 	VMOVU	%VEC(0), (%rdi)
+ 	VMOVU	%VEC(1), -VEC_SIZE(%rdi,%rdx)
+ L(return):
+-	VZEROUPPER
++#if VEC_SIZE > 16
++	ZERO_UPPER_VEC_REGISTERS_RETURN
++#else
+ 	ret
++#endif
+ 
+ L(movsb):
+ 	cmp	__x86_shared_non_temporal_threshold(%rip), %RDX_LP
+@@ -310,8 +314,7 @@ L(between_32_63):
+ 	VMOVU	-32(%rsi,%rdx), %YMM1
+ 	VMOVU	%YMM0, (%rdi)
+ 	VMOVU	%YMM1, -32(%rdi,%rdx)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ #endif
+ #if VEC_SIZE > 16
+ 	/* From 16 to 31.  No branch when size == 16.  */
+@@ -320,7 +323,7 @@ L(between_16_31):
+ 	VMOVU	-16(%rsi,%rdx), %XMM1
+ 	VMOVU	%XMM0, (%rdi)
+ 	VMOVU	%XMM1, -16(%rdi,%rdx)
+-	ret
++	VZEROUPPER_RETURN
+ #endif
+ L(between_8_15):
+ 	/* From 8 to 15.  No branch when size == 8.  */
+@@ -373,8 +376,7 @@ L(more_2x_vec):
+ 	VMOVU	%VEC(5), -(VEC_SIZE * 2)(%rdi,%rdx)
+ 	VMOVU	%VEC(6), -(VEC_SIZE * 3)(%rdi,%rdx)
+ 	VMOVU	%VEC(7), -(VEC_SIZE * 4)(%rdi,%rdx)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ L(last_4x_vec):
+ 	/* Copy from 2 * VEC to 4 * VEC. */
+ 	VMOVU	(%rsi), %VEC(0)
+@@ -385,8 +387,7 @@ L(last_4x_vec):
+ 	VMOVU	%VEC(1), VEC_SIZE(%rdi)
+ 	VMOVU	%VEC(2), -VEC_SIZE(%rdi,%rdx)
+ 	VMOVU	%VEC(3), -(VEC_SIZE * 2)(%rdi,%rdx)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ L(more_8x_vec):
+ 	cmpq	%rsi, %rdi
+@@ -442,8 +443,7 @@ L(loop_4x_vec_forward):
+ 	VMOVU	%VEC(8), -(VEC_SIZE * 3)(%rcx)
+ 	/* Store the first VEC.  */
+ 	VMOVU	%VEC(4), (%r11)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ L(more_8x_vec_backward):
+ 	/* Load the first 4 * VEC and last VEC to support overlapping
+@@ -494,8 +494,7 @@ L(loop_4x_vec_backward):
+ 	VMOVU	%VEC(7), (VEC_SIZE * 3)(%rdi)
+ 	/* Store the last VEC.  */
+ 	VMOVU	%VEC(8), (%r11)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ #if (defined USE_MULTIARCH || VEC_SIZE == 16) && IS_IN (libc)
+ L(large_forward):
+@@ -530,8 +529,7 @@ L(loop_large_forward):
+ 	VMOVU	%VEC(8), -(VEC_SIZE * 3)(%rcx)
+ 	/* Store the first VEC.  */
+ 	VMOVU	%VEC(4), (%r11)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ L(large_backward):
+ 	/* Don't use non-temporal store if there is overlap between
+@@ -565,8 +563,7 @@ L(loop_large_backward):
+ 	VMOVU	%VEC(7), (VEC_SIZE * 3)(%rdi)
+ 	/* Store the last VEC.  */
+ 	VMOVU	%VEC(8), (%r11)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ #endif
+ END (MEMMOVE_SYMBOL (__memmove, unaligned_erms))
+ 
+diff --git a/sysdeps/x86_64/multiarch/memrchr-avx2-rtm.S b/sysdeps/x86_64/multiarch/memrchr-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..cea2d2a72db7406abef6408e12d5a510c7624475
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/memrchr-avx2-rtm.S
+@@ -0,0 +1,12 @@
++#ifndef MEMRCHR
++# define MEMRCHR __memrchr_avx2_rtm
++#endif
++
++#define ZERO_UPPER_VEC_REGISTERS_RETURN \
++  ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST
++
++#define VZEROUPPER_RETURN jmp	 L(return_vzeroupper)
++
++#define SECTION(p) p##.avx.rtm
++
++#include "memrchr-avx2.S"
+diff --git a/sysdeps/x86_64/multiarch/memrchr-avx2.S b/sysdeps/x86_64/multiarch/memrchr-avx2.S
+index f5437b54dee9ade6a4a66d01f31d660792d88ed3..c8d54c08d6508353c4ecf064ca0fba927faa0394 100644
+--- a/sysdeps/x86_64/multiarch/memrchr-avx2.S
++++ b/sysdeps/x86_64/multiarch/memrchr-avx2.S
+@@ -20,14 +20,22 @@
+ 
+ # include <sysdep.h>
+ 
++# ifndef MEMRCHR
++#  define MEMRCHR	__memrchr_avx2
++# endif
++
+ # ifndef VZEROUPPER
+ #  define VZEROUPPER	vzeroupper
+ # endif
+ 
++# ifndef SECTION
++#  define SECTION(p)	p##.avx
++# endif
++
+ # define VEC_SIZE 32
+ 
+-	.section .text.avx,"ax",@progbits
+-ENTRY (__memrchr_avx2)
++	.section SECTION(.text),"ax",@progbits
++ENTRY (MEMRCHR)
+ 	/* Broadcast CHAR to YMM0.  */
+ 	vmovd	%esi, %xmm0
+ 	vpbroadcastb %xmm0, %ymm0
+@@ -134,8 +142,8 @@ L(loop_4x_vec):
+ 	vpmovmskb %ymm1, %eax
+ 	bsrl	%eax, %eax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++L(return_vzeroupper):
++	ZERO_UPPER_VEC_REGISTERS_RETURN
+ 
+ 	.p2align 4
+ L(last_4x_vec_or_less):
+@@ -169,8 +177,7 @@ L(last_4x_vec_or_less):
+ 	addq	%rax, %rdx
+ 	jl	L(zero)
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(last_2x_vec):
+@@ -191,31 +198,27 @@ L(last_2x_vec):
+ 	jl	L(zero)
+ 	addl	$(VEC_SIZE * 2), %eax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(last_vec_x0):
+ 	bsrl	%eax, %eax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(last_vec_x1):
+ 	bsrl	%eax, %eax
+ 	addl	$VEC_SIZE, %eax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(last_vec_x2):
+ 	bsrl	%eax, %eax
+ 	addl	$(VEC_SIZE * 2), %eax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(last_vec_x3):
+@@ -232,8 +235,7 @@ L(last_vec_x1_check):
+ 	jl	L(zero)
+ 	addl	$VEC_SIZE, %eax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(last_vec_x3_check):
+@@ -243,12 +245,14 @@ L(last_vec_x3_check):
+ 	jl	L(zero)
+ 	addl	$(VEC_SIZE * 3), %eax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(zero):
+-	VZEROUPPER
++	xorl	%eax, %eax
++	VZEROUPPER_RETURN
++
++	.p2align 4
+ L(null):
+ 	xorl	%eax, %eax
+ 	ret
+@@ -273,8 +277,7 @@ L(last_vec_or_less_aligned):
+ 
+ 	bsrl	%eax, %eax
+ 	addq	%rdi, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(last_vec_or_less):
+@@ -315,8 +318,7 @@ L(last_vec_or_less):
+ 	bsrl	%eax, %eax
+ 	addq	%rdi, %rax
+ 	addq	%r8, %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(last_vec_2x_aligned):
+@@ -353,7 +355,6 @@ L(last_vec_2x_aligned):
+ 	bsrl	%eax, %eax
+ 	addq	%rdi, %rax
+ 	addq	%r8, %rax
+-	VZEROUPPER
+-	ret
+-END (__memrchr_avx2)
++	VZEROUPPER_RETURN
++END (MEMRCHR)
+ #endif
+diff --git a/sysdeps/x86_64/multiarch/memset-avx2-unaligned-erms-rtm.S b/sysdeps/x86_64/multiarch/memset-avx2-unaligned-erms-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..8ac3e479bba488becd0becb63011496fef9eff13
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/memset-avx2-unaligned-erms-rtm.S
+@@ -0,0 +1,10 @@
++#define ZERO_UPPER_VEC_REGISTERS_RETURN \
++  ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST
++
++#define VZEROUPPER_RETURN jmp	 L(return)
++
++#define SECTION(p) p##.avx.rtm
++#define MEMSET_SYMBOL(p,s)	p##_avx2_##s##_rtm
++#define WMEMSET_SYMBOL(p,s)	p##_avx2_##s##_rtm
++
++#include "memset-avx2-unaligned-erms.S"
+diff --git a/sysdeps/x86_64/multiarch/memset-avx2-unaligned-erms.S b/sysdeps/x86_64/multiarch/memset-avx2-unaligned-erms.S
+index 7ab3d89849bedeb51c39ae90dc182441a90f5ca9..ae0860f36a47d5941456e5138b11544ad9540dbf 100644
+--- a/sysdeps/x86_64/multiarch/memset-avx2-unaligned-erms.S
++++ b/sysdeps/x86_64/multiarch/memset-avx2-unaligned-erms.S
+@@ -14,9 +14,15 @@
+   movq r, %rax; \
+   vpbroadcastd %xmm0, %ymm0
+ 
+-# define SECTION(p)		p##.avx
+-# define MEMSET_SYMBOL(p,s)	p##_avx2_##s
+-# define WMEMSET_SYMBOL(p,s)	p##_avx2_##s
++# ifndef SECTION
++#  define SECTION(p)		p##.avx
++# endif
++# ifndef MEMSET_SYMBOL
++#  define MEMSET_SYMBOL(p,s)	p##_avx2_##s
++# endif
++# ifndef WMEMSET_SYMBOL
++#  define WMEMSET_SYMBOL(p,s)	p##_avx2_##s
++# endif
+ 
+ # include "memset-vec-unaligned-erms.S"
+ #endif
+diff --git a/sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S b/sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S
+index 7f8c2aba87ba0d00c28b3e0f021c4dc7985cb987..de5a8a38f5b66e34c00bea4f67a14845b1efcd29 100644
+--- a/sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S
++++ b/sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S
+@@ -45,17 +45,14 @@
+ #ifndef VZEROUPPER
+ # if VEC_SIZE > 16
+ #  define VZEROUPPER			vzeroupper
++#  define VZEROUPPER_SHORT_RETURN	vzeroupper; ret
+ # else
+ #  define VZEROUPPER
+ # endif
+ #endif
+ 
+ #ifndef VZEROUPPER_SHORT_RETURN
+-# if VEC_SIZE > 16
+-#  define VZEROUPPER_SHORT_RETURN	vzeroupper
+-# else
+-#  define VZEROUPPER_SHORT_RETURN	rep
+-# endif
++# define VZEROUPPER_SHORT_RETURN	rep; ret
+ #endif
+ 
+ #ifndef MOVQ
+@@ -117,8 +114,7 @@ L(entry_from_bzero):
+ 	/* From VEC and to 2 * VEC.  No branch when size == VEC_SIZE.  */
+ 	VMOVU	%VEC(0), -VEC_SIZE(%rdi,%rdx)
+ 	VMOVU	%VEC(0), (%rdi)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ #if defined USE_MULTIARCH && IS_IN (libc)
+ END (MEMSET_SYMBOL (__memset, unaligned))
+ 
+@@ -141,14 +137,12 @@ ENTRY (__memset_erms)
+ ENTRY (MEMSET_SYMBOL (__memset, erms))
+ # endif
+ L(stosb):
+-	/* Issue vzeroupper before rep stosb.  */
+-	VZEROUPPER
+ 	mov	%RDX_LP, %RCX_LP
+ 	movzbl	%sil, %eax
+ 	mov	%RDI_LP, %RDX_LP
+ 	rep stosb
+ 	mov	%RDX_LP, %RAX_LP
+-	ret
++	VZEROUPPER_RETURN
+ # if VEC_SIZE == 16
+ END (__memset_erms)
+ # else
+@@ -175,8 +169,7 @@ ENTRY (MEMSET_SYMBOL (__memset, unaligned_erms))
+ 	/* From VEC and to 2 * VEC.  No branch when size == VEC_SIZE.  */
+ 	VMOVU	%VEC(0), -VEC_SIZE(%rdi,%rdx)
+ 	VMOVU	%VEC(0), (%rdi)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ L(stosb_more_2x_vec):
+ 	cmp	__x86_rep_stosb_threshold(%rip), %RDX_LP
+@@ -190,8 +183,11 @@ L(more_2x_vec):
+ 	VMOVU	%VEC(0), -VEC_SIZE(%rdi,%rdx)
+ 	VMOVU	%VEC(0), -(VEC_SIZE * 2)(%rdi,%rdx)
+ L(return):
+-	VZEROUPPER
++#if VEC_SIZE > 16
++	ZERO_UPPER_VEC_REGISTERS_RETURN
++#else
+ 	ret
++#endif
+ 
+ L(loop_start):
+ 	leaq	(VEC_SIZE * 4)(%rdi), %rcx
+@@ -217,7 +213,6 @@ L(loop):
+ 	cmpq	%rcx, %rdx
+ 	jne	L(loop)
+ 	VZEROUPPER_SHORT_RETURN
+-	ret
+ L(less_vec):
+ 	/* Less than 1 VEC.  */
+ # if VEC_SIZE != 16 && VEC_SIZE != 32 && VEC_SIZE != 64
+@@ -241,40 +236,34 @@ L(less_vec):
+ 	jb	1f
+ 	movb	%cl, (%rdi)
+ 1:
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ # if VEC_SIZE > 32
+ 	/* From 32 to 63.  No branch when size == 32.  */
+ L(between_32_63):
+ 	VMOVU	%YMM0, -32(%rdi,%rdx)
+ 	VMOVU	%YMM0, (%rdi)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ # endif
+ # if VEC_SIZE > 16
+ 	/* From 16 to 31.  No branch when size == 16.  */
+ L(between_16_31):
+ 	VMOVU	%XMM0, -16(%rdi,%rdx)
+ 	VMOVU	%XMM0, (%rdi)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ # endif
+ 	/* From 8 to 15.  No branch when size == 8.  */
+ L(between_8_15):
+ 	movq	%rcx, -8(%rdi,%rdx)
+ 	movq	%rcx, (%rdi)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ L(between_4_7):
+ 	/* From 4 to 7.  No branch when size == 4.  */
+ 	movl	%ecx, -4(%rdi,%rdx)
+ 	movl	%ecx, (%rdi)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ L(between_2_3):
+ 	/* From 2 to 3.  No branch when size == 2.  */
+ 	movw	%cx, -2(%rdi,%rdx)
+ 	movw	%cx, (%rdi)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ END (MEMSET_SYMBOL (__memset, unaligned_erms))
+diff --git a/sysdeps/x86_64/multiarch/rawmemchr-avx2-rtm.S b/sysdeps/x86_64/multiarch/rawmemchr-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..acc5f6e2fb60e11c4161072798b503dd154cb9ae
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/rawmemchr-avx2-rtm.S
+@@ -0,0 +1,4 @@
++#define MEMCHR __rawmemchr_avx2_rtm
++#define USE_AS_RAWMEMCHR 1
++
++#include "memchr-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/stpcpy-avx2-rtm.S b/sysdeps/x86_64/multiarch/stpcpy-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..2b9c07a59f6605ee091162bab818540c2b209a31
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/stpcpy-avx2-rtm.S
+@@ -0,0 +1,3 @@
++#define USE_AS_STPCPY
++#define STRCPY __stpcpy_avx2_rtm
++#include "strcpy-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/stpncpy-avx2-rtm.S b/sysdeps/x86_64/multiarch/stpncpy-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..60a2ccfe5327ccdb91418739efeb7545c3df018f
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/stpncpy-avx2-rtm.S
+@@ -0,0 +1,4 @@
++#define USE_AS_STPCPY
++#define USE_AS_STRNCPY
++#define STRCPY __stpncpy_avx2_rtm
++#include "strcpy-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/strcat-avx2-rtm.S b/sysdeps/x86_64/multiarch/strcat-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..637fb557c4b83a152b105c49ab00804c7630354a
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strcat-avx2-rtm.S
+@@ -0,0 +1,12 @@
++#ifndef STRCAT
++# define STRCAT __strcat_avx2_rtm
++#endif
++
++#define ZERO_UPPER_VEC_REGISTERS_RETURN \
++  ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST
++
++#define VZEROUPPER_RETURN jmp	 L(return_vzeroupper)
++
++#define SECTION(p) p##.avx.rtm
++
++#include "strcat-avx2.S"
+diff --git a/sysdeps/x86_64/multiarch/strcat-avx2.S b/sysdeps/x86_64/multiarch/strcat-avx2.S
+index a4143bf8f566c13c0f6789887aba8653adf76b17..1e6d4827eece8833b4fb1d1e630c1e1221e702f7 100644
+--- a/sysdeps/x86_64/multiarch/strcat-avx2.S
++++ b/sysdeps/x86_64/multiarch/strcat-avx2.S
+@@ -30,7 +30,11 @@
+ /* Number of bytes in a vector register */
+ # define VEC_SIZE	32
+ 
+-	.section .text.avx,"ax",@progbits
++# ifndef SECTION
++#  define SECTION(p)	p##.avx
++# endif
++
++	.section SECTION(.text),"ax",@progbits
+ ENTRY (STRCAT)
+ 	mov	%rdi, %r9
+ # ifdef USE_AS_STRNCAT
+diff --git a/sysdeps/x86_64/multiarch/strchr-avx2-rtm.S b/sysdeps/x86_64/multiarch/strchr-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..81f20d1d8ed68b63131d8ae45dc39424118d4898
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strchr-avx2-rtm.S
+@@ -0,0 +1,12 @@
++#ifndef STRCHR
++# define STRCHR __strchr_avx2_rtm
++#endif
++
++#define ZERO_UPPER_VEC_REGISTERS_RETURN \
++  ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST
++
++#define VZEROUPPER_RETURN jmp	 L(return_vzeroupper)
++
++#define SECTION(p) p##.avx.rtm
++
++#include "strchr-avx2.S"
+diff --git a/sysdeps/x86_64/multiarch/strchr-avx2.S b/sysdeps/x86_64/multiarch/strchr-avx2.S
+index 39fc69da7b8dc2ec2f5c45e17c6f736557306080..0a5217514aa3d60f4dbd9e0247c5f896bd9a7b63 100644
+--- a/sysdeps/x86_64/multiarch/strchr-avx2.S
++++ b/sysdeps/x86_64/multiarch/strchr-avx2.S
+@@ -38,9 +38,13 @@
+ #  define VZEROUPPER	vzeroupper
+ # endif
+ 
++# ifndef SECTION
++#  define SECTION(p)	p##.avx
++# endif
++
+ # define VEC_SIZE 32
+ 
+-	.section .text.avx,"ax",@progbits
++	.section SECTION(.text),"ax",@progbits
+ ENTRY (STRCHR)
+ 	movl	%edi, %ecx
+ 	/* Broadcast CHAR to YMM0.  */
+@@ -93,8 +97,8 @@ L(cros_page_boundary):
+ 	cmp	(%rax), %CHAR_REG
+ 	cmovne	%rdx, %rax
+ # endif
+-	VZEROUPPER
+-	ret
++L(return_vzeroupper):
++	ZERO_UPPER_VEC_REGISTERS_RETURN
+ 
+ 	.p2align 4
+ L(aligned_more):
+@@ -190,8 +194,7 @@ L(first_vec_x0):
+ 	cmp	(%rax), %CHAR_REG
+ 	cmovne	%rdx, %rax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x1):
+@@ -205,8 +208,7 @@ L(first_vec_x1):
+ 	cmp	(%rax), %CHAR_REG
+ 	cmovne	%rdx, %rax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x2):
+@@ -220,8 +222,7 @@ L(first_vec_x2):
+ 	cmp	(%rax), %CHAR_REG
+ 	cmovne	%rdx, %rax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(4x_vec_end):
+@@ -247,8 +248,7 @@ L(first_vec_x3):
+ 	cmp	(%rax), %CHAR_REG
+ 	cmovne	%rdx, %rax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ END (STRCHR)
+ #endif
+diff --git a/sysdeps/x86_64/multiarch/strchr.c b/sysdeps/x86_64/multiarch/strchr.c
+index d642b88771ed950792633ea9b079de536182fb7b..4ed1177c7091a42b9c34b96b6019dc827fcaee0f 100644
+--- a/sysdeps/x86_64/multiarch/strchr.c
++++ b/sysdeps/x86_64/multiarch/strchr.c
+@@ -29,6 +29,7 @@
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2_no_bsf) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_rtm) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+ 
+ static inline void *
+@@ -44,6 +45,9 @@ IFUNC_SELECTOR (void)
+ 	  && CPU_FEATURE_USABLE_P (cpu_features, BMI2))
+ 	return OPTIMIZE (evex);
+ 
++      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	return OPTIMIZE (avx2_rtm);
++
+       if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+ 	return OPTIMIZE (avx2);
+     }
+diff --git a/sysdeps/x86_64/multiarch/strchrnul-avx2-rtm.S b/sysdeps/x86_64/multiarch/strchrnul-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..cdcf818b91f9fe72ca910e7fb0c508f4dd085773
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strchrnul-avx2-rtm.S
+@@ -0,0 +1,3 @@
++#define STRCHR __strchrnul_avx2_rtm
++#define USE_AS_STRCHRNUL 1
++#include "strchr-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/strcmp-avx2-rtm.S b/sysdeps/x86_64/multiarch/strcmp-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..aecd30d97f02e999b22608e263ed02ff1b878e7a
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strcmp-avx2-rtm.S
+@@ -0,0 +1,12 @@
++#ifndef STRCMP
++# define STRCMP __strcmp_avx2_rtm
++#endif
++
++#define ZERO_UPPER_VEC_REGISTERS_RETURN \
++  ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST
++
++#define VZEROUPPER_RETURN jmp	 L(return_vzeroupper)
++
++#define SECTION(p) p##.avx.rtm
++
++#include "strcmp-avx2.S"
+diff --git a/sysdeps/x86_64/multiarch/strcmp-avx2.S b/sysdeps/x86_64/multiarch/strcmp-avx2.S
+index fb2527e0ca286a8dbedc99412cb8a2edb91cad96..759e5b64c2a06a1474261bcab0ac842df861c5e0 100644
+--- a/sysdeps/x86_64/multiarch/strcmp-avx2.S
++++ b/sysdeps/x86_64/multiarch/strcmp-avx2.S
+@@ -55,6 +55,10 @@
+ #  define VZEROUPPER	vzeroupper
+ # endif
+ 
++# ifndef SECTION
++#  define SECTION(p)	p##.avx
++# endif
++
+ /* Warning!
+            wcscmp/wcsncmp have to use SIGNED comparison for elements.
+            strcmp/strncmp have to use UNSIGNED comparison for elements.
+@@ -75,7 +79,7 @@
+    the maximum offset is reached before a difference is found, zero is
+    returned.  */
+ 
+-	.section .text.avx,"ax",@progbits
++	.section SECTION(.text),"ax",@progbits
+ ENTRY (STRCMP)
+ # ifdef USE_AS_STRNCMP
+ 	/* Check for simple cases (0 or 1) in offset.  */
+@@ -137,8 +141,8 @@ L(return):
+ 	movzbl	(%rsi, %rdx), %edx
+ 	subl	%edx, %eax
+ # endif
+-	VZEROUPPER
+-	ret
++L(return_vzeroupper):
++	ZERO_UPPER_VEC_REGISTERS_RETURN
+ 
+ 	.p2align 4
+ L(return_vec_size):
+@@ -171,8 +175,7 @@ L(return_vec_size):
+ 	subl	%edx, %eax
+ #  endif
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(return_2_vec_size):
+@@ -205,8 +208,7 @@ L(return_2_vec_size):
+ 	subl	%edx, %eax
+ #  endif
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(return_3_vec_size):
+@@ -239,8 +241,7 @@ L(return_3_vec_size):
+ 	subl	%edx, %eax
+ #  endif
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(next_3_vectors):
+@@ -366,8 +367,7 @@ L(back_to_loop):
+ 	subl	%edx, %eax
+ #  endif
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(test_vec):
+@@ -410,8 +410,7 @@ L(test_vec):
+ 	subl	%edx, %eax
+ #  endif
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(test_2_vec):
+@@ -454,8 +453,7 @@ L(test_2_vec):
+ 	subl	%edx, %eax
+ #  endif
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(test_3_vec):
+@@ -496,8 +494,7 @@ L(test_3_vec):
+ 	subl	%edx, %eax
+ #  endif
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(loop_cross_page):
+@@ -566,8 +563,7 @@ L(loop_cross_page):
+ 	subl	%edx, %eax
+ #  endif
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(loop_cross_page_2_vec):
+@@ -641,8 +637,7 @@ L(loop_cross_page_2_vec):
+ 	subl	%edx, %eax
+ #  endif
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ # ifdef USE_AS_STRNCMP
+ L(string_nbyte_offset_check):
+@@ -684,8 +679,7 @@ L(cross_page_loop):
+ # ifndef USE_AS_WCSCMP
+ L(different):
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ # ifdef USE_AS_WCSCMP
+ 	.p2align 4
+@@ -695,16 +689,14 @@ L(different):
+ 	setl	%al
+ 	negl	%eax
+ 	orl	$1, %eax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ # endif
+ 
+ # ifdef USE_AS_STRNCMP
+ 	.p2align 4
+ L(zero):
+ 	xorl	%eax, %eax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(char0):
+@@ -718,8 +710,7 @@ L(char0):
+ 	movzbl	(%rdi), %eax
+ 	subl	%ecx, %eax
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ # endif
+ 
+ 	.p2align 4
+@@ -744,8 +735,7 @@ L(last_vector):
+ 	movzbl	(%rsi, %rdx), %edx
+ 	subl	%edx, %eax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	/* Comparing on page boundary region requires special treatment:
+ 	   It must done one vector at the time, starting with the wider
+@@ -866,7 +856,6 @@ L(cross_page_4bytes):
+ 	testl	%eax, %eax
+ 	jne	L(cross_page_loop)
+ 	subl	%ecx, %eax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ END (STRCMP)
+ #endif
+diff --git a/sysdeps/x86_64/multiarch/strcmp.c b/sysdeps/x86_64/multiarch/strcmp.c
+index 68ece4bc1ce85b937b778fcc512ce8877d228098..df4ba875d94c82d8a8b8b1f8d9d8cdf2daed3f84 100644
+--- a/sysdeps/x86_64/multiarch/strcmp.c
++++ b/sysdeps/x86_64/multiarch/strcmp.c
+@@ -30,6 +30,7 @@ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2_unaligned) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (ssse3) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_rtm) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+ 
+ static inline void *
+@@ -46,6 +47,9 @@ IFUNC_SELECTOR (void)
+ 	  && !CPU_FEATURES_ARCH_P (cpu_features, Prefer_AVX2_STRCMP))
+ 	return OPTIMIZE (evex);
+ 
++      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	return OPTIMIZE (avx2_rtm);
++
+       if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+ 	return OPTIMIZE (avx2);
+     }
+diff --git a/sysdeps/x86_64/multiarch/strcpy-avx2-rtm.S b/sysdeps/x86_64/multiarch/strcpy-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..c2c581ecf7061ab79b03b295d916c24d58f3bc33
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strcpy-avx2-rtm.S
+@@ -0,0 +1,12 @@
++#ifndef STRCPY
++# define STRCPY __strcpy_avx2_rtm
++#endif
++
++#define ZERO_UPPER_VEC_REGISTERS_RETURN \
++  ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST
++
++#define VZEROUPPER_RETURN jmp	 L(return_vzeroupper)
++
++#define SECTION(p) p##.avx.rtm
++
++#include "strcpy-avx2.S"
+diff --git a/sysdeps/x86_64/multiarch/strcpy-avx2.S b/sysdeps/x86_64/multiarch/strcpy-avx2.S
+index 3f2f9e8170b790de0a41260cb02ebb2f0954841b..1ce17253ab1d6f2c898be8a4b5e774bad79209f2 100644
+--- a/sysdeps/x86_64/multiarch/strcpy-avx2.S
++++ b/sysdeps/x86_64/multiarch/strcpy-avx2.S
+@@ -37,6 +37,10 @@
+ #  define VZEROUPPER	vzeroupper
+ # endif
+ 
++# ifndef SECTION
++#  define SECTION(p)	p##.avx
++# endif
++
+ /* zero register */
+ #define xmmZ	xmm0
+ #define ymmZ	ymm0
+@@ -46,7 +50,7 @@
+ 
+ # ifndef USE_AS_STRCAT
+ 
+-	.section .text.avx,"ax",@progbits
++	.section SECTION(.text),"ax",@progbits
+ ENTRY (STRCPY)
+ #  ifdef USE_AS_STRNCPY
+ 	mov	%RDX_LP, %R8_LP
+@@ -369,8 +373,8 @@ L(CopyVecSizeExit):
+ 	lea	1(%rdi), %rdi
+ 	jnz	L(StrncpyFillTailWithZero)
+ # endif
+-	VZEROUPPER
+-	ret
++L(return_vzeroupper):
++	ZERO_UPPER_VEC_REGISTERS_RETURN
+ 
+ 	.p2align 4
+ L(CopyTwoVecSize1):
+@@ -553,8 +557,7 @@ L(Exit1):
+ 	lea	2(%rdi), %rdi
+ 	jnz	L(StrncpyFillTailWithZero)
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(Exit2):
+@@ -569,8 +572,7 @@ L(Exit2):
+ 	lea	3(%rdi), %rdi
+ 	jnz	L(StrncpyFillTailWithZero)
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(Exit3):
+@@ -584,8 +586,7 @@ L(Exit3):
+ 	lea	4(%rdi), %rdi
+ 	jnz	L(StrncpyFillTailWithZero)
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(Exit4_7):
+@@ -602,8 +603,7 @@ L(Exit4_7):
+ 	lea	1(%rdi, %rdx), %rdi
+ 	jnz	L(StrncpyFillTailWithZero)
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(Exit8_15):
+@@ -620,8 +620,7 @@ L(Exit8_15):
+ 	lea	1(%rdi, %rdx), %rdi
+ 	jnz	L(StrncpyFillTailWithZero)
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(Exit16_31):
+@@ -638,8 +637,7 @@ L(Exit16_31):
+ 	lea 1(%rdi, %rdx), %rdi
+ 	jnz L(StrncpyFillTailWithZero)
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(Exit32_63):
+@@ -656,8 +654,7 @@ L(Exit32_63):
+ 	lea	1(%rdi, %rdx), %rdi
+ 	jnz	L(StrncpyFillTailWithZero)
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ # ifdef USE_AS_STRNCPY
+ 
+@@ -671,8 +668,7 @@ L(StrncpyExit1):
+ #  ifdef USE_AS_STRCAT
+ 	movb	$0, 1(%rdi)
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(StrncpyExit2):
+@@ -684,8 +680,7 @@ L(StrncpyExit2):
+ #  ifdef USE_AS_STRCAT
+ 	movb	$0, 2(%rdi)
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(StrncpyExit3_4):
+@@ -699,8 +694,7 @@ L(StrncpyExit3_4):
+ #  ifdef USE_AS_STRCAT
+ 	movb	$0, (%rdi, %r8)
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(StrncpyExit5_8):
+@@ -714,8 +708,7 @@ L(StrncpyExit5_8):
+ #  ifdef USE_AS_STRCAT
+ 	movb	$0, (%rdi, %r8)
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(StrncpyExit9_16):
+@@ -729,8 +722,7 @@ L(StrncpyExit9_16):
+ #  ifdef USE_AS_STRCAT
+ 	movb	$0, (%rdi, %r8)
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(StrncpyExit17_32):
+@@ -744,8 +736,7 @@ L(StrncpyExit17_32):
+ #  ifdef USE_AS_STRCAT
+ 	movb	$0, (%rdi, %r8)
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(StrncpyExit33_64):
+@@ -760,8 +751,7 @@ L(StrncpyExit33_64):
+ #  ifdef USE_AS_STRCAT
+ 	movb	$0, (%rdi, %r8)
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(StrncpyExit65):
+@@ -778,50 +768,43 @@ L(StrncpyExit65):
+ #  ifdef USE_AS_STRCAT
+ 	movb	$0, 65(%rdi)
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ #  ifndef USE_AS_STRCAT
+ 
+ 	.p2align 4
+ L(Fill1):
+ 	mov	%dl, (%rdi)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(Fill2):
+ 	mov	%dx, (%rdi)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(Fill3_4):
+ 	mov	%dx, (%rdi)
+ 	mov     %dx, -2(%rdi, %r8)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(Fill5_8):
+ 	mov	%edx, (%rdi)
+ 	mov     %edx, -4(%rdi, %r8)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(Fill9_16):
+ 	mov	%rdx, (%rdi)
+ 	mov	%rdx, -8(%rdi, %r8)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(Fill17_32):
+ 	vmovdqu %xmmZ, (%rdi)
+ 	vmovdqu %xmmZ, -16(%rdi, %r8)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(CopyVecSizeUnalignedVec2):
+@@ -898,8 +881,7 @@ L(Fill):
+ 	cmp	$1, %r8d
+ 	ja	L(Fill2)
+ 	je	L(Fill1)
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ /* end of ifndef USE_AS_STRCAT */
+ #  endif
+@@ -929,8 +911,7 @@ L(UnalignedFourVecSizeLeaveCase3):
+ #  ifdef USE_AS_STRCAT
+ 	movb	$0, (VEC_SIZE * 4)(%rdi)
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(UnalignedFourVecSizeLeaveCase2):
+@@ -1001,16 +982,14 @@ L(StrncpyExit):
+ #  ifdef USE_AS_STRCAT
+ 	movb	$0, (%rdi)
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(ExitZero):
+ #  ifndef USE_AS_STRCAT
+ 	mov	%rdi, %rax
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ # endif
+ 
+diff --git a/sysdeps/x86_64/multiarch/strlen-avx2-rtm.S b/sysdeps/x86_64/multiarch/strlen-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..75b4b7612cbfac7ba04f1c5510f67770d7cec151
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strlen-avx2-rtm.S
+@@ -0,0 +1,12 @@
++#ifndef STRLEN
++# define STRLEN __strlen_avx2_rtm
++#endif
++
++#define ZERO_UPPER_VEC_REGISTERS_RETURN \
++  ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST
++
++#define VZEROUPPER_RETURN jmp	 L(return_vzeroupper)
++
++#define SECTION(p) p##.avx.rtm
++
++#include "strlen-avx2.S"
+diff --git a/sysdeps/x86_64/multiarch/strlen-avx2.S b/sysdeps/x86_64/multiarch/strlen-avx2.S
+index 73421ec1b2748f68447a60027360a6f969f5c7b3..9f7af98a0e10b4d57a65f41a9998adc76a622a5d 100644
+--- a/sysdeps/x86_64/multiarch/strlen-avx2.S
++++ b/sysdeps/x86_64/multiarch/strlen-avx2.S
+@@ -36,9 +36,13 @@
+ #  define VZEROUPPER	vzeroupper
+ # endif
+ 
++# ifndef SECTION
++#  define SECTION(p)	p##.avx
++# endif
++
+ # define VEC_SIZE 32
+ 
+-	.section .text.avx,"ax",@progbits
++	.section SECTION(.text),"ax",@progbits
+ ENTRY (STRLEN)
+ # ifdef USE_AS_STRNLEN
+ 	/* Check for zero length.  */
+@@ -111,8 +115,8 @@ L(cros_page_boundary):
+ # ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ # endif
+-	VZEROUPPER
+-	ret
++L(return_vzeroupper):
++	ZERO_UPPER_VEC_REGISTERS_RETURN
+ 
+ 	.p2align 4
+ L(aligned_more):
+@@ -231,8 +235,7 @@ L(last_4x_vec_or_less):
+ #  ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(last_2x_vec):
+@@ -253,8 +256,7 @@ L(last_2x_vec):
+ #  ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x0_check):
+@@ -267,8 +269,7 @@ L(first_vec_x0_check):
+ #  ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x1_check):
+@@ -282,8 +283,7 @@ L(first_vec_x1_check):
+ #  ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x2_check):
+@@ -297,8 +297,7 @@ L(first_vec_x2_check):
+ #  ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x3_check):
+@@ -312,8 +311,7 @@ L(first_vec_x3_check):
+ #  ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(max):
+@@ -321,8 +319,7 @@ L(max):
+ #  ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ #  endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(zero):
+@@ -338,8 +335,7 @@ L(first_vec_x0):
+ # ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x1):
+@@ -350,8 +346,7 @@ L(first_vec_x1):
+ # ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(first_vec_x2):
+@@ -362,8 +357,7 @@ L(first_vec_x2):
+ # ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(4x_vec_end):
+@@ -389,8 +383,7 @@ L(first_vec_x3):
+ # ifdef USE_AS_WCSLEN
+ 	shrq	$2, %rax
+ # endif
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ END (STRLEN)
+ #endif
+diff --git a/sysdeps/x86_64/multiarch/strncat-avx2-rtm.S b/sysdeps/x86_64/multiarch/strncat-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..0dcea18dbb89d4691a2e17c8a7bd49c8194db42a
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strncat-avx2-rtm.S
+@@ -0,0 +1,3 @@
++#define USE_AS_STRNCAT
++#define STRCAT __strncat_avx2_rtm
++#include "strcat-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/strncmp-avx2-rtm.S b/sysdeps/x86_64/multiarch/strncmp-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..37d1224bb9b7056bbfd47e3ac2bc3675aee3f1f4
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strncmp-avx2-rtm.S
+@@ -0,0 +1,3 @@
++#define STRCMP	__strncmp_avx2_rtm
++#define USE_AS_STRNCMP 1
++#include "strcmp-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/strncmp.c b/sysdeps/x86_64/multiarch/strncmp.c
+index 385032812f6a84d7debcc8be725d2d7857d8717b..7accba2b7c6024904548b4c8f2549f53701ac2a8 100644
+--- a/sysdeps/x86_64/multiarch/strncmp.c
++++ b/sysdeps/x86_64/multiarch/strncmp.c
+@@ -30,6 +30,7 @@ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (ssse3) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse42) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_rtm) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+ 
+ static inline void *
+@@ -46,6 +47,9 @@ IFUNC_SELECTOR (void)
+ 	  && !CPU_FEATURES_ARCH_P (cpu_features, Prefer_AVX2_STRCMP))
+ 	return OPTIMIZE (evex);
+ 
++      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	return OPTIMIZE (avx2_rtm);
++
+       if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+ 	return OPTIMIZE (avx2);
+     }
+diff --git a/sysdeps/x86_64/multiarch/strncpy-avx2-rtm.S b/sysdeps/x86_64/multiarch/strncpy-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..79e7083299c010606f77002685ee24e160a309e8
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strncpy-avx2-rtm.S
+@@ -0,0 +1,3 @@
++#define USE_AS_STRNCPY
++#define STRCPY __strncpy_avx2_rtm
++#include "strcpy-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/strnlen-avx2-rtm.S b/sysdeps/x86_64/multiarch/strnlen-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..04f1626a5c9ac2aea0611e51e60ba2a9ad4ef93e
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strnlen-avx2-rtm.S
+@@ -0,0 +1,4 @@
++#define STRLEN __strnlen_avx2_rtm
++#define USE_AS_STRNLEN 1
++
++#include "strlen-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/strrchr-avx2-rtm.S b/sysdeps/x86_64/multiarch/strrchr-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..5def14ec1c69c596a87f0d0f47e793e23636c6fb
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strrchr-avx2-rtm.S
+@@ -0,0 +1,12 @@
++#ifndef STRRCHR
++# define STRRCHR __strrchr_avx2_rtm
++#endif
++
++#define ZERO_UPPER_VEC_REGISTERS_RETURN \
++  ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST
++
++#define VZEROUPPER_RETURN jmp	 L(return_vzeroupper)
++
++#define SECTION(p) p##.avx.rtm
++
++#include "strrchr-avx2.S"
+diff --git a/sysdeps/x86_64/multiarch/strrchr-avx2.S b/sysdeps/x86_64/multiarch/strrchr-avx2.S
+index 146bdd51d0822d7a030b42c780f92e403236bd91..ad91fab9915105eda1fc130ed50aeb0a7e8fc178 100644
+--- a/sysdeps/x86_64/multiarch/strrchr-avx2.S
++++ b/sysdeps/x86_64/multiarch/strrchr-avx2.S
+@@ -36,9 +36,13 @@
+ #  define VZEROUPPER	vzeroupper
+ # endif
+ 
++# ifndef SECTION
++#  define SECTION(p)	p##.avx
++# endif
++
+ # define VEC_SIZE	32
+ 
+-	.section .text.avx,"ax",@progbits
++	.section SECTION(.text),"ax",@progbits
+ ENTRY (STRRCHR)
+ 	movd	%esi, %xmm4
+ 	movl	%edi, %ecx
+@@ -166,8 +170,8 @@ L(return_value):
+ # endif
+ 	bsrl	%eax, %eax
+ 	leaq	-VEC_SIZE(%rdi, %rax), %rax
+-	VZEROUPPER
+-	ret
++L(return_vzeroupper):
++	ZERO_UPPER_VEC_REGISTERS_RETURN
+ 
+ 	.p2align 4
+ L(match):
+@@ -198,8 +202,7 @@ L(find_nul):
+ 	jz	L(return_value)
+ 	bsrl	%eax, %eax
+ 	leaq	-VEC_SIZE(%rdi, %rax), %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(char_and_nul):
+@@ -222,14 +225,12 @@ L(char_and_nul_in_first_vec):
+ 	jz	L(return_null)
+ 	bsrl	%eax, %eax
+ 	leaq	-VEC_SIZE(%rdi, %rax), %rax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ 	.p2align 4
+ L(return_null):
+ 	xorl	%eax, %eax
+-	VZEROUPPER
+-	ret
++	VZEROUPPER_RETURN
+ 
+ END (STRRCHR)
+ #endif
+diff --git a/sysdeps/x86_64/multiarch/wcschr-avx2-rtm.S b/sysdeps/x86_64/multiarch/wcschr-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..d49dbbf0b43743210460673305152bfad7b7f542
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcschr-avx2-rtm.S
+@@ -0,0 +1,3 @@
++#define STRCHR __wcschr_avx2_rtm
++#define USE_AS_WCSCHR 1
++#include "strchr-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/wcscmp-avx2-rtm.S b/sysdeps/x86_64/multiarch/wcscmp-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..d6ca2b80644f2f018797aabbbd228d8f76655e16
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcscmp-avx2-rtm.S
+@@ -0,0 +1,4 @@
++#define STRCMP __wcscmp_avx2_rtm
++#define USE_AS_WCSCMP 1
++
++#include "strcmp-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/wcslen-avx2-rtm.S b/sysdeps/x86_64/multiarch/wcslen-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..35658d7365870104905867274ea43e5cf1d8d382
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcslen-avx2-rtm.S
+@@ -0,0 +1,4 @@
++#define STRLEN __wcslen_avx2_rtm
++#define USE_AS_WCSLEN 1
++
++#include "strlen-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/wcsncmp-avx2-rtm.S b/sysdeps/x86_64/multiarch/wcsncmp-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..4e88c70cc696b82d411b120b765a9e4532b05a41
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcsncmp-avx2-rtm.S
+@@ -0,0 +1,5 @@
++#define STRCMP __wcsncmp_avx2_rtm
++#define USE_AS_STRNCMP 1
++#define USE_AS_WCSCMP 1
++
++#include "strcmp-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/wcsnlen-avx2-rtm.S b/sysdeps/x86_64/multiarch/wcsnlen-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..7437ebee2da0022990ffffa432cc233a7f8d5eaf
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcsnlen-avx2-rtm.S
+@@ -0,0 +1,5 @@
++#define STRLEN __wcsnlen_avx2_rtm
++#define USE_AS_WCSLEN 1
++#define USE_AS_STRNLEN 1
++
++#include "strlen-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/wcsnlen.c b/sysdeps/x86_64/multiarch/wcsnlen.c
+index a0878e23ed68c7bf3110227ad29d27b3533104f2..8beba9f7d371b7b1c79deb830f027d4fd43274f2 100644
+--- a/sysdeps/x86_64/multiarch/wcsnlen.c
++++ b/sysdeps/x86_64/multiarch/wcsnlen.c
+@@ -29,6 +29,7 @@
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse4_1) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_rtm) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+ 
+ static inline void *
+@@ -44,6 +45,9 @@ IFUNC_SELECTOR (void)
+ 	  && CPU_FEATURE_USABLE_P (cpu_features, BMI2))
+ 	return OPTIMIZE (evex);
+ 
++      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	return OPTIMIZE (avx2_rtm);
++
+       if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+ 	return OPTIMIZE (avx2);
+     }
+diff --git a/sysdeps/x86_64/multiarch/wcsrchr-avx2-rtm.S b/sysdeps/x86_64/multiarch/wcsrchr-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..9bf760833f93c8815afd63be31cff265356d04b4
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcsrchr-avx2-rtm.S
+@@ -0,0 +1,3 @@
++#define STRRCHR __wcsrchr_avx2_rtm
++#define USE_AS_WCSRCHR 1
++#include "strrchr-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/wmemchr-avx2-rtm.S b/sysdeps/x86_64/multiarch/wmemchr-avx2-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..58ed21db012df2a7cc3c331648daf455d8a54242
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wmemchr-avx2-rtm.S
+@@ -0,0 +1,4 @@
++#define MEMCHR __wmemchr_avx2_rtm
++#define USE_AS_WMEMCHR 1
++
++#include "memchr-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/wmemcmp-avx2-movbe-rtm.S b/sysdeps/x86_64/multiarch/wmemcmp-avx2-movbe-rtm.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..31104d12153f06bb2ada5197257430aa2f0747f2
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wmemcmp-avx2-movbe-rtm.S
+@@ -0,0 +1,4 @@
++#define MEMCMP __wmemcmp_avx2_movbe_rtm
++#define USE_AS_WMEMCMP 1
++
++#include "memcmp-avx2-movbe-rtm.S"
+diff --git a/sysdeps/x86_64/sysdep.h b/sysdeps/x86_64/sysdep.h
+index 0b73674f6800b4c30f22e24118f95c2f4450b383..c8ad778fee2c567739865a4d73c153896bbdc7fb 100644
+--- a/sysdeps/x86_64/sysdep.h
++++ b/sysdeps/x86_64/sysdep.h
+@@ -95,6 +95,28 @@ lose:									      \
+ #define R14_LP	r14
+ #define R15_LP	r15
+ 
++/* Zero upper vector registers and return with xtest.  NB: Use VZEROALL
++   to avoid RTM abort triggered by VZEROUPPER inside transactionally.  */
++#define ZERO_UPPER_VEC_REGISTERS_RETURN_XTEST \
++	xtest;							\
++	jz	1f;						\
++	vzeroall;						\
++	ret;							\
++1:								\
++	vzeroupper;						\
++	ret
++
++/* Zero upper vector registers and return.  */
++#ifndef ZERO_UPPER_VEC_REGISTERS_RETURN
++# define ZERO_UPPER_VEC_REGISTERS_RETURN \
++	VZEROUPPER;						\
++	ret
++#endif
++
++#ifndef VZEROUPPER_RETURN
++# define VZEROUPPER_RETURN	VZEROUPPER; ret
++#endif
++
+ #else	/* __ASSEMBLER__ */
+ 
+ /* Long and pointer size in bytes.  */
+-- 
+2.41.0
+

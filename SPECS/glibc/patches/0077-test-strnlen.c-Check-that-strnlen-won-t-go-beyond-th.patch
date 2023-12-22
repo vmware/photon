@@ -1,0 +1,65 @@
+From 33046deb9626e35b587db9e722111a450f952e44 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Sat, 27 Mar 2021 09:06:39 -0700
+Subject: [PATCH 077/124] test-strnlen.c: Check that strnlen won't go beyond
+ the maximum length
+
+Place strings ending at page boundary without the null byte.  If an
+implementation goes beyond EXP_LEN, it will trigger the segfault.
+
+(cherry picked from commit cb882b21b63606aabd6e55afe23b42434d95f2ef)
+---
+ string/test-strnlen.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/string/test-strnlen.c b/string/test-strnlen.c
+index 2a56d16c177047d66ae92aafc1ea336e450fa67f..9b4b01a1a7a88940b18daf5e37180e6a33b8f739 100644
+--- a/string/test-strnlen.c
++++ b/string/test-strnlen.c
+@@ -198,6 +198,35 @@ do_page_tests (void)
+     }
+ }
+ 
++/* Tests meant to unveil fail on implementations that access bytes
++   beyond the maxium length.  */
++
++static void
++do_page_2_tests (void)
++{
++  size_t i, exp_len, offset;
++  size_t last_offset = page_size / sizeof (CHAR);
++
++  CHAR *s = (CHAR *) buf2;
++  MEMSET (s, 65, last_offset);
++
++  /* Place short strings ending at page boundary without the null
++     byte.  */
++  offset = last_offset;
++  for (i = 0; i < 128; i++)
++    {
++      /* Decrease offset to stress several sizes and alignments.  */
++      offset--;
++      exp_len = last_offset - offset;
++      FOR_EACH_IMPL (impl, 0)
++	{
++	  /* If an implementation goes beyond EXP_LEN, it will trigger
++	     the segfault.  */
++	  do_one_test (impl, (CHAR *) (s + offset), exp_len, exp_len);
++	}
++    }
++}
++
+ int
+ test_main (void)
+ {
+@@ -244,6 +273,7 @@ test_main (void)
+ 
+   do_random_tests ();
+   do_page_tests ();
++  do_page_2_tests ();
+   return ret;
+ }
+ 
+-- 
+2.41.0
+

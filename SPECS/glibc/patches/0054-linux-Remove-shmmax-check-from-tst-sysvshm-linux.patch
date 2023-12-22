@@ -1,0 +1,76 @@
+From 182ffd8e757aa44e2b8136cfc0995b04c2a4b654 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Tue, 2 Feb 2021 09:55:50 -0300
+Subject: [PATCH 054/124] linux: Remove shmmax check from tst-sysvshm-linux
+
+The shmmax expected value is tricky to check because kernel clamps it
+to INT_MAX in two cases:
+
+  1. Compat symbols with IPC_64, i.e, 32-bit binaries running on 64-bit
+     kernels.
+
+  2. Default symbol without IPC_64 (defined as IPC_OLD within Linux) and
+     glibc always use IPC_64 for 32-bit ABIs (to support 64-bit time_t).
+     It means that 32-bit binaries running on 32-bit kernels will not see
+     shmmax being clamped.
+
+And finding out whether the compat symbol is used would require checking
+the underlying kernel against the current ABI.  The shmall and shmmni
+already provided enough coverage.
+
+Checked on x86_64-linux-gnu and i686-linux-gnu.  It should fix the
+tst-sysvshm-linux failures on 32-bit kernels.
+
+(cherry picked from commit 913201078502ad3f10043db02a8efce5d75387c2)
+---
+ sysdeps/unix/sysv/linux/tst-sysvshm-linux.c | 26 +++++++++++----------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
+
+diff --git a/sysdeps/unix/sysv/linux/tst-sysvshm-linux.c b/sysdeps/unix/sysv/linux/tst-sysvshm-linux.c
+index cb32bd522effbc7ae69589d633a4bd20928ef49d..bb154592a6ebd85611375392857ca8720e034736 100644
+--- a/sysdeps/unix/sysv/linux/tst-sysvshm-linux.c
++++ b/sysdeps/unix/sysv/linux/tst-sysvshm-linux.c
+@@ -122,18 +122,21 @@ do_test (void)
+   if (shmid == -1)
+     FAIL_EXIT1 ("shmget failed: %m");
+ 
++  /* It does not check shmmax because kernel clamp its value to INT_MAX for:
++
++     1. Compat symbols with IPC_64, i.e, 32-bit binaries running on 64-bit
++        kernels.
++
++     2. Default symbol without IPC_64 (defined as IPC_OLD within Linux) and
++        glibc always use IPC_64 for 32-bit ABIs (to support 64-bit time_t).
++        It means that 32-bit binaries running on 32-bit kernels will not see
++        shmmax being clamped.
++
++     And finding out whether the compat symbol is used would require checking
++     the underlying kernel against the current ABI.  The shmall and shmmni
++     already provided enough coverage.  */
++
+   struct test_shminfo tipcinfo;
+-  {
+-    uint64_t v = read_proc_file ("/proc/sys/kernel/shmmax");
+-#if LONG_MAX == INT_MAX
+-    /* Kernel explicit clamp the value for shmmax on compat symbol (32-bit
+-       binaries running on 64-bit kernels).  */
+-    if (sizeof (__syscall_ulong_t) == sizeof (unsigned long int)
+-        && v > INT_MAX)
+-      v = INT_MAX;
+-#endif
+-    tipcinfo.shmmax = v;
+-  }
+   tipcinfo.shmall = read_proc_file ("/proc/sys/kernel/shmall");
+   tipcinfo.shmmni = read_proc_file ("/proc/sys/kernel/shmmni");
+ 
+@@ -152,7 +155,6 @@ do_test (void)
+       FAIL_EXIT1 ("shmctl with IPC_INFO failed: %m");
+ 
+     TEST_COMPARE (ipcinfo.shmall, tipcinfo.shmall);
+-    TEST_COMPARE (ipcinfo.shmmax, tipcinfo.shmmax);
+     TEST_COMPARE (ipcinfo.shmmni, tipcinfo.shmmni);
+   }
+ 
+-- 
+2.41.0
+

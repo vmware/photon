@@ -1,0 +1,47 @@
+From 077f1f78bbecaf2f36dc01a27900cf73314cc713 Mon Sep 17 00:00:00 2001
+From: Noah Goldstein <goldstein.w.n@gmail.com>
+Date: Fri, 11 Aug 2023 18:42:52 -0500
+Subject: [PATCH 124/124] x86: Fix incorrect scope of setting
+ `shared_per_thread` [BZ# 30745]
+
+The:
+
+```
+    if (shared_per_thread > 0 && threads > 0)
+      shared_per_thread /= threads;
+```
+
+Code was accidentally moved to inside the else scope.  This doesn't
+match how it was previously (before af992e7abd).
+
+This patch fixes that by putting the division after the `else` block.
+
+(cherry picked from commit 084fb31bc2c5f95ae0b9e6df4d3cf0ff43471ede)
+---
+ sysdeps/x86/cacheinfo.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/sysdeps/x86/cacheinfo.c b/sysdeps/x86/cacheinfo.c
+index 6c0a80ddbb776d837871609be4f842403b70a41f..84c2d3c96ea3473cf83baf80a48f895f7e02bb53 100644
+--- a/sysdeps/x86/cacheinfo.c
++++ b/sysdeps/x86/cacheinfo.c
+@@ -736,12 +736,11 @@ get_common_cache_info (long int *shared_ptr, long int * shared_per_thread_ptr, u
+ 	  threads
+ 	      = ((cpu_features->features[COMMON_CPUID_INDEX_1].cpuid.ebx >> 16)
+ 		 & 0xff);
+-
+-	  /* Cap usage of highest cache level to the number of supported
+-	     threads.  */
+-	  if (shared_per_thread > 0 && threads > 0)
+-	    shared_per_thread /= threads;
+ 	}
++      /* Cap usage of highest cache level to the number of supported
++	 threads.  */
++      if (shared_per_thread > 0 && threads > 0)
++	shared_per_thread /= threads;
+     }
+ 
+   /* Account for non-inclusive L2 and L3 caches.  */
+-- 
+2.41.0
+

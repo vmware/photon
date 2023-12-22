@@ -1,0 +1,132 @@
+From e6251366b64960c271b39ec8d2afcc79e965e291 Mon Sep 17 00:00:00 2001
+From: Noah Goldstein <goldstein.w.n@gmail.com>
+Date: Tue, 15 Feb 2022 08:18:15 -0600
+Subject: [PATCH 095/124] x86: Fallback {str|wcs}cmp RTM in the ncmp overflow
+ case [BZ #28896]
+
+In the overflow fallback strncmp-avx2-rtm and wcsncmp-avx2-rtm would
+call strcmp-avx2 and wcscmp-avx2 respectively. This would have
+not checks around vzeroupper and would trigger spurious
+aborts. This commit fixes that.
+
+test-strcmp, test-strncmp, test-wcscmp, and test-wcsncmp all pass on
+AVX2 machines with and without RTM.
+
+Co-authored-by: H.J. Lu <hjl.tools@gmail.com>
+
+(cherry picked from commit c6272098323153db373f2986c67786ea8c85f1cf)
+---
+ sysdeps/x86/Makefile                        |  2 +-
+ sysdeps/x86/tst-strncmp-rtm.c               | 17 ++++++++++++++++-
+ sysdeps/x86_64/multiarch/strcmp-avx2.S      |  2 +-
+ sysdeps/x86_64/multiarch/strncmp-avx2-rtm.S |  1 +
+ sysdeps/x86_64/multiarch/strncmp-avx2.S     |  1 +
+ sysdeps/x86_64/multiarch/wcsncmp-avx2-rtm.S |  2 +-
+ sysdeps/x86_64/multiarch/wcsncmp-avx2.S     |  2 +-
+ 7 files changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/sysdeps/x86/Makefile b/sysdeps/x86/Makefile
+index e821d95fa33a3720ea58b6a8141035f7e6621721..ea641226a7a2c1bba4af1db42a256fad7351039f 100644
+--- a/sysdeps/x86/Makefile
++++ b/sysdeps/x86/Makefile
+@@ -43,7 +43,7 @@ CFLAGS-tst-memset-rtm.c += -mrtm
+ CFLAGS-tst-strchr-rtm.c += -mrtm
+ CFLAGS-tst-strcpy-rtm.c += -mrtm
+ CFLAGS-tst-strlen-rtm.c += -mrtm
+-CFLAGS-tst-strncmp-rtm.c += -mrtm
++CFLAGS-tst-strncmp-rtm.c += -mrtm -Wno-error
+ CFLAGS-tst-strrchr-rtm.c += -mrtm
+ endif
+ 
+diff --git a/sysdeps/x86/tst-strncmp-rtm.c b/sysdeps/x86/tst-strncmp-rtm.c
+index 236ad951b5b59cd1624c7033616dd9c2e6f97656..4d0004b58aae428d0a0026c59ff02309d2e6e748 100644
+--- a/sysdeps/x86/tst-strncmp-rtm.c
++++ b/sysdeps/x86/tst-strncmp-rtm.c
+@@ -16,6 +16,7 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <stdint.h>
+ #include <tst-string-rtm.h>
+ 
+ #define LOOP 3000
+@@ -45,8 +46,22 @@ function (void)
+     return 1;
+ }
+ 
++__attribute__ ((noinline, noclone))
++static int
++function_overflow (void)
++{
++  if (strncmp (string1, string2, SIZE_MAX) == 0)
++    return 0;
++  else
++    return 1;
++}
++
+ static int
+ do_test (void)
+ {
+-  return do_test_1 ("strncmp", LOOP, prepare, function);
++  int status = do_test_1 ("strncmp", LOOP, prepare, function);
++  if (status != EXIT_SUCCESS)
++    return status;
++  status = do_test_1 ("strncmp", LOOP, prepare, function_overflow);
++  return status;
+ }
+diff --git a/sysdeps/x86_64/multiarch/strcmp-avx2.S b/sysdeps/x86_64/multiarch/strcmp-avx2.S
+index 759e5b64c2a06a1474261bcab0ac842df861c5e0..c2714c447897624779db8c290c564f850604b61b 100644
+--- a/sysdeps/x86_64/multiarch/strcmp-avx2.S
++++ b/sysdeps/x86_64/multiarch/strcmp-avx2.S
+@@ -95,7 +95,7 @@ ENTRY (STRCMP)
+ 	   length to bound a valid memory region. In these cases just use
+ 	   'wcscmp'.  */
+ 	shrq	$56, %rcx
+-	jnz	__wcscmp_avx2
++	jnz	OVERFLOW_STRCMP
+ #  endif
+ 	/* Convert units: from wide to byte char.  */
+ 	shl	$2, %RDX_LP
+diff --git a/sysdeps/x86_64/multiarch/strncmp-avx2-rtm.S b/sysdeps/x86_64/multiarch/strncmp-avx2-rtm.S
+index 37d1224bb9b7056bbfd47e3ac2bc3675aee3f1f4..68bad365ba728eecc879a847341ba7eb7e700be7 100644
+--- a/sysdeps/x86_64/multiarch/strncmp-avx2-rtm.S
++++ b/sysdeps/x86_64/multiarch/strncmp-avx2-rtm.S
+@@ -1,3 +1,4 @@
+ #define STRCMP	__strncmp_avx2_rtm
+ #define USE_AS_STRNCMP 1
++#define OVERFLOW_STRCMP	__strcmp_avx2_rtm
+ #include "strcmp-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/strncmp-avx2.S b/sysdeps/x86_64/multiarch/strncmp-avx2.S
+index 1678bcc235a4bc6a1c9715aa6a225a85d035df6b..f138e9f1fdcf277c35fd8fc54faf950a33464efb 100644
+--- a/sysdeps/x86_64/multiarch/strncmp-avx2.S
++++ b/sysdeps/x86_64/multiarch/strncmp-avx2.S
+@@ -1,3 +1,4 @@
+ #define STRCMP	__strncmp_avx2
+ #define USE_AS_STRNCMP 1
++#define OVERFLOW_STRCMP __strcmp_avx2
+ #include "strcmp-avx2.S"
+diff --git a/sysdeps/x86_64/multiarch/wcsncmp-avx2-rtm.S b/sysdeps/x86_64/multiarch/wcsncmp-avx2-rtm.S
+index 4e88c70cc696b82d411b120b765a9e4532b05a41..f467582cbedd45357be8f4e37b66edf8ed4bd4c5 100644
+--- a/sysdeps/x86_64/multiarch/wcsncmp-avx2-rtm.S
++++ b/sysdeps/x86_64/multiarch/wcsncmp-avx2-rtm.S
+@@ -1,5 +1,5 @@
+ #define STRCMP __wcsncmp_avx2_rtm
+ #define USE_AS_STRNCMP 1
+ #define USE_AS_WCSCMP 1
+-
++#define OVERFLOW_STRCMP	__wcscmp_avx2_rtm
+ #include "strcmp-avx2-rtm.S"
+diff --git a/sysdeps/x86_64/multiarch/wcsncmp-avx2.S b/sysdeps/x86_64/multiarch/wcsncmp-avx2.S
+index 4fa1de4d3f1f97ff666164153c14ae3caa6d60aa..e9ede522b8bde27d1ebea2ad12aeca5b23442710 100644
+--- a/sysdeps/x86_64/multiarch/wcsncmp-avx2.S
++++ b/sysdeps/x86_64/multiarch/wcsncmp-avx2.S
+@@ -1,5 +1,5 @@
+ #define STRCMP __wcsncmp_avx2
+ #define USE_AS_STRNCMP 1
+ #define USE_AS_WCSCMP 1
+-
++#define OVERFLOW_STRCMP	__wcscmp_avx2
+ #include "strcmp-avx2.S"
+-- 
+2.41.0
+

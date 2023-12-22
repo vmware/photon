@@ -1,0 +1,24 @@
+From bee0b69a58e341b70b2f9db6078ae047827ff209 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Thu, 27 Jan 2022 14:46:15 -0800
+Subject: [PATCH 088/124] NEWS: Add a bug fix entry for BZ #27974
+
+---
+ NEWS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/NEWS b/NEWS
+index aef85a7d1776c6289733116e0fe234e1e1c61ae2..d138a45519f2a6595825243a4289140a069276a9 100644
+--- a/NEWS
++++ b/NEWS
+@@ -24,6 +24,7 @@ The following bugs are resolved with this release:
+   [27130] "rep movsb" performance issue
+   [27177] GLIBC_TUNABLES=glibc.cpu.x86_ibt=on:glibc.cpu.x86_shstk=on doesn't work
+   [27457] vzeroupper use in AVX2 multiarch string functions cause HTM aborts
++  [27974] Overflow bug in some implementation of wcsnlen, wmemchr, and wcsncat
+   [28524] Conversion from ISO-2022-JP-3 with iconv may emit spurious NULs
+   [28607] Masked signals are delivered on thread exit
+   [28755] overflow bug in wcsncmp_avx2 and wcsncmp_evex
+-- 
+2.41.0
+

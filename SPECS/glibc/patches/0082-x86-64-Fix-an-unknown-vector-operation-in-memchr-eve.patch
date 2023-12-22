@@ -1,0 +1,31 @@
+From f73bf74102a93dcea344177375cf9433f31eac4f Mon Sep 17 00:00:00 2001
+From: Alice Xu <alice.d.xu@gmail.com>
+Date: Fri, 7 May 2021 19:03:21 -0700
+Subject: [PATCH 082/124] x86-64: Fix an unknown vector operation in
+ memchr-evex.S
+
+An unknown vector operation occurred in commit 2a76821c308. Fixed it
+by using "ymm{k1}{z}" but not "ymm {k1} {z}".
+
+Reviewed-by: H.J. Lu <hjl.tools@gmail.com>
+(cherry picked from commit 6ea916adfa0ab9af6e7dc6adcf6f977dfe017835)
+---
+ sysdeps/x86_64/multiarch/memchr-evex.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sysdeps/x86_64/multiarch/memchr-evex.S b/sysdeps/x86_64/multiarch/memchr-evex.S
+index 81d5cd6486fc73bb12fda6a8f6a360f6d5e4bf05..f3fdad4fda65b2f2a43eb725c23a06ca7263be59 100644
+--- a/sysdeps/x86_64/multiarch/memchr-evex.S
++++ b/sysdeps/x86_64/multiarch/memchr-evex.S
+@@ -271,7 +271,7 @@ L(loop_4x_vec):
+ 	vpxorq	(VEC_SIZE * 6)(%rdi), %YMMMATCH, %YMM3
+ 	VPCMP	$0, (VEC_SIZE * 7)(%rdi), %YMMMATCH, %k3
+ 	/* Reduce VEC2 / VEC3 with min and VEC1 with zero mask.  */
+-	VPMINU	%YMM2, %YMM3, %YMM3 {%k1} {z}
++	VPMINU	%YMM2, %YMM3, %YMM3{%k1}{z}
+ 	VPCMP	$0, %YMM3, %YMMZERO, %k2
+ # ifdef USE_AS_RAWMEMCHR
+ 	subq	$-(VEC_SIZE * 4), %rdi
+-- 
+2.41.0
+

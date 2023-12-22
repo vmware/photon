@@ -1,0 +1,166 @@
+From f82385fcce8f07d5121f6914ad300098df8948f8 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Sun, 7 Mar 2021 09:45:23 -0800
+Subject: [PATCH 073/124] x86-64: Use ZMM16-ZMM31 in AVX512 memmove family
+ functions
+
+Update ifunc-memmove.h to select the function optimized with AVX512
+instructions using ZMM16-ZMM31 registers to avoid RTM abort with usable
+AVX512VL since VZEROUPPER isn't needed at function exit.
+
+(cherry picked from commit e4fda4631017e49d4ee5a2755db34289b6860fa4)
+---
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c    | 24 +++++++++---------
+ sysdeps/x86_64/multiarch/ifunc-memmove.h      | 12 +++++----
+ .../multiarch/memmove-avx512-unaligned-erms.S | 25 +++++++++++++++++--
+ 3 files changed, 42 insertions(+), 19 deletions(-)
+
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index a51f9b59116cf84345a2860c7343f9a0daa61516..2bed017c3bc6bcc959fd6b9fb0820272b41ba1ca 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -83,10 +83,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      CPU_FEATURE_USABLE (AVX512F),
+ 			      __memmove_chk_avx512_no_vzeroupper)
+ 	      IFUNC_IMPL_ADD (array, i, __memmove_chk,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memmove_chk_avx512_unaligned)
+ 	      IFUNC_IMPL_ADD (array, i, __memmove_chk,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memmove_chk_avx512_unaligned_erms)
+ 	      IFUNC_IMPL_ADD (array, i, __memmove_chk,
+ 			      CPU_FEATURE_USABLE (AVX),
+@@ -148,10 +148,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      CPU_FEATURE_USABLE (AVX512F),
+ 			      __memmove_avx512_no_vzeroupper)
+ 	      IFUNC_IMPL_ADD (array, i, memmove,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memmove_avx512_unaligned)
+ 	      IFUNC_IMPL_ADD (array, i, memmove,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memmove_avx512_unaligned_erms)
+ 	      IFUNC_IMPL_ADD (array, i, memmove, CPU_FEATURE_USABLE (SSSE3),
+ 			      __memmove_ssse3_back)
+@@ -733,10 +733,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      CPU_FEATURE_USABLE (AVX512F),
+ 			      __memcpy_chk_avx512_no_vzeroupper)
+ 	      IFUNC_IMPL_ADD (array, i, __memcpy_chk,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memcpy_chk_avx512_unaligned)
+ 	      IFUNC_IMPL_ADD (array, i, __memcpy_chk,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memcpy_chk_avx512_unaligned_erms)
+ 	      IFUNC_IMPL_ADD (array, i, __memcpy_chk,
+ 			      CPU_FEATURE_USABLE (AVX),
+@@ -802,10 +802,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      CPU_FEATURE_USABLE (AVX512F),
+ 			      __memcpy_avx512_no_vzeroupper)
+ 	      IFUNC_IMPL_ADD (array, i, memcpy,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memcpy_avx512_unaligned)
+ 	      IFUNC_IMPL_ADD (array, i, memcpy,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __memcpy_avx512_unaligned_erms)
+ 	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_sse2_unaligned)
+ 	      IFUNC_IMPL_ADD (array, i, memcpy, 1,
+@@ -819,10 +819,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      CPU_FEATURE_USABLE (AVX512F),
+ 			      __mempcpy_chk_avx512_no_vzeroupper)
+ 	      IFUNC_IMPL_ADD (array, i, __mempcpy_chk,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __mempcpy_chk_avx512_unaligned)
+ 	      IFUNC_IMPL_ADD (array, i, __mempcpy_chk,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __mempcpy_chk_avx512_unaligned_erms)
+ 	      IFUNC_IMPL_ADD (array, i, __mempcpy_chk,
+ 			      CPU_FEATURE_USABLE (AVX),
+@@ -864,10 +864,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			      CPU_FEATURE_USABLE (AVX512F),
+ 			      __mempcpy_avx512_no_vzeroupper)
+ 	      IFUNC_IMPL_ADD (array, i, mempcpy,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __mempcpy_avx512_unaligned)
+ 	      IFUNC_IMPL_ADD (array, i, mempcpy,
+-			      CPU_FEATURE_USABLE (AVX512F),
++			      CPU_FEATURE_USABLE (AVX512VL),
+ 			      __mempcpy_avx512_unaligned_erms)
+ 	      IFUNC_IMPL_ADD (array, i, mempcpy,
+ 			      CPU_FEATURE_USABLE (AVX),
+diff --git a/sysdeps/x86_64/multiarch/ifunc-memmove.h b/sysdeps/x86_64/multiarch/ifunc-memmove.h
+index 4c7bb64cb826e914be2dbd50c7d158f5296295ce..db26210e3b2327762703a6c83136327e5680c9f9 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-memmove.h
++++ b/sysdeps/x86_64/multiarch/ifunc-memmove.h
+@@ -56,13 +56,15 @@ IFUNC_SELECTOR (void)
+   if (CPU_FEATURE_USABLE_P (cpu_features, AVX512F)
+       && !CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_AVX512))
+     {
+-      if (CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+-	return OPTIMIZE (avx512_no_vzeroupper);
++      if (CPU_FEATURE_USABLE_P (cpu_features, AVX512VL))
++	{
++	  if (CPU_FEATURE_USABLE_P (cpu_features, ERMS))
++	    return OPTIMIZE (avx512_unaligned_erms);
+ 
+-      if (CPU_FEATURE_USABLE_P (cpu_features, ERMS))
+-	return OPTIMIZE (avx512_unaligned_erms);
++	  return OPTIMIZE (avx512_unaligned);
++	}
+ 
+-      return OPTIMIZE (avx512_unaligned);
++      return OPTIMIZE (avx512_no_vzeroupper);
+     }
+ 
+   if (CPU_FEATURES_ARCH_P (cpu_features, AVX_Fast_Unaligned_Load))
+diff --git a/sysdeps/x86_64/multiarch/memmove-avx512-unaligned-erms.S b/sysdeps/x86_64/multiarch/memmove-avx512-unaligned-erms.S
+index aac1515cf6b3bb5c29377de6ffdafa89641cd7ad..848848ab39ff9326270196952874f9e4b2577e0b 100644
+--- a/sysdeps/x86_64/multiarch/memmove-avx512-unaligned-erms.S
++++ b/sysdeps/x86_64/multiarch/memmove-avx512-unaligned-erms.S
+@@ -1,11 +1,32 @@
+ #if IS_IN (libc)
+ # define VEC_SIZE	64
+-# define VEC(i)		zmm##i
++# define XMM0		xmm16
++# define XMM1		xmm17
++# define YMM0		ymm16
++# define YMM1		ymm17
++# define VEC0		zmm16
++# define VEC1		zmm17
++# define VEC2		zmm18
++# define VEC3		zmm19
++# define VEC4		zmm20
++# define VEC5		zmm21
++# define VEC6		zmm22
++# define VEC7		zmm23
++# define VEC8		zmm24
++# define VEC9		zmm25
++# define VEC10		zmm26
++# define VEC11		zmm27
++# define VEC12		zmm28
++# define VEC13		zmm29
++# define VEC14		zmm30
++# define VEC15		zmm31
++# define VEC(i)		VEC##i
+ # define VMOVNT		vmovntdq
+ # define VMOVU		vmovdqu64
+ # define VMOVA		vmovdqa64
++# define VZEROUPPER
+ 
+-# define SECTION(p)		p##.avx512
++# define SECTION(p)		p##.evex512
+ # define MEMMOVE_SYMBOL(p,s)	p##_avx512_##s
+ 
+ # include "memmove-vec-unaligned-erms.S"
+-- 
+2.41.0
+

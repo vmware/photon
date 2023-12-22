@@ -1,0 +1,45 @@
+From 05c025abca109daf7ddbc9e4562815a4274920ef Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Wed, 14 Oct 2020 10:54:39 +0200
+Subject: [PATCH 018/124] support: Provide a way to clear the RA bit in DNS
+ server responses
+
+(cherry picked from commit 08443b19965f48862b02c2fd7b33a39d66daf2ff)
+---
+ support/resolv_test.c | 4 +++-
+ support/resolv_test.h | 4 ++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/support/resolv_test.c b/support/resolv_test.c
+index e343c4b516039e44c33c5f583aca76eae98f6874..9878a040a3da872db356e471022e3c2390ff4a34 100644
+--- a/support/resolv_test.c
++++ b/support/resolv_test.c
+@@ -181,7 +181,9 @@ resolv_response_init (struct resolv_response_builder *b,
+   b->buffer[2] |= b->query_buffer[2] & 0x01; /* Copy the RD bit.  */
+   if (flags.tc)
+     b->buffer[2] |= 0x02;
+-  b->buffer[3] = 0x80 | flags.rcode; /* Always set RA.  */
++  b->buffer[3] = flags.rcode;
++  if (!flags.clear_ra)
++    b->buffer[3] |= 0x80;
+   if (flags.ad)
+     b->buffer[3] |= 0x20;
+ 
+diff --git a/support/resolv_test.h b/support/resolv_test.h
+index c46de32ff4f9ab59d5809d7dabbf80567d58aff6..31a5c1c3e795b7ca6056ac4e371fc4bb00ced601 100644
+--- a/support/resolv_test.h
++++ b/support/resolv_test.h
+@@ -148,6 +148,10 @@ struct resolv_response_flags
+   /* If true, the AD (authenticated data) flag will be set.  */
+   bool ad;
+ 
++  /* If true, do not set the RA (recursion available) flag in the
++     response.  */
++  bool clear_ra;
++
+   /* Initial section count values.  Can be used to artificially
+      increase the counts, for malformed packet testing.*/
+   unsigned short qdcount;
+-- 
+2.41.0
+

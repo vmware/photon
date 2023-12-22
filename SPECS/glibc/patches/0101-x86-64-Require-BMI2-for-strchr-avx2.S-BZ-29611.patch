@@ -1,0 +1,95 @@
+From f9e29095fcc11f79a3afcb4b5dd3ce070e3d4084 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Mon, 19 Apr 2021 10:45:07 -0700
+Subject: [PATCH 101/124] x86-64: Require BMI2 for strchr-avx2.S [BZ #29611]
+
+Since strchr-avx2.S updated by
+
+commit 1f745ecc2109890886b161d4791e1406fdfc29b8
+Author: noah <goldstein.w.n@gmail.com>
+Date:   Wed Feb 3 00:38:59 2021 -0500
+
+    x86-64: Refactor and improve performance of strchr-avx2.S
+
+uses sarx:
+
+c4 e2 72 f7 c0       	sarx   %ecx,%eax,%eax
+
+for strchr-avx2 family functions, require BMI2 in ifunc-impl-list.c and
+ifunc-avx2.h.
+
+This fixes BZ #29611.
+
+(cherry picked from commit 83c5b368226c34a2f0a5287df40fc290b2b34359)
+---
+ sysdeps/x86_64/multiarch/ifunc-avx2.h      |  4 ++--
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c | 12 +++++++++---
+ 2 files changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/sysdeps/x86_64/multiarch/ifunc-avx2.h b/sysdeps/x86_64/multiarch/ifunc-avx2.h
+index f450c786f007f297e6b41d1548ea30d81f8b5fda..0d9d837488d5575ea820cb972b82be2e1a186c69 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-avx2.h
++++ b/sysdeps/x86_64/multiarch/ifunc-avx2.h
+@@ -30,11 +30,11 @@ IFUNC_SELECTOR (void)
+   const struct cpu_features* cpu_features = __get_cpu_features ();
+ 
+   if (CPU_FEATURE_USABLE_P (cpu_features, AVX2)
++      && CPU_FEATURE_USABLE_P (cpu_features, BMI2)
+       && CPU_FEATURES_ARCH_P (cpu_features, AVX_Fast_Unaligned_Load))
+     {
+       if (CPU_FEATURE_USABLE_P (cpu_features, AVX512VL)
+-	  && CPU_FEATURE_USABLE_P (cpu_features, AVX512BW)
+-	  && CPU_FEATURE_USABLE_P (cpu_features, BMI2))
++	  && CPU_FEATURE_USABLE_P (cpu_features, AVX512BW))
+ 	return OPTIMIZE (evex);
+ 
+       if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index 920e64241e91950242178fd2a964c556f9b101e2..d4bbf61030c46ef47ca1bb44b94937d3175638a9 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -400,10 +400,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   /* Support sysdeps/x86_64/multiarch/strchr.c.  */
+   IFUNC_IMPL (i, name, strchr,
+ 	      IFUNC_IMPL_ADD (array, i, strchr,
+-			      CPU_FEATURE_USABLE (AVX2),
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __strchr_avx2)
+ 	      IFUNC_IMPL_ADD (array, i, strchr,
+ 			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)
+ 			       && CPU_FEATURE_USABLE (RTM)),
+ 			      __strchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strchr,
+@@ -417,10 +419,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   /* Support sysdeps/x86_64/multiarch/strchrnul.c.  */
+   IFUNC_IMPL (i, name, strchrnul,
+ 	      IFUNC_IMPL_ADD (array, i, strchrnul,
+-			      CPU_FEATURE_USABLE (AVX2),
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __strchrnul_avx2)
+ 	      IFUNC_IMPL_ADD (array, i, strchrnul,
+ 			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)
+ 			       && CPU_FEATURE_USABLE (RTM)),
+ 			      __strchrnul_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strchrnul,
+@@ -574,10 +578,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   /* Support sysdeps/x86_64/multiarch/wcschr.c.  */
+   IFUNC_IMPL (i, name, wcschr,
+ 	      IFUNC_IMPL_ADD (array, i, wcschr,
+-			      CPU_FEATURE_USABLE (AVX2),
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __wcschr_avx2)
+ 	      IFUNC_IMPL_ADD (array, i, wcschr,
+ 			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)
+ 			       && CPU_FEATURE_USABLE (RTM)),
+ 			      __wcschr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wcschr,
+-- 
+2.41.0
+

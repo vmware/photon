@@ -1,0 +1,3407 @@
+From a1999f6ad906cb77d5492febf9ea44671174afe0 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Fri, 5 Mar 2021 06:24:52 -0800
+Subject: [PATCH 065/124] x86-64: Add ifunc-avx2.h functions with 256-bit EVEX
+
+Update ifunc-avx2.h, strchr.c, strcmp.c, strncmp.c and wcsnlen.c to
+select the function optimized with 256-bit EVEX instructions using
+YMM16-YMM31 registers to avoid RTM abort with usable AVX512VL, AVX512BW
+and BMI2 since VZEROUPPER isn't needed at function exit.
+
+For strcmp/strncmp, prefer AVX2 strcmp/strncmp if Prefer_AVX2_STRCMP
+is set.
+
+(cherry picked from commit 1fd8c163a83d96ace1ff78fa6bac7aee084f6f77)
+---
+ sysdeps/x86_64/multiarch/Makefile          |   21 +-
+ sysdeps/x86_64/multiarch/ifunc-avx2.h      |   14 +-
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c |   81 ++
+ sysdeps/x86_64/multiarch/memchr-evex.S     |  381 +++++++
+ sysdeps/x86_64/multiarch/memrchr-evex.S    |  337 +++++++
+ sysdeps/x86_64/multiarch/rawmemchr-evex.S  |    4 +
+ sysdeps/x86_64/multiarch/strchr-evex.S     |  335 +++++++
+ sysdeps/x86_64/multiarch/strchr.c          |   14 +-
+ sysdeps/x86_64/multiarch/strchrnul-evex.S  |    3 +
+ sysdeps/x86_64/multiarch/strcmp-evex.S     | 1043 ++++++++++++++++++++
+ sysdeps/x86_64/multiarch/strcmp.c          |   15 +-
+ sysdeps/x86_64/multiarch/strlen-evex.S     |  436 ++++++++
+ sysdeps/x86_64/multiarch/strncmp-evex.S    |    3 +
+ sysdeps/x86_64/multiarch/strncmp.c         |   15 +-
+ sysdeps/x86_64/multiarch/strnlen-evex.S    |    4 +
+ sysdeps/x86_64/multiarch/strrchr-evex.S    |  265 +++++
+ sysdeps/x86_64/multiarch/wcschr-evex.S     |    3 +
+ sysdeps/x86_64/multiarch/wcscmp-evex.S     |    4 +
+ sysdeps/x86_64/multiarch/wcslen-evex.S     |    4 +
+ sysdeps/x86_64/multiarch/wcsncmp-evex.S    |    5 +
+ sysdeps/x86_64/multiarch/wcsnlen-evex.S    |    5 +
+ sysdeps/x86_64/multiarch/wcsnlen.c         |   14 +-
+ sysdeps/x86_64/multiarch/wcsrchr-evex.S    |    3 +
+ sysdeps/x86_64/multiarch/wmemchr-evex.S    |    4 +
+ 24 files changed, 2996 insertions(+), 17 deletions(-)
+ create mode 100644 sysdeps/x86_64/multiarch/memchr-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/memrchr-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/rawmemchr-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/strchr-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/strchrnul-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/strcmp-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/strlen-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/strncmp-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/strnlen-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/strrchr-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcschr-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcscmp-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcslen-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcsncmp-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcsnlen-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/wcsrchr-evex.S
+ create mode 100644 sysdeps/x86_64/multiarch/wmemchr-evex.S
+
+diff --git a/sysdeps/x86_64/multiarch/Makefile b/sysdeps/x86_64/multiarch/Makefile
+index 395e432c092ca17c9020930d03c2dc42507be804..83f9abb20d750f1cfdb57130d936d3734c2f21f5 100644
+--- a/sysdeps/x86_64/multiarch/Makefile
++++ b/sysdeps/x86_64/multiarch/Makefile
+@@ -43,7 +43,17 @@ sysdep_routines += strncat-c stpncpy-c strncpy-c \
+ 		   memmove-avx512-unaligned-erms \
+ 		   memset-sse2-unaligned-erms \
+ 		   memset-avx2-unaligned-erms \
+-		   memset-avx512-unaligned-erms
++		   memset-avx512-unaligned-erms \
++		   memchr-evex \
++		   memrchr-evex \
++		   rawmemchr-evex \
++		   strchr-evex \
++		   strchrnul-evex \
++		   strcmp-evex \
++		   strlen-evex \
++		   strncmp-evex \
++		   strnlen-evex \
++		   strrchr-evex
+ CFLAGS-varshift.c += -msse4
+ CFLAGS-strcspn-c.c += -msse4
+ CFLAGS-strpbrk-c.c += -msse4
+@@ -60,7 +70,14 @@ sysdep_routines += wmemcmp-sse4 wmemcmp-ssse3 wmemcmp-c \
+ 		   wcschr-sse2 wcschr-avx2 \
+ 		   wcsrchr-sse2 wcsrchr-avx2 \
+ 		   wcsnlen-sse4_1 wcsnlen-c \
+-		   wcslen-sse2 wcslen-avx2 wcsnlen-avx2
++		   wcslen-sse2 wcslen-avx2 wcsnlen-avx2 \
++		   wcschr-evex \
++		   wcscmp-evex \
++		   wcslen-evex \
++		   wcsncmp-evex \
++		   wcsnlen-evex \
++		   wcsrchr-evex \
++		   wmemchr-evex
+ endif
+ 
+ ifeq ($(subdir),debug)
+diff --git a/sysdeps/x86_64/multiarch/ifunc-avx2.h b/sysdeps/x86_64/multiarch/ifunc-avx2.h
+index f4e311d470315e91f0010160ce9f2e3331690f30..a2f18c26170f4f5648e7015546be2f3ff0001143 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-avx2.h
++++ b/sysdeps/x86_64/multiarch/ifunc-avx2.h
+@@ -21,16 +21,24 @@
+ 
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+ 
+ static inline void *
+ IFUNC_SELECTOR (void)
+ {
+   const struct cpu_features* cpu_features = __get_cpu_features ();
+ 
+-  if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER)
+-      && CPU_FEATURE_USABLE_P (cpu_features, AVX2)
++  if (CPU_FEATURE_USABLE_P (cpu_features, AVX2)
+       && CPU_FEATURES_ARCH_P (cpu_features, AVX_Fast_Unaligned_Load))
+-    return OPTIMIZE (avx2);
++    {
++      if (CPU_FEATURE_USABLE_P (cpu_features, AVX512VL)
++	  && CPU_FEATURE_USABLE_P (cpu_features, AVX512BW)
++	  && CPU_FEATURE_USABLE_P (cpu_features, BMI2))
++	return OPTIMIZE (evex);
++
++      if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
++	return OPTIMIZE (avx2);
++    }
+ 
+   return OPTIMIZE (sse2);
+ }
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index f93ec39d981e6ea7674ac1c290295170d9eddeb8..45366ede5c33b70d9e4f91682ed1f32fc2586e82 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -43,6 +43,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, memchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __memchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, memchr,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __memchr_evex)
+ 	      IFUNC_IMPL_ADD (array, i, memchr, 1, __memchr_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/memcmp.c.  */
+@@ -121,6 +126,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, memrchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __memrchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, memrchr,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)),
++			      __memrchr_evex)
++
+ 	      IFUNC_IMPL_ADD (array, i, memrchr, 1, __memrchr_sse2))
+ 
+ #ifdef SHARED
+@@ -179,6 +189,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, rawmemchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __rawmemchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, rawmemchr,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __rawmemchr_evex)
+ 	      IFUNC_IMPL_ADD (array, i, rawmemchr, 1, __rawmemchr_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/strlen.c.  */
+@@ -186,6 +201,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strlen,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strlen_avx2)
++	      IFUNC_IMPL_ADD (array, i, strlen,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)),
++			      __strlen_evex)
+ 	      IFUNC_IMPL_ADD (array, i, strlen, 1, __strlen_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/strnlen.c.  */
+@@ -193,6 +212,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strnlen,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strnlen_avx2)
++	      IFUNC_IMPL_ADD (array, i, strnlen,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)),
++			      __strnlen_evex)
+ 	      IFUNC_IMPL_ADD (array, i, strnlen, 1, __strnlen_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/stpncpy.c.  */
+@@ -255,6 +278,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, strchr,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __strchr_evex)
+ 	      IFUNC_IMPL_ADD (array, i, strchr, 1, __strchr_sse2_no_bsf)
+ 	      IFUNC_IMPL_ADD (array, i, strchr, 1, __strchr_sse2))
+ 
+@@ -263,6 +291,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strchrnul,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strchrnul_avx2)
++	      IFUNC_IMPL_ADD (array, i, strchrnul,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __strchrnul_evex)
+ 	      IFUNC_IMPL_ADD (array, i, strchrnul, 1, __strchrnul_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/strrchr.c.  */
+@@ -270,6 +303,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strrchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strrchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, strrchr,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)),
++			      __strrchr_evex)
+ 	      IFUNC_IMPL_ADD (array, i, strrchr, 1, __strrchr_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/strcmp.c.  */
+@@ -277,6 +314,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strcmp,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strcmp_avx2)
++	      IFUNC_IMPL_ADD (array, i, strcmp,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __strcmp_evex)
+ 	      IFUNC_IMPL_ADD (array, i, strcmp, CPU_FEATURE_USABLE (SSE4_2),
+ 			      __strcmp_sse42)
+ 	      IFUNC_IMPL_ADD (array, i, strcmp, CPU_FEATURE_USABLE (SSSE3),
+@@ -370,6 +412,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcschr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcschr_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcschr,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __wcschr_evex)
+ 	      IFUNC_IMPL_ADD (array, i, wcschr, 1, __wcschr_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/wcsrchr.c.  */
+@@ -377,6 +424,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcsrchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcsrchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcsrchr,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __wcsrchr_evex)
+ 	      IFUNC_IMPL_ADD (array, i, wcsrchr, 1, __wcsrchr_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/wcscmp.c.  */
+@@ -384,6 +436,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcscmp,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcscmp_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcscmp,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __wcscmp_evex)
+ 	      IFUNC_IMPL_ADD (array, i, wcscmp, 1, __wcscmp_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/wcsncmp.c.  */
+@@ -391,6 +448,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcsncmp,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcsncmp_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcsncmp,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __wcsncmp_evex)
+ 	      IFUNC_IMPL_ADD (array, i, wcsncmp, 1, __wcsncmp_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/wcscpy.c.  */
+@@ -404,6 +466,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcslen,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcslen_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcslen,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __wcslen_evex)
+ 	      IFUNC_IMPL_ADD (array, i, wcslen, 1, __wcslen_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/wcsnlen.c.  */
+@@ -411,6 +478,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wcsnlen,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wcsnlen_avx2)
++	      IFUNC_IMPL_ADD (array, i, wcsnlen,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __wcsnlen_evex)
+ 	      IFUNC_IMPL_ADD (array, i, wcsnlen,
+ 			      CPU_FEATURE_USABLE (SSE4_1),
+ 			      __wcsnlen_sse4_1)
+@@ -421,6 +493,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, wmemchr,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __wmemchr_avx2)
++	      IFUNC_IMPL_ADD (array, i, wmemchr,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
++			      __wmemchr_evex)
+ 	      IFUNC_IMPL_ADD (array, i, wmemchr, 1, __wmemchr_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/wmemcmp.c.  */
+@@ -568,6 +645,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, strncmp,
+ 			      CPU_FEATURE_USABLE (AVX2),
+ 			      __strncmp_avx2)
++	      IFUNC_IMPL_ADD (array, i, strncmp,
++			      (CPU_FEATURE_USABLE (AVX512VL)
++			       && CPU_FEATURE_USABLE (AVX512BW)),
++			      __strncmp_evex)
+ 	      IFUNC_IMPL_ADD (array, i, strncmp, CPU_FEATURE_USABLE (SSE4_2),
+ 			      __strncmp_sse42)
+ 	      IFUNC_IMPL_ADD (array, i, strncmp, CPU_FEATURE_USABLE (SSSE3),
+diff --git a/sysdeps/x86_64/multiarch/memchr-evex.S b/sysdeps/x86_64/multiarch/memchr-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..6dd5d67b90fb41f7647c51a606b5f45e662cb5f8
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/memchr-evex.S
+@@ -0,0 +1,381 @@
++/* memchr/wmemchr optimized with 256-bit EVEX instructions.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#if IS_IN (libc)
++
++# include <sysdep.h>
++
++# ifndef MEMCHR
++#  define MEMCHR	__memchr_evex
++# endif
++
++# ifdef USE_AS_WMEMCHR
++#  define VPBROADCAST	vpbroadcastd
++#  define VPCMP		vpcmpd
++#  define SHIFT_REG	r8d
++# else
++#  define VPBROADCAST	vpbroadcastb
++#  define VPCMP		vpcmpb
++#  define SHIFT_REG	ecx
++# endif
++
++# define XMMMATCH	xmm16
++# define YMMMATCH	ymm16
++# define YMM1		ymm17
++# define YMM2		ymm18
++# define YMM3		ymm19
++# define YMM4		ymm20
++# define YMM5		ymm21
++# define YMM6		ymm22
++
++# define VEC_SIZE 32
++
++	.section .text.evex,"ax",@progbits
++ENTRY (MEMCHR)
++# ifndef USE_AS_RAWMEMCHR
++	/* Check for zero length.  */
++	test	%RDX_LP, %RDX_LP
++	jz	L(zero)
++# endif
++	movl	%edi, %ecx
++# ifdef USE_AS_WMEMCHR
++	shl	$2, %RDX_LP
++# else
++#  ifdef __ILP32__
++	/* Clear the upper 32 bits.  */
++	movl	%edx, %edx
++#  endif
++# endif
++	/* Broadcast CHAR to YMMMATCH.  */
++	VPBROADCAST %esi, %YMMMATCH
++	/* Check if we may cross page boundary with one vector load.  */
++	andl	$(2 * VEC_SIZE - 1), %ecx
++	cmpl	$VEC_SIZE, %ecx
++	ja	L(cros_page_boundary)
++
++	/* Check the first VEC_SIZE bytes.  */
++	VPCMP	$0, (%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++
++# ifndef USE_AS_RAWMEMCHR
++	jnz	L(first_vec_x0_check)
++	/* Adjust length and check the end of data.  */
++	subq	$VEC_SIZE, %rdx
++	jbe	L(zero)
++# else
++	jnz	L(first_vec_x0)
++# endif
++
++	/* Align data for aligned loads in the loop.  */
++	addq	$VEC_SIZE, %rdi
++	andl	$(VEC_SIZE - 1), %ecx
++	andq	$-VEC_SIZE, %rdi
++
++# ifndef USE_AS_RAWMEMCHR
++	/* Adjust length.  */
++	addq	%rcx, %rdx
++
++	subq	$(VEC_SIZE * 4), %rdx
++	jbe	L(last_4x_vec_or_less)
++# endif
++	jmp	L(more_4x_vec)
++
++	.p2align 4
++L(cros_page_boundary):
++	andl	$(VEC_SIZE - 1), %ecx
++# ifdef USE_AS_WMEMCHR
++	/* NB: Divide shift count by 4 since each bit in K1 represent 4
++	   bytes.  */
++	movl	%ecx, %SHIFT_REG
++	sarl	$2, %SHIFT_REG
++# endif
++	andq	$-VEC_SIZE, %rdi
++	VPCMP	$0, (%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	/* Remove the leading bytes.  */
++	sarxl	%SHIFT_REG, %eax, %eax
++	testl	%eax, %eax
++	jz	L(aligned_more)
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WMEMCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++# ifndef USE_AS_RAWMEMCHR
++	/* Check the end of data.  */
++	cmpq	%rax, %rdx
++	jbe	L(zero)
++# endif
++	addq	%rdi, %rax
++	addq	%rcx, %rax
++	ret
++
++	.p2align 4
++L(aligned_more):
++# ifndef USE_AS_RAWMEMCHR
++        /* Calculate "rdx + rcx - VEC_SIZE" with "rdx - (VEC_SIZE - rcx)"
++	   instead of "(rdx + rcx) - VEC_SIZE" to void possible addition
++	   overflow.  */
++	negq	%rcx
++	addq	$VEC_SIZE, %rcx
++
++	/* Check the end of data.  */
++	subq	%rcx, %rdx
++	jbe	L(zero)
++# endif
++
++	addq	$VEC_SIZE, %rdi
++
++# ifndef USE_AS_RAWMEMCHR
++	subq	$(VEC_SIZE * 4), %rdx
++	jbe	L(last_4x_vec_or_less)
++# endif
++
++L(more_4x_vec):
++	/* Check the first 4 * VEC_SIZE.  Only one VEC_SIZE at a time
++	   since data is only aligned to VEC_SIZE.  */
++	VPCMP	$0, (%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x0)
++
++	VPCMP	$0, VEC_SIZE(%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x1)
++
++	VPCMP	$0, (VEC_SIZE * 2)(%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x2)
++
++	VPCMP	$0, (VEC_SIZE * 3)(%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x3)
++
++	addq	$(VEC_SIZE * 4), %rdi
++
++# ifndef USE_AS_RAWMEMCHR
++	subq	$(VEC_SIZE * 4), %rdx
++	jbe	L(last_4x_vec_or_less)
++# endif
++
++	/* Align data to 4 * VEC_SIZE.  */
++	movq	%rdi, %rcx
++	andl	$(4 * VEC_SIZE - 1), %ecx
++	andq	$-(4 * VEC_SIZE), %rdi
++
++# ifndef USE_AS_RAWMEMCHR
++	/* Adjust length.  */
++	addq	%rcx, %rdx
++# endif
++
++	.p2align 4
++L(loop_4x_vec):
++	/* Compare 4 * VEC at a time forward.  */
++	VPCMP	$0, (%rdi), %YMMMATCH, %k1
++	VPCMP	$0, VEC_SIZE(%rdi), %YMMMATCH, %k2
++	kord	%k1, %k2, %k5
++	VPCMP	$0, (VEC_SIZE * 2)(%rdi), %YMMMATCH, %k3
++	VPCMP	$0, (VEC_SIZE * 3)(%rdi), %YMMMATCH, %k4
++
++	kord	%k3, %k4, %k6
++	kortestd %k5, %k6
++	jnz	L(4x_vec_end)
++
++	addq	$(VEC_SIZE * 4), %rdi
++
++# ifdef USE_AS_RAWMEMCHR
++	jmp	L(loop_4x_vec)
++# else
++	subq	$(VEC_SIZE * 4), %rdx
++	ja	L(loop_4x_vec)
++
++L(last_4x_vec_or_less):
++	/* Less than 4 * VEC and aligned to VEC_SIZE.  */
++	addl	$(VEC_SIZE * 2), %edx
++	jle	L(last_2x_vec)
++
++	VPCMP	$0, (%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x0)
++
++	VPCMP	$0, VEC_SIZE(%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x1)
++
++	VPCMP	$0, (VEC_SIZE * 2)(%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++
++	jnz	L(first_vec_x2_check)
++	subl	$VEC_SIZE, %edx
++	jle	L(zero)
++
++	VPCMP	$0, (VEC_SIZE * 3)(%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++
++	jnz	L(first_vec_x3_check)
++	xorl	%eax, %eax
++	ret
++
++	.p2align 4
++L(last_2x_vec):
++	addl	$(VEC_SIZE * 2), %edx
++	VPCMP	$0, (%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++
++	jnz	L(first_vec_x0_check)
++	subl	$VEC_SIZE, %edx
++	jle	L(zero)
++
++	VPCMP	$0, VEC_SIZE(%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x1_check)
++	xorl	%eax, %eax
++	ret
++
++	.p2align 4
++L(first_vec_x0_check):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WMEMCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	/* Check the end of data.  */
++	cmpq	%rax, %rdx
++	jbe	L(zero)
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(first_vec_x1_check):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WMEMCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	/* Check the end of data.  */
++	cmpq	%rax, %rdx
++	jbe	L(zero)
++	addq	$VEC_SIZE, %rax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(first_vec_x2_check):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WMEMCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	/* Check the end of data.  */
++	cmpq	%rax, %rdx
++	jbe	L(zero)
++	addq	$(VEC_SIZE * 2), %rax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(first_vec_x3_check):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WMEMCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	/* Check the end of data.  */
++	cmpq	%rax, %rdx
++	jbe	L(zero)
++	addq	$(VEC_SIZE * 3), %rax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(zero):
++	xorl	%eax, %eax
++	ret
++# endif
++
++	.p2align 4
++L(first_vec_x0):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WMEMCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	(%rdi, %rax, 4), %rax
++# else
++	addq	%rdi, %rax
++# endif
++	ret
++
++	.p2align 4
++L(first_vec_x1):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WMEMCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	VEC_SIZE(%rdi, %rax, 4), %rax
++# else
++	addq	$VEC_SIZE, %rax
++	addq	%rdi, %rax
++# endif
++	ret
++
++	.p2align 4
++L(first_vec_x2):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WMEMCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	(VEC_SIZE * 2)(%rdi, %rax, 4), %rax
++# else
++	addq	$(VEC_SIZE * 2), %rax
++	addq	%rdi, %rax
++# endif
++	ret
++
++	.p2align 4
++L(4x_vec_end):
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x0)
++	kmovd	%k2, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x1)
++	kmovd	%k3, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x2)
++	kmovd	%k4, %eax
++	testl	%eax, %eax
++L(first_vec_x3):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WMEMCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	(VEC_SIZE * 3)(%rdi, %rax, 4), %rax
++# else
++	addq	$(VEC_SIZE * 3), %rax
++	addq	%rdi, %rax
++# endif
++	ret
++
++END (MEMCHR)
++#endif
+diff --git a/sysdeps/x86_64/multiarch/memrchr-evex.S b/sysdeps/x86_64/multiarch/memrchr-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..16bf8e02b1e80c84a77e2e8b8e9b9e10f83624a5
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/memrchr-evex.S
+@@ -0,0 +1,337 @@
++/* memrchr optimized with 256-bit EVEX instructions.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#if IS_IN (libc)
++
++# include <sysdep.h>
++
++# define VMOVA		vmovdqa64
++
++# define YMMMATCH	ymm16
++
++# define VEC_SIZE 32
++
++	.section .text.evex,"ax",@progbits
++ENTRY (__memrchr_evex)
++	/* Broadcast CHAR to YMMMATCH.  */
++	vpbroadcastb %esi, %YMMMATCH
++
++	sub	$VEC_SIZE, %RDX_LP
++	jbe	L(last_vec_or_less)
++
++	add	%RDX_LP, %RDI_LP
++
++	/* Check the last VEC_SIZE bytes.  */
++	vpcmpb	$0, (%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x0)
++
++	subq	$(VEC_SIZE * 4), %rdi
++	movl	%edi, %ecx
++	andl	$(VEC_SIZE - 1), %ecx
++	jz	L(aligned_more)
++
++	/* Align data for aligned loads in the loop.  */
++	addq	$VEC_SIZE, %rdi
++	addq	$VEC_SIZE, %rdx
++	andq	$-VEC_SIZE, %rdi
++	subq	%rcx, %rdx
++
++	.p2align 4
++L(aligned_more):
++	subq	$(VEC_SIZE * 4), %rdx
++	jbe	L(last_4x_vec_or_less)
++
++	/* Check the last 4 * VEC_SIZE.  Only one VEC_SIZE at a time
++	   since data is only aligned to VEC_SIZE.  */
++	vpcmpb	$0, (VEC_SIZE * 3)(%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x3)
++
++	vpcmpb	$0, (VEC_SIZE * 2)(%rdi), %YMMMATCH, %k2
++	kmovd	%k2, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x2)
++
++	vpcmpb	$0, VEC_SIZE(%rdi), %YMMMATCH, %k3
++	kmovd	%k3, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x1)
++
++	vpcmpb	$0, (%rdi), %YMMMATCH, %k4
++	kmovd	%k4, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x0)
++
++	/* Align data to 4 * VEC_SIZE for loop with fewer branches.
++	   There are some overlaps with above if data isn't aligned
++	   to 4 * VEC_SIZE.  */
++	movl	%edi, %ecx
++	andl	$(VEC_SIZE * 4 - 1), %ecx
++	jz	L(loop_4x_vec)
++
++	addq	$(VEC_SIZE * 4), %rdi
++	addq	$(VEC_SIZE * 4), %rdx
++	andq	$-(VEC_SIZE * 4), %rdi
++	subq	%rcx, %rdx
++
++	.p2align 4
++L(loop_4x_vec):
++	/* Compare 4 * VEC at a time forward.  */
++	subq	$(VEC_SIZE * 4), %rdi
++	subq	$(VEC_SIZE * 4), %rdx
++	jbe	L(last_4x_vec_or_less)
++
++	vpcmpb	$0, (%rdi), %YMMMATCH, %k1
++	vpcmpb	$0, VEC_SIZE(%rdi), %YMMMATCH, %k2
++	kord	%k1, %k2, %k5
++	vpcmpb	$0, (VEC_SIZE * 2)(%rdi), %YMMMATCH, %k3
++	vpcmpb	$0, (VEC_SIZE * 3)(%rdi), %YMMMATCH, %k4
++
++	kord	%k3, %k4, %k6
++	kortestd %k5, %k6
++	jz	L(loop_4x_vec)
++
++	/* There is a match.  */
++	kmovd	%k4, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x3)
++
++	kmovd	%k3, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x2)
++
++	kmovd	%k2, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x1)
++
++	kmovd	%k1, %eax
++	bsrl	%eax, %eax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(last_4x_vec_or_less):
++	addl	$(VEC_SIZE * 4), %edx
++	cmpl	$(VEC_SIZE * 2), %edx
++	jbe	L(last_2x_vec)
++
++	vpcmpb	$0, (VEC_SIZE * 3)(%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x3)
++
++	vpcmpb	$0, (VEC_SIZE * 2)(%rdi), %YMMMATCH, %k2
++	kmovd	%k2, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x2)
++
++	vpcmpb	$0, VEC_SIZE(%rdi), %YMMMATCH, %k3
++	kmovd	%k3, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x1_check)
++	cmpl	$(VEC_SIZE * 3), %edx
++	jbe	L(zero)
++
++	vpcmpb	$0, (%rdi), %YMMMATCH, %k4
++	kmovd	%k4, %eax
++	testl	%eax, %eax
++	jz	L(zero)
++	bsrl	%eax, %eax
++	subq	$(VEC_SIZE * 4), %rdx
++	addq	%rax, %rdx
++	jl	L(zero)
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(last_2x_vec):
++	vpcmpb	$0, (VEC_SIZE * 3)(%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(last_vec_x3_check)
++	cmpl	$VEC_SIZE, %edx
++	jbe	L(zero)
++
++	vpcmpb	$0, (VEC_SIZE * 2)(%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jz	L(zero)
++	bsrl	%eax, %eax
++	subq	$(VEC_SIZE * 2), %rdx
++	addq	%rax, %rdx
++	jl	L(zero)
++	addl	$(VEC_SIZE * 2), %eax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(last_vec_x0):
++	bsrl	%eax, %eax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(last_vec_x1):
++	bsrl	%eax, %eax
++	addl	$VEC_SIZE, %eax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(last_vec_x2):
++	bsrl	%eax, %eax
++	addl	$(VEC_SIZE * 2), %eax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(last_vec_x3):
++	bsrl	%eax, %eax
++	addl	$(VEC_SIZE * 3), %eax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(last_vec_x1_check):
++	bsrl	%eax, %eax
++	subq	$(VEC_SIZE * 3), %rdx
++	addq	%rax, %rdx
++	jl	L(zero)
++	addl	$VEC_SIZE, %eax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(last_vec_x3_check):
++	bsrl	%eax, %eax
++	subq	$VEC_SIZE, %rdx
++	addq	%rax, %rdx
++	jl	L(zero)
++	addl	$(VEC_SIZE * 3), %eax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(zero):
++	xorl	%eax, %eax
++	ret
++
++	.p2align 4
++L(last_vec_or_less_aligned):
++	movl	%edx, %ecx
++
++	vpcmpb	$0, (%rdi), %YMMMATCH, %k1
++
++	movl	$1, %edx
++	/* Support rdx << 32.  */
++	salq	%cl, %rdx
++	subq	$1, %rdx
++
++	kmovd	%k1, %eax
++
++	/* Remove the trailing bytes.  */
++	andl	%edx, %eax
++	testl	%eax, %eax
++	jz	L(zero)
++
++	bsrl	%eax, %eax
++	addq	%rdi, %rax
++	ret
++
++	.p2align 4
++L(last_vec_or_less):
++	addl	$VEC_SIZE, %edx
++
++	/* Check for zero length.  */
++	testl	%edx, %edx
++	jz	L(zero)
++
++	movl	%edi, %ecx
++	andl	$(VEC_SIZE - 1), %ecx
++	jz	L(last_vec_or_less_aligned)
++
++	movl	%ecx, %esi
++	movl	%ecx, %r8d
++	addl	%edx, %esi
++	andq	$-VEC_SIZE, %rdi
++
++	subl	$VEC_SIZE, %esi
++	ja	L(last_vec_2x_aligned)
++
++	/* Check the last VEC.  */
++	vpcmpb	$0, (%rdi), %YMMMATCH, %k1
++	kmovd	%k1, %eax
++
++	/* Remove the leading and trailing bytes.  */
++	sarl	%cl, %eax
++	movl	%edx, %ecx
++
++	movl	$1, %edx
++	sall	%cl, %edx
++	subl	$1, %edx
++
++	andl	%edx, %eax
++	testl	%eax, %eax
++	jz	L(zero)
++
++	bsrl	%eax, %eax
++	addq	%rdi, %rax
++	addq	%r8, %rax
++	ret
++
++	.p2align 4
++L(last_vec_2x_aligned):
++	movl	%esi, %ecx
++
++	/* Check the last VEC.  */
++	vpcmpb	$0, VEC_SIZE(%rdi), %YMMMATCH, %k1
++
++	movl	$1, %edx
++	sall	%cl, %edx
++	subl	$1, %edx
++
++	kmovd	%k1, %eax
++
++	/* Remove the trailing bytes.  */
++	andl	%edx, %eax
++
++	testl	%eax, %eax
++	jnz	L(last_vec_x1)
++
++	/* Check the second last VEC.  */
++	vpcmpb	$0, (%rdi), %YMMMATCH, %k1
++
++	movl	%r8d, %ecx
++
++	kmovd	%k1, %eax
++
++	/* Remove the leading bytes.  Must use unsigned right shift for
++	   bsrl below.  */
++	shrl	%cl, %eax
++	testl	%eax, %eax
++	jz	L(zero)
++
++	bsrl	%eax, %eax
++	addq	%rdi, %rax
++	addq	%r8, %rax
++	ret
++END (__memrchr_evex)
++#endif
+diff --git a/sysdeps/x86_64/multiarch/rawmemchr-evex.S b/sysdeps/x86_64/multiarch/rawmemchr-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..ec942b77ba5a3598b14f6030af0e7da890e0ef15
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/rawmemchr-evex.S
+@@ -0,0 +1,4 @@
++#define MEMCHR __rawmemchr_evex
++#define USE_AS_RAWMEMCHR 1
++
++#include "memchr-evex.S"
+diff --git a/sysdeps/x86_64/multiarch/strchr-evex.S b/sysdeps/x86_64/multiarch/strchr-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..ddc86a705866e40ee2c6a9d366af436a8d18ae39
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strchr-evex.S
+@@ -0,0 +1,335 @@
++/* strchr/strchrnul optimized with 256-bit EVEX instructions.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#if IS_IN (libc)
++
++# include <sysdep.h>
++
++# ifndef STRCHR
++#  define STRCHR	__strchr_evex
++# endif
++
++# define VMOVU		vmovdqu64
++# define VMOVA		vmovdqa64
++
++# ifdef USE_AS_WCSCHR
++#  define VPBROADCAST	vpbroadcastd
++#  define VPCMP		vpcmpd
++#  define VPMINU	vpminud
++#  define CHAR_REG	esi
++#  define SHIFT_REG	r8d
++# else
++#  define VPBROADCAST	vpbroadcastb
++#  define VPCMP		vpcmpb
++#  define VPMINU	vpminub
++#  define CHAR_REG	sil
++#  define SHIFT_REG	ecx
++# endif
++
++# define XMMZERO	xmm16
++
++# define YMMZERO	ymm16
++# define YMM0		ymm17
++# define YMM1		ymm18
++# define YMM2		ymm19
++# define YMM3		ymm20
++# define YMM4		ymm21
++# define YMM5		ymm22
++# define YMM6		ymm23
++# define YMM7		ymm24
++# define YMM8		ymm25
++
++# define VEC_SIZE 32
++# define PAGE_SIZE 4096
++
++	.section .text.evex,"ax",@progbits
++ENTRY (STRCHR)
++	movl	%edi, %ecx
++# ifndef USE_AS_STRCHRNUL
++	xorl	%edx, %edx
++# endif
++
++	/* Broadcast CHAR to YMM0.	*/
++	VPBROADCAST %esi, %YMM0
++
++	vpxorq	%XMMZERO, %XMMZERO, %XMMZERO
++
++	/* Check if we cross page boundary with one vector load.  */
++	andl	$(PAGE_SIZE - 1), %ecx
++	cmpl	$(PAGE_SIZE - VEC_SIZE), %ecx
++	ja  L(cross_page_boundary)
++
++	/* Check the first VEC_SIZE bytes. Search for both CHAR and the
++	   null bytes.  */
++	VMOVU	(%rdi), %YMM1
++
++	/* Leaves only CHARS matching esi as 0.  */
++	vpxorq	%YMM1, %YMM0, %YMM2
++	VPMINU	%YMM2, %YMM1, %YMM2
++	/* Each bit in K0 represents a CHAR or a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM2, %k0
++	ktestd	%k0, %k0
++	jz	L(more_vecs)
++	kmovd	%k0, %eax
++	tzcntl	%eax, %eax
++	/* Found CHAR or the null byte.	 */
++# ifdef USE_AS_WCSCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	(%rdi, %rax, 4), %rax
++# else
++	addq	%rdi, %rax
++# endif
++# ifndef USE_AS_STRCHRNUL
++	cmp (%rax), %CHAR_REG
++	cmovne	%rdx, %rax
++# endif
++	ret
++
++	.p2align 4
++L(more_vecs):
++	/* Align data for aligned loads in the loop.  */
++	andq	$-VEC_SIZE, %rdi
++L(aligned_more):
++
++	/* Check the next 4 * VEC_SIZE.	 Only one VEC_SIZE at a time
++	   since data is only aligned to VEC_SIZE.	*/
++	VMOVA	VEC_SIZE(%rdi), %YMM1
++	addq	$VEC_SIZE, %rdi
++
++	/* Leaves only CHARS matching esi as 0.  */
++	vpxorq	%YMM1, %YMM0, %YMM2
++	VPMINU	%YMM2, %YMM1, %YMM2
++	/* Each bit in K0 represents a CHAR or a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM2, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x0)
++
++	VMOVA	VEC_SIZE(%rdi), %YMM1
++	/* Leaves only CHARS matching esi as 0.  */
++	vpxorq	%YMM1, %YMM0, %YMM2
++	VPMINU	%YMM2, %YMM1, %YMM2
++	/* Each bit in K0 represents a CHAR or a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM2, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x1)
++
++	VMOVA	(VEC_SIZE * 2)(%rdi), %YMM1
++	/* Leaves only CHARS matching esi as 0.  */
++	vpxorq	%YMM1, %YMM0, %YMM2
++	VPMINU	%YMM2, %YMM1, %YMM2
++	/* Each bit in K0 represents a CHAR or a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM2, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x2)
++
++	VMOVA	(VEC_SIZE * 3)(%rdi), %YMM1
++	/* Leaves only CHARS matching esi as 0.  */
++	vpxorq	%YMM1, %YMM0, %YMM2
++	VPMINU	%YMM2, %YMM1, %YMM2
++	/* Each bit in K0 represents a CHAR or a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM2, %k0
++	ktestd	%k0, %k0
++	jz	L(prep_loop_4x)
++
++	kmovd	%k0, %eax
++	tzcntl	%eax, %eax
++	/* Found CHAR or the null byte.	 */
++# ifdef USE_AS_WCSCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	(VEC_SIZE * 3)(%rdi, %rax, 4), %rax
++# else
++	leaq	(VEC_SIZE * 3)(%rdi, %rax), %rax
++# endif
++# ifndef USE_AS_STRCHRNUL
++	cmp (%rax), %CHAR_REG
++	cmovne	%rdx, %rax
++# endif
++	ret
++
++	.p2align 4
++L(first_vec_x0):
++	tzcntl	%eax, %eax
++	/* Found CHAR or the null byte.	 */
++# ifdef USE_AS_WCSCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	(%rdi, %rax, 4), %rax
++# else
++	addq	%rdi, %rax
++# endif
++# ifndef USE_AS_STRCHRNUL
++	cmp (%rax), %CHAR_REG
++	cmovne	%rdx, %rax
++# endif
++	ret
++
++	.p2align 4
++L(first_vec_x1):
++	tzcntl	%eax, %eax
++	/* Found CHAR or the null byte.	 */
++# ifdef USE_AS_WCSCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	VEC_SIZE(%rdi, %rax, 4), %rax
++# else
++	leaq	VEC_SIZE(%rdi, %rax), %rax
++# endif
++# ifndef USE_AS_STRCHRNUL
++	cmp (%rax), %CHAR_REG
++	cmovne	%rdx, %rax
++# endif
++	ret
++
++	.p2align 4
++L(first_vec_x2):
++	tzcntl	%eax, %eax
++	/* Found CHAR or the null byte.	 */
++# ifdef USE_AS_WCSCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	(VEC_SIZE * 2)(%rdi, %rax, 4), %rax
++# else
++	leaq	(VEC_SIZE * 2)(%rdi, %rax), %rax
++# endif
++# ifndef USE_AS_STRCHRNUL
++	cmp (%rax), %CHAR_REG
++	cmovne	%rdx, %rax
++# endif
++	ret
++
++L(prep_loop_4x):
++	/* Align data to 4 * VEC_SIZE.	*/
++	andq	$-(VEC_SIZE * 4), %rdi
++
++	.p2align 4
++L(loop_4x_vec):
++	/* Compare 4 * VEC at a time forward.  */
++	VMOVA	(VEC_SIZE * 4)(%rdi), %YMM1
++	VMOVA	(VEC_SIZE * 5)(%rdi), %YMM2
++	VMOVA	(VEC_SIZE * 6)(%rdi), %YMM3
++	VMOVA	(VEC_SIZE * 7)(%rdi), %YMM4
++
++	/* Leaves only CHARS matching esi as 0.  */
++	vpxorq	%YMM1, %YMM0, %YMM5
++	vpxorq	%YMM2, %YMM0, %YMM6
++	vpxorq	%YMM3, %YMM0, %YMM7
++	vpxorq	%YMM4, %YMM0, %YMM8
++
++	VPMINU	%YMM5, %YMM1, %YMM5
++	VPMINU	%YMM6, %YMM2, %YMM6
++	VPMINU	%YMM7, %YMM3, %YMM7
++	VPMINU	%YMM8, %YMM4, %YMM8
++
++	VPMINU	%YMM5, %YMM6, %YMM1
++	VPMINU	%YMM7, %YMM8, %YMM2
++
++	VPMINU	%YMM1, %YMM2, %YMM1
++
++	/* Each bit in K0 represents a CHAR or a null byte.  */
++	VPCMP	$0, %YMMZERO, %YMM1, %k0
++
++	addq	$(VEC_SIZE * 4), %rdi
++
++	ktestd	%k0, %k0
++	jz	L(loop_4x_vec)
++
++	/* Each bit in K0 represents a CHAR or a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM5, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x0)
++
++	/* Each bit in K1 represents a CHAR or a null byte in YMM2.  */
++	VPCMP	$0, %YMMZERO, %YMM6, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x1)
++
++	/* Each bit in K2 represents a CHAR or a null byte in YMM3.  */
++	VPCMP	$0, %YMMZERO, %YMM7, %k2
++	/* Each bit in K3 represents a CHAR or a null byte in YMM4.  */
++	VPCMP	$0, %YMMZERO, %YMM8, %k3
++
++# ifdef USE_AS_WCSCHR
++	/* NB: Each bit in K2/K3 represents 4-byte element.  */
++	kshiftlw $8, %k3, %k1
++# else
++	kshiftlq $32, %k3, %k1
++# endif
++
++	/* Each bit in K1 represents a NULL or a mismatch.  */
++	korq	%k1, %k2, %k1
++	kmovq	%k1, %rax
++
++	tzcntq  %rax, %rax
++# ifdef USE_AS_WCSCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	(VEC_SIZE * 2)(%rdi, %rax, 4), %rax
++# else
++	leaq	(VEC_SIZE * 2)(%rdi, %rax), %rax
++# endif
++# ifndef USE_AS_STRCHRNUL
++	cmp (%rax), %CHAR_REG
++	cmovne	%rdx, %rax
++# endif
++	ret
++
++	/* Cold case for crossing page with first load.	 */
++	.p2align 4
++L(cross_page_boundary):
++	andq	$-VEC_SIZE, %rdi
++	andl	$(VEC_SIZE - 1), %ecx
++
++	VMOVA	(%rdi), %YMM1
++
++	/* Leaves only CHARS matching esi as 0.  */
++	vpxorq	%YMM1, %YMM0, %YMM2
++	VPMINU	%YMM2, %YMM1, %YMM2
++	/* Each bit in K0 represents a CHAR or a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM2, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++
++# ifdef USE_AS_WCSCHR
++	/* NB: Divide shift count by 4 since each bit in K1 represent 4
++	   bytes.  */
++	movl	%ecx, %SHIFT_REG
++	sarl    $2, %SHIFT_REG
++# endif
++
++	/* Remove the leading bits.	 */
++	sarxl	%SHIFT_REG, %eax, %eax
++	testl	%eax, %eax
++
++	jz	L(aligned_more)
++	tzcntl	%eax, %eax
++	addq	%rcx, %rdi
++# ifdef USE_AS_WCSCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	(%rdi, %rax, 4), %rax
++# else
++	addq	%rdi, %rax
++# endif
++# ifndef USE_AS_STRCHRNUL
++	cmp (%rax), %CHAR_REG
++	cmovne	%rdx, %rax
++# endif
++	ret
++
++END (STRCHR)
++# endif
+diff --git a/sysdeps/x86_64/multiarch/strchr.c b/sysdeps/x86_64/multiarch/strchr.c
+index 8df4609bf8cf83b91aa0d03dee3e1f02f38e266e..d642b88771ed950792633ea9b079de536182fb7b 100644
+--- a/sysdeps/x86_64/multiarch/strchr.c
++++ b/sysdeps/x86_64/multiarch/strchr.c
+@@ -29,16 +29,24 @@
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2_no_bsf) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+ 
+ static inline void *
+ IFUNC_SELECTOR (void)
+ {
+   const struct cpu_features* cpu_features = __get_cpu_features ();
+ 
+-  if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER)
+-      && CPU_FEATURE_USABLE_P (cpu_features, AVX2)
++  if (CPU_FEATURE_USABLE_P (cpu_features, AVX2)
+       && CPU_FEATURES_ARCH_P (cpu_features, AVX_Fast_Unaligned_Load))
+-    return OPTIMIZE (avx2);
++    {
++      if (CPU_FEATURE_USABLE_P (cpu_features, AVX512VL)
++	  && CPU_FEATURE_USABLE_P (cpu_features, AVX512BW)
++	  && CPU_FEATURE_USABLE_P (cpu_features, BMI2))
++	return OPTIMIZE (evex);
++
++      if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
++	return OPTIMIZE (avx2);
++    }
+ 
+   if (CPU_FEATURES_ARCH_P (cpu_features, Slow_BSF))
+     return OPTIMIZE (sse2_no_bsf);
+diff --git a/sysdeps/x86_64/multiarch/strchrnul-evex.S b/sysdeps/x86_64/multiarch/strchrnul-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..064fe7ca9e9ca31b89206f88d2d1ed23964d5ec1
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strchrnul-evex.S
+@@ -0,0 +1,3 @@
++#define STRCHR __strchrnul_evex
++#define USE_AS_STRCHRNUL 1
++#include "strchr-evex.S"
+diff --git a/sysdeps/x86_64/multiarch/strcmp-evex.S b/sysdeps/x86_64/multiarch/strcmp-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..459eeed09f5e276e6e28694d5b2af85188da473d
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strcmp-evex.S
+@@ -0,0 +1,1043 @@
++/* strcmp/wcscmp/strncmp/wcsncmp optimized with 256-bit EVEX instructions.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#if IS_IN (libc)
++
++# include <sysdep.h>
++
++# ifndef STRCMP
++#  define STRCMP	__strcmp_evex
++# endif
++
++# define PAGE_SIZE	4096
++
++/* VEC_SIZE = Number of bytes in a ymm register */
++# define VEC_SIZE	32
++
++/* Shift for dividing by (VEC_SIZE * 4).  */
++# define DIVIDE_BY_VEC_4_SHIFT	7
++# if (VEC_SIZE * 4) != (1 << DIVIDE_BY_VEC_4_SHIFT)
++#  error (VEC_SIZE * 4) != (1 << DIVIDE_BY_VEC_4_SHIFT)
++# endif
++
++# define VMOVU		vmovdqu64
++# define VMOVA		vmovdqa64
++
++# ifdef USE_AS_WCSCMP
++/* Compare packed dwords.  */
++#  define VPCMP		vpcmpd
++#  define SHIFT_REG32	r8d
++#  define SHIFT_REG64	r8
++/* 1 dword char == 4 bytes.  */
++#  define SIZE_OF_CHAR	4
++# else
++/* Compare packed bytes.  */
++#  define VPCMP		vpcmpb
++#  define SHIFT_REG32	ecx
++#  define SHIFT_REG64	rcx
++/* 1 byte char == 1 byte.  */
++#  define SIZE_OF_CHAR	1
++# endif
++
++# define XMMZERO	xmm16
++# define XMM0		xmm17
++# define XMM1		xmm18
++
++# define YMMZERO	ymm16
++# define YMM0		ymm17
++# define YMM1		ymm18
++# define YMM2		ymm19
++# define YMM3		ymm20
++# define YMM4		ymm21
++# define YMM5		ymm22
++# define YMM6		ymm23
++# define YMM7		ymm24
++
++/* Warning!
++           wcscmp/wcsncmp have to use SIGNED comparison for elements.
++           strcmp/strncmp have to use UNSIGNED comparison for elements.
++*/
++
++/* The main idea of the string comparison (byte or dword) using 256-bit
++   EVEX instructions consists of comparing (VPCMP) two ymm vectors. The
++   latter can be on either packed bytes or dwords depending on
++   USE_AS_WCSCMP. In order to check the null char, algorithm keeps the
++   matched bytes/dwords, requiring 5 EVEX instructions (3 VPCMP and 2
++   KORD). In general, the costs of comparing VEC_SIZE bytes (32-bytes)
++   are 3 VPCMP and 2 KORD instructions, together with VMOVU and ktestd
++   instructions.  Main loop (away from from page boundary) compares 4
++   vectors are a time, effectively comparing 4 x VEC_SIZE bytes (128
++   bytes) on each loop.
++
++   The routine strncmp/wcsncmp (enabled by defining USE_AS_STRNCMP) logic
++   is the same as strcmp, except that an a maximum offset is tracked.  If
++   the maximum offset is reached before a difference is found, zero is
++   returned.  */
++
++	.section .text.evex,"ax",@progbits
++ENTRY (STRCMP)
++# ifdef USE_AS_STRNCMP
++	/* Check for simple cases (0 or 1) in offset.  */
++	cmp	$1, %RDX_LP
++	je	L(char0)
++	jb	L(zero)
++#  ifdef USE_AS_WCSCMP
++	/* Convert units: from wide to byte char.  */
++	shl	$2, %RDX_LP
++#  endif
++	/* Register %r11 tracks the maximum offset.  */
++	mov	%RDX_LP, %R11_LP
++# endif
++	movl	%edi, %eax
++	xorl	%edx, %edx
++	/* Make %XMMZERO (%YMMZERO) all zeros in this function.  */
++	vpxorq	%XMMZERO, %XMMZERO, %XMMZERO
++	orl	%esi, %eax
++	andl	$(PAGE_SIZE - 1), %eax
++	cmpl	$(PAGE_SIZE - (VEC_SIZE * 4)), %eax
++	jg	L(cross_page)
++	/* Start comparing 4 vectors.  */
++	VMOVU	(%rdi), %YMM0
++	VMOVU	(%rsi), %YMM1
++
++	/* Each bit in K0 represents a mismatch in YMM0 and YMM1.  */
++	VPCMP	$4, %YMM0, %YMM1, %k0
++
++	/* Check for NULL in YMM0.  */
++	VPCMP	$0, %YMMZERO, %YMM0, %k1
++	/* Check for NULL in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM1, %k2
++	/* Each bit in K1 represents a NULL in YMM0 or YMM1.  */
++	kord	%k1, %k2, %k1
++
++	/* Each bit in K1 represents:
++	   1. A mismatch in YMM0 and YMM1.  Or
++	   2. A NULL in YMM0 or YMM1.
++	 */
++	kord	%k0, %k1, %k1
++
++	ktestd	%k1, %k1
++	je	L(next_3_vectors)
++	kmovd	%k1, %ecx
++	tzcntl	%ecx, %edx
++# ifdef USE_AS_WCSCMP
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %edx
++# endif
++# ifdef USE_AS_STRNCMP
++	/* Return 0 if the mismatched index (%rdx) is after the maximum
++	   offset (%r11).   */
++	cmpq	%r11, %rdx
++	jae	L(zero)
++# endif
++# ifdef USE_AS_WCSCMP
++	xorl	%eax, %eax
++	movl	(%rdi, %rdx), %ecx
++	cmpl	(%rsi, %rdx), %ecx
++	je	L(return)
++L(wcscmp_return):
++	setl	%al
++	negl	%eax
++	orl	$1, %eax
++L(return):
++# else
++	movzbl	(%rdi, %rdx), %eax
++	movzbl	(%rsi, %rdx), %edx
++	subl	%edx, %eax
++# endif
++	ret
++
++	.p2align 4
++L(return_vec_size):
++	kmovd	%k1, %ecx
++	tzcntl	%ecx, %edx
++# ifdef USE_AS_WCSCMP
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %edx
++# endif
++# ifdef USE_AS_STRNCMP
++	/* Return 0 if the mismatched index (%rdx + VEC_SIZE) is after
++	   the maximum offset (%r11).  */
++	addq	$VEC_SIZE, %rdx
++	cmpq	%r11, %rdx
++	jae	L(zero)
++#  ifdef USE_AS_WCSCMP
++	xorl	%eax, %eax
++	movl	(%rdi, %rdx), %ecx
++	cmpl	(%rsi, %rdx), %ecx
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rdi, %rdx), %eax
++	movzbl	(%rsi, %rdx), %edx
++	subl	%edx, %eax
++#  endif
++# else
++#  ifdef USE_AS_WCSCMP
++	xorl	%eax, %eax
++	movl	VEC_SIZE(%rdi, %rdx), %ecx
++	cmpl	VEC_SIZE(%rsi, %rdx), %ecx
++	jne	L(wcscmp_return)
++#  else
++	movzbl	VEC_SIZE(%rdi, %rdx), %eax
++	movzbl	VEC_SIZE(%rsi, %rdx), %edx
++	subl	%edx, %eax
++#  endif
++# endif
++	ret
++
++	.p2align 4
++L(return_2_vec_size):
++	kmovd	%k1, %ecx
++	tzcntl	%ecx, %edx
++# ifdef USE_AS_WCSCMP
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %edx
++# endif
++# ifdef USE_AS_STRNCMP
++	/* Return 0 if the mismatched index (%rdx + 2 * VEC_SIZE) is
++	   after the maximum offset (%r11).  */
++	addq	$(VEC_SIZE * 2), %rdx
++	cmpq	%r11, %rdx
++	jae	L(zero)
++#  ifdef USE_AS_WCSCMP
++	xorl	%eax, %eax
++	movl	(%rdi, %rdx), %ecx
++	cmpl	(%rsi, %rdx), %ecx
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rdi, %rdx), %eax
++	movzbl	(%rsi, %rdx), %edx
++	subl	%edx, %eax
++#  endif
++# else
++#  ifdef USE_AS_WCSCMP
++	xorl	%eax, %eax
++	movl	(VEC_SIZE * 2)(%rdi, %rdx), %ecx
++	cmpl	(VEC_SIZE * 2)(%rsi, %rdx), %ecx
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(VEC_SIZE * 2)(%rdi, %rdx), %eax
++	movzbl	(VEC_SIZE * 2)(%rsi, %rdx), %edx
++	subl	%edx, %eax
++#  endif
++# endif
++	ret
++
++	.p2align 4
++L(return_3_vec_size):
++	kmovd	%k1, %ecx
++	tzcntl	%ecx, %edx
++# ifdef USE_AS_WCSCMP
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %edx
++# endif
++# ifdef USE_AS_STRNCMP
++	/* Return 0 if the mismatched index (%rdx + 3 * VEC_SIZE) is
++	   after the maximum offset (%r11).  */
++	addq	$(VEC_SIZE * 3), %rdx
++	cmpq	%r11, %rdx
++	jae	L(zero)
++#  ifdef USE_AS_WCSCMP
++	xorl	%eax, %eax
++	movl	(%rdi, %rdx), %ecx
++	cmpl	(%rsi, %rdx), %ecx
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rdi, %rdx), %eax
++	movzbl	(%rsi, %rdx), %edx
++	subl	%edx, %eax
++#  endif
++# else
++#  ifdef USE_AS_WCSCMP
++	xorl	%eax, %eax
++	movl	(VEC_SIZE * 3)(%rdi, %rdx), %ecx
++	cmpl	(VEC_SIZE * 3)(%rsi, %rdx), %ecx
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(VEC_SIZE * 3)(%rdi, %rdx), %eax
++	movzbl	(VEC_SIZE * 3)(%rsi, %rdx), %edx
++	subl	%edx, %eax
++#  endif
++# endif
++	ret
++
++	.p2align 4
++L(next_3_vectors):
++	VMOVU	VEC_SIZE(%rdi), %YMM0
++	VMOVU	VEC_SIZE(%rsi), %YMM1
++	/* Each bit in K0 represents a mismatch in YMM0 and YMM1.  */
++	VPCMP	$4, %YMM0, %YMM1, %k0
++	VPCMP	$0, %YMMZERO, %YMM0, %k1
++	VPCMP	$0, %YMMZERO, %YMM1, %k2
++	/* Each bit in K1 represents a NULL in YMM0 or YMM1.  */
++	kord	%k1, %k2, %k1
++	/* Each bit in K1 represents a NULL or a mismatch.  */
++	kord	%k0, %k1, %k1
++	ktestd	%k1, %k1
++	jne	L(return_vec_size)
++
++	VMOVU	(VEC_SIZE * 2)(%rdi), %YMM2
++	VMOVU	(VEC_SIZE * 3)(%rdi), %YMM3
++	VMOVU	(VEC_SIZE * 2)(%rsi), %YMM4
++	VMOVU	(VEC_SIZE * 3)(%rsi), %YMM5
++
++	/* Each bit in K0 represents a mismatch in YMM2 and YMM4.  */
++	VPCMP	$4, %YMM2, %YMM4, %k0
++	VPCMP	$0, %YMMZERO, %YMM2, %k1
++	VPCMP	$0, %YMMZERO, %YMM4, %k2
++	/* Each bit in K1 represents a NULL in YMM2 or YMM4.  */
++	kord	%k1, %k2, %k1
++	/* Each bit in K1 represents a NULL or a mismatch.  */
++	kord	%k0, %k1, %k1
++	ktestd	%k1, %k1
++	jne	L(return_2_vec_size)
++
++	/* Each bit in K0 represents a mismatch in YMM3 and YMM5.  */
++	VPCMP	$4, %YMM3, %YMM5, %k0
++	VPCMP	$0, %YMMZERO, %YMM3, %k1
++	VPCMP	$0, %YMMZERO, %YMM5, %k2
++	/* Each bit in K1 represents a NULL in YMM3 or YMM5.  */
++	kord	%k1, %k2, %k1
++	/* Each bit in K1 represents a NULL or a mismatch.  */
++	kord	%k0, %k1, %k1
++	ktestd	%k1, %k1
++	jne	L(return_3_vec_size)
++L(main_loop_header):
++	leaq	(VEC_SIZE * 4)(%rdi), %rdx
++	movl	$PAGE_SIZE, %ecx
++	/* Align load via RAX.  */
++	andq	$-(VEC_SIZE * 4), %rdx
++	subq	%rdi, %rdx
++	leaq	(%rdi, %rdx), %rax
++# ifdef USE_AS_STRNCMP
++	/* Starting from this point, the maximum offset, or simply the
++	   'offset', DECREASES by the same amount when base pointers are
++	   moved forward.  Return 0 when:
++	     1) On match: offset <= the matched vector index.
++	     2) On mistmach, offset is before the mistmatched index.
++	 */
++	subq	%rdx, %r11
++	jbe	L(zero)
++# endif
++	addq	%rsi, %rdx
++	movq	%rdx, %rsi
++	andl	$(PAGE_SIZE - 1), %esi
++	/* Number of bytes before page crossing.  */
++	subq	%rsi, %rcx
++	/* Number of VEC_SIZE * 4 blocks before page crossing.  */
++	shrq	$DIVIDE_BY_VEC_4_SHIFT, %rcx
++	/* ESI: Number of VEC_SIZE * 4 blocks before page crossing.   */
++	movl	%ecx, %esi
++	jmp	L(loop_start)
++
++	.p2align 4
++L(loop):
++# ifdef USE_AS_STRNCMP
++	/* Base pointers are moved forward by 4 * VEC_SIZE.  Decrease
++	   the maximum offset (%r11) by the same amount.  */
++	subq	$(VEC_SIZE * 4), %r11
++	jbe	L(zero)
++# endif
++	addq	$(VEC_SIZE * 4), %rax
++	addq	$(VEC_SIZE * 4), %rdx
++L(loop_start):
++	testl	%esi, %esi
++	leal	-1(%esi), %esi
++	je	L(loop_cross_page)
++L(back_to_loop):
++	/* Main loop, comparing 4 vectors are a time.  */
++	VMOVA	(%rax), %YMM0
++	VMOVA	VEC_SIZE(%rax), %YMM2
++	VMOVA	(VEC_SIZE * 2)(%rax), %YMM4
++	VMOVA	(VEC_SIZE * 3)(%rax), %YMM6
++	VMOVU	(%rdx), %YMM1
++	VMOVU	VEC_SIZE(%rdx), %YMM3
++	VMOVU	(VEC_SIZE * 2)(%rdx), %YMM5
++	VMOVU	(VEC_SIZE * 3)(%rdx), %YMM7
++
++	VPCMP	$4, %YMM0, %YMM1, %k0
++	VPCMP	$0, %YMMZERO, %YMM0, %k1
++	VPCMP	$0, %YMMZERO, %YMM1, %k2
++	kord	%k1, %k2, %k1
++	/* Each bit in K4 represents a NULL or a mismatch in YMM0 and
++	   YMM1.  */
++	kord	%k0, %k1, %k4
++
++	VPCMP	$4, %YMM2, %YMM3, %k0
++	VPCMP	$0, %YMMZERO, %YMM2, %k1
++	VPCMP	$0, %YMMZERO, %YMM3, %k2
++	kord	%k1, %k2, %k1
++	/* Each bit in K5 represents a NULL or a mismatch in YMM2 and
++	   YMM3.  */
++	kord	%k0, %k1, %k5
++
++	VPCMP	$4, %YMM4, %YMM5, %k0
++	VPCMP	$0, %YMMZERO, %YMM4, %k1
++	VPCMP	$0, %YMMZERO, %YMM5, %k2
++	kord	%k1, %k2, %k1
++	/* Each bit in K6 represents a NULL or a mismatch in YMM4 and
++	   YMM5.  */
++	kord	%k0, %k1, %k6
++
++	VPCMP	$4, %YMM6, %YMM7, %k0
++	VPCMP	$0, %YMMZERO, %YMM6, %k1
++	VPCMP	$0, %YMMZERO, %YMM7, %k2
++	kord	%k1, %k2, %k1
++	/* Each bit in K7 represents a NULL or a mismatch in YMM6 and
++	   YMM7.  */
++	kord	%k0, %k1, %k7
++
++	kord	%k4, %k5, %k0
++	kord	%k6, %k7, %k1
++
++	/* Test each mask (32 bits) individually because for VEC_SIZE
++	   == 32 is not possible to OR the four masks and keep all bits
++	   in a 64-bit integer register, differing from SSE2 strcmp
++	   where ORing is possible.  */
++	kortestd %k0, %k1
++	je	L(loop)
++	ktestd	%k4, %k4
++	je	L(test_vec)
++	kmovd	%k4, %edi
++	tzcntl	%edi, %ecx
++# ifdef USE_AS_WCSCMP
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %ecx
++# endif
++# ifdef USE_AS_STRNCMP
++	cmpq	%rcx, %r11
++	jbe	L(zero)
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	(%rsi, %rcx), %edi
++	cmpl	(%rdx, %rcx), %edi
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rax, %rcx), %eax
++	movzbl	(%rdx, %rcx), %edx
++	subl	%edx, %eax
++#  endif
++# else
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	(%rsi, %rcx), %edi
++	cmpl	(%rdx, %rcx), %edi
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rax, %rcx), %eax
++	movzbl	(%rdx, %rcx), %edx
++	subl	%edx, %eax
++#  endif
++# endif
++	ret
++
++	.p2align 4
++L(test_vec):
++# ifdef USE_AS_STRNCMP
++	/* The first vector matched.  Return 0 if the maximum offset
++	   (%r11) <= VEC_SIZE.  */
++	cmpq	$VEC_SIZE, %r11
++	jbe	L(zero)
++# endif
++	ktestd	%k5, %k5
++	je	L(test_2_vec)
++	kmovd	%k5, %ecx
++	tzcntl	%ecx, %edi
++# ifdef USE_AS_WCSCMP
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %edi
++# endif
++# ifdef USE_AS_STRNCMP
++	addq	$VEC_SIZE, %rdi
++	cmpq	%rdi, %r11
++	jbe	L(zero)
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	(%rsi, %rdi), %ecx
++	cmpl	(%rdx, %rdi), %ecx
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rax, %rdi), %eax
++	movzbl	(%rdx, %rdi), %edx
++	subl	%edx, %eax
++#  endif
++# else
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	VEC_SIZE(%rsi, %rdi), %ecx
++	cmpl	VEC_SIZE(%rdx, %rdi), %ecx
++	jne	L(wcscmp_return)
++#  else
++	movzbl	VEC_SIZE(%rax, %rdi), %eax
++	movzbl	VEC_SIZE(%rdx, %rdi), %edx
++	subl	%edx, %eax
++#  endif
++# endif
++	ret
++
++	.p2align 4
++L(test_2_vec):
++# ifdef USE_AS_STRNCMP
++	/* The first 2 vectors matched.  Return 0 if the maximum offset
++	   (%r11) <= 2 * VEC_SIZE.  */
++	cmpq	$(VEC_SIZE * 2), %r11
++	jbe	L(zero)
++# endif
++	ktestd	%k6, %k6
++	je	L(test_3_vec)
++	kmovd	%k6, %ecx
++	tzcntl	%ecx, %edi
++# ifdef USE_AS_WCSCMP
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %edi
++# endif
++# ifdef USE_AS_STRNCMP
++	addq	$(VEC_SIZE * 2), %rdi
++	cmpq	%rdi, %r11
++	jbe	L(zero)
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	(%rsi, %rdi), %ecx
++	cmpl	(%rdx, %rdi), %ecx
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rax, %rdi), %eax
++	movzbl	(%rdx, %rdi), %edx
++	subl	%edx, %eax
++#  endif
++# else
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	(VEC_SIZE * 2)(%rsi, %rdi), %ecx
++	cmpl	(VEC_SIZE * 2)(%rdx, %rdi), %ecx
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(VEC_SIZE * 2)(%rax, %rdi), %eax
++	movzbl	(VEC_SIZE * 2)(%rdx, %rdi), %edx
++	subl	%edx, %eax
++#  endif
++# endif
++	ret
++
++	.p2align 4
++L(test_3_vec):
++# ifdef USE_AS_STRNCMP
++	/* The first 3 vectors matched.  Return 0 if the maximum offset
++	   (%r11) <= 3 * VEC_SIZE.  */
++	cmpq	$(VEC_SIZE * 3), %r11
++	jbe	L(zero)
++# endif
++	kmovd	%k7, %esi
++	tzcntl	%esi, %ecx
++# ifdef USE_AS_WCSCMP
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %ecx
++# endif
++# ifdef USE_AS_STRNCMP
++	addq	$(VEC_SIZE * 3), %rcx
++	cmpq	%rcx, %r11
++	jbe	L(zero)
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	(%rsi, %rcx), %esi
++	cmpl	(%rdx, %rcx), %esi
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rax, %rcx), %eax
++	movzbl	(%rdx, %rcx), %edx
++	subl	%edx, %eax
++#  endif
++# else
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	(VEC_SIZE * 3)(%rsi, %rcx), %esi
++	cmpl	(VEC_SIZE * 3)(%rdx, %rcx), %esi
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(VEC_SIZE * 3)(%rax, %rcx), %eax
++	movzbl	(VEC_SIZE * 3)(%rdx, %rcx), %edx
++	subl	%edx, %eax
++#  endif
++# endif
++	ret
++
++	.p2align 4
++L(loop_cross_page):
++	xorl	%r10d, %r10d
++	movq	%rdx, %rcx
++	/* Align load via RDX.  We load the extra ECX bytes which should
++	   be ignored.  */
++	andl	$((VEC_SIZE * 4) - 1), %ecx
++	/* R10 is -RCX.  */
++	subq	%rcx, %r10
++
++	/* This works only if VEC_SIZE * 2 == 64. */
++# if (VEC_SIZE * 2) != 64
++#  error (VEC_SIZE * 2) != 64
++# endif
++
++	/* Check if the first VEC_SIZE * 2 bytes should be ignored.  */
++	cmpl	$(VEC_SIZE * 2), %ecx
++	jge	L(loop_cross_page_2_vec)
++
++	VMOVU	(%rax, %r10), %YMM2
++	VMOVU	VEC_SIZE(%rax, %r10), %YMM3
++	VMOVU	(%rdx, %r10), %YMM4
++	VMOVU	VEC_SIZE(%rdx, %r10), %YMM5
++
++	VPCMP	$4, %YMM4, %YMM2, %k0
++	VPCMP	$0, %YMMZERO, %YMM2, %k1
++	VPCMP	$0, %YMMZERO, %YMM4, %k2
++	kord	%k1, %k2, %k1
++	/* Each bit in K1 represents a NULL or a mismatch in YMM2 and
++	   YMM4.  */
++	kord	%k0, %k1, %k1
++
++	VPCMP	$4, %YMM5, %YMM3, %k3
++	VPCMP	$0, %YMMZERO, %YMM3, %k4
++	VPCMP	$0, %YMMZERO, %YMM5, %k5
++	kord	%k4, %k5, %k4
++	/* Each bit in K3 represents a NULL or a mismatch in YMM3 and
++	   YMM5.  */
++	kord	%k3, %k4, %k3
++
++# ifdef USE_AS_WCSCMP
++	/* NB: Each bit in K1/K3 represents 4-byte element.  */
++	kshiftlw $8, %k3, %k2
++	/* NB: Divide shift count by 4 since each bit in K1 represent 4
++	   bytes.  */
++	movl	%ecx, %SHIFT_REG32
++	sarl	$2, %SHIFT_REG32
++# else
++	kshiftlq $32, %k3, %k2
++# endif
++
++	/* Each bit in K1 represents a NULL or a mismatch.  */
++	korq	%k1, %k2, %k1
++	kmovq	%k1, %rdi
++
++	/* Since ECX < VEC_SIZE * 2, simply skip the first ECX bytes.  */
++	shrxq	%SHIFT_REG64, %rdi, %rdi
++	testq	%rdi, %rdi
++	je	L(loop_cross_page_2_vec)
++	tzcntq	%rdi, %rcx
++# ifdef USE_AS_WCSCMP
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %ecx
++# endif
++# ifdef USE_AS_STRNCMP
++	cmpq	%rcx, %r11
++	jbe	L(zero)
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	(%rsi, %rcx), %edi
++	cmpl	(%rdx, %rcx), %edi
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rax, %rcx), %eax
++	movzbl	(%rdx, %rcx), %edx
++	subl	%edx, %eax
++#  endif
++# else
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	(%rsi, %rcx), %edi
++	cmpl	(%rdx, %rcx), %edi
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rax, %rcx), %eax
++	movzbl	(%rdx, %rcx), %edx
++	subl	%edx, %eax
++#  endif
++# endif
++	ret
++
++	.p2align 4
++L(loop_cross_page_2_vec):
++	/* The first VEC_SIZE * 2 bytes match or are ignored.  */
++	VMOVU	(VEC_SIZE * 2)(%rax, %r10), %YMM0
++	VMOVU	(VEC_SIZE * 3)(%rax, %r10), %YMM1
++	VMOVU	(VEC_SIZE * 2)(%rdx, %r10), %YMM2
++	VMOVU	(VEC_SIZE * 3)(%rdx, %r10), %YMM3
++
++	VPCMP	$4, %YMM0, %YMM2, %k0
++	VPCMP	$0, %YMMZERO, %YMM0, %k1
++	VPCMP	$0, %YMMZERO, %YMM2, %k2
++	kord	%k1, %k2, %k1
++	/* Each bit in K1 represents a NULL or a mismatch in YMM0 and
++	   YMM2.  */
++	kord	%k0, %k1, %k1
++
++	VPCMP	$4, %YMM1, %YMM3, %k3
++	VPCMP	$0, %YMMZERO, %YMM1, %k4
++	VPCMP	$0, %YMMZERO, %YMM3, %k5
++	kord	%k4, %k5, %k4
++	/* Each bit in K3 represents a NULL or a mismatch in YMM1 and
++	   YMM3.  */
++	kord	%k3, %k4, %k3
++
++# ifdef USE_AS_WCSCMP
++	/* NB: Each bit in K1/K3 represents 4-byte element.  */
++	kshiftlw $8, %k3, %k2
++# else
++	kshiftlq $32, %k3, %k2
++# endif
++
++	/* Each bit in K1 represents a NULL or a mismatch.  */
++	korq	%k1, %k2, %k1
++	kmovq	%k1, %rdi
++
++	xorl	%r8d, %r8d
++	/* If ECX > VEC_SIZE * 2, skip ECX - (VEC_SIZE * 2) bytes.  */
++	subl	$(VEC_SIZE * 2), %ecx
++	jle	1f
++	/* R8 has number of bytes skipped.  */
++	movl	%ecx, %r8d
++# ifdef USE_AS_WCSCMP
++	/* NB: Divide shift count by 4 since each bit in K1 represent 4
++	   bytes.  */
++	sarl	$2, %ecx
++# endif
++	/* Skip ECX bytes.  */
++	shrq	%cl, %rdi
++1:
++	/* Before jumping back to the loop, set ESI to the number of
++	   VEC_SIZE * 4 blocks before page crossing.  */
++	movl	$(PAGE_SIZE / (VEC_SIZE * 4) - 1), %esi
++
++	testq	%rdi, %rdi
++# ifdef USE_AS_STRNCMP
++	/* At this point, if %rdi value is 0, it already tested
++	   VEC_SIZE*4+%r10 byte starting from %rax. This label
++	   checks whether strncmp maximum offset reached or not.  */
++	je	L(string_nbyte_offset_check)
++# else
++	je	L(back_to_loop)
++# endif
++	tzcntq	%rdi, %rcx
++# ifdef USE_AS_WCSCMP
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %ecx
++# endif
++	addq	%r10, %rcx
++	/* Adjust for number of bytes skipped.  */
++	addq	%r8, %rcx
++# ifdef USE_AS_STRNCMP
++	addq	$(VEC_SIZE * 2), %rcx
++	subq	%rcx, %r11
++	jbe	L(zero)
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	(%rsi, %rcx), %edi
++	cmpl	(%rdx, %rcx), %edi
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rax, %rcx), %eax
++	movzbl	(%rdx, %rcx), %edx
++	subl	%edx, %eax
++#  endif
++# else
++#  ifdef USE_AS_WCSCMP
++	movq	%rax, %rsi
++	xorl	%eax, %eax
++	movl	(VEC_SIZE * 2)(%rsi, %rcx), %edi
++	cmpl	(VEC_SIZE * 2)(%rdx, %rcx), %edi
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(VEC_SIZE * 2)(%rax, %rcx), %eax
++	movzbl	(VEC_SIZE * 2)(%rdx, %rcx), %edx
++	subl	%edx, %eax
++#  endif
++# endif
++	ret
++
++# ifdef USE_AS_STRNCMP
++L(string_nbyte_offset_check):
++	leaq	(VEC_SIZE * 4)(%r10), %r10
++	cmpq	%r10, %r11
++	jbe	L(zero)
++	jmp	L(back_to_loop)
++# endif
++
++	.p2align 4
++L(cross_page_loop):
++	/* Check one byte/dword at a time.  */
++# ifdef USE_AS_WCSCMP
++	cmpl	%ecx, %eax
++# else
++	subl	%ecx, %eax
++# endif
++	jne	L(different)
++	addl	$SIZE_OF_CHAR, %edx
++	cmpl	$(VEC_SIZE * 4), %edx
++	je	L(main_loop_header)
++# ifdef USE_AS_STRNCMP
++	cmpq	%r11, %rdx
++	jae	L(zero)
++# endif
++# ifdef USE_AS_WCSCMP
++	movl	(%rdi, %rdx), %eax
++	movl	(%rsi, %rdx), %ecx
++# else
++	movzbl	(%rdi, %rdx), %eax
++	movzbl	(%rsi, %rdx), %ecx
++# endif
++	/* Check null char.  */
++	testl	%eax, %eax
++	jne	L(cross_page_loop)
++	/* Since %eax == 0, subtract is OK for both SIGNED and UNSIGNED
++	   comparisons.  */
++	subl	%ecx, %eax
++# ifndef USE_AS_WCSCMP
++L(different):
++# endif
++	ret
++
++# ifdef USE_AS_WCSCMP
++	.p2align 4
++L(different):
++	/* Use movl to avoid modifying EFLAGS.  */
++	movl	$0, %eax
++	setl	%al
++	negl	%eax
++	orl	$1, %eax
++	ret
++# endif
++
++# ifdef USE_AS_STRNCMP
++	.p2align 4
++L(zero):
++	xorl	%eax, %eax
++	ret
++
++	.p2align 4
++L(char0):
++#  ifdef USE_AS_WCSCMP
++	xorl	%eax, %eax
++	movl	(%rdi), %ecx
++	cmpl	(%rsi), %ecx
++	jne	L(wcscmp_return)
++#  else
++	movzbl	(%rsi), %ecx
++	movzbl	(%rdi), %eax
++	subl	%ecx, %eax
++#  endif
++	ret
++# endif
++
++	.p2align 4
++L(last_vector):
++	addq	%rdx, %rdi
++	addq	%rdx, %rsi
++# ifdef USE_AS_STRNCMP
++	subq	%rdx, %r11
++# endif
++	tzcntl	%ecx, %edx
++# ifdef USE_AS_WCSCMP
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %edx
++# endif
++# ifdef USE_AS_STRNCMP
++	cmpq	%r11, %rdx
++	jae	L(zero)
++# endif
++# ifdef USE_AS_WCSCMP
++	xorl	%eax, %eax
++	movl	(%rdi, %rdx), %ecx
++	cmpl	(%rsi, %rdx), %ecx
++	jne	L(wcscmp_return)
++# else
++	movzbl	(%rdi, %rdx), %eax
++	movzbl	(%rsi, %rdx), %edx
++	subl	%edx, %eax
++# endif
++	ret
++
++	/* Comparing on page boundary region requires special treatment:
++	   It must done one vector at the time, starting with the wider
++	   ymm vector if possible, if not, with xmm. If fetching 16 bytes
++	   (xmm) still passes the boundary, byte comparison must be done.
++	 */
++	.p2align 4
++L(cross_page):
++	/* Try one ymm vector at a time.  */
++	cmpl	$(PAGE_SIZE - VEC_SIZE), %eax
++	jg	L(cross_page_1_vector)
++L(loop_1_vector):
++	VMOVU	(%rdi, %rdx), %YMM0
++	VMOVU	(%rsi, %rdx), %YMM1
++
++	/* Each bit in K0 represents a mismatch in YMM0 and YMM1.  */
++	VPCMP	$4, %YMM0, %YMM1, %k0
++	VPCMP	$0, %YMMZERO, %YMM0, %k1
++	VPCMP	$0, %YMMZERO, %YMM1, %k2
++	/* Each bit in K1 represents a NULL in YMM0 or YMM1.  */
++	kord	%k1, %k2, %k1
++	/* Each bit in K1 represents a NULL or a mismatch.  */
++	kord	%k0, %k1, %k1
++	kmovd	%k1, %ecx
++	testl	%ecx, %ecx
++	jne	L(last_vector)
++
++	addl	$VEC_SIZE, %edx
++
++	addl	$VEC_SIZE, %eax
++# ifdef USE_AS_STRNCMP
++	/* Return 0 if the current offset (%rdx) >= the maximum offset
++	   (%r11).  */
++	cmpq	%r11, %rdx
++	jae	L(zero)
++# endif
++	cmpl	$(PAGE_SIZE - VEC_SIZE), %eax
++	jle	L(loop_1_vector)
++L(cross_page_1_vector):
++	/* Less than 32 bytes to check, try one xmm vector.  */
++	cmpl	$(PAGE_SIZE - 16), %eax
++	jg	L(cross_page_1_xmm)
++	VMOVU	(%rdi, %rdx), %XMM0
++	VMOVU	(%rsi, %rdx), %XMM1
++
++	/* Each bit in K0 represents a mismatch in XMM0 and XMM1.  */
++	VPCMP	$4, %XMM0, %XMM1, %k0
++	VPCMP	$0, %XMMZERO, %XMM0, %k1
++	VPCMP	$0, %XMMZERO, %XMM1, %k2
++	/* Each bit in K1 represents a NULL in XMM0 or XMM1.  */
++	korw	%k1, %k2, %k1
++	/* Each bit in K1 represents a NULL or a mismatch.  */
++	korw	%k0, %k1, %k1
++	kmovw	%k1, %ecx
++	testl	%ecx, %ecx
++	jne	L(last_vector)
++
++	addl	$16, %edx
++# ifndef USE_AS_WCSCMP
++	addl	$16, %eax
++# endif
++# ifdef USE_AS_STRNCMP
++	/* Return 0 if the current offset (%rdx) >= the maximum offset
++	   (%r11).  */
++	cmpq	%r11, %rdx
++	jae	L(zero)
++# endif
++
++L(cross_page_1_xmm):
++# ifndef USE_AS_WCSCMP
++	/* Less than 16 bytes to check, try 8 byte vector.  NB: No need
++	   for wcscmp nor wcsncmp since wide char is 4 bytes.   */
++	cmpl	$(PAGE_SIZE - 8), %eax
++	jg	L(cross_page_8bytes)
++	vmovq	(%rdi, %rdx), %XMM0
++	vmovq	(%rsi, %rdx), %XMM1
++
++	/* Each bit in K0 represents a mismatch in XMM0 and XMM1.  */
++	VPCMP	$4, %XMM0, %XMM1, %k0
++	VPCMP	$0, %XMMZERO, %XMM0, %k1
++	VPCMP	$0, %XMMZERO, %XMM1, %k2
++	/* Each bit in K1 represents a NULL in XMM0 or XMM1.  */
++	kord	%k1, %k2, %k1
++	/* Each bit in K1 represents a NULL or a mismatch.  */
++	kord	%k0, %k1, %k1
++	kmovd	%k1, %ecx
++
++# ifdef USE_AS_WCSCMP
++	/* Only last 2 bits are valid.  */
++	andl	$0x3, %ecx
++# else
++	/* Only last 8 bits are valid.  */
++	andl	$0xff, %ecx
++# endif
++
++	testl	%ecx, %ecx
++	jne	L(last_vector)
++
++	addl	$8, %edx
++	addl	$8, %eax
++#  ifdef USE_AS_STRNCMP
++	/* Return 0 if the current offset (%rdx) >= the maximum offset
++	   (%r11).  */
++	cmpq	%r11, %rdx
++	jae	L(zero)
++#  endif
++
++L(cross_page_8bytes):
++	/* Less than 8 bytes to check, try 4 byte vector.  */
++	cmpl	$(PAGE_SIZE - 4), %eax
++	jg	L(cross_page_4bytes)
++	vmovd	(%rdi, %rdx), %XMM0
++	vmovd	(%rsi, %rdx), %XMM1
++
++	/* Each bit in K0 represents a mismatch in XMM0 and XMM1.  */
++	VPCMP	$4, %XMM0, %XMM1, %k0
++	VPCMP	$0, %XMMZERO, %XMM0, %k1
++	VPCMP	$0, %XMMZERO, %XMM1, %k2
++	/* Each bit in K1 represents a NULL in XMM0 or XMM1.  */
++	kord	%k1, %k2, %k1
++	/* Each bit in K1 represents a NULL or a mismatch.  */
++	kord	%k0, %k1, %k1
++	kmovd	%k1, %ecx
++
++# ifdef USE_AS_WCSCMP
++	/* Only the last bit is valid.  */
++	andl	$0x1, %ecx
++# else
++	/* Only last 4 bits are valid.  */
++	andl	$0xf, %ecx
++# endif
++
++	testl	%ecx, %ecx
++	jne	L(last_vector)
++
++	addl	$4, %edx
++#  ifdef USE_AS_STRNCMP
++	/* Return 0 if the current offset (%rdx) >= the maximum offset
++	   (%r11).  */
++	cmpq	%r11, %rdx
++	jae	L(zero)
++#  endif
++
++L(cross_page_4bytes):
++# endif
++	/* Less than 4 bytes to check, try one byte/dword at a time.  */
++# ifdef USE_AS_STRNCMP
++	cmpq	%r11, %rdx
++	jae	L(zero)
++# endif
++# ifdef USE_AS_WCSCMP
++	movl	(%rdi, %rdx), %eax
++	movl	(%rsi, %rdx), %ecx
++# else
++	movzbl	(%rdi, %rdx), %eax
++	movzbl	(%rsi, %rdx), %ecx
++# endif
++	testl	%eax, %eax
++	jne	L(cross_page_loop)
++	subl	%ecx, %eax
++	ret
++END (STRCMP)
++#endif
+diff --git a/sysdeps/x86_64/multiarch/strcmp.c b/sysdeps/x86_64/multiarch/strcmp.c
+index 16ae72a4c809fccd53018f2295ee27ef91df7dcd..68ece4bc1ce85b937b778fcc512ce8877d228098 100644
+--- a/sysdeps/x86_64/multiarch/strcmp.c
++++ b/sysdeps/x86_64/multiarch/strcmp.c
+@@ -30,16 +30,25 @@ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2_unaligned) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (ssse3) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+ 
+ static inline void *
+ IFUNC_SELECTOR (void)
+ {
+   const struct cpu_features* cpu_features = __get_cpu_features ();
+ 
+-  if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER)
+-      && CPU_FEATURE_USABLE_P (cpu_features, AVX2)
++  if (CPU_FEATURE_USABLE_P (cpu_features, AVX2)
+       && CPU_FEATURES_ARCH_P (cpu_features, AVX_Fast_Unaligned_Load))
+-    return OPTIMIZE (avx2);
++    {
++      if (CPU_FEATURE_USABLE_P (cpu_features, AVX512VL)
++	  && CPU_FEATURE_USABLE_P (cpu_features, AVX512BW)
++	  && CPU_FEATURE_USABLE_P (cpu_features, BMI2)
++	  && !CPU_FEATURES_ARCH_P (cpu_features, Prefer_AVX2_STRCMP))
++	return OPTIMIZE (evex);
++
++      if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
++	return OPTIMIZE (avx2);
++    }
+ 
+   if (CPU_FEATURES_ARCH_P (cpu_features, Fast_Unaligned_Load))
+     return OPTIMIZE (sse2_unaligned);
+diff --git a/sysdeps/x86_64/multiarch/strlen-evex.S b/sysdeps/x86_64/multiarch/strlen-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..cd022509cb175ac0e24d10d2e56b53319afcd4a3
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strlen-evex.S
+@@ -0,0 +1,436 @@
++/* strlen/strnlen/wcslen/wcsnlen optimized with 256-bit EVEX instructions.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#if IS_IN (libc)
++
++# include <sysdep.h>
++
++# ifndef STRLEN
++#  define STRLEN	__strlen_evex
++# endif
++
++# define VMOVA		vmovdqa64
++
++# ifdef USE_AS_WCSLEN
++#  define VPCMP		vpcmpd
++#  define VPMINU	vpminud
++#  define SHIFT_REG	r9d
++# else
++#  define VPCMP		vpcmpb
++#  define VPMINU	vpminub
++#  define SHIFT_REG	ecx
++# endif
++
++# define XMMZERO	xmm16
++# define YMMZERO	ymm16
++# define YMM1		ymm17
++# define YMM2		ymm18
++# define YMM3		ymm19
++# define YMM4		ymm20
++# define YMM5		ymm21
++# define YMM6		ymm22
++
++# define VEC_SIZE 32
++
++	.section .text.evex,"ax",@progbits
++ENTRY (STRLEN)
++# ifdef USE_AS_STRNLEN
++	/* Check for zero length.  */
++	test	%RSI_LP, %RSI_LP
++	jz	L(zero)
++#  ifdef USE_AS_WCSLEN
++	shl	$2, %RSI_LP
++#  elif defined __ILP32__
++	/* Clear the upper 32 bits.  */
++	movl	%esi, %esi
++#  endif
++	mov	%RSI_LP, %R8_LP
++# endif
++	movl	%edi, %ecx
++	movq	%rdi, %rdx
++	vpxorq	%XMMZERO, %XMMZERO, %XMMZERO
++
++	/* Check if we may cross page boundary with one vector load.  */
++	andl	$(2 * VEC_SIZE - 1), %ecx
++	cmpl	$VEC_SIZE, %ecx
++	ja	L(cros_page_boundary)
++
++	/* Check the first VEC_SIZE bytes.  Each bit in K0 represents a
++	   null byte.  */
++	VPCMP	$0, (%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++
++# ifdef USE_AS_STRNLEN
++	jnz	L(first_vec_x0_check)
++	/* Adjust length and check the end of data.  */
++	subq	$VEC_SIZE, %rsi
++	jbe	L(max)
++# else
++	jnz	L(first_vec_x0)
++# endif
++
++	/* Align data for aligned loads in the loop.  */
++	addq	$VEC_SIZE, %rdi
++	andl	$(VEC_SIZE - 1), %ecx
++	andq	$-VEC_SIZE, %rdi
++
++# ifdef USE_AS_STRNLEN
++	/* Adjust length.  */
++	addq	%rcx, %rsi
++
++	subq	$(VEC_SIZE * 4), %rsi
++	jbe	L(last_4x_vec_or_less)
++# endif
++	jmp	L(more_4x_vec)
++
++	.p2align 4
++L(cros_page_boundary):
++	andl	$(VEC_SIZE - 1), %ecx
++	andq	$-VEC_SIZE, %rdi
++
++# ifdef USE_AS_WCSLEN
++	/* NB: Divide shift count by 4 since each bit in K0 represent 4
++	   bytes.  */
++	movl	%ecx, %SHIFT_REG
++	sarl	$2, %SHIFT_REG
++# endif
++	VPCMP	$0, (%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++
++	/* Remove the leading bytes.  */
++	sarxl	%SHIFT_REG, %eax, %eax
++	testl	%eax, %eax
++	jz	L(aligned_more)
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WCSLEN
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++# ifdef USE_AS_STRNLEN
++	/* Check the end of data.  */
++	cmpq	%rax, %rsi
++	jbe	L(max)
++# endif
++	addq	%rdi, %rax
++	addq	%rcx, %rax
++	subq	%rdx, %rax
++# ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++# endif
++	ret
++
++	.p2align 4
++L(aligned_more):
++# ifdef USE_AS_STRNLEN
++        /* "rcx" is less than VEC_SIZE.  Calculate "rdx + rcx - VEC_SIZE"
++	    with "rdx - (VEC_SIZE - rcx)" instead of "(rdx + rcx) - VEC_SIZE"
++	    to void possible addition overflow.  */
++	negq	%rcx
++	addq	$VEC_SIZE, %rcx
++
++	/* Check the end of data.  */
++	subq	%rcx, %rsi
++	jbe	L(max)
++# endif
++
++	addq	$VEC_SIZE, %rdi
++
++# ifdef USE_AS_STRNLEN
++	subq	$(VEC_SIZE * 4), %rsi
++	jbe	L(last_4x_vec_or_less)
++# endif
++
++L(more_4x_vec):
++	/* Check the first 4 * VEC_SIZE.  Only one VEC_SIZE at a time
++	   since data is only aligned to VEC_SIZE.  */
++	VPCMP	$0, (%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x0)
++
++	VPCMP	$0, VEC_SIZE(%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x1)
++
++	VPCMP	$0, (VEC_SIZE * 2)(%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x2)
++
++	VPCMP	$0, (VEC_SIZE * 3)(%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x3)
++
++	addq	$(VEC_SIZE * 4), %rdi
++
++# ifdef USE_AS_STRNLEN
++	subq	$(VEC_SIZE * 4), %rsi
++	jbe	L(last_4x_vec_or_less)
++# endif
++
++	/* Align data to 4 * VEC_SIZE.  */
++	movq	%rdi, %rcx
++	andl	$(4 * VEC_SIZE - 1), %ecx
++	andq	$-(4 * VEC_SIZE), %rdi
++
++# ifdef USE_AS_STRNLEN
++	/* Adjust length.  */
++	addq	%rcx, %rsi
++# endif
++
++	.p2align 4
++L(loop_4x_vec):
++	/* Compare 4 * VEC at a time forward.  */
++	VMOVA	(%rdi), %YMM1
++	VMOVA	VEC_SIZE(%rdi), %YMM2
++	VMOVA	(VEC_SIZE * 2)(%rdi), %YMM3
++	VMOVA	(VEC_SIZE * 3)(%rdi), %YMM4
++
++	VPMINU	%YMM1, %YMM2, %YMM5
++	VPMINU	%YMM3, %YMM4, %YMM6
++
++	VPMINU	%YMM5, %YMM6, %YMM5
++	VPCMP	$0, %YMM5, %YMMZERO, %k0
++	ktestd	%k0, %k0
++	jnz	L(4x_vec_end)
++
++	addq	$(VEC_SIZE * 4), %rdi
++
++# ifndef USE_AS_STRNLEN
++	jmp	L(loop_4x_vec)
++# else
++	subq	$(VEC_SIZE * 4), %rsi
++	ja	L(loop_4x_vec)
++
++L(last_4x_vec_or_less):
++	/* Less than 4 * VEC and aligned to VEC_SIZE.  */
++	addl	$(VEC_SIZE * 2), %esi
++	jle	L(last_2x_vec)
++
++	VPCMP	$0, (%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x0)
++
++	VPCMP	$0, VEC_SIZE(%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x1)
++
++	VPCMP	$0, (VEC_SIZE * 2)(%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x2_check)
++	subl	$VEC_SIZE, %esi
++	jle	L(max)
++
++	VPCMP	$0, (VEC_SIZE * 3)(%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x3_check)
++	movq	%r8, %rax
++#  ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++#  endif
++	ret
++
++	.p2align 4
++L(last_2x_vec):
++	addl	$(VEC_SIZE * 2), %esi
++
++	VPCMP	$0, (%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x0_check)
++	subl	$VEC_SIZE, %esi
++	jle	L(max)
++
++	VPCMP	$0, VEC_SIZE(%rdi), %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x1_check)
++	movq	%r8, %rax
++#  ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++#  endif
++	ret
++
++	.p2align 4
++L(first_vec_x0_check):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WCSLEN
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	/* Check the end of data.  */
++	cmpq	%rax, %rsi
++	jbe	L(max)
++	addq	%rdi, %rax
++	subq	%rdx, %rax
++#  ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++#  endif
++	ret
++
++	.p2align 4
++L(first_vec_x1_check):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WCSLEN
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	/* Check the end of data.  */
++	cmpq	%rax, %rsi
++	jbe	L(max)
++	addq	$VEC_SIZE, %rax
++	addq	%rdi, %rax
++	subq	%rdx, %rax
++#  ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++#  endif
++	ret
++
++	.p2align 4
++L(first_vec_x2_check):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WCSLEN
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	/* Check the end of data.  */
++	cmpq	%rax, %rsi
++	jbe	L(max)
++	addq	$(VEC_SIZE * 2), %rax
++	addq	%rdi, %rax
++	subq	%rdx, %rax
++#  ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++#  endif
++	ret
++
++	.p2align 4
++L(first_vec_x3_check):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WCSLEN
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	/* Check the end of data.  */
++	cmpq	%rax, %rsi
++	jbe	L(max)
++	addq	$(VEC_SIZE * 3), %rax
++	addq	%rdi, %rax
++	subq	%rdx, %rax
++#  ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++#  endif
++	ret
++
++	.p2align 4
++L(max):
++	movq	%r8, %rax
++#  ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++#  endif
++	ret
++
++	.p2align 4
++L(zero):
++	xorl	%eax, %eax
++	ret
++# endif
++
++	.p2align 4
++L(first_vec_x0):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WCSLEN
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	addq	%rdi, %rax
++	subq	%rdx, %rax
++# ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++# endif
++	ret
++
++	.p2align 4
++L(first_vec_x1):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WCSLEN
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	addq	$VEC_SIZE, %rax
++	addq	%rdi, %rax
++	subq	%rdx, %rax
++# ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++# endif
++	ret
++
++	.p2align 4
++L(first_vec_x2):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WCSLEN
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	addq	$(VEC_SIZE * 2), %rax
++	addq	%rdi, %rax
++	subq	%rdx, %rax
++# ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++# endif
++	ret
++
++	.p2align 4
++L(4x_vec_end):
++	VPCMP	$0, %YMM1, %YMMZERO, %k0
++	kmovd	%k0, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x0)
++	VPCMP	$0, %YMM2, %YMMZERO, %k1
++	kmovd	%k1, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x1)
++	VPCMP	$0, %YMM3, %YMMZERO, %k2
++	kmovd	%k2, %eax
++	testl	%eax, %eax
++	jnz	L(first_vec_x2)
++	VPCMP	$0, %YMM4, %YMMZERO, %k3
++	kmovd	%k3, %eax
++L(first_vec_x3):
++	tzcntl	%eax, %eax
++# ifdef USE_AS_WCSLEN
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	sall	$2, %eax
++# endif
++	addq	$(VEC_SIZE * 3), %rax
++	addq	%rdi, %rax
++	subq	%rdx, %rax
++# ifdef USE_AS_WCSLEN
++	shrq	$2, %rax
++# endif
++	ret
++
++END (STRLEN)
++#endif
+diff --git a/sysdeps/x86_64/multiarch/strncmp-evex.S b/sysdeps/x86_64/multiarch/strncmp-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..a1d53e8c9f894e3171be91d8b77940cdb1112188
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strncmp-evex.S
+@@ -0,0 +1,3 @@
++#define STRCMP	__strncmp_evex
++#define USE_AS_STRNCMP 1
++#include "strcmp-evex.S"
+diff --git a/sysdeps/x86_64/multiarch/strncmp.c b/sysdeps/x86_64/multiarch/strncmp.c
+index 3c94b3ffd92828a1d06dcbabd81110f15c555461..385032812f6a84d7debcc8be725d2d7857d8717b 100644
+--- a/sysdeps/x86_64/multiarch/strncmp.c
++++ b/sysdeps/x86_64/multiarch/strncmp.c
+@@ -30,16 +30,25 @@ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (ssse3) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse42) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+ 
+ static inline void *
+ IFUNC_SELECTOR (void)
+ {
+   const struct cpu_features* cpu_features = __get_cpu_features ();
+ 
+-  if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER)
+-      && CPU_FEATURE_USABLE_P (cpu_features, AVX2)
++  if (CPU_FEATURE_USABLE_P (cpu_features, AVX2)
+       && CPU_FEATURES_ARCH_P (cpu_features, AVX_Fast_Unaligned_Load))
+-    return OPTIMIZE (avx2);
++    {
++      if (CPU_FEATURE_USABLE_P (cpu_features, AVX512VL)
++	  && CPU_FEATURE_USABLE_P (cpu_features, AVX512BW)
++	  && CPU_FEATURE_USABLE_P (cpu_features, BMI2)
++	  && !CPU_FEATURES_ARCH_P (cpu_features, Prefer_AVX2_STRCMP))
++	return OPTIMIZE (evex);
++
++      if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
++	return OPTIMIZE (avx2);
++    }
+ 
+   if (CPU_FEATURE_USABLE_P (cpu_features, SSE4_2)
+       && !CPU_FEATURES_ARCH_P (cpu_features, Slow_SSE4_2))
+diff --git a/sysdeps/x86_64/multiarch/strnlen-evex.S b/sysdeps/x86_64/multiarch/strnlen-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..722022f303cc0ab581b0c957d7ceb933474b97f9
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strnlen-evex.S
+@@ -0,0 +1,4 @@
++#define STRLEN __strnlen_evex
++#define USE_AS_STRNLEN 1
++
++#include "strlen-evex.S"
+diff --git a/sysdeps/x86_64/multiarch/strrchr-evex.S b/sysdeps/x86_64/multiarch/strrchr-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..f920b5a584edd293a604452a99115de7e8beae4b
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/strrchr-evex.S
+@@ -0,0 +1,265 @@
++/* strrchr/wcsrchr optimized with 256-bit EVEX instructions.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#if IS_IN (libc)
++
++# include <sysdep.h>
++
++# ifndef STRRCHR
++#  define STRRCHR	__strrchr_evex
++# endif
++
++# define VMOVU		vmovdqu64
++# define VMOVA		vmovdqa64
++
++# ifdef USE_AS_WCSRCHR
++#  define VPBROADCAST	vpbroadcastd
++#  define VPCMP		vpcmpd
++#  define SHIFT_REG	r8d
++# else
++#  define VPBROADCAST	vpbroadcastb
++#  define VPCMP		vpcmpb
++#  define SHIFT_REG	ecx
++# endif
++
++# define XMMZERO	xmm16
++# define YMMZERO	ymm16
++# define YMMMATCH	ymm17
++# define YMM1		ymm18
++
++# define VEC_SIZE	32
++
++	.section .text.evex,"ax",@progbits
++ENTRY (STRRCHR)
++	movl	%edi, %ecx
++	/* Broadcast CHAR to YMMMATCH.  */
++	VPBROADCAST %esi, %YMMMATCH
++
++	vpxorq	%XMMZERO, %XMMZERO, %XMMZERO
++
++	/* Check if we may cross page boundary with one vector load.  */
++	andl	$(2 * VEC_SIZE - 1), %ecx
++	cmpl	$VEC_SIZE, %ecx
++	ja	L(cros_page_boundary)
++
++	VMOVU	(%rdi), %YMM1
++
++	/* Each bit in K0 represents a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM1, %k0
++	/* Each bit in K1 represents a CHAR in YMM1.  */
++	VPCMP	$0, %YMMMATCH, %YMM1, %k1
++	kmovd	%k0, %ecx
++	kmovd	%k1, %eax
++
++	addq	$VEC_SIZE, %rdi
++
++	testl	%eax, %eax
++	jnz	L(first_vec)
++
++	testl	%ecx, %ecx
++	jnz	L(return_null)
++
++	andq	$-VEC_SIZE, %rdi
++	xorl	%edx, %edx
++	jmp	L(aligned_loop)
++
++	.p2align 4
++L(first_vec):
++	/* Check if there is a null byte.  */
++	testl	%ecx, %ecx
++	jnz	L(char_and_nul_in_first_vec)
++
++	/* Remember the match and keep searching.  */
++	movl	%eax, %edx
++	movq	%rdi, %rsi
++	andq	$-VEC_SIZE, %rdi
++	jmp	L(aligned_loop)
++
++	.p2align 4
++L(cros_page_boundary):
++	andl	$(VEC_SIZE - 1), %ecx
++	andq	$-VEC_SIZE, %rdi
++
++# ifdef USE_AS_WCSRCHR
++	/* NB: Divide shift count by 4 since each bit in K1 represent 4
++	   bytes.  */
++	movl	%ecx, %SHIFT_REG
++	sarl	$2, %SHIFT_REG
++# endif
++
++	VMOVA	(%rdi), %YMM1
++
++	/* Each bit in K0 represents a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM1, %k0
++	/* Each bit in K1 represents a CHAR in YMM1.  */
++	VPCMP	$0, %YMMMATCH, %YMM1, %k1
++	kmovd	%k0, %edx
++	kmovd	%k1, %eax
++
++	shrxl	%SHIFT_REG, %edx, %edx
++	shrxl	%SHIFT_REG, %eax, %eax
++	addq	$VEC_SIZE, %rdi
++
++	/* Check if there is a CHAR.  */
++	testl	%eax, %eax
++	jnz	L(found_char)
++
++	testl	%edx, %edx
++	jnz	L(return_null)
++
++	jmp	L(aligned_loop)
++
++	.p2align 4
++L(found_char):
++	testl	%edx, %edx
++	jnz	L(char_and_nul)
++
++	/* Remember the match and keep searching.  */
++	movl	%eax, %edx
++	leaq	(%rdi, %rcx), %rsi
++
++	.p2align 4
++L(aligned_loop):
++	VMOVA	(%rdi), %YMM1
++	addq	$VEC_SIZE, %rdi
++
++	/* Each bit in K0 represents a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM1, %k0
++	/* Each bit in K1 represents a CHAR in YMM1.  */
++	VPCMP	$0, %YMMMATCH, %YMM1, %k1
++	kmovd	%k0, %ecx
++	kmovd	%k1, %eax
++	orl	%eax, %ecx
++	jnz	L(char_nor_null)
++
++	VMOVA	(%rdi), %YMM1
++	add	$VEC_SIZE, %rdi
++
++	/* Each bit in K0 represents a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM1, %k0
++	/* Each bit in K1 represents a CHAR in YMM1.  */
++	VPCMP	$0, %YMMMATCH, %YMM1, %k1
++	kmovd	%k0, %ecx
++	kmovd	%k1, %eax
++	orl	%eax, %ecx
++	jnz	L(char_nor_null)
++
++	VMOVA	(%rdi), %YMM1
++	addq	$VEC_SIZE, %rdi
++
++	/* Each bit in K0 represents a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM1, %k0
++	/* Each bit in K1 represents a CHAR in YMM1.  */
++	VPCMP	$0, %YMMMATCH, %YMM1, %k1
++	kmovd	%k0, %ecx
++	kmovd	%k1, %eax
++	orl	%eax, %ecx
++	jnz	L(char_nor_null)
++
++	VMOVA	(%rdi), %YMM1
++	addq	$VEC_SIZE, %rdi
++
++	/* Each bit in K0 represents a null byte in YMM1.  */
++	VPCMP	$0, %YMMZERO, %YMM1, %k0
++	/* Each bit in K1 represents a CHAR in YMM1.  */
++	VPCMP	$0, %YMMMATCH, %YMM1, %k1
++	kmovd	%k0, %ecx
++	kmovd	%k1, %eax
++	orl	%eax, %ecx
++	jz	L(aligned_loop)
++
++	.p2align 4
++L(char_nor_null):
++	/* Find a CHAR or a null byte in a loop.  */
++	testl	%eax, %eax
++	jnz	L(match)
++L(return_value):
++	testl	%edx, %edx
++	jz	L(return_null)
++	movl	%edx, %eax
++	movq	%rsi, %rdi
++	bsrl	%eax, %eax
++# ifdef USE_AS_WCSRCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	-VEC_SIZE(%rdi, %rax, 4), %rax
++# else
++	leaq	-VEC_SIZE(%rdi, %rax), %rax
++# endif
++	ret
++
++	.p2align 4
++L(match):
++	/* Find a CHAR.  Check if there is a null byte.  */
++	kmovd	%k0, %ecx
++	testl	%ecx, %ecx
++	jnz	L(find_nul)
++
++	/* Remember the match and keep searching.  */
++	movl	%eax, %edx
++	movq	%rdi, %rsi
++	jmp	L(aligned_loop)
++
++	.p2align 4
++L(find_nul):
++	/* Mask out any matching bits after the null byte.  */
++	movl	%ecx, %r8d
++	subl	$1, %r8d
++	xorl	%ecx, %r8d
++	andl	%r8d, %eax
++	testl	%eax, %eax
++	/* If there is no CHAR here, return the remembered one.  */
++	jz	L(return_value)
++	bsrl	%eax, %eax
++# ifdef USE_AS_WCSRCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	-VEC_SIZE(%rdi, %rax, 4), %rax
++# else
++	leaq	-VEC_SIZE(%rdi, %rax), %rax
++# endif
++	ret
++
++	.p2align 4
++L(char_and_nul):
++	/* Find both a CHAR and a null byte.  */
++	addq	%rcx, %rdi
++	movl	%edx, %ecx
++L(char_and_nul_in_first_vec):
++	/* Mask out any matching bits after the null byte.  */
++	movl	%ecx, %r8d
++	subl	$1, %r8d
++	xorl	%ecx, %r8d
++	andl	%r8d, %eax
++	testl	%eax, %eax
++	/* Return null pointer if the null byte comes first.  */
++	jz	L(return_null)
++	bsrl	%eax, %eax
++# ifdef USE_AS_WCSRCHR
++	/* NB: Multiply wchar_t count by 4 to get the number of bytes.  */
++	leaq	-VEC_SIZE(%rdi, %rax, 4), %rax
++# else
++	leaq	-VEC_SIZE(%rdi, %rax), %rax
++# endif
++	ret
++
++	.p2align 4
++L(return_null):
++	xorl	%eax, %eax
++	ret
++
++END (STRRCHR)
++#endif
+diff --git a/sysdeps/x86_64/multiarch/wcschr-evex.S b/sysdeps/x86_64/multiarch/wcschr-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..7cb8f1e41ab971251f8bea23840f79aca5aade7a
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcschr-evex.S
+@@ -0,0 +1,3 @@
++#define STRCHR __wcschr_evex
++#define USE_AS_WCSCHR 1
++#include "strchr-evex.S"
+diff --git a/sysdeps/x86_64/multiarch/wcscmp-evex.S b/sysdeps/x86_64/multiarch/wcscmp-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..42e73e51eb5ed0bea1bf2440abb9af3adcb6e36f
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcscmp-evex.S
+@@ -0,0 +1,4 @@
++#define STRCMP __wcscmp_evex
++#define USE_AS_WCSCMP 1
++
++#include "strcmp-evex.S"
+diff --git a/sysdeps/x86_64/multiarch/wcslen-evex.S b/sysdeps/x86_64/multiarch/wcslen-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..bdafa83bd531f8dcfc23eb8c52f30bd47a3c5258
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcslen-evex.S
+@@ -0,0 +1,4 @@
++#define STRLEN __wcslen_evex
++#define USE_AS_WCSLEN 1
++
++#include "strlen-evex.S"
+diff --git a/sysdeps/x86_64/multiarch/wcsncmp-evex.S b/sysdeps/x86_64/multiarch/wcsncmp-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..8a8e310713eb59079fab4452efe4e2626f53ee00
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcsncmp-evex.S
+@@ -0,0 +1,5 @@
++#define STRCMP __wcsncmp_evex
++#define USE_AS_STRNCMP 1
++#define USE_AS_WCSCMP 1
++
++#include "strcmp-evex.S"
+diff --git a/sysdeps/x86_64/multiarch/wcsnlen-evex.S b/sysdeps/x86_64/multiarch/wcsnlen-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..24773bb4e2327ca4c45e856f08a9e207b5a402d6
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcsnlen-evex.S
+@@ -0,0 +1,5 @@
++#define STRLEN __wcsnlen_evex
++#define USE_AS_WCSLEN 1
++#define USE_AS_STRNLEN 1
++
++#include "strlen-evex.S"
+diff --git a/sysdeps/x86_64/multiarch/wcsnlen.c b/sysdeps/x86_64/multiarch/wcsnlen.c
+index 52e7e5d4f3002e7a5dbc6a9b0db86df3fcab1197..a0878e23ed68c7bf3110227ad29d27b3533104f2 100644
+--- a/sysdeps/x86_64/multiarch/wcsnlen.c
++++ b/sysdeps/x86_64/multiarch/wcsnlen.c
+@@ -29,16 +29,24 @@
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (sse4_1) attribute_hidden;
+ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+ 
+ static inline void *
+ IFUNC_SELECTOR (void)
+ {
+   const struct cpu_features* cpu_features = __get_cpu_features ();
+ 
+-  if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER)
+-      && CPU_FEATURE_USABLE_P (cpu_features, AVX2)
++  if (CPU_FEATURE_USABLE_P (cpu_features, AVX2)
+       && CPU_FEATURES_ARCH_P (cpu_features, AVX_Fast_Unaligned_Load))
+-    return OPTIMIZE (avx2);
++    {
++      if (CPU_FEATURE_USABLE_P (cpu_features, AVX512VL)
++	  && CPU_FEATURE_USABLE_P (cpu_features, AVX512BW)
++	  && CPU_FEATURE_USABLE_P (cpu_features, BMI2))
++	return OPTIMIZE (evex);
++
++      if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
++	return OPTIMIZE (avx2);
++    }
+ 
+   if (CPU_FEATURE_USABLE_P (cpu_features, SSE4_1))
+     return OPTIMIZE (sse4_1);
+diff --git a/sysdeps/x86_64/multiarch/wcsrchr-evex.S b/sysdeps/x86_64/multiarch/wcsrchr-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..c64602f7dc154ad6f1522f1bbeb50771918c5da1
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcsrchr-evex.S
+@@ -0,0 +1,3 @@
++#define STRRCHR __wcsrchr_evex
++#define USE_AS_WCSRCHR 1
++#include "strrchr-evex.S"
+diff --git a/sysdeps/x86_64/multiarch/wmemchr-evex.S b/sysdeps/x86_64/multiarch/wmemchr-evex.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..06cd0f9f5a7575e72b070337bfc5f98a0efaf11a
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wmemchr-evex.S
+@@ -0,0 +1,4 @@
++#define MEMCHR __wmemchr_evex
++#define USE_AS_WMEMCHR 1
++
++#include "memchr-evex.S"
+-- 
+2.41.0
+

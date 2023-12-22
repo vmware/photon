@@ -1,0 +1,83 @@
+From 44b395932961a29825da4ad025124a6760858d9c Mon Sep 17 00:00:00 2001
+From: Raoni Fassina Firmino <raoni@linux.ibm.com>
+Date: Thu, 11 Feb 2021 17:41:20 -0300
+Subject: [PATCH 039/124] powerpc64: Workaround sigtramp vdso return call
+
+A not so recent kernel change[1] changed how the trampoline
+`__kernel_sigtramp_rt64` is used to call signal handlers.
+
+This was exposed on the test misc/tst-sigcontext-get_pc
+
+Before kernel 5.9, the kernel set LR to the trampoline address and
+jumped directly to the signal handler, and at the end the signal
+handler, as any other function, would `blr` to the address set.  In
+other words, the trampoline was executed just at the end of the signal
+handler and the only thing it did was call sigreturn.  But since
+kernel 5.9 the kernel set CTRL to the signal handler and calls to the
+trampoline code, the trampoline then `bctrl` to the address in CTRL,
+setting the LR to the next instruction in the middle of the
+trampoline, when the signal handler returns, the rest of the
+trampoline code executes the same code as before.
+
+Here is the full trampoline code as of kernel 5.11.0-rc5 for
+reference:
+
+    V_FUNCTION_BEGIN(__kernel_sigtramp_rt64)
+    .Lsigrt_start:
+            bctrl   /* call the handler */
+            addi    r1, r1, __SIGNAL_FRAMESIZE
+            li      r0,__NR_rt_sigreturn
+            sc
+    .Lsigrt_end:
+    V_FUNCTION_END(__kernel_sigtramp_rt64)
+
+This new behavior breaks how `backtrace()` uses to detect the
+trampoline frame to correctly reconstruct the stack frame when it is
+called from inside a signal handling.
+
+This workaround rely on the fact that the trampoline code is at very
+least two (maybe 3?) instructions in size (as it is in the 32 bits
+version, only on `li` and `sc`), so it is safe to check the return
+address be in the range __kernel_sigtramp_rt64 .. + 4.
+
+[1] subject: powerpc/64/signal: Balance return predictor stack in signal trampoline
+    commit: 0138ba5783ae0dcc799ad401a1e8ac8333790df9
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0138ba5783ae0dcc799ad401a1e8ac8333790df9
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit 5ee506ed35a2c9184bcb1fb5e79b6cceb9bb0dd1)
+---
+ sysdeps/powerpc/powerpc64/backtrace.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/sysdeps/powerpc/powerpc64/backtrace.c b/sysdeps/powerpc/powerpc64/backtrace.c
+index 8a53a1088f27af137b3cef4f3eac96046889cd92..362a2b713cf95a0496f07db4680377c5dfd50b33 100644
+--- a/sysdeps/powerpc/powerpc64/backtrace.c
++++ b/sysdeps/powerpc/powerpc64/backtrace.c
+@@ -54,11 +54,22 @@ struct signal_frame_64 {
+   /* We don't care about the rest, since the IP value is at 'uc' field.  */
+ };
+ 
++/* Test if the address match to the inside the trampoline code.
++   Up to and including kernel 5.8, returning from an interrupt or syscall to a
++   signal handler starts execution directly at the handler's entry point, with
++   LR set to address of the sigreturn trampoline (the vDSO symbol).
++   Newer kernels will branch to signal handler from the trampoline instead, so
++   checking the stacktrace against the vDSO entrypoint does not work in such
++   case.
++   The vDSO branches with a 'bctrl' instruction, so checking either the
++   vDSO address itself and the next instruction should cover all kernel
++   versions.  */
+ static inline bool
+ is_sigtramp_address (void *nip)
+ {
+ #ifdef HAVE_SIGTRAMP_RT64
+-  if (nip == GLRO (dl_vdso_sigtramp_rt64))
++  if (nip == GLRO (dl_vdso_sigtramp_rt64) ||
++      nip == GLRO (dl_vdso_sigtramp_rt64) + 4)
+     return true;
+ #endif
+   return false;
+-- 
+2.41.0
+

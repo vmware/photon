@@ -1,0 +1,39 @@
+From 0f8f0ed25c196cfb93edf461aefdad15314ae05c Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wdijkstr@arm.com>
+Date: Fri, 28 Aug 2020 17:51:40 +0100
+Subject: [PATCH 006/124] AArch64: Improve backwards memmove performance
+
+On some microarchitectures performance of the backwards memmove improves if
+the stores use STR with decreasing addresses.  So change the memmove loop
+in memcpy_advsimd.S to use 2x STR rather than STP.
+
+Reviewed-by: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+(cherry picked from commit bd394d131c10c9ec22c6424197b79410042eed99)
+---
+ sysdeps/aarch64/multiarch/memcpy_advsimd.S | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/sysdeps/aarch64/multiarch/memcpy_advsimd.S b/sysdeps/aarch64/multiarch/memcpy_advsimd.S
+index d4ba74777744c8bb5a83e43ab2d63ad8dab35203..48bb6d7ca425197907eaef2307fb3939e69baa15 100644
+--- a/sysdeps/aarch64/multiarch/memcpy_advsimd.S
++++ b/sysdeps/aarch64/multiarch/memcpy_advsimd.S
+@@ -223,12 +223,13 @@ L(copy_long_backwards):
+ 	b.ls	L(copy64_from_start)
+ 
+ L(loop64_backwards):
+-	stp	A_q, B_q, [dstend, -32]
++	str	B_q, [dstend, -16]
++	str	A_q, [dstend, -32]
+ 	ldp	A_q, B_q, [srcend, -96]
+-	stp	C_q, D_q, [dstend, -64]
++	str	D_q, [dstend, -48]
++	str	C_q, [dstend, -64]!
+ 	ldp	C_q, D_q, [srcend, -128]
+ 	sub	srcend, srcend, 64
+-	sub	dstend, dstend, 64
+ 	subs	count, count, 64
+ 	b.hi	L(loop64_backwards)
+ 
+-- 
+2.41.0
+

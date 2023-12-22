@@ -1,0 +1,24 @@
+From 05751d1c5c85b7f55086e81567cd55b025b25625 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Thu, 27 Jan 2022 12:22:42 -0800
+Subject: [PATCH 075/124] NEWS: Add a bug fix entry for BZ #27457
+
+---
+ NEWS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/NEWS b/NEWS
+index 39d741b4014cf45c86c00a518d976ac625c9ae03..aef85a7d1776c6289733116e0fe234e1e1c61ae2 100644
+--- a/NEWS
++++ b/NEWS
+@@ -23,6 +23,7 @@ The following bugs are resolved with this release:
+   [26932] libc: sh: Multiple floating point functions defined as stubs only
+   [27130] "rep movsb" performance issue
+   [27177] GLIBC_TUNABLES=glibc.cpu.x86_ibt=on:glibc.cpu.x86_shstk=on doesn't work
++  [27457] vzeroupper use in AVX2 multiarch string functions cause HTM aborts
+   [28524] Conversion from ISO-2022-JP-3 with iconv may emit spurious NULs
+   [28607] Masked signals are delivered on thread exit
+   [28755] overflow bug in wcsncmp_avx2 and wcsncmp_evex
+-- 
+2.41.0
+

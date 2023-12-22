@@ -1,0 +1,143 @@
+From 6bbc1a3a350655b8ca4670e0708f07d46782db3b Mon Sep 17 00:00:00 2001
+From: Sunil K Pandey <skpgkp2@gmail.com>
+Date: Wed, 28 Sep 2022 14:33:48 -0700
+Subject: [PATCH 102/124] x86-64: Require BMI2 for avx2 functions [BZ #29611]
+
+This patch fixes BZ #29611
+---
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c | 38 ++++++++++++++++------
+ 1 file changed, 28 insertions(+), 10 deletions(-)
+
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index d4bbf61030c46ef47ca1bb44b94937d3175638a9..0399dfe469ccd0561468d2f0f2a645940e2fe11a 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -41,10 +41,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   /* Support sysdeps/x86_64/multiarch/memchr.c.  */
+   IFUNC_IMPL (i, name, memchr,
+ 	      IFUNC_IMPL_ADD (array, i, memchr,
+-			      CPU_FEATURE_USABLE (AVX2),
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __memchr_avx2)
+ 	      IFUNC_IMPL_ADD (array, i, memchr,
+ 			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)
+ 			       && CPU_FEATURE_USABLE (RTM)),
+ 			      __memchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, memchr,
+@@ -166,15 +168,18 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   /* Support sysdeps/x86_64/multiarch/memrchr.c.  */
+   IFUNC_IMPL (i, name, memrchr,
+ 	      IFUNC_IMPL_ADD (array, i, memrchr,
+-			      CPU_FEATURE_USABLE (AVX2),
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __memrchr_avx2)
+ 	      IFUNC_IMPL_ADD (array, i, memrchr,
+ 			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)
+ 			       && CPU_FEATURE_USABLE (RTM)),
+ 			      __memrchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, memrchr,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+-			       && CPU_FEATURE_USABLE (AVX512BW)),
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __memrchr_evex)
+ 
+ 	      IFUNC_IMPL_ADD (array, i, memrchr, 1, __memrchr_sse2))
+@@ -269,10 +274,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   /* Support sysdeps/x86_64/multiarch/rawmemchr.c.  */
+   IFUNC_IMPL (i, name, rawmemchr,
+ 	      IFUNC_IMPL_ADD (array, i, rawmemchr,
+-			      CPU_FEATURE_USABLE (AVX2),
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __rawmemchr_avx2)
+ 	      IFUNC_IMPL_ADD (array, i, rawmemchr,
+ 			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)
+ 			       && CPU_FEATURE_USABLE (RTM)),
+ 			      __rawmemchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, rawmemchr,
+@@ -437,15 +444,18 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   /* Support sysdeps/x86_64/multiarch/strrchr.c.  */
+   IFUNC_IMPL (i, name, strrchr,
+ 	      IFUNC_IMPL_ADD (array, i, strrchr,
+-			      CPU_FEATURE_USABLE (AVX2),
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __strrchr_avx2)
+ 	      IFUNC_IMPL_ADD (array, i, strrchr,
+ 			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)
+ 			       && CPU_FEATURE_USABLE (RTM)),
+ 			      __strrchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, strrchr,
+ 			      (CPU_FEATURE_USABLE (AVX512VL)
+-			       && CPU_FEATURE_USABLE (AVX512BW)),
++			       && CPU_FEATURE_USABLE (AVX512BW)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __strrchr_evex)
+ 	      IFUNC_IMPL_ADD (array, i, strrchr, 1, __strrchr_sse2))
+ 
+@@ -596,10 +606,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   /* Support sysdeps/x86_64/multiarch/wcsrchr.c.  */
+   IFUNC_IMPL (i, name, wcsrchr,
+ 	      IFUNC_IMPL_ADD (array, i, wcsrchr,
+-			      CPU_FEATURE_USABLE (AVX2),
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __wcsrchr_avx2)
+ 	      IFUNC_IMPL_ADD (array, i, wcsrchr,
+ 			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)
+ 			       && CPU_FEATURE_USABLE (RTM)),
+ 			      __wcsrchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wcsrchr,
+@@ -612,10 +624,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   /* Support sysdeps/x86_64/multiarch/wcscmp.c.  */
+   IFUNC_IMPL (i, name, wcscmp,
+ 	      IFUNC_IMPL_ADD (array, i, wcscmp,
+-			      CPU_FEATURE_USABLE (AVX2),
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __wcscmp_avx2)
+ 	      IFUNC_IMPL_ADD (array, i, wcscmp,
+ 			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)
+ 			       && CPU_FEATURE_USABLE (RTM)),
+ 			      __wcscmp_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wcscmp,
+@@ -628,10 +642,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   /* Support sysdeps/x86_64/multiarch/wcsncmp.c.  */
+   IFUNC_IMPL (i, name, wcsncmp,
+ 	      IFUNC_IMPL_ADD (array, i, wcsncmp,
+-			      CPU_FEATURE_USABLE (AVX2),
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __wcsncmp_avx2)
+ 	      IFUNC_IMPL_ADD (array, i, wcsncmp,
+ 			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)
+ 			       && CPU_FEATURE_USABLE (RTM)),
+ 			      __wcsncmp_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wcsncmp,
+@@ -692,10 +708,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   /* Support sysdeps/x86_64/multiarch/wmemchr.c.  */
+   IFUNC_IMPL (i, name, wmemchr,
+ 	      IFUNC_IMPL_ADD (array, i, wmemchr,
+-			      CPU_FEATURE_USABLE (AVX2),
++			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __wmemchr_avx2)
+ 	      IFUNC_IMPL_ADD (array, i, wmemchr,
+ 			      (CPU_FEATURE_USABLE (AVX2)
++			       && CPU_FEATURE_USABLE (BMI2)
+ 			       && CPU_FEATURE_USABLE (RTM)),
+ 			      __wmemchr_avx2_rtm)
+ 	      IFUNC_IMPL_ADD (array, i, wmemchr,
+-- 
+2.41.0
+

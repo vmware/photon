@@ -1,0 +1,85 @@
+From f6f96a16e6ce649eca0a673bc13b051b40bf2ceb Mon Sep 17 00:00:00 2001
+From: "Dmitry V. Levin" <ldv@altlinux.org>
+Date: Tue, 4 Oct 2022 08:00:00 +0000
+Subject: [PATCH 105/124] NEWS: add entries for fixed bugs
+
+Add NEWS entries to the list of bugs that were fixed after glibc 2.32
+release: 24973, 25399, 26383, 26690, 26798, 26831, 26926, 26988, 27024,
+27068, 27256, 27398, 27462, 27471, 27476, 27511, 27609, 27655, 27896,
+28011, 28033, 28064, 28213, 29304, and 29611.
+---
+ NEWS | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+
+diff --git a/NEWS b/NEWS
+index 9998d471f5a4dad6b5d5a14f844c6ddb625425a4..3e844d918619fa96e8d212e6ae118c7ece905851 100644
+--- a/NEWS
++++ b/NEWS
+@@ -8,8 +8,14 @@ using `glibc' in the "product" field.
+ The following bugs are resolved with this release:
+ 
+   [20019] NULL pointer dereference in libc.so.6 IFUNC due to uninitialized GOT
++  [24973] locale: iconv encounters segmentation fault when converting
++    0x00 0xfe in EUC-KR to UTF-8 (CVE-2019-25013)
++  [25399] string: undefined reference to `__warn_memset_zero_len' when
++    changing gnuc version
+   [26224] iconv hangs when converting some invalid inputs from several IBM
+     character sets (CVE-2020-27618)
++  [26383] locale: bind_textdomain_codeset doesn't accept //TRANSLIT
++    anymore
+   [26534] libm.so 2.32 SIGILL in pow() due to FMA4 instruction on non-FMA4
+     system
+   [26555] string: strerrorname_np does not return the documented value
+@@ -19,18 +25,49 @@ The following bugs are resolved with this release:
+   [26637] libc: semctl SEM_STAT_ANY fails to pass the buffer specified
+     by the caller to the kernel
+   [26639] libc: msgctl IPC_INFO and MSG_INFO return garbage
++  [26690] stdio: Aliasing violation in __vfscanf_internal
++  [26798] dynamic-link: aarch64: variant PCS symbols may be incorrectly
++    lazy bound
++  [26831] aarch64: seccomp filters may prevent mprotect(PROT_EXEC|PROT_BTI)
+   [26853] aarch64: Missing unwind information in statically linked startup code
++  [26926] dynamic-link: aarch64: library dependencies are not bti
++    protected
+   [26932] libc: sh: Multiple floating point functions defined as stubs only
++  [26988] dynamic-link: aarch64: BTI mprotect address is not page
++    aligned
++  [27024] Wrong access (read_only, 3, 4) attribute for readlinkat
++  [27068] Static PIE binaries SIGILL when BTI is enabled on aarch64
+   [27130] "rep movsb" performance issue
+   [27177] GLIBC_TUNABLES=glibc.cpu.x86_ibt=on:glibc.cpu.x86_shstk=on doesn't work
++  [27256] locale: Assertion failure in ISO-2022-JP-3 gconv module
++    related to combining characters (CVE-2021-3326)
++  [27398] x86: Improve testing false positive for tst-cpu-features-cpuinfo with
++    bad hardware
+   [27457] vzeroupper use in AVX2 multiarch string functions cause HTM aborts
++  [27462] nscd: double-free in nscd (CVE-2021-27645)
++  [27471] GLIBC_TUNABLES aren't parsed properly in AT_SECURE binaries
++  [27476] getcwd(NULL, PATH_MAX) generates warnings on -Wnonnull
++  [27511] libc: S390 memmove assumes Vector Facility when MIE Facility 3
++    is present
++  [27609] dynamic-link: [2.32/2.33/2.34 Regression] In elf/dl-open.c
++    (_dl_open) we might use __LM_ID_CALLER to index GL(dl_ns)[]
++  [27655] string: Wrong size calculation in string/test-strnlen.c
++  [27896] nptl: mq_notify does not handle separately allocated thread
++    attributes (CVE-2021-33574)
+   [27974] Overflow bug in some implementation of wcsnlen, wmemchr, and wcsncat
++  [28011] libc: Wild read in wordexp (parse_param) (CVE-2021-35942)
++  [28033] libc: Need to check RTM_ALWAYS_ABORT for RTM
++  [28064] string: x86_64:wcslen implementation list has wcsnlen
++  [28213] librt: NULL pointer dereference in mq_notify (CVE-2021-38604)
+   [28524] Conversion from ISO-2022-JP-3 with iconv may emit spurious NULs
+   [28607] Masked signals are delivered on thread exit
+   [28755] overflow bug in wcsncmp_avx2 and wcsncmp_evex
+   [28896] strncmp-avx2-rtm and wcsncmp-avx2-rtm fallback on non-rtm
+     variants when avoiding overflow
++  [29304] libc: mq_timedreceive does not handle 64 bit syscall return
++    correct for !__ASSUME_TIME64_SYSCALLS
+   [29528] elf: Call __libc_early_init for reused namespaces
++  [29611] Optimized AVX2 string functions unconditionally use BMI2 instructions
+ 
+ Version 2.32
+ 
+-- 
+2.41.0
+

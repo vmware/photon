@@ -1,0 +1,78 @@
+From b6eae83717d1b272b3dc0f5eb59354ca6ffe4dde Mon Sep 17 00:00:00 2001
+From: Szabolcs Nagy <szabolcs.nagy@arm.com>
+Date: Thu, 29 Oct 2020 13:29:15 +0000
+Subject: [PATCH 032/124] elf: Move note processing after l_phdr is updated
+
+Program headers are processed in two pass: after the first pass
+load segments are mmapped so in the second pass target specific
+note processing logic can access the notes.
+
+The second pass is moved later so various link_map fields are
+set up that may be useful for note processing such as l_phdr.
+The second pass should be before the fd is closed so that is
+available.
+
+Reviewed-by: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+(cherry picked from commit 38a3836011f3fe3290a94ab136dcb5f3c5c9f4e2)
+
+elf: Fix dl-load.c
+
+Rebasing broke commit 38a3836011f3fe3290a94ab136dcb5f3c5c9f4e2
+it was supposed to move code.
+
+(cherry picked from commit 751acde7ec335506b54e94ed6f2c998f6c0a22c6)
+---
+ elf/dl-load.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/elf/dl-load.c b/elf/dl-load.c
+index e39980fb192dc19769d4e78142c277efac56b31b..9ef1cc320364232b7fdb8033cd08ce6eaea45e30 100644
+--- a/elf/dl-load.c
++++ b/elf/dl-load.c
+@@ -1251,21 +1251,6 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
+ 				  maplength, has_holes, loader);
+     if (__glibc_unlikely (errstring != NULL))
+       goto call_lose;
+-
+-    /* Process program headers again after load segments are mapped in
+-       case processing requires accessing those segments.  Scan program
+-       headers backward so that PT_NOTE can be skipped if PT_GNU_PROPERTY
+-       exits.  */
+-    for (ph = &phdr[l->l_phnum]; ph != phdr; --ph)
+-      switch (ph[-1].p_type)
+-	{
+-	case PT_NOTE:
+-	  _dl_process_pt_note (l, &ph[-1]);
+-	  break;
+-	case PT_GNU_PROPERTY:
+-	  _dl_process_pt_gnu_property (l, &ph[-1]);
+-	  break;
+-	}
+   }
+ 
+   if (l->l_ld == 0)
+@@ -1377,6 +1362,21 @@ cannot enable executable stack as shared object requires");
+   if (l->l_tls_initimage != NULL)
+     l->l_tls_initimage = (char *) l->l_tls_initimage + l->l_addr;
+ 
++  /* Process program headers again after load segments are mapped in
++     case processing requires accessing those segments.  Scan program
++     headers backward so that PT_NOTE can be skipped if PT_GNU_PROPERTY
++     exits.  */
++  for (ph = &l->l_phdr[l->l_phnum]; ph != l->l_phdr; --ph)
++    switch (ph[-1].p_type)
++      {
++      case PT_NOTE:
++	_dl_process_pt_note (l, &ph[-1]);
++	break;
++      case PT_GNU_PROPERTY:
++	_dl_process_pt_gnu_property (l, &ph[-1]);
++	break;
++      }
++
+   /* We are done mapping in the file.  We no longer need the descriptor.  */
+   if (__glibc_unlikely (__close_nocancel (fd) != 0))
+     {
+-- 
+2.41.0
+

@@ -1,0 +1,61 @@
+From 1799ac8eabe87acd7b1ef7c3a483171489563482 Mon Sep 17 00:00:00 2001
+From: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Date: Mon, 15 Mar 2021 16:00:06 +0530
+Subject: [PATCH 046/124] support: Typo and formatting fixes
+
+- Add a newline to the end of error messages in transfer().
+- Fixed the name of support_subprocess_init().
+
+(cherry picked from commit 95c68080a3ded882789b1629f872c3ad531efda0)
+---
+ support/support_capture_subprocess.c | 2 +-
+ support/support_subprocess.c         | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/support/support_capture_subprocess.c b/support/support_capture_subprocess.c
+index c82c8d465b2a576bb8f96a1c63a33a6e9933e07d..28a37df67f018892efa192f0436f9fba9e7c5936 100644
+--- a/support/support_capture_subprocess.c
++++ b/support/support_capture_subprocess.c
+@@ -39,7 +39,7 @@ transfer (const char *what, struct pollfd *pfd, struct xmemstream *stream)
+       if (ret < 0)
+         {
+           support_record_failure ();
+-          printf ("error: reading from subprocess %s: %m", what);
++          printf ("error: reading from subprocess %s: %m\n", what);
+           pfd->events = 0;
+           pfd->revents = 0;
+         }
+diff --git a/support/support_subprocess.c b/support/support_subprocess.c
+index 0d007fbb2d01d4c261e8f090fb130f164eeff0f9..4a25828111fc661c75a40f1bde45b0d5320c68f6 100644
+--- a/support/support_subprocess.c
++++ b/support/support_subprocess.c
+@@ -27,7 +27,7 @@
+ #include <support/subprocess.h>
+ 
+ static struct support_subprocess
+-support_suprocess_init (void)
++support_subprocess_init (void)
+ {
+   struct support_subprocess result;
+ 
+@@ -48,7 +48,7 @@ support_suprocess_init (void)
+ struct support_subprocess
+ support_subprocess (void (*callback) (void *), void *closure)
+ {
+-  struct support_subprocess result = support_suprocess_init ();
++  struct support_subprocess result = support_subprocess_init ();
+ 
+   result.pid = xfork ();
+   if (result.pid == 0)
+@@ -71,7 +71,7 @@ support_subprocess (void (*callback) (void *), void *closure)
+ struct support_subprocess
+ support_subprogram (const char *file, char *const argv[])
+ {
+-  struct support_subprocess result = support_suprocess_init ();
++  struct support_subprocess result = support_subprocess_init ();
+ 
+   posix_spawn_file_actions_t fa;
+   /* posix_spawn_file_actions_init does not fail.  */
+-- 
+2.41.0
+

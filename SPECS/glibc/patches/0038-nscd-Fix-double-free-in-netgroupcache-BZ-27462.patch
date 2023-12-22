@@ -1,0 +1,45 @@
+From 1d4526569162e6c8f0789eb077492730b0756b3b Mon Sep 17 00:00:00 2001
+From: DJ Delorie <dj@redhat.com>
+Date: Thu, 25 Feb 2021 16:08:21 -0500
+Subject: [PATCH 038/124] nscd: Fix double free in netgroupcache [BZ #27462]
+
+In commit 745664bd798ec8fd50438605948eea594179fba1 a use-after-free
+was fixed, but this led to an occasional double-free.  This patch
+tracks the "live" allocation better.
+
+Tested manually by a third party.
+
+Related: RHBZ 1927877
+
+Reviewed-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit dca565886b5e8bd7966e15f0ca42ee5cff686673)
+---
+ nscd/netgroupcache.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/nscd/netgroupcache.c b/nscd/netgroupcache.c
+index 88c69d1e9c1d183eccb8e443e43b3f42add0602d..381aa721ef28c778e6f6db9d6fd08283b0e3e1e7 100644
+--- a/nscd/netgroupcache.c
++++ b/nscd/netgroupcache.c
+@@ -248,7 +248,7 @@ addgetnetgrentX (struct database_dyn *db, int fd, request_header *req,
+ 					     : NULL);
+ 				    ndomain = (ndomain ? newbuf + ndomaindiff
+ 					       : NULL);
+-				    buffer = newbuf;
++				    *tofreep = buffer = newbuf;
+ 				  }
+ 
+ 				nhost = memcpy (buffer + bufused,
+@@ -319,7 +319,7 @@ addgetnetgrentX (struct database_dyn *db, int fd, request_header *req,
+ 		    else if (status == NSS_STATUS_TRYAGAIN && e == ERANGE)
+ 		      {
+ 			buflen *= 2;
+-			buffer = xrealloc (buffer, buflen);
++			*tofreep = buffer = xrealloc (buffer, buflen);
+ 		      }
+ 		    else if (status == NSS_STATUS_RETURN
+ 			     || status == NSS_STATUS_NOTFOUND
+-- 
+2.41.0
+

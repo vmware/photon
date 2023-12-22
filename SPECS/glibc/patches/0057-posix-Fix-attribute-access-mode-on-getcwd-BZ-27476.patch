@@ -1,0 +1,53 @@
+From 1d4002393974ae580596724c17a42b9c945663e0 Mon Sep 17 00:00:00 2001
+From: Aurelien Jarno <aurelien@aurel32.net>
+Date: Fri, 10 Sep 2021 19:39:35 +0200
+Subject: [PATCH 057/124] posix: Fix attribute access mode on getcwd [BZ
+ #27476]
+
+There is a GNU extension that allows to call getcwd(NULL, >0). It is
+described in the documentation, but also directly in the unistd.h
+header, just above the declaration.
+
+Therefore the attribute access mode added in commit 06febd8c6705
+is not correct. Drop it.
+
+(cherry picked from commit 63a788f48a713f2081f200dd054df3e728b0e7c2)
+---
+ posix/bits/unistd.h | 5 ++---
+ posix/unistd.h      | 3 +--
+ 2 files changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/posix/bits/unistd.h b/posix/bits/unistd.h
+index 725a83eb0de5aef581d5261690c6ca55b692c61f..7e5bb6fb1e9a99089c69af2a844da29a29632a15 100644
+--- a/posix/bits/unistd.h
++++ b/posix/bits/unistd.h
+@@ -193,10 +193,9 @@ __NTH (readlinkat (int __fd, const char *__restrict __path,
+ #endif
+ 
+ extern char *__getcwd_chk (char *__buf, size_t __size, size_t __buflen)
+-     __THROW __wur __attr_access ((__write_only__, 1, 2));
++     __THROW __wur;
+ extern char *__REDIRECT_NTH (__getcwd_alias,
+-			     (char *__buf, size_t __size), getcwd)
+-  __wur __attr_access ((__write_only__, 1, 2));
++			     (char *__buf, size_t __size), getcwd) __wur;
+ extern char *__REDIRECT_NTH (__getcwd_chk_warn,
+ 			     (char *__buf, size_t __size, size_t __buflen),
+ 			     __getcwd_chk)
+diff --git a/posix/unistd.h b/posix/unistd.h
+index aac164dc9c4c473d603d9ef1cc67dac42d9339c2..acf9ee7e79ab5a35615ec9300ec0c95ccc3fa35d 100644
+--- a/posix/unistd.h
++++ b/posix/unistd.h
+@@ -517,8 +517,7 @@ extern int fchdir (int __fd) __THROW __wur;
+    an array is allocated with `malloc'; the array is SIZE
+    bytes long, unless SIZE == 0, in which case it is as
+    big as necessary.  */
+-extern char *getcwd (char *__buf, size_t __size) __THROW __wur
+-    __attr_access ((__write_only__, 1, 2));
++extern char *getcwd (char *__buf, size_t __size) __THROW __wur;
+ 
+ #ifdef	__USE_GNU
+ /* Return a malloc'd string containing the current directory name.
+-- 
+2.41.0
+

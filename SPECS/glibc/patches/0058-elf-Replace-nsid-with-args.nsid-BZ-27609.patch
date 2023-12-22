@@ -1,0 +1,52 @@
+From 53c8f3f1255f4e45084476c9c23d63e99516ad3b Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Thu, 30 Sep 2021 10:29:17 -0700
+Subject: [PATCH 058/124] elf: Replace nsid with args.nsid [BZ #27609]
+
+commit ec935dea6332cb22f9881cd1162bad156173f4b0
+Author: Florian Weimer <fweimer@redhat.com>
+Date:   Fri Apr 24 22:31:15 2020 +0200
+
+    elf: Implement __libc_early_init
+
+has
+
+@@ -856,6 +876,11 @@ no more namespaces available for dlmopen()"));
+   /* See if an error occurred during loading.  */
+   if (__glibc_unlikely (exception.errstring != NULL))
+     {
++      /* Avoid keeping around a dangling reference to the libc.so link
++   map in case it has been cached in libc_map.  */
++      if (!args.libc_already_loaded)
++  GL(dl_ns)[nsid].libc_map = NULL;
++
+
+do_dlopen calls _dl_open with nsid == __LM_ID_CALLER (-2), which calls
+dl_open_worker with args.nsid = nsid.  dl_open_worker updates args.nsid
+if it is __LM_ID_CALLER.  After dl_open_worker returns, it is wrong to
+use nsid.
+
+Replace nsid with args.nsid after dl_open_worker returns.  This fixes
+BZ #27609.
+
+(cherry picked from commit 1e1ecea62e899acb58c3fdf3b320a0833ddd0dff)
+---
+ elf/dl-open.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/elf/dl-open.c b/elf/dl-open.c
+index 8769e4705157bb7732441541242b5bd9e4558bdc..55b39e1bbe022edf2b44878d1fae7ec46e3c4b86 100644
+--- a/elf/dl-open.c
++++ b/elf/dl-open.c
+@@ -887,7 +887,7 @@ no more namespaces available for dlmopen()"));
+       /* Avoid keeping around a dangling reference to the libc.so link
+ 	 map in case it has been cached in libc_map.  */
+       if (!args.libc_already_loaded)
+-	GL(dl_ns)[nsid].libc_map = NULL;
++	GL(dl_ns)[args.nsid].libc_map = NULL;
+ 
+       /* Remove the object from memory.  It may be in an inconsistent
+ 	 state if relocation failed, for example.  */
+-- 
+2.41.0
+

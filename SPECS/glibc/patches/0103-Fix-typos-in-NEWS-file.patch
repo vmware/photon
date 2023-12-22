@@ -1,0 +1,44 @@
+From 51e00fc5aa4baa0d14cca5e621386e3841c2bfac Mon Sep 17 00:00:00 2001
+From: Shuo Wang <wangshuo47@huawei.com>
+Date: Mon, 2 Nov 2020 15:53:13 +0800
+Subject: [PATCH 103/124] Fix typos in NEWS file
+
+(cherry picked from commit fdb724f9032ff73310be0e51549f494a3eaa7495)
+---
+ NEWS | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index d39e7299886d18739d332e266b3ddb279ef6998e..084434b869c67f41879d78b54389cf9d2e434f2f 100644
+--- a/NEWS
++++ b/NEWS
+@@ -704,7 +704,7 @@ The following bugs are resolved with this release:
+   [24040] libc: riscv64: unterminated call chain in __thread_start
+   [24047] network: libresolv should use IP_RECVERR/IPV6_RECVERR to avoid
+     long timeouts
+-  [24051] stdio: puts and putchar ouput to _IO_stdout instead of stdout
++  [24051] stdio: puts and putchar output to _IO_stdout instead of stdout
+   [24059] nss: nss_files: get_next_alias calls fgets_unlocked without
+     checking for NULL.
+   [24114] regex: regexec buffer read overrun in "grep -i
+@@ -1882,7 +1882,7 @@ The following bugs are resolved with this release:
+   [22111] malloc: malloc: per thread cache is not returned when thread exits
+   [22112] localedata: Fix LC_TELEPHONE/LC_NAME for az_AZ
+   [22134] libc: [linux] implement fexecve with execveat
+-  [22142] libc: [powerpc] printf oupts a wrong value of DBL_MAX on ppc64 and
++  [22142] libc: [powerpc] printf outputs a wrong value of DBL_MAX on ppc64 and
+     ppc64le
+   [22145] libc: ttyname() gives up too early in the face of namespaces
+   [22146] math: C++ build issue with float128 on x86_64
+@@ -2665,7 +2665,7 @@ Security related changes:
+ 
+ The following bugs are resolved with this release:
+ 
+-  [4099] stdio: Overly agressive caching by stream i/o functions.
++  [4099] stdio: Overly aggressive caching by stream i/o functions.
+   [7065] build: Support building glibc with -fstack-protector or -fstack-
+     protector-all
+   [9842] localedata: en_CA: incorrect date format
+-- 
+2.41.0
+

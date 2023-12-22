@@ -1,0 +1,124 @@
+From b923e061d4986e6c73f882698f65c911596fae5e Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Wed, 24 Nov 2021 08:59:54 +0100
+Subject: [PATCH 060/124] nptl: Do not set signal mask on second setjmp return
+ [BZ #28607]
+
+__libc_signal_restore_set was in the wrong place: It also ran
+when setjmp returned the second time (after pthread_exit or
+pthread_cancel).  This is observable with blocked pending
+signals during thread exit.
+
+Fixes commit b3cae39dcbfa2432b3f3aa28854d8ac57f0de1b8
+("nptl: Start new threads with all signals blocked [BZ #25098]").
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit e186fc5a31e46f2cbf5ea1a75223b4412907f3d8)
+---
+ NEWS                                      |  1 +
+ nptl/pthread_create.c                     |  4 +-
+ sysdeps/pthread/Makefile                  |  1 +
+ sysdeps/pthread/tst-pthread-exit-signal.c | 45 +++++++++++++++++++++++
+ 4 files changed, 49 insertions(+), 2 deletions(-)
+ create mode 100644 sysdeps/pthread/tst-pthread-exit-signal.c
+
+diff --git a/NEWS b/NEWS
+index 2afe250ccf48923402f09dd5f81570f57d6f31a0..581e6b2ac1439597807f5d55018b93ae45925982 100644
+--- a/NEWS
++++ b/NEWS
+@@ -23,6 +23,7 @@ The following bugs are resolved with this release:
+   [26932] libc: sh: Multiple floating point functions defined as stubs only
+   [27130] "rep movsb" performance issue
+   [27177] GLIBC_TUNABLES=glibc.cpu.x86_ibt=on:glibc.cpu.x86_shstk=on doesn't work
++  [28607] Masked signals are delivered on thread exit
+ 
+ Version 2.32
+ 
+diff --git a/nptl/pthread_create.c b/nptl/pthread_create.c
+index 2cba3da38cfaba4c66abf3e5604d90d2d5fc22ee..c217cda608a0363a3b63bb92620fc679227d8438 100644
+--- a/nptl/pthread_create.c
++++ b/nptl/pthread_create.c
+@@ -416,8 +416,6 @@ START_THREAD_DEFN
+   unwind_buf.priv.data.prev = NULL;
+   unwind_buf.priv.data.cleanup = NULL;
+ 
+-  __libc_signal_restore_set (&pd->sigmask);
+-
+   /* Allow setxid from now onwards.  */
+   if (__glibc_unlikely (atomic_exchange_acq (&pd->setxid_futex, 0) == -2))
+     futex_wake (&pd->setxid_futex, 1, FUTEX_PRIVATE);
+@@ -427,6 +425,8 @@ START_THREAD_DEFN
+       /* Store the new cleanup handler info.  */
+       THREAD_SETMEM (pd, cleanup_jmp_buf, &unwind_buf);
+ 
++      __libc_signal_restore_set (&pd->sigmask);
++
+       /* We are either in (a) or (b), and in either case we either own
+          PD already (2) or are about to own PD (1), and so our only
+ 	 restriction would be that we can't free PD until we know we
+diff --git a/sysdeps/pthread/Makefile b/sysdeps/pthread/Makefile
+index 920d875420fdb7073dff2432dc295c7c4b5a6c6f..bf9b7f7223615a1ad89d35ecfbbe116a2cacb9ad 100644
+--- a/sysdeps/pthread/Makefile
++++ b/sysdeps/pthread/Makefile
+@@ -107,6 +107,7 @@ tests += tst-cnd-basic tst-mtx-trylock tst-cnd-broadcast \
+ 	 tst-unload \
+ 	 tst-unwind-thread \
+ 	 tst-pt-vfork1 tst-pt-vfork2 tst-vfork1x tst-vfork2x \
++	 tst-pthread-exit-signal \
+ 
+ 
+ # Files which must not be linked with libpthread.
+diff --git a/sysdeps/pthread/tst-pthread-exit-signal.c b/sysdeps/pthread/tst-pthread-exit-signal.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..b4526fe663671068e3cb6f7d71bb075406aa5bf6
+--- /dev/null
++++ b/sysdeps/pthread/tst-pthread-exit-signal.c
+@@ -0,0 +1,45 @@
++/* Test that pending signals are not delivered on thread exit (bug 28607).
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++/* Due to bug 28607, pthread_kill (or pthread_cancel) restored the
++   signal mask during during thread exit, triggering the delivery of a
++   blocked pending signal (SIGUSR1 in this test).  */
++
++#include <support/xthread.h>
++#include <support/xsignal.h>
++
++static void *
++threadfunc (void *closure)
++{
++  sigset_t sigmask;
++  sigfillset (&sigmask);
++  xpthread_sigmask (SIG_SETMASK, &sigmask, NULL);
++  xpthread_kill (pthread_self (), SIGUSR1);
++  pthread_exit (NULL);
++  return NULL;
++}
++
++static int
++do_test (void)
++{
++  pthread_t thr = xpthread_create (NULL, threadfunc, NULL);
++  xpthread_join (thr);
++  return 0;
++}
++
++#include <support/test-driver.c>
+-- 
+2.41.0
+

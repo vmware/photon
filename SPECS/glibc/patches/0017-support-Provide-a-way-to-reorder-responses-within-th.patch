@@ -1,0 +1,307 @@
+From f688bcd83de17986deed911434b20a964410ad2e Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Wed, 14 Oct 2020 10:54:39 +0200
+Subject: [PATCH 017/124] support: Provide a way to reorder responses within
+ the DNS test server
+
+(cherry picked from commit 873e239a4c3d8ec235c27439c1bdc5bbf8aa1818)
+---
+ support/Makefile                            |  2 +
+ support/resolv_response_context_duplicate.c | 37 +++++++++++++
+ support/resolv_response_context_free.c      | 28 ++++++++++
+ support/resolv_test.c                       | 59 +++++++++++++--------
+ support/resolv_test.h                       | 37 +++++++++++--
+ 5 files changed, 135 insertions(+), 28 deletions(-)
+ create mode 100644 support/resolv_response_context_duplicate.c
+ create mode 100644 support/resolv_response_context_free.c
+
+diff --git a/support/Makefile b/support/Makefile
+index 93faafddf9d860589bb2c33c94a0719486649136..4154863511bcc7ef847f12cb163617ac2fda1aa0 100644
+--- a/support/Makefile
++++ b/support/Makefile
+@@ -35,6 +35,8 @@ libsupport-routines = \
+   ignore_stderr \
+   next_to_fault \
+   oom_error \
++  resolv_response_context_duplicate \
++  resolv_response_context_free \
+   resolv_test \
+   set_fortify_handler \
+   support-xfstat \
+diff --git a/support/resolv_response_context_duplicate.c b/support/resolv_response_context_duplicate.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..f9c5c3462ad053ec68107f7657175a20aa8e8588
+--- /dev/null
++++ b/support/resolv_response_context_duplicate.c
+@@ -0,0 +1,37 @@
++/* Duplicate a response context used in DNS resolver tests.
++   Copyright (C) 2020 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <string.h>
++#include <support/resolv_test.h>
++#include <support/support.h>
++
++struct resolv_response_context *
++resolv_response_context_duplicate (const struct resolv_response_context *ctx)
++{
++  struct resolv_response_context *result = xmalloc (sizeof (*result));
++  memcpy (result, ctx, sizeof (*result));
++  if (result->client_address != NULL)
++    {
++      result->client_address = xmalloc (result->client_address_length);
++      memcpy (result->client_address, ctx->client_address,
++              result->client_address_length);
++    }
++  result->query_buffer = xmalloc (result->query_length);
++  memcpy (result->query_buffer, ctx->query_buffer, result->query_length);
++  return result;
++}
+diff --git a/support/resolv_response_context_free.c b/support/resolv_response_context_free.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..b88c05ffd4acfdd442f570755e2af48ee2567014
+--- /dev/null
++++ b/support/resolv_response_context_free.c
+@@ -0,0 +1,28 @@
++/* Free a response context used in DNS resolver tests.
++   Copyright (C) 2020 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <stdlib.h>
++#include <support/resolv_test.h>
++
++void
++resolv_response_context_free (struct resolv_response_context *ctx)
++{
++  free (ctx->query_buffer);
++  free (ctx->client_address);
++  free (ctx);
++}
+diff --git a/support/resolv_test.c b/support/resolv_test.c
+index 53b7fc41ab894455547b7e0074753fe25edad4e6..e343c4b516039e44c33c5f583aca76eae98f6874 100644
+--- a/support/resolv_test.c
++++ b/support/resolv_test.c
+@@ -434,9 +434,9 @@ resolv_response_buffer (const struct resolv_response_builder *b)
+   return result;
+ }
+ 
+-static struct resolv_response_builder *
+-response_builder_allocate
+-  (const unsigned char *query_buffer, size_t query_length)
++struct resolv_response_builder *
++resolv_response_builder_allocate (const unsigned char *query_buffer,
++                                  size_t query_length)
+ {
+   struct resolv_response_builder *b = xmalloc (sizeof (*b));
+   memset (b, 0, offsetof (struct resolv_response_builder, buffer));
+@@ -445,8 +445,8 @@ response_builder_allocate
+   return b;
+ }
+ 
+-static void
+-response_builder_free (struct resolv_response_builder *b)
++void
++resolv_response_builder_free (struct resolv_response_builder *b)
+ {
+   tdestroy (b->compression_offsets, free);
+   free (b);
+@@ -661,13 +661,17 @@ server_thread_udp_process_one (struct resolv_test *obj, int server_index)
+ 
+   struct resolv_response_context ctx =
+     {
++      .test = obj,
++      .client_address = &peer,
++      .client_address_length = peerlen,
+       .query_buffer = query,
+       .query_length = length,
+       .server_index = server_index,
+       .tcp = false,
+       .edns = qinfo.edns,
+     };
+-  struct resolv_response_builder *b = response_builder_allocate (query, length);
++  struct resolv_response_builder *b
++    = resolv_response_builder_allocate (query, length);
+   obj->config.response_callback
+     (&ctx, b, qinfo.qname, qinfo.qclass, qinfo.qtype);
+ 
+@@ -684,7 +688,7 @@ server_thread_udp_process_one (struct resolv_test *obj, int server_index)
+           if (b->offset >= 12)
+             printf ("info: UDP server %d: sending response:"
+                     " %zu bytes, RCODE %d (for %s/%u/%u)\n",
+-                    server_index, b->offset, b->buffer[3] & 0x0f,
++                    ctx.server_index, b->offset, b->buffer[3] & 0x0f,
+                     qinfo.qname, qinfo.qclass, qinfo.qtype);
+           else
+             printf ("info: UDP server %d: sending response: %zu bytes"
+@@ -694,23 +698,31 @@ server_thread_udp_process_one (struct resolv_test *obj, int server_index)
+           if (b->truncate_bytes > 0)
+             printf ("info:    truncated by %u bytes\n", b->truncate_bytes);
+         }
+-      size_t to_send = b->offset;
+-      if (to_send < b->truncate_bytes)
+-        to_send = 0;
+-      else
+-        to_send -= b->truncate_bytes;
+-
+-      /* Ignore most errors here because the other end may have closed
+-         the socket. */
+-      if (sendto (obj->servers[server_index].socket_udp,
+-                  b->buffer, to_send, 0,
+-                  (struct sockaddr *) &peer, peerlen) < 0)
+-        TEST_VERIFY_EXIT (errno != EBADF);
++      resolv_response_send_udp (&ctx, b);
+     }
+-  response_builder_free (b);
++  resolv_response_builder_free (b);
+   return true;
+ }
+ 
++void
++resolv_response_send_udp (const struct resolv_response_context *ctx,
++                          struct resolv_response_builder *b)
++{
++  TEST_VERIFY_EXIT (!ctx->tcp);
++  size_t to_send = b->offset;
++  if (to_send < b->truncate_bytes)
++    to_send = 0;
++  else
++    to_send -= b->truncate_bytes;
++
++  /* Ignore most errors here because the other end may have closed
++     the socket.  */
++  if (sendto (ctx->test->servers[ctx->server_index].socket_udp,
++              b->buffer, to_send, 0,
++              ctx->client_address, ctx->client_address_length) < 0)
++    TEST_VERIFY_EXIT (errno != EBADF);
++}
++
+ /* UDP thread_callback function.  Variant for one thread per
+    server.  */
+ static void
+@@ -897,14 +909,15 @@ server_thread_tcp_client (void *arg)
+ 
+       struct resolv_response_context ctx =
+         {
++          .test = closure->obj,
+           .query_buffer = query_buffer,
+           .query_length = query_length,
+           .server_index = closure->server_index,
+           .tcp = true,
+           .edns = qinfo.edns,
+         };
+-      struct resolv_response_builder *b = response_builder_allocate
+-        (query_buffer, query_length);
++      struct resolv_response_builder *b
++        = resolv_response_builder_allocate (query_buffer, query_length);
+       closure->obj->config.response_callback
+         (&ctx, b, qinfo.qname, qinfo.qclass, qinfo.qtype);
+ 
+@@ -936,7 +949,7 @@ server_thread_tcp_client (void *arg)
+           writev_fully (closure->client_socket, buffers, 2);
+         }
+       bool close_flag = b->close;
+-      response_builder_free (b);
++      resolv_response_builder_free (b);
+       free (query_buffer);
+       if (close_flag)
+         break;
+diff --git a/support/resolv_test.h b/support/resolv_test.h
+index 67819469a07053ef397b1a69be0fae50017d2091..c46de32ff4f9ab59d5809d7dabbf80567d58aff6 100644
+--- a/support/resolv_test.h
++++ b/support/resolv_test.h
+@@ -35,25 +35,36 @@ struct resolv_edns_info
+   uint16_t payload_size;
+ };
+ 
++/* This opaque struct collects information about the resolver testing
++   currently in progress.  */
++struct resolv_test;
++
+ /* This struct provides context information when the response callback
+    specified in struct resolv_redirect_config is invoked. */
+ struct resolv_response_context
+ {
+-  const unsigned char *query_buffer;
++  struct resolv_test *test;
++  void *client_address;
++  size_t client_address_length;
++  unsigned char *query_buffer;
+   size_t query_length;
+   int server_index;
+   bool tcp;
+   struct resolv_edns_info edns;
+ };
+ 
++/* Produces a deep copy of the context.  */
++struct resolv_response_context *
++  resolv_response_context_duplicate (const struct resolv_response_context *);
++
++/* Frees the copy.  For the context passed to the response function,
++   this happens implicitly.  */
++void resolv_response_context_free (struct resolv_response_context *);
++
+ /* This opaque struct is used to construct responses from within the
+    response callback function.  */
+ struct resolv_response_builder;
+ 
+-/* This opaque struct collects information about the resolver testing
+-   currently in progress.  */
+-struct resolv_test;
+-
+ enum
+   {
+     /* Maximum number of test servers supported by the framework.  */
+@@ -188,6 +199,22 @@ void resolv_response_close (struct resolv_response_builder *);
+ /* The size of the response packet built so far.  */
+ size_t resolv_response_length (const struct resolv_response_builder *);
+ 
++/* Allocates a response builder tied to a specific query packet,
++   starting at QUERY_BUFFER, containing QUERY_LENGTH bytes.  */
++struct resolv_response_builder *
++  resolv_response_builder_allocate (const unsigned char *query_buffer,
++                                    size_t query_length);
++
++/* Deallocates a response buffer.  */
++void resolv_response_builder_free (struct resolv_response_builder *);
++
++/* Sends a UDP response using a specific context.  This can be used to
++   reorder or duplicate responses, along with
++   resolv_response_context_duplicate and
++   response_builder_allocate.  */
++void resolv_response_send_udp (const struct resolv_response_context *,
++                               struct resolv_response_builder *);
++
+ __END_DECLS
+ 
+ #endif /* SUPPORT_RESOLV_TEST_H */
+-- 
+2.41.0
+

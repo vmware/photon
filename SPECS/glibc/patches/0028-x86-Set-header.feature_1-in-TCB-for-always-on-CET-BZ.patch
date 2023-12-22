@@ -1,0 +1,73 @@
+From 87450ecf8a80fa0572ec3a99abad30d11b5ccd4b Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Tue, 12 Jan 2021 19:00:13 -0800
+Subject: [PATCH 028/124] x86: Set header.feature_1 in TCB for always-on CET
+ [BZ #27177]
+
+Update dl_cet_check() to set header.feature_1 in TCB when both IBT and
+SHSTK are always on.
+
+(cherry picked from commit 2ef23b520597f4ea1790a669b83e608f24f4cf12)
+---
+ NEWS                         | 1 +
+ sysdeps/x86/Makefile         | 6 ++++++
+ sysdeps/x86/dl-cet.c         | 5 ++++-
+ sysdeps/x86/tst-setjmp-cet.c | 1 +
+ 4 files changed, 12 insertions(+), 1 deletion(-)
+ create mode 100644 sysdeps/x86/tst-setjmp-cet.c
+
+diff --git a/NEWS b/NEWS
+index 5c32a966b74e13832cb459345dd99c1affaba85f..8b589b175b0a59d638de06128ebdf780cb385503 100644
+--- a/NEWS
++++ b/NEWS
+@@ -21,6 +21,7 @@ The following bugs are resolved with this release:
+   [26853] aarch64: Missing unwind information in statically linked startup code
+   [26932] libc: sh: Multiple floating point functions defined as stubs only
+   [27130] "rep movsb" performance issue
++  [27177] GLIBC_TUNABLES=glibc.cpu.x86_ibt=on:glibc.cpu.x86_shstk=on doesn't work
+ 
+ Version 2.32
+ 
+diff --git a/sysdeps/x86/Makefile b/sysdeps/x86/Makefile
+index a6736aef2554737fa56b1c5d898ee7075e9b87c8..9736a13e7be0f15c9b43e1ccc4bc8fe685e1c1f4 100644
+--- a/sysdeps/x86/Makefile
++++ b/sysdeps/x86/Makefile
+@@ -12,6 +12,12 @@ endif
+ ifeq ($(subdir),setjmp)
+ gen-as-const-headers += jmp_buf-ssp.sym
+ sysdep_routines += __longjmp_cancel
++ifneq ($(enable-cet),no)
++ifneq ($(have-tunables),no)
++tests += tst-setjmp-cet
++tst-setjmp-cet-ENV = GLIBC_TUNABLES=glibc.cpu.x86_ibt=on:glibc.cpu.x86_shstk=on
++endif
++endif
+ endif
+ 
+ ifeq ($(subdir),string)
+diff --git a/sysdeps/x86/dl-cet.c b/sysdeps/x86/dl-cet.c
+index 03572f7af6ff18d12ef48b263e7f4fb28d0e1cbd..3cc54a8d534cf0036d18846e186ea841c8327a32 100644
+--- a/sysdeps/x86/dl-cet.c
++++ b/sysdeps/x86/dl-cet.c
+@@ -47,7 +47,10 @@ dl_cet_check (struct link_map *m, const char *program)
+   /* No legacy object check if both IBT and SHSTK are always on.  */
+   if (enable_ibt_type == cet_always_on
+       && enable_shstk_type == cet_always_on)
+-    return;
++    {
++      THREAD_SETMEM (THREAD_SELF, header.feature_1, GL(dl_x86_feature_1));
++      return;
++    }
+ 
+   /* Check if IBT is enabled by kernel.  */
+   bool ibt_enabled
+diff --git a/sysdeps/x86/tst-setjmp-cet.c b/sysdeps/x86/tst-setjmp-cet.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..42c795d2a86a70a55cd78963052e03dc48bb9c4d
+--- /dev/null
++++ b/sysdeps/x86/tst-setjmp-cet.c
+@@ -0,0 +1 @@
++#include <setjmp/tst-setjmp.c>
+-- 
+2.41.0
+

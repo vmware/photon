@@ -1,0 +1,163 @@
+From 33dc30bc838b12183744746de102da8b76b9b1d0 Mon Sep 17 00:00:00 2001
+From: Szabolcs Nagy <szabolcs.nagy@arm.com>
+Date: Tue, 1 Dec 2020 10:13:18 +0000
+Subject: [PATCH 034/124] aarch64: Use mmap to add PROT_BTI instead of mprotect
+ [BZ #26831]
+
+Re-mmap executable segments if possible instead of using mprotect
+to add PROT_BTI. This allows using BTI protection with security
+policies that prevent mprotect with PROT_EXEC.
+
+If the fd of the ELF module is not available because it was kernel
+mapped then mprotect is used and failures are ignored.  To protect
+the main executable even when mprotect is filtered the linux kernel
+ will have to be changed to add PROT_BTI to it.
+
+The delayed failure reporting is mainly needed because currently
+_dl_process_gnu_properties does not propagate failures such that
+the required cleanups happen. Using the link_map_machine struct for
+error propagation is not ideal, but this seemed to be the least
+intrusive solution.
+
+Fixes bug 26831.
+
+Reviewed-by: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+(cherry picked from commit cd543b5eb3642d76e365a131ce676f31fe3f1dd4)
+---
+ sysdeps/aarch64/dl-bti.c  | 52 ++++++++++++++++++++++++++-------------
+ sysdeps/aarch64/dl-prop.h |  8 +++++-
+ sysdeps/aarch64/linkmap.h |  2 +-
+ 3 files changed, 43 insertions(+), 19 deletions(-)
+
+diff --git a/sysdeps/aarch64/dl-bti.c b/sysdeps/aarch64/dl-bti.c
+index 779d0fe48879eaccd1283efdf1bf2e36be3226c9..cf7624aaa2fefe7437781ec5b866a482ae885d9e 100644
+--- a/sysdeps/aarch64/dl-bti.c
++++ b/sysdeps/aarch64/dl-bti.c
+@@ -19,9 +19,17 @@
+ #include <errno.h>
+ #include <libintl.h>
+ #include <ldsodefs.h>
++#include <sys/mman.h>
+ 
+-static void
+-enable_bti (struct link_map *map, const char *program)
++/* See elf/dl-load.h.  */
++#ifndef MAP_COPY
++# define MAP_COPY (MAP_PRIVATE | MAP_DENYWRITE)
++#endif
++
++/* Enable BTI protection for MAP.  */
++
++void
++_dl_bti_protect (struct link_map *map, int fd)
+ {
+   const size_t pagesz = GLRO(dl_pagesize);
+   const ElfW(Phdr) *phdr;
+@@ -41,18 +49,30 @@ enable_bti (struct link_map *map, const char *program)
+ 	if (phdr->p_flags & PF_W)
+ 	  prot |= PROT_WRITE;
+ 
+-	if (__mprotect (start, len, prot) < 0)
+-	  {
+-	    if (program)
+-	      _dl_fatal_printf ("%s: mprotect failed to turn on BTI\n",
+-				map->l_name);
+-	    else
+-	      _dl_signal_error (errno, map->l_name, "dlopen",
+-				N_("mprotect failed to turn on BTI"));
+-	  }
++	if (fd == -1)
++	  /* Ignore failures for kernel mapped binaries.  */
++	  __mprotect (start, len, prot);
++	else
++	  map->l_mach.bti_fail = __mmap (start, len, prot,
++					 MAP_FIXED|MAP_COPY|MAP_FILE,
++					 fd, off) == MAP_FAILED;
+       }
+ }
+ 
++
++static void
++bti_failed (struct link_map *l, const char *program)
++{
++  if (program)
++    _dl_fatal_printf ("%s: %s: failed to turn on BTI protection\n",
++		      program, l->l_name);
++  else
++    /* Note: the errno value is not available any more.  */
++    _dl_signal_error (0, l->l_name, "dlopen",
++		      N_("failed to turn on BTI protection"));
++}
++
++
+ /* Enable BTI for L and its dependencies.  */
+ 
+ void
+@@ -61,16 +81,14 @@ _dl_bti_check (struct link_map *l, const char *program)
+   if (!GLRO(dl_aarch64_cpu_features).bti)
+     return;
+ 
+-  if (l->l_mach.bti)
+-    enable_bti (l, program);
++  if (l->l_mach.bti_fail)
++    bti_failed (l, program);
+ 
+   unsigned int i = l->l_searchlist.r_nlist;
+   while (i-- > 0)
+     {
+       struct link_map *dep = l->l_initfini[i];
+-      if (dep->l_init_called)
+-	continue;
+-      if (dep->l_mach.bti)
+-	enable_bti (dep, program);
++      if (dep->l_mach.bti_fail)
++	bti_failed (dep, program);
+     }
+ }
+diff --git a/sysdeps/aarch64/dl-prop.h b/sysdeps/aarch64/dl-prop.h
+index 2016d1472e1e69b82040dee1c11f2dd96efdfc90..e926e549849a5e5f22af1db06efc3a6ce51dfb93 100644
+--- a/sysdeps/aarch64/dl-prop.h
++++ b/sysdeps/aarch64/dl-prop.h
+@@ -19,6 +19,8 @@
+ #ifndef _DL_PROP_H
+ #define _DL_PROP_H
+ 
++extern void _dl_bti_protect (struct link_map *, int) attribute_hidden;
++
+ extern void _dl_bti_check (struct link_map *, const char *)
+     attribute_hidden;
+ 
+@@ -43,6 +45,10 @@ static inline int
+ _dl_process_gnu_property (struct link_map *l, int fd, uint32_t type,
+ 			  uint32_t datasz, void *data)
+ {
++  if (!GLRO(dl_aarch64_cpu_features).bti)
++    /* Skip note processing.  */
++    return 0;
++
+   if (type == GNU_PROPERTY_AARCH64_FEATURE_1_AND)
+     {
+       /* Stop if the property note is ill-formed.  */
+@@ -51,7 +57,7 @@ _dl_process_gnu_property (struct link_map *l, int fd, uint32_t type,
+ 
+       unsigned int feature_1 = *(unsigned int *) data;
+       if (feature_1 & GNU_PROPERTY_AARCH64_FEATURE_1_BTI)
+-	l->l_mach.bti = true;
++	_dl_bti_protect (l, fd);
+ 
+       /* Stop if we processed the property note.  */
+       return 0;
+diff --git a/sysdeps/aarch64/linkmap.h b/sysdeps/aarch64/linkmap.h
+index 847a03ace2f85b7acdebde8a2a11015dccaa474b..b3f7663b07df5d05471659b2350883c195a6a91a 100644
+--- a/sysdeps/aarch64/linkmap.h
++++ b/sysdeps/aarch64/linkmap.h
+@@ -22,5 +22,5 @@ struct link_map_machine
+ {
+   ElfW(Addr) plt;	  /* Address of .plt */
+   void *tlsdesc_table;	  /* Address of TLS descriptor hash table.  */
+-  bool bti;		  /* Branch Target Identification is enabled.  */
++  bool bti_fail;	  /* Failed to enable Branch Target Identification.  */
+ };
+-- 
+2.41.0
+

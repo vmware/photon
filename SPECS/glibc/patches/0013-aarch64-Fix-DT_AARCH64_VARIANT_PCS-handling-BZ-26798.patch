@@ -1,0 +1,55 @@
+From 70ee5e8b573f76745760dd6b75f705590fc1923a Mon Sep 17 00:00:00 2001
+From: Szabolcs Nagy <szabolcs.nagy@arm.com>
+Date: Thu, 22 Oct 2020 17:55:01 +0100
+Subject: [PATCH 013/124] aarch64: Fix DT_AARCH64_VARIANT_PCS handling [BZ
+ #26798]
+
+The variant PCS support was ineffective because in the common case
+linkmap->l_mach.plt == 0 but then the symbol table flags were ignored
+and normal lazy binding was used instead of resolving the relocs early.
+(This was a misunderstanding about how GOT[1] is setup by the linker.)
+
+In practice this mainly affects SVE calls when the vector length is
+more than 128 bits, then the top bits of the argument registers get
+clobbered during lazy binding.
+
+Fixes bug 26798.
+
+(cherry picked from commit 558251bd8785760ad40fcbfeaaee5d27fa5b0fe4)
+---
+ sysdeps/aarch64/dl-machine.h | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/sysdeps/aarch64/dl-machine.h b/sysdeps/aarch64/dl-machine.h
+index 70b9ed39250a9fd8ab6270940f2f69a383b081a9..fde7cfd9e2ba2fef7fd60b1891a7d2ae02dd2330 100644
+--- a/sysdeps/aarch64/dl-machine.h
++++ b/sysdeps/aarch64/dl-machine.h
+@@ -395,13 +395,6 @@ elf_machine_lazy_rel (struct link_map *map,
+   /* Check for unexpected PLT reloc type.  */
+   if (__builtin_expect (r_type == AARCH64_R(JUMP_SLOT), 1))
+     {
+-      if (map->l_mach.plt == 0)
+-	{
+-	  /* Prelinking.  */
+-	  *reloc_addr += l_addr;
+-	  return;
+-	}
+-
+       if (__glibc_unlikely (map->l_info[DT_AARCH64 (VARIANT_PCS)] != NULL))
+ 	{
+ 	  /* Check the symbol table for variant PCS symbols.  */
+@@ -425,7 +418,10 @@ elf_machine_lazy_rel (struct link_map *map,
+ 	    }
+ 	}
+ 
+-      *reloc_addr = map->l_mach.plt;
++      if (map->l_mach.plt == 0)
++	*reloc_addr += l_addr;
++      else
++	*reloc_addr = map->l_mach.plt;
+     }
+   else if (__builtin_expect (r_type == AARCH64_R(TLSDESC), 1))
+     {
+-- 
+2.41.0
+

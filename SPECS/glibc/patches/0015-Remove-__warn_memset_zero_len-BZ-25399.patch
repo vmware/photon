@@ -1,0 +1,58 @@
+From 5337b2af4b863fc9a1b92134bbe09758f1eff39d Mon Sep 17 00:00:00 2001
+From: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Date: Tue, 3 Nov 2020 15:09:28 +0530
+Subject: [PATCH 015/124] Remove __warn_memset_zero_len [BZ #25399]
+
+Non-gcc compilers (clang and possibly other compilers that do not
+masquerade as gcc 5.0 or later) are unable to use
+__warn_memset_zero_len since the symbol is no longer available on
+glibc built with gcc 5.0 or later.  While it was likely an oversight
+that caused this omission, the fact that it wasn't noticed until
+recently (when clang closed the gap on _FORTIFY_SUPPORT) that the
+symbol was missing.
+
+Given that both gcc and clang are capable of doing this check in the
+compiler, drop all remaining signs of __warn_memset_zero_len from
+glibc so that no more objects are built with this symbol in future.
+
+(cherry-picked from dc274b141666766b8ef70992d887e3c0c5e41bed)
+---
+ string/bits/string_fortified.h | 15 ---------------
+ 1 file changed, 15 deletions(-)
+
+diff --git a/string/bits/string_fortified.h b/string/bits/string_fortified.h
+index 309d0f39b2c3ed5343ceb2a1ad73b81182805efb..c8d3051af8a68cb1d1c24f0fc11deb4adee9b9e6 100644
+--- a/string/bits/string_fortified.h
++++ b/string/bits/string_fortified.h
+@@ -22,11 +22,6 @@
+ # error "Never use <bits/string_fortified.h> directly; include <string.h> instead."
+ #endif
+ 
+-#if !__GNUC_PREREQ (5,0)
+-__warndecl (__warn_memset_zero_len,
+-	    "memset used with constant zero length parameter; this could be due to transposed parameters");
+-#endif
+-
+ __fortify_function void *
+ __NTH (memcpy (void *__restrict __dest, const void *__restrict __src,
+ 	       size_t __len))
+@@ -58,16 +53,6 @@ __NTH (mempcpy (void *__restrict __dest, const void *__restrict __src,
+ __fortify_function void *
+ __NTH (memset (void *__dest, int __ch, size_t __len))
+ {
+-  /* GCC-5.0 and newer implements these checks in the compiler, so we don't
+-     need them here.  */
+-#if !__GNUC_PREREQ (5,0)
+-  if (__builtin_constant_p (__len) && __len == 0
+-      && (!__builtin_constant_p (__ch) || __ch != 0))
+-    {
+-      __warn_memset_zero_len ();
+-      return __dest;
+-    }
+-#endif
+   return __builtin___memset_chk (__dest, __ch, __len, __bos0 (__dest));
+ }
+ 
+-- 
+2.41.0
+

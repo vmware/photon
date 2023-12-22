@@ -1,0 +1,170 @@
+From 46e1e64fe3ea90f3b32bf38eb15edd94e2a428cd Mon Sep 17 00:00:00 2001
+From: Szabolcs Nagy <szabolcs.nagy@arm.com>
+Date: Wed, 28 Oct 2020 15:17:06 +0000
+Subject: [PATCH 033/124] elf: Pass the fd to note processing
+
+To handle GNU property notes on aarch64 some segments need to
+be mmaped again, so the fd of the loaded ELF module is needed.
+
+When the fd is not available (kernel loaded modules), then -1
+is passed.
+
+The fd is passed to both _dl_process_pt_gnu_property and
+_dl_process_pt_note for consistency. Target specific note
+processing functions are updated accordingly.
+
+Reviewed-by: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+(cherry picked from commit c00452d7757a300931ee186d043c43b48eeb0875)
+---
+ elf/dl-load.c              | 12 +++++++-----
+ elf/rtld.c                 |  4 ++--
+ sysdeps/aarch64/dl-prop.h  |  6 +++---
+ sysdeps/generic/dl-prop.h  |  6 +++---
+ sysdeps/generic/ldsodefs.h |  5 +++--
+ sysdeps/x86/dl-prop.h      |  6 +++---
+ 6 files changed, 21 insertions(+), 18 deletions(-)
+
+diff --git a/elf/dl-load.c b/elf/dl-load.c
+index 9ef1cc320364232b7fdb8033cd08ce6eaea45e30..71867e7c1a59d397a5532b04e0985478e3fd1ccd 100644
+--- a/elf/dl-load.c
++++ b/elf/dl-load.c
+@@ -855,10 +855,12 @@ lose (int code, int fd, const char *name, char *realname, struct link_map *l,
+ 
+ /* Process PT_GNU_PROPERTY program header PH in module L after
+    PT_LOAD segments are mapped.  Only one NT_GNU_PROPERTY_TYPE_0
+-   note is handled which contains processor specific properties.  */
++   note is handled which contains processor specific properties.
++   FD is -1 for the kernel mapped main executable otherwise it is
++   the fd used for loading module L.  */
+ 
+ void
+-_dl_process_pt_gnu_property (struct link_map *l, const ElfW(Phdr) *ph)
++_dl_process_pt_gnu_property (struct link_map *l, int fd, const ElfW(Phdr) *ph)
+ {
+   const ElfW(Nhdr) *note = (const void *) (ph->p_vaddr + l->l_addr);
+   const ElfW(Addr) size = ph->p_memsz;
+@@ -905,7 +907,7 @@ _dl_process_pt_gnu_property (struct link_map *l, const ElfW(Phdr) *ph)
+ 	      last_type = type;
+ 
+ 	      /* Target specific property processing.  */
+-	      if (_dl_process_gnu_property (l, type, datasz, ptr) == 0)
++	      if (_dl_process_gnu_property (l, fd, type, datasz, ptr) == 0)
+ 		return;
+ 
+ 	      /* Check the next property item.  */
+@@ -1370,10 +1372,10 @@ cannot enable executable stack as shared object requires");
+     switch (ph[-1].p_type)
+       {
+       case PT_NOTE:
+-	_dl_process_pt_note (l, &ph[-1]);
++	_dl_process_pt_note (l, fd, &ph[-1]);
+ 	break;
+       case PT_GNU_PROPERTY:
+-	_dl_process_pt_gnu_property (l, &ph[-1]);
++	_dl_process_pt_gnu_property (l, fd, &ph[-1]);
+ 	break;
+       }
+ 
+diff --git a/elf/rtld.c b/elf/rtld.c
+index 5b882163fae5ea8a289b6fae197bc4dc1af43826..14a42ed00a7af9a8ada50db314e07de5d6f8b452 100644
+--- a/elf/rtld.c
++++ b/elf/rtld.c
+@@ -1534,10 +1534,10 @@ of this helper program; chances are you did not intend to run this program.\n\
+     switch (ph[-1].p_type)
+       {
+       case PT_NOTE:
+-	_dl_process_pt_note (main_map, &ph[-1]);
++	_dl_process_pt_note (main_map, -1, &ph[-1]);
+ 	break;
+       case PT_GNU_PROPERTY:
+-	_dl_process_pt_gnu_property (main_map, &ph[-1]);
++	_dl_process_pt_gnu_property (main_map, -1, &ph[-1]);
+ 	break;
+       }
+ 
+diff --git a/sysdeps/aarch64/dl-prop.h b/sysdeps/aarch64/dl-prop.h
+index b0785bda831bcb2cb8233038b8be477f11b36773..2016d1472e1e69b82040dee1c11f2dd96efdfc90 100644
+--- a/sysdeps/aarch64/dl-prop.h
++++ b/sysdeps/aarch64/dl-prop.h
+@@ -35,13 +35,13 @@ _dl_open_check (struct link_map *m)
+ }
+ 
+ static inline void __attribute__ ((always_inline))
+-_dl_process_pt_note (struct link_map *l, const ElfW(Phdr) *ph)
++_dl_process_pt_note (struct link_map *l, int fd, const ElfW(Phdr) *ph)
+ {
+ }
+ 
+ static inline int
+-_dl_process_gnu_property (struct link_map *l, uint32_t type, uint32_t datasz,
+-			  void *data)
++_dl_process_gnu_property (struct link_map *l, int fd, uint32_t type,
++			  uint32_t datasz, void *data)
+ {
+   if (type == GNU_PROPERTY_AARCH64_FEATURE_1_AND)
+     {
+diff --git a/sysdeps/generic/dl-prop.h b/sysdeps/generic/dl-prop.h
+index f1cf576fe3c69bc9dacb42526a65c2c11563b4e8..df27ff8e6a09c5c84f5f3b132eac1b293247d383 100644
+--- a/sysdeps/generic/dl-prop.h
++++ b/sysdeps/generic/dl-prop.h
+@@ -37,15 +37,15 @@ _dl_open_check (struct link_map *m)
+ }
+ 
+ static inline void __attribute__ ((always_inline))
+-_dl_process_pt_note (struct link_map *l, const ElfW(Phdr) *ph)
++_dl_process_pt_note (struct link_map *l, int fd, const ElfW(Phdr) *ph)
+ {
+ }
+ 
+ /* Called for each property in the NT_GNU_PROPERTY_TYPE_0 note of L,
+    processing of the properties continues until this returns 0.  */
+ static inline int __attribute__ ((always_inline))
+-_dl_process_gnu_property (struct link_map *l, uint32_t type, uint32_t datasz,
+-			  void *data)
++_dl_process_gnu_property (struct link_map *l, int fd, uint32_t type,
++			  uint32_t datasz, void *data)
+ {
+   return 0;
+ }
+diff --git a/sysdeps/generic/ldsodefs.h b/sysdeps/generic/ldsodefs.h
+index ba114ab4b1e5f735a9da20e4a715692ab11a41ac..62ac40d81bd9fc26cca657410a22d5e3b5fc5042 100644
+--- a/sysdeps/generic/ldsodefs.h
++++ b/sysdeps/generic/ldsodefs.h
+@@ -919,8 +919,9 @@ extern void _dl_rtld_di_serinfo (struct link_map *loader,
+ 				 Dl_serinfo *si, bool counting);
+ 
+ /* Process PT_GNU_PROPERTY program header PH in module L after
+-   PT_LOAD segments are mapped.  */
+-void _dl_process_pt_gnu_property (struct link_map *l, const ElfW(Phdr) *ph);
++   PT_LOAD segments are mapped from file FD.  */
++void _dl_process_pt_gnu_property (struct link_map *l, int fd,
++				  const ElfW(Phdr) *ph);
+ 
+ 
+ /* Search loaded objects' symbol tables for a definition of the symbol
+diff --git a/sysdeps/x86/dl-prop.h b/sysdeps/x86/dl-prop.h
+index 89911e19e238ff64a080cf787a29e949da133718..4eb3b85a7bd1a1982724effb2ffeb08e621d3b9e 100644
+--- a/sysdeps/x86/dl-prop.h
++++ b/sysdeps/x86/dl-prop.h
+@@ -145,15 +145,15 @@ _dl_process_cet_property_note (struct link_map *l,
+ }
+ 
+ static inline void __attribute__ ((unused))
+-_dl_process_pt_note (struct link_map *l, const ElfW(Phdr) *ph)
++_dl_process_pt_note (struct link_map *l, int fd, const ElfW(Phdr) *ph)
+ {
+   const ElfW(Nhdr) *note = (const void *) (ph->p_vaddr + l->l_addr);
+   _dl_process_cet_property_note (l, note, ph->p_memsz, ph->p_align);
+ }
+ 
+ static inline int __attribute__ ((always_inline))
+-_dl_process_gnu_property (struct link_map *l, uint32_t type, uint32_t datasz,
+-			  void *data)
++_dl_process_gnu_property (struct link_map *l, int fd, uint32_t type,
++			  uint32_t datasz, void *data)
+ {
+   return 0;
+ }
+-- 
+2.41.0
+

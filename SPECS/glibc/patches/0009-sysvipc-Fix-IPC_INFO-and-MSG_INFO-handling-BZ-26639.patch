@@ -1,0 +1,280 @@
+From c4aeedea598a1bd80f52ca9ebd07fe447680d491 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Tue, 29 Sep 2020 14:39:56 -0300
+Subject: [PATCH 009/124] sysvipc: Fix IPC_INFO and MSG_INFO handling [BZ
+ #26639]
+
+Both commands are Linux extensions where the third argument is a
+'struct msginfo' instead of 'struct msqid_ds' and its information
+does not contain any time related fields (so there is no need to
+extra conversion for __IPC_TIME64.
+
+The regression testcase checks for Linux specifix SysV ipc message
+control extension.  For IPC_INFO/MSG_INFO it tries to match the values
+against the tunable /proc values and for MSG_STAT/MSG_STAT_ANY it
+check if the create message queue is within the global list returned
+by the kernel.
+
+Checked on x86_64-linux-gnu and on i686-linux-gnu (Linux v5.4 and on
+Linux v4.15).
+
+(cherry picked from commit 20a00dbefca5695cccaa44846a482db8ccdd85ab)
+---
+ NEWS                                        |   1 +
+ sysdeps/unix/sysv/linux/Makefile            |   2 +-
+ sysdeps/unix/sysv/linux/msgctl.c            |  22 ++-
+ sysdeps/unix/sysv/linux/tst-sysvmsg-linux.c | 177 ++++++++++++++++++++
+ 4 files changed, 197 insertions(+), 5 deletions(-)
+ create mode 100644 sysdeps/unix/sysv/linux/tst-sysvmsg-linux.c
+
+diff --git a/NEWS b/NEWS
+index fb3a9e4f7d10bf837721f15811302e096025ca41..15c0299dd029266700984098624f77b800c07c36 100644
+--- a/NEWS
++++ b/NEWS
+@@ -12,6 +12,7 @@ The following bugs are resolved with this release:
+   [26555] string: strerrorname_np does not return the documented value
+   [26637] libc: semctl SEM_STAT_ANY fails to pass the buffer specified
+     by the caller to the kernel
++  [26639] libc: msgctl IPC_INFO and MSG_INFO return garbage
+ 
+ Version 2.32
+ 
+diff --git a/sysdeps/unix/sysv/linux/Makefile b/sysdeps/unix/sysv/linux/Makefile
+index 9b930e746613b320c1d4404096580247c7b0b37c..6ea615ab00ed7c0a1c54635a6e464c4cb2a2578d 100644
+--- a/sysdeps/unix/sysv/linux/Makefile
++++ b/sysdeps/unix/sysv/linux/Makefile
+@@ -100,7 +100,7 @@ tests += tst-clone tst-clone2 tst-clone3 tst-fanotify tst-personality \
+ 	 tst-quota tst-sync_file_range tst-sysconf-iov_max tst-ttyname \
+ 	 test-errno-linux tst-memfd_create tst-mlock2 tst-pkey \
+ 	 tst-rlimit-infinity tst-ofdlocks tst-gettid tst-gettid-kill \
+-	 tst-tgkill tst-sysvsem-linux
++	 tst-tgkill tst-sysvsem-linux tst-sysvmsg-linux
+ tests-internal += tst-ofdlocks-compat tst-sigcontext-get_pc
+ 
+ CFLAGS-tst-sigcontext-get_pc.c = -fasynchronous-unwind-tables
+diff --git a/sysdeps/unix/sysv/linux/msgctl.c b/sysdeps/unix/sysv/linux/msgctl.c
+index 0776472d5e01dea3d4a90e5f025f5074e10d0250..a1f24ab242813dd03fe5e012ab61d904e27afcef 100644
+--- a/sysdeps/unix/sysv/linux/msgctl.c
++++ b/sysdeps/unix/sysv/linux/msgctl.c
+@@ -90,8 +90,15 @@ __msgctl64 (int msqid, int cmd, struct __msqid64_ds *buf)
+   struct kernel_msqid64_ds ksemid, *arg = NULL;
+   if (buf != NULL)
+     {
+-      msqid64_to_kmsqid64 (buf, &ksemid);
+-      arg = &ksemid;
++      /* This is a Linux extension where kernel returns a 'struct msginfo'
++	 instead.  */
++      if (cmd == IPC_INFO || cmd == MSG_INFO)
++	arg = (struct kernel_msqid64_ds *) buf;
++      else
++	{
++	  msqid64_to_kmsqid64 (buf, &ksemid);
++	  arg = &ksemid;
++	}
+     }
+ # ifdef __ASSUME_SYSVIPC_BROKEN_MODE_T
+   if (cmd == IPC_SET)
+@@ -169,8 +176,15 @@ __msgctl (int msqid, int cmd, struct msqid_ds *buf)
+   struct __msqid64_ds msqid64, *buf64 = NULL;
+   if (buf != NULL)
+     {
+-      msqid_to_msqid64 (&msqid64, buf);
+-      buf64 = &msqid64;
++      /* This is a Linux extension where kernel returns a 'struct msginfo'
++	 instead.  */
++      if (cmd == IPC_INFO || cmd == MSG_INFO)
++	buf64 = (struct __msqid64_ds *) buf;
++      else
++	{
++	  msqid_to_msqid64 (&msqid64, buf);
++	  buf64 = &msqid64;
++	}
+     }
+ 
+   int ret = __msgctl64 (msqid, cmd, buf64);
+diff --git a/sysdeps/unix/sysv/linux/tst-sysvmsg-linux.c b/sysdeps/unix/sysv/linux/tst-sysvmsg-linux.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..630f4f792cad83d90c316e0c2b156ed9d0db8c29
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/tst-sysvmsg-linux.c
+@@ -0,0 +1,177 @@
++/* Basic tests for Linux SYSV message queue extensions.
++   Copyright (C) 2020 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sys/ipc.h>
++#include <sys/msg.h>
++#include <errno.h>
++#include <stdlib.h>
++#include <stdbool.h>
++#include <stdio.h>
++
++#include <support/check.h>
++#include <support/temp_file.h>
++
++#define MSGQ_MODE 0644
++
++/* These are for the temporary file we generate.  */
++static char *name;
++static int msqid;
++
++static void
++remove_msq (void)
++{
++  /* Enforce message queue removal in case of early test failure.
++     Ignore error since the msg may already have being removed.  */
++  msgctl (msqid, IPC_RMID, NULL);
++}
++
++static void
++do_prepare (int argc, char *argv[])
++{
++  TEST_VERIFY_EXIT (create_temp_file ("tst-sysvmsg.", &name) != -1);
++}
++
++#define PREPARE do_prepare
++
++struct test_msginfo
++{
++  int msgmax;
++  int msgmnb;
++  int msgmni;
++};
++
++/* It tries to obtain some system-wide SysV messsage queue information from
++   /proc to check against IPC_INFO/MSG_INFO.  The /proc only returns the
++   tunables value of MSGMAX, MSGMNB, and MSGMNI.
++
++   The kernel also returns constant value for MSGSSZ, MSGSEG and also MSGMAP,
++   MSGPOOL, and MSGTQL (for IPC_INFO).  The issue to check them is they might
++   change over kernel releases.  */
++
++static int
++read_proc_file (const char *file)
++{
++  FILE *f = fopen (file, "r");
++  if (f == NULL)
++    FAIL_UNSUPPORTED ("/proc is not mounted or %s is not available", file);
++
++  int v;
++  int r = fscanf (f, "%d", & v);
++  TEST_VERIFY_EXIT (r == 1);
++
++  fclose (f);
++  return v;
++}
++
++
++/* Check if the message queue with IDX (index into the kernel's internal
++   array) matches the one with KEY.  The CMD is either MSG_STAT or
++   MSG_STAT_ANY.  */
++
++static bool
++check_msginfo (int idx, key_t key, int cmd)
++{
++  struct msqid_ds msginfo;
++  int mid = msgctl (idx, cmd, &msginfo);
++  /* Ignore unused array slot returned by the kernel or information from
++     unknown message queue.  */
++  if ((mid == -1 && errno == EINVAL) || mid != msqid)
++    return false;
++
++  if (mid == -1)
++    FAIL_EXIT1 ("msgctl with %s failed: %m",
++		cmd == MSG_STAT ? "MSG_STAT" : "MSG_STAT_ANY");
++
++  TEST_COMPARE (msginfo.msg_perm.__key, key);
++  TEST_COMPARE (msginfo.msg_perm.mode, MSGQ_MODE);
++  TEST_COMPARE (msginfo.msg_qnum, 0);
++
++  return true;
++}
++
++static int
++do_test (void)
++{
++  atexit (remove_msq);
++
++  key_t key = ftok (name, 'G');
++  if (key == -1)
++    FAIL_EXIT1 ("ftok failed: %m");
++
++  msqid = msgget (key, MSGQ_MODE | IPC_CREAT);
++  if (msqid == -1)
++    FAIL_EXIT1 ("msgget failed: %m");
++
++  struct test_msginfo tipcinfo;
++  tipcinfo.msgmax = read_proc_file ("/proc/sys/kernel/msgmax");
++  tipcinfo.msgmnb = read_proc_file ("/proc/sys/kernel/msgmnb");
++  tipcinfo.msgmni = read_proc_file ("/proc/sys/kernel/msgmni");
++
++  int msqidx;
++
++  {
++    struct msginfo ipcinfo;
++    msqidx = msgctl (msqid, IPC_INFO, (struct msqid_ds *) &ipcinfo);
++    if (msqidx == -1)
++      FAIL_EXIT1 ("msgctl with IPC_INFO failed: %m");
++
++    TEST_COMPARE (ipcinfo.msgmax, tipcinfo.msgmax);
++    TEST_COMPARE (ipcinfo.msgmnb, tipcinfo.msgmnb);
++    TEST_COMPARE (ipcinfo.msgmni, tipcinfo.msgmni);
++  }
++
++  /* Same as before but with MSG_INFO.  */
++  {
++    struct msginfo ipcinfo;
++    msqidx = msgctl (msqid, MSG_INFO, (struct msqid_ds *) &ipcinfo);
++    if (msqidx == -1)
++      FAIL_EXIT1 ("msgctl with IPC_INFO failed: %m");
++
++    TEST_COMPARE (ipcinfo.msgmax, tipcinfo.msgmax);
++    TEST_COMPARE (ipcinfo.msgmnb, tipcinfo.msgmnb);
++    TEST_COMPARE (ipcinfo.msgmni, tipcinfo.msgmni);
++  }
++
++  /* We check if the created message queue shows in global list.  */
++  bool found = false;
++  for (int i = 0; i <= msqidx; i++)
++    {
++      /* We can't tell apart if MSG_STAT_ANY is not supported (kernel older
++	 than 4.17) or if the index used is invalid.  So it just check if the
++	 value returned from a valid call matches the created message
++	 queue.  */
++      check_msginfo (i, key, MSG_STAT_ANY);
++
++      if (check_msginfo (i, key, MSG_STAT))
++	{
++	  found = true;
++	  break;
++	}
++    }
++
++  if (!found)
++    FAIL_EXIT1 ("msgctl with MSG_STAT/MSG_STAT_ANY could not find the "
++		"created message queue");
++
++  if (msgctl (msqid, IPC_RMID, NULL) == -1)
++    FAIL_EXIT1 ("msgctl failed");
++
++  return 0;
++}
++
++#include <support/test-driver.c>
+-- 
+2.41.0
+

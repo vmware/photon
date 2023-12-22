@@ -1,0 +1,98 @@
+From e61a8fd8fadbf1a8cef997a0f921575cb2905ea2 Mon Sep 17 00:00:00 2001
+From: Patrick McGehearty <patrick.mcgehearty@oracle.com>
+Date: Mon, 28 Sep 2020 20:11:28 +0000
+Subject: [PATCH 011/124] Reversing calculation of
+ __x86_shared_non_temporal_threshold
+
+The __x86_shared_non_temporal_threshold determines when memcpy on x86
+uses non_temporal stores to avoid pushing other data out of the last
+level cache.
+
+This patch proposes to revert the calculation change made by H.J. Lu's
+patch of June 2, 2017.
+
+H.J. Lu's patch selected a threshold suitable for a single thread
+getting maximum performance. It was tuned using the single threaded
+large memcpy micro benchmark on an 8 core processor. The last change
+changes the threshold from using 3/4 of one thread's share of the
+cache to using 3/4 of the entire cache of a multi-threaded system
+before switching to non-temporal stores. Multi-threaded systems with
+more than a few threads are server-class and typically have many
+active threads. If one thread consumes 3/4 of the available cache for
+all threads, it will cause other active threads to have data removed
+from the cache. Two examples show the range of the effect. John
+McCalpin's widely parallel Stream benchmark, which runs in parallel
+and fetches data sequentially, saw a 20% slowdown with this patch on
+an internal system test of 128 threads. This regression was discovered
+when comparing OL8 performance to OL7.  An example that compares
+normal stores to non-temporal stores may be found at
+https://vgatherps.github.io/2018-09-02-nontemporal/.  A simple test
+shows performance loss of 400 to 500% due to a failure to use
+nontemporal stores. These performance losses are most likely to occur
+when the system load is heaviest and good performance is critical.
+
+The tunable x86_non_temporal_threshold can be used to override the
+default for the knowledgable user who really wants maximum cache
+allocation to a single thread in a multi-threaded system.
+The manual entry for the tunable has been expanded to provide
+more information about its purpose.
+
+	modified: sysdeps/x86/cacheinfo.c
+	modified: manual/tunables.texi
+
+(cherry picked from commit d3c57027470b78dba79c6d931e4e409b1fecfc80)
+---
+ manual/tunables.texi    |  6 +++++-
+ sysdeps/x86/cacheinfo.c | 16 +++++++++++-----
+ 2 files changed, 16 insertions(+), 6 deletions(-)
+
+diff --git a/manual/tunables.texi b/manual/tunables.texi
+index 23ef0d40e74d9e02a677fe6133c2de2151ae7b52..d72d7a5ec07b7147387927afb7b12ea2b7466a2e 100644
+--- a/manual/tunables.texi
++++ b/manual/tunables.texi
+@@ -432,7 +432,11 @@ set shared cache size in bytes for use in memory and string routines.
+ 
+ @deftp Tunable glibc.cpu.x86_non_temporal_threshold
+ The @code{glibc.cpu.x86_non_temporal_threshold} tunable allows the user
+-to set threshold in bytes for non temporal store.
++to set threshold in bytes for non temporal store. Non temporal stores
++give a hint to the hardware to move data directly to memory without
++displacing other data from the cache. This tunable is used by some
++platforms to determine when to use non temporal stores in operations
++like memmove and memcpy.
+ 
+ This tunable is specific to i386 and x86-64.
+ @end deftp
+diff --git a/sysdeps/x86/cacheinfo.c b/sysdeps/x86/cacheinfo.c
+index 217c21c34ff2b5273a5d969a2a627d98ec524527..dadec5d58f9f5adfbdc844bb98816e5717068a0e 100644
+--- a/sysdeps/x86/cacheinfo.c
++++ b/sysdeps/x86/cacheinfo.c
+@@ -854,14 +854,20 @@ init_cacheinfo (void)
+       __x86_shared_cache_size = shared;
+     }
+ 
+-  /* The large memcpy micro benchmark in glibc shows that 6 times of
+-     shared cache size is the approximate value above which non-temporal
+-     store becomes faster on a 8-core processor.  This is the 3/4 of the
+-     total shared cache size.  */
++  /* The default setting for the non_temporal threshold is 3/4 of one
++     thread's share of the chip's cache. For most Intel and AMD processors
++     with an initial release date between 2017 and 2020, a thread's typical
++     share of the cache is from 500 KBytes to 2 MBytes. Using the 3/4
++     threshold leaves 125 KBytes to 500 KBytes of the thread's data
++     in cache after a maximum temporal copy, which will maintain
++     in cache a reasonable portion of the thread's stack and other
++     active data. If the threshold is set higher than one thread's
++     share of the cache, it has a substantial risk of negatively
++     impacting the performance of other threads running on the chip. */
+   __x86_shared_non_temporal_threshold
+     = (cpu_features->non_temporal_threshold != 0
+        ? cpu_features->non_temporal_threshold
+-       : __x86_shared_cache_size * threads * 3 / 4);
++       : __x86_shared_cache_size * 3 / 4);
+ 
+   /* NB: The REP MOVSB threshold must be greater than VEC_SIZE * 8.  */
+   unsigned int minimum_rep_movsb_threshold;
+-- 
+2.41.0
+

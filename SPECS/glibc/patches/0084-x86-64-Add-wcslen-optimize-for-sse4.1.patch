@@ -1,0 +1,181 @@
+From ad711f9eee7f2d3e0d766100a56b40c447733a3f Mon Sep 17 00:00:00 2001
+From: Noah Goldstein <goldstein.w.n@gmail.com>
+Date: Wed, 23 Jun 2021 01:19:34 -0400
+Subject: [PATCH 084/124] x86-64: Add wcslen optimize for sse4.1
+
+No bug. This comment adds the ifunc / build infrastructure
+necessary for wcslen to prefer the sse4.1 implementation
+in strlen-vec.S. test-wcslen.c is passing.
+
+Signed-off-by: Noah Goldstein <goldstein.w.n@gmail.com>
+Reviewed-by: H.J. Lu <hjl.tools@gmail.com>
+(cherry picked from commit 6f573a27b6c8b4236445810a44660612323f5a73)
+---
+ sysdeps/x86_64/multiarch/Makefile          |  4 +-
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c |  3 ++
+ sysdeps/x86_64/multiarch/ifunc-wcslen.h    | 52 ++++++++++++++++++++++
+ sysdeps/x86_64/multiarch/wcslen-sse4_1.S   |  4 ++
+ sysdeps/x86_64/multiarch/wcslen.c          |  2 +-
+ sysdeps/x86_64/multiarch/wcsnlen.c         | 34 +-------------
+ 6 files changed, 63 insertions(+), 36 deletions(-)
+ create mode 100644 sysdeps/x86_64/multiarch/ifunc-wcslen.h
+ create mode 100644 sysdeps/x86_64/multiarch/wcslen-sse4_1.S
+
+diff --git a/sysdeps/x86_64/multiarch/Makefile b/sysdeps/x86_64/multiarch/Makefile
+index cf7379038081c6a21b1286fc59ab4d88dc9cdeec..da1446d731c8af2ebc2735b3352e2bda0fa5ea41 100644
+--- a/sysdeps/x86_64/multiarch/Makefile
++++ b/sysdeps/x86_64/multiarch/Makefile
+@@ -97,8 +97,8 @@ sysdep_routines += wmemcmp-sse4 wmemcmp-ssse3 wmemcmp-c \
+ 		   wcscpy-ssse3 wcscpy-c \
+ 		   wcschr-sse2 wcschr-avx2 \
+ 		   wcsrchr-sse2 wcsrchr-avx2 \
+-		   wcsnlen-sse4_1 wcsnlen-c \
+-		   wcslen-sse2 wcslen-avx2 wcsnlen-avx2 \
++		   wcslen-sse2 wcslen-sse4_1 wcslen-avx2 \
++		   wcsnlen-c wcsnlen-sse4_1 wcsnlen-avx2 \
+ 		   wcschr-avx2-rtm \
+ 		   wcscmp-avx2-rtm \
+ 		   wcslen-avx2-rtm \
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index 3768dcecae7c9a3478e9a30616132e740159bb73..11e9e258209c71703de59044b83a2a5ed1f10101 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -655,6 +655,9 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 			       && CPU_FEATURE_USABLE (AVX512BW)
+ 			       && CPU_FEATURE_USABLE (BMI2)),
+ 			      __wcslen_evex)
++	      IFUNC_IMPL_ADD (array, i, wcsnlen,
++			      CPU_FEATURE_USABLE (SSE4_1),
++			      __wcsnlen_sse4_1)
+ 	      IFUNC_IMPL_ADD (array, i, wcslen, 1, __wcslen_sse2))
+ 
+   /* Support sysdeps/x86_64/multiarch/wcsnlen.c.  */
+diff --git a/sysdeps/x86_64/multiarch/ifunc-wcslen.h b/sysdeps/x86_64/multiarch/ifunc-wcslen.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..39e33473785c4cd42a3f738cdd854473187997ae
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/ifunc-wcslen.h
+@@ -0,0 +1,52 @@
++/* Common definition for ifunc selections for wcslen and wcsnlen
++   All versions must be listed in ifunc-impl-list.c.
++   Copyright (C) 2017-2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <init-arch.h>
++
++extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (sse4_1) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_rtm) attribute_hidden;
++extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
++
++static inline void *
++IFUNC_SELECTOR (void)
++{
++  const struct cpu_features* cpu_features = __get_cpu_features ();
++
++  if (CPU_FEATURE_USABLE_P (cpu_features, AVX2)
++      && CPU_FEATURE_USABLE_P (cpu_features, BMI2)
++      && CPU_FEATURES_ARCH_P (cpu_features, AVX_Fast_Unaligned_Load))
++    {
++      if (CPU_FEATURE_USABLE_P (cpu_features, AVX512VL)
++	  && CPU_FEATURE_USABLE_P (cpu_features, AVX512BW))
++	return OPTIMIZE (evex);
++
++      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	return OPTIMIZE (avx2_rtm);
++
++      if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
++	return OPTIMIZE (avx2);
++    }
++
++  if (CPU_FEATURE_USABLE_P (cpu_features, SSE4_1))
++    return OPTIMIZE (sse4_1);
++
++  return OPTIMIZE (sse2);
++}
+diff --git a/sysdeps/x86_64/multiarch/wcslen-sse4_1.S b/sysdeps/x86_64/multiarch/wcslen-sse4_1.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..7e62621afc7294925e11edc3071b848e607c7473
+--- /dev/null
++++ b/sysdeps/x86_64/multiarch/wcslen-sse4_1.S
+@@ -0,0 +1,4 @@
++#define AS_WCSLEN
++#define strlen	__wcslen_sse4_1
++
++#include "strlen-vec.S"
+diff --git a/sysdeps/x86_64/multiarch/wcslen.c b/sysdeps/x86_64/multiarch/wcslen.c
+index bb97438c7f9dedf5fdd7fc61f778b57f22ca4ba8..26b5fdffd655901cfd9420761301691db516f85e 100644
+--- a/sysdeps/x86_64/multiarch/wcslen.c
++++ b/sysdeps/x86_64/multiarch/wcslen.c
+@@ -24,7 +24,7 @@
+ # undef __wcslen
+ 
+ # define SYMBOL_NAME wcslen
+-# include "ifunc-avx2.h"
++# include "ifunc-wcslen.h"
+ 
+ libc_ifunc_redirected (__redirect_wcslen, __wcslen, IFUNC_SELECTOR ());
+ weak_alias (__wcslen, wcslen);
+diff --git a/sysdeps/x86_64/multiarch/wcsnlen.c b/sysdeps/x86_64/multiarch/wcsnlen.c
+index 8beba9f7d371b7b1c79deb830f027d4fd43274f2..f15c1b328be4f57a3ced9cadda044d198024dc83 100644
+--- a/sysdeps/x86_64/multiarch/wcsnlen.c
++++ b/sysdeps/x86_64/multiarch/wcsnlen.c
+@@ -24,39 +24,7 @@
+ # undef __wcsnlen
+ 
+ # define SYMBOL_NAME wcsnlen
+-# include <init-arch.h>
+-
+-extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2) attribute_hidden;
+-extern __typeof (REDIRECT_NAME) OPTIMIZE (sse4_1) attribute_hidden;
+-extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2) attribute_hidden;
+-extern __typeof (REDIRECT_NAME) OPTIMIZE (avx2_rtm) attribute_hidden;
+-extern __typeof (REDIRECT_NAME) OPTIMIZE (evex) attribute_hidden;
+-
+-static inline void *
+-IFUNC_SELECTOR (void)
+-{
+-  const struct cpu_features* cpu_features = __get_cpu_features ();
+-
+-  if (CPU_FEATURE_USABLE_P (cpu_features, AVX2)
+-      && CPU_FEATURES_ARCH_P (cpu_features, AVX_Fast_Unaligned_Load))
+-    {
+-      if (CPU_FEATURE_USABLE_P (cpu_features, AVX512VL)
+-	  && CPU_FEATURE_USABLE_P (cpu_features, AVX512BW)
+-	  && CPU_FEATURE_USABLE_P (cpu_features, BMI2))
+-	return OPTIMIZE (evex);
+-
+-      if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
+-	return OPTIMIZE (avx2_rtm);
+-
+-      if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER))
+-	return OPTIMIZE (avx2);
+-    }
+-
+-  if (CPU_FEATURE_USABLE_P (cpu_features, SSE4_1))
+-    return OPTIMIZE (sse4_1);
+-
+-  return OPTIMIZE (sse2);
+-}
++# include "ifunc-wcslen.h"
+ 
+ libc_ifunc_redirected (__redirect_wcsnlen, __wcsnlen, IFUNC_SELECTOR ());
+ weak_alias (__wcsnlen, wcsnlen);
+-- 
+2.41.0
+

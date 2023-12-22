@@ -1,0 +1,87 @@
+From 3bb13e91495c763c1ce7759e3b0d2cb32d4095b6 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Fri, 26 Feb 2021 05:36:59 -0800
+Subject: [PATCH 064/124] x86: Set Prefer_No_VZEROUPPER and add
+ Prefer_AVX2_STRCMP
+
+1. Set Prefer_No_VZEROUPPER if RTM is usable to avoid RTM abort triggered
+by VZEROUPPER inside a transactionally executing RTM region.
+2. Since to compare 2 32-byte strings, 256-bit EVEX strcmp requires 2
+loads, 3 VPCMPs and 2 KORDs while AVX2 strcmp requires 1 load, 2 VPCMPEQs,
+1 VPMINU and 1 VPMOVMSKB, AVX2 strcmp is faster than EVEX strcmp.  Add
+Prefer_AVX2_STRCMP to prefer AVX2 strcmp family functions.
+
+(cherry picked from commit 1da50d4bda07f04135dca39f40e79fc9eabed1f8)
+---
+ sysdeps/x86/cpu-features.c | 20 ++++++++++++++++++--
+ sysdeps/x86/cpu-features.h |  2 ++
+ sysdeps/x86/cpu-tunables.c |  2 ++
+ 3 files changed, 22 insertions(+), 2 deletions(-)
+
+diff --git a/sysdeps/x86/cpu-features.c b/sysdeps/x86/cpu-features.c
+index 4c24ba7c3143f3ab472432e4e179243cec3d3d04..eb554b6d141676715bcc41348ede73ac1a06de80 100644
+--- a/sysdeps/x86/cpu-features.c
++++ b/sysdeps/x86/cpu-features.c
+@@ -546,8 +546,24 @@ init_cpu_features (struct cpu_features *cpu_features)
+ 	cpu_features->preferred[index_arch_Prefer_No_VZEROUPPER]
+ 	  |= bit_arch_Prefer_No_VZEROUPPER;
+       else
+-	cpu_features->preferred[index_arch_Prefer_No_AVX512]
+-	  |= bit_arch_Prefer_No_AVX512;
++	{
++	  cpu_features->preferred[index_arch_Prefer_No_AVX512]
++	    |= bit_arch_Prefer_No_AVX512;
++
++	  /* Avoid RTM abort triggered by VZEROUPPER inside a
++	     transactionally executing RTM region.  */
++	  if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
++	    cpu_features->preferred[index_arch_Prefer_No_VZEROUPPER]
++	      |= bit_arch_Prefer_No_VZEROUPPER;
++
++	  /* Since to compare 2 32-byte strings, 256-bit EVEX strcmp
++	     requires 2 loads, 3 VPCMPs and 2 KORDs while AVX2 strcmp
++	     requires 1 load, 2 VPCMPEQs, 1 VPMINU and 1 VPMOVMSKB,
++	     AVX2 strcmp is faster than EVEX strcmp.  */
++	  if (CPU_FEATURE_USABLE_P (cpu_features, AVX2))
++	    cpu_features->preferred[index_arch_Prefer_AVX2_STRCMP]
++	      |= bit_arch_Prefer_AVX2_STRCMP;
++	}
+     }
+   /* This spells out "AuthenticAMD" or "HygonGenuine".  */
+   else if ((ebx == 0x68747541 && ecx == 0x444d4163 && edx == 0x69746e65)
+diff --git a/sysdeps/x86/cpu-features.h b/sysdeps/x86/cpu-features.h
+index a0b9b9177c827b75f1405714851286cebd90e5e0..72ea74d083e6e2d026b3f7f5172a58b7c5a1e389 100644
+--- a/sysdeps/x86/cpu-features.h
++++ b/sysdeps/x86/cpu-features.h
+@@ -804,6 +804,7 @@ extern const struct cpu_features *__get_cpu_features (void)
+ #define bit_arch_Prefer_FSRM			(1u << 13)
+ #define bit_arch_Prefer_No_AVX512		(1u << 14)
+ #define bit_arch_MathVec_Prefer_No_AVX512	(1u << 15)
++#define bit_arch_Prefer_AVX2_STRCMP		(1u << 16)
+ 
+ #define index_arch_Fast_Rep_String		PREFERRED_FEATURE_INDEX_1
+ #define index_arch_Fast_Copy_Backward		PREFERRED_FEATURE_INDEX_1
+@@ -821,6 +822,7 @@ extern const struct cpu_features *__get_cpu_features (void)
+ #define index_arch_Prefer_No_AVX512		PREFERRED_FEATURE_INDEX_1
+ #define index_arch_MathVec_Prefer_No_AVX512	PREFERRED_FEATURE_INDEX_1
+ #define index_arch_Prefer_FSRM			PREFERRED_FEATURE_INDEX_1
++#define index_arch_Prefer_AVX2_STRCMP		PREFERRED_FEATURE_INDEX_1
+ 
+ /* XCR0 Feature flags.  */
+ #define bit_XMM_state		(1u << 1)
+diff --git a/sysdeps/x86/cpu-tunables.c b/sysdeps/x86/cpu-tunables.c
+index 588bbf9448bd6a44497818651ca3cfeaa84c8701..b251a91af3fe5202fe378823e33eee45332291fa 100644
+--- a/sysdeps/x86/cpu-tunables.c
++++ b/sysdeps/x86/cpu-tunables.c
+@@ -238,6 +238,8 @@ TUNABLE_CALLBACK (set_hwcaps) (tunable_val_t *valp)
+ 	      CHECK_GLIBC_IFUNC_PREFERRED_BOTH (n, cpu_features,
+ 						Fast_Copy_Backward,
+ 						disable, 18);
++	      CHECK_GLIBC_IFUNC_PREFERRED_NEED_BOTH
++		(n, cpu_features, Prefer_AVX2_STRCMP, AVX2, disable, 18);
+ 	    }
+ 	  break;
+ 	case 19:
+-- 
+2.41.0
+

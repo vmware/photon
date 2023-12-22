@@ -1,0 +1,69 @@
+From 1a24bbd43e483650c7ac622f600f755229c90d23 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Sat, 25 Jan 2020 14:19:40 -0800
+Subject: [PATCH 026/124] x86-64: Avoid rep movsb with short distance [BZ
+ #27130]
+
+When copying with "rep movsb", if the distance between source and
+destination is N*4GB + [1..63] with N >= 0, performance may be very
+slow.  This patch updates memmove-vec-unaligned-erms.S for AVX and
+AVX512 versions with the distance in RCX:
+
+	cmpl	$63, %ecx
+	// Don't use "rep movsb" if ECX <= 63
+	jbe	L(Don't use rep movsb")
+	Use "rep movsb"
+
+Benchtests data with bench-memcpy, bench-memcpy-large, bench-memcpy-random
+and bench-memcpy-walk on Skylake, Ice Lake and Tiger Lake show that its
+performance impact is within noise range as "rep movsb" is only used for
+data size >= 4KB.
+
+(cherry picked from commit 3ec5d83d2a237d39e7fd6ef7a0bc8ac4c171a4a5)
+---
+ .../multiarch/memmove-vec-unaligned-erms.S    | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S b/sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+index bd5dc1a3f3f9bc49780e7cd0efb141549b7d53af..092f364bb684b4ea78c0c4bde15a34376300e70b 100644
+--- a/sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
++++ b/sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+@@ -56,6 +56,13 @@
+ # endif
+ #endif
+ 
++/* Avoid short distance rep movsb only with non-SSE vector.  */
++#ifndef AVOID_SHORT_DISTANCE_REP_MOVSB
++# define AVOID_SHORT_DISTANCE_REP_MOVSB (VEC_SIZE > 16)
++#else
++# define AVOID_SHORT_DISTANCE_REP_MOVSB 0
++#endif
++
+ #ifndef PREFETCH
+ # define PREFETCH(addr) prefetcht0 addr
+ #endif
+@@ -243,7 +250,21 @@ L(movsb):
+ 	cmpq	%r9, %rdi
+ 	/* Avoid slow backward REP MOVSB.  */
+ 	jb	L(more_8x_vec_backward)
++# if AVOID_SHORT_DISTANCE_REP_MOVSB
++	movq	%rdi, %rcx
++	subq	%rsi, %rcx
++	jmp	2f
++# endif
+ 1:
++# if AVOID_SHORT_DISTANCE_REP_MOVSB
++	movq	%rsi, %rcx
++	subq	%rdi, %rcx
++2:
++/* Avoid "rep movsb" if RCX, the distance between source and destination,
++   is N*4GB + [1..63] with N >= 0.  */
++	cmpl	$63, %ecx
++	jbe	L(more_2x_vec)	/* Avoid "rep movsb" if ECX <= 63.  */
++# endif
+ 	mov	%RDX_LP, %RCX_LP
+ 	rep movsb
+ L(nop):
+-- 
+2.41.0
+
