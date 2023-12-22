@@ -1,43 +1,45 @@
-Summary:	Functions for multiple precision math
-Name:		mpfr
-Version:	4.1.0
-Release:	1%{?dist}
-License:	GPLv3+
-URL:		http://www.mpfr.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
+Summary:        Functions for multiple precision math
+Name:           mpfr
+Version:        4.1.0
+Release:        2%{?dist}
+License:        GPLv3+
+URL:            http://www.mpfr.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.mpfr.org/%{name}-%{version}/%{name}-%{version}.tar.xz
-%define sha1 mpfr=159c3a58705662bfde4dc93f2617f3660855ead6
-Requires:	gmp
+Source0:        http://www.mpfr.org/%{name}-%{version}/%{name}-%{version}.tar.xz
+%define sha512  mpfr=1bd1c349741a6529dfa53af4f0da8d49254b164ece8a46928cdb13a99460285622d57fe6f68cef19c6727b3f9daa25ddb3d7d65c201c8f387e421c7f7bee6273
+Requires:       gmp
 %description
 The MPFR package contains functions for multiple precision math.
-%package	devel
-Summary:	Header and development files for mpfr
-Requires:	%{name} = %{version}
+%package        devel
+Summary:        Header and development files for mpfr
+Requires:       %{name} = %{version}
+Requires:       gmp-devel
 
-%description	devel
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup
+
 %build
 %configure \
-	--enable-thread-safe \
-	--docdir=%{_defaultdocdir}/%{name}-%{version} \
-	--disable-silent-rules
-make %{?_smp_mflags}
+        --enable-thread-safe \
+        --docdir=%{_defaultdocdir}/%{name}-%{version} \
+        --disable-silent-rules
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%{make_install} %{?_smp_mflags}
 find %{buildroot}%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}%{_infodir}
 
 %check
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -65,6 +67,8 @@ make %{?_smp_mflags} check
 %{_docdir}/mpfr-%{version}/COPYING
 
 %changelog
+*   Mon Jan 08 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.1.0-2
+-   Fix requires
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 4.1.0-1
 -   Automatic Version Bump
 *   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.2-1
