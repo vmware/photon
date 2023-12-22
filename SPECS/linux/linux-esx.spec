@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.201
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -648,6 +648,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Dec 22 2023 Keerthana K <keerthanak@vmware.com> 5.10.201-2
+- Increase CONFIG_LOG_BUF_SHIFT to 18
+- Decrease CONFIG_LOG_CPU_MAX_BUF_SHIFT to 12
 * Mon Nov 27 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.201-1
 - Update to version 5.10.201
 * Thu Nov 23 2023 Ankit Jain <ankitja@vmware.com> 5.10.200-3
