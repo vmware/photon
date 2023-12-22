@@ -1,7 +1,7 @@
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        2.10.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -25,6 +25,8 @@ Requires:       python3-ecdsa > 0.11
 Requires:       python3-cryptography
 Requires:       python3-PyNaCl
 Requires:       python3-bcrypt
+
+Patch0:         CVE-2023-48795.patch
 
 %description
 "Paramiko" is a combination of the esperanto words for "paranoid" and "friend". It's a module for Python 2.6+ that implements the SSH2 protocol for secure (encrypted and authenticated) connections to remote machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates signed by a powerful central authority.
@@ -51,6 +53,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 22 2023 Mukul Sikka <msikka@vmware.com> 2.10.3-5
+- Fix for CVE-2023-48795
 * Tue Dec 19 2023 Prashant S Chauhan <psingchauha@vmware.com> 2.10.3-4
 - Bump up to compile with latest python3-cryptography
 * Fri Dec 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.10.3-3

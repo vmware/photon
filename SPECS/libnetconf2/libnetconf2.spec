@@ -1,7 +1,7 @@
 Summary:        NETCONF library in C intended for building NETCONF clients and servers.
 Name:           libnetconf2
 Version:        2.1.18
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Tools
 URL:            https://github.com/CESNET/libnetconf2
@@ -99,6 +99,8 @@ popd
 %dir %{_includedir}/%{name}
 
 %changelog
+* Tue Dec 26 2023 Mukul Sikka <msikka@vmware.com> 2.1.18-3
+- Version bump up to use libssh v0.10.5
 * Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.1.18-2
 - Version bump up to use libssh v0.10.5
 * Mon Apr 17 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.18-1
