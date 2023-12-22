@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.62
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -565,6 +565,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-14
+- Increase CONFIG_LOG_BUF_SHIFT to 18
+- Decrease CONFIG_LOG_CPU_MAX_BUF_SHIFT to 12
 * Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-13
 - Update canister to 5.0.0-6.1.62-13
 * Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-12
