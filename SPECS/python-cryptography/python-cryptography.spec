@@ -3,7 +3,7 @@
 Summary:        Python cryptography library
 Name:           python-cryptography
 Version:        3.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -14,6 +14,7 @@ Source0: https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.
 %define sha512 %{srcname}=feb86c65365cbe7a0175f9c7794bb9d4c8c4530a5766b895de3986c2db1ac85b24de32cd21c60c5181cbd35835c6508e3e329c706046bb8e5bba252a03f6d210
 
 Patch0:         CVE-2023-23931.patch
+Patch1:         CVE-2023-49083.patch
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
@@ -101,6 +102,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri Dec 22 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.1.1-3
+- Fix CVE-2023-49083
 * Thu Nov 02 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.1.1-2
 - Fix CVE-2023-23931
 * Tue Oct 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1.1-1
