@@ -3,8 +3,8 @@
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.11.0
-Release:        10%{?dist}
+Version:        3.11.7
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -12,17 +12,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha512 Python=314eef88ae0d68760f34d7a32f238fd2ecb27c50963baa7357c42ad8159026ec50229a0b31d83c39710a472904a06422afc082f9658a90a1dc83ccb74c08039d
+%define sha512 Python=11e06f2ffe1f66888cb5b4e9f607de815294d6863a77eda6ec6d7c724ef158df9f51881f4a956d4a6fa973c2fb6fd031d495e3496e9b0bb53793fb1cc8434c63
 
 Source1: macros.python
 
 Patch0: cgi3.patch
 Patch1: use-HMAC-SHA256-in-FIPS-mode.patch
-Patch2: CVE-2023-24329.patch
-Patch3: CVE-2022-45061.patch
-Patch4: CVE-2023-40217.patch
-Patch5: CVE-2023-41105.patch
-Patch6: CVE-2007-4559.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -326,6 +321,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Mon Dec 11 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.7-1
+- Update to 3.11.7
 * Fri Nov 03 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.0-10
 - Fix CVE-2007-4559
 * Mon Sep 11 2023 Prashant S Chauhan <psingchauha@vmware.com> 3.11.0-9
