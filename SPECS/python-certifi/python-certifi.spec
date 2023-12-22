@@ -1,9 +1,8 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Python package for providing Mozilla's CA Bundle
 Name:           python-certifi
-Version:        2018.08.24
+Version:        2023.11.17
 Release:        1%{?dist}
 URL:            https://github.com/certifi
 License:        MPL-2.0
@@ -11,13 +10,16 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/certifi/python-certifi/archive/certifi-%{version}.tar.gz
-%define sha1    certifi=7433702a8c690e6cf6e7108e7bd3d8999d4976d6
+%define sha512  certifi=873eb3a34c5061f164484eec5bc659d4869882c96477395eec7d9d52242a033f9d82d293b07bcb094d04e62dc9af8a65caf2385a1a2a78c7058252af1b3d715b
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 BuildRequires:  ca-certificates
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python-pytest
+BuildRequires:  python3-pytest
 %endif
 
 Requires:       ca-certificates
@@ -32,19 +34,13 @@ SSL certificates while verifying the identity of TLS hosts
 %package -n     python3-certifi
 Summary:        Python 3 certifi library
 
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-%if %{with_check}
-BuildRequires:  python3-pytest
-%endif
-
 Requires:       ca-certificates
 
 %description -n python3-certifi
 Python 3 version of certifi.
 
 %prep
-%setup -q -n python-certifi-%{version}
+%autosetup -n python-certifi-%{version}
 
 %build
 python2 setup.py build
@@ -67,5 +63,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-*   Wed Sep 19 2018 Ajay Kaher <akaher@vmware.com> 2018.08.24-1
--   Initial packaging
+* Tue Dec 19 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2023.11.17-1
+- Update to 2023.11.17, Fixes CVE-2023-37920
+* Wed Sep 19 2018 Ajay Kaher <akaher@vmware.com> 2018.08.24-1
+- Initial packaging
