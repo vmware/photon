@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.62
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -453,6 +453,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 29 2024 Keerthana K <keerthanak@vmware.com> 6.1.62-12
+- Increase CONFIG_LOG_BUF_SHIFT to 18
+- Decrease CONFIG_LOG_CPU_MAX_BUF_SHIFT to 12
 * Tue Mar 26 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.1.62-11
 - Fix proc_sched_rt01 ltp testcase failure
 * Mon Feb 12 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.62-10
