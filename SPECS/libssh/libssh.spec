@@ -1,6 +1,6 @@
 Summary:        A library implementing the SSH protocol
 Name:           libssh
-Version:        0.10.5
+Version:        0.10.6
 Release:        1%{?dist}
 License:        LGPLv2+
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Group:          System Environment/NetworkingLibraries
 URL:            https://www.libssh.org
 
 Source0: https://www.libssh.org/files/0.10/%{name}-%{version}.tar.xz
-%define sha512 %{name}=2b758f9df2b5937865d4aee775ffeafafe3ae6739a89dfc470e38c7394e3c3cb5fcf8f842fdae04929890ee7e47bf8f50e3a38e82dfd26a009f3aae009d589e0
+%define sha512 %{name}=40c62d63c44e882999b71552c237d73fc7364313bd00b15a211a34aeff1b73693da441d2c8d4e40108d00fb7480ec7c5b6d472f9c0784b2359a179632ab0d6c1
 
 Source1: libssh_client.config
 Source2: libssh_server.config
@@ -109,6 +109,8 @@ install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.confi
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/%{name}/%{name}_server.config
 
 %changelog
+* Fri Dec 22 2023 Mukul Sikka <msikka@vmware.com> 0.10.6-1
+- Version upgrade to v0.10.6 to fix CVE-2023-48795
 * Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 0.10.5-1
 - Version upgrade to v0.10.5 to fix follwing CVE's:
 - CVE-2023-2023-1667, CVE-2023-2283

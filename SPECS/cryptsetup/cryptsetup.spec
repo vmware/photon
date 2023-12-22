@@ -1,7 +1,7 @@
 Summary:        Utility to setup encrypted disks
 Name:           cryptsetup
 Version:        2.4.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+ and LGPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -150,6 +150,8 @@ rm -rf %{buildroot}%{_libdir}/*.la
 %exclude %{_libdir}/%{name}/libcryptsetup-token-ssh.la
 
 %changelog
+* Tue Dec 26 2023 Mukul Sikka <msikka@vmware.com> 2.4.3-3
+- Version bump up to use libssh v0.10.6
 * Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.3-2
 - Version bump up to use libssh v0.10.5
 * Wed Apr 20 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.3-1
