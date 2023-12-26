@@ -4,7 +4,7 @@
 Summary:        Modules and plugins supported by Ansible community
 Name:           ansible-community-general
 Version:        6.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND PSF-2.0
 URL:            https://github.com/ansible-collections/community.general
 Group:          Development/Libraries
@@ -45,6 +45,8 @@ rm -vr %{buildroot}%{ansible_collection_files}/%{collection_name}/tests
 %{ansible_collection_files}
 
 %changelog
+* Tue Dec 26 2023 Nitesh Kumar <kunitesh@vmware.com> 6.3.0-2
+- Version bump up as a part of ansible v2.14.12 upgrade
 * Wed Feb 22 2023 Nitesh Kumar <kunitesh@vmware.com> 6.3.0-1
 - Version upgrade to v6.3.0
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 6.1.0-1
