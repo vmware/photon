@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        18.17.1
+Version:        20.10.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define sha512 node=aeafa150c2f523cca96b137a5a6d607095d3f564246668790c9c812efc378080b98bf5eb5da2dd0d4902d164dc5c7b03d45d322f668f779aad6d076e45cc1cf6
+%define sha512 node=3ebb10903cb2c30daced132acd408e2dd3c972cc73c945a2ba4f30cbe6ed315a3b2fc4b49a5cfba7166be8df0d31571f2c624d666584054efbf15b48d658e2cb
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -73,9 +73,11 @@ make %{?_smp_mflags} cctest
 %{_includedir}/*
 %{_docdir}/node/lldb_commands.py
 %{_docdir}/node/gdbinit
-%{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+* Wed Dec 06 2023 Prashant S Chauhan <psinghchauha@vmware.com> 20.10.0-1
+- Upgrade to 20.10.0
+- Remove node.stp as systemtap support has been removed
 * Thu Aug 24 2023 Shivani Agarwal <shivania2@vmware.com> 18.17.1-1
 - Upgrade to 18.17.1 to CVE-2023-32006, CVE-2023-32002
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 18.10.0-4
