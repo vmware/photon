@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -42,6 +42,7 @@ Patch18:        CVE-2023-38408-1.patch
 Patch19:        CVE-2023-38408-2.patch
 Patch20:        CVE-2023-38408-3.patch
 Patch21:        0001-Support-for-overriding-algorithms-for-ssh-keyscan.patch
+Patch22:        CVE-2023-51385.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
@@ -87,7 +88,7 @@ This provides the ssh server daemons, utilities, configuration and service files
 # Using autosetup is not feasible
 %setup -q -a0 -a1
 %patch0 -p0
-%autopatch -p1 -m1 -M21
+%autopatch -p1 -m1 -M22
 
 %build
 sh ./configure \
@@ -201,6 +202,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+* Tue Dec 26 2023 Mukul Sikka <msikka@vmware.com> 7.8p1-18
+- Fix for CVE-2023-51385
 * Wed Aug 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.8p1-17
 - Keyscan fips mode fix
 * Tue Aug 01 2023 Shivani Agarwal <shivania2@vmware.com> 7.8p1-16
