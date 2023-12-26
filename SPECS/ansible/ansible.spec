@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.14.2
-Release:        2%{?dist}
+Version:        2.16.2
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha512 %{name}=46ad59c694bf2aa1fc42d2f3b3074244c8d1d3acb61eb5787bd18d1efe3cc534459fc9c0628a0f60c67bd82c998f8cbbac80babf24258c37ff5ce95c8cf7900d
+%define sha512 %{name}=e76ee6de939ca09923cc7e19956ef2a673426059b4eb8bc9ae34c14b1b84248ac927daa68a0ef48adc94f28909c042be3be50cc1f6359feab1f9e257969a202c
 
 Source1: tdnf.py
 Source2: macros.ansible
@@ -72,6 +72,8 @@ touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 %{_rpmconfigdir}/%{name}_collection.py
 
 %changelog
+* Tue Dec 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.16.2-1
+- Version upgrade to v2.16.2 to fix CVE-2023-5764
 * Mon Nov 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.14.2-2
 - Fix requires
 - Fix an issue in upgrade using playbook.
