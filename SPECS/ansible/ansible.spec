@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.12.7
-Release:        2%{?dist}
+Version:        2.14.12
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -9,10 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/ansible/ansible/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8600fc96950ec1c0490bf3cbed88a1729bf4505b82879192ea9560ac6a90d27a382072e5d4aa92072f21e804867932c37ec7e5e75ffd08a383c4bf7d0e030607
+%define sha512 %{name}=4a44739bb10743b3bdf11de5d53ec5273f50f805a9f984ad5ddf330d1070205f03e8328d35bc66421b478ee55226e4e9b99b8ccd514c747e1cd688e620f4bd12
 
-Source1: macros.ansible
-Source: tdnf.py
+Source1: tdnf.py
+Source2: macros.ansible
+Source3: ansible_collection.py
 
 BuildArch: noarch
 
@@ -20,8 +21,16 @@ BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-resolvelib
 
+%if 0%{?with_check}
+BuildRequires: python3-pip
+BuildRequires: python3-jinja2 >= 3.1.2
+BuildRequires: python3-PyYAML
+BuildRequires: python3-pytest
+BuildRequires: python3-cryptography
+%endif
+
 Requires: python3
-Requires: python3-jinja2
+Requires: python3-jinja2 >= 3.1.2
 Requires: python3-PyYAML
 Requires: python3-xml
 Requires: python3-paramiko
@@ -40,15 +49,17 @@ Development files for ansible packages
 
 %prep
 %autosetup -p1
-cp -vp %{SOURCE2} lib/%{name}/modules/
+cp -vp %{SOURCE1} lib/%{name}/modules/
 
 %build
-%{py3_build}
+%py3_build
 
 %install
-%{py3_install}
-install -Dpm0644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
-touch -r %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
+%py3_install
+install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
+touch -r %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
+install -Dpm0744 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
+touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 
 %files
 %defattr(-, root, root)
@@ -58,8 +69,11 @@ touch -r %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 %files devel
 %defattr(-, root, root)
 %{_rpmmacrodir}/macros.%{name}
+%{_rpmconfigdir}/%{name}_collection.py
 
 %changelog
+* Thu Jan 04 2024 Nitesh Kumar <kunitesh@vmware.com> 2.14.12-1
+- Version upgrade to v2.14.12 to fix CVE-2023-5764
 * Mon Nov 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.12.7-2
 - Fix requires
 - Fix an issue in upgrade using playbook.

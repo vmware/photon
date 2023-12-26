@@ -2,16 +2,16 @@
 
 Summary:       Python documentation generator
 Name:          python3-sphinx
-Version:       3.3.0
-Release:       5%{?dist}
+Version:       5.1.1
+Release:       1%{?dist}
 Group:         Development/Tools
 License:       BSD-2-Clause
-URL:           http://www.vmware.com
+URL:           www.sphinx-doc.org
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0: https://pypi.python.org/packages/a7/df/4487783152b14f2b7cd0b0c9afb119b262c584bf972b90ab544b61b74c62/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=661487fa5af29eb66c97ee29b234fe69de5bb05a8ef8728b543f9d14bdedb3b78ba92ae35facff55b70730292cd38ee2912a72ecbb0e68e11671cf819d3c0a21
+Source0: https://github.com/sphinx-doc/sphinx/archive/refs/tags/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=82cb4c435b0f6cee6bf80b81028f06e425e3d6fb5614e64b1f5a8c715ece80b697b5b55e04f3afe26236bb4590de9cd41008d6480c4b3d895803d83e914afff3
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -23,9 +23,9 @@ BuildRequires: python3-six
 BuildRequires: python3-alabaster
 BuildRequires: python3-imagesize
 BuildRequires: python3-requests
+BuildRequires: python3-snowballstemmer
 BuildRequires: python3-typing
 BuildRequires: python3-packaging
-BuildRequires: python3-snowballstemmer
 BuildRequires: python3-sphinxcontrib-applehelp
 BuildRequires: python3-sphinxcontrib-devhelp
 BuildRequires: python3-sphinxcontrib-qthelp
@@ -97,6 +97,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Thu Jan 04 2024 Nitesh Kumar <kunitesh@vmware.com> 5.1.1-1
+- Version upgrade to v5.1.1 to make python3-jinja2 v3.1.2 compaitable
 * Sun Aug 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.3.0-5
 - Fix file packaging
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.3.0-4

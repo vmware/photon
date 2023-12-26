@@ -4,7 +4,7 @@
 Summary:        Ansible Collection targeting POSIX and POSIX-ish platforms
 Name:           ansible-posix
 Version:        1.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and Python
 URL:            https://github.com/ansible-collections/ansible.posix
 Group:          Development/Libraries
@@ -36,9 +36,11 @@ find -type f ! -executable -name '*.py' -print -exec sed -i -e '1{\@^#!.*@d}' '{
 find -type f -name '.gitignore' -print -delete
 
 %build
+export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 %{ansible_collection_build}
 
 %install
+export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 %{ansible_collection_install}
 
 %files
@@ -46,6 +48,8 @@ find -type f -name '.gitignore' -print -delete
 %{ansible_collection_files}
 
 %changelog
+* Thu Jan 04 2024 Nitesh Kumar <kunitesh@vmware.com> 1.4.0-3
+- Version bump up as a part of ansible v2.14.12 upgrade
 * Thu Nov 24 2022 Nitesh Kumar <kunitesh@vmware.com> 1.4.0-2
 - Version bump up to use ansible v2.12.7
 * Wed Sep 28 2022 Nitesh Kumar <kunitesh@vmware.com> 1.4.0-1

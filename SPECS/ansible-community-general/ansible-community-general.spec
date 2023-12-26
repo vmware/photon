@@ -4,7 +4,7 @@
 Summary:        Modules and plugins supported by Ansible community
 Name:           ansible-community-general
 Version:        5.6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND PSF-2.0
 URL:            https://github.com/ansible-collections/community.general
 Group:          Development/Libraries
@@ -32,9 +32,11 @@ find -type f ! -executable -name '*.py' -print -exec sed -i -e '1{\@^#!.*@d}' '{
 find -type f -name '.gitignore' -print -delete
 
 %build
+export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 %{ansible_collection_build}
 
 %install
+export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 %{ansible_collection_install}
 rm -vr %{buildroot}%{ansible_collection_files}/%{collection_name}/tests
 
@@ -43,6 +45,8 @@ rm -vr %{buildroot}%{ansible_collection_files}/%{collection_name}/tests
 %{ansible_collection_files}
 
 %changelog
+* Thu Jan 04 2024 Nitesh Kumar <kunitesh@vmware.com> 5.6.0-3
+- Version bump up as a part of ansible v2.14.12 upgrade
 * Thu Nov 24 2022 Nitesh Kumar <kunitesh@vmware.com> 5.6.0-2
 - Version bump up to use ansible v2.12.7
 * Wed Sep 28 2022 Nitesh Kumar <kunitesh@vmware.com> 5.6.0-1

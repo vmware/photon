@@ -1,6 +1,6 @@
 Name:           python3-setuptools-rust
 Version:        1.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Setuptools plugin for Rust support
 License:        MIT
 Group:          Development/Languages/Python
@@ -53,5 +53,7 @@ Compile and distribute Python extensions written in Rust as easily as if they we
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jan 08 2024 Nitesh Kumar <kunitesh@vmware.com> 1.5.2-2
+- Version bump up as a part of python3-sphinx upgrade v5.1.1
 * Tue Aug 01 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.2-1
 - Initial Build

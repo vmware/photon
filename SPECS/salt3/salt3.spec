@@ -2,7 +2,7 @@
 
 Name:           salt3
 Version:        3005.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
 License:        ASL 2.0
@@ -297,6 +297,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Thu Jan 04 2024 Nitesh Kumar <kunitesh@vmware.com> 3005.4-2
+- Bump up as part of python3-jinja2 v3.1.2 upgrade
 * Fri Oct 27 2023 Felippe Burk <saltstack_operations@vmware.com> 3005.4-1
 - Update to version 3005.4
 * Wed Oct 04 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3005.3-2
