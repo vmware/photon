@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.9p1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -29,6 +29,7 @@ Patch3: CVE-2023-38408-3.patch
 Patch4: CVE-2023-38408-4.patch
 Patch5: CVE-2023-28531.patch
 Patch6: 0001-Support-for-overriding-algorithms-for-ssh-keyscan.patch
+Patch7: CVE-2023-51385.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -197,6 +198,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Tue Dec 26 2023 Mukul Sikka <msikka@vmware.com> 8.9p1-5
+- Fix for CVE-2023-51385
 * Tue Nov 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.9p1-4
 - Fix sshd.socket failure issue upon graceful session exit
 * Wed Aug 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.9p1-3
