@@ -1,7 +1,7 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
 Version:        4.19.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://wiki.linuxfoundation.org/networking/iproute2
 Group:          Applications/System
@@ -87,6 +87,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 28 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-2
+- Fix mss-clamp value setting issue
 * Mon Oct 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.19.0-1
 - Upgrade to v4.19.0
 * Wed Feb 16 2022 Sharan Turlapati <sturlapati@vmware.com> 4.18.0-4

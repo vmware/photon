@@ -1,4 +1,4 @@
-From 48f3f41432221d88ee8b05a435c88b236fd50c9d Mon Sep 17 00:00:00 2001
+From bea83e3d770fede6262e3a2097990ec7aa5a44d8 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Fri, 24 Jun 2022 19:51:05 +0530
 Subject: [PATCH 3/4] mss-clamp
@@ -6,8 +6,8 @@ Subject: [PATCH 3/4] mss-clamp
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
  include/uapi/linux/if_tunnel.h |  1 +
- ip/link_gre.c                  | 73 ++++++++++++++++++++++++----------
- 2 files changed, 52 insertions(+), 22 deletions(-)
+ ip/link_gre.c                  | 74 ++++++++++++++++++++++++----------
+ 2 files changed, 53 insertions(+), 22 deletions(-)
 
 diff --git a/include/uapi/linux/if_tunnel.h b/include/uapi/linux/if_tunnel.h
 index ecdc766..2321d74 100644
@@ -22,7 +22,7 @@ index ecdc766..2321d74 100644
  };
  
 diff --git a/ip/link_gre.c b/ip/link_gre.c
-index 1ee7ee1..912fbf4 100644
+index 1ee7ee1..383f28b 100644
 --- a/ip/link_gre.c
 +++ b/ip/link_gre.c
 @@ -22,6 +22,9 @@
@@ -87,7 +87,7 @@ index 1ee7ee1..912fbf4 100644
  		} else {
  			gre_print_help(lu, argc, argv, stderr);
  			return -1;
-@@ -386,40 +406,44 @@ get_failed:
+@@ -386,40 +406,45 @@ get_failed:
  		}
  	}
  
@@ -151,10 +151,11 @@ index 1ee7ee1..912fbf4 100644
 +	addattr16(n, maxlen, IFLA_GRE_ENCAP_FLAGS, encapflags);
 +	addattr16(n, maxlen, IFLA_GRE_ENCAP_SPORT, htons(encapsport));
 +	addattr16(n, maxlen, IFLA_GRE_ENCAP_DPORT, htons(encapdport));
++    addattr16(n, MSGBUFSZ, IFLA_GRE_MSS_CLAMP, mss_clamp);
  
  	return 0;
  }
-@@ -544,6 +568,11 @@ static void gre_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+@@ -544,6 +569,11 @@ static void gre_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
  			    "erspan_hwid", "erspan_hwid 0x%x ", erspan_hwid);
  	}
  
@@ -167,5 +168,5 @@ index 1ee7ee1..912fbf4 100644
  			IFLA_GRE_ENCAP_TYPE,
  			IFLA_GRE_ENCAP_FLAGS,
 -- 
-2.25.1
+2.43.0
 
