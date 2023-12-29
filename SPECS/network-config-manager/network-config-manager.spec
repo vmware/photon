@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
 Version:        0.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -27,6 +27,9 @@ Requires: glib
 Requires: libmnl
 Requires: nftables
 
+Provides: netmgmt
+Obsoletes: netmgmt
+
 %description
 The network-config-manager nmctl allows to configure and introspect
 the state of the network links as seen by systemd-networkd.
@@ -44,13 +47,14 @@ Requires:       nftables-devel
 Requires:       systemd-devel
 Requires:       libyaml-devel
 Requires:       glib-devel
+Provides:       netmgmt-devel
+Obsoletes:      netmgmt-devel
 
 %description devel
 This package contains the headers necessary for building.
 
 %prep
 %autosetup -p1
-mkdir build
 
 %build
 %meson
@@ -77,6 +81,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Dec 26 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7-2
+- Add provides & obsoletes netmgmt
 * Mon Dec 18 2023 Tapas Kundu <tapas.kundu@broadcom.com> 0.7-1
 - Update to 0.7
 * Thu Nov 30 2023 Nitesh Kumar <kunitesh@vmware.com> 0.6.6-1
