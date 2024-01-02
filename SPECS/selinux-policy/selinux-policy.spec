@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -52,9 +52,10 @@ Patch26: fix_systemd_gpt_denials.patch
 BuildArch:      noarch
 
 BuildRequires: checkpolicy
-BuildRequires: python3
+BuildRequires: python3-devel
 BuildRequires: semodule-utils
 BuildRequires: libselinux-utils
+BuildRequires: libselinux-devel
 BuildRequires: policycoreutils
 
 Requires: policycoreutils
@@ -68,6 +69,10 @@ Summary: SELinux policy devel
 Requires: %{name} = %{version}-%{release}
 Requires: m4
 Requires: checkpolicy
+Requires: selinux-python
+Requires: semodule-utils
+Requires: rpm-build
+Requires: build-essential
 
 %description devel
 SELinux policy development
@@ -122,6 +127,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Tue Jan 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-4
+- Fix devel package requires
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 36.5-3
 - Add rpm macros
 * Thu Sep 1 2022 Shivani Agarwal <shivania2@vmware.com> 36.5-2
