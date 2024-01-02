@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.94
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -285,6 +285,24 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 # TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 %endif
 
+#HCX-Patches
+Patch701: 0001-Active-probing-of-dst-mac-of-unknown-unicast.patch
+Patch702: 0002-Skip-IP_ECN_decapsulate-for-gretap-devices.patch
+Patch703: 0003-Handle-ipsec-in-ipip-more-correctly.patch
+Patch704: 0004-De-cap-fou-traffic-into-correct-tunnel-device-s.patch
+Patch705: 0005-Add-unknown-fou-tracking-to-kernel.patch
+Patch706: 0006-Add-initial-support-for-vxlan-trunk-to-cgw-kernel-wi.patch
+Patch707: 0007-Changes-for-bridge-vlan-arp-filtering-to-work-right.patch
+Patch708: 0008-Add-support-for-mac-flapping-and-long-mac-flapping-p.patch
+Patch709: 0009-vmxnet3-Avoid-fragmentation-by-giving-each-vmxnet3-d.patch
+Patch710: 0010-RPS-flow-balance.patch
+Patch711: 0011-add-mss-clamp-support-to-gretap-baseimage.patch
+Patch712: 0012-set-max_mtu-as-IP_MAX_MTU.patch
+Patch713: 0013-set-max_mtu-as-IP_MAX_MTU_for_vlan.patch
+Patch714: 0014-iptunnel-mark-xfrm-multi-parts.patch
+Patch715: 0015-disable-pskb_inet_may_pull-in-tunnel.patch
+Patch716: 0016-gre_tap-interface-mss_clamp-support.patch
+
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 
@@ -499,6 +517,9 @@ The kernel fips-canister
 # SEV on VMware
 %autopatch -p1 -m600 -M609
 %endif
+
+#HCX-Patches
+%autopatch -p1 -m701 -M716
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
@@ -850,6 +871,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Jun 27 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.94-2
+- Ported HCX kernel patches and config changes
 * Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.1.94-1
 - Update to version 6.1.94
 * Mon May 20 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.90-5
