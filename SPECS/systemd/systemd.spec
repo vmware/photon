@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.12
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -58,7 +58,6 @@ Requires:       libgpg-error
 
 BuildRequires:  libgpg-error-devel
 BuildRequires:  bzip2-devel
-BuildRequires:  gnu-efi
 BuildRequires:  curl-devel
 BuildRequires:  docbook-xml
 BuildRequires:  docbook-xsl
@@ -303,8 +302,6 @@ CONFIGURE_OPTS=(
        -Dsystemd-network-uid=76
        -Dsystemd-resolve-uid=77
        -Dsystemd-timesync-uid=78
-       -Defi=true
-       -Dgnu-efi=true
        $CROSS_COMPILE_CONFIG
 )
 
@@ -379,9 +376,6 @@ rm -rf %{buildroot}/*
 
 %post udev
 udevadm hwdb --update &>/dev/null || :
-if [ $1 -eq 1 ] || [ $1 -eq 2 ]; then
-  [ "$(bootctl is-installed)" = "no" ] && bootctl install || :
-fi
 
 %systemd_post %udev_services
 
@@ -497,7 +491,6 @@ fi
 %{_libdir}/binfmt.d
 %{_libdir}/rpm/*
 %{_libdir}/sysctl.d/*
-%{_systemd_util_dir}/boot/*
 %{_systemd_util_dir}/catalog/*
 %{_systemd_util_dir}/*.so
 %{_systemd_util_dir}/network/*
@@ -506,7 +499,6 @@ fi
 %{_systemd_util_dir}/resolv.conf
 %{_systemd_util_dir}/%{name}*
 %{_systemd_util_dir}/user*
-%{_systemd_util_dir}/ukify
 %{_systemd_util_dir}/import-pubring.gpg
 %{_unitdir}/*
 %{_presetdir}/*
@@ -561,7 +553,6 @@ fi
 %{_sysconfdir}/%{name}/timesyncd.conf
 %{_sysconfdir}/udev/udev.conf
 %{_tmpfilesdir}/%{name}-pstore.conf
-%{_bindir}/bootctl
 %{_bindir}/kernel-install
 %{_bindir}/%{name}-hwdb
 %{_bindir}/udevadm
@@ -713,6 +704,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Jan 02 2024 Ankit Jain <ankitja@vmware.com> 253.12-5
+- Disable 'efi' and 'gnu-efi' support
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 253.12-4
 - Bump version as a part of gnutls upgrade
 * Mon Nov 20 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253.12-3
