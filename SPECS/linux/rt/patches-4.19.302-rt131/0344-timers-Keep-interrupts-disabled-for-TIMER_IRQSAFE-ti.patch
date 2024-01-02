@@ -1,0 +1,34 @@
+From d24ad5ccbf32a6ae6e175958ff2ee5b5bf40e630 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 19 Aug 2022 11:24:42 +0200
+Subject: [PATCH 344/354] timers: Keep interrupts disabled for TIMER_IRQSAFE
+ timer.
+
+Keep interrupts disabled across callback invocation for the
+TIMER_IRQSAFE as expected.
+This is required for the timer used by workqueue after the upcomming
+rework.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Daniel Wagner <wagi@monom.org>
+---
+ kernel/time/timer.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index a2be2277506d..3e2c0bd03004 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1397,8 +1397,7 @@ static void expire_timers(struct timer_base *base, struct hlist_head *head)
+ 
+ 		fn = timer->function;
+ 
+-		if (!IS_ENABLED(CONFIG_PREEMPT_RT_FULL) &&
+-		    timer->flags & TIMER_IRQSAFE) {
++		if (timer->flags & TIMER_IRQSAFE) {
+ 			raw_spin_unlock(&base->lock);
+ 			call_timer_fn(timer, fn);
+ 			base->running_timer = NULL;
+-- 
+2.43.0
+

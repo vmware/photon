@@ -7,7 +7,7 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.297
+Version:        4.19.303
 Release:        1%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -16,12 +16,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt129
+%define rt_version rt131
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=fd63ed21739e0e5081263c0c18ce80dd72fcff6a0a08791da4fe5831ca9d1f56bb5e6705a33b59652a6d4145351ac06f2d69a4cfeb069622c293e9636a1f6e75
+%define sha512 linux=96bd2211f05bee534a824aa24579eecd9fd5fec57a1e817436651d521a4afa5e3cb7da6bb93763770bb5f1d2e1d5b98a629bf5bb011040f7072cff4cd9ab14a8
 
 %ifarch x86_64
 Source1: config-rt
@@ -253,9 +253,6 @@ Patch151: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
 Patch152: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch153: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch154: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
-
-#Fix for CVE-2021-44879
-Patch155: 0001-f2fs-fix-to-do-sanity-check-on-inode-type-during-gar.patch
 
 #Fix for CVE-2022-0480
 Patch156: 0001-memcg-enable-accounting-for-file-lock-caches.patch
@@ -1166,6 +1163,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon Jan 01 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.303-1
+- Update to version 4.19.303
 * Fri Nov 03 2023 Ankit Jain <ankitja@vmware.com> 4.19.297-1
 - Update to version 4.19.297
 * Mon Oct 09 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.295-4
