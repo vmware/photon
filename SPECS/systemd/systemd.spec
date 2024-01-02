@@ -2,8 +2,8 @@
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        254.1
-Release:        8%{?dist}
+Version:        255.2
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=eb2f4a95c890792fe11080e8dafc1eb4588ee98a3084d28083c4dd1f97962f56188c41641708c23267d01f1431821e823e1b89012f90d6ede80a12a0ce11a6d7
+%define sha512 %{name}=0a9a43adc6d23f52349d298cdff3f3ae6accd7e43a33253608f7a9d241699c7cba3c9f6a0fa6da3ae3cba0e246e272076bfa2cdf5bade7bc019406f407be0bb9
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -29,7 +29,6 @@ Source14:       sysusers.generate-pre.sh
 Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
 Patch2: use-bfq-scheduler.patch
-Patch3: fix-lvrename-unmount.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -83,7 +82,6 @@ BuildRequires:  pkg-config
 BuildRequires:  python3-devel
 BuildRequires:  python3-lxml
 BuildRequires:  python3-jinja2
-BuildRequires:  python3-pyelftools
 BuildRequires:  shadow
 BuildRequires:  util-linux-devel
 BuildRequires:  XML-Parser
@@ -180,21 +178,6 @@ This package provides ukify, a script that combines a kernel image, an initrd,
 with a command line, and possibly PCR measurements and other metadata, into a
 Unified Kernel Image (UKI).
 
-%package boot-unsigned
-Summary: UEFI boot manager (unsigned version)
-
-Provides: systemd-boot-unsigned-%{efi_arch} = %version-%release
-Provides: systemd-boot = %version-%release
-Provides: version(systemd-boot-unsigned) = %version
-
-%description boot-unsigned
-systemd-boot (short: sd-boot) is a simple UEFI boot manager. It provides a
-graphical menu to select the entry to boot and an editor for the kernel command
-line. systemd-boot supports systems with UEFI firmware only.
-
-This package contains the unsigned version. Install systemd-boot instead to get
-the version that works with Secure Boot.
-
 %package container
 Summary: Tools for containers and VMs
 Requires:       %{name} = %{version}-%{release}
@@ -284,33 +267,34 @@ fi
 
 CONFIGURE_OPTS=(
        -Dmode=release
-       -Dkmod=true
+       -Dkmod=enabled
        -Duser-path=%{_usr}/local/bin:%{_usr}/local/sbin:%{_bindir}:%{_sbindir}
        -Dservice-watchdog=
-       -Dblkid=true
-       -Dseccomp=true
+       -Dblkid=enabled
+       -Dseccomp=enabled
        -Dfirstboot=false
        -Dldconfig=false
-       -Dxz=true
-       -Dzlib=true
-       -Dbzip2=true
-       -Dlz4=true
-       -Dacl=true
+       -Dxz=enabled
+       -Dzlib=enabled
+       -Dbzip2=enabled
+       -Dlz4=enabled
+       -Dacl=enabled
        -Dsmack=true
-       -Dgcrypt=true
-       -Dsplit-usr=true
+       -Dgcrypt=enabled
        -Dsysusers=true
-       -Dpam=true
-       -Dpolkit=true
-       -Dselinux=true
-       -Dlibcurl=true
-       -Dgnutls=true
+       -Dpam=enabled
+       -Dpolkit=enabled
+       -Dselinux=enabled
+       -Dlibcurl=enabled
+       -Dgnutls=enabled
+       -Ddefault-network=true
+       -Dvmspawn=enabled
        -Ddns-over-tls=true
        -Ddefault-dnssec=no
        -Ddefault-dns-over-tls=no
        -Ddefault-mdns=no
        -Ddefault-llmnr=resolve
-       -Dopenssl=true
+       -Dopenssl=enabled
        -Db_ndebug=false
        -Dhwdb=true
        -Ddefault-kill-user-processes=false
@@ -318,7 +302,6 @@ CONFIGURE_OPTS=(
        -Dinstall-tests=true
        -Dnobody-user=nobody
        -Dnobody-group=nobody
-       -Dsplit-usr=false
        -Dsplit-bin=true
        -Db_lto=true
        -Db_ndebug=false
@@ -327,16 +310,33 @@ CONFIGURE_OPTS=(
        -Drc-local=%{_sysconfdir}/rc.d/rc.local
        -Dfallback-hostname=localhost
        -Doomd=false
-       -Dhomed=false
-       -Dbootloader=true
+       -Dhomed=disabled
+       -Dbootloader=disabled
        -Dversion-tag=v%{version}-%{release}
        -Dsystemd-network-uid=76
        -Dsystemd-resolve-uid=77
        -Dsystemd-timesync-uid=78
-       -Defi=true
+       -Defi=false
        -Dstatus-unit-format-default=combined
        -Ddefault-timeout-sec=45
        -Ddefault-user-timeout-sec=45
+       -Dapparmor=disabled
+       -Dbpf-framework=disabled
+       -Daudit=disabled
+       -Dxenctrl=disabled
+       -Dlibcryptsetup=disabled
+       -Dlibcryptsetup-plugins=disabled
+       -Dlibidn2=disabled
+       -Dlibidn=disabled
+       -Dlibiptc=disabled
+       -Dqrencode=disabled
+       -Dp11kit=disabled
+       -Dlibfido2=disabled
+       -Dtpm2=disabled
+       -Dxkbcommon=disabled
+       -Dpwquality=disabled
+       -Dpasswdqc=disabled
+       -Ddbus=disabled
        $CROSS_COMPILE_CONFIG
 )
 
@@ -453,18 +453,36 @@ fi
 %endif
 %config(noreplace) %{_sysconfdir}/%{name}/network/99-dhcp-en.network
 
-%config(noreplace) /boot/%{name}.cfg
+%{_bindir}/%{name}-ac-power
+%{_bindir}/%{name}-analyze
+%{_bindir}/%{name}-ask-password
+%{_bindir}/%{name}-cat
+%{_bindir}/%{name}-cgls
+%{_bindir}/%{name}-cgtop
+%{_bindir}/%{name}-confext
+%{_bindir}/%{name}-creds
+%{_bindir}/%{name}-delta
+%{_bindir}/%{name}-detect-virt
+%{_bindir}/%{name}-dissect
+%{_bindir}/%{name}-escape
+%{_bindir}/%{name}-id128
+%{_bindir}/%{name}-inhibit
+%{_bindir}/%{name}-machine-id-setup
+%{_bindir}/%{name}-mount
+%{_bindir}/%{name}-notify
+%{_bindir}/%{name}-path
+%{_bindir}/%{name}-repart
+%{_bindir}/%{name}-resolve
+%{_bindir}/%{name}-run
+%{_bindir}/%{name}-socket-activate
+%{_bindir}/%{name}-stdio-bridge
+%{_bindir}/%{name}-sysext
+%{_bindir}/%{name}-sysusers
+%{_bindir}/%{name}-tmpfiles
+%{_bindir}/%{name}-tty-ask-password-agent
+%{_bindir}/%{name}-umount
 
-%{_sbindir}/halt
-%{_sbindir}/init
-%{_sbindir}/poweroff
-%{_sbindir}/reboot
-%{_sbindir}/runlevel
-%{_sbindir}/shutdown
-%{_sbindir}/telinit
-%{_sbindir}/resolvconf
-%{_sbindir}/mount.ddi
-
+%{_bindir}/bootctl
 %{_bindir}/busctl
 %{_bindir}/coredumpctl
 %{_bindir}/hostnamectl
@@ -475,61 +493,44 @@ fi
 %{_bindir}/portablectl
 %{_bindir}/resolvectl
 %{_bindir}/systemctl
-%{_bindir}/%{name}-confext
-%{_bindir}/%{name}-sysusers
-%{_bindir}/%{name}-analyze
-%{_bindir}/%{name}-ask-password
-%{_bindir}/%{name}-cat
-%{_bindir}/%{name}-cgls
-%{_bindir}/%{name}-cgtop
-%{_bindir}/%{name}-delta
-%{_bindir}/%{name}-detect-virt
-%{_bindir}/%{name}-escape
-%{_bindir}/%{name}-id128
-%{_bindir}/%{name}-inhibit
-%{_bindir}/%{name}-machine-id-setup
-%{_bindir}/%{name}-mount
-%{_bindir}/%{name}-notify
-%{_bindir}/%{name}-path
-%{_bindir}/%{name}-resolve
-%{_bindir}/%{name}-run
-%{_bindir}/%{name}-socket-activate
-%{_bindir}/%{name}-stdio-bridge
-%{_bindir}/%{name}-tmpfiles
-%{_bindir}/%{name}-tty-ask-password-agent
-%{_bindir}/%{name}-umount
 %{_bindir}/timedatectl
 %{_bindir}/userdbctl
-%{_bindir}/%{name}-repart
-%{_bindir}/%{name}-dissect
-%{_bindir}/%{name}-sysext
-%{_bindir}/%{name}-creds
-%{_bindir}/%{name}-ac-power
+%{_bindir}/varlinkctl
 
+%{_sbindir}/halt
+%{_sbindir}/init
+%{_sbindir}/mount.ddi
+%{_sbindir}/poweroff
+%{_sbindir}/reboot
+%{_sbindir}/resolvconf
+%{_sbindir}/runlevel
+%{_sbindir}/shutdown
+%{_sbindir}/telinit
+
+%config(noreplace) /boot/%{name}.cfg
+%{_tmpfilesdir}/%{name}-network.conf
+%{_tmpfilesdir}/%{name}-nologin.conf
+%{_tmpfilesdir}/%{name}-resolve.conf
+%{_tmpfilesdir}/%{name}-tmp.conf
+%{_tmpfilesdir}/%{name}.conf
+%{_tmpfilesdir}/README
+%{_tmpfilesdir}/credstore.conf
 %{_tmpfilesdir}/etc.conf
 %{_tmpfilesdir}/home.conf
 %{_tmpfilesdir}/journal-nocow.conf
 %{_tmpfilesdir}/legacy.conf
 %{_tmpfilesdir}/portables.conf
-%{_tmpfilesdir}/static-nodes-permissions.conf
 %{_tmpfilesdir}/provision.conf
-%{_tmpfilesdir}/%{name}-nologin.conf
-%{_tmpfilesdir}/%{name}-tmp.conf
-%{_tmpfilesdir}/%{name}.conf
-%{_tmpfilesdir}/%{name}-resolve.conf
-%{_tmpfilesdir}/%{name}-network.conf
+%{_tmpfilesdir}/static-nodes-permissions.conf
 %{_tmpfilesdir}/tmp.conf
 %{_tmpfilesdir}/var.conf
 %{_tmpfilesdir}/x11.conf
-%{_tmpfilesdir}/credstore.conf
-%{_tmpfilesdir}/README
 
 %{_environmentdir}/99-environment.conf
 %exclude %{_datadir}/locale
 %{_libdir}/binfmt.d
 %{_libdir}/rpm/*
 %{_libdir}/sysctl.d/*
-%{_systemd_util_dir}/boot/*
 %{_systemd_util_dir}/catalog/*
 %{_systemd_util_dir}/*.so
 %{_systemd_util_dir}/network/*
@@ -540,6 +541,7 @@ fi
 %{_systemd_util_dir}/user*
 %{_systemd_util_dir}/ukify
 %{_systemd_util_dir}/import-pubring.gpg
+%{_systemd_util_dir}/repart/*
 %{_unitdir}/*
 %{_presetdir}/*
 %{_systemdgeneratordir}/*
@@ -593,7 +595,6 @@ fi
 %{_sysconfdir}/%{name}/timesyncd.conf
 %{_sysconfdir}/udev/udev.conf
 %{_tmpfilesdir}/%{name}-pstore.conf
-%{_bindir}/bootctl
 %{_bindir}/kernel-install
 %{_bindir}/%{name}-hwdb
 %{_bindir}/udevadm
@@ -699,30 +700,19 @@ fi
 %files pam
 %defattr(-,root,root)
 %{_libdir}/security/pam_systemd.so
+%{_libdir}/security/pam_systemd_loadkey.so
 %{_libdir}/pam.d/%{name}-user
-
-%files boot-unsigned
-%defattr(-,root,root)
-%dir %{_systemd_util_dir}/boot
-%dir %{_systemd_util_dir}/boot/efi
-%{_bindir}/bootctl
-%{_systemd_util_dir}/boot/efi/linux*.efi.stub
-%{_systemd_util_dir}/boot/efi/systemd-boot*.efi
-%{_systemd_util_dir}/systemd-bless-boot
-%{_systemdgeneratordir}/systemd-bless-boot-generator
-%{_unitdir}/sysinit.target.wants/systemd-boot-random-seed.service
-%{_unitdir}/systemd-bless-boot.service
-%{_unitdir}/systemd-boot-random-seed.service
-%{_unitdir}/systemd-boot-update.service
 
 %files ukify
 %defattr(-,root,root)
 %{_libdir}/kernel/install.d/60-ukify.install
 %{_libdir}/systemd/ukify
+%{_bindir}/ukify
 
 %files container
 %defattr(-,root,root)
 %{_bindir}/%{name}-nspawn
+%{_bindir}/%{name}-vmspawn
 %{_bindir}/machinectl
 
 %{_systemd_util_dir}/%{name}-machined
@@ -764,6 +754,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Jan 04 2024 Susant Sahani <susant.sahani@broadcom.com> 255.2-1
+- Version bump.
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-8
 - Bump version as a part of gnutls upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-7

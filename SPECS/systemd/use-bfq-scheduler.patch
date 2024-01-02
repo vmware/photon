@@ -1,6 +1,6 @@
-From fb013adc7d3c1cfefbd012c2d1ae4961f5a3a146 Mon Sep 17 00:00:00 2001
+From 49ac7437fc8e1d002c5588015babc1abeaa5b990 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
-Date: Tue, 15 Aug 2023 09:08:08 +0000
+Date: Tue, 2 Jan 2024 15:05:00 +0000
 Subject: [PATCH] udev: use bfq as the default scheduler
 
 As requested in https://bugzilla.redhat.com/show_bug.cgi?id=1738828.
@@ -25,7 +25,7 @@ index 0000000..30a4f4c
 +  KERNEL=="mmcblk*[0-9]|msblk*[0-9]|mspblk*[0-9]|sd*[!0-9]|sr*", \
 +  ATTR{queue/scheduler}="bfq"
 diff --git a/rules.d/meson.build b/rules.d/meson.build
-index 20fca22..212c875 100644
+index 3040fae..852a892 100644
 --- a/rules.d/meson.build
 +++ b/rules.d/meson.build
 @@ -8,6 +8,7 @@ rules = [

@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        10%{?dist}
+Release:        11%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
@@ -23,6 +23,7 @@ Patch5: 0005-mkinitrd-verbose-fix.patch
 Patch6: 0006-dracut.sh-validate-instmods-calls.patch
 Patch7: 0007-feat-dracut.sh-support-multiple-config-dirs.patch
 Patch8: 0008-fix-dracut-systemd-rootfs-generator-cannot-write-out.patch
+Patch9: 0009-install-systemd-executor.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
@@ -157,6 +158,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Wed Jan 03 2024 Susant Sahani <susant.sahani@broadcom.com> 059-11
+- Include systemd-executor if available
 * Tue Oct 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-10
 - Add gzip, procps-ng, xz to requires
 * Thu Jul 27 2023 Piyush Gupta <gpiyush@vmware.com> 059-9
