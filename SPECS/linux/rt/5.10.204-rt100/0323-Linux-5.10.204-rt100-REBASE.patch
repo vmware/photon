@@ -1,0 +1,20 @@
+From 0a50987f60b76f392050410e35609fb4361dcca7 Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Fri, 22 Dec 2023 17:30:57 -0300
+Subject: [PATCH 323/323] Linux 5.10.204-rt100 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 21988f9ad53f..79d3e2b9f550 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt34
++-rt100
+-- 
+2.43.0
+

@@ -1,0 +1,88 @@
+From 2074b2bfdbed96348cbb99a1a3920fa7a9e4df46 Mon Sep 17 00:00:00 2001
+From: Wang Yong <wang.yong12@zte.com.cn>
+Date: Tue, 12 Sep 2023 15:14:28 +0800
+Subject: [PATCH 321/323] arm64: signal: Use ARCH_RT_DELAYS_SIGNAL_SEND
+
+The ltp test prompts the following bug information under the 5.10 kernel:
+BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:969
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 796, name: cat
+Preemption disabled at:
+[<ffffffe40f433980>] do_debug_exception+0x60/0x180
+CPU: 3 PID: 796 Comm: cat Not tainted 5.10.59-rt52-KERNEL_VERSION #38
+Hardware name: linux,dummy-virt (DT)
+Call trace:
+ dump_backtrace+0x0/0x198
+ show_stack+0x20/0x30
+ dump_stack+0xf0/0x13c
+ ___might_sleep+0x140/0x178
+ rt_spin_lock+0x30/0x90
+ force_sig_info_to_task+0x30/0xe0
+ force_sig_fault_to_task+0x54/0x78
+ force_sig_fault+0x1c/0x28
+ arm64_force_sig_fault+0x48/0x78
+ send_user_sigtrap+0x4c/0x80
+ brk_handler+0x3c/0x68
+ do_debug_exception+0xac/0x180
+ el0_dbg+0x34/0x58
+ el0_sync_handler+0x50/0xb8
+ el0_sync+0x180/0x1c0
+
+It has been fixed by
+0c34700de5e7 ("arm64: signal: Use ARCH_RT_DELAYS_SIGNAL_SEND.") in
+higher versions of the kernel. This patch needs to be compatible with 5.10.
+5.10 kernel does not have signal.h file, so adding signal.h file to
+define ARCH_RT_DELAYS_SIGNAL_SEND.
+
+Link: https://lore.kernel.org/r/202309121514283793475@zte.com.cn
+Signed-off-by: Wang Yong <wang.yong12@zte.com.cn>
+Cc: Xuexin Jiang <jiang.xuexin@zte.com.cn>
+Cc: Yang Yang <yang.yang29@zte.com.cn>
+Cc: Xiaokai Ran <ran.xiaokai@zte.com.cn>
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ arch/arm64/include/asm/signal.h | 12 ++++++++++++
+ arch/arm64/kernel/signal.c      |  9 +++++++++
+ 2 files changed, 21 insertions(+)
+ create mode 100644 arch/arm64/include/asm/signal.h
+
+diff --git a/arch/arm64/include/asm/signal.h b/arch/arm64/include/asm/signal.h
+new file mode 100644
+index 000000000000..0fb418cf4c17
+--- /dev/null
++++ b/arch/arm64/include/asm/signal.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __ARM64_ASM_SIGNAL_H
++#define __ARM64_ASM_SIGNAL_H
++
++#include <uapi/asm/signal.h>
++#include <uapi/asm/siginfo.h>
++
++#if defined(CONFIG_PREEMPT_RT)
++#define ARCH_RT_DELAYS_SIGNAL_SEND
++#endif
++
++#endif
+diff --git a/arch/arm64/kernel/signal.c b/arch/arm64/kernel/signal.c
+index 94eed0dc3afc..5b08f55ec85d 100644
+--- a/arch/arm64/kernel/signal.c
++++ b/arch/arm64/kernel/signal.c
+@@ -929,6 +929,15 @@ asmlinkage void do_notify_resume(struct pt_regs *regs,
+ 		} else {
+ 			local_daif_restore(DAIF_PROCCTX);
+ 
++#ifdef ARCH_RT_DELAYS_SIGNAL_SEND
++			if (unlikely(current->forced_info.si_signo)) {
++				struct task_struct *t = current;
++
++				force_sig_info(&t->forced_info);
++				t->forced_info.si_signo = 0;
++			}
++#endif
++
+ 			if (thread_flags & _TIF_UPROBE)
+ 				uprobe_notify_resume(regs);
+ 
+-- 
+2.43.0
+

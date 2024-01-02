@@ -1,0 +1,44 @@
+From 8cc1a32ca44ae3484956295c75afcc2234e809ae Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 22 Sep 2021 19:34:40 +0200
+Subject: [PATCH 301/323] preempt: Move preempt_enable_no_resched() to the RT
+ block
+
+preempt_enable_no_resched() should point to preempt_enable() on
+PREEMPT_RT so nobody is playing any preempt tricks and enables
+preemption without checking for the need-resched flag.
+
+This was misplaced in v3.14.0-rt1 und remained unnoticed until now.
+
+Point preempt_enable_no_resched() and preempt_enable() on RT.
+
+Cc: stable-rt@vger.kernel.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ include/linux/preempt.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/preempt.h b/include/linux/preempt.h
+index af39859f02ee..7b5b2ed55531 100644
+--- a/include/linux/preempt.h
++++ b/include/linux/preempt.h
+@@ -208,12 +208,12 @@ do { \
+ 	preempt_count_dec(); \
+ } while (0)
+ 
+-#ifdef CONFIG_PREEMPT_RT
++#ifndef CONFIG_PREEMPT_RT
+ # define preempt_enable_no_resched() sched_preempt_enable_no_resched()
+-# define preempt_check_resched_rt() preempt_check_resched()
++# define preempt_check_resched_rt() barrier();
+ #else
+ # define preempt_enable_no_resched() preempt_enable()
+-# define preempt_check_resched_rt() barrier();
++# define preempt_check_resched_rt() preempt_check_resched()
+ #endif
+ 
+ #define preemptible()	(preempt_count() == 0 && !irqs_disabled())
+-- 
+2.43.0
+

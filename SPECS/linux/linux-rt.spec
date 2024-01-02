@@ -16,7 +16,7 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.201
+Version:        5.10.206
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -25,12 +25,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt96
+%define rt_version rt100
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=6335fb4f13400f8c61f34de221b4d2807619e2b555ef0884e5ab12e0243be34f6802d46a4df7460b7960e4bf1474a29f8b5ccbb8535120b2b1c9aac1935545d7
+%define sha512 linux=48b04c27f183fc90fb7ccebba62d4e99bd3272e7f2618c0bd8ea864b89acfb2b4b4f69361774c960685267b52b70c4f7454dfcc61f64e9781939e2374870ee4e
 %ifarch x86_64
 Source1: config-rt
 %endif
@@ -639,6 +639,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jan 09 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.206-1
+- Update to version 5.10.206 and rt version to 5.10.204-rt100
 * Mon Nov 27 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.201-1
 - Update to version 5.10.201
 * Wed Nov 15 2023 Kuntal Nayak <nkuntal@vmware.com> 5.10.200-2

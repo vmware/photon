@@ -15,7 +15,7 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.201
+Version:        5.10.206
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:    http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=6335fb4f13400f8c61f34de221b4d2807619e2b555ef0884e5ab12e0243be34f6802d46a4df7460b7960e4bf1474a29f8b5ccbb8535120b2b1c9aac1935545d7
+%define sha512 linux=48b04c27f183fc90fb7ccebba62d4e99bd3272e7f2618c0bd8ea864b89acfb2b4b4f69361774c960685267b52b70c4f7454dfcc61f64e9781939e2374870ee4e
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -508,6 +508,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jan 09 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.206-1
+- Update to version 5.10.206
 * Mon Nov 27 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 5.10.201-1
 - Update to version 5.10.201
 * Wed Nov 15 2023 Kuntal Nayak <nkuntal@vmware.com> 5.10.200-2
