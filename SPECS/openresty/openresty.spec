@@ -9,8 +9,8 @@
 
 Summary:       A Fast and Scalable Web Platform by Extending NGINX with Lua
 Name:          openresty
-Version:       1.21.4.1
-Release:       3%{?dist}
+Version:       1.21.4.3
+Release:       1%{?dist}
 License:       BSD
 URL:           https://openresty.org/en
 Group:         Applications/System
@@ -18,7 +18,7 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0:       https://openresty.org/download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a388d9219b709c8e8042c65137db0ad3abd2094473f3cc65f389ab00d5884368e4e797466e0068787c8601be563da5f852d4294bd81bda47b329a22d76ccccb2
+%define sha512 %{name}=dd0f36a367177a2d03378abf7995bad466965705fb549fa1f2a3bfc1cf5ba153de2849f789a718e1a4abb85996fde90f79f7f7571677ec32ee596aa076261c52
 
 Source1:       %{name}.service
 Source2:       %{name}.sh
@@ -223,6 +223,8 @@ rm -rf %{buildroot}
 %{orprefix}/resty.index
 
 %changelog
+* Wed Jan 03 2024 Michelle Wang <michellew@vmware.com> 1.21.4.3-1
+- Upgrade to 1.21.4.3 for CVE-2023-44487
 * Mon Jul 17 2023 Michelle Wang <michellew@vmware.com> 1.21.4.1-3
 - fix for CVE-2022-41741 and CVE-2022-41742
 * Wed Mar 22 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21.4.1-2
