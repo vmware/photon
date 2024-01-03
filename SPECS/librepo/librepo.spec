@@ -1,7 +1,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.14.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -40,6 +40,8 @@ metadata.
 Summary:        Repodata downloading library
 Requires:       curl-libs
 Requires:       curl-devel
+Requires:       glib-devel
+Requires:       libxml2-devel
 Requires:       %{name} = %{version}-%{release}
 
 %description devel
@@ -100,6 +102,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/%{name}/
 
 %changelog
+* Wed Jan 03 2024 Anmol Jain <anmol.jain@broadcom.com> 1.14.5-5
+- Fix for test failure
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.14.5-4
 - Bump version as a part of libxml2 upgrade
 * Thu Apr 13 2023 Harinadh D <hdommaraju@vmware.com> 1.14.5-3

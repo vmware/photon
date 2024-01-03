@@ -1,7 +1,7 @@
 Summary:        X11 libxshmfence runtime library.
 Name:           libxshmfence
 Version:        1.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
@@ -21,6 +21,8 @@ Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
 Requires:       pkg-config
 Requires:       util-macros
+Requires:       libX11-devel
+Requires:       proto
 
 %description    devel
 It contains the libraries and header files to create applications
@@ -54,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/
 
 %changelog
+* Wed Jan 03 2024 Anmol Jain <anmol.jain@broadcom.com> 1.3.2-2
+- Fix for test failure
 * Thu Feb 23 2023 Shivani Agarwal <shivania2@vmware.com> 1.3.2-1
 - Version update
 * Tue Aug 03 2021 Alexey Makhalov <amakhalov@vmware.com> 1.3-1
