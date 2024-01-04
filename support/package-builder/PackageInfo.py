@@ -47,8 +47,8 @@ class PackageInfo(object):
 
     def writePkgListToFile(self, fileName):
         self.logger.debug("Writing package list to the json file")
-        dirPath = os.path.basename(fileName)
-        if not os.path.isdir(dirPath):
+        dirPath = os.path.dirname(fileName)
+        if dirPath and not os.path.isdir(dirPath):
             self.cmdUtils.runBashCmd(f"mkdir -p {dirPath}")
         with open(fileName, 'w+') as pkgInfoFile:
             json.dump(self.pkgList, pkgInfoFile, indent=4)
