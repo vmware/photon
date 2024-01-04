@@ -17,6 +17,7 @@ class PackageInfo(object):
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
         self.pkgList = {}
+        self.cmdUtils = CommandUtils()
 
     def loadPackagesData(self):
         listPackages = SPECS.getData().getListPackages()
@@ -40,8 +41,8 @@ class PackageInfo(object):
     def writePkgListToFile(self, fileName):
         self.logger.debug("Writing package list to the json file")
         cmdUtils = CommandUtils()
-        dirPath = os.path.basename(fileName)
-        if not os.path.isdir(dirPath):
-            cmdUtils.runCommandInShell("mkdir -p " + dirPath)
+        dirPath = os.path.dirname(fileName)
+        if dirPath and not os.path.isdir(dirPath):
+            self.cmdUtils.runCommandInShell(f"mkdir -p {dirPath}")
         with open(fileName, 'w+') as pkgInfoFile:
             json.dump(self.pkgList, pkgInfoFile, indent=4)
