@@ -53,12 +53,15 @@ sh ./bootstrap
 %make_build
 
 %install
+%ifarch x86_64
 %make_install install-strip %{?_smp_mflags}
-
-%if 0%{?with_check}
-%check
-make %{?_smp_mflags} check
 %endif
+%ifarch aarch64
+%make_install install-strip
+%endif
+
+%check
+%make_build check
 
 %clean
 rm -rf %{buildroot}
