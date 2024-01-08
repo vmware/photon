@@ -1,17 +1,20 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
 Version:          0.7.5
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 License:          GPLv2+ and GPLv3+ and LGPLv2+
 Group:            System Environment/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0:        http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%{version}.tar.gz
-%define sha1    %{name}=229b3a934eb82e193219a3c536b405080061d216
+Source0: http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%{version}.tar.gz
+%define sha512 %{name}=457101136e59f7a1657ce591e9ea678ab9091a59219d41b6c522fad4a3555c5cbcb8c9e0c3267fd871940d99b5f8673ab4ce5ec9737dee52f017e5c80a4e59d7
 
-BuildRequires:    systemd
+Source1: atftpd.socket
+Source2: atftpd.service
+
+BuildRequires:    systemd-devel
 
 Requires:         systemd
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
@@ -40,60 +43,41 @@ files using the TFTP protocol.
 
 %prep
 %autosetup -p1
-sed -i "s/-g -Wall -D_REENTRANT/-g -Wall -D_REENTRANT -std=gnu89/" configure.ac
 
 %build
+sh ./autogen.sh
 %configure
 %make_build
 
 %install
-[ -n "%{buildroot}" -a "%{buildroot}" != '/' ] && rm -rf %{buildroot}
-%makeinstall
+%make_install %{?_smp_mflags}
 
-mkdir -p %{buildroot}/%{_var}/lib/tftpboot
-mkdir -p %{buildroot}/%{_unitdir}
-cat << EOF >> %{buildroot}/%{_unitdir}/atftpd.service
-[Unit]
-Description=The tftp server serves files using the trivial file transfer protocol.
+mkdir -p %{buildroot}%{_sharedstatedir}/tftpboot \
+         %{buildroot}%{_unitdir} \
+         %{buildroot}%{_sysconfdir}/sysconfig
 
-[Service]
-EnvironmentFile=/etc/sysconfig/atftpd
-ExecStart=/usr/sbin/atftpd --user \$ATFTPD_USER --group \$ATFTPD_GROUP \$ATFTPD_DIRECTORY
-StandardInput=socket
+install -p -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/
 
-[Install]
-Also=atftpd.socket
-EOF
+sed -i -e "s|@SBINDIR@|%{_sbindir}|" -e "s|@SYSCONFDIR@|%{_sysconfdir}|" %{SOURCE2}
+install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/
 
-cat << EOF >> %{buildroot}/%{_unitdir}/atftpd.socket
-[Unit]
-Description=Tftp Server Socket
-
-[Socket]
-ListenDatagram=69
-
-[Install]
-WantedBy=sockets.target
-EOF
-
-mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 cat << EOF >> %{buildroot}%{_sysconfdir}/sysconfig/atftpd
 ATFTPD_USER=tftp
 ATFTPD_GROUP=tftp
 ATFTPD_OPTIONS=
 ATFTPD_USE_INETD=false
-ATFTPD_DIRECTORY=/var/lib/tftpboot
+ATFTPD_DIRECTORY=%{_sharedstatedir}/tftpboot
 ATFTPD_BIND_ADDRESSES=
 EOF
 
 %check
 sed -i 's/^start_server$/chown -R nobody $DIRECTORY\nstart_server/g' test/test.sh || true
-make %{?_smp_mflags} check
+%make_build check
 
 %pre
-if [ $1 -eq 1 ] ; then
-  getent group  tftp  >/dev/null || groupadd -r tftp
-  getent passwd tftp  >/dev/null || useradd  -c "tftp" -s /bin/false -g tftp -M -r tftp
+if [ $1 -eq 1 ]; then
+  getent group  tftp >/dev/null || groupadd -r tftp
+  getent passwd tftp >/dev/null || useradd  -c "tftp" -s /bin/false -g tftp -M -r tftp
 fi
 
 %preun
@@ -105,21 +89,14 @@ fi
 
 %postun
 /sbin/ldconfig
-if [ $1 -eq 0 ] ; then
-  if getent passwd tftp >/dev/null; then
-    userdel tftp
-  fi
-  if getent group tftp >/dev/null; then
-    groupdel tftp
-  fi
-fi
 %systemd_postun_with_restart atftpd.socket
 
 %clean
-[ -n "%{buildroot}" -a "%{buildroot}" != '/' ] && rm -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files
-%dir %attr(0750,nobody,nobody) %{_var}/lib/tftpboot
+%defattr(-,root,root)
+%dir %attr(0750,nobody,nobody) %{_sharedstatedir}/tftpboot
 %{_mandir}/man8/atftpd.8.gz
 %{_mandir}/man8/in.tftpd.8.gz
 %{_sbindir}/atftpd
@@ -129,10 +106,13 @@ fi
 %{_sysconfdir}/sysconfig/atftpd
 
 %files client
-%{_mandir}/man1/atftp.1.gz
-%{_bindir}/atftp
+%defattr(-,root,root)
+%{_mandir}/man1/%{name}.1.gz
+%{_bindir}/%{name}
 
 %changelog
+* Mon Jan 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.5-2
+- Fix service file, start socket unit automatically
 * Mon Sep 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.7.5-1
 - Upgrade to v0.7.5, fixes CVE-2021-41054
 * Wed Jan 20 2021 Tapas Kundu <tkundu@vmware.com> 0.7.2-2
