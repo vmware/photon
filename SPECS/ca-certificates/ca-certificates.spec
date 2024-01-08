@@ -1,7 +1,7 @@
 Summary:             Certificate Authority certificates
 Name:                ca-certificates
 Version:             20201001
-Release:             3%{?dist}
+Release:             4%{?dist}
 License:             Custom
 URL:                 http://anduin.linuxfromscratch.org/BLFS/other
 Group:               System Environment/Security
@@ -237,7 +237,15 @@ cd %{_sysconfdir}/ssl/certs
 for file in *.pem; do
   ln -sf $file $(openssl x509 -hash -noout -in $file).0
 done
+# Cleanup broken symlinks
+find -L %{_sysconfdir}/ssl/certs -type l -delete
 exit 0
+
+%preun
+cd %{_sysconfdir}/ssl/certs
+for f in *.pem; do
+  rm -f "$(openssl x509 -hash -noout -in "$f")".0
+done
 
 %clean
 rm -rf %{buildroot}/*
@@ -254,6 +262,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Mon Jan 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20201001-4
+- Clean up broken symlinks for which files are not present
 * Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 20201001-3
 - Fix requires
 - Fix binary path
