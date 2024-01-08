@@ -3,7 +3,7 @@
 %global gem_name activesupport
 
 Name: rubygem-activesupport
-Version:        6.0.3.3
+Version:        7.1.0
 Release:        1%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
@@ -12,8 +12,18 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/activesupport/versions/%{version}
 Source0:        https://rubygems.org/downloads/activesupport-%{version}.gem
-%define sha1    activesupport=673e08bfcce6de903d0dfc4c0bb80f67b46c76d4
+%define sha512  activesupport=f27dc7a76741bd5a000b2f141e5d8eae9d46406dce95c44acb9f9b2d8bbbbcaedde9889944163cbe0c3f5342c6c48c3b4383c7f7c28bbe189665ea345109d3df
+
 BuildRequires:  ruby
+
+Requires: ruby
+Requires: rubygem-i18n
+Requires: rubygem-concurrent-ruby
+Requires: rubygem-tzinfo
+Requires: rubygem-base64
+Requires: rubygem-connection_pool
+Requires: rubygem-drb
+Requires: rubygem-ruby2-keywords
 
 %description
 A toolkit of support libraries and Ruby core extensions extracted from the
@@ -21,7 +31,7 @@ Rails framework. Rich support for multibyte strings, internationalization,
 time zones, and testing.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -33,6 +43,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 7.1.0-1
+-   Fix requires and upgraded version
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.3.3-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.3.2-1

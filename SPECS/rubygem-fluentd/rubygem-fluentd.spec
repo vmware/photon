@@ -3,8 +3,8 @@
 %global gem_name fluentd
 
 Name: rubygem-fluentd
-Version:        1.11.3
-Release:        2%{?dist}
+Version:        1.15.2
+Release:        1%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        Apache 2
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluentd-%{version}.gem
-%define sha1    fluentd=470d8199dcc69b7df94fd7c4ae94559c4ed82d2e
+%define sha512  fluentd=0e10ccf9ee33def27cc841162f4368f09753c733b4b9cf924b77fcb410b1b79ffb6b3294128575faa7324d1b696596344f202880b6292c437f5b22111056a686
 BuildRequires:  ruby >= 2.1
 
 Requires(post): systemd
@@ -35,6 +35,10 @@ Requires: rubygem-tzinfo >= 1.0.0
 Requires: rubygem-tzinfo-data > 1.0.0
 Requires: rubygem-yajl-ruby >= 1.0
 Requires: rubygem-bundler >= 1.14.0
+Requires: rubygem-webrick >= 1.4.2, rubygem-webrick < 1.8.0
+Requires: rubygem-concurrent-ruby
+Requires: ruby
+
 BuildArch: noarch
 Provides: rubygem(%{gem_name}) = %{version}
 
@@ -43,7 +47,7 @@ Fluentd is an open source data collector designed to scale and simplify log mana
 It can collect, process and ship many kinds of data in near real-time.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -55,6 +59,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 1.15.2-1
+-   Add webrick to requires and upgrade version
 *   Thu Jul 08 2021 Piyush Gupta <gpiyush@vmware.com> 1.11.3-2
 -   Version bump for rubygem-bundler upgrade.
 *   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.3-1
