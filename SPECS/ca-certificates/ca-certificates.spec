@@ -1,7 +1,7 @@
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
 Version:        20230315
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Custom
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
@@ -238,7 +238,15 @@ cd %{_sysconfdir}/ssl/certs
 for file in *.pem; do
   ln -sf $file $(openssl x509 -hash -noout -in $file).0
 done
+# Cleanup broken symlinks
+find -L %{_sysconfdir}/ssl/certs -type l -delete
 exit 0
+
+%preun
+cd %{_sysconfdir}/ssl/certs
+for f in *.pem; do
+  rm -f "$(openssl x509 -hash -noout -in "$f")".0
+done
 
 %clean
 rm -rf %{buildroot}
@@ -255,6 +263,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Mon Jan 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-3
+- Clean up broken symlinks for which files are not present
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 20230315-2
 - Bump version as a part of openssl upgrade
 * Thu Mar 16 2023 Gerrit Photon <photon-checkins@vmware.com> 20230315-1
