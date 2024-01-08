@@ -1,7 +1,7 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
 Version:          0.8.0
-Release:          4%{?dist}
+Release:          5%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 License:          GPLv2+ and GPLv3+ and LGPLv2+
 Group:            System Environment/Daemons
@@ -11,19 +11,19 @@ Distribution:     Photon
 Source0: http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b700b3e4182970fb494ffabd49e39d3622b1aff5f69882549eff0b52a01c8c47babe51b451c4829f9b833ea2ea7c590a2f3819f8e3508176fa7d1b5c0e152b68
 
-Source1:          %{name}.sysusers
+Source1: %{name}.sysusers
+Source2: atftpd.socket
+Source3: atftpd.service
 
 BuildRequires:    systemd-devel
 BuildRequires:    readline-devel
 BuildRequires:    pcre2-devel
-BuildRequires:    systemd-devel
 
 Requires:         systemd
 Requires:         pcre2-libs
 Requires(pre):    systemd-rpm-macros
 
 Provides:         tftp-server
-
 Provides:         tftp
 
 %description
@@ -58,29 +58,10 @@ mkdir -p %{buildroot}%{_sharedstatedir}/tftpboot \
          %{buildroot}%{_sysusersdir}
 
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysusersdir}/
-cat << EOF >> %{buildroot}%{_unitdir}/atftpd.service
-[Unit]
-Description=The tftp server serves files using the trivial file transfer protocol.
+install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/
 
-[Service]
-EnvironmentFile=%{_sysconfdir}/sysconfig/atftpd
-ExecStart=%{_sbindir}/atftpd --user \$ATFTPD_USER --group \$ATFTPD_GROUP \$ATFTPD_DIRECTORY
-StandardInput=socket
-
-[Install]
-Also=atftpd.socket
-EOF
-
-cat << EOF >> %{buildroot}%{_unitdir}/atftpd.socket
-[Unit]
-Description=Tftp Server Socket
-
-[Socket]
-ListenDatagram=69
-
-[Install]
-WantedBy=sockets.target
-EOF
+sed -i -e "s|@SBINDIR@|%{_sbindir}|" -e "s|@SYSCONFDIR@|%{_sysconfdir}|" %{SOURCE3}
+install -p -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/
 
 cat << EOF >> %{buildroot}%{_sysconfdir}/sysconfig/atftpd
 ATFTPD_USER=tftp
@@ -91,10 +72,8 @@ ATFTPD_DIRECTORY=%{_sharedstatedir}/tftpboot
 ATFTPD_BIND_ADDRESSES=
 EOF
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %pre
 if [ $1 -eq 1 ] ; then
@@ -117,7 +96,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%dir %attr(0750,nobody,nobody) %{_var}/lib/tftpboot
+%dir %attr(0750,nobody,nobody) %{_sharedstatedir}/tftpboot
 %{_mandir}/man8/atftpd.8.gz
 %{_mandir}/man8/in.tftpd.8.gz
 %{_sbindir}/atftpd
@@ -129,10 +108,12 @@ rm -rf %{buildroot}
 
 %files client
 %defattr(-,root,root)
-%{_mandir}/man1/atftp.1.gz
-%{_bindir}/atftp
+%{_mandir}/man1/%{name}.1.gz
+%{_bindir}/%{name}
 
 %changelog
+* Fri Jan 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.0-5
+- Fix service file, start socket unit automatically
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 0.8.0-4
 - Resolving systemd-rpm-macros for group creation
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 0.8.0-3
