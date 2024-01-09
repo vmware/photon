@@ -1,7 +1,7 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
 Version:          0.8.0
-Release:          6%{?dist}
+Release:          7%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 License:          GPLv2+ and GPLv3+ and LGPLv2+
 Group:            System Environment/Daemons
@@ -112,6 +112,8 @@ rm -rf %{buildroot}
 %{_bindir}/atftp
 
 %changelog
+* Tue Jan 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.0-7
+- Install socket unit when atftpd service is enabled
 * Fri Jan 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.0-6
 - Fix service file, start socket unit automatically
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 0.8.0-5
