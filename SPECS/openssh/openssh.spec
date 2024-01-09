@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -27,6 +27,7 @@ Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
 Patch2: CVE-2023-51385.patch
 Patch3: openssh-CVE-2023-48795.patch
+Patch4: CVE-2023-51384.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires: openssl-devel
@@ -195,6 +196,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+* Tue Jan 09 2024 Shivani Agarwal <shivania2@vmware.com> 9.3p2-7
+- Fix CVE-2023-51384
 * Wed Jan 03 2024 Harinadh D <hdommaraju@vmware.com> 9.3p2-6
 - Fix CVE-2023-48795
 * Tue Dec 26 2023 Mukul Sikka <msikka@vmware.com> 9.3p2-5
