@@ -2,7 +2,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.35.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
@@ -11,7 +11,10 @@ Distribution:   Photon
 
 Source0:        http://sqlite.org/2020/%{name}-autoconf-%{sourcever}.tar.gz
 %define sha512  sqlite=039af796f79fc4517be0bd5ba37886264d49da309e234ae6fccdb488ef0109ed2b917fc3e6c1fc7224dff4f736824c653aaf8f0a37550c5ebc14d035cb8ac737
+
 Patch0:         CVE-2021-31239.patch
+Patch1:         CVE-2023-7104.patch
+
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
 Requires:       sqlite-libs = %{version}-%{release}
@@ -90,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
+* Tue Jan 09 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 3.35.5-3
+- Patched CVE-2023-7104
 * Thu Aug 10 2023 Siju Maliakkal <smaliakkal@vmware.com> 3.35.5-2
 - Apply patch to fix CVE-2021-31239
 * Mon Apr 19 2021 Siju Maliakkal <smaliakkal@vmware.com> 3.35.5-1
