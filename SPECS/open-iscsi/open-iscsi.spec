@@ -1,14 +1,14 @@
 Summary:        iSCSI tools for Linux
 Name:           open-iscsi
 Version:        2.1.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            https://github.com/open-iscsi/open-iscsi
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    open=19aa834f5a6033fd0e53d4e32a8f28c4a3d5ec58
+%define sha512  open=0de417dc45b765458c5a1f09029b5df9b5c18d45d7a8fb6b38d539b7013f512a3c8731d5046f554611eccc77b93fea0df30fe4932d79cea44776ac944c398a52
 
 BuildRequires:  open-isns-devel
 BuildRequires:  openssl-devel
@@ -42,6 +42,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -d %{buildroot}%{_unitdir}
 install -pm 644 etc/systemd/iscsi.service %{buildroot}%{_unitdir}
+install -pm 644 etc/systemd/iscsi-init.service %{buildroot}%{_unitdir}
 install -pm 644 etc/systemd/iscsid.service %{buildroot}%{_unitdir}
 install -pm 644 etc/systemd/iscsid.socket %{buildroot}%{_unitdir}
 install -pm 644 etc/systemd/iscsiuio.service %{buildroot}%{_unitdir}
@@ -65,6 +66,7 @@ install -pm 644 etc/systemd/iscsiuio.socket %{buildroot}%{_unitdir}
 /sbin/iscsistart
 /sbin/iscsiuio
 %{_unitdir}/iscsi.service
+%{_unitdir}/iscsi-init.service
 %{_unitdir}/iscsid.service
 %{_unitdir}/iscsid.socket
 %{_unitdir}/iscsiuio.service
@@ -89,6 +91,8 @@ install -pm 644 etc/systemd/iscsiuio.socket %{buildroot}%{_unitdir}
 %{_libdir}/pkgconfig/libopeniscsiusr.pc
 
 %changelog
+* Tue Jan 09 2024 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.3-3
+- Package iscsi-init service file as well
 * Wed Nov 24 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.3-2
 - increment for openssl 3.0.0 compatibility
 * Tue Feb 16 2021 Susant Sahani <ssahani@vmware.com> 2.1.3-1
