@@ -6,3 +6,6 @@ Requires=atftpd.socket
 EnvironmentFile=@SYSCONFDIR@/sysconfig/atftpd
 ExecStart=@SBINDIR@/atftpd --user $ATFTPD_USER --group $ATFTPD_GROUP $ATFTPD_DIRECTORY
 StandardInput=socket
+
+[Install]
+Also=atftpd.socket
