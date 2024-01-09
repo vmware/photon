@@ -3,7 +3,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.40.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
@@ -12,6 +12,8 @@ Distribution:   Photon
 
 Source0: http://sqlite.org/2022/%{name}-autoconf-%{sourcever}.tar.gz
 %define sha512 %{name}=50ff85b40b0017a73b52988843ec439358a8dde7d5d012a33ecfdaa67006697692f091a62d5f052f64e6fee84e27251864d331f63039a326ae4d5bf4a4dd5a91
+
+Patch0:         CVE-2023-7104.patch
 
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
@@ -93,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
+* Tue Jan 09 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 3.40.1-2
+- Patched CVE-2023-7104
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.40.1-1
 - bump version to 3.40.1
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.39.4-2
