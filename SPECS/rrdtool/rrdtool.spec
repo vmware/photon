@@ -1,61 +1,69 @@
 Summary:        Round Robin Database Tool to store and display time-series data
 Name:           rrdtool
-Version:        1.7.2
-Release:        3%{?dist}
+Version:        1.8.0
+Release:        1%{?dist}
 License:        LGPLv2 or MPLv1.1
-URL:            http://oss.oetiker.ch/rrdtool/
+URL:            http://oss.oetiker.ch/rrdtool
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/oetiker/rrdtool-1.x/releases/download/v1.6.0/%{name}-%{version}.tar.gz
-%define sha512 rrdtool=453230efc68aeb4a12842d20a9d246ba478a79c2f6bfd9693a91837c1c1136abe8af177be64fe29aa40bf84ccfce7f2f15296aefe095e89b8b62aef5a7623e29
+Source0: https://github.com/oetiker/rrdtool-1.x/releases/download/v%{version}/%{name}-%{version}.tar.gz
+%define sha512 %{name}=8ae6f94d119e8d0e1ba7f2d0738f1ba008a4880d1022f1c0c5436f662d961fceec5c42e01c241493ece3d6f55c60fd7d1d264f93e678f3cf1251201dcde027c1
 
 BuildRequires:  pkg-config
 BuildRequires:  libpng-devel
 BuildRequires:  pango-devel
+BuildRequires:  fribidi-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  pixman-devel
 BuildRequires:  freetype2-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  cairo-devel
-BuildRequires:  glib-devel >= 2.68.4
-BuildRequires:  systemd
+BuildRequires:  glib-devel
+BuildRequires:  systemd-devel
 
-Requires:       systemd
+Requires: libxml2
+Requires: systemd
+Requires: cairo
+Requires: pango
+Requires: libpng
 
 %description
-RRD is the Acronym for Round Robin Database. RRD is a system to store and
-display time-series data.
+RRD is the Acronym for Round Robin Database.
+RRD is a system to store and display time-series data.
 
 %package        devel
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
-It contains the libraries and header files to create applications
+It contains the libraries and header files to create applications.
 
 %prep
 %autosetup -p1
 
 %build
 %configure \
-        --disable-tcl           \
-        --disable-python        \
-        --disable-perl          \
-        --disable-lua           \
-        --disable-examples      \
+    --disable-tcl \
+    --disable-python \
+    --disable-perl \
+    --disable-lua \
+    --disable-examples \
     --with-systemdsystemunitdir=%{_unitdir} \
-    --disable-docs              \
-        --disable-static
+    --disable-docs \
+    --disable-static
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
-#%%check
-#make %{?_smp_mflags} -k check
+%check
+%make_build check
+
+%clean
+rm -rf %{buildroot}/*
 
 %post
 /sbin/ldconfig
@@ -71,9 +79,8 @@ find %{buildroot} -name '*.la' -delete
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so*
-%{_unitdir}/rrdcached.service
-%{_unitdir}/rrdcached.socket
+%{_libdir}/*.so.*
+%{_unitdir}/*
 %exclude %{_datadir}/locale/*
 
 %files devel
@@ -83,6 +90,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Jan 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0-1
+- Upgrade to v1.8.0
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.7.2-3
 - Bump version as part of glib upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.7.2-2
