@@ -7,7 +7,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.36.2
-Release:        2%{?kernelsubrelease}%{?dist}
+Release:        3%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://falco.org
 Group:          Applications/System
@@ -94,6 +94,7 @@ export KERNELDIR="%{_modulesdir}/build"
 %{cmake_install}
 mkdir -p %{buildroot}%{_modulesdir}/extra
 install -vm 644 %{__cmake_builddir}/driver/%{name}.ko %{buildroot}%{_modulesdir}/extra
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
 
 %clean
 rm -rf %{buildroot}/*
@@ -107,10 +108,11 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_usrsrc}/*
+%exclude %{_usrsrc}/debug
+%{_usrsrc}/%{name}*
 %{_sysconfdir}/%{name}
 %{_datadir}/%{name}
-%{_modulesdir}/extra/%{name}.ko
+%{_modulesdir}/extra/%{name}.ko.xz
 %{_sysconfdir}/falcoctl/falcoctl.yaml
 
 %files devel
@@ -120,6 +122,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Tue Jan 09 2024 Ankit Jain <ankitja@vmware.com> 0.36.2-3
+- compress .ko and exclude debug from main package
 * Thu Dec 14 2023 Piyush Gupta <gpiyush@vmware.com> 0.36.2-2
 - Bump up version to compile with new go
 * Thu Nov 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.36.2-1

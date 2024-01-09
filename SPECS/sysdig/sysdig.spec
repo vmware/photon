@@ -9,7 +9,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.34.1
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org
 Group:          Applications/System
@@ -117,6 +117,7 @@ rm -rf %{buildroot}%{_datadir}/zsh/ \
 
 mkdir -p %{buildroot}%{_modulesdir}/extra
 mv %{__cmake_builddir}/driver/scap.ko %{buildroot}%{_modulesdir}/extra
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
 
 %clean
 rm -rf %{buildroot}/*
@@ -130,13 +131,16 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_usrsrc}/*
+%exclude %{_usrsrc}/debug
+%{_usrsrc}/scap*
 %{_datadir}/%{name}/*
 %{_datadir}/bash-completion/*
 %{_mandir}/*
-%{_modulesdir}/extra/scap.ko
+%{_modulesdir}/extra/scap.ko.xz
 
 %changelog
+* Tue Jan 09 2024 Ankit Jain <ankitja@vmware.com> 0.34.1-2
+- compress .ko and exclude debug from main package
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.34.1-1
 - Upgrade to v0.34.1
 * Wed Aug 23 2023 Mukul Sikka <msikka@vmware.com> 0.30.2-7
