@@ -3,7 +3,7 @@
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.1.7
+Version:        7.2.17
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -20,20 +20,19 @@ Group:          shells
 # git checkout -b v7.1.5 tags/v7.1.5
 # cd .. && tar czf powershell-7.1.5.tar.gz PowerShell-7.1.5
 Source0:        %{name}-%{version}.tar.gz
-%define sha512    %{name}=0d205576730f97066e9a73984be10563362067e797bc8f613821a72cca9bd8d601edd05b08e17f6c2fd310a1f5c2d9c736bb6bbee7f139beb24f820260e8370d
+%define sha512 %{name}=6aee55fbc3efd9a301ab2fb4ce7a397c68391889b101d1e6299bb29843544c1b716798c0817c42a5a334711c7845a8aabde333f8c4ef3fee5ff17c9f2386dd77
 
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
 # PowerShell-Native uses googletest submodule in it, we need that as well
 Source1:        %{name}-native-%{ps_native_ver}.tar.gz
-%define sha512    %{name}-native=872d8c88e6825a06bc664a36aec864e7ca2a639457a0129aa8d2a12296ebb5c3e0d38ee593c08bbfba0678354123e914cb1096a92c09cd48964618225a1c2836
+%define sha512 %{name}-native=872d8c88e6825a06bc664a36aec864e7ca2a639457a0129aa8d2a12296ebb5c3e0d38ee593c08bbfba0678354123e914cb1096a92c09cd48964618225a1c2836
 
 # This is downloaded from github release page of PowerShell
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.1.5/powershell-7.1.5-linux-x64.tar.gz
 Source2:        %{name}-%{version}-linux-x64.tar.gz
-%define sha512    %{name}-%{version}-linux=91b7a3f0bc5234a58cbd78643ca497eb1193581364b75a8f8192a9f67250aa847feea0d412f526108c741e3f074780fcc2b5dbe0488bfd44776e5a9563faecd5
-
+%define sha512 %{name}-%{version}-linux=cbae2504476605a472a6f44868b3c4f1f02debbc367141c642af400ab07de7ef98fb51bf981df1a5068cba94aa2f67907ffac9c0f8dd23c201c377bafcae2b8a
 Source3:        build.sh
 Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 
@@ -44,12 +43,10 @@ Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 Source5:        omi-%{libmi_tag}.tar.gz
 %define sha512    omi-%{libmi_tag}=97dbd968bd4a3075b534af9ebfe03c7003e3dfa07b0cc3923842fe6aecfbebff29fd2537195eb2ee27ff8e8e7a3779a4ba26156b7029a916c4a5eba4024d8009
 
-Patch0:         Remove-workarounds-for-.NET-5-RTM-builds.patch
-
 BuildArch:      x86_64
 
-BuildRequires:  dotnet-sdk = 5.0.407
-BuildRequires:  dotnet-runtime = 5.0.16
+BuildRequires:  dotnet-sdk = 6.0.417
+BuildRequires:  dotnet-runtime = 6.0.25
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -76,7 +73,6 @@ It consists of a cross-platform command-line shell and associated scripting lang
 %prep
 # Using autosetup is not feasible
 %setup -qn PowerShell-%{version}
-%patch0 -p1
 # Using autosetup is not feasible
 %setup -qcTDa 1 -n PowerShell-Native
 # Using autosetup is not feasible
@@ -151,6 +147,8 @@ fi
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue Jan 09 2024 Anmol Jain <anmolja@vmware.com> 7.2.17-1
+- Version Upgrade
 * Tue Nov 15 2022 Anmol Jain <anmolja@vmware.com> 7.1.7-1
 - Upgrade to version 7.1.7
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.1.5-3
