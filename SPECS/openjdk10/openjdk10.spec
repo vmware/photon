@@ -2,81 +2,85 @@
 %global security_hardening none
 %define jdk_major_version 1.10.0
 %define subversion 23
-Summary:	OpenJDK
-Name:		openjdk10
-Version:	1.10.0.23
-Release:	6%{?dist}
-License:	GNU GPL
-URL:		https://openjdk.java.net
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk10/jdk10/openjdk-%{version}.tar.gz
-%define sha1 openjdk-1.10.0=d0b6193fd1687b23fb7553b62d32f0e7e0527ea8
+Summary: OpenJDK
+Name:    openjdk10
+Version: 1.10.0.23
+Release: 7%{?dist}
+License: GNU GPL
+URL:     https://openjdk.java.net
+Group:   Development/Tools
+Vendor:  VMware, Inc.
+Distribution: Photon
+Source0: http://www.java.net/download/openjdk/jdk10/jdk10/openjdk-%{version}.tar.gz
+%define sha512 openjdk-1.10.0=d5ed3026f3a9675b533d7b970a99fa38ddaf8b9a88eeb86d28ad3fac83887070b215ab52ff4fb0d106ad3c28d6da18eb0df42ef0ba9f461f44d07e06bd6b7f3c
 Patch0:         fix_build_with_make4.3.patch
+Patch1:         fix_time_check.patch
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
-BuildRequires:	which
-BuildRequires:	zip
-BuildRequires:	unzip
-BuildRequires:  zlib-devel
-BuildRequires:	ca-certificates
-BuildRequires:	chkconfig
-BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
-Requires:       openjre10 = %{version}-%{release}
-Requires:       chkconfig
-Obsoletes:      openjdk <= %{version}
-AutoReqProv: 	no
+BuildRequires: which
+BuildRequires: zip
+BuildRequires: unzip
+BuildRequires: zlib-devel
+BuildRequires: ca-certificates
+BuildRequires: chkconfig
+BuildRequires: fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
+Requires:      openjre10 = %{version}-%{release}
+Requires:      chkconfig
+Obsoletes:     openjdk <= %{version}
+AutoReqProv: no
 %define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdkversion 1.8.0.112
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
-%package	-n openjre10
-Summary:	Java runtime environment
-AutoReqProv: 	no
+%package -n openjre10
+Summary: Java runtime environment
+AutoReqProv:  no
 Obsoletes:      openjre <= %{version}
 Requires:       chkconfig
-Requires:	libstdc++
-%description	-n openjre10
+Requires: libstdc++
+%description -n openjre10
 It contains the libraries files for Java runtime environment
 
-%package		doc
-Summary:		Documentation and demo applications for openjdk
+%package doc
+Summary: Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	doc
+%description doc
 It contains the documentation and demo applications for openjdk
 
-%package 		src
+%package src
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
-%description	src
+%description src
 This package provides the runtime library class sources.
 
 %prep -p exit
+# Using autosetup is not feasible
 %setup -qn openjdk-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 unset JAVA_HOME &&
 ENABLE_HEADLESS_ONLY="true" &&
 sh configure \
-	--with-target-bits=64 \
-	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
-	--enable-headless-only \
-        --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
-	--with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
-	--with-freetype-include=/usr/include/freetype2 \
-	--with-freetype-lib=/usr/lib \
-	--with-stdc++lib=dynamic \
-        --disable-warnings-as-errors
+ --with-target-bits=64 \
+ --with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
+ --enable-headless-only \
+ --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+ --with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
+ --with-freetype-include=/usr/include/freetype2 \
+ --with-freetype-lib=/usr/lib \
+ --with-stdc++lib=dynamic \
+ --disable-warnings-as-errors
 
 mkdir /usr/share/java -p
+# make doesn't support _smp_mflags
 make \
     DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
     SCTP_WERROR= \
@@ -88,6 +92,7 @@ make \
 
 %install
 unset JAVA_HOME &&
+# make doesn't support _smp_mflags
 make install
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
@@ -198,7 +203,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/conf
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jmods
 
-%files	-n openjre10
+%files -n openjre10
 %defattr(-,root,root)
 %dir %{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/
@@ -224,6 +229,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Wed Jan 10 2024 Mukul Sikka <msikk@vmware.com> 1.10.0.23-7
+-   Fix for time check causing the fail
 *   Fri May 14 2021 Tapas Kundu <tkundu@vmware.com> 1.10.0.23-6
 -   Fix build with make 4.3
 *   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 1.10.0.23-5
