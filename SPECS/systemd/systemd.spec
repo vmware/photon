@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -21,7 +21,6 @@ Source4:        99-dhcp-en.network
 Source5:        10-rdrand-rng.conf
 %endif
 Source6:        10-defaults.preset
-Source7:        60-ioschedulers.rules
 
 Patch0:         systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:         systemd-247-default-dns-from-env.patch
@@ -324,7 +323,6 @@ ln -sfr %{buildroot}%{_var}/opt/journal/log %{buildroot}%{_var}/log/journal
 
 find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/udev/rules.d
-install -Dm 0644 %{SOURCE7} %{buildroot}%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 install -dm 0755 %{buildroot}/boot/
 install -m 0644 %{SOURCE3} %{buildroot}/boot/
@@ -521,7 +519,6 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 %dir %{_sysconfdir}/udev
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
-%{_sysconfdir}/udev/rules.d/60-ioschedulers.rules
 %dir %{_sysconfdir}/kernel
 %dir %{_sysconfdir}/modules-load.d
 %{_sysconfdir}/%{name}/pstore.conf
@@ -689,6 +686,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Tue Jan 09 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 247.13-12
+- Removed 60-ioschedulers.rules file
 * Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 247.13-11
 - Bump version as a part of gnutls upgrade
 * Mon Nov 20 2023  <bguruswamy@vmware.com> 247.13-10
