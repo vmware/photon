@@ -1,7 +1,7 @@
 Summary:        library for laying out and rendering of text.
 Name:           pango
 Version:        1.40.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://pango.org
 Group:          System Environment/Libraries
@@ -20,7 +20,11 @@ BuildRequires:  harfbuzz
 BuildRequires:  harfbuzz-devel
 BuildRequires:  freetype2
 
-Requires:   harfbuzz-devel
+Requires:   glib
+Requires:   libpng
+Requires:   cairo
+Requires:   fontconfig
+Requires:   harfbuzz
 
 %description
 Pango is a library for laying out and rendering of text, with an emphasis on internationalization. Pango can be used anywhere that text layout is needed, though most of the work on Pango so far has been done in the context of the GTK+ widget toolkit.
@@ -28,6 +32,12 @@ Pango is a library for laying out and rendering of text, with an emphasis on int
 %package    devel
 Summary:    Header and development files
 Requires:   %{name} = %{version}-%{release}
+Requires:   glib-devel
+Requires:   cairo-devel
+Requires:   libpng-devel
+Requires:   fontconfig-devel
+Requires:   harfbuzz-devel
+
 %description    devel
 It contains the libraries and header files to create applications
 
@@ -64,6 +74,8 @@ make %{?_smp_mflags} -k check || exit 0
 %{_datadir}/man/*
 
 %changelog
+*       Thu Jan 11 2024 Brennan Lamoreaux <blamoreaux@vmware.com> 1.40.4-4
+-       Update requires
 *       Fri Sep 22 2023 Shivani Agarwal <shivania2@vmware.com> 1.40.4-3
 -       Bump version as a part of libpng upgrade
 *       Tue Feb 21 2023 Shivani Agarwal <shivania2@vmware.com> 1.40.4-2
