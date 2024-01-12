@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.78
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MPLv2.0
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
@@ -15,6 +15,7 @@ Patch0: %{name}-%{version}-standalone-1.patch
 Patch1: CVE-2022-36320-1.patch
 Patch2: CVE-2022-36320-2.patch
 Patch3: CVE-2022-3479.patch
+Patch4: CVE-2023-0767.patch
 
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -131,6 +132,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Fri Jan 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-6
+- Fix CVE-2023-0767
 * Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 3.78-5
 - Patched for CVE-2022-3479
 * Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.78-4
