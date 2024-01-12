@@ -1,14 +1,15 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and GPLv2+
 URL:            https://www.kernel.org/pub/linux/libs/pam/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://linux-pam.org/library/%{name}-%{version}.tar.bz2
-%define sha1    Linux-PAM=e956252e81d824c35a60c9b50919ca0767f8a8ec
+%define sha512  Linux-PAM=4a89ca4b6f4676107aca4018f7c11addf03495266b209cb11c913f8b5d191d9a1f72197715dcf2a69216b4036de88780bcbbb5a8652e386910d71ba1b6282e42
+Patch0:         Linux-PAM-protect-dir.patch
 BuildRequires:  cracklib-devel
 Requires:       cracklib
 
@@ -110,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Thu Jan 11 2024 Dweep Advani <dweep.advani@broadcom.com> 1.3.0-2
+- prevent DoS in protect_dir method
 * Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-1
 - Version update.
 * Fri Feb 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-5
