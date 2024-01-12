@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
@@ -15,6 +15,7 @@ Source1: pamtmp.conf
 Source2: default-faillock.conf
 
 Patch0: faillock-add-support-to-print-login-failures.patch
+Patch1: Linux-PAM-protect-dir.patch
 
 BuildRequires: libselinux-devel
 BuildRequires: gdbm-devel
@@ -137,6 +138,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Thu Jan 11 2024 Dweep Advani <dweep.advani@broadcom.com> 1.5.3-2
+- prevent DoS in protect_dir method
 * Wed May 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.3-1
 - Upgrade to v1.5.3
 * Mon Nov 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-6
