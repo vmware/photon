@@ -12,13 +12,13 @@ function prepare_for_upgrade() {
   # remove toybox from vm & install coreutils
   # toybox is intended for container images only to keep image size small
   if ${RPM} -q --quiet toybox; then
-    ${TDNF} $ASSUME_YES_OPT $REPOS_OPT erase toybox
+    erase_pkgs toybox
   fi
 
   # Now install coreutils
   if ${RPM} -q --quiet coreutils; then
     ${TDNF} $ASSUME_YES_OPT $REPOS_OPT reinstall coreutils
   else
-    ${TDNF} $ASSUME_YES_OPT $REPOS_OPT install coreutils
+    install_pkgs coreutils
   fi
 }

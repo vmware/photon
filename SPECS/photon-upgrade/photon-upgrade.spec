@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -13,6 +13,7 @@ Source1:        constants.sh
 Source2:        ph5-to-ph6-upgrade.sh
 Source3:        utils.sh
 Source4:        common.sh
+Source5:        ph5-to-ph6-deprecated-pkgs.txt
 
 BuildArch:      noarch
 
@@ -21,6 +22,10 @@ Requires:       tdnf
 Requires:       coreutils
 Requires:       gawk
 Requires:       sed
+Requires:       (coreutils or coreutils-selinux)
+Requires:       photon-release
+Requires:       findutils
+Requires:       util-linux
 
 %description
 Provides functionalities to upgrade Photon OS 5.0 to newer release and
@@ -37,6 +42,7 @@ install -m440 %{SOURCE1} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE2} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE3} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE4} %{buildroot}%{_libdir}/%{name}
+install -m440 %{SOURCE5} %{buildroot}%{_libdir}/%{name}
 
 %clean
 rm -rf %{buildroot}
@@ -47,6 +53,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Fri Jan 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0-3
+- Enhancements of backup/restore configs, prechecks, logging
 * Thu Sep 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0-2
 - Reordering service configuration resetting and enhancing pre upgrade package error reporting
 * Thu Jun 08 2023 Dweep Advani <dadvani@vmware.com> 1.0-1
