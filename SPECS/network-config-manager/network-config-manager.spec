@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
-Version:        0.7
-Release:        2%{?dist}
+Version:        0.7.1
+Release:        1%{?dist}
 License:        Apache 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/vmware/network-config-manager
 
 Source0: https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=d24accdc621fa96145123fe5f0815730fd3412ea9b39a3f1081fd3b1b3e3b74b75a813f961d1dad5f90484bbc7e7a674bf093a03e042b5f2fdce8b4afbf515e2
+%define sha512 %{name}-%{version}=2140939ad1965326496b630c7ef55f6bd5fdbfef9823284e0fea6b0ceddf2cde199ab9539cfb8d0a0f46c609ee6bbd488d09d767e020ce0d3c653bb03222283d
 
 BuildRequires: glib-devel
 BuildRequires: json-c-devel
@@ -81,6 +81,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Fri Jan 12 2024 Susant Sahani <susant.sahani@broadcom.com> 0.7.1-1
+- Update to 0.7.1
 * Tue Dec 26 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7-2
 - Add provides & obsoletes netmgmt
 * Mon Dec 18 2023 Tapas Kundu <tapas.kundu@broadcom.com> 0.7-1
