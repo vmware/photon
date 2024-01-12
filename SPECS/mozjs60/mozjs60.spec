@@ -3,7 +3,7 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          mozjs%{major}
 Version:       60.9.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -17,6 +17,7 @@ Patch0: emitter.patch
 Patch1: CVE-2019-17026.patch
 Patch2: CVE-2020-15656.patch
 Patch3: CVE-2021-29984.patch
+Patch4: CVE-2023-0767.patch
 
 BuildRequires: autoconf213
 BuildRequires: which
@@ -67,8 +68,6 @@ rm -rf %{buildroot}%{_libdir}/libjs_static.ajs \
        %{buildroot}%{_libdir}/debug \
        %{buildroot}/usr/src
 
-find %{buildroot} -name '*.la' -delete
-
 %post
 /sbin/ldconfig
 
@@ -87,6 +86,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
+* Fri Jan 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 60.9.0-4
+- Fix CVE-2023-0767
 * Fri Sep 01 2023 Mukul Sikka <msikka@vmware.com> 60.9.0-3
 - Multiple CVE fix
 * Thu Jul 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 60.9.0-2
