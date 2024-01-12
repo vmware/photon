@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -36,6 +36,9 @@ Patch13:      0005-elf-Add-test-case-for-BZ-19329.patch
 #Additional patches
 Patch300:     CVE-2023-4806_CVE-2023-5156.patch
 Patch301:     CVE-2023-4813.patch
+
+#fix: CVE-2023-0687
+Patch302:     0001_gmon_Fix_allocated_buffer_overflow.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -99,7 +102,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %autopatch -p1 -m101 -M224
 
 # Additional patches
-%autopatch -p1 -m300 -M301
+%autopatch -p1 -m300 -M302
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -317,6 +320,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Jan 12 2024 Ajay Kaher <akaher@vmware.com> 2.32-15
+- Fix CVE-2023-0687
 * Fri Dec 22 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.32-14
 - Update patches from release branch
 - Fix CVE-2023-4806, CVE-2023-5156

@@ -1,0 +1,75 @@
+From 801af9fafd4689337ebf27260aa115335a0cb2bc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=D0=9B=D0=B5=D0=BE=D0=BD=D0=B8=D0=B4=20=D0=AE=D1=80=D1=8C?=
+ =?UTF-8?q?=D0=B5=D0=B2=20=28Leonid=20Yuriev=29?= <leo@yuriev.ru>
+Date: Sat, 4 Feb 2023 14:41:38 +0300
+Subject: [PATCH] gmon: Fix allocated buffer overflow (bug 29444)
+
+Source: https://github.com/bminor/glibc/commit/801af9fafd4689337ebf27260aa115335a0cb2bc
+
+The `__monstartup()` allocates a buffer used to store all the data
+accumulated by the monitor.
+
+The size of this buffer depends on the size of the internal structures
+used and the address range for which the monitor is activated, as well
+as on the maximum density of call instructions and/or callable functions
+that could be potentially on a segment of executable code.
+
+In particular a hash table of arcs is placed at the end of this buffer.
+The size of this hash table is calculated in bytes as
+   p->fromssize = p->textsize / HASHFRACTION;
+
+but actually should be
+   p->fromssize = ROUNDUP(p->textsize / HASHFRACTION, sizeof(*p->froms));
+
+This results in writing beyond the end of the allocated buffer when an
+added arc corresponds to a call near from the end of the monitored
+address range, since `_mcount()` check the incoming caller address for
+monitored range but not the intermediate result hash-like index that
+uses to write into the table.
+
+It should be noted that when the results are output to `gmon.out`, the
+table is read to the last element calculated from the allocated size in
+bytes, so the arcs stored outside the buffer boundary did not fall into
+`gprof` for analysis. Thus this "feature" help me to found this bug
+during working with https://sourceware.org/bugzilla/show_bug.cgi?id=29438
+
+Just in case, I will explicitly note that the problem breaks the
+`make test t=gmon/tst-gmon-dso` added for Bug 29438.
+There, the arc of the `f3()` call disappears from the output, since in
+the DSO case, the call to `f3` is located close to the end of the
+monitored range.
+
+Signed-off-by: Леонид Юрьев (Leonid Yuriev) <leo@yuriev.ru>
+
+Another minor error seems a related typo in the calculation of
+`kcountsize`, but since kcounts are smaller than froms, this is
+actually to align the p->froms data.
+
+Co-authored-by: DJ Delorie <dj@redhat.com>
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+---
+ gmon/gmon.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/gmon/gmon.c b/gmon/gmon.c
+index dee64803ada..bf76358d5b1 100644
+--- a/gmon/gmon.c
++++ b/gmon/gmon.c
+@@ -132,6 +132,8 @@ __monstartup (u_long lowpc, u_long highpc)
+   p->lowpc = ROUNDDOWN(lowpc, HISTFRACTION * sizeof(HISTCOUNTER));
+   p->highpc = ROUNDUP(highpc, HISTFRACTION * sizeof(HISTCOUNTER));
+   p->textsize = p->highpc - p->lowpc;
++  /* This looks like a typo, but it's here to align the p->froms
++     section.  */
+   p->kcountsize = ROUNDUP(p->textsize / HISTFRACTION, sizeof(*p->froms));
+   p->hashfraction = HASHFRACTION;
+   p->log_hashfraction = -1;
+@@ -142,7 +144,7 @@ __monstartup (u_long lowpc, u_long highpc)
+ 	 instead of integer division.  Precompute shift amount. */
+       p->log_hashfraction = ffs(p->hashfraction * sizeof(*p->froms)) - 1;
+   }
+-  p->fromssize = p->textsize / HASHFRACTION;
++  p->fromssize = ROUNDUP(p->textsize / HASHFRACTION, sizeof(*p->froms));
+   p->tolimit = p->textsize * ARCDENSITY / 100;
+   if (p->tolimit < MINARCS)
+     p->tolimit = MINARCS;
