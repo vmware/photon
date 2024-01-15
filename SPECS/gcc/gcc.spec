@@ -2,16 +2,16 @@
 %define _use_internal_dependency_generator 0
 Summary:        Contains the GNU compiler collection
 Name:           gcc
-Version:        10.2.0
-Release:        2%{?dist}
+Version:        10.5.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
-%define sha512  gcc=42ae38928bd2e8183af445da34220964eb690b675b1892bbeb7cd5bb62be499011ec9a93397dba5e2fb681afadfc6f2767d03b9035b44ba9be807187ae6dc65e
+Source0: http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
+%define sha512 gcc=d86dbc18b978771531f4039465e7eb7c19845bf607dc513c97abf8e45ffe1086a99d98f83dfb7b37204af22431574186de9d5ff80c8c3c3a98dbe3983195bffd
 
 Patch0:         PLUGIN_TYPE_CAST.patch
 
@@ -20,7 +20,8 @@ Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
 Requires:       libgcc-atomic = %{version}-%{release}
 Requires:       gmp
-%if %{with_check}
+
+%if 0%{?with_check}
 BuildRequires:  autogen
 BuildRequires:  dejagnu
 %endif
@@ -234,6 +235,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
+* Mon Jan 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.5.0-1
+- Upgrade to v10.5.0
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.2.0-2
 - Remove .la files
 * Thu Jan 28 2021 Alexey Makhalov <amakhalov@vmware.com> 10.2.0-1

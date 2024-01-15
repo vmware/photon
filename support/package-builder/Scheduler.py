@@ -127,6 +127,7 @@ class Scheduler(object):
                 Scheduler.listOfAlreadyBuiltPackages.add(package)
                 if not constants.rpmCheck:
                     Scheduler._markPkgNodeAsBuilt(package)
+                Scheduler.printStatus()
 
     @staticmethod
     def notifyPackageBuildFailed(package):
@@ -134,6 +135,7 @@ class Scheduler(object):
             if package in Scheduler.listOfPackagesCurrentlyBuilding:
                 Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
                 Scheduler.listOfFailedPackages.append(package)
+                Scheduler.printStatus()
 
     @staticmethod
     def isAllPackagesBuilt():
@@ -177,7 +179,20 @@ class Scheduler(object):
                     Scheduler.listOfPackagesNextToBuild.qsize())
             Scheduler.listOfPackagesCurrentlyBuilding.add(package)
             Scheduler.listOfPackagesToBuild.remove(package)
+            Scheduler.printStatus()
             return package
+
+    @staticmethod
+    def printStatus():
+        Scheduler.logger.info(
+            "Package Status: Total: {} Building: {} Broken: {} Pending: {} Done: {}".format(  # noqa: E501
+                len(Scheduler.sortedList),
+                len(Scheduler.listOfPackagesCurrentlyBuilding),
+                len(Scheduler.listOfFailedPackages),
+                len(Scheduler.listOfPackagesToBuild),
+                len(Scheduler.listOfAlreadyBuiltPackages),
+            )
+        )
 
     @staticmethod
     def getDoneList():
