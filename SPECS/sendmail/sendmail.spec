@@ -1,15 +1,15 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
-Version:          8.17.1
-Release:          10%{?dist}
+Version:          8.18.0.2
+Release:          1%{?dist}
 URL:              http://www.sendmail.org
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0: https://ftp.sendmail.org/sendmail.%{version}.tar.gz
-%define sha512 %{name}.%{version}=ae42343fb06c09f2db5d919d602afc4241914387dfdae0f15e0967dda3be25bf1d3a4637b57266763679646a3cea6aa07e6453266fd9b7358c1a09ec2b627a15
+Source0: https://ftp.sendmail.org/snapshots/sendmail.%{version}.tar.gz
+%define sha512 %{name}.%{version}=b2ee60595285bf79e5216fcc039c3b321f4719311f6ab3fbd6ad787254b17997639ca9f709036d6a5b552ffc573d22efbc392fafba5952bf77b8b9c1f55edc70
 Source1: %{name}.sysusers
 
 Patch0: fix-compatibility-with-openssl-3.0.patch
@@ -191,6 +191,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Wed Jan 17 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 8.18.0.2-1
+- Version upgrade to v8.18.0.2 to address CVE-2023-51765
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-10
 - Bump version as a part of openssl upgrade
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-9
