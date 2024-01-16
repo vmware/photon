@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.206
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -228,6 +228,9 @@ Patch139: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 
 #Fix CVE-2023-22995
 Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
+
+# Fix CVE-2024-0340
+Patch141: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -648,6 +651,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.206-3
+- Fix CVE-2024-0340
 * Mon Jan 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.10.206-2
 - Build with gcc-10.5.0
 * Tue Jan 09 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.206-1

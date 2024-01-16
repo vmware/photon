@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.206
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -184,6 +184,9 @@ Patch137: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 
 #Fix CVE-2023-22995
 Patch138: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
+
+# Fix CVE-2024-0340
+Patch139: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -639,6 +642,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.206-3
+- Fix CVE-2024-0340
 * Mon Jan 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.10.206-2
 - Build with gcc-10.5.0
 * Tue Jan 09 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.206-1
