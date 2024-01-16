@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.70
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -181,6 +181,8 @@ Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
 Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
 # Fix CVE-2023-39191
 %include %{SOURCE42}
+# Fix CVE-2024-0340
+Patch109: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -458,6 +460,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-4
+- Fix CVE-2024-0340
 * Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-3
 - Fix CVE-2023-39191
 * Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-2

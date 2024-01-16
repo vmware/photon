@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.70
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -188,6 +188,8 @@ Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
 Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
 # Fix CVE-2023-39191
 %include %{SOURCE50}
+# Fix CVE-2024-0340
+Patch109: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -844,6 +846,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-4
+- Fix CVE-2024-0340
 * Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-3
 - Fix CVE-2023-39191
 * Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-2
