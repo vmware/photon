@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.70
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -142,6 +142,8 @@ Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 # Fix CVE-2023-5633
 Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
 Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
+# Fix CVE-2024-0340
+Patch109: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 # Fix CVE-2023-39191
 %include %{SOURCE42}
 
@@ -421,6 +423,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-3
+- Fix CVE-2024-0340
 * Mon Jan 08 2024 Roye Eshed <roye.eshed@broadcom.com> 6.1.70-2
 - Move Intel i40e, iavf and ice drivers for linux-rt to their own spec files.
 * Mon Jan 01 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.70-1

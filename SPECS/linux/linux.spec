@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.70
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -169,6 +169,9 @@ Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 # Fix CVE-2023-5633
 Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
 Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
+# Fix CVE-2024-0340
+Patch109: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
+
 # Fix CVE-2023-39191
 %include %{SOURCE42}
 
@@ -818,6 +821,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-2
+- Fix CVE-2024-0340
 * Mon Jan 01 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.70-1
 - Update to version 6.1.70
 * Thu Dec 14 2023 Srish Srinivasan <ssrish@vmware.com> 6.1.62-11
