@@ -1,7 +1,7 @@
 Summary:        Minimalistic C client library for Redis
 Name:           hiredis
 Version:        1.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Productivity/Databases/Clients
 Vendor:         VMware, Inc.
@@ -55,6 +55,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Jan 18 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.1.0-3
+- Version bump up to consume redis v7.2.4
 * Mon Sep 11 2023 Nitesh Kumar <kunitesh@vmware.com> 1.1.0-2
 - Bump up version to consume redis v7.0.13
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.1.0-1
