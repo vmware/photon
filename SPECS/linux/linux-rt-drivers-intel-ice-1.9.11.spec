@@ -25,12 +25,12 @@ Patch2:         ice-v1.9.11-Fix-build-errors-on-6.1.y.patch
 BuildArch:      x86_64
 
 BuildRequires:  kmod-devel
-BuildRequires:  linux-rt-devel = %{conflicts_ver}
+BuildRequires:  linux-rt-devel = %{uname_r}
 
 Requires:       kmod
 Requires:       linux-rt = %{uname_r}
 
-Conflicts:      linux-rt < %{uname_r}
+Conflicts:      linux-rt < %{conflicts_ver}
 
 %description
 This Linux package contains the Intel ice v1.9.11 driver.
