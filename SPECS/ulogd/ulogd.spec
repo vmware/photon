@@ -1,7 +1,7 @@
 Summary:        ulogd - The userspace logging daemon for netfilter
 Name:           ulogd
 Version:        2.0.7
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            https://git.netfilter.org/ulogd2
 Group:          System Environment/Daemons
@@ -126,6 +126,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/%{name}_output_PCAP.so
 
 %changelog
+* Fri Jan 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.7-7
+- Bump version as a part of mysql upgrade
 * Thu Nov 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.7-6
 - Bump version as a part of mysql upgrade
 * Thu Feb 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.7-5

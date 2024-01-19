@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.35
+Version:        8.0.36
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=2936f7a84aa5f96633b239d1dba3613462d88f3a2ea493a7d05aa9a9b590e9e36a30857f44fcdb11360242375d6106e80cd1b32e0c6cb14502c1518ad1a720b2
+%define sha512 %{name}-boost=a6c1c009a322b7e7aa2aa607573060414c847c77d48f44a24058ffb89673621f2ebbcc1a4448fa841a87ff721159cc8eaf44a57721c7dc233c130691c16a9d4a
 
 BuildRequires: cmake
 BuildRequires: rpcsvc-proto-devel
@@ -182,6 +182,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Jan 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.36-1
+- Upgrade to v8.0.36
 * Wed Nov 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-1
 - Upgrade to v8.0.35
 - Add systemd service files for mysql-server
