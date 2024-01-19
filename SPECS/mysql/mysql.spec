@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.35
-Release:        2%{?dist}
+Version:        8.3.0
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=2936f7a84aa5f96633b239d1dba3613462d88f3a2ea493a7d05aa9a9b590e9e36a30857f44fcdb11360242375d6106e80cd1b32e0c6cb14502c1518ad1a720b2
+%define sha512 %{name}-boost=3ab9c672fcf42caa639699ad1169f4297f53242abb0b88e533aa05872f6cee07dce9bafa812adb3162ed7d8bf5669bf350b6f0397f24117462589c5d334bd173
 
 Source1: %{name}.sysusers
 
@@ -179,6 +179,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Jan 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.3.0-1
+- Upgrade to v8.3.0
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-2
 - Use bundled protobuf, build breaks with latest protobuf provided by system
 * Wed Nov 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-1
