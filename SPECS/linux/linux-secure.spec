@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        6.1.70
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        6.1.75
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -25,7 +25,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=e5ad2477005291d21168d9417f329b3ddee47d0af5ada3e7325490f2a673c9546458e84829aff0728f23a07d693470a7650ae64106e46aa76af4cbf92c22cd36
+%define sha512 linux=32ebc547a7670fa0119d4cf7c83c1d2128da69231e339fa1d07c3863e9ae7f13fd194dffb861a6892c9cf3a9eba06b620c0df326a097ddc541fef2ce8f234d85
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -151,15 +151,10 @@ Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2023-2176
 Patch105: RDMA-core-Refactor-rdma_bind_addr.patch
 Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
-# Fix CVE-2023-5633
-Patch107: 0001-drm-vmwgfx-Fix-possible-invalid-drm-gem-put-calls.patch
-Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
 # Fix CVE-2024-0340
 Patch109: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 # Fix CVE-2023-39191
 %include %{SOURCE40}
-# Fix CVE-2023-6915
-Patch129: 0001-ida-Fix-crash-in-ida_free-when-the-bitmap-is-empty.patch
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -486,6 +481,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jan 23 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.75-1
+- Update to version 6.1.75
 * Tue Jan 23 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.70-5
 - Fix CVE-2023-6915
 * Wed Jan 17 2024 Bryan Tan <bryan-bt.tan@broadcom.com> 6.1.70-4
