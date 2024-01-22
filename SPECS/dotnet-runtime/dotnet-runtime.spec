@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        7.0.14
+Version:        8.0.1
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,8 +17,7 @@ Group:          Development/Tools
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
 Source0:        %{name}-%{version}-linux-x64.tar.gz
-%define sha512    %{name}=02fd66ef2059d124d9c4f3fbfd0d5b0375b83610cdf51a2972567e4bdaf1d55e532478533509ec2408c371e7fdd6efea8e9b9aec9eb5cd703e8e5d2814ef319b
-
+%define sha512    %{name}=cbd03325280ff93cd0edab71c5564a50bb2423980f63d04602914db917c9c811a0068d848cab07d82e3260bff6684ad7cffacc2f449c06fc0b0aa8f845c399b6
 BuildArch: x86_64
 
 BuildRequires: lttng-ust-devel >= 2.13.4-2
@@ -59,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*
 
 %changelog
+* Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 8.0.1-1
+- Version update
 * Thu Dec 21 2023 Anmol Jain <anmolja@vmware.com> 7.0.14-1
 - Version update
 * Thu Jun 08 2023 Anmol Jain <anmolja@vmware.com> 7.0.5-1

@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        7.0.404
+Version:        8.0.101
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,7 +17,7 @@ Group:          Development/Tools
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/17b6759f-1af0-41bc-ab12-209ba0377779/e8d02195dbf1434b940e0f05ae086453/dotnet-sdk-6.0.100-linux-x64.tar.gz
 Source0: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}=f5c122044e9a107968af1a534051e28242f45307c3db760fbb4f3a003d92d8ea5a856ad4c4e8e4b88a3b6a825fe5e3c9e596c9d2cfa0eca8d5d9ee2c5dad0053
+%define sha512 %{name}=26df0151a3a59c4403b52ba0f0df61eaa904110d897be604f19dcaa27d50860c82296733329cb4a3cf20a2c2e518e8f5d5f36dfb7931bf714a45e46b11487c9a
 BuildArch: x86_64
 
 Requires: dotnet-runtime
@@ -42,6 +42,8 @@ cp -pr sdk/%{version} %{buildroot}%{_libdir}/dotnet/sdk
 %{_libdir}/*
 
 %changelog
+* Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 8.0.101-1
+- Version update
 * Thu Dec 21 2023 Anmol Jain <anmolja@vmware.com> 7.0.404-1
 - Upgrade version to 7.0.404
 * Mon Jun 12 2023 Anmol Jain <anmolja@vmware.com> 7.0.203-1
