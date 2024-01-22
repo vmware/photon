@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.303
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -107,6 +107,9 @@ Patch49: 0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 #Fix for CVE-2022-1055
 Patch50: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
+
+# Fix CVE-2024-0340
+Patch51: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 
 # 9p patches
 Patch54: 0001-fs-9p-Add-opt_metaonly-option.patch
@@ -838,6 +841,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.303-2
+- Fix CVE-2024-0340
 * Mon Jan 01 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.303-1
 - Update to version 4.19.303
 * Fri Nov 03 2023 Ankit Jain <ankitja@vmware.com> 4.19.297-1

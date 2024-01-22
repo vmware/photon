@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.303
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -123,6 +123,9 @@ Patch45: secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.
 #Fix for CVE-2019-19338
 Patch47: 0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch48: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
+
+# Fix CVE-2024-0340
+Patch49: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 
 # Fix for CVE-2020-16119
 Patch59: 0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
@@ -1158,6 +1161,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.303-2
+- Fix CVE-2024-0340
 * Mon Jan 01 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.303-1
 - Update to version 4.19.303
 * Fri Nov 03 2023 Ankit Jain <ankitja@vmware.com> 4.19.297-1
