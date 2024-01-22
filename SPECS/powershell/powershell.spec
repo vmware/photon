@@ -3,7 +3,7 @@
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.2.17
+Version:        7.2.18
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -20,7 +20,7 @@ Group:          shells
 # git checkout -b v7.2.0 tags/v7.2.0
 # cd .. && tar czf powershell-7.2.0.tar.gz PowerShell-7.2.0
 Source0:        %{name}-%{version}.tar.gz
-%define sha512 %{name}=6aee55fbc3efd9a301ab2fb4ce7a397c68391889b101d1e6299bb29843544c1b716798c0817c42a5a334711c7845a8aabde333f8c4ef3fee5ff17c9f2386dd77
+%define sha512 %{name}=458a82f6f3f4c0325a44f64c317108c150c35c19bc750d686b2f9296c54f5198e21d94dfcff40d7d61fdcb304d24c8730a384fcb99981c8b313368ce335b835f
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
 # PowerShell-Native uses googletest submodule in it, we need that as well
@@ -31,7 +31,7 @@ Source1:        %{name}-native-%{ps_native_ver}.tar.gz
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
 Source2:        %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}-%{version}-linux=cbae2504476605a472a6f44868b3c4f1f02debbc367141c642af400ab07de7ef98fb51bf981df1a5068cba94aa2f67907ffac9c0f8dd23c201c377bafcae2b8a
+%define sha512 %{name}-%{version}-linux=824254ed3f5dd548e05b456ac380282f5e23b8862ab5206877c6194c9617e8c94edfb46951dad5e75ceb1b98ef3b136be54521470d9021bc5ec4e701252bb5d2
 Source3:        build.sh
 Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 
@@ -44,8 +44,8 @@ Source5:        omi-%{libmi_tag}.tar.gz
 
 BuildArch:      x86_64
 
-BuildRequires:  dotnet-sdk = 6.0.417
-BuildRequires:  dotnet-runtime = 6.0.25
+BuildRequires:  dotnet-sdk = 6.0.418
+BuildRequires:  dotnet-runtime = 6.0.26
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -149,6 +149,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Mon Jan 22 2024 Anmol Jain <anmolja@vmware.com> 7.2.18-1
+- Version upgrade
 * Wed Dec 20 2023 Anmol Jain <anmolja@vmware.com> 7.2.17-1
 - Fixed CVE-2022-23267
 * Tue Nov 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.2.7-2
