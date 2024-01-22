@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.6.16
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -17,6 +17,8 @@ Patch2: CVE-2022-2509.patch
 Patch3: CVE-2023-0361-1.patch
 Patch4: CVE-2023-0361-2.patch
 Patch5: CVE-2023-5981.patch
+Patch6: CVE-2024-0553.patch
+Patch7: CVE-2024-0567.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -104,6 +106,8 @@ EOF
 %{_mandir}/man3/*
 
 %changelog
+* Mon Jan 22 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.6.16-6
+- Fix CVE-2024-0553 and CVE-2024-0567
 * Fri Dec 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.16-5
 - Fix CVE-2023-5981
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.16-4
