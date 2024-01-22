@@ -1,7 +1,7 @@
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
-Version:        1.9.13
-Release:        2%{?dist}
+Version:        1.9.18
+Release:        1%{?dist}
 License:        GPLv3+
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ Group:          System Environment/Daemons
 URL:            http://www.irisa.fr/caps/projects/hipsor/
 
 Source0:        http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
-%define sha512  %{name}=dff0f4273643ed6b2fea26f1ba5c17be3d655d27ab0b96091bcd23e1cb984fc440cc81e694cc7bcc84a9a667d96f3c04a73675f79ecae525ee56390940cce576
+%define sha512  %{name}=ef2e0ae3be68a8fba16371c3347d52ecf9748269ae30eef2e5c26aad6cfb516f87295e1e56be902df1064e7d4ace04863dd094d62b69e584608f779d63b42d8e
 
 Source1:        %{name}.service
 
@@ -93,6 +93,9 @@ rm -rf %{buildroot}
 %{_libdir}/*.so
 
 %changelog
+* Wed Jan 24 2024 Harinadh D <hdommaraju@vmware.com> 1.9.18-1
+- Version upgrade
+- Haveged v1.19.13 doesn't work with linux kernel >v5.4
 * Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 1.9.13-2
 - Fix for requires
 * Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.13-1
