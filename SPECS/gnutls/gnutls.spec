@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -13,6 +13,8 @@ Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
 
 Patch0: default-priority.patch
 Patch1: CVE-2023-5981.patch
+Patch2: CVE-2024-0553.patch
+Patch3: CVE-2024-0567.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -102,6 +104,8 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man3/*
 
 %changelog
+* Mon Jan 22 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.7.10-2
+- Fix for CVE-2024-0553 and CVE-2024-0567
 * Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.10-1
 - Upgrade to v3.7.10
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-3
