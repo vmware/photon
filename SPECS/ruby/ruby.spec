@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -25,6 +25,11 @@ BuildRequires:  tzdata
 Requires:       ca-certificates
 Requires:       openssl
 Requires:       gmp
+
+Obsoletes:      rubygem-base64
+Obsoletes:      rubygem-connection_pool
+Obsoletes:      rubygem-drb
+Obsoletes:      rubygem-ruby2-keywords
 
 %description
 The Ruby package contains the Ruby development environment.
@@ -78,6 +83,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Mon Jan 22 2024 Shivani Agarwal <shivania2@vmware.com> 3.1.2-3
+- Add obsolete package
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 3.1.2-2
 - Bump release as a part of readline upgrade
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.1.2-1
