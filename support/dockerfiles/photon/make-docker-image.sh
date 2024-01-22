@@ -28,13 +28,14 @@ EOF
 rm -rf $TEMP_CHROOT
 mkdir $TEMP_CHROOT
 
-tdnf install -y rpm tar gzip grep coreutils
+tdnf install -y --setopt=tsflags=nodocs rpm tar gzip grep coreutils
 
 rpm --root $TEMP_CHROOT/ --initdb
 
 tdnf --releasever ${PHOTON_RELEASE_VERSION} \
      --installroot $TEMP_CHROOT/ \
      --rpmverbosity error \
+     --setopt=tsflags=nodocs \
      install -y \
      filesystem bash toybox tdnf photon-release photon-repos curl
 
