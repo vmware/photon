@@ -1,7 +1,7 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        4.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            https://sourceforge.net/projects/procps-ng
 Group:          Applications/System
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0: https://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
 %define sha512 %{name}=1749375f72fdede58b394a7b64127b7ef7f432854995669c73802d5d626e611d23b0f6eca85106590a0b6cc21057c7c389c459dbff8f02ec52ed506723330541
+
+Patch0:        CVE-2023-4016.patch
 
 BuildRequires: ncurses-devel
 
@@ -116,6 +118,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Mon Jan 22 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.0.0-4
+- Patched CVE-2023-4016
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 4.0.0-3
 - Bump version as a part of ncurses upgrade to v6.4
 * Thu Mar 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.0-2
