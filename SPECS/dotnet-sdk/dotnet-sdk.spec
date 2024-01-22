@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        6.0.417
+Version:        6.0.418
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,8 +17,7 @@ Group:          Development/Tools
 # https://github.com/dotnet/core/blob/main/release-notes/5.0/5.0.11/5.0.11.md
 # https://download.visualstudio.microsoft.com/download/pr/6788a5a5-1879-4095-948d-72c7fbdf350f/c996151548ec9f24d553817db64c3577/dotnet-sdk-5.0.402-linux-x64.tar.gz
 Source0:        %{name}-%{version}-linux-x64.tar.gz
-%define sha512    %{name}=997caff60dbad7259db7e3dd89886fc86b733fa6c1bd3864c8199f704eb24ee59395e327c43bb7c0ed74e57ec412bd616ea26f02f8f8668d04423d6f8e0a8a33
-
+%define sha512    %{name}=24d705157ae51ed5ec5ff267c76474d2ff71b0e56693f700de456321f15212a7791291b95770522a976434f5220e5c03b042f41755a0b6e9854abf73cd51e299
 BuildArch:      x86_64
 
 Requires:       dotnet-runtime
@@ -44,6 +43,8 @@ cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/dotnet-sdk-%{version
 %{_docdir}/*
 
 %changelog
+* Mon Jan 22 2024 Anmol Jain <anmolja@vmware.com> 6.0.418-1
+- Upgarde to version 6.0.418
 * Tue Jan 09 2024 Anmol Jain <anmolja@vmware.com> 6.0.417-1
 - Upgarde to version 6.0.417
 * Tue Nov 15 2022 Anmol Jain <anmolja@vmware.com> 5.0.407-1
