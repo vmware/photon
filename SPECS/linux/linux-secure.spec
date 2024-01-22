@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.206
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -138,6 +138,9 @@ Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2024-0607
+Patch105: 0001-netfilter-nf_tables-fix-pointer-math-issue-in-nft_by.patch
 
 # Fix for CVE-2022-3522
 Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
@@ -453,6 +456,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jan 22 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.206-4
+- Fix CVE-2024-0607
 * Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.206-3
 - Fix CVE-2024-0340
 * Mon Jan 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.10.206-2

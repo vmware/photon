@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.206
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -126,6 +126,9 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch105: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2024-0607
+Patch106: 0001-netfilter-nf_tables-fix-pointer-math-issue-in-nft_by.patch
 
 # Fix for CVE-2022-3522
 Patch107: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
@@ -511,6 +514,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jan 22 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.206-4
+- Fix CVE-2024-0607
 * Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.206-3
 - Fix CVE-2024-0340
 * Mon Jan 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.10.206-2
