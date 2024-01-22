@@ -61,4 +61,4 @@ Patch358: 0058-mm-page_alloc-Use-write_seqlock_irqsave-instead-writ.patch
 Patch359: 0059-bpf-Remove-in_atomic-from-bpf_link_put.patch
 Patch360: 0060-posix-timers-Ensure-timer-ID-search-loop-limit-is-va.patch
 Patch361: 0061-drm-i915-Do-not-disable-preemption-for-resets.patch
-Patch362: 0062-Linux-6.1.69-rt21-REBASE.patch
+Patch362: 0062-Linux-6.1.73-rt22-REBASE.patch

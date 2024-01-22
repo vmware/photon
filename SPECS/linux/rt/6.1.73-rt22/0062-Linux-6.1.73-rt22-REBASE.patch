@@ -1,0 +1,20 @@
+From 46b774fa9eeafe90be6439cda8a8fe7409ee6860 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clark.williams@gmail.com>
+Date: Thu, 18 Jan 2024 14:01:50 -0600
+Subject: [PATCH 62/62] Linux 6.1.73-rt22 REBASE
+
+Signed-off-by: Clark Williams <clark.williams@gmail.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 9f7d0bdbffb1..c29508d21914 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt13
++-rt22
+-- 
+2.43.0
+
