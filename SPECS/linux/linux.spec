@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.206
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -220,6 +220,12 @@ Patch139: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 
 # Fix CVE-2024-0340
 Patch140: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
+
+#Fix CVE-2024-0565
+Patch141: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
+
+#Fix CVE-2023-6915
+Patch142: 0001-ida-Fix-crash-in-ida_free-when-the-bitmap-is-empty.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -913,6 +919,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Jan 22 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.206-5
+- Fixes CVE-2024-0565 and CVE-2023-6915
 * Mon Jan 22 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.206-4
 - Fix CVE-2024-0607
 * Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.206-3
