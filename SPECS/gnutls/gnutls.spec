@@ -1,6 +1,6 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.8.2
+Version:        3.8.3
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
@@ -8,8 +8,8 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
-%define sha512 %{name}=b3aa6e0fa7272cfca0bb0d364fe5dc9ca70cfd41878631d57271ba0a597cf6020a55a19e97a2c02f13a253455b119d296cf6f701be2b4e6880ebeeb07c93ef38
+Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.8/%{name}-%{version}.tar.xz
+%define sha512 %{name}=74eddba01ce4c2ffdca781c85db3bb52c85f1db3c09813ee2b8ceea0608f92ca3912fd9266f55deb36a8ba4d01802895ca5d5d219e7d9caec45e1a8534e45a84
 
 Patch0: default-priority.patch
 
@@ -94,6 +94,8 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man3/*
 
 %changelog
+* Mon Jan 22 2024 Brennan Lamoreaux <brennan.lamoreaux@vmware.com> 3.8.3-1
+- Upgrade to 3.8.3
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8.2-1
 - Upgrade to v3.8.2
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-4

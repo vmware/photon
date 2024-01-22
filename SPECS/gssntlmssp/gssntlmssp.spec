@@ -1,7 +1,7 @@
 Summary:        GSSAPI NTLMSSP Mechanism
 Name:           gssntlmssp
 Version:        1.1.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv3+
@@ -38,7 +38,6 @@ BuildRequires: libtirpc-devel
 BuildRequires: openldap-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: jansson-devel
-BuildRequires: gnutls-devel
 BuildRequires: samba-client-libs
 BuildRequires: libwbclient
 BuildRequires: libwbclient-devel
@@ -93,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/gssapi/gssapi_ntlmssp.h
 
 %changelog
+* Tue Jan 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.1.0-14
+- Version bump for gnutls upgrade
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-13
 - Bump version as a part of gnutls upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-12
