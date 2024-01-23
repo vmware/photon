@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.70
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -158,6 +158,8 @@ Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
 Patch109: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 # Fix CVE-2023-39191
 %include %{SOURCE40}
+# Fix CVE-2023-6915
+Patch129: 0001-ida-Fix-crash-in-ida_free-when-the-bitmap-is-empty.patch
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -484,6 +486,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jan 23 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.70-5
+- Fix CVE-2023-6915
 * Wed Jan 17 2024 Bryan Tan <bryan-bt.tan@broadcom.com> 6.1.70-4
 - Fix refcount underflow in vsock
 * Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-3
