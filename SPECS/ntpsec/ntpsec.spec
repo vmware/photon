@@ -1,14 +1,14 @@
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
-Version:        1.2.2
-Release:        2%{?dist}
+Version:        1.2.3
+Release:        1%{?dist}
 License:        BSD-2-Clause AND NTP AND BSD-3-Clause AND MIT
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://www.ntpsec.org/
 Source0:        https://ftp.ntpsec.org/pub/releases/%{name}-%{version}.tar.gz
-%define sha512  ntpsec=929f07e4183cf7f4c24c15f99391fb6d4d87eeb267ea767adbff0b58d44c419490c52174a01a5819f133e479602bb9343e4853c5a016ff41c04d3c6e76caa958
+%define sha512  ntpsec=cec0c6ddff81c3da48157f3437945c11832b29577482c86c9d6df997d0194fea9df43ad05189c63efbf5a491a9a7f98eaae78065445d5e31499b1f1d78e217fb
 Source1:        %{name}.sysusers
 
 Patch0:         ntpstats_path.patch
@@ -49,14 +49,13 @@ Requires:       python3
 The ntpsec python bindings used by various ntp utilities.
 
 %prep
-%autosetup -p1 -n %{name}-NTPsec_1_2_2
+%autosetup -p1 -n %{name}-NTPsec_1_2_3
 
 %build
 export CFLAGS="%{optflags}"
 export CCFLAGS="%{optflags}"
 python3 ./waf configure \
     --enable-debug \
-    --enable-debug-gdb \
     --prefix=%{_prefix} \
     --python=%{python3} \
     --pythonarchdir=%{python3_sitearch} \
@@ -85,7 +84,6 @@ driftfile /var/lib/ntp/drift/ntp.drift
 EOF
 
 rm -rf %{buildroot}%{_docdir}
-rm %{buildroot}%{_bindir}/runtests
 
 %check
 python3 ./waf check --verbose %{?_smp_mflags}
@@ -128,6 +126,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/ntp*
 
 %changelog
+* Mon Jan 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.3-1
+- Update to 1.2.3, Fixes CVE-2023-4012
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.2.2-2
 - Use systemd-rpm-macros for user creation
 * Fri May 27 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.2-1
