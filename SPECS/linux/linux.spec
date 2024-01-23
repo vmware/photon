@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.70
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -143,6 +143,9 @@ Patch21: 6.1-0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+
+#VMCI/VSOCK
+Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 %ifarch x86_64
 # VMW: [50..59]
@@ -821,6 +824,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Jan 17 2024 Bryan Tan <bryan-bt.tan@broadcom.com> 6.1.70-3
+- Fix refcount underflow in vsock
 * Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-2
 - Fix CVE-2024-0340
 * Mon Jan 01 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.70-1

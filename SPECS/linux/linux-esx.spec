@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.70
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -126,6 +126,9 @@ Patch21: 0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch22: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 #initrd newca
 Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
+
+#VMCI/VSOCK
+Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -565,6 +568,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jan 17 2024 Bryan Tan <bryan-bt.tan@broadcom.com> 6.1.70-3
+- Fix refcount underflow in vsock
 * Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-2
 - Fix CVE-2024-0340
 * Mon Jan 01 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.1.70-1

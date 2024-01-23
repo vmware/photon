@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.70
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -108,6 +108,9 @@ Patch11:  6.0-0001-cgroup-v1-cgroup_stat-support.patch
 #HyperV patches
 Patch20:  vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 Patch21:  6.1-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
+
+#VMCI/VSOCK
+Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 # Out-of-tree patches from AppArmor:
 Patch30: 6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
@@ -481,6 +484,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jan 17 2024 Bryan Tan <bryan-bt.tan@broadcom.com> 6.1.70-4
+- Fix refcount underflow in vsock
 * Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-3
 - Fix CVE-2024-0340
 * Wed Jan 10 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.70-2

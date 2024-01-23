@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.70
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -113,6 +113,9 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 # latency spikes across all vcpus due to nested pagetable
 # synchronization.
 Patch23: 6.0-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
+
+#VMCI/VSOCK
+Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 # VMW: [55..60]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -259,7 +262,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 32 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M23
+%autopatch -p1 -m0 -M24
 
 #VMW
 %autopatch -p1 -m55 -M60
@@ -423,6 +426,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jan 17 2024 Bryan Tan <bryan-bt.tan@broadcom.com> 6.1.70-4
+- Fix refcount underflow in vsock
 * Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-3
 - Fix CVE-2024-0340
 * Mon Jan 08 2024 Roye Eshed <roye.eshed@broadcom.com> 6.1.70-2
