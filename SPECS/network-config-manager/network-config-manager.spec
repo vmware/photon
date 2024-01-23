@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
 Version:        0.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +10,8 @@ URL:            https://github.com/vmware/network-config-manager
 
 Source0: https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=2140939ad1965326496b630c7ef55f6bd5fdbfef9823284e0fea6b0ceddf2cde199ab9539cfb8d0a0f46c609ee6bbd488d09d767e020ce0d3c653bb03222283d
+
+Patch0: Replace_address_fix.patch
 
 BuildRequires: glib-devel
 BuildRequires: json-c-devel
@@ -81,6 +83,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Jan 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.7.1-2
+- Patched for replace address fix
 * Fri Jan 12 2024 Susant Sahani <susant.sahani@broadcom.com> 0.7.1-1
 - Update to 0.7.1
 * Tue Dec 26 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7-2

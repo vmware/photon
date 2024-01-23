@@ -1,0 +1,280 @@
+From 352d3ee8de341fffdfcca85dd96667dd0c7ac90d Mon Sep 17 00:00:00 2001
+From: Susant Sahani <ssahani@gmail.com>
+Date: Thu, 18 Jan 2024 19:50:11 +0530
+Subject: [PATCH] ctl: Allow address or many address to replace by family of
+ address
+
+1. remove IPv4 or IPv6 address
+2. Add a address or many
+---
+ include/network-config-manager.h.in  |   1 +
+ src/manager/network-config-manager.c | 124 +++++++++++++++++++++++++++
+ src/manager/network-manager-ctl.c    |   4 +-
+ src/manager/network-manager.c        |  70 +++++++++++++++
+ src/manager/network-manager.h        |   1 +
+ 5 files changed, 199 insertions(+), 1 deletion(-)
+
+diff --git a/include/network-config-manager.h.in b/include/network-config-manager.h.in
+index a7be3ee1..583a7447 100644
+--- a/include/network-config-manager.h.in
++++ b/include/network-config-manager.h.in
+@@ -27,6 +27,7 @@ int ncm_display_one_link_addresses(int argc, char *argv[]);
+ int ncm_link_get_addresses(const char *ifname, char ***ret);
+ int ncm_link_add_address(int argc, char *argv[]);
+ int ncm_link_remove_address(int argc, char *argv[]);
++int ncm_link_replace_address(int argc, char *argv[]);
+ 
+ int ncm_link_set_default_gateway(int argc, char *argv[]);
+ int ncm_link_set_default_gateway_family(int argc, char *argv[]);
+diff --git a/src/manager/network-config-manager.c b/src/manager/network-config-manager.c
+index 37836890..e7530f84 100644
+--- a/src/manager/network-config-manager.c
++++ b/src/manager/network-config-manager.c
+@@ -1545,6 +1545,130 @@ _public_ int ncm_link_remove_address(int argc, char *argv[]) {
+         return 0;
+ }
+ 
++_public_ int ncm_link_replace_address(int argc, char *argv[]) {
++        AddressFamily family = ADDRESS_FAMILY_NO;
++        _auto_cleanup_strv_ char **addrs = NULL;
++        _auto_cleanup_ IfNameIndex *p = NULL;
++        int r;
++
++        for (int i = 1; i < argc; i++) {
++                if (str_eq_fold(argv[i], "dev") || str_eq_fold(argv[i], "device") || str_eq_fold(argv[i], "d")) {
++                        parse_next_arg(argv, argc, i);
++
++                        r = parse_ifname_or_index(argv[i], &p);
++                        if (r < 0) {
++                                log_warning("Failed to find device: %s", argv[i]);
++                                return r;
++                        }
++                        continue;
++                } else if (str_eq_fold(argv[i], "address") || str_eq_fold(argv[i], "a") || str_eq_fold(argv[i], "addr")) {
++                        _auto_cleanup_ IPAddress *a = NULL;
++
++                        parse_next_arg(argv, argc, i);
++
++                        r = parse_ip_from_str(argv[i], &a);
++                        if (r < 0) {
++                                log_warning("Failed to parse address '%s': %s", argv[i], strerror(-r));
++                                return r;
++                        }
++
++                        r = strv_extend(&addrs, argv[i]);
++                        if (r < 0)
++                                return log_oom();
++
++                      continue;
++                } else if (str_eq_fold(argv[i], "many")) {
++                        _auto_cleanup_strv_ char **s = NULL;
++                        bool white_space = false;
++
++                        parse_next_arg(argv, argc, i);
++
++                        if (strchr(argv[i], ',')) {
++                                char **d;
++
++                                s = strsplit(argv[i], ",", -1);
++                                if (!s) {
++                                        log_warning("Failed to parse many addresses '%s': %s", argv[i], strerror(EINVAL));
++                                        return -EINVAL;
++                                }
++
++                                s = strv_remove(s, "");
++                                if (!s) {
++                                        log_warning("Failed to parse many addresses '%s': %s", argv[i], strerror(EINVAL));
++                                        return -EINVAL;
++                                }
++
++                                strv_foreach(d, s) {
++                                        _auto_cleanup_ IPAddress *a = NULL;
++
++                                        r = parse_ip_from_str(*d, &a);
++                                        if (r < 0) {
++                                                log_warning("Failed to parse address: %s", *d);
++                                                return r;
++                                        }
++                                }
++
++                        } else {
++                                _auto_cleanup_strv_ char **t = NULL;
++                                char **d;
++
++                                r = argv_to_strv(argc - 4, argv + i, &t);
++                                if (r < 0) {
++                                        log_warning("Failed to parse address: %s", strerror(-r));
++                                        return r;
++                                }
++
++                                strv_foreach(d, t) {
++                                        _auto_cleanup_ IPAddress *a = NULL;
++
++                                        r = parse_ip_from_str(*d, &a);
++                                        if (r >= 0) {
++                                                strv_extend(&s, *d);
++                                                i++;
++                                        }
++                                }
++                                white_space = true;
++                        }
++
++                        addrs = steal_ptr(s);
++                        if (white_space)
++                                i--;
++                        continue;
++                } else if(str_eq_fold(argv[i], "family") || str_eq_fold(argv[i], "f")) {
++                        parse_next_arg(argv, argc, i);
++
++                        r = address_family_name_to_type(argv[i]);
++                        if (r < 0) {
++                                log_warning("Failed to parse family='%s': %s", argv[i], strerror(EINVAL));
++                                return -EINVAL;
++                        }
++                        family |= r;
++                        continue;
++                }
++
++                log_warning("Failed to parse '%s': %s", argv[i], strerror(EINVAL));
++                return -EINVAL;
++        }
++
++        if (!p) {
++                log_warning("Failed to find device: %s",  strerror(ENXIO));
++                return -ENXIO;
++        }
++
++        if (!addrs && family == ADDRESS_FAMILY_NO) {
++                log_warning("Failed to parse address or family for device '%s': %s", p->ifname, strerror(-r));
++                return r;
++        }
++
++        r = manager_replace_link_address(p, addrs, family);
++        if (r < 0) {
++                log_warning("Failed to remove address from device '%s': %s", p->ifname, strerror(-r));
++                return r;
++        }
++
++        return 0;
++}
++
+ _public_ int ncm_link_get_addresses(const char *ifname, char ***ret) {
+         _cleanup_(addresses_freep) Addresses *addr = NULL;
+         _auto_cleanup_ IfNameIndex *p = NULL;
+diff --git a/src/manager/network-manager-ctl.c b/src/manager/network-manager-ctl.c
+index 72eb442d..6edd6eec 100644
+--- a/src/manager/network-manager-ctl.c
++++ b/src/manager/network-manager-ctl.c
+@@ -149,6 +149,7 @@ static int help(void) {
+                                                       "\n\t\t\t\t      scope {global|link|host|NUMBER}] dad [DAD {none|ipv4|ipv6|both}] prefix-route|pr [PREFIXROUTE BOOLEAN]"
+                                                       "\n\t\t\t\t      prefix-route|pr [PREFIXROUTE BOOLEAN] many [ADDRESS1,ADDRESS2...] Configures device Address.\n"
+                "  remove-addr                  dev [DEVICE] address|a|addr [ADDRESS] many [ADDRESS1,ADDRESS2...] f|family [ipv4|ipv6|yes] Removes address or family of addresses from device.\n"
++               "  replace-addr                 dev [DEVICE] address|a|addr [ADDRESS] many [ADDRESS1,ADDRESS2...] f|family [ipv4|ipv6|yes] Replaces family of addresses, address with a address or many\n"
+                "  set-gw                       dev [DEVICE] gw [GATEWAY ADDRESS] onlink [ONLINK BOOLEAN] keep [BOOLEAN] Configures device default Gateway.\n"
+                "  set-gw-family                dev [DEVICE] gw4 [IPv4 GATEWAY ADDRESS] gw6 [IPv6 GATEWAY ADDRESS] Configures device default IPv4/IPv6 Gateway.\n"
+                "  remove-gw                    dev [DEVICE] f|family [ipv4|ipv6|yes] Removes Gateway from device.\n"
+@@ -395,9 +396,10 @@ static int cli_run(int argc, char *argv[]) {
+                 { "set-dhcp-iaid",                 "dhcp-iaid",        4,        WORD_ANY, false, ncm_link_set_dhcp_client_iaid},
+                 { "set-dhcp-duid",                 "dhcp-duid",        4,        WORD_ANY, false, ncm_link_set_dhcp_client_duid},
+                 { "set-link-state",                "ls",               3,        WORD_ANY, false, ncm_link_update_state },
+-                { "add-addr",                      "aa",               4,        WORD_ANY, false, ncm_link_add_address },
+                 { "show-addr",                     "a",                1,        WORD_ANY, false, ncm_display_one_link_addresses },
++                { "add-addr",                      "aa",               4,        WORD_ANY, false, ncm_link_add_address },
+                 { "remove-addr",                   "raddr",            3,        WORD_ANY, false, ncm_link_remove_address },
++                { "replace-addr",                  "repa",             3,        WORD_ANY, false, ncm_link_replace_address },
+                 { "set-gw",                        "sgw",              4,        WORD_ANY, false, ncm_link_set_default_gateway },
+                 { "set-gw-family",                 "sgwf",             4,        WORD_ANY, false, ncm_link_set_default_gateway_family },
+                 { "remove-gw",                     "rgw",              2,        WORD_ANY, false, ncm_link_remove_gateway },
+diff --git a/src/manager/network-manager.c b/src/manager/network-manager.c
+index ed86de30..2ede000b 100644
+--- a/src/manager/network-manager.c
++++ b/src/manager/network-manager.c
+@@ -1249,6 +1249,76 @@ int manager_configure_link_address(const IfNameIndex *ifidx,
+         return dbus_network_reload();
+ }
+ 
++int manager_replace_link_address(const IfNameIndex *ifidx, char **many, AddressFamily family) {
++        _cleanup_(key_file_freep) KeyFile *key_file = NULL;
++        _auto_cleanup_ char *setup = NULL, *network = NULL;
++        char **t;
++        int r;
++
++        assert(ifidx);
++
++        r = network_parse_link_setup_state(ifidx->ifindex, &setup);
++        if (r < 0) {
++                log_warning("Failed to find device setup '%s': %s", ifidx->ifname, strerror(-r));
++                return r;
++        }
++
++        r = network_parse_link_network_file(ifidx->ifindex, &network);
++        if (r < 0) {
++                log_warning("Failed to find .network file for '%s': %s", ifidx->ifname, strerror(-r));
++                return r;
++        }
++
++        r = parse_key_file(network, &key_file);
++        if (r < 0)
++                return r;
++
++        for (GList *i = key_file->sections; i; i = g_list_next (i)) {
++                _auto_cleanup_ IPAddress *addr = NULL;
++                Section *s = (Section *) i->data;
++
++                if (!str_eq(s->name, "Address"))
++                        continue;
++
++                for (GList *j = s->keys; j; j = g_list_next (j)) {
++                        Key *key = (Key *) j->data;
++
++                        if (!str_eq(key->name, "Address"))
++                                continue;
++
++                        r = parse_ip_from_str(key->v, &addr);
++                        if (r >= 0) {
++                                if ((addr->family == AF_INET && family & ADDRESS_FAMILY_IPV4) ||
++                                    (addr->family == AF_INET6 && family & ADDRESS_FAMILY_IPV6))
++                                        i = g_list_delete_link(key_file->sections, i);
++                        }
++                }
++        }
++
++        strv_foreach(t, many) {
++                _cleanup_(section_freep) Section *section = NULL;
++
++                if (key_file_config_exists(key_file, "Address", "Address", *t))
++                        continue;
++
++                r = section_new("Address", &section);
++                if (r < 0)
++                        return r;
++
++                add_key_to_section(section, "Address", *t);
++                add_section_to_key_file(key_file, section);
++                steal_ptr(section);
++        }
++
++        r = key_file_save (key_file);
++        if (r < 0) {
++                log_warning("Failed to write to '%s': %s", key_file->name, strerror(-r));
++                return r;
++        }
++
++        return dbus_network_reload();
++}
++
+ int manager_remove_link_address(const IfNameIndex *ifidx, char **addresses, AddressFamily family) {
+         _cleanup_(key_file_freep) KeyFile *key_file = NULL;
+         _auto_cleanup_ char *setup = NULL, *network = NULL;
+diff --git a/src/manager/network-manager.h b/src/manager/network-manager.h
+index bb411f82..5dabd388 100644
+--- a/src/manager/network-manager.h
++++ b/src/manager/network-manager.h
+@@ -105,6 +105,7 @@ int manager_configure_link_address(const IfNameIndex *ifidx,
+                                    char **many);
+ 
+ int manager_remove_link_address(const IfNameIndex *ifidx, char **addresses, AddressFamily family);
++int manager_replace_link_address(const IfNameIndex *ifidx, char **many, AddressFamily family);
+ 
+ int manager_configure_default_gateway(const IfNameIndex *ifidx, Route *rt, bool keep);
+ int manager_configure_default_gateway_full(const IfNameIndex *ifidx, Route *rt4, Route *rt6);
