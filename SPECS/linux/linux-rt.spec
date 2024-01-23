@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.70
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -118,7 +118,10 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 # synchronization.
 Patch23: 6.0-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
 
-# VMW: [55..65]
+#VMCI/VSOCK
+Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
+
+# VMW: [55..60]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 
@@ -282,7 +285,7 @@ stalld to use eBPF based backend.
 %setup -q -T -D -b 32 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M23
+%autopatch -p1 -m0 -M24
 
 #VMW
 %autopatch -p1 -m55 -M60
@@ -476,6 +479,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Apr 29 2024 Bryan Tan <bryan-bt.tan@broadcom.com> 6.1.70-5
+- Fix refcount underflow in vsock
 * Mon Apr 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-4
 - Fix CVE-2024-0340
 * Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-3

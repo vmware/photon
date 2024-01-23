@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.70
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -155,6 +155,9 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 # Fixroc_sched_rt01 ltp testcase failure
 Patch23: 0001-sched-rt-Disallow-writing-invalid-values-to-sched_rt.patch
 Patch24: 0001-sched-rt-sysctl_sched_rr_timeslice-show-default-time.patch
+
+#VMCI/VSOCK
+Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 %ifarch x86_64
 # VMW: [50..59]
@@ -846,6 +849,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Bryan Tan <bryan-bt.tan@broadcom.com> 6.1.70-5
+- Fix refcount underflow in vsock
 * Mon Apr 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-4
 - Fix CVE-2024-0340
 * Mon Apr 29 2024 Kuntal Nayak <nkuntal@vmware.com> 6.1.70-3
