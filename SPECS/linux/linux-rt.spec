@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.70
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -157,6 +157,8 @@ Patch108: 0002-drm-vmwgfx-Keep-a-gem-reference-to-user-bos-in-surfa.patch
 %include %{SOURCE42}
 # Fix CVE-2024-0340
 Patch109: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
+# Fix CVE-2023-6915
+Patch129: 0001-ida-Fix-crash-in-ida_free-when-the-bitmap-is-empty.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -479,6 +481,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Apr 29 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.70-6
+- Fix CVE-2023-6915
 * Mon Apr 29 2024 Bryan Tan <bryan-bt.tan@broadcom.com> 6.1.70-5
 - Fix refcount underflow in vsock
 * Mon Apr 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.70-4
