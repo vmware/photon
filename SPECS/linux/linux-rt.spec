@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.305
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -137,9 +137,10 @@ Patch40: efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
 #Fix for CVE-2019-19338
 Patch41: 0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch42: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
-
 # Fix CVE-2024-0340
 Patch43: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
+#Fix for CVE-2024-0565
+Patch44: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
 
 # Fix for CVE-2022-3524 and CVE-2022-3567
 Patch51: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
@@ -1166,6 +1167,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue Jan 30 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.19.305-2
+- Fix CVE-2024-0565
 * Mon Jan 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-1
 - Update to version 4.19.305
 * Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.303-2

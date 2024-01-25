@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.305
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -126,6 +126,9 @@ Patch48: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
 # Fix CVE-2024-0340
 Patch49: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
+
+#Fix for CVE-2024-0565
+Patch50: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
 
 # Fix for CVE-2020-16119
 Patch59: 0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
@@ -1161,6 +1164,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Jan 30 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.19.305-2
+- Fix CVE-2024-0565
 * Mon Jan 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-1
 - Update to version 4.19.305
 * Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.303-2
