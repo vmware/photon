@@ -1,6 +1,6 @@
 Summary:        The PyPA recommended tool for installing Python packages.
 Name:           python3-pip
-Version:        23.0.1
+Version:        23.3.2
 Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pip/
 Source0:        https://files.pythonhosted.org/packages/6b/8b/0b16094553ecc680e43ded8f920c3873b01b1da79a54274c98f08cb29fca/pip-%{version}.tar.gz
-%define sha512 pip=f85523d44ccf81b340cc63964441e7ce4c9c0296518ec8fee742692c05b470b02263be810d2f4806bc9fc10d4fcfbeb75bfb3f1cc4509a54955804a4fbb21e1e
+%define sha512 pip=b2d8bcff02fe196163e88e02702861bfccba202e5c71d8c6843eeebc84066efa6987574e26a89ff25f096645e99c824dde585fbae415b66d5eb88657bb4d9cb4
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
@@ -42,5 +42,7 @@ find %{buildroot}%{python3_sitelib} -name '*.exe' | xargs rm -f
 %{_bindir}/pip*
 
 %changelog
+* Wed Jan 24 2024 Prashant S Chauhan <psinghchauha@vmware.com> 23.3.2-1
+- Update to 23.3.2
 * Tue Feb 07 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.0.1-1
 - Separate python3-pip from python3 spec.
