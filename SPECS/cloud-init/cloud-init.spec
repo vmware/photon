@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        23.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -23,6 +23,7 @@ Patch4: 0005-test_vmware.py-fix-pkg-test-failure.patch
 %endif
 
 Patch5: 0006-Change-log-level-to-info-to-make-GOSC-regression-tes.patch
+Patch6: 0007-call-home.patch
 
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
@@ -147,6 +148,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 
 %changelog
+* Thu Jan 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.4-2
+- Call home fix
 * Thu Dec 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.4-1
 - Upgrade to v23.4
 * Tue Oct 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.3.2-1
