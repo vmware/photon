@@ -12,11 +12,11 @@ lockdown if force (unconditional) config options are not set.]
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 ---
  arch/x86/kernel/Makefile     |  2 ++
- arch/x86/kernel/lockdown.c   | 21 +++++++++++++++++++++
+ arch/x86/kernel/lockdown.c   | 26 ++++++++++++++++++++++++++
  include/linux/lockdown.h     |  7 +++++++
  security/lockdown/Kconfig    |  8 ++++++++
  security/lockdown/lockdown.c |  8 ++++++++
- 5 files changed, 46 insertions(+)
+ 5 files changed, 51 insertions(+)
  create mode 100644 arch/x86/kernel/lockdown.c
  create mode 100644 include/linux/lockdown.h
 
@@ -35,10 +35,10 @@ index 42b5540da..4f9bbb047 100644
  ifeq ($(CONFIG_X86_64),y)
 diff --git a/arch/x86/kernel/lockdown.c b/arch/x86/kernel/lockdown.c
 new file mode 100644
-index 000000000..a94f910dc
+index 000000000..fd1736acf
 --- /dev/null
 +++ b/arch/x86/kernel/lockdown.c
-@@ -0,0 +1,21 @@
+@@ -0,0 +1,26 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
 +#include <linux/efi.h>
@@ -48,12 +48,17 @@ index 000000000..a94f910dc
 +
 +extern struct boot_params boot_params;
 +
++bool is_efi_system(void) {
++	return efi_enabled(EFI_BOOT) ||
++		!strncmp((char *)&boot_params.efi_info.efi_loader_signature, EFI64_LOADER_SIGNATURE, 4) ||
++		!strncmp((char *)&boot_params.efi_info.efi_loader_signature, EFI32_LOADER_SIGNATURE, 4);
++}
++
 +/*
 + * Determine whether UEFI Secure Boot is enabled
 + */
-+bool __init secureboot_enabled(void) {
-+        if (!strncmp((char *)&boot_params.efi_info.efi_loader_signature,
-+                     EFI64_LOADER_SIGNATURE, 4)) {
++bool secureboot_enabled(void) {
++        if (is_efi_system()) {
 +		if (boot_params.secure_boot == efi_secureboot_mode_enabled)
 +			return true;
 +	}
@@ -93,7 +98,7 @@ index e84ddf484..f2fa07773 100644
  	prompt "Kernel default lockdown mode"
  	default LOCK_DOWN_KERNEL_FORCE_NONE
 diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index a79b985e9..8c36a94ad 100644
+index a79b985e9..56004fc13 100644
 --- a/security/lockdown/lockdown.c
 +++ b/security/lockdown/lockdown.c
 @@ -13,6 +13,7 @@
@@ -108,7 +113,7 @@ index a79b985e9..8c36a94ad 100644
  						 LOCKDOWN_INTEGRITY_MAX,
  						 LOCKDOWN_CONFIDENTIALITY_MAX};
  
-+bool __init __weak secureboot_enabled(void) { return false; }
++bool __weak secureboot_enabled(void) { return false; }
 +
  /*
   * Put the kernel into lock-down mode.
@@ -119,7 +124,7 @@ index a79b985e9..8c36a94ad 100644
  	lock_kernel_down("Kernel configuration", LOCKDOWN_CONFIDENTIALITY_MAX);
 +#elif defined(CONFIG_LOCK_DOWN_KERNEL_IN_SECUREBOOT)
 +        if (secureboot_enabled())
-+		lock_kernel_down("Kernel configuration", LOCKDOWN_INTEGRITY_MAX);
++		lock_kernel_down("EFI Secure Boot mode", LOCKDOWN_INTEGRITY_MAX);
 +	else
 +		pr_notice("Kernel not locked down\n");
  #endif

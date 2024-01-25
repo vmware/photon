@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.81
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -471,6 +471,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Apr 10 2024  Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.81-6
+- Update SBAT verification
 * Wed Apr 10 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.81-5
 - Defer the initialization of jitterentropy.
 * Wed Mar 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.81-4

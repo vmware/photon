@@ -7,16 +7,20 @@ To extend Secure Boot trusted chain to next executed kernel.
 Introduce a logic to verify .sbat section of new bzImage against
 SBAT entries from EFI variable used by shim.
 
+[ KN: Simplify SBAT verification. Only call routine when UEFI
+secure boot is enabled. Get SBAT data from MOK tables if
+cannot fetch from EFI. ]
+
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
 ---
  crypto/asymmetric_keys/verify_pefile.c |  24 +++
- drivers/firmware/efi/libstub/efistub.h |   1 +
  include/linux/verification.h           |  11 ++
- kernel/kexec_file.c                    |   4 +
- security/Kconfig                       |  13 ++
+ kernel/kexec_file.c                    |   8 +
+ security/Kconfig                       |  12 ++
  security/Makefile                      |   1 +
- security/sbat.c                        | 229 +++++++++++++++++++++++++
- 7 files changed, 283 insertions(+)
+ security/sbat.c                        | 232 +++++++++++++++++++++++++
+ 6 files changed, 288 insertions(+)
  create mode 100644 security/sbat.c
 
 diff --git a/crypto/asymmetric_keys/verify_pefile.c b/crypto/asymmetric_keys/verify_pefile.c
@@ -51,23 +55,11 @@ index 22beaf221..7813de5cf 100644
 +
 +	return -ENODATA;
 +}
-diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
-index 970e86e3a..747a5f7aa 100644
---- a/drivers/firmware/efi/libstub/efistub.h
-+++ b/drivers/firmware/efi/libstub/efistub.h
-@@ -967,6 +967,7 @@ asmlinkage void __noreturn efi_enter_kernel(unsigned long entrypoint,
- void efi_handle_post_ebs_state(void);
- 
- enum efi_secureboot_mode efi_get_secureboot(void);
-+efi_status_t efi_get_sbatlevel(char **data, unsigned long *size);
- 
- #ifdef CONFIG_RESET_ATTACK_MITIGATION
- void efi_enable_reset_attack_mitigation(void);
 diff --git a/include/linux/verification.h b/include/linux/verification.h
-index f34e50ebc..9a4fcef83 100644
+index cb2d47f28..dfebedf56 100644
 --- a/include/linux/verification.h
 +++ b/include/linux/verification.h
-@@ -66,6 +66,17 @@ extern int verify_pkcs7_message_sig(const void *data, size_t len,
+@@ -67,6 +67,17 @@ extern int verify_pkcs7_message_sig(const void *data, size_t len,
  extern int verify_pefile_signature(const void *pebuf, unsigned pelen,
  				   struct key *trusted_keys,
  				   enum key_being_used_for usage);
@@ -86,22 +78,33 @@ index f34e50ebc..9a4fcef83 100644
  
  #endif /* CONFIG_SYSTEM_DATA_VERIFICATION */
 diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
-index 6d787ae9d..ce67705cf 100644
+index 6d787ae9d..9b673e555 100644
 --- a/kernel/kexec_file.c
 +++ b/kernel/kexec_file.c
-@@ -131,6 +131,10 @@ int kexec_kernel_verify_pe_sig(const char *kernel, unsigned long kernel_len)
+@@ -27,6 +27,8 @@
+ #include <linux/kernel_read_file.h>
+ #include <linux/syscalls.h>
+ #include <linux/vmalloc.h>
++#include <linux/lockdown.h>
++
+ #include "kexec_internal.h"
+ 
+ #ifdef CONFIG_KEXEC_SIG
+@@ -131,6 +133,12 @@ int kexec_kernel_verify_pe_sig(const char *kernel, unsigned long kernel_len)
  {
  	int ret;
  
-+	ret = verify_pefile_sbat(kernel, kernel_len);
-+	if (ret)
-+		return ret;
++	if (secureboot_enabled()) {
++		ret = verify_pefile_sbat(kernel, kernel_len);
++		if (ret)
++			return ret;
++	}
 +
  	ret = verify_pefile_signature(kernel, kernel_len,
  				      VERIFY_USE_SECONDARY_KEYRING,
  				      VERIFYING_KEXEC_PE_SIGNATURE);
 diff --git a/security/Kconfig b/security/Kconfig
-index 536689678..7acc4986b 100644
+index 536689678..371cc82d1 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -218,6 +218,18 @@ config SECURITY_SBAT
@@ -137,10 +140,10 @@ index 18121f8f8..38da41d50 100644
  obj-$(CONFIG_SECURITY)			+= lsm_audit.o
 diff --git a/security/sbat.c b/security/sbat.c
 new file mode 100644
-index 000000000..80168215f
+index 000000000..5ea2267c1
 --- /dev/null
 +++ b/security/sbat.c
-@@ -0,0 +1,229 @@
+@@ -0,0 +1,232 @@
 +#define pr_fmt(fmt) "SBAT: "fmt
 +#include <linux/kernel.h>
 +#include <linux/slab.h>
@@ -166,7 +169,6 @@ index 000000000..80168215f
 +			const char *vendor_url;
 +		};
 +	};
-+	unsigned long gen;
 +};
 +
 +struct sbat {
@@ -190,7 +192,7 @@ index 000000000..80168215f
 +		if (s->data[i] == '\xA')
 +			s->n_entries++;
 +
-+	s->entries = kcalloc(s->n_entries, sizeof(struct sbat_entry*), GFP_KERNEL);
++	s->entries = kcalloc(s->n_entries, sizeof(struct sbat_entry), GFP_KERNEL);
 +	if (!s->entries)
 +		return ERR_PTR(-ENOMEM);
 +
@@ -209,7 +211,6 @@ index 000000000..80168215f
 +			if (i >= size)
 +				goto error;
 +			s->entries[e].field[f] = &s->data[i];
-+
 +		}
 +		else if (s->data[i] == '\xA') {
 +			if (full_parse && f != FIELDS - 1)
@@ -219,27 +220,11 @@ index 000000000..80168215f
 +				goto error;
 +
 +			s->data[i++] = '\0';
-+			/* Convert generation field to integer */
-+			if (kstrtoul(s->entries[e].field[1], 0, &s->entries[e].gen) < 0)
-+				goto error;
-+
 +			e++;
 +			f = 0;
-+			if (e <= s->n_entries)
++			if (e < s->n_entries)
 +				s->entries[e].field[f] = &s->data[i];
 +		}
-+	}
-+	/* Handle non 0xA terminated SBAT */
-+	if ((e == s->n_entries - 1) && ((f == FIELDS - 1) || !full_parse)) {
-+		/* The line must have at least 2 entries */
-+		if (!f)
-+			goto error;
-+		s->data[size] = '\0';
-+		/* Convert generation field to integer */
-+		if (kstrtoul(s->entries[e].field[1], 0, &s->entries[e].gen) < 0)
-+			goto error;
-+		e++;
-+		f = 0;
 +	}
 +	/* Corrupted SBAT ? */
 +	if (e != s->n_entries || f)
@@ -270,11 +255,10 @@ index 000000000..80168215f
 +		return ERR_PTR(-ENODATA);
 +	}
 +
-+	s = kmalloc(sizeof(struct sbat) + size + 1, GFP_KERNEL);
++	s = kzalloc(sizeof(struct sbat) + size, GFP_KERNEL);
 +	if (!s)
 +		return ERR_PTR(-ENOMEM);
 +	memcpy(&s->data, sbat_data, size);
-+	s->data[size] = '\xA';
 +
 +	out = parse_sbat(s, size, true);
 +	if (IS_ERR(out))
@@ -288,31 +272,43 @@ index 000000000..80168215f
 +	efi_status_t status;
 +	struct sbat *s, *out;
 +	unsigned long size = 0;
-+	int ret;
++	struct efi_mokvar_table_entry *mokvar_entry;
 +
 +	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE)) {
-+		pr_info("Unable to get SBAT level from EFI\n");
-+		ret = efi_enabled(EFI_BOOT)? -ENOPROTOOPT : 0;
-+		return ERR_PTR(ret);
++        	pr_info("EFI Runtime Services are disabled!\n");
++		return ERR_PTR(-ENOPROTOOPT);
 +	}
 +
 +	status = efi.get_variable(shim_SbatLevel_name, &shim_guid,
 +				  NULL, &size, NULL);
 +
-+	if (status != EFI_BUFFER_TOO_SMALL || !size)
-+		return ERR_PTR(-ENODATA);
++	if (status != EFI_BUFFER_TOO_SMALL)
++		goto fetch_mok;
 +
-+	s = kmalloc(sizeof(struct sbat) + size + 1, GFP_KERNEL);
++	s = kzalloc(sizeof(struct sbat) + size, GFP_KERNEL);
 +	if (!s)
 +		return ERR_PTR(-ENOMEM);
 +
 +	status = efi.get_variable(shim_SbatLevel_name, &shim_guid,
 +				  NULL, &size, s->data);
-+	if (status != EFI_SUCCESS) {
-+		kfree(s);
-+		return ERR_PTR(-ENODATA);
-+	}
++	if (status == EFI_SUCCESS)
++		goto parse_sbat;
 +
++	kfree(s);
++
++fetch_mok:
++	mokvar_entry = efi_mokvar_entry_find("SbatLevelRT");
++	if (!mokvar_entry || !mokvar_entry->data_size)
++		return ERR_PTR(-ENODATA);
++
++	size = mokvar_entry->data_size;
++	s = kzalloc(sizeof(struct sbat) + size, GFP_KERNEL);
++	if (!s)
++		return ERR_PTR(-ENOMEM);
++
++	memcpy(&s->data, mokvar_entry->data, size);
++
++parse_sbat:
 +	out = parse_sbat(s, size, false);
 +	if (IS_ERR(out))
 +		kfree(s);
@@ -325,30 +321,33 @@ index 000000000..80168215f
 +	struct sbat *s, *sl;
 +	int ret = 0;
 +	int i, j;
++	unsigned int sbat_gen, sbat_var_gen;
 +
 +	s = get_sbat_from_pefile(pebuf, pelen);
 +	if (IS_ERR(s))
 +		return PTR_ERR(s);
 +
 +	sl = get_sbat_from_efi();
-+	/*
-+	 *..OR_NULL for the case when EFI is not available (Legacy BIOS?),
-+	 * then return 0 (verified OK)
-+	 */
 +	if (IS_ERR_OR_NULL(sl)) {
-+		kfree(s);
++		free_sbat(s);
 +		return PTR_ERR(sl);
 +	}
 +
-+	pr_debug("PE file:\n");
++	pr_debug("SBAT section data\n");
 +	for (i = 0; i < s->n_entries; i++)
-+		pr_debug("%d: %s,%ld\n", i, s->entries[i].name,
-+			s->entries[i].gen);
++		pr_debug("%s, %s, %s, %s, %s, %s\n",
++			s->entries[i].name,
++			s->entries[i].genstr,
++			s->entries[i].vendor_name,
++			s->entries[i].vendor_package_name,
++			s->entries[i].vendor_version,
++			s->entries[i].vendor_url);
 +
-+	pr_debug("EFI:\n");
++	pr_debug("SBAT EFI data\n");
 +	for (i = 0; i < sl->n_entries; i++)
-+		pr_debug("%d: %s,%ld\n", i, sl->entries[i].name,
-+			 sl->entries[i].gen);
++		pr_debug("%s, %s\n",
++			sl->entries[i].name,
++			sl->entries[i].genstr);
 +
 +	for (i = 0; i < s->n_entries; i++) {
 +		struct sbat_entry *e = &s->entries[i];
@@ -356,9 +355,15 @@ index 000000000..80168215f
 +			struct sbat_entry *el = &sl->entries[j];
 +			if (strcmp(e->name, el->name))
 +				continue;
-+			if (e->gen < el->gen) {
-+				pr_warn("Component %s was revoked %ld < %ld\n",
-+					e->name, e->gen, el->gen);
++			if (kstrtouint(e->genstr, 0, &sbat_gen) < 0 ||
++			    kstrtouint(el->genstr, 0, &sbat_var_gen) < 0) {
++				ret = -EILSEQ;
++				goto quit;
++			}
++			pr_debug("Component %s has a matching SBAT variable entry, verifying\n",
++				e->name);
++			if (sbat_gen < sbat_var_gen) {
++				pr_warn("Image did not pass SBAT verification\n");
 +				ret = -EKEYREVOKED;
 +				goto quit;
 +			}
@@ -366,6 +371,7 @@ index 000000000..80168215f
 +	}
 +
 +quit:
++	pr_info("Finished verifying SBAT data: %d\n", ret);
 +	free_sbat(s);
 +	free_sbat(sl);
 +	return ret;
