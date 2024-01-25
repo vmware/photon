@@ -8,11 +8,12 @@
 %global _pgdatadir      %{_pgbaseinstdir}/share/%{srcname}
 %global _pgdocdir       %{_pgbaseinstdir}/share/doc/%{srcname}
 %define alter_weight    200
+%global service_name %{name}.service
 
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -21,6 +22,12 @@ Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
 %define sha512 %{srcname}=25d545de69d6ac16b044e09939678af97b6574c71d47d98f95f0ef9ad11ff65e864e503ddff119d73fbb3c61e648e31219982d60da7fc2382ba10e0bfc370aa5
+
+Source1: %{srcname}.tmpfiles.d
+Source2: %{srcname}.service
+Source4: %{srcname}-check-db-dir.in
+Source5: %{srcname}-env-vars.conf
+Source6: %{srcname}.preset
 
 BuildRequires:  krb5-devel
 BuildRequires:  libedit-devel
@@ -101,6 +108,26 @@ sh ./configure \
 %make_install %{?_smp_mflags}
 %make_install -C contrib %{?_smp_mflags}
 
+mkdir -p %{buildroot}{%{_tmpfilesdir},%{_unitdir},%{_libexecdir}} \
+         %{buildroot}{%{_sysconfdir}/sysconfig,%{_presetdir}}
+
+install -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
+
+sed -i -e "s/%PGNAME%/%{name}/g" %{SOURCE2}
+cp %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+
+sed -i -i "s/%PGNAME%/%{name}/g" %{SOURCE6}
+cp %{SOURCE6} %{buildroot}%{_presetdir}/99-%{name}.preset
+
+sed -i -e "s/%PGMAJVER%/%{pgmajorversion}/g" %{SOURCE4}
+install -m 755 %{SOURCE4} %{buildroot}%{_libexecdir}/%{name}-check-db-dir
+
+sed -i -e "s/%PGNAME%/%{name}/g" %{SOURCE5}
+install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/sysconfig/%{name}.conf
+
+install -d -m 755 %{buildroot}%{_var}/run/%{srcname}
+install -d -m 700 %{buildroot}%{_sharedstatedir}/pgsql/%{name}
+
 # For postgresql 10+, commands are renamed
 # Ref: https://wiki.postgresql.org/wiki/New_in_postgres_10
 ln -sfv pg_receivewal %{buildroot}%{_pgbindir}/pg_receivexlog
@@ -111,12 +138,15 @@ echo "%{_pglibdir}" > %{buildroot}%{_pgbaseinstdir}/%{srcname}.conf
 
 %{_fixperms} %{buildroot}/*
 
-%if 0%{?with_check}
 %check
-sed -i '2219s/",/  ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g'  src/test/regress/pg_regress.c
+sed -i '2219s/",/ ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g'  src/test/regress/pg_regress.c
 chown -Rv nobody .
 sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
-%endif
+
+%pre
+groupadd -r postgres &> /dev/null || :
+useradd -M -N -g postgres -r -d /var/lib/pgsql -s /bin/bash \
+  -c "PostgreSQL Server" postgres &> /dev/null || :
 
 %post
 /sbin/ldconfig
@@ -221,6 +251,14 @@ rm -rf %{buildroot}/*
 %{_pgdatadir}/*
 %{_pglibdir}/*
 %{_pgdocdir}/extension/*.example
+%{_tmpfilesdir}/%{name}.conf
+%{_unitdir}/%{name}.service
+%{_presetdir}/99-%{name}.preset
+%attr(700,postgres,postgres) %dir %{_sharedstatedir}/pgsql/%{name}
+%attr(755,postgres,postgres) %dir %{_var}/run/%{srcname}
+%attr(700,postgres,postgres) %dir %{_sharedstatedir}/pgsql
+%attr(644,postgres,postgres) %config(noreplace) %{_sysconfdir}/sysconfig/%{name}.conf
+%{_libexecdir}/%{name}-check-db-dir
 
 %files libs
 %defattr(-,root,root)
@@ -263,6 +301,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Wed Feb 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-2
+- Add systemd unit file
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-1
 - Upgrade to v13.14
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.13-1

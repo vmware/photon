@@ -1,0 +1,34 @@
+# It's not recommended to modify this file in-place, because it will be
+# overwritten during package upgrades. It is recommended to use systemd
+# "dropin" feature; i.e. create file with suffix .conf under
+# /etc/systemd/system/UNITNAME.service.d directory overriding the
+# unit's defaults. Look at systemd.unit(5) manual page for more info.
+
+[Unit]
+Description=PostgreSQL database server
+# We should start postgresql service after network is up (rhbz#2127534 and rhbz#2157651)
+After=network-online.target
+
+[Service]
+Type=notify
+
+User=postgres
+Group=postgres
+
+# Disable OOM kill on the postgres
+OOMScoreAdjust=-1000
+
+EnvironmentFile=/etc/sysconfig/%PGNAME%.conf
+
+# Even though the $PGDATA variable is exported (postgres would accept that)
+# use the -D option here so PGDATA content is printed by /bin/ps and by
+# 'systemctl status'.
+ExecStart=/usr/bin/postgres -D "${PGDATA}"
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGINT
+# No artificial start/stop timeout (rhbz#1525477, pgrpms#2786).
+TimeoutSec=0
+
+[Install]
+WantedBy=multi-user.target

@@ -8,11 +8,12 @@
 %global _pgdocdir       %{_pgbaseinstdir}/share/doc/%{srcname}
 %define alter_weight    300
 %define obsoletes_version 14.5
+%global service_name %{name}.service
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
 Version:        14.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -21,6 +22,12 @@ Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
 %define sha512 %{srcname}=67289cd638ed7b13e845263d5a34394347f33735d9e2fafd6aa3562989a3a9455ea547d1b5079138648f33b093e77841654188fc74a49c0d6d458a42cfb57ffe
+
+Source1: %{srcname}.tmpfiles.d
+Source2: %{srcname}.service
+Source4: %{srcname}-check-db-dir.in
+Source5: %{srcname}-env-vars.conf
+Source6: %{srcname}.preset
 
 BuildRequires:  krb5-devel
 BuildRequires:  libedit-devel
@@ -47,8 +54,8 @@ Requires:       lz4
 Requires:       systemd
 Requires:       %{name}-libs = %{version}-%{release}
 
-Provides:       postgresql = %{version}-%{release}
-Obsoletes:      postgresql <= %{obsoletes_version}
+Provides:       %{srcname} = %{version}-%{release}
+Obsoletes:      %{srcname} <= %{obsoletes_version}
 
 %description
 PostgreSQL is an object-relational database management system.
@@ -58,8 +65,8 @@ Summary:    Libraries for use with PostgreSQL
 Group:      Applications/Databases
 Requires:   chkconfig
 Requires(postun): chkconfig
-Provides:   postgresql-libs = %{version}-%{release}
-Obsoletes:  postgresql-libs <= %{obsoletes_version}
+Provides:   %{srcname}-libs = %{version}-%{release}
+Obsoletes:  %{srcname}-libs <= %{obsoletes_version}
 
 %description libs
 The postgresql-libs package provides the essential shared libraries for any
@@ -71,8 +78,8 @@ PostgreSQL server.
 Summary:        Development files for postgresql.
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-Provides:       postgresql-devel = %{version}-%{release}
-Obsoletes:      postgresql-devel <= %{obsoletes_version}
+Provides:       %{srcname}-devel = %{version}-%{release}
+Obsoletes:      %{srcname}-devel <= %{obsoletes_version}
 
 %description    devel
 The postgresql-devel package contains libraries and header files for
@@ -82,7 +89,7 @@ developing applications that use postgresql.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
+sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/%{srcname}@' src/include/pg_config_manual.h
 
 sh ./configure \
     --prefix=%{_pgbaseinstdir} \
@@ -110,6 +117,26 @@ sh ./configure \
 %make_install %{?_smp_mflags}
 %make_install -C contrib %{?_smp_mflags}
 
+mkdir -p %{buildroot}{%{_tmpfilesdir},%{_unitdir},%{_libexecdir}} \
+         %{buildroot}{%{_sysconfdir}/sysconfig,%{_presetdir}}
+
+install -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
+
+sed -i -e "s/%PGNAME%/%{name}/g" %{SOURCE2}
+cp %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+
+sed -i -i "s/%PGNAME%/%{name}/g" %{SOURCE6}
+cp %{SOURCE6} %{buildroot}%{_presetdir}/99-%{name}.preset
+
+sed -i -e "s/%PGMAJVER%/%{pgmajorversion}/g" %{SOURCE4}
+install -m 755 %{SOURCE4} %{buildroot}%{_libexecdir}/%{name}-check-db-dir
+
+sed -i -e "s/%PGNAME%/%{name}/g" %{SOURCE5}
+install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/sysconfig/%{name}.conf
+
+install -d -m 755 %{buildroot}%{_var}/run/%{srcname}
+install -d -m 700 %{buildroot}%{_sharedstatedir}/pgsql/%{name}
+
 # For postgresql 10+, commands are renamed
 # Ref: https://wiki.postgresql.org/wiki/New_in_postgres_10
 ln -sfv pg_receivewal %{buildroot}%{_pgbindir}/pg_receivexlog
@@ -120,15 +147,27 @@ echo "%{_pglibdir}" > %{buildroot}%{_pgbaseinstdir}/%{srcname}.conf
 
 %{_fixperms} %{buildroot}/*
 
-%if 0%{?with_check}
 %check
-sed -i '2219s/",/  ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g' src/test/regress/pg_regress.c
+sed -i '2219s/",/ ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g' src/test/regress/pg_regress.c
 chown -Rv nobody .
-sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
-%endif
+sudo -u nobody -s /bin/bash -c "PATH=$PATH %make_build check"
+
+%pre
+groupadd -r postgres &> /dev/null || :
+useradd -M -N -g postgres -r -d /var/lib/pgsql -s /bin/bash \
+  -c "PostgreSQL Server" postgres &> /dev/null || :
 
 %post
 /sbin/ldconfig
+%systemd_post %{service_name}
+
+%postun
+%systemd_postun_with_restart %{service_name}
+alternatives --remove initdb %{_pgbindir}/initdb
+/sbin/ldconfig
+
+%preun
+%systemd_preun %{service_name}
 
 %posttrans
 alternatives --install %{_bindir}/initdb initdb %{_pgbindir}/initdb %{alter_weight} \
@@ -154,10 +193,6 @@ alternatives --install %{_bindir}/initdb initdb %{_pgbindir}/initdb %{alter_weig
     --slave %{_bindir}/postmaster postmaster %{_pgbindir}/postmaster \
     --slave %{_bindir}/vacuumlo vacuumlo %{_pgbindir}/vacuumlo
 
-/sbin/ldconfig
-
-%postun
-alternatives --remove initdb %{_pgbindir}/initdb
 /sbin/ldconfig
 
 %post libs
@@ -230,6 +265,14 @@ rm -rf %{buildroot}/*
 %{_pgdatadir}/*
 %{_pglibdir}/*
 %{_pgdocdir}/extension/*.example
+%{_tmpfilesdir}/%{name}.conf
+%{_unitdir}/%{name}.service
+%{_presetdir}/99-%{name}.preset
+%attr(700,postgres,postgres) %dir %{_sharedstatedir}/pgsql/%{name}
+%attr(755,postgres,postgres) %dir %{_var}/run/%{srcname}
+%attr(700,postgres,postgres) %dir %{_sharedstatedir}/pgsql
+%attr(644,postgres,postgres) %config(noreplace) %{_sysconfdir}/sysconfig/%{name}.conf
+%{_libexecdir}/%{name}-check-db-dir
 
 %files libs
 %defattr(-,root,root)
@@ -272,6 +315,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Wed Feb 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-2
+- Add systemd unit file
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-1
 - Upgrade to v14.11
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.10-1
