@@ -414,7 +414,7 @@ class SPECS(object):
         # adding kernelrelease rpm macro
         kernelrelease = defPkg.release
         kernelrelease_comp  = kernelrelease.split('.')
-        if re.fullmatch('rc\d+', kernelrelease_comp[0]):
+        if re.fullmatch(r'rc\d+', kernelrelease_comp[0]):
             kernelrelease_comp.pop(0)
 
         # adding kernelsubrelease rpm macro
