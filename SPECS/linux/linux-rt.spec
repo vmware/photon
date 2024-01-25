@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.81
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -482,6 +482,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Apr 29 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.81-6
+- Update SBAT verification
 * Mon Apr 29 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.81-5
 - Fix CVE-2024-52452
 * Mon Apr 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.81-4

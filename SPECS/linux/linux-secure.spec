@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.81
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -492,6 +492,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.81-5
+- Update SBAT verification
 * Mon Apr 29 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.81-4
 - Fix CVE-2024-52452
 * Mon Apr 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.81-3
