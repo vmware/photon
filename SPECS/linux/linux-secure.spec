@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.206
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        5.10.209
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=48b04c27f183fc90fb7ccebba62d4e99bd3272e7f2618c0bd8ea864b89acfb2b4b4f69361774c960685267b52b70c4f7454dfcc61f64e9781939e2374870ee4e
+%define sha512 linux=85f0957d052c8321e5b4fa2aea19220f0ef581e25d760746315afe70878353b9d4597dd2aaa1fb41ef2631c649275cd19fbb92b8ae9ccc8f86c6e17ac171b1c2
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -186,9 +186,6 @@ Patch141: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 
 #Fix CVE-2024-0565
 Patch142: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
-
-#Fix CVE-2023-6915
-Patch143: 0001-ida-Fix-crash-in-ida_free-when-the-bitmap-is-empty.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -462,6 +459,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sun Jan 28 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.209-1
+- Update to version 5.10.209
 * Mon Jan 22 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.206-5
 - Fixes CVE-2024-0565 and CVE-2023-6915
 * Mon Jan 22 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.206-4
