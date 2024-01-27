@@ -1,0 +1,123 @@
+From bab2574b5eea1c92a8b2bf7dff8693ffd42f58aa Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Mon, 18 Mar 2024 00:25:51 -0500
+Subject: [PATCH] Add provision to disable netboot and httpboot in shim
+
+---
+ Make.defaults | 4 ++++
+ Makefile      | 9 +++++++--
+ shim.c        | 7 +++++++
+ shim.h        | 4 ++++
+ 4 files changed, 22 insertions(+), 2 deletions(-)
+
+diff --git a/Make.defaults b/Make.defaults
+index e75cd3c..ecb4ee4 100644
+--- a/Make.defaults
++++ b/Make.defaults
+@@ -157,6 +157,10 @@ ifneq ($(origin DISABLE_REMOVABLE_LOAD_OPTIONS), undefined)
+ 	DEFINES  += -DDISABLE_REMOVABLE_LOAD_OPTIONS
+ endif
+ 
++ifneq ($(origin DISABLE_REMOTE_BOOT), undefined)
++	DEFINES  += -DDISABLE_REMOTE_BOOT
++endif
++
+ LIB_GCC		= $(shell $(CC) $(ARCH_CFLAGS) -print-libgcc-file-name)
+ EFI_LIBS	= -lefi -lgnuefi --start-group Cryptlib/libcryptlib.a Cryptlib/OpenSSL/libopenssl.a --end-group $(LIB_GCC)
+ FORMAT		?= --target efi-app-$(ARCH)
+diff --git a/Makefile b/Makefile
+index 8283d56..9fa1989 100644
+--- a/Makefile
++++ b/Makefile
+@@ -38,9 +38,9 @@ CFLAGS += -DENABLE_SHIM_CERT
+ else
+ TARGETS += $(MMNAME) $(FBNAME)
+ endif
+-OBJS	= shim.o globals.o mok.o netboot.o cert.o replacements.o tpm.o version.o errlog.o sbat.o sbat_data.o sbat_var.o pe.o pe-relocate.o httpboot.o csv.o load-options.o
++OBJS	= shim.o globals.o mok.o cert.o replacements.o tpm.o version.o errlog.o sbat.o sbat_data.o sbat_var.o pe.o pe-relocate.o csv.o load-options.o
+ KEYS	= shim_cert.h ocsp.* ca.* shim.crt shim.csr shim.p12 shim.pem shim.key shim.cer
+-ORIG_SOURCES	= shim.c globals.c mok.c netboot.c replacements.c tpm.c errlog.c sbat.c pe.c pe-relocate.c httpboot.c shim.h version.h $(wildcard include/*.h) cert.S sbat_var.S
++ORIG_SOURCES	= shim.c globals.c mok.c replacements.c tpm.c errlog.c sbat.c pe.c pe-relocate.c shim.h version.h $(wildcard include/*.h) cert.S sbat_var.S
+ MOK_OBJS = MokManager.o PasswordCrypt.o crypt_blowfish.o errlog.o sbat_data.o globals.o
+ ORIG_MOK_SOURCES = MokManager.c PasswordCrypt.c crypt_blowfish.c shim.h $(wildcard include/*.h)
+ FALLBACK_OBJS = fallback.o tpm.o errlog.o sbat_data.o globals.o
+@@ -69,6 +69,11 @@ ifneq ($(origin FALLBACK_VERBOSE_WAIT), undefined)
+ 	CFLAGS += -DFALLBACK_VERBOSE_WAIT=$(FALLBACK_VERBOSE_WAIT)
+ endif
+ 
++ifeq ($(origin DISABLE_REMOTE_BOOT), undefined)
++	OBJS += httpboot.o netboot.o
++	ORIG_SOURCES += httpboot.c netboot.c
++endif
++
+ all: confcheck $(TARGETS)
+ 
+ confcheck:
+diff --git a/shim.c b/shim.c
+index 633163a..7272296 100644
+--- a/shim.c
++++ b/shim.c
+@@ -1094,9 +1094,12 @@ EFI_STATUS read_image(EFI_HANDLE image_handle, CHAR16 *ImagePath,
+ 		      CHAR16 **PathName, void **data, int *datasize)
+ {
+ 	EFI_STATUS efi_status;
++
++#if !defined(DISABLE_REMOTE_BOOT)
+ 	void *sourcebuffer = NULL;
+ 	UINT64 sourcesize = 0;
+ 	CHAR8 *netbootname;
++#endif
+ 
+ 	/*
+ 	 * We need to refer to the loaded image protocol on the running
+@@ -1119,6 +1122,7 @@ EFI_STATUS read_image(EFI_HANDLE image_handle, CHAR16 *ImagePath,
+ 		return efi_status;
+ 	}
+ 
++#if !defined(DISABLE_REMOTE_BOOT)
+ 	if (findNetboot(shim_li->DeviceHandle)) {
+ 		str16_to_str8(ImagePath, &netbootname);
+ 		efi_status = parseNetbootinfo(image_handle, netbootname);
+@@ -1150,6 +1154,7 @@ EFI_STATUS read_image(EFI_HANDLE image_handle, CHAR16 *ImagePath,
+ 		*data = sourcebuffer;
+ 		*datasize = sourcesize;
+ 	} else {
++#endif
+ 		/*
+ 		 * Read the new executable off disk
+ 		 */
+@@ -1161,7 +1166,9 @@ EFI_STATUS read_image(EFI_HANDLE image_handle, CHAR16 *ImagePath,
+ 			ClearErrors();
+ 			return efi_status;
+ 		}
++#if !defined(DISABLE_REMOTE_BOOT)
+ 	}
++#endif
+ 
+ 	if (*datasize < 0)
+ 		efi_status = EFI_INVALID_PARAMETER;
+diff --git a/shim.h b/shim.h
+index 5791a03..daa7d8b 100644
+--- a/shim.h
++++ b/shim.h
+@@ -167,13 +167,17 @@
+ #include "include/errors.h"
+ #include "include/execute.h"
+ #include "include/guid.h"
++#if !defined(DISABLE_REMOTE_BOOT)
+ #include "include/http.h"
+ #include "include/httpboot.h"
++#endif
+ #include "include/ip4config2.h"
+ #include "include/ip6config.h"
+ #include "include/load-options.h"
+ #include "include/mok.h"
++#if !defined(DISABLE_REMOTE_BOOT)
+ #include "include/netboot.h"
++#endif
+ #include "include/passwordcrypt.h"
+ #include "include/peimage.h"
+ #include "include/pe.h"
+-- 
+2.44.0
+

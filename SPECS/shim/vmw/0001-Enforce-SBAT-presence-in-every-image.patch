@@ -7,14 +7,17 @@ Fail SB if EFI image does not have .sbat section.
 Only image that currently does not have .sbat is Linux kernel.
 There was a discussion[1] about adding it.
 Linux distros must add .sbat section to bzImage/zImage before signing.
+Photon has added support for .sbat in its kernel,
+the signed shim may be used to boot other/older kernels
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
  pe.c | 10 +++++-----
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/pe.c b/pe.c
-index e15b89f..ccd5d17 100644
+index 3305601..f7f3689 100644
 --- a/pe.c
 +++ b/pe.c
 @@ -342,19 +342,19 @@ verify_sbat_section(char *SBATBase, size_t SBATSize)
@@ -39,9 +42,9 @@ index e15b89f..ccd5d17 100644
 +	if (list_empty(&sbat_var))
 +		return EFI_SUCCESS;
 +
- 	sbat_size = SBATSize + 1;
- 	sbat_data = AllocatePool(sbat_size);
- 	if (!sbat_data) {
+ 	if (checked_add(SBATSize, 1, &sbat_size)) {
+ 		dprint(L"SBATSize + 1 would overflow\n");
+ 		return EFI_SECURITY_VIOLATION;
 -- 
-2.39.0
+2.43.0
 

@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    15%{?dist}
+Release:    16%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -34,9 +34,6 @@ Patch1603: 0003-fs-ntfs-Fix-an-OOB-read-when-parsing-directory-entri.patch
 Patch1604: 0004-fs-ntfs-Fix-an-OOB-read-when-parsing-bitmaps-for-ind.patch
 Patch1605: 0005-fs-ntfs-Fix-an-OOB-read-when-parsing-a-volume-label.patch
 Patch1606: 0006-fs-ntfs-Make-code-more-readable.patch
-
-# CVE-2024-1048
-Patch1607: grub-set-bootflag-rocky-7.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
@@ -253,6 +250,9 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Wed Mar 06 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-16
+- Sync fedora grub patches to latest
+- Update grub sbat to gen 4 since the NFTS CVEs are in place.
 * Fri Mar 01 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 2.06-15
 - Adding requires 'grub2-theme' so that boot menu screen
 - doesn't comeup scrambled.
