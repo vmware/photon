@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.305
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -56,13 +56,13 @@ Source10: https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DC
 Source11: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha512 i40e=5dbe5186f23d14aac185f74283377d9bfc0837ab16b145a107f735d5439a207e27db871e278656cd06ba595f426d7095a294d39110df5ad6b30ea9f6d3a2a3a7
 
-%define iavf_version 4.9.1
+%define iavf_version 4.9.5
 Source13: https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=6a52b06373eda09824fc2674ce5a5ff488dc86331c9022faf2857c38a3002a969c6bb039271fc31e70310589701ac65d57d310d08459aa3402acbec9af1f7683
+%define sha512 iavf=2e97671d1fd51b5b0017b49dcfa62854ef55a85182fcd4990d2d7faea0c3dc9532fe3896c81eabff3c30fb3b2b9573c22416adfec3a1e0f0107c44a9216fbf3a
 
-%define ice_version 1.12.7
+%define ice_version 1.13.7
 Source14: https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=71b08c90ee6c03242b0b11eef2425ec55fe089fa7735cc5ae9bae7469e14768b67505315a456e98b0b09ce0be71ffd35f119f2df211b927265f4d4eb8cbdf60b
+%define sha512 ice=6167a0240624915ee6dce8f2186d6980c224baab8bcccee2b1d991d5cc15510b95b7b2a309cc60e57eae7dfffc4e2186730650ba104a231e54711c3b01f20f7b
 
 # common
 Patch1: double-tcp_mem-limits.patch
@@ -522,12 +522,11 @@ Patch1504: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.pa
 Patch1505: i40e-v2.23.17-don-t-install-auxiliary-module-on.patch
 
 #Patches for iavf driver
-Patch1512: iavf-v4.9.1-no-aux-symvers.patch
-Patch1513: iavf-v4.9.1-iavf-Makefile-added-alias-for-i40evf.patch
+Patch1512: iavf-v4.9.5-no-aux-symvers.patch
+Patch1513: iavf-v4.9.5-iavf-Makefile-added-alias-for-i40evf.patch
 
 #Patches for ice driver
-Patch1522: ice-v1.12.7-Remove-inline-from-ethtool_sprintf.patch
-Patch1523: ice-v1.12.7-don-t-install-auxiliary-module-on-modul.patch
+Patch1523: ice-v1.13.7-don-t-install-auxiliary-module-on-modul.patch
 %endif
 
 # Usermode helper fixes
@@ -765,7 +764,7 @@ popd
 
 # Patches for ice driver
 pushd ../ice-%{ice_version}
-%autopatch -p1 -m1522 -M1523
+%autopatch -p1 -m1523 -M1523
 popd
 
 %endif
@@ -915,8 +914,12 @@ make -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
             INSTALL_MOD_DIR=extra INSTALL_AUX_DIR=extra/auxiliary MANDIR=%{_mandir} \
             modules_install mandocs_install %{?_smp_mflags}
 
-install -Dvm 644 src/linux/auxiliary_bus.h \
-        %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/include/linux/auxiliary_bus.h
+# keep this updated in line with AUX_BUS_HEADERS in iavf-<version>/src/common.mk
+aux_bus_headers=("linux/auxiliary_bus.h" "auxiliary_compat.h" "kcompat_generated_defs.h")
+for header in "${aux_bus_headers[@]}"; do
+    install -Dvm 644 "src/$header" \
+            %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/include/linux/"${header##*/}"
+done
 popd
 
 # install ice module
@@ -1164,6 +1167,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Jan 31 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-3
+- Upgrade iavf driver to 4.9.5, ice driver to 1.13.7
 * Tue Jan 30 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.19.305-2
 - Fix CVE-2024-0565
 * Mon Jan 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-1

@@ -1,0 +1,62 @@
+From a59c1b577c4e8052518fcd766ae7663cfec6ce27 Mon Sep 17 00:00:00 2001
+From: "Him Kalyan Bordoloi" <bordoloih@vmware.com>
+Date: Tue, 5 Jul 2022 10:00:00 -0700
+Subject: [PATCH] Do not package a separate symvers file for auxiliary module
+
+TODO: Merge the symbol information from building auxiliary.ko into the
+existing Module.symvers file, instead of packaging it separately.
+
+Also, do NOT skip moving auxiliary.ko to INSTALL_AUX_DIR, since
+INSTALL_MOD_DIR and INSTALL_AUX_DIR are NOT defined to be the same in
+linux-rt.spec, unlike other linux* spec files (where both are defined
+to be "extra").
+
+Skip installing header .h files from the iavf Makefile, since we
+have better control over this installation in the linux* spec files.
+
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+[ Brennan: For iavf v4.9.5 - skip packaging all header files ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ src/common.mk | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/src/common.mk b/src/common.mk
+index 1f75b8e..eb56fe2 100644
+--- a/src/common.mk
++++ b/src/common.mk
+@@ -434,12 +434,12 @@ export INSTALL_AUX_DIR ?= updates/drivers/net/ethernet/intel/auxiliary
+ AUX_BUS_HEADERS ?= linux/auxiliary_bus.h auxiliary_compat.h kcompat_generated_defs.h
+ ifeq (${NEED_AUX_BUS},2)
+ define auxiliary_post_install
+-	install -D -m 644 Module.symvers ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/intel_auxiliary.symvers
++#	install -D -m 644 Module.symvers ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/intel_auxiliary.symvers
+ 	install -d ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}
+ 	mv -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_MOD_DIR}/intel_auxiliary.ko* \
+ 	      ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}/
+-	install -d ${INSTALL_MOD_PATH}/${KSRC}/include/linux
+-	install -D -m 644 ${AUX_BUS_HEADERS} -t ${INSTALL_MOD_PATH}/${KSRC}/include/linux
++#	install -d ${INSTALL_MOD_PATH}/${KSRC}/include/linux
++#	install -D -m 644 ${AUX_BUS_HEADERS} -t ${INSTALL_MOD_PATH}/${KSRC}/include/linux
+ endef
+ else
+ auxiliary_post_install =
+@@ -447,11 +447,11 @@ endif
+
+ ifeq (${NEED_AUX_BUS},2)
+ define auxiliary_post_uninstall
+-	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/intel_auxiliary.symvers
++#	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/extern-symvers/intel_auxiliary.symvers
+ 	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_AUX_DIR}/intel_auxiliary.ko*
+-	rm -f ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_bus.h
+-	rm -f ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_compat.h
+-	rm -f ${INSTALL_MOD_PATH}/${KSRC}/include/linux/kcompat_generated_defs.h
++#	rm -f ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_bus.h
++#	rm -f ${INSTALL_MOD_PATH}/${KSRC}/include/linux/auxiliary_compat.h
++#	rm -f ${INSTALL_MOD_PATH}/${KSRC}/include/linux/kcompat_generated_defs.h
+ endef
+ else
+ auxiliary_post_uninstall =
+--
+2.39.0
+
