@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.303
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.305
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -19,7 +19,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=96bd2211f05bee534a824aa24579eecd9fd5fec57a1e817436651d521a4afa5e3cb7da6bb93763770bb5f1d2e1d5b98a629bf5bb011040f7072cff4cd9ab14a8
+%define sha512 linux=2e9b2f90ff5f6fbc3a0b32dd57620e917b6b004bbefe319e72ffe1ac9ede95fcf87d03bfed73114327a71cfcec6612888d4947922f4ec8d88deea4554b4b579c
 
 %ifarch x86_64
 Source1: config-aws
@@ -565,6 +565,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jan 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-1
+- Update to version 4.19.305
 * Tue Jan 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.303-2
 - Fix CVE-2024-0340
 * Mon Jan 01 2024 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.303-1
