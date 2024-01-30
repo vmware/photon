@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -52,6 +52,9 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Tue Jan 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0-13
+- Added rubygem-base64, rubygem-drb, rubygem-connection_pool, rubygem-ruby2-keywords
+- packages to ph4-to-ph5-deprecated-pkgs list
 * Wed Dec 06 2023 Dweep Advani <dadvani@vmware.com> 1.0-12
 - Enhance handling of extra removed packages and config backup
 * Mon Oct 16 2023 Dweep Advani <dadvani@vmware.com> 1.0-11

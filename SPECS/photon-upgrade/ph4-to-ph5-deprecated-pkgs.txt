@@ -51,6 +51,10 @@ python3-backports_abc
 python3-m2r
 python3-subprocess32
 python3-portalocker
+rubygem-base64
+rubygem-connection_pool
+rubygem-drb
+rubygem-ruby2-keywords
 salt3
 salt3-api
 salt3-cloud
