@@ -2,8 +2,8 @@
 
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        7.0.102
-Release:        2%{?dist}
+Version:        7.0.302
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -17,12 +17,18 @@ Group:          Development/Tools
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/17b6759f-1af0-41bc-ab12-209ba0377779/e8d02195dbf1434b940e0f05ae086453/dotnet-sdk-6.0.100-linux-x64.tar.gz
 Source0: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}=7667aae20a9e50d31d1fc004cdc5cb033d2682d3aa793dde28fa2869de5ac9114e8215a87447eb734e87073cfe9496c1c9b940133567f12b3a7dea31a813967f
+%define sha512 %{name}=9387bd804ed980ba1bc33093598ddbafa3a761e07d28916c94442cc329533d78a03bfc59d3066a1a861244302414e7e658b4e721b5bc825f623f8f908e748b7e
 
 BuildArch: x86_64
 
-Requires: dotnet-runtime >= 7.0.2
+BuildRequires: lttng-ust-devel >= 2.13.4-2
+
+Requires: curl
+Requires: libunwind
+Requires: krb5
+Requires: lttng-ust >= 2.13.4-2
 Requires: icu >= 70.1
+Requires: libstdc++
 
 %description
 .NET Core is a development platform that you can use to build command-line
@@ -43,6 +49,8 @@ cp -pr sdk/%{version} %{buildroot}%{_libdir}/dotnet/sdk
 %{_libdir}/*
 
 %changelog
+* Thu Jun 01 2023 Raymond Welch <rwelch@vmware.com> 7.0.302-1
+- Upgrade to v7.0.302, removed the dotnet-runtime dependency, sdk installs the dotnet runtime.
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.102-2
 - Bump version as a part of icu upgrade
 * Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.102-1
