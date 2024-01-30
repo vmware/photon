@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.305
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -82,6 +82,8 @@ Patch44: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 Patch45: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 #Fix for CVE-2024-0565
 Patch46: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
+# Fix for CVE-2024-0607
+Patch47: 0001-netfilter-nf_tables-fix-pointer-math-issue-in.patch
 # Fix for CVE-2020-16119
 Patch57: 0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch58: 0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
@@ -547,6 +549,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 05 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-4
+- Fix CVE-2024-0607
 * Mon Feb 05 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-3
 - Fix for CVE-2023-39197
 * Tue Jan 30 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.19.305-2

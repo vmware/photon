@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.305
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -108,6 +108,8 @@ Patch34: 0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch35: 0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
 # Fix for CVE-2019-12381
 Patch36: 0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+# Fix for CVE-2024-0607
+Patch37: 0001-netfilter-nf_tables-fix-pointer-math-issue-in.patch
 # Fix for CVE-2019-12378
 Patch38: 0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
@@ -1170,6 +1172,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Feb 05 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-5
+- Fix CVE-2024-0607
 * Mon Feb 05 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-4
 - Fix for CVE-2023-39197
 * Wed Jan 31 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-3

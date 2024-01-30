@@ -1,0 +1,59 @@
+From f75cd2a5e62143183204e9bd9e5cb5bf1b4818bd Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Tue, 30 Jan 2024 17:00:55 +0530
+Subject: [PATCH] netfilter: nf_tables: fix pointer math issue in 
+ nft_byteorder_eval()
+
+commit c301f0981fdd3fd1ffac6836b423c4d7a8e0eb63 upstream.
+
+The problem is in nft_byteorder_eval() where we are iterating through a
+loop and writing to dst[0], dst[1], dst[2] and so on...  On each
+iteration we are writing 8 bytes.  But dst[] is an array of u32 so each
+element only has space for 4 bytes.  That means that every iteration
+overwrites part of the previous element.
+
+I spotted this bug while reviewing commit caf3ef7468f7 ("netfilter:
+nf_tables: prevent OOB access in nft_byteorder_eval") which is a related
+issue.  I think that the reason we have not detected this bug in testing
+is that most of time we only write one element.
+
+Fixes: ce1e7989d989 ("netfilter: nft_byteorder: provide 64bit le/be conversion")
+Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Ajay: Modified to apply on v4.19.y]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ net/netfilter/nft_byteorder.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/netfilter/nft_byteorder.c b/net/netfilter/nft_byteorder.c
+index dba1612..8c4ee49 100644
+--- a/net/netfilter/nft_byteorder.c
++++ b/net/netfilter/nft_byteorder.c
+@@ -41,19 +41,20 @@ static void nft_byteorder_eval(const struct nft_expr *expr,
+ 
+ 	switch (priv->size) {
+ 	case 8: {
++		u64 *dst64 = (void *)dst;
+ 		u64 src64;
+ 
+ 		switch (priv->op) {
+ 		case NFT_BYTEORDER_NTOH:
+ 			for (i = 0; i < priv->len / 8; i++) {
+ 				src64 = get_unaligned((u64 *)&src[i]);
+-				put_unaligned_be64(src64, &dst[i]);
++				put_unaligned_be64(src64, &dst64[i]);
+ 			}
+ 			break;
+ 		case NFT_BYTEORDER_HTON:
+ 			for (i = 0; i < priv->len / 8; i++) {
+ 				src64 = get_unaligned_be64(&src[i]);
+-				put_unaligned(src64, (u64 *)&dst[i]);
++				put_unaligned(src64, &dst64[i]);
+ 			}
+ 			break;
+ 		}
+-- 
+2.7.4
+

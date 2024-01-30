@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.305
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -113,6 +113,9 @@ Patch51: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 
 #Fix for CVE-2024-0565
 Patch52: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
+
+# Fix for CVE-2024-0607
+Patch53: 0001-netfilter-nf_tables-fix-pointer-math-issue-in.patch
 
 # 9p patches
 Patch54: 0001-fs-9p-Add-opt_metaonly-option.patch
@@ -850,6 +853,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Feb 05 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-5
+- Fix CVE-2024-0607
 * Mon Feb 05 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-4
 - Fix for CVE-2023-39197
 * Wed Jan 31 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-3
