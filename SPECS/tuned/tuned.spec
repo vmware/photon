@@ -1,6 +1,6 @@
 Name:           tuned
-Version:        2.19.0
-Release:        10%{?dist}
+Version:        2.21.0
+Release:        1%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -9,17 +9,16 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: tuned-%{version}.tar.gz
-%define sha512  %{name}=64ed338398f7ae73cdf4de04ce24dec6869abf3f399459f13de792edfd965da4efdab0fb1337749556f2868d1769dcb55df9e13983d1e0bc2769fb5fc791cfb8
+%define sha512  %{name}=f1f58d582997db7789af990895c63c1fd4f6329b95cda7fa0fb314f95f05be120b90228e347d0239e4a4bed13baad66a42f006880e369f46741ecf8705bb92d0
 
 Patch0:         remove_desktop_utils_dependency.patch
 Patch1:         tuned-fix-bug-in-sysctl-verify.patch
 Patch2:         bootloader-plugin-support-for-photon.patch
 Patch3:         0001-Schedule-perf-events-iff-scheduler-per-process-confi.patch
 Patch4:         0001-realtime-Modify-hung_task-detection-param.patch
-Patch5:         0001-tuned-expand-functions-for-variables-in-plugin_net.patch
-Patch6:         0001-tuned-don-t-verify-irq-0-on-x86_64.patch
-Patch7:         0001-plugin-bootloader-Support-for-ostree-boot.patch
-Patch8:         0001-add-support-for-sched-kernel-cmdline-parameter.patch
+Patch5:         0001-tuned-don-t-verify-irq-0-on-x86_64.patch
+Patch6:         0001-plugin-bootloader-Support-for-ostree-boot.patch
+Patch7:         0001-add-support-for-sched-kernel-cmdline-parameter.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  systemd-devel
@@ -107,7 +106,7 @@ make test %{?_smp_mflags}
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING README
+%doc AUTHORS COPYING README.md
 %{python3_sitelib}/tuned
 %{_sbindir}/tuned
 %{_sbindir}/tuned-adm
@@ -115,7 +114,7 @@ make test %{?_smp_mflags}
 %{_sysconfdir}/tuned/active_profile
 %config(noreplace) %{_sysconfdir}/modprobe.d/kvm.rt.tuned.conf
 %config(noreplace) %{_sysconfdir}/tuned/tuned-main.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/com.redhat.tuned.conf
+%{_datadir}/dbus-1/system.d/com.redhat.tuned.conf
 %config(noreplace) %{_sysconfdir}/modprobe.d/tuned.conf
 %config(noreplace) /boot/tuned.cfg
 %config(noreplace) %{_sysconfdir}/tuned/
@@ -150,6 +149,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Tue Jan 23 2024 Roye Eshed <roye.eshed@broadcom.com> 2.21.0-1
+- Update Tuned to 2.21.0
 * Tue Sep 12 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.19.0-10
 - Add support for the 'sched' kernel cmdline parameter
 * Fri Aug 25 2023 Ankit Jain <ankitja@vmware.com> 2.19.0-9

@@ -35,19 +35,17 @@ and a new check is added to verify whether the scheduler configurations
 (process_name, prio, policy, affinity) from tuned.conf is not null and then
 schedule perf events and create thread.
 
+Signed-off-by: Roye Eshed <roye.eshed@broadcom.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  tuned/plugins/plugin_scheduler.py | 59 +++++++++++++++----------------
  1 file changed, 29 insertions(+), 30 deletions(-)
 
 diff --git a/tuned/plugins/plugin_scheduler.py b/tuned/plugins/plugin_scheduler.py
-index 32b9c1a..6440a74 100644
+index a5c4765ea..7436cfe7a 100644
 --- a/tuned/plugins/plugin_scheduler.py
 +++ b/tuned/plugins/plugin_scheduler.py
-@@ -126,37 +126,11 @@ class SchedulerPlugin(base.Plugin):
- 
- 		instance._scheduler = instance.options
- 
+@@ -495,31 +495,5 @@ class SchedulerPlugin(base.Plugin):
 -		perf_mmap_pages_raw = self._variables.expand(instance.options["perf_mmap_pages"])
 -		perf_mmap_pages = self._calc_mmap_pages(perf_mmap_pages_raw)
 -		if perf_mmap_pages == 0:
@@ -79,10 +77,7 @@ index 32b9c1a..6440a74 100644
 -			# no perf
 -			except:
 -				instance._runtime_tuning = False
- 
- 	def _instance_cleanup(self, instance):
- 		pass
-@@ -575,9 +549,34 @@ class SchedulerPlugin(base.Plugin):
+@@ -932,9 +906,34 @@ class SchedulerPlugin(base.Plugin):
  					priority, affinity)
  		self._storage.set(self._scheduler_storage_key,
  				self._scheduler_original)
@@ -120,10 +115,10 @@ index 32b9c1a..6440a74 100644
  
  	def _restore_ps_affinity(self):
  		try:
-@@ -622,7 +621,7 @@ class SchedulerPlugin(base.Plugin):
+@@ -980,7 +979,7 @@ class SchedulerPlugin(base.Plugin):
  
- 	def _instance_unapply_static(self, instance, full_rollback = False):
- 		super(SchedulerPlugin, self)._instance_unapply_static(instance, full_rollback)
+ 	def _instance_unapply_static(self, instance, rollback = consts.ROLLBACK_SOFT):
+ 		super(SchedulerPlugin, self)._instance_unapply_static(instance, rollback)
 -		if self._daemon and instance._runtime_tuning:
 +		if self._daemon and instance._runtime_tuning and bool(instance._sched_lookup):
  			instance._terminate.set()
