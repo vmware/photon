@@ -3,7 +3,7 @@
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
 Version:        8.0.101
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -34,14 +34,18 @@ applications, microservices and modern websites.
 
 %install
 mkdir -p %{buildroot}%{_libdir}/dotnet/sdk
-
 cp -pr sdk/%{version} %{buildroot}%{_libdir}/dotnet/sdk
+mkdir -p %{buildroot}%{_sysconfdir}/dotnet
+echo "%{_libdir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 
 %files
 %defattr(-,root,root,0755)
 %{_libdir}/*
+%{_sysconfdir}/dotnet/install_location
 
 %changelog
+* Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 8.0.101-2
+- Bump version as a part to set env location
 * Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 8.0.101-1
 - Version update
 * Thu Dec 21 2023 Anmol Jain <anmolja@vmware.com> 7.0.404-1
