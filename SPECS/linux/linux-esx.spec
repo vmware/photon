@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.90
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -115,6 +115,9 @@ Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
 
 #VMCI/VSOCK
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
+
+#external-entropy
+Patch25: 0001-external_entropy-Enable-External-Entropy-support.patch
 
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -469,6 +472,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jun 03 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.90-3
+- External entropy support.
 * Mon May 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.90-2
 - Optimize gdb commands in check_fips_canister_compatibility script
 * Mon May 13 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.90-1
