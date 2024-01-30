@@ -5,6 +5,8 @@ Subject: [PATCH] add support for sched kernel cmdline parameter
 
 Add a new variable "sched_isolation" to manage the new
 'sched' parameter on the kernel cmdline
+
+Signed-off-by: Roye Eshed <roye.eshed@broadcom.com>
 ---
  profiles/realtime/realtime-variables.conf | 7 +++++++
  profiles/realtime/tuned.conf              | 8 ++++++--
@@ -53,8 +55,8 @@ index b51308f..769f961 100644
  /sys/devices/system/machinecheck/machinecheck*/ignore_ce = 1
  
  [bootloader]
--cmdline_realtime=+isolcpus=${managed_irq}${isolated_cores} intel_pstate=disable nosoftlockup tsc=reliable
-+cmdline_realtime=+isolcpus=${managed_irq}${sched}${isolated_cores} intel_pstate=disable nosoftlockup tsc=reliable
+-cmdline_realtime=+isolcpus=${managed_irq}${isolated_cores} intel_pstate=disable nosoftlockup
++cmdline_realtime=+isolcpus=${managed_irq}${sched}${isolated_cores} intel_pstate=disable nosoftlockup
  
  [irqbalance]
  banned_cpus=${isolated_cores}

@@ -9,26 +9,27 @@ Subject: [PATCH] realtime: Modify hung_task detection param
 - To log infinite number of times, set
   hung_task_warnings to -1
 
+Signed-off-by: Roye Eshed <roye.eshed@broadcom.com>
 Signed-off-by: Ankit Jain <ankitja@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
- profiles/realtime/tuned.conf | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ profiles/realtime/tuned.conf | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/profiles/realtime/tuned.conf b/profiles/realtime/tuned.conf
-index 8eed36e..f9c6883 100644
---- a/profiles/realtime/tuned.conf
-+++ b/profiles/realtime/tuned.conf
-@@ -39,7 +39,8 @@ managed_irq=${f:regex_search_ternary:${isolate_managed_irq}:\b[y,Y,1,t,T]\b:mana
- channels=combined ${f:check_net_queue_count:${netdev_queue_count}}
- 
- [sysctl]
+diff --git a/tuned.conf b/tuned.conf
+index 218402887..f44093f41 100644
+--- a/profiles/network-latency/tuned.conf
++++ b/profiles/network-latency/tuned.conf
+@@ -14,7 +14,8 @@ net.core.busy_read=50
+ net.core.busy_poll=50
+ net.ipv4.tcp_fastopen=3
+ kernel.numa_balancing=0
 -kernel.hung_task_timeout_secs = 600
 +kernel.hung_task_timeout_secs = 30
 +kernel.hung_task_warnings = -1
  kernel.nmi_watchdog = 0
- kernel.sched_rt_runtime_us = -1
  vm.stat_interval = 10
+ kernel.timer_migration = 0
 -- 
 2.23.1
 
