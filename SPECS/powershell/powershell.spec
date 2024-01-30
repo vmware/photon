@@ -1,10 +1,10 @@
-%global ps_native_ver   7.3.2
+%global ps_native_ver   7.4.0
 %global libmi_tag       1.6.11-0
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.3.2
-Release:        4%{?dist}
+Version:        7.4.1
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -20,20 +20,17 @@ Group:          shells
 # git checkout -b v7.2.0 tags/v7.2.0
 # cd .. && tar czf powershell-7.2.0.tar.gz PowerShell-7.2.0
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=117d0f4a576eeb12a517fe99f42d376a1a4947da5a109a79c59702393cf0ba82da4f1368cbf78a6a2c8f13438fdb51f9692ee8c122e78b50cae82e6297663266
-
+%define sha512 %{name}=06963c88cfd38d3b9d457236ec5c547c260f711269302efe789a3071d09abd1484673c7fc1e45079e275c1c06f58079ab65bc205631b34d3266a600c2f9db4f3
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
 # PowerShell-Native uses googletest submodule in it, we need that as well
 Source1: %{name}-native-%{ps_native_ver}.tar.gz
-%define sha512 %{name}-native=7b13b2700fc9ce20525414ccf244aad92b005a0d8e5231d72d27e5fe8bfefc9a573ff81cff6702bd0547e6eebcf3f192d797d6f0415846d49a4db79edc33ebb7
-
+%define sha512 %{name}-native=6f00c3b7bc45307530bd04065138c4d0f613dcae3cca6bfbca3544c1cf4012b195f230a1b3d1968c1cf7f62fa1850ca6325ab81c668932886fc22fb7284e4370
 # This is downloaded from github release page of PowerShell
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
 Source2: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}-%{version}-linux=c42cd23c0a1fd416d9f1c7b639428af70ef71339cd70629ee459cb5cec940a2376317fef3e251f8dca5fa11ac872a319b96d7472b9d359e102c79d8c47a6ffc9
-
+%define sha512 %{name}-%{version}-linux=3193c28935e474421aabe1f2b1df185fc6f49ed8dc148b60fca9314af48950f0d80aa7872f14830a2c5297ca9c160cf9cfc6b364c94ba72d51da37b9ca590da4
 Source3: build.sh
 Source4: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 
@@ -46,8 +43,8 @@ Source5: omi-%{libmi_tag}.tar.gz
 
 BuildArch:      x86_64
 
-BuildRequires:  dotnet-sdk = 7.0.102
-BuildRequires:  dotnet-runtime = 7.0.2
+BuildRequires:  dotnet-sdk = 8.0.101
+BuildRequires:  dotnet-runtime = 8.0.1
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -68,6 +65,7 @@ BuildRequires:  zlib-devel
 
 Requires:       icu >= 70.1
 Requires:       zlib
+Requires:       dotnet-sdk = 8.0.101
 
 %description
 PowerShell is an automation and configuration management platform.
@@ -154,6 +152,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 7.4.1-1
+- Version update
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.3.2-4
 - Bump version as a part of openssl upgrade
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 7.3.2-3

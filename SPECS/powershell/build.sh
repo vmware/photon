@@ -59,7 +59,7 @@ dotnet run ../System.Management.Automation/CoreCLR/CorePsTypeCatalog.cs powershe
 popd
 
 touch DELETE_ME_TO_DISABLE_CONSOLEHOST_TELEMETRY
-dotnet publish /property:GenerateFullPaths=true --configuration Linux --framework net7.0 --runtime linux-x64 src/powershell-unix --output bin
+dotnet publish /property:GenerateFullPaths=true --configuration Linux --framework net8.0 --runtime linux-x64 src/powershell-unix --output bin
 
 # Even after powershell rpm built, dotnet processes are alive, following to stop them:
 for pid in $(pgrep dotnet); do
