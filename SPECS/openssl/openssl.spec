@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.9
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -43,6 +43,7 @@ Patch3: CVE-2023-3817.patch
 Patch4: CVE-2023-4807.patch
 Patch5: CVE-2023-5363.patch
 Patch6: CVE-2023-5678.patch
+Patch7: CVE-2024-0727.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -256,6 +257,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Jan 30 2024 Mukul Sikka <msikka@vmware.com> 3.0.9-9
+- Fix for CVE-2024-0727
 * Fri Nov 17 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-8
 - Fix for CVE-2023-5678
 * Mon Oct 16 2023 Srinidhi Rao <srinidhir@vmware.com> 3.0.9-7
