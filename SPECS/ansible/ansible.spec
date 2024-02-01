@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.14.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -14,6 +14,8 @@ Source0: https://github.com/ansible/ansible/archive/refs/tags/%{name}-%{version}
 Source1: tdnf.py
 Source2: macros.ansible
 Source3: ansible_collection.py
+
+Patch0: CVE-2024-0690.patch
 
 BuildArch: noarch
 
@@ -72,6 +74,8 @@ touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 %{_rpmconfigdir}/%{name}_collection.py
 
 %changelog
+* Thu Feb 01 2024 Kuntal Nayak <nkuntal@vmware.com> 2.14.12-2
+- Fix CVE-2024-0690
 * Tue Dec 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.14.12-1
 - Version upgrade to v2.14.12 to fix CVE-2023-5764
 * Mon Nov 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.14.2-2
