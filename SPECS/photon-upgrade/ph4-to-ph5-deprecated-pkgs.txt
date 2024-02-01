@@ -1,7 +1,8 @@
 binutils-aarch64-linux-gnu
+cgroup-utils
+copenapi
 c-rest-engine
 c-rest-engine-devel
-cgroup-utils
 dcerpc
 dcerpc-devel
 fcgi
@@ -46,11 +47,11 @@ pmd-devel
 pmd-gssapi-unix
 pmd-libs
 pmd-python3
-python3-PyPAM
 python3-backports_abc
 python3-m2r
-python3-subprocess32
 python3-portalocker
+python3-PyPAM
+python3-subprocess32
 rubygem-base64
 rubygem-connection_pool
 rubygem-drb
