@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
 Version:        0.7.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -12,6 +12,7 @@ Source0: https://github.com/vmware/network-config-manager/archive/%{name}-%{vers
 %define sha512 %{name}-%{version}=2140939ad1965326496b630c7ef55f6bd5fdbfef9823284e0fea6b0ceddf2cde199ab9539cfb8d0a0f46c609ee6bbd488d09d767e020ce0d3c653bb03222283d
 
 Patch0: Replace_address_fix.patch
+Patch1: show_dhcp_mode_fix.patch
 
 BuildRequires: glib-devel
 BuildRequires: json-c-devel
@@ -83,6 +84,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Feb 01 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.7.1-3
+- Patched to support show-dhcp-mode nmctl command
 * Tue Jan 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.7.1-2
 - Patched for replace address fix
 * Fri Jan 12 2024 Susant Sahani <susant.sahani@broadcom.com> 0.7.1-1

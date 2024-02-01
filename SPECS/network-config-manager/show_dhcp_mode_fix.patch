@@ -1,0 +1,180 @@
+From 14504fb95c7393ebae1d38d7ddf91baff9f709c3 Mon Sep 17 00:00:00 2001
+From: Nitesh <nitesh-nk.kumar@broadcom.com>
+Date: Wed, 24 Jan 2024 11:41:38 +0000
+Subject: [PATCH] nmctl: Adding command to get DHCP mode
+
+command - nmctl show-dhcp-mode dev <DEVICE> -j (Use -j for JSON format output)
+---
+ include/network-config-manager.h.in  |  2 ++
+ src/json/network-json.c              | 17 +++++++++
+ src/json/network-json.h              |  1 +
+ src/manager/network-config-manager.c | 54 +++++++++++++++++++++++++---
+ src/manager/network-manager-ctl.c    |  2 ++
+ 5 files changed, 72 insertions(+), 4 deletions(-)
+
+diff --git a/include/network-config-manager.h.in b/include/network-config-manager.h.in
+index 583a7447..f1ed5299 100644
+--- a/include/network-config-manager.h.in
++++ b/include/network-config-manager.h.in
+@@ -171,6 +171,8 @@ int ncm_nft_run_command(int argc, char *argv[]);
+ int ncm_get_system_status(char **ret);
+ int ncm_get_link_status(const char *ifname, char **ret);
+ 
++int ncm_get_dhcp_mode(int argc, char *argv[]);
++
+ 
+ /* deprecated API*/
+ 
+diff --git a/src/json/network-json.c b/src/json/network-json.c
+index 50822570..aa2b93a5 100644
+--- a/src/json/network-json.c
++++ b/src/json/network-json.c
+@@ -1025,6 +1025,23 @@ int json_acquire_dns_mode(DHCPClient mode, bool dhcpv4, bool dhcpv6, bool static
+         return 0;
+ }
+ 
++int json_acquire_dhcp_mode(DHCPClient mode) {
++        _cleanup_(json_object_putp) json_object *jobj = NULL;
++        _cleanup_(json_object_putp) json_object *s = NULL;
++
++        jobj = json_object_new_object();
++        if (!jobj)
++                return log_oom();
++
++        s = json_object_new_string(dhcp_client_modes_to_name(mode));
++
++        json_object_object_add(jobj, "DHCPMode", s);
++        steal_ptr(s);
++
++        printf("%s\n", json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_NOSLASHESCAPE | JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY));
++        return 0;
++}
++
+ int json_build_ntp_server(const IfNameIndex *p, json_object **ret) {
+         _auto_cleanup_strv_ char **dhcp_ntp = NULL, **link_ntp = NULL, **ntp = NULL;
+         _cleanup_(json_object_putp) json_object *jntp = NULL;
+diff --git a/src/json/network-json.h b/src/json/network-json.h
+index 0f8eb8de..68eba147 100644
+--- a/src/json/network-json.h
++++ b/src/json/network-json.h
+@@ -34,6 +34,7 @@ int address_flags_to_string(Address *a, json_object *jobj, uint32_t flags);
+ int routes_flags_to_string(Route *rt, json_object *jobj, uint32_t flags);
+ 
+ int json_acquire_dns_mode(DHCPClient mode, bool dhcpv4, bool dhcpv6, bool static_dns);
++int json_acquire_dhcp_mode(DHCPClient mode);
+ 
+ int json_acquire_and_parse_network_data(json_object **ret);
+ int json_parse_address_config_source(const json_object *jobj,
+diff --git a/src/manager/network-config-manager.c b/src/manager/network-config-manager.c
+index e7530f84..d0050e97 100644
+--- a/src/manager/network-config-manager.c
++++ b/src/manager/network-config-manager.c
+@@ -1425,7 +1425,7 @@ _public_ int ncm_link_remove_address(int argc, char *argv[]) {
+         AddressFamily family = ADDRESS_FAMILY_NO;
+         _auto_cleanup_strv_ char **addrs = NULL;
+         _auto_cleanup_ IfNameIndex *p = NULL;
+-        int r;
++        int r = -1;
+ 
+         for (int i = 1; i < argc; i++) {
+                 if (str_eq_fold(argv[i], "dev") || str_eq_fold(argv[i], "device") || str_eq_fold(argv[i], "d")) {
+@@ -1549,7 +1549,7 @@ _public_ int ncm_link_replace_address(int argc, char *argv[]) {
+         AddressFamily family = ADDRESS_FAMILY_NO;
+         _auto_cleanup_strv_ char **addrs = NULL;
+         _auto_cleanup_ IfNameIndex *p = NULL;
+-        int r;
++        int r = -1;
+ 
+         for (int i = 1; i < argc; i++) {
+                 if (str_eq_fold(argv[i], "dev") || str_eq_fold(argv[i], "device") || str_eq_fold(argv[i], "d")) {
+@@ -3385,7 +3385,7 @@ _public_ int ncm_link_remove_dhcpv4_server_static_address(int argc, char *argv[]
+         _auto_cleanup_ char *mac = NULL;
+         bool have_mac = false;
+         bool have_address = false;
+-        int r;
++        int r = -1;
+ 
+         for (int i = 1; i < argc; i++) {
+                 if (str_eq_fold(argv[i], "dev") || str_eq_fold(argv[i], "device") || str_eq_fold(argv[i], "d")) {
+@@ -3454,7 +3454,7 @@ _public_ int ncm_link_add_ipv6_router_advertisement(int argc, char *argv[]) {
+         IPv6RAPreference preference = _IPV6_RA_PREFERENCE_INVALID;
+         _auto_cleanup_ IfNameIndex *p = NULL;
+         _auto_cleanup_ char *domain = NULL;
+-        int r;
++        int r = -1;
+ 
+         for (int i = 1; i < argc; i++) {
+                 if (str_eq_fold(argv[i], "dev") || str_eq_fold(argv[i], "device") || str_eq_fold(argv[i], "d")) {
+@@ -3766,6 +3766,52 @@ _public_ int ncm_get_dns_mode(int argc, char *argv[]) {
+         return 0;
+ }
+ 
++_public_ int ncm_get_dhcp_mode(int argc, char *argv[]) {
++        _auto_cleanup_ IfNameIndex *p = NULL;
++        _auto_cleanup_ char *network = NULL;
++        DHCPClient mode = DHCP_CLIENT_NO;
++        int r = -1;
++
++        for (int i = 1; i < argc; i++) {
++                if (str_eq_fold(argv[i], "dev") || str_eq_fold(argv[i], "device") || str_eq_fold(argv[i], "d")) {
++                        parse_next_arg(argv, argc, i);
++
++                        r = parse_ifname_or_index(argv[i], &p);
++                        if (r < 0) {
++                                log_warning("Failed to find device: %s", argv[i]);
++                                return r;
++                        }
++                        continue;
++                }
++
++                log_warning("Failed to parse '%s': %s", argv[i], strerror(EINVAL));
++                return -EINVAL;
++        }
++
++        if (!p) {
++                log_warning("Failed to find device: %s",  strerror(ENXIO));
++                return -ENXIO;
++        }
++
++        r = network_parse_link_network_file(p->ifindex, &network);
++        if (r < 0)
++                return r;
++
++        r = manager_acquire_link_dhcp_client_kind(p, &mode);
++        if (r < 0 && r != -ENOENT) {
++                log_warning("Failed to parse 'DHCP=' : %s",  strerror(-r));
++                return r;
++        }
++
++        if (json_enabled())
++                return json_acquire_dhcp_mode(mode);
++
++        display(beautify_enabled() ? true : false, ansi_color_bold_blue(),"DHCP Mode: ");
++        printf("%s\n", dhcp_client_modes_to_name(mode));
++
++        return 0;
++}
++
+ _public_ int ncm_show_dns_server(int argc, char *argv[]) {
+         _auto_cleanup_ char *mdns = NULL, *llmnr = NULL, *dns_over_tls = NULL, *conf_mode = NULL, *dns_sec = NULL;
+         _cleanup_(dns_servers_freep) DNSServers *fallback = NULL, *dns = NULL;
+diff --git a/src/manager/network-manager-ctl.c b/src/manager/network-manager-ctl.c
+index 6edd6eec..7ef745a3 100644
+--- a/src/manager/network-manager-ctl.c
++++ b/src/manager/network-manager-ctl.c
+@@ -254,6 +254,7 @@ static int help(void) {
+                "  reconfigure                  dev [DEVICE] Reconfigure device.\n"
+                "  show-config                  dev [DEVICE] Displays network configuration of device.\n"
+                "  show-dns-mode                dev [DEVICE] Displays dns mode of device.\n"
++               "  show-dhcp-mode               dev [DEVICE] Displays dhcp mode of device.\n"
+                "  edit                         dev [DEVICE] Edit network configuration of device.\n"
+                "  edit-link                    dev [DEVICE] Edit link configuration of device.\n"
+                "  set-link                     [LINK] [alias STRING] [desc STRING] [mtu STRING]  [bps STRING]  [duplex STRING] [wol STRING | List] [wolp STRING] "
+@@ -466,6 +467,7 @@ static int cli_run(int argc, char *argv[]) {
+                 { "reconfigure",                   "rc",               1,        WORD_ANY, false, ncm_link_reconfigure },
+                 { "show-config",                   "sc",               1,        WORD_ANY, false, ncm_link_show_network_config },
+                 { "show-dns-mode",                 "sdm",              1,        WORD_ANY, false, ncm_get_dns_mode },
++                { "show-dhcp-mode",                "sdhm",             1,        WORD_ANY, false, ncm_get_dhcp_mode },
+                 { "edit",                          "e" ,               1,        WORD_ANY, false, ncm_link_edit_network_config },
+                 { "edit-link",                     "el" ,              1,        WORD_ANY, false, ncm_link_edit_link_config },
+                 { "set-link",                      "l",                2,        WORD_ANY, false, ncm_configure_link },
