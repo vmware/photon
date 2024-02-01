@@ -1,6 +1,6 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2zi
+Version:        1.0.2zj
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
@@ -8,8 +8,8 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.openssl.org/source/vmware-OpenSSL_1_0_2zi.tar.gz
-%define sha512 vmware-OpenSSL_1_0_2zi=2b8a5c25e4da9b825fdd0bf43a88f813089ac2457b4be64bf191dc966c4a92cd026a8aabff37e619ec3f41f16ced4db8f4eb2d9668b548a6c0926b1da2a1f272
+Source0: http://www.openssl.org/source/vmware-OpenSSL_1_0_2zj.tar.gz
+%define sha512 vmware-OpenSSL_1_0_2zj=bbdaf0e2f20ed5401160d8b57cf01cad6e69baccf05f2140874a7635cab07c32654b59ee6fd2b12ab4e597d863530e8b8851023ef5cb987436b22e2a57572143
 
 Source1: rehash_ca_certificates.sh
 
@@ -77,7 +77,7 @@ Perl scripts that convert certificates and keys to various formats.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -n vmware-OpenSSL_1_0_2zi
+%setup -q -n vmware-OpenSSL_1_0_2zj
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -165,6 +165,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+* Thu Feb 01 2024 Mukul Sikka <msikka@vmware.com> 1.0.2zj-1
+- Update to openssl-1.0.2zj
 * Wed Aug 23 2023 Mukul Sikka <msikka@vmware.com> 1.0.2zi-1
 - Update to openssl-1.0.2zi
 * Wed Feb 08 2023 Srinidhi Rao <srinidhir@vmware.com> 1.0.2zh-1
