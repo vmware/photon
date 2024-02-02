@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.2.0
-Release:       5%{?dist}
+Release:       6%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -12,18 +12,19 @@ Source0: https://github.com/vmware/photonos-netmgr/archive/refs/tags/%{name}-%{v
 %define sha512 %{name}=345c83eb8635d96c66d2926ae543ad872798036a3b68cd07f6c68d42537b71585692ce30f2537ec732143f506bac40e3e1a126aa19c8647627d6ca26899b74a8
 
 Patch0: fix-section-name-parsing-logic.patch
+Patch1: 0001-destination-address-parsing-fix-in-case-of-ip-route.patch
 
 BuildRequires: autoconf
 BuildRequires: check-devel
 BuildRequires: docker >= 1.12
 BuildRequires: glib-devel >= 2.68.4
 
-Requires:      glib >= 2.68.4
-Requires:      iputils
-Requires:      libgcc
-Requires:      ntp
-Requires:      pcre
-Requires:      systemd >= 228
+Requires: glib >= 2.68.4
+Requires: iputils
+Requires: libgcc
+Requires: ntp
+Requires: pcre
+Requires: systemd >= 228
 
 %description
 Network management utilities for PhotonOS
@@ -60,7 +61,6 @@ export CFLAGS
     --disable-static
 
 %make_build
-
 %install
 %make_install %{?_smp_mflags}
 
@@ -84,6 +84,8 @@ export CFLAGS
 %{_libdir}/libnetmgrcli.so
 
 %changelog
+* Fri Feb 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.2.0-6
+- Patched for ip_route fix
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.2.0-5
 - Bump version as part of glib upgrade
 * Tue Oct 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.0-4
