@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.62
-Release:        8%{?acvp_build:.acvp}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -808,6 +808,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Feb 02 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.62-9
+- Enable CONFIG_PROC_EVENTS
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-8
 - Update canister to 5.0.0-6.1.62-13
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-7
