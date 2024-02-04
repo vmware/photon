@@ -1,0 +1,195 @@
+diff --git a/util/grub-set-bootflag.c b/util/grub-set-bootflag.c
+index 3b4c25ca2..31a868aec 100644
+--- a/util/grub-set-bootflag.c
++++ b/util/grub-set-bootflag.c
+@@ -33,6 +33,9 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
++#include <sys/file.h>
++#include <sys/stat.h>
++#include <sys/resource.h>
+ 
+ #include "progname.h"
+ 
+@@ -57,13 +60,15 @@ static void usage(FILE *out)
+ int main(int argc, char *argv[])
+ {
+   /* NOTE buf must be at least the longest bootflag length + 4 bytes */
+-  char env[GRUBENV_SIZE + 1], buf[64], *s;
+-  /* +1 for 0 termination, +6 for "XXXXXX" in tmp filename */
+-  char env_filename[PATH_MAX + 1], tmp_filename[PATH_MAX + 6 + 1];
++  char env[GRUBENV_SIZE + 1 + 2], buf[64], *s;
++  /* +1 for 0 termination, +11 for ".%u" in tmp filename */
++  char env_filename[PATH_MAX + 1], tmp_filename[PATH_MAX + 11 + 1];
+   const char *bootflag;
+   int i, fd, len, ret;
+   FILE *f;
+ 
++  umask(077);
++
+   if (argc != 2)
+     {
+       usage (stderr);
+@@ -94,20 +99,22 @@ int main(int argc, char *argv[])
+   len = strlen (bootflag);
+ 
+   /*
+-   * Really become root. setuid avoids an user killing us, possibly leaking
+-   * the tmpfile. setgid avoids the new grubenv's gid being that of the user.
++   * Exit calmly when not installed SUID root and invoked by non-root.  This
++   * allows installing user/grub-boot-success.service unconditionally while
++   * supporting non-SUID installation of the program for some limited usage.
+    */
+-  ret = setuid(0);
+-  if (ret)
++  if (geteuid())
+     {
+-      perror ("Error setuid(0) failed");
+-      return 1;
++      printf ("grub-set-bootflag not running as root, no action taken\n");
++      return 0;
+     }
+ 
+-  ret = setgid(0);
+-  if (ret)
++  /*
++   * setegid avoids the new grubenv's gid being that of the user.
++   */
++  if (setegid(0))
+     {
+-      perror ("Error setgid(0) failed");
++      perror ("setegid(0) failed");
+       return 1;
+     }
+ 
+@@ -136,6 +143,9 @@ int main(int argc, char *argv[])
+ 
+   /* 0 terminate env */
+   env[GRUBENV_SIZE] = 0;
++  /* not a valid flag value */
++  env[GRUBENV_SIZE + 1] = 0;
++  env[GRUBENV_SIZE + 2] = 0;
+ 
+   if (strncmp (env, GRUB_ENVBLK_SIGNATURE, strlen (GRUB_ENVBLK_SIGNATURE)))
+     {
+@@ -171,21 +181,86 @@ int main(int argc, char *argv[])
+ 
+   /* The grubenv is not 0 terminated, so memcpy the name + '=' , '1', '\n' */
+   snprintf(buf, sizeof(buf), "%s=1\n", bootflag);
++  if (!memcmp(s, buf, len + 3))
++    return 0; /* nothing to do */
+   memcpy(s, buf, len + 3);
+ 
++  struct rlimit rlim;
++  if (getrlimit(RLIMIT_FSIZE, &rlim) || rlim.rlim_cur < GRUBENV_SIZE || rlim.rlim_max < GRUBENV_SIZE)
++    {
++      fprintf (stderr, "Resource limits undetermined or too low\n");
++      return 1;
++    }
++
++  /*
++   * Here we work under the premise that we shouldn't write into the target
++   * file directly because we might not be able to have all of our changes
++   * written completely and atomically.  That was CVE-2019-14865, known to
++   * have been triggerable via RLIMIT_FSIZE.  While we've dealt with that
++   * specific attack via the check above, there may be other possibilities.
++   */
+ 
+   /*
+    * Create a tempfile for writing the new env.  Use the canonicalized filename
+    * for the template so that the tmpfile is in the same dir / on same fs.
++   *
++   * We now use per-user fixed temporary filenames, so that a user cannot cause
++   * multiple files to accumulate.
++   *
++   * We don't use O_EXCL so that a stale temporary file doesn't prevent further
++   * usage of the program by the user.
+    */
+-  snprintf(tmp_filename, sizeof(tmp_filename), "%sXXXXXX", env_filename);
+-  fd = mkstemp(tmp_filename);
++  snprintf(tmp_filename, sizeof(tmp_filename), "%s.%u", env_filename, getuid());
++  fd = open(tmp_filename, O_CREAT | O_WRONLY, 0600);
+   if (fd == -1)
+     {
+       perror ("Creating tmpfile failed");
+       return 1;
+     }
+ 
++  /*
++   * The lock prevents the same user from reaching further steps ending in
++   * rename() concurrently, in which case the temporary file only partially
++   * written by one invocation could be renamed to the target file by another.
++   *
++   * The lock also guards the slow fsync() from concurrent calls.  After the
++   * first time that and the rename() complete, further invocations for the
++   * same flag become no-ops.
++   *
++   * We lock the temporary file rather than the target file because locking the
++   * latter would allow any user having SIGSTOP'ed their process to make all
++   * other users' invocations fail (or lock up if we'd use blocking mode).
++   *
++   * We use non-blocking mode (LOCK_NB) because the lock having been taken by
++   * another process implies that the other process would normally have already
++   * renamed the file to target by the time it releases the lock (and we could
++   * acquire it), so we'd be working directly on the target if we proceeded,
++   * which is undesirable, and we'd kind of fail on the already-done rename.
++   */
++  if (flock(fd, LOCK_EX | LOCK_NB))
++    {
++      perror ("Locking tmpfile failed");
++      return 1;
++    }
++
++  /*
++   * Deal with the potential that another invocation proceeded all the way to
++   * rename() and process exit while we were between open() and flock().
++   */
++  {
++    struct stat st1, st2;
++    if (fstat(fd, &st1) || stat(tmp_filename, &st2))
++      {
++        perror ("stat of tmpfile failed");
++        return 1;
++      }
++    if (st1.st_dev != st2.st_dev || st1.st_ino != st2.st_ino)
++      {
++        fprintf (stderr, "Another invocation won race\n");
++        return 1;
++      }
++  }
++
+   f = fdopen (fd, "w");
+   if (!f)
+     {
+@@ -210,23 +285,25 @@ int main(int argc, char *argv[])
+       return 1;     
+     }
+ 
+-  ret = fsync (fileno (f));
++  ret = ftruncate (fileno (f), GRUBENV_SIZE);
+   if (ret)
+     {
+-      perror ("Error syncing tmpfile");
++      perror ("Error truncating tmpfile");
+       unlink(tmp_filename);
+       return 1;
+     }
+ 
+-  ret = fclose (f);
++  ret = fsync (fileno (f));
+   if (ret)
+     {
+-      perror ("Error closing tmpfile");
++      perror ("Error syncing tmpfile");
+       unlink(tmp_filename);
+       return 1;
+     }
+ 
+   /*
++   * We must not close the file before rename() as that would remove the lock.
++   *
+    * And finally rename the tmpfile with the new env over the old env, the
+    * linux kernel guarantees that this is atomic (from a syscall pov).
+    */
+

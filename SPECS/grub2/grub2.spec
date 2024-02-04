@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    13%{?dist}
+Release:    14%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -34,6 +34,9 @@ Patch1603: 0003-fs-ntfs-Fix-an-OOB-read-when-parsing-directory-entri.patch
 Patch1604: 0004-fs-ntfs-Fix-an-OOB-read-when-parsing-bitmaps-for-ind.patch
 Patch1605: 0005-fs-ntfs-Fix-an-OOB-read-when-parsing-a-volume-label.patch
 Patch1606: 0006-fs-ntfs-Make-code-more-readable.patch
+
+# CVE-2024-1048
+Patch1607: grub-set-bootflag-rocky-7.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
@@ -248,6 +251,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Sun Feb 04 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-14
+- Fix CVE-2024-1048
 * Wed Oct 25 2023 Ajay Kaher <akaher@vmware.com> 2.06-13
 - Fix for CVE-2023-4692, CVE-2023-4693
 * Mon Jun 12 2023 Ajay Kaher <akaher@vmware.com> 2.06-12
