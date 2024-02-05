@@ -1,0 +1,10 @@
+iso_files:
+    sample_ks.cfg: isolinux/
+    /photon/support/poi/configs/iso/open_source_license.tar.gz: ""
+    /photon/EULA.txt: ""
+    /photon/NOTICE-Apachev2: ""
+    /photon/NOTICE-GPL2.0: ""
+
+initrd_files:
+    sample_ui.cfg: installer/
+    /photon/EULA.txt: installer/
