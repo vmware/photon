@@ -346,6 +346,14 @@ class Poi(object):
         """
         self.run_poi(["bash", "-c", script], workdir=stage_cfg_dir)
 
+
+    """
+    A custom ISO contains just packages from packages.json (-p) option,
+    and the dependencies. The packages.json file is copied from
+    common/data/packages_{type).json}.
+    Config files are from support/poi/configs/{type)-iso/}.
+    """
+
     def create_custom_iso(self, iso_file, type=None, subdir=None):
         if subdir is None:
             subdir = f"{type}-iso"
@@ -363,6 +371,7 @@ class Poi(object):
                       "-p", f"packages_{type}.json",
                       "--initrd-pkgs-list-file", "packages_installer_initrd.json",
                       "--repo-paths=/repo",
+                      "--config", f"{type}-iso.yaml",
                       "--name", iso_file
                      ],
                      workdir=stage_cfg_dir)
