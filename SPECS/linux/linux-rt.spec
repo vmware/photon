@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.305
-Release:        5%{?kat_build:.%kat}%{?dist}
+Release:        6%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -363,6 +363,9 @@ Patch707: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
 #Fix for CVE-2023-39197
 Patch708: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
+
+#Fix CVE-2024-1086
+Patch709: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -747,7 +750,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M641
 
 # CVE Fixes
-%autopatch -p1 -m700 -M708
+%autopatch -p1 -m700 -M709
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1252,6 +1255,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.305-6
+- Fix CVE-2024-1086
 * Mon Feb 05 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-5
 - Fix CVE-2024-0607
 * Mon Feb 05 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-4

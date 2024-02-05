@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.305
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -494,6 +494,9 @@ Patch713: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 #Fix for CVE-2023-39197
 Patch714: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
 
+#Fix CVE-2024-1086
+Patch715: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
+
 # Patches for i40e driver
 Patch803: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
 Patch804: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
@@ -615,7 +618,7 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m540 -M554
 
 # CVE Fixes
-%autopatch -p1 -m700 -M714
+%autopatch -p1 -m700 -M715
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -853,6 +856,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.305-6
+- Fix CVE-2024-1086
 * Mon Feb 05 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-5
 - Fix CVE-2024-0607
 * Mon Feb 05 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-4

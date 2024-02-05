@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.305
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -582,6 +582,9 @@ Patch1566: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 #Fix for CVE-2023-39197
 Patch1567: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
 
+#Fix CVE-2024-1086
+Patch1568: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -781,7 +784,7 @@ popd
 %autopatch -p1 -m1545 -M1549
 
 # CVE Patches
-%autopatch -p1 -m1550 -M1567
+%autopatch -p1 -m1550 -M1568
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1172,6 +1175,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.305-6
+- Fix CVE-2024-1086
 * Mon Feb 05 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-5
 - Fix CVE-2024-0607
 * Mon Feb 05 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-4

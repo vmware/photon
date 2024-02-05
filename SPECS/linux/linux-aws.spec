@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.305
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -257,6 +257,9 @@ Patch313: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 #Fix for CVE-2023-39197
 Patch314: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
 
+#Fix CVE-2024-1086
+Patch315: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
+
 # Usermode helper fixes
 Patch400: 0001-umh-Add-command-line-to-user-mode-helpers.patch
 Patch401: 0002-umh-add-exit-routine-for-UMH-process.patch
@@ -368,7 +371,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m191 -M194
 
 # CVE fixes
-%autopatch -p1 -m300 -M314
+%autopatch -p1 -m300 -M315
 
 # Usermode helper patches
 %autopatch -p1 -m400 -M401
@@ -573,6 +576,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.305-5
+- Fix CVE-2024-1086
 * Mon Feb 05 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-4
 - Fix CVE-2024-0607
 * Mon Feb 05 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-3
