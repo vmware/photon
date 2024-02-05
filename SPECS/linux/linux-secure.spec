@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.209
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -186,6 +186,9 @@ Patch141: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 
 #Fix CVE-2024-0565
 Patch142: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
+
+#Fix CVE-2024-1086
+Patch143: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -459,6 +462,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.209-2
+- Fix CVE-2024-1086
 * Sun Jan 28 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.209-1
 - Update to version 5.10.209
 * Mon Jan 22 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.206-5

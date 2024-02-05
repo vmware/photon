@@ -1,0 +1,73 @@
+From f342de4e2f33e0e39165d8639387aa6c19dff660 Mon Sep 17 00:00:00 2001
+From: Florian Westphal <fw@strlen.de>
+Date: Sat, 20 Jan 2024 22:50:04 +0100
+Subject: [PATCH] netfilter: nf_tables: reject QUEUE/DROP verdict parameters
+
+commit f342de4e2f33e0e39165d8639387aa6c19dff660 upstream
+
+This reverts commit e0abdadcc6e1.
+
+core.c:nf_hook_slow assumes that the upper 16 bits of NF_DROP
+verdicts contain a valid errno, i.e. -EPERM, -EHOSTUNREACH or similar,
+or 0.
+
+Due to the reverted commit, its possible to provide a positive
+value, e.g. NF_ACCEPT (1), which results in use-after-free.
+
+Its not clear to me why this commit was made.
+
+NF_QUEUE is not used by nftables; "queue" rules in nftables
+will result in use of "nft_queue" expression.
+
+If we later need to allow specifiying errno values from userspace
+(do not know why), this has to call NF_DROP_GETERR and check that
+"err <= 0" holds true.
+
+Fixes: e0abdadcc6e1 ("netfilter: nf_tables: accept QUEUE/DROP verdict parameters")
+Cc: stable@vger.kernel.org
+Reported-by: Notselwyn <notselwyn@pwning.tech>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+[ Shivani: Applied to 4.19 branch ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ net/netfilter/nf_tables_api.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
+
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index fca8f9a36063..31b49c3b24b2 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -9336,16 +9336,10 @@ static int nft_verdict_init(const struct nft_ctx *ctx, struct nft_data *data,
+ 	data->verdict.code = ntohl(nla_get_be32(tb[NFTA_VERDICT_CODE]));
+ 
+ 	switch (data->verdict.code) {
+-	default:
+-		switch (data->verdict.code & NF_VERDICT_MASK) {
+-		case NF_ACCEPT:
+-		case NF_DROP:
+-		case NF_QUEUE:
+-			break;
+-		default:
+-			return -EINVAL;
+-		}
+-		fallthrough;
++        case NF_ACCEPT:
++        case NF_DROP:
++        case NF_QUEUE:
++                break;
+ 	case NFT_CONTINUE:
+ 	case NFT_BREAK:
+ 	case NFT_RETURN:
+@@ -9380,6 +9374,8 @@ static int nft_verdict_init(const struct nft_ctx *ctx, struct nft_data *data,
+ 
+ 		data->verdict.chain = chain;
+ 		break;
++        default:
++                return -EINVAL;
+ 	}
+ 
+ 	desc->len = sizeof(data->verdict);
+-- 
+2.39.0
+

@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.209
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -237,6 +237,9 @@ Patch141: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 
 #Fix CVE-2024-0565
 Patch142: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
+
+#Fix CVE-2024-1086
+Patch143: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
 
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -657,6 +660,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Feb 13 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.209-3
+- Fix CVE-2024-1086
 * Mon Feb 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.209-2
 - initramfs: Fix freeing of 'newc' initrd when used in mix with 'newca'
 * Sun Jan 28 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.209-1
