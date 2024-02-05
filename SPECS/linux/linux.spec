@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.305
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -577,6 +577,9 @@ Patch1565: 0001-memcg-enable-accounting-of-ipc-resources.patch
 #Fix for CVE-2023-2124
 Patch1566: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
+#Fix for CVE-2023-39197
+Patch1567: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -776,7 +779,7 @@ popd
 %autopatch -p1 -m1545 -M1549
 
 # CVE Patches
-%autopatch -p1 -m1550 -M1566
+%autopatch -p1 -m1550 -M1567
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1167,6 +1170,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Feb 05 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-4
+- Fix for CVE-2023-39197
 * Wed Jan 31 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-3
 - Upgrade iavf driver to 4.9.5, ice driver to 1.13.7
 * Tue Jan 30 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.19.305-2

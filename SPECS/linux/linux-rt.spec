@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.305
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -358,6 +358,9 @@ Patch706: 0001-memcg-enable-accounting-of-ipc-resources.patch
 
 #Fix for CVE-2023-2124
 Patch707: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
+
+#Fix for CVE-2023-39197
+Patch708: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -742,7 +745,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M641
 
 # CVE Fixes
-%autopatch -p1 -m700 -M707
+%autopatch -p1 -m700 -M708
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1247,6 +1250,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon Feb 05 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-4
+- Fix for CVE-2023-39197
 * Wed Jan 31 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.305-3
 - Upgrade iavf driver to 4.9.5, ice driver to 1.13.7
 * Tue Jan 30 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.19.305-2

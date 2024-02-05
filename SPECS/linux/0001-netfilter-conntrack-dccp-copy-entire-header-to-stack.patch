@@ -1,0 +1,143 @@
+From b132b83e9fd1a25e351a916d11d9b3552d3b9487 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Mon, 5 Feb 2024 18:41:00 +0000
+Subject: [PATCH] netfilter: conntrack: dccp: copy entire header to stack
+ buffer, not just basic one
+
+[ Upstream commit ff0a3a7d52ff7282dbd183e7fc29a1fe386b0c30 ]
+
+Eric Dumazet says:
+  nf_conntrack_dccp_packet() has an unique:
+
+  dh = skb_header_pointer(skb, dataoff, sizeof(_dh), &_dh);
+
+  And nothing more is 'pulled' from the packet, depending on the content.
+  dh->dccph_doff, and/or dh->dccph_x ...)
+  So dccp_ack_seq() is happily reading stuff past the _dh buffer.
+
+BUG: KASAN: stack-out-of-bounds in nf_conntrack_dccp_packet+0x1134/0x11c0
+Read of size 4 at addr ffff000128f66e0c by task syz-executor.2/29371
+[..]
+
+Fix this by increasing the stack buffer to also include room for
+the extra sequence numbers and all the known dccp packet type headers,
+then pull again after the initial validation of the basic header.
+
+While at it, mark packets invalid that lack 48bit sequence bit but
+where RFC says the type MUST use them.
+
+Compile tested only.
+
+v2: first skb_header_pointer() now needs to adjust the size to
+    only pull the generic header. (Eric)
+
+Heads-up: I intend to remove dccp conntrack support later this year.
+
+Fixes: 2bc780499aa3 ("[NETFILTER]: nf_conntrack: add DCCP protocol support")
+Reported-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+[ Brennan: Ported to v4.19 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/netfilter/nf_conntrack_proto_dccp.c | 52 +++++++++++++++++++++++--
+ 1 file changed, 49 insertions(+), 3 deletions(-)
+
+diff --git a/net/netfilter/nf_conntrack_proto_dccp.c b/net/netfilter/nf_conntrack_proto_dccp.c
+index e24c436d913e..393f5d8d78f7 100644
+--- a/net/netfilter/nf_conntrack_proto_dccp.c
++++ b/net/netfilter/nf_conntrack_proto_dccp.c
+@@ -438,17 +438,47 @@ static u64 dccp_ack_seq(const struct dccp_hdr *dh)
+ 		     ntohl(dhack->dccph_ack_nr_low);
+ }
+ 
++struct nf_conntrack_dccp_buf {
++	struct dccp_hdr dh;	 		/* generic header part */
++	struct dccp_hdr_ext ext; 	/* optional depending dh->dccph_x */
++	union {			 			/* depends on header type */
++		struct dccp_hdr_ack_bits ack;
++		struct dccp_hdr_request req;
++		struct dccp_hdr_response response;
++		struct dccp_hdr_reset rst;
++	} u;
++};
++
++static struct dccp_hdr *
++dccp_header_pointer(const struct sk_buff *skb, int offset, const struct dccp_hdr *dh,
++		    struct nf_conntrack_dccp_buf *buf)
++{
++	unsigned int hdrlen = __dccp_hdr_len(dh);
++
++	if (hdrlen > sizeof(*buf))
++		return NULL;
++
++	return skb_header_pointer(skb, offset, hdrlen, buf);
++}
++
+ static int dccp_packet(struct nf_conn *ct, const struct sk_buff *skb,
+ 		       unsigned int dataoff, enum ip_conntrack_info ctinfo)
+ {
+ 	enum ip_conntrack_dir dir = CTINFO2DIR(ctinfo);
+-	struct dccp_hdr _dh, *dh;
++	struct nf_conntrack_dccp_buf _dh;
+ 	u_int8_t type, old_state, new_state;
+ 	enum ct_dccp_roles role;
+ 	unsigned int *timeouts;
++	struct dccp_hdr *dh;
+ 
+-	dh = skb_header_pointer(skb, dataoff, sizeof(_dh), &_dh);
++	dh = skb_header_pointer(skb, dataoff, sizeof(*dh), &_dh.dh);
+ 	BUG_ON(dh == NULL);
++
++	/* pull again, including possible 48 bit sequences and subtype header */
++	dh = dccp_header_pointer(skb, dataoff, dh, &_dh);
++	if (!dh)
++		return NF_DROP;
++
+ 	type = dh->dccph_type;
+ 
+ 	if (type == DCCP_PKT_RESET &&
+@@ -531,10 +561,20 @@ static int dccp_error(struct net *net, struct nf_conn *tmpl,
+ 		      struct sk_buff *skb, unsigned int dataoff,
+ 		      u_int8_t pf, unsigned int hooknum)
+ {
++	static const unsigned long require_seq48 = 1 << DCCP_PKT_REQUEST |
++						   1 << DCCP_PKT_RESPONSE |
++						   1 << DCCP_PKT_CLOSEREQ |
++						   1 << DCCP_PKT_CLOSE |
++						   1 << DCCP_PKT_RESET |
++						   1 << DCCP_PKT_SYNC |
++						   1 << DCCP_PKT_SYNCACK;
+ 	struct dccp_hdr _dh, *dh;
+ 	unsigned int dccp_len = skb->len - dataoff;
+ 	unsigned int cscov;
+ 	const char *msg;
++	u8 type;
++
++	BUILD_BUG_ON(DCCP_PKT_INVALID >= BITS_PER_LONG);
+ 
+ 	dh = skb_header_pointer(skb, dataoff, sizeof(_dh), &_dh);
+ 	if (dh == NULL) {
+@@ -564,11 +604,17 @@ static int dccp_error(struct net *net, struct nf_conn *tmpl,
+ 		goto out_invalid;
+ 	}
+ 
+-	if (dh->dccph_type >= DCCP_PKT_INVALID) {
++	type = dh->dccph_type;
++	if (type >= DCCP_PKT_INVALID) {
+ 		msg = "nf_ct_dccp: reserved packet type ";
+ 		goto out_invalid;
+ 	}
+ 
++	if (test_bit(type, &require_seq48) && !dh->dccph_x) {
++		msg = "nf_ct_dccp: type lacks 48bit sequence numbers";
++		goto out_invalid;
++	}
++
+ 	return NF_ACCEPT;
+ 
+ out_invalid:
+-- 
+2.39.0
+
