@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org
 Group:          System Environment/Daemons
@@ -32,6 +32,7 @@ BuildRequires:  json-c-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemd-devel
 BuildRequires:  python3-devel
+BuildRequires:  python3-pip
 BuildRequires:  curl-devel
 BuildRequires:  ivykis-devel
 BuildRequires:  paho-c-devel
@@ -93,6 +94,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
   --disable-redis \
   --enable-python \
   --with-python=3 \
+  --with-python-packages=system \
   --with-ivykis=system \
   --enable-mqtt \
   --disable-static \
@@ -170,6 +172,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Tue Feb 06 2024 Prashant S Chauhan <psinghchauha@vmware.com> 4.3.1-4
+- Use system provided pip instead of ensurepip
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-3
 - Rebuild with jit enabled pcre2
 * Thu Oct 19 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.3.1-2

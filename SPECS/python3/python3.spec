@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.11
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -247,6 +247,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python%{VER}/lib-dynload/pyexpat*.so
 %exclude %{_libdir}/python%{VER}/curses
 %exclude %{_libdir}/python%{VER}/lib-dynload/_curses*.so
+%exclude %{_libdir}/python%{VER}/ensurepip
 
 %files  xml
 %defattr(-, root, root, 755)
@@ -287,6 +288,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Fri Feb 02 2024 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.11-6
+- Remove ensurepip, fixes second level CVEs
 * Fri Nov 03 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.11-5
 - Fix CVE-2023-40217
 * Mon Aug 21 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.11-4
