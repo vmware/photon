@@ -1,0 +1,78 @@
+From a8b4750d4d9142ef225b4207a64f5d7a67645c9b Mon Sep 17 00:00:00 2001
+From: Nitesh <kunitesh@vmware.com>
+Date: Fri, 2 Feb 2024 19:03:00 +0530
+Subject: [PATCH] destination address parsing fix in case of ip route
+
+---
+ cli/netmgrcli.c |  5 +++--
+ src/netmgr.c    | 10 ++++++----
+ 2 files changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/cli/netmgrcli.c b/cli/netmgrcli.c
+index f602ffc..8c3e72a 100644
+--- a/cli/netmgrcli.c
++++ b/cli/netmgrcli.c
+@@ -487,6 +487,7 @@ cli_ip_route(
+ {
+     uint32_t err = 0, validIfName = 0, validDest = 0, validGW = 0;
+     uint8_t prefix = 255;
++    char addrWithPrefix[INET6_ADDRSTRLEN+5];
+     char addr[INET6_ADDRSTRLEN+5];
+     int nOptionIndex = 0, nOption = 0;
+     CMD_OP op = OP_INVALID;
+@@ -563,8 +564,8 @@ cli_ip_route(
+                     err = EDOM;
+                     break;
+                 }
+-                sprintf(addr, "%s/%hhu", addr, prefix);
+-                err = netmgrcli_alloc_keyvalue("destination", addr, pCmd);
++                sprintf(addrWithPrefix, "%s/%hhu", addr, prefix);
++                err = netmgrcli_alloc_keyvalue("destination", addrWithPrefix, pCmd);
+                 break;
+             case 'g':
+                 if ((strlen(optarg) > 0) &&
+diff --git a/src/netmgr.c b/src/netmgr.c
+index 1ab6ef7..f1bc1fa 100644
+--- a/src/netmgr.c
++++ b/src/netmgr.c
+@@ -4091,6 +4091,7 @@ nm_add_static_ip_route(
+ {
+     uint32_t err = 0;
+     uint8_t prefix = 255;
++    char szDestAddrWithPrefix[INET6_ADDRSTRLEN+5];
+     char szDestAddr[INET6_ADDRSTRLEN+5];
+     NET_IP_ROUTE route = {0};
+     int lockId;
+@@ -4132,8 +4133,8 @@ nm_add_static_ip_route(
+     }
+ 
+     memcpy(&route, pRoute, sizeof(route));
+-    sprintf(szDestAddr, "%s/%hhu", szDestAddr, prefix);
+-    route.pszDestNetwork = szDestAddr;
++    sprintf(szDestAddrWithPrefix, "%s/%hhu", szDestAddr, prefix);
++    route.pszDestNetwork = szDestAddrWithPrefix;
+ 
+     err = nm_add_route_section(&route);
+     bail_on_error(err);
+@@ -4155,6 +4156,7 @@ nm_delete_static_ip_route(
+ {
+     uint32_t err = 0;
+     uint8_t prefix = 255;
++    char szDestAddrWithPrefix[INET6_ADDRSTRLEN+5];
+     char szDestAddr[INET6_ADDRSTRLEN+5];
+     NET_IP_ROUTE route;
+     int lockId;
+@@ -4185,8 +4187,8 @@ nm_delete_static_ip_route(
+     }
+ 
+     memcpy(&route, pRoute, sizeof(route));
+-    sprintf(szDestAddr, "%s/%hhu", szDestAddr, prefix);
+-    route.pszDestNetwork = szDestAddr;
++    sprintf(szDestAddrWithPrefix, "%s/%hhu", szDestAddr, prefix);
++    route.pszDestNetwork = szDestAddrWithPrefix;
+ 
+     err = nm_delete_route_section(&route);
+     bail_on_error(err);
+-- 
+2.34.1
+

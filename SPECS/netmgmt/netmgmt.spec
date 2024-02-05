@@ -1,27 +1,29 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.2.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
-URL:           http://www.vmware.com
+URL:           https://github.com/vmware/photonos-netmgr
 Distribution:  Photon
 
-Source0:       %{name}-%{version}.tar.gz
-%define sha512 netmgmt=345c83eb8635d96c66d2926ae543ad872798036a3b68cd07f6c68d42537b71585692ce30f2537ec732143f506bac40e3e1a126aa19c8647627d6ca26899b74a8
+Source0: https://github.com/vmware/photonos-netmgr/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=345c83eb8635d96c66d2926ae543ad872798036a3b68cd07f6c68d42537b71585692ce30f2537ec732143f506bac40e3e1a126aa19c8647627d6ca26899b74a8
+
+Patch0: 0001-destination-address-parsing-fix-in-case-of-ip-route.patch
 
 BuildRequires: autoconf
 BuildRequires: check >= 0.9.4
 BuildRequires: docker >= 1.12
 BuildRequires: glib-devel >= 2.58.3
 
-Requires:      glib >= 2.58.3
-Requires:      iputils
-Requires:      libgcc
-Requires:      ntp
-Requires:      pcre
-Requires:      systemd >= 228
+Requires: glib >= 2.58.3
+Requires: iputils
+Requires: libgcc
+Requires: ntp
+Requires: pcre
+Requires: systemd >= 228
 
 %description
 Network management utilities for PhotonOS
@@ -79,6 +81,8 @@ find %{buildroot} -name '*.la' -delete
 #%%doc ChangeLog README COPYING
 
 %changelog
+* Mon Feb 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.2.0-4
+- Patched for ip_route fix
 * Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.2.0-3
 - Version bump due to glib change
 * Tue Sep 3 2019 Michelle Wang <michellew@vmware.com> 1.2.0-2
