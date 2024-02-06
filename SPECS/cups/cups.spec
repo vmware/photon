@@ -1,7 +1,7 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
 Version:        2.4.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
@@ -71,9 +71,8 @@ rm -rf %{buildroot}/*
 %config %{_sysconfdir}/cups/snmp.conf.default
 %dir %attr(755,root,root) %{_sysconfdir}/cups/ppd
 %dir %attr(700,root,root) %{_sysconfdir}/cups/ssl
-%config %{_sysconfdir}/rc.d/
 %config %{_sysconfdir}/dbus-1/system.d/cups.conf
-
+%{_unitdir}/*
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/libcups*.so.*
@@ -92,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.7-4
+- Bump version as a part of dbus upgrade
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.7-3
 - Bump version as a part of gnutls upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.7-2

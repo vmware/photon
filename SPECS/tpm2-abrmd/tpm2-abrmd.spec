@@ -1,7 +1,7 @@
 Summary:        TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
 Name:           tpm2-abrmd
 Version:        2.4.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-abrmd
 Group:          System Environment/Security
@@ -70,6 +70,8 @@ The libraries and header files needed for TSS2 ABRMD development.
 %{_mandir}/man7
 
 %changelog
+* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.1-4
+- Bump version as a part of dbus upgrade
 * Thu Oct 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.1-3
 - Fix devel package requires
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.4.1-2

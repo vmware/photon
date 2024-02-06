@@ -1,7 +1,7 @@
 Summary:        Bluetooth utilities
 Name:           bluez
 Version:        5.71
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -84,6 +84,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.71-2
+- Bump version as a part of dbus upgrade
 * Tue Apr 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 5.71-1
 - Version upgrade to v5.71 to fix following CVE's:
 - CVE-2023-44431, CVE-2023-51580, CVE-2023-51589,

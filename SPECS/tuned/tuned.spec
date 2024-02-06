@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.21.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -149,6 +149,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.21.0-2
+- Bump version as a part of dbus upgrade
 * Tue Jan 23 2024 Roye Eshed <roye.eshed@broadcom.com> 2.21.0-1
 - Update Tuned to 2.21.0
 * Tue Sep 12 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.19.0-10

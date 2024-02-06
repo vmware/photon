@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        255.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -753,8 +753,10 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Mar 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 255.2-3
+- Bump version as a part of dbus upgrade
 * Tue Feb 27 2024 Susant Sahani <guruswamy.basavaiah@broadcom.com> 255.2-2
-- use-bfq-scheduler.patch
+- Remove use-bfq-scheduler.patch
 * Thu Jan 04 2024 Susant Sahani <susant.sahani@broadcom.com> 255.2-1
 - Version bump.
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-8

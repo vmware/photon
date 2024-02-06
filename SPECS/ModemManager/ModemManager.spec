@@ -1,7 +1,7 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.18.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -103,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/connection.available.d/*
 
 %changelog
+* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.18.12-3
+- Bump version as a part of dbus upgrade
 * Tue Jan 03 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.18.12-2
 - Bump release as a part of libgudev upgrade to 237-1
 * Fri Dec 23 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.18.12-1

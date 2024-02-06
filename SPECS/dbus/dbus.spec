@@ -1,7 +1,7 @@
 Summary:        DBus message bus
 Name:           dbus
-Version:        1.15.4
-Release:        4%{?dist}
+Version:        1.15.8
+Release:        1%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -9,13 +9,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
-%define sha512 %{name}=53a5b7161940c5d4432b902c3c0ac1f1965978e3791a640d1a71f2d819474b727497f7a13c95d7c5850baef659062f1434296a3f5e56701383cc573dfbf187ee
+%define sha512 %{name}=84b8ac194ede3bf300f4501395b7253538469a4f9d59ea4adaf800282e359ef43494d81941b338081d3704317d39f0aba14906c6490419f04f946eb9d815f46c
 
 Source1: %{name}.sysusers
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
 BuildRequires:  xz-devel
+BuildRequires:  meson
+BuildRequires:  shadow
 
 Requires:       expat
 Requires:       systemd
@@ -28,6 +30,7 @@ The dbus package contains dbus.
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
 Requires:       expat-devel
+Requires:       systemd-devel
 
 %description    devel
 It contains the libraries and header files to create applications
@@ -44,30 +47,31 @@ simple interprocess messaging system (systemd --user integration)
 %autosetup -p1
 
 %build
-%configure \
-    --docdir=%{_docdir}/%{name}-%{version} \
-    --enable-libaudit=no \
-    --enable-selinux=no \
-    --with-console-auth-dir=/run/console \
-    --enable-user-session \
-    --runstatedir=/run
+CONFIGURE_OPTS=(
+  -Dlibaudit=disabled
+  -Dselinux=disabled
+  -Druntime_dir=/run
+  -Duser_session=true
+  -Dsystemd_user_unitdir=%{_userunitdir}
+  -Dsystemd_system_unitdir=%{_unitdir}
+  -Dsystemd=enabled
+  -Drelocation=enabled
+  -Ddbus_user="dbus"
+  --auto-features=disabled
+)
 
-%make_build
+%{meson} "${CONFIGURE_OPTS[@]}"
+%{meson_build}
 
 %install
-%make_install %{?_smp_mflags}
-install -vdm755 %{buildroot}%{_libdir}
+groupadd dbus
+%{meson_install}
 
-mkdir -p %{buildroot}%{_userunitdir}
-
-rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket \
-      %{buildroot}%{_libdir}/*.a \
-      %{buildroot}%{_libdir}/*.la
-
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -pDm 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
+rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket
 
 %check
-%make_build check
+%{meson_test}
 
 %pre
 %sysusers_create_compat %{SOURCE1}
@@ -97,10 +101,9 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %{_libdir}/libdbus-1.so.*
 %{_tmpfilesdir}/%{name}.conf
 %{_unitdir}/*
-%exclude %{_sysusersdir}
 %{_libexecdir}/*
 %{_datadir}/%{name}-1
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %files devel
 %defattr(-,root,root)
@@ -119,6 +122,8 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Tue Feb 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.8-1
+- Upgrade to v1.15.8
 * Fri Sep 22 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-4
 - Create dbus user
 * Thu Sep 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-3

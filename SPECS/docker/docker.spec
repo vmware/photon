@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        24.0.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -321,6 +321,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.0.5-6
+- Bump version as a part of dbus upgrade
 * Fri Mar 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.0.5-5
 - Add iptables to docker-engine requires
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-4

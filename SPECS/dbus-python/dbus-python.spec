@@ -1,6 +1,6 @@
 Name:           dbus-python3
 Version:        1.3.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python bindings for D-Bus
 License:        MIT
 Group:          Development/Libraries/Python
@@ -62,6 +62,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/dbus-python.pc
 
 %changelog
+* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.2-3
+- Bump version as a part of dbus upgrade
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.2-2
 - Update release to compile with python 3.11
 * Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 1.3.2-1

@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        23.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -148,6 +148,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 
 %changelog
+* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.4-3
+- Bump version as a part of dbus upgrade
 * Thu Jan 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.4-2
 - Call home fix
 * Thu Dec 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.4-1

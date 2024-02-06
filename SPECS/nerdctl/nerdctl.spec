@@ -6,7 +6,7 @@
 Summary:        Docker-compatible CLI for containerd
 Name:           nerdctl
 Version:        1.4.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/containerd/nerdctl
 Group:          Applications/File
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/containerd-rootless-setuptool.sh
 
 %changelog
+* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.0-8
+- Bump version as a part of dbus upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.4.0-7
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.4.0-6

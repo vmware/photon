@@ -1,7 +1,7 @@
 Name:          libnvme
 Summary:       Linux-native nvme device management library
 Version:       1.3
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -79,6 +79,8 @@ This package contains Python bindings for libnvme.
 %{python3_sitearch}/%{name}/
 
 %changelog
+*  Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3-3
+-  Bump version as a part of dbus upgrade
 *  Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3-2
 -  Bump version as a part of openssl upgrade
 *  Fri Mar 10 2023 Srish Srinivasan <ssrish@vmware.com> 1.3-1

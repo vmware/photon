@@ -1,7 +1,7 @@
 Summary:       Netlink Protocol Library Suite
 Name:          libnl
 Version:       3.7.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       LGPLv2+
 Group:         System Environment/Libraries
 URL:           https://github.com/thom311/libnl
@@ -65,6 +65,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.7.0-3
+- Bump version as a part of dbus upgrade
 * Tue Sep 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.0-2
 - Remove .la files
 * Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 3.7.0-1

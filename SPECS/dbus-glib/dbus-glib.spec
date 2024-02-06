@@ -1,7 +1,7 @@
 Summary:        Glib interfaces to D-Bus API
 Name:           dbus-glib
 Version:        0.112
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        AFL and GPLv2+
 Group:          System Environment/Libraries
 URL:            https://dbus.freedesktop.org/doc/dbus-glib
@@ -70,6 +70,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.112-5
+- Bump version as a part of dbus upgrade
 * Wed Sep 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.112-4
 - Add URL to spec header
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.112-3

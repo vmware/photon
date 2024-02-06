@@ -1,7 +1,7 @@
 Summary:       A set of tools to manage bluetooth devices for linux
 Name:          bluez-tools
 Version:       0.2.0.20140808
-Release:       6%{?dist}
+Release:       7%{?dist}
 License:       GPL
 Group:         Applications/Communication
 Vendor:        VMware, Inc.
@@ -46,6 +46,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %doc AUTHORS COPYING
 
 %changelog
+* Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.2.0.20140808-7
+- Bump version as a part of dbus upgrade
 * Tue Apr 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.2.0.20140808-6
 - Version Bump up to consume bluez v5.71
 * Fri Dec 16 2022 Nitesh Kumar <kunitesh@vmware.com> 0.2.0.20140808-5
