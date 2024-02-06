@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.209
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -114,6 +114,10 @@ Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 Patch41: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
 Patch42: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
+
+# Patch from the same series that resolved CVE-2024-0565
+Patch43: 0001-smb-client-fix-potential-OOBs-in-smb2_parse_contexts.patch
+Patch44: 0001-smb-client-fix-parsing-of-SMB3.1.1-POSIX-create-cont.patch
 
 # Expose Photon kernel macros to identify kernel flavor and version
 Patch50: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
@@ -402,7 +406,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M42
+%autopatch -p1 -m0 -M44
 
 # VMW
 %autopatch -p1 -m50 -M59
@@ -660,6 +664,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Feb 13 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.209-4
+- Patch from the same series that resolved CVE-2024-0565
 * Tue Feb 13 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.209-3
 - Fix CVE-2024-1086
 * Mon Feb 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.209-2

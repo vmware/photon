@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.209
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -106,6 +106,10 @@ Patch45: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
 Patch46: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
 Patch47: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch48: 0004-linux-aws-Makefile-Add-kernel-flavor-info-to-the-gen.patch
+
+# Patch from the same series that resolved CVE-2024-0565
+Patch49: 0001-smb-client-fix-potential-OOBs-in-smb2_parse_contexts.patch
+Patch50: 0001-smb-client-fix-parsing-of-SMB3.1.1-POSIX-create-cont.patch
 
 # VMW: [55..65]
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -334,7 +338,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M48
+%autopatch -p1 -m0 -M50
 
 # VMW
 %autopatch -p1 -m55 -M65
@@ -520,6 +524,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Feb 05 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.209-3
+- Patch from the same series that resolved CVE-2024-0565
 * Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.209-2
 - Fix CVE-2024-1086
 * Sun Jan 28 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.209-1

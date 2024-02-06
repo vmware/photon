@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.209
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -103,6 +103,10 @@ Patch43: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
 Patch44: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
 Patch45: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch46: 0004-linux-secure-Makefile-Add-kernel-flavor-info-to-the-.patch
+
+# Patch from the same series that resolved CVE-2024-0565
+Patch47: 0001-smb-client-fix-potential-OOBs-in-smb2_parse_contexts.patch
+Patch48: 0001-smb-client-fix-parsing-of-SMB3.1.1-POSIX-create-cont.patch
 
 # VMW: [55..60]
 %ifarch x86_64
@@ -301,7 +305,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M46
+%autopatch -p1 -m0 -M48
 
 %ifarch x86_64
 # VMW x86
@@ -462,6 +466,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 05 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.209-3
+- Patch from the same series that resolved CVE-2024-0565
 * Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.209-2
 - Fix CVE-2024-1086
 * Sun Jan 28 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.209-1
