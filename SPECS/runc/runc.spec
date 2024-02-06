@@ -2,14 +2,15 @@
 %define __os_install_post %{nil}
 
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.1.4
-%define RUNC_BRANCH  v%{version}
+%define RUNC_VERSION 1.1.12
+%define RUNC_BRANCH  v%{RUNC_VERSION}
+
 %define gopath_comp  github.com/opencontainers/runc
 
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
-Version:             1.1.4
-Release:             12%{?dist}
+Version:             1.1.12
+Release:             1%{?dist}
 License:             ASL 2.0
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
@@ -17,17 +18,14 @@ Vendor:              VMware, Inc.
 Distribution:        Photon
 
 Source0: https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
-%define sha512 %{name}=c8e79ad839964680d29ab56a4de255f91192741951673025da6889c544a232d4d392db2da8005d8e22999a37bfbc9c9fe7f6043b165bc4edc2f2a29261d8a3d6
+%define sha512 %{name}=92e8ac54a77d7ebcc76b5a9cc08d9a064211f12e9d26f064070cc203a5afb11c3af28d8f556f297513f797a2933d50bf10a8f22e307724041d66aa8c5ca1d9d3
 
-Patch0: CVE-2023-27561.patch
-Patch1: CVE-2023-25809.patch
-
-BuildRequires:       go
-BuildRequires:       which
-BuildRequires:       go-md2man
-BuildRequires:       pkg-config
-BuildRequires:       libseccomp
-BuildRequires:       libseccomp-devel
+BuildRequires: go
+BuildRequires: which
+BuildRequires: go-md2man
+BuildRequires: pkg-config
+BuildRequires: libseccomp
+BuildRequires: libseccomp-devel
 
 %description
 runC is a CLI tool for spawning and running containers according to the OCI specification.
@@ -41,12 +39,7 @@ Requires:            %{name} = %{version}-%{release}
 Documentation for runc
 
 %prep
-# Using autosetup is not feasible
-%setup -q -c
-pushd %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
-popd
+%autosetup -p1 -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{version} src/%{gopath_comp}
 
@@ -76,6 +69,8 @@ cd src/%{gopath_comp}
 %{_mandir}/man8/*
 
 %changelog
+* Tue Feb 06 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.1.12-1
+- Version upgrade to v1.1.12 to fix CVE-2024-21626
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.4-12
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.4-11
