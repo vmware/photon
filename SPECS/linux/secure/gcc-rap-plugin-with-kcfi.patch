@@ -35,6 +35,7 @@ Following changes are made to adopt KCFI in GCC RAP plugin:
   callers of SYM_TYPED_FUNC_START when CONFIG_PAX_RAP is enabled.
 
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Signed-off-by: Mukul Sikka <mukul.sikka@broadcom.com>
 ---
  Makefile                                      |   2 +
  arch/Kconfig                                  |   8 +-
@@ -87,7 +88,7 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  include/linux/compiler_types.h                |   4 +
  include/linux/moduleparam.h                   |   4 +-
  include/linux/pci.h                           |   2 +-
- include/linux/syscalls.h                      |  16 +-
+ include/linux/syscalls.h                      |  17 +-
  kernel/bpf/core.c                             |  21 +-
  kernel/events/core.c                          |   3 +-
  kernel/module/main.c                          |   9 +-
@@ -104,7 +105,7 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  scripts/mod/modpost.c                         |   6 -
  security/Kconfig                              |  29 +
  security/apparmor/net.c                       |   2 +-
- 68 files changed, 2322 insertions(+), 450 deletions(-)
+ 68 files changed, 2322 insertions(+), 451 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -132,7 +133,7 @@ diff --git a/arch/Kconfig b/arch/Kconfig
 index b60d271bf..edf9a4c77 100644
 --- a/arch/Kconfig
 +++ b/arch/Kconfig
-@@ -750,10 +750,16 @@ config ARCH_SUPPORTS_CFI_CLANG
+@@ -753,10 +753,16 @@ config ARCH_SUPPORTS_CFI_CLANG
  config ARCH_USES_CFI_TRAPS
  	bool
  
@@ -164,7 +165,7 @@ diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
 index 6c2826417..e6c5e6fff 100644
 --- a/arch/x86/entry/common.c
 +++ b/arch/x86/entry/common.c
-@@ -47,7 +47,17 @@ static __always_inline bool do_syscall_x64(struct pt_regs *regs, int nr)
+@@ -48,7 +48,17 @@ static __always_inline bool do_syscall_x64(struct pt_regs *regs, int nr)
  
  	if (likely(unr < NR_syscalls)) {
  		unr = array_index_nospec(unr, NR_syscalls);
@@ -182,7 +183,7 @@ index 6c2826417..e6c5e6fff 100644
  		return true;
  	}
  	return false;
-@@ -109,7 +119,48 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs, int nr)
+@@ -114,7 +124,48 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs, int nr)
  
  	if (likely(unr < IA32_NR_syscalls)) {
  		unr = array_index_nospec(unr, IA32_NR_syscalls);
@@ -3619,21 +3620,23 @@ diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
 index a34b0f9a9..f3dd85b6b 100644
 --- a/include/linux/syscalls.h
 +++ b/include/linux/syscalls.h
-@@ -122,6 +122,13 @@ enum landlock_rule_type;
+@@ -122,8 +122,14 @@ enum landlock_rule_type;
  #define __TYPE_IS_UL(t)	(__TYPE_AS(t, 0UL))
  #define __TYPE_IS_LL(t) (__TYPE_AS(t, 0LL) || __TYPE_AS(t, 0ULL))
  #define __SC_LONG(t, a) __typeof(__builtin_choose_expr(__TYPE_IS_LL(t), 0LL, 0L)) a
-+#define __SC_TYPE(t) __typeof__(                               \
++#define __SC_TYPE(t, a) __typeof__(                               \
 +       __builtin_choose_expr(                                  \
 +               sizeof(t) > sizeof(int),                        \
 +               (t) 0,                                          \
 +               __builtin_choose_expr(__type_is_unsigned(t), 0UL, 0L)   \
 +       ))
-+#define __SC_WRAP(t, a)        (__SC_TYPE(t)) a
++#define __SC_WRAP(t, a)        (__SC_TYPE(t, a)) a
  #define __SC_CAST(t, a)	(__force t) a
+-#define __SC_TYPE(t, a)	t
  #define __SC_ARGS(t, a)	a
  #define __SC_TEST(t, a) (void)BUILD_BUG_ON_ZERO(!__TYPE_IS_LL(t) && sizeof(t) > sizeof(long))
-@@ -239,18 +246,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
+ 
+@@ -240,18 +246,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
  	__diag_push();							\
  	__diag_ignore(GCC, 8, "-Wattribute-alias",			\
  		      "Type aliasing is used to sanitize syscall arguments");\
@@ -3661,7 +3664,7 @@ diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
 index 647067236..5f8d8289a 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -1049,6 +1049,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
+@@ -1066,6 +1066,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
  	bpf_jit_uncharge_modmem(size);
  }
  
@@ -3672,7 +3675,7 @@ index 647067236..5f8d8289a 100644
  /* Allocate jit binary from bpf_prog_pack allocator.
   * Since the allocated memory is RO+X, the JIT engine cannot write directly
   * to the memory. To solve this problem, a RW buffer is also allocated at
-@@ -1095,11 +1099,24 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -1112,11 +1116,24 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
  
  	hole = min_t(unsigned int, size - (proglen + sizeof(*ro_header)),
  		     BPF_PROG_CHUNK_SIZE - sizeof(*ro_header));
@@ -3697,7 +3700,7 @@ index 647067236..5f8d8289a 100644
  	return ro_header;
  }
  
-@@ -1626,7 +1643,7 @@ bool bpf_opcode_in_insntable(u8 code)
+@@ -1644,7 +1661,7 @@ bool bpf_opcode_in_insntable(u8 code)
  }
  
  #ifndef CONFIG_BPF_JIT_ALWAYS_ON
@@ -3706,7 +3709,7 @@ index 647067236..5f8d8289a 100644
  {
  	memset(dst, 0, size);
  	return -EFAULT;
-@@ -1922,7 +1939,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
+@@ -1943,7 +1960,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
  		DST = *(SIZE *)(unsigned long) (SRC + insn->off);	\
  		CONT;							\
  	LDX_PROBE_MEM_##SIZEOP:						\
@@ -3763,7 +3766,7 @@ diff --git a/kernel/sched/core.c b/kernel/sched/core.c
 index 55d13980e..fe421c269 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -4881,7 +4881,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
+@@ -4885,7 +4885,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
  	lockdep_assert_rq_held(rq);
  
  	while (head) {
@@ -3790,7 +3793,7 @@ diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core
 index 20eede37d..e5a5fc5cb 100644
 --- a/net/netfilter/ipset/ip_set_core.c
 +++ b/net/netfilter/ipset/ip_set_core.c
-@@ -389,7 +389,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
+@@ -391,7 +391,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
  	rcu_assign_pointer(comment->c, NULL);
  }
  
