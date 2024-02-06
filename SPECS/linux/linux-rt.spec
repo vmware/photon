@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.305
-Release:        6%{?kat_build:.%kat}%{?dist}
+Version:        4.19.306
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -16,12 +16,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt131
+%define rt_version rt132
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=2e9b2f90ff5f6fbc3a0b32dd57620e917b6b004bbefe319e72ffe1ac9ede95fcf87d03bfed73114327a71cfcec6612888d4947922f4ec8d88deea4554b4b579c
+%define sha512 linux=0b7f2b0321d59f94574db6acf0485029a9e7521058eebe1835af7f898e4a446ae25881dbad11e78e5c6bcef58988494325a2827824b7152a0e43edc878126640
 
 %ifarch x86_64
 Source1: config-rt
@@ -1255,6 +1255,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue Feb 06 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-1
+- Update to version 4.19.306
 * Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.305-6
 - Fix CVE-2024-1086
 * Mon Feb 05 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.305-5

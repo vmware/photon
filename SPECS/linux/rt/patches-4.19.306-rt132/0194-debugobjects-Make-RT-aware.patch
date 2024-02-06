@@ -1,0 +1,28 @@
+From 9df7beebf62aeff7e674782c7cc7f2de6162e343 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sun, 17 Jul 2011 21:41:35 +0200
+Subject: [PATCH 194/353] debugobjects: Make RT aware
+
+Avoid filling the pool / allocating memory with irqs off().
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ lib/debugobjects.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/debugobjects.c b/lib/debugobjects.c
+index 62d095fd0c52..08c372c65d10 100644
+--- a/lib/debugobjects.c
++++ b/lib/debugobjects.c
+@@ -475,7 +475,7 @@ static void debug_objects_fill_pool(void)
+ 	 * On RT enabled kernels the pool refill must happen in preemptible
+ 	 * context:
+ 	 */
+-	if (!IS_ENABLED(CONFIG_PREEMPT_RT) || preemptible())
++	if (!IS_ENABLED(CONFIG_PREEMPT_RT_FULL) || preemptible())
+ 		fill_pool();
+ }
+ 
+-- 
+2.43.0
+

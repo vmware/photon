@@ -1,0 +1,51 @@
+From 5a3414d2774e4924fbb540d613ae654e0b563a70 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clark.williams@gmail.com>
+Date: Sun, 30 Jan 2022 15:46:27 -0600
+Subject: [PATCH 337/353] rt: PREEMPT_RT safety net for backported patches
+
+While doing some 4.19-rt cleanup work, I stumbled across the fact that parts of
+two backported patches were dependent on CONFIG_PREEMPT_RT, rather than
+the CONFIG_PREEMPT_RT_FULL used in 4.19 and earlier RT series.  The commits
+in the linux-stable-rt v4.19-rt branch are:
+
+dad4c6a33bf4e mm: slub: Don't resize the location tracking cache on PREEMPT_RT
+e626b6f873f2c net: Treat __napi_schedule_irqoff() as __napi_schedule() on PREEMPT_RT
+
+Discussing this at the Stable RT maintainers meeting, Steven Rostedt suggested that
+we automagically select CONFIG_PREEMPT_RT if CONFIG_PREEMPT_RT_FULL is on, giving
+us a safety net for any subsequently backported patches. Here's my first cut at
+that patch.
+
+I suspect we'll need a similar patch for stable RT kernels < 4.19.
+
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ kernel/Kconfig.preempt | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/kernel/Kconfig.preempt b/kernel/Kconfig.preempt
+index 306567f72a3e..fd924c0bcea7 100644
+--- a/kernel/Kconfig.preempt
++++ b/kernel/Kconfig.preempt
+@@ -6,6 +6,9 @@ config PREEMPT_RT_BASE
+ 	bool
+ 	select PREEMPT
+ 
++config PREEMPT_RT
++       bool
++
+ config HAVE_PREEMPT_LAZY
+ 	bool
+ 
+@@ -80,6 +83,7 @@ config PREEMPT_RT_FULL
+ 	depends on IRQ_FORCED_THREADING
+ 	select PREEMPT_RT_BASE
+ 	select PREEMPT_RCU
++	select PREEMPT_RT
+ 	help
+ 	  All and everything
+ 
+-- 
+2.43.0
+
