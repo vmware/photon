@@ -1,0 +1,811 @@
+From 4d5a2e55784cb6616762de09c598908093dc4b16 Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <him-kalyan.bordoloi@broadcom.com>
+Date: Fri, 16 Feb 2024 22:24:42 +0000
+Subject: [PATCH 2/2] stalld: Boost and Migrate Feature
+
+Stalld is intended to keep a system stable. In order to do that it monitors
+threads that are starving, and then boosts their priority using the deadline
+scheduler. Currently any starving thread is boosted, including user space
+threads. This pactice however leads to unintended consequences in misconfigured
+systems.
+
+In practice, we have seen instances where multiple user threads are starving on
+a CPU (which is also running one or more high priority cpu hungry task), along
+with kernel threads. The lower priority user threads, as well as kernel threads
+are entirely dependent on stalld to make progress.
+
+In such cases, stalld spends significant time boosting user threads. As a result
+kernel thread spend more time being starved and unable to make progress. This
+leads to systemwide issues, including system hangs, thus defeating the purpose of
+stalld
+
+With this patch, we change stalld's behaviour to boost kernel threads and select
+non CPU agnostic usertasks only. A user task that is CPU agnostic, ie. one that
+can be moved to a different CPU will be migrated to a CPU that is not as busy.
+We have added a config to provide a whitelist of non CPU agnostic user process
+and threads.
+---
+ src/sched_debug.c      |   8 +
+ src/stalld.c           | 388 ++++++++++++++++++++++++++++++++++-------
+ src/stalld.h           |  19 +-
+ src/utils.c            |  91 ++++++++--
+ systemd/stalld.service |   2 +-
+ 5 files changed, 430 insertions(+), 78 deletions(-)
+
+diff --git a/src/sched_debug.c b/src/sched_debug.c
+index d8a0552..ffb731a 100644
+--- a/src/sched_debug.c
++++ b/src/sched_debug.c
+@@ -292,6 +292,12 @@ static int parse_new_task_format(char *buffer, struct task_info *task_info, int
+ 		/* Get the id of the thread group leader. */
+ 		task->tgid = get_tgid(task->pid);
+ 
++		/* get the id of the parent process*/
++		task->ppid = get_ppid(task->pid);
++
++		/* init retry count for migration*/
++		task->nr_migration_attempts_left = config_migration_attempts;
++
+ 		/* Go to the end of the pid. */
+ 		start=end;
+ 
+@@ -483,9 +489,11 @@ static int parse_old_task_format(char *buffer, struct task_info *task_info, int
+ 			task->comm[comm_size] = 0;
+ 			task->pid = pid;
+ 			task->tgid = get_tgid(task->pid);
++			task->ppid = get_ppid(task->pid);
+ 			task->ctxsw = ctxsw;
+ 			task->prio = prio;
+ 			task->since = time(NULL);
++			task->nr_migration_attempts_left = config_migration_attempts;
+ 			waiting_tasks++;
+ 		}
+ 
+diff --git a/src/stalld.c b/src/stalld.c
+index a554cc8..5fb0dca 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -60,6 +60,11 @@ struct log_queue log_queue;
+ struct log_thread logging_thread;
+ unsigned long config_log_buffer_size = 1000;
+ 
++/*
++ * Boost and Migrate feature.
++ */
++int config_boost_and_migrate = 0;
++int config_migration_attempts = 3;
+ /*
+  * Denylisting feature.
+  */
+@@ -141,13 +146,26 @@ int STAT_MAX_SIZE = 4096;
+  * Variables related to the threads to be ignored.
+  */
+ unsigned int nr_thread_ignore = 0;
+-regex_t *compiled_regex_thread = NULL;
++regex_t *compiled_regex_ignore_thread = NULL;
+ 
+ /*
+  * Variables related to the processes to be ignored.
+  */
+ unsigned int nr_process_ignore = 0;
+-regex_t *compiled_regex_process = NULL;
++regex_t *compiled_regex_ignore_process = NULL;
++
++/*
++ * variables related to user threads to be boosted
++ */
++unsigned int nr_thread_boost = 0;
++regex_t *compiled_regex_boost_thread = NULL;
++
++/*
++ * variables related to user processes to be boosted
++ */
++unsigned int nr_process_boost = 0;
++regex_t *compiled_regex_boost_process = NULL;
++
+ 
+ /*
+  * Store the current sched_debug file path.
+@@ -244,6 +262,59 @@ out_free_mem:
+ 	return -EINVAL;
+ }
+ 
++/*
++ * API to fetch the parent's PID for a thread/procespp */
++int get_ppid(int pid)
++{
++	const char ppid_field[PPID_FIELD] = "PPid:";
++	char file_location[PROC_PID_FILE_PATH_LEN];
++	char *status = NULL;
++	int ppid, n;
++	FILE *fp;
++
++	status = calloc(TMP_BUFFER_SIZE, sizeof(char));
++	if (status == NULL) {
++		return -ENOMEM;
++	}
++
++	n = sprintf(file_location, "/proc/%d/status", pid);
++	if (n < 0)
++		goto out_free_mem;
++
++	if ((fp = fopen(file_location, "r")) == NULL)
++		goto out_free_mem;
++
++	/*
++	 * Iterate till we find the PPid field
++	 */
++	while (1) {
++		if (fgets(status, TMP_BUFFER_SIZE, fp) == NULL)
++			goto out_close_fd;
++		if (!(strncmp(status, ppid_field, (PPID_FIELD - 1))))
++			break;
++		/*
++		 * Zero out the buffer just in case
++		 */
++		memset(status, 0, TMP_BUFFER_SIZE);
++	}
++	/*
++	 * since we're now at the line we're interested in,
++	 * let's read in the field that we want
++	 */
++	if (sscanf(status, "%*s %d", &ppid) != 1)
++		goto out_close_fd;
++
++	fclose(fp);
++	free(status);
++	return ppid;
++
++out_close_fd:
++	fclose(fp);
++out_free_mem:
++	free(status);
++	return -EINVAL;
++}
++
+ /*
+  * Read the content of sched_debug into the input buffer.
+  */
+@@ -448,6 +519,149 @@ void print_waiting_tasks(struct cpu_info *cpu_info)
+ 
+ }
+ 
++/*
++ * API to check if the task must not be considered for priority boosting.
++ * The task's name itself will be checked or the name of the task
++ * group it is a part of will be checked.
++ */
++int check_task_regex(struct task_info *task, unsigned int flag) {
++	char group_comm[COMM_SIZE];;
++	int ret = -EINVAL;
++	unsigned int i;
++	unsigned int nr_thread = 0;
++	unsigned int nr_process = 0;
++	regex_t *compiled_regex_thread = NULL;
++	regex_t *compiled_regex_process = NULL;
++	const char *log_string;
++
++	switch (flag) {
++		case IGNORE_THREADS:
++		case IGNORE_PROCESSES:
++			nr_thread = nr_thread_ignore;
++			compiled_regex_thread = compiled_regex_ignore_thread;
++			nr_process = nr_process_ignore;
++			compiled_regex_process = compiled_regex_ignore_process;
++			log_string = "ignored";
++			break;
++		case BOOST_THREADS:
++		case BOOST_PROCESSES:
++			nr_thread = nr_thread_boost;
++			compiled_regex_thread = compiled_regex_boost_thread;
++			nr_process = nr_process_boost;
++			compiled_regex_process = compiled_regex_boost_process;
++			log_string = "considered";
++			break;
++	}
++
++	/*
++	 * Check if this task's name has been passed as part of the
++	 * thread ignore regex.
++	 */
++	for (i = 0; i < nr_thread; i++) {
++		ret = regexec(&compiled_regex_thread[i], task->comm, REGEXEC_NO_NMATCH,
++				REGEXEC_NO_MATCHPTR, REGEXEC_NO_FLAGS);
++		if (!ret) {
++			log_msg("Thread %s will be %s for boosting\n", task->comm, log_string);
++			return ret;
++		}
++	}
++	ret = -EINVAL;
++
++	/*
++	 * If a valid tgid has been found and its not that of the swapper
++	 * (because its not listed on the /proc filesystem) then proceed
++	 * to fetch the name of the process.
++	 */
++	if (task->tgid > SWAPPER) {
++		if (fill_process_comm(task->tgid, task->pid, group_comm, COMM_SIZE)) {
++			warn("Ran into a tgid without process name");
++			return ret;
++		}
++		/*
++		 * Check if the process group that this task is a part has been
++		 * requested to be ignored.
++		 */
++		for (i = 0; i < nr_process; i++) {
++			ret = regexec(&compiled_regex_process[i], group_comm, REGEXEC_NO_NMATCH,
++					REGEXEC_NO_MATCHPTR, REGEXEC_NO_FLAGS);
++			if (!ret) {
++				log_msg("Thread %s (spawned by %s) will be %s for boosting\n", task->comm, group_comm, log_string);
++				goto out;
++			}
++		}
++	}
++out:
++	return ret;
++}
++
++int is_migration_possible(struct task_info *task) {
++	cpu_set_t cpuset;
++
++	/* Migration is not possible */
++	/* If the task has exhausted migration attempts */
++	if (task->nr_migration_attempts_left <= 0)
++		return 0;
++
++	/* If task is allowed to run on only one CPU */
++	read_cpu_affinity(task->pid, &cpuset);
++	if (CPU_COUNT(&cpuset) < 2)
++		return 0;
++
++	return 1;
++}
++
++int check_needs_boosting(struct task_info *task)
++{
++	int boost = 1;
++
++	/* If feature is enabled, we don't boost all user tasks */
++	if (config_boost_and_migrate) {
++		boost = 0;
++		/* Kernel threads need to be boosted */
++		if(task->ppid == 2 || task->pid == 2)
++			boost = 1;
++		/* Only boost user tasks that are whitelisted */
++		else if (!check_task_regex(task, BOOST_THREADS))
++			boost = 1;
++		/* Or if migration is not possible now */
++		else if (!is_migration_possible(task))
++			boost = 1;
++	}
++	/* no need to boost if task is in the blacklist */
++	if (config_ignore && !(check_task_regex(task, IGNORE_THREADS))) {
++		task->since = time(NULL);
++		boost = 0;
++	}
++
++	return boost;
++}
++
++int check_needs_migration(struct task_info *task)
++{
++	int migrate = 0;
++
++	/* If feature is enabled, a starving task is either boosted or migrated*/
++	if (config_boost_and_migrate) {
++		/* Don't migrate kernel tasks*/
++		if(task->ppid == 2 || task->pid == 2)
++			migrate = 0;
++		/* Or if migration is not possible now */
++		else if (!is_migration_possible(task))
++			migrate = 0;
++		/* Whitelisted user space tasks will also remain on the CPU*/
++		else if (!check_task_regex(task, BOOST_THREADS))
++			migrate = 0;
++		/* Tasks in the blacklist are always left alone*/
++		else if (!check_task_regex(task, IGNORE_THREADS))
++			migrate = 0;
++		else
++			migrate = 1;
++	}
++
++	return migrate;
++}
++
++
+ struct cpu_starving_task_info {
+ 	struct task_info task;
+ 	int pid;
+@@ -473,7 +687,7 @@ void update_cpu_starving_vector(int cpu, int tgid, int pid, time_t since, struct
+ 	 * If there is no thread in the vector, or if the in the
+ 	 * vector has an earlier since (time stamp), update it.
+ 	 */
+-	if ((cpu_info->since == 0) || cpu_info->since > since) {
++	if (check_needs_boosting(task) && ( (cpu_info->since == 0) || cpu_info->since > since)) {
+ 		memcpy(&(cpu_info->task), task, sizeof(struct task_info));
+ 		cpu_info->pid = pid;
+ 		cpu_info->tgid = tgid;
+@@ -496,6 +710,9 @@ void merge_taks_info(int cpu, struct task_info *old_tasks, int nr_old, struct ta
+ 
+ 			if (old_task->pid == new_task->pid) {
+ 				if (old_task->ctxsw == new_task->ctxsw) {
++					if (old_task->nr_migration_attempts_left < new_task->nr_migration_attempts_left
++					    && old_task->nr_migration_attempts_left >= 0)
++						new_task->nr_migration_attempts_left = old_task->nr_migration_attempts_left;
+ 					new_task->since = old_task->since;
+ 					if (config_single_threaded)
+ 						update_cpu_starving_vector(cpu, new_task->tgid, new_task->pid, new_task->since, new_task);
+@@ -618,6 +835,91 @@ void do_fifo_boost(int tgid, int pid, struct sched_attr *old_attr, struct cpu_in
+ 	}
+ }
+ 
++int migrate_starving_task(int pid, int cpu, int nr_cpus, char *busy_cpu_list)
++{
++	int ret;
++	cpu_set_t cpuset;
++	int busy_cpu_count;
++
++	/*
++	 * Read the current cpu affinity of the task
++	 */
++	ret = read_cpu_affinity(pid, &cpuset);
++	if (ret < 0)
++		return ret;
++
++	/*
++	 * If idle_detection is available, make sure that
++	 * idle CPUs are available and only migrate to them
++	 */
++	if (config_idle_detection && nr_cpus > 0 && busy_cpu_list) {
++		busy_cpu_count = 0;
++
++		for (int i = 0; i < nr_cpus; i++) {
++			if (!CPU_ISSET(i, &cpuset))
++				continue;
++			if (!busy_cpu_list[i])
++				break;
++			busy_cpu_count++;
++		}
++		if (busy_cpu_count == CPU_COUNT(&cpuset)) {
++			if (config_verbose)
++				log_msg("All CPUs are busy. Task Migration not possible\n");
++			return -1;
++		}
++		for (int i = 0; i < nr_cpus; i++) {
++			if (busy_cpu_list[i] && (i != cpu))
++				remove_from_cpu_affinity(&cpuset, i);
++		}
++	}
++	ret = remove_from_cpu_affinity(&cpuset, cpu);
++	if (ret < 0)
++		return ret;
++
++	log_msg("Try to migrate task %d from CPU %s\n", pid, cpu);
++	/*
++	 * Set the modified CPU affinity
++	 */
++	ret = write_cpu_affinity(pid, &cpuset);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++int check_migratable_tasks(struct cpu_info *cpu, int nr_cpus, char *busy_cpu_list)
++{
++	struct task_info *tasks = cpu->starving;
++	struct task_info *task;
++	int migrated = 0;
++
++	for (int i = 0; i < cpu->nr_waiting_tasks; i++) {
++		task = &tasks[i];
++
++		if ((time(NULL) - task->since) >= config_starving_threshold) {
++
++			if (!check_needs_migration(task))
++				continue;
++
++			log_msg("%s-%d starved on CPU %d for %d seconds.\n",
++				task->comm, task->pid, cpu->id,
++				(time(NULL) - task->since));
++
++			if ( !migrate_starving_task(task->pid, cpu->id, nr_cpus, busy_cpu_list) ) {
++				task->nr_migration_attempts_left = config_migration_attempts;
++				migrated++;
++			} else {
++				task->nr_migration_attempts_left--;
++				if (task->nr_migration_attempts_left == 0) {
++					log_msg("task %s-%d could not be migrated out of CPU %d\n",task->comm, task->pid, cpu->id);
++				}
++			}
++		}
++	}
++
++	return migrated;
++ }
++
+ int boost_starving_task(int tgid, int pid, struct cpu_info *cpu)
+ {
+ 	struct sched_attr attr;
+@@ -655,57 +957,6 @@ int boost_starving_task(int tgid, int pid, struct cpu_info *cpu)
+ 
+ }
+ 
+-/*
+- * API to check if the task must not be considered for priority boosting.
+- * The task's name itself will be checked or the name of the task
+- * group it is a part of will be checked.
+- */
+-int check_task_ignore(struct task_info *task) {
+-	char group_comm[COMM_SIZE];
+-	int ret = -EINVAL;
+-	unsigned int i;
+-
+-	/*
+-	 * Check if this task's name has been passed as part of the
+-	 * thread ignore regex.
+-	 */
+-	for (i = 0; i < nr_thread_ignore; i++) {
+-		ret = regexec(&compiled_regex_thread[i], task->comm, REGEXEC_NO_NMATCH,
+-				REGEXEC_NO_MATCHPTR, REGEXEC_NO_FLAGS);
+-		if (!ret) {
+-			log_msg("Ignoring the thread %s from consideration for boosting\n", task->comm);
+-			return ret;
+-		}
+-	}
+-	ret = -EINVAL;
+-
+-	/*
+-	 * If a valid tgid has been found and its not that of the swapper
+-	 * (because its not listed on the /proc filesystem) then proceed
+-	 * to fetch the name of the process.
+-	 */
+-	if (task->tgid > SWAPPER) {
+-		if (fill_process_comm(task->tgid, task->pid, group_comm, COMM_SIZE)) {
+-			warn("Ran into a tgid without process name");
+-			return ret;
+-		}
+-		/*
+-		 * Check if the process group that this task is a part has been
+-		 * requested to be ignored.
+-		 */
+-		for (i = 0; i < nr_process_ignore; i++) {
+-			ret = regexec(&compiled_regex_process[i], group_comm, REGEXEC_NO_NMATCH,
+-					REGEXEC_NO_MATCHPTR, REGEXEC_NO_FLAGS);
+-			if (!ret) {
+-				log_msg("Ignoring the thread %s (spawned by %s) from consideration for boosting\n", task->comm, group_comm);
+-				goto out;
+-			}
+-		}
+-	}
+-out:
+-	return ret;
+-}
+-
+ int check_starving_tasks(struct cpu_info *cpu)
+ {
+ 	struct task_info *tasks = cpu->starving;
+@@ -723,14 +974,10 @@ int check_starving_tasks(struct cpu_info *cpu)
+ 				(time(NULL) - task->since));
+ 
+ 			/*
+-			 * Check if this task needs to be ignored from being boosted
+-			 * if yes, update the time stamp so that it doesn't keep
+-			 * getting reported as being starved.
++			 * check if this task needs to be boosted
+ 			 */
+-			if (config_ignore && !(check_task_ignore(task))) {
+-				task->since = time(NULL);
++			if (!check_needs_boosting(task))
+ 				continue;
+-			}
+ 
+ 			starving+=1;
+ 
+@@ -928,6 +1175,8 @@ void *cpu_main(void *data)
+ 
+ 		if (backend->has_starving_task(cpu)) {
+ 			nothing_to_do = 0;
++			if (config_boost_and_migrate)
++				check_migratable_tasks(cpu, 0, NULL);
+ 			check_starving_tasks(cpu);
+ 		} else {
+ 			nothing_to_do++;
+@@ -1154,11 +1403,12 @@ int boost_cpu_starving_vector(struct cpu_starving_task_info *vector, int nr_cpus
+ 
+ 		if (cpu->pid != 0 && (now - cpu->since) >= config_starving_threshold) {
+ 			/*
+-			 * Check if this task name is part of a denylist
+-			 * If yes, do not boost it.
++			 * Check if this task needs to be boosted
+ 			 */
+-			if (config_ignore && !check_task_ignore(&cpu->task))
++			if (!check_needs_boosting(&cpu->task)) {
++				log_msg("\t task %s-%d not boosted\n",cpu->task.comm, cpu->pid);
+ 				continue;
++			}
+ 
+ 			/* Save the task policy. */
+ 			ret = get_current_policy(cpu->pid, &attr[i]);
+@@ -1300,6 +1550,12 @@ void single_threaded_main(struct cpu_info *cpus, int nr_cpus)
+ 
+ 		}
+ 
++		if (config_boost_and_migrate) {
++			for (i = 0; i < nr_cpus; i++) {
++				check_migratable_tasks(&cpus[i], nr_cpus, busy_cpu_list);
++			}
++		}
++
+ 		boosted = boost_cpu_starving_vector(cpu_starving_vector, nr_cpus, cpus);
+ 		if (!boosted)
+ 			goto skipped;
+@@ -1601,8 +1857,10 @@ int main(int argc, char **argv)
+ 	else
+ 		single_threaded_main(cpus, config_nr_cpus);
+ 
+-	cleanup_regex(&nr_thread_ignore, &compiled_regex_thread);
+-	cleanup_regex(&nr_process_ignore, &compiled_regex_process);
++	cleanup_regex(&nr_thread_ignore, &compiled_regex_ignore_thread);
++	cleanup_regex(&nr_process_ignore, &compiled_regex_ignore_process);
++	cleanup_regex(&nr_thread_boost, &compiled_regex_boost_thread);
++	cleanup_regex(&nr_process_boost, &compiled_regex_boost_process);
+ 
+ 	if (config_threaded_log) {
+ 		if (join_thread(&logging_thread.thread) != 0) {
+diff --git a/src/stalld.h b/src/stalld.h
+index 158f6b7..8c6a0f0 100644
+--- a/src/stalld.h
++++ b/src/stalld.h
+@@ -30,7 +30,10 @@
+ #define SWAPPER 0
+ #define IGNORE_THREADS 1
+ #define IGNORE_PROCESSES 2
++#define BOOST_THREADS 3
++#define BOOST_PROCESSES 4
+ #define TGID_FIELD 6
++#define PPID_FIELD 6
+ #define REGEXEC_NO_NMATCH 0
+ #define REGEXEC_NO_MATCHPTR NULL
+ #define REGEXEC_NO_FLAGS 0
+@@ -58,8 +61,10 @@
+ struct task_info {
+        int pid;
+        int tgid;
++       int ppid;
+        int prio;
+        int ctxsw;
++       int nr_migration_attempts_left;
+        time_t since;
+        char comm[COMM_SIZE];
+ };
+@@ -232,8 +237,12 @@ void cleanup_logging();
+ void find_sched_debug_path(void);
+ int set_reservation(int period, int reservation);
+ int get_tgid(int pid);
++int get_ppid(int pid);
+ void merge_taks_info(int cpu, struct task_info *old_tasks, int nr_old, struct task_info *new_tasks, int nr_new);
+ int set_cpu_affinity(char *cpu_list);
++int read_cpu_affinity(int pid, cpu_set_t *cpuset);
++int write_cpu_affinity(int pid, cpu_set_t *cpuset);
++int remove_from_cpu_affinity(cpu_set_t *cpuset, int cpu);
+ 
+ /*
+  * Shared variables.
+@@ -249,6 +258,8 @@ extern int config_threaded_log;
+ extern struct log_queue log_queue;
+ extern struct log_thread logging_thread;
+ extern unsigned long config_log_buffer_size;
++extern int config_boost_and_migrate;
++extern int config_migration_attempts;
+ extern int config_ignore;
+ extern unsigned long config_dl_period;
+ extern unsigned long config_dl_runtime;
+@@ -266,10 +277,14 @@ extern int config_idle_detection;
+ extern int config_single_threaded;
+ extern int config_adaptive_multi_threaded;
+ extern char pidfile[];
++extern unsigned int nr_thread_boost;
++extern unsigned int nr_process_boost;
++extern regex_t *compiled_regex_boost_thread;
++extern regex_t *compiled_regex_boost_process;
+ extern unsigned int nr_thread_ignore;
+ extern unsigned int nr_process_ignore;
+-extern regex_t *compiled_regex_thread;
+-extern regex_t *compiled_regex_process;
++extern regex_t *compiled_regex_ignore_thread;
++extern regex_t *compiled_regex_ignore_process;
+ extern char *config_sched_debug_path;
+ extern int config_reservation;
+ extern size_t config_buffer_size;
+diff --git a/src/utils.c b/src/utils.c
+index c8ae762..2b52cae 100644
+--- a/src/utils.c
++++ b/src/utils.c
+@@ -758,6 +758,43 @@ int setup_hr_tick(void)
+ 	return ret;
+ }
+ 
++int read_cpu_affinity(int pid, cpu_set_t *cpuset) {
++        int ret = 0;
++
++        /* Get CPU affinity mask for the process */
++        ret = sched_getaffinity(pid, sizeof(cpu_set_t), cpuset);
++        if (ret < 0) {
++                warn("sched_getaffinity failed for pid %d\n", pid);
++        }
++
++        return ret;
++}
++
++int write_cpu_affinity(int pid, cpu_set_t *cpuset) {
++        int ret = 0;
++
++        /* Set CPU affinity mask for the process */
++        ret = sched_setaffinity(pid, sizeof(cpu_set_t), cpuset);
++        if (ret < 0) {
++                warn("sched_setaffinity failed for pid %d\n", pid);
++        }
++
++        return ret;
++}
++
++int remove_from_cpu_affinity(cpu_set_t *cpuset, int cpu) {
++
++	/* Check that cpuset contains atleast one other cpu */
++	if ( !CPU_ISSET(cpu, cpuset) || CPU_COUNT(cpuset) < 2 ) {
++		return -1;
++	}
++
++       /* Remove the specified CPU from the CPU affinity mask */
++        CPU_CLR(cpu, cpuset);
++
++        return 0;
++}
++
+ int should_monitor(int cpu)
+ {
+ 	if (config_monitor_all_cpus)
+@@ -856,6 +893,14 @@ static void print_usage(void)
+ 		"          -r/--boost_runtime: SCHED_DEADLINE runtime [ns] that the starving task will receive",
+ 		"          -d/--boost_duration: how long [s] the starving task will run with SCHED_DEADLINE",
+ 		"          -F/--force_fifo: use SCHED_FIFO for boosting",
++		"        migrating options:",
++		"          -m/--boost_and_migrate: Use both boosting and migration",
++		"          -C/--migration_attempts: how many times migration will be attempted before falling back",
++		"                               to boosting",
++		"          -u/--boost_user_threads: regexes (comma-separated) of thread names that must be boosted,",
++		"                               but not migrated",
++		"          -U/--boost_user_processes: regexes (comma-separated) of process names that must be boosted,",
++		"                               but not migrated",
+ 		"        monitoring options:",
+ 		"          -t/--starving_threshold: how long [s] the starving task will wait before being boosted",
+ 		"          -A/--aggressive_mode: dispatch one thread per run queue, even when there is no starving",
+@@ -956,18 +1001,26 @@ error:
+ 	cleanup_regex(nr_task, compiled_expr);
+ }
+ 
+-static void parse_task_ignore_string(char *task_ignore_string, unsigned int ignore_flag)
++static void parse_task_string(char *task_string, unsigned int flag)
+ {
+-	log_msg("task ignore string %s\n", task_ignore_string);
++	log_msg("task string %s\n", task_string);
+ 
+-	switch (ignore_flag) {
++	switch (flag) {
+ 		case IGNORE_THREADS:
+-			compile_regex(task_ignore_string, &nr_thread_ignore, &compiled_regex_thread,
+-					ignore_flag);
++			compile_regex(task_string, &nr_thread_ignore, &compiled_regex_ignore_thread,
++					flag);
+ 			break;
+ 		case IGNORE_PROCESSES:
+-			compile_regex(task_ignore_string, &nr_process_ignore, &compiled_regex_process,
+-					ignore_flag);
++			compile_regex(task_string, &nr_process_ignore, &compiled_regex_ignore_process,
++					flag);
++			break;
++		case BOOST_THREADS:
++			compile_regex(task_string, &nr_thread_boost, &compiled_regex_boost_thread,
++					flag);
++			break;
++		case BOOST_PROCESSES:
++			compile_regex(task_string, &nr_process_boost, &compiled_regex_boost_process,
++					flag);
+ 			break;
+ 	}
+ }
+@@ -1089,6 +1142,7 @@ int parse_args(int argc, char **argv)
+ 			{"cpu",			required_argument, 0, 'c'},
+ 			{"log_only",		no_argument,	   0, 'l'},
+ 			{"threaded_logging",	no_argument,	   0, 'T'},
++			{"boost_and_migrate",	no_argument,	   0, 'm'},
+ 			{"verbose",		no_argument,	   0, 'v'},
+ 			{"log_kmsg",		no_argument,	   0, 'k'},
+ 			{"log_syslog",		no_argument,	   0, 's'},
+@@ -1102,6 +1156,7 @@ int parse_args(int argc, char **argv)
+ 			{"boost_runtime",	required_argument, 0, 'r'},
+ 			{"boost_duration",	required_argument, 0, 'd'},
+ 			{"starving_threshold",	required_argument, 0, 't'},
++			{"migration_attempts",	required_argument, 0, 'C'},
+ 			{"pidfile",		required_argument, 0, 'P'},
+ 			{"force_fifo", 		no_argument, 	   0, 'F'},
+ 			{"version", 		no_argument,	   0, 'V'},
+@@ -1110,6 +1165,8 @@ int parse_args(int argc, char **argv)
+ 			{"reservation",		required_argument, 0, 'R'},
+ 			{"ignore_threads",      required_argument, 0, 'i'},
+ 			{"ignore_processes",    required_argument, 0, 'I'},
++			{"boost_user_threads",  required_argument, 0, 'u'},
++			{"boost_user_processes",required_argument, 0, 'U'},
+ 			{"backend",		required_argument, 0, 'b'},
+ 			{"affinity",		required_argument, 0, 'a'},
+ 			{0, 0, 0, 0}
+@@ -1118,7 +1175,7 @@ int parse_args(int argc, char **argv)
+ 		/* getopt_long stores the option index here. */
+ 		int option_index = 0;
+ 
+-		c = getopt_long(argc, argv, "lvkTfAOMhsB:p:r:d:t:c:FVSg:i:I:R:b:a:",
++		c = getopt_long(argc, argv, "lvkTfAOMhsB:p:r:d:t:c:FVSg:i:I:R:b:a:mu:U:C:",
+ 				 long_options, &option_index);
+ 
+ 		/* Detect the end of the options. */
+@@ -1130,13 +1187,19 @@ int parse_args(int argc, char **argv)
+ 			config_monitor_all_cpus = 0;
+ 			parse_cpu_list(optarg);
+ 			break;
++		case 'u':
++			parse_task_string(optarg, BOOST_THREADS);
++			break;
++		case 'U':
++			parse_task_string(optarg, BOOST_PROCESSES);
++			break;
+ 		case 'i':
+ 			config_ignore = 1;
+-			parse_task_ignore_string(optarg, IGNORE_THREADS);
++			parse_task_string(optarg, IGNORE_THREADS);
+ 			break;
+ 		case 'I':
+ 			config_ignore = 1;
+-			parse_task_ignore_string(optarg, IGNORE_PROCESSES);
++			parse_task_string(optarg, IGNORE_PROCESSES);
+ 			break;
+ 		case 'l':
+ 			config_log_only = 1;
+@@ -1160,6 +1223,9 @@ int parse_args(int argc, char **argv)
+ 		case 'f':
+ 			config_foreground = 1;
+ 			break;
++		case 'm':
++			config_boost_and_migrate = 1;
++			break;
+ 		case 'A':
+ 			config_aggressive = 1;
+ 			/*
+@@ -1201,6 +1267,11 @@ int parse_args(int argc, char **argv)
+ 				usage("boost_duration should be at most one hour");
+ 
+ 			break;
++		case 'C':
++			config_migration_attempts = get_long_from_str(optarg);
++			if (config_migration_attempts < 1)
++				usage("migration_attempts should be at least 1");
++			break;
+ 		case 'h':
+ 			print_usage();
+ 			exit(EXIT_SUCCESS);
+diff --git a/systemd/stalld.service b/systemd/stalld.service
+index e055bd4..811d5b2 100644
+--- a/systemd/stalld.service
++++ b/systemd/stalld.service
+@@ -10,7 +10,7 @@ ExecStartPre=/usr/bin/throttlectl off
+ 
+ # In case the regex passed to IT or IP includes C escape sequences,
+ # use ${IT} or ${IP} instead of $IT or $IP
+-ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $LB $FG $PF $IT $IP $VB $FF $CG $BE
++ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BM $MA $BP $BR $BD $THRESH $LOGGING $LB $FG $PF $IT $IP $UT $UP $VB $FF $CG $BE
+ ExecStopPost=/usr/bin/throttlectl on
+ CPUSchedulingPolicy=fifo
+ CPUSchedulingPriority=10
+-- 
+2.39.0
+

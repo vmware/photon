@@ -1,7 +1,7 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.19.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://gitlab.com/rt-linux-tools/stalld
@@ -36,6 +36,8 @@ Patch8: 0009-stalld-Include-FF-and-CG-config-params-in-service-fi.patch
 Patch9: 0001-stalld-service-Include-BE-option-in-stalld-service-f.patch
 Patch10: 0001-Disable-eBPF-skeleton-creation-instead-use-eBPF-obje.patch
 %endif
+Patch11: 0001-stalld-Move-logging-to-dedicated-thread.patch
+Patch12: 0002-stalld-Boost-and-Migrate-Feature.patch
 
 %description
 The stalld program monitors the set of system threads, looking for
@@ -82,6 +84,9 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Mon Mar 04 2024 Him Kalyan Bordoloi <him-kalyan.bordoloi@broadcom.com> 1.19.1-3
+- Feature to move logging to a dedicated thread
+- Feature to use boosting and task migration to alleviate stall
 * Tue Feb 27 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 1.19.1-2
 - Fix for ARM build failure
 * Mon Feb 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 1.19.1-1
