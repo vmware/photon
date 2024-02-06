@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        6.1.75
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        6.1.77
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -25,7 +25,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=32ebc547a7670fa0119d4cf7c83c1d2128da69231e339fa1d07c3863e9ae7f13fd194dffb861a6892c9cf3a9eba06b620c0df326a097ddc541fef2ce8f234d85
+%define sha512 linux=b5c27926ccab2f53af0d48aa2f4ffdeb30588fb2ac293dd58de554a79de8eef7da463272e04e6af384c80644a0e94bb89a59223d4b488815f83ee336798290b5
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -481,6 +481,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Feb 13 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.77-1
+- Update to version 6.1.77
 * Mon Feb 12 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.75-3
 - Update canister version to 5.0.0-6.1.75-2
 * Fri Feb 02 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.75-2
