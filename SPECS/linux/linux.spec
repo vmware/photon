@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.75
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -58,13 +58,13 @@ Source7:        check_for_config_applicability.inc
 Source10:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
 
-%define iavf_version 4.8.2
+%define iavf_version 4.9.5
 Source11:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=5406b86e61f6528adfd7bc3a5f330cec8bb3b4d6c67395961cc6ab78ec3bd325c3a8655b8f42bf56fb47c62a85fb7dbb0c1aa3ecb6fa069b21acb682f6f578cf
+%define sha512 iavf=2e97671d1fd51b5b0017b49dcfa62854ef55a85182fcd4990d2d7faea0c3dc9532fe3896c81eabff3c30fb3b2b9573c22416adfec3a1e0f0107c44a9216fbf3a
 
-%define ice_version 1.11.14
+%define ice_version 1.13.7
 Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
+%define sha512 ice=6167a0240624915ee6dce8f2186d6980c224baab8bcccee2b1d991d5cc15510b95b7b2a309cc60e57eae7dfffc4e2186730650ba104a231e54711c3b01f20f7b
 %endif
 
 %if 0%{?fips}
@@ -276,10 +276,10 @@ Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 Patch1500: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
 Patch1501: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
 
-# Patches for iavf v4.8.2 driver [1510..1519]
+# Patches for iavf v4.9.5 driver [1510..1519]
 Patch1511: iavf-Makefile-added-alias-for-i40evf.patch
 
-# Patches for ice v1.11.14 driver [1520..1529]
+# Patches for ice v1.13.7 driver [1520..1529]
 %endif
 
 BuildRequires:  bc
@@ -298,6 +298,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  cmake
 BuildRequires:  bison
 BuildRequires:  dwarves-devel
+BuildRequires:  which
 
 %ifarch x86_64
 BuildRequires:  pciutils-devel
@@ -820,6 +821,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Jan 31 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.75-2
+- Upgrade iavf to v4.9.5 and ice to 1.13.7
 * Wed Jan 31 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.75-1
 - Update to version 6.1.75
 * Wed Jan 31 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.70-5
