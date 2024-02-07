@@ -17,7 +17,7 @@ if [ $# -ne 2 ]; then
   abort 1 "Usage: $0 <release-tag-commit-id> <chromium-version>"
 fi
 
-pushd "$(dirname "$0")"
+pushd /tmp
 
 commit="$1"
 version="$2"
@@ -44,8 +44,6 @@ git clone -q --depth 1 https://chromium.googlesource.com/chromium/tools/depot_to
 
 pushd depot_tools
 commit_hash="$(git rev-parse --short HEAD)"
-
-rm -rf ./.git*
 
 export PATH=$PATH:$PWD
 
@@ -77,7 +75,6 @@ mv $chromium_tarball $outputdir/
 [ $? -ne 0 ] && abort 1 "ERROR: mv chromium"
 
 popd # _tmp_
-
 rm -rf _tmp_
 
 git clean -xxfd
@@ -96,3 +93,5 @@ mv $depot_tools_tarball $outputdir/
 [ $? -ne 0 ] && abort 1 "ERROR: mv depot_tools"
 
 popd # top
+
+echo -e "\n\n--- Done: tarballs are at $outputdir ---"
