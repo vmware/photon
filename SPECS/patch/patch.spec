@@ -1,14 +1,17 @@
 Summary:        Program for modifying or creating files
 Name:           patch
 Version:        2.7.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.gz
-%define sha1 patch=0ed8f3e49d84964f27e27c712fc8780e291dfa60
-Patch0:		CVE-2018-6951.patch
-Patch1:		CVE-2018-1000156.patch
-Patch2:		CVE-2018-6952.patch
+%define sha512  patch=75d4e1544484da12185418cd4a1571994398140a91ac606fa08dd067004187dad77d1413f0eb3319b3fe4df076714615c98b29df06af052bb65960fa8b0c86bf
+Patch0:         CVE-2018-6951.patch
+Patch1:         CVE-2018-1000156.patch
+#CVE-2018-6952.patch is an incomplete fix which introduced CVE-2019-20633
+#CVE-2018-6952 is just Crash in CLI tool, no security impact,complete fix not yet available
+#in upstream.
+#Patch2         CVE-2018-6952.patch
 patch3:         CVE-2019-13636.patch
 Patch4:         CVE-2019-13638.patch
 Group:          Development/Tools
@@ -21,19 +24,13 @@ Program for modifying or creating files by applying a patch
 file typically created by the diff program.
 
 %prep
-%setup -q
-%patch0	-p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-
+%autosetup -p1
 %build
 %configure --disable-silent-rules
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 %check
 sed -i "s/ulimit -n 32/ulimit -n 1024/g" tests/deep-directories
@@ -45,6 +42,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Wed Feb 07 2024 Harinadh D <hdommaraju@vmware.com> 2.7.6-6
+-   Avoid applying in-complete fix for CVE-2018-6952
 *   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 2.7.6-5
 -   Do not conflict with toybox >= 0.8.2-2
 *   Thu Aug 08 2019 Shreenidhi Shedi <sshedi@vmware.com> 2.7.6-4
