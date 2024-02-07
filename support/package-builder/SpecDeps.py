@@ -155,13 +155,12 @@ class SpecDependencyGenerator(object):
             for version in SPECS.getData().getVersions(base_package):
                 listRPMPackages = SPECS.getData().getRPMPackages(base_package, version)
                 for package in listRPMPackages:
-                    release = SPECS.getData(arch).getRelease(package, version)
                     buildarch=SPECS.getData(arch).getBuildArch(package, version)
-                    filename = os.path.join(buildarch, package + "-" + version + "-" + release + "." + buildarch + ".rpm")
+                    filename = os.path.join(buildarch, f"{package}-{version}.{buildarch}.rpm")
                     output.append(filename)
                 # TODO: support '%global debug_package %{nil}' parsing, to exclude such packages
                 if includeDebuginfoRPMs and SPECS.getData(arch).getBuildArch(base_package, version) == arch:
-                    filename = os.path.join(buildarch, base_package + "-debuginfo-" + version + "-" + release + "." + buildarch + ".rpm")
+                    filename = os.path.join(buildarch, f"{base_package}-debuginfo-{version}.{buildarch}.rpm")
                     output.append(filename)
 
         return output

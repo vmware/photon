@@ -50,7 +50,7 @@ class PackageManager(object):
         for package in constants.listCoreToolChainPackages:
             version = SPECS.getData().getHighestVersion(package)
             rpmPkg = pkgUtils.findRPMFile(package, version)
-            self.sortedPackageList.append(package+"-"+version)
+            self.sortedPackageList.append(f"{package}-{version}")
             if rpmPkg is not None:
                 doneList.append(f"{package}-{version}")
                 continue
