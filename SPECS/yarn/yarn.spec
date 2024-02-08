@@ -1,17 +1,19 @@
 Summary:        Fast, reliable, and secure dependency management.
 Name:           yarn
 Version:        1.21.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause
 URL:            https://yarnpkg.com
 Source0:        https://github.com/yarnpkg/yarn/archive/%{name}-%{version}.tar.gz
-%define sha1    yarn=88bcbdfb28c27c8348f92b327826111cba116c11
+%define sha512    yarn=bde3a7c8c591852e902cc8f29da2ebede799142576fdf3dbc70a611760c108faf227d5e8e6661a93f1893f2a432496374068a5a8a22ac39616ae14c554bd2a91
 Source1:        node_modules_yarn_1.21.tar.gz
-%define sha1    node_modules_yarn=0017116df1538cde49ef06635811343b167c3d92
+%define sha512    node_modules_yarn=d9017a191ade9f40e289e8ac7de41d676b66063f03234689ce7a9799502180191b7378d04cd303ae5fca05b4397eda66e63508ca46292e909181c13c24475d28
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Developement/Languages/NodeJs
 Patch0:         CVE-2020-8131-Fix-arbitrary-file-write-on-fetch.patch
+Patch1:         CVE-2021-4435.patch
+
 BuildArch:      noarch
 BuildRequires:  nodejs = 8.17.0
 
@@ -25,9 +27,7 @@ guarantee that any installation that works on one system will work exactly the s
 Yarn uses checksums to verify the integrity of every installed package before its code is executed.
 
 %prep
-%setup -q -n %{name}-%{version}
-
-%patch0 -p1
+%autosetup -n %{name}-%{version} -p1
 
 tar xf %{SOURCE1} --no-same-owner
 
@@ -58,6 +58,8 @@ ln -sf %{_datadir}/%{name}/bin/yarnpkg %{buildroot}%{_bindir}/yarnpkg
 %exclude %{_datadir}/%{name}/bin/yarn.ps1
 
 %changelog
+*   Thu Feb 08 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.21.1-2
+-   Fix CVE-2021-4435
 *   Sat Apr 18 2020 Tapas Kundu <tkundu@vmware.com> 1.21.1-1
 -   Update to 1.21.1
 *   Thu Apr 02 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 1.10.1-8
