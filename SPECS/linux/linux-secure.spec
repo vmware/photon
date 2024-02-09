@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.75
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -481,6 +481,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Feb 02 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.75-2
+- Fix log indicators for non-approved algorithms
 * Tue Jan 23 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.75-1
 - Update to version 6.1.75
 * Tue Jan 23 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.70-5

@@ -547,6 +547,129 @@ void *fcw_scatterwalk_map(struct scatter_walk *walk)
 	return scatterwalk_map(walk);
 }
 
+static char *canister_algs[] = {
+	"cipher_null-generic",
+	"ecb-cipher_null",
+	"rsa-generic",
+	"sha1-generic",
+	"sha256-generic",
+	"sha224-generic",
+	"sha512-generic",
+	"sha384-generic",
+	"aes-generic",
+	"ctr(aes-generic)",
+	"drbg_pr_ctr_aes128",
+	"drbg_pr_ctr_aes192",
+	"drbg_pr_ctr_aes256",
+	"drbg_pr_sha1",
+	"drbg_pr_sha384",
+	"drbg_pr_sha512",
+	"drbg_pr_sha256",
+	"hmac(sha1-generic)",
+	"drbg_pr_hmac_sha1",
+	"hmac(sha384-generic)",
+	"drbg_pr_hmac_sha384",
+	"hmac(sha512-generic)",
+	"drbg_pr_hmac_sha512",
+	"hmac(sha256-generic)",
+	"drbg_pr_hmac_sha256",
+	"drbg_nopr_ctr_aes128",
+	"drbg_nopr_ctr_aes192",
+	"drbg_nopr_ctr_aes256",
+	"drbg_nopr_sha1",
+	"drbg_nopr_sha384",
+	"drbg_nopr_sha512",
+	"drbg_nopr_sha256",
+	"drbg_nopr_hmac_sha1",
+	"drbg_nopr_hmac_sha384",
+	"drbg_nopr_hmac_sha512",
+	"drbg_nopr_hmac_sha256",
+	"ecdh-generic",
+	"cbc(aes-generic)",
+	"cbc(aes-aesni)",
+	"ecb(aes-generic)",
+	"hmac(sha224-generic)",
+	"pkcs1pad(rsa-generic,sha256)",
+	"pkcs1pad(rsa-generic,sha512)",
+	"xts(ecb(aes-generic))",
+	"aes-aesni",
+	"__ecb-aes-aesni",
+	"__cbc-aes-aesni",
+	"__ctr-aes-aesni",
+	"__xts-aes-aesni",
+	"cryptd(__ecb-aes-aesni)",
+	"ecb-aes-aesni",
+	"cryptd(__cbc-aes-aesni)",
+	"cbc-aes-aesni",
+	"cryptd(__ctr-aes-aesni)",
+	"ctr-aes-aesni",
+	"cryptd(__xts-aes-aesni)",
+	"xts-aes-aesni",
+	"ccm_base(ctr(aes-generic),cbcmac(aes-generic))",
+	"ccm_base(ctr-aes-aesni,cbcmac(aes-aesni))",
+	"cfb(aes-generic)",
+	"cfb(aes-aesni)",
+	"cmac(aes-generic)",
+	"cmac(aes-aesni)",
+	"sha3-224-generic",
+	"hmac(sha3-224-generic)",
+	"sha3-256-generic",
+	"hmac(sha3-256-generic)",
+	"sha3-384-generic",
+	"hmac(sha3-384-generic)",
+	"sha3-512-generic",
+	"hmac(sha3-512-generic)",
+	"pkcs1pad(rsa-generic,sha1)",
+	"pkcs1pad(rsa-generic,sha224)",
+	"pkcs1pad(rsa-generic,sha384)",
+	"ecdsa-nist-p384-generic",
+	"ecdsa-nist-p256-generic",
+	"ecdh-nist-p384-generic",
+	"ecdh-nist-p256-generic",
+	"jitterentropy_rng",
+	"cts-cbc-aes-aesni",
+	"__cts-cbc-aes-aesni",
+	"cryptd(__cts-cbc-aes-aesni)",
+	"seqiv(rfc4106-gcm-aesni)",
+	"seqiv(rfc4106(gcm_base(ctr(aes-generic),ghash-generic)))",
+	"ghash-generic",
+	"cts(cbc(aes-generic))",
+	"cts(cbc(aes-generic))",
+	"cryptd(__cbc-aes-aesni)",
+	"cbc-aes-aesni",
+	"gcm_base(ctr(aes-generic),ghash-generic)",
+	"generic-gcm-aesni",
+	"__generic-gcm-aesni",
+	"cryptd(__generic-gcm-aesni)",
+	"rfc4106(gcm_base(ctr(aes-generic),ghash-generic))",
+	"rfc4106-gcm-aesni",
+	"__rfc4106-gcm-aesni",
+	"cryptd(__rfc4106-gcm-aesni)",
+	// no certification require
+	"crc32c-generic",
+	"crct10dif-generic",
+	"crc32c-intel",
+	"crc64-rocksoft-generic",
+	"deflate-scomp",
+	"deflate-generic",
+	"zlib-deflate-scomp",
+	"__xctr-aes-aesni",
+	"xctr-aes-aesni",
+};
+
+int fcw_fips_not_allowed_alg(char *name)
+{
+	if (fips_enabled == 1) {
+		int i;
+		for (i = 0; i < sizeof(canister_algs)/sizeof(canister_algs[0]); i++) {
+			if (strcmp(name, canister_algs[i]) == 0)
+				return 0;
+		}
+		return 1;
+	}
+	return 0;
+}
+
 static int crypto_msg_notify(struct notifier_block *this, unsigned long msg,
 			    void *data)
 {
@@ -556,6 +679,11 @@ static int crypto_msg_notify(struct notifier_block *this, unsigned long msg,
 		pr_notice("alg request: %s (%s) by %s(%d)",
 			   alg->cra_driver_name, alg->cra_name,
 			   current->comm, current->pid);
+	}
+	if (msg == CRYPTO_MSG_ALG_REGISTER) {
+		if (fcw_fips_not_allowed_alg(alg->cra_driver_name)) {
+			pr_notice("alg: %s (%s) not certified", alg->cra_driver_name, alg->cra_name);
+		}
 	}
 	return NOTIFY_DONE;
 }
