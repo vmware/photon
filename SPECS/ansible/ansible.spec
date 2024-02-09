@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.11.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -15,6 +15,7 @@ Source1: macros.ansible
 
 Patch0: Add-Photon-OS-tdnf-support.patch
 Patch1: CVE-2023-5115.patch
+Patch2: CVE-2024-0690.patch
 
 BuildArch: noarch
 
@@ -68,6 +69,8 @@ python3 setup.py test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Fri Feb 09 2024 Kuntal Nayak <nkuntal@vmware.com> 2.11.12-3
+- Patch CVE-2024-0690
 * Tue Jan 23 2024 Kuntal Nayak <nkuntal@vmware.com> 2.11.12-2
 - Patch CVE-2023-5115
 * Thu Dec 15 2022 Nitesh Kumar <kunitesh@vmware.com> 2.11.12-1
