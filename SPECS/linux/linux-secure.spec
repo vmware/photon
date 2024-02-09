@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        14%{?kat_build:.kat}%{?dist}
+Release:        15%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -474,6 +474,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Feb 02 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.62-15
+- Fix log indicators for non-approved algorithms
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-14
 - Update canister to 5.0.0-6.1.62-13
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-13

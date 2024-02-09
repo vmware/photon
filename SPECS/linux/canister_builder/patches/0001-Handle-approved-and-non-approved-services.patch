@@ -1,4 +1,4 @@
-From eb8df24c16f99f666bcf88240ae8a57525b7dd91 Mon Sep 17 00:00:00 2001
+From a7a0e5409b8583bad810d5ddfa648fe2ed146afc Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 8 Dec 2023 09:30:48 +0000
 Subject: [PATCH] Handle approved and non-approved services
@@ -10,8 +10,11 @@ Subject: [PATCH] Handle approved and non-approved services
         ghash-generic outside of gcm context
         rfc4309(ccm(aes))
         rfc3686(ctr(aes)))
-- Add log message at invocation time for the approved services in gcm to
-  differentiate from non-approved.
+- Add log message in pksc1pad_encrypt and pkcs1pad_decrypt functions as non-approved
+  services.
+- Add logic in gcm/rfc4106 encrypt functions to maintain whitelist of known
+  callers of gcm-aes/rfc4106-gcm-aes and log message if any other
+  callers are using gcm-aes/rfc4106-gcm-aes with External IV
 
 /* |----------------------------------------------------------------------|
  * |				    |	Encrypt		|	Decrypt	  |
@@ -31,36 +34,36 @@ Subject: [PATCH] Handle approved and non-approved services
  * |----------------------------------------------------------------------|
  */
 
-Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---
- arch/x86/crypto/aesni-intel_glue.c | 35 +++++++++++++++++++++++++++++-
- crypto/aes_generic.c               | 11 +++++++++-
- crypto/cbc.c                       |  4 ++++
- crypto/ccm.c                       | 10 +++++++++
- crypto/cfb.c                       |  7 +++++-
- crypto/cmac.c                      |  4 ++++
- crypto/ctr.c                       |  7 ++++++
- crypto/cts.c                       |  4 ++++
- crypto/drbg.c                      | 10 ++++++++-
- crypto/ecb.c                       |  9 ++++++--
- crypto/ecdh.c                      | 11 ++++++++++
- crypto/ecdsa.c                     | 10 +++++++++
- crypto/gcm.c                       | 32 +++++++++++++++++++++++++++
- crypto/ghash-generic.c             | 10 ++++++++-
- crypto/hmac.c                      |  3 +++
- crypto/rsa-pkcs1pad.c              |  7 ++++++
- crypto/rsa.c                       |  6 +++++
- crypto/seqiv.c                     | 14 ++++++++++++
- crypto/sha1_generic.c              | 10 ++++++++-
- crypto/sha256_generic.c            | 13 ++++++++++-
- crypto/sha3_generic.c              | 12 +++++++++-
- crypto/sha512_generic.c            | 12 +++++++++-
- crypto/testmgr.c                   | 16 +++++---------
- crypto/xts.c                       |  9 ++++++--
- 24 files changed, 242 insertions(+), 24 deletions(-)
+ arch/x86/crypto/aesni-intel_glue.c | 76 +++++++++++++++++++++++++++++-
+ crypto/aes_generic.c               | 11 ++++-
+ crypto/cbc.c                       |  4 ++
+ crypto/ccm.c                       | 10 ++++
+ crypto/cfb.c                       |  7 ++-
+ crypto/cmac.c                      |  4 ++
+ crypto/ctr.c                       |  7 +++
+ crypto/cts.c                       |  4 ++
+ crypto/drbg.c                      | 10 +++-
+ crypto/ecb.c                       |  9 +++-
+ crypto/ecdh.c                      | 11 +++++
+ crypto/ecdsa.c                     | 10 ++++
+ crypto/gcm.c                       | 65 +++++++++++++++++++++++++
+ crypto/ghash-generic.c             | 10 +++-
+ crypto/hmac.c                      |  3 ++
+ crypto/rsa-pkcs1pad.c              | 19 ++++++++
+ crypto/rsa.c                       |  6 +++
+ crypto/seqiv.c                     |  4 ++
+ crypto/sha1_generic.c              | 10 +++-
+ crypto/sha256_generic.c            | 13 ++++-
+ crypto/sha3_generic.c              | 12 ++++-
+ crypto/sha512_generic.c            | 12 ++++-
+ crypto/testmgr.c                   | 16 ++-----
+ crypto/xts.c                       |  9 +++-
+ 24 files changed, 317 insertions(+), 25 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index de9142518..3981b82fd 100644
+index de9142518..2865daa76 100644
 --- a/arch/x86/crypto/aesni-intel_glue.c
 +++ b/arch/x86/crypto/aesni-intel_glue.c
 @@ -34,6 +34,7 @@
@@ -71,19 +74,82 @@ index de9142518..3981b82fd 100644
  
  void fcw_kernel_fpu_begin(void);
  void fcw_kernel_fpu_end(void);
-@@ -825,6 +826,11 @@ static int gcmaes_decrypt(struct aead_request *req, unsigned int assoclen,
- 	u8 auth_tag[16];
+@@ -797,6 +798,26 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
+ 	return 0;
+ }
+ 
++static char *gcm_encrypt_callers_whitelist[] = {
++	"_aead_recvmsg",
++};
++
++static char *rfc4106_gcm_encrypt_callers_whitelist[] = {
++	"seqiv_aead_encrypt",
++	"_aead_recvmsg",
++};
++
++static int is_caller_in_whitelist(char *caller_name, char **whitelist_callers, int size)
++{
++	int i = 0;
++
++	for (i = 0; i < size; i++) {
++		if (strstr(whitelist_callers[i], caller_name))
++			return 1;
++	}
++	return 0;
++}
++
+ static int gcmaes_encrypt(struct aead_request *req, unsigned int assoclen,
+ 			  u8 *hash_subkey, u8 *iv, void *aes_ctx)
+ {
+@@ -852,6 +873,17 @@ static int helper_rfc4106_encrypt(struct aead_request *req)
+ 	u8 *iv = PTR_ALIGN(&ivbuf[0], AESNI_ALIGN);
+ 	unsigned int i;
+ 	__be32 counter = cpu_to_be32(1);
++	char caller_name[64];
++
++	if (fips_enabled) {
++		sprintf(caller_name, "%ps", __builtin_return_address(3));
++		if (!is_caller_in_whitelist(caller_name, rfc4106_gcm_encrypt_callers_whitelist,
++					    ARRAY_SIZE(rfc4106_gcm_encrypt_callers_whitelist))) {
++			fcw_printk(KERN_NOTICE "alg: (%s) (%s) Encryption with external IV is not"
++					" approved in FIPS mode\n", crypto_tfm_alg_driver_name(req->base.tfm),
++					crypto_tfm_alg_name(req->base.tfm));
++		}
++	}
+ 
+ 	/* Assuming we are supporting rfc4106 64-bit extended */
+ 	/* sequence numbers We need to have the AAD length equal */
+@@ -906,8 +938,10 @@ static int xts_aesni_setkey(struct crypto_skcipher *tfm, const u8 *key,
  	int err;
  
-+	if (fips_enabled) {
-+		fcw_printk(KERN_INFO "%s %s decryption is an approved service\n",
-+			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
+ 	err = xts_verify_key(tfm, key, keylen);
+-	if (err)
++	if (err) {
++		fcw_printk(KERN_ERR "XTS verify duplicate key test failed\n");
+ 		return err;
 +	}
+ 
+ 	keylen /= 2;
+ 
+@@ -1182,6 +1216,17 @@ static int generic_gcmaes_encrypt(struct aead_request *req)
+ 	u8 ivbuf[16 + (AESNI_ALIGN - 8)] __aligned(8);
+ 	u8 *iv = PTR_ALIGN(&ivbuf[0], AESNI_ALIGN);
+ 	__be32 counter = cpu_to_be32(1);
++	char caller_name[64];
 +
- 	err = gcmaes_crypt_by_sg(false, req, assoclen, hash_subkey, iv, aes_ctx,
- 				 auth_tag, auth_tag_len);
- 	if (err)
-@@ -1257,7 +1263,7 @@ MODULE_DEVICE_TABLE(x86cpu, aesni_cpu_id);
++	if (fips_enabled) {
++		sprintf(caller_name, "%ps", __builtin_return_address(3));
++		if (!is_caller_in_whitelist(caller_name, gcm_encrypt_callers_whitelist,
++					    ARRAY_SIZE(gcm_encrypt_callers_whitelist))) {
++			fcw_printk(KERN_NOTICE "alg: (%s) (%s) Encryption with external IV is not"
++					" approved in FIPS mode\n", crypto_tfm_alg_driver_name(req->base.tfm),
++					crypto_tfm_alg_name(req->base.tfm));
++		}
++	}
+ 
+ 	fcw_memcpy(iv, req->iv, 12);
+ 	*((__be32 *)(iv+12)) = counter;
+@@ -1257,7 +1302,7 @@ MODULE_DEVICE_TABLE(x86cpu, aesni_cpu_id);
  
  int __init aesni_init(void)
  {
@@ -92,7 +158,7 @@ index de9142518..3981b82fd 100644
  
  	if (!x86_match_cpu(aesni_cpu_id))
  		return -ENODEV;
-@@ -1285,17 +1291,44 @@ int __init aesni_init(void)
+@@ -1285,17 +1330,44 @@ int __init aesni_init(void)
  	if (err)
  		return err;
  
@@ -454,7 +520,7 @@ index 930f6cc18..168f9e3a0 100644
  
  nist_p384_error:
 diff --git a/crypto/gcm.c b/crypto/gcm.c
-index 89ea69061..5bdf17ca4 100644
+index 89ea69061..b5c2a5bd5 100644
 --- a/crypto/gcm.c
 +++ b/crypto/gcm.c
 @@ -17,6 +17,7 @@
@@ -465,19 +531,51 @@ index 89ea69061..5bdf17ca4 100644
  #include "fips_canister_wrapper.h"
  
  struct gcm_instance_ctx {
-@@ -507,6 +508,11 @@ static int crypto_gcm_decrypt(struct aead_request *req)
- 	unsigned int cryptlen = req->cryptlen;
- 	u32 flags = aead_request_flags(req);
+@@ -448,11 +449,43 @@ static void gcm_encrypt_done(struct crypto_async_request *areq, int err)
+ 	aead_request_complete(req, err);
+ }
  
-+	if (fips_enabled) {
-+		fcw_printk(KERN_INFO "%s %s decryption is an approved service\n",
-+			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
-+	}
++static char *gcm_encrypt_callers_whitelist[] = {
++	"crypto_rfc4106_encrypt",
++	"_aead_recvmsg",
++};
 +
- 	cryptlen -= authsize;
++static char *rfc4106_gcm_encrypt_callers_whitelist[] = {
++	"seqiv_aead_encrypt",
++	"_aead_recvmsg",
++};
++
++static int is_caller_in_whitelist(char *caller_name, char **whitelist_callers, int size)
++{
++	int i = 0;
++
++	for (i = 0; i < size; i++) {
++		if (strstr(whitelist_callers[i], caller_name))
++			return 1;
++	}
++	return 0;
++}
++
+ static int crypto_gcm_encrypt(struct aead_request *req)
+ {
+ 	struct crypto_gcm_req_priv_ctx *pctx = crypto_gcm_reqctx(req);
+ 	struct skcipher_request *skreq = &pctx->u.skreq;
+ 	u32 flags = aead_request_flags(req);
++	char caller_name[64];
++
++	if (fips_enabled) {
++		sprintf(caller_name, "%ps", __builtin_return_address(1));
++		if (!is_caller_in_whitelist(caller_name, gcm_encrypt_callers_whitelist,
++					    ARRAY_SIZE(gcm_encrypt_callers_whitelist))) {
++			fcw_printk(KERN_NOTICE "alg: (%s) (%s) Encryption with external IV is not"
++					" approved in FIPS mode\n", crypto_tfm_alg_driver_name(req->base.tfm),
++					crypto_tfm_alg_name(req->base.tfm));
++		}
++	}
  
  	crypto_gcm_init_common(req);
-@@ -651,6 +657,13 @@ static int crypto_gcm_create_common(struct crypto_template *tmpl,
+ 	crypto_gcm_init_crypt(req, req->cryptlen);
+@@ -651,6 +684,13 @@ static int crypto_gcm_create_common(struct crypto_template *tmpl,
  	if (err) {
  err_free_inst:
  		crypto_gcm_free(inst);
@@ -491,7 +589,7 @@ index 89ea69061..5bdf17ca4 100644
  	}
  	return err;
  }
-@@ -750,6 +763,7 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
+@@ -750,6 +790,7 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
  	}
  
  	aead_request_set_tfm(subreq, child);
@@ -499,19 +597,25 @@ index 89ea69061..5bdf17ca4 100644
  	aead_request_set_callback(subreq, req->base.flags, req->base.complete,
  				  req->base.data);
  	aead_request_set_crypt(subreq, rctx->src,
-@@ -781,6 +795,11 @@ static int crypto_rfc4106_decrypt(struct aead_request *req)
- 	if (err)
- 		return err;
- 
-+	if (fips_enabled) {
-+		fcw_printk(KERN_INFO "%s %s decryption is an approved service\n",
-+			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
-+	}
+@@ -763,6 +804,17 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
+ static int crypto_rfc4106_encrypt(struct aead_request *req)
+ {
+ 	int err;
++	char caller_name[64];
 +
- 	req = crypto_rfc4106_crypt(req);
++	if (fips_enabled) {
++		sprintf(caller_name, "%ps", __builtin_return_address(1));
++		if (!is_caller_in_whitelist(caller_name, rfc4106_gcm_encrypt_callers_whitelist,
++					    ARRAY_SIZE(rfc4106_gcm_encrypt_callers_whitelist))) {
++			fcw_printk(KERN_NOTICE "alg: (%s) (%s) Encryption with external IV is not"
++					" approved in FIPS mode\n", crypto_tfm_alg_driver_name(req->base.tfm),
++					crypto_tfm_alg_name(req->base.tfm));
++		}
++	}
  
- 	return crypto_aead_decrypt(req);
-@@ -892,6 +911,16 @@ static int crypto_rfc4106_create(struct crypto_template *tmpl,
+ 	err = crypto_ipsec_check_assoclen(req->assoclen);
+ 	if (err)
+@@ -892,6 +944,16 @@ static int crypto_rfc4106_create(struct crypto_template *tmpl,
  	if (err) {
  err_free_inst:
  		crypto_rfc4106_free(inst);
@@ -528,7 +632,7 @@ index 89ea69061..5bdf17ca4 100644
  	}
  	return err;
  }
-@@ -1107,6 +1136,9 @@ static int crypto_rfc4543_create(struct crypto_template *tmpl,
+@@ -1107,6 +1169,9 @@ static int crypto_rfc4543_create(struct crypto_template *tmpl,
  	if (err) {
  err_free_inst:
  		crypto_rfc4543_free(inst);
@@ -581,7 +685,7 @@ index e9116ae4c..879b48ae4 100644
  	return err;
  }
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index dbeeb60a7..ab86e686f 100644
+index dbeeb60a7..9b0a165e5 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
 @@ -14,6 +14,7 @@
@@ -592,7 +696,33 @@ index dbeeb60a7..ab86e686f 100644
  #include "fips_canister_wrapper.h"
  
  /*
-@@ -681,6 +682,12 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -232,6 +233,12 @@ static int pkcs1pad_encrypt(struct akcipher_request *req)
+ 	int err;
+ 	unsigned int i, ps_end;
+ 
++	if (fips_enabled) {
++		fcw_printk(KERN_NOTICE "alg: (%s) (%s) Encryption is not approved in FIPS mode\n",
++			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
++
++	}
++
+ 	if (!ctx->key_size)
+ 		return -EINVAL;
+ 
+@@ -347,6 +354,12 @@ static int pkcs1pad_decrypt(struct akcipher_request *req)
+ 	struct pkcs1pad_request *req_ctx = akcipher_request_ctx(req);
+ 	int err;
+ 
++	if (fips_enabled) {
++		fcw_printk(KERN_NOTICE "alg: (%s) (%s) Decryption is not approved in FIPS mode\n",
++			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
++
++	}
++
+ 	if (!ctx->key_size || req->src_len != ctx->key_size)
+ 		return -EINVAL;
+ 
+@@ -681,6 +694,12 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err) {
  err_free_inst:
  		pkcs1pad_free(inst);
@@ -630,7 +760,7 @@ index 21993a1af..76bf3935d 100644
  	if (err) {
  		crypto_unregister_akcipher(&rsa);
 diff --git a/crypto/seqiv.c b/crypto/seqiv.c
-index 652541710..66af95362 100644
+index 652541710..938e22471 100644
 --- a/crypto/seqiv.c
 +++ b/crypto/seqiv.c
 @@ -15,6 +15,7 @@
@@ -641,31 +771,7 @@ index 652541710..66af95362 100644
  #include "fips_canister_wrapper.h"
  
  static void seqiv_aead_encrypt_complete2(struct aead_request *req, int err)
-@@ -64,6 +65,11 @@ static int seqiv_aead_encrypt(struct aead_request *req)
- 	data = req->base.data;
- 	info = req->iv;
- 
-+	if (fips_enabled) {
-+		fcw_printk(KERN_INFO "%s %s encryption with internal IV is an approved service\n",
-+			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
-+	}
-+
- 	if (req->src != req->dst) {
- 		SYNC_SKCIPHER_REQUEST_ON_STACK(nreq, ctx->sknull);
- 
-@@ -114,6 +120,11 @@ static int seqiv_aead_decrypt(struct aead_request *req)
- 	void *data;
- 	unsigned int ivsize = 8;
- 
-+	if (fips_enabled) {
-+		fcw_printk(KERN_INFO "%s %s decryption with internal IV is an approved service\n",
-+			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
-+	}
-+
- 	if (req->cryptlen < ivsize + crypto_aead_authsize(geniv))
- 		return -EINVAL;
- 
-@@ -159,6 +170,9 @@ static int seqiv_aead_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -159,6 +160,9 @@ static int seqiv_aead_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err) {
  free_inst:
  		inst->free(inst);
