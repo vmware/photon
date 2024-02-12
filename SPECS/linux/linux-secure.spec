@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.75
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -40,9 +40,9 @@ Source5:        linux-sbat.csv.in
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.62-13%{dist}-secure
+%define fips_canister_version 5.0.0-6.1.75-2%{dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=51f09934bf41186f5e6a6dd06df84ffc9718f5aaea59eaeb887b639c8f0e8f98caac1339ce51139ab8064c1797631024b10fd92f2c65c35d38b88a17857b96b3
+%define sha512 fips-canister=ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
 %endif
 
 Source17: fips_canister_wrapper.c
@@ -481,6 +481,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Feb 12 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.75-3
+- Update canister version to 5.0.0-6.1.75-2
 * Fri Feb 02 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.75-2
 - Fix log indicators for non-approved algorithms
 * Tue Jan 23 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.75-1
