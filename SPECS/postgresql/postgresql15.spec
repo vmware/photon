@@ -11,7 +11,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql15
-Version:        15.5
+Version:        15.6
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -20,18 +20,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=9ed9d160b3cef99954ccd47a970c107b7e3b0196a7d848f740bf3c52a1c626f6f457814c97f37b9f0467bb07734e19806a15bd9cf3c39445e1d89e75b37064cc
+%define sha512 %{srcname}=d9f158d844ec21bc5a7eccad9193dfe026d3df46a011980412ad7d150b3894c01754be0053bed530976047d7eff657204ac321138ba8da6eac8fb7b93b9520ad
 
 BuildRequires: clang-devel
-BuildRequires: diffutils
-BuildRequires: gcc
 BuildRequires: gettext
 BuildRequires: krb5-devel
 BuildRequires: icu-devel
 BuildRequires: libedit-devel
 BuildRequires: libxml2-devel
 BuildRequires: libxslt-devel
-BuildRequires: linux-api-headers
 BuildRequires: Linux-PAM-devel
 BuildRequires: llvm-devel
 BuildRequires: lz4-devel
@@ -44,7 +41,6 @@ BuildRequires: openssl-devel
 BuildRequires: systemtap-sdt-devel
 BuildRequires: boost-devel
 BuildRequires: systemd-devel
-BuildRequires: tar
 BuildRequires: tcl-devel
 BuildRequires: tzdata
 BuildRequires: util-linux-libs
@@ -662,6 +658,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-1
+- Upgrade to v15.6
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.5-1
 - Upgrade to v15.5
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 15.4-2
