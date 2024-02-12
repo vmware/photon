@@ -11,7 +11,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql16
-Version:        16.1
+Version:        16.2
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -20,17 +20,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=69f4635e5841452599f13b47df41ce2425ab34b4e4582fd2c635bc78d561fa36c5b03eccb4ae6569872dc74775be1b5a62dee20c9a4f12a43339250128352918
+%define sha512 %{srcname}=3194941cc3f1ec86b6cf4f08c6422d268d99890441f8fc9ab87b6a7fd16c990fa230b544308644cbef54e6960c4984e3703752e40930bdc0537b7bfda3ab7ccf
 
 BuildRequires: clang-devel
-BuildRequires: diffutils
 BuildRequires: gettext-devel
 BuildRequires: krb5-devel
 BuildRequires: icu-devel
 BuildRequires: libedit-devel
 BuildRequires: libxml2-devel
 BuildRequires: libxslt-devel
-BuildRequires: linux-api-headers
 BuildRequires: Linux-PAM-devel
 BuildRequires: llvm-devel
 BuildRequires: lz4-devel
@@ -655,5 +653,7 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.2-1
+- Upgrade to v16.2
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 16.1-1
 - Initial version.
