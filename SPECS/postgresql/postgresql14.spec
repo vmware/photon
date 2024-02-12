@@ -11,7 +11,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.10
+Version:        14.11
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -20,10 +20,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=f546e62eb158efdeecf091271ee60945604ca7f3683f0b259ee18eb682431158e282bf4f81d8df304c956919788f8077e72aa47c467d32d6aef1ccfe470862a5
+%define sha512 %{srcname}=67289cd638ed7b13e845263d5a34394347f33735d9e2fafd6aa3562989a3a9455ea547d1b5079138648f33b093e77841654188fc74a49c0d6d458a42cfb57ffe
 
-BuildRequires:  diffutils
-BuildRequires:  gcc
 BuildRequires:  krb5-devel
 BuildRequires:  libedit-devel
 BuildRequires:  libxml2-devel
@@ -32,7 +30,6 @@ BuildRequires:  openldap
 BuildRequires:  perl
 BuildRequires:  readline-devel
 BuildRequires:  openssl-devel
-BuildRequires:  tar
 BuildRequires:  tzdata
 BuildRequires:  zlib-devel
 BuildRequires:  lz4-devel
@@ -275,6 +272,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-1
+- Upgrade to v14.11
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.10-1
 - Upgrade to v14.10
 * Sun Aug 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.9-1
