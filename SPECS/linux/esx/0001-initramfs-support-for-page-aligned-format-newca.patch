@@ -1,4 +1,4 @@
-From 28af7576c9f384fd2f0631a0070b148eb3a5256c Mon Sep 17 00:00:00 2001
+From a9f231da04015d993e94f679a5dbac27ab145105 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 19 May 2020 11:04:52 -0700
 Subject: [PATCH] initramfs: support for page aligned format "newca"
@@ -36,9 +36,10 @@ CRX often use concatenation of initrds, so introduce support
 of multiple image extraction support
 
 If there is a mix of newc and newca images in initramfs,
-we blindly retain the entire initramfs.
-We track the start and end offsets of each individual newc image,
-while combining adjacent images into larger blobs.
+we use to blindly retain the entire initramfs.
+However,now we track the start and end offsets of each
+individual newc image, while combining adjacent images into
+larger blobs.
 We can then free these newc encoded sections of the initramfs
 
    Large files
@@ -66,11 +67,11 @@ Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Bo Gan <ganb@vmware.com>
 Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
 ---
- init/initramfs.c | 202 ++++++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 189 insertions(+), 13 deletions(-)
+ init/initramfs.c | 200 ++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 187 insertions(+), 13 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 55b74d7e5..14d150c7c 100644
+index 55b74d7e5..30190a3df 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
 @@ -13,12 +13,93 @@
@@ -200,7 +201,7 @@ index 55b74d7e5..14d150c7c 100644
  {
  	victim += n;
  	this_header += n;
-@@ -244,16 +327,38 @@ static int __init do_collect(void)
+@@ -244,16 +327,36 @@ static int __init do_collect(void)
  
  static int __init do_header(void)
  {
@@ -212,9 +213,7 @@ index 55b74d7e5..14d150c7c 100644
 -	if (memcmp(collected, "070701", 6)) {
 +	if (!memcmp(collected, "0707ca", 6)) {
 +		if (!newca_found) {
-+			printk(KERN_INFO "Page aligned format detected. "
-+					 "Retain initrd.\n");
-+			do_retain_initrd = 1;
++			printk(KERN_INFO "Page aligned format detected.\n");
 +			newca_found = 1;
 +		}
 +		page_aligned_fmt = true;
@@ -241,7 +240,7 @@ index 55b74d7e5..14d150c7c 100644
  	next_header = (next_header + 3) & ~3;
  	state = SkipIt;
  	if (name_len <= 0 || name_len > PATH_MAX)
-@@ -318,6 +423,16 @@ static int __init maybe_link(void)
+@@ -318,6 +421,16 @@ static int __init maybe_link(void)
  	return 0;
  }
  
@@ -258,7 +257,7 @@ index 55b74d7e5..14d150c7c 100644
  static __initdata struct file *wfile;
  static __initdata loff_t wfile_pos;
  
-@@ -326,6 +441,7 @@ static int __init do_name(void)
+@@ -326,6 +439,7 @@ static int __init do_name(void)
  	state = SkipIt;
  	next_state = Reset;
  	if (strcmp(collected, "TRAILER!!!") == 0) {
@@ -266,7 +265,7 @@ index 55b74d7e5..14d150c7c 100644
  		free_hash();
  		return 0;
  	}
-@@ -334,8 +450,13 @@ static int __init do_name(void)
+@@ -334,8 +448,13 @@ static int __init do_name(void)
  		int ml = maybe_link();
  		if (ml >= 0) {
  			int openflags = O_WRONLY|O_CREAT;
@@ -281,7 +280,7 @@ index 55b74d7e5..14d150c7c 100644
  			wfile = filp_open(collected, openflags, mode);
  			if (IS_ERR(wfile))
  				return 0;
-@@ -366,6 +487,10 @@ static int __init do_name(void)
+@@ -366,6 +485,10 @@ static int __init do_name(void)
  
  static int __init do_copy(void)
  {
@@ -292,7 +291,7 @@ index 55b74d7e5..14d150c7c 100644
  	if (byte_count >= body_len) {
  		struct timespec64 t[2] = { };
  		if (xwrite(wfile, victim, body_len, &wfile_pos) != body_len)
-@@ -454,6 +579,8 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -454,6 +577,8 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	decompress_fn decompress;
  	const char *compress_name;
  	static __initdata char msg_buf[64];
@@ -301,7 +300,7 @@ index 55b74d7e5..14d150c7c 100644
  
  	header_buf = kmalloc(110, GFP_KERNEL);
  	symlink_buf = kmalloc(PATH_MAX + N_ALIGN(PATH_MAX) + 1, GFP_KERNEL);
-@@ -466,19 +593,20 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -466,19 +591,20 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	this_header = 0;
  	message = NULL;
  	while (!message && len) {
@@ -324,7 +323,7 @@ index 55b74d7e5..14d150c7c 100644
  		}
  		this_header = 0;
  		decompress = decompress_method(buf, len, &compress_name);
-@@ -502,6 +630,46 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -502,6 +628,46 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  		this_header = saved_offset + my_inptr;
  		buf += my_inptr;
  		len -= my_inptr;
@@ -371,7 +370,7 @@ index 55b74d7e5..14d150c7c 100644
  	}
  	dir_utime();
  	kfree(name_buf);
-@@ -510,8 +678,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -510,8 +676,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	return message;
  }
  
@@ -380,7 +379,7 @@ index 55b74d7e5..14d150c7c 100644
  static int __init retain_initrd_param(char *str)
  {
  	if (*str)
-@@ -532,7 +698,6 @@ __setup("keepinitrd", keepinitrd_setup);
+@@ -532,7 +696,6 @@ __setup("keepinitrd", keepinitrd_setup);
  
  extern char __initramfs_start[];
  extern unsigned long __initramfs_size;
@@ -388,7 +387,7 @@ index 55b74d7e5..14d150c7c 100644
  #include <linux/kexec.h>
  
  void __weak __init free_initrd_mem(unsigned long start, unsigned long end)
-@@ -622,6 +787,8 @@ static int __init populate_rootfs(void)
+@@ -622,6 +785,8 @@ static int __init populate_rootfs(void)
  #ifdef CONFIG_BLK_DEV_RAM
  		populate_initrd_image(err);
  #else
@@ -397,7 +396,7 @@ index 55b74d7e5..14d150c7c 100644
  		printk(KERN_EMERG "Initramfs unpacking failed: %s\n", err);
  #endif
  	}
-@@ -631,8 +798,17 @@ static int __init populate_rootfs(void)
+@@ -631,8 +796,17 @@ static int __init populate_rootfs(void)
  	 * If the initrd region is overlapped with crashkernel reserved region,
  	 * free only memory that is not part of crashkernel region.
  	 */
@@ -418,5 +417,5 @@ index 55b74d7e5..14d150c7c 100644
  	initrd_end = 0;
  
 -- 
-2.34.1
+2.23.1
 
