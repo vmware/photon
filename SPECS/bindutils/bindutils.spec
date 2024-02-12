@@ -4,8 +4,8 @@
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.16.42
-Release:        4%{?dist}
+Version:        9.16.48
+Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Group:          Development/Tools
@@ -13,9 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://downloads.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512  bind=cf29e72c9c979f3cf8ba0b17357fb09c37f1436a7f3a518f49ce4b4c682fb367dd3d8e71de6603c166c95a7c535a77a9f2a1393a59723294626acefebbc95fd6
-
-Patch0:         bindutils-CVE-2023-3341.patch
+%define sha512  bind=83829a5045e2a29dd2b491d3ab72b545f5664023fcd4aa205a44dbb7bcc5c737b4466c0d73f124b8d88fd33c56776871a07dde1ba0530d43eec8e7304a08d353
 
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
@@ -93,6 +91,8 @@ chmod 0770 %{_home_dir}
 %{_tmpfilesdir}/named.conf
 
 %changelog
+* Mon Feb 12 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.16.48-1
+- Update to latest subversion to fix CVEs
 * Wed Oct 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.16.42-4
 - Don't delete user & group post uninstallation
 * Thu Sep 28 2023 Prashant S Chauhan <psinghchauha@vmware.com> 9.16.42-3
