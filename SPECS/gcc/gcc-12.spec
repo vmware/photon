@@ -5,7 +5,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc-12
 Version:        12.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -133,7 +133,7 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_mandir}/man1/g++-%{program_suffix}.1.gz
 %{_mandir}/man1/cpp-%{program_suffix}.1.gz
 %{_mandir}/man1/lto-dump-%{program_suffix}.1.gz
-%{_mandir}/man7/*.gz
+%exclude %{_mandir}/man7/*.gz
 %{_datadir}/gdb/*
 %{_mandir}/man1/gfortran-%{program_suffix}.1.gz
 %{_libexecdir}/gcc/%{_arch}-unknown-linux-gnu/%{version}/f951
@@ -142,5 +142,7 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_includedir}/c++/*
 
 %changelog
+* Tue Feb 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.3.0-2
+- Fix man page install conflict with gcc-10
 * Wed Jan 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.3.0-1
 - Alternative, higher version of gcc
