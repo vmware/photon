@@ -1,6 +1,6 @@
 Summary:        An XML parser library
 Name:           expat
-Version:        2.5.0
+Version:        2.6.0
 Release:        1%{?dist}
 License:        MIT
 URL:            http://expat.sourceforge.net/
@@ -9,8 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
-%define sha512    %{name}=2da73b991b7c0c54440485c787e5edeb3567230204e31b3cac1c3a6713ec6f9f1554d3afffc0f8336168dfd5df02db4a69bcf21b4d959723d14162d13ab87516
-
+%define sha512    %{name}=d6f1c4a1a2ec8ffc04c04d6767cc8dd7dea3d132d10b8a2c45c5bfb405893c75db032b87a56cc88300b61c961dd7f9782b93aa74dddc7e66f25acb0c6c82b1fd
 Requires:       expat-libs = %{version}-%{release}
 
 %description
@@ -40,11 +39,11 @@ The package contains expat doc files.
 
 %build
 %configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--disable-static
+        CFLAGS="%{optflags}" \
+        CXXFLAGS="%{optflags}" \
+        --bindir=%{_bindir} \
+        --libdir=%{_libdir} \
+        --disable-static
 
 make %{?_smp_mflags}
 
@@ -58,8 +57,8 @@ rm -rf %{buildroot}/%{_docdir}/%{name}
 %check
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %post libs
 /sbin/ldconfig
@@ -91,8 +90,11 @@ rm -rf %{buildroot}/*
 %files docs
 %defattr(-,root,root)
 %doc AUTHORS Changes
+%exclude %{_mandir}/man1/xmlwf.1.gz
 
 %changelog
+* Tue Feb 13 2024 Anmol Jain <anmolja@vmware.com> 2.6.0-1
+- Version Upgrade to fix CVE-2023-52425 & CVE-2023-52426
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1
 - Automatic Version Bump
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.8-1
