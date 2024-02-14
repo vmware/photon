@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.62
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -44,9 +44,9 @@ Source6: preempt_rt.patches
 %if 0%{?fips}
 Source10: check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.62-13%{?dist}-secure
+%define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
 Source16: fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=51f09934bf41186f5e6a6dd06df84ffc9718f5aaea59eaeb887b639c8f0e8f98caac1339ce51139ab8064c1797631024b10fd92f2c65c35d38b88a17857b96b3
+%define sha512 fips-canister=ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
 %endif
 
 Source19: spec_install_post.inc
@@ -416,6 +416,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 12 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.62-10
+- Update canister version to 5.0.0-6.1.75-2
 * Mon Jan 08 2024 Roye Eshed <roye.eshed@broadcom.com> 6.1.62-9
 - Move Intel i40e, iavf and ice drivers for linux-rt to their own spec files.
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-8
