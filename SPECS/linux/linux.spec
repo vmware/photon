@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.201
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -65,9 +65,9 @@ Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.62-13.ph5-secure
+%define fips_canister_version 5.0.0-6.1.75-2.ph5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=51f09934bf41186f5e6a6dd06df84ffc9718f5aaea59eaeb887b639c8f0e8f98caac1339ce51139ab8064c1797631024b10fd92f2c65c35d38b88a17857b96b3
+%define sha512 fips-canister=ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
 Source17:       fips_canister_wrapper.c
 Source18:       fips_canister_wrapper.h
 Source19:       fips_canister_wrapper_asm.S
@@ -893,6 +893,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Feb 12 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.201-2
+- Update canister version to 5.0.0-6.1.75-2
 * Thu Dec 14 2023 Keerthana K <keerthanak@vmware.com> 5.10.201-1
 - Update to version 5.10.201
 - Update canister version to 5.0.0-6.1.62-13
