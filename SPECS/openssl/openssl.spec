@@ -7,8 +7,8 @@
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.9
-Release:        9%{?dist}
+Version:        3.0.13
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -16,7 +16,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=86c99146b37236419b110db77dd3ac3992e6bed78c258f0cc3434ca233460b4e17c0ac81d7058547fe9cb72a9fd80ee56d4b4916bb731dbe2bbcf1c3d46bf31a
+%define sha512 %{name}=22f4096781f0b075f5bf81bd39a0f97e111760dfa73b6f858f6bb54968a7847944d74969ae10f9a51cc21a2f4af20d9a4c463649dc824f5e439e196d6764c4f9
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
@@ -37,13 +37,6 @@ Source7: %{fips_provider_srcname}.tar.xz
 %endif
 
 Patch0: openssl-cnf.patch
-Patch1: CVE-2023-2975.patch
-Patch2: CVE-2023-3446.patch
-Patch3: CVE-2023-3817.patch
-Patch4: CVE-2023-4807.patch
-Patch5: CVE-2023-5363.patch
-Patch6: CVE-2023-5678.patch
-Patch7: CVE-2024-0727.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -257,6 +250,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Feb 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.13-1
+- Update to openssl-3.0.13
 * Tue Jan 30 2024 Mukul Sikka <msikka@vmware.com> 3.0.9-9
 - Fix for CVE-2024-0727
 * Fri Nov 17 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-8
