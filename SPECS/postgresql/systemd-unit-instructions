@@ -1,0 +1,21 @@
+mkdir -p %{buildroot}{%{_tmpfilesdir},%{_unitdir},%{_libexecdir}} \
+         %{buildroot}{%{_sysconfdir}/sysconfig,%{_presetdir}}
+
+install -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
+
+sed -i -e "s/%PGNAME%/%{name}/g" %{SOURCE2}
+cp %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+
+sed -i -e "s/%PGMAJVER%/%{pgmajorversion}/g" %{SOURCE3}
+install -m 755 %{SOURCE3} %{buildroot}%{_libexecdir}/%{name}-check-db-dir
+
+sed -i -e "s/%PGNAME%/%{name}/g" %{SOURCE4}
+install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/sysconfig/%{name}.conf
+
+sed -i -e "s/%PGNAME%/%{name}/g" %{SOURCE5}
+cp %{SOURCE5} %{buildroot}%{_presetdir}/99-%{name}.preset
+
+install -p -D -m 0644 %{SOURCE6} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+
+install -d -m 755 %{buildroot}%{_var}/run/%{srcname}
+install -d -m 700 %{buildroot}%{_sharedstatedir}/pgsql/%{name}

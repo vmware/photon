@@ -8,11 +8,12 @@
 %global _pgmandir       %{_pgdatadir}/man/%{srcname}
 %global _pgdocdir       %{_pgbaseinstdir}/share/doc/%{srcname}
 %define alter_weight    400
+%global service_name    %{name}.service
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
 Version:        14.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -22,6 +23,14 @@ Distribution:   Photon
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
 %define sha512 %{srcname}=67289cd638ed7b13e845263d5a34394347f33735d9e2fafd6aa3562989a3a9455ea547d1b5079138648f33b093e77841654188fc74a49c0d6d458a42cfb57ffe
 
+Source1: %{srcname}.tmpfiles.d
+Source2: %{srcname}.service
+Source3: %{srcname}-check-db-dir.in
+Source4: %{srcname}-env-vars.conf
+Source5: %{srcname}.preset
+Source6: %{srcname}.sysusers
+Source7: systemd-unit-instructions
+
 BuildRequires: clang-devel
 BuildRequires: gettext-devel
 BuildRequires: krb5-devel
@@ -29,7 +38,6 @@ BuildRequires: icu-devel
 BuildRequires: libedit-devel
 BuildRequires: libxml2-devel
 BuildRequires: libxslt-devel
-BuildRequires: linux-api-headers
 BuildRequires: Linux-PAM-devel
 BuildRequires: llvm-devel
 BuildRequires: lz4-devel
@@ -188,7 +196,7 @@ for the backend.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
+sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/%{srcname}@' src/include/pg_config_manual.h
 
 sh ./configure \
     --prefix=%{_pgbaseinstdir} \
@@ -220,10 +228,12 @@ sh ./configure \
     --docdir=%{_pgdocdir} \
     --mandir=%{_pgmandir}
 
-make world %{?_smp_mflags}
+%make_build world
 
 %install
-make install-world DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install install-world
+
+%include %{SOURCE7}
 
 # Remove anything related to Python 2.  These have no need to be
 # around as only Python 3 is supported.
@@ -281,11 +291,9 @@ cat postgres-%{pgmajorversion}.lang pg_resetwal-%{pgmajorversion}.lang \
     pg_archivecleanup-%{pgmajorversion}.lang pg_waldump-%{pgmajorversion}.lang \
     pg_rewind-%{pgmajorversion}.lang pg_upgrade-%{pgmajorversion}.lang >> pg_i18n.lst
 
-%if 0%{?with_check}
 %check
 # Run the main regression test suites in the source tree.
-run_test_path()
-{
+run_test_path() {
   make_path="$1"
   chown -Rv nobody .
   sudo -u nobody -s /bin/bash -c "PATH=$PATH make -C $make_path -k check"
@@ -301,7 +309,6 @@ run_test_path "src/test/authentication"
 run_test_path "src/test/recovery"
 run_test_path "src/test/ssl"
 run_test_path "src/test/subscription"
-%endif
 
 %post
 /sbin/ldconfig
@@ -370,7 +377,18 @@ alternatives --install %{_bindir}/initdb initdb %{_pgbindir}/initdb %{alter_weig
 
 /sbin/ldconfig
 
+%pre server
+%sysusers_create_compat %{SOURCE6}
+
+%preun server
+%systemd_preun %{service_name}
+
+%post server
+/sbin/ldconfig
+%systemd_post %{service_name}
+
 %postun server
+%systemd_postun_with_restart %{service_name}
 alternatives --remove initdb %{_pgbindir}/initdb
 /sbin/ldconfig
 
@@ -491,6 +509,15 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/pgoutput.so
 %{_pglibdir}/plpgsql.so
 %{_pglibdir}/*_and_*.so
+%{_tmpfilesdir}/%{name}.conf
+%{_unitdir}/%{name}.service
+%{_presetdir}/99-%{name}.preset
+%attr(700,postgres,postgres) %dir %{_sharedstatedir}/pgsql/%{name}
+%attr(755,postgres,postgres) %dir %{_var}/run/%{srcname}
+%attr(700,postgres,postgres) %dir %{_sharedstatedir}/pgsql
+%attr(644,postgres,postgres) %config(noreplace) %{_sysconfdir}/sysconfig/%{name}.conf
+%{_libexecdir}/%{name}-check-db-dir
+%{_sysusersdir}/%{name}.sysusers
 
 %files i18n -f pg_i18n.lst
 
@@ -655,6 +682,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Sat Feb 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-2
+- Add systemd unit file
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-1
 - Upgrade to v14.11
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.10-2

@@ -8,11 +8,12 @@
 %global _pgmandir       %{_pgdatadir}/man/%{srcname}
 %global _pgdocdir       %{_pgbaseinstdir}/share/doc/%{srcname}
 %define alter_weight    600
+%global service_name    %{name}.service
 
 Summary:        PostgreSQL database engine
 Name:           postgresql16
 Version:        16.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -21,6 +22,14 @@ Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
 %define sha512 %{srcname}=3194941cc3f1ec86b6cf4f08c6422d268d99890441f8fc9ab87b6a7fd16c990fa230b544308644cbef54e6960c4984e3703752e40930bdc0537b7bfda3ab7ccf
+
+Source1: %{srcname}.tmpfiles.d
+Source2: %{srcname}.service
+Source3: %{srcname}-check-db-dir.in
+Source4: %{srcname}-env-vars.conf
+Source5: %{srcname}.preset
+Source6: %{srcname}.sysusers
+Source7: systemd-unit-instructions
 
 BuildRequires: clang-devel
 BuildRequires: gettext-devel
@@ -188,7 +197,7 @@ for the backend.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
+sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/%{srcname}@' src/include/pg_config_manual.h
 
 sh ./configure \
     --prefix=%{_pgbaseinstdir} \
@@ -224,6 +233,8 @@ sh ./configure \
 
 %install
 %make_install install-world
+
+%include %{SOURCE7}
 
 # Remove anything related to Python 2.  These have no need to be
 # around as only Python 3 is supported.
@@ -366,7 +377,18 @@ alternatives --install %{_bindir}/initdb initdb %{_pgbindir}/initdb %{alter_weig
 
 /sbin/ldconfig
 
+%pre server
+%sysusers_create_compat %{SOURCE6}
+
+%preun server
+%systemd_preun %{service_name}
+
+%post server
+/sbin/ldconfig
+%systemd_post %{service_name}
+
 %postun server
+%systemd_postun_with_restart %{service_name}
 alternatives --remove initdb %{_pgbindir}/initdb
 /sbin/ldconfig
 
@@ -485,6 +507,15 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/pgoutput.so
 %{_pglibdir}/plpgsql.so
 %{_pglibdir}/*_and_*.so
+%{_tmpfilesdir}/%{name}.conf
+%{_unitdir}/%{name}.service
+%{_presetdir}/99-%{name}.preset
+%attr(700,postgres,postgres) %dir %{_sharedstatedir}/pgsql/%{name}
+%attr(755,postgres,postgres) %dir %{_var}/run/%{srcname}
+%attr(700,postgres,postgres) %dir %{_sharedstatedir}/pgsql
+%attr(644,postgres,postgres) %config(noreplace) %{_sysconfdir}/sysconfig/%{name}.conf
+%{_libexecdir}/%{name}-check-db-dir
+%{_sysusersdir}/%{name}.sysusers
 
 %files i18n -f pg_i18n.lst
 
@@ -653,6 +684,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Sat Feb 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.2-2
+- Add systemd unit file
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.2-1
 - Upgrade to v16.2
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 16.1-1
