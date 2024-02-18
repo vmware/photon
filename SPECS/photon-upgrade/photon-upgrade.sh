@@ -591,6 +591,96 @@ function update_solv_to_support_complex_deps() {
   fi
 }
 
+# Updates all installed Photon OS packages to latest versions
+function do_ph4_to_ph4_update() {
+  # old_new_pkg_map hash captures those packages which have another version
+  # available in 4.0 with a different name. For example, apache-tomcat and
+  # apache-tomcat9 both are avaialble in 4.0. The update repo must provide only
+  # the newer rpm to upgrade to it from installed version.
+  local -A old_new_pkg_map=(
+    [apache-tomcat]="apache-tomcat apache-tomcat9"
+  )
+  # Hash keys map paths in older version of package to those in newer versions.
+  # The conf_path_map hash is only used in restore_configs() and nowhere else.
+  # Each update/upgrade path may bring it's own map.
+  declare -A conf_path_map=(
+    # config of apache-tomcat in 4.0 to be restored for apache-tomcat9
+    [/var/opt/apache-tomcat/conf]=/var/opt/apache-tomcat9/conf
+  )
+  # The cleanup_residual_files_map hash has command that help cleanup any
+  # residual files that the uninstalled package leaves behind. This elimnates
+  # any errors that are shown during updates of packages from old_new_pkg_map
+  declare -A cleanup_residual_files_map=(
+    [apache-tomcat]="${RM} -rf /var/opt/apache-tomcat /usr/share/java/tomcat"
+  )
+  local i=''    # Iterator for keys of old_new_pkg_map to detect installed pkgs
+  local f=''    # Loop variable for detecting pkgs in repo corresponding to $i
+  local -a removed_pkgs_list=()
+  local found=no
+
+  write_to_syslog "Starting update of packages with command line: $CMDLINE"
+  backup_rpms_list_n_db $OLD_RPMDB_PATH
+  remove_debuginfo_packages
+  pre_upgrade_rm_pkgs
+  tdnf_makecache
+  rebuilddb
+
+  for i in $(find_installed_packages ${!old_new_pkg_map[@]}); do
+    found=no
+    for f in ${old_new_pkg_map[$i]}; do
+      if ${TDNF} $REPOS_OPT list available $f > /dev/null 2>&1; then
+        found=yes
+        if [ "$f" = "$i" ]; then
+          # Found the same package name in the repo as the one installed.
+          # Only that found package will be used  for update.
+          unset old_new_pkg_map[$i]
+          unset cleanup_residual_files_map[$i]
+        else
+          # The installed package is not found but the other replacing package
+          # is found in the repo. The old package and it's dependent packagtes
+          # will be removed before updating all packages to newer version and
+          # the other replacing package and all removed packages will be
+          # reinstalled post update and their configurations will be restored.
+          old_new_pkg_map[$i]=$f
+        fi
+        break
+      fi
+    done
+    if [ "$found" = "no" ]; then
+      unset old_new_pkg_map[$i]
+      unset cleanup_residual_files_map[$i]
+    fi
+  done
+
+  if [ ${#old_new_pkg_map[@]} -gt 0 ]; then
+    for i in ${!old_new_pkg_map[@]}; do
+      echo "Note: The installed $i will be upgraded to ${old_new_pkg_map[$i]}"
+    done
+  fi
+
+  # At this point old_new_pkg_map keys are the packages which are installed and
+  # will be replaced by those packages which are named in corresponding values
+  removed_pkgs_list+=( $(find_extra_erased_pkgs ${!old_new_pkg_map[@]}) )
+  backup_configs $TMP_BACKUP_LOC ${removed_pkgs_list[@]} ${!old_new_pkg_map[@]}
+  erase_pkgs ${!old_new_pkg_map[@]}
+  if [ ${#cleanup_residual_files_map[@]} -gt 0 ]; then
+    for i in ${!cleanup_residual_files_map[@]}; do
+      echo "Executing '${cleanup_residual_files_map[$i]}' for cleanup."
+      eval "${cleanup_residual_files_map[$i]}"
+    done
+  fi
+  # Upgrading all installed RPMs to lastest available versions in the repo.
+  distro_upgrade $FROM_VERSION
+  rebuilddb
+  install_pkgs ${removed_pkgs_list[@]} ${old_new_pkg_map[@]}
+  if [ -n "$INSTALL_ALL" ]; then
+    install_all_from_repo
+  fi
+  post_upgrade_rm_pkgs
+  restore_configs $TMP_BACKUP_LOC
+}
+
+
 # Checks whether tdnf repo configurations are as expected or not.  The method
 # aborts photon-upgrade if it finds photon-release package from other
 # OS releases than the one being updated or upgraded to.
@@ -816,17 +906,6 @@ if [ "$UPGRADE_OS" = "y" ]; then
 elif [ "$UPDATE_PKGS" = 'y' ]; then
   # The script is run without --upgrade-os option.
   # Upgrading all installed RPMs to latest versions.
-  write_to_syslog "Starting update of packages with command line: $CMDLINE"
-  remove_debuginfo_packages
-  backup_rpms_list_n_db $OLD_RPMDB_PATH
-  pre_upgrade_rm_pkgs
-  tdnf_makecache
-  rebuilddb
-  distro_upgrade $FROM_VERSION
-  rebuilddb
-  if [ -n "$INSTALL_ALL" ]; then
-    install_all_from_repo
-  fi
-  post_upgrade_rm_pkgs
+  do_ph4_to_ph4_update
 fi
 cleanup_and_exit 0

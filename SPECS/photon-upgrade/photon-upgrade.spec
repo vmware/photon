@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -52,6 +52,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Fri Feb 16 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0-15
+- Add feature to update to other availabe package within 4.0 having different name
 * Thu Feb 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-14
 - Add copenapi to deprecated packages list
 * Tue Jan 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0-13
