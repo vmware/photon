@@ -25,9 +25,10 @@ Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
-Source4: %{srcname}-check-db-dir.in
-Source5: %{srcname}-env-vars.conf
-Source6: %{srcname}.preset
+Source3: %{srcname}-check-db-dir.in
+Source4: %{srcname}-env-vars.conf
+Source5: %{srcname}.preset
+Source6: systemd-unit-instructions
 
 BuildRequires:  krb5-devel
 BuildRequires:  libedit-devel
@@ -117,25 +118,7 @@ sh ./configure \
 %make_install %{?_smp_mflags}
 %make_install -C contrib %{?_smp_mflags}
 
-mkdir -p %{buildroot}{%{_tmpfilesdir},%{_unitdir},%{_libexecdir}} \
-         %{buildroot}{%{_sysconfdir}/sysconfig,%{_presetdir}}
-
-install -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
-
-sed -i -e "s/%PGNAME%/%{name}/g" %{SOURCE2}
-cp %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
-
-sed -i -i "s/%PGNAME%/%{name}/g" %{SOURCE6}
-cp %{SOURCE6} %{buildroot}%{_presetdir}/99-%{name}.preset
-
-sed -i -e "s/%PGMAJVER%/%{pgmajorversion}/g" %{SOURCE4}
-install -m 755 %{SOURCE4} %{buildroot}%{_libexecdir}/%{name}-check-db-dir
-
-sed -i -e "s/%PGNAME%/%{name}/g" %{SOURCE5}
-install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/sysconfig/%{name}.conf
-
-install -d -m 755 %{buildroot}%{_var}/run/%{srcname}
-install -d -m 700 %{buildroot}%{_sharedstatedir}/pgsql/%{name}
+%include %{SOURCE6}
 
 # For postgresql 10+, commands are renamed
 # Ref: https://wiki.postgresql.org/wiki/New_in_postgres_10
