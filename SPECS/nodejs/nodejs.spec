@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        20.10.0
+Version:        20.11.1
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define sha512  node=3ebb10903cb2c30daced132acd408e2dd3c972cc73c945a2ba4f30cbe6ed315a3b2fc4b49a5cfba7166be8df0d31571f2c624d666584054efbf15b48d658e2cb
+%define sha512  node=9451a2bc297e655da6a575d550a15616afcf16c6dd9b80528cbaed26b9f862d8c788c10e7e4e54c49bdffae8958789f1c04b40286f1e0e61c3488f3c00d2a563
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -75,6 +75,9 @@ make %{?_smp_mflags} cctest
 %{_docdir}/node/gdbinit
 
 %changelog
+* Mon Feb 19 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 20.11.1-1
+- Upgrade to 20.11.1 to fix CVE-2024-21892, CVE-2024-22017, CVE-2024-22019,
+- CVE-2023-46809, CVE-2024-22025, CVE-2024-21891, CVE-2024-21896, CVE-2024-21890
 * Wed Dec 06 2023 Prashant S Chauhan <psinghchauha@vmware.com> 20.10.0-1
 - Upgrade to 20.10.0
 - Remove node.stp as systemtap support has been removed
