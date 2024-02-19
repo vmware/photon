@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -45,6 +45,9 @@ BuildRequires: zlib-devel
 Requires: bash
 Requires: glibc
 Requires: libgcc
+
+#Resolve conflicts with photon 5.0 higher
+Conflicts: %{name}-libs
 
 %description
 The OpenSSL package contains management tools and libraries relating
@@ -250,6 +253,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Mon Feb 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.13-2
+- Fix Upgrade test failure
 * Thu Feb 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.13-1
 - Update to openssl-3.0.13
 * Tue Jan 30 2024 Mukul Sikka <msikka@vmware.com> 3.0.9-9
