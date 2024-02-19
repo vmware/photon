@@ -1,17 +1,17 @@
 %define _use_internal_dependency_generator 0
-%define _origname apache-tomcat
-%define _prefix /var/opt/%{name}
-%define _origprefix /var/opt/%{_origname}
-%define _bindir %{_prefix}/bin
-%define _confdir %{_prefix}/conf
-%define _libdir %{_prefix}/lib
+%define _origname   apache-tomcat
+%define _prefix     %{_var}/opt/%{name}
+%define _origprefix %{_var}/opt/%{_origname}
+%define _bindir     %{_prefix}/bin
+%define _confdir    %{_prefix}/conf
+%define _libdir     %{_prefix}/lib
 %define _webappsdir %{_prefix}/webapps
-%define _logsdir %{_prefix}/logs
-%define _tempdir %{_prefix}/temp
+%define _logsdir    %{_prefix}/logs
+%define _tempdir    %{_prefix}/temp
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat-9
-Version:        9.0.80
+Version:        9.0.83
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -20,7 +20,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=a2fb298c1fd2615e1a69371b5f84eb569e897faad3cbe17e3626460f5ce311085c120dd3f62c255fde87e6517915365ab52ada613776d45185b8e53624935114
+%define sha512 %{_origname}=28e112a9d01918434ad03c414058275bbc4e34be408c2cfe2d819c3a08cadc3c31920e279c5312529aa2f5abf1e002537012c5f06d43ba8894448afd5585c231
+
+# Please check the below link for the supported java version
+# https://tomcat.apache.org/whichversion.html
 # base-for-apache-tomcat is a cached -Dbase.path folder
 # generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
@@ -29,13 +32,13 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=a9af5a439100d05e0efd9246aaef59824fab9e9f453c513ccfc196a87058510d0d3f9974c16fe2aab81fa9f137f52b913ac4e353a32cbcf01f4e07551553110f
+%define sha512 base=4beef378a74346fb68fba156e73f263c772dc23ba4888a6b7134a460219adddd5b4c9e0a3424e9a0ee517fed4f036e0f9136dff40a5cb3c9ad06c1c873056c1c
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
 BuildArch: noarch
 
-BuildRequires: openjdk11
+BuildRequires: openjdk17
 BuildRequires: apache-ant
 
 Requires: jre >= 8.0
@@ -84,11 +87,12 @@ rm -rf %{buildroot}%{_prefix}/webapps/{examples,docs}
 
 install -vdm 644 %{buildroot}%{_datadir}/java/tomcat9
 
-for jar in %{buildroot}/%{_libdir}/*.jar
-do
-    jarname=$(basename $jar .jar)
-    ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/tomcat9/${jarname}.jar
+pushd %{buildroot}
+for jar in ./%{_libdir}/*.jar; do
+  jarname=$(basename $jar)
+  ln -sfrv ./%{_libdir}/${jarname} ./%{_datadir}/java/tomcat9/${jarname}
 done
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -99,6 +103,7 @@ rm -rf %{buildroot}/*
 %dir %{_bindir}
 %dir %{_libdir}
 %dir %{_confdir}
+%dir %{_webappsdir}
 %dir %{_webappsdir}/ROOT
 %dir %{_logsdir}
 %dir %{_tempdir}
@@ -114,6 +119,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_confdir}/tomcat-users.xsd
 %config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
+%dir %{_datadir}/java
+%dir %{_datadir}/java/tomcat9
 %{_datadir}/java/tomcat9/*.jar
 %{_prefix}/LICENSE
 %{_prefix}/NOTICE
@@ -138,6 +145,8 @@ alternatives --remove apache-tomcat %{_prefix}
 fi
 
 %changelog
+* Tue Feb 20 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 9.0.83-1
+- Upgrade to 9.0.83, Fix CVE-2023-46589
 * Mon Sep 04 2023 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 9.0.80-1
 - Upgrade to 9.0.80
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 8.5.78-2

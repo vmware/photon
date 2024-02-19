@@ -1,17 +1,17 @@
 %define _use_internal_dependency_generator 0
-%define _longname apache-tomcat-10
-%define _prefix /var/opt/%{_longname}
-%define _altprefix /var/opt/%{name}
-%define _bindir %{_prefix}/bin
-%define _confdir %{_prefix}/conf
-%define _libdir %{_prefix}/lib
+%define _longname   apache-tomcat-10
+%define _prefix     %{_var}/opt/%{_longname}
+%define _altprefix  %{_var}/opt/%{name}
+%define _bindir     %{_prefix}/bin
+%define _confdir    %{_prefix}/conf
+%define _libdir     %{_prefix}/lib
 %define _webappsdir %{_prefix}/webapps
-%define _logsdir %{_prefix}/logs
-%define _tempdir %{_prefix}/temp
+%define _logsdir    %{_prefix}/logs
+%define _tempdir    %{_prefix}/temp
 
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        10.1.13
+Version:        10.1.16
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -20,7 +20,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha512 %{name}=e44e2dba618f70d9a39e976cc07d33fc9cbead2169e24d6ea2051c8db20601f63ee7bc657245869450c82cf0ceb272501066b77ae45265d19b7964f5ed0e85b1
+%define sha512 %{name}=a358f93642fcb9eb34e4fb30f6dc7f7a3d69ae9c83c7a50748f143e3297228db106548cb44a1c2102e63325ae39be67090a66be1920ccac5d080c8ff1f41ad8c
+
+# Please check the below link for the supported java version
+# https://tomcat.apache.org/whichversion.html
 # base-for-apache-tomcat is a cached -Dbase.path folder
 # generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
@@ -29,13 +32,13 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{name
 # 4. mv tomcat-build-libs base-for-%{name}-%{version}
 # 5. tar -cvzf base-for-%{name}-%{version}.tar.gz base-for-%{name}-%{version}
 Source1: base-for-%{name}-%{version}.tar.gz
-%define sha512 base=0a4e9b7c2e1abd2070f97be319611a38a71216227d398410e93edff8c37097718c1a330e7615b5f92b60b44022e17d0aee66424af91261642c03bfdc421f8796
+%define sha512 base=1f69d7321058d8a633b6b3c084b4754e1db2218e95ef53f5debd4f5df8225c367f8f650c8626385d0b5f9143623f7076c65eb393919967f25edf1a2f47d9abeb
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
 BuildArch: noarch
 
-BuildRequires: openjdk11
+BuildRequires: openjdk17
 BuildRequires: apache-ant
 
 Requires: (openjdk11-jre or openjdk17-jre)
@@ -59,7 +62,8 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 %build
-ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
+ant -Dant.build.javac.source=11 -Dant.build.javac.target=11 \
+-Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
@@ -82,11 +86,12 @@ rm -rf %{buildroot}%{_prefix}/webapps/{examples,docs}
 
 install -vdm 644 %{buildroot}%{_datadir}/java/tomcat10
 
-for jar in %{buildroot}/%{_libdir}/*.jar
-do
-    jarname=$(basename $jar .jar)
-    ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/tomcat10/${jarname}.jar
+pushd %{buildroot}
+for jar in ./%{_libdir}/*.jar; do
+  jarname=$(basename $jar)
+  ln -sfrv ./%{_libdir}/${jarname} ./%{_datadir}/java/tomcat10/${jarname}
 done
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -97,6 +102,7 @@ rm -rf %{buildroot}/*
 %dir %{_bindir}
 %dir %{_libdir}
 %dir %{_confdir}
+%dir %{_webappsdir}
 %dir %{_webappsdir}/ROOT
 %dir %{_logsdir}
 %dir %{_tempdir}
@@ -112,6 +118,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_confdir}/tomcat-users.xsd
 %config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
+%dir %{_datadir}/java
+%dir %{_datadir}/java/tomcat10
 %{_datadir}/java/tomcat10/*.jar
 %{_prefix}/LICENSE
 %{_prefix}/NOTICE
@@ -136,6 +144,8 @@ alternatives --remove apache-tomcat %{_prefix}
 fi
 
 %changelog
+* Tue Feb 20 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 10.1.16-1
+- Upgrade to 10.1.16, Fix CVE-2023-46589
 * Wed Sep 06 2023 Prashant S Chauhan <psinghchauh@vmware.com> 10.1.13-1
 - Update to v10.1.13, Fixes CVE-2023-34981
 - Introduce alternatives
