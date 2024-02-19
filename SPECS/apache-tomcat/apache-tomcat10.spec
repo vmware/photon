@@ -11,8 +11,8 @@
 
 Summary:        Apache Tomcat 10.1
 Name:           apache-tomcat10
-Version:        10.1.15
-Release:        2%{?dist}
+Version:        10.1.16
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -22,7 +22,10 @@ Obsoletes:      %{_origname} < 10.1.15-1%{?dist}
 Provides:       %{_origname} = %{version}-%{release}
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=7a0b8a584d7e801446f031415551ac943be21c5c4ed9e7ee1a66c43339f0625435a80465930121633eebaf5eae95c096684ee2d99ed70805ce52509a3aa7c67e
+%define sha512 %{_origname}=a358f93642fcb9eb34e4fb30f6dc7f7a3d69ae9c83c7a50748f143e3297228db106548cb44a1c2102e63325ae39be67090a66be1920ccac5d080c8ff1f41ad8c
+
+# Please check the below link for the supported java version
+# https://tomcat.apache.org/whichversion.html
 # base-for-apache-tomcat is a cached -Dbase.path folder
 # generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
@@ -31,13 +34,13 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{_ori
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=7dab004b75e926581d06e95ccb6f7a98b1776bb2172db0c797ada05254448ea917b119e2a6479f6b0fe42670eb09cebfc129946487cacf726b61153f439955fd
+%define sha512 base=1f69d7321058d8a633b6b3c084b4754e1db2218e95ef53f5debd4f5df8225c367f8f650c8626385d0b5f9143623f7076c65eb393919967f25edf1a2f47d9abeb
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
 BuildArch: noarch
 
-BuildRequires: openjdk11
+BuildRequires: openjdk17
 BuildRequires: apache-ant
 
 Requires:         (openjdk11-jre or openjdk17-jre)
@@ -65,7 +68,8 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 %build
-ant -Dbase.path="../base-for-%{_origname}-%{version}" deploy dist-prepare dist-source
+ant -Dant.build.javac.source=11 -Dant.build.javac.target=11 \
+-Dbase.path="../base-for-%{_origname}-%{version}" deploy dist-prepare dist-source
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
@@ -88,11 +92,12 @@ rm -rf %{buildroot}%{_prefix}/webapps/{examples,docs}
 
 install -vdm 644 %{buildroot}%{_datadir}/java/tomcat10
 
-for jar in %{buildroot}/%{_libdir}/*.jar
-do
-    jarname=$(basename $jar)
-    ln -sfv %{_libdir}/${jarname} %{buildroot}%{_datadir}/java/tomcat10/${jarname}
+pushd %{buildroot}
+for jar in ./%{_libdir}/*.jar; do
+  jarname=$(basename $jar)
+  ln -sfrv ./%{_libdir}/${jarname} ./%{_datadir}/java/tomcat10/${jarname}
 done
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -145,6 +150,8 @@ alternatives --remove apache-tomcat %{_prefix}
 fi
 
 %changelog
+* Tue Feb 20 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 10.1.16-1
+- Upgrade to 10.1.16, Fix CVE-2023-46589
 * Tue Feb 20 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.1.15-2
 - Fix file packaging
 * Wed Oct 25 2023 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 10.1.15-1
