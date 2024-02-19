@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.88
-Release:        2%{?dist}
+Version:        8.5.96
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -9,7 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha512 %{name}=f3db0daf451ab6ef34163e2adf6388cd4d4502c7b28915f3ae954b79ea3fe5ed17c900294bac0b192268431a62d501b3b8d35f6d9e0bcb3ae1f9962ac3b8a084
+%define sha512 %{name}=3d2652e06d81eb014623bf1b0f03c238f330487682a255a4ed37a2b722f99194d08e3083b491d962917bc21cfbefd44f0e7808248c6b90c6a87db292138144dd
+
+# Please check the below link for the supported java version
+# https://tomcat.apache.org/whichversion.html
 # base-for-apache-tomcat is a cached -Dbase.path folder
 # generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
@@ -18,14 +21,13 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}
 # 4. mv tomcat-build-libs base-for-%{name}-%{version}
 # 5. tar -cvzf base-for-%{name}-%{version}.tar.gz base-for-%{name}-%{version}
 Source1: base-for-%{name}-%{version}.tar.gz
-%define sha512 base=eab0ea7e56ea6aa833c8f5ebed19456a122e728cdde96928882596504e32a8d5980a8c9e1f3dadd2cc336e8e221101d00300c9347f25d322562b87dc06e79d9a
+%define sha512 base=70bf85ebd014c1be306b1237a77400a0655b2455df099e84c314b277151ea8cdcb4d8c8d4603019be5e00f2870f8e0810f7e8c3365c95a10b3b4f69e8fb4794e
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
 BuildArch: noarch
 
-BuildRequires: openjre8
-BuildRequires: openjdk8
+BuildRequires: openjdk11
 BuildRequires: apache-ant
 
 Requires: openjre8
@@ -59,7 +61,8 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
 %autosetup -D -b 1 -n %{name}-%{version}-src -p1
 
 %build
-ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
+ant -Dant.build.javac.source=1.8 -Dant.build.javac.target=1.8 \
+ -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
@@ -83,11 +86,12 @@ rm -rf %{buildroot}%{_prefix}/webapps/docs
 
 install -vdm 644 %{buildroot}%{_datadir}/java/tomcat
 
-for jar in %{buildroot}/%{_libdir}/*.jar
-do
-    jarname=$(basename $jar .jar)
-    ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/tomcat/${jarname}.jar
+pushd %{buildroot}
+for jar in ./%{_libdir}/*.jar; do
+  jarname=$(basename $jar)
+  ln -sfrv ./%{_libdir}/${jarname} ./%{_datadir}/java/tomcat/${jarname}
 done
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -98,6 +102,7 @@ rm -rf %{buildroot}/*
 %dir %{_bindir}
 %dir %{_libdir}
 %dir %{_confdir}
+%dir %{_webappsdir}
 %dir %{_webappsdir}/ROOT
 %dir %{_logsdir}
 %dir %{_tempdir}
@@ -113,6 +118,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_confdir}/tomcat-users.xsd
 %config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
+%dir %{_datadir}/java
+%dir %{_datadir}/java/tomcat
 %{_datadir}/java/tomcat/*.jar
 %{_prefix}/LICENSE
 %{_prefix}/NOTICE
@@ -127,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed Feb 21 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 8.5.96-1
+- Upgrade to 8.5.96, Fix CVE-2023-46589
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.5.88-2
 - Bump version as a part of openjdk8 upgrade
 * Wed Jun 14 2023 Nitesh Kumar <kunitesh@vmware.com> 8.5.88-1
