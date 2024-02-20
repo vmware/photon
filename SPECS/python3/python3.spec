@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.11
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -14,7 +14,12 @@ Distribution:   Photon
 Source0: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 %define sha512 Python=fa113b4b635d271a1412999587ec64654d337db263851a6a9d88b3cab4ed66dba76fe03e65c4d341f0a83fd8182d35e245bfd9827465d7aebcb4deb71af4d047
 
-Source1:        macros.python
+Source1: macros.python
+
+# check readme inside the tarball for instructions on
+# how to create this tarball
+Source2: setuptools-pip-wheels%{?dist}-1.0.tar.xz
+%define sha512 setuptools-pip-wheels=2cf58e212034fe280e13990e42f9159c3d70757dc8ef8337db67c26f01618584e1810444ce2e965b8f4b4b2bc34f34b39cecb93363198b1a4f2e3477fb2271b2
 
 Patch0:         cgi3.patch
 Patch1:         CVE-2023-27043.patch
@@ -22,6 +27,7 @@ Patch2:         CVE-2007-4559.patch
 Patch3:         CVE-2023-24329.patch
 Patch4:         use-HMAC-SHA256-in-FIPS-mode.patch
 Patch5:         CVE-2023-40217.patch
+Patch6:         ensurepip-upgrade-bundled-pip-and-setuptools.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -33,6 +39,7 @@ BuildRequires:  expat-devel >= 2.1.0
 BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  sqlite-devel
 BuildRequires:  util-linux-devel
+
 # cross compilation requires native python3 installed for ensurepip
 %define BuildRequiresNative %{name}-xml
 
@@ -130,7 +137,9 @@ Group: Development/Tools
 Requires: %{name} = %{version}-%{release}
 
 %description test
-The test package contains all regression tests for Python as well as the modules test.support and test.regrtest. test.support is used to enhance your tests while test.regrtest drives the testing suite.
+The test package contains all regression tests for Python as well as the
+modules test.support and test.regrtest.
+test.support is used to enhance your tests while test.regrtest drives the testing suite.
 
 %package        macros
 Summary:        Macros for Python packages.
@@ -144,7 +153,7 @@ You should not need to install this package manually as the various
 python-devel packages require it. So install a python-devel package instead.
 
 %prep
-%autosetup -p1 -n Python-%{version}
+%autosetup -p1 -n Python-%{version} -a2
 
 %build
 export OPT="${CFLAGS}"
@@ -154,6 +163,15 @@ if [ %{_host} != %{_build} ]; then
   export ac_cv_file__dev_ptmx=yes
   export ac_cv_file__dev_ptc=no
 fi
+
+rm -vf Lib/ensurepip/_bundled/pip*.whl \
+       Lib/ensurepip/_bundled/setuptools*.whl
+
+pushd setuptools-pip-wheels/%{_arch}
+cp pip*.whl \
+   setuptools*.whl \
+   ../../Lib/ensurepip/_bundled/
+popd
 
 %configure \
     --enable-shared \
@@ -188,13 +206,11 @@ install -m 644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}
 %endif
 %endif
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} test
-%endif
+%make_build test
 
 %post
-ln -sfv %{_bindir}/%{name} %{_bindir}/python
+ln -srfv %{_bindir}/%{name} %{_bindir}/python
 /sbin/ldconfig
 
 %postun
@@ -203,7 +219,7 @@ ln -sfv %{_bindir}/%{name} %{_bindir}/python
 #as python will still be linked to python3
 if [ $1 -eq 0 ] ; then
   if [ -f "%{_bindir}/python2" ]; then
-    ln -sfv %{_bindir}/python2 %{_bindir}/python
+    ln -sfrv %{_bindir}/python2 %{_bindir}/python
   else
     rm -f %{_bindir}/python
   fi
@@ -247,7 +263,6 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python%{VER}/lib-dynload/pyexpat*.so
 %exclude %{_libdir}/python%{VER}/curses
 %exclude %{_libdir}/python%{VER}/lib-dynload/_curses*.so
-%exclude %{_libdir}/python%{VER}/ensurepip
 
 %files  xml
 %defattr(-, root, root, 755)
@@ -288,6 +303,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Tue Feb 20 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.10.11-7
+- Upgrade bundled pip to 23.3.2
 * Fri Feb 02 2024 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.11-6
 - Remove ensurepip, fixes second level CVEs
 * Fri Nov 03 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.11-5

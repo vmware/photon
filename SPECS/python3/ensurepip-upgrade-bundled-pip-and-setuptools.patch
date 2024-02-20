@@ -1,0 +1,30 @@
+From 33126d4ea1544167c4e9dea14cf408dfc379764a Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 21 Feb 2024 18:53:19 +0530
+Subject: [PATCH] ensurepip: upgrade bundled pip to 23.3.2
+
+upgrade setuptools to 65.5.1
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ Lib/ensurepip/__init__.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Lib/ensurepip/__init__.py b/Lib/ensurepip/__init__.py
+index c628828..1c2927c 100644
+--- a/Lib/ensurepip/__init__.py
++++ b/Lib/ensurepip/__init__.py
+@@ -11,8 +11,8 @@ from importlib import resources
+ 
+ __all__ = ["version", "bootstrap"]
+ _PACKAGE_NAMES = ('setuptools', 'pip')
+-_SETUPTOOLS_VERSION = "65.5.0"
+-_PIP_VERSION = "23.0.1"
++_SETUPTOOLS_VERSION = "65.5.1"
++_PIP_VERSION = "23.3.2"
+ _PROJECTS = [
+     ("setuptools", _SETUPTOOLS_VERSION, "py3"),
+     ("pip", _PIP_VERSION, "py3"),
+-- 
+2.43.2
+
