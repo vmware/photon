@@ -1,6 +1,7 @@
+%global _default_patch_fuzz 1
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
-Version:        2.89
+Version:        2.90
 Release:        1%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
@@ -9,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://thekelleys.org.uk/dnsmasq/%{name}-%{version}.tar.xz
-%define sha512 %{name}=4384ed5b673e10eaf6532e6eaeb5c0a6b817581433cc28c632bdcbadbfc050a0ab73bc5b73c98d708cd39515bb3f72168714b0aa5f16436cebdd18020648d428
+%define sha512 %{name}=e169de1892f935e219b0f49d90107f95cba42b40bca20bd3c973313c2cd4df58b929af6628cd988419051d81c3b4ccf8e9f816274df7d0840e79f5bf49602442
 
 Patch0:         enable_dnssec.patch
 
@@ -93,6 +94,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Tue Feb 20 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 2.90-1
+- Update to v2.90 to fix CVE-2023-50868, CVE-2023-50387
 * Mon May 22 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.89-1
 - Version bump
 * Wed Dec 07 2022 Susant Sahai <ssahani@vmware.com> 2.88-1
