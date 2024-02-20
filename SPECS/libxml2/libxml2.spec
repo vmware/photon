@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.12
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
@@ -25,6 +25,7 @@ Patch10: libxml2-CVE-2023-39615-1.patch
 Patch11: libxml2-CVE-2023-39615-2.patch
 Patch12: 0001-malloc-fail-Fix-memory-leak-in-xmlStaticCopyNodeList.patch
 Patch13: libxml2-CVE-2023-45322.patch
+Patch14: libxml2-CVE-2024-25062.patch
 
 BuildRequires: python3-devel
 BuildRequires: zlib-devel
@@ -105,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Mon Feb 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.9.12-13
+- Fix for CVE-2024-25062
 * Fri Oct 13 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.12-12
 - Fix for CVE-2023-45322
 * Fri Sep 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.12-11
