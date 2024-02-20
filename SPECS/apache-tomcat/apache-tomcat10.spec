@@ -1,18 +1,18 @@
 %define _use_internal_dependency_generator 0
-%define _origname apache-tomcat
-%define _prefix /var/opt/%{name}
-%define _origprefix /var/opt/%{_origname}
-%define _bindir %{_prefix}/bin
-%define _confdir %{_prefix}/conf
-%define _libdir %{_prefix}/lib
+%define _origname   apache-tomcat
+%define _prefix     %{_var}/opt/%{name}
+%define _origprefix %{_var}/opt/%{_origname}
+%define _bindir     %{_prefix}/bin
+%define _confdir    %{_prefix}/conf
+%define _libdir     %{_prefix}/lib
 %define _webappsdir %{_prefix}/webapps
-%define _logsdir %{_prefix}/logs
-%define _tempdir %{_prefix}/temp
+%define _logsdir    %{_prefix}/logs
+%define _tempdir    %{_prefix}/temp
 
 Summary:        Apache Tomcat 10.1
 Name:           apache-tomcat10
 Version:        10.1.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -103,6 +103,7 @@ rm -rf %{buildroot}/*
 %dir %{_bindir}
 %dir %{_libdir}
 %dir %{_confdir}
+%dir %{_webappsdir}
 %dir %{_webappsdir}/ROOT
 %dir %{_logsdir}
 %dir %{_tempdir}
@@ -118,6 +119,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_confdir}/tomcat-users.xsd
 %config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
+%dir %{_datadir}/java
+%dir %{_datadir}/java/tomcat10
 %{_datadir}/java/tomcat10/*.jar
 %{_prefix}/LICENSE
 %{_prefix}/NOTICE
@@ -142,6 +145,8 @@ alternatives --remove apache-tomcat %{_prefix}
 fi
 
 %changelog
+* Tue Feb 20 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.1.15-2
+- Fix file packaging
 * Wed Oct 25 2023 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 10.1.15-1
 - Upgrade to 10.1.15
 - Rename to apache-tomcat10
