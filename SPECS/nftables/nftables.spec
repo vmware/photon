@@ -1,42 +1,43 @@
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        1.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        GPLv2
-URL:            https://netfilter.org/projects/nftables/
-Source0:        %{url}/files/%{name}-%{version}.tar.bz2
-%define sha1    nftables=9183aa8947780bccca98db449e6aec1f47158164
-Source1:        nftables.service
-Source2:        nftables.conf
-Source3:        nft_ruleset_photon.nft
+URL:            https://netfilter.org/projects/nftables
 
-Patch0:         nftables-1.0.1-drop-historyh.patch
+Source0: %{url}/files/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=a0db4d82725509d2a9c638ba7ba55547ad7b5138a5fe686b0e90260d6a65e060dd72a470969c1d69e945303bd2bfc33b2021d9f4141b88befefddc61b7afe10d
 
-BuildRequires:  gcc
-BuildRequires:  flex
-BuildRequires:  bison
-BuildRequires:  libmnl-devel
-BuildRequires:  gmp-devel
-BuildRequires:  readline-devel
-BuildRequires:  libnftnl-devel
-BuildRequires:  systemd-devel
-BuildRequires:  iptables-devel
-BuildRequires:  jansson-devel
-BuildRequires:  python3-devel
-BuildRequires:  libedit-devel
+Source1: %{name}.service
+Source2: %{name}.conf
+Source3: nft_ruleset_photon.nft
 
-Requires:       libmnl
-Requires:       gmp
-Requires:       readline
-Requires:       libnftnl
-Requires:       systemd
-Requires:       iptables
-Requires:       jansson
-Requires:       python3
-Requires:       libedit
+Patch0: nftables-1.0.1-drop-historyh.patch
+
+BuildRequires: flex
+BuildRequires: bison
+BuildRequires: libmnl-devel
+BuildRequires: gmp-devel
+BuildRequires: readline-devel
+BuildRequires: libnftnl-devel
+BuildRequires: systemd-devel
+BuildRequires: iptables-devel
+BuildRequires: jansson-devel
+BuildRequires: python3-devel
+BuildRequires: libedit-devel
+
+Requires: readline
+Requires: systemd
+Requires: python3
+Requires: libmnl
+Requires: gmp
+Requires: libnftnl
+Requires: iptables
+Requires: jansson
+Requires: libedit
 
 %description
 Netfilter Tables userspace utilities. nftables is a framework by the
@@ -54,73 +55,82 @@ Requires:       %{name} = %{version}-%{release}
 %description devel
 Development tools and static libraries and header files for the libnftables library.
 
-%package -n     python3-nftables
+%package -n     python3-%{name}
 Summary:        Python module providing an interface to libnftables
 Requires:       %{name} = %{version}-%{release}
 
-%description -n python3-nftables
+%description -n python3-%{name}
 The nftables python module provides an interface to libnftables via ctypes.
 
 %prep
 %autosetup -p1
 
 %build
-%configure --disable-silent-rules --with-xtables --with-json --disable-man-doc \
-           --enable-python --with-python-bin=/usr/bin/python3
-%make_build %{?_smp_mflags}
+%configure \
+    --disable-silent-rules \
+    --with-xtables \
+    --with-json \
+    --disable-man-doc \
+    --enable-python \
+    --with-python-bin=%{python3} \
+    --disable-static
+
+%make_build
 
 %install
-%make_install
-find %{buildroot} -name '*.la' -exec rm -f {} ';'
+%make_install %{?_smp_mflags}
 
-rm -f %{buildroot}/%{_libdir}/libnftables.a
+mkdir -p %{buildroot}{%{_unitdir},%{_presetdir}}
+cp -a %{SOURCE1} %{buildroot}%{_unitdir}
 
-mkdir -p %{buildroot}/%{_unitdir}
-cp -a %{SOURCE1} %{buildroot}/%{_unitdir}/
+echo "disable %{name}.service" > %{buildroot}%{_presetdir}/10-%{name}.preset
 
-mkdir -p %{buildroot}/%{_sysconfdir}/sysconfig
-cp -a %{SOURCE2} %{buildroot}/%{_sysconfdir}/sysconfig/
-chmod 600 %{buildroot}/%{_sysconfdir}/sysconfig/nftables.conf
+mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
+cp -a %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/
+chmod 600 %{buildroot}%{_sysconfdir}/sysconfig/%{name}.conf
 
-mkdir -m 700 -p %{buildroot}/%{_sysconfdir}/nftables
-cp -a %{SOURCE3} %{buildroot}/%{_sysconfdir}/nftables
-chmod 600 %{buildroot}/%{_sysconfdir}/nftables/*.nft
-chmod 700 %{buildroot}/%{_sysconfdir}/nftables
+mkdir -m 700 -p %{buildroot}%{_sysconfdir}/%{name}
+cp -a %{SOURCE3} %{buildroot}%{_sysconfdir}/%{name}
+chmod 600 %{buildroot}%{_sysconfdir}/%{name}/*.nft
+chmod 700 %{buildroot}%{_sysconfdir}/%{name}
 
 %post
-%systemd_post nftables.service
 /sbin/ldconfig
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun nftables.service
+%systemd_preun %{name}.service
 
 %postun
-%systemd_postun_with_restart nftables.service
+%systemd_postun_with_restart %{name}.service
 /sbin/ldconfig
 
 %files
 %defattr(-, root, root)
 %license COPYING
-%config(noreplace) %{_sysconfdir}/nftables/
-%config(noreplace) %{_sysconfdir}/sysconfig/nftables.conf
+%config(noreplace) %{_sysconfdir}/%{name}/
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}.conf
 %{_sbindir}/nft
 %{_libdir}/libnftables.so.*
-%{_unitdir}/nftables.service
-%{_datadir}/doc/nftables/examples/*
-%{_datadir}/nftables/*
+%{_unitdir}/%{name}.service
+%{_presetdir}/10-%{name}.preset
+%{_datadir}/doc/%{name}/examples/*
+%{_datadir}/%{name}/*
 
 %files devel
 %defattr(-, root, root)
 %{_libdir}/libnftables.so
 %{_libdir}/pkgconfig/libnftables.pc
-%{_includedir}/nftables/libnftables.h
+%{_includedir}/%{name}/libnftables.h
 
-%files -n python3-nftables
+%files -n python3-%{name}
 %defattr(-, root, root)
-%{python3_sitelib}/nftables-*.egg-info
-%{python3_sitelib}/nftables/
+%{python3_sitelib}/%{name}-*.egg-info
+%{python3_sitelib}/%{name}/
 
 %changelog
+* Thu Feb 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.1-2
+- Add preset for nftables service
 * Thu Jan 13 2022 Susant Sahani <ssahani@vmware.com> 1.0.1-1
 - Version bump
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.9.8-4
