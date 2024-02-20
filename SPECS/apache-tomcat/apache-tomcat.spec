@@ -1,15 +1,15 @@
-%define _prefix %{_var}/opt/%{name}
-%define _bindir %{_prefix}/bin
-%define _confdir %{_prefix}/conf
-%define _libdir %{_prefix}/lib
+%define _prefix     %{_var}/opt/%{name}
+%define _bindir     %{_prefix}/bin
+%define _confdir    %{_prefix}/conf
+%define _libdir     %{_prefix}/lib
 %define _webappsdir %{_prefix}/webapps
-%define _logsdir %{_prefix}/logs
-%define _tempdir %{_prefix}/temp
+%define _logsdir    %{_prefix}/logs
+%define _tempdir    %{_prefix}/temp
 
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.93
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -83,10 +83,12 @@ rm -rf %{buildroot}%{_prefix}/webapps/{examples,docs}
 
 install -vdm 644 %{buildroot}%{_datadir}/java/tomcat
 
-for jar in %{buildroot}/%{_libdir}/*.jar; do
-  jarname=$(basename $jar .jar)
-  ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/tomcat/${jarname}.jar
+pushd %{buildroot}
+for jar in ./%{_libdir}/*.jar; do
+  jarname=$(basename $jar)
+  ln -sfrv ./%{_libdir}/${jarname} ./%{_datadir}/java/tomcat/${jarname}
 done
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -97,6 +99,7 @@ rm -rf %{buildroot}/*
 %dir %{_bindir}
 %dir %{_libdir}
 %dir %{_confdir}
+%dir %{_webappsdir}
 %dir %{_webappsdir}/ROOT
 %dir %{_logsdir}
 %dir %{_tempdir}
@@ -112,6 +115,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_confdir}/tomcat-users.xsd
 %config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
+%dir %{_datadir}/java
+%dir %{_datadir}/java/tomcat
 %{_datadir}/java/tomcat/*.jar
 %{_prefix}/LICENSE
 %{_prefix}/NOTICE
@@ -126,6 +131,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Tue Feb 20 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.5.93-3
+- Fix file packaging
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.5.93-2
 - Require jre8 or jdk11-jre or jdk17-jre
 * Mon Sep 04 2023 Prashant S Chauhan <psinghchauha@vmware.com> 8.5.93-1
