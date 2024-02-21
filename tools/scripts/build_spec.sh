@@ -91,7 +91,7 @@ function create_sandbox() {
     # image is less then 2 weeks
     if [ "$cdate" -gt "$vdate" ]; then
       # use this image
-      run "Use local build template image" docker run -d --name $CONTAINER --network="host" photon_build_spec:$VERSION.0 tail -f /dev/null
+      run "Use local build template image" docker run --ulimit nofile=1024:1024 -d --name $CONTAINER --network="host" photon_build_spec:$VERSION.0 tail -f /dev/null
       return 0
     else
       # remove old image
@@ -100,7 +100,7 @@ function create_sandbox() {
   fi
 
 
-  run "Pull photon image" docker run -d --name $CONTAINER --network="host" photon:$VERSION.0 tail -f /dev/null
+  run "Pull photon image" docker run --ulimit nofile=1024:1024 -d --name $CONTAINER --network="host" photon:$VERSION.0 tail -f /dev/null
 
   # replace toybox with coreutils and install default build tools
   run "Replace toybox with coreutils" in_sandbox tdnf remove -y toybox
