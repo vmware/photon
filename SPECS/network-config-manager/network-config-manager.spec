@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
 Version:        0.7.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -28,7 +28,7 @@ Requires: libyaml
 Requires: systemd
 Requires: glib
 Requires: libmnl
-Requires: nftables
+Requires: nftables-libs
 
 Provides: netmgmt
 Obsoletes: netmgmt
@@ -84,6 +84,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Feb 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.1-4
+- Require nftables-libs
 * Thu Feb 01 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.7.1-3
 - Patched to support show-dhcp-mode nmctl command
 * Tue Jan 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.7.1-2
