@@ -11,8 +11,8 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.82
-Release:        2%{?dist}
+Version:        9.0.83
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -20,7 +20,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=0291196832150147230a263bcfd64f7ac9ce9f6c26924f72b831d28479e7886f00b9ab3adff175785e8c5b47d8b16f7a7897acafa3474428f48cec02fd852b3e
+%define sha512 %{_origname}=28e112a9d01918434ad03c414058275bbc4e34be408c2cfe2d819c3a08cadc3c31920e279c5312529aa2f5abf1e002537012c5f06d43ba8894448afd5585c231
+
+# Please check the below link for the supported java version
+# https://tomcat.apache.org/whichversion.html
 # base-for-apache-tomcat is a cached -Dbase.path folder
 # generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
@@ -29,13 +32,13 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=352b7d3af5e75a705f6e08a78fb5b75f72ac06cb2495713b92992647520e5a3e65a64c24f3c7f5ee23499c19b84fb7787435c11c0ca16c0725b9292a35c33b90
+%define sha512 base=4beef378a74346fb68fba156e73f263c772dc23ba4888a6b7134a460219adddd5b4c9e0a3424e9a0ee517fed4f036e0f9136dff40a5cb3c9ad06c1c873056c1c
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
 BuildArch: noarch
 
-BuildRequires: openjdk11
+BuildRequires: openjdk17
 BuildRequires: apache-ant
 
 Requires:         (openjre8 or openjdk11-jre or openjdk17-jre)
@@ -145,6 +148,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed Feb 21 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 9.0.83-1
+- Upgrade to 9.0.83, Fix CVE-2023-46589
 * Tue Feb 20 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.82-2
 - Fix file packaging
 * Wed Nov 22 2023 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 9.0.82-1

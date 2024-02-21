@@ -8,8 +8,8 @@
 
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.93
-Release:        3%{?dist}
+Version:        8.5.96
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -17,8 +17,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha512 %{name}=655752367585e7aa4af7b9b1392edb2c6e40dbda739aa459d81929ab0376648b8731baa469acaa8886bc3c859f8c8485f6826e86f59c3ac2bc1d876d17c2ce9b
+%define sha512 %{name}=3d2652e06d81eb014623bf1b0f03c238f330487682a255a4ed37a2b722f99194d08e3083b491d962917bc21cfbefd44f0e7808248c6b90c6a87db292138144dd
 
+# Please check the below link for the supported java version
+# https://tomcat.apache.org/whichversion.html
 # base-for-apache-tomcat is a cached -Dbase.path folder
 # generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
@@ -27,11 +29,11 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}
 # 4. mv tomcat-build-libs base-for-%{name}-%{version}
 # 5. tar -cvzf base-for-%{name}-%{version}.tar.gz base-for-%{name}-%{version}
 Source1: base-for-%{name}-%{version}.tar.gz
-%define sha512 base=3d3b8dbb85c65288322bf8b5b3b06821a513f3e27fa5fa2709cd95d4e77f8a4f9e0a9443441ea7731e7562811e78e513734ac5cf26f3868b6ae9800f8da25392
+%define sha512 base=70bf85ebd014c1be306b1237a77400a0655b2455df099e84c314b277151ea8cdcb4d8c8d4603019be5e00f2870f8e0810f7e8c3365c95a10b3b4f69e8fb4794e
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
-BuildRequires: openjdk8
+BuildRequires: openjdk11
 BuildRequires: apache-ant
 
 Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
@@ -57,9 +59,8 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 %build
-ant \
-    -Dbase.path="../base-for-%{name}-%{version}" \
-    deploy dist-prepare dist-source
+ant -Dant.build.javac.source=1.8 -Dant.build.javac.target=1.8 \
+ -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
@@ -131,6 +132,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed Feb 21 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 8.5.96-1
+- Upgrade to 8.5.96, Fix CVE-2023-46589
 * Tue Feb 20 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.5.93-3
 - Fix file packaging
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.5.93-2
