@@ -133,7 +133,7 @@ class PackageBuilder(object):
 
         if listDependentPackages:
             self.logger.debug(
-                "Installing the build time dependent packages for " + arch
+                f"Installing the build time dependent packages for {arch}"
             )
             for pkg in listDependentPackages:
                 (
@@ -177,22 +177,15 @@ class PackageBuilder(object):
                     )
             pkgUtils.installRPMSInOneShot(self.sandbox, arch)
             self.logger.debug(
-                "Finished installing the build time dependent packages for "
-                + arch
+                f"Finished installing the build dependencies for {arch}"
             )
 
     def _buildPackagePrepareFunction(self, package, version, doneList):
         self.package = package
         self.version = version
-        self.logName = "build-" + package + "-" + version
+        self.logName = f"build-{package}-{version}"
         self.logPath = (
-            constants.logPath
-            + "/"
-            + package
-            + "-"
-            + version
-            + "."
-            + constants.currentArch
+            f"{constants.logPath}/{package}-{version}.{constants.currentArch}"
         )
         if not os.path.isdir(self.logPath):
             self.cmdUtils.runBashCmd(f"mkdir -p {self.logPath}")

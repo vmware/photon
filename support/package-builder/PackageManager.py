@@ -50,7 +50,7 @@ class PackageManager(object):
         for package in constants.listCoreToolChainPackages:
             version = SPECS.getData().getHighestVersion(package)
             rpmPkg = pkgUtils.findRPMFile(package, version)
-            self.sortedPackageList.append(package + "-" + version)
+            self.sortedPackageList.append(f"{package}-{version}")
             if rpmPkg is not None:
                 doneList.append(f"{package}-{version}")
                 continue
@@ -163,7 +163,7 @@ class PackageManager(object):
                         packageIsAlreadyBuilt = False
                         break
                 if packageIsAlreadyBuilt:
-                    listAvailablePackages.add(package + "-" + version)
+                    listAvailablePackages.add(f"{package}-{version}")
 
         return listAvailablePackages
 
@@ -231,7 +231,7 @@ class PackageManager(object):
         for pkg in listPackages:
             base = SPECS.getData().getSpecName(pkg)
             for version in SPECS.getData().getVersions(base):
-                listPackageNamesAndVersions.add(base + "-" + version)
+                listPackageNamesAndVersions.add(f"{base}-{version}")
 
         returnVal = self._calculateParams(listPackageNamesAndVersions)
         if not returnVal:
