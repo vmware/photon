@@ -15,7 +15,7 @@
                  "openssl-devel",
                  "fuse-devel",
                  "python3-pip",
-                 "createrepo",
+                 "createrepo_c",
                  "texinfo",
                  "wget",
                  "sudo"
