@@ -40,20 +40,6 @@ Source2:        initramfs.trigger
 Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
 
-%ifarch x86_64
-%define i40e_version 2.22.18
-Source6:        https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
-
-%define iavf_version 4.9.5
-Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=2e97671d1fd51b5b0017b49dcfa62854ef55a85182fcd4990d2d7faea0c3dc9532fe3896c81eabff3c30fb3b2b9573c22416adfec3a1e0f0107c44a9216fbf3a
-
-%define ice_version 1.13.7
-Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=6167a0240624915ee6dce8f2186d6980c224baab8bcccee2b1d991d5cc15510b95b7b2a309cc60e57eae7dfffc4e2186730650ba104a231e54711c3b01f20f7b
-%endif
-
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
@@ -244,23 +230,6 @@ Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %endif
 
-%ifarch x86_64
-# SEV on VMware: [600..609]
-Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
-Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
-Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
-# TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
-
-# Patches for i40e v2.22.18 driver [1500..1509]
-Patch1500: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
-Patch1501: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
-
-# Patches for iavf v4.9.5 driver [1510..1519]
-Patch1511: iavf-Makefile-added-alias-for-i40evf.patch
-
-# Patches for ice v1.13.7 driver [1520..1529]
-%endif
-
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -317,14 +286,6 @@ The Linux package contains the Linux kernel doc files
 %prep
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
-%ifarch x86_64
-# Using autosetup is not feasible
-%setup -q -T -D -b 6 -n linux-%{version}
-# Using autosetup is not feasible
-%setup -q -T -D -b 7 -n linux-%{version}
-# Using autosetup is not feasible
-%setup -q -T -D -b 8 -n linux-%{version}
-%endif
 %if 0%{?fips}
 # Using autosetup is not feasible
 %setup -q -T -D -b 16 -n linux-%{version}
@@ -371,21 +332,6 @@ The Linux package contains the Linux kernel doc files
 %ifarch x86_64
 # SEV on VMware
 %autopatch -p1 -m600 -M609
-
-# Patches for i40e driver
-pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m1500 -M1509
-popd
-
-# Patches for iavf driver
-pushd ../iavf-%{iavf_version}
-%autopatch -p1 -m1510 -M1519
-popd
-
-# Patches for ice driver
-pushd ../ice-%{ice_version}
-%autopatch -p1 -m1520 -M1529
-popd
 %endif
 
 %ifarch x86_64
@@ -431,27 +377,6 @@ make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
 %include %{SOURCE9}
 %endif
 
-%ifarch x86_64
-# build i40e module
-bldroot="${PWD}"
-pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
-popd
-
-# build iavf module
-pushd ../iavf-%{iavf_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
-popd
-
-# build ice module
-pushd ../ice-%{ice_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
-popd
-%endif
-
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
@@ -460,27 +385,7 @@ install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
-bldroot="${PWD}"
-# install i40e module
-pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
-popd
-
-# install iavf module
-pushd ../iavf-%{iavf_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
-popd
-
-# install ice module
-pushd ../ice-%{ice_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
-popd
-
 install -vm 644 arch/%{archdir}/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
-
 %endif
 
 %ifarch aarch64
@@ -544,25 +449,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %config(noreplace) /boot/linux-%{uname_r}.cfg
 /lib/modules/*
 %exclude %{_modulesdir}/build
-%ifarch x86_64
-# iavf.conf is used to just blacklist the deprecated i40evf
-# and create alias of i40evf to iavf.
-# By default iavf is used for VF driver.
-# This file creates conflict with other flavour of linux
-# thus excluding this file from packaging
-%exclude %{_sysconfdir}/modprobe.d/iavf.conf
-# ICE driver firmware files are packaged in linux-firmware
-%exclude /lib/firmware/updates/intel/ice
-%endif
 
 %config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %files docs
 %defattr(-,root,root)
-%{_defaultdocdir}/linux-%{uname_r}/*
-%ifarch x86_64
-%{_mandir}/*
-%endif
+%{_docdir}/linux-%{uname_r}/*
 
 %files devel
 %defattr(-,root,root)

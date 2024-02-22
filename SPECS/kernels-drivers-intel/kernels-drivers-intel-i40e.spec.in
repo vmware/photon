@@ -1,0 +1,89 @@
+%global security_hardening  none
+%define debug_package       %{nil}
+%define src_ver             %{I40E_VERSION}
+%define kernel_ver          %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+%define uname_r             %{kernel_ver}%{KERNEL_FLAVOUR}
+%define kern_pkg_name       linux%{KERNEL_FLAVOUR}
+%define _modulesdir         /lib/modules/%{uname_r}
+%define conflicts_ver       6.1.70-2%{?dist}
+
+Summary:        Intel i40e driver v%{I40E_VERSION}
+Name:           linux%{KERNEL_FLAVOUR}-drivers-intel-i40e
+Version:        %{I40E_VERSION}%{?kernelsubrelease}
+Release:        2%{?dist}
+License:        GPLv2
+URL:            https://sourceforge.net/projects/e1000
+Group:          System Environment/Kernel
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{src_ver}/i40e-%{src_ver}.tar.gz
+
+%if "%{src_ver}" == "2.23.17"
+%define sha512 i40e-%{src_ver}=5dbe5186f23d14aac185f74283377d9bfc0837ab16b145a107f735d5439a207e27db871e278656cd06ba595f426d7095a294d39110df5ad6b30ea9f6d3a2a3a7
+
+Patch0:         i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
+Patch1:         i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+%endif
+
+%if "%{src_ver}" == "2.22.18"
+%define sha512 i40e-%{src_ver}=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
+
+Patch0:         i40e-v2.22.18-linux-rt-i40e-Fix-build-errors-on-kernel-6.1.y.patch
+Patch1:         i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
+Patch2:         i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+%endif
+
+BuildArch:      x86_64
+
+BuildRequires:  which
+BuildRequires:  kmod-devel
+BuildRequires:  %{kern_pkg_name}-devel = %{kernel_ver}
+
+Requires:       kmod
+Requires:       %{kern_pkg_name} =  %{kernel_ver}
+
+Conflicts:      %{kern_pkg_name} < %{conflicts_ver}
+
+%description
+This Linux package contains the Intel i40e v%{src_ver} driver.
+
+%package docs
+Summary:        Kernel docs
+Group:          System Environment/Kernel
+Conflicts:      %{kern_pkg_name}-docs < %{conflicts_ver}
+
+%description docs
+This Linux package contains the Linux kernel doc files including files that
+were left unpackaged from %{kern_pkg_name} in the %{_mandir}.
+
+%prep
+%autosetup -p1 -n i40e-%{src_ver}
+
+%build
+make -C src KSRC=%{_modulesdir}/build %{?_smp_mflags}
+
+%install
+make -C src KSRC=%{_modulesdir}/build INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra/i40e-%{src_ver} MANDIR=%{_mandir} \
+    modules_install mandocs_install %{?_smp_mflags}
+
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
+
+%post
+/sbin/depmod -a %{uname_r}
+
+%files
+%defattr(-,root,root)
+%dir %{_modulesdir}/extra/i40e-%{src_ver}
+%{_modulesdir}/extra/i40e-%{src_ver}/i40e.ko.xz
+
+%files docs
+%defattr(-,root,root)
+%{_mandir}/*
+
+%changelog
+* Thu Feb 22 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{I40E_VERSION}-2
+- Adding generic template for i40e driver
+* Thu Jan 04 2024 Roye Eshed <roye.eshed@broadcom.com> %{I40E_VERSION}-1
+- Package Intel driver i40e v%{I40E_VERSION} for linux-rt.

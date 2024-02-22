@@ -218,8 +218,6 @@ BuildRequires:  audit-devel
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  bison
 BuildRequires:  dwarves-devel
-# i40e build scripts require getopt
-BuildRequires:  util-linux
 # stalld plugin requires libbpf-devel and clang-devel
 BuildRequires:  libbpf-devel
 BuildRequires:  clang-devel

@@ -12,4 +12,4 @@ tools/src/contain/contain_unpriv
 common/data/pkg_info.json
 SPECS/falco/*.spec
 SPECS/sysdig/*.spec
-SPECS/linux/linux-rt-drivers-intel*.spec
+SPECS/kernels-drivers-intel/*.spec

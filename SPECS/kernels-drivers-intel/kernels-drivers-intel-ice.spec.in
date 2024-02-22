@@ -1,0 +1,101 @@
+%global security_hardening  none
+%define debug_package       %{nil}
+%define src_ver             %{ICE_VERSION}
+%define kernel_ver          %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+%define uname_r             %{kernel_ver}%{KERNEL_FLAVOUR}
+%define kern_pkg_name       linux%{KERNEL_FLAVOUR}
+%define _modulesdir         /lib/modules/%{uname_r}
+%define conflicts_ver       6.1.70-2%{?dist}
+
+Summary:        Intel ice driver v%{ICE_VERSION}
+Name:           linux%{KERNEL_FLAVOUR}-drivers-intel-ice
+Version:        %{ICE_VERSION}%{?kernelsubrelease}
+Release:        2%{?dist}
+License:        GPLv2
+URL:            https://sourceforge.net/projects/e1000
+Group:          System Environment/Kernel
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://sourceforge.net/projects/e1000/files/ice%20stable/%{src_ver}/ice-%{src_ver}.tar.gz
+
+%if "%{src_ver}" == "1.13.7"
+%define sha512 ice-%{src_ver}=6167a0240624915ee6dce8f2186d6980c224baab8bcccee2b1d991d5cc15510b95b7b2a309cc60e57eae7dfffc4e2186730650ba104a231e54711c3b01f20f7b
+%endif
+
+%if "%{src_ver}" == "1.12.7"
+%define sha512 ice-%{src_ver}=71b08c90ee6c03242b0b11eef2425ec55fe089fa7735cc5ae9bae7469e14768b67505315a456e98b0b09ce0be71ffd35f119f2df211b927265f4d4eb8cbdf60b
+
+Patch0:         ice-v1.12.7-Remove-inline-from-ethtool_sprintf.patch
+%endif
+
+%if "%{src_ver}" == "1.11.14"
+%define sha512 ice-%{src_ver}=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
+
+Patch0:         ice-v1.11.14-linux-rt-fix-build-errors-on-6.1.y.patch
+%endif
+
+%if "%{src_ver}" == "1.9.11"
+%define sha512 ice-%{src_ver}=4ca301ea7d190d74f2eebf148483db5e2482ca19ff0eaf1c3061c9550ab215d1b0ab12e1f6466fe6bccc889d2ddae47058043b3d8622fd90c2b29c545bbcd3fc
+
+Patch0:         ice-v1.9.11-linux-rt-ice-Fix-build-errors-on-kernel-6.0.y.patch
+Patch1:         ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
+Patch2:         ice-v1.9.11-Fix-build-errors-on-6.1.y.patch
+%endif
+
+BuildArch:      x86_64
+
+BuildRequires:  which
+BuildRequires:  kmod-devel
+BuildRequires:  %{kern_pkg_name}-devel = %{kernel_ver}
+
+Requires:       kmod
+Requires:       %{kern_pkg_name} = %{kernel_ver}
+
+Conflicts:      %{kern_pkg_name} < %{conflicts_ver}
+
+%description
+This Linux package contains the Intel ice v%{src_ver} driver.
+
+%package docs
+Summary:        Kernel docs
+Group:          System Environment/Kernel
+
+Conflicts:      %{kern_pkg_name}-docs < %{conflicts_ver}
+
+%description docs
+This Linux package contains the Linux kernel doc files including files that
+were left unpackaged from %{kern_pkg_name} in the %{_mandir}.
+
+%prep
+%autosetup -p1 -n ice-%{src_ver}
+
+%build
+make -C src KSRC=%{_modulesdir}/build %{?_smp_mflags}
+
+%install
+make -C src KSRC=%{_modulesdir}/build INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra/ice-%{src_ver} MANDIR=%{_mandir} \
+    modules_install mandocs_install %{?_smp_mflags}
+
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
+
+%post
+/sbin/depmod -a %{uname_r}
+
+%files
+%defattr(-,root,root)
+%dir %{_modulesdir}/extra/ice-%{src_ver}
+%{_modulesdir}/extra/ice-%{src_ver}/ice.ko.xz
+# ICE driver firmware files are packaged in linux-firmware
+%exclude /lib/firmware/updates/intel/ice
+
+%files docs
+%defattr(-,root,root)
+%{_mandir}/*
+
+%changelog
+* Wed Jan 31 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{ICE_VERSION}-2
+- Adding generic template for ice driver
+* Wed Jan 31 2024 Brennan Lamoreaux <brennan.lamroeaux@broadcom.com> %{ICE_VERSION}-1
+- Add new ice v%{ICE_VERSION} driver
