@@ -1,7 +1,7 @@
 Summary:        GO interface to the VMware vSphere API.
 Name:           govmomi
 Version:        0.29.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 Group:          Development/Languages
 License:        Apache License 2.0
 Vendor:         VMware, Inc.
@@ -54,6 +54,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/vcsim
 
 %changelog
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 0.29.0-11
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 0.29.0-10
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 0.29.0-9

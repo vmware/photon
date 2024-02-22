@@ -7,7 +7,7 @@
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -86,6 +86,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/network-broker.service
 
 %changelog
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 0.3-10
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 0.3-9
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 0.3-8

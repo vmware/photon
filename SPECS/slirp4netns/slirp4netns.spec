@@ -1,7 +1,7 @@
 Summary:    slirp for network namespaces
 Name:       slirp4netns
 Version:    1.2.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        https://github.com/rootless-containers/%{name}
 Group:          Applications/System
@@ -50,5 +50,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/%{name}.1.gz
 
 %changelog
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.2.0-2
+- Bump version as a part of go upgrade
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.0-1
 - Introduce slirp4netns. Needed for rootlesskit
