@@ -154,28 +154,27 @@ index ca2fe1869..faf2e5a87 100644
 +CFLAGS_REMOVE_syscall_32.o += -fplugin-arg-rap_plugin-hash=abs-finish
 +CFLAGS_REMOVE_syscall_64.o += -fplugin-arg-rap_plugin-hash=abs-finish
 diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index 9c0b26ae5..d1153414c 100644
+index 9c0b26ae5..cf8289136 100644
 --- a/arch/x86/entry/common.c
 +++ b/arch/x86/entry/common.c
-@@ -79,8 +79,18 @@ __visible noinstr void do_syscall_64(struct pt_regs *regs, int nr)
- 	instrumentation_begin();
+@@ -48,7 +48,17 @@ static __always_inline bool do_syscall_x64(struct pt_regs *regs, int nr)
  
- 	if (!do_syscall_x64(regs, nr) && !do_syscall_x32(regs, nr) && nr != -1) {
+ 	if (likely(unr < NR_syscalls)) {
+ 		unr = array_index_nospec(unr, NR_syscalls);
 +#ifdef CONFIG_PAX_RAP
 +		asm volatile("movq %[param],%%rdi\n\t"
 +			"call *%P[syscall]\n\t"
 +			"mov %%rax,%[result]\n\t"
 +			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (sys_call_table[nr]),
++			: [syscall] "m" (sys_call_table[unr]),
 +			[param] "m" (regs)
 +			: "ax", "cx", "dx", "r8", "r9", "r10", "r11", "di", "memory");
 +#else
- 		/* Invalid system call, but still a system call. */
- 		regs->ax = __x64_sys_ni_syscall(regs);
+ 		regs->ax = sys_call_table[unr](regs);
 +#endif
+ 		return true;
  	}
- 
- 	instrumentation_end();
+ 	return false;
 @@ -114,7 +124,48 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs, int nr)
  
  	if (likely(unr < IA32_NR_syscalls)) {
@@ -191,7 +190,7 @@ index 9c0b26ae5..d1153414c 100644
 +			     "call *%P[syscall]\n\t"
 +			     "mov %%rax,%[result]\n\t"
 +			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (ia32_sys_call_table[nr]),
++			: [syscall] "m" (ia32_sys_call_table[unr]),
 +			  [param1] "m" (regs->bx),
 +			  [param2] "m" (regs->cx),
 +			  [param3] "m" (regs->dx),
@@ -210,7 +209,7 @@ index 9c0b26ae5..d1153414c 100644
 +			     "addl $6*8,%%esp\n\t"
 +			     "mov %%eax,%[result]\n\t"
 +			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (ia32_sys_call_table[nr]),
++			: [syscall] "m" (ia32_sys_call_table[unr]),
 +			  [param1] "m" (regs->bx),
 +			  [param2] "m" (regs->cx),
 +			  [param3] "m" (regs->dx),
