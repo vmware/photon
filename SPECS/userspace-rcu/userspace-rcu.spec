@@ -1,7 +1,7 @@
 Summary:        user space RCU (read-copy-update)
 Name:           userspace-rcu
 Version:        0.13.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/urcu/userspace-rcu/releases
 Source:         %{name}-%{version}.tar.gz
@@ -54,6 +54,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
+* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 0.13.2-6
+- Bump version as a part of libxml2 upgrade
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.13.2-5
 - Bump version as a part of elfutils upgrade
 * Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.13.2-4

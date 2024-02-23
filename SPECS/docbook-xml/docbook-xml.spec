@@ -1,7 +1,7 @@
 Summary:        Docbook-xml-%{version}
 Name:           docbook-xml
 Version:        4.5
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        MIT
 URL:            http://www.docbook.org
 Group:          Development/Tools
@@ -179,6 +179,8 @@ fi
 %{_sysconfdir}/xml
 
 %changelog
+* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.5-11
+- Bump version as a part of libxml2 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.5-10
 - Bump version as a part of libxml2 upgrade
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 4.5-9

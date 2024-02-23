@@ -1,15 +1,15 @@
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.10.4
-Release:        2%{?dist}
+Version:        2.12.5
+Release:        1%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://download.gnome.org/sources/libxml2/2.10/%{name}-%{version}.tar.xz
-%define sha512 %{name}=792c1dceb098cd353a7eca4c46d31cce6310b2553d97fd3918cf0b94d93b2480759202036511bde36c24166236bd4616f57e79959eea9afe3f60614bdfe13094
+Source0: https://download.gnome.org/sources/libxml2/2.12/%{name}-%{version}.tar.xz
+%define sha512 %{name}=da5c5afb95db80342d78d4371d029bf10ce5cd601b24b294272d9996f82357bd5262a15a2b44b0904a14471c8ff0c9fd9c796f164246551f02ee19a8f083f926
 BuildRequires:  python3-devel
 BuildRequires:  python3-xml
 BuildRequires:  zlib-devel
@@ -88,6 +88,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Mon Feb 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.12.5-1
+- Update to v2.12.5
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 2.10.4-2
 - Bump version as a part of ncurses upgrade to v6.4
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.10.4-1

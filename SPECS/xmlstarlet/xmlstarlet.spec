@@ -1,7 +1,7 @@
 Summary:        Command Line XML Toolkit
 Name:           xmlstarlet
 Version:        1.6.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 URL:            http://xmlstar.sourceforge.net/
 Group:          Text Tools
@@ -62,6 +62,8 @@ rm -fr %{buildroot}
 %{_bindir}/xml
 
 %changelog
+* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.6.1-6
+- Bump version as a part of libxml2 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.6.1-5
 - Bump version as a part of libxml2 upgrade
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-4

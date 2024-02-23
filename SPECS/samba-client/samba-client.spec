@@ -1,7 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.17.5
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -578,6 +578,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.17.5-8
+- Bump version as a part of libxml2 upgrade
 * Tue Jan 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.17.5-7
 - Version bump for gnutls upgrade
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.17.5-6

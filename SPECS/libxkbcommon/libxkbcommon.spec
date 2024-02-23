@@ -1,7 +1,7 @@
 Summary:        X.Org X11 XKB parsing library
 Name:           libxkbcommon
 Version:        1.4.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            https://xkbcommon.org
 Group:          System Environment/Libraries
@@ -45,13 +45,6 @@ Requires:       %{name}-x11 = %{version}-%{release}
 
 %description    x11-devel
 X.Org X11 XKB keymap creation library development package
-
-%package        utils
-Summary:        X.Org X11 XKB parsing utilities
-Requires:       %{name} = %{version}-%{release}
-
-%description utils
-%{name}-utils is a set of utilities to analyze and test XKB parsing.
 
 %prep
 %autosetup -p1
@@ -114,6 +107,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/xkbcommon-x11.pc
 
 %changelog
+* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.4.1-4
+- Bump version as a part of libxml2 upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.4.1-3
 - Bump version as a part of libX11 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.4.1-2

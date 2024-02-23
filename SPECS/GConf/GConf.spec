@@ -1,7 +1,7 @@
 Summary:        configuration database system used by many GNOME applications
 Name:           GConf
 Version:        3.2.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            http://gnome.org
 Group:          System Environment/Libraries
@@ -89,6 +89,8 @@ rm -rf %{buildroot}/*
 %{_datadir}
 
 %changelog
+*   Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.2.6-3
+-   Bump version as a part of libxml2 upgrade
 *   Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.6-2
 -   Bump version as a part of libxml2 upgrade
 *   Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.6-1

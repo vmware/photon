@@ -2,8 +2,8 @@
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name libxml-ruby
 Name:           rubygem-libxml-ruby
-Version:        3.2.4
-Release:        2%{?dist}
+Version:        5.0.2
+Release:        1%{?dist}
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group:          Applications/Programming
 License:        BSD
@@ -11,17 +11,35 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/libxml-ruby-%{version}.gem
-%define sha512    libxml-ruby=0799249baa6d575f4fa9e000111a08a8f923221852f2169cf82586f377cdf0a8e13d772bde00296de30426a3a5eef568a23f91852d56f316dc9aa3cbabf8f911
+%define sha512  libxml-ruby=449464107c1b533c25ec3ba4e722f5805f1e487609939306ee4535ba9b8197e47d79d50fa69571f0dff9d7ab974ee848ce95679a6f64da84aaf109c367ef6829
+
 BuildRequires:  ruby >= 2.4.0
 BuildRequires:  libxml2-devel
 Requires:       ruby
 %description
 Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 %prep
+echo "ADK1"
+pwd
+ls
 %autosetup -c -T
+echo "ADK4"
+pwd
+ls
+
 %build
+echo "ADK2"
+pwd
+ls
+
 %install
+echo "ADK5"
+pwd
+ls
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+pwd
+echo "ADK3"
+ls
 
 %check
 cd %{buildroot}%{gemdir}/gems/libxml-ruby-%{version}
@@ -55,6 +73,8 @@ rake test
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+*   Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.0.2-1
+-   Upgrade to v5.0.2
 *   Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.4-2
 -   Bump version as a part of libxml2 upgrade
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.4-1

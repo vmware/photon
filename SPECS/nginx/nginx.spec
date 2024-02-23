@@ -4,7 +4,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.25.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -21,6 +21,7 @@ Source2: %{name}.service
 Source3: %{name}.sysusers
 
 Patch0: CVE-2023-44487.patch
+Patch1: 0001-XML-fixed-building-with-libxml2-2.12-and-later.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -115,6 +116,8 @@ rm -rf %{buildroot}
 %{_var}/log/%{name}
 
 %changelog
+* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.25.2-4
+- Bump version as a part of libxml2 upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25.2-3
 - Bump version as a part of openssl upgrade
 * Thu Oct 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25.2-2

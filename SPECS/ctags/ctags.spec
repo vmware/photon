@@ -3,7 +3,7 @@
 Summary:        A C programming language indexing and/or cross-reference tool
 Name:           ctags
 Version:        6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL
 URL:            https://ctags.io/
 Source:         https://github.com/universal-ctags/ctags/archive/%{name}-%{version}.%{upstreamversion}.tar.gz
@@ -55,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.0-3
+- Bump version as a part of libxml2 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0-2
 - Bump version as a part of libxml2 upgrade
 * Fri Feb 17 2023 Anmol Jain <anmolja@vmware.com> 6.0-1
