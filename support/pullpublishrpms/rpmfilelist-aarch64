@@ -113,4 +113,5 @@ noarch/autoconf-2.71-2.ph5.noarch.rpm
 noarch/automake-1.16.5-1.ph5.noarch.rpm
 noarch/linux-api-headers-6.0.7-1.ph5.noarch.rpm
 noarch/man-pages-5.13-1.ph5.noarch.rpm
+noarch/python3-wheel-0.37.1-2.ph5.noarch.rpm
 noarch/systemd-rpm-macros-252.4-8.ph5.noarch.rpm
