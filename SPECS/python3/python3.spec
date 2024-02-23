@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -16,8 +16,14 @@ Source0: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 
 Source1: macros.python
 
+# check readme inside the tarball for instructions on
+# how to create this tarball
+Source2: setuptools-pip-wheels%{?dist}-1.0.tar.xz
+%define sha512 setuptools-pip-wheels=73f478b62e7716ec19f366bb8d0866af19c5afa55a8b90664efe3760a69903be2f4b79b41ca6946c8528eaad594e19974dbb6c8a2735722b1b35b2aa77bc1569
+
 Patch0: cgi3.patch
 Patch1: use-HMAC-SHA256-in-FIPS-mode.patch
+Patch2: ensurepip-upgrade-bundled-pip-and-setuptools.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -29,6 +35,7 @@ BuildRequires: expat-devel >= 2.1.0
 BuildRequires: libffi-devel >= 3.0.13
 BuildRequires: sqlite-devel
 BuildRequires: util-linux-devel
+
 # cross compilation requires native python3 installed for ensurepip
 %define BuildRequiresNative %{name}-xml
 
@@ -120,35 +127,15 @@ Requires:       %{name} = %{version}-%{release}
 The Python package includes several development tools that are used
 to build python programs.
 
-%package        pip
-Summary:        The PyPA recommended tool for installing Python packages.
-Group:          Development/Tools
-BuildArch:      noarch
-Requires:       %{name} = %{version}-%{release}
-Requires:       %{name}-xml = %{version}-%{release}
-
-%description    pip
-The PyPA recommended tool for installing Python packages.
-
-%package        setuptools
-Summary:        Download, build, install, upgrade, and uninstall Python packages.
-Group:          Development/Tools
-BuildArch:      noarch
-Requires:       %{name} = %{version}-%{release}
-Requires:       %{name}-xml = %{version}-%{release}
-
-Provides:       python%{VER}dist(setuptools)
-
-%description    setuptools
-setuptools is a collection of enhancements to the Python distutils that allow you to more easily build and distribute Python packages, especially ones that have dependencies on other packages.
-
 %package test
 Summary: Regression tests package for Python.
 Group: Development/Tools
 Requires: %{name} = %{version}-%{release}
 
 %description test
-The test package contains all regression tests for Python as well as the modules test.support and test.regrtest. test.support is used to enhance your tests while test.regrtest drives the testing suite.
+The test package contains all regression tests for Python as well as the
+modules test.support and test.regrtest.
+test.support is used to enhance your tests while test.regrtest drives the testing suite.
 
 %package        macros
 Summary:        Macros for Python packages.
@@ -162,7 +149,7 @@ You should not need to install this package manually as the various
 python-devel packages require it. So install a python-devel package instead.
 
 %prep
-%autosetup -p1 -n Python-%{version}
+%autosetup -p1 -n Python-%{version} -a2
 
 %build
 export OPT="${CFLAGS}"
@@ -172,6 +159,15 @@ if [ %{_host} != %{_build} ]; then
   export ac_cv_file__dev_ptmx=yes
   export ac_cv_file__dev_ptc=no
 fi
+
+rm -vf Lib/ensurepip/_bundled/pip*.whl \
+       Lib/ensurepip/_bundled/setuptools*.whl
+
+pushd setuptools-pip-wheels/%{_arch}
+cp pip*.whl \
+   setuptools*.whl \
+   ../../Lib/ensurepip/_bundled/
+popd
 
 %configure \
     --enable-shared \
@@ -208,13 +204,11 @@ cp -p Tools/scripts/pathfix.py %{buildroot}%{_bindir}/pathfix.py
 %endif
 %endif
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} test
-%endif
+%make_build test
 
 %post
-ln -sfv %{_bindir}/%{name} %{_bindir}/python
+ln -sfrv %{_bindir}/%{name} %{_bindir}/python
 /sbin/ldconfig
 
 %postun
@@ -223,7 +217,7 @@ ln -sfv %{_bindir}/%{name} %{_bindir}/python
 #as python will still be linked to python3
 if [ $1 -eq 0 ] ; then
   if [ -f "%{_bindir}/python2" ]; then
-    ln -sfv %{_bindir}/python2 %{_bindir}/python
+    ln -sfrv %{_bindir}/python2 %{_bindir}/python
   else
     rm -f %{_bindir}/python
   fi
@@ -245,6 +239,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpython3.so
 %{_libdir}/libpython%{VER}.so.1.0
 
+%exclude %{_bindir}/pip3
+%exclude %{_bindir}/pip%{VER}
 %exclude %{_libdir}/python%{VER}/ctypes/test
 %exclude %{_libdir}/python%{VER}/distutils/tests
 %exclude %{_libdir}/python%{VER}/idlelib/idle_test
@@ -297,21 +293,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/2to3-%{VER}
 %exclude %{_bindir}/idle*
 
-%files pip
-%defattr(-, root, root, 755)
-%{_libdir}/python%{VER}/site-packages/pip/*
-%{_bindir}/pip*
-%exclude %{_libdir}/python%{VER}/site-packages/pip/_vendor/distlib/*.exe
-
-%files setuptools
-%defattr(-, root, root, 755)
-%{_libdir}/python%{VER}/site-packages/distutils-precedence.pth
-%{_libdir}/python%{VER}/site-packages/_distutils_hack/*
-%{_libdir}/python%{VER}/site-packages/pkg_resources/*
-%{_libdir}/python%{VER}/site-packages/setuptools/*
-%{_libdir}/python%{VER}/site-packages/setuptools-*.dist-info/*
-%exclude %{_libdir}/python%{VER}/site-packages/setuptools/*.exe
-
 %files test
 %defattr(-, root, root, 755)
 %{_libdir}/python%{VER}/test/*
@@ -321,6 +302,9 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Wed Feb 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.7-2
+- Seperate pip & setuptools
+- Use pip & setuptools whl from system
 * Mon Dec 11 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.7-1
 - Update to 3.11.7
 * Fri Nov 03 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.0-10
