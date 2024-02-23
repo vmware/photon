@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.306
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -285,6 +285,9 @@ Patch209: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
 #Fix CVE-2024-1086
 Patch210: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
 
+#Fix CVE-2023-51779
+Patch211: 0001-Bluetooth-af_bluetooth-Fix-Use-After-Free-in-bt_sock.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -378,7 +381,7 @@ popd
 %autopatch -p1 -m100 -M191
 
 # CVE Fixes
-%autopatch -p1 -m192 -M210
+%autopatch -p1 -m192 -M211
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -552,6 +555,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-2
+- Fix CVE-2023-51779
 * Tue Feb 06 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-1
 - Update to version 4.19.306
 * Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.305-5

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.306
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -497,6 +497,9 @@ Patch714: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
 #Fix CVE-2024-1086
 Patch715: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
 
+#Fix CVE-2023-51779
+Patch716: 0001-Bluetooth-af_bluetooth-Fix-Use-After-Free-in-bt_sock.patch
+
 # Patches for i40e driver
 Patch803: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
 Patch804: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
@@ -618,7 +621,7 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m540 -M554
 
 # CVE Fixes
-%autopatch -p1 -m700 -M715
+%autopatch -p1 -m700 -M716
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -856,6 +859,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Fri Feb 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-2
+- Fix CVE-2023-51779
 * Tue Feb 06 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-1
 - Update to version 4.19.306
 * Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.305-6

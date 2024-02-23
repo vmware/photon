@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.306
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -260,6 +260,9 @@ Patch314: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
 #Fix CVE-2024-1086
 Patch315: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
 
+#Fix CVE-2023-51779
+Patch316: 0001-Bluetooth-af_bluetooth-Fix-Use-After-Free-in-bt_sock.patch
+
 # Usermode helper fixes
 Patch400: 0001-umh-Add-command-line-to-user-mode-helpers.patch
 Patch401: 0002-umh-add-exit-routine-for-UMH-process.patch
@@ -371,7 +374,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m191 -M194
 
 # CVE fixes
-%autopatch -p1 -m300 -M315
+%autopatch -p1 -m300 -M316
 
 # Usermode helper patches
 %autopatch -p1 -m400 -M401
@@ -576,6 +579,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Feb 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-2
+- Fix CVE-2023-51779
 * Tue Feb 06 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-1
 - Update to version 4.19.306
 * Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.305-5
