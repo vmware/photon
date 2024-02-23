@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2022.19
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -164,6 +164,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2022.19-8
+- Bump version as a part of sqlite upgrade to v3.43.2
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.19-7
 - Bump version as a part of rpm upgrade
 * Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 2022.19-6

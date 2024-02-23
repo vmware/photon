@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2023.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -167,6 +167,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2023.5-2
+- Bump version as a part of sqlite upgrade to v3.43.2
 * Tue Jul 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.5-1
 - Upgrade to v2023.5
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.5-6

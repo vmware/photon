@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.5.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -294,6 +294,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.5.6-2
+- Bump version as a part of sqlite upgrade to v3.43.2
 * Tue Dec 12 2023 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.6-1
 - update to 3.5.6
 - adds --rpmdefine option and fixes

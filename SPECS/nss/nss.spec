@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.78
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MPLv2.0
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
@@ -132,6 +132,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.78-7
+- Bump version as a part of sqlite upgrade to v3.43.2
 * Fri Jan 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-6
 - Fix CVE-2023-0767
 * Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 3.78-5

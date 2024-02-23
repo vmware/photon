@@ -4,7 +4,7 @@
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
 Version:        0.189
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:          Development/Tools
 URL:            https://sourceware.org/elfutils
@@ -204,6 +204,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.189-3
+- Bump version as a part of sqlite upgrade to v3.43.2
 * Wed Sep 13 2023 Srish Srinivasan <ssrish@vmware.com> 0.189-2
 - Version bump as a part of libmicrohttpd version update
 * Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 0.189-1

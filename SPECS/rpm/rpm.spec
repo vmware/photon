@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -327,6 +327,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.18.2-2
+- Bump version as a part of sqlite upgrade to v3.43.2
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.2-1
 - Upgrade to v4.18.2
 - Drop setup.py-based Python build
