@@ -1,7 +1,8 @@
+%global _default_patch_fuzz 1
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
-Version:        2.85
-Release:        4%{?dist}
+Version:        2.90
+Release:        1%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
@@ -9,11 +10,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://thekelleys.org.uk/dnsmasq/%{name}-%{version}.tar.xz
-%define sha512  %{name}=8beefe76b46f7d561f40d0900ba68b260a199cb62ab5b653746e3a1104c04fb8899b9e7a160a1be4fe8782bfb1607b556e9ffb9c25c4e99653e4bc74fcc03b09
+%define sha512  %{name}=e169de1892f935e219b0f49d90107f95cba42b40bca20bd3c973313c2cd4df58b929af6628cd988419051d81c3b4ccf8e9f816274df7d0840e79f5bf49602442
 
 Patch0:         enable_dnssec.patch
-Patch1:         CVE-2022-0934.patch
-Patch2:         CVE-2023-28450.patch
+
 BuildRequires:  systemd
 BuildRequires:  nettle-devel
 
@@ -97,6 +97,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Fri Feb 23 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 2.90-1
+- Update to v2.90 to fix CVE-2023-50387 and CVE-2023-50868
 * Mon Apr 03 2023 Anmol Jain <anmolja@vmware.com> 2.85-4
 - Fix for CVE-2023-28450
 * Thu Mar 09 2023 Srish Srinivasan <ssrish@vmware.com> 2.85-3
