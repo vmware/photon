@@ -20,7 +20,7 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.77
+Version:        6.1.79
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -32,7 +32,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=b5c27926ccab2f53af0d48aa2f4ffdeb30588fb2ac293dd58de554a79de8eef7da463272e04e6af384c80644a0e94bb89a59223d4b488815f83ee336798290b5
+%define sha512 linux=a8d0940c683744c713403304de8970b55beda7cfd339c00f7888236982b68d6577ea9f11f700f0181b66771e3daca2c41dbedce201662d36e9372bda11e10c2e
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -189,8 +189,6 @@ Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2023-2176
 Patch105: RDMA-core-Refactor-rdma_bind_addr.patch
 Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
-# Fix CVE-2024-0340
-Patch109: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 # Fix CVE-2023-39191
 %include %{SOURCE42}
 
@@ -566,6 +564,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.79-1
+- Update to version 6.1.79
 * Tue Feb 13 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.77-1
 - Update to version 6.1.77
 * Mon Feb 12 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.75-3

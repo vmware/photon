@@ -29,7 +29,7 @@ Signed-off-by: Clark Williams <clark.williams@gmail.com>
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
-index 7291fb6399d2..de7ebd2bf3ba 100644
+index aaa25ed1a..a51c36397 100644
 --- a/include/linux/sched/task.h
 +++ b/include/linux/sched/task.h
 @@ -141,8 +141,12 @@ static inline void put_task_struct(struct task_struct *t)
@@ -45,7 +45,7 @@ index 7291fb6399d2..de7ebd2bf3ba 100644
 +	}
  }
  
- static inline void put_task_struct_many(struct task_struct *t, int nr)
+ DEFINE_FREE(put_task, struct task_struct *, if (_T) put_task_struct(_T))
 -- 
-2.43.0
+2.43.2
 
