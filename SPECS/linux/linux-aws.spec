@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.209
-Release:        3%{?dist}
+Version:        5.10.210
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:    http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=85f0957d052c8321e5b4fa2aea19220f0ef581e25d760746315afe70878353b9d4597dd2aaa1fb41ef2631c649275cd19fbb92b8ae9ccc8f86c6e17ac171b1c2
+%define sha512 linux=7049825b8c19d8e6b16c75b590abd1c22124e633f885bd0df76a7650c413baf7a8023441d2c803df881c15b3ec67758482fc1ea59bf33d413a136d6fc6c34a43
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -131,9 +131,6 @@ Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-4204
 Patch105: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
-# Fix for CVE-2024-0607
-Patch106: 0001-netfilter-nf_tables-fix-pointer-math-issue-in-nft_by.patch
-
 # Fix for CVE-2022-3522
 Patch107: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
 Patch108: 0002-mm_hugetlb_fix_race_condition_of_uffd_missing_minor_handling.patch
@@ -173,14 +170,8 @@ Patch139: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 #Fix CVE-2023-22995
 Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 
-# Fix CVE-2024-0340
-Patch141: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
-
 #Fix CVE-2024-0565
 Patch142: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
-
-#Fix CVE-2024-1086
-Patch143: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch150: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
@@ -524,6 +515,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-1
+- Update to version 5.10.210
 * Mon Feb 05 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.209-3
 - Patch from the same series that resolved CVE-2024-0565
 * Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.209-2

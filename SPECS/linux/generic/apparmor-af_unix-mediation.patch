@@ -7,6 +7,8 @@ af_socket mediation did not make it into 4.17 so add remaining out
 of tree patch
 
 Signed-off-by: John Johansen <john.johansen@canonical.com>
+[vkb: Fixed arguments passed to unix_state_lock_nested]
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
  security/apparmor/Makefile          |   3 +-
  security/apparmor/af_unix.c         | 652 ++++++++++++++++++++++++++++++++++++
@@ -625,10 +627,10 @@ index 00000000..54b3796
 +	}
 +	if (sk1 < sk2) {
 +		unix_state_lock(sk1);
-+		unix_state_lock_nested(sk2);
++		unix_state_lock_nested(sk2, U_LOCK_SECOND);
 +	} else {
 +		unix_state_lock(sk2);
-+		unix_state_lock_nested(sk1);
++		unix_state_lock_nested(sk1, U_LOCK_SECOND);
 +	}
 +}
 +

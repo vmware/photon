@@ -16,8 +16,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.209
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        5.10.210
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -30,7 +30,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=85f0957d052c8321e5b4fa2aea19220f0ef581e25d760746315afe70878353b9d4597dd2aaa1fb41ef2631c649275cd19fbb92b8ae9ccc8f86c6e17ac171b1c2
+%define sha512 linux=7049825b8c19d8e6b16c75b590abd1c22124e633f885bd0df76a7650c413baf7a8023441d2c803df881c15b3ec67758482fc1ea59bf33d413a136d6fc6c34a43
 %ifarch x86_64
 Source1: config-rt
 %endif
@@ -150,9 +150,6 @@ Patch102: 0001-mm-fix-panic-in-__alloc_pages.patch
 # Fix for CVE-2021-4204
 Patch103: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
-# Fix for CVE-2024-0607
-Patch105: 0001-netfilter-nf_tables-fix-pointer-math-issue-in-nft_by.patch
-
 # Fix for CVE-2022-3522
 Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
 Patch107: 0002-mm_hugetlb_fix_race_condition_of_uffd_missing_minor_handling.patch
@@ -192,14 +189,8 @@ Patch137: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 #Fix CVE-2023-22995
 Patch138: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 
-# Fix CVE-2024-0340
-Patch139: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
-
 #Fix CVE-2024-0565
 Patch140: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
-
-#Fix CVE-2024-1086
-Patch141: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -655,6 +646,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-1
+- Update to version 5.10.210
 * Mon Feb 05 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.209-3
 - Patch from the same series that resolved CVE-2024-0565
 * Mon Feb 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.209-2

@@ -3223,7 +3223,6 @@ CONFIG_LPC_ICH=m
 # CONFIG_MFD_SKY81452 is not set
 # CONFIG_ABX500_CORE is not set
 # CONFIG_MFD_SYSCON is not set
-# CONFIG_MFD_TI_AM335X_TSCADC is not set
 # CONFIG_MFD_LP3943 is not set
 # CONFIG_MFD_LP8788 is not set
 # CONFIG_MFD_TI_LMU is not set
