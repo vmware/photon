@@ -83,7 +83,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  include/linux/pci.h                           |   2 +-
  include/linux/syscalls.h                      |  18 +-
  kernel/bpf/core.c                             |  17 +
- kernel/events/core.c                          |   6 +-
+ kernel/events/core.c                          |   3 +-
  kernel/module/main.c                          |   9 +-
  kernel/sched/core.c                           |   2 +-
  net/bridge/br_private.h                       |   3 +-
@@ -97,7 +97,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  scripts/gcc-plugins/rap_plugin/sip.c          |  96 +++
  scripts/mod/modpost.c                         |   6 -
  security/Kconfig                              |  20 +
- 64 files changed, 2289 insertions(+), 447 deletions(-)
+ 64 files changed, 2288 insertions(+), 445 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -105,10 +105,10 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  create mode 100644 scripts/gcc-plugins/rap_plugin/sip.c
 
 diff --git a/Makefile b/Makefile
-index 6e34c9427..d9f064ae5 100644
+index 1f8dafe96..e849d765e 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -999,10 +999,12 @@ export CC_FLAGS_LTO
+@@ -1006,10 +1006,12 @@ export CC_FLAGS_LTO
  endif
  
  ifdef CONFIG_CFI_CLANG
@@ -122,10 +122,10 @@ index 6e34c9427..d9f064ae5 100644
  ifdef CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B
  KBUILD_CFLAGS += -falign-functions=64
 diff --git a/arch/Kconfig b/arch/Kconfig
-index 81599f5c1..fd946df1c 100644
+index b60d271bf..edf9a4c77 100644
 --- a/arch/Kconfig
 +++ b/arch/Kconfig
-@@ -747,10 +747,16 @@ config ARCH_SUPPORTS_CFI_CLANG
+@@ -750,10 +750,16 @@ config ARCH_SUPPORTS_CFI_CLANG
  config ARCH_USES_CFI_TRAPS
  	bool
  
@@ -154,28 +154,27 @@ index ca2fe1869..faf2e5a87 100644
 +CFLAGS_REMOVE_syscall_32.o += -fplugin-arg-rap_plugin-hash=abs-finish
 +CFLAGS_REMOVE_syscall_64.o += -fplugin-arg-rap_plugin-hash=abs-finish
 diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index 6c2826417..49053917e 100644
+index 6c2826417..e6c5e6fff 100644
 --- a/arch/x86/entry/common.c
 +++ b/arch/x86/entry/common.c
-@@ -78,8 +78,18 @@ __visible noinstr void do_syscall_64(struct pt_regs *regs, int nr)
- 	instrumentation_begin();
+@@ -47,7 +47,17 @@ static __always_inline bool do_syscall_x64(struct pt_regs *regs, int nr)
  
- 	if (!do_syscall_x64(regs, nr) && !do_syscall_x32(regs, nr) && nr != -1) {
+ 	if (likely(unr < NR_syscalls)) {
+ 		unr = array_index_nospec(unr, NR_syscalls);
 +#ifdef CONFIG_PAX_RAP
 +		asm volatile("movq %[param],%%rdi\n\t"
 +			"call *%P[syscall]\n\t"
 +			"mov %%rax,%[result]\n\t"
 +			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (sys_call_table[nr]),
++			: [syscall] "m" (sys_call_table[unr]),
 +			[param] "m" (regs)
 +			: "ax", "cx", "dx", "r8", "r9", "r10", "r11", "di", "memory");
 +#else
- 		/* Invalid system call, but still a system call. */
- 		regs->ax = __x64_sys_ni_syscall(regs);
+ 		regs->ax = sys_call_table[unr](regs);
 +#endif
+ 		return true;
  	}
- 
- 	instrumentation_end();
+ 	return false;
 @@ -109,7 +119,48 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs, int nr)
  
  	if (likely(unr < IA32_NR_syscalls)) {
@@ -191,7 +190,7 @@ index 6c2826417..49053917e 100644
 +			     "call *%P[syscall]\n\t"
 +			     "mov %%rax,%[result]\n\t"
 +			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (ia32_sys_call_table[nr]),
++			: [syscall] "m" (ia32_sys_call_table[unr]),
 +			  [param1] "m" (regs->bx),
 +			  [param2] "m" (regs->cx),
 +			  [param3] "m" (regs->dx),
@@ -210,7 +209,7 @@ index 6c2826417..49053917e 100644
 +			     "addl $6*8,%%esp\n\t"
 +			     "mov %%eax,%[result]\n\t"
 +			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (ia32_sys_call_table[nr]),
++			: [syscall] "m" (ia32_sys_call_table[unr]),
 +			  [param1] "m" (regs->bx),
 +			  [param2] "m" (regs->cx),
 +			  [param3] "m" (regs->dx),
@@ -226,7 +225,7 @@ index 6c2826417..49053917e 100644
  		regs->ax = __ia32_sys_ni_syscall(regs);
  	}
 diff --git a/arch/x86/include/asm/text-patching.h b/arch/x86/include/asm/text-patching.h
-index 1cc15528c..4379d2ce3 100644
+index 85b85a275..71814bf4f 100644
 --- a/arch/x86/include/asm/text-patching.h
 +++ b/arch/x86/include/asm/text-patching.h
 @@ -52,6 +52,10 @@ extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void
@@ -269,10 +268,10 @@ index 75884d2cd..266f5ce89 100644
 +
  #endif /* _ASM_VERMAGIC_H */
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 5cadcea03..c3be5e7f2 100644
+index 46b7ee0ab..346340873 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -1217,6 +1217,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
+@@ -1235,6 +1235,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
  	return __text_poke(text_poke_memcpy, addr, opcode, len);
  }
  
@@ -352,7 +351,7 @@ index 7ca2d46c0..e0129c791 100644
  	.mmu.exit_mmap		= paravirt_nop,
  	.mmu.notify_page_enc_status_changed	= paravirt_nop,
 diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index d3fdec706..c0c86cfbb 100644
+index c0a5a4f22..5d88ced16 100644
 --- a/arch/x86/kernel/traps.c
 +++ b/arch/x86/kernel/traps.c
 @@ -121,6 +121,10 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, const char *str,
@@ -380,7 +379,7 @@ index dd8cd8831..d96964621 100644
  		      "jmp memcpy_erms", X86_FEATURE_ERMS
  
 diff --git a/drivers/char/tpm/tpm-chip.c b/drivers/char/tpm/tpm-chip.c
-index 783d65fc7..960c9e4bb 100644
+index c0759d49f..64395bfef 100644
 --- a/drivers/char/tpm/tpm-chip.c
 +++ b/drivers/char/tpm/tpm-chip.c
 @@ -373,6 +373,11 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
@@ -2068,7 +2067,7 @@ index 05e1a63e0..3b5dff3b6 100644
  	case CSIO_SCSIE_ABORT:
  	case CSIO_SCSIE_CLOSE:
 diff --git a/fs/nfsd/nfs4xdr.c b/fs/nfsd/nfs4xdr.c
-index 8377e14b8..67864df49 100644
+index 89a579be0..a53960847 100644
 --- a/fs/nfsd/nfs4xdr.c
 +++ b/fs/nfsd/nfs4xdr.c
 @@ -529,8 +529,9 @@ nfsd4_decode_fattr4(struct nfsd4_compoundargs *argp, u32 *bmval, u32 bmlen,
@@ -2833,7 +2832,7 @@ index 8377e14b8..67864df49 100644
  };
  
  static inline bool
-@@ -3641,8 +3710,9 @@ nfsd4_encode_stateid(struct xdr_stream *xdr, stateid_t *sid)
+@@ -3643,8 +3712,9 @@ nfsd4_encode_stateid(struct xdr_stream *xdr, stateid_t *sid)
  }
  
  static __be32
@@ -2844,7 +2843,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -3654,8 +3724,9 @@ nfsd4_encode_access(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
+@@ -3656,8 +3726,9 @@ nfsd4_encode_access(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
  	return 0;
  }
  
@@ -2855,7 +2854,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -3671,8 +3742,9 @@ static __be32 nfsd4_encode_bind_conn_to_session(struct nfsd4_compoundres *resp,
+@@ -3673,8 +3744,9 @@ static __be32 nfsd4_encode_bind_conn_to_session(struct nfsd4_compoundres *resp,
  }
  
  static __be32
@@ -2866,7 +2865,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  
  	return nfsd4_encode_stateid(xdr, &close->cl_stateid);
-@@ -3680,8 +3752,9 @@ nfsd4_encode_close(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_c
+@@ -3682,8 +3754,9 @@ nfsd4_encode_close(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_c
  
  
  static __be32
@@ -2877,7 +2876,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -3694,8 +3767,9 @@ nfsd4_encode_commit(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
+@@ -3696,8 +3769,9 @@ nfsd4_encode_commit(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
  }
  
  static __be32
@@ -2888,7 +2887,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -3708,8 +3782,9 @@ nfsd4_encode_create(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
+@@ -3710,8 +3784,9 @@ nfsd4_encode_create(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
  }
  
  static __be32
@@ -2899,7 +2898,7 @@ index 8377e14b8..67864df49 100644
  	struct svc_fh *fhp = getattr->ga_fhp;
  	struct xdr_stream *xdr = resp->xdr;
  
-@@ -3718,8 +3793,9 @@ nfsd4_encode_getattr(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
+@@ -3720,8 +3795,9 @@ nfsd4_encode_getattr(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
  }
  
  static __be32
@@ -2910,7 +2909,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	struct svc_fh *fhp = *fhpp;
  	unsigned int len;
-@@ -3773,8 +3849,9 @@ nfsd4_encode_lock_denied(struct xdr_stream *xdr, struct nfsd4_lock_denied *ld)
+@@ -3775,8 +3851,9 @@ nfsd4_encode_lock_denied(struct xdr_stream *xdr, struct nfsd4_lock_denied *ld)
  }
  
  static __be32
@@ -2921,7 +2920,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  
  	if (!nfserr)
-@@ -3786,8 +3863,9 @@ nfsd4_encode_lock(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_lo
+@@ -3788,8 +3865,9 @@ nfsd4_encode_lock(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_lo
  }
  
  static __be32
@@ -2932,7 +2931,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  
  	if (nfserr == nfserr_denied)
-@@ -3796,8 +3874,9 @@ nfsd4_encode_lockt(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_l
+@@ -3798,8 +3876,9 @@ nfsd4_encode_lockt(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_l
  }
  
  static __be32
@@ -2943,7 +2942,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  
  	return nfsd4_encode_stateid(xdr, &locku->lu_stateid);
-@@ -3805,8 +3884,9 @@ nfsd4_encode_locku(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_l
+@@ -3807,8 +3886,9 @@ nfsd4_encode_locku(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_l
  
  
  static __be32
@@ -2954,7 +2953,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -3819,8 +3899,9 @@ nfsd4_encode_link(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_li
+@@ -3821,8 +3901,9 @@ nfsd4_encode_link(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_li
  
  
  static __be32
@@ -2965,7 +2964,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -3913,16 +3994,20 @@ nfsd4_encode_open(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_op
+@@ -3915,16 +3996,20 @@ nfsd4_encode_open(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_op
  }
  
  static __be32
@@ -2988,7 +2987,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  
  	return nfsd4_encode_stateid(xdr, &od->od_stateid);
-@@ -4021,8 +4106,9 @@ static __be32 nfsd4_encode_readv(struct nfsd4_compoundres *resp,
+@@ -4023,8 +4108,9 @@ static __be32 nfsd4_encode_readv(struct nfsd4_compoundres *resp,
  
  static __be32
  nfsd4_encode_read(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -2999,7 +2998,7 @@ index 8377e14b8..67864df49 100644
  	bool splice_ok = test_bit(RQ_SPLICE_OK, &resp->rqstp->rq_flags);
  	unsigned long maxcount;
  	struct xdr_stream *xdr = resp->xdr;
-@@ -4063,8 +4149,9 @@ nfsd4_encode_read(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4065,8 +4151,9 @@ nfsd4_encode_read(struct nfsd4_compoundres *resp, __be32 nfserr,
  }
  
  static __be32
@@ -3010,7 +3009,7 @@ index 8377e14b8..67864df49 100644
  	__be32 *p, *maxcount_p, zero = xdr_zero;
  	struct xdr_stream *xdr = resp->xdr;
  	int length_offset = xdr->buf->len;
-@@ -4108,8 +4195,9 @@ nfsd4_encode_readlink(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd
+@@ -4110,8 +4197,9 @@ nfsd4_encode_readlink(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd
  }
  
  static __be32
@@ -3021,7 +3020,7 @@ index 8377e14b8..67864df49 100644
  	int maxcount;
  	int bytes_left;
  	loff_t offset;
-@@ -4199,8 +4287,9 @@ nfsd4_encode_readdir(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
+@@ -4201,8 +4289,9 @@ nfsd4_encode_readdir(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
  }
  
  static __be32
@@ -3032,7 +3031,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -4212,8 +4301,9 @@ nfsd4_encode_remove(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
+@@ -4214,8 +4303,9 @@ nfsd4_encode_remove(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
  }
  
  static __be32
@@ -3043,7 +3042,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -4226,8 +4316,9 @@ nfsd4_encode_rename(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
+@@ -4228,8 +4318,9 @@ nfsd4_encode_rename(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
  }
  
  static __be32
@@ -3054,7 +3053,7 @@ index 8377e14b8..67864df49 100644
  	u32 i, nflavs, supported;
  	struct exp_flavor_info *flavs;
  	struct exp_flavor_info def_flavs[2];
-@@ -4295,8 +4386,9 @@ nfsd4_do_encode_secinfo(struct xdr_stream *xdr, struct svc_export *exp)
+@@ -4297,8 +4388,9 @@ nfsd4_do_encode_secinfo(struct xdr_stream *xdr, struct svc_export *exp)
  
  static __be32
  nfsd4_encode_secinfo(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3065,7 +3064,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  
  	return nfsd4_do_encode_secinfo(xdr, secinfo->si_exp);
-@@ -4304,8 +4396,9 @@ nfsd4_encode_secinfo(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4306,8 +4398,9 @@ nfsd4_encode_secinfo(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_secinfo_no_name(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3076,7 +3075,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  
  	return nfsd4_do_encode_secinfo(xdr, secinfo->sin_exp);
-@@ -4316,8 +4409,9 @@ nfsd4_encode_secinfo_no_name(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4318,8 +4411,9 @@ nfsd4_encode_secinfo_no_name(struct nfsd4_compoundres *resp, __be32 nfserr,
   * regardless of the error status.
   */
  static __be32
@@ -3087,7 +3086,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -4340,8 +4434,9 @@ nfsd4_encode_setattr(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
+@@ -4342,8 +4436,9 @@ nfsd4_encode_setattr(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
  }
  
  static __be32
@@ -3098,7 +3097,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -4364,8 +4459,9 @@ nfsd4_encode_setclientid(struct nfsd4_compoundres *resp, __be32 nfserr, struct n
+@@ -4366,8 +4461,9 @@ nfsd4_encode_setclientid(struct nfsd4_compoundres *resp, __be32 nfserr, struct n
  }
  
  static __be32
@@ -3109,7 +3108,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -4381,8 +4477,9 @@ nfsd4_encode_write(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_w
+@@ -4383,8 +4479,9 @@ nfsd4_encode_write(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_w
  
  static __be32
  nfsd4_encode_exchange_id(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3120,7 +3119,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  	char *major_id;
-@@ -4459,8 +4556,9 @@ nfsd4_encode_exchange_id(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4461,8 +4558,9 @@ nfsd4_encode_exchange_id(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_create_session(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3131,7 +3130,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -4512,8 +4610,9 @@ nfsd4_encode_create_session(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4514,8 +4612,9 @@ nfsd4_encode_create_session(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_sequence(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3142,7 +3141,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -4535,8 +4634,9 @@ nfsd4_encode_sequence(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4537,8 +4636,9 @@ nfsd4_encode_sequence(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_test_stateid(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3153,7 +3152,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	struct nfsd4_test_stateid_id *stateid, *next;
  	__be32 *p;
-@@ -4556,8 +4656,9 @@ nfsd4_encode_test_stateid(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4558,8 +4658,9 @@ nfsd4_encode_test_stateid(struct nfsd4_compoundres *resp, __be32 nfserr,
  #ifdef CONFIG_NFSD_PNFS
  static __be32
  nfsd4_encode_getdeviceinfo(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3164,7 +3163,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	const struct nfsd4_layout_ops *ops;
  	u32 starting_len = xdr->buf->len, needed_len;
-@@ -4612,8 +4713,9 @@ nfsd4_encode_getdeviceinfo(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4611,8 +4712,9 @@ nfsd4_encode_getdeviceinfo(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_layoutget(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3175,7 +3174,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	const struct nfsd4_layout_ops *ops;
  	__be32 *p;
-@@ -4639,8 +4741,9 @@ nfsd4_encode_layoutget(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4638,8 +4740,9 @@ nfsd4_encode_layoutget(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_layoutcommit(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3186,7 +3185,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -4660,8 +4763,9 @@ nfsd4_encode_layoutcommit(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4659,8 +4762,9 @@ nfsd4_encode_layoutcommit(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_layoutreturn(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3197,7 +3196,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -4745,9 +4849,9 @@ nfsd42_encode_nl4_server(struct nfsd4_compoundres *resp, struct nl4_server *ns)
+@@ -4744,9 +4848,9 @@ nfsd42_encode_nl4_server(struct nfsd4_compoundres *resp, struct nl4_server *ns)
  }
  
  static __be32
@@ -3209,7 +3208,7 @@ index 8377e14b8..67864df49 100644
  	__be32 *p;
  
  	nfserr = nfsd42_encode_write_res(resp, &copy->cp_res,
-@@ -4763,8 +4867,9 @@ nfsd4_encode_copy(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4762,8 +4866,9 @@ nfsd4_encode_copy(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_offload_status(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3220,7 +3219,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -4856,8 +4961,9 @@ nfsd4_encode_read_plus_hole(struct nfsd4_compoundres *resp,
+@@ -4855,8 +4960,9 @@ nfsd4_encode_read_plus_hole(struct nfsd4_compoundres *resp,
  
  static __be32
  nfsd4_encode_read_plus(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3231,7 +3230,7 @@ index 8377e14b8..67864df49 100644
  	unsigned long maxcount, count;
  	struct xdr_stream *xdr = resp->xdr;
  	struct file *file;
-@@ -4926,8 +5032,9 @@ nfsd4_encode_read_plus(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4925,8 +5031,9 @@ nfsd4_encode_read_plus(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_copy_notify(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3242,7 +3241,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -4961,8 +5068,9 @@ nfsd4_encode_copy_notify(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4960,8 +5067,9 @@ nfsd4_encode_copy_notify(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_seek(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3253,7 +3252,7 @@ index 8377e14b8..67864df49 100644
  	__be32 *p;
  
  	p = xdr_reserve_space(resp->xdr, 4 + 8);
-@@ -5024,8 +5132,9 @@ nfsd4_vbuf_to_stream(struct xdr_stream *xdr, char *buf, u32 buflen)
+@@ -5023,8 +5131,9 @@ nfsd4_vbuf_to_stream(struct xdr_stream *xdr, char *buf, u32 buflen)
  
  static __be32
  nfsd4_encode_getxattr(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3264,7 +3263,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p, err;
  
-@@ -5048,8 +5157,9 @@ nfsd4_encode_getxattr(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -5047,8 +5156,9 @@ nfsd4_encode_getxattr(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_setxattr(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3275,7 +3274,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -5089,8 +5199,9 @@ nfsd4_listxattr_validate_cookie(struct nfsd4_listxattrs *listxattrs,
+@@ -5088,8 +5198,9 @@ nfsd4_listxattr_validate_cookie(struct nfsd4_listxattrs *listxattrs,
  
  static __be32
  nfsd4_encode_listxattrs(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3286,7 +3285,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	u32 cookie_offset, count_offset, eof;
  	u32 left, xdrleft, slen, count;
-@@ -5200,8 +5311,9 @@ nfsd4_encode_listxattrs(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -5199,8 +5310,9 @@ nfsd4_encode_listxattrs(struct nfsd4_compoundres *resp, __be32 nfserr,
  
  static __be32
  nfsd4_encode_removexattr(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -3297,7 +3296,7 @@ index 8377e14b8..67864df49 100644
  	struct xdr_stream *xdr = resp->xdr;
  	__be32 *p;
  
-@@ -5221,93 +5333,93 @@ typedef __be32(* nfsd4_enc)(struct nfsd4_compoundres *, __be32, void *);
+@@ -5220,93 +5332,93 @@ typedef __be32(* nfsd4_enc)(struct nfsd4_compoundres *, __be32, void *);
   * done in the decoding phase.
   */
  static const nfsd4_enc nfsd4_enc_ops[] = {
@@ -3507,7 +3506,7 @@ index 962cd41a2..b50341126 100644
  	    .ops = &param_ops_##type,					\
  	    .elemsize = sizeof(array[0]), .elem = array };		\
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 2bda4a4e4..79e624060 100644
+index eccaf1abe..1a8b4d7b7 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -194,7 +194,7 @@ static inline const char *pci_power_name(pci_power_t state)
@@ -3564,10 +3563,10 @@ index a34b0f9a9..6f9d5599d 100644
  	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  #endif /* __SYSCALL_DEFINEx */
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 17ab3e15a..79808f0e0 100644
+index 647067236..9f98c3994 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -1048,6 +1048,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
+@@ -1049,6 +1049,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
  	bpf_jit_uncharge_modmem(size);
  }
  
@@ -3578,7 +3577,7 @@ index 17ab3e15a..79808f0e0 100644
  /* Allocate jit binary from bpf_prog_pack allocator.
   * Since the allocated memory is RO+X, the JIT engine cannot write directly
   * to the memory. To solve this problem, a RW buffer is also allocated at
-@@ -1094,11 +1098,24 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -1095,11 +1099,24 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
  
  	hole = min_t(unsigned int, size - (proglen + sizeof(*ro_header)),
  		     BPF_PROG_CHUNK_SIZE - sizeof(*ro_header));
@@ -3604,7 +3603,7 @@ index 17ab3e15a..79808f0e0 100644
  }
  
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 3b9e86108..b6159f89a 100644
+index 8f2b9d8b9..df64a06ee 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
 @@ -1112,8 +1112,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_context *cpuctx, int cpu)
@@ -3619,10 +3618,10 @@ index 3b9e86108..b6159f89a 100644
  	struct pmu *pmu = cpuctx->ctx.pmu;
  	unsigned long flags;
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 7a627345d..bcac0eee0 100644
+index 7a376e26d..d4e152c71 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -1951,8 +1951,15 @@ static int setup_load_info(struct load_info *info, int flags)
+@@ -1959,8 +1959,15 @@ static int setup_load_info(struct load_info *info, int flags)
  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  {
  	const char *modmagic = get_modinfo(info, "vermagic");
@@ -3638,7 +3637,7 @@ index 7a627345d..bcac0eee0 100644
  	if (flags & MODULE_INIT_IGNORE_VERMAGIC)
  		modmagic = NULL;
  
-@@ -1987,7 +1994,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
+@@ -1995,7 +2002,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  		return err;
  
  	/* Set up license info based on the info section */
@@ -3648,10 +3647,10 @@ index 7a627345d..bcac0eee0 100644
  	if (get_modinfo(info, "test")) {
  		if (!test_taint(TAINT_TEST))
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index f730b6fe9..a15bf2ee3 100644
+index 55d13980e..fe421c269 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -4878,7 +4878,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
+@@ -4881,7 +4881,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
  	lockdep_assert_rq_held(rq);
  
  	while (head) {
@@ -3675,7 +3674,7 @@ index 06e5f6faa..a33f77509 100644
  
  static inline bool br_rx_handler_check_rtnl(const struct net_device *dev)
 diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index 46ebee940..71d84ea1f 100644
+index 20eede37d..e5a5fc5cb 100644
 --- a/net/netfilter/ipset/ip_set_core.c
 +++ b/net/netfilter/ipset/ip_set_core.c
 @@ -389,7 +389,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
@@ -3719,7 +3718,7 @@ index e4deaf5fa..7acd78f9d 100644
  # Some plugins are enabled outside of this Makefile, but they still need to
  # be included in GCC_PLUGIN so they can get built.
 diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
-index b34d11e22..d65105d94 100644
+index 320afd3cf..6246b5bdf 100644
 --- a/scripts/gcc-plugins/Makefile
 +++ b/scripts/gcc-plugins/Makefile
 @@ -36,11 +36,13 @@ plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
@@ -4415,7 +4414,7 @@ index 000000000..420fcbdbf
 +}
 diff --git a/scripts/gcc-plugins/rap_plugin/rap_plugin.c b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
 new file mode 100644
-index 000000000..04c9d45ca
+index 000000000..963960c56
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
 @@ -0,0 +1,553 @@
@@ -5075,10 +5074,10 @@ index 000000000..65bc1cdea
 +	U64TO8_LE(out, b);
 +}
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 2c80da022..d4bea757c 100644
+index e6be7fc26..f917a868e 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -1911,15 +1911,9 @@ static void check_exports(struct module *mod)
+@@ -1875,15 +1875,9 @@ static void check_exports(struct module *mod)
  		const char *basename;
  		exp = find_symbol(s->name);
  		if (!exp) {
@@ -5095,7 +5094,7 @@ index 2c80da022..d4bea757c 100644
  		}
  
 diff --git a/security/Kconfig b/security/Kconfig
-index 1bd57b5d5..dc8fbe4fa 100644
+index fb75f9203..453c8e039 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -94,6 +94,26 @@ config PAX_XATTR_PAX_FLAGS
