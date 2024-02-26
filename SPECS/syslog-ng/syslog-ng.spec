@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -66,6 +66,7 @@ needed to build applications using syslog-ng APIs.
 
 %build
 autoreconf -vif
+
 sh ./configure --host=%{_host} --build=%{_build} \
    CFLAGS="%{optflags}" \
    CXXFLAGS="%{optflags}" \
@@ -80,7 +81,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
    --includedir=%{_includedir} \
    --libdir=%{_libdir} \
    --libexecdir=%{_libexecdir} \
-   --localstatedir=%{_localstatedir} \
+   --localstatedir=%{_sharedstatedir}/%{name} \
    --sharedstatedir=%{_sharedstatedir} \
    --mandir=%{_mandir} \
    --infodir=%{_infodir} \
@@ -105,6 +106,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
 
 %install
 %make_install %{?_smp_mflags}
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 
 rm -rf %{buildroot}%{_unitdir}/%{name}@.service \
        %{buildroot}%{_infodir} \
@@ -154,6 +156,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/%{name}/libmod-python.so
 %{_datadir}/%{name}/*
 %{_mandir}/*
+%dir %{_sharedstatedir}/%{name}
 
 %files -n python3-%{name}
 %defattr(-,root,root,-)
@@ -169,6 +172,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Mon Feb 26 2024 Nitesh Kumar <nitesh-nk.kumar@brodcom.com> 4.3.1-3
+- Fixing localstatedir path
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-2
 - Rebuild with jit enabled pcre2
 * Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-1

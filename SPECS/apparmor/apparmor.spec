@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        3.1.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -10,6 +10,8 @@ Group:          Productivity/Security
 
 Source0: https://launchpad.net/%{name}/3.1/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=e4fa8e0985472c00d3b68044f4150659787cf15b384b901af32b5aba3f0b2839f33bfe0b0675bf8ea7a1f5727152756a276c75b1dec383a33b92b0a1b8615a11
+
+Patch0: 0001-apparmor-profile-fix-for-sbin.syslog-ng.patch
 
 BuildRequires: perl
 BuildRequires: python3-devel
@@ -335,6 +337,8 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Mon Feb 26 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.1.2-10
+- Patching apparmor sbin.syslog-ng profile fix
 * Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-9
 - Bump version as a part of httpd v2.4.58 upgrade
 * Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-8
