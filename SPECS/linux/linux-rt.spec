@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.79
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -470,6 +470,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri Mar 01 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.1.79-2
+- Enable CONFIG_PPPOE
 * Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.79-1
 - Update to version 6.1.79
 * Tue Feb 13 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 6.1.77-2
