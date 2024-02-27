@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        255.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -28,7 +28,6 @@ Source14:       sysusers.generate-pre.sh
 
 Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
-Patch2: use-bfq-scheduler.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -754,6 +753,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Feb 27 2024 Susant Sahani <guruswamy.basavaiah@broadcom.com> 255.2-2
+- use-bfq-scheduler.patch
 * Thu Jan 04 2024 Susant Sahani <susant.sahani@broadcom.com> 255.2-1
 - Version bump.
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-8
