@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.5.8
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -14,6 +14,10 @@ Source0:        http://cache.ruby-lang.org/pub/ruby/2.5/%{name}-%{version}.tar.b
 Patch0:         CVE-2020-25613.patch
 Patch1:         ruby-CVE-2021-31799.patch
 Patch2:         CVE-2022-28739.patch
+Patch3:         CVE-2021-41817.patch
+Patch4:         CVE-2021-41819.patch
+Patch5:         CVE-2023-28756.patch
+Patch6:         CVE-2021-33621.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -67,6 +71,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Tue Feb 27 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.5.8-6
+- Fix CVE-2021-41817, CVE-2021-41819, CVE-2023-28756 and CVE-2021-33621
 * Wed Jul 05 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.5.8-5
 - Version bump to build with updated tzdata
 * Fri Sep 02 2022 HarinadhD <hdommaraju@vmware.com> 2.5.8-4
