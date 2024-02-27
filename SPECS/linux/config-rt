@@ -2804,7 +2804,7 @@ CONFIG_PPP=m
 # CONFIG_PPP_FILTER is not set
 # CONFIG_PPP_MPPE is not set
 # CONFIG_PPP_MULTILINK is not set
-# CONFIG_PPPOE is not set
+CONFIG_PPPOE=m
 # CONFIG_PPTP is not set
 # CONFIG_PPP_ASYNC is not set
 # CONFIG_PPP_SYNC_TTY is not set
