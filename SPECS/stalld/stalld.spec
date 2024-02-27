@@ -1,7 +1,7 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.19.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://gitlab.com/rt-linux-tools/stalld
@@ -16,11 +16,12 @@ Source1: %{name}-tca.conf
 BuildRequires: build-essential
 BuildRequires: systemd-devel
 BuildRequires: libbpf-devel
+%ifarch x86_64
 BuildRequires: linux-rt-stalld-ebpf-plugin
-
+Requires: linux-rt-stalld-ebpf-plugin
+%endif
 Requires: bash
 Requires: systemd
-Requires: linux-rt-stalld-ebpf-plugin
 
 Patch0: 0001-stalld-Fix-for-failed-to-parse-cpu-info-warning.patch
 Patch1: 0002-stalld-Add-error-handling-for-thread-creation-failur.patch
@@ -31,8 +32,10 @@ Patch5: 0006-stalld-Fix-single-threaded-mode-starvation-threshold.patch
 Patch6: 0007-stalld-Add-debug-print-for-starving-tasks.patch
 Patch7: 0008-stalld-change-default-config_granularity-value-to-2s.patch
 Patch8: 0009-stalld-Include-FF-and-CG-config-params-in-service-fi.patch
+%ifarch x86_64
 Patch9: 0001-stalld-service-Include-BE-option-in-stalld-service-f.patch
 Patch10: 0001-Disable-eBPF-skeleton-creation-instead-use-eBPF-obje.patch
+%endif
 
 %description
 The stalld program monitors the set of system threads, looking for
@@ -45,7 +48,11 @@ such stalled threads is configurable by the user.
 %autosetup -p1 -n %{name}-v%{version}
 
 %build
+%ifarch x86_64
 %make_build
+%else
+%make_build USE_BPF=0
+%endif
 
 %install
 %make_install %{?_smp_mflags}
@@ -75,6 +82,8 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Tue Feb 27 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 1.19.1-2
+- Fix for ARM build failure
 * Mon Feb 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 1.19.1-1
 - Update version to 1.19.1 with eBPF based backend support
 * Mon Mar 06 2023 Ankit Jain <ankitja@vmware.com> 1.17.1-3
