@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.210
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -235,6 +235,9 @@ Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 
 #Fix CVE-2024-0565
 Patch142: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
+
+# Fix CVE-2024-0841
+Patch143: 0001-fs-hugetlb-fix-NULL-pointer-dereference-in-hugetlbs_.patch
 
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -655,6 +658,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Feb 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-2
+- Fix CVE-2024-0841
 * Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-1
 - Update to version 5.10.210
 * Tue Feb 13 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.209-4
