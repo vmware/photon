@@ -1,6 +1,6 @@
 Name:           python-etcd
 Version:        0.4.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python API for etcd
 License:        MIT
 Group:          Development/Languages/Python
@@ -84,6 +84,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Feb 28 2024 Anmol Jain <anmolja@vmware.com> 0.4.5-4
+- Bump version as a part of etcd upgrade
 * Wed Aug 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.4.5-3
 - Add python3-dnspython to requires
 * Tue Dec 04 2018 Ashwin H<ashwinh@vmware.com> 0.4.5-2
