@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.3.9
-Release:        4%{?dist}
+Version:        3.3.11
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,10 +9,9 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=86e9bf81b8e9e7a7cf219b52ae1bffcc7dbf53a295d8c96b7f83064ba817567bc44e0fc1ab7c435dd280aec28c34d09bdbce6abe21d3f85b99f99cf867b615e6
+%define sha512  %{name}=0c240a4e86264dcc6f47c3c3e9c99f5378ee18f937c03da17014a6617818655091f0865d22b78a24d697c2ef943d050d33157f764f478ecc3d96b5b770cb2ac8
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
-Patch1:         add-space-to-list-output.patch
 
 Requires:       rpm-libs >= 4.16.1.3-1
 Requires:       curl-libs
@@ -228,6 +227,9 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Apr 30 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.3.11-1
+- update to 3.3.11
+- fix multiple --repofrompath options
 * Mon Apr 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.9-4
 - Add space to list output
 * Thu Oct 19 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.3.9-3
