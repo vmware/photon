@@ -5,7 +5,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.7
-Release:        12%{?dist}
+Release:        13%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -344,6 +344,8 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/gssapi_unix/*.a
 
 %changelog
+* Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 0.0.7-13
+- Bump version as a part of expat upgrade
 * Thu Dec 01 2022 Susant Sahani <ssahani@vmware.com> 0.0.7-12
 - Bump with latest network-config-manager
 * Mon Sep 19 2022 Oliver Kurth <okurth@vmware.com> 0.0.7-11

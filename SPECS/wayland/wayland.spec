@@ -1,7 +1,7 @@
 Summary:        Wayland Compositor Infrastructure
 Name:           wayland
 Version:        1.20.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://wayland.freedesktop.org
 Group:          System Environment/Libraries
@@ -114,6 +114,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libwayland-server.so.0*
 
 %changelog
+* Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 1.20.0-5
+- Bump version as a part of expat upgrade
 * Mon Jul 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.0-4
 - Add libffi-devel to requires of libwayland-server
 * Wed Sep 28 2022 Shivani Agarwal <shivania2@vmware.com> 1.20.0-3

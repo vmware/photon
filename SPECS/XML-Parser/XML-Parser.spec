@@ -1,11 +1,11 @@
 Summary:       XML-Parser perl module
 Name:          XML-Parser
 Version:       2.46
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPL+
 URL:           http://search.cpan.org/~toddr/%{name}-%{version}/
 Source0:       http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
-%define sha1 XML-Parser=40cba8a10847b71804684e5c72a410277f47f8ce
+%define sha512 %{name}=c4609495cc5ca34952f61876a690ef76d42eee6689d1bedb8036c9eab918525ec5213f1639c7178c029ee0f8765a2ca5eb0197f6e39b8be6d5dbc3f3c1d0b389
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -13,10 +13,13 @@ BuildRequires: expat-devel
 BuildRequires: perl
 Requires:      expat
 Requires:      perl
+
 %description
 The XML::Parser module is a Perl extension interface to James Clark's XML parser, expat
+
 %prep
-%setup -q
+%autosetup -p1
+
 %build
 perl Makefile.PL
 if [ %{_host} != %{_build} ]; then
@@ -30,9 +33,10 @@ if [ %{_host} != %{_build} ]; then
   ln -sf %{_arch}-linux-gnu-ld /usr/bin/ld
   ln -sf %{_arch}-linux-gnu-ar /usr/bin/ar
 fi
+
 make %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %define __perl_version 5.30.1
 rm %{buildroot}/%{_libdir}/perl5/%{__perl_version}/*/perllocal.pod
@@ -44,7 +48,10 @@ make %{?_smp_mflags} test
 %defattr(-,root,root)
 %{_libdir}/perl5/*
 %{_mandir}/man3/*
+
 %changelog
+*   Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 2.46-3
+-   Bump version as a part of expat upgrade
 *   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 2.46-2
 -   Rebuild for perl version upgrade to 5.30.1
 *   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 2.46-1

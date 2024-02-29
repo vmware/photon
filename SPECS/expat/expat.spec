@@ -1,23 +1,17 @@
 Summary:        An XML parser library
 Name:           expat
-Version:        2.2.9
-Release:        11%{?dist}
+Version:        2.4.9
+Release:        1%{?dist}
 License:        MIT
 URL:            http://expat.sourceforge.net/
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=e082874efcc4b00709e2c0192c88fb15dfc4f33fc3a2b09e619b010ea93baaf7e7572683f738463db0ce2350cab3de48a0c38af6b74d1c4f5a9e311f499edab0
-Patch0:         CVE-2022-22822-27.patch
-Patch1:         CVE-2021-45960-46143.patch
-Patch2:         CVE-2022-23852.patch
-Patch3:         CVE-2022-23990.patch
-Patch4:         CVE-2022-25235_25236.patch
-Patch5:         CVE-2022-25314_25315.patch
-Patch6:         CVE-2022-25313.patch
-Patch7:         expat-CVE-2022-40674.patch
-Patch8:         expat-CVE-2022-43680.patch
+%define sha512 %{name}=8508379b4915d84d50f3638678a90792179c98247d1cb5e6e6387d117af4dc148ac7031c1debea8b96e7b710ef436cf0dd5da91f3d22b8186a00cfafe1201169
+Patch0:         CVE-2022-43680.patch
+Patch1:         CVE-2023-52425.patch
+Patch2:         CVE-2023-52426.patch
 Requires:       expat-libs = %{version}-%{release}
 
 %description
@@ -59,8 +53,8 @@ rm -rf %{buildroot}/%{_docdir}/%{name}
 %check
 %make_check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %post libs
 /sbin/ldconfig
@@ -84,6 +78,7 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 %{_libdir}/libexpat.so
+%{_libdir}/cmake/*
 
 %files libs
 %{_libdir}/libexpat.so.*
@@ -93,6 +88,8 @@ rm -rf %{buildroot}/*
 %doc AUTHORS Changes
 
 %changelog
+* Wed Feb 28 2024 Anmol Jain <anmol.jain@broadcom.com> 2.4.9-1
+- Version Upgrade to fix CVE-2023-52425 & CVE-2023-52426
 * Thu Oct 27 2022 Harinadh D <hdommaraju@vmware.com> 2.2.9-11
 - Fix CVE-2022-43680
 * Mon Sep 19 2022 Harinadh D <hdommaraju@vmware.com> 2.2.9-10

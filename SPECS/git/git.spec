@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.35.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -135,6 +135,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 2.35.6-5
+- Bump version as a part of expat upgrade
 * Wed May 31 2023 Nitesh Kumar <kunitesh@vmware.com> 2.35.6-4
 - Adding conflict to git-extras
 * Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.35.6-3

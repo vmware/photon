@@ -1,6 +1,6 @@
 Name:           dbus-broker
 Version:        32
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Linux D-Bus Message Broker
 License:        ASL 2.0
 Vendor:         VMware, Inc.
@@ -81,6 +81,8 @@ fi
 %{_userunitdir}/dbus-broker.service
 
 %changelog
+* Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 32-2
+- Bump version as a part of expat upgrade
 * Wed Oct 26 2022 Shivani Agarwal <shivania2@vmware.com> 32-1
 - Update version for CVE-2022-31212
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 29-2

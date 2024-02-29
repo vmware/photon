@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        13.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -103,6 +103,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %endif
 
 %changelog
+*   Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 13.2-3
+-   Bump version as a part of expat upgrade
 *   Fri Oct 20 2023 Anmol Jain <anmolja@vmware.com> 13.2-2
 -   Fix for CVE-2023-1972
 *   Tue Jul 25 2023 Anmol Jain <anmolja@vmware.com> 13.2-1

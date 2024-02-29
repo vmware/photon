@@ -1,7 +1,7 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
 Version:       0.120
-Release:       5%{?dist}
+Release:       6%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
@@ -106,6 +106,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 0.120-6
+- Bump version as a part of expat upgrade
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.120-5
 - Bump version as part of glib upgrade
 * Tue Aug 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.120-4

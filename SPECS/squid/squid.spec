@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        6.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -223,6 +223,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 6.6-2
+- Bump version as a part of expat upgrade
 * Tue Jan 02 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.6-1
 - Update to v6.6 to fix CVE-2023-50269
 * Wed Nov 22 2023 Srish Srinivasan <ssrish@vmware.com> 6.5-1

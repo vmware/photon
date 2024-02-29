@@ -1,7 +1,7 @@
 Summary:        DBus for systemd
 Name:           dbus
 Version:        1.13.18
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -78,6 +78,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+* Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 1.13.18-4
+- Bump version as a part of expat upgrade
 * Thu Oct 13 2022 Ajay Kaher <akaher@vmware.com> 1.13.18-3
 - Fix CVE-2022-42010, CVE-2022-42011, CVE-2022-42012
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.13.18-2

@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.16.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -30,6 +30,8 @@ BuildRequires:  doxygen
 
 Requires:       drpm
 Requires:       zchunk-libs
+Requires:       glib
+Requires:       sqlite
 
 %if 0%{?with_check}
 Requires:       libxml2
@@ -47,6 +49,9 @@ C implementation of the createrepo.
 %package devel
 Summary:    Library for repodata manipulation
 Requires:   %{name} = %{version}-%{release}
+Requires:   glib-devel
+Requires:   sqlite-devel
+Requires:   libxml2-devel
 
 %description devel
 headers and libraries for createrepo_c
@@ -90,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 0.16.0-9
+- Bump version as a part of expat upgrade & Fix devel package requires
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.16.0-8
 - Bump version as part of glib upgrade
 * Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-7

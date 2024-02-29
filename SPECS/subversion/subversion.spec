@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
@@ -99,6 +99,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 1.14.2-6
+- Bump version as a part of expat upgrade
 * Tue Nov 07 2023 Nitesh Kumar <kunitesh@vmware.com> 1.14.2-5
 - Version bump as a part of apr-util v1.6.3 upgrade
 * Mon Feb 13 2023 Ankit Jain <ankitja@vmware.com> 1.14.2-4

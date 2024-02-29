@@ -1,7 +1,7 @@
 Summary:        unbound dns server
 Name:           unbound
 Version:        1.16.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
@@ -91,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 1.16.3-2
+- Bump version as a part of expat upgrade
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.3-1
 - Upgrade to v1.16.3
 - Fix CVE-2023-50387, CVE-2023-50868

@@ -1,13 +1,12 @@
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
 Version:        0.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
-Source0:        thin-provisioning-tools-%{version}.tar.gz
-%define sha1    thin-provisioning-tools=2015701a5767bae5960c8611673088fa9dcf3b60
-Patch0:         thin-provisioning-tools-fix-for-gcc-6.3.patch
+Source0:        %{name}-%{version}.tar.gz
+%define sha512  %{name}=e1796fb3948847d72ca8247cae58017507c0a847a00201b93668eeb8fbfea4107c4c2affa5c211c149798a89b10474e83d2bd61a5545a668299be97aed591e0f
 BuildRequires:  expat-devel, libaio-devel, boost-devel
 Requires:       expat, libaio
 Vendor:         VMware, Inc.
@@ -22,7 +21,7 @@ are included and era check, dump, restore and invalidate to manage
 snapshot eras
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 autoconf
@@ -34,7 +33,7 @@ make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
-make DESTDIR=%{buildroot} MANDIR=%{_mandir} install
+make DESTDIR=%{buildroot} MANDIR=%{_mandir} install %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}
@@ -46,6 +45,8 @@ rm -rf %{buildroot}
 %{_sbindir}/*
 
 %changelog
+*   Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 0.9.0-2
+-   Bump version as a part of expat upgrade
 *   Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 0.9.0-1
 -   Automatic Version Bump
 *   Wed Jun 10 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8.5-1
@@ -66,4 +67,3 @@ rm -rf %{buildroot}
 -   Updating version
 *   Tue Mar 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.4.1-1
 -   Initial version
-
