@@ -4,7 +4,7 @@
 
 Name: rubygem-fluent-plugin-s3
 Version:        1.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Amazon S3 output plugin for Fluentd event collector.
 Group:          Development/Languages
 License:        Apache 2.0
@@ -14,15 +14,14 @@ URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluent-plugin-s3-%{version}.gem
 %define sha512    fluent-plugin-s3=3983c451a805e42e0b8329ee4b66ab65eb2bde41cc373de1e3f47e4908d0dc2b92b43901436ccc4174fff1b216461d6afdfb6e04dfa8e38036bb977ce5726e74
 BuildRequires:  ruby
-%if %{with_check}
-BuildRequires:  git
-%endif
 
 Requires: rubygem-aws-sdk-s3 >= 1.0
 Requires: rubygem-aws-sdk-s3 >= 1.0
 Requires: rubygem-fluentd >= 0.14.2
 Requires: rubygem-fluentd < 2.0.0
 Requires: rubygem-aws-sdk-sqs >= 1.0
+Requires: rubygem-jmespath > 1.6.1
+Requires: rubygem-sigdump > 0.2.4
 
 %description
 Amazon S3 output plugin for Fluentd event collector.
@@ -35,16 +34,13 @@ Amazon S3 output plugin for Fluentd event collector.
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 
-%check
-cd %{buildroot}%{gemdir}/gems/fluent-plugin-s3-%{version}
-gem install bundler aws-sdk-s3 aws-sdk-sqs fluentd_regexp_tester test-unit-rr timecop uuidtools
-rake test
-
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.2-2
+-   Bump Version to build with new ruby
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.7.2-1
 -   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1

@@ -3,8 +3,8 @@
 %global gem_name http
 
 Name:           rubygem-http
-Version:        5.1.0
-Release:        2%{?dist}
+Version:        5.2.0
+Release:        1%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -13,7 +13,7 @@ License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512 %{gem_name}=b99da5318da54e7b64abd48df0b68cde9a02e1ae92b51fc43302e3dea28ba9672e2b7a25e31c342235835e16b2e1b98c94b6d4efa7916a0aa99258fc8290260f
+%define sha512 %{gem_name}=88a813498db68827ea665c3a568ce45b0096203484564f3de18d46abdd87d2ecd756745f9f530965db306f8e37185d3d0b31959082bbe01fee5545b36b0716bd
 
 BuildRequires:  ruby
 
@@ -43,6 +43,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.2.0-1
+- Update to version 5.2.0
 * Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.1.0-2
 - Fix requires
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1

@@ -1,9 +1,11 @@
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name libxml-ruby
+%global ruby_ver 3.3.0
+
 Name:           rubygem-libxml-ruby
 Version:        5.0.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group:          Applications/Programming
 License:        BSD
@@ -11,18 +13,39 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/libxml-ruby-%{version}.gem
-%define sha512  libxml-ruby=449464107c1b533c25ec3ba4e722f5805f1e487609939306ee4535ba9b8197e47d79d50fa69571f0dff9d7ab974ee848ce95679a6f64da84aaf109c367ef6829
+
+%define sha512    libxml-ruby=449464107c1b533c25ec3ba4e722f5805f1e487609939306ee4535ba9b8197e47d79d50fa69571f0dff9d7ab974ee848ce95679a6f64da84aaf109c367ef6829
 
 BuildRequires:  ruby >= 2.4.0
 BuildRequires:  libxml2-devel
 Requires:       ruby
 %description
 Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
+
 %prep
-%autosetup -c -T
+gem unpack %{SOURCE0}
+%autosetup -p1 -D -T -n  %{gem_name}-%{version}
+gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
+
 %build
+gem build %{gem_name}.gemspec
+gem install %{gem_name}-%{version}.gem
+
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+mkdir -p %{buildroot}%{gemdir}
+mkdir -p %{buildroot}%{gemdir}/cache
+mkdir -p %{buildroot}%{gemdir}/doc
+mkdir -p %{buildroot}%{gemdir}/plugins
+mkdir -p %{buildroot}%{gemdir}/specifications
+mkdir -p %{buildroot}%{gemdir}/gems
+mkdir -p %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
+cp -pa %{gemdir}/build_info %{buildroot}%{gemdir}/
+cp -pa %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
+cp -pa %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
+cp -pa %{gemdir}/plugins %{buildroot}%{gemdir}/
+cp -pa %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications
+cp -pa %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems
+cp -pa %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
 
 %check
 cd %{buildroot}%{gemdir}/gems/libxml-ruby-%{version}
@@ -55,7 +78,10 @@ rake test
 %files
 %defattr(-,root,root,-)
 %{gemdir}
+
 %changelog
+*   Tue Apr 02 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.2-3
+-   Build with source
 *   Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.0.2-2
 -   Bump version as a part of libxml2 upgrade
 *   Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.0.2-1

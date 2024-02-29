@@ -4,7 +4,7 @@
 
 Name: rubygem-fluent-plugin-systemd
 Version:        1.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        This is a fluentd input plugin. It reads logs from the systemd journal.
 Group:          Development/Languages
 License:        Apache 2
@@ -36,6 +36,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.5-2
+-   Bump Version to build with new ruby
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1
 -   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.2-1

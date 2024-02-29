@@ -3,8 +3,8 @@
 %global gem_name async-io
 
 Name:           rubygem-async-io
-Version:        1.34.0
-Release:        2%{?dist}
+Version:        1.41.0
+Release:        1%{?dist}
 Summary:        Provides support for asynchonous TCP, UDP, UNIX and SSL sockets.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -13,13 +13,14 @@ License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512 %{gem_name}=513bf5f97e2653ee46395c3f67d3a092ed94dedfb74183cde2479d9fb7cd21ff1ca22939ff4e406ef7845ad301c14e251b61c6ec3cc27c81b7dd9bb387115276
+%define sha512 %{gem_name}=e067053c052117da8ab799bb7b3e2c8ed61bb1d0635d7b4ac13e582aa3d0e716b4ea3053e8391b1558cdb0e062bc2f7fbf71d9072caeebc6cacd77cf25977964
 
-BuildRequires:  ruby >= 2.3.0, ruby < 3.1.3
+BuildRequires:  ruby >= 2.3.0, ruby < 3.3.1
 
-Requires: rubygem-async >= 1.14.0, rubygem-async < 2.2.2
+Requires: rubygem-async >= 1.14.0, rubygem-async < 2.8.3
 Requires: rubygem-fiber-local
 Requires: ruby
+Requires: rubygem-fiber-annotation
 
 BuildArch: noarch
 
@@ -39,6 +40,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.41.0-1
+-   Update to version 1.41.0
 * Wed Oct 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.34.0-2
 - Fix requires
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.34.0-1

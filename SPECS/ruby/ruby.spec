@@ -1,30 +1,28 @@
 Summary:        Ruby
 Name:           ruby
-Version:        3.1.2
-Release:        3%{?dist}
+Version:        3.3.0
+Release:        1%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9155d1150398eaea7c9954af61ecf8dfdb885cfcf63a67bbcf6c92e282cd3ccac0ff9234d039286a9623297b65197441438c37f707e31d270ce2fe11e8f38a44
-
-Patch0:         re-enable_gem_extension_build_1.patch
-Patch1:         re-enable_gem_extension_build_2.patch
-Patch2:         re-enable_gem_extension_build_3.patch
-Patch3:         re-enable_gem_extension_build_4.patch
+Source0:        https://cache.ruby-lang.org/pub/ruby/3.3/%{name}-%{version}.tar.gz
+%define sha512 %{name}=26074009b501fc793d71a74e419f34a6033c9353433919ca74ba2d24a3de432dbb11fd92c2bc285f0e4d951a6d6c74bf5b69a2ab36200c8c26e871746d6e0fc6
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
 BuildRequires:  readline
 BuildRequires:  tzdata
+BuildRequires:  libffi-devel
+BuildRequires:  libyaml-devel
 
 Requires:       ca-certificates
 Requires:       openssl
 Requires:       gmp
+Requires:       libyaml
 
 %description
 The Ruby package contains the Ruby development environment.
@@ -78,6 +76,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.3.0-1
+-   Update to version 3.3.0
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1.2-3
 - Bump version as a part of openssl upgrade
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 3.1.2-2

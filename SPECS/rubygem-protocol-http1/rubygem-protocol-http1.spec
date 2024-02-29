@@ -3,8 +3,8 @@
 %global gem_name protocol-http1
 
 Name:           rubygem-protocol-http1
-Version:        0.14.6
-Release:        2%{?dist}
+Version:        0.18.0
+Release:        1%{?dist}
 Summary:        A low level implementation of the HTTP/1 protocol.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -13,13 +13,14 @@ License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512 %{gem_name}=e9a47a559576e90b3770bac421e043e37c3697f447d2d3d8ee1531be19d8ddc2203f59bfc7baf212fe10cb90656cbdc6470e1061125ab64dd74e84484885ec48
+%define sha512 %{gem_name}=8b557531f0fea005ab4ea0f02f407668ffb95f08f8807200b1e35bc6b0adf18dd6ea73833f78db60df77951f563a2451e71db8be02be1004a31efc88c25eb4d9
 
 BuildRequires: ruby
 
 Requires: rubygem-protocol-http >= 0.5.0, rubygem-protocol-http < 1.0.0
 Requires: rubygem-async-io
 Requires: rubygem-io-event
+Requires: rubygem-fiber-annotation
 Requires: ruby
 
 BuildArch: noarch
@@ -40,6 +41,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.18.0-1
+-   Update to version 0.18.0
 * Sun Oct 22 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.14.6-2
 - Fix requires
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 0.14.6-1

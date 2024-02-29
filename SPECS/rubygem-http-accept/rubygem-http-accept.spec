@@ -3,8 +3,8 @@
 %global gem_name http-accept
 
 Name:           rubygem-http-accept
-Version:        2.2.0
-Release:        2%{?dist}
+Version:        2.2.1
+Release:        1%{?dist}
 Summary:        Parse Accept and Accept-Language HTTP headers.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -13,7 +13,7 @@ License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512 %{gem_name}=f60a9818e79b90c67da8b5c2a5f357b40049aec1809c0809bbf17e1c3d93734cd1367fd4d7d5afba1ae49f6c9817281b6892d6ef9a027d91fc49c46ec943409b
+%define sha512 %{gem_name}=a23f9d84924cfe30f9b4a4ce1779392a44556e2b852b5afad37199f8d724087cfc6e418497acbf24d17393b322ab8854ccb38decf1dcbe60f1e1ad562f350030
 
 BuildRequires:  ruby
 
@@ -37,6 +37,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.1-1
+- Update to version 2.2.1
 * Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2.0-2
 - Fix requires
 * Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1

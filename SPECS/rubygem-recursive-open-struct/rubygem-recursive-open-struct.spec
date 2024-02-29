@@ -4,7 +4,7 @@
 
 Name: rubygem-recursive-open-struct
 Version:        1.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A subclass of OpenStruct that allows nested hashes to be treated in a recursive fashion
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -34,6 +34,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.3-2
+- Bump Version to build with new ruby
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.1.3-1
 -   Automatic Version Bump
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.2-1

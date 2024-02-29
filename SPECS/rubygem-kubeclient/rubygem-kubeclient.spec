@@ -3,8 +3,8 @@
 %global gem_name kubeclient
 
 Name:           rubygem-kubeclient
-Version:        4.10.1
-Release:        2%{?dist}
+Version:        4.11.0
+Release:        1%{?dist}
 Summary:        A client for Kubernetes REST api.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -13,7 +13,7 @@ License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512 %{gem_name}=71b5dcaeb238802ac096282d031c05c89dd7c950a2cc863fb1fa4aef596909c0834b2c53c5a759085e47e2f3929838fe8473ca6debee4e2b74e31095745a8190
+%define sha512 %{gem_name}=f32a9df1a0d56a2b128eb2377191ab61548d3873561eeaf46d6cb271d5b5ba29ca7a9df2dac6ff130c357e41ab2cfe6e307140c9255d2962f5ff5eb89c6ae144
 
 BuildRequires:  ruby
 BuildRequires:  findutils
@@ -33,12 +33,28 @@ BuildArch: noarch
 A client for Kubernetes REST api.
 
 %prep
-%autosetup -p1 -n %{gem_name}-%{version}
+gem unpack %{SOURCE0}
+%autosetup -p1 -D -T -n  %{gem_name}-%{version}
+gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
 
 %build
+gem build %{gem_name}.gemspec
+gem install %{gem_name}-%{version}.gem
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+mkdir -p %{buildroot}%{gemdir}
+mkdir -p %{buildroot}%{gemdir}/cache
+mkdir -p %{buildroot}%{gemdir}/doc
+mkdir -p %{buildroot}%{gemdir}/plugins
+mkdir -p %{buildroot}%{gemdir}/specifications
+mkdir -p %{buildroot}%{gemdir}/gems
+mkdir -p %{buildroot}%{gemdir}/extensions
+cp -pa %{gemdir}/build_info %{buildroot}%{gemdir}/
+cp -pa %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
+cp -pa %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
+cp -pa %{gemdir}/plugins %{buildroot}%{gemdir}/
+cp -pa %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications
+cp -pa %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems
 [ -d %{buildroot}%{_libdir} ] && find %{buildroot}%{_libdir} -type f -perm /022 -exec chmod go-w {} \;
 
 %files
@@ -46,6 +62,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.11.0-1
+-   Update to version 4.11.0
 * Sat Oct 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.10.1-2
 - Fix requires
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 4.10.1-1

@@ -4,7 +4,7 @@
 
 Name: rubygem-http-form_data
 Version:        2.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Utility-belt to build form data request bodies. Provides support for application/x-www-form-urlencoded and multipart/form-data types.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    http-form_data=1ed9996ba39ebebcb3102303cee7dc16de621f3f
+%define sha512  http-form_data=c070126d18a66bd505005d7dae4ece6c751e52593806daf618bbb437b7f9296a5f18aac2e317b3526c9b34adc2f4d9fc7b7bab8cf2a8c8ca67fdc5940969ff21
 BuildRequires:  ruby >= 1.9
 
 BuildArch: noarch
@@ -21,7 +21,7 @@ BuildArch: noarch
 Utility-belt to build form data request bodies. Provides support for application/x-www-form-urlencoded and multipart/form-data types.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -33,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.0-2
+- Bump Version to build with new ruby
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
 -   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.0.3-2

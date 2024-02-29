@@ -4,7 +4,7 @@
 
 Name:           rubygem-multi_json
 Version:        1.15.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Ruby Gem for JSON parsing and encoding
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -33,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.0-2
+- Bump Version to build with new ruby
 * Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.0-1
 - Initial version.
 - Needed by rubygem-fluent-plugin-kubernetes_metadata_filter.

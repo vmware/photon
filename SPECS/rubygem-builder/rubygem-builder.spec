@@ -5,7 +5,7 @@
 Summary:        Builders for MarkUp
 Name:           rubygem-builder
 Version:        3.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 License:        MIT
 Vendor:         VMware, Inc.
@@ -47,6 +47,8 @@ popd
 %{gemdir}
 
 %changelog
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.4-2
+- Bump Version to build with new ruby
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.4-1
 - Automatic Version Bump
 * Wed Mar 22 2017 Chang Lee <changlee@vmware.com> 3.2.3-2

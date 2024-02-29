@@ -1,10 +1,11 @@
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name strptime
+%global ruby_ver 3.3.0
 
 Name: rubygem-strptime
 Version:        0.2.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        a fast strptime/strftime engine which uses VM
 Group:          Development/Languages
 License:        BSD 2
@@ -21,18 +22,37 @@ Provides: rubygem-strptime = %{version}
 a fast strptime/strftime engine which uses VM
 
 %prep
-%autosetup -c -T
+gem unpack %{SOURCE0}
+%autosetup -p1 -D -T -n  %{gem_name}-%{version}
+gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
 
 %build
+gem build %{gem_name}.gemspec
+gem install %{gem_name}-%{version}.gem
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+mkdir -p %{buildroot}%{gemdir}
+mkdir -p %{buildroot}%{gemdir}/cache
+mkdir -p %{buildroot}%{gemdir}/doc
+mkdir -p %{buildroot}%{gemdir}/plugins
+mkdir -p %{buildroot}%{gemdir}/specifications
+mkdir -p %{buildroot}%{gemdir}/gems
+mkdir -p %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
+cp -pa %{gemdir}/build_info %{buildroot}%{gemdir}/
+cp -pa %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
+cp -pa %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
+cp -pa %{gemdir}/plugins %{buildroot}%{gemdir}/
+cp -pa %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications
+cp -pa %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems
+cp -pa %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Wed Feb 28 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-3
+-   Update build command, to build with source code
 *   Fri Nov 25 2022 Shivani Agarwal <shivania2@vmware.com> 0.2.5-2
 -   Version bump to build with new ruby
 *   Sat Sep 26 2020 Gerrit Photon <photon-checkins@vmware.com> 0.2.5-1

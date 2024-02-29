@@ -4,7 +4,7 @@
 
 Name:           rubygem-async-pool
 Version:        0.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A singleplex and multiplex resource pool for implementing robust clients.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -19,6 +19,7 @@ BuildRequires:  ruby
 
 Requires: ruby
 Requires: rubygem-async
+Requires: rubygem-fiber-annotation
 
 BuildArch: noarch
 
@@ -38,5 +39,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.4.0-2
+- Bump Version to build with new ruby
 * Wed Oct 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.4.0-1
 - Initial version. Needed by rubygem-async-http.

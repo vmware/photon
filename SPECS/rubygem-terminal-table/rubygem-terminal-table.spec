@@ -3,7 +3,7 @@
 %define gem_name terminal-table
 Name:           rubygem-terminal-table
 Version:        3.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Simple, feature rich ascii table generation library
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -31,6 +31,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.2-2
+-   Bump Version to build with new ruby
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.2-1
 -   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.8.0-2

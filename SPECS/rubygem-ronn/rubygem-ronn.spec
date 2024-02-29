@@ -4,7 +4,7 @@
 
 Name: rubygem-ronn
 Version:        0.7.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        manual authoring tool
 Group:          Development/Languages
 License:        MIT
@@ -35,6 +35,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.7.3-3
+-   Bump Version to build with new ruby
 *   Fri Nov 25 2022 Shivani Agarwal <shivania2@vmware.com> 0.7.3-2
 -   Version bump to build with new ruby
 *   Thu Sep 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.7.3-1

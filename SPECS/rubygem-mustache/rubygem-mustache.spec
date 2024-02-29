@@ -4,7 +4,7 @@
 
 Name: rubygem-mustache
 Version:        1.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A framework-agnostic way to render logic-free views
 Group:          Development/Languages
 License:        MIT
@@ -33,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.1-3
+-   Bump Version to build with new ruby
 *   Thu Dec 08 2022 Shivani Agarwal <shivania2@vmware.com> 1.1.1-2
 -   Bump version to build with new Ruby
 *   Thu Sep 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.1.1-1

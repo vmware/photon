@@ -5,7 +5,7 @@
 Summary:        Optimist is a commandline option parser for Ruby that just gets out of your way.
 Name:           rubygem-optimist
 Version:        3.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 License:        MIT
 Vendor:         VMware, Inc.
@@ -37,5 +37,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.0-2
+- Bump Version to build with new ruby
 * Mon Oct 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1.0-1
 - Intial version, needed by rubygems-rbvmomi

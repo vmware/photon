@@ -5,7 +5,7 @@
 Summary:        Ruby interface to the VMware vSphere API.
 Name:           rubygem-rbvmomi
 Version:        3.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages
 License:        MIT
 Vendor:         VMware, Inc.
@@ -42,6 +42,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.0-3
+- Bump Version to build with new ruby
 * Mon Oct 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.0-2
 - Fix requires
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.0-1

@@ -3,8 +3,8 @@
 %global gem_name serverengine
 
 Name:           rubygem-serverengine
-Version:        2.3.0
-Release:        2%{?dist}
+Version:        2.3.2
+Release:        1%{?dist}
 Summary:        A framework to implement robust multiprocess servers like Unicorn
 Group:          Development/Languages
 License:        Apache 2
@@ -13,7 +13,7 @@ Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}
 
 Source0: https://rubygems.org/downloads/serverengine-%{version}.gem
-%define sha512 %{gem_name}=0887ac556f9f4faa7d8e25743b2f79694153c0e7e39666c8ea02d0313c17835e0e5697da498ad1b23612ec938d8d9f430cfb9699711479ae088011c5a7fee4c4
+%define sha512 %{gem_name}=9ca32740d4579fb8cbeb613780ed78a9a2e5a72fb427d24aa26a9a805f83de0d2840eb3de6e2e4205a771e1c58bcc4a171869807fdb49ddbb017ceeb8ca08c73
 
 BuildRequires: ruby
 
@@ -36,6 +36,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.2-1
+-   Update to version 2.3.2
 * Mon Oct 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.3.0-2
 - Fix requires
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1

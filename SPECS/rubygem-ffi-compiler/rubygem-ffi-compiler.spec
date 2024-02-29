@@ -4,7 +4,7 @@
 
 Name:           rubygem-ffi-compiler
 Version:        1.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -39,6 +39,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Tue Mar 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.1-2
+- Bump version with rubygem-ffi upgrade
 * Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0.1-1
 - Initial version.
 - Needed by rubygem-http-parser.

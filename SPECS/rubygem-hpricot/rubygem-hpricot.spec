@@ -1,10 +1,11 @@
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name hpricot
+%global ruby_ver 3.3.0
 
 Name: rubygem-hpricot
 Version:        0.8.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        a swift, liberal HTML parser with a fantastic library
 Group:          Development/Library
 License:        MIT
@@ -20,18 +21,37 @@ Hpricot is a fast, flexible HTML parser written in C. It's designed to be
 very accommodating and to have a very helpful library
 
 %prep
-%autosetup -c -T
+gem unpack %{SOURCE0}
+%autosetup -p1 -D -T -n  %{gem_name}-%{version}
+gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
 
 %build
+gem build %{gem_name}.gemspec
+gem install %{gem_name}-%{version}.gem
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+mkdir -p %{buildroot}%{gemdir}
+mkdir -p %{buildroot}%{gemdir}/cache
+mkdir -p %{buildroot}%{gemdir}/doc
+mkdir -p %{buildroot}%{gemdir}/plugins
+mkdir -p %{buildroot}%{gemdir}/specifications
+mkdir -p %{buildroot}%{gemdir}/gems
+mkdir -p %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
+cp -pa %{gemdir}/build_info %{buildroot}%{gemdir}/
+cp -pa %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
+cp -pa %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
+cp -pa %{gemdir}/plugins %{buildroot}%{gemdir}/
+cp -pa %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications
+cp -pa %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems
+cp -pa %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Wed Feb 28 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.6-3
+-   Update build command, to build with source code
 *   Fri Nov 25 2022 Shivani Agarwal <shivania2@vmware.com> 0.8.6-2
 -   Version bump to build with new ruby
 *   Thu Sep 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.8.6-1

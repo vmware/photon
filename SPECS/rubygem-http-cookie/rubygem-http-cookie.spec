@@ -4,7 +4,7 @@
 
 Name: rubygem-http-cookie
 Version:        1.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        HTTP::Cookie is a Ruby library to handle HTTP Cookies based on RFC 6265.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -38,6 +38,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.5-2
+- Bump Version to build with new ruby
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1
 -   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.0.3-2

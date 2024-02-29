@@ -5,7 +5,7 @@
 Name:           rubygem-fluent-plugin-remote_syslog
 Summary:        Fluentd output plugin for remote syslog
 Version:        1.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -34,6 +34,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.0-2
+-   Bump Version to build with new ruby
 *   Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 1.1.0-1
 -   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.0.0-2

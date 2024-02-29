@@ -1,18 +1,19 @@
 %global debug_package   %{nil}
 %global gem_name        nokogiri
 %global gemdir          %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
+%global ruby_ver 3.3.0
 
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
-Version:        1.13.9
-Release:        5%{?dist}
+Version:        1.16.2
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/nokogiri/
 Source0:        https://rubygems.org/downloads/nokogiri-%{version}.gem
-%define sha512  nokogiri=207161fcf74aa1d1550841765268746e72d74b7516b34daf61cc5e7dc6af8fec4866f2734cd53afaf17fc546c92c3709a72f9e72da13071f65465855abf89bfa
+%define sha512  nokogiri=4a973610855ef9ac5cced69cd43cf723273f23dbf14586021ffaa8787b0c54fb3d63f94239636166bdeb8668d6e67d269899ebc1ad0a232d95389aeee8dad642
 BuildRequires:  ruby >= 2.4.0
 BuildRequires:  rubygem-mini_portile2
 BuildRequires:  libxml2-devel
@@ -26,13 +27,31 @@ Requires:       libxslt
 Nokogiri is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features is the ability to search documents via XPath or CSS3 selectors.
 
 %prep
-%autosetup -c -T -p1
+gem unpack %{SOURCE0}
+%autosetup -p1 -D -T -n  %{gem_name}-%{version}
+gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
 
 %build
+gem build %{gem_name}.gemspec
+gem install --bindir %{_bindir}/ %{gem_name}-%{version}.gem
 
 %install
-NOKOGIRI_USE_SYSTEM_LIBRARIES=1 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
-%{_fixperms} %{buildroot}/*
+mkdir -p %{buildroot}%{gemdir}
+mkdir -p %{buildroot}%{gemdir}/bin
+mkdir -p %{buildroot}%{gemdir}/cache
+mkdir -p %{buildroot}%{gemdir}/doc
+mkdir -p %{buildroot}%{gemdir}/plugins
+mkdir -p %{buildroot}%{gemdir}/specifications
+mkdir -p %{buildroot}%{gemdir}/gems
+mkdir -p %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
+cp -pa %{_bindir}/nokogiri %{buildroot}%{gemdir}/bin/
+cp -pa %{gemdir}/build_info %{buildroot}%{gemdir}/
+cp -pa %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
+cp -pa %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
+cp -pa %{gemdir}/plugins %{buildroot}%{gemdir}/
+cp -pa %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications
+cp -pa %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems
+cp -pa %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
 
 %clean
 rm -rf %{buildroot}/*
@@ -42,6 +61,8 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+*   Tue Apr 02 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.2-1
+-   Update to version 1.16.2
 *   Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.13.9-5
 -   Bump version as a part of libxml2 upgrade
 *   Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.13.9-4
