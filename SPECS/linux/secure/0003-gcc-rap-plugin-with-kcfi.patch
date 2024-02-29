@@ -3527,14 +3527,14 @@ index 27a6ba1c0..6f9d5599d 100644
  #define __TYPE_IS_UL(t)	(__TYPE_AS(t, 0UL))
  #define __TYPE_IS_LL(t) (__TYPE_AS(t, 0LL) || __TYPE_AS(t, 0ULL))
 -#define __SC_LONG(t, a) __typeof(__builtin_choose_expr(__TYPE_IS_LL(t), 0LL, 0L)) a
-+#define __SC_TYPE(t) __typeof__(                               \
++#define __SC_TYPE(t, a) __typeof__(                               \
 +       __builtin_choose_expr(                                  \
 +               sizeof(t) > sizeof(int),                        \
 +               (t) 0,                                          \
 +               __builtin_choose_expr(__type_is_unsigned(t), 0UL, 0L)   \
 +       ))
-+#define __SC_LONG(t, a)        __SC_TYPE(t) a
-+#define __SC_WRAP(t, a)        (__SC_TYPE(t)) a
++#define __SC_LONG(t, a)        __SC_TYPE(t, a) a
++#define __SC_WRAP(t, a)        (__SC_TYPE(t, a)) a
  #define __SC_CAST(t, a)	(__force t) a
 -#define __SC_TYPE(t, a)	t
  #define __SC_ARGS(t, a)	a

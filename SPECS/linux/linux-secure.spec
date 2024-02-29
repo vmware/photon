@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.79
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -479,6 +479,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Feb 29 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.79-2
+- Fix SC_TYPE macro in gcc-rap-plugin patch
 * Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.79-1
 - Update to version 6.1.79
 * Fri Feb 23 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.77-2
