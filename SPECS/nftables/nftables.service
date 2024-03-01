@@ -3,6 +3,7 @@ Description=Netfilter Tables
 Documentation=man:nft(8)
 Wants=network-pre.target
 Before=network-pre.target
+Conflicts=iptables.service
 
 [Service]
 Type=oneshot

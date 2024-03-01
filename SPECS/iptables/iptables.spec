@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -21,13 +21,14 @@ Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
 
+Requires: %{name}-libs = %{version}-%{release}
+
 BuildRequires:  jansson-devel
 BuildRequires:  libmnl-devel
 BuildRequires:  libnftnl-devel
 BuildRequires:  systemd-devel
 BuildRequires:  libpcap-devel
 
-Requires:       libpcap
 Requires:       libnftnl
 Requires:       libmnl
 Requires:       jansson
@@ -37,6 +38,15 @@ Requires:       chkconfig
 The next part of this chapter deals with firewalls. The principal
 firewall tool for Linux is Iptables. You will need to install
 Iptables if you intend on using any form of a firewall.
+
+%package libs
+Summary:    Shared libraries provided by iptables
+Requires:   libpcap
+
+Conflicts: %{name} < 1.8.9-3%{?dist}
+
+%description libs
+%{summary}
 
 %package        devel
 Summary:        Header and development files for iptables
@@ -125,14 +135,15 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/xtables.conf
 %{_sbindir}/*
 %{_bindir}/*
-%{_libdir}/*.so.*
 %{_libdir}/%{name}/*
 %{_unitdir}/%{name}.service
 %{_mandir}/man1/*
 %{_mandir}/man8/*
 %{_datadir}/xtables/%{name}.xslt
-%ghost %{_sbindir}/ip{,6}tables{,-save,-restore}
-%ghost %{_sbindir}/{eb,arp}tables{,-save,-restore}
+
+%files libs
+%defattr(-,root,root)
+%{_libdir}/*.so.*
 
 %files devel
 %defattr(-,root,root)
@@ -142,6 +153,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Tue Mar 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.9-3
+- Add libs sub-package
 * Fri Oct 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.9-2
 - Remove dead symlink iptables-xml from libdir
 * Sun Jan 22 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.9-1
