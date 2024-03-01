@@ -1,7 +1,7 @@
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        1.0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -46,7 +46,7 @@ Summary: Shared libs for %{name}
 Requires: libmnl
 Requires: gmp
 Requires: libnftnl
-Requires: iptables
+Requires: iptables-libs
 Requires: jansson
 Requires: libedit
 
@@ -139,6 +139,9 @@ chmod 700 %{buildroot}%{_sysconfdir}/%{name}
 %{python3_sitelib}/%{name}/
 
 %changelog
+* Tue Mar 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.6-3
+- Require iptables-libs
+- nftables.service should conflict with iptables.service
 * Thu Feb 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.6-2
 - Add libs sub package
 - Add preset for nftables service
