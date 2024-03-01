@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    14%{?dist}
+Release:    15%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -46,6 +46,7 @@ BuildRequires:  bison
 Requires:   xz-libs
 Requires:   device-mapper-libs
 Requires:   systemd-udev
+Requires:   grub2-theme
 
 %description
 The GRUB package contains the GRand Unified Bootloader.
@@ -86,6 +87,7 @@ Group:      System Environment/Base
 %ifarch x86_64
 Requires:   shim-signed >= 15.4
 %endif
+Requires:   grub2-theme
 %description efi-image
 GRUB UEFI image signed by vendor key
 
@@ -251,6 +253,9 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Fri Mar 01 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 2.06-15
+- Adding requires 'grub2-theme' so that boot menu screen
+- doesn't comeup scrambled.
 * Sun Feb 04 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-14
 - Fix CVE-2024-1048
 * Wed Oct 25 2023 Ajay Kaher <akaher@vmware.com> 2.06-13

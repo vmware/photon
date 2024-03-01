@@ -1,7 +1,7 @@
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -24,7 +24,6 @@ Requires: findutils
 Requires: gdbm
 Requires: grep
 Requires: grub2-efi-image
-Requires: grub2-theme
 Requires: gzip
 Requires: iana-etc
 Requires: iproute2
@@ -62,6 +61,8 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
+* Fri Mar 01 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 5.0-2
+- 'grub2-theme' will get installed as part of 'grub2-efi-image'
 * Sun May 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-1
 - Set version to major version of photon
 * Mon Jul 18 2022 <okurth@vmware.com> 0.1-7
