@@ -281,6 +281,12 @@ function install_other_packages() {
 # which were renamed will be removed by this method. The replacing package gets
 # installed in install_other_packages()
 function remove_replaced_packages() {
+  # Used for cleaning any leftover paths from replaced packages
+  local -A leftover_path_map=(
+    # identifies apache-tomcat paths used in alternatives
+    [apache-tomcat]="/var/opt/apache-tomcat /usr/share/java/tomcat"
+  )
+  local p=''
   if [ ${#replaced_pkgs_map[@]} -gt 0 ]; then
     echo "Removing following packages which will be replaced by other "\
              "packages -\n${!replaced_pkgs_map[@]}"
@@ -291,6 +297,13 @@ function remove_replaced_packages() {
     fi
     echo "Removal of replaced packages '${!replaced_pkgs_map[@]}' succeeded."
   fi
+  # Remove any leftover paths that replaced packages would have left behind
+  for p in ${!leftover_path_map[@]}; do
+    if [ -n "${replaced_pkgs_map[$p]}" ]; then
+      # when a replaced package is chosen for $p, cleanup is needed
+      ${RM} -rf ${leftover_path_map[$p]}
+    fi
+  done
 }
 
 # Usage: find_extra_erased_pkgs p1 p2 p3 ...

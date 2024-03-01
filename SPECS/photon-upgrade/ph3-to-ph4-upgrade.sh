@@ -6,6 +6,8 @@ read -d "\n" -a deprecated_packages_arr < "$PHOTON_UPGRADE_UTILS_DIR/ph3-to-ph4-
 # This hashtable maps package name changes
 # we do not expect any core packages here
 declare -A replaced_pkgs_map=(
+  [apache-tomcat]="apache-tomcat apache-tomcat9"
+  [apache-tomcat-webapps]="apache-tomcat-webapps apache-tomcat9-webapps"
   [autoconf213]=autoconf
   [gcc-10]=gcc
   [iptraf]=iptraf-ng
@@ -43,7 +45,10 @@ declare -a residual_pkgs_arr=(
 )
 
 # Hash keys are paths in source OS mapping to paths (as values) in target OS
-declare -A conf_path_map=()
+declare -A conf_path_map=(
+  # config of apache-tomcat in 3.0 will be restored for apache-tomcat9 in 4.0
+  [/var/opt/apache-tomcat/conf]=/var/opt/apache-tomcat9/conf
+)
 
 # Take care of post upgrade config changes
 function fix_post_upgrade_config() {

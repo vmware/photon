@@ -10,6 +10,7 @@ read -d "\n" -a deprecated_packages_arr < "$PHOTON_UPGRADE_UTILS_DIR/ph3-to-ph5-
 # we do not expect any core packages here
 declare -A replaced_pkgs_map=(
   [apache-tomcat]="apache-tomcat10 apache-tomcat9"
+  [apache-tomcat-webapps]="apache-tomcat10-webapps apache-tomcat9-webapps"
   [autoconf213]=autoconf
   [gcc-10]=gcc
   [iptraf]=iptraf-ng
