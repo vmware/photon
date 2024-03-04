@@ -24,8 +24,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.79
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.81
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -36,7 +36,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=a8d0940c683744c713403304de8970b55beda7cfd339c00f7888236982b68d6577ea9f11f700f0181b66771e3daca2c41dbedce201662d36e9372bda11e10c2e
+%define sha512 linux=019eca1bdd822f1ed65f6f7f73ab101c7402d61e612c88cf9afe10eae96edca4a8839cd85f92b7062de62dbb8840898e668a40d2d8d8cda611d4dc533355052c
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -166,15 +166,15 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix CVE-2023-0597
 Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
-# Fix CVE-2023-2176
-Patch105: RDMA-core-Refactor-rdma_bind_addr.patch
-Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 # Fix CVE-2024-23307
 Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 # Fix CVE-2024-22099
 Patch108: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 # Fix CVE-2023-39191
 %include %{SOURCE42}
+
+# Fix CVE-2024-26584
+Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -823,6 +823,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Mar 06 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-1
+- Update to version 6.1.81, patched CVE-2024-26584
 * Wed Mar 06 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.79-2
 - Fixes CVE-2024-23307 and CVE-2024-22099
 * Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.79-1

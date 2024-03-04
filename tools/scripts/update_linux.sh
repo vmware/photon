@@ -1,6 +1,7 @@
 #! /bin/sh
 
-specs="linux-api-headers/linux-api-headers.spec linux/linux.spec linux/linux-esx.spec linux/linux-secure.spec linux/linux-rt.spec"
+# linux-api-headers has been excluded from the list of specs to be updated
+specs="linux/linux.spec linux/linux-esx.spec linux/linux-secure.spec linux/linux-rt.spec"
 
 tarball_url=`curl -s https://www.kernel.org  | grep -Eo 'https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.[0-9]*.tar.xz' | uniq`
 tarball=$(basename $tarball_url)

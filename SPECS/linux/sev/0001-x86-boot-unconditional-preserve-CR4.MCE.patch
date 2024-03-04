@@ -9,13 +9,16 @@ As per commit 77a512e35db7, CONFIG_INTEL_TDX_GUEST selects CONFIG_X86_MCE only
 to preserve CR4.MCE while enabling CR4.PAE. Preserving CR4.MCE should be unconditional
 and CONFIG_INTEL_TDX_GUEST should not select CONFIG_X86_MCE.
 
+commit e2fa53a04cc722aaaedbd91cd414d170067fb09d is preserving CR4.MCE
+without any condition checks
+
 Signed-off-by: Ajay Kaher <akaher@vmware.com>
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Srish Srinivasan <srish.srinivasan@broadcom.com>
 ---
  arch/x86/Kconfig                   | 1 -
- arch/x86/boot/compressed/head_64.S | 4 ----
  arch/x86/kernel/head_64.S          | 4 ----
- 3 files changed, 9 deletions(-)
+ 2 files changed, 5 deletions(-)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
 index b3d5706..8de87f4 100644
@@ -29,28 +32,6 @@ index b3d5706..8de87f4 100644
  	help
  	  Support running as a guest under Intel TDX.  Without this support,
  	  the guest kernel can not boot or run under TDX.
-diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
-index d33f060..d0c4238 100644
---- a/arch/x86/boot/compressed/head_64.S
-+++ b/arch/x86/boot/compressed/head_64.S
-@@ -655,7 +655,6 @@ SYM_CODE_START(trampoline_32bit_src)
- 1:	popl	%edx
- 	popl	%ecx
- 
--#ifdef CONFIG_X86_MCE
- 	/*
- 	 * Preserve CR4.MCE if the kernel will enable #MC support.
- 	 * Clearing MCE may fault in some environments (that also force #MC
-@@ -665,9 +664,6 @@ SYM_CODE_START(trampoline_32bit_src)
- 	 */
- 	movl	%cr4, %eax
- 	andl	$X86_CR4_MCE, %eax
--#else
--	movl	$0, %eax
--#endif
- 
- 	/* Enable PAE and LA57 (if required) paging modes */
- 	orl	$X86_CR4_PAE, %eax
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
 index 998cdb1..98d9868 100644
 --- a/arch/x86/kernel/head_64.S
@@ -75,4 +56,3 @@ index 998cdb1..98d9868 100644
  	orl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
 -- 
 2.7.4
-
