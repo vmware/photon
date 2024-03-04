@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        6.1.79
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        6.1.81
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -25,7 +25,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=a8d0940c683744c713403304de8970b55beda7cfd339c00f7888236982b68d6577ea9f11f700f0181b66771e3daca2c41dbedce201662d36e9372bda11e10c2e
+%define sha512 linux=019eca1bdd822f1ed65f6f7f73ab101c7402d61e612c88cf9afe10eae96edca4a8839cd85f92b7062de62dbb8840898e668a40d2d8d8cda611d4dc533355052c
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -120,10 +120,6 @@ Patch32: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch33: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
-# Fix proc_sched_rt01 ltp testcase failure
-Patch34: 0001-sched-rt-Disallow-writing-invalid-values-to-sched_rt.patch
-Patch35: 0001-sched-rt-sysctl_sched_rr_timeslice-show-default-time.patch
-
 # VMW: [40..49]
 %ifarch x86_64
 Patch40: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -152,15 +148,15 @@ Patch100: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix CVE-2023-0597
 Patch102: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
-# Fix CVE-2023-2176
-Patch105: RDMA-core-Refactor-rdma_bind_addr.patch
-Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 # Fix CVE-2023-39191
 %include %{SOURCE40}
 # Fix CVE-2024-23307
 Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 # Fix CVE-2024-22099
 Patch108: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
+
+# Fix CVE-2024-26584
+Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -489,6 +485,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-1
+- Update to version 6.1.81, patched CVE-2024-26584
 * Mon Apr 29 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.79-3
 - Fixes CVE-2024-23307 and CVE-2024-22099
 * Mon Apr 29 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.79-2
