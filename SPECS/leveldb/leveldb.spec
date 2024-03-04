@@ -1,7 +1,7 @@
 Summary:        A fast and lightweight key/value database library by Google
 Name:           leveldb
 Version:        1.23
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD
 URL:            https://github.com/google/leveldb
 Group:          Development/Libraries/C and C++
@@ -78,6 +78,8 @@ ctest -V %{?_smp_mflags}
 %{_libdir}/cmake/%{name}
 
 %changelog
+* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.23-6
+- Bump version as a part of sqlite upgrade to v3.43.2
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 1.23-5
 - bump release as part of sqlite update
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.23-4

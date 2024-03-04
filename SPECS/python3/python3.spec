@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -301,6 +301,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.11.7-3
+- Bump version as a part of sqlite upgrade to v3.43.2
 * Wed Feb 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.7-2
 - Seperate pip & setuptools
 - Use pip & setuptools whl from system

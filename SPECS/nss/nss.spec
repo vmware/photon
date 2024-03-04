@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.89.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MPLv2.0
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
@@ -128,6 +128,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.89.1-2
+- Bump version as a part of sqlite upgrade to v3.43.2
 * Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.89.1-1
 - Upgrade to v3.89.1
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.78-3

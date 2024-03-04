@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.20.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -99,6 +99,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.20.1-10
+- Bump version as a part of sqlite upgrade to v3.43.2
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 0.20.1-9
 - Bump version as a part of libxml2 upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.20.1-8

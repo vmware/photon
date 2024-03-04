@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2023.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -162,6 +162,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2023.10-4
+- Bump version as a part of sqlite upgrade to v3.43.2
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2023.10-3
 - Bump version as a part of libxml2 upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.10-2
