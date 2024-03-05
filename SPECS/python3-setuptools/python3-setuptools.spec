@@ -7,7 +7,7 @@ Name:           python3-setuptools
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        69.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -24,7 +24,6 @@ BuildRequires: python3-xml
 
 Requires:       python3
 Requires:       python3-xml
-Requires:       %{name}-wheel = %{version}-%{release}
 
 BuildArch:      noarch
 
@@ -70,5 +69,7 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Wed Mar 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 69.0.3-2
+- Remove wheel dependency
 * Wed Feb 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 69.0.3-1
 - Initial addition. Seperated from python3 spec.
