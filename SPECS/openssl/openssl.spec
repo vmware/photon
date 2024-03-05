@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -34,6 +34,7 @@ Source7: %{fips_provider_srcname}.tar.xz
 %endif
 
 Patch0: openssl-cnf.patch
+Patch1: CVE-2023-50782.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -271,6 +272,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Mon Mar 04 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.13-2
+- Fix CVE-2023-50782
 * Thu Feb 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.13-1
 - Update to openssl-3.0.13
 * Tue Jan 30 2024 Mukul Sikka <msikka@vmware.com> 3.0.9-10

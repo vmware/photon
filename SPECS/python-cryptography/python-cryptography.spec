@@ -1,7 +1,7 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        41.0.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -26,7 +26,7 @@ BuildRequires:  python3-pip
 BuildRequires:  curl-devel
 %endif
 
-Requires:       openssl
+Requires:       openssl >= 3.0.13-2
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-cffi
@@ -68,6 +68,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Mon Mar 04 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 41.0.7-2
+- Bump up to use fixed openssl, Fixes CVE-2023-50782
 * Tue Dec 19 2023 Prashant S Chauhan <psinghchauha@vmware.com> 41.0.7-1
 - Update to v41.0.7
 * Mon Oct 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 38.0.1-1
