@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.306
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.307
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=0b7f2b0321d59f94574db6acf0485029a9e7521058eebe1835af7f898e4a446ae25881dbad11e78e5c6bcef58988494325a2827824b7152a0e43edc878126640
+%define sha512 linux=2be40ae405a61feb1f942e0d4c63f2ca13d4a4bbadd64afd1e0a372c5a515135a3f16ae440d77061231cc4f2d9fc9421a7249adc15c50db564796f40414e5967
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -108,14 +108,8 @@ Patch49: 0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 #Fix for CVE-2022-1055
 Patch50: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 
-# Fix CVE-2024-0340
-Patch51: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
-
 #Fix for CVE-2024-0565
 Patch52: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
-
-# Fix for CVE-2024-0607
-Patch53: 0001-netfilter-nf_tables-fix-pointer-math-issue-in.patch
 
 # 9p patches
 Patch54: 0001-fs-9p-Add-opt_metaonly-option.patch
@@ -494,9 +488,6 @@ Patch713: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 #Fix for CVE-2023-39197
 Patch714: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
 
-#Fix CVE-2024-1086
-Patch715: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
-
 #Fix CVE-2023-51779
 Patch716: 0001-Bluetooth-af_bluetooth-Fix-Use-After-Free-in-bt_sock.patch
 
@@ -859,6 +850,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Wed Mar 06 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.307-1
+- Update to version 4.19.307
 * Fri Feb 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-2
 - Fix CVE-2023-51779
 * Tue Feb 06 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-1

@@ -1,0 +1,105 @@
+From afb33dfbd8eca938d5312562ece895e0a71c1b0a Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 19 Aug 2022 11:24:45 +0200
+Subject: [PATCH 346/353] workqueue: Use rcuwait for wq_manager_wait
+
+Upstream commit d8bb65ab70f702531aaaa11d9710f9450078e295
+
+The workqueue code has it's internal spinlock (pool::lock) and also
+implicit spinlock usage in the wq_manager waitqueue. These spinlocks
+are converted to 'sleeping' spinlocks on a RT-kernel.
+
+Workqueue functions can be invoked from contexts which are truly atomic
+even on a PREEMPT_RT enabled kernel. Taking sleeping locks from such
+contexts is forbidden.
+
+pool::lock can be converted to a raw spinlock as the lock held times
+are short. But the workqueue manager waitqueue is handled inside of
+pool::lock held regions which again violates the lock nesting rules
+of raw and regular spinlocks.
+
+The manager waitqueue has no special requirements like custom wakeup
+callbacks or mass wakeups. While it does not use exclusive wait mode
+explicitly there is no strict requirement to queue the waiters in a
+particular order as there is only one waiter at a time.
+
+This allows to replace the waitqueue with rcuwait which solves the
+locking problem because rcuwait relies on existing locking.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+[wagi: Updated context as v4.19-rt was using swait]
+Signed-off-by: Daniel Wagner <wagi@monom.org>
+---
+ kernel/workqueue.c | 24 ++++++++++++++++++++----
+ 1 file changed, 20 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 0f2450425879..0c7033deaef2 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -50,6 +50,7 @@
+ #include <linux/sched/isolation.h>
+ #include <linux/nmi.h>
+ #include <linux/kvm_para.h>
++#include <linux/rcuwait.h>
+ 
+ #include "workqueue_internal.h"
+ 
+@@ -299,7 +300,8 @@ static struct workqueue_attrs *wq_update_unbound_numa_attrs_buf;
+ static DEFINE_MUTEX(wq_pool_mutex);	/* protects pools and workqueues list */
+ static DEFINE_MUTEX(wq_pool_attach_mutex); /* protects worker attach/detach */
+ static DEFINE_RAW_SPINLOCK(wq_mayday_lock);	/* protects wq->maydays list */
+-static DECLARE_SWAIT_QUEUE_HEAD(wq_manager_wait); /* wait for manager to go away */
++/* wait for manager to go away */
++static struct rcuwait manager_wait = __RCUWAIT_INITIALIZER(manager_wait);
+ 
+ static LIST_HEAD(workqueues);		/* PR: list of all workqueues */
+ static bool workqueue_freezing;		/* PL: have wqs started freezing? */
+@@ -2026,7 +2028,7 @@ static bool manage_workers(struct worker *worker)
+ 
+ 	pool->manager = NULL;
+ 	pool->flags &= ~POOL_MANAGER_ACTIVE;
+-	swake_up_one(&wq_manager_wait);
++	rcuwait_wake_up(&manager_wait);
+ 	return true;
+ }
+ 
+@@ -3345,6 +3347,18 @@ static void rcu_free_pool(struct rcu_head *rcu)
+ 	kfree(pool);
+ }
+ 
++/* This returns with the lock held on success (pool manager is inactive). */
++static bool wq_manager_inactive(struct worker_pool *pool)
++{
++	raw_spin_lock_irq(&pool->lock);
++
++	if (pool->flags & POOL_MANAGER_ACTIVE) {
++		raw_spin_unlock_irq(&pool->lock);
++		return false;
++	}
++	return true;
++}
++
+ /**
+  * put_unbound_pool - put a worker_pool
+  * @pool: worker_pool to put
+@@ -3380,10 +3394,12 @@ static void put_unbound_pool(struct worker_pool *pool)
+ 	 * Become the manager and destroy all workers.  This prevents
+ 	 * @pool's workers from blocking on attach_mutex.  We're the last
+ 	 * manager and @pool gets freed with the flag set.
++	 * Because of how wq_manager_inactive() works, we will hold the
++	 * spinlock after a successful wait.
+ 	 */
+ 	raw_spin_lock_irq(&pool->lock);
+-	swait_event_lock_irq(wq_manager_wait,
+-			    !(pool->flags & POOL_MANAGER_ACTIVE), pool->lock);
++	rcuwait_wait_event(&manager_wait, wq_manager_inactive(pool),
++			   TASK_UNINTERRUPTIBLE);
+ 	pool->flags |= POOL_MANAGER_ACTIVE;
+ 
+ 	while ((worker = first_idle_worker(pool)))
+-- 
+2.44.0
+

@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.306
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.307
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=0b7f2b0321d59f94574db6acf0485029a9e7521058eebe1835af7f898e4a446ae25881dbad11e78e5c6bcef58988494325a2827824b7152a0e43edc878126640
+%define sha512 linux=2be40ae405a61feb1f942e0d4c63f2ca13d4a4bbadd64afd1e0a372c5a515135a3f16ae440d77061231cc4f2d9fc9421a7249adc15c50db564796f40414e5967
 
 %ifarch x86_64
 Source1: config
@@ -108,8 +108,6 @@ Patch34: 0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch35: 0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
 # Fix for CVE-2019-12381
 Patch36: 0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
-# Fix for CVE-2024-0607
-Patch37: 0001-netfilter-nf_tables-fix-pointer-math-issue-in.patch
 # Fix for CVE-2019-12378
 Patch38: 0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
@@ -125,9 +123,6 @@ Patch45: secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.
 #Fix for CVE-2019-19338
 Patch47: 0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch48: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
-
-# Fix CVE-2024-0340
-Patch49: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 
 #Fix for CVE-2024-0565
 Patch50: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
@@ -581,9 +576,6 @@ Patch1566: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
 #Fix for CVE-2023-39197
 Patch1567: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
-
-#Fix CVE-2024-1086
-Patch1568: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
 
 #Fix CVE-2023-51779
 Patch1569: 0001-Bluetooth-af_bluetooth-Fix-Use-After-Free-in-bt_sock.patch
@@ -1178,6 +1170,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Mar 06 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.307-1
+- Update to version 4.19.307
 * Fri Feb 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-2
 - Fix CVE-2023-51779
 * Tue Feb 06 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-1

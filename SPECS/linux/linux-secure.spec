@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.306
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.307
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=0b7f2b0321d59f94574db6acf0485029a9e7521058eebe1835af7f898e4a446ae25881dbad11e78e5c6bcef58988494325a2827824b7152a0e43edc878126640
+%define sha512 linux=2be40ae405a61feb1f942e0d4c63f2ca13d4a4bbadd64afd1e0a372c5a515135a3f16ae440d77061231cc4f2d9fc9421a7249adc15c50db564796f40414e5967
 
 Source1: config-secure
 Source2: initramfs.trigger
@@ -78,12 +78,8 @@ Patch42: 0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 #Fix for CVE-2019-19338
 Patch43: 0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch44: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
-# Fix CVE-2024-0340
-Patch45: 0001-vhost_use_kzalloc_instead_of_kmalloc.patch
 #Fix for CVE-2024-0565
 Patch46: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
-# Fix for CVE-2024-0607
-Patch47: 0001-netfilter-nf_tables-fix-pointer-math-issue-in.patch
 # Fix for CVE-2020-16119
 Patch57: 0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch58: 0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
@@ -281,9 +277,6 @@ Patch208: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
 #Fix for CVE-2023-39197
 Patch209: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
-
-#Fix CVE-2024-1086
-Patch210: 0001-netfilter-nf_tables-reject-QUEUE-DROP-verdict-parame.patch
 
 #Fix CVE-2023-51779
 Patch211: 0001-Bluetooth-af_bluetooth-Fix-Use-After-Free-in-bt_sock.patch
@@ -555,6 +548,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Mar 06 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.307-1
+- Update to version 4.19.307
 * Fri Feb 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-2
 - Fix CVE-2023-51779
 * Tue Feb 06 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-1

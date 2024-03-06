@@ -7,6 +7,13 @@ af_socket mediation did not make it into 4.17 so add remaining out
 of tree patch
 
 Signed-off-by: John Johansen <john.johansen@canonical.com>
+
+mimic changes to unix_state_double_lock from net/unix/af_unix.c after the introduction of a
+distinct enum unix_socket_lock_class and associated changes in unix_state_lock_nested through 
+the upstream commit:
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=linux-4.19.y&id=875f31aaa67e306098befa5e798a049075910fa7
+
+Signed-off-by: Srish Srinivasan <srish.srinivasan@broadcom.com>
 ---
  security/apparmor/Makefile          |   3 +-
  security/apparmor/af_unix.c         | 652 ++++++++++++++++++++++++++++
@@ -39,10 +46,10 @@ index ff23fcfefe19..fad407f6f62c 100644
  clean-files := capability_names.h rlim_names.h net_names.h
 diff --git a/security/apparmor/af_unix.c b/security/apparmor/af_unix.c
 new file mode 100644
-index 000000000000..54b3796f63d0
+index 000000000..54b3796f63d0
 --- /dev/null
 +++ b/security/apparmor/af_unix.c
-@@ -0,0 +1,652 @@
+@@ -0,0 +1,650 @@
 +/*
 + * AppArmor security module
 + *
@@ -623,13 +630,11 @@ index 000000000000..54b3796f63d0
 +		unix_state_lock(sk1);
 +		return;
 +	}
-+	if (sk1 < sk2) {
-+		unix_state_lock(sk1);
-+		unix_state_lock_nested(sk2);
-+	} else {
-+		unix_state_lock(sk2);
-+		unix_state_lock_nested(sk1);
-+	}
++	if (sk1 > sk2)
++		swap(sk1, sk2);
++
++	unix_state_lock(sk1);
++	unix_state_lock_nested(sk2, U_LOCK_SECOND);
 +}
 +
 +static void unix_state_double_unlock(struct sock *sk1, struct sock *sk2)
