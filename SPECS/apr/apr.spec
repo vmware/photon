@@ -4,7 +4,7 @@
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.7.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org
 Group:          System Environment/Libraries
@@ -17,6 +17,8 @@ Source0: http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
 %if 0%{?with_check}
 Patch0: apr-skip-getservbyname-test.patch
 %endif
+
+Requires:       util-linux-libs
 
 %description
 The Apache Portable Runtime.
@@ -66,6 +68,8 @@ It contains the libraries and header files to create applications.
 %{_libdir}/pkgconfig
 
 %changelog
+* Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.7.4-3
+- Add util-linux-libs package under Requires section
 * Fri Aug 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.4-2
 - Fix devel package requires
 * Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 1.7.4-1
