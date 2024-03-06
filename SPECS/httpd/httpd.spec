@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.58
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
 Group:          Applications/System
@@ -198,6 +198,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.4.58-3
+- Bump version as a part of apr upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.58-2
 - Bump version as a part of openssl upgrade
 * Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.58-1
