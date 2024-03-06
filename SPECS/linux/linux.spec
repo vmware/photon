@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.79
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -188,6 +188,10 @@ Patch105: RDMA-core-Refactor-rdma_bind_addr.patch
 Patch106: RDMA-core-Update-CMA-destination-address-on-rdma_resolve_addr.patch
 # Fix CVE-2023-39191
 %include %{SOURCE50}
+# Fix CVE-2024-23307
+Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
+# Fix CVE-2024-22099
+Patch108: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -844,6 +848,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.79-2
+- Fixes CVE-2024-23307 and CVE-2024-22099
 * Mon Apr 29 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.79-1
 - Update to version 6.1.79
 * Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.77-1
