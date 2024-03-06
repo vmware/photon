@@ -1,10 +1,11 @@
 %define njs_ver     0.8.0
 %define nginx_user  %{name}
+%define headers_more_nginx_module_ver 0.37
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.25.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -17,7 +18,10 @@ Source0: http://nginx.org/download/nginx-%{version}.tar.gz
 Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
 %define sha512 %{name}-njs=5e5fd3b0aba9d1a0b47207081e59d577cbd3db41e141cfa529526a778bbcd4fec1cd4dacaa1dc63ee07868ccf35f4d4cc465abff831bb03d128b0b1f1b04bb28
 
-Source2: %{name}.service
+Source2: https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/headers-more-nginx-module-%{headers_more_nginx_module_ver}.tar.gz
+%define sha512 headers-more-nginx-module=0cc2fffe506194d439e3669644d41b7943e2c3cffa3483eb70b92067930b358d506a14646eff8362b191a11c624db29f6b53d830876929dcb4ce1c9d7b2bc40d
+
+Source3: %{name}.service
 
 Patch0: CVE-2023-44487.patch
 
@@ -39,7 +43,10 @@ Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server.
 
 %prep
-%autosetup -p1 -a0 -a1
+# Using autosetup is not feasible
+%setup -q -a1 -a2
+
+%patch -P0 -p1
 
 %build
 sh ./configure \
@@ -51,6 +58,7 @@ sh ./configure \
     --error-log-path=/var/log/%{name}/error.log \
     --http-log-path=/var/log/%{name}/access.log \
     --add-module=njs-%{njs_ver}/%{name} \
+    --add-dynamic-module=./headers-more-nginx-module-%{headers_more_nginx_module_ver} \
     --with-http_ssl_module \
     --with-pcre \
     --with-ipv6 \
@@ -71,7 +79,7 @@ install -vdm755 %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}%{_var}/log
 install -vdm755 %{buildroot}%{_var}/opt/%{name}/log
 ln -sfrv %{buildroot}%{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
-install -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+install -p -m 0644 %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
 
 %clean
 rm -rf %{buildroot}
@@ -108,6 +116,7 @@ getent passwd %{nginx_user} > /dev/null || \
 %config(noreplace) %{_sysconfdir}/%{name}/scgi_params.default
 %config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params
 %config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params.default
+%{_sysconfdir}/%{name}/modules/ngx_http_headers_more_filter_module.so
 %{_sysconfdir}/%{name}/win-utf
 %{_sysconfdir}/%{name}/html/*
 %{_sbindir}/*
@@ -116,6 +125,8 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Wed Mar 06 2024 Harinadh D <hdommaraju@vmware.com> 1.25.2-3
+- Add headers-more-nginx-module
 * Thu Oct 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25.2-2
 - Fix CVE-2023-44487
 * Mon Feb 20 2023 Harinadh D <hdommaraju@vmware.com> 1.22.0-4
