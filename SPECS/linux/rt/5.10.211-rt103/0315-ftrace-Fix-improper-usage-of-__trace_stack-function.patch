@@ -1,0 +1,49 @@
+From f1de46e4925de8b522245e54a53457f67872a889 Mon Sep 17 00:00:00 2001
+From: Anand Je Saipureddy <s.anandje1@gmail.com>
+Date: Sat, 23 Jul 2022 12:19:43 +0530
+Subject: [PATCH 315/323] ftrace: Fix improper usage of __trace_stack()
+ function.
+
+In kernel/trace/trace_events_trigger.c --> stacktrace_trigger() -->
+__trace_stack() is not defined as per the function definition.
+
+With commit edbaaa13a660
+("tracing: Merge irqflags + preemt counter, add RT bits")
+the irqflags(flags) and preemption counter(preempt_count()) are
+now should be evaluated early by tracing_gen_ctx().
+
+This patch replaces the irqflags and preemption counter
+with tracing_gen_ctx().
+
+Fixes: 5e8446e3820c ("tracing: Dump stacktrace trigger to the corresponding instance")
+Link: https://lore.kernel.org/r/20220723064943.16532-1-s.anandje1@gmail.com
+Signed-off-by: Anand Je Saipureddy <s.anandje1@gmail.com>
+Reviewed-by: Corey Minyard <cminyard@mvista.com>
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ kernel/trace/trace_events_trigger.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/trace/trace_events_trigger.c b/kernel/trace/trace_events_trigger.c
+index 7f25cc48bc503..64abc66b82e5b 100644
+--- a/kernel/trace/trace_events_trigger.c
++++ b/kernel/trace/trace_events_trigger.c
+@@ -1222,12 +1222,10 @@ stacktrace_trigger(struct event_trigger_data *data, void *rec,
+ 		   struct ring_buffer_event *event)
+ {
+ 	struct trace_event_file *file = data->private_data;
+-	unsigned long flags;
+ 
+-	if (file) {
+-		local_save_flags(flags);
+-		__trace_stack(file->tr, STACK_SKIP, preempt_count());
+-	} else
++	if (file)
++		__trace_stack(file->tr, tracing_gen_ctx(), STACK_SKIP);
++	else
+ 		trace_dump_stack(STACK_SKIP);
+ }
+ 
+-- 
+2.44.0
+

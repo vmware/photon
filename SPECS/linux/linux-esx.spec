@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.210
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.212
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=7049825b8c19d8e6b16c75b590abd1c22124e633f885bd0df76a7650c413baf7a8023441d2c803df881c15b3ec67758482fc1ea59bf33d413a136d6fc6c34a43
+%define sha512 linux=e430cc7a37ef77c5f8979e33865e3f5ad0c02270977d52da5bc153daedd30af8791ea6e2377d7e91ffffed6bb4a418e47f6401d09d97c567a9f4635afb3ed73b
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -109,10 +109,6 @@ Patch38: 0001-vmxnet3-do-not-reschedule-napi-for-rx-processing.patch
 Patch40: 0002-vmxnet3-use-correct-intrConf-reference-when-using-ex.patch
 Patch41: 0001-vmxnet3-move-rss-code-block-under-eop-descriptor.patch
 Patch42: 0001-vmxnet3-use-gro-callback-when-UPT-is-enabled.patch
-
-# Patch from the same series that resolved CVE-2024-0565
-Patch43: 0001-smb-client-fix-potential-OOBs-in-smb2_parse_contexts.patch
-Patch44: 0001-smb-client-fix-parsing-of-SMB3.1.1-POSIX-create-cont.patch
 
 # Expose Photon kernel macros to identify kernel flavor and version
 Patch50: 0001-kbuild-simplify-access-to-the-kernel-s-version.patch
@@ -228,17 +224,19 @@ Patch139: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 #Fix CVE-2023-22995
 Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 
-#Fix CVE-2024-0565
-Patch142: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
-
-# Fix CVE-2024-0841
-Patch143: 0001-fs-hugetlb-fix-NULL-pointer-dereference-in-hugetlbs_.patch
+#Fix build error due to upstream commit ba27d1a80871eb8dbeddf34ec7d396c149cbb8d7
+Patch141: add-missing-include-to-paravirt.patch
 
 # Fix CVE-2024-23307
 Patch144: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 
 # Fix CVE-2024-22099
 Patch145: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
+
+# Fix CVE-2024-26584
+Patch146: 0001-tls-rx-simplify-async-wait.patch
+Patch147: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
+Patch148: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -401,7 +399,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M97
 
 # CVE
-%autopatch -p1 -m100 -M145
+%autopatch -p1 -m100 -M148
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -620,6 +618,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 11 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-1
+- Update to version 5.10.212, patched CVE-2024-26584
 * Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  5.10.210-4
 - Fixes CVE-2024-23307 and CVE-2024-22099
 * Thu Mar 07 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 5.10.210-3

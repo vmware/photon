@@ -1,0 +1,79 @@
+From 37943f047bfb88ba4dfc7a522563f57c86d088a0 Mon Sep 17 00:00:00 2001
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Fri, 8 Apr 2022 11:31:27 -0700
+Subject: [PATCH] tls: rx: simplify async wait
+
+Since we are protected from async completions by decrypt_compl_lock
+we can drop the async_notify and reinit the completion before we
+start waiting.
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/net/tls.h |  1 -
+ net/tls/tls_sw.c  | 14 ++------------
+ 2 files changed, 2 insertions(+), 13 deletions(-)
+
+diff --git a/include/net/tls.h b/include/net/tls.h
+index a01c264e5f15..6fe78361c8c8 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -152,7 +152,6 @@ struct tls_sw_context_rx {
+ 	atomic_t decrypt_pending;
+ 	/* protect crypto_wait with decrypt_pending*/
+ 	spinlock_t decrypt_compl_lock;
+-	bool async_notify;
+ };
+ 
+ struct tls_record_info {
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index ecf9a3832798..003f7c178cde 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -173,7 +173,6 @@ static void tls_decrypt_done(struct crypto_async_request *req, int err)
+ 	struct scatterlist *sg;
+ 	struct sk_buff *skb;
+ 	unsigned int pages;
+-	int pending;
+ 
+ 	skb = (struct sk_buff *)req->data;
+ 	tls_ctx = tls_get_ctx(skb->sk);
+@@ -221,9 +220,7 @@ static void tls_decrypt_done(struct crypto_async_request *req, int err)
+ 	kfree(aead_req);
+ 
+ 	spin_lock_bh(&ctx->decrypt_compl_lock);
+-	pending = atomic_dec_return(&ctx->decrypt_pending);
+-
+-	if (!pending && ctx->async_notify)
++	if (!atomic_dec_return(&ctx->decrypt_pending))
+ 		complete(&ctx->async_wait.completion);
+ 	spin_unlock_bh(&ctx->decrypt_compl_lock);
+ }
+@@ -1940,7 +1937,7 @@ int tls_sw_recvmsg(struct sock *sk,
+ 	if (num_async) {
+ 		/* Wait for all previously submitted records to be decrypted */
+ 		spin_lock_bh(&ctx->decrypt_compl_lock);
+-		ctx->async_notify = true;
++		reinit_completion(&ctx->async_wait.completion);
+ 		pending = atomic_read(&ctx->decrypt_pending);
+ 		spin_unlock_bh(&ctx->decrypt_compl_lock);
+ 		if (pending) {
+@@ -1952,15 +1949,8 @@ int tls_sw_recvmsg(struct sock *sk,
+ 				decrypted = 0;
+ 				goto end;
+ 			}
+-		} else {
+-			reinit_completion(&ctx->async_wait.completion);
+ 		}
+ 
+-		/* There can be no concurrent accesses, since we have no
+-		 * pending decrypt operations
+-		 */
+-		WRITE_ONCE(ctx->async_notify, false);
+-
+ 		/* Drain records from the rx_list & copy if required */
+ 		if (is_peek || is_kvec)
+ 			err = process_rx_list(ctx, msg, &control, &cmsg, copied,
+-- 
+2.34.1
+

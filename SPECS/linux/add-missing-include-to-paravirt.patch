@@ -1,0 +1,40 @@
+From: "Borislav Petkov (AMD)" <bp@alien8.de>
+
+The Link tag has all the details but basically due to missing upstream
+commits, the header which contains __text_gen_insn() is not in the
+includes in paravirt.c, leading to:
+
+  arch/x86/kernel/paravirt.c: In function 'paravirt_patch_call':
+  arch/x86/kernel/paravirt.c:65:9: error: implicit declaration of function '__text_gen_insn' \
+  [-Werror=implicit-function-declaration]
+   65 |         __text_gen_insn(insn_buff, CALL_INSN_OPCODE,
+      |         ^~~~~~~~~~~~~~~
+
+Add the missing include.
+
+Reported-by: Omar Sandoval <osandov@osandov.com>
+Signed-off-by: Borislav Petkov (AMD) <bp@alien8.de>
+Link: https://lore.kernel.org/r/ZeYXvd1-rVkPGvvW@telecaster
+
+Fix build error due to upstream commit ba27d1a80871eb8dbeddf34ec7d396c149cbb8d7
+Refer: https://lore.kernel.org/stable/20240305112711.GAZecBj5TMaQDSz6Ym@fat_crate.local/
+
+Signed-off-by: Srish Srinivasan <srish.srinivasan@broadcom.com>
+---
+ arch/x86/kernel/paravirt.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
+index 5bea8d93883a..f0e4ad8595ca 100644
+--- a/arch/x86/kernel/paravirt.c
++++ b/arch/x86/kernel/paravirt.c
+@@ -31,6 +31,7 @@
+ #include <asm/special_insns.h>
+ #include <asm/tlb.h>
+ #include <asm/io_bitmap.h>
++#include <asm/text-patching.h>
+ 
+ /*
+  * nop stub, which must not clobber anything *including the stack* to
+-- 
+2.43.0

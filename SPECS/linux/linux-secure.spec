@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.210
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        5.10.212
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=7049825b8c19d8e6b16c75b590abd1c22124e633f885bd0df76a7650c413baf7a8023441d2c803df881c15b3ec67758482fc1ea59bf33d413a136d6fc6c34a43
+%define sha512 linux=e430cc7a37ef77c5f8979e33865e3f5ad0c02270977d52da5bc153daedd30af8791ea6e2377d7e91ffffed6bb4a418e47f6401d09d97c567a9f4635afb3ed73b
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -104,10 +104,6 @@ Patch44: 0002-kbuild-replace-if-A-A-B-with-or-A-B.patch
 Patch45: 0003-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch46: 0004-linux-secure-Makefile-Add-kernel-flavor-info-to-the-.patch
 
-# Patch from the same series that resolved CVE-2024-0565
-Patch47: 0001-smb-client-fix-potential-OOBs-in-smb2_parse_contexts.patch
-Patch48: 0001-smb-client-fix-parsing-of-SMB3.1.1-POSIX-create-cont.patch
-
 # VMW: [55..60]
 %ifarch x86_64
 Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -182,17 +178,19 @@ Patch139: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 #Fix CVE-2023-22995
 Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 
-#Fix CVE-2024-0565
-Patch142: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
-
-# Fix CVE-2024-0841
-Patch143: 0001-fs-hugetlb-fix-NULL-pointer-dereference-in-hugetlbs_.patch
+#Fix build error due to upstream commit ba27d1a80871eb8dbeddf34ec7d396c149cbb8d7
+Patch141: add-missing-include-to-paravirt.patch
 
 # Fix CVE-2024-23307
 Patch144: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 
 # Fix CVE-2024-22099
 Patch145: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
+
+# Fix CVE-2024-26584
+Patch146: 0001-tls-rx-simplify-async-wait.patch
+Patch147: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
+Patch148: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -321,7 +319,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE
-%autopatch -p1 -m100 -M145
+%autopatch -p1 -m100 -M148
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -466,6 +464,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 11 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-1
+- Update to version 5.10.212, patched CVE-2024-26584
 * Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  5.10.210-3
 - Fixes CVE-2024-23307 and CVE-2024-22099
 * Wed Feb 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-2
