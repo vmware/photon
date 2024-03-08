@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.210
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -30,11 +30,6 @@ Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
 
 %ifarch x86_64
-# Intel i915 baskport
-%define i915_backports RHEL88_23WW28.5_647.21_23.5.19_230406.22
-Source5:        https://github.com/intel-gpu/intel-gpu-i915-backports/archive/refs/tags/%{i915_backports}.tar.gz
-%define sha512 RHEL88=1b9a13c18631f3a5f245fa226f56cefaeb70af7631eeceda707b3daafbb6650f5f6840f02fc86186241b7d9b17e70495d3e0f342e271f9817e0411facdf113b7
-
 %define i40e_version 2.22.18
 Source6:        https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
@@ -157,8 +152,6 @@ Patch77: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 Patch78: 0009-esx-vmxnet3-software-timestamping.patch
 %endif
 
-Patch79: linux-esx-Initialize-PAT-even-if-MTRR-is-not-set.patch
-
 #TARFS
 Patch80:    0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 
@@ -178,7 +171,9 @@ Patch92: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
 %ifarch x86_64
 # Driver VM patchset
 Patch95: 0001-Adding-SBX-kernel-driver.patch
+# Required for out of tree Intel i915 support
 Patch96: 0001-Add-vmap_pfn-without-enabling-i915.patch
+Patch97: linux-esx-Initialize-PAT-even-if-MTRR-is-not-set.patch
 %endif
 
 # CVE:
@@ -321,13 +316,6 @@ Patch1542:       0012-check-exclusive-vectors-when-freeing-interrupt1.patch
 Patch1543:       0013-release-notification-bitmap-inn-error-path.patch
 Patch1544:       0014-add-support-for-arm64.patch
 
-%ifarch x86_64
-# DriverVM patches for i915 backport
-Patch2000:       0001-i915-backport-headless.patch
-Patch2001:       0002-Do-not-compile-backported-intel-gtt.patch
-Patch2002:       0003-Disable-drm_panel-and-modeset_helper.patch
-%endif
-
 BuildArch:     x86_64
 
 BuildRequires: bc
@@ -387,8 +375,6 @@ The Linux package contains the Linux kernel doc files
 %setup -q -n linux-%{version}
 %ifarch x86_64
 # Using autosetup is not feasible
-%setup -q -T -D -b 5 -n intel-gpu-i915-backports-%{i915_backports}
-# Using autosetup is not feasible
 %setup -q -T -D -b 6 -n linux-%{version}
 # Using autosetup is not feasible
 %setup -q -T -D -b 7 -n linux-%{version}
@@ -406,7 +392,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m50 -M59
 
 # -esx
-%autopatch -p1 -m60 -M96
+%autopatch -p1 -m60 -M97
 
 # CVE
 %autopatch -p1 -m100 -M144
@@ -455,18 +441,6 @@ popd
 # vmci
 %autopatch -p1 -m1521 -M1544
 
-%ifarch x86_64
-# Patches for i915 backport
-pushd ../intel-gpu-i915-backports-%{i915_backports}
-%autopatch -p1 -m2000 -M2002
-
-# Disable non relevant makefile logic as it causes make install failure.
-sed -i '/depmod/d' Makefile.real
-sed -i '/compress_modules/d' Makefile.real
-sed -i '/update-initramfs/d' Makefile.real
-popd
-%endif
-
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
@@ -502,18 +476,6 @@ make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64
 %endif
 
 %ifarch x86_64
-# build i915 backport modules
-bldroot="${PWD}"
-pushd ../intel-gpu-i915-backports-%{i915_backports}
-LEX=flex YACC=bison make KLIB_BUILD=${bldroot} defconfig-drm
-LEX=flex YACC=bison make %{?_smp_mflags} KLIB_BUILD=${bldroot}
-# Check for core .ko presence as it can be silently skipped
-# if CONFIG_ dependencies are not met.
-test -f drivers/gpu/drm/i915/i915.ko -a \
-     -f drivers/gpu/drm/drm.ko -a \
-     -f drivers/dma-buf/dmabuf.ko
-popd
-
 # build i40e module
 bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
@@ -543,12 +505,6 @@ install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
-# install i915 backport modules
-bldroot="${PWD}"
-pushd ../intel-gpu-i915-backports-%{i915_backports}
-LEX=flex YACC=bison make %{?_smp_mflags} KLIB_BUILD=${bldroot} INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
-
 # The auxiliary.ko kernel module is a common dependency for i40e, iavf
 # and ice drivers.  Install it only once, along with the iavf driver
 # and re-use it in the ice and i40e drivers.
@@ -658,6 +614,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Mar 07 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 5.10.210-3
+- Remove Intel i915 backported out of tree device driver.
 * Wed Feb 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-2
 - Fix CVE-2024-0841
 * Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-1
