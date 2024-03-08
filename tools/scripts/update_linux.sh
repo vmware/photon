@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # linux-api-headers has been excluded from the list of specs to be updated
-specs="linux/linux.spec linux/linux-esx.spec linux/linux-secure.spec linux/linux-aws.spec linux/linux-rt.spec"
+specs="linux/linux.spec linux/linux-esx.spec linux/linux-secure.spec linux/linux-aws.spec"
 
 tarball_url=`curl -k -s https://www.kernel.org  | grep -Eo 'https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.10.[0-9]*.tar.xz' | uniq`
 tarball=$(basename $tarball_url)

@@ -56,7 +56,6 @@ targetDict = {
         "k8s-docker-images",
         "all-images",
         "minimal-iso",
-        "rt-iso",
     ],
     "rpmBuild": [
         "packages",
@@ -293,7 +292,7 @@ class Utilities:
         )
         if list_json_files:
             runShellCmd(
-                f"cp {Build_Config.dataDir}/build_install_options_all.json {Build_Config.dataDir}/build_install_options_minimal.json {Build_Config.dataDir}/build_install_options_rt.json {Build_Config.generatedDataPath}"
+                f"cp {Build_Config.dataDir}/build_install_options_all.json {Build_Config.dataDir}/build_install_options_minimal.json"
             )
 
         for json_file in list_json_files:
@@ -742,22 +741,6 @@ class RpmBuildTarget:
             BuildEnvironmentSetup.packages_cached()
         check_prerequesite["packages-minimal"] = True
 
-    def packages_rt(self):
-        if check_prerequesite["packages-rt"]:
-            return
-
-        if not configdict["additional-path"]["photon-cache-path"]:
-            Builder.buildPackagesInJson(
-                os.path.join(Build_Config.dataDir, "packages_rt.json"),
-                Build_Config.buildThreads,
-                Build_Config.pkgBuildType,
-                Build_Config.pkgInfoFile,
-                self.logger,
-            )
-        else:
-            BuildEnvironmentSetup.packages_cached()
-        check_prerequesite["packages-rt"] = True
-
     def packages_initrd(self):
         if check_prerequesite["packages-initrd"]:
             return
@@ -1082,18 +1065,6 @@ class BuildImage:
                 f"{Build_Config.generatedDataPath}/build_install_options_minimal.json"
             )
 
-        elif imgName == "rt-iso":
-            self.iso_path = f"{Build_Config.stagePath}/photon-rt-{constants.releaseVersion}-{constants.buildNumber}.iso"
-            self.debug_iso_path = self.iso_path.rpartition(".")[0] + ".debug.iso"
-            if "SKIP_DEBUG_ISO" in os.environ:
-                self.debug_iso_path = None
-            self.package_list_file = (
-                f"{Build_Config.dataDir}/build_install_options_rt.json"
-            )
-            self.pkg_to_be_copied_conf_file = (
-                f"{Build_Config.generatedDataPath}/build_install_options_rt.json"
-            )
-
         else:
             self.pkg_to_be_copied_conf_file = Build_Config.pkgToBeCopiedConfFile
             self.package_list_file = Build_Config.packageListFile
@@ -1108,12 +1079,10 @@ class BuildImage:
         BuildEnvironmentSetup.photon_stage()
         if self.img_name == "iso":
             rpmBuildTarget.packages()
-        elif self.img_name == "rt-iso":
-            rpmBuildTarget.packages_rt()
         else:
             rpmBuildTarget.packages_minimal()
 
-        if self.img_name in ["rt-iso", "minimal-iso"]:
+        if self.img_name in ["minimal-iso"]:
             rpmBuildTarget.packages_initrd()
 
         RpmBuildTarget.create_repo()
@@ -1570,7 +1539,7 @@ def main():
         attr = None
         if targetName in targetDict["image"]:
             buildImage = BuildImage(targetName)
-            if targetName in ["iso", "src-iso", "minimal-iso", "rt-iso"]:
+            if targetName in ["iso", "src-iso", "minimal-iso"]:
                 buildImage.set_Iso_Parameters(targetName)
                 buildImage.build_iso()
             elif targetName in buildImage.ova_cloud_images + ["rpi", "ls1012afrwy"]:

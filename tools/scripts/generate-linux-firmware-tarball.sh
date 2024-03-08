@@ -10,7 +10,7 @@ git clone https://github.com/RPi-Distro/firmware-nonfree.git --branch buster --d
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-regdb.git --depth=1
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git --depth=1
 # ICE driver firmware
-# Version should be same as provided in linux/linux-rt spec
+# Version should be same as provided in linux spec
 ice_version=$(curl --compressed "https://github.com/vmware/photon/blob/$(git branch | grep '^\*' | cut -d' ' -f2)/SPECS/linux/linux.spec" 2> /dev/null | grep -m 1 'ice_version' | cut -d'<' -f4 | cut -d' ' -f3)
 wget https://sourceforge.net/projects/e1000/files/ice%20stable/$ice_version/ice-$ice_version.tar.gz
 tar -xpf ice-$ice_version.tar.gz

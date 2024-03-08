@@ -110,7 +110,7 @@ use File::Find;
 
     7. Created a source tree for a package with all its patches applied:
 
-        lazyspec.pl --make-tree SPEC/linux/linux-rt.spec
+        lazyspec.pl --make-tree SPEC/linux/linux.spec
 
 =head1 BUGS
 

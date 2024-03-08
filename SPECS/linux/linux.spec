@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.216
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -436,7 +436,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %package tools
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
-Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version} or linux-rt = %{version})
+Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version})
 Requires:       audit elfutils-libelf binutils-libs
 Requires:       xz-libs slang
 Requires:       python3 traceevent-plugins
@@ -913,6 +913,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu May 16 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.216-2
+- Remove linux-rt from requires of linux-tools
 * Tue May 07 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.216-1
 - Update to version 5.10.216
 * Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.214-3

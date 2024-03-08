@@ -8,7 +8,6 @@ The following list contains the different Linux kernel flavours available:
 - `linux` - A generic kernel designed to run everywhere and support everything.
 - `linux-esx` - Optimized to run only on VMware hypervisor (ESXi, WS, Fusion). It has minimal set of device drivers to support VMware virtual devices. `uname -r` displays `Linux` . For additional features switch to the generic flavour.
 - `linux-secure` - Security hardened variant of the generic kernel. `uname -r` displays `-secure` suffix.
-- `linux-rt` - This is a Photon Real Time kernel. `uname -r` displays `-rt` suffix.
 - `linux-aws` - Optimized for AWS hypervisor kernel. `uname -r` displays `-aws` suffix.
 
 To see the version of kernel installed, run the following command:
