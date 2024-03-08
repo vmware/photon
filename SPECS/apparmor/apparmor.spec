@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        3.1.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -10,6 +10,8 @@ Group:          Productivity/Security
 
 Source0: https://launchpad.net/%{name}/3.1/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=e4fa8e0985472c00d3b68044f4150659787cf15b384b901af32b5aba3f0b2839f33bfe0b0675bf8ea7a1f5727152756a276c75b1dec383a33b92b0a1b8615a11
+
+Patch0: 0001-fix-syslog-ng-profile.patch
 
 BuildRequires: perl
 BuildRequires: python3-devel
@@ -191,7 +193,6 @@ done
 mv %{buildroot}/lib/* %{buildroot}%{_libdir}
 mv %{buildroot}/sbin/* %{buildroot}%{_sbindir}
 
-%if 0%{?with_check}
 %check
 pip3 install notify2 dbus-python psutil
 ln -sfv %{_bindir}/pyflakes %{_bindir}/pyflakes3
@@ -199,9 +200,8 @@ ln -sfv %{_bindir}/pyflakes %{_bindir}/pyflakes3
 for target in libraries/libapparmor \
               binutils \
               utils; do
-make check %{?_smp_mflags} -C ${target}
+%make_build check -C ${target}
 done
-%endif
 
 %post -n libapparmor
 /sbin/ldconfig
@@ -335,6 +335,8 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Wed Mar 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.2-11
+- sbin.syslog-ng profile fix
 * Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.1.2-10
 - Bump version as a part of apr upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1.2-9
