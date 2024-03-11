@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -66,6 +66,17 @@ Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 %description server
 This provides the ssh server daemons, utilities, configuration and service files.
+
+%package socket
+Summary: sshd.socket units
+Requires:   %{name}-server = %{version}-%{release}
+
+Conflicts: %{name}-server < 9.3p2-4%{?dist}
+
+%description socket
+Users should install this only if they want to use socket mechanism
+for starting ssh sessions, slightly inefficient compared to ssh.service
+mechanism.
 
 %prep
 %autosetup -p1
@@ -155,8 +166,6 @@ rm -rf %{buildroot}/*
 %dir %attr(0711,root,root) %{privsep_path}
 %{_unitdir}/sshd-keygen.service
 %{_unitdir}/sshd.service
-%{_unitdir}/sshd.socket
-%{_unitdir}/sshd@.service
 %{_sbindir}/sshd
 %{_libexecdir}/sftp-server
 %{_mandir}/man5/sshd_config.5.gz
@@ -194,7 +203,14 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
+%files socket
+%defattr(-,root,root)
+%{_unitdir}/sshd.socket
+%{_unitdir}/sshd@.service
+
 %changelog
+* Mon Mar 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-4
+- Introduce socket sub package
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-3
 - Bump version as a part of openssl upgrade
 * Tue Nov 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-2
