@@ -1,0 +1,56 @@
+From 2535b848fa0f42ddff3e5255cf5e742c9b77bb26 Mon Sep 17 00:00:00 2001
+From: Yuxuan Hu <20373622@buaa.edu.cn>
+Date: Wed, 3 Jan 2024 17:10:43 +0800
+Subject: [PATCH] Bluetooth: rfcomm: Fix null-ptr-deref in
+ rfcomm_check_security
+
+[upstream commit 2535b848fa0f42ddff3e5255cf5e742c9b77bb26]
+
+During our fuzz testing of the connection and disconnection process at the
+RFCOMM layer, we discovered this bug. By comparing the packets from a
+normal connection and disconnection process with the testcase that
+triggered a KASAN report. We analyzed the cause of this bug as follows:
+
+1. In the packets captured during a normal connection, the host sends a
+`Read Encryption Key Size` type of `HCI_CMD` packet
+(Command Opcode: 0x1408) to the controller to inquire the length of
+encryption key.After receiving this packet, the controller immediately
+replies with a Command Completepacket (Event Code: 0x0e) to return the
+Encryption Key Size.
+
+2. In our fuzz test case, the timing of the controller's response to this
+packet was delayed to an unexpected point: after the RFCOMM and L2CAP
+layers had disconnected but before the HCI layer had disconnected.
+
+3. After receiving the Encryption Key Size Response at the time described
+in point 2, the host still called the rfcomm_check_security function.
+However, by this time `struct l2cap_conn *conn = l2cap_pi(sk)->chan->conn;`
+had already been released, and when the function executed
+`return hci_conn_security(conn->hcon, d->sec_level, auth_type, d->out);`,
+specifically when accessing `conn->hcon`, a null-ptr-deref error occurred.
+
+To fix this bug, check if `sk->sk_state` is BT_CLOSED before calling
+rfcomm_recv_frame in rfcomm_process_rx.
+
+Signed-off-by: Yuxuan Hu <20373622@buaa.edu.cn>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+---
+ net/bluetooth/rfcomm/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
+index 053ef8f25fae..1d34d8497033 100644
+--- a/net/bluetooth/rfcomm/core.c
++++ b/net/bluetooth/rfcomm/core.c
+@@ -1941,7 +1941,7 @@ static struct rfcomm_session *rfcomm_process_rx(struct rfcomm_session *s)
+ 	/* Get data directly from socket receive queue without copying it. */
+ 	while ((skb = skb_dequeue(&sk->sk_receive_queue))) {
+ 		skb_orphan(skb);
+-		if (!skb_linearize(skb)) {
++		if (!skb_linearize(skb) && sk->sk_state != BT_CLOSED) {
+ 			s = rfcomm_recv_frame(s, skb);
+ 			if (!s)
+ 				break;
+-- 
+2.25.1
+

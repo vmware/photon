@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.307
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -362,6 +362,12 @@ Patch708: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
 
 #Fix CVE-2023-51779
 Patch710: 0001-Bluetooth-af_bluetooth-Fix-Use-After-Free-in-bt_sock.patch
+
+# Fix CVE-2024-23307
+Patch711: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
+
+# Fix CVE-2024-22099
+Patch712: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -746,7 +752,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M641
 
 # CVE Fixes
-%autopatch -p1 -m700 -M710
+%autopatch -p1 -m700 -M712
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1251,6 +1257,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  4.19.307-2
+- Fixes CVE-2024-23307 and CVE-2024-22099
 * Wed Mar 06 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.307-1
 - Update to version 4.19.307, rt133
 * Fri Feb 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.306-2
