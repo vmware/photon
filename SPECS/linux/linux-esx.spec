@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.210
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -234,6 +234,12 @@ Patch142: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
 # Fix CVE-2024-0841
 Patch143: 0001-fs-hugetlb-fix-NULL-pointer-dereference-in-hugetlbs_.patch
 
+# Fix CVE-2024-23307
+Patch144: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
+
+# Fix CVE-2024-22099
+Patch145: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
+
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -395,7 +401,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M97
 
 # CVE
-%autopatch -p1 -m100 -M144
+%autopatch -p1 -m100 -M145
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -614,6 +620,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  5.10.210-4
+- Fixes CVE-2024-23307 and CVE-2024-22099
 * Thu Mar 07 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 5.10.210-3
 - Remove Intel i915 backported out of tree device driver.
 * Wed Feb 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-2

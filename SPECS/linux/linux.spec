@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.210
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -224,6 +224,12 @@ Patch141: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
 
 # Fix CVE-2024-0841
 Patch142: 0001-fs-hugetlb-fix-NULL-pointer-dereference-in-hugetlbs_.patch
+
+# Fix CVE-2024-23307
+Patch143: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
+
+# Fix CVE-2024-22099
+Patch144: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -485,7 +491,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M143
+%autopatch -p1 -m100 -M144
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m150 -M151
@@ -917,6 +923,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  5.10.210-3
+- Fixes CVE-2024-23307 and CVE-2024-22099
 * Wed Feb 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-2
 - Fix CVE-2024-0841
 * Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-1

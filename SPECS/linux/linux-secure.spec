@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.210
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -188,6 +188,12 @@ Patch142: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
 # Fix CVE-2024-0841
 Patch143: 0001-fs-hugetlb-fix-NULL-pointer-dereference-in-hugetlbs_.patch
 
+# Fix CVE-2024-23307
+Patch144: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
+
+# Fix CVE-2024-22099
+Patch145: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -315,7 +321,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE
-%autopatch -p1 -m100 -M144
+%autopatch -p1 -m100 -M145
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -460,6 +466,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  5.10.210-3
+- Fixes CVE-2024-23307 and CVE-2024-22099
 * Wed Feb 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-2
 - Fix CVE-2024-0841
 * Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-1

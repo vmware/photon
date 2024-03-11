@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.210
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -175,6 +175,12 @@ Patch141: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
 
 # Fix CVE-2024-0841
 Patch142: 0001-fs-hugetlb-fix-NULL-pointer-dereference-in-hugetlbs_.patch
+
+# Fix CVE-2024-23307
+Patch143: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
+
+# Fix CVE-2024-22099
+Patch144: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch150: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
@@ -518,6 +524,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  5.10.210-3
+- Fixes CVE-2024-23307 and CVE-2024-22099
 * Wed Feb 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-2
 - Fix CVE-2024-0841
 * Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.210-1
