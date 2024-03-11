@@ -1,10 +1,10 @@
 %define privsep_path %{_sharedstatedir}/sshd
-%global sshd_services sshd.service sshd.socket sshd-keygen.service
+%global sshd_services sshd.service sshd-keygen.service
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.9p1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -72,6 +72,17 @@ Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 %description server
 This provides the ssh server daemons, utilities, configuration and service files.
 
+%package socket
+Summary: sshd.socket units
+Requires:   %{name}-server = %{version}-%{release}
+
+Conflicts: %{name}-server < 8.9p1-7%{?dist}
+
+%description socket
+Users should install this only if they want to use socket mechanism
+for starting ssh sessions, slightly inefficient compared to ssh.service
+mechanism.
+
 %prep
 %autosetup -p1
 
@@ -118,7 +129,7 @@ install -m644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
 
 %check
 if ! getent passwd sshd >/dev/null; then
-   useradd sshd
+  useradd sshd
 fi
 if [ ! -d %{privsep_path} ]; then
    mkdir %{privsep_path}
@@ -160,8 +171,6 @@ rm -rf %{buildroot}/*
 %attr(700,root,sys) %{privsep_path}
 %{_unitdir}/sshd-keygen.service
 %{_unitdir}/sshd.service
-%{_unitdir}/sshd.socket
-%{_unitdir}/sshd@.service
 %{_sbindir}/sshd
 %{_libexecdir}/sftp-server
 %{_mandir}/man5/sshd_config.5.gz
@@ -198,7 +207,14 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
+%files socket
+%defattr(-,root,root)
+%{_unitdir}/sshd.socket
+%{_unitdir}/sshd@.service
+
 %changelog
+* Mon Mar 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-7
+- Introduce socket sub package
 * Tue Jan 09 2024 Shivani Agarwal <shivania2@vmware.com> 8.9p1-6
 - Fix CVE-2023-51384
 * Tue Dec 26 2023 Mukul Sikka <msikka@vmware.com> 8.9p1-5
