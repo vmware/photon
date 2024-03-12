@@ -394,31 +394,6 @@ class SPECS(object):
             SPECS()
         return SPECS.__instance.specData[arch]
 
-    @staticmethod
-    def addKernelRPMacro(spec_path_name):
-        rpm_macro = {}
-
-        # adding kernelversion rpm macro
-        spec = SpecParser(spec_path_name, constants.buildArch)
-        defPkg = spec.packages.get('default')
-        kernelversion = defPkg.version
-
-        # adding kernelrelease rpm macro
-        kernelrelease = defPkg.release
-        kernelrelease_comp  = kernelrelease.split('.')
-        if re.fullmatch(r'rc\d+', kernelrelease_comp[0]):
-            kernelrelease_comp.pop(0)
-
-        # adding kernelsubrelease rpm macro
-        a, b, c = kernelversion.split(".")
-        kernelsubrelease = ('%02d%02d%03d%03d' % (int(a),
-                                                  int(b), int(c),
-                                                  int(kernelrelease_comp[0])))
-        if kernelsubrelease:
-            kernelsubrelease = f".{kernelsubrelease}"
-
-        return [kernelversion, kernelrelease, kernelsubrelease]
-
     def __init__(self):
         """Virtually private constructor."""
         if SPECS.__instance is not None:
@@ -428,18 +403,6 @@ class SPECS(object):
         self.initialize()
 
     def initialize(self):
-        kver_to_rpm_macros_dict = {
-            "linux-rt": ["LINUX_RT_KERNEL_VERSION", "LINUX_RT_KERNEL_RELEASE", "linuxrt_kernelsubrelease"],
-        }
-
-        kernel_spec_dir=f"{constants.specPath}/linux"
-
-        for spec, macros in kver_to_rpm_macros_dict.items():
-            spec_fpath = f"{kernel_spec_dir}/{spec}.spec"
-            rpm_macros_ver = self.addKernelRPMacro(spec_fpath)
-            for key, val in zip(macros, rpm_macros_ver):
-                constants.addMacro(key, val)
-
         # Full parsing
         self.specData[constants.buildArch] = SpecData(
             constants.buildArch, constants.logPath, constants.specPath

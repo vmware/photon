@@ -53,20 +53,6 @@ Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux
 Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
 
-%ifarch x86_64
-%define i40e_version 2.22.18
-Source10:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha512 i40e=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
-
-%define iavf_version 4.8.2
-Source11:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha512 iavf=5406b86e61f6528adfd7bc3a5f330cec8bb3b4d6c67395961cc6ab78ec3bd325c3a8655b8f42bf56fb47c62a85fb7dbb0c1aa3ecb6fa069b21acb682f6f578cf
-
-%define ice_version 1.11.14
-Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha512 ice=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
-%endif
-
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
@@ -262,17 +248,6 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 
-%ifarch x86_64
-# Patches for i40e v2.22.18 driver [1500..1509]
-Patch1500: i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
-Patch1501: i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
-
-# Patches for iavf v4.8.2 driver [1510..1519]
-Patch1511: iavf-Makefile-added-alias-for-i40evf.patch
-%endif
-
-# Patches for ice v1.11.14 driver [1520..1529]
-
 BuildRequires:  bc
 BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
@@ -385,14 +360,6 @@ manipulation of eBPF programs and maps.
 %setup -q -T -D -b 3 -n linux-%{version}
 # Using autosetup is not feasible
 %setup -q -T -D -b 4 -n linux-%{version}
-%ifarch x86_64
-# Using autosetup is not feasible
-%setup -q -T -D -b 10 -n linux-%{version}
-# Using autosetup is not feasible
-%setup -q -T -D -b 11 -n linux-%{version}
-# Using autosetup is not feasible
-%setup -q -T -D -b 13 -n linux-%{version}
-%endif
 
 %if 0%{?fips}
 # Using autosetup is not feasible
@@ -451,23 +418,6 @@ manipulation of eBPF programs and maps.
 pushd ../amzn-drivers-efa_linux_%{efa_version}
 %autopatch -p1 -m1400 -M1409
 popd
-
-%ifarch x86_64
-# Patches for i40e driver
-pushd ../i40e-%{i40e_version}
-%autopatch -p1 -m1500 -M1509
-popd
-
-# Patches for iavf driver
-pushd ../iavf-%{iavf_version}
-%autopatch -p1 -m1510 -M1519
-popd
-
-# Patches for ice driver
-pushd ../ice-%{ice_version}
-%autopatch -p1 -m1520 -M1529
-popd
-%endif
 
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
@@ -568,27 +518,6 @@ cd build
 %cmake_build
 popd
 
-%ifarch x86_64
-# build i40e module
-bldroot="${PWD}"
-pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
-popd
-
-# build iavf module
-pushd ../iavf-%{iavf_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
-popd
-
-# build ice module
-pushd ../ice-%{ice_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
-popd
-%endif
-
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
@@ -610,24 +539,6 @@ make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modu
 popd
 
 %ifarch x86_64
-# install i40e module
-pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
-popd
-
-# install iavf module
-pushd ../iavf-%{iavf_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
-popd
-
-# install ice module
-pushd ../ice-%{ice_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
-    INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
-popd
-
 # Verify for build-id match
 # We observe different IDs sometimes
 # TODO: debug it
@@ -734,23 +645,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %ifarch aarch64
 %exclude %{_modulesdir}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
-%ifarch x86_64
-# iavf.conf is used to just blacklist the deprecated i40evf
-# and create alias of i40evf to iavf.
-# By default iavf is used for VF driver.
-# This file creates conflict with other flavour of linux
-# thus excluding this file from packaging
-%exclude %{_sysconfdir}/modprobe.d/iavf.conf
-# ICE driver firmware files are packaged in linux-firmware
-%exclude /lib/firmware/updates/intel/ice
-%endif
 
 %config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %files docs
 %defattr(-,root,root)
 %{_docdir}/linux-%{uname_r}/*
-# For out-of-tree Intel i40e driver.
 %ifarch x86_64
 %{_mandir}/*
 %endif
