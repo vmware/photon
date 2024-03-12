@@ -675,7 +675,7 @@ class SpecParser(object):
         specObj.specFile = self.specfile
         defPkg = self.packages.get("default")
         specObj.name = defPkg.name
-        specObj.version = defPkg.version
+        specObj.version = f"{defPkg.version}-{defPkg.release}"
         specObj.release = defPkg.release
         specObj.checksums = defPkg.checksums
         specObj.license = defPkg.license

@@ -225,9 +225,8 @@ class PackageUtils(object):
 
         if version == "*":
             version = SPECS.getData(arch).getHighestVersion(package)
-        release = SPECS.getData(arch).getRelease(package, version)
         buildarch = SPECS.getData(arch).getBuildArch(package, version)
-        filename = f"{package}-{version}-{release}.{buildarch}.rpm"
+        filename = f"{package}-{version}.{buildarch}.rpm"
 
         fullpath = f"{constants.rpmPath}/{buildarch}/{filename}"
         if os.path.isfile(fullpath):
@@ -245,8 +244,7 @@ class PackageUtils(object):
     def findSourceRPMFile(self, package, version="*"):
         if version == "*":
             version = SPECS.getData().getHighestVersion(package)
-        release = SPECS.getData().getRelease(package, version)
-        filename = f"{package}-{version}-{release}.src.rpm"
+        filename = f"{package}-{version}.src.rpm"
 
         fullpath = f"{constants.sourceRpmPath}/{filename}"
         if os.path.isfile(fullpath):
@@ -259,8 +257,7 @@ class PackageUtils(object):
 
         if version == "*":
             version = SPECS.getData(arch).getHighestVersion(package)
-        release = SPECS.getData(arch).getRelease(package, version)
-        filename = f"{package}-debuginfo-{version}-{release}.{arch}.rpm"
+        filename = f"{package}-debuginfo-{version}.{arch}.rpm"
 
         fullpath = f"{constants.rpmPath}/{arch}/{filename}"
         if os.path.isfile(fullpath):

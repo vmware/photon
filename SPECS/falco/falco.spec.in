@@ -1,13 +1,11 @@
 %global security_hardening none
-
 %define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
-
 %define _modulesdir /lib/modules/%{uname_r}
 
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.36.2
-Release:        2%{?kernelsubrelease}%{?dist}
+Release:        3%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://falco.org
 Group:          Applications/System
@@ -94,6 +92,7 @@ export KERNELDIR="%{_modulesdir}/build"
 %{cmake_install}
 mkdir -p %{buildroot}%{_modulesdir}/extra
 install -vm 644 %{__cmake_builddir}/driver/%{name}.ko %{buildroot}%{_modulesdir}/extra
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
 
 %clean
 rm -rf %{buildroot}/*
@@ -107,10 +106,11 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_usrsrc}/*
+%exclude %{_usrsrc}/debug
+%{_usrsrc}/%{name}*
 %{_sysconfdir}/%{name}
 %{_datadir}/%{name}
-%{_modulesdir}/extra/%{name}.ko
+%{_modulesdir}/extra/%{name}.ko.xz
 %{_sysconfdir}/falcoctl/falcoctl.yaml
 
 %files devel
@@ -120,17 +120,21 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Tue Jan 09 2024 Ankit Jain <ankitja@vmware.com> 0.36.2-3
+- compress .ko and exclude debug from main package
 * Thu Dec 14 2023 Piyush Gupta <gpiyush@vmware.com> 0.36.2-2
 - Bump up version to compile with new go
 * Thu Nov 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.36.2-1
 - Upgrade to v0.36.2
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-11
-- Bump version as a part of openssl upgrade
-* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 0.32.2-10
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-12
+- Bump version as a part of protobuf upgrade
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 0.32.2-11
 - Bump up version to compile with new go
-* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 0.32.2-9
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 0.32.2-10
 - Bump up version to compile with new go
-* Wed Aug 09 2023 Mukul Sikka <msikka@vmware.com> 0.32.2-8
+* Wed Aug 23 2023 Mukul Sikka <msikka@vmware.com> 0.32.2-9
+- Bump version as a part of grpc upgrade
+* Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 0.32.2-8
 - Bump version as a part of grpc upgrade
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 0.32.2-7
 - Bump up version to compile with new go
@@ -140,7 +144,7 @@ rm -rf %{buildroot}/*
 - Bump version as a part of lua upgrade
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-4
 - Bump version as a part of protobuf upgrade
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 0.32.2-3
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 0.32.2-3
 - Bump version as a part of ncurses upgrade to v6.4
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-2
 - Bump version as a part of zlib upgrade

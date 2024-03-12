@@ -680,6 +680,8 @@ class RpmBuildTarget:
 
         CheckTools.check_spec_files()
 
+        runBashCmd("./tools/scripts/generate-specs-from-templates.sh")
+
         Utilities(None).generate_dep_lists()
 
         if constants.buildArch != constants.targetArch:

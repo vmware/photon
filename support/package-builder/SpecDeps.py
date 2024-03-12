@@ -177,13 +177,12 @@ class SpecDependencyGenerator(object):
                     base_package, version
                 )
                 for package in listRPMPackages:
-                    release = SPECS.getData(arch).getRelease(package, version)
                     buildarch = SPECS.getData(arch).getBuildArch(
                         package, version
                     )
                     filename = os.path.join(
                         buildarch,
-                        f"{package}-{version}-{release}.{buildarch}.rpm",
+                        f"{package}-{version}.{buildarch}.rpm",
                     )
                     output.append(filename)
                 """
@@ -197,8 +196,7 @@ class SpecDependencyGenerator(object):
                 ):
                     filename = os.path.join(
                         buildarch,
-                        f"{base_package}-debuginfo-{version}-{release}."
-                        f"{buildarch}.rpm",
+                        f"{base_package}-debuginfo-{version}.{buildarch}.rpm",
                     )
                     output.append(filename)
 

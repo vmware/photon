@@ -38,7 +38,7 @@ class SpecData(object):
 
             # skip the specfile if buildarch differs
             buildarch = spec.packages.get("default").buildarch
-            if buildarch != "noarch" and buildarch != self.arch:
+            if buildarch not in {"noarch", self.arch}:
                 self.logger.debug(f"Skipping spec file: {specFile}")
                 continue
 
@@ -48,10 +48,10 @@ class SpecData(object):
             for specPkg in specObj.listPackages:
                 self.mapPackageToSpec[specPkg] = name
 
-            if name in self.mapSpecObjects:
-                self.mapSpecObjects[name].append(specObj)
-            else:
+            if name not in self.mapSpecObjects:
                 self.mapSpecObjects[name] = [specObj]
+            else:
+                self.mapSpecObjects[name].append(specObj)
 
             self.mapSpecFileNameToSpecObj[os.path.basename(specFile)] = specObj
 
@@ -73,12 +73,12 @@ class SpecData(object):
         return listSpecFiles
 
     def _getProperVersion(self, depPkg):
-        if depPkg.compare == "":
+        if not depPkg.compare:
             return self.getHighestVersion(depPkg.package)
         specObjs = self.getSpecObjects(depPkg.package)
         try:
             for obj in specObjs:
-                verrel = obj.version + "-" + obj.release
+                verrel = obj.version
                 if depPkg.compare == ">=":
                     if LooseVersion(verrel) >= LooseVersion(depPkg.version):
                         return obj.version
@@ -88,9 +88,9 @@ class SpecData(object):
                 elif depPkg.compare == "=":
                     if LooseVersion(verrel) == LooseVersion(depPkg.version):
                         return obj.version
-                    if LooseVersion(obj.version) == LooseVersion(
-                        depPkg.version
-                    ):
+                    x = obj.version.rsplit("-", 1)[0]
+                    y = depPkg.version.rsplit("-", 1)[0]
+                    if LooseVersion(x) == LooseVersion(y):
                         return obj.version
                 elif depPkg.compare == "<":
                     if LooseVersion(verrel) < LooseVersion(depPkg.version):
@@ -108,19 +108,12 @@ class SpecData(object):
             raise e
 
         # about to throw exception
-        availableVersions = ""
+        availableVersions = []
         for obj in specObjs:
-            availableVersions += (
-                " " + obj.name + "-" + obj.version + "-" + obj.release
-            )
-        raise Exception(
-            "Could not find package: "
-            + depPkg.package
-            + depPkg.compare
-            + depPkg.version
-            + " available specs:"
-            + availableVersions
-        )
+            availableVersions.append(f"{obj.name}-{obj.version}")
+        raise Exception("Could not find package: "
+                        f"{depPkg.package}{depPkg.compare}{depPkg.version}"
+                        " available specs: " + " ".join(availableVersions))
 
     def _getSpecObjField(self, package, version, field):
         for specObj in self.getSpecObjects(package):
@@ -306,7 +299,7 @@ class SpecData(object):
 
     @staticmethod
     def compareVersions(p):
-        return StrictVersion(p.version)
+        return LooseVersion(p.version)
 
     def getSpecName(self, package):
         if package in self.mapPackageToSpec:
@@ -319,8 +312,7 @@ class SpecData(object):
     def isRPMPackage(self, package):
         if package in self.mapPackageToSpec:
             specName = self.mapPackageToSpec[package]
-            if specName in self.mapSpecObjects:
-                return True
+            return specName in self.mapSpecObjects
         return False
 
     def getSecurityHardeningOption(self, package, version):
@@ -437,7 +429,6 @@ class SPECS(object):
 
     def initialize(self):
         kver_to_rpm_macros_dict = {
-            "linux": ["KERNEL_VERSION", "KERNEL_RELEASE", "kernelsubrelease"],
             "linux-rt": ["LINUX_RT_KERNEL_VERSION", "LINUX_RT_KERNEL_RELEASE", "linuxrt_kernelsubrelease"],
         }
 

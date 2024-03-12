@@ -183,9 +183,10 @@ class PackageBuilder(object):
     def _buildPackagePrepareFunction(self, package, version, doneList):
         self.package = package
         self.version = version
-        self.logName = f"build-{package}-{version}"
+        pkg = f"{package}-{version}"
+        self.logName = f"build-{pkg}"
         self.logPath = (
-            f"{constants.logPath}/{package}-{version}.{constants.currentArch}"
+            f"{constants.logPath}/{pkg}.{constants.currentArch}"
         )
         if not os.path.isdir(self.logPath):
             self.cmdUtils.runBashCmd(f"mkdir -p {self.logPath}")
@@ -272,7 +273,7 @@ class PackageBuilder(object):
             )
             raise Exception("Missing rpm file")
         specificRPM = os.path.basename(rpmfile.replace(".rpm", ""))
-        pkg = package + "-" + packageVersion
+        pkg = self._findPackageNameAndVersionFromRPMFile(f"{package}-{packageVersion}")
         if pkg in listInstalledPackages:
             return
         # mark it as installed -  to avoid recursion

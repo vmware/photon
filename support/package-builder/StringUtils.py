@@ -52,9 +52,9 @@ class StringUtils(object):
 
     @staticmethod
     def splitPackageNameAndVersion(pkg):
-        versionindex = pkg.rfind("-")
-        if versionindex == -1:
-            raise Exception("Invalid argument")
-        packageName = pkg[:versionindex]
-        packageVersion = pkg[versionindex + 1 :]  # noqa: E203
+        packageVersion = pkg.rsplit('-', 1)[0]
+        if not packageVersion:
+            raise Exception(f"Invalid argument: {pkg}")
+        packageName = packageVersion.rsplit("-", 1)[0]
+        packageVersion = pkg.rsplit(packageName)[1][1:]
         return packageName, packageVersion
