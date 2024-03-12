@@ -7,14 +7,16 @@ rpmvercmp is defined in rpm/rpmver.h
 risdigit is defined in rpm/rpmstring.h
 
 Resolves: rhbz#2080210
+
+Signed-off-by: Ashwin Dayanand Kamat <ashwim.kamat@broadcom.com>
 ---
  cmake/FindRPM.cmake                    | 3 +++
  config.h.in                            | 1 +
- src/OVAL/results/oval_cmp_evr_string.c | 5 +++++
- 3 files changed, 9 insertions(+)
+ src/OVAL/results/oval_cmp_evr_string.c | 6 ++++++
+ 3 files changed, 10 insertions(+)
 
 diff --git a/cmake/FindRPM.cmake b/cmake/FindRPM.cmake
-index a666942eae..369d153fcc 100644
+index a666942..369d153 100644
 --- a/cmake/FindRPM.cmake
 +++ b/cmake/FindRPM.cmake
 @@ -30,6 +30,9 @@ set(RPM_VERSION ${RPM_PKGCONF_VERSION})
@@ -28,7 +30,7 @@ index a666942eae..369d153fcc 100644
  
  # Set the include dir variables and the libraries and let libfind_process do the rest.
 diff --git a/config.h.in b/config.h.in
-index 1b72855822..bb1428afc8 100644
+index 1b72855..bb1428a 100644
 --- a/config.h.in
 +++ b/config.h.in
 @@ -44,6 +44,7 @@
@@ -40,10 +42,18 @@ index 1b72855822..bb1428afc8 100644
  #cmakedefine BZIP2_FOUND
  
 diff --git a/src/OVAL/results/oval_cmp_evr_string.c b/src/OVAL/results/oval_cmp_evr_string.c
-index 3bfc8ce5f9..3ba0fa0cbd 100644
+index 3bfc8ce..8b20251 100644
 --- a/src/OVAL/results/oval_cmp_evr_string.c
 +++ b/src/OVAL/results/oval_cmp_evr_string.c
-@@ -37,7 +37,12 @@
+@@ -28,6 +28,7 @@
+ #include <stdlib.h>
+ #include <stdio.h>
+ #include <math.h>
++#include <limits.h>
+ #include <string.h>
+ #include <ctype.h>
+ #include "oval_cmp_evr_string_impl.h"
+@@ -37,7 +38,12 @@
  #include "common/_error.h"
  
  #ifdef HAVE_RPMVERCMP
@@ -56,3 +66,6 @@ index 3bfc8ce5f9..3ba0fa0cbd 100644
  #else
  #ifdef OS_WINDOWS
  #include <malloc.h>
+-- 
+2.39.0
+
