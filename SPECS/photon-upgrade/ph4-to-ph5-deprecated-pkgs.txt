@@ -16,6 +16,7 @@ gtest-static
 json_spirit
 json_spirit-devel
 kaigen-gothic-cjk
+ktap
 libcalico
 libnss-ato
 libsoup-doc
