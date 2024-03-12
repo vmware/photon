@@ -35,6 +35,7 @@ json_spirit
 json_spirit-devel
 kaigen-gothic-cjk
 kibana
+ktap
 kube-controllers
 libcalico
 libdb-devel

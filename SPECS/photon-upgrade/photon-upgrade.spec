@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -56,6 +56,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Tue Mar 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-20
+- Add ktap to deprecated package list
 * Fri Mar 01 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0-19
 - Support upgrading to apache-tomcat9 in 4.0 from apache-tomcat in 3.0
 * Wed Dec 06 2023 Dweep Advani <dadvani@vmware.com> 1.0-18

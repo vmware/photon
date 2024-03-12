@@ -27,6 +27,7 @@ js
 js-devel
 kaigen-gothic-cjk
 kibana
+ktap
 kube-controllers
 libcalico
 libdb-devel
