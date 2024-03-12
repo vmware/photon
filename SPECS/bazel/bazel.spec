@@ -4,7 +4,7 @@
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        6.1.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License 2.0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -57,6 +57,8 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Mon Mar 11 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 6.1.2-4
+- Version bump to use new jdk11
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.2-3
 - Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.2-2

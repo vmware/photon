@@ -9,7 +9,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.96
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -132,6 +132,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Mon Mar 11 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 8.5.96-2
+- Version bump to use new jdk11 or jdk17
 * Wed Feb 21 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 8.5.96-1
 - Upgrade to 8.5.96, Fix CVE-2023-46589
 * Tue Feb 20 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.5.93-3

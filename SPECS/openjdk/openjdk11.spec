@@ -4,16 +4,16 @@
 
 Summary:        OpenJDK
 Name:           openjdk11
-Version:        11.0.20
-Release:        7%{?dist}
+Version:        11.0.22
+Release:        1%{?dist}
 License:        GNU General Public License V2
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}.tar.gz
-%define sha512 jdk-11.0=59dd536c613d58d5cd333ed680a8d51b88fc41e8cf2ec11c9996890b0ad704132b2f0f086a6ba280da84565853cb4e21a030e04280ea3d888ecb156c21e8ca29
+Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}-ga.tar.gz
+%define sha512 jdk-11.0=b88d0db9750d8201dfb4b027045de4023be766e42cca7a3ff5e0cb28db4c6da3f146a57819a6b81cb33e5837726986bcc3780ecf88bf525f445c2cd35a3993d8
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -84,7 +84,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep
-%autosetup -p1 -n jdk11u-jdk-%{version}-6
+%autosetup -p1 -n jdk11u-jdk-%{version}-ga
 
 %build
 chmod a+x ./configur*
@@ -245,6 +245,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Mon Mar 11 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 11.0.22-1
+- Updating to jdk-11.0.22-ga
 * Wed Oct 11 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.20-7
 - Use openjdk11 as bootstrap JDK
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.20-6

@@ -12,7 +12,7 @@
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
 Version:        9.0.83
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -148,6 +148,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Mon Mar 11 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 9.0.83-2
+- Version bump to use new jdk11 or jdk17
 * Wed Feb 21 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 9.0.83-1
 - Upgrade to 9.0.83, Fix CVE-2023-46589
 * Tue Feb 20 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.82-2
