@@ -3,7 +3,7 @@ title:  Secure Boot with FIPS
 weight: 6
 ---
 
-You can boot Photon 5 with FIPS either enabled or not disabled.
+You can boot Photon 5 with FIPS either enabled or not enabled.
 
 ## Booting with FIPS
 When you boot Photon 5 with UEFI Secure Boot and FIPS is enabled, the kernel log (dmesg) should contain messages in the following format:
@@ -25,7 +25,7 @@ When you boot Photon 5 with UEFI Secure Boot and FIPS is enabled, the kernel log
 ```
 
 ## Booting without FIPS
-When you boot Photon 5 with FIPS disenabled, the kernel log (dmesg) should contain messages in the following format:
+When you boot Photon 5 with FIPS not enabled, the kernel log (dmesg) should contain messages in the following format:
 
 ```sh
 [    0.343113] integrity: Loading X.509 certificate: UEFI:db
