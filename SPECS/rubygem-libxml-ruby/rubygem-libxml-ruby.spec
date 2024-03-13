@@ -19,27 +19,10 @@ Requires:       ruby
 %description
 Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 %prep
-echo "ADK1"
-pwd
-ls
 %autosetup -c -T
-echo "ADK4"
-pwd
-ls
-
 %build
-echo "ADK2"
-pwd
-ls
-
 %install
-echo "ADK5"
-pwd
-ls
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
-pwd
-echo "ADK3"
-ls
 
 %check
 cd %{buildroot}%{gemdir}/gems/libxml-ruby-%{version}
