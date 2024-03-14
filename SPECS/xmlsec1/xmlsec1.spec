@@ -1,7 +1,7 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
 Version:        1.2.37
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -76,6 +76,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.37-5
+- Bump version as a part of nss upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.2.37-4
 - Bump version as a part of libxml2 upgrade
 * Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.37-3

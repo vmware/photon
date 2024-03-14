@@ -3,7 +3,7 @@
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
 Version:       102.12.0
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -137,6 +137,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 102.12.0-5
+- Bump version as a part of nss upgrade
 * Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 102.12.0-4
 - Add provides & obsoletes for mozjs60
 * Wed Sep 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 102.12.0-3

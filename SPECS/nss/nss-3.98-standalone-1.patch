@@ -1,6 +1,6 @@
-From 3476b42de7cb3f8d880c6eee5b0f17b2d072bce0 Mon Sep 17 00:00:00 2001
-From: Shreenidhi Shedi <sshedi@vmware.com>
-Date: Tue, 9 May 2023 18:19:04 +0530
+From f51d765a6a1ac263a0a9ce3c2f5561e3a94586f5 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 14 Mar 2024 15:59:11 +0530
 Subject: [PATCH] Submitted By:            Xi Ruoyao
  <xry111_AT_mengyan1223_DOT_wang> Date:                    2020-08-22 Initial
  Package Version: 3.12.4 Upstream Status:         Not applicable Origin:      
@@ -10,13 +10,14 @@ Subject: [PATCH] Submitted By:            Xi Ruoyao
  Minimum NSPR version is now read out from package,                         
  instead of hardcoded value in the patch.
 
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
  nss/Makefile             |   4 +-
  nss/config/Makefile      |  42 +++++++++++
  nss/config/nss-config.in | 153 +++++++++++++++++++++++++++++++++++++++
  nss/config/nss.pc.in     |  12 +++
- nss/manifest.mn          |   4 +-
- 5 files changed, 211 insertions(+), 4 deletions(-)
+ nss/manifest.mn          |   2 +-
+ 5 files changed, 210 insertions(+), 3 deletions(-)
  create mode 100644 nss/config/Makefile
  create mode 100644 nss/config/nss-config.in
  create mode 100644 nss/config/nss.pc.in
@@ -273,15 +274,9 @@ index 0000000..483926b
 +Cflags: -I${includedir}
 +
 diff --git a/nss/manifest.mn b/nss/manifest.mn
-index fbc420a..565b5d1 100644
+index fbc420a..b983d88 100644
 --- a/nss/manifest.mn
 +++ b/nss/manifest.mn
-@@ -1,4 +1,4 @@
--# 
-+#
- # This Source Code Form is subject to the terms of the Mozilla Public
- # License, v. 2.0. If a copy of the MPL was not distributed with this
- # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 @@ -10,7 +10,7 @@ IMPORTS =	nspr20/v4.8 \
  
  RELEASE = nss
@@ -292,5 +287,5 @@ index fbc420a..565b5d1 100644
  HAVE_ALL_TARGET := 1
  
 -- 
-2.25.1
+2.44.0
 

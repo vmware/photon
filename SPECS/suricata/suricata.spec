@@ -1,7 +1,7 @@
 Summary:        Intrusion Detection System
 Name:           suricata
 Version:        7.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -169,6 +169,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/rules
 
 %changelog
+* Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.0.0-2
+- Bump version as a part of nss upgrade
 * Fri Sep 08 2023 Mukul Sikka <msikka@vmware.com> 7.0.0-1
 - Update to v7.0.0 to fix multiple CVEs
 * Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 6.0.12-4

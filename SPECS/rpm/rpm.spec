@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.19.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -367,6 +367,8 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}/*.md
 
 %changelog
+* Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-5
+- Bump version as a part of nss upgrade
 * Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.19.0-4
 - Bump version as a part of sqlite upgrade to v3.43.2
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.19.0-3
