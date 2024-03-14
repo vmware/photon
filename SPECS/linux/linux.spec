@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.90
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -205,6 +205,11 @@ Patch210: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch211: 6.0-0005-vmw_balloon-add-arm64-support.patch
 Patch212: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
 %endif
+
+# perf: off-cpu sample
+Patch221: 0001-perf-core-add-logic-to-collect-off-cpu-sample.patch
+Patch222: 0002-perf-record-add-options-to-off-cpu.patch
+Patch223: 0003-perf-display-off-cpu-samples.patch
 
 %ifarch x86_64
 # AWS: [300..339]
@@ -465,6 +470,8 @@ The kernel fips-canister
 # aarch64 patches
 %autopatch -p1 -m200 -M219
 %endif
+
+%autopatch -p1 -m221 -M223
 
 %ifarch x86_64
 # AWS x86
@@ -846,6 +853,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon May 20 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.90-5
+- perf: add patch to collect off-cpu sample
 * Mon May 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.90-4
 - Optimize gdb commands in check_fips_canister_compatibility script
 * Fri May 17 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.90-3
