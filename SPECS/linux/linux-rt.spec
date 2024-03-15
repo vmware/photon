@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.81
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -176,7 +176,8 @@ Patch716: Guest-timer-Advancement-Feature.patch
 
 # Provide mixed cpusets guarantees for processes placement
 Patch717: 0001-Enable-and-enhance-SCHED-isolation.patch
-
+# Kernel cmdline param to disable task distribution within cpumask
+Patch718: 0001-sched_core-Disable-tasks-distribution-within-cpumask.patch
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
 Patch1000: 0002-FIPS-crypto-self-tests.patch
@@ -296,7 +297,7 @@ stalld to use eBPF based backend.
 %autopatch -p1 -m100 -M129
 
 # RT
-%autopatch -p1 -m301 -M717
+%autopatch -p1 -m301 -M718
 
 %autopatch -p1 -m1000 -M1004
 
@@ -474,6 +475,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Mar 27 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.81-3
+- Kernel cmdline param to disable distribution of tasks within cpumask
 * Mon Mar 25 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-2
 - Patched CVE-2024-26585
 * Wed Mar 06 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-1
@@ -484,7 +487,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 - Enable CONFIG_PPPOE
 * Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.79-1
 - Update to version 6.1.79
-* Tue Feb 13 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 6.1.77-2
+* Tue Feb 13 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.77-2
 - Add stalld eBPF plugin package
 * Tue Feb 13 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.77-1
 - Update to version 6.1.77, rt24
