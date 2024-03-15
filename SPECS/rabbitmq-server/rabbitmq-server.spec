@@ -19,7 +19,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.12.4
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -150,6 +150,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.12.4-2
+- Bump version as a part of rsync upgrade
 * Wed Dec 20 2023 Harinadh D <hdommaraju@vmware.com> 3.12.4-1
 - Upgrade to v3.12.4
 * Thu Dec 07 2023 Harinadh D <hdommaraju@vmware.com> 3.11.18-1
