@@ -1,6 +1,6 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
-Version:        3.2.4
+Version:        3.2.7
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org
@@ -9,10 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
-%define sha512 %{name}=96318e2754fbddf84d16df671c721e577766969dfa415925c4dc1be2e4e60a51246623747a8aec0c6e9c0824e6aa7335235ccd07f3d6fd901f8cf28e2d6e91b6
-
-Patch0: CVE-2022-29154-1.patch
-Patch1: CVE-2022-29154-2.patch
+%define sha512 %{name}=c2afba11a352fd88133f9e96e19d6df80eb864450c83eced13a7faa23df947bccf2ef093f2101df6ee30abff4cbbd39ac802e9aa5f726e42c9caff274fad8377
 
 BuildRequires:  zlib-devel
 BuildRequires:  systemd-devel
@@ -89,6 +86,8 @@ make %{?_smp_mflags} check
 %exclude %{_usrsrc}/debug
 
 %changelog
+* Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.7-1
+- Upgrade to v3.2.7
 * Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.4-1
 - Fix CVE-2022-29154
 * Sat Mar 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.1.3-4
