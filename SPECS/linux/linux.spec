@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.311
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -598,6 +598,9 @@ Patch1573: 0001-vt-fix-memory-overlapping-when-deleting-chars-in-the-buffer.patc
 # Fix CVE-2023-52458
 Patch1574: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
+#Fix CVE-2024-23851/CVE-2023-52429
+Patch1575: 0001-dm-limit-the-number-of-targets-and-parameter-size-ar.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -797,7 +800,7 @@ popd
 %autopatch -p1 -m1545 -M1549
 
 # CVE Patches
-%autopatch -p1 -m1550 -M1574
+%autopatch -p1 -m1550 -M1575
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1188,6 +1191,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Fri Apr 05 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.311-2
+- Patched CVE-2023-52429/CVE-2024-23851
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.311-1
 - Update to version 4.19.311
 * Mon Apr 01 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.307-6

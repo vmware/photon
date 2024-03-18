@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.311
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -274,6 +274,9 @@ Patch322: netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
 # Fix CVE-2023-52620
 Patch323: netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
+#Fix CVE-2024-23851/CVE-2023-52429
+Patch324: 0001-dm-limit-the-number-of-targets-and-parameter-size-ar.patch
+
 # Usermode helper fixes
 Patch400: 0001-umh-Add-command-line-to-user-mode-helpers.patch
 Patch401: 0002-umh-add-exit-routine-for-UMH-process.patch
@@ -385,7 +388,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m191 -M194
 
 # CVE fixes
-%autopatch -p1 -m300 -M323
+%autopatch -p1 -m300 -M324
 
 # Usermode helper patches
 %autopatch -p1 -m400 -M401
@@ -590,6 +593,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Apr 05 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.311-2
+- Patched CVE-2023-52429/CVE-2024-23851
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.311-1
 - Update to version 4.19.311
 * Mon Apr 01 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.307-6

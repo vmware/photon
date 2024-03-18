@@ -1,0 +1,81 @@
+From a891a0621e725e85529985139cada8cb5a74a116 Mon Sep 17 00:00:00 2001
+From: Mikulas Patocka <mpatocka@redhat.com>
+Date: Tue, 9 Jan 2024 15:57:56 +0100
+Subject: [PATCH] dm: limit the number of targets and parameter size area
+
+commit bd504bcfec41a503b32054da5472904b404341a4 upstream.
+
+The kvmalloc function fails with a warning if the size is larger than
+INT_MAX. The warning was triggered by a syscall testing robot.
+
+In order to avoid the warning, this commit limits the number of targets to
+1048576 and the size of the parameter area to 1073741824.
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: He Gao <hegao@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srish Srinivasan <srish.srinivasan@broadcom.com>
+---
+ drivers/md/dm-core.h  | 2 ++
+ drivers/md/dm-ioctl.c | 3 ++-
+ drivers/md/dm-table.c | 9 +++++++--
+ 3 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/md/dm-core.h b/drivers/md/dm-core.h
+index 3db92d9a030b..ff73b2c17be5 100644
+--- a/drivers/md/dm-core.h
++++ b/drivers/md/dm-core.h
+@@ -19,6 +19,8 @@
+ #include "dm.h"
+ 
+ #define DM_RESERVED_MAX_IOS		1024
++#define DM_MAX_TARGETS			1048576
++#define DM_MAX_TARGET_PARAMS		1024
+ 
+ struct dm_kobject_holder {
+ 	struct kobject kobj;
+diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
+index 5f9b9178c647..4184c8a2d497 100644
+--- a/drivers/md/dm-ioctl.c
++++ b/drivers/md/dm-ioctl.c
+@@ -1760,7 +1760,8 @@ static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kern
+ 	if (copy_from_user(param_kernel, user, minimum_data_size))
+ 		return -EFAULT;
+ 
+-	if (param_kernel->data_size < minimum_data_size)
++	if (unlikely(param_kernel->data_size < minimum_data_size) ||
++	    unlikely(param_kernel->data_size > DM_MAX_TARGETS * DM_MAX_TARGET_PARAMS))
+ 		return -EINVAL;
+ 
+ 	secure_data = param_kernel->flags & DM_SECURE_DATA_FLAG;
+diff --git a/drivers/md/dm-table.c b/drivers/md/dm-table.c
+index 5c590895c14c..31bcdcd93c7a 100644
+--- a/drivers/md/dm-table.c
++++ b/drivers/md/dm-table.c
+@@ -144,7 +144,12 @@ static int alloc_targets(struct dm_table *t, unsigned int num)
+ int dm_table_create(struct dm_table **result, fmode_t mode,
+ 		    unsigned num_targets, struct mapped_device *md)
+ {
+-	struct dm_table *t = kzalloc(sizeof(*t), GFP_KERNEL);
++	struct dm_table *t;
++
++	if (num_targets > DM_MAX_TARGETS)
++		return -EOVERFLOW;
++
++	t = kzalloc(sizeof(*t), GFP_KERNEL);
+ 
+ 	if (!t)
+ 		return -ENOMEM;
+@@ -158,7 +163,7 @@ int dm_table_create(struct dm_table **result, fmode_t mode,
+ 
+ 	if (!num_targets) {
+ 		kfree(t);
+-		return -ENOMEM;
++		return -EOVERFLOW;
+ 	}
+ 
+ 	if (alloc_targets(t, num_targets)) {
+-- 
+2.34.1
+

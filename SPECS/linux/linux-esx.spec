@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.311
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -509,6 +509,9 @@ Patch720: 0001-vt-fix-memory-overlapping-when-deleting-chars-in-the-buffer.patch
 #Fix CVE-2023-52458
 Patch721: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
+#Fix CVE-2024-23851/CVE-2023-52429
+Patch722: 0001-dm-limit-the-number-of-targets-and-parameter-size-ar.patch
+
 # Patches for i40e driver
 Patch803: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
 Patch804: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
@@ -630,7 +633,7 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m540 -M554
 
 # CVE Fixes
-%autopatch -p1 -m700 -M721
+%autopatch -p1 -m700 -M722
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -868,6 +871,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Fri Apr 05 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.311-2
+- Patched CVE-2023-52429/CVE-2024-23851
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.311-1
 - Update to version 4.19.311
 * Mon Apr 01 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.307-6
