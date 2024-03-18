@@ -13,7 +13,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql14
 Version:        14.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -298,6 +298,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Fri Mar 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-3
+- Use version specific bindir path in service file
 * Wed Feb 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-2
 - Add systemd unit file
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-1
