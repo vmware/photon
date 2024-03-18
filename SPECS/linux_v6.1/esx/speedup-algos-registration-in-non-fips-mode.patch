@@ -1,0 +1,35 @@
+From 525f3923bd2a86a096d2230878289afe680bc7ac Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Fri, 7 Oct 2022 20:53:16 +0000
+Subject: Speedup algos registration in non fips mode
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ crypto/fips_canister_wrapper.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/crypto/fips_canister_wrapper.c b/crypto/fips_canister_wrapper.c
+index a2b84f4b7..35a412cdc 100644
+--- a/crypto/fips_canister_wrapper.c
++++ b/crypto/fips_canister_wrapper.c
+@@ -350,6 +350,16 @@ static int crypto_msg_notify(struct notifier_block *this, unsigned long msg,
+ 			   alg->cra_driver_name, alg->cra_name,
+ 			   current->comm, current->pid);
+ 	}
++	if (msg == CRYPTO_MSG_ALG_REGISTER) {
++		/*
++		 * If FIPS disabled, we want to speed up the registration path
++		 * by marking alg test as passed and returning NOTIFY_STOP.
++		 */
++		if (!fips_enabled) {
++			crypto_alg_tested(alg->cra_driver_name, 0);
++			return NOTIFY_STOP;
++		}
++	}
+ 	return NOTIFY_DONE;
+ }
+ 
+-- 
+2.23.3
+
+

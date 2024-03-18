@@ -1,0 +1,489 @@
+From 9fa6c217ab796ac8372ba005762dab73b876010a
+From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Date: Wed Feb 23 09:25:56 2022 +0530
+Subject: [PATCH] 0001-vmw_extcfg: Prepare for Non-ACPI Hotplug support
+
+Provide a way to receive hotplug events when ACPI is disabled.
+
+VMX provides a way to register and access cpu, memory and device
+information via Extended Config space of PCI root. This is helpful
+when the guest is booted with ACPI turned off, CRX/directBoot.
+There is no access to chipset when the kernel is booted with out
+ACPI.
+
+Summary of method used to achieve hotplug without ACPI
+
+* When ACPI is disabled, reserve IO, MMIO addresses
+* Let root PCI device know about these addresses
+* Register a PnP device that responds on IRQ 9
+* When the Interrupt handler is invoked, read from Ext Config space
+  and figure out the exact device that was hot added/removed.
+* Add/remove the resource to the OS similar to the ACPI handler.
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Signed-off-by: Alex Upshaw <upshawa@vmware.com>
+---
+ arch/x86/include/asm/io_apic.h          |   2 +
+ arch/x86/kernel/acpi/boot.c             |   6 ++
+ drivers/misc/Kconfig                    |   1 +
+ drivers/misc/Makefile                   |   1 +
+ drivers/misc/vmw_extcfg/Kconfig         |  15 +++
+ drivers/misc/vmw_extcfg/Makefile        |   3 +
+ drivers/misc/vmw_extcfg/extcfg_device.c |  67 +++++++++++++
+ drivers/misc/vmw_extcfg/extcfg_device.h |  74 ++++++++++++++
+ drivers/misc/vmw_extcfg/extcfg_driver.c | 170 ++++++++++++++++++++++++++++++++
+ drivers/misc/vmw_extcfg/extcfg_driver.h |  26 +++++
+ 10 files changed, 365 insertions(+)
+ create mode 100644 drivers/misc/vmw_extcfg/Kconfig
+ create mode 100644 drivers/misc/vmw_extcfg/Makefile
+ create mode 100644 drivers/misc/vmw_extcfg/extcfg_device.c
+ create mode 100644 drivers/misc/vmw_extcfg/extcfg_device.h
+ create mode 100644 drivers/misc/vmw_extcfg/extcfg_driver.c
+ create mode 100644 drivers/misc/vmw_extcfg/extcfg_driver.h
+
+diff --git a/arch/x86/include/asm/io_apic.h b/arch/x86/include/asm/io_apic.h
+index a1a26f6d3..792ae9d20 100644
+--- a/arch/x86/include/asm/io_apic.h
++++ b/arch/x86/include/asm/io_apic.h
+@@ -170,6 +170,8 @@ extern int mp_map_gsi_to_irq(u32 gsi, unsigned int flags,
+ extern void mp_unmap_irq(int irq);
+ extern int mp_register_ioapic(int id, u32 address, u32 gsi_base,
+ 			      struct ioapic_domain_cfg *cfg);
++extern int ext_mp_register_ioapic_irq(u8 bus_irq, u8 polarity,
++				  u8 trigger, u32 gsi);
+ extern int mp_unregister_ioapic(u32 gsi_base);
+ extern int mp_ioapic_registered(u32 gsi_base);
+ 
+diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
+index 14cd3186d..cfc9d5aa6 100644
+--- a/arch/x86/kernel/acpi/boot.c
++++ b/arch/x86/kernel/acpi/boot.c
+@@ -432,6 +432,12 @@ static int __init mp_register_ioapic_irq(u8 bus_irq, u8 polarity,
+ 	return 0;
+ }
+ 
++int __init ext_mp_register_ioapic_irq(u8 bus_irq, u8 polarity,
++						u8 trigger, u32 gsi)
++{
++	return mp_register_ioapic_irq(bus_irq, polarity, trigger, gsi);
++}
++
+ static int __init
+ acpi_parse_ioapic(union acpi_subtable_headers * header, const unsigned long end)
+ {
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index fafa8b0d8..12f8bb440 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -514,4 +514,5 @@ source "drivers/misc/habanalabs/Kconfig"
+ source "drivers/misc/uacce/Kconfig"
+ source "drivers/misc/pvpanic/Kconfig"
+ source "drivers/misc/mchp_pci1xxxx/Kconfig"
++source "drivers/misc/vmw_extcfg/Kconfig"
+ endmenu
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index d23231e73..18ab71ea7 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -62,3 +62,4 @@ obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
+ obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
+ obj-$(CONFIG_GP_PCI1XXXX)	+= mchp_pci1xxxx/
+ obj-$(CONFIG_VCPU_STALL_DETECTOR)	+= vcpu_stall_detector.o
++obj-$(CONFIG_VMWARE_EXTCFG)	+= vmw_extcfg/
+\ No newline at end of file
+diff --git a/drivers/misc/vmw_extcfg/Kconfig b/drivers/misc/vmw_extcfg/Kconfig
+new file mode 100644
+index 000000000..ab063665e
+--- /dev/null
++++ b/drivers/misc/vmw_extcfg/Kconfig
+@@ -0,0 +1,15 @@
++# SPDX-License-Identifier: Dual BSD/GPL
++#
++# VMware EXTCFG device
++#
++
++config VMWARE_EXTCFG
++	bool "VMware Extended Configuration Driver"
++	depends on X86 && PCI
++	help
++	  This is VMware's Extended Configuration Driver.  It enables
++	  cpu, memory hotplug for guest in a virtual
++	  environment when ACPI is unavailable.
++
++	  If unsure, say N.
++
+diff --git a/drivers/misc/vmw_extcfg/Makefile b/drivers/misc/vmw_extcfg/Makefile
+new file mode 100644
+index 000000000..909b41339
+--- /dev/null
++++ b/drivers/misc/vmw_extcfg/Makefile
+@@ -0,0 +1,3 @@
++# SPDX-License-Identifier: Dual BSD/GPL
++obj-$(CONFIG_VMWARE_EXTCFG) += vmw_extcfg.o
++vmw_extcfg-$(CONFIG_VMWARE_EXTCFG) += extcfg_device.o extcfg_driver.o
+\ No newline at end of file
+diff --git a/drivers/misc/vmw_extcfg/extcfg_device.c b/drivers/misc/vmw_extcfg/extcfg_device.c
+new file mode 100644
+index 000000000..af13d6fd7
+--- /dev/null
++++ b/drivers/misc/vmw_extcfg/extcfg_device.c
+@@ -0,0 +1,67 @@
++// SPDX-License-Identifier: Dual BSD/GPL
++/*
++ * VMware Virtual Chipset Extended Configuration Driver
++ *
++ * Copyright (C) 2022 VMware, Inc. All rights reserved.
++ */
++
++#include <linux/io.h>
++#include <linux/ioport.h>
++#include "extcfg_device.h"
++
++static struct extcfg cfg;
++
++struct extcfg *get_extcfg(void)
++{
++	return &cfg;
++}
++
++u8 extconf_read_8(unsigned long offset)
++{
++	outl(offset, cfg.io_bar + INDEX_REG_OFF);
++	return inb(cfg.io_bar + DATA_REG_OFF);
++}
++
++u64 extconf_read_64(unsigned long offset)
++{
++	u64 ret;
++
++	outl(offset + 4, cfg.io_bar + INDEX_REG_OFF);
++	ret = inl(cfg.io_bar + DATA_REG_OFF);
++	ret <<= 32;
++	outl(offset, cfg.io_bar + INDEX_REG_OFF);
++	ret |= inl(cfg.io_bar + DATA_REG_OFF);
++
++	return ret;
++}
++
++void extconf_write_64_mmio(unsigned long offset, u64 data)
++{
++	writeq(data, (void *) ((u8 *)cfg.mmio_addr + offset));
++}
++
++u32 read_acpi_notification_queue(u32 offset)
++{
++	outl(offset, cfg.io_bar + INDEX_REG_OFF);
++	return inl(cfg.io_bar + DATA_REG_OFF);
++}
++
++void write_acpi_notification_queue(u32 offset, u32 status)
++{
++	outl(offset, cfg.io_bar + INDEX_REG_OFF);
++	outl(status, cfg.io_bar + DATA_REG_OFF);
++}
++
++void post_process_acpi_event(int gpeMask)
++{
++	/* write notify status done */
++	u32 offset = gpeMask == GPE_2_MASK ? ANQ_STATUS_OFF : DEV_HP_QUEUE_BASE;
++
++	write_acpi_notification_queue(offset, ANQ_STATUS_DONE);
++
++	/* update status reg */
++	outb((gpeMask | inl(GPE_STATUS_REG)), GPE_STATUS_REG);
++
++	/* reenable interrupt */
++	outl((gpeMask | inl(GPE_ENABLE_REG)), GPE_ENABLE_REG);
++}
+diff --git a/drivers/misc/vmw_extcfg/extcfg_device.h b/drivers/misc/vmw_extcfg/extcfg_device.h
+new file mode 100644
+index 000000000..936d773fe
+--- /dev/null
++++ b/drivers/misc/vmw_extcfg/extcfg_device.h
+@@ -0,0 +1,74 @@
++/* SPDX-License-Identifier: Dual BSD/GPL */
++/*
++ * VMware Virtual Chipset Extended Configuration Driver
++ *
++ * Copyright (C) 2022 VMware, Inc. All rights reserved.
++ */
++
++#ifndef _EXTCFG_DEVICE_H_
++#define _EXTCFG_DEVICE_H_
++
++#include <linux/init.h>
++#include <linux/interrupt.h>
++#include <asm/mpspec.h>
++#include <asm/irqdomain.h>
++#include <asm/io_apic.h>
++#include <asm/mpspec_def.h>
++#include <asm/mpspec.h>
++
++enum anq_commands {
++	NO_COMMAND,
++	MEM_HOTPLUG_COMMAND,
++	CPU_HOTPLUG_COMMAND,
++	HOT_BUTTON_COMMAND,
++	VMGEN_COMMAND,
++	NVDIMM_COMMAND
++};
++
++enum devhp_commands { HOTADD_COMMAND = 1, HOTREMOVE_COMMAND = 2 };
++
++#define VMW_EXTCFG "vmw_extcfg"
++#define INDEX_REG_OFF 0
++#define DATA_REG_OFF 4
++
++#define SCI_EN_MASK 0x0001
++#define SMI_DIS_MASK 0xFFFE
++#define GPE_2_MASK 0x04
++#define GPE_1_MASK 0x02
++#define BIOS_MODE_REG 0x00b2
++#define GPE_STATUS_REG 0x100c
++#define GPE_STATUS2_REG 0x100d
++#define GPE_ENABLE_REG 0x100e
++#define PMCTL_REG 0x1004
++#define PMGLOBCTL_REG 0x1028
++
++#define ANQ_STATUS_OFF 0x100
++
++#define ANQ_STATUS_DONE 0
++#define BIOS_ACPI_MODE 0xF0
++#define SCI_IRQ_NO 9
++#define APIC_POLARITY_ACTIVE_LOW 3
++
++#define DEV_HP_QUEUE_BASE (0xA0 + 0x10)
++
++struct extcfg {
++	resource_size_t io_bar;
++	resource_size_t mmio_bar;
++	void *mmio_addr;
++};
++
++struct extcfg *get_extcfg(void);
++
++u8 extconf_read_8(unsigned long offset);
++
++u64 extconf_read_64(unsigned long offset);
++
++void extconf_write_64_mmio(unsigned long offset, u64 data);
++
++u32 read_acpi_notification_queue(u32 offset);
++
++void write_acpi_notification_queue(u32 offset, u32 status);
++
++void post_process_acpi_event(int gpeMask);
++
++#endif /* _EXTCFG_DEVICE_H_ */
+diff --git a/drivers/misc/vmw_extcfg/extcfg_driver.c b/drivers/misc/vmw_extcfg/extcfg_driver.c
+new file mode 100644
+index 000000000..881cd1fcd
+--- /dev/null
++++ b/drivers/misc/vmw_extcfg/extcfg_driver.c
+@@ -0,0 +1,170 @@
++// SPDX-License-Identifier: Dual BSD/GPL
++/*
++ * VMware Virtual Chipset Extended Configuration Driver
++ *
++ * Copyright (C) 2022 VMware, Inc. All rights reserved.
++ */
++
++#include <linux/atomic.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/acpi.h>
++#include <linux/io.h>
++#include <linux/ioport.h>
++#include <linux/pci.h>
++#include <linux/pnp.h>
++#include "../../pnp/base.h"
++#include <linux/bitops.h>
++#include <linux/io.h>
++#include <asm/pci_x86.h>
++#include <asm/io_apic.h>
++#include <asm/irqdomain.h>
++#include <asm/e820/api.h>
++#include <linux/sched.h>
++#include <linux/workqueue.h>
++#include "extcfg_device.h"
++#include "extcfg_driver.h"
++
++static struct work_struct hotplug_work;
++static unsigned int irq;
++
++irqreturn_t sci_interrupt_handler(int irq, void *dev_id)
++{
++	/*disable interrupt*/
++	outl(~inl(GPE_STATUS_REG) & inl(GPE_ENABLE_REG), GPE_ENABLE_REG);
++	return IRQ_HANDLED;
++}
++
++static int __init extcfg_drv_init(void)
++{
++	u32 gsi = SCI_IRQ_NO;
++	struct irq_alloc_info info;
++	int ret = 0;
++	/*
++	 * SCI source must be enabled to receive SCI interrupt. The following
++	 * needs to be done to enable SCI source
++	 * Check PMCTL_SCI_EN bit in PMCTL register.  If it is 0, you are using
++	 * legacy BIOS.  Write value 0xF0 to port 0xB2 to transition to ACPI mode.
++	 * Check bit again.  If it is still 0, then BIOS does not want to support
++	 * ACPI. Or you are not using any firmware at all: then just simply write
++	 * SCI_EN bit (plus disable SMI by clearing PMGLOBCTL_SMIEN bit in
++	 * PMGLOBCTL register).
++	 */
++	if ((inw(PMCTL_REG) & SCI_EN_MASK) == 0) {
++		outb(BIOS_ACPI_MODE, BIOS_MODE_REG);
++
++		if ((inw(PMCTL_REG) & SCI_EN_MASK) == 0) {
++			outw(inw(PMCTL_REG) | SCI_EN_MASK, PMCTL_REG);
++			outw(inw(PMGLOBCTL_REG) & SMI_DIS_MASK, PMGLOBCTL_REG);
++		}
++		outw((GPE_2_MASK | GPE_1_MASK | inl(GPE_ENABLE_REG)),
++		     GPE_ENABLE_REG);
++	}
++
++	ioapic_set_alloc_attr(&info, NUMA_NO_NODE, ACPI_LEVEL_SENSITIVE,
++			      ACPI_ACTIVE_LOW);
++	irq = mp_map_gsi_to_irq(gsi, IOAPIC_MAP_ALLOC, &info);
++	ret = request_irq(irq, sci_interrupt_handler, IRQF_SHARED, VMW_EXTCFG,
++			  sci_interrupt_handler);
++	return ret;
++}
++module_init(extcfg_drv_init);
++
++static void __exit extcfg_drv_exit(void)
++{
++	free_irq(irq, sci_interrupt_handler);
++}
++module_exit(extcfg_drv_exit);
++
++static int __init extcfg_dev_init(void)
++{
++	int ret;
++	struct pnp_dev *dev;
++	struct extcfg *cfg;
++	const char pnpid[sizeof(VMW_EXTCFG)] = VMW_EXTCFG;
++
++	/* Do nothing if ACPI is enabled */
++	if (!acpi_disabled)
++		return -ENODEV;
++
++	ret = pnp_register_protocol(&pnpacpi_protocol);
++	if (ret)
++		return ret;
++	dev = pnp_alloc_dev(&pnpacpi_protocol, 0, &pnpid[0]);
++	if (!dev)
++		return -ENOMEM;
++
++	dev->capabilities |= (PNP_CONFIGURABLE | PNP_READ | PNP_WRITE);
++
++	/* Register IO Ports */
++	if (pnp_register_port_resource(dev, 0, VMW_EXTCFG_IO_MIN, VMW_EXTCFG_IO_MAX,
++				   VMW_EXTCFG_IO_ALIGN, VMW_EXTCFG_IO_SIZE, 0) < 0)
++		return -ENOMEM;
++	/* Register MM IO region */
++	if (pnp_register_mem_resource(dev, 0, VMW_EXTCFG_MMIO_MIN,
++				  VMW_EXTCFG_MMIO_MAX, VMW_EXTCFG_MMIO_ALIGN,
++				  VMW_EXTCFG_MMIO_SIZE, 0) < 0)
++		return -ENOMEM;
++
++	if (pnp_device_attach(dev) < 0)
++		return -ENODEV;
++
++	/* ensure resources are allocated */
++	if (pnp_auto_config_dev(dev)) {
++		pnp_device_detach(dev);
++		return -EBUSY;
++	}
++
++	dev->active = 1;
++
++	ret = pnp_add_device(dev);
++	if (ret) {
++		put_device(&dev->dev);
++		pnp_device_detach(dev);
++		return ret;
++	}
++
++	cfg = get_extcfg();
++
++	cfg->io_bar = pnp_port_start(dev, 0);
++	cfg->mmio_bar = pnp_mem_start(dev, 0);
++	cfg->mmio_addr = ioremap(cfg->mmio_bar, VMW_EXTCFG_MMIO_SIZE);
++
++	pnp_set_drvdata(dev, &cfg);
++
++	pr_notice("VMware Ext Config->  IO: 0x%016llX MMIO: 0x%016llX\n",
++	       cfg->io_bar, cfg->mmio_bar);
++
++	/*
++	 * PCI Configuration Changes for Extended Configuration Device
++	 * Changes are in PCI Device 00:00.0
++	 * Refer wiki: https://wiki.eng.vmware.com/VirtualHardware/Chipset for details
++	 */
++	if (pci_direct_conf1.write(0, 0, 0, PCI_REG_EXT_CONF_IO_BAR, 4,
++					(u32)cfg->io_bar) < 0)
++		return -EINVAL;
++	if (pci_direct_conf1.write(0, 0, 0, PCI_REG_EXT_CONF_MMIO_BAR, 4,
++					(u32)cfg->mmio_bar) < 0)
++		return -EINVAL;
++
++	return 0;
++}
++fs_initcall(extcfg_dev_init);
++
++static int __init initialize_ioapic_sci(void)
++{
++	if (acpi_disabled) {
++		return ext_mp_register_ioapic_irq(SCI_IRQ_NO,
++					      APIC_POLARITY_ACTIVE_LOW,
++					      APIC_POLARITY_ACTIVE_LOW,
++					      SCI_IRQ_NO);
++	}
++	return 0;
++}
++core_initcall(initialize_ioapic_sci);
++
++MODULE_AUTHOR("VMware, Inc.");
++MODULE_DESCRIPTION("VMware Virtual Chipset Extended Configuration Driver.");
++MODULE_VERSION("1.0");
++MODULE_LICENSE("Dual BSD/GPL");
+diff --git a/drivers/misc/vmw_extcfg/extcfg_driver.h b/drivers/misc/vmw_extcfg/extcfg_driver.h
+new file mode 100644
+index 000000000..ca20e97d3
+--- /dev/null
++++ b/drivers/misc/vmw_extcfg/extcfg_driver.h
+@@ -0,0 +1,26 @@
++/* SPDX-License-Identifier: Dual BSD/GPL */
++/*
++ * VMware Virtual Chipset Extended Configuration Driver
++ *
++ * Copyright (C) 2022 VMware, Inc. All rights reserved.
++ */
++
++#ifndef _EXTCFG_DRIVER_H_
++#define _EXTCFG_DRIVER_H_
++
++#include <linux/types.h>
++
++#define PCI_REG_EXT_CONF_IO_BAR 0x40
++#define PCI_REG_EXT_CONF_MMIO_BAR 0x44
++
++#define VMW_EXTCFG_IO_MIN 0xf000
++#define VMW_EXTCFG_IO_MAX 0xffff
++#define VMW_EXTCFG_IO_ALIGN 0x1000
++#define VMW_EXTCFG_IO_SIZE 32
++
++#define VMW_EXTCFG_MMIO_MIN 0xf0000000
++#define VMW_EXTCFG_MMIO_MAX 0xffffffff
++#define VMW_EXTCFG_MMIO_ALIGN 0x200000
++#define VMW_EXTCFG_MMIO_SIZE (18 << 20)
++
++#endif /* _EXTCFG_DRIVER_H_ */
+-- 
+2.7.4
+

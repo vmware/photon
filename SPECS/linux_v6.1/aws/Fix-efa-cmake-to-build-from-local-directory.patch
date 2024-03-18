@@ -1,0 +1,35 @@
+From 7f877277a8febd0a9f6d7c5f65e79bcf0365d5db Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Wed, 14 Dec 2022 18:27:37 -0800
+Subject: [PATCH] Fix efa cmake to build from local directory
+
+cmake only tries to use /lib/modules/<kernel_ver>/build to get linux headers.
+Patch makes sure we can use a local build as well
+
+---
+ kernel/linux/efa/CMakeLists.txt | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/linux/efa/CMakeLists.txt b/kernel/linux/efa/CMakeLists.txt
+index 155113d..55e3599 100644
+--- a/kernel/linux/efa/CMakeLists.txt
++++ b/kernel/linux/efa/CMakeLists.txt
+@@ -5,10 +5,13 @@ cmake_minimum_required(VERSION 2.8.11)
+ project(efa C)
+
+ set(KERNEL_VER "" CACHE STRING "Kernel version to build for")
++set(KERNEL_DIR "" CACHE STRING "Kernel build directory")
+ if(NOT KERNEL_VER)
+-  execute_process(COMMAND uname -r OUTPUT_VARIABLE uname_r
++  if(NOT KERNEL_DIR)
++    execute_process(COMMAND uname -r OUTPUT_VARIABLE uname_r
+                   OUTPUT_STRIP_TRAILING_WHITESPACE)
+-  set(KERNEL_DIR "/lib/modules/${uname_r}/build")
++    set(KERNEL_DIR "/lib/modules/${uname_r}/build")
++  endif()
+ else()
+   set(KERNEL_DIR "/lib/modules/${KERNEL_VER}/build")
+ endif()
+--
+2.17.1
+

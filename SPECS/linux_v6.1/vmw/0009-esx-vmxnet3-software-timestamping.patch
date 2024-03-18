@@ -1,0 +1,24 @@
+diff -Naur a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c	2020-11-09 23:46:32.741883266 -0800
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c	2020-11-09 23:44:22.621643088 -0800
+@@ -1099,6 +1099,9 @@
+ 		goto drop_pkt;
+ 	}
+ 
++	/* timestamp packet in software */
++	skb_tx_timestamp(skb);
++
+ 	spin_lock_irqsave(&tq->tx_lock, flags);
+ 
+ 	if (count > vmxnet3_cmd_ring_desc_avail(&tq->tx_ring)) {
+diff -Naur a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c	2020-11-09 23:38:51.529031950 -0800
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c	2020-11-09 23:47:53.082031551 -0800
+@@ -1204,6 +1204,7 @@
+ 	.set_ringparam     = vmxnet3_set_ringparam,
+ 	.get_rxnfc         = vmxnet3_get_rxnfc,
+ 	.set_rxnfc         = vmxnet3_set_rxnfc,
++	.get_ts_info       = ethtool_op_get_ts_info,
+ #ifdef VMXNET3_RSS
+ 	.get_rxfh_indir_size = vmxnet3_get_rss_indir_size,
+ 	.get_rxfh          = vmxnet3_get_rss,

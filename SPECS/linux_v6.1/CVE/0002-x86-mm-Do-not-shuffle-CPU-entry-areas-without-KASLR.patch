@@ -1,0 +1,61 @@
+From 53acba99c876d36136f9bf10caed24dc7d1c934f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
+Date: Mon, 6 Mar 2023 20:31:44 +0100
+Subject: [PATCH 2/2] x86/mm: Do not shuffle CPU entry areas without KASLR
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit a3f547addcaa10df5a226526bc9e2d9a94542344 upstream.
+
+The commit 97e3d26b5e5f ("x86/mm: Randomize per-cpu entry area") fixed
+an omission of KASLR on CPU entry areas. It doesn't take into account
+KASLR switches though, which may result in unintended non-determinism
+when a user wants to avoid it (e.g. debugging, benchmarking).
+
+Generate only a single combination of CPU entry areas offsets -- the
+linear array that existed prior randomization when KASLR is turned off.
+
+Since we have 3f148f331814 ("x86/kasan: Map shadow for percpu pages on
+demand") and followups, we can use the more relaxed guard
+kasrl_enabled() (in contrast to kaslr_memory_enabled()).
+
+Fixes: 97e3d26b5e5f ("x86/mm: Randomize per-cpu entry area")
+Signed-off-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/all/20230306193144.24605-1-mkoutny%40suse.com
+[Ankit: Backported the change for v6.1.x]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ arch/x86/mm/cpu_entry_area.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/x86/mm/cpu_entry_area.c b/arch/x86/mm/cpu_entry_area.c
+index 20844cf14..4d7fba2b2 100644
+--- a/arch/x86/mm/cpu_entry_area.c
++++ b/arch/x86/mm/cpu_entry_area.c
+@@ -9,6 +9,7 @@
+ #include <asm/cpu_entry_area.h>
+ #include <asm/fixmap.h>
+ #include <asm/desc.h>
++#include <asm/setup.h>
+ 
+ static DEFINE_PER_CPU_PAGE_ALIGNED(struct entry_stack_page, entry_stack_storage);
+ 
+@@ -28,6 +29,12 @@ static __init void init_cea_offsets(void)
+ 	unsigned int max_cea;
+ 	unsigned int i, j;
+ 
++	if (!kaslr_enabled()) {
++		for_each_possible_cpu(i)
++			per_cpu(_cea_offset, i) = i;
++		return;
++	}
++
+ 	max_cea = (CPU_ENTRY_AREA_MAP_SIZE - PAGE_SIZE) / CPU_ENTRY_AREA_SIZE;
+ 
+ 	/* O(sodding terrible) */
+-- 
+2.23.1
+

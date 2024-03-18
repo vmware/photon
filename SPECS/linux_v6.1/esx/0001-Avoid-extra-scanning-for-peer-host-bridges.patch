@@ -1,0 +1,48 @@
+From 24693f58ed55300199255b1dcccc698a80a95f4e Mon Sep 17 00:00:00 2001
+From: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
+Date: Thu, 14 Jul 2022 15:36:20 +0000
+Subject: [PATCH] Avoid extra scanning for peer host bridges
+
+VMware hypervisor doesn't support multiple host bridges.
+
+pcibios_scan_specific_bus() calls scanning for all buses for peer host bridges.
+When mmconfig is initialised pcibios_last_bus is a non zero positive value (0x7f).
+Due to which there is increased raw_pci_read() calls when mm_config is initialised.
+But VMware hypervisor doesn't support multiple host bridges and for the single host bridge,
+the information is provided by ACPI tables.
+So avoid extra scanning.
+
+Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
+---
+ arch/x86/pci/legacy.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/pci/legacy.c b/arch/x86/pci/legacy.c
+index 467311b1..1e27fc6a 100644
+--- a/arch/x86/pci/legacy.c
++++ b/arch/x86/pci/legacy.c
+@@ -7,6 +7,7 @@
+ #include <linux/pci.h>
+ #include <asm/jailhouse_para.h>
+ #include <asm/pci_x86.h>
++#include <asm/hypervisor.h>
+ 
+ /*
+  * Discover remaining PCI buses in case there are peer host bridges.
+@@ -68,7 +69,12 @@ static int __init pci_subsys_init(void)
+ 		}
+ 	}
+ 
+-	pcibios_fixup_peer_bridges();
++	/*
++	 * Multiple peer host bridges are not supported.
++	 * Avoid extra scanning.
++	 */
++	if (x86_hyper_type != X86_HYPER_VMWARE)
++		pcibios_fixup_peer_bridges();
+ 	x86_init.pci.init_irq();
+ 	pcibios_init();
+ 
+-- 
+2.30.0
+
