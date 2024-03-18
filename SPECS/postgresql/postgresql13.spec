@@ -13,7 +13,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -667,6 +667,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-4
+- Use version specific bindir path in service file
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 13.14-3
 - Bump version as a part of libxml2 upgrade
 * Sat Feb 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-2
