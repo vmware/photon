@@ -2,8 +2,8 @@
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        253.12
-Release:        7%{?dist}
+Version:        253.17
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=dd099160932258f7baf541e52ce7181565096f93f9311e4d3f6383c2035ab3d39765a7de03fb99b83e16a79db301558577fb14859ef24f3da548e8806ef95ea2
+%define sha512 %{name}=3acc9ba17db26ce701a8b11984a25f269109d08bcec589dabe6cf46033c59aac151e8baaa561b3c8300bf8d5bc3e0769e84971be3fe893a7f003e618141800a6
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -701,6 +701,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Apr 29 2024 Susant Sahani <susant.sahani@broadcom.com> 253.17-1
+- Upgrade to v253.17
 * Sun Mar 24 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 253.12-7
 - Fix issue with VM reconfigure + static ip
 * Tue Jan 09 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 253.12-6
