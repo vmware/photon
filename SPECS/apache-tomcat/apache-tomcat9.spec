@@ -11,8 +11,8 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.83
-Release:        2%{?dist}
+Version:        9.0.86
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -20,7 +20,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=28e112a9d01918434ad03c414058275bbc4e34be408c2cfe2d819c3a08cadc3c31920e279c5312529aa2f5abf1e002537012c5f06d43ba8894448afd5585c231
+%define sha512 %{_origname}=02b5100f18233b4b20e6f03e455daf67b842ec2f894ff6f6971383f1a8f8c8ebbb098cb7f16be73f69e3f8cd1f3a2ce1ca78948aa7cc788fc316e0e8f68f4cde
 
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
@@ -32,7 +32,7 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=4beef378a74346fb68fba156e73f263c772dc23ba4888a6b7134a460219adddd5b4c9e0a3424e9a0ee517fed4f036e0f9136dff40a5cb3c9ad06c1c873056c1c
+%define sha512 base=9a5547015e419ee48ab3bc0a04ecdc856f60b6d64ffb2ba4d3bf4a38fc2babfe74ce3a1c4b8a51d6ac1981397548f1e6ed61d4954777b6ee66219672900d84d0
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
@@ -148,6 +148,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Tue Mar 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 9.0.86-1
+- Version upgrade to v9.0.86
 * Mon Mar 11 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 9.0.83-2
 - Version bump to use new jdk11 or jdk17
 * Wed Feb 21 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 9.0.83-1
