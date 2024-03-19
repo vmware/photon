@@ -1,20 +1,16 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
+%define lvm2_services blk-availability.service lvm2-monitor.service
+%define dm_event_units dm-event.service dm-event.socket
 Summary:        Userland logical volume management tools
 Name:           lvm2
-Version:        2.02.187
-Release:        2%{?dist}
+Version:        2.03.10
+Release:        1%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0:        ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha1    LVM2=2a846b1a766aad5e04e2835a510c84ecc7ceb28d
-Source1:        lvm2-activate.service
-
+Source0:        https://www.sourceware.org/pub/lvm2/releases/LVM2.%{version}.tgz
+%define sha512  LVM2=8678ae2f99739ccad0250f6f4b4b8e84520f2053835985a1ea9c80196a64df31a48858aebf983170c3dfcafecea83f2c6aa630ef73fd31dd84cf1627a1b421e4
 Patch0:         lvm2-set-default-preferred_names.patch
 
 BuildRequires:  libselinux-devel, libsepol-devel
@@ -23,9 +19,7 @@ BuildRequires:  readline-devel
 BuildRequires:  systemd-devel
 BuildRequires:  thin-provisioning-tools
 BuildRequires:  libaio-devel
-BuildRequires:  python2-devel
-BuildRequires:  python3-devel
-
+BuildRequires:  boost
 Requires:       device-mapper-libs = %{version}-%{release}
 Requires:       device-mapper-event-libs = %{version}-%{release}
 Requires:       device-mapper-event = %{version}-%{release}
@@ -42,142 +36,89 @@ losetup(8)), creating volume groups (kind of virtual disks) from one
 or more physical volumes and creating one or more logical volumes
 (kind of logical partitions) in volume groups.
 
-%package    devel
-Summary:    Development libraries and headers
-Group:      Development/Libraries
-License:    LGPLv2
-Requires:   %{name} = %{version}-%{release}
-Requires:   device-mapper-devel = %{version}-%{release}
-Requires:   util-linux-devel
+%package        devel
+Summary:        Development libraries and headers
+Group:          Development/Libraries
+License:        LGPLv2
+Requires:       %{name} = %{version}-%{release}
+Requires:       device-mapper-devel = %{version}-%{release}
+Requires:       util-linux-devel
 
 %description    devel
 This package contains files needed to develop applications that use
 the lvm2 libraries.
 
-%package    libs
-Summary:    Shared libraries for lvm2
-License:    LGPLv2
-Group:      System Environment/Libraries
-Requires:   device-mapper-libs = %{version}-%{release}
-Requires:   device-mapper-event-libs = %{version}-%{release}
+%package        libs
+Summary:        Shared libraries for lvm2
+License:        LGPLv2
+Group:          System Environment/Libraries
+Requires:       device-mapper-libs = %{version}-%{release}
+Requires:       device-mapper-event-libs = %{version}-%{release}
 
 %description    libs
 This package contains shared lvm2 libraries for applications.
 
-%post libs -p /sbin/ldconfig
+%package -n     device-mapper
+Summary:        Device mapper utility
+Group:          System Environment/Base
+URL:            http://sources.redhat.com/dm
+Requires:       device-mapper-libs
+Requires:       systemd
 
-%postun libs -p /sbin/ldconfig
-
-%package        python-libs
-Summary:        Python module to access LVM
-License:        LGPLv2
-Group:          Development/Libraries
-Requires:       %{name}-libs = %{version}-%{release}
-Requires:       python2-libs
-Requires:       python2
-
-%description    python-libs
-Python module to allow the creation and use of LVM
-logical volumes, physical volumes, and volume groups.
-
-%package    -n  python3-lvm2-libs
-Summary:        Python module to access LVM
-License:        LGPLv2
-Group:          Development/Libraries
-Requires:       %{name}-libs = %{version}-%{release}
-Requires:       python3-libs
-Requires:       python3
-
-%description -n python3-lvm2-libs
-Python module to allow the creation and use of LVM
-logical volumes, physical volumes, and volume groups.
-
-%package -n device-mapper
-Summary:    Device mapper utility
-Group:      System Environment/Base
-URL:        http://sources.redhat.com/dm
-Requires:   device-mapper-libs
-Requires:   systemd
 %description -n device-mapper
 This package contains the supporting userspace utility, dmsetup,
 for the kernel device-mapper.
 
-%package -n device-mapper-devel
-Summary:    Development libraries and headers for device-mapper
-License:    LGPLv2
-Group:      Development/Libraries
-Requires:   device-mapper = %{version}-%{release}
-Requires:   libselinux-devel
-Provides:   pkgconfig(devmapper)
+%package -n     device-mapper-devel
+Summary:        Development libraries and headers for device-mapper
+License:        LGPLv2
+Group:          Development/Libraries
+Requires:       device-mapper = %{version}-%{release}
+Requires:       libselinux-devel
+Provides:       pkgconfig(devmapper)
 
 %description -n device-mapper-devel
 This package contains files needed to develop applications that use
 the device-mapper libraries.
 
-%package -n device-mapper-libs
-Summary:    Device-mapper shared library
-License:    LGPLv2
-Group:      System Environment/Libraries
-Requires:   libselinux
-Requires:   libsepol
-Requires:   systemd
+%package -n     device-mapper-libs
+Summary:        Device-mapper shared library
+License:        LGPLv2
+Group:          System Environment/Libraries
+Requires:       libselinux
+Requires:       libsepol
+Requires:       systemd
 
 %description -n device-mapper-libs
 This package contains the device-mapper shared library, libdevmapper.
 
-%post -n device-mapper-libs
-/sbin/ldconfig
-
-%postun -n device-mapper-libs
-/sbin/ldconfig
-
-%package -n device-mapper-event
-Summary:    Device-mapper event daemon
-Group:      System Environment/Base
-Requires:   device-mapper = %{version}-%{release}
-Requires:   device-mapper-event-libs = %{version}-%{release}
+%package -n     device-mapper-event
+Summary:        Device-mapper event daemon
+Group:          System Environment/Base
+Requires:       device-mapper = %{version}-%{release}
+Requires:       device-mapper-event-libs = %{version}-%{release}
 Requires:       systemd
 
 %description -n device-mapper-event
 This package contains the dmeventd daemon for monitoring the state
 of device-mapper devices.
 
-%post -n device-mapper-event
-%systemd_post dm-event.service dm-event.socket
-if [ $1 -eq 1 ];then
-    # This is initial installation
-    systemctl start dm-event.socket
-fi
-%preun -n device-mapper-event
-if [ $1 -eq 0 ];then
-    # This is erase operation
-    systemctl stop dm-event.socket
-fi
-%systemd_preun dm-event.service dm-event.socket
-
-%postun -n device-mapper-event
-%systemd_postun_with_restart dm-event.service dm-event.socket
-
-%package -n device-mapper-event-libs
-Summary:    Device-mapper event daemon shared library
-License:    LGPLv2
-Group:      System Environment/Libraries
-Requires:   device-mapper-libs = %{version}-%{release}
+%package -n     device-mapper-event-libs
+Summary:        Device-mapper event daemon shared library
+License:        LGPLv2
+Group:          System Environment/Libraries
+Requires:       device-mapper-libs = %{version}-%{release}
 
 %description -n device-mapper-event-libs
 This package contains the device-mapper event daemon shared library,
 libdevmapper-event.
 
-%post -n device-mapper-event-libs -p /sbin/ldconfig
-
-%postun -n device-mapper-event-libs -p /sbin/ldconfig
-
-%package -n device-mapper-event-devel
-Summary:    Development libraries and headers for the device-mapper event daemon
-License:    LGPLv2
-Group:      Development/Libraries
-Requires:   device-mapper-event = %{version}-%{release}
-Requires:   device-mapper-devel = %{version}-%{release}
+%package -n     device-mapper-event-devel
+Summary:        Development libraries and headers for the device-mapper event daemon
+License:        LGPLv2
+Group:          Development/Libraries
+Requires:       device-mapper-event = %{version}-%{release}
+Requires:       device-mapper-devel = %{version}-%{release}
 
 %description -n device-mapper-event-devel
 This package contains files needed to develop applications that use
@@ -185,6 +126,7 @@ the device-mapper event library.
 
 %prep
 %autosetup -p1 -n LVM2.%{version}
+#%patch0 -p1 -b .preferred_names
 
 %build
 %define _default_pid_dir /run
@@ -208,15 +150,12 @@ the device-mapper event library.
     --enable-cmdlib \
     --enable-dmeventd \
     --enable-use_lvmetad \
-    --enable-python2-bindings \
-    --enable-python3-bindings \
     --enable-blkid_wiping \
     --enable-lvmetad \
     --with-udevdir=%{_udevdir} --enable-udev_sync \
     --with-thin=internal \
     --with-cache=internal \
     --with-cluster=internal --with-clvmd=none
-
 make %{?_smp_mflags}
 
 %install
@@ -225,37 +164,58 @@ make install_system_dirs DESTDIR=%{buildroot} %{?_smp_mflags}
 make install_systemd_units DESTDIR=%{buildroot} %{?_smp_mflags}
 make install_systemd_generators DESTDIR=%{buildroot} %{?_smp_mflags}
 make install_tmpfiles_configuration DESTDIR=%{buildroot} %{?_smp_mflags}
-cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable lvm2-activate.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
-echo "disable lvm2-monitor.service" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
-echo "disable lvm2-lvmetad.socket" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
-echo "disable lvm2-lvmetad.service" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
+install -vdm755 %{buildroot}%{_presetdir}
+cat <<EOF > %{buildroot}%{_presetdir}/50-lvm2.preset
+disable lvm2-monitor.service
+EOF
 
 %preun
-%systemd_preun lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
+%systemd_preun %lvm2_services
 
 %post
 /sbin/ldconfig
-%systemd_post lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
+%systemd_post %lvm2_services
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
+%systemd_postun_with_restart %lvm2_services
+
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
+
+%post -n device-mapper-libs
+/sbin/ldconfig
+
+%postun -n device-mapper-libs
+/sbin/ldconfig
+
+%post -n device-mapper-event
+if [ $1 -eq 1 ]; then
+  systemctl start dm-event.socket
+fi
+%systemd_post %dm_event_units
+
+%preun -n device-mapper-event
+%systemd_preun %dm_event_units
+if [ $1 -eq 0 ]; then
+  systemctl stop dm-event.socket
+fi
+
+%postun -n device-mapper-event
+%systemd_postun_with_restart %dm_event_units
+
+%post -n device-mapper-event-libs -p /sbin/ldconfig
+%postun -n device-mapper-event-libs -p /sbin/ldconfig
 
 %files  devel
 %defattr(-,root,root,-)
-%{_libdir}/liblvm2app.so
 %{_libdir}/liblvm2cmd.so
 %{_libdir}/libdevmapper-event-lvm2.so
-%{_includedir}/lvm2app.h
 %{_includedir}/lvm2cmd.h
-%{_libdir}/pkgconfig/lvm2app.pc
 
 %files libs
 %defattr(-,root,root,-)
-%{_libdir}/liblvm2app.so.*
 %{_libdir}/liblvm2cmd.so.*
 %{_libdir}/libdevmapper-event-lvm2.so.*
 %dir %{_libdir}/device-mapper
@@ -269,12 +229,6 @@ echo "disable lvm2-lvmetad.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %{_libdir}/libdevmapper-event-lvm2raid.so
 %{_libdir}/libdevmapper-event-lvm2thin.so
 %{_libdir}/libdevmapper-event-lvm2vdo.so
-
-%files  python-libs
-%{python2_sitelib}/*
-
-%files -n  python3-lvm2-libs
-%{python3_sitelib}/*
 
 %files -n device-mapper
 %defattr(-,root,root,-)
@@ -335,7 +289,7 @@ echo "disable lvm2-lvmetad.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %{_unitdir}/../system-generators/lvm2-activation-generator
 %{_unitdir}/blk-availability.service
 %{_unitdir}/lvm2-*
-%{_libdir}/systemd/system-preset/50-lvm2.preset
+%{_presetdir}/50-lvm2.preset
 %{_libdir}/tmpfiles.d/lvm2.conf
 %dir %{_sysconfdir}/lvm
 %attr(644, -, -) %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
@@ -345,6 +299,8 @@ echo "disable lvm2-lvmetad.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %ghost %{_sysconfdir}/lvm/cache/.cache
 
 %changelog
+* Fri Feb 02 2024 Harinadh D <hdommaraju@vmware.com> 2.03.10-1
+- Upgrade version
 * Thu Mar 18 2021 Ankit Jain <ankitja@vmware.com> 2.02.187-2
 - Corrected the lvmetad service name in preset
 * Tue Sep 15 2020 Ankit Jain <ankitja@vmware.com> 2.02.187-1
