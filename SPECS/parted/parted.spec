@@ -1,7 +1,7 @@
 Summary:        GNU Parted manipulates partition tables
 Name:           parted
-Version:        3.2
-Release:        10%{?dist}
+Version:        3.5
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:          Applications/System
@@ -9,7 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/gnu/parted/%{name}-%{version}.tar.xz
-%define sha512 parted=b51c6f067496591f0231f642a222ca2f368e9690bd4114bac76da543f32980864c1c71f0213be08f610bcdfb940f202bdd58dce7ddde8b5b2ec9120e8efc798e
+%define sha512 parted=87fc69e947de5f0b670ee5373a7cdf86180cd782f6d7280f970f217f73f55ee1b1b018563f48954f3a54fdde5974b33e07eee68c9ccdf08e621d3dc0e3ce126a
+
+Patch0:         parted-freelocale.patch
 
 Conflicts:      toybox < 0.8.2-2
 
@@ -24,20 +26,21 @@ command-line frontend, parted, which can also be used in scripts.
 
 %build
 #Add a header to allow building with glibc-2.28 or later
-sed -i '/utsname.h/a#include <sys/sysmacros.h>' libparted/arch/linux.c
+sed -i '/utsname.h/a#include <sys/sysmacros.h>' libparted/arch/linux.c &&
 
-%configure --without-readline \
+%configure \
+    --without-readline \
     --disable-debug \
-	--disable-nls \
+    --disable-nls \
     --disable-device-mapper
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -52,6 +55,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{_infodir}/dir
 
 %changelog
+* Tue Mar 19 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 3.5-1
+- Version upgrade
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2-10
 - Remove .la files
 * Tue Oct 27 2020 Dweep Advani <dadvani@vmware.com> 3.2-9

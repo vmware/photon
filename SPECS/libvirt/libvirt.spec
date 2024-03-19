@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        4.7.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -129,6 +129,8 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/*
 
 %changelog
+*   Tue Mar 26 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 4.7.0-13
+-   Version bump to use parted 3.5
 *   Wed Jan 24 2024 Harinadh D <hdommaraju@vmware.com> 4.7.0-12
 -   Version bump to use libssh2 1.11.0
 *   Fri Sep 02 2022 Mukul Sikka <msikka@vmware.com> 4.7.0-11
