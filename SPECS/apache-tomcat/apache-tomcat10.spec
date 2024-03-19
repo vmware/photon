@@ -11,7 +11,7 @@
 
 Summary:        Apache Tomcat 10.1
 Name:           apache-tomcat10
-Version:        10.1.16
+Version:        10.1.19
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -22,7 +22,7 @@ Obsoletes:      %{_origname} < 10.1.15-1%{?dist}
 Provides:       %{_origname} = %{version}-%{release}
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=a358f93642fcb9eb34e4fb30f6dc7f7a3d69ae9c83c7a50748f143e3297228db106548cb44a1c2102e63325ae39be67090a66be1920ccac5d080c8ff1f41ad8c
+%define sha512 %{_origname}=ee9bd20979a53f2151ac10dd8be4d4c0b82cabb60c10f33572460094a199832434b4f55aed4ab0334a2daf2795dbbfa345a55144132dbfecc7b3ab2d74999e77
 
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
@@ -34,7 +34,7 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{_ori
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=1f69d7321058d8a633b6b3c084b4754e1db2218e95ef53f5debd4f5df8225c367f8f650c8626385d0b5f9143623f7076c65eb393919967f25edf1a2f47d9abeb
+%define sha512 base=480d9fe053a0de25e560306bd98c0489a22237ac1ad8132ad5f78a116531aa08cd23b799ff7b69e04936086503656b51e715b1d3300cc3f27cfc6d4ea6a113a4
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
@@ -150,6 +150,8 @@ alternatives --remove apache-tomcat %{_prefix}
 fi
 
 %changelog
+* Tue Mar 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 10.1.19-1
+- Version upgrade to v10.1.19
 * Tue Feb 20 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 10.1.16-1
 - Upgrade to 10.1.16, Fix CVE-2023-46589
 * Tue Feb 20 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.1.15-2
