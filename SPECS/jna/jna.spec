@@ -4,7 +4,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        4.5.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
@@ -81,6 +81,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+* Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.2-6
+- Bump version as a part of openjdk8 upgrade
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.5.2-5
 - Bump version as a part of openjdk8 upgrade
 * Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 4.5.2-4

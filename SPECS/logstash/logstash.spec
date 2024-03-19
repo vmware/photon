@@ -1,7 +1,7 @@
 Summary:        Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.8.15
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -121,6 +121,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+* Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 6.8.15-4
+- Bump version as a part of openjdk8 upgrade
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.8.15-3
 - Bump version as a part of openjdk8 upgrade
 * Wed Dec 15 2021 Ankit Jain <ankitja@vmware.com> 6.8.15-2

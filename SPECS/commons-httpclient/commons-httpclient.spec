@@ -1,7 +1,7 @@
 Summary:    Apache commons-httpclient
 Name:       commons-httpclient
 Version:    3.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache
 URL:        http://ant.apache.org
 Group:      Applications/System
@@ -77,6 +77,8 @@ ant -Ddist.dir="." -Dbuild.sysclasspath=first -Dtest.failonerror=false -Dlib.dir
 %{_datadir}/java/%{name}/*.jar
 
 %changelog
+* Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.1-3
+- Bump version as a part of openjdk8 upgrade
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1-2
 - Bump version as a part of openjdk8 upgrade
 * Thu Sep 10 2020 Ankit Jain <ankitja@vmware.com> 3.1-1

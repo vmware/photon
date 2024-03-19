@@ -1,7 +1,7 @@
 Summary:    Apache Maven
 Name:       apache-maven
 Version:    3.6.3
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache License 2.0
 URL:        http://maven.apache.org
 Group:      Applications/System
@@ -79,6 +79,8 @@ done
 %exclude %{maven_libdir}/jansi-native
 
 %changelog
+* Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.3-3
+- Bump version as a part of openjdk8 upgrade
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.3-2
 - Bump version as a part of openjdk8 upgrade
 * Tue May 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.6.3-1

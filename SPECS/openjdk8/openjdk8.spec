@@ -1,12 +1,12 @@
 %global security_hardening  none
 %define jdk_major_version   1.8.0
 %define bootstrapjdkversion 1.8.0.112
-%define subversion          382
+%define subversion          402
 %define _use_internal_dependency_generator  0
 
 Summary:    OpenJDK
 Name:       openjdk8
-Version:    1.8.0.382
+Version:    1.8.0.402
 Release:    1%{?dist}
 License:    GNU GPL
 URL:        https://wiki.openjdk.org/display/jdk8u
@@ -16,7 +16,7 @@ Distribution:   Photon
 
 # download the tag from github and rename the tarball to openjdk-%{version}.tar.gz
 Source0: https://github.com/openjdk/jdk8u/archive/refs/tags/openjdk-%{version}.tar.gz
-%define sha512 openjdk=7830225fda3dfc32f4ead641b59fc5dc725fbfbce840cd5f2c2c331ae0ddff446e4255328aa311ed5bff2b6aa8baae427655ba9e5417fc3e10e5a81208b4539c
+%define sha512 openjdk=476d195ef500d8dd2013b17de0669a77ef8076b55c2753eb88b1a13f7a48526b1be7a1befabd284eb9ee8411df19ab1f39c81287ab659984d2d67e8aa7192d79
 
 Patch0: Awt_build_headless_only.patch
 Patch1: check-system-ca-certs-x86.patch
@@ -86,7 +86,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep
-%autosetup -p1 -n jdk8u-jdk8u%{subversion}-b03
+%autosetup -p1 -n jdk8u-jdk8u%{subversion}-ga
 
 rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
 sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
@@ -277,6 +277,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK8-%{jdk_major_version}/src.zip
 
 %changelog
+* Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.0.402-1
+- Upgrade to v1.8.0.402
 * Fri Jun 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0.382-1
 - Upgrade to v1.8.0.382, fixes a lot of CVEs
 * Mon Jun 13 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.0.322-1

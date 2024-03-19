@@ -1,7 +1,7 @@
 Summary:    Ant contrib
 Name:       ant-contrib
 Version:    1.0b3
-Release:    16%{?dist}
+Release:    17%{?dist}
 License:    Apache
 URL:        http://ant-contrib.sourceforget.net
 Group:      Applications/System
@@ -48,6 +48,8 @@ rm -rf %{buildroot}
 %{_prefix}/lib/*.jar
 
 %changelog
+* Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0b3-17
+- Bump version as a part of openjdk8 upgrade
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0b3-16
 - Bump version as a part of openjdk8 upgrade
 * Thu Sep 10 2020 Ankit Jain <ankitja@vmware.com> 1.0b3-15

@@ -1,7 +1,7 @@
 Summary:    Apache Commons Daemon
 Name:       commons-daemon
 Version:    1.1.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    Apache
 URL:        http://commons.apache.org/proper/commons-daemon
 Group:      Applications/System
@@ -60,6 +60,8 @@ rm -rf %{buildroot}
 %{_datadir}/java/*.jar
 
 %changelog
+* Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.0-5
+- Bump version as a part of openjdk8 upgrade
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-4
 - Bump version as a part of openjdk8 upgrade
 * Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 1.1.0-3
