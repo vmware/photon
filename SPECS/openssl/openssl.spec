@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -17,6 +17,7 @@ Distribution:   Photon
 
 Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
 %define sha512 %{name}=22f4096781f0b075f5bf81bd39a0f97e111760dfa73b6f858f6bb54968a7847944d74969ae10f9a51cc21a2f4af20d9a4c463649dc824f5e439e196d6764c4f9
+Patch1: CVE-2023-50782.patch
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
@@ -253,6 +254,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Mon Mar 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.13-3
+- Fix CVE-2023-50782
 * Mon Feb 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.13-2
 - Fix Upgrade test failure
 * Thu Feb 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.13-1
