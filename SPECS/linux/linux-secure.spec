@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.214
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -126,7 +126,7 @@ Patch92: 0002-Added-PAX_RANDKSTACK.patch
 Patch93: 0003-Added-rap_plugin.patch
 Patch94: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
 
-# CVE:
+# CVE: [100..300]
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
@@ -212,6 +212,8 @@ Patch155: 0001-netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
 # Fix CVE-2024-26643
 Patch156: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
+# Fix CVE-2023-1192
+Patch157: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -339,8 +341,8 @@ The Linux package contains the Linux kernel doc files
 #Secure
 %autopatch -p1 -m90 -M94
 
-# CVE
-%autopatch -p1 -m100 -M156
+# CVE: [100..300]
+%autopatch -p1 -m100 -M157
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -485,6 +487,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.214-3
+- Fix for CVE-2023-1192
 * Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2
 - Patched CVE-2024-26643
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-1

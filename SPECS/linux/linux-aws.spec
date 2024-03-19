@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.214
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -118,7 +118,7 @@ Patch58: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 #Kernel lockdown
 Patch59: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 
-# CVE:
+# CVE: [100..300]
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
@@ -181,10 +181,8 @@ Patch149: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
 # Fix CVE-2023-52482
 Patch150: 0001-x86-srso-Add-SRSO-mitigation-for-Hygon-processors.patch
-
-# Enable CONFIG_DEBUG_INFO_BTF=y
-Patch151: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
-
+# Fix CVE-2023-1192
+Patch151: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
 # Fix CVE-2024-26583
 Patch152: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
 
@@ -204,46 +202,49 @@ Patch156: 0001-netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 Patch157: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
 
 #Amazon AWS
-Patch201: 0002-bump-the-default-TTL-to-255.patch
-Patch202: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
-Patch203: 0005-drivers-introduce-AMAZON_DRIVER_UPDATES.patch
-Patch204: 0006-drivers-amazon-add-network-device-drivers-support.patch
-Patch205: 0007-drivers-amazon-introduce-AMAZON_ENA_ETHERNET.patch
-Patch206: 0008-Importing-Amazon-ENA-driver-1.5.0-into-amazon-4.14.y.patch
-Patch207: 0009-xen-manage-keep-track-of-the-on-going-suspend-mode.patch
-Patch208: 0010-xen-manage-introduce-helper-function-to-know-the-on-.patch
-Patch209: 0011-xenbus-add-freeze-thaw-restore-callbacks-support.patch
-Patch210: 0012-x86-xen-Introduce-new-function-to-map-HYPERVISOR_sha.patch
-Patch211: 0013-x86-xen-add-system-core-suspend-and-resume-callbacks.patch
-Patch212: 0014-xen-blkfront-add-callbacks-for-PM-suspend-and-hibern.patch
-Patch213: 0015-xen-netfront-add-callbacks-for-PM-suspend-and-hibern.patch
-Patch214: 0016-xen-time-introduce-xen_-save-restore-_steal_clock.patch
-Patch215: 0017-x86-xen-save-and-restore-steal-clock.patch
-Patch216: 0018-xen-events-add-xen_shutdown_pirqs-helper-function.patch
-Patch217: 0019-x86-xen-close-event-channels-for-PIRQs-in-system-cor.patch
-Patch218: 0020-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
-Patch219: 0021-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
-Patch220: 0022-xen-blkfront-add-persistent_grants-parameter.patch
-Patch221: 0023-Revert-xen-dont-fiddle-with-event-channel-masking-in.patch
-Patch222: 0024-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
-Patch223: 0025-x86-tsc-avoid-system-instability-in-hibernation.patch
-Patch224: 0026-block-xen-blkfront-consider-new-dom0-features-on-res.patch
-Patch225: 0028-xen-restore-pirqs-on-resume-from-hibernation.patch
-Patch226: 0029-xen-Only-restore-the-ACPI-SCI-interrupt-in-xen_resto.patch
-Patch227: 0030-net-ena-Import-the-ENA-v2-driver-2.0.2g.patch
-Patch228: 0031-xen-netfront-call-netif_device_attach-on-resume.patch
-Patch229: 0032-net-ena-replace-dma_zalloc_coherent-with-dma_alloc_c.patch
-Patch230: 0060-xen-Restore-xen-pirqs-on-resume-from-hibernation.patch
-Patch231: 0061-block-xen-blkfront-bump-the-maximum-number-of-indire.patch
-Patch232: 0063-linux-ena-update-ENA-linux-driver-to-version-2.1.1.patch
-Patch233: 0064-Update-ena-driver-to-version-2.1.3.patch
-Patch234: 0065-Add-Amazon-EFA-driver-version-1.4.patch
-Patch235: 0066-libfs-revert-d4f4de5e5ef8efde85febb6876cd3c8ab163199.patch
-Patch236: 0070-ena-update-to-2.2.3.patch
-Patch237: 0071-ena-update-to-2.2.6.patch
-Patch238: 0082-ena-Update-to-2.2.10.patch
-Patch239: 0123-drivers-amazon-efa-update-to-1.9.0.patch
-Patch240: drivers-amazon-efa-driver-compilation-fix-on-5.10.patch
+Patch301: 0002-bump-the-default-TTL-to-255.patch
+Patch302: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
+Patch303: 0005-drivers-introduce-AMAZON_DRIVER_UPDATES.patch
+Patch304: 0006-drivers-amazon-add-network-device-drivers-support.patch
+Patch305: 0007-drivers-amazon-introduce-AMAZON_ENA_ETHERNET.patch
+Patch306: 0008-Importing-Amazon-ENA-driver-1.5.0-into-amazon-4.14.y.patch
+Patch307: 0009-xen-manage-keep-track-of-the-on-going-suspend-mode.patch
+Patch308: 0010-xen-manage-introduce-helper-function-to-know-the-on-.patch
+Patch309: 0011-xenbus-add-freeze-thaw-restore-callbacks-support.patch
+Patch310: 0012-x86-xen-Introduce-new-function-to-map-HYPERVISOR_sha.patch
+Patch311: 0013-x86-xen-add-system-core-suspend-and-resume-callbacks.patch
+Patch312: 0014-xen-blkfront-add-callbacks-for-PM-suspend-and-hibern.patch
+Patch313: 0015-xen-netfront-add-callbacks-for-PM-suspend-and-hibern.patch
+Patch314: 0016-xen-time-introduce-xen_-save-restore-_steal_clock.patch
+Patch315: 0017-x86-xen-save-and-restore-steal-clock.patch
+Patch316: 0018-xen-events-add-xen_shutdown_pirqs-helper-function.patch
+Patch317: 0019-x86-xen-close-event-channels-for-PIRQs-in-system-cor.patch
+Patch318: 0020-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
+Patch319: 0021-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
+Patch320: 0022-xen-blkfront-add-persistent_grants-parameter.patch
+Patch321: 0023-Revert-xen-dont-fiddle-with-event-channel-masking-in.patch
+Patch322: 0024-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
+Patch323: 0025-x86-tsc-avoid-system-instability-in-hibernation.patch
+Patch324: 0026-block-xen-blkfront-consider-new-dom0-features-on-res.patch
+Patch325: 0028-xen-restore-pirqs-on-resume-from-hibernation.patch
+Patch326: 0029-xen-Only-restore-the-ACPI-SCI-interrupt-in-xen_resto.patch
+Patch327: 0030-net-ena-Import-the-ENA-v2-driver-2.0.2g.patch
+Patch328: 0031-xen-netfront-call-netif_device_attach-on-resume.patch
+Patch329: 0032-net-ena-replace-dma_zalloc_coherent-with-dma_alloc_c.patch
+Patch330: 0060-xen-Restore-xen-pirqs-on-resume-from-hibernation.patch
+Patch331: 0061-block-xen-blkfront-bump-the-maximum-number-of-indire.patch
+Patch332: 0063-linux-ena-update-ENA-linux-driver-to-version-2.1.1.patch
+Patch333: 0064-Update-ena-driver-to-version-2.1.3.patch
+Patch334: 0065-Add-Amazon-EFA-driver-version-1.4.patch
+Patch335: 0066-libfs-revert-d4f4de5e5ef8efde85febb6876cd3c8ab163199.patch
+Patch336: 0070-ena-update-to-2.2.3.patch
+Patch337: 0071-ena-update-to-2.2.6.patch
+Patch338: 0082-ena-Update-to-2.2.10.patch
+Patch339: 0123-drivers-amazon-efa-update-to-1.9.0.patch
+Patch340: drivers-amazon-efa-driver-compilation-fix-on-5.10.patch
+
+# Enable CONFIG_DEBUG_INFO_BTF=y
+Patch400: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -361,17 +362,14 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 # VMW
 %autopatch -p1 -m55 -M65
 
-# CVE
-%autopatch -p1 -m100 -M150
-
-# Enable CONFIG_DEBUG_INFO_BTF=y
-%autopatch -p1 -m151 -M151
-
-# CVE
-%autopatch -p1 -m152 -M157
+# CVE: [100..300]
+%autopatch -p1 -m100 -M157
 
 #Amazon AWS
-%autopatch -p1 -m201 -M240
+%autopatch -p1 -m301 -M340
+
+# Enable CONFIG_DEBUG_INFO_BTF=y
+%autopatch -p1 -m400 -M400
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -545,6 +543,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.214-3
+- Fix for CVE-2023-1192
 * Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2
 - Patched CVE-2024-26643
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-1

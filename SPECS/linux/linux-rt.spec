@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.214
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -135,7 +135,7 @@ Patch57: 0001-x86-vmware-avoid-TSC-recalibration.patch
 #Kernel lockdown
 Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 
-# CVE:
+# CVE: [100..300]
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix for CVE-2019-12379
 Patch101: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
@@ -219,20 +219,8 @@ Patch155: 0001-netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
 # Fix CVE-2024-26643
 Patch156: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
-
-# Allow PCI resets to be disabled from vfio_pci module
-Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
-# Add PCI quirk to allow multiple devices under the same virtual PCI bridge
-# to be put into separate IOMMU groups on ESXi.
-Patch201: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
-
-# Enable CONFIG_DEBUG_INFO_BTF=y
-Patch202: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
-
-# SEV, TDX
-%ifarch x86_64
-Patch211: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
-%endif
+# Fix CVE-2023-1192
+Patch157: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -275,6 +263,20 @@ Patch716: Guest-timer-Advancement-Feature.patch
 
 # Provide mixed cpusets guarantees for processes placement
 Patch717: 0001-Enable-and-enhance-SCHED-isolation.patch
+
+# Allow PCI resets to be disabled from vfio_pci module
+Patch800: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+# Add PCI quirk to allow multiple devices under the same virtual PCI bridge
+# to be put into separate IOMMU groups on ESXi.
+Patch801: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+
+# Enable CONFIG_DEBUG_INFO_BTF=y
+Patch802: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
+
+# SEV, TDX
+%ifarch x86_64
+Patch811: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
+%endif
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -417,21 +419,21 @@ The Linux package contains the Linux kernel doc files
 #VMW
 %autopatch -p1 -m55 -M65
 
-# CVE
-%autopatch -p1 -m100 -M156
-
-# Allow PCI resets to be disabled from vfio_pci module
-%autopatch -p1 -m200 -M201
-
-%autopatch -p1 -m202 -M202
-
-# SEV, TDX
-%ifarch x86_64
-%autopatch -p1 -m211 -M211
-%endif
+# CVE: [100..300]
+%autopatch -p1 -m100 -M157
 
 # RT
 %autopatch -p1 -m301 -M717
+
+# Allow PCI resets to be disabled from vfio_pci module
+%autopatch -p1 -m800 -M801
+
+%autopatch -p1 -m802 -M802
+
+# SEV, TDX
+%ifarch x86_64
+%autopatch -p1 -m811 -M811
+%endif
 
 %autopatch -p1 -m1000 -M1007
 
@@ -674,6 +676,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.214-3
+- Fix for CVE-2023-1192
 * Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2
 - Patched CVE-2024-26643
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-1

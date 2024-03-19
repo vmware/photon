@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.214
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -163,7 +163,7 @@ Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
 Patch59: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 %endif
 
-# CVE:
+# CVE: [100..300]
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
@@ -229,16 +229,8 @@ Patch148: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
 # Fix CVE-2023-52482
 Patch149: 0001-x86-srso-Add-SRSO-mitigation-for-Hygon-processors.patch
-
-# Allow PCI resets to be disabled from vfio_pci module
-Patch150: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
-# Add PCI quirk to allow multiple devices under the same virtual PCI bridge
-# to be put into separate IOMMU groups on ESXi.
-Patch151: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
-
-# Enable CONFIG_DEBUG_INFO_BTF=y
-Patch152: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
-
+# Fix CVE-2023-1192
+Patch150: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
 # Fix CVE-2024-26583
 Patch153: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
 
@@ -259,13 +251,21 @@ Patch158: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
-Patch201: 0001-OF-DT-Overlay-configfs-interface.patch
-Patch202: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
-Patch203: 0003-of-overlay-Correct-symbol-path-fixups.patch
+Patch301: 0001-OF-DT-Overlay-configfs-interface.patch
+Patch302: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
+Patch303: 0003-of-overlay-Correct-symbol-path-fixups.patch
 
 # Rpi fan driver
-Patch204: 0001-Add-rpi-poe-fan-driver.patch
+Patch304: 0001-Add-rpi-poe-fan-driver.patch
 %endif
+
+# Allow PCI resets to be disabled from vfio_pci module
+Patch305: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+# Add PCI quirk to allow multiple devices under the same virtual PCI bridge
+# to be put into separate IOMMU groups on ESXi.
+Patch306: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+# Enable CONFIG_DEBUG_INFO_BTF=y
+Patch307: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -507,22 +507,19 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m55 -M65
 %endif
 
-# CVE
-%autopatch -p1 -m100 -M149
-
-# Allow PCI resets to be disabled from vfio_pci module
-%autopatch -p1 -m150 -M151
-
-%autopatch -p1 -m152 -M152
-
-# CVE
-%autopatch -p1 -m153 -M158
+# CVE: [100..300]
+%autopatch -p1 -m100 -M158
 
 %ifarch aarch64
 # Rpi of_configfs patches
 # Rpi fan driver
-%autopatch -p1 -m201 -M204
+%autopatch -p1 -m301 -M304
 %endif
+
+# Allow PCI resets to be disabled from vfio_pci module
+%autopatch -p1 -m305 -M306
+
+%autopatch -p1 -m307 -M307
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -577,24 +574,8 @@ popd
 %endif
 
 # vmci
-%patch1521 -p1
-%patch1522 -p1
-%patch1523 -p1
-%patch1524 -p1
-%patch1531 -p1
-%patch1532 -p1
-%patch1533 -p1
-%patch1534 -p1
-%patch1535 -p1
-%patch1536 -p1
-%patch1537 -p1
-%patch1538 -p1
-%patch1539 -p1
-%patch1540 -p1
-%patch1541 -p1
-%patch1542 -p1
-%patch1543 -p1
-%patch1544 -p1
+%autopatch -p1 -m1521 -M1524
+%autopatch -p1 -m1531 -M1544
 
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
@@ -943,6 +924,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.214-3
+- Fix for CVE-2023-1192
 * Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2
 - Patched CVE-2024-26643
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-1

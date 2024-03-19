@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.214
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -172,7 +172,7 @@ Patch96: 0001-Add-vmap_pfn-without-enabling-i915.patch
 Patch97: linux-esx-Initialize-PAT-even-if-MTRR-is-not-set.patch
 %endif
 
-# CVE:
+# CVE: [100..300]
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
@@ -258,13 +258,15 @@ Patch155: 0001-netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
 # Fix CVE-2024-26643
 Patch156: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
+# Fix CVE-2023-1192
+Patch157: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
 
 #Patches for ptp_vmw
-Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
-Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
+Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
+Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
 
 # GPUs support for DriverVM
-Patch300: amdgpu-Add-Missing-Sienna-Cichlid-DID.patch
+Patch400: amdgpu-Add-Missing-Sienna-Cichlid-DID.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -419,14 +421,14 @@ The Linux package contains the Linux kernel doc files
 # -esx
 %autopatch -p1 -m60 -M97
 
-# CVE
-%autopatch -p1 -m100 -M156
+# CVE: [100..300]
+%autopatch -p1 -m100 -M157
 
 #Patches for ptp_vmw
-%autopatch -p1 -m201 -M202
+%autopatch -p1 -m301 -M302
 
 # GPUs support for DriverVM
-%autopatch -p1 -m300 -M300
+%autopatch -p1 -m400 -M400
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -639,6 +641,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.214-3
+- Fix for CVE-2023-1192
 * Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2
 - Patched CVE-2024-26643
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-1
