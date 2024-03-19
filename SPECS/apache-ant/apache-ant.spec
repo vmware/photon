@@ -8,7 +8,7 @@
 Summary:    Apache Ant
 Name:       apache-ant
 Version:    1.10.10
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    Apache
 URL:        http://ant.apache.org
 Group:      Applications/System
@@ -138,6 +138,8 @@ rm -rf %{buildroot}
 %{_bindir}/runant.pl
 
 %changelog
+* Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.10-5
+- Bump version as a part of openjdk8 upgrade
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.10-4
 - Require jre8 or jdk11-jre or jdk17-jre
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.10-3
