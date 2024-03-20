@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.81
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -190,7 +190,11 @@ Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 # Fix CVE-2024-26585
 Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 # Fix CVE-2023-52585
-Patch131: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
+Patch130: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
+
+# Fix CVE-2023-52452
+Patch131: 0001-bpf-Allow-reads-from-uninit-stack.patch
+Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -460,7 +464,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M131
+%autopatch -p1 -m100 -M132
 
 %ifarch aarch64
 # aarch64 patches
@@ -847,6 +851,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.81-4
+- Fix CVE-2024-52452
 * Mon Apr 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.81-3
 - Fix CVE-2023-52585
 * Mon Apr 29 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-2

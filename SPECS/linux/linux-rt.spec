@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.81
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -154,7 +154,11 @@ Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 # Fix CVE-2024-26585
 Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 # Fix CVE-2023-52585
-Patch131: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
+Patch130: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
+
+# Fix CVE-2023-52452
+Patch131: 0001-bpf-Allow-reads-from-uninit-stack.patch
+Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -297,7 +301,7 @@ stalld to use eBPF based backend.
 %autopatch -p1 -m62 -M63
 
 # CVE
-%autopatch -p1 -m100 -M131
+%autopatch -p1 -m100 -M132
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -478,6 +482,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Apr 29 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.81-5
+- Fix CVE-2024-52452
 * Mon Apr 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.81-4
 - Fix CVE-2023-52585
 * Mon Apr 29 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.81-3
