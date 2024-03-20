@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.307
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -287,6 +287,9 @@ Patch212: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 # Fix CVE-2024-22099
 Patch213: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 
+#Fix CVE-2023-52509
+Patch214: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -380,7 +383,7 @@ popd
 %autopatch -p1 -m100 -M191
 
 # CVE Fixes
-%autopatch -p1 -m192 -M213
+%autopatch -p1 -m192 -M214
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -554,6 +557,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Mar 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.307-3
+- Fix CVE-2023-52509
 * Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  4.19.307-2
 - Fixes CVE-2024-23307 and CVE-2024-22099
 * Wed Mar 06 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.307-1

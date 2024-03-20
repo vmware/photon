@@ -1,0 +1,53 @@
+From 65d34cfd4e347054eb4193bc95d9da7eaa72dee5 Mon Sep 17 00:00:00 2001
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Thu, 5 Oct 2023 10:12:01 +0900
+Subject: [PATCH] ravb: Fix use-after-free issue in ravb_tx_timeout_work()
+
+commit 3971442870713de527684398416970cf025b4f89 upstream.
+
+The ravb_stop() should call cancel_work_sync(). Otherwise,
+ravb_tx_timeout_work() is possible to use the freed priv after
+ravb_remove() was called like below:
+
+CPU0			CPU1
+			ravb_tx_timeout()
+ravb_remove()
+unregister_netdev()
+free_netdev(ndev)
+// free priv
+			ravb_tx_timeout_work()
+			// use priv
+
+unregister_netdev() will call .ndo_stop() so that ravb_stop() is
+called. And, after phy_stop() is called, netif_carrier_off()
+is also called. So that .ndo_tx_timeout() will not be called
+after phy_stop().
+
+Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
+Reported-by: Zheng Wang <zyytlz.wz@163.com>
+Closes: https://lore.kernel.org/netdev/20230725030026.1664873-1-zyytlz.wz@163.com/
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Link: https://lore.kernel.org/r/20231005011201.14368-3-yoshihiro.shimoda.uh@renesas.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/renesas/ravb_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index 4698fbde7fb7..367da05ddb1e 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1703,6 +1703,8 @@ static int ravb_close(struct net_device *ndev)
+ 			of_phy_deregister_fixed_link(np);
+ 	}
+ 
++	cancel_work_sync(&priv->work);
++
+ 	if (priv->chip_id != RCAR_GEN2) {
+ 		free_irq(priv->tx_irqs[RAVB_NC], ndev);
+ 		free_irq(priv->rx_irqs[RAVB_NC], ndev);
+-- 
+2.39.0
+

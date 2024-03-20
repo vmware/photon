@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.307
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -497,6 +497,9 @@ Patch717: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 # Fix CVE-2024-22099
 Patch718: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 
+#Fix CVE-2023-52509
+Patch719: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
+
 # Patches for i40e driver
 Patch803: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
 Patch804: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
@@ -618,7 +621,7 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m540 -M554
 
 # CVE Fixes
-%autopatch -p1 -m700 -M718
+%autopatch -p1 -m700 -M719
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -856,6 +859,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Wed Mar 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.307-3
+- Fix CVE-2023-52509
 * Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  4.19.307-2
 - Fixes CVE-2024-23307 and CVE-2024-22099
 * Wed Mar 06 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.307-1

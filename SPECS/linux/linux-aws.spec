@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.307
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -262,6 +262,9 @@ Patch317: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 # Fix CVE-2024-22099
 Patch318: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 
+#Fix CVE-2023-52509
+Patch319: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
+
 # Usermode helper fixes
 Patch400: 0001-umh-Add-command-line-to-user-mode-helpers.patch
 Patch401: 0002-umh-add-exit-routine-for-UMH-process.patch
@@ -373,7 +376,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m191 -M194
 
 # CVE fixes
-%autopatch -p1 -m300 -M318
+%autopatch -p1 -m300 -M319
 
 # Usermode helper patches
 %autopatch -p1 -m400 -M401
@@ -578,6 +581,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Mar 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.307-3
+- Fix CVE-2023-52509
 * Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  4.19.307-2
 - Fixes CVE-2024-23307 and CVE-2024-22099
 * Wed Mar 06 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.307-1
