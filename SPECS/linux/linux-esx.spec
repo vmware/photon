@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.81
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -180,10 +180,17 @@ Patch108: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 # Fix CVE-2023-39191 [110..128]
 %include %{SOURCE42}
+
+# 110-128 are reserved by CVE-2023-39191.patches
+
 # Fix CVE-2024-26585
 Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 # Fix CVE-2023-52585
 Patch131: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
+
+# Fix CVE-2023-52452
+Patch132: 0001-bpf-Allow-reads-from-uninit-stack.patch
+Patch133: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -309,7 +316,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M89
 
 # CVE
-%autopatch -p1 -m100 -M131
+%autopatch -p1 -m100 -M133
 
 %ifarch aarch64
 # aarch64 patches
@@ -463,6 +470,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Mar 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.81-4
+- Fix CVE-2024-52452
 * Wed Mar 27 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.81-3
 - Fix CVE-2023-52585
 * Mon Mar 25 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-2
