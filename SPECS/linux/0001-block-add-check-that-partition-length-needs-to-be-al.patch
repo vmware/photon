@@ -1,0 +1,72 @@
+From 6f64f866aa1ae6975c95d805ed51d7e9433a0016 Mon Sep 17 00:00:00 2001
+From: Min Li <min15.li@samsung.com>
+Date: Thu, 29 Jun 2023 14:25:17 +0000
+Subject: [PATCH 4.19] block: add check that partition length needs to be aligned
+ with block size
+
+[ Upstream commit 6f64f866aa1ae6975c95d805ed51d7e9433a0016]
+
+Before calling add partition or resize partition, there is no check
+on whether the length is aligned with the logical block size.
+If the logical block size of the disk is larger than 512 bytes,
+then the partition size maybe not the multiple of the logical block size,
+and when the last sector is read, bio_truncate() will adjust the bio size,
+resulting in an IO error if the size of the read command is smaller than
+the logical block size.If integrity data is supported, this will also
+result in a null pointer dereference when calling bio_integrity_free.
+
+Cc:  <stable@vger.kernel.org>
+Signed-off-by: Min Li <min15.li@samsung.com>
+Reviewed-by: Damien Le Moal <dlemoal@kernel.org>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20230629142517.121241-1-min15.li@samsung.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
+---
+ block/ioctl.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/block/ioctl.c b/block/ioctl.c
+index 3884d810e..3441af07b 100644
+--- a/block/ioctl.c
++++ b/block/ioctl.c
+@@ -18,7 +18,7 @@ static int blkpg_ioctl(struct block_device *bdev, struct blkpg_ioctl_arg __user
+ 	struct blkpg_ioctl_arg a;
+ 	struct blkpg_partition p;
+ 	struct disk_part_iter piter;
+-	long long start, length;
++	sector_t start, length;
+ 	int partno;
+ 
+ 	if (!capable(CAP_SYS_ADMIN))
+@@ -33,6 +33,15 @@ static int blkpg_ioctl(struct block_device *bdev, struct blkpg_ioctl_arg __user
+ 	partno = p.pno;
+ 	if (partno <= 0)
+ 		return -EINVAL;
++
++	if (a.op != BLKPG_DEL_PARTITION &&
++	    (p.start < 0 || p.length <= 0 || p.start + p.length < 0)) {
++		return -EINVAL;
++	}
++	/* Check that the partition is aligned to the block size */
++	if (!IS_ALIGNED(p.start | p.length, bdev_logical_block_size(bdev)))
++		return -EINVAL;
++
+ 	switch (a.op) {
+ 		case BLKPG_ADD_PARTITION:
+ 			start = p.start >> 9;
+@@ -45,10 +54,6 @@ static int blkpg_ioctl(struct block_device *bdev, struct blkpg_ioctl_arg __user
+ 				    || pstart < 0 || plength < 0 || partno > 65535)
+ 					return -EINVAL;
+ 			}
+-			/* check if partition is aligned to blocksize */
+-			if (p.start & (bdev_logical_block_size(bdev) - 1))
+-				return -EINVAL;
+-
+ 			mutex_lock(&bdev->bd_mutex);
+ 
+ 			/* overlap? */
+-- 
+2.35.6
+

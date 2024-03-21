@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.307
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -374,6 +374,9 @@ Patch713: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
 
 # Fix CVE-2022-48627
 Patch714: 0001-vt-fix-memory-overlapping-when-deleting-chars-in-the-buffer.patch
+
+#Fix CVE-2023-52458
+Patch715: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -758,7 +761,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M641
 
 # CVE Fixes
-%autopatch -p1 -m700 -M714
+%autopatch -p1 -m700 -M715
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1263,6 +1266,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon Mar 25 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.19.307-5
+- Fix for CVE-2023-52458
 * Thu Mar 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.307-4
 - Fix CVE-2022-48627
 * Wed Mar 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.307-3
