@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.307
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -589,6 +589,9 @@ Patch1571: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 #Fix CVE-2023-52509
 Patch1572: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
 
+# Fix CVE-2022-48627
+Patch1573: 0001-vt-fix-memory-overlapping-when-deleting-chars-in-the-buffer.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -788,7 +791,7 @@ popd
 %autopatch -p1 -m1545 -M1549
 
 # CVE Patches
-%autopatch -p1 -m1550 -M1572
+%autopatch -p1 -m1550 -M1573
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1179,6 +1182,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Thu Mar 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.307-4
+- Fix CVE-2022-48627
 * Wed Mar 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.307-3
 - Fix CVE-2023-52509
 * Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  4.19.307-2
