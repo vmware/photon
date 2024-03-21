@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.81
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -145,7 +145,7 @@ Patch59: 0002-Add-.sbat-section.patch
 Patch60: 0003-Verify-SBAT-on-kexec.patch
 %endif
 
-# CVE: [100..129]
+# CVE: [100..199]
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
@@ -158,11 +158,12 @@ Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 Patch108: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 # Fix CVE-2024-26584
 Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
-# Fix CVE-2023-39191
+# Fix CVE-2023-39191 [110..128]
 %include %{SOURCE42}
-
 # Fix CVE-2024-26585
 Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
+# Fix CVE-2023-52585
+Patch131: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -394,7 +395,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M129
+%autopatch -p1 -m100 -M131
 
 %ifarch aarch64
 # aarch64 patches
@@ -726,6 +727,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Mar 27 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.81-3
+- Fix CVE-2023-52585
 * Mon Mar 25 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-2
 - Patched CVE-2024-26585
 * Wed Mar 06 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-1
