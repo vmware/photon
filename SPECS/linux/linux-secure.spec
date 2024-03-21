@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.81
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -156,9 +156,10 @@ Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 Patch108: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 # Fix CVE-2024-26584
 Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
-
 # Fix CVE-2024-26585
 Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
+# Fix CVE-2023-52585
+Patch131: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
 
 # Crypto:
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -297,7 +298,7 @@ The kernel fips-canister
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M129
+%autopatch -p1 -m100 -M131
 
 # crypto
 %autopatch -p1 -m500 -M504
@@ -487,6 +488,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.81-3
+- Fix CVE-2023-52585
 * Mon Apr 29 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-2
 - Patched CVE-2024-26585
 * Mon Apr 29 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-1

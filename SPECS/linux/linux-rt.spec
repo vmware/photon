@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.81
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -151,9 +151,10 @@ Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 Patch108: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 # Fix CVE-2024-26584
 Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
-
 # Fix CVE-2024-26585
 Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
+# Fix CVE-2023-52585
+Patch131: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -296,7 +297,7 @@ stalld to use eBPF based backend.
 %autopatch -p1 -m62 -M63
 
 # CVE
-%autopatch -p1 -m100 -M129
+%autopatch -p1 -m100 -M131
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -477,6 +478,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Apr 29 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.81-4
+- Fix CVE-2023-52585
 * Mon Apr 29 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.81-3
 - Kernel cmdline param to disable distribution of tasks within cpumask
 * Mon Apr 29 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-2
