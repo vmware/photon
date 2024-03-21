@@ -1,7 +1,6 @@
 /*
  * Copyright (C) 2017 - 2022, Stephan Mueller <smueller@chronox.de>
  *
- *
  * License: see LICENSE file in root directory
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
