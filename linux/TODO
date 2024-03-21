@@ -1,0 +1,1 @@
+- DSA siggen complies with ACVP Server v0.5.4 which will be released shortly (i.e. currently the produced JSON file is not accepted by the server) - https://github.com/usnistgov/ACVP/issues/522

@@ -1,0 +1,91 @@
+Kernel crypto API externalization for LRNG testing
+==================================================
+
+Purpose
+-------
+This kernel module is intended to externalize the kernel crypto API to
+user space to allow it to be tested for all ciphers offered used by
+the LRNG.
+
+This module is yet single threaded, i.e. it expects only one user!
+
+WARNING: This code is ONLY intended for development and test environments.
+It is not intended for production environments.
+
+Compilation
+-----------
+Just call make.
+
+Method of use
+-------------
+Make sure you have the debugfs mounted.
+
+First, load the module into the kernel by insmod <module.ko>.
+
+Maybe load other crypto modules as needed (e.g. drbg, ...).
+
+A number of files appear in /sys/kernel/debug/kcapi_lrng/ which are used to
+interact with user space. The documentation of the files is given in the source
+code of the module. An example is given in test.pl.
+
+Examples
+--------
+Run or look into test.pl
+
+
+Source code description
+=======================
+The idea of the kernel module is that user space writes all data into the
+debugfs files as needed. The module will take the data and copy it into its
+memory space.
+
+The entire crypto operation is performed when reading the "data" file.
+
+Thus, when you want to understand the logic flow of the kernel module, start
+by searching the implementation of the read function for the data file, i.e.
+kccavs_data_read.
+
+Please note that when writing data into the "name" debugfs file, all
+previously written data to any other files is cleared. I.e. when writing a new
+cipher name, the kernel module assumes a complete new test is spawned.
+
+The function invoking the cipher implementation provide source code comments
+indicating which data written to which files is expected as input and where
+the output is written to.
+
+Note, every debugfs file is connected with one variable maintained in
+the kernel memory. The variable name is identical to the debugfs file name,
+e.g.:
+
+	variable kccavs_test->key is read/written by using file "key"
+
+Most of the kccavs_test variables have read and write functions associated so
+that user space can read and write data. In some cases, I was too lazy to
+add both functions, so it may be the case that either only a read or only
+a write function is present. Check the "file_operations" data structure
+instances for the implemented handler functions.
+
+
+ACVP testing
+============
+
+ACVP tool configuration
+-----------------------
+
+TDES: ECB, CBC, CTR (external counter) with all keys independent
+
+AES: 128, 192, 256, ECB, CBC, CTR (external counter)
+
+SHA: SHA-1, SHA-224, SHA256, SHA-384, SHA-512 (byte-only messages
+
+HMAC: SHA-1, SHA-224, SHA256, SHA-384, SHA-512
+	* MAC is full size
+	* KS < BS, KS == BS, KS > BS
+
+DRBG: with and w/o PR, reseed implemented
+	Hash DRBG: SHA-1, SHA256, SHA-384, SHA-512
+	HMAC DRBG: SHA-1, SHA256, SHA-384, SHA-512
+	CTR DRBG: AES-128, AES-192, AES-256 with DF
+
+---
+Stephan Mueller <smueller@chronox.de>
