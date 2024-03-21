@@ -1,0 +1,39 @@
+SSHv2 KDF ACVP Test
+===================
+
+This code implements the ACVP test for the SSHv2 key derivation function that is
+implemented by kex_derive_keys_bn(). OpenSSH is not a library and therefore you cannot just call it's internal API's, therfore we need to create an appication to call these API's.
+
+Compile
+-------
+
+To compile the code, do the following:
+
+1. add ssh-cavs.c it to the OpenSSH code tree
+        1a. For Red Hat based distro's put OpenSSH src rpm on the test machine and then do rpm -i <path to openssh src.rpm file>
+        1b. cd ~/rpmbuild && rpmbuild -bb SPECS/openssh.spec
+        1c. rpmbuild -bc SPECS/openssh.spec 2>&1 | grep configure
+                1ca. This gets the ./configure options you will need to run in the openssh code in ~/rpmbuild/BUILD/<openssh code>/ in step #4 below.
+
+2. add the following to Makefile.in
+
+SSHCAVSOBJS := roaming_dummy.o
+ssh-cavs$(EXEEXT): $(LIBCOMPAT) libssh.a $(SSHCAVSOBJS) ssh-cavs.o
+        $(LD) -o $@ $(SSHCAVSOBJS) ssh-cavs.o $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS)
+
+3. Add ssh-cavs$(EXEEXT) to the TARGETS line in Makefile.in
+
+4. configure SSH code with the configure option from 1c.
+
+5. Compile the ssh code via "make" command
+
+Execute Test
+------------
+
+Ensure that the ssh-cavs application is in the top directory of the acvpparser folder (ssh-cavs does not depend on any special library and can therefore be copied around).
+
+Now, execute:
+
+        acvpparser/helper/exec_openssh.sh. You probably will have to fix the script to have the correct directories for your specific algorithm implementation name.
+
+Return the generated testvector-response.json files back to the FIPS lab for verification.
