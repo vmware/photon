@@ -1,0 +1,64 @@
+From e6c86c513f440bec5f1046539c7e3c6c653842da Mon Sep 17 00:00:00 2001
+From: "Paul E. McKenney" <paulmck@kernel.org>
+Date: Fri, 14 Oct 2022 19:39:43 +0800
+Subject: [PATCH] rcu-tasks: Provide rcu_trace_implies_rcu_gp()
+
+[ Upstream commit e6c86c513f440bec5f1046539c7e3c6c653842da]
+
+As an accident of implementation, an RCU Tasks Trace grace period also
+acts as an RCU grace period.  However, this could change at any time.
+This commit therefore creates an rcu_trace_implies_rcu_gp() that currently
+returns true to codify this accident.  Code relying on this accident
+must call this function to verify that this accident is still happening.
+
+Reported-by: Hou Tao <houtao@huaweicloud.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Martin KaFai Lau <martin.lau@linux.dev>
+Link: https://lore.kernel.org/r/20221014113946.965131-2-houtao@huaweicloud.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
+---
+ include/linux/rcupdate.h | 12 ++++++++++++
+ kernel/rcu/tasks.h       |  2 ++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
+index 8716a1706..0122c03da 100644
+--- a/include/linux/rcupdate.h
++++ b/include/linux/rcupdate.h
+@@ -201,6 +201,18 @@ static inline void exit_tasks_rcu_stop(void) { }
+ static inline void exit_tasks_rcu_finish(void) { }
+ #endif /* #else #ifdef CONFIG_TASKS_RCU_GENERIC */
+ 
++/**
++ * rcu_trace_implies_rcu_gp - does an RCU Tasks Trace grace period imply an RCU grace period?
++ *
++ * As an accident of implementation, an RCU Tasks Trace grace period also
++ * acts as an RCU grace period.  However, this could change at any time.
++ * Code relying on this accident must call this function to verify that
++ * this accident is still happening.
++ *
++ * You have been warned!
++ */
++static inline bool rcu_trace_implies_rcu_gp(void) { return true; }
++
+ /**
+  * cond_resched_tasks_rcu_qs - Report potential quiescent states to RCU
+  *
+diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+index c5624ab05..105fdc2bb 100644
+--- a/kernel/rcu/tasks.h
++++ b/kernel/rcu/tasks.h
+@@ -1015,6 +1015,8 @@ static void rcu_tasks_trace_postscan(struct list_head *hop)
+ 
+ 	// Wait for late-stage exiting tasks to finish exiting.
+ 	// These might have passed the call to exit_tasks_rcu_finish().
++
++	// If you remove the following line, update rcu_trace_implies_rcu_gp()!!!
+ 	synchronize_rcu();
+ 	// Any tasks that exit after this point will set ->trc_reader_checked.
+ }
+-- 
+2.35.6
+

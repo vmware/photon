@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.212
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -192,6 +192,12 @@ Patch146: 0001-tls-rx-simplify-async-wait.patch
 Patch147: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
 Patch148: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 
+# Fix CVE-2023-52458
+Patch149: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
+
+# Fix CVE-2023-52482
+Patch150: 0001-x86-srso-Add-SRSO-mitigation-for-Hygon-processors.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -319,7 +325,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE
-%autopatch -p1 -m100 -M148
+%autopatch -p1 -m100 -M150
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -464,6 +470,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Mar 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.212-2
+- Fix for CVE-2023-52458/2023-52482
 * Mon Mar 11 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-1
 - Update to version 5.10.212, patched CVE-2024-26584
 * Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  5.10.210-3

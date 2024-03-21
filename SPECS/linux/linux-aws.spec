@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.212
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -170,18 +170,28 @@ Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 Patch141: add-missing-include-to-paravirt.patch
 
 # Fix CVE-2024-23307
-Patch143: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
+Patch142: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 
 # Fix CVE-2024-22099
-Patch144: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
+Patch143: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 
 # Fix CVE-2024-26584
-Patch145: 0001-tls-rx-simplify-async-wait.patch
-Patch146: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
-Patch147: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
+Patch144: 0001-tls-rx-simplify-async-wait.patch
+Patch145: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
+Patch146: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
+
+# Fix CVE-2023-52447
+Patch147: 0001-rcu-tasks-Provide-rcu_trace_implies_rcu_gp.patch
+Patch148: 0001-bpf-Defer-the-free-of-inner-map-when-necessary.patch
+
+# Fix CVE-2023-52458
+Patch149: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
+
+# Fix CVE-2023-52482
+Patch150: 0001-x86-srso-Add-SRSO-mitigation-for-Hygon-processors.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
-Patch150: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
+Patch151: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
 
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
@@ -342,10 +352,10 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m55 -M65
 
 # CVE
-%autopatch -p1 -m100 -M147
+%autopatch -p1 -m100 -M150
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
-%autopatch -p1 -m150 -M150
+%autopatch -p1 -m151 -M151
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -522,6 +532,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Mar 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.212-2
+- Fix for CVE-2023-52447/2023-52458/2023-52482
 * Mon Mar 11 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-1
 - Update to version 5.10.212, patched CVE-2024-26584
 * Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  5.10.210-3

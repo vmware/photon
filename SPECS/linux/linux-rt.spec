@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.212
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -198,6 +198,16 @@ Patch143: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 Patch144: 0001-tls-rx-simplify-async-wait.patch
 Patch145: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
 Patch146: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
+
+# Fix CVE-2023-52447
+Patch147: 0001-rcu-tasks-Provide-rcu_trace_implies_rcu_gp.patch
+Patch148: 0001-bpf-Defer-the-free-of-inner-map-when-necessary.patch
+
+# Fix CVE-2023-52458
+Patch149: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
+
+# Fix CVE-2023-52482
+Patch150: 0001-x86-srso-Add-SRSO-mitigation-for-Hygon-processors.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -397,7 +407,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M65
 
 # CVE
-%autopatch -p1 -m100 -M146
+%autopatch -p1 -m100 -M150
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
@@ -653,6 +663,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Mar 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.212-2
+- Fix for CVE-2023-52447/2023-52458/2023-52482
 * Mon Mar 11 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-1
 - Update to version 5.10.212, rt103, patched CVE-2024-26584
 * Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  5.10.210-3

@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.212
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -238,6 +238,12 @@ Patch146: 0001-tls-rx-simplify-async-wait.patch
 Patch147: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
 Patch148: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 
+# Fix CVE-2023-52458
+Patch149: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
+
+# Fix CVE-2023-52482
+Patch150: 0001-x86-srso-Add-SRSO-mitigation-for-Hygon-processors.patch
+
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -399,7 +405,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M97
 
 # CVE
-%autopatch -p1 -m100 -M148
+%autopatch -p1 -m100 -M150
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -618,6 +624,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Mar 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.212-2
+- Fix for CVE-2023-52458/2023-52482
 * Mon Mar 11 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-1
 - Update to version 5.10.212, patched CVE-2024-26584
 * Mon Mar 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>  5.10.210-4

@@ -1,0 +1,36 @@
+From a5ef7d68cea1344cf524f04981c2b3f80bedbb0d Mon Sep 17 00:00:00 2001
+From: Pu Wen <puwen@hygon.cn>
+Date: Thu, 28 Sep 2023 14:59:16 +0800
+Subject: [PATCH] x86/srso: Add SRSO mitigation for Hygon processors
+
+[Upstream commit a5ef7d68cea1344cf524f04981c2b3f80bedbb0d]
+
+Add mitigation for the speculative return stack overflow vulnerability
+which exists on Hygon processors too.
+
+Signed-off-by: Pu Wen <puwen@hygon.cn>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Borislav Petkov (AMD) <bp@alien8.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/tencent_4A14812842F104E93AA722EC939483CEFF05@qq.com
+Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
+---
+ arch/x86/kernel/cpu/common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 4ecc6072e..8aa43c8ca 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1168,7 +1168,7 @@ static const struct x86_cpu_id cpu_vuln_blacklist[] __initconst = {
+ 	VULNBL_AMD(0x15, RETBLEED),
+ 	VULNBL_AMD(0x16, RETBLEED),
+ 	VULNBL_AMD(0x17, RETBLEED | SRSO),
+-	VULNBL_HYGON(0x18, RETBLEED),
++	VULNBL_HYGON(0x18, RETBLEED | SRSO),
+ 	VULNBL_AMD(0x19, SRSO),
+ 	{}
+ };
+-- 
+2.35.6
+
