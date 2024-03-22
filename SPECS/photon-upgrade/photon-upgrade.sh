@@ -617,6 +617,17 @@ function do_ph4_to_ph4_update() {
   local f=''    # Loop variable for detecting pkgs in repo corresponding to $i
   local -a removed_pkgs_list=()
   local found=no
+  # set of installed packages from the keys of old_new_pkg_map hash
+  local -a inst_pkgs_arr=(
+    $(find_installed_packages ${!old_new_pkg_map[@]})
+  )
+  # set of packages which are not installed from the keys of old_new_pkg_map
+  local -a notinst_pkgs_arr=(
+    $(
+      $PRINTF '%s\n' ${!old_new_pkg_map[@]} ${inst_pkgs_arr[@]} | $SORT | \
+        $UNIQ -u
+    )
+  )
 
   write_to_syslog "Starting update of packages with command line: $CMDLINE"
   backup_rpms_list_n_db $OLD_RPMDB_PATH
@@ -625,7 +636,14 @@ function do_ph4_to_ph4_update() {
   tdnf_makecache
   rebuilddb
 
-  for i in $(find_installed_packages ${!old_new_pkg_map[@]}); do
+  # cleanup old_new_pkg_map hash and cleanup_residual_files_map hash for those
+  # packages which are not installed
+  for i in ${notinst_pkgs_arr[@]}; do
+    unset old_new_pkg_map[$i]
+    unset cleanup_residual_files_map[$i]
+  done
+
+  for i in ${inst_pkgs_arr[@]}; do
     found=no
     for f in ${old_new_pkg_map[$i]}; do
       if ${TDNF} $REPOS_OPT list available $f > /dev/null 2>&1; then

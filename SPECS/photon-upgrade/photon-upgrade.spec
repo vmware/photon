@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -52,6 +52,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Fri Mar 22 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0-17
+- Fix corner case of cleanup wrongly triggering during 4.0 to 4.0 update
 * Tue Mar 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-16
 - Add ktap to deprecated package list
 * Fri Feb 16 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0-15
