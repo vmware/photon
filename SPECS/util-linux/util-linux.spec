@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.38
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -10,6 +10,11 @@ Distribution:   Photon
 
 Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v%{version}/%{name}-%{version}.tar.xz
 %define sha512  %{name}=d0f7888f457592067938e216695871ce6475a45d83a092cc3fd72b8cf8fca145ca5f3a99122f1744ef60b4f773055cf4e178dc6c59cd30837172aee0b5597e8c
+
+Patch0: CVE-2024-28085-pre1.patch
+Patch1: CVE-2024-28085-pre2.patch
+Patch2: CVE-2024-28085-pre3.patch
+Patch3: CVE-2024-28085.patch
 
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
@@ -110,6 +115,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+* Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.38-4
+- Fix CVE-2024-28085
 * Sat Feb 04 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.38-3
 - Fix issue with new autoconf
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.38-2
