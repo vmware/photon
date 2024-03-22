@@ -1,12 +1,12 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
-Version:        4.0
+Version:        4.2
 Release:        1%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
 Source0:        %{name}-%{version}.tgz
-%define sha512  linuxptp=763de5654f0426f2f489223e02fb3dd39a3a830751b366406657efe33bb923b5b38edada7b62de3efed6d257d5d386ece0d42a5eb92da5e5d443eac9b32e105d
+%define sha512  linuxptp=479e512efd0573602379a9e1d8ef5c0ec9e033944cee5aed11c68cea5e8a3f7d4b6f2d11f6d6d4718282010da52c2c8629d675d9b388cc0c3d574845a913cdbb
 Source1:        ptp4l.service
 Source2:        phc2sys.service
 Source3:        ts2phc.service
@@ -105,6 +105,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/tz2alt.8.gz
 
 %changelog
+*   Thu Mar 21 2024 Roye Eshed <roye.eshed@broadcom.com> 4.2-1
+-   Upgrade linuxptp to version 4.2
 *   Wed Aug 16 2023 Roye Eshed <eshedr@vmware.com> 4.0-1
 -   Port linuxptp 4.0 update from Photon 3.0 (from Brennan Lamoreaux)
 *   Fri Jun 02 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.1.1-4
