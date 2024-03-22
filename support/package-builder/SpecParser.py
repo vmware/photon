@@ -204,14 +204,14 @@ class SpecParser(object):
                 parts = macro_name[1:].split(":")
                 assert parts
                 retv = ""
-                if _test_conditional(macro_name):
+                if _test_conditional(macro_name):  # ?
                     if _is_macro_defined(parts[0]):
                         if len(parts) == 2:
                             retv = parts[1]
                         else:
                             retv = _get_macro(parts[0])
-                else:
-                    if not _is_macro_defined(parts[0]):
+                else:  # !
+                    if _is_macro_defined(parts[0]):
                         if len(parts) == 2:
                             retv = parts[1]
                 return retv
