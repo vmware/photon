@@ -14,7 +14,7 @@
 Summary:        Go
 Name:           go
 Version:        1.21.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -26,6 +26,8 @@ Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
 
 Requires:       glibc
 Requires:       gcc
+
+Patch0:          CVE-2023-45288.patch
 
 %define ExtraBuildRequires go
 
@@ -117,6 +119,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.21.7-2
+- Fix for CVE-2023-45288
 * Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.21.7-1
 - Upgrade to 1.21.7
 * Fri Dec 15 2023 Mukul Sikka <msikka@vmware.com> 1.20.12-1
