@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.37.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -10,6 +10,11 @@ Distribution:   Photon
 
 Source0: %{name}-%{version}.tar.xz
 %define sha512 %{name}=ada2629b0a8e83ea83513e04f7b1ccceb3b8ab82acd119c5d8389d1abc48c92d0b591f39fb34b1fd65db3ab630f03a672a9f3dacf1a6e4f124bdb083fc1be6d7
+
+Patch0: CVE-2024-28085-pre1.patch
+Patch1: CVE-2024-28085-pre2.patch
+Patch2: CVE-2024-28085-pre3.patch
+Patch3: CVE-2024-28085.patch
 
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
@@ -30,6 +35,7 @@ and messages.
 Summary: Additional language files for util-linux
 Group: Applications/System
 Requires: %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of util-linux.
 
@@ -38,12 +44,14 @@ Summary: Header and library files for util-linux
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
 Requires:  pkg-config
+
 %description devel
 These are the header and library files of util-linux.
 
 %package libs
 Summary: library files for util-linux
 Group: Development/Libraries
+
 %description libs
 These are library files of util-linux.
 
@@ -107,6 +115,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+* Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.37.4-2
+- Fix CVE-2024-28085
 * Mon Mar 21 2022 Ankit Jain <ankitja@vmware.com> 2.37.4-1
 - Fixes CVE-2022-0563
 * Mon Jan 24 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.37.2-1
