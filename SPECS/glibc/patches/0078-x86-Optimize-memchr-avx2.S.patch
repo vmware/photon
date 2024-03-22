@@ -1,7 +1,7 @@
 From ca7d6c8d7f792a7832f81cad65a35c6d51f198b6 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Mon, 3 May 2021 03:01:58 -0400
-Subject: [PATCH 078/124] x86: Optimize memchr-avx2.S
+Subject: [PATCH 078/125] x86: Optimize memchr-avx2.S
 
 No bug. This commit optimizes memchr-avx2.S. The optimizations include
 replacing some branches with cmovcc, avoiding some branches entirely
@@ -580,5 +580,5 @@ index d9cb59a9df28776a1bf10874de5a16afc1b0dedd..ea1b44a3d6aa12e2b9631c8fb843c6a2
  END (MEMCHR)
  #endif
 -- 
-2.41.0
+2.44.0
 

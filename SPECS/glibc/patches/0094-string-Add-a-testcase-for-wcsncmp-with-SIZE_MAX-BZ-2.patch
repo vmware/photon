@@ -1,7 +1,7 @@
 From 0f8a2390000c4e9a152b5f6cf8220f2560c01e74 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Thu, 17 Feb 2022 08:10:35 -0800
-Subject: [PATCH 094/124] string: Add a testcase for wcsncmp with SIZE_MAX [BZ
+Subject: [PATCH 094/125] string: Add a testcase for wcsncmp with SIZE_MAX [BZ
  #28755]
 
 Verify that wcsncmp (L("abc"), L("abd"), SIZE_MAX) == 0.  The new test
@@ -62,5 +62,5 @@ index d961ac4493672e2f2a77af189a54e27e59deb8fe..02806f4ebdcd6ef9b620b2bcf8613308
    printf ("%23s", "");
    FOR_EACH_IMPL (impl, 0)
 -- 
-2.41.0
+2.44.0
 

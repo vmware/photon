@@ -1,7 +1,7 @@
 From 70ee5e8b573f76745760dd6b75f705590fc1923a Mon Sep 17 00:00:00 2001
 From: Szabolcs Nagy <szabolcs.nagy@arm.com>
 Date: Thu, 22 Oct 2020 17:55:01 +0100
-Subject: [PATCH 013/124] aarch64: Fix DT_AARCH64_VARIANT_PCS handling [BZ
+Subject: [PATCH 013/125] aarch64: Fix DT_AARCH64_VARIANT_PCS handling [BZ
  #26798]
 
 The variant PCS support was ineffective because in the common case
@@ -51,5 +51,5 @@ index 70b9ed39250a9fd8ab6270940f2f69a383b081a9..fde7cfd9e2ba2fef7fd60b1891a7d2ae
    else if (__builtin_expect (r_type == AARCH64_R(TLSDESC), 1))
      {
 -- 
-2.41.0
+2.44.0
 

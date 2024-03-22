@@ -1,7 +1,7 @@
 From e6251366b64960c271b39ec8d2afcc79e965e291 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Tue, 15 Feb 2022 08:18:15 -0600
-Subject: [PATCH 095/124] x86: Fallback {str|wcs}cmp RTM in the ncmp overflow
+Subject: [PATCH 095/125] x86: Fallback {str|wcs}cmp RTM in the ncmp overflow
  case [BZ #28896]
 
 In the overflow fallback strncmp-avx2-rtm and wcsncmp-avx2-rtm would
@@ -128,5 +128,5 @@ index 4fa1de4d3f1f97ff666164153c14ae3caa6d60aa..e9ede522b8bde27d1ebea2ad12aeca5b
 +#define OVERFLOW_STRCMP	__wcscmp_avx2
  #include "strcmp-avx2.S"
 -- 
-2.41.0
+2.44.0
 

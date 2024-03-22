@@ -1,7 +1,7 @@
 From a2539f5b1d4547389578ae08a952d984568f251e Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Wed, 20 Jan 2021 14:32:23 -0300
-Subject: [PATCH 059/124] support: Add xpthread_kill
+Subject: [PATCH 059/125] support: Add xpthread_kill
 
 Checked on x86_64-linux-gnu.
 
@@ -71,5 +71,5 @@ index 05f8d4a7d9e031a83abb471927f322aef379f535..cb1fc30da0e48950febc42027ddc3f90
     to cover most internal glibc stack usage.  */
  void support_set_small_thread_stack_size (pthread_attr_t *attr);
 -- 
-2.41.0
+2.44.0
 

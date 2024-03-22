@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -39,6 +39,8 @@ Patch301:     CVE-2023-4813.patch
 
 #fix: CVE-2023-0687
 Patch302:     0001_gmon_Fix_allocated_buffer_overflow.patch
+
+Patch303:     CVE-2023-4911.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -99,10 +101,10 @@ Name Service Cache Daemon
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %autopatch -p1 -m0 -M19
 # Release branch patches
-%autopatch -p1 -m101 -M224
+%autopatch -p1 -m101 -M225
 
 # Additional patches
-%autopatch -p1 -m300 -M302
+%autopatch -p1 -m300 -M303
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -320,6 +322,9 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Mar 22 2024 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.32-16
+- Fix CVE-2023-4911
+- Sync with branch
 * Fri Jan 12 2024 Ajay Kaher <akaher@vmware.com> 2.32-15
 - Fix CVE-2023-0687
 * Fri Dec 22 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.32-14

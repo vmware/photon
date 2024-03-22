@@ -1,7 +1,7 @@
 From 9b139b6b81a5def91bec01f30301acc95fbf0289 Mon Sep 17 00:00:00 2001
 From: "Dmitry V. Levin" <ldv@altlinux.org>
 Date: Tue, 29 Sep 2020 14:10:20 -0300
-Subject: [PATCH 008/124] sysvipc: Fix SEM_STAT_ANY kernel argument pass [BZ
+Subject: [PATCH 008/125] sysvipc: Fix SEM_STAT_ANY kernel argument pass [BZ
  #26637]
 
 Handle SEM_STAT_ANY the same way as SEM_STAT so that the buffer argument
@@ -309,5 +309,5 @@ index 01dbff343a445b97bc8c0be9008a89a5c9ace0cd..b7284e0b4885c47a8dc5bec38a6074be
  #include <sys/ipc.h>
  #include <sys/sem.h>
 -- 
-2.41.0
+2.44.0
 

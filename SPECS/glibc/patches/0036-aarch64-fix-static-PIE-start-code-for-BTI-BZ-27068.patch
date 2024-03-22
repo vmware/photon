@@ -1,7 +1,7 @@
 From d3cb8f6222a3cb955712b720d7c0c0dba37898f9 Mon Sep 17 00:00:00 2001
 From: Guillaume Gardet <guillaume.gardet@arm.com>
 Date: Mon, 14 Dec 2020 15:38:22 +0000
-Subject: [PATCH 036/124] aarch64: fix static PIE start code for BTI [BZ
+Subject: [PATCH 036/125] aarch64: fix static PIE start code for BTI [BZ
  #27068]
 
 A bti c was missing from rcrt1.o which made all -static-pie
@@ -27,5 +27,5 @@ index 108f602721b42cac527a0be4f7e2733aec1dc59d..1998ea95d407697fe1b3ced767928092
  #endif
  END(_start)
 -- 
-2.41.0
+2.44.0
 

@@ -1,7 +1,7 @@
 From 04e991f22eeacff3e11cc9317317739adf82956a Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Fri, 5 Mar 2021 07:15:03 -0800
-Subject: [PATCH 068/124] x86-64: Add memset family functions with 256-bit EVEX
+Subject: [PATCH 068/125] x86-64: Add memset family functions with 256-bit EVEX
 
 Update ifunc-memset.h/ifunc-wmemset.h to select the function optimized
 with 256-bit EVEX instructions using YMM16-YMM31 registers to avoid RTM
@@ -251,5 +251,5 @@ index 2bfc95de05f60db84b12b0960aeeaad206a4e70f..7f8c2aba87ba0d00c28b3e0f021c4dc7
  	ret
  # endif
 -- 
-2.41.0
+2.44.0
 

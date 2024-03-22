@@ -1,7 +1,7 @@
 From 6f8c9dc8bbaf54edf64da3177d82ca5db00cafd3 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Thu, 30 Jun 2022 09:08:31 -0300
-Subject: [PATCH 099/124] linux: Fix mq_timereceive check for 32 bit fallback
+Subject: [PATCH 099/125] linux: Fix mq_timereceive check for 32 bit fallback
  code (BZ 29304)
 
 On  success,  mq_receive() and mq_timedreceive() return the number of
@@ -29,5 +29,5 @@ index 728a63d1ec6359eaebae41cc7ab5c0cc4529a95d..fda57be19deb96a70902dd60d3680e8f
  
    struct timespec ts32;
 -- 
-2.41.0
+2.44.0
 

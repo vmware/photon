@@ -122,3 +122,4 @@ Patch221: 0121-x86-Increase-non_temporal_threshold-to-roughly-sizeo.patch
 Patch222: 0122-x86-Fix-slight-bug-in-shared_per_thread-cache-size-c.patch
 Patch223: 0123-x86-Use-3-4-sizeof-per-thread-L3-as-low-bound-for-NT.patch
 Patch224: 0124-x86-Fix-incorrect-scope-of-setting-shared_per_thread.patch
+Patch225: 0125-x86_64-Optimize-ffsll-function-code-size.patch

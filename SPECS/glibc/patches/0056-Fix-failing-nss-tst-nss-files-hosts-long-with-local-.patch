@@ -1,7 +1,7 @@
 From d299f19889cb3b4ffc1c5b59317b7bf684faaa3e Mon Sep 17 00:00:00 2001
 From: Aurelien Jarno <aurelien@aurel32.net>
 Date: Fri, 3 Sep 2021 00:28:14 +0200
-Subject: [PATCH 056/124] Fix failing nss/tst-nss-files-hosts-long with local
+Subject: [PATCH 056/125] Fix failing nss/tst-nss-files-hosts-long with local
  resolver
 
 When a local resolver like unbound is listening on the IPv4 loopback
@@ -34,5 +34,5 @@ index 0000000000000000000000000000000000000000..5b0c6a419937a01375858787ac5cfd62
 @@ -0,0 +1 @@
 +hosts: files
 -- 
-2.41.0
+2.44.0
 

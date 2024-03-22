@@ -1,7 +1,7 @@
 From 1a24bbd43e483650c7ac622f600f755229c90d23 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Sat, 25 Jan 2020 14:19:40 -0800
-Subject: [PATCH 026/124] x86-64: Avoid rep movsb with short distance [BZ
+Subject: [PATCH 026/125] x86-64: Avoid rep movsb with short distance [BZ
  #27130]
 
 When copying with "rep movsb", if the distance between source and
@@ -65,5 +65,5 @@ index bd5dc1a3f3f9bc49780e7cd0efb141549b7d53af..092f364bb684b4ea78c0c4bde15a3437
  	rep movsb
  L(nop):
 -- 
-2.41.0
+2.44.0
 

@@ -1,7 +1,7 @@
 From 7a9e8a984a32ccaf8947d116fca63ad406452bfa Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 9 Mar 2021 21:07:24 +0100
-Subject: [PATCH 117/124] <shlib-compat.h>: Support compat_symbol_reference for
+Subject: [PATCH 117/125] <shlib-compat.h>: Support compat_symbol_reference for
  _ISOMAC
 
 This is helpful for testing compat symbols in cases where _ISOMAC
@@ -58,5 +58,5 @@ index 60153bb50d3dcf5aeff9303403300ae3609e2bbe..8ac99fec1598b09290dd2ed45b7938d7
  # define symbol_version(real, name, version) \
    symbol_version_reference(real, name, version)
 -- 
-2.41.0
+2.44.0
 

@@ -1,7 +1,7 @@
 From 7dbd7af692575a906a8bfcc9f1f0b3534858d533 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Mon, 19 Apr 2021 19:36:06 -0400
-Subject: [PATCH 086/124] x86: Optimize strlen-evex.S
+Subject: [PATCH 086/125] x86: Optimize strlen-evex.S
 
 No bug. This commit optimizes strlen-evex.S. The
 optimizations are mostly small things but they add up to roughly
@@ -741,5 +741,5 @@ index 05838190788b2153247e945d211deb840d993f72..4bf6874b823355196933922a19e5fe59
  END (STRLEN)
  #endif
 -- 
-2.41.0
+2.44.0
 

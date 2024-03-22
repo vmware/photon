@@ -1,7 +1,7 @@
 From 90496a2f5d9e7870910d0a720397dfb22fc9191d Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Sun, 7 Mar 2021 09:44:18 -0800
-Subject: [PATCH 072/124] x86-64: Use ZMM16-ZMM31 in AVX512 memset family
+Subject: [PATCH 072/125] x86-64: Use ZMM16-ZMM31 in AVX512 memset family
  functions
 
 Update ifunc-memset.h/ifunc-wmemset.h to select the function optimized
@@ -146,5 +146,5 @@ index 0783979ca5d5d77c65c688a44596f6bdd75350d3..22e7b187c84920df3711cbc422b7e2d6
  # define WMEMSET_SYMBOL(p,s)	p##_avx512_##s
  
 -- 
-2.41.0
+2.44.0
 

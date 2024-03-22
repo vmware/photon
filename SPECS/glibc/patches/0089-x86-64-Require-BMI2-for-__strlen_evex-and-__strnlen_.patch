@@ -1,7 +1,7 @@
 From f996f678b908a4a0e73816da89d47869e50c370f Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Mon, 19 Apr 2021 07:07:21 -0700
-Subject: [PATCH 089/124] x86-64: Require BMI2 for __strlen_evex and
+Subject: [PATCH 089/125] x86-64: Require BMI2 for __strlen_evex and
  __strnlen_evex
 
 Since __strlen_evex and __strnlen_evex added by
@@ -49,5 +49,5 @@ index 11e9e258209c71703de59044b83a2a5ed1f10101..e5af769869b8ab57033608870bd32747
  	      IFUNC_IMPL_ADD (array, i, strnlen, 1, __strnlen_sse2))
  
 -- 
-2.41.0
+2.44.0
 

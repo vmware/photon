@@ -1,7 +1,7 @@
 From 443e146ce7aa1df0aa29fc0775451a4d933fcfbb Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Fri, 18 Feb 2022 19:10:42 -0800
-Subject: [PATCH 098/124] NEWS: Add a bug fix entry for BZ #28896
+Subject: [PATCH 098/125] NEWS: Add a bug fix entry for BZ #28896
 
 ---
  NEWS | 2 ++
@@ -21,5 +21,5 @@ index d138a45519f2a6595825243a4289140a069276a9..48edda1390b6b459d2e881cb65bceafe
  Version 2.32
  
 -- 
-2.41.0
+2.44.0
 

@@ -1,7 +1,7 @@
 From b923e061d4986e6c73f882698f65c911596fae5e Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Wed, 24 Nov 2021 08:59:54 +0100
-Subject: [PATCH 060/124] nptl: Do not set signal mask on second setjmp return
+Subject: [PATCH 060/125] nptl: Do not set signal mask on second setjmp return
  [BZ #28607]
 
 __libc_signal_restore_set was in the wrong place: It also ran
@@ -120,5 +120,5 @@ index 0000000000000000000000000000000000000000..b4526fe663671068e3cb6f7d71bb0754
 +
 +#include <support/test-driver.c>
 -- 
-2.41.0
+2.44.0
 

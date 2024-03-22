@@ -1,7 +1,7 @@
 From 737efa27fca5c97f566a2005687fda7d6659cd2e Mon Sep 17 00:00:00 2001
 From: Fangrui Song <maskray@google.com>
 Date: Thu, 8 Jul 2021 14:26:22 -0700
-Subject: [PATCH 050/124] x86_64: Remove unneeded static PIE check for
+Subject: [PATCH 050/125] x86_64: Remove unneeded static PIE check for
  undefined weak diagnostic
 
 https://sourceware.org/bugzilla/show_bug.cgi?id=21782 dropped an ld
@@ -106,5 +106,5 @@ index cdaba0c075abfb2cca89d812cae32dd3e391dc16..611a7d9ba3fdfb8f1317e3713f695783
  dnl position independent way.
  AC_DEFINE(PI_STATIC_AND_HIDDEN)
 -- 
-2.41.0
+2.44.0
 

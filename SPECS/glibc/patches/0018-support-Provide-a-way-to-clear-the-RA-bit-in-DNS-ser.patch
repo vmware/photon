@@ -1,7 +1,7 @@
 From 05c025abca109daf7ddbc9e4562815a4274920ef Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Wed, 14 Oct 2020 10:54:39 +0200
-Subject: [PATCH 018/124] support: Provide a way to clear the RA bit in DNS
+Subject: [PATCH 018/125] support: Provide a way to clear the RA bit in DNS
  server responses
 
 (cherry picked from commit 08443b19965f48862b02c2fd7b33a39d66daf2ff)
@@ -41,5 +41,5 @@ index c46de32ff4f9ab59d5809d7dabbf80567d58aff6..31a5c1c3e795b7ca6056ac4e371fc4bb
       increase the counts, for malformed packet testing.*/
    unsigned short qdcount;
 -- 
-2.41.0
+2.44.0
 

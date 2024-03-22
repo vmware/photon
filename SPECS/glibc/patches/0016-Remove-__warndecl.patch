@@ -1,7 +1,7 @@
 From eba0ce6058828afd84b27a42b7bca5218f94aa10 Mon Sep 17 00:00:00 2001
 From: Siddhesh Poyarekar <siddhesh@sourceware.org>
 Date: Thu, 5 Nov 2020 10:20:32 +0530
-Subject: [PATCH 016/124] Remove __warndecl
+Subject: [PATCH 016/125] Remove __warndecl
 
 The macro is not used anymore, so remove it and warning-nop.c.
 
@@ -123,5 +123,5 @@ index 19d9cc5cfe14e6f6426731ddfe34a526bc2f685e..38221d0b2a9424654e2613a7bb94096a
  # define __errordecl(name, msg) extern void name (void)
  #endif
 -- 
-2.41.0
+2.44.0
 

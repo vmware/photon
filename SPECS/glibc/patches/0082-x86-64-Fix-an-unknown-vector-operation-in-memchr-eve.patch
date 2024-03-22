@@ -1,7 +1,7 @@
 From f73bf74102a93dcea344177375cf9433f31eac4f Mon Sep 17 00:00:00 2001
 From: Alice Xu <alice.d.xu@gmail.com>
 Date: Fri, 7 May 2021 19:03:21 -0700
-Subject: [PATCH 082/124] x86-64: Fix an unknown vector operation in
+Subject: [PATCH 082/125] x86-64: Fix an unknown vector operation in
  memchr-evex.S
 
 An unknown vector operation occurred in commit 2a76821c308. Fixed it
@@ -27,5 +27,5 @@ index 81d5cd6486fc73bb12fda6a8f6a360f6d5e4bf05..f3fdad4fda65b2f2a43eb725c23a06ca
  # ifdef USE_AS_RAWMEMCHR
  	subq	$-(VEC_SIZE * 4), %rdi
 -- 
-2.41.0
+2.44.0
 

@@ -1,7 +1,7 @@
 From c42821ec053da5d42868dd49f91f335bc3a331f5 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Tue, 23 Feb 2021 06:33:10 -0800
-Subject: [PATCH 071/124] x86: Add string/memory function tests in RTM region
+Subject: [PATCH 071/125] x86: Add string/memory function tests in RTM region
 
 At function exit, AVX optimized string/memory functions have VZEROUPPER
 which triggers RTM abort.   When such functions are called inside a
@@ -732,5 +732,5 @@ index 0000000000000000000000000000000000000000..e32bfaf5f50db9d18731bf2f0cc15efc
 +  return do_test_1 ("strrchr", LOOP, prepare, function);
 +}
 -- 
-2.41.0
+2.44.0
 

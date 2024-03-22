@@ -1,7 +1,7 @@
 From 6b5d4f31eda1deb78565892d4ae98784ca381ee2 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Fri, 5 Mar 2021 06:36:50 -0800
-Subject: [PATCH 066/124] x86-64: Add strcpy family functions with 256-bit EVEX
+Subject: [PATCH 066/125] x86-64: Add strcpy family functions with 256-bit EVEX
 
 Update ifunc-strcpy.h to select the function optimized with 256-bit EVEX
 instructions using YMM16-YMM31 registers to avoid RTM abort with usable
@@ -1485,5 +1485,5 @@ index 0000000000000000000000000000000000000000..40e391f0da6236a325620df83344214a
 +#define STRCPY __strncpy_evex
 +#include "strcpy-evex.S"
 -- 
-2.41.0
+2.44.0
 

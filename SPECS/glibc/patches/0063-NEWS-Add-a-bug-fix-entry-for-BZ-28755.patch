@@ -1,7 +1,7 @@
 From 40eebb02ccbc2d621e796795d5994fe7483b679f Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Wed, 26 Jan 2022 21:00:25 -0800
-Subject: [PATCH 063/124] NEWS: Add a bug fix entry for BZ #28755
+Subject: [PATCH 063/125] NEWS: Add a bug fix entry for BZ #28755
 
 ---
  NEWS | 1 +
@@ -20,5 +20,5 @@ index b29826f4f591fef222ac9b34098423fd8a5931bb..39d741b4014cf45c86c00a518d976ac6
  Version 2.32
  
 -- 
-2.41.0
+2.44.0
 

@@ -1,7 +1,7 @@
 From 0b5c3ed5e34b26cb3567a7825b7613a9b75b02ef Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Fri, 5 Mar 2021 06:46:08 -0800
-Subject: [PATCH 067/124] x86-64: Add memmove family functions with 256-bit
+Subject: [PATCH 067/125] x86-64: Add memmove family functions with 256-bit
  EVEX
 
 Update ifunc-memmove.h to select the function optimized with 256-bit EVEX
@@ -240,5 +240,5 @@ index 092f364bb684b4ea78c0c4bde15a34376300e70b..c2e405519ea71e008475acb1d1fa2860
  #endif
  L(between_8_15):
 -- 
-2.41.0
+2.44.0
 

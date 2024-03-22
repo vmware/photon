@@ -1,7 +1,7 @@
 From f6f96a16e6ce649eca0a673bc13b051b40bf2ceb Mon Sep 17 00:00:00 2001
 From: "Dmitry V. Levin" <ldv@altlinux.org>
 Date: Tue, 4 Oct 2022 08:00:00 +0000
-Subject: [PATCH 105/124] NEWS: add entries for fixed bugs
+Subject: [PATCH 105/125] NEWS: add entries for fixed bugs
 
 Add NEWS entries to the list of bugs that were fixed after glibc 2.32
 release: 24973, 25399, 26383, 26690, 26798, 26831, 26926, 26988, 27024,
@@ -81,5 +81,5 @@ index 9998d471f5a4dad6b5d5a14f844c6ddb625425a4..3e844d918619fa96e8d212e6ae118c7e
  Version 2.32
  
 -- 
-2.41.0
+2.44.0
 

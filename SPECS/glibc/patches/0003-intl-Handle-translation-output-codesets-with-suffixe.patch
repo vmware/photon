@@ -1,7 +1,7 @@
 From fe62c4d173f3cc1ac64f01e75a8f421b2f092cdb Mon Sep 17 00:00:00 2001
 From: Arjun Shankar <arjun@redhat.com>
 Date: Fri, 25 Sep 2020 14:47:06 +0200
-Subject: [PATCH 003/124] intl: Handle translation output codesets with
+Subject: [PATCH 003/125] intl: Handle translation output codesets with
  suffixes [BZ #26383]
 
 Commit 91927b7c7643 (Rewrite iconv option parsing [BZ #19519]) did not
@@ -246,5 +246,5 @@ index fd70432ecac5d0ce680c034b0f8676a8c4a04d65..e9f6e5e09f0c03537d054445ec59fe4b
 -#include "../test-skeleton.c"
 +#include <support/test-driver.c>
 -- 
-2.41.0
+2.44.0
 

@@ -1,7 +1,7 @@
 From cebc01cbfd6c257f329e818b68bb1b2eef2afe09 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Ho=C5=A1ek?= <ondra.hosek@gmail.com>
 Date: Wed, 26 Aug 2020 04:26:50 +0200
-Subject: [PATCH 001/124] x86-64: Fix FMA4 detection in ifunc [BZ #26534]
+Subject: [PATCH 001/125] x86-64: Fix FMA4 detection in ifunc [BZ #26534]
 
 A typo in commit 107e6a3c2212ba7a3a4ec7cae8d82d73f7c95d0b causes the
 FMA4 code path to be taken on systems that support FMA, even if they do
@@ -26,5 +26,5 @@ index 7659758972206cd3e404f12b75ab779f1459032c..e5fd5ac9cb57bb2036f48e25d3354d67
  
    return OPTIMIZE (sse2);
 -- 
-2.41.0
+2.44.0
 

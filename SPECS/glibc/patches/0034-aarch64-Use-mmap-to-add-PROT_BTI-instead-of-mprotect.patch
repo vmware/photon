@@ -1,7 +1,7 @@
 From 33dc30bc838b12183744746de102da8b76b9b1d0 Mon Sep 17 00:00:00 2001
 From: Szabolcs Nagy <szabolcs.nagy@arm.com>
 Date: Tue, 1 Dec 2020 10:13:18 +0000
-Subject: [PATCH 034/124] aarch64: Use mmap to add PROT_BTI instead of mprotect
+Subject: [PATCH 034/125] aarch64: Use mmap to add PROT_BTI instead of mprotect
  [BZ #26831]
 
 Re-mmap executable segments if possible instead of using mprotect
@@ -159,5 +159,5 @@ index 847a03ace2f85b7acdebde8a2a11015dccaa474b..b3f7663b07df5d05471659b2350883c1
 +  bool bti_fail;	  /* Failed to enable Branch Target Identification.  */
  };
 -- 
-2.41.0
+2.44.0
 

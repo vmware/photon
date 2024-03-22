@@ -1,7 +1,7 @@
 From 23482f788665df83edc8b542698f45fed45a2711 Mon Sep 17 00:00:00 2001
 From: Carlos O'Donell <carlos@redhat.com>
 Date: Fri, 2 Oct 2020 09:23:35 -0400
-Subject: [PATCH 005/124] Set version.h RELEASE to "stable" (Bug 26700)
+Subject: [PATCH 005/125] Set version.h RELEASE to "stable" (Bug 26700)
 
 The RELEASE macro was accidentaly set to "release" instead of
 the expected "stable" by the release manager.  This is a mistake
@@ -22,5 +22,5 @@ index 83cd196798350a2a82b7adf28b030294033d4184..e6ca7a88570faa942741355efe3c9df2
 +#define RELEASE "stable"
  #define VERSION "2.32"
 -- 
-2.41.0
+2.44.0
 

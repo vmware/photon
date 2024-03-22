@@ -1,7 +1,7 @@
 From f82385fcce8f07d5121f6914ad300098df8948f8 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Sun, 7 Mar 2021 09:45:23 -0800
-Subject: [PATCH 073/124] x86-64: Use ZMM16-ZMM31 in AVX512 memmove family
+Subject: [PATCH 073/125] x86-64: Use ZMM16-ZMM31 in AVX512 memmove family
  functions
 
 Update ifunc-memmove.h to select the function optimized with AVX512
@@ -162,5 +162,5 @@ index aac1515cf6b3bb5c29377de6ffdafa89641cd7ad..848848ab39ff9326270196952874f9e4
  
  # include "memmove-vec-unaligned-erms.S"
 -- 
-2.41.0
+2.44.0
 

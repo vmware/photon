@@ -1,7 +1,7 @@
 From b462b80b08c4e15f0afe3f0ff3507abd6ff8ef3a Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Thu, 10 Aug 2023 12:13:26 -0500
-Subject: [PATCH 121/124] x86: Increase `non_temporal_threshold` to roughly
+Subject: [PATCH 121/125] x86: Increase `non_temporal_threshold` to roughly
  `sizeof_L3 / 4`
 
 Current `non_temporal_threshold` set to roughly '3/4 * sizeof_L3 /
@@ -263,5 +263,5 @@ index 3fb4a028d81815619068ccb1b42d2a97c174ec7d..ef88b6a3663af650cb55ee086607fe9f
    /* NB: The REP MOVSB threshold must be greater than VEC_SIZE * 8.  */
    unsigned int minimum_rep_movsb_threshold;
 -- 
-2.41.0
+2.44.0
 

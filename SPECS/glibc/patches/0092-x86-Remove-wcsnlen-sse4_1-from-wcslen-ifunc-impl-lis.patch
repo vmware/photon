@@ -1,7 +1,7 @@
 From d528cb51651ad47fb3222362c6a40278e33afe67 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Thu, 8 Jul 2021 16:13:19 -0400
-Subject: [PATCH 092/124] x86: Remove wcsnlen-sse4_1 from wcslen
+Subject: [PATCH 092/125] x86: Remove wcsnlen-sse4_1 from wcslen
  ifunc-impl-list [BZ #28064]
 
 The following commit
@@ -47,5 +47,5 @@ index e5af769869b8ab57033608870bd32747f538b9b6..920e64241e91950242178fd2a964c556
  
    /* Support sysdeps/x86_64/multiarch/wcsnlen.c.  */
 -- 
-2.41.0
+2.44.0
 

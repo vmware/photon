@@ -1,7 +1,7 @@
 From a1999f6ad906cb77d5492febf9ea44671174afe0 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Fri, 5 Mar 2021 06:24:52 -0800
-Subject: [PATCH 065/124] x86-64: Add ifunc-avx2.h functions with 256-bit EVEX
+Subject: [PATCH 065/125] x86-64: Add ifunc-avx2.h functions with 256-bit EVEX
 
 Update ifunc-avx2.h, strchr.c, strcmp.c, strncmp.c and wcsnlen.c to
 select the function optimized with 256-bit EVEX instructions using
@@ -3403,5 +3403,5 @@ index 0000000000000000000000000000000000000000..06cd0f9f5a7575e72b070337bfc5f98a
 +
 +#include "memchr-evex.S"
 -- 
-2.41.0
+2.44.0
 

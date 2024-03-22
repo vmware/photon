@@ -1,7 +1,7 @@
 From 182ffd8e757aa44e2b8136cfc0995b04c2a4b654 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Tue, 2 Feb 2021 09:55:50 -0300
-Subject: [PATCH 054/124] linux: Remove shmmax check from tst-sysvshm-linux
+Subject: [PATCH 054/125] linux: Remove shmmax check from tst-sysvshm-linux
 
 The shmmax expected value is tricky to check because kernel clamps it
 to INT_MAX in two cases:
@@ -72,5 +72,5 @@ index cb32bd522effbc7ae69589d633a4bd20928ef49d..bb154592a6ebd85611375392857ca872
    }
  
 -- 
-2.41.0
+2.44.0
 

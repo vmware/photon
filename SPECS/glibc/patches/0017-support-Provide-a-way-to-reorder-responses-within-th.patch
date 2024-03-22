@@ -1,7 +1,7 @@
 From f688bcd83de17986deed911434b20a964410ad2e Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Wed, 14 Oct 2020 10:54:39 +0200
-Subject: [PATCH 017/124] support: Provide a way to reorder responses within
+Subject: [PATCH 017/125] support: Provide a way to reorder responses within
  the DNS test server
 
 (cherry picked from commit 873e239a4c3d8ec235c27439c1bdc5bbf8aa1818)
@@ -303,5 +303,5 @@ index 67819469a07053ef397b1a69be0fae50017d2091..c46de32ff4f9ab59d5809d7dabbf8056
  
  #endif /* SUPPORT_RESOLV_TEST_H */
 -- 
-2.41.0
+2.44.0
 

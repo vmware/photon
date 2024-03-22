@@ -1,7 +1,7 @@
 From 5abb1c32c22145c9e01307910fa2f82adf85d3ee Mon Sep 17 00:00:00 2001
 From: Nikita Popov <npv1310@gmail.com>
 Date: Tue, 2 Nov 2021 13:21:42 +0500
-Subject: [PATCH 061/124] gconv: Do not emit spurious NUL character in
+Subject: [PATCH 061/125] gconv: Do not emit spurious NUL character in
  ISO-2022-JP-3 (bug 28524)
 
 Bugfix 27256 has introduced another issue:
@@ -195,5 +195,5 @@ index 62cbc54a110ab1f98861562309cd4d5f83c37099..c7b470db618657318cd41c595517b46f
        else								      \
  	{								      \
 -- 
-2.41.0
+2.44.0
 

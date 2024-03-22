@@ -1,7 +1,7 @@
 From ae98c17a1dffc9353771d5c1d4fcead35617efc4 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Mon, 3 May 2021 03:03:19 -0400
-Subject: [PATCH 081/124] x86: Optimize memchr-evex.S
+Subject: [PATCH 081/125] x86: Optimize memchr-evex.S
 
 No bug. This commit optimizes memchr-evex.S. The optimizations include
 replacing some branches with cmovcc, avoiding some branches entirely
@@ -697,5 +697,5 @@ index 6dd5d67b90fb41f7647c51a606b5f45e662cb5f8..81d5cd6486fc73bb12fda6a8f6a360f6
  END (MEMCHR)
  #endif
 -- 
-2.41.0
+2.44.0
 

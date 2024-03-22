@@ -1,7 +1,7 @@
 From 3c207c9c29e7549fcc3c52329865f0dd384c8e3f Mon Sep 17 00:00:00 2001
 From: Siddhesh Poyarekar <siddhesh@sourceware.org>
 Date: Tue, 16 Mar 2021 12:37:53 +0530
-Subject: [PATCH 042/124] tst-env-setuid: Use
+Subject: [PATCH 042/125] tst-env-setuid: Use
  support_capture_subprogram_self_sgid
 
 Use the support_capture_subprogram_self_sgid to spawn an sgid child.
@@ -246,5 +246,5 @@ index 41dc79e83a85e082b6e131f1170b9f1e9b7b0a2a..2dbccdb69e0790ca46717d09eb5f4de6
  
  #define TEST_FUNCTION_ARGV do_test
 -- 
-2.41.0
+2.44.0
 

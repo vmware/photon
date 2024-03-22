@@ -1,7 +1,7 @@
 From 44b395932961a29825da4ad025124a6760858d9c Mon Sep 17 00:00:00 2001
 From: Raoni Fassina Firmino <raoni@linux.ibm.com>
 Date: Thu, 11 Feb 2021 17:41:20 -0300
-Subject: [PATCH 039/124] powerpc64: Workaround sigtramp vdso return call
+Subject: [PATCH 039/125] powerpc64: Workaround sigtramp vdso return call
 
 A not so recent kernel change[1] changed how the trampoline
 `__kernel_sigtramp_rt64` is used to call signal handlers.
@@ -79,5 +79,5 @@ index 8a53a1088f27af137b3cef4f3eac96046889cd92..362a2b713cf95a0496f07db4680377c5
  #endif
    return false;
 -- 
-2.41.0
+2.44.0
 

@@ -1,7 +1,7 @@
 From 53c8f3f1255f4e45084476c9c23d63e99516ad3b Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Thu, 30 Sep 2021 10:29:17 -0700
-Subject: [PATCH 058/124] elf: Replace nsid with args.nsid [BZ #27609]
+Subject: [PATCH 058/125] elf: Replace nsid with args.nsid [BZ #27609]
 
 commit ec935dea6332cb22f9881cd1162bad156173f4b0
 Author: Florian Weimer <fweimer@redhat.com>
@@ -48,5 +48,5 @@ index 8769e4705157bb7732441541242b5bd9e4558bdc..55b39e1bbe022edf2b44878d1fae7ec4
        /* Remove the object from memory.  It may be in an inconsistent
  	 state if relocation failed, for example.  */
 -- 
-2.41.0
+2.44.0
 

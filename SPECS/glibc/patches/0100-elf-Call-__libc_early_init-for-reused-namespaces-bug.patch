@@ -1,7 +1,7 @@
 From 51b72ac04bc23dd5e82a5e9fbdbc86820dd26d98 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 26 Aug 2022 21:15:43 +0200
-Subject: [PATCH 100/124] elf: Call __libc_early_init for reused namespaces
+Subject: [PATCH 100/125] elf: Call __libc_early_init for reused namespaces
  (bug 29528)
 
 libc_map is never reset to NULL, neither during dlclose nor on a
@@ -233,5 +233,5 @@ index 0000000000000000000000000000000000000000..449f3c8fa9f2aa01c590c6680e85d7b0
 +
 +#include <support/test-driver.c>
 -- 
-2.41.0
+2.44.0
 

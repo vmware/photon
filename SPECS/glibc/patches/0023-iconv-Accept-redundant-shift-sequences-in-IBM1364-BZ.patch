@@ -1,7 +1,7 @@
 From 050022910be1d1f5c11cd5168f1685ad4f9580d2 Mon Sep 17 00:00:00 2001
 From: Arjun Shankar <arjun@redhat.com>
 Date: Wed, 4 Nov 2020 12:19:38 +0100
-Subject: [PATCH 023/124] iconv: Accept redundant shift sequences in IBM1364
+Subject: [PATCH 023/125] iconv: Accept redundant shift sequences in IBM1364
  [BZ #26224]
 
 The IBM1364, IBM1371, IBM1388, IBM1390 and IBM1399 character sets
@@ -106,5 +106,5 @@ index 49e7267ab4507226aac12c47b561a2699c0a6fd2..521f0825b7fba350b5b1cf110e92c779
  	++inptr;							      \
  	continue;							      \
 -- 
-2.41.0
+2.44.0
 

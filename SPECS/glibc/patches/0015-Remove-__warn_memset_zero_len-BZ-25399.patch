@@ -1,7 +1,7 @@
 From 5337b2af4b863fc9a1b92134bbe09758f1eff39d Mon Sep 17 00:00:00 2001
 From: Siddhesh Poyarekar <siddhesh@sourceware.org>
 Date: Tue, 3 Nov 2020 15:09:28 +0530
-Subject: [PATCH 015/124] Remove __warn_memset_zero_len [BZ #25399]
+Subject: [PATCH 015/125] Remove __warn_memset_zero_len [BZ #25399]
 
 Non-gcc compilers (clang and possibly other compilers that do not
 masquerade as gcc 5.0 or later) are unable to use
@@ -54,5 +54,5 @@ index 309d0f39b2c3ed5343ceb2a1ad73b81182805efb..c8d3051af8a68cb1d1c24f0fc11deb4a
  }
  
 -- 
-2.41.0
+2.44.0
 

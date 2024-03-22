@@ -1,7 +1,7 @@
 From f9e29095fcc11f79a3afcb4b5dd3ce070e3d4084 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Mon, 19 Apr 2021 10:45:07 -0700
-Subject: [PATCH 101/124] x86-64: Require BMI2 for strchr-avx2.S [BZ #29611]
+Subject: [PATCH 101/125] x86-64: Require BMI2 for strchr-avx2.S [BZ #29611]
 
 Since strchr-avx2.S updated by
 
@@ -91,5 +91,5 @@ index 920e64241e91950242178fd2a964c556f9b101e2..d4bbf61030c46ef47ca1bb44b94937d3
  			      __wcschr_avx2_rtm)
  	      IFUNC_IMPL_ADD (array, i, wcschr,
 -- 
-2.41.0
+2.44.0
 

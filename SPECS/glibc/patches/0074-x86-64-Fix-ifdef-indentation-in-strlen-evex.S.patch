@@ -1,7 +1,7 @@
 From 6479c904df3725b0a55566ae733c59107cee4737 Mon Sep 17 00:00:00 2001
 From: Sunil K Pandey <skpgkp2@gmail.com>
 Date: Thu, 1 Apr 2021 15:47:04 -0700
-Subject: [PATCH 074/124] x86-64: Fix ifdef indentation in strlen-evex.S
+Subject: [PATCH 074/125] x86-64: Fix ifdef indentation in strlen-evex.S
 
 Fix some indentations of ifdef in file strlen-evex.S which are off by 1
 and confusing to read.
@@ -68,5 +68,5 @@ index cd022509cb175ac0e24d10d2e56b53319afcd4a3..05838190788b2153247e945d211deb84
  	cmpq	%rax, %rsi
  	jbe	L(max)
 -- 
-2.41.0
+2.44.0
 

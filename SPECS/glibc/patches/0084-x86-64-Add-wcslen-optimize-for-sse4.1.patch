@@ -1,7 +1,7 @@
 From ad711f9eee7f2d3e0d766100a56b40c447733a3f Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Wed, 23 Jun 2021 01:19:34 -0400
-Subject: [PATCH 084/124] x86-64: Add wcslen optimize for sse4.1
+Subject: [PATCH 084/125] x86-64: Add wcslen optimize for sse4.1
 
 No bug. This comment adds the ifunc / build infrastructure
 necessary for wcslen to prefer the sse4.1 implementation
@@ -177,5 +177,5 @@ index 8beba9f7d371b7b1c79deb830f027d4fd43274f2..f15c1b328be4f57a3ced9cadda044d19
  libc_ifunc_redirected (__redirect_wcsnlen, __wcsnlen, IFUNC_SELECTOR ());
  weak_alias (__wcsnlen, wcsnlen);
 -- 
-2.41.0
+2.44.0
 

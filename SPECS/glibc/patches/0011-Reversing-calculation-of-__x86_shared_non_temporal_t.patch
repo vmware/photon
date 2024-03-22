@@ -1,7 +1,7 @@
 From e61a8fd8fadbf1a8cef997a0f921575cb2905ea2 Mon Sep 17 00:00:00 2001
 From: Patrick McGehearty <patrick.mcgehearty@oracle.com>
 Date: Mon, 28 Sep 2020 20:11:28 +0000
-Subject: [PATCH 011/124] Reversing calculation of
+Subject: [PATCH 011/125] Reversing calculation of
  __x86_shared_non_temporal_threshold
 
 The __x86_shared_non_temporal_threshold determines when memcpy on x86
@@ -94,5 +94,5 @@ index 217c21c34ff2b5273a5d969a2a627d98ec524527..dadec5d58f9f5adfbdc844bb98816e57
    /* NB: The REP MOVSB threshold must be greater than VEC_SIZE * 8.  */
    unsigned int minimum_rep_movsb_threshold;
 -- 
-2.41.0
+2.44.0
 

@@ -1,7 +1,7 @@
 From c511c9bd051b6a2b58d02707bbc4694156fc9656 Mon Sep 17 00:00:00 2001
 From: Siddhesh Poyarekar <siddhesh@sourceware.org>
 Date: Fri, 9 Apr 2021 20:55:45 +0530
-Subject: [PATCH 041/124] support: Add capability to fork an sgid child
+Subject: [PATCH 041/125] support: Add capability to fork an sgid child
 
 Add a new function support_capture_subprogram_self_sgid that spawns an
 sgid child of the running program with its own image and returns the
@@ -467,5 +467,5 @@ index 36e3a77af22856742bed3debd4215e5d513f8043..52cea8182a0de0bd19e360acf13e8b8b
  support_process_wait (struct support_subprocess *proc)
  {
 -- 
-2.41.0
+2.44.0
 
