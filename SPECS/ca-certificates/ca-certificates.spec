@@ -5,7 +5,7 @@
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
 Version:        20230315
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Custom
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
@@ -62,22 +62,18 @@ mkdir -p %{buildroot}%{_bindir}
 cp -pv %{SOURCE1} %{SOURCE2} %{SOURCE3} %{buildroot}%{_bindir}
 chmod +x %{buildroot}%{_bindir}/*
 
+pushd %{buildroot}%{ssl_certs_dir}
+for file in *.pem; do
+  ln -sf $file $(openssl x509 -subject_hash -noout -in $file).0
+done
+
+bash %{buildroot}%{_bindir}/remove-expired-certs.sh "${PWD}"
+popd
+
 %{_fixperms} %{buildroot}/*
 
 %posttrans
-cd %{ssl_certs_dir}
-for file in *.pem; do
-  ln -sf $file $(openssl x509 -hash -noout -in $file).0
-done
-# Cleanup broken symlinks
-find -L %{ssl_certs_dir} -type l -delete
-exit 0
-
-%preun
-cd %{ssl_certs_dir}
-for f in *.pem; do
-  rm -f "$(openssl x509 -hash -noout -in "$f")".0
-done
+bash %{_bindir}/remove-expired-certs.sh %{ssl_certs_dir}
 
 %clean
 rm -rf %{buildroot}
@@ -94,6 +90,8 @@ rm -rf %{buildroot}
 %{crt_dir}/ca-bundle.crt
 
 %changelog
+* Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-5
+- Create cert symlinks at build time
 * Fri Jan 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-4
 - Spec cleanups, don't generate helper scripts everytime
 * Mon Jan 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-3

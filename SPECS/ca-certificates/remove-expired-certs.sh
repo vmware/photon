@@ -44,3 +44,5 @@ for cert in $certs; do
     rm -f "${cert}"
   fi
 done
+
+find -L ${DIR} -type l -delete

@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -271,6 +271,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.0-3
+- Remove dead symlinks during certificate rehash
 * Fri Dec 29 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.0-2
 - Add provides & obsoletes for nxtgn-openssl
 * Sat Nov 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-1
