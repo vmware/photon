@@ -1,7 +1,7 @@
 Summary:        Bluetooth utilities
 Name:           bluez
 Version:        5.66
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -12,6 +12,7 @@ Source0: http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
 %define sha512 %{name}=ed0994932687eacf27207867366671b323671f5d5199daf36ea5eff8f254f2bc99ef989ef7df9883b35c06f2af60452be8bad0a06109428a4717cf2b247b4865
 
 Patch0: bluez-CVE-2023-27349.patch
+Patch1: bluez-CVE-2023-50229-50230.patch
 
 BuildRequires:  libical-devel
 BuildRequires:  glib-devel
@@ -86,6 +87,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Fri Mar 22 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 5.66-4
+- Patched to fix CVE-2023-50229 and CVE-2023-50230
 * Fri May 12 2023 Nitesh Kumar <kunitesh@vmware.com> 5.66-3
 - Patched to fix CVE-2023-27349
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.66-2
