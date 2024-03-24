@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.81
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -170,11 +170,13 @@ Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 # Fix CVE-2024-22099
 Patch108: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
+# Fix CVE-2024-26584
+Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 # Fix CVE-2023-39191
 %include %{SOURCE42}
 
-# Fix CVE-2024-26584
-Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
+# Fix CVE-2024-26585
+Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -823,6 +825,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Mar 25 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-2
+- Patched CVE-2024-26585
 * Wed Mar 06 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.81-1
 - Update to version 6.1.81, patched CVE-2024-26584
 * Wed Mar 06 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.79-2
