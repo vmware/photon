@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.12
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -31,6 +31,7 @@ Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
 Patch2: execute-suppress-credentials-mount-if-empty.patch
 Patch3: fix-lvrename-unmount.patch
+Patch4: revert-network-delay-to-configure-address-until-it-i.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -700,6 +701,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Sun Mar 24 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 253.12-7
+- Fix issue with VM reconfigure + static ip
 * Tue Jan 09 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 253.12-6
 - Remove '60-ioschedulers.rules' and 'use-bfq-scheduler.patch' files
 * Tue Jan 02 2024 Ankit Jain <ankitja@vmware.com> 253.12-5

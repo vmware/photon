@@ -1,0 +1,48 @@
+From 16bfb12c8f815a468021b6e20871061d20b50f57 Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Sat, 22 Jul 2023 15:10:49 +0900
+Subject: [PATCH] Revert "network: delay to configure address until it is
+ removed on reconfigure"
+
+This reverts commit 6e8477edd3a988357ad5f5fa6610904d44ec402c.
+
+The commit intended to fix a race reported at #28009. However,
+unfortunately, it does not fix the root of the race, and reveals
+the race in more simple setups. See reports in #28358.
+---
+ src/network/networkd-address.c | 3 ---
+ src/network/networkd-util.h    | 4 ----
+ 2 files changed, 7 deletions(-)
+
+diff --git a/src/network/networkd-address.c b/src/network/networkd-address.c
+index 21d08c8f37..7fbe23e905 100644
+--- a/src/network/networkd-address.c
++++ b/src/network/networkd-address.c
+@@ -1212,9 +1212,6 @@ static bool address_is_ready_to_configure(Link *link, const Address *address) {
+         if (!link_is_ready_to_configure(link, false))
+                 return false;
+ 
+-        if (address_is_removing(address))
+-                return false;
+-
+         if (!ipv4acd_bound(address))
+                 return false;
+ 
+diff --git a/src/network/networkd-util.h b/src/network/networkd-util.h
+index 8ffe4b5b5b..9c360f5526 100644
+--- a/src/network/networkd-util.h
++++ b/src/network/networkd-util.h
+@@ -125,10 +125,6 @@ int network_config_state_to_string_alloc(NetworkConfigState s, char **ret);
+                                     NETWORK_CONFIG_STATE_REMOVING,      \
+                                     NETWORK_CONFIG_STATE_REMOVING);     \
+         }                                                               \
+-        static inline bool name##_is_removing(const type *t) {          \
+-                assert(t);                                              \
+-                return FLAGS_SET(t->state, NETWORK_CONFIG_STATE_REMOVING); \
+-        }                                                               \
+         static inline void name##_enter_removed(type *t) {              \
+                 name##_update_state(t,                                  \
+                                     NETWORK_CONFIG_STATE_CONFIGURED |   \
+-- 
+2.44.0
+
