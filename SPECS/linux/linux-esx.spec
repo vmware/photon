@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.212
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -244,6 +244,15 @@ Patch149: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 # Fix CVE-2023-52482
 Patch150: 0001-x86-srso-Add-SRSO-mitigation-for-Hygon-processors.patch
 
+# Fix CVE-2024-26583
+Patch151: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
+
+# Fix CVE-2024-26585
+Patch152: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
+
+# Fix CVE-2024-26589
+Patch153: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
+
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -405,7 +414,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M97
 
 # CVE
-%autopatch -p1 -m100 -M150
+%autopatch -p1 -m100 -M153
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -624,6 +633,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 25 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-3
+- Patched CVE-2024-26583, CVE-2024-26585, and CVE-2024-26589
 * Tue Mar 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.212-2
 - Fix for CVE-2023-52458/2023-52482
 * Mon Mar 11 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-1

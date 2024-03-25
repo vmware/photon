@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.212
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -247,6 +247,15 @@ Patch151: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch152: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
+
+# Fix CVE-2024-26583
+Patch153: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
+
+# Fix CVE-2024-26585
+Patch154: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
+
+# Fix CVE-2024-26589
+Patch155: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -505,6 +514,9 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m150 -M151
 
 %autopatch -p1 -m152 -M152
+
+# CVE
+%autopatch -p1 -m153 -M155
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -931,6 +943,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Mar 25 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-3
+- Patched CVE-2024-26583, CVE-2024-26585, and CVE-2024-26589
 * Tue Mar 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.212-2
 - Fix for CVE-2023-52447/2023-52458/2023-52482
 * Mon Mar 11 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-1

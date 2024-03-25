@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.212
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -193,6 +193,15 @@ Patch150: 0001-x86-srso-Add-SRSO-mitigation-for-Hygon-processors.patch
 # Enable CONFIG_DEBUG_INFO_BTF=y
 Patch151: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
 
+# Fix CVE-2024-26583
+Patch152: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
+
+# Fix CVE-2024-26585
+Patch153: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
+
+# Fix CVE-2024-26589
+Patch154: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
+
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
 Patch202: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
@@ -356,6 +365,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 # Enable CONFIG_DEBUG_INFO_BTF=y
 %autopatch -p1 -m151 -M151
+
+# CVE
+%autopatch -p1 -m152 -M154
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -532,6 +544,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Mar 25 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-3
+- Patched CVE-2024-26583, CVE-2024-26585, and CVE-2024-26589
 * Tue Mar 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.212-2
 - Fix for CVE-2023-52447/2023-52458/2023-52482
 * Mon Mar 11 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-1

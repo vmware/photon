@@ -1,0 +1,65 @@
+From 6db22d6c7a6dc914b12c0469b94eb639b6a8a146 Mon Sep 17 00:00:00 2001
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Tue, 6 Feb 2024 17:18:20 -0800
+Subject: [PATCH] tls: fix race between tx work scheduling and socket close
+
+[ Upstream commit e01e3934a1b2d122919f73bc6ddbe1cdafc4bbdb ]
+
+Similarly to previous commit, the submitting thread (recvmsg/sendmsg)
+may exit as soon as the async crypto handler calls complete().
+Reorder scheduling the work before calling complete().
+This seems more logical in the first place, as it's
+the inverse order of what the submitting thread will do.
+
+Reported-by: valis <sec@valis.email>
+Fixes: a42055e8d2c3 ("net/tls: Add support for async encryption of records for performance")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Reviewed-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Srish Srinivasan <srish.srinivasan@broadcom.com>
+---
+ net/tls/tls_sw.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
+
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 15af2e856..8afbf3421 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -463,7 +463,6 @@ static void tls_encrypt_done(struct crypto_async_request *req, int err)
+ 	struct scatterlist *sge;
+ 	struct sk_msg *msg_en;
+ 	struct tls_rec *rec;
+-	bool ready = false;
+ 
+ 	if (err == -EINPROGRESS) /* see the comment in tls_decrypt_done() */
+ 		return;
+@@ -497,19 +496,16 @@ static void tls_encrypt_done(struct crypto_async_request *req, int err)
+ 		/* If received record is at head of tx_list, schedule tx */
+ 		first_rec = list_first_entry(&ctx->tx_list,
+ 					     struct tls_rec, list);
+-		if (rec == first_rec)
+-			ready = true;
++		if (rec == first_rec) {
++			/* Schedule the transmission */
++			if (!test_and_set_bit(BIT_TX_SCHEDULED,
++					      &ctx->tx_bitmask))
++				schedule_delayed_work(&ctx->tx_work.work, 1);
++		}
+ 	}
+ 
+ 	if (atomic_dec_and_test(&ctx->encrypt_pending))
+ 		complete(&ctx->async_wait.completion);
+-
+-	if (!ready)
+-		return;
+-
+-	/* Schedule the transmission */
+-	if (!test_and_set_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask))
+-		schedule_delayed_work(&ctx->tx_work.work, 1);
+ }
+ 
+ static int tls_encrypt_async_wait(struct tls_sw_context_tx *ctx)
+-- 
+2.34.1
