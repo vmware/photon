@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.62
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -132,6 +132,10 @@ Patch60: 0003-Verify-SBAT-on-kexec.patch
 %ifarch x86_64
 Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 %endif
+
+# Fix proc_sched_rt01 ltp testcase failure
+Patch62: 0001-sched-rt-Disallow-writing-invalid-values-to-sched_rt.patch
+Patch63: 0001-sched-rt-sysctl_sched_rr_timeslice-show-default-time.patch
 
 # CVE:
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -280,6 +284,8 @@ stalld to use eBPF based backend.
 %ifarch x86_64
 %autopatch -p1 -m61 -M61
 %endif
+
+%autopatch -p1 -m62 -M63
 
 # CVE
 %autopatch -p1 -m100 -M129
@@ -463,6 +469,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue Mar 26 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.1.62-12
+- Fix proc_sched_rt01 ltp testcase failure
 * Tue Feb 13 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 6.1.62-11
 - Add stalld eBPF plugin package
 * Mon Feb 12 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.62-10

@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.62
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -114,6 +114,10 @@ Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
+
+# Fix proc_sched_rt01 ltp testcase failure
+Patch32: 0001-sched-rt-Disallow-writing-invalid-values-to-sched_rt.patch
+Patch33: 0001-sched-rt-sysctl_sched_rr_timeslice-show-default-time.patch
 
 %ifarch x86_64
 # VMW: [50..59]
@@ -449,6 +453,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Mar 26 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.1.62-11
+- Fix proc_sched_rt01 ltp testcase failure
 * Mon Feb 12 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.62-10
 - Update canister version to 5.0.0-6.1.75-2
 * Wed Dec 20 2023 Keerthana K <keerthanak@vmware.com> 6.1.62-9

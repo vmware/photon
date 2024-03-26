@@ -1,0 +1,46 @@
+From c1fc6484e1fb7cc2481d169bfef129a1b0676abe Mon Sep 17 00:00:00 2001
+From: Cyril Hrubis <chrubis@suse.cz>
+Date: Wed, 2 Aug 2023 17:19:06 +0200
+Subject: [PATCH] sched/rt: sysctl_sched_rr_timeslice show default timeslice
+ after reset
+
+[ Upstream commit c1fc6484e1fb7cc2481d169bfef129a1b0676abe]
+
+The sched_rr_timeslice can be reset to default by writing value that is
+<= 0. However after reading from this file we always got the last value
+written, which is not useful at all.
+
+$ echo -1 > /proc/sys/kernel/sched_rr_timeslice_ms
+$ cat /proc/sys/kernel/sched_rr_timeslice_ms
+-1
+
+Fix this by setting the variable that holds the sysctl file value to the
+jiffies_to_msecs(RR_TIMESLICE) in case that <= 0 value was written.
+
+Signed-off-by: Cyril Hrubis <chrubis@suse.cz>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Petr Vorel <pvorel@suse.cz>
+Acked-by: Mel Gorman <mgorman@suse.de>
+Tested-by: Petr Vorel <pvorel@suse.cz>
+Link: https://lore.kernel.org/r/20230802151906.25258-3-chrubis@suse.cz
+---
+ kernel/sched/rt.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 185d3d749f6b..0597ba0f85ff 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -3062,6 +3062,9 @@ static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
+ 		sched_rr_timeslice =
+ 			sysctl_sched_rr_timeslice <= 0 ? RR_TIMESLICE :
+ 			msecs_to_jiffies(sysctl_sched_rr_timeslice);
++
++		if (sysctl_sched_rr_timeslice <= 0)
++			sysctl_sched_rr_timeslice = jiffies_to_msecs(RR_TIMESLICE);
+ 	}
+ 	mutex_unlock(&mutex);
+ 
+-- 
+2.35.6
+

@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.62
-Release:        10%{?acvp_build:.acvp}%{?dist}
+Release:        11%{?acvp_build:.acvp}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -127,6 +127,10 @@ Patch21: 6.1-0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+
+# Fixroc_sched_rt01 ltp testcase failure
+Patch23: 0001-sched-rt-Disallow-writing-invalid-values-to-sched_rt.patch
+Patch24: 0001-sched-rt-sysctl_sched_rr_timeslice-show-default-time.patch
 
 %ifarch x86_64
 # VMW: [50..59]
@@ -708,6 +712,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Mar 26 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.1.62-11
+- Fix proc_sched_rt01 ltp testcase failure
 * Mon Feb 12 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.62-10
 - Update canister version to 5.0.0-6.1.75-2
 * Fri Feb 02 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.62-9

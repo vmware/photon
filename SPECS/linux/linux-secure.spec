@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        6.1.62
-Release:        17%{?kat_build:.kat}%{?dist}
+Release:        18%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -113,6 +113,10 @@ Patch32: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch33: 6.0-0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+# Fix proc_sched_rt01 ltp testcase failure
+Patch34: 0001-sched-rt-Disallow-writing-invalid-values-to-sched_rt.patch
+Patch35: 0001-sched-rt-sysctl_sched_rr_timeslice-show-default-time.patch
 
 # VMW: [40..49]
 %ifarch x86_64
@@ -269,7 +273,7 @@ The kernel fips-canister
 %setup -q -T -D -b 34 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M33
+%autopatch -p1 -m0 -M35
 
 %ifarch x86_64
 # VMW x86
@@ -474,6 +478,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Mar 26 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.1.62-18
+- Fix proc_sched_rt01 ltp testcase failure
 * Fri Feb 23 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.62-17
 - Fix rap_plugin patch for syscall
 * Mon Feb 12 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.62-16
