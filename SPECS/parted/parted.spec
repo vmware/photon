@@ -1,7 +1,7 @@
 Summary:        GNU Parted manipulates partition tables
 Name:           parted
-Version:        3.3
-Release:        3%{?dist}
+Version:        3.5
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/gnu/parted/%{name}-%{version}.tar.xz
-%define sha512 parted=d1384694a491aa53bab6206fdeccd1d192de2ed379fe25aa865dd6aa06ed945a728e85b2ccc2fb23f5aa9dfee4a8bd8f0f2be1dd386cb8e8861b73382c6a07e4
+%define sha512 parted=87fc69e947de5f0b670ee5373a7cdf86180cd782f6d7280f970f217f73f55ee1b1b018563f48954f3a54fdde5974b33e07eee68c9ccdf08e621d3dc0e3ce126a
 
 Patch0:         parted-freelocale.patch
 
@@ -55,6 +55,8 @@ sed -i '/utsname.h/a#include <sys/sysmacros.h>' libparted/arch/linux.c &&
 %exclude %{_infodir}/dir
 
 %changelog
+* Tue Mar 26 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 3.5-1
+- Version upgrade to fix issues in lvm2 snapshot workflow
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.3-3
 - Remove .la files
 * Fri Jan 22 2021 Dweep Advani <dadvani@vmware.com> 3.3-2
