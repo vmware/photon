@@ -43,7 +43,7 @@ class PackageInfo(object):
                         }
                         self.pkgList[f"{rpmPkg}-{version}"] = listPkgAttributes
                         self.logger.debug(
-                            f"Added {rpmPkg}-{version}to the package info json"
+                            f"Added {rpmPkg}-{version} to package info json"
                         )
                     else:
                         self.logger.debug(

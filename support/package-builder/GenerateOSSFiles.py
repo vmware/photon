@@ -191,6 +191,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
         yamlFile = open(f"{yamlSourceDir}/sources_list.yaml", "w")
     listPackages = SPECS.getData().getListPackages()
     listPackages.sort()
+
     import PullSources
 
     for package in listPackages:
@@ -203,7 +204,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
             if listPatches:
                 modified = True
             url = SPECS.getData().getSourceURL(package, version)
-            if url is None:
+            if not url:
                 url = SPECS.getData().getURL(package, version)
 
             sourceName = None
@@ -213,7 +214,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
                 sha512 = SPECS.getData().getChecksum(
                     package, version, sourceName
                 )
-                if sha512 is not None:
+                if sha512:
                     PullSources.get(
                         package,
                         sourceName,
@@ -259,28 +260,14 @@ def buildSRPMList(
         yamlFile = open(f"{yamlSrpmDir}/srpm_list.yaml", "w")
     listPackages = SPECS.getData().getListPackages()
     listPackages.sort()
+
     for package in listPackages:
         if package in blackListPkgs:
             continue
         ossname = package
         for ossversion in SPECS.getData().getVersions(package):
-            ossrelease = SPECS.getData().getRelease(package, ossversion)
-
-            """
-            add variable curleasever here for ossrelease in 4.0 branch
-            contains dist_tag
-            in 4.0, ossrelease is 2.ph4
-            in 1.0, 2.0, 3.0, ossrelease is 2.
-            """
-            curleasever = ossrelease
-            if not ossrelease.endswith(dist_tag):
-                curleasever = "%s%s" % (ossrelease, dist_tag)
-            srpm_file_name = "%s-%s-%s.src.rpm" % (
-                ossname,
-                ossversion,
-                curleasever,
-            )
-            logger.info("srpm name is %s" % (srpm_file_name))
+            srpm_file_name = f"{ossname}-{ossversion}.src.rpm"
+            logger.info(f"srpm name is {srpm_file_name}")
             listFoundSRPMFiles = cmdUtils.findFile(srpm_file_name, srpmPath)
 
             srpmName = None
@@ -298,14 +285,14 @@ def buildSRPMList(
 
             if not singleFile:
                 yamlFile = open(
-                    f"{yamlSrpmDir}/{ossname}-{ossversion}-{curleasever}.yaml",
+                    f"{yamlSrpmDir}/{ossname}-{ossversion}.yaml",
                     "w",
                 )
 
-            yamlFile.write(f"baseos:{ossname}:{ossversion}-{curleasever}:\n")
+            yamlFile.write(f"baseos:{ossname}:{ossversion}:\n")
             yamlFile.write("  repository: BaseOS\n")
             yamlFile.write(f"  name: '{ossname}'\n")
-            yamlFile.write(f"  version: '{ossversion}-{curleasever}'\n")
+            yamlFile.write(f"  version: '{ossversion}'\n")
             yamlFile.write("  url: 'http://www.vmware.com'\n")
             yamlFile.write("  baseos-style: rpm\n")
             yamlFile.write(f"  baseos-source: '{srpmName}'\n")
