@@ -25,7 +25,6 @@ BuildRequires:  python3-cffi
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
-%define with_check 1
 %if 0%{?with_check}
 BuildRequires:  python3-pip
 BuildRequires:  curl-devel
