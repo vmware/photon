@@ -41,7 +41,7 @@ class PackageInfo(object):
                             "debugrpm":debugrpmFile
                         }
                         self.pkgList[f"{rpmPkg}-{version}"] = listPkgAttributes
-                        self.logger.debug(f"Added {rpmPkg}-{version}to the package info json")
+                        self.logger.debug(f"Added {rpmPkg}-{version} to package info json")
                     else:
                         self.logger.debug(f"Missing rpm file for package: {rpmPkg}")
 
