@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -16,6 +16,7 @@ Patch1:         re-enable_gem_extension_build_2.patch
 Patch2:         re-enable_gem_extension_build_3.patch
 Patch3:         re-enable_gem_extension_build_4.patch
 Patch4:         CVE-2021-33621.patch
+Patch5:         CVE-2024-27281.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -89,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Tue Mar 26 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-6
+- Fix CVE-2024-27281
 * Wed Feb 07 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-5
 - Fix CVE-2021-33621
 * Tue Jan 30 2024 Shivani Agarwal <shivania2@vmware.com> 3.1.2-4
