@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.81
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -230,6 +230,7 @@ Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
 %ifarch x86_64
 Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+Patch506: 0001-jitterentropy-kcapi-defer-jent_init.patch
 %endif
 
 %if 0%{?fips}
@@ -330,7 +331,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m500 -M504
 
 %ifarch x86_64
-%autopatch -p1 -m505 -M505
+%autopatch -p1 -m505 -M506
 %endif
 
 %if 0%{?fips}
@@ -470,6 +471,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Apr 10 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.81-5
+- Defer the initialization of jitterentropy.
 * Wed Mar 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.81-4
 - Fix CVE-2024-52452
 * Wed Mar 27 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.81-3
