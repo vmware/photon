@@ -1,7 +1,7 @@
 Summary:        Packet Analyzer
 Name:           tcpdump
 Version:        4.99.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            http://www.tcpdump.org
 Group:          Networking
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0: http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
 %define sha512 tcpdump=cb51e19574707d07c0de90dd4c301955897f2c9f2a69beb7162c08f59189f55625346d1602c8d66ab2b4c626ea4b0df1f08ed8734d2d7f536d0a7840c2d6d8df
+
+Patch0: CVE-2024-2397.patch
 
 BuildRequires: libpcap-devel
 
@@ -21,7 +23,7 @@ It allows the user to display TCP/IP and other packets being
 transmitted or received over a network to which the computer is attached.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure
@@ -42,6 +44,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/tcpdump.1.gz
 
 %changelog
+* Thu Mar 28 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.99.4-2
+- Patched for CVE-2024-2397
 * Thu May 18 2023 Nitesh Kumar <kunitesh@vmware.com> 4.99.4-1
 - Upgrade to v4.99.4 to fix CVE-2023-1801
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 4.99.1-1
