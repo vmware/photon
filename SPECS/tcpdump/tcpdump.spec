@@ -1,17 +1,22 @@
 Summary:        Packet Analyzer
 Name:           tcpdump
 Version:        4.99.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            http://www.tcpdump.org
-Source0:        http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha512  tcpdump=cb51e19574707d07c0de90dd4c301955897f2c9f2a69beb7162c08f59189f55625346d1602c8d66ab2b4c626ea4b0df1f08ed8734d2d7f536d0a7840c2d6d8df
-Patch0:         CVE-2018-19519.patch
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  libpcap-devel
-Requires:       libpcap
+
+Source0: http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
+%define sha512 %{name}=cb51e19574707d07c0de90dd4c301955897f2c9f2a69beb7162c08f59189f55625346d1602c8d66ab2b4c626ea4b0df1f08ed8734d2d7f536d0a7840c2d6d8df
+
+Patch0: CVE-2018-19519.patch
+Patch1: CVE-2024-2397.patch
+
+BuildRequires: libpcap-devel
+
+Requires: libpcap
 
 %description
 Tcpdump is a common packet analyzer that runs under the command line.
@@ -38,44 +43,46 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/tcpdump.1.gz
 
 %changelog
-*   Tue Jul 04 2023 Shivani Agarwal <shivania2@vmware.com> 4.99.4-1
--   Fix CVE-2020-8036
-*   Wed Feb 23 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.9.3-5
--   Fix CVE-2018-16301
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.9.3-4
--   Bump up release for openssl
-*   Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.9.3-3
--   Added patch, fixes CVE-2020-8037
-*   Wed Sep 30 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.9.3-2
--   openssl 1.1.1
-*   Wed Oct 09 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 4.9.3-1
--   Update to version 4.9.3 to fix multiple CVEs
-*   Thu Mar 14 2019 Michelle Wang <michellew@vmware.com> 4.9.2-2
--   Add patch CVE-2018-19519
-*   Fri Sep 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.2-1
--   Updating version to 4.9.2
-*   Thu Sep 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.1-2
--   Fix for CVE-2017-11541 CVE-2017-11542 and CVE-2017-11543
-*   Thu Aug 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.1-1
--   Updating version to 4.9.1
-*   Thu Feb 02 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.0-1
--   Adding latest version to handle following CVEs
--   CVE-2016-7922, CVE-2016-7923, CVE-2016-7924, CVE-2016-7925,
--   CVE-2016-7926, CVE-2016-7927, CVE-2016-7928, CVE-2016-7929,
--   CVE-2016-7930, CVE-2016-7931, CVE-2016-7932, CVE-2016-7933,
--   CVE-2016-7934, CVE-2016-7935, CVE-2016-7936, CVE-2016-7937,
--   CVE-2016-7938, CVE-2016-7939, CVE-2016-7940, CVE-2016-7973,
--   CVE-2016-7974, CVE-2016-7975, CVE-2016-7983, CVE-2016-7984,
--   CVE-2016-7985, CVE-2016-7986, CVE-2016-7992, CVE-2016-7993,
--   CVE-2016-8574, CVE-2016-8575, CVE-2017-5202, CVE-2017-5203,
--   CVE-2017-5204, CVE-2017-5205, CVE-2017-5341, CVE-2017-5342,
--   CVE-2017-5482, CVE-2017-5483, CVE-2017-5484, CVE-2017-5485,
--   CVE-2017-5486
-*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 4.7.4-3
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.7.4-2
--   GA - Bump release of all rpms
-*   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.7.4-1
--   Upgrade version.
-*   Mon Apr 6  2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.7.3-1
--   Updating version to 4.7.3
+* Thu Mar 28 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.99.4-2
+- Patched for CVE-2024-2397
+* Tue Jul 04 2023 Shivani Agarwal <shivania2@vmware.com> 4.99.4-1
+- Fix CVE-2020-8036
+* Wed Feb 23 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.9.3-5
+- Fix CVE-2018-16301
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.9.3-4
+- Bump up release for openssl
+* Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.9.3-3
+- Added patch, fixes CVE-2020-8037
+* Wed Sep 30 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.9.3-2
+- openssl 1.1.1
+* Wed Oct 09 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 4.9.3-1
+- Update to version 4.9.3 to fix multiple CVEs
+* Thu Mar 14 2019 Michelle Wang <michellew@vmware.com> 4.9.2-2
+- Add patch CVE-2018-19519
+* Fri Sep 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.2-1
+- Updating version to 4.9.2
+* Thu Sep 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.1-2
+- Fix for CVE-2017-11541 CVE-2017-11542 and CVE-2017-11543
+* Thu Aug 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.1-1
+- Updating version to 4.9.1
+* Thu Feb 02 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.0-1
+- Adding latest version to handle following CVEs
+- CVE-2016-7922, CVE-2016-7923, CVE-2016-7924, CVE-2016-7925,
+- CVE-2016-7926, CVE-2016-7927, CVE-2016-7928, CVE-2016-7929,
+- CVE-2016-7930, CVE-2016-7931, CVE-2016-7932, CVE-2016-7933,
+- CVE-2016-7934, CVE-2016-7935, CVE-2016-7936, CVE-2016-7937,
+- CVE-2016-7938, CVE-2016-7939, CVE-2016-7940, CVE-2016-7973,
+- CVE-2016-7974, CVE-2016-7975, CVE-2016-7983, CVE-2016-7984,
+- CVE-2016-7985, CVE-2016-7986, CVE-2016-7992, CVE-2016-7993,
+- CVE-2016-8574, CVE-2016-8575, CVE-2017-5202, CVE-2017-5203,
+- CVE-2017-5204, CVE-2017-5205, CVE-2017-5341, CVE-2017-5342,
+- CVE-2017-5482, CVE-2017-5483, CVE-2017-5484, CVE-2017-5485,
+- CVE-2017-5486
+* Tue Oct 04 2016 ChangLee <changlee@vmware.com> 4.7.4-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.7.4-2
+- GA - Bump release of all rpms
+* Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.7.4-1
+- Upgrade version.
+* Mon Apr 6  2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.7.3-1
+- Updating version to 4.7.3
