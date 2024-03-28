@@ -15,7 +15,8 @@ cat > /etc/yum.repos.d/photon-dev.repo << "EOF"
     enabled=1
     skip_if_unavailable=True
     EOF
-``` . 
+    .
+```
 
 2. After establishing a new repository, run the following command to update the cached binary metadata for the repositories that `tdnf` polls: 
     
