@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.83
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -172,6 +172,9 @@ Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
 # Fix CVE-2024-26642
 Patch133: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
+
+# Fix CVE-2024-26643
+Patch134: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -403,7 +406,7 @@ manipulation of eBPF programs and maps.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M133
+%autopatch -p1 -m100 -M134
 
 %ifarch aarch64
 # aarch64 patches
@@ -735,6 +738,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Sun Apr 14 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2
+- Patched CVE-2024-26643
 * Thu Apr 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-1
 - Update to version 6.1.83
 - Fix CVE-2024-26642

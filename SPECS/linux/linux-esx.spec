@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.83
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -183,6 +183,8 @@ Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 
 # Fix CVE-2024-26585
 Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
+#Fix CVE-2024-26643
+Patch130: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
 # Fix CVE-2023-52585
 Patch131: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
 
@@ -472,6 +474,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sun Apr 14 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2
+- Patched CVE-2024-26643
 * Thu Apr 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-1
 - Update to version 6.1.83
 - Fix CVE-2024-26642
