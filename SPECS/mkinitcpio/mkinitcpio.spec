@@ -1,7 +1,7 @@
 Summary:       Modular initramfs image creation utility
 Name:          mkinitcpio
 Version:       34
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPLv2
 URL:           https://projects.archlinux.org/mkinitcpio.git/
 Group:         System Environment/Development
@@ -53,6 +53,8 @@ sed -i "s/a2x/a2x3 --verbose --no-xmllint/" Makefile
 %{_datadir}/*
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 34-4
+- Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 34-3
 - Bump version as a part of libxml2 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 34-2

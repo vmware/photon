@@ -1,7 +1,7 @@
 Summary:        Libical — an implementation of iCalendar protocols and data formats
 Name:           libical
 Version:        3.0.14
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MPL-2.0
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -74,6 +74,8 @@ make test ARGS="-V" %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.0.14-7
+- Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.0.14-6
 - Bump version as a part of libxml2 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.0.14-5

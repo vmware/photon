@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.71.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -101,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.71.1-4
+- Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.71.1-3
 - Bump version as a part of libxml2 upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.71.1-2

@@ -1,7 +1,7 @@
 Summary:        X.Org X11 XKB parsing library
 Name:           libxkbcommon
 Version:        1.4.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            https://xkbcommon.org
 Group:          System Environment/Libraries
@@ -107,6 +107,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/xkbcommon-x11.pc
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.4.1-5
+- Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.4.1-4
 - Bump version as a part of libxml2 upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.4.1-3

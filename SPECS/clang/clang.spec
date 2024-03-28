@@ -3,7 +3,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        15.0.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
@@ -102,6 +102,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/libscanbuild
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-6
+- Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-5
 - Bump version as a part of libxml2 upgrade
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 15.0.7-4

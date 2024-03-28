@@ -1,6 +1,6 @@
 Name:           vulkan-loader
 Version:        1.3.237
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Vulkan ICD desktop loader
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.3.237-5
+- Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.3.237-4
 - Bump version as a part of libxml2 upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.3.237-3

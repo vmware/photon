@@ -13,7 +13,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql15
 Version:        15.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -686,6 +686,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.6-5
+- Bump version as a part of libxml2 upgrade
 * Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-4
 - Use version specific bindir path in service file
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.6-3

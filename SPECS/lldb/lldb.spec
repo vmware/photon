@@ -3,7 +3,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        15.0.7
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-7
+- Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-6
 - Bump version as a part of libxml2 upgrade
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.0.7-5

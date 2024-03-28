@@ -1,7 +1,7 @@
 Summary:        s3fs allows Linux, macOS, and FreeBSD to mount an S3 bucket via FUSE
 Name:           s3fs-fuse
 Version:        1.91
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPL-2.0
 Group:          Development/Tools
 URL:            https://github.com/s3fs-fuse/s3fs-fuse
@@ -67,6 +67,8 @@ rm -rf %{buildroot}
 %doc COPYING AUTHORS README.md ChangeLog
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.91-7
+- Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.91-6
 - Bump version as a part of libxml2 upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.91-5

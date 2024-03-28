@@ -1,7 +1,7 @@
 Summary:        XML and HTML with Python
 Name:           python3-lxml
 Version:        4.9.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            https://github.com/lxml/lxml
@@ -48,6 +48,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.9.1-5
+- Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.9.1-4
 - Bump version as a part of libxml2 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.1-3

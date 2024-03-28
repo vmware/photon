@@ -1,7 +1,7 @@
 Summary:        Docbook-xsl-%{name}
 Name:           docbook-xsl
 Version:        1.79.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        Apache License
 URL:            http://www.docbook.org
 Group:          Development/Tools
@@ -96,6 +96,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.79.1-12
+- Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.79.1-11
 - Bump version as a part of libxml2 upgrade
 * Sun Jul 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.79.1-10

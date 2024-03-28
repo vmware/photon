@@ -1,7 +1,7 @@
 Summary:        AMD Open Source Driver for Vulkan
 Name:           amdvlk
 Version:        2023.Q1.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            https://github.com/GPUOpen-Drivers/AMDVLK
 Group:          System Environment/Libraries
@@ -61,6 +61,8 @@ rm -rf %{buildroot}/*
 %license %{_datadir}/doc/%{name}/LICENSE.txt
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2023.Q1.3-5
+- Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2023.Q1.3-4
 - Bump version as a part of libxml2 upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 2023.Q1.3-3

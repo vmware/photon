@@ -13,7 +13,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql14
 Version:        14.11
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -682,6 +682,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 14.11-5
+- Bump version as a part of libxml2 upgrade
 * Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-4
 - Use version specific bindir path in service file
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 14.11-3
