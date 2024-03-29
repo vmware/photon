@@ -5,6 +5,20 @@ weight: 6
 
 You can boot Photon 5 with FIPS either enabled or not enabled.
 
+## Booting without FIPS
+When you boot Photon 5 with FIPS not enabled, the kernel log (dmesg) should contain messages in the following format:
+
+```sh
+[    0.343113] integrity: Loading X.509 certificate: UEFI:db
+[    0.347625] integrity: Loaded X.509 cert 'VMware, Inc.: 4ad8ba0472073d28127706ddc6ccb9050441bbc7'
+[    0.347626] integrity: Loading X.509 certificate: UEFI:db
+[    0.347716] integrity: Loaded X.509 cert 'VMware, Inc.: VMware Secure Boot Signing: 04597f3e1ffb240bba0ff0f05d5eb05f3e15f6d7'
+[    0.347716] integrity: Loading X.509 certificate: UEFI:db
+[    0.347724] integrity: Loaded X.509 cert 'Microsoft Corporation UEFI CA 2011: 13adbf4309bd82709c8cd54f316ed522988a1bd4'
+[    0.347724] integrity: Loading X.509 certificate: UEFI:db
+[    0.347731] integrity: Loaded X.509 cert 'Microsoft Windows Production PCA 2011: a92902398e16c49778cd90f99e4f9ae17c55af53'
+```
+
 ## Booting with FIPS
 When you boot Photon 5 with UEFI Secure Boot and FIPS is enabled, the kernel log (dmesg) should contain messages in the following format:
 
@@ -22,20 +36,6 @@ When you boot Photon 5 with UEFI Secure Boot and FIPS is enabled, the kernel log
 [ 0.793236] integrity: Loaded X.509 cert 'Microsoft Windows Production PCA 2011: a92902398e16c49778cd90f99e4f9ae17c55af53'
 [ 4.241463] cfg80211: Loading compiled-in X.509 certificates for regulatory database
 [ 4.242182] cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
-```
-
-## Booting without FIPS
-When you boot Photon 5 with FIPS not enabled, the kernel log (dmesg) should contain messages in the following format:
-
-```sh
-[    0.343113] integrity: Loading X.509 certificate: UEFI:db
-[    0.347625] integrity: Loaded X.509 cert 'VMware, Inc.: 4ad8ba0472073d28127706ddc6ccb9050441bbc7'
-[    0.347626] integrity: Loading X.509 certificate: UEFI:db
-[    0.347716] integrity: Loaded X.509 cert 'VMware, Inc.: VMware Secure Boot Signing: 04597f3e1ffb240bba0ff0f05d5eb05f3e15f6d7'
-[    0.347716] integrity: Loading X.509 certificate: UEFI:db
-[    0.347724] integrity: Loaded X.509 cert 'Microsoft Corporation UEFI CA 2011: 13adbf4309bd82709c8cd54f316ed522988a1bd4'
-[    0.347724] integrity: Loading X.509 certificate: UEFI:db
-[    0.347731] integrity: Loaded X.509 cert 'Microsoft Windows Production PCA 2011: a92902398e16c49778cd90f99e4f9ae17c55af53'
 ```
 
 You can safely ignore the error message for the first key 'VMware, Inc.: 4ad8ba0472073d28127706ddc6ccb9050441bbc7' because its replacement key 'VMware, Inc.: VMware Secure Boot Signing: 04597f3e1ffb240bba0ff0f05d5eb05f3e15f6d7' is already in place.
