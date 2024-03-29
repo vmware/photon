@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.214
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -210,6 +210,9 @@ Patch154: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patc
 # Fix CVE-2024-26642
 Patch155: 0001-netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
+# Fix CVE-2024-26643
+Patch156: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -337,7 +340,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE
-%autopatch -p1 -m100 -M155
+%autopatch -p1 -m100 -M156
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -482,6 +485,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2
+- Patched CVE-2024-26643
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-1
 - Update to version 5.10.214
 - Fix CVE-2024-26642, CVE-2023-52620

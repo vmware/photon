@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.214
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -253,6 +253,9 @@ Patch156: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patc
 
 # Fix CVE-2023-52620
 Patch157: 0001-netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
+
+# Fix CVE-2024-26643
+Patch158: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -513,7 +516,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m152 -M152
 
 # CVE
-%autopatch -p1 -m153 -M157
+%autopatch -p1 -m153 -M158
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -940,6 +943,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2
+- Patched CVE-2024-26643
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-1
 - Update to version 5.10.214
 - Fix CVE-2024-26642, CVE-2023-52620

@@ -17,7 +17,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.214
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -217,6 +217,9 @@ Patch154: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patc
 # Fix CVE-2024-26642
 Patch155: 0001-netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
+# Fix CVE-2024-26643
+Patch156: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
+
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
@@ -415,7 +418,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M65
 
 # CVE
-%autopatch -p1 -m100 -M155
+%autopatch -p1 -m100 -M156
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
@@ -671,6 +674,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2
+- Patched CVE-2024-26643
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-1
 - Update to version 5.10.214
 - Fix CVE-2024-26642, CVE-2023-52620

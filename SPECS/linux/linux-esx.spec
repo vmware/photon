@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.214
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -256,6 +256,9 @@ Patch154: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patc
 # Fix CVE-2024-26642
 Patch155: 0001-netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
+# Fix CVE-2024-26643
+Patch156: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
+
 #Patches for ptp_vmw
 Patch201: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch202: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -417,7 +420,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M97
 
 # CVE
-%autopatch -p1 -m100 -M155
+%autopatch -p1 -m100 -M156
 
 #Patches for ptp_vmw
 %autopatch -p1 -m201 -M202
@@ -636,6 +639,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2
+- Patched CVE-2024-26643
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-1
 - Update to version 5.10.214
 - Fix CVE-2024-26642, CVE-2023-52620

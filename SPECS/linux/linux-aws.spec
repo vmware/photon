@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.214
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -200,6 +200,9 @@ Patch155: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patc
 # Fix CVE-2024-26642
 Patch156: 0001-netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
+# Fix CVE-2024-26643
+Patch157: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
+
 #Amazon AWS
 Patch201: 0002-bump-the-default-TTL-to-255.patch
 Patch202: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
@@ -365,7 +368,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m151 -M151
 
 # CVE
-%autopatch -p1 -m152 -M156
+%autopatch -p1 -m152 -M157
 
 #Amazon AWS
 %autopatch -p1 -m201 -M240
@@ -542,6 +545,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2
+- Patched CVE-2024-26643
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-1
 - Update to version 5.10.214
 - Fix CVE-2024-26642, CVE-2023-52620
