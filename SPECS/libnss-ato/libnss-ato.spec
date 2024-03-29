@@ -1,44 +1,60 @@
-%global commitversion 603cae8
+%global commit_id 603cae8
+
 Summary:        libnss-ato
 Name:           libnss-ato
 Version:        20201005
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU General Public License
 URL:            https://github.com/donapieppo/libnss-ato
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    libnss-ato=914a386b048f8caaa0b11a11fedf51df9f465de6
-Group:	        Development/Tools
-Vendor:	        VMware, Inc.
-Distribution: 	Photon
-Provides:       libnss_ato
-Requires:       nss
-BuildRequires:  nss-devel
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: %{name}-%{version}.tar.gz
+%define sha512 %{name}=f9583d8ec91644e6528bb4e9824682d1266895c7bce2784a7fcaf29ad155fb6ac83359cd996cf3fd03b114d4363ff341e58fee730520f278422b4dffcbc2c85e
+
+Source1: %{name}.conf
+
+Provides: libnss_ato = %{version}-%{release}
+
+Requires: nss
+
+BuildRequires: nss-devel
+
+%if 0%{?with_check}
+BuildRequires: shadow
+%endif
 
 %description
 The libnss_ato module is a set of C library extensions,
 which allows to map every nss request for unknown user to a single predefined user.
 
 %prep
-%setup -q -n %{name}-%{commitversion}
+%autosetup -p1 -n %{name}-%{commit_id}
 
 %build
-make all %{?_smp_mflags} CFLAGS="%{optflags}" LDFLAGS=""
+%make_build
 
 %install
-mkdir -p %{buildroot}
-make DESTDIR=%{buildroot} install
-mkdir %{buildroot}/lib
-mv libnss_ato*so* %{buildroot}/lib/
+mkdir -p %{buildroot}{%{_libdir},%{_sysconfdir}}
+mv libnss_ato*.so* %{buildroot}%{_libdir}
+cp %{SOURCE1} %{buildroot}%{_sysconfdir}
 
 %check
 ./libnss_ato_test root
 
+%clean
+rm -rf %{buildroot}
+
 %files
 %defattr(-,root,root)
-/lib/libnss_ato*
-%exclude %{_mandir}/*
+%config(noreplace) %{_sysconfdir}/%{name}.conf
+%{_libdir}/libnss_ato*.so*
 
 %changelog
+* Fri Mar 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20201005-2
+- Spec cleanups
+- Package libnss-ato.conf
 * Mon Oct 05 2020 Gerrit Photon <photon-checkins@vmware.com> 20201005-1
 - Automatic Version Bump
 * Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.6-3
