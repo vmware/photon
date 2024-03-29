@@ -1,0 +1,56 @@
+From 013d0f5c67f91a15adec19e8316600023640468f Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Sun, 12 Feb 2023 16:52:42 +0000
+Subject: [PATCH] Enable `-Werror -Wextra` gcc flags
+
+Introduce `UNUSED` macro for handling unused variables
+
+Use UNUSED macro to handle an unused variable in signal
+handler
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ Makefile | 2 +-
+ util.c   | 2 ++
+ util.h   | 2 ++
+ 3 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 7b2fe14..36f7bcf 100644
+--- a/Makefile
++++ b/Makefile
+@@ -20,7 +20,7 @@ ifeq ($(VERSION), "")
+ endif
+ 
+ CC	= gcc
+-CFLAGS	= -Wall $(EXTRA_CFLAGS) -pthread -DVERSION=$(VERSION)
++CFLAGS	= -Wall -Wextra -Werror $(EXTRA_CFLAGS) -pthread -DVERSION=$(VERSION)
+ LDLIBS	= -lm -lrt -pthread $(EXTRA_LDFLAGS)
+ 
+ OBJS	= esmc_socket.o synce_clock.o synce_dev.o synce_dev_ctrl.o \
+diff --git a/util.c b/util.c
+index b162055..65419b3 100644
+--- a/util.c
++++ b/util.c
+@@ -215,6 +215,8 @@ int get_arg_val_d(int op, const char *optarg, double *val,
+ 
+ static void handle_int_quit_term(int s)
+ {
++	UNUSED(s);
++
+ 	running = 0;
+ }
+ 
+diff --git a/util.h b/util.h
+index 6bc24c4..4ae0b2c 100644
+--- a/util.h
++++ b/util.h
+@@ -33,6 +33,8 @@
+ #define xstr(s)	str(s)
+ #define str(s)	#s
+ 
++#define UNUSED(var) (void)(var)
++
+ #define PACKED __attribute__((packed))
+ 
+ #define MAX_PRINT_BYTES 16

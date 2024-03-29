@@ -1,0 +1,48 @@
+From 980750bde07136255784d6ef6cdb5c085d30e2f9 Mon Sep 17 00:00:00 2001
+From: Tobias Brunner <tobias@strongswan.org>
+Date: Fri, 17 Feb 2023 15:07:20 +0100
+Subject: [PATCH] libtls: Fix authentication bypass and expired pointer
+ dereference
+
+`public` is returned, but previously only if a trusted key was found.
+We obviously don't want to return untrusted keys.  However, since the
+reference is released after determining the key type, the returned
+object also doesn't have the correct refcount.
+
+So when the returned reference is released after verifying the TLS
+signature, the public key object is actually destroyed.  The certificate
+object then points to an expired pointer, which is dereferenced once it
+itself is destroyed after the authentication is complete.  Depending on
+whether the pointer is valid (i.e. points to memory allocated to the
+process) and what was allocated there after the public key was freed,
+this could result in a segmentation fault or even code execution.
+
+Fixes: 63fd718915b5 ("libtls: call create_public_enumerator() with key_type")
+Fixes: CVE-2023-26463
+---
+ src/libtls/tls_server.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/libtls/tls_server.c b/src/libtls/tls_server.c
+index c9c300917dd6..573893f2efb5 100644
+--- a/src/libtls/tls_server.c
++++ b/src/libtls/tls_server.c
+@@ -183,11 +183,11 @@ public_key_t *tls_find_public_key(auth_cfg_t *peer_auth, identification_t *id)
+ 	cert = peer_auth->get(peer_auth, AUTH_HELPER_SUBJECT_CERT);
+ 	if (cert)
+ 	{
+-		public = cert->get_public_key(cert);
+-		if (public)
++		current = cert->get_public_key(cert);
++		if (current)
+ 		{
+-			key_type = public->get_type(public);
+-			public->destroy(public);
++			key_type = current->get_type(current);
++			current->destroy(current);
+ 		}
+ 		enumerator = lib->credmgr->create_public_enumerator(lib->credmgr,
+ 											key_type, id, peer_auth, TRUE);
+-- 
+2.25.1
+

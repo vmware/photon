@@ -1,0 +1,4 @@
+g vsftpd 47
+g ftp 45
+u vsftpd 47 "vsftpd User" /dev/null /bin/false
+u ftp 45 "anonymous_user" /home/ftp /bin/false

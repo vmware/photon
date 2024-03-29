@@ -1,0 +1,57 @@
+From 6ca2e32c1b134cf16f4a705f6422b1899879c596 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Mon, 6 Mar 2023 08:56:05 +0000
+Subject: [PATCH] stalld:utils: Fix freeing of invalid pointer
+
+If wrong regex is given, then while parsing
+  regex we call cleanup_regex
+  - parse_task_ignore_string()
+   - compile_regex()
+    - cleanup_regex()
+
+compiled = *compiled_expr;
+if (compiled)
+	free(compiled);
+- we doesn't reset the *compiled_expr variable after freeing
+  and it is extern variable
+- again cleanup_regex() gets called from stalld.c
+  with already freed address(Non Null Address):
+https://git.kernel.org/pub/scm/utils/stalld/stalld.git/tree/src/stalld.c?h=v1.18.0#n1307
+
+- when we `systemctl restart stalld`, we get coredump:
+which shows
+systemd[1]: Stopping Stall Monitor...
+systemd-coredump[780991]: Process 780670 (stalld) of user 0 dumped core.
+  Stack trace of thread 780670:
+  #0  0x00007f6becf1e041 raise (libc.so.6 + 0x3d041)
+  #1  0x00007f6becf07536 abort (libc.so.6 + 0x26536)
+  #2  0x00007f6becf5f5a8 n/a (libc.so.6 + 0x7e5a8)
+  #3  0x00007f6becf66fea n/a (libc.so.6 + 0x85fea)
+  #4  0x00007f6becf673dc n/a (libc.so.6 + 0x863dc)
+  #5  0x000055666563ed7e n/a (/usr/bin/stalld (deleted) + 0x6d7e)
+systemd[1]: stalld.service: Main process exited, code=dumped, status=6/ABRT
+systemd[1]: stalld.service: Failed with result 'core-dump'
+
+- Resetting the extern variable to NULL after
+  freeing the memory solves this issue.
+
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ src/utils.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/utils.c b/src/utils.c
+index 589756f..bfe178c 100644
+--- a/src/utils.c
++++ b/src/utils.c
+@@ -371,6 +371,7 @@ void cleanup_regex(unsigned int *nr_task, regex_t **compiled_expr)
+ 			regfree(&compiled[i]);
+ 		}
+ 		free(compiled);
++		*compiled_expr = NULL;
+ 	}
+ 	*nr_task = 0;
+ }
+-- 
+2.23.1
+

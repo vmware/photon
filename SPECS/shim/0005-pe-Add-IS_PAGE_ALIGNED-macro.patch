@@ -1,0 +1,95 @@
+From e4f40ae862b5389c8cc7d4f938a34238421456a1 Mon Sep 17 00:00:00 2001
+From: Nicholas Bishop <nicholasbishop@google.com>
+Date: Tue, 20 Dec 2022 14:40:39 -0500
+Subject: [PATCH 5/6] pe: Add IS_PAGE_ALIGNED macro
+
+This makes some checks in `get_mem_attrs` and `update_mem_attrs`
+clearer.
+
+Also add `test-pe-util.c` with a test for the new macro. The file is
+named that way instead of `test-pe.c` to avoid having to get `pe.c`
+building in the unit test environment.
+
+Signed-off-by: Nicholas Bishop <nicholasbishop@google.com>
+---
+ include/peimage.h |  3 +++
+ pe.c              |  4 ++--
+ test-pe-util.c    | 30 ++++++++++++++++++++++++++++++
+ 3 files changed, 35 insertions(+), 2 deletions(-)
+ create mode 100644 test-pe-util.c
+
+diff --git a/include/peimage.h b/include/peimage.h
+index e97b29c..6eef105 100644
+--- a/include/peimage.h
++++ b/include/peimage.h
+@@ -29,6 +29,9 @@
+ #define ALIGN_VALUE(Value, Alignment) ((Value) + (((Alignment) - (Value)) & ((Alignment) - 1)))
+ #define ALIGN_POINTER(Pointer, Alignment) ((VOID *) (ALIGN_VALUE ((UINTN)(Pointer), (Alignment))))
+ 
++// Check if `val` is evenly aligned to the page size.
++#define IS_PAGE_ALIGNED(val) (!((val) & EFI_PAGE_MASK))
++
+ //
+ // PE32+ Subsystem type for EFI images
+ //
+diff --git a/pe.c b/pe.c
+index 5ad0914..85b64c0 100644
+--- a/pe.c
++++ b/pe.c
+@@ -937,7 +937,7 @@ get_mem_attrs (uintptr_t addr, size_t size, uint64_t *attrs)
+ 	if (EFI_ERROR(efi_status) || !proto)
+ 		return efi_status;
+ 
+-	if (physaddr & 0xfff || size & 0xfff || size == 0 || attrs == NULL) {
++	if (!IS_PAGE_ALIGNED(physaddr) || !IS_PAGE_ALIGNED(size) || size == 0 || attrs == NULL) {
+ 		dprint(L"%a called on 0x%llx-0x%llx and attrs 0x%llx\n",
+ 		       __func__, (unsigned long long)physaddr,
+ 		       (unsigned long long)(physaddr+size-1),
+@@ -971,7 +971,7 @@ update_mem_attrs(uintptr_t addr, uint64_t size,
+ 		       (unsigned long long)addr, (unsigned long long)size,
+ 		       &before, efi_status);
+ 
+-	if (physaddr & 0xfff || size & 0xfff || size == 0) {
++	if (!IS_PAGE_ALIGNED(physaddr) || !IS_PAGE_ALIGNED(size) || size == 0) {
+ 		dprint(L"%a called on 0x%llx-0x%llx (size 0x%llx) +%a%a%a -%a%a%a\n",
+ 		       __func__, (unsigned long long)physaddr,
+ 		       (unsigned long long)(physaddr + size - 1),
+diff --git a/test-pe-util.c b/test-pe-util.c
+new file mode 100644
+index 0000000..d576548
+--- /dev/null
++++ b/test-pe-util.c
+@@ -0,0 +1,30 @@
++// SPDX-License-Identifier: BSD-2-Clause-Patent
++/*
++ * test-pe-util.c - test PE utilities
++ */
++
++#ifndef SHIM_UNIT_TEST
++#define SHIM_UNIT_TEST
++#endif
++#include "shim.h"
++
++static int
++test_is_page_aligned(void)
++{
++	assert_true_return(IS_PAGE_ALIGNED(0), -1, "\n");
++	assert_false_return(IS_PAGE_ALIGNED(1), -1, "\n");
++	assert_false_return(IS_PAGE_ALIGNED(4095), -1, "\n");
++	assert_true_return(IS_PAGE_ALIGNED(4096), -1, "\n");
++	assert_false_return(IS_PAGE_ALIGNED(4097), -1, "\n");
++
++	return 0;
++}
++
++int
++main(void)
++{
++	int status = 0;
++	test(test_is_page_aligned);
++
++	return status;
++}
+-- 
+2.35.5
+

@@ -1,0 +1,48 @@
+From cf208a8c85028bdb72f738389686c1fcc247c82a Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 22 Aug 2023 18:19:32 +0000
+Subject: [PATCH] Use vmware.com/isolcpu property name
+
+That what Photon OS kubelet uses also.
+Addition: make isolcpu_plugin service resetting together with kubelet
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ isolcpu.go                   | 4 ++--
+ isolcpu_plugin.service       | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/isolcpu.go b/isolcpu.go
+index 1ef784df..89d97c6b 100644
+--- a/isolcpu.go
++++ b/isolcpu.go
+@@ -37,8 +37,8 @@ import (
+ )
+ 
+ const (
+-	namespace  = "windriver.com"
+-	deviceType = "isolcpus"
++	namespace  = "vmware.com"
++	deviceType = "isolcpu"
+ 	nodeRE	= `^node[0-9]+$`
+ )
+ 
+diff --git a/isolcpu_plugin.service b/isolcpu_plugin.service
+index 8ef5830c..00ab3f99 100644
+--- a/isolcpu_plugin.service
++++ b/isolcpu_plugin.service
+@@ -3,9 +3,10 @@ Description=Kubernetes Isolated CPU Plugin Daemon
+ Documentation=https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/ 
+ After=kubelet.service
+ Requires=kubelet.service
++PartOf=kubelet.service
+ 
+ [Service]
+-ExecStart=/usr/local/sbin/isolcpu_plugin
++ExecStart=/usr/bin/isolcpu_plugin
+ ExecStartPost=/bin/bash -c 'echo $MAINPID > /var/run/isolcpu_plugin.pid'
+ Restart=on-failure
+ RestartSec=3
+-- 
+2.30.3
+

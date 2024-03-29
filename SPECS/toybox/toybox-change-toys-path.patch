@@ -1,0 +1,301 @@
+From 37d867e0fffeeb48e1768f47d3b36da4e89125b8 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Sun, 21 Aug 2022 10:59:35 +0530
+Subject: [PATCH] fix deliverables path
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Signed-off-by: Harinadh D <hdommaraju@vmware.com>
+---
+ toys/lsb/pidof.c         |  2 +-
+ toys/other/blkid.c       |  4 ++--
+ toys/other/dos2unix.c    |  4 ++--
+ toys/other/freeramdisk.c |  2 +-
+ toys/other/fsync.c       |  2 +-
+ toys/other/help.c        |  2 +-
+ toys/other/lsusb.c       |  2 +-
+ toys/other/oneit.c       |  2 +-
+ toys/other/readahead.c   |  2 +-
+ toys/other/sysctl.c      |  4 ++--
+ toys/other/vconfig.c     |  2 +-
+ toys/other/vmstat.c      |  2 +-
+ toys/other/watchdog.c    |  2 +-
+ toys/posix/kill.c        |  4 ++--
+ toys/posix/ps.c          | 14 +++++++-------
+ toys/posix/test.c        |  2 +-
+ 17 files changed, 27 insertions(+), 27 deletions(-)
+
+diff --git a/toys/lsb/pidof.c b/toys/lsb/pidof.c
+index 791eed0..3a8d69c 100644
+--- a/toys/lsb/pidof.c
++++ b/toys/lsb/pidof.c
+@@ -5,7 +5,7 @@
+  *
+  * http://refspecs.linuxfoundation.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/pidof.html
+ 
+-USE_PIDOF(NEWTOY(pidof, "so:x", TOYFLAG_BIN))
++USE_PIDOF(NEWTOY(pidof, "so:x", TOYFLAG_USR|TOYFLAG_BIN))
+ 
+ config PIDOF
+   bool "pidof"
+diff --git a/toys/other/blkid.c b/toys/other/blkid.c
+index 46c9a3f..cc4d8ed 100644
+--- a/toys/other/blkid.c
++++ b/toys/other/blkid.c
+@@ -5,8 +5,8 @@
+  * See ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.24/libblkid-docs/api-index-full.html
+  * TODO: -U and -L should require arguments
+ 
+-USE_BLKID(NEWTOY(blkid, "ULo:s*[!LU]", TOYFLAG_BIN))
+-USE_FSTYPE(NEWTOY(fstype, "<1", TOYFLAG_BIN))
++USE_BLKID(NEWTOY(blkid, "ULs*[!LU]", TOYFLAG_SBIN))
++USE_FSTYPE(NEWTOY(fstype, "<1", TOYFLAG_USR|TOYFLAG_BIN))
+ 
+ config BLKID
+   bool "blkid"
+diff --git a/toys/other/dos2unix.c b/toys/other/dos2unix.c
+index 083a814..4284eb8 100644
+--- a/toys/other/dos2unix.c
++++ b/toys/other/dos2unix.c
+@@ -2,8 +2,8 @@
+  *
+  * Copyright 2012 Rob Landley <rob@landley.net>
+ 
+-USE_DOS2UNIX(NEWTOY(dos2unix, 0, TOYFLAG_BIN))
+-USE_UNIX2DOS(NEWTOY(unix2dos, 0, TOYFLAG_BIN))
++USE_DOS2UNIX(NEWTOY(dos2unix, 0, TOYFLAG_USR|TOYFLAG_BIN))
++USE_UNIX2DOS(NEWTOY(unix2dos, 0, TOYFLAG_USR|TOYFLAG_BIN))
+ 
+ config DOS2UNIX
+   bool "dos2unix/unix2dos"
+diff --git a/toys/other/freeramdisk.c b/toys/other/freeramdisk.c
+index 9e6845a..6689940 100644
+--- a/toys/other/freeramdisk.c
++++ b/toys/other/freeramdisk.c
+@@ -4,7 +4,7 @@
+  *
+  * No Standard
+ 
+-USE_FREERAMDISK(NEWTOY(freeramdisk, "<1>1", TOYFLAG_SBIN|TOYFLAG_NEEDROOT))
++USE_FREERAMDISK(NEWTOY(freeramdisk, "<1>1", TOYFLAG_USR|TOYFLAG_SBIN|TOYFLAG_NEEDROOT))
+ 
+ config FREERAMDISK
+   bool "freeramdisk"
+diff --git a/toys/other/fsync.c b/toys/other/fsync.c
+index e155b60..3d73251 100644
+--- a/toys/other/fsync.c
++++ b/toys/other/fsync.c
+@@ -4,7 +4,7 @@
+  *
+  * No Standard.
+ 
+-USE_FSYNC(NEWTOY(fsync, "<1d", TOYFLAG_BIN))
++USE_FSYNC(NEWTOY(fsync, "<1d", TOYFLAG_USR|TOYFLAG_BIN))
+ 
+ config FSYNC
+   bool "fsync"
+diff --git a/toys/other/help.c b/toys/other/help.c
+index 5a61f68..6ebab3f 100644
+--- a/toys/other/help.c
++++ b/toys/other/help.c
+@@ -4,7 +4,7 @@
+  *
+  * Often a shell builtin.
+ 
+-USE_HELP(NEWTOY(help, "ahu", TOYFLAG_BIN|TOYFLAG_MAYFORK))
++USE_HELP(NEWTOY(help, "ahu", TOYFLAG_USR|TOYFLAG_BIN|TOYFLAG_MAYFORK))
+ 
+ config HELP
+   bool "help"
+diff --git a/toys/other/lsusb.c b/toys/other/lsusb.c
+index 3ca7703..52b0a4b 100644
+--- a/toys/other/lsusb.c
++++ b/toys/other/lsusb.c
+@@ -4,7 +4,7 @@
+  * Copyright 2013 Isaac Dunham <ibid.ag@gmail.com>
+ 
+ USE_LSUSB(NEWTOY(lsusb, "i:", TOYFLAG_USR|TOYFLAG_BIN))
+-USE_LSPCI(NEWTOY(lspci, "emkn@i:", TOYFLAG_USR|TOYFLAG_BIN))
++USE_LSPCI(NEWTOY(lspci, "emkn@i:", TOYFLAG_USR|TOYFLAG_SBIN))
+ 
+ config LSPCI
+   bool "lspci"
+diff --git a/toys/other/oneit.c b/toys/other/oneit.c
+index 4c8bb1f..de79750 100644
+--- a/toys/other/oneit.c
++++ b/toys/other/oneit.c
+@@ -2,7 +2,7 @@
+  *
+  * Copyright 2005, 2007 by Rob Landley <rob@landley.net>.
+ 
+-USE_ONEIT(NEWTOY(oneit, "^<1nc:p3[!pn]", TOYFLAG_SBIN))
++USE_ONEIT(NEWTOY(oneit, "^<1nc:p3[!pn]", TOYFLAG_USR|TOYFLAG_SBIN))
+ 
+ config ONEIT
+   bool "oneit"
+diff --git a/toys/other/readahead.c b/toys/other/readahead.c
+index 3221227..b0b9f09 100644
+--- a/toys/other/readahead.c
++++ b/toys/other/readahead.c
+@@ -4,7 +4,7 @@
+  *
+  * No standard.
+ 
+-USE_READAHEAD(NEWTOY(readahead, NULL, TOYFLAG_BIN))
++USE_READAHEAD(NEWTOY(readahead, NULL, TOYFLAG_USR|TOYFLAG_BIN))
+ 
+ config READAHEAD
+   bool "readahead"
+diff --git a/toys/other/sysctl.c b/toys/other/sysctl.c
+index 3773594..f71e4b2 100644
+--- a/toys/other/sysctl.c
++++ b/toys/other/sysctl.c
+@@ -4,8 +4,8 @@
+  * Copyright 2014 Kyungwan Han <asura321@gmail.com>
+  *
+  * No Standard
+- 
+-USE_SYSCTL(NEWTOY(sysctl, "^neNqwpaA[!ap][!aq][!aw][+aA]", TOYFLAG_SBIN))
++
++USE_SYSCTL(NEWTOY(sysctl, "^neNqwpaA[!ap][!aq][!aw][+aA]", TOYFLAG_SBIN|TOYFLAG_USR))
+ 
+ config SYSCTL
+   bool "sysctl"
+diff --git a/toys/other/vconfig.c b/toys/other/vconfig.c
+index 83674d8..6081159 100644
+--- a/toys/other/vconfig.c
++++ b/toys/other/vconfig.c
+@@ -5,7 +5,7 @@
+  *
+  * No standard
+ 
+-USE_VCONFIG(NEWTOY(vconfig, "<2>4", TOYFLAG_NEEDROOT|TOYFLAG_SBIN))
++USE_VCONFIG(NEWTOY(vconfig, "<2>4", TOYFLAG_USR|TOYFLAG_NEEDROOT|TOYFLAG_SBIN))
+ 
+ config VCONFIG
+   bool "vconfig"
+diff --git a/toys/other/vmstat.c b/toys/other/vmstat.c
+index d5cf569..6463cd1 100644
+--- a/toys/other/vmstat.c
++++ b/toys/other/vmstat.c
+@@ -5,7 +5,7 @@
+  * TODO: I have no idea how "system" category is calculated.
+  * whatever we're doing isn't matching what other implementations are doing.
+ 
+-USE_VMSTAT(NEWTOY(vmstat, ">2n", TOYFLAG_BIN))
++USE_VMSTAT(NEWTOY(vmstat, ">2n", TOYFLAG_BIN|TOYFLAG_USR))
+ 
+ config VMSTAT
+   bool "vmstat"
+diff --git a/toys/other/watchdog.c b/toys/other/watchdog.c
+index c3268a1..b8627bc 100644
+--- a/toys/other/watchdog.c
++++ b/toys/other/watchdog.c
+@@ -4,7 +4,7 @@
+  *
+  * See kernel.org/doc/Documentation/watchdog/watchdog-api.txt
+ 
+-USE_WATCHDOG(NEWTOY(watchdog, "<1>1Ft#=4<1T#=60<1", TOYFLAG_NEEDROOT|TOYFLAG_SBIN))
++USE_WATCHDOG(NEWTOY(watchdog, "<1>1Ft#=4<1T#=60<1", TOYFLAG_NEEDROOT|TOYFLAG_BIN|TOYFLAG_USR))
+ 
+ config WATCHDOG
+   bool "watchdog"
+diff --git a/toys/posix/kill.c b/toys/posix/kill.c
+index 2f47f60..d94964d 100644
+--- a/toys/posix/kill.c
++++ b/toys/posix/kill.c
+@@ -12,7 +12,7 @@
+  * No Standard
+ 
+ USE_KILL(NEWTOY(kill, "?ls: ", TOYFLAG_BIN|TOYFLAG_MAYFORK))
+-USE_KILLALL5(NEWTOY(killall5, "?o*ls: [!lo][!ls]", TOYFLAG_SBIN))
++USE_KILLALL5(NEWTOY(killall5, "?o*ls: [!lo][!ls]", TOYFLAG_USR|TOYFLAG_SBIN))
+ 
+ config KILL
+   bool "kill"
+@@ -126,7 +126,7 @@ void kill_main(void)
+       if (!readfile(toybuf, toybuf, sizeof(toybuf)) || !*toybuf) continue;
+ 
+       // Check with omit list.
+-      for (count = 0; count < ocount; count++) 
++      for (count = 0; count < ocount; count++)
+         if (procpid == olist[count]) break;
+       if (count != ocount) continue;
+ 
+diff --git a/toys/posix/ps.c b/toys/posix/ps.c
+index 1fdfc17..59b0a42 100644
+--- a/toys/posix/ps.c
++++ b/toys/posix/ps.c
+@@ -45,12 +45,12 @@
+  * TODO: pgrep -f only searches the amount of cmdline that fits in toybuf.
+  * TODO: pgrep qemu-system-i386 never matches because one char too long
+ 
+-USE_PS(NEWTOY(ps, "k(sort)*P(ppid)*aAdeflMno*O*p(pid)*s*t*Tu*U*g*G*wZ[!ol][+Ae][!oO]", TOYFLAG_BIN|TOYFLAG_LOCALE))
++USE_PS(NEWTOY(ps, "k(sort)*P(ppid)*aAdeflMno*O*p(pid)*s*t*Tu*U*g*G*wZ[!ol][+Ae][!oO]", TOYFLAG_USR|TOYFLAG_BIN|TOYFLAG_LOCALE))
+ // stayroot because iotop needs root to read other process' proc/$$/io
+ // TOP and IOTOP have a large common option block used for common processing,
+ // the default values are different but the flags are in the same order.
+ USE_TOP(NEWTOY(top, ">0O*h" "Hk*o*p*u*s#<1d%<100=3000m#n#<1bq[!oO]", TOYFLAG_USR|TOYFLAG_BIN|TOYFLAG_LOCALE))
+-USE_IOTOP(NEWTOY(iotop, ">0AaKO" "Hk*o*p*u*s#<1=7d%<100=3000m#n#<1bq", TOYFLAG_USR|TOYFLAG_BIN|TOYFLAG_STAYROOT|TOYFLAG_LOCALE))
++USE_IOTOP(NEWTOY(iotop, ">0AaKO" "Hk*o*p*u*s#<1=7d%<100=3000m#n#<1bq", TOYFLAG_USR|TOYFLAG_SBIN|TOYFLAG_STAYROOT|TOYFLAG_LOCALE))
+ USE_PGREP(NEWTOY(pgrep, "?cld:u*U*t*s*P*g*G*fnovxL:[-no]", TOYFLAG_USR|TOYFLAG_BIN))
+ USE_PKILL(NEWTOY(pkill,    "?Vu*U*t*s*P*g*G*fnovxl:[-no]", TOYFLAG_USR|TOYFLAG_BIN))
+ 
+@@ -556,7 +556,7 @@ static char *string_field(struct procpid *tb, struct ofields *field)
+ 
+   // Clock displays
+   } else if (which <= PS_TIME_) {
+-    int unit = 60, pad = 2, j = TT.ticks; 
++    int unit = 60, pad = 2, j = TT.ticks;
+     time_t seconds;
+ 
+     if (which!=PS_TIME_) unit *= 60*24;
+@@ -619,7 +619,7 @@ static char *string_field(struct procpid *tb, struct ofields *field)
+       if (slot[SLOT_sid]==*slot) *s++ = 's';
+       if (slot[SLOT_vmlck]) *s++ = 'L';
+       if (slot[SLOT_ttypgrp]==*slot) *s++ = '+';
+-    } 
++    }
+     *s = 0;
+   } else if (which==PS_STIME) {
+     time_t t = time(0)-slot[SLOT_uptime]+slot[SLOT_starttime]/TT.ticks;
+@@ -1254,7 +1254,7 @@ static int ksort(void *aa, void *bb)
+ 
+ // Collect ->extra field from leaf nodes DIRTREE_SAVEd by get_ps() into array
+ // (recursion because tree from get_thread() isn't flat list of siblings)
+-static struct procpid **collate_leaves(struct procpid **tb, struct dirtree *dt) 
++static struct procpid **collate_leaves(struct procpid **tb, struct dirtree *dt)
+ {
+   while (dt) {
+     struct dirtree *next = dt->next;
+@@ -1277,7 +1277,7 @@ static struct procpid **collate(int count, struct dirtree *dt)
+   collate_leaves(tbsort, dt);
+ 
+   return tbsort;
+-} 
++}
+ 
+ // parse command line arguments (ala -k -o) with a comma separated FIELD list
+ static void default_ko(char *s, void *fields, char *err, struct arg_list *arg)
+@@ -1885,7 +1885,7 @@ static void do_pgk(struct procpid *tb)
+     printf("%lld", *tb->slot);
+     if (FLAG(l))
+       printf(" %s", tb->str+tb->offset[4]*!!FLAG(f));
+-    
++
+     printf("%s", TT.pgrep.d ? TT.pgrep.d : "\n");
+   }
+ }
+diff --git a/toys/posix/test.c b/toys/posix/test.c
+index f9a2bbb..12e18a0 100644
+--- a/toys/posix/test.c
++++ b/toys/posix/test.c
+@@ -7,7 +7,7 @@
+  * Deviations from posix: -k, [[ < > =~ ]]
+ 
+ USE_TEST(NEWTOY(test, 0, TOYFLAG_USR|TOYFLAG_BIN|TOYFLAG_NOHELP|TOYFLAG_MAYFORK))
+-USE_TEST_GLUE(OLDTOY([, test, TOYFLAG_BIN|TOYFLAG_MAYFORK|TOYFLAG_NOHELP))
++USE_TEST_GLUE(OLDTOY([, test, TOYFLAG_USR|TOYFLAG_BIN|TOYFLAG_MAYFORK|TOYFLAG_NOHELP))
+ USE_SH(OLDTOY([[, test, TOYFLAG_NOFORK|TOYFLAG_NOHELP))
+ 
+ config TEST

@@ -1,0 +1,38 @@
+From b9977a94becdc00d20912315a12c64f132daca7a Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 13 Dec 2021 16:54:28 +0530
+Subject: [PATCH] tweak find-debuginfo
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ scripts/find-debuginfo.in | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/scripts/find-debuginfo.in b/scripts/find-debuginfo.in
+index 8b9ce77..8be3aa0 100755
+--- a/scripts/find-debuginfo.in
++++ b/scripts/find-debuginfo.in
+@@ -649,11 +649,6 @@ if [ -s "$SOURCEFILE" ]; then
+ fi
+ 
+ if [ -d "${RPM_BUILD_ROOT}/usr/lib" ] || [ -d "${RPM_BUILD_ROOT}/usr/src" ]; then
+-  ((nout > 0)) ||
+-  test ! -d "${RPM_BUILD_ROOT}/usr/lib" ||
+-  (cd "${RPM_BUILD_ROOT}/usr/lib"; find debug -type d) |
+-  sed 's,^,%dir /usr/lib/,' >> "$LISTFILE"
+-
+   (cd "${RPM_BUILD_ROOT}/usr"
+    test ! -d lib/debug || find lib/debug ! -type d
+    test ! -d src/debug -o -n "$srcout" || find src/debug -mindepth 1 -maxdepth 1
+@@ -724,7 +719,7 @@ while ((i < nout)); do
+   mv "${LISTFILE}.new" "$LISTFILE"
+   ((++i))
+ done
+-if ((nout > 0)); then
++if ((0 && nout > 0)); then
+   # Generate %dir lines for each output list.
+   generate_percent_dir()
+   {
+-- 
+2.25.1
+

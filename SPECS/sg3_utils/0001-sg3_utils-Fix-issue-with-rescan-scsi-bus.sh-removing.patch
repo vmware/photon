@@ -1,0 +1,39 @@
+From aea7939eb26ad2102f0f1f893860b496473fe6c1 Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <bguruswamy@vmware.com>
+Date: Mon, 17 Apr 2023 13:21:51 +0530
+Subject: [PATCH] sg3_utils: Fix issue with rescan-scsi-bus.sh removing hard
+ disks
+
+rescan-scsi-bus.sh -r removing hard disks due to upstream
+commit d1c58f173918f22723a79d0ab06bcfb60092e75a in sg3_utils.
+
+commit in this link
+https://github.com/doug-gilbert/sg3_utils/commit/fc72119f67614152d635452856ec9894474599e4
+fixes the issue in upstream, only selected changes picked.
+
+Signed-off-by: Guruswamy Basavaiah <bguruswamy@vmware.com>
+---
+ scripts/rescan-scsi-bus.sh | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/scripts/rescan-scsi-bus.sh b/scripts/rescan-scsi-bus.sh
+index 46fe6c0..e34ea35 100755
+--- a/scripts/rescan-scsi-bus.sh
++++ b/scripts/rescan-scsi-bus.sh
+@@ -307,7 +307,13 @@ testonline ()
+   IPREV=$(echo "$INQ" | grep 'Product revision level:' | sed 's/^[^:]*: \(.*\)$/\1/')
+   STR=$(printf "  Vendor: %-08s Model: %-16s Rev: %-4s" "$IVEND" "$IPROD" "$IPREV")
+   IPTYPE=$(echo "$INQ" | sed -n 's/.* Device_type=\([0-9]*\) .*/\1/p')
++  if [ -z "$IPTYPE" ]; then
++    IPTYPE=$(echo "$INQ" | sed -n 's/.* PDT=\([0-9]*\) .*/\1/p')
++  fi
+   IPQUAL=$(echo "$INQ" | sed -n 's/ *PQual=\([0-9]*\)  Device.*/\1/p')
++  if [ -z "$IPQUAL" ] ; then
++    IPQUAL=$(echo "$INQ" | sed -n 's/ *PQual=\([0-9]*\)  PDT.*/\1/p')
++  fi
+   if [ "$IPQUAL" != 0 ] ; then
+     [ -z "$IPQUAL" ] && IPQUAL=3
+     [ -z "$IPTYPE" ] && IPTYPE=31
+--
+2.25.1
+

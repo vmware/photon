@@ -1,0 +1,128 @@
+From c274786b556910dae8a7f5f3aeb3c7e3d01130c7 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 19 May 2020 11:04:52 -0700
+Subject: [PATCH] initramfs: support for page aligned format "newca"
+
+"newca" archive format (header 0707ca) is similar to "newc"
+format (header 070701) but with page aligned regular files
+data.
+
+Generated "newca" file is bigger than "newc", but advantage
+is that pages with files content can be used by page cache
+as is without copying. It allows 1) to speed up the boot
+process (zero copy), and 2) to share initrd memory provided
+by hypervisor between VMs to get better memory density.
+
+Introduces new function: xadd_pages to put file content
+pages to its page cache mapping. Initramfs extraction
+logic will use xadd_pages instead of xwrite for "newca"
+archive format.
+
+In addition, initrd memory will not be freed for "newca" as
+it is used by page caches.
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ init/initramfs.c | 53 +++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 50 insertions(+), 3 deletions(-)
+
+diff --git a/init/initramfs.c b/init/initramfs.c
+index 55b74d7e5260..c3a26243c50f 100644
+--- a/init/initramfs.c
++++ b/init/initramfs.c
+@@ -17,6 +17,35 @@
+ #include <linux/init_syscalls.h>
+ #include <linux/task_work.h>
+ #include <linux/umh.h>
++#include <linux/pagemap.h>
++
++static bool page_aligned_fmt __initdata;
++
++static int __init xadd_pages(struct file *file, const char *p, size_t count, pgoff_t pgoff)
++{
++	struct page *page;
++	size_t pages = (count + PAGE_SIZE - 1) >> PAGE_SHIFT;
++	struct address_space *mapping = file->f_mapping;
++	gfp_t gfp_mask = mapping->gfp_mask | __GFP_WRITE;
++	int err = 0;
++
++	for (; pages--; ++pgoff, p += PAGE_SIZE) {
++		page = virt_to_page(p);
++
++
++		err = add_to_page_cache_lru(page, mapping, pgoff, gfp_mask);
++		if (err)
++			goto out;
++
++		SetPageUptodate(page);
++		set_page_dirty(page);
++		unlock_page(page);
++		put_page(page);
++	}
++	err = count;
++out:
++	return err;
++}
+ 
+ static __initdata bool csum_present;
+ static __initdata u32 io_csum;
+@@ -25,6 +54,13 @@ static ssize_t __init xwrite(struct file *file, const unsigned char *p,
+ 		size_t count, loff_t *pos)
+ {
+ 	ssize_t out = 0;
++	/* Add ramdisk pages directly to fd's page cache */
++	if (page_aligned_fmt) {
++		BUG_ON(*pos & ~PAGE_MASK);
++		BUG_ON((uintptr_t)p & ~PAGE_MASK);
++
++		return xadd_pages(file, p, count, *pos >> PAGE_SHIFT);
++	}
+ 
+ 	/* sys_write only can write MAX_RW_COUNT aka 2G-4K bytes at most */
+ 	while (count) {
+@@ -284,6 +320,10 @@ static int __init do_header(void)
+ 		csum_present = false;
+ 	} else if (!memcmp(collected, "070702", 6)) {
+ 		csum_present = true;
++	} else if (!memcmp(collected, "0707ca", 6)) {
++		if (!page_aligned_fmt)
++			printk(KERN_INFO "Page aligned format detected. Retain initrd.\n");
++		page_aligned_fmt = true;
+ 	} else {
+ 		if (memcmp(collected, "070707", 6) == 0)
+ 			error("incorrect cpio method used: use -H newc option");
+@@ -292,7 +332,10 @@ static int __init do_header(void)
+ 		return 1;
+ 	}
+ 	parse_header(collected);
+-	next_header = this_header + N_ALIGN(name_len) + body_len;
++	next_header = this_header + N_ALIGN(name_len);
++	if (page_aligned_fmt && S_ISREG(mode))
++		next_header = PAGE_ALIGN(next_header);
++	next_header += body_len;
+ 	next_header = (next_header + 3) & ~3;
+ 	state = SkipIt;
+ 	if (name_len <= 0 || name_len > PATH_MAX)
+@@ -406,6 +449,10 @@ static int __init do_name(void)
+ 
+ static int __init do_copy(void)
+ {
++	if (page_aligned_fmt && !PAGE_ALIGNED(victim))
++		/* Align file start to the next page boundary  */
++		eat(PAGE_ALIGN((loff_t)victim) - (loff_t)victim);
++
+ 	if (byte_count >= body_len) {
+ 		if (xwrite(wfile, victim, body_len, &wfile_pos) != body_len)
+ 			error("write error");
+@@ -722,7 +769,7 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
+ 	 * If the initrd region is overlapped with crashkernel reserved region,
+ 	 * free only memory that is not part of crashkernel region.
+ 	 */
+-	if (!do_retain_initrd && initrd_start && !kexec_free_initrd())
++	if (!do_retain_initrd && initrd_start && !page_aligned_fmt && !kexec_free_initrd())
+ 		free_initrd_mem(initrd_start, initrd_end);
+ 	initrd_start = 0;
+ 	initrd_end = 0;
+-- 
+2.23.3
+

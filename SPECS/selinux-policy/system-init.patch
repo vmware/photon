@@ -1,0 +1,98 @@
+From 35505f809b6e94ce31c3186b6742cce429e57b5e Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:42:08 +0530
+Subject: [PATCH 14/20] system init
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/init.fc | 10 +++++++++
+ policy/modules/system/init.te | 41 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 51 insertions(+)
+
+diff --git a/policy/modules/system/init.fc b/policy/modules/system/init.fc
+index 333c2d5..17af6cc 100644
+--- a/policy/modules/system/init.fc
++++ b/policy/modules/system/init.fc
+@@ -81,6 +81,15 @@ ifdef(`distro_gentoo', `
+ /var/run/systemd/machine-id	--	gen_context(system_u:object_r:machineid_t,s0)
+ /var/run/systemd/journal/dev-log    -s  gen_context(system_u:object_r:devlog_t,s0)
+ 
++/run/initctl	-p	gen_context(system_u:object_r:initctl_t,s0)
++/run/systemd/initctl/fifo	-p	gen_context(system_u:object_r:initctl_t,s0)
++/run/utmp		--	gen_context(system_u:object_r:initrc_var_run_t,s0)
++/run/runlevel\.dir		gen_context(system_u:object_r:initrc_var_run_t,s0)
++/run/random-seed	--	gen_context(system_u:object_r:initrc_var_run_t,s0)
++/run/setmixer_flag	--	gen_context(system_u:object_r:initrc_var_run_t,s0)
++/run/systemd/machine-id	--	gen_context(system_u:object_r:machineid_t,s0)
++/run/systemd/journal/dev-log    -s  gen_context(system_u:object_r:devlog_t,s0)
++
+ ifdef(`distro_debian',`
+ /var/run/hotkey-setup	--	gen_context(system_u:object_r:initrc_var_run_t,s0)
+ /var/run/kdm/.*		--	gen_context(system_u:object_r:initrc_var_run_t,s0)
+@@ -99,3 +108,4 @@ ifdef(`distro_suse', `
+ /var/run/sysconfig(/.*)?	gen_context(system_u:object_r:initrc_var_run_t,s0)
+ ')
+ /var/run/systemd(/.*)?		gen_context(system_u:object_r:init_var_run_t,s0)
++/run/systemd(/.*)?		gen_context(system_u:object_r:init_var_run_t,s0)
+diff --git a/policy/modules/system/init.te b/policy/modules/system/init.te
+index a838cdd..9790e61 100644
+--- a/policy/modules/system/init.te
++++ b/policy/modules/system/init.te
+@@ -428,6 +428,21 @@ ifdef(`distro_gentoo',`
+ 	init_exec_rc(initrc_t)
+ ')
+ 
++ifdef(`distro_photon',`
++	fs_manage_tmpfs_files(init_t)
++	fs_manage_tmpfs_symlinks(init_t)
++	fs_manage_tmpfs_sockets(init_t)
++	fs_manage_tmpfs_chr_files(init_t)
++	fs_exec_tmpfs_files(init_t)
++	fs_read_tmpfs_symlinks(init_t)
++	fs_tmpfs_filetrans(init_t, initctl_t, fifo_file)
++	fs_tmpfs_filetrans_named_content(init_t)
++    fs_relabelfrom_tmpfs_lnk_files(init_t)
++
++	logging_stream_connect_syslog(init_t)
++	logging_relabel_syslog_pid_socket(init_t)
++')
++
+ ifdef(`distro_redhat',`
+ 	fs_manage_tmpfs_files(init_t)
+ 	fs_manage_tmpfs_symlinks(init_t)
+@@ -735,6 +750,32 @@ auth_rw_lastlog(init_t)
+ auth_domtrans_chk_passwd(init_t)
+ auth_manage_passwd(init_t)
+ 
++ifdef(`distro_photon',`
++    # it comes from setupr scripts used in systemd unit files
++    # has been covered by initrc_t
++	optional_policy(`
++		bind_manage_config_dirs(init_t)
++		bind_manage_config(init_t)
++		bind_write_config(init_t)
++		bind_setattr_zone_dirs(init_t)
++	')
++
++    optional_policy(`
++	    ipsec_read_config(init_t)
++        ipsec_manage_pid(init_t)
++        ipsec_stream_connect(init_t)
++    ')
++
++    optional_policy(`
++        rpc_manage_nfs_state_data(init_t)
++    ')
++
++    optional_policy(`
++        sysnet_relabelfrom_dhcpc_state(init_t)
++        sysnet_setattr_dhcp_state(init_t)
++    ')
++')
++
+ ifdef(`distro_redhat',`
+     # it comes from setupr scripts used in systemd unit files
+     # has been covered by initrc_t
+-- 
+2.35.1
+

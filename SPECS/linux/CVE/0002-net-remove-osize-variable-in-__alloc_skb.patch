@@ -1,0 +1,66 @@
+From b71c39459910758ee3a57a66531a0f86c9718e7a Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 15 Sep 2023 15:32:13 +0530
+Subject: [PATCH v6.1.y 2/4] net: remove osize variable in __alloc_skb()
+
+From: Eric Dumazet <edumazet@google.com>
+
+commit 65998d2bf857b9ae5acc1f3b70892bd1b429ccab upstream.
+
+This is a cleanup patch, to prepare following change.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[Ajay: Regenerated the patch for v6.1.y]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ net/core/skbuff.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 4aea8f5..1c059b6 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -479,7 +479,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+ {
+ 	struct kmem_cache *cache;
+ 	struct sk_buff *skb;
+-	unsigned int osize;
+ 	bool pfmemalloc;
+ 	u8 *data;
+ 
+@@ -505,16 +504,15 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+ 	 * Both skb->head and skb_shared_info are cache line aligned.
+ 	 */
+ 	size = SKB_HEAD_ALIGN(size);
+-	osize = kmalloc_size_roundup(size);
+-	data = kmalloc_reserve(osize, gfp_mask, node, &pfmemalloc);
++	size = kmalloc_size_roundup(size);
++	data = kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
+ 	if (unlikely(!data))
+ 		goto nodata;
+ 	/* kmalloc_size_roundup() might give us more room than requested.
+ 	 * Put skb_shared_info exactly at the end of allocated zone,
+ 	 * to allow max possible filling before reallocation.
+ 	 */
+-	size = SKB_WITH_OVERHEAD(osize);
+-	prefetchw(data + size);
++	prefetchw(data + SKB_WITH_OVERHEAD(size));
+ 
+ 	/*
+ 	 * Only clear those fields we need to clear, not those that we will
+@@ -522,7 +520,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+ 	 * the tail pointer in struct sk_buff!
+ 	 */
+ 	memset(skb, 0, offsetof(struct sk_buff, tail));
+-	__build_skb_around(skb, data, osize);
++	__build_skb_around(skb, data, size);
+ 	skb->pfmemalloc = pfmemalloc;
+ 
+ 	if (flags & SKB_ALLOC_FCLONE) {
+-- 
+2.7.4
+

@@ -1,0 +1,97 @@
+From a97ab3c8945f445acabe181646b456eb97a429f0 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 12 Jul 2022 19:53:02 +0530
+Subject: [PATCH 1/4] add hcx helper modules
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ include/hcx_helpers.h | 13 +++++++++++++
+ lib/Makefile          |  3 ++-
+ lib/hcx_helpers.c     | 41 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 56 insertions(+), 1 deletion(-)
+ create mode 100644 include/hcx_helpers.h
+ create mode 100644 lib/hcx_helpers.c
+
+diff --git a/include/hcx_helpers.h b/include/hcx_helpers.h
+new file mode 100644
+index 0000000..c71a980
+--- /dev/null
++++ b/include/hcx_helpers.h
+@@ -0,0 +1,13 @@
++#ifndef _HCX_HELPER_H_
++#define _HCX_HELPER_H_
++
++#define proc_sys_net_prefix     "/proc/sys/net"
++
++#define F_ARP_PROBE     proc_sys_net_prefix "/bridge/arp_probe"
++
++#define F_MSS_CLAMP     proc_sys_net_prefix "/ipv4/gre_mss_clamp"
++
++int get_mss_clamp(void);
++int get_arp_probe(void);
++
++#endif /* _HCX_HELPER_H_ */
+diff --git a/lib/Makefile b/lib/Makefile
+index ddedd37..fc25b48 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -5,7 +5,8 @@ CFLAGS += -fPIC
+ 
+ UTILOBJ = utils.o utils_math.o rt_names.o ll_map.o ll_types.o ll_proto.o ll_addr.o \
+ 	inet_proto.o namespace.o json_writer.o json_print.o json_print_math.o \
+-	names.o color.o bpf_legacy.o bpf_glue.o exec.o fs.o cg_map.o ppp_proto.o
++	names.o color.o bpf_legacy.o bpf_glue.o exec.o fs.o cg_map.o ppp_proto.o \
++	hcx_helpers.o
+ 
+ ifeq ($(HAVE_ELF),y)
+ ifeq ($(HAVE_LIBBPF),y)
+diff --git a/lib/hcx_helpers.c b/lib/hcx_helpers.c
+new file mode 100644
+index 0000000..e7ca478
+--- /dev/null
++++ b/lib/hcx_helpers.c
+@@ -0,0 +1,41 @@
++#include <stdio.h>
++#include <stdlib.h>
++
++#include "hcx_helpers.h"
++
++static int get_val(const char *fpath)
++{
++  FILE *fp;
++  int val = 0;
++
++  fp = fopen(fpath, "r");
++  if (!fp)
++    return val;
++
++  if (fscanf(fp, "%d", &val) != 1)
++    val = 0;
++
++  fclose(fp);
++
++  return val;
++}
++
++int get_arp_probe(void)
++{
++    static int arp_probe = -1;
++
++    if (arp_probe < 0)
++        arp_probe = get_val(F_ARP_PROBE);
++
++    return arp_probe;
++}
++
++int get_mss_clamp(void)
++{
++    static int mss_clamp = -1;
++
++    if (mss_clamp < 0)
++        mss_clamp = get_val(F_MSS_CLAMP);
++
++    return mss_clamp;
++}
+-- 
+2.37.3
+

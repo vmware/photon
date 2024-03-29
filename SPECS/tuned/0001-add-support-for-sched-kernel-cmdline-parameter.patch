@@ -1,0 +1,63 @@
+From 95e5a2361dad6256c4dd527d34b28af07271a1cd Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Tue, 12 Sep 2023 19:21:11 +0000
+Subject: [PATCH] add support for sched kernel cmdline parameter
+
+Add a new variable "sched_isolation" to manage the new
+'sched' parameter on the kernel cmdline
+---
+ profiles/realtime/realtime-variables.conf | 7 +++++++
+ profiles/realtime/tuned.conf              | 8 ++++++--
+ 2 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/profiles/realtime/realtime-variables.conf b/profiles/realtime/realtime-variables.conf
+index d3d898d..e2e21ec 100644
+--- a/profiles/realtime/realtime-variables.conf
++++ b/profiles/realtime/realtime-variables.conf
+@@ -20,3 +20,10 @@ isolate_managed_irq=Y
+ # (non-isolated) CPUs.
+ #
+ # netdev_queue_count=4
++
++#
++# Uncomment the 'sched_isolation=Y' below to improve initial process placement
++# away from isolated cores when scheduled under a cpuset containing both
++# isolated and non-isolated cores. This does not affect realtime processes.
++#
++# sched_isolation=Y
+diff --git a/profiles/realtime/tuned.conf b/profiles/realtime/tuned.conf
+index b51308f..769f961 100644
+--- a/profiles/realtime/tuned.conf
++++ b/profiles/realtime/tuned.conf
+@@ -8,7 +8,7 @@ summary=Optimize for realtime workloads
+ include = network-latency
+ 
+ [variables]
+-# User is responsible for updating variables.conf with variable content such as isolated_cores=X-Y 
++# User is responsible for updating variables.conf with variable content such as isolated_cores=X-Y
+ include = /etc/tuned/realtime-variables.conf
+ 
+ isolated_cores_assert_check = \\${isolated_cores}
+@@ -35,6 +35,10 @@ assert2=${f:assertion:isolated_cores contains online CPU(s):${isolated_cores_exp
+ isolate_managed_irq = ${isolate_managed_irq}
+ managed_irq=${f:regex_search_ternary:${isolate_managed_irq}:\b[y,Y,1,t,T]\b:managed_irq,domain,:}
+ 
++# Set sched_isolation
++sched_isolation = ${sched_isolation}
++sched=${f:regex_search_ternary:${sched_isolation}:\b[y,Y,1,t,T]\b:sched,:}
++
+ [net]
+ channels=combined ${f:check_net_queue_count:${netdev_queue_count}}
+ 
+@@ -53,7 +57,7 @@ kernel.timer_migration = 0
+ /sys/devices/system/machinecheck/machinecheck*/ignore_ce = 1
+ 
+ [bootloader]
+-cmdline_realtime=+isolcpus=${managed_irq}${isolated_cores} intel_pstate=disable nosoftlockup tsc=reliable
++cmdline_realtime=+isolcpus=${managed_irq}${sched}${isolated_cores} intel_pstate=disable nosoftlockup tsc=reliable
+ 
+ [irqbalance]
+ banned_cpus=${isolated_cores}
+-- 
+2.39.0
+

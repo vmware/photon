@@ -1,0 +1,33 @@
+From 1c725e333e9d20b87346fb394a1d01fa5be4fbaf Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20P=C3=ADsa=C5=99?= <ppisar@redhat.com>
+Date: Wed, 12 Oct 2016 10:46:22 +0200
+Subject: [PATCH] Do not use SSLv2_client_method() with OpenSSL >= 1.1.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+SSLv2 support was removed from OpenSSL 1.1.0.
+
+CPAN RT#118343
+
+Signed-off-by: Petr Písař <ppisar@redhat.com>
+---
+ SSLeay.xs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/SSLeay.xs b/SSLeay.xs
+index 1560604..ba0dd24 100644
+--- a/SSLeay.xs
++++ b/SSLeay.xs
+@@ -152,7 +152,7 @@ SSL_CTX_new(packname, ssl_version)
+             ctx = SSL_CTX_new(SSLv3_client_method());
+         }
+         else {
+-#ifndef OPENSSL_NO_SSL2
++#if !defined OPENSSL_NO_SSL2 && OPENSSL_VERSION_NUMBER < 0x10100000L
+             /* v2 is the default */
+             ctx = SSL_CTX_new(SSLv2_client_method());
+ #else
+-- 
+2.7.4
+

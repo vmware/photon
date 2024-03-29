@@ -1,0 +1,95 @@
+From 711b6a86867cc1435847805cff30b76f152addc9 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 28 Mar 2023 18:28:01 +0530
+Subject: [PATCH] rpmdev-spectool: remove progressbar support
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ rpmdev-spectool | 42 ++----------------------------------------
+ 1 file changed, 2 insertions(+), 40 deletions(-)
+
+diff --git a/rpmdev-spectool b/rpmdev-spectool
+index 1d57256..52ddd15 100755
+--- a/rpmdev-spectool
++++ b/rpmdev-spectool
+@@ -28,7 +28,6 @@ from collections import OrderedDict
+ from typing import Optional
+ from urllib.parse import urlparse
+ 
+-import progressbar
+ import requests
+ import rpm
+ 
+@@ -206,35 +205,8 @@ def split_numbers(args: str) -> list:
+     return args.split(",")
+ 
+ 
+-# simple streamed file download progress tracker inspired by requests_download
+-class ProgressTracker:
+-    def __init__(self, progress_bar: progressbar.ProgressBar):
+-        self.progress_bar = progress_bar
+-        self.received = 0
+-
+-    def on_start(self, response: requests.Response):
+-        max_value = None
+-
+-        if "content-length" in response.headers:
+-            max_value = int(response.headers["content-length"])
+-
+-        self.progress_bar.start(max_value=max_value)
+-        self.received = 0
+-
+-    def on_chunk(self, chunk: bytes):
+-        self.received += len(chunk)
+-
+-        try:
+-            self.progress_bar.update(self.received)
+-        except ValueError:
+-            pass
+-
+-    def on_finish(self):
+-        self.progress_bar.finish()
+-
+-
+ # simple streamed file download implementation inspired by requests_download
+-def download(url, target, headers=None, tracker: Optional[ProgressTracker] = None):
++def download(url, target, headers=None):
+     if headers is None:
+         headers = {}
+ 
+@@ -246,9 +218,6 @@ def download(url, target, headers=None, tracker: Optional[ProgressTracker] = Non
+     ret = requests.get(url, headers=headers, stream=True)
+     ret.raise_for_status()
+ 
+-    if tracker:
+-        tracker.on_start(ret)
+-
+     with open(target, "wb") as file:
+         # decode_content=False: workaround for some servers that claim to return
+         # gzip-compressed data when serving .tar.gz files
+@@ -256,12 +225,6 @@ def download(url, target, headers=None, tracker: Optional[ProgressTracker] = Non
+             if chunk:
+                 file.write(chunk)
+ 
+-                if tracker:
+-                    tracker.on_chunk(chunk)
+-
+-    if tracker:
+-        tracker.on_finish()
+-
+ 
+ def get_file(url: str, path: str, force: bool) -> bool:
+     if os.path.exists(path):
+@@ -271,8 +234,7 @@ def get_file(url: str, path: str, force: bool) -> bool:
+             print("File '{}' already present.".format(path))
+             return False
+ 
+-    progress = ProgressTracker(progressbar.DataTransferBar())
+-    download(url, path, tracker=progress)
++    download(url, path)
+ 
+     return True
+ 
+-- 
+2.39.2
+

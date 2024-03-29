@@ -1,0 +1,3 @@
+g vernemq -
+u vernemq - "VerneMQ" /var/lib/vernemq /bin/bash
+m vernemq vernemq

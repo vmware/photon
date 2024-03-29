@@ -1,0 +1,52 @@
+From 3f9205b75724c59c70c66286cabdae0d7ff95270 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Fri, 7 Oct 2022 20:39:34 +0000
+Subject: FIPS: do not allow not certified algos in fips=2
+
+Introduuce fips=2 kernel parameter which (1) enables fips mode (fips=1)
+in the kernel and (2) forces to register only certified crypto algos
+from the canister.
+On registration event of non certified algo, kernel will complain:
+[ 9217.061565] alg: blake2b-160-generic (blake2b-160) not certified
+[ 9217.061582] alg: blake2b-256-generic (blake2b-256) not certified
+[ 9217.061832] alg: blake2b-384-generic (blake2b-384) not certified
+and throw -ELIBBAD error to the caller.
+
+fips=2 will allow us to confidently answer what crypto algorithms kernel
+are in use by the user.
+
+There are 3 possible scenarios to hit it:
+
+1. Userspace app accessing AF_ALG API with not allowed crypto alg
+
+void main(void)
+{
+	        struct sockaddr_alg sa = {AF_ALG, "hash", 0, 0, "blake2b-512"};
+
+		        if (bind(socket(AF_ALG, SOCK_SEQPACKET, 0), (struct sockaddr *)&sa, sizeof(sa)) == -1)
+				                printf("Errno: %d\n", errno);
+}
+
+2. Loading the module (.ko) with crypto implementation
+3. Kernel accessing not approved crypto alg. In that case "alg ... not
+certified" might be followed by pernel panic.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ crypto/fips.c                  |   4 +-
+
+diff --git a/crypto/fips.c b/crypto/fips.c
+index 7b1d8caee669..6aaeade33aba 100644
+--- a/crypto/fips.c
++++ b/crypto/fips.c
+@@ -22,7 +22,9 @@ EXPORT_SYMBOL_GPL(fips_fail_notif_chain);
+ /* Process kernel command-line parameter at boot time. fips=0 or fips=1 */
+ static int fips_enable(char *str)
+ {
+-	fips_enabled = !!simple_strtol(str, NULL, 0);
++	fips_enabled = simple_strtol(str, NULL, 0);
++	if (fips_enabled > 2 || fips_enabled < 0)
++		fips_enabled = 1;
+ 	printk(KERN_INFO "fips mode: %s\n",
+ 		fips_enabled ? "enabled" : "disabled");
+ 	return 1;

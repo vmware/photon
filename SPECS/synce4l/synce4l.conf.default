@@ -1,0 +1,172 @@
+# Global section is for debuging mostly
+[global]
+#
+# Runtime options
+#
+logging_level   7
+use_syslog      0
+verbose         1
+message_tag     [synce4l]
+
+
+#
+# Device section
+# Per-device configuration
+#
+# User defined name of a one logical device configured for SyncE in the system.
+# All the ports configured after this section will be a part of this device
+# (until next device section).
+[<synce1>]
+
+#
+# Mode for synce4l operation.
+# There are two currently supported modes:
+# - line
+# - external
+#
+# Input mode "line" mean the inputs recovered from the PHY's.
+# The ports configured (in the port-sections [<dev name>], under the device
+# section) will be monitored for the QL (Quality Level).
+# QL is sent by the peer connected to the port and represents the Holdover
+# performance of the peer.
+# The best QL is selected and frequency recovered on that port shall be used
+# to feed its frequency to all the other ports.
+#
+# The "external" input mode are either 1PPS from built-in GPS module or 1PPS
+# from the on-board SMA connectors. Device must be pre-confiured to use this
+# setting. # Before running the application, one of the external inputs shall be
+# selected. This is done through the interface supplied by the NIC vendor.
+#
+# In this mode synce4l application is only responsible for sending
+# the QL to the peers on all configured ports.
+# The QL value that is sent equals configured "external_input_QL"
+# (and "external_input_ext_QL" in case of "extended_tlv=1").
+#
+input_mode  line
+# input_mode    external
+
+#
+# These values are sent to the peers on configured ports ONLY when 'external'
+# mode is enabled.
+# Valid values are defined in Table 11-7 and Table 11-8 of recommendation
+# ITU-T G.8264.
+# They shall be configured appropriately so they are understood by the peer.
+#
+# external_input_QL corresponds to the SSM code column.
+#
+# external_input_ext_QL corresponds to the Enhanced SSM code column
+# (is used only if "extended_tlv = 1")
+#
+external_input_QL   2
+external_input_ext_QL   255
+
+#
+# If extended TLV shall be supported on the device.
+# 0 if no extended tlv shall be supported
+# 1 if extended tlv shall be supported
+# default: 0
+#
+# In case of 0:
+#       - the port will always TX the non-extended TLV, for RX only
+#         non-extended TLV will be processed for reference signal selection
+# In case of 1:
+#       - If port is configured with external_input=1, the TX will always use
+#         extended TLV (no RX is required in this case)
+#       - If port is configured with line or external input mode, the TX version
+#         of TLV will be propagated from the port that was chosen as
+#         candidate for frequency synchronization
+#
+extended_tlv        1
+
+#
+# Which network option shall be supported
+#
+# 1 or 2 as defined in T-REC-G.8264
+# default: 1
+#
+# This is rather per-network option, all device in SyncE network
+# shall have this configured for the same value
+#
+network_option      1
+
+#
+# Seconds indicating minimum time to recover from the QL-failed state on the
+# port.
+# Range: 10-720
+# Default: 300
+#
+# If valid QL was not received from one of the source ports within 5 seconds
+# the port is no longer a valid source (marked as QL-failed)
+#
+# Valid QL must be received for more then "recover_time" seconds on that port
+# to use its PHY recovered signal again as a valid source
+#
+recover_time        10
+
+#
+# Shell command to be executed in order to obtain current EEC status of a
+# device.
+#
+eec_get_state_cmd       cat /sys/class/net/eth0/device/cgu_state
+
+#
+# EEC state values, must equal to values produced by stdout of
+# "eec_get_state_cmd" command
+#
+eec_holdover_value  4
+eec_locked_ho_value 3
+eec_locked_value    2
+eec_freerun_value   1
+eec_invalid_value   0
+
+#
+# Port section(s)
+#
+# It starts per-port configuration.
+# Each port (of the device) that is used for SyncE, shall have its own section.
+#
+[eth0]
+
+#
+# msec resolution of TX the QL from this port to the peer
+# [100-3000], default:1000 (1000 = 1 second is expected by the standard)
+#
+# As the standard expects 1 sec, it is not recommended to use different
+# than a 1000.
+#
+tx_heartbeat_msec   1000
+
+#
+# recovered PHY signal can be lost at anytime, this is msec resolution of
+# reading the socket, acting on signal lost shall be done just after
+# [10-500], default:50
+#
+rx_heartbeat_msec   500
+
+#
+# Shell commands for enabling/disabling this port as main recovered clock on a
+# device.
+#
+recover_clock_enable_cmd    echo 1 0 > /sys/class/net/eth0/device/phy/synce
+recover_clock_disable_cmd   echo 0 0 > /sys/class/net/eth0/device/phy/synce
+
+#
+# next configured interface for the device
+#
+#[eth1]
+#recover_clock_enable_cmd   echo 1 0 > /sys/class/net/eth1/device/phy/synce
+#recover_clock_disable_cmd  echo 0 0 > /sys/class/net/eth1/device/phy/synce
+
+
+############################################################
+#
+# next SyncE device section
+#
+#[<synce2>]
+#input_mode  line
+# input_mode    external
+
+#
+# new port belonging to the "new" device
+#
+#[enp7s0f0]

@@ -1,0 +1,12 @@
+diff -up cdrkit-1.1.11/genisoimage/genisoimage.h.me cdrkit-1.1.11/genisoimage/genisoimage.h
+--- cdrkit-1.1.11/genisoimage/genisoimage.h.me	2020-02-24 15:10:35.542998992 +0100
++++ cdrkit-1.1.11/genisoimage/genisoimage.h	2020-02-24 15:10:50.011130450 +0100
+@@ -377,7 +377,7 @@ extern int	use_fileversion;
+ extern int	split_SL_component;
+ extern int	split_SL_field;
+ extern char	*trans_tbl;
+-char		*outfile;
++extern char	*outfile;
+ 
+ #define	JMAX		64	/* maximum Joliet file name length (spec) */
+ #define	JLONGMAX	103	/* out of spec Joliet file name length */

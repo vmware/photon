@@ -1,0 +1,13 @@
+[Unit]
+Description=Ethernet Bridge Filtering Tables
+ConditionFileIsExecutable=/etc/systemd/scripts/ebtables
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/etc/systemd/scripts/ebtables start
+ExecStop=/etc/systemd/scripts/ebtables stop
+
+[Install]
+WantedBy=multi-user.target

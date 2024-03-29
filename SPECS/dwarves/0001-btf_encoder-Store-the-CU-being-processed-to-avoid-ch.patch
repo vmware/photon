@@ -1,0 +1,65 @@
+From 121a46a026afac197652cb8a4cdf2d3879d7f587 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Mon, 10 Oct 2022 09:34:53 -0300
+Subject: [PATCH] btf_encoder: Store the CU being processed to avoid changing
+ many functions
+
+Having it as encoder->cu will make it available to nested function
+without requiring changing all the functions leading to them.
+
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ btf_encoder.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/btf_encoder.c b/btf_encoder.c
+index 7ad3f29..fb2ca77 100644
+--- a/btf_encoder.c
++++ b/btf_encoder.c
+@@ -44,9 +44,13 @@ struct var_info {
+ 	uint32_t    sz;
+ };
+ 
++/*
++ * cu: cu being processed.
++ */
+ struct btf_encoder {
+ 	struct list_head  node;
+ 	struct btf        *btf;
++	struct cu         *cu;
+ 	struct gobuffer   percpu_secinfo;
+ 	const char	  *filename;
+ 	struct elf_symtab *symtab;
+@@ -1255,8 +1259,9 @@ static bool ftype__has_arg_names(const struct ftype *ftype)
+ 	return true;
+ }
+ 
+-static int btf_encoder__encode_cu_variables(struct btf_encoder *encoder, struct cu *cu, uint32_t type_id_off)
++static int btf_encoder__encode_cu_variables(struct btf_encoder *encoder, uint32_t type_id_off)
+ {
++	struct cu *cu = encoder->cu;
+ 	uint32_t core_id;
+ 	struct tag *pos;
+ 	int err = -1;
+@@ -1488,6 +1493,7 @@ int btf_encoder__encode_cu(struct btf_encoder *encoder, struct cu *cu, struct co
+ 	struct tag *pos;
+ 	int err = 0;
+ 
++	encoder->cu = cu;
+ 
+ 	if (!encoder->has_index_type) {
+ 		/* cu__find_base_type_by_name() takes "type_id_t *id" */
+@@ -1603,8 +1609,9 @@ int btf_encoder__encode_cu(struct btf_encoder *encoder, struct cu *cu, struct co
+ 	}
+ 
+ 	if (!encoder->skip_encoding_vars)
+-		err = btf_encoder__encode_cu_variables(encoder, cu, type_id_off);
++		err = btf_encoder__encode_cu_variables(encoder, type_id_off);
+ out:
++	encoder->cu = NULL;
+ 	return err;
+ }
+ 
+-- 
+2.34.1
+

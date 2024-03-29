@@ -1,0 +1,41 @@
+From 7199969f107999a99804f75111d67b4fb902b910 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 29 Mar 2022 17:42:26 +0530
+Subject: [PATCH] fix fc conflicts
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/contrib/container.fc | 2 --
+ policy/modules/kernel/devices.fc    | 3 ---
+ 2 files changed, 5 deletions(-)
+
+diff --git a/policy/modules/contrib/container.fc b/policy/modules/contrib/container.fc
+index 31872a3..dc70bcc 100644
+--- a/policy/modules/contrib/container.fc
++++ b/policy/modules/contrib/container.fc
+@@ -21,8 +21,6 @@
+ /usr/libexec/lxd/.*		--	gen_context(system_u:object_r:container_runtime_exec_t,s0)
+ /usr/bin/podman		--	gen_context(system_u:object_r:container_runtime_exec_t,s0)
+ /usr/local/bin/podman		--	gen_context(system_u:object_r:container_runtime_exec_t,s0)
+-/usr/bin/conmon		--	gen_context(system_u:object_r:conmon_exec_t,s0)
+-/usr/local/bin/conmon		--	gen_context(system_u:object_r:conmon_exec_t,s0)
+ /usr/local/s?bin/runc		--	gen_context(system_u:object_r:container_runtime_exec_t,s0)
+ /usr/s?bin/runc			--	gen_context(system_u:object_r:container_runtime_exec_t,s0)
+ /usr/local/s?bin/crun		--	gen_context(system_u:object_r:container_runtime_exec_t,s0)
+diff --git a/policy/modules/kernel/devices.fc b/policy/modules/kernel/devices.fc
+index fc4204a..7181f6b 100644
+--- a/policy/modules/kernel/devices.fc
++++ b/policy/modules/kernel/devices.fc
+@@ -134,9 +134,6 @@
+ /dev/sonypi		-c	gen_context(system_u:object_r:v4l_device_t,s0)
+ /dev/spidev.*		-c	gen_context(system_u:object_r:usb_device_t,s0)
+ /dev/tlk[0-3]		-c	gen_context(system_u:object_r:v4l_device_t,s0)
+-/dev/tmc_etb[0-9]+	-c	gen_context(system_u:object_r:hwtracing_device_t,s0)
+-/dev/tmc_etf[0-9]+	-c	gen_context(system_u:object_r:hwtracing_device_t,s0)
+-/dev/tmc_etr[0-9]+	-c	gen_context(system_u:object_r:hwtracing_device_t,s0)
+ /dev/tpm[0-9]*		-c	gen_context(system_u:object_r:tpm_device_t,s0)
+ /dev/tpmrm[0-9]*		-c	gen_context(system_u:object_r:tpm_device_t,s0)
+ /dev/trng		-c	gen_context(system_u:object_r:random_device_t,s0)
+-- 
+2.35.1
+

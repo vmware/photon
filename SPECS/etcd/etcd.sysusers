@@ -1,0 +1,2 @@
+g etcd -
+u etcd - "etcd Daemon User" /var/lib/etcd /bin/bash

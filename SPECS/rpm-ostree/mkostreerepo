@@ -1,0 +1,249 @@
+#!/bin/bash
+#################################################
+#       Title:  mkostreerepo                    #
+#        Date:  2019-09-20                      #
+#     Version:  1.0                             #
+#      Author:  ankitja@vmware.com              #
+#     Options:                                  #
+#################################################
+#   Overview
+#       Create Repo Tree for RPM-OStree
+#   End
+#
+
+function show-help()
+{
+  echo "Script to create a Photon OSTree repo"
+  echo "Usage: "
+  echo "$0 -r=<repo path> "
+  echo "$0 -r=<repo path> -p=<json treefile>"
+  echo "$0 -c -r=<repo path> -p=<json treefile>"
+  echo "-r|--repopath   <Provide repo path> "
+  echo "-p|--jsonfile   <Provide Json file> "
+  echo "-c|--customrepo <Provide custom repo file inside repo path directory> "
+  exit 0
+}
+
+function check-rpm-ostree()
+{
+  local rc=0
+  command -v rpm-ostree &>/dev/null
+  if [ "$?" -ne 0 ]; then
+    echo "rpm-ostree not installed on System. Installing rpm-ostree package.."
+    tdnf install -y rpm-ostree &>/dev/null
+    rc=$?
+    if [ "$rc" -ne 0 ];then
+      echo "ERROR : rpm-ostree installation Failed!!"
+      exit $rc
+    fi
+  fi
+}
+
+function create-input-json()
+{
+  if [ ! -z "$JSONFILE" ]; then
+    echo "Given JSON : ${JSONFILE}"
+    if [ ! -f $JSONFILE ]; then
+      echo "ERROR : ${JSONFILE} doesn't exist !!"
+      exit 1
+    fi
+    cp $JSONFILE $REPOPATH/ &>/dev/null
+    JSONFILE="$REPOPATH/$(basename $JSONFILE)"
+  elif [ -z "$JSONFILE" ] && [ ! -f $REPOPATH/photon-base.json ]; then
+    echo "Generating photon-base.json"
+    JSONFILE="$REPOPATH/photon-base.json"
+cat > $JSONFILE << EOF
+{
+        "comment": "Photon Minimal OSTree",
+
+        "osname": "photon",
+
+        "releasever": "5.0",
+
+        "ref": "photon/5.0/$(uname -m)/minimal",
+
+        "automatic_version_prefix": "5.0_minimal",
+
+        "repos": ["photon", "photon-updates", "photon-extras"],
+
+        "selinux": false,
+
+        "initramfs-args": ["--no-hostonly"],
+
+        "bootstrap_packages": ["filesystem"],
+
+        "documentation": false,
+
+        "tmp-is-dir": true,
+
+        "packages": ["bash", "bc", "bridge-utils", "bzip2","ca-certificates",
+                     "cloud-init", "cpio", "cracklib-dicts", "dbus", "e2fsprogs",
+                     "file", "findutils", "gdbm", "grep", "gzip", "iana-etc",
+                     "iptables", "iproute2", "iputils", "libtool", "linux", "motd",
+                     "net-tools", "pkg-config", "photon-release", "photon-repos",
+                     "procps-ng", "rpm", "sed", "sudo", "tzdata", "util-linux",
+                     "vim", "which", "dracut-tools", "rpm-ostree", "nss-altfiles",
+                     "openssh", "systemd", "systemd-udev", "openssl", "grub2", "grub2-efi",
+                     "grub2-efi-image", "shadow", "ncurses", "grub2-theme-ostree",
+                     "selinux-policy"],
+
+        "packages-x86_64": ["grub2-pc", "open-vm-tools-gosc"],
+
+        "units": ["sshd-keygen.service", "sshd.service"]
+}
+EOF
+  elif [ -f $REPOPATH/photon-base.json ]; then
+    JSONFILE="$REPOPATH/photon-base.json"
+  fi
+}
+
+function generating-repos()
+{
+  if [ "$DEFAULT" == "NO" ]; then
+    while true; do
+      read -p "Do you wish to create your own Repo files as mentioned in ${JSONFILE}? (Press 'N' if already created or Default creation)" yn
+      case $yn in
+        [Yy]* )
+           echo "Please create required repo files inside ${REPOPATH} directory same as mentioned in ${JSONFILE}"
+           exit 0;;
+        [Nn]* )
+           DEFAULT="YES"; break;;
+        * ) echo "Please answer 'Y' or 'N'";;
+      esac
+    done
+  fi
+  if [ "$DEFAULT" == "YES" ] && [ ! -f $REPOPATH/photon.repo ]; then
+cat > $REPOPATH/photon.repo << EOF
+[photon]
+name=VMware Photon Linux \$releasever (\$basearch)
+baseurl=https://packages.vmware.com/photon/\$releasever/photon_release_\$releasever_\$basearch
+gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+gpgcheck=1
+enabled=1
+skip_if_unavailable=True
+EOF
+  fi
+  if [ ! -f $REPOPATH/photon-updates.repo ]; then
+cat > $REPOPATH/photon-updates.repo << EOF
+[photon-updates]
+name=VMware Photon Linux \$releasever (\$basearch) Updates
+baseurl=https://packages.vmware.com/photon/\$releasever/photon_updates_\$releasever_\$basearch
+gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+gpgcheck=1
+enabled=1
+skip_if_unavailable=True
+EOF
+  fi
+  if [ ! -f $REPOPATH/photon-extras.repo ]; then
+cat > $REPOPATH/photon-extras.repo << EOF
+[photon-extras]
+name=VMware Photon Extras \$releasever (\$basearch)
+baseurl=https://packages.vmware.com/photon/\$releasever/photon_extras_\$releasever_\$basearch
+gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+gpgcheck=1
+enabled=1
+skip_if_unavailable=True
+EOF
+  fi
+}
+
+function do-commit()
+{
+  local rc=0
+  create-input-json
+  generating-repos
+  umask 0022
+  rpm-ostree compose tree --cachedir=$CACHEDATAPATH --repo=$REPODATAPATH $JSONFILE
+  rc=$?
+  if [ "$rc" -ne 0 ]; then
+    echo "ERROR: RPM Ostree compose tree Failed !!"
+    umask $UMASKVAL
+    exit $rc
+  fi
+  ostree summary --repo=$REPODATAPATH --update
+  ostree summary -v --repo=$REPODATAPATH
+  umask $UMASKVAL
+}
+
+function create-base-tree()
+{
+  local rc=0
+  ostree --repo=repo init --mode=archive-z2
+  rc=$?
+  if [ "$rc" -ne 0 ]; then
+    echo "ERROR: Ostree init Failed !!"
+    exit $rc
+  fi
+  echo "Generating Base Tree.."
+  do-commit
+}
+
+
+REPOPATH=""
+JSONFILE=""
+DEFAULT="YES"
+POSITIONAL=()
+
+if [ $# -lt 1 ]; then
+  show-help
+fi
+
+for i in "$@"
+do
+case $i in
+    -h|--help)
+    show-help
+    exit 0
+    ;;
+    -r=*|--repopath=*)
+    REPOPATH="${i#*=}"
+    if [ -z "$REPOPATH" ]; then
+      echo "Path not provided to generate the repo data !!"
+      show-help
+      exit 0
+    fi
+    ;;
+    -p=*|--jsonfile=*)
+    JSONFILE="${i#*=}"
+    if [ ! -z "$JSONFILE" ];then
+      JSONFILE="$(readlink -f ${JSONFILE})"
+    fi
+    ;;
+    -c|--customrepo)
+    DEFAULT="NO"
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1")
+    ;;
+esac
+done
+
+UMASKVAL="$(umask)"
+
+if [ -z "$REPOPATH" ]; then
+  echo "Please provide repopath !!"
+  show-help
+  exit 0
+fi
+REPOPATH="$(readlink -f ${REPOPATH})"
+
+REPODATAPATH="$REPOPATH/repo"
+CACHEDATAPATH="$REPOPATH/cache"
+
+check-rpm-ostree
+
+echo "Given Path: ${REPOPATH} ; DEFAULT REPOS : ${DEFAULT}"
+mkdir -p $REPODATAPATH
+mkdir -p $CACHEDATAPATH
+if [ ! -d "${REPODATAPATH}/refs" ]; then
+  cd $REPOPATH
+  create-base-tree
+  echo "Base Tree has been created. Repo data Path: ${REPODATAPATH}"
+  cd - &>/dev/null
+else
+  echo "Base tree exist, executing new commit.."
+  cd $REPOPATH
+  do-commit
+  echo "New Commit executed. Repo data Path: ${REPODATAPATH}"
+  cd - &>/dev/null
+fi

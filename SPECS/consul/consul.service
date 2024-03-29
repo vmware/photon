@@ -1,0 +1,19 @@
+[Unit]
+Description=Consul Agent
+Requires=network.target
+After=network.target
+
+[Service]
+ExecStartPre=/usr/bin/rm -rf /var/lib/consul/*
+ExecStartPre=/usr/bin/mkdir -p /var/lib/consul/config
+ExecStartPre=/usr/bin/mkdir -p /var/lib/consul/data
+ExecStart=/usr/bin/consul agent -config-dir=/var/lib/consul/config -data-dir=/var/lib/consul/data -server -client=0.0.0.0 -advertise=127.0.0.1 -bootstrap -ui
+ExecReload=/usr/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
+User=consul
+Group=consul
+Restart=on-failure
+LimitNOFILE=131072
+
+[Install]
+WantedBy=multi-user.target

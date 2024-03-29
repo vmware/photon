@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfspod
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 1Gi
+  selector:
+    matchLabels:
+      storage-tier: nfspod
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: photon
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 1Gi
+  selector:
+    matchLabels:
+      storage-tier: photon
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: specs
+spec:
+  accessModes:
+  - ReadOnlyMany
+  resources:
+     requests:
+       storage: 1Gi
+  selector:
+    matchLabels:
+      storage-tier: specs
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rpms
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 1Gi
+  selector:
+    matchLabels:
+      storage-tier: rpms
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: publishrpms
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 1Gi
+  selector:
+    matchLabels:
+      storage-tier: publishrpms
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: publishxrpms
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 1Gi
+  selector:
+    matchLabels:
+      storage-tier: publishxrpms
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: logs
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 1Gi
+  selector:
+    matchLabels:
+      storage-tier: logs
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: builder
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 1Gi
+  selector:
+    matchLabels:
+      storage-tier: builder

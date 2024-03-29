@@ -1,0 +1,2 @@
+g sshd 50
+u sshd 50 "sshd PrivSep" /usr/share/empty.sshd /bin/false

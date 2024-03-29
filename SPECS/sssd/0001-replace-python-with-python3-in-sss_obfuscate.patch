@@ -1,0 +1,22 @@
+From f77785279f87051f62dd4ee05f9578b1f8547caa Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Tue, 4 Oct 2022 17:18:59 +0000
+Subject: [PATCH] replace python with python3 in sss_obfuscate
+
+---
+ src/tools/sss_obfuscate | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/tools/sss_obfuscate b/src/tools/sss_obfuscate
+index 5981e81..1665f8d 100644
+--- a/src/tools/sss_obfuscate
++++ b/src/tools/sss_obfuscate
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+
+ from __future__ import print_function
+
+--
+2.30.5
+

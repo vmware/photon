@@ -1,0 +1,7 @@
+# Photon Base Build Container
+
+FROM photon:5.0
+
+ADD tmp/k8s/usr/bin/kube-controller-manager /usr/bin/kube-controller-manager
+
+CMD ["/usr/bin/kube-controller-manager"]

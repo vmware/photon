@@ -1,0 +1,52 @@
+From 61974a5bf1e6307a0eebee38fc1762f7c009c103 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 23 Jun 2023 19:12:31 +0200
+Subject: [PATCH 59/64] seqlock: Do the lockdep annotation before locking in
+ do_write_seqcount_begin_nested()
+
+It was brought up by Tetsuo that the following sequence
+   write_seqlock_irqsave()
+   printk_deferred_enter()
+
+could lead to a deadlock if the lockdep annotation within
+write_seqlock_irqsave() triggers. The problem is that the sequence
+counter is incremented before the lockdep annotation is performed. The
+lockdep splat would then attempt to invoke printk() but the reader side,
+of the same seqcount, could have a tty_port::lock acquired waiting for
+the sequence number to become even again.
+
+The other lockdep annotations come before the actual locking because "we
+want to see the locking error before it happens". There is no reason why
+seqcount should be different here.
+
+Do the lockdep annotation first then perform the locking operation (the
+sequence increment).
+
+Fixes: 1ca7d67cf5d5a ("seqcount: Add lockdep functionality to seqcount/seqlock structures")
+Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Link: https://lore.kernel.org/20230621130641.-5iueY1I@linutronix.de
+Link: https://lore.kernel.org/r/20230623171232.892937-2-bigeasy@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+(cherry picked from commit dc93c1f07d485c6d29b49844add0e8d5d705b9cf)
+Signed-off-by: Clark Williams <clark.williams@gmail.com>
+---
+ include/linux/seqlock.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/seqlock.h b/include/linux/seqlock.h
+index 3926e9027947..d778af83c8f3 100644
+--- a/include/linux/seqlock.h
++++ b/include/linux/seqlock.h
+@@ -512,8 +512,8 @@ do {									\
+ 
+ static inline void do_write_seqcount_begin_nested(seqcount_t *s, int subclass)
+ {
+-	do_raw_write_seqcount_begin(s);
+ 	seqcount_acquire(&s->dep_map, subclass, 0, _RET_IP_);
++	do_raw_write_seqcount_begin(s);
+ }
+ 
+ /**
+-- 
+2.41.0
+

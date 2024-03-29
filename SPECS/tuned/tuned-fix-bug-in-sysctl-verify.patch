@@ -1,0 +1,30 @@
+From 39617972360ec269c8d46027dfe1d77c3a39621a Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Mon, 14 Sep 2020 19:58:37 +0000
+Subject: [PATCH] tuned: fix bug in sysctl verify
+
+Bug in sysctl plugin converts None object to string 'None'
+For sysctl parameters that are disabled, verify should be skipped.
+Because of this bug, verify logic thinks that 'None' is set for
+the param (instead of param being absent)
+---
+ tuned/utils/commands.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tuned/utils/commands.py b/tuned/utils/commands.py
+index 7cbdfbb..4861b82 100644
+--- a/tuned/utils/commands.py
++++ b/tuned/utils/commands.py
+@@ -28,7 +28,8 @@ class commands:
+ 		return {"Y":"1", "YES":"1", "T":"1", "TRUE":"1", "N":"0", "NO":"0", "F":"0", "FALSE":"0"}.get(v, value)
+ 
+ 	def remove_ws(self, s):
+-		return re.sub('\s+', ' ', str(s)).strip()
++		if s is not None:
++			return re.sub('\s+', ' ', str(s)).strip()
+ 
+ 	def unquote(self, v):
+ 		return re.sub("^\"(.*)\"$", r"\1", v)
+-- 
+2.19.0
+

@@ -1,0 +1,78 @@
+From 3712d0a7828e9024196eedfc711d28495c13d929 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 21:23:01 +0530
+Subject: [PATCH] contrib container
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/contrib/container.te | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
+
+diff --git a/policy/modules/contrib/container.te b/policy/modules/contrib/container.te
+index 058b829..3c23c4d 100644
+--- a/policy/modules/contrib/container.te
++++ b/policy/modules/contrib/container.te
+@@ -22,7 +22,7 @@ gen_tunable(container_connect_any, false)
+ ##  Allow containers to use any device volume mounted into container
+ ##  </p>
+ ## </desc>
+-gen_tunable(container_use_devices, false)
++#gen_tunable(container_use_devices, false)
+ 
+ ## <desc>
+ ## <p>
+@@ -52,6 +52,7 @@ allow container_domain container_runtime_domain:process sigchld;
+ allow container_runtime_domain container_domain:process2 { nnp_transition nosuid_transition };
+ dontaudit container_runtime_domain container_domain:process { noatsecure rlimitinh siginh };
+ 
++type data_home_t;
+ type conmon_exec_t;
+ application_executable_file(conmon_exec_t)
+ can_exec(container_runtime_t, conmon_exec_t)
+@@ -963,7 +964,7 @@ allow container_net_domain self:netlink_xfrm_socket create_netlink_socket_perms;
+ 
+ 
+ kernel_unlabeled_domtrans(container_runtime_domain, spc_t)
+-kernel_unlabeled_entry_type(spc_t)
++#kernel_unlabeled_entry_type(spc_t)
+ allow container_runtime_domain unlabeled_t:key manage_key_perms;
+ #kernel_dontaudit_write_usermodehelper_state(container_t)
+ gen_require(`
+@@ -987,10 +988,6 @@ optional_policy(`
+ 	rpm_read_db(container_domain)
+ ')
+ 
+-optional_policy(`
+-	sssd_stream_connect(container_domain)
+-')
+-
+ optional_policy(`
+ 	systemd_dbus_chat_logind(container_domain)
+ ')
+@@ -1248,8 +1245,6 @@ manage_sock_files_pattern(container_kvm_t, container_file_t, container_file_t)
+ 
+ dev_rw_kvm(container_kvm_t)
+ 
+-sssd_read_public_files(container_kvm_t)
+-
+ # Container init - Policy for running systemd based containers
+ container_domain_template(container_init)
+ typeattribute container_init_t container_net_domain, container_user_domain;
+@@ -1271,10 +1266,10 @@ optional_policy(`
+ 	virt_default_capabilities(container_init_t)
+ ')
+ 
+-tunable_policy(`container_use_devices',`
+-	allow container_domain device_node:chr_file rw_chr_file_perms;
+-	allow container_domain device_node:blk_file rw_blk_file_perms;
+-')
++#tunable_policy(`container_use_devices',`
++#	allow container_domain device_node:chr_file rw_chr_file_perms;
++#	allow container_domain device_node:blk_file rw_blk_file_perms;
++#')
+ 
+ tunable_policy(`virt_sandbox_use_sys_admin',`
+ 	allow container_init_t self:capability sys_admin;
+-- 
+2.35.1
+

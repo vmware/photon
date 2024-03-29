@@ -1,0 +1,21 @@
+diff -up ./Curl.xs.orig ./Curl.xs
+--- ./Curl.xs.orig	2019-10-18 07:45:38.380881448 +0200
++++ ./Curl.xs	2019-10-18 07:46:20.712032844 +0200
+@@ -47,7 +47,7 @@ typedef enum {
+ 
+ typedef struct {
+     /* The main curl handle */
+-    struct CURL *curl;
++    CURL *curl;
+     I32 *y;
+     /* Lists that can be set via curl_easy_setopt() */
+     struct curl_slist *slist[SLIST_LAST];
+@@ -73,7 +73,7 @@ typedef struct {
+ #ifdef CURLINC_MULTI_H
+     struct CURLM *curlm;
+ #else
+-    struct void *curlm;
++    void *curlm;
+ #endif
+ } perl_curl_multi;
+ 

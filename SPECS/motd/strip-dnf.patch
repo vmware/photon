@@ -1,0 +1,25 @@
+diff --git a/setup.py b/setup.py
+index bb8375a..a141d5d 100644
+--- a/setup.py
++++ b/setup.py
+@@ -11,18 +11,14 @@ setup(
+     author_email='rtnpro@gmail.com',
+     url='https://github.com/rtnpro/motdgen',
+     license="GPLv2",
+-    scripts=["motdgen", "motdgen-cache-updateinfo"],
++    scripts=["motdgen"],
+     packages=find_packages(),
+     include_package_data=True,
+     data_files=[
+         ('/etc/profile.d', ['motdgen.sh']),
+         ('/etc/pam.d', ['pam.d/motdgen']),
+-        ('/usr/lib/python2.7/site-packages/dnf-plugins',
+-         ['dnf/plugins/cache_updateinfo.py']),
+         ('/etc/motdgen.d', [
+-            'motdgen.d/01-uptime.sh',
+-            'motdgen.d/02-updateinfo.sh']),
+-        ('/etc/cron.daily', ['motdgen-cache-updateinfo']),
++            'motdgen.d/01-uptime.sh']),
+         ('/etc/systemd/system', ['motdgen.service'])
+     ]
+ )
