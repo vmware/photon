@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        24.0.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -76,6 +76,7 @@ Requires:       systemd
 Requires:       containerd
 # 20.10 uses containerd v2 shim by default
 Requires:       /usr/bin/containerd-shim-runc-v2
+Requires:       iptables
 
 %description    engine
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -324,6 +325,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Fri Mar 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.0.5-4
+- Add iptables to docker-engine requires
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-3
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-2
