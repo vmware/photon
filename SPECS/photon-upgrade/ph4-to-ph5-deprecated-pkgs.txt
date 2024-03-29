@@ -18,7 +18,6 @@ json_spirit-devel
 kaigen-gothic-cjk
 ktap
 libcalico
-libnss-ato
 libsoup-doc
 lightstep-tracer-cpp
 lightwave
