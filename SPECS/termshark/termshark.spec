@@ -7,7 +7,7 @@
 Summary:        A terminal user-interface for tshark, inspired by Wireshark
 Name:           termshark
 Version:        2.4.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        MIT
 URL:            https://github.com/gcla/%{name}/releases/tag/v%{version}.tar.gz
 Source0:        https://github.com/gcla/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -64,6 +64,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Mon Apr 01 2024 Anmol Jain <anmol.jain@broadcom.com> 2.4.0-11
+- Bump version as a part of wireshark upgrade
 * Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 2.4.0-10
 - Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.0-9
