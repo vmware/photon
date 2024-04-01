@@ -1,7 +1,7 @@
 Summary:        Bluetooth utilities
 Name:           bluez
-Version:        5.65
-Release:        5%{?dist}
+Version:        5.71
+Release:        1%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,11 +9,7 @@ Url:            https://github.com/bluez/bluez
 Distribution:   Photon
 
 Source0: http://www.kernel.org/pub/linux/bluetooth/%{name}-%{version}.tar.xz
-%define sha512  %{name}=c20c09a1a75053c77d73b3ce15ac7fd321eb6df5ca1646d57c6848b87c0c9957908bc17dd928da4ef2aacfc8667877cbc7511c1ba43db839bfa9bf1fb8269907
-
-Patch0: bluez-CVE-2023-27349.patch
-patch1: bluez-CVE-2023-45866.patch
-Patch2: bluez-CVE-2023-50229-50230.patch
+%define sha512 %{name}=648394bbe470405aa0e2d3914474e95c122f567deaaac20a5dd74bac29fa430dfb64cdb7bdb4fb7510e62fa73e96112a97197fc212b421bf480b8d1bb24cfb5d
 
 BuildRequires: libical-devel
 BuildRequires: glib-devel >= 2.58.3
@@ -77,7 +73,7 @@ make %{?_smp_mflags} -k check
 %{_datadir}/dbus-1/services/org.bluez.obex.service
 %{_libdir}/systemd/user/obex.service
 %{_unitdir}/bluetooth.service
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/bluetooth.conf
+%config(noreplace) %{_datadir}/dbus-1/system.d/bluetooth.conf
 %doc COPYING TODO
 
 %files devel
@@ -87,6 +83,10 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Apr 01 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 5.71-1
+- Version upgrade to v5.71 to fix following CVE's:
+- CVE-2023-44431, CVE-2023-51580, CVE-2023-51589,
+- CVE-2023-51592 and CVE-2023-51596
 * Fri Mar 22 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 5.65-5
 - Patched to fix CVE-2023-50229 and CVE-2023-50230
 * Tue Jan 02 2024 Harinadh D <hdommaraju@vmware.com> 5.65-4
