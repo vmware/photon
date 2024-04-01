@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.307
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -267,6 +267,12 @@ Patch188: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
 Patch189: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 Patch190: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
 Patch191: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
+
+# Fix CVE-2024-26642
+Patch192: netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
+
+# Fix CVE-2023-52620
+Patch193: netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -758,7 +764,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch17 -p1
 %endif
 
-%autopatch -p1 -m18 -M191
+%autopatch -p1 -m18 -M193
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1185,6 +1191,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Apr 01 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.307-6
+- Fix CVE-2024-26642, CVE-2023-52620
 * Mon Mar 25 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.19.307-5
 - Fix for CVE-2023-52458
 * Thu Mar 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.307-4

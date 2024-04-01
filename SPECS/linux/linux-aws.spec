@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.307
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -271,6 +271,12 @@ Patch320: 0001-vt-fix-memory-overlapping-when-deleting-chars-in-the-buffer.patch
 #Fix CVE-2023-52458
 Patch321: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
+# Fix CVE-2024-26642
+Patch322: netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
+
+# Fix CVE-2023-52620
+Patch323: netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
+
 # Usermode helper fixes
 Patch400: 0001-umh-Add-command-line-to-user-mode-helpers.patch
 Patch401: 0002-umh-add-exit-routine-for-UMH-process.patch
@@ -382,7 +388,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m191 -M194
 
 # CVE fixes
-%autopatch -p1 -m300 -M321
+%autopatch -p1 -m300 -M323
 
 # Usermode helper patches
 %autopatch -p1 -m400 -M401
@@ -587,6 +593,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 01 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.307-6
+- Fix CVE-2024-26642, CVE-2023-52620
 * Mon Mar 25 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.19.307-5
 - Fix for CVE-2023-52458
 * Thu Mar 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.307-4

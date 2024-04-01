@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.307
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -156,6 +156,12 @@ Patch92: 0001-memcg-enable-accounting-for-file-lock-caches.patch
 
 #Fix for CVE-2022-3303
 Patch93: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
+
+# Fix CVE-2024-26642
+Patch94: netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
+
+# Fix CVE-2023-52620
+Patch95: netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
 # inherit tcp_limit_output_bytes
 Patch97: tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -865,6 +871,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Apr 01 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.307-6
+- Fix CVE-2024-26642, CVE-2023-52620
 * Mon Mar 25 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.19.307-5
 - Fix for CVE-2023-52458
 * Thu Mar 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.307-4

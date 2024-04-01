@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.307
-Release:        5%{?kat_build:.%kat}%{?dist}
+Release:        6%{?kat_build:.%kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -272,6 +272,12 @@ Patch157: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
 
 #Fix for CVE-2022-3303
 Patch158: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
+
+# Fix CVE-2024-26642
+Patch159: netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
+
+# Fix CVE-2023-52620
+Patch160: netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
 #SEV, TDX
 Patch161: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
@@ -1266,6 +1272,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon Apr 01 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.307-6
+- Fix CVE-2024-26642, CVE-2023-52620
 * Mon Mar 25 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.19.307-5
 - Fix for CVE-2023-52458
 * Thu Mar 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.307-4
