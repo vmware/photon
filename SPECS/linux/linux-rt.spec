@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.81
-Release:        6%{?dist}
+Version:        6.1.83
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,12 +22,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt26
+%define rt_version rt28
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=019eca1bdd822f1ed65f6f7f73ab101c7402d61e612c88cf9afe10eae96edca4a8839cd85f92b7062de62dbb8840898e668a40d2d8d8cda611d4dc533355052c
+%define sha512 linux=51d3b7d1dbfe0ecba1bd1265723a8e7c1553d99ade785bb91fe39979108c38f5e933b018406bfdc303a96d50eccb88d629c8dc0fecc94b975efffe8e79b43fc5
 
 %ifarch x86_64
 Source1: config-rt
@@ -145,8 +145,6 @@ Patch102: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2024-23307
 Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
-# Fix CVE-2024-22099
-Patch108: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 # Fix CVE-2024-26584
 Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 # Fix CVE-2023-39191 [110..128]
@@ -162,6 +160,9 @@ Patch130: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
 # Fix CVE-2023-52452
 Patch131: 0001-bpf-Allow-reads-from-uninit-stack.patch
 Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
+
+# Fix CVE-2024-26642
+Patch133: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -302,7 +303,7 @@ stalld to use eBPF based backend.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M132
+%autopatch -p1 -m100 -M133
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -483,6 +484,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Thu Apr 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-1
+- Update to version 6.1.83
+- Fix CVE-2024-26642
 * Mon Apr 8 2024  Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.81-6
 - Update SBAT verification
 * Wed Mar 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.81-5
