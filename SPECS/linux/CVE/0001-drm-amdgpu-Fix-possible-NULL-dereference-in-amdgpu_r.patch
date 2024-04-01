@@ -1,0 +1,49 @@
+From c711eaf566a95419fb0f3fb2cfcc290780f24ae0 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Mon, 1 Apr 2024 12:27:37 +0530
+Subject: [PATCH] drm/amdgpu: Fix possible NULL dereference in
+ amdgpu_ras_query_error_status_helper()
+
+From: Srinivasan Shanmugam <srinivasan.shanmugam@amd.com>
+
+[ Upstream commit b8d55a90fd55b767c25687747e2b24abd1ef8680 ]
+
+Return invalid error code -EINVAL for invalid block id.
+
+Fixes the below:
+
+drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c:1183 amdgpu_ras_query_error_status_helper() error: we previously assumed 'info' could be null (see line 1176)
+
+Suggested-by: Hawking Zhang <Hawking.Zhang@amd.com>
+Cc: Tao Zhou <tao.zhou1@amd.com>
+Cc: Hawking Zhang <Hawking.Zhang@amd.com>
+Cc: Christian König <christian.koenig@amd.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Srinivasan Shanmugam <srinivasan.shanmugam@amd.com>
+Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+[Ajay: applied AMDGPU_RAS_BLOCK_COUNT condition to amdgpu_ras_error_query()
+       as amdgpu_ras_query_error_status_helper() not present in v5.10.y
+       amdgpu_ras_query_error_status_helper() was introduced in 8cc0f5669eb6]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
+index a8f1c49..e971d2b 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
+@@ -765,6 +765,9 @@ int amdgpu_ras_error_query(struct amdgpu_device *adev,
+ 	if (!obj)
+ 		return -EINVAL;
+ 
++	if (!info || info->head.block == AMDGPU_RAS_BLOCK_COUNT)
++		return -EINVAL;
++
+ 	switch (info->head.block) {
+ 	case AMDGPU_RAS_BLOCK__UMC:
+ 		if (adev->umc.funcs->query_ras_error_count)
+-- 
+2.7.4
+
