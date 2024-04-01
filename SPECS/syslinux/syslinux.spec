@@ -5,7 +5,7 @@
 Summary:      Simple kernel loader which boots from a FAT filesystem
 Name:         syslinux
 Version:      6.04
-Release:      10%{?dist}
+Release:      11%{?dist}
 License:      GPLv2+
 URL:          http://www.syslinux.org
 Group:        Applications/System
@@ -91,6 +91,8 @@ rm %{buildroot}%{_bindir}/sha1pass
 %{_datadir}/%{name}/com32/*
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.04-11
+- Bump version as a part of util-linux upgrade
 * Fri Jun 16 2023 Srish Srinivasan <ssrish@vmware.com> 6.04-10
 - Update libpng and zlib source to the latest versions to fix multiple CVEs
 * Mon Apr 17 2023 Nitesh Kumar <kunitesh@vmware.com> 6.04-9

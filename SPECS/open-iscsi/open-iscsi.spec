@@ -1,7 +1,7 @@
 Summary:        iSCSI tools for Linux
 Name:           open-iscsi
 Version:        2.1.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            https://github.com/open-iscsi/open-iscsi
 Group:          Applications/System
@@ -65,6 +65,8 @@ Header files for doing development with open-iscsi
 %{_libdir}/pkgconfig/libopeniscsiusr.pc
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.6-4
+- Bump version as a part of util-linux upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.1.6-3
 - Bump version as a part of openssl upgrade
 * Thu Oct 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.1.6-2

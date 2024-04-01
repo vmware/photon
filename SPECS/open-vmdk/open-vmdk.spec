@@ -1,7 +1,7 @@
 Summary:       Tools to create OVA files from raw disk images
 Name:          open-vmdk
 Version:       0.3.8
-Release:       1%{?dist}
+Release:       2%{?dist}
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       Apache License 2.0
@@ -48,6 +48,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/*
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.3.8-2
+- Bump version as a part of util-linux upgrade
 * Thu Mar 07 2024 Oliver Kurth <okurth@vmware.com> 0.3.8-1
 - update to 0.3.8
 * Fri Feb 02 2024 Oliver Kurth <okurth@vmware.com> 0.3.7-1

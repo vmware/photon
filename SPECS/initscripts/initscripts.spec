@@ -1,7 +1,7 @@
 Summary:        Scripts to bring up network interfaces and legacy utilities
 Name:           initscripts
 Version:        10.17
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Group:          System Environment/Base
 URL:            https://github.com/fedora-sysv/initscripts
@@ -183,6 +183,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/{rwtab.d,statetab.d} \
 %{_unitdir}/readonly-root.service
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.17-4
+- Bump version as a part of util-linux upgrade
 * Thu Nov 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.17-3
 - Spec clanups
 - Add patch to manage services using systemctl.

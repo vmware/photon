@@ -4,7 +4,7 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
 Version:        2.03.16
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
@@ -300,6 +300,8 @@ fi
 %{_libdir}/pkgconfig/devmapper-event.pc
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.03.16-4
+- Bump version as a part of util-linux upgrade
 * Mon Oct 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.03.16-3
 - Fix spec issues
 - get rid of invalid systemd units

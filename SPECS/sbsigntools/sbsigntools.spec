@@ -1,6 +1,6 @@
 Name:          sbsigntools
 Version:       0.9.5
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Signing utility for UEFI secure boot
 License:       GPLv3+
 URL:           https://git.kernel.org/pub/scm/linux/kernel/git/jejb/sbsigntools.git
@@ -62,6 +62,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/sbverify.1.*
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.9.5-3
+- Bump version as a part of util-linux upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.5-2
 - Bump version as a part of openssl upgrade
 * Thu Sep 21 2023 Alexey Makhalov <amakhalov@vmware.com> 0.9.5-1

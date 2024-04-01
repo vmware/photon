@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        11%{?dist}
+Release:        12%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
@@ -158,6 +158,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 059-12
+- Bump version as a part of util-linux upgrade
 * Wed Jan 03 2024 Susant Sahani <susant.sahani@broadcom.com> 059-11
 - Include systemd-executor if available
 * Tue Oct 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-10

@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
-Version:        2.38
-Release:        3%{?dist}
+Version:        2.40
+Release:        1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v%{version}/%{name}-%{version}.tar.xz
-%define sha512  %{name}=d0f7888f457592067938e216695871ce6475a45d83a092cc3fd72b8cf8fca145ca5f3a99122f1744ef60b4f773055cf4e178dc6c59cd30837172aee0b5597e8c
+%define sha512 %{name}=f06e61d4ee0e196223f7341ec75a16a6671f82d6e353823490ecff17e947bb169a6b65177e3ab0da6e733e079b24d6a77905a0e8bbfed82ca9aa22a3facb6180
 
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
@@ -59,7 +59,8 @@ autoreconf -fiv
     --disable-silent-rules \
     --disable-static \
     --disable-use-tty-group \
-    --without-python
+    --without-python \
+    --disable-liblastlog2
 
 %make_build
 
@@ -110,6 +111,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.40-1
+- Upgrade to v2.40
 * Sat Feb 04 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.38-3
 - Fix issue with new autoconf
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.38-2

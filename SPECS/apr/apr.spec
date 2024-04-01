@@ -4,7 +4,7 @@
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org
 Group:          System Environment/Libraries
@@ -68,6 +68,8 @@ It contains the libraries and header files to create applications.
 %{_libdir}/pkgconfig
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.4-2
+- Bump version as a part of util-linux upgrade
 * Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.7.4-1
 - Upgrade apr package to v1.7.4
 * Fri Aug 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-5

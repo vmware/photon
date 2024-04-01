@@ -3,7 +3,7 @@
 Name:           abupdate
 Summary:        A/B partition set update and rollback
 Version:        1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://github.com/vmware/photon
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -52,6 +52,8 @@ cp %{SOURCE3} %{buildroot}%{_docdir}
 %{_unitdir}/abupdate.service
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-5
+- Bump version as a part of util-linux upgrade
 * Tue Nov 28 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.0-4
 - Don't reinstall grub on EFI
 * Thu Feb 23 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.0-3

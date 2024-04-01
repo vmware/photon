@@ -1,7 +1,7 @@
 Summary:        Shell script to auto detect free size on disk and grow partition.
 Name:           cloud-utils
 Version:        0.32
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://launchpad.net/cloud-utils
 License:        GPLv3
 Group:          System Environment
@@ -39,6 +39,8 @@ cp -p man/growpart.* %{buildroot}%{_mandir}/man1/
 %doc %{_mandir}/man1/growpart.*
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.32-3
+- Bump version as a part of util-linux upgrade
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32-2
 - Fix requires
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.32-1

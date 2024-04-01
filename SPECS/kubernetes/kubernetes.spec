@@ -13,7 +13,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -263,6 +263,8 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
+* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.27.3-9
+- Bump version as a part of util-linux upgrade
 * Fri Mar 08 2024 Anmol Jain <anmol.jain@broadcom.com> 1.27.3-8
 - Bump version as a part of etcd upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-7
