@@ -16,8 +16,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.212
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.214
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -25,12 +25,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt103
+%define rt_version rt105
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=e430cc7a37ef77c5f8979e33865e3f5ad0c02270977d52da5bc153daedd30af8791ea6e2377d7e91ffffed6bb4a418e47f6401d09d97c567a9f4635afb3ed73b
+%define sha512 linux=120b5f269b56478791d00ca3af18acd4e16b8fd01af163d9db8b8cdcecf7df4bf6c50cfed9e0ae456e6b1677e4b450b8fcfc376b746344bf1d056f024d2ce1e5
 %ifarch x86_64
 Source1: config-rt
 %endif
@@ -188,23 +188,13 @@ Patch137: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 #Fix CVE-2023-22995
 Patch138: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 
-#Fix build error due to upstream commit ba27d1a80871eb8dbeddf34ec7d396c149cbb8d7
-Patch139: add-missing-include-to-paravirt.patch
-
 # Fix CVE-2024-23307
 Patch142: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
-
-# Fix CVE-2024-22099
-Patch143: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 
 # Fix CVE-2024-26584
 Patch144: 0001-tls-rx-simplify-async-wait.patch
 Patch145: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
 Patch146: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
-
-# Fix CVE-2023-52447
-Patch147: 0001-rcu-tasks-Provide-rcu_trace_implies_rcu_gp.patch
-Patch148: 0001-bpf-Defer-the-free-of-inner-map-when-necessary.patch
 
 # Fix CVE-2023-52458
 Patch149: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
@@ -220,6 +210,12 @@ Patch152: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 
 # Fix CVE-2024-26589
 Patch153: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
+
+# Fix CVE-2024-26642
+Patch154: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
+
+# Fix CVE-2024-26642
+Patch155: 0001-netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch200: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -419,7 +415,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m55 -M65
 
 # CVE
-%autopatch -p1 -m100 -M153
+%autopatch -p1 -m100 -M155
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m200 -M201
@@ -675,6 +671,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-1
+- Update to version 5.10.214
+- Fix CVE-2024-26642, CVE-2023-52620
 * Mon Apr 01 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.212-4
 - Fix CVE-2023-52585
 * Mon Mar 25 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.10.212-3

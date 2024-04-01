@@ -1,0 +1,39 @@
+From 0dc94da6d98ae3e40afc793e38ee468f35d19842 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Mon, 6 Sep 2021 18:19:16 +0200
+Subject: [PATCH 305/323] locking: Drop might_resched() from
+ might_sleep_no_state_check()
+
+might_sleep_no_state_check() serves the same purpose as might_sleep()
+except it is used before sleeping locks are acquired and therefore does
+not check task_struct::state because the state is preserved.
+
+That state is preserved in the locking slow path so we must not schedule
+at the begin of the locking function because the state will be lost and
+not preserved at that time.
+
+Remove might_resched() from might_sleep_no_state_check() to avoid losing the
+state before it is preserved.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ include/linux/kernel.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 7b4fdd5b2f7ba..4e88ae0b2578e 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -225,7 +225,7 @@ extern void __cant_migrate(const char *file, int line);
+ 	do { __might_sleep(__FILE__, __LINE__, 0); might_resched(); } while (0)
+ 
+ # define might_sleep_no_state_check() \
+-	do { ___might_sleep(__FILE__, __LINE__, 0); might_resched(); } while (0)
++	do { ___might_sleep(__FILE__, __LINE__, 0); } while (0)
+ 
+ /**
+  * cant_sleep - annotation for functions that cannot sleep
+-- 
+2.44.0
+

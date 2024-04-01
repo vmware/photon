@@ -1,0 +1,48 @@
+From 40b9ada90b77fdca1b49327b5591e72e888d47a4 Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Wed, 20 Dec 2023 10:20:48 -0300
+Subject: [PATCH 322/323] rt: mm/page_alloc: backport missing bits from
+ __build_all_zonelists() fix
+
+A while ago upstream landed commit a2ebb51575828 ("mm/page_alloc: use
+write_seqlock_irqsave() instead write_seqlock() + local_irq_save().")
+to fix a problem that had already been worked on v5.10-rt via commit
+7bdd3bd5143a4 ("Revert "mm/page_alloc: fix potential deadlock on
+zonelist_update_seqseqlock""). Sebastian pointed out it was important
+to backport the missing elements of a2ebb51575828 for code consistency.
+
+Fixes: 7bdd3bd5143a4 ("Revert "mm/page_alloc: fix potential deadlock on zonelist_update_seqseqlock"")
+Cc: stable-rt@vger.kernel.org
+Suggested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ mm/page_alloc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 39d1782b398fc..cd1e8d0b2269d 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -6043,8 +6043,9 @@ static void __build_all_zonelists(void *data)
+ 	int nid;
+ 	int __maybe_unused cpu;
+ 	pg_data_t *self = data;
++	unsigned long flags;
+ 
+-	write_seqlock(&zonelist_update_seq);
++	write_seqlock_irqsave(&zonelist_update_seq, flags);
+ 
+ #ifdef CONFIG_NUMA
+ 	memset(node_load, 0, sizeof(node_load));
+@@ -6077,7 +6078,7 @@ static void __build_all_zonelists(void *data)
+ #endif
+ 	}
+ 
+-	write_sequnlock(&zonelist_update_seq);
++	write_sequnlock_irqrestore(&zonelist_update_seq, flags);
+ }
+ 
+ static noinline void __init
+-- 
+2.44.0
+

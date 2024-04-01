@@ -1,0 +1,47 @@
+From fafaef69272de568ad2a5b9a89d10a04609f060f Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Tue, 24 Aug 2021 22:47:37 +0200
+Subject: [PATCH 300/323] sched: Switch wait_task_inactive to
+ HRTIMER_MODE_REL_HARD
+
+With PREEMPT_RT enabled all hrtimers callbacks will be invoked in
+softirq mode unless they are explicitly marked as HRTIMER_MODE_HARD.
+During boot kthread_bind() is used for the creation of per-CPU threads
+and then hangs in wait_task_inactive() if the ksoftirqd is not
+yet up and running.
+The hang disappeared since commit
+   26c7295be0c5e ("kthread: Do not preempt current task if it is going to call schedule()")
+
+but enabling function trace on boot reliably leads to the freeze on boot
+behaviour again.
+The timer in wait_task_inactive() can not be directly used by an user
+interface to abuse it and create a mass wake of several tasks at the
+same time which would to long sections with disabled interrupts.
+Therefore it is safe to make the timer HRTIMER_MODE_REL_HARD.
+
+Switch the timer to HRTIMER_MODE_REL_HARD.
+
+Cc: stable-rt@vger.kernel.org
+Link: https://lkml.kernel.org/r/20210826170408.vm7rlj7odslshwch@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ kernel/sched/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 81b342d6629bb..6735872a8508b 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -2739,7 +2739,7 @@ unsigned long wait_task_inactive(struct task_struct *p, long match_state)
+ 			ktime_t to = NSEC_PER_SEC / HZ;
+ 
+ 			set_current_state(TASK_UNINTERRUPTIBLE);
+-			schedule_hrtimeout(&to, HRTIMER_MODE_REL);
++			schedule_hrtimeout(&to, HRTIMER_MODE_REL_HARD);
+ 			continue;
+ 		}
+ 
+-- 
+2.44.0
+
