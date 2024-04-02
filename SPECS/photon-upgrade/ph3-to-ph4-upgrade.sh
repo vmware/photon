@@ -17,26 +17,26 @@ declare -A replaced_pkgs_map=(
   [nxtgn-openssl-c_rehash]=openssl-c_rehash
   [nxtgn-openssl-devel]=openssl-devel
   [nxtgn-openssl-perl]=openssl-perl
-  [openjdk8]="openjdk17 openjdk11 openjdk8"
-  [openjdk8-doc]="openjdk17-doc openjdk11-doc openjdk8-doc"
-  [openjdk8-src]="openjdk17-src openjdk11-src openjdk8-src"
+  [openjdk8]="openjdk8 openjdk17 openjdk11"
+  [openjdk8-doc]="openjdk8-doc openjdk17-doc openjdk11-doc"
+  [openjdk8-src]="openjdk8-src openjdk17-src openjdk11-src"
   [openjdk10]="openjdk17 openjdk11"
   [openjdk10-doc]="openjdk17-doc openjdk11-doc"
   [openjdk10-src]="openjdk17-src openjdk11-src"
   [openjdk11]="openjdk17 openjdk11"
   [openjdk11-doc]="openjdk17-doc openjdk11-doc"
   [openjdk11-src]="openjdk17-src openjdk11-src"
-  [openjre8]="openjdk17-jre openjdk11-jre openjre8"
+  [openjre8]="openjre8 openjdk17-jre openjdk11-jre"
   [openjre10]="openjdk17-jre openjdk11-jre"
   [postgresql]="postgresql14 postgresql13 postgresql10"
   [postgresql-libs]="postgresql14-libs postgresql13-libs postgresql10-libs"
   [postgresql-devel]="postgresql14-devel postgresql13-devel postgresql10-devel"
-  [postgresql13]="postgresql14 postgresql13 postgresql10"
-  [postgresql13-libs]="postgresql14-libs postgresql13-libs postgresql10-libs"
-  [postgresql13-devel]="postgresql14-devel postgresql13-devel postgresql10-devel"
-  [pgaudit13]="pgaudit14 pgaudit13"
+  [postgresql13]="postgresql13 postgresql14 postgresql10"
+  [postgresql13-libs]="postgresql13-libs postgresql14-libs postgresql10-libs"
+  [postgresql13-devel]="postgresql13-devel postgresql14-devel postgresql10-devel"
+  [pgaudit13]="pgaudit13 pgaudit14"
   [repmgr]="repmgr14 repmgr13 repmgr10"
-  [repmgr13]="repmgr14 repmgr13 repmgr10"
+  [repmgr13]="repmgr13 repmgr14 repmgr10"
 )
 
 # Residual pkgs to remove post upgrade

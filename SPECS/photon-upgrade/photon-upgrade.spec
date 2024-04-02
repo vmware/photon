@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        20%{?dist}
+Release:        21%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -56,6 +56,9 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Tue Apr 02 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0-21
+- Upgrade to installed package name only whenever possible
+- deprecate libnss-ato in 3.0 to 5.0 upgrade
 * Tue Mar 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-20
 - Add ktap to deprecated package list
 * Fri Mar 01 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0-19

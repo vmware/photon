@@ -33,12 +33,12 @@ declare -A replaced_pkgs_map=(
   [postgresql]="postgresql15 postgresql14 postgresql13"
   [postgresql-libs]="postgresql15-libs postgresql14-libs postgresql13-libs"
   [postgresql-devel]="postgresql15-devel postgresql14-devel postgresql13-devel"
-  [postgresql13]="postgresql15 postgresql14 postgresql13"
-  [postgresql13-libs]="postgresql15-libs postgresql14-libs postgresql13-libs"
-  [postgresql13-devel]="postgresql15-devel postgresql14-devel postgresql13-devel"
-  [pgaudit13]="pgaudit15 pgaudit14 pgaudit13"
+  [postgresql13]="postgresql13 postgresql15 postgresql14"
+  [postgresql13-libs]="postgresql13-libs postgresql15-libs postgresql14-libs"
+  [postgresql13-devel]="postgresql13-devel postgresql15-devel postgresql14-devel"
+  [pgaudit13]="pgaudit13 pgaudit15 pgaudit14"
   [repmgr]="repmgr15 repmgr14 repmgr13"
-  [repmgr13]="repmgr15 repmgr14 repmgr13"
+  [repmgr13]="repmgr13 repmgr15 repmgr14"
 )
 
 # Residual pkgs to remove post upgrade
