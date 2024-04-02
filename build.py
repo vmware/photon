@@ -1152,6 +1152,9 @@ class BuildImage:
             self.debug_iso_path = None
 
     def img_present(self, img):
+        if os.environ.get("FORCE_IMG_BUILD", 0):
+            return False
+
         build_num = constants.buildNumber
         release_ver = constants.releaseVersion
         img_fn = (
