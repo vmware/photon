@@ -1,6 +1,6 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
-Version:        3.14
+Version:        3.16
 Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/esnet/iperf
@@ -10,7 +10,7 @@ Distribution:   Photon
 
 #Source download URL: https://github.com/esnet/iperf/archive/%{version}.tar.gz
 Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
-%define sha512 iperf=a90fbaddd73e5b721a84cee71cefb63391c13f64107f5785e954e7c44e9a8c5072e402b6fe45434966d3cc58ac97227c608ca9719161fc23459c5e5efcf8232b
+%define sha512 iperf=9ba97e03f17f3b939343b07ed3d508fbf57489e2b984b77a3dc3ada535f981350e56495154bdd108a83b3c507ccbed599b2b7b25de0d1778912d2c01b4ad4e7c
 
 Patch1:         disablepg.patch
 
@@ -57,6 +57,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+* Tue Apr 2 2024 Roye Eshed <roye.eshed@broadcom.com> 3.16-1
+- Update iperf version to 3.16 and absorb CVE-2023-7250 fix
 * Fri Aug 11 2023 Roye Eshed <eshedr@vmware.com> 3.14-1
 - Update iperf version and absorb CVE-2023-38403 fix
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9-2
