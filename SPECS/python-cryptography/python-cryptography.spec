@@ -76,7 +76,7 @@ pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
-#%%check
+%check
 openssl req \
     -new \
     -newkey rsa:4096 \
