@@ -229,6 +229,9 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
                     f"{yamlSourceDir}/{ossname}-{version}.yaml",
                     "w",
                 )
+
+            version = version.split("-")[0]
+
             yamlFile.write(f"vmwsource:{ossname}:{version}:\n")
             yamlFile.write("  repository: VMWsource\n")
             yamlFile.write(f"  name: '{ossname}'\n")
