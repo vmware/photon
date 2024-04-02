@@ -1,6 +1,6 @@
 Name:           gpsd
 Version:        3.25
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Service daemon for mediating access to a GPS
 Group:          System Environment
 Vendor:         VMware, Inc.
@@ -228,6 +228,8 @@ rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man
 %exclude %{_datadir}/%{name}/gpsd-logo.png
 
 %changelog
+* Tue Apr 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.25-2
+- Version Bump up to consume bluez v5.71
 * Tue Apr 25 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 3.25-1
 - Initial addition to Photon. Adapted from provided spec file
 - in the gpsd gitlab repository.
