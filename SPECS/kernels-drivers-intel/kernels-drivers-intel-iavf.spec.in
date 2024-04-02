@@ -9,8 +9,8 @@
 
 Summary:        Intel iavf driver v%{IAVF_VERSION}
 Name:           linux%{KERNEL_FLAVOUR}-drivers-intel-iavf
-Version:        %{IAVF_VERSION}%{?kernelsubrelease}
-Release:        2%{?dist}
+Version:        %{IAVF_VERSION}
+Release:        3%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://sourceforge.net/projects/e1000
 Group:          System Environment/Kernel
@@ -96,6 +96,8 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
 %{_mandir}/*
 
 %changelog
+* Tue Apr 02 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{IAVF_VERSION}-3
+- Fix subrelease naming convention
 * Thu Feb 22 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{IAVF_VERSION}-2
 - Adding generic template for iavf driver
 * Thu Jan 04 2024 Roye Eshed <roye.eshed@broadcom.com> %{IAVF_VERSION}-1
