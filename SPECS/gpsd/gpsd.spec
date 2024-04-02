@@ -1,6 +1,6 @@
 Name:           gpsd
 Version:        3.25
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Service daemon for mediating access to a GPS
 Group:          System Environment
 Vendor:         VMware, Inc.
@@ -229,6 +229,8 @@ install -p -m 0755 gpsinit %{buildroot}%{_sbindir}
 %exclude %{_datadir}/%{name}/gpsd-logo.png
 
 %changelog
+* Tue Apr 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.25-4
+- Version Bump up to consume bluez v5.71
 * Tue Oct 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.25-3
 - Bump version as a part of scons upgrade
 * Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.25-2
