@@ -556,6 +556,7 @@ pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa/build/src
 make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
+%ifarch x86_64
 # Verify for build-id match
 # We observe different IDs sometimes
 # TODO: debug it
@@ -569,7 +570,6 @@ if [ "$ID1" != "$ID2" ] ; then
   exit 1
 fi
 
-%ifarch x86_64
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %endif
 
