@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -52,6 +52,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Wed Apr 03 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0-19
+- Prefer upgrading to the same package name when upgrading OS
 * Fri Mar 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-18
 - Remove libnss-ato from deprecated package list
 - libnss-ato is re-added to Ph5 based on https://github.com/donapieppo/libnss-ato/issues/21
