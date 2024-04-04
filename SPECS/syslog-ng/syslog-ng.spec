@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org
 Group:          System Environment/Daemons
@@ -38,6 +38,8 @@ BuildRequires:  ivykis-devel
 BuildRequires:  paho-c-devel
 BuildRequires:  bison
 
+Obsoletes:      eventlog
+
 %description
 The syslog-ng application is a flexible and highly scalable
 system logging tool. It is often used to manage log messages and implement
@@ -56,6 +58,7 @@ Summary:        Header and development files for syslog-ng
 Requires:       %{name} = %{version}-%{release}
 Requires:       ivykis-devel
 Requires:       glib-devel
+Obsoletes:      eventlog-devel
 
 %description    devel
 syslog-ng-devel package contains header files, pkfconfig files, and libraries
@@ -172,6 +175,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Thu Apr 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-5
+- Obsolete eventlog
 * Tue Feb 06 2024 Prashant S Chauhan <psinghchauha@vmware.com> 4.3.1-4
 - Use system provided pip instead of ensurepip
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-3
