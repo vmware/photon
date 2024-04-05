@@ -21,8 +21,8 @@ index f0e1552..33996cb 100644
  
  # In case the regex passed to IT or IP includes C escape sequences,
  # use ${IT} or ${IP} instead of $IT or $IP
--ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP $VB $FF $CG
-+ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP $VB $FF $CG $BE
+-ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BM $MA $BP $BR $BD $THRESH $LOGGING $LB $FG $PF $IT $IP $UT $UP $VB $FF $CG
++ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BM $MA $BP $BR $BD $THRESH $LOGGING $LB $FG $PF $IT $IP $UT $UP $VB $FF $CG $BE
  ExecStopPost=/usr/bin/throttlectl on
  CPUSchedulingPolicy=fifo
  CPUSchedulingPriority=10
