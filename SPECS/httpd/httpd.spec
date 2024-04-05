@@ -1,6 +1,6 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.58
+Version:        2.4.59
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=d6e73bf413a507ec16b621ff635e178206207a9e9810ce3944b3dc98d39cde8f225307110167fc9da5822175796c8cb66f98be5b9f0d8b76dcd83a401d39b2c1
+%define sha512 %{name}=209da0bbac5e2564d4590302515b35495be6402273ff4024aa93e85e44554c95e053201d606383936425a41e1b5b97e6b40055dcbb385eb691a5029a6f3158c2
 Source1: %{name}.sysusers
 
 # Patch0 is taken from:
@@ -198,6 +198,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Fri Apr 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.4.59-1
+- Version upgrade to v2.4.59 to fix CVE-2024-27316
 * Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.58-1
 - Version upgrade to v2.4.58 to fix CVE-2023-31122
 * Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.4.56-6
