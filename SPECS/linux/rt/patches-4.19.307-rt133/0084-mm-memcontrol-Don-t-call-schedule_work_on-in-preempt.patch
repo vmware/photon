@@ -43,6 +43,7 @@ replace the pair of get/put_cpu() to get/put_cpu_light().
 
 Signed-off-by: Yang Shi <yang.shi@windriver.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---
  mm/memcontrol.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
@@ -60,9 +61,9 @@ index 5a366cf79821..e048d50de7aa 100644
  	for_each_online_cpu(cpu) {
  		struct memcg_stock_pcp *stock = &per_cpu(memcg_stock, cpu);
  		struct mem_cgroup *memcg;
-@@ -2104,7 +2104,7 @@ static void drain_all_stock(struct mem_cgroup *root_memcg)
+@@ -2111,7 +2111,7 @@
+ 				schedule_work_on(cpu, &stock->work);
  		}
- 		css_put(&memcg->css);
  	}
 -	put_cpu();
 +	put_cpu_light();

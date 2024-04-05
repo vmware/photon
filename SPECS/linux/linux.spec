@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.307
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        4.19.311
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=2be40ae405a61feb1f942e0d4c63f2ca13d4a4bbadd64afd1e0a372c5a515135a3f16ae440d77061231cc4f2d9fc9421a7249adc15c50db564796f40414e5967
+%define sha512 linux=be9f578ac4cd45afd56e01769e4055c1edd2c67fdcfbae4a2d88a7c10144dc141b0335e11274c0b7a4169c27492a72ab7bbd630782a0c81e2b255f292511446b
 
 %ifarch x86_64
 Source1: config
@@ -588,9 +588,6 @@ Patch1569: 0001-Bluetooth-af_bluetooth-Fix-Use-After-Free-in-bt_sock.patch
 
 # Fix CVE-2024-23307
 Patch1570: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
-
-# Fix CVE-2024-22099
-Patch1571: 0001-Bluetooth-rfcomm-Fix-null-ptr-deref-in-rfcomm_check_.patch
 
 #Fix CVE-2023-52509
 Patch1572: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
@@ -1191,6 +1188,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.311-1
+- Update to version 4.19.311
 * Mon Apr 01 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.307-6
 - Fix CVE-2024-26642, CVE-2023-52620
 * Mon Mar 25 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.19.307-5
