@@ -1,7 +1,7 @@
 Summary:    nghttp2 is an implementation of HTTP/2 and its header compression algorithm, HPACK.
 Name:       nghttp2
 Version:    1.57.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    MIT
 URL:        https://nghttp2.org
 Group:      Applications/System
@@ -9,6 +9,9 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    https://github.com/nghttp2/nghttp2/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %define sha512 nghttp2=d914eb48afd1ea182c1b2a454bf5e7963a7e28165f1d6d29bb83dd61a1b611c8c469e72a7a22daf23b8037f6e5ae9d4e791150b7d135746c1a5ec71ceb777f92
+
+Patch0: CVE-2024-28182.patch
+
 BuildRequires: c-ares-devel
 BuildRequires: openssl-devel
 BuildRequires: systemd
@@ -16,6 +19,7 @@ BuildRequires: zlib-devel
 BuildRequires: libxml2-devel
 BuildRequires: libevent-devel
 BuildRequires: jansson-devel
+BuildRequires: automake
 
 %description
 Implementation of the Hypertext Transfer Protocol version 2 in C.
@@ -31,12 +35,13 @@ These are the header files of nghttp2.
 %autosetup -p1
 
 %build
+autoreconf -i
 %configure \
     --disable-static \
     --enable-lib-only \
     --disable-python-bindings
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 %make_install %{?_smp_mflags}
@@ -55,6 +60,8 @@ make %{?_smp_mflags}
 %{_mandir}/man1/*
 
 %changelog
+*   Fri Apr 05 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 1.57.0-2
+-   Fix for CVE-2024-28182
 *   Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.57.0-1
 -   Upgrade to version 1.57.0
 *   Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.41.0-4
