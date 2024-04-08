@@ -1,17 +1,15 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
-Version:        3.3.17
-Release:        2%{?dist}
+Version:        4.0.4
+Release:        1%{?dist}
 License:        GPLv2
 URL:            https://sourceforge.net/projects/procps-ng
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha512  %{name}=59e9a5013430fd9da508c4655d58375dc32e025bb502bb28fb9a92a48e4f2838b3355e92b4648f7384b2050064d17079bf4595d889822ebb5030006bc154a1a7
-
-Patch0:         CVE-2023-4016.patch
+Source0: https://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
+%define sha512 %{name}=94375544e2422fefc23d7634063c49ef1be62394c46039444f85e6d2e87e45cfadc33accba5ca43c96897b4295bfb0f88d55a30204598ddb26ef66f0420cefb4
 
 BuildRequires:  ncurses-devel
 
@@ -24,7 +22,7 @@ The Procps package contains programs for monitoring processes.
 
 %package    devel
 Summary:    Header and development files for procps-ng
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 
 %description    devel
 It contains the libraries and header files to create applications
@@ -38,7 +36,7 @@ Requires:   %{name} = %{version}-%{release}
 These are the additional language files of procps-ng
 
 %prep
-%autosetup -p1 -n procps-%{version}
+%autosetup -p1
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -46,25 +44,32 @@ if [ %{_host} != %{_build} ]; then
   export ac_cv_func_realloc_0_nonnull=yes
 fi
 
-%configure --docdir=%{_defaultdocdir}/%{name}-%{version} \
-           --disable-static \
-           --disable-kill \
-           --disable-silent-rules
+%configure \
+  --docdir=%{_docdir}/%{name}-%{version} \
+  --disable-static \
+  --disable-kill \
+  --disable-silent-rules
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-install -vdm 755 %{buildroot}%{_bindir}
-install -vdm 755 %{buildroot}%{_lib}
-ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libprocps.so) %{buildroot}%{_libdir}/libprocps.so
-install -vdm 755 %{buildroot}%{_sbindir}
-ln -sfv %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
+%make_install %{?_smp_mflags}
+ln -srv %{buildroot}%{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
+ln -srv %{buildroot}%{_bindir}/pidwait %{buildroot}%{_bindir}/pwait
 find %{buildroot} -name '*.la' -delete
+
+rm -rf %{buildroot}%{_mandir}/de/ \
+       %{buildroot}%{_mandir}/fr/ \
+       %{buildroot}%{_mandir}/pl/ \
+       %{buildroot}%{_mandir}/pt_BR/ \
+       %{buildroot}%{_mandir}/ro/ \
+       %{buildroot}%{_mandir}/sv/ \
+       %{buildroot}%{_mandir}/uk/
+
 %find_lang %{name}
 
 %check
-make %{?_smp_mflags} check
+%make_build check
 
 %ldconfig_scriptlets
 
@@ -84,45 +89,31 @@ make %{?_smp_mflags} check
 %{_bindir}/slabtop
 %{_bindir}/watch
 %{_bindir}/pkill
+%{_bindir}/pidwait
 %{_bindir}/pwait
 %{_sbindir}/sysctl
 %{_sbindir}/pidof
 %_datadir/locale/*
-%{_docdir}/procps-ng-*/*
+%{_docdir}/%{name}-*/*
 %{_mandir}/man8/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
-%{_libdir}/libprocps.so.*
+%{_libdir}/*.so.*
 
 %files devel
-%{_includedir}/proc/sig.h
-%{_includedir}/proc/wchan.h
-%{_includedir}/proc/version.h
-%{_includedir}/proc/pwcache.h
-%{_includedir}/proc/procps.h
-%{_includedir}/proc/devname.h
-%{_includedir}/proc/sysinfo.h
-%{_includedir}/proc/readproc.h
-%{_includedir}/proc/escape.h
-%{_includedir}/proc/slab.h
-%{_includedir}/proc/alloc.h
-%{_includedir}/proc/whattime.h
-%{_includedir}/proc/numa.h
-%{_libdir}/pkgconfig/libprocps.pc
-%{_libdir}/libprocps.so
+%defattr(-,root,root)
+%{_includedir}/libproc2/*.h
+%{_libdir}/pkgconfig/libproc2.pc
+%{_libdir}/*.so
 %{_mandir}/man3/*
-
-%exclude %{_mandir}/pl/*
-%exclude %{_mandir}/pt_BR/*
-%exclude %{_mandir}/sv/*
-%exclude %{_mandir}/uk/*
-%exclude %{_mandir}/de/*
-%exclude %{_mandir}/fr/*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.0.4-1
+- Upgrade to v4.0.4
+- pwait is renamed to pidwait but we are retaining it using symlink
 * Tue Jan 16 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 3.3.17-2
 - Patched CVE-2023-4016
 * Mon Dec 06 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.3.17-1
