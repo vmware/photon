@@ -1,7 +1,7 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
-Version:        4.0.0
-Release:        4%{?dist}
+Version:        4.0.4
+Release:        1%{?dist}
 License:        GPLv2
 URL:            https://sourceforge.net/projects/procps-ng
 Group:          Applications/System
@@ -9,9 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha512 %{name}=1749375f72fdede58b394a7b64127b7ef7f432854995669c73802d5d626e611d23b0f6eca85106590a0b6cc21057c7c389c459dbff8f02ec52ed506723330541
-
-Patch0:        CVE-2023-4016.patch
+%define sha512 %{name}=94375544e2422fefc23d7634063c49ef1be62394c46039444f85e6d2e87e45cfadc33accba5ca43c96897b4295bfb0f88d55a30204598ddb26ef66f0420cefb4
 
 BuildRequires: ncurses-devel
 
@@ -46,22 +44,30 @@ if [ %{_host} != %{_build} ]; then
   export ac_cv_func_realloc_0_nonnull=yes
 fi
 
-%configure --docdir=%{_defaultdocdir}/%{name}-%{version} \
-           --disable-static \
-           --disable-kill \
-           --disable-silent-rules
+%configure \
+   --docdir=%{_docdir}/%{name}-%{version} \
+   --disable-static \
+   --disable-kill \
+   --disable-silent-rules
 
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-ln -srv %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
+ln -srv %{buildroot}%{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
+
+rm -rf %{buildroot}%{_mandir}/de/ \
+       %{buildroot}%{_mandir}/fr/ \
+       %{buildroot}%{_mandir}/pl/ \
+       %{buildroot}%{_mandir}/pt_BR/ \
+       %{buildroot}%{_mandir}/ro/ \
+       %{buildroot}%{_mandir}/sv/ \
+       %{buildroot}%{_mandir}/uk/
+
 %find_lang %{name}
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %clean
 rm -rf %{buildroot}
@@ -92,32 +98,21 @@ rm -rf %{buildroot}
 %{_mandir}/man8/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
-%{_libdir}/libproc-2.so.*
+%{_libdir}/*.so.*
 
 %files devel
 %defattr(-,root,root)
-%{_libdir}/libproc-2.so
-%{_includedir}/procps/diskstats.h
-%{_includedir}/procps/meminfo.h
-%{_includedir}/procps/misc.h
-%{_includedir}/procps/pids.h
-%{_includedir}/procps/slabinfo.h
-%{_includedir}/procps/stat.h
-%{_includedir}/procps/vmstat.h
-%{_includedir}/procps/xtra-procps-debug.h
+%{_includedir}/libproc2/*.h
+%{_libdir}/pkgconfig/libproc2.pc
+%{_libdir}/*.so
 %{_mandir}/man3/*
-%{_libdir}/pkgconfig/*.pc
-%exclude %{_mandir}/pl/*
-%exclude %{_mandir}/pt_BR/*
-%exclude %{_mandir}/sv/*
-%exclude %{_mandir}/uk/*
-%exclude %{_mandir}/de/*
-%exclude %{_mandir}/fr/*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.0.4-1
+- Upgrade to v4.0.4
 * Tue Jan 16 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.0.0-4
 - Patched CVE-2023-4016
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 4.0.0-3
