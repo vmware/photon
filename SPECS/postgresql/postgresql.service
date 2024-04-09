@@ -23,7 +23,7 @@ EnvironmentFile=/etc/sysconfig/%PGNAME%.conf
 # Even though the $PGDATA variable is exported (postgres would accept that)
 # use the -D option here so PGDATA content is printed by /bin/ps and by
 # 'systemctl status'.
-ExecStart=%PG_BINDIR% -D "${PGDATA}"
+ExecStart=%PG_BINDIR%/postgres -D "${PGDATA}"
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=mixed
 KillSignal=SIGINT
