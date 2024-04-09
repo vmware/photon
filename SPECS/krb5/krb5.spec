@@ -1,8 +1,9 @@
 %define minor_ver 1.20
+
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.20.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
@@ -28,15 +29,20 @@ which can improve your network's security by eliminating the insecure
 practice of clear text passwords.
 
 %package devel
-Summary:        Libraries and header files for krb5
+Summary:    Libraries and header files for krb5
 Requires:   %{name} = %{version}-%{release}
+Requires:   e2fsprogs-devel
+
+Conflicts: %{name} < 1.20.2-2%{?dist}
+
 %description devel
 Static libraries and header files for the support library for krb5
 
 %package lang
 Summary:    Additional language files for krb5
 Group:      System Environment/Security
-Requires: %{name} = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of krb5.
 
@@ -44,10 +50,8 @@ These are the additional language files of krb5.
 %autosetup -p1
 
 %build
-cd src &&
-sed -e 's@\^u}@^u cols 300}@' \
-    -i tests/dejagnu/config/default.exp &&
-CPPFLAGS="-D_GNU_SOURCE" \
+cd src
+export CPPFLAGS="-D_GNU_SOURCE"
 autoconf
 if [ %{_host} != %{_build} ]; then
   export krb5_cv_attr_constructor_destructor=yes,yes
@@ -56,43 +60,29 @@ if [ %{_host} != %{_build} ]; then
   export ac_cv_file__etc_environment=no
   export ac_cv_file__etc_TIMEZONE=no
 fi
+
 %configure \
-        --with-system-et         \
-        --with-system-ss         \
-        --with-system-verto=no   \
-        --enable-dns-for-realm   \
-        --enable-pkinit          \
-        --enable-shared          \
-        --without-tcl
-make %{?_smp_mflags}
+        --with-system-et \
+        --with-system-ss \
+        --with-system-verto=no \
+        --enable-dns-for-realm \
+        --enable-pkinit \
+        --enable-shared
+
+%make_build
 
 %install
 cd src
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-find %{buildroot}/%{_libdir} -name '*.la' -delete
-for LIBRARY in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv \
-               kdb5 krad krb5 krb5support verto ; do
-    chmod -v 755 %{buildroot}/%{_libdir}/lib$LIBRARY.so
-done
-
-ln -v -sf %{buildroot}/%{_libdir}/libkrb5.so.3.3        /usr/lib/libkrb5.so
-ln -v -sf %{buildroot}/%{_libdir}/libk5crypto.so.3.1    /usr/lib/libk5crypto.so
-ln -v -sf %{buildroot}/%{_libdir}/libkrb5support.so.0.1 /usr/lib/libkrb5support.so
-
-mv -v %{buildroot}/%{_bindir}/ksu /bin
-chmod -v 755 /bin/ksu
-
-install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
-
-unset LIBRARY
+%make_install %{?_smp_mflags}
 %{_fixperms} %{buildroot}/*
 
+%if 0%{?with_check}
 %check
 # krb5 tests require hostname resolve
-echo "127.0.0.1 $HOSTNAME" >> /etc/hosts
+echo "127.0.0.1 $HOSTNAME" >> %{_sysconfdir}/hosts
 cd src
 make check %{?_smp_mflags}
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -103,7 +93,6 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so
 %{_libdir}/*.so.*
 %{_libdir}/krb5/plugins/*
 %{_sbindir}/*
@@ -111,21 +100,23 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_mandir}/man7/*
-%{_datarootdir}/man/man5/.k5identity.5.gz
-%{_datarootdir}/man/man5/.k5login.5.gz
+%{_datadir}/man/man5/.k5identity.5.gz
+%{_datadir}/man/man5/.k5login.5.gz
 
 %files devel
 %defattr(-,root,root)
+%{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
-%{_datarootdir}/examples/*
-%{_docdir}/*
+%{_datadir}/examples/*
 
 %files lang
 %defattr(-,root,root)
-%{_datarootdir}/locale/*
+%{_datadir}/locale/*
 
 %changelog
+* Tue Apr 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.20.2-2
+- Fix spec issues
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.20.2-1
 - Update to v1.20.2 to fix CVE-2023-36054
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.1-3
