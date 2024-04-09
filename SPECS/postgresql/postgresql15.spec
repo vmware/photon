@@ -13,7 +13,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql15
 Version:        15.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -55,15 +55,8 @@ BuildRequires: tzdata
 BuildRequires: util-linux-libs
 BuildRequires: zlib-devel
 
-Requires: icu
-Requires: libedit
-Requires: libxml2
-Requires: lz4
-Requires: readline
-Requires: systemd
-Requires: tzdata
-Requires: zlib
-Requires: %{name}-libs = %{version}-%{release}
+Requires: %{name}-client = %{version}-%{release}
+Requires: %{name}-server = %{version}-%{release}
 
 %description
 PostgreSQL is an advanced Object-Relational database management system (DBMS).
@@ -76,6 +69,24 @@ found in the postgresql-server sub-package.
 If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL
 server, you need this package. You also need to install this package
 if you're installing the postgresql-server package.
+
+%package client
+Summary:  Postgresql client binaries
+Requires: krb5
+Requires: icu
+Requires: libedit
+Requires: libxml2
+Requires: lz4
+Requires: readline
+Requires: systemd
+Requires: tzdata
+Requires: zlib
+Requires: %{name}-libs = %{version}-%{release}
+
+Conflicts: %{name} < 15.6-4%{?dist}
+
+%description client
+%{summary}
 
 %package libs
 Summary:    The shared libraries required for any PostgreSQL clients
@@ -313,7 +324,7 @@ run_test_path "src/test/subscription"
 %post
 /sbin/ldconfig
 
-%posttrans
+%posttrans client
 alternatives --install %{_bindir}/clusterdb clusterdb %{_pgbindir}/clusterdb %{alter_weight} \
     --slave %{_bindir}/createdb createdb %{_pgbindir}/createdb \
     --slave %{_bindir}/createuser createuser %{_pgbindir}/createuser \
@@ -334,7 +345,7 @@ alternatives --install %{_bindir}/clusterdb clusterdb %{_pgbindir}/clusterdb %{a
 
 /sbin/ldconfig
 
-%postun
+%postun client
 alternatives --remove clusterdb %{_pgbindir}/clusterdb
 /sbin/ldconfig
 
@@ -407,6 +418,9 @@ alternatives --remove oid2name %{_pgbindir}/oid2name
 rm -rf %{buildroot}/*
 
 %files
+%defattr(-,root,root)
+
+%files client
 %defattr(-,root,root)
 %{_pgbindir}/clusterdb
 %{_pgbindir}/createdb
@@ -686,6 +700,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Mon Apr 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-4
+- Introduce client subpackage, make main package a meta package
 * Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-3
 - Use version specific bindir path in service file
 * Sat Feb 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-2
