@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -35,6 +35,7 @@ Source7: %{fips_provider_srcname}.tar.xz
 
 Patch0: openssl-cnf.patch
 Patch1: CVE-2023-50782.patch
+Patch2: CVE-2024-2511.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -272,6 +273,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Wed Apr 10 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.13-4
+- Fix CVE-2024-2511
 * Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.13-3
 - Remove dead symlinks during certificate rehash
 * Mon Mar 04 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.13-2
