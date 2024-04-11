@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org
 Group:          System Environment/Daemons
@@ -84,7 +84,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
   --includedir=%{_includedir} \
   --libdir=%{_libdir} \
   --libexecdir=%{_libexecdir} \
-  --localstatedir=%{_localstatedir} \
+  --localstatedir=%{_sharedstatedir}/%{name} \
   --sharedstatedir=%{_sharedstatedir} \
   --mandir=%{_mandir} \
   --infodir=%{_infodir} \
@@ -110,6 +110,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
 
 %install
 %make_install %{?_smp_mflags}
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 
 rm -rf %{buildroot}%{_unitdir}/%{name}@.service \
        %{buildroot}%{_infodir} \
@@ -160,6 +161,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/%{name}/libmod-python.so
 %{_datadir}/%{name}/*
 %{_mandir}/*
+%dir %{_sharedstatedir}/%{name}
 
 %files -n python3-%{name}
 %defattr(-,root,root,-)
@@ -175,6 +177,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Thu Apr 11 2024 Nitesh Kumar <nitesh-nk.kumar@brodcom.com> 4.3.1-6
+- Fixing localstatedir path
 * Thu Apr 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-5
 - Obsolete eventlog
 * Tue Feb 06 2024 Prashant S Chauhan <psinghchauha@vmware.com> 4.3.1-4

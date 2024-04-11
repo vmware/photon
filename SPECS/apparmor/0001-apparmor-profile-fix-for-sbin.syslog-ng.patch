@@ -1,0 +1,40 @@
+From 889b047467c89de44f70f7c84b7f4f9b252647a8 Mon Sep 17 00:00:00 2001
+From: Nitesh <kunitesh@vmware.com>
+Date: Mon, 26 Feb 2024 16:47:23 +0530
+Subject: [PATCH] apparmor-profile-fix-for-sbin.syslog-ng
+
+---
+ profiles/apparmor.d/sbin.syslog-ng | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/profiles/apparmor.d/sbin.syslog-ng b/profiles/apparmor.d/sbin.syslog-ng
+index 5ae8587..993beaf 100644
+--- a/profiles/apparmor.d/sbin.syslog-ng
++++ b/profiles/apparmor.d/sbin.syslog-ng
+@@ -38,12 +38,14 @@ profile syslog-ng /{usr/,}{bin,sbin}/syslog-ng {
+   unix (receive) type=dgram,
+   unix (receive) type=stream,
+ 
++  /run/systemd/notify rw,
+   /dev/log w,
+   /dev/syslog w,
+   /dev/tty10 rw,
+   /dev/xconsole rw,
+   /dev/kmsg r,
+   /etc/machine-id r,
++  /etc/ssl/*.cnf r,
+   /etc/syslog-ng/* r,
+   /etc/syslog-ng/conf.d/ r,
+   /etc/syslog-ng/conf.d/* r,
+@@ -54,7 +56,7 @@ profile syslog-ng /{usr/,}{bin,sbin}/syslog-ng {
+   /var/lib/syslog-ng/syslog-ng-?????.qf rw,
+   # chrooted applications
+   @{CHROOT_BASE}/var/lib/*/dev/log w,
+-  @{CHROOT_BASE}/var/lib/syslog-ng/syslog-ng.persist* rw,
++  @{CHROOT_BASE}/var/lib/syslog-ng/* rw,
+   @{CHROOT_BASE}/var/log/** w,
+   @{CHROOT_BASE}/@{run}/syslog-ng.pid krw,
+   @{CHROOT_BASE}/@{run}/syslog-ng.ctl rw,
+-- 
+2.34.1
+
