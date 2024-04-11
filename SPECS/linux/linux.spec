@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.83
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -738,6 +738,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Apr 18 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.83-3
+- Enable CONFIG_ATA_PIIX for ata/pata intel SFF drivers replacing legacy IDE drivers
 * Sun Apr 14 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2
 - Patched CVE-2024-26643
 * Thu Apr 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-1
