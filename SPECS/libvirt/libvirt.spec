@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        9.3.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPL
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
@@ -12,6 +12,8 @@ Source0: http://libvirt.org/sources/%{name}-%{version}.tar.xz
 %define sha512 %{name}=b9349dcd7798c76d75bb20afad67d6e676758cb201acaf7aed5109f0e91422b2bcca964a2f19aa8dc4fd0eca2923902474e16e3839bf8b15aca827028e88ddb7
 
 Patch0:         CVE-2023-3750.patch
+Patch1:         CVE-2024-2494.patch
+Patch2:         CVE-2024-2496.patch
 
 BuildRequires:  audit-devel
 BuildRequires:  cyrus-sasl-devel
@@ -205,6 +207,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/polkit-1/*
 
 %changelog
+* Fri Apr 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.3.0-6
+- Fix CVE-2024-2494 and CVE-2024-2496
 * Mon Apr 01 2024 Anmol Jain <anmol.jain@broadcom.com> 9.3.0-5
 - Bump version as a part of wireshark upgrade
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3.0-4
