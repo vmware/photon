@@ -1,9 +1,9 @@
-diff -urp suricata-6.0.9.orig/python/suricata/sc/suricatasc.py suricata-6.0.9/python/suricata/sc/suricatasc.py
---- suricata-6.0.9.orig/python/suricata/sc/suricatasc.py	2022-11-28 01:31:05.000000000 -0500
-+++ suricata-6.0.9/python/suricata/sc/suricatasc.py	2022-12-13 17:17:12.651749381 -0500
+diff -urp suricata-6.0.18.orig/python/suricata/sc/suricatasc.py suricata-6.0.18/python/suricata/sc/suricatasc.py
+--- suricata-6.0.18.orig/python/suricata/sc/suricatasc.py	2022-11-28 01:31:05.000000000 -0500
++++ suricata-6.0.18/python/suricata/sc/suricatasc.py	2022-12-13 17:17:12.651749381 -0500
 @@ -1,4 +1,4 @@
 -#!/usr/bin/python
 +#!/usr/bin/python3
- # Copyright(C) 2012-2020 Open Information Security Foundation
+ # Copyright(C) 2012-2023 Open Information Security Foundation
  
  # This program is free software; you can redistribute it and/or modify

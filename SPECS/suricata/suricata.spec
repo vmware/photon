@@ -1,6 +1,6 @@
 Summary:        Intrusion Detection System
 Name:           suricata
-Version:        6.0.13
+Version:        6.0.18
 Release:        1%{?dist}
 License:        GPLv2
 Vendor:         VMware, Inc.
@@ -8,8 +8,7 @@ Distribution:   Photon
 URL:            https://suricata.io
 Group:          System Environment/Security
 Source0:        https://www.openinfosecfoundation.org/download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=7b7ea4b01b6ec4662db1e875e940d667b0aa71b7b91dccf72d32b644c6291814c3fde0c69c96c138d2f1e2412c92456fede823d61c3b7ba63f4bae0edc2dbb0d
-
+%define sha512 %{name}=2beb60e5ebb9292c9352d3599d43d1d5f42c15d22e0e576619c4c29ea3cbdedc4e485dca9d04c9116a17358fe9b2cf3900a1026acbe961a8e0bf5ec408feced2
 Source1: suricata.sysconfig
 Source2: photon.notes
 Source3: suricata-tmpfiles.conf
@@ -171,6 +170,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/rules
 
 %changelog
+* Fri Apr 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 6.0.18-1
+- Update to v6.0.18 to fix CVE-2024-28870
 * Fri Sep 08 2023 Mukul Sikka <msikka@vmware.com> 6.0.13-1
 - Update to v6.0.13 to fix multiple CVEs
 * Fri Apr 28 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.0.12-1
