@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.4
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -18,6 +18,7 @@ BuildRequires: python3-requests
 BuildRequires: python3-cracklib
 BuildRequires: python3-curses
 BuildRequires: python3-PyYAML
+BuildRequires: python3-jc
 
 Requires: python3-pyinstaller
 Requires: python3-pyOpenSSL
@@ -25,6 +26,7 @@ Requires: python3-requests
 Requires: python3-cracklib
 Requires: python3-curses
 Requires: python3-PyYAML
+Requires: python3-jc
 
 Requires: dosfstools
 Requires: efibootmgr
@@ -64,6 +66,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.4-3
+- Add "jc" dependency
 * Wed Oct 25 2023 Ankit Jain <ankitja@vmware.com> 2.4-2
 - Fix tmpfs mount issue
 * Fri Oct 13 2023 Piyush Gupta <gpiyush@vmware.com> 2.4-1

@@ -1,7 +1,7 @@
 Summary:       Convert output of command line tools and others to JSON
 Name:          jc
 Version:       1.23.6
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       MIT
 URL:           https://github.com/kellyjonbrazil/jc
 Group:         Development/Languages/Python
@@ -18,10 +18,6 @@ BuildRequires: python3-xmltodict
 BuildRequires: python3-ruamel-yaml
 BuildRequires: python3-Pygments
 
-Requires: python3
-Requires: python3-xmltodict
-Requires: python3-ruamel-yaml
-Requires: python3-Pygments
 Requires: python3-%{name} = %{version}-%{release}
 
 %if 0%{?with_check}
@@ -36,6 +32,10 @@ tools, file-types, and common strings to JSON, YAML, or Dictionaries.
 %package -n python3-%{name}
 BuildArch: noarch
 Summary: Module to convert output of command line tools and others
+Requires: python3
+Requires: python3-xmltodict
+Requires: python3-ruamel-yaml
+Requires: python3-Pygments
 
 %description -n python3-%{name}
 Module to convert the output of popular command-line
@@ -80,5 +80,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/%{name}-%{version}-py%{python3_version}.egg-info
 
 %changelog
+* Fri Apr 12 2024 Oliver Kurth <oliver.kurth@broadcom.com> 1.23.6-2
+- fix requires by moving them to the python package
 * Tue Oct 24 2023 Oliver Kurth <okurth@vmware.com> 1.23.6-1
 - Initial build
