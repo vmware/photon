@@ -7,6 +7,7 @@ FIND=/usr/bin/find
 GREP=/usr/bin/grep
 LN=/usr/bin/ln
 LOGGER=/usr/bin/logger
+MKDIR=/usr/bin/mkdir
 MKTEMP=/usr/bin/mktemp
 MV=/usr/bin/mv
 PRINTF=/usr/bin/printf
@@ -19,6 +20,7 @@ STAT=/usr/bin/stat
 STDBUF=/usr/bin/stdbuf
 SYSTEMCTL=/usr/bin/systemctl
 TDNF='/usr/bin/tdnf --setopt clean_requirements_on_remove=false'
+TEE=/usr/bin/tee
 TR=/usr/bin/tr
 UNIQ=/usr/bin/uniq
 WC=/usr/bin/wc
