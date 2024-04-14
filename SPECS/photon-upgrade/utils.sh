@@ -185,7 +185,7 @@ function backup_configs() {
       if [ -e "$tgt_dir" ]; then
         rc=0
       else
-        mkdir -p "$tgt_dir"
+        ${MKDIR} -p "$tgt_dir"
         rc=$?
         if [ $rc -eq 0 ]; then
           builtin read mode user group <<< $($STAT -c "%a %U %G" $src_dir)

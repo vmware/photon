@@ -56,15 +56,6 @@ rubygem-base64
 rubygem-connection_pool
 rubygem-drb
 rubygem-ruby2-keywords
-salt3
-salt3-api
-salt3-cloud
-salt3-master
-salt3-minion
-salt3-proxy
-salt3-spm
-salt3-ssh
-salt3-syndic
 sqlite2
 sqlite2-devel
 sshfs

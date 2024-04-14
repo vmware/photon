@@ -1,13 +1,25 @@
 #!/bin/bash
 
+set -o pipefail
+
 trap '' SIGINT SIGQUIT
 PROG="$(basename $0)"
 CMDLINE="$0 $@ # PID: $$"
 
 PHOTON_UPGRADE_UTILS_DIR="/usr/lib/photon-upgrade"
 
+TIMESTAMP=$(date +%Y-%m-%d-%H-%M-%S)
+LOG_FN="/var/log/${PROG}-${TIMESTAMP}.log"
+
+# sourcing these files should not have any errors
+set -e
 source ${PHOTON_UPGRADE_UTILS_DIR}/utils.sh
 source ${PHOTON_UPGRADE_UTILS_DIR}/common.sh
+set +e
+
+# show logs on console & store them in a file
+# also, keep stderr & stdout intact
+exec 2> >(${TEE} -a ${LOG_FN} >&2) > >(${TEE} -a ${LOG_FN})
 
 FROM_VERSION="$(/usr/bin/lsb_release -s -r)"
 TO_VERSION=''       # non-blank value indicates an os-upgrade, otherwise, update
@@ -184,13 +196,32 @@ function check_packages_in_target_repo() {
     [coreutils]="coreutils-selinux coreutils"
   )
 
+  local list_available_fn="${TMP_BACKUP_LOC}/list_available.txt"
+
+  if ! test -s "${list_available_fn}"; then
+    ${TDNF} $REPOS_OPT "--releasever=$TO_VERSION" list available | \
+      $AWK '{print $1}' | ${UNIQ} | ${SORT} > "${list_available_fn}"
+    if [ $? -ne 0 ]; then
+      ${RM} -f "${list_available_fn}"
+      abort 1 "ERROR($FUNCNAME): tdnf list available failed ..."
+    fi
+    ${SED} -i -e "s/^\(.*\).$(uname -m).*$/\1/" "${list_available_fn}"
+    ${SED} -i -e "s/^\(.*\).noarch.*$/\1/" "${list_available_fn}"
+  fi
+
   for ptgt in $*; do
     [ ${#ptgt} -gt 10 -a "${ptgt: -10}" = '-debuginfo' ] && continue
+
+    $GREP -qw "^${ptgt}$" "${list_available_fn}" &> /dev/null && \
+      continue
+
+    # fallback method, some packages might be available through Provides
     ${TDNF} $REPOS_OPT "--releasever=$TO_VERSION" list available \
-      ${providing_pkgs_map[$ptgt]:-$ptgt} > /dev/null 2>&1 && \
-        continue
+       ${providing_pkgs_map[$ptgt]:-$ptgt} &> /dev/null && continue
+
     missing_pkgs_arr+=($ptgt)
   done
+
   builtin echo ${missing_pkgs_arr[@]}
   return ${#missing_pkgs_arr[@]}
 }
@@ -352,7 +383,6 @@ function find_extra_erased_pkgs() {
   return ${#unexpected_pkgs_arr[@]}
 }
 
-
 #Some packages are deprecaed in 5.0, lets remove them before upgrading
 function remove_unsupported_packages() {
   local rc=0
@@ -367,7 +397,6 @@ function remove_unsupported_packages() {
     fi
   fi
 }
-
 
 # Usage1: tdnf_makecache
 # Usage2; tdnf_makecache releasever
@@ -459,8 +488,7 @@ function install_all_from_repo() {
 }
 
 # Removes those packages named in --rm-pkgs-pre option before upgrading
-function pre_upgrade_rm_pkgs()
-{
+function pre_upgrade_rm_pkgs() {
   local pkglist=''
   local p
 
@@ -485,8 +513,7 @@ function pre_upgrade_rm_pkgs()
 }
 
 # Removes those packages named in --rm-pkgs-post after upgrade
-function post_upgrade_rm_pkgs()
-{
+function post_upgrade_rm_pkgs() {
   local pkglist=''
   local p
 
@@ -514,7 +541,8 @@ function post_upgrade_rm_pkgs()
 # end-user
 function backup_rpms_list_n_db() {
   local rpm_db_loc=$1
-  TMP_BACKUP_LOC="$($MKTEMP -p /tmp -d photon-upgrade-XXX)"
+  TMP_BACKUP_LOC="/tmp/${PROG}-${TIMESTAMP}"
+  ${MKDIR} -p ${TMP_BACKUP_LOC} || exit 1
   local rpmqa_file="$TMP_BACKUP_LOC/rpm-qa.txt"
 
   echo "Recording list of all installed RPMs on this machine to $rpmqa_file."
@@ -785,7 +813,11 @@ function verify_version_and_upgrade() {
         )
       )
       if is_precheck_running; then
-        echo "Prechecks done, exiting."
+        if [ $rc -eq 0 ]; then
+          echo "Prechecks: PASS, exiting with status($rc)."
+        else
+          echoerr "Prechecks: FAIL, exiting with status($rc)."
+        fi
         exit $rc
       fi
       remove_debuginfo_packages

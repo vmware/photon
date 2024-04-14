@@ -53,7 +53,7 @@ function relocate_rpmdb() {
   local nnew=0
   local rc=0
 
-  mkdir -p $NEW_RPMDB_PATH
+  ${MKDIR} -p $NEW_RPMDB_PATH
   if [ -d "$NEW_RPMDB_PATH/rpm" ]; then
     ${RM} -rf "$NEW_RPMDB_PATH/rpm"
   fi
