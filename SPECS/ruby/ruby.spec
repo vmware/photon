@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -21,6 +21,9 @@ Patch6:         CVE-2023-28756.patch
 Patch7:         CVE-2021-41817.patch
 Patch8:         CVE-2024-27281.patch
 Patch9:         CVE-2021-41816.patch
+Patch10:        CVE-2023-36617-1.patch
+Patch11:        CVE-2023-36617-2.patch
+Patch12:        CVE-2023-28755.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -86,7 +89,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 
 %changelog
-* Fri APr 12 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-8
+* Mon Apr 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-9
+- Fix CVE-2023-36617, CVE-2023-28755
+* Fri Apr 12 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-8
 - Fix CVE-2021-41816
 * Wed Mar 27 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.4-7
 - Fix CVE-2024-27281
