@@ -1,14 +1,14 @@
 Summary:    ODBC driver manager
 Name:       freetds
 Version:    1.1.36
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://www.unixodbc.org/
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    ftp://ftp.%{name}.org/pub/%{name}/stable/%{name}-%{version}.tar.gz
-%define sha1 freetds=f4b2d2fea70bd5c7f62e900b123779759cdb1a5e
+%define sha512 %{name}=5f650760bc78d91e217042a8c7882ba38c552346901dd89b62d0166a8777fe64aec2e0246adbf52fede2e4e3d67f1542b5c2a5ad636014cde49eceeccceb2b3b
 
 BuildRequires: unixODBC-devel
 BuildRequires: gnutls-devel
@@ -59,10 +59,10 @@ and can be installed even if FreeTDS main package is not installed
     --with-tdsver=auto \
     --with-unixodbc \
     --with-gnutls
-make
+make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.a'  -delete
 find %{buildroot} -name '*.la' -delete
 
@@ -109,6 +109,8 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 %{_docdir}/%{name}/*
 
 %changelog
+*   Mon Apr 22 2024 Roye Eshed <roye.eshed@broadcom.com> 1.1.36-3
+-   Bump version as a part of unixODBC upgrade
 *   Mon May 31 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.1.36-2
 -   Bump version to fix nettle dependancy issue.
 *   Fri May 15 2020 Dweep Advani <dadvani@vmware.com> 1.1.36-1
