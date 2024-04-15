@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        5.9
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Source0:        http://www.squid-cache.org/Versions/v5/%{name}-%{version}.tar.xz
@@ -26,6 +26,9 @@ Patch6:         backport-CVE-2023-49286.patch
 Patch7:         CVE-2023-49286.patch
 Patch8:         CVE-2023-50269.patch
 Patch9:         CVE-2024-23638.patch
+Patch10:        CVE-2023-5824.patch
+Patch11:        CVE-2024-25111.patch
+Patch12:        CVE-2024-25617.patch
 
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  autoconf
@@ -140,7 +143,7 @@ mkdir -p src/icmp/tests
 mkdir -p tools/squidclient/tests
 mkdir -p tools/tests
 
-make %{?_smp_mflags} DEFAULT_SWAP_DIR=%{_localstatedir}/spool/squid
+make %{?_smp_mflags} CXXFLAGS="-std=c++17" DEFAULT_SWAP_DIR=%{_localstatedir}/spool/squid
 
 %install
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
@@ -233,6 +236,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Mon Apr 15 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.9-6
+- Patched CVE-2023-5824, CVE-2024-25111 and CVE-2024-25617
 * Fri Feb 02 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.9-5
 - Patched CVE-2024-23638
 * Tue Jan 02 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 5.9-4
