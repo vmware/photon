@@ -1,22 +1,20 @@
 Summary:        Ruby
 Name:           ruby
-Version:        3.1.2
-Release:        6%{?dist}
+Version:        3.1.4
+Release:        1%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9155d1150398eaea7c9954af61ecf8dfdb885cfcf63a67bbcf6c92e282cd3ccac0ff9234d039286a9623297b65197441438c37f707e31d270ce2fe11e8f38a44
+Source0:        https://cache.ruby-lang.org/pub/ruby/3.1/%{name}-%{version}.tar.gz
+%define sha512 %{name}=41cf1561dd7eb249bb2c2f5ea958884880648cc1d11da9315f14158a2d0ff94b2c5c7d75291a67e57e1813d2ec7b618e5372a9f18ee93be6ed306f47b0d3199a
 
-Patch0:         re-enable_gem_extension_build_1.patch
-Patch1:         re-enable_gem_extension_build_2.patch
-Patch2:         re-enable_gem_extension_build_3.patch
-Patch3:         re-enable_gem_extension_build_4.patch
-Patch4:         CVE-2021-33621.patch
-Patch5:         CVE-2024-27281.patch
+Patch1:         CVE-2024-27281.patch
+Patch2:         CVE-2024-27280.patch
+Patch3:         CVE-2023-36617-1.patch
+Patch4:         CVE-2023-36617-2.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -90,6 +88,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Mon Apr 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-1
+- Upgrade to 3.1.4 to Fix CVE-2024-27280, CVE-2023-36617, CVE-2023-28755
 * Tue Mar 26 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-6
 - Fix CVE-2024-27281
 * Wed Feb 07 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-5
