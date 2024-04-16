@@ -3,8 +3,8 @@
 
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
-Version:        6.6
-Release:        3%{?dist}
+Version:        6.9
+Release:        1%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.squid-cache.org/Versions/v6/%{name}-%{version}.tar.xz
-%define sha512 %{name}=4ab261ed85ad674288467500aca9d8a48e3918b55f777635c0ba7a2551f248d35536848a5fbf2c946490a818004727f2aed33144f0a3ebab0be36cc4cffb020c
+%define sha512 %{name}=2666551caca39fa6ca49b56b537645dd043ee0c99b805c433cf714172e6062590fd6ed942043df1a3b543f30c039f3ab701493187dc6a0a4a8311217417c366e
 
 Source1: %{name}.sysconfig
 Source2: %{name}.pam
@@ -237,6 +237,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Tue Apr 16 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.9-1
+- Update to version 6.9
 * Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.6-3
 - Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.6-2
