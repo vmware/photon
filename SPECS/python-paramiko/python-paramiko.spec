@@ -1,7 +1,7 @@
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        2.10.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -53,6 +53,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Mon Apr 15 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.10.3-6
+- Bump to compile with python3-pycryptodome v3.20.0
 * Fri Dec 22 2023 Mukul Sikka <msikka@vmware.com> 2.10.3-5
 - Fix for CVE-2023-48795
 * Tue Dec 19 2023 Prashant S Chauhan <psingchauha@vmware.com> 2.10.3-4
