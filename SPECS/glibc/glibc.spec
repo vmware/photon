@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -31,6 +31,7 @@ Patch1:         0002-malloc-arena-fix.patch
 Patch500:       CVE-2023-6246.patch
 Patch501:       CVE-2023-6779.patch
 Patch502:       CVE-2023-6780.patch
+Patch503:       CVE-2024-2961.patch
 
 Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
@@ -364,6 +365,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Apr 16 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-10
+- Fix for CVE-2024-2961.patch
 * Tue Jan 23 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-9
 - Fix for CVE-2023-6246, CVE-2023-6779, CVE-2023-6780
 * Thu Oct 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.36-8
