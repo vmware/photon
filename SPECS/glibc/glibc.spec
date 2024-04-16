@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        25%{?dist}
+Release:        26%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -52,6 +52,7 @@ Patch32:        CVE-2021-3999.patch
 # CVE-2023-4813
 Patch33:        0001-Simplify-allocations-and-fix-merge-and-continue-acti.patch
 Patch34:        CVE-2023-4806_CVE-2023-5156.patch
+Patch35:        CVE-2024-2961.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -144,6 +145,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch32 -p1
 %patch33 -p1
 %patch34 -p1
+%patch35 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -355,6 +357,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Tue Jan 09 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.28-26
+-   Fix CVE-2024-2961
 *   Tue Jan 09 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.28-25
 -   Fix CVE-2023-4806 and CVE-2023-5156
 *   Fri Oct 13 2023 Ajay Kaher <akaher@vmware.com> 2.28-24
