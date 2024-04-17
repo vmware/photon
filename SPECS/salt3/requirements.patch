@@ -1,0 +1,6 @@
+diff --git a/requirements/base.txt b/requirements/base.txt
+index 96037ccf14..712dcca023 100644
+--- a/requirements/base.txt
++++ b/requirements/base.txt
+@@ -7 +6,0 @@ distro>=1.0.1
+-contextvars
