@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.214
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -543,6 +543,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Apr 17 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.214-4
+- Fix CVE-2024-26587, Disable CONFIG_NETDEVSIM
 * Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.214-3
 - Fix for CVE-2023-1192
 * Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2
