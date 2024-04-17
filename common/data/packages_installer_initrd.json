@@ -61,6 +61,7 @@
         "ostree",
         "ostree-grub2",
         "ostree-libs",
+        "open-vm-tools",
         "lvm2"],
 
     "packages_x86_64": ["grub2-pc"]

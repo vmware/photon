@@ -80,17 +80,16 @@ This indicates that the "text" field is plain text. It is then encrypted and use
 	<td>Specify a boolean value to use linux esx instead of generic linux. 
 </td>
 	</tr><tr>
-	<td>type</td>
-	<td>Specify the type of package. 
-<p> Specify "full", "minimal" or "micro". 
-</td>
-	</tr><tr>
 	<td>postinstall</td>
 	<td>Specify an array of bash commands to execute after install. <p> See the example for partitions.
 </td>
 	</tr><tr>
 	<td>public_key</td>
 	<td>Optional. <p>The public key that you require to install for password-less logins. <p> This key is created in authorized_keys in the .ssh directory.
+</td>
+	</tr><tr>
+	<td>insecure_repo</td>
+	<td>Specify a boolean value to let tdnf skip https validation of remote RPM repos
 </td>
 	</tr>
 	</tbody>
@@ -122,9 +121,25 @@ Here is a sample kickstart configuration file:
 
 ## Unattended Installation Through Kickstart
 
-For an unattended installation, you pass the `ks=<config_file>` parameter to the kernel command. To pass the config file, there are two options: by providing it on the ISO or by serving it from an HTTP server. 
+### Installing as ESXi VM
 
-The syntax to pass the config-file to the kernel through the ISO takes the following form: 
+For an unattended installation, the kickstart configuration needs to be passed to the installer. For installing as ESXi VMs, we provide an easy way through VM extra settings:
+
+    guestinfo.kickstart.data=<base64 encoded json configuration file>
+
+Or
+
+    guestinfo.kickstart.url=<URL to kickstart configuration file>
+
+The supported URL schemes are described below.
+
+### Generic installation
+
+If installing on other platforms or you'd rather prefer the generic kickstart installation path, the `ks=<URL to config_file>` parameter can be appended to the kernel command line, and the installer will take it up.
+
+The supported URL schemes are: cdrom:/, http://, https:// and https+insecure://
+
+For cdrom:/, it points to an absolute file path on the cdrom:
 
     ks=cdrom:/<config_file_path>
 
@@ -132,9 +147,7 @@ Here is an example:
 
     ks=cdrom:/isolinux/my_ks.cfg
 
-The syntax to serve the config-file to the kernel from an HTTP server (NOTE: DO NOT use https:// here) takes the following form: 
-
-    ks=http://<server>/<config_file_path>
+For https+insecure://, it's like https://, except that server certificate validation will be skipped.
 
 ## Building an ISO with a Kickstart Config File
 

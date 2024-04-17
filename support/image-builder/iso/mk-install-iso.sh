@@ -184,6 +184,10 @@ sed -i "s/ExecStart.*/ExecStart=-\/sbin\/agetty --autologin root --keep-baud 115
 #- Step 7 - Create installer script
 sed -i "s/root:.*/root:x:0:0:root:\/root:\/bin\/bootphotoninstaller/g" ${INITRD}/etc/passwd
 
+#- Step 7 - Disable vmtoolsd/vgauthd
+ln -s /dev/null ${INITRD}/etc/systemd/system/vmtoolsd.service
+ln -s /dev/null ${INITRD}/etc/systemd/system/vgauthd.service
+
 mkdir -p ${INITRD}/mnt/photon-root/photon-chroot
 rm -rf ${INITRD}/RPMS
 

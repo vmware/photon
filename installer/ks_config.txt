@@ -50,6 +50,14 @@ Kickstart config file is a json format with following possible parameters:
 	Default value: "photon-<randomized string>"
 	Example: { "hostname": "photon-machine" }
 
+"insecure_repo" (optional)
+	Set "sslverify=0" to the tdnf configuration of Photon installer
+	packages repo. The `insecure_installation=1` kernel command line
+	option has the same effect, except that it also allows insecure
+	kickstart URLs such as http:// and https:// without validation of
+	server certificates. This option is useful when the kernel option
+	is not set and you still want to allow insecure packages repo.
+
 "live" (optional)
 	Should be set to flase if target system will not be run on
 	host machine. When it set to false, installer will not add EFI boot

@@ -51,6 +51,7 @@ class Installer(object):
         'disk',
         'eject_cdrom',
         'hostname',
+        'insecure_repo',
         'install_linux_esx',
         'live',
         'log_level',
@@ -79,8 +80,7 @@ class Installer(object):
     linux_dependencies = ["devel", "drivers", "docs", "oprofile", "dtb", "hmacgen"]
 
     def __init__(self, working_directory="/mnt/photon-root",
-                 rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS",
-                 insecure_installation=False):
+                 rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS"):
         self.exiting = False
         self.interactive = False
         self.install_config = None
@@ -89,7 +89,6 @@ class Installer(object):
         self.logger = None
         self.cmd = None
         self.working_directory = working_directory
-        self.insecure_installation = insecure_installation
 
         if os.path.exists(self.working_directory) and os.path.isdir(self.working_directory) and working_directory == '/mnt/photon-root':
             shutil.rmtree(self.working_directory)
@@ -876,7 +875,7 @@ class Installer(object):
                 repo_file.write("baseurl=file://{}\n".format(self.rpm_cache_dir))
                 keepcache = True
             repo_file.write("gpgcheck=0\nenabled=1\n")
-            if self.insecure_installation:
+            if self.install_config.get('insecure_repo', False):
                 repo_file.write("sslverify=0\n")
         with open(self.tdnf_conf_path, "w") as conf_file:
             conf_file.writelines([
