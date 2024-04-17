@@ -13,7 +13,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.14
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -90,6 +90,9 @@ Conflicts: %{name} < 13.14-4%{?dist}
 %package libs
 Summary:    The shared libraries required for any PostgreSQL clients
 Group:      Applications/Databases
+Requires:   krb5
+Requires:   openldap
+Requires:   openssl
 Requires:   chkconfig
 Requires(postun): chkconfig
 
@@ -679,6 +682,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Apr 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-5
+- Fix libs package requires
 * Mon Apr 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-4
 - Introduce client subpackage, make main package a meta package
 * Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-3
