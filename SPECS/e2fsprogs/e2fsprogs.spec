@@ -1,7 +1,7 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.46.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
@@ -16,8 +16,10 @@ Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox < 0.8.2-2
 
 BuildRequires:  util-linux-devel
+BuildRequires:  fuse-devel
 
 Requires:       util-linux-libs
+Requires:       fuse
 
 %description
 The E2fsprogs package contains the utilities for handling the ext2 file system.
@@ -86,6 +88,7 @@ make %{?_smp_mflags} check
 %{_bindir}/compile_et
 %{_bindir}/mk_cmds
 %{_bindir}/chattr
+%{_bindir}/fuse2fs
 %{_bindir}/lsattr
 %{_libdir}/e2initrd_helper
 %{_datadir}/ss/ct_c.awk
@@ -140,6 +143,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Fri Apr 19 2024 Oliver Kurth <oliver.kurth@broadcom.com> 1.46.5-3
+- build and install fuse2fs
 * Wed Dec 06 2023 Roye Eshed <reshed@vmware.com> 1.46.5-2
 - Fix for CVE-2022-1304.
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.46.5-1
