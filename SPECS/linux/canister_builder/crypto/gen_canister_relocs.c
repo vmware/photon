@@ -411,6 +411,9 @@ static void parse_sections(Elf *elf, size_t shstrndx, int *n_syms, size_t *strnd
 		 *
 		 * Skip ".note.gnu.property" section from canister measurement
 		 * as this section is stripped off from vmlinux.
+		 *
+		 * Skip __mcount_loc section for canister measurement as it will be
+		 * discarded during initial bootup process before canister measurement.
 		 */
 		if (!strncmp(name, ".discard.", 9) ||
 		    !strcmp(name, ".exitcall.exit") ||
@@ -420,6 +423,7 @@ static void parse_sections(Elf *elf, size_t shstrndx, int *n_syms, size_t *strnd
 		    !strncmp(name, "___kcrctab", 10) ||
 		    !strcmp(name, "__ex_table") ||
 		    !strcmp(name, "__jump_table") ||
+		    !strcmp(name, "__mcount_loc") ||
 		    !strcmp(name, ".note.gnu.property"))
 			continue;
 

@@ -1,5 +1,6 @@
 %global security_hardening none
 %global __cmake_in_source_build 0
+%global lkcm_version 5.0.0
 
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1
@@ -10,6 +11,10 @@
 
 # Set this flag to 0 to build without canister
 %global fips 1
+%endif
+
+%if 0%{?canister_build}
+%global fips 0
 %endif
 
 %if 0%{?acvp_build}
@@ -25,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.83
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -76,19 +81,36 @@ Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
-%endif
 
-%if 0%{?fips}
 Source36: fips_canister_wrapper.c
 Source37: fips_canister_wrapper.h
 Source38: fips_canister_wrapper_asm.S
 Source39: fips_canister_wrapper_common.h
+# fips_canister_wrapper_internal{.c,.h} is the latest released
+# wrapper files. These files may differ between 2 canister versions.
+# During canister binary update, rename
+# %%{fips_canister_version}-fips_canister_wrapper_internal{.c,.h}
+# files to fips_canister_wrapper_internal{.c,.h}
+%if 0%{?fips}
 Source40: fips_canister_wrapper_internal.h
 Source41: fips_canister_wrapper_internal.c
 %endif
 
 # CVE
 Source42: CVE-2023-39191.patches
+
+%if 0%{?canister_build}
+Source43: fips_canister_wrapper_internal.h
+Source44: fips_canister_wrapper_internal.c
+Source45: fips_integrity.c
+Source46: fips_integrity.h
+Source47: update_canister_hmac.sh
+Source48: canister_combine.lds
+Source49: gen_canister_relocs.c
+Source50: check_kernel_struct_in_canister.inc
+%endif
+%endif
+
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
 Patch1: net-Double-tcp_mem-limits.patch
@@ -144,6 +166,11 @@ Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 Patch59: 0002-Add-.sbat-section.patch
 Patch60: 0003-Verify-SBAT-on-kexec.patch
 %endif
+
+#Secure:
+Patch61: gcc-rap-plugin-with-kcfi.patch
+Patch62: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
+Patch63: fix-warn-definition.patch
 
 # CVE: [100..199]
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -273,6 +300,31 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 
+%if 0%{?canister_build}
+# Below patches are common for fips and canister_build flags
+# 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
+# in both places until final canister binary is released
+Patch10000: 0001-FIPS-canister-binary-usage.patch
+Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+# Below patches are specific to canister_build flag
+Patch10003: 0002-FIPS-canister-creation.patch
+Patch10004: 0003-aesni_intel-Remove-static-call.patch
+Patch10005: 0004-Disable-retpoline_sites-and-return_sites-section-in-.patch
+Patch10006: 0005-Move-__bug_table-section-to-fips_canister_wrapper.patch
+Patch10007: 0006-crypto-Add-prandom-module_kthread_exit-to-canister-w.patch
+Patch10008: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
+Patch10009: 0008-Move-kernel-structures-usage.patch
+Patch10010: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
+Patch10011: 0001-List-canister-objs-in-a-file.patch
+# Patch for RSA FIPS 186-5 compliance
+Patch10012: 0001-crypto-rsa-allow-only-odd-e-and-restrict-value-in-FI.patch
+Patch10013: 0001-Handle-approved-and-non-approved-services.patch
+
+%if 0%{?kat_build}
+Patch10014: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
+%endif
+%endif
+
 BuildRequires:  bc
 BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
@@ -379,6 +431,16 @@ Requires:   linux-tools = %{version}-%{release}
 This package contains the bpftool, which allows inspection and simple
 manipulation of eBPF programs and maps.
 
+%if 0%{?canister_build}
+%package fips-canister
+Summary:       FIPS canister tarball
+Group:         System Environment/Kernel
+Requires:      python3
+Requires:      %{name} = %{version}-%{release}
+%description fips-canister
+The kernel fips-canister
+%endif
+
 %prep
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
@@ -404,6 +466,9 @@ manipulation of eBPF programs and maps.
 # VMW x86
 %autopatch -p1 -m50 -M60
 %endif
+
+#Secure
+%autopatch -p1 -m61 -M63
 
 # CVE
 %autopatch -p1 -m100 -M134
@@ -448,6 +513,14 @@ pushd ../amzn-drivers-efa_linux_%{efa_version}
 %autopatch -p1 -m1400 -M1409
 popd
 
+%if 0%{?canister_build}
+%autopatch -p1 -m10000 -M10013
+
+%if 0%{?kat_build}
+%autopatch -p1 -m10014 -M10014
+%endif
+%endif
+
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
       crypto/jitterentropy-%{jent_major_version}/
@@ -480,6 +553,7 @@ sed -i '/# end of Userspace interface/{G;}' .config
 %endif
 
 cp %{SOURCE20} photon_sb2020.pem
+%ifarch x86_64
 %if 0%{?fips}
 cp %{SOURCE36} crypto/
 cp %{SOURCE37} crypto/
@@ -493,7 +567,31 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    crypto/
 %endif
 
+%if 0%{?canister_build}
+cp %{SOURCE36} crypto/
+cp %{SOURCE37} crypto/
+cp %{SOURCE38} crypto/
+cp %{SOURCE39} crypto/
+cp %{SOURCE43} crypto/fips_canister_wrapper_internal.h
+cp %{SOURCE44} crypto/fips_canister_wrapper_internal.c
+cp %{SOURCE45} crypto/
+cp %{SOURCE46} crypto/
+cp %{SOURCE47} crypto/
+cp %{SOURCE48} crypto/
+cp %{SOURCE49} crypto/
+%endif
+%endif
+
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
+
+%if 0%{?canister_build}
+sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
+sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
+
+%if 0%{?kat_build}
+sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_TAMPER_TEST=y' .config
+%endif
+%endif
 
 %ifarch x86_64
 sed -e "s,@@NAME@@,%{name},g" \
@@ -547,7 +645,23 @@ cd build
 %cmake_build
 popd
 
+%if 0%{?canister_build}
+%include %{SOURCE50}
+%endif
+
 %install
+%if 0%{?canister_build}
+install -vdm 755 %{buildroot}%{_libdir}/fips-canister/
+pushd crypto/
+mkdir fips-canister-%{lkcm_version}-%{version}-%{release}-secure
+cp fips_canister.o \
+   fips_canister-kallsyms \
+   .fips_canister.o.cmd \
+   fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
+tar -cvjf fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
+popd
+cp crypto/fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 %{buildroot}%{_libdir}/fips-canister/
+%endif
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
@@ -601,7 +715,7 @@ ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
 
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet loadpin.enabled=0 audit=1 slab_nomerge
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -737,7 +851,15 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_sbindir}/bpftool
 %{_datadir}/bash-completion/completions/bpftool
 
+%if 0%{?canister_build}
+%files fips-canister
+%defattr(-,root,root)
+%{_libdir}/fips-canister/*
+%endif
+
 %changelog
+* Thu May 02 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-5
+- Port secure kernel changes to generic
 * Tue Apr 23 2024 Roye Eshed <roye.eshed@broadcom.com> 6.1.83-4
 - Fix for CVE-2023-52586 by disabling CONFIG_DRM_MSM
 * Thu Apr 18 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.83-3
