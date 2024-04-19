@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.90
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -473,6 +473,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon May 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.90-2
+- Optimize gdb commands in check_fips_canister_compatibility script
 * Mon May 13 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.90-1
 - Update to version 6.1.90
 * Sun Apr 14 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2

@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.90
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -469,6 +469,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon May 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.90-2
+- Optimize gdb commands in check_fips_canister_compatibility script
 * Mon May 13 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.90-1
 - Update to version 6.1.90
 * Thu May 09 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-4

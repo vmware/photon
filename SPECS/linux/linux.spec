@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.90
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -846,6 +846,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon May 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.90-4
+- Optimize gdb commands in check_fips_canister_compatibility script
 * Fri May 17 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.90-3
 - linux-generic will now obsolete and provide linux-secure as linux-secure
   has been merged into linux-generic. This will ensure tdnf update on
