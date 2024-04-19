@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
-Version:        0.7.1
-Release:        2%{?dist}
+Version:        0.7.3
+Release:        1%{?dist}
 License:        Apache 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/vmware/network-config-manager
 
 Source0: https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=2140939ad1965326496b630c7ef55f6bd5fdbfef9823284e0fea6b0ceddf2cde199ab9539cfb8d0a0f46c609ee6bbd488d09d767e020ce0d3c653bb03222283d
+%define sha512 %{name}-%{version}=34a587a87a91792b7063af57459f668b30436ad91a077f6a93eab32bb5a0d72862966a6a3c6b9473fae41ee638daad69534f4aca2014c56e04548e744c22df37
 
 BuildRequires: glib-devel
 BuildRequires: json-c-devel
@@ -25,7 +25,6 @@ Requires: libyaml
 Requires: systemd
 Requires: glib
 Requires: libmnl
-Requires: nftables-libs
 
 Provides: netmgmt
 Obsoletes: netmgmt
@@ -81,6 +80,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu May 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.7.3-1
+- Version upgrade to v0.7.3
 * Thu Feb 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.1-2
 - Require nftables-libs
 * Fri Jan 12 2024 Susant Sahani <susant.sahani@broadcom.com> 0.7.1-1
