@@ -13,8 +13,8 @@
 
 Summary:        Go
 Name:           go
-Version:        1.20.12
-Release:        2%{?dist}
+Version:        1.21.7
+Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -22,7 +22,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha512  go=3f4d1a22a0f1dd7e8feb008517e43b32c3600ce77168e5edfb75b4060577362ae62f28c9891de0f7bf553407bd8e09efc1563d34ee8af5285b3c80b3946f4b65
+%define sha512  go=5cadc458265deea2650fbbc5b0652e19e858fa7a7b929ea717e82ee4be2af45214a9dfc5b8b799003e83b92aa80141962a472d1d4f0653e97e99df5b68c88e5d
 Requires:       glibc
 Requires:       gcc
 
@@ -54,7 +54,7 @@ rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir} %{buildroot}%{goroot}
 
-cp -R api bin doc lib pkg src misc VERSION %{buildroot}%{goroot}
+cp -R api bin doc lib pkg src misc VERSION go.env %{buildroot}%{goroot}
 
 # remove the unnecessary zoneinfo file (Go will always use the system one first)
 rm -rfv %{buildroot}%{goroot}/lib/time
@@ -118,6 +118,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Thu Apr 18 2024 Mukul Sikka <msikka@vmware.com> 1.21.7-1
+- Upgrade to 1.21.7
 * Fri Mar 22 2024 Mukul Sikka <msikka@vmware.com> 1.20.12-2
 - Fix for CVE-2023-45288
 * Fri Dec 15 2023 Mukul Sikka <msikka@vmware.com> 1.20.12-1
