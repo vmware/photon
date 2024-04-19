@@ -16,7 +16,7 @@ Source0: https://github.com/p11-glue/p11-kit/releases/download/%{version}/%{name
 Source1: update-ca-trust
 
 BuildRequires: gcc
-BuildRequires: libtasn1-devel >= 2.3
+BuildRequires: libtasn1-devel
 BuildRequires: libffi-devel
 BuildRequires: gettext
 BuildRequires: gtk-doc
@@ -96,17 +96,15 @@ Update CA trust tool
 mkdir -p %{buildroot}%{_sysconfdir}/pkcs11/modules \
          %{buildroot}%{_ca_trust_dir}/extracted/{pem,openssl,java,edk2}
 
-cp -p %{SOURCE1} %{buildroot}%{_bindir}/update-ca-trust
+install -D -p -m 0755 %{SOURCE1} %{buildroot}%{_bindir}/update-ca-trust
 
 mv %{buildroot}%{_sysconfdir}/pkcs11/pkcs11.conf.example \
        %{buildroot}%{_sysconfdir}/pkcs11/pkcs11.conf
 
 rm -rf %{buildroot}%{_datadir}/gtk-doc
 
-%if 0%{?with_check}
 %check
 %make_build check
-%endif
 
 %clean
 rm -rf %{buildroot}/*

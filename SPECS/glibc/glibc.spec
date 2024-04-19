@@ -171,7 +171,7 @@ install -vdm 755 %{buildroot}%{_libdir}/locale
 cp -v ../%{name}-%{version}/nscd/nscd.conf %{buildroot}%{_sysconfdir}/nscd.conf
 #       Install locale generation script and config file
 cp -v %{SOURCE2} %{buildroot}%{_sysconfdir}
-cp -v %{SOURCE1} %{buildroot}%{_sbindir}
+install -D -p -m 0755 %{SOURCE1} %{buildroot}%{_sbindir}
 #       Remove unwanted cruft
 rm -rf %{buildroot}%{_infodir}
 #       Install configuration files
@@ -224,7 +224,6 @@ popd
 mv %{buildroot}/sbin/* %{buildroot}/%{_sbindir}
 rmdir %{buildroot}/sbin
 
-%if 0%{?with_check}
 %check
 cd %{_builddir}/glibc-build
 make %{?_smp_mflags} check ||:
@@ -253,7 +252,6 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 # check for exact 'n' failures
 [ $(grep ^FAIL tests.sum | wc -l) -ne $n ] && exit 1 ||:
-%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig

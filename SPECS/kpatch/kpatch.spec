@@ -88,6 +88,13 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_bindir}
 cp %{SOURCE3} %{buildroot}%{_sysconfdir}/auto_livepatch
 cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 
+chmod +x %{buildroot}%{_bindir}/*
+
+%{_fixperms} %{buildroot}/*
+
+%clean
+rm -rf %{buildroot}
+
 %files
 %defattr(-,root,root,-)
 %{_sbindir}/kpatch

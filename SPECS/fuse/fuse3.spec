@@ -33,21 +33,21 @@ userspace program.
 %package        devel
 Summary:        Header and development files
 Group:          Development/Libraries
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 Requires:       systemd-devel
 
 %description    devel
 It contains the libraries and header files to create fuse applications.
 
 %prep
-%autosetup -n libfuse-fuse-%{version}
+%autosetup -p1 -n libfuse-fuse-%{version}
 
 %build
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 CONFIGURE_OPTS=(
-   --prefix=/usr
+   --prefix=%{_usr}
    -D examples=false
 )
 

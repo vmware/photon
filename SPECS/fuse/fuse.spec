@@ -42,11 +42,6 @@ sh ./makeconf.sh
 mkdir -p %{buildroot}%{_libdir}/%{name}
 %make_install %{?_smp_mflags}
 
-install -v -m755 -d %{_docdir}/%{name}-%{version}
-
-install -v -m644 doc/{how-fuse-works,kernel.txt} \
-                 %{_docdir}/%{name}-%{version}
-
 %files
 %defattr(-,root,root)
 %{_libdir}/libfuse.so.*

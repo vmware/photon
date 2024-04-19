@@ -1,16 +1,19 @@
-Summary:	cifs client utils
-Name:		cifs-utils
-Version:	7.0
-Release:	1%{?dist}
-License:	GPLv3
-URL:		http://wiki.samba.org/index.php/LinuxCIFS_utils
-Group:		Applications/Nfs-utils-client
+Summary:    cifs client utils
+Name:       cifs-utils
+Version:    7.0
+Release:    1%{?dist}
+License:    GPLv3
+URL:        http://wiki.samba.org/index.php/LinuxCIFS_utils
+Group:      Applications/Nfs-utils-client
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
 Source0:        https://ftp.samba.org/pub/linux-cifs/cifs-utils/cifs-utils-%{version}.tar.bz2
 %define sha512  cifs-utils=4c57741af0c4567a78f352c73caca998881666a5ed36536275cfa775efd66ff1a44ebe539a8ed96c409c5b08a1378266964ce667a27e9fc7f2d43999c63dd0eb
-Vendor:		VMware, Inc.
-Distribution:	Photon
+
 BuildRequires:  libcap-ng-devel
 BuildRequires:  libtalloc-devel
+
 Requires:       libcap-ng
 
 %description
@@ -19,7 +22,7 @@ Cifs-utils, a package of utilities for doing and managing mounts of the Linux CI
 %package devel
 Summary:    The libraries and header files needed for Cifs-Utils development.
 Group:      Development/Libraries
-Requires:   cifs-utils = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
 
 %description devel
 Provides header files needed for Cifs-Utils development.
@@ -29,16 +32,17 @@ Provides header files needed for Cifs-Utils development.
 
 %build
 %configure \
-    ROOTSBINDIR=/usr/sbin \
+    ROOTSBINDIR=%{_sbindir} \
     --disable-pam \
-    --disable-systemd &&
+    --disable-systemd
+
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
 %check
-make %{?_smp_mflags} check
+%make_build check
 
 %files
 %defattr(-,root,root)
@@ -67,7 +71,7 @@ make %{?_smp_mflags} check
 -       Upgraded to version 6.8
 *       Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 6.7-1
 -       Upgraded to version 6.7
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.4-2
--	GA - Bump release of all rpms
-*	Mon Jan 25 2016 Divya Thaluru <dthaluru@vmware.com> 6.4-1
--	Initial build.	First version.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.4-2
+-   GA - Bump release of all rpms
+*   Mon Jan 25 2016 Divya Thaluru <dthaluru@vmware.com> 6.4-1
+-   Initial build.  First version.

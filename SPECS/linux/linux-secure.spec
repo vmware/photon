@@ -344,6 +344,7 @@ cp %{SOURCE24} crypto/fips_canister_wrapper_internal.c
 cp %{SOURCE25} crypto/
 cp %{SOURCE26} crypto/
 cp %{SOURCE27} crypto/
+chmod a+x crypto/$(basename %{SOURCE27})
 cp %{SOURCE28} crypto/
 cp %{SOURCE29} crypto/
 %endif

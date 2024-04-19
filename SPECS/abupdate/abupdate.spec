@@ -39,7 +39,7 @@ as well as switch between sets, and rollback from A to B.
 
 %install
 mkdir -p %{buildroot}{%{_sbindir},%{_sysconfdir},%{_unitdir},%{_docdir}}
-cp %{SOURCE0} %{buildroot}%{_sbindir}
+install -D -p -m 0755 %{SOURCE0} %{buildroot}%{_sbindir}
 cp %{SOURCE1} %{buildroot}%{_sysconfdir}
 cp %{SOURCE2} %{buildroot}%{_unitdir}
 cp %{SOURCE3} %{buildroot}%{_docdir}

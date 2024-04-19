@@ -515,7 +515,8 @@ autoreconf -ivf
 %make_build
 
 %install
-%make_install %{?_smp_mflags}
+%make_install %{?_smp_mflags} || \
+    %make_install %{?_smp_mflags}
 
 # Prepare language files
 %find_lang %{name}
