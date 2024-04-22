@@ -12,8 +12,8 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.27.3
-Release:        10%{?dist}
+Version:        1.27.13
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}.tar.gz=51cf0178c8a2a00798cc618c9918f556c418de137566db60a66a0c7556ee625b34cf86b1da241856599784588c0e3e8b81225dca627fea70a87c94adb073bb7a
+%define sha512 %{name}-%{version}.tar.gz=cffb7b0b29ef65bbf234a2743afac284ab119976eb12a0ea3b26582ae65d58b2b584781f72a252ea8dd1b950aa27622839eaafb3b561447bedd8edde09003b1f
 
 Source1: https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.gz
 %define sha512 contrib-%{contrib_ver}=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
@@ -263,6 +263,8 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
+* Mon Apr 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.13-1
+- Update to 1.27.13, fixes CVE-2024-3177
 * Wed Mar 13 2024 Mukul Sikka <msikka@vmware.com> 1.27.3-10
 - Bump version as a part of go upgrade
 * Fri Mar 08 2024 Anmol Jain <anmol.jain@broadcom.com> 1.27.3-9
