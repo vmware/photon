@@ -246,11 +246,11 @@ void fcw_bug(void)
 
 void *fcw_init_ratelimit_state(void *rs)
 {
+	struct ratelimit_state *_rs = kzalloc(sizeof(struct ratelimit_state),
+					GFP_KERNEL);
 	if (rs != NULL)
 		return rs;
 
-	struct ratelimit_state *_rs = kzalloc(sizeof(struct ratelimit_state),
-					GFP_KERNEL);
 	_rs->lock = __RAW_SPIN_LOCK_UNLOCKED(_rs.lock);
 	_rs->interval = DEFAULT_RATELIMIT_INTERVAL;
 	_rs->burst = DEFAULT_RATELIMIT_BURST;
