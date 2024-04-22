@@ -1,9 +1,11 @@
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name libxml-ruby
+%global ruby_ver 2.7.0
+
 Name:           rubygem-libxml-ruby
 Version:        3.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group:          Applications/Programming
 License:        BSD
@@ -11,17 +13,35 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/libxml-ruby-%{version}.gem
-%define sha1    libxml-ruby=dc4dba1a11af8854102f9455c65b63cb4e382df1
+%define sha512  libxml-ruby=21b5e045d48b9098f4e7330f9da54876f3467c9715ae5aaf224ad35f179f2ee20330377d70b3922c1d7adec8396cf152b38a29a619d1297ec74dffa67e9a66ce
+
 BuildRequires:  ruby >= 2.4.0
 BuildRequires:  libxml2-devel
-Requires:       ruby >= 2.4.0
+
+Requires:       ruby
+
 %description
 Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
+
 %prep
-%setup -q -c -T
+gem unpack %{SOURCE0}
+cd %{gem_name}-%{version}
+/bin/chmod -Rf a+rX,u+w,g-w,o-w .
+gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
+
 %build
+cd %{gem_name}-%{version}
+gem build %{gem_name}.gemspec
+gem install %{gem_name}-%{version}.gem
+
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+mkdir -p %{buildroot}%{gemdir}/{cache,doc,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
+cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
+cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
+cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
+cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
+cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
+cp -a %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
 
 %check
 cd %{buildroot}%{gemdir}/gems/libxml-ruby-%{version}
@@ -54,7 +74,10 @@ rake test
 %files
 %defattr(-,root,root,-)
 %{gemdir}
+
 %changelog
+*   Thu Apr 25 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.0-2
+-   Build from source
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
 -   Automatic Version Bump
 *   Fri Nov 23 2018 Sujay G <gsujay@vmware.com> 3.1.0-2
@@ -75,4 +98,3 @@ rake test
 -   GA - Bump release of all rpms
 *   Wed Nov 11 2015 Anish Swaminathan <anishs@vmware.com> 2.8.0-1
 -   Initial build
-
