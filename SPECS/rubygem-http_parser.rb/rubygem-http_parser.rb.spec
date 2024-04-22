@@ -1,10 +1,11 @@
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name http_parser.rb
+%global ruby_ver 3.1.0
 
 Name: rubygem-http_parser.rb
 Version:        0.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides ruby bindings to http parser
 Group:          Development/Languages
 License:        MIT
@@ -20,18 +21,33 @@ Provides: rubygem-http_parser.rb = %{version}
 Provides ruby bindings to http parser.
 
 %prep
-%autosetup -c -T
+gem unpack %{SOURCE0}
+cd %{gem_name}-%{version}
+/bin/chmod -Rf a+rX,u+w,g-w,o-w .
+gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
 
 %build
+cd %{gem_name}-%{version}
+gem build %{gem_name}.gemspec
+gem install %{gem_name}-%{version}.gem
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+mkdir -p %{buildroot}%{gemdir}/{cache,doc,plugins,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
+cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
+cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
+cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
+cp -a %{gemdir}/plugins %{buildroot}%{gemdir}/
+cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
+cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
+cp -a %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.0-2
+-   Update build command, to build with source code
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 0.8.0-1
 -   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.6.0-2

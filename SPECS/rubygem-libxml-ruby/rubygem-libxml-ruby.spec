@@ -1,9 +1,11 @@
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name libxml-ruby
+%global ruby_ver 3.1.0
+
 Name:           rubygem-libxml-ruby
 Version:        5.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group:          Applications/Programming
 License:        BSD
@@ -12,16 +14,35 @@ Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/libxml-ruby-%{version}.gem
 %define sha512    libxml-ruby=449464107c1b533c25ec3ba4e722f5805f1e487609939306ee4535ba9b8197e47d79d50fa69571f0dff9d7ab974ee848ce95679a6f64da84aaf109c367ef6829
+
 BuildRequires:  ruby >= 2.4.0
 BuildRequires:  libxml2-devel
+
 Requires:       ruby
+
 %description
 Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
+
 %prep
-%autosetup -c -T
+gem unpack %{SOURCE0}
+cd %{gem_name}-%{version}
+/bin/chmod -Rf a+rX,u+w,g-w,o-w .
+gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
+
 %build
+cd %{gem_name}-%{version}
+gem build %{gem_name}.gemspec
+gem install %{gem_name}-%{version}.gem
+
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+mkdir -p %{buildroot}%{gemdir}/{cache,doc,plugins,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
+cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
+cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
+cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
+cp -a %{gemdir}/plugins %{buildroot}%{gemdir}/
+cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
+cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
+cp -a %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
 
 %check
 cd %{buildroot}%{gemdir}/gems/libxml-ruby-%{version}
@@ -54,7 +75,10 @@ rake test
 %files
 %defattr(-,root,root,-)
 %{gemdir}
+
 %changelog
+*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.2-2
+-   Build from source
 *   Tue Mar 12 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.0.2-1
 -   Upgrade to v5.0.2
 *   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.4-2

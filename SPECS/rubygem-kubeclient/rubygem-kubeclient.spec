@@ -4,7 +4,7 @@
 
 Name:           rubygem-kubeclient
 Version:        4.10.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A client for Kubernetes REST api.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -32,12 +32,24 @@ BuildArch:      noarch
 A client for Kubernetes REST api.
 
 %prep
-%autosetup -n %{gem_name}-%{version}
+gem unpack %{SOURCE0}
+cd %{gem_name}-%{version}
+/bin/chmod -Rf a+rX,u+w,g-w,o-w .
+gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
 
 %build
+cd %{gem_name}-%{version}
+gem build %{gem_name}.gemspec
+gem install %{gem_name}-%{version}.gem
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+mkdir -p %{buildroot}%{gemdir}/{cache,doc,plugins,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
+cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
+cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
+cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
+cp -a %{gemdir}/plugins %{buildroot}%{gemdir}/
+cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
+cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
 [ -d %{buildroot}%{_libdir} ] && find %{buildroot}%{_libdir} -type f -perm /022 -exec chmod go-w {} \;
 
 %files
@@ -45,6 +57,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.10.1-3
+-   Build from source
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 4.10.1-2
 -   Fix requires
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 4.10.1-1

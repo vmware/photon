@@ -1,11 +1,12 @@
 %global debug_package   %{nil}
 %global gem_name        nokogiri
 %global gemdir          %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
+%global ruby_ver 3.1.0
 
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
 Version:        1.13.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -26,13 +27,26 @@ Requires:       libxslt
 Nokogiri is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features is the ability to search documents via XPath or CSS3 selectors.
 
 %prep
-%autosetup -c -T -p1
+gem unpack %{SOURCE0}
+cd %{gem_name}-%{version}
+/bin/chmod -Rf a+rX,u+w,g-w,o-w .
+gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
 
 %build
+cd %{gem_name}-%{version}
+gem build %{gem_name}.gemspec
+gem install --bindir %{_bindir}/ %{gem_name}-%{version}.gem
 
 %install
-NOKOGIRI_USE_SYSTEM_LIBRARIES=1 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
-%{_fixperms} %{buildroot}/*
+mkdir -p %{buildroot}%{gemdir}/{bin,cache,doc,plugins,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
+cp -a %{_bindir}/bundle %{_bindir}/bundler %{buildroot}%{gemdir}/bin/
+cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
+cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
+cp -a %{gemdir}/plugins %{buildroot}%{gemdir}/
+cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
+cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
+cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
+cp -a %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
 
 %clean
 rm -rf %{buildroot}/*
@@ -42,6 +56,8 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.13.9-4
+-   Build from source
 *   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.13.9-3
 -   Bump version as a part of libxml2 upgrade
 *   Fri Mar 10 2023 Shivani Agarwal <shivania2@vmware.com> 1.13.9-2
