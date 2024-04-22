@@ -24,30 +24,25 @@ and thereby inherits Discount’s numerous useful extensions to the Markdown lan
 
 %prep
 gem unpack %{SOURCE0}
-%autosetup -p1 -D -T -n  %{gem_name}-%{version}
+cd %{gem_name}-%{version}
+/bin/chmod -Rf a+rX,u+w,g-w,o-w .
 gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
 
 %build
+cd %{gem_name}-%{version}
 gem build %{gem_name}.gemspec
 gem install --bindir %{_bindir}/ %{gem_name}-%{version}.gem
 
 %install
-mkdir -p %{buildroot}%{gemdir}
-mkdir -p %{buildroot}%{gemdir}/bin
-mkdir -p %{buildroot}%{gemdir}/cache
-mkdir -p %{buildroot}%{gemdir}/doc
-mkdir -p %{buildroot}%{gemdir}/plugins
-mkdir -p %{buildroot}%{gemdir}/specifications
-mkdir -p %{buildroot}%{gemdir}/gems
-mkdir -p %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
-cp -pa %{_bindir}/rdiscount %{buildroot}%{gemdir}/bin/
-cp -pa %{gemdir}/build_info %{buildroot}%{gemdir}/
-cp -pa %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
-cp -pa %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
-cp -pa %{gemdir}/plugins %{buildroot}%{gemdir}/
-cp -pa %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications
-cp -pa %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems
-cp -pa %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
+mkdir -p %{buildroot}%{gemdir}/{bin,cache,doc,plugins,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
+cp -a %{_bindir}/bundle %{_bindir}/bundler %{buildroot}%{gemdir}/bin/
+cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
+cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
+cp -a %{gemdir}/plugins %{buildroot}%{gemdir}/
+cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
+cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
+cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
+cp -a %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
 
 %files
 %defattr(-,root,root,-)
