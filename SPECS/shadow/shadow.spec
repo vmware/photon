@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 License:        BSD
 Group:          Applications/System
@@ -95,6 +95,7 @@ sed -i 's@DICTPATH.*@DICTPATH\t/usr/share/cracklib/pw_dict@' \
 %make_install %{?_smp_mflags}
 mkdir -p %{buildroot}%{_sysconfdir}/default
 cp %{SOURCE12} %{buildroot}%{_sysconfdir}/default
+
 # Disable usergroups. Use "users" group by default (see /usr/sbin/useradd)
 # for all nonroot users.
 sed -i 's/USERGROUPS_ENAB.*/USERGROUPS_ENAB no/' %{buildroot}%{_sysconfdir}/login.defs
@@ -208,6 +209,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.13-5
+- Use pam_umask.so to set system-wide umask
 * Sat Dec 16 2023 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.13-4
 - Patched CVE-2023-29383, CVE-2023-4641
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.13-3
