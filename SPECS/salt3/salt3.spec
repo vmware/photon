@@ -6,7 +6,7 @@
 
 Name: salt3
 Version: 3005.5
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -292,6 +292,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Apr 15 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3005.5-2
+- Bump to compile with python3-pycryptodomex v3.20.0
 * Mon Feb 5 2024 Felippe Burk <saltstack-sre.pdl@broadcom.com> 3005.5-1
 - Update to 3005.5 cve release
 * Fri Oct 27 2023 Felippe Burk <saltstack_operations@vmware.com> 3005.4-1
