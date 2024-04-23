@@ -14,7 +14,7 @@
 
             "build-src-rpm" : true,
             "build-dbginfo-rpm" : true,
-            "build-dbginfo-rpm-list" : ["glibc", "linux"],
+            "build-dbginfo-rpm-list" : ["glibc", "linux","linux-esx"],
             "extra-packages-list": ["chromium"],
 
             "target" : "iso",
