@@ -18,7 +18,8 @@
         "build-dbginfo-rpm": true,
         "build-dbginfo-rpm-list": [
             "glibc",
-            "linux"
+            "linux",
+            "linux-esx"
         ],
         "extra-packages-list": [
             "chromium"
