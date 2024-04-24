@@ -24,7 +24,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
@@ -37,6 +37,7 @@ Source0: https://github.com/SSSD/sssd/releases/download/%{version}/%{name}-%{ver
 Source1: sssd.conf
 
 Patch0: 0001-replace-python-with-python3-in-sss_obfuscate.patch
+Patch1: CVE-2023-3758.patch
 
 Requires: sssd-ad = %{version}-%{release}
 Requires: sssd-common = %{version}-%{release}
@@ -1022,6 +1023,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Wed Apr 24 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-12
+- Fix CVE-2023-3758
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.8.2-11
 - Bump version as a part of gnutls upgrade
 * Mon Nov 27 2023 Harinadh D <hdommaraju@vmware.com> 2.8.2-10
