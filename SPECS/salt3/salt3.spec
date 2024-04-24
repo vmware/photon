@@ -1,5 +1,3 @@
-%global include_tests 1
-
 Name:           salt3
 Version:        3005.5
 Release:        2%{?dist}
@@ -17,10 +15,9 @@ Source3:        salt-syndic.service
 Source4:        salt-minion.service
 Source5:        salt-api.service
 Source6:        logrotate.salt
+Source7:        salt-default.preset
 
 Patch0:         requirements.patch
-
-BuildRoot:      %{_tmppath}/salt-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:      noarch
 
@@ -128,8 +125,7 @@ Salt Package Manager
 %build
 
 %install
-rm -rf %{buildroot}
-cd $RPM_BUILD_DIR/salt-%{version}
+cd %{_builddir}/salt-%{version}
 python3 setup.py install -O1 --root %{buildroot}
 
 # Add some directories
@@ -155,8 +151,34 @@ install -p -m 0644 %{SOURCE5} %{buildroot}%{_unitdir}/
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d/
 install -p -m 0644 %{SOURCE6} %{buildroot}%{_sysconfdir}/logrotate.d/salt
 
+install -v -D -m 0644 %{SOURCE7} %{buildroot}%{_presetdir}/50-salt.preset
+
 %clean
 rm -rf %{buildroot}
+
+%preun master
+%systemd_preun salt-master.service
+
+%preun syndic
+%systemd_preun salt-syndic.service
+
+%preun minion
+%systemd_preun salt-minion.service
+
+%post master
+%systemd_post salt-master.service
+
+%post minion
+%systemd_post salt-minion.service
+
+%postun master
+%systemd_postun salt-master.service
+
+%postun syndic
+%systemd_postun salt-syndic.service
+
+%postun minion
+%systemd_postun salt-minion.service
 
 %files
 %defattr(-,root,root,-)
@@ -165,6 +187,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/salt-*-py3.10.egg-info
 %{_sysconfdir}/logrotate.d/salt
 %{_var}/cache/salt
+%{_presetdir}/50-salt.preset
 
 %files master
 %defattr(-,root,root)
@@ -179,7 +202,7 @@ rm -rf %{buildroot}
 %{_bindir}/salt-key
 %{_bindir}/salt-master
 %{_bindir}/salt-run
-%config(noreplace) %{_unitdir}/salt-master.service
+%{_unitdir}/salt-master.service
 %config(noreplace) %{_sysconfdir}/salt/master
 
 %files minion
@@ -188,21 +211,23 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/salt-minion.1.*
 %{_bindir}/salt-minion
 %{_bindir}/salt-call
-%config(noreplace) %{_unitdir}/salt-minion.service
+%{_unitdir}/salt-minion.service
 %config(noreplace) %{_sysconfdir}/salt/minion
 
 %files syndic
+%defattr(-,root,root,-)
 %doc %{_mandir}/man1/salt-syndic.1.*
 %{_bindir}/salt-syndic
-%config(noreplace) %{_unitdir}/salt-syndic.service
+%{_unitdir}/salt-syndic.service
 
 %files api
 %defattr(-,root,root)
 %doc %{_mandir}/man1/salt-api.1.*
 %{_bindir}/salt-api
-%config(noreplace) %{_unitdir}/salt-api.service
+%{_unitdir}/salt-api.service
 
 %files cloud
+%defattr(-,root,root,-)
 %doc %{_mandir}/man1/salt-cloud.1.*
 %{_bindir}/salt-cloud
 %{_sysconfdir}/salt/cloud.conf.d
@@ -213,90 +238,24 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/cloud
 
 %files ssh
+%defattr(-,root,root,-)
 %doc %{_mandir}/man1/salt-ssh.1.*
 %{_bindir}/salt-ssh
 %{_sysconfdir}/salt/roster
 
 %files proxy
+%defattr(-,root,root,-)
 %doc %{_mandir}/man1/salt-proxy.1.*
 %{_bindir}/salt-proxy
 
 %files spm
+%defattr(-,root,root,-)
 %doc %{_mandir}/man1/spm.1.*
 %{_bindir}/spm
 
-%preun master
-%if 0%{?systemd_preun:1}
-  %systemd_preun salt-master.service
-%else
-  if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    %{_bindir}/systemctl --no-reload disable salt-master.service > /dev/null 2>&1 || :
-    %{_bindir}/systemctl stop salt-master.service > /dev/null 2>&1 || :
-  fi
-%endif
-
-%preun syndic
-%if 0%{?systemd_preun:1}
-  %systemd_preun salt-syndic.service
-%else
-  if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    %{_bindir}/systemctl --no-reload disable salt-syndic.service > /dev/null 2>&1 || :
-    %{_bindir}/systemctl stop salt-syndic.service > /dev/null 2>&1 || :
-  fi
-%endif
-
-%preun minion
-%if 0%{?systemd_preun:1}
-  %systemd_preun salt-minion.service
-%else
-  if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    %{_bindir}/systemctl --no-reload disable salt-minion.service > /dev/null 2>&1 || :
-    %{_bindir}/systemctl stop salt-minion.service > /dev/null 2>&1 || :
-  fi
-%endif
-
-%post master
-%if 0%{?systemd_post:1}
-  %systemd_post salt-master.service
-%else
-  %{_bindir}/systemctl daemon-reload &>/dev/null || :
-%endif
-
-%post minion
-%if 0%{?systemd_post:1}
-  %systemd_post salt-minion.service
-%else
-  %{_bindir}/systemctl daemon-reload &>/dev/null || :
-%endif
-
-%postun master
-%if 0%{?systemd_post:1}
-  %systemd_postun salt-master.service
-%else
-  %{_bindir}/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-master.service &>/dev/null || :
-%endif
-
-%postun syndic
-%if 0%{?systemd_post:1}
-  %systemd_postun salt-syndic.service
-%else
-  %{_bindir}/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-syndic.service &>/dev/null || :
-%endif
-
-%postun minion
-%if 0%{?systemd_post:1}
-  %systemd_postun salt-minion.service
-%else
-  %{_bindir}/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-minion.service &>/dev/null || :
-%endif
-
 %changelog
+* Wed Apr 24 2024 Prafful Mehrotra <prafful.mehrotra@broadcom.com> 3005.5-2
+- Cherry-picking packaging changes from 5.0 branch
 * Mon Apr 15 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3005.5-2
 - Bump to compile with python3-pycryptodomex v3.20.0
 * Mon Feb 5 2024 Felippe Burk <saltstack-sre.pdl@broadcom.com> 3005.5-1

@@ -10,3 +10,4 @@ output-*/
 tools/bin/
 tools/src/contain/contain_unpriv
 common/data/pkg_info.json
+.idea/
