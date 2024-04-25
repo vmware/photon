@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.311
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -301,6 +301,8 @@ Patch218: netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
 #Fix CVE-2024-23851/CVE-2023-52429
 Patch219: 0001-dm-limit-the-number-of-targets-and-parameter-size-ar.patch
+# Fix CVE-2021-46952
+Patch220: 0001-NFS-fs_context-validate-UDP-retrans-to-prevent-shift.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -395,7 +397,7 @@ popd
 %autopatch -p1 -m100 -M191
 
 # CVE Fixes
-%autopatch -p1 -m192 -M219
+%autopatch -p1 -m192 -M220
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -569,6 +571,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Apr 25 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.311-3
+- Fixes CVE-2021-46952
 * Fri Apr 05 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.311-2
 - Patched CVE-2023-52429/CVE-2024-23851
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.311-1

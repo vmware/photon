@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.311
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -273,6 +273,8 @@ Patch192: netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
 
 # Fix CVE-2023-52620
 Patch193: netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
+# Fix CVE-2021-46952
+Patch194: 0001-NFS-fs_context-validate-UDP-retrans-to-prevent-shift.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -761,10 +763,10 @@ This Linux package contains hmac sha generator kernel module.
 %autopatch -p1 -m1 -M16
 
 %ifarch x86_64
-%patch17 -p1
+%autopatch -p1 -m17 -M17
 %endif
 
-%autopatch -p1 -m18 -M193
+%autopatch -p1 -m18 -M194
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1191,6 +1193,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Thu Apr 25 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.311-3
+- Fixes CVE-2021-46952
 * Fri Apr 05 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.311-2
 - Patched CVE-2023-52429/CVE-2024-23851
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.311-1

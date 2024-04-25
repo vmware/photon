@@ -1,0 +1,74 @@
+From 7843962c53deb92e84e99dfc465babf1282bb648 Mon Sep 17 00:00:00 2001
+From: Randy Dunlap <rdunlap@infradead.org>
+Date: Mon, 1 Mar 2021 16:19:30 -0800
+Subject: [PATCH] NFS: fs_context: validate UDP retrans to prevent shift
+ out-of-bounds
+
+commit c09f11ef35955785f92369e25819bf0629df2e59 upstream.
+
+Fix shift out-of-bounds in xprt_calc_majortimeo(). This is caused
+by a garbage timeout (retrans) mount option being passed to nfs mount,
+in this case from syzkaller.
+
+If the protocol is XPRT_TRANSPORT_UDP, then 'retrans' is a shift
+value for a 64-bit long integer, so 'retrans' cannot be >= 64.
+If it is >= 64, fail the mount and return an error.
+
+Fixes: 9954bf92c0cd ("NFS: Move mount parameterisation bits into their own file")
+Reported-by: syzbot+ba2e91df8f74809417fa@syzkaller.appspotmail.com
+Reported-by: syzbot+f3a0fa110fd630ab56c8@syzkaller.appspotmail.com
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Trond Myklebust <trond.myklebust@hammerspace.com>
+Cc: Anna Schumaker <anna.schumaker@netapp.com>
+Cc: linux-nfs@vger.kernel.org
+Cc: David Howells <dhowells@redhat.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: stable@vger.kernel.org
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+[Ankit: Backported for v4.19,
+commit 9954bf92c0cd ("NFS: Move mount parameterisation bits into their own file")
+commit f2aedb713c28 ("NFS: Add fs_context support.") since v5.6,
+splitted the fs/nfs/super.c into their own file to form the basis
+of filesystem context handling for NFS and added fs_context support into it
+However, CVE-2021-46952 vuln. is still applicable in v4.19, because
+garbage timeout (retrans) mount option being passed to nfs mount.
+So, ported the changes accordingly.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ fs/nfs/super.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/fs/nfs/super.c b/fs/nfs/super.c
+index 5db7aceb4..49f79f913 100644
+--- a/fs/nfs/super.c
++++ b/fs/nfs/super.c
+@@ -2033,6 +2033,15 @@ static int nfs23_validate_mount_data(void *options,
+ 			memset(mntfh->data + mntfh->size, 0,
+ 			       sizeof(mntfh->data) - mntfh->size);
+ 
++		/*
++		 * for proto == XPRT_TRANSPORT_UDP, which is what uses
++		 * to_exponential, implying shift: limit the shift value
++		 * to BITS_PER_LONG (majortimeo is unsigned long)
++		 */
++		if (!(data->flags & NFS_MOUNT_TCP)) /* this will be UDP */
++			if (data->retrans >= 64) /* shift value is too large */
++				goto out_invalid_data;
++
+ 		/*
+ 		 * Translate to nfs_parsed_mount_data, which nfs_fill_super
+ 		 * can deal with.
+@@ -2133,6 +2142,10 @@ static int nfs23_validate_mount_data(void *options,
+ out_invalid_fh:
+ 	dfprintk(MOUNT, "NFS: invalid root filehandle\n");
+ 	return -EINVAL;
++
++out_invalid_data:
++	dfprintk(MOUNT, "NFS: invalid binary mount data\n");
++	return -EINVAL;
+ }
+ 
+ #if IS_ENABLED(CONFIG_NFS_V4)
+-- 
+2.23.1
+

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.311
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -110,6 +110,8 @@ Patch50: 0001-net-sched-fix-use-after-free-in-tc_new_tfilter.patch
 
 #Fix for CVE-2024-0565
 Patch52: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
+# Fix CVE-2021-46952
+Patch53: 0001-NFS-fs_context-validate-UDP-retrans-to-prevent-shift.patch
 
 # 9p patches
 Patch54: 0001-fs-9p-Add-opt_metaonly-option.patch
@@ -871,6 +873,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Thu Apr 25 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.311-3
+- Fixes CVE-2021-46952
 * Fri Apr 05 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.311-2
 - Patched CVE-2023-52429/CVE-2024-23851
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.311-1

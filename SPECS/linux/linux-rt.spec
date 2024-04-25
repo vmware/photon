@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.311
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -383,6 +383,8 @@ Patch715: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
 #Fix CVE-2024-23851/CVE-2023-52429
 Patch716: 0001-dm-limit-the-number-of-targets-and-parameter-size-ar.patch
+# Fix CVE-2021-46952
+Patch717: 0001-NFS-fs_context-validate-UDP-retrans-to-prevent-shift.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -767,7 +769,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M641
 
 # CVE Fixes
-%autopatch -p1 -m700 -M716
+%autopatch -p1 -m700 -M717
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1272,6 +1274,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Thu Apr 25 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.311-3
+- Fixes CVE-2021-46952
 * Fri Apr 05 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.311-2
 - Patched CVE-2023-52429/CVE-2024-23851
 * Wed Apr 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.19.311-1
