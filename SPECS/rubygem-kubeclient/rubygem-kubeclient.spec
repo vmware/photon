@@ -1,10 +1,9 @@
 %global debug_package %{nil}
-%global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name kubeclient
 
 Name:           rubygem-kubeclient
 Version:        4.10.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A client for Kubernetes REST api.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -14,7 +13,7 @@ URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  kubeclient=71b5dcaeb238802ac096282d031c05c89dd7c950a2cc863fb1fa4aef596909c0834b2c53c5a759085e47e2f3929838fe8473ca6debee4e2b74e31095745a8190
 
-BuildRequires:  ruby
+BuildRequires:  ruby-devel
 BuildRequires:  findutils
 
 Requires:       rubygem-activesupport
@@ -32,31 +31,20 @@ BuildArch:      noarch
 A client for Kubernetes REST api.
 
 %prep
-gem unpack %{SOURCE0}
-cd %{gem_name}-%{version}
-/bin/chmod -Rf a+rX,u+w,g-w,o-w .
-gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
+%autosetup -n %{gem_name}-%{version}
 
 %build
-cd %{gem_name}-%{version}
-gem build %{gem_name}.gemspec
-gem install %{gem_name}-%{version}.gem
 
 %install
-mkdir -p %{buildroot}%{gemdir}/{cache,doc,plugins,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
-cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
-cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
-cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
-cp -a %{gemdir}/plugins %{buildroot}%{gemdir}/
-cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
-cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
-[ -d %{buildroot}%{_libdir} ] && find %{buildroot}%{_libdir} -type f -perm /022 -exec chmod go-w {} \;
+gem install -V --local --force --install-dir %{buildroot}/%{gem_base} %{SOURCE0}
 
 %files
 %defattr(-,root,root,-)
-%{gemdir}
+%{gem_base}
 
 %changelog
+*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.10.1-4
+-   Add gem macros
 *   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.10.1-3
 -   Build from source
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 4.10.1-2

@@ -1,10 +1,9 @@
 %global debug_package %{nil}
-%global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name fluent-plugin-kubernetes_metadata_filter
 
 Name:           rubygem-fluent-plugin-kubernetes_metadata_filter
 Version:        3.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Fluentd Filter plugin to add Kubernetes metadata.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -14,7 +13,7 @@ URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=6383590639aab9a81aa87a191dcd5b7058e360dcf0ee7744e1a91b36e1c8b92f82a2f7de731883e208bb8e49d2dcc45285a714341e3fc226f1dfe4a8916c8bbf
 
-BuildRequires:  ruby
+BuildRequires:  ruby-devel
 BuildRequires:  findutils
 
 Requires:       rubygem-fluentd >= 0.14.0, rubygem-fluentd < 2.0.0
@@ -39,31 +38,20 @@ metadata. This behaviors supports multi-tenant systems that rely on the authenti
 proper log isolation.
 
 %prep
-gem unpack %{SOURCE0}
-cd %{gem_name}-%{version}
-/bin/chmod -Rf a+rX,u+w,g-w,o-w .
-gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
+%autosetup -n %{gem_name}-%{version}
 
 %build
-cd %{gem_name}-%{version}
-gem build %{gem_name}.gemspec
-gem install %{gem_name}-%{version}.gem
 
 %install
-mkdir -p %{buildroot}%{gemdir}/{cache,doc,plugins,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
-cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
-cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
-cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
-cp -a %{gemdir}/plugins %{buildroot}%{gemdir}/
-cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
-cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
-[ -d %{buildroot}%{_libdir} ] && find %{buildroot}%{_libdir} -type f -perm /022 -exec chmod go-w {} \;
+gem install -V --local --force --install-dir %{buildroot}/%{gem_base} %{SOURCE0}
 
 %files
 %defattr(-,root,root,-)
-%{gemdir}
+%{gem_base}
 
 %changelog
+*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-3
+-   Add gem macros
 * Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-2
 - Build from source
 *   Fri Dec 15 2023 Shivani Agrwal <shivania2@vmware.com> 3.4.0-1
