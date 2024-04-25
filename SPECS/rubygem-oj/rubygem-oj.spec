@@ -1,11 +1,9 @@
 %global debug_package %{nil}
-%global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name oj
-%global ruby_ver 3.3.0
 
 Name: rubygem-oj
 Version:        3.16.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The fastest JSON parser and object serializer.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -14,7 +12,7 @@ License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  oj=98d5610b1a71b31cd7c9d5f789f3aa6a751c950ba9003d5b54c823a85aabc7e7a51dd11cf8a9ad1ea74173cc51e221f5896f58642becfd064fd0c2fbc8e35d64
-BuildRequires:  ruby >= 2.0
+BuildRequires:  ruby-devel
 BuildRequires:  gmp-devel
 Requires:       ruby
 
@@ -22,31 +20,21 @@ Requires:       ruby
 The fastest JSON parser and object serializer.
 
 %prep
-gem unpack %{SOURCE0}
-cd %{gem_name}-%{version}
-/bin/chmod -Rf a+rX,u+w,g-w,o-w .
-gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
+%gem_unpack %{SOURCE0}
 
 %build
-cd %{gem_name}-%{version}
-gem build %{gem_name}.gemspec
-gem install %{gem_name}-%{version}.gem
+%gem_build
 
 %install
-mkdir -p %{buildroot}%{gemdir}/{cache,doc,plugins,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
-cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
-cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
-cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
-cp -a %{gemdir}/plugins %{buildroot}%{gemdir}/
-cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
-cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
-cp -a %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
-%{gemdir}
+%{gem_base}
 
 %changelog
+*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.16.3-2
+-   Add gem macros
 *   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.16.3-1
 -   Update to version 3.16.3
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.13.21-1

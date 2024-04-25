@@ -1,11 +1,9 @@
 %global debug_package %{nil}
-%global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name http-parser
-%global ruby_ver 3.3.0
 
 Name:           rubygem-http-parser
 Version:        1.2.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -16,7 +14,7 @@ URL:            https://rubygems.org/gems/%{gem_name}
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=03c34c3e8174d9010440483af34800b74a7bbddd5daa63607e6aa2254d9c91cf36d90854ea65827b32680432de278aeeb7b8878f788f124c150f163409fa5107
 
-BuildRequires: ruby
+BuildRequires: ruby-devel
 BuildRequires: rubygem-ffi-compiler
 
 Requires: rubygem-ffi-compiler
@@ -29,31 +27,21 @@ An easy-to-use client library for making requests from Ruby. It uses a simple
 method chaining system for building requests, similar to Python's Requests.
 
 %prep
-gem unpack %{SOURCE0}
-cd %{gem_name}-%{version}
-/bin/chmod -Rf a+rX,u+w,g-w,o-w .
-gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
+%gem_unpack %{SOURCE0}
 
 %build
-cd %{gem_name}-%{version}
-gem build %{gem_name}.gemspec
-gem install %{gem_name}-%{version}.gem
+%gem_build
 
 %install
-mkdir -p %{buildroot}%{gemdir}/{cache,doc,plugins,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
-cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
-cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
-cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
-cp -a %{gemdir}/plugins %{buildroot}%{gemdir}/
-cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
-cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
-cp -a %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
-%{gemdir}
+%{gem_base}
 
 %changelog
+* Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.3-3
+- Add gem macros
 * Wed Feb 28 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.3-2
 - Update build command, to build with source code
 * Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.3-1

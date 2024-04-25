@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0:        https://cache.ruby-lang.org/pub/ruby/3.3/%{name}-%{version}.tar.gz
 %define sha512 %{name}=26074009b501fc793d71a74e419f34a6033c9353433919ca74ba2d24a3de432dbb11fd92c2bc285f0e4d951a6d6c74bf5b69a2ab36200c8c26e871746d6e0fc6
+
+Source1: macros.ruby
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -27,6 +29,17 @@ Requires:       libyaml
 %description
 The Ruby package contains the Ruby development environment.
 This is useful for object-oriented scripting.
+
+%package devel
+Summary:    Development Libraries for ruby
+Group:      Development/Libraries
+Requires:   findutils
+Requires:   libselinux-devel
+Requires:   (coreutils or coreutils-selinux)
+Requires:   %{name} = %{version}-%{release}
+
+%description devel
+Header files for doing development with ruby.
 
 %prep
 %autosetup -p1
@@ -49,6 +62,11 @@ make %{?_smp_mflags} COPY="cp -p"
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 %make_install %{?_smp_mflags}
+# Move macros file into proper place and replace the %%{name} macro, since it
+# would be wrongly evaluated during build of other packages.
+mkdir -p %{buildroot}%{_rpmmacrodir}
+install -m 644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.ruby
+sed -i "s/%%{name}/%{name}/" %{buildroot}%{_rpmmacrodir}/macros.ruby
 
 %check
 %if 0%{?with_check}
@@ -75,9 +93,15 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 
+%files devel
+%defattr(-,root,root)
+%{_rpmmacrodir}/macros.ruby
+
 %changelog
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.3.0-1
--   Update to version 3.3.0
+* Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.3.0-2
+- Add Macro definition macros.ruby file
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.3.0-1
+- Update to version 3.3.0
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1.2-3
 - Bump version as a part of openssl upgrade
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 3.1.2-2

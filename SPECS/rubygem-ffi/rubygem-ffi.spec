@@ -1,11 +1,9 @@
 %global debug_package %{nil}
-%global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name ffi
-%global ruby_ver 3.3.0
 
 Name:           rubygem-ffi
 Version:        1.16.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Ruby FFI library
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -16,7 +14,7 @@ URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/ffi-%{version}.gem
 %define sha512  ffi=b3d823a03055412a85ae3dbc10c3b50615614f0b66830e144ca47610b1f93f588ff693a95d364b4f686968b79bba91f9f9fa60b932479c6bf9ceb10e15575b98
 
-BuildRequires:  ruby > 2.1.0
+BuildRequires:  ruby-devel
 BuildRequires:  gcc
 BuildRequires:  libffi-devel
 BuildRequires:  gmp-devel
@@ -27,34 +25,21 @@ Requires:       ruby
 Ruby FFI library
 
 %prep
-gem unpack %{SOURCE0}
-cd %{gem_name}-%{version}
-/bin/chmod -Rf a+rX,u+w,g-w,o-w .
-gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
+%gem_unpack %{SOURCE0}
 
 %build
-cd %{gem_name}-%{version}
-gem build %{gem_name}.gemspec
-gem install %{gem_name}-%{version}.gem
+%gem_build
 
 %install
-mkdir -p %{buildroot}%{gemdir}/{cache,doc,plugins,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
-cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
-cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
-cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
-cp -a %{gemdir}/plugins %{buildroot}%{gemdir}/
-cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
-cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
-cp -a %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
-[ -d %{buildroot}%{_libdir} ] && find %{buildroot}%{_libdir} -type f -perm /022 -exec chmod go-w {} \;
+%gem_install
 
 %files
 %defattr(-,root,root,-)
-%{gemdir}
-
-%exclude %{_libdir}/ruby/gems/%{ruby_ver}/gems/ffi-1.16.3/ext/ffi_c/libffi-%{_arch}-linux/include/ffitarget.h
+%{gem_base}
 
 %changelog
+* Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.3-2
+- Add gem macros
 * Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.3-1
 - Update to version 1.16.3
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.5-1
