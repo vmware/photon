@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -26,6 +26,8 @@ Patch11:        CVE-2023-36617-2.patch
 Patch12:        CVE-2023-28755.patch
 Patch13:        CVE-2024-27282.patch
 
+Source1: macros.ruby
+
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -39,6 +41,17 @@ Requires:       gmp
 %description
 The Ruby package contains the Ruby development environment.
 This is useful for object-oriented scripting.
+
+%package devel
+Summary:    Development Libraries for ruby
+Group:      Development/Libraries
+Requires:   findutils
+Requires:   libselinux-devel
+Requires:   (coreutils or coreutils-selinux)
+Requires:   %{name} = %{version}-%{release}
+
+%description devel
+Header files for doing development with ruby.
 
 %prep
 %autosetup -p1
@@ -62,6 +75,11 @@ make %{?_smp_mflags} COPY="cp -p"
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 %make_install %{?_smp_mflags}
+# Move macros file into proper place and replace the %%{name} macro, since it
+# would be wrongly evaluated during build of other packages.
+mkdir -p %{buildroot}%{_rpmmacrodir}
+install -m 644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.ruby
+sed -i "s/%%{name}/%{name}/" %{buildroot}%{_rpmmacrodir}/macros.ruby
 
 %check
 %if 0%{?with_check}
@@ -89,7 +107,13 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 
+%files devel
+%defattr(-,root,root)
+%{_rpmmacrodir}/macros.ruby
+
 %changelog
+* Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-11
+- Add Macro definition macros.ruby file
 * Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-10
 - Fix CVE-2024-27282
 * Mon Apr 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-9

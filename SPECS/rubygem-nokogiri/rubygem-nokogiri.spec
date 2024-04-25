@@ -1,12 +1,10 @@
 %global debug_package   %{nil}
 %global gem_name        nokogiri
-%global gemdir          %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
-%global ruby_ver 2.7.0
 
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
 Version:        1.12.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -14,7 +12,7 @@ Distribution:   Photon
 URL:            https://rubygems.org/gems/nokogiri/
 Source0:        https://rubygems.org/downloads/nokogiri-%{version}.gem
 %define sha512  nokogiri=29ef38133906f3ffc4b8a3d8f980b5b684dcab21360a46fa618cc47caf1f98f51654a64648a1cc638d784a33336f24ce45a6ea43aa365caf39702e36ab75dbcf
-BuildRequires:  ruby >= 2.4.0
+BuildRequires:  ruby-devel
 BuildRequires:  rubygem-mini_portile2
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
@@ -27,31 +25,21 @@ Requires:       libxslt
 Nokogiri is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features is the ability to search documents via XPath or CSS3 selectors.
 
 %prep
-gem unpack %{SOURCE0}
-cd %{gem_name}-%{version}
-/bin/chmod -Rf a+rX,u+w,g-w,o-w .
-gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
+%gem_unpack %{SOURCE0}
 
 %build
-cd %{gem_name}-%{version}
-gem build %{gem_name}.gemspec
-gem install --bindir %{_bindir}/ %{gem_name}-%{version}.gem
+%gem_build
 
 %install
-mkdir -p %{buildroot}%{gemdir}/{bin,cache,doc,specifications,gems,extensions/%{_arch}-linux/%{ruby_ver}}
-cp -a %{_bindir}/bundle %{_bindir}/bundler %{buildroot}%{gemdir}/bin/
-cp -a %{gemdir}/cache/%{gem_name}-%{version}.gem %{buildroot}%{gemdir}/cache/
-cp -a %{gemdir}/doc/%{gem_name}-%{version} %{buildroot}%{gemdir}/doc/
-cp -a %{gemdir}/specifications/%{gem_name}-%{version}.gemspec %{buildroot}%{gemdir}/specifications/
-cp -a %{gemdir}/gems/%{gem_name}-%{version} %{buildroot}%{gemdir}/gems/
-cp -a %{gemdir}/build_info %{buildroot}%{gemdir}/
-cp -a %{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}/%{gem_name}-%{version} %{buildroot}%{gemdir}/extensions/%{_arch}-linux/%{ruby_ver}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
-%{gemdir}
+%{gem_base}
 
 %changelog
+*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.12.5-5
+-   Add gem macros
 *   Thu Apr 25 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.12.5-4
 -   Build from source
 *   Fri Mar 10 2023 Shivani Agarwal <shivania2@vmware.com> 1.12.5-3
