@@ -24,8 +24,8 @@
 
 Name:           sssd
 Summary:        System Security Services Daemon
-Version:        2.8.2
-Release:        13%{?dist}
+Version:        2.9.4
+Release:        1%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
@@ -33,11 +33,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/SSSD/sssd/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512 sssd=10b7a641823aefb43e30bff9e5f309a1f48446ffff421a06f86496db24ba1fbd384733b5690864507ef9b2f04c91e563fe9820536031f83f1bd6e93edfedee55
+%define sha512 sssd=9546cf074628f32137b16ca0c763988785271124244b645d1e786762e8578f10d983793a29bffcc004b064452fe8d465476a3041688d2f3c11c2751fb5bec3e2
 
 Source1: sssd.conf
 
 Patch0: 0001-replace-python-with-python3-in-sss_obfuscate.patch
+Patch1: CVE-2023-3758.patch
 
 Requires: sssd-ad = %{version}-%{release}
 Requires: sssd-common = %{version}-%{release}
@@ -128,6 +129,9 @@ the existing back ends.
 %package common
 Summary: Common files for the SSSD
 License: GPLv3+
+# libsss_simpleifp is removed starting 2.9.0
+Obsoletes: libsss_simpleifp < 2.9.0
+Obsoletes: libsss_simpleifp-debuginfo < 2.9.0
 # Requires
 Requires: samba-client >= %{ldb_version}
 Requires: sssd-client = %{version}-%{release}
@@ -316,6 +320,7 @@ identity data from and authenticate against an Active Directory server.
 Summary: The proxy back end of the SSSD
 License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
+Requires: libsss_certmap = %{version}-%{release}
 
 %description proxy
 Provides the proxy back end which can be used to wrap an existing NSS and/or
@@ -406,24 +411,6 @@ Requires: sssd-common = %{version}-%{release}
 %description polkit-rules
 Provides rules for polkit integration with SSSD. This is required
 for smartcard support.
-
-%package -n libsss_simpleifp
-Summary: The SSSD D-Bus responder helper library
-License: GPLv3+
-Requires: sssd-dbus = %{version}-%{release}
-Requires: libcap
-
-%description -n libsss_simpleifp
-Provides library that simplifies D-Bus API for the SSSD InfoPipe responder.
-
-%package -n libsss_simpleifp-devel
-Summary: The SSSD D-Bus responder helper library
-License: GPLv3+
-Requires: dbus-devel
-Requires: libsss_simpleifp = %{version}-%{release}
-
-%description -n libsss_simpleifp-devel
-Provides library that simplifies D-Bus API for the SSSD InfoPipe responder.
 
 %package winbind_idmap
 Summary: SSSD's idmap_sss Backend for Winbind
@@ -728,8 +715,6 @@ fi
 %{_libexecdir}/%{servicename}/sssd_check_socket_activated_responders
 
 %dir %{_libdir}/%{name}
-# The files provider is intentionally packaged in -common
-%{_libdir}/%{name}/libsss_files.so
 %{_libdir}/%{name}/libsss_simple.so
 
 #Internal shared libraries
@@ -785,7 +770,6 @@ fi
 %{_mandir}/man1/sss_ssh_authorizedkeys.1*
 %{_mandir}/man1/sss_ssh_knownhostsproxy.1*
 %{_mandir}/man5/sssd.conf.5*
-%{_mandir}/man5/sssd-files.5*
 %{_mandir}/man5/sssd-simple.5*
 %{_mandir}/man5/sssd-sudo.5*
 %{_mandir}/man5/sssd-session-recording.5*
@@ -862,19 +846,8 @@ fi
 %{_mandir}/man5/sssd-ifp.5*
 %{_unitdir}/sssd-ifp.service
 # InfoPipe DBus plumbing
-%{_sysconfdir}/dbus-1/system.d/org.freedesktop.sssd.infopipe.conf
+%{_datadir}/dbus-1/system.d/org.freedesktop.sssd.infopipe.conf
 %{_datadir}/dbus-1/system-services/org.freedesktop.sssd.infopipe.service
-
-%files -n libsss_simpleifp
-%defattr(-,root,root)
-%{_libdir}/libsss_simpleifp.so.*
-
-%files -n libsss_simpleifp-devel
-%defattr(-,root,root)
-%{_includedir}/sss_sifp.h
-%{_includedir}/sss_sifp_dbus.h
-%{_libdir}/libsss_simpleifp.so
-%{_libdir}/pkgconfig/sss_simpleifp.pc
 
 %files client -f sssd_client.lang
 %defattr(-,root,root)
@@ -1024,6 +997,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Fri Apr 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.9.4-1
+- Upgrade to latest 2.9.4 and add patch for CVE-2023-3758
 * Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.2-13
 - Bump version as a part of dbus upgrade
 * Tue Apr 02 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-12
