@@ -1,0 +1,32 @@
+From fb7771d43d6a643fc7f4fbcb2a4cede682deaa5a Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Mon, 29 Apr 2024 17:56:13 +0530
+Subject: [PATCH] Mandatory space in list output
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ tools/cli/lib/api.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/cli/lib/api.c b/tools/cli/lib/api.c
+index ec8a2a04..dcf2db68 100644
+--- a/tools/cli/lib/api.c
++++ b/tools/cli/lib/api.c
+@@ -172,7 +172,7 @@ TDNFCliListCommand(
+         if(snprintf(
+             szNameAndArch,
+             MAX_COL_LEN,
+-            "%s.%s",
++            "%s.%s ",
+             pPkg->pszName,
+             pPkg->pszArch) < 0)
+         {
+@@ -184,7 +184,7 @@ TDNFCliListCommand(
+         if(snprintf(
+             szVersionAndRelease,
+             MAX_COL_LEN,
+-            "%s-%s",
++            "%s-%s ",
+             pPkg->pszVersion,
+             pPkg->pszRelease) < 0)
+         {
