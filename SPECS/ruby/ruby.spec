@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -15,6 +15,7 @@ Patch1:         CVE-2024-27281.patch
 Patch2:         CVE-2024-27280.patch
 Patch3:         CVE-2023-36617-1.patch
 Patch4:         CVE-2023-36617-2.patch
+Patch5:         CVE-2024-27282.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -88,6 +89,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-2
+- Fix CVE-2024-27282
 * Mon Apr 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-1
 - Upgrade to 3.1.4 to Fix CVE-2024-27280, CVE-2023-36617, CVE-2023-28755
 * Tue Mar 26 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-6
