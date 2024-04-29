@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.3.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -12,6 +12,7 @@ Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{versi
 %define sha512  %{name}=86e9bf81b8e9e7a7cf219b52ae1bffcc7dbf53a295d8c96b7f83064ba817567bc44e0fc1ab7c435dd280aec28c34d09bdbce6abe21d3f85b99f99cf867b615e6
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
+Patch1:         add-space-to-list-output.patch
 
 Requires:       rpm-libs >= 4.16.1.3-1
 Requires:       curl-libs
@@ -227,6 +228,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Mon Apr 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.9-4
+- Add space to list output
 * Thu Oct 19 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.3.9-3
 - Version bump for updated glib
 * Mon May 29 2023 Harinadh D <hdommaraju@vmware.com> 3.3.9-2
