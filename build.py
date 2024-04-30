@@ -590,13 +590,12 @@ class CleanUp:
             )
             for pkg in whoNeedsList:
                 package, version = StringUtils.splitPackageNameAndVersion(pkg)
-                release = SPECS.getData().getRelease(package, version)
                 for p in SPECS.getData().getPackages(package, version):
                     buildarch = SPECS.getData().getBuildArch(p, version)
                     rpmFile = os.path.join(
                         constants.rpmPath,
                         buildarch,
-                        f"{p}-{version}-{release}.*{buildarch}.rpm",
+                        f"{p}-{version}*{buildarch}.rpm",
                     )
                     runBashCmd(f"rm -f {rpmFile}")
 
