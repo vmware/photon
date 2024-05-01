@@ -62,11 +62,11 @@ class IsoInstaller(object):
         else:
             install_config=self._load_ks_config_platform(verify=not insecure)
 
-        if not install_config:
+        if install_config is None:
             install_config = {}
-        install_config['release_version'] = options.release_version
-        if insecure:
+        elif insecure:
             install_config['insecure_repo'] = True
+        install_config['release_version'] = options.release_version
 
         if options.ui_config_file:
             ui_config = (JsonWrapper(options.ui_config_file)).read()
