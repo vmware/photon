@@ -7,7 +7,7 @@ Name:           python3-setuptools
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        65.5.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -56,6 +56,9 @@ install -p dist/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
 %check
 %{py3_test}
 
+%post
+find %{python3_sitelib}/%{srcname}-* -type d -empty -delete
+
 %clean
 rm -rf %{buildroot}
 
@@ -69,6 +72,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Thu May 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 65.5.1-4
+- Remove leftover empty setuptools dirs from install location
 * Wed Mar 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 65.5.1-3
 - Remove wheel dependency
 * Tue Feb 20 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 65.5.1-2
