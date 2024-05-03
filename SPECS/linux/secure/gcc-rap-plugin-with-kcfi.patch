@@ -1,4 +1,4 @@
-From 3bba35b91c6d6b6f6a8449c326e46822546be6f7 Mon Sep 17 00:00:00 2001
+From 328d23d18ae829a2bc26a75a6d41c14f67020cf8 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Wed, 3 Apr 2024 10:56:21 +0000
 Subject: [PATCH] gcc rap plugin with kcfi
@@ -35,11 +35,15 @@ Following changes are made to adopt KCFI in GCC RAP plugin:
   callers of SYM_TYPED_FUNC_START when CONFIG_PAX_RAP is enabled.
 
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+[Ankit: Upstream commmit:
+https://github.com/gregkh/linux/commit/74fcb181772e5b8a8f1244c7393c56ae6d03c330
+replaced indirect way of calling system call with switch statement based
+direct system call. So, there is no need for asm way to call syscall directly.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
  Makefile                                      |   2 +
  arch/Kconfig                                  |   8 +-
  arch/x86/entry/Makefile                       |   2 +
- arch/x86/entry/common.c                       |  51 ++
  arch/x86/include/asm/linkage.h                |   8 +
  arch/x86/include/asm/text-patching.h          |   4 +
  arch/x86/include/asm/vermagic.h               |   9 +-
@@ -100,7 +104,7 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  scripts/mod/modpost.c                         |   6 -
  security/Kconfig                              |  29 +
  security/apparmor/net.c                       |   2 +-
- 64 files changed, 1945 insertions(+), 189 deletions(-)
+ 63 files changed, 1894 insertions(+), 189 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -108,7 +112,7 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  create mode 100644 scripts/gcc-plugins/rap_plugin/sip.c
 
 diff --git a/Makefile b/Makefile
-index 800bbe7c5..4b75ce672 100644
+index 3bf9f2d4c..826c32d22 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1005,10 +1005,12 @@ export CC_FLAGS_LTO
@@ -125,10 +129,10 @@ index 800bbe7c5..4b75ce672 100644
  ifdef CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B
  KBUILD_CFLAGS += -falign-functions=64
 diff --git a/arch/Kconfig b/arch/Kconfig
-index f99fd9a4c..a6462a99f 100644
+index e959abf96..45c1ddd0c 100644
 --- a/arch/Kconfig
 +++ b/arch/Kconfig
-@@ -754,10 +754,16 @@ config ARCH_SUPPORTS_CFI_CLANG
+@@ -762,10 +762,16 @@ config ARCH_SUPPORTS_CFI_CLANG
  config ARCH_USES_CFI_TRAPS
  	bool
  
@@ -156,77 +160,6 @@ index ca2fe1869..faf2e5a87 100644
  
 +CFLAGS_REMOVE_syscall_32.o += -fplugin-arg-rap_plugin-hash=abs-finish
 +CFLAGS_REMOVE_syscall_64.o += -fplugin-arg-rap_plugin-hash=abs-finish
-diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index 9c0b26ae5..cf8289136 100644
---- a/arch/x86/entry/common.c
-+++ b/arch/x86/entry/common.c
-@@ -48,7 +48,17 @@ static __always_inline bool do_syscall_x64(struct pt_regs *regs, int nr)
- 
- 	if (likely(unr < NR_syscalls)) {
- 		unr = array_index_nospec(unr, NR_syscalls);
-+#ifdef CONFIG_PAX_RAP
-+		asm volatile("movq %[param],%%rdi\n\t"
-+			"call *%P[syscall]\n\t"
-+			"mov %%rax,%[result]\n\t"
-+			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (sys_call_table[unr]),
-+			[param] "m" (regs)
-+			: "ax", "cx", "dx", "r8", "r9", "r10", "r11", "di", "memory");
-+#else
- 		regs->ax = sys_call_table[unr](regs);
-+#endif
- 		return true;
- 	}
- 	return false;
-@@ -114,7 +124,48 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs, int nr)
- 
- 	if (likely(unr < IA32_NR_syscalls)) {
- 		unr = array_index_nospec(unr, IA32_NR_syscalls);
-+#ifdef CONFIG_PAX_RAP
-+#ifdef CONFIG_X86_64
-+		asm volatile("movl %[param1],%%edi\n\t"
-+			     "movl %[param2],%%esi\n\t"
-+			     "movl %[param3],%%edx\n\t"
-+			     "movl %[param4],%%ecx\n\t"
-+			     "movl %[param5],%%r8d\n\t"
-+			     "movl %[param6],%%r9d\n\t"
-+			     "call *%P[syscall]\n\t"
-+			     "mov %%rax,%[result]\n\t"
-+			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (ia32_sys_call_table[unr]),
-+			  [param1] "m" (regs->bx),
-+			  [param2] "m" (regs->cx),
-+			  [param3] "m" (regs->dx),
-+			  [param4] "m" (regs->si),
-+			  [param5] "m" (regs->di),
-+			  [param6] "m" (regs->bp)
-+			: "ax", "di", "si", "dx", "cx", "r8", "r9", "r10", "r11", "memory");
-+#else
-+		asm volatile("pushl %[param6]\n\t"
-+			     "pushl %[param5]\n\t"
-+			     "pushl %[param4]\n\t"
-+			     "pushl %[param3]\n\t"
-+			     "pushl %[param2]\n\t"
-+			     "pushl %[param1]\n\t"
-+			     "call *%P[syscall]\n\t"
-+			     "addl $6*8,%%esp\n\t"
-+			     "mov %%eax,%[result]\n\t"
-+			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (ia32_sys_call_table[unr]),
-+			  [param1] "m" (regs->bx),
-+			  [param2] "m" (regs->cx),
-+			  [param3] "m" (regs->dx),
-+			  [param4] "m" (regs->si),
-+			  [param5] "m" (regs->di),
-+			  [param6] "m" (regs->bp)
-+			: "ax", "dx", "cx", "memory");
-+#endif
-+#else
- 		regs->ax = ia32_sys_call_table[unr](regs);
-+#endif
- 	} else if (nr != -1) {
- 		regs->ax = __ia32_sys_ni_syscall(regs);
- 	}
 diff --git a/arch/x86/include/asm/linkage.h b/arch/x86/include/asm/linkage.h
 index 3a0282a6a..378f1f581 100644
 --- a/arch/x86/include/asm/linkage.h
@@ -2114,7 +2047,7 @@ index 962cd41a2..b50341126 100644
  	    .ops = &param_ops_##type,					\
  	    .elemsize = sizeof(array[0]), .elem = array };		\
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index f5d89a4b8..f7479ab79 100644
+index 4da7411da..9506a4f38 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -194,7 +194,7 @@ static inline const char *pci_power_name(pci_power_t state)
@@ -2286,10 +2219,10 @@ index 18a4f8f28..5c4bb23d4 100644
  		head->next = NULL;
  		head = next;
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 51d010f64..531dd4a99 100644
+index 940de9516..dfeaefa75 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -868,7 +868,8 @@ void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
+@@ -869,7 +869,8 @@ void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
  
  static inline bool br_rx_handler_check_rcu(const struct net_device *dev)
  {
@@ -3720,7 +3653,7 @@ index 686eed37f..2833ece61 100644
  		}
  
 diff --git a/security/Kconfig b/security/Kconfig
-index 371cc82d1..08e4cf887 100644
+index e6db09a77..148706453 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -5,6 +5,35 @@
@@ -3773,5 +3706,5 @@ index 50e17fb0a..9d0b08cff 100644
  	struct unix_sock *u = unix_sk(sk);
  	if (u && u->addr)
 -- 
-2.39.0
+2.23.1
 

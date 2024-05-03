@@ -1,7 +1,8 @@
-From f48b09bb2282615b9dee4b58fb51209598eacf99 Mon Sep 17 00:00:00 2001
+From 161a01d3b4e408f056ead5b234ac39e0ada0de01 Mon Sep 17 00:00:00 2001
 From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 Date: Mon, 1 Apr 2024 23:15:12 +0000
 Subject: [PATCH] bpf: Fix accesses to uninit stack slots
+
 commit 6b4a64bafd107e521c01eec3453ce94a3fb38529 upstream
 
 Privileged programs are supposed to be able to read uninitialized stack
@@ -56,7 +57,6 @@ Link: https://lore.kernel.org/bpf/20231208032519.260451-3-andreimatei1@gmail.com
 Closes: https://lore.kernel.org/bpf/CABWLsev9g8UP_c3a=1qbuZUi20tGoUXoU07FPf-5FLvhOKOY+Q@mail.gmail.com/
 
 [ Brennan : Ported to v6.1 - fix return values of several tests to match ]
-
 ---
  kernel/bpf/verifier.c                         | 61 +++++++-----------
  .../selftests/bpf/verifier/atomic_cmpxchg.c   | 11 ----
@@ -68,13 +68,13 @@ Closes: https://lore.kernel.org/bpf/CABWLsev9g8UP_c3a=1qbuZUi20tGoUXoU07FPf-5FLv
  7 files changed, 96 insertions(+), 73 deletions(-)
 
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index b2033b87b..43d00e1db 100644
+index e728602a4..61e952f97 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
 @@ -1267,7 +1267,10 @@ static int resize_reference_state(struct bpf_func_state *state, size_t n)
  	return 0;
  }
-
+ 
 -static int grow_stack_state(struct bpf_func_state *state, int size)
 +/* Possibly update state->allocated_stack to be at least size bytes. Also
 + * possibly update the function's high-water mark in its bpf_subprog_info.
@@ -82,10 +82,10 @@ index b2033b87b..43d00e1db 100644
 +static int grow_stack_state(struct bpf_verifier_env *env, struct bpf_func_state *state, int size)
  {
  	size_t old_n = state->allocated_stack / BPF_REG_SIZE, n = size / BPF_REG_SIZE;
-
+ 
 @@ -1279,6 +1282,11 @@ static int grow_stack_state(struct bpf_func_state *state, int size)
  		return -ENOMEM;
-
+ 
  	state->allocated_stack = size;
 +
 +	/* update known max for given subprogram */
@@ -94,11 +94,11 @@ index b2033b87b..43d00e1db 100644
 +
  	return 0;
  }
-
+ 
 @@ -3487,9 +3495,6 @@ static int check_stack_write_fixed_off(struct bpf_verifier_env *env,
  	struct bpf_reg_state *reg = NULL;
  	u32 dst_reg = insn->dst_reg;
-
+ 
 -	err = grow_stack_state(state, round_up(slot + 1, BPF_REG_SIZE));
 -	if (err)
 -		return err;
@@ -108,18 +108,18 @@ index b2033b87b..43d00e1db 100644
 @@ -3643,10 +3648,6 @@ static int check_stack_write_var_off(struct bpf_verifier_env *env,
  	if (value_reg && register_is_null(value_reg))
  		writing_zero = true;
-
+ 
 -	err = grow_stack_state(state, round_up(-min_off, BPF_REG_SIZE));
 -	if (err)
 -		return err;
 -
  	for (i = min_off; i < max_off; i++) {
  		int spi;
-
+ 
 @@ -4690,20 +4691,6 @@ static int check_ptr_alignment(struct bpf_verifier_env *env,
  					   strict);
  }
-
+ 
 -static int update_stack_depth(struct bpf_verifier_env *env,
 -			      const struct bpf_func_state *func,
 -			      int off)
@@ -148,7 +148,7 @@ index b2033b87b..43d00e1db 100644
  					  enum bpf_access_type t)
  {
  	int min_valid_off;
-
+ 
 -	if (t == BPF_WRITE)
 +	if (t == BPF_WRITE || env->allow_uninit_stack)
  		min_valid_off = -MAX_BPF_STACK;
@@ -157,13 +157,13 @@ index b2033b87b..43d00e1db 100644
 @@ -5188,7 +5176,7 @@ static int check_stack_access_within_bounds(
  		max_off = reg->smax_value + off + access_size;
  	}
-
+ 
 -	err = check_stack_slot_within_bounds(min_off, state, type);
 +	err = check_stack_slot_within_bounds(env, min_off, state, type);
  	if (!err && max_off > 0)
  		err = -EINVAL; /* out of stack access into non-negative offsets */
-
-@@ -5203,8 +5191,10 @@ static int check_stack_access_within_bounds(
+ 	if (!err && access_size < 0)
+@@ -5208,8 +5196,10 @@ static int check_stack_access_within_bounds(
  			verbose(env, "invalid variable-offset%s stack R%d var_off=%s size=%d\n",
  				err_extra, regno, tn_buf, access_size);
  		}
@@ -173,20 +173,20 @@ index b2033b87b..43d00e1db 100644
 +
 +	return grow_stack_state(env, state, round_up(-min_off, BPF_REG_SIZE));
  }
-
+ 
  /* check whether memory at (regno + off) is accessible for t = (read | write)
-@@ -5219,7 +5209,6 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+@@ -5224,7 +5214,6 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
  {
  	struct bpf_reg_state *regs = cur_regs(env);
  	struct bpf_reg_state *reg = regs + regno;
 -	struct bpf_func_state *state;
  	int size, err = 0;
-
+ 
  	size = bpf_size_to_bytes(bpf_size);
-@@ -5363,11 +5352,6 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+@@ -5368,11 +5357,6 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
  		if (err)
  			return err;
-
+ 
 -		state = func(env, reg);
 -		err = update_stack_depth(env, state, off);
 -		if (err)
@@ -195,8 +195,8 @@ index b2033b87b..43d00e1db 100644
  		if (t == BPF_READ)
  			err = check_stack_read(env, regno, off, size,
  					       value_regno);
-@@ -5559,7 +5543,8 @@ static int check_atomic(struct bpf_verifier_env *env, int insn_idx, struct bpf_i
-
+@@ -5564,7 +5548,8 @@ static int check_atomic(struct bpf_verifier_env *env, int insn_idx, struct bpf_i
+ 
  /* When register 'regno' is used to read the stack (either directly or through
   * a helper function) make sure that it's within stack boundary and, depending
 - * on the access type, that all elements of the stack are initialized.
@@ -205,8 +205,8 @@ index b2033b87b..43d00e1db 100644
   *
   * 'off' includes 'regno->off', but not its dynamic part (if any).
   *
-@@ -5667,8 +5652,11 @@ static int check_stack_range_initialized(
-
+@@ -5672,8 +5657,11 @@ static int check_stack_range_initialized(
+ 
  		slot = -i - 1;
  		spi = slot / BPF_REG_SIZE;
 -		if (state->allocated_stack <= slot)
@@ -219,22 +219,22 @@ index b2033b87b..43d00e1db 100644
  		stype = &state->stack[spi].slot_type[slot % BPF_REG_SIZE];
  		if (*stype == STACK_MISC)
  			goto mark;
-@@ -5692,7 +5680,6 @@ static int check_stack_range_initialized(
+@@ -5697,7 +5685,6 @@ static int check_stack_range_initialized(
  			goto mark;
  		}
-
+ 
 -err:
  		if (tnum_is_const(reg->var_off)) {
  			verbose(env, "invalid%s read from stack R%d off %d+%d size %d\n",
  				err_extra, regno, min_off, i - min_off, access_size);
-@@ -5717,7 +5704,7 @@ static int check_stack_range_initialized(
+@@ -5722,7 +5709,7 @@ static int check_stack_range_initialized(
  		 * helper may write to the entire memory range.
  		 */
  	}
 -	return update_stack_depth(env, state, min_off);
 +	return 0;
  }
-
+ 
  static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
 diff --git a/tools/testing/selftests/bpf/verifier/atomic_cmpxchg.c b/tools/testing/selftests/bpf/verifier/atomic_cmpxchg.c
 index b39665f33..096219311 100644
@@ -312,7 +312,7 @@ index 02d9e0042..7d1f65c90 100644
 @@ -22,12 +22,13 @@
  		/* bpf_strtoul() */
  		BPF_EMIT_CALL(BPF_FUNC_strtoul),
-
+ 
 -		BPF_MOV64_IMM(BPF_REG_0, 1),
 +		BPF_MOV64_IMM(BPF_REG_0, 0),
  		BPF_EXIT_INSN(),
@@ -442,6 +442,6 @@ index b183e26c0..ab62f029d 100644
  },
  {
  	"indirect variable-offset stack access, priv vs unpriv",
---
-2.39.0
+-- 
+2.23.1
 

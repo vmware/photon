@@ -6,16 +6,22 @@ Subject: [PATCH 2/3] Add .sbat section
 To be able to revoke previously shipped signed kernel images by SBAT
 generation. See https://github.com/rhboot/shim/blob/main/SBAT.md
 
+Upstream kernel v6.1.90 modified the build-tool to generate bzImage and section alignments.
+- We are injecting .sbat section in between setup and compressed vmlinux sections.
+- Adhering to new alignment requirements, we shift vmlinux's sections by one page.
+- Include sbat in setup sectors' info because bootloader offsets kernel image using this bootparams.
+
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadom.com>
 ---
- arch/x86/boot/Makefile      |  2 +-
- arch/x86/boot/header.S      | 22 ++++++++++++++++++++++
- arch/x86/boot/tools/build.c | 33 ++++++++++++++++++++++++++-------
- security/Kconfig            | 12 ++++++++++++
- 4 files changed, 61 insertions(+), 8 deletions(-)
+ arch/x86/boot/Makefile      |  6 +++--
+ arch/x86/boot/header.S      | 47 +++++++++++++++++++++++++++++--------
+ arch/x86/boot/tools/build.c | 28 ++++++++++++++++++++--
+ security/Kconfig            | 12 ++++++++++
+ 4 files changed, 79 insertions(+), 14 deletions(-)
 
 diff --git a/arch/x86/boot/Makefile b/arch/x86/boot/Makefile
-index 9e38ffaad..c757ce1fb 100644
+index 3c1b35203..256a7315c 100644
 --- a/arch/x86/boot/Makefile
 +++ b/arch/x86/boot/Makefile
 @@ -79,7 +79,7 @@ $(obj)/bzImage: asflags-y  := $(SVGA_MODE)
@@ -27,121 +33,198 @@ index 9e38ffaad..c757ce1fb 100644
  
  $(obj)/bzImage: $(obj)/setup.bin $(obj)/vmlinux.bin $(obj)/tools/build FORCE
  	$(call if_changed,image)
+@@ -100,9 +100,11 @@ targets += zoffset.h
+ $(obj)/zoffset.h: $(obj)/compressed/vmlinux FORCE
+ 	$(call if_changed,zoffset)
+ 
++$(obj)/sbat_info.h: $(CONFIG_SECURITY_SBAT)
++	@echo "#define sbat_section_len $$(wc -c < $< )" > $@
+ 
+ AFLAGS_header.o += -I$(objtree)/$(obj)
+-$(obj)/header.o: $(obj)/zoffset.h
++$(obj)/header.o: $(obj)/zoffset.h $(obj)/sbat_info.h
+ 
+ LDFLAGS_setup.elf	:= -m elf_i386 -z noexecstack -T
+ $(obj)/setup.elf: $(src)/setup.ld $(SETUP_OBJS) FORCE
 diff --git a/arch/x86/boot/header.S b/arch/x86/boot/header.S
-index f912d7770..1c0225fbd 100644
+index 7593339b5..c5c3e495b 100644
 --- a/arch/x86/boot/header.S
 +++ b/arch/x86/boot/header.S
-@@ -232,6 +232,28 @@ section_table:
- 		IMAGE_SCN_MEM_DISCARDABLE	| \
- 		IMAGE_SCN_ALIGN_1BYTES		# Characteristics
+@@ -38,6 +38,12 @@ SYSSEG		= 0x1000		/* historical load address >> 4 */
  
+ 	.set	salign, 0x1000
+ 	.set	falign, 0x200
++	.set    sbat_sz, 0x0
++
 +#ifdef CONFIG_SECURITY_SBAT
-+	#
-+	# The offset & size fields are filled in by build.c.
-+	#
++	#include "sbat_info.h"
++	.set    sbat_sz, salign
++#endif
+ 
+ 	.code16
+ 	.section ".bstext", "ax"
+@@ -82,9 +88,9 @@ optional_header:
+ 	.long	ZO__end - ZO__data		# SizeOfInitializedData
+ 	.long	0				# SizeOfUninitializedData
+ 
+-	.long	setup_size + ZO_efi_pe_entry	# AddressOfEntryPoint
+-
+-	.long	setup_size			# BaseOfCode
++	.long	setup_size + ZO_efi_pe_entry + sbat_sz
++						# AddressOfEntryPoint
++	.long	setup_size + sbat_sz		# BaseOfCode
+ #ifdef CONFIG_X86_32
+ 	.long	0				# data
+ #endif
+@@ -105,7 +111,7 @@ extra_header_fields:
+ 	.word	0				# MinorSubsystemVersion
+ 	.long	0				# Win32VersionValue
+ 
+-	.long	setup_size + ZO__end		# SizeOfImage
++	.long	setup_size + ZO__end + sbat_sz	# SizeOfImage
+ 
+ 	.long	salign				# SizeOfHeaders
+ 	.long	0				# CheckSum
+@@ -176,21 +182,41 @@ pecompat_fstart:
+ 	.byte	0x1				# Version
+ 	.byte	8				# Size
+ 	.word	IMAGE_FILE_MACHINE_I386		# PE machine type
+-	.long	setup_size + ZO_efi32_pe_entry	# Entrypoint
++	.long	setup_size + ZO_efi32_pe_entry + sbat_sz
++						# Entrypoint
+ 	.byte	0x0				# Sentinel
+ 	.popsection
+ #else
+ 	.set	pecompat_fstart, setup_size
+ #endif
++
++#ifdef CONFIG_SECURITY_SBAT
 +	.ascii	".sbat"
 +	.byte	0
 +	.byte	0
 +	.byte	0
-+	.long	0				# VirtualSize
-+	.long	0				# VirtualAddress
-+	.long	0				# SizeOfRawData
-+	.long	0				# PointerToRawData
++	.long	sbat_section_len		# VirtualSize
++	.long	setup_size			# VirtualAddress
++	.long	sbat_sz				# SizeOfRawData
++	.long	setup_size			# PointerToRawData
 +	.long	0				# PointerToRelocations
 +	.long	0				# PointerToLineNumbers
 +	.word	0				# NumberOfRelocations
 +	.word	0				# NumberOfLineNumbers
 +	.long	IMAGE_SCN_CNT_INITIALIZED_DATA	| \
 +		IMAGE_SCN_MEM_READ		| \
-+		IMAGE_SCN_MEM_DISCARDABLE	| \
-+		IMAGE_SCN_ALIGN_1BYTES		# Characteristics
++		IMAGE_SCN_MEM_DISCARDABLE	# Characteristics
 +#endif
 +
- #ifdef CONFIG_EFI_MIXED
- 	#
- 	# The offset & size fields are filled in by build.c.
+ 	.ascii	".text"
+ 	.byte	0
+ 	.byte	0
+ 	.byte	0
+ 	.long	ZO__data
+-	.long	setup_size
++	.long	setup_size + sbat_sz
+ 	.long	ZO__data			# Size of initialized data
+ 						# on disk
+-	.long	setup_size
++	.long	setup_size + sbat_sz
+ 	.long	0				# PointerToRelocations
+ 	.long	0				# PointerToLineNumbers
+ 	.word	0				# NumberOfRelocations
+@@ -201,15 +227,16 @@ pecompat_fstart:
+ 
+ 	.ascii	".data\0\0\0"
+ 	.long	ZO__end - ZO__data		# VirtualSize
+-	.long	setup_size + ZO__data		# VirtualAddress
++	.long	setup_size + ZO__data + sbat_sz	# VirtualAddress
+ 	.long	ZO__edata - ZO__data		# SizeOfRawData
+-	.long	setup_size + ZO__data		# PointerToRawData
++	.long	setup_size + ZO__data + sbat_sz	# PointerToRawData
+ 
+ 	.long	0, 0, 0
+ 	.long	IMAGE_SCN_CNT_INITIALIZED_DATA	| \
+ 		IMAGE_SCN_MEM_READ		| \
+ 		IMAGE_SCN_MEM_WRITE		# Characteristics
+ 
++
+ 	.set	section_count, (. - section_table) / 40
+ #endif /* CONFIG_EFI_STUB */
+ 
+@@ -222,7 +249,7 @@ sentinel:	.byte 0xff, 0xff        /* Used to detect broken loaders */
+ 
+ 	.globl	hdr
+ hdr:
+-		.byte setup_sects - 1
++		.byte setup_sects - 1 + sbat_sz / 0x200
+ root_flags:	.word ROOT_RDONLY
+ syssize:	.long ZO__edata / 16
+ ram_size:	.word 0			/* Obsolete */
 diff --git a/arch/x86/boot/tools/build.c b/arch/x86/boot/tools/build.c
-index a3725ad46..d0b803d55 100644
+index 10311d77c..500e8701c 100644
 --- a/arch/x86/boot/tools/build.c
 +++ b/arch/x86/boot/tools/build.c
-@@ -195,12 +195,12 @@ static void update_pecoff_section_header(char *section_name, u32 offset, u32 siz
- 	update_pecoff_section_header_fields(section_name, offset, size, size, offset);
- }
+@@ -48,6 +48,7 @@ typedef unsigned int   u32;
+ u8 buf[SETUP_SECT_MAX*512];
  
--static void update_pecoff_setup_and_reloc(unsigned int size)
-+static void update_pecoff_setup_and_reloc(unsigned int size, unsigned int sbat_size)
+ static unsigned long _edata;
++#define SBAT_SZ 0x1000
+ 
+ /*----------------------------------------------------------------------*/
+ 
+@@ -171,15 +172,16 @@ static void parse_zoffset(char *fname)
+ 
+ int main(int argc, char ** argv)
  {
- 	u32 setup_offset = 0x200;
--	u32 reloc_offset = size - PECOFF_RELOC_RESERVE - PECOFF_COMPAT_RESERVE;
-+	u32 reloc_offset = size - PECOFF_RELOC_RESERVE - PECOFF_COMPAT_RESERVE - sbat_size;
- #ifdef CONFIG_EFI_MIXED
--	u32 compat_offset = reloc_offset + PECOFF_RELOC_RESERVE;
-+	u32 compat_offset = reloc_offset + PECOFF_RELOC_RESERVE + sbat_size;
- #endif
- 	u32 setup_size = reloc_offset - setup_offset;
- 
-@@ -304,7 +304,8 @@ static void efi_stub_entry_update(void)
- 
- #else
- 
--static inline void update_pecoff_setup_and_reloc(unsigned int size) {}
-+static inline void update_pecoff_setup_and_reloc(unsigned int size,
-+						 unsigned int sbat_size) {}
- static inline void update_pecoff_text(unsigned int text_start,
- 				      unsigned int file_sz,
- 				      unsigned int init_sz) {}
-@@ -371,7 +372,7 @@ int main(int argc, char ** argv)
- {
- 	unsigned int i, sz, setup_sectors, init_sz;
+-	unsigned int i, sz, setup_sectors;
++	unsigned int i, sz, setup_sectors, sbat_section_len = 0;
  	int c;
--	u32 sys_size;
-+	u32 sys_size, sbat_size = 0;
  	struct stat sb;
  	FILE *file, *dest;
  	int fd;
-@@ -380,7 +381,7 @@ int main(int argc, char ** argv)
- 
- 	efi_stub_defaults();
+ 	void *kernel;
+ 	u32 crc = 0xffffffffUL;
++	u8 sbat_buf[SBAT_SZ];
  
 -	if (argc != 5)
 +	if (argc != 5 && argc != 6)
  		usage();
  	parse_zoffset(argv[3]);
  
-@@ -401,6 +402,13 @@ int main(int argc, char ** argv)
- 		die("Boot block hasn't got boot flag (0xAA55)");
- 	fclose(file);
- 
-+	if (argc == 6) {
-+		if (stat(argv[5], &sb))
-+			die("Unable to stat `%s': %m", argv[5]);
-+		sbat_size = sb.st_size;
-+		memset(buf+c, 0, sbat_size);
-+		c += sbat_size;
-+	}
- 	c += reserve_pecoff_compat_section(c);
- 	c += reserve_pecoff_reloc_section(c);
- 
-@@ -411,7 +419,18 @@ int main(int argc, char ** argv)
+@@ -208,6 +210,21 @@ int main(int argc, char ** argv)
  	i = setup_sectors*512;
  	memset(buf+c, 0, i-c);
  
--	update_pecoff_setup_and_reloc(i);
-+	update_pecoff_setup_and_reloc(i, sbat_size);
-+	if (sbat_size) {
-+		u32 sbat_offset = i - PECOFF_COMPAT_RESERVE - sbat_size;
-+		update_pecoff_section_header(".sbat", sbat_offset, sbat_size);
-+		file = fopen(argv[5], "r");
-+		if (!file)
-+			die("Unable to open `%s': %m", argv[5]);
-+		if (fread(&buf[sbat_offset], 1, sizeof(buf) - sbat_offset,
-+			  file) != sbat_size)
-+			die("Reading sbat failed");
-+		fclose(file);
++	if (argc == 6) {
++		if (stat(argv[5], &sb))
++			die("Unable to stat '%s': %m", argv[5]);
++		sbat_section_len = sb.st_size;
++		memset(sbat_buf, 0, SBAT_SZ);
++		if (sbat_section_len) {
++			file = fopen(argv[5], "r");
++			if (!file)
++				die("Unable to open '%s': %m", argv[5]);
++			if (fread(sbat_buf, 1, sizeof(sbat_buf), file) != sbat_section_len)
++				die("Reading sbat failed");
++			fclose(file);
++		}
 +	}
++
+ 	/* Open and stat the kernel file */
+ 	fd = open(argv[2], O_RDONLY);
+ 	if (fd < 0)
+@@ -226,6 +243,13 @@ int main(int argc, char ** argv)
+ 	if (fwrite(buf, 1, i, dest) != i)
+ 		die("Writing setup failed");
  
- 	/* Set the default root device */
- 	put_unaligned_le16(DEFAULT_ROOT_DEV, &buf[508]);
++	/* Copy the SBAT section data */
++	if (argc == 6 ) {
++		crc = partial_crc32(sbat_buf, SBAT_SZ, crc);
++		if (fwrite(sbat_buf, 1, SBAT_SZ, dest) != SBAT_SZ)
++			die("Writing sbat failed");
++	}
++
+ 	/* Copy the kernel code */
+ 	crc = partial_crc32(kernel, sz, crc);
+ 	if (fwrite(kernel, 1, sz, dest) != sz)
 diff --git a/security/Kconfig b/security/Kconfig
 index e6db09a77..536689678 100644
 --- a/security/Kconfig

@@ -1,0 +1,20 @@
+From 152fc11f6f99015370ab40fdeaccc694f6121745 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clark.williams@gmail.com>
+Date: Fri, 3 May 2024 09:48:40 -0500
+Subject: [PATCH 64/64] Linux 6.1.90-rt30 REBASE
+
+Signed-off-by: Clark Williams <clark.williams@gmail.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index c5b71f9a229d..b72862e06be4 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt25
++-rt30
+-- 
+2.44.0
+
