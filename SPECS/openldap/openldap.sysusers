@@ -1,0 +1,2 @@
+g ldap -
+u ldap - "Stand-alone LDAP Daemon" /usr/sbin/slapd /sbin/nologin
