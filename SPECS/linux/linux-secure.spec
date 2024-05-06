@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.311
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -304,6 +304,9 @@ Patch219: 0001-dm-limit-the-number-of-targets-and-parameter-size-ar.patch
 # Fix CVE-2021-46952
 Patch220: 0001-NFS-fs_context-validate-UDP-retrans-to-prevent-shift.patch
 
+#Fix CVE-2024-26882
+Patch221: 0001-net-ip_tunnel-make-sure-to-pull-inner-header-in-ip_tunnel_rcv.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -397,7 +400,7 @@ popd
 %autopatch -p1 -m100 -M191
 
 # CVE Fixes
-%autopatch -p1 -m192 -M220
+%autopatch -p1 -m192 -M221
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -571,6 +574,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon May 06 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.311-4
+- Fixes CVE-2024-26882
 * Thu Apr 25 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.311-3
 - Fixes CVE-2021-46952
 * Fri Apr 05 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.311-2

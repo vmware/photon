@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.311
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -371,6 +371,9 @@ Patch710: 0001-Bluetooth-af_bluetooth-Fix-Use-After-Free-in-bt_sock.patch
 
 # Fix CVE-2024-23307
 Patch711: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
+
+#Fix CVE-2024-26882
+Patch712:0001-net-ip_tunnel-make-sure-to-pull-inner-header-in-ip_t.patch
 
 #Fix CVE-2023-52509
 Patch713: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
@@ -1274,6 +1277,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon May 06 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.311-4
+- Fixes CVE-2024-26882
 * Thu Apr 25 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.311-3
 - Fixes CVE-2021-46952
 * Fri Apr 05 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.311-2

@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.311
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -252,6 +252,9 @@ Patch313: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
 
 #Fix for CVE-2023-39197
 Patch314: 0001-netfilter-conntrack-dccp-copy-entire-header-to-stack.patch
+
+#Fix CVE-2024-26882
+Patch315: 0001-net-ip_tunnel-make-sure-to-pull-inner-header-in-ip_t.patch
 
 #Fix CVE-2023-51779
 Patch316: 0001-Bluetooth-af_bluetooth-Fix-Use-After-Free-in-bt_sock.patch
@@ -595,6 +598,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon May 06 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.311-4
+- Fixes CVE-2024-26882
 * Thu Apr 25 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.311-3
 - Fixes CVE-2021-46952
 * Fri Apr 05 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.19.311-2
