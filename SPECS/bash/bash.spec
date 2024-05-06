@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
@@ -102,15 +102,6 @@ if [ -z "$INPUTRC" -a ! -f "$HOME/.inputrc" ]; then
   INPUTRC=%{_sysconfdir}/inputrc
 fi
 export INPUTRC
-EOF
-
-cat > %{buildroot}%{_sysconfdir}/profile.d/umask.sh << "EOF"
-# By default, the umask should be set.
-if [ "$(id -gn)" = "$(id -un)" -a $EUID -gt 99 ]; then
-  umask 002
-else
-  umask 022
-fi
 EOF
 
 cat > %{buildroot}%{_sysconfdir}/profile.d/i18n.sh << "EOF"
@@ -324,6 +315,8 @@ fi
 %{_mandir}/*/*
 
 %changelog
+* Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.2-3
+- Remove umask.sh, have systemd wide common umask value
 * Mon May 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.2-2
 - Remove bash-completion related files
 - bash-completion is a new package now

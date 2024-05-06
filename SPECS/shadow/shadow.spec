@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 License:        BSD
 Group:          Applications/System
@@ -208,6 +208,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.13-6
+- Use pam_umask.so to set system-wide umask
 * Thu Dec 21 2023 Srish Srinivasan <ssrish@vmware.com> 4.13-5
 - Patched CVE-2023-29383, CVE-2023-4641
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.13-4
