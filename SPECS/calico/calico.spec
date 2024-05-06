@@ -1,12 +1,14 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
-Version:        3.26.1
-Release:        8%{?dist}
+Version:        3.26.4
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  calico=2571bbae94ca0c80b11a347ffc4601e7ab5feba3bd9fb93e78e0b3ec9998a2871ba7abf3fe8029f8738ed9cf616b4e0a7ddb6a0556b08873045fefe1c2656d99
-Patch0:         CVE-2023-41378.patch
+%define sha512  calico=85a051cf938f771e9bf3173cc1806697b73b36d221053ad53ecf69afae0bfe8f9c0c6fac24de4b5f3e747b095ebf11e79d6358bd0e7a797a5144054010bb15b4
+
+Patch1:         0001-CVE-2024-33522.patch
+Patch2:         0002-CVE-2024-33522.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -136,6 +138,9 @@ cp -r confd/etc/ %{buildroot}%{_sysconfdir}
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
+* Mon May 06 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.26.4-1
+- Update to 3.26.4 and add patches for CVE-2024-33522. Drop patch for
+- CVE-2023-41378, as this was included in 3.26.3
 * Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 3.26.1-8
 - Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 3.26.1-7
