@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 License:        BSD
 Group:          Applications/System
@@ -207,76 +207,78 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
-*   Sat Dec 16 2023 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.13-2
--   Patched CVE-2023-29383, CVE-2023-4641
-*   Mon Jun 19 2023 Anmol Jain <anmolja@vmware.com> 4.13-1
--   Fix for CVE-2013-4235
-*   Mon May 22 2023 Anmol Jain <anmolja@vmware.com> 4.8.1-5
--   Fix for CVE-2023-29383.patch
-*   Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 4.8.1-4
--   Fix for requires
-*   Wed Feb 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.8.1-3
--   Added patch to be lenient with usernames
-*   Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 4.8.1-2
--   pam_cracklib has been deprecated.
--   Replaced it with pam_pwquality
-*   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.1-1
--   Fix for Automatic Version Bump
-*   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 4.6-5
--   Do not conflict with toybox >= 0.8.2-2
-*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 4.6-4
--   Cross compilation support
-*   Wed Oct 24 2018 Michelle Wang <michellew@vmware.com> 4.6-3
--   Add su and login into shadow-tool.
-*   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 4.6-2
--   Add conflict toybox for shadow-tools.
-*   Wed Sep 19 2018 Srinidhi Rao <srinidhir@vmware.com> 4.6-1
--   Upgrading the version to 4.6.
-*   Mon Jul 30 2018 Tapas Kundu <tkundu@vmware.com> 4.2.1-16
--   Added fix for CVE-2018-7169.
-*   Fri Apr 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-15
--   Move pam.d config file to here for better tracking.
--   Add pam_loginuid module as optional in a session.
-*   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-14
--   Added -tools subpackage.
--   Main package requires -tools or toybox.
-*   Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 4.2.1-13
--   Added fix for CVE-2017-12424, CVE-2016-6252.
-*   Thu Apr 27 2017 Divya Thaluru <dthaluru@vmware.com> 4.2.1-12
--   Allow '.' in username.
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-11
--   BuildRequires Linux-PAM-devel.
-*   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-10
--   Added -lang subpackage.
-*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 4.2.1-9
--   Modified %check.
-*   Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-8
--   Added logic to not replace pam.d conf files in upgrade scenario.
-*   Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-7
--   Adding pam_cracklib module as requisite to pam password configuration.
-*   Wed May 25 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-6
--   Modifying pam_systemd module as optional in a session.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-5
--   GA Bump release of all rpms.
-*   Mon May 2 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-4
--   Enabling pam_systemd module in a session.
-*   Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
--   Setting password aging limits to 90 days.
-*   Wed Apr 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
--   Setting password aging limits to 365 days.
-*   Wed Mar 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-2
--   Enabling pam_limits module in a session.
-*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 4.2.1-1
--   Update version.
-*   Wed Dec 2 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-6
--   Fixed PAM Configuration file for passwd.
-*   Mon Oct 26 2015 Sharath George <sharathg@vmware.com> 4.1.5.1-5
--   Allow mixed case in username.
-*   Mon Jun 29 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-4
--   Fixed PAM Configuration file for chpasswd.
-*   Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.5.1-3
--   Use group id 100(users) by default.
-*   Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-2
--   Adding PAM support.
-*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-1
--   Initial build First version.
+* Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.13-3
+- Use pam_umask.so to set system-wide umask
+* Sat Dec 16 2023 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.13-2
+- Patched CVE-2023-29383, CVE-2023-4641
+* Mon Jun 19 2023 Anmol Jain <anmolja@vmware.com> 4.13-1
+- Fix for CVE-2013-4235
+* Mon May 22 2023 Anmol Jain <anmolja@vmware.com> 4.8.1-5
+- Fix for CVE-2023-29383.patch
+* Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 4.8.1-4
+- Fix for requires
+* Wed Feb 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.8.1-3
+- Added patch to be lenient with usernames
+* Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 4.8.1-2
+- pam_cracklib has been deprecated.
+- Replaced it with pam_pwquality
+* Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.1-1
+- Fix for Automatic Version Bump
+* Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 4.6-5
+- Do not conflict with toybox >= 0.8.2-2
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 4.6-4
+- Cross compilation support
+* Wed Oct 24 2018 Michelle Wang <michellew@vmware.com> 4.6-3
+- Add su and login into shadow-tool.
+* Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 4.6-2
+- Add conflict toybox for shadow-tools.
+* Wed Sep 19 2018 Srinidhi Rao <srinidhir@vmware.com> 4.6-1
+- Upgrading the version to 4.6.
+* Mon Jul 30 2018 Tapas Kundu <tkundu@vmware.com> 4.2.1-16
+- Added fix for CVE-2018-7169.
+* Fri Apr 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-15
+- Move pam.d config file to here for better tracking.
+- Add pam_loginuid module as optional in a session.
+* Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-14
+- Added -tools subpackage.
+- Main package requires -tools or toybox.
+* Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 4.2.1-13
+- Added fix for CVE-2017-12424, CVE-2016-6252.
+* Thu Apr 27 2017 Divya Thaluru <dthaluru@vmware.com> 4.2.1-12
+- Allow '.' in username.
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-11
+- BuildRequires Linux-PAM-devel.
+* Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-10
+- Added -lang subpackage.
+* Tue Oct 04 2016 ChangLee <changlee@vmware.com> 4.2.1-9
+- Modified %check.
+* Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-8
+- Added logic to not replace pam.d conf files in upgrade scenario.
+* Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-7
+- Adding pam_cracklib module as requisite to pam password configuration.
+* Wed May 25 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-6
+- Modifying pam_systemd module as optional in a session.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-5
+- GA Bump release of all rpms.
+* Mon May 2 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-4
+- Enabling pam_systemd module in a session.
+* Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
+- Setting password aging limits to 90 days.
+* Wed Apr 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
+- Setting password aging limits to 365 days.
+* Wed Mar 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-2
+- Enabling pam_limits module in a session.
+* Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 4.2.1-1
+- Update version.
+* Wed Dec 2 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-6
+- Fixed PAM Configuration file for passwd.
+* Mon Oct 26 2015 Sharath George <sharathg@vmware.com> 4.1.5.1-5
+- Allow mixed case in username.
+* Mon Jun 29 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-4
+- Fixed PAM Configuration file for chpasswd.
+* Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.5.1-3
+- Use group id 100(users) by default.
+* Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-2
+- Adding PAM support.
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-1
+- Initial build First version.
