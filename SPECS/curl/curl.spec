@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.1.2
-Release:        8%{?dist}
+Version:        8.7.1
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -9,17 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
-%define sha512 %{name}=532ab96eba6dea66d272f3be56f5af5c5da922480f9a10e203de98037c311f12f8145ba6bf813831e42815e068874ccfd108f84f7650743f5dbb3ebc3bc9c4f4
-
-Patch0:        CVE-2023-32001.patch
-Patch1:        curl-CVE-2023-38039.patch
-Patch2:        curl-CVE-2023-38545.patch
-Patch3:        curl-CVE-2023-38546.patch
-Patch4:        curl-CVE-2023-46218.patch
-Patch5:        better-random-strings.patch
-Patch6:        curl-CVE-2023-46219.patch
-Patch7:        curl-CVE-2024-2004.patch
-Patch8:        curl-CVE-2024-2398.patch
+%define sha512 %{name}=5bbde9d5648e9226f5490fa951690aaf159149345f3a315df2ba58b2468f3e59ca32e8a49734338afc861803a4f81caac6d642a4699b72c6310ebfb1f618aad2
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
@@ -114,6 +104,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Mon May 06 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 8.7.1-1
+- Version upgrade
+- Fix CVE-2023-46218,CVE-2023-46219
 * Mon Mar 25 2024 Harinadh D <harinadh.dommaraju@vmware.com> 8.1.2-8
 - Fix of CVE-2024-2004,CVE-2024-2398
 * Tue Dec 05 2023 Harinadh D <hdommaraju@vmware.com> 8.1.2-7
