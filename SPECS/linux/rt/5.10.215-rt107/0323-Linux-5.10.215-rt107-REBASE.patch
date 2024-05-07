@@ -1,0 +1,20 @@
+From 63f2c3efdbda863fc01ba4fc18cd4daa4712faf4 Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Thu, 18 Apr 2024 21:34:16 -0300
+Subject: [PATCH 323/323] Linux 5.10.215-rt107 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 21988f9ad53f1..2e0a3c9605753 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt34
++-rt107
+-- 
+2.44.0
+

@@ -1,0 +1,37 @@
+From 771eede6339e4ab3444babfcc66d93f4c38a78c3 Mon Sep 17 00:00:00 2001
+From: Xie Yongji <xieyongji@bytedance.com>
+Date: Mon, 13 Sep 2021 19:19:28 +0800
+Subject: [PATCH 312/323] aio: Fix incorrect usage of eventfd_signal_allowed()
+
+commit 4b3749865374899e115aa8c48681709b086fe6d3 upstream.
+
+We should defer eventfd_signal() to the workqueue when
+eventfd_signal_allowed() return false rather than return
+true.
+
+Fixes: b542e383d8c0 ("eventfd: Make signal recursion protection a task bit")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Link: https://lore.kernel.org/r/20210913111928.98-1-xieyongji@bytedance.com
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ fs/aio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/aio.c b/fs/aio.c
+index 7030157e99338..0f02ea16305cf 100644
+--- a/fs/aio.c
++++ b/fs/aio.c
+@@ -1776,7 +1776,7 @@ static int aio_poll_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
+ 		list_del_init(&req->wait.entry);
+ 		list_del(&iocb->ki_list);
+ 		iocb->ki_res.res = mangle_poll(mask);
+-		if (iocb->ki_eventfd && eventfd_signal_allowed()) {
++		if (iocb->ki_eventfd && !eventfd_signal_allowed()) {
+ 			iocb = NULL;
+ 			INIT_WORK(&req->work, aio_poll_put_work);
+ 			schedule_work(&req->work);
+-- 
+2.44.0
+

@@ -1,0 +1,104 @@
+From ab1be3f1aa7799f99155488c28eacaef65eb68fb Mon Sep 17 00:00:00 2001
+From: Filipe Manana <fdmanana@suse.com>
+Date: Mon, 19 Feb 2024 20:10:07 +0000
+Subject: [PATCH] btrfs: fix data race at btrfs_use_block_rsv() when accessing
+ block reserve
+
+[ Upstream commit c7bb26b847e5b97814f522686068c5628e2b3646 ]
+
+At btrfs_use_block_rsv() we read the size of a block reserve without
+locking its spinlock, which makes KCSAN complain because the size of a
+block reserve is always updated while holding its spinlock. The report
+from KCSAN is the following:
+
+  [653.313148] BUG: KCSAN: data-race in btrfs_update_delayed_refs_rsv [btrfs] / btrfs_use_block_rsv [btrfs]
+
+  [653.314755] read to 0x000000017f5871b8 of 8 bytes by task 7519 on cpu 0:
+  [653.314779]  btrfs_use_block_rsv+0xe4/0x2f8 [btrfs]
+  [653.315606]  btrfs_alloc_tree_block+0xdc/0x998 [btrfs]
+  [653.316421]  btrfs_force_cow_block+0x220/0xe38 [btrfs]
+  [653.317242]  btrfs_cow_block+0x1ac/0x568 [btrfs]
+  [653.318060]  btrfs_search_slot+0xda2/0x19b8 [btrfs]
+  [653.318879]  btrfs_del_csums+0x1dc/0x798 [btrfs]
+  [653.319702]  __btrfs_free_extent.isra.0+0xc24/0x2028 [btrfs]
+  [653.320538]  __btrfs_run_delayed_refs+0xd3c/0x2390 [btrfs]
+  [653.321340]  btrfs_run_delayed_refs+0xae/0x290 [btrfs]
+  [653.322140]  flush_space+0x5e4/0x718 [btrfs]
+  [653.322958]  btrfs_preempt_reclaim_metadata_space+0x102/0x2f8 [btrfs]
+  [653.323781]  process_one_work+0x3b6/0x838
+  [653.323800]  worker_thread+0x75e/0xb10
+  [653.323817]  kthread+0x21a/0x230
+  [653.323836]  __ret_from_fork+0x6c/0xb8
+  [653.323855]  ret_from_fork+0xa/0x30
+
+  [653.323887] write to 0x000000017f5871b8 of 8 bytes by task 576 on cpu 3:
+  [653.323906]  btrfs_update_delayed_refs_rsv+0x1a4/0x250 [btrfs]
+  [653.324699]  btrfs_add_delayed_data_ref+0x468/0x6d8 [btrfs]
+  [653.325494]  btrfs_free_extent+0x76/0x120 [btrfs]
+  [653.326280]  __btrfs_mod_ref+0x6a8/0x6b8 [btrfs]
+  [653.327064]  btrfs_dec_ref+0x50/0x70 [btrfs]
+  [653.327849]  walk_up_proc+0x236/0xa50 [btrfs]
+  [653.328633]  walk_up_tree+0x21c/0x448 [btrfs]
+  [653.329418]  btrfs_drop_snapshot+0x802/0x1328 [btrfs]
+  [653.330205]  btrfs_clean_one_deleted_snapshot+0x184/0x238 [btrfs]
+  [653.330995]  cleaner_kthread+0x2b0/0x2f0 [btrfs]
+  [653.331781]  kthread+0x21a/0x230
+  [653.331800]  __ret_from_fork+0x6c/0xb8
+  [653.331818]  ret_from_fork+0xa/0x30
+
+So add a helper to get the size of a block reserve while holding the lock.
+Reading the field while holding the lock instead of using the data_race()
+annotation is used in order to prevent load tearing.
+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Backported to 5.10.216]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ fs/btrfs/block-rsv.c |  2 +-
+ fs/btrfs/block-rsv.h | 16 ++++++++++++++++
+ 2 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/fs/btrfs/block-rsv.c b/fs/btrfs/block-rsv.c
+index eb41dc2f6..190b3355a 100644
+--- a/fs/btrfs/block-rsv.c
++++ b/fs/btrfs/block-rsv.c
+@@ -485,7 +485,7 @@ struct btrfs_block_rsv *btrfs_use_block_rsv(struct btrfs_trans_handle *trans,
+ 
+ 	block_rsv = get_block_rsv(trans, root);
+ 
+-	if (unlikely(block_rsv->size == 0))
++	if (unlikely(btrfs_block_rsv_size(block_rsv) == 0))
+ 		goto try_reserve;
+ again:
+ 	ret = btrfs_block_rsv_use_bytes(block_rsv, blocksize);
+diff --git a/fs/btrfs/block-rsv.h b/fs/btrfs/block-rsv.h
+index 0b6ae5302..fe4c803fa 100644
+--- a/fs/btrfs/block-rsv.h
++++ b/fs/btrfs/block-rsv.h
+@@ -90,4 +90,20 @@ static inline void btrfs_unuse_block_rsv(struct btrfs_fs_info *fs_info,
+ 	btrfs_block_rsv_release(fs_info, block_rsv, 0, NULL);
+ }
+ 
++/*
++ * Get the size of a block reserve in a context where getting a stale value is
++ * acceptable, instead of accessing it directly and trigger data race warning
++ * from KCSAN.
++ */
++static inline u64 btrfs_block_rsv_size(struct btrfs_block_rsv *rsv)
++{
++       u64 ret;
++
++       spin_lock(&rsv->lock);
++       ret = rsv->size;
++       spin_unlock(&rsv->lock);
++
++       return ret;
++}
++
+ #endif /* BTRFS_BLOCK_RSV_H */
+-- 
+2.35.6
+

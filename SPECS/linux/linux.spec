@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.214
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.216
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=120b5f269b56478791d00ca3af18acd4e16b8fd01af163d9db8b8cdcecf7df4bf6c50cfed9e0ae456e6b1677e4b450b8fcfc376b746344bf1d056f024d2ce1e5
+%define sha512 linux=d407add11bca1b41a4dde118c9fef52dc67d2f0aad1cc1ed77143104d7d9b7ce1bcd4661681246c06300e9ff5155fbb8d901428bffc32672b6e531ad10fcad7b
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -224,30 +224,19 @@ Patch143: 0001-tls-rx-simplify-async-wait.patch
 Patch144: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
 Patch145: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 
-# Fix CVE-2023-52458
-Patch148: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
-
-# Fix CVE-2023-52482
-Patch149: 0001-x86-srso-Add-SRSO-mitigation-for-Hygon-processors.patch
 # Fix CVE-2023-1192
-Patch150: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
+Patch146: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
 # Fix CVE-2024-26583
-Patch153: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
+Patch147: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
 
 # Fix CVE-2024-26585
-Patch154: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
+Patch148: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 
 # Fix CVE-2024-26589
-Patch155: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
+Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 
-# Fix CVE-2024-26642
-Patch156: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
-
-# Fix CVE-2023-52620
-Patch157: 0001-netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
-
-# Fix CVE-2024-26643
-Patch158: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
+# Fix CVE-2024-26904
+Patch150: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -924,6 +913,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue May 07 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.216-1
+- Update to version 5.10.216
 * Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.214-3
 - Fix for CVE-2023-1192
 * Wed Apr 03 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.214-2

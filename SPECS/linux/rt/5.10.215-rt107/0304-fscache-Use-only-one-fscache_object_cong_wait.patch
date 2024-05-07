@@ -1,0 +1,30 @@
+From 9bf6dbd205a71b61785d2d7e5d5ca74183b5de13 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Tue, 2 Nov 2021 11:52:05 +0100
+Subject: [PATCH 304/323] fscache: Use only one fscache_object_cong_wait.
+
+This is an update of the original patch, removing put_cpu_var() which
+was overseen in the initial patch.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ fs/fscache/object.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/fs/fscache/object.c b/fs/fscache/object.c
+index 55158f30d0935..fb9794dce721c 100644
+--- a/fs/fscache/object.c
++++ b/fs/fscache/object.c
+@@ -823,8 +823,6 @@ void fscache_enqueue_object(struct fscache_object *object)
+ 				wake_up(&fscache_object_cong_wait);
+ 		} else
+ 			fscache_put_object(object, fscache_obj_put_queue);
+-
+-		put_cpu_var(fscache_object_cong_wait);
+ 	}
+ }
+ 
+-- 
+2.44.0
+
