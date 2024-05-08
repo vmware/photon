@@ -1021,7 +1021,7 @@ class CheckTools:
             print(f"{key} is enabled, not checking for updates")
             return
 
-        if hasattr(photon_installer, "__version__"):
+        if hasattr(photon_installer, "__version__") and '+' in photon_installer.__version__:
             local_hash = photon_installer.__version__.split("+")[1]
 
             remote_hash = f"git ls-remote {url} {tag} | cut -f1"
@@ -1030,7 +1030,8 @@ class CheckTools:
                 print("Upstream photon-installer is updated, updating local copy ...")
                 install_from_url(cmd)
         else:
-            install_from_url(cmd)
+            print("Looks like photon-installer installed from a non pip method, stopping here ...")
+            return
 
 
 """
