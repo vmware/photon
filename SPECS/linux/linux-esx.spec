@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.83
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -240,6 +240,14 @@ Patch506: 0001-jitterentropy-kcapi-defer-jent_init.patch
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+%endif
+
+%ifarch x86_64
+# SEV on VMware: [600..609]
+Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
+Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
+Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
+# TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 %endif
 
 BuildRequires: bc
@@ -474,6 +482,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed May 08 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-3
+- Add SEV patches back in spec file
 * Sun Apr 14 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2
 - Patched CVE-2024-26643
 * Thu Apr 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-1
