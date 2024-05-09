@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.83
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -482,6 +482,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu May 09 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-4
+- Enable CONFIG_X86_SGX
 * Wed May 08 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-3
 - Add SEV patches back in spec file
 * Sun Apr 14 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2
