@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.3.0
+Version:        8.4.0
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,8 +8,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 
-Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=3ab9c672fcf42caa639699ad1169f4297f53242abb0b88e533aa05872f6cee07dce9bafa812adb3162ed7d8bf5669bf350b6f0397f24117462589c5d334bd173
+Source0: https://cdn.mysql.com/Downloads/MySQL-8.4/mysql-%{version}.tar.gz
+%define sha512 %{name}=59d54a8405b5cab0de95c67f3228b0b292a03b12147e8dc01f67b34b407c1e4f9644340d7dfdc1f23d1d081a749d5a49f6361b540bfc1789a9068b56dc5da08c
 
 Source1: %{name}.sysusers
 
@@ -21,7 +21,7 @@ BuildRequires: libevent-devel
 BuildRequires: curl-devel
 BuildRequires: zstd-devel
 BuildRequires: lz4-devel
-#BuildRequires: protobuf-devel
+BuildRequires: protobuf-devel
 BuildRequires: openssl-devel
 BuildRequires: libtirpc-devel
 BuildRequires: ncurses-devel
@@ -36,7 +36,7 @@ Requires: libevent
 Requires: curl-libs
 Requires: zstd-libs
 Requires: lz4
-#Requires: protobuf
+Requires: protobuf
 Requires: openssl
 Requires: libtirpc
 Requires: perl
@@ -162,6 +162,7 @@ fi
 %{_sbindir}/*
 %{_libdir}/*.so.*
 %dir %{_lib64dir}/%{name}/private
+%{_lib64dir}/%{name}/private/*.so
 %attr(755,root,root) %{_lib64dir}/%{name}/private/libprotobuf*.so.*
 %{_libdir}/plugin/*
 %{_datadir}/*
@@ -179,6 +180,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri May 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.0-1
+- Upgrade to v8.4.0, fixes a bunch of CVEs
 * Fri Jan 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.3.0-1
 - Upgrade to v8.3.0
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-3
