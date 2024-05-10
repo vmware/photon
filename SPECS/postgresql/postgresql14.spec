@@ -12,8 +12,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.11
-Release:        6%{?dist}
+Version:        14.12
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=67289cd638ed7b13e845263d5a34394347f33735d9e2fafd6aa3562989a3a9455ea547d1b5079138648f33b093e77841654188fc74a49c0d6d458a42cfb57ffe
+%define sha512 %{srcname}=cb6729d0fba8aa705c92beecdc5cd1131e64337db6de038da6f5b75c7d9e65381f93f6ebfac601d5622399b9485e8ec558be53e6a7dcc59350a9b053f8836bf9
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -516,6 +516,7 @@ rm -rf %{buildroot}/*
 %{_pgdatadir}/tsearch_data/*.rules
 %{_pgdatadir}/tsearch_data/*.stop
 %{_pgdatadir}/tsearch_data/*.syn
+%{_pgdatadir}/fix-CVE-2024-4317.sql
 %{_pglibdir}/dict_int.so
 %{_pglibdir}/dict_snowball.so
 %{_pglibdir}/dict_xsyn.so
@@ -696,6 +697,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Fri May 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.12-1
+- Upgrade to v14.12
 * Tue Apr 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-6
 - Introduce client subpackage, make main package a meta package
 * Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 14.11-5
