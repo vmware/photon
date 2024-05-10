@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        12.3.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -24,6 +24,7 @@ Source3: vgauthd.service
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0: ovt-linux-deployment.patch
 Patch1: gosc-root-password-update.patch
+Patch2: gosc-change-order-of-args-to-cloud-init-in-Ph4-and-above.patch
 
 %ifarch aarch64
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
@@ -79,7 +80,7 @@ The "%{name}-sdmp" package contains a plugin for Service Discovery.
 
 %package        gosc
 Summary:        GOSC scripts
-Requires:       cloud-init
+Requires:       cloud-init >= 24.1.4-1
 Requires:       %{name} = %{version}-%{release}
 
 %description    gosc
@@ -179,6 +180,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Wed May 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.3.5-5
+- Invoke cloud-init with proper args
 * Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 12.3.5-4
 - Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 12.3.5-3

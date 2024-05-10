@@ -4,12 +4,13 @@ Date: Thu, 7 Sep 2023 12:53:58 +0530
 Subject: [PATCH 1/5] azure ds
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  cloudinit/sources/helpers/azure.py | 30 ++++++++++++++++++++++++++++++
  1 file changed, 30 insertions(+)
 
 diff --git a/cloudinit/sources/helpers/azure.py b/cloudinit/sources/helpers/azure.py
-index 6e5c1f4..155b037 100644
+index 1af5f13..e70d260 100644
 --- a/cloudinit/sources/helpers/azure.py
 +++ b/cloudinit/sources/helpers/azure.py
 @@ -1,5 +1,6 @@
@@ -19,15 +20,15 @@ index 6e5c1f4..155b037 100644
  import json
  import logging
  import os
-@@ -11,6 +12,7 @@ import zlib
+@@ -8,6 +9,7 @@ import textwrap
+ import zlib
  from contextlib import contextmanager
  from datetime import datetime
- from errno import ENOENT
 +from io import StringIO
  from time import sleep, time
- from typing import TYPE_CHECKING, Callable, List, Optional, TypeVar, Union
+ from typing import Callable, List, Optional, TypeVar, Union
  from xml.etree import ElementTree
-@@ -48,6 +50,8 @@ azure_ds_reporter = events.ReportEventStack(
+@@ -34,6 +36,8 @@ azure_ds_reporter = events.ReportEventStack(
  
  T = TypeVar("T")
  
@@ -36,7 +37,7 @@ index 6e5c1f4..155b037 100644
  
  def azure_ds_telemetry_reporter(func: Callable[..., T]) -> Callable[..., T]:
      def impl(*args, **kwargs):
-@@ -926,6 +930,32 @@ class WALinuxAgentShim:
+@@ -842,6 +846,32 @@ class WALinuxAgentShim:
          report_diagnostic_event(msg, logger_func=LOG.debug)
          return goal_state
  
@@ -70,5 +71,5 @@ index 6e5c1f4..155b037 100644
      def _get_user_pubkeys(
          self, goal_state: GoalState, pubkey_info: list
 -- 
-2.25.1
+2.39.0
 

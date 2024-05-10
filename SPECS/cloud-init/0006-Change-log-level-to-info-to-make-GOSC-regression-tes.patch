@@ -4,18 +4,19 @@ Date: Mon, 11 Dec 2023 16:52:27 +0530
 Subject: [PATCH] Change log level to info to make GOSC regression tests happy
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  cloudinit/subp.py | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/cloudinit/subp.py b/cloudinit/subp.py
-index 85a970f..13099e8 100644
+index c94b44e..b217faf 100644
 --- a/cloudinit/subp.py
 +++ b/cloudinit/subp.py
-@@ -406,8 +406,8 @@ def runparts(dirp, skip_no_exist=True, exe_prefix=None):
+@@ -380,8 +380,8 @@ def runparts(dirp, skip_no_exist=True, exe_prefix=None):
                  LOG.debug(e)
                  failed.append(exe_name)
-         else:
+         elif os.path.isfile(exe_path):
 -            LOG.warning(
 -                "skipping %s as its not executable "
 +            LOG.info(
@@ -24,5 +25,5 @@ index 85a970f..13099e8 100644
                  "executable permissions.",
                  exe_path,
 -- 
-2.25.1
+2.39.0
 
