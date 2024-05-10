@@ -1,8 +1,8 @@
 %define cl_services cloud-config.service cloud-config.target cloud-final.service %{name}.service %{name}.target %{name}-local.service
 
 Name:           cloud-init
-Version:        23.4
-Release:        3%{?dist}
+Version:        24.1.4
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e425a957cb38f2be2fcb83693696d0177ad84150f8a55759226d8696344ddd75e33e23a7230c492087784ef96ddd71305bc3462479e2c1a3ed0e704ac0f2d879
+%define sha512 %{name}=374a5a10895f4f850457f3015687fb2c5b605841658b819244139fadf0075cd818cfdec5aeb8d0ca9ddbfa40de3b5070d2c4ffd0f6bcc306349b0db70edee2c7
 
 Patch0: 0001-azure-ds.patch
 Patch1: 0002-Change-default-policy.patch
@@ -23,7 +23,6 @@ Patch4: 0005-test_vmware.py-fix-pkg-test-failure.patch
 %endif
 
 Patch5: 0006-Change-log-level-to-info-to-make-GOSC-regression-tes.patch
-Patch6: 0007-call-home.patch
 
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
@@ -137,7 +136,6 @@ rm -rf %{buildroot}
 %dir %{_sharedstatedir}/cloud
 %dir %{_sysconfdir}/cloud/templates
 %doc %{_sysconfdir}/cloud/cloud.cfg.d/README
-%doc %{_sysconfdir}/cloud/clean.d/README
 %config(noreplace) %{_sysconfdir}/cloud/templates/*
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
@@ -148,6 +146,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 
 %changelog
+* Wed May 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.1.4-1
+- Upgrade to v24.1.4
 * Thu Jan 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.4-3
 - Call home fix
 * Fri Dec 22 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.4-2
