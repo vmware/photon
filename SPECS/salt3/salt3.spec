@@ -1,6 +1,6 @@
 Name:           salt3
 Version:        3006.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
 License:        ASL 2.0
@@ -38,6 +38,7 @@ Requires:       python3-tornado
 Requires:       python3-psutil
 Requires:       python3-distro
 Requires:       python3-looseversion
+Requires:       python3-jmespath
 
 %ifarch x86_64
 Requires:       dmidecode
@@ -256,5 +257,7 @@ rm -rf %{buildroot}
 %{_bindir}/spm
 
 %changelog
+* Mon May 13 2024 Etienne Le Sueur <etienne.le-sueur@broadcom.com> 3006.7-2
+- Update requirements to include python3-jmespath to fix issue listing minions
 * Wed Apr 17 2024 Prafful Mehrotra <prafful.mehrotra@broadcom.com> 3006.7-1
 - Update to 3006.7-1 for Ph5 and adding python_backport_abc, looseversion
