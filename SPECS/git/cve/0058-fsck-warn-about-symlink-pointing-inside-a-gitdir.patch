@@ -1,0 +1,237 @@
+From a33fea0886cfa016d313d2bd66bdd08615bffbc9 Mon Sep 17 00:00:00 2001
+From: Johannes Schindelin <johannes.schindelin@gmx.de>
+Date: Wed, 10 Apr 2024 18:01:13 +0200
+Subject: [PATCH 58/59] fsck: warn about symlink pointing inside a gitdir
+
+In the wake of fixing a vulnerability where `git clone` mistakenly
+followed a symbolic link that it had just written while checking out
+files, writing into a gitdir, let's add some defense-in-depth by
+teaching `git fsck` to report symbolic links stored in its trees that
+point inside `.git/`.
+
+Even though the Git project never made any promises about the exact
+shape of the `.git/` directory's contents, there are likely repositories
+out there containing symbolic links that point inside the gitdir. For
+that reason, let's only report these as warnings, not as errors.
+Security-conscious users are encouraged to configure
+`fsck.symlinkPointsToGitDir = error`.
+
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ Documentation/fsck-msgids.txt | 12 ++++++++
+ fsck.c                        | 56 +++++++++++++++++++++++++++++++++++
+ fsck.h                        | 12 ++++++++
+ t/t1450-fsck.sh               | 37 +++++++++++++++++++++++
+ 4 files changed, 117 insertions(+)
+
+diff --git a/Documentation/fsck-msgids.txt b/Documentation/fsck-msgids.txt
+index 12eae8a222..b06ec385af 100644
+--- a/Documentation/fsck-msgids.txt
++++ b/Documentation/fsck-msgids.txt
+@@ -157,6 +157,18 @@
+ `nullSha1`::
+ 	(WARN) Tree contains entries pointing to a null sha1.
+ 
++`symlinkPointsToGitDir`::
++	(WARN) Symbolic link points inside a gitdir.
++
++`symlinkTargetBlob`::
++	(ERROR) A non-blob found instead of a symbolic link's target.
++
++`symlinkTargetLength`::
++	(WARN) Symbolic link target longer than maximum path length.
++
++`symlinkTargetMissing`::
++	(ERROR) Unable to read symbolic link target's blob.
++
+ `treeNotSorted`::
+ 	(ERROR) A tree is not properly sorted.
+ 
+diff --git a/fsck.c b/fsck.c
+index 47eaeedd70..b85868e122 100644
+--- a/fsck.c
++++ b/fsck.c
+@@ -636,6 +636,8 @@ static int fsck_tree(const struct object_id *tree_oid,
+ 				retval += report(options, tree_oid, OBJ_TREE,
+ 						 FSCK_MSG_MAILMAP_SYMLINK,
+ 						 ".mailmap is a symlink");
++			oidset_insert(&options->symlink_targets_found,
++				      entry_oid);
+ 		}
+ 
+ 		if ((backslash = strchr(name, '\\'))) {
+@@ -1228,6 +1230,56 @@ static int fsck_blob(const struct object_id *oid, const char *buf,
+ 		}
+ 	}
+ 
++	if (oidset_contains(&options->symlink_targets_found, oid)) {
++		const char *ptr = buf;
++		const struct object_id *reported = NULL;
++
++		oidset_insert(&options->symlink_targets_done, oid);
++
++		if (!buf || size > PATH_MAX) {
++			/*
++			 * A missing buffer here is a sign that the caller found the
++			 * blob too gigantic to load into memory. Let's just consider
++			 * that an error.
++			 */
++			return report(options, oid, OBJ_BLOB,
++					FSCK_MSG_SYMLINK_TARGET_LENGTH,
++					"symlink target too long");
++		}
++
++		while (!reported && ptr) {
++			const char *p = ptr;
++			char c, *slash = strchrnul(ptr, '/');
++			char *backslash = memchr(ptr, '\\', slash - ptr);
++
++			c = *slash;
++			*slash = '\0';
++
++			while (!reported && backslash) {
++				*backslash = '\0';
++				if (is_ntfs_dotgit(p))
++					ret |= report(options, reported = oid, OBJ_BLOB,
++						      FSCK_MSG_SYMLINK_POINTS_TO_GIT_DIR,
++						      "symlink target points to git dir");
++				*backslash = '\\';
++				p = backslash + 1;
++				backslash = memchr(p, '\\', slash - p);
++			}
++			if (!reported && is_ntfs_dotgit(p))
++				ret |= report(options, reported = oid, OBJ_BLOB,
++					      FSCK_MSG_SYMLINK_POINTS_TO_GIT_DIR,
++					      "symlink target points to git dir");
++
++			if (!reported && is_hfs_dotgit(ptr))
++				ret |= report(options, reported = oid, OBJ_BLOB,
++					      FSCK_MSG_SYMLINK_POINTS_TO_GIT_DIR,
++					      "symlink target points to git dir");
++
++			*slash = c;
++			ptr = c ? slash + 1 : NULL;
++		}
++	}
++
+ 	return ret;
+ }
+ 
+@@ -1319,6 +1371,10 @@ int fsck_finish(struct fsck_options *options)
+ 			  FSCK_MSG_GITATTRIBUTES_MISSING, FSCK_MSG_GITATTRIBUTES_BLOB,
+ 			  options, ".gitattributes");
+ 
++	ret |= fsck_blobs(&options->symlink_targets_found, &options->symlink_targets_done,
++			  FSCK_MSG_SYMLINK_TARGET_MISSING, FSCK_MSG_SYMLINK_TARGET_BLOB,
++			  options, "<symlink-target>");
++
+ 	return ret;
+ }
+ 
+diff --git a/fsck.h b/fsck.h
+index fcecf4101c..130fa8d8f9 100644
+--- a/fsck.h
++++ b/fsck.h
+@@ -63,6 +63,8 @@ enum fsck_msg_type {
+ 	FUNC(GITATTRIBUTES_LARGE, ERROR) \
+ 	FUNC(GITATTRIBUTES_LINE_LENGTH, ERROR) \
+ 	FUNC(GITATTRIBUTES_BLOB, ERROR) \
++	FUNC(SYMLINK_TARGET_MISSING, ERROR) \
++	FUNC(SYMLINK_TARGET_BLOB, ERROR) \
+ 	/* warnings */ \
+ 	FUNC(EMPTY_NAME, WARN) \
+ 	FUNC(FULL_PATHNAME, WARN) \
+@@ -72,6 +74,8 @@ enum fsck_msg_type {
+ 	FUNC(NULL_SHA1, WARN) \
+ 	FUNC(ZERO_PADDED_FILEMODE, WARN) \
+ 	FUNC(NUL_IN_COMMIT, WARN) \
++	FUNC(SYMLINK_TARGET_LENGTH, WARN) \
++	FUNC(SYMLINK_POINTS_TO_GIT_DIR, WARN) \
+ 	/* infos (reported as warnings, but ignored by default) */ \
+ 	FUNC(BAD_FILEMODE, INFO) \
+ 	FUNC(GITMODULES_PARSE, INFO) \
+@@ -139,6 +143,8 @@ struct fsck_options {
+ 	struct oidset gitmodules_done;
+ 	struct oidset gitattributes_found;
+ 	struct oidset gitattributes_done;
++	struct oidset symlink_targets_found;
++	struct oidset symlink_targets_done;
+ 	kh_oid_map_t *object_names;
+ };
+ 
+@@ -148,6 +154,8 @@ struct fsck_options {
+ 	.gitmodules_done = OIDSET_INIT, \
+ 	.gitattributes_found = OIDSET_INIT, \
+ 	.gitattributes_done = OIDSET_INIT, \
++	.symlink_targets_found = OIDSET_INIT, \
++	.symlink_targets_done = OIDSET_INIT, \
+ 	.error_func = fsck_error_function \
+ }
+ #define FSCK_OPTIONS_STRICT { \
+@@ -156,6 +164,8 @@ struct fsck_options {
+ 	.gitmodules_done = OIDSET_INIT, \
+ 	.gitattributes_found = OIDSET_INIT, \
+ 	.gitattributes_done = OIDSET_INIT, \
++	.symlink_targets_found = OIDSET_INIT, \
++	.symlink_targets_done = OIDSET_INIT, \
+ 	.error_func = fsck_error_function, \
+ }
+ #define FSCK_OPTIONS_MISSING_GITMODULES { \
+@@ -164,6 +174,8 @@ struct fsck_options {
+ 	.gitmodules_done = OIDSET_INIT, \
+ 	.gitattributes_found = OIDSET_INIT, \
+ 	.gitattributes_done = OIDSET_INIT, \
++	.symlink_targets_found = OIDSET_INIT, \
++	.symlink_targets_done = OIDSET_INIT, \
+ 	.error_func = fsck_error_cb_print_missing_gitmodules, \
+ }
+ 
+diff --git a/t/t1450-fsck.sh b/t/t1450-fsck.sh
+index de0f6d5e7f..5669872bc8 100755
+--- a/t/t1450-fsck.sh
++++ b/t/t1450-fsck.sh
+@@ -1023,4 +1023,41 @@ test_expect_success 'fsck error on gitattributes with excessive size' '
+ 	test_cmp expected actual
+ '
+ 
++test_expect_success 'fsck warning on symlink target with excessive length' '
++	symlink_target=$(printf "pattern %032769d" 1 | git hash-object -w --stdin) &&
++	test_when_finished "remove_object $symlink_target" &&
++	tree=$(printf "120000 blob %s\t%s\n" $symlink_target symlink | git mktree) &&
++	test_when_finished "remove_object $tree" &&
++	cat >expected <<-EOF &&
++	warning in blob $symlink_target: symlinkTargetLength: symlink target too long
++	EOF
++	git fsck --no-dangling >actual 2>&1 &&
++	test_cmp expected actual
++'
++
++test_expect_success 'fsck warning on symlink target pointing inside git dir' '
++	gitdir=$(printf ".git" | git hash-object -w --stdin) &&
++	ntfs_gitdir=$(printf "GIT~1" | git hash-object -w --stdin) &&
++	hfs_gitdir=$(printf ".${u200c}git" | git hash-object -w --stdin) &&
++	inside_gitdir=$(printf "nested/.git/config" | git hash-object -w --stdin) &&
++	benign_target=$(printf "legit/config" | git hash-object -w --stdin) &&
++	tree=$(printf "120000 blob %s\t%s\n" \
++		$benign_target benign_target \
++		$gitdir gitdir \
++		$hfs_gitdir hfs_gitdir \
++		$inside_gitdir inside_gitdir \
++		$ntfs_gitdir ntfs_gitdir |
++		git mktree) &&
++	for o in $gitdir $ntfs_gitdir $hfs_gitdir $inside_gitdir $benign_target $tree
++	do
++		test_when_finished "remove_object $o" || return 1
++	done &&
++	printf "warning in blob %s: symlinkPointsToGitDir: symlink target points to git dir\n" \
++		$gitdir $hfs_gitdir $inside_gitdir $ntfs_gitdir |
++	sort >expected &&
++	git fsck --no-dangling >actual 2>&1 &&
++	sort actual >actual.sorted &&
++	test_cmp expected actual.sorted
++'
++
+ test_done
+-- 
+2.39.0
+

@@ -1,0 +1,72 @@
+From c67cf4c434039f9b5c796f7e34345b75e0c14450 Mon Sep 17 00:00:00 2001
+From: Jeff King <peff@peff.net>
+Date: Mon, 28 Aug 2023 14:37:35 -0400
+Subject: [PATCH 29/59] test-lib: ignore uninteresting LSan output
+
+When I run the tests in leak-checking mode the same way our CI job does,
+like:
+
+  make SANITIZE=leak \
+       GIT_TEST_PASSING_SANITIZE_LEAK=true \
+       GIT_TEST_SANITIZE_LEAK_LOG=true \
+       test
+
+then LSan can racily produce useless entries in the log files that look
+like this:
+
+  ==git==3034393==Unable to get registers from thread 3034307.
+
+I think they're mostly harmless based on the source here:
+
+  https://github.com/llvm/llvm-project/blob/7e0a52e8e9ef6394bb62e0b56e17fa23e7262411/compiler-rt/lib/lsan/lsan_common.cpp#L414
+
+which reads:
+
+    PtraceRegistersStatus have_registers =
+        suspended_threads.GetRegistersAndSP(i, &registers, &sp);
+    if (have_registers != REGISTERS_AVAILABLE) {
+      Report("Unable to get registers from thread %llu.\n", os_id);
+      // If unable to get SP, consider the entire stack to be reachable unless
+      // GetRegistersAndSP failed with ESRCH.
+      if (have_registers == REGISTERS_UNAVAILABLE_FATAL)
+        continue;
+      sp = stack_begin;
+    }
+
+The program itself still runs fine and LSan doesn't cause us to abort.
+But test-lib.sh looks for any non-empty LSan logs and marks the test as
+a failure anyway, under the assumption that we simply missed the failing
+exit code somehow.
+
+I don't think I've ever seen this happen in the CI job, but running
+locally using clang-14 on an 8-core machine, I can't seem to make it
+through a full run of the test suite without having at least one
+failure. And it's a different one every time (though they do seem to
+often be related to packing tests, which makes sense, since that is one
+of our biggest users of threaded code).
+
+We can hack around this by only counting LSan log files that contain a
+line that doesn't match our known-uninteresting pattern.
+
+Signed-off-by: Jeff King <peff@peff.net>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ t/test-lib.sh | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/t/test-lib.sh b/t/test-lib.sh
+index 6db377f68b..251b22ba5a 100644
+--- a/t/test-lib.sh
++++ b/t/test-lib.sh
+@@ -334,6 +334,7 @@ nr_san_dir_leaks_ () {
+ 	find "$TEST_RESULTS_SAN_DIR" \
+ 		-type f \
+ 		-name "$TEST_RESULTS_SAN_FILE_PFX.*" 2>/dev/null |
++	xargs grep -lv "Unable to get registers from thread" |
+ 	wc -l
+ }
+ 
+-- 
+2.39.0
+

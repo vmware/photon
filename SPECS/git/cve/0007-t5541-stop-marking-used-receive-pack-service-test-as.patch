@@ -1,0 +1,43 @@
+From 6ec90b5bf11ea9416715d31b8e3810e2915f1b9d Mon Sep 17 00:00:00 2001
+From: Jeff King <peff@peff.net>
+Date: Thu, 23 Feb 2023 05:50:36 -0500
+Subject: [PATCH 07/59] t5541: stop marking "used receive-pack service" test as
+ v0 only
+
+We have a test which checks to see if a request to git-receive-pack was
+made. Originally, it was checking the entire set of requests made in the
+script so far, including clones, and thus it would break when run with
+the v2 protocol (since that implies an extra request for fetches).
+
+Since the previous commit, though, we are only checking the requests
+made by a single push. And since there is no v2 push protocol, the test
+now passes no matter what's in GIT_TEST_PROTOCOL_VERSION. We can just
+run it all the time.
+
+Signed-off-by: Jeff King <peff@peff.net>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+---
+ t/t5541-http-push-smart.sh | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/t/t5541-http-push-smart.sh b/t/t5541-http-push-smart.sh
+index ef39d14ed2..f8bf533c33 100755
+--- a/t/t5541-http-push-smart.sh
++++ b/t/t5541-http-push-smart.sh
+@@ -86,12 +86,7 @@ test_expect_success 'used receive-pack service' '
+ 	POST /smart/test_repo.git/git-receive-pack HTTP/1.1 200
+ 	EOF
+ 
+-	# NEEDSWORK: If the overspecification of the expected result is reduced, we
+-	# might be able to run this test in all protocol versions.
+-	if test "$GIT_TEST_PROTOCOL_VERSION" = 0
+-	then
+-		check_access_log exp
+-	fi
++	check_access_log exp
+ '
+ 
+ test_expect_success 'push to remote repository (standard) with sending Accept-Language' '
+-- 
+2.39.0
+

@@ -1,0 +1,83 @@
+From 3167b60e5bd9fb8e2f9413b38001b624dc2e3da2 Mon Sep 17 00:00:00 2001
+From: Johannes Schindelin <johannes.schindelin@gmx.de>
+Date: Fri, 3 Nov 2023 07:27:35 +0000
+Subject: [PATCH 28/59] ci: upgrade to using macos-13
+
+In April, GitHub announced that the `macos-13` pool is available:
+https://github.blog/changelog/2023-04-24-github-actions-macos-13-is-now-available/.
+It is only a matter of time until the `macos-12` pool is going away,
+therefore we should switch now, without pressure of a looming deadline.
+
+Since the `macos-13` runners no longer include Python2, we also drop
+specifically testing with Python2 and switch uniformly to Python3, see
+https://github.com/actions/runner-images/blob/HEAD/images/macos/macos-13-Readme.md
+for details about the software available on the `macos-13` pool's
+runners.
+
+Also, on macOS 13, Homebrew seems to install a `gcc@9` package that no
+longer comes with a regular `unistd.h` (there seems only to be a
+`ssp/unistd.h`), and hence builds would fail with:
+
+    In file included from base85.c:1:
+    git-compat-util.h:223:10: fatal error: unistd.h: No such file or directory
+      223 | #include <unistd.h>
+          |          ^~~~~~~~~~
+    compilation terminated.
+
+The reason why we install GCC v9.x explicitly is historical, and back in
+the days it was because it was the _newest_ version available via
+Homebrew: 176441bfb58 (ci: build Git with GCC 9 in the 'osx-gcc' build
+job, 2019-11-27).
+
+To reinstate the spirit of that commit _and_ to fix that build failure,
+let's switch to the now-newest GCC version: v13.x.
+
+Backported-from: 682a868f67 (ci: upgrade to using macos-13, 2023-11-03)
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ .github/workflows/main.yml | 6 +++---
+ ci/lib.sh                  | 6 ++----
+ 2 files changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/.github/workflows/main.yml b/.github/workflows/main.yml
+index f2fd6cf9cd..2e8b7cd768 100644
+--- a/.github/workflows/main.yml
++++ b/.github/workflows/main.yml
+@@ -262,11 +262,11 @@ jobs:
+             pool: ubuntu-20.04
+           - jobname: osx-clang
+             cc: clang
+-            pool: macos-12
++            pool: macos-13
+           - jobname: osx-gcc
+             cc: gcc
+-            cc_package: gcc-9
+-            pool: macos-12
++            cc_package: gcc-13
++            pool: macos-13
+           - jobname: linux-gcc-default
+             cc: gcc
+             pool: ubuntu-latest
+diff --git a/ci/lib.sh b/ci/lib.sh
+index 706e3ba7e9..611564f773 100755
+--- a/ci/lib.sh
++++ b/ci/lib.sh
+@@ -253,11 +253,9 @@ ubuntu-*)
+ 	export PATH="$GIT_LFS_PATH:$P4_PATH:$PATH"
+ 	;;
+ macos-*)
+-	if [ "$jobname" = osx-gcc ]
++	MAKEFLAGS="$MAKEFLAGS PYTHON_PATH=$(which python3)"
++	if [ "$jobname" != osx-gcc ]
+ 	then
+-		MAKEFLAGS="$MAKEFLAGS PYTHON_PATH=$(which python3)"
+-	else
+-		MAKEFLAGS="$MAKEFLAGS PYTHON_PATH=$(which python2)"
+ 		MAKEFLAGS="$MAKEFLAGS NO_APPLE_COMMON_CRYPTO=NoThanks"
+ 		MAKEFLAGS="$MAKEFLAGS NO_OPENSSL=NoThanks"
+ 	fi
+-- 
+2.39.0
+

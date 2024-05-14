@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.39.0
-Release:        4%{?dist}
+Version:        2.39.3
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -9,7 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512 %{name}=f072cae7738279b1c0f8202e83a243ff0164b03d3be22895aa875caa265150a5773e1f062724b3eb82bc64b163730b6f451b82fa0c904167a8fa53ced5d3b1df
+%define sha512 %{name}=ddd9f41df9d59aedaddb3a3cd551c105903b5f8c86455d4d05a8342920d67754b358b6ab0d6c10cca743b8e0e621baea16f71a9d6290f4d37297a9c45e8b3763
+
+Source1: cve.patches
+
+%include %{SOURCE1}
 
 BuildRequires: curl-devel
 BuildRequires: python3-devel
@@ -138,6 +142,10 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Tue May 14 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.39.3-1
+- Patched on v2.39.3 to fix following CVE's:
+- CVE-2024-32002, CVE-2024-32004, CVE-2024-32020,
+- CVE-2024-32021 and CVE-2024-32465
 * Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-4
 - Adding conflict to git-extras
 * Thu May 25 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-3

@@ -1,0 +1,84 @@
+From 5d312ec8a4981264b4ed3d3b77c43a0336385be2 Mon Sep 17 00:00:00 2001
+From: Jeff King <peff@peff.net>
+Date: Fri, 5 Apr 2024 16:04:51 -0400
+Subject: [PATCH 27/59] remote-curl: add Transfer-Encoding header only for
+ older curl
+
+As of curl 7.66.0, we don't need to manually specify a "chunked"
+Transfer-Encoding header. Instead, modern curl deduces the need for it
+in a POST that has a POSTFIELDSIZE of -1 and uses READFUNCTION rather
+than POSTFIELDS.
+
+That version is recent enough that we can't just drop the header; we
+need to do so conditionally. Since it's only a single line, it seems
+like the simplest thing would just be to keep setting it unconditionally
+(after all, the #ifdefs are much longer than the actual code). But
+there's another wrinkle: HTTP/2.
+
+Curl may choose to use HTTP/2 under the hood if the server supports it.
+And in that protocol, we do not use the chunked encoding for streaming
+at all. Most versions of curl handle this just fine by recognizing and
+removing the header. But there's a regression in curl 8.7.0 and 8.7.1
+where it doesn't, and large requests over HTTP/2 are broken (which t5559
+notices). That regression has since been fixed upstream, but not yet
+released.
+
+Make the setting of this header conditional, which will let Git work
+even with those buggy curl versions. And as a bonus, it serves as a
+reminder that we can eventually clean up the code as we bump the
+supported curl versions.
+
+This is a backport of 92a209bf24 (remote-curl: add Transfer-Encoding
+header only for older curl, 2024-04-05) into the `maint-2.39` branch.
+
+Signed-off-by: Jeff King <peff@peff.net>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ git-curl-compat.h | 9 +++++++++
+ remote-curl.c     | 3 +++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/git-curl-compat.h b/git-curl-compat.h
+index fd96b3cdff..e1d0bdd273 100644
+--- a/git-curl-compat.h
++++ b/git-curl-compat.h
+@@ -126,6 +126,15 @@
+ #define GIT_CURL_HAVE_CURLSSLSET_NO_BACKENDS
+ #endif
+ 
++/**
++ * Versions before curl 7.66.0 (September 2019) required manually setting the
++ * transfer-encoding for a streaming POST; after that this is handled
++ * automatically.
++ */
++#if LIBCURL_VERSION_NUM < 0x074200
++#define GIT_CURL_NEED_TRANSFER_ENCODING_HEADER
++#endif
++
+ /**
+  * CURLOPT_PROTOCOLS_STR and CURLOPT_REDIR_PROTOCOLS_STR were added in 7.85.0,
+  * released in August 2022.
+diff --git a/remote-curl.c b/remote-curl.c
+index 1b5d9ac1d8..d2e8d57c7e 100644
+--- a/remote-curl.c
++++ b/remote-curl.c
+@@ -1,4 +1,5 @@
+ #include "cache.h"
++#include "git-curl-compat.h"
+ #include "config.h"
+ #include "remote.h"
+ #include "connect.h"
+@@ -942,7 +943,9 @@ static int post_rpc(struct rpc_state *rpc, int stateless_connect, int flush_rece
+ 		/* The request body is large and the size cannot be predicted.
+ 		 * We must use chunked encoding to send it.
+ 		 */
++#ifdef GIT_CURL_NEED_TRANSFER_ENCODING_HEADER
+ 		headers = curl_slist_append(headers, "Transfer-Encoding: chunked");
++#endif
+ 		rpc->initial_buffer = 1;
+ 		curl_easy_setopt(slot->curl, CURLOPT_READFUNCTION, rpc_out);
+ 		curl_easy_setopt(slot->curl, CURLOPT_INFILE, rpc);
+-- 
+2.39.0
+

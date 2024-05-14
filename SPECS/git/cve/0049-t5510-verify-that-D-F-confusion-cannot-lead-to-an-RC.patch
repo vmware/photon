@@ -1,0 +1,61 @@
+From e4930e86c0d521aa6c3c3da9f590e852f6eeac21 Mon Sep 17 00:00:00 2001
+From: Johannes Schindelin <johannes.schindelin@gmx.de>
+Date: Sun, 24 Mar 2024 14:13:41 +0100
+Subject: [PATCH 49/59] t5510: verify that D/F confusion cannot lead to an RCE
+
+The most critical vulnerabilities in Git lead to a Remote Code Execution
+("RCE"), i.e. the ability for an attacker to have malicious code being
+run as part of a Git operation that is not expected to run said code,
+such has hooks delivered as part of a `git clone`.
+
+A couple of parent commits ago, a bug was fixed that let Git be confused
+by the presence of a path `a-` to mistakenly assume that a directory
+`a/` can safely be created without removing an existing `a` that is a
+symbolic link.
+
+This bug did not represent an exploitable vulnerability on its
+own; Let's make sure it stays that way.
+
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ t/t5510-fetch.sh | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/t/t5510-fetch.sh b/t/t5510-fetch.sh
+index c0b745e33b..211afe13e9 100755
+--- a/t/t5510-fetch.sh
++++ b/t/t5510-fetch.sh
+@@ -1240,6 +1240,30 @@ EOF
+ 	test_cmp fatal-expect fatal-actual
+ '
+ 
++test_expect_success SYMLINKS 'clone does not get confused by a D/F conflict' '
++	git init df-conflict &&
++	(
++		cd df-conflict &&
++		ln -s .git a &&
++		git add a &&
++		test_tick &&
++		git commit -m symlink &&
++		test_commit a- &&
++		rm a &&
++		mkdir -p a/hooks &&
++		write_script a/hooks/post-checkout <<-EOF &&
++		echo WHOOPSIE >&2
++		echo whoopsie >"$TRASH_DIRECTORY"/whoops
++		EOF
++		git add a/hooks/post-checkout &&
++		test_tick &&
++		git commit -m post-checkout
++	) &&
++	git clone df-conflict clone 2>err &&
++	! grep WHOOPS err &&
++	test_path_is_missing whoops
++'
++
+ . "$TEST_DIRECTORY"/lib-httpd.sh
+ start_httpd
+ 
+-- 
+2.39.0
+

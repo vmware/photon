@@ -1,0 +1,42 @@
+From d113449e265d1914e55f67f0e14e26a8d784b987 Mon Sep 17 00:00:00 2001
+From: Jeff King <peff@peff.net>
+Date: Wed, 1 Feb 2023 06:39:06 -0500
+Subject: [PATCH 04/59] t/lib-httpd: drop SSLMutex config
+
+The SSL config enabled by setting LIB_HTTPD_SSL does not work with
+Apache versions greater than 2.2, as more recent versions complain about
+the SSLMutex directive. According to
+https://httpd.apache.org/docs/current/upgrading.html:
+
+  Directives AcceptMutex, LockFile, RewriteLock, SSLMutex,
+  SSLStaplingMutex, and WatchdogMutexPath have been replaced with a
+  single Mutex directive. You will need to evaluate any use of these
+  removed directives in your 2.2 configuration to determine if they can
+  just be deleted or will need to be replaced using Mutex.
+
+Deleting this line will just use the system default, which seems
+sensible. The original came as part of faa4bc35a0 (http-push: add
+regression tests, 2008-02-27), but no specific reason is given there (or
+on the mailing list) for its presence.
+
+Signed-off-by: Jeff King <peff@peff.net>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+---
+ t/lib-httpd/apache.conf | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/t/lib-httpd/apache.conf b/t/lib-httpd/apache.conf
+index 332617f10d..51a4fbcf62 100644
+--- a/t/lib-httpd/apache.conf
++++ b/t/lib-httpd/apache.conf
+@@ -203,7 +203,6 @@ SSLCertificateKeyFile httpd.pem
+ SSLRandomSeed startup file:/dev/urandom 512
+ SSLRandomSeed connect file:/dev/urandom 512
+ SSLSessionCache none
+-SSLMutex file:ssl_mutex
+ SSLEngine On
+ </IfDefine>
+ 
+-- 
+2.39.0
+

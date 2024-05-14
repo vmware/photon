@@ -1,0 +1,92 @@
+From d7626170794948b4f0ca270af0316f7e5fa38a99 Mon Sep 17 00:00:00 2001
+From: Jeff King <peff@peff.net>
+Date: Wed, 1 Feb 2023 06:37:21 -0500
+Subject: [PATCH 02/59] t/lib-httpd: bump required apache version to 2.2
+
+Apache 2.2 was released in 2005, almost 18 years ago. We can probably
+assume that people are running a version at least that old (and the
+stakes for removing it are fairly low, as the worst case is that they
+would not run the http tests against their ancient version).
+
+Dropping support for the older versions cleans up the config file a
+little, and will also enable us to bump the required version further
+(with more cleanups) in a future patch.
+
+Note that the file actually checks for version 2.1. In apache's
+versioning scheme, odd numbered versions are for development and even
+numbers are for stable releases. So 2.1 and 2.2 are effectively the same
+from our perspective.
+
+Older versions would just fail to start, which would generally cause us
+to skip the tests. However, we do have version detection code in
+lib-httpd.sh which produces a nicer error message, so let's update that,
+too. I didn't bother handling the case of "3.0", etc. Apache has been on
+2.x for 21 years, with no signs of bumping the major version.  And if
+they eventually do, I suspect there will be enough breaking changes that
+we'd need to update more than just the numeric version check. We can
+worry about that hypothetical when it happens.
+
+Signed-off-by: Jeff King <peff@peff.net>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+---
+ t/lib-httpd.sh          | 11 +++++++----
+ t/lib-httpd/apache.conf |  8 --------
+ 2 files changed, 7 insertions(+), 12 deletions(-)
+
+diff --git a/t/lib-httpd.sh b/t/lib-httpd.sh
+index 608949ea80..8fc411ff41 100644
+--- a/t/lib-httpd.sh
++++ b/t/lib-httpd.sh
+@@ -99,16 +99,19 @@ then
+ fi
+ 
+ HTTPD_VERSION=$($LIB_HTTPD_PATH -v | \
+-	sed -n 's/^Server version: Apache\/\([0-9]*\)\..*$/\1/p; q')
++	sed -n 's/^Server version: Apache\/\([0-9.]*\).*$/\1/p; q')
++HTTPD_VERSION_MAJOR=$(echo $HTTPD_VERSION | cut -d. -f1)
++HTTPD_VERSION_MINOR=$(echo $HTTPD_VERSION | cut -d. -f2)
+ 
+-if test -n "$HTTPD_VERSION"
++if test -n "$HTTPD_VERSION_MAJOR"
+ then
+ 	if test -z "$LIB_HTTPD_MODULE_PATH"
+ 	then
+-		if ! test $HTTPD_VERSION -ge 2
++		if ! test "$HTTPD_VERSION_MAJOR" -eq 2 ||
++		   ! test "$HTTPD_VERSION_MINOR" -ge 2
+ 		then
+ 			test_skip_or_die GIT_TEST_HTTPD \
+-				"at least Apache version 2 is required"
++				"at least Apache version 2.2 is required"
+ 		fi
+ 		if ! test -d "$DEFAULT_HTTPD_MODULE_PATH"
+ 		then
+diff --git a/t/lib-httpd/apache.conf b/t/lib-httpd/apache.conf
+index 0294739a77..35f5e28507 100644
+--- a/t/lib-httpd/apache.conf
++++ b/t/lib-httpd/apache.conf
+@@ -38,13 +38,6 @@ Protocols h2c
+ LockFile accept.lock
+ </IfVersion>
+ 
+-<IfVersion < 2.1>
+-<IfModule !mod_auth.c>
+-	LoadModule auth_module modules/mod_auth.so
+-</IfModule>
+-</IfVersion>
+-
+-<IfVersion >= 2.1>
+ <IfModule !mod_auth_basic.c>
+ 	LoadModule auth_basic_module modules/mod_auth_basic.so
+ </IfModule>
+@@ -57,7 +50,6 @@ LockFile accept.lock
+ <IfModule !mod_authz_host.c>
+ 	LoadModule authz_host_module modules/mod_authz_host.so
+ </IfModule>
+-</IfVersion>
+ 
+ <IfVersion >= 2.4>
+ <IfModule !mod_authn_core.c>
+-- 
+2.39.0
+

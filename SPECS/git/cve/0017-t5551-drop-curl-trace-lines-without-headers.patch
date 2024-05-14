@@ -1,0 +1,53 @@
+From b71a2bf11fa7b2b146a88b9af5b0ae05e5796b24 Mon Sep 17 00:00:00 2001
+From: Jeff King <peff@peff.net>
+Date: Thu, 23 Feb 2023 06:05:07 -0500
+Subject: [PATCH 17/59] t5551: drop curl trace lines without headers
+
+We pick apart a curl trace, looking for "=> Send header:" and so on, and
+matching against an expected set of requests and responses. We remove
+"== Info" lines entirely. However, our parser is fooled when running the
+test with LIB_HTTPD_SSL on Ubuntu 20.04 (as found in our linux-gcc CI
+job), as curl hands us an "Info" buffer with a newline, and we get:
+
+  == Info: successfully set certificate verify locations:
+  == Info:   CAfile: /etc/ssl/certs/ca-certificates.crt
+    CApath: /etc/ssl/certs
+  => Send SSL data[...]
+
+which results in the "CApath" line ending up in the cleaned-up output,
+causing the test to fail.
+
+Arguably the tracing code should detect this and put it on two separate
+"== Info" lines. But this is actually a curl bug, fixed by their
+80d73bcca (tls: provide the CApath verbose log on its own line,
+2020-08-18). It's simpler to just work around it here.
+
+Since we are using GIT_TRACE_CURL, every line should just start with one
+of "<=", "==", or "=>", and we can throw away anything else. In fact, we
+can just replace the pattern for deleting "*" lines. Those were from the
+old GIT_CURL_VERBOSE output, but we switched over in 14e24114d9
+(t5551-http-fetch-smart.sh: use the GIT_TRACE_CURL environment var,
+2016-09-05).
+
+Signed-off-by: Jeff King <peff@peff.net>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+---
+ t/t5551-http-fetch-smart.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/t/t5551-http-fetch-smart.sh b/t/t5551-http-fetch-smart.sh
+index 2e42271cb8..13b38c7ef5 100755
+--- a/t/t5551-http-fetch-smart.sh
++++ b/t/t5551-http-fetch-smart.sh
+@@ -86,7 +86,7 @@ test_expect_success 'clone http repository' '
+ 	'\'' |
+ 	sed -e "
+ 		s/Q\$//
+-		/^[*] /d
++		/^[^<=]/d
+ 		/^== Info:/d
+ 		/^=> Send header, /d
+ 		/^=> Send header:$/d
+-- 
+2.39.0
+

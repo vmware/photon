@@ -1,0 +1,48 @@
+From 87d38afa0d6900fa2c3ddeba51528af9d26cd161 Mon Sep 17 00:00:00 2001
+From: Jeff King <peff@peff.net>
+Date: Thu, 23 Feb 2023 06:01:31 -0500
+Subject: [PATCH 15/59] t5551: simplify expected cookie file
+
+After making an HTTP request that should store cookies, we check that
+the expected values are in the cookie file. We don't want to look at the
+whole file, because it has noisy comments at the top that we shouldn't
+depend on. But we strip out the interesting bits using "tail -3", which
+is brittle. It requires us to put an extra blank line in our expected
+output, and it would fail to notice any reordering or extra content in
+the cookie file.
+
+Instead, let's just grep for non-blank lines that are not comments,
+which more directly describes what we're interested in.
+
+Signed-off-by: Jeff King <peff@peff.net>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+---
+ t/t5551-http-fetch-smart.sh | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/t/t5551-http-fetch-smart.sh b/t/t5551-http-fetch-smart.sh
+index b912958518..2f15a707d4 100755
+--- a/t/t5551-http-fetch-smart.sh
++++ b/t/t5551-http-fetch-smart.sh
+@@ -294,7 +294,6 @@ test_expect_success 'cookies stored in http.cookiefile when http.savecookies set
+ 	127.0.0.1	FALSE	/smart_cookies/	FALSE	0	othername	othervalue
+ 	EOF
+ 	sort >expect_cookies.txt <<-\EOF &&
+-
+ 	127.0.0.1	FALSE	/smart_cookies/	FALSE	0	othername	othervalue
+ 	127.0.0.1	FALSE	/smart_cookies/repo.git/info/	FALSE	0	name	value
+ 	EOF
+@@ -306,8 +305,8 @@ test_expect_success 'cookies stored in http.cookiefile when http.savecookies set
+ 	# might be able to run this test in all protocol versions.
+ 	if test "$GIT_TEST_PROTOCOL_VERSION" = 0
+ 	then
+-		tail -3 cookies.txt | sort >cookies_tail.txt &&
+-		test_cmp expect_cookies.txt cookies_tail.txt
++		grep "^[^#]" cookies.txt | sort >cookies_stripped.txt &&
++		test_cmp expect_cookies.txt cookies_stripped.txt
+ 	fi
+ '
+ 
+-- 
+2.39.0
+

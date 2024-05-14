@@ -1,0 +1,96 @@
+From e69ac42fcc866d3d6f84ea42bc656673440a07f5 Mon Sep 17 00:00:00 2001
+From: Jeff King <peff@peff.net>
+Date: Tue, 16 Apr 2024 04:52:13 -0400
+Subject: [PATCH 42/59] docs: document security issues around untrusted .git
+ dirs
+
+For a long time our general philosophy has been that it's unsafe to run
+arbitrary Git commands if you don't trust the hooks or config in .git,
+but that running upload-pack should be OK. E.g., see 1456b043fc (Remove
+post-upload-hook, 2009-12-10), or the design of uploadpack.packObjectsHook.
+
+But we never really documented this (and even the discussions that led
+to 1456b043fc were not on the public list!). Let's try to make our
+approach more clear, but also be realistic that even upload-pack carries
+some risk.
+
+Helped-by: Filip Hejsek <filip.hejsek@gmail.com>
+Helped-by: Junio C Hamano <gitster@pobox.com>
+Signed-off-by: Jeff King <peff@peff.net>
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ Documentation/git-upload-pack.txt | 15 +++++++++++++++
+ Documentation/git.txt             | 31 +++++++++++++++++++++++++++++++
+ 2 files changed, 46 insertions(+)
+
+diff --git a/Documentation/git-upload-pack.txt b/Documentation/git-upload-pack.txt
+index fc4c62d7bc..1d30a4f6b4 100644
+--- a/Documentation/git-upload-pack.txt
++++ b/Documentation/git-upload-pack.txt
+@@ -71,6 +71,21 @@ This is implemented by having `upload-pack` internally set the
+ you trust it), you can explicitly set `GIT_NO_LAZY_FETCH` to
+ `0`.
+ 
++SECURITY
++--------
++
++Most Git commands should not be run in an untrusted `.git` directory
++(see the section `SECURITY` in linkgit:git[1]). `upload-pack` tries to
++avoid any dangerous configuration options or hooks from the repository
++it's serving, making it safe to clone an untrusted directory and run
++commands on the resulting clone.
++
++For an extra level of safety, you may be able to run `upload-pack` as an
++alternate user. The details will be platform dependent, but on many
++systems you can run:
++
++    git clone --no-local --upload-pack='sudo -u nobody git-upload-pack' ...
++
+ SEE ALSO
+ --------
+ linkgit:gitnamespaces[7]
+diff --git a/Documentation/git.txt b/Documentation/git.txt
+index 1d33e083ab..d2969461a4 100644
+--- a/Documentation/git.txt
++++ b/Documentation/git.txt
+@@ -1032,6 +1032,37 @@ The index is also capable of storing multiple entries (called "stages")
+ for a given pathname.  These stages are used to hold the various
+ unmerged version of a file when a merge is in progress.
+ 
++SECURITY
++--------
++
++Some configuration options and hook files may cause Git to run arbitrary
++shell commands. Because configuration and hooks are not copied using
++`git clone`, it is generally safe to clone remote repositories with
++untrusted content, inspect them with `git log`, and so on.
++
++However, it is not safe to run Git commands in a `.git` directory (or
++the working tree that surrounds it) when that `.git` directory itself
++comes from an untrusted source. The commands in its config and hooks
++are executed in the usual way.
++
++By default, Git will refuse to run when the repository is owned by
++someone other than the user running the command. See the entry for
++`safe.directory` in linkgit:git-config[1]. While this can help protect
++you in a multi-user environment, note that you can also acquire
++untrusted repositories that are owned by you (for example, if you
++extract a zip file or tarball from an untrusted source). In such cases,
++you'd need to "sanitize" the untrusted repository first.
++
++If you have an untrusted `.git` directory, you should first clone it
++with `git clone --no-local` to obtain a clean copy. Git does restrict
++the set of options and hooks that will be run by `upload-pack`, which
++handles the server side of a clone or fetch, but beware that the
++surface area for attack against `upload-pack` is large, so this does
++carry some risk. The safest thing is to serve the repository as an
++unprivileged user (either via linkgit:git-daemon[1], ssh, or using
++other tools to change user ids). See the discussion in the `SECURITY`
++section of linkgit:git-upload-pack[1].
++
+ FURTHER DOCUMENTATION
+ ---------------------
+ 
+-- 
+2.39.0
+

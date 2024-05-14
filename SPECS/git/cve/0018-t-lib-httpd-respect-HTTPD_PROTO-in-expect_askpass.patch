@@ -1,0 +1,43 @@
+From 9d15b1e5df56dd4409766fe8ef55752436ca9f3d Mon Sep 17 00:00:00 2001
+From: Jeff King <peff@peff.net>
+Date: Thu, 23 Feb 2023 06:05:55 -0500
+Subject: [PATCH 18/59] t/lib-httpd: respect $HTTPD_PROTO in expect_askpass()
+
+When the HTTP tests are run with LIB_HTTPD_SSL in the environment, then
+we access the test server as https://. This causes expect_askpass to
+complain, because it tries to blindly match "http://" in the prompt
+shown to the user. We can adjust this to use $HTTPD_PROTO, which is set
+during the setup phase.
+
+Note that this is enough for t5551 and t5559 to pass when run with
+https, but there are similar problems in other scripts that will need to
+be fixed before the whole suite can run with LIB_HTTPD_SSL.
+
+Signed-off-by: Jeff King <peff@peff.net>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+---
+ t/lib-httpd.sh | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/t/lib-httpd.sh b/t/lib-httpd.sh
+index 608949ea80..c8fd4fc713 100644
+--- a/t/lib-httpd.sh
++++ b/t/lib-httpd.sh
+@@ -280,11 +280,11 @@ expect_askpass() {
+ 		none)
+ 			;;
+ 		pass)
+-			echo "askpass: Password for 'http://$2@$dest': "
++			echo "askpass: Password for '$HTTPD_PROTO://$2@$dest': "
+ 			;;
+ 		both)
+-			echo "askpass: Username for 'http://$dest': "
+-			echo "askpass: Password for 'http://$2@$dest': "
++			echo "askpass: Username for '$HTTPD_PROTO://$dest': "
++			echo "askpass: Password for '$HTTPD_PROTO://$2@$dest': "
+ 			;;
+ 		*)
+ 			false
+-- 
+2.39.0
+
