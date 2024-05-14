@@ -20,8 +20,15 @@ populate_kvers() {
     local x="$(echo $i | tr '-' '_')"
 
     for sp in ${k_specs[@]}; do
-      kvers[$x]+="$(grep ^Version: $sp | awk '{print $2}') "
-      krels[$x]+="$(grep ^Release: $sp | awk '{print $2}' | tr -d -c 0-9) "
+      if [[ -z "$KERNEL_VERSION" ]]; then
+          kvers[$x]+="$(grep ^Version: $sp | awk '{print $2}')"
+          krels[$x]+="$(grep ^Release: $sp | awk '{print $2}' | tr -d -c 0-9)"
+      else
+          local kver="${KERNEL_VERSION%%-*}"
+          local rel="${KERNEL_VERSION##$kver-}"
+          kvers[$x]+="$kver"
+          krels[$x]+="${rel%%.ph*}"
+      fi
     done
   done
 }
@@ -130,9 +137,9 @@ create_specs "linux"
 echo "Creating kernel drivers for linux-esx ..."
 create_specs "linux-esx"
 
-d_info["iavf"]="4.9.5 4.8.2 4.5.3 %{IAVF_VERSION}"
-d_info["i40e"]="2.22.18 2.23.17 %{I40E_VERSION}"
-d_info["ice"]="1.13.7 1.12.7 1.11.14 1.9.11 %{ICE_VERSION}"
+d_info["iavf"]="4.11.1 4.9.5 4.8.2 4.5.3 %{IAVF_VERSION}"
+d_info["i40e"]="2.22.18 2.23.17 2.25.7 %{I40E_VERSION}"
+d_info["ice"]="1.14.9 1.13.7 1.12.7 1.11.14 1.9.11 %{ICE_VERSION}"
 
 echo "Creating kernel drivers for linux-rt ..."
 create_specs "linux-rt"
