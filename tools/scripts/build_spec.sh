@@ -145,7 +145,7 @@ function prepare_buildenv() {
   local br
   br=$(in_sandbox rpmspec ${RPM_MACROS[@]} -P /usr/src/photon/SOURCES/"$SPECFILE" | sed -n 's/BuildRequires://p' | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g;s/ \+/ /g' | tr '\n' ' ')
   if [ "$br" != "" ]; then
-    run "Install build requirements" in_sandbox tdnf install -y $br
+    run "Install build requirements" in_sandbox tdnf install -y --enablerepo photon $br
   fi
 }
 
