@@ -10,7 +10,6 @@
 Summary:        Intel iavf driver v%{IAVF_VERSION}
 Name:           linux%{KERNEL_FLAVOUR}-drivers-intel-iavf
 Version:        %{IAVF_VERSION}
-Release:        3%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://sourceforge.net/projects/e1000
 Group:          System Environment/Kernel
@@ -19,13 +18,22 @@ Distribution:   Photon
 
 Source0:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{src_ver}/iavf-%{src_ver}.tar.gz
 
+%if "%{src_ver}" == "4.11.1"
+Release:        1%{?kernelsubrelease}%{?dist}
+%define sha512 iavf-%{src_ver}=201961b1f4b891368060f321e414d3d28b18a7c7b15bb6ad7c8e517216228bd67cbf68a018d59ce6b38e97cbb620f5ca1d88f829679d15930bc06688f40fa757
+
+Patch0:         iavf-v4.11.1-iavf-Makefile-added-alias-for-i40evf.patch
+%endif
+
 %if "%{src_ver}" == "4.9.5"
+Release:        3%{?kernelsubrelease}%{?dist}
 %define sha512 iavf-%{src_ver}=2e97671d1fd51b5b0017b49dcfa62854ef55a85182fcd4990d2d7faea0c3dc9532fe3896c81eabff3c30fb3b2b9573c22416adfec3a1e0f0107c44a9216fbf3a
 
 Patch0:         iavf-v4.9.1-iavf-Makefile-added-alias-for-i40evf.patch
 %endif
 
 %if "%{src_ver}" == "4.8.2"
+Release:        3%{?kernelsubrelease}%{?dist}
 %define sha512 iavf-%{src_ver}=5406b86e61f6528adfd7bc3a5f330cec8bb3b4d6c67395961cc6ab78ec3bd325c3a8655b8f42bf56fb47c62a85fb7dbb0c1aa3ecb6fa069b21acb682f6f578cf
 
 Patch0:         iavf-v4.8.2-linux-rt-iavf-Fix-build-errors-on-kernel-6.1.y.patch
@@ -33,6 +41,7 @@ Patch1:         iavf-Makefile-added-alias-for-i40evf.patch
 %endif
 
 %if "%{src_ver}" == "4.5.3"
+Release:        3%{?kernelsubrelease}%{?dist}
 %define sha512 iavf-%{src_ver}=573b6b92ff7d8ee94d1ec01c56b990063c98c6f785a5fb96db30cf9c3fac4ff64277500b8468210464df343831818f576dd97cd172193491e3d47fec146c43fa
 
 Patch0:         iavf-v4.5.3-linux-rt-iavf-Fix-build-errors-on-kernel-6.0.y.patch
@@ -45,6 +54,7 @@ BuildArch:      x86_64
 
 BuildRequires:  which
 BuildRequires:  kmod-devel
+BuildRequires:  util-linux
 BuildRequires:  %{kern_pkg_name}-devel = %{kernel_ver}
 
 Requires:       kmod
@@ -96,9 +106,16 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
 %{_mandir}/*
 
 %changelog
+%if "%{src_ver}" == "4.11.1"
+* Tue May 14 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> %{IAVF_VERSION}-1
+- Initial addition of iavf v4.11.1
+%endif
+
+%if "%{src_ver}" != "4.11.1"
 * Tue Apr 02 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{IAVF_VERSION}-3
 - Fix subrelease naming convention
 * Thu Feb 22 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{IAVF_VERSION}-2
 - Adding generic template for iavf driver
 * Thu Jan 04 2024 Roye Eshed <roye.eshed@broadcom.com> %{IAVF_VERSION}-1
 - Package Intel driver iavf v%{IAVF_VERSION} for %{KERNEL_FLAVOUR}.
+%endif
