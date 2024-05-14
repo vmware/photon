@@ -1,0 +1,77 @@
+From 8c9c051bef3db0fe267f3fb6a1dab293c5f23b38 Mon Sep 17 00:00:00 2001
+From: Patrick Steinhardt <ps@pks.im>
+Date: Mon, 15 Apr 2024 13:30:36 +0200
+Subject: [PATCH 37/59] setup.c: introduce `die_upon_dubious_ownership()`
+
+Introduce a new function `die_upon_dubious_ownership()` that uses
+`ensure_valid_ownership()` to verify whether a repositroy is safe for
+use, and causes Git to die in case it is not.
+
+This function will be used in a subsequent commit.
+
+Helped-by: Johannes Schindelin <Johannes.Schindelin@gmx.de>
+Signed-off-by: Patrick Steinhardt <ps@pks.im>
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ cache.h | 12 ++++++++++++
+ setup.c | 21 +++++++++++++++++++++
+ 2 files changed, 33 insertions(+)
+
+diff --git a/cache.h b/cache.h
+index fcf49706ad..a46a3e4b6b 100644
+--- a/cache.h
++++ b/cache.h
+@@ -606,6 +606,18 @@ void set_git_work_tree(const char *tree);
+ 
+ #define ALTERNATE_DB_ENVIRONMENT "GIT_ALTERNATE_OBJECT_DIRECTORIES"
+ 
++/*
++ * Check if a repository is safe and die if it is not, by verifying the
++ * ownership of the worktree (if any), the git directory, and the gitfile (if
++ * any).
++ *
++ * Exemptions for known-safe repositories can be added via `safe.directory`
++ * config settings; for non-bare repositories, their worktree needs to be
++ * added, for bare ones their git directory.
++ */
++void die_upon_dubious_ownership(const char *gitfile, const char *worktree,
++				const char *gitdir);
++
+ void setup_work_tree(void);
+ /*
+  * Find the commondir and gitdir of the repository that contains the current
+diff --git a/setup.c b/setup.c
+index cefd5f63c4..9d401ae4c8 100644
+--- a/setup.c
++++ b/setup.c
+@@ -1165,6 +1165,27 @@ static int ensure_valid_ownership(const char *gitfile,
+ 	return data.is_safe;
+ }
+ 
++void die_upon_dubious_ownership(const char *gitfile, const char *worktree,
++				const char *gitdir)
++{
++	struct strbuf report = STRBUF_INIT, quoted = STRBUF_INIT;
++	const char *path;
++
++	if (ensure_valid_ownership(gitfile, worktree, gitdir, &report))
++		return;
++
++	strbuf_complete(&report, '\n');
++	path = gitfile ? gitfile : gitdir;
++	sq_quote_buf_pretty(&quoted, path);
++
++	die(_("detected dubious ownership in repository at '%s'\n"
++	      "%s"
++	      "To add an exception for this directory, call:\n"
++	      "\n"
++	      "\tgit config --global --add safe.directory %s"),
++	    path, report.buf, quoted.buf);
++}
++
+ static int allowed_bare_repo_cb(const char *key, const char *value, void *d)
+ {
+ 	enum allowed_bare_repo *allowed_bare_repo = d;
+-- 
+2.39.0
+

@@ -1,0 +1,54 @@
+From 213958f2482a9985764e7deb7ee2bd18d8222e65 Mon Sep 17 00:00:00 2001
+From: Johannes Schindelin <johannes.schindelin@gmx.de>
+Date: Sun, 11 Feb 2024 12:11:29 +0000
+Subject: [PATCH 34/59] ci(linux32): add a note about Actions that must not be
+ updated
+
+The Docker container used by the `linux32` job comes without Node.js,
+and therefore the `actions/checkout` and `actions/upload-artifact`
+Actions cannot be upgraded to the latest versions (because they use
+Node.js).
+
+One time too many, I accidentally tried to update them, where
+`actions/checkout` at least fails immediately, but the
+`actions/upload-artifact` step is only used when any test fails, and
+therefore the CI run usually passes even though that Action was updated
+to a version that is incompatible with the Docker container in which
+this job runs.
+
+So let's add a big fat warning, mainly for my own benefit, to avoid
+running into the very same issue over and over again.
+
+Backported-from: 20e0ff8835 (ci(linux32): add a note about Actions that must not be updated, 2024-02-11)
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ .github/workflows/main.yml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/.github/workflows/main.yml b/.github/workflows/main.yml
+index 359cf19eb4..2dc0221f7f 100644
+--- a/.github/workflows/main.yml
++++ b/.github/workflows/main.yml
+@@ -321,7 +321,7 @@ jobs:
+     steps:
+     - uses: actions/checkout@v4
+       if: matrix.vector.jobname != 'linux32'
+-    - uses: actions/checkout@v1
++    - uses: actions/checkout@v1 # cannot be upgraded because Node.js Actions aren't supported in this container
+       if: matrix.vector.jobname == 'linux32'
+     - run: ci/install-docker-dependencies.sh
+     - run: ci/run-build-and-tests.sh
+@@ -335,7 +335,7 @@ jobs:
+         path: ${{env.FAILED_TEST_ARTIFACTS}}
+     - name: Upload failed tests' directories
+       if: failure() && env.FAILED_TEST_ARTIFACTS != '' && matrix.vector.jobname == 'linux32'
+-      uses: actions/upload-artifact@v1
++      uses: actions/upload-artifact@v1 # cannot be upgraded because Node.js Actions aren't supported in this container
+       with:
+         name: failed-tests-${{matrix.vector.jobname}}
+         path: ${{env.FAILED_TEST_ARTIFACTS}}
+-- 
+2.39.0
+

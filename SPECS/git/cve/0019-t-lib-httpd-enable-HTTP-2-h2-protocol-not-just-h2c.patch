@@ -1,0 +1,44 @@
+From 3c14419c6b2747fa0c60d8d63e5ff59b58327de3 Mon Sep 17 00:00:00 2001
+From: Jeff King <peff@peff.net>
+Date: Thu, 23 Feb 2023 06:06:44 -0500
+Subject: [PATCH 19/59] t/lib-httpd: enable HTTP/2 "h2" protocol, not
+just h2c
+
+Commit 73c49a4474 (t: run t5551 tests with both HTTP and HTTP/2,
+2022-11-11) added Apache config to enable HTTP/2. However, it only
+enabled the "h2c" protocol, which allows cleartext HTTP/2 (generally
+based on an upgrade header during an HTTP/1.1 request). This is what
+t5559 is generally testing, since by default we don't set up SSL/TLS.
+
+However, it should be possible to run t5559 with LIB_HTTPD_SSL set. In
+that case, Apache will advertise support for HTTP/2 via ALPN during the
+TLS handshake. But we need to tell it support "h2" (the non-cleartext
+version) to do so. Without that, then curl does not even try to do the
+HTTP/1.1 upgrade (presumably because after seeing that we did TLS but
+didn't get the ALPN indicator, it assumes it would be fruitless).
+
+Signed-off-by: Jeff King <peff@peff.net>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+
+[nitesh-nk.kumar@broadcom.com: ported fix to v2.39.3]
+Signed-off-by: Nitesh Kumar <nitesh-nk.kumar@broadcom.com>
+---
+ t/lib-httpd/apache.conf | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/t/lib-httpd/apache.conf b/t/lib-httpd/apache.conf
+index 51a4fbc..693b75e 100644
+--- a/t/lib-httpd/apache.conf
++++ b/t/lib-httpd/apache.conf
+@@ -31,7 +31,7 @@ ErrorLog error.log
+ 
+ <IfDefine HTTP2>
+ LoadModule http2_module modules/mod_http2.so
+-Protocols h2c
++Protocols h2 h2c
+ </IfDefine>
+ 
+ <IfModule !mod_auth_basic.c>
+-- 
+2.34.1
+

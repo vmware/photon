@@ -1,0 +1,363 @@
+From e8d0608944486019ea0e1ed2ed29776811a565c2 Mon Sep 17 00:00:00 2001
+From: Johannes Schindelin <johannes.schindelin@gmx.de>
+Date: Tue, 26 Mar 2024 14:37:25 +0100
+Subject: [PATCH 48/59] submodule: require the submodule path to contain
+ directories only
+
+Submodules are stored in subdirectories of their superproject. When
+these subdirectories have been replaced with symlinks by a malicious
+actor, all kinds of mayhem can be caused.
+
+This _should_ not be possible, but many CVEs in the past showed that
+_when_ possible, it allows attackers to slip in code that gets executed
+during, say, a `git clone --recursive` operation.
+
+Let's add some defense-in-depth to disallow submodule paths to have
+anything except directories in them.
+
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ builtin/submodule--helper.c   | 32 +++++++++++++++-
+ submodule.c                   | 72 +++++++++++++++++++++++++++++++++++
+ submodule.h                   |  5 +++
+ t/t7423-submodule-symlinks.sh |  9 +++--
+ 4 files changed, 113 insertions(+), 5 deletions(-)
+
+diff --git a/builtin/submodule--helper.c b/builtin/submodule--helper.c
+index 9eacc43574..941afe1568 100644
+--- a/builtin/submodule--helper.c
++++ b/builtin/submodule--helper.c
+@@ -294,6 +294,9 @@ static void runcommand_in_submodule_cb(const struct cache_entry *list_item,
+ 	struct child_process cp = CHILD_PROCESS_INIT;
+ 	char *displaypath;
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	displaypath = get_submodule_displaypath(path, info->prefix);
+ 
+ 	sub = submodule_from_path(the_repository, null_oid(), path);
+@@ -620,6 +623,9 @@ static void status_submodule(const char *path, const struct object_id *ce_oid,
+ 		.free_removed_argv_elements = 1,
+ 	};
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	if (!submodule_from_path(the_repository, null_oid(), path))
+ 		die(_("no submodule mapping found in .gitmodules for path '%s'"),
+ 		      path);
+@@ -1220,6 +1226,9 @@ static void sync_submodule(const char *path, const char *prefix,
+ 	if (!is_submodule_active(the_repository, path))
+ 		return;
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	sub = submodule_from_path(the_repository, null_oid(), path);
+ 
+ 	if (sub && sub->url) {
+@@ -1360,6 +1369,9 @@ static void deinit_submodule(const char *path, const char *prefix,
+ 	struct strbuf sb_config = STRBUF_INIT;
+ 	char *sub_git_dir = xstrfmt("%s/.git", path);
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	sub = submodule_from_path(the_repository, null_oid(), path);
+ 
+ 	if (!sub || !sub->name)
+@@ -1674,6 +1686,9 @@ static int clone_submodule(const struct module_clone_data *clone_data,
+ 	const char *clone_data_path = clone_data->path;
+ 	char *to_free = NULL;
+ 
++	if (validate_submodule_path(clone_data_path) < 0)
++		exit(128);
++
+ 	if (!is_absolute_path(clone_data->path))
+ 		clone_data_path = to_free = xstrfmt("%s/%s", get_git_work_tree(),
+ 						    clone_data->path);
+@@ -2542,6 +2557,9 @@ static int update_submodule(struct update_data *update_data)
+ {
+ 	int ret;
+ 
++	if (validate_submodule_path(update_data->sm_path) < 0)
++		return -1;
++
+ 	ret = determine_submodule_update_strategy(the_repository,
+ 						  update_data->just_cloned,
+ 						  update_data->sm_path,
+@@ -2649,12 +2667,21 @@ static int update_submodules(struct update_data *update_data)
+ 
+ 	for (i = 0; i < suc.update_clone_nr; i++) {
+ 		struct update_clone_data ucd = suc.update_clone[i];
+-		int code;
++		int code = 128;
+ 
+ 		oidcpy(&update_data->oid, &ucd.oid);
+ 		update_data->just_cloned = ucd.just_cloned;
+ 		update_data->sm_path = ucd.sub->path;
+ 
++		/*
++		 * Verify that the submodule path does not contain any
++		 * symlinks; if it does, it might have been tampered with.
++		 * TODO: allow exempting it via
++		 * `safe.submodule.path` or something
++		 */
++		if (validate_submodule_path(update_data->sm_path) < 0)
++			goto fail;
++
+ 		code = ensure_core_worktree(update_data->sm_path);
+ 		if (code)
+ 			goto fail;
+@@ -3361,6 +3388,9 @@ static int module_add(int argc, const char **argv, const char *prefix)
+ 	normalize_path_copy(add_data.sm_path, add_data.sm_path);
+ 	strip_dir_trailing_slashes(add_data.sm_path);
+ 
++	if (validate_submodule_path(add_data.sm_path) < 0)
++		exit(128);
++
+ 	die_on_index_match(add_data.sm_path, force);
+ 	die_on_repo_without_commits(add_data.sm_path);
+ 
+diff --git a/submodule.c b/submodule.c
+index 71ec23ad98..0b87ae6340 100644
+--- a/submodule.c
++++ b/submodule.c
+@@ -1005,6 +1005,9 @@ static int submodule_has_commits(struct repository *r,
+ 		.super_oid = super_oid
+ 	};
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	oid_array_for_each_unique(commits, check_has_commit, &has_commit);
+ 
+ 	if (has_commit.result) {
+@@ -1127,6 +1130,9 @@ static int push_submodule(const char *path,
+ 			  const struct string_list *push_options,
+ 			  int dry_run)
+ {
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	if (for_each_remote_ref_submodule(path, has_remote, NULL) > 0) {
+ 		struct child_process cp = CHILD_PROCESS_INIT;
+ 		strvec_push(&cp.args, "push");
+@@ -1176,6 +1182,9 @@ static void submodule_push_check(const char *path, const char *head,
+ 	struct child_process cp = CHILD_PROCESS_INIT;
+ 	int i;
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	strvec_push(&cp.args, "submodule--helper");
+ 	strvec_push(&cp.args, "push-check");
+ 	strvec_push(&cp.args, head);
+@@ -1507,6 +1516,9 @@ static struct fetch_task *fetch_task_create(struct submodule_parallel_fetch *spf
+ 	struct fetch_task *task = xmalloc(sizeof(*task));
+ 	memset(task, 0, sizeof(*task));
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	task->sub = submodule_from_path(spf->r, treeish_name, path);
+ 
+ 	if (!task->sub) {
+@@ -1879,6 +1891,9 @@ unsigned is_submodule_modified(const char *path, int ignore_untracked)
+ 	const char *git_dir;
+ 	int ignore_cp_exit_code = 0;
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	strbuf_addf(&buf, "%s/.git", path);
+ 	git_dir = read_gitfile(buf.buf);
+ 	if (!git_dir)
+@@ -1955,6 +1970,9 @@ int submodule_uses_gitfile(const char *path)
+ 	struct strbuf buf = STRBUF_INIT;
+ 	const char *git_dir;
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	strbuf_addf(&buf, "%s/.git", path);
+ 	git_dir = read_gitfile(buf.buf);
+ 	if (!git_dir) {
+@@ -1994,6 +2012,9 @@ int bad_to_remove_submodule(const char *path, unsigned flags)
+ 	struct strbuf buf = STRBUF_INIT;
+ 	int ret = 0;
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	if (!file_exists(path) || is_empty_dir(path))
+ 		return 0;
+ 
+@@ -2044,6 +2065,9 @@ void submodule_unset_core_worktree(const struct submodule *sub)
+ {
+ 	struct strbuf config_path = STRBUF_INIT;
+ 
++	if (validate_submodule_path(sub->path) < 0)
++		exit(128);
++
+ 	submodule_name_to_gitdir(&config_path, the_repository, sub->name);
+ 	strbuf_addstr(&config_path, "/config");
+ 
+@@ -2066,6 +2090,9 @@ static int submodule_has_dirty_index(const struct submodule *sub)
+ {
+ 	struct child_process cp = CHILD_PROCESS_INIT;
+ 
++	if (validate_submodule_path(sub->path) < 0)
++		exit(128);
++
+ 	prepare_submodule_repo_env(&cp.env);
+ 
+ 	cp.git_cmd = 1;
+@@ -2083,6 +2110,10 @@ static int submodule_has_dirty_index(const struct submodule *sub)
+ static void submodule_reset_index(const char *path)
+ {
+ 	struct child_process cp = CHILD_PROCESS_INIT;
++
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	prepare_submodule_repo_env(&cp.env);
+ 
+ 	cp.git_cmd = 1;
+@@ -2287,6 +2318,34 @@ int validate_submodule_git_dir(char *git_dir, const char *submodule_name)
+ 	return 0;
+ }
+ 
++int validate_submodule_path(const char *path)
++{
++	char *p = xstrdup(path);
++	struct stat st;
++	int i, ret = 0;
++	char sep;
++
++	for (i = 0; !ret && p[i]; i++) {
++		if (!is_dir_sep(p[i]))
++			continue;
++
++		sep = p[i];
++		p[i] = '\0';
++		/* allow missing components, but no symlinks */
++		ret = lstat(p, &st) || !S_ISLNK(st.st_mode) ? 0 : -1;
++		p[i] = sep;
++		if (ret)
++			error(_("expected '%.*s' in submodule path '%s' not to "
++				"be a symbolic link"), i, p, p);
++	}
++	if (!lstat(p, &st) && S_ISLNK(st.st_mode))
++		ret = error(_("expected submodule path '%s' not to be a "
++			      "symbolic link"), p);
++	free(p);
++	return ret;
++}
++
++
+ /*
+  * Embeds a single submodules git directory into the superprojects git dir,
+  * non recursively.
+@@ -2297,6 +2356,9 @@ static void relocate_single_git_dir_into_superproject(const char *path)
+ 	struct strbuf new_gitdir = STRBUF_INIT;
+ 	const struct submodule *sub;
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	if (submodule_uses_worktrees(path))
+ 		die(_("relocate_gitdir for submodule '%s' with "
+ 		      "more than one worktree not supported"), path);
+@@ -2337,6 +2399,9 @@ static void absorb_git_dir_into_superproject_recurse(const char *path)
+ 
+ 	struct child_process cp = CHILD_PROCESS_INIT;
+ 
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	cp.dir = path;
+ 	cp.git_cmd = 1;
+ 	cp.no_stdin = 1;
+@@ -2359,6 +2424,10 @@ void absorb_git_dir_into_superproject(const char *path)
+ 	int err_code;
+ 	const char *sub_git_dir;
+ 	struct strbuf gitdir = STRBUF_INIT;
++
++	if (validate_submodule_path(path) < 0)
++		exit(128);
++
+ 	strbuf_addf(&gitdir, "%s/.git", path);
+ 	sub_git_dir = resolve_gitdir_gently(gitdir.buf, &err_code);
+ 
+@@ -2501,6 +2570,9 @@ int submodule_to_gitdir(struct strbuf *buf, const char *submodule)
+ 	const char *git_dir;
+ 	int ret = 0;
+ 
++	if (validate_submodule_path(submodule) < 0)
++		exit(128);
++
+ 	strbuf_reset(buf);
+ 	strbuf_addstr(buf, submodule);
+ 	strbuf_complete(buf, '/');
+diff --git a/submodule.h b/submodule.h
+index b52a4ff1e7..fb770f1687 100644
+--- a/submodule.h
++++ b/submodule.h
+@@ -148,6 +148,11 @@ void submodule_name_to_gitdir(struct strbuf *buf, struct repository *r,
+  */
+ int validate_submodule_git_dir(char *git_dir, const char *submodule_name);
+ 
++/*
++ * Make sure that the given submodule path does not follow symlinks.
++ */
++int validate_submodule_path(const char *path);
++
+ #define SUBMODULE_MOVE_HEAD_DRY_RUN (1<<0)
+ #define SUBMODULE_MOVE_HEAD_FORCE   (1<<1)
+ int submodule_move_head(const char *path,
+diff --git a/t/t7423-submodule-symlinks.sh b/t/t7423-submodule-symlinks.sh
+index a72f3cbcab..3d3c7af3ce 100755
+--- a/t/t7423-submodule-symlinks.sh
++++ b/t/t7423-submodule-symlinks.sh
+@@ -14,15 +14,16 @@ test_expect_success 'prepare' '
+ 	git commit -m submodule
+ '
+ 
+-test_expect_failure SYMLINKS 'git submodule update must not create submodule behind symlink' '
++test_expect_success SYMLINKS 'git submodule update must not create submodule behind symlink' '
+ 	rm -rf a b &&
+ 	mkdir b &&
+ 	ln -s b a &&
++	test_path_is_missing b/sm &&
+ 	test_must_fail git submodule update &&
+ 	test_path_is_missing b/sm
+ '
+ 
+-test_expect_failure SYMLINKS,CASE_INSENSITIVE_FS 'git submodule update must not create submodule behind symlink on case insensitive fs' '
++test_expect_success SYMLINKS,CASE_INSENSITIVE_FS 'git submodule update must not create submodule behind symlink on case insensitive fs' '
+ 	rm -rf a b &&
+ 	mkdir b &&
+ 	ln -s b A &&
+@@ -46,7 +47,7 @@ test_expect_success SYMLINKS 'git restore --recurse-submodules must not be confu
+ 	test_path_is_missing a/target/submodule_file
+ '
+ 
+-test_expect_failure SYMLINKS 'git restore --recurse-submodules must not migrate git dir of symlinked repo' '
++test_expect_success SYMLINKS 'git restore --recurse-submodules must not migrate git dir of symlinked repo' '
+ 	prepare_symlink_to_repo &&
+ 	rm -rf .git/modules &&
+ 	test_must_fail git restore --recurse-submodules a/sm &&
+@@ -55,7 +56,7 @@ test_expect_failure SYMLINKS 'git restore --recurse-submodules must not migrate
+ 	test_path_is_missing a/target/submodule_file
+ '
+ 
+-test_expect_failure SYMLINKS 'git checkout -f --recurse-submodules must not migrate git dir of symlinked repo when removing submodule' '
++test_expect_success SYMLINKS 'git checkout -f --recurse-submodules must not migrate git dir of symlinked repo when removing submodule' '
+ 	prepare_symlink_to_repo &&
+ 	rm -rf .git/modules &&
+ 	test_must_fail git checkout -f --recurse-submodules initial &&
+-- 
+2.39.0
+

@@ -1,0 +1,100 @@
+From f4aa8c8bb11dae6e769cd930565173808cbb69c8 Mon Sep 17 00:00:00 2001
+From: Johannes Schindelin <johannes.schindelin@gmx.de>
+Date: Wed, 10 Apr 2024 14:39:37 +0200
+Subject: [PATCH 40/59] fetch/clone: detect dubious ownership of local
+ repositories
+
+When cloning from somebody else's repositories, it is possible that,
+say, the `upload-pack` command is overridden in the repository that is
+about to be cloned, which would then be run in the user's context who
+started the clone.
+
+To remind the user that this is a potentially unsafe operation, let's
+extend the ownership checks we have already established for regular
+gitdir discovery to extend also to local repositories that are about to
+be cloned.
+
+This protection extends also to file:// URLs.
+
+The fixes in this commit address CVE-2024-32004.
+
+Note: This commit does not touch the `fetch`/`clone` code directly, but
+instead the function used implicitly by both: `enter_repo()`. This
+function is also used by `git receive-pack` (i.e. pushes), by `git
+upload-archive`, by `git daemon` and by `git http-backend`. In setups
+that want to serve repositories owned by different users than the
+account running the service, this will require `safe.*` settings to be
+configured accordingly.
+
+Also note: there are tiny time windows where a time-of-check-time-of-use
+("TOCTOU") race is possible. The real solution to those would be to work
+with `fstat()` and `openat()`. However, the latter function is not
+available on Windows (and would have to be emulated with rather
+expensive low-level `NtCreateFile()` calls), and the changes would be
+quite extensive, for my taste too extensive for the little gain given
+that embargoed releases need to pay extra attention to avoid introducing
+inadvertent bugs.
+
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+
+[nitesh-nk.kumar@broadcom.com: ported fix to v2.39.3]
+Signed-off-by: Nitesh Kumar <nitesh-nk.kumar@broadcom.com>
+---
+ path.c                        |  2 ++
+ t/t0411-clone-from-partial.sh |  6 +++---
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/path.c b/path.c
+index 492e17ad12..d61f70e87d 100644
+--- a/path.c
++++ b/path.c
+@@ -840,6 +840,7 @@ const char *enter_repo(const char *path, int strict)
+ 		if (!suffix[i])
+ 			return NULL;
+ 		gitfile = read_gitfile(used_path.buf);
++		die_upon_dubious_ownership(gitfile, NULL, used_path.buf);
+ 		if (gitfile) {
+ 			strbuf_reset(&used_path);
+ 			strbuf_addstr(&used_path, gitfile);
+@@ -850,6 +851,7 @@ const char *enter_repo(const char *path, int strict)
+ 	}
+ 	else {
+ 		const char *gitfile = read_gitfile(path);
++		die_upon_dubious_ownership(gitfile, NULL, path);
+ 		if (gitfile)
+ 			path = gitfile;
+ 		if (chdir(path))
+diff --git a/t/t0411-clone-from-partial.sh b/t/t0411-clone-from-partial.sh
+index fb72a0a9ff..eb3360dbca 100755
+--- a/t/t0411-clone-from-partial.sh
++++ b/t/t0411-clone-from-partial.sh
+@@ -23,7 +23,7 @@ test_expect_success 'create evil repo' '
+ 	>evil/.git/shallow
+ '
+ 
+-test_expect_failure 'local clone must not fetch from promisor remote and execute script' '
++test_expect_success 'local clone must not fetch from promisor remote and execute script' '
+ 	rm -f script-executed &&
+ 	test_must_fail git clone \
+ 		--upload-pack="GIT_TEST_ASSUME_DIFFERENT_OWNER=true git-upload-pack" \
+@@ -32,7 +32,7 @@ test_expect_failure 'local clone must not fetch from promisor remote and execute
+ 	test_path_is_missing script-executed
+ '
+ 
+-test_expect_failure 'clone from file://... must not fetch from promisor remote and execute script' '
++test_expect_success 'clone from file://... must not fetch from promisor remote and execute script' '
+ 	rm -f script-executed &&
+ 	test_must_fail git clone \
+ 		--upload-pack="GIT_TEST_ASSUME_DIFFERENT_OWNER=true git-upload-pack" \
+@@ -41,7 +41,7 @@ test_expect_failure 'clone from file://... must not fetch from promisor remote a
+ 	test_path_is_missing script-executed
+ '
+ 
+-test_expect_failure 'fetch from file://... must not fetch from promisor remote and execute script' '
++test_expect_success 'fetch from file://... must not fetch from promisor remote and execute script' '
+ 	rm -f script-executed &&
+ 	test_must_fail git fetch \
+ 		--upload-pack="GIT_TEST_ASSUME_DIFFERENT_OWNER=true git-upload-pack" \
+-- 
+2.39.0
+

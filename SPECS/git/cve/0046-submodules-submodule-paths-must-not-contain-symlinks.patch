@@ -1,0 +1,152 @@
+From 97065761333fd62db1912d81b489db938d8c991d Mon Sep 17 00:00:00 2001
+From: Johannes Schindelin <johannes.schindelin@gmx.de>
+Date: Fri, 22 Mar 2024 11:19:22 +0100
+Subject: [PATCH 46/59] submodules: submodule paths must not contain symlinks
+
+When creating a submodule path, we must be careful not to follow
+symbolic links. Otherwise we may follow a symbolic link pointing to
+a gitdir (which are valid symbolic links!) e.g. while cloning.
+
+On case-insensitive filesystems, however, we blindly replace a directory
+that has been created as part of the `clone` operation with a symlink
+when the path to the latter differs only in case from the former's path.
+
+Let's simply avoid this situation by expecting not ever having to
+overwrite any existing file/directory/symlink upon cloning. That way, we
+won't even replace a directory that we just created.
+
+This addresses CVE-2024-32002.
+
+Reported-by: Filip Hejsek <filip.hejsek@gmail.com>
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ builtin/submodule--helper.c | 35 +++++++++++++++++++++++++++
+ t/t7406-submodule-update.sh | 48 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 83 insertions(+)
+
+diff --git a/builtin/submodule--helper.c b/builtin/submodule--helper.c
+index b76e13ddce..4c1a7dbcda 100644
+--- a/builtin/submodule--helper.c
++++ b/builtin/submodule--helper.c
+@@ -1641,12 +1641,35 @@ static char *clone_submodule_sm_gitdir(const char *name)
+ 	return sm_gitdir;
+ }
+ 
++static int dir_contains_only_dotgit(const char *path)
++{
++	DIR *dir = opendir(path);
++	struct dirent *e;
++	int ret = 1;
++
++	if (!dir)
++		return 0;
++
++	e = readdir_skip_dot_and_dotdot(dir);
++	if (!e)
++		ret = 0;
++	else if (strcmp(DEFAULT_GIT_DIR_ENVIRONMENT, e->d_name) ||
++		 (e = readdir_skip_dot_and_dotdot(dir))) {
++		error("unexpected item '%s' in '%s'", e->d_name, path);
++		ret = 0;
++	}
++
++	closedir(dir);
++	return ret;
++}
++
+ static int clone_submodule(const struct module_clone_data *clone_data,
+ 			   struct string_list *reference)
+ {
+ 	char *p;
+ 	char *sm_gitdir = clone_submodule_sm_gitdir(clone_data->name);
+ 	char *sm_alternate = NULL, *error_strategy = NULL;
++	struct stat st;
+ 	struct child_process cp = CHILD_PROCESS_INIT;
+ 	const char *clone_data_path = clone_data->path;
+ 	char *to_free = NULL;
+@@ -1660,6 +1683,10 @@ static int clone_submodule(const struct module_clone_data *clone_data,
+ 		      "git dir"), sm_gitdir);
+ 
+ 	if (!file_exists(sm_gitdir)) {
++		if (clone_data->require_init && !stat(clone_data_path, &st) &&
++		    !is_empty_dir(clone_data_path))
++			die(_("directory not empty: '%s'"), clone_data_path);
++
+ 		if (safe_create_leading_directories_const(sm_gitdir) < 0)
+ 			die(_("could not create directory '%s'"), sm_gitdir);
+ 
+@@ -1704,6 +1731,14 @@ static int clone_submodule(const struct module_clone_data *clone_data,
+ 		if(run_command(&cp))
+ 			die(_("clone of '%s' into submodule path '%s' failed"),
+ 			    clone_data->url, clone_data_path);
++
++		if (clone_data->require_init && !stat(clone_data_path, &st) &&
++		    !dir_contains_only_dotgit(clone_data_path)) {
++			char *dot_git = xstrfmt("%s/.git", clone_data_path);
++			unlink(dot_git);
++			free(dot_git);
++			die(_("directory not empty: '%s'"), clone_data_path);
++		}
+ 	} else {
+ 		char *path;
+ 
+diff --git a/t/t7406-submodule-update.sh b/t/t7406-submodule-update.sh
+index f094e3d7f3..63c24f7f7c 100755
+--- a/t/t7406-submodule-update.sh
++++ b/t/t7406-submodule-update.sh
+@@ -1179,4 +1179,52 @@ test_expect_success 'submodule update --recursive skip submodules with strategy=
+ 	test_cmp expect.err actual.err
+ '
+ 
++test_expect_success CASE_INSENSITIVE_FS,SYMLINKS \
++	'submodule paths must not follow symlinks' '
++
++	# This is only needed because we want to run this in a self-contained
++	# test without having to spin up an HTTP server; However, it would not
++	# be needed in a real-world scenario where the submodule is simply
++	# hosted on a public site.
++	test_config_global protocol.file.allow always &&
++
++	# Make sure that Git tries to use symlinks on Windows
++	test_config_global core.symlinks true &&
++
++	tell_tale_path="$PWD/tell.tale" &&
++	git init hook &&
++	(
++		cd hook &&
++		mkdir -p y/hooks &&
++		write_script y/hooks/post-checkout <<-EOF &&
++		echo HOOK-RUN >&2
++		echo hook-run >"$tell_tale_path"
++		EOF
++		git add y/hooks/post-checkout &&
++		test_tick &&
++		git commit -m post-checkout
++	) &&
++
++	hook_repo_path="$(pwd)/hook" &&
++	git init captain &&
++	(
++		cd captain &&
++		git submodule add --name x/y "$hook_repo_path" A/modules/x &&
++		test_tick &&
++		git commit -m add-submodule &&
++
++		printf .git >dotgit.txt &&
++		git hash-object -w --stdin <dotgit.txt >dot-git.hash &&
++		printf "120000 %s 0\ta\n" "$(cat dot-git.hash)" >index.info &&
++		git update-index --index-info <index.info &&
++		test_tick &&
++		git commit -m add-symlink
++	) &&
++
++	test_path_is_missing "$tell_tale_path" &&
++	test_must_fail git clone --recursive captain hooked 2>err &&
++	grep "directory not empty" err &&
++	test_path_is_missing "$tell_tale_path"
++'
++
+ test_done
+-- 
+2.39.0
+

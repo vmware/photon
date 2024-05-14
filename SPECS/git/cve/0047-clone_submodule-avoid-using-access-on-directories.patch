@@ -1,0 +1,46 @@
+From eafffd9ad417bdf0a3c63e5276d5a18f563cd291 Mon Sep 17 00:00:00 2001
+From: Johannes Schindelin <johannes.schindelin@gmx.de>
+Date: Fri, 12 Apr 2024 21:00:44 +0200
+Subject: [PATCH 47/59] clone_submodule: avoid using `access()` on directories
+
+In 0060fd1511b (clone --recurse-submodules: prevent name squatting on
+Windows, 2019-09-12), I introduced code to verify that a git dir either
+does not exist, or is at least empty, to fend off attacks where an
+inadvertently (and likely maliciously) pre-populated git dir would be
+used while cloning submodules recursively.
+
+The logic used `access(<path>, X_OK)` to verify that a directory exists
+before calling `is_empty_dir()` on it. That is a curious way to check
+for a directory's existence and might well fail for unwanted reasons.
+Even the original author (it was I ;-) ) struggles to explain why this
+function was used rather than `stat()`.
+
+This code was _almost_ copypastad in the previous commit, but that
+`access()` call was caught during review.
+
+Let's use `stat()` instead also in the code that was almost copied
+verbatim. Let's not use `lstat()` because in the unlikely event that
+somebody snuck a symbolic link in, pointing to a crafted directory, we
+want to verify that that directory is empty.
+
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ builtin/submodule--helper.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/builtin/submodule--helper.c b/builtin/submodule--helper.c
+index 4c1a7dbcda..9eacc43574 100644
+--- a/builtin/submodule--helper.c
++++ b/builtin/submodule--helper.c
+@@ -1742,7 +1742,7 @@ static int clone_submodule(const struct module_clone_data *clone_data,
+ 	} else {
+ 		char *path;
+ 
+-		if (clone_data->require_init && !access(clone_data_path, X_OK) &&
++		if (clone_data->require_init && !stat(clone_data_path, &st) &&
+ 		    !is_empty_dir(clone_data_path))
+ 			die(_("directory not empty: '%s'"), clone_data_path);
+ 		if (safe_create_leading_directories_const(clone_data_path) < 0)
+-- 
+2.39.0
+

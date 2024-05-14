@@ -1,0 +1,60 @@
+From d1bb66a546b4bb46005d17ba711caaad26f26c1e Mon Sep 17 00:00:00 2001
+From: Patrick Steinhardt <ps@pks.im>
+Date: Mon, 15 Apr 2024 13:30:31 +0200
+Subject: [PATCH 36/59] builtin/clone: abort when hardlinked source and target
+ file differ
+
+When performing local clones with hardlinks we refuse to copy source
+files which are symlinks as a mitigation for CVE-2022-39253. This check
+can be raced by an adversary though by changing the file to a symlink
+after we have checked it.
+
+Fix the issue by checking whether the hardlinked destination file
+matches the source file and abort in case it doesn't.
+
+This addresses CVE-2024-32021.
+
+Reported-by: Apple Product Security <product-security@apple.com>
+Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
+Signed-off-by: Patrick Steinhardt <ps@pks.im>
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ builtin/clone.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/builtin/clone.c b/builtin/clone.c
+index 073e6323d7..4b80fa0870 100644
+--- a/builtin/clone.c
++++ b/builtin/clone.c
+@@ -357,8 +357,27 @@ static void copy_or_link_directory(struct strbuf *src, struct strbuf *dest,
+ 		if (unlink(dest->buf) && errno != ENOENT)
+ 			die_errno(_("failed to unlink '%s'"), dest->buf);
+ 		if (!option_no_hardlinks) {
+-			if (!link(src->buf, dest->buf))
++			if (!link(src->buf, dest->buf)) {
++				struct stat st;
++
++				/*
++				 * Sanity-check whether the created hardlink
++				 * actually links to the expected file now. This
++				 * catches time-of-check-time-of-use bugs in
++				 * case the source file was meanwhile swapped.
++				 */
++				if (lstat(dest->buf, &st))
++					die(_("hardlink cannot be checked at '%s'"), dest->buf);
++				if (st.st_mode != iter->st.st_mode ||
++				    st.st_ino != iter->st.st_ino ||
++				    st.st_dev != iter->st.st_dev ||
++				    st.st_size != iter->st.st_size ||
++				    st.st_uid != iter->st.st_uid ||
++				    st.st_gid != iter->st.st_gid)
++					die(_("hardlink different from source at '%s'"), dest->buf);
++
+ 				continue;
++			}
+ 			if (option_local > 0)
+ 				die_errno(_("failed to create link '%s'"), dest->buf);
+ 			option_no_hardlinks = 1;
+-- 
+2.39.0
+

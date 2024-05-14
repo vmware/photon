@@ -1,0 +1,106 @@
+From 7e1bcc8d631c597d72b175aa649eb5e604e4dd68 Mon Sep 17 00:00:00 2001
+From: Johannes Schindelin <Johannes.Schindelin@gmx.de>
+Date: Sun, 11 Feb 2024 12:11:28 +0000
+Subject: [PATCH 32/59] ci: bump remaining outdated Actions versions
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+After activating automatic Dependabot updates in the
+git-for-windows/git repository, Dependabot noticed a couple
+of yet-unaddressed updates.  They avoid "Node.js 16 Actions"
+deprecation messages by bumping the following Actions'
+versions:
+
+- actions/upload-artifact from 3 to 4
+- actions/download-artifact from 3 to 4
+- actions/cache from 3 to 4
+
+Backported-from: 820a340085 (ci: bump remaining outdated Actions versions, 2024-02-11)
+Helped-by: Matthias Aßhauer <mha1993@live.de>
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+Signed-off-by: Junio C Hamano <gitster@pobox.com>
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+---
+ .github/workflows/main.yml | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/.github/workflows/main.yml b/.github/workflows/main.yml
+index aedb6b0ced..359cf19eb4 100644
+--- a/.github/workflows/main.yml
++++ b/.github/workflows/main.yml
+@@ -106,7 +106,7 @@ jobs:
+     - name: zip up tracked files
+       run: git archive -o artifacts/tracked.tar.gz HEAD
+     - name: upload tracked files and build artifacts
+-      uses: actions/upload-artifact@v3
++      uses: actions/upload-artifact@v4
+       with:
+         name: windows-artifacts
+         path: artifacts
+@@ -123,7 +123,7 @@ jobs:
+       cancel-in-progress: ${{ needs.ci-config.outputs.skip_concurrent == 'yes' }}
+     steps:
+     - name: download tracked files and build artifacts
+-      uses: actions/download-artifact@v3
++      uses: actions/download-artifact@v4
+       with:
+         name: windows-artifacts
+         path: ${{github.workspace}}
+@@ -140,7 +140,7 @@ jobs:
+       run: ci/print-test-failures.sh
+     - name: Upload failed tests' directories
+       if: failure() && env.FAILED_TEST_ARTIFACTS != ''
+-      uses: actions/upload-artifact@v3
++      uses: actions/upload-artifact@v4
+       with:
+         name: failed-tests-windows
+         path: ${{env.FAILED_TEST_ARTIFACTS}}
+@@ -195,7 +195,7 @@ jobs:
+     - name: zip up tracked files
+       run: git archive -o artifacts/tracked.tar.gz HEAD
+     - name: upload tracked files and build artifacts
+-      uses: actions/upload-artifact@v3
++      uses: actions/upload-artifact@v4
+       with:
+         name: vs-artifacts
+         path: artifacts
+@@ -213,7 +213,7 @@ jobs:
+     steps:
+     - uses: git-for-windows/setup-git-for-windows-sdk@v1
+     - name: download tracked files and build artifacts
+-      uses: actions/download-artifact@v3
++      uses: actions/download-artifact@v4
+       with:
+         name: vs-artifacts
+         path: ${{github.workspace}}
+@@ -231,7 +231,7 @@ jobs:
+       run: ci/print-test-failures.sh
+     - name: Upload failed tests' directories
+       if: failure() && env.FAILED_TEST_ARTIFACTS != ''
+-      uses: actions/upload-artifact@v3
++      uses: actions/upload-artifact@v4
+       with:
+         name: failed-tests-windows
+         path: ${{env.FAILED_TEST_ARTIFACTS}}
+@@ -293,7 +293,7 @@ jobs:
+       if: failure() && env.FAILED_TEST_ARTIFACTS != ''
+     - name: Upload failed tests' directories
+       if: failure() && env.FAILED_TEST_ARTIFACTS != ''
+-      uses: actions/upload-artifact@v3
++      uses: actions/upload-artifact@v4
+       with:
+         name: failed-tests-${{matrix.vector.jobname}}
+         path: ${{env.FAILED_TEST_ARTIFACTS}}
+@@ -329,7 +329,7 @@ jobs:
+       if: failure() && env.FAILED_TEST_ARTIFACTS != ''
+     - name: Upload failed tests' directories
+       if: failure() && env.FAILED_TEST_ARTIFACTS != '' && matrix.vector.jobname != 'linux32'
+-      uses: actions/upload-artifact@v3
++      uses: actions/upload-artifact@v4
+       with:
+         name: failed-tests-${{matrix.vector.jobname}}
+         path: ${{env.FAILED_TEST_ARTIFACTS}}
+-- 
+2.39.0
+
