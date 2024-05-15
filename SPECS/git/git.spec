@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.39.0
-Release:        4%{?dist}
+Version:        2.45.1
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512 %{name}=f072cae7738279b1c0f8202e83a243ff0164b03d3be22895aa875caa265150a5773e1f062724b3eb82bc64b163730b6f451b82fa0c904167a8fa53ced5d3b1df
+%define sha512 %{name}=28461855e03f3dd5af73a1c6d26cc3e2b7b71f5eb90852f1daf582d24503b4dd5c4e4dac359e9eba1c2ba542aeb0940e0482506f19d02a354654b181c56c5317
 
 BuildRequires:  curl-devel
 BuildRequires:  python3-devel
@@ -102,7 +102,6 @@ rm -rf %{buildroot}/*
 %exclude %{_libexecdir}/git-core/git-instaweb
 %exclude %{_libexecdir}/git-core/git-filter-branch
 %exclude %{_libexecdir}/git-core/git-archimport
-%exclude %{_libexecdir}/git-core/git-add--interactive
 %exclude %{_libexecdir}/git-core/git-gui--askpass
 %exclude %{_libexecdir}/git-core/git-gui
 %exclude %{_libexecdir}/git-core/git-citool
@@ -122,7 +121,6 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/git-core/git-instaweb
 %{_libexecdir}/git-core/git-filter-branch
 %{_libexecdir}/git-core/git-archimport
-%{_libexecdir}/git-core/git-add--interactive
 %{_libexecdir}/git-core/git-gui--askpass
 %{_libexecdir}/git-core/git-gui
 %{_libexecdir}/git-core/git-citool
@@ -139,6 +137,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Wed May 15 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.45.1-1
+- Version upgrade to v2.45.1
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.39.0-4
 - Bump version as a part of openssl upgrade
 * Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-3
