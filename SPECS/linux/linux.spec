@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.83
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -357,6 +357,8 @@ Requires(post):   (coreutils or coreutils-selinux)
 Requires(postun): (coreutils or coreutils-selinux)
 
 Obsoletes:  linux-aws
+Obsoletes:  linux-secure
+Provides:   linux-secure
 
 %description
 The Linux package contains the Linux kernel.
@@ -855,6 +857,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri May 17 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.83-5
+- linux-generic will now obsolete and provide linux-secure as linux-secure
+  has been merged into linux-generic. This will ensure tdnf update on
+  Photon 5.0 is handled gracefully.
 * Mon Apr 29 2024 Roye Eshed <roye.eshed@broadcom.com> 6.1.83-4
 - Fix for CVE-2023-52586 by disabling CONFIG_DRM_MSM
 * Mon Apr 29 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.83-3
