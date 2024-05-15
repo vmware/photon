@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.90
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -346,6 +346,8 @@ Requires(post):   (coreutils or coreutils-selinux)
 Requires(postun): (coreutils or coreutils-selinux)
 
 Obsoletes:  linux-aws
+Obsoletes:  linux-secure
+Provides:   linux-secure
 
 %description
 The Linux package contains the Linux kernel.
@@ -844,6 +846,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri May 17 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.90-3
+- linux-generic will now obsolete and provide linux-secure as linux-secure
+  has been merged into linux-generic. This will ensure tdnf update on
+  Photon 5.0 is handled gracefully.
 * Fri May 17 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.90-2
 - Re-enable CONFIG_SECURITY_SELINUX_DEVELOP to fix boot time regressions
   in stig hardened systems.
