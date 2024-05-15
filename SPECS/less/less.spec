@@ -1,7 +1,7 @@
 Summary:    Text file viewer
 Name:       less
-Version:    608
-Release:    3%{?dist}
+Version:    654
+Release:    1%{?dist}
 License:    GPLv3+
 URL:        http://www.greenwoodsoftware.com/less
 Group:      Applications/File
@@ -9,9 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.greenwoodsoftware.com/less/%{name}-%{version}.tar.gz
-%define sha512 %{name}=7945b7f88921832ebb1b45fba8cbb449ee0133342796b654a52c146dfff3d84db18724ee84e53349eeea6017a0ebe2d8eb5366210275981dde7bb7190118fa66
-
-Patch0: CVE-2022-46663.patch
+%define sha512 %{name}=b8fa6688fb2aac4b015dbc000429db45f94c7484f388d1af60ff8fee7f72fec35614e0a3f6eb811583cd899f647b2e01fe47533ab6a7633dac04c155dd415678
 
 BuildRequires: ncurses-devel
 
@@ -36,6 +34,8 @@ The Less package contains a text file viewer
 %{_mandir}/*/*
 
 %changelog
+* Tue May 14 2024 Mukul Sikka <msikka@vmware.com> 654-1
+- Upgrade version to 654
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 608-3
 - Bump version as a part of ncurses upgrade to v6.4
 * Fri Feb 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 608-2
