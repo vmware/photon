@@ -6,7 +6,7 @@ Summary:        chromium
 Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
-Version:        123.0.6283.1
+Version:        125.0.6422.65
 Release:        1%{?dist}
 License:        BSD 3
 URL:            https://chromium.googlesource.com/chromium/src
@@ -14,13 +14,12 @@ Group:          System Utility
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
+# generated using tools/scripts/fetch-chromium-source.sh
 Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=f17ee035fc2e2a6c6a220d008574f0570980a76a678a7d9ed86c24779246f9f2abc521328c1369556c389c1c0f1dc57d957d2766adcdcc12f121fb127f747118
+%define sha512 %{name}=3b9e0c7a30f15cd5766c17ac678cdd9c2e4f2778971dafcb85092a66e89c96fc5ff544b49db3f06d01731c9a9cbff0296f789674d7a9f935ffa1828ee15d5df9
 
-# git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-# tar cJf depot_tools-<short-commit-hash>.tar.xz depot_tools
-Source1: depot_tools-af6eabf.tar.xz
-%define sha512 depot_tools=78a880d9e57c2954aa5a77344c716e41a113e85238df6b326baee3b7731d9f9491a2cc789fb31823f9142f20440da907562a2cb4681b3985bd069dbf71b4a5da
+Source1: depot_tools-274689c.tar.xz
+%define sha512 depot_tools=4f40a936e414740e98584f62829120f658bfb49f495bf83ef3084adce8671a96181cafe2b4857c88270cbc6d165c300bd6e2e0094cde742a9a0b7c08e7fd6835
 
 Source2: headless.gn
 
@@ -84,6 +83,8 @@ cp -pr %{builddir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Thu May 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 125.0.6422.65-1
+- Upgrade to v125.0.6422.65
 * Tue Feb 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 123.0.6283.1-1
 - Upgrade to v123.0.6283.1
 * Fri Dec 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 119.0.6045.176-2
