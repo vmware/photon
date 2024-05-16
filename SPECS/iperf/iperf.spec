@@ -1,6 +1,6 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
-Version:        3.12
+Version:        3.17.1
 Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/esnet/iperf
@@ -10,7 +10,7 @@ Distribution:   Photon
 #Source download URL: https://github.com/esnet/iperf/archive/3.8.1.tar.gz
 Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
 Patch1:         disablepg.patch
-%define sha512  iperf=9b0600a19750311557833b32ca5c4be809ab98643522f125645dd8f83c482017e42fbe5fc9484624731176a59b67203a468eb81eebf1a37b9c1b3eff818857ba
+%define sha512  iperf=54789c5a63081aa803575ce1df3cb251a3b0bb16313f049f2479ae3a5af39944ace1222d4a086bed0ab34821da73371b2499f8b8283791a953d861da4cfc56f0
 BuildRequires:  autoconf
 BuildRequires:  automake
 
@@ -54,6 +54,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+*       Tue May 14 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.17.1-1
+-       Update to version 3.17.1
 *       Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 3.12-1
 -       Automatic Version Bump
 *       Sun May 29 2022 Gerrit Photon <photon-checkins@vmware.com> 3.11-1
@@ -70,9 +72,9 @@ make %{?_smp_mflags} check
 -       Upgraded to version 3.1.7
 *       Thu Oct 6 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.3-1
 -       Upgraded to version 3.1.3
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-2
--	GA - Bump release of all rpms
-* 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.1.2-1
-- 	Upgrade to 3.1.2
+*       Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-2
+-       GA - Bump release of all rpms
+*       Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.1.2-1
+-       Upgrade to 3.1.2
 *       Wed Oct 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-1
 -       Add iperf v3.1 package.
