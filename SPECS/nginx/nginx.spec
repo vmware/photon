@@ -5,7 +5,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.25.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -68,6 +68,7 @@ sh ./configure \
     --with-http_stub_status_module \
     --with-http_v2_module \
     --with-http_realip_module \
+    --with-stream_ssl_preread_module \
     --user=%{nginx_user} \
     --group=%{nginx_user}
 
@@ -125,6 +126,8 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Wed May 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.25.2-4
+- Enable support for ssl_preread_module
 * Wed Mar 06 2024 Harinadh D <hdommaraju@vmware.com> 1.25.2-3
 - Add headers-more-nginx-module
 * Thu Oct 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25.2-2
