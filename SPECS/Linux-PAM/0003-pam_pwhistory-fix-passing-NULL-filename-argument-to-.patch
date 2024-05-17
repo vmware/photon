@@ -1,0 +1,64 @@
+From a229c96482b42a6b868e0d5dd179578f962318b7 Mon Sep 17 00:00:00 2001
+From: Md Zain Hasib <hasibm@vmware.com>
+Date: Sat, 29 Jul 2023 11:01:35 +0530
+Subject: [PATCH] pam_pwhistory: fix passing NULL filename argument to
+ pwhistory helper
+
+This change fixes a bug when pwhistory_helper is invoked from
+pam_pwhistory with an NULL filename, pwhistory_helper receives a short
+circuited argc count of 3, ignoring the rest of the arguments passed
+due to filename being NULL. To resolve the issue, an empty string is
+passed in case the filename is empty, which is later changed back to
+NULL in pwhistory_helper so that it can be passed to opasswd to read
+the default opasswd file.
+
+* modules/pam_pwhistory/pam_pwhistory.c (run_save_helper,
+run_check_helper): Replace NULL filename argument with an empty string.
+* modules/pam_pwhistory/pwhistory_helper.c (main): Replace empty string
+filename argument with NULL.
+
+Fixes: 11c35109a67f ("pam_pwhistory: Enable alternate location for password history file (#396)")
+Signed-off-by: Dmitry V. Levin <ldv@strace.io>
+---
+ modules/pam_pwhistory/pam_pwhistory.c    | 4 ++--
+ modules/pam_pwhistory/pwhistory_helper.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/modules/pam_pwhistory/pam_pwhistory.c b/modules/pam_pwhistory/pam_pwhistory.c
+index 5a7fb81..98ddffc 100644
+--- a/modules/pam_pwhistory/pam_pwhistory.c
++++ b/modules/pam_pwhistory/pam_pwhistory.c
+@@ -141,7 +141,7 @@ run_save_helper(pam_handle_t *pamh, const char *user,
+       args[0] = (char *)PWHISTORY_HELPER;
+       args[1] = (char *)"save";
+       args[2] = (char *)user;
+-      args[3] = (char *)filename;
++      args[3] = (char *)((filename != NULL) ? filename : "");
+       DIAG_POP_IGNORE_CAST_QUAL;
+       if (asprintf(&args[4], "%d", howmany) < 0 ||
+           asprintf(&args[5], "%d", debug) < 0)
+@@ -228,7 +228,7 @@ run_check_helper(pam_handle_t *pamh, const char *user,
+       args[0] = (char *)PWHISTORY_HELPER;
+       args[1] = (char *)"check";
+       args[2] = (char *)user;
+-      args[3] = (char *)filename;
++      args[3] = (char *)((filename != NULL) ? filename : "");
+       DIAG_POP_IGNORE_CAST_QUAL;
+       if (asprintf(&args[4], "%d", debug) < 0)
+         {
+diff --git a/modules/pam_pwhistory/pwhistory_helper.c b/modules/pam_pwhistory/pwhistory_helper.c
+index 469d95f..fb9a1e3 100644
+--- a/modules/pam_pwhistory/pwhistory_helper.c
++++ b/modules/pam_pwhistory/pwhistory_helper.c
+@@ -108,7 +108,7 @@ main(int argc, char *argv[])
+ 
+   option = argv[1];
+   user = argv[2];
+-  filename = argv[3];
++  filename = (argv[3][0] != '\0') ? argv[3] : NULL;
+ 
+   if (strcmp(option, "check") == 0 && argc == 5)
+     return check_history(user, filename, argv[4]);
+-- 
+2.34.1
+

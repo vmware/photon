@@ -1,0 +1,27 @@
+From d917ce6fcae5f15fea20422f7d636974643a97e7 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:35:50 +0530
+Subject: [PATCH 05/35] kernel storage
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/kernel/storage.fc | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/policy/modules/kernel/storage.fc b/policy/modules/kernel/storage.fc
+index cf2dcbd..6b4bde0 100644
+--- a/policy/modules/kernel/storage.fc
++++ b/policy/modules/kernel/storage.fc
+@@ -54,6 +54,9 @@
+ ifdef(`distro_redhat', `
+ /dev/root		-b	gen_context(system_u:object_r:fixed_disk_device_t,mls_systemhigh)
+ ')
++ifdef(`distro_photon', `
++/dev/root		-b	gen_context(system_u:object_r:fixed_disk_device_t,mls_systemhigh)
++')
+ /dev/s(cd|r)[^/]*	-b	gen_context(system_u:object_r:removable_device_t,s0)
+ /dev/sbpcd.*		-b	gen_context(system_u:object_r:removable_device_t,s0)
+ /dev/sg[0-9]+		-c	gen_context(system_u:object_r:scsi_generic_device_t,s0)
+-- 
+2.45.0
+
