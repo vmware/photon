@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.90
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -844,6 +844,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri May 17 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.90-2
+- Re-enable CONFIG_SECURITY_SELINUX_DEVELOP to fix boot time regressions
+  in stig hardened systems.
 * Mon May 13 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.90-1
 - Update to version 6.1.90
 - Fix aarch64 builds
