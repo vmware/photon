@@ -1,0 +1,35 @@
+From fe31ea4f20612245592ccd60b210bfe8daa3e38c Mon Sep 17 00:00:00 2001
+From: Dweep Advani <dweep.advani@broadcom.com>
+Date: Mon, 20 May 2024 04:43:32 +0000
+Subject: [PATCH] systemd: do not use -ftrivial-auto-var-init=zero
+
+The -ftrivial-auto-var-init=zero was causing automatic variables to be
+initialized to zero, which had huge performance impact on systemd
+operations like mask/unmask/enable/disable. Do not build wih that flag.
+Ref: https://gcc.gnu.org/pipermail/gcc-patches/2021-February/565514.html
+Ref: https://github.com/systemd/systemd/pull/23297
+---
+ meson.build | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 3f47b72..0b07b95 100644
+--- a/meson.build
++++ b/meson.build
+@@ -445,13 +445,6 @@ if cc.get_id() == 'clang'
+         ]
+ endif
+ 
+-if get_option('mode') == 'release'
+-        # We could enable 'pattern' for developer mode, but that can interfere with
+-        # valgrind and sanitizer builds. Also, clang does not zero-initialize unions,
+-        # breaking some of our code (https://reviews.llvm.org/D68115).
+-        possible_common_cc_flags += '-ftrivial-auto-var-init=zero'
+-endif
+-
+ possible_cc_flags = possible_common_cc_flags + [
+         '-Werror=missing-declarations',
+         '-Werror=missing-prototypes',
+-- 
+2.39.4
+

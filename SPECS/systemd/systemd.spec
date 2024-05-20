@@ -2,7 +2,7 @@
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        253.17
+Version:        253.19
 Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=3acc9ba17db26ce701a8b11984a25f269109d08bcec589dabe6cf46033c59aac151e8baaa561b3c8300bf8d5bc3e0769e84971be3fe893a7f003e618141800a6
+%define sha512 %{name}=42798768a5859ded6bb5f65bed2d0ced81c86eca06ebed275967352435e4bac93df8c95a4a3f841f43e1450457629c92e9e1a5f51159607055484dc53ffa1699
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -32,6 +32,8 @@ Patch1: fetch-dns-servers-from-environment.patch
 Patch2: execute-suppress-credentials-mount-if-empty.patch
 Patch3: fix-lvrename-unmount.patch
 Patch4: revert-network-delay-to-configure-address-until-it-i.patch
+Patch5: do-not-build-with-trivial-auto-var-init-zero.patch
+Patch6: do-not-allocate-1m-on-stack.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -701,6 +703,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue May 21 2024 Dweep Advani <dweep.advani@broadcom.com> 253.19-1
+- Version upgrade to 253.19, avoid -ftrivial-auto-var-init=zero and do not alloc 1m on stack
 * Mon Apr 29 2024 Susant Sahani <susant.sahani@broadcom.com> 253.17-1
 - Upgrade to v253.17
 * Sun Mar 24 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 253.12-7
