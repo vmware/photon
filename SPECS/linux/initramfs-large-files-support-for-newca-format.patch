@@ -20,26 +20,16 @@ alignment page. It will make initrd images even smaller if there are
 many empty files.
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
- init/initramfs.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ init/initramfs.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 7beaaf9149bd..c18868604298 100644
+index a189d5350..a4efa6224 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
-@@ -20,8 +20,8 @@ static ssize_t __init xadd_pages(int fd, const char *p, size_t count)
- 	loff_t pos = 0;
- 	struct fd f;
- 	struct page *page;
--	int pn;
--	int pages = (count + PAGE_SIZE - 1) >> PAGE_SHIFT;
-+	pgoff_t pn;
-+	pgoff_t pages = (count + PAGE_SIZE - 1) >> PAGE_SHIFT;
- 	struct address_space *mapping;
- 	gfp_t gfp_mask;
- 
-@@ -195,12 +195,12 @@ static __initdata unsigned rdev;
+@@ -213,12 +213,12 @@ static __initdata unsigned rdev;
  
  static void __init parse_header(char *s)
  {
@@ -54,7 +44,7 @@ index 7beaaf9149bd..c18868604298 100644
  		memcpy(buf, s, 8);
  		parsed[i] = simple_strtoul(buf, NULL, 16);
  	}
-@@ -215,6 +215,8 @@ static void __init parse_header(char *s)
+@@ -233,6 +233,8 @@ static void __init parse_header(char *s)
  	minor = parsed[8];
  	rdev = new_encode_dev(MKDEV(parsed[9], parsed[10]));
  	name_len = parsed[11];
@@ -63,7 +53,7 @@ index 7beaaf9149bd..c18868604298 100644
  }
  
  /* FSM */
-@@ -234,7 +236,7 @@ static __initdata char *victim;
+@@ -252,7 +254,7 @@ static __initdata char *victim;
  static unsigned long byte_count __initdata;
  static __initdata loff_t this_header, next_header;
  
@@ -72,7 +62,7 @@ index 7beaaf9149bd..c18868604298 100644
  {
  	victim += n;
  	this_header += n;
-@@ -299,8 +301,14 @@ static int __init do_header(void)
+@@ -323,8 +325,14 @@ static int __init do_header(void)
  	}
  	parse_header(collected);
  	next_header = this_header + N_ALIGN(name_len);
@@ -89,5 +79,5 @@ index 7beaaf9149bd..c18868604298 100644
  	next_header = (next_header + 3) & ~3;
  	state = SkipIt;
 -- 
-2.11.0
+2.35.6
 

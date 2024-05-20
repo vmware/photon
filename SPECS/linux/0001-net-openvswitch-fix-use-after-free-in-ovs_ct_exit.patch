@@ -1,0 +1,45 @@
+From 2db9a8c0a01fa1c762c1e61a13c212c492752994 Mon Sep 17 00:00:00 2001
+From: Hyunwoo Kim <v4bel@theori.io>
+Date: Mon, 22 Apr 2024 05:37:17 -0400
+Subject: [PATCH] net: openvswitch: Fix Use-After-Free in ovs_ct_exit
+
+[ Upstream commit 5ea7b72d4fac2fdbc0425cd8f2ea33abe95235b2 ]
+
+Since kfree_rcu, which is called in the hlist_for_each_entry_rcu traversal
+of ovs_ct_limit_exit, is not part of the RCU read critical section, it
+is possible that the RCU grace period will pass during the traversal and
+the key will be free.
+
+To prevent this, it should be changed to hlist_for_each_entry_safe.
+
+Fixes: 11efd5cb04a1 ("openvswitch: Support conntrack zone limit")
+Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Aaron Conole <aconole@redhat.com>
+Link: https://lore.kernel.org/r/ZiYvzQN/Ry5oeFQW@v4bel-B760M-AORUS-ELITE-AX
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Backport to 4.19.311]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ net/openvswitch/conntrack.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+index 0777c8d41..3ea1e5ffa 100644
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -1836,8 +1836,9 @@ static void ovs_ct_limit_exit(struct net *net, struct ovs_net *ovs_net)
+ 	for (i = 0; i < CT_LIMIT_HASH_BUCKETS; ++i) {
+ 		struct hlist_head *head = &info->limits[i];
+ 		struct ovs_ct_limit *ct_limit;
++		struct hlist_node *next;
+ 
+-		hlist_for_each_entry_rcu(ct_limit, head, hlist_node)
++		hlist_for_each_entry_safe(ct_limit, next, head, hlist_node)
+ 			kfree_rcu(ct_limit, rcu);
+ 	}
+ 	kfree(ovs_net->ct_limit_info->limits);
+-- 
+2.35.6
+

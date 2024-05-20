@@ -1,14 +1,15 @@
-From 86b4d28714c430efd5b808e734243c68afff984e Mon Sep 17 00:00:00 2001
+rom 86b4d28714c430efd5b808e734243c68afff984e Mon Sep 17 00:00:00 2001
 From: Him Kalyan Bordoloi <bordoloih@vmware.com>
 Date: Tue, 22 Sep 2020 19:22:56 +0000
 Subject: [PATCH] initramfs multiple image extraction support
 
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  init/initramfs.c | 39 ++++++++++++++++++++++++++++++++++-----
  1 file changed, 34 insertions(+), 5 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 7beaaf9149bd..4dcfb6bd35fa 100644
+index 547a1f001..667f8e61c 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
 @@ -14,6 +14,17 @@
@@ -26,10 +27,10 @@ index 7beaaf9149bd..4dcfb6bd35fa 100644
 +}
 +__setup("initrd_no_file_overwrite", initrd_no_file_overwrite_setup);
 +
- static ssize_t __init xadd_pages(int fd, const char *p, size_t count)
- {
- 	ssize_t ret = 0;
-@@ -284,15 +295,22 @@ static int __init do_collect(void)
+ /*
+  * Add file pages directly to fd's page cache.
+  */
+@@ -281,15 +292,22 @@ static int __init do_collect(void)
  
  static int __init do_header(void)
  {
@@ -53,7 +54,7 @@ index 7beaaf9149bd..4dcfb6bd35fa 100644
  	else if (memcmp(collected, "070701", 6)) {
  		error("no cpio magic");
  		return 1;
-@@ -365,6 +383,16 @@ static int __init maybe_link(void)
+@@ -362,6 +380,16 @@ static int __init maybe_link(void)
  	return 0;
  }
  
@@ -67,10 +68,10 @@ index 7beaaf9149bd..4dcfb6bd35fa 100644
 +	return 0;
 +}
 +
- static __initdata int wfd;
+ static __initdata struct file *wfile;
+ static __initdata loff_t wfile_pos;
  
- static int __init do_name(void)
-@@ -380,8 +408,11 @@ static int __init do_name(void)
+@@ -378,8 +406,11 @@ static int __init do_name(void)
  		int ml = maybe_link();
  		if (ml >= 0) {
  			int openflags = O_WRONLY|O_CREAT;
@@ -80,10 +81,10 @@ index 7beaaf9149bd..4dcfb6bd35fa 100644
 +					panic("initramfs: file already exists %s", collected);
  				openflags |= O_TRUNC;
 +			}
- 			wfd = ksys_open(collected, openflags, mode);
- 
- 			if (wfd >= 0) {
-@@ -556,8 +587,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+ 			wfile = filp_open(collected, openflags, mode);
+ 			if (IS_ERR(wfile))
+ 				return 0;
+@@ -555,8 +586,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	return message;
  }
  
@@ -92,7 +93,7 @@ index 7beaaf9149bd..4dcfb6bd35fa 100644
  static int __init retain_initrd_param(char *str)
  {
  	if (*str)
-@@ -578,7 +607,7 @@ static void __init free_initrd(void)
+@@ -577,7 +606,7 @@ static void __init free_initrd(void)
  	unsigned long crashk_start = (unsigned long)__va(crashk_res.start);
  	unsigned long crashk_end   = (unsigned long)__va(crashk_res.end);
  #endif
@@ -102,5 +103,5 @@ index 7beaaf9149bd..4dcfb6bd35fa 100644
  
  #ifdef CONFIG_KEXEC_CORE
 -- 
-2.23.3
+2.35.6
 

@@ -19,12 +19,13 @@ to prevent any problems in userspace.
 This change also consolidates all panics that are
 specific to CRX under one kernel parameter -
 panic_on_initramfs_error
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  init/initramfs.c | 16 ++++++++++------
  1 file changed, 10 insertions(+), 6 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 4dcfb6bd35fa..045e3e5f48da 100644
+index 667f8e61c..a660ce46c 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
 @@ -16,14 +16,14 @@ static __initdata bool page_aligned_fmt = false;
@@ -44,9 +45,9 @@ index 4dcfb6bd35fa..045e3e5f48da 100644
 -__setup("initrd_no_file_overwrite", initrd_no_file_overwrite_setup);
 +__setup("panic_on_initramfs_error", panic_on_initramfs_error_setup);
  
- static ssize_t __init xadd_pages(int fd, const char *p, size_t count)
- {
-@@ -409,7 +409,7 @@ static int __init do_name(void)
+ /*
+  * Add file pages directly to fd's page cache.
+@@ -407,7 +407,7 @@ static int __init do_name(void)
  		if (ml >= 0) {
  			int openflags = O_WRONLY|O_CREAT;
  			if (ml != 1) {
@@ -55,7 +56,7 @@ index 4dcfb6bd35fa..045e3e5f48da 100644
  					panic("initramfs: file already exists %s", collected);
  				openflags |= O_TRUNC;
  			}
-@@ -721,8 +721,12 @@ static int __init populate_rootfs(void)
+@@ -728,8 +728,12 @@ static int __init populate_rootfs(void)
  		printk(KERN_INFO "Unpacking initramfs...\n");
  		err = unpack_to_rootfs((char *)initrd_start,
  			initrd_end - initrd_start);
@@ -70,5 +71,5 @@ index 4dcfb6bd35fa..045e3e5f48da 100644
  	}
  	free_initrd();
 -- 
-2.28.0
+2.35.6
 

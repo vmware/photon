@@ -20,15 +20,16 @@ archive format.
 
 In addition, initrd memory will not be freed for "newca" as
 it is used by page caches.
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
- init/initramfs.c | 60 +++++++++++++++++++++++++++++++++++++++++++++++++++++---
+ init/initramfs.c | 60 +++++++++++++++++++++++++++++++++++++++++++++---
  1 file changed, 57 insertions(+), 3 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index dab8d63459f6..7beaaf9149bd 100644
+index fceede4cf..e6f276fac 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
-@@ -10,11 +10,53 @@
+@@ -10,12 +10,54 @@
  #include <linux/syscalls.h>
  #include <linux/utime.h>
  #include <linux/file.h>
@@ -36,53 +37,54 @@ index dab8d63459f6..7beaaf9149bd 100644
 +
 +static __initdata bool page_aligned_fmt = false;
 +
-+static ssize_t __init xadd_pages(int fd, const char *p, size_t count)
++/*
++ * Add file pages directly to fd's page cache.
++ */
++static int __init xadd_pages(struct file *file, const char *p, size_t count,
++			     loff_t *pos)
 +{
-+	ssize_t ret = 0;
-+	loff_t pos = 0;
-+	struct fd f;
 +	struct page *page;
-+	int pn;
-+	int pages = (count + PAGE_SIZE - 1) >> PAGE_SHIFT;
-+	struct address_space *mapping;
-+	gfp_t gfp_mask;
++	size_t pages = (count + PAGE_SIZE - 1) >> PAGE_SHIFT;
++	struct address_space *mapping = file->f_mapping;
++	gfp_t gfp_mask = mapping->gfp_mask | __GFP_WRITE;
++	pgoff_t pgoff = *pos >> PAGE_SHIFT;
++	int err = 0;
 +
-+	f = fdget_pos(fd);
-+	mapping = f.file->f_mapping;
-+	gfp_mask = mapping->gfp_mask | __GFP_WRITE;
++	for (; pages--; ++pgoff, p += PAGE_SIZE) {
++		page = virt_to_page(p);
 +
-+	for (pn = 0; pn < pages; pn++) {
-+		pos = pn << PAGE_SHIFT;
-+		page = virt_to_page(p + pos);
-+		ret = add_to_page_cache_lru(page, mapping, pn, gfp_mask);
-+		if (ret) {
++
++		err = add_to_page_cache_lru(page, mapping, pgoff, gfp_mask);
++		if (err)
 +			goto out;
-+		}
 +
 +		SetPageUptodate(page);
 +		set_page_dirty(page);
 +		unlock_page(page);
-+		put_page(page);
++		*pos += PAGE_SIZE;
 +	}
-+
-+	ret = count;
++	err = count;
 +out:
-+	fdput_pos(f);
-+	return ret;
++	return err;
 +}
  
- static ssize_t __init xwrite(int fd, const char *p, size_t count)
+ static ssize_t __init xwrite(struct file *file, const char *p, size_t count,
+ 		loff_t *pos)
  {
  	ssize_t out = 0;
  
 +	/* Add ramdisk pages directly to fd's page cache */
-+	if (page_aligned_fmt)
-+		return xadd_pages(fd, p, count);
++	if (page_aligned_fmt) {
++		BUG_ON(*pos & ~PAGE_MASK);
++		BUG_ON((uintptr_t)p & ~PAGE_MASK);
++
++		return xadd_pages(file, p, count, pos);
++	}
 +
  	/* sys_write only can write MAX_RW_COUNT aka 2G-4K bytes at most */
  	while (count) {
- 		ssize_t rv = ksys_write(fd, p, count);
-@@ -246,12 +288,20 @@ static int __init do_header(void)
+ 		ssize_t rv = kernel_write(file, p, count, pos);
+@@ -247,12 +289,20 @@ static int __init do_header(void)
  		error("incorrect cpio method used: use -H newc option");
  		return 1;
  	}
@@ -105,7 +107,7 @@ index dab8d63459f6..7beaaf9149bd 100644
  	next_header = (next_header + 3) & ~3;
  	state = SkipIt;
  	if (name_len <= 0 || name_len > PATH_MAX)
-@@ -362,6 +412,10 @@ static int __init do_name(void)
+@@ -365,6 +415,10 @@ static int __init do_name(void)
  
  static int __init do_copy(void)
  {
@@ -114,9 +116,9 @@ index dab8d63459f6..7beaaf9149bd 100644
 +		eat(PAGE_ALIGN((loff_t)victim) - (loff_t)victim);
 +
  	if (byte_count >= body_len) {
- 		if (xwrite(wfd, victim, body_len) != body_len)
+ 		if (xwrite(wfile, victim, body_len, &wfile_pos) != body_len)
  			error("write error");
-@@ -524,7 +578,7 @@ static void __init free_initrd(void)
+@@ -527,7 +581,7 @@ static void __init free_initrd(void)
  	unsigned long crashk_start = (unsigned long)__va(crashk_res.start);
  	unsigned long crashk_end   = (unsigned long)__va(crashk_res.end);
  #endif
@@ -126,5 +128,5 @@ index dab8d63459f6..7beaaf9149bd 100644
  
  #ifdef CONFIG_KEXEC_CORE
 -- 
-2.11.0
+2.35.6
 

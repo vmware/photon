@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.311
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.313
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=be9f578ac4cd45afd56e01769e4055c1edd2c67fdcfbae4a2d88a7c10144dc141b0335e11274c0b7a4169c27492a72ab7bbd630782a0c81e2b255f292511446b
+%define sha512 linux=48896531312681106e3401be3c1ae552426e7db0f2059de34956c97cc66c13e7e8ab9350e9f43849e2c7ffba5bf4e5822927e3ddfedebc240d524670e02c644c
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -158,12 +158,6 @@ Patch92: 0001-memcg-enable-accounting-for-file-lock-caches.patch
 
 #Fix for CVE-2022-3303
 Patch93: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
-
-# Fix CVE-2024-26642
-Patch94: netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
-
-# Fix CVE-2023-52620
-Patch95: netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
 
 # inherit tcp_limit_output_bytes
 Patch97: tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -508,14 +502,11 @@ Patch717: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 #Fix CVE-2023-52509
 Patch719: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
 
-# Fix CVE-2022-48627
-Patch720: 0001-vt-fix-memory-overlapping-when-deleting-chars-in-the-buffer.patch
-
 #Fix CVE-2023-52458
-Patch721: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
+Patch720: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
 #Fix CVE-2024-23851/CVE-2023-52429
-Patch722: 0001-dm-limit-the-number-of-targets-and-parameter-size-ar.patch
+Patch721: 0001-dm-limit-the-number-of-targets-and-parameter-size-ar.patch
 
 # Patches for i40e driver
 Patch803: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
@@ -876,6 +867,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Tue May 14 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.313-1
+- Update to version 4.19.313
 * Mon May 06 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.311-4
 - Fixes CVE-2024-26882
 * Thu Apr 25 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.311-3

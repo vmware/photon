@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.311
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -353,7 +353,7 @@ Patch700: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 Patch701: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
 #Fix for CVE-2023-1076
-Patch702: 0001-net-add-sock_init_data_uid.patch
+Patch702: 0001-net-add-sock_init_data_uid-rt.patch
 Patch703: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
 Patch704: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
 
@@ -388,6 +388,12 @@ Patch715: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 Patch716: 0001-dm-limit-the-number-of-targets-and-parameter-size-ar.patch
 # Fix CVE-2021-46952
 Patch717: 0001-NFS-fs_context-validate-UDP-retrans-to-prevent-shift.patch
+
+#Fix CVE-2024-27395
+Patch718: 0001-net-openvswitch-fix-use-after-free-in-ovs_ct_exit.patch
+
+#Fix CVE-2024-27396
+Patch719: 0001-net-gtp-fix-use-after-free-in-gtp_dellink.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -772,7 +778,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M641
 
 # CVE Fixes
-%autopatch -p1 -m700 -M717
+%autopatch -p1 -m700 -M719
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1277,6 +1283,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon May 20 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.311-5
+- Fixes CVE-2024-27395, CVE-2024-27396
 * Mon May 06 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.311-4
 - Fixes CVE-2024-26882
 * Thu Apr 25 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.311-3

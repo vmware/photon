@@ -18,20 +18,19 @@ Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
 Reviewed-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
-Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  include/net/sock.h |  7 ++++++-
  net/core/sock.c    | 15 ++++++++++++---
  2 files changed, 18 insertions(+), 4 deletions(-)
 
 diff --git a/include/net/sock.h b/include/net/sock.h
-index b5a929a4b..ca0761e09 100644
+index 9eb656683..21ca39233 100644
 --- a/include/net/sock.h
 +++ b/include/net/sock.h
-@@ -1714,7 +1714,12 @@ void sk_common_release(struct sock *sk);
+@@ -1678,7 +1678,12 @@ void sk_common_release(struct sock *sk);
   *	Default socket callbacks and setup code
   */
- 
+
 -/* Initialise core socket variables */
 +/* Initialise core socket variables using an explicit uid. */
 +void sock_init_data_uid(struct socket *sock, struct sock *sk, kuid_t uid);
@@ -40,22 +39,22 @@ index b5a929a4b..ca0761e09 100644
 + * Assumes struct socket *sock is embedded in a struct socket_alloc.
 + */
  void sock_init_data(struct socket *sock, struct sock *sk);
- 
+
  /*
 diff --git a/net/core/sock.c b/net/core/sock.c
-index fdae6ba23..f8785bf53 100644
+index cd23a8e45..0f08eabc8 100644
 --- a/net/core/sock.c
 +++ b/net/core/sock.c
-@@ -2811,7 +2811,7 @@ void sk_stop_timer_sync(struct sock *sk, struct timer_list *timer)
+@@ -2792,7 +2792,7 @@ void sk_stop_timer(struct sock *sk, struct timer_list* timer)
  }
- EXPORT_SYMBOL(sk_stop_timer_sync);
- 
+ EXPORT_SYMBOL(sk_stop_timer);
+
 -void sock_init_data(struct socket *sock, struct sock *sk)
 +void sock_init_data_uid(struct socket *sock, struct sock *sk, kuid_t uid)
  {
  	sk_init_common(sk);
  	sk->sk_send_head	=	NULL;
-@@ -2830,11 +2830,10 @@ void sock_init_data(struct socket *sock, struct sock *sk)
+@@ -2811,11 +2811,10 @@ void sock_init_data(struct socket *sock, struct sock *sk)
  		sk->sk_type	=	sock->type;
  		sk->sk_wq	=	sock->wq;
  		sock->sk	=	sk;
@@ -65,10 +64,10 @@ index fdae6ba23..f8785bf53 100644
 -		sk->sk_uid	=	make_kuid(sock_net(sk)->user_ns, 0);
  	}
 +	sk->sk_uid      =       uid;
- 
+
  	rwlock_init(&sk->sk_callback_lock);
  	if (sk->sk_kern_sock)
-@@ -2892,6 +2891,16 @@ void sock_init_data(struct socket *sock, struct sock *sk)
+@@ -2873,6 +2872,16 @@ void sock_init_data(struct socket *sock, struct sock *sk)
  	refcount_set(&sk->sk_refcnt, 1);
  	atomic_set(&sk->sk_drops, 0);
  }
@@ -83,8 +82,7 @@ index fdae6ba23..f8785bf53 100644
 +	sock_init_data_uid(sock, sk, uid);
 +}
  EXPORT_SYMBOL(sock_init_data);
- 
- void lock_sock_nested(struct sock *sk, int subclass)
--- 
-2.35.6
 
+ void lock_sock_nested(struct sock *sk, int subclass)
+--
+2.35.6
