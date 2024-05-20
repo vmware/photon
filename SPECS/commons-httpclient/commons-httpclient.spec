@@ -3,7 +3,7 @@
 Summary:    Apache commons-httpclient
 Name:       commons-httpclient
 Version:    3.1
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    Apache
 URL:        http://ant.apache.org
 Group:      Applications/System
@@ -56,8 +56,8 @@ ant -Ddist.dir="." -Dbuild.sysclasspath=first -Dtest.failonerror=false \
 
 %install
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
-mkdir -p -m 700 %{buildroot}%{_prefix}
-mkdir -p -m 700 %{buildroot}%{_datadir}/java/%{name}
+mkdir -p -m 755 %{buildroot}%{_prefix}
+mkdir -p -m 755 %{buildroot}%{_datadir}/java/%{name}
 cp -r dist/commons-httpclient.jar %{buildroot}%{_prefix}/
 cp -r dist/commons-httpclient.jar %{buildroot}%{_datadir}/java/%{name}/
 
@@ -86,6 +86,8 @@ ant -Ddist.dir="." -Dbuild.sysclasspath=first -Dtest.failonerror=false \
 %{_datadir}/java/%{name}/*.jar
 
 %changelog
+* Mon May 20 2024 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1-5
+- Fix directory permissions
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1-4
 - Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1-3
