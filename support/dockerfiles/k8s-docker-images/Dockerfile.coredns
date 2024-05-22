@@ -1,6 +1,0 @@
-FROM k8s-base-image:5.0
-
-COPY tmp/usr/bin/coredns /
-
-EXPOSE 53 53/udp
-ENTRYPOINT ["/coredns"]
