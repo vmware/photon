@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        24.1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -23,6 +23,7 @@ Patch4: 0005-test_vmware.py-fix-pkg-test-failure.patch
 %endif
 
 Patch5: 0006-Change-log-level-to-info-to-make-GOSC-regression-tes.patch
+Patch6: 0007-cli-retain-file-argument-as-main-cmd-arg.patch
 
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
@@ -146,6 +147,9 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 
 %changelog
+* Wed May 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.1.4-2
+- Fix --file argument parsing bug
+- Refer: https://github.com/canonical/cloud-init/issues/5302
 * Wed May 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.1.4-1
 - Upgrade to v24.1.4
 * Thu Jan 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.4-3
