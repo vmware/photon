@@ -33,5 +33,6 @@
     },
     "photon-path": "",
     "stage-path": "",
-    "spec-path": ""
+    "spec-path": "",
+    "branch-name": ""
 }

@@ -967,6 +967,7 @@ class CheckTools:
         if check_prerequesite["check-pre-reqs"]:
             return
 
+        CheckTools.clone_photon_subbranch()
         CheckTools.check_all_tools()
         CheckTools.check_sanity()
         CheckTools.check_docker()
@@ -974,6 +975,14 @@ class CheckTools:
         CheckTools.check_contain()
         CheckTools.check_git_hooks()
         check_prerequesite["check-pre-reqs"] = True
+
+    def clone_photon_subbranch():
+        ph_branch = configdict["branch-name"]
+        if os.path.exists(ph_branch):
+            print(f"The directory '{ph_branch}' already exists. Skipping cloning.")
+            return
+        cmd = (f"git fetch origin {ph_branch}:{ph_branch};git clone -b {ph_branch} . {ph_branch}")
+        runBashCmd(cmd)
 
     def create_ph_builder_img():
         ph_docker_img = configdict["photon-build-param"]["photon-docker-image"]
@@ -1698,6 +1707,12 @@ def main():
     if not configdict.get("photon-path", ""):
         configdict["photon-path"] = os.path.dirname(cfgPath)
 
+    if "BRANCH_NAME" not in os.environ:
+        raise Exception("Photon Sub Branch is not mentioned \nPlease provide BRANCH_NAME input during build")
+
+    if not configdict.get("branch-name", ""):
+        configdict["branch-name"] = os.environ["BRANCH_NAME"]
+
     ph_build_param = configdict["photon-build-param"]
     process_env_build_params(ph_build_param)
 
@@ -1710,6 +1725,7 @@ def main():
         )
         with open(os.environ["CONFIG"], "rt") as f:
             jsonData = json.load(f)
+
         targetName = jsonData["image_type"]
 
     if "IMG_NAME" in os.environ:
