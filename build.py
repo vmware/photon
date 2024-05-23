@@ -292,7 +292,9 @@ class Utilities:
         )
         if list_json_files:
             runShellCmd(
-                f"cp {Build_Config.dataDir}/build_install_options_all.json {Build_Config.dataDir}/build_install_options_minimal.json"
+                f"cp {Build_Config.dataDir}/build_install_options_all.json"
+                f" {Build_Config.dataDir}/build_install_options_minimal.json"
+                f" {Build_Config.generatedDataPath}"
             )
 
         for json_file in list_json_files:
