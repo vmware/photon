@@ -984,6 +984,10 @@ class CheckTools:
         cmd = (f"git fetch origin {ph_branch}:{ph_branch};git clone -b {ph_branch} . {ph_branch}")
         runBashCmd(cmd)
 
+        # create softlink: SPECS/ph_branch -> ../ph_branch/SPECS
+        cmd = (f"ln -s ../{ph_branch}/SPECS/ SPECS/{ph_branch}")
+        runBashCmd(cmd)
+
     def create_ph_builder_img():
         ph_docker_img = configdict["photon-build-param"]["photon-docker-image"]
         ph_docker_img_url = configdict["photon-build-param"][
