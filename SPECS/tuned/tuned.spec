@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.21.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -38,6 +38,7 @@ Requires:       linux-python3-perf
 Requires:       irqbalance
 Requires:       systemd
 Requires:       virt-what
+Requires(post): psmisc
 
 %if 0%{?with_check}
 BuildRequires:  curl-devel
@@ -96,6 +97,12 @@ pip3 install unittest2
 make test %{?_smp_mflags}
 
 %post
+# After installing the dbus conf rules, dbus doesn't load them automatically
+# and subsequent start of the service fails
+# Fix: relaod the dbus conf rules using below command
+if [ $1 = 1 ] ; then
+  %{_bindir}/killall -HUP dbus-daemon 2>&1 > /dev/null
+fi
 %systemd_post tuned.service
 
 %preun
@@ -149,6 +156,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Thu May 23 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.21.0-3
+- Fix dbus rule loading issue
 * Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.21.0-2
 - Bump version as a part of dbus upgrade
 * Tue Jan 23 2024 Roye Eshed <roye.eshed@broadcom.com> 2.21.0-1
