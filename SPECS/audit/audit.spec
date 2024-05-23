@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -103,10 +103,8 @@ patch --fuzz=1 -p0 < %{PATCH1}
 find . -name '*.orig' -delete
 popd
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %pretrans -p <lua>
 path = "/var/log/audit"
@@ -122,9 +120,6 @@ end
 %postun
 /sbin/ldconfig
 %systemd_postun_with_restart auditd.service
-
-%preun
-%systemd_preun auditd.service
 
 %files
 %defattr(-,root,root)
@@ -171,6 +166,8 @@ end
 %{python3_sitelib}/*
 
 %changelog
+* Thu May 23 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-17
+- Remove %systemd_preun auditd.service, it's not allowed
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-16
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-15
