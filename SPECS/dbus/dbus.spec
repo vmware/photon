@@ -1,7 +1,7 @@
 Summary:        DBus for systemd
 Name:           dbus
 Version:        1.13.18
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -11,12 +11,10 @@ Distribution:   Photon
 Source0: http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
 %define sha512 %{name}=93724660529fb777e2dd5207f953dd0b4c02c079293ae202ffdcabd9c4033110a7f9980b55a443770e0ea0bb8fc6b5717797d954ee268d34e13d364df0f01539
 
-# Fix for CVE-2022-42010
-Patch0:         0001-dbus-marshal-validate_Check_brackets_in_signature_nest.patch
-# Fix for CVE-2022-42011
-Patch1:         0001-dbus-marshal-validate_Validate_length_of_arrays_of.patch
-# Fix for CVE-2022-42012
-Patch2:         0001-dbus-marshal-byteswap_Byte-swap_Unix_fd_indexes_if_needed.patch
+Patch0: CVE-2022-42010.patch
+Patch1: CVE-2022-42011.patch
+Patch2: CVE-2022-42012.patch
+Patch3: CVE-2023-34969.patch
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -78,6 +76,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+* Fri May 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.13.18-5
+- Fix CVE-2023-34969
 * Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 1.13.18-4
 - Bump version as a part of expat upgrade
 * Thu Oct 13 2022 Ajay Kaher <akaher@vmware.com> 1.13.18-3
