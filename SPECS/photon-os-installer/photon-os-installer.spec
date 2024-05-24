@@ -2,15 +2,15 @@
 
 Summary:       Photon OS Installer
 Name:          photon-os-installer
-Version:       2.4
-Release:       3%{?dist}
+Version:       2.7
+Release:       1%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/photon-os-installer
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 %{name}=a361c22234ed467c0cf1a827d1a3a15553ebde6f68e48c8d32f4867d26ca9326029d7840791bed0186565e935670ebcc273a5fe77c84a90dc80f2a80d5972dda
+%define sha512 %{name}=9c2b6df1e9136e94db1451064b51a286b2894849b309dde9539cb9df4fc82e807c74ccb0f7795d7d1d5b2c1ea856dfb38623e1c08e94c567696a637ca6f75fe8
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -41,8 +41,8 @@ Requires: lvm2
 Requires: zlib
 Requires: cdrkit
 Requires: findutils
-
-Patch0: 0001-photon-os-installer-ostreeinstaller-Fix-tmp-mountpoi.patch
+# needed for --rpmdefine option
+Requires: tdnf >= 3.5.6
 
 %description
 Installer to build Photon images
@@ -66,6 +66,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Mon Jun 24 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.7-1
+- Upgrade to v2.7
 * Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.4-3
 - Add "jc" dependency
 * Wed Oct 25 2023 Ankit Jain <ankitja@vmware.com> 2.4-2
