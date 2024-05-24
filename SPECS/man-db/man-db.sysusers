@@ -1,2 +1,0 @@
-g man -
-u man - "man" /var/cache/man /bin/false

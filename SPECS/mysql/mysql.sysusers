@@ -1,2 +1,0 @@
-g mysql 27
-u mysql 27 "mysql" /var/lib/mysql /bin/false

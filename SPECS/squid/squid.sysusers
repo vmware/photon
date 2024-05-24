@@ -1,2 +1,0 @@
-g squid -
-u squid 53 "" /var/spool/squid /sbin/nologin

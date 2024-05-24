@@ -1,2 +1,0 @@
-g pgbouncer -
-u pgbouncer - "" /home/pgbouncer /bin/bash

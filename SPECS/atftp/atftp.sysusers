@@ -1,2 +1,0 @@
-g tftp -
-u tftp - "tftp" /home/tftp /bin/false

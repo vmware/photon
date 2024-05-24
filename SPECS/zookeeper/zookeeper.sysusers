@@ -1,3 +1,0 @@
-g hadoop -
-u zookeeper - "ZooKeeper" /usr/share/zookeeper /bin/bash
-m zookeeper hadoop

@@ -1,8 +1,0 @@
-[Unit]
-Description=Tftp Server Socket
-
-[Socket]
-ListenDatagram=69
-
-[Install]
-WantedBy=sockets.target

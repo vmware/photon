@@ -1,9 +1,0 @@
-# Begin /etc/pam.d/system-session
-
-session   required    pam_unix.so
-session   required    pam_limits.so
-session   optional    pam_systemd.so
-session   optional    pam_loginuid.so
-session   optional    pam_umask.so silent
-
-# End /etc/pam.d/system-session

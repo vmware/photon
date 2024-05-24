@@ -1,9 +1,0 @@
-[Unit]
-Description=SSH Per-Connection Server
-After=sshd-keygen.service
-Wants=sshd-keygen.service
-
-[Service]
-ExecStart=-/usr/sbin/sshd -i
-StandardInput=socket
-StandardError=syslog
