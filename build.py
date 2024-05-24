@@ -104,6 +104,7 @@ targetDict = {
 
 configdict = {}
 check_prerequesite = {}
+ph_path = ""
 
 cmdUtils = CommandUtils()
 runBashCmd = cmdUtils.runBashCmd
@@ -601,9 +602,16 @@ class CleanUp:
 
     def clean_stage_for_incremental_build():
         rpm_path = constants.rpmPath
-        ph_path = configdict["photon-path"]
 
-        cmd = f"git -C {ph_path} diff --name-only @~1 @"
+        basecommit = ""
+        if "base-commit" in configdict["photon-build-param"]:
+            basecommit = str(configdict["photon-build-param"].get("base-commit"))
+
+        if basecommit:
+            cmd = f"git -C {ph_path} diff --name-only {basecommit}"
+        else:
+            cmd = f"git -C {ph_path} diff --name-only @~1 @"
+
         out, _, _ = runBashCmd(cmd, capture=True)
         if ("support/package-builder" in out) or ("support/pullpublishrpms" in out):
             print("Remove all staged RPMs")
@@ -612,12 +620,6 @@ class CleanUp:
         if not os.path.exists(rpm_path):
             print(f"{rpm_path} is empty, return ...")
             return
-
-        basecommit = ""
-        if "base-commit" in configdict["photon-build-param"]:
-            basecommit = str(
-                configdict["photon-build-param"].get("base-commit")
-            )
 
         if not basecommit:
             return
@@ -1060,14 +1062,15 @@ class CheckTools:
         if check_prerequesite["check-spec-files"]:
             return
 
-        cmd = f"{photonDir}/tools/scripts/get_modified_files.sh"
+        script_fn = f"{photonDir}/tools/scripts/get_modified_files.sh"
+        cmd = f"{script_fn} {configdict['photon-path']} && {script_fn} {configdict['branch-name']}"
 
         if "base-commit" in configdict["photon-build-param"]:
             commit_id = str(
                 configdict["photon-build-param"].get("base-commit")
             )
             if commit_id:
-                cmd = f"git diff --name-only {commit_id}"
+                cmd = f"git -C {ph_path} diff --name-only {commit_id}"
 
         files, _, _ = runBashCmd(cmd, capture=True)
         files = files.splitlines()
@@ -1701,18 +1704,17 @@ def main():
 
     global configdict
     global check_prerequesite
+    global ph_path
 
     with open(cfgPath) as jsonData:
         configdict = json.load(jsonData)
 
     cfgPath = os.path.abspath(cfgPath)
 
-
-    if "BRANCH_NAME" not in os.environ:
-        raise Exception("Photon Release Branch is not mentioned \nPlease provide BRANCH_NAME input during build")
-
-    if not configdict.get("branch-name", ""):
+    if "BRANCH_NAME" in os.environ:
         configdict["branch-name"] = os.environ["BRANCH_NAME"]
+    if not configdict.get("branch-name", ""):
+        raise Exception("Photon Sub Branch is not mentioned /\nPlease provide BRANCH_NAME input during build")
 
     clone_photon_subbranch()
     create_new_simlink()
@@ -1754,6 +1756,11 @@ def main():
     for target in targetDict:
         for item in targetDict[target]:
             check_prerequesite[item] = False
+
+    commit_id = str(configdict["photon-build-param"].get("base-commit", ""))
+    check_hash=f"git -C {configdict['branch-name']} rev-parse --verify {commit_id}"
+    _, _, rc = runBashCmd(check_hash, capture=True, ignore_rc=True)
+    ph_path = configdict["photon-path"] if rc else configdict["branch-name"]
 
     initialize_constants()
 
