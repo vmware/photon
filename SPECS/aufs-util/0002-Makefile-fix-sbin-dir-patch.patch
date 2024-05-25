@@ -1,0 +1,26 @@
+From 5981e7e207e3837ed9cd6124bb1589829fde31a1 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sat, 25 May 2024 09:30:56 +0530
+Subject: [PATCH 2/2] Makefile: fix sbin dir patch
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 83649e9..e6ff33b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -158,7 +158,7 @@ install_sbin: File = auibusy aumvdown auplink mount.aufs umount.aufs
+ ifeq (${Glibc},no)
+ install_sbin: File += auplink_ftw
+ endif
+-install_sbin: Tgt = ${DESTDIR}/sbin
++install_sbin: Tgt = ${DESTDIR}/usr/sbin
+ install_ubin: File = aubusy auchk aubrsync #auctl
+ install_ubin: Tgt = ${DESTDIR}/usr/bin
+ install_sbin install_ubin: ${File}
+-- 
+2.45.1
+

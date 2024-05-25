@@ -1,0 +1,26 @@
+From 55398d56084fcf725964c494578c6b6c1cd80211 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sat, 25 May 2024 09:27:10 +0530
+Subject: [PATCH] aufs_type.h: remove __user
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ include/uapi/linux/aufs_type.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/aufs_type.h b/include/uapi/linux/aufs_type.h
+index 4356663..78e8d4d 100644
+--- a/include/uapi/linux/aufs_type.h
++++ b/include/uapi/linux/aufs_type.h
+@@ -298,7 +298,7 @@ static inline int au_rdu_len(int nlen)
+ }
+ 
+ union au_rdu_ent_ul {
+-	struct au_rdu_ent __user	*e;
++	struct au_rdu_ent *e;
+ 	uint64_t			ul;
+ };
+ 
+-- 
+2.45.1
+
