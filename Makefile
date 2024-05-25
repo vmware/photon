@@ -8,3 +8,6 @@ endif
 	else\
 		python3 build.py -c $(CONF) -t $@;\
 	fi
+
+help:
+	@python3 build.py --help

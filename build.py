@@ -1572,7 +1572,6 @@ def process_env_build_params(ph_build_param):
         "LOGLEVEL": "loglevel",
         "PHOTON_PULLSOURCES_CONFIG": "pull-sources-config",
         "PKG_BUILD_OPTIONS": "pkg-build-options",
-        "CROSS_TARGET": "tarsetdefaultArch",
         "PHOTON_DOCKER_IMAGE": "photon-docker-image",
         "KAT_BUILD": "kat-build",
         "CANISTER_BUILD": "canister-build",
@@ -1642,16 +1641,30 @@ def process_additional_cfgs(cfgdict_additional_path):
                 cfgdict_additional_path[v] = os.environ[k]
 
 
+def show_help():
+    help_fn = f"{photonDir}/help.txt"
+
+    with open(help_fn, "r") as file:
+        contents = file.read()
+        print(contents)
+
+    sys.exit(0)
+
+
 def main():
 
-    parser = ArgumentParser()
+    parser = ArgumentParser(add_help=False)
 
     parser.add_argument("-b", "--branch", dest="photonBranch", default=None)
     parser.add_argument("-c", "--config", dest="configPath", default=None)
     parser.add_argument("-t", "--target", dest="targetName", default=None)
+    parser.add_argument("-h", "--help", dest="help", action="store_true")
     parser.add_argument("args", nargs="*")
 
     options = parser.parse_args()
+
+    if options.help:
+        show_help()
 
     branch = options.photonBranch
     cfgPath = options.configPath

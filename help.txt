@@ -1,0 +1,203 @@
+Photon OS Build Help Guide
+
+Overview:
+
+This script provides various build options for Photon OS.
+Each option allows you to perform different build tasks, ranging from building
+individual packages to creating entire ISO images.
+
+Usage:
+
+Run the script using the following command format:
+    make [options] (equivalent to python3 build.py -t <opt>)
+    python3 build.py [options]
+
+Options:
+
+Here are the available options you can use with the script:
+
+- -h, --help
+  - Displays the help message and exits.
+
+- -c, --config CONFIG
+  - Specifies the path to the build configuration file.
+  - Default is 'build-config.json'.
+
+- -t, --target TARGET
+  - Specifies the build target.
+  - Possible values include:
+    - 'all': Build all components.
+    - 'all-images': Build AMI, GCE, Azure, and OVA images.
+    - 'basic-iso': Build the basic ISO.
+    - 'check-packages': Run package self-tests (%check).
+    - 'check-pre-reqs': Check prerequisites to start the Photon build.
+    - 'clean': Clean everything.
+    - 'clean-chroot': Clean the chroot environment.
+    - 'clean-stage-for-incremental-build': Remove upward dependencies and build incrementally.
+    - 'create-repo': Create repository data.
+    - 'extra-packages': Build additional packages like Chromium.
+    - 'generate-yaml-files': Generate the OSS YAML file.
+    - 'iso': Build the ISO image.
+    - 'k8s-docker-images': Build Kubernetes Docker images.
+    - 'minimal-iso': Build the minimal ISO.
+    - 'ostree-repo': Build the OSTree repository.
+    - 'packages': Build all packages.
+    - 'packages-basic': Build packages for the basic ISO.
+    - 'packages-docker': Build packages for the Docker image.
+    - 'packages-initrd': Build initrd packages.
+    - 'packages-minimal': Build packages for the minimal ISO.
+    - 'packages-rt': Build packages for the RT ISO.
+    - 'photon-docker-image': Build the Photon Docker image.
+    - 'rt-iso': Build the RT ISO.
+    - 'sources-cached': Create the stage directory hierarchy.
+    - 'src-iso': Build the source ISO.
+    - 'tool-chain-stage1': Build stage 1 packages.
+    - 'tool-chain-stage2': Build stage 2 packages.
+    - Check examples below, to know how to build ova, ami like cloud images
+
+
+Environment Variables:
+
+Customize your build process using these environment variables:
+
+BASE_COMMIT
+- Used while invoking spec checker and while cleaning stage for incremental build
+- This commit is considered as the commit to build Photon from.
+
+BUILD_DBGINFO_RPM
+- 1/0 to enable/disable debuginfo rpm build
+
+BUILD_EXTRA_PKGS
+- Build extra/special package like Chromium
+
+BUILD_SRC_RPM
+- 1/0 to enable/disable src rpm build
+
+BUILDDEPS
+- Generate BuildDependencies.json during package build
+
+ACVP_BUILD
+CANISTER_BUILD
+KAT_BUILD
+- All three of the above configs used while building kernels
+
+CONFIG
+- Config file to use
+
+DOCKER_ENV
+- Skips docker pre checks if file given here is present
+
+IMG_NAME
+- Which image to build, can be ova, azure, gce
+
+INPUT_PHOTON_BUILD_NUMBER
+
+LOGLEVEL
+- Info by default, set to debug for verbose logging
+
+PH_DOCKER_IMAGE_URL
+- Docker image url to import from if needed by builder
+
+PHOTON_BUILD_NUM
+- Commit ID of Photon repo to build
+
+PHOTON_CACHE_PATH
+PHOTON_SOURCES_PATH
+PHOTON_PUBLISH_RPMS_PATH
+PHOTON_PUBLISH_XRPMS_PATH
+- All four configs above are cached photon packages path, source tarball path, publish & publishX rpms cached paths
+- Pre existing files will be used from these locations during build process.
+
+PHOTON_DOCKER_IMAGE
+- Photon docker image to use while doing package builds
+- May or may not be used based on host's capabilities
+
+PHOTON_PKG_BLACKLIST_FILE
+- Packages to be skipped while generating OSS yaml
+
+PHOTON_PULLSOURCES_CONFIG
+- Server url to pull sources from
+
+PHOTON_RELEASE_VER
+- Release version of Photon
+
+PKG_BUILD_OPTIONS
+- Package specific additional build options
+- Refer: common/data/pkg_build_options.json
+
+POI_IMAGE
+- Photon offline installer (POI) container image to use
+
+RESUME_BUILD
+- Resume building of package without clearing chroot
+
+RPMCHECK
+- Run %check of given package
+
+THREADS
+- Number of packages to build in parallel, doesn't work like `make -j`
+
+
+Examples:
+
+Build Everything:
+
+    sudo make all THREADS=4
+
+Build ISO Variants:
+
+    sudo make iso THREADS=4
+    sudo make minimal-iso THREADS=4
+    sudo make basic-iso THREADS=4
+    sudo make rt-iso THREADS=4
+    sudo make src-iso THREADS=4
+
+Build Packages:
+
+    sudo make <pkg-name> THREADS=4 LOGLEVEL=debug
+    sudo make packages THREADS=4
+    sudo make packages-minimal THREADS=4
+    sudo make packages-basic THREADS=4
+    sudo make packages-rt THREADS=4
+    sudo make packages-initrd THREADS=4
+    sudo make packages-docker THREADS=4
+    sudo make ostree-repo THREADS=4
+    sudo make extra-packages THREADS=4
+
+Build Cloud Images:
+
+    sudo make image IMG_NAME=<img>
+    Where <img> can be ami, azure, ova, gce, rpi, ls1012afrwy.
+
+Build Container Images:
+
+    sudo make photon-docker-image THREADS=4
+    sudo make k8s-docker-images THREADS=4
+    sudo make all-images THREADS=4
+
+Cleaning:
+
+    sudo make clean
+    sudo make clean-chroot
+    sudo make clean-stage-for-incremental-build
+
+Package Self Check:
+
+Make sure all RPMs are present before running self-checks.
+
+    sudo make <pkg> RPMCHECK=1
+    sudo make <pkg> RPMCHECK=enable_stop_on_error
+
+Miscellaneous:
+
+    sudo make check-pre-reqs
+    sudo make check-spec-files
+    sudo make initialize-constants
+    sudo make create-repo
+    sudo make pkgtree pkg=<pkg-name>
+    sudo make who-needs pkg=<pkg-name>
+    sudo make print-upward-deps pkg=<pkg-name>
+    sudo make clean-stage-rpms
+    sudo make pull-stage-rpms <rpms-repo-url>
+    sudo make imgtree img=<img-name>
+    Where <img-name> can be ova, gce, azure, etc.
