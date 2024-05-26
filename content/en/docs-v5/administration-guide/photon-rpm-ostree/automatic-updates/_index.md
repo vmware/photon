@@ -36,8 +36,8 @@ $ systemctl restart rpm-ostreed
 
     ```
     $ systemctl reload rpm-ostreed
-    $ systemctl enable rpm-ostree-automatic.timer --now  
-    $ systemctl restart rpm-ostree-automatic
+    $ systemctl enable rpm-ostreed-automatic.timer --now  
+    $ systemctl restart rpm-ostreed-automatic
     ```
 
 1. Verify that the automatic update feature has been enabled:
