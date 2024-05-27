@@ -1,0 +1,8 @@
+/var/log/lighttpd/*log {
+    missingok
+    notifempty
+    sharedscripts
+    postrotate
+        /usr/bin/killall -HUP lighttpd &>/dev/null || :
+    endscript
+}
