@@ -17,10 +17,6 @@ source ${PHOTON_UPGRADE_UTILS_DIR}/utils.sh
 source ${PHOTON_UPGRADE_UTILS_DIR}/common.sh
 set +e
 
-# show logs on console & store them in a file
-# also, keep stderr & stdout intact
-exec 2> >(${TEE} -a ${LOG_FN} >&2) > >(${TEE} -a ${LOG_FN})
-
 FROM_VERSION="$(/usr/bin/lsb_release -s -r)"
 TO_VERSION=''       # non-blank value indicates an os-upgrade, otherwise, update
 ASSUME_YES_OPT=''   # value '-y' denotes non-interactive invocation
@@ -51,6 +47,8 @@ declare -a deprecated_pkgs_to_remove_arr=()
 
 # extra packages which got removed while removing deprecated and replaed pkgs
 declare -a extra_erased_pkgs_arr=()
+
+KERNEL_COREDUMP_PATTERN_ORIGINAL="$(get_kernel_coredump_pattern)"
 
 function show_help() {
   local rc=0
@@ -657,6 +655,8 @@ function do_ph4_to_ph4_update() {
     )
   )
 
+  trap exit_cleanup EXIT
+  disable_all_coredumps || abort $ERETRY_EAGAIN "Could not disable coredumps."
   write_to_syslog "Starting update of packages with command line: $CMDLINE"
   backup_rpms_list_n_db $OLD_RPMDB_PATH
   remove_debuginfo_packages
@@ -820,6 +820,8 @@ function verify_version_and_upgrade() {
         fi
         exit $rc
       fi
+      trap exit_cleanup EXIT
+      disable_all_coredumps || abort $ERETRY_EAGAIN "Could not disable coredumps."
       remove_debuginfo_packages
       backup_configs $TMP_BACKUP_LOC \
                      ${!replaced_pkgs_map[@]} \

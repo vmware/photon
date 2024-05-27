@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
-Version:        1.0
-Release:        20%{?dist}
+Version:        1.1
+Release:        1%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -52,6 +52,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Wed May 29 2024 Dweep Advani <dweep.advani@broadcom.com> 1.1-1
+- Avoid coredumps during upgrade and revert logfile change
 * Thu Apr 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-20
 - Show logs to console and store them in a file at the same time
 - Speed up package availability check in target repo

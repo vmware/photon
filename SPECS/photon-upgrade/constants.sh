@@ -1,4 +1,5 @@
 AWK=/usr/bin/awk
+CAT=/usr/bin/cat
 CHMOD=/usr/bin/chmod
 CHOWN=/usr/bin/chown
 CP=/usr/bin/cp
@@ -21,8 +22,12 @@ SYSTEMCTL=/usr/bin/systemctl
 TDNF='/usr/bin/tdnf --noautoremove'
 TEE=/usr/bin/tee
 TR=/usr/bin/tr
+TRUE=/usr/bin/true
 UNIQ=/usr/bin/uniq
 WC=/usr/bin/wc
+
+KERNEL_CORE_PATTERN_FILE='/proc/sys/kernel/core_pattern'
+DISABLE_COREDUMP_PATTERN="| $TRUE"
 
 OLD_RPMDB_PATH=/var/lib/rpm
 NEW_RPMDB_PATH=/usr/lib/sysimage

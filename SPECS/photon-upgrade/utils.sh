@@ -267,3 +267,42 @@ function restore_configs() {
     fi
   done
 }
+
+# Retrieves current kernel coredump pattern
+function get_kernel_coredump_pattern() {
+  $CAT "$KERNEL_CORE_PATTERN_FILE"
+}
+
+# Sets the current kernel coredump pattern
+function set_kernel_coredump_pattern() {
+  local rc=0
+  builtin echo "$1" > "$KERNEL_CORE_PATTERN_FILE"
+  rc=$?
+  if [ "$(get_kernel_coredump_pattern)" != "$1" ]; then
+    echoerr "Error settting coredump pattern to '$1'"
+  fi
+  return $rc
+}
+
+# Disable all coredumps
+function disable_all_coredumps() {
+  local rc=0
+  set_kernel_coredump_pattern "$DISABLE_COREDUMP_PATTERN"
+  rc=$?
+  if [ $rc -ne 0 ]; then
+    echoerr "Error disabling all coredumps."
+  fi
+  return $rc
+}
+
+# Resets the coredumps to their original value that was detected
+# during startup and stored in global $KERNEL_COREDUMP_PATTERN_ORIGINAL
+function reset_coredumps() {
+  set_kernel_coredump_pattern "$KERNEL_COREDUMP_PATTERN_ORIGINAL"
+}
+
+# exit_cleanup() will be called via atexit() while exiting and will do below -
+# - resets the kernel.core_pattern to to the original value
+function exit_cleanup() {
+  reset_coredumps
+}
