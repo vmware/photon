@@ -97,6 +97,7 @@ def getConstants():
     constant_dict["logLevel"] = constants.logLevel
     constant_dict["dist"] = constants.dist
     constant_dict["buildNumber"] = constants.buildNumber
+    constant_dict["commonBuildNumber"] = constants.commonBuildNumber
     constant_dict["releaseVersion"] = constants.releaseVersion
     constant_dict["prevPublishRPMRepo"] = constants.prevPublishRPMRepo
     constant_dict["prevPublishXRPMRepo"] = constants.prevPublishXRPMRepo

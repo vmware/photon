@@ -5,6 +5,7 @@ import platform
 from Logger import Logger
 from CommandUtils import CommandUtils as cmdUtils
 
+PH_COMMIT_URI_PREFIX = "https://github.com/vmware/photon/commit/"
 
 class constants(object):
     specPath = ""
@@ -32,6 +33,7 @@ class constants(object):
     userDefinedMacros = {}
     dist = None
     buildNumber = None
+    commonBuildNumber = None
     releaseVersion = None
     katBuild = False
     canisterBuild = False
@@ -481,6 +483,10 @@ class constants(object):
         constants.buildNumber = buildNumber
 
     @staticmethod
+    def setCommonBuildNumber(commonBuildNumber):
+        constants.commonBuildNumber = commonBuildNumber
+
+    @staticmethod
     def setReleaseVersion(releaseVersion):
         constants.releaseVersion = releaseVersion
 
@@ -518,6 +524,9 @@ class constants(object):
         # adding buildnumber rpm macro
         if constants.buildNumber is not None:
             constants.addMacro("photon_build_number", constants.buildNumber)
+
+        if constants.buildNumber is not None and constants.commonBuildNumber is not None:
+            constants.addMacro("phvcs", f'{PH_COMMIT_URI_PREFIX}{constants.buildNumber}\;{PH_COMMIT_URI_PREFIX}{constants.commonBuildNumber}')
 
         # adding releasenumber rpm macro
         if constants.releaseVersion is not None:

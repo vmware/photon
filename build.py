@@ -1399,6 +1399,9 @@ def initialize_constants():
     constants.setBuildNumber(
         configdict["photon-build-param"]["input-photon-build-number"]
     )
+    constants.setCommonBuildNumber(
+        configdict["photon-build-param"]["input-photon-common-build-number"]
+    )
     constants.setReleaseVersion(
         configdict["photon-build-param"]["photon-release-version"]
     )
@@ -1576,6 +1579,9 @@ def set_default_value_of_config():
 
     key = "photon-build-param"
     out, _, _ = runBashCmd("git rev-parse --short HEAD", capture=True)
+    configdict[key]["input-photon-common-build-number"] = out.rstrip()
+
+    out, _, _ = runBashCmd(f"git -C {configdict['release-branch-path']} rev-parse --short HEAD", capture=True)
     configdict[key]["input-photon-build-number"] = out.rstrip()
 
     ret = f"{curDir}/common/data/" + configdict[key]["pkg-build-options"]
@@ -1611,6 +1617,9 @@ def process_env_build_params(ph_build_param):
     os.environ["PHOTON_RELEASE_VER"] = ph_build_param["photon-release-version"]
     os.environ["PHOTON_BUILD_NUM"] = ph_build_param[
         "input-photon-build-number"
+    ]
+    os.environ["PHOTON_COMMON_BUILD_NUM"] = ph_build_param[
+        "input-photon-common-build-number"
     ]
 
     for k, v in env_build_param_dict.items():
@@ -1746,6 +1755,10 @@ def main():
     ]
     os.environ["PHOTON_BUILD_NUM"] = configdict["photon-build-param"][
         "input-photon-build-number"
+    ]
+
+    os.environ["PHOTON_COMMON_BUILD_NUM"] = configdict["photon-build-param"][
+        "input-photon-common-build-number"
     ]
 
     if not configdict.get("photon-path", ""):

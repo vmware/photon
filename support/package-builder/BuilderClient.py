@@ -60,6 +60,7 @@ class BuilderClient:
         constants.setLogLevel(constant_dict["logLevel"])
         constants.setDist(constant_dict["dist"])
         constants.setBuildNumber(constant_dict["buildNumber"])
+        constants.setCommonBuildNumber(constant_dict["commonBuildNumber"])
         constants.setReleaseVersion(constant_dict["releaseVersion"])
         constants.setPrevPublishRPMRepo(constant_dict["prevPublishRPMRepo"])
         constants.setPrevPublishXRPMRepo(constant_dict["prevPublishXRPMRepo"])
