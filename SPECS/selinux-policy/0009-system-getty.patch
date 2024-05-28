@@ -1,7 +1,7 @@
-From 0b040d7a0577d442d96b7ed680bc59ea9fa56515 Mon Sep 17 00:00:00 2001
+From c4b7576821a8ff3f2827c32efad0cba4c6c53a07 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 28 Mar 2022 20:41:24 +0530
-Subject: [PATCH 13/20] system getty
+Subject: [PATCH 09/29] system getty
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -24,5 +24,5 @@ index 03748d1..a89b4b2 100644
  	# Support logging in from /dev/console
  	term_use_console(getty_t)
 -- 
-2.35.1
+2.45.1
 

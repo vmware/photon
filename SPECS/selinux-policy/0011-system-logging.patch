@@ -1,7 +1,7 @@
-From 4790f1a3aa5b5d5c1d11c0b3cdeb2a5eae872556 Mon Sep 17 00:00:00 2001
+From 2ea4e764bc8a0d2c4d1f6720e6596c729dd58223 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 28 Mar 2022 20:42:43 +0530
-Subject: [PATCH 15/20] system logging
+Subject: [PATCH 11/29] system logging
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -50,5 +50,5 @@ index 8dd07cd..16a0400 100644
  /var/spool/bacula/log(/.*)? 	gen_context(system_u:object_r:var_log_t,s0)
  /var/spool/postfix/pid	-d	gen_context(system_u:object_r:var_run_t,s0)
 -- 
-2.35.1
+2.45.1
 

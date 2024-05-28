@@ -1,7 +1,7 @@
-From d82e154e0a633b2510e15e3e277d1cec2c811a3d Mon Sep 17 00:00:00 2001
+From 17fb21292ecb47814426ed3da01f0fdb9f32c3e8 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 3 Mar 2022 01:03:35 +0000
-Subject: [PATCH 09/20] motd_t: new domain for motdgen
+Subject: [PATCH 08/29] motd_t: new domain for motdgen
 
 ---
  policy/modules/contrib/motd.fc     |  5 +++++
@@ -133,5 +133,5 @@ index 1885fa6..8ba5900 100644
  
  logging_set_loginuid(login_pgm)
 -- 
-2.35.1
+2.45.1
 

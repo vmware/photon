@@ -1,7 +1,7 @@
-From da814fdb23c8782423ff2eb946110ee30f94cad9 Mon Sep 17 00:00:00 2001
+From 0c2be1e610ba912d17c0e0f565475a4c7af7921b Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 4 Apr 2022 12:59:02 +0530
-Subject: [PATCH] Fix AVC denials based on package test results
+Subject: [PATCH 23/29] Fix AVC denials based on package test results
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -332,5 +332,5 @@ index 3edef8f..66771bb 100644
  kernel_load_unsigned_module(systemd_modules_load_t)
  kernel_ib_access_unlabeled_pkeys(systemd_modules_load_t)
 -- 
-2.35.1
+2.45.1
 

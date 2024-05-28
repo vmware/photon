@@ -1,0 +1,35 @@
+From d14fed01200ae2213c1688e940b708d12bf9fc01 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Tue, 28 May 2024 20:26:19 +0530
+Subject: [PATCH 29/29] init.te: fix denials
+
+May 28 08:14:53 ph4dev kernel: audit: type=1400 audit(1716902093.640:7): avc:  denied  { open } for  pid=1 comm="systemd" path="/run/cloud-init/hook-hotplug-cmd" dev="tmpfs" ino=778 scontext=system_u:system_r:init_t:s0 tcontext=system_u:object_r:net_conf_t:s0 tclass=fifo_file permissive=1
+May 28 09:57:12 ph4dev audit[1]: AVC avc:  denied  { add_name } for  pid=1 comm="systemd" name="hook-hotplug-cmd" scontext=system_u:system_r:init_t:s0 tcontext=system_u:object_r:net_conf_t:s0 tclass=dir permissive=0
+May 28 09:57:12 ph4dev systemd[1]: cloud-init-hotplugd.socket: Failed to open FIFO /run/cloud-init/hook-hotplug-cmd: Permission denied
+May 28 09:57:12 ph4dev systemd[1]: cloud-init-hotplugd.socket: Failed to listen on sockets: Permission denied
+May 28 09:57:12 ph4dev kernel: audit: type=1400 audit(1716908232.652:4): avc:  denied  { add_name } for  pid=1 comm="systemd" name="hook-hotplug-cmd" scontext=system_u:system_r:init_t:s0 tcontext=system_u:object_r:net_conf_t:s0 tclass=dir permissive=0
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/system/init.te | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/policy/modules/system/init.te b/policy/modules/system/init.te
+index 1da55cc..351a16b 100644
+--- a/policy/modules/system/init.te
++++ b/policy/modules/system/init.te
+@@ -2041,3 +2041,11 @@ optional_policy(`
+ optional_policy(`
+     rabbitmq_admin(init_t, system_r)
+ ')
++
++require {
++  type net_conf_t;
++}
++
++allow init_t net_conf_t:dir add_name;
++
++allow init_t net_conf_t:fifo_file { getattr open create read write };
+-- 
+2.45.1
+

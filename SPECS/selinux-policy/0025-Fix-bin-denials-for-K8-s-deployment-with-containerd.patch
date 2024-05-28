@@ -1,11 +1,11 @@
-From f410e9861e62cf1eb828f0bdd273e952f3c7a71f Mon Sep 17 00:00:00 2001
+From cb69d422eb171b8c447b9f2f9f01c1932ccc91ad Mon Sep 17 00:00:00 2001
 From: Shivani Agarwal <shivania2@vmware.com>
 Date: Fri, 9 Sep 2022 15:55:06 +0000
-Subject: [PATCH] Fix bin denials for K8's deployment with containerd
+Subject: [PATCH 25/29] Fix bin denials for K8's deployment with containerd
 
 Changes are added to resolve following bin denials
 
-avc:  denied  { watch } for pid=2071 comm="kube-controller" 
+avc:  denied  { watch } for pid=2071 comm="kube-controller"
 path="/usr/libexec/kubernetes/kubelet-plugins/volume/exec"
 dev="sda3" ino=1458924 scontext=system_u:system_r:container_t:s0:c610,c650
 tcontext=system_u:object_r:bin_t:s0 tclass=dir permissive=1
@@ -50,14 +50,14 @@ index adcd6da..6e10d23 100644
  ## <summary>
  ##	Manage container share files.
 diff --git a/policy/modules/contrib/container.te b/policy/modules/contrib/container.te
-index 56d6e3b..bc21f0a 100644
+index 95a888a..6bbb84e 100644
 --- a/policy/modules/contrib/container.te
 +++ b/policy/modules/contrib/container.te
-@@ -1306,3 +1306,4 @@ kernel_mounton_systemd_ProtectKernelTunables(container_engine_t)
+@@ -1301,3 +1301,4 @@ kernel_mounton_systemd_ProtectKernelTunables(container_engine_t)
  term_mount_pty_fs(container_engine_t)
  container_runtime_read_kubernetes_files(container_t)
  container_runtime_watch_kubernetes_files(container_t)
 +container_runtime_watch_bin_files(container_t)
 -- 
-2.23.3
+2.45.1
 

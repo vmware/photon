@@ -1,7 +1,7 @@
-From e3406f832df6d545cb3ea72b01e6ea4864ee18ac Mon Sep 17 00:00:00 2001
+From 03c19f8ce41e171d1c1824475879ff95fb1f6c1e Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 28 Mar 2022 20:13:41 +0530
-Subject: [PATCH 01/20] admin_usermanage
+Subject: [PATCH 17/29] admin_usermanage
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -22,5 +22,5 @@ index 6640310..4d1e878 100644
  kernel_read_kernel_sysctls(passwd_t)
  
 -- 
-2.35.1
+2.45.1
 

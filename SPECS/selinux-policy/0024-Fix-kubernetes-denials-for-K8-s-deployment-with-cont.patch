@@ -1,21 +1,22 @@
-From 95776e757a765b466f79f28cc6e1691715e9b822 Mon Sep 17 00:00:00 2001
+From cbbe2ef426a903fc2ae9dc784e61d0208fe52a87 Mon Sep 17 00:00:00 2001
 From: Shivani Agarwal <shivania2@vmware.com>
 Date: Fri, 9 Sep 2022 14:16:15 +0000
-Subject: [PATCH] Fix kubernetes denials for K8's deployment with containerd
+Subject: [PATCH 24/29] Fix kubernetes denials for K8's deployment with
+ containerd
 
 Changes are added to resolve following kubernetes  denials
 
 avc:  denied  { read } for  pid=6084 comm="kube-controller"
-path="/etc/kubernetes/pki/front-proxy-ca.crt" dev="sda3" ino=1049304 
+path="/etc/kubernetes/pki/front-proxy-ca.crt" dev="sda3" ino=1049304
 scontext=system_u:system_r:container_t:s0:c221,c620
 tcontext=system_u:object_r:kubernetes_file_t:s0 tclass=file permissive=0
 ---
- policy/modules/contrib/container.if | 19 +++++++++++++++++++
- policy/modules/contrib/container.te |  1 +
- 2 files changed, 44 insertions(+)
+ policy/modules/contrib/container.if | 43 +++++++++++++++++++++++++++++
+ policy/modules/contrib/container.te |  2 ++
+ 2 files changed, 45 insertions(+)
 
 diff --git a/policy/modules/contrib/container.if b/policy/modules/contrib/container.if
-index a77e673..1dad31e 100644
+index a77e673..adcd6da 100644
 --- a/policy/modules/contrib/container.if
 +++ b/policy/modules/contrib/container.if
 @@ -185,6 +185,49 @@ interface(`container_runtime_read_tmpfs_files',`
@@ -69,15 +70,15 @@ index a77e673..1dad31e 100644
  ## <summary>
  ##	Manage container share files.
 diff --git a/policy/modules/contrib/container.te b/policy/modules/contrib/container.te
-index 058b829..7c31116 100644
+index 3c23c4d..95a888a 100644
 --- a/policy/modules/contrib/container.te
 +++ b/policy/modules/contrib/container.te
-@@ -1304,3 +1304,5 @@ kernel_mounton_core_if(container_engine_t)
+@@ -1299,3 +1299,5 @@ kernel_mounton_core_if(container_engine_t)
  kernel_mounton_proc(container_engine_t)
  kernel_mounton_systemd_ProtectKernelTunables(container_engine_t)
  term_mount_pty_fs(container_engine_t)
 +container_runtime_read_kubernetes_files(container_t)
 +container_runtime_watch_kubernetes_files(container_t)
 -- 
-2.23.3
+2.45.1
 

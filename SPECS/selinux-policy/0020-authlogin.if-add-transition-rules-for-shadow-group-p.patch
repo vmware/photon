@@ -1,7 +1,7 @@
-From 530233de0034ac9ef9eb30c1714723c3f0573214 Mon Sep 17 00:00:00 2001
+From 899372df2bfd51895b65bba9a0bb277a6c216b32 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Wed, 16 Mar 2022 16:37:17 +0530
-Subject: [PATCH 03/20] authlogin.if: add transition rules for shadow, group,
+Subject: [PATCH 20/29] authlogin.if: add transition rules for shadow, group,
  passwd (+) files
 
 groupadd & useradd commands create /etc/passwd+, /etc/shadow+.
@@ -64,5 +64,5 @@ index b5b3702..2ef14a5 100644
  	files_etc_filetrans($1, passwd_file_t, file, "passwd.lock")
  	files_etc_filetrans($1, passwd_file_t, file, "group.lock")
 -- 
-2.35.1
+2.45.1
 

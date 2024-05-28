@@ -1,7 +1,7 @@
-From 2f4cc4ffd524385ef2553e4a4294605d6288d3b5 Mon Sep 17 00:00:00 2001
+From c2dbfdf9d09642c8ee24c2c9377b3f73f0e2ad0e Mon Sep 17 00:00:00 2001
 From: Shivani Agarwal <shivania2@vmware.com>
 Date: Fri, 9 Sep 2022 16:26:27 +0000
-Subject: [PATCH] Fix etcd denials for K8's deployment with containerd
+Subject: [PATCH 26/29] Fix etcd denials for K8's deployment with containerd
 
 Changes are added to resolve following etcd denials
 
@@ -9,8 +9,8 @@ avc:  denied  { add_name } for  pid=10891 comm="etcd" name=".touch"
 scontext=system_u:system_r:container_t:s0:c506,c833
 tcontext=system_u:object_r:var_lib_t:s0 tclass=dir permissive=1
 ---
- policy/modules/contrib/container.if | 78 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- policy/modules/contrib/container.te |  4 +++
+ policy/modules/contrib/container.if | 78 +++++++++++++++++++++++++++++
+ policy/modules/contrib/container.te |  4 ++
  2 files changed, 82 insertions(+)
 
 diff --git a/policy/modules/contrib/container.if b/policy/modules/contrib/container.if
@@ -103,10 +103,10 @@ index 6e10d23..dacc0da 100644
  ## <summary>
  ##	Manage container share files.
 diff --git a/policy/modules/contrib/container.te b/policy/modules/contrib/container.te
-index bc21f0a..5834136 100644
+index 6bbb84e..1ac42d1 100644
 --- a/policy/modules/contrib/container.te
-+++ bpolicy/modules/contrib//container.te
-@@ -1307,3 +1307,7 @@ term_mount_pty_fs(container_engine_t)
++++ b/policy/modules/contrib/container.te
+@@ -1302,3 +1302,7 @@ term_mount_pty_fs(container_engine_t)
  container_runtime_read_kubernetes_files(container_t)
  container_runtime_watch_kubernetes_files(container_t)
  container_runtime_watch_bin_files(container_t)
@@ -115,5 +115,5 @@ index bc21f0a..5834136 100644
 +container_runtime_create_var_lib_files(container_t)
 +container_runtime_map_var_lib_files(container_t)
 -- 
-2.23.3
+2.45.1
 

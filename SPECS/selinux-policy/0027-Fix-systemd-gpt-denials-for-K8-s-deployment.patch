@@ -1,7 +1,7 @@
-From 9356b227af566905b1ba70532336bf015288bb71 Mon Sep 17 00:00:00 2001
+From 17e98b73ec6130f1c79a29367b1963083e879d75 Mon Sep 17 00:00:00 2001
 From: Shivani Agarwal <shivania2@vmware.com>
 Date: Fri, 9 Sep 2022 14:08:35 +0000
-Subject: [PATCH] Fix systemd gpt denials for K8's deployment
+Subject: [PATCH 27/29] Fix systemd gpt denials for K8's deployment
 
 Changes are added to resolve following systemd denials
 
@@ -13,7 +13,7 @@ tcontext=system_u:system_r:systemd_gpt_generator_t:s0 tclass=capability permissi
  1 file changed, 2 insertions(+)
 
 diff --git a/policy/modules/system/systemd.te b/policy/modules/system/systemd.te
-index 66771bbb4..bbb8c62eb 100644
+index 66771bb..bbb8c62 100644
 --- a/policy/modules/system/systemd.te
 +++ b/policy/modules/system/systemd.te
 @@ -1117,6 +1117,8 @@ systemd_read_efivarfs(systemd_hwdb_t)
@@ -26,5 +26,5 @@ index 66771bbb4..bbb8c62eb 100644
  
  dev_read_sysfs(systemd_gpt_generator_t)
 -- 
-2.23.3
+2.45.1
 

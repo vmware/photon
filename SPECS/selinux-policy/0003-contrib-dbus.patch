@@ -1,7 +1,7 @@
-From b4618d074f7c31beb6fa7aeeca73db71a736dfdd Mon Sep 17 00:00:00 2001
+From da725df5fbff94d9525b92bec161bac207f91bf6 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 28 Mar 2022 20:30:24 +0530
-Subject: [PATCH 05/20] contrib dbus
+Subject: [PATCH 03/29] contrib dbus
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -24,5 +24,5 @@ index 1c1db3d..68bff69 100644
  /var/named/chroot/var/run/dbus(/.*)?	gen_context(system_u:object_r:system_dbusd_var_run_t,s0)
  ')
 -- 
-2.35.1
+2.45.1
 

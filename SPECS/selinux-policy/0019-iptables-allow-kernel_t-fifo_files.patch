@@ -1,7 +1,7 @@
-From 3b32eaf22641da3574cdad958dc9712251b92d2e Mon Sep 17 00:00:00 2001
+From aa780832c5dc4481b9e7b7d57c7704dcadfe414c Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 3 Mar 2022 00:01:30 +0000
-Subject: [PATCH 07/20] iptables: allow kernel_t fifo_files
+Subject: [PATCH 19/29] iptables: allow kernel_t fifo_files
 
 ---
  policy/modules/system/iptables.te | 1 +
@@ -20,5 +20,5 @@ index 3374bff..f38b69a 100644
  allow iptables_t self:netlink_socket create_socket_perms;
  allow iptables_t self:netlink_generic_socket create_socket_perms;
 -- 
-2.35.1
+2.45.1
 

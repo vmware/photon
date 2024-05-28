@@ -1,0 +1,25 @@
+From 84d01be472ea45673a6ca70fd9fd32b90308cbcb Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Tue, 28 May 2024 19:44:38 +0530
+Subject: [PATCH 28/29] getty.te: fix denials
+
+May 28 08:14:57 ph4dev audit[905]: AVC avc:  denied  { checkpoint_restore } for  pid=905 comm="agetty" capability=40  scontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tcontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tclass=capability2 permissive=1
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/system/getty.te | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/policy/modules/system/getty.te b/policy/modules/system/getty.te
+index a89b4b2..421acf5 100644
+--- a/policy/modules/system/getty.te
++++ b/policy/modules/system/getty.te
+@@ -173,3 +173,5 @@ optional_policy(`
+ optional_policy(`
+ 	udev_read_db(getty_t)
+ ')
++
++allow getty_t self:capability2 checkpoint_restore;
+-- 
+2.45.1
+

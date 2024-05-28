@@ -1,7 +1,7 @@
-From 22602e3b32ba62668f73e498b05dcbe5b26f9f1f Mon Sep 17 00:00:00 2001
+From 45cc0b70a502ee4222afd181f2b33a6d109a967e Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 28 Mar 2022 20:39:46 +0530
-Subject: [PATCH 11/20] roles unprivuser
+Subject: [PATCH 07/29] roles unprivuser
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -147,5 +147,5 @@ index 4bff8ff..b308872 100644
      vmtools_run_helper(user_t, user_r)
  ')
 -- 
-2.35.1
+2.45.1
 

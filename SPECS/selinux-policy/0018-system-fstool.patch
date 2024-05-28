@@ -1,7 +1,7 @@
-From 16b57c6f7550cdd24668cf7efff3092306d93198 Mon Sep 17 00:00:00 2001
+From d1e669a28a7247ec859cb8ccca75a4d4be22fb0e Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 28 Mar 2022 20:40:42 +0530
-Subject: [PATCH 12/20] system fstool
+Subject: [PATCH 18/29] system fstool
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -26,5 +26,5 @@ index 0085819..14e20a4 100644
  	amanda_rw_dumpdates_files(fsadm_t)
  	amanda_append_log_files(fsadm_t)
 -- 
-2.35.1
+2.45.1
 

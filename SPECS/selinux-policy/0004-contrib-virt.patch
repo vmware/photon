@@ -1,7 +1,7 @@
-From bc40e5d5a3a0d8b4910e93cf5a228e51c666ed15 Mon Sep 17 00:00:00 2001
+From 2de4350e60af0aeeafa284aa10d3eb1ce4d3cb27 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 28 Mar 2022 20:30:58 +0530
-Subject: [PATCH 06/20] contrib virt
+Subject: [PATCH 04/29] contrib virt
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -22,5 +22,5 @@ index 340056b..66423fb 100644
  virt_domain_template(svirt_tcg)
  role system_r types svirt_tcg_t;
 -- 
-2.35.1
+2.45.1
 

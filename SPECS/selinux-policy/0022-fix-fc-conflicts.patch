@@ -1,7 +1,7 @@
-From 7199969f107999a99804f75111d67b4fb902b910 Mon Sep 17 00:00:00 2001
+From 40031ebca2147518dfaab8d9d0c6fcedf5abb2c0 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Tue, 29 Mar 2022 17:42:26 +0530
-Subject: [PATCH] fix fc conflicts
+Subject: [PATCH 22/29] fix fc conflicts
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -37,5 +37,5 @@ index fc4204a..7181f6b 100644
  /dev/tpmrm[0-9]*		-c	gen_context(system_u:object_r:tpm_device_t,s0)
  /dev/trng		-c	gen_context(system_u:object_r:random_device_t,s0)
 -- 
-2.35.1
+2.45.1
 

@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -21,33 +21,35 @@ Source3: modules.conf
 Source4: macros.%{name}
 Source5: config
 
-Patch0: contrib-container.patch
-Patch1: contrib-cron.patch
-Patch2: contrib-dbus.patch
-Patch3: contrib-virt.patch
-Patch4: kernel-storage.patch
-Patch5: roles-staff.patch
-Patch6: roles-unprivuser.patch
-Patch7: motd_t-new-domain-for-motdgen.patch
-Patch8: system-getty.patch
-Patch9: system-init.patch
-Patch10: system-logging.patch
-Patch11: system-modutils.patch
-Patch12: system-systemd.patch
-Patch13: system-sysnetwork.patch
-Patch14: system-udev.patch
-Patch15: system-userdomain.patch
-Patch16: admin_usermanage.patch
-Patch17: system-fstool.patch
-Patch18: iptables-allow-kernel_t-fifo_files.patch
-Patch19: authlogin.if-add-transition-rules-for-shadow.patch
-Patch20: allow-lvm_t-to-transit-to-unconfined_t.patch
-Patch21: fix-fc-conflicts.patch
-Patch22: fix-AVC-denials-based-on-package-test-results.patch
-Patch23: Fix-kubernetes-denials-for-K8-deployment.patch
-Patch24: Fix-bin-denials-for-K8-deployment-with-containerd.patch
-Patch25: Fix-etcd-denials-for-K8-deployment-with-containerd.patch
-Patch26: fix_systemd_gpt_denials.patch
+Patch0: 0001-contrib-container.patch
+Patch1: 0002-contrib-cron.patch
+Patch2: 0003-contrib-dbus.patch
+Patch3: 0004-contrib-virt.patch
+Patch4: 0005-kernel-storage.patch
+Patch5: 0006-roles-staff.patch
+Patch6: 0007-roles-unprivuser.patch
+Patch7: 0008-motd_t-new-domain-for-motdgen.patch
+Patch8: 0009-system-getty.patch
+Patch9: 0010-system-init.patch
+Patch10: 0011-system-logging.patch
+Patch11: 0012-system-modutils.patch
+Patch12: 0013-system-systemd.patch
+Patch13: 0014-system-sysnetwork.patch
+Patch14: 0015-system-udev.patch
+Patch15: 0016-system-userdomain.patch
+Patch16: 0017-admin_usermanage.patch
+Patch17: 0018-system-fstool.patch
+Patch18: 0019-iptables-allow-kernel_t-fifo_files.patch
+Patch19: 0020-authlogin.if-add-transition-rules-for-shadow-group-p.patch
+Patch20: 0021-allow-lvm_t-to-transit-to-unconfined_t.patch
+Patch21: 0022-fix-fc-conflicts.patch
+Patch22: 0023-Fix-AVC-denials-based-on-package-test-results.patch
+Patch23: 0024-Fix-kubernetes-denials-for-K8-s-deployment-with-cont.patch
+Patch24: 0025-Fix-bin-denials-for-K8-s-deployment-with-containerd.patch
+Patch25: 0026-Fix-etcd-denials-for-K8-s-deployment-with-containerd.patch
+Patch26: 0027-Fix-systemd-gpt-denials-for-K8-s-deployment.patch
+Patch27: 0028-getty.te-fix-denials.patch
+Patch28: 0029-init.te-fix-denials.patch
 
 BuildArch:      noarch
 
@@ -127,6 +129,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Tue May 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-5
+- Fix few denials
 * Tue Jan 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-4
 - Fix devel package requires
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 36.5-3

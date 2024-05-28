@@ -1,7 +1,7 @@
-From 550e58085ae0d9792bdea52552cccc40a5a59fb3 Mon Sep 17 00:00:00 2001
+From 2cfd0317ff3a2fe0aeea767da2c03bf6a637af70 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 28 Mar 2022 20:38:58 +0530
-Subject: [PATCH 10/20] roles staff
+Subject: [PATCH 06/29] roles staff
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -114,5 +114,5 @@ index e819516..e9b5405 100644
  	userdom_execmod_user_home_files(staff_t)
  ')
 -- 
-2.35.1
+2.45.1
 
