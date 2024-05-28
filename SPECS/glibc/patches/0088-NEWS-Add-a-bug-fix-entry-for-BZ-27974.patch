@@ -1,7 +1,7 @@
 From bee0b69a58e341b70b2f9db6078ae047827ff209 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Thu, 27 Jan 2022 14:46:15 -0800
-Subject: [PATCH 088/125] NEWS: Add a bug fix entry for BZ #27974
+Subject: [PATCH 088/147] NEWS: Add a bug fix entry for BZ #27974
 
 ---
  NEWS | 1 +
@@ -20,5 +20,5 @@ index aef85a7d1776c6289733116e0fe234e1e1c61ae2..d138a45519f2a6595825243a4289140a
    [28607] Masked signals are delivered on thread exit
    [28755] overflow bug in wcsncmp_avx2 and wcsncmp_evex
 -- 
-2.44.0
+2.35.6
 

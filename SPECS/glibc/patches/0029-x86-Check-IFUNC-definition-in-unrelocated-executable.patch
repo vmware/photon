@@ -1,7 +1,7 @@
 From 4c619b3eed558172198790f842740abb9af1989d Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Mon, 28 Dec 2020 05:28:49 -0800
-Subject: [PATCH 029/125] x86: Check IFUNC definition in unrelocated executable
+Subject: [PATCH 029/147] x86: Check IFUNC definition in unrelocated executable
  [BZ #20019]
 
 Calling an IFUNC function defined in unrelocated executable also leads to
@@ -197,5 +197,5 @@ index ca73d8fef9c11aa814d0f89acbb064e770caec95..363a749cb2f20426467a99a85ee46ffa
  # endif
  	  value = ((ElfW(Addr) (*) (void)) value) ();
 -- 
-2.44.0
+2.35.6
 

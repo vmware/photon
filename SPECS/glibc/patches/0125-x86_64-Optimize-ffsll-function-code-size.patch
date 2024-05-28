@@ -1,7 +1,7 @@
 From bd1ded3d05c81927beb117cd6bcc668a7640cdc9 Mon Sep 17 00:00:00 2001
 From: Sunil K Pandey <skpgkp2@gmail.com>
 Date: Wed, 26 Jul 2023 08:34:05 -0700
-Subject: [PATCH 125/125] x86_64: Optimize ffsll function code size.
+Subject: [PATCH 125/147] x86_64: Optimize ffsll function code size.
 
 Ffsll function randomly regress by ~20%, depending on how code gets
 aligned in memory.  Ffsll function code size is 17 bytes.  Since default
@@ -46,5 +46,5 @@ index 594ee5c681b2d4554bdd5b09f746e3e35cdf8a5f..e056ac4b4ff31b158b779e4f0a8442a3
  
  #ifndef __ILP32__
 -- 
-2.44.0
+2.35.6
 

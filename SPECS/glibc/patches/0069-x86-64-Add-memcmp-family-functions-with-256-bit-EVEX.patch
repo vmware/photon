@@ -1,7 +1,7 @@
 From 43e3ba09ece40ba4beb3d3c985190209ecc6a052 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Fri, 5 Mar 2021 07:20:28 -0800
-Subject: [PATCH 069/125] x86-64: Add memcmp family functions with 256-bit EVEX
+Subject: [PATCH 069/147] x86-64: Add memcmp family functions with 256-bit EVEX
 
 Update ifunc-memcmp.h to select the function optimized with 256-bit EVEX
 instructions using YMM16-YMM31 registers to avoid RTM abort with usable
@@ -558,5 +558,5 @@ index 0000000000000000000000000000000000000000..4726d74aa10773a53aac84531b44461e
 +
 +#include "memcmp-evex-movbe.S"
 -- 
-2.44.0
+2.35.6
 

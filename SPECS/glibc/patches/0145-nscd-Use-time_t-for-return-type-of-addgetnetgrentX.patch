@@ -1,0 +1,36 @@
+From 4ab74e9ba7a5e4129bd47ef1c208a9de95649558 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Thu, 2 May 2024 17:06:19 +0200
+Subject: [PATCH 145/147] nscd: Use time_t for return type of addgetnetgrentX
+
+Using int may give false results for future dates (timeouts after the
+year 2028).
+
+Fixes commit 04a21e050d64a1193a6daab872bca2528bda44b ("CVE-2024-33601,
+CVE-2024-33602: nscd: netgroup: Use two buffers in addgetnetgrentX
+(bug 31680)").
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 4bbca1a44691a6e9adcee5c6798a707b626bc331)
+---
+ nscd/netgroupcache.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/nscd/netgroupcache.c b/nscd/netgroupcache.c
+index 40275652026b7d064978b12e29bd119ea4372f40..799298ad845f4e5f0adf864b6eb7ef2418c9e3ac 100644
+--- a/nscd/netgroupcache.c
++++ b/nscd/netgroupcache.c
+@@ -681,8 +681,8 @@ readdinnetgr (struct database_dyn *db, struct hashentry *he,
+       .key_len = he->len
+     };
+ 
+-  int timeout = addinnetgrX (db, -1, &req, db->data + he->key, he->owner,
+-			     he, dh);
++  time_t timeout = addinnetgrX (db, -1, &req, db->data + he->key, he->owner,
++				he, dh);
+   if (timeout < 0)
+     timeout = 0;
+   return timeout;
+-- 
+2.35.6
+

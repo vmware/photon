@@ -1,7 +1,7 @@
 From ede8acfdee2f91b121f7fd46361a0bcabafe864d Mon Sep 17 00:00:00 2001
 From: Paul Zimmermann <Paul.Zimmermann@inria.fr>
 Date: Tue, 8 Dec 2020 20:26:32 +0530
-Subject: [PATCH 104/125] Fix typos in "NEWS for version 2.32"
+Subject: [PATCH 104/147] Fix typos in "NEWS for version 2.32"
 
 (cherry picked from commit 4d3a77c73594c3704992f8d5b779c8be053cff35)
 ---
@@ -81,5 +81,5 @@ index 084434b869c67f41879d78b54389cf9d2e434f2f..9998d471f5a4dad6b5d5a14f844c6ddb
    strerror or strerror_r instead.
  
 -- 
-2.44.0
+2.35.6
 

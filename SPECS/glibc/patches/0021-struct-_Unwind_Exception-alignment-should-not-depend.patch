@@ -1,7 +1,7 @@
 From 3ea24955bff835f1c5bbfd7674208e25fa795c1a Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Wed, 11 Nov 2020 11:59:11 +0100
-Subject: [PATCH 021/125] struct _Unwind_Exception alignment should not depend
+Subject: [PATCH 021/147] struct _Unwind_Exception alignment should not depend
  on compiler flags
 
 __attribute__((__aligned__)) selects an alignment that depends on
@@ -55,5 +55,5 @@ index b667a5b6522a32e82ad26654dc70d86777564d5e..c229603af38091ee1a3060d9cb095b1b
  
  /* The ACTIONS argument to the personality routine is a bitwise OR of one
 -- 
-2.44.0
+2.35.6
 

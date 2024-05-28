@@ -1,7 +1,7 @@
 From 2dfa659a66f20facc4082207884c20e986ddecee Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Wed, 14 Oct 2020 10:54:39 +0200
-Subject: [PATCH 019/125] resolv: Handle transaction ID collisions in parallel
+Subject: [PATCH 019/147] resolv: Handle transaction ID collisions in parallel
  queries (bug 26600)
 
 If the transaction IDs are equal, the old check attributed both
@@ -462,5 +462,5 @@ index 0000000000000000000000000000000000000000..611d37362f3e5e89b92766f079045934
 +
 +#include <support/test-driver.c>
 -- 
-2.44.0
+2.35.6
 

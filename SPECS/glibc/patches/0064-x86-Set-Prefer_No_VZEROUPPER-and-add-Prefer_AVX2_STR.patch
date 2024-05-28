@@ -1,7 +1,7 @@
 From 3bb13e91495c763c1ce7759e3b0d2cb32d4095b6 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Fri, 26 Feb 2021 05:36:59 -0800
-Subject: [PATCH 064/125] x86: Set Prefer_No_VZEROUPPER and add
+Subject: [PATCH 064/147] x86: Set Prefer_No_VZEROUPPER and add
  Prefer_AVX2_STRCMP
 
 1. Set Prefer_No_VZEROUPPER if RTM is usable to avoid RTM abort triggered
@@ -83,5 +83,5 @@ index 588bbf9448bd6a44497818651ca3cfeaa84c8701..b251a91af3fe5202fe378823e33eee45
  	  break;
  	case 19:
 -- 
-2.44.0
+2.35.6
 

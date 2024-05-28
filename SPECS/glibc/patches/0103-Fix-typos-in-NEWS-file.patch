@@ -1,7 +1,7 @@
 From 51e00fc5aa4baa0d14cca5e621386e3841c2bfac Mon Sep 17 00:00:00 2001
 From: Shuo Wang <wangshuo47@huawei.com>
 Date: Mon, 2 Nov 2020 15:53:13 +0800
-Subject: [PATCH 103/125] Fix typos in NEWS file
+Subject: [PATCH 103/147] Fix typos in NEWS file
 
 (cherry picked from commit fdb724f9032ff73310be0e51549f494a3eaa7495)
 ---
@@ -40,5 +40,5 @@ index d39e7299886d18739d332e266b3ddb279ef6998e..084434b869c67f41879d78b54389cf9d
      protector-all
    [9842] localedata: en_CA: incorrect date format
 -- 
-2.44.0
+2.35.6
 

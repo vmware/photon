@@ -1,0 +1,83 @@
+From 2a4c4043d03c79e05047f36b128aa3cdee36e254 Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Wed, 11 Jan 2023 13:51:48 +0000
+Subject: [PATCH 132/147] AArch64: Improve strlen_asimd
+
+Use shrn for the mask, merge tst+bne into cbnz, and tweak code alignment.
+Performance improves slightly as a result.
+
+Reviewed-by: Szabolcs Nagy <szabolcs.nagy@arm.com>
+(cherry picked from commit 1bbb1a2022e126f21810d3d0ebe0a975d5243e43)
+---
+ sysdeps/aarch64/multiarch/strlen_asimd.S | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
+
+diff --git a/sysdeps/aarch64/multiarch/strlen_asimd.S b/sysdeps/aarch64/multiarch/strlen_asimd.S
+index e8902dd27f0142aa68e78e4f6df0a704d380549a..4206b4ac51e1e6a7ad1da39be02dfc62ef3ff5c3 100644
+--- a/sysdeps/aarch64/multiarch/strlen_asimd.S
++++ b/sysdeps/aarch64/multiarch/strlen_asimd.S
+@@ -48,6 +48,7 @@
+ #define tmp	x2
+ #define tmpw	w2
+ #define synd	x3
++#define syndw	w3
+ #define shift	x4
+ 
+ /* For the first 32 bytes, NUL detection works on the principle that
+@@ -87,7 +88,6 @@
+ 
+ ENTRY (__strlen_asimd)
+ 	PTR_ARG (0)
+-
+ 	and	tmp1, srcin, MIN_PAGE_SIZE - 1
+ 	cmp	tmp1, MIN_PAGE_SIZE - 32
+ 	b.hi	L(page_cross)
+@@ -123,7 +123,6 @@ ENTRY (__strlen_asimd)
+ 	add	len, len, tmp1, lsr 3
+ 	ret
+ 
+-	.p2align 3
+ 	/* Look for a NUL byte at offset 16..31 in the string.  */
+ L(bytes16_31):
+ 	ldp	data1, data2, [srcin, 16]
+@@ -151,6 +150,7 @@ L(bytes16_31):
+ 	add	len, len, tmp1, lsr 3
+ 	ret
+ 
++	nop
+ L(loop_entry):
+ 	bic	src, srcin, 31
+ 
+@@ -166,18 +166,12 @@ L(loop):
+ 	/* Low 32 bits of synd are non-zero if a NUL was found in datav1.  */
+ 	cmeq	maskv.16b, datav1.16b, 0
+ 	sub	len, src, srcin
+-	tst	synd, 0xffffffff
+-	b.ne	1f
++	cbnz	syndw, 1f
+ 	cmeq	maskv.16b, datav2.16b, 0
+ 	add	len, len, 16
+ 1:
+ 	/* Generate a bitmask and compute correct byte offset.  */
+-#ifdef __AARCH64EB__
+-	bic	maskv.8h, 0xf0
+-#else
+-	bic	maskv.8h, 0x0f, lsl 8
+-#endif
+-	umaxp	maskv.16b, maskv.16b, maskv.16b
++	shrn	maskv.8b, maskv.8h, 4
+ 	fmov	synd, maskd
+ #ifndef __AARCH64EB__
+ 	rbit	synd, synd
+@@ -186,8 +180,6 @@ L(loop):
+ 	add	len, len, tmp, lsr 2
+ 	ret
+ 
+-        .p2align 4
+-
+ L(page_cross):
+ 	bic	src, srcin, 31
+ 	mov	tmpw, 0x0c03
+-- 
+2.35.6
+

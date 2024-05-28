@@ -1,7 +1,7 @@
 From ff75390ef59823193351ae77584c397c503b7b58 Mon Sep 17 00:00:00 2001
 From: Andreas Schwab <schwab@linux-m68k.org>
 Date: Thu, 27 May 2021 12:49:47 +0200
-Subject: [PATCH 047/125] Use __pthread_attr_copy in mq_notify (bug 27896)
+Subject: [PATCH 047/147] Use __pthread_attr_copy in mq_notify (bug 27896)
 
 Make a deep copy of the pthread attribute object to remove a potential
 use-after-free issue.
@@ -68,5 +68,5 @@ index 61bbb03b646aff64004637f0042bb12fa7517c5b..f404acfdfe5109338a754ef3dbc6b2f8
    return retval;
  }
 -- 
-2.44.0
+2.35.6
 

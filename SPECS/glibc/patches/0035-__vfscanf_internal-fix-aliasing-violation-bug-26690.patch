@@ -1,7 +1,7 @@
 From 082798622d888e2d1b39b0758a0a5f8530a558b2 Mon Sep 17 00:00:00 2001
 From: Andreas Schwab <schwab@suse.de>
 Date: Thu, 1 Oct 2020 13:59:13 +0200
-Subject: [PATCH 035/125] __vfscanf_internal: fix aliasing violation (bug
+Subject: [PATCH 035/147] __vfscanf_internal: fix aliasing violation (bug
  26690)
 
 As noted in <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97264>, the cast
@@ -89,5 +89,5 @@ index 95b46dcbeb55b1724b396f02a940f3047259b926..3a323547f9934088ab75729a3e6ff65f
  	      }
  	    else
 -- 
-2.44.0
+2.35.6
 

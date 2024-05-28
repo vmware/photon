@@ -1,7 +1,7 @@
 From 077f1f78bbecaf2f36dc01a27900cf73314cc713 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Fri, 11 Aug 2023 18:42:52 -0500
-Subject: [PATCH 124/125] x86: Fix incorrect scope of setting
+Subject: [PATCH 124/147] x86: Fix incorrect scope of setting
  `shared_per_thread` [BZ# 30745]
 
 The:
@@ -43,5 +43,5 @@ index 6c0a80ddbb776d837871609be4f842403b70a41f..84c2d3c96ea3473cf83baf80a48f895f
  
    /* Account for non-inclusive L2 and L3 caches.  */
 -- 
-2.44.0
+2.35.6
 

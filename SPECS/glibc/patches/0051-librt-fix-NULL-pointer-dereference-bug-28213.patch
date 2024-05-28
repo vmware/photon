@@ -1,7 +1,7 @@
 From 76dfec932475fa1a8751149520fa39bc4bbc9125 Mon Sep 17 00:00:00 2001
 From: Nikita Popov <npv1310@gmail.com>
 Date: Mon, 9 Aug 2021 20:17:34 +0530
-Subject: [PATCH 051/125] librt: fix NULL pointer dereference (bug 28213)
+Subject: [PATCH 051/147] librt: fix NULL pointer dereference (bug 28213)
 
 Helper thread frees copied attribute on NOTIFY_REMOVED message
 received from the OS kernel.  Unfortunately, it fails to check whether
@@ -36,5 +36,5 @@ index b5a903c3a260bed9e6185edf7c68ed8837fdee58..2bb98172c8093c44708c7bb91389ae65
  	  /* The only state we keep is the copy of the thread attributes.  */
  	  pthread_attr_destroy (data.attr);
 -- 
-2.44.0
+2.35.6
 

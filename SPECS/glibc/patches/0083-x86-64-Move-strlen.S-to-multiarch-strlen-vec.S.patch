@@ -1,7 +1,7 @@
 From 5d8687bfb755c2bea91ffd241e6490afe0bb1392 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Tue, 22 Jun 2021 20:42:10 -0700
-Subject: [PATCH 083/125] x86-64: Move strlen.S to multiarch/strlen-vec.S
+Subject: [PATCH 083/147] x86-64: Move strlen.S to multiarch/strlen-vec.S
 
 Since strlen.S contains SSE2 version of strlen/strnlen and SSE4.1
 version of wcslen/wcsnlen, move strlen.S to multiarch/strlen-vec.S
@@ -559,5 +559,5 @@ index 2e226d0d55e84e67f76a6affc802a2f73b1097eb..8422c15cc8e086e0dcb5fe3ea62ad469
 -END(strlen)
  libc_hidden_builtin_def (strlen)
 -- 
-2.44.0
+2.35.6
 

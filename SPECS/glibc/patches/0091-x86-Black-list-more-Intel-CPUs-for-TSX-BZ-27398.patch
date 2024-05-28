@@ -1,7 +1,7 @@
 From b1fcaf14fe91a35a21a184623c4f08352f566297 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Fri, 14 Jan 2022 14:48:01 -0800
-Subject: [PATCH 091/125] x86: Black list more Intel CPUs for TSX [BZ #27398]
+Subject: [PATCH 091/147] x86: Black list more Intel CPUs for TSX [BZ #27398]
 
 Disable TSX and enable RTM_ALWAYS_ABORT for Intel CPUs listed in:
 
@@ -63,5 +63,5 @@ index ad135a122b9732af43c7d6cab0507e4c8717d02b..484efe7a0f2371f702a50c4169982e42
  	      /* Xeon E7 v3 with stepping >= 4 has working TSX.  */
  	      if (stepping >= 4)
 -- 
-2.44.0
+2.35.6
 

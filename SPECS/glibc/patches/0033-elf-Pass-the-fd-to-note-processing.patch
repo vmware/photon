@@ -1,7 +1,7 @@
 From 46e1e64fe3ea90f3b32bf38eb15edd94e2a428cd Mon Sep 17 00:00:00 2001
 From: Szabolcs Nagy <szabolcs.nagy@arm.com>
 Date: Wed, 28 Oct 2020 15:17:06 +0000
-Subject: [PATCH 033/125] elf: Pass the fd to note processing
+Subject: [PATCH 033/147] elf: Pass the fd to note processing
 
 To handle GNU property notes on aarch64 some segments need to
 be mmaped again, so the fd of the loaded ELF module is needed.
@@ -166,5 +166,5 @@ index 89911e19e238ff64a080cf787a29e949da133718..4eb3b85a7bd1a1982724effb2ffeb08e
    return 0;
  }
 -- 
-2.44.0
+2.35.6
 

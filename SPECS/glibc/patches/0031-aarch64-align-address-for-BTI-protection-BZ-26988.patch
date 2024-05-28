@@ -1,7 +1,7 @@
 From c6090dcebd1fc2a39a95b6fd420e072a2039a81b Mon Sep 17 00:00:00 2001
 From: Szabolcs Nagy <szabolcs.nagy@arm.com>
 Date: Tue, 1 Dec 2020 10:12:32 +0000
-Subject: [PATCH 031/125] aarch64: align address for BTI protection [BZ #26988]
+Subject: [PATCH 031/147] aarch64: align address for BTI protection [BZ #26988]
 
 Handle unaligned executable load segments (the bfd linker is not
 expected to produce such binaries, but other linkers may).
@@ -58,5 +58,5 @@ index 56c097210ad4968ba40e1366f5925a845f15d4a0..779d0fe48879eaccd1283efdf1bf2e36
  
  /* Enable BTI for L and its dependencies.  */
 -- 
-2.44.0
+2.35.6
 

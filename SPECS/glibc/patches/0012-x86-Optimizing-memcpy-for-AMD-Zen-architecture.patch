@@ -1,7 +1,7 @@
 From 8813b2682e4094e43b0cf1634e99619f1b8b2c62 Mon Sep 17 00:00:00 2001
 From: Sajan Karumanchi <sajan.karumanchi@amd.com>
 Date: Wed, 28 Oct 2020 13:05:33 +0530
-Subject: [PATCH 012/125] x86: Optimizing memcpy for AMD Zen architecture.
+Subject: [PATCH 012/147] x86: Optimizing memcpy for AMD Zen architecture.
 
 Modifying the shareable cache '__x86_shared_cache_size', which is a
 factor in computing the non-temporal threshold parameter
@@ -62,5 +62,5 @@ index dadec5d58f9f5adfbdc844bb98816e5717068a0e..3fb4a028d81815619068ccb1b42d2a97
      }
  
 -- 
-2.44.0
+2.35.6
 

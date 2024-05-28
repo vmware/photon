@@ -1,7 +1,7 @@
 From 0d9793e82a19bcef10ef7d73a26cd44b7ad30753 Mon Sep 17 00:00:00 2001
 From: Andreas Schwab <schwab@suse.de>
 Date: Wed, 6 Jan 2021 11:03:44 +0530
-Subject: [PATCH 025/125] Fix buffer overrun in EUC-KR conversion module (bz
+Subject: [PATCH 025/147] Fix buffer overrun in EUC-KR conversion module (bz
  #24973)
 
 The byte 0xfe as input to the EUC-KR conversion denotes a user-defined
@@ -132,5 +132,5 @@ index d3eb3a4ff868585adddafc668d4b30ed6b619a2a..f5cdc72797aae6eb5dce389bcf5cb6a5
    if (ch2 < offset || (ch2 - offset) <= 0x20 || (ch2 - offset) >= 0x7f)
      return __UNKNOWN_10646_CHAR;
 -- 
-2.44.0
+2.35.6
 

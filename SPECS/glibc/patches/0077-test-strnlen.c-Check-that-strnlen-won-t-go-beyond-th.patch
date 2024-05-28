@@ -1,7 +1,7 @@
 From 33046deb9626e35b587db9e722111a450f952e44 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Sat, 27 Mar 2021 09:06:39 -0700
-Subject: [PATCH 077/125] test-strnlen.c: Check that strnlen won't go beyond
+Subject: [PATCH 077/147] test-strnlen.c: Check that strnlen won't go beyond
  the maximum length
 
 Place strings ending at page boundary without the null byte.  If an
@@ -61,5 +61,5 @@ index 2a56d16c177047d66ae92aafc1ea336e450fa67f..9b4b01a1a7a88940b18daf5e37180e6a
  }
  
 -- 
-2.44.0
+2.35.6
 

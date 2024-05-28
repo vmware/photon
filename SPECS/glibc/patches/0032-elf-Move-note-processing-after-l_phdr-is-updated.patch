@@ -1,7 +1,7 @@
 From b6eae83717d1b272b3dc0f5eb59354ca6ffe4dde Mon Sep 17 00:00:00 2001
 From: Szabolcs Nagy <szabolcs.nagy@arm.com>
 Date: Thu, 29 Oct 2020 13:29:15 +0000
-Subject: [PATCH 032/125] elf: Move note processing after l_phdr is updated
+Subject: [PATCH 032/147] elf: Move note processing after l_phdr is updated
 
 Program headers are processed in two pass: after the first pass
 load segments are mmapped so in the second pass target specific
@@ -74,5 +74,5 @@ index e39980fb192dc19769d4e78142c277efac56b31b..9ef1cc320364232b7fdb8033cd08ce6e
    if (__glibc_unlikely (__close_nocancel (fd) != 0))
      {
 -- 
-2.44.0
+2.35.6
 

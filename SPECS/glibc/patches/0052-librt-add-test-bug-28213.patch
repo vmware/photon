@@ -1,7 +1,7 @@
 From 75507b3337ae6d1662a0ac138517219fcb1af929 Mon Sep 17 00:00:00 2001
 From: Nikita Popov <npv1310@gmail.com>
 Date: Thu, 12 Aug 2021 16:09:50 +0530
-Subject: [PATCH 052/125] librt: add test (bug 28213)
+Subject: [PATCH 052/147] librt: add test (bug 28213)
 
 This test implements following logic:
 1) Create POSIX message queue.
@@ -143,5 +143,5 @@ index 0000000000000000000000000000000000000000..0c096b5a0ad4170a79617349a172383c
 +
 +#include <support/test-driver.c>
 -- 
-2.44.0
+2.35.6
 

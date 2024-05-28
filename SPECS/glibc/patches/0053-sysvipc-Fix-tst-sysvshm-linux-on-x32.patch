@@ -1,7 +1,7 @@
 From cc6ff883a63ef0f8e2dad8f97a5784c30acd2d49 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Thu, 15 Oct 2020 15:45:26 -0300
-Subject: [PATCH 053/125] sysvipc: Fix tst-sysvshm-linux on x32
+Subject: [PATCH 053/147] sysvipc: Fix tst-sysvshm-linux on x32
 
 The Linux shminfo fields are '__syscall_ulong_t' (which is 64-bit
 for x32).  This patch fixes the test to compare againt the correct
@@ -43,5 +43,5 @@ index 7128ae2e14db5ad8111849ada5841a1e89f2ceb5..cb32bd522effbc7ae69589d633a4bd20
  #endif
      tipcinfo.shmmax = v;
 -- 
-2.44.0
+2.35.6
 

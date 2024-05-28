@@ -1,7 +1,7 @@
 From 0a888ff9bd83bbad572e6cdf188006408b9aa9b1 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Tue, 20 Sep 2022 17:58:04 -0700
-Subject: [PATCH 119/125] x86: Fix wcsnlen-avx2 page cross length comparison
+Subject: [PATCH 119/147] x86: Fix wcsnlen-avx2 page cross length comparison
  [BZ #29591]
 
 Previous implementation was adjusting length (rsi) to match
@@ -127,5 +127,5 @@ index 45e08e64d6dfed30a38e47de1b8fc8ddbb051838..8cfb7391b0afff39344e3b00ea411006
  # endif
  
 -- 
-2.44.0
+2.35.6
 

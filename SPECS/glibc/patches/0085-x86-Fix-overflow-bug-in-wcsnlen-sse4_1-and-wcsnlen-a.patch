@@ -1,7 +1,7 @@
 From 04b9cc156d1537eb015a2eb717c942f59a7c03fb Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Wed, 23 Jun 2021 01:56:29 -0400
-Subject: [PATCH 085/125] x86: Fix overflow bug in wcsnlen-sse4_1 and
+Subject: [PATCH 085/147] x86: Fix overflow bug in wcsnlen-sse4_1 and
  wcsnlen-avx2 [BZ #27974]
 
 This commit fixes the bug mentioned in the previous commit.
@@ -493,5 +493,5 @@ index 8f660bb9c75debb5858973b0cbaa94269fcedfa3..439e486a4317a332018fbd2a8ccdd244
  	and	$-64, %R10_LP
  	mov	%RSI_LP, %R11_LP
 -- 
-2.44.0
+2.35.6
 

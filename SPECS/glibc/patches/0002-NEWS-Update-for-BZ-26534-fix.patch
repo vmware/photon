@@ -1,7 +1,7 @@
 From 386543bc4495f658dcce6cd4d11e4ba6574a46f5 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Wed, 26 Aug 2020 04:26:50 +0200
-Subject: [PATCH 002/125] NEWS: Update for [BZ #26534] fix
+Subject: [PATCH 002/147] NEWS: Update for [BZ #26534] fix
 
 ---
  NEWS | 5 +++++
@@ -24,5 +24,5 @@ index 485b8ddffa0d41635d12383c2da1e2d4d5f949c6..a141de93dd0ad5892fa81e865df25e5a
  
  Major new features:
 -- 
-2.44.0
+2.35.6
 

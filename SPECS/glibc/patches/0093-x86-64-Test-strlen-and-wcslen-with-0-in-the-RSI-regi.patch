@@ -1,7 +1,7 @@
 From 9d1cd8bd7a8c6c8b7c4bfb3e566f711494cc12db Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Thu, 8 Jul 2021 16:13:17 -0400
-Subject: [PATCH 093/125] x86-64: Test strlen and wcslen with 0 in the RSI
+Subject: [PATCH 093/147] x86-64: Test strlen and wcslen with 0 in the RSI
  register [BZ #28064]
 
 commit 6f573a27b6c8b4236445810a44660612323f5a73
@@ -164,5 +164,5 @@ index 0000000000000000000000000000000000000000..f45a7dfb5147d89c81f477c81fcb0217
 +#define WIDE 1
 +#include "tst-rsi-strlen.c"
 -- 
-2.44.0
+2.35.6
 

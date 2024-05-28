@@ -1,7 +1,7 @@
 From 610e2c515045a5924f28d8c4fb0a5ddacc90980a Mon Sep 17 00:00:00 2001
 From: Szabolcs Nagy <szabolcs.nagy@arm.com>
 Date: Fri, 20 Nov 2020 15:27:06 +0000
-Subject: [PATCH 030/125] aarch64: Fix missing BTI protection from dependencies
+Subject: [PATCH 030/147] aarch64: Fix missing BTI protection from dependencies
  [BZ #26926]
 
 The _dl_open_check and _rtld_main_check hooks are not called on the
@@ -50,5 +50,5 @@ index 196e462520e0dc49bac57996eaaac5972635204e..56c097210ad4968ba40e1366f5925a84
 +    }
  }
 -- 
-2.44.0
+2.35.6
 

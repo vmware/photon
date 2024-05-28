@@ -1,7 +1,7 @@
 From 5c36293f067d2af16e4eb9f9465be36f346ea6d0 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Thu, 15 Oct 2020 12:33:13 +0200
-Subject: [PATCH 020/125] resolv: Serialize processing in
+Subject: [PATCH 020/147] resolv: Serialize processing in
  resolv/tst-resolv-txnid-collision
 
 When switching name servers, response processing by two server
@@ -35,5 +35,5 @@ index 611d37362f3e5e89b92766f0790459340cc071b3..189b76f1268f4e4d4345565bcd4f0540
  
    for (int rcode = 0; rcode <= 5; ++rcode)
 -- 
-2.44.0
+2.35.6
 

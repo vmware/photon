@@ -1,7 +1,7 @@
 From 760e1d287825fa91d4d5a0cc921340c740d803e2 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Wed, 27 Jan 2021 13:36:12 +0100
-Subject: [PATCH 037/125] gconv: Fix assertion failure in ISO-2022-JP-3 module
+Subject: [PATCH 037/147] gconv: Fix assertion failure in ISO-2022-JP-3 module
  (bug 27256)
 
 The conversion loop to the internal encoding does not follow
@@ -289,5 +289,5 @@ index 8c3b7e627e518d98f0d0e47414282ee394c4974a..62cbc54a110ab1f98861562309cd4d5f
  									      \
  	inptr += 2;							      \
 -- 
-2.44.0
+2.35.6
 

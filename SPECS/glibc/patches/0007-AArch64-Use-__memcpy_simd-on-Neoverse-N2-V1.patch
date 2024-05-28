@@ -1,7 +1,7 @@
 From 81c5484d93a7768a8acc4cfdc228d925d60cd906 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wdijkstr@arm.com>
 Date: Wed, 14 Oct 2020 13:56:21 +0100
-Subject: [PATCH 007/125] AArch64: Use __memcpy_simd on Neoverse N2/V1
+Subject: [PATCH 007/147] AArch64: Use __memcpy_simd on Neoverse N2/V1
 
 Add CPU detection of Neoverse N2 and Neoverse V1, and select __memcpy_simd as
 the memcpy/memmove ifunc.
@@ -58,5 +58,5 @@ index fc688450ee0e0f7cf58e73920263631a0ea7c8d6..00a4d0c8e75f5554120da6da9c079ed6
  #define IS_EMAG(midr) (MIDR_IMPLEMENTOR(midr) == 'P'			      \
                         && MIDR_PARTNUM(midr) == 0x000)
 -- 
-2.44.0
+2.35.6
 

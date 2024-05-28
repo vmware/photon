@@ -1,7 +1,7 @@
 From 36ae20e6764fc0eb1ef126c41e40f14ecedc4031 Mon Sep 17 00:00:00 2001
 From: Siddhesh Poyarekar <siddhesh@sourceware.org>
 Date: Tue, 16 Mar 2021 12:37:54 +0530
-Subject: [PATCH 043/125] Enhance setuid-tunables test
+Subject: [PATCH 043/147] Enhance setuid-tunables test
 
 Instead of passing GLIBC_TUNABLES via the environment, pass the
 environment variable from parent to child.  This allows us to test
@@ -156,5 +156,5 @@ index 971d5892b17c91fc60b8cb19139de9446e55dcdc..91db3d755549646f1edc40b3dd158985
 +#define TEST_FUNCTION_ARGV do_test
 +#include <support/test-driver.c>
 -- 
-2.44.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 0e49f103adc199ad6e9664d6d8e99bc5463766f6 Mon Sep 17 00:00:00 2001
 From: Siddhesh Poyarekar <siddhesh@sourceware.org>
 Date: Tue, 16 Mar 2021 12:37:55 +0530
-Subject: [PATCH 044/125] Fix SXID_ERASE behavior in setuid programs (BZ
+Subject: [PATCH 044/147] Fix SXID_ERASE behavior in setuid programs (BZ
  #27471)
 
 When parse_tunables tries to erase a tunable marked as SXID_ERASE for
@@ -167,5 +167,5 @@ index 91db3d755549646f1edc40b3dd158985ca2f21ef..ca0c8c245c41f6ff065364c980dfc0e8
  
  static int
 -- 
-2.44.0
+2.35.6
 

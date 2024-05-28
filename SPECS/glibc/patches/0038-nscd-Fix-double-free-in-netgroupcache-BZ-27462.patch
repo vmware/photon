@@ -1,7 +1,7 @@
 From 1d4526569162e6c8f0789eb077492730b0756b3b Mon Sep 17 00:00:00 2001
 From: DJ Delorie <dj@redhat.com>
 Date: Thu, 25 Feb 2021 16:08:21 -0500
-Subject: [PATCH 038/125] nscd: Fix double free in netgroupcache [BZ #27462]
+Subject: [PATCH 038/147] nscd: Fix double free in netgroupcache [BZ #27462]
 
 In commit 745664bd798ec8fd50438605948eea594179fba1 a use-after-free
 was fixed, but this led to an occasional double-free.  This patch
@@ -41,5 +41,5 @@ index 88c69d1e9c1d183eccb8e443e43b3f42add0602d..381aa721ef28c778e6f6db9d6fd08283
  		    else if (status == NSS_STATUS_RETURN
  			     || status == NSS_STATUS_NOTFOUND
 -- 
-2.44.0
+2.35.6
 

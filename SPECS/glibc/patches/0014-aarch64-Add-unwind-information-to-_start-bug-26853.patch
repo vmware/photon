@@ -1,7 +1,7 @@
 From c6e794640c324db37038c6a8606f3f5f8903250b Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Mon, 9 Nov 2020 11:31:04 +0100
-Subject: [PATCH 014/125] aarch64: Add unwind information to _start (bug 26853)
+Subject: [PATCH 014/147] aarch64: Add unwind information to _start (bug 26853)
 
 This adds CFI directives which communicate that the stack ends
 with this function.
@@ -53,5 +53,5 @@ index 75393e1c1809a36b5784878d91670bc3672f56b2..108f602721b42cac527a0be4f7e2733a
  	/* Define a symbol for the first piece of initialized data.  */
  	.data
 -- 
-2.44.0
+2.35.6
 

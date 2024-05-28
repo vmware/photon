@@ -1,7 +1,7 @@
 From 27e892f6608e9d0da71884bb1422a735f6062850 Mon Sep 17 00:00:00 2001
 From: Andreas Schwab <schwab@linux-m68k.org>
 Date: Fri, 25 Jun 2021 15:02:47 +0200
-Subject: [PATCH 049/125] wordexp: handle overflow in positional parameter
+Subject: [PATCH 049/147] wordexp: handle overflow in positional parameter
  number (bug 28011)
 
 Use strtoul instead of atoi so that overflow can be detected.
@@ -38,5 +38,5 @@ index e082d94895631d70af0762c0b6c070abe3419109..56289503a17e66093bc88018bf73807e
        if (n >= __libc_argc)
  	/* Substitute NULL. */
 -- 
-2.44.0
+2.35.6
 

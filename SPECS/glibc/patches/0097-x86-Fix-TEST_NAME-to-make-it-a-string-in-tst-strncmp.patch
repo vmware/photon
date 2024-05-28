@@ -1,7 +1,7 @@
 From 7bbad8e3cfd7f6da3e4b17d84aea2465f6e8f713 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Fri, 18 Feb 2022 17:00:25 -0600
-Subject: [PATCH 097/125] x86: Fix TEST_NAME to make it a string in
+Subject: [PATCH 097/147] x86: Fix TEST_NAME to make it a string in
  tst-strncmp-rtm.c
 
 Previously TEST_NAME was passing a function pointer. This didn't fail
@@ -34,5 +34,5 @@ index 4e9f094f39c72f678390ea0b1454fdcca8062e34..aef9866cf2fbe7744cec53656ca268a3
  
  
 -- 
-2.44.0
+2.35.6
 

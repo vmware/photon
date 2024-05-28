@@ -1,7 +1,7 @@
 From 778b8d37865a1d6689155c23802724bf11e4bc75 Mon Sep 17 00:00:00 2001
 From: Stefan Liebler <stli@linux.ibm.com>
 Date: Tue, 23 Mar 2021 17:29:26 +0100
-Subject: [PATCH 040/125] S390: Also check vector support in memmove
+Subject: [PATCH 040/147] S390: Also check vector support in memmove
  ifunc-selector [BZ #27511]
 
 The arch13 memmove variant is currently selected by the ifunc selector
@@ -105,5 +105,5 @@ index e6195c6e261efcbd0a253aa451a69a830cdec8df..17c0cc3952d873ead76ccc2ca58b6391
  # endif
  # if HAVE_MEMMOVE_Z13
 -- 
-2.44.0
+2.35.6
 

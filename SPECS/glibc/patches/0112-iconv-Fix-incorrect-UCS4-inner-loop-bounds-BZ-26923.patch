@@ -1,7 +1,7 @@
 From 1896ace5805f7322daeb367f57004c8ea15a1d70 Mon Sep 17 00:00:00 2001
 From: Michael Colavita <mcolavita@fb.com>
 Date: Thu, 19 Nov 2020 11:44:40 -0500
-Subject: [PATCH 112/125] iconv: Fix incorrect UCS4 inner loop bounds
+Subject: [PATCH 112/147] iconv: Fix incorrect UCS4 inner loop bounds
  (BZ#26923)
 
 Previously, in UCS4 conversion routines we limit the number of
@@ -163,5 +163,5 @@ index 0000000000000000000000000000000000000000..0b92b19f66b573eb4e6bbbb15fc19db6
 +
 +#include <support/test-driver.c>
 -- 
-2.44.0
+2.35.6
 

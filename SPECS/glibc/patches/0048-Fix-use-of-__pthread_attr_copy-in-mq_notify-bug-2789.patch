@@ -1,7 +1,7 @@
 From 16949aeaa078b5994a333980d7a6cd5705d5e1f7 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 1 Jun 2021 17:51:41 +0200
-Subject: [PATCH 048/125] Fix use of __pthread_attr_copy in mq_notify (bug
+Subject: [PATCH 048/147] Fix use of __pthread_attr_copy in mq_notify (bug
  27896)
 
 __pthread_attr_copy can fail and does not initialize the attribute
@@ -50,5 +50,5 @@ index f404acfdfe5109338a754ef3dbc6b2f845c6be2c..b5a903c3a260bed9e6185edf7c68ed88
        pthread_attr_destroy (data.attr);
        free (data.attr);
 -- 
-2.44.0
+2.35.6
 

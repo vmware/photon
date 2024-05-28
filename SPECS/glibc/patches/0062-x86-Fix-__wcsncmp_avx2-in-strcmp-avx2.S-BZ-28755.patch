@@ -1,7 +1,7 @@
 From 3a5f4c4010db9bab67267c63339d1983007584f8 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Sun, 9 Jan 2022 16:02:21 -0600
-Subject: [PATCH 062/125] x86: Fix __wcsncmp_avx2 in strcmp-avx2.S [BZ# 28755]
+Subject: [PATCH 062/147] x86: Fix __wcsncmp_avx2 in strcmp-avx2.S [BZ# 28755]
 
 Fixes [BZ# 28755] for wcsncmp by redirecting length >= 2^56 to
 __wcscmp_avx2. For x86_64 this covers the entire address range so any
@@ -37,5 +37,5 @@ index d42b04b54fa8b44aabb676e08e90fcaceb406b71..fb2527e0ca286a8dbedc99412cb8a2ed
  	shl	$2, %RDX_LP
  #  endif
 -- 
-2.44.0
+2.35.6
 

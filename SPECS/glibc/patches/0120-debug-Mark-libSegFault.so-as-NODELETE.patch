@@ -1,7 +1,7 @@
 From bf4a99baedf5277185f9fe215ed9636490d251f8 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Thu, 20 Jul 2023 18:31:48 +0200
-Subject: [PATCH 120/125] debug: Mark libSegFault.so as NODELETE
+Subject: [PATCH 120/147] debug: Mark libSegFault.so as NODELETE
 
 The signal handler installed in the ELF constructor cannot easily
 be removed again (because the program may have changed handlers
@@ -28,5 +28,5 @@ index 0036edd1872eff2f8b634ad26a235cd9a60d0a31..75584027b0ff2626e30c6a7df92acd04
  libpcprofile-routines = pcprofile
  libpcprofile-inhibit-o = $(filter-out .os,$(object-suffixes))
 -- 
-2.44.0
+2.35.6
 

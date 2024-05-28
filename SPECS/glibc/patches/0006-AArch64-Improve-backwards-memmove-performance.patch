@@ -1,7 +1,7 @@
 From 0f8f0ed25c196cfb93edf461aefdad15314ae05c Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wdijkstr@arm.com>
 Date: Fri, 28 Aug 2020 17:51:40 +0100
-Subject: [PATCH 006/125] AArch64: Improve backwards memmove performance
+Subject: [PATCH 006/147] AArch64: Improve backwards memmove performance
 
 On some microarchitectures performance of the backwards memmove improves if
 the stores use STR with decreasing addresses.  So change the memmove loop
@@ -35,5 +35,5 @@ index d4ba74777744c8bb5a83e43ab2d63ad8dab35203..48bb6d7ca425197907eaef2307fb3939
  	b.hi	L(loop64_backwards)
  
 -- 
-2.44.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 72c07875610c5129b4de33143e865eefe9b9d3bd Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Mon, 19 Apr 2021 19:36:07 -0400
-Subject: [PATCH 080/125] x86: Optimize strlen-avx2.S
+Subject: [PATCH 080/147] x86: Optimize strlen-avx2.S
 
 No bug. This commit optimizes strlen-avx2.S. The optimizations are
 mostly small things but they add up to roughly 10-30% performance
@@ -763,5 +763,5 @@ index 9f7af98a0e10b4d57a65f41a9998adc76a622a5d..2216b3997e8f94c3c65c0ec8972eb51c
  END (STRLEN)
  #endif
 -- 
-2.44.0
+2.35.6
 

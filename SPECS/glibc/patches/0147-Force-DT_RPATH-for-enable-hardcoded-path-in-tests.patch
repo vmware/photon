@@ -1,0 +1,48 @@
+From f80f3409e8b78b49b92dfdc22c08d6fa299d6920 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Thu, 9 May 2024 20:07:01 -0700
+Subject: [PATCH 147/147] Force DT_RPATH for --enable-hardcoded-path-in-tests
+
+On Fedora 40/x86-64, linker enables --enable-new-dtags by default which
+generates DT_RUNPATH instead of DT_RPATH.  Unlike DT_RPATH, DT_RUNPATH
+only applies to DT_NEEDED entries in the executable and doesn't applies
+to DT_NEEDED entries in shared libraries which are loaded via DT_NEEDED
+entries in the executable.  Some glibc tests have libstdc++.so.6 in
+DT_NEEDED, which has libm.so.6 in DT_NEEDED.  When DT_RUNPATH is generated,
+/lib64/libm.so.6 is loaded for such tests.  If the newly built glibc is
+older than glibc 2.36, these tests fail with
+
+assert/tst-assert-c++: /export/build/gnu/tools-build/glibc-gitlab-release/build-x86_64-linux/libc.so.6: version `GLIBC_2.36' not found (required by /lib64/libm.so.6)
+assert/tst-assert-c++: /export/build/gnu/tools-build/glibc-gitlab-release/build-x86_64-linux/libc.so.6: version `GLIBC_ABI_DT_RELR' not found (required by /lib64/libm.so.6)
+
+Pass -Wl,--disable-new-dtags to linker when building glibc tests with
+--enable-hardcoded-path-in-tests.  This fixes BZ #31719.
+
+Signed-off-by: H.J. Lu <hjl.tools@gmail.com>
+(cherry picked from commit 2dcaf70643710e22f92a351e36e3cff8b48c60dc)
+---
+ Makeconfig | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/Makeconfig b/Makeconfig
+index dfda418aaccb16fae379a4d6aab5b27849d176d3..b7edfac42eff45e1fd068929e3f3fba83165bbd2 100644
+--- a/Makeconfig
++++ b/Makeconfig
+@@ -557,9 +557,12 @@ link-libc-rpath-link = -Wl,-rpath-link=$(rpath-link)
+ # before the expansion of LDLIBS-* variables).
+ 
+ # Tests use -Wl,-rpath instead of -Wl,-rpath-link for
+-# build-hardcoded-path-in-tests.
++# build-hardcoded-path-in-tests.  Add -Wl,--disable-new-dtags to force
++# DT_RPATH instead of DT_RUNPATH which only applies to DT_NEEDED entries
++# in the executable and doesn't applies to DT_NEEDED entries in shared
++# libraries which are loaded via DT_NEEDED entries in the executable.
+ ifeq (yes,$(build-hardcoded-path-in-tests))
+-link-libc-tests-rpath-link = $(link-libc-rpath)
++link-libc-tests-rpath-link = $(link-libc-rpath) -Wl,--disable-new-dtags
+ else
+ link-libc-tests-rpath-link = $(link-libc-rpath-link)
+ endif  # build-hardcoded-path-in-tests
+-- 
+2.35.6
+

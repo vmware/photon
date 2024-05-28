@@ -1,7 +1,7 @@
 From 2a7cef79d5da8a2b3b1c4b368efb81c69c8403b9 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Fri, 5 Mar 2021 07:26:42 -0800
-Subject: [PATCH 070/125] x86-64: Add AVX optimized string/memory functions for
+Subject: [PATCH 070/147] x86-64: Add AVX optimized string/memory functions for
  RTM
 
 Since VZEROUPPER triggers RTM abort while VZEROALL won't, select AVX
@@ -2561,5 +2561,5 @@ index 0b73674f6800b4c30f22e24118f95c2f4450b383..c8ad778fee2c567739865a4d73c15389
  
  /* Long and pointer size in bytes.  */
 -- 
-2.44.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 6bbc1a3a350655b8ca4670e0708f07d46782db3b Mon Sep 17 00:00:00 2001
 From: Sunil K Pandey <skpgkp2@gmail.com>
 Date: Wed, 28 Sep 2022 14:33:48 -0700
-Subject: [PATCH 102/125] x86-64: Require BMI2 for avx2 functions [BZ #29611]
+Subject: [PATCH 102/147] x86-64: Require BMI2 for avx2 functions [BZ #29611]
 
 This patch fixes BZ #29611
 ---
@@ -139,5 +139,5 @@ index d4bbf61030c46ef47ca1bb44b94937d3175638a9..0399dfe469ccd0561468d2f0f2a64594
  			      __wmemchr_avx2_rtm)
  	      IFUNC_IMPL_ADD (array, i, wmemchr,
 -- 
-2.44.0
+2.35.6
 
