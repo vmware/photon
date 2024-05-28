@@ -1,7 +1,7 @@
 From 9d7eebde8f134ea25bdb9ab61bc74d5e71e41288 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 023/118] resolv: Add tst-resolv-byaddr for testing reverse
+Subject: [PATCH 023/175] resolv: Add tst-resolv-byaddr for testing reverse
  lookup
 
 Reviewed-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
@@ -405,5 +405,5 @@ index 0000000000000000000000000000000000000000..05725225af0818cbf70b0e5bf0bf530b
 +  resolv_response_close_record (b);
 +}
 -- 
-2.41.0
+2.35.6
 

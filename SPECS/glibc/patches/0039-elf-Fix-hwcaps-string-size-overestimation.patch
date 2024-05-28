@@ -1,7 +1,7 @@
 From 4b95b6e8bbb5a2b6856f707bf3bc3308ebef595a Mon Sep 17 00:00:00 2001
 From: Javier Pello <devel@otheo.eu>
 Date: Mon, 5 Sep 2022 20:09:01 +0200
-Subject: [PATCH 039/118] elf: Fix hwcaps string size overestimation
+Subject: [PATCH 039/175] elf: Fix hwcaps string size overestimation
 
 Commit dad90d528259b669342757c37dedefa8577e2636 added glibc-hwcaps
 support for LD_LIBRARY_PATH and, for this, it adjusted the total
@@ -56,5 +56,5 @@ index 6f161f6ad528661f6b577d7d5d8a1f6ec6825363..92eb53790ef8d32005c0da5e28804bc5
      = malloc (*sz * sizeof (*result) + total);
    if (overall_result == NULL)
 -- 
-2.41.0
+2.35.6
 

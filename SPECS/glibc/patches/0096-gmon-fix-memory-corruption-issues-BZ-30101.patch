@@ -1,7 +1,7 @@
 From 3c98431da5d628074882e37287667c7e99560996 Mon Sep 17 00:00:00 2001
 From: Simon Kissane <skissane@gmail.com>
 Date: Sat, 11 Feb 2023 08:58:02 +1100
-Subject: [PATCH 096/118] gmon: fix memory corruption issues [BZ# 30101]
+Subject: [PATCH 096/175] gmon: fix memory corruption issues [BZ# 30101]
 
 V2 of this patch fixes an issue in V1, where the state was changed to ON not
 OFF at end of _mcleanup. I hadn't noticed that (counterintuitively) ON=0 and
@@ -205,5 +205,5 @@ index 0000000000000000000000000000000000000000..b259653ec833aca44650bcb435862906
 +  return 0;
 +}
 -- 
-2.41.0
+2.35.6
 

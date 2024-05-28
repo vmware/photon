@@ -1,7 +1,7 @@
 From 3e279192749cfcae4ceebb1f21a3275e677d0561 Mon Sep 17 00:00:00 2001
 From: Michael Hudson-Doyle <michael.hudson@canonical.com>
 Date: Fri, 12 Aug 2022 11:29:31 +1200
-Subject: [PATCH 058/118] Ensure calculations happen with desired rounding mode
+Subject: [PATCH 058/175] Ensure calculations happen with desired rounding mode
  in y1lf128
 
 math/test-float128-y1 fails on x86_64 and ppc64el with gcc 12 and -O3,
@@ -50,5 +50,5 @@ index 54c457681aecef079cb64d406ca89e05d2ce4fc5..9a9c5c6f00d7ca189d3068755c6be80d
      }
  
 -- 
-2.41.0
+2.35.6
 

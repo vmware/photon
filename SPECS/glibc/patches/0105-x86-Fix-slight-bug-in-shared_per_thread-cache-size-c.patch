@@ -1,7 +1,7 @@
 From 42c266a18f1aa87813b138247f98d7b690c67f34 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Mon, 17 Jul 2023 23:14:33 -0500
-Subject: [PATCH 105/118] x86: Fix slight bug in `shared_per_thread` cache size
+Subject: [PATCH 105/175] x86: Fix slight bug in `shared_per_thread` cache size
  calculation.
 
 After:
@@ -46,5 +46,5 @@ index 6e7d0197a7f1cc6d267ab140817753142cf14459..79fb8cc5e37394622abda1bedae5ff5f
      }
  
 -- 
-2.41.0
+2.35.6
 

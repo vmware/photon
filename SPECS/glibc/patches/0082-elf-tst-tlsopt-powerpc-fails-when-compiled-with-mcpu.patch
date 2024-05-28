@@ -1,7 +1,7 @@
 From dbd23eaca95eb0264b6325c7286a4b370a67404d Mon Sep 17 00:00:00 2001
 From: Alan Modra <amodra@gmail.com>
 Date: Sat, 12 Nov 2022 11:20:31 +1030
-Subject: [PATCH 082/118] elf/tst-tlsopt-powerpc fails when compiled with
+Subject: [PATCH 082/175] elf/tst-tlsopt-powerpc fails when compiled with
  -mcpu=power10 (BZ# 29776)
 
 Supports pcrel addressing of TLS GOT entry.  Also tweak the non-pcrel
@@ -43,5 +43,5 @@ index 2a82e53bafe9d0eb3e8df7cdf5bc17fb3df7dd88..d941024963fc7e6a65cc6388185f3a59
    register unsigned long thread_pointer __asm__ ("r2");
    asm ("bcl 20,31,1f\n1:\t"
 -- 
-2.41.0
+2.35.6
 

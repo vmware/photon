@@ -1,7 +1,7 @@
 From 3c9b4004e2dccc9ca2ace078a0106f9d682fd1a0 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 025/118] resolv: Add internal __res_binary_hnok function
+Subject: [PATCH 025/175] resolv: Add internal __res_binary_hnok function
 
 During package parsing, only the binary representation is available,
 and it is convenient to check that directly for conformance with host
@@ -60,5 +60,5 @@ index 07a412d8ff4da7423393325cc4627a9b2398d8bc..213edceaf3dc677bcfe56dd33d95fe8a
  versioned_symbol (libc, ___res_hnok, res_hnok, GLIBC_2_34);
  versioned_symbol (libc, ___res_hnok, __libc_res_hnok, GLIBC_PRIVATE);
 -- 
-2.41.0
+2.35.6
 

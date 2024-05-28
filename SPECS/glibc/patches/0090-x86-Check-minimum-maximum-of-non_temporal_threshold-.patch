@@ -1,7 +1,7 @@
 From f3991fec8071dbcf3ec9f13a91c738b66fcd4159 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Tue, 3 Jan 2023 13:06:48 -0800
-Subject: [PATCH 090/118] x86: Check minimum/maximum of non_temporal_threshold
+Subject: [PATCH 090/175] x86: Check minimum/maximum of non_temporal_threshold
  [BZ #29953]
 
 The minimum non_temporal_threshold is 0x4040.  non_temporal_threshold may
@@ -68,5 +68,5 @@ index e9f338210863b0a18226dfe0d43d677a27d58c51..637b5a022d7fe9d67339411cb337f1e8
  			   minimum_rep_movsb_threshold, SIZE_MAX);
    TUNABLE_SET_WITH_BOUNDS (x86_rep_stosb_threshold, rep_stosb_threshold, 1,
 -- 
-2.41.0
+2.35.6
 

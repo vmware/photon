@@ -1,7 +1,7 @@
 From 4c6a78addabbd6e1b69763e286768919e56dfe0a Mon Sep 17 00:00:00 2001
 From: Xi Ruoyao <xry111@xry111.site>
 Date: Sat, 15 Oct 2022 14:12:13 +0800
-Subject: [PATCH 067/118] longlong.h: update from GCC for LoongArch clz/ctz
+Subject: [PATCH 067/175] longlong.h: update from GCC for LoongArch clz/ctz
  support
 
 Update longlong.h to GCC r13-3269.  Keep our local change (prefer https
@@ -34,5 +34,5 @@ index 9b89469ac21ed70562d99a8d1436dfecaeebd577..d8f76a43b50ffd45b5e7489eaf637baf
  #define add_ssaaaa(sh, sl, ah, al, bh, bl) \
    /* The cmp clears the condition bit.  */ \
 -- 
-2.41.0
+2.35.6
 

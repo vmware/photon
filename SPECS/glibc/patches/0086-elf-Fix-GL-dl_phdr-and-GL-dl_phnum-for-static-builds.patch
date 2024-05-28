@@ -1,7 +1,7 @@
 From d5aaece8a3528ff5f9cc0ceeb067da0e47436669 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Tue, 3 Jan 2023 09:56:28 -0300
-Subject: [PATCH 086/118] elf: Fix GL(dl_phdr) and GL(dl_phnum) for static
+Subject: [PATCH 086/175] elf: Fix GL(dl_phdr) and GL(dl_phnum) for static
  builds [BZ #29864]
 
 The 73fc4e28b9464f0e refactor did not add the GL(dl_phdr) and
@@ -192,5 +192,5 @@ index 4af0b5b2ce23a762bd78d29747f50b0e1210680d..f45b630ba5cf9146a841005c1410dc2d
    call_function_static_weak (_dl_find_object_init);
  
 -- 
-2.41.0
+2.35.6
 

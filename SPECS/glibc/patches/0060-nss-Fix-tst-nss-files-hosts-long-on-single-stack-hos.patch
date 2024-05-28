@@ -1,7 +1,7 @@
 From 2681d38cafaceafeb330bc0536fa710b75ed5947 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 13 Sep 2022 16:11:40 +0200
-Subject: [PATCH 060/118] nss: Fix tst-nss-files-hosts-long on single-stack
+Subject: [PATCH 060/175] nss: Fix tst-nss-files-hosts-long on single-stack
  hosts (bug 24816)
 
 getent implicitly passes AI_ADDRCONFIG to getaddrinfo by default.
@@ -53,5 +53,5 @@ index 3942cf5fca5d4961e26657df3e9e2305e43f11df..a7697e31431fc77cb41e8b1e92a73c5d
      FAIL_EXIT1("ahostsv6 failed");
  
 -- 
-2.41.0
+2.35.6
 

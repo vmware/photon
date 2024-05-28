@@ -1,7 +1,7 @@
 From da5f134f6d59701a3a6119309ae91c93c3fa5b51 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 20 Sep 2022 11:00:42 +0200
-Subject: [PATCH 042/118] elf: Implement force_first handling in
+Subject: [PATCH 042/175] elf: Implement force_first handling in
  _dl_sort_maps_dfs (bug 28937)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -110,5 +110,5 @@ index 5f7f18ef270bc12d8ef848f62c35b84bb1ddb41c..4bf9052db16fb3522375afad055f1ca0
 +output(glibc.rtld.dynamic_sort=1): {+a[a2>a1>a>];+b[b1>b>];-b[<b<b1];+c[c>];%c(a1());}<a<a2<c<a1
 +output(glibc.rtld.dynamic_sort=2): {+a[a2>a1>a>];+b[b1>b>];-b[<b<b1];+c[c>];%c(a1());}<a2<a<c<a1
 -- 
-2.41.0
+2.35.6
 

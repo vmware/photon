@@ -1,7 +1,7 @@
 From 2ba9801d9f222de9fe1f5f04dcd1c276e56b4245 Mon Sep 17 00:00:00 2001
 From: Vladislav Khmelevsky <och95@yandex.ru>
 Date: Thu, 17 Nov 2022 12:47:29 +0400
-Subject: [PATCH 073/118] elf: Fix rtld-audit trampoline for aarch64
+Subject: [PATCH 073/175] elf: Fix rtld-audit trampoline for aarch64
 
 This patch fixes two problems with audit:
 
@@ -47,5 +47,5 @@ index 909b208578225b22dd62a6d184809a9032e17ca9..d66f0b9c4579ef2fc95f9cb083ef3b87
  	ldp	q2, q3, [x29, #OFFSET_RV + DL_OFFSET_RV_V0 + 32*1]
  	ldp	q4, q5, [x29, #OFFSET_RV + DL_OFFSET_RV_V0 + 32*2]
 -- 
-2.41.0
+2.35.6
 

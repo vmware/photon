@@ -1,7 +1,7 @@
 From d8bf4388df679fa5a3ae7889a649e573e3124530 Mon Sep 17 00:00:00 2001
 From: Aurelien Jarno <aurelien@aurel32.net>
 Date: Mon, 3 Oct 2022 23:46:11 +0200
-Subject: [PATCH 053/118] x86-64: Require BMI2 for AVX2 wcs(n)cmp
+Subject: [PATCH 053/175] x86-64: Require BMI2 for AVX2 wcs(n)cmp
  implementations
 
 The AVX2 wcs(n)cmp implementations use the 'bzhi' instruction, which
@@ -53,5 +53,5 @@ index aebef3daafc73565e4829744bb09abadaee9217c..fec8790c1156718656c1e87a89701fae
  				     __wcsncmp_avx2_rtm)
  	      /* ISA V2 wrapper for GENERIC implementation because the
 -- 
-2.41.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 2fce85f67c56e46863db40b8ca75bbf0fa993053 Mon Sep 17 00:00:00 2001
 From: caiyinyu <caiyinyu@loongson.cn>
 Date: Wed, 12 Oct 2022 20:28:42 +0800
-Subject: [PATCH 069/118] LoongArch: Fix ABI related macros in elf.h to keep
+Subject: [PATCH 069/175] LoongArch: Fix ABI related macros in elf.h to keep
  consistent with binutils[1].
 
 [1]:
@@ -31,5 +31,5 @@ index 02a1b3f52fdfa3d8d92fd4e3008316ab0a23f26d..014393f3ccc7a628d34c63a192ed3114
  /* LoongArch specific dynamic relocations */
  #define R_LARCH_NONE		0
 -- 
-2.41.0
+2.35.6
 

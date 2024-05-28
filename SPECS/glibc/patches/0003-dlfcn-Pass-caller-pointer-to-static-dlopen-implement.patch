@@ -1,7 +1,7 @@
 From c74bb93cfdb04d49155b0e30983a3c866167bbca Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Thu, 4 Aug 2022 17:54:48 +0200
-Subject: [PATCH 003/118] dlfcn: Pass caller pointer to static dlopen
+Subject: [PATCH 003/175] dlfcn: Pass caller pointer to static dlopen
  implementation (bug 29446)
 
 Fixes commit 0c1c3a771eceec46e66ce1183cf988e2303bd373 ("dlfcn: Move
@@ -45,5 +45,5 @@ index 2696dde4b1cdf510b78f173e8b69155890ddae66..9b07b4e132f2e73d00339d8702ff34c1
  
  void *
 -- 
-2.41.0
+2.35.6
 

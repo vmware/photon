@@ -1,7 +1,7 @@
 From 4321cbc2af788827e56e5581f56d7da2876b48f1 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella Netto <adhemerval.zanella@linaro.org>
 Date: Wed, 26 Oct 2022 16:04:25 -0300
-Subject: [PATCH 078/118] time: Use 64 bit time on tzfile
+Subject: [PATCH 078/175] time: Use 64 bit time on tzfile
 
 The tzfile_mtime is already compared to 64 bit time_t stat call.
 Reviewed-by: DJ Delorie <dj@redhat.com>
@@ -25,5 +25,5 @@ index dd75848ba95d8f6c72fd9a6d54894804e5419c36..394b098856da391e5b2b63098cb7e1ae
  struct ttinfo
    {
 -- 
-2.41.0
+2.35.6
 

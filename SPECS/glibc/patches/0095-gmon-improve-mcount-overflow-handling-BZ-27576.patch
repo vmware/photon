@@ -1,7 +1,7 @@
 From 8920855c4568fa99c67cb1c7d6b29465c25f51c2 Mon Sep 17 00:00:00 2001
 From: Simon Kissane <skissane@gmail.com>
 Date: Sat, 11 Feb 2023 20:12:13 +1100
-Subject: [PATCH 095/118] gmon: improve mcount overflow handling [BZ# 27576]
+Subject: [PATCH 095/175] gmon: improve mcount overflow handling [BZ# 27576]
 
 When mcount overflows, no gmon.out file is generated, but no message is printed
 to the user, leaving the user with no idea why, and thinking maybe there is
@@ -434,5 +434,5 @@ index 83cdcdac6dc70098b0408133d4a6f1987bd84eca..8bb2f29ea56bf23d4e0a9d53a05d2104
 +disabled, and no @file{gmon.out} file will be generated.
 +@end deftp
 -- 
-2.41.0
+2.35.6
 

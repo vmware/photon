@@ -1,7 +1,7 @@
 From 6d42a86ad3861d6ec67058eb32f5150e7b734951 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 21 Feb 2023 09:20:28 +0100
-Subject: [PATCH 091/118] gshadow: Matching sgetsgent, sgetsgent_r ERANGE
+Subject: [PATCH 091/175] gshadow: Matching sgetsgent, sgetsgent_r ERANGE
  handling (bug 30151)
 
 Before this change, sgetsgent_r did not set errno to ERANGE, but
@@ -140,5 +140,5 @@ index 0000000000000000000000000000000000000000..0370c10fd0630b42a2b273808a63f9b9
 +
 +#include <support/test-driver.c>
 -- 
-2.41.0
+2.35.6
 

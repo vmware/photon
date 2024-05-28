@@ -1,7 +1,7 @@
 From 0062e7dd1c3674ece2daca53a898badd28b60421 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Wed, 10 Aug 2022 16:24:06 -0300
-Subject: [PATCH 010/118] glibcextract.py: Add compile_c_snippet
+Subject: [PATCH 010/175] glibcextract.py: Add compile_c_snippet
 
 It might be used on tests to check if a snippet build with the provided
 compiler and flags.
@@ -47,5 +47,5 @@ index 43ab58ffe2a32c657b1f532ef552f515c673779e..36d204c9b0c9313c0335a32f00efb895
 +                stderr=subprocess.STDOUT)
 +        return CompileResult(r.returncode, r.stdout)
 -- 
-2.41.0
+2.35.6
 

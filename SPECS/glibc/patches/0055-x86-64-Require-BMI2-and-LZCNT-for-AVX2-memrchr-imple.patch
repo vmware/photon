@@ -1,7 +1,7 @@
 From 923c3f3c373f499e62160e00831dda576443317b Mon Sep 17 00:00:00 2001
 From: Aurelien Jarno <aurelien@aurel32.net>
 Date: Mon, 3 Oct 2022 23:46:11 +0200
-Subject: [PATCH 055/118] x86-64: Require BMI2 and LZCNT for AVX2 memrchr
+Subject: [PATCH 055/175] x86-64: Require BMI2 and LZCNT for AVX2 memrchr
  implementation
 
 The AVX2 memrchr implementation uses the 'shlxl' instruction, which
@@ -70,5 +70,5 @@ index 7c84963d92ca08bca186956c697b6a06b7e872cb..ec1c5b55fb7cf3d2f0b6769a6652a9f7
  				     __memrchr_avx2_rtm)
  	      /* ISA V2 wrapper for SSE2 implementation because the SSE2
 -- 
-2.41.0
+2.35.6
 

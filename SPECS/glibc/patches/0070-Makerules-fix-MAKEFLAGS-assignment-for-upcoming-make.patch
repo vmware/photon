@@ -1,7 +1,7 @@
 From 36cc06341a0c5029f49efaeef744dc3e9758e669 Mon Sep 17 00:00:00 2001
 From: Sergei Trofimovich <slyich@gmail.com>
 Date: Tue, 13 Sep 2022 13:39:13 -0400
-Subject: [PATCH 070/118] Makerules: fix MAKEFLAGS assignment for upcoming
+Subject: [PATCH 070/175] Makerules: fix MAKEFLAGS assignment for upcoming
  make-4.4 [BZ# 29564]
 
 make-4.4 will add long flags to MAKEFLAGS variable:
@@ -111,5 +111,5 @@ index ca00dd1fe23eda1196b9ae602b67eb1a3a7d9660..3c5e273f2b8faf3e38c987c61ab6637c
  else						# -s
  verbose	:=
 -- 
-2.41.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 19535f3b57306ea3ec559a6c0b10d2d7a87418a7 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 14 Oct 2022 11:02:25 +0200
-Subject: [PATCH 062/118] elf: Do not completely clear reused namespace in
+Subject: [PATCH 062/175] elf: Do not completely clear reused namespace in
  dlmopen (bug 29600)
 
 The data in the _ns_debug member must be preserved, otherwise
@@ -107,5 +107,5 @@ index 449f3c8fa9f2aa01c590c6680e85d7b0ccdfd77e..70c71fe19c7d0bf9d46c3b84df962405
  }
  
 -- 
-2.41.0
+2.35.6
 

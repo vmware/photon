@@ -1,7 +1,7 @@
 From d1241cf00139733de069c84933cd576dc1a1f45e Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 6 Sep 2022 07:38:10 +0200
-Subject: [PATCH 041/118] elf: Rename _dl_sort_maps parameter from skip to
+Subject: [PATCH 041/175] elf: Rename _dl_sort_maps parameter from skip to
  force_first
 
 The new implementation will not be able to skip an arbitrary number
@@ -83,5 +83,5 @@ index 050a3032de8b0ed2879474dba3536fc9ea3be90f..6b256b83880cea967ea010d804d7288d
  /* The dynamic linker calls this function before and having changing
     any shared object mappings.  The `r_state' member of `struct r_debug'
 -- 
-2.41.0
+2.35.6
 

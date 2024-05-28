@@ -1,7 +1,7 @@
 From ac47d8f6cf9744139adb12f540fb9cc610cac579 Mon Sep 17 00:00:00 2001
 From: Joseph Myers <joseph@codesourcery.com>
 Date: Tue, 2 Aug 2022 21:05:07 +0000
-Subject: [PATCH 004/118] Update syscall lists for Linux 5.19
+Subject: [PATCH 004/175] Update syscall lists for Linux 5.19
 
 Linux 5.19 has no new syscalls, but enables memfd_secret in the uapi
 headers for RISC-V.  Update the version number in syscall-names.list
@@ -57,5 +57,5 @@ index 6c7b2f70117757275e947855b310c313b38b0eb6..028ad3107a5116659ec00846310322c9
  FAST_atomic_update
  FAST_cmpxchg
 -- 
-2.41.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 46479e5d10ed87825aa277da158d6a687974518b Mon Sep 17 00:00:00 2001
 From: Aurelien Jarno <aurelien@aurel32.net>
 Date: Mon, 3 Oct 2022 23:46:11 +0200
-Subject: [PATCH 050/118] x86-64: Require BMI2 for AVX2 str(n)casecmp
+Subject: [PATCH 050/175] x86-64: Require BMI2 for AVX2 str(n)casecmp
  implementations
 
 The AVX2 str(n)casecmp implementations use the 'bzhi' instruction, which
@@ -114,5 +114,5 @@ index 68646ef199ecb71ce93af9cdc98460c2c771437a..7622af259ca5c08fb0d7c0943d67c2cd
  				      AVX_Fast_Unaligned_Load, ))
      {
 -- 
-2.41.0
+2.35.6
 

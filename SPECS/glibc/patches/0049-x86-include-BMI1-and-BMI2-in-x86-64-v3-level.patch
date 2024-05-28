@@ -1,7 +1,7 @@
 From 18bec23cbb4d530a2a8ce95353770661fabcd55f Mon Sep 17 00:00:00 2001
 From: Aurelien Jarno <aurelien@aurel32.net>
 Date: Mon, 3 Oct 2022 23:46:11 +0200
-Subject: [PATCH 049/118] x86: include BMI1 and BMI2 in x86-64-v3 level
+Subject: [PATCH 049/175] x86: include BMI1 and BMI2 in x86-64-v3 level
 
 The "System V Application Binary Interface AMD64 Architecture Processor
 Supplement" mandates the BMI1 and BMI2 CPU features for the x86-64-v3
@@ -27,5 +27,5 @@ index 1ade78ab73ed261fcaef776abe632c3bf755614e..5b4dd5f062283b12eab59ab173488170
  	      && CPU_FEATURE_USABLE_P (cpu_features, FMA)
  	      && CPU_FEATURE_USABLE_P (cpu_features, LZCNT)
 -- 
-2.41.0
+2.35.6
 

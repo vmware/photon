@@ -1,7 +1,7 @@
 From dd4131c8322891a0ad7cfb661efa41aecc02b581 Mon Sep 17 00:00:00 2001
 From: Aurelien Jarno <aurelien@aurel32.net>
 Date: Tue, 1 Nov 2022 20:43:55 +0100
-Subject: [PATCH 068/118] linux: Fix fstatat on MIPSn64 (BZ #29730)
+Subject: [PATCH 068/175] linux: Fix fstatat on MIPSn64 (BZ #29730)
 
 Commit 6e8a0aac2f883 ("time: Fix overflow itimer tests on 32-bit
 systems") changed in_time_t_range to assume a 32-bit time_t. This broke
@@ -89,5 +89,5 @@ index 0000000000000000000000000000000000000000..fe6c3a0ddad93bbe53042fe1808bfbf8
 +
 +weak_alias (__fstatat, fstatat)
 -- 
-2.41.0
+2.35.6
 

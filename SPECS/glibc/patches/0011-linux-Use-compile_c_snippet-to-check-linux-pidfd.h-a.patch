@@ -1,7 +1,7 @@
 From 1cc5513114e76083669cba1b11252aad35525e69 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Wed, 10 Aug 2022 14:24:44 -0300
-Subject: [PATCH 011/118] linux: Use compile_c_snippet to check linux/pidfd.h
+Subject: [PATCH 011/175] linux: Use compile_c_snippet to check linux/pidfd.h
  availability
 
 Instead of tying to a specific kernel version.
@@ -37,5 +37,5 @@ index 90cbb9be642f11d028fcef38c9673a3a57a8167e..d732173abda91332f6d586280cb776c3
                  '#include <sys/pidfd.h>\n',
                  '#include <asm/fcntl.h>\n'
 -- 
-2.41.0
+2.35.6
 

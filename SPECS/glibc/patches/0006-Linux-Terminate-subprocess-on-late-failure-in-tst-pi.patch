@@ -1,7 +1,7 @@
 From e982657073c4db21459ffd9e17bc505b1d64b876 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Mon, 15 Aug 2022 16:43:59 +0200
-Subject: [PATCH 006/118] Linux: Terminate subprocess on late failure in
+Subject: [PATCH 006/175] Linux: Terminate subprocess on late failure in
  tst-pidfd (bug 29485)
 
 Reviewed-by: Carlos O'Donell <carlos@redhat.com>
@@ -42,5 +42,5 @@ index 037af22290a76ac6eb75cc87d2aba5d7e214cb38..5711d1c312948ca0f1436bfb08bcc5e4
  
      char *path = xasprintf ("/proc/%d/fd/%d", pid, remote_fd);
 -- 
-2.41.0
+2.35.6
 

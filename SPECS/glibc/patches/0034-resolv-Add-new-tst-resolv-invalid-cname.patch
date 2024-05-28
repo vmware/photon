@@ -1,7 +1,7 @@
 From e2ec6a8db38a6b734bbdb41e498fdc9460f7566a Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 034/118] resolv: Add new tst-resolv-invalid-cname
+Subject: [PATCH 034/175] resolv: Add new tst-resolv-invalid-cname
 
 This test checks resolution through CNAME chains that do not contain
 host names (bug 12154).
@@ -448,5 +448,5 @@ index 0000000000000000000000000000000000000000..ae2d4419b1978c02ec5838b13e99d2f1
 +
 +#include <support/test-driver.c>
 -- 
-2.41.0
+2.35.6
 

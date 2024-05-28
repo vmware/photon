@@ -1,7 +1,7 @@
 From 5165080fec63a1f03aa1985b77bca300465bf570 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 031/118] nss_dns: Remove remnants of IPv6 address mapping
+Subject: [PATCH 031/175] nss_dns: Remove remnants of IPv6 address mapping
 
 res_use_inet6 always returns false since commit 3f8b44be0a658266adff5
 ("resolv: Remove support for RES_USE_INET6 and the inet6 option").
@@ -317,5 +317,5 @@ index cd26399b7ec7afd8edf459f32f2d62d7a898a02e..8e38583e151ffb6c4ca1f30ca235d05f
        return NSS_STATUS_SUCCESS;
      }
 -- 
-2.41.0
+2.35.6
 

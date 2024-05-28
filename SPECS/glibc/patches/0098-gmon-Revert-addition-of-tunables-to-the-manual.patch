@@ -1,7 +1,7 @@
 From b7008a92f505632f32b313d1033d6d15c99a0b31 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 28 Apr 2023 17:55:39 +0200
-Subject: [PATCH 098/118] gmon: Revert addition of tunables to the manual
+Subject: [PATCH 098/175] gmon: Revert addition of tunables to the manual
 
 These tunables had to be removed over GLIBC_PRIVATE ABI stability
 concerns.
@@ -84,5 +84,5 @@ index 8bb2f29ea56bf23d4e0a9d53a05d210498211dee..83cdcdac6dc70098b0408133d4a6f198
 -disabled, and no @file{gmon.out} file will be generated.
 -@end deftp
 -- 
-2.41.0
+2.35.6
 

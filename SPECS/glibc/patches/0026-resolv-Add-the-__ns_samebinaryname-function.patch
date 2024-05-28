@@ -1,7 +1,7 @@
 From 20ec40a51d3a8e9487f40dc9352d158def23ea8c Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 026/118] resolv: Add the __ns_samebinaryname function
+Subject: [PATCH 026/175] resolv: Add the __ns_samebinaryname function
 
 During packet parsing, only the binary name is available.  If the name
 equality check is performed before conversion to text, we can sometimes
@@ -188,5 +188,5 @@ index 0000000000000000000000000000000000000000..b06ac610b4cde8be8dd3aab8ac3de5f7
 +
 +#include <support/test-driver.c>
 -- 
-2.41.0
+2.35.6
 

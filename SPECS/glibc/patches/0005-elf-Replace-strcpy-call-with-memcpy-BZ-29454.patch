@@ -1,7 +1,7 @@
 From 302bc33bc53c787da6e74162a7092e9c0fb964a8 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Mon, 8 Aug 2022 11:26:22 +0800
-Subject: [PATCH 005/118] elf: Replace `strcpy` call with `memcpy` [BZ #29454]
+Subject: [PATCH 005/175] elf: Replace `strcpy` call with `memcpy` [BZ #29454]
 
 GCC normally does this optimization for us in
 strlen_pass::handle_builtin_strcpy but only for optimized
@@ -30,5 +30,5 @@ index 8bbf110d02c832df53924faf6b86a09df656c308..b97c17b3a9c5e750a673f6d1e3ed3902
  }
  
 -- 
-2.41.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 0f90d6204d79223fd32248c774df0cb7f0e604de Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 8 Nov 2022 14:15:02 +0100
-Subject: [PATCH 072/118] Linux: Support __IPC_64 in sysvctl *ctl command
+Subject: [PATCH 072/175] Linux: Support __IPC_64 in sysvctl *ctl command
  arguments (bug 29771)
 
 Old applications pass __IPC_64 as part of the command argument because
@@ -239,5 +239,5 @@ index ea389354973edbe13533370eb7b766e9029fc965..f00817a6f62de8402a1c14320e326bd0
  #if __TIMESIZE != 64
  libc_hidden_def (__shmctl64)
 -- 
-2.41.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 856bac55f98dc840e7c27cfa82262b933385de90 Mon Sep 17 00:00:00 2001
 From: Romain Geissler <romain.geissler@amadeus.com>
 Date: Mon, 25 Sep 2023 01:21:51 +0100
-Subject: [PATCH 116/118] Fix leak in getaddrinfo introduced by the fix for
+Subject: [PATCH 116/175] Fix leak in getaddrinfo introduced by the fix for
  CVE-2023-4806 [BZ #30843]
 
 This patch fixes a very recently added leak in getaddrinfo.
@@ -94,5 +94,5 @@ index 7a43a3bf4c098fa6195b625d45060bc398b62538..f975dcd2bcfaf585fad88e3f43a2ac7e
    return result;
  }
 -- 
-2.41.0
+2.35.6
 

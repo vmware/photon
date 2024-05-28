@@ -1,7 +1,7 @@
 From 76e05613ee28f4ac4a0ab97effc32e0e78e37a56 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Thu, 29 Sep 2022 16:15:20 -0300
-Subject: [PATCH 046/118] stdlib: Fix __getrandom_nocancel type and arc4random
+Subject: [PATCH 046/175] stdlib: Fix __getrandom_nocancel type and arc4random
  usage (BZ #29638)
 
 Using an unsigned type prevents the fallback to be used if kernel
@@ -56,5 +56,5 @@ index a263d294b1bbfd00726667ae872ed829133a78a6..cf35c8bfc9043ec99b368fa9362d585c
  {
    return INLINE_SYSCALL_CALL (getrandom, buf, buflen, flags);
 -- 
-2.41.0
+2.35.6
 

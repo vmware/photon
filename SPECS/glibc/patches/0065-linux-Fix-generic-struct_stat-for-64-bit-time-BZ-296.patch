@@ -1,7 +1,7 @@
 From 7b7dfbb0cbdffebf0233c650627a4861212fbb60 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Wed, 19 Oct 2022 19:14:04 -0300
-Subject: [PATCH 065/118] linux: Fix generic struct_stat for 64 bit time (BZ#
+Subject: [PATCH 065/175] linux: Fix generic struct_stat for 64 bit time (BZ#
  29657)
 
 The generic Linux struct_stat misses the conditionals to use
@@ -885,5 +885,5 @@ index 0000000000000000000000000000000000000000..0f7c9cdc89ebf6867c36b3e8c9f42641
 +
 +#endif /* _BITS_STRUCT_STAT_H  */
 -- 
-2.41.0
+2.35.6
 

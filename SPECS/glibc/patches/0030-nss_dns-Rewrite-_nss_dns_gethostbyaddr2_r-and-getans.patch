@@ -1,7 +1,7 @@
 From 77f523c473878ec0051582ef15161c6982879095 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 030/118] nss_dns: Rewrite _nss_dns_gethostbyaddr2_r and
+Subject: [PATCH 030/175] nss_dns: Rewrite _nss_dns_gethostbyaddr2_r and
  getanswer_ptr
 
 The simplification takes advantage of the split from getanswer_r.
@@ -509,5 +509,5 @@ index d384e1f82d7d158ac2052b87da9d72e973a0a7fe..cd26399b7ec7afd8edf459f32f2d62d7
    *errnop = ENOENT;
    return NSS_STATUS_TRYAGAIN;
 -- 
-2.41.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 5c62874f423af93e97b51bc9a57af228a546156f Mon Sep 17 00:00:00 2001
 From: Arjun Shankar <arjun@redhat.com>
 Date: Mon, 22 Aug 2022 18:21:14 +0200
-Subject: [PATCH 009/118] NEWS: Add entry for bug 28846
+Subject: [PATCH 009/175] NEWS: Add entry for bug 28846
 
 ---
  NEWS | 1 +
@@ -20,5 +20,5 @@ index becab3ade949aa17618f59491f17ecfcef9e591f..ae30900bbc72f93638bfc65d8eb698bc
    [29485] Linux: Terminate subprocess on late failure in tst-pidfd
    [29490] alpha: New __brk_call implementation is broken
 -- 
-2.41.0
+2.35.6
 

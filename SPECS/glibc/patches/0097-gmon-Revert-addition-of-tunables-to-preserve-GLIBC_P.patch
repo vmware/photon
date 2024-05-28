@@ -1,7 +1,7 @@
 From dee43b346059ca677e6810569e44aa0b9b6dc05e Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 28 Apr 2023 17:07:38 +0200
-Subject: [PATCH 097/118] gmon: Revert addition of tunables to preserve
+Subject: [PATCH 097/175] gmon: Revert addition of tunables to preserve
  GLIBC_PRIVATE ABI
 
 Otherwise, processes are likely to crash during concurrent updates
@@ -84,5 +84,5 @@ index 5e99a7351dc716660583b34b54922c680f62b9f6..97be1f72caa163e10e8c0df39426f587
    /*
     * If we are incorrectly called twice in a row (without an
 -- 
-2.41.0
+2.35.6
 

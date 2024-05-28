@@ -1,7 +1,7 @@
 From cdc496eb55e30f8f2461bedb0a7381c0a7a3d3ae Mon Sep 17 00:00:00 2001
 From: John David Anglin <danglin@gcc.gnu.org>
 Date: Tue, 20 Sep 2022 20:14:14 +0000
-Subject: [PATCH 048/118] hppa: undef __ASSUME_SET_ROBUST_LIST
+Subject: [PATCH 048/175] hppa: undef __ASSUME_SET_ROBUST_LIST
 
 QEMU does not support support set_robust_list. Thus, we need
 to enable detection of set_robust_list system call.
@@ -23,5 +23,5 @@ index 0cd21ef0fa8b4e140c45c7af48aca6424932521a..079612e4aad88002b14d59356a7bf1c9
 +/* QEMU does not support set_robust_list.  */
 +#undef __ASSUME_SET_ROBUST_LIST
 -- 
-2.41.0
+2.35.6
 

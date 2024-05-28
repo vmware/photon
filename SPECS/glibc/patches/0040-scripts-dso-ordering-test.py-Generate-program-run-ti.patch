@@ -1,7 +1,7 @@
 From 7a3f8c8a7aeb41d4bbfeec07d0be1e92c3019919 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 6 Sep 2022 07:38:10 +0200
-Subject: [PATCH 040/118] scripts/dso-ordering-test.py: Generate program
+Subject: [PATCH 040/175] scripts/dso-ordering-test.py: Generate program
  run-time dependencies
 
 The main program needs to depend on all shared objects, even objects
@@ -40,5 +40,5 @@ index 2dd6bfda183257a8a4c7bad4862f6d3171c1eaca..b87cf2f80996de25ea4686704ec7b28c
          # Add main executable to test-srcs
          makefile.write("test-srcs += %s/%s\n" % (test_subdir, test_name))
 -- 
-2.41.0
+2.35.6
 

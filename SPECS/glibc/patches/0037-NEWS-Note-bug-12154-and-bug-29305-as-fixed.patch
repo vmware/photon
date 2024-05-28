@@ -1,7 +1,7 @@
 From 5d885617cec5713fdde42177398fe98acb66b7a2 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 13 Sep 2022 13:22:27 +0200
-Subject: [PATCH 037/118] NEWS: Note bug 12154 and bug 29305 as fixed
+Subject: [PATCH 037/175] NEWS: Note bug 12154 and bug 29305 as fixed
 
 ---
  NEWS | 2 ++
@@ -22,5 +22,5 @@ index 9360596fcc0a991108d36d85c87baac9bad4c673..03281e3ab41c26cd21e822c44a50511f
    [29446] _dlopen now ignores dl_caller argument in static mode
    [29485] Linux: Terminate subprocess on late failure in tst-pidfd
 -- 
-2.41.0
+2.35.6
 

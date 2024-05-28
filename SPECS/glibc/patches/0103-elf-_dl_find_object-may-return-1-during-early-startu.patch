@@ -1,7 +1,7 @@
 From c36912f08335ce28ccff963a60853a4035273b34 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 7 Jul 2023 10:11:26 +0200
-Subject: [PATCH 103/118] elf: _dl_find_object may return 1 during early
+Subject: [PATCH 103/175] elf: _dl_find_object may return 1 during early
  startup (bug 30515)
 
 Success is reported with a 0 return value, and failure is -1.
@@ -68,5 +68,5 @@ index db7ba95abec20f534f9cee3d2f64bc3fb8c1c4ca..9e0a122c389535d0580f2b020e296046
    void *dlmopen_handle = xdlmopen (LM_ID_NEWLM, LIBC_SO, RTLD_NOW);
    TEST_VERIFY (dlmopen_handle != handle);
 -- 
-2.41.0
+2.35.6
 

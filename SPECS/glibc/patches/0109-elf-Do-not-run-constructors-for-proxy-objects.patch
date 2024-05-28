@@ -1,7 +1,7 @@
 From f33ffef08983621c6a89a12771486c3beaf50d11 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 22 Aug 2023 13:56:25 +0200
-Subject: [PATCH 109/118] elf: Do not run constructors for proxy objects
+Subject: [PATCH 109/175] elf: Do not run constructors for proxy objects
 
 Otherwise, the ld.so constructor runs for each audit namespace
 and each dlmopen namespace.
@@ -33,5 +33,5 @@ index deefeb099a856d1f590626f6c5fb5727b94e11d8..fca8e3a05ebdc705152784dbb3a0f2dc
    if (l->l_init_called)
      /* This object is all done.  */
 -- 
-2.41.0
+2.35.6
 

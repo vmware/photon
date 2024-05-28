@@ -1,7 +1,7 @@
 From 908454129d21126bf7fc58f2a520b1f304dc5f02 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 23 Sep 2022 19:30:57 +0200
-Subject: [PATCH 061/118] nss: Use shared prefix in IPv4 address in tst-reload1
+Subject: [PATCH 061/175] nss: Use shared prefix in IPv4 address in tst-reload1
 
 Otherwise, sorting based on the longest-matching prefix in
 getaddrinfo can reorder the addresses in ways the test does not
@@ -48,5 +48,5 @@ index fdc5bdd65b24bc3c7e485eee20f8855837236e7e..bc32bb132aa0a8da9d850ac8e10259c3
  
  static struct hostent host_table_2[] = {
 -- 
-2.41.0
+2.35.6
 

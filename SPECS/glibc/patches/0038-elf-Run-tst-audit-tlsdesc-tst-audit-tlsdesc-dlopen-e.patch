@@ -1,7 +1,7 @@
 From df51334828f2af214105aad82042140ee3a6de0a Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 13 Sep 2022 19:57:43 +0200
-Subject: [PATCH 038/118] elf: Run tst-audit-tlsdesc, tst-audit-tlsdesc-dlopen
+Subject: [PATCH 038/175] elf: Run tst-audit-tlsdesc, tst-audit-tlsdesc-dlopen
  everywhere
 
 The test is valid for all TLS models, but we want to make a reasonable
@@ -75,5 +75,5 @@ index 43353a4b088e5a9b1165285b990d4908b0a313ee..72178d33ffd6ed6b9cfea423595b8631
  modules-names += tst-protected1moda tst-protected1modb
  tests += tst-protected1a tst-protected1b
 -- 
-2.41.0
+2.35.6
 

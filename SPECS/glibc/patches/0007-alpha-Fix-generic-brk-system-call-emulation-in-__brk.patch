@@ -1,7 +1,7 @@
 From 8b139cd4f1074ae0d95d9bff60db283a1ed72734 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Mon, 22 Aug 2022 11:04:47 +0200
-Subject: [PATCH 007/118] alpha: Fix generic brk system call emulation in
+Subject: [PATCH 007/175] alpha: Fix generic brk system call emulation in
  __brk_call (bug 29490)
 
 The kernel special-cases the zero argument for alpha brk, and we can
@@ -45,5 +45,5 @@ index b8088cf13f938c88b263f83efa1941e3c59a1a8a..0b851b6c8664e8d5dfcde26de9b8ef3b
 +  return (void *) result;
  }
 -- 
-2.41.0
+2.35.6
 

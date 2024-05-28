@@ -1,7 +1,7 @@
 From c5cdb39c20e96d9ac0d46fc7284b8276a537fd35 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 035/118] nss_dns: Rewrite _nss_dns_gethostbyname4_r using
+Subject: [PATCH 035/175] nss_dns: Rewrite _nss_dns_gethostbyname4_r using
  current interfaces
 
 Introduce struct alloc_buffer to this function, and use it and
@@ -592,5 +592,5 @@ index bea505d69724658d571bea719977d09ea674096e..9fa81f23c853ba9e839e82e3db7c09cd
    return status;
  }
 -- 
-2.41.0
+2.35.6
 

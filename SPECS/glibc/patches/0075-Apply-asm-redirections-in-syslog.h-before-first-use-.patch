@@ -1,7 +1,7 @@
 From 3aae843e9e9e6a2502e98ff44d2671b20a023f8e Mon Sep 17 00:00:00 2001
 From: Tulio Magno Quites Machado Filho <tuliom@redhat.com>
 Date: Fri, 11 Nov 2022 17:00:15 -0300
-Subject: [PATCH 075/118] Apply asm redirections in syslog.h before first use
+Subject: [PATCH 075/175] Apply asm redirections in syslog.h before first use
  [BZ #27087]
 
 Similar to d0fa09a770, but for syslog.h when _FORTIFY_SOURCE > 0.
@@ -75,5 +75,5 @@ index d933fea1041338e76c9e721513e38cb181e179c8..3888153ed2ee7cfc5ba464b2c892879f
  
  __END_DECLS
 -- 
-2.41.0
+2.35.6
 

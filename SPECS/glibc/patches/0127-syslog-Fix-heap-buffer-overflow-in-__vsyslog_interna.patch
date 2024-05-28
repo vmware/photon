@@ -1,4 +1,8 @@
-syslog: Fix heap buffer overflow in __vsyslog_internal (CVE-2023-6779)
+From 2bc9d7c002bdac38b5c2a3f11b78e309d7765b83 Mon Sep 17 00:00:00 2001
+From: Arjun Shankar <arjun@redhat.com>
+Date: Mon, 15 Jan 2024 17:44:44 +0100
+Subject: [PATCH 127/175] syslog: Fix heap buffer overflow in
+ __vsyslog_internal (CVE-2023-6779)
 
 __vsyslog_internal used the return value of snprintf/vsnprintf to
 calculate buffer sizes for memory allocation.  If these functions (for
@@ -7,15 +11,18 @@ small to hold output.  This commit fixes that.
 
 All snprintf/vsnprintf calls are checked for negative return values and
 the function silently returns upon encountering them.
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 7e5a0c286da33159d47d0122007aac016f3e02cd)
 ---
  misc/syslog.c | 39 ++++++++++++++++++++++++++++-----------
  1 file changed, 28 insertions(+), 11 deletions(-)
 
 diff --git a/misc/syslog.c b/misc/syslog.c
-index 814d224a1e..53440e47ad 100644
+index fe1daf988b71f1d380526cda0658561a13aee1bf..3108ae913477a0fb99dfa88fb32f6d89aca21fae 100644
 --- a/misc/syslog.c
 +++ b/misc/syslog.c
-@@ -185,11 +185,13 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
+@@ -183,11 +183,13 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
    else
      l = __snprintf (bufs, sizeof bufs,
  		    SYSLOG_HEADER_WITHOUT_TS (pri, &msgoff));
@@ -30,7 +37,7 @@ index 814d224a1e..53440e47ad 100644
      {
        /* At this point, there is still a chance that we can print the
           remaining part of the log into bufs and use that.  */
-@@ -215,12 +217,15 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
+@@ -213,12 +215,15 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
      __set_errno (saved_errno);
  
      vl = __vsnprintf_internal (pos, len, fmt, apc, mode_flags);
@@ -48,7 +55,7 @@ index 814d224a1e..53440e47ad 100644
    }
  
    if (buf == NULL)
-@@ -231,25 +236,37 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
+@@ -229,25 +234,37 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
  	  /* Tell the cancellation handler to free this buffer.  */
  	  clarg.buf = buf;
  
@@ -95,5 +102,5 @@ index 814d224a1e..53440e47ad 100644
      }
  
 -- 
-2.43.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 93bd77104cdd7380823d80c778776d2eafb69a91 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Tue, 23 May 2023 16:45:03 -0700
-Subject: [PATCH 100/118] Document BZ #20975 fix
+Subject: [PATCH 100/175] Document BZ #20975 fix
 
 ---
  NEWS | 1 +
@@ -20,5 +20,5 @@ index 0b3ee2ad14352254af09104fdb42816bb75aad9e..43f2deb49dfebaeb95c7d5ed9b1c184c
    [27576] gmon: improve mcount overflow handling
    [28846] CMSG_NXTHDR may trigger -Wstrict-overflow warning
 -- 
-2.41.0
+2.35.6
 

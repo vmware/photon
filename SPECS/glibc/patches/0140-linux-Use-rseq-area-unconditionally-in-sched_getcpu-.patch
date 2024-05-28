@@ -1,0 +1,53 @@
+From 1b85f77f43c8e352d6aac7835eedf654c5d9242b Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 15 Mar 2024 19:08:24 +0100
+Subject: [PATCH 140/175] linux: Use rseq area unconditionally in sched_getcpu
+ (bug 31479)
+
+Originally, nptl/descr.h included <sys/rseq.h>, but we removed that
+in commit 2c6b4b272e6b4d07303af25709051c3e96288f2d ("nptl:
+Unconditionally use a 32-byte rseq area").  After that, it was
+not ensured that the RSEQ_SIG macro was defined during sched_getcpu.c
+compilation that provided a definition.  This commit always checks
+the rseq area for CPU number information before using the other
+approaches.
+
+This adds an unnecessary (but well-predictable) branch on
+architectures which do not define RSEQ_SIG, but its cost is small
+compared to the system call.  Most architectures that have vDSO
+acceleration for getcpu also have rseq support.
+
+Fixes: 2c6b4b272e6b4d07303af25709051c3e96288f2d
+Fixes: 1d350aa06091211863e41169729cee1bca39f72f
+Reviewed-by: Arjun Shankar <arjun@redhat.com>
+(cherry picked from commit 7a76f218677d149d8b7875b336722108239f7ee9)
+Fixes: 54e812100df2a6f1d75fbef4e3b45c076599842f
+---
+ sysdeps/unix/sysv/linux/sched_getcpu.c | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/sysdeps/unix/sysv/linux/sched_getcpu.c b/sysdeps/unix/sysv/linux/sched_getcpu.c
+index 5c3301004cc9f39db8a4c838dcb8bf3e5c7beeb0..3a2f71238622864c07112b3da062034bc6190e92 100644
+--- a/sysdeps/unix/sysv/linux/sched_getcpu.c
++++ b/sysdeps/unix/sysv/linux/sched_getcpu.c
+@@ -33,17 +33,9 @@ vsyscall_sched_getcpu (void)
+   return r == -1 ? r : cpu;
+ }
+ 
+-#ifdef RSEQ_SIG
+ int
+ sched_getcpu (void)
+ {
+   int cpu_id = THREAD_GETMEM_VOLATILE (THREAD_SELF, rseq_area.cpu_id);
+   return __glibc_likely (cpu_id >= 0) ? cpu_id : vsyscall_sched_getcpu ();
+ }
+-#else /* RSEQ_SIG */
+-int
+-sched_getcpu (void)
+-{
+-  return vsyscall_sched_getcpu ();
+-}
+-#endif /* RSEQ_SIG */
+-- 
+2.35.6
+

@@ -1,7 +1,7 @@
 From b714ab7e3ce999b79401cdd22291128a7fd6d8ef Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 029/118] nss_dns: Split getanswer_ptr from getanswer_r
+Subject: [PATCH 029/175] nss_dns: Split getanswer_ptr from getanswer_r
 
 And expand the use of name_ok and qtype in getanswer_ptr (the
 former also in getanswer_r).
@@ -448,5 +448,5 @@ index 544cffbecd1a1e9949d7cb7805fc0a1e14fad4f3..d384e1f82d7d158ac2052b87da9d72e9
  gaih_getanswer_slice (const querybuf *answer, int anslen, const char *qname,
  		      struct gaih_addrtuple ***patp,
 -- 
-2.41.0
+2.35.6
 

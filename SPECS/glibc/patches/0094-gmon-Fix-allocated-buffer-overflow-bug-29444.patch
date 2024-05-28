@@ -2,7 +2,7 @@ From 33909e5abc8ad24c52d48bd005e102b6b56537c4 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?=D0=9B=D0=B5=D0=BE=D0=BD=D0=B8=D0=B4=20=D0=AE=D1=80=D1=8C?=
  =?UTF-8?q?=D0=B5=D0=B2=20=28Leonid=20Yuriev=29?= <leo@yuriev.ru>
 Date: Sat, 4 Feb 2023 14:41:38 +0300
-Subject: [PATCH 094/118] gmon: Fix allocated buffer overflow (bug 29444)
+Subject: [PATCH 094/175] gmon: Fix allocated buffer overflow (bug 29444)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -89,5 +89,5 @@ index dee64803ada583d79ca9adc281beffce4300255f..bf76358d5b1aa2da25093f3aa15cc209
    if (p->tolimit < MINARCS)
      p->tolimit = MINARCS;
 -- 
-2.41.0
+2.35.6
 

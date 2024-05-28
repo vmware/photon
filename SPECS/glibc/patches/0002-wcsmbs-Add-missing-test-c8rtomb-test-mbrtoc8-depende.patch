@@ -1,7 +1,7 @@
 From 33f1b4c1452b33991e670f636ebe98b90a405e10 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Fri, 29 Jul 2022 10:50:56 -0700
-Subject: [PATCH 002/118] wcsmbs: Add missing test-c8rtomb/test-mbrtoc8
+Subject: [PATCH 002/175] wcsmbs: Add missing test-c8rtomb/test-mbrtoc8
  dependency
 
 Make test-c8rtomb.out and test-mbrtoc8.out depend on $(gen-locales) for
@@ -30,5 +30,5 @@ index e6b9e8743a5c4475e955bcca3cee8b730e7b4883..3d19d5556ff408805b14471f68ffff1e
  
  $(objpfx)tst-wcstod-round: $(libm)
 -- 
-2.41.0
+2.35.6
 

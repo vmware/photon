@@ -1,7 +1,7 @@
 From 645d94808aaa90fb1b20a25ff70bb50d9eb1d55b Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Mon, 5 Sep 2022 09:34:39 -0300
-Subject: [PATCH 020/118] syslog: Remove extra whitespace between timestamp and
+Subject: [PATCH 020/175] syslog: Remove extra whitespace between timestamp and
  message (BZ#29544)
 
 The rfc3164 clear states that a single space character must follow
@@ -54,5 +54,5 @@ index 1d332ece537d56987ea63fceb7a9599ccc675493..3560b518a25d1ee1bb96f19db32a7d9e
    r.facility = number & LOG_FACMASK;
    r.priority = number & LOG_PRIMASK;
 -- 
-2.41.0
+2.35.6
 

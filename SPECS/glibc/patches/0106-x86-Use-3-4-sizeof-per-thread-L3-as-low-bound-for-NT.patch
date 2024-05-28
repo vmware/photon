@@ -1,7 +1,7 @@
 From 64b184fd80e4441b5fd97987fabecf0b54f20cae Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Tue, 18 Jul 2023 10:27:59 -0500
-Subject: [PATCH 106/118] x86: Use `3/4*sizeof(per-thread-L3)` as low bound for
+Subject: [PATCH 106/175] x86: Use `3/4*sizeof(per-thread-L3)` as low bound for
  NT threshold.
 
 On some machines we end up with incomplete cache information. This can
@@ -44,5 +44,5 @@ index 79fb8cc5e37394622abda1bedae5ff5f5761b9a6..627cf57efe4ced9a8e33ea16f928c265
       'x86_non_temporal_threshold' by `LOG_4X_MEMCPY_THRESH` (4) and it is best
       if that operation cannot overflow. Minimum of 0x4040 (16448) because the
 -- 
-2.41.0
+2.35.6
 

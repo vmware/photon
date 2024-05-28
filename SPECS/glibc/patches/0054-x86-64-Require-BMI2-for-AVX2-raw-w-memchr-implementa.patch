@@ -1,7 +1,7 @@
 From d9196d4f3fa9997388655813ddd236426a16dd92 Mon Sep 17 00:00:00 2001
 From: Aurelien Jarno <aurelien@aurel32.net>
 Date: Mon, 3 Oct 2022 23:46:11 +0200
-Subject: [PATCH 054/118] x86-64: Require BMI2 for AVX2 (raw|w)memchr
+Subject: [PATCH 054/175] x86-64: Require BMI2 for AVX2 (raw|w)memchr
  implementations
 
 The AVX2 memchr, rawmemchr and wmemchr implementations use the 'bzhi'
@@ -63,5 +63,5 @@ index fec8790c1156718656c1e87a89701fae5d74838f..7c84963d92ca08bca186956c697b6a06
  				     __wmemchr_avx2_rtm)
  	      /* ISA V2 wrapper for SSE2 implementation because the SSE2
 -- 
-2.41.0
+2.35.6
 

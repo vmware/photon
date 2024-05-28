@@ -1,4 +1,8 @@
-syslog: Fix heap buffer overflow in __vsyslog_internal (CVE-2023-6246)
+From d1a83b6767f68b3cb5b4b4ea2617254acd040c82 Mon Sep 17 00:00:00 2001
+From: Arjun Shankar <arjun@redhat.com>
+Date: Mon, 15 Jan 2024 17:44:43 +0100
+Subject: [PATCH 126/175] syslog: Fix heap buffer overflow in
+ __vsyslog_internal (CVE-2023-6246)
 
 __vsyslog_internal did not handle a case where printing a SYSLOG_HEADER
 containing a long program name failed to update the required buffer
@@ -7,6 +11,9 @@ the heap.  This commit fixes that.  It also adds a new regression test
 that uses glibc.malloc.check.
 
 Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+Tested-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 6bd0e4efcc78f3c0115e5ea9739a1642807450da)
 ---
  misc/Makefile                                 |  8 ++-
  misc/syslog.c                                 | 50 +++++++++++++------
@@ -17,10 +24,10 @@ Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
  create mode 100644 misc/tst-syslog-long-progname.root/postclean.req
 
 diff --git a/misc/Makefile b/misc/Makefile
-index 42899c2b6c..c273ec6974 100644
+index ba8232a0e9515241b768d47929bb2d5eef03d0f4..66e9ded8f9d34902b08ae1f9634de31899cd21ec 100644
 --- a/misc/Makefile
 +++ b/misc/Makefile
-@@ -289,7 +289,10 @@ tests-special += $(objpfx)tst-error1-mem.out \
+@@ -115,7 +115,10 @@ tests-special += $(objpfx)tst-error1-mem.out \
    $(objpfx)tst-allocate_once-mem.out
  endif
  
@@ -32,7 +39,7 @@ index 42899c2b6c..c273ec6974 100644
  
  CFLAGS-select.c += -fexceptions -fasynchronous-unwind-tables
  CFLAGS-tsearch.c += $(uses-callbacks)
-@@ -351,6 +354,9 @@ $(objpfx)tst-allocate_once-mem.out: $(objpfx)tst-allocate_once.out
+@@ -175,6 +178,9 @@ $(objpfx)tst-allocate_once-mem.out: $(objpfx)tst-allocate_once.out
  	$(common-objpfx)malloc/mtrace $(objpfx)tst-allocate_once.mtrace > $@; \
  	$(evaluate-test)
  
@@ -43,10 +50,10 @@ index 42899c2b6c..c273ec6974 100644
  $(objpfx)tst-select-time64: $(librt)
  $(objpfx)tst-pselect: $(librt)
 diff --git a/misc/syslog.c b/misc/syslog.c
-index 1b8cb722c5..814d224a1e 100644
+index f67d4b58a448cabdf63f629f72a9df6e009286cf..fe1daf988b71f1d380526cda0658561a13aee1bf 100644
 --- a/misc/syslog.c
 +++ b/misc/syslog.c
-@@ -124,8 +124,9 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
+@@ -122,8 +122,9 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
  {
    /* Try to use a static buffer as an optimization.  */
    char bufs[1024];
@@ -58,7 +65,7 @@ index 1b8cb722c5..814d224a1e 100644
    int msgoff;
    int saved_errno = errno;
  
-@@ -177,29 +178,50 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
+@@ -175,29 +176,50 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
  #define SYSLOG_HEADER_WITHOUT_TS(__pri, __msgoff)        \
    "<%d>: %n", __pri, __msgoff
  
@@ -123,7 +130,7 @@ index 1b8cb722c5..814d224a1e 100644
      {
 diff --git a/misc/tst-syslog-long-progname.c b/misc/tst-syslog-long-progname.c
 new file mode 100644
-index 0000000000..88f37a8a00
+index 0000000000000000000000000000000000000000..88f37a8a0042f417533f339d18e6d9964e4ae199
 --- /dev/null
 +++ b/misc/tst-syslog-long-progname.c
 @@ -0,0 +1,39 @@
@@ -168,7 +175,7 @@ index 0000000000..88f37a8a00
 +#include <support/test-driver.c>
 diff --git a/misc/tst-syslog-long-progname.root/postclean.req b/misc/tst-syslog-long-progname.root/postclean.req
 new file mode 100644
-index 0000000000..e69de29bb2
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 -- 
-2.43.0
+2.35.6
 

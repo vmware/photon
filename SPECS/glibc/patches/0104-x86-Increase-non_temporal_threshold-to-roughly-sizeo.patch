@@ -1,7 +1,7 @@
 From 2e74c9016724ce09512920b79485a87d75a00f59 Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Wed, 7 Jun 2023 13:18:01 -0500
-Subject: [PATCH 104/118] x86: Increase `non_temporal_threshold` to roughly
+Subject: [PATCH 104/175] x86: Increase `non_temporal_threshold` to roughly
  `sizeof_L3 / 4`
 
 Current `non_temporal_threshold` set to roughly '3/4 * sizeof_L3 /
@@ -249,5 +249,5 @@ index 637b5a022d7fe9d67339411cb337f1e893dfdf5b..6e7d0197a7f1cc6d267ab14081775314
       'x86_non_temporal_threshold' by `LOG_4X_MEMCPY_THRESH` (4) and it is best
       if that operation cannot overflow. Minimum of 0x4040 (16448) because the
 -- 
-2.41.0
+2.35.6
 

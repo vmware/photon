@@ -1,7 +1,7 @@
 From b6c713557688bfb42c6279ec3d8dfab5884510fe Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Thu, 27 Oct 2022 11:36:44 +0200
-Subject: [PATCH 108/118] elf: Introduce to _dl_call_fini
+Subject: [PATCH 108/175] elf: Introduce to _dl_call_fini
 
 This consolidates the destructor invocations from _dl_fini and
 dlclose.  Remove the micro-optimization that avoids
@@ -237,5 +237,5 @@ index 6b256b83880cea967ea010d804d7288dd8d0cbad..c2627fced763913f6f47ac002e6c3793
     If FORCE_FIRST, MAPS[0] keeps its place even if the dependencies
     say otherwise.  */
 -- 
-2.41.0
+2.35.6
 

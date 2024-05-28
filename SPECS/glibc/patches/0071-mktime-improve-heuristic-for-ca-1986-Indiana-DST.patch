@@ -1,7 +1,7 @@
 From 70410f2286cc36c9ccb133878811c728ae51725f Mon Sep 17 00:00:00 2001
 From: Paul Eggert <eggert@cs.ucla.edu>
 Date: Thu, 8 Sep 2022 20:08:32 -0500
-Subject: [PATCH 071/118] mktime: improve heuristic for ca-1986 Indiana DST
+Subject: [PATCH 071/175] mktime: improve heuristic for ca-1986 Indiana DST
 
 This patch syncs mktime.c from Gnulib, fixing a
 problem reported by Mark Krenz <https://bugs.gnu.org/48085>,
@@ -74,5 +74,5 @@ index 494c89bf546e01072d6b939649d88c58174e2648..e9a60067107f0f78eabfb27a8ef93221
        return -1;
      }
 -- 
-2.41.0
+2.35.6
 

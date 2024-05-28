@@ -1,7 +1,7 @@
 From adb69f8ffe83db5d475868b42996bc70de8cff77 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 027/118] resolv: Add internal __ns_name_length_uncompressed
+Subject: [PATCH 027/175] resolv: Add internal __ns_name_length_uncompressed
  function
 
 This function is useful for checking that the question name is
@@ -279,5 +279,5 @@ index 0000000000000000000000000000000000000000..c4a2904db75d1221273e47ac118c8fdd
 +
 +#include <support/test-driver.c>
 -- 
-2.41.0
+2.35.6
 

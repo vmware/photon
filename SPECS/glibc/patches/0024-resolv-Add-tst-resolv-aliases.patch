@@ -1,7 +1,7 @@
 From bffc33e90ed57a4786c676dda92d935e3613e031 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 024/118] resolv: Add tst-resolv-aliases
+Subject: [PATCH 024/175] resolv: Add tst-resolv-aliases
 
 Reviewed-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
 (cherry picked from commit 87aa98aa80627553a66bdcad2701fd6307723645)
@@ -292,5 +292,5 @@ index 0000000000000000000000000000000000000000..b212823aa07ceb2117144d38a3c641f9
 +
 +#include <support/test-driver.c>
 -- 
-2.41.0
+2.35.6
 

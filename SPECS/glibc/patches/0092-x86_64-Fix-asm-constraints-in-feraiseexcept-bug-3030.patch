@@ -1,7 +1,7 @@
 From 95c5bddc9fbfda12220124dbf13750f97bae4e1d Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Mon, 3 Apr 2023 17:23:11 +0200
-Subject: [PATCH 092/118] x86_64: Fix asm constraints in feraiseexcept (bug
+Subject: [PATCH 092/175] x86_64: Fix asm constraints in feraiseexcept (bug
  30305)
 
 The divss instruction clobbers its first argument, and the constraints
@@ -51,5 +51,5 @@ index 864f4777a26d740c6a33357c2227fd25c3770f85..23446ff4acd90aae828086688d621afd
      }
  
 -- 
-2.41.0
+2.35.6
 

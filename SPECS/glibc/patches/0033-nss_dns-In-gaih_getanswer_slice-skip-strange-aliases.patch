@@ -1,7 +1,7 @@
 From 7a236dc44a22dc4252e803d1ee1d3b970ec43805 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 033/118] nss_dns: In gaih_getanswer_slice, skip strange
+Subject: [PATCH 033/175] nss_dns: In gaih_getanswer_slice, skip strange
  aliases (bug 12154)
 
 If the name is not a host name, skip adding it to the result, instead
@@ -53,5 +53,5 @@ index b887e77e9cc13c6babbfe6284bb9664602c23429..bea505d69724658d571bea719977d09e
  	      /* Reclaim buffer space.  */
  	      if (h_name + h_namelen == buffer)
 -- 
-2.41.0
+2.35.6
 

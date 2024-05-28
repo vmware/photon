@@ -1,7 +1,7 @@
 From 93967a2a7bbdcedb73e0b246713580c7c84d001e Mon Sep 17 00:00:00 2001
 From: Noah Goldstein <goldstein.w.n@gmail.com>
 Date: Wed, 14 Dec 2022 10:52:10 -0800
-Subject: [PATCH 084/118] x86: Prevent SIGSEGV in memcmp-sse2 when data is
+Subject: [PATCH 084/175] x86: Prevent SIGSEGV in memcmp-sse2 when data is
  concurrently modified [BZ #29863]
 
 In the case of INCORRECT usage of `memcmp(a, b, N)` where `a` and `b`
@@ -111,5 +111,5 @@ index afd450d0206d6633da9fbc4607a7fa6aeb4e137c..51bc9344f0698b7c9c56b2fb8da3d5ba
  	movzbl	(VEC_SIZE * -1 + SIZE_OFFSET)(%rdi, %rax), %eax
  	subl	%ecx, %eax
 -- 
-2.41.0
+2.35.6
 

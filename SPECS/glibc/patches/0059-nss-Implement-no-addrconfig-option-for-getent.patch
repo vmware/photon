@@ -1,7 +1,7 @@
 From 700d3281f9e57b53c27bc991394b22d467432626 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 13 Sep 2022 16:10:20 +0200
-Subject: [PATCH 059/118] nss: Implement --no-addrconfig option for getent
+Subject: [PATCH 059/175] nss: Implement --no-addrconfig option for getent
 
 The ahosts, ahostsv4, ahostsv6 commands unconditionally pass
 AI_ADDRCONFIG to getaddrinfo, which is not always desired.
@@ -75,5 +75,5 @@ index 8178b4b470063f27dc1975c7f186c3fbdb8b9c10..d2d2524b0cbef18b912f4de412e6bb37
        return ARGP_ERR_UNKNOWN;
      }
 -- 
-2.41.0
+2.35.6
 

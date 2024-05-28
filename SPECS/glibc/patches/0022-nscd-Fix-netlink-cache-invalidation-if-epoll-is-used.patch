@@ -1,7 +1,7 @@
 From c399271c10bd00714504e8d4dfbec8aebf996dd4 Mon Sep 17 00:00:00 2001
 From: Fabian Vogt <fvogt@suse.de>
 Date: Wed, 27 Jul 2022 11:44:07 +0200
-Subject: [PATCH 022/118] nscd: Fix netlink cache invalidation if epoll is used
+Subject: [PATCH 022/175] nscd: Fix netlink cache invalidation if epoll is used
  [BZ #29415]
 
 Processes cache network interface information such as whether IPv4 or IPv6
@@ -55,5 +55,5 @@ index 61d1674eb49a2eb48e3534662e675ff5b1936f6a..531d2e83df4fa417ff26a3cf14144f30
  # endif
  	else
 -- 
-2.41.0
+2.35.6
 

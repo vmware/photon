@@ -1,7 +1,7 @@
 From 9273b2d0e93e7355656cad3be3a1ca76489df483 Mon Sep 17 00:00:00 2001
 From: Aurelien Jarno <aurelien@aurel32.net>
 Date: Mon, 10 Oct 2022 00:39:33 +0200
-Subject: [PATCH 064/118] Avoid undefined behaviour in ibm128 implementation of
+Subject: [PATCH 064/175] Avoid undefined behaviour in ibm128 implementation of
  llroundl (BZ #29488)
 
 Detecting an overflow edge case depended on signed overflow of a long
@@ -81,5 +81,5 @@ index d85154e73ac062e6c9ed403fe3cfc3889726ff72..d8c0de1faf29fd03180d6839e44818a8
      }
    else
 -- 
-2.41.0
+2.35.6
 

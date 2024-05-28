@@ -1,7 +1,7 @@
 From 2bd815d8347851212b9a91dbdca8053f4dbdac87 Mon Sep 17 00:00:00 2001
 From: Siddhesh Poyarekar <siddhesh@sourceware.org>
 Date: Tue, 4 Oct 2022 18:43:50 -0400
-Subject: [PATCH 057/118] nscd: Drop local address tuple variable [BZ #29607]
+Subject: [PATCH 057/175] nscd: Drop local address tuple variable [BZ #29607]
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -64,5 +64,5 @@ index 51e793199fff83137548501949b553bc2cad2f37..e0baed170b36d6d1ca2ca6c3f758e50c
  	    {
  	      ++naddrs;
 -- 
-2.41.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 4444be051cae74fed390d4bc1a15ed730cc07b02 Mon Sep 17 00:00:00 2001
 From: Martin Jansa <Martin.Jansa@gmail.com>
 Date: Wed, 21 Sep 2022 10:51:03 -0300
-Subject: [PATCH 079/118] locale: prevent maybe-uninitialized errors with -Os
+Subject: [PATCH 079/175] locale: prevent maybe-uninitialized errors with -Os
  [BZ #19444]
 
 Fixes following error when building  with -Os:
@@ -50,5 +50,5 @@ index 8be2d220f814fbbcb85c506a0911d4215324203c..4a4d5aa6b261ab4e3bc116efc85ce0e4
    const unsigned char *usrc;
  
 -- 
-2.41.0
+2.35.6
 

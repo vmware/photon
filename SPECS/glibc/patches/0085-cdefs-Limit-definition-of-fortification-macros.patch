@@ -1,7 +1,7 @@
 From 56e00c585420af63fc4df9e28ff9e12bb2a3274f Mon Sep 17 00:00:00 2001
 From: Siddhesh Poyarekar <siddhesh@sourceware.org>
 Date: Thu, 2 Feb 2023 07:49:02 -0500
-Subject: [PATCH 085/118] cdefs: Limit definition of fortification macros
+Subject: [PATCH 085/175] cdefs: Limit definition of fortification macros
 
 Define the __glibc_fortify and other macros only when __FORTIFY_LEVEL >
 0.  This has the effect of not defining these macros on older C90
@@ -49,5 +49,5 @@ index f525f67547f0c81902a591c8fc1f23b2cf38072e..294e633335998cad5dda2cf55f26fcba
  #if __GNUC_PREREQ (4,3)
  # define __warnattr(msg) __attribute__((__warning__ (msg)))
 -- 
-2.41.0
+2.35.6
 

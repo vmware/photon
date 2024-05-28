@@ -1,7 +1,7 @@
 From d1d8379bff34f02f86f82db2cef5bf66746d3560 Mon Sep 17 00:00:00 2001
 From: John David Anglin <danglin@gcc.gnu.org>
 Date: Sat, 1 Oct 2022 19:49:25 +0000
-Subject: [PATCH 047/118] hppa: Fix initialization of dp register [BZ 29635]
+Subject: [PATCH 047/175] hppa: Fix initialization of dp register [BZ 29635]
 
 After upgrading glibc to Debian 2.35-1, gdb faulted on
 startup and dropped core in a function call in the main
@@ -69,5 +69,5 @@ index c865713be1e3f8e0430bbb35c8db7ebe3e7a6abf..1d5194856601e025cb4355c94c2b4935
  "	ldo	4(%r23),%r23\n"	/* delay slot */			\
  									\
 -- 
-2.41.0
+2.35.6
 

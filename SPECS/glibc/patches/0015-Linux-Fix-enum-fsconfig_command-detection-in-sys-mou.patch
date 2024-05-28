@@ -1,7 +1,7 @@
 From 3bd3c612e98a53ce60ed972f5cd2b90628b3cba5 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 16 Aug 2022 09:25:23 +0200
-Subject: [PATCH 015/118] Linux: Fix enum fsconfig_command detection in
+Subject: [PATCH 015/175] Linux: Fix enum fsconfig_command detection in
  <sys/mount.h>
 
 The #ifdef FSOPEN_CLOEXEC check did not work because the macro
@@ -41,5 +41,5 @@ index 2e3fd6a7fe6b38f32c2563512719a4ad76d73794..19841d07385244813e3773d872348d37
  #define OPEN_TREE_CLONE    1         /* Clone the target tree and attach the clone */
  #define OPEN_TREE_CLOEXEC  O_CLOEXEC /* Close the file on execve() */
 -- 
-2.41.0
+2.35.6
 

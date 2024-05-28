@@ -1,7 +1,7 @@
 From f0e9657067240b8b105c6d58d5da9dc926f2f0ed Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 028/118] resolv: Add DNS packet parsing helpers geared towards
+Subject: [PATCH 028/175] resolv: Add DNS packet parsing helpers geared towards
  wire format
 
 The public parser functions around the ns_rr record type produce
@@ -541,5 +541,5 @@ index 0000000000000000000000000000000000000000..c3c09089053d0c40546f0aaed348c395
 +
 +#include <support/test-driver.c>
 -- 
-2.41.0
+2.35.6
 

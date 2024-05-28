@@ -1,7 +1,7 @@
 From d13a7a6f100576b1e30dc044b2e0c4cbcb6196f6 Mon Sep 17 00:00:00 2001
 From: Arjun Shankar <arjun@redhat.com>
 Date: Tue, 2 Aug 2022 11:10:25 +0200
-Subject: [PATCH 008/118] socket: Check lengths before advancing pointer in
+Subject: [PATCH 008/175] socket: Check lengths before advancing pointer in
  CMSG_NXTHDR
 
 The inline and library functions that the CMSG_NXTHDR macro may expand
@@ -444,5 +444,5 @@ index 15b7a3a9258083979ac46656f0267a8668b5075a..24f72b797a44b32dc8e18a1bb0371fc6
  }
  libc_hidden_def (__cmsg_nxthdr)
 -- 
-2.41.0
+2.35.6
 

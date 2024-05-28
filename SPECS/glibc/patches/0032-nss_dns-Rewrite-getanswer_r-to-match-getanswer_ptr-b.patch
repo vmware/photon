@@ -1,7 +1,7 @@
 From 78c8ef21fa54e994451d5b42ead6080d99a88a49 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 10:02:49 +0200
-Subject: [PATCH 032/118] nss_dns: Rewrite getanswer_r to match getanswer_ptr
+Subject: [PATCH 032/175] nss_dns: Rewrite getanswer_r to match getanswer_ptr
  (bug 12154, bug 29305)
 
 Allocate the pointer arrays only at the end, when their sizes
@@ -567,5 +567,5 @@ index 8e38583e151ffb6c4ca1f30ca235d05fd12c4fd7..b887e77e9cc13c6babbfe6284bb96646
  
  static enum nss_status
 -- 
-2.41.0
+2.35.6
 

@@ -1,7 +1,7 @@
 From 227c9035872fc9e9e2cf56ec8f89219747ee19bc Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?J=C3=B6rg=20Sonnenberger?= <joerg@bec.de>
 Date: Mon, 26 Sep 2022 13:59:16 -0400
-Subject: [PATCH 045/118] get_nscd_addresses: Fix subscript typos [BZ #29605]
+Subject: [PATCH 045/175] get_nscd_addresses: Fix subscript typos [BZ #29605]
 
 Fix the subscript on air->family, which was accidentally set to COUNT
 when it should have remained as I.
@@ -34,5 +34,5 @@ index bcff909b2f3939d04b6ad33a78ae4f510504f96c..5cda9bb072434d078a7114a26c396719
  	}
        at[count].next = at + count + 1;
 -- 
-2.41.0
+2.35.6
 

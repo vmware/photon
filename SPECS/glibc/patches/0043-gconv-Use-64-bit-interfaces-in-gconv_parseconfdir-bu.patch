@@ -1,7 +1,7 @@
 From 52c037f3574eb9062b111d78a4cbeb79681d07d3 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 20 Sep 2022 12:12:43 +0200
-Subject: [PATCH 043/118] gconv: Use 64-bit interfaces in gconv_parseconfdir
+Subject: [PATCH 043/175] gconv: Use 64-bit interfaces in gconv_parseconfdir
  (bug 29583)
 
 It's possible that inode numbers are outside the 32-bit range.
@@ -77,5 +77,5 @@ index debb96b322b0ceee27b203871a0e4a7b25c79993..b72933b526d0363ef829e1571c7ad49d
  
  	      free (conf);
 -- 
-2.41.0
+2.35.6
 

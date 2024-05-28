@@ -1,7 +1,7 @@
 From 29c577e0f54fe6e70ceacb3659179781c5569903 Mon Sep 17 00:00:00 2001
 From: Aurelien Jarno <aurelien@aurel32.net>
 Date: Mon, 3 Oct 2022 23:46:11 +0200
-Subject: [PATCH 052/118] x86-64: Require BMI2 for AVX2 strncmp implementation
+Subject: [PATCH 052/175] x86-64: Require BMI2 for AVX2 strncmp implementation
 
 The AVX2 strncmp implementations uses the 'bzhi' instruction, which
 belongs to the BMI2 CPU feature.
@@ -63,5 +63,5 @@ index 4ebe4bde30994e824b2a843033a7cc03d533537b..c4f8b6bbb5ee0f6a0ed70f070efb0690
  
        if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
 -- 
-2.41.0
+2.35.6
 

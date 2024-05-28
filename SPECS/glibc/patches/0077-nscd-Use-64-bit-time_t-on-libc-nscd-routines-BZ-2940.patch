@@ -1,7 +1,7 @@
 From c1e080bc9521d2282a1f60c2ee19d80adae672ee Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella Netto <adhemerval.zanella@linaro.org>
 Date: Wed, 26 Oct 2022 16:04:24 -0300
-Subject: [PATCH 077/118] nscd: Use 64 bit time_t on libc nscd routines (BZ#
+Subject: [PATCH 077/175] nscd: Use 64 bit time_t on libc nscd routines (BZ#
  29402)
 
 Although the nscd module is built with 64 bit time_t, the routines
@@ -54,5 +54,5 @@ index 9becb620335d14d7becebe6c29ad96cc4e7463ee..31c64275f0833d17e59afa9066f1b115
  
    if (map == NO_MAPPING)
 -- 
-2.41.0
+2.35.6
 

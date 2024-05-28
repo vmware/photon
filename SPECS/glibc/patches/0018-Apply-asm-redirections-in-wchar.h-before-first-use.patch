@@ -1,7 +1,7 @@
 From 3c791f2031ca8f6b99e96b774ed1c505ceb93595 Mon Sep 17 00:00:00 2001
 From: Raphael Moreira Zinsly <rzinsly@linux.ibm.com>
 Date: Wed, 24 Aug 2022 11:43:37 -0300
-Subject: [PATCH 018/118] Apply asm redirections in wchar.h before first use
+Subject: [PATCH 018/175] Apply asm redirections in wchar.h before first use
 
 Similar to d0fa09a770, but for wchar.h.  Fixes [BZ #27087] by applying
 all long double related asm redirections before using functions in
@@ -421,5 +421,5 @@ index 5d6a40853d5eb176140324d3faab8f9244aa8da5..c1321c75186ad1ed8f4d148cfff27be2
  
  #endif /* wchar.h  */
 -- 
-2.41.0
+2.35.6
 

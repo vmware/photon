@@ -1,7 +1,7 @@
 From 9f0d3bb2e325dc30ae20e347cccbe10fa0b4ce9b Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 8 Sep 2023 13:02:06 +0200
-Subject: [PATCH 111/118] elf: Remove unused l_text_end field from struct
+Subject: [PATCH 111/175] elf: Remove unused l_text_end field from struct
  link_map
 
 It is a left-over from commit 52a01100ad011293197637e42b5be1a479a2
@@ -139,5 +139,5 @@ index 87966e839701095e753e1aec0a9d395041cc6f06..81f5715db07535b7e5d437da92d23f19
      /* Default array for 'l_scope'.  */
      struct r_scope_elem *l_scope_mem[4];
 -- 
-2.41.0
+2.35.6
 

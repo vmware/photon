@@ -1,7 +1,7 @@
 From a7fa604f3050a1024dc8ec28ff28bad811f6151f Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Tue, 30 Aug 2022 13:30:03 +0200
-Subject: [PATCH 036/118] resolv: Fix building tst-resolv-invalid-cname for
+Subject: [PATCH 036/175] resolv: Fix building tst-resolv-invalid-cname for
  earlier C standards
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -36,5 +36,5 @@ index ae2d4419b1978c02ec5838b13e99d2f115f56de6..63dac90e02d6cbc7b1296b8c47c44b21
    FAIL_EXIT1 ("invalid test_mode: %d", mode);
  }
 -- 
-2.41.0
+2.35.6
 

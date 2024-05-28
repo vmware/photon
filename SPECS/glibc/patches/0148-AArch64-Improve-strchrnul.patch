@@ -1,0 +1,45 @@
+From 8ee69bd2df74fcc18ecf7e08eb5c74809c0be0e9 Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Wed, 11 Jan 2023 13:52:23 +0000
+Subject: [PATCH 148/175] AArch64: Improve strchrnul
+
+Unroll the main loop, which improves performance slightly.
+
+Reviewed-by: Szabolcs Nagy <szabolcs.nagy@arm.com>
+(cherry picked from commit 09ebd8549b2ce5a3a6c0c7c5f3e62227faf50a99)
+---
+ sysdeps/aarch64/strchrnul.S | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/sysdeps/aarch64/strchrnul.S b/sysdeps/aarch64/strchrnul.S
+index ee154ab74bb8ea50274bd67a43e5e08f974565ef..94465fc088a018d7a6d0a991978c5bd2aee8bf90 100644
+--- a/sysdeps/aarch64/strchrnul.S
++++ b/sysdeps/aarch64/strchrnul.S
+@@ -70,14 +70,22 @@ ENTRY (__strchrnul)
+ 
+ 	.p2align 4
+ L(loop):
+-	ldr	qdata, [src, 16]!
++	ldr	qdata, [src, 16]
++	cmeq	vhas_chr.16b, vdata.16b, vrepchr.16b
++	cmhs	vhas_chr.16b, vhas_chr.16b, vdata.16b
++	umaxp	vend.16b, vhas_chr.16b, vhas_chr.16b
++	fmov	tmp1, dend
++	cbnz	tmp1, L(end)
++	ldr	qdata, [src, 32]!
+ 	cmeq	vhas_chr.16b, vdata.16b, vrepchr.16b
+ 	cmhs	vhas_chr.16b, vhas_chr.16b, vdata.16b
+ 	umaxp	vend.16b, vhas_chr.16b, vhas_chr.16b
+ 	fmov	tmp1, dend
+ 	cbz	tmp1, L(loop)
+-
++	sub	src, src, 16
++L(end):
+ 	shrn	vend.8b, vhas_chr.8h, 4		/* 128->64 */
++	add	src, src, 16
+ 	fmov	tmp1, dend
+ #ifndef __AARCH64EB__
+ 	rbit	tmp1, tmp1
+-- 
+2.35.6
+
