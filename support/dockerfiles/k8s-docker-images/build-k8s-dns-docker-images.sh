@@ -12,7 +12,7 @@ ARCH=x86_64
 source common.sh
 
 # Docker images for kubernetes-dns artifacts
-fn="${SPEC_DIR}/kubernetes-dns/kubernetes-dns.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/kubernetes-dns/kubernetes-dns.spec" )"
 K8S_DNS_VER=$(get_spec_ver "${fn}")
 K8S_DNS_VER_REL=${K8S_DNS_VER}-$(get_spec_rel "${fn}")
 K8S_DNS_RPM=kubernetes-dns-${K8S_DNS_VER_REL}${DIST_TAG}.${ARCH}.rpm

@@ -12,7 +12,7 @@ ARCH=x86_64
 source common.sh
 
 # Docker images for calico-node, calico-cni
-fn="${SPEC_DIR}/calico/calico.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/calico/calico.spec" )"
 CALICO_VER=$(get_spec_ver "${fn}")
 CALICO_VER_REL=${CALICO_VER}-$(get_spec_rel "${fn}")
 CALICO_RPM=calico-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
@@ -30,31 +30,31 @@ CALICO_K8S_POLICY_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_K8S_POLICY_RPM}
 CONFD_RPM=confd-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CONFD_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CONFD_RPM}
 
-fn="${SPEC_DIR}/calico-bgp-daemon/calico-bgp-daemon.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/calico-bgp-daemon/calico-bgp-daemon.spec" )"
 CALICO_BGP_VER=$(get_spec_ver "${fn}")
 CALICO_BGP_VER_REL=${CALICO_BGP_VER}-$(get_spec_rel "${fn}")
 CALICO_BGP_RPM=calico-bgp-daemon-${CALICO_BGP_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_BGP_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_BGP_RPM}
 
-fn="${SPEC_DIR}/gobgp/gobgp.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/gobgp/gobgp.spec")"
 GO_BGP_VER=$(get_spec_ver "${fn}")
 GO_BGP_VER_REL=${GO_BGP_VER}-$(get_spec_rel "${fn}")
 GO_BGP_RPM=gobgp-${GO_BGP_VER_REL}${DIST_TAG}.${ARCH}.rpm
 GO_BGP_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${GO_BGP_RPM}
 
-fn="${SPEC_DIR}/calico-bird/calico-bird.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/calico-bird/calico-bird.spec" )"
 CALICO_BIRD_VER=$(get_spec_ver "${fn}")
 CALICO_BIRD_VER_REL=${CALICO_BIRD_VER}-$(get_spec_rel "${fn}")
 CALICO_BIRD_RPM=calico-bird-${CALICO_BIRD_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_BIRD_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_BIRD_RPM}
 
-fn="${SPEC_DIR}/calico-libnetwork/calico-libnetwork.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/calico-libnetwork/calico-libnetwork.spec" )"
 CALICO_LIBNET_VER=$(get_spec_ver "${fn}")
 CALICO_LIBNET_VER_REL=${CALICO_LIBNET_VER}-$(get_spec_rel "${fn}")
 CALICO_LIBNET_RPM=calico-libnetwork-${CALICO_LIBNET_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_LIBNET_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_LIBNET_RPM}
 
-fn="${SPEC_DIR}/cni/cni.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/cni/cni.spec" )"
 K8S_CNI_VER=$(get_spec_ver "${fn}")
 K8S_CNI_VER_REL=${K8S_CNI_VER}-$(get_spec_rel "${fn}")
 K8S_CNI_RPM=cni-${K8S_CNI_VER_REL}${DIST_TAG}.${ARCH}.rpm

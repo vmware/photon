@@ -679,7 +679,7 @@ class RpmBuildTarget:
 
         CheckTools.check_spec_files()
 
-        #runBashCmd("./tools/scripts/generate-specs-from-templates.sh")
+        runBashCmd("./tools/scripts/generate-specs-from-templates.sh")
 
         Utilities(None).generate_dep_lists()
 

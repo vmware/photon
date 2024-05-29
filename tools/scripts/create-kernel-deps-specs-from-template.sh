@@ -106,8 +106,8 @@ specs=(falco sysdig)
 echo "Creating ${specs[@]} specs ..."
 
 for s in ${!specs[@]}; do
-  rm -f $spec_dir/${specs[$s]}/*.spec
-  specs[$s]="$spec_dir/${specs[$s]}/${specs[$s]}.spec.in"
+  find -L "$spec_dir" -type f -path "*/${specs[$s]}/*.spec" -delete
+  specs[$s]="$(find -L "$spec_dir" -type f -name ${specs[$s]}.spec.in)"
 done
 
 create_specs "linux"
@@ -120,9 +120,9 @@ done
 specs=(${kernel_drivers_intel[@]})
 
 for s in ${!specs[@]}; do
-  specs[$s]="$spec_dir/kernels-drivers-intel/${specs[$s]}.spec.in"
+  specs[$s]="$(find -L "$spec_dir" -type f -name ${specs[$s]}.spec.in )"
 done
-rm -f $spec_dir/kernels-drivers-intel/*.spec
+find -L "$spec_dir" -type f -path "*/kernels-drivers-intel/*.spec" -delete
 
 declare -A d_info=()
 

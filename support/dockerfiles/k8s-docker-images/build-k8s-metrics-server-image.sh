@@ -12,7 +12,7 @@ ARCH=x86_64
 source common.sh
 
 # Docker images for kubernetes-metrics-server
-fn="${SPEC_DIR}/kubernetes-metrics-server/kubernetes-metrics-server.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/kubernetes-metrics-server/kubernetes-metrics-server.spec" )"
 K8S_MET_SERV_VER=$(get_spec_ver "${fn}")
 K8S_MET_SERV_VER_REL=${K8S_MET_SERV_VER}-$(get_spec_rel "${fn}")
 K8S_MET_SERV_RPM=kubernetes-metrics-server-${K8S_MET_SERV_VER_REL}${DIST_TAG}.${ARCH}.rpm

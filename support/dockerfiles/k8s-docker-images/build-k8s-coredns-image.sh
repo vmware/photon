@@ -12,7 +12,7 @@ ARCH=x86_64
 source common.sh
 
 # Docker images for coredns
-fn="${SPEC_DIR}/coredns/coredns.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/coredns/coredns.spec" )"
 K8S_COREDNS_VER=$(get_spec_ver "${fn}")
 K8S_COREDNS_VER_REL=${K8S_COREDNS_VER}-$(get_spec_rel "${fn}")
 K8S_COREDNS_RPM=coredns-${K8S_COREDNS_VER_REL}${DIST_TAG}.${ARCH}.rpm

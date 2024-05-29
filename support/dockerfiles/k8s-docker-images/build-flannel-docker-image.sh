@@ -12,7 +12,7 @@ ARCH=x86_64
 source common.sh
 
 # Docker image for flannel
-fn="${SPEC_DIR}/flannel/flannel.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/flannel/flannel.spec" )"
 FLANNEL_VER=$(get_spec_ver "${fn}")
 FLANNEL_VER_REL=${FLANNEL_VER}-$(get_spec_rel "${fn}")
 FLANNEL_RPM=flannel-${FLANNEL_VER_REL}${DIST_TAG}.${ARCH}.rpm

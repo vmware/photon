@@ -12,7 +12,7 @@ ARCH=noarch
 source common.sh
 
 # Docker image for wavefront-proxy
-fn="${SPEC_DIR}/wavefront-proxy/wavefront-proxy.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/wavefront-proxy/wavefront-proxy.spec" )"
 WAVEFRONT_PROXY_VER=$(get_spec_ver "${fn}")
 WAVEFRONT_PROXY_VER_REL=${WAVEFRONT_PROXY_VER}-$(get_spec_rel "${fn}")
 WAVEFRONT_PROXY_RPM=wavefront-proxy-${WAVEFRONT_PROXY_VER_REL}${DIST_TAG}.${ARCH}.rpm

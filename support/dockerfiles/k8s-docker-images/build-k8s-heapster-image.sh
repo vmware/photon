@@ -12,7 +12,7 @@ ARCH=x86_64
 source common.sh
 
 # Docker images for heapster - kubernetes cluster monitoring tool.
-fn="${SPEC_DIR}/heapster/heapster.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/heapster/heapster.spec" )"
 K8S_HEAPSTER_VER=$(get_spec_ver "${fn}")
 K8S_HEAPSTER_VER_REL=${K8S_HEAPSTER_VER}-$(get_spec_rel "${fn}")
 K8S_HEAPSTER_RPM=heapster-${K8S_HEAPSTER_VER_REL}${DIST_TAG}.${ARCH}.rpm

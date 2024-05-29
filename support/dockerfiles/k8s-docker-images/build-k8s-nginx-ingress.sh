@@ -12,7 +12,7 @@ ARCH=x86_64
 source common.sh
 
 # Docker image for kubernetes nginx ingress controller
-fn="${SPEC_DIR}/nginx-ingress/nginx-ingress.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/nginx-ingress/nginx-ingress.spec" )"
 NGINX_INC_VER=$(get_spec_ver "${fn}")
 NGINX_INC_VER_REL=${NGINX_INC_VER}-$(get_spec_rel "${fn}")
 NGINX_INC_RPM=nginx-ingress-${NGINX_INC_VER_REL}${DIST_TAG}.${ARCH}.rpm

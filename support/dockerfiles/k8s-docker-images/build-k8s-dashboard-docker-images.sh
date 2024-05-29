@@ -12,7 +12,7 @@ ARCH=x86_64
 source common.sh
 
 # Docker images for kubernetes-dashboard
-fn="${SPEC_DIR}/kubernetes-dashboard/kubernetes-dashboard.spec"
+fn="$(find -L "$SPEC_DIR" -type f -path "*/kubernetes-dashboard/kubernetes-dashboard.spec" )"
 K8S_DASH_VER=$(get_spec_ver "${fn}")
 K8S_DASH_VER_REL=${K8S_DASH_VER}-$(get_spec_rel "${fn}")
 K8S_DASH_RPM=kubernetes-dashboard-${K8S_DASH_VER_REL}${DIST_TAG}.${ARCH}.rpm
