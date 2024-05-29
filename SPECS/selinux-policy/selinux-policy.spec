@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -50,6 +50,7 @@ Patch25: 0026-Fix-etcd-denials-for-K8-s-deployment-with-containerd.patch
 Patch26: 0027-Fix-systemd-gpt-denials-for-K8-s-deployment.patch
 Patch27: 0028-getty.te-fix-denials.patch
 Patch28: 0029-init.te-fix-denials.patch
+Patch29: 0030-systemd.te-fix-denials.patch
 
 BuildArch:      noarch
 
@@ -129,6 +130,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Wed May 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-6
+- Fix resolved denial
 * Tue May 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-5
 - Fix few denials
 * Tue Jan 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-4

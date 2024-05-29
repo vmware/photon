@@ -1,0 +1,41 @@
+From f40ea397b0ffdc062bfdfd93159aa96b9705b987 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 29 May 2024 13:33:14 +0530
+Subject: [PATCH] systemd.te: fix denials
+
+May 29 07:45:12 photon-machine.CBENGLAB.COM audit: PATH item=0 name="/etc/selinux/config" inode=2884373 dev=08:06 mode=0100640 ouid=0 ogid=0 rdev=00:00 obj=system_u:object_r:selinux_config_t:s0 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0
+May 29 07:45:12 photon-machine.CBENGLAB.COM audit: PROCTITLE proctitle="(resolved)"
+
+May 29 07:45:12 photon-machine.CBENGLAB.COM audit[1]: SYSCALL arch=c000003e syscall=84 success=no exit=-2 a0=55e35eb17c10 a1=0 a2=2 a3=40 items=1 ppid=0 pid=1 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm="systemd" exe="/usr/lib/systemd/systemd" subj=system_u:system_r:init_t:s0 key=(null)
+May 29 07:45:12 photon-machine.CBENGLAB.COM audit: CWD cwd="/"
+May 29 07:45:12 photon-machine.CBENGLAB.COM audit: PATH item=0 name="/sys/fs/cgroup/cpu/system.slice/system-getty.slice/" inode=75 dev=00:24 mode=040755 ouid=0 ogid=0 rdev=00:00 obj=system_u:object_r:cgroup_t:s0 nametype=PARENT cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/system/systemd.te | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/policy/modules/system/systemd.te b/policy/modules/system/systemd.te
+index bbb8c62..f27d7f9 100644
+--- a/policy/modules/system/systemd.te
++++ b/policy/modules/system/systemd.te
+@@ -1212,6 +1212,9 @@ optional_policy(`
+     networkmanager_dbus_chat(systemd_resolved_t)
+ ')
+ 
++seutil_read_config(systemd_resolved_t)
++seutil_read_file_contexts(systemd_resolved_t)
++
+ ########################################
+ #
+ # Common rules for systemd domains
+@@ -1461,3 +1464,6 @@ optional_policy(`
+ optional_policy(`
+ 	unconfined_server_domtrans(systemd_sleep_t)
+ ')
++
++allow init_t cgroup_t:dir { read search open };
++allow init_t cgroup_t:file { read open write getattr };
+-- 
+2.34.1
+
