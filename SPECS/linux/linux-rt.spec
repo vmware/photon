@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.311
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -373,7 +373,7 @@ Patch710: 0001-Bluetooth-af_bluetooth-Fix-Use-After-Free-in-bt_sock.patch
 Patch711: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 
 #Fix CVE-2024-26882
-Patch712:0001-net-ip_tunnel-make-sure-to-pull-inner-header-in-ip_t.patch
+Patch712: 0001-net-ip_tunnel-make-sure-to-pull-inner-header-in-ip_t.patch
 
 #Fix CVE-2023-52509
 Patch713: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
@@ -394,6 +394,9 @@ Patch718: 0001-net-openvswitch-fix-use-after-free-in-ovs_ct_exit.patch
 
 #Fix CVE-2024-27396
 Patch719: 0001-net-gtp-fix-use-after-free-in-gtp_dellink.patch
+
+#Fix CVE-2024-26934
+Patch720: 0001-USB-core-Fix-deadlock-in-usb_deauthorize_interface.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -778,7 +781,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M641
 
 # CVE Fixes
-%autopatch -p1 -m700 -M719
+%autopatch -p1 -m700 -M720
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1283,6 +1286,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue May 28 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.311-6
+- Patched CVE-2024-26934
 * Mon May 20 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.311-5
 - Fixes CVE-2024-27395, CVE-2024-27396
 * Mon May 06 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.311-4
