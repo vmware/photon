@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        255.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -28,6 +28,7 @@ Source14:       sysusers.generate-pre.sh
 
 Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
+Patch2: 0001-Remove-unused-default-groups-rules-and-tmpfiles.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -751,6 +752,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Jun 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 255.2-6
+- Patched to remove unused groups from systemd
 * Tue Jun 18 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 255.2-5
 - Disable sysupdate through build
 * Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 255.2-4
