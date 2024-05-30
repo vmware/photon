@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -34,6 +34,7 @@ Patch3: fix-lvrename-unmount.patch
 Patch4: revert-network-delay-to-configure-address-until-it-i.patch
 Patch5: do-not-build-with-trivial-auto-var-init-zero.patch
 Patch6: do-not-allocate-1m-on-stack.patch
+Patch7: 0001-Remove-unused-default-groups-rules-and-tmpfiles.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -703,6 +704,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu May 30 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 253.19-2
+- Patched to remove unused groups from systemd
 * Tue May 21 2024 Dweep Advani <dweep.advani@broadcom.com> 253.19-1
 - Version upgrade to 253.19, avoid -ftrivial-auto-var-init=zero and do not alloc 1m on stack
 * Mon Apr 29 2024 Susant Sahani <susant.sahani@broadcom.com> 253.17-1
