@@ -1,11 +1,11 @@
 Summary:        Cron Daemon
 Name:           cronie
 Version:        1.5.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+ and MIT and BSD and ISC
 URL:            https://github.com/cronie-crond/cronie
 Source0:        https://github.com/cronie-crond/cronie/releases/download/cronie-%{version}/cronie-%{version}.tar.gz
-%define sha1    cronie=1e616d6d119b3b313f05edb381436e45f98477be
+%define sha512  cronie=3cb53ee4db7722c0764a1d2e5dfe773cfc31c91e9d0798d579a58ec8c29a1f42238e18c27baae2eaff6df37250cd06dddbf77f0020aed68b9712fd7332efb912
 Source1:        run-parts.sh
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -16,27 +16,26 @@ BuildRequires:  systemd
 Requires:       systemd
 Requires:       libselinux
 Requires:       Linux-PAM
+Requires:       shadow
 %description
 Cronie contains the standard UNIX daemon crond that runs specified programs at
 scheduled times and related tools. It is based on the original cron and
 has security and configuration enhancements like the ability to use pam and
 SELinux.
 %prep
-%setup -q
+%autosetup
 sed -i 's/^\s*auth\s*include\s*password-auth$/auth       include    system-auth/g;
      s/^\s*account\s*include\s*password-auth$/account    include    system-account/g;
      s/^\s*session\s*include\s*password-auth$/session    include    system-session/g;' pam/crond
 %build
 %configure \
-    --sysconfdir=/etc   \
-    --localstatedir=/var\
     --with-pam          \
     --enable-anacron    \
     --enable-pie        \
     --enable-relro
 make %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 install -vdm700 %{buildroot}%{_localstatedir}/spool/cron
 
 install -vdm755 %{buildroot}%{_sysconfdir}/sysconfig/
@@ -119,6 +118,8 @@ make %{?_smp_mflags} check
 %ghost %attr(0600,root,root) %{_localstatedir}/spool/anacron/cron.weekly
 
 %changelog
+*   Thu May 30 2024 Anmol Jain <anmol.jain@broadcom.com> 1.5.5-2
+-   Added shadow pkg in Requires
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.5-1
 -   Automatic Version Bump
 *   Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 1.5.1-1
@@ -151,4 +152,3 @@ make %{?_smp_mflags} check
 -   Add crond to systemd service.
 *   Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
 -   Initial build. First version
-
