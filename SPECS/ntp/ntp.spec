@@ -1,6 +1,6 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p16
+Version:        4.2.8p18
 Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
@@ -9,14 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha512  %{name}=0b4a3336def620d3ab2f06dacf8621e848167e35657c0a1206eca178a7541dd8730071bd7a0a8dea2c4682c4f38d31c3772d01093c26fd5a4395e37a86e770e2
+%define sha512  %{name}=c314f645d7d85e1028327657f30557cdfd86d417565b6c9fcbb40fca8a4c22a97b70908e8b73c6b31e14915b5b910ae0055fd42e819dd3cb48583b2a826c3fc4
 
 #https://github.com/darkhelmet/ntpstat
 Source1:        ntpstat-master.zip
 %define sha512  ntpstat=79e348e93683f61eb97371f62bcb3b74cedfe6fd248a86d294d65ce4dc3649ce923bdf683cb18604fe47c4e854a6970c4ae1577e20b1febc87c3009888025ed0
 Source2:        %{name}.sysconfig
-
-Patch0:         Get-rid-of-EVP_MD_CTX_FLAG_NON_FIPS_ALLOW.patch
 
 BuildRequires:  which
 BuildRequires:  libcap-devel
@@ -40,7 +38,8 @@ NTP protocol.
 %package        perl
 Summary:        Perl scripts for ntp
 Group:          Utilities
-Requires:       ntp = %{version}-%{release}, perl >= 5
+Requires:       %{name} = %{version}-%{release}
+Requires:       perl >= 5
 Requires:       perl-Net-SSLeay
 Requires:       perl-IO-Socket-SSL
 
@@ -68,37 +67,35 @@ state of the NTP daemon running on the local machine.
     --enable-linuxcaps
 
 %make_build
-make -C ntpstat-master CFLAGS="$CFLAGS" %{?_smp_mflags}
+%make_build -C ntpstat-master CFLAGS="$CFLAGS"
 
 %install
 %make_install %{?_smp_mflags}
 install -v -m755 -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
-cp -v -R html/* %{buildroot}%{_datadir}/doc/%{name}-%{version}/
-install -vdm 755 %{buildroot}/etc
+cp -v -R html/* %{buildroot}%{_docdir}/%{name}-%{version}/
+install -vdm 755 %{buildroot}%{_sysconfdir}
 
-mkdir -p %{buildroot}/var/lib/%{name}/drift \
-         %{buildroot}/etc/sysconfig \
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name}/drift \
+         %{buildroot}%{_sysconfdir}/sysconfig \
          %{buildroot}%{_unitdir}
 
-cp %{SOURCE2} %{buildroot}/etc/sysconfig/%{name}
+cp %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
 pushd ntpstat-master
 install -m 755 ntpstat %{buildroot}%{_bindir}
 install -m 644 ntpstat.1 %{buildroot}%{_mandir}/man8/ntpstat.8
 popd
 
-cat > %{buildroot}/etc/%{name}.conf <<- "EOF"
+cat > %{buildroot}%{_sysconfdir}/%{name}.conf <<- "EOF"
 tinker panic 0
 restrict default kod nomodify notrap nopeer noquery
 restrict 127.0.0.1
 restrict -6 ::1
-driftfile /var/lib/%{name}/drift/%{name}.drift
+driftfile %{_sharedstatedir}/%{name}/drift/%{name}.drift
 EOF
 
 install -D -m644 COPYRIGHT %{buildroot}%{_datadir}/licenses/%{name}/LICENSE
-rm -rf %{buildroot}/etc/rc.d/*
-
-%{_fixperms} %{buildroot}/*
+rm -rf %{buildroot}%{_sysconfdir}/rc.d/*
 
 cat << EOF >> %{buildroot}%{_unitdir}/ntpd.service
 [Unit]
@@ -109,27 +106,28 @@ Conflicts=systemd-timesyncd.service
 
 [Service]
 Type=forking
-EnvironmentFile=/etc/sysconfig/%{name}
-ExecStart=/usr/bin/ntpd -g -u ntp:ntp
+EnvironmentFile=%{_sysconfdir}/sysconfig/%{name}
+ExecStart=%{_bindir}/ntpd -g -u %{name}:%{name}
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable ntpd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ntpd.preset
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable ntpd.service" > %{buildroot}%{_presetdir}/50-ntpd.preset
+
+%{_fixperms} %{buildroot}/*
 
 %check
 %make_build check
 
 %pre
-if ! getent group ntp >/dev/null; then
-    groupadd -g 87 ntp
-fi
-if ! getent passwd ntp >/dev/null; then
-    useradd -c "Network Time Protocol" -d /var/lib/ntp -u 87 -g ntp -s /bin/false ntp
-fi
+! getent group %{name} >/dev/null && groupadd -g 87 %{name} || :
+
+! getent passwd %{name} >/dev/null && \
+  useradd -c "Network Time Protocol" \
+  -d %{_sharedstatedir}/%{name} -u 87 -g %{name} -s /bin/false %{name} || :
 
 %post
 /sbin/ldconfig
@@ -151,7 +149,7 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %{_unitdir}/ntpd.service
-%{_libdir}/systemd/system-preset/50-ntpd.preset
+%{_presetdir}/50-ntpd.preset
 %{_bindir}/ntpd
 %{_bindir}/ntpdate
 %{_bindir}/ntpdc
@@ -160,9 +158,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/ntptime
 %{_bindir}/sntp
 %{_bindir}/tickadj
-%{_datadir}/doc/%{name}-%{version}/*
-%{_datadir}/doc/%{name}/*
-%{_datadir}/doc/sntp/*
+%{_docdir}/%{name}-%{version}/*
+%{_docdir}/%{name}/*
+%{_docdir}/sntp/*
 %{_datadir}/licenses/%{name}/LICENSE
 %{_mandir}/man1/ntpd.1.gz
 %{_mandir}/man1/ntpdc.1.gz
@@ -172,6 +170,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 
 %files perl
+%defattr(-,root,root)
 %{_bindir}/calc_tickadj
 %{_bindir}/ntptrace
 %{_bindir}/%{name}-wait
@@ -188,6 +187,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.2.8p18-1
+- Upgrade to v4.2.8p18
 * Mon Jun 19 2023 Michelle Wang <michellew@vmware.com> 4.2.8p16-1
 - Upgrade to 4.2.8p16 for CVE-2023-26551 ~ CVE-2023-26555
 * Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.2.8p15-8
