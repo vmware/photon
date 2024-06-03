@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -63,6 +63,7 @@ BuildRequires: policycoreutils
 
 Requires: policycoreutils
 Requires: coreutils-selinux
+Requires: libselinux-utils
 
 %description
 Provides default Photon OS SELinux policy.
@@ -102,7 +103,7 @@ mkdir -p %{buildroot}%{_sharedstatedir}/selinux/default
 mkdir %{buildroot}%{_datadir}/selinux/devel
 cp doc/Makefile.example %{buildroot}%{_datadir}/selinux/devel/Makefile
 cp config/file_contexts.subs_dist %{buildroot}%{_sysconfdir}/selinux/default/contexts/files/
-cp -p %{SOURCE5} %{buildroot}%{_sysconfdir}/selinux/config
+install -v -m644 %{SOURCE5} %{buildroot}%{_sysconfdir}/selinux/config
 
 mkdir -p %{buildroot}%{_rpmmacrodir}
 cp -p %{SOURCE4} %{buildroot}%{_rpmmacrodir}/
@@ -130,6 +131,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-7
+- Fix config file permission
 * Wed May 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-6
 - Fix resolved denial
 * Tue May 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-5
