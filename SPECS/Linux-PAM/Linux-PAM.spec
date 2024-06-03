@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
@@ -14,8 +14,9 @@ Source0: https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{
 Source1: pamtmp.conf
 Source2: default-faillock.conf
 
-Patch0: faillock-add-support-to-print-login-failures.patch
-Patch1: Linux-PAM-protect-dir.patch
+Patch0: 0001-faillock-add-support-to-print-login-failures.patch
+Patch1: 0002-Linux-PAM-protect-dir.patch
+Patch2: 0003-pam_pwhistory-fix-passing-NULL-filename-argument-to-.patch
 
 BuildRequires: libselinux-devel
 BuildRequires: gdbm-devel
@@ -138,6 +139,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-3
+- Fix passing NULL filename argument to pwhistory helper
 * Thu Jan 11 2024 Dweep Advani <dweep.advani@broadcom.com> 1.5.3-2
 - prevent DoS in protect_dir method
 * Wed May 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.3-1
