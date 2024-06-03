@@ -1,6 +1,6 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
-Version:        1.5.3
+Version:        1.6.1
 Release:        1%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam
@@ -9,12 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=af88e8c1b6a9b737ffaffff7dd9ed8eec996d1fbb5804fb76f590bed66d8a1c2c6024a534d7a7b6d18496b300f3d6571a08874cf406cd2e8cea1d5eff49c136a
+%define sha512 %{name}=ddb5a5f296f564b76925324550d29f15d342841a97815336789c7bb922a8663e831edeb54f3dcd1eaf297e3325c9e2e6c14b8740def5c43cf3f160a8a14fa2ea
 
 Source1: pamtmp.conf
 Source2: default-faillock.conf
 
-Patch0: faillock-add-support-to-print-login-failures.patch
+Patch0: 0001-faillock-add-support-to-print-login-failures.patch
 
 BuildRequires:  libselinux-devel
 BuildRequires:  gdbm-devel
@@ -32,6 +32,7 @@ enable the local system administrator to choose how applications authenticate us
 Summary:        Additional language files for Linux-PAM
 Group:          System Environment/Base
 Requires:       %{name} = %{version}-%{release}
+
 %description    lang
 These are the additional language files of Linux-PAM.
 
@@ -91,7 +92,6 @@ install -m644 -D %{SOURCE1} %{buildroot}%{_tmpfilesdir}/pam.conf
 
 %{_fixperms} %{buildroot}/*
 
-%if 0%{?with_check}
 %check
 install -v -m755 -d %{_sysconfdir}/pam.d
 cat > %{_sysconfdir}/pam.d/other << "EOF"
@@ -100,8 +100,7 @@ account  required       pam_deny.so
 password required       pam_deny.so
 session  required       pam_deny.so
 EOF
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -136,6 +135,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.1-1
+- Upgrade to v1.6.1
 * Wed May 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.3-1
 - Upgrade to v1.5.3
 * Mon Nov 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-3
