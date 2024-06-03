@@ -1,19 +1,20 @@
 Summary:        Service identity verification for pyOpenSSL.
 Name:           python3-service_identity
 Version:        21.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/service_identity
+
 Source0:        service_identity-%{version}.tar.gz
 %define sha512  service_identity=36a6f7cb30871bd38da865521503c622a70318f8c5cdc74b0565bdc292bb3b84682bf3afe050d007b21f27d0c54ba0bfe1cd71b63fb13fa42cbaef66cb115c2b
+
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-pip
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pyasn1-modules
@@ -24,7 +25,6 @@ BuildRequires:  python3-idna
 %endif
 
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-pyasn1-modules
 Requires:       python3-pyasn1
 Requires:       python3-attrs
@@ -47,11 +47,7 @@ In the simplest case, this means host name verification. However, service_identi
 %py3_install
 
 %check
-pip3 install pathlib2
-pip3 install funcsigs
-pip3 install pluggy
-pip3 install atomicwrites
-pip3 install more-itertools
+pip3 install pathlib2 funcsigs pluggy atomicwrites more-itertools
 PYTHONPATH="%{buildroot}%{python3_sitelib}" py.test3
 
 %files
@@ -59,6 +55,8 @@ PYTHONPATH="%{buildroot}%{python3_sitelib}" py.test3
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.1.0-2
+- Bump version as a part of python3-pyOpenSSL upgrade
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 21.1.0-1
 - Automatic Version Bump
 * Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 18.1.0-2

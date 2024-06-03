@@ -1,15 +1,26 @@
+%define srcname cryptography
+
 Summary:        Python cryptography library
 Name:           python3-cryptography
-Version:        38.0.1
-Release:        2%{?dist}
+Version:        42.0.7
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
-%define sha512 cryptography=a0e9eb645888a74e01377c0ed79427d066a50d10a9b628828195e82b7ee44ff59866f3659f2028541856bba818340c404e00061645c2676bc63f8ece42fd511e
+Source0: https://pypi.io/packages/source/c/cryptography/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=2f502fd78490ed2dc26884b05c9db32d6dcf8ed17ca3808299e528aa53ec13805e2be741d92d6a540b7dded011850cf033abe2e073f22f07e271c7c1c25c024b
+
+# Steps to generate this tarball:
+# Extract cryptography tarball
+# Trigger the build
+# cd ~/.cargo
+# tar czf <tar-name>.tar.gz registry-<version>
+
+Source1: %{name}-registry-%{version}.tar.gz
+%define sha512 %{name}-registry=8a59eb057bed105001d990e8a03478bf32c8774a156314183404c47a03c09b430ad33273fc0c409eadde30ea53deca9512e7d69e65b9ebdc9bc1694be19412b6
 
 BuildRequires:  openssl-devel
 BuildRequires:  python3-devel
@@ -21,14 +32,14 @@ BuildRequires:  python3-typing-extensions
 BuildRequires:  python3-semantic-version
 BuildRequires:  rust
 BuildRequires:  ca-certificates
-%if 0%{?with_check}
 BuildRequires:  python3-pip
+BuildRequires:  python3-wheel
+%if 0%{?with_check}
 BuildRequires:  curl-devel
 %endif
 
 Requires:       openssl
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-cffi
 Requires:       python3-idna
 Requires:       python3-pyasn1
@@ -40,13 +51,17 @@ Requires:       python3-asn1crypto
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
 
 %prep
-%autosetup -p1 -n cryptography-%{version}
+%autosetup -p1 -a0 -a1 -n cryptography-%{version}
+mkdir -p $HOME/.cargo/
+mv registry $HOME/.cargo/
 
 %build
-%{py3_build}
+export CARGO_NET_OFFLINE=true
+%{pyproject_wheel}
 
 %install
-%{py3_install}
+export CARGO_NET_OFFLINE=true
+%{pyproject_install}
 
 %check
 openssl req \
@@ -58,16 +73,25 @@ openssl req \
     -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=photon.com" \
     -keyout photon.key \
     -out photon.cert
+
 openssl rsa -in photon.key -out photon.pem
+
 mv photon.pem /etc/ssl/certs
+
 pip3 install pretend pytest hypothesis iso8601 cryptography_vectors pytz
+
 python3 setup.py test
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 42.0.7-1
+- Upgrade to v42.0.7
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 38.0.1-2
 - Bump version as a part of openssl upgrade
 * Mon Oct 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 38.0.1-1

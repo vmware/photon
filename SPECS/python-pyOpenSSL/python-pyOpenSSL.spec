@@ -1,7 +1,7 @@
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python3-pyOpenSSL
-Version:        22.0.0
-Release:        3%{?dist}
+Version:        24.1.0
+Release:        1%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -9,11 +9,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/source/p/pyOpenSSL/pyOpenSSL-%{version}.tar.gz
-%define sha512 pyOpenSSL=3d7695f27b7909eb82f05527ab7551fe90a85a70f20ea980293b59672a62f9b015966180407fa0786e94b01ad1d1acfaa7d40426bb63410efd24a144e559e2f0
+%define sha512 pyOpenSSL=acb07025f085d2fe9338e5ce5f65937001b1a8376c41ac532e9b0548668ce05c844e3e28c58efad812a034becf8e24aa9504165ff6af4c3b085cf463fa4d2fb6
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-pip
+BuildRequires:  python3-wheel
 %if 0%{?with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
@@ -26,6 +28,7 @@ BuildRequires:  python3-pyasn1
 BuildRequires:  python3-six
 BuildRequires:  python3-packaging
 BuildRequires:  python3-asn1crypto
+BuildRequires:  python3-pytest
 %endif
 
 Requires:       python3
@@ -41,16 +44,22 @@ High-level wrapper around a subset of the OpenSSL library.
 %autosetup -n pyOpenSSL-%{version}
 
 %build
-%py3_build
+%{pyproject_wheel}
 
 %install
-%py3_install
+%{pyproject_install}
+
+%check
+pip3 install pretend flaky tomli
+%pytest
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.1.0-1
+- Upgrade to v24.1.0
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.0.0-3
 - Bump version as a part of openssl upgrade
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.0.0-2

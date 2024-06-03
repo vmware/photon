@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        4%{?dist}
+Release:        6%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -25,6 +25,7 @@ Source5: %{name}.sysusers
 
 Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
+Patch2: 0003-support-build-with-openssl-3.3.0.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -209,6 +210,10 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Thu Jun 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-6
+- Support building with openssl 3.3.0
+* Tue Jun 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-5
+- Bump version as a part of openssl upgrade
 * Mon Mar 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-4
 - Introduce socket sub package
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-3

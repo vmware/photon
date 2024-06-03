@@ -1,7 +1,7 @@
 Summary:        OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:           tpm2-pkcs11
-Version:        1.8.0
-Release:        7%{?dist}
+Version:        1.9.0
+Release:        1%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-pkcs11
 Group:          System Environment/Security
@@ -9,10 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/tpm2-software/tpm2-pkcs11/releases/download/1.6.0/%{name}-%{version}.tar.gz
-%define sha512 tpm2=006943b3853dc80e44d2322ea0278d6a9f2139c3b3e2a2c5f33436d479d698c5b9d685fb1166d22562bcf3d52edb1075efe7592c27a8c3a0cd05356cab3c9874
+%define sha512 tpm2=e88e78790a8d4d5a67713855106860e90dd18da00dc738ca7bfebf7979cdde54ce5089d0be015e7a208117bf393db700ca7739986c5e8138ee0e3b37344614b0
 
-BuildRequires:  make
-BuildRequires:  gcc
 BuildRequires:  openssl-devel
 BuildRequires:  tpm2-tools
 BuildRequires:  tpm2-tss-devel
@@ -29,10 +27,8 @@ BuildRequires:  python3-pyasn1-modules
 BuildRequires:  cmocka-devel
 BuildRequires:  dbus
 BuildRequires:  tpm2-pytss
-
-%if 0%{?with_check}
-BuildRequires: python3-pip
-%endif
+BuildRequires:  python3-wheel
+BuildRequires:  python3-pip
 
 Requires:   openssl
 Requires:   tpm2-tools
@@ -40,7 +36,7 @@ Requires:   tpm2-tss
 Requires:   tpm2-abrmd
 Requires:   libyaml
 Requires:   sqlite-libs
-Requires:   tpm2-pytss
+Requires:   tpm2-pytss >= 2.2.1-1
 
 %description
 OSS implementation of the TCG TPM2 PKCSv11 Software Stack
@@ -58,18 +54,18 @@ Requires:         python3-PyYAML
 Tools for TCG TPM2 PKCSv11 Software Stack
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
-sh ./bootstrap
+autoreconf -vif
 
 %configure \
-    --enable-unit
+  --enable-unit
 
 %make_build PACKAGE_VERSION=%{version}
 
 cd tools
-%py3_build
+%pyproject_wheel
 
 %install
 %make_install %{?_smp_mflags}
@@ -77,17 +73,15 @@ cd tools
 rm %{buildroot}%{_libdir}/pkgconfig/tpm2-pkcs11.pc
 
 cd tools
-%py3_install
+%pyproject_install
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+%make_build check
 cd tools
 python3 setup.py test
-%endif
 
 %clean
 rm -rf %{buildroot}/*
@@ -104,6 +98,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.0-1
+- Upgrade to v1.9.0
 * Thu Mar 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0-7
 - Bump version as a part of dbus upgrade
 * Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.8.0-6

@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.4
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -66,6 +66,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4-4
+- Bump version as a part of python3-pyOpenSSL upgrade
 * Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.4-3
 - Add "jc" dependency
 * Wed Oct 25 2023 Ankit Jain <ankitja@vmware.com> 2.4-2

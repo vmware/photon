@@ -1,7 +1,7 @@
 From b0dbe81fbdf989877e6db9c80ff41b4dd0793aac Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Sun, 19 Nov 2023 11:04:06 +0530
-Subject: [PATCH] support openssl-3.2.x builds
+Subject: [PATCH] support openssl-3.3.x builds
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -17,7 +17,7 @@ index 13e5070..cb87e3d 100644
  #define SYMMETRIC_ALIGNMENT RADIX_BYTES
  
 -#if OPENSSL_VERSION_NUMBER > 0x300000ffL
-+#if OPENSSL_VERSION_NUMBER > 0x30200000L
++#if OPENSSL_VERSION_NUMBER > 0x30300000L
  // Check the bignum_st definition in crypto/bn/bn_lcl.h or crypto/bn/bn_local.h and either update
  // the version check or provide the new definition for this version.
  // Currently safe for all 3.0.n.a

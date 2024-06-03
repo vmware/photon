@@ -1,0 +1,26 @@
+From 0b103e17b160c04aafd67780b032ef449dd4bf3b Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 6 Jun 2024 00:11:11 +0530
+Subject: [PATCH] support build with openssl-3.3.0
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ configure | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 9ad9699..6e4b4fb 100755
+--- a/configure
++++ b/configure
+@@ -15627,7 +15627,7 @@ then :
+ 				# OpenSSL 3; we use the 1.1x API
+ 				CPPFLAGS="$CPPFLAGS -DOPENSSL_API_COMPAT=0x10100000L"
+ 				;;
+-			301*|302*)
++			30*)
+ 				# OpenSSL development branch; request 1.1x API
+ 				CPPFLAGS="$CPPFLAGS -DOPENSSL_API_COMPAT=0x10100000L"
+ 				;;
+-- 
+2.45.2
+

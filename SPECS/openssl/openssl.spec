@@ -7,16 +7,16 @@
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.2.0
-Release:        3%{?dist}
+Version:        3.3.0
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.openssl.org/source/%{name}-%{version}-beta1.tar.gz
-%define sha512 %{name}=07ce7d1c5c84371a1aeb64a208fbc74f89275765f9bb00a0e3262fcae7ecb83cdd73cba30a01fe44b60a0616b9c6bb4c9c42c43fc42ecf0b6fdde57a621813c6
+Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
+%define sha512 %{name}=1f9daeee6542e1b831c65f1f87befaef98ccedc3abc958c9d17f064ef771924c30849e3ff880f94eed4aaa9d81ea105e3bc8815e6d2e4d6b60b5e890f14fc5da
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
@@ -123,7 +123,7 @@ exit 1
 %if 0%{?with_certified_fips}
 %autosetup -p1 -a0 -a7
 %else
-%autosetup -p1 -n %{name}-%{version}-beta1
+%autosetup -p1 -n %{name}-%{version}
 %endif
 
 %build
@@ -251,6 +251,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
 %{_libdir}/*.so
+%exclude %{_libdir}/cmake/OpenSSL/*.cmake
 
 %files perl
 %defattr(-,root,root)
@@ -271,6 +272,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-1
+- Upgrade to v3.3.0
 * Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.0-3
 - Remove dead symlinks during certificate rehash
 * Fri Dec 29 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.0-2

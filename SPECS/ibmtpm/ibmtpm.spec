@@ -1,7 +1,7 @@
 Summary:        This project is an implementation of the TCG TPM 2.0 specification.
 Name:           ibmtpm
 Version:        1682
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD 2-Clause
 URL:            https://sourceforge.net/projects/ibmswtpm2/files
 Group:          System Environment/Security
@@ -11,7 +11,7 @@ Distribution:   Photon
 Source0: %{name}%{version}.tar.gz
 %define sha512 %{name}=564c2154e5459cbbf4ec052bea7909d1eaff0aa07b291c7de44b1204ecfda3c4156fa18da4499e4202b8772b54ae30d0c7c89bd12cd415f3882d17c8d340686d
 
-Patch0: support-openssl-3.2.x-builds.patch
+Patch0: support-openssl-3.3.x-builds.patch
 
 BuildRequires: openssl-devel
 BuildRequires: systemd-devel
@@ -55,6 +55,8 @@ EOF
 %{_unitdir}/ibmtpm_server.service
 
 %changelog
+* Wed Jun 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1682-3
+- Fix build with openssl-3.3.0
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1682-2
 - Bump version as a part of openssl upgrade
 * Sun Oct 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 1682-1
