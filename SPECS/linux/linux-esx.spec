@@ -2,7 +2,7 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.313
+Version:        4.19.315
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=48896531312681106e3401be3c1ae552426e7db0f2059de34956c97cc66c13e7e8ab9350e9f43849e2c7ffba5bf4e5822927e3ddfedebc240d524670e02c644c
+%define sha512 linux=e0e2eaf2912102c2790e1e809214ee2b1d9196e63297157828bd6363135bcfc672850433bc245a0d69a7e840f9e13fa312ca81587b5e984f22913d3d34bbf982
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -505,9 +505,6 @@ Patch719: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
 #Fix CVE-2023-52458
 Patch720: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
-#Fix CVE-2024-23851/CVE-2023-52429
-Patch721: 0001-dm-limit-the-number-of-targets-and-parameter-size-ar.patch
-
 # Patches for i40e driver
 Patch803: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
 Patch804: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
@@ -867,6 +864,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Thu May 30 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.315-1
+- Update to version 4.19.315, rt134
 * Tue May 14 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.313-1
 - Update to version 4.19.313
 * Mon May 06 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.311-4

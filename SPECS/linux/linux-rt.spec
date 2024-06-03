@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.311
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        4.19.315
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -16,12 +16,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt133
+%define rt_version rt134
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=be9f578ac4cd45afd56e01769e4055c1edd2c67fdcfbae4a2d88a7c10144dc141b0335e11274c0b7a4169c27492a72ab7bbd630782a0c81e2b255f292511446b
+%define sha512 linux=e0e2eaf2912102c2790e1e809214ee2b1d9196e63297157828bd6363135bcfc672850433bc245a0d69a7e840f9e13fa312ca81587b5e984f22913d3d34bbf982
 
 %ifarch x86_64
 Source1: config-rt
@@ -273,12 +273,6 @@ Patch157: 0001-video-fbdev-i740fb-Error-out-if-pixclock-equals-zero.patch
 #Fix for CVE-2022-3303
 Patch158: 0001-ALSA-pcm-oss-Fix-race-at-SNDCTL_DSP_SYNC.patch
 
-# Fix CVE-2024-26642
-Patch159: netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
-
-# Fix CVE-2023-52620
-Patch160: netfilter-nf_tables-disallow-timeout-for-anonymous-sets.patch
-
 #SEV, TDX
 Patch161: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
 
@@ -353,7 +347,7 @@ Patch700: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 Patch701: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 
 #Fix for CVE-2023-1076
-Patch702: 0001-net-add-sock_init_data_uid-rt.patch
+Patch702: 0001-net-add-sock_init_data_uid.patch
 Patch703: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
 Patch704: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
 
@@ -378,25 +372,11 @@ Patch712: 0001-net-ip_tunnel-make-sure-to-pull-inner-header-in-ip_t.patch
 #Fix CVE-2023-52509
 Patch713: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
 
-# Fix CVE-2022-48627
-Patch714: 0001-vt-fix-memory-overlapping-when-deleting-chars-in-the-buffer.patch
-
 #Fix CVE-2023-52458
 Patch715: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
-#Fix CVE-2024-23851/CVE-2023-52429
-Patch716: 0001-dm-limit-the-number-of-targets-and-parameter-size-ar.patch
 # Fix CVE-2021-46952
 Patch717: 0001-NFS-fs_context-validate-UDP-retrans-to-prevent-shift.patch
-
-#Fix CVE-2024-27395
-Patch718: 0001-net-openvswitch-fix-use-after-free-in-ovs_ct_exit.patch
-
-#Fix CVE-2024-27396
-Patch719: 0001-net-gtp-fix-use-after-free-in-gtp_dellink.patch
-
-#Fix CVE-2024-26934
-Patch720: 0001-USB-core-Fix-deadlock-in-usb_deauthorize_interface.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -1286,6 +1266,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Thu May 30 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.315-1
+- Update to version 4.19.315, rt134
 * Tue May 28 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.311-6
 - Patched CVE-2024-26934
 * Mon May 20 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.19.311-5

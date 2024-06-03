@@ -1,0 +1,41 @@
+From 8a037a7afbc3b6cadfa17004b036a2150fe3ae82 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 25 Oct 2012 10:32:35 +0100
+Subject: [PATCH 081/351] mm: Enable SLUB for RT
+
+Avoid the memory allocation in IRQ section
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+[bigeasy: factor out everything except the kcalloc() workaorund ]
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ mm/slub.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/mm/slub.c b/mm/slub.c
+index ead93b7fbd69..2258ea8b4c10 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -3734,6 +3734,11 @@ static void list_slab_objects(struct kmem_cache *s, struct page *page,
+ 							const char *text)
+ {
+ #ifdef CONFIG_SLUB_DEBUG
++#ifdef CONFIG_PREEMPT_RT_BASE
++	/* XXX move out of irq-off section */
++	slab_err(s, page, text, s->name);
++#else
++
+ 	void *addr = page_address(page);
+ 	void *p;
+ 	unsigned long *map = kcalloc(BITS_TO_LONGS(page->objects),
+@@ -3755,6 +3760,7 @@ static void list_slab_objects(struct kmem_cache *s, struct page *page,
+ 	slab_unlock(page);
+ 	kfree(map);
+ #endif
++#endif
+ }
+ 
+ /*
+-- 
+2.44.0
+
