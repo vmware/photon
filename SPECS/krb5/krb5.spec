@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.17
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
@@ -11,14 +11,16 @@ Distribution:   Photon
 Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=7462a578b936bd17f155a362dbb5d388e157a80a096549028be6c55400b11361c7f8a28e424fd5674801873651df4e694d536cae66728b7ae5e840e532358c52
 
-Patch0:         krb5-CVE-2020-28196.patch
-Patch1:         krb5-CVE-2021-36222.patch
-Patch2:         krb5-CVE-2021-37750.patch
+Patch0: krb5-CVE-2020-28196.patch
+Patch1: krb5-CVE-2021-36222.patch
+Patch2: krb5-CVE-2021-37750.patch
 %if 0%{?with_check}
-Patch3:         krb5-Make-test-PKINIT-certs-work-with-OpenSSL-3.0.patch
+Patch3: krb5-Make-test-PKINIT-certs-work-with-OpenSSL-3.0.patch
 %endif
-Patch4:         krb5-CVE-2022-42898.patch
-Patch5:         CVE-2023-36054.patch
+Patch4: krb5-CVE-2022-42898.patch
+Patch5: CVE-2023-36054.patch
+Patch6: CVE-2024-26458.patch
+Patch7: CVE-2024-26461.patch
 
 Requires:       openssl
 Requires:       e2fsprogs-libs
@@ -139,6 +141,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+* Mon Jun 03 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 1.17-11
+- patched CVE-2024-26458 and CVE-2024-26461
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.17-10
 - Fix CVE-2023-36054
 * Thu Jan 19 2023 Srish Srinivasan <ssrish@vmware.com> 1.17-9
