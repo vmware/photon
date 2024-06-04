@@ -1,7 +1,7 @@
 Summary:        Extensions to the standard Python datetime module
 Name:           python3-dateutil
 Version:        2.8.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache Software License, BSD License (Dual License)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -16,6 +16,7 @@ BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-setuptools_scm
 BuildRequires:  python3-xml
+BuildRequires:  python3-typing-extensions
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-six
@@ -42,6 +43,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-2
+- Add typing-extensions in BuildRequires
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.8.2-1
 - Automatic Version Bump
 * Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 2.8.1-2

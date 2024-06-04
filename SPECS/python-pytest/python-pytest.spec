@@ -1,6 +1,6 @@
 Name:           python3-pytest
 Version:        7.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 License:        MIT
 Group:          Development/Languages/Python
@@ -21,6 +21,7 @@ BuildRequires:  python3-packaging
 BuildRequires:  python3-pluggy
 BuildRequires:  python3-py
 BuildRequires:  python3-toml
+BuildRequires:  python3-typing-extensions
 BuildRequires:  python3-pip
 BuildRequires:  python3-wcwidth
 
@@ -65,6 +66,8 @@ make %{_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.1.2-2
+- Use system provided packages to do offline build
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 7.1.2-1
 - Automatic Version Bump
 * Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 6.2.5-1

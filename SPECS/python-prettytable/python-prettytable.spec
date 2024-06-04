@@ -1,6 +1,6 @@
 Name:           python3-prettytable
 Version:        3.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Library for displaying tabular data in a visually appealing ASCII format
 License:        BSD-2-Clause
 Group:          Development/Languages/Python
@@ -11,8 +11,11 @@ Source0:        prettytable-%{version}.tar.gz
 %define sha512  prettytable=e190717e2ea89e8faddc7015fd5118e0d93ac5f5318641ce5960b22b4ea3740ff12c4d15812b33655252f258c96f9e848f554d1e678d39761c28025ba7772609
 
 BuildRequires:  python3-devel
+BuildRequires:  python3-packaging
 BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-typing-extensions
 BuildRequires:  python3-xml
 
 Requires:       python3
@@ -46,6 +49,8 @@ LANG=en_US.UTF-8 python3 prettytable_test.py
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3.0-2
+- Use system provided packages to do offline build
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.3.0-1
 - Automatic Version Bump
 * Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.7.2-7

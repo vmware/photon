@@ -3,7 +3,7 @@
 Summary:        Ultra fast JSON encoder and decoder written in pure C
 Name:           python3-ujson
 Version:        5.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Tools
 License:        BSD
 Vendor:         VMware, Inc.
@@ -15,8 +15,11 @@ Source0:        https://files.pythonhosted.org/packages/fb/94/44fbbb059fe5d295f1
 
 BuildRequires:  double-conversion-devel
 BuildRequires:  python3-devel
+BuildRequires:  python3-packaging
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-setuptools_scm
 BuildRequires:  python3-pip
+BuildRequires:  python3-wheel
 %if 0%{?with_check}
 BuildRequires:  python3-pytest
 %endif
@@ -30,10 +33,10 @@ UltraJSON is an ultra fast JSON encoder and decoder written in pure C with bindi
 %autosetup -p1 -n ujson-%{version}
 
 %build
-python3 -m pip wheel --disable-pip-version-check --verbose .
+%pyproject_wheel
 
 %install
-python3 -m pip install --root %{buildroot} --prefix %{_prefix} --disable-pip-version-check --verbose .
+%pyproject_install
 
 %if 0%{?with_check}
 %check
@@ -51,5 +54,7 @@ rm -rf %{buildroot}
 %{python3_sitearch}/ujson*.so
 
 %changelog
+* Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-2
+- Use system provided packages to do offline build
 * Wed Oct 12 2022 Nitesh Kumar <kunitesh@vmware.com> 5.4.0-1
 - Initial version, Needed by python3-pydantic

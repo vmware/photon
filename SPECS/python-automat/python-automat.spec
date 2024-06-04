@@ -3,7 +3,7 @@
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python3-automat
 Version:        22.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -14,10 +14,12 @@ Source0: https://files.pythonhosted.org/packages/source/A/Automat/%{srcname}-%{v
 %define sha512 %{srcname}=5819cfe0687bf391949891562f3657f449cf9a8e8ea90c1537e89509dc618da1160856f92ab52dc450e0a7d51d0e4644bfe2db3d4108126a42ee1bea2f06bb7a
 
 BuildRequires: python3-devel
+BuildRequires: python3-wheel
 BuildRequires: python3-packaging
 BuildRequires: python3-pip
 BuildRequires: python3-setuptools_scm
 BuildRequires: python3-setuptools
+BuildRequires: python3-typing-extensions
 BuildRequires: python3-xml
 BuildRequires: python3-docutils
 BuildRequires: python3-mistune
@@ -66,6 +68,8 @@ ln -sv automat-visualize3 %{buildroot}%{_bindir}/automat-visualize
 %{_bindir}/automat-visualize*
 
 %changelog
+* Tue Jun 04 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-2
+- Add python3-wheels & typing-extensions in BuildRequires
 * Sun Aug 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.10.0-1
 - Upgrade to 22.10.0
 - Drop m2r dependency
