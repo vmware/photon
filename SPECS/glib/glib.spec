@@ -1,7 +1,7 @@
 Summary:       Low-level libraries useful for providing data structure handling for C.
 Name:          glib
 Version:       2.68.4
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       LGPLv2+
 URL:           https://developer.gnome.org/glib/
 Group:         Applications/System
@@ -34,6 +34,31 @@ Provides:      pkgconfig(gthread-2.0)
 
 # CVE fixes
 %include %{SOURCE1}
+
+# Fix for CVE-2024-34397 [100..117]
+# Backported following Upstream MRs:
+# https://gitlab.gnome.org/GNOME/glib/-/merge_requests/4040
+# https://gitlab.gnome.org/GNOME/glib/-/merge_requests/4056
+# Added a supporting patch to add 'g_set_str()' API:
+# https://gitlab.gnome.org/GNOME/glib/-/commit/49ae9b490d12f79d51d04a27daed9a8e01c65758
+Patch100: 0001-gdbusmessage-Cache-the-arg0-value.patch
+Patch101: 0002-tests-Add-a-data-driven-test-for-signal-subscription.patch
+Patch102: 0003-tests-Add-support-for-subscribing-to-signals-from-a-.patch
+Patch103: 0004-tests-Add-a-test-case-for-what-happens-if-a-unique-n.patch
+Patch104: 0005-tests-Add-test-coverage-for-signals-that-match-the-m.patch
+Patch105: 0006-gdbusprivate-Add-symbolic-constants-for-the-message-.patch
+Patch106: 0007-gdbusconnection-Move-SignalData-SignalSubscriber-hig.patch
+Patch107: 0008-gdbusconnection-Factor-out-signal_data_new_take.patch
+Patch108: 0009-gdbusconnection-Factor-out-add_signal_data.patch
+Patch109: 0010-gdbusconnection-Factor-out-remove_signal_data_if_unu.patch
+Patch110: 0011-gdbusconnection-Stop-storing-sender_unique_name-in-S.patch
+Patch111: 0012-gdbus-Track-name-owners-for-signal-subscriptions.patch
+Patch112: 0013-gdbusconnection-Don-t-deliver-signals-if-the-sender-.patch
+Patch113: 0014-tests-Add-a-test-for-matching-by-two-well-known-name.patch
+Patch114: 0015-tests-Add-a-test-for-signal-filtering-by-well-known-.patch
+Patch115: 0016-tests-Ensure-that-unsubscribing-with-GetNameOwner-in.patch
+Patch116: 0001-strfuncs-add-g_set_str.patch
+Patch117: 0001-gdbusconnection-Allow-name-owners-to-have-the-syntax.patch
 
 %description
 The GLib package contains a low-level libraries useful for providing data structure handling for C,
@@ -119,6 +144,8 @@ The glib-doc package includes documentation for the GLib library.
 %doc %{_datadir}/gtk-doc/html/*
 
 %changelog
+* Tue Jun 04 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.68.4-2
+- Fixes CVE-2024-34397
 * Mon Sep 25 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.68.4-1
 - Fix misc CVEs from issue 3126
 - Fix CVE-2023-32643 which is a side effect of 3126
