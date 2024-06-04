@@ -1,6 +1,6 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p17
+Version:        4.2.8p18
 Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha512  %{name}=e003bfe6f46065890663bc6791b02277f64318b692e49d8d678b76c23b245f357834eb483b0a44f1f47783166e5504686b36494af77f6eebe6f844cd3f2b6a8c
+%define sha512  %{name}=c314f645d7d85e1028327657f30557cdfd86d417565b6c9fcbb40fca8a4c22a97b70908e8b73c6b31e14915b5b910ae0055fd42e819dd3cb48583b2a826c3fc4
 
 # https://github.com/darkhelmet/ntpstat
 Source1:        ntpstat-master.zip
@@ -17,8 +17,6 @@ Source1:        ntpstat-master.zip
 
 Source2:        %{name}.sysconfig
 Source3:        %{name}.sysusers
-
-Patch0:         Get-rid-of-EVP_MD_CTX_FLAG_NON_FIPS_ALLOW.patch
 
 BuildRequires:  which
 BuildRequires:  libcap-devel
@@ -189,6 +187,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Wed Jun 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.2.8p18-1
+- Upgrade to v4.2.8p18
 * Tue Jun 27 2023 Michelle Wang <michellew@vmware.com> 4.2.8p17-1
 - Upgrade to 4.2.8p17 for CVE-2023-26551 ~ CVE-2023-26555
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.2.8p15-8
