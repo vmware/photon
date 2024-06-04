@@ -1,6 +1,6 @@
 Name:           docker-py3
 Version:        6.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python API for docker
 License:        ASL2.0
 Group:          Development/Languages/Python
@@ -16,7 +16,9 @@ BuildRequires: python3-ipaddress
 BuildRequires: python3-pip
 BuildRequires: python3-requests
 BuildRequires: python3-setuptools
+BuildRequires: python3-setuptools_scm
 BuildRequires: python3-six
+BuildRequires: python3-typing-extensions
 BuildRequires: python3-xml
 BuildRequires: python3-macros
 
@@ -61,6 +63,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jun 04 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-3
+- Add setuptools_scm and typing-extensions in BuildRequires
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 6.0.0-2
 - Update release to compile with python 3.11
 * Mon Oct 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-1

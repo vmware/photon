@@ -3,7 +3,7 @@
 Summary:        Library to access the metadata for a Python package
 Name:           python3-importlib-metadata
 Version:        6.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 License:        ASL 2.0
 URL:            https://github.com/python/importlib_metadata
@@ -16,7 +16,11 @@ Source0: https://files.pythonhosted.org/packages/90/07/6397ad02d31bddf1841c9ad3e
 BuildArch:     noarch
 
 BuildRequires: python3-devel
+BuildRequires: python3-packaging
 BuildRequires: python3-pip
+BuildRequires: python3-setuptools
+BuildRequires: python3-setuptools_scm
+BuildRequires: python3-wheel
 
 %if 0%{?with_check}
 BuildRequires:  python3-test
@@ -28,6 +32,7 @@ BuildRequires:  python3-more-itertools
 
 Requires:      python3
 Requires:      python3-typing-extensions
+Requires:      python3-zipp
 
 %description
 Library to access the metadata for a Python package.
@@ -39,13 +44,12 @@ Python versions.
 %autosetup -n %{srcname}-%{version}
 
 %build
-%{python3} -m pip wheel --disable-pip-version-check --verbose .
+%pyproject_wheel
 
 %install
-%{python3} -m pip install --root %{buildroot} --prefix %{_prefix} --disable-pip-version-check --verbose .
+%pyproject_install
 
-rm -f %{buildroot}%{python3_sitelib}/__pycache__/typing_extensions.cpython-37.pyc \
-      %{buildroot}%{python3_sitelib}/typing_extensions.py
+rm -f %{buildroot}%{python3_sitelib}/typing_extensions.py
 
 %if 0%{?with_check}
 %check
@@ -61,5 +65,7 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-2
+- Use system provided packages to do offline build
 * Thu Jan 12 2023 Srish Srinivasan <ssrish@vmware.com> 6.0.0-1
 - Initial build. First version
