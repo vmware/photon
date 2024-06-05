@@ -1,5 +1,4 @@
 %global security_hardening  none
-%define debug_package       %{nil}
 %define src_ver             %{ICE_VERSION}
 %define kernel_ver          %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %define uname_r             %{kernel_ver}%{KERNEL_FLAVOUR}
@@ -19,37 +18,39 @@ Distribution:   Photon
 Source0: https://sourceforge.net/projects/e1000/files/ice%20stable/%{src_ver}/ice-%{src_ver}.tar.gz
 
 %if "%{src_ver}" == "1.14.9"
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 %define sha512 ice-%{src_ver}=4a7fdc7b451d88ccd1ebcda45f1549407873c8d6fdd82bf549d47ef97acbafe13e5a09f03d3dc1ed22c76fa0486fca7186cfea76ba715a13bc83262f6aee37b3
 %endif
 
 %if "%{src_ver}" == "1.13.7"
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        4%{?kernelsubrelease}%{?dist}
 %define sha512 ice-%{src_ver}=6167a0240624915ee6dce8f2186d6980c224baab8bcccee2b1d991d5cc15510b95b7b2a309cc60e57eae7dfffc4e2186730650ba104a231e54711c3b01f20f7b
 %endif
 
 %if "%{src_ver}" == "1.12.7"
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        4%{?kernelsubrelease}%{?dist}
 %define sha512 ice-%{src_ver}=71b08c90ee6c03242b0b11eef2425ec55fe089fa7735cc5ae9bae7469e14768b67505315a456e98b0b09ce0be71ffd35f119f2df211b927265f4d4eb8cbdf60b
 
 Patch0:         ice-v1.12.7-Remove-inline-from-ethtool_sprintf.patch
 %endif
 
 %if "%{src_ver}" == "1.11.14"
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        4%{?kernelsubrelease}%{?dist}
 %define sha512 ice-%{src_ver}=a2a6a498e553d41e4e6959a19cdb74f0ceff3a7dbcbf302818ad514fdc18e3d3b515242c88d55ef8a00c9d16925f0cd8579cb41b3b1c27ea6716ccd7e70fd847
 
 Patch0:         ice-v1.11.14-linux-rt-fix-build-errors-on-6.1.y.patch
 %endif
 
 %if "%{src_ver}" == "1.9.11"
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        4%{?kernelsubrelease}%{?dist}
 %define sha512 ice-%{src_ver}=4ca301ea7d190d74f2eebf148483db5e2482ca19ff0eaf1c3061c9550ab215d1b0ab12e1f6466fe6bccc889d2ddae47058043b3d8622fd90c2b29c545bbcd3fc
 
 Patch0:         ice-v1.9.11-linux-rt-ice-Fix-build-errors-on-kernel-6.0.y.patch
 Patch1:         ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
 Patch2:         ice-v1.9.11-Fix-build-errors-on-6.1.y.patch
 %endif
+
+Source1: spec_install_post.inc
 
 BuildArch:      x86_64
 
@@ -87,7 +88,8 @@ make -C src KSRC=%{_modulesdir}/build INSTALL_MOD_PATH=%{buildroot} \
     INSTALL_MOD_DIR=extra/ice-%{src_ver} MANDIR=%{_mandir} \
     modules_install mandocs_install %{?_smp_mflags}
 
-find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
+%include %{SOURCE1}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -105,11 +107,15 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
 
 %changelog
 %if "%{src_ver}" == "1.14.9"
+* Wed Jun 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{ICE_VERSION}-2
+- Package debug info in seperate pkg
 * Tue May 14 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> %{ICE_VERSION}-1
 - Initial addition of ice v1.14.9
 %endif
 
 %if "%{src_ver}" != "1.14.9"
+* Wed Jun 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{ICE_VERSION}-4
+- Package debug info in seperate pkg
 * Tue Apr 02 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{ICE_VERSION}-3
 - Fix subrelease naming convention
 * Wed Jan 31 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{ICE_VERSION}-2
