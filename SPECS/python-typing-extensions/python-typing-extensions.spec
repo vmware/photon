@@ -1,6 +1,6 @@
 Name:           python3-typing-extensions
 Version:        4.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Backported and Experimental Type Hints for Python 3.7+
 License:        PSF
 Group:          Development/Tools
@@ -15,6 +15,7 @@ Patch0:         backport-generic-typedict.patch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-pip
+BuildRequires:  python3-flit-core
 %if 0%{?with_check}
 BuildRequires:  python3-test
 %endif
@@ -31,10 +32,10 @@ standard format, and it has been designed to also be used by static and runtime 
 %autosetup -n typing_extensions-%{version} -p1
 
 %build
-%{python3} -m pip wheel --disable-pip-version-check --verbose .
+%{pyproject_wheel}
 
 %install
-%{python3} -m pip install --root %{buildroot} --prefix %{_prefix} --disable-pip-version-check --verbose .
+%{pyproject_install}
 
 %if 0%{?with_check}
 %check
@@ -50,6 +51,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Thu Jun 06 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.3.0-3
+- Update release to compile with host python3-flit-core
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.3.0-2
 - Update release to compile with python 3.11
 * Wed Oct 12 2022 Tapas Kundu <tkundu@vmware.com> 4.3.0-1
