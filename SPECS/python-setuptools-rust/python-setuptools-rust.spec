@@ -1,6 +1,6 @@
 Name:           python3-setuptools-rust
 Version:        1.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Setuptools plugin for Rust support
 License:        MIT
 Group:          Development/Languages/Python
@@ -27,6 +27,7 @@ BuildRequires:  python3-atmoicwrites
 
 Requires:       python3
 Requires:       python3-semantic-version
+Requires:       python3-tomli
 
 BuildArch:      noarch
 
@@ -51,6 +52,8 @@ Compile and distribute Python extensions written in Rust as easily as if they we
 %{python3_sitelib}/*
 
 %changelog
+* Sun Jun 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.0-2
+- Add tomli to requires
 * Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.0-1
 - Upgrade to v1.9.0
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.2-1
