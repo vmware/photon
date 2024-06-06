@@ -13,7 +13,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -90,6 +90,7 @@ cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-%{contrib_ver}/init/systemd/environ/apiserver
 sed -i '/KUBE_ALLOW_PRIV/d' contrib-%{contrib_ver}/init/systemd/kubelet.service
+export FORCE_HOST_GO=y
 
 %build
 make WHAT="cmd/kube-proxy" %{?_smp_mflags}
@@ -263,6 +264,8 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
+* Thu Jun 06 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-2
+- Update release to compile with host go
 * Mon Apr 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.13-1
 - Update to 1.27.13, fixes CVE-2024-3177
 * Wed Mar 13 2024 Mukul Sikka <msikka@vmware.com> 1.27.3-10
