@@ -4,7 +4,7 @@
 Summary:        OpenLdap-2.6.4
 Name:           openldap
 Version:        2.6.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenLDAP
 URL:            https://www.openldap.org
 Group:          System Environment/Security
@@ -14,10 +14,14 @@ Distribution:   Photon
 Source0: https://www.openldap.org/software/download/OpenLDAP/openldap-release/%{name}-%{version}.tgz
 %define sha512 %{name}=4be49c4866e47e96677d0e1f7caa380791917c9df8d6bb343d032aba45031c87db3bd4f6b953e914a1f40044fa68f4886ae96929a410b7188c0ed9bb75073a30
 
+Source1: %{name}.sysusers
+Source2: slapd.service
+Source3: default-disable.preset
+
 # Patch0 is downloaded from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
 Patch0: %{name}-%{version}-consolidated-1.patch
-Patch2: openldap-add-export-symbols-LDAP_CONNECTIONLESS.patch
+Patch1: %{name}-add-export-symbols-LDAP_CONNECTIONLESS.patch
 
 Requires: openssl
 Requires: cyrus-sasl
@@ -29,6 +33,7 @@ BuildRequires: groff
 BuildRequires: e2fsprogs-devel
 BuildRequires: libtool
 BuildRequires: systemd-devel
+BuildRequires: libltdl-devel
 
 %description
 OpenLDAP is an open source suite of LDAP (Lightweight Directory Access
@@ -52,17 +57,43 @@ protocols for enabling directory services over the Internet. Install
 this package only if you plan to develop or will need to compile
 customized LDAP clients.
 
+%package servers
+Summary: slapd (Stand-alone LDAP Daemon) is the openLDAP server process.
+Requires: %{name} = %{version}-%{release}
+
+%description servers
+The openldap-slapd package includes the development libraries and
+header files needed to run OpenLDAP stand alone Daemon server process
+that handles LDAP request and manages the directory data.
+
 %prep
 %autosetup -p1
 
 %build
 export CFLAGS="${CFLAGS} ${LDFLAGS} -Wl,--as-needed -DLDAP_CONNECTIONLESS"
-%configure \
+sh ./configure \
          $(test %{_host} != %{_build} && echo "CC=%{_host}-gcc --with-yielding-select=yes --with-sysroot=/target-%{_arch}") \
+        --program-prefix= \
+        --disable-dependency-tracking \
+        --prefix=%{_prefix} \
+        --exec-prefix=%{_prefix} \
+        --bindir=%{_bindir} \
+        --sbindir=%{_sbindir} \
+        --sysconfdir=%{_sysconfdir} \
+        --datadir=%{_datadir} \
+        --includedir=%{_includedir} \
+        --libdir=%{_libdir} \
+        --localstatedir=%{_var} \
+        --sharedstatedir=%{_sharedstatedir} \
+        --mandir=%{_mandir} \
+        --infodir=%{_infodir} \
+        --disable-silent-rules \
         --disable-static \
-        --disable-slapd \
         --disable-ndb \
+        --disable-sql \
+        --disable-wt \
         --with-tls=openssl \
+        --enable-slapd \
         --enable-debug \
         --enable-dynamic \
         --enable-syslog \
@@ -76,7 +107,8 @@ export CFLAGS="${CFLAGS} ${LDFLAGS} -Wl,--as-needed -DLDAP_CONNECTIONLESS"
         --with-cyrus-sasl \
         --with-threads \
         --with-pic \
-        --with-gnu-ld
+        --with-gnu-ld \
+        --libexecdir=%{_libdir}
 
 if [ %{_host} != %{_build} ]; then
  sed -i '/#define NEED_MEMCMP_REPLACEMENT 1/d' include/portable.h
@@ -87,18 +119,35 @@ fi
 %make_install %{?_smp_mflags}
 %{_fixperms} %{buildroot}/*
 
+install -m 0755 -d %{buildroot}%{_localstatedir}/run/%{name}
+install -m 0755 -d %{buildroot}%{_sharedstatedir}/%{name}
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -Dm 0644 %{SOURCE2} %{buildroot}%{_unitdir}/slapd.service
+install -v -D -m 0644 %{SOURCE3} %{buildroot}%{_presetdir}/50-slapd.preset
+
 %if 0%{?with_check}
 %check
 make %{?_smp_mflags} test
 %endif
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%pre
+%sysusers_create_compat %{SOURCE1}
+
+%post
+/sbin/ldconfig
+
+%post servers
+%systemd_post slapd.service
+
+%postun servers
+%systemd_postun_with_restart slapd.service
+
+%postun
+/sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
 
-# TODO: need to create deve sub package
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -117,7 +166,21 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 
+%files servers
+%defattr(-,root,root)
+%{_sbindir}/*
+%{_sysconfdir}/%{name}/schema/*
+%{_sysconfdir}/%{name}/slapd.*
+%{_libdir}/%{name}/*
+%{_libdir}/systemd/system/slapd.service
+%{_sysusersdir}/%{name}.sysusers
+%{_presetdir}/50-slapd.preset
+%dir %attr(-,ldap,ldap) %{_localstatedir}/run/%{name}
+%dir %attr(-,ldap,ldap) %{_sharedstatedir}/%{name}
+
 %changelog
+* Fri Jun 07 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.6.4-3
+- Adding subpackage slapd servers
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.6.4-2
 - Bump version as a part of openssl upgrade
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.6.4-1
