@@ -1,8 +1,8 @@
-From 509b9610fd058546d0ea6b530acf666d4942c78c Mon Sep 17 00:00:00 2001
+From f7d778e7125298f034d694b92256880b42243744 Mon Sep 17 00:00:00 2001
 From: Panu Matilainen <pmatilai@redhat.com>
 Date: Fri, 25 Mar 2022 15:30:52 +0200
-Subject: [PATCH] Move %patch uncompress logic from spec parse to build time,
- sort of
+Subject: [PATCH 12/13] Move %patch uncompress logic from spec parse to build
+ time, sort of
 
 The rationale is the same as with %setup, see previous commit.
 However as commit 6845efae0dcc005f3bbb4cd4179a3ccce9d9638c pointed out,
@@ -102,4 +102,5 @@ index 382999c..ec3fd05 100644
  
      tar = rpmGetPath("%{__tar}", NULL);
 -- 
-2.39.2
+2.34.1
+

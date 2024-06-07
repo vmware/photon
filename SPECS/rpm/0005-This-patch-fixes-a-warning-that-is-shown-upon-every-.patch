@@ -1,0 +1,30 @@
+From e0f8810c099bea62acdb83ae1f431bbb35027768 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Thu, 19 Aug 2021 19:40:46 +0530
+Subject: [PATCH 05/13] This patch fixes a warning that is shown upon every rpm
+ usage.
+
+Without this change, package builder throws a warning message upon
+building every package.
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ lib/backend/dbi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/backend/dbi.c b/lib/backend/dbi.c
+index 809d013..d1f06bd 100644
+--- a/lib/backend/dbi.c
++++ b/lib/backend/dbi.c
+@@ -96,7 +96,7 @@ dbDetectBackend(rpmdb rdb)
+ 	if (ondisk && ondisk != cfg) {
+ 	    if (*db_backend) {
+ 		if (rdb->db_flags & RPMDB_FLAG_REBUILD) {
+-		    rpmlog(RPMLOG_WARNING,
++		    rpmlog(RPMLOG_DEBUG,
+ 			    _("Converting database from %s to %s backend\n"),
+ 			    ondisk->name, db_backend);
+ 		} else {
+-- 
+2.34.1
+

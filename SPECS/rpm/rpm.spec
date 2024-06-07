@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -23,17 +23,19 @@ Source7: rpmdb-rebuild.service
 Source8: rpm.conf
 Source9: lock.c
 
-Patch0: find-debuginfo-do-not-generate-dir-entries.patch
-Patch1: Header-signatures-alone-are-not-sufficient.patch
-Patch2: Fix-regression-reading-rpm-v3.patch
-Patch3: rpmdb-rename-dir.patch
-Patch4: silence-warning.patch
-Patch5: sync-buf-cache.patch
-Patch6: wait-for-lock.patch
-Patch7: CVE-2021-3521.patch
-Patch8: os-install-post-improvements.patch
-Patch9: setup-macro-fix.patch
-Patch10: move-patch-uncompress-logic-from-spec-parse-to-build.patch
+Patch0: 0001-find-debuginfo-do-not-generate-dir-entries.patch
+Patch1: 0002-Header-signatures-alone-are-not-sufficient.patch
+Patch2: 0003-Fix-regression-reading-rpm-v3-and-other-rare-package.patch
+Patch3: 0004-lib-rpmdb.c-use-a-fallback-method-for-renaming-direc.patch
+Patch4: 0005-This-patch-fixes-a-warning-that-is-shown-upon-every-.patch
+Patch5: 0006-commit-buffer-cache-to-disk-after-ending-rpm-transac.patch
+Patch6: 0007-If-rpm-is-not-triggered-from-tty-rpm-transactions-wo.patch
+Patch7: 0008-CVE-2021-3521-1.patch
+Patch8: 0009-CVE-2021-3521-2.patch
+Patch9: 0010-os-install-post-improvements.patch
+Patch10: 0011-Fix-setup-and-patch-not-getting-expanded-in-rpmspec-.patch
+Patch11: 0012-Move-patch-uncompress-logic-from-spec-parse-to-build.patch
+Patch12: 0013-Unbreak-checking-of-installed-rich-dependencies.patch
 
 Requires: bash
 Requires: zstd-libs
@@ -353,6 +355,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.16.1.3-19
+- Fix rich dependency issue
 * Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-18
 - Add build-libs, sign-libs sub packages
 * Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 4.16.1.3-17

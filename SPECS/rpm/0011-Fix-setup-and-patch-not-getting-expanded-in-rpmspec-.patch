@@ -1,8 +1,8 @@
-From 14a136655bd82e223d9d92d53e5f6ef8ee66c34e Mon Sep 17 00:00:00 2001
+From ad6ab0cb7992b244b357178f4a156ef77000bc04 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Sun, 26 Feb 2023 17:15:14 +0530
-Subject: [PATCH] Fix %setup and %patch not getting expanded in rpmspec --parse
-   output
+Subject: [PATCH 11/13] Fix %setup and %patch not getting expanded in rpmspec
+ --parse output
 
 Handling %setup and %patch pseudo-macros in %prep is, ahem, special.
 Which is why they don't appear expanded in --parse output despite
@@ -232,4 +232,5 @@ index 2b11201..96b140d 100644
 +[])
 +AT_CLEANUP
 -- 
-2.39.2
+2.34.1
+

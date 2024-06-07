@@ -1,7 +1,8 @@
-From 0ebfd7295ea7ad26a5cfbfa399803848be03d9a2 Mon Sep 17 00:00:00 2001
+From 29a7f2c860d247afc9a6268729addabf9370cf2a Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Tue, 1 Jun 2021 16:50:38 +0530
-Subject: [PATCH] Fix regression reading rpm v3 and other rare packages (#1635)
+Subject: [PATCH 03/13] Fix regression reading rpm v3 and other rare packages
+ (#1635)
 
 Commit d6a86b5 introduced far stricter
 checks on what tags are allowed in signature and main headers than rpm
@@ -29,7 +30,7 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
  1 file changed, 20 insertions(+), 15 deletions(-)
 
 diff --git a/lib/package.c b/lib/package.c
-index 276e3e554..da0df7779 100644
+index 36ed5ab..8c2b66b 100644
 --- a/lib/package.c
 +++ b/lib/package.c
 @@ -35,21 +35,22 @@ struct taglate_s {
@@ -84,5 +85,5 @@ index 276e3e554..da0df7779 100644
  
      rpmtdReset(&td);
 -- 
-2.17.1
+2.34.1
 

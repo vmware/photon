@@ -1,7 +1,7 @@
-From c354748d0f18b0b37e059a7143591543c4d5f735 Mon Sep 17 00:00:00 2001
+From 9fbeb36a23e5217392f144c62ca6b9a402b24ac8 Mon Sep 17 00:00:00 2001
 From: Demi Marie Obenour <demi@invisiblethingslab.com>
 Date: Wed, 28 Apr 2021 15:51:17 +0530
-Subject: [PATCH] Header signatures alone are not sufficient
+Subject: [PATCH 02/13] Header signatures alone are not sufficient
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -19,7 +19,7 @@ Regression test changes from original patch are dropped.
  1 file changed, 11 insertions(+), 3 deletions(-)
 
 diff --git a/lib/rpmvs.c b/lib/rpmvs.c
-index 7255069fc..d2f4f3170 100644
+index 7255069..d2f4f31 100644
 --- a/lib/rpmvs.c
 +++ b/lib/rpmvs.c
 @@ -451,7 +451,7 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
@@ -61,5 +61,5 @@ index 7255069fc..d2f4f3170 100644
  	    required |= (missing & sinfo->range);
  	}
 -- 
-2.17.1
+2.34.1
 

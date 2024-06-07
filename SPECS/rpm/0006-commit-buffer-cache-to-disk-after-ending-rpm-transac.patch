@@ -1,7 +1,8 @@
-From d06454cd6da345e80150be805ca3ae48197747b2 Mon Sep 17 00:00:00 2001
+From a2bab2443a18bacd8946383b66c87d37fe6ab65c Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Fri, 1 Oct 2021 18:43:48 +0530
-Subject: [PATCH] commit buffer cache to disk after ending rpm transaction
+Subject: [PATCH 06/13] commit buffer cache to disk after ending rpm
+ transaction
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -55,5 +56,5 @@ index a517a8e..2f7efca 100644
  	rpmlockRelease(txn->lock);
  	if (txn->flags & RPMTXN_WRITE)
 -- 
-2.31.1
+2.34.1
 

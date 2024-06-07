@@ -1,7 +1,8 @@
-From bde4ceb58576e365f156fc05486f49800e16ca03 Mon Sep 17 00:00:00 2001
+From a378a9d456927d63ab7b600d5372899e7f2abfce Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Fri, 13 Aug 2021 17:16:33 +0530
-Subject: [PATCH] lib/rpmdb.c: use a fallback method for renaming directories
+Subject: [PATCH 04/13] lib/rpmdb.c: use a fallback method for renaming
+ directories
 
 While migrating rpm db from BDB to SQLITE in a docker container rename
 function throws EXDEV error.
@@ -527,5 +528,5 @@ index 8e3ab5a..eb4dac2 100644
  }
  #endif
 -- 
-2.17.1
+2.34.1
 

@@ -1,7 +1,7 @@
-From b5c8eb30d3fd9fd40416916b47d9c62eef7a3545 Mon Sep 17 00:00:00 2001
+From 1b33989f93a099ddde8b3afb1acbf5ca80623089 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Fri, 11 Dec 2020 15:54:57 +0530
-Subject: [PATCH] find debuginfo do not generate dir entries
+Subject: [PATCH 01/13] find debuginfo do not generate dir entries
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -9,7 +9,7 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/scripts/find-debuginfo.sh b/scripts/find-debuginfo.sh
-index e0c36ebb6..7c3c97628 100755
+index e0c36eb..7c3c976 100755
 --- a/scripts/find-debuginfo.sh
 +++ b/scripts/find-debuginfo.sh
 @@ -585,10 +585,10 @@ if [ -s "$SOURCEFILE" ]; then
@@ -37,5 +37,5 @@ index e0c36ebb6..7c3c97628 100755
    generate_percent_dir()
    {
 -- 
-2.17.1
+2.34.1
 

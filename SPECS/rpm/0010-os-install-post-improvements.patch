@@ -1,7 +1,7 @@
-From c6ea41446a7367939380f992e884dfc5ea862a32 Mon Sep 17 00:00:00 2001
+From 04bfeb54e9a1599165818e2329083acc4c679168 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmare.com>
 Date: Sun, 2 Oct 2022 15:17:37 +0530
-Subject: [PATCH] os-install-post improvements
+Subject: [PATCH 10/13] os-install-post improvements
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -127,5 +127,5 @@ index c3484fe..799bf2b
 +# strip all binaries with more than 1 link
 +strip_elf_binaries "+1" "1"
 -- 
-2.37.3
+2.34.1
 

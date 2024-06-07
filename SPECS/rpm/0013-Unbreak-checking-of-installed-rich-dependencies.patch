@@ -1,0 +1,144 @@
+From 23301e53d87b17fadbe9cdda11bb47f750b76b6b Mon Sep 17 00:00:00 2001
+From: Michael Schroeder <mls@suse.de>
+Date: Fri, 4 Jun 2021 23:30:49 +0200
+Subject: [PATCH 13/13] Unbreak checking of installed rich dependencies
+
+Commit ddb32b9187e9ce85819a84ca8d202131fd9f8b9f added an
+extra check that tests if the provide we are checking really
+intersects the dependency from rpmdb. Unfortunately the
+rpmdsCompare() call does not understand rich dependencies and
+will consider them as not intersecting.
+
+Unbreak the check by not doing the intersection test for
+rich dependencies. We'll improve this in a later commit.
+
+Also add test cases for dependency problems with installed
+rich dependencies.
+---
+ lib/depends.c    |  2 +-
+ tests/rpmdeps.at | 99 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 100 insertions(+), 1 deletion(-)
+
+diff --git a/lib/depends.c b/lib/depends.c
+index c10ba4b..fecbd96 100644
+--- a/lib/depends.c
++++ b/lib/depends.c
+@@ -846,7 +846,7 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
+ 	rpmdsSetIx(ds, rpmdbGetIteratorFileNum(mi));
+ 
+ 	/* Is it in our range at all? (but file deps have no range) */
+-	if (depds)
++	if (depds && !rpmdsIsRich(ds))
+ 	    match = rpmdsCompare(ds, depds);
+ 
+ 	if (match && unsatisfiedDepend(ts, dcache, ds) == is_problem) {
+diff --git a/tests/rpmdeps.at b/tests/rpmdeps.at
+index 67bde1d..8357af9 100644
+--- a/tests/rpmdeps.at
++++ b/tests/rpmdeps.at
+@@ -732,3 +732,102 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
+ [],
+ [])
+ AT_CLEANUP
++
++# ------------------------------
++#
++AT_SETUP([install to break installed rich dependency])
++AT_KEYWORDS([install, boolean])
++RPMDB_INIT
++
++runroot rpmbuild --quiet -bb \
++	--define "pkg one" \
++	--define "cfls (deptest-three or deptest-five)" \
++	  /data/SPECS/deptest.spec
++runroot rpmbuild --quiet -bb \
++	--define "pkg two" \
++	--define "reqs (deptest-five if deptest-four)" \
++	  /data/SPECS/deptest.spec
++runroot rpmbuild --quiet -bb \
++	--define "pkg three" \
++	  /data/SPECS/deptest.spec
++runroot rpmbuild --quiet -bb \
++	--define "pkg four" \
++	  /data/SPECS/deptest.spec
++
++# installed conflict with "or" clause
++AT_CHECK([
++RPMDB_INIT
++
++runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
++runroot rpm -U /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
++],
++[1],
++[],
++[error: Failed dependencies:
++	(deptest-three or deptest-five) conflicts with (installed) deptest-one-1.0-1.noarch
++])
++
++# installed requires with "if" clause
++AT_CHECK([
++RPMDB_INIT
++
++runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
++runroot rpm -U /build/RPMS/noarch/deptest-four-1.0-1.noarch.rpm
++],
++[1],
++[],
++[error: Failed dependencies:
++	(deptest-five if deptest-four) is needed by (installed) deptest-two-1.0-1.noarch
++])
++AT_CLEANUP
++
++# ------------------------------
++#
++AT_SETUP([erase to break installed rich dependency])
++AT_KEYWORDS([install, boolean])
++RPMDB_INIT
++
++runroot rpmbuild --quiet -bb \
++	--define "pkg one" \
++	--define "reqs (deptest-three or deptest-five)" \
++	  /data/SPECS/deptest.spec
++runroot rpmbuild --quiet -bb \
++	--define "pkg two" \
++	--define "cfls (deptest-five unless deptest-four)" \
++	  /data/SPECS/deptest.spec
++runroot rpmbuild --quiet -bb \
++	--define "pkg three" \
++	  /data/SPECS/deptest.spec
++runroot rpmbuild --quiet -bb \
++	--define "pkg four" \
++	  /data/SPECS/deptest.spec
++runroot rpmbuild --quiet -bb \
++	--define "pkg five" \
++	  /data/SPECS/deptest.spec
++
++# installed requires with "or" clause
++AT_CHECK([
++RPMDB_INIT
++
++runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
++runroot rpm -e deptest-three
++],
++[1],
++[],
++[error: Failed dependencies:
++	(deptest-three or deptest-five) is needed by (installed) deptest-one-1.0-1.noarch
++])
++
++# installed conflicts with "unless" clause
++AT_CHECK([
++RPMDB_INIT
++
++runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-four-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-five-1.0-1.noarch.rpm
++runroot rpm -e deptest-four
++],
++[1],
++[],
++[error: Failed dependencies:
++	(deptest-five unless deptest-four) conflicts with (installed) deptest-two-1.0-1.noarch
++])
++AT_CLEANUP
+-- 
+2.34.1
+
