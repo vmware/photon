@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -704,6 +704,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-3
+- Disable sysupdate services through preset
 * Thu May 30 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 253.19-2
 - Patched to remove unused groups from systemd
 * Tue May 21 2024 Dweep Advani <dweep.advani@broadcom.com> 253.19-1
