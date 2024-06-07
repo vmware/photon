@@ -3,7 +3,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.19.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -22,8 +22,6 @@ BuildRequires:  python3-xml
 BuildRequires:  chkconfig
 BuildRequires:  openjdk8
 BuildRequires:  apache-maven
-
-Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
 
 %description
 Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data.
@@ -130,6 +128,9 @@ popd
 %{_libdir}/java/%{name}/*.jar
 
 %changelog
+* Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.19.6-5
+- Fix requires of protobuf
+- jre is needed by protobuf-java, not protobuf
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.19.6-4
 - Bump version as a part of openjdk8 upgrade
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.19.6-3
