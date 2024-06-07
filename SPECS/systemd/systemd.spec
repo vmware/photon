@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        255.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -408,9 +408,6 @@ rm -rf %{buildroot}/*
 
 %post udev
 udevadm hwdb --update &>/dev/null || :
-if [ $1 -eq 1 ] || [ $1 -eq 2 ]; then
-  [ "$(bootctl is-installed)" = "no" ] && bootctl install || :
-fi
 
 %systemd_post %udev_services
 
@@ -753,6 +750,8 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 255.2-4
+- Disable sysupdate services through preset
 * Thu Mar 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 255.2-3
 - Bump version as a part of dbus upgrade
 * Tue Feb 27 2024 Susant Sahani <guruswamy.basavaiah@broadcom.com> 255.2-2
