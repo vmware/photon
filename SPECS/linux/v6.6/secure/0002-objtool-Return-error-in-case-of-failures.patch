@@ -1,0 +1,33 @@
+From bbc75cb652c435688b9e3cf89e92a6931728e56a Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Tue, 9 Jul 2024 07:40:01 +0000
+Subject: [PATCH 2/2] objtool: Return error in case of failures
+
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ tools/objtool/check.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 0a33d9195b7a..93347f1efd0d 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -4696,7 +4696,7 @@ static void free_insns(struct objtool_file *file)
+ 
+ int check(struct objtool_file *file)
+ {
+-	int ret, warnings = 0;
++	int ret = 0, warnings = 0;
+ 
+ 	arch_initial_func_cfi_state(&initial_func_cfi);
+ 	init_cfi_state(&init_cfi);
+@@ -4858,5 +4858,5 @@ int check(struct objtool_file *file)
+ 	 *  errors are still fairly common due to the growing matrix of
+ 	 *  supported toolchains and their recent pace of change.
+ 	 */
+-	return 0;
++	return ret;
+ }
+-- 
+2.39.4
+

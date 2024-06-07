@@ -1,5 +1,3 @@
-%global build_for none
-
 %global security_hardening none
 %global __cmake_in_source_build 0
 %global lkcm_version 5.0.0
@@ -12,7 +10,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 %endif
 
 %if 0%{?canister_build}
@@ -31,8 +29,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.83
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.6.28
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -43,7 +41,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=51d3b7d1dbfe0ecba1bd1265723a8e7c1553d99ade785bb91fe39979108c38f5e933b018406bfdc303a96d50eccb88d629c8dc0fecc94b975efffe8e79b43fc5
+%define sha512 linux=fdf6def06de85656f8aa010edfb8b2f7f71cdeef9a70b5b35511833fbcf0e4fbfafb6224acfdf475975bc4bc8f05d0291745af5a6ae752a70cbd09ae2d3d17a8
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -84,10 +82,12 @@ Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
 
+%if 0%{?fips}
 Source36: fips_canister_wrapper.c
 Source37: fips_canister_wrapper.h
 Source38: fips_canister_wrapper_asm.S
 Source39: fips_canister_wrapper_common.h
+%endif
 # fips_canister_wrapper_internal{.c,.h} is the latest released
 # wrapper files. These files may differ between 2 canister versions.
 # During canister binary update, rename
@@ -110,9 +110,6 @@ Source49: check_kernel_struct_in_canister.inc
 %endif
 %endif
 
-# CVE
-Source50: CVE-2023-39191.patches
-
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
 Patch1: net-Double-tcp_mem-limits.patch
@@ -123,7 +120,6 @@ Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch6: 0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
-Patch8: Discard-.note.gnu.property-sections-in-generic-NOTES.patch
 
 # Expose Photon kernel macros to identify kernel flavor and version
 Patch9:  0001-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
@@ -165,42 +161,20 @@ Patch57: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 
 # Secure Boot and Kernel Lockdown
 Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
-Patch59: 0002-Add-.sbat-section.patch
-Patch60: 0003-Verify-SBAT-on-kexec.patch
+#Patch59: 0002-Add-.sbat-section.patch
+#Patch60: 0003-Verify-SBAT-on-kexec.patch
 %endif
 
 #Secure:
-Patch61: gcc-rap-plugin-with-kcfi.patch
-Patch62: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
-Patch63: fix-warn-definition.patch
+Patch61: 0001-gcc-rap-plugin-with-kcfi.patch
+Patch62: 0002-objtool-Return-error-in-case-of-failures.patch
+Patch63: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
 
 # CVE: [100..199]
-Patch100: 0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-# Fix CVE-2023-0597
-Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
-Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
-# Fix CVE-2023-39191
-%include %{SOURCE50}
-# Fix CVE-2024-23307
-Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
-# Fix CVE-2024-26584
-Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
-# Fix CVE-2024-26585
-Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 # Fix CVE-2023-52585
 Patch130: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
-
-# Fix CVE-2023-52452
-Patch131: 0001-bpf-Allow-reads-from-uninit-stack.patch
-Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
-
-# Fix CVE-2024-26642
-Patch133: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
-
-# Fix CVE-2024-26643
-Patch134: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -267,6 +241,7 @@ Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+#Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
 
 %if 0%{?acvp_build:1}
@@ -299,6 +274,9 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
+
+# Patches for ena [1500..1409]
+Patch1500: 0001-ena-Change-the-devlink_param_driverinit_value_get.patch
 
 %if 0%{?canister_build}
 # Below patches are common for fips and canister_build flags
@@ -341,6 +319,8 @@ BuildRequires:  python3-setuptools
 BuildRequires:  cmake
 BuildRequires:  bison
 BuildRequires:  dwarves-devel
+BuildRequires:  libtraceevent-devel
+BuildRequires:  clang-devel
 
 %ifarch x86_64
 BuildRequires:  pciutils-devel
@@ -472,7 +452,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M134
+%autopatch -p1 -m100 -M130
 
 %ifarch aarch64
 # aarch64 patches
@@ -492,7 +472,7 @@ The kernel fips-canister
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M509
+%autopatch -p1 -m508 -M511
 %endif
 
 %if 0%{?acvp_build:1}
@@ -512,6 +492,11 @@ The kernel fips-canister
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
 %autopatch -p1 -m1400 -M1409
+popd
+
+# Patches for ena driver
+pushd ../amzn-drivers-ena_linux_%{ena_version}
+%autopatch -p1 -m1500 -M1500
 popd
 
 %if 0%{?canister_build}
@@ -621,7 +606,11 @@ make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
-make %{?_smp_mflags} ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
+make %{?_smp_mflags} ARCH=%{arch} -C tools  perf PYTHON=python3 $ARCH_FLAGS
+ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
+ARCH_FLAGS+=" EXTRA_CFLAGS+=-DHAVE_LIBBPF_SUPPORT"
+ARCH_FLAGS+=" EXTRA_CFLAGS+=-DBUILD_BPF_SKEL"
+make %{?_smp_mflags} ARCH=%{arch} -C tools bpf PYTHON=python3 $ARCH_FLAGS
 # verify perf has no dependency on libunwind
 tools/perf/perf -vv | grep libunwind | grep OFF
 tools/perf/perf -vv | grep dwarf | grep on
@@ -757,7 +746,7 @@ make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
       prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
 %endif
 
-make install %{?_smp_mflags} -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
+make install %{?_smp_mflags} -C tools/bpf prefix=%{_prefix} DESTDIR=%{buildroot}
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
 cp -p %{SOURCE19} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
@@ -787,6 +776,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %exclude %{_modulesdir}/build
 %exclude %{_modulesdir}/kernel/drivers/gpu
 %exclude %{_modulesdir}/kernel/sound
+%exclude %{_includedir}/powercap.h
 %ifarch aarch64
 %exclude %{_modulesdir}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
@@ -829,8 +819,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libexecdir}/perf-core
 %{_datadir}/perf-core
 %{_docdir}/perf-tip
-%{_libdir}/perf/examples/bpf/*
-%{_libdir}/perf/include/bpf/*
 %{_includedir}/perf/*
 %ifarch x86_64
 %{_includedir}/cpufreq.h
@@ -859,6 +847,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Aug 29 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.6.28-1
+- Upgrade to version 6.6.x.
 * Fri May 17 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.83-6
 - Re-enable CONFIG_SECURITY_SELINUX_DEVELOP to fix boot time regressions
   in stig hardened systems.

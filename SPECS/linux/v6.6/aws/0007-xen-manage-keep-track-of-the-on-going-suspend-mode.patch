@@ -1,7 +1,7 @@
-From a3175e9e9a418f64b5bb8a5088a2093706e0ae8b Mon Sep 17 00:00:00 2001
+From 1c3629901f09d84a2a97ed95fb81780b9c0319ed Mon Sep 17 00:00:00 2001
 From: Munehisa Kamata <kamatam@amazon.com>
 Date: Wed, 12 Jul 2017 23:35:17 +0000
-Subject: xen/manage: keep track of the on-going suspend mode
+Subject: [PATCH] xen/manage: keep track of the on-going suspend mode
 
 To differentiate between Xen suspend, PM suspend and PM hibernation,
 keep track of the on-going suspend mode by mainly using a new PM
@@ -16,6 +16,8 @@ scenario. Though, acquirng pm_mutex is still right thing to do, and we
 would need to modify Xen shutdown code to avoid the issue. This will be
 fixed by a separate patch.
 
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
+
 Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Reviewed-by: Sebastian Biemueller <sbiemue@amazon.com>
@@ -23,11 +25,11 @@ Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 CR: https://cr.amazon.com/r/8273194/
 ---
- drivers/xen/manage.c | 58 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 58 insertions(+)
+ drivers/xen/manage.c | 59 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
 
 diff --git a/drivers/xen/manage.c b/drivers/xen/manage.c
-index c16df629907e..16958df28982 100644
+index c16df629907e..2f265b0a5d08 100644
 --- a/drivers/xen/manage.c
 +++ b/drivers/xen/manage.c
 @@ -14,6 +14,7 @@
@@ -78,7 +80,7 @@ index c16df629907e..16958df28982 100644
  }
  #endif	/* CONFIG_HIBERNATE_CALLBACKS */
 
-@@ -388,3 +407,42 @@ int xen_setup_shutdown_event(void)
+@@ -388,3 +408,42 @@ int xen_setup_shutdown_event(void)
  EXPORT_SYMBOL_GPL(xen_setup_shutdown_event);
 
  subsys_initcall(xen_setup_shutdown_event);
@@ -122,5 +124,5 @@ index c16df629907e..16958df28982 100644
 +
 +subsys_initcall(xen_setup_pm_notifier);
 --
-2.17.1
+2.35.6
 

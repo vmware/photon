@@ -1,7 +1,8 @@
-From fe03868f069dd427b266fc4efa5e45b01d529e7c Mon Sep 17 00:00:00 2001
+From 7c8c8d9d1e0f3076e7a0458debb770ee9468ac9e Mon Sep 17 00:00:00 2001
 From: Munehisa Kamata <kamatam@amazon.com>
 Date: Mon, 9 Jan 2017 23:36:52 +0000
-Subject: xen-netfront: add callbacks for PM suspend and hibernation support
+Subject: [PATCH] xen-netfront: add callbacks for PM suspend and hibernation
+ support
 
 Add freeze and restore callbacks for PM suspend and hibernation support.
 The freeze handler simply disconnects the frotnend from the backend and
@@ -19,6 +20,8 @@ longer default timeout seems a bit more reasonable here to avoid hitting
 the timeout. Also, make it configurable via module parameter so that we
 can cover broader setups than what we know currently.
 
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
+
 Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
@@ -29,7 +32,7 @@ CR: https://cr.amazon.com/r/8297632
  1 file changed, 96 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 27a11cc08c61..a0fafed522ce 100644
+index ad29f370034e..ed8c4835642a 100644
 --- a/drivers/net/xen-netfront.c
 +++ b/drivers/net/xen-netfront.c
 @@ -43,6 +43,7 @@
@@ -39,7 +42,7 @@ index 27a11cc08c61..a0fafed522ce 100644
 +#include <linux/completion.h>
  #include <net/ip.h>
  #include <linux/bpf.h>
- #include <net/page_pool.h>
+ #include <net/page_pool/types.h>
 @@ -59,6 +60,12 @@
  #include <xen/interface/memory.h>
  #include <xen/interface/grant_table.h>
@@ -108,7 +111,7 @@ index 27a11cc08c61..a0fafed522ce 100644
  	err = -ENOMEM;
  	np->rx_stats = netdev_alloc_pcpu_stats(struct netfront_stats);
  	if (np->rx_stats == NULL)
-@@ -2239,6 +2273,50 @@ static int xennet_create_queues(struct netfront_info *info,
+@@ -2246,6 +2280,50 @@ static int xennet_create_queues(struct netfront_info *info,
  	return 0;
  }
 
@@ -159,7 +162,7 @@ index 27a11cc08c61..a0fafed522ce 100644
  /* Common code used when first setting up, and when resuming. */
  static int talk_to_netback(struct xenbus_device *dev,
  			   struct netfront_info *info)
-@@ -2469,6 +2547,8 @@ static int xennet_connect(struct net_device *dev)
+@@ -2476,6 +2554,8 @@ static int xennet_connect(struct net_device *dev)
  		spin_unlock_bh(&queue->rx_lock);
  	}
 
@@ -168,7 +171,7 @@ index 27a11cc08c61..a0fafed522ce 100644
  	return 0;
  }
 
-@@ -2506,10 +2586,22 @@ static void netback_changed(struct xenbus_device *dev,
+@@ -2513,10 +2593,22 @@ static void netback_changed(struct xenbus_device *dev,
  		break;
 
  	case XenbusStateClosed:
@@ -192,7 +195,7 @@ index 27a11cc08c61..a0fafed522ce 100644
  		xenbus_frontend_closed(dev);
  		break;
  	}
-@@ -2671,6 +2763,9 @@ static struct xenbus_driver netfront_driver = {
+@@ -2676,6 +2768,9 @@ static struct xenbus_driver netfront_driver = {
  	.probe = netfront_probe,
  	.remove = xennet_remove,
  	.resume = netfront_resume,
@@ -203,5 +206,5 @@ index 27a11cc08c61..a0fafed522ce 100644
  };
 
 --
-2.17.1
+2.35.6
 

@@ -1,11 +1,14 @@
-From 3bcafaa6b5d074206ef49d085fe1683cca1d22b3 Mon Sep 17 00:00:00 2001
+From 183fc10543a956143d1b61fd876ba65ea0bcfa76 Mon Sep 17 00:00:00 2001
 From: Frank van der Linden <fllinden@amazon.com>
 Date: Sat, 10 Nov 2018 00:18:32 +0000
-Subject: xen: Only restore the ACPI SCI interrupt in xen_restore_pirqs.
+Subject: [PATCH] xen: Only restore the ACPI SCI interrupt in
+ xen_restore_pirqs.
 
 Restoring all PIRQs, which is the right thing to do, was causing problems
 on larger instances. This is a horrible workaround until this issue is fully
 understood.
+
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
 
 Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 Reviewed-by: Alakesh Haloi <alakeshh@amazon.com>
@@ -16,10 +19,10 @@ Reviewed-by: Qian Lu <luqia@amazon.com>
  1 file changed, 41 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
-index 60e21dc96c77..80ca3aff2c64 100644
+index 913563dbc5d1..3f1b588536a8 100644
 --- a/drivers/xen/events/events_base.c
 +++ b/drivers/xen/events/events_base.c
-@@ -67,6 +67,10 @@
+@@ -68,6 +68,10 @@
  #include <xen/xenbus.h>
  #include <asm/hw_irq.h>
 
@@ -30,7 +33,7 @@ index 60e21dc96c77..80ca3aff2c64 100644
  #include "events_internal.h"
 
  #undef MODULE_PARAM_PREFIX
-@@ -2138,9 +2142,45 @@ void xen_shutdown_pirqs(void)
+@@ -2123,9 +2127,45 @@ void xen_shutdown_pirqs(void)
  	}
  }
 
@@ -78,5 +81,5 @@ index 60e21dc96c77..80ca3aff2c64 100644
 
  static struct irq_chip xen_dynamic_chip __read_mostly = {
 --
-2.17.1
+2.35.6
 

@@ -1,0 +1,97 @@
+From 0656b09602a2ec7303412ccc62842da91e7cf6c7 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Fri, 3 May 2024 06:29:59 +0000
+Subject: [PATCH] ena: Change the devlink_param_driverinit_value_get
+
+  -  In the latest kernel starting from 6.6.x, the name of the
+     function 'devlink_param_driverinit_value_get' go changed
+     to 'devl_param_driverinit_value_get'. Hence use this new
+     API name in ena amazon drivers.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ kernel/linux/ena/ena_devlink.c | 16 ++++++----------
+ kernel/linux/ena/kcompat.h     |  6 ++++++
+ 2 files changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/kernel/linux/ena/ena_devlink.c b/kernel/linux/ena/ena_devlink.c
+index f140d02..9732ff3 100644
+--- a/kernel/linux/ena/ena_devlink.c
++++ b/kernel/linux/ena/ena_devlink.c
+@@ -108,7 +108,7 @@ void ena_devlink_params_get(struct devlink *devlink)
+	if (!ena_is_devlink_params_registered(devlink))
+		return;
+ #endif
+-	err = devlink_param_driverinit_value_get(devlink,
++	err = devl_param_driverinit_value_get(devlink,
+						 ENA_DEVLINK_PARAM_ID_LLQ_HEADER_SIZE,
+						 &val);
+	if (err) {
+@@ -119,7 +119,7 @@ void ena_devlink_params_get(struct devlink *devlink)
+	adapter->large_llq_header_enabled = val.vbool;
+ #ifdef ENA_PHC_SUPPORT
+
+-	err = devlink_param_driverinit_value_get(devlink, ENA_DEVLINK_PARAM_ID_PHC_ENABLE, &val);
++	err = devl_param_driverinit_value_get(devlink, ENA_DEVLINK_PARAM_ID_PHC_ENABLE, &val);
+	if (err) {
+		netdev_err(adapter->netdev, "Failed to query PHC param\n");
+		return;
+@@ -140,7 +140,7 @@ void ena_devlink_disable_large_llq_header_param(struct devlink *devlink)
+
+ #endif
+	value.vbool = false;
+-	devlink_param_driverinit_value_set(devlink,
++	devl_param_driverinit_value_set(devlink,
+					   ENA_DEVLINK_PARAM_ID_LLQ_HEADER_SIZE,
+					   value);
+ }
+@@ -157,7 +157,7 @@ void ena_devlink_disable_phc_param(struct devlink *devlink)
+
+ #endif
+	value.vbool = false;
+-	devlink_param_driverinit_value_set(devlink, ENA_DEVLINK_PARAM_ID_PHC_ENABLE, value);
++	devl_param_driverinit_value_set(devlink, ENA_DEVLINK_PARAM_ID_PHC_ENABLE, value);
+ }
+
+ #endif /* ENA_PHC_SUPPORT */
+@@ -277,19 +277,15 @@ static int ena_devlink_configure_params(struct devlink *devlink)
+	}
+
+	value.vbool = adapter->large_llq_header_enabled;
+-	devlink_param_driverinit_value_set(devlink,
++	devl_param_driverinit_value_set(devlink,
+					   ENA_DEVLINK_PARAM_ID_LLQ_HEADER_SIZE,
+					   value);
+
+ #ifdef ENA_PHC_SUPPORT
+	value.vbool = ena_phc_is_enabled(adapter);
+-	devlink_param_driverinit_value_set(devlink, ENA_DEVLINK_PARAM_ID_PHC_ENABLE, value);
++	devl_param_driverinit_value_set(devlink, ENA_DEVLINK_PARAM_ID_PHC_ENABLE, value);
+
+ #endif /* ENA_PHC_SUPPORT */
+-#ifdef ENA_DEVLINK_RELOAD_SUPPORT_ADVERTISEMENT_NEEDED
+-	devlink_set_features(devlink, DEVLINK_F_RELOAD);
+-
+-#endif
+ #ifdef ENA_DEVLINK_PUBLISH_REQUIRED
+	devlink_params_publish(devlink);
+
+diff --git a/kernel/linux/ena/kcompat.h b/kernel/linux/ena/kcompat.h
+index fd44a3e..27c463a 100644
+--- a/kernel/linux/ena/kcompat.h
++++ b/kernel/linux/ena/kcompat.h
+@@ -776,6 +776,12 @@ do {									\
+ #define ENA_DEVLINK_CONFIGURE_AFTER_REGISTER
+ #endif
+
++#if LINUX_VERSION_CODE > KERNEL_VERSION(6, 6, 0)
++#undef ENA_DEVLINK_RELOAD_SUPPORT_ADVERTISEMENT_NEEDED
++#undef ENA_DEVLINK_RELOAD_ENABLING_REQUIRED
++#undef ENA_DEVLINK_PUBLISH_REQUIRED
++#endif
++
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(3,19,0) && \
+     !(RHEL_RELEASE_CODE && ((RHEL_RELEASE_CODE != RHEL_RELEASE_VERSION(7, 1)) && \
+			    (RHEL_RELEASE_CODE > RHEL_RELEASE_VERSION(6, 6)))) && \
+--
+2.35.6

@@ -1,7 +1,7 @@
-From b9182fdf021c0dbbdc65ffd1f64516e8bc95b92c Mon Sep 17 00:00:00 2001
+From c56b6a9d0b7119b3b8aafb72a781c2c6c1eb2306 Mon Sep 17 00:00:00 2001
 From: Eduardo Valentin <eduval@amazon.com>
 Date: Mon, 9 Apr 2018 20:50:29 +0000
-Subject: x86: tsc: avoid system instability in hibernation
+Subject: [PATCH] x86: tsc: avoid system instability in hibernation
 
 System instability are seen during resume from hibernation when system
 is under heavy CPU load. This is due to the lack of update of sched
@@ -37,6 +37,8 @@ hibernation event, we can then mark the sched clock as stable
 again, avoiding unnecessary syncs with time of day on systems
 in which TSC is reliable.
 
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
+
 Reviewed-by: Erik Quanstrom <quanstro@amazon.com>
 Reviewed-by: Frank van der Linden <fllinden@amazon.com>
 Reviewed-by: Balbir Singh <sblbir@amazon.com>
@@ -52,7 +54,7 @@ CR: https://cr.amazon.com/r/8440112/
  3 files changed, 36 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index cafacb2e58cc..cece80554128 100644
+index 15f97c0abc9d..40161f8aff88 100644
 --- a/arch/x86/kernel/tsc.c
 +++ b/arch/x86/kernel/tsc.c
 @@ -15,6 +15,7 @@
@@ -63,7 +65,7 @@ index cafacb2e58cc..cece80554128 100644
 
  #include <asm/hpet.h>
  #include <asm/timer.h>
-@@ -1575,3 +1576,31 @@ unsigned long calibrate_delay_is_known(void)
+@@ -1650,3 +1651,31 @@ unsigned long calibrate_delay_is_known(void)
  	return 0;
  }
  #endif
@@ -96,10 +98,10 @@ index cafacb2e58cc..cece80554128 100644
 +
 +subsys_initcall(tsc_setup_pm_notifier);
 diff --git a/include/linux/sched/clock.h b/include/linux/sched/clock.h
-index 867d588314e0..902654ac5f7e 100644
+index 196f0ca351a2..811b8ebb57a5 100644
 --- a/include/linux/sched/clock.h
 +++ b/include/linux/sched/clock.h
-@@ -32,6 +32,10 @@ static inline void clear_sched_clock_stable(void)
+@@ -41,6 +41,10 @@ static inline void clear_sched_clock_stable(void)
  {
  }
 
@@ -110,7 +112,7 @@ index 867d588314e0..902654ac5f7e 100644
  static inline void sched_clock_idle_sleep_event(void)
  {
  }
-@@ -51,6 +55,7 @@ static inline u64 local_clock(void)
+@@ -65,6 +69,7 @@ static __always_inline u64 local_clock(void)
  }
  #else
  extern int sched_clock_stable(void);
@@ -119,7 +121,7 @@ index 867d588314e0..902654ac5f7e 100644
 
  /*
 diff --git a/kernel/sched/clock.c b/kernel/sched/clock.c
-index e374c0c923da..1b3fb1604a53 100644
+index 3c6193de9cde..c2a488a667f1 100644
 --- a/kernel/sched/clock.c
 +++ b/kernel/sched/clock.c
 @@ -114,7 +114,7 @@ notrace static void __scd_stamp(struct sched_clock_data *scd)
@@ -141,5 +143,5 @@ index e374c0c923da..1b3fb1604a53 100644
  	return 0;
  }
 --
-2.17.1
+2.35.6
 

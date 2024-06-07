@@ -1,7 +1,7 @@
-From d3cff911bf187e1432cbf3f403158bfbc5a1f4e0 Mon Sep 17 00:00:00 2001
+From 933c8ebeef72dec8f943e635201e4f8da262d62b Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Fri, 22 Dec 2017 15:13:17 -0800
-Subject: [PATCH 04/12] 9p: vsock transport for 9p
+Subject: [PATCH] 9p: vsock transport for 9p
 
 This second and correct implementation of 9p support over vsock.
 Second implementation addresses the issue, described in PR 2007859.
@@ -23,7 +23,7 @@ Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
  1 file changed, 68 insertions(+)
 
 diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index e758978b44be..260cdcdb313b 100644
+index d0eb03ada704..ecc9ae2e7843 100644
 --- a/net/9p/trans_fd.c
 +++ b/net/9p/trans_fd.c
 @@ -20,6 +20,8 @@
@@ -32,11 +32,11 @@ index e758978b44be..260cdcdb313b 100644
  #include <linux/inet.h>
 +#include <linux/vmw_vmci_defs.h>
 +#include <uapi/linux/vm_sockets.h>
- #include <linux/idr.h>
  #include <linux/file.h>
  #include <linux/parser.h>
-@@ -961,6 +963,59 @@ static int p9_bind_privport(struct socket *sock)
- 	return err;
+ #include <linux/slab.h>
+@@ -985,6 +987,59 @@ static int p9_bind_privport(struct socket *sock)
+	return err;
  }
 
 +static int
@@ -95,8 +95,8 @@ index e758978b44be..260cdcdb313b 100644
 
  static int
  p9_fd_create_tcp(struct p9_client *client, const char *addr, char *args)
-@@ -1079,6 +1134,18 @@ p9_fd_create(struct p9_client *client, const char *addr, char *args)
- 	return 0;
+@@ -1105,6 +1160,18 @@ p9_fd_create(struct p9_client *client, const char *addr, char *args)
+	return 0;
  }
 
 +static struct p9_trans_module p9_vsock_trans = {
@@ -112,16 +112,15 @@ index e758978b44be..260cdcdb313b 100644
 +};
 +
  static struct p9_trans_module p9_tcp_trans = {
- 	.name = "tcp",
- 	.maxsize = MAX_SOCK_BUF,
-@@ -1155,6 +1222,7 @@ static void p9_poll_workfn(struct work_struct *work)
+	.name = "tcp",
+	.maxsize = MAX_SOCK_BUF,
+@@ -1182,6 +1249,7 @@ static void p9_poll_workfn(struct work_struct *work)
 
  static int __init p9_trans_fd_init(void)
  {
 +	v9fs_register_trans(&p9_vsock_trans);
- 	v9fs_register_trans(&p9_tcp_trans);
- 	v9fs_register_trans(&p9_unix_trans);
- 	v9fs_register_trans(&p9_fd_trans);
+	v9fs_register_trans(&p9_tcp_trans);
+	v9fs_register_trans(&p9_unix_trans);
+	v9fs_register_trans(&p9_fd_trans);
 --
-2.17.1
-
+2.35.6

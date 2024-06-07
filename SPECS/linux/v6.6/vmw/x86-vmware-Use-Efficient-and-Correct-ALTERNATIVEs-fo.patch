@@ -22,42 +22,42 @@ Signed-off-by: Bo Gan <ganb@vmware.com>
  create mode 100644 arch/x86/kernel/cpu/vmw_hc.S
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 72b9654f764c..f86bbb90061b 100644
+index dd5de540e..6c46f827c 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -21719,6 +21719,7 @@ L:	x86@kernel.org
+@@ -23017,6 +23017,7 @@ L:	x86@kernel.org
  S:	Supported
  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/vmware
  F:	arch/x86/include/asm/vmware.h
 +F:	arch/x86/kernel/cpu/vmw_hc.S
  F:	arch/x86/kernel/cpu/vmware.c
- 
+
  VMWARE PVRDMA DRIVER
 diff --git a/arch/x86/include/asm/asm-prototypes.h b/arch/x86/include/asm/asm-prototypes.h
-index 8f80de627c60..a960b7c705fe 100644
+index b1a98fa38..24e2980dd 100644
 --- a/arch/x86/include/asm/asm-prototypes.h
 +++ b/arch/x86/include/asm/asm-prototypes.h
-@@ -12,6 +12,7 @@
- #include <asm/special_insns.h>
- #include <asm/preempt.h>
+@@ -14,6 +14,7 @@
  #include <asm/asm.h>
+ #include <asm/gsseg.h>
+ #include <asm/nospec-branch.h>
 +#include <asm/vmware.h>
- 
+
  #ifndef CONFIG_X86_CMPXCHG64
  extern void cmpxchg8b_emu(void);
 diff --git a/arch/x86/include/asm/vmware.h b/arch/x86/include/asm/vmware.h
-index ac9fc51e2b18..e9e9a91455e0 100644
+index ac9fc51e2..e9e9a9145 100644
 --- a/arch/x86/include/asm/vmware.h
 +++ b/arch/x86/include/asm/vmware.h
 @@ -2,10 +2,16 @@
  #ifndef _ASM_X86_VMWARE_H
  #define _ASM_X86_VMWARE_H
- 
+
 +#include <linux/bits.h>
  #include <asm/cpufeatures.h>
  #include <asm/alternative.h>
  #include <linux/stringify.h>
- 
+
 +#define CPUID_VMWARE_INFO_LEAF               0x40000000
 +#define CPUID_VMWARE_FEATURES_LEAF           0x40000010
 +#define CPUID_VMWARE_FEATURES_ECX_VMMCALL    BIT(0)
@@ -69,7 +69,7 @@ index ac9fc51e2b18..e9e9a91455e0 100644
 @@ -28,30 +34,56 @@
  #define VMWARE_HYPERVISOR_HB   BIT(0)
  #define VMWARE_HYPERVISOR_OUT  BIT(1)
- 
+
 +#ifndef __ASSEMBLY__
 +/*
 + * Custom calling convention defined by hypervisor.
@@ -89,10 +89,10 @@ index ac9fc51e2b18..e9e9a91455e0 100644
 +							", %%dx; "	\
 +		      "inl (%%dx), %%eax", X86_FEATURE_HYPERVISOR,	\
 +		      "movw $0, %%dx; "					\
- 		      "vmcall", X86_FEATURE_VMCALL,			\
+		      "vmcall", X86_FEATURE_VMCALL,			\
 +		      "movw $0, %%dx; "					\
- 		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
- 
+		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
+
  /*
 - * The high bandwidth out call. The low word of edx is presumed to have the
 - * HB and OUT bits set.
@@ -108,12 +108,12 @@ index ac9fc51e2b18..e9e9a91455e0 100644
 +		      "movw $" __stringify(VMWARE_HYPERVISOR_HB |	\
 +					   VMWARE_HYPERVISOR_OUT)	\
 +							", %%dx; "	\
- 		      "vmcall", X86_FEATURE_VMCALL,			\
+		      "vmcall", X86_FEATURE_VMCALL,			\
 +		      "movw $" __stringify(VMWARE_HYPERVISOR_HB |	\
 +					   VMWARE_HYPERVISOR_OUT)	\
 +							", %%dx; "	\
- 		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
- 
+		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
+
  /*
 - * The high bandwidth in call. The low word of edx is presumed to have the
 - * HB bit set.
@@ -128,27 +128,27 @@ index ac9fc51e2b18..e9e9a91455e0 100644
 +		      "cld; rep insb", X86_FEATURE_HYPERVISOR,		\
 +		      "movw $" __stringify(VMWARE_HYPERVISOR_HB)	\
 +							", %%dx; "	\
- 		      "vmcall", X86_FEATURE_VMCALL,			\
+		      "vmcall", X86_FEATURE_VMCALL,			\
 +		      "movw $" __stringify(VMWARE_HYPERVISOR_HB)	\
 +							", %%dx; "	\
- 		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
+		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
  #endif
 diff --git a/arch/x86/kernel/cpu/Makefile b/arch/x86/kernel/cpu/Makefile
-index 9661e3e802be..89c96c936083 100644
+index 4350f6bfc..82149a98a 100644
 --- a/arch/x86/kernel/cpu/Makefile
 +++ b/arch/x86/kernel/cpu/Makefile
-@@ -53,7 +53,7 @@ obj-$(CONFIG_X86_SGX)			+= sgx/
- 
+@@ -51,7 +51,7 @@ obj-$(CONFIG_X86_SGX)			+= sgx/
+
  obj-$(CONFIG_X86_LOCAL_APIC)		+= perfctr-watchdog.o
- 
+
 -obj-$(CONFIG_HYPERVISOR_GUEST)		+= vmware.o hypervisor.o mshyperv.o
 +obj-$(CONFIG_HYPERVISOR_GUEST)		+= vmware.o vmw_hc.o hypervisor.o mshyperv.o
  obj-$(CONFIG_ACRN_GUEST)		+= acrn.o
- 
- ifdef CONFIG_X86_FEATURE_NAMES
+
+ quiet_cmd_mkcapflags = MKCAP   $@
 diff --git a/arch/x86/kernel/cpu/vmw_hc.S b/arch/x86/kernel/cpu/vmw_hc.S
 new file mode 100644
-index 000000000000..3a5adb77baab
+index 000000000..3a5adb77b
 --- /dev/null
 +++ b/arch/x86/kernel/cpu/vmw_hc.S
 @@ -0,0 +1,61 @@
@@ -214,25 +214,25 @@ index 000000000000..3a5adb77baab
 +SYM_FUNC_END(vmw_hypercall_hb_in_slowpath)
 +EXPORT_SYMBOL(vmw_hypercall_hb_in_slowpath)
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 02039ec3597d..64bc42214054 100644
+index 11f83d079..6cd310305 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -39,11 +39,6 @@
  #undef pr_fmt
  #define pr_fmt(fmt)	"vmware: " fmt
- 
+
 -#define CPUID_VMWARE_INFO_LEAF               0x40000000
 -#define CPUID_VMWARE_FEATURES_LEAF           0x40000010
 -#define CPUID_VMWARE_FEATURES_ECX_VMMCALL    BIT(0)
 -#define CPUID_VMWARE_FEATURES_ECX_VMCALL     BIT(1)
 -
  #define VMWARE_HYPERVISOR_MAGIC	0x564D5868
- 
+
  #define VMWARE_CMD_GETVERSION    10
 @@ -57,44 +52,22 @@
  #define STEALCLOCK_DISABLED        0
  #define STEALCLOCK_ENABLED         1
- 
+
 -#define VMWARE_PORT(cmd, eax, ebx, ecx, edx)				\
 -	__asm__("inl (%%dx), %%eax" :					\
 -		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
@@ -245,12 +245,12 @@ index 02039ec3597d..64bc42214054 100644
 -	__asm__("vmcall" :						\
 +#define VMWARE_CMD(cmd, eax, ebx, ecx, edx)				\
 +	__asm__(VMWARE_HYPERCALL :					\
- 		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
- 		"a"(VMWARE_HYPERVISOR_MAGIC),				\
- 		"c"(VMWARE_CMD_##cmd),					\
- 		"d"(0), "b"(UINT_MAX) :					\
- 		"memory")
- 
+		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
+		"a"(VMWARE_HYPERVISOR_MAGIC),				\
+		"c"(VMWARE_CMD_##cmd),					\
+		"d"(0), "b"(UINT_MAX) :					\
+		"memory")
+
 -#define VMWARE_VMMCALL(cmd, eax, ebx, ecx, edx)                         \
 -	__asm__("vmmcall" :						\
 -		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
@@ -258,12 +258,12 @@ index 02039ec3597d..64bc42214054 100644
 +	__asm__(VMWARE_HYPERCALL :				        \
 +		"=a"(eax), "=c"(ecx), "+d"(edx), "+b"(ebx),		\
 +					"+S"(esi), "+D"(edi) :		\
- 		"a"(VMWARE_HYPERVISOR_MAGIC),				\
+		"a"(VMWARE_HYPERVISOR_MAGIC),				\
 -		"c"(VMWARE_CMD_##cmd),					\
 -		"d"(0), "b"(UINT_MAX) :					\
 +		"c"(VMWARE_CMD_##cmd) :					\
- 		"memory")
- 
+		"memory")
+
 -#define VMWARE_CMD(cmd, eax, ebx, ecx, edx) do {		\
 -	switch (vmware_hypercall_mode) {			\
 -	case CPUID_VMWARE_FEATURES_ECX_VMCALL:			\
@@ -279,12 +279,12 @@ index 02039ec3597d..64bc42214054 100644
 -	} while (0)
 -
  struct vmware_steal_time {
- 	union {
- 		uint64_t clock;	/* stolen time counter in units of vtsc */
+	union {
+		uint64_t clock;	/* stolen time counter in units of vtsc */
 @@ -107,8 +80,30 @@ struct vmware_steal_time {
- 	uint64_t reserved[7];
+	uint64_t reserved[7];
  };
- 
+
 +#define VMWARE_HB_OUT(cmd, eax, ebx, ecx, edx, esi, edi, ebp)		\
 +	__asm__("pushq %%rbp\n\t"					\
 +		"movl %[extra], %%ebp\n\t"				\
@@ -310,17 +310,16 @@ index 02039ec3597d..64bc42214054 100644
  static unsigned long vmware_tsc_khz __ro_after_init;
 -static u8 vmware_hypercall_mode     __ro_after_init;
 +u8 vmware_hypercall_mode     __ro_after_init;
- 
+
  static inline int __vmware_platform(void)
  {
 @@ -379,6 +374,7 @@ static void __init vmware_set_capabilities(void)
  {
- 	setup_force_cpu_cap(X86_FEATURE_CONSTANT_TSC);
- 	setup_force_cpu_cap(X86_FEATURE_TSC_RELIABLE);
+	setup_force_cpu_cap(X86_FEATURE_CONSTANT_TSC);
+	setup_force_cpu_cap(X86_FEATURE_TSC_RELIABLE);
 +	setup_force_cpu_cap(X86_FEATURE_HYPERVISOR);
- 	if (vmware_tsc_khz)
- 		setup_force_cpu_cap(X86_FEATURE_TSC_KNOWN_FREQ);
- 	if (vmware_hypercall_mode == CPUID_VMWARE_FEATURES_ECX_VMCALL)
--- 
-2.25.1
-
+	if (vmware_tsc_khz)
+		setup_force_cpu_cap(X86_FEATURE_TSC_KNOWN_FREQ);
+	if (vmware_hypercall_mode == CPUID_VMWARE_FEATURES_ECX_VMCALL)
+--
+2.41.0

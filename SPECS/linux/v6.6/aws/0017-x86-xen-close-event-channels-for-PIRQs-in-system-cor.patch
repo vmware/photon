@@ -1,8 +1,8 @@
-From 36f05cc4df8de1eec28cf6ae0526c9541cbd2207 Mon Sep 17 00:00:00 2001
+From 88c4fe5b875a2c7564738b01d2b4603124026377 Mon Sep 17 00:00:00 2001
 From: Munehisa Kamata <kamatam@amazon.com>
 Date: Thu, 24 Aug 2017 22:56:36 +0000
-Subject: x86/xen: close event channels for PIRQs in system core suspend
- callback
+Subject: [PATCH] x86/xen: close event channels for PIRQs in system core
+ suspend callback
 
 Close event channels allocated for devices which are backed by PIRQ and
 still active when suspending the system core. Normally, the devices are
@@ -53,6 +53,8 @@ Note that we don't explicitly re-allocate event channels for such
 devices in the resume callback. Re-allocation will occur when PM core
 re-enable IRQs for the devices at later point.
 
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
+
 Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
@@ -76,5 +78,5 @@ index dae0f74f5390..affa63d4b6bd 100644
  	xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
 
 --
-2.17.1
+2.35.6
 

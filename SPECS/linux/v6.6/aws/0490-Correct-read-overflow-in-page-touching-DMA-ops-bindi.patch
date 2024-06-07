@@ -1,7 +1,7 @@
-From a8b98327f85db977b0a16d29f6ccae8fbac93cb2 Mon Sep 17 00:00:00 2001
+From 2146f0130cbf0c7c403a6bf0e07af40dc2489e79 Mon Sep 17 00:00:00 2001
 From: Tighe Barris <tbarri@amazon.com>
 Date: Wed, 25 May 2022 16:43:55 +0000
-Subject: Correct read overflow in page touching DMA ops binding
+Subject: [PATCH] Correct read overflow in page touching DMA ops binding
 
 To force a page into residence, a read operation is performed on behalf
 of devices without an IOMMU. This functionality is required to facilitate
@@ -12,6 +12,8 @@ introduced this logic by invoking a '__raw_readl' function. This function
 can however read past the bounds of memory mapped for DMA. Instead,
 it is replaced with '__raw_readb'. This limits the length of memory read
 to a byte, and prevents reading past the range of mapped memory.
+
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
 
 Fixes: 25d4ce2 ("Introduce page touching DMA ops binding")
 Signed-off-by: Tighe Barris <tbarri@amazon.com>
@@ -44,5 +46,5 @@ index a9bb7901d769..c5ffb90a40a5 100644
 
  static void *page_touching_dma_alloc(struct device *dev, size_t size,
 --
-2.17.1
+2.35.6
 

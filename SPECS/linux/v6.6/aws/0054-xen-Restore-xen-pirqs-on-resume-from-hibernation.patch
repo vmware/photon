@@ -1,7 +1,7 @@
-From 3896fe00e1dbc86ca06b27d6b389e82bf2262ddb Mon Sep 17 00:00:00 2001
+From 426c9d410d1797700d8127eb7e9e600c997694e2 Mon Sep 17 00:00:00 2001
 From: Anchal Agarwal <anchalag@amazon.com>
 Date: Thu, 15 Aug 2019 22:26:27 +0000
-Subject: xen: Restore xen-pirqs on resume from hibernation
+Subject: [PATCH] xen: Restore xen-pirqs on resume from hibernation
 
 shutdown_pirq is invoked during hibernation path and hence
 PIRQs should be restarted during resume. [Commit: xen: Only
@@ -28,6 +28,8 @@ should be followed for hibernation path. As per the flow of
 hibernation_platform_enter, we should not restore pirqs explicitly
 in syscore_resume ops and it should be done in resume devices path.
 
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
+
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 ---
  arch/x86/xen/suspend.c           |  1 -
@@ -49,10 +51,10 @@ index 39644923b623..8be6ffa6bfbe 100644
 
  /*
 diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
-index 80ca3aff2c64..f7c7dd31b39e 100644
+index 3f1b588536a8..c5f1ecde2156 100644
 --- a/drivers/xen/events/events_base.c
 +++ b/drivers/xen/events/events_base.c
-@@ -2139,50 +2139,10 @@ void xen_shutdown_pirqs(void)
+@@ -2124,50 +2124,10 @@ void xen_shutdown_pirqs(void)
  			continue;
 
  		shutdown_pirq(irq_get_irq_data(info->irq));
@@ -105,10 +107,10 @@ index 80ca3aff2c64..f7c7dd31b39e 100644
  	.name			= "xen-dyn",
 
 diff --git a/include/linux/irq.h b/include/linux/irq.h
-index c3eb89606c2b..4882a16672a2 100644
+index 90081afa10ce..c79f470d5e17 100644
 --- a/include/linux/irq.h
 +++ b/include/linux/irq.h
-@@ -817,6 +817,8 @@ extern int irq_set_msi_desc_off(unsigned int irq_base, unsigned int irq_offset,
+@@ -812,6 +812,8 @@ extern int irq_set_msi_desc_off(unsigned int irq_base, unsigned int irq_offset,
  				struct msi_desc *entry);
  extern struct irq_data *irq_get_irq_data(unsigned int irq);
 
@@ -118,7 +120,7 @@ index c3eb89606c2b..4882a16672a2 100644
  {
  	struct irq_data *d = irq_get_irq_data(irq);
 diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 8ac37e8e738a..891a895ac218 100644
+index dc94e0bf2c94..29e20445fc5a 100644
 --- a/kernel/irq/chip.c
 +++ b/kernel/irq/chip.c
 @@ -170,11 +170,11 @@ static void irq_state_clr_masked(struct irq_desc *desc)
@@ -136,5 +138,5 @@ index 8ac37e8e738a..891a895ac218 100644
  {
  	irqd_set(&desc->irq_data, IRQD_IRQ_STARTED);
 --
-2.17.1
+2.35.6
 

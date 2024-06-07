@@ -1,8 +1,8 @@
-From c96930a97359a7074c30dd9dcea3f3f9435a0214 Mon Sep 17 00:00:00 2001
+From 099837fd07f5595046ba2a5eb77e67839626b0c7 Mon Sep 17 00:00:00 2001
 From: Anchal Agarwal <anchalag@amazon.com>
 Date: Thu, 22 Feb 2018 21:52:42 +0000
-Subject: x86/xen: Introduce new function to map HYPERVISOR_shared_info on
- Resume
+Subject: [PATCH] x86/xen: Introduce new function to map HYPERVISOR_shared_info
+ on Resume
 
 Introduce a small function which re-uses shared page's PA allocated
 during guest initialization time in reserve_shared_info() and not
@@ -28,7 +28,7 @@ CR: https://cr.amazon.com/r/8273203/
  2 files changed, 9 insertions(+)
 
 diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
-index 1c1ac418484b..d2521fcb86a9 100644
+index 3f8c34707c50..9623be6bdd6e 100644
 --- a/arch/x86/xen/enlighten_hvm.c
 +++ b/arch/x86/xen/enlighten_hvm.c
 @@ -36,6 +36,13 @@ static unsigned long shared_info_pfn;
@@ -46,7 +46,7 @@ index 1c1ac418484b..d2521fcb86a9 100644
  {
  	struct xen_add_to_physmap xatp;
 diff --git a/arch/x86/xen/xen-ops.h b/arch/x86/xen/xen-ops.h
-index 9a8bb972193d..46861d793736 100644
+index a87ab36889e7..f40122117378 100644
 --- a/arch/x86/xen/xen-ops.h
 +++ b/arch/x86/xen/xen-ops.h
 @@ -56,6 +56,8 @@ void xen_enable_sysenter(void);
@@ -59,5 +59,5 @@ index 9a8bb972193d..46861d793736 100644
  void xen_unplug_emulated_devices(void);
 
 --
-2.17.1
+2.35.6
 

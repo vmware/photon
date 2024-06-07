@@ -1,12 +1,14 @@
-From 9d37910543e6af104876aee033547fef86210bb1 Mon Sep 17 00:00:00 2001
+From 265d8003db297d8951a0f6de4ed7a3df9efa8c6c Mon Sep 17 00:00:00 2001
 From: Munehisa Kamata <kamatam@amazon.com>
 Date: Fri, 21 Jul 2017 06:06:12 +0000
-Subject: x86/xen: save and restore steal clock
+Subject: [PATCH] x86/xen: save and restore steal clock
 
 Save steal clock values of all present CPUs in the system core ops
 suspend callbacks. Also, restore a boot CPU's steal clock in the system
 core resume callback. For non-boot CPUs, restore after they're brought
 up, because runstate info for non-boot CPUs are not active until then.
+
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
 
 Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
@@ -55,10 +57,10 @@ index 784c4484100b..dae0f74f5390 100644
  }
 
 diff --git a/arch/x86/xen/time.c b/arch/x86/xen/time.c
-index 9ef0a5cca96e..cc11dd2e2f48 100644
+index 52fa5609b7f6..82660f07e65e 100644
 --- a/arch/x86/xen/time.c
 +++ b/arch/x86/xen/time.c
-@@ -548,6 +548,9 @@ static void xen_hvm_setup_cpu_clockevents(void)
+@@ -588,6 +588,9 @@ static void xen_hvm_setup_cpu_clockevents(void)
  {
  	int cpu = smp_processor_id();
  	xen_setup_runstate_info(cpu);
@@ -69,5 +71,5 @@ index 9ef0a5cca96e..cc11dd2e2f48 100644
  	 * xen_setup_timer(cpu) - snprintf is bad in atomic context. Hence
  	 * doing it xen_hvm_cpu_notify (which gets called by smp_init during
 --
-2.17.1
+2.35.6
 

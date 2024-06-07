@@ -36,13 +36,13 @@ Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
  1 file changed, 27 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index a2a087a797ae..5644b32edc48 100644
+index 10499bcd4..0624ddf37 100644
 --- a/arch/x86/kernel/cpu/bugs.c
 +++ b/arch/x86/kernel/cpu/bugs.c
-@@ -252,6 +252,24 @@ static void x86_amd_ssb_disable(void)
- 		wrmsrl(MSR_AMD64_LS_CFG, msrval);
+@@ -228,6 +228,24 @@ static void x86_amd_ssb_disable(void)
+		wrmsrl(MSR_AMD64_LS_CFG, msrval);
  }
- 
+
 +/* Bitmask of switches for security mitigations to follow PoS model. */
 +static unsigned int __ro_after_init performance_over_security = 0;
 +/* Ignore IBRS (Skylake and older CPUs) and use other techniques instead. */
@@ -63,11 +63,11 @@ index a2a087a797ae..5644b32edc48 100644
 +
  #undef pr_fmt
  #define pr_fmt(fmt)	"MDS: " fmt
- 
-@@ -1378,8 +1396,15 @@ static void __init spectre_v2_select_mitigation(void)
- 		    retbleed_cmd != RETBLEED_CMD_OFF &&
- 		    boot_cpu_has(X86_FEATURE_IBRS) &&
- 		    boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
+
+@@ -1571,8 +1589,15 @@ static void __init spectre_v2_select_mitigation(void)
+		    retbleed_cmd != RETBLEED_CMD_STUFF &&
+		    boot_cpu_has(X86_FEATURE_IBRS) &&
+		    boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
 -			mode = SPECTRE_V2_IBRS;
 -			break;
 +			/* Allow pos= only if spectre_v2 is not set (auto). */
@@ -79,9 +79,8 @@ index a2a087a797ae..5644b32edc48 100644
 +				mode = SPECTRE_V2_IBRS;
 +				break;
 +			}
- 		}
- 
- 		mode = spectre_v2_select_retpoline();
--- 
-2.35.5
+		}
 
+		mode = spectre_v2_select_retpoline();
+--
+2.41.0

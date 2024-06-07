@@ -1,7 +1,7 @@
-From de77a4d06db8fb89755b5f8e3de4e75b3a9d4d55 Mon Sep 17 00:00:00 2001
+From 67e9d4914ee8dbe6466f3e499acde2e68c309aa5 Mon Sep 17 00:00:00 2001
 From: Munehisa Kamata <kamatam@amazon.com>
 Date: Thu, 13 Jul 2017 07:22:39 +0000
-Subject: xen/time: introduce xen_{save,restore}_steal_clock
+Subject: [PATCH] xen/time: introduce xen_{save,restore}_steal_clock
 
 Currently, steal time accounting code in scheduler expects steal clock
 callback to provide monotonically increasing value. If the accounting
@@ -25,6 +25,8 @@ xen_restore_steal_clock(), sets offset if it found the current values in
 runstate info are smaller than previous ones. xen_steal_clock() is also
 modified to use the offset to ensure that scheduler only sees
 monotonically increasing number.
+
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
 
 Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
@@ -91,7 +93,7 @@ index 152dd33bb223..bf41e5cf1332 100644
  {
  	struct vcpu_register_runstate_memory_area area;
 diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-index 97efacbb329d..b5b1c39a67f0 100644
+index 4385b39242f6..55ec77bb8064 100644
 --- a/include/xen/xen-ops.h
 +++ b/include/xen/xen-ops.h
 @@ -38,6 +38,8 @@ void xen_time_setup_guest(void);
@@ -104,5 +106,5 @@ index 97efacbb329d..b5b1c39a67f0 100644
  int xen_setup_shutdown_event(void);
 
 --
-2.17.1
+2.35.6
 

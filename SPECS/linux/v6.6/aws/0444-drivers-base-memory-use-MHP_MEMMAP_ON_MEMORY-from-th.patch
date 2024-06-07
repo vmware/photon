@@ -1,49 +1,77 @@
-From 34659c904e1f91510d9b5f0b20055d07f06e2624 Mon Sep 17 00:00:00 2001
+From 30062f0d9e5a4fb8f2633e29f1cb6435631c0cdb Mon Sep 17 00:00:00 2001
 From: Frank van der Linden <fllinden@amazon.com>
 Date: Thu, 9 Dec 2021 20:41:11 +0000
-Subject: drivers/base/memory: use MHP_MEMMAP_ON_MEMORY from the probe
+Subject: [PATCH] drivers/base/memory: use MHP_MEMMAP_ON_MEMORY from the probe
  interface
 
 If it is possible to use MHP_MEMMAP_ON_MEMORY from the probe interface,
 which should normally be the case, do so.
 
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
+
 Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 ---
- drivers/base/memory.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/base/memory.c          | 11 +++++++----
+ include/linux/memory_hotplug.h |  1 +
+ mm/memory_hotplug.c            |  2 +-
+ 3 files changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-index bc60c9cd3230..020b287f8299 100644
+index 8a13babd826c..c49b06c69c74 100644
 --- a/drivers/base/memory.c
 +++ b/drivers/base/memory.c
-@@ -493,9 +493,10 @@ static DEVICE_ATTR_RW(auto_online_blocks);
+@@ -529,9 +529,10 @@ static DEVICE_ATTR_RO(crash_hotplug);
  static ssize_t probe_store(struct device *dev, struct device_attribute *attr,
- 			   const char *buf, size_t count)
+			   const char *buf, size_t count)
  {
 -	u64 phys_addr;
 +	u64 phys_addr, size;
- 	int nid, ret;
- 	unsigned long pages_per_block = PAGES_PER_SECTION * sections_per_block;
+	int nid, ret;
+	unsigned long pages_per_block = PAGES_PER_SECTION * sections_per_block;
 +	mhp_t mhp_flags;
 
- 	ret = kstrtoull(buf, 0, &phys_addr);
- 	if (ret)
-@@ -508,10 +509,12 @@ static ssize_t probe_store(struct device *dev, struct device_attribute *attr,
- 	if (ret)
- 		return ret;
+	ret = kstrtoull(buf, 0, &phys_addr);
+	if (ret)
+@@ -544,10 +545,12 @@ static ssize_t probe_store(struct device *dev, struct device_attribute *attr,
+	if (ret)
+		return ret;
 
 +	size = MIN_MEMORY_BLOCK_SIZE * sections_per_block;
 +	mhp_flags = mhp_supports_memmap_on_memory(size) ?
 +	    MHP_MEMMAP_ON_MEMORY : MHP_NONE;
 +
- 	nid = memory_add_physaddr_to_nid(phys_addr);
+	nid = memory_add_physaddr_to_nid(phys_addr);
 -	ret = __add_memory(nid, phys_addr,
 -			   MIN_MEMORY_BLOCK_SIZE * sections_per_block,
 -			   MHP_NONE);
 +	ret = __add_memory(nid, phys_addr, size, mhp_flags);
 
- 	if (ret)
- 		goto out;
---
-2.17.1
+	if (ret)
+		goto out;
+diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
+index 7d2076583494..6e6b71688f23 100644
+--- a/include/linux/memory_hotplug.h
++++ b/include/linux/memory_hotplug.h
+@@ -356,6 +356,7 @@ extern struct zone *zone_for_pfn_range(int online_type, int nid,
+ extern int arch_create_linear_mapping(int nid, u64 start, u64 size,
+				      struct mhp_params *params);
+ void arch_remove_linear_mapping(u64 start, u64 size);
++extern bool mhp_supports_memmap_on_memory(unsigned long size);
+ #endif /* CONFIG_MEMORY_HOTPLUG */
 
+ #endif /* __LINUX_MEMORY_HOTPLUG_H */
+diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+index f36525a595a9..525b7534bb18 100644
+--- a/mm/memory_hotplug.c
++++ b/mm/memory_hotplug.c
+@@ -1327,7 +1327,7 @@ static inline bool arch_supports_memmap_on_memory(unsigned long vmemmap_size)
+ }
+ #endif
+
+-static bool mhp_supports_memmap_on_memory(unsigned long size)
++bool mhp_supports_memmap_on_memory(unsigned long size)
+ {
+	unsigned long vmemmap_size = memory_block_memmap_size();
+	unsigned long memmap_pages = memory_block_memmap_on_memory_pages();
+--
+2.35.6

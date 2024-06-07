@@ -19,13 +19,13 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  create mode 100644 drivers/char/hw_random/rdrand-rng.c
 
 diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
-index 3da8e85f8aae..5f4a8f927410 100644
+index 8de74dcfa..f71da7ece 100644
 --- a/drivers/char/hw_random/Kconfig
 +++ b/drivers/char/hw_random/Kconfig
-@@ -61,6 +61,20 @@ config HW_RANDOM_AMD
- 
- 	  If unsure, say Y.
- 
+@@ -62,6 +62,20 @@ config HW_RANDOM_AMD
+
+	  If unsure, say Y.
+
 +config HW_RANDOM_RDRAND
 +	tristate "x86 rdrand Random Number Generator support"
 +	depends on (X86_32 || X86_64)
@@ -41,10 +41,10 @@ index 3da8e85f8aae..5f4a8f927410 100644
 +	  If unsure, say N.
 +
  config HW_RANDOM_ATMEL
- 	tristate "Atmel Random Number Generator support"
- 	depends on (ARCH_AT91 || COMPILE_TEST) && HAVE_CLK && OF
+	tristate "Atmel Random Number Generator support"
+	depends on (ARCH_AT91 || COMPILE_TEST)
 diff --git a/drivers/char/hw_random/Makefile b/drivers/char/hw_random/Makefile
-index 3e948cf04476..dfa0dfddac09 100644
+index 32549a118..1f24f2d72 100644
 --- a/drivers/char/hw_random/Makefile
 +++ b/drivers/char/hw_random/Makefile
 @@ -8,6 +8,7 @@ rng-core-y := core.o
@@ -57,7 +57,7 @@ index 3e948cf04476..dfa0dfddac09 100644
  obj-$(CONFIG_HW_RANDOM_GEODE) += geode-rng.o
 diff --git a/drivers/char/hw_random/rdrand-rng.c b/drivers/char/hw_random/rdrand-rng.c
 new file mode 100644
-index 000000000000..8f68d784408f
+index 000000000..8f68d7844
 --- /dev/null
 +++ b/drivers/char/hw_random/rdrand-rng.c
 @@ -0,0 +1,73 @@
@@ -134,6 +134,5 @@ index 000000000000..8f68d784408f
 +MODULE_AUTHOR("Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>");
 +MODULE_DESCRIPTION("H/W RNG driver for x86 CPUs that support RDRAND/RDSEED");
 +MODULE_LICENSE("GPL");
--- 
-2.25.1
-
+--
+2.41.0

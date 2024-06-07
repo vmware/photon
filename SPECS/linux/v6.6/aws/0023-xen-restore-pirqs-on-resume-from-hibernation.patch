@@ -1,10 +1,12 @@
-From 2b447db4607d5ecc874fc8dbbd1205de1c59a4e5 Mon Sep 17 00:00:00 2001
+From 02d077b9b46f6ac8982a45e9c3e2273e3d3c9c54 Mon Sep 17 00:00:00 2001
 From: Frank van der Linden <fllinden@amazon.com>
 Date: Fri, 26 Oct 2018 21:27:54 +0000
-Subject: xen: restore pirqs on resume from hibernation.
+Subject: [PATCH] xen: restore pirqs on resume from hibernation.
 
 The hibernation code unlinks event channels from these (legacy) IRQs, so they
 must be reinitialized on wakeup, much like in the Xen suspend/resume case.
+
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
 
 Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 Reviewed-by: Cristian Gafton <gafton@amazon.com>
@@ -32,10 +34,10 @@ index affa63d4b6bd..39644923b623 100644
 
  /*
 diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
-index 1433a9f95902..60e21dc96c77 100644
+index e402e8d12a8c..913563dbc5d1 100644
 --- a/drivers/xen/events/events_base.c
 +++ b/drivers/xen/events/events_base.c
-@@ -2138,6 +2138,11 @@ void xen_shutdown_pirqs(void)
+@@ -2123,6 +2123,11 @@ void xen_shutdown_pirqs(void)
  	}
  }
 
@@ -48,10 +50,10 @@ index 1433a9f95902..60e21dc96c77 100644
  	.name			= "xen-dyn",
 
 diff --git a/include/xen/events.h b/include/xen/events.h
-index 7f30459489d7..72fb0167eb2e 100644
+index 43a587b3496c..52c9b51cc303 100644
 --- a/include/xen/events.h
 +++ b/include/xen/events.h
-@@ -87,6 +87,7 @@ void notify_remote_via_irq(int irq);
+@@ -86,6 +86,7 @@ void notify_remote_via_irq(int irq);
 
  void xen_irq_resume(void);
  void xen_shutdown_pirqs(void);
@@ -60,5 +62,5 @@ index 7f30459489d7..72fb0167eb2e 100644
  /* Clear an irq's pending state, in preparation for polling on it */
  void xen_clear_irq_pending(int irq);
 --
-2.17.1
+2.35.6
 

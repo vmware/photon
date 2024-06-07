@@ -1,7 +1,7 @@
-From 8416119d402e70b3d352d7a4a2f6c64328ab4b63 Mon Sep 17 00:00:00 2001
+From 2b74cbd09693be7a1b21b305b93ff571704ab737 Mon Sep 17 00:00:00 2001
 From: James Gowans <jgowans@amazon.com>
 Date: Fri, 17 Sep 2021 00:45:10 +0200
-Subject: Introduce page touching DMA ops binding
+Subject: [PATCH] Introduce page touching DMA ops binding
 
 Allows enabling page touching via a kernel command line parameter.
 When enabled, devices which don't have an IOMMU assigned to them will be
@@ -24,10 +24,10 @@ Cc-Team: ec2-memo <ec2-memo@amazon.com>
  create mode 100644 kernel/dma/page_touching.c
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index f86bbb90061b..ad36e8de7553 100644
+index 40312bb550f0..c13f716d553d 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -15376,6 +15376,13 @@ F:	Documentation/mm/page_table_check.rst
+@@ -16158,6 +16158,13 @@ F:	Documentation/mm/page_table_check.rst
  F:	include/linux/page_table_check.h
  F:	mm/page_table_check.c
 
@@ -42,7 +42,7 @@ index f86bbb90061b..ad36e8de7553 100644
  M:	Kenneth Chan <kenneth.t.chan@gmail.com>
  L:	platform-driver-x86@vger.kernel.org
 diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 599cf81f5685..08f53dfa7c30 100644
+index 3cb101e8cb29..65082b8ff3ca 100644
 --- a/arch/arm64/mm/dma-mapping.c
 +++ b/arch/arm64/mm/dma-mapping.c
 @@ -9,6 +9,7 @@
@@ -109,7 +109,7 @@ index 000000000000..8ff9856e994c
 + */
 +void setup_dma_page_touching_ops(struct device *dev);
 diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 56866aaa2ae1..8a6b0acb78e4 100644
+index f488997b0717..baa41d4cc05a 100644
 --- a/kernel/dma/Kconfig
 +++ b/kernel/dma/Kconfig
 @@ -24,6 +24,16 @@ config DMA_OPS_BYPASS
@@ -126,7 +126,7 @@ index 56866aaa2ae1..8a6b0acb78e4 100644
 +	  The capacility must still be set up at boot time via the
 +	  page_touching.dma_page_touching_enable kernel command line param.
 +
- config NEED_SG_DMA_LENGTH
+ config NEED_SG_DMA_FLAGS
  	bool
 
 diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
@@ -279,5 +279,5 @@ index 000000000000..a9bb7901d769
 +	dev->dma_ops = &page_touching_dma_ops;
 +}
 --
-2.17.1
+2.35.6
 

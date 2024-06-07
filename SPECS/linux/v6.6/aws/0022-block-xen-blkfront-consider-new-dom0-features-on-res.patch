@@ -1,7 +1,7 @@
-From 5759bfc92a68ea934204177c89de96450e5bf747 Mon Sep 17 00:00:00 2001
+From d817bbdf710ee1b737cf33bbdc212fb3a90e93a7 Mon Sep 17 00:00:00 2001
 From: Eduardo Valentin <eduval@amazon.com>
 Date: Thu, 18 Oct 2018 22:13:48 +0000
-Subject: block: xen-blkfront: consider new dom0 features on restore
+Subject: [PATCH] block: xen-blkfront: consider new dom0 features on restore
 
 On regular start, the instance will perform a regular boot, in which rootfs
 is mounted accordingly to the xen-blkback features (in particular
@@ -56,6 +56,8 @@ the rootfs as RO.
 The fix is essentially to read xenbus to query the new xen
 blkback capabilities and update them into the request queue.
 
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
+
 Reviewed-by: Balbir Singh <sblbir@amazon.com>
 Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
 Signed-off-by: Eduardo Valentin <eduval@amazon.com>
@@ -64,10 +66,10 @@ Signed-off-by: Eduardo Valentin <eduval@amazon.com>
  1 file changed, 3 insertions(+)
 
 diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index 8ecbef9f4b70..6571260227d8 100644
+index 098dd0968295..59cd44ccea8f 100644
 --- a/drivers/block/xen-blkfront.c
 +++ b/drivers/block/xen-blkfront.c
-@@ -2629,6 +2629,9 @@ static int blkfront_restore(struct xenbus_device *dev)
+@@ -2628,6 +2628,9 @@ static int blkfront_restore(struct xenbus_device *dev)
  {
  	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
  	int err = 0;
@@ -78,5 +80,5 @@ index 8ecbef9f4b70..6571260227d8 100644
  	if (err)
  		goto out;
 --
-2.17.1
+2.35.6
 

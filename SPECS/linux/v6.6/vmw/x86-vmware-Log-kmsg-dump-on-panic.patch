@@ -1,18 +1,18 @@
 From 35d48897601962c412b03b3468e11108ff9bfe56 Mon Sep 17 00:00:00 2001
 From: Bo Gan <ganb@vmware.com>
 Date: Tue, 2 Jun 2020 19:35:47 -0700
-Subject: [PATCH 15/25] x86/vmware: Log kmsg dump on panic
+Subject: [PATCH] x86/vmware: Log kmsg dump on panic
 
 In case of panic kmsg will be dumped to vmware.log file
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Bo Gan <ganb@vmware.com>
 ---
- arch/x86/kernel/cpu/vmware.c | 142 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 142 insertions(+)
+ arch/x86/kernel/cpu/vmware.c | 144 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 144 insertions(+)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 64bc42214..c34d7e533 100644
+index 6cd310305..66c913dd2 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -28,6 +28,8 @@
@@ -31,20 +31,20 @@ index 64bc42214..c34d7e533 100644
 +#define VMWARE_CMD_MESSAGE       30
  #define VMWARE_CMD_VCPU_RESERVED 31
  #define VMWARE_CMD_STEALCLOCK    91
- 
+
 @@ -52,6 +55,8 @@
  #define STEALCLOCK_DISABLED        0
  #define STEALCLOCK_ENABLED         1
- 
+
 +#define VMWARE_HB_CMD_MESSAGE      0
 +
  #define VMWARE_CMD(cmd, eax, ebx, ecx, edx)				\
- 	__asm__(VMWARE_HYPERCALL :					\
- 		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
+	__asm__(VMWARE_HYPERCALL :					\
+		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
 @@ -117,6 +122,13 @@ static unsigned long vmware_get_tsc_khz(void)
- 	return vmware_tsc_khz;
+	return vmware_tsc_khz;
  }
- 
+
 +static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
 +				enum kmsg_dump_reason reason);
 +
@@ -57,15 +57,15 @@ index 64bc42214..c34d7e533 100644
  static bool vmw_sched_clock __initdata = true;
 @@ -424,6 +436,8 @@ static void __init vmware_platform_setup(void)
  #endif
- 
- 	vmware_set_capabilities();
+
+	vmware_set_capabilities();
 +
 +	kmsg_dump_register(&kmsg_dumper);
  }
- 
+
  static u8 __init vmware_select_hypercall(void)
 @@ -522,3 +536,133 @@ const __initconst struct hypervisor_x86 x86_hyper_vmware = {
- 	.runtime.sev_es_hcall_finish	= vmware_sev_es_hcall_finish,
+	.runtime.sev_es_hcall_finish	= vmware_sev_es_hcall_finish,
  #endif
  };
 +
@@ -198,6 +198,5 @@ index 64bc42214..c34d7e533 100644
 +		vmware_log_close(&msg);
 +	}
 +}
--- 
-2.7.4
-
+--
+2.41.0

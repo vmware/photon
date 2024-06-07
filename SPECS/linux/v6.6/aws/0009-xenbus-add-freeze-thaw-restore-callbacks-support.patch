@@ -1,7 +1,7 @@
-From e9cb15e6234341b2b2be389e5e18406598687656 Mon Sep 17 00:00:00 2001
+From 5a1dfe3f931c80e86a9976d68e0d782dc7a2de52 Mon Sep 17 00:00:00 2001
 From: Munehisa Kamata <kamatam@amazon.com>
 Date: Thu, 13 Jul 2017 02:00:31 +0000
-Subject: xenbus: add freeze/thaw/restore callbacks support
+Subject: [PATCH] xenbus: add freeze/thaw/restore callbacks support
 
 Since commit b3e96c0c7562 ("xen: use freeze/restore/thaw PM events for
 suspend/resume/chkpt"), xenbus uses PMSG_FREEZE, PMSG_THAW and
@@ -18,6 +18,8 @@ existing xenbus device drivers already have suspend/resume callbacks
 specifically designed for Xen suspend. So we can allow the device
 drivers to keep the existing callbacks wihtout modification.
 
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
+
 Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
@@ -29,7 +31,7 @@ CR: https://cr.amazon.com/r/8273200/
  2 files changed, 86 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/xen/xenbus/xenbus_probe.c b/drivers/xen/xenbus/xenbus_probe.c
-index 58b732dcbfb8..fc7f5b2ec2ad 100644
+index 3205e5d724c8..e26c3269c721 100644
 --- a/drivers/xen/xenbus/xenbus_probe.c
 +++ b/drivers/xen/xenbus/xenbus_probe.c
 @@ -50,6 +50,7 @@
@@ -183,19 +185,19 @@ index 58b732dcbfb8..fc7f5b2ec2ad 100644
  }
  EXPORT_SYMBOL_GPL(xenbus_dev_cancel);
 diff --git a/include/xen/xenbus.h b/include/xen/xenbus.h
-index eaa932b99d8a..3d8684d373d5 100644
+index ac22cf08c09f..e7db507596d6 100644
 --- a/include/xen/xenbus.h
 +++ b/include/xen/xenbus.h
-@@ -120,6 +120,9 @@ struct xenbus_driver {
- 	int (*remove)(struct xenbus_device *dev);
+@@ -117,6 +117,9 @@ struct xenbus_driver {
+	void (*remove)(struct xenbus_device *dev);
  	int (*suspend)(struct xenbus_device *dev);
  	int (*resume)(struct xenbus_device *dev);
 +	int (*freeze)(struct xenbus_device *dev);
 +	int (*thaw)(struct xenbus_device *dev);
 +	int (*restore)(struct xenbus_device *dev);
- 	int (*uevent)(struct xenbus_device *, struct kobj_uevent_env *);
+	int (*uevent)(const struct xenbus_device *, struct kobj_uevent_env *);
  	struct device_driver driver;
  	int (*read_otherend_details)(struct xenbus_device *dev);
 --
-2.17.1
+2.35.6
 

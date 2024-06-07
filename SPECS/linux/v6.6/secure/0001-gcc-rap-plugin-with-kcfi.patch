@@ -1,6 +1,6 @@
-From 3bba35b91c6d6b6f6a8449c326e46822546be6f7 Mon Sep 17 00:00:00 2001
+From 00fd6ab91b030d203b9f5d0fadc5bb91958838e2 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
-Date: Wed, 3 Apr 2024 10:56:21 +0000
+Date: Fri, 26 Jul 2024 10:51:50 +0000
 Subject: [PATCH] gcc rap plugin with kcfi
 
 This patch adopts the forward-edge control-flow integrity
@@ -34,31 +34,25 @@ Following changes are made to adopt KCFI in GCC RAP plugin:
   replaced __CFI_TYPE macro with __RAP_TYPE for adding rap_hash for
   callers of SYM_TYPED_FUNC_START when CONFIG_PAX_RAP is enabled.
 
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Back ported this patch to v6.6.x]
+
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Signed-off-by: Mukul Sikka <mukul.sikka@broadcom.com>
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
  Makefile                                      |   2 +
  arch/Kconfig                                  |   8 +-
- arch/x86/entry/Makefile                       |   2 +
- arch/x86/entry/common.c                       |  51 ++
- arch/x86/include/asm/linkage.h                |   8 +
+ arch/x86/Kconfig                              |   2 +-
  arch/x86/include/asm/text-patching.h          |   4 +
  arch/x86/include/asm/vermagic.h               |   9 +-
  arch/x86/kernel/alternative.c                 |   7 +
  arch/x86/kernel/cpu/vmware.c                  |   9 +-
  arch/x86/kernel/module.c                      |   6 +-
- arch/x86/kernel/paravirt.c                    |   7 +-
  arch/x86/kernel/traps.c                       |   4 +
- arch/x86/tools/relocs.c                       |   1 +
+ arch/x86/tools/relocs.c                       |   3 +
  drivers/block/floppy.c                        |  11 +-
- drivers/char/tpm/tpm-chip.c                   |   9 +-
  drivers/firmware/dmi-id.c                     |   7 +-
- drivers/net/ethernet/brocade/bna/bfa_cs.h     |  42 +-
- drivers/net/ethernet/brocade/bna/bfa_ioc.c    |  10 +-
- drivers/net/ethernet/brocade/bna/bfa_ioc.h    |   4 +-
- drivers/net/ethernet/brocade/bna/bfa_msgq.h   |   8 +-
- drivers/net/ethernet/brocade/bna/bna_enet.c   |   6 +-
- drivers/net/ethernet/brocade/bna/bna_tx_rx.c  |   6 +-
- drivers/net/ethernet/brocade/bna/bna_types.h  |  24 +-
  drivers/net/ethernet/brocade/bna/bnad.c       |  11 +-
  drivers/scsi/bfa/bfa.h                        |   4 +-
  drivers/scsi/bfa/bfa_cs.h                     | 124 +++-
@@ -73,34 +67,26 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  drivers/scsi/bfa/bfa_svc.h                    |  20 +-
  drivers/scsi/bfa/bfad.c                       |  12 +-
  drivers/scsi/bfa/bfad_drv.h                   |   5 +-
- drivers/scsi/csiostor/csio_defs.h             |  19 +-
- drivers/scsi/csiostor/csio_hw.c               |  69 ++-
- drivers/scsi/csiostor/csio_init.c             |   2 +-
- drivers/scsi/csiostor/csio_lnode.c            |  32 +-
- drivers/scsi/csiostor/csio_rnode.c            |  28 +-
- drivers/scsi/csiostor/csio_scsi.c             |  37 +-
- include/linux/cfi_types.h                     |   8 +
- include/linux/compiler_types.h                |   4 +
+ include/linux/compiler_types.h                |   6 +-
  include/linux/moduleparam.h                   |   4 +-
  include/linux/pci.h                           |   2 +-
  include/linux/syscalls.h                      |  17 +-
- kernel/bpf/core.c                             |  21 +-
+ kernel/bpf/core.c                             |  21 +
  kernel/events/core.c                          |   3 +-
- kernel/module/main.c                          |   9 +-
+ kernel/module/main.c                          |   9 +
  kernel/sched/core.c                           |   2 +-
  net/bridge/br_private.h                       |   3 +-
  net/netfilter/ipset/ip_set_core.c             |   1 -
  scripts/Makefile.gcc-plugins                  |  12 +
- scripts/gcc-plugins/Makefile                  |   4 +-
+ scripts/gcc-plugins/Makefile                  |   8 +-
  scripts/gcc-plugins/rap_plugin/rap.h          |  38 ++
  .../gcc-plugins/rap_plugin/rap_fptr_pass.c    | 224 +++++++
  scripts/gcc-plugins/rap_plugin/rap_hash.c     | 396 +++++++++++++
- scripts/gcc-plugins/rap_plugin/rap_plugin.c   | 553 ++++++++++++++++++
+ scripts/gcc-plugins/rap_plugin/rap_plugin.c   | 557 ++++++++++++++++++
  scripts/gcc-plugins/rap_plugin/sip.c          |  96 +++
  scripts/mod/modpost.c                         |   6 -
  security/Kconfig                              |  29 +
- security/apparmor/net.c                       |   2 +-
- 64 files changed, 1945 insertions(+), 189 deletions(-)
+ 51 files changed, 1798 insertions(+), 148 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -108,10 +94,10 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  create mode 100644 scripts/gcc-plugins/rap_plugin/sip.c
 
 diff --git a/Makefile b/Makefile
-index 800bbe7c5..4b75ce672 100644
+index a3839877aafd..13bb55d6347a 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1005,10 +1005,12 @@ export CC_FLAGS_LTO
+@@ -976,10 +976,12 @@ export CC_FLAGS_LTO
  endif
  
  ifdef CONFIG_CFI_CLANG
@@ -122,13 +108,13 @@ index 800bbe7c5..4b75ce672 100644
  endif
 +endif
  
- ifdef CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B
- KBUILD_CFLAGS += -falign-functions=64
+ ifneq ($(CONFIG_FUNCTION_ALIGNMENT),0)
+ KBUILD_CFLAGS += -falign-functions=$(CONFIG_FUNCTION_ALIGNMENT)
 diff --git a/arch/Kconfig b/arch/Kconfig
-index f99fd9a4c..a6462a99f 100644
+index 20c2c93d2c88..6c5bb9651096 100644
 --- a/arch/Kconfig
 +++ b/arch/Kconfig
-@@ -754,10 +754,16 @@ config ARCH_SUPPORTS_CFI_CLANG
+@@ -802,10 +802,16 @@ config ARCH_SUPPORTS_CFI_CLANG
  config ARCH_USES_CFI_TRAPS
  	bool
  
@@ -146,111 +132,24 @@ index f99fd9a4c..a6462a99f 100644
  	help
  	  This option enables Clang’s forward-edge Control Flow Integrity
  	  (CFI) checking, where the compiler injects a runtime check to each
-diff --git a/arch/x86/entry/Makefile b/arch/x86/entry/Makefile
-index ca2fe1869..faf2e5a87 100644
---- a/arch/x86/entry/Makefile
-+++ b/arch/x86/entry/Makefile
-@@ -21,3 +21,5 @@ obj-$(CONFIG_PREEMPTION)	+= thunk_$(BITS).o
- obj-$(CONFIG_IA32_EMULATION)	+= entry_64_compat.o syscall_32.o
- obj-$(CONFIG_X86_X32_ABI)	+= syscall_x32.o
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 0ca3130c6c8f..c737526635f5 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2406,7 +2406,7 @@ config CALL_PADDING
  
-+CFLAGS_REMOVE_syscall_32.o += -fplugin-arg-rap_plugin-hash=abs-finish
-+CFLAGS_REMOVE_syscall_64.o += -fplugin-arg-rap_plugin-hash=abs-finish
-diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index 9c0b26ae5..cf8289136 100644
---- a/arch/x86/entry/common.c
-+++ b/arch/x86/entry/common.c
-@@ -48,7 +48,17 @@ static __always_inline bool do_syscall_x64(struct pt_regs *regs, int nr)
+ config FINEIBT
+ 	def_bool y
+-	depends on X86_KERNEL_IBT && CFI_CLANG && RETPOLINE
++	depends on X86_KERNEL_IBT && KCFI_CLANG && MITIGATION_RETPOLINE
+ 	select CALL_PADDING
  
- 	if (likely(unr < NR_syscalls)) {
- 		unr = array_index_nospec(unr, NR_syscalls);
-+#ifdef CONFIG_PAX_RAP
-+		asm volatile("movq %[param],%%rdi\n\t"
-+			"call *%P[syscall]\n\t"
-+			"mov %%rax,%[result]\n\t"
-+			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (sys_call_table[unr]),
-+			[param] "m" (regs)
-+			: "ax", "cx", "dx", "r8", "r9", "r10", "r11", "di", "memory");
-+#else
- 		regs->ax = sys_call_table[unr](regs);
-+#endif
- 		return true;
- 	}
- 	return false;
-@@ -114,7 +124,48 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs, int nr)
- 
- 	if (likely(unr < IA32_NR_syscalls)) {
- 		unr = array_index_nospec(unr, IA32_NR_syscalls);
-+#ifdef CONFIG_PAX_RAP
-+#ifdef CONFIG_X86_64
-+		asm volatile("movl %[param1],%%edi\n\t"
-+			     "movl %[param2],%%esi\n\t"
-+			     "movl %[param3],%%edx\n\t"
-+			     "movl %[param4],%%ecx\n\t"
-+			     "movl %[param5],%%r8d\n\t"
-+			     "movl %[param6],%%r9d\n\t"
-+			     "call *%P[syscall]\n\t"
-+			     "mov %%rax,%[result]\n\t"
-+			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (ia32_sys_call_table[unr]),
-+			  [param1] "m" (regs->bx),
-+			  [param2] "m" (regs->cx),
-+			  [param3] "m" (regs->dx),
-+			  [param4] "m" (regs->si),
-+			  [param5] "m" (regs->di),
-+			  [param6] "m" (regs->bp)
-+			: "ax", "di", "si", "dx", "cx", "r8", "r9", "r10", "r11", "memory");
-+#else
-+		asm volatile("pushl %[param6]\n\t"
-+			     "pushl %[param5]\n\t"
-+			     "pushl %[param4]\n\t"
-+			     "pushl %[param3]\n\t"
-+			     "pushl %[param2]\n\t"
-+			     "pushl %[param1]\n\t"
-+			     "call *%P[syscall]\n\t"
-+			     "addl $6*8,%%esp\n\t"
-+			     "mov %%eax,%[result]\n\t"
-+			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (ia32_sys_call_table[unr]),
-+			  [param1] "m" (regs->bx),
-+			  [param2] "m" (regs->cx),
-+			  [param3] "m" (regs->dx),
-+			  [param4] "m" (regs->si),
-+			  [param5] "m" (regs->di),
-+			  [param6] "m" (regs->bp)
-+			: "ax", "dx", "cx", "memory");
-+#endif
-+#else
- 		regs->ax = ia32_sys_call_table[unr](regs);
-+#endif
- 	} else if (nr != -1) {
- 		regs->ax = __ia32_sys_ni_syscall(regs);
- 	}
-diff --git a/arch/x86/include/asm/linkage.h b/arch/x86/include/asm/linkage.h
-index 3a0282a6a..378f1f581 100644
---- a/arch/x86/include/asm/linkage.h
-+++ b/arch/x86/include/asm/linkage.h
-@@ -58,6 +58,14 @@
- 	.long __kcfi_typeid_##name ASM_NL			\
- 	SYM_FUNC_END(__cfi_##name)
- 
-+#define __RAP_TYPE(name)					\
-+	SYM_START(__cfi_##name, SYM_L_LOCAL, SYM_A_NONE)	\
-+	.fill 2, 1, 0xcc ASM_NL				\
-+	.byte 0xb8 ASM_NL					\
-+	.long __rap_hash_##name ASM_NL			\
-+	.fill 2, 1, 0xcc ASM_NL				\
-+	SYM_FUNC_END(__cfi_##name)
-+
- /* SYM_TYPED_FUNC_START -- use for indirectly called globals, w/ CFI type */
- #define SYM_TYPED_FUNC_START(name)				\
- 	SYM_TYPED_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)	\
+ config HAVE_CALL_THUNKS
 diff --git a/arch/x86/include/asm/text-patching.h b/arch/x86/include/asm/text-patching.h
-index 85b85a275..71814bf4f 100644
+index 29832c338cdc..a73ecab16ead 100644
 --- a/arch/x86/include/asm/text-patching.h
 +++ b/arch/x86/include/asm/text-patching.h
-@@ -52,6 +52,10 @@ extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void
+@@ -53,6 +53,10 @@ extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void
  extern void text_poke_queue(void *addr, const void *opcode, size_t len, const void *emulate);
  extern void text_poke_finish(void);
  
@@ -262,7 +161,7 @@ index 85b85a275..71814bf4f 100644
  #define INT3_INSN_OPCODE	0xCC
  
 diff --git a/arch/x86/include/asm/vermagic.h b/arch/x86/include/asm/vermagic.h
-index 75884d2cd..266f5ce89 100644
+index 75884d2cdec3..266f5ce89639 100644
 --- a/arch/x86/include/asm/vermagic.h
 +++ b/arch/x86/include/asm/vermagic.h
 @@ -5,6 +5,7 @@
@@ -290,10 +189,10 @@ index 75884d2cd..266f5ce89 100644
 +
  #endif /* _ASM_VERMAGIC_H */
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 69f85e274..291d31fd8 100644
+index aae7456ece07..4528ef4726b9 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -1240,6 +1240,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
+@@ -1915,6 +1915,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
  	return __text_poke(text_poke_memcpy, addr, opcode, len);
  }
  
@@ -308,10 +207,10 @@ index 69f85e274..291d31fd8 100644
   * text_poke_kgdb - Update instructions on a live kernel by kgdb
   * @addr: address to modify
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index b67e7bee1..27a83f41c 100644
+index 11f83d07925e..e26d67eed850 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -348,10 +348,17 @@ static __init int activate_jump_labels(void)
+@@ -326,10 +326,17 @@ static __init int activate_jump_labels(void)
  }
  arch_initcall(activate_jump_labels);
  
@@ -331,10 +230,10 @@ index b67e7bee1..27a83f41c 100644
  	if (vmware_tsc_khz == 0)
  		return;
 diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index c032edcd3..e41af9f86 100644
+index 5f71a0cf4399..a87b476e27ed 100644
 --- a/arch/x86/kernel/module.c
 +++ b/arch/x86/kernel/module.c
-@@ -227,7 +227,11 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
+@@ -231,7 +231,11 @@ static int write_relocate_add(Elf64_Shdr *sechdrs,
  {
  	int ret;
  	bool early = me->state == MODULE_STATE_UNFORMED;
@@ -347,36 +246,11 @@ index c032edcd3..e41af9f86 100644
  
  	if (!early) {
  		write = text_poke;
-diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
-index 7ca2d46c0..e0129c791 100644
---- a/arch/x86/kernel/paravirt.c
-+++ b/arch/x86/kernel/paravirt.c
-@@ -262,6 +262,10 @@ struct pv_info pv_info = {
- /* 64-bit pagetable entries */
- #define PTE_IDENT	__PV_IS_CALLEE_SAVE(_paravirt_ident_64)
- 
-+void tlb_remove_page_wrapper(struct mmu_gather *tlb, void *table) {
-+	tlb_remove_page(tlb, (struct page *)table);
-+}
-+
- struct paravirt_patch_template pv_ops = {
- 	/* Cpu ops. */
- 	.cpu.io_delay		= native_io_delay,
-@@ -316,8 +320,7 @@ struct paravirt_patch_template pv_ops = {
- 	.mmu.flush_tlb_kernel	= native_flush_tlb_global,
- 	.mmu.flush_tlb_one_user	= native_flush_tlb_one_user,
- 	.mmu.flush_tlb_multi	= native_flush_tlb_multi,
--	.mmu.tlb_remove_table	=
--			(void (*)(struct mmu_gather *, void *))tlb_remove_page,
-+	.mmu.tlb_remove_table	= tlb_remove_page_wrapper,
- 
- 	.mmu.exit_mmap		= paravirt_nop,
- 	.mmu.notify_page_enc_status_changed	= paravirt_nop,
 diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index c0a5a4f22..5d88ced16 100644
+index c876f1d36a81..e833c1fc48ce 100644
 --- a/arch/x86/kernel/traps.c
 +++ b/arch/x86/kernel/traps.c
-@@ -121,6 +121,10 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, const char *str,
+@@ -109,6 +109,10 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, const char *str,
  
  		tsk->thread.error_code = error_code;
  		tsk->thread.trap_nr = trapnr;
@@ -388,19 +262,21 @@ index c0a5a4f22..5d88ced16 100644
  	} else {
  		if (fixup_vdso_exception(regs, trapnr, error_code, 0))
 diff --git a/arch/x86/tools/relocs.c b/arch/x86/tools/relocs.c
-index 9a5b101c4..f437a880b 100644
+index e7013283640f..3d78c48e4460 100644
 --- a/arch/x86/tools/relocs.c
 +++ b/arch/x86/tools/relocs.c
-@@ -57,6 +57,7 @@ static const char * const sym_regex_kernel[S_NSYMTYPES] = {
+@@ -57,6 +57,9 @@ static const char * const sym_regex_kernel[S_NSYMTYPES] = {
  	"xen_save_fl_direct_reloc$|"
  	"VDSO|"
  	"__kcfi_typeid_|"
++#if 0
 +	"__rap_hash_|"
++#endif
  	"__crc_)",
  
  /*
 diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-index 487840e35..146883d67 100644
+index ea4eb88a2e45..c754ce9282bd 100644
 --- a/drivers/block/floppy.c
 +++ b/drivers/block/floppy.c
 @@ -530,14 +530,13 @@ static struct format_descr format_req;
@@ -415,7 +291,7 @@ index 487840e35..146883d67 100644
  	void (*redo)(void);	/* this is called to retry the operation */
  	void (*error)(void);	/* this is called to tally an error */
 -	done_f done;		/* this is called to say if the operation has
-+	void (*done)(int);	/* this is called to say if the operation has
++	void (*done)(int);		/* this is called to say if the operation has
  				 * succeeded/failed */
  } *cont;
  
@@ -447,38 +323,11 @@ index 487840e35..146883d67 100644
  };
  
  /* schedules handler, waiting for completion. May be interrupted, will then
-diff --git a/drivers/char/tpm/tpm-chip.c b/drivers/char/tpm/tpm-chip.c
-index c0759d49f..64395bfef 100644
---- a/drivers/char/tpm/tpm-chip.c
-+++ b/drivers/char/tpm/tpm-chip.c
-@@ -373,6 +373,11 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
- }
- EXPORT_SYMBOL_GPL(tpm_chip_alloc);
- 
-+static void tpm_put_device(void *dev)
-+{
-+	put_device(dev);
-+}
-+
- /**
-  * tpmm_chip_alloc() - allocate a new struct tpm_chip instance
-  * @pdev: parent device to which the chip is associated
-@@ -390,9 +395,7 @@ struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
- 	if (IS_ERR(chip))
- 		return chip;
- 
--	rc = devm_add_action_or_reset(pdev,
--				      (void (*)(void *)) put_device,
--				      &chip->dev);
-+	rc = devm_add_action_or_reset(pdev, tpm_put_device, &chip->dev);
- 	if (rc)
- 		return ERR_PTR(rc);
- 
 diff --git a/drivers/firmware/dmi-id.c b/drivers/firmware/dmi-id.c
-index 940ddf916..77a8d43e6 100644
+index 5f3a3e913d28..d19c78a78ae3 100644
 --- a/drivers/firmware/dmi-id.c
 +++ b/drivers/firmware/dmi-id.c
-@@ -169,9 +169,14 @@ static int dmi_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
+@@ -169,9 +169,14 @@ static int dmi_dev_uevent(const struct device *dev, struct kobj_uevent_env *env)
  	return 0;
  }
  
@@ -494,320 +343,11 @@ index 940ddf916..77a8d43e6 100644
  	.dev_uevent = dmi_dev_uevent,
  };
  
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_cs.h b/drivers/net/ethernet/brocade/bna/bfa_cs.h
-index 8f0ac7b99..dffc8837b 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_cs.h
-+++ b/drivers/net/ethernet/brocade/bna/bfa_cs.h
-@@ -26,10 +26,19 @@ struct bfa_sm_table {
- 	int		state;	/*!< state machine encoding	*/
- 	char		*name;	/*!< state name for display	*/
- };
--#define BFA_SM(_sm)		((bfa_sm_t)(_sm))
-+#define BFA_SM(_sm)		(_sm)
-+
-+#define bfa_sm_set_state(_sm, _state)	((_sm)->sm = (_state))
-+#define bfa_sm_cmp_state(_sm, _state)	((_sm)->sm == (_state))
- 
- /* State machine with entry actions. */
--typedef void (*bfa_fsm_t)(void *fsm, int event);
-+struct bfa_ioc;
-+enum ioc_event;
-+struct bfa_iocpf;
-+enum iocpf_event;
-+
-+typedef void (*bfa_fsm_ioc_t)(struct bfa_ioc *fsm, enum ioc_event event);
-+typedef void (*bfa_fsm_iocpf_t)(struct bfa_iocpf *fsm, enum iocpf_event event);
- 
- /* oc - object class eg. bfa_ioc
-  * st - state, eg. reset
-@@ -41,16 +50,37 @@ typedef void (*bfa_fsm_t)(void *fsm, int event);
- 	static void oc ## _sm_ ## st ## _entry(otype * fsm)
- 
- #define bfa_fsm_set_state(_fsm, _state) do {				\
--	(_fsm)->fsm = (bfa_fsm_t)(_state);				\
-+	(_fsm)->fsm = (_state);						\
- 	_state ## _entry(_fsm);						\
- } while (0)
- 
- #define bfa_fsm_send_event(_fsm, _event)	((_fsm)->fsm((_fsm), (_event)))
--#define bfa_fsm_cmp_state(_fsm, _state)					\
--	((_fsm)->fsm == (bfa_fsm_t)(_state))
-+#define bfa_fsm_cmp_state(_fsm, _state)		((_fsm)->fsm == (_state))
-+
-+/* For converting from state machine function to state encoding. */
-+struct iocpf_sm_table {
-+	bfa_fsm_iocpf_t	sm;	/*!< state machine function	*/
-+	int		state;	/*!< state machine encoding	*/
-+	char		*name;	/*!< state name for display	*/
-+};
-+struct ioc_sm_table {
-+	bfa_fsm_ioc_t	sm;	/*!< state machine function	*/
-+	int		state;	/*!< state machine encoding	*/
-+	char		*name;	/*!< state name for display	*/
-+};
-+
-+static inline int
-+iocpf_sm_to_state(const struct iocpf_sm_table *smt, bfa_fsm_iocpf_t sm)
-+{
-+	int	i = 0;
-+
-+	while (smt[i].sm && smt[i].sm != sm)
-+		i++;
-+	return smt[i].state;
-+}
- 
- static inline int
--bfa_sm_to_state(const struct bfa_sm_table *smt, bfa_sm_t sm)
-+ioc_sm_to_state(const struct ioc_sm_table *smt, bfa_fsm_ioc_t sm)
- {
- 	int	i = 0;
- 
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_ioc.c b/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-index cd933817a..d2fb975f9 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-+++ b/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-@@ -114,7 +114,7 @@ bfa_fsm_state_decl(bfa_ioc, disabling, struct bfa_ioc, enum ioc_event);
- bfa_fsm_state_decl(bfa_ioc, disabled, struct bfa_ioc, enum ioc_event);
- bfa_fsm_state_decl(bfa_ioc, hwfail, struct bfa_ioc, enum ioc_event);
- 
--static struct bfa_sm_table ioc_sm_table[] = {
-+static struct ioc_sm_table ioc_sm_table[] = {
- 	{BFA_SM(bfa_ioc_sm_uninit), BFA_IOC_UNINIT},
- 	{BFA_SM(bfa_ioc_sm_reset), BFA_IOC_RESET},
- 	{BFA_SM(bfa_ioc_sm_enabling), BFA_IOC_ENABLING},
-@@ -183,7 +183,7 @@ bfa_fsm_state_decl(bfa_iocpf, disabling_sync, struct bfa_iocpf,
- 						enum iocpf_event);
- bfa_fsm_state_decl(bfa_iocpf, disabled, struct bfa_iocpf, enum iocpf_event);
- 
--static struct bfa_sm_table iocpf_sm_table[] = {
-+static struct iocpf_sm_table iocpf_sm_table[] = {
- 	{BFA_SM(bfa_iocpf_sm_reset), BFA_IOCPF_RESET},
- 	{BFA_SM(bfa_iocpf_sm_fwcheck), BFA_IOCPF_FWMISMATCH},
- 	{BFA_SM(bfa_iocpf_sm_mismatch), BFA_IOCPF_FWMISMATCH},
-@@ -2860,12 +2860,12 @@ static enum bfa_ioc_state
- bfa_ioc_get_state(struct bfa_ioc *ioc)
- {
- 	enum bfa_iocpf_state iocpf_st;
--	enum bfa_ioc_state ioc_st = bfa_sm_to_state(ioc_sm_table, ioc->fsm);
-+	enum bfa_ioc_state ioc_st = ioc_sm_to_state(ioc_sm_table, ioc->fsm);
- 
- 	if (ioc_st == BFA_IOC_ENABLING ||
- 		ioc_st == BFA_IOC_FAIL || ioc_st == BFA_IOC_INITFAIL) {
- 
--		iocpf_st = bfa_sm_to_state(iocpf_sm_table, ioc->iocpf.fsm);
-+		iocpf_st = iocpf_sm_to_state(iocpf_sm_table, ioc->iocpf.fsm);
- 
- 		switch (iocpf_st) {
- 		case BFA_IOCPF_SEMWAIT:
-@@ -2983,7 +2983,7 @@ bfa_nw_iocpf_timeout(struct bfa_ioc *ioc)
- {
- 	enum bfa_iocpf_state iocpf_st;
- 
--	iocpf_st = bfa_sm_to_state(iocpf_sm_table, ioc->iocpf.fsm);
-+	iocpf_st = iocpf_sm_to_state(iocpf_sm_table, ioc->iocpf.fsm);
- 
- 	if (iocpf_st == BFA_IOCPF_HWINIT)
- 		bfa_ioc_poll_fwinit(ioc);
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_ioc.h b/drivers/net/ethernet/brocade/bna/bfa_ioc.h
-index edd0ed5b5..1b93441ae 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_ioc.h
-+++ b/drivers/net/ethernet/brocade/bna/bfa_ioc.h
-@@ -148,7 +148,7 @@ struct bfa_ioc_notify {
- } while (0)
- 
- struct bfa_iocpf {
--	bfa_fsm_t		fsm;
-+	bfa_fsm_iocpf_t		fsm;
- 	struct bfa_ioc		*ioc;
- 	bool			fw_mismatch_notified;
- 	bool			auto_recover;
-@@ -156,7 +156,7 @@ struct bfa_iocpf {
- };
- 
- struct bfa_ioc {
--	bfa_fsm_t		fsm;
-+	bfa_fsm_ioc_t		fsm;
- 	struct bfa		*bfa;
- 	struct bfa_pcidev	pcidev;
- 	struct timer_list	ioc_timer;
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_msgq.h b/drivers/net/ethernet/brocade/bna/bfa_msgq.h
-index 75343b535..ad775b035 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_msgq.h
-+++ b/drivers/net/ethernet/brocade/bna/bfa_msgq.h
-@@ -55,8 +55,10 @@ enum bfa_msgq_cmdq_flags {
- 	BFA_MSGQ_CMDQ_F_DB_UPDATE	= 1,
- };
- 
-+enum cmdq_event;
-+
- struct bfa_msgq_cmdq {
--	bfa_fsm_t			fsm;
-+	void (*fsm)(struct bfa_msgq_cmdq *, enum cmdq_event);
- 	enum bfa_msgq_cmdq_flags flags;
- 
- 	u16			producer_index;
-@@ -81,8 +83,10 @@ enum bfa_msgq_rspq_flags {
- 
- typedef void (*bfa_msgq_mcfunc_t)(void *cbarg, struct bfi_msgq_mhdr *mhdr);
- 
-+enum rspq_event;
-+
- struct bfa_msgq_rspq {
--	bfa_fsm_t			fsm;
-+	void (*fsm)(struct bfa_msgq_rspq *, enum rspq_event);
- 	enum bfa_msgq_rspq_flags flags;
- 
- 	u16			producer_index;
-diff --git a/drivers/net/ethernet/brocade/bna/bna_enet.c b/drivers/net/ethernet/brocade/bna/bna_enet.c
-index a2c983f56..883de0ac8 100644
---- a/drivers/net/ethernet/brocade/bna/bna_enet.c
-+++ b/drivers/net/ethernet/brocade/bna/bna_enet.c
-@@ -1257,7 +1257,7 @@ bna_enet_mtu_get(struct bna_enet *enet)
- void
- bna_enet_enable(struct bna_enet *enet)
- {
--	if (enet->fsm != (bfa_sm_t)bna_enet_sm_stopped)
-+	if (enet->fsm != bna_enet_sm_stopped)
- 		return;
- 
- 	enet->flags |= BNA_ENET_F_ENABLED;
-@@ -1751,12 +1751,12 @@ bna_ioceth_uninit(struct bna_ioceth *ioceth)
- void
- bna_ioceth_enable(struct bna_ioceth *ioceth)
- {
--	if (ioceth->fsm == (bfa_fsm_t)bna_ioceth_sm_ready) {
-+	if (ioceth->fsm == bna_ioceth_sm_ready) {
- 		bnad_cb_ioceth_ready(ioceth->bna->bnad);
- 		return;
- 	}
- 
--	if (ioceth->fsm == (bfa_fsm_t)bna_ioceth_sm_stopped)
-+	if (ioceth->fsm == bna_ioceth_sm_stopped)
- 		bfa_fsm_send_event(ioceth, IOCETH_E_ENABLE);
- }
- 
-diff --git a/drivers/net/ethernet/brocade/bna/bna_tx_rx.c b/drivers/net/ethernet/brocade/bna/bna_tx_rx.c
-index 2623a0da4..c05dc7a1c 100644
---- a/drivers/net/ethernet/brocade/bna/bna_tx_rx.c
-+++ b/drivers/net/ethernet/brocade/bna/bna_tx_rx.c
-@@ -1956,7 +1956,7 @@ static void
- bna_rx_stop(struct bna_rx *rx)
- {
- 	rx->rx_flags &= ~BNA_RX_F_ENET_STARTED;
--	if (rx->fsm == (bfa_fsm_t) bna_rx_sm_stopped)
-+	if (rx->fsm == bna_rx_sm_stopped)
- 		bna_rx_mod_cb_rx_stopped(&rx->bna->rx_mod, rx);
- 	else {
- 		rx->stop_cbfn = bna_rx_mod_cb_rx_stopped;
-@@ -2535,7 +2535,7 @@ bna_rx_destroy(struct bna_rx *rx)
- void
- bna_rx_enable(struct bna_rx *rx)
- {
--	if (rx->fsm != (bfa_sm_t)bna_rx_sm_stopped)
-+	if (rx->fsm != bna_rx_sm_stopped)
- 		return;
- 
- 	rx->rx_flags |= BNA_RX_F_ENABLED;
-@@ -3523,7 +3523,7 @@ bna_tx_destroy(struct bna_tx *tx)
- void
- bna_tx_enable(struct bna_tx *tx)
- {
--	if (tx->fsm != (bfa_sm_t)bna_tx_sm_stopped)
-+	if (tx->fsm != bna_tx_sm_stopped)
- 		return;
- 
- 	tx->flags |= BNA_TX_F_ENABLED;
-diff --git a/drivers/net/ethernet/brocade/bna/bna_types.h b/drivers/net/ethernet/brocade/bna/bna_types.h
-index 666b6922e..94261bb24 100644
---- a/drivers/net/ethernet/brocade/bna/bna_types.h
-+++ b/drivers/net/ethernet/brocade/bna/bna_types.h
-@@ -312,8 +312,10 @@ struct bna_attr {
- 
- /* IOCEth */
- 
-+enum bna_ioceth_event;
-+
- struct bna_ioceth {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_ioceth *, enum bna_ioceth_event);
- 	struct bfa_ioc ioc;
- 
- 	struct bna_attr attr;
-@@ -334,8 +336,10 @@ struct bna_pause_config {
- 	enum bna_status rx_pause;
- };
- 
-+enum bna_enet_event;
-+
- struct bna_enet {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_enet *, enum bna_enet_event);
- 	enum bna_enet_flags flags;
- 
- 	enum bna_enet_type type;
-@@ -360,8 +364,10 @@ struct bna_enet {
- 
- /* Ethport */
- 
-+enum bna_ethport_event;
-+
- struct bna_ethport {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_ethport *, enum bna_ethport_event);
- 	enum bna_ethport_flags flags;
- 
- 	enum bna_link_status link_status;
-@@ -454,13 +460,15 @@ struct bna_txq {
- };
- 
- /* Tx object */
-+enum bna_tx_event;
-+
- struct bna_tx {
- 	/* This should be the first one */
- 	struct list_head			qe;
- 	int			rid;
- 	int			hw_id;
- 
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_tx *, enum bna_tx_event);
- 	enum bna_tx_flags flags;
- 
- 	enum bna_tx_type type;
-@@ -698,8 +706,10 @@ struct bna_rxp {
- };
- 
- /* RxF structure (hardware Rx Function) */
-+enum bna_rxf_event;
-+
- struct bna_rxf {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_rxf *, enum bna_rxf_event);
- 
- 	struct bfa_msgq_cmd_entry msgq_cmd;
- 	union {
-@@ -769,13 +779,15 @@ struct bna_rxf {
- };
- 
- /* Rx object */
-+enum bna_rx_event;
-+
- struct bna_rx {
- 	/* This should be the first one */
- 	struct list_head			qe;
- 	int			rid;
- 	int			hw_id;
- 
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bna_rx *, enum bna_rx_event);
- 
- 	enum bna_rx_type type;
- 
 diff --git a/drivers/net/ethernet/brocade/bna/bnad.c b/drivers/net/ethernet/brocade/bna/bnad.c
-index d6d90f972..cb8e17ddf 100644
+index 31191b520b58..d5ce711a9ade 100644
 --- a/drivers/net/ethernet/brocade/bna/bnad.c
 +++ b/drivers/net/ethernet/brocade/bna/bnad.c
-@@ -1092,8 +1092,9 @@ bnad_cb_tx_resume(struct bnad *bnad, struct bna_tx *tx)
+@@ -1091,8 +1091,9 @@ bnad_cb_tx_resume(struct bnad *bnad, struct bna_tx *tx)
   * Free all TxQs buffers and then notify TX_E_CLEANUP_DONE to Tx fsm.
   */
  static void
@@ -818,7 +358,7 @@ index d6d90f972..cb8e17ddf 100644
  	struct bnad_tx_info *tx_info =
  		container_of(work, struct bnad_tx_info, tx_cleanup_work);
  	struct bnad *bnad = NULL;
-@@ -1171,7 +1172,7 @@ bnad_cb_rx_stall(struct bnad *bnad, struct bna_rx *rx)
+@@ -1170,7 +1171,7 @@ bnad_cb_rx_stall(struct bnad *bnad, struct bna_rx *rx)
   * Free all RxQs buffers and then notify RX_E_CLEANUP_DONE to Rx fsm.
   */
  static void
@@ -827,7 +367,7 @@ index d6d90f972..cb8e17ddf 100644
  {
  	struct bnad_rx_info *rx_info =
  		container_of(work, struct bnad_rx_info, rx_cleanup_work);
-@@ -1992,8 +1993,7 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
+@@ -1991,8 +1992,7 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
  	}
  	tx_info->tx = tx;
  
@@ -837,7 +377,7 @@ index d6d90f972..cb8e17ddf 100644
  
  	/* Register ISR for the Tx object */
  	if (intr_info->intr_type == BNA_INTR_T_MSIX) {
-@@ -2249,8 +2249,7 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
+@@ -2248,8 +2248,7 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
  	rx_info->rx = rx;
  	spin_unlock_irqrestore(&bnad->bna_lock, flags);
  
@@ -848,7 +388,7 @@ index d6d90f972..cb8e17ddf 100644
  	/*
  	 * Init NAPI, so that state is set to NAPI_STATE_SCHED,
 diff --git a/drivers/scsi/bfa/bfa.h b/drivers/scsi/bfa/bfa.h
-index f30fe324e..f4a755651 100644
+index f30fe324e6ec..f4a755651c03 100644
 --- a/drivers/scsi/bfa/bfa.h
 +++ b/drivers/scsi/bfa/bfa.h
 @@ -215,8 +215,10 @@ struct bfa_faa_args_s {
@@ -864,7 +404,7 @@ index f30fe324e..f4a755651 100644
  	struct bfa_iocfc_cfg_s	cfg;
  	u32		req_cq_pi[BFI_IOC_MAX_CQS];
 diff --git a/drivers/scsi/bfa/bfa_cs.h b/drivers/scsi/bfa/bfa_cs.h
-index 6b606bf58..aac8ad1f5 100644
+index 6b606bf589b4..aac8ad1f50d3 100644
 --- a/drivers/scsi/bfa/bfa_cs.h
 +++ b/drivers/scsi/bfa/bfa_cs.h
 @@ -176,8 +176,6 @@ bfa_q_is_on_q_func(struct list_head *q, struct list_head *qe)
@@ -1029,7 +569,7 @@ index 6b606bf58..aac8ad1f5 100644
  	int	i = 0;
  
 diff --git a/drivers/scsi/bfa/bfa_fcpim.h b/drivers/scsi/bfa/bfa_fcpim.h
-index 8bf094335..060af3ac4 100644
+index 8bf09433549b..060af3ac4fa2 100644
 --- a/drivers/scsi/bfa/bfa_fcpim.h
 +++ b/drivers/scsi/bfa/bfa_fcpim.h
 @@ -157,9 +157,11 @@ struct bfa_fcp_mod_s {
@@ -1072,7 +612,7 @@ index 8bf094335..060af3ac4 100644
  	struct bfa_rport_s	*rport;	/*  bfa rport	*/
  	void			*ditn;	/*  driver i-t-n structure	*/
 diff --git a/drivers/scsi/bfa/bfa_fcs.h b/drivers/scsi/bfa/bfa_fcs.h
-index c1baf5cd0..733a2993b 100644
+index c1baf5cd0d3e..733a2993b78a 100644
 --- a/drivers/scsi/bfa/bfa_fcs.h
 +++ b/drivers/scsi/bfa/bfa_fcs.h
 @@ -59,8 +59,10 @@ struct bfa_fcs_s;
@@ -1204,7 +744,7 @@ index c1baf5cd0..733a2993b 100644
  	struct bfad_itnim_s	*itnim_drv;	/*  driver peer instance */
  	struct bfa_fcs_s	*fcs;		/*  fcs instance	*/
 diff --git a/drivers/scsi/bfa/bfa_fcs_fcpim.c b/drivers/scsi/bfa/bfa_fcs_fcpim.c
-index c7de62bae..27ccaf6a4 100644
+index c7de62baeec9..27ccaf6a4786 100644
 --- a/drivers/scsi/bfa/bfa_fcs_fcpim.c
 +++ b/drivers/scsi/bfa/bfa_fcs_fcpim.c
 @@ -52,7 +52,7 @@ static void	bfa_fcs_itnim_sm_hcb_offline(struct bfa_fcs_itnim_s *itnim,
@@ -1235,7 +775,7 @@ index c7de62bae..27ccaf6a4 100644
  	attr->rec_support   = itnim->rec_support;
  	attr->conf_comp	    = itnim->conf_comp;
 diff --git a/drivers/scsi/bfa/bfa_fcs_lport.c b/drivers/scsi/bfa/bfa_fcs_lport.c
-index b12afcc4b..c84c526f8 100644
+index 008afd817087..198b2495e949 100644
 --- a/drivers/scsi/bfa/bfa_fcs_lport.c
 +++ b/drivers/scsi/bfa/bfa_fcs_lport.c
 @@ -6037,7 +6037,7 @@ static void	bfa_fcs_vport_sm_stopping(struct bfa_fcs_vport_s *vport,
@@ -1257,7 +797,7 @@ index b12afcc4b..c84c526f8 100644
  
  
 diff --git a/drivers/scsi/bfa/bfa_fcs_rport.c b/drivers/scsi/bfa/bfa_fcs_rport.c
-index c21aa37b8..6db306c60 100644
+index c21aa37b8adb..6db306c600e5 100644
 --- a/drivers/scsi/bfa/bfa_fcs_rport.c
 +++ b/drivers/scsi/bfa/bfa_fcs_rport.c
 @@ -136,7 +136,7 @@ static void	bfa_fcs_rport_sm_fc4_off_delete(struct bfa_fcs_rport_s *rport,
@@ -1279,7 +819,7 @@ index c21aa37b8..6db306c60 100644
  
  
 diff --git a/drivers/scsi/bfa/bfa_ioc.c b/drivers/scsi/bfa/bfa_ioc.c
-index 5740302d8..9e19e4f5f 100644
+index e1ed1424fddb..478f67bd5fa6 100644
 --- a/drivers/scsi/bfa/bfa_ioc.c
 +++ b/drivers/scsi/bfa/bfa_ioc.c
 @@ -140,7 +140,7 @@ bfa_fsm_state_decl(bfa_ioc, disabling, struct bfa_ioc_s, enum ioc_event);
@@ -1316,7 +856,7 @@ index 5740302d8..9e19e4f5f 100644
  		switch (iocpf_st) {
  		case BFA_IOCPF_SEMWAIT:
 diff --git a/drivers/scsi/bfa/bfa_ioc.h b/drivers/scsi/bfa/bfa_ioc.h
-index 5e568d6d7..cbf6c3f92 100644
+index 5e568d6d7b26..cbf6c3f9250a 100644
 --- a/drivers/scsi/bfa/bfa_ioc.h
 +++ b/drivers/scsi/bfa/bfa_ioc.h
 @@ -282,16 +282,20 @@ struct bfa_ioc_notify_s {
@@ -1355,7 +895,7 @@ index 5e568d6d7..cbf6c3f92 100644
  	bfa_boolean_t		read_data_valid;
  	bfa_boolean_t		min_cfg;
 diff --git a/drivers/scsi/bfa/bfa_svc.c b/drivers/scsi/bfa/bfa_svc.c
-index 4e3cef02f..6aad7ddcd 100644
+index c9745c0b4eee..500f6885587d 100644
 --- a/drivers/scsi/bfa/bfa_svc.c
 +++ b/drivers/scsi/bfa/bfa_svc.c
 @@ -201,7 +201,7 @@ static void     bfa_fcport_ln_sm_up_dn_nf(struct bfa_fcport_ln_s *ln,
@@ -1413,7 +953,7 @@ index 4e3cef02f..6aad7ddcd 100644
  }
  
 diff --git a/drivers/scsi/bfa/bfa_svc.h b/drivers/scsi/bfa/bfa_svc.h
-index 9c8310957..5a4ad66bc 100644
+index 9c83109574e9..5a4ad66bcbff 100644
 --- a/drivers/scsi/bfa/bfa_svc.h
 +++ b/drivers/scsi/bfa/bfa_svc.h
 @@ -152,6 +152,8 @@ struct bfa_fcxp_rsp_info_s {
@@ -1488,7 +1028,7 @@ index 9c8310957..5a4ad66bc 100644
  	bfa_cb_diag_t	cbfn;
  	void		*cbarg;
 diff --git a/drivers/scsi/bfa/bfad.c b/drivers/scsi/bfa/bfad.c
-index e5aa982ff..4f9dd0b8a 100644
+index 62cb7a864fd5..13dcfb37edd3 100644
 --- a/drivers/scsi/bfa/bfad.c
 +++ b/drivers/scsi/bfa/bfad.c
 @@ -400,6 +400,16 @@ bfad_hcb_comp(void *arg, bfa_status_t status)
@@ -1508,7 +1048,7 @@ index e5aa982ff..4f9dd0b8a 100644
  /*
   * bfa_init callback
   */
-@@ -1429,7 +1439,7 @@ bfad_pci_remove(struct pci_dev *pdev)
+@@ -1424,7 +1434,7 @@ bfad_pci_remove(struct pci_dev *pdev)
   * PCI Error Recovery entry, error detected.
   */
  static pci_ers_result_t
@@ -1518,10 +1058,10 @@ index e5aa982ff..4f9dd0b8a 100644
  	struct bfad_s *bfad = pci_get_drvdata(pdev);
  	unsigned long	flags;
 diff --git a/drivers/scsi/bfa/bfad_drv.h b/drivers/scsi/bfa/bfad_drv.h
-index eaee7c8bc..1c0368fbe 100644
+index 7682cfa34265..bb815507fa8b 100644
 --- a/drivers/scsi/bfa/bfad_drv.h
 +++ b/drivers/scsi/bfa/bfad_drv.h
-@@ -179,8 +179,10 @@ union bfad_tmp_buf {
+@@ -178,8 +178,10 @@ union bfad_tmp_buf {
  /*
   * BFAD (PCI function) data structure
   */
@@ -1533,7 +1073,7 @@ index eaee7c8bc..1c0368fbe 100644
  	struct list_head list_entry;
  	struct bfa_s	bfa;
  	struct bfa_fcs_s bfa_fcs;
-@@ -301,6 +303,7 @@ void		bfad_fcs_stop(struct bfad_s *bfad);
+@@ -300,6 +302,7 @@ void		bfad_fcs_stop(struct bfad_s *bfad);
  void		bfad_remove_intr(struct bfad_s *bfad);
  void		bfad_hal_mem_release(struct bfad_s *bfad);
  void		bfad_hcb_comp(void *arg, bfa_status_t status);
@@ -1541,546 +1081,20 @@ index eaee7c8bc..1c0368fbe 100644
  
  int		bfad_setup_intr(struct bfad_s *bfad);
  void		bfad_remove_intr(struct bfad_s *bfad);
-diff --git a/drivers/scsi/csiostor/csio_defs.h b/drivers/scsi/csiostor/csio_defs.h
-index e50e93e7f..71327b224 100644
---- a/drivers/scsi/csiostor/csio_defs.h
-+++ b/drivers/scsi/csiostor/csio_defs.h
-@@ -87,7 +87,8 @@ enum csio_ln_ev {
- 	CSIO_LNE_MAX_EVENT,
- };
- 
--typedef void (*csio_sm_state_t)(struct csio_lnode *ln, enum csio_ln_ev evt);
-+struct csio_sm;
-+typedef void (*csio_sm_state_t)(struct csio_sm *, uint32_t);
- 
- struct csio_sm {
- 	struct list_head	sm_list;
-@@ -95,9 +96,9 @@ struct csio_sm {
- };
- 
- static inline void
--csio_set_state(void *smp, void *state)
-+csio_set_state(struct csio_sm *smp, csio_sm_state_t state)
- {
--	((struct csio_sm *)smp)->sm_state = state;
-+	smp->sm_state = state;
- }
- 
- static inline void
-@@ -107,21 +108,21 @@ csio_init_state(struct csio_sm *smp, void *state)
- }
- 
- static inline void
--csio_post_event(void *smp, uint32_t evt)
-+csio_post_event(struct csio_sm *smp, uint32_t evt)
- {
--	((struct csio_sm *)smp)->sm_state(smp, evt);
-+	smp->sm_state(smp, evt);
- }
- 
- static inline csio_sm_state_t
--csio_get_state(void *smp)
-+csio_get_state(struct csio_sm *smp)
- {
--	return ((struct csio_sm *)smp)->sm_state;
-+	return smp->sm_state;
- }
- 
- static inline bool
--csio_match_state(void *smp, void *state)
-+csio_match_state(struct csio_sm *smp, csio_sm_state_t state)
- {
--	return (csio_get_state(smp) == (csio_sm_state_t)state);
-+	return (csio_get_state(smp) == state);
- }
- 
- #define	CSIO_ASSERT(cond)		BUG_ON(!(cond))
-diff --git a/drivers/scsi/csiostor/csio_hw.c b/drivers/scsi/csiostor/csio_hw.c
-index e43c5413c..3ee049d50 100644
---- a/drivers/scsi/csiostor/csio_hw.c
-+++ b/drivers/scsi/csiostor/csio_hw.c
-@@ -89,15 +89,15 @@ static void csio_mgmtm_cleanup(struct csio_mgmtm *);
- static void csio_hw_mbm_cleanup(struct csio_hw *);
- 
- /* State machine forward declarations */
--static void csio_hws_uninit(struct csio_hw *, enum csio_hw_ev);
--static void csio_hws_configuring(struct csio_hw *, enum csio_hw_ev);
--static void csio_hws_initializing(struct csio_hw *, enum csio_hw_ev);
--static void csio_hws_ready(struct csio_hw *, enum csio_hw_ev);
--static void csio_hws_quiescing(struct csio_hw *, enum csio_hw_ev);
--static void csio_hws_quiesced(struct csio_hw *, enum csio_hw_ev);
--static void csio_hws_resetting(struct csio_hw *, enum csio_hw_ev);
--static void csio_hws_removing(struct csio_hw *, enum csio_hw_ev);
--static void csio_hws_pcierr(struct csio_hw *, enum csio_hw_ev);
-+static void csio_hws_uninit(struct csio_sm *, uint32_t);
-+static void csio_hws_configuring(struct csio_sm *, uint32_t);
-+static void csio_hws_initializing(struct csio_sm *, uint32_t);
-+static void csio_hws_ready(struct csio_sm *, uint32_t);
-+static void csio_hws_quiescing(struct csio_sm *, uint32_t);
-+static void csio_hws_quiesced(struct csio_sm *, uint32_t);
-+static void csio_hws_resetting(struct csio_sm *, uint32_t);
-+static void csio_hws_removing(struct csio_sm *, uint32_t);
-+static void csio_hws_pcierr(struct csio_sm *, uint32_t);
- 
- static void csio_hw_initialize(struct csio_hw *hw);
- static void csio_evtq_stop(struct csio_hw *hw);
-@@ -105,12 +105,12 @@ static void csio_evtq_start(struct csio_hw *hw);
- 
- int csio_is_hw_ready(struct csio_hw *hw)
- {
--	return csio_match_state(hw, csio_hws_ready);
-+	return csio_match_state(&hw->sm, csio_hws_ready);
- }
- 
- int csio_is_hw_removing(struct csio_hw *hw)
- {
--	return csio_match_state(hw, csio_hws_removing);
-+	return csio_match_state(&hw->sm, csio_hws_removing);
- }
- 
- 
-@@ -2777,8 +2777,11 @@ csio_hw_fatal_err(struct csio_hw *hw)
-  *
-  */
- static void
--csio_hws_uninit(struct csio_hw *hw, enum csio_hw_ev evt)
-+csio_hws_uninit(struct csio_sm *_hw, uint32_t _evt)
- {
-+	struct csio_hw *hw = container_of(_hw, struct csio_hw, sm);
-+	enum csio_hw_ev evt = _evt;
-+
- 	hw->prev_evt = hw->cur_evt;
- 	hw->cur_evt = evt;
- 	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -2802,8 +2805,11 @@ csio_hws_uninit(struct csio_hw *hw, enum csio_hw_ev evt)
-  *
-  */
- static void
--csio_hws_configuring(struct csio_hw *hw, enum csio_hw_ev evt)
-+csio_hws_configuring(struct csio_sm *_hw, uint32_t _evt)
- {
-+	struct csio_hw *hw = container_of(_hw, struct csio_hw, sm);
-+	enum csio_hw_ev evt = _evt;
-+
- 	hw->prev_evt = hw->cur_evt;
- 	hw->cur_evt = evt;
- 	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -2840,8 +2846,11 @@ csio_hws_configuring(struct csio_hw *hw, enum csio_hw_ev evt)
-  *
-  */
- static void
--csio_hws_initializing(struct csio_hw *hw, enum csio_hw_ev evt)
-+csio_hws_initializing(struct csio_sm *_hw, uint32_t _evt)
- {
-+	struct csio_hw *hw = container_of(_hw, struct csio_hw, sm);
-+	enum csio_hw_ev evt = _evt;
-+
- 	hw->prev_evt = hw->cur_evt;
- 	hw->cur_evt = evt;
- 	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -2878,8 +2887,11 @@ csio_hws_initializing(struct csio_hw *hw, enum csio_hw_ev evt)
-  *
-  */
- static void
--csio_hws_ready(struct csio_hw *hw, enum csio_hw_ev evt)
-+csio_hws_ready(struct csio_sm *_hw, uint32_t _evt)
- {
-+	struct csio_hw *hw = container_of(_hw, struct csio_hw, sm);
-+	enum csio_hw_ev evt = _evt;
-+
- 	/* Remember the event */
- 	hw->evtflag = evt;
- 
-@@ -2927,8 +2939,11 @@ csio_hws_ready(struct csio_hw *hw, enum csio_hw_ev evt)
-  *
-  */
- static void
--csio_hws_quiescing(struct csio_hw *hw, enum csio_hw_ev evt)
-+csio_hws_quiescing(struct csio_sm *_hw, uint32_t _evt)
- {
-+	struct csio_hw *hw = container_of(_hw, struct csio_hw, sm);
-+	enum csio_hw_ev evt = _evt;
-+
- 	hw->prev_evt = hw->cur_evt;
- 	hw->cur_evt = evt;
- 	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -2987,8 +3002,11 @@ csio_hws_quiescing(struct csio_hw *hw, enum csio_hw_ev evt)
-  *
-  */
- static void
--csio_hws_quiesced(struct csio_hw *hw, enum csio_hw_ev evt)
-+csio_hws_quiesced(struct csio_sm *_hw, uint32_t _evt)
- {
-+	struct csio_hw *hw = container_of(_hw, struct csio_hw, sm);
-+	enum csio_hw_ev evt = _evt;
-+
- 	hw->prev_evt = hw->cur_evt;
- 	hw->cur_evt = evt;
- 	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -3012,8 +3030,11 @@ csio_hws_quiesced(struct csio_hw *hw, enum csio_hw_ev evt)
-  *
-  */
- static void
--csio_hws_resetting(struct csio_hw *hw, enum csio_hw_ev evt)
-+csio_hws_resetting(struct csio_sm *_hw, uint32_t _evt)
- {
-+	struct csio_hw *hw = container_of(_hw, struct csio_hw, sm);
-+	enum csio_hw_ev evt = _evt;
-+
- 	hw->prev_evt = hw->cur_evt;
- 	hw->cur_evt = evt;
- 	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -3038,8 +3059,11 @@ csio_hws_resetting(struct csio_hw *hw, enum csio_hw_ev evt)
-  *
-  */
- static void
--csio_hws_removing(struct csio_hw *hw, enum csio_hw_ev evt)
-+csio_hws_removing(struct csio_sm *_hw, uint32_t _evt)
- {
-+	struct csio_hw *hw = container_of(_hw, struct csio_hw, sm);
-+	enum csio_hw_ev evt = _evt;
-+
- 	hw->prev_evt = hw->cur_evt;
- 	hw->cur_evt = evt;
- 	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -3073,8 +3097,11 @@ csio_hws_removing(struct csio_hw *hw, enum csio_hw_ev evt)
-  *
-  */
- static void
--csio_hws_pcierr(struct csio_hw *hw, enum csio_hw_ev evt)
-+csio_hws_pcierr(struct csio_sm *_hw, uint32_t _evt)
- {
-+	struct csio_hw *hw = container_of(_hw, struct csio_hw, sm);
-+	enum csio_hw_ev evt = _evt;
-+
- 	hw->prev_evt = hw->cur_evt;
- 	hw->cur_evt = evt;
- 	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -4231,7 +4258,7 @@ csio_hw_start(struct csio_hw *hw)
- 
- 	if (csio_is_hw_ready(hw))
- 		return 0;
--	else if (csio_match_state(hw, csio_hws_uninit))
-+	else if (csio_match_state(&hw->sm, csio_hws_uninit))
- 		return -EINVAL;
- 	else
- 		return -ENODEV;
-diff --git a/drivers/scsi/csiostor/csio_init.c b/drivers/scsi/csiostor/csio_init.c
-index ccbded335..59de675c4 100644
---- a/drivers/scsi/csiostor/csio_init.c
-+++ b/drivers/scsi/csiostor/csio_init.c
-@@ -1054,7 +1054,7 @@ static void csio_remove_one(struct pci_dev *pdev)
-  *
-  */
- static pci_ers_result_t
--csio_pci_error_detected(struct pci_dev *pdev, pci_channel_state_t state)
-+csio_pci_error_detected(struct pci_dev *pdev, enum pci_channel_state state)
- {
- 	struct csio_hw *hw = pci_get_drvdata(pdev);
- 
-diff --git a/drivers/scsi/csiostor/csio_lnode.c b/drivers/scsi/csiostor/csio_lnode.c
-index 5b3ffefae..f8db0065d 100644
---- a/drivers/scsi/csiostor/csio_lnode.c
-+++ b/drivers/scsi/csiostor/csio_lnode.c
-@@ -55,10 +55,10 @@ int csio_fdmi_enable = 1;
- #define PORT_ID_PTR(_x)         ((uint8_t *)(&_x) + 1)
- 
- /* Lnode SM declarations */
--static void csio_lns_uninit(struct csio_lnode *, enum csio_ln_ev);
--static void csio_lns_online(struct csio_lnode *, enum csio_ln_ev);
--static void csio_lns_ready(struct csio_lnode *, enum csio_ln_ev);
--static void csio_lns_offline(struct csio_lnode *, enum csio_ln_ev);
-+static void csio_lns_uninit(struct csio_sm *, uint32_t);
-+static void csio_lns_online(struct csio_sm *, uint32_t);
-+static void csio_lns_ready(struct csio_sm *, uint32_t);
-+static void csio_lns_offline(struct csio_sm *, uint32_t);
- 
- static int csio_ln_mgmt_submit_req(struct csio_ioreq *,
- 		void (*io_cbfn) (struct csio_hw *, struct csio_ioreq *),
-@@ -1095,7 +1095,7 @@ csio_handle_link_down(struct csio_hw *hw, uint8_t portid, uint32_t fcfi,
- int
- csio_is_lnode_ready(struct csio_lnode *ln)
- {
--	return (csio_get_state(ln) == csio_lns_ready);
-+	return (csio_get_state(&ln->sm) == csio_lns_ready);
- }
- 
- /*****************************************************************************/
-@@ -1111,8 +1111,10 @@ csio_is_lnode_ready(struct csio_lnode *ln)
-  * Return - none.
-  */
- static void
--csio_lns_uninit(struct csio_lnode *ln, enum csio_ln_ev evt)
-+csio_lns_uninit(struct csio_sm *_ln, uint32_t _evt)
- {
-+	struct csio_lnode *ln = container_of(_ln, struct csio_lnode, sm);
-+	enum csio_ln_ev evt = _evt;
- 	struct csio_hw *hw = csio_lnode_to_hw(ln);
- 	struct csio_lnode *rln = hw->rln;
- 	int rv;
-@@ -1164,8 +1166,10 @@ csio_lns_uninit(struct csio_lnode *ln, enum csio_ln_ev evt)
-  * Return - none.
-  */
- static void
--csio_lns_online(struct csio_lnode *ln, enum csio_ln_ev evt)
-+csio_lns_online(struct csio_sm *_ln, uint32_t _evt)
- {
-+	struct csio_lnode *ln = container_of(_ln, struct csio_lnode, sm);
-+	enum csio_ln_ev evt = _evt;
- 	struct csio_hw *hw = csio_lnode_to_hw(ln);
- 
- 	CSIO_INC_STATS(ln, n_evt_sm[evt]);
-@@ -1215,8 +1219,10 @@ csio_lns_online(struct csio_lnode *ln, enum csio_ln_ev evt)
-  * Return - none.
-  */
- static void
--csio_lns_ready(struct csio_lnode *ln, enum csio_ln_ev evt)
-+csio_lns_ready(struct csio_sm *_ln, uint32_t _evt)
- {
-+	struct csio_lnode *ln = container_of(_ln, struct csio_lnode, sm);
-+	enum csio_ln_ev evt = _evt;
- 	struct csio_hw *hw = csio_lnode_to_hw(ln);
- 
- 	CSIO_INC_STATS(ln, n_evt_sm[evt]);
-@@ -1289,8 +1295,10 @@ csio_lns_ready(struct csio_lnode *ln, enum csio_ln_ev evt)
-  * Return - none.
-  */
- static void
--csio_lns_offline(struct csio_lnode *ln, enum csio_ln_ev evt)
-+csio_lns_offline(struct csio_sm *_ln, uint32_t _evt)
- {
-+	struct csio_lnode *ln = container_of(_ln, struct csio_lnode, sm);
-+	enum csio_ln_ev evt = _evt;
- 	struct csio_hw *hw = csio_lnode_to_hw(ln);
- 	struct csio_lnode *rln = hw->rln;
- 	int rv;
-@@ -1366,15 +1374,15 @@ csio_free_fcfinfo(struct kref *kref)
- void
- csio_lnode_state_to_str(struct csio_lnode *ln, int8_t *str)
- {
--	if (csio_get_state(ln) == csio_lns_uninit) {
-+	if (csio_get_state(&ln->sm) == csio_lns_uninit) {
- 		strcpy(str, "UNINIT");
- 		return;
- 	}
--	if (csio_get_state(ln) == csio_lns_ready) {
-+	if (csio_get_state(&ln->sm) == csio_lns_ready) {
- 		strcpy(str, "READY");
- 		return;
- 	}
--	if (csio_get_state(ln) == csio_lns_offline) {
-+	if (csio_get_state(&ln->sm) == csio_lns_offline) {
- 		strcpy(str, "OFFLINE");
- 		return;
- 	}
-diff --git a/drivers/scsi/csiostor/csio_rnode.c b/drivers/scsi/csiostor/csio_rnode.c
-index 713e13adf..dcbdf1125 100644
---- a/drivers/scsi/csiostor/csio_rnode.c
-+++ b/drivers/scsi/csiostor/csio_rnode.c
-@@ -46,10 +46,10 @@ static int csio_rnode_init(struct csio_rnode *, struct csio_lnode *);
- static void csio_rnode_exit(struct csio_rnode *);
- 
- /* Static machine forward declarations */
--static void csio_rns_uninit(struct csio_rnode *, enum csio_rn_ev);
--static void csio_rns_ready(struct csio_rnode *, enum csio_rn_ev);
--static void csio_rns_offline(struct csio_rnode *, enum csio_rn_ev);
--static void csio_rns_disappeared(struct csio_rnode *, enum csio_rn_ev);
-+static void csio_rns_uninit(struct csio_sm *, uint32_t);
-+static void csio_rns_ready(struct csio_sm *, uint32_t);
-+static void csio_rns_offline(struct csio_sm *, uint32_t);
-+static void csio_rns_disappeared(struct csio_sm *, uint32_t);
- 
- /* RNF event mapping */
- static enum csio_rn_ev fwevt_to_rnevt[] = {
-@@ -88,13 +88,13 @@ static enum csio_rn_ev fwevt_to_rnevt[] = {
- int
- csio_is_rnode_ready(struct csio_rnode *rn)
- {
--	return csio_match_state(rn, csio_rns_ready);
-+	return csio_match_state(&rn->sm, csio_rns_ready);
- }
- 
- static int
- csio_is_rnode_uninit(struct csio_rnode *rn)
- {
--	return csio_match_state(rn, csio_rns_uninit);
-+	return csio_match_state(&rn->sm, csio_rns_uninit);
- }
- 
- static int
-@@ -601,8 +601,10 @@ __csio_unreg_rnode(struct csio_rnode *rn)
-  *
-  */
- static void
--csio_rns_uninit(struct csio_rnode *rn, enum csio_rn_ev evt)
-+csio_rns_uninit(struct csio_sm *_rn, uint32_t _evt)
- {
-+	struct csio_rnode *rn = container_of(_rn, struct csio_rnode, sm);
-+	enum csio_rn_ev evt = _evt;
- 	struct csio_lnode *ln = csio_rnode_to_lnode(rn);
- 	int ret = 0;
- 
-@@ -641,8 +643,10 @@ csio_rns_uninit(struct csio_rnode *rn, enum csio_rn_ev evt)
-  *
-  */
- static void
--csio_rns_ready(struct csio_rnode *rn, enum csio_rn_ev evt)
-+csio_rns_ready(struct csio_sm *_rn, uint32_t _evt)
- {
-+	struct csio_rnode *rn = container_of(_rn, struct csio_rnode, sm);
-+	enum csio_rn_ev evt = _evt;
- 	struct csio_lnode *ln = csio_rnode_to_lnode(rn);
- 	int ret = 0;
- 
-@@ -726,8 +730,10 @@ csio_rns_ready(struct csio_rnode *rn, enum csio_rn_ev evt)
-  *
-  */
- static void
--csio_rns_offline(struct csio_rnode *rn, enum csio_rn_ev evt)
-+csio_rns_offline(struct csio_sm *_rn, uint32_t _evt)
- {
-+	struct csio_rnode *rn = container_of(_rn, struct csio_rnode, sm);
-+	enum csio_rn_ev evt = _evt;
- 	struct csio_lnode *ln = csio_rnode_to_lnode(rn);
- 	int ret = 0;
- 
-@@ -785,8 +791,10 @@ csio_rns_offline(struct csio_rnode *rn, enum csio_rn_ev evt)
-  *
-  */
- static void
--csio_rns_disappeared(struct csio_rnode *rn, enum csio_rn_ev evt)
-+csio_rns_disappeared(struct csio_sm *_rn, uint32_t _evt)
- {
-+	struct csio_rnode *rn = container_of(_rn, struct csio_rnode, sm);
-+	enum csio_rn_ev evt = _evt;
- 	struct csio_lnode *ln = csio_rnode_to_lnode(rn);
- 	int ret = 0;
- 
-diff --git a/drivers/scsi/csiostor/csio_scsi.c b/drivers/scsi/csiostor/csio_scsi.c
-index 05e1a63e0..3b5dff3b6 100644
---- a/drivers/scsi/csiostor/csio_scsi.c
-+++ b/drivers/scsi/csiostor/csio_scsi.c
-@@ -65,12 +65,12 @@ static int csio_ddp_descs = 128;
- static int csio_do_abrt_cls(struct csio_hw *,
- 				      struct csio_ioreq *, bool);
- 
--static void csio_scsis_uninit(struct csio_ioreq *, enum csio_scsi_ev);
--static void csio_scsis_io_active(struct csio_ioreq *, enum csio_scsi_ev);
--static void csio_scsis_tm_active(struct csio_ioreq *, enum csio_scsi_ev);
--static void csio_scsis_aborting(struct csio_ioreq *, enum csio_scsi_ev);
--static void csio_scsis_closing(struct csio_ioreq *, enum csio_scsi_ev);
--static void csio_scsis_shost_cmpl_await(struct csio_ioreq *, enum csio_scsi_ev);
-+static void csio_scsis_uninit(struct csio_sm *, uint32_t);
-+static void csio_scsis_io_active(struct csio_sm *, uint32_t);
-+static void csio_scsis_tm_active(struct csio_sm *, uint32_t);
-+static void csio_scsis_aborting(struct csio_sm *, uint32_t);
-+static void csio_scsis_closing(struct csio_sm *, uint32_t);
-+static void csio_scsis_shost_cmpl_await(struct csio_sm *, uint32_t);
- 
- /*
-  * csio_scsi_match_io - Match an ioreq with the given SCSI level data.
-@@ -700,8 +700,10 @@ csio_scsi_abrt_cls(struct csio_ioreq *req, bool abort)
- /* START: SCSI SM                                                            */
- /*****************************************************************************/
- static void
--csio_scsis_uninit(struct csio_ioreq *req, enum csio_scsi_ev evt)
-+csio_scsis_uninit(struct csio_sm *_req, uint32_t _evt)
- {
-+	struct csio_ioreq *req = container_of(_req, struct csio_ioreq, sm);
-+	enum csio_scsi_ev evt = _evt;
- 	struct csio_hw *hw = req->lnode->hwp;
- 	struct csio_scsim *scsim = csio_hw_to_scsim(hw);
- 
-@@ -770,8 +772,10 @@ csio_scsis_uninit(struct csio_ioreq *req, enum csio_scsi_ev evt)
- }
- 
- static void
--csio_scsis_io_active(struct csio_ioreq *req, enum csio_scsi_ev evt)
-+csio_scsis_io_active(struct csio_sm *_req, uint32_t _evt)
- {
-+	struct csio_ioreq *req = container_of(_req, struct csio_ioreq, sm);
-+	enum csio_scsi_ev evt = _evt;
- 	struct csio_hw *hw = req->lnode->hwp;
- 	struct csio_scsim *scm = csio_hw_to_scsim(hw);
- 	struct csio_rnode *rn;
-@@ -842,8 +846,10 @@ csio_scsis_io_active(struct csio_ioreq *req, enum csio_scsi_ev evt)
- }
- 
- static void
--csio_scsis_tm_active(struct csio_ioreq *req, enum csio_scsi_ev evt)
-+csio_scsis_tm_active(struct csio_sm *_req, uint32_t _evt)
- {
-+	struct csio_ioreq *req = container_of(_req, struct csio_ioreq, sm);
-+	enum csio_scsi_ev evt = _evt;
- 	struct csio_hw *hw = req->lnode->hwp;
- 	struct csio_scsim *scm = csio_hw_to_scsim(hw);
- 
-@@ -885,8 +891,10 @@ csio_scsis_tm_active(struct csio_ioreq *req, enum csio_scsi_ev evt)
- }
- 
- static void
--csio_scsis_aborting(struct csio_ioreq *req, enum csio_scsi_ev evt)
-+csio_scsis_aborting(struct csio_sm *_req, uint32_t _evt)
- {
-+	struct csio_ioreq *req = container_of(_req, struct csio_ioreq, sm);
-+	enum csio_scsi_ev evt = _evt;
- 	struct csio_hw *hw = req->lnode->hwp;
- 	struct csio_scsim *scm = csio_hw_to_scsim(hw);
- 
-@@ -982,8 +990,10 @@ csio_scsis_aborting(struct csio_ioreq *req, enum csio_scsi_ev evt)
- }
- 
- static void
--csio_scsis_closing(struct csio_ioreq *req, enum csio_scsi_ev evt)
-+csio_scsis_closing(struct csio_sm *_req, uint32_t _evt)
- {
-+	struct csio_ioreq *req = container_of(_req, struct csio_ioreq, sm);
-+	enum csio_scsi_ev evt = _evt;
- 	struct csio_hw *hw = req->lnode->hwp;
- 	struct csio_scsim *scm = csio_hw_to_scsim(hw);
- 
-@@ -1046,8 +1056,11 @@ csio_scsis_closing(struct csio_ioreq *req, enum csio_scsi_ev evt)
- }
- 
- static void
--csio_scsis_shost_cmpl_await(struct csio_ioreq *req, enum csio_scsi_ev evt)
-+csio_scsis_shost_cmpl_await(struct csio_sm *_req, uint32_t _evt)
- {
-+	struct csio_ioreq *req = container_of(_req, struct csio_ioreq, sm);
-+	enum csio_scsi_ev evt = _evt;
-+
- 	switch (evt) {
- 	case CSIO_SCSIE_ABORT:
- 	case CSIO_SCSIE_CLOSE:
-diff --git a/include/linux/cfi_types.h b/include/linux/cfi_types.h
-index 6b8713675..6f3fe6a60 100644
---- a/include/linux/cfi_types.h
-+++ b/include/linux/cfi_types.h
-@@ -20,11 +20,19 @@
- 	.4byte __kcfi_typeid_##name
- #endif
- 
-+#ifdef CONFIG_PAX_RAP
-+#define SYM_TYPED_ENTRY(name, linkage, align...)	\
-+	linkage(name) ASM_NL				\
-+	align ASM_NL					\
-+	__RAP_TYPE(name) ASM_NL				\
-+	name:
-+#else
- #define SYM_TYPED_ENTRY(name, linkage, align...)	\
- 	linkage(name) ASM_NL				\
- 	align ASM_NL					\
- 	__CFI_TYPE(name) ASM_NL				\
- 	name:
-+#endif
- 
- #define SYM_TYPED_START(name, linkage, align...)	\
- 	SYM_TYPED_ENTRY(name, linkage, align)
 diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index 574b4121e..5d9f44ea9 100644
+index b2f9e2c409cf..f3a17f64c5d6 100644
 --- a/include/linux/compiler_types.h
 +++ b/include/linux/compiler_types.h
-@@ -326,6 +326,10 @@ struct ftrace_likely_data {
+@@ -79,7 +79,7 @@ static inline void __chk_io_ptr(const volatile void __iomem *ptr) { }
+ /* Attributes */
+ #include <linux/compiler_attributes.h>
+ 
+-#if CONFIG_FUNCTION_ALIGNMENT > 0
++#if !defined(CONFIG_PAX_RAP) && (CONFIG_FUNCTION_ALIGNMENT > 0)
+ #define __function_aligned		__aligned(CONFIG_FUNCTION_ALIGNMENT)
+ #else
+ #define __function_aligned
+@@ -394,6 +394,10 @@ struct ftrace_likely_data {
  			 __scalar_type_to_expr_cases(long long),	\
  			 default: (x)))
  
@@ -2092,7 +1106,7 @@ index 574b4121e..5d9f44ea9 100644
  #define __native_word(t) \
  	(sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
 diff --git a/include/linux/moduleparam.h b/include/linux/moduleparam.h
-index 962cd41a2..b50341126 100644
+index 962cd41a2cb5..b503411267ad 100644
 --- a/include/linux/moduleparam.h
 +++ b/include/linux/moduleparam.h
 @@ -354,7 +354,7 @@ static inline void kernel_param_unlock(struct module *mod)
@@ -2114,10 +1128,10 @@ index 962cd41a2..b50341126 100644
  	    .ops = &param_ops_##type,					\
  	    .elemsize = sizeof(array[0]), .elem = array };		\
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index f5d89a4b8..f7479ab79 100644
+index b548d5646a86..c70da725d8b6 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -194,7 +194,7 @@ static inline const char *pci_power_name(pci_power_t state)
+@@ -195,7 +195,7 @@ static inline const char *pci_power_name(pci_power_t state)
   */
  typedef unsigned int __bitwise pci_channel_state_t;
  
@@ -2127,10 +1141,10 @@ index f5d89a4b8..f7479ab79 100644
  	pci_channel_io_normal = (__force pci_channel_state_t) 1,
  
 diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-index 27a6ba1c0..617be02cf 100644
+index bbbd6fac3aff..9ee89dec0864 100644
 --- a/include/linux/syscalls.h
 +++ b/include/linux/syscalls.h
-@@ -122,8 +122,14 @@ enum landlock_rule_type;
+@@ -124,8 +124,14 @@ struct cachestat;
  #define __TYPE_IS_UL(t)	(__TYPE_AS(t, 0UL))
  #define __TYPE_IS_LL(t) (__TYPE_AS(t, 0LL) || __TYPE_AS(t, 0ULL))
  #define __SC_LONG(t, a) __typeof(__builtin_choose_expr(__TYPE_IS_LL(t), 0LL, 0L)) a
@@ -2146,7 +1160,7 @@ index 27a6ba1c0..617be02cf 100644
  #define __SC_ARGS(t, a)	a
  #define __SC_TEST(t, a) (void)BUILD_BUG_ON_ZERO(!__TYPE_IS_LL(t) && sizeof(t) > sizeof(long))
  
-@@ -240,18 +246,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
+@@ -242,18 +248,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
  	__diag_push();							\
  	__diag_ignore(GCC, 8, "-Wattribute-alias",			\
  		      "Type aliasing is used to sanitize syscall arguments");\
@@ -2171,10 +1185,10 @@ index 27a6ba1c0..617be02cf 100644
  	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  #endif /* __SYSCALL_DEFINEx */
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 44abf88e1..bf6c48e86 100644
+index 1333273a71de..54ae1a1d4183 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -1071,6 +1071,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
+@@ -1075,6 +1075,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
  	bpf_jit_uncharge_modmem(size);
  }
  
@@ -2185,73 +1199,67 @@ index 44abf88e1..bf6c48e86 100644
  /* Allocate jit binary from bpf_prog_pack allocator.
   * Since the allocated memory is RO+X, the JIT engine cannot write directly
   * to the memory. To solve this problem, a RW buffer is also allocated at
-@@ -1117,11 +1121,24 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -1092,6 +1096,10 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
+ {
+ 	struct bpf_binary_header *ro_header;
+ 	u32 size, hole, start;
++	u32 padding_bytes = 0;
++#ifdef CONFIG_CALL_PADDING
++	padding_bytes += CONFIG_FUNCTION_PADDING_BYTES;
++#endif
+ 
+ 	WARN_ON_ONCE(!is_power_of_2(alignment) ||
+ 		     alignment > BPF_IMAGE_ALIGNMENT);
+@@ -1121,10 +1129,23 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
  
  	hole = min_t(unsigned int, size - (proglen + sizeof(*ro_header)),
  		     BPF_PROG_CHUNK_SIZE - sizeof(*ro_header));
 +#ifdef CONFIG_PAX_RAP
-+	hole -= 6;
++	hole -= (4 + padding_bytes);
 +#endif
- 	start = prandom_u32_max(hole) & ~(alignment - 1);
-+#ifdef CONFIG_PAX_RAP
-+	start += 6;
-+#endif
+ 	start = get_random_u32_below(hole) & ~(alignment - 1);
  
++#ifdef CONFIG_PAX_RAP
++	start += (4 + padding_bytes);
++#endif
  	*image_ptr = &ro_header->image[start];
  	*rw_image = &(*rw_header)->image[start];
- 
 +#ifdef CONFIG_PAX_RAP
 +#ifdef CONFIG_RELOCATABLE
-+	*(int *)(*rw_image - 6) = 0x456bce13;
++	*(int *)(*rw_image - (4 + padding_bytes)) = 0x456bce13;
 +#else
-+	*(int *)(*rw_image - 6) = (int)&__rap_hash___bpf_prog_run;
++	*(int *)(*rw_image - (4 + padding_bytes)) = (int)&__rap_hash___bpf_prog_run;
 +#endif
 +#endif
+ 
  	return ro_header;
  }
- 
-@@ -1649,7 +1666,7 @@ bool bpf_opcode_in_insntable(u8 code)
- }
- 
- #ifndef CONFIG_BPF_JIT_ALWAYS_ON
--u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
-+u64 __weak bpf_probe_read_kernel_alt(void *dst, u32 size, const void *unsafe_ptr)
- {
- 	memset(dst, 0, size);
- 	return -EFAULT;
-@@ -1948,7 +1965,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
- 		DST = *(SIZE *)(unsigned long) (SRC + insn->off);	\
- 		CONT;							\
- 	LDX_PROBE_MEM_##SIZEOP:						\
--		bpf_probe_read_kernel(&DST, sizeof(SIZE),		\
-+		bpf_probe_read_kernel_alt(&DST, sizeof(SIZE),		\
- 				      (const void *)(long) (SRC + insn->off));	\
- 		DST = *((SIZE *)&DST);					\
- 		CONT;
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 872d149b1..9add3564f 100644
+index fe543e7898f5..6ba94752f1c1 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
-@@ -1112,8 +1112,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_context *cpuctx, int cpu)
+@@ -1119,8 +1119,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_pmu_context *cpc, int cpu)
  	timer->function = perf_mux_hrtimer_handler;
  }
  
--static int perf_mux_hrtimer_restart(struct perf_cpu_context *cpuctx)
-+static int perf_mux_hrtimer_restart(void *_cpuctx)
+-static int perf_mux_hrtimer_restart(struct perf_cpu_pmu_context *cpc)
++static int perf_mux_hrtimer_restart(void *_cpc)
  {
-+	struct perf_cpu_context *cpuctx = _cpuctx;
- 	struct hrtimer *timer = &cpuctx->hrtimer;
- 	struct pmu *pmu = cpuctx->ctx.pmu;
++	struct perf_cpu_pmu_context *cpc = _cpc;
+ 	struct hrtimer *timer = &cpc->hrtimer;
  	unsigned long flags;
+ 
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 554aba47a..1a4a78adf 100644
+index 34d9e718c2c7..c28f9b9481f3 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -1959,8 +1959,15 @@ static int setup_load_info(struct load_info *info, int flags)
+@@ -2076,8 +2076,17 @@ static void module_augment_kernel_taints(struct module *mod, struct load_info *i
  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  {
  	const char *modmagic = get_modinfo(info, "vermagic");
++#ifdef CONFIG_PAX_RAP
 +	const char *license = get_modinfo(info, "license");
++#endif
  	int err;
  
 +#if defined(CONFIG_PAX_KERNEXEC_PLUGIN_METHOD_OR) || defined(CONFIG_PAX_RAP)
@@ -2263,20 +1271,11 @@ index 554aba47a..1a4a78adf 100644
  	if (flags & MODULE_INIT_IGNORE_VERMAGIC)
  		modmagic = NULL;
  
-@@ -1995,7 +2002,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
- 		return err;
- 
- 	/* Set up license info based on the info section */
--	set_license(mod, get_modinfo(info, "license"));
-+	set_license(mod, license);
- 
- 	if (get_modinfo(info, "test")) {
- 		if (!test_taint(TAINT_TEST))
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 18a4f8f28..5c4bb23d4 100644
+index 1f91e2c12731..60a530d51d6e 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -4885,7 +4885,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
+@@ -5019,7 +5019,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
  	lockdep_assert_rq_held(rq);
  
  	while (head) {
@@ -2286,10 +1285,10 @@ index 18a4f8f28..5c4bb23d4 100644
  		head->next = NULL;
  		head = next;
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 51d010f64..531dd4a99 100644
+index 82e63908dce8..83f37c4d2477 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -868,7 +868,8 @@ void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
+@@ -921,7 +921,8 @@ void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
  
  static inline bool br_rx_handler_check_rcu(const struct net_device *dev)
  {
@@ -2300,7 +1299,7 @@ index 51d010f64..531dd4a99 100644
  
  static inline bool br_rx_handler_check_rtnl(const struct net_device *dev)
 diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index f645da82d..0e82af111 100644
+index 3184cc6be4c9..c0c14fceed21 100644
 --- a/net/netfilter/ipset/ip_set_core.c
 +++ b/net/netfilter/ipset/ip_set_core.c
 @@ -391,7 +391,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
@@ -2312,7 +1311,7 @@ index f645da82d..0e82af111 100644
  
  const struct ip_set_ext_type ip_set_extensions[] = {
 diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
-index e4deaf5fa..7acd78f9d 100644
+index e4deaf5fa571..7acd78f9d9c4 100644
 --- a/scripts/Makefile.gcc-plugins
 +++ b/scripts/Makefile.gcc-plugins
 @@ -22,6 +22,14 @@ export DISABLE_STRUCTLEAK_PLUGIN
@@ -2344,10 +1343,17 @@ index e4deaf5fa..7acd78f9d 100644
  # Some plugins are enabled outside of this Makefile, but they still need to
  # be included in GCC_PLUGIN so they can get built.
 diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
-index 320afd3cf..6246b5bdf 100644
+index 320afd3cf8e8..0d3c8bdeca84 100644
 --- a/scripts/gcc-plugins/Makefile
 +++ b/scripts/gcc-plugins/Makefile
-@@ -36,11 +36,13 @@ plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
+@@ -33,14 +33,20 @@ plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
+ 		  -fno-rtti -fno-exceptions -fasynchronous-unwind-tables \
+ 		  -ggdb -Wno-narrowing -Wno-unused-variable \
+ 		  -Wno-format-diag
++ifdef CONFIG_CALL_PADDING
++plugin_cxxflags += -DCONFIG_FUNCTION_PADDING_BYTES='$(CONFIG_FUNCTION_PADDING_BYTES)'
++endif
++
  
  plugin_ldflags	= -shared
  
@@ -2364,7 +1370,7 @@ index 320afd3cf..6246b5bdf 100644
  plugin-single	:= $(addprefix $(obj)/, $(plugin-single))
 diff --git a/scripts/gcc-plugins/rap_plugin/rap.h b/scripts/gcc-plugins/rap_plugin/rap.h
 new file mode 100644
-index 000000000..dbaafeed7
+index 000000000000..0e2c26301e33
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap.h
 @@ -0,0 +1,38 @@
@@ -2373,7 +1379,7 @@ index 000000000..dbaafeed7
 +
 +#include "gcc-common.h"
 +
-+#define RAP_HASH_START_PADDING_SIZE  3
++#define RAP_HASH_START_PADDING_SIZE  1
 +#define RAP_HASH_END_PADDING_SIZE  2
 +typedef struct {
 +	int hash; // will be sign extended to long in reality
@@ -2408,7 +1414,7 @@ index 000000000..dbaafeed7
 +#endif
 diff --git a/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c b/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
 new file mode 100644
-index 000000000..511076ab2
+index 000000000000..f8124b597b2d
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
 @@ -0,0 +1,224 @@
@@ -2463,7 +1469,7 @@ index 000000000..511076ab2
 +#endif
 +	basic_block cond_bb, join_bb, true_bb;
 +	edge e;
-+	const HOST_WIDE_INT rap_hash_offset = sizeof(rap_hash_t) + 2;
++	const HOST_WIDE_INT rap_hash_offset = sizeof(rap_hash_t) + CONFIG_FUNCTION_PADDING_BYTES;
 +
 +	call_stmt = gsi_stmt(*gsi);
 +	loc = gimple_location(call_stmt);
@@ -2638,7 +1644,7 @@ index 000000000..511076ab2
 +#include "gcc-generate-gimple-pass.h"
 diff --git a/scripts/gcc-plugins/rap_plugin/rap_hash.c b/scripts/gcc-plugins/rap_plugin/rap_hash.c
 new file mode 100644
-index 000000000..420fcbdbf
+index 000000000000..420fcbdbfc05
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_hash.c
 @@ -0,0 +1,396 @@
@@ -3040,10 +2046,10 @@ index 000000000..420fcbdbf
 +}
 diff --git a/scripts/gcc-plugins/rap_plugin/rap_plugin.c b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
 new file mode 100644
-index 000000000..963960c56
+index 000000000000..b05e0bf95753
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
-@@ -0,0 +1,553 @@
+@@ -0,0 +1,557 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
 + * Licensed under the GPL v2
@@ -3197,7 +2203,7 @@ index 000000000..963960c56
 +		char padding[RAP_HASH_START_PADDING_SIZE];
 +
 +		// this byte sequence helps disassemblers not trip up on the following rap hash
-+		memset(padding, 0xcc, sizeof padding - 1);
++		//memset(padding, 0xcc, sizeof padding - 1);
 +		padding[sizeof padding - 1] = 0xb8;
 +		ASM_OUTPUT_ASCII(asm_out_file, padding, sizeof padding);
 +	}
@@ -3211,9 +2217,11 @@ index 000000000..963960c56
 +	cgraph_node_ptr node;
 +	rap_hash_t imprecise_rap_hash;
 +	char *name = NULL;
++#if 0
 +	char end_padding[RAP_HASH_END_PADDING_SIZE];
 +
 +	memset(end_padding, 0xcc, sizeof end_padding);
++#endif
 +	gcc_assert(debug_hooks == &rap_debug_hooks);
 +
 +	// chain to previous callback
@@ -3247,9 +2255,11 @@ index 000000000..963960c56
 +	if (report_func_hash)
 +		inform(DECL_SOURCE_LOCATION(decl), "func rap_hash: %x %s", imprecise_rap_hash.hash, IDENTIFIER_POINTER(DECL_ASSEMBLER_NAME(decl)));
 +
-+	fprintf(asm_out_file, "\t.long %#x\t%s __rap_hash_%s\n", imprecise_rap_hash.hash, ASM_COMMENT_START, IDENTIFIER_POINTER(DECL_ASSEMBLER_NAME(decl)));
++	fprintf(asm_out_file, "\t.long %#x\t%s __kcfi_typeid_%s\n", imprecise_rap_hash.hash, ASM_COMMENT_START, IDENTIFIER_POINTER(DECL_ASSEMBLER_NAME(decl)));
 +
++#if 0
 +	ASM_OUTPUT_ASCII(asm_out_file, end_padding, sizeof end_padding);
++#endif
 +	fprintf(asm_out_file, "\t.size\t%s, .-%s\n", name, name);
 +}
 +
@@ -3323,7 +2333,7 @@ index 000000000..963960c56
 +			asmname++;
 +
 +		gcc_assert(asmname[0]);
-+		gcc_assert(asprintf(&name, "__rap_hash_%s", asmname) != -1);
++		gcc_assert(asprintf(&name, "__kcfi_typeid_%s", asmname) != -1);
 +
 +		hash = rap_hash_function_node_imprecise(node);
 +		if (report_abs_hash)
@@ -3371,7 +2381,7 @@ index 000000000..963960c56
 +	if (strchr(asmname, '.'))
 +		return;
 +
-+	gcc_assert(asprintf(&name, "__rap_hash_%s", asmname) != -1);
++	gcc_assert(asprintf(&name, "__kcfi_typeid_%s", asmname) != -1);
 +
 +	hash = rap_hash_function_decl(fndecl, imprecise_rap_hash_flags);
 +
@@ -3599,7 +2609,7 @@ index 000000000..963960c56
 +}
 diff --git a/scripts/gcc-plugins/rap_plugin/sip.c b/scripts/gcc-plugins/rap_plugin/sip.c
 new file mode 100644
-index 000000000..65bc1cdea
+index 000000000000..65bc1cdea580
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/sip.c
 @@ -0,0 +1,96 @@
@@ -3700,10 +2710,10 @@ index 000000000..65bc1cdea
 +	U64TO8_LE(out, b);
 +}
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 686eed37f..2833ece61 100644
+index 269bd79bcd9a..367f5a30b77d 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -1879,15 +1879,9 @@ static void check_exports(struct module *mod)
+@@ -1774,15 +1774,9 @@ static void check_exports(struct module *mod)
  		const char *basename;
  		exp = find_symbol(s->name);
  		if (!exp) {
@@ -3720,7 +2730,7 @@ index 686eed37f..2833ece61 100644
  		}
  
 diff --git a/security/Kconfig b/security/Kconfig
-index 371cc82d1..08e4cf887 100644
+index 52c9af08ad35..0581ff078066 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -5,6 +5,35 @@
@@ -3759,19 +2769,6 @@ index 371cc82d1..08e4cf887 100644
  source "security/keys/Kconfig"
  
  config SECURITY_DMESG_RESTRICT
-diff --git a/security/apparmor/net.c b/security/apparmor/net.c
-index 50e17fb0a..9d0b08cff 100644
---- a/security/apparmor/net.c
-+++ b/security/apparmor/net.c
-@@ -95,7 +95,7 @@ static void audit_unix_addr(struct audit_buffer *ab, const char *str,
- }
- 
- static void audit_unix_sk_addr(struct audit_buffer *ab, const char *str,
--			       struct sock *sk)
-+			       const struct sock *sk)
- {
- 	struct unix_sock *u = unix_sk(sk);
- 	if (u && u->addr)
 -- 
-2.39.0
+2.35.6
 
