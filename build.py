@@ -1758,7 +1758,7 @@ def main():
             check_prerequesite[item] = False
 
     commit_id = str(configdict["photon-build-param"].get("base-commit", ""))
-    check_hash=f"git -C {configdict['branch-name']} rev-parse --verify {commit_id}"
+    check_hash=f"git -C {configdict['branch-name']} merge-base --is-ancestor {commit_id} HEAD"
     _, _, rc = runBashCmd(check_hash, capture=True, ignore_rc=True)
     ph_path = configdict["photon-path"] if rc else configdict["branch-name"]
 
