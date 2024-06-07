@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql15
 Version:        15.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -54,8 +54,6 @@ Requires:       lz4
 Requires:       systemd
 Requires:       %{name}-libs = %{version}-%{release}
 
-Provides:       %{srcname} = %{version}-%{release}
-
 %description
 PostgreSQL is an object-relational database management system.
 
@@ -64,7 +62,6 @@ Summary:    Libraries for use with PostgreSQL
 Group:      Applications/Databases
 Requires:   chkconfig
 Requires(postun): chkconfig
-Provides:   %{srcname}-libs = %{version}-%{release}
 
 %description libs
 The postgresql-libs package provides the essential shared libraries for any
@@ -76,7 +73,6 @@ PostgreSQL server.
 Summary:        Development files for postgresql.
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-Provides:       %{srcname}-devel = %{version}-%{release}
 
 %description    devel
 The postgresql-devel package contains libraries and header files for
@@ -308,5 +304,7 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-2
+- Remove provides, only pgsql14 should provide pgsql
 * Mon May 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-1
 - Initial version.
