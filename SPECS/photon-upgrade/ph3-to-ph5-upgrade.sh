@@ -41,6 +41,23 @@ declare -A replaced_pkgs_map=(
   [repmgr13]="repmgr13 repmgr15 repmgr14"
 )
 
+# Maps the the packages with new names in target repo to the installed packages
+# as the packages from target repo named in key provide them
+declare -A provides_map=(
+  [apache-tomcat10]=apache-tomcat
+  [apache-tomcat10-webapps]=apache-tomcat-webapps
+  [autoconf]=autoconf213
+  [gcc]=gcc-10
+  [iptraf-ng]=iptraf
+  [mozjs]=mozjs60
+  [mozjs-devel]=mozjs60-devel
+  [network-config-manager]=netmgmt
+  [openssl]=nxtgn-openssl
+  [openssl-c_rehash]=nxtgn-openssl-c_rehash
+  [openssl-devel]=nxtgn-openssl-devel
+  [openssl-perl]=nxtgn-openssl-perl
+)
+
 # Residual pkgs to remove post upgrade
 declare -a residual_pkgs_arr=(
   libmetalink libdb

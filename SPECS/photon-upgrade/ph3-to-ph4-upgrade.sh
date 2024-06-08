@@ -39,6 +39,15 @@ declare -A replaced_pkgs_map=(
   [repmgr13]="repmgr13 repmgr14 repmgr10"
 )
 
+# Maps the the packages with new names in target repo to the installed packages
+# as the packages from target repo named in key provide them
+declare -A provides_map=(
+  [postgresql14]=postgresql
+  [postgresql14-libs]=postgresql-libs
+  [postgresql14-devel]=postgresql-devel
+  [repmgr14]=repmgr
+)
+
 # Residual pkgs to remove post upgrade
 declare -a residual_pkgs_arr=(
   libmetalink libdb

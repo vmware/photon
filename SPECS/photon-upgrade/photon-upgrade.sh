@@ -156,6 +156,22 @@ function check_installed_packages_in_target_repo() {
   local -a missings_arr=()
   local i
   local n
+  local sp
+  local tp
+
+  # Here we cleanup the replaced_pkgs_map and remove those key value pairs where
+  # package named in value provides the package named in key. For example,
+  # repmgr14 in 4.0 provides repmgr. The distro-sync across OS versions will
+  # take care upgrading those packages so there is no need to uninstall them
+  # before the OS upgrade
+  echo "Finalise list of replacing packages"
+  for sp in ${!replaced_pkgs_map[@]}; do
+    tp=${replaced_pkgs_map[$sp]}
+    if [ "${provides_map[$tp]}" = "$sp" ]; then
+      echo "* $tp provides $sp"
+      unset replaced_pkgs_map[$sp]
+    fi
+  done
 
   echo "Finding packages in the target repo. This may take several minutes."
   missings_arr+=($(check_packages_in_target_repo ${rpms_arr[@]}))
@@ -189,8 +205,8 @@ function check_packages_in_target_repo() {
   local list_available_fn="${TMP_BACKUP_LOC}/list_available.txt"
 
   if ! test -s "${list_available_fn}"; then
-    ${TDNF} $REPOS_OPT "--releasever=$TO_VERSION" list available | \
-      ${AWK} '{print $1}' | ${UNIQ} | ${SORT} > "${list_available_fn}"
+    ${TDNF} $REPOS_OPT "--releasever=$TO_VERSION" list available --refresh | \
+      ${AWK} '{print $1}' | ${SORT} | ${UNIQ} > "${list_available_fn}"
     if [ $? -ne 0 ]; then
       ${RM} -f "${list_available_fn}"
       abort 1 "ERROR($FUNCNAME): tdnf list available failed ..."
