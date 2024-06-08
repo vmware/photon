@@ -1,0 +1,30 @@
+From b97227406cc63ade7ed727fa28bba941e4643d8a Mon Sep 17 00:00:00 2001
+From: Christopher McCann <dark3phoenix@gmail.com>
+Date: Tue, 26 Mar 2024 09:24:43 -0400
+Subject: [PATCH] fix(cacerts): Correct configuration customizations for Photon
+ (#5077)
+
+* Fixes certificates being placed in the wrong folder
+  (/etc/pki/tls/certs/ instead of the correct /etc/ssl/certs/)
+* Fixes certificates having the wrong extension (.crt instead of .pem)
+---
+ cloudinit/config/cc_ca_certs.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/cloudinit/config/cc_ca_certs.py b/cloudinit/config/cc_ca_certs.py
+index 3f6b8fb175e..ed012f24c31 100644
+--- a/cloudinit/config/cc_ca_certs.py
++++ b/cloudinit/config/cc_ca_certs.py
+@@ -46,9 +46,9 @@
+         "ca_cert_update_cmd": ["update-ca-certificates"],
+     },
+     "photon": {
+-        "ca_cert_path": "/etc/ssl/certs/",
+-        "ca_cert_local_path": "/etc/pki/tls/certs/",
+-        "ca_cert_filename": "cloud-init-ca-cert-{cert_index}.crt",
++        "ca_cert_path": "/etc/pki/tls/certs/",
++        "ca_cert_local_path": "/etc/ssl/certs/",
++        "ca_cert_filename": "cloud-init-ca-cert-{cert_index}.pem",
+         "ca_cert_config": None,
+         "ca_cert_update_cmd": ["rehash_ca_certificates.sh"],
+     },

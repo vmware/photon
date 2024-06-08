@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        24.1.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -24,6 +24,8 @@ Patch4: 0005-test_vmware.py-fix-pkg-test-failure.patch
 
 Patch5: 0006-Change-log-level-to-info-to-make-GOSC-regression-tes.patch
 Patch6: 0007-cli-retain-file-argument-as-main-cmd-arg.patch
+Patch7: 0008-cacert-config.patch
+Patch8: 0009-Show-stdout-logs-in-journal-only.patch
 
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
@@ -77,6 +79,7 @@ Requires: python3-jsonschema
 Requires: python3-netifaces
 Requires: python3-pyserial
 Requires: dhcp-client
+Requires: openssl-c_rehash
 
 BuildArch: noarch
 
@@ -87,9 +90,6 @@ ssh keys and to let the user run various scripts.
 
 %prep
 %autosetup -p1
-
-find systemd -name "cloud*.service*" | \
-    xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
 %build
 %{py3_build}
@@ -147,6 +147,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 
 %changelog
+* Sat Jun 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.1.4-3
+- Fix cacert config
 * Wed May 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.1.4-2
 - Fix --file argument parsing bug
 - Refer: https://github.com/canonical/cloud-init/issues/5302
