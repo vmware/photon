@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -57,6 +57,7 @@ Patch32: 0033-fix-getty_t-denial.patch
 Patch33: 0034-fix-local_login_t-denial.patch
 Patch34: 0035-allow-alg_socket-for-sshd.patch
 Patch35: 0036-authlogin.te-fix-pwhistory-denial.patch
+Patch36: 0037-systemd-init_t-denial.patch
 
 BuildArch:      noarch
 
@@ -136,6 +137,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Mon Jun 10 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 36.5-8
+- Fix sshd and audit_control denials
 * Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-7
 - Fix config file permission
 * Fri May 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-6
