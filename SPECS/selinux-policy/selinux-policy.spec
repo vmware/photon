@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -51,6 +51,7 @@ Patch26: 0027-Fix-systemd-gpt-denials-for-K8-s-deployment.patch
 Patch27: 0028-getty.te-fix-denials.patch
 Patch28: 0029-init.te-fix-denials.patch
 Patch29: 0030-systemd.te-fix-denials.patch
+Patch30: 0031-ssh-denial-fix.patch
 
 BuildArch:      noarch
 
@@ -131,6 +132,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Mon Jun 10 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 36.5-8
+- Fix sshd_t config file permission
 * Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-7
 - Fix config file permission
 * Wed May 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-6
