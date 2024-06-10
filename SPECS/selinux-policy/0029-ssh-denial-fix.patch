@@ -1,4 +1,4 @@
-From 77793268be057206a7e3f782c9c89e7705e22826 Mon Sep 17 00:00:00 2001
+From 49a02cd37b708293a38b19b2e6de5fb47c47d186 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Fri, 17 May 2024 22:59:48 +0530
 Subject: [PATCH 29/35] ssh denial fix
@@ -7,21 +7,28 @@ This happens when pam-faillock is enabled.
 
 type=AVC msg=audit(1716303120.620:282): avc:  denied  { read write } for  pid=1080 comm="sshd" name="root" dev="sda3" ino=655375 scontext=system_u:system_r:sshd_t:s0-s0:c0.c1023 tcontext=system_u:object_r:var_log_t:s0 tclass=file permissive=1
 
+AVC avc:  denied  { create } for  pid=955 comm="sshd" name="root" scontext=system_u:system_r:sshd_t:s0-s0:c0.c1023 tcontext=system_u:object_r:var_log_t:s0 tclass=file permissive=0
+
+AVC avc:  denied  { setattr } for  pid=868 comm="sshd" name="root" dev="sda3" ino=524538 scontext=system_u:system_r:sshd_t:s0-s0:c0.c1023 tcontext=system_u:object_r:var_log_t:s0 tclass=file permissive=0
+
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+[Added rules for create and setattr sshd_t denials]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
- policy/modules/services/ssh.te | 2 ++
- 1 file changed, 2 insertions(+)
+ policy/modules/services/ssh.te | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/policy/modules/services/ssh.te b/policy/modules/services/ssh.te
-index cd034aa..efa21b2 100644
+index 531bbbf..6ad506d 100644
 --- a/policy/modules/services/ssh.te
 +++ b/policy/modules/services/ssh.te
-@@ -744,3 +744,5 @@ optional_policy(`
+@@ -744,3 +744,6 @@ optional_policy(`
  	xserver_use_xdm_fds(ssh_agent_type)
  	xserver_rw_xdm_pipes(ssh_agent_type)
  ')
 +
-+allow sshd_t var_log_t:file { open read write };
++allow sshd_t var_log_t:file { create open read write };
++allow sshd_t var_log_t:file { setattr };
 -- 
-2.45.0
+2.39.4
 

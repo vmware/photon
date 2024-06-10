@@ -1,0 +1,31 @@
+From 924224ab65ac6cc44afb4a2485bb8b97f37b9ccf Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivania2@vmware.com>
+Date: Mon, 10 Jun 2024 09:50:47 +0000
+Subject: [PATCH 37/37] systemd_pstore remove_name dir denial fix
+
+AVC avc:  denied  { unlink } for  pid=766 comm="systemd-pstore" name="dmesg-efi-171802321001001" dev="pstore" ino=18582 scontext=system_u:system_r:init_t:s0 tcontext=system_u:object_r:pstore_t:s0 tclass=file permissive=0
+
+AVC avc:  denied  { read } for  pid=744 comm="systemd-pstore" name="dmesg-efi-171800218815001" dev="pstore" ino=17978 scontext=system_u:system_r:init_t:s0 tcontext=system_u:object_r:pstore_t:s0 tclass=file permissive=0
+
+AVC avc:  denied  { remove_name } for  pid=769 comm="systemd-pstore" name="dmesg-efi-171802321011001" dev="pstore" ino=18607 scontext=system_u:system_r:init_t:s0 tcontext=system_u:object_r:pstore_t:s0 tclass=dir permissive=0
+
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ policy/modules/system/init.te | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/policy/modules/system/init.te b/policy/modules/system/init.te
+index 1da55cc..ab85714 100644
+--- a/policy/modules/system/init.te
++++ b/policy/modules/system/init.te
+@@ -2041,3 +2041,7 @@ optional_policy(`
+ optional_policy(`
+     rabbitmq_admin(init_t, system_r)
+ ')
++
++allow init_t pstore_t:file { unlink open read };
++
++allow init_t pstore_t:dir remove_name;
+-- 
+2.39.4
+
