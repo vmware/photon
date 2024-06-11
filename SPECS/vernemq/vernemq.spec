@@ -1,6 +1,6 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
-Version:          1.12.5
+Version:          2.0.1
 Release:          1%{?dist}
 License:          Apache License, Version 2.0
 URL:              https://github.com/vernemq/vernemq
@@ -9,17 +9,36 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=3e30e20745f7b53d015a2a0f5371d17ce0e002c041b85f80cdd1db4f40be648bb103bc1d484f494d1b79ecd0c99c2c915a8f909887f717a63b6c0d259ade7aab
+%define sha512 %{name}=e4f1cd4c74d2cb67ab1524a76bdc6071e7b1e38ede574bc11e5ffe861bff99321647be0730f5f17d724dd792aa0fb86d0e9a92417f45bc43fef1461f1f64ae52
 
-Source1: %{name}_vendor-%{version}.tar.gz
-%define sha512 vernemq_vendor=20b95694449f44fb99f7b136176031ce7ccfc1359bc26f590ced3d0fd575aed405d0eb455c52c0ae0c14769594e0380200e8810b3779441b236c89704ed4df8e
+# Building this tarball is not a straight forward process
+#
+# Setup your environment with desired version of erlang
+# Extract vernemq tarball
+# Run `make rel` (this command should succeed)
+# This will bring all dependencies into _build/default/lib/
+# mkdir -p vernemq_vendor-<version>/_checkouts
+# mv _build/default/lib/* vernemq_vendor-<version>/_checkouts
+# mv _build/default/plugins vernemq_vendor-<version>/
+#
+# Now do, rm -rf _build
+# mkdir -p _build/default/
+# cp -a vernemq_vendor-<version>/plugins _build/default/
+# cp -a vernemq_vendor-<version>/_checkouts .
+#
+# Ensure that no sources are fetched from web during build
+# If anything is fetched from web, it must be fixed
+#
+# Once all done, create vendor tarball
+#
+# XZ_OPT=-9 tar cJf vernemq_vendor-version>.tar.xz
+Source1: %{name}_vendor-%{version}.tar.xz
+%define sha512 %{name}_vendor=f0a57b95ad487544717004c0af449d9fd589be37d9a66e03c6e51bdc7ff5e444a224c6a88c219a08fcd6f08c6bfa4c60ae8d6e8e8733a1d6d54b83608bc73b26
 
-Source2:    vars.config
-Source3:    %{name}.service
+Source2: vars.config
+Source3: %{name}.service
 
-Patch0: local_version.patch
-Patch1: bump_plumtree.patch
-Patch2: add_otp_25.patch
+Patch0: 0001-local_version.patch
 
 # leveldb(core dependency) build on aarch64 is currently not supported
 # hence vernemq is restricted to x86_64
@@ -44,16 +63,17 @@ Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 A high-performance, distributed MQTT message broker.
 
 %prep
-# Using autosetup is not feasible
-%setup -q
-# Using autosetup is not feasible
-%setup -q -D -b 1
-%autopatch -p1 -m0 -M2
+%autosetup -p1 -b0 -b1
 
 %build
 LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 mv ../%{name}_vendor-%{version}/_checkouts _checkouts
+
+mkdir -p _build/default
+mv ../%{name}_vendor-%{version}/plugins _build/default/
+
 cp %{SOURCE2} ./vars.config
+
 # make doesn't support _smp_mflags
 make rel
 
@@ -65,15 +85,15 @@ install -vpm 0644 -t %{buildroot}%{_sysconfdir}/%{name} _build/default/rel/%{nam
 install -vpm 0644 -t %{buildroot}%{_sysconfdir}/%{name} _build/default/rel/%{name}/etc/vmq.acl
 install -vdm 0755 %{buildroot}%{_libdir}/%{name}
 
-cp -r _build/default/rel/%{name}/bin \
+cp -a _build/default/rel/%{name}/bin \
       _build/default/rel/%{name}/lib \
       _build/default/rel/%{name}/erts-* \
       _build/default/rel/%{name}/releases \
       %{buildroot}%{_libdir}/%{name}
 
 install -vdm 0755 %{buildroot}%{_datadir}
-cp -r _build/default/rel/%{name}/share %{buildroot}%{_datadir}/%{name}
-install -vdm 0755 %{buildroot}%{_localstatedir}/log/%{name}/sasl
+cp -a _build/default/rel/%{name}/share %{buildroot}%{_datadir}/%{name}
+install -vdm 0755 %{buildroot}%{_var}/log/%{name}/sasl
 
 mkdir -p %{buildroot}%{_unitdir}
 cp %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
@@ -83,25 +103,29 @@ echo "enable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 
 mkdir -p %{buildroot}%{_tmpfilesdir}
 cat >> %{buildroot}%{_tmpfilesdir}/%{name}.conf << EOF
-d /run/%{name} 0755 %{name} %{name} -
+d %{_rundir}/%{name} 0755 %{name} %{name} -
 EOF
 
-install -vdm 0755 %{buildroot}/%{_sbindir}
-ln -sf %{_lib64dir}/%{name}/bin/%{name} %{buildroot}%{_sbindir}
-ln -sf %{_lib64dir}/%{name}/bin/vmq-admin %{buildroot}%{_sbindir}
-ln -sf %{_lib64}/%{name}/bin/vmq-passwd %{buildroot}%{_sbindir}
+install -vdm 0755 %{buildroot}%{_sbindir}
+ln -sv %{_libdir}/%{name}/bin/%{name} %{buildroot}%{_sbindir}
+ln -sv %{_libdir}/%{name}/bin/vmq-admin %{buildroot}%{_sbindir}
+ln -sv %{_libdir}/%{name}/bin/vmq-passwd %{buildroot}%{_sbindir}
 
 %pre
-getent group %{name} >/dev/null || /usr/sbin/groupadd -r %{name}
+getent group %{name} >/dev/null || groupadd -r %{name}
 
 getent passwd %{name} >/dev/null || \
-  /usr/sbin/useradd --comment "VerneMQ" --shell \
+  useradd --comment "VerneMQ" --shell \
     /bin/bash -M -r --groups %{name} --home %{_sharedstatedir}/%{name} %{name}
 
 %preun
 %systemd_preun %{name}.service
 
 %post
+# for pipe dir, after first installation
+mkdir -m 755 -p %{_rundir}/%{name}
+chown -R %{name}:%{name} %{_rundir}/%{name}
+
 %systemd_post %{name}.service
 
 %postun
@@ -114,16 +138,18 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %license LICENSE.txt
 %attr(0755,%{name},%{name}) %{_sharedstatedir}/%{name}
-%attr(0755,%{name},%{name}) %{_localstatedir}/log/%{name}
+%attr(0755,%{name},%{name}) %{_var}/log/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}/*
 %{_sbindir}/*
-%{_libdir}/%{name}
-%{_datadir}/%{name}
+%attr(0755,%{name},%{name}) %{_libdir}/%{name}
+%attr(0755,%{name},%{name}) %{_datadir}/%{name}
 %{_unitdir}/%{name}.service
 %{_presetdir}/50-%{name}.preset
 %{_tmpfilesdir}/%{name}.conf
 
 %changelog
+* Fri Jun 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.1-1
+- Upgrade to v2.0.1
 * Wed Nov 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.12.5-1
 - Upgrade to v1.12.5
 * Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.0-3

@@ -2,7 +2,7 @@
 
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
-Version:         1.14.1
+Version:         1.16.3
 Release:         1%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org
@@ -11,7 +11,7 @@ Distribution:    Photon
 Group:           Development/Languages
 
 Source0: https://github.com/elixir-lang/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8f4c531f36ba1f2f775b1b45075790bfbdcc1c2995cb127809ac9cbb4d6163bf784d9db402119afbcd5f5d75725870cc59968bf751910d29b43f075328265573
+%define sha512 %{name}=1511fb78bdcc50850cbf91007ed11c6a89e947d0a743c1e9ed30e1c93c1b47b5377fced17eeb66ac511d4f151d2e00ef2ecc6fb425d0d4afe2451be41a6ba6ee
 
 BuildRequires:   git
 BuildRequires:   sed
@@ -32,18 +32,19 @@ fault-tolerant, non-stop applications with hot code swapping.
 
 %build
 export LANG="en_US.UTF-8"
-make compile %{?_smp_mflags}
+%make_build compile
+
+%install
+mkdir -p %{buildroot}%{_datadir}/%{name}/%{version} \
+         %{buildroot}%{_bindir}
+
+cp -a bin lib %{buildroot}%{_datadir}/%{name}/%{version}
+
+ln -sv %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}%{_bindir}/
 
 %check
 export LANG="en_US.UTF-8"
-make test %{?_smp_mflags}
-
-%install
-mkdir -p %{buildroot}%{_datadir}/%{name}/%{version}
-cp -ra bin lib %{buildroot}%{_datadir}/%{name}/%{version}
-
-mkdir -p %{buildroot}%{_bindir}
-ln -s %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}%{_bindir}/
+%make_build test
 
 %files
 %defattr(-,root,root)
@@ -55,6 +56,8 @@ ln -s %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}%{
 %{_datadir}/%{name}
 
 %changelog
+* Wed Jun 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.3-1
+- Upgrade to v1.16.3
 * Tue Nov 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.1-1
 - Upgrade to v1.14.1
 * Mon Dec 21 2020 Sujay G <gsujay@vmware.com> 1.10.4-3

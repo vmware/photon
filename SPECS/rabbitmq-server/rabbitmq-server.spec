@@ -1,4 +1,4 @@
-%define erlang_minver       25.0
+%define erlang_minver       26.2.5
 %define erlang_maxver       27.0
 %define _rabbitmq_user      rabbitmq
 %define _rabbitmq_group     rabbitmq
@@ -18,8 +18,8 @@
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.12.4
-Release:       2%{?dist}
+Version:       3.13.3
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -28,7 +28,7 @@ URL:           https://github.com/rabbitmq/rabbitmq-server
 
 # use only .xz bundle from release page of github
 Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 rabbitmq=8e01b258f0ec8345b767d6974e94a3cad64bdb29590fc0f82b5c2abae875cf55bdcfd8306ce52a41114bf548917affa30491d249c93f3c123e58057cd461414d
+%define sha512 rabbitmq=3d06926e4068ef8d0a832e6d32267a6fc3d098a59583266e5c419e421cdf3c5dd60b77859778232289b80e1e3ff3e35ce9959ea53fefa269d7b1afe5f686c068
 
 Source1: %{name}.tmpfiles
 Source2: %{name}.logrotate
@@ -150,6 +150,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Tue Jun 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.13.3-1
+- Upgrade to v3.13.3
 * Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.12.4-2
 - Bump version as a part of rsync upgrade
 * Wed Dec 20 2023 Harinadh D <hdommaraju@vmware.com> 3.12.4-1
