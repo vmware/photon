@@ -1,7 +1,7 @@
 Name:          erlang
 Summary:       erlang
-Version:       25.1.2
-Release:       3%{?dist}
+Version:       26.2.5
+Release:       1%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -9,10 +9,10 @@ License:       ASL2.0
 URL:           https://www.erlang.org
 
 Source0: https://github.com/erlang/otp/archive/refs/tags/OTP-%{version}.tar.gz
-%define sha512 OTP=a478799cb7df70a552043da55757b811e8b97182be15ab928e05b58537bb7bc4899aee406648767f538d8bd5c09e0a9d7e3655c99a8df0e6a0b77db83a720fb8
+%define sha512 OTP=f06d34290c0d93609aa3efbdc97206e8d3ce17aa2c3f62b6c566c7631ee3a3d45a89b61ce0ace81604b5a94610d03ad98558f27ee888ca90ecdeeeb2759c0184
 
 Patch0: 0001-erlang-fix-vernemq-build-fail.patch
-Patch1: erlang-CVE-2023-48795.patch
+Patch1: 0002-lib-crypto-c_src-crypto.c-load-fips-provider-in-fips.patch
 
 Requires: ncurses-libs
 
@@ -49,6 +49,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue Jun 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2.5-1
+- Upgrade to v26.2.5
 * Fri Dec 22 2023 Harinadh D <hdommaraju@vmware.com> 25.1.2-3
 - Fix CVE-2023-48795
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 25.1.2-2

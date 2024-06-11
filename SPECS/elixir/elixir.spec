@@ -2,8 +2,8 @@
 
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
-Version:         1.14.2
-Release:         2%{?dist}
+Version:         1.16.3
+Release:         1%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org
 Vendor:          VMware, Inc.
@@ -11,7 +11,7 @@ Distribution:    Photon
 Group:           Development/Languages
 
 Source0: https://github.com/elixir-lang/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ec492464553aa6bdaa37dbfd07b1fdc00d398242e269e73893d75b615e0fc44d360b2347378c45982281feed8d0c34c7fbdd09101ca12df0f7073cf52e43f04e
+%define sha512 %{name}=1511fb78bdcc50850cbf91007ed11c6a89e947d0a743c1e9ed30e1c93c1b47b5377fced17eeb66ac511d4f151d2e00ef2ecc6fb425d0d4afe2451be41a6ba6ee
 
 BuildRequires:   git
 BuildRequires:   sed
@@ -31,22 +31,21 @@ fault-tolerant, non-stop applications with hot code swapping.
 
 %build
 export LANG="en_US.UTF-8"
-make compile %{?_smp_mflags}
+%make_build compile
 
 %install
-mkdir -p %{buildroot}%{_datadir}/%{name}/%{version}
-cp -pra bin lib %{buildroot}%{_datadir}/%{name}/%{version}
+mkdir -p %{buildroot}%{_datadir}/%{name}/%{version} \
+         %{buildroot}%{_bindir}
 
-mkdir -p %{buildroot}%{_bindir}
+cp -a bin lib %{buildroot}%{_datadir}/%{name}/%{version}
+
 # don't create relative symlinks, this must be absolute symlink
 # or else some builds fail with weird errors (rabbimq for example)
-ln -sfv %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}%{_bindir}
+ln -sv %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}%{_bindir}
 
-%if 0%{?with_check}
 %check
 export LANG="en_US.UTF-8"
-make test %{?_smp_mflags}
-%endif
+%make_build test
 
 %files
 %defattr(-,root,root)
@@ -57,6 +56,8 @@ make test %{?_smp_mflags}
 %{_datadir}/%{name}
 
 %changelog
+* Tue Jun 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.3-1
+- Upgrade to v1.16.3
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-2
 - Bump version as a part of openldap upgrade
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.14.2-1

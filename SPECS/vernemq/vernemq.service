@@ -5,21 +5,24 @@ Wants=network.target epmd@0.0.0.0.socket
 ConditionPathExists=/etc/vernemq/vernemq.conf
 
 [Service]
-Type=forking
-PIDFile=/run/vernemq/vernemq.pid
-WorkingDirectory=/usr/lib64/vernemq
-ExecStartPre=/usr/lib64/vernemq/bin/vernemq chkconfig
-ExecStart=/usr/lib64/vernemq/bin/vernemq start
-ExecStop=/usr/lib64/vernemq/bin/vernemq stop
-ExecStop=/bin/sh -c "while ps -p $MAINPID >/dev/null 2>&1; do sleep 1; done"
+Type=notify
 User=vernemq
 Group=vernemq
 NotifyAccess=all
-RuntimeDirectory=vernemq
-RuntimeDirectoryMode=0755
+
+# if we set this to infinity, vernemq service fails to start
+# vernemq: ll_alloc: Cannot allocate 2147483711 bytes of memory
+LimitNOFILE=65536
+
 Environment="WAIT_FOR_ERLANG=3600"
 TimeoutStartSec=3600
-LimitNOFILE=infinity
+RuntimeDirectory=vernemq
+RuntimeDirectoryMode=0755
+WorkingDirectory=/usr/lib/vernemq
+ExecStartPre=/usr/lib/vernemq/bin/vernemq chkconfig
+ExecStart=/usr/lib/vernemq/bin/vernemq start
+ExecStop=/usr/lib/vernemq/bin/vernemq stop
+SuccessExitStatus=69
 
 [Install]
 WantedBy=multi-user.target

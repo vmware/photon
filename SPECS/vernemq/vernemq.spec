@@ -1,58 +1,81 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
-Version:          1.12.6.2
-Release:          4%{?dist}
+Version:          2.0.1
+Release:          1%{?dist}
 License:          Apache License, Version 2.0
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0: https://github.com/vernemq/vernemq/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=be171617ee827a9fa9a1dcd836b3d1f9b53975ecc6a3865c3e5d4c2c6abcdee124ef92a546035b549416235c1d9e9271f9f034e590397d5505b941eb8268bc97
+Source0: https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=e4f1cd4c74d2cb67ab1524a76bdc6071e7b1e38ede574bc11e5ffe861bff99321647be0730f5f17d724dd792aa0fb86d0e9a92417f45bc43fef1461f1f64ae52
 
-Source1: %{name}_vendor-%{version}.tar.gz
-%define sha512 vernemq_vendor=45acfa62b6bebddad19ce02461e5ab212dd868b37ab9d2ed89df1c7b3d9ad2ec7281d61f8d4e1171f6018010607a8129bc99eee837f900a2449617d7935af0d1
+# Building this tarball is not a straight forward process
+#
+# Setup your environment with desired version of erlang
+# Extract vernemq tarball
+# Run `make rel` (this command should succeed)
+# This will bring all dependencies into _build/default/lib/
+# mkdir -p vernemq_vendor-<version>/_checkouts
+# mv _build/default/lib/* vernemq_vendor-<version>/_checkouts
+# mv _build/default/plugins vernemq_vendor-<version>/
+#
+# Now do, rm -rf _build
+# mkdir -p _build/default/
+# cp -a vernemq_vendor-<version>/plugins _build/default/
+# cp -a vernemq_vendor-<version>/_checkouts .
+#
+# Ensure that no sources are fetched from web during build
+# If anything is fetched from web, it must be fixed
+#
+# Once all done, create vendor tarball
+#
+# XZ_OPT=-9 tar cJf vernemq_vendor-version>.tar.xz
+Source1: %{name}_vendor-%{version}.tar.xz
+%define sha512 %{name}_vendor=f0a57b95ad487544717004c0af449d9fd589be37d9a66e03c6e51bdc7ff5e444a224c6a88c219a08fcd6f08c6bfa4c60ae8d6e8e8733a1d6d54b83608bc73b26
 
 Source2: vars.config
 Source3: %{name}.service
 Source4: %{name}.sysusers
 
-Patch0: local_version.patch
+Patch0: 0001-local_version.patch
 
 # leveldb(core dependency) build on aarch64 is currently not supported
 # hence vernemq is restricted to x86_64
-BuildArch: x86_64
+BuildArch:        x86_64
 
-BuildRequires: erlang
-BuildRequires: which
-BuildRequires: make
-BuildRequires: libstdc++-devel
-BuildRequires: snappy-devel
-BuildRequires: systemd-devel
+BuildRequires:    erlang
+BuildRequires:    which
+BuildRequires:    make
+BuildRequires:    libstdc++-devel
+BuildRequires:    snappy-devel
+BuildRequires:    systemd-devel
 
-Requires:      snappy
-Requires:      libstdc++
-Requires:      systemd
-Requires:      openssl
-Requires:      ncurses
-Requires(pre): systemd-rpm-macros
-Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+Requires:         erlang = 26.2.5
+Requires:         snappy
+Requires:         libstdc++
+Requires:         systemd
+Requires:         openssl
+Requires:         ncurses
+Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 A high-performance, distributed MQTT message broker.
 
 %prep
-# Using autosetup is not feasible
-%setup -q
-# Using autosetup is not feasible
-%setup -Tq -D -b 1
-%autopatch -p1 -m0 -M2
+%autosetup -p1 -b0 -b1
 
 %build
 export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 mv ../%{name}_vendor-%{version}/_checkouts _checkouts
+
+mkdir -p _build/default
+mv ../%{name}_vendor-%{version}/plugins _build/default/
+
 cp %{SOURCE2} ./vars.config
+
 # make doesn't support _smp_mflags
 make rel
 
@@ -64,15 +87,29 @@ install -vpm 0644 -t %{buildroot}%{_sysconfdir}/%{name} _build/default/rel/%{nam
 install -vpm 0644 -t %{buildroot}%{_sysconfdir}/%{name} _build/default/rel/%{name}/etc/vmq.acl
 install -vdm 0755 %{buildroot}%{_libdir}/%{name}
 
-cp -pr _build/default/rel/%{name}/bin \
-       _build/default/rel/%{name}/lib \
-       _build/default/rel/%{name}/erts-* \
-       _build/default/rel/%{name}/releases \
-       %{buildroot}%{_libdir}/%{name}
+erts_dir="$(find %{_libdir}/erlang/ -maxdepth 1 -type d -name erts-*)"
+[ -z "${erts_dir}" ] && exit 1
+erts_dir="$(basename ${erts_dir})"
+
+ln -sv %{_libdir}/erlang/${erts_dir}/bin/* \
+          _build/default/rel/%{name}/${erts_dir}/bin/
+
+cp -a _build/default/rel/%{name}/bin \
+      _build/default/rel/%{name}/lib \
+      _build/default/rel/%{name}/${erts_dir} \
+      _build/default/rel/%{name}/releases \
+      %{buildroot}%{_libdir}/%{name}
+
+install -vdm 0755 %{buildroot}%{_libdir}/erlang/lib
+pushd %{buildroot}%{_usr}
+for i in bridge commons server; do
+  ln -srv lib/vernemq/lib/vmq_${i}-0.0.0 lib/erlang/lib/
+done
+popd
 
 install -vdm 0755 %{buildroot}%{_datadir}
-cp -r _build/default/rel/%{name}/share %{buildroot}%{_datadir}/%{name}
-install -vdm 0755 %{buildroot}%{_localstatedir}/log/%{name}/sasl
+cp -a _build/default/rel/%{name}/share %{buildroot}%{_datadir}/%{name}
+install -vdm 0755 %{buildroot}%{_var}/log/%{name}/sasl
 
 mkdir -p %{buildroot}%{_unitdir}
 cp %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
@@ -82,13 +119,13 @@ echo "enable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 
 mkdir -p %{buildroot}%{_tmpfilesdir}
 cat >> %{buildroot}%{_tmpfilesdir}/%{name}.conf << EOF
-d /run/%{name} 0755 %{name} %{name} -
+d %{_rundir}/%{name} 0755 %{name} %{name} -
 EOF
 
 install -vdm 0755 %{buildroot}%{_sbindir}
-ln -sfv %{_lib64dir}/%{name}/bin/%{name} %{buildroot}%{_sbindir}
-ln -sfv %{_lib64dir}/%{name}/bin/vmq-admin %{buildroot}%{_sbindir}
-ln -sfv %{_lib64dir}/%{name}/bin/vmq-passwd %{buildroot}%{_sbindir}
+ln -sv %{_libdir}/%{name}/bin/%{name} %{buildroot}%{_sbindir}
+ln -sv %{_libdir}/%{name}/bin/vmq-admin %{buildroot}%{_sbindir}
+ln -sv %{_libdir}/%{name}/bin/vmq-passwd %{buildroot}%{_sbindir}
 install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %pre
@@ -98,6 +135,10 @@ install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %systemd_preun %{name}.service
 
 %post
+# for pipe dir, after first installation
+mkdir -m 755 -p %{_rundir}/%{name}
+chown -R %{name}:%{name} %{_rundir}/%{name}
+
 %systemd_post %{name}.service
 
 %postun
@@ -110,17 +151,21 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %license LICENSE.txt
 %attr(0755,%{name},%{name}) %{_sharedstatedir}/%{name}
-%attr(0755,%{name},%{name}) %{_localstatedir}/log/%{name}
+%attr(0755,%{name},%{name}) %{_var}/log/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}/*
 %{_sbindir}/*
-%{_libdir}/%{name}
-%{_datadir}/%{name}
+%attr(0755,%{name},%{name}) %{_libdir}/%{name}
+%attr(0755,%{name},%{name}) %{_libdir}/erlang/lib/*
+%attr(0755,%{name},%{name}) %{_datadir}/%{name}
 %{_unitdir}/%{name}.service
 %{_presetdir}/50-%{name}.preset
 %{_tmpfilesdir}/%{name}.conf
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Jun 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.1-1
+- Upgrade to v2.0.1
+- Avoid repackaging erlng binaries, use system provided erlang
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.12.6.2-4
 - Resolving systemd-rpm-macros for group creation
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 1.12.6.2-3
