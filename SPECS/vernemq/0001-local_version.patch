@@ -1,31 +1,60 @@
+From 27966da8c29571b58a79e6b50a01416124891e48 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Fri, 14 Jun 2024 13:15:52 -0500
+Subject: [PATCH] local_version
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ Makefile     |  2 +-
+ rebar.config | 15 ++++++---------
+ 2 files changed, 7 insertions(+), 10 deletions(-)
+
 diff --git a/Makefile b/Makefile
-index 972ad4c..4fb1451 100644
+index 48441b7..58fb239 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,6 +1,6 @@
  BASE_DIR         = $(shell pwd)
  ERLANG_BIN       = $(shell dirname $(shell which erl))
 -GIT_VERSION      = $(shell git describe --tags --always)
-+GIT_VERSION      = 1.12.6.2
++GIT_VERSION      = 2.0.1
  OVERLAY_VARS    ?=
  REBAR ?= $(BASE_DIR)/rebar3
  
 diff --git a/rebar.config b/rebar.config
-index 49f6623..e927070 100644
+index 3e10e97..c7776e8 100644
 --- a/rebar.config
 +++ b/rebar.config
-@@ -64,7 +64,7 @@
+@@ -11,7 +11,7 @@
+ {edoc_opts, [{preprocess, true}]}.
+ 
+ {project_plugins, [
+-    {rebar3_cuttlefish, {git, "https://github.com/vernemq/rebar3_cuttlefish", {branch, "master"}}},
++    {rebar3_cuttlefish, {git, "https://github.com/vernemq/rebar3_cuttlefish", {ref, "53b4602"}}},
+     erlfmt
+ ]}.
+ 
+@@ -60,7 +60,7 @@
  {cuttlefish, [{schema_dir, "lib"}, {schema_discovery, false}]}.
  
  {relx, [
 -    {release, {vernemq, semver}, [
-+    {release, {vernemq, "1.12.6.2"}, [
++    {release, {vernemq, "2.0.1"}, [
          sasl,
          inets,
          xmerl,
-@@ -136,12 +136,9 @@
-         {template, "apps/vmq_swc/priv/vmq_swc.schema", "share/schema/19-vmq_swc.schema"},
-         {template, "apps/vmq_pulse/priv/vmq_pulse.schema", "share/schema/20-vmq_pulse.schema"},
+@@ -91,7 +91,7 @@
+     % the vars.generated is created by the Makefile
+     {overlay_vars, "vars.generated"},
+     {dev_mode, false},
+-    {include_erts, true},
++    {include_erts, false},
+     {include_src, false},
+     % we're using the runner from files/runner (ex. node_package)
+     {extended_start_script, false},
+@@ -138,12 +138,9 @@
+             "share/schema/21-vmq_http_pub.schema"},
+         {template, "apps/vmq_web_ui/priv/vmq_web_ui.schema", "share/schema/22-vmq_web_ui.schema"},
          {template, "files/vmq.schema", "share/schema/30-vmq.schema"},
 -        {template, "_build/default/lib/cuttlefish/priv/erlang_vm.schema",
 -            "share/schema/31-erlang_vm.schema"},
@@ -39,3 +68,6 @@ index 49f6623..e927070 100644
          {mkdir, "lib/erlio-patches"}
      ]}
  ]}.
+-- 
+2.34.1
+

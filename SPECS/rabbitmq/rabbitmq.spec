@@ -11,8 +11,8 @@
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.11.3
-Release:       4%{?dist}
+Version:       3.13.3
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -21,11 +21,12 @@ URL:           https://github.com/rabbitmq/rabbitmq-server
 
 # use only .xz bundle from release page of github
 Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 rabbitmq=6f010a9b7286ce3960435f201c771cc317c9b97f733649eae43ca4db2f839904aad08e7285bccf889a295cfcdc9b34b169d00f90118c75c11850c375ac2bb8a9
+%define sha512 rabbitmq=3d06926e4068ef8d0a832e6d32267a6fc3d098a59583266e5c419e421cdf3c5dd60b77859778232289b80e1e3ff3e35ce9959ea53fefa269d7b1afe5f686c068
 
 Source1: %{name}.tmpfiles
 Source2: rabbitmq.sysusers
-Requires:      erlang
+
+Requires:      erlang = 26.2.5
 Requires:      erlang-sd_notify
 Requires:      socat
 Requires:      systemd
@@ -56,14 +57,15 @@ rabbitmq messaging server
 %build
 export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 export PROJECT_VERSION="%{version}"
-# https://github.com/rabbitmq/rabbitmq-server/discussions/5246
-export DIST_AS_EZS=1
-%make_build
+
+# some intermittent build failure
+# retry if first run fails
+%make_build || %make_build
 
 %install
 export PROJECT_VERSION="%{version}"
 export RMQ_ROOTDIR="%{_rabbit_libdir}"
-export DIST_AS_EZS=1
+
 %make_install %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_sharedstatedir}/rabbitmq
@@ -101,10 +103,8 @@ install -p -D -m 0644 ./deps/rabbit/docs/rabbitmq.conf.example \
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} tests
-%endif
+%make_build tests
 
 %clean
 rm -rf %{buildroot}
@@ -138,6 +138,8 @@ chmod g+s %{_sysconfdir}/rabbitmq
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Tue Jun 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.13.3-1
+- Upgrade to v3.13.3
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 3.11.3-4
 - Resolving systemd-rpm-macros for group creation
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.11.3-3
