@@ -12,18 +12,24 @@ dist=".ph5"
 
 declare -A kvers
 declare -A krels
+declare -A specs_map=(
+[linux_specs]="linux linux-esx linux-rt"
+[kernel_drivers_intel]="kernels-drivers-intel-iavf kernels-drivers-intel-i40e kernels-drivers-intel-ice"
+[other_specs]="sysdig falco"
+)
 
 populate_kvers() {
   local i=""
   local sp=""
 
-  for i in linux linux-esx linux-rt; do
-    local k_specs=($(grep -lrw "^Name:[[:space:]]*$i$" $spec_dir/linux/))
+  for i in ${specs_map["linux_specs"]}; do
+    local k_specs=($(grep -lr "^Name:[[:space:]]*$i$" $spec_dir/linux/))
 
     local x="$(echo $i | tr '-' '_')"
+
     for sp in ${k_specs[@]}; do
-      kvers[$x]+="$(grep ^Version: $sp | awk '{print $2}')"
-      krels[$x]+="$(grep ^Release: $sp | awk '{print $2}' | tr -d -c 0-9)"
+      kvers[$x]+="$(grep ^Version: $sp | awk '{print $2}') "
+      krels[$x]+="$(grep ^Release: $sp | awk '{print $2}' | tr -d -c 0-9) "
     done
   done
 }
@@ -42,8 +48,8 @@ create_specs() {
   local pkg="$1"
 
   local x="$(echo $pkg | tr '-' '_')"
-  local kver_arr=${kvers[$x]}
-  local krel_arr=${krels[$x]}
+  local kver_arr=(${kvers[$x]})
+  local krel_arr=(${krels[$x]})
   #local kver_arr=("6.1.75" "6.6.66" "6.8.88")
   #local krel_arr=("1" "2" "4")
   local sp=""
@@ -101,7 +107,7 @@ create_specs() {
 
 populate_kvers
 
-specs=(falco sysdig)
+specs=(${specs_map["other_specs"]})
 
 echo "Creating ${specs[@]} specs ..."
 
@@ -113,11 +119,7 @@ done
 create_specs "linux"
 
 kernel_drivers_intel=()
-for i in iavf i40e ice; do
-  kernel_drivers_intel+=(kernels-drivers-intel-$i)
-done
-
-specs=(${kernel_drivers_intel[@]})
+specs=(${specs_map["kernel_drivers_intel"]})
 
 for s in ${!specs[@]}; do
   specs[$s]="$(find -L "$spec_dir" -type f -name ${specs[$s]}.spec.in )"
