@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.12.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0: https://download.gnome.org/sources/libxml2/2.12/%{name}-%{version}.tar.xz
 %define sha512 %{name}=19d6901c0f189813e8bd20ffdfbb29d8545ca30154d1f3cc82624d64e4db3cfbe8eef7e8ccc1e195289f1bf94bb50fefcf11a95badb0ddeb845b4e4ea5a819ac
+
+Patch0:        libxml2-CVE-2024-34459.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-xml
@@ -89,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Tue Jun 11 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.12.6-2
+- Fix for CVE-2024-34459
 * Wed Mar 27 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.12.6-1
 - Update to v2.12.6
 * Tue Mar 12 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.12.5-1
