@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        27%{?dist}
+Release:        28%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -54,6 +54,10 @@ Patch33:        0001-Simplify-allocations-and-fix-merge-and-continue-acti.patch
 Patch34:        CVE-2023-4806_CVE-2023-5156.patch
 Patch35:        CVE-2024-2961.patch
 Patch36:        CVE-2024-33599.patch
+Patch37:        CVE-2024-33600-nscd-Do-not-send-missing-not-found-re.patch
+Patch38:        CVE-2024-33600-nscd-Avoid-null-pointer-crashes-after.patch
+Patch39:        CVE-2024-33601-CVE-2024-33602-nscd-netgroup-Use-two-.patch
+Patch40:        nscd-Use-time_t-for-return-type-of-addgetnetgrentX.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -148,6 +152,10 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
+%patch40 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -359,6 +367,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Wed Jun 12 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.28-28
+-   Fix CVE-2024-33600, CVE-2024-33600, CVE-2024-33601, CVE-2024-33602
 *   Tue May 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.28-27
 -   Fix CVE-2024-33599
 *   Tue Jan 09 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.28-26
