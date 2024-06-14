@@ -1,0 +1,63 @@
+From 7f35fbcd21af4c2c88429697f4508f1be1e8f042 Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivania2@vmware.com>
+Date: Fri, 9 Sep 2022 14:16:15 +0000
+Subject: [PATCH 23/39] Fix kubernetes denials for K8's deployment with
+ containerd
+
+Changes are added to resolve following kubernetes  denials
+
+avc:  denied  { read } for  pid=6084 comm="kube-controller"
+path="/etc/kubernetes/pki/front-proxy-ca.crt" dev="sda3" ino=1049304
+scontext=system_u:system_r:container_t:s0:c221,c620
+tcontext=system_u:object_r:kubernetes_file_t:s0 tclass=file permissive=0
+---
+ policy/modules/contrib/container.if | 19 +++++++++++++++++++
+ policy/modules/contrib/container.te |  2 ++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/policy/modules/contrib/container.if b/policy/modules/contrib/container.if
+index 4412feb..f5bcc30 100644
+--- a/policy/modules/contrib/container.if
++++ b/policy/modules/contrib/container.if
+@@ -185,6 +185,25 @@ interface(`container_runtime_read_tmpfs_files',`
+ 	read_lnk_files_pattern($1, container_runtime_tmpfs_t, container_runtime_tmpfs_t)
+ ')
+ 
++########################################
++## <summary>
++##      Read container runtime kubernetes files.
++## </summary>
++## <param name="domain">
++##      <summary>
++##      Domain allowed access.
++##      </summary>
++## </param>
++#
++interface(`container_runtime_read_kubernetes_files',`
++        gen_require(`
++                type kubernetes_file_t;
++        ')
++
++        files_search_var_lib($1)
++        read_files_pattern($1, kubernetes_file_t, kubernetes_file_t)
++')
++
+ ########################################
+ ## <summary>
+ ##	Manage container share files.
+diff --git a/policy/modules/contrib/container.te b/policy/modules/contrib/container.te
+index 83f4e98..bc85980 100644
+--- a/policy/modules/contrib/container.te
++++ b/policy/modules/contrib/container.te
+@@ -1429,6 +1429,8 @@ kernel_mounton_systemd_ProtectKernelTunables(container_engine_t)
+ term_mount_pty_fs(container_engine_t)
+ term_use_generic_ptys(container_engine_t)
+ 
++container_runtime_read_kubernetes_files(container_t)
++
+ allow container_engine_t container_file_t:chr_file mounton;
+ allow container_engine_t filesystem_type:{dir file} mounton;
+ allow container_engine_t proc_kcore_t:file mounton;
+-- 
+2.45.2
+

@@ -1,0 +1,57 @@
+From 13247cc9c81627ab09a95b7e179ff84b72188984 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 30 May 2024 14:59:29 +0530
+Subject: [PATCH 35/39] authlogin.te: fix pwhistory denial
+
+Fix following denials:
+
+May 30 09:24:38 ph5dev audit[797]: AVC avc:  denied  { read write } for  pid=797 comm="pwhistory_helpe" path="/dev/pts/0" dev="devpts" ino=3 scontext=system_u:system_r:updpwd_t:s0-s0:c0.c1023 tcontext=system_u:object_r:sshd_devpts_t:s0 tclass=chr_file permissive=1
+
+May 30 10:23:42 ph5dev audit[822]: AVC avc:  denied  { noatsecure } for  pid=822 comm="passwd" scontext=system_u:system_r:passwd_t:s0-s0:c0.c1023 tcontext=system_u:system_r:updpwd_t:s0-s0:c0.c1023 tclass=process permissive=1
+May 30 10:23:42 ph5dev audit[822]: AVC avc:  denied  { rlimitinh } for  pid=822 comm="pwhistory_helpe" scontext=system_u:system_r:passwd_t:s0-s0:c0.c1023 tcontext=system_u:system_r:updpwd_t:s0-s0:c0.c1023 tclass=process permissive=1
+May 30 10:23:42 ph5dev audit[822]: AVC avc:  denied  { siginh } for  pid=822 comm="pwhistory_helpe" scontext=system_u:system_r:passwd_t:s0-s0:c0.c1023 tcontext=system_u:system_r:updpwd_t:s0-s0:c0.c1023 tclass=process permissive=1
+
+This happens when pwhistory is configured.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/admin/usermanage.te | 2 ++
+ policy/modules/system/authlogin.te | 8 +++++++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/policy/modules/admin/usermanage.te b/policy/modules/admin/usermanage.te
+index 9e574ca..e72e8d4 100644
+--- a/policy/modules/admin/usermanage.te
++++ b/policy/modules/admin/usermanage.te
+@@ -681,3 +681,5 @@ optional_policy(`
+ optional_policy(`
+ 	stapserver_manage_lib(useradd_t)
+ ')
++
++allow passwd_t updpwd_t:process { rlimitinh noatsecure siginh };
+diff --git a/policy/modules/system/authlogin.te b/policy/modules/system/authlogin.te
+index e1beaf1..fec341c 100644
+--- a/policy/modules/system/authlogin.te
++++ b/policy/modules/system/authlogin.te
+@@ -587,7 +587,7 @@ corecmd_getattr_all_executables(login_pgm)
+ domain_kill_all_domains(login_pgm)
+ 
+ allow login_pgm self:netlink_kobject_uevent_socket create_socket_perms;
+-allow login_pgm self:netlink_selinux_socket create_socket_perms; 
++allow login_pgm self:netlink_selinux_socket create_socket_perms;
+ allow login_pgm self:capability ipc_lock;
+ dontaudit login_pgm self:capability net_admin;
+ allow login_pgm self:process { setcap setkeycreate };
+@@ -712,3 +712,9 @@ optional_policy(`
+ 	ssh_agent_exec(login_pgm)
+ 	ssh_read_user_home_files(login_pgm)
+ ')
++
++require {
++  type sshd_devpts_t;
++}
++
++allow updpwd_t sshd_devpts_t:chr_file { read write open ioctl };
+-- 
+2.45.2
+

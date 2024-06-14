@@ -1,0 +1,68 @@
+From e23f34c0101a357fa6632a5c4c2d3a7e1d28f404 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Thu, 3 Mar 2022 01:03:35 +0000
+Subject: [PATCH 07/39] motd_t: new domain for motdgen
+
+---
+ policy/modules/services/ssh.te     | 3 +++
+ policy/modules/system/authlogin.fc | 2 --
+ policy/modules/system/authlogin.te | 9 ---------
+ 3 files changed, 3 insertions(+), 11 deletions(-)
+
+diff --git a/policy/modules/services/ssh.te b/policy/modules/services/ssh.te
+index b634083..a44d340 100644
+--- a/policy/modules/services/ssh.te
++++ b/policy/modules/services/ssh.te
+@@ -332,6 +332,9 @@ term_setattr_all_ttys(sshd_t)
+ term_relabelto_all_ptys(sshd_t)
+ term_use_ptmx(sshd_t)
+ 
++allow sshd_t self:alg_socket { create bind accept };
++motdgen_exec(sshd_t);
++
+ # for X forwarding
+ corenet_tcp_bind_xserver_port(sshd_t)
+ corenet_tcp_bind_vnc_port(sshd_t)
+diff --git a/policy/modules/system/authlogin.fc b/policy/modules/system/authlogin.fc
+index dc359e2..af2274d 100644
+--- a/policy/modules/system/authlogin.fc
++++ b/policy/modules/system/authlogin.fc
+@@ -83,8 +83,6 @@ ifdef(`distro_gentoo', `
+ 
+ /run/console(/.*)?	 	gen_context(system_u:object_r:pam_var_console_t,s0)
+ /run/faillock(/.*)?		gen_context(system_u:object_r:faillog_t,s0)
+-/run/motd		--	gen_context(system_u:object_r:motd_var_run_t,s0)
+-/run/motd\.d(/.*)?		gen_context(system_u:object_r:motd_var_run_t,s0)
+ /run/pam_mount(/.*)?	gen_context(system_u:object_r:pam_var_run_t,s0)
+ /run/pam_ssh(/.*)?		gen_context(system_u:object_r:pam_var_run_t,s0)
+ /run/pam_timestamp(/.*)?	gen_context(system_u:object_r:pam_var_run_t,s0)
+diff --git a/policy/modules/system/authlogin.te b/policy/modules/system/authlogin.te
+index 9607f51..4627dad 100644
+--- a/policy/modules/system/authlogin.te
++++ b/policy/modules/system/authlogin.te
+@@ -77,11 +77,6 @@ files_pid_file(pam_var_console_t)
+ type pam_var_run_t;
+ files_pid_file(pam_var_run_t)
+ 
+-# For MOTD files read by login programs, e.g. sshd, located in
+-# /run/motd.d/, or symlinked out from /run/motd.d/
+-type motd_var_run_t;
+-files_type(motd_var_run_t);
+-
+ type shadow_t;
+ files_auth_file(shadow_t)
+ neverallow ~can_read_shadow_passwords shadow_t:file read;
+@@ -650,10 +645,6 @@ selinux_compute_user_contexts(login_pgm)
+ auth_manage_faillog(login_pgm)
+ auth_manage_pam_pid(login_pgm)
+ 
+-list_dirs_pattern(login_pgm, motd_var_run_t, motd_var_run_t);
+-read_files_pattern(login_pgm, motd_var_run_t, motd_var_run_t);
+-read_lnk_files_pattern(login_pgm, motd_var_run_t, motd_var_run_t);
+-
+ init_rw_utmp(login_pgm)
+ 
+ logging_set_loginuid(login_pgm)
+-- 
+2.45.2
+

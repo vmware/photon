@@ -1,0 +1,59 @@
+From 357b52639a062baa57f8a093aa080a66e00e221a Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 12 Jun 2024 14:50:53 +0530
+Subject: [PATCH 36/39] Disable some neverallow rules for container rules
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/contrib/container.te | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/policy/modules/contrib/container.te b/policy/modules/contrib/container.te
+index 9701de7..44a2246 100644
+--- a/policy/modules/contrib/container.te
++++ b/policy/modules/contrib/container.te
+@@ -350,8 +350,6 @@ domain_getattr_all_domains(container_runtime_domain)
+ 
+ userdom_map_tmp_files(container_runtime_domain)
+ 
+-anaconda_domtrans_install(container_runtime_domain)
+-
+ optional_policy(`
+ 	gnome_map_generic_data_home_files(container_runtime_domain)
+ 	allow container_runtime_domain data_home_t:dir { relabelfrom relabelto };
+@@ -789,8 +787,6 @@ optional_policy(`
+ 
+ domain_transition_all(spc_t)
+ 
+-anaconda_domtrans_install(spc_t)
+-
+ optional_policy(`
+ 	dbus_chat_system_bus(spc_t)
+ 	dbus_chat_session_bus(spc_t)
+@@ -1506,12 +1502,12 @@ optional_policy(`
+ 
+ # Standard container which needs to be allowed to use any device
+ container_domain_template(container_device, container)
+-allow container_device_t device_node:chr_file rw_chr_file_perms;
++#allow container_device_t device_node:chr_file rw_chr_file_perms;
+ 
+ # Standard container which needs to be allowed to use any device and
+ # communicate with kubelet
+ container_domain_template(container_device_plugin, container)
+-allow container_device_plugin_t device_node:chr_file rw_chr_file_perms;
++#allow container_device_plugin_t device_node:chr_file rw_chr_file_perms;
+ dev_rw_sysfs(container_device_plugin_t)
+ kernel_read_debugfs(container_device_plugin_t)
+ container_kubelet_stream_connect(container_device_plugin_t)
+@@ -1519,7 +1515,7 @@ container_kubelet_stream_connect(container_device_plugin_t)
+ # Standard container which needs to be allowed to use any device and
+ # modify kubelet configuration
+ container_domain_template(container_device_plugin_init, container)
+-allow container_device_plugin_init_t device_node:chr_file rw_chr_file_perms;
++#allow container_device_plugin_init_t device_node:chr_file rw_chr_file_perms;
+ dev_rw_sysfs(container_device_plugin_init_t)
+ manage_dirs_pattern(container_device_plugin_init_t, kubernetes_file_t, kubernetes_file_t)
+ manage_files_pattern(container_device_plugin_init_t, kubernetes_file_t, kubernetes_file_t)
+-- 
+2.45.2
+

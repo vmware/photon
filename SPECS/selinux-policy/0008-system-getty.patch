@@ -1,0 +1,28 @@
+From 3ea540e02eb64dcb7f53c47ad7c88422d4e90c73 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:41:24 +0530
+Subject: [PATCH 08/39] system getty
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/getty.te | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/policy/modules/system/getty.te b/policy/modules/system/getty.te
+index 0ad09a7..0b13028 100644
+--- a/policy/modules/system/getty.te
++++ b/policy/modules/system/getty.te
+@@ -131,6 +131,10 @@ ifdef(`distro_ubuntu',`
+ 	')
+ ')
+ 
++ifdef(`distro_photon',`
++	allow getty_t self:capability sys_admin;
++')
++
+ tunable_policy(`login_console_enabled',`
+ 	# Support logging in from /dev/console
+ 	term_use_console(getty_t)
+-- 
+2.45.2
+

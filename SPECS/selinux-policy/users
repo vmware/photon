@@ -1,0 +1,42 @@
+# Source:
+# https://src.fedoraproject.org/rpms/selinux-policy/raw/rawhide/f/users-minimum
+#
+##################################
+#
+# Core User configuration.
+#
+
+#
+# gen_user(username, prefix, role_set, mls_defaultlevel, mls_range, [mcs_catetories])
+#
+# Note: Identities without a prefix wil not be listed
+# in the users_extra file used by genhomedircon.
+
+#
+# system_u is the user identity for system processes and objects.
+# There should be no corresponding Unix user identity for system,
+# and a user process should never be assigned the system user
+# identity.
+#
+gen_user(system_u,, system_r unconfined_r, s0, s0 - mls_systemhigh, mcs_allcats)
+
+#
+# user_u is a generic user identity for Linux users who have no
+# SELinux user identity defined.  The modified daemons will use
+# this user identity in the security context if there is no matching
+# SELinux user identity for a Linux user.  If you do not want to
+# permit any access to such users, then remove this entry.
+#
+    gen_user(user_u, user, user_r, s0, s0)
+    gen_user(staff_u, user, staff_r system_r sysadm_r unconfined_r, s0, s0 - mls_systemhigh, mcs_allcats)
+    gen_user(sysadm_u, user, sysadm_r, s0, s0 - mls_systemhigh, mcs_allcats)
+
+#
+# The following users correspond to Unix identities.
+# These identities are typically assigned as the user attribute
+# when login starts the user shell.  Users with access to the sysadm_r
+# role should use the staff_r role instead of the user_r role when
+# not in the sysadm_r.
+#
+    gen_user(root, user, unconfined_r sysadm_r staff_r system_r, s0, s0 - mls_systemhigh, mcs_allcats)
+    gen_user(unconfined_u, user, unconfined_r system_r, s0, s0 - mls_systemhigh, mcs_allcats)

@@ -1,0 +1,30 @@
+From 65d495949fa948a30f29e4f099e043d260104fda Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:45:15 +0530
+Subject: [PATCH 14/39] system udev
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/udev.te | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/policy/modules/system/udev.te b/policy/modules/system/udev.te
+index 3dfb902..28f0407 100644
+--- a/policy/modules/system/udev.te
++++ b/policy/modules/system/udev.te
+@@ -231,6 +231,12 @@ ifdef(`distro_gentoo',`
+ 	init_getattr_script_status_files(udev_t)
+ ')
+ 
++ifdef(`distro_photon',`
++	optional_policy(`
++		unconfined_domain(udev_t)
++	')
++')
++
+ ifdef(`distro_redhat',`
+ 	fs_manage_hugetlbfs_dirs(udev_t)
+ 
+-- 
+2.45.2
+

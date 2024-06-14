@@ -1,0 +1,151 @@
+From ab90d4905f2fd3b9ac3c9ca6d24e02d76734d02f Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:39:46 +0530
+Subject: [PATCH 06/39] roles unprivuser
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/roles/unprivuser.te | 127 -----------------------------
+ 1 file changed, 127 deletions(-)
+
+diff --git a/policy/modules/roles/unprivuser.te b/policy/modules/roles/unprivuser.te
+index fcf5f4f..9ad20b2 100644
+--- a/policy/modules/roles/unprivuser.te
++++ b/policy/modules/roles/unprivuser.te
+@@ -177,133 +177,6 @@ optional_policy(`
+ 	vlock_run(user_t, user_r)
+ ')
+ 
+-ifndef(`distro_redhat',`
+-	optional_policy(`
+-		auth_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		bluetooth_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		cdrecord_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		cron_role(user_r, user)
+-	')
+-
+-	optional_policy(`
+-		dbus_role_template(user, user_r, user_t)
+-
+-		optional_policy(`
+-			gnome_role_template(user, user_r, user_t)
+-		')
+-	')
+-
+-	optional_policy(`
+-		evolution_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		games_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-       		gnome_filetrans_fontconfig_home_content(user_t)
+-	')
+-
+-	optional_policy(`
+-		gpg_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		hadoop_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		irc_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		java_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		lockdev_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		lpd_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		mozilla_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		mplayer_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		postgresql_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		pyzor_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		razor_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		rssh_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		spamassassin_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		ssh_role_template(user, user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		systemd_systemctl_entrypoint(user_t)
+-	')
+-
+-
+-	optional_policy(`
+-		thunderbird_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		tvtime_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		uml_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		userhelper_role_template(user, user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		vmware_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		wireshark_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		xserver_run(user_t, user_r)
+-	')
+-')
+-
+ optional_policy(`
+     vmtools_run_helper(user_t, user_r)
+ ')
+-- 
+2.45.2
+

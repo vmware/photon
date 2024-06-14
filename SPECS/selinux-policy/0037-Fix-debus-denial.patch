@@ -1,0 +1,30 @@
+From 979ccb7f450bc83985be0c0842a1e4129087c20b Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 12 Jun 2024 16:22:38 +0530
+Subject: [PATCH 37/39] Fix debus denial
+
+Jun 12 05:29:36 phdev kernel: audit: type=1400
+audit(1718188176.676:170): avc:  denied  { open } for  pid=684
+comm="dbus-daemon" path="/run/systemd/users/0" dev="tmpfs" ino=1131
+scontext=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023
+tcontext=system_u:object_r:var_t:s0 tclass=file permissive=1
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/contrib/dbus.te | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/policy/modules/contrib/dbus.te b/policy/modules/contrib/dbus.te
+index 73a0373..6c00fba 100644
+--- a/policy/modules/contrib/dbus.te
++++ b/policy/modules/contrib/dbus.te
+@@ -410,3 +410,6 @@ allow session_bus_type dbusd_unconfined:dbus send_msg;
+ 
+ kernel_stream_connect(session_bus_type)
+ systemd_login_read_pid_files(session_bus_type)
++
++# Allow dbus-daemon to open files in /run/systemd/users
++allow system_dbusd_t var_t:file { open read write getattr setattr create };
+-- 
+2.45.2
+

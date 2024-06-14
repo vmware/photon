@@ -1,0 +1,28 @@
+From 4dd841ad40655071b9942ebad9a67d096b5b4473 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:42:43 +0530
+Subject: [PATCH 10/39] system logging
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/logging.fc | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/policy/modules/system/logging.fc b/policy/modules/system/logging.fc
+index 3622048..2085c17 100644
+--- a/policy/modules/system/logging.fc
++++ b/policy/modules/system/logging.fc
+@@ -69,6 +69,10 @@ ifndef(`distro_gentoo',`
+ /var/log/audit\.log.*	--	gen_context(system_u:object_r:auditd_log_t,mls_systemhigh)
+ ')
+ 
++ifdef(`distro_photon',`
++/var/opt/audit(/.*)?       gen_context(system_u:object_r:auditd_log_t,mls_systemhigh)
++')
++
+ ifdef(`distro_redhat',`
+ /var/named/chroot/var/log -d	gen_context(system_u:object_r:var_log_t,s0)
+ /var/named/chroot/dev/log -s	gen_context(system_u:object_r:devlog_t,s0)
+-- 
+2.45.2
+

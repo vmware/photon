@@ -1,0 +1,27 @@
+From ee952bab60f0eb13b2c69008340c303304e430d0 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 17 May 2024 23:36:22 +0530
+Subject: [PATCH 32/39] fix getty_t denial
+
+Fixes following denial.
+
+type=AVC msg=audit(1716303099.832:239): avc:  denied  { checkpoint_restore } for  pid=897 comm="agetty" capability=40  scontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tcontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tclass=capability2 permissive=0
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/system/getty.te | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/policy/modules/system/getty.te b/policy/modules/system/getty.te
+index 0b13028..54d760d 100644
+--- a/policy/modules/system/getty.te
++++ b/policy/modules/system/getty.te
+@@ -174,3 +174,5 @@ optional_policy(`
+ optional_policy(`
+ 	udev_read_db(getty_t)
+ ')
++
++allow getty_t self:capability2 checkpoint_restore;
+-- 
+2.45.2
+

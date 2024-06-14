@@ -1,27 +1,27 @@
-From 26c387973a4278218c4ad02137c4b4306ac43ef9 Mon Sep 17 00:00:00 2001
+From e6de7b22f925fd12ec387d03748abe4e59ab64b3 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 28 Mar 2022 21:23:01 +0530
-Subject: [PATCH 01/35] contrib container
+Subject: [PATCH 01/39] contrib container
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- policy/modules/contrib/container.te | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+ policy/modules/contrib/container.te | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
 
 diff --git a/policy/modules/contrib/container.te b/policy/modules/contrib/container.te
-index 058b829..3c23c4d 100644
+index 4f10105..83f4e98 100644
 --- a/policy/modules/contrib/container.te
 +++ b/policy/modules/contrib/container.te
-@@ -22,7 +22,7 @@ gen_tunable(container_connect_any, false)
+@@ -36,8 +36,6 @@ gen_tunable(sshd_launch_containers, false)
  ##  Allow containers to use any device volume mounted into container
  ##  </p>
  ## </desc>
 -gen_tunable(container_use_devices, false)
-+#gen_tunable(container_use_devices, false)
- 
+-
  ## <desc>
- ## <p>
-@@ -52,6 +52,7 @@ allow container_domain container_runtime_domain:process sigchld;
+ ##  <p>
+ ##  Allow containers to use any xserver device volume mounted into container, mostly used for GPU acceleration
+@@ -91,6 +89,7 @@ allow container_domain container_runtime_domain:process sigchld;
  allow container_runtime_domain container_domain:process2 { nnp_transition nosuid_transition };
  dontaudit container_runtime_domain container_domain:process { noatsecure rlimitinh siginh };
  
@@ -29,17 +29,16 @@ index 058b829..3c23c4d 100644
  type conmon_exec_t;
  application_executable_file(conmon_exec_t)
  can_exec(container_runtime_t, conmon_exec_t)
-@@ -963,7 +964,7 @@ allow container_net_domain self:netlink_xfrm_socket create_netlink_socket_perms;
+@@ -1098,7 +1097,6 @@ allow container_net_domain self:netlink_xfrm_socket create_netlink_socket_perms;
  
- 
+ allow container_domain spc_t:unix_stream_socket { read write };
  kernel_unlabeled_domtrans(container_runtime_domain, spc_t)
 -kernel_unlabeled_entry_type(spc_t)
-+#kernel_unlabeled_entry_type(spc_t)
  allow container_runtime_domain unlabeled_t:key manage_key_perms;
  #kernel_dontaudit_write_usermodehelper_state(container_t)
  gen_require(`
-@@ -987,10 +988,6 @@ optional_policy(`
- 	rpm_read_db(container_domain)
+@@ -1120,10 +1118,6 @@ optional_policy(`
+ 	rpm_transition_script(spc_t, system_r)
  ')
  
 -optional_policy(`
@@ -49,30 +48,27 @@ index 058b829..3c23c4d 100644
  optional_policy(`
  	systemd_dbus_chat_logind(container_domain)
  ')
-@@ -1248,8 +1245,6 @@ manage_sock_files_pattern(container_kvm_t, container_file_t, container_file_t)
+@@ -1370,8 +1364,6 @@ manage_sock_files_pattern(container_kvm_t, container_file_t, container_file_t)
  
  dev_rw_kvm(container_kvm_t)
  
 -sssd_read_public_files(container_kvm_t)
 -
  # Container init - Policy for running systemd based containers
- container_domain_template(container_init)
- typeattribute container_init_t container_net_domain, container_user_domain;
-@@ -1271,10 +1266,10 @@ optional_policy(`
+ container_domain_template(container_init, container)
+ typeattribute container_init_t container_init_domain, container_net_domain, container_user_domain;
+@@ -1399,11 +1391,6 @@ optional_policy(`
  	virt_default_capabilities(container_init_t)
  ')
  
 -tunable_policy(`container_use_devices',`
--	allow container_domain device_node:chr_file rw_chr_file_perms;
--	allow container_domain device_node:blk_file rw_blk_file_perms;
+-	allow container_domain device_node:chr_file {rw_chr_file_perms map};
+-	allow container_domain device_node:blk_file {rw_blk_file_perms map};
 -')
-+#tunable_policy(`container_use_devices',`
-+#	allow container_domain device_node:chr_file rw_chr_file_perms;
-+#	allow container_domain device_node:blk_file rw_blk_file_perms;
-+#')
- 
- tunable_policy(`virt_sandbox_use_sys_admin',`
- 	allow container_init_t self:capability sys_admin;
+-
+ tunable_policy(`container_use_xserver_devices',`
+ 	dev_getattr_xserver_misc_dev(container_t)
+ 	dev_rw_xserver_misc(container_t)
 -- 
-2.45.0
+2.45.2
 

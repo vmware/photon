@@ -1,0 +1,33 @@
+From 57d189cef03b5a4cfc8f4c3d215f43d91b671710 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 17 May 2024 23:05:16 +0530
+Subject: [PATCH 30/39] systemd_gpt_generator denial fix
+
+This fixes following denial. Happens at early boot, started happening
+with recent versions of systemd.
+
+type=AVC msg=audit(1716303092.468:18): avc:  denied  { write } for  pid=564 comm="systemd-gpt-aut" name="generator.late" dev="tmpfs" ino=472 scontext=system_u:system_r:systemd_gpt_generator_t:s0 tcontext=system_u:object_r:init_var_run_t:s0 tclass=dir permissive=0
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/system/systemd.te | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/policy/modules/system/systemd.te b/policy/modules/system/systemd.te
+index c88bb9b..9c7ca22 100644
+--- a/policy/modules/system/systemd.te
++++ b/policy/modules/system/systemd.te
+@@ -1762,6 +1762,10 @@ optional_policy(`
+ 	unconfined_server_domtrans(systemd_sleep_t)
+ ')
+ 
++allow systemd_gpt_generator_t init_var_run_t:lnk_file create;
++allow systemd_gpt_generator_t init_var_run_t:file { write create read };
++allow systemd_gpt_generator_t init_var_run_t:dir { write create read add_name remove_name };
++
+ ########################################
+ #
+ # systemd_pstore local policy
+-- 
+2.45.2
+

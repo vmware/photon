@@ -1,0 +1,327 @@
+From 2f140531259efcf19c3d32f371ef31af348e44c9 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 4 Apr 2022 12:59:02 +0530
+Subject: [PATCH 22/39] Fix AVC denials based on package test results
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/admin/usermanage.te     |  1 +
+ policy/modules/roles/unconfineduser.te |  4 ++-
+ policy/modules/services/ssh.te         |  3 +++
+ policy/modules/system/authlogin.te     |  2 ++
+ policy/modules/system/init.te          | 37 +++++++++++++++++++-------
+ policy/modules/system/iptables.te      |  2 ++
+ policy/modules/system/logging.te       |  2 ++
+ policy/modules/system/systemd.te       | 17 +++++++++++-
+ 8 files changed, 57 insertions(+), 11 deletions(-)
+
+diff --git a/policy/modules/admin/usermanage.te b/policy/modules/admin/usermanage.te
+index 4d1e878..9e574ca 100644
+--- a/policy/modules/admin/usermanage.te
++++ b/policy/modules/admin/usermanage.te
+@@ -328,6 +328,7 @@ allow passwd_t self:sem create_sem_perms;
+ allow passwd_t self:msgq create_msgq_perms;
+ allow passwd_t self:msg { send receive };
+ allow passwd_t self:netlink_selinux_socket create_socket_perms;
++allow passwd_t user_home_t:file write;
+ 
+ allow passwd_t crack_db_t:dir list_dir_perms;
+ read_files_pattern(passwd_t, crack_db_t, crack_db_t)
+diff --git a/policy/modules/roles/unconfineduser.te b/policy/modules/roles/unconfineduser.te
+index 2f3ae29..dfd0265 100644
+--- a/policy/modules/roles/unconfineduser.te
++++ b/policy/modules/roles/unconfineduser.te
+@@ -74,6 +74,8 @@ allow unconfined_t self:cap_userns all_cap_userns_perms;
+ 
+ allow unconfined_t self:bpf { map_create map_read map_write prog_load prog_run };
+ 
++allow unconfined_t self:file mounton;
++
+ kernel_rw_unlabeled_socket(unconfined_t)
+ kernel_rw_unlabeled_rawip_socket(unconfined_t)
+ kernel_rw_unlabeled_smc_socket(unconfined_t)
+@@ -195,7 +197,7 @@ optional_policy(`
+ 		gen_require(`
+ 			type user_tmpfs_t;
+ 		')
+-	
++
+ 		xserver_rw_session(unconfined_t, user_tmpfs_t)
+ 		xserver_dbus_chat_xdm(unconfined_t)
+ 	')
+diff --git a/policy/modules/services/ssh.te b/policy/modules/services/ssh.te
+index a44d340..915118b 100644
+--- a/policy/modules/services/ssh.te
++++ b/policy/modules/services/ssh.te
+@@ -47,6 +47,8 @@ type ssh_keygen_t;
+ type ssh_keygen_exec_t;
+ init_system_domain(ssh_keygen_t, ssh_keygen_exec_t)
+ 
++allow ssh_keygen_t self:alg_socket { create bind accept };
++
+ type ssh_keygen_tmp_t;
+ files_tmp_file(ssh_keygen_tmp_t)
+ 
+@@ -559,6 +561,7 @@ allow ssh_keygen_t self:unix_stream_socket create_stream_socket_perms;
+ 
+ allow ssh_keygen_t sshd_key_t:file manage_file_perms;
+ files_etc_filetrans(ssh_keygen_t, sshd_key_t, file)
++allow ssh_keygen_t etc_t:file unlink;
+ 
+ manage_dirs_pattern(ssh_keygen_t, ssh_home_t, ssh_home_t)
+ manage_files_pattern(ssh_keygen_t, ssh_home_t, ssh_home_t)
+diff --git a/policy/modules/system/authlogin.te b/policy/modules/system/authlogin.te
+index 4627dad..e1beaf1 100644
+--- a/policy/modules/system/authlogin.te
++++ b/policy/modules/system/authlogin.te
+@@ -46,6 +46,8 @@ typealias chkpwd_t alias { auditadm_chkpwd_t secadm_chkpwd_t system_chkpwd_t };
+ application_domain(chkpwd_t, chkpwd_exec_t)
+ role system_r types chkpwd_t;
+ 
++libs_use_ld_so(chkpwd_t)
++
+ type faillog_t;
+ logging_log_file(faillog_t)
+ mls_trusted_object(faillog_t)
+diff --git a/policy/modules/system/init.te b/policy/modules/system/init.te
+index 9cee4fb..96675a6 100644
+--- a/policy/modules/system/init.te
++++ b/policy/modules/system/init.te
+@@ -100,6 +100,8 @@ role system_r types init_t;
+ init_initrc_domain(init_t)
+ corecmd_shell_entry_type(init_t)
+ 
++allow init_t self:alg_socket { create bind accept };
++
+ #
+ # init_tmp_t is the type for content in /tmp directory
+ #
+@@ -272,6 +274,9 @@ corecmd_exec_bin(init_t)
+ corenet_all_recvfrom_netlabel(init_t)
+ corenet_tcp_bind_all_ports(init_t)
+ corenet_udp_bind_all_ports(init_t)
++corenet_udp_bind_generic_node(init_t)
++corenet_tcp_bind_generic_node(init_t)
++corenet_tcp_connect_all_ports(init_t)
+ 
+ dev_create_all_files(init_t)
+ dev_create_all_chr_files(init_t)
+@@ -334,6 +339,13 @@ files_read_non_security_sock_files(init_t)
+ files_watch_non_security_dirs(init_t)
+ files_watch_non_security_files(init_t)
+ files_watch_non_security_lnk_files(init_t)
++files_manage_etc_files(init_t)
++files_manage_var_dirs(init_t)
++files_manage_var_files(init_t)
++files_manage_generic_spool_dirs(init_t)
++files_manage_generic_spool(init_t)
++files_root_filetrans(init_t, root_t, file)
++files_associate_rootfs(init_t)
+ 
+ fs_read_efivarfs_files(init_t)
+ fs_setattr_efivarfs_files(init_t)
+@@ -387,8 +399,6 @@ term_watch_reads_user_ttys(init_t)
+ init_domtrans_script(init_t)
+ init_exec_notrans_direct_init_entry(init_t)
+ 
+-libs_rw_ld_so_cache(init_t)
+-
+ logging_create_devlog_dev(init_t)
+ logging_send_syslog_msg(init_t)
+ logging_send_audit_msgs(init_t)
+@@ -426,6 +436,10 @@ userdom_use_user_ptys(init_t)
+ userdom_watch_user_ptys(init_t)
+ userdom_watch_reads_user_ptys(init_t)
+ 
++userdom_manage_tmp_files(init_t)
++userdom_manage_user_tmp_dirs(init_t)
++userdom_map_tmp_files(init_t)
++
+ allow init_t self:process setsched;
+ 
+ ifdef(`distro_gentoo',`
+@@ -610,7 +624,7 @@ allow init_t self:unix_dgram_socket { create_socket_perms sendto };
+ allow init_t self:process { setkeycreate setsockcreate setfscreate setrlimit setexec };
+ allow init_t self:process { getcap setcap };
+ allow init_t self:unix_stream_socket { create_stream_socket_perms connectto recvfrom };
+-allow init_t self:netlink_kobject_uevent_socket create_socket_perms; 
++allow init_t self:netlink_kobject_uevent_socket create_socket_perms;
+ allow init_t self:netlink_selinux_socket create_socket_perms;
+ allow init_t self:unix_dgram_socket lock;
+ # Until systemd is fixed
+@@ -707,7 +721,7 @@ fs_list_all(init_t)
+ fs_list_auto_mountpoints(init_t)
+ fs_register_binary_executable_type(init_t)
+ fs_relabel_tmpfs_sock_file(init_t)
+-fs_rw_tmpfs_files(init_t)	
++fs_rw_tmpfs_files(init_t)
+ fs_relabel_cgroup_dirs(init_t)
+ fs_search_cgroup_dirs(init_t)
+ # for network namespaces
+@@ -1168,6 +1182,7 @@ auth_use_nsswitch(initrc_t)
+ libs_rw_ld_so_cache(initrc_t)
+ libs_exec_lib_files(initrc_t)
+ libs_exec_ld_so(initrc_t)
++libs_use_ld_so(init_t)
+ 
+ logging_send_audit_msgs(initrc_t)
+ logging_send_syslog_msg(initrc_t)
+@@ -1419,7 +1434,7 @@ tunable_policy(`daemons_use_tty',`
+ 	term_dontaudit_use_all_ttys(daemon)
+ 	term_dontaudit_use_all_ptys(daemon)
+  ')
+- 
++
+ # system-config-services causes avc messages that should be dontaudited
+ tunable_policy(`daemons_dump_core',`
+ 	files_manage_root_files(daemon)
+@@ -1431,7 +1446,7 @@ optional_policy(`
+ 	userdom_dontaudit_read_user_tmp_files(daemon)
+ 	userdom_dontaudit_write_user_tmp_files(daemon)
+ ')
+- 
++
+ optional_policy(`
+ 	amavis_search_lib(initrc_t)
+ 	amavis_setattr_pid_files(initrc_t)
+@@ -1791,7 +1806,7 @@ optional_policy(`
+ 
+ 	# Allow SELinux aware applications to request rpm_script_t execution
+ 	rpm_transition_script(initrc_t, system_r)
+-	
++
+ 	optional_policy(`
+ 		rtkit_scheduled(initrc_t)
+ 	')
+@@ -1837,7 +1852,7 @@ userdom_dontaudit_rw_stream(daemon)
+ logging_inherit_append_all_logs(daemon)
+ 
+ optional_policy(`
+-	# sudo service restart causes this 
++	# sudo service restart causes this
+ 	unconfined_signull(daemon)
+ ')
+ 
+@@ -2035,7 +2050,7 @@ optional_policy(`
+         rhcs_read_cluster_lib_files(daemon)
+         rhcs_read_cluster_pid_files(daemon)
+     ')
+-    
++
+  ')
+ 
+ optional_policy(`
+@@ -2046,3 +2061,7 @@ optional_policy(`
+         ccs_read_config(daemon)
+     ')
+  ')
++
++optional_policy(`
++    rabbitmq_admin(init_t, system_r)
++')
+diff --git a/policy/modules/system/iptables.te b/policy/modules/system/iptables.te
+index ef0033f..df747f2 100644
+--- a/policy/modules/system/iptables.te
++++ b/policy/modules/system/iptables.te
+@@ -13,6 +13,8 @@ type iptables_exec_t;
+ init_system_domain(iptables_t, iptables_exec_t)
+ role iptables_roles types iptables_t;
+ 
++libs_read_lib_files(iptables_t)
++
+ type iptables_initrc_exec_t;
+ init_script_file(iptables_initrc_exec_t)
+ 
+diff --git a/policy/modules/system/logging.te b/policy/modules/system/logging.te
+index c6787db..68793e4 100644
+--- a/policy/modules/system/logging.te
++++ b/policy/modules/system/logging.te
+@@ -118,6 +118,8 @@ init_daemon_domain(syslogd_t, syslogd_exec_t)
+ init_nnp_daemon_domain(syslogd_t)
+ mls_trusted_object(syslogd_t)
+ 
++libs_read_lib_files(syslogd_t)
++
+ type syslogd_initrc_exec_t;
+ init_script_file(syslogd_initrc_exec_t)
+ 
+diff --git a/policy/modules/system/systemd.te b/policy/modules/system/systemd.te
+index 10fcc23..f1d98b8 100644
+--- a/policy/modules/system/systemd.te
++++ b/policy/modules/system/systemd.te
+@@ -283,6 +283,8 @@ allow systemd_logind_t self:process getcap;
+ allow systemd_logind_t self:netlink_kobject_uevent_socket create_socket_perms;
+ allow systemd_logind_t self:unix_dgram_socket create_socket_perms;
+ 
++libs_read_lib_files(systemd_logind_t)
++
+ mls_file_read_all_levels(systemd_logind_t)
+ mls_file_write_all_levels(systemd_logind_t)
+ mls_dbus_send_all_levels(systemd_logind_t)
+@@ -584,6 +586,8 @@ allow systemd_networkd_t self:udp_socket create_socket_perms;
+ allow systemd_networkd_t self:rawip_socket create_socket_perms;
+ allow systemd_networkd_t self:tun_socket { relabelfrom relabelto create_socket_perms };
+ 
++libs_read_lib_files(systemd_networkd_t)
++
+ allow init_t systemd_networkd_t:netlink_route_socket create_netlink_socket_perms;
+ 
+ manage_files_pattern(systemd_networkd_t, systemd_networkd_var_run_t, systemd_networkd_var_run_t)
+@@ -795,7 +799,7 @@ optional_policy(`
+ ')
+ 
+ optional_policy(`
+-	# we have /run/user/$USER/dconf 
++	# we have /run/user/$USER/dconf
+ 	gnome_delete_home_config(systemd_tmpfiles_t)
+ 	gnome_delete_home_config_dirs(systemd_tmpfiles_t)
+ 	gnome_setattr_home_config_dirs(systemd_tmpfiles_t)
+@@ -906,6 +910,8 @@ allow systemd_localed_t self:fifo_file rw_fifo_file_perms;
+ allow systemd_localed_t self:unix_stream_socket create_stream_socket_perms;
+ allow systemd_localed_t self:unix_dgram_socket create_socket_perms;
+ 
++xserver_manage_config(systemd_localed_t)
++
+ dev_write_kmsg(systemd_localed_t)
+ 
+ init_dbus_chat(systemd_localed_t)
+@@ -942,6 +948,9 @@ allow systemd_hostnamed_t self:fifo_file rw_fifo_file_perms;
+ allow systemd_hostnamed_t self:unix_stream_socket create_stream_socket_perms;
+ allow systemd_hostnamed_t self:unix_dgram_socket create_socket_perms;
+ 
++manage_dirs_pattern(systemd_hostnamed_t, init_var_run_t, init_var_run_t)
++manage_files_pattern(systemd_hostnamed_t, init_var_run_t, init_var_run_t)
++
+ manage_files_pattern(systemd_hostnamed_t, hostname_etc_t, hostname_etc_t)
+ manage_lnk_files_pattern(systemd_hostnamed_t, hostname_etc_t, hostname_etc_t)
+ files_etc_filetrans(systemd_hostnamed_t, hostname_etc_t, file)
+@@ -1171,6 +1180,8 @@ kernel_rw_all_sysctls(systemd_sysctl_t)
+ kernel_read_security_state(systemd_sysctl_t)
+ kernel_write_security_state(systemd_sysctl_t)
+ 
++libs_read_lib_files(systemd_sysctl_t)
++
+ files_read_system_conf_files(systemd_sysctl_t)
+ 
+ dev_write_kmsg(systemd_sysctl_t)
+@@ -1296,6 +1307,8 @@ allow systemd_gpt_generator_t self:capability sys_rawio;
+ dontaudit systemd_gpt_generator_t self:capability sys_admin;
+ allow systemd_gpt_generator_t self:netlink_kobject_uevent_socket create_socket_perms;
+ 
++libs_read_lib_files(systemd_gpt_generator_t)
++
+ dev_read_sysfs(systemd_gpt_generator_t)
+ dev_write_kmsg(systemd_gpt_generator_t)
+ dev_read_rand(systemd_gpt_generator_t)
+@@ -1521,6 +1534,8 @@ read_lnk_files_pattern(systemd_domain, systemd_home_t, systemd_home_t)
+ 
+ allow systemd_modules_load_t self:system module_load;
+ 
++libs_read_lib_files(systemd_modules_load_t)
++
+ kernel_dgram_send(systemd_modules_load_t)
+ kernel_load_unsigned_module(systemd_modules_load_t)
+ kernel_ib_access_unlabeled_pkeys(systemd_modules_load_t)
+-- 
+2.45.2
+

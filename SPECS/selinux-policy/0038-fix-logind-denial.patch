@@ -1,0 +1,24 @@
+From fa6d33e8530e79e9a5b6e753756c2bc56fc95cb5 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 12 Jun 2024 16:43:33 +0530
+Subject: [PATCH 38/39] fix logind denial
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/system/systemd.te | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/policy/modules/system/systemd.te b/policy/modules/system/systemd.te
+index 35556c9..5731656 100644
+--- a/policy/modules/system/systemd.te
++++ b/policy/modules/system/systemd.te
+@@ -1819,3 +1819,6 @@ fs_manage_bpf_files(systemd_nsresourced_t)
+ 
+ init_named_pid_filetrans(systemd_nsresourced_t, systemd_nsresourced_runtime_t, dir, "nsresource")
+ init_named_pid_filetrans(systemd_nsresourced_t, systemd_nsresourced_runtime_t, file, "io.systemd.NamespaceResource")
++
++allow systemd_logind_t var_t:file { open read write getattr setattr create };
++allow systemd_logind_t var_t:fifo_file { open read write getattr setattr create unlink };
+-- 
+2.45.2
+

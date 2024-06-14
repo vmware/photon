@@ -1,0 +1,25 @@
+From db06b8ed14464e56d4c852660a259b6cc5b06375 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:43:22 +0530
+Subject: [PATCH 11/39] system modutils
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/modutils.fc | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/policy/modules/system/modutils.fc b/policy/modules/system/modutils.fc
+index 37a2f6c..2165588 100644
+--- a/policy/modules/system/modutils.fc
++++ b/policy/modules/system/modutils.fc
+@@ -3,6 +3,7 @@
+ /etc/modules\.conf.*	--	gen_context(system_u:object_r:modules_conf_t,s0)
+ /etc/modprobe\.conf.*	--	gen_context(system_u:object_r:modules_conf_t,s0)
+ /etc/modprobe\.d(/.*)?		gen_context(system_u:object_r:modules_conf_t,s0)
++/etc/modules-load\.d(/.*)?	gen_context(system_u:object_r:modules_conf_t,s0)
+ 
+ ifdef(`distro_gentoo',`
+ # gentoo init scripts still manage this file
+-- 
+2.45.2
+

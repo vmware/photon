@@ -1,0 +1,35 @@
+From 44a91041dbf6eac2578ef2b35a6cb86407b8cccc Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 23 May 2024 16:33:55 +0530
+Subject: [PATCH 34/39] allow alg_socket for sshd
+
+Without this, sshd won't be able to use jitterentropy and recvmsg call
+results in permission denied error.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/services/ssh.te | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/policy/modules/services/ssh.te b/policy/modules/services/ssh.te
+index 4e932e5..2b394d3 100644
+--- a/policy/modules/services/ssh.te
++++ b/policy/modules/services/ssh.te
+@@ -47,7 +47,7 @@ type ssh_keygen_t;
+ type ssh_keygen_exec_t;
+ init_system_domain(ssh_keygen_t, ssh_keygen_exec_t)
+ 
+-allow ssh_keygen_t self:alg_socket { create bind accept };
++allow ssh_keygen_t self:alg_socket { create bind accept read write getattr setopt };
+ 
+ type ssh_keygen_tmp_t;
+ files_tmp_file(ssh_keygen_tmp_t)
+@@ -763,3 +763,5 @@ optional_policy(`
+ ')
+ 
+ allow sshd_t var_log_t:file { open read write };
++
++allow sshd_t self:alg_socket { create bind accept read write getattr setopt };
+-- 
+2.45.2
+

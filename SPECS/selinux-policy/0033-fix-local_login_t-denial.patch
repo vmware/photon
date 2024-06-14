@@ -1,0 +1,27 @@
+From 82973075d5b5539453a22583408a9ed885b349d4 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 17 May 2024 23:37:23 +0530
+Subject: [PATCH 33/39] fix local_login_t denial
+
+Fixes following denial.
+
+type=AVC msg=audit(1716303103.400:240): avc:  denied  { read write } for  pid=897 comm="login" name="root" dev="sda3" ino=655375 scontext=system_u:system_r:local_login_t:s0-s0:c0.c1023 tcontext=system_u:object_r:var_log_t:s0 tclass=file permissive=0
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/system/locallogin.te | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/policy/modules/system/locallogin.te b/policy/modules/system/locallogin.te
+index 790f5ce..001682b 100644
+--- a/policy/modules/system/locallogin.te
++++ b/policy/modules/system/locallogin.te
+@@ -298,3 +298,5 @@ ifdef(`sulogin_no_pam', `
+ optional_policy(`
+ 	plymouthd_exec_plymouth(sulogin_t)
+ ')
++
++allow local_login_t var_log_t:file { open read write lock getattr };
+-- 
+2.45.2
+

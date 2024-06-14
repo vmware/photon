@@ -1,0 +1,141 @@
+From 1823a207f1441411135c87acd9b126bcbe6ff51f Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:42:08 +0530
+Subject: [PATCH 09/39] system init
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/contrib/motd.fc |  5 +++++
+ policy/modules/contrib/motd.if | 22 ++++++++++++++++++
+ policy/modules/contrib/motd.te | 18 +++++++++++++++
+ policy/modules/system/init.te  | 41 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 86 insertions(+)
+ create mode 100644 policy/modules/contrib/motd.fc
+ create mode 100644 policy/modules/contrib/motd.if
+ create mode 100644 policy/modules/contrib/motd.te
+
+diff --git a/policy/modules/contrib/motd.fc b/policy/modules/contrib/motd.fc
+new file mode 100644
+index 0000000..95e4f9b
+--- /dev/null
++++ b/policy/modules/contrib/motd.fc
+@@ -0,0 +1,5 @@
++/usr/bin/motdgen --      gen_context(system_u:object_r:motd_exec_t,s0)
++
++/var/run/motd		--	gen_context(system_u:object_r:motd_var_run_t,s0)
++/var/run/motd\.d(/.*)?		gen_context(system_u:object_r:motd_var_run_t,s0)
++/var/run/motdgen(/.*)?		gen_context(system_u:object_r:motd_var_run_t,s0)
+diff --git a/policy/modules/contrib/motd.if b/policy/modules/contrib/motd.if
+new file mode 100644
+index 0000000..1405d9b
+--- /dev/null
++++ b/policy/modules/contrib/motd.if
+@@ -0,0 +1,22 @@
++########################################
++## <summary>
++##      Execute the motdgen tool in the caller domain.
++## </summary>
++## <param name="domain">
++##      <summary>
++##      Domain allowed access.
++##      </summary>
++## </param>
++#
++interface(`motdgen_exec',`
++        gen_require(`
++                type motd_t, motd_exec_t;
++        ')
++
++        corecmd_search_bin($1)
++        can_exec($1, motd_exec_t)
++
++        allow $1 motd_t:process transition;
++        type_transition $1 motd_exec_t:process motd_t;
++')
++
+diff --git a/policy/modules/contrib/motd.te b/policy/modules/contrib/motd.te
+new file mode 100644
+index 0000000..33d7a1b
+--- /dev/null
++++ b/policy/modules/contrib/motd.te
+@@ -0,0 +1,18 @@
++policy_module(motd, 1.0)
++
++attribute_role motd_roles;
++roleattribute system_r motd_roles;
++
++type motd_t;
++type motd_exec_t;
++init_system_domain(motd_t, motd_exec_t)
++
++type motd_var_run_t;
++files_type(motd_var_run_t);
++
++role motd_roles types motd_t;
++
++auth_login_pgm_domain(motd_t);
++files_read_var_files(motd_t);
++manage_files_pattern(motd_t, motd_var_run_t, motd_var_run_t);
++
+diff --git a/policy/modules/system/init.te b/policy/modules/system/init.te
+index faa46ea..9cee4fb 100644
+--- a/policy/modules/system/init.te
++++ b/policy/modules/system/init.te
+@@ -434,6 +434,21 @@ ifdef(`distro_gentoo',`
+ 	init_exec_rc(initrc_t)
+ ')
+ 
++ifdef(`distro_photon',`
++	fs_manage_tmpfs_files(init_t)
++	fs_manage_tmpfs_symlinks(init_t)
++	fs_manage_tmpfs_sockets(init_t)
++	fs_manage_tmpfs_chr_files(init_t)
++	fs_exec_tmpfs_files(init_t)
++	fs_read_tmpfs_symlinks(init_t)
++	fs_tmpfs_filetrans(init_t, initctl_t, fifo_file)
++	fs_tmpfs_filetrans_named_content(init_t)
++    fs_relabelfrom_tmpfs_lnk_files(init_t)
++
++	logging_stream_connect_syslog(init_t)
++	logging_relabel_syslog_pid_socket(init_t)
++')
++
+ ifdef(`distro_redhat',`
+ 	fs_manage_tmpfs_files(init_t)
+ 	fs_manage_tmpfs_symlinks(init_t)
+@@ -755,6 +770,32 @@ auth_rw_lastlog(init_t)
+ auth_domtrans_chk_passwd(init_t)
+ auth_manage_passwd(init_t)
+ 
++ifdef(`distro_photon',`
++    # it comes from setupr scripts used in systemd unit files
++    # has been covered by initrc_t
++	optional_policy(`
++		bind_manage_config_dirs(init_t)
++		bind_manage_config(init_t)
++		bind_write_config(init_t)
++		bind_setattr_zone_dirs(init_t)
++	')
++
++    optional_policy(`
++	    ipsec_read_config(init_t)
++        ipsec_manage_pid(init_t)
++        ipsec_stream_connect(init_t)
++    ')
++
++    optional_policy(`
++        rpc_manage_nfs_state_data(init_t)
++    ')
++
++    optional_policy(`
++        sysnet_relabelfrom_dhcpc_state(init_t)
++        sysnet_setattr_dhcp_state(init_t)
++    ')
++')
++
+ ifdef(`distro_redhat',`
+     # it comes from setupr scripts used in systemd unit files
+     # has been covered by initrc_t
+-- 
+2.45.2
+

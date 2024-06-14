@@ -1,0 +1,29 @@
+From 82167b6188a16a9b3a32e38ca4510e594ba0d1d8 Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivania2@vmware.com>
+Date: Fri, 9 Sep 2022 14:08:35 +0000
+Subject: [PATCH 26/39] Fix systemd gpt denials for K8's deployment
+
+Changes are added to resolve following systemd denials
+
+avc:  denied  { sys_admin } for  pid=4067 comm="systemd-gpt-aut" capability=21
+scontext=system_u:system_r:systemd_gpt_generator_t:s0
+tcontext=system_u:system_r:systemd_gpt_generator_t:s0 tclass=capability permissive=0
+---
+ policy/modules/system/systemd.te | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/policy/modules/system/systemd.te b/policy/modules/system/systemd.te
+index f1d98b8..c88bb9b 100644
+--- a/policy/modules/system/systemd.te
++++ b/policy/modules/system/systemd.te
+@@ -1308,6 +1308,7 @@ dontaudit systemd_gpt_generator_t self:capability sys_admin;
+ allow systemd_gpt_generator_t self:netlink_kobject_uevent_socket create_socket_perms;
+ 
+ libs_read_lib_files(systemd_gpt_generator_t)
++allow systemd_gpt_generator_t self:capability sys_admin;
+ 
+ dev_read_sysfs(systemd_gpt_generator_t)
+ dev_write_kmsg(systemd_gpt_generator_t)
+-- 
+2.45.2
+

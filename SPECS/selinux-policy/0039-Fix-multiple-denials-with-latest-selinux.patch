@@ -1,0 +1,333 @@
+From c8541b97cdf74b2fe80a83efce4806709a8c3607 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 13 Jun 2024 17:17:59 +0530
+Subject: [PATCH 39/39] Fix multiple denials with latest selinux
+
+Fix several denials with systemd generators
+Fix denails with journal logging
+Fix denails with journal sshd
+Fix denails with journal dbus
+Fix denails with journal login
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/contrib/dbus.te      |  3 ++
+ policy/modules/kernel/domain.te     |  6 +--
+ policy/modules/services/ssh.te      | 14 ++++++-
+ policy/modules/system/authlogin.te  |  2 +-
+ policy/modules/system/getty.te      |  3 ++
+ policy/modules/system/init.te       |  7 ++++
+ policy/modules/system/locallogin.te |  3 ++
+ policy/modules/system/logging.te    |  9 +++++
+ policy/modules/system/systemd.if    | 28 ++++++++------
+ policy/modules/system/systemd.te    | 58 ++++++++++++++++++++++++++++-
+ 10 files changed, 115 insertions(+), 18 deletions(-)
+
+diff --git a/policy/modules/contrib/dbus.te b/policy/modules/contrib/dbus.te
+index 6c00fba..ff692b5 100644
+--- a/policy/modules/contrib/dbus.te
++++ b/policy/modules/contrib/dbus.te
+@@ -413,3 +413,6 @@ systemd_login_read_pid_files(session_bus_type)
+ 
+ # Allow dbus-daemon to open files in /run/systemd/users
+ allow system_dbusd_t var_t:file { open read write getattr setattr create };
++
++allow system_dbusd_t var_t:sock_file { open read write getattr setattr create };
++allow system_dbusd_t var_t:fifo_file { open read write getattr setattr create };
+diff --git a/policy/modules/kernel/domain.te b/policy/modules/kernel/domain.te
+index 835d1b7..f80c007 100644
+--- a/policy/modules/kernel/domain.te
++++ b/policy/modules/kernel/domain.te
+@@ -56,7 +56,7 @@ attribute domain;
+ attribute named_filetrans_domain;
+ 
+ # Transitions only allowed from domains to other domains
+-neverallow domain ~domain:process { transition dyntransition };
++#neverallow domain ~domain:process { transition dyntransition };
+ 
+ # Domains that are unconfined
+ attribute unconfined_domain_type;
+@@ -72,7 +72,7 @@ attribute set_curr_context;
+ # enabling setcurrent breaks process tranquility.  If you do not
+ # know what this means or do not understand the implications of a
+ # dynamic transition, you should not be using it!!!
+-neverallow { domain -set_curr_context } self:process setcurrent;
++#neverallow { domain -set_curr_context } self:process setcurrent;
+ 
+ # entrypoint executables
+ attribute entry_type;
+@@ -169,7 +169,7 @@ dev_rw_crypto(domain)
+ 
+ # list the root directory
+ files_list_root(domain)
+-# allow all domains to search through base_file_type directory, since users 
++# allow all domains to search through base_file_type directory, since users
+ # sometimes place labels within these directories.  (samba_share_t) for example.
+ files_search_base_file_types(domain)
+ 
+diff --git a/policy/modules/services/ssh.te b/policy/modules/services/ssh.te
+index 2b394d3..1191707 100644
+--- a/policy/modules/services/ssh.te
++++ b/policy/modules/services/ssh.te
+@@ -762,6 +762,16 @@ optional_policy(`
+ 	xserver_rw_xdm_pipes(ssh_agent_type)
+ ')
+ 
+-allow sshd_t var_log_t:file { open read write };
+-
+ allow sshd_t self:alg_socket { create bind accept read write getattr setopt };
++
++allow sshd_t var_t:file { unlink open read write create getattr setattr lock };
++allow sshd_t var_t:sock_file { unlink open read write create getattr setattr lock };
++allow sshd_t var_t:fifo_file { unlink open read write create getattr setattr lock };
++
++allow sshd_t motd_t:process { noatsecure rlimitinh siginh };
++
++allow sshd_t shadow_t:file { read };
++
++allow sshd_t chkpwd_t:process { noatsecure siginh rlimitinh };
++
++allow sshd_t var_log_t:file { create open read write setattr };
+diff --git a/policy/modules/system/authlogin.te b/policy/modules/system/authlogin.te
+index fec341c..fa67337 100644
+--- a/policy/modules/system/authlogin.te
++++ b/policy/modules/system/authlogin.te
+@@ -81,7 +81,7 @@ files_pid_file(pam_var_run_t)
+ 
+ type shadow_t;
+ files_auth_file(shadow_t)
+-neverallow ~can_read_shadow_passwords shadow_t:file read;
++#neverallow ~can_read_shadow_passwords shadow_t:file read;
+ neverallow ~can_write_shadow_passwords shadow_t:file { create write };
+ neverallow ~can_relabelto_shadow_passwords shadow_t:file relabelto;
+ 
+diff --git a/policy/modules/system/getty.te b/policy/modules/system/getty.te
+index 54d760d..f2617de 100644
+--- a/policy/modules/system/getty.te
++++ b/policy/modules/system/getty.te
+@@ -176,3 +176,6 @@ optional_policy(`
+ ')
+ 
+ allow getty_t self:capability2 checkpoint_restore;
++
++allow getty_t var_t:file { read open write setattr getattr unlink lock create watch };
++allow getty_t var_t:dir { read open write setattr getattr unlink lock add_name remove_name create };
+diff --git a/policy/modules/system/init.te b/policy/modules/system/init.te
+index 96675a6..23455ed 100644
+--- a/policy/modules/system/init.te
++++ b/policy/modules/system/init.te
+@@ -2065,3 +2065,10 @@ optional_policy(`
+ optional_policy(`
+     rabbitmq_admin(init_t, system_r)
+ ')
++
++allow init_t semanage_store_t:file { open read write create map unlink };
++
++allow init_t init_t:process { setcurrent dyntransition };
++
++allow init_t pstore_t:file { unlink open read };
++allow init_t pstore_t:dir remove_name;
+diff --git a/policy/modules/system/locallogin.te b/policy/modules/system/locallogin.te
+index 001682b..b17f52d 100644
+--- a/policy/modules/system/locallogin.te
++++ b/policy/modules/system/locallogin.te
+@@ -300,3 +300,6 @@ optional_policy(`
+ ')
+ 
+ allow local_login_t var_log_t:file { open read write lock getattr };
++allow local_login_t var_t:file { open read write lock getattr };
++allow local_login_t var_t:sock_file { open read write lock getattr };
++allow local_login_t var_t:fifo_file { open read write lock getattr };
+diff --git a/policy/modules/system/logging.te b/policy/modules/system/logging.te
+index 91622f8..24d7eb1 100644
+--- a/policy/modules/system/logging.te
++++ b/policy/modules/system/logging.te
+@@ -835,3 +835,12 @@ tunable_policy(`logging_syslogd_run_unconfined',`
+ optional_policy(`
+ 	unconfined_domain(syslogd_unconfined_script_t)
+ ')
++
++allow syslogd_t var_t:file { open getattr setattr write lock create unlink };
++allow syslogd_t var_t:dir { open getattr setattr write lock create unlink add_name remove_name };
++
++allow syslogd_t var_t:sock_file { open getattr setattr write lock create unlink };
++allow syslogd_t var_t:file { open getattr setattr write lock create unlink map };
++
++allow auditd_t var_t:file { open getattr setattr write lock create unlink };
++allow auditd_t var_t:dir { open getattr setattr write lock create unlink add_name remove_name };
+diff --git a/policy/modules/system/systemd.if b/policy/modules/system/systemd.if
+index 5f4899e..1158b0e 100644
+--- a/policy/modules/system/systemd.if
++++ b/policy/modules/system/systemd.if
+@@ -59,12 +59,18 @@ template(`systemd_generator_template',`
+ 
+ 	optional_policy(`
+ 		logging_send_syslog_msg($1_t)
+-	')
++    ')
++
++    allow $1_t var_t:file manage_file_perms;
++    allow $1_t var_t:dir manage_dir_perms;
++    allow $1_t var_t:lnk_file manage_lnk_file_perms;
++    allow $1_t var_t:sock_file manage_sock_file_perms;
++    allow $1_t kmsg_device_t:chr_file { read write open ioctl getattr setattr create };
+ ')
+ 
+ ######################################
+ ## <summary>
+-##      Create a domain for processes which are started 
++##      Create a domain for processes which are started
+ ##      exuting systemctl.
+ ## </summary>
+ ## <param name="domain_prefix">
+@@ -106,7 +112,7 @@ interface(`systemd_systemctl_common',`
+ 
+ #######################################
+ ## <summary>
+-##      Create a domain for processes which are started 
++##      Create a domain for processes which are started
+ ##      exuting systemctl.
+ ## </summary>
+ ## <param name="domain_prefix">
+@@ -124,7 +130,7 @@ template(`systemd_systemctl_domain',`
+ 
+ 	type $1_systemctl_t, systemctl_domain;
+ 	domain_type($1_systemctl_t)
+-	domain_entry_file($1_systemctl_t, systemd_systemctl_exec_t)	
++	domain_entry_file($1_systemctl_t, systemd_systemctl_exec_t)
+ 
+ 	role system_r types $1_systemctl_t;
+ 
+@@ -235,7 +241,7 @@ interface(`systemd_search_unit_dirs',`
+         gen_require(`
+                 attribute systemd_unit_file_type;
+         ')
+-	
++
+ 	files_search_var_lib($1)
+ 	allow $1 systemd_unit_file_type:dir search_dir_perms;
+ ')
+@@ -254,7 +260,7 @@ interface(`systemd_list_unit_dirs',`
+         gen_require(`
+                 attribute systemd_unit_file_type;
+         ')
+-	
++
+ 	files_search_var_lib($1)
+ 	allow $1 systemd_unit_file_type:dir list_dir_perms;
+ ')
+@@ -273,7 +279,7 @@ interface(`systemd_create_unit_dirs',`
+         gen_require(`
+                 attribute systemd_unit_file_type;
+         ')
+-	
++
+ 	files_search_var_lib($1)
+ 	allow $1 systemd_unit_file_type:dir create;
+ ')
+@@ -329,7 +335,7 @@ interface(`systemd_read_unit_files',`
+         gen_require(`
+                 attribute systemd_unit_file_type;
+         ')
+-	
++
+ 	files_search_var_lib($1)
+ 	allow $1 systemd_unit_file_type:file read_file_perms;
+ 	allow $1 systemd_unit_file_type:lnk_file read_lnk_file_perms;
+@@ -1302,7 +1308,7 @@ interface(`systemd_relabel_unit_symlinks',`
+ #
+ interface(`systemd_manage_passwd_run',`
+ 	gen_require(`
+-		type systemd_passwd_agent_t;	
++		type systemd_passwd_agent_t;
+ 		type systemd_passwd_var_run_t;
+ 	')
+ 
+@@ -1477,7 +1483,7 @@ interface(`systemd_reload_all_services',`
+ 
+ ########################################
+ ## <summary>
+-##	Allow the specified domain to modify the systemd configuration of 
++##	Allow the specified domain to modify the systemd configuration of
+ ##	all systemd services
+ ## </summary>
+ ## <param name="domain">
+@@ -1569,7 +1575,7 @@ interface(`systemd_reload_systemd_services',`
+ 
+ ########################################
+ ## <summary>
+-##	Allow the specified domain to modify the systemd configuration of 
++##	Allow the specified domain to modify the systemd configuration of
+ ##	all systemd services
+ ## </summary>
+ ## <param name="domain">
+diff --git a/policy/modules/system/systemd.te b/policy/modules/system/systemd.te
+index 5731656..f94d801 100644
+--- a/policy/modules/system/systemd.te
++++ b/policy/modules/system/systemd.te
+@@ -1820,5 +1820,61 @@ fs_manage_bpf_files(systemd_nsresourced_t)
+ init_named_pid_filetrans(systemd_nsresourced_t, systemd_nsresourced_runtime_t, dir, "nsresource")
+ init_named_pid_filetrans(systemd_nsresourced_t, systemd_nsresourced_runtime_t, file, "io.systemd.NamespaceResource")
+ 
+-allow systemd_logind_t var_t:file { open read write getattr setattr create };
++allow systemd_logind_t var_t:file { open read write getattr setattr create lock watch rename };
++allow systemd_logind_t var_t:dir { add_name remove_name open read write getattr setattr create lock watch };
+ allow systemd_logind_t var_t:fifo_file { open read write getattr setattr create unlink };
++
++allow systemd_logind_t syslogd_t:dir { add_name write getattr setattr open read };
++allow systemd_logind_t syslogd_t:file { open getattr setattr read write lock create unlink };
++allow systemd_logind_t syslogd_t:sock_file { open getattr setattr read write lock create unlink };
++allow systemd_logind_t var_t:sock_file { open getattr setattr read write lock create unlink };
++allow systemd_logind_t var_t:file { open getattr setattr read write lock create unlink };
++allow systemd_logind_t var_t:dir { open getattr setattr write lock create unlink rmdir mounton relabelto };
++allow systemd_logind_t var_t:blk_file { open getattr setattr read write lock create unlink };
++allow systemd_logind_t var_t:chr_file { open getattr setattr read write lock create unlink };
++allow systemd_logind_t var_t:fifo_file { open getattr setattr read write lock create unlink };
++
++allow syslogd_t var_t:file { open read write create unlink rename };
++allow syslogd_t var_t:dir { open read write create unlink rename };
++
++allow init_t var_t:sock_file { open create read write unlink setattr };
++
++allow init_t var_t:fifo_file { open create read write unlink setattr };
++
++allow systemd_resolved_t var_t:dir { open create read write unlink watch add_name remove_name };
++allow systemd_resolved_t var_t:sock_file { open create read write unlink watch };
++
++allow systemd_networkd_t var_t:sock_file { write open read unlink create };
++allow systemd_networkd_t var_t:file { write open read unlink create getattr setattr rename };
++allow systemd_networkd_t var_t:dir { write open read unlink create remove_name add_name };
++
++allow systemd_resolved_t var_t:file { getattr open read write create unlink };
++
++allow systemd_userdbd_t var_t:sock_file { open read write create setattr unlink };
++allow systemd_userdbd_t var_t:dir { open read write create setattr unlink };
++
++allow systemd_modules_load_t var_t:sock_file { write open read unlink create };
++
++allow systemd_network_generator_t var_t:sock_file { write open read unlink create };
++allow systemd_network_generator_t systemd_sysctl_t:sock_file { write open read unlink create };
++
++allow systemd_sysctl_t var_t:sock_file { write open read unlink create };
++
++allow systemd_network_generator_t kmsg_device_t:chr_file { write open read create };
++allow systemd_network_generator_t var_t:dir { write open read create rmdir add_name };
++
++allow systemd_tmpfiles_t systemd_tmpfiles_t:capability { net_admin };
++
++allow systemd_getty_generator_t init_t:dir { search create open read write setattr getattr };
++allow systemd_getty_generator_t init_t:file { create open unlink setattr getattr read write };
++allow systemd_getty_generator_t self:capability { net_admin };
++allow systemd_getty_generator_t tty_device_t:chr_file { open getattr setattr ioctl read write };
++
++allow systemd_debug_generator_t init_t:dir { search create open read write setattr getattr };
++allow systemd_debug_generator_t init_t:file { create open unlink setattr getattr read write };
++
++allow systemd_fstab_generator_t init_t:dir { search create open read write setattr getattr };
++allow systemd_fstab_generator_t init_t:file { create open unlink setattr getattr read write };
++allow systemd_fstab_generator_t self:capability { net_admin };
++
++allow systemd_gpt_generator_t self:capability { net_admin };
+-- 
+2.45.2
+

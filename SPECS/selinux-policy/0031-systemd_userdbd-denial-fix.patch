@@ -1,0 +1,31 @@
+From 080a5c7c60f749918b0d0775f75bcd340571dab0 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 17 May 2024 23:06:27 +0530
+Subject: [PATCH 31/39] systemd_userdbd denial fix
+
+Fixes following denial.
+
+type=PROCTITLE msg=audit(1716303105.488:249): proctitle="/usr/lib/systemd/systemd-journald"
+type=AVC msg=audit(1716303105.512:250): avc:  denied  { sys_resource } for  pid=1047 comm="(sd-worker)" capability=24  scontext=system_u:system_r:systemd_userdbd_t:s0 tcontext=system_u:system_r:systemd_userdbd_t:s0 tclass=capability permissive=0
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/system/systemd.te | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/policy/modules/system/systemd.te b/policy/modules/system/systemd.te
+index 9c7ca22..35556c9 100644
+--- a/policy/modules/system/systemd.te
++++ b/policy/modules/system/systemd.te
+@@ -1766,6 +1766,8 @@ allow systemd_gpt_generator_t init_var_run_t:lnk_file create;
+ allow systemd_gpt_generator_t init_var_run_t:file { write create read };
+ allow systemd_gpt_generator_t init_var_run_t:dir { write create read add_name remove_name };
+ 
++allow systemd_userdbd_t self:capability sys_resource;
++
+ ########################################
+ #
+ # systemd_pstore local policy
+-- 
+2.45.2
+
