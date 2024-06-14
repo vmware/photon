@@ -10,4 +10,6 @@ enable systemd-resolved.service
 
 # these services are not needed by Photon
 disable systemd-sysupdate
+disable systemd-sysupdate.timer
 disable systemd-sysupdate-reboot
+disable systemd-sysupdate-reboot.timer
