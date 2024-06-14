@@ -144,7 +144,11 @@ create_specs() {
 
   for i in ${!kver_arr[@]}; do
     local kver="${kver_arr[$i]}"
-    local krel="${krel_arr[$i]}${dist}"
+        if [[ "$pkg" == "linux" ]]; then
+            local krel="${krel_arr[$i]}%{?acvp_build:.acvp}${dist}"
+        else
+            local krel="${krel_arr[$i]}${dist}"
+        fi
     local build_for_value="${build_for_arr[$i]}"
 
     local a="$(echo $kver | cut -d. -f1)"

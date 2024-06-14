@@ -5,6 +5,9 @@ Subject: [PATCH] crypto api return status prints for LKCM5 demo
 
 - these prints appear only when both ACVP_BUILD and KAT_BUILD
   are enabled during build
+
+Signed-off-by: Srish Srinivasan <srish.srinivasan@broadcom.com>
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  crypto/aead.c             | 35 ++++++++++++++++++++++++++++++++---
  crypto/akcipher.c         | 10 ++++++++--
@@ -21,10 +24,10 @@ Subject: [PATCH] crypto api return status prints for LKCM5 demo
  12 files changed, 204 insertions(+), 19 deletions(-)
 
 diff --git a/crypto/aead.c b/crypto/aead.c
-index 169910952..7aaa45dd5 100644
+index c4ece86c4..b64771784 100644
 --- a/crypto/aead.c
 +++ b/crypto/aead.c
-@@ -51,6 +51,11 @@ int crypto_aead_setkey(struct crypto_aead *tfm,
+@@ -50,6 +50,11 @@ int crypto_aead_setkey(struct crypto_aead *tfm,
  	else
  		err = crypto_aead_alg(tfm)->setkey(tfm, key, keylen);
  
@@ -36,7 +39,7 @@ index 169910952..7aaa45dd5 100644
  	if (unlikely(err)) {
  		crypto_aead_set_flags(tfm, CRYPTO_TFM_NEED_KEY);
  		return err;
-@@ -71,9 +76,12 @@ int crypto_aead_setauthsize(struct crypto_aead *tfm, unsigned int authsize)
+@@ -70,9 +75,12 @@ int crypto_aead_setauthsize(struct crypto_aead *tfm, unsigned int authsize)
  
  	if (crypto_aead_alg(tfm)->setauthsize) {
  		err = crypto_aead_alg(tfm)->setauthsize(tfm, authsize);
@@ -50,7 +53,7 @@ index 169910952..7aaa45dd5 100644
  
  	tfm->authsize = authsize;
  	return 0;
-@@ -92,7 +100,14 @@ int crypto_aead_encrypt(struct aead_request *req)
+@@ -91,7 +99,14 @@ int crypto_aead_encrypt(struct aead_request *req)
  		ret = -ENOKEY;
  	else
  		ret = crypto_aead_alg(aead)->encrypt(req);
@@ -65,7 +68,7 @@ index 169910952..7aaa45dd5 100644
  	return ret;
  }
  EXPORT_SYMBOL_GPL(crypto_aead_encrypt);
-@@ -111,7 +126,14 @@ int crypto_aead_decrypt(struct aead_request *req)
+@@ -110,7 +125,14 @@ int crypto_aead_decrypt(struct aead_request *req)
  		ret = -EINVAL;
  	else
  		ret = crypto_aead_alg(aead)->decrypt(req);
@@ -80,7 +83,7 @@ index 169910952..7aaa45dd5 100644
  	return ret;
  }
  EXPORT_SYMBOL_GPL(crypto_aead_decrypt);
-@@ -136,8 +158,15 @@ static int crypto_aead_init_tfm(struct crypto_tfm *tfm)
+@@ -135,8 +157,15 @@ static int crypto_aead_init_tfm(struct crypto_tfm *tfm)
  	if (alg->exit)
  		aead->base.exit = crypto_aead_exit_tfm;
  
@@ -120,10 +123,10 @@ index ab975a420..c9ae52210 100644
  	return 0;
  }
 diff --git a/crypto/algif_ecc.c b/crypto/algif_ecc.c
-index f1cb804e4..d9faa7c42 100644
+index 2091789c4..6cd495584 100644
 --- a/crypto/algif_ecc.c
 +++ b/crypto/algif_ecc.c
-@@ -106,6 +106,10 @@ static int ecc_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+@@ -109,6 +109,10 @@ static int ecc_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
  		ecc_swap_digits((u64 *)y_buf, pk.y, pk.ndigits);
  
  		ret = ecc_is_pubkey_valid_full(curve, &pk);
@@ -134,10 +137,10 @@ index f1cb804e4..d9faa7c42 100644
  
  
  		kfree(pk.x);
-@@ -149,8 +153,27 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
- 	} else if(iov[3].iov_len == 384) {
- 		curve = &nist_p384;
- 		curve_id = 3;
+@@ -155,8 +159,27 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
+ 	} else if(iov[3].iov_len == 192) {
+ 		curve = &nist_p192;
+ 		curve_id = 1;
 -	} else
 -		return -EINVAL;
 +	} else {
@@ -164,7 +167,7 @@ index f1cb804e4..d9faa7c42 100644
  
          if (iov[0].iov_len != curve->g.ndigits * sizeof(u64) ||
              iov[1].iov_len != curve->g.ndigits * sizeof(u64) ||
-@@ -158,12 +181,20 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
+@@ -164,12 +187,20 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
                  return -EINVAL;
  
          ret = ecc_gen_privkey(curve_id, curve->g.ndigits, (u64 *)d_buf);
@@ -188,10 +191,10 @@ index f1cb804e4..d9faa7c42 100644
          ret = copy_to_user(iov[0].iov_base, d_buf, iov[0].iov_len);
          if (ret) {
 diff --git a/crypto/cipher.c b/crypto/cipher.c
-index b47141ed4..ae53a91f3 100644
+index 395f0c2fb..45bb7a356 100644
 --- a/crypto/cipher.c
 +++ b/crypto/cipher.c
-@@ -52,7 +52,12 @@ int crypto_cipher_setkey(struct crypto_cipher *tfm,
+@@ -51,7 +51,12 @@ int crypto_cipher_setkey(struct crypto_cipher *tfm,
  	if ((unsigned long)key & alignmask)
  		return setkey_unaligned(tfm, key, keylen);
  
@@ -510,5 +513,5 @@ index 17bb3673d..ced7d2494 100644
  }
  
 -- 
-2.39.0
+2.39.4
 

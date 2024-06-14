@@ -19,6 +19,9 @@
 
 %if 0%{?acvp_build}
 %global fips 1
+%if 0%{?canister_build}
+%global fips 0
+%endif
 %endif
 
 %ifarch aarch64
@@ -30,7 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.83
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -110,6 +113,11 @@ Source49: check_kernel_struct_in_canister.inc
 
 # CVE
 Source50: CVE-2023-39191.patches
+
+%if 0%{?acvp_build}
+Source53: config_%{_arch}_acvp
+Source54: check_for_acvp_config_applicability.inc
+%endif
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -531,35 +539,15 @@ cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 
-%if 0%{?acvp_build:1}
-#ACVP test harness changes in kernel configs.
-sed -i 's/# CONFIG_CRYPTO_USER is not set/CONFIG_CRYPTO_USER=y/' .config
-sed -i 's/# CONFIG_CRYPTO_DH is not set/CONFIG_CRYPTO_DH=y/' .config
-sed -i 's/CONFIG_CRYPTO_USER_API=m/CONFIG_CRYPTO_USER_API=y/' .config
-sed -i 's/CONFIG_CRYPTO_USER_API_HASH=m/CONFIG_CRYPTO_USER_API_HASH=y/' .config
-sed -i 's/CONFIG_CRYPTO_USER_API_SKCIPHER=m/CONFIG_CRYPTO_USER_API_SKCIPHER=y/' .config
-sed -i 's/CONFIG_CRYPTO_USER_API_RNG=m/CONFIG_CRYPTO_USER_API_RNG=y/' .config
-sed -i 's/# CONFIG_CRYPTO_USER_API_RNG_CAVP is not set/CONFIG_CRYPTO_USER_API_RNG_CAVP=y/' .config
-sed -i 's/# CONFIG_CRYPTO_USER_API_AEAD is not set/CONFIG_CRYPTO_USER_API_AEAD=y/' .config
-sed -i '/CONFIG_CRYPTO_USER_API_ENABLE_OBSOLETE/ a # CONFIG_CRYPTO_STATS is not set' .config
-sed -i '/CONFIG_CRYPTO_STATS/ a CONFIG_CRYPTO_USER_API_AKCIPHER=y' .config
-sed -i '/CONFIG_CRYPTO_USER_API_AKCIPHER/ a CONFIG_CRYPTO_USER_API_KPP=y' .config
-sed -i '/CONFIG_CRYPTO_USER_API_KPP=y/ a CONFIG_CRYPTO_USER_API_ECC=y' .config
-sed -i '/CONFIG_CRYPTO_DH=y/ a # CONFIG_CRYPTO_DH_RFC7919_GROUPS is not set' .config
-sed -i '/# end of Userspace interface/ { N; d; }' .config
-sed -i '/# CONFIG_CRYPTO_STATS is not set/ a # end of Userspace interface' .config
-sed -i '/# end of Userspace interface/{G;}' .config
-%endif
-
 cp %{SOURCE20} photon_sb2020.pem
 %ifarch x86_64
 %if 0%{?fips}
-cp %{SOURCE36} crypto/
-cp %{SOURCE37} crypto/
-cp %{SOURCE38} crypto/
-cp %{SOURCE39} crypto/
-cp %{SOURCE40} crypto/
-cp %{SOURCE41} crypto/
+install %{SOURCE36} crypto/
+install %{SOURCE37} crypto/
+install %{SOURCE38} crypto/
+install %{SOURCE39} crypto/
+install %{SOURCE40} crypto/
+install %{SOURCE41} crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
@@ -567,17 +555,15 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
 %endif
 
 %if 0%{?canister_build}
-cp %{SOURCE36} crypto/
-cp %{SOURCE37} crypto/
-cp %{SOURCE38} crypto/
-cp %{SOURCE39} crypto/
-cp %{SOURCE42} crypto/fips_canister_wrapper_internal.h
-cp %{SOURCE43} crypto/fips_canister_wrapper_internal.c
-cp %{SOURCE44} crypto/
-cp %{SOURCE45} crypto/
-cp %{SOURCE46} crypto/
-cp %{SOURCE47} crypto/
-cp %{SOURCE48} crypto/
+install %{SOURCE38} crypto/
+install %{SOURCE39} crypto/
+install %{SOURCE42} crypto/fips_canister_wrapper_internal.h
+install %{SOURCE43} crypto/fips_canister_wrapper_internal.c
+install %{SOURCE44} crypto/
+install %{SOURCE45} crypto/
+install -m 755 %{SOURCE46} crypto/
+install %{SOURCE47} crypto/
+install %{SOURCE48} crypto/
 %endif
 %endif
 
@@ -585,7 +571,7 @@ sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
 %if 0%{?canister_build}
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
-sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
+sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}\"/" crypto/fips_integrity.c
 
 %if 0%{?kat_build}
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_TAMPER_TEST=y' .config
@@ -599,7 +585,12 @@ sed -e "s,@@NAME@@,%{name},g" \
     %{SOURCE25} > linux-sbat.csv
 %endif
 
+%if 0%{?acvp_build}
+cp %{SOURCE53} .config_acvp
+%include %{SOURCE54}
+%else
 %include %{SOURCE7}
+%endif
 
 # Set/add CONFIG_CROSS_COMPILE= if needed
 if [ %{_host} != %{_build} ]; then
@@ -652,14 +643,14 @@ popd
 %if 0%{?canister_build}
 install -vdm 755 %{buildroot}%{_libdir}/fips-canister/
 pushd crypto/
-mkdir fips-canister-%{lkcm_version}-%{version}-%{release}-secure
+mkdir fips-canister-%{lkcm_version}-%{version}-%{release}
 cp fips_canister.o \
    fips_canister-kallsyms \
    .fips_canister.o.cmd \
-   fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
-tar -cvjf fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
+   fips-canister-%{lkcm_version}-%{version}-%{release}/
+tar -cvjf fips-canister-%{lkcm_version}-%{version}-%{release}.tar.bz2 fips-canister-%{lkcm_version}-%{version}-%{release}/
 popd
-cp crypto/fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 %{buildroot}%{_libdir}/fips-canister/
+cp crypto/fips-canister-%{lkcm_version}-%{version}-%{release}.tar.bz2 %{buildroot}%{_libdir}/fips-canister/
 %endif
 
 install -vdm 755 %{buildroot}%{_sysconfdir}
@@ -857,6 +848,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.83-7
+- Fix build error in acvp build and some spec refinement
 * Fri May 17 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.83-6
 - Re-enable CONFIG_SECURITY_SELINUX_DEVELOP to fix boot time regressions
   in stig hardened systems.
