@@ -1,16 +1,17 @@
 Summary:        Connection tracking userspace tools for Linux.
 Name:           conntrack-tools
 Version:        1.4.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
-URL:            http://conntrack-tools.netfilter.org/
-Source0:        http://netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha1 conntrack-tools=731252dac79ad80f7c8d2ea4ce876d174fed0ebf
-Source1:        conntrackd.conf
-Source2:        conntrackd.service
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+URL:            http://conntrack-tools.netfilter.org/
+Source0:        http://netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
+%define sha512  conntrack-tools=a48260308a12b11b584fcf4658ec2c4c1adb2801c9cf9a73fc259e5c30d2fbe401aca21e931972413f03e415f98fbf9bd678d2126faa6c6d5748e8a652e58f1a
+Source1:        conntrackd.conf
+Source2:        conntrackd.service
+
 BuildRequires: gcc
 BuildRequires: systemd-devel
 BuildRequires: libtirpc-devel
@@ -23,6 +24,7 @@ BuildRequires: libnetfilter_queue-devel
 BuildRequires: bison
 BuildRequires: flex
 BuildRequires: systemd
+
 Requires:      systemd
 Requires:      libmnl
 Requires:      libnetfilter_conntrack
@@ -75,6 +77,8 @@ install -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/
 %systemd_postun conntrackd.service
 
 %changelog
+*  Fri Jun 14 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.6-4
+-  Fix conntrackd.service failure
 *  Sun Oct 17 2021 Susant Sahani <ssahani@vmware.com.com> 1.4.6-3
 -  Rename conntrackd.conf eth2 -> eth0
 *  Sat Feb 27 2021 Andrew Williams <andy@tensixtyone.com> 1.4.6-2
