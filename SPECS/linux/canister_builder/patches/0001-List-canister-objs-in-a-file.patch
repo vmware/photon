@@ -40,4 +40,3 @@ index d3df694c0..1fd7da7f4 100644
    CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 -- 
 2.19.0
-

@@ -57,7 +57,7 @@ create_specs() {
 
   for i in ${!kver_arr[@]}; do
     local kver="${kver_arr[$i]}"
-    local krel="${krel_arr[$i]}${dist}"
+    local krel="${krel_arr[$i]}%{?acvp_build:.acvp}${dist}"
 
     local a="$(echo $kver | cut -d. -f1)"
     local b="$(echo $kver | cut -d. -f2)"
