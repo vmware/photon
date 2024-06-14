@@ -44,14 +44,14 @@ diff --git a/crypto/Makefile b/crypto/Makefile
 index 7289ccb84..f68acf932 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -166,6 +166,7 @@ obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
- obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
- obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
- obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
+@@ -200,6 +200,7 @@ ecrdsa_generic-y += ecrdsa.o
+ ecrdsa_generic-y += ecrdsa_params.asn1.o
+ ecrdsa_generic-y += ecrdsa_pub_key.asn1.o
+ obj-$(CONFIG_CRYPTO_ECRDSA) += ecrdsa_generic.o
 +obj-$(CONFIG_CRYPTO_USER_API_AKCIPHER) += algif_akcipher.o
- obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
- obj-$(CONFIG_CRYPTO_OFB) += ofb.o
- obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
+ 
+ #
+ # generic algorithms and the async_tx api
 diff --git a/crypto/algif_akcipher.c b/crypto/algif_akcipher.c
 new file mode 100644
 index 000000000..8ed305ecc

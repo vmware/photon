@@ -4,6 +4,7 @@ Date: Fri, 3 Nov 2023 07:51:23 +0000
 Subject: [PATCH] List canister objs in a file
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Srish Srinivasan <srish.srinivasan@broadcom.com>
 ---
  crypto/Makefile | 4 ++++
  1 file changed, 4 insertions(+)
@@ -37,7 +38,6 @@ index d3df694c0..1fd7da7f4 100644
 +	@$(foreach obj,$(canister),echo $(obj) >> objs;)
  define UPDATE_CFLAGS =
    CFLAGS_$1 += -DFIPS_CANISTER
-   CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
+   CFLAGS_REMOVE_$1 += -pg -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 -- 
 2.19.0
-

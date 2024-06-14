@@ -5,6 +5,8 @@ Subject: [PATCH] crypto api return status prints for LKCM5 demo
 
 - these prints appear only when both ACVP_BUILD and KAT_BUILD
   are enabled during build
+
+Signed-off-by: Srish Srinivasan <srish.srinivasan@broadcom.com>
 ---
  crypto/aead.c             | 35 ++++++++++++++++++++++++++++++++---
  crypto/akcipher.c         | 10 ++++++++--
@@ -123,7 +125,7 @@ diff --git a/crypto/algif_ecc.c b/crypto/algif_ecc.c
 index f1cb804e4..d9faa7c42 100644
 --- a/crypto/algif_ecc.c
 +++ b/crypto/algif_ecc.c
-@@ -106,6 +106,10 @@ static int ecc_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+@@ -109,6 +109,10 @@ static int ecc_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
  		ecc_swap_digits((u64 *)y_buf, pk.y, pk.ndigits);
  
  		ret = ecc_is_pubkey_valid_full(curve, &pk);
@@ -134,10 +136,10 @@ index f1cb804e4..d9faa7c42 100644
  
  
  		kfree(pk.x);
-@@ -149,8 +153,27 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
- 	} else if(iov[3].iov_len == 384) {
- 		curve = &nist_p384;
- 		curve_id = 3;
+@@ -155,8 +159,27 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
+	} else if(iov[3].iov_len == 192) {
+		curve = &nist_p192;
+		curve_id = 1;
 -	} else
 -		return -EINVAL;
 +	} else {
@@ -164,7 +166,7 @@ index f1cb804e4..d9faa7c42 100644
  
          if (iov[0].iov_len != curve->g.ndigits * sizeof(u64) ||
              iov[1].iov_len != curve->g.ndigits * sizeof(u64) ||
-@@ -158,12 +181,20 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
+@@ -164,12 +187,20 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
                  return -EINVAL;
  
          ret = ecc_gen_privkey(curve_id, curve->g.ndigits, (u64 *)d_buf);
@@ -511,4 +513,3 @@ index 17bb3673d..ced7d2494 100644
  
 -- 
 2.39.0
-

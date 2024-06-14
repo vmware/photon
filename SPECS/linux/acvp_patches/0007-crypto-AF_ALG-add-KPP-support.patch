@@ -75,14 +75,14 @@ diff --git a/crypto/Makefile b/crypto/Makefile
 index 4a06f5659..3ea05f3b9 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -164,6 +164,7 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
- obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
- obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
+@@ -201,6 +201,7 @@ ecrdsa_generic-y += ecrdsa_params.asn1.o
+ ecrdsa_generic-y += ecrdsa_pub_key.asn1.o
+ obj-$(CONFIG_CRYPTO_ECRDSA) += ecrdsa_generic.o
  obj-$(CONFIG_CRYPTO_USER_API_AKCIPHER) += algif_akcipher.o
 +obj-$(CONFIG_CRYPTO_USER_API_KPP) += algif_kpp.o
- obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
- obj-$(CONFIG_CRYPTO_OFB) += ofb.o
- obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
+
+ #
+ # generic algorithms and the async_tx api
 diff --git a/crypto/af_alg.c b/crypto/af_alg.c
 index 4178ebac8..e6ef93a28 100644
 --- a/crypto/af_alg.c
@@ -530,11 +530,11 @@ index 000000000..d30136020
 +	return ret;
 +}
 +
-+static int kpp_ecdh_set_privkey(struct crypto_kpp *tfm, const u8 *key,
++static int kpp_ecdh_set_privkey(struct crypto_kpp *tfm, const void *key,
 +				unsigned int keylen)
 +{
 +	struct ecdh params = {
-+		.key = key,
++		.key = (u8*)key,
 +		.key_size = keylen,
 +	};
 +

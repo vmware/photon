@@ -21,6 +21,7 @@ Canister creation patch.
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Signed-off-by: Srish Srinivasan <srish.srinivasan@broadcom.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c |  73 ++++++++++---------
  crypto/Makefile                    |  87 +++++++++++++++++++++++
@@ -459,19 +460,19 @@ index 851fbc4fb..15d75b62c 100644
 +	$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $^ -o $@
 +define UPDATE_CFLAGS =
 +  CFLAGS_$1 += -DFIPS_CANISTER
-+  CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
++  CFLAGS_REMOVE_$1 += -pg -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(canister),$(eval $(call UPDATE_CFLAGS,$(obj))))
 +
 +define UPDATE_CFLAGS_LIB_CRYPTO =
 +  CFLAGS_lib-crypto-$1 += -DFIPS_CANISTER
-+  CFLAGS_REMOVE_lib-crypto-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
++  CFLAGS_REMOVE_lib-crypto-$1 += -pg -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(lib-crypto-y),$(eval $(call UPDATE_CFLAGS_LIB_CRYPTO,$(obj))))
 +
 +define UPDATE_CFLAGS_X86 =
 +  CFLAGS_x86-$1 += -DFIPS_CANISTER
-+  CFLAGS_REMOVE_x86-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
++  CFLAGS_REMOVE_x86-$1 += -pg -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(aesni-intel-y),$(eval $(call UPDATE_CFLAGS_X86,$(obj))))
 +
