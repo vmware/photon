@@ -4,7 +4,7 @@ linkTitle: Upgrading Photon OS 4.0 system to Photon OS 5.0
 weight: 2
 ---
 
-You can upgrade the existing Photon OS 4.0 systems to Photon OS 5.0, and take advantage of the functionality enhancements in Photon OS 5.0. For details, see [What's New in Photon OS 5.0](./whats-new/).
+You can upgrade the existing Photon OS 4.0 systems to Photon OS 5.0, and take advantage of the functionality enhancements in Photon OS 5.0. For details, see [What's New in Photon OS 5.0](https://github.com/vmware/photon/wiki/What-is-New-in-Photon-OS-5.0).
 
 The  `photon-upgrade` package provides a seamless upgrade for Photon OS. To use the package, you need to perform the following steps:
 
