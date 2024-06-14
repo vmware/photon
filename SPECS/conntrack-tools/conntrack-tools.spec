@@ -1,7 +1,7 @@
 Summary:        Connection tracking userspace tools for Linux.
 Name:           conntrack-tools
 Version:        1.4.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://conntrack-tools.netfilter.org
 Group:          Development/Tools
@@ -87,6 +87,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Fri Jun 14 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.7-3
+- Fix conntrackd.service failure
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.7-2
 - Bump version as a part of libtirpc upgrade
 * Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com.com> 1.4.7-1
