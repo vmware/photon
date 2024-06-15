@@ -11,6 +11,7 @@ Distribution:   Photon
 Source0: https://download.gnome.org/sources/libxml2/2.9/%{name}-%{version}.tar.gz
 %define sha512 %{name}=df1c6486e80f0fcf3c506f3599bcfb94b620c00d0b5d26831bc983daa78d58ec58b5057b1ec7c1a26c694f40199c6234ee2a6dcabf65abfa10c447cb5705abbd
 
+#Note:   If you are fixing a CVE here, please check for the same under libxml2 component of gettext
 Patch0:  0001-Work-around-lxml-API.patch
 Patch1:  libxml2-CVE-2022-23308.patch
 Patch2:  libxml2-CVE-2022-29824.patch

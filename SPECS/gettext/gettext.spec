@@ -1,14 +1,23 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
 Version:        0.21
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-Patch0:         libxml2-CVE-2022-40304.patch
+Patch0:         libxml2-CVE-2016-3709.patch
+Patch1:         libxml2-CVE-2019-19956.patch
+Patch2:         libxml2-CVE-2021-3517.patch
+Patch3:         libxml2-CVE-2021-3518.patch
+Patch4:         libxml2-CVE-2021-3541.patch
+Patch5:         libxml2-CVE-2022-23308.patch
+Patch6:         libxml2-CVE-2022-40303.patch
+Patch7:         libxml2-CVE-2022-40304.patch
+Patch8:         libxml2-CVE-2024-25062.patch
+
 %define sha512  gettext=f7e2968651879f8444d43a176a149db9f9411f4a03132a7f3b37c2ed97e3978ae6888169c995c1953cb78943b6e3573811abcbb8661b6631edbbe067b2699ddf
 
 %description
@@ -17,7 +26,26 @@ These allow programs to be compiled with NLS
 messages in the user's native language.
 
 %prep
-%autosetup -p1
+# Using autosetup is not feasible
+%setup -q -n gettext-%{version}
+
+# Manually apply libxml2 patches instead of dynamically linking system installed libxml2 because its
+# dependencies and their dynamic relocations have an impact on the startup time of a program that is linked with it
+
+# Apply patches to gnulib-local/lib/libxml
+pushd gnulib-local/lib/libxml
+%autopatch -p1 -m0 -M8
+popd
+
+# Apply patches to gettext-tools/gnulib-lib/libxml
+pushd gettext-tools/gnulib-lib/libxml
+%autopatch -p1 -m0 -M8
+popd
+
+# Apply patches to libtextstyle/lib/libxml
+pushd libtextstyle/lib/libxml
+%autopatch -p1 -m0 -M8
+popd
 
 %build
 %configure \
@@ -36,8 +64,8 @@ rm -rf %{buildroot}%{_infodir}
 sed -i 's/test-term-ostream-xterm.sh//1' ./libtextstyle/tests/Makefile
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files -f %{name}.lang
 %defattr(-,root,root)
@@ -54,6 +82,9 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Fri Jun 14 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 0.21-4
+- Fix CVE-2016-3709/2019-19956/2021-3517/2021-3518/
+- 2021-3541/2022-23308/2022-40303/2022-40304/2024-25062
 * Wed Dec 21 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.21-3
 - Fix CVE-2022-40304
 * Mon Nov 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.21-2
