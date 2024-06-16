@@ -2,8 +2,8 @@
 
 Summary:    Package manager
 Name:       rpm
-Version:    4.19.0
-Release:    6%{?dist}
+Version:    4.19.1.1
+Release:    1%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -11,7 +11,7 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=84801954eab8390af86388c96e0a446b0924bc3791dabcb8641dbaa53586ca852400c0b53c969c06e716949aa36ce337de7d6ba1ffc09eca31900af250f205cb
+%define sha512 %{name}=3364c453c29903c144a3680ceca7a17426eb085c288b6313fb7e857a42a5e0a965f623882e0f58e633f8b8770e839d9df9f7653d99c73759af5c89d0a981908d
 
 Source1:    macros
 Source2:    macros.php
@@ -19,11 +19,12 @@ Source3:    macros.perl
 Source4:    macros.vpath
 Source5:    macros.ldconfig
 
-Patch0:     silence-warning.patch
-Patch1:     sync-buf-cache.patch
-Patch2:     wait-for-lock.patch
-Patch3:     migrate-rpmdb.patch
-Patch4:     dilute-user-group-requires.patch
+Patch0:     0001-silence-warning.patch
+Patch1:     0002-sync-buf-cache.patch
+Patch2:     0003-wait-for-lock.patch
+Patch3:     0004-migrate-rpmdb.patch
+Patch4:     0005-dilute-user-group-requires.patch
+Patch5:     0006-disable-sysusers.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -203,7 +204,8 @@ that will manipulate RPM packages and databases.
     -DWITH_ARCHIVE=OFF \
     -DWITH_AUDIT=OFF \
     -DENABLE_NDB=OFF \
-    -DENABLE_OPENMP=OFF
+    -DENABLE_OPENMP=OFF \
+    -DENABLE_TESTSUITE=OFF
 
 pushd %{__cmake_builddir}
 %make_build
@@ -227,8 +229,7 @@ install -vm644 %{SOURCE4} %{buildroot}%{_rpmmacrodir}
 install -vm644 %{SOURCE5} %{buildroot}%{_rpmmacrodir}
 
 %check
-make check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
-%make_build clean
+# tests run in container env, so use a VM and do make check
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -367,6 +368,8 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}/*.md
 
 %changelog
+* Sun Jun 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.1.1-1
+- Upgrade to v4.19.1.1
 * Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-6
 - Bump version as a part of dbus upgrade
 * Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-5

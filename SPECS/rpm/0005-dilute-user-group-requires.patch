@@ -1,7 +1,7 @@
-From cadc6827aeed436cce7a105dba33a49d6944069e Mon Sep 17 00:00:00 2001
+From 3cccef745c850c2ffc4d37c66dbfae29b63ada72 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Sun, 5 Nov 2023 11:29:06 +0530
-Subject: [PATCH] dilute user, group requires
+Subject: [PATCH 5/6] dilute user, group requires
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
@@ -9,7 +9,7 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/macros.in b/macros.in
-index a047d1e38..5f4d6909e 100644
+index 0b98f8c..8e3bdc9 100644
 --- a/macros.in
 +++ b/macros.in
 @@ -244,7 +244,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
@@ -22,5 +22,5 @@ index a047d1e38..5f4d6909e 100644
  #	The directory where newly built binary packages will be written.
  %_rpmdir		%{_topdir}/RPMS
 -- 
-2.25.1
+2.45.2
 

@@ -1,0 +1,32 @@
+From 0cebe03f48b0a922f4d72be24a88ae9410d48d01 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 19 Jun 2024 20:21:44 +0530
+Subject: [PATCH 6/6] macros.in: disable sysusers
+
+If not done, package installations may fail saying
+/usr/lib/rpm/macros.d/sysusers.sh not found.
+
+systemd-sysusers.service will create the users upon boot, so let it
+handle it as needed.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ macros.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/macros.in b/macros.in
+index 8e3bdc9..f8d9763 100644
+--- a/macros.in
++++ b/macros.in
+@@ -141,7 +141,7 @@
+ 
+ # sysusers helper binary (or a replacement script), uncomment to disable
+ #%__systemd_sysusers	@__SYSTEMD_SYSUSERS@
+-%__systemd_sysusers	%{_rpmconfigdir}/sysusers.sh
++#%__systemd_sysusers	%{_rpmconfigdir}/sysusers.sh
+ 
+ #
+ #	Path to script that creates debug symbols in a /usr/lib/debug
+-- 
+2.45.2
+

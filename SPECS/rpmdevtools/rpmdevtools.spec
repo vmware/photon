@@ -1,6 +1,6 @@
 Name:       rpmdevtools
 Version:    9.6
-Release:    2%{?dist}
+Release:    3%{?dist}
 Summary:    RPM Development Tools
 License:    GPLv2+ and GPLv2
 URL:        https://pagure.io/rpmdevtools
@@ -74,6 +74,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/*
 
 %changelog
+* Sun Jun 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.6-3
+- Bump version as a part of rpm upgrade
 * Mon Nov 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.6-2
 - Bump version as a part of rpm upgrade
 * Tue Mar 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.6-1

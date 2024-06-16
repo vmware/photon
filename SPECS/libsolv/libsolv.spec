@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.7.25
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
@@ -75,6 +75,8 @@ cd %{__cmake_builddir}
 %{_mandir}/man3/*
 
 %changelog
+* Sun Jun 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.25-2
+- Bump version as a part of rpm upgrade
 * Sat Nov 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.7.25-1
 - Upgrade to v0.7.25
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.7.22-4

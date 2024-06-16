@@ -1,7 +1,7 @@
-From b093e00225b14fa4ecdd1cd48243e825c0729d86 Mon Sep 17 00:00:00 2001
+From 573dc14167949e8648332bb0ac4c5ee35e5785f0 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Thu, 3 Feb 2022 16:17:38 +0530
-Subject: [PATCH] Migrate rpmdb to /usr/lib/sysimage/rpm
+Subject: [PATCH 4/6] Migrate rpmdb to /usr/lib/sysimage/rpm
 
 Reference:  https://fedoraproject.org/wiki/Changes/RelocateRPMToUsr
 
@@ -11,10 +11,10 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
  1 file changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/macros.in b/macros.in
-index 22f675cdb..fc9c49930 100644
+index b49ffaa..0b98f8c 100644
 --- a/macros.in
 +++ b/macros.in
-@@ -140,7 +140,7 @@
+@@ -120,7 +120,7 @@
  %_buildshell		/bin/sh
  
  #	The location of the rpm database file(s).
@@ -23,7 +23,7 @@ index 22f675cdb..fc9c49930 100644
  
  #	The location of the rpm database file(s) after "rpm --rebuilddb".
  %_dbpath_rebuild	%{_dbpath}
-@@ -330,7 +330,7 @@ package or when debugging this package.\
+@@ -338,7 +338,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
  
  #	A colon separated list of desired locales to be installed;
  #	"all" means install all locale specific files.
@@ -32,7 +32,7 @@ index 22f675cdb..fc9c49930 100644
  %_install_langs	all
  
  #	Set ModularityLabel: for packages being build
-@@ -565,17 +565,17 @@ package or when debugging this package.\
+@@ -573,17 +573,17 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
  #%__find_conflicts	???
  #%__find_obsoletes	???
  
@@ -54,7 +54,7 @@ index 22f675cdb..fc9c49930 100644
  # %__myattr_requires	path + args to requires finder script for <myattr>
  # %__myattr_provides	path + args to provides finder script for <myattr>
  # %__myattr_magic	libmagic classification match regex
-@@ -1266,7 +1266,7 @@ end
+@@ -1315,7 +1315,7 @@ end
  # -S<scm name>	Sets the used patch application style, eg '-S git' enables
  #           	usage of git repository and per-patch commits.
  # -N		Disable automatic patch application
@@ -64,5 +64,5 @@ index 22f675cdb..fc9c49930 100644
  %setup %{-a} %{-b} %{-c} %{-D} %{-n} %{-T} %{!-v:-q}\
  %{-S:%global __scm %{-S*}}\
 -- 
-2.25.1
+2.45.2
 
