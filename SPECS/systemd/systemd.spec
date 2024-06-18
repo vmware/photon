@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        255.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -336,6 +336,7 @@ CONFIGURE_OPTS=(
        -Dpwquality=disabled
        -Dpasswdqc=disabled
        -Ddbus=disabled
+       -Dsysupdate=false
        $CROSS_COMPILE_CONFIG
 )
 
@@ -750,6 +751,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Jun 18 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 255.2-5
+- Disable sysupdate through build
 * Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 255.2-4
 - Disable sysupdate services through preset
 * Thu Mar 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 255.2-3
