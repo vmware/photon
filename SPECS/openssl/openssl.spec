@@ -7,8 +7,8 @@
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.13
-Release:        4%{?dist}
+Version:        3.0.14
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -16,8 +16,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=22f4096781f0b075f5bf81bd39a0f97e111760dfa73b6f858f6bb54968a7847944d74969ae10f9a51cc21a2f4af20d9a4c463649dc824f5e439e196d6764c4f9
-
+%define sha512 %{name}=1c59c01e60da902a20780d71f1fa5055d4037f38c4bc3fb27ed5b91f211b36a6018055409441ad4df58b5e9232b2528240d02067272c3c9ccb8c221449ca9ac0
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
 Source3: distro.cnf
@@ -35,7 +34,6 @@ Source7: %{fips_provider_srcname}.tar.xz
 
 Patch0: openssl-cnf.patch
 Patch1: CVE-2023-50782.patch
-Patch2: CVE-2024-2511.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -273,6 +271,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Jun 18 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.14-1
+- Update to openssl-3.0.14 to fix CVE-2024-4741
 * Wed Apr 10 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.13-4
 - Fix CVE-2024-2511
 * Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.13-3
