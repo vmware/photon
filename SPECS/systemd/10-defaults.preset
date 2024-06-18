@@ -7,9 +7,3 @@ enable systemd-timesyncd.service
 enable systemd-networkd.service
 enable systemd-networkd-wait-online.service
 enable systemd-resolved.service
-
-# these services are not needed by Photon
-disable systemd-sysupdate
-disable systemd-sysupdate.timer
-disable systemd-sysupdate-reboot
-disable systemd-sysupdate-reboot.timer
