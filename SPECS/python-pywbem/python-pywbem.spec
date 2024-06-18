@@ -1,6 +1,6 @@
 Name:           python3-pywbem
 Version:        1.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python WBEM Client
 Group:          Development/Libraries
 License:        LGPLv2+
@@ -25,7 +25,9 @@ Requires:       python3-ply
 Requires:       python3-mock
 Requires:       python3-nocasedict
 Requires:       python3-nocaselist
+Requires:       python3-requests
 Requires:       python3-yamlloader
+
 Provides:       python%{python3_version}dist(pywbem)
 
 %description
@@ -67,6 +69,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jun 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-2
+- Add python3-requests to Requires
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.4.1-1
 - Automatic Version Bump
 * Wed Jul 21 2021 Tapas Kundu <tkundu2vmware.com> 1.1.2-2

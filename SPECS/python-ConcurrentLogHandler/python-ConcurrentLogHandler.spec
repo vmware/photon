@@ -2,7 +2,7 @@
 
 Name:           python3-ConcurrentLogHandler
 Version:        0.9.20
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Concurrent logging handler (drop-in replacement for RotatingFileHandler) Python 2.6+
 License:        Apache-2.0
 Group:          Development/Languages/Python
@@ -22,6 +22,7 @@ BuildRequires:  python3-pytest
 
 Requires:       python3
 Requires:       python3-setuptools
+Requires:       python3-portalocker
 
 BuildArch:      noarch
 
@@ -43,6 +44,8 @@ ConcurrentLogHandler is a module that provides an additional log handler for Pyt
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jun 25 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.9.20-3
+- Add python3-portalocker dependency
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.9.20-2
 - Update release to compile with python 3.11
 * Tue Nov 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.9.20-1
