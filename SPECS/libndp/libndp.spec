@@ -1,7 +1,7 @@
 Summary:    Library for Neighbor Discovery Protocol
 Name:       libndp
 Version:    1.7
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    LGPLv2+
 URL:        http://www.libndp.org/
 Group:      System Environment/Libraries
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source:     http://www.libndp.org/files/%{name}-%{version}.tar.gz
 %define sha512 libndp=a9a4b4cb0a9e23384fbb37b7315129d891559bb4203ddd50348d9cddbd03c7d38bd62697d7c17db52568cf06ad631fb59612fc85b8a987309de65b270bca68cd
+
+Patch0: CVE-2024-5564.patch
 
 %description
 This package contains a library which provides a wrapper
@@ -50,6 +52,8 @@ make %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Jun 19 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.7-3
+- Fix CVE-2024-5564
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7-2
 - Remove .la files
 * Thu Sep 13 2018 Bo Gan <ganb@vmware.com> 1.7-1
