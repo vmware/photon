@@ -1,0 +1,36 @@
+From 6de837628740dadd1ebd7f5d4155826c397045f0 Mon Sep 17 00:00:00 2001
+From: Gregor Beck <gbeck@esigma-technology.com>
+Date: Fri, 3 Sep 2021 14:19:11 +0200
+Subject: [PATCH 336/351] fscache: fix initialisation of cookie hash table raw
+ spinlocks
+
+The original patch, 602660600bcd ("fscache: initialize cookie hash
+table raw spinlocks"), subtracted 1 from the shift and so still left
+some spinlocks uninitialized.  This fixes that.
+
+[zanussi: Added changelog text]
+
+Signed-off-by: Gregor Beck <gregor.beck@gmail.com>
+Fixes: 602660600bcd ("fscache: initialize cookie hash table raw spinlocks")
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+(cherry picked from commit 2cdede918a7b5f2b367e4839ad021e1d3b2479b1)
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ fs/fscache/cookie.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/fscache/cookie.c b/fs/fscache/cookie.c
+index b2b9a85a4ba5..84e57196a293 100644
+--- a/fs/fscache/cookie.c
++++ b/fs/fscache/cookie.c
+@@ -955,6 +955,6 @@ void __init fscache_cookie_init(void)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < (1 << fscache_cookie_hash_shift) - 1; i++)
++	for (i = 0; i < ARRAY_SIZE(fscache_cookie_hash); i++)
+ 		INIT_HLIST_BL_HEAD(&fscache_cookie_hash[i]);
+ }
+-- 
+2.45.1
+

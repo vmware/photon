@@ -47,7 +47,6 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  arch/x86/kernel/traps.c                       |   4 +
  arch/x86/xen/xen-asm.S                        |   8 +-
  drivers/char/tpm/tpm-chip.c                   |   9 +-
- drivers/firmware/dmi-id.c                     |   7 +-
  drivers/gpu/drm/radeon/radeon_kms.c           |   4 +-
  .../net/ethernet/broadcom/bnx2x/bnx2x_link.c  | 216 ++++---
  .../net/ethernet/broadcom/bnx2x/bnx2x_link.h  |   4 +-
@@ -116,7 +115,7 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  scripts/gcc-plugins/rap_plugin/rap_plugin.c   | 534 +++++++++++++++++
  scripts/gcc-plugins/rap_plugin/sip.c          |  96 +++
  security/Kconfig                              |  18 +
- 110 files changed, 2482 insertions(+), 743 deletions(-)
+ 109 files changed, 2476 insertions(+), 742 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/Makefile
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
@@ -1371,26 +1370,6 @@ index 2d62a3649..d1f5b8e16 100644
 +	rc = devm_add_action_or_reset(pdev, tpm_put_device, &chip->dev);
  	if (rc)
  		return ERR_PTR(rc);
- 
-diff --git a/drivers/firmware/dmi-id.c b/drivers/firmware/dmi-id.c
-index 624a11cb0..3ddff56fe 100644
---- a/drivers/firmware/dmi-id.c
-+++ b/drivers/firmware/dmi-id.c
-@@ -161,9 +161,14 @@ static int dmi_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
- 	return 0;
- }
- 
-+static void dmi_dev_release(struct device *dev)
-+{
-+	kfree(dev);
-+}
-+
- static struct class dmi_class = {
- 	.name = "dmi",
--	.dev_release = (void(*)(struct device *)) kfree,
-+	.dev_release = dmi_dev_release,
- 	.dev_uevent = dmi_dev_uevent,
- };
  
 diff --git a/drivers/gpu/drm/radeon/radeon_kms.c b/drivers/gpu/drm/radeon/radeon_kms.c
 index 36c7d0d26..6e729a9e0 100644

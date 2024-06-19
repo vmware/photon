@@ -1,0 +1,116 @@
+From ccc965df1bde80342af9867f3914c5ca8564c8e6 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 22 Dec 2021 20:35:22 +0100
+Subject: [PATCH 338/351] net: Add missing xmit_lock_owner hunks.
+
+The patch
+	net: move xmit_recursion to per-task variable on -RT
+
+lost a few hunks during its rebase.
+
+Add the `xmit_lock_owner' accessor/wrapper.
+
+Reported-by: Salvatore Bonaccorso <carnil@debian.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/netdevice.h | 29 +++++++++++++----------------
+ 1 file changed, 13 insertions(+), 16 deletions(-)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index dc0f243bf003..91a2fca65f7e 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3899,17 +3899,17 @@ static inline u32 netif_msg_init(int debug_value, int default_msg_enable_bits)
+ #ifdef CONFIG_PREEMPT_RT_FULL
+ static inline void netdev_queue_set_owner(struct netdev_queue *txq, int cpu)
+ {
+-	txq->xmit_lock_owner = current;
++	WRITE_ONCE(txq->xmit_lock_owner, current);
+ }
+ 
+ static inline void netdev_queue_clear_owner(struct netdev_queue *txq)
+ {
+-	txq->xmit_lock_owner = NULL;
++	WRITE_ONCE(txq->xmit_lock_owner, NULL);
+ }
+ 
+ static inline bool netdev_queue_has_owner(struct netdev_queue *txq)
+ {
+-	if (txq->xmit_lock_owner != NULL)
++	if (READ_ONCE(txq->xmit_lock_owner) != NULL)
+ 		return true;
+ 	return false;
+ }
+@@ -3918,17 +3918,19 @@ static inline bool netdev_queue_has_owner(struct netdev_queue *txq)
+ 
+ static inline void netdev_queue_set_owner(struct netdev_queue *txq, int cpu)
+ {
+-	txq->xmit_lock_owner = cpu;
++	/* Pairs with READ_ONCE() in __dev_queue_xmit() */
++	WRITE_ONCE(txq->xmit_lock_owner, cpu);
+ }
+ 
+ static inline void netdev_queue_clear_owner(struct netdev_queue *txq)
+ {
+-	txq->xmit_lock_owner = -1;
++	/* Pairs with READ_ONCE() in __dev_queue_xmit() */
++	WRITE_ONCE(txq->xmit_lock_owner, -1);
+ }
+ 
+ static inline bool netdev_queue_has_owner(struct netdev_queue *txq)
+ {
+-	if (txq->xmit_lock_owner != -1)
++	if (READ_ONCE(txq->xmit_lock_owner) != -1)
+ 		return true;
+ 	return false;
+ }
+@@ -3937,8 +3939,7 @@ static inline bool netdev_queue_has_owner(struct netdev_queue *txq)
+ static inline void __netif_tx_lock(struct netdev_queue *txq, int cpu)
+ {
+ 	spin_lock(&txq->_xmit_lock);
+-	/* Pairs with READ_ONCE() in __dev_queue_xmit() */
+-	WRITE_ONCE(txq->xmit_lock_owner, cpu);
++	netdev_queue_set_owner(txq, cpu);
+ }
+ 
+ static inline bool __netif_tx_acquire(struct netdev_queue *txq)
+@@ -3955,8 +3956,7 @@ static inline void __netif_tx_release(struct netdev_queue *txq)
+ static inline void __netif_tx_lock_bh(struct netdev_queue *txq)
+ {
+ 	spin_lock_bh(&txq->_xmit_lock);
+-	/* Pairs with READ_ONCE() in __dev_queue_xmit() */
+-	WRITE_ONCE(txq->xmit_lock_owner, smp_processor_id());
++	netdev_queue_set_owner(txq, smp_processor_id());
+ }
+ 
+ static inline bool __netif_tx_trylock(struct netdev_queue *txq)
+@@ -3964,23 +3964,20 @@ static inline bool __netif_tx_trylock(struct netdev_queue *txq)
+ 	bool ok = spin_trylock(&txq->_xmit_lock);
+ 
+ 	if (likely(ok)) {
+-		/* Pairs with READ_ONCE() in __dev_queue_xmit() */
+-		WRITE_ONCE(txq->xmit_lock_owner, smp_processor_id());
++		netdev_queue_set_owner(txq, smp_processor_id());
+ 	}
+ 	return ok;
+ }
+ 
+ static inline void __netif_tx_unlock(struct netdev_queue *txq)
+ {
+-	/* Pairs with READ_ONCE() in __dev_queue_xmit() */
+-	WRITE_ONCE(txq->xmit_lock_owner, -1);
++	netdev_queue_clear_owner(txq);
+ 	spin_unlock(&txq->_xmit_lock);
+ }
+ 
+ static inline void __netif_tx_unlock_bh(struct netdev_queue *txq)
+ {
+-	/* Pairs with READ_ONCE() in __dev_queue_xmit() */
+-	WRITE_ONCE(txq->xmit_lock_owner, -1);
++	netdev_queue_clear_owner(txq);
+ 	spin_unlock_bh(&txq->_xmit_lock);
+ }
+ 
+-- 
+2.45.1
+
