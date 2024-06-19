@@ -1,14 +1,16 @@
 Summary:      Library for Neighbor Discovery Protocol
 Name:         libndp
 Version:      1.8
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      LGPLv2+
 URL:          http://www.libndp.org/
 Source:       http://www.libndp.org/files/%{name}-%{version}.tar.gz
-%define sha1  libndp=c506274b3929fbb2f1108e44602390958909dfd3
+%define sha512 libndp=93cb4629a748aa8c3569c8748657489b263046c8245aa640478c86323f44bd7e66c135bf956fe5d7990226f52d5dd9ffe9452c505d6c3ad3da0860a28e2dbe6a
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
 Distribution: Photon
+
+Patch0: CVE-2024-5564.patch
 
 %description
 This package contains a library which provides a wrapper
@@ -31,7 +33,7 @@ Headers and libraries for the libndp.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name \*.la -delete
 
 %ldconfig_scriptlets
@@ -47,6 +49,8 @@ find %{buildroot} -name \*.la -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Wed Jun 19 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.8-2
+-   Fix CVE-2024-5564
 *   Wed Aug 04 2021 Susant Sahani <ssahani@vmware.com> 1.8-1
 -   Update to 1.8
 *   Thu Sep 13 2018 Bo Gan <ganb@vmware.com> 1.7-1
