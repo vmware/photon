@@ -1,11 +1,11 @@
-%define njs_ver     0.8.0
+%define njs_ver     0.8.3
 %define nginx_user  %{name}
 %define headers_more_nginx_module_ver 0.37
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.25.2
-Release:        4%{?dist}
+Version:        1.26.1
+Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -13,17 +13,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://nginx.org/download/nginx-%{version}.tar.gz
-%define sha512 %{name}=47da46d823f336432aca6c4cd54c76660af60620518d5c518504033a9fd6b411fd6d41e4aac2c8200311a53f96159aa3da8920145e8ed85596c9c2c14e20cb27
+%define sha512 %{name}=dfaadde78eb5cf8c8c3a43ead9ac49fc852c8de3e70e69754e3ffafc88c50c8bc08cdac0cc0ba8a9d8c155bdb334865e2e6c7dc1144c79959c426a9e087b3e37
 
 Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
-%define sha512 %{name}-njs=5e5fd3b0aba9d1a0b47207081e59d577cbd3db41e141cfa529526a778bbcd4fec1cd4dacaa1dc63ee07868ccf35f4d4cc465abff831bb03d128b0b1f1b04bb28
+%define sha512 %{name}-njs=c6d70167ba91305ff859fcbb389662eb7654074845349599d00586d87aa8b086308d154fe3be2ea773ddd015ae5b04e4fba40ec82d1c461d1a3a10c23a2fb7b4
 
 Source2: https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/headers-more-nginx-module-%{headers_more_nginx_module_ver}.tar.gz
 %define sha512 headers-more-nginx-module=0cc2fffe506194d439e3669644d41b7943e2c3cffa3483eb70b92067930b358d506a14646eff8362b191a11c624db29f6b53d830876929dcb4ce1c9d7b2bc40d
 
 Source3: %{name}.service
-
-Patch0: CVE-2023-44487.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -45,8 +43,6 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
 %prep
 # Using autosetup is not feasible
 %setup -q -a1 -a2
-
-%patch -P0 -p1
 
 %build
 sh ./configure \
@@ -126,6 +122,9 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Wed Jun 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.26.1-1
+- Version upgrade to v1.26.1 to fix following CVE's:
+- CVE-2024-31079, CVE-2024-32760, CVE-2024-34161 and CVE-2024-35200
 * Wed May 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.25.2-4
 - Enable support for ssl_preread_module
 * Wed Mar 06 2024 Harinadh D <hdommaraju@vmware.com> 1.25.2-3
