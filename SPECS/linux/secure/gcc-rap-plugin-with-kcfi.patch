@@ -40,6 +40,7 @@ https://github.com/gregkh/linux/commit/74fcb181772e5b8a8f1244c7393c56ae6d03c330
 replaced indirect way of calling system call with switch statement based
 direct system call. So, there is no need for asm way to call syscall directly.]
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
 ---
  Makefile                                      |   2 +
  arch/Kconfig                                  |   8 +-
@@ -55,7 +56,6 @@ Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
  arch/x86/tools/relocs.c                       |   1 +
  drivers/block/floppy.c                        |  11 +-
  drivers/char/tpm/tpm-chip.c                   |   9 +-
- drivers/firmware/dmi-id.c                     |   7 +-
  drivers/net/ethernet/brocade/bna/bfa_cs.h     |  42 +-
  drivers/net/ethernet/brocade/bna/bfa_ioc.c    |  10 +-
  drivers/net/ethernet/brocade/bna/bfa_ioc.h    |   4 +-
@@ -104,7 +104,7 @@ Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
  scripts/mod/modpost.c                         |   6 -
  security/Kconfig                              |  29 +
  security/apparmor/net.c                       |   2 +-
- 63 files changed, 1894 insertions(+), 189 deletions(-)
+ 62 files changed, 1888 insertions(+), 188 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -406,26 +406,6 @@ index c0759d49f..64395bfef 100644
 +	rc = devm_add_action_or_reset(pdev, tpm_put_device, &chip->dev);
  	if (rc)
  		return ERR_PTR(rc);
- 
-diff --git a/drivers/firmware/dmi-id.c b/drivers/firmware/dmi-id.c
-index 940ddf916..77a8d43e6 100644
---- a/drivers/firmware/dmi-id.c
-+++ b/drivers/firmware/dmi-id.c
-@@ -169,9 +169,14 @@ static int dmi_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
- 	return 0;
- }
- 
-+static void dmi_dev_release(struct device *dev)
-+{
-+	kfree(dev);
-+}
-+
- static struct class dmi_class = {
- 	.name = "dmi",
--	.dev_release = (void(*)(struct device *)) kfree,
-+	.dev_release = dmi_dev_release,
- 	.dev_uevent = dmi_dev_uevent,
- };
  
 diff --git a/drivers/net/ethernet/brocade/bna/bfa_cs.h b/drivers/net/ethernet/brocade/bna/bfa_cs.h
 index 8f0ac7b99..dffc8837b 100644

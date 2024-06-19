@@ -29,8 +29,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.90
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.94
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -41,7 +41,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=0f16edca9dfa35830820c17508a87abf550bb1b1bbfeed78a7537b3c6c10e890b82524f3deb059f7fddc41d77e07a4c143c59fdeebd875e6795353f5cedccb41
+%define sha512 linux=41e37c17215783da64e855eac89a014811ea2aafd6687bc0381727083d270df55d979493f62d264ba221d34cc67494c25a8d5e146dc38e5a3a66f104c9227079
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -181,9 +181,6 @@ Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2023-39191 [110..128]
 %include %{SOURCE42}
-
-# Fix CVE-2023-52585
-Patch130: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
 
 # Fix CVE-2023-52452
 Patch131: 0001-bpf-Allow-reads-from-uninit-stack.patch
@@ -853,6 +850,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.1.94-1
+- Update to version 6.1.94
 * Mon May 20 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.90-5
 - perf: add patch to collect off-cpu sample
 * Mon May 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.90-4
