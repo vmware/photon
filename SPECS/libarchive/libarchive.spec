@@ -1,7 +1,7 @@
 Summary:        Multi-format archive and compression library
 Name:           libarchive
 Version:        3.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause License
 URL:            http://www.libarchive.org
 Group:          System Environment/Development
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0:        http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
 %define sha512  %{name}=ccd36fc5e24e5feaad15b08496c4f6373f1bbb6ba657af5dc633b9d1454c98aba9a59ccffc48b41afc1219119d46c15d4db09c5855950422946e4dc058f17b88
+
+Patch0: CVE-2024-26256.patch
 
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
@@ -63,6 +65,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Jun 19 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 3.7.1-2
+- Fix CVE-2024-26256
 * Tue Aug 22 2023 Harinadh D <hdommaraju@vmware.com> 3.7.1-1
 - Version Upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.1-5
