@@ -8,6 +8,7 @@ Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
 Signed-off-by: srinidhira0 <srinidhir@vmware.com>
 Signed-off-by: Ankit Jain <ankitja@vmware.com>
 Signed-off-by: Srish Srinivasan <srish.srinivasan@broadcom.com>
+Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
 ---
  arch/x86/crypto/aesni-intel_asm.S             |  14 +-
  arch/x86/crypto/aesni-intel_avx-x86_64.S      |  16 +-
@@ -106,7 +107,7 @@ Signed-off-by: Srish Srinivasan <srish.srinivasan@broadcom.com>
  scripts/gcc-plugins/rap_plugin/sip.c          |  96 +++
  scripts/mod/modpost.c                         |   7 -
  security/Kconfig                              |  18 +
- 97 files changed, 2369 insertions(+), 542 deletions(-)
+ 96 files changed, 2363 insertions(+), 541 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -1157,26 +1158,6 @@ index ed600473a..bf9a6a7c0 100644
 +	rc = devm_add_action_or_reset(pdev, tpm_put_device, &chip->dev);
  	if (rc)
  		return ERR_PTR(rc);
- 
-diff --git a/drivers/firmware/dmi-id.c b/drivers/firmware/dmi-id.c
-index 86d71b021..0cfc60cc2 100644
---- a/drivers/firmware/dmi-id.c
-+++ b/drivers/firmware/dmi-id.c
-@@ -164,9 +164,14 @@ static int dmi_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
- 	return 0;
- }
- 
-+static void dmi_dev_release(struct device *dev)
-+{
-+	kfree(dev);
-+}
-+
- static struct class dmi_class = {
- 	.name = "dmi",
--	.dev_release = (void(*)(struct device *)) kfree,
-+	.dev_release = dmi_dev_release,
- 	.dev_uevent = dmi_dev_uevent,
- };
  
 diff --git a/drivers/net/ethernet/brocade/bna/bfa_cs.h b/drivers/net/ethernet/brocade/bna/bfa_cs.h
 index 8f0ac7b99..dffc8837b 100644
@@ -6055,9 +6036,9 @@ index f603230c6..2bf1eb4d3 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -95,6 +95,24 @@ config PAX_XATTR_PAX_FLAGS
- 
+
  endif
- 
+
 +config PAX_RAP
 +	bool "Prevent code reuse attacks"
 +	depends on X86_64 && GCC_PLUGINS
@@ -6077,7 +6058,8 @@ index f603230c6..2bf1eb4d3 100644
 +	  headers explicitly in addition to the normal gcc package.
 +
  config PAX_RANDKSTACK
- 	bool "Randomize kernel stack base"
- 	depends on X86_TSC && X86
--- 
-2.23.1
+	bool "Randomize kernel stack base"
+	depends on X86_TSC && X86
+--
+2.39.0
+

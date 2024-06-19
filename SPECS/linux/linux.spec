@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.216
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.219
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=d407add11bca1b41a4dde118c9fef52dc67d2f0aad1cc1ed77143104d7d9b7ce1bcd4661681246c06300e9ff5155fbb8d901428bffc32672b6e531ad10fcad7b
+%define sha512 linux=e62d8262654054c3a05e5e0a62dcedc51499fcfa078a4c19cb52c6dca82a83125152b83aa9bc0fdd448f563fbd71409305402d1a12cc8c7a038b8bed76ac482e
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -175,8 +175,6 @@ Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-# Fix for CVE-2023-52585
-Patch105: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
 # Fix for CVE-2022-3522
 Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
 Patch107: 0002-mm_hugetlb_fix_race_condition_of_uffd_missing_minor_handling.patch
@@ -913,6 +911,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.219-1
+- Update to version 5.10.219
 * Thu May 16 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.216-2
 - Remove linux-rt from requires of linux-tools
 * Tue May 07 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.216-1

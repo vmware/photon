@@ -83,6 +83,7 @@ Subject: [PATCH] Added PAX_RANDKSTACK
 Signed-off-by: Him Kalyan Bordoloi<bordoloih@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
 ---
  arch/x86/entry/entry_64.S    | 38 ++++++++++++++++++++++++++++++++++--
  arch/x86/kernel/process_64.c | 15 ++++++++++++++
@@ -90,12 +91,12 @@ Signed-off-by: srinidhira0 <srinidhir@vmware.com>
  3 files changed, 67 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 559c82b83475..9e2d0eeb6786 100644
+index bd785386d..619715e76 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -54,6 +54,15 @@ SYM_CODE_START(native_usergs_sysret64)
- SYM_CODE_END(native_usergs_sysret64)
- #endif /* CONFIG_PARAVIRT_XXL */
+@@ -46,6 +46,15 @@
+ .code64
+ .section .entry.text, "ax"
  
 +#ifdef CONFIG_PAX_RANDKSTACK
 +.macro PAX_RAND_KSTACK
@@ -109,7 +110,7 @@ index 559c82b83475..9e2d0eeb6786 100644
  /*
   * 64-bit SYSCALL instruction entry. Up to 6 arguments in registers.
   *
-@@ -115,15 +124,32 @@ SYM_INNER_LABEL(entry_SYSCALL_64_after_hwframe, SYM_L_GLOBAL)
+@@ -107,15 +116,32 @@ SYM_INNER_LABEL(entry_SYSCALL_64_after_hwframe, SYM_L_GLOBAL)
  	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
  
  	/* IRQs are off. */
@@ -144,7 +145,7 @@ index 559c82b83475..9e2d0eeb6786 100644
  	/*
  	 * Try to use SYSRET instead of IRET if we're returning to
  	 * a completely clean 64-bit userspace context.  If we're not,
-@@ -288,8 +314,16 @@ SYM_CODE_START(ret_from_fork)
+@@ -287,8 +313,16 @@ SYM_CODE_START(ret_from_fork)
  
  2:
  	UNWIND_HINT_REGS
@@ -162,7 +163,7 @@ index 559c82b83475..9e2d0eeb6786 100644
  
  1:
 diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index ad3f82a18de9..c653598d119a 100644
+index 1d8bc4736..c4fd1d898 100644
 --- a/arch/x86/kernel/process_64.c
 +++ b/arch/x86/kernel/process_64.c
 @@ -61,6 +61,21 @@
@@ -188,7 +189,7 @@ index ad3f82a18de9..c653598d119a 100644
  void __show_regs(struct pt_regs *regs, enum show_regs_mode mode,
  		 const char *log_lvl)
 diff --git a/security/Kconfig b/security/Kconfig
-index ea9587201623..04d9e21e87d4 100644
+index 81788f5e8..0e74f0413 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -94,6 +94,22 @@ config PAX_XATTR_PAX_FLAGS
@@ -215,5 +216,5 @@ index ea9587201623..04d9e21e87d4 100644
  
  source "security/keys/Kconfig"
 -- 
-2.23.3
+2.39.0
 
