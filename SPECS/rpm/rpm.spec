@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -26,6 +26,7 @@ Patch2: 0003-If-rpm-is-not-triggered-from-tty-rpm-transactions-wo.patch
 Patch3: 0004-Migrate-rpmdb-to-usr-lib-sysimage-rpm.patch
 Patch4: 0005-Fix-a-race-condition-in-brp-strip.patch
 Patch5: 0006-Disable-removing-exec-permission-from-shared-objects.patch
+Patch6: 0001-Add-RPMTAG_VCS-to-optionalTags.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -329,6 +330,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Mon Apr 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 4.18.2-6
+- adding build numbers to RPMTAG_VCS
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.18.2-5
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-4
