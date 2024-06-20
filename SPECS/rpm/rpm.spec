@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.19.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -24,6 +24,7 @@ Patch1:     sync-buf-cache.patch
 Patch2:     wait-for-lock.patch
 Patch3:     migrate-rpmdb.patch
 Patch4:     dilute-user-group-requires.patch
+Patch5:     0001-Add-RPMTAG_VCS-to-optionalTags.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -367,6 +368,8 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}/*.md
 
 %changelog
+* Wed Jun 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.0-7
+- adding build numbers to RPMTAG_VCS
 * Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-6
 - Bump version as a part of dbus upgrade
 * Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-5
