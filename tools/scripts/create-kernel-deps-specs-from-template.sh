@@ -10,6 +10,60 @@ declare -A specs_map=(
 [other_specs]="sysdig falco"
 )
 
+
+# _______________________________________________________________________________
+# |                           Kernel - Intel Driver Map                         |
+# |_____________________________________________________________________________|
+# |	 |             v6.6 	           |     v6.1                           |
+# |______|_________________________________|____________________________________|
+# | ice  | "4.19.9" [linux,linux-{esx,rt}] |  "1.14.9" [linux-rt]               |
+# |      |                                 |  "1.13.7" [linux,linux-{esx,rt}]   |
+# |      |                                 |  "1.12.7" [linux-rt]               |
+# |      |                                 |  "1.11.14"[linux-rt]               |
+# |      |                                 |  "1.9.11" [linux-rt]               |
+# |______|_________________________________|____________________________________|
+# | iavf | "4.11.1" [linux,linux-{esx,rt}] |  "4.11.1" [linux-rt]               |
+# |      |                                 |  "4.9.5"  [linux,linux-{esx,rt}]   |
+# |      |                                 |  "4.8.2"  [linux-rt]               |
+# |      |                                 |  "4.5.3"  [linux-rt]		|
+# |______|_________________________________|____________________________________|
+# | i40e | "2.25.7" [linux,linux-{esx,rt}] |  "2.25.7" [linux-rt]               |
+# |      |                                 |  "2.23.17"[linux-rt]               |
+# |      |                                 |  "2.22.18"[linux,linux-{esx,rt}]	|
+# |______|_________________________________|____________________________________|
+#
+# Note: While adding/removing any version from any of the given drivers,
+#       Please update above table and carefully update all the references
+#       of i40e/ice/iavf read-only array
+declare -ra i40e=("2.25.7" "2.23.17" "2.22.18")
+declare -ra ice=("1.14.9" "1.13.7" "1.12.7" "1.11.14" "1.9.11")
+declare -ra iavf=("4.11.1" "4.9.5" "4.8.2" "4.5.3")
+
+# Note: Composite Key speretated by ':' is being used as per below nomenclature
+# [KernelVersion:DriverVersion:KernelFlavour]
+declare -rA kernel_driver_map=(
+ [v6.6:i40e:linux]="${i40e[0]}"
+ [v6.1:i40e:linux]="${i40e[2]}"
+ [v6.6:ice:linux]="${ice[0]}"
+ [v6.1:ice:linux]="${ice[1]}"
+ [v6.6:iavf:linux]="${iavf[0]}"
+ [v6.1:iavf:linux]="${iavf[1]}"
+
+ [v6.6:i40e:linux-esx]="${i40e[0]}"
+ [v6.1:i40e:linux-esx]="${i40e[2]}"
+ [v6.6:ice:linux-esx]="${ice[0]}"
+ [v6.1:ice:linux-esx]="${ice[1]}"
+ [v6.6:iavf:linux-esx]="${iavf[0]}"
+ [v6.1:iavf:linux-esx]="${iavf[1]}"
+
+ [v6.6:i40e:linux-rt]="${i40e[0]}"
+ [v6.1:i40e:linux-rt]="${i40e[@]}"
+ [v6.6:ice:linux-rt]="${ice[0]}"
+ [v6.1:ice:linux-rt]="${ice[@]}"
+ [v6.6:iavf:linux-rt]="${iavf[0]}"
+ [v6.1:iavf:linux-rt]="${iavf[@]}"
+)
+
 populate_kvers() {
   local i=""
   local sp=""
@@ -21,15 +75,39 @@ populate_kvers() {
 
     for sp in ${k_specs[@]}; do
       if [[ -z "$KERNEL_VERSION" ]]; then
-          kvers[$x]+="$(grep ^Version: $sp | awk '{print $2}')"
-          krels[$x]+="$(grep ^Release: $sp | awk '{print $2}' | tr -d -c 0-9)"
+          kvers[$x]+="$(grep ^Version: $sp | awk '{print $2}') "
+          krels[$x]+="$(grep ^Release: $sp | awk '{print $2}' | tr -d -c 0-9) "
       else
           local kver="${KERNEL_VERSION%%-*}"
           local rel="${KERNEL_VERSION##$kver-}"
-          kvers[$x]+="$kver"
-          krels[$x]+="${rel%%.ph*}"
+          kvers[$x]+="$kver "
+          krels[$x]+="${rel%%.ph*} "
       fi
     done
+    kvers[$x]=$(echo "${kvers[$x]}" | sed 's/[[:space:]]*$//')
+  done
+}
+
+# Trim down the input driver versions as per
+# "kernel - Intel Driver Map"
+get_kernel_compatible_drivers() {
+  local kernel_version="$1"
+  local driver_name="$2"
+  local -n driver_versions="$3"
+  local kernel_flavour="linux$4"
+  local kd_map_key="v$(echo "$kernel_version" | cut -d '.' -f1,2):${driver_name}:${kernel_flavour}"
+  local valid_driver_versions=(${kernel_driver_map["$kd_map_key"]})
+  for (( i=0; i<${#driver_versions[@]}; i++ )); do
+    local flag=0
+    for t in "${valid_driver_versions[@]}"; do
+      if [[ "$t" == "${driver_versions[$i]}" ]]; then
+        flag=1
+        break
+      fi
+    done
+    if [[ "$flag" == "0" ]]; then
+      unset driver_versions[$i]
+    fi
   done
 }
 
@@ -79,6 +157,11 @@ create_specs() {
         for i in ${tmp[@]}; do
           [ "$i" != "$d_ver_macro" ] && d_vers+=("$i")
         done
+        get_kernel_compatible_drivers "$kver" "$d_bname" d_vers "$kernel_flavour"
+        if [[ ${#d_vers[@]} -eq 0 ]]; then
+          echo "ERROR: For kernel version:$kver, NO valid version of $d_bname found!!" 1>&2
+          return 1
+        fi
 
         local d_ver=""
         for d_ver in ${d_vers[@]}; do
@@ -127,9 +210,9 @@ find -L $@ -type f -path "*/kernels-drivers-intel/*.spec" -delete
 
 declare -A d_info=()
 
-d_info["ice"]="1.13.7 %{ICE_VERSION}"
-d_info["iavf"]="4.9.5 %{IAVF_VERSION}"
-d_info["i40e"]="2.22.18 %{I40E_VERSION}"
+d_info["ice"]="${ice[@]: 0: 2} %{ICE_VERSION}"
+d_info["iavf"]="${iavf[@]: 0: 2} %{IAVF_VERSION}"
+d_info["i40e"]="${i40e[0]} ${i40e[2]} %{I40E_VERSION}"
 
 echo "Creating kernel drivers for linux ..."
 create_specs "linux"
@@ -137,9 +220,9 @@ create_specs "linux"
 echo "Creating kernel drivers for linux-esx ..."
 create_specs "linux-esx"
 
-d_info["iavf"]="4.11.1 4.9.5 4.8.2 4.5.3 %{IAVF_VERSION}"
-d_info["i40e"]="2.22.18 2.23.17 2.25.7 %{I40E_VERSION}"
-d_info["ice"]="1.14.9 1.13.7 1.12.7 1.11.14 1.9.11 %{ICE_VERSION}"
+d_info["iavf"]="${iavf[@]} %{IAVF_VERSION}"
+d_info["i40e"]="${i40e[@]} %{I40E_VERSION}"
+d_info["ice"]="${ice[@]} %{ICE_VERSION}"
 
 echo "Creating kernel drivers for linux-rt ..."
 create_specs "linux-rt"
