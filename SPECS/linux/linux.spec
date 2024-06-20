@@ -528,7 +528,7 @@ cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
 cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
 %endif
 
-make %{?_smp_mflags} mrproper
+%make_build mrproper
 cp %{SOURCE1} .config
 
 %if 0%{?acvp_build:1}
@@ -608,8 +608,8 @@ grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFI
 fi
 
 %build
-make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
-    KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
+%make_build KBUILD_BUILD_VERSION="1-photon" \
+    KBUILD_BUILD_HOST="photon" ARCH=%{arch}
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -619,20 +619,20 @@ make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
-make %{?_smp_mflags} ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
+%make_build ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
 # verify perf has no dependency on libunwind
 tools/perf/perf -vv | grep libunwind | grep OFF
 tools/perf/perf -vv | grep dwarf | grep on
 
 %ifarch x86_64
 #build turbostat and cpupower
-make %{?_smp_mflags} ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
+%make_build ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
 %endif
 
 # build ENA module
 bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make %{?_smp_mflags} -C ${bldroot} M="${PWD}" V=1 modules %{?_smp_mflags}
+%make_build -C ${bldroot} M="${PWD}" modules
 popd
 
 # build EFA module
@@ -667,18 +667,18 @@ install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
-make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 # install ENA module
 bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
 # install EFA module
 bldroot="${PWD}"
 pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa/build/src
-make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
 %ifarch x86_64
@@ -744,18 +744,18 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
 
-make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
+%make_build -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
      prefix=%{_prefix} perf_install PYTHON=python3 $ARCH_FLAGS
 
-make %{?_smp_mflags} -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} \
+%make_build -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} \
      prefix=%{_prefix} PYTHON=python3 install-python_ext
 
 %ifarch x86_64
-make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
+%make_build -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
       prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
 %endif
 
-make install %{?_smp_mflags} -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
+%make_build install -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
 cp -p %{SOURCE19} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf

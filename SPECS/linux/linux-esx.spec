@@ -349,7 +349,7 @@ cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
 cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
 %endif
 
-make %{?_smp_mflags} mrproper
+%make_build mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
 cp %{SOURCE36} crypto/
@@ -377,8 +377,8 @@ sed -e "s,@@NAME@@,%{name},g" \
 %include %{SOURCE4}
 
 %build
-make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
-    KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
+%make_build KBUILD_BUILD_VERSION="1-photon" \
+    KBUILD_BUILD_HOST="photon" ARCH=%{arch}
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -389,7 +389,7 @@ install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
-make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
 install -vm 644 arch/%{archdir}/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
