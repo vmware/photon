@@ -454,7 +454,7 @@ popd
 # vmci
 %autopatch -p1 -m1521 -M1544
 
-make %{?_smp_mflags} mrproper
+%make_build mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
@@ -482,7 +482,7 @@ sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 %include %{SOURCE4}
 
 %build
-make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+%make_build KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64"
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -492,20 +492,20 @@ make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64
 # build i40e module
 bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
+%make_build -C src KSRC=${bldroot} clean
+%make_build -C src KSRC=${bldroot}
 popd
 
 # build iavf module
 pushd ../iavf-%{iavf_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
+%make_build -C src KSRC=${bldroot} clean
+%make_build -C src KSRC=${bldroot}
 popd
 
 # build ice module
 pushd ../ice-%{ice_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
+%make_build -C src KSRC=${bldroot} clean
+%make_build -C src KSRC=${bldroot}
 popd
 
 %endif
@@ -515,7 +515,7 @@ install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
-make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
 # The auxiliary.ko kernel module is a common dependency for i40e, iavf
@@ -525,24 +525,24 @@ make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 # install i40e module
 bldroot="${PWD}"
 pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+%make_build -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
     INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install_no_aux mandocs_install
 popd
 
 # install iavf module (with aux module)
 pushd ../iavf-%{iavf_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra \
+%make_build -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra \
     INSTALL_AUX_DIR=extra/auxiliary MANDIR=%{_mandir} modules_install \
-    mandocs_install %{?_smp_mflags}
+    mandocs_install
 install -Dvm 644 src/linux/auxiliary_bus.h \
        %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
 popd
 
 # install ice module
 pushd ../ice-%{ice_version}
-make -C src KSRC=${bldroot} MANDIR=%{_mandir} INSTALL_MOD_PATH=%{buildroot} \
-            mandocs_install %{?_smp_mflags}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+%make_build -C src KSRC=${bldroot} MANDIR=%{_mandir} INSTALL_MOD_PATH=%{buildroot} \
+            mandocs_install
+%make_build -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
     INSTALL_MOD_DIR=extra modules_install_no_aux
 popd
 %endif

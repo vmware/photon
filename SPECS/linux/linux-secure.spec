@@ -365,7 +365,7 @@ The Linux package contains the Linux kernel doc files
 %patch1543 -p1
 %patch1544 -p1
 
-make %{?_smp_mflags} mrproper
+%make_build mrproper
 cp %{SOURCE1} .config
 
 %if 0%{?fips}
@@ -387,8 +387,8 @@ sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 %include %{SOURCE4}
 
 %build
-make V=1 KBUILD_BUILD_VERSION="1-photon" \
-    KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+%make_build KBUILD_BUILD_VERSION="1-photon" \
+    KBUILD_BUILD_HOST="photon" ARCH="x86_64"
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -399,7 +399,7 @@ install -vdm 755 %{buildroot}/%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
-make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build INSTALL_MOD_PATH=%{buildroot} modules_install
 
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}

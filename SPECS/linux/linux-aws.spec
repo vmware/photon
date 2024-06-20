@@ -373,7 +373,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m511 -M511
 %endif
 
-make %{?_smp_mflags} mrproper
+%make_build mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
@@ -394,7 +394,7 @@ sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 %include %{SOURCE4}
 
 %build
-make %{?_smp_mflags} VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" \
+%make_build KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH=%{arch}
 
 %if 0%{?fips}
@@ -407,7 +407,7 @@ install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
-make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
 

@@ -564,7 +564,7 @@ popd
 %autopatch -p1 -m1521 -M1524
 %autopatch -p1 -m1531 -M1544
 
-make %{?_smp_mflags} mrproper
+%make_build mrproper
 cp %{SOURCE1} .config
 
 %if 0%{?acvp_build:1} && 0%{?fips}
@@ -607,7 +607,7 @@ grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFI
 fi
 
 %build
-make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
+%make_build KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch}
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -617,43 +617,43 @@ make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="phot
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
 
-make %{?_smp_mflags} ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
+%make_build ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
 # verify perf has no dependency on libunwind
 tools/perf/perf -vv | grep libunwind | grep OFF
 tools/perf/perf -vv | grep dwarf | grep on
 
 %ifarch x86_64
 # build turbostat and cpupower
-make %{?_smp_mflags} ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
+%make_build ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
 
 # build ENA module
 bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 patch -p4 < %{SOURCE12}
-make %{?_smp_mflags} -C ${bldroot} M="${PWD}" V=1 modules %{?_smp_mflags}
+%make_build -C ${bldroot} M="${PWD}" modules
 popd
 
 # build Intel SGX module
 pushd ../SGXDataCenterAttestationPrimitives-DCAP_%{sgx_version}/driver/linux
-make %{?_smp_mflags} KDIR=${bldroot} ARCH=%{arch} %{?_smp_mflags}
+%make_build KDIR=${bldroot} ARCH=%{arch}
 popd
 
 # build i40e module
 pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
+%make_build -C src KSRC=${bldroot} clean
+%make_build -C src KSRC=${bldroot}
 popd
 
 # build iavf module
 pushd ../iavf-%{iavf_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
+%make_build -C src KSRC=${bldroot} clean
+%make_build -C src KSRC=${bldroot}
 popd
 
 # build ice module
 pushd ../ice-%{ice_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} clean
-make -C src KSRC=${bldroot} %{?_smp_mflags}
+%make_build -C src KSRC=${bldroot} clean
+%make_build -C src KSRC=${bldroot}
 popd
 %endif
 
@@ -663,13 +663,13 @@ install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
-make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
 # install ENA module
 bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
 # install Intel SGX module
@@ -686,24 +686,24 @@ popd
 
 # install i40e module
 pushd ../i40e-%{i40e_version}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+%make_build -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
     INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install_no_aux mandocs_install
 popd
 
 # install iavf module (with aux module)
 pushd ../iavf-%{iavf_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra \
+%make_build -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra \
     INSTALL_AUX_DIR=extra/auxiliary MANDIR=%{_mandir} modules_install \
-    mandocs_install %{?_smp_mflags}
+    mandocs_install
 install -Dvm 644 src/linux/auxiliary_bus.h \
        %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/include/linux/auxiliary_bus.h
 popd
 
 # install ice module
 pushd ../ice-%{ice_version}
-make -C src KSRC=${bldroot} MANDIR=%{_mandir} INSTALL_MOD_PATH=%{buildroot} \
-            mandocs_install %{?_smp_mflags}
-make %{?_smp_mflags} -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
+%make_build -C src KSRC=${bldroot} MANDIR=%{_mandir} INSTALL_MOD_PATH=%{buildroot} \
+            mandocs_install
+%make_build -C src KSRC=${bldroot} INSTALL_MOD_PATH=%{buildroot} \
      INSTALL_MOD_DIR=extra modules_install_no_aux
 popd
 
@@ -766,18 +766,18 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
 
-make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
+%make_build -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
      prefix=%{_prefix} perf_install PYTHON=python3 $ARCH_FLAGS
 
-make %{?_smp_mflags} -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} \
+%make_build -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} \
      prefix=%{_prefix} PYTHON=python3 install-python_ext
 
 %ifarch x86_64
-make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
+%make_build -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
      prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
 %endif
 
-make install %{?_smp_mflags} -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
+%make_build install -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
 cp -p %{SOURCE23} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
