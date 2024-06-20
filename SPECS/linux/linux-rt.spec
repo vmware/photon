@@ -316,7 +316,7 @@ cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
 cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
 %endif
 
-make %{?_smp_mflags} mrproper
+%make_build mrproper
 cp %{SOURCE21} photon_sb2020.pem
 
 %ifarch x86_64
@@ -347,19 +347,19 @@ sed -e "s,@@NAME@@,%{name},g" \
 %include %{SOURCE5}
 
 %build
-make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{?arch} %{?_smp_mflags}
+%make_build KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{?arch}
 
 %if 0%{?fips}
 %include %{SOURCE10}
 %endif
 
 # build bpftool
-make %{?_smp_mflags} -C tools/bpf/bpftool
+%make_build -C tools/bpf/bpftool
 
 # build stalld eBPF plugin
 bldroot="${PWD}"
 pushd ../stalld-v%{stalld_version}/bpf
-make %{?_smp_mflags} VMLINUX_BTF="${bldroot}/vmlinux" BPFTOOL="${bldroot}/tools/bpf/bpftool/bpftool"
+%make_build VMLINUX_BTF="${bldroot}/vmlinux" BPFTOOL="${bldroot}/tools/bpf/bpftool/bpftool"
 popd
 
 %install
@@ -368,11 +368,11 @@ install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
-make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build INSTALL_MOD_PATH=%{buildroot} modules_install
 
 # install stalld eBPF plugin
 pushd ../stalld-v%{stalld_version}/bpf
-make install PREFIX=%{buildroot}%{_prefix} %{?_smp_mflags}
+%make_build install PREFIX=%{buildroot}%{_prefix}
 popd
 
 %ifarch x86_64
