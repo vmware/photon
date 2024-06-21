@@ -13,7 +13,7 @@
 
 Summary:        Go
 Name:           go
-Version:        1.21.7
+Version:        1.21.11
 Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
@@ -22,11 +22,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha512  go=5cadc458265deea2650fbbc5b0652e19e858fa7a7b929ea717e82ee4be2af45214a9dfc5b8b799003e83b92aa80141962a472d1d4f0653e97e99df5b68c88e5d
+%define sha512  go=dffcef964a4fbe08cd965bcffad6138fab164f14936a83988ced86924f794c1f107c122d1aeb674eacb0a1a498a31bdf83ea8f87b352494fa69f6e38931d2120
+
 Requires:       glibc
 Requires:       gcc
-
-Patch0:         CVE-2023-45288.patch
 
 %define ExtraBuildRequires go
 
@@ -118,6 +117,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.21.11-1
+- Upgrade to 1.21.11
 * Thu Apr 18 2024 Mukul Sikka <msikka@vmware.com> 1.21.7-1
 - Upgrade to 1.21.7
 * Fri Mar 22 2024 Mukul Sikka <msikka@vmware.com> 1.20.12-2

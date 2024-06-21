@@ -5,7 +5,7 @@
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
 Version:          1.28.1
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          MIT
 URL:              https://github.com/influxdata/telegraf
 Group:            Development/Tools
@@ -105,6 +105,8 @@ systemctl daemon-reload
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.28.1-5
+- Bump version as a part of go upgrade
 * Thu Apr 18 2024 Mukul Sikka <msikka@vmware.com> 1.28.1-4
 - Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.28.1-3
