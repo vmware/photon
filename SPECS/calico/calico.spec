@@ -1,7 +1,7 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.26.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -138,6 +138,8 @@ cp -r confd/etc/ %{buildroot}%{_sysconfdir}
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 3.26.4-2
+- Bump version as a part of go upgrade
 * Mon May 06 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.26.4-1
 - Update to 3.26.4 and add patches for CVE-2024-33522. Drop patch for
 - CVE-2023-41378, as this was included in 3.26.3

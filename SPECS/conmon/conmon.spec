@@ -1,7 +1,7 @@
 Summary:        A container monitor utility
 Name:           conmon
 Version:        2.1.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        conmon-%{version}.tar.gz
@@ -44,6 +44,8 @@ make %{?_smp_mflags} PREFIX=%{buildroot}%{_prefix} -C docs install
 %{_mandir}/man8/%{name}.8.gz
 
 %changelog
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 2.1.7-3
+- Bump version as a part of go upgrade
 * Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 2.1.7-2
 - Bump version as a part of go upgrade
 * Fri Jun 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.1.7-1
