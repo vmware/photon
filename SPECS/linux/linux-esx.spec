@@ -78,6 +78,8 @@ Source41: fips_canister_wrapper_internal.c
 # CVE
 Source42: CVE-2023-39191.patches
 
+Source43: sign_and_compress.sh
+
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
 Patch1: net-Double-tcp_mem-limits.patch
@@ -375,6 +377,7 @@ sed -e "s,@@NAME@@,%{name},g" \
 %endif
 
 %include %{SOURCE4}
+cp %{SOURCE43} .
 
 %build
 %make_build KBUILD_BUILD_VERSION="1-photon" \
@@ -435,13 +438,13 @@ install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/linux-headers-%{una
 cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 # symling to the build folder
 ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
-find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
 cp -p %{SOURCE20} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
 %include %{SOURCE2}
 %include %{SOURCE3}
+
 %include %{SOURCE19}
 
 %post

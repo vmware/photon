@@ -25,7 +25,7 @@
 %endif
 
 %ifarch aarch64
-%define arch arm64
+%define arch    arm64
 %define archdir arm64
 %global fips 0
 %endif
@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.83
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -120,6 +120,8 @@ Source50: CVE-2023-39191.patches
 Source53: config_%{_arch}_acvp
 Source54: check_for_acvp_config_applicability.inc
 %endif
+
+Source55: sign_and_compress.sh
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -596,6 +598,8 @@ cp %{SOURCE53} .config_acvp
 %include %{SOURCE7}
 %endif
 
+cp %{SOURCE55} .
+
 # Set/add CONFIG_CROSS_COMPILE= if needed
 if [ %{_host} != %{_build} ]; then
 grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFIG_CROSS_COMPILE="%{_host}-"' .config || \
@@ -633,7 +637,7 @@ popd
 # build EFA module
 bldroot="${PWD}"
 pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa
-mkdir build
+mkdir -p build
 cd build
 %cmake -DKERNEL_DIR=${bldroot} ..
 %cmake_build
@@ -647,7 +651,7 @@ popd
 %if 0%{?canister_build}
 install -vdm 755 %{buildroot}%{_libdir}/fips-canister/
 pushd crypto/
-mkdir fips-canister-%{lkcm_version}-%{version}-%{release}
+mkdir -p fips-canister-%{lkcm_version}-%{version}-%{release}
 cp fips_canister.o \
    fips_canister-kallsyms \
    .fips_canister.o.cmd \
@@ -733,7 +737,6 @@ install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/linux-headers-%{una
 
 cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r} # copy .config manually to be where it's expected to be
 ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
-find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %ifarch aarch64
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
@@ -852,6 +855,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sat Nov 23 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.83-9
+- Keep .BTF section in kernel modules
 * Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.83-8
 - Require coreutils only
 * Thu Jun 13 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.83-7
