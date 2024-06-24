@@ -1,7 +1,7 @@
 Summary:        A robust email syntax and deliverability validation library
 Name:           python3-email-validator
 Version:        1.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Tools
 License:        CC0
 Vendor:         VMware, Inc.
@@ -55,5 +55,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/email_validator-%{version}-py%{python3_version}.egg-info
 
 %changelog
+* Thu Jul 25 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.1-2
+- Bump up as part of dnspython update
 * Wed Oct 12 2022 Nitesh Kumar <kunitesh@vmware.com> 1.2.1-1
 - Initial version,Needed by python3-pydantic
