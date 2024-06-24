@@ -1,7 +1,7 @@
 Summary:        linear algebra package
 Name:           lapack
 Version:        3.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.netlib.org/lapack
 License:        BSD
 Group:          Development/Libraries
@@ -11,7 +11,7 @@ Distribution:   Photon
 Source0: http://www.netlib.org/%{name}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=424956ad941a60a4b71e0d451ad48db12a692f8a71a90f3ca7f71d6ecc1922f392746ea84df1c47a46577ed2db32e9e47ec44ad248207c5ac7da179becb712ef
 
-Patch0: lapack-CVE-2021-4048.patch
+Patch0: CVE-2021-4048.patch
 
 BuildRequires:  cmake
 BuildRequires:  gfortran
@@ -38,10 +38,10 @@ developing applications that use lapack.
       -DBUILD_SHARED_LIBS=ON \
       -DLAPACKE=ON
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 mkdir %{buildroot}%{_includedir}/lapacke
 mv %{buildroot}%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
 
@@ -65,6 +65,8 @@ mv %{buildroot}%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
 %exclude %{_libdir}/cmake/*
 
 %changelog
+* Wed Dec 15 2021 Nitesh Kumar <kunitesh@vmware.com> 3.9.0-2
+- Fix for CVE-2021-4048.
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9.0-1
 - Automatic Version Bump
 * Thu Sep 20 2018 Ankit Jain <ankitja@vmware.com> 3.8.0-1
