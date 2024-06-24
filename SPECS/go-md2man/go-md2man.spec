@@ -1,7 +1,7 @@
 Summary:        Converts markdown into roff (man pages)
 Name:           go-md2man
 Version:        2.0.0
-Release:        25%{?dist}
+Release:        26%{?dist}
 License:        MIT
 URL:            https://github.com/cpuguy83/go-md2man
 Source0:        https://github.com/cpuguy83/go-md2man/archive/%{name}-%{version}.tar.gz
@@ -40,6 +40,8 @@ eu-elfcompress -q -p -t none %{buildroot}%{_bindir}/*
 %{_docdir}/licenses/%{name}
 
 %changelog
+* Mon Jun 24 2024 Mukul Sikka <msikka@vmware.com> 2.0.0-26
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.0-25
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.0-24

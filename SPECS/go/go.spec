@@ -14,18 +14,20 @@
 
 Summary:        Go
 Name:           go
-Version:        1.20.12
-Release:        2%{?dist}
+Version:        1.20.14
+Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha512  go=3f4d1a22a0f1dd7e8feb008517e43b32c3600ce77168e5edfb75b4060577362ae62f28c9891de0f7bf553407bd8e09efc1563d34ee8af5285b3c80b3946f4b65
+%define sha512  go=d97951fedf87a999e3f09819a8ac23608980e68173ae141fa11140f0117a35639308de0ea37d3b209bfb709cd5758cd39016dd0f2dd6c3959e1ea3ea29c6fef4
 Requires:       glibc
 
 Patch0:         CVE-2023-45288.patch
+Patch1:         CVE-2024-24790.patch
+Patch2:         CVE-2024-24791.patch
 
 %define ExtraBuildRequires go
 
@@ -113,6 +115,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Mon Aug 05 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.20.14-1
+- Fix for CVE-2024-24790 and CVE-2024-24791
 * Fri Mar 22 2024 Mukul Sikka <msikka@vmware.com> 1.20.12-2
 - Fix for CVE-2023-45288
 * Fri Dec 15 2023 Mukul Sikka <msikka@vmware.com> 1.20.12-1
