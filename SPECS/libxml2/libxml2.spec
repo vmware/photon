@@ -11,7 +11,8 @@ Distribution:   Photon
 Source0: https://download.gnome.org/sources/libxml2/2.12/%{name}-%{version}.tar.xz
 %define sha512 %{name}=19d6901c0f189813e8bd20ffdfbb29d8545ca30154d1f3cc82624d64e4db3cfbe8eef7e8ccc1e195289f1bf94bb50fefcf11a95badb0ddeb845b4e4ea5a819ac
 
-Patch0:        libxml2-CVE-2024-34459.patch
+#Note:   If you are fixing a CVE here, please check for the same in gettext libxml2
+Patch0:  libxml2-CVE-2024-34459.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-xml
