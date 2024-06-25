@@ -1,0 +1,52 @@
+From 40b3c3551281e4a9e63225fd20bbc6d31f04c0a5 Mon Sep 17 00:00:00 2001
+From: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
+Date: Tue, 25 Jun 2024 06:02:40 +0000
+Subject: [PATCH] xmlsec1: Fix build issues due to libxml2 upgrade
+
+Include appropriate header files to include the definitions
+of xml parser related functions.
+---
+ src/buffer.c       | 1 +
+ src/relationship.c | 1 +
+ src/xmlsec.c       | 1 +
+ 3 files changed, 3 insertions(+)
+
+diff --git a/src/buffer.c b/src/buffer.c
+index 935cc64..451f2cc 100644
+--- a/src/buffer.c
++++ b/src/buffer.c
+@@ -21,6 +21,7 @@
+ #include <ctype.h>
+ 
+ #include <libxml/tree.h>
++#include <libxml/xmlIO.h>
+ 
+ #include <xmlsec/xmlsec.h>
+ #include <xmlsec/xmltree.h>
+diff --git a/src/relationship.c b/src/relationship.c
+index 3a77835..f949771 100644
+--- a/src/relationship.c
++++ b/src/relationship.c
+@@ -81,6 +81,7 @@
+ #include <libxml/tree.h>
+ #include <libxml/xpointer.h>
+ #include <libxml/c14n.h>
++#include <libxml/list.h>
+ 
+ #include <xmlsec/xmlsec.h>
+ #include <xmlsec/xmltree.h>
+diff --git a/src/xmlsec.c b/src/xmlsec.c
+index 6da57ca..8f9a16c 100644
+--- a/src/xmlsec.c
++++ b/src/xmlsec.c
+@@ -21,6 +21,7 @@
+ #include <string.h>
+ 
+ #include <libxml/tree.h>
++#include <libxml/parser.h>
+ 
+ #include <xmlsec/xmlsec.h>
+ #include <xmlsec/xmltree.h>
+-- 
+2.45.1
+

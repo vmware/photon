@@ -1,6 +1,6 @@
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.12.6
+Version:        2.13.0
 Release:        1%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org
@@ -9,7 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://download.gnome.org/sources/libxml2/2.12/%{name}-%{version}.tar.xz
-%define sha512 %{name}=19d6901c0f189813e8bd20ffdfbb29d8545ca30154d1f3cc82624d64e4db3cfbe8eef7e8ccc1e195289f1bf94bb50fefcf11a95badb0ddeb845b4e4ea5a819ac
+%define sha512 %{name}=54f817e5a73180746cb9e8e2c8749d0430c1f541252c36918345194c7b46cdb88f373bd14a49a2a31918b0a8eefbb9835dd6d9cb93bca4b0f6701a554bae202b
+
+#Note:   If you are fixing a CVE here, please check for the same under libxml2 component of gettext
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-xml
 BuildRequires:  zlib-devel
@@ -88,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Tue Jun 11 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.13.0-1
+- Update to v2.13.0
 * Wed Mar 27 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.12.6-1
 - Update to v2.12.6
 * Mon Feb 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.12.5-1

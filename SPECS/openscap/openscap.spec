@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.6
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
@@ -12,6 +12,7 @@ Source0: https://github.com/OpenSCAP/openscap/releases/download/%{version}/opens
 %define sha512 %{name}=5e4d6c4addc15b2a0245b5caef80fda3020f1cac83ed4aa436ef3f1703d1d761060c931c2536fa68de7ad5bab002b79c8b2d1e5f7695d46249f4562f5a1569a0
 
 Patch0: use-correct-includes.patch
+Patch1: openscap-Fix-build-issues.patch
 
 BuildRequires:  xmlsec1-devel
 BuildRequires:  swig
@@ -122,6 +123,8 @@ Python bindings.
 %{_libdir}/python%{python3_version}/*
 
 %changelog
+* Mon Jun 24 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.3.6-17
+- Bump version as a part of libxml2 upgrade
 * Sun Jun 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.6-16
 - Bump version as a part of rpm upgrade
 * Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.3.6-15

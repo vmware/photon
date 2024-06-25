@@ -1,15 +1,15 @@
 Summary:        Libxslt
 Name:           libxslt
-Version:        1.1.37
-Release:        5%{?dist}
+Version:        1.1.41
+Release:        1%{?dist}
 License:        MIT
 URL:            http://http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4e7a57cbe02ceea34404213a88bdbb63a756edfab63063ce3979b670816ae3f6fb3637a49508204e6e46b936628e0a3b8b77e9201530a1184225bd68da403b25
+Source0: https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.xz
+%define sha512 %{name}=b9f94d1c00dfb9f731c6c424a0d3f07fb0a37935048b26618e5405c3890d1d40c832420117de4d5363a90ab4809f77f6e566013ce7858cc88e0905709ca0f6fe
 
 Requires:       libxml2
 Requires:       libgcrypt
@@ -75,11 +75,12 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxslt/*
 %{_includedir}/*
 %{_docdir}/*
-%{_datadir}/aclocal/*
 %{_mandir}/man3/*
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Thu Jun 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.1.41-1
+- Upgrade to v1.1.41
 * Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.1.37-5
 - Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.1.37-4

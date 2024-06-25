@@ -3,7 +3,7 @@
 
 Name:           rubygem-libxml-ruby
 Version:        5.0.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group:          Applications/Programming
 License:        BSD
@@ -12,7 +12,9 @@ Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/libxml-ruby-%{version}.gem
 
-%define sha512    libxml-ruby=449464107c1b533c25ec3ba4e722f5805f1e487609939306ee4535ba9b8197e47d79d50fa69571f0dff9d7ab974ee848ce95679a6f64da84aaf109c367ef6829
+%define sha512  libxml-ruby=449464107c1b533c25ec3ba4e722f5805f1e487609939306ee4535ba9b8197e47d79d50fa69571f0dff9d7ab974ee848ce95679a6f64da84aaf109c367ef6829
+
+Patch0:         rubygem-libxml-Fix-build-failures.patch
 
 BuildRequires:  ruby-devel
 BuildRequires:  libxml2-devel
@@ -24,6 +26,7 @@ Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 
 %prep
 %gem_unpack %{SOURCE0}
+%autopatch -p1
 
 %build
 %gem_build
@@ -64,6 +67,8 @@ rake test
 %{gem_base}
 
 %changelog
+*   Mon Jun 24 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.0.2-5
+-   Bump version as a part of libxml2 upgrade
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.2-4
 -   Add gem macros
 *   Tue Apr 02 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.2-3

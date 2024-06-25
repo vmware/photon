@@ -1,0 +1,54 @@
+From 51762a1f4fefda3f38bcc939a8d32b428974fd33 Mon Sep 17 00:00:00 2001
+From: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
+Date: Tue, 25 Jun 2024 06:11:26 +0000
+Subject: [PATCH] s3fs-fuse: Fix build issues due to libxml2 upgrade
+
+Include appropriate header files to include the definitions
+of xml parser related functions.
+---
+ src/mpu_util.cpp | 2 ++
+ src/s3fs.cpp     | 1 +
+ src/s3fs_xml.cpp | 2 ++
+ 3 files changed, 5 insertions(+)
+
+diff --git a/src/mpu_util.cpp b/s3fs-fuse-1.91/src/mpu_util.cpp
+index d4ea0a6..c2268b5 100644
+--- a/src/mpu_util.cpp
++++ b/src/mpu_util.cpp
+@@ -21,6 +21,8 @@
+ #include <cstdio>
+ #include <cstdlib>
+ 
++#include <libxml/parser.h>
++
+ #include "common.h"
+ #include "s3fs.h"
+ #include "mpu_util.h"
+diff --git a/src/s3fs.cpp b/s3fs-fuse-1.91/src/s3fs.cpp
+index 9746a98..911d177 100644
+--- a/src/s3fs.cpp
++++ b/src/s3fs.cpp
+@@ -27,6 +27,7 @@
+ #include <getopt.h>
+ 
+ #include <fstream>
++#include <libxml/parser.h>
+ 
+ #include "common.h"
+ #include "s3fs.h"
+diff --git a/src/s3fs_xml.cpp b/s3fs-fuse-1.91/src/s3fs_xml.cpp
+index afee8a3..ddabeca 100644
+--- a/src/s3fs_xml.cpp
++++ b/src/s3fs_xml.cpp
+@@ -21,6 +21,8 @@
+ #include <cstdio>
+ #include <cstdlib>
+ 
++#include <libxml/parser.h>
++
+ #include "common.h"
+ #include "s3fs.h"
+ #include "s3fs_xml.h"
+-- 
+2.45.1
+

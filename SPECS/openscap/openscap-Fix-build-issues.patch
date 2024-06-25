@@ -1,0 +1,26 @@
+From e29b8bfd02b6d2870a9bdb9590866908027e9f7a Mon Sep 17 00:00:00 2001
+From: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
+Date: Tue, 25 Jun 2024 06:27:29 +0000
+Subject: [PATCH] openscap: Fix build issues due to libxml2 upgrade
+
+Include appropriate header files to include the definitions of
+xml parser related functions.
+---
+ src/source/bz2.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/source/bz2.c b/src/source/bz2.c
+index a35c911..f3e4ac6 100644
+--- a/src/source/bz2.c
++++ b/src/source/bz2.c
+@@ -26,6 +26,7 @@
+ #endif
+ 
+ #include <libxml/tree.h>
++#include <libxml/parser.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #ifdef OS_WINDOWS
+-- 
+2.45.1
+

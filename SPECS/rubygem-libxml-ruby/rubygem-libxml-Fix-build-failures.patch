@@ -1,0 +1,39 @@
+From 1543768e46447eadff1b8b982052259e5157b07b Mon Sep 17 00:00:00 2001
+From: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
+Date: Tue, 25 Jun 2024 05:46:53 +0000
+Subject: [PATCH] rubygem-libxml-ruby: Fix build issues due to libxml2 upgrade
+
+Include appropriate header files to include the definitions
+ of xml parser related functions.
+---
+ ext/libxml/ruby_libxml.h       | 1 +
+ ext/libxml/ruby_xml_document.c | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/ext/libxml/ruby_libxml.h b/ext/libxml/ruby_libxml.h
+index 08b2fc4..ec6c97d 100644
+--- a/ext/libxml/ruby_libxml.h
++++ b/ext/libxml/ruby_libxml.h
+@@ -4,6 +4,7 @@
+ #define __RUBY_LIBXML_H__
+ 
+ #include <ruby.h>
++#include <libxml/parser.h>
+ 
+ #include "ruby_xml_version.h"
+ #include "ruby_xml.h"
+diff --git a/ext/libxml/ruby_xml_document.c b/ext/libxml/ruby_xml_document.c
+index fe39a8d..0b99d0a 100644
+--- a/ext/libxml/ruby_xml_document.c
++++ b/ext/libxml/ruby_xml_document.c
+@@ -57,6 +57,7 @@
+ #include <libxml/relaxng.h>
+ #include <libxml/xmlschemas.h>
+ #include <libxml/xinclude.h>
++#include <libxml/valid.h>
+ 
+ VALUE cXMLDocument;
+ 
+-- 
+2.45.1
+
