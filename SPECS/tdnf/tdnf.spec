@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.6
-Release:        6%{?dist}
+Version:        3.5.7
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0: https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=e7c371cabf094c417fe7f11f8bd81dc201b9750b3dbe8ea5626288c66d39bee7f5c71133cd0b2465a14284313abf1afd096d09ecbd9d26c61874b2b7a9416d9d
+%define sha512  %{name}=9b34fa9b2f8d39c61dc2e291042a83a8d55a80bdcb64fc6b22f112613ec02a2f1c641ae97dc95c7bb047f87601260259935fcba34eb0cc06cd4540c0e890a35c
 
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 Patch1: rpm-keyring-API-calls-1.patch
@@ -297,6 +297,9 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Jun 25 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.7-1
+- update to 3.5.7
+- epoch fix
 * Sun Jun 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.6-6
 - Bump version as a part of rpm upgrade
 * Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.6-5
