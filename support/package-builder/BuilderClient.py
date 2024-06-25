@@ -51,7 +51,7 @@ class BuilderClient:
         sys.exit(1)
 
     def initializeConstants(self, constant_dict):
-        constants.setSpecPath(constant_dict["specPath"])
+        constants.setSpecPaths(constant_dict["specPaths"])
         constants.setSourcePath(constant_dict["sourcePath"])
         constants.setRpmPath(constant_dict["rpmPath"])
         constants.setSourceRpmPath(constant_dict["sourceRpmPath"])

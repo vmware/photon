@@ -88,7 +88,7 @@ def getMapPackageToCycle():
 @app.route("/constants/", methods=["GET"])
 def getConstants():
     constant_dict = {}
-    constant_dict["specPath"] = constants.specPath
+    constant_dict["specPaths"] = constants.specPaths
     constant_dict["sourcePath"] = constants.sourcePath
     constant_dict["rpmPath"] = constants.rpmPath
     constant_dict["sourceRpmPath"] = constants.sourceRpmPath

@@ -8,7 +8,7 @@ from CommandUtils import CommandUtils as cmdUtils
 PH_COMMIT_URI_PREFIX = "https://github.com/vmware/photon/commit/"
 
 class constants(object):
-    specPath = ""
+    specPaths= []
     sourcePath = ""
     rpmPath = ""
     logPath = ""
@@ -387,8 +387,12 @@ class constants(object):
     }
 
     @staticmethod
-    def setSpecPath(specPath):
-        constants.specPath = specPath
+    def addSpecPath(specPath):
+        constants.specPaths.append(specPath)
+
+    @staticmethod
+    def setSpecPaths(specPaths):
+        constants.specPaths = specPaths
 
     @staticmethod
     def setSourcePath(sourcePath):

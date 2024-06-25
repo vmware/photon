@@ -12,7 +12,7 @@ from SpecParser import SpecParser
 
 
 class SpecData(object):
-    def __init__(self, arch, logPath, specFilesPath):
+    def __init__(self, arch, logPath, specFilesPaths):
         self.arch = arch
         self.logger = Logger.getLogger("SpecData", logPath, constants.logLevel)
 
@@ -28,12 +28,12 @@ class SpecData(object):
         # map spec file name to SpecObject
         self.mapSpecFileNameToSpecObj = {}
 
-        self._readSpecs(specFilesPath)
+        self._readSpecs(specFilesPaths)
 
     # Read all .spec files from the given folder including subfolders,
     # creates corresponding SpecObjects and put them in internal mappings.
-    def _readSpecs(self, specFilesPath):
-        for specFile in self._getListSpecFiles(specFilesPath):
+    def _readSpecs(self, specFilesPaths):
+        for specFile in self._getListSpecFiles(specFilesPaths):
             spec = SpecParser(specFile, self.arch)
 
             # skip the specfile if buildarch differs
@@ -62,14 +62,15 @@ class SpecData(object):
                     value, key=lambda x: self.compareVersions(x), reverse=True
                 )
 
-    def _getListSpecFiles(self, path):
+    def _getListSpecFiles(self, paths):
         listSpecFiles = []
-        for dirEntry in os.listdir(path):
-            dirEntryPath = os.path.join(path, dirEntry)
-            if os.path.isfile(dirEntryPath) and dirEntryPath.endswith(".spec"):
-                listSpecFiles.append(dirEntryPath)
-            elif os.path.isdir(dirEntryPath):
-                listSpecFiles.extend(self._getListSpecFiles(dirEntryPath))
+        for path in paths:
+            for dirEntry in os.listdir(path):
+                dirEntryPath = os.path.join(path, dirEntry)
+                if os.path.isfile(dirEntryPath) and dirEntryPath.endswith(".spec"):
+                    listSpecFiles.append(dirEntryPath)
+                elif os.path.isdir(dirEntryPath):
+                    listSpecFiles.extend(self._getListSpecFiles([dirEntryPath]))
         return listSpecFiles
 
     def _getProperVersion(self, depPkg):
@@ -405,10 +406,10 @@ class SPECS(object):
     def initialize(self):
         # Full parsing
         self.specData[constants.buildArch] = SpecData(
-            constants.buildArch, constants.logPath, constants.specPath
+            constants.buildArch, constants.logPath, constants.specPaths
         )
 
         if constants.buildArch != constants.targetArch:
             self.specData[constants.targetArch] = SpecData(
-                constants.targetArch, constants.logPath, constants.specPath
+                constants.targetArch, constants.logPath, constants.specPaths
             )

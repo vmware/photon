@@ -294,7 +294,8 @@ def main():
         default=DEFAULT_DISPLAY_OPTION,
     )
     parser.add_argument(
-        "-s", "--spec-path", dest="spec_path", default=SPEC_FILE_DIR
+        "-s", "--spec-path", dest="spec_paths", nargs='+', default=[SPEC_FILE_DIR],
+        help="Paths to spec files"
     )
     parser.add_argument(
         "-l", "--log-path", dest="log_path", default=LOG_FILE_DIR
@@ -317,7 +318,7 @@ def main():
     )
     options = parser.parse_args()
 
-    constants.setSpecPath(options.spec_path)
+    constants.setSpecPaths(options.spec_paths)
     constants.setLogPath(options.log_path)
     constants.setLogLevel(options.log_level)
     constants.initialize()

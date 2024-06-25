@@ -18,7 +18,8 @@ def main():
     usage = "Usage: %prog [options] <package name>"
     parser = ArgumentParser(usage)
     parser.add_argument(
-        "-s", "--spec-path", dest="specPath", default="../../SPECS"
+        "-s", "--spec-path", dest="specPaths", nargs='+', default=["../../SPECS"],
+        help="Paths to spec files"
     )
     parser.add_argument(
         "-l", "--log-path", dest="logPath", default="../../stage/LOGS"
@@ -76,12 +77,12 @@ def main():
                     f"{options.pkgBlacklistFile}"
                 )
                 errorFlag = True
-
-        if not os.path.isdir(options.specPath):
-            logger.error(
-                f"Given Specs Path is not a directory: {options.specPath}"
-            )
-            errorFlag = True
+        for path in options.specPaths:
+            if not os.path.isdir(path):
+                logger.error(
+                    f"Given Specs Path is not a directory: {path}"
+                )
+                errorFlag = True
 
         if not os.path.isdir(options.sourceRpmPath):
             logger.error(
@@ -112,7 +113,7 @@ def main():
             if not os.path.isdir(options.outputDirPath):
                 cmdUtils.runBashCmd(f"mkdir -p {options.outputDirPath}")
 
-        constants.setSpecPath(options.specPath)
+        constants.setSpecPaths(options.specPaths)
         constants.setSourceRpmPath(options.sourceRpmPath)
         constants.setLogPath(options.logPath)
         constants.setLogLevel(options.logLevel)

@@ -689,7 +689,7 @@ class RpmBuildTarget:
             runBashCmd(f"mkdir -p {constants.rpmPath}/{constants.targetArch}")
 
         self.logger.debug(f"Source Path : {constants.sourcePath}")
-        self.logger.debug(f"Spec Path : {constants.specPath}")
+        self.logger.debug(f"Spec Path : {constants.specPaths}")
         self.logger.debug(f"Rpm Path : {constants.rpmPath}")
         self.logger.debug(f"Log Path : {constants.logPath}")
         self.logger.debug(f"Log Level : {constants.logLevel}")
@@ -1321,10 +1321,11 @@ class BuildImage:
         cmd = f"{cmd} {Build_Config.stagePath}"
         runBashCmd(cmd)
 
+        
         for script in k8s_build_scripts:
             cmd = f"./{script} {ph_dist_tag} {constants.releaseVersion}"
-            cmd = f"{cmd} {constants.specPath} {Build_Config.stagePath}"
-            cmd = f"{cmd} {ph_builder_tag}"
+            cmd = f"{cmd} {Build_Config.stagePath}"
+            cmd = f"{cmd} {ph_builder_tag} {constants.specPaths}"
             runBashCmd(cmd)
 
         print("Successfully built all the k8s docker images")
@@ -1377,11 +1378,22 @@ def initialize_constants():
             )
         )
     )
-    constants.setSpecPath(
+    # set SPECS paths
+    constants.addSpecPath(
         os.path.join(
             str(
                 PurePath(
                     configdict["photon-path"], configdict.get("spec-path", "")
+                )
+            ),
+            "SPECS",
+        )
+    )
+    constants.addSpecPath(
+        os.path.join(
+            str(
+                PurePath(
+                    configdict["release-branch-path"], configdict.get("spec-path", "")
                 )
             ),
             "SPECS",
@@ -1545,23 +1557,6 @@ def initialize_constants():
     constants.initialize()
 
     check_prerequesite["initialize-constants"] = True
-
-def create_new_symlink(dir_path):
-    global configdict
-
-    ph_branch = dir_path
-    specs_dir = "SPECS"
-    release_version = configdict["photon-build-param"][
-        "photon-release-version"
-    ]
-    for link in os.listdir(specs_dir):
-        if os.path.islink(os.path.join(specs_dir, link)):
-                os.unlink(os.path.join(specs_dir, link))
-
-    # Create new symbolic link: SPECS/ph_branch -> ../ph_branch/SPECS
-    new_link_target = os.path.join("..", ph_branch, specs_dir)
-    new_link_path = os.path.join(specs_dir, (f'{release_version}-SPECS'))
-    os.symlink(new_link_target, new_link_path)
 
 def set_default_value_of_config():
     global configdict
@@ -1749,7 +1744,6 @@ def main():
             ).resolve()
 
     set_default_value_of_config()
-    create_new_symlink(configdict["release-branch-path"])
 
     os.environ["PHOTON_RELEASE_VER"] = configdict["photon-build-param"][
         "photon-release-version"
