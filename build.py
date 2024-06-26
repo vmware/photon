@@ -10,7 +10,7 @@ import shutil
 import traceback
 
 from argparse import ArgumentParser
-from pathlib import PurePath
+from pathlib import PurePath, Path
 from urllib.parse import urlparse
 
 # photon imports
@@ -1063,7 +1063,7 @@ class CheckTools:
             return
 
         script_fn = f"{photonDir}/tools/scripts/get_modified_files.sh"
-        cmd = f"{script_fn} {configdict['photon-path']} && {script_fn} {configdict['branch-name']}"
+        cmd = f"{script_fn} {configdict['photon-path']} && {script_fn} {configdict['release-branch-path']}"
 
         if "base-commit" in configdict["photon-build-param"]:
             commit_id = str(
@@ -1201,8 +1201,9 @@ class BuildImage:
             args.append(f"--config={self.config_file}")
         if self.poi_image is not None:
             args.append(f"--docker-image={self.poi_image}")
+        args.append(f"--stage-dir={Build_Config.stagePath}")
         args = " ".join(args)
-        cmd = f"cd {photonDir}/support/poi && ./poi.py {args} {self.img_name}"
+        cmd = f"cd {photonDir}/support/poi && ./poi.py {args} {self.img_name} "
         print(f"running {cmd}")
         runBashCmd(cmd)
 
@@ -1368,11 +1369,10 @@ def initialize_constants():
     Build_Config.setStagePath(
         os.path.join(
             str(
-                PurePath(
-                    configdict["photon-path"], configdict.get("stage-path", "")
-                )
-            ),
-            "stage",
+                Path(
+                    configdict["release-branch-path"], configdict.get("stage-path", "")
+                ).resolve()
+            )
         )
     )
     constants.setSpecPath(
@@ -1541,26 +1541,21 @@ def initialize_constants():
 
     check_prerequesite["initialize-constants"] = True
 
-def clone_photon_subbranch():
-    ph_branch = configdict["branch-name"]
-    if os.path.exists(ph_branch):
-        print(f"The directory '{ph_branch}' already exists. Skipping cloning.")
-        return
-    cmd = (f"git fetch origin {ph_branch}:{ph_branch};git clone -b {ph_branch} $(git remote get-url origin) {ph_branch}")
-    runBashCmd(cmd)
+def create_new_symlink(dir_path):
+    global configdict
 
-def create_new_simlink():
-    ph_branch = configdict["branch-name"]
+    ph_branch = dir_path
     specs_dir = "SPECS"
-    old_links=[]
-
+    release_version = configdict["photon-build-param"][
+        "photon-release-version"
+    ]
     for link in os.listdir(specs_dir):
         if os.path.islink(os.path.join(specs_dir, link)):
                 os.unlink(os.path.join(specs_dir, link))
 
     # Create new symbolic link: SPECS/ph_branch -> ../ph_branch/SPECS
     new_link_target = os.path.join("..", ph_branch, specs_dir)
-    new_link_path = os.path.join(specs_dir, ph_branch)
+    new_link_path = os.path.join(specs_dir, (f'{release_version}-SPECS'))
     os.symlink(new_link_target, new_link_path)
 
 def set_default_value_of_config():
@@ -1665,11 +1660,23 @@ def process_additional_cfgs(cfgdict_additional_path):
             if val:
                 cfgdict_additional_path[v] = os.environ[k]
 
+def merge_dicts(dict1, dict2):
+    """
+    Merge two dictionaries with dict2 taking precedence over dict1.
+    """
+    merged_dict = dict1.copy()
+    for key, value in dict2.items():
+        if isinstance(value, dict) and key in merged_dict and isinstance(merged_dict[key], dict):
+            merged_dict[key] = merge_dicts(merged_dict[key], value)
+        elif key in merged_dict:
+            raise Exception("ERROR: " + key + " is present in both configs.\nIt can only be present in one.")
+        else:
+            merged_dict[key] = value
+    return merged_dict
 
 def main():
 
     parser = ArgumentParser()
-
     parser.add_argument("-b", "--branch", dest="photonBranch", default=None)
     parser.add_argument("-c", "--config", dest="configPath", default=None)
     parser.add_argument("-t", "--target", dest="targetName", default=None)
@@ -1711,14 +1718,27 @@ def main():
 
     cfgPath = os.path.abspath(cfgPath)
 
-    if "BRANCH_NAME" in os.environ:
-        configdict["branch-name"] = os.environ["BRANCH_NAME"]
-    if not configdict.get("branch-name", ""):
-        raise Exception("Photon Sub Branch is not mentioned /\nPlease provide BRANCH_NAME input during build")
+    if os.environ.get("RELEASE_BRANCH_PATH") is not None:
+        configdict["release-branch-path"] = os.environ["RELEASE_BRANCH_PATH"]
 
-    clone_photon_subbranch()
-    create_new_simlink()
+    releaseDir = Path(
+        configdict["photon-path"], configdict.get("release-branch-path", "")
+        ).resolve()
+
+    releaseCfgPath = f"{releaseDir}/{build_cfg}"
+    with open(releaseCfgPath) as jsonData:
+        releasedict = json.load(jsonData)
+
+    configdict = merge_dicts(releasedict, configdict)
+
+    if os.environ.get("STAGE_PATH") is not None:
+        configdict["stage-path"] = os.environ["STAGE_PATH"]
+        configdict["stage-path"] = Path(
+            configdict["photon-path"], configdict.get("stage-path", "")
+            ).resolve()
+
     set_default_value_of_config()
+    create_new_symlink(configdict["release-branch-path"])
 
     os.environ["PHOTON_RELEASE_VER"] = configdict["photon-build-param"][
         "photon-release-version"
@@ -1758,9 +1778,9 @@ def main():
             check_prerequesite[item] = False
 
     commit_id = str(configdict["photon-build-param"].get("base-commit", ""))
-    check_hash=f"git -C {configdict['branch-name']} merge-base --is-ancestor {commit_id} HEAD"
+    check_hash=f"git -C {configdict['release-branch-path']} merge-base --is-ancestor {commit_id} HEAD"
     _, _, rc = runBashCmd(check_hash, capture=True, ignore_rc=True)
-    ph_path = configdict["photon-path"] if rc else configdict["branch-name"]
+    ph_path = configdict["photon-path"] if rc else configdict["release-branch-path"]
 
     initialize_constants()
 
