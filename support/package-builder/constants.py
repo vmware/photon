@@ -9,7 +9,9 @@ from CommandUtils import CommandUtils as cmdUtils
 PH_COMMIT_URI_PREFIX = "https://github.com/vmware/photon/commit/"
 
 class constants(object):
-    specPaths= []
+    specPaths = []
+    gitSourcePath = ""
+    stagePath = ""
     sourcePath = ""
     rpmPath = ""
     logPath = ""
@@ -42,6 +44,7 @@ class constants(object):
     testForceRPMS = []
     tmpDirPath = "/dev/shm"
     buildOptions = {}
+    srpcli = None
     # will be extended later from listMakeCheckRPMPkgtoInstall
     listMakeCheckRPMPkgWithVersionstoInstall = None
     buildArch = platform.machine()
@@ -112,6 +115,14 @@ class constants(object):
     @staticmethod
     def setSpecPaths(specPaths):
         constants.specPaths = specPaths
+
+    @staticmethod
+    def setGitSourcePath(gitSourcePath):
+        constants.gitSourcePath = gitSourcePath
+
+    @staticmethod
+    def setStagePath(stagePath):
+        constants.stagePath = stagePath
 
     @staticmethod
     def setSourcePath(sourcePath):

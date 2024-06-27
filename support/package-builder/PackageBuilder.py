@@ -10,6 +10,7 @@ from constants import constants
 from SpecData import SPECS
 from StringUtils import StringUtils
 from Sandbox import Chroot, SystemdNspawn, Container
+from SRP import SRP
 
 
 class PackageBuilder(object):
@@ -23,6 +24,7 @@ class PackageBuilder(object):
         self.doneList = None
         self.sandboxType = sandboxType
         self.sandbox = None
+        self.srp = None
         self.cmdUtils = CommandUtils()
         self.mapPackageToCycles = mapPackageToCycles
         self.listNodepsPackages = [
@@ -72,18 +74,19 @@ class PackageBuilder(object):
         try:
             self.sandbox.create(f"{self.package}-{self.version}")
 
-            tUtils = ToolChainUtils(self.logName, self.logPath)
+            tUtils = ToolChainUtils(self.logName, self.logPath, self.srpLogCommand)
             if self.sandbox.hasToolchain():
-                tUtils.installExtraToolchainRPMS(
+                inputRPMS = tUtils.installExtraToolchainRPMS(
                     self.sandbox, self.package, self.version
                 )
             else:
-                tUtils.installToolchainRPMS(
+                inputRPMS = tUtils.installToolchainRPMS(
                     self.sandbox,
                     self.package,
                     self.version,
                     availablePackages=self.doneList,
                 )
+            self.srp.addInputRPMS(inputRPMS.split())
 
             if (self.package not in constants.listCoreToolChainPackages) or (
                 constants.rpmCheck and self.package in constants.testForceRPMS
@@ -94,12 +97,13 @@ class PackageBuilder(object):
 
             pkgUtils = PackageUtils(self.logName, self.logPath)
             pkgUtils.adjustGCCSpecs(self.sandbox, self.package, self.version)
-            pkgUtils.buildRPMSForGivenPackage(
-                self.sandbox, self.package, self.version, self.logPath
-            )
-            self.logger.debug(
-                f"Successfully built the package: {self.package}"
-            )
+            listRPMFiles, listSRPMFiles = pkgUtils.buildRPMSForGivenPackage(
+                                              self.sandbox,
+                                              self.package,
+                                              self.version,
+                                              self.logPath)
+            self.srp.addOutputRPMS(listRPMFiles + listSRPMFiles)
+            self.logger.debug(f"Successfully built the package: {self.package}")
         except Exception as e:
             self.logger.error(f"Failed while building package: {self.package}")
             self.logger.debug(
@@ -118,6 +122,7 @@ class PackageBuilder(object):
             raise e
         if self.sandbox:
             self.sandbox.destroy()
+        self.srp.finalize()
 
     def _installDependencies(self, arch, deps=[]):
         (
@@ -197,16 +202,23 @@ class PackageBuilder(object):
         )
         self.doneList = doneList
 
+        self.srp = SRP(pkg, self.logger)
+        self.srp.initialize()
+
         if self.sandboxType == "chroot":
-            sandbox = Chroot(self.logger)
+            sandbox = Chroot(self.logger, self.srpLogCommand)
         elif self.sandboxType == "systemd-nspawn":
-            sandbox = SystemdNspawn(self.logger)
+            sandbox = SystemdNspawn(self.logger, self.srpLogCommand)
         elif self.sandboxType == "container":
-            sandbox = Container(self.logger)
+            sandbox = Container(self.logger, self.srpLogCommand)
         else:
             raise Exception(f"Unknown sandbox type: {self.sandboxType}")
 
         self.sandbox = sandbox
+
+
+    def srpLogCommand(self, cmd):
+        self.srp.addCommand(cmd)
 
     def _findPackageNameAndVersionFromRPMFile(self, rpmfile):
         rpmfile = os.path.basename(rpmfile)

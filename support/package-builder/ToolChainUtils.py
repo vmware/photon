@@ -12,11 +12,12 @@ from StringUtils import StringUtils
 
 
 class ToolChainUtils(object):
-    def __init__(self, logName=None, logPath=None):
+    def __init__(self, logName=None, logPath=None, cmdlog=lambda cmd: None):
         if logName is None:
             logName = "Toolchain Utils"
         if logPath is None:
             logPath = constants.logPath
+        self.cmdlog = cmdlog
 
         self.cmdUtils = CommandUtils()
         self.logName = logName
@@ -200,23 +201,26 @@ class ToolChainUtils(object):
             )
 
         self.logger.debug(f"Executing cmd: {cmd}")
+        self.cmdlog(cmd)
         self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
         self.logger.debug(
             f"Successfully installed default toolchain RPMS in Chroot: {ChrootID}"  # noqa: E501
         )
 
         if packageName:
-            self.installExtraToolchainRPMS(chroot, packageName, packageVersion)
+            rpmFiles = rpmFiles + self.installExtraToolchainRPMS(chroot, packageName, packageVersion)
 
         if constants.crossCompiling:
-            self.installTargetToolchain(chroot, targetPackageName)
+            rpmFiles = rpmFiles + self.installTargetToolchain(chroot, targetPackageName)
+
+        return rpmFiles
 
     def installExtraToolchainRPMS(self, sandbox, packageName, packageVersion):
         listOfToolChainPkgs = SPECS.getData(
             constants.buildArch
         ).getExtraBuildRequiresForPackage(packageName, packageVersion)
         if not listOfToolChainPkgs:
-            return
+            return ""
         self.logger.debug(
             f"Installing package specific toolchain RPMs for {packageName}: "
             + str(listOfToolChainPkgs)
@@ -244,10 +248,12 @@ class ToolChainUtils(object):
 
         self.logger.debug(f"Installing custom rpms: {packages}")
         cmd = f"rpm -iv --nodeps --force {rpmFiles}"
+        self.cmdlog(cmd)
         if sandbox.run(cmd, logfn=self.logger.debug):
             self.logger.debug(f"Command Executed: {cmd}")
             self.logger.error("Installing custom toolchains failed")
             raise Exception("RPM installation failed")
+        return rpmFiles
 
     # Install target's core toolchain packages up to 'stopAtPackage' package
     def installTargetToolchain(self, chroot, stopAtPackage=None):
@@ -276,6 +282,7 @@ class ToolChainUtils(object):
         self.logger.debug(packages)
 
         cmd = f"mkdir -p {ChrootID}/target-{constants.targetArch}"
+        self.cmdlog(cmd)
         self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
 
         if rpmFiles != "":
@@ -283,8 +290,10 @@ class ToolChainUtils(object):
                 f"{self.rpmCommand} -Uv --nodeps --ignorearch --noscripts --root"  # noqa: E501
                 f" {ChrootID}/target-{constants.targetArch} {rpmFiles}"
             )
+            self.cmdlog(cmd)
             self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
         self.logger.debug(
             "Successfully installed target toolchain RPMS in chroot: "
             f"{ChrootID}"
         )
+        return rpmFiles

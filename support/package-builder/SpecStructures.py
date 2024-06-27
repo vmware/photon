@@ -14,6 +14,8 @@ class Package(object):
         self.name = ""
         self.group = ""
         self.license = ""
+        self.summary = ""
+        self.description = ""
         self.version = ""
         self.release = ""
         self.buildarch = buildarch
@@ -35,30 +37,21 @@ class Package(object):
         self.obsoletes = []
         self.conflicts = []
 
-        self.descriptionMacro = None
-        self.postMacro = None
-        self.postunMacro = None
         self.filesMacro = None
-        self.packageMacro = None
 
         if basePkg:
             self.basePkgName = basePkg.name
             self.group = basePkg.group
             self.license = basePkg.license
+            self.summary = basePkg.summary
             self.version = basePkg.version
             self.buildarch = basePkg.buildarch
             self.release = basePkg.release
             self.distribution = basePkg.distribution
 
     def updatePackageMacro(self, macro):
-        if macro.macroName == "%post":
-            self.postMacro = macro
-        if macro.macroName == "%postun":
-            self.postunMacro = macro
         if macro.macroName == "%files":
             self.filesMacro = macro
-        if macro.macroName == "%description":
-            self.descriptionMacro = macro
 
 
 class SpecObject(object):
@@ -98,3 +91,6 @@ class SpecObject(object):
         self.url = ""
         self.sourceurl = ""
         self.license = ""
+        self.summary = ""
+        # map subpackage name to its description string
+        self.descriptions = {}

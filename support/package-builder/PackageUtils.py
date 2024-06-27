@@ -156,7 +156,7 @@ class PackageUtils(object):
             )
 
             if constants.rpmCheck:
-                return
+                return listRPMFiles, listSRPMFiles
 
             logmsg = ""
             RpmsToCheck = []
@@ -178,6 +178,7 @@ class PackageUtils(object):
             self.logger.error(f"Failed while building rpm: {package}")
             raise e
         self.logger.debug("RPM build is successful")
+        return listRPMFiles, listSRPMFiles
 
     """
     Check for unintended debug symbols in rpm. If present, stop the build.
