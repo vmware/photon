@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -111,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Thu Jun 27 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-4
+- Fix Syntax error in macros.ruby file
 * Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-3
 - Add Macro definition macros.ruby file
 * Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-2
