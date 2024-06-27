@@ -4,7 +4,9 @@ from Logger import Logger
 from CommandUtils import CommandUtils as cmdUtils
 
 class constants(object):
+    gitSourcePath = ""
     specPath = ""
+    stagePath = ""
     sourcePath = ""
     rpmPath = ""
     logPath = ""
@@ -36,6 +38,7 @@ class constants(object):
     testForceRPMS = []
     tmpDirPath = "/dev/shm"
     buildOptions = {}
+    srpcli = None
     # will be extended later from listMakeCheckRPMPkgtoInstall
     listMakeCheckRPMPkgWithVersionstoInstall = None
     buildArch = platform.machine()
@@ -360,8 +363,16 @@ class constants(object):
     }
 
     @staticmethod
+    def setGitSourcePath(gitSourcePath):
+        constants.gitSourcePath = gitSourcePath
+
+    @staticmethod
     def setSpecPath(specPath):
         constants.specPath = specPath
+
+    @staticmethod
+    def setStagePath(stagePath):
+        constants.stagePath = stagePath
 
     @staticmethod
     def setSourcePath(sourcePath):

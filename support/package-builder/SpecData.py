@@ -295,6 +295,12 @@ class SpecData(object):
     def getLicense(self, package, version):
         return self._getSpecObjField(package, version, field=lambda x : x.license)
 
+    def getSummary(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.summary)
+
+    def getDescription(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.descriptions[package])
+
     # Converts "glibc-devel-2.28" into "glibc-2.28"
     def getBasePkg(self, pkg):
         package, version = StringUtils.splitPackageNameAndVersion(pkg)

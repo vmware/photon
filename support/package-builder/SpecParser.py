@@ -80,6 +80,18 @@ class SpecParser(object):
                         pkg.name = packageName
                         self.currentPkg = packageName
                         self.packages[pkg.name] = pkg
+                    elif line.startswith('%description'):
+                        description = None
+                        while i+1 < totalLines:
+                            line = lines[i+1].strip()
+                            if line and (self._isSpecMacro(line) or self._isPackageMacro(line) or self._isDefinition(line)):
+                                break
+                            if description:
+                                description += f" {line}"
+                            else:
+                                description = line
+                            i += 1
+                        self.packages[self.currentPkg].description = description
                     else:
                         if defaultpkg.name == packageName:
                             packageName = 'default'
@@ -634,6 +646,7 @@ class SpecParser(object):
         specObj.release = defPkg.release
         specObj.checksums = defPkg.checksums
         specObj.license = defPkg.license
+        specObj.summary = defPkg.summary
         specObj.url = defPkg.URL
         specObj.securityHardening = self.globalSecurityHardening
         specObj.isCheckAvailable = self.checkMacro is not None
@@ -652,5 +665,6 @@ class SpecParser(object):
             specObj.buildarch[pkg.name] = pkg.buildarch
             if pkg.filesMacro:
                 specObj.listRPMPackages.append(pkg.name)
+            specObj.descriptions[pkg.name] = pkg.description
 
         return specObj

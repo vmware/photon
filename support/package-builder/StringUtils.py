@@ -48,3 +48,34 @@ class StringUtils(object):
         packageName = packageVersion.rsplit("-", 1)[0]
         packageVersion = pkg.rsplit(packageName)[1][1:]
         return packageName, packageVersion
+
+    @staticmethod
+    def splitRPMFilename(filename):
+        """ splitRPMFilename splits RPM filename or RPM package name into components: name, version, release, dist tag, arch
+        Examples:
+        "openssl-libs-3.0.8-2.ph5.x86_64.rpm" -> ("openssl-libs", "3.0.8", "2", "ph5", "x86_64")
+        "openssl-libs-3.0.8-2.ph5" -> ("openssl-libs", "3.0.8", "2", "ph5", "")
+        :param filename: string containing filename or package name
+        :return: quintuplet of strings: name, version, release, dist tag, arch
+        """
+        if filename[-4:] == '.rpm':
+            filename = filename[:-4]
+
+        archIndex = filename.rfind('.')
+        arch = filename[archIndex+1:]
+        if arch not in ["noarch", "x86_64", "aarch64", "src"]:
+            arch = ""
+            archIndex = len(filename)
+
+        tagIndex = filename[:archIndex].rfind('.')
+        tag = filename[tagIndex+1:archIndex]
+
+        relIndex = filename[:tagIndex].rfind('-')
+        rel = filename[relIndex+1:tagIndex]
+
+        verIndex = filename[:relIndex].rfind('-')
+        ver = filename[verIndex+1:relIndex]
+
+        name = filename[0:verIndex]
+        return name, ver, rel, tag, arch
+

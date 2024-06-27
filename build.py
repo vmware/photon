@@ -1246,6 +1246,8 @@ def initialize_constants():
     if check_prerequesite["initialize-constants"]:
         return
 
+    constants.setGitSourcePath(photonDir)
+
     Build_Config.setStagePath(
         os.path.join(
             str(PurePath(configdict["photon-path"], configdict.get("stage-path", ""))),
@@ -1302,6 +1304,7 @@ def initialize_constants():
     constants.setPublishBuildDependencies(
         configdict["photon-build-param"].get("publish-build-dependencies", False)
     )
+    constants.setStagePath(Build_Config.stagePath)
     constants.setRpmPath(os.path.join(Build_Config.stagePath, "RPMS"))
     Build_Config.setRpmNoArchPath()
     Build_Config.setRpmArchPath()
@@ -1376,6 +1379,7 @@ def initialize_constants():
         constants.set_resume_build(
             bool(configdict["photon-build-param"]["resume-build"])
         )
+    constants.srpcli = configdict.get("srpcli", None)
 
     constants.initialize()
 
