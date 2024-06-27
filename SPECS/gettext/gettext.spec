@@ -1,6 +1,6 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
-Version:        0.22
+Version:        0.22.5
 Release:        1%{?dist}
 License:        GPL-3.0-or-later and LGPL-2.0-or-later and GFDL-1.2-or-later
 URL:            http://www.gnu.org/software/gettext
@@ -9,7 +9,17 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-%define sha512 %{name}=c6368344aa4e0f6fd7c4a93023a5f7b377c7bb97b8ea688fd54f4c385c069d9ff27611d8763b1aed6328b6d3c4db7b34bd89bfbf6525ecaef11eb58434a4d4fa
+%define sha512 %{name}=a60999bb9d09441f138214d87acb7e59aab81e765bb9253a77c54902681c5de164a5a04de2a9778dfb479dbdefaab2d5de1fbaf6095c555c43e7e9fd7a1c09bd
+
+Patch0:         libxml2-CVE-2016-3709.patch
+Patch1:         libxml2-CVE-2019-19956.patch
+Patch2:         libxml2-CVE-2021-3517.patch
+Patch3:         libxml2-CVE-2021-3518.patch
+Patch4:         libxml2-CVE-2021-3541.patch
+Patch5:         libxml2-CVE-2022-23308.patch
+Patch6:         libxml2-CVE-2022-40303.patch
+Patch7:         libxml2-CVE-2022-40304.patch
+Patch8:         libxml2-CVE-2024-25062.patch
 
 Requires: libgcc
 Requires: libstdc++
@@ -47,7 +57,26 @@ License: LGPL-2.0-or-later and GPL-3.0-or-later
 This package contains libraries used internationalization support.
 
 %prep
-%autosetup -p1
+# Using autosetup is not feasible
+%setup -q -n gettext-%{version}
+
+# Manually apply libxml2 patches instead of dynamically linking system installed libxml2 because its
+# dependencies and their dynamic relocations have an impact on the startup time of a program that is linked with it
+
+# Apply patches to gnulib-local/lib/libxml
+pushd gnulib-local/lib/libxml
+%autopatch -p1 -m0 -M8
+popd
+
+# Apply patches to gettext-tools/gnulib-lib/libxml
+pushd gettext-tools/gnulib-lib/libxml
+%autopatch -p1 -m0 -M8
+popd
+
+# Apply patches to libtextstyle/lib/libxml
+pushd libtextstyle/lib/libxml
+%autopatch -p1 -m0 -M8
+popd
 
 %build
 %configure \
@@ -102,6 +131,8 @@ make %{?_smp_mflags} check
 %{_docdir}/*
 
 %changelog
+* Thu Jun 27 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 0.22.5-1
+- Upgrade to v0.22.5
 * Mon Aug 14 2023 Susant Sahani <ssahani@vmware.com> 0.22-1
 - Version bump.
 * Mon May 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.21.1-2
