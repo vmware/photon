@@ -1,0 +1,161 @@
+From 89972ae25c133df31290f394413c19ea903219ad Mon Sep 17 00:00:00 2001
+From: Long Qin <qin.long@intel.com>
+Date: Wed, 1 Nov 2017 16:10:04 +0800
+Subject: [PATCH 3/6] CryptoPkg/BaseCryptLib: Fix buffer overflow issue in
+ realloc wrapper
+
+There is one long-standing problem in CRT realloc wrapper, which will
+cause the obvious buffer overflow issue when re-allocating one bigger
+memory block:
+    void *realloc (void *ptr, size_t size)
+    {
+      //
+      // BUG: hardcode OldSize == size! We have no any knowledge about
+      // memory size of original pointer ptr.
+      //
+      return ReallocatePool ((UINTN) size, (UINTN) size, ptr);
+    }
+This patch introduces one extra header to record the memory buffer size
+information when allocating memory block from malloc routine, and re-wrap
+the realloc() and free() routines to remove this BUG.
+
+Cc: Laszlo Ersek <lersek@redhat.com>
+Cc: Ting Ye <ting.ye@intel.com>
+Cc: Jian J Wang <jian.j.wang@intel.com>
+Contributed-under: TianoCore Contribution Agreement 1.0
+Signed-off-by: Qin Long <qin.long@intel.com>
+Reviewed-by: Jian J Wang <jian.j.wang@intel.com>
+Validated-by: Jian J Wang <jian.j.wang@intel.com>
+
+Cherry picked from https://github.com/tianocore/edk2.git, commit
+cf8197a39d07179027455421a182598bd6989999. Changes:
+* `SIGNATURE_32` -> `EFI_SIGNATURE_32`
+* Added definition of `MIN`
+
+Fixes https://github.com/rhboot/shim/issues/538
+
+Signed-off-by: Nicholas Bishop <nicholasbishop@google.com>
+---
+ Cryptlib/SysCall/BaseMemAllocation.c | 85 +++++++++++++++++++++++++---
+ 1 file changed, 78 insertions(+), 7 deletions(-)
+
+diff --git a/Cryptlib/SysCall/BaseMemAllocation.c b/Cryptlib/SysCall/BaseMemAllocation.c
+index 792b29e..7a565ff 100644
+--- a/Cryptlib/SysCall/BaseMemAllocation.c
++++ b/Cryptlib/SysCall/BaseMemAllocation.c
+@@ -15,6 +15,20 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+ 
+ #include <OpenSslSupport.h>
+ 
++//
++// Extra header to record the memory buffer size from malloc routine.
++//
++#define CRYPTMEM_HEAD_SIGNATURE    EFI_SIGNATURE_32('c','m','h','d')
++typedef struct {
++  UINT32    Signature;
++  UINT32    Reserved;
++  UINTN     Size;
++} CRYPTMEM_HEAD;
++
++#define CRYPTMEM_OVERHEAD      sizeof(CRYPTMEM_HEAD)
++
++#define MIN(a, b) ({(a) < (b) ? (a) : (b);})
++
+ //
+ // -- Memory-Allocation Routines --
+ //
+@@ -22,27 +36,84 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+ /* Allocates memory blocks */
+ void *malloc (size_t size)
+ {
+-  return AllocatePool ((UINTN) size);
++  CRYPTMEM_HEAD  *PoolHdr;
++  UINTN          NewSize;
++  VOID           *Data;
++
++  //
++  // Adjust the size by the buffer header overhead
++  //
++  NewSize = (UINTN)(size) + CRYPTMEM_OVERHEAD;
++
++  Data  = AllocatePool (NewSize);
++  if (Data != NULL) {
++    PoolHdr = (CRYPTMEM_HEAD *)Data;
++    //
++    // Record the memory brief information
++    //
++    PoolHdr->Signature = CRYPTMEM_HEAD_SIGNATURE;
++    PoolHdr->Size      = size;
++
++    return (VOID *)(PoolHdr + 1);
++  } else {
++    //
++    // The buffer allocation failed.
++    //
++    return NULL;
++  }
+ }
+ 
+ /* Reallocate memory blocks */
+ void *realloc (void *ptr, size_t size)
+ {
+-  //
+-  // BUG: hardcode OldSize == size! We have no any knowledge about
+-  // memory size of original pointer ptr.
+-  //
+-  return ReallocatePool (ptr, (UINTN) size, (UINTN) size);
++  CRYPTMEM_HEAD  *OldPoolHdr;
++  CRYPTMEM_HEAD  *NewPoolHdr;
++  UINTN          OldSize;
++  UINTN          NewSize;
++  VOID           *Data;
++
++  NewSize = (UINTN)size + CRYPTMEM_OVERHEAD;
++  Data = AllocatePool (NewSize);
++  if (Data != NULL) {
++    NewPoolHdr = (CRYPTMEM_HEAD *)Data;
++    NewPoolHdr->Signature = CRYPTMEM_HEAD_SIGNATURE;
++    NewPoolHdr->Size      = size;
++    if (ptr != NULL) {
++      //
++      // Retrieve the original size from the buffer header.
++      //
++      OldPoolHdr = (CRYPTMEM_HEAD *)ptr - 1;
++      ASSERT (OldPoolHdr->Signature == CRYPTMEM_HEAD_SIGNATURE);
++      OldSize = OldPoolHdr->Size;
++
++      //
++      // Duplicate the buffer content.
++      //
++      CopyMem ((VOID *)(NewPoolHdr + 1), ptr, MIN (OldSize, size));
++      FreePool ((VOID *)OldPoolHdr);
++    }
++
++    return (VOID *)(NewPoolHdr + 1);
++  } else {
++    //
++    // The buffer allocation failed.
++    //
++    return NULL;
++  }
+ }
+ 
+ /* De-allocates or frees a memory block */
+ void free (void *ptr)
+ {
++  CRYPTMEM_HEAD  *PoolHdr;
++
+   //
+   // In Standard C, free() handles a null pointer argument transparently. This
+   // is not true of FreePool() below, so protect it.
+   //
+   if (ptr != NULL) {
+-    FreePool (ptr);
++    PoolHdr = (CRYPTMEM_HEAD *)ptr - 1;
++    ASSERT (PoolHdr->Signature == CRYPTMEM_HEAD_SIGNATURE);
++    FreePool (PoolHdr);
+   }
+ }
+-- 
+2.35.5
+

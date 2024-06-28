@@ -1,0 +1,12 @@
+Reference bug: https://bugs.gentoo.org/704704
+
+diff -Naurp a/libparted/labels/atari.c b/libparted/labels/atari.c
+--- a/libparted/labels/atari.c
++++ b/libparted/labels/atari.c
+@@ -1966,5 +1966,5 @@ void
+ ped_disk_atari_done ()
+ {
+ 	ped_disk_type_unregister (&atari_disk_type);
+-	freelocale(atr_c_locale);
++	PED_ASSERT (freelocale(atr_c_locale));
+ }

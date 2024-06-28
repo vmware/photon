@@ -1,0 +1,195 @@
+From 45091a04ba2778c2f133067384201961e0b03721 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Mon, 20 Dec 2021 14:25:41 +0000
+Subject: [PATCH] crypto: kattest - break KAT fips intentionally
+
+1. Modified Kernel crypto testmgr to break KAT fips tests for
+   algorithms supported in photon.
+2. Added a new module kattest to tamper the testmgr tests.
+3. Added kernel cmdline parameter "katbuild". This parameter is used
+   to break a particular algorithm in fips power on self tests.
+   you can specify values [1,2,3...18]. each value corresponds to
+   an algorithm for which the test vectors are tampered.
+---
+ crypto/Kconfig   | 19 +++++++++++++
+ crypto/Makefile  |  1 +
+ crypto/kattest.c | 74 ++++++++++++++++++++++++++++++++++++++++++++++++
+ crypto/testmgr.c | 29 +++++++++++++++++++
+ 4 files changed, 123 insertions(+)
+ create mode 100644 crypto/kattest.c
+
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index aa15d8ee0..d720dc794 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -220,6 +220,25 @@ config CRYPTO_SELF_TEST
+ 	help
+ 	  Crypto self test module for FIPS.
+ 
++config CRYPTO_BROKEN_KAT
++	bool "Broken Known Answer Test module"
++	select CRYPTO_MANAGER
++	select CRYPTO_FIPS
++	select CRYPTO_AES
++	select CRYPTO_CBC
++	select CRYPTO_ECB
++	select CRYPTO_CTR
++	select CRYPTO_DES
++	select CRYPTO_XTS
++	select CRYPTO_HMAC
++	select CRYPTO_SHA256
++	select CRYPTO_SHA512
++	select CRYPTO_RSA
++	select CRYPTO_DRBG
++	select CRYPTO_ECDH
++	help
++	  Crypto Broken Known Answer Test for FIPS testing
++
+ config CRYPTO_SIMD
+ 	tristate
+ 	select CRYPTO_CRYPTD
+diff --git a/crypto/Makefile b/crypto/Makefile
+index b4d3850f2..875bf89e7 100644
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -50,6 +50,7 @@ sm2_generic-y += sm2.o
+ 
+ obj-$(CONFIG_CRYPTO_SM2) += sm2_generic.o
+ obj-$(CONFIG_CRYPTO_SELF_TEST) += crypto_self_test.o
++obj-$(CONFIG_CRYPTO_BROKEN_KAT) += kattest.o
+ 
+ crypto_acompress-y := acompress.o
+ crypto_acompress-y += scompress.o
+diff --git a/crypto/kattest.c b/crypto/kattest.c
+new file mode 100644
+index 000000000..e2a9eb893
+--- /dev/null
++++ b/crypto/kattest.c
+@@ -0,0 +1,74 @@
++/*
++ * kattest module
++ *
++ * Copyright (c) 2020 VMware
++ *
++ */
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/export.h>
++
++int kat_testbuild;
++EXPORT_SYMBOL_GPL(kat_testbuild);
++/* Process kernel command-line parameter at boot time.
+++ * katbuild=1 katbuild=2 etc
+++ */
++static int kat_test(char *str)
++{
++	kat_testbuild = simple_strtol(str, NULL, 0);
++	printk(KERN_INFO "kat build : %d\n", kat_testbuild);
++	return 1;
++}
++
++__setup("katbuild=", kat_test);
++
++
++static const char * const alg_list[] = {
++	"cbc(aes)",
++	"ecb(aes)",
++	"xts(aes)",
++	"ctr(aes)",
++	"hmac(sha1)",
++	"hmac(sha224)",
++	"hmac(sha256)",
++	"hmac(sha384)",
++	"hmac(sha512)",
++	"rsa",
++	"pkcs1pad(rsa,sha256)",
++	"drbg_pr_ctr_aes128",
++	"drbg_pr_hmac_sha256",
++	"drbg_nopr_ctr_aes256",
++	"drbg_nopr_hmac_sha256",
++	"ecdh",
++};
++
++void tamper_input_vector(const char *alg, const char *driver, const char *vector)
++{
++	int idx = kat_testbuild - 1;
++	char *test = "\x23\x32\x23\x32\x23\x32\x23\x32";
++
++	switch (kat_testbuild) {
++		case 1 ... 18:
++			if (strcmp(alg, alg_list[idx]) && strcmp(driver, alg_list[idx]))
++				break;
++
++			memcpy((char *)vector, test, strlen(test));
++			break;
++	}
++}
++
++EXPORT_SYMBOL_GPL(tamper_input_vector);
++
++static int __init kattest_init(void)
++{
++	printk(KERN_INFO "Kattest Init\n");
++	return 1;
++}
++
++static void __exit kattest_exit(void) {}
++
++subsys_initcall(kattest_init);
++module_exit(kattest_exit);
+diff --git a/crypto/testmgr.c b/crypto/testmgr.c
+index b505d0286..7f59f18a6 100644
+--- a/crypto/testmgr.c
++++ b/crypto/testmgr.c
+@@ -36,6 +36,29 @@
+ #include <crypto/internal/simd.h>
+ 
+ #include "internal.h"
++#include "testmgr.h"
++
++extern int kat_testbuild;
++const char ** poison_alg_strs[] = {
++   (const char **)&aes_cbc_tv_template[2].ctext,
++   (const char **)&aes_tv_template[3].ctext,
++   (const char **)&aes_xts_tv_template[4].ctext,
++   (const char **)&aes_ctr_tv_template[2].ctext,
++   (const char **)&hmac_sha1_tv_template[0].digest,
++   (const char **)&hmac_sha224_tv_template[2].digest,
++   (const char **)&hmac_sha256_tv_template[0].digest,
++   (const char **)&hmac_sha384_tv_template[1].digest,
++   (const char **)&hmac_sha512_tv_template[0].digest,
++   (const char **)&rsa_tv_template[0].c,
++   (const char **)&pkcs1pad_rsa_tv_template[0].c,
++   (const char **)&drbg_pr_ctr_aes128_tv_template[0].expected,
++   (const char **)&drbg_pr_hmac_sha256_tv_template[0].expected,
++   (const char **)&drbg_nopr_ctr_aes256_tv_template[0].expected,
++   (const char **)&drbg_nopr_hmac_sha256_tv_template[0].expected,
++   (const char **)&ecdh_tv_template[0].expected_ss,
++};
+ 
+ static bool notests;
+ module_param(notests, bool, 0644);
+@@ -57,6 +80,8 @@ DEFINE_PER_CPU(bool, crypto_simd_disabled_for_test);
+ EXPORT_PER_CPU_SYMBOL_GPL(crypto_simd_disabled_for_test);
+ #endif
+ 
++extern void tamper_input_vector(const char *alg, const char *driver, const char *vector);
++
+ #ifdef CONFIG_CRYPTO_MANAGER_DISABLE_TESTS
+ 
+ /* a perfect nop */
+@@ -5713,6 +5738,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+ 			     (j >= 0 && !alg_test_descs[j].fips_allowed)))
+ 		goto non_fips_alg;
+ 
++	if (fips_enabled && kat_testbuild > 0 && kat_testbuild < 19) {
++		tamper_input_vector(alg, driver, *poison_alg_strs[kat_testbuild-1]);
++	}
++
+ 	rc = 0;
+ 	if (i >= 0)
+ 		rc |= alg_test_descs[i].test(alg_test_descs + i, driver,
+-- 
+2.28.0
+

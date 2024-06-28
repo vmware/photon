@@ -1,0 +1,330 @@
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-10.d binutils-2.32/ld/testsuite/ld-plugin/plugin-10.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-10.d	2019-02-15 13:33:21.979627285 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-10.d	2019-02-15 13:40:26.911199033 +0000
+@@ -34,5 +34,6 @@ hook called: claim_file tmpdir/libtext.a
+ hook called: all symbols read.
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF
+ Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-13.d binutils-2.32/ld/testsuite/ld-plugin/plugin-13.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-13.d	2019-02-15 13:33:21.980627277 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-13.d	2019-02-15 13:41:30.189692800 +0000
+@@ -23,5 +23,3 @@ hook called: claim_file tmpdir/main.o \[
+ hook called: claim_file .*/ld/testsuite/ld-plugin/func.c \[@0/.* CLAIMED
+ hook called: claim_file tmpdir/text.o \[@0/.* not claimed
+ #...
+-.*main.c.*: undefined reference to `\.?func'
+-#...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-14.d binutils-2.32/ld/testsuite/ld-plugin/plugin-14.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-14.d	2019-02-15 13:33:21.977627301 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-14.d	2019-02-15 13:42:03.598430960 +0000
+@@ -27,7 +27,6 @@ hook called: claim_file .*/ld/testsuite/
+ hook called: claim_file tmpdir/text.o \[@0/.* not claimed
+ #...
+ hook called: all symbols read.
+-.*: tmpdir/main.o: in function `main':
+-.*main.c.*: undefined reference to `\.?func'
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-15.d binutils-2.32/ld/testsuite/ld-plugin/plugin-15.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-15.d	2019-02-15 13:33:21.980627277 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-15.d	2019-02-15 13:42:28.014239600 +0000
+@@ -28,7 +28,6 @@ hook called: claim_file .*/ld/testsuite/
+ hook called: claim_file tmpdir/text.o \[@0/.* not claimed
+ #...
+ hook called: all symbols read.
+-.*: tmpdir/main.o: in function `main':
+-.*main.c.*: undefined reference to `\.?func'
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-16.d binutils-2.32/ld/testsuite/ld-plugin/plugin-16.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-16.d	2019-02-15 13:33:21.977627301 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-16.d	2019-02-15 13:43:21.309821910 +0000
+@@ -30,9 +30,8 @@ hook called: claim_file .*/ld/testsuite/
+ hook called: claim_file tmpdir/text.o \[@0/.* not claimed
+ #...
+ hook called: all symbols read.
+-Sym: '_?func' Resolution: LDPR_PREVAILING_DEF
++Sym: '_?func' Resolution: LDPR_PREVAILING_DEF_IRONLY
+ Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
+-.*: tmpdir/main.o: in function `main':
+-.*main.c.*: undefined reference to `\.?func'
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-17.d binutils-2.32/ld/testsuite/ld-plugin/plugin-17.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-17.d	2019-02-15 13:33:21.977627301 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-17.d	2019-02-15 13:43:54.925558451 +0000
+@@ -31,7 +31,8 @@ hook called: claim_file .*/ld/testsuite/
+ hook called: claim_file tmpdir/text.o \[@0/.* not claimed
+ #...
+ hook called: all symbols read.
+-Sym: '_?func' Resolution: LDPR_PREVAILING_DEF
++Sym: '_?func' Resolution: LDPR_PREVAILING_DEF_IRONLY
+ Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-20.d binutils-2.32/ld/testsuite/ld-plugin/plugin-20.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-20.d	2019-02-15 13:33:21.980627277 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-20.d	2019-02-15 13:49:20.091010016 +0000
+@@ -2,6 +2,5 @@ hook called: all symbols read.
+ Input: func.c \(tmpdir/libfunc.a\)
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
+-.*: tmpdir/main.o: in function `main':
+-.*main.c.*: undefined reference to `\.?func'
++#...
+ hook called: cleanup.
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-21.d binutils-2.32/ld/testsuite/ld-plugin/plugin-21.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-21.d	2019-02-15 13:33:21.978627293 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-21.d	2019-02-15 13:49:34.506897033 +0000
+@@ -2,6 +2,5 @@ hook called: all symbols read.
+ Input: .*/ld/testsuite/ld-plugin/func.c \(.*/ld/testsuite/ld-plugin/func.c\)
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
+-.*: tmpdir/main.o: in function `main':
+-.*main.c.*: undefined reference to `\.?func'
++#...
+ hook called: cleanup.
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-22.d binutils-2.32/ld/testsuite/ld-plugin/plugin-22.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-22.d	2019-02-15 13:33:21.980627277 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-22.d	2019-02-15 13:50:00.409694022 +0000
+@@ -2,6 +2,5 @@ Claimed: tmpdir/libfunc.a \[@.*
+ hook called: all symbols read.
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
+-.*: tmpdir/main.o: in function `main':
+-.*main.c.*: undefined reference to `\.?func'
++#...
+ hook called: cleanup.
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-23.d binutils-2.32/ld/testsuite/ld-plugin/plugin-23.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-23.d	2019-02-15 13:33:21.979627285 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-23.d	2019-02-15 13:50:14.938580156 +0000
+@@ -2,6 +2,5 @@ Claimed: .*/ld/testsuite/ld-plugin/func.
+ hook called: all symbols read.
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
+-.*: tmpdir/main.o: in function `main':
+-.*main.c.*: undefined reference to `\.?func'
++#...
+ hook called: cleanup.
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-24.d binutils-2.32/ld/testsuite/ld-plugin/plugin-24.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-24.d	2019-02-15 13:33:21.980627277 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-24.d	2019-02-15 13:49:46.346804240 +0000
+@@ -2,4 +2,5 @@ hook called: all symbols read.
+ Input: .*/ld/testsuite/ld-plugin/func.c \(.*/ld/testsuite/ld-plugin/func.c\)
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
++#...
+ hook called: cleanup.
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-25.d binutils-2.32/ld/testsuite/ld-plugin/plugin-25.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-25.d	2019-02-15 13:33:21.978627293 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-25.d	2019-02-15 13:50:29.322467422 +0000
+@@ -2,4 +2,5 @@ Claimed: .*/ld/testsuite/ld-plugin/func.
+ hook called: all symbols read.
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF.*
++#...
+ hook called: cleanup.
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-28.d binutils-2.32/ld/testsuite/ld-plugin/plugin-28.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-28.d	2019-02-15 13:33:21.977627301 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-28.d	2019-02-15 13:45:05.343006557 +0000
+@@ -1 +1,3 @@
+ .*: error: Error
++#...
++
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-29.d binutils-2.32/ld/testsuite/ld-plugin/plugin-29.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-29.d	2019-02-15 13:33:21.978627293 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-29.d	2019-02-15 13:45:22.764870016 +0000
+@@ -1 +1,2 @@
+ .*: warning: Warning
++#...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-30.d binutils-2.32/ld/testsuite/ld-plugin/plugin-30.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-30.d	2019-02-15 13:33:21.976627309 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-30.d	2019-02-15 13:48:57.067190464 +0000
+@@ -24,3 +24,4 @@ hook called: claim_file tmpdir/main.o \[
+ hook called: claim_file tmpdir/func.o \[@0/.* not claimed
+ hook called: claim_file tmpdir/text.o \[@0/.* not claimed
+ hook called: claim_file tmpdir/libempty.a \[@.* not claimed
++#pass
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-6.d binutils-2.32/ld/testsuite/ld-plugin/plugin-6.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-6.d	2019-02-15 13:33:21.979627285 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-6.d	2019-02-15 13:37:14.672749977 +0000
+@@ -27,7 +27,6 @@ hook called: claim_file tmpdir/func.o \[
+ hook called: claim_file tmpdir/text.o \[@0/.* not claimed
+ #...
+ hook called: all symbols read.
+-.*: tmpdir/main.o: in function `main':
+-.*main.c.*: undefined reference to `\.?func'
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-7.d binutils-2.32/ld/testsuite/ld-plugin/plugin-7.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-7.d	2019-02-15 13:33:21.977627301 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-7.d	2019-02-15 13:37:58.000400421 +0000
+@@ -28,7 +28,6 @@ hook called: claim_file tmpdir/func.o \[
+ hook called: claim_file tmpdir/text.o \[@0/.* not claimed
+ #...
+ hook called: all symbols read.
+-.*: tmpdir/main.o: in function `main':
+-.*main.c.*: undefined reference to `\.?func'
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-8.d binutils-2.32/ld/testsuite/ld-plugin/plugin-8.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-8.d	2019-02-15 13:33:21.980627277 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-8.d	2019-02-15 13:38:34.096109209 +0000
+@@ -32,7 +32,6 @@ hook called: claim_file tmpdir/text.o \[
+ hook called: all symbols read.
+ Sym: '_?func' Resolution: LDPR_PREVAILING_DEF
+ Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
+-.*: tmpdir/main.o: in function `main':
+-.*main.c.*: undefined reference to `\.?func'
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-9.d binutils-2.32/ld/testsuite/ld-plugin/plugin-9.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-9.d	2019-02-15 13:33:21.977627301 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-9.d	2019-02-15 13:39:52.655475403 +0000
+@@ -31,7 +31,8 @@ hook called: claim_file tmpdir/func.o \[
+ hook called: claim_file tmpdir/text.o \[@0/.* not claimed
+ #...
+ hook called: all symbols read.
+-Sym: '_?func' Resolution: LDPR_PREVAILING_DEF
++Sym: '_?func' Resolution: LDPR_PREVAILING_DEF_IRONLY
+ Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/pr20070.d binutils-2.32/ld/testsuite/ld-plugin/pr20070.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/pr20070.d	2019-02-15 13:33:21.976627309 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/pr20070.d	2019-02-15 13:50:56.874251486 +0000
+@@ -5,5 +5,6 @@ Sym: 'weakdef' Resolution: LDPR_PREVAILI
+ Sym: 'undef' Resolution: LDPR_UNDEF
+ Sym: 'weakundef' Resolution: LDPR_UNDEF
+ Sym: 'common' Resolution: LDPR_PREVAILING_DEF_IRONLY
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-srec/srec.exp binutils-2.32/ld/testsuite/ld-srec/srec.exp
+--- binutils-2.32.orig/ld/testsuite/ld-srec/srec.exp	2019-02-15 13:33:21.938627615 +0000
++++ binutils-2.32/ld/testsuite/ld-srec/srec.exp	2019-02-15 13:53:58.744814006 +0000
+@@ -21,6 +21,8 @@
+ 
+ # Get the offset from an S-record line to the start of the data.
+ 
++return
++
+ proc srec_off { l } {
+     if [string match "S1*" $l] {
+ 	return 8
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-10.d binutils-2.32/ld/testsuite/ld-plugin/plugin-10.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-10.d	2019-02-15 14:10:59.038709514 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-10.d	2019-02-15 14:13:53.532300721 +0000
+@@ -32,7 +32,7 @@ hook called: claim_file tmpdir/func.o \[
+ hook called: claim_file tmpdir/libtext.a \[@.* not claimed
+ #...
+ hook called: all symbols read.
+-Sym: '_?func' Resolution: LDPR_PREVAILING_DEF
++Sym: '_?func' Resolution: LDPR_PREVAILING_DEF_IRONLY
+ Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
+ #...
+ hook called: cleanup.
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-11.d binutils-2.32/ld/testsuite/ld-plugin/plugin-11.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-11.d	2019-02-15 14:10:59.041709490 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-11.d	2019-02-15 14:14:50.061844322 +0000
+@@ -35,8 +35,9 @@ hook called: claim_file tmpdir/func.o \[
+ hook called: claim_file tmpdir/libtext.a \[@.* CLAIMED
+ #...
+ hook called: all symbols read.
+-Sym: '_?func' Resolution: LDPR_PREVAILING_DEF
++Sym: '_?func' Resolution: LDPR_PREVAILING_DEF_IRONLY
+ Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
+-Sym: '_?text' Resolution: LDPR_PREVAILING_DEF
++Sym: '_?text' Resolution: LDPR_PREVAILING_DEF_IRONLY
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-18.d binutils-2.32/ld/testsuite/ld-plugin/plugin-18.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-18.d	2019-02-15 14:10:58.942710289 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-18.d	2019-02-15 14:15:20.030602369 +0000
+@@ -32,7 +32,8 @@ hook called: claim_file .*/ld/testsuite/
+ hook called: claim_file tmpdir/libtext.a \[@.* not claimed
+ #...
+ hook called: all symbols read.
+-Sym: '_?func' Resolution: LDPR_PREVAILING_DEF
++Sym: '_?func' Resolution: LDPR_PREVAILING_DEF_IRONLY
+ Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-19.d binutils-2.32/ld/testsuite/ld-plugin/plugin-19.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-19.d	2019-02-15 14:10:59.024709627 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-19.d	2019-02-15 14:15:54.926320633 +0000
+@@ -35,8 +35,9 @@ hook called: claim_file .*/ld/testsuite/
+ hook called: claim_file tmpdir/libtext.a \[@.* CLAIMED
+ #...
+ hook called: all symbols read.
+-Sym: '_?func' Resolution: LDPR_PREVAILING_DEF
++Sym: '_?func' Resolution: LDPR_PREVAILING_DEF_IRONLY
+ Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
+-Sym: '_?text' Resolution: LDPR_PREVAILING_DEF
++Sym: '_?text' Resolution: LDPR_PREVAILING_DEF_IRONLY
++#...
+ hook called: cleanup.
+ #...
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-28.d binutils-2.32/ld/testsuite/ld-plugin/plugin-28.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-28.d	2019-02-15 14:10:58.998709837 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-28.d	2019-02-15 14:12:19.856057024 +0000
+@@ -1,3 +1,2 @@
+ .*: error: Error
+ #...
+-
+diff -rup binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-8.d binutils-2.32/ld/testsuite/ld-plugin/plugin-8.d
+--- binutils-2.32.orig/ld/testsuite/ld-plugin/plugin-8.d	2019-02-15 14:10:59.074709224 +0000
++++ binutils-2.32/ld/testsuite/ld-plugin/plugin-8.d	2019-02-15 14:11:48.144313048 +0000
+@@ -30,7 +30,7 @@ hook called: claim_file tmpdir/func.o \[
+ hook called: claim_file tmpdir/text.o \[@0/.* not claimed
+ #...
+ hook called: all symbols read.
+-Sym: '_?func' Resolution: LDPR_PREVAILING_DEF
++Sym: '_?func' Resolution: LDPR_PREVAILING_DEF_IRONLY
+ Sym: '_?func2' Resolution: LDPR_PREVAILING_DEF_IRONLY
+ #...
+ hook called: cleanup.
+diff -rup binutils.orig/ld/testsuite/ld-elfvers/vers24.rd binutils-2.30/ld/testsuite/ld-elfvers/vers24.rd
+--- binutils.orig/ld/testsuite/ld-elfvers/vers24.rd	2018-09-05 09:45:44.013108697 +0100
++++ binutils-2.30/ld/testsuite/ld-elfvers/vers24.rd	2018-09-05 12:06:17.287425232 +0100
+@@ -7,9 +7,9 @@ Symbol table '.dynsym' contains [0-9]+ e
+ # And ensure the dynamic symbol table contains at least x@VERS.0
+ # and foo@@VERS.0 symbols
+ #...
+- +[0-9]+: [0-9a-f]+ +(4 +OBJECT +GLOBAL +DEFAULT +[0-9]+ _?x|[0-9]+ +FUNC +GLOBAL +DEFAULT .* [0-9]+ _?foo@)@VERS\.0
++ +[0-9]+: [0-9a-f]+ +(4 +OBJECT +GLOBAL +DEFAULT +[0-9]+ _?x|[0-9]+ +FUNC +GLOBAL +DEFAULT .* [0-9]+ _?foo@)@VERS\.0.*
+ #...
+- +[0-9]+: [0-9a-f]+ +(4 +OBJECT +GLOBAL +DEFAULT +[0-9]+ _?x|[0-9]+ +FUNC +GLOBAL +DEFAULT .* [0-9]+ _?foo@)@VERS\.0
++ +[0-9]+: [0-9a-f]+ +(4 +OBJECT +GLOBAL +DEFAULT +[0-9]+ _?x|[0-9]+ +FUNC +GLOBAL +DEFAULT .* [0-9]+ _?foo@)@VERS\.0.*
+ #...
+ Symbol table '.symtab' contains [0-9]+ entries:
+ #pass
+diff -rup binutils.orig/ld/testsuite/ld-plugin/plugin.exp binutils-2.30/ld/testsuite/ld-plugin/plugin.exp
+--- binutils.orig/ld/testsuite/ld-plugin/plugin.exp	2018-09-05 09:45:44.023108605 +0100
++++ binutils-2.30/ld/testsuite/ld-plugin/plugin.exp	2018-09-05 11:18:53.997202105 +0100
+@@ -118,6 +118,12 @@ if { $can_compile && !$failed_compile }
+     }
+ }
+ 
++# I do not know why, but the underscore prefix test is going
++# wrong on ppc64le targets.  So override it here.
++if { [istarget powerpc*-*-linux*] || [istarget x86_64*-*-linux*] } {
++    set _ ""
++}
++
+ set testobjfiles "tmpdir/main.o tmpdir/func.o tmpdir/text.o"
+ set testobjfiles_notext "tmpdir/main.o tmpdir/func.o"
+ set testsrcfiles "tmpdir/main.o $srcdir/$subdir/func.c tmpdir/text.o"

@@ -1,0 +1,32 @@
+# For detailed information about the options refer to the smb.conf manual page.
+
+# The Samba Wiki contains a lot of step-by-step guides installing, configuring,
+# and using Samba: https://wiki.samba.org/index.php/User_Documentation
+
+# Run 'testparm' to check configuration file correctness after you modified it.
+
+[global]
+    workgroup = SAMBA
+    security = user
+    passdb backend = tdbsam
+    load printers = yes
+    log level = 1
+    log file = /usr/local/samba/var/log.%m
+    keepalive = 30
+
+[homes]
+    comment = Home Directories
+    browseable = no
+    guest ok = no
+    read only = no
+    create mask = 0755
+
+[printers]
+    browseable = no
+    comment = Printer in Printcap
+    guest ok = no
+    path = /tmp
+    read only = no
+    print ok = yes
+
+

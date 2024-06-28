@@ -1,0 +1,6 @@
+FROM k8s-base-image:5.0
+
+ADD tmp/k8dns/usr/bin/sidecar /sidecar
+
+USER nobody:nobody
+ENTRYPOINT ["/sidecar"]

@@ -1,0 +1,37 @@
+From 4b142a1ad1f7016e7b4864f6505ab5146027c7ba Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Thu, 15 Dec 2022 11:26:04 +0000
+Subject: [PATCH] confdata: format change for split script
+
+---
+ scripts/kconfig/confdata.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
+index c4340c90e172..620335378314 100644
+--- a/scripts/kconfig/confdata.c
++++ b/scripts/kconfig/confdata.c
+@@ -592,7 +592,7 @@ struct comment_style {
+ };
+ 
+ static const struct comment_style comment_style_pound = {
+-	.decoration = "#",
++	.decoration = "###",
+ 	.prefix = "#",
+ 	.postfix = "#",
+ };
+@@ -874,9 +874,8 @@ int conf_write(const char *name)
+ 				goto next;
+ 			str = menu_get_prompt(menu);
+ 			fprintf(out, "\n"
+-				     "#\n"
+-				     "# %s\n"
+-				     "#\n", str);
++				     "#%s %s\n", menu->prompt->type == P_MENU ?
++				     "" : "#", str);
+ 			need_newline = false;
+ 		} else if (!(sym->flags & SYMBOL_CHOICE) &&
+ 			   !(sym->flags & SYMBOL_WRITTEN)) {
+-- 
+2.25.1
+

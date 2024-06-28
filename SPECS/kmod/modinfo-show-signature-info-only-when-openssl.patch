@@ -1,0 +1,226 @@
+From 8c6bb7a51ee82d1e43ea8c4d49f93efec919df57 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 6 Mar 2023 15:25:59 +0000
+Subject: [PATCH] modinfo: show signature info only when openssl libs are
+ present
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ libkmod/libkmod-signature.c | 165 ++++++++++++++++++++++++++++++++----
+ 1 file changed, 147 insertions(+), 18 deletions(-)
+
+diff --git a/libkmod/libkmod-signature.c b/libkmod/libkmod-signature.c
+index 4ae5af6..d004ba1 100644
+--- a/libkmod/libkmod-signature.c
++++ b/libkmod/libkmod-signature.c
+@@ -19,10 +19,9 @@
+ 
+ #include <endian.h>
+ #include <inttypes.h>
+-#ifdef ENABLE_OPENSSL
+ #include <openssl/pkcs7.h>
+ #include <openssl/ssl.h>
+-#endif
++#include <dlfcn.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -98,6 +97,141 @@ struct module_signature {
+ 	uint32_t sig_len;    /* Length of signature data (big endian) */
+ };
+ 
++static void *gCryptoHandle;
++
++static void (*PKCS7free)(PKCS7 *);
++#define PKCS7_free PKCS7free
++
++static void (*BNfree)(BIGNUM *);
++#define BN_free BNfree
++
++static int (*OBJobj2nid)(const ASN1_OBJECT *);
++#define OBJ_obj2nid OBJobj2nid
++
++static int (*X509_NAME_entrycount)(const X509_NAME *);
++#define X509_NAME_entry_count X509_NAME_entrycount
++
++static X509_NAME_ENTRY *(*X509_NAME_getentry)(const X509_NAME *, int);
++#define X509_NAME_get_entry X509_NAME_getentry
++
++static ASN1_OBJECT *(*X509_NAME_ENTRY_getobject)(const X509_NAME_ENTRY *);
++#define X509_NAME_ENTRY_get_object X509_NAME_ENTRY_getobject
++
++static ASN1_STRING *(*X509_NAME_ENTRY_getdata)(const X509_NAME_ENTRY *);
++#define X509_NAME_ENTRY_get_data X509_NAME_ENTRY_getdata
++
++static const unsigned char *(*ASN1_STRING_get0data)(const ASN1_STRING *x);
++#define ASN1_STRING_get0_data ASN1_STRING_get0data
++
++static BIO *(*BIO_new_membuf) (const void *, int);
++#define BIO_new_mem_buf BIO_new_membuf
++
++static PKCS7 *(*d2i_PKCS7bio)(BIO *, PKCS7 **);
++#define d2i_PKCS7_bio d2i_PKCS7bio
++
++static int (*BIOfree)(BIO *);
++#define BIO_free BIOfree
++
++STACK_OF(PKCS7_SIGNER_INFO) *(*PKCS7_get_signerinfo)(PKCS7 *);
++#define PKCS7_get_signer_info PKCS7_get_signerinfo
++
++static void (*PKCS7_SIGNER_INFO_get0algs)(PKCS7_SIGNER_INFO *, EVP_PKEY **, X509_ALGOR **, X509_ALGOR **);
++#define PKCS7_SIGNER_INFO_get0_algs PKCS7_SIGNER_INFO_get0algs
++
++static int (*ASN1_STRINGlength)(const ASN1_STRING *);
++#define ASN1_STRING_length ASN1_STRINGlength
++
++static BIGNUM *(*ASN1_INTEGER_toBN)(const ASN1_INTEGER *, BIGNUM *);
++#define ASN1_INTEGER_to_BN ASN1_INTEGER_toBN
++
++static int (*BN_bn2_bin)(const BIGNUM *, unsigned char *);
++#define BN_bn2bin BN_bn2_bin
++
++static void (*X509_ALGORget0)(const ASN1_OBJECT **, int *, const void **, const X509_ALGOR *);
++#define X509_ALGOR_get0 X509_ALGORget0
++
++static void *(*OPENSSL_skvalue)(const OPENSSL_STACK *, int);
++#define OPENSSL_sk_value OPENSSL_skvalue
++
++static int (*BN_numbits)(const BIGNUM *);
++#define BN_num_bits BN_numbits
++
++#define LIBCRYPTO_SO    "libcrypto.so.3"
++
++#define get_sym(sym, handle, var) if (!(var = dlsym(handle, sym))) goto end
++
++static int populate_fn_ptrs(void)
++{
++        const char *symbol;
++        int retval = -1;
++
++        gCryptoHandle = dlopen(LIBCRYPTO_SO, RTLD_LAZY);
++        if (!gCryptoHandle)
++                goto end;
++
++        symbol = "PKCS7_free";
++        get_sym(symbol, gCryptoHandle, PKCS7free);
++
++        symbol = "BN_free";
++        get_sym(symbol, gCryptoHandle, BNfree);
++
++        symbol = "OBJ_obj2nid";
++        get_sym(symbol, gCryptoHandle, OBJobj2nid);
++
++        symbol = "X509_NAME_entry_count";
++        get_sym(symbol, gCryptoHandle, X509_NAME_entrycount);
++
++        symbol = "X509_NAME_get_entry";
++        get_sym(symbol, gCryptoHandle, X509_NAME_getentry);
++
++        symbol = "X509_NAME_ENTRY_get_object";
++        get_sym(symbol, gCryptoHandle, X509_NAME_ENTRY_getobject);
++
++        symbol = "X509_NAME_ENTRY_get_data";
++        get_sym(symbol, gCryptoHandle, X509_NAME_ENTRY_getdata);
++
++        symbol = "ASN1_STRING_get0_data";
++        get_sym(symbol, gCryptoHandle, ASN1_STRING_get0data);
++
++        symbol = "BIO_new_mem_buf";
++        get_sym(symbol, gCryptoHandle, BIO_new_membuf);
++
++        symbol = "d2i_PKCS7_bio";
++        get_sym(symbol, gCryptoHandle, d2i_PKCS7bio);
++
++        symbol = "BIO_free";
++        get_sym(symbol, gCryptoHandle, BIOfree);
++
++        symbol = "PKCS7_get_signer_info";
++        get_sym(symbol, gCryptoHandle, PKCS7_get_signerinfo);
++
++        symbol = "PKCS7_SIGNER_INFO_get0_algs";
++        get_sym(symbol, gCryptoHandle, PKCS7_SIGNER_INFO_get0algs);
++
++        symbol = "ASN1_STRING_length";
++        get_sym(symbol, gCryptoHandle, ASN1_STRINGlength);
++
++        symbol = "ASN1_INTEGER_to_BN";
++        get_sym(symbol, gCryptoHandle, ASN1_INTEGER_toBN);
++
++        symbol = "BN_bn2bin";
++        get_sym(symbol, gCryptoHandle, BN_bn2_bin);
++
++        symbol = "X509_ALGOR_get0";
++        get_sym(symbol, gCryptoHandle, X509_ALGORget0);
++
++        symbol = "OPENSSL_sk_value";
++        get_sym(symbol, gCryptoHandle, OPENSSL_skvalue);
++
++        symbol = "BN_num_bits";
++        get_sym(symbol, gCryptoHandle, BN_numbits);
++
++        retval = 0;
++
++end:
++        return retval;
++}
++
+ static bool fill_default(const char *mem, off_t size,
+ 			 const struct module_signature *modsig, size_t sig_len,
+ 			 struct kmod_signature_info *sig_info)
+@@ -121,8 +255,6 @@ static bool fill_default(const char *mem, off_t size,
+ 	return true;
+ }
+ 
+-#ifdef ENABLE_OPENSSL
+-
+ struct pkcs7_private {
+ 	PKCS7 *pkcs7;
+ 	unsigned char *key_id;
+@@ -220,6 +352,12 @@ static bool fill_pkcs7(const char *mem, off_t size,
+ 	struct pkcs7_private *pvt;
+ 	const char *issuer_str;
+ 
++	if (populate_fn_ptrs()) {
++		sig_info->hash_algo = "unknown";
++		sig_info->id_type = pkey_id_type[modsig->id_type];
++		return true;
++	}
++
+ 	size -= sig_len;
+ 	pkcs7_raw = mem + size;
+ 
+@@ -301,19 +439,6 @@ err:
+ 	return false;
+ }
+ 
+-#else /* ENABLE OPENSSL */
+-
+-static bool fill_pkcs7(const char *mem, off_t size,
+-		       const struct module_signature *modsig, size_t sig_len,
+-		       struct kmod_signature_info *sig_info)
+-{
+-	sig_info->hash_algo = "unknown";
+-	sig_info->id_type = pkey_id_type[modsig->id_type];
+-	return true;
+-}
+-
+-#endif /* ENABLE OPENSSL */
+-
+ #define SIG_MAGIC "~Module signature appended~\n"
+ 
+ /*
+@@ -357,7 +482,11 @@ bool kmod_module_signature_info(const struct kmod_file *file, struct kmod_signat
+ 
+ 	switch (modsig->id_type) {
+ 	case PKEY_ID_PKCS7:
+-		return fill_pkcs7(mem, size, modsig, sig_len, sig_info);
++		int retval;
++		retval = fill_pkcs7(mem, size, modsig, sig_len, sig_info);
++		if (gCryptoHandle)
++			dlclose(gCryptoHandle);
++		return retval;
+ 	default:
+ 		return fill_default(mem, size, modsig, sig_len, sig_info);
+ 	}
+-- 
+2.39.0

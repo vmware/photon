@@ -1,0 +1,2 @@
+g telegraf -
+u telegraf - "Telegraf" /var/lib/telegraf /sbin/nologin

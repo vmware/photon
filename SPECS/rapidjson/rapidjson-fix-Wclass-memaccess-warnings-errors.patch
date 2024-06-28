@@ -1,0 +1,59 @@
+From fa5963a2f5b231ee2babff771f169ccca22870ed Mon Sep 17 00:00:00 2001
+From: Philipp A Hartmann <pah@qo.cx>
+Date: Sun, 15 Jul 2018 14:17:14 +0200
+Subject: [PATCH] Fix -Wclass-memaccess warnings/errors
+
+Recent GCC versions warn about using memcpy/memmove to
+write to a class pointer (-Wclass-memaccess).
+
+Avoid the warnings by casting to void* first.
+
+Closes #1086.
+Closes #1205.
+Closes #1246.
+---
+ include/rapidjson/document.h | 20 +++++---------------
+ 1 file changed, 5 insertions(+), 15 deletions(-)
+
+diff --git a/include/rapidjson/document.h b/include/rapidjson/document.h
+index d25c5c0a6..bf9e6fdb5 100644
+--- a/include/rapidjson/document.h
++++ b/include/rapidjson/document.h
+@@ -1513,7 +1513,7 @@ class GenericValue {
+         MemberIterator pos = MemberBegin() + (first - MemberBegin());
+         for (MemberIterator itr = pos; itr != last; ++itr)
+             itr->~Member();
+-        std::memmove(&*pos, &*last, static_cast<size_t>(MemberEnd() - last) * sizeof(Member));
++        std::memmove(static_cast<void*>(&*pos), &*last, static_cast<size_t>(MemberEnd() - last) * sizeof(Member));
+         data_.o.size -= static_cast<SizeType>(last - first);
+         return pos;
+     }
+@@ -1716,8 +1716,8 @@ class GenericValue {
+         RAPIDJSON_ASSERT(last <= End());
+         ValueIterator pos = Begin() + (first - Begin());
+         for (ValueIterator itr = pos; itr != last; ++itr)
+-            itr->~GenericValue();       
+-        std::memmove(pos, last, static_cast<size_t>(End() - last) * sizeof(GenericValue));
++            itr->~GenericValue();
++        std::memmove(static_cast<void*>(pos), last, static_cast<size_t>(End() - last) * sizeof(GenericValue));
+         data_.a.size -= static_cast<SizeType>(last - first);
+         return pos;
+     }
+@@ -2032,7 +2032,7 @@ class GenericValue {
+         if (count) {
+             GenericValue* e = static_cast<GenericValue*>(allocator.Malloc(count * sizeof(GenericValue)));
+             SetElementsPointer(e);
+-            std::memcpy(e, values, count * sizeof(GenericValue));
++            std::memcpy(static_cast<void*>(e), values, count * sizeof(GenericValue));
+         }
+         else
+             SetElementsPointer(0);
+@@ -2050,7 +2045,7 @@ RAPIDJSON_DIAG_POP
+         if (count) {
+             Member* m = static_cast<Member*>(allocator.Malloc(count * sizeof(Member)));
+             SetMembersPointer(m);
+-            std::memcpy(m, members, count * sizeof(Member));
++            std::memcpy(static_cast<void*>(m), members, count * sizeof(Member));
+         }
+         else
+             SetMembersPointer(0);

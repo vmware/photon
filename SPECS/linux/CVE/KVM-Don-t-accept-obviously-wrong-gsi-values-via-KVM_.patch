@@ -1,0 +1,32 @@
+From 9131bdba4d58bd9abc8133d8df65273314a1493c Mon Sep 17 00:00:00 2001
+From: Jan H. Schönherr <jschoenh@amazon.de>
+Date: Thu, 7 Sep 2017 19:02:48 +0100
+Subject: [PATCH 14/23] KVM: Don't accept obviously wrong gsi values via KVM_IRQFD
+
+We cannot add routes for gsi values >= KVM_MAX_IRQ_ROUTES -- see
+kvm_set_irq_routing(). Hence, there is no sense in accepting them
+via KVM_IRQFD. Prevent them from entering the system in the first
+place.
+
+Signed-off-by: Jan H. Schönherr <jschoenh@amazon.de>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ virt/kvm/eventfd.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
+index 67b6fc1..dea42bf 100644
+--- a/virt/kvm/eventfd.c
++++ b/virt/kvm/eventfd.c
+@@ -568,6 +568,8 @@ kvm_irqfd(struct kvm *kvm, struct kvm_irqfd *args)
+ {
+ 	if (args->flags & ~(KVM_IRQFD_FLAG_DEASSIGN | KVM_IRQFD_FLAG_RESAMPLE))
+ 		return -EINVAL;
++	if (args->gsi >= KVM_MAX_IRQ_ROUTES)
++		return -EINVAL;
+ 
+ 	if (args->flags & KVM_IRQFD_FLAG_DEASSIGN)
+ 		return kvm_irqfd_deassign(kvm, args);
+-- 
+2.7.4
+

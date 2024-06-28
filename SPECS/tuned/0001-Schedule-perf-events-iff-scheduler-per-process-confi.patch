@@ -1,0 +1,134 @@
+From 4e2782e32413c5060ed409a0b284e6250d1a8df7 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Mon, 23 Aug 2021 14:03:08 +0000
+Subject: [PATCH] Schedule perf events iff scheduler per process configurations
+ are set
+
+Tuned scheduler plugin registers for process creation and exit
+(perf.RECORD_COMM and perf.RECORD_EXIT) perf events during plugin init
+(`_instance_init`) if runtime scheduling is not disabled explicitly.
+By default, runtime tuning is set true in tuned code, if not disabled
+explicitly in tuned profile conf file.
+
+It also creates a thread and polls for the perf events and checks whether
+it is of perf.RECORD_COMM or perf.RECORD_EXIT type in `_instance_apply_static`
+function if runtime scheduling is enabled. This thread runs indefinitely
+till the tuned process is terminated and keeps polling for these perf events.
+When these events are hit, tuned code checks whether the created process name
+matches the regex configured from tuned.conf and tunes these processes with
+configured scheduler_priority, affinity and policy.
+
+Even when these are not configured in tuned.conf, scheduler plugin creates
+perf events and creates this polling thread and returns from tune_process function
+as there is no process tuning configurations set. Basically, it just polls for
+these events and does nothing.
+
+Perf events ((perf.RECORD_COMM and perf.RECORD_EXIT) created by tuned causes OS jitter
+in realtime kernel. When a RT task is started to run, perf events (perf_event_comm_output())
+registered through tuned wakes up tasks through irq_work() which causes ktimersoftd in
+isolated cores. This causes jitter in isolated cores. Apart from this, whenever a process
+is created/changed or exited the perf events registered through tuned causes jitter.
+
+To fix this issue, perf events scheduling code is moved from `_instance_init` to
+_instance_apply_static` function where the thread is created to poll on these events
+and a new check is added to verify whether the scheduler configurations
+(process_name, prio, policy, affinity) from tuned.conf is not null and then
+schedule perf events and create thread.
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ tuned/plugins/plugin_scheduler.py | 59 +++++++++++++++----------------
+ 1 file changed, 29 insertions(+), 30 deletions(-)
+
+diff --git a/tuned/plugins/plugin_scheduler.py b/tuned/plugins/plugin_scheduler.py
+index 32b9c1a..6440a74 100644
+--- a/tuned/plugins/plugin_scheduler.py
++++ b/tuned/plugins/plugin_scheduler.py
+@@ -126,37 +126,11 @@ class SchedulerPlugin(base.Plugin):
+ 
+ 		instance._scheduler = instance.options
+ 
+-		perf_mmap_pages_raw = self._variables.expand(instance.options["perf_mmap_pages"])
+-		perf_mmap_pages = self._calc_mmap_pages(perf_mmap_pages_raw)
+-		if perf_mmap_pages == 0:
+-			log.error("Invalid 'perf_mmap_pages' value specified: '%s', using default kernel value" % perf_mmap_pages_raw)
+-			perf_mmap_pages = None
+-		if perf_mmap_pages is not None and str(perf_mmap_pages) != perf_mmap_pages_raw:
+-			log.info("'perf_mmap_pages' value has to be power of two, specified: '%s', using: '%d'" %
+-				(perf_mmap_pages_raw, perf_mmap_pages))
+ 		for k in instance._scheduler:
+ 			instance._scheduler[k] = self._variables.expand(instance._scheduler[k])
+ 		if self._cmd.get_bool(instance._scheduler.get("runtime", 1)) == "0":
+ 			instance._runtime_tuning = False
+ 		instance._terminate = threading.Event()
+-		if self._daemon and instance._runtime_tuning:
+-			try:
+-				instance._threads = perf.thread_map()
+-				evsel = perf.evsel(type = perf.TYPE_SOFTWARE,
+-					config = perf.COUNT_SW_DUMMY,
+-					task = 1, comm = 1, mmap = 0, freq = 0,
+-					wakeup_events = 1, watermark = 1,
+-					sample_type = perf.SAMPLE_TID | perf.SAMPLE_CPU)
+-				evsel.open(cpus = self._cpus, threads = instance._threads)
+-				instance._evlist = perf.evlist(self._cpus, instance._threads)
+-				instance._evlist.add(evsel)
+-				if perf_mmap_pages is None:
+-					instance._evlist.mmap()
+-				else:
+-					instance._evlist.mmap(pages = perf_mmap_pages)
+-			# no perf
+-			except:
+-				instance._runtime_tuning = False
+ 
+ 	def _instance_cleanup(self, instance):
+ 		pass
+@@ -575,9 +549,34 @@ class SchedulerPlugin(base.Plugin):
+ 					priority, affinity)
+ 		self._storage.set(self._scheduler_storage_key,
+ 				self._scheduler_original)
+-		if self._daemon and instance._runtime_tuning:
+-			instance._thread = threading.Thread(target = self._thread_code, args = [instance])
+-			instance._thread.start()
++		if self._daemon and instance._runtime_tuning and bool(instance._sched_lookup):
++			perf_mmap_pages_raw = self._variables.expand(instance.options["perf_mmap_pages"])
++			perf_mmap_pages = self._calc_mmap_pages(perf_mmap_pages_raw)
++			if perf_mmap_pages == 0:
++				log.error("Invalid 'perf_mmap_pages' value specified: '%s', using default kernel value" % perf_mmap_pages_raw)
++				perf_mmap_pages = None
++			if perf_mmap_pages is not None and str(perf_mmap_pages) != perf_mmap_pages_raw:
++				log.info("'perf_mmap_pages' value has to be power of two, specified: '%s', using: '%d'" %
++					(perf_mmap_pages_raw, perf_mmap_pages))
++			try:
++				instance._threads = perf.thread_map()
++				evsel = perf.evsel(type = perf.TYPE_SOFTWARE,
++					config = perf.COUNT_SW_DUMMY,
++					task = 1, comm = 1, mmap = 0, freq = 0,
++					wakeup_events = 1, watermark = 1,
++					sample_type = perf.SAMPLE_TID | perf.SAMPLE_CPU)
++				evsel.open(cpus = self._cpus, threads = instance._threads)
++				instance._evlist = perf.evlist(self._cpus, instance._threads)
++				instance._evlist.add(evsel)
++				if perf_mmap_pages is None:
++					instance._evlist.mmap()
++				else:
++					instance._evlist.mmap(pages = perf_mmap_pages)
++				instance._thread = threading.Thread(target = self._thread_code, args = [instance])
++				instance._thread.start()
++			# no perf
++			except:
++				instance._runtime_tuning = False
+ 
+ 	def _restore_ps_affinity(self):
+ 		try:
+@@ -622,7 +621,7 @@ class SchedulerPlugin(base.Plugin):
+ 
+ 	def _instance_unapply_static(self, instance, full_rollback = False):
+ 		super(SchedulerPlugin, self)._instance_unapply_static(instance, full_rollback)
+-		if self._daemon and instance._runtime_tuning:
++		if self._daemon and instance._runtime_tuning and bool(instance._sched_lookup):
+ 			instance._terminate.set()
+ 			instance._thread.join()
+ 		self._restore_ps_affinity()
+-- 
+2.28.0
+

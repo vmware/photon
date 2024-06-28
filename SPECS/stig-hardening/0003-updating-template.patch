@@ -1,0 +1,41 @@
+From 29b054f85264ecfd03822810310f1f1f60d7e59d Mon Sep 17 00:00:00 2001
+From: "rlakey@vmware.com" <rlakey@vmware.com>
+Date: Tue, 3 Oct 2023 15:28:29 -0600
+Subject: [PATCH 3/3] updating template
+
+---
+ templates/zz-stig-hardening.conf | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/templates/zz-stig-hardening.conf b/templates/zz-stig-hardening.conf
+index e69de29..e43bca7 100644
+--- a/templates/zz-stig-hardening.conf
++++ b/templates/zz-stig-hardening.conf
+@@ -0,0 +1,23 @@
++kernel.dmesg_restrict = 1
++net.ipv4.tcp_syncookies = 1
++fs.protected_symlinks = 1
++kernel.randomize_va_space=2
++net.ipv4.conf.all.accept_source_route = 0
++net.ipv4.conf.default.accept_source_route = 0
++net.ipv6.conf.all.accept_source_route = 0
++net.ipv6.conf.default.accept_source_route = 0
++net.ipv4.icmp_echo_ignore_broadcasts = 1
++net.ipv4.conf.all.accept_redirects=0
++net.ipv4.conf.default.accept_redirects=0
++net.ipv4.conf.all.secure_redirects=0
++net.ipv4.conf.default.secure_redirects=0
++net.ipv4.conf.all.send_redirects=0
++net.ipv4.conf.default.send_redirects=0
++net.ipv4.conf.all.log_martians = 1
++net.ipv4.conf.default.log_martians = 1
++net.ipv4.conf.all.rp_filter=1
++net.ipv4.conf.default.rp_filter=1
++net.ipv4.ip_forward=0
++net.ipv4.tcp_timestamps = 1
++fs.protected_hardlinks = 1
++fs.suid_dumpable=0
+\ No newline at end of file
+-- 
+2.34.1
+

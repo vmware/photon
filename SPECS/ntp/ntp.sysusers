@@ -1,0 +1,2 @@
+g ntp 87
+u ntp 87 "Network Time Protocol" /var/lib/ntp /bin/false

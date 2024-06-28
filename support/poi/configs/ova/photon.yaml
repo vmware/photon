@@ -1,0 +1,51 @@
+system:
+    name: photon
+    type: vmx-14
+    os_vmw: vmwarePhoton64Guest
+    firmware: efi
+    secure_boot: false
+
+networks:
+    vm_network:
+        name: "VM Network"
+        description: "The VM Network network"
+
+hardware:
+    cpus: 2
+    memory: 2048
+    sata1:
+        type: sata_controller
+    scsi1:
+        type: scsi_controller
+    cdrom1:
+        type: cd_drive
+        parent: sata1
+    floppy1:
+        type: floppy
+    rootdisk:
+        type: hard_disk
+        parent: scsi1
+        disk_image: !param disk
+    usb1:
+        type: usb_controller
+    ethernet1:
+        type: ethernet
+        subtype: VmxNet3
+        network: vm_network
+    videocard1:
+        type: video_card
+    vmci1:
+        type: vmci
+
+product:
+    product: Photon OS
+    vendor: VMware Inc.
+
+annotation:
+    text: >
+      This OVA provides a minimal installed profile of PhotonOS. Default
+      password for root user is changeme. However user will be prompted
+      to change the password during first login.
+
+eula:
+    file: !param eulafile

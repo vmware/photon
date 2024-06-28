@@ -1,0 +1,21 @@
+live: false
+
+hostname: photon-machine
+
+password:
+    crypted: false
+    text: changeme
+
+disks:
+    default:
+        filename: !param imgfile=photon-azure.img
+        size: 16384
+
+packagelist_file: packages_azure.json
+linux_flavor: linux
+
+postinstallscripts:
+- azure-patch.sh
+
+additional_files:
+- cloud-photon.cfg: /etc/cloud/cloud.cfg

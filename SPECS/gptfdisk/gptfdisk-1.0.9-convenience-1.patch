@@ -1,0 +1,16 @@
+diff --git a/Makefile b/Makefile
+index af9701c..4389b15 100644
+--- a/Makefile
++++ b/Makefile
+@@ -165,6 +165,11 @@ lint:	#no pre-reqs
+ clean:	#no pre-reqs
+ 	rm -f core *.o *~ $(ALL_EXE)
+
++install: gdisk cgdisk sgdisk fixparts
++	install -dm 755 $(DESTDIR)/sbin $(DESTDIR)/usr/share/man/man8
++	install -m755 gdisk cgdisk sgdisk fixparts $(DESTDIR)/sbin
++	install -m644 *.8 $(DESTDIR)/usr/share/man/man8
++
+ strip:	#no pre-reqs
+ 	$(STRIP) $(ALL_EXE)
+

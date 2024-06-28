@@ -1,0 +1,57 @@
+diff -Naurp gcc-7.3.0-orig/gcc/c/c-typeck.c gcc-7.3.0/gcc/c/c-typeck.c
+--- gcc-7.3.0-orig/gcc/c/c-typeck.c	2017-06-08 12:12:38.381833000 -0700
++++ gcc-7.3.0/gcc/c/c-typeck.c	2018-04-24 14:44:50.222592671 -0700
+@@ -48,6 +48,8 @@ along with GCC; see the file COPYING3.
+ #include "c-family/c-ubsan.h"
+ #include "cilk.h"
+ #include "gomp-constants.h"
++#include "plugin-api.h"
++#include "plugin.h"
+ #include "spellcheck-tree.h"
+ #include "gcc-rich-location.h"
+ 
+@@ -5452,6 +5454,12 @@ build_c_cast (location_t loc, tree type,
+ 	return error_mark_node;
+     }
+ 
++  {
++    tree cast_info[] {type, TREE_TYPE(value)};
++    invoke_plugin_callbacks (PLUGIN_TYPE_CAST, cast_info);
++  }
++
++
+   if (type == TYPE_MAIN_VARIANT (TREE_TYPE (value)))
+     {
+       if (RECORD_OR_UNION_TYPE_P (type))
+diff -Naurp gcc-7.3.0-orig/gcc/plugin.c gcc-7.3.0/gcc/plugin.c
+--- gcc-7.3.0-orig/gcc/plugin.c	2017-03-21 04:50:18.693898000 -0700
++++ gcc-7.3.0/gcc/plugin.c	2018-04-24 14:46:13.956372418 -0700
+@@ -471,6 +471,7 @@ register_callback (const char *plugin_na
+       case PLUGIN_EARLY_GIMPLE_PASSES_END:
+       case PLUGIN_NEW_PASS:
+       case PLUGIN_INCLUDE_FILE:
++      case PLUGIN_TYPE_CAST:
+         {
+           struct callback_info *new_callback;
+           if (!callback)
+@@ -551,6 +552,7 @@ invoke_plugin_callbacks_full (int event,
+       case PLUGIN_EARLY_GIMPLE_PASSES_END:
+       case PLUGIN_NEW_PASS:
+       case PLUGIN_INCLUDE_FILE:
++      case PLUGIN_TYPE_CAST:
+         {
+           /* Iterate over every callback registered with this event and
+              call it.  */
+diff -Naurp gcc-7.3.0-orig/gcc/plugin.def gcc-7.3.0/gcc/plugin.def
+--- gcc-7.3.0-orig/gcc/plugin.def	2017-01-01 04:07:43.905435000 -0800
++++ gcc-7.3.0/gcc/plugin.def	2018-04-24 14:47:02.209408557 -0700
+@@ -99,6 +99,9 @@ DEFEVENT (PLUGIN_NEW_PASS)
+    as a const char* pointer.  */
+ DEFEVENT (PLUGIN_INCLUDE_FILE)
+ 
++/* Called when expression is casted to some type.  */
++DEFEVENT (PLUGIN_TYPE_CAST)
++
+ /* When adding a new hard-coded plugin event, don't forget to edit in
+    file plugin.c the functions register_callback and
+    invoke_plugin_callbacks_full accordingly!  */

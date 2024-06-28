@@ -1,0 +1,2 @@
+g consul -
+u consul - "Consul Agent" /var/lib/consul /bin/false

@@ -1,0 +1,36 @@
+diff --git a/build.xml b/build.xml
+index 7c339bd..b65b5c8 100644
+--- a/build.xml
++++ b/build.xml
+@@ -179,6 +179,7 @@
+           description="Compile shareable components">
+     <javac srcdir      ="${source.home}/java"
+            destdir     ="${build.home}/classes"
++           encoding    ="ISO-8859-1"
+            debug       ="${compile.debug}"
+            deprecation ="${compile.deprecation}"
+            optimize    ="${compile.optimize}">
+@@ -186,6 +187,7 @@
+     </javac>
+     <javac srcdir      ="${source.home}/examples"
+            destdir     ="${build.home}/examples"
++           encoding    ="ISO-8859-1"
+            debug       ="${compile.debug}"
+            deprecation ="${compile.deprecation}"
+            optimize    ="${compile.optimize}">
+@@ -197,6 +199,7 @@
+           description="Compile unit test cases">
+     <javac srcdir      ="${test.home}"
+            destdir     ="${build.home}/tests"
++           encoding    ="ISO-8859-1"
+            debug       ="${compile.debug}"
+            deprecation ="${compile.deprecation}"
+            optimize    ="${compile.optimize}">
+@@ -241,6 +244,7 @@
+     <mkdir dir="${dist.home}/docs/api"/>
+     <javadoc sourcepath   ="${source.home}/java"
+              destdir      ="${dist.home}/docs/api"
++             encoding     ="ISO-8859-1"
+              packagenames ="org.apache.commons.*"
+              author       ="true"
+              protected    ="true"

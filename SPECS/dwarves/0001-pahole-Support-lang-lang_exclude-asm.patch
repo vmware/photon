@@ -1,0 +1,65 @@
+From 79d9a783ea74797aa4304009e0cf1bdb9235fcf4 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Tue, 4 Oct 2022 18:09:33 -0300
+Subject: [PATCH] pahole: Support '--lang/--lang_exclude=asm'
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+It is disjoint from the other languages and then the first simple
+implementation of language inclusion/exclusion didn't support it, add
+an special case to test against 0x8001 (DW_LANG_Mips_Assembler) to cover
+that.
+
+This is needed as recently compilers started to add DWARF constructs to
+represent asm CUs that broke pahole as it didn't support
+DW_TAG_unspecified_type as a "type", so add it in case in the future we
+want to exclude such CUs.
+
+The DW_TAG_unspecified_type tag is going to be supported in the next
+csets tho.
+
+We also may want this to exclude new tags that aren't supported in BTF,
+etc.
+
+Cc: Martin Liška <mliska@suse.cz>
+Cc: Nick Clifton <nickc@redhat.com>
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+
+[ssrish: resolved a hunk failure]
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+---
+ dwarves.c          | 3 +++
+ man-pages/pahole.1 | 2 +-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/dwarves.c b/dwarves.c
+index db1dcf5..32bfec5 100644
+--- a/dwarves.c
++++ b/dwarves.c
+@@ -2127,6 +2127,9 @@ int lang__str2int(const char *lang)
+ 	[DW_LANG_UPC]		 = "upc",
+ 	};
+ 
++	if (strcasecmp(lang, "asm") == 0)
++		return DW_LANG_Mips_Assembler;
++
+ 	// c89 is the first, bliss is the last, see /usr/include/dwarf.h
+ 	for (int id = DW_LANG_C89; id <= DW_LANG_BLISS; ++id)
+ 		if (languages[id] && strcasecmp(lang, languages[id]) == 0)
+diff --git a/man-pages/pahole.1 b/man-pages/pahole.1
+index bb88e2f..f60713a 100644
+--- a/man-pages/pahole.1
++++ b/man-pages/pahole.1
+@@ -378,7 +378,7 @@ Only process compilation units built from source code written in the specified l
+ 
+ Supported languages:
+ 
+-  ada83, ada95, bliss, c, c89, c99, c11, c++, c++03, c++11, c++14, cobol74,
++  ada83, ada95, asm, bliss, c, c89, c99, c11, c++, c++03, c++11, c++14, cobol74,
+   cobol85, d, dylan, fortran77, fortran90, fortran95, fortran03, fortran08,
+   go, haskell, java, julia, modula2, modula3, objc, objc++, ocaml, opencl,
+   pascal83, pli, python, renderscript, rust, swift, upc
+-- 
+2.35.6
+

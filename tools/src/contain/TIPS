@@ -1,0 +1,93 @@
+Shutting down or killing a container
+------------------------------------
+
+From the host, the inject utility can be used to run an appropriate command
+within the container to start a graceful shut down. For example
+
+  inject PID /bin/halt
+
+To immediately stop a container and all its processes, it is sufficient to
+send the init process a SIGKILL from the host using
+
+  pkill -KILL -P PID
+
+where PID is the process ID of a running container supervisor. It is very
+important not to SIGKILL the container supervisor itself or the container
+will be orphaned, continuing to run unsupervised as a child of the host
+init.
+
+
+Using cgroups to limit memory and CPU-share available to a container
+--------------------------------------------------------------------
+
+If cgroup support including memcg and memcg-swap is compiled into the kernel
+and the cgroup filesystem is mounted with the cpu and memory controllers
+enabled, it is straightforward to apply memory and CPU-share limits to a
+container as it is started. For example, the shell script
+
+  #!/bin/sh -e
+  mkdir /sys/fs/cgroup/mycontainer
+  echo $$ >/sys/fs/cgroup/mycontainer/tasks
+  echo 2G >/sys/fs/cgroup/mycontainer/memory.limit_in_bytes
+  echo 2G >/sys/fs/cgroup/mycontainer/memory.memsw.limit_in_bytes
+  echo 1000 >sys/fs/cgroup/mycontainer/cpu.shares
+  exec contain [...]
+
+applies a limit of 2GB virtual memory and a CPU-share of 1000 before
+starting the container. It might also be useful to apply a
+memory.kmem.limit_in_bytes setting to prevent a container from using
+excessive amounts of kernel memory.
+
+Note that to set the virtual memory limit in memory.memsw.limit_in_bytes, it
+is first necessary to set a smaller or equal physical memory limit in
+memory.limit_in_bytes.
+
+When a container lives inside a memory cgroup, memory.memsw.usage_in_bytes
+gives a measure of the total virtual memory in use by the container, and
+memory.usage_in_bytes measures its physical memory footprint. The accounting
+policy is explained in linux/kernel/Documentation/cgroups/memory.txt.
+
+
+Troubleshooting
+---------------
+
+The contain/psuedo error message 'Failed to unshare user namespace: Invalid
+argument' typically means that your kernel is not compiled with support for
+user namespaces, i.e. CONFIG_USER_NS is not set. The contain tool will also
+die with a similar message referring to one of the other required namespaces
+if support for that is not available in the kernel.
+
+To run these tools you need to be running Linux 3.8 or later with
+
+  CONFIG_UTS_NS=y
+  CONFIG_IPC_NS=y
+  CONFIG_USER_NS=y
+  CONFIG_PID_NS=y
+  CONFIG_NET_NS=y
+
+set in the kernel build config. Note that before Linux 3.12, CONFIG_XFS_FS
+conflicted with CONFIG_USER_NS, so these tools could not be used where XFS
+support was compiled either into the kernel or as a module.
+
+The contain tool will fail to mount /dev/pts unless
+
+  CONFIG_DEVPTS_MULTIPLE_INSTANCES=y
+
+is set in the kernel build config. Both container and host /dev/pts must be
+mounted with -o newinstance, with /dev/ptmx symlinked to pts/ptmx.
+
+Linux 3.12 introduced tighter restrictions on mounting proc and sysfs, which
+broke older versions of contain. To comply with these new rules, contain
+now ensures that procfs and sysfs are mounted in the new mount namespace
+before pivoting into the container and detaching the host root.
+
+A bug in Linux 3.12 will prevent contain from mounting /proc in a container
+if binfmt_misc is mounted on /proc/sys/fs/binfmt_misc in the host
+filesystem. This was fixed in Linux 3.13.
+
+Linux 3.19 introduced restrictions on writing a user namespace GID map as an
+unprivileged user unless setgroups() has been permanently deactivated, which
+broke older versions of contain. Run non-setuid and unprivileged, contain
+and pseudo must now deactivate setgroups() to create containers, but if they
+are installed setuid, they will bypass this kernel restriction and leave
+setgroups() enabled in the resulting containers.

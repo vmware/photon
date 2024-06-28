@@ -1,0 +1,63 @@
+From 4368263f492914261f079e075dae88788d4b30a6 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 27 Apr 2021 18:22:18 +0200
+Subject: [PATCH] ragel just completely lacks a block to support system colm.
+
+[sshedi: make this work on photon]
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ configure.ac    | 22 +++++++---------------
+ src/Makefile.am |  2 +-
+ 2 files changed, 8 insertions(+), 16 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 6b3a5b4..3b0ed15 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -42,23 +42,15 @@ AC_CHECK_HEADERS([sys/mman.h sys/wait.h unistd.h])
+ AC_ARG_WITH(colm,
+ 	[AC_HELP_STRING([--with-colm], [location of colm install])],
+ 	[
+-		COLM="$withval/bin/colm"
+-		COLM_WRAP="$withval/bin/colm-wrap"
+-		CPPFLAGS="-I$withval/include ${CPPFLAGS}"
+-		CPPFLAGS="-I$withval/include/aapl ${CPPFLAGS}"
+-		LDFLAGS="-L$withval/lib ${LDFLAGS}"
+-		LIBCOLM_LA="$withval/lib/libcolm.la"
+-		LIBFSM_LA="$withval/lib/libfsm.la"
+-		COLM_SHARE="$withval/share"
+-	],
+-	[]
++		COLM=/usr/bin/colm
++		COLM_WRAP=/usr/bin/colm-wrap
++		CPPFLAGS="-I/usr/include/aapl $CPPFLAGS"
++		LIBCOLM_LA=-lcolm
++		LIBFSM_LA=-lfsm
++		COLM_SHARE='${datadir}/colm'
++	]
+ )
+ 
+-AC_CHECK_FILES(
+-	[$COLM],
+-	[],
+-	[AC_ERROR([colm is required to build ragel])]
+-)
+ AC_SUBST(COLM)
+ AC_SUBST(COLM_WRAP)
+ AC_SUBST(COLM_SHARE)
+diff --git a/src/Makefile.am b/src/Makefile.am
+index c4fe531..f391a72 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -39,7 +39,7 @@ nodist_ragel_SOURCES = \
+ 	parse.c rlreduce.cc
+ 
+ ragel_LDADD = $(LIBFSM_LA) $(LIBCOLM_LA) libragel.la
+-ragel_DEPENDENCIES = $(LIBFSM_LA) $(LIBCOLM_LA) libragel.la
++ragel_DEPENDENCIES = libragel.la
+ 
+ BUILT_SOURCES = \
+ 	version.h \
+-- 
+2.25.1
+

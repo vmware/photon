@@ -1,0 +1,22 @@
+install_options_file: /photon/common/data/build_install_options_all.json
+
+iso_files:
+    sample_ks.cfg: isolinux/
+    open_source_license.tar.gz: ""
+    /photon/EULA.txt: ""
+    /photon/NOTICE-Apachev2: ""
+    /photon/NOTICE-GPL2.0: ""
+    /photon/stage/ostree-repo.tar.gz: ""
+
+initrd_files:
+    /photon/common/data/build_install_options_all.json: installer/
+    # make sure all files referenced in the above are included
+    # use `cat build_install_options_all.json | jq '.[].packagelist_file' -r`
+    /photon/common/data/packages_minimal.json: installer/
+    /photon/common/data/packages_developer.json: installer/
+    /photon/common/data/packages_ostree_host.json: installer/
+    /photon/common/data/packages_rt.json: installer/
+    /photon/common/data/packages_appliance.json: installer/
+
+    sample_ui.cfg: installer/
+    /photon/EULA.txt: installer/

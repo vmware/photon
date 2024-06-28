@@ -1,0 +1,26 @@
+From 9ab6c4c13ceeff65811180e897420fa42bda9fbc Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Date: Sun, 21 Aug 2022 20:29:44 +0530
+Subject: [PATCH] Add -Wno-error=stringop-truncation to EXTRA_CFLAGS
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+---
+ src/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/Makefile b/src/Makefile
+index 04bf4f2..ef28764 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -65,7 +65,7 @@ EXTRA_CFLAGS = -fipa-pure-const -Wlogical-op -Wpacked-bitfield-compat -Wsync-nan
+ 	-Wcoverage-mismatch -Wcpp -Wformat-contains-nul -Wnormalized=nfc -Wsuggest-attribute=const \
+ 	-Wsuggest-attribute=noreturn -Wsuggest-attribute=pure -Wtrampolines -Wjump-misses-init \
+ 	-Wno-suggest-attribute=pure -Wno-suggest-attribute=const -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 \
+-	-Wstrict-overflow=5 -fno-semantic-interposition
++	-Wstrict-overflow=5 -fno-semantic-interposition -Wno-error=stringop-truncation
+ else
+ EXTRA_CFLAGS = -Wunused-command-line-argument
+ endif
+-- 
+2.37.2
+

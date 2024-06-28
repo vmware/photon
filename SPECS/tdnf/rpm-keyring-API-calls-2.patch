@@ -1,0 +1,233 @@
+From 65d2850f005bd75b2d752701a6f6555eed5ef33e Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Fri, 10 Mar 2023 14:12:32 -0800
+Subject: [PATCH] update rpm keyring API calls 2/2 (VerifyRpmSig)
+
+---
+ client/gpgcheck.c   | 138 ++++++++++----------------------------------
+ client/includes.h   |   1 +
+ client/prototypes.h |  13 -----
+ 3 files changed, 30 insertions(+), 122 deletions(-)
+
+diff --git a/client/gpgcheck.c b/client/gpgcheck.c
+index b8b3968d..4957c881 100644
+--- a/client/gpgcheck.c
++++ b/client/gpgcheck.c
+@@ -22,28 +22,50 @@
+ 
+ uint32_t
+ TDNFGPGCheck(
+-    rpmKeyring pKeyring,
++    rpmts pTS,
+     const char* pszKeyFile,
+     const char* pszPkgFile
+     )
+ {
+     uint32_t dwError = 0;
+-    char* pszKeyData = NULL;
++    rpmKeyring pKeyring = NULL;
++    FD_t fp = NULL;
+ 
+-    if(!pKeyring || IsNullOrEmptyString(pszKeyFile) || !pszPkgFile)
++    if(!pTS || IsNullOrEmptyString(pszKeyFile) || !pszPkgFile)
+     {
+         dwError = ERROR_TDNF_INVALID_PARAMETER;
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+ 
++    fp = Fopen(pszPkgFile, "r.ufdio");
++    if (fp == NULL) {
++        dwError = errno;
++        BAIL_ON_TDNF_SYSTEM_ERROR(dwError);
++    }
++
++    pKeyring = rpmtsGetKeyring(pTS, 0);
++    if (pKeyring == NULL) {
++        pr_err("failed to get RPM keyring");
++        dwError = ERROR_TDNF_INVALID_PARAMETER;
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++
+     dwError = AddKeyFileToKeyring(pszKeyFile, pKeyring);
+     BAIL_ON_TDNF_ERROR(dwError);
+ 
+-    dwError = VerifyRpmSig(pKeyring, pszPkgFile);
+-    BAIL_ON_TDNF_ERROR(dwError);
++    if (rpmVerifySignatures(
++        /* unused but must be != NULL, see lib/rpmchecksig.c in rpm */ (QVA_t)1,
++        pTS, fp, pszPkgFile) != 0)
++    {
++        dwError = ERROR_TDNF_RPM_GPG_NO_MATCH;
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
+ 
+ cleanup:
+-    TDNF_SAFE_FREE_MEMORY(pszKeyData);
++    if(fp)
++    {
++        Fclose(fp);
++    }
+     return dwError;
+ 
+ error:
+@@ -142,106 +164,6 @@ AddKeyFileToKeyring(
+     goto cleanup;
+ }
+ 
+-uint32_t
+-VerifyRpmSig(
+-    rpmKeyring pKeyring,
+-    const char* pszPkgFile
+-    )
+-{
+-    uint32_t dwError = 0;
+-    FD_t pFD_t = NULL;
+-    rpmts pTS = NULL;
+-    rpmtd pTD = NULL;
+-    Header pPkgHeader = NULL;
+-    pgpDig pDigest = NULL;
+-
+-    if(!pKeyring || IsNullOrEmptyString(pszPkgFile))
+-    {
+-        dwError = ERROR_TDNF_INVALID_PARAMETER;
+-        BAIL_ON_TDNF_ERROR(dwError);
+-    }
+-
+-    pFD_t = Fopen(pszPkgFile, "r.fdio");
+-    if(!pFD_t)
+-    {
+-        dwError = errno;
+-        BAIL_ON_TDNF_SYSTEM_ERROR(dwError);
+-    }
+-
+-    pTS = rpmtsCreate();
+-    if(!pTS)
+-    {
+-        dwError = ERROR_TDNF_RPMTS_CREATE_FAILED;
+-        BAIL_ON_TDNF_RPM_ERROR(dwError);
+-    }
+-    rpmtsSetVSFlags (pTS, _RPMVSF_NOSIGNATURES);
+-
+-    pTD = rpmtdNew();
+-    if(!pTD)
+-    {
+-        dwError = ERROR_TDNF_RPMTD_CREATE_FAILED;
+-        BAIL_ON_TDNF_RPM_ERROR(dwError);
+-    }
+-
+-    dwError = rpmReadPackageFile(pTS, pFD_t, pszPkgFile, &pPkgHeader);
+-    BAIL_ON_TDNF_RPM_ERROR(dwError);
+-
+-    if(!headerConvert(pPkgHeader, HEADERCONV_RETROFIT_V3))
+-    {
+-        dwError = ERROR_TDNF_RPM_HEADER_CONVERT_FAILED;
+-        BAIL_ON_TDNF_RPM_ERROR(dwError);
+-    }
+-
+-    if(!headerGet(pPkgHeader, RPMTAG_RSAHEADER, pTD, HEADERGET_MINMEM))
+-    {
+-        dwError = ERROR_TDNF_RPM_GET_RSAHEADER_FAILED;
+-        BAIL_ON_TDNF_ERROR(dwError);
+-    }
+-
+-    pDigest = pgpNewDig();
+-    if(pgpPrtPkts(pTD->data, pTD->count, pDigest, 0))
+-    {
+-        dwError = ERROR_TDNF_RPM_GPG_PARSE_FAILED;
+-        BAIL_ON_TDNF_ERROR(dwError);
+-    }
+-
+-    if(rpmKeyringLookup(pKeyring, pDigest) != RPMRC_OK)
+-    {
+-        dwError = ERROR_TDNF_RPM_GPG_NO_MATCH;
+-        BAIL_ON_TDNF_ERROR(dwError);
+-    }
+-
+-cleanup:
+-    if(pFD_t)
+-    {
+-        Fclose(pFD_t);
+-    }
+-    if(pDigest)
+-    {
+-        pgpFreeDig(pDigest);
+-    }
+-    if(pPkgHeader)
+-    {
+-        headerFree(pPkgHeader);
+-    }
+-    if(pTD)
+-    {
+-        rpmtdFree(pTD);
+-    }
+-    if(pTS)
+-    {
+-        rpmtsFree(pTS);
+-    }
+-    return dwError;
+-
+-error:
+-    if (pszPkgFile)
+-    {
+-        pr_err("Error verifying signature of: %s\n", pszPkgFile);
+-    }
+-    goto cleanup;
+-}
+-
+ uint32_t
+ TDNFImportGPGKeyFile(
+     rpmts pTS,
+@@ -300,7 +222,6 @@ TDNFGPGCheckPackage(
+ {
+     uint32_t dwError = 0;
+     Header rpmHeader = NULL;
+-    rpmKeyring pKeyring = NULL;
+     int nGPGSigCheck = 0;
+     FD_t fp = NULL;
+     char** ppszUrlGPGKeys = NULL;
+@@ -373,8 +294,7 @@ TDNFGPGCheckPackage(
+             dwError = TDNFImportGPGKeyFile(pTS->pTS, pszLocalGPGKey);
+             BAIL_ON_TDNF_ERROR(dwError);
+ 
+-            pKeyring = rpmtsGetKeyring(pTS->pTS, 0);
+-            dwError = TDNFGPGCheck(pKeyring, pszLocalGPGKey, pszFilePath);
++            dwError = TDNFGPGCheck(pTS->pTS, pszLocalGPGKey, pszFilePath);
+             if (dwError == 0)
+             {
+                 nMatched++;
+diff --git a/client/includes.h b/client/includes.h
+index 470f3ba9..8f975e87 100644
+--- a/client/includes.h
++++ b/client/includes.h
+@@ -43,6 +43,7 @@
+ #include <rpm/rpmts.h>
+ #include <rpm/rpmkeyring.h>
+ #include <rpm/header.h>
++#include <rpm/rpmcli.h>
+ 
+ //libcurl
+ #include <curl/curl.h>
+diff --git a/client/prototypes.h b/client/prototypes.h
+index 42244993..abb5e349 100644
+--- a/client/prototypes.h
++++ b/client/prototypes.h
+@@ -49,19 +49,6 @@ AddKeyFileToKeyring(
+     rpmKeyring pKeyring
+     );
+ 
+-uint32_t
+-VerifyRpmSig(
+-    rpmKeyring pKeyring,
+-    const char* pszPkgFile
+-    );
+-
+-uint32_t
+-TDNFGPGCheck(
+-    rpmKeyring pKeyring,
+-    const char* pszUrlKeyFile,
+-    const char* pszPackage
+-    );
+-
+ uint32_t
+ TDNFImportGPGKeyFile(
+     rpmts pTS,

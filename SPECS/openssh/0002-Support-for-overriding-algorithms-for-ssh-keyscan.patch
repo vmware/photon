@@ -1,0 +1,121 @@
+From 24736f9de365b8cf6762912d10cf442b44470390 Mon Sep 17 00:00:00 2001
+From: Damien Miller <djm@mindrot.org>
+Date: Tue, 8 Aug 2023 15:25:58 +1000
+Subject: [PATCH] Support for overriding algorithms for ssh-keyscan
+
+Based on patch from Shreenidhi Shedi in bz3599
+---
+ ssh-keyscan.1 | 25 ++++++++++++++++++++++++-
+ ssh-keyscan.c | 37 ++++++++++++++++++++++++++++++++-----
+ 2 files changed, 56 insertions(+), 6 deletions(-)
+
+diff --git a/ssh-keyscan.1 b/ssh-keyscan.1
+index aa6d34f..8978302 100644
+--- a/ssh-keyscan.1
++++ b/ssh-keyscan.1
+@@ -100,8 +100,15 @@ but they do not reveal identifying information should the file's contents
+ be disclosed.
+ .It Fl O Ar option
+ Specify a key/value option.
+-At present, only a single option is supported:
++At present, the following options are supported:
+ .Bl -tag -width Ds
++.It Cm ciphers Ns = Ns Ar algorithms
++Specifies the ciphers allowed and their order of preference.
++Multiple ciphers must be comma-separated.
++See
++.Xr ssh_config 5
++for more information on available ciphers.
++If not specified, then a default list of ciphers will be used.
+ .It Cm hashalg Ns = Ns Ar algorithm
+ Selects a hash algorithm to use when printing SSHFP records using the
+ .Fl D
+@@ -111,6 +118,22 @@ Valid algorithms are
+ and
+ .Dq sha256 .
+ The default is to print both.
++.It Cm macs Ns = Ns Ar algorithms
++Specifies the message authentication codes (MACs) allowed and their order
++of preference.
++Multiple MACs must be comma-separated.
++See
++.Xr ssh_config 5
++for more information on available MACs.
++If not specified, then a default list of MACs will be used.
++.It Cm kexalgorithms Ns = Ns Ar algorithms
++Specifies the key exchange algorithms allowed and their order
++of preference.
++Multiple algorithms must be comma-separated.
++See
++.Xr ssh_config 5
++for more information on available algorithms.
++If not specified, then a default list of algorithms will be used.
+ .El
+ .It Fl p Ar port
+ Connect to
+diff --git a/ssh-keyscan.c b/ssh-keyscan.c
+index 3f3092e..bb59b55 100644
+--- a/ssh-keyscan.c
++++ b/ssh-keyscan.c
+@@ -82,6 +82,9 @@ int print_sshfp = 0;		/* Print SSHFP records instead of known_hosts */
+ int found_one = 0;		/* Successfully found a key */
+ 
+ int hashalg = -1;		/* Hash for SSHFP records or -1 for all */
++char *ciphers = NULL;		/* Ciphers or NULL for default list */
++char *macs = NULL;		/* MACs or NULL for default list */
++char *kexalgs = NULL;		/* KexAlgorithms or NULL for default list */
+ 
+ #define MAXMAXFD 256
+ 
+@@ -236,6 +239,17 @@ keygrab_ssh2(con *c)
+ 	char *myproposal[PROPOSAL_MAX] = { KEX_CLIENT };
+ 	int r;
+ 
++	if (kexalgs != NULL)
++		myproposal[PROPOSAL_KEX_ALGS] = kexalgs;
++	if (ciphers != NULL) {
++		myproposal[PROPOSAL_ENC_ALGS_CTOS] = ciphers;
++		myproposal[PROPOSAL_ENC_ALGS_STOC] = ciphers;
++	}
++	if (macs != NULL) {
++		myproposal[PROPOSAL_MAC_ALGS_CTOS] = macs;
++		myproposal[PROPOSAL_MAC_ALGS_CTOS] = macs;
++	}
++
+ 	switch (c->c_keytype) {
+ 	case KT_DSA:
+ 		myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS] = get_cert ?
+@@ -769,12 +783,25 @@ main(int argc, char **argv)
+ 			argv[fopt_count++] = optarg;
+ 			break;
+ 		case 'O':
+-			/* Maybe other misc options in the future too */
+-			if (strncmp(optarg, "hashalg=", 8) != 0)
++			if (strncasecmp(optarg, "hashalg=", 8) == 0) {
++				if ((hashalg = ssh_digest_alg_by_name(
++				    optarg + 8)) == -1)
++					fatal("Unsupported hash algorithm");
++			} else if (strncasecmp(optarg, "ciphers=", 8) == 0) {
++				ciphers = xstrdup(optarg + 8);
++				if (!ciphers_valid(ciphers))
++					fatal("Unsupported ciphers");
++			} else if (strncasecmp(optarg, "macs=", 5) == 0) {
++				macs = xstrdup(optarg + 5);
++				if (!mac_valid(macs))
++					fatal("Unsupported MACs");
++			} else if (strncasecmp(optarg,
++			    "kexalgorithms=", 14) == 0) {
++				kexalgs = xstrdup(optarg + 14);
++				if (!kex_names_valid(kexalgs))
++					fatal("Unsupported KexAlgorithms");
++                        } else
+ 				fatal("Unsupported -O option");
+-			if ((hashalg = ssh_digest_alg_by_name(
+-			    optarg + 8)) == -1)
+-				fatal("Unsupported hash algorithm");
+ 			break;
+ 		case 't':
+ 			get_keytypes = 0;
+-- 
+2.41.0
+

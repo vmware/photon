@@ -1,0 +1,2 @@
+g smmsp 26
+u smmsp 26 "Sendmail Daemon" /dev/null /bin/false

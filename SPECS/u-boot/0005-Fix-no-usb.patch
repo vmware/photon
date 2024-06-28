@@ -1,0 +1,37 @@
+From 81e89675ed049e8a5747fb49987178dcc0e0c3c7 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Thu, 10 Oct 2019 10:59:59 +0000
+Subject: [PATCH] If CONFIG_USB is not enabled then should not include usb
+ with-in BOOT_TARGET_DEVICES.
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ include/configs/rpi.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/include/configs/rpi.h b/include/configs/rpi.h
+index 77d2d54..13684ac 100644
+--- a/include/configs/rpi.h
++++ b/include/configs/rpi.h
+@@ -174,11 +174,18 @@
+ 	#define BOOT_TARGET_DHCP(func)
+ #endif
+ 
++#ifdef CONFIG_USB
+ #define BOOT_TARGET_DEVICES(func) \
+ 	BOOT_TARGET_MMC(func) \
+ 	BOOT_TARGET_USB(func) \
+ 	BOOT_TARGET_PXE(func) \
+ 	BOOT_TARGET_DHCP(func)
++#else
++#define BOOT_TARGET_DEVICES(func) \
++        BOOT_TARGET_MMC(func) \
++        BOOT_TARGET_PXE(func) \
++        BOOT_TARGET_DHCP(func)
++#endif
+ 
+ #include <config_distro_bootcmd.h>
+ 
+-- 
+2.19.0
+

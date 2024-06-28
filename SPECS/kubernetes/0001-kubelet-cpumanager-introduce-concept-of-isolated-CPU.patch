@@ -1,0 +1,726 @@
+From 9eb53daa27cf061597e8a7e58e34fc518dfa4379 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Sat, 19 Aug 2023 04:44:24 +0000
+Subject: [PATCH] kubelet cpumanager introduce concept of isolated CPUs
+
+Based on:
+https://opendev.org/starlingx/integ/src/branch/master/kubernetes/kubernetes-1.26.1/debian/deb_folder/patches/kubelet-cpumanager-introduce-concept-of-isolated-CPU.patch
+https://opendev.org/starlingx/integ/src/branch/master/kubernetes/kubernetes-1.26.1/debian/deb_folder/patches/enable-support-for-kubernetes-to-ignore-isolcpus.patch
+https://opendev.org/starlingx/integ/src/branch/master/kubernetes/kubernetes-1.26.1/debian/deb_folder/patches/kubelet-cpumanager-keep-normal-containers-off-reserv.patch
+by:
+Daniel Safta <daniel.safta@windriver.com>
+Jim Gauld <james.gauld@windriver.com>
+Chris Friesen <chris.friesen@windriver.com>
+Gleb Aronsky <gleb.aronsky@windriver.com>
+Ramesh Kumar Sivanandam <rameshkumar.sivanandam@windriver.com>
+Sachin Gopala Krishna <saching.krishna@windriver.com>
+
+This introduces the concept of "isolated CPUs", which are CPUs that
+have been isolated at the kernel level via the "isolcpus" kernel boot
+parameter.
+
+With this change CPUs listed in /sys/devices/system/cpu/isolated will
+be marked as "isolated CPUs", so kubelet will skip them over for
+"normal" CPU resource tracking.
+
+A plugin (outside the scope of this commit) will expose the isolated
+CPUs to kubelet via the device plugin API.
+
+If a pod specifies some number of "vmware.com/isolcpu" resources, the
+device manager will allocate them, so the container cpuset will be set
+to the isolated CPUs. Regular "cpu" can be also used to have mixed
+cpuset of isolated and non isolated CPUs.
+
+The main goal of this patch is to allow a mix of isolated and exclusive
+CPUs in the same container within the pod specification with precise
+control of isolcpus allocation.
+
+If the file "/etc/kubernetes/respect_isolcpus" exists, then kubelet
+will use isolcpus awareness and will exclude them from allocations.
+
+The admin user can then rely on the fact that CPU allocation is
+deterministic to ensure that the isolcpus they configure end up being
+allocated to the correct pods.
+
+[AM]
+The main differences comparing to Starlingx/Windriver implementation:
+1. Support for mixed cpuset to allocate isolated and non isolated CPUs
+   within the POD.
+2. Do not rely on reserved CPUs list, isolcpus mask used instead.
+3. Reserved CPUs kubelet parameter still required for static policy,
+   but our recomendation is to set to isolcpus mask. excludeReservedCPUs
+   propery is eliminated.
+4. Changed pod yaml property name to "vmware.com/isolcpu".
+5. Use /etc/kubernetes/respect_isolcpus file as a feature switch to
+   enable isolcpus support.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ pkg/kubelet/cm/container_manager_linux.go     |  1 +
+ pkg/kubelet/cm/cpumanager/cpu_manager.go      | 40 +++++++-
+ pkg/kubelet/cm/cpumanager/cpu_manager_test.go | 31 ++++--
+ pkg/kubelet/cm/cpumanager/policy_static.go    | 83 ++++++++++++++--
+ .../cm/cpumanager/policy_static_test.go       | 31 ++++--
+ pkg/kubelet/cm/devicemanager/manager_stub.go  | 99 +++++++++++++++++++
+ 6 files changed, 262 insertions(+), 23 deletions(-)
+ create mode 100644 pkg/kubelet/cm/devicemanager/manager_stub.go
+
+diff --git a/pkg/kubelet/cm/container_manager_linux.go b/pkg/kubelet/cm/container_manager_linux.go
+index 02cb34dd..ae8daf24 100644
+--- a/pkg/kubelet/cm/container_manager_linux.go
++++ b/pkg/kubelet/cm/container_manager_linux.go
+@@ -325,6 +325,7 @@ func NewContainerManager(mountUtil mount.Interface, cadvisorInterface cadvisor.I
+ 		cm.GetNodeAllocatableReservation(),
+ 		nodeConfig.KubeletRootDir,
+ 		cm.topologyManager,
++		cm.deviceManager,
+ 	)
+ 	if err != nil {
+ 		klog.ErrorS(err, "Failed to initialize cpu manager")
+diff --git a/pkg/kubelet/cm/cpumanager/cpu_manager.go b/pkg/kubelet/cm/cpumanager/cpu_manager.go
+index 443eecd2..4dd23ddb 100644
+--- a/pkg/kubelet/cm/cpumanager/cpu_manager.go
++++ b/pkg/kubelet/cm/cpumanager/cpu_manager.go
+@@ -19,7 +19,10 @@ package cpumanager
+ import (
+ 	"context"
+ 	"fmt"
++	"io/ioutil"
+ 	"math"
++	"os"
++	"strings"
+ 	"sync"
+ 	"time"
+ 
+@@ -33,6 +36,7 @@ import (
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpumanager/state"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpumanager/topology"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpuset"
++	"k8s.io/kubernetes/pkg/kubelet/cm/devicemanager"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/topologymanager"
+ 	"k8s.io/kubernetes/pkg/kubelet/config"
+ 	kubecontainer "k8s.io/kubernetes/pkg/kubelet/container"
+@@ -51,6 +55,32 @@ type policyName string
+ // cpuManagerStateFileName is the file name where cpu manager stores its state
+ const cpuManagerStateFileName = "cpu_manager_state"
+ 
++// get the system-level isolated CPUs
++func getIsolcpus() cpuset.CPUSet {
++	// This is a gross hack to basically turn on awareness of isolcpus to exclude
++	// isolated cpus from pods allocations.
++	if _, err := os.Stat("/etc/kubernetes/respect_isolcpus"); err != nil {
++		return cpuset.New()
++	}
++
++	klog.Infof("[cpumanager] turning on isolcpus awareness")
++	dat, err := ioutil.ReadFile("/sys/devices/system/cpu/isolated")
++	if err != nil {
++		klog.Errorf("[cpumanager] unable to read sysfs isolcpus subdir")
++		return cpuset.New()
++	}
++
++	// The isolated cpus string ends in a newline
++	cpustring := strings.TrimSuffix(string(dat), "\n")
++	cset, err := cpuset.Parse(cpustring)
++	if err != nil {
++		klog.Errorf("[cpumanager] unable to parse sysfs isolcpus string to cpuset")
++		return cpuset.New()
++	}
++
++	return cset
++}
++
+ // Manager interface provides methods for Kubelet to manage pod cpus.
+ type Manager interface {
+ 	// Start is called during Kubelet initialization.
+@@ -151,7 +181,8 @@ func (s *sourcesReadyStub) AddSource(source string) {}
+ func (s *sourcesReadyStub) AllReady() bool          { return true }
+ 
+ // NewManager creates new cpu manager based on provided policy
+-func NewManager(cpuPolicyName string, cpuPolicyOptions map[string]string, reconcilePeriod time.Duration, machineInfo *cadvisorapi.MachineInfo, specificCPUs cpuset.CPUSet, nodeAllocatableReservation v1.ResourceList, stateFileDirectory string, affinity topologymanager.Store) (Manager, error) {
++func NewManager(cpuPolicyName string, cpuPolicyOptions map[string]string, reconcilePeriod time.Duration, machineInfo *cadvisorapi.MachineInfo, specificCPUs cpuset.CPUSet, nodeAllocatableReservation v1.ResourceList, stateFileDirectory string, affinity topologymanager.Store, deviceManager devicemanager.Manager) (Manager, error) {
++
+ 	var topo *topology.CPUTopology
+ 	var policy Policy
+ 	var err error
+@@ -189,7 +220,12 @@ func NewManager(cpuPolicyName string, cpuPolicyOptions map[string]string, reconc
+ 		// exclusively allocated.
+ 		reservedCPUsFloat := float64(reservedCPUs.MilliValue()) / 1000
+ 		numReservedCPUs := int(math.Ceil(reservedCPUsFloat))
+-		policy, err = NewStaticPolicy(topo, numReservedCPUs, specificCPUs, affinity, cpuPolicyOptions)
++
++		// isolCPUs is the set of kernel-isolated CPUs.  They should be a subset of specificCPUs or
++		// of the CPUs that NewStaticPolicy() will pick if numReservedCPUs is set.  It's only in the
++		// argument list here for ease of testing, it's really internal to the policy.
++		isolCPUs := getIsolcpus()
++		policy, err = NewStaticPolicy(topo, numReservedCPUs, specificCPUs, isolCPUs, affinity, cpuPolicyOptions, deviceManager)
+ 		if err != nil {
+ 			return nil, fmt.Errorf("new static policy error: %w", err)
+ 		}
+diff --git a/pkg/kubelet/cm/cpumanager/cpu_manager_test.go b/pkg/kubelet/cm/cpumanager/cpu_manager_test.go
+index 250f1eb0..f7a4207e 100644
+--- a/pkg/kubelet/cm/cpumanager/cpu_manager_test.go
++++ b/pkg/kubelet/cm/cpumanager/cpu_manager_test.go
+@@ -37,6 +37,7 @@ import (
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpumanager/state"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpumanager/topology"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpuset"
++	"k8s.io/kubernetes/pkg/kubelet/cm/devicemanager"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/topologymanager"
+ )
+ 
+@@ -215,6 +216,7 @@ func makeMultiContainerPod(initCPUs, appCPUs []struct{ request, limit string })
+ }
+ 
+ func TestCPUManagerAdd(t *testing.T) {
++	testDM, _ := devicemanager.NewManagerStub()
+ 	testPolicy, _ := NewStaticPolicy(
+ 		&topology.CPUTopology{
+ 			NumCPUs:    4,
+@@ -229,8 +231,10 @@ func TestCPUManagerAdd(t *testing.T) {
+ 		},
+ 		0,
+ 		cpuset.New(),
++		cpuset.New(),
+ 		topologymanager.NewFakeManager(),
+-		nil)
++		nil,
++		testDM)
+ 	testCases := []struct {
+ 		description        string
+ 		updateErr          error
+@@ -479,8 +483,9 @@ func TestCPUManagerAddWithInitContainers(t *testing.T) {
+ 		},
+ 	}
+ 
++	testDM, _ := devicemanager.NewManagerStub()
+ 	for _, testCase := range testCases {
+-		policy, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, cpuset.New(), topologymanager.NewFakeManager(), nil)
++		policy, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, cpuset.New(), cpuset.New(), topologymanager.NewFakeManager(), nil, testDM)
+ 
+ 		mockState := &mockState{
+ 			assignments:   testCase.stAssignments,
+@@ -635,7 +640,9 @@ func TestCPUManagerGenerate(t *testing.T) {
+ 			}
+ 			defer os.RemoveAll(sDir)
+ 
+-			mgr, err := NewManager(testCase.cpuPolicyName, nil, 5*time.Second, machineInfo, cpuset.New(), testCase.nodeAllocatableReservation, sDir, topologymanager.NewFakeManager())
++			testDM, err := devicemanager.NewManagerStub()
++			mgr, err := NewManager(testCase.cpuPolicyName, nil, 5*time.Second, machineInfo, cpuset.New(), testCase.nodeAllocatableReservation, sDir, topologymanager.NewFakeManager(), testDM)
++
+ 			if testCase.expectedError != nil {
+ 				if !strings.Contains(err.Error(), testCase.expectedError.Error()) {
+ 					t.Errorf("Unexpected error message. Have: %s wants %s", err.Error(), testCase.expectedError.Error())
+@@ -705,6 +712,7 @@ func TestCPUManagerRemove(t *testing.T) {
+ }
+ 
+ func TestReconcileState(t *testing.T) {
++	testDM, _ := devicemanager.NewManagerStub()
+ 	testPolicy, _ := NewStaticPolicy(
+ 		&topology.CPUTopology{
+ 			NumCPUs:    8,
+@@ -723,8 +731,10 @@ func TestReconcileState(t *testing.T) {
+ 		},
+ 		0,
+ 		cpuset.New(),
++		cpuset.New(),
+ 		topologymanager.NewFakeManager(),
+-		nil)
++		nil,
++		testDM)
+ 
+ 	testCases := []struct {
+ 		description                  string
+@@ -1228,6 +1238,7 @@ func TestReconcileState(t *testing.T) {
+ // above test cases are without kubelet --reserved-cpus cmd option
+ // the following tests are with --reserved-cpus configured
+ func TestCPUManagerAddWithResvList(t *testing.T) {
++	testDM, _ := devicemanager.NewManagerStub()
+ 	testPolicy, _ := NewStaticPolicy(
+ 		&topology.CPUTopology{
+ 			NumCPUs:    4,
+@@ -1242,8 +1253,10 @@ func TestCPUManagerAddWithResvList(t *testing.T) {
+ 		},
+ 		1,
+ 		cpuset.New(0),
++		cpuset.New(),
+ 		topologymanager.NewFakeManager(),
+-		nil)
++		nil,
++		testDM)
+ 	testCases := []struct {
+ 		description        string
+ 		updateErr          error
+@@ -1355,7 +1368,8 @@ func TestCPUManagerHandlePolicyOptions(t *testing.T) {
+ 			}
+ 			defer os.RemoveAll(sDir)
+ 
+-			_, err = NewManager(testCase.cpuPolicyName, testCase.cpuPolicyOptions, 5*time.Second, machineInfo, cpuset.New(), nodeAllocatableReservation, sDir, topologymanager.NewFakeManager())
++			testDM, err := devicemanager.NewManagerStub()
++			_, err = NewManager(testCase.cpuPolicyName, testCase.cpuPolicyOptions, 5*time.Second, machineInfo, cpuset.New(), nodeAllocatableReservation, sDir, topologymanager.NewFakeManager(), testDM)
+ 			if err == nil {
+ 				t.Errorf("Expected error, but NewManager succeeded")
+ 			}
+@@ -1368,6 +1382,7 @@ func TestCPUManagerHandlePolicyOptions(t *testing.T) {
+ }
+ 
+ func TestCPUManagerGetAllocatableCPUs(t *testing.T) {
++	testDm, _ := devicemanager.NewManagerStub()
+ 	nonePolicy, _ := NewNonePolicy(nil)
+ 	staticPolicy, _ := NewStaticPolicy(
+ 		&topology.CPUTopology{
+@@ -1383,8 +1398,10 @@ func TestCPUManagerGetAllocatableCPUs(t *testing.T) {
+ 		},
+ 		1,
+ 		cpuset.New(0),
++		cpuset.New(),
+ 		topologymanager.NewFakeManager(),
+-		nil)
++		nil,
++		testDm)
+ 
+ 	testCases := []struct {
+ 		description        string
+diff --git a/pkg/kubelet/cm/cpumanager/policy_static.go b/pkg/kubelet/cm/cpumanager/policy_static.go
+index 7a82de03..384c13b5 100644
+--- a/pkg/kubelet/cm/cpumanager/policy_static.go
++++ b/pkg/kubelet/cm/cpumanager/policy_static.go
+@@ -18,6 +18,8 @@ package cpumanager
+ 
+ import (
+ 	"fmt"
++	"os"
++	"strconv"
+ 
+ 	v1 "k8s.io/api/core/v1"
+ 	utilfeature "k8s.io/apiserver/pkg/util/feature"
+@@ -28,6 +30,7 @@ import (
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpumanager/state"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpumanager/topology"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpuset"
++	"k8s.io/kubernetes/pkg/kubelet/cm/devicemanager"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/topologymanager"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/topologymanager/bitmask"
+ 	"k8s.io/kubernetes/pkg/kubelet/metrics"
+@@ -111,6 +114,10 @@ type staticPolicy struct {
+ 	// (e.g. only reserved pairs of core siblings) this set is expected to be
+ 	// identical to the reserved set.
+ 	reservedPhysicalCPUs cpuset.CPUSet
++	// set of isolated CPUs with isolcpus attribute
++	isolcpus cpuset.CPUSet
++	// parent containerManager, used to get device list
++	deviceManager devicemanager.Manager
+ 	// topology manager reference to get container Topology affinity
+ 	affinity topologymanager.Store
+ 	// set of CPUs to reuse across allocations in a pod
+@@ -125,7 +132,8 @@ var _ Policy = &staticPolicy{}
+ // NewStaticPolicy returns a CPU manager policy that does not change CPU
+ // assignments for exclusively pinned guaranteed containers after the main
+ // container process starts.
+-func NewStaticPolicy(topology *topology.CPUTopology, numReservedCPUs int, reservedCPUs cpuset.CPUSet, affinity topologymanager.Store, cpuPolicyOptions map[string]string) (Policy, error) {
++func NewStaticPolicy(topology *topology.CPUTopology, numReservedCPUs int, reservedCPUs cpuset.CPUSet, isolCPUs cpuset.CPUSet, affinity topologymanager.Store, cpuPolicyOptions map[string]string, deviceManager devicemanager.Manager) (Policy, error) {
++
+ 	opts, err := NewStaticPolicyOptions(cpuPolicyOptions)
+ 	if err != nil {
+ 		return nil, err
+@@ -138,8 +146,10 @@ func NewStaticPolicy(topology *topology.CPUTopology, numReservedCPUs int, reserv
+ 	klog.InfoS("Static policy created with configuration", "options", opts)
+ 
+ 	policy := &staticPolicy{
+-		topology:    topology,
+-		affinity:    affinity,
++		topology:        topology,
++		affinity:        affinity,
++		isolcpus:        isolCPUs,
++		deviceManager:   deviceManager,
+ 		cpusToReuse: make(map[string]cpuset.CPUSet),
+ 		options:     opts,
+ 	}
+@@ -175,6 +185,12 @@ func NewStaticPolicy(topology *topology.CPUTopology, numReservedCPUs int, reserv
+ 	policy.reservedCPUs = reserved
+ 	policy.reservedPhysicalCPUs = reservedPhysicalCPUs
+ 
++	if !isolCPUs.IsSubsetOf(reserved) {
++		klog.Errorf("[cpumanager] isolCPUs %v is not a subset of reserved %v", isolCPUs, reserved)
++		reserved = reserved.Union(isolCPUs)
++		klog.Warningf("[cpumanager] mismatch isolCPUs %v, force reserved %v", isolCPUs, reserved)
++	}
++
+ 	return policy, nil
+ }
+ 
+@@ -201,7 +217,12 @@ func (p *staticPolicy) validateState(s state.State) error {
+ 		}
+ 		// state is empty initialize
+ 		allCPUs := p.topology.CPUDetails.CPUs()
+-		s.SetDefaultCPUSet(allCPUs)
++		// Exclude isolated CPUs from the default CPUSet to keep containers off them
++		// unless explicitly affined.
++		s.SetDefaultCPUSet(allCPUs.Difference(p.isolcpus))
++		klog.Infof("[cpumanager] static policy: CPUSet: allCPUs:%v, isolcpus:%v, default:%v\n",
++			allCPUs, p.isolcpus, s.GetDefaultCPUSet())
++
+ 		return nil
+ 	}
+ 
+@@ -240,6 +261,7 @@ func (p *staticPolicy) validateState(s state.State) error {
+ 		}
+ 	}
+ 	totalKnownCPUs = totalKnownCPUs.Union(tmpCPUSets...)
++	totalKnownCPUs = totalKnownCPUs.Union(p.isolcpus)
+ 	if !totalKnownCPUs.Equals(p.topology.CPUDetails.CPUs()) {
+ 		return fmt.Errorf("current set of available CPUs \"%s\" doesn't match with CPUs in state \"%s\"",
+ 			p.topology.CPUDetails.CPUs().String(), totalKnownCPUs.String())
+@@ -288,7 +310,9 @@ func (p *staticPolicy) updateCPUsToReuse(pod *v1.Pod, container *v1.Container, c
+ 
+ func (p *staticPolicy) Allocate(s state.State, pod *v1.Pod, container *v1.Container) (rerr error) {
+ 	numCPUs := p.guaranteedCPUs(pod, container)
+-	if numCPUs == 0 {
++	isolcpus := p.podIsolCPUs(pod, container)
++	if numCPUs == 0  && isolcpus.Size() == 0 {
++		klog.Infof("[cpumanager] static policy: ZERO guaranteed or isolated CPUs requested (namespace: %s, pod UID: %s, pod: %s, container: %s)", pod.Namespace, string(pod.UID), pod.Name, container.Name)
+ 		// container belongs in the shared pool (nothing to do; use default cpuset)
+ 		return nil
+ 	}
+@@ -350,9 +374,19 @@ func (p *staticPolicy) Allocate(s state.State, pod *v1.Pod, container *v1.Contai
+ 		klog.ErrorS(err, "Unable to allocate CPUs", "pod", klog.KObj(pod), "containerName", container.Name, "numCPUs", numCPUs)
+ 		return err
+ 	}
++
++	if isolcpus.Size() > 0 {
++		klog.Infof("[cpumanager] allocated %d isolcpu(s) for (namespace: %s, pod UID: %s, pod: %s, container: %s); cpuset=%v",
++			isolcpus.Size(), pod.Namespace, string(pod.UID), pod.Name, container.Name, isolcpus)
++		cpuset = cpuset.Union(isolcpus)
++		numCPUs += isolcpus.Size()
++	}
++
+ 	s.SetCPUSet(string(pod.UID), container.Name, cpuset)
+ 	p.updateCPUsToReuse(pod, container, cpuset)
+-
++	klog.Infof("[cpumanager] guaranteed: AddContainer "+
++		"(namespace: %s, pod UID: %s, pod: %s, container: %s); numCPUS=%d, cpuset=%v",
++		pod.Namespace, string(pod.UID), pod.Name, container.Name, numCPUs, cpuset)
+ 	return nil
+ }
+ 
+@@ -374,6 +408,7 @@ func (p *staticPolicy) RemoveContainer(s state.State, podUID string, containerNa
+ 	cpusInUse := getAssignedCPUsOfSiblings(s, podUID, containerName)
+ 	if toRelease, ok := s.GetCPUSet(podUID, containerName); ok {
+ 		s.Delete(podUID, containerName)
++		toRelease = toRelease.Difference(p.isolcpus)
+ 		// Mutate the shared pool, adding released cpus.
+ 		toRelease = toRelease.Difference(cpusInUse)
+ 		s.SetDefaultCPUSet(s.GetDefaultCPUSet().Union(toRelease))
+@@ -653,6 +688,42 @@ func (p *staticPolicy) generateCPUTopologyHints(availableCPUs cpuset.CPUSet, reu
+ 	return hints
+ }
+ 
++// get the isolated CPUs (if any) from the devices associated with a specific container
++func (p *staticPolicy) podIsolCPUs(pod *v1.Pod, container *v1.Container) cpuset.CPUSet {
++	// This is a gross hack to basically turn on awareness of isolcpus to exclude
++	// isolated cpus from pods allocations.
++	if _, err := os.Stat("/etc/kubernetes/respect_isolcpus"); err != nil {
++		return cpuset.New()
++	}
++
++	// NOTE: This is required for TestStaticPolicyAdd() since makePod() does
++	// not create UID. We also need a way to properly stub devicemanager.
++	if len(string(pod.UID)) == 0 {
++		return cpuset.New()
++	}
++	resContDevices := p.deviceManager.GetDevices(string(pod.UID), container.Name)
++	cpuSet := cpuset.New()
++	for resourceName, resourceDevs := range resContDevices {
++		// this resource name needs to match the isolcpus device plugin
++		if resourceName == "vmware.com/isolcpu" {
++			for devID, _ := range resourceDevs {
++				cpuStrList := []string{devID}
++				if len(cpuStrList) > 0 {
++					// loop over the list of strings, convert each one to int, add to cpuset
++					for _, cpuStr := range cpuStrList {
++						cpu, err := strconv.Atoi(cpuStr)
++						if err != nil {
++							panic(err)
++						}
++						cpuSet = cpuSet.Union(cpuset.New(cpu))
++					}
++				}
++			}
++		}
++	}
++	return cpuSet
++}
++
+ // isHintSocketAligned function return true if numa nodes in hint are socket aligned.
+ func (p *staticPolicy) isHintSocketAligned(hint topologymanager.TopologyHint, minAffinitySize int) bool {
+ 	numaNodesBitMask := hint.NUMANodeAffinity.GetBits()
+diff --git a/pkg/kubelet/cm/cpumanager/policy_static_test.go b/pkg/kubelet/cm/cpumanager/policy_static_test.go
+index 2c88dee0..c0c95bfd 100644
+--- a/pkg/kubelet/cm/cpumanager/policy_static_test.go
++++ b/pkg/kubelet/cm/cpumanager/policy_static_test.go
+@@ -28,6 +28,7 @@ import (
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpumanager/state"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpumanager/topology"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/cpuset"
++	"k8s.io/kubernetes/pkg/kubelet/cm/devicemanager"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/topologymanager"
+ 	"k8s.io/kubernetes/pkg/kubelet/cm/topologymanager/bitmask"
+ )
+@@ -69,7 +70,8 @@ func (spt staticPolicyTest) PseudoClone() staticPolicyTest {
+ }
+ 
+ func TestStaticPolicyName(t *testing.T) {
+-	policy, _ := NewStaticPolicy(topoSingleSocketHT, 1, cpuset.New(), topologymanager.NewFakeManager(), nil)
++	testDM, _ := devicemanager.NewManagerStub()
++	policy, _ := NewStaticPolicy(topoSingleSocketHT, 1, cpuset.New(), cpuset.New(), topologymanager.NewFakeManager(), nil, testDM)
+ 
+ 	policyName := policy.Name()
+ 	if policyName != "static" {
+@@ -79,6 +81,7 @@ func TestStaticPolicyName(t *testing.T) {
+ }
+ 
+ func TestStaticPolicyStart(t *testing.T) {
++	testDM, _ := devicemanager.NewManagerStub()
+ 	testCases := []staticPolicyTest{
+ 		{
+ 			description: "non-corrupted state",
+@@ -145,7 +148,8 @@ func TestStaticPolicyStart(t *testing.T) {
+ 	}
+ 	for _, testCase := range testCases {
+ 		t.Run(testCase.description, func(t *testing.T) {
+-			p, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, cpuset.New(), topologymanager.NewFakeManager(), nil)
++			p, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, cpuset.New(), cpuset.New(), topologymanager.NewFakeManager(), nil, testDM)
++
+ 			policy := p.(*staticPolicy)
+ 			st := &mockState{
+ 				assignments:   testCase.stAssignments,
+@@ -614,7 +618,8 @@ func runStaticPolicyTestCase(t *testing.T, testCase staticPolicyTest) {
+ 	if testCase.reservedCPUs != nil {
+ 		cpus = testCase.reservedCPUs.Clone()
+ 	}
+-	policy, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, cpus, tm, testCase.options)
++	testDM, _ := devicemanager.NewManagerStub()
++	policy, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, cpus, cpuset.New(), tm, testCase.options, testDM)
+ 
+ 	st := &mockState{
+ 		assignments:   testCase.stAssignments,
+@@ -661,6 +666,7 @@ func runStaticPolicyTestCaseWithFeatureGate(t *testing.T, testCase staticPolicyT
+ }
+ 
+ func TestStaticPolicyReuseCPUs(t *testing.T) {
++	testDM, _ := devicemanager.NewManagerStub()
+ 	testCases := []struct {
+ 		staticPolicyTest
+ 		expCSetAfterAlloc  cpuset.CPUSet
+@@ -685,7 +691,7 @@ func TestStaticPolicyReuseCPUs(t *testing.T) {
+ 	}
+ 
+ 	for _, testCase := range testCases {
+-		policy, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, cpuset.New(), topologymanager.NewFakeManager(), nil)
++		policy, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, cpuset.New(), cpuset.New(), topologymanager.NewFakeManager(), nil, testDM)
+ 
+ 		st := &mockState{
+ 			assignments:   testCase.stAssignments,
+@@ -717,6 +723,7 @@ func TestStaticPolicyReuseCPUs(t *testing.T) {
+ }
+ 
+ func TestStaticPolicyRemove(t *testing.T) {
++	testDM, _ := devicemanager.NewManagerStub()
+ 	testCases := []staticPolicyTest{
+ 		{
+ 			description:   "SingleSocketHT, DeAllocOneContainer",
+@@ -775,7 +782,7 @@ func TestStaticPolicyRemove(t *testing.T) {
+ 	}
+ 
+ 	for _, testCase := range testCases {
+-		policy, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, cpuset.New(), topologymanager.NewFakeManager(), nil)
++		policy, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, cpuset.New(), cpuset.New(), topologymanager.NewFakeManager(), nil, testDM)
+ 
+ 		st := &mockState{
+ 			assignments:   testCase.stAssignments,
+@@ -797,6 +804,7 @@ func TestStaticPolicyRemove(t *testing.T) {
+ }
+ 
+ func TestTopologyAwareAllocateCPUs(t *testing.T) {
++	testDM, _ := devicemanager.NewManagerStub()
+ 	testCases := []struct {
+ 		description     string
+ 		topo            *topology.CPUTopology
+@@ -865,7 +873,8 @@ func TestTopologyAwareAllocateCPUs(t *testing.T) {
+ 		},
+ 	}
+ 	for _, tc := range testCases {
+-		p, _ := NewStaticPolicy(tc.topo, 0, cpuset.New(), topologymanager.NewFakeManager(), nil)
++		p, _ := NewStaticPolicy(tc.topo, 0, cpuset.New(), cpuset.New(), topologymanager.NewFakeManager(), nil, testDM)
++
+ 		policy := p.(*staticPolicy)
+ 		st := &mockState{
+ 			assignments:   tc.stAssignments,
+@@ -898,6 +907,7 @@ type staticPolicyTestWithResvList struct {
+ 	topo            *topology.CPUTopology
+ 	numReservedCPUs int
+ 	reserved        cpuset.CPUSet
++	isolcpus        cpuset.CPUSet
+ 	stAssignments   state.ContainerCPUAssignments
+ 	stDefaultCPUSet cpuset.CPUSet
+ 	pod             *v1.Pod
+@@ -908,6 +918,7 @@ type staticPolicyTestWithResvList struct {
+ }
+ 
+ func TestStaticPolicyStartWithResvList(t *testing.T) {
++	testDM, _ := devicemanager.NewManagerStub()
+ 	testCases := []staticPolicyTestWithResvList{
+ 		{
+ 			description:     "empty cpuset",
+@@ -939,7 +950,7 @@ func TestStaticPolicyStartWithResvList(t *testing.T) {
+ 	}
+ 	for _, testCase := range testCases {
+ 		t.Run(testCase.description, func(t *testing.T) {
+-			p, err := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, testCase.reserved, topologymanager.NewFakeManager(), nil)
++			p, err := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, testCase.reserved, cpuset.NewCPUSet(), topologymanager.NewFakeManager(), nil, testDM)
+ 			if !reflect.DeepEqual(err, testCase.expNewErr) {
+ 				t.Errorf("StaticPolicy Start() error (%v). expected error: %v but got: %v",
+ 					testCase.description, testCase.expNewErr, err)
+@@ -978,6 +989,7 @@ func TestStaticPolicyAddWithResvList(t *testing.T) {
+ 			topo:            topoSingleSocketHT,
+ 			numReservedCPUs: 1,
+ 			reserved:        cpuset.New(0),
++			isolcpus:        cpuset.New(),
+ 			stAssignments:   state.ContainerCPUAssignments{},
+ 			stDefaultCPUSet: cpuset.New(0, 1, 2, 3, 4, 5, 6, 7),
+ 			pod:             makePod("fakePod", "fakeContainer2", "8000m", "8000m"),
+@@ -990,6 +1002,7 @@ func TestStaticPolicyAddWithResvList(t *testing.T) {
+ 			topo:            topoSingleSocketHT,
+ 			numReservedCPUs: 2,
+ 			reserved:        cpuset.New(0, 1),
++			isolcpus:        cpuset.New(),
+ 			stAssignments:   state.ContainerCPUAssignments{},
+ 			stDefaultCPUSet: cpuset.New(0, 1, 2, 3, 4, 5, 6, 7),
+ 			pod:             makePod("fakePod", "fakeContainer2", "1000m", "1000m"),
+@@ -1002,6 +1015,7 @@ func TestStaticPolicyAddWithResvList(t *testing.T) {
+ 			topo:            topoSingleSocketHT,
+ 			numReservedCPUs: 2,
+ 			reserved:        cpuset.New(0, 1),
++			isolcpus:        cpuset.New(),
+ 			stAssignments: state.ContainerCPUAssignments{
+ 				"fakePod": map[string]cpuset.CPUSet{
+ 					"fakeContainer100": cpuset.New(2, 3, 6, 7),
+@@ -1015,8 +1029,9 @@ func TestStaticPolicyAddWithResvList(t *testing.T) {
+ 		},
+ 	}
+ 
++	testDM, _ := devicemanager.NewManagerStub()
+ 	for _, testCase := range testCases {
+-		policy, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, testCase.reserved, topologymanager.NewFakeManager(), nil)
++		policy, _ := NewStaticPolicy(testCase.topo, testCase.numReservedCPUs, testCase.reserved, testCase.isolcpus, topologymanager.NewFakeManager(), nil, testDM)
+ 
+ 		st := &mockState{
+ 			assignments:   testCase.stAssignments,
+diff --git a/pkg/kubelet/cm/devicemanager/manager_stub.go b/pkg/kubelet/cm/devicemanager/manager_stub.go
+new file mode 100644
+index 00000000..e6874f88
+--- /dev/null
++++ b/pkg/kubelet/cm/devicemanager/manager_stub.go
+@@ -0,0 +1,99 @@
++/*
++Copyright 2017 The Kubernetes Authors.
++
++Licensed under the Apache License, Version 2.0 (the "License");
++you may not use this file except in compliance with the License.
++You may obtain a copy of the License at
++
++    http://www.apache.org/licenses/LICENSE-2.0
++
++Unless required by applicable law or agreed to in writing, software
++distributed under the License is distributed on an "AS IS" BASIS,
++WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++See the License for the specific language governing permissions and
++limitations under the License.
++*/
++
++package devicemanager
++
++import (
++	v1 "k8s.io/api/core/v1"
++	"k8s.io/kubernetes/pkg/kubelet/cm/topologymanager"
++	"k8s.io/kubernetes/pkg/kubelet/config"
++	"k8s.io/kubernetes/pkg/kubelet/lifecycle"
++	"k8s.io/kubernetes/pkg/kubelet/pluginmanager/cache"
++	schedulerframework "k8s.io/kubernetes/pkg/scheduler/framework"
++)
++
++// ManagerStub provides a simple stub implementation for the Device Manager.
++type ManagerStub struct{}
++
++// NewManagerStub creates a ManagerStub.
++func NewManagerStub() (*ManagerStub, error) {
++	return &ManagerStub{}, nil
++}
++
++// Start simply returns nil.
++func (h *ManagerStub) Start(activePods ActivePodsFunc, sourcesReady config.SourcesReady) error {
++	return nil
++}
++
++// Stop simply returns nil.
++func (h *ManagerStub) Stop() error {
++	return nil
++}
++
++// Allocate simply returns nil.
++func (h *ManagerStub) Allocate(pod *v1.Pod, container *v1.Container) error {
++	return nil
++}
++
++// UpdatePluginResources simply returns nil.
++func (h *ManagerStub) UpdatePluginResources(node *schedulerframework.NodeInfo, attrs *lifecycle.PodAdmitAttributes) error {
++	return nil
++}
++
++// GetDeviceRunContainerOptions simply returns nil.
++func (h *ManagerStub) GetDeviceRunContainerOptions(pod *v1.Pod, container *v1.Container) (*DeviceRunContainerOptions, error) {
++	return nil, nil
++}
++
++// GetCapacity simply returns nil capacity and empty removed resource list.
++func (h *ManagerStub) GetCapacity() (v1.ResourceList, v1.ResourceList, []string) {
++	return nil, nil, []string{}
++}
++
++// GetWatcherHandler returns plugin watcher interface
++func (h *ManagerStub) GetWatcherHandler() cache.PluginHandler {
++	return nil
++}
++
++// GetTopologyHints returns an empty TopologyHint map
++func (h *ManagerStub) GetTopologyHints(pod *v1.Pod, container *v1.Container) map[string][]topologymanager.TopologyHint {
++	return map[string][]topologymanager.TopologyHint{}
++}
++
++// GetPodTopologyHints returns an empty TopologyHint map
++func (h *ManagerStub) GetPodTopologyHints(pod *v1.Pod) map[string][]topologymanager.TopologyHint {
++	return map[string][]topologymanager.TopologyHint{}
++}
++
++// GetDevices returns nil
++func (h *ManagerStub) GetDevices(_, _ string) ResourceDeviceInstances {
++	return nil
++}
++
++// GetAllocatableDevices returns nothing
++func (h *ManagerStub) GetAllocatableDevices() ResourceDeviceInstances {
++	return nil
++}
++
++// ShouldResetExtendedResourceCapacity returns false
++func (h *ManagerStub) ShouldResetExtendedResourceCapacity() bool {
++	return false
++}
++
++// UpdateAllocatedDevices returns nothing
++func (h *ManagerStub) UpdateAllocatedDevices() {
++	return
++}
+-- 
+2.39.0
+

@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index af9701c..974f9d8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -148,7 +148,7 @@ gdisk:	$(LIB_OBJS) gdisk.o gpttext.o
+ 	$(CXX) $(LIB_OBJS) gdisk.o gpttext.o $(LDFLAGS) $(LDLIBS) $(FATBINFLAGS) -o gdisk$(FN_EXTENSION)
+ 
+ cgdisk: $(LIB_OBJS) cgdisk.o gptcurses.o
+-	$(CXX) $(LIB_OBJS) cgdisk.o gptcurses.o $(LDFLAGS) $(LDLIBS) $(CGDISK_LDLIBS) -o cgdisk$(FN_EXTENSION)
++	$(CXX) $(LIB_OBJS) cgdisk.o gptcurses.o $(LDFLAGS) -ltinfo $(LDLIBS) $(CGDISK_LDLIBS) -o cgdisk$(FN_EXTENSION)
+ 
+ sgdisk: $(LIB_OBJS) sgdisk.o gptcl.o
+ 	$(CXX) $(LIB_OBJS) sgdisk.o gptcl.o $(LDFLAGS) $(LDLIBS) $(SGDISK_LDLIBS) $(THINBINFLAGS) -o sgdisk$(FN_EXTENSION)

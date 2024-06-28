@@ -1,0 +1,84 @@
+From fddeaf94ebd560370a445afc34b591ae044703e3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Sun, 12 Feb 2023 16:16:01 +0000
+Subject: [PATCH] Make `synce4l -v` option actually work
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ Makefile  | 10 +++++++++-
+ synce4l.c | 10 +++++++---
+ util.h    |  3 +++
+ 3 files changed, 19 insertions(+), 4 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 6472f52..7b2fe14 100644
+--- a/Makefile
++++ b/Makefile
+@@ -11,8 +11,16 @@
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ 
++VERSION := "$(shell git describe --abbrev=4 --dirty --always --tags)"
++ifndef VERSION
++  $(error VERSION is unset)
++endif
++ifeq ($(VERSION), "")
++  $(error VERSION is empty)
++endif
++
+ CC	= gcc
+-CFLAGS	= -Wall $(EXTRA_CFLAGS) -pthread
++CFLAGS	= -Wall $(EXTRA_CFLAGS) -pthread -DVERSION=$(VERSION)
+ LDLIBS	= -lm -lrt -pthread $(EXTRA_LDFLAGS)
+ 
+ OBJS	= esmc_socket.o synce_clock.o synce_dev.o synce_dev_ctrl.o \
+diff --git a/synce4l.c b/synce4l.c
+index a8eabd5..9ee5c2a 100644
+--- a/synce4l.c
++++ b/synce4l.c
+@@ -15,6 +15,7 @@
+ #include "synce_clock.h"
+ #include "config.h"
+ #include "print.h"
++#include "util.h"
+ 
+ static void usage(char *progname)
+ {
+@@ -40,9 +41,12 @@ static void synce4l_cleanup(struct config *cfg)
+ 		config_destroy(cfg);
+ }
+ 
+-static void version_show()
++static void version_show(void)
+ {
+-	// TODO: add version
++#ifndef VERSION
++	#error VERSION macro not defined, failing compilation.
++#endif
++	printf("synce4l version: %s\n", xstr(VERSION));
+ }
+ 
+ int unused()
+@@ -89,7 +93,7 @@ int main(int argc, char *argv[])
+ 			config_set_int(cfg, "use_syslog", 0);
+ 			break;
+ 		case 'v':
+-			version_show(stdout);
++			version_show();
+ 			synce4l_cleanup(cfg);
+ 			return 0;
+ 		case 'h':
+diff --git a/util.h b/util.h
+index ecb8921..6bc24c4 100644
+--- a/util.h
++++ b/util.h
+@@ -30,6 +30,9 @@
+ 
+ #include "address.h"
+ 
++#define xstr(s)	str(s)
++#define str(s)	#s
++
+ #define PACKED __attribute__((packed))
+ 
+ #define MAX_PRINT_BYTES 16

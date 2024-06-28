@@ -1,0 +1,30 @@
+From 4614db40ef55939f3a1a43099272afc15fe7b3d8 Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <bguruswamy@vmware.com>
+Date: Thu, 8 Jun 2023 14:09:57 +0530
+Subject: [PATCH] In photon 5.0 .rpm.lock file path has changed
+
+In photon 5.0 .rpm.lock file path has changed to
+/usr/lib/sysimage/rpm/.rpm.lock, modified the same in
+audit.STIG.rules.
+
+Signed-off-by: Guruswamy Basavaiah <bguruswamy@vmware.com>
+---
+ templates/audit.STIG.rules | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/templates/audit.STIG.rules b/templates/audit.STIG.rules
+index c6d470f..d61db6e 100644
+--- a/templates/audit.STIG.rules
++++ b/templates/audit.STIG.rules
+@@ -56,7 +56,7 @@
+ -a always,exit -F path=/usr/sbin/sendmail -F perm=x -F auid>=1000 -F auid!=unset -F key=privileged
+ -a always,exit -F path=/usr/sbin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=unset -F key=privileged
+ -a always,exit -F path=/usr/sbin/usernetctl -F perm=x -F auid>=1000 -F auid!=unset -F key=privileged
+--a always,exit -F path=/var/lib/rpm/.rpm.lock -F perm=x -F auid>=1000 -F auid!=unset -F key=privileged
++-a always,exit -F path=/usr/lib/sysimage/rpm/.rpm.lock -F perm=x -F auid>=1000 -F auid!=unset -F key=privileged
+ 
+ # PHTN-50-000173 audit failed logons
+ -w /var/log/faillog -p wa -k logons
+-- 
+2.25.1
+

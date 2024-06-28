@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nfspod
+  labels:
+    app: nfspod
+spec:
+  restartPolicy: Never
+  containers:
+  - name: nfs-copy
+    image: satyarajesh/k8sphoton:v3
+    ports:
+    - containerPort: 80
+    securityContext:
+      privileged: true
+    workingDir: /root
+    volumeMounts:
+    - name: nfspod
+      mountPath: /root
+    - name: sys
+      mountPath: /sys
+      readOnly: false
+    command: ["/bin/bash"]
+    args: ["-c", "tail -f /dev/null"]
+  volumes:
+  - name: nfspod
+    persistentVolumeClaim:
+      claimName: nfspod
+  - name: sys
+    hostPath:
+      path: /sys

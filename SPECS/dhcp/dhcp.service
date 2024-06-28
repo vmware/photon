@@ -1,0 +1,11 @@
+[Unit]
+Description=ISC DHCP Server
+Documentation=man:dhcpd(8) man:dhcpd.conf(5)
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/default/dhcpd
+ExecStart=/usr/sbin/dhcpd -f --no-pid $DHCPD_OPTS
+
+[Install]
+WantedBy=multi-user.target

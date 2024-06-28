@@ -1,0 +1,27 @@
+{
+    "packages": [
+        "minimal",
+        "linux",
+        "linux-esx",
+        "initramfs",
+        "build-essential",
+        "go",
+        "git",
+        "tar",
+        "grub2",
+        "grub2-efi",
+        "less",
+        "device-mapper",
+        "kpartx",
+        "openssl-devel",
+        "fuse-devel",
+        "python3-pip",
+        "createrepo_c",
+        "texinfo",
+        "wget",
+        "sudo"
+    ],
+    "packages_x86_64": [
+        "grub2-pc"
+    ]
+}

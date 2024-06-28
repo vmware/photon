@@ -1,0 +1,59 @@
+From d06454cd6da345e80150be805ca3ae48197747b2 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Fri, 1 Oct 2021 18:43:48 +0530
+Subject: [PATCH] commit buffer cache to disk after ending rpm transaction
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ lib/rpmts.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/lib/rpmts.c b/lib/rpmts.c
+index a517a8e..2f7efca 100644
+--- a/lib/rpmts.c
++++ b/lib/rpmts.c
+@@ -71,7 +71,7 @@ int rpmtsCloseDB(rpmts ts)
+     int rc = 0;
+ 
+     if (ts->rdb != NULL) {
+-	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBGET), 
++	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBGET),
+ 			rpmdbOp(ts->rdb, RPMDB_OP_DBGET));
+ 	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBPUT),
+ 			rpmdbOp(ts->rdb, RPMDB_OP_DBPUT));
+@@ -692,7 +692,7 @@ static int uintCmp(unsigned int a, unsigned int b)
+     return (a != b);
+ }
+ 
+-/* "hash"function*/ 
++/* "hash"function*/
+ static unsigned int uintId(unsigned int a)
+ {
+     return a;
+@@ -1113,7 +1113,7 @@ rpmts rpmtsCreate(void)
+ 	tmp = rpmExpand("%{_install_langs}", NULL);
+ 	if (tmp && *tmp != '%') {
+ 	    ARGV_t langs = NULL;
+-	    argvSplit(&langs, tmp, ":");	
++	    argvSplit(&langs, tmp, ":");
+ 	    /* If we'll be installing all languages anyway, don't bother */
+ 	    for (ARGV_t l = langs; *l; l++) {
+ 		if (rstreq(*l, "all")) {
+@@ -1241,12 +1241,13 @@ rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
+ 	if (txn->flags & RPMTXN_WRITE)
+ 	    rpmsqBlock(SIG_BLOCK);
+     }
+-    
++
+     return txn;
+ }
+ 
+ rpmtxn rpmtxnEnd(rpmtxn txn)
+ {
++    sync();
+     if (txn) {
+ 	rpmlockRelease(txn->lock);
+ 	if (txn->flags & RPMTXN_WRITE)
+-- 
+2.31.1
+

@@ -1,0 +1,21 @@
+diff -up Crypt-SSLeay-0.72/SSLeay.xs.orig Crypt-SSLeay-0.72/SSLeay.xs
+--- Crypt-SSLeay-0.72/SSLeay.xs.orig	2022-03-22 14:21:52.059717460 +0100
++++ Crypt-SSLeay-0.72/SSLeay.xs	2022-03-22 14:23:22.872218881 +0100
+@@ -149,7 +149,7 @@ SSL_CTX_new(packname, ssl_version)
+             ctx = SSL_CTX_new(SSLv23_client_method());
+         }
+         else if(ssl_version == 3) {
+-            ctx = SSL_CTX_new(SSLv3_client_method());
++            ctx = SSL_CTX_new(TLS_client_method());
+         }
+         else {
+ #if !defined OPENSSL_NO_SSL2 && OPENSSL_VERSION_NUMBER < 0x10100000L
+@@ -157,7 +157,7 @@ SSL_CTX_new(packname, ssl_version)
+             ctx = SSL_CTX_new(SSLv2_client_method());
+ #else
+             /* v3 is the default */
+-            ctx = SSL_CTX_new(SSLv3_client_method());
++            ctx = SSL_CTX_new(TLS_client_method());
+ #endif
+         }
+ 

@@ -1,0 +1,11 @@
+{
+    "packages": [
+        "minimal",
+        "linux",
+        "linux-esx",
+        "initramfs",
+        "lvm2",
+        "less",
+        "sudo"
+    ]
+}

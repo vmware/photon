@@ -1,0 +1,1106 @@
+#!/bin/bash
+
+set -o pipefail
+
+if [[ "$EUID" -ne 0 ]]; then
+    echo "Please run as root user"
+    exit 1
+fi
+
+_ROOT=()
+EFI=()
+SETS=()
+
+A_UUID_ROOT=""
+B_UUID_ROOT=""
+
+FSTAB="etc/fstab"
+GRUB_CFG="boot/grub2/grub.cfg"
+
+MNTPT_ROOT="/mnt/abupdate" # mount all shadow partitions as subdirectories of this dir
+MNTPT_CLEAN="/mnt/ab-clean"
+MNTPT_EFI="$MNTPT_ROOT/boot/efi"
+
+BOOT_TYPE="" # e.g BIOS, EFI, BOTH
+CONFIG_BOOT_TYPE="" # used to preserve config file value of BOOT_TYPE
+
+CONFIG_FILE="/etc/abupdate.conf"
+PHOTON_CFG="/boot/photon.cfg"
+
+TDNF_CONFIG=""
+PKG_LIST=""
+
+ARCH=$(uname -m) # e.g aarch64, x86_64
+
+# wrapper for umount
+# arg 1 - directory/device/partition to unmount
+unmount() {
+    if ! umount "$1"; then
+        echo "Failed to unmount shadow $1 partition, attempting lazy unmount"
+        if ! umount -l "$1"; then
+            echo "ERROR: Failed to lazily unmount $1"
+            exit 1
+        else
+            echo "Lazy unmount of $1 successful"
+        fi
+    fi
+}
+
+# prints error message and then exits
+error() {
+    if [[ -z "$1" ]]; then
+        echo "Error! Exiting." 1>&2
+    else
+        echo "ERROR: $1" 1>&2
+    fi
+
+    # unmount B filesystem
+    local fs
+    local elem
+    local psuedo_filesystems=("proc" "dev" "sys" "tmp" "run")
+    for fs in "${psuedo_filesystems[@]}"; do
+        check_if_mntpt "${MNTPT_ROOT}/$fs" && unmount "$MNTPT_ROOT/$fs"
+    done
+
+    for elem in "${SETS[@]}"; do
+        local mnt_pt="${elem}[2]"
+        if [[ ! "$elem" == "_ROOT" ]] && check_if_mntpt "${MNTPT_ROOT}/${!mnt_pt}"; then
+            local mnt_pt="${elem}[2]"
+            unmount "${MNTPT_ROOT}/${!mnt_pt}"
+        fi
+    done
+
+    if check_if_mntpt "$MNTPT_ROOT"; then
+        unmount "$MNTPT_ROOT"
+    fi
+
+    exit 1
+}
+
+# parse the command line arguments, flow control
+parse_cmdline_args() {
+     case "$1" in
+        # auto initialize /etc/abupdate.conf
+        init)
+            init_cfg
+        ;;
+        # deploy image into shadow set with a tarball
+        deploy)
+            read_cfg 1
+            shift
+            deploy_image "$1"
+        ;;
+        # mount shadow partition set
+        mount)
+            read_cfg 1
+            mount_b_partition
+        ;;
+        # unmount shadow partition set
+        unmount)
+            read_cfg 1
+            unmount_b_partition
+        ;;
+        # sync a and b partition sets
+        sync)
+            read_cfg 1
+            mirror_partitions
+        ;;
+        # clear out shadow partition sets
+        clean)
+            read_cfg 1
+            shift
+            if [[ -z "$1" ]]; then
+                clean_shadow_partitions "${SETS[@]}"
+            else
+                clean_shadow_partitions "$@"
+            fi
+        ;;
+        # copies partition a to b, and updates the packages
+        update)
+            read_cfg 1
+            shift
+            update "$@"
+        ;;
+        # install/uninstall specific package into shadow partition
+        install|uninstall)
+            read_cfg 1
+            package_wrapper "$@"
+        ;;
+        # switches to B partition and kexec boots from there
+        switch)
+            read_cfg 1
+            switch
+        ;;
+        finish)
+            read_cfg 1
+            # if booted properly into the new kernel, finalize it by editing bootloader
+            finish_cap_check
+            finalize
+
+            # only need to run this once
+            # make sure it is disabled, otherwise this will run on every boot
+            systemctl disable abupdate.service
+        ;;
+        check)
+            read_cfg 1
+            # run sanity checks
+            check
+        ;;
+        help)
+            help_menu 0
+        ;;
+        *)
+            help_menu 1
+        ;;
+    esac
+}
+
+# Parse package list given to update/(un)install commands, and
+# extract the TDNF config file if it is included (with a -c flag)
+# arg 1 - package list passed to install/uninstall/update commands
+parse_pkg_list() {
+    if [[ $PACKAGE_MANAGER == "RPM" ]]; then
+        PKG_LIST="$@"
+        return
+    fi
+
+    # remove references to -c /path/to/config if TDNF_CONFIG is specified
+    if [[ -n "$TDNF_CONFIG" ]]; then
+        while (( "$#" )); do
+            if [[ "$1" == "-c" ]]; then
+                TDNF_CONFIG="$2"
+                shift
+            else
+                PKG_LIST="$PKG_LIST $1"
+            fi
+            shift
+        done
+    else
+        PKG_LIST="$@"
+    fi
+}
+
+# wrapper function to handle update/remove/install of packages to shadow partition set
+# arg 1: base command given to abupdate - install/uninstall/update
+# arg 2: rest of arguments passed to abupdate
+package_wrapper() {
+    # first opt should be the base command - ex) install, remove, update
+    local pkg_manager_opts=$1
+    [[ "$1" == "uninstall" ]] && pkg_manager_opts="remove"
+    shift
+
+    mount_b_partition
+
+    echo "Running update/install sanity checks..."
+    update_sanity_checks
+    echo "Looks good."
+
+    parse_pkg_list "$@"
+
+    if [[ "$PACKAGE_MANAGER" == "TDNF" ]]; then
+        pkg_manager_opts="$pkg_manager_opts -y --installroot $MNTPT_ROOT"
+        [[ -n "$TDNF_CONFIG" ]] && pkg_manager_opts="$pkg_manager_opts -c $TDNF_CONFIG"
+        tdnf $pkg_manager_opts $PKG_LIST || error
+    else
+        case "$pkg_manager_opts" in
+            install|update)
+                pkg_manager_opts="-Uv"
+            ;;
+            uninstall|remove)
+                pkg_manager_opts="-ev"
+            ;;
+        esac
+        pkg_manager_opts="$pkg_manager_opts --root=$MNTPT_ROOT"
+        rpm $pkg_manager_opts $PKG_LIST || error
+    fi
+
+    echo "Package operation completed successfully"
+}
+
+# deploy whole OS image to shadow partition set
+# arg 1 - image filename (tarball)
+deploy_image() {
+    local tar_name
+    clean_shadow_partitions "${SETS[@]}"
+
+    #TODO: Add a flag to keep b partition mounted if it was mounted previously
+
+    # mount all shadow partitions to correct relative locations
+    mount_b_partition "no_pseudo"
+
+    cp -p "$1" "$MNTPT_ROOT"
+    pushd "$MNTPT_ROOT" || error
+    tar_name=$(basename "$1")
+    tar -xf "$tar_name" || error "Failed to unpack tarball"
+    popd || error
+
+    echo "Successfully deployed tarball image to shadow partition set"
+    unmount_b_partition
+}
+
+# merge any empty files from /etc dir
+merge_etc() {
+    # delete empty files, so we can transfer them with rsync
+    for file in "$MNTPT_ROOT"/etc/*; do
+        if [[ -f $file ]] && [[ -s $MNTPT_ROOT/$file ]]; then
+            rm "$file"
+        fi
+    done
+    rsync -aHx --ignore-existing /etc/ "$MNTPT_ROOT"/etc/
+}
+
+# clear out all specified partitions
+# take in a list of set names to clear out
+# or clears out all if none specified
+clean_shadow_partitions() {
+    unmount_b_partition
+    mkdir -p "$MNTPT_CLEAN"
+    while [[ -n "$1" ]]; do
+        local B_partuuid="${1^^}[1]"
+        if [[ -n "${!B_partuuid}" ]]; then
+            echo "Cleaning $1 - partuuid = ${!B_partuuid}"
+            mount PARTUUID="${!B_partuuid}" "$MNTPT_CLEAN" || error "Failed to mount shadow $1 partition"
+            rm -rf "${MNTPT_CLEAN:?}"/* || error "Failed to clean all files in shadow $1 partition"
+            unmount "$MNTPT_CLEAN"
+        else
+            echo "Partition set $1 not found, skipping"
+        fi
+        shift
+    done
+
+    echo "All partitions cleaned successfully"
+}
+
+check() {
+    echo "Running checks..."
+
+    mount_b_partition
+
+    echo "Checking filesystem types match"
+    fs_type_check
+    echo "Filesystem types match."
+
+    echo "Checking that B partition is bootable"
+    bootable_check
+    echo "B partition is bootable"
+
+    echo "Checking that B partition is big enough"
+    size_check
+    echo "B partition has sufficient space"
+
+    echo "checking required tools are installed"
+    capability_check
+    echo "all required tools are installed"
+
+    echo "Checks passed. Everything looks good."
+
+    unmount_b_partition
+}
+
+# check for tools to finalize
+finish_cap_check() {
+    if [[ $BOOT_TYPE == "EFI" ]] || [[ $BOOT_TYPE == "BOTH" ]]; then
+        command -v efibootmgr &> /dev/null || error "efibootmgr not found. Can be installed with \"tdnf install efibootmgr\""
+    fi
+    if [[ "$BOOT_TYPE" == "BIOS" ]] || [[ $BOOT_TYPE == "BOTH" ]]; then
+        command -v grub2-install &> /dev/null || error "grub2-install not found. Can be installed with \"tdnf install grub2-pc\""
+    fi
+}
+
+# check if we have tools for switching
+switch_cap_check() {
+    command -v rsync &> /dev/null || error "rsync not found. Can be installed with \"tdnf install rsync\""
+    command -v kexec &> /dev/null || error "kexec not found. Can be installed with \"tdnf install kexec-tools\""
+    if [[ "$AUTO_FINISH" == "YES" ]] || [[ "$AUTO_FINISH" == "Y" ]]; then
+        mount_b_partition
+        export BOOT_TYPE=$BOOT_TYPE
+        export MNTPT_ROOT=$MNTPT_ROOT
+        export SETS=( "${SETS[@]}" )
+        export -f finish_cap_check
+        export -f error
+        export -f check_if_mntpt
+        chroot $MNTPT_ROOT /bin/bash -c finish_cap_check || error "Missing tool(s) in $MNTPT_ROOT (shadow partition set)"
+    fi
+}
+
+# check required tools for updating/installing packages
+update_cap_check() {
+    if [[ "$PACKAGE_MANAGER" == "TDNF" ]]; then
+        command -v tdnf &> /dev/null || error "Package manager is set to tdnf but tdnf is not found"
+    elif [[ "$PACKAGE_MANAGER" == "RPM" ]]; then
+        command -v rpm &> /dev/null || error "Package manager is set to rpm, but rpm is not found"
+    fi
+
+    if [[ "$AUTO_SWITCH" == "YES" ]] || [[ "$AUTO_SWITCH" == "Y" ]]; then
+        switch_cap_check
+    fi
+}
+
+# check to verify required software is installed
+capability_check() {
+    update_cap_check
+    switch_cap_check
+    finish_cap_check
+}
+
+# takes in a list of packages to update
+# otherwise, just updates all packages
+update() {
+    echo -e "Upgrading B partition to latest kernel/packages"
+
+    # have to mount first, otherwise sanity checks will be wacky
+    mount_b_partition
+
+    echo "Running sanity checks..."
+    update_sanity_checks
+    echo "Looks good."
+
+    # update packages in partition B
+    package_wrapper "update" "$@"
+
+    unmount_b_partition
+
+    echo "Updated successfully"
+
+    if [[ "$AUTO_SWITCH" == "YES" ]] || [[ "$AUTO_SWITCH" == "Y" ]]; then
+        echo ""
+        echo "AutoSwitch=yes, automatically switching to B partition set"
+        echo ""
+        switch
+    fi
+}
+
+switch() {
+    mount_b_partition
+
+    echo "Updating config files"
+    update_config_files
+    echo "Config files updated (fstab, grub.cfg)"
+
+    # update config file in B partition to be the opposite
+    # since after we switch, the B partition is now the current A partition
+    update_b_config
+
+    switch_sanity_checks
+
+    if [[ "$AUTO_FINISH" == "YES" ]] || [[ "$AUTO_FINISH" == "Y" ]]; then
+        chroot $MNTPT_ROOT /bin/bash -c "systemctl enable abupdate.service" || error "Failed to enable auto finish service"
+    else
+        chroot $MNTPT_ROOT /bin/bash -c "systemctl disable abupdate.service" || error "Failed to disable auto finish service"
+    fi
+
+    merge_etc
+
+    # boot into new kernel version
+    kexec_reboot
+}
+
+help_menu() {
+    local retval="$1"
+cat << EOF >&2
+    Usage: ./abupdate <options>
+    Available options:
+      init
+            Initializes /etc/abupdate.conf. Attempts to auto detect A and B partitions and boot type.
+      sync
+            Mirrors the active (A) partition set to the inactive (B) partition set. Syncs all data between the two partition sets
+      deploy <image.tar.gz>
+            Accepts an OS image as a tar file. Cleans the B partition set and then deploys the OS image into the B partition set
+      mount
+            Mounts B partition set, and pseudo filesystems, at /mnt/abupdate
+      unmount
+            Unmounts B partition set and pseudo filesystems from /mnt/abupdate
+      clean
+            Cleans the B partition set. Removes all files
+      update <packages>
+            Accepts a list of packages to update.
+            If PACKAGE_MANAGER is set to rpm, the list must be a list of .rpm files
+            If no args, updates all packages on the B partition set.
+            If AUTO_SWITCH is set, automatically switches into B partition set
+            To specify a custom tdnf config file, use -c /path/to/config or set TDNF_CONFIG in /etc/abupdate.conf.
+      install <packages>
+            Accepts a list of packages to install to the shadow (B) partition set
+            If PACKAGE_MANAGER is set to rpm, the list must be a list of .rpm files
+            To specify a custom tdnf config file, use -c /path/to/config or set TDNF_CONFIG in /etc/abupdate.conf.
+      uninstall <packages>
+            Accepts a list of packages to uninstall from the shadow (B) partition set.
+            To specify a custom tdnf config file, use -c /path/to/config or set TDNF_CONFIG in /etc/abupdate.conf.
+      switch
+            Executes a kexec boot into the B partition set.
+            If AUTO_FINISH is set, automatically finalizes the switch with the finish command
+            Otherwise, the next boot will be back into the original A partition set
+      finish
+            Finalizes the switch by updating the bootloader. Ensures that the next reboot will be into the current partition set.
+      help
+            Print help menu
+EOF
+
+    exit $retval
+}
+
+# check to ensure that the partition is functioning properly before we boot into it
+# need partuuids for both sanity check types
+switch_sanity_checks() {
+    fs_type_check
+    bootable_check
+    switch_cap_check
+}
+
+update_sanity_checks() {
+    fs_type_check
+}
+
+bootable_check() {
+    # verify that other partition is bootable - check for initrd and vmlinuz
+    [[ -f ${MNTPT_ROOT}/${PHOTON_CFG} ]] || error "photon.cfg not found in B partition! unbootable"
+    local vmlinuz_version
+    local initrd_version
+    local linux_version
+    vmlinuz_version=$(grep photon_linux ${MNTPT_ROOT}/${PHOTON_CFG} | cut -d "=" -f 2-) || error
+    initrd_version=$(grep photon_initrd $MNTPT_ROOT/${PHOTON_CFG} | cut -d "=" -f 2-) || error
+    if [[ ! -f "$MNTPT_ROOT/boot/$vmlinuz_version" ]]; then
+        error "vmlinuz not found in B partition! unbootable."
+    fi
+
+    if [[ -n "$initrd_version" ]] && [[ ! -f "$MNTPT_ROOT/boot/$initrd_version" ]]; then
+        error "initrd not found in B partition! unbootable"
+    fi
+
+    # check for correct installation of kernel modules
+    linux_version=$(cut -d '-' -f 2- <<< "$MNTPT_ROOT/lib/modules/$vmlinuz_version") || error
+    if [[ -d "$MNTPT_ROOT/lib/modules/$linux_version" ]]; then
+        # check to make sure it's not empty
+        [[ $(find $MNTPT_ROOT/lib/modules/"$linux_version" -name "*"  | wc -l) -eq 0 ]] && error "Kernel modules directory found but empty. Are modules installed?"
+    else
+        error "Failed to find kernel modules directory! /lib/modules/$linux_version not found or not a directory"
+    fi
+
+    if [[ "$BOOT_TYPE" == "EFI" ]] || [[ $BOOT_TYPE == "BOTH" ]]; then
+        # just check to make sure that the efi files are present
+        # if not, probably it is not bootable
+        # filesystem type check should also occur previously
+        if [[ "$ARCH" == "x86_64" ]]; then
+            [[ -f "$MNTPT_EFI/EFI/BOOT/bootx64.efi" ]] || error "EFI/BOOT/bootx64.efi not found in EFI partition B"
+            [[ -f "$MNTPT_EFI/EFI/BOOT/grubx64.efi" ]] || error "EFI/BOOT/grubx64.efi not found in EFI partition B"
+            [[ -f "$MNTPT_EFI/boot/grub2/grub.cfg" ]] || error "/boot/grub2/grub.cfg not found in ROOT partition B"
+        elif [[ "$ARCH" == "aarch64" ]]; then
+            [[ -f "$MNTPT_EFI/EFI/BOOT/BOOTAA64.efi" ]] || error "EFI/BOOT/BOOTAA64.efi not found in EFI partition B"
+            [[ -f "$MNTPT_EFI/boot/grub2/grub.cfg" ]] || error "/boot/grub2/grub.cfg not found in ROOT partition B"
+        fi
+    fi
+}
+
+# check to make sure fs is formatted the same in both partitions
+fs_type_check() {
+    # findmnt will return 1 if output is none, so this will also serve as a null check
+    local fstype_a
+    local fstype_b
+    fstype_a=$(blkid -t PARTUUID="${_ROOT[0]}" -o value -s TYPE) || error "Error getting filesystem types"
+    fstype_b=$(blkid -t PARTUUID="${_ROOT[1]}" -o value -s TYPE) || error "Error getting filesystem types"
+
+    if [[ $BOOT_TYPE == "EFI" ]] || [[ $BOOT_TYPE == "BOTH" ]]; then
+        local efi_type_a
+        local efi_type_b
+        efi_type_a=$(blkid -t PARTUUID="${EFI[0]}" -o value -s TYPE) || error "Error getting filesystem types"
+        efi_type_b=$(blkid -t PARTUUID="${EFI[1]}" -o value -s TYPE) || error "Error getting filesystem types"
+        [[ $efi_type_a == "vfat" ]] || error "A EFI format is $efi_type_a, not vfat/fat32"
+        [[ $efi_type_b == "vfat" ]] || error "B EFI format is $efi_type_b, not vfat/fat32"
+    fi
+
+    if [[ "$fstype_b" != "$fstype_a" ]]; then
+        echo "Root file system formatting does not match! Exiting"
+        echo "A = \"$fstype_a\", B = \"$fstype_b\""
+        exit 1
+    fi
+}
+
+# update the abupdate.conf file in the B partition to swap the A-B labels for partitions
+update_b_config() {
+    # copy to b partition if it exists
+    if [[ -f "$CONFIG_FILE" ]]; then
+        cp -p "$CONFIG_FILE"  "$MNTPT_ROOT/$CONFIG_FILE" || error
+    fi
+
+    if [[ ! -d /boot/efi/$GRUB_CFG ]] || [[ ! -f "/boot/efi/$GRUB_CFG" ]]; then
+        echo "Copying $MNTPT_EFI/$GRUB_CFG as it is not present"
+        mkdir -p $MNTPT_EFI/boot/grub2
+        cp -p /boot/efi/$GRUB_CFG $MNTPT_EFI/$GRUB_CFG || error "Failed to copy grub.cfg from A to B partition"
+    fi
+
+    # for each partition set, swap the partuuids for A and B
+    local elem
+    for elem in "${SETS[@]}"; do
+        local A_partuuid="${elem}[0]"
+        local B_partuuid="${elem}[1]"
+        local mnt_pt="${elem}[2]"
+        sed -i -E "s/(\"?${!A_partuuid}\"?\,?) (\"?${!B_partuuid}\"?\,?)/\2 \1/" "$MNTPT_ROOT/$CONFIG_FILE" || error "Failed to update $CONFIG_FILE in B partition set"
+    done
+}
+
+# check to make sure the values read in from the config file are valid
+valid_config_check() {
+    [[ "$AUTO_FINISH" != "YES" ]] && [[ "$AUTO_FINISH" != "Y" ]] && [[ "$AUTO_FINISH" != "NO" ]] && [[ "$AUTO_FINISH" != "N" ]] && error "Invalid value for AUTO_FINISH. Valid options: YES, Y, NO, N"
+    [[ "$AUTO_SWITCH" != "YES" ]] && [[ "$AUTO_SWITCH" != "Y" ]] && [[ "$AUTO_SWITCH" != "NO" ]] && [[ "$AUTO_SWITCH" != "N" ]] && error "Invalid value for AUTO_SWITCH. Valid options: YES, Y, yes, y"
+    [[ "$BOOT_TYPE" != "BIOS" ]] && [[ "$BOOT_TYPE" != "EFI" ]] && [[ "$BOOT_TYPE" != "BOTH" ]] && error "Invalid value for BOOT_TYPE. Valid options: BIOS, EFI, BOTH"
+    [[ "$PACKAGE_MANAGER" != "TDNF" ]] && [[ "$PACKAGE_MANAGER" != "RPM" ]] && error "Invalid value for PACKAGE_MANAGER. Valid options: TDNF, RPM"
+
+    [[ "${#SETS[@]}" -eq 0 ]] && error "No partition sets found in config file!"
+    check_for_dup_partuuids
+
+    [[ -n "$A_UUID_ROOT" ]] || error "Unable to get UUID from PARTUUID for root A partition"
+    [[ -n "$B_UUID_ROOT" ]] || error "Unable to get UUID from PARTUUID for root B partition"
+}
+
+# just read cfg file
+# args:
+#   1. run config check - pass in 0 to skip valid_config_check, any other number otherwise
+read_cfg() {
+    #get config options
+    if [[ -f "$CONFIG_FILE" ]]; then
+        source "$CONFIG_FILE"
+    else
+        echo "No config file found at $CONFIG_FILE"
+        [[ "$1" -eq 0 ]] || help_menu 1
+    fi
+
+    [[ -z "$PACKAGE_MANAGER" ]] && PACKAGE_MANAGER="TDNF"
+    [[ -z "$AUTO_FINISH" ]] && AUTO_FINISH="NO"
+    [[ -z "$AUTO_SWITCH" ]] && AUTO_SWITCH="NO"
+
+    # make sure all options are all caps (except platform)
+    AUTO_FINISH="${AUTO_FINISH^^}"
+    BOOT_TYPE="${BOOT_TYPE^^}"
+    AUTO_SWITCH="${AUTO_SWITCH^^}"
+    PACKAGE_MANAGER="${PACKAGE_MANAGER^^}"
+
+    # remove any trailing commas from sets (easy mistake to make)
+    for usr_set in "${SETS[@]}"; do
+        local A_partuuid="${usr_set}[0]"
+        local B_partuuid="${usr_set}[1]"
+        local mnt_pt="${usr_set}[2]"
+        # new_set can't be local, otherwise doesn't work
+        declare -n new_set=$usr_set
+        new_set=( "${!A_partuuid%,}" "${!B_partuuid%,}" "${!mnt_pt%,}" )
+    done
+
+    # get UUIDs from PARTUUIDs
+    if [[ -n "${_ROOT[0]}" ]]; then
+        A_UUID_ROOT=$(blkid -t PARTUUID="${_ROOT[0]}" -o value -s UUID) || error
+    fi
+
+    if [[ -n "${_ROOT[1]}" ]]; then
+         B_UUID_ROOT=$(blkid -t PARTUUID="${_ROOT[1]}" -o value -s UUID) || error
+    fi
+
+    [[ "$1" -eq 0 ]] || valid_config_check
+
+}
+
+# autodetect needed variables and write out configuration
+init_cfg() {
+
+    read_cfg 0
+
+    if [[ -z "$BOOT_TYPE" ]]; then
+        echo "Attempting to guess boot type..."
+        if fdisk -l | grep -q "BIOS" && [[ -d "/sys/firmware/efi" ]]; then
+            BOOT_TYPE="BOTH"
+        elif [[ -d "/sys/firmware/efi" ]]; then
+            BOOT_TYPE="EFI"
+        else
+            BOOT_TYPE="BIOS"
+        fi
+        echo "Detected $BOOT_TYPE boot type"
+    fi
+
+    CONFIG_BOOT_TYPE="$BOOT_TYPE"
+
+    # if the partition UUIDs are not set in the config file, try to auto detect them.
+    if { [[ "$BOOT_TYPE" == "EFI" ]] || [[ $BOOT_TYPE == "BOTH" ]]; } && { [[ -z "${EFI[0]}" ]] || [[ -z "${EFI[1]}" ]]; }; then
+        echo "detecting efi partition uuids"
+        auto_detect_flag=1
+        detect_efi_partitions
+        SETS+=("EFI")
+    fi
+
+    if [[ -z "${_ROOT[0]}" ]] || [[ -z "${_ROOT[1]}" ]]; then
+        echo "detecting rootfs partition uuids"
+        auto_detect_flag=1
+        detect_rootfs_partitions
+        SETS+=("_ROOT")
+    fi
+
+    if [[ ${#SETS[@]} -eq 0 ]]; then
+        SETS+=("_ROOT")
+        [[ $BOOT_TYPE == "EFI" ]] && SETS+=("EFI")
+    fi
+
+    A_UUID_ROOT=$(blkid -t PARTUUID="${_ROOT[0]}" -o value -s UUID) || error
+    B_UUID_ROOT=$(blkid -t PARTUUID="${_ROOT[1]}" -o value -s UUID) || error
+
+    echo "CONFIGURED SETTINGS:"
+    local elem
+    for elem in "${SETS[@]}"; do
+        local A_partuuid="${elem}[0]"
+        local B_partuuid="${elem}[1]"
+        echo "    PARTUUID for $elem (A) = ${!A_partuuid}"
+        echo "    PARTUUID for $elem (B) = ${!B_partuuid}"
+    done
+
+cat <<EOF >&2
+    A_UUID_ROOT=$A_UUID_ROOT
+    B_UUID_ROOT=$B_UUID_ROOT
+    BOOT_TYPE=$BOOT_TYPE
+    PACKAGE_MANAGER=$PACKAGE_MANAGER
+    AUTO_SWITCH=$AUTO_SWITCH
+    AUTO_FINISH=$AUTO_FINISH
+EOF
+
+    # make sure user confirms auto detected settings
+    # assume that config file is correct, if we didnt have to auto detect anything
+    if [[ $auto_detect_flag == 1 ]]; then
+        echo "CONFIRM: Are these settings correct? Please enter y/n: "
+        local confirm
+        read -r confirm
+        [[ $confirm != "y" && "$confirm" != "yes" ]] && error "User declined settings. Please update /etc/abupdate.conf to the correct settings"
+    fi
+
+    # write detected values to the config file, so we don't have to do it again later
+    update_a_config
+}
+
+# checks the partition UUIDs to ensure there are no duplicates
+check_for_dup_partuuids() {
+    # check for duplicate partuuids
+    # add each partuuid to a list, then just check the list for repetition
+    # maybe not the most efficient, but the number of partuuids to check is minimal
+    local list=()
+    local names=() # e.g ROOT, EFI
+    local elem
+    for elem in "${SETS[@]}"; do
+        local A_partuuid="${elem}[0]"
+        local B_partuuid="${elem}[1]"
+        [[ -z "${!A_partuuid}" ]] && error "No partuuid specified for active partition $elem"
+        [[ -z "${!B_partuuid}" ]] && error "No partuuid specified for shadow partition $elem"
+        [[ "${!A_partuuid}" == "${!B_partuuid}" ]] && error "Duplicate PARTUUID detected"
+        local i=0
+        local puuid
+        for puuid in "${list[@]}"; do
+            if [[ "$puuid" == "${!A_partuuid}" && "${names[$i]}" != "$elem" ]]; then
+                error "Duplicated partuuid detected! $puuid matches ${!A_partuuid}"
+            elif [[ "$puuid" == "${!B_partuuid}" && "${names[$i]}" != "$elem" ]]; then
+                error "Duplicated partuuid detected! $puuid matches ${!B_partuuid}"
+            fi
+            i=$i+1
+        done
+        list+=("${!A_partuuid}" "${!B_partuuid}")
+        # match every entry in list with the correct name
+        names+=("$elem" "$elem")
+    done
+}
+
+# update config file in this partition with current variables
+update_a_config() {
+    [[ -f "$CONFIG_FILE" ]] || touch $CONFIG_FILE
+
+    local temp="$BOOT_TYPE"
+    BOOT_TYPE="$CONFIG_BOOT_TYPE"
+
+    declare variables=( "BOOT_TYPE" "AUTO_FINISH" "AUTO_SWITCH" )
+    for var in "${variables[@]}"; do
+        # either create new or update existing. Want to avoid changing things if possible, so probably best to find and replace
+        # instead of just echo-ing all the existing values, which might erase some info in the file
+        sed -i "s/$var=.*/$var=${!var}/g" "$CONFIG_FILE"
+
+        # uncomment line if commented
+        sed -i "/$var=${!var}/s/^#//g" "$CONFIG_FILE"
+
+        # remove any leading whitespace
+        sed -i "/$var=${!var}/s/^[ \t]*//g" "$CONFIG_FILE"
+
+        # check if sed performed the substitution, if not then just add a new line
+        grep "$var=${!var}" "$CONFIG_FILE" &> /dev/null || echo "$var=${!var}" >> "$CONFIG_FILE"
+    done
+
+    BOOT_TYPE="$temp"
+
+    local sets_str="SETS=("
+    local elem
+    for elem in "${SETS[@]}"; do
+        local A_partuuid="${elem}[0]"
+        local B_partuuid="${elem}[1]"
+        local mnt_pt="${elem}[2]"
+        local str="$elem=(\"${!A_partuuid}\" \"${!B_partuuid}\" \"${!mnt_pt}\")"
+
+        sed -i "s#$elem=.*#$str#g" "$CONFIG_FILE"
+        sed -i "/$elem=.*/s/^#//g" "$CONFIG_FILE"
+        sed -i "/$elem=.*/s/^[ \t]*//g" "$CONFIG_FILE"
+        grep "$str" "$CONFIG_FILE" &> /dev/null || echo "$str" >> "$CONFIG_FILE"
+
+        sets_str="$sets_str \"$elem\" "
+    done
+
+    # update sets
+    sets_str="$sets_str)"
+    sed -i "s/SETS=.*/$sets_str/g" "$CONFIG_FILE"
+    sed -i "/SETS=.*/s/^#//g" "$CONFIG_FILE"
+    sed -i "/SETS=.*/s/^[ \t]*//g" "$CONFIG_FILE"
+    grep "$sets_str" "$CONFIG_FILE" &> /dev/null || echo "$sets_str" >> "$CONFIG_FILE"
+
+    valid_config_check
+}
+
+check_if_mntpt() {
+    mountpoint "$1" &> /dev/null
+}
+
+# mount the shadow partition set as subfolders of mntpt_root
+# pass in "no_pseudo" if pseudo fs are not needed
+mount_b_partition() {
+    local elem
+    local fs
+
+    # mount root and efi first, then others as subdirs
+    [[ -d "$MNTPT_ROOT" ]] || mkdir -p "$MNTPT_ROOT"
+    if ! check_if_mntpt "$MNTPT_ROOT"; then
+        mount PARTUUID="${_ROOT[1]}" "$MNTPT_ROOT" || error "Failed to mount shadow root partition"
+    fi
+
+    [[ -d "$MNTPT_EFI" ]] || mkdir -p "$MNTPT_EFI"
+    if [[ -n "$EFI" ]] && ! check_if_mntpt "$MNTPT_EFI"; then
+        mount PARTUUID="${EFI[1]}" "$MNTPT_EFI" || error "Failed to mount shadow EFI partition"
+    fi
+
+    # mount pseudo filesystems if required
+    if [[ ! "$1" == "no_pseudo" ]]; then
+        local pseudo_filesystems=("proc" "dev" "sys" "tmp" "run")
+        for fs in "${pseudo_filesystems[@]}"; do
+            [[ -d $MNTPT_ROOT/"$fs" ]] || mkdir -p $MNTPT_ROOT/"$fs"
+            check_if_mntpt "$MNTPT_ROOT/$fs" || ( mount --bind /"$fs" $MNTPT_ROOT/"$fs" || error "Failed to bind /$fs to $MNTPT_ROOT/$fs" )
+        done
+    fi
+
+    for elem in "${SETS[@]}"; do
+        local B_partuuid="${elem}[1]"
+        local mnt_pt="${elem}[2]"
+        if [[ ! "$elem" == "_ROOT" ]] && [[ ! "$elem" == "EFI" ]] && ! check_if_mntpt "${MNTPT_ROOT}/${!mnt_pt}"; then
+            mkdir -p "${MNTPT_ROOT}/${!mnt_pt}"
+            mount PARTUUID="${!B_partuuid}" "${MNTPT_ROOT}/${!mnt_pt}" || error "Failed to mount shadow ${!mnt_pt} partition (partuuid = ${!B_partuuid})"
+        fi
+    done
+
+    echo "Mounted B partitions at $MNTPT_ROOT"
+}
+
+unmount_b_partition() {
+    # unmount B filesystem
+    local fs
+    local elem
+    local psuedo_filesystems=("proc" "dev" "sys" "tmp" "run")
+    for fs in "${psuedo_filesystems[@]}"; do
+        check_if_mntpt "${MNTPT_ROOT}/$fs" && unmount "$MNTPT_ROOT/$fs"
+    done
+
+    for elem in "${SETS[@]}"; do
+        local mnt_pt="${elem}[2]"
+        if [[ ! "$elem" == "_ROOT" ]] && check_if_mntpt "${MNTPT_ROOT}/${!mnt_pt}"; then
+            local mnt_pt="${elem}[2]"
+            unmount "${MNTPT_ROOT}/${!mnt_pt}"
+        fi
+    done
+
+    if check_if_mntpt "$MNTPT_ROOT"; then
+        unmount "$MNTPT_ROOT"
+    fi
+
+    echo "Unmounted B partitions from $MNTPT_ROOT"
+}
+
+# check to make sure there is enough space in the b partition
+size_check() {
+    local a_name
+    local b_name
+    local elem
+    for elem in "${SETS[@]}"; do
+        local A_partuuid="${elem}[0]"
+        local B_partuuid="${elem}[1]"
+        a_name=$(blkid -t PARTUUID="${!A_partuuid}" | cut -d ":" -f 1) || error
+        b_name=$(blkid -t PARTUUID="${!B_partuuid}" | cut -d ":" -f 1) || error
+
+        # verify size matches - check to see if B has enough space to store used amount in A
+        local used_a
+        local capacity_b
+        used_a=$(df "$a_name" | awk -F ' ' 'NR>1 {print $3}') || error
+        capacity_b=$(df "$b_name" | awk -F ' ' 'NR>1 {print $2}')  || error
+
+        if [[ $used_a -gt $capacity_b ]]; then
+            error "Partion A $elem has used $used_a 1k-blocks, Partition B has only $capacity_b 1k-blocks. There is not enough space."
+        fi
+    done
+}
+
+mirror_partitions() {
+    # rsync specified partitions
+
+    mount_b_partition
+    local elem
+    for elem in "${SETS[@]}"; do
+        local exclude_dirs="$elem"_EXCLUDE\[\@\]
+        local exclude_str=""
+        exclude_dirs=( ${!exclude_dirs} )
+        for dir in "${exclude_dirs[@]}"; do
+            # strip leading slash, if present
+            dir=${dir#/}
+            exclude_str="${exclude_str} --exclude=/${dir%/}"
+        done
+    done
+    echo "Syncing A and B partitions"
+
+    # sync contents of root A filesystem to B (need /run/systemd, otherwise tdnf will complain)
+    rsync -aHX --delete --include={"/proc/1/","/proc/self/","/run/systemd/"} $exclude_str --exclude={"/mnt/*","/sys/*","/proc/*","/run/*","/tmp/*","/media/*","lost+found/*","/$GRUB_CFG"} / "$MNTPT_ROOT" > /dev/null || error "Failed to sync A and B partitions"
+    # only copy this the first time. don't overwrite existing
+    if [[ ! -f "$MNTPT_EFI/$GRUB_CFG" ]]; then
+        cp -p "/boot/efi/$GRUB_CFG" "$MNTPT_EFI/$GRUB_CFG"
+    fi
+
+    echo "Successfully synced A and B partitions"
+
+    unmount_b_partition
+}
+
+update_config_files() {
+    # update rootfs/etc/fstab to switch from A to B
+    # this will be in partition B
+    local elem
+
+    if [[ -f "$MNTPT_ROOT/$FSTAB" ]] || [[ ! -s "$MNTPT_ROOT/$FSTAB" ]]; then
+        cp -p /$FSTAB $MNTPT_ROOT/$FSTAB
+    fi
+
+    for elem in "${SETS[@]}"; do
+        local A_partuuid="${elem}[0]"
+        local B_partuuid="${elem}[1]"
+        sed -i "s/${!A_partuuid}/${!B_partuuid}/g" "$MNTPT_ROOT/$FSTAB" || error "Failed to update fstab"
+    done
+
+    # verify that fstab is looking good
+    chroot $MNTPT_ROOT /bin/bash -c "findmnt --verify" || error "/etc/fstab is invalid! Aborting"
+
+    # update grub.cfg in B rootfs partition
+    if [[ -f "$MNTPT_ROOT/$GRUB_CFG" ]] || [[ ! -s "$MNTPT_ROOT/$GRUB_CFG" ]]; then
+        cp -p /$GRUB_CFG $MNTPT_ROOT/$GRUB_CFG
+    fi
+    sed -i "s/${_ROOT[0]}/${_ROOT[1]}/g" "$MNTPT_ROOT/$GRUB_CFG" || error "Failed to update grub.cfg in rootfs partition"
+    sed -i "s/$A_UUID_ROOT/$B_UUID_ROOT/g" "$MNTPT_ROOT/$GRUB_CFG" || error "Failed to update grub.cfg in rootfs partition"
+}
+
+# uses kexec -l to load the new kernel into memory
+load_kernel() {
+    # detect linux version
+    local linux_version
+    local initrd_version
+    vmlinuz_version=$(grep photon_linux $MNTPT_ROOT/$PHOTON_CFG | cut -d "=" -f 2)
+    initrd_version=$(grep photon_initrd $MNTPT_ROOT/$PHOTON_CFG | cut -d "=" -f 2)
+
+    # maybe there is a better way to figure out the command line parameters in the shadow partition set?
+    local opts
+    local file
+    local line
+    local cmdline_var
+    grep "\ $.*cmdline" < "$MNTPT_ROOT/boot/grub2/grub.cfg" | while IFS= read -r cmdline_var; do
+        if grep -q "cmdline" <<< "$cmdline_var"; then
+            file=$(cut -d '_' -f 1 <<< "$cmdline_var")
+            file=${file#*$}
+            line=$(cut -d '$' -f 2 <<< "$cmdline_var")
+            opts="$opts $(grep "$line" $MNTPT_ROOT/boot/"${file}".cfg | cut -d '=' -f 2-)"
+        fi
+    done
+
+    linux_version=$(cut -d '-' -f 2- <<< "$vmlinuz_version")
+    if [[ -n "$initrd_version" ]]; then
+        kexec -l $MNTPT_ROOT/boot/"$vmlinuz_version" --initrd=$MNTPT_ROOT/boot/"$initrd_version" --append=root=PARTUUID="${_ROOT[1]} $opts" || error "Failed to load kernel in partition B"
+    else
+        kexec -l $MNTPT_ROOT/boot/"$vmlinuz_version" --append=root=PARTUUID="${_ROOT[1]} $opts" || error "Failed to load kernel in partition B"
+    fi
+}
+
+# boot into the newly loaded kernel
+kexec_reboot() {
+    load_kernel
+
+    # ensure that correct partitions are unmounted
+    unmount_b_partition
+
+    echo "Booting into B partition set"
+    kexec -e || error
+}
+
+# attempt to detect the partition names for A and B rootfs partitions
+detect_rootfs_partitions() {
+    # make sure it's empty - could possibly have something read in from config file
+    _ROOT=()
+    _ROOT+=("$(findmnt / -n -o PARTUUID)")
+
+    if [ -z "${_ROOT[0]}" ]; then
+        error "Unable to detect currently mounted rootfs partition"
+    fi
+
+    # array to store all of the root fs partition uuids
+    local rootfs_partitions
+    mapfile -t rootfs_partitions < <(fdisk -l | grep "Linux" | awk '{print $1}') || error
+    local i=0
+    local part
+    for part in "${rootfs_partitions[@]}"; do
+        rootfs_partitions[$i]=$(blkid "$part" -o value -s PARTUUID)
+        i=$i+1
+    done
+
+    if [ "${#rootfs_partitions[@]}" -eq 1 ]; then
+        error "Only one root filesystem partition found! A/B update requires a secondary partition."
+    elif [ "${#rootfs_partitions[@]}" -gt 2 ]; then
+        error "Unable to detect which Linux filesystem partition to use as secondary. There are more than two! Please specify in abupdate.conf"
+    fi
+
+    # pick the one that's different than A
+    if [[ "${rootfs_partitions[1]}" != "${_ROOT[0]}" ]]; then
+        _ROOT+=("${rootfs_partitions[1]}")
+    else
+        _ROOT+=("${rootfs_partitions[0]}")
+    fi
+
+    #mnt point
+    _ROOT+=("/")
+}
+
+# attempt to detect the partition names for A and B EFI partitions
+detect_efi_partitions() {
+    # make sure it's empty before we populate it
+    EFI=()
+    EFI+=("$(findmnt /boot/efi -n -o PARTUUID)")
+
+    # array to store all of the efi partitions (should be two, otherwise this is BIOS boot)
+    local efi_partitions
+    mapfile -t efi_partitions < <(fdisk -l | grep EFI | awk '{print $1}') || error
+    local i=0
+    local part
+    for part in "${efi_partitions[@]}"; do
+        efi_partitions[$i]=$(blkid "$part" -o value -s PARTUUID) || error
+        i=$i+1
+    done
+
+    if [ "${#efi_partitions[@]}" -eq 1 ]; then
+        error "Only one efi filesystem partition found! AB update requires a secondary partition."
+    elif [ "${#efi_partitions[@]}" -gt 2 ]; then
+        error "Unable to detect which EFI partition to use as secondary. There are more than two! Please specify in abupdate.conf"
+    fi
+
+    # pick the different partition
+    if [[ "${efi_partitions[1]}" != "${EFI[0]}" ]]; then
+        EFI+=("${efi_partitions[1]}")
+    else
+        EFI+=("${efi_partitions[0]}" )
+    fi
+
+    EFI+=("/boot/efi")
+}
+
+# finalize the switch
+finalize() {
+    local disk_name
+    local bootloader_efi
+    local grub_bootloader_efi
+
+    if [[ "$ARCH" == "aarch64" ]]; then
+        grub_bootloader_efi="\EFI\grub\grubaa64.efi"
+        bootloader_efi="\EFI\BOOT\BOOTAA64.EFI"
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        grub_bootloader_efi="\EFI\grub\grubx64.efi"
+        bootloader_efi="\EFI\BOOT\grubx64.efi"
+    else
+        error "$ARCH not supported"
+    fi
+
+    # if BIOS, update MBR by installing grub
+    # if EFI, update efi boot entries
+    # if both, update both
+
+    if [[ ! $BOOT_TYPE == "BIOS" ]] && [[ ! $BOOT_TYPE == "EFI" ]] && [[ ! $BOOT_TYPE == "BOTH" ]]; then
+        error "unknown boot type"
+    fi
+
+    if [[ $BOOT_TYPE == "BIOS" ]] || [[ $BOOT_TYPE == "BOTH" ]]; then
+        disk_name=$(blkid -t PARTUUID="${_ROOT[0]}" | cut -d ":" -f 1) || error
+        disk_name=${disk_name//[0-9]/}
+
+        rpm -q grub2-pc &> /dev/null || error "grub2-pc not installed. Install with \"tdnf install grub2-pc\""
+
+        # try to get platform type, if wrong this could brick at least this partition, but potentially the whole machine by messing up the MBR
+        if [[ -z "$PLATFORM" && $(find /usr/lib/grub/* -prune -name "*" | wc -l) -gt 1 ]]; then
+            error "Multiple platforms detected in /usr/lib/grub. Please specify correct platform for grub by setting PLATFORM in /etc/abupdate.conf"
+        elif [[ -z "$PLATFORM" ]]; then
+            PLATFORM=$(ls /usr/lib/grub) || error
+        fi
+
+        # overwrite MBR by grub2-install
+        grub2-install "$disk_name" --target="$PLATFORM" || error "Failed to update MBR. Is grub2-pc package installed?"
+
+    elif [[ $BOOT_TYPE == "EFI" ]]; then
+        # install grub into this partition, otherwise it will use same bootloader as other partition set
+        # and that will just boot into the other partition set (in some situations)
+        disk_name=$(blkid -t PARTUUID="${EFI[0]}" | cut -d ":" -f 1) || error
+        disk_name=${disk_name//[0-9]/}
+
+        rpm -q --quiet grub2-efi || error "grub2-efi not installed. Install with \"tdnf install grub2-efi\""
+
+        if [[ -z "$PLATFORM" && $(find /usr/lib/grub/* -prune -name "*" | wc -l) -gt 1 ]]; then
+            error "Multiple platforms detected in /usr/lib/grub. Please specify correct platform for grub by setting PLATFORM in /etc/abupdate.conf"
+        elif [[ -z "$PLATFORM" ]]; then
+            PLATFORM=$(ls /usr/lib/grub) || error
+        fi
+
+        # install new grub bootloader for this partition set
+        grub2-install "$disk_name" --target="$PLATFORM" || error "Failed to install new grub bootloader. Is grub2-efi package installed?"
+    fi
+
+    if [[ $BOOT_TYPE == "EFI" ]] || [[ $BOOT_TYPE == "BOTH" ]]; then
+        # update efi grub cfg in current partition to point to this partition (after switch, it will still point to previous)
+        sed -i "s/$B_UUID_ROOT/$A_UUID_ROOT/g" "/boot/efi/$GRUB_CFG" || error "Failed to update grub.cfg in EFI partition"
+
+        # find which entry is the grub entry
+        local bootnum
+        bootnum=$(efibootmgr | grep -E "(^|\s)grub(\s|$)")
+
+        # if no grub entry, then we have to do this a bit differently
+        # probably, grub is not installed
+        if [[ -n "$bootnum" ]]; then
+            bootnum="${bootnum//[!0-9]/}"
+
+            # get the partition number for the A partition
+            local partition_num
+            partition_num=$(blkid | grep "${EFI[0]}" | cut -d ":" -f 1) || error
+            partition_num="${partition_num//[!0-9]/}"
+
+            # create new efi boot entry
+            efibootmgr -c -d "$disk_name" -p "$partition_num" -L grub -l "$grub_bootloader_efi" &> /dev/null || error "Failed to create new efi boot entry (Grub)"
+
+            # delete existing entry for grub
+            # modifying existing doesn't seem to work
+            efibootmgr -b "$bootnum" -B &> /dev/null || error "Failed to edit efi boot entry. Is efibootmgr package installed?"
+        else
+            # get the partition number for the A partition
+            local partition_num
+            partition_num=$(blkid | grep "${EFI[0]}" | cut -d ":" -f 1) || error
+            partition_num="${partition_num//[!0-9]/}"
+
+            # create new Photon boot entry
+            bootnum=$(efibootmgr | grep -E "(^|\s)Photon(\s|$)")
+            bootnum="${bootnum//[!0-9]/}"
+            efibootmgr -c -d "$disk_name" -p "$partition_num" -L Photon -l "$bootloader_efi"  &> /dev/null || error "Failed to create new efi boot entry (Photon)"
+            [[ -n $bootnum ]] && (efibootmgr -b "$bootnum" -B &> /dev/null || error "Failed to delete existing Photon boot entry")
+        fi
+    fi
+    echo "Successfully finalized update. Next (re)boot will be into this partition set."
+}
+
+# flow control function
+parse_cmdline_args "$@"

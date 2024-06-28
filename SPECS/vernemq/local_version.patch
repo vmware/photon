@@ -1,0 +1,41 @@
+diff --git a/Makefile b/Makefile
+index 972ad4c..4fb1451 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,6 @@
+ BASE_DIR         = $(shell pwd)
+ ERLANG_BIN       = $(shell dirname $(shell which erl))
+-GIT_VERSION      = $(shell git describe --tags --always)
++GIT_VERSION      = 1.12.6.2
+ OVERLAY_VARS    ?=
+ REBAR ?= $(BASE_DIR)/rebar3
+ 
+diff --git a/rebar.config b/rebar.config
+index 49f6623..e927070 100644
+--- a/rebar.config
++++ b/rebar.config
+@@ -64,7 +64,7 @@
+ {cuttlefish, [{schema_dir, "lib"}, {schema_discovery, false}]}.
+ 
+ {relx, [
+-    {release, {vernemq, semver}, [
++    {release, {vernemq, "1.12.6.2"}, [
+         sasl,
+         inets,
+         xmerl,
+@@ -136,12 +136,9 @@
+         {template, "apps/vmq_swc/priv/vmq_swc.schema", "share/schema/19-vmq_swc.schema"},
+         {template, "apps/vmq_pulse/priv/vmq_pulse.schema", "share/schema/20-vmq_pulse.schema"},
+         {template, "files/vmq.schema", "share/schema/30-vmq.schema"},
+-        {template, "_build/default/lib/cuttlefish/priv/erlang_vm.schema",
+-            "share/schema/31-erlang_vm.schema"},
+-        {template, "_build/default/lib/riak_sysmon/priv/riak_sysmon.schema",
+-            "share/schema/32-riak_sysmon.schema"},
+-        {template, "_build/default/lib/eleveldb/priv/eleveldb.schema",
+-            "share/schema/33-eleveldb.schema"},
++        {template, "_checkouts/cuttlefish/priv/erlang_vm.schema", "share/schema/31-erlang_vm.schema"},
++        {template, "_checkouts/riak_sysmon/priv/riak_sysmon.schema", "share/schema/32-riak_sysmon.schema"},
++        {template, "_checkouts/eleveldb/priv/eleveldb.schema", "share/schema/33-eleveldb.schema"},
+         {mkdir, "lib/erlio-patches"}
+     ]}
+ ]}.

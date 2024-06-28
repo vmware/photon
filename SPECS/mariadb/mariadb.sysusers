@@ -1,0 +1,2 @@
+g mysql -
+u mysql - "mysql" /home/mysql /bin/false

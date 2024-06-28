@@ -1,0 +1,53 @@
+From 4c133d4fd94519693489de29f428a76fb143a1a3 Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh <svasamsetty@vmware.com>
+Date: Mon, 31 May 2021 21:15:46 +0530
+Subject: [PATCH] compatibility with openssl 3.0.0
+
+---
+ configure.self              | 2 +-
+ packaging/cmake/config.h.in | 2 ++
+ src/win32_config.h          | 2 +-
+ 3 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/configure.self b/configure.self
+index 3e7dc97..a92a262 100644
+--- a/configure.self
++++ b/configure.self
+@@ -140,7 +140,7 @@ void foo (void) {
+ 
+     if [[ "$WITH_SSL" == "y" ]]; then
+         # SASL SCRAM requires base64 encoding from OpenSSL
+-        mkl_allvar_set WITH_SASL_SCRAM WITH_SASL_SCRAM y
++        mkl_allvar_set WITH_SASL_SCRAM WITH_SASL_SCRAM n
+         # SASL OAUTHBEARER's default unsecured JWS implementation
+         # requires base64 encoding from OpenSSL
+         mkl_allvar_set WITH_SASL_OAUTHBEARER WITH_SASL_OAUTHBEARER y
+diff --git a/packaging/cmake/config.h.in b/packaging/cmake/config.h.in
+index a405506..f3ccb4c 100644
+--- a/packaging/cmake/config.h.in
++++ b/packaging/cmake/config.h.in
+@@ -34,7 +34,9 @@
+ #define WITH_SOCKEM 1
+ #cmakedefine01 WITH_SSL
+ #cmakedefine01 WITH_SASL
++#if 0
+ #cmakedefine01 WITH_SASL_SCRAM
++#endif
+ #cmakedefine01 WITH_SASL_OAUTHBEARER
+ #cmakedefine01 WITH_SASL_CYRUS
+ #cmakedefine01 WITH_LZ4_EXT
+diff --git a/src/win32_config.h b/src/win32_config.h
+index 4579cf7..db9d7a1 100644
+--- a/src/win32_config.h
++++ b/src/win32_config.h
+@@ -40,7 +40,7 @@
+ /* zstd is linked dynamically on Windows, but the dynamic library provides
+  * the experimental/advanced API, just as the static builds on *nix */
+ #define WITH_ZSTD_STATIC 1
+-#define WITH_SASL_SCRAM 1
++#define WITH_SASL_SCRAM 0
+ #define WITH_SASL_OAUTHBEARER 1
+ #define ENABLE_DEVEL 0
+ #define WITH_PLUGINS 1
+-- 
+2.17.1

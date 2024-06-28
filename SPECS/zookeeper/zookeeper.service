@@ -1,0 +1,18 @@
+[Unit]
+Description=Apache ZooKeeper
+After=network.target
+ConditionPathExists=/etc/zookeeper/zoo.cfg
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/zkServer.sh start /etc/zookeeper/zoo.cfg
+ExecStop=/usr/bin/zkServer.sh stop
+User=zookeeper
+Group=hadoop
+RuntimeDirectory=zookeeper
+RuntimeDirectoryMode=0755
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

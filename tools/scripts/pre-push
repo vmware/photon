@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# This is triggered by pre-push git hook
+
+SCRIPT_DIR="$(dirname "$(realpath $0)")"
+
+SRC_DIR="$(realpath ${SCRIPT_DIR}/../..)"
+
+modified_spec_files=$(bash ${SCRIPT_DIR}/get_modified_files.sh | grep '\.spec')
+
+if [ -z "${modified_spec_files}" ]; then
+  exit 0
+fi
+
+python3 ${SRC_DIR}/support/spec-checker/check_spec.py ${modified_spec_files}
+exit $?
