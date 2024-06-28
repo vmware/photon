@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -28,6 +28,7 @@ Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
 Patch2: CVE-2023-51385.patch
 Patch3: openssh-CVE-2023-48795.patch
 Patch4: CVE-2023-51384.patch
+Patch5: 0003-disable-async-signal-unsafe-code.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires: openssl-devel
@@ -210,6 +211,9 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Tue Jun 25 2024 Tapas Kundu <tapas.kundu@broadcom.com> 9.3p2-9
+- commenting out the async-signal-unsafe code from the
+- sshsigdie() function
 * Mon Mar 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-8
 - Introduce socket sub package
 * Tue Jan 09 2024 Shivani Agarwal <shivania2@vmware.com> 9.3p2-7
