@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -44,6 +44,8 @@ Patch303:     CVE-2023-4911.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
+
+Conflicts:      %{name}-i18n < 2.32-19
 
 %define ExtraBuildRequires bison, python3, python3-libs
 
@@ -128,11 +130,10 @@ cat > find_requires.sh << _EOF
 if [ -d /tools ]; then
 /tools/lib/rpm/find-requires %{buildroot} %{glibc_target_cpu} | grep -v GLIBC_PRIVATE
 else
-%{_prefix}/lib/rpm/find-requires %{buildroot} %{glibc_target_cpu} | grep -v GLIBC_PRIVATE
+%{_libdir}/rpm/find-requires %{buildroot} %{glibc_target_cpu} | grep -v GLIBC_PRIVATE
 fi
 _EOF
 chmod +x find_requires.sh
-#___EOF
 
 %build
 
@@ -151,16 +152,16 @@ cd %{_builddir}/%{name}-build
         libc_cv_slibdir=/lib
 
 # Sometimes we have false "out of memory" make error
-# just rerun/continue make to workaroung it.
-make %{?_smp_mflags} || make %{?_smp_mflags} || make %{?_smp_mflags}
+# just rerun/continue make to workaround it.
+%make_build || %make_build || %make_build
 
 %install
 #       Do not remove static libs
 pushd %{_builddir}/glibc-build
 #       Create directories
-make install_root=%{buildroot} install %{?_smp_mflags}
+%make_install install_root=%{buildroot}
 install -vdm 755 %{buildroot}%{_sysconfdir}/ld.so.conf.d
-install -vdm 755 %{buildroot}/var/cache/nscd
+install -vdm 755 %{buildroot}%{_var}/cache/nscd
 install -vdm 755 %{buildroot}%{_libdir}/locale
 cp -v ../%{name}-%{version}/nscd/nscd.conf %{buildroot}%{_sysconfdir}/nscd.conf
 #       Install locale generation script and config file
@@ -178,7 +179,7 @@ cp -pv %{SOURCE3} %{buildroot}%{_sysconfdir}
 
 cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
 #       Begin /etc/ld.so.conf
-    /usr/local/lib
+    %{_usr}/local/lib
     /opt/lib
     include /etc/ld.so.conf.d/*.conf
 EOF
@@ -189,22 +190,22 @@ popd
 %find_lang %{name} --all-name
 pushd localedata
 # Generate out of locale-archive an (en_US.) UTF-8 locale
-mkdir -p %{buildroot}/usr/lib/locale
+mkdir -p %{buildroot}%{_libdir}/locale
 if [ %{_host} != %{_build} ]; then
 LOCALEDEF=localedef
 else
 LOCALEDEF=../../glibc-build/locale/localedef
 fi
 I18NPATH=. GCONV_PATH=../../glibc-build/iconvdata LC_ALL=C $LOCALEDEF --no-archive --prefix=%{buildroot} -A ../intl/locale.alias -i locales/en_US -c -f charmaps/UTF-8 en_US.UTF-8
-mv %{buildroot}/usr/lib/locale/en_US.utf8 %{buildroot}/usr/lib/locale/en_US.UTF-8
+mv %{buildroot}%{_libdir}/locale/en_US.utf8 %{buildroot}%{_libdir}/locale/en_US.UTF-8
 popd
 # to do not depend on /bin/bash
-sed -i 's@#! /bin/bash@#! /bin/sh@' %{buildroot}/usr/bin/ldd
-sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
+sed -i 's@#! /bin/bash@#! /bin/sh@' %{buildroot}%{_bindir}/ldd
+sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}%{_bindir}/tzselect
 
 %check
 cd %{_builddir}/glibc-build
-make %{?_smp_mflags} check ||:
+%make_build check ||:
 # These 2 persistant false positives are OK
 # XPASS for: elf/tst-protected1a and elf/tst-protected1b
 [ `grep ^XPASS tests.sum | wc -l` -ne 2 -a `grep "^XPASS: elf/tst-protected1[ab]" tests.sum | wc -l` -ne 2 ] && exit 1 ||:
@@ -236,12 +237,11 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %postun -p /sbin/ldconfig
 
 %posttrans iconv
-/usr/sbin/iconvconfig
+%{_sbindir}/iconvconfig
 
 %postun iconv
-if [ -e /usr/lib64/gconv/gconv-modules.cache ]
-then
-    rm /usr/lib64/gconv/gconv-modules.cache
+if [ -e %{_lib64dir}/gconv/gconv-modules.cache ]; then
+  rm %{_lib64dir}/gconv/gconv-modules.cache
 fi
 
 %files
@@ -253,7 +253,6 @@ fi
 %config(noreplace) %{_sysconfdir}/rpc
 %attr(0644,root,root) %config(missingok,noreplace) %{_sysconfdir}/ld.so.cache
 %config %{_sysconfdir}/locale-gen.conf
-
 /lib/*
 %exclude /lib/libpcprofile.so
 %{_libdir}/*.so
@@ -264,34 +263,39 @@ fi
 %{_datadir}/i18n/charmaps/UTF-8.gz
 %{_datadir}/i18n/charmaps/ISO-8859-1.gz
 %{_datadir}/i18n/locales/en_US
-%{_datarootdir}/locale/locale.alias
-%exclude %{_localstatedir}/lib/nss_db/Makefile
-%exclude /usr/bin/catchsegv
-%exclude /usr/bin/iconv
-%exclude /usr/bin/mtrace
-%exclude /usr/bin/pcprofiledump
-%exclude /usr/bin/pldd
-%exclude /usr/bin/sotruss
-%exclude /usr/bin/sprof
-%exclude /usr/bin/xtrace
+%{_datadir}/i18n/locales/en_GB
+%{_datadir}/i18n/locales/i18n*
+%{_datadir}/i18n/locales/iso14651_t1
+%{_datadir}/i18n/locales/iso14651_t1_common
+%{_datadir}/i18n/locales/translit_*
+%{_datadir}/locale/locale.alias
+%exclude %{_sharedstatedir}/nss_db/Makefile
+%exclude %{_bindir}/catchsegv
+%exclude %{_bindir}/iconv
+%exclude %{_bindir}/mtrace
+%exclude %{_bindir}/pcprofiledump
+%exclude %{_bindir}/pldd
+%exclude %{_bindir}/sotruss
+%exclude %{_bindir}/sprof
+%exclude %{_bindir}/xtrace
 
 %files iconv
 %defattr(-,root,root)
 %{_libdir}/gconv/*
-/usr/bin/iconv
-/usr/sbin/iconvconfig
+%{_bindir}/iconv
+%{_sbindir}/iconvconfig
 
 %files tools
 %defattr(-,root,root)
-/usr/bin/catchsegv
-/usr/bin/mtrace
-/usr/bin/pcprofiledump
-/usr/bin/pldd
-/usr/bin/sotruss
-/usr/bin/sprof
-/usr/bin/xtrace
-/usr/sbin/zdump
-/usr/sbin/zic
+%{_bindir}/catchsegv
+%{_bindir}/mtrace
+%{_bindir}/pcprofiledump
+%{_bindir}/pldd
+%{_bindir}/sotruss
+%{_bindir}/sprof
+%{_bindir}/xtrace
+%{_sbindir}/zdump
+%{_sbindir}/zic
 /sbin/sln
 %{_libdir}/audit/*
 /lib/libpcprofile.so
@@ -299,7 +303,7 @@ fi
 %files nscd
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/nscd.conf
-/usr/sbin/nscd
+%{_sbindir}/nscd
 %dir %{_localstatedir}/cache/nscd
 
 %files i18n
@@ -309,11 +313,16 @@ fi
 %exclude %{_datadir}/i18n/charmaps/UTF-8.gz
 %exclude %{_datadir}/i18n/charmaps/ISO-8859-1.gz
 %exclude %{_datadir}/i18n/locales/en_US
+%exclude %{_datadir}/i18n/locales/en_GB
+%exclude %{_datadir}/i18n/locales/i18n*
+%exclude %{_datadir}/i18n/locales/iso14651_t1
+%exclude %{_datadir}/i18n/locales/iso14651_t1_common
+%exclude %{_datadir}/i18n/locales/translit_*
 
 %files devel
 %defattr(-,root,root)
 # TODO: Excluding for now to remove dependency on PERL
-# /usr/bin/mtrace
+# %%{_bindir}/mtrace
 %{_libdir}/*.a
 %{_libdir}/*.o
 %{_includedir}/*
@@ -322,6 +331,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Sun Jun 30 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.32-19
+- Fix locale generation issue by packaging files properly
 * Tue May 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.32-18
 - Fix CVEs reported on nscd
 - Sync branch patches
