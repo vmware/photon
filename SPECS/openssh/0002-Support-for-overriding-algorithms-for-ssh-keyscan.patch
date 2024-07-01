@@ -1,16 +1,16 @@
-From 24736f9de365b8cf6762912d10cf442b44470390 Mon Sep 17 00:00:00 2001
+From 649863931b017c71f46c86652c543e8d7fa70b08 Mon Sep 17 00:00:00 2001
 From: Damien Miller <djm@mindrot.org>
 Date: Tue, 8 Aug 2023 15:25:58 +1000
-Subject: [PATCH] Support for overriding algorithms for ssh-keyscan
+Subject: [PATCH 2/2] Support for overriding algorithms for ssh-keyscan
 
 Based on patch from Shreenidhi Shedi in bz3599
 ---
  ssh-keyscan.1 | 25 ++++++++++++++++++++++++-
- ssh-keyscan.c | 37 ++++++++++++++++++++++++++++++++-----
- 2 files changed, 56 insertions(+), 6 deletions(-)
+ ssh-keyscan.c | 42 ++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 60 insertions(+), 7 deletions(-)
 
 diff --git a/ssh-keyscan.1 b/ssh-keyscan.1
-index aa6d34f..8978302 100644
+index 79cef30..d059d37 100644
 --- a/ssh-keyscan.1
 +++ b/ssh-keyscan.1
 @@ -100,8 +100,15 @@ but they do not reveal identifying information should the file's contents
@@ -54,20 +54,32 @@ index aa6d34f..8978302 100644
  .It Fl p Ar port
  Connect to
 diff --git a/ssh-keyscan.c b/ssh-keyscan.c
-index 3f3092e..bb59b55 100644
+index 548eaab..22d045c 100644
 --- a/ssh-keyscan.c
 +++ b/ssh-keyscan.c
-@@ -82,6 +82,9 @@ int print_sshfp = 0;		/* Print SSHFP records instead of known_hosts */
- int found_one = 0;		/* Successfully found a key */
+@@ -8,7 +8,7 @@
+  */
  
- int hashalg = -1;		/* Hash for SSHFP records or -1 for all */
+ #include "includes.h"
+- 
++
+ #include <sys/types.h>
+ #include "openbsd-compat/sys-queue.h"
+ #include <sys/resource.h>
+@@ -86,6 +86,12 @@ int hashalg = -1;		/* Hash for SSHFP records or -1 for all */
+ 
+ int quiet = 0;			/* Don't print key comment lines */
+ 
 +char *ciphers = NULL;		/* Ciphers or NULL for default list */
++
 +char *macs = NULL;		/* MACs or NULL for default list */
++
 +char *kexalgs = NULL;		/* KexAlgorithms or NULL for default list */
- 
++
  #define MAXMAXFD 256
  
-@@ -236,6 +239,17 @@ keygrab_ssh2(con *c)
+ /* The number of seconds after which to give up on a TCP connection */
+@@ -239,6 +245,17 @@ keygrab_ssh2(con *c)
  	char *myproposal[PROPOSAL_MAX] = { KEX_CLIENT };
  	int r;
  
@@ -85,7 +97,7 @@ index 3f3092e..bb59b55 100644
  	switch (c->c_keytype) {
  	case KT_DSA:
  		myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS] = get_cert ?
-@@ -769,12 +783,25 @@ main(int argc, char **argv)
+@@ -740,12 +757,25 @@ main(int argc, char **argv)
  			argv[fopt_count++] = optarg;
  			break;
  		case 'O':
@@ -117,5 +129,5 @@ index 3f3092e..bb59b55 100644
  		case 't':
  			get_keytypes = 0;
 -- 
-2.41.0
+2.45.2
 

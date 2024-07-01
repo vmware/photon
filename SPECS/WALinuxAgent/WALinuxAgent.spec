@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.9.1.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
@@ -81,6 +81,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jul 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.1.1-4
+- Bump version as a part of openssh upgrade
 * Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.1.1-3
 - Bump version as a part of util-linux upgrade
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.1.1-2

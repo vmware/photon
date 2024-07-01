@@ -1,7 +1,7 @@
 Summary:        Noninteractive ssh password provider
 Name:           sshpass
 Version:        1.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/sshpass/
 Source0:        http://downloads.sourceforge.net/project/sshpass/%{name}/%{version}/%{name}-%{version}.tar.gz
@@ -36,6 +36,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1
 
 %changelog
+* Mon Jul 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10-2
+- Bump version as a part of openssh upgrade
 * Fri Sep 22 2023 Oliver Kurth <okurth@vmware.com> 1.10-1
 - update to 1.10
 - require openssh-clients instead of openssh

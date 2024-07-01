@@ -3,8 +3,8 @@
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        9.3p2
-Release:        6%{?dist}
+Version:        9.8p1
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha512 %{name}=15b8c57aa120186f1d1c3c2b8dc6ffd26733e12f755a6b0a4255d9ec1815a61506275ff5723b4ac029e44bc2ad22852ac36e1101f292348fbfa79aa1a4cd3f35
+%define sha512 %{name}=95dec2f18e58eb47994f3de4430253e0665e185564b65088ca5f4108870e05feddef8cda8d3c0a4b75f18b98cc2c024df0e27de53b48c1a16da8da483cb8292a
 
 # These sources are taken from:
 # http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-<version>.tar.xz
@@ -25,7 +25,6 @@ Source5: %{name}.sysusers
 
 Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
-Patch2: 0003-support-build-with-openssl-3.3.0.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -169,6 +168,7 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd.service
 %{_sbindir}/sshd
 %{_libexecdir}/sftp-server
+%{_libexecdir}/sshd-session
 %{_mandir}/man5/sshd_config.5.gz
 %{_mandir}/man8/sshd.8.gz
 %{_mandir}/man5/moduli.5.gz
@@ -210,6 +210,9 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Mon Jul 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.8p1-1
+- Upgraded to v9.8p1
+- Fixes CVE-2024-6387
 * Thu Jun 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-6
 - Support building with openssl 3.3.0
 * Tue Jun 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-5
