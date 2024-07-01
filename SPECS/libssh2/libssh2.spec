@@ -17,7 +17,7 @@ Requires:       openssl
 Requires:       zlib
 
 Patch0:         fix-libssh2-linking-error.patch
-patch1:         libssh2-CVE-2023-48795.patch
+Patch1:         libssh2-CVE-2023-48795.patch
 
 %description
 libssh2 is a client-side C library implementing the SSH2 protocol.
