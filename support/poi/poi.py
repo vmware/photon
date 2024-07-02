@@ -62,6 +62,7 @@ class Poi(object):
                    "-v", f"{self.repo_dir}:/repo",
                    "-v", f"{workdir}:/workdir",
                    "-v", f"{self.photon_dir}:/photon",
+                   "-v", f"{self.stage_dir}:/photon/stage",
                    "-w", "/workdir"]
 
         if self.arch != THIS_ARCH:
@@ -417,7 +418,7 @@ def main():
             config = a
         elif o == "--docker-image":
             poi_image = a
-        elif o == "--stage_dir":
+        elif o == "--stage-dir":
             stage_dir = a
         elif o == "--repo-dir":
             repo_dir = a

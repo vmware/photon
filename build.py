@@ -1276,6 +1276,7 @@ class BuildImage:
             f" docker run --ulimit nofile=1024:1024 --rm --privileged --net=host"
             f" -e PHOTON_BUILD_NUMBER={constants.buildNumber}"
             f" -e PHOTON_RELEASE_VERSION={constants.releaseVersion}"
+            f" -v {Build_Config.stagePath}:/photon/stage"
             f" -v {photonDir}:/workspace photon-build {docker_script}"
         )
 

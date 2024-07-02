@@ -10,14 +10,14 @@ echo "PHOTON_RELEASE_VERSION=${PHOTON_RELEASE_VERSION}"
 arch="$(uname -m)"
 TEMP_CHROOT="${PWD}/temp_chroot"
 ROOTFS_TAR_FILENAME="photon-rootfs-${PHOTON_RELEASE_VERSION}-${PHOTON_BUILD_NUMBER}.${arch}.tar.gz"
-STAGE_DIR="${PWD}/stage"
+STAGE_DIR="/photon/stage"
 
 rm -rf /etc/yum.repos.d/*
 
 cat > /etc/yum.repos.d/photon-local.repo <<- EOF
 [photon-local]
 name=VMware Photon Linux ${PHOTON_RELEASE_VERSION}($arch)
-baseurl=file://${PWD}/stage/RPMS
+baseurl=file://${STAGE_DIR}/RPMS
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY
 gpgcheck=0
 enabled=1
