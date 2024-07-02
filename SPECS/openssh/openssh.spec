@@ -1,10 +1,10 @@
 %define privsep_path %{_datadir}/empty.sshd
-%global sshd_services sshd.service sshd.socket sshd-keygen.service
+%global sshd_services sshd.service sshd-keygen.service
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.8p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -151,7 +151,6 @@ fi
 %systemd_post %{sshd_services}
 
 %postun server
-/sbin/ldconfig
 %systemd_postun_with_restart %{sshd_services}
 
 %clean
@@ -210,6 +209,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Tue Jul 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.8p1-2
+- Remove sshd.socket from sshd_services list
 * Mon Jul 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.8p1-1
 - Upgraded to v9.8p1
 - Fixes CVE-2024-6387
