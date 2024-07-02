@@ -1,10 +1,10 @@
 %define privsep_path %{_datadir}/empty.sshd
-%global sshd_services sshd.service sshd.socket sshd-keygen.service
+%global sshd_services sshd.service sshd-keygen.service
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -211,6 +211,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Tue Jul 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-10
+- Remove sshd.socket from sshd_services list
 * Tue Jun 25 2024 Tapas Kundu <tapas.kundu@broadcom.com> 9.3p2-9
 - commenting out the async-signal-unsafe code from the
 - sshsigdie() function
