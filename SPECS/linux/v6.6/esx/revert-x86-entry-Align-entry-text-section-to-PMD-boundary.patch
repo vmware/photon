@@ -1,4 +1,4 @@
-From 91ad0689c9d94c1b12b47fac687b860e85593775 Mon Sep 17 00:00:00 2001
+From b2476d9be165707fc939c008b448861517b60667 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 30 Aug 2023 11:38:29 +0530
 Subject: [PATCH] x86/entry: Align entry text section to PMD boundary
@@ -48,7 +48,7 @@ Signed-off-by: Ingo Molnar <mingo@kernel.org>
  1 file changed, 3 deletions(-)
 
 diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index fd03f5a..478857c 100644
+index 54a5596ad..661b0ebc3 100644
 --- a/arch/x86/kernel/vmlinux.lds.S
 +++ b/arch/x86/kernel/vmlinux.lds.S
 @@ -67,7 +67,6 @@ jiffies = jiffies_64;
@@ -67,12 +67,14 @@ index fd03f5a..478857c 100644
  #define BSS_DECRYPTED
  
  #endif
-@@ -147,5 +145,4 @@ SECTIONS
+@@ -150,7 +148,6 @@ SECTIONS
+ 		. = srso_alias_untrain_ret | (1 << 2) | (1 << 8) | (1 << 14) | (1 << 20);
+ 		*(.text..__x86.rethunk_safe)
  #endif
 -		ALIGN_ENTRY_TEXT_END
- 		SOFTIRQENTRY_TEXT
- 		STATIC_CALL_TEXT
  		*(.gnu.warning)
+ 
+ 	} :text = 0xcccccccc
 -- 
-2.7.4
+2.35.6
 

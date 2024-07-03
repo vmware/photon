@@ -307,7 +307,7 @@ index 000000000..911bd20fb
 +	return TARFS_SB(sb)->first;
 +}
 +
-+extern int tarfs_getattr(struct user_namespace *mnt_userns, const struct path *path,
++extern int tarfs_getattr(struct mnt_idmap *idmap, const struct path *path,
 +			 struct kstat *stat, u32 request_mask, unsigned int flags);
 +extern int tarfs_read_dir(struct file *file, struct dir_context *ctx);
 +extern mode_t tarfs_entry_mode(struct tarfs_entry *entry);
@@ -329,7 +329,7 @@ index 000000000..911bd20fb
 +	.mmap		= generic_file_readonly_mmap,
 +	.fsync		= generic_file_fsync,
 +	.open		= generic_file_open,
-+	.splice_read    = generic_file_splice_read,
++	.splice_read    = filemap_splice_read,
 +};
 +
 +static const struct inode_operations tarfs_file_inode_operations = {
@@ -554,12 +554,12 @@ index 000000000..41fa448a0
 + *         flags: Currently unused.
 + * @return dentry of the file or sub dir.
 + */
-+int tarfs_getattr(struct user_namespace *mnt_userns, const struct path *path,
++int tarfs_getattr(struct mnt_idmap *idmap, const struct path *path,
 +		  struct kstat *stat, u32 request_mask, unsigned int flags)
 +{
 +	struct inode *inode = d_inode(path->dentry);
 +
-+	generic_fillattr(mnt_userns, inode, stat);
++	generic_fillattr(&nop_mnt_idmap, request_mask, inode, stat);
 +	if (stat->blocks == 0)
 +		stat->blocks = inode->i_mapping->nrpages << (PAGE_SHIFT - TARFS_BLOCK_SIZE_BITS);
 +
@@ -1068,7 +1068,7 @@ index 000000000..4231476f3
 +		(inode->i_size + sb->s_blocksize - 1) >> sb->s_blocksize_bits;
 +	inode->i_atime = entry->atime;
 +	inode->i_mtime = entry->mtime;
-+	inode->i_ctime = entry->ctime;
++	inode->__i_ctime = entry->ctime;
 +	__insert_inode_hash(inode, dentry_inode->i_ino);
 +	entry->inode = inode->i_ino;
 +	entry->ptr_inode = inode;
@@ -1547,12 +1547,12 @@ index 000000000..4231476f3
 +	}
 +	inode->i_uid = current_fsuid();
 +	inode->i_gid = current_fsgid();
-+	inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
++	inode->i_atime = inode->i_mtime = inode->__i_ctime = current_time(inode);
 +	inode->i_size = sb->s_blocksize;
 +	inode->i_blocks = (inode->i_size + sb->s_blocksize - 1) >> sb->s_blocksize_bits;
 +	inode->i_op = &tarfs_dir_inode_operations;
 +	inode->i_fop = &tarfs_dir_operations;
-+	inode_init_owner(&init_user_ns, inode, NULL, ROOT_INO_MODE);
++	inode_init_owner(&nop_mnt_idmap, inode, NULL, ROOT_INO_MODE);
 +	/*directory inodes start off with i_nlink=2(for "." entry)*/
 +	inc_nlink(inode);
 +	inc_nlink(inode);

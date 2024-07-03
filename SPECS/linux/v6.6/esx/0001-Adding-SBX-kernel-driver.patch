@@ -1,4 +1,4 @@
-From 3d91e7b3fdd62de0946d3a1c653904d0c9b9ceb6 Mon Sep 17 00:00:00 2001
+From eed73320e59e527b4d97bd698635f064aafd5a2e Mon Sep 17 00:00:00 2001
 From: gobleg <gobleg@vmware.com>
 Date: Wed, 5 Jul 2023 15:28:39 -0500
 Subject: [PATCH] Adding SBX kernel driver
@@ -9,43 +9,39 @@ in the guest and the shared memory on the host. This driver should
 only be used for the graphics DriverVM project.
 ---
  drivers/misc/Kconfig           |    1 +
- drivers/misc/Makefile          |    3 +-
+ drivers/misc/Makefile          |    1 +
  drivers/misc/vmw_sbx/Kconfig   |   11 +
  drivers/misc/vmw_sbx/Makefile  |    6 +
  drivers/misc/vmw_sbx/sbx.c     | 1065 ++++++++++++++++++++++++++++++++
  drivers/misc/vmw_sbx/sbx_reg.h |   57 ++
- 6 files changed, 1142 insertions(+), 1 deletion(-)
+ 6 files changed, 1141 insertions(+)
  create mode 100644 drivers/misc/vmw_sbx/Kconfig
  create mode 100644 drivers/misc/vmw_sbx/Makefile
  create mode 100644 drivers/misc/vmw_sbx/sbx.c
  create mode 100644 drivers/misc/vmw_sbx/sbx_reg.h
 
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 540613afb25a..e13fc1884e65 100644
+index de06d3301..0037d7796 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
-@@ -515,4 +515,5 @@ source "drivers/misc/uacce/Kconfig"
+@@ -580,4 +580,5 @@ source "drivers/misc/uacce/Kconfig"
  source "drivers/misc/pvpanic/Kconfig"
  source "drivers/misc/mchp_pci1xxxx/Kconfig"
  source "drivers/misc/vmw_extcfg/Kconfig"
 +source "drivers/misc/vmw_sbx/Kconfig"
  endmenu
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index 00dce5f781e3..2389323d45cf 100644
+index ed4f6d2ab..c4740f109 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
-@@ -62,4 +62,5 @@ obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
- obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
- obj-$(CONFIG_GP_PCI1XXXX)	+= mchp_pci1xxxx/
- obj-$(CONFIG_VCPU_STALL_DETECTOR)	+= vcpu_stall_detector.o
--obj-$(CONFIG_VMWARE_EXTCFG)	+= vmw_extcfg/
-\ No newline at end of file
-+obj-$(CONFIG_VMWARE_EXTCFG)	+= vmw_extcfg/
-+obj-$(CONFIG_SBX)		+= vmw_sbx/
-\ No newline at end of file
+@@ -68,3 +68,4 @@ obj-$(CONFIG_TMR_INJECT)	+= xilinx_tmr_inject.o
+ obj-$(CONFIG_TPS6594_ESM)	+= tps6594-esm.o
+ obj-$(CONFIG_TPS6594_PFSM)	+= tps6594-pfsm.o
+ obj-$(CONFIG_VMWARE_EXTCFG)    += vmw_extcfg/
++obj-$(CONFIG_SBX)              += vmw_sbx/
 diff --git a/drivers/misc/vmw_sbx/Kconfig b/drivers/misc/vmw_sbx/Kconfig
 new file mode 100644
-index 000000000000..1a4e7096467f
+index 000000000..1a4e70964
 --- /dev/null
 +++ b/drivers/misc/vmw_sbx/Kconfig
 @@ -0,0 +1,11 @@
@@ -62,7 +58,7 @@ index 000000000000..1a4e7096467f
 +	  If unsure, say no.
 diff --git a/drivers/misc/vmw_sbx/Makefile b/drivers/misc/vmw_sbx/Makefile
 new file mode 100644
-index 000000000000..ce1e01f1b935
+index 000000000..ce1e01f1b
 --- /dev/null
 +++ b/drivers/misc/vmw_sbx/Makefile
 @@ -0,0 +1,6 @@
@@ -74,7 +70,7 @@ index 000000000000..ce1e01f1b935
 +obj-$(CONFIG_SBX)		+= sbx.o
 diff --git a/drivers/misc/vmw_sbx/sbx.c b/drivers/misc/vmw_sbx/sbx.c
 new file mode 100644
-index 000000000000..ffd126046944
+index 000000000..ffd126046
 --- /dev/null
 +++ b/drivers/misc/vmw_sbx/sbx.c
 @@ -0,0 +1,1065 @@
@@ -787,7 +783,7 @@ index 000000000000..ffd126046944
 +	.unlocked_ioctl = sbx_mgr_ioctl,
 +};
 +
-+static char *sbx_devnode(struct device *dev, umode_t *mode)
++static char *sbx_devnode(const struct device *dev, umode_t *mode)
 +{
 +	if (mode)
 +		*mode = 0600;
@@ -856,7 +852,7 @@ index 000000000000..ffd126046944
 +	dev_info(dev, "sbx probe: alloc major number %d success\n",
 +		 sbx_mgr_major);
 +
-+	sbx_class = class_create(THIS_MODULE, SBX_NAME "drv");
++	sbx_class = class_create(SBX_NAME "drv");
 +	if (IS_ERR(sbx_class)) {
 +		result = PTR_ERR(sbx_class);
 +		dev_err(dev, "sbx probe: class create fail error=%d\n", result);
@@ -1145,7 +1141,7 @@ index 000000000000..ffd126046944
 +module_exit(sbx_exit_module);
 diff --git a/drivers/misc/vmw_sbx/sbx_reg.h b/drivers/misc/vmw_sbx/sbx_reg.h
 new file mode 100644
-index 000000000000..eab41615a62f
+index 000000000..eab41615a
 --- /dev/null
 +++ b/drivers/misc/vmw_sbx/sbx_reg.h
 @@ -0,0 +1,57 @@
@@ -1207,5 +1203,5 @@ index 000000000000..eab41615a62f
 +
 +#endif
 -- 
-2.30.2
+2.35.6
 

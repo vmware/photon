@@ -1,5 +1,3 @@
-%global build_for none
-
 %global security_hardening none
 %global __cmake_in_source_build 0
 
@@ -11,7 +9,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 %endif
 
 %ifarch aarch64
@@ -22,8 +20,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.83
-Release:        2%{?dist}
+Version:        6.6.28
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -34,7 +32,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=51d3b7d1dbfe0ecba1bd1265723a8e7c1553d99ade785bb91fe39979108c38f5e933b018406bfdc303a96d50eccb88d629c8dc0fecc94b975efffe8e79b43fc5
+%define sha512 linux=fdf6def06de85656f8aa010edfb8b2f7f71cdeef9a70b5b35511833fbcf0e4fbfafb6224acfdf475975bc4bc8f05d0291745af5a6ae752a70cbd09ae2d3d17a8
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -77,8 +75,6 @@ Source39: fips_canister_wrapper_common.h
 Source40: fips_canister_wrapper_internal.h
 Source41: fips_canister_wrapper_internal.c
 %endif
-# CVE
-Source42: CVE-2023-39191.patches
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -90,11 +86,9 @@ Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch6: 0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
-Patch8: Discard-.note.gnu.property-sections-in-generic-NOTES.patch
 # Expose Photon kernel macros to identify kernel flavor and version
 Patch9:  0001-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch10: 0002-linux-esx-Makefile-Add-kernel-flavor-info-to-the-gen.patch
-Patch11: 9p-file-attributes-caching-support.patch
 Patch12: 9p-support-for-local-file-lock.patch
 Patch13: 0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 # Out-of-tree patches from AppArmor:
@@ -133,10 +127,12 @@ Patch55: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 # Secure Boot and Kernel Lockdown
 Patch56: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
-Patch57: 0002-Add-.sbat-section.patch
+#Patch57: 0002-Add-.sbat-section.patch
 # NOTE: linux-esx does not support kexec, omitting SBAT verify logic.
 # CONFIG_SECURITY_SBAT_VERIFY=y
 # Patch58: 0003-Verify-SBAT-on-kexec.patch
+#external-entropy
+Patch59: 0001-external_entropy-Enable-External-Entropy-support.patch
 %endif
 
 # linux-esx [60..89]
@@ -168,31 +164,10 @@ Patch82: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
 Patch85: 0001-Adding-SBX-kernel-driver.patch
 
 # CVE: [100..199]
-Patch100: 0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-# Fix CVE-2023-0597
-Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
-Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
-# Fix CVE-2023-39191
-%include %{SOURCE42}
-# Fix CVE-2024-23307
-Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
-# Fix CVE-2024-26584
-Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
-# Fix CVE-2024-26585
-Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
-#Fix CVE-2024-26643
-Patch130: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
 # Fix CVE-2023-52585
 Patch131: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
-
-# Fix CVE-2023-52452
-Patch132: 0001-bpf-Allow-reads-from-uninit-stack.patch
-Patch133: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
-
-# Fix CVE-2024-26642
-Patch134: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -207,16 +182,6 @@ Patch207: 0001-vmw_vmci-arm64-support-memory-ordering.patch
 %endif
 
 # 9p: [300..350]
-Patch300: 0001-fs-9p-Add-opt_metaonly-cache-option.patch
-Patch301: 0002-p9fs_dir_readdir-offset-support.patch
-Patch302: 0003-Add-9p-zero-copy-data-path-using-crossfd.patch
-Patch303: 0004-Enable-cache-loose-for-vdfs-9p.patch
-Patch304: 0005-Ensure-seekdir-take-effect-when-entries-in-readdir-b.patch
-Patch305: 0006-Initialize-fid-iounit-during-creation-of-p9_fid.patch
-Patch306: 0007-Don-t-use-writeback-fid-for-cache-when-enabled-for-V.patch
-Patch307: 0008-fscache-Only-fetch-attr-from-inode-cache-when-cache-.patch
-Patch308: 0009-9p-fscache-Make-dcache-work-with-case-insensitive-vo.patch
-Patch309: 0010-9p-fscache-Ensure-consistent-blksize-is-returned-fro.patch
 
 # Crypto: [500..529]
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -231,13 +196,13 @@ Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
 %ifarch x86_64
 Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
-Patch506: 0001-jitterentropy-kcapi-defer-jent_init.patch
 %endif
 
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch510: 0001-crypto-Export-symbol-crypto_shash_alg_has_setkey.patch
 %endif
 
 BuildRequires: bc
@@ -254,6 +219,8 @@ BuildRequires: procps-ng-devel
 BuildRequires: lz4
 BuildRequires: elfutils-libelf-devel
 BuildRequires: bison
+BuildRequires:  libtraceevent-devel
+BuildRequires:  clang-devel
 
 %if 0%{?fips}
 BuildRequires: gdb
@@ -317,7 +284,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M89
 
 # CVE
-%autopatch -p1 -m100 -M134
+%autopatch -p1 -m100 -M133
 
 %ifarch aarch64
 # aarch64 patches
@@ -331,11 +298,11 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m500 -M504
 
 %ifarch x86_64
-%autopatch -p1 -m505 -M506
+%autopatch -p1 -m505 -M505
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M509
+%autopatch -p1 -m508 -M510
 %endif
 
 %ifarch x86_64
@@ -458,6 +425,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %config(noreplace) /boot/linux-%{uname_r}.cfg
 /lib/modules/*
 %exclude %{_modulesdir}/build
+%exclude %{_includedir}/powercap.h
 
 %config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
@@ -471,6 +439,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Sep 05 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.6.28-1
+- Upgrade to version 6.6.x.
 * Mon Apr 29 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2
 - Patched CVE-2024-26643
 * Mon Apr 29 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-1

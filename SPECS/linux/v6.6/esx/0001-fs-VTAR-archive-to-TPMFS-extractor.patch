@@ -1,4 +1,4 @@
-From fa348f87a790c4a57a090d96c2b4c37a2092f738 Mon Sep 17 00:00:00 2001
+From 77862fd1e1b5bff383f52e0ffd0ea99c12a5e471 Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Wed, 7 Oct 2020 12:50:40 +0000
 Subject: [PATCH] fs: VTAR archive to TPMFS extractor
@@ -21,14 +21,15 @@ or executed.
 allocation for file content data.
 
 Signed-off-by: Ankit Jain <ankitja@vmware.com>
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
  fs/Kconfig        |   1 +
  fs/Makefile       |   1 +
  fs/vtar/Kconfig   |  21 ++
  fs/vtar/Makefile  |   7 +
  fs/vtar/README.md |  33 +++
- fs/vtar/vtar.h    |  84 ++++++++
- fs/vtar/vtarfs.c  | 534 ++++++++++++++++++++++++++++++++++++++++++++++
+ fs/vtar/vtar.h    |  80 +++++++
+ fs/vtar/vtarfs.c  | 538 ++++++++++++++++++++++++++++++++++++++++++++++
  7 files changed, 681 insertions(+)
  create mode 100644 fs/vtar/Kconfig
  create mode 100644 fs/vtar/Makefile
@@ -37,10 +38,10 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  create mode 100644 fs/vtar/vtarfs.c
 
 diff --git a/fs/Kconfig b/fs/Kconfig
-index aa4c12282301..00420c8e7de9 100644
+index aa7e03cc1..4edde5bd6 100644
 --- a/fs/Kconfig
 +++ b/fs/Kconfig
-@@ -288,6 +288,7 @@ source "fs/sysv/Kconfig"
+@@ -331,6 +331,7 @@ source "fs/sysv/Kconfig"
  source "fs/ufs/Kconfig"
  source "fs/erofs/Kconfig"
  source "fs/vboxsf/Kconfig"
@@ -49,17 +50,17 @@ index aa4c12282301..00420c8e7de9 100644
  endif # MISC_FILESYSTEMS
  
 diff --git a/fs/Makefile b/fs/Makefile
-index 999d1a23f036..8a47d8fe8627 100644
+index f9541f40b..4113a2321 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
-@@ -136,3 +136,4 @@ obj-$(CONFIG_EFIVAR_FS)		+= efivarfs/
+@@ -129,3 +129,4 @@ obj-$(CONFIG_EFIVAR_FS)		+= efivarfs/
  obj-$(CONFIG_EROFS_FS)		+= erofs/
  obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
  obj-$(CONFIG_ZONEFS_FS)		+= zonefs/
 +obj-$(CONFIG_VTAR)		+= vtar/
 diff --git a/fs/vtar/Kconfig b/fs/vtar/Kconfig
 new file mode 100644
-index 000000000000..e9628c8c8a01
+index 000000000..e9628c8c8
 --- /dev/null
 +++ b/fs/vtar/Kconfig
 @@ -0,0 +1,21 @@
@@ -86,7 +87,7 @@ index 000000000000..e9628c8c8a01
 +        module will be called vtarfs. If unsure, say N.
 diff --git a/fs/vtar/Makefile b/fs/vtar/Makefile
 new file mode 100644
-index 000000000000..1a81f51c1bff
+index 000000000..1a81f51c1
 --- /dev/null
 +++ b/fs/vtar/Makefile
 @@ -0,0 +1,7 @@
@@ -99,7 +100,7 @@ index 000000000000..1a81f51c1bff
 +vtar-objs := vtarfs.o
 diff --git a/fs/vtar/README.md b/fs/vtar/README.md
 new file mode 100644
-index 000000000000..5b3b8b6a0c09
+index 000000000..5b3b8b6a0
 --- /dev/null
 +++ b/fs/vtar/README.md
 @@ -0,0 +1,33 @@
@@ -138,10 +139,10 @@ index 000000000000..5b3b8b6a0c09
 +This will unmount both the mount entry.
 diff --git a/fs/vtar/vtar.h b/fs/vtar/vtar.h
 new file mode 100644
-index 000000000000..97823c3a1d73
+index 000000000..c7d06b56b
 --- /dev/null
 +++ b/fs/vtar/vtar.h
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,80 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -213,10 +214,6 @@ index 000000000000..97823c3a1d73
 +	.statfs         = simple_statfs,
 +};
 +
-+static const struct address_space_operations vtar_ram_addr_ops = {
-+	.readpage       = simple_readpage,
-+};
-+
 +struct vtar_mount_opts {
 +	umode_t mode;
 +};
@@ -228,10 +225,10 @@ index 000000000000..97823c3a1d73
 +#endif
 diff --git a/fs/vtar/vtarfs.c b/fs/vtar/vtarfs.c
 new file mode 100644
-index 000000000000..5a5b012bec72
+index 000000000..ec67d3138
 --- /dev/null
 +++ b/fs/vtar/vtarfs.c
-@@ -0,0 +1,534 @@
+@@ -0,0 +1,538 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -297,7 +294,8 @@ index 000000000000..5a5b012bec72
 +	error = kern_path(filename, LOOKUP_FOLLOW | LOOKUP_DIRECTORY, &path);
 +	if (error)
 +		return error;
-+	error = inode_permission(path.dentry->d_inode, MAY_EXEC | MAY_CHDIR);
++	error = inode_permission(&nop_mnt_idmap, path.dentry->d_inode,
++						MAY_EXEC | MAY_CHDIR);
 +	if (!error)
 +		set_fs_pwd(current->fs, &path);
 +	path_put(&path);
@@ -346,7 +344,8 @@ index 000000000000..5a5b012bec72
 +		return PTR_ERR(dentry);
 +	error = security_path_symlink(&path, dentry, oldname);
 +	if (!error)
-+		error = vfs_symlink(path.dentry->d_inode, dentry, oldname);
++		error = vfs_symlink(&nop_mnt_idmap, path.dentry->d_inode,
++							dentry, oldname);
 +	done_path_create(&path, dentry);
 +	return error;
 +}
@@ -364,7 +363,8 @@ index 000000000000..5a5b012bec72
 +		mode &= ~current_umask();
 +	error = security_path_mkdir(&path, dentry, mode);
 +	if (!error)
-+		error = vfs_mkdir(path.dentry->d_inode, dentry, mode);
++		error = vfs_mkdir(&nop_mnt_idmap,path.dentry->d_inode,
++							dentry, mode);
 +	done_path_create(&path, dentry);
 +	return error;
 +}
@@ -584,7 +584,7 @@ index 000000000000..5a5b012bec72
 +	inode->i_mode = mode;
 +	inode->i_uid = current_fsuid();
 +	inode->i_gid = current_fsgid();
-+	inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
++	inode->i_atime = inode->i_mtime = inode->__i_ctime = current_time(inode);
 +	inode->i_sb = sb;
 +	inode->i_fop = &simple_dir_operations;
 +
@@ -632,11 +632,12 @@ index 000000000000..5a5b012bec72
 +		goto err_fill_super;
 +	}
 +	inode = vtar_create_inode(sb, S_IFDIR | info->mount_opts.mode);
-+	inode->i_mapping->a_ops = &vtar_ram_addr_ops;
++	inode->i_mapping->a_ops = &ram_aops;
 +	mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
 +	mapping_set_unevictable(inode->i_mapping);
 +	inode->i_op = &vtar_dir_inode_operations;
-+	inode_init_owner(inode, NULL, (S_IFDIR | info->mount_opts.mode));
++	inode_init_owner(&nop_mnt_idmap, inode, NULL,
++			(S_IFDIR | info->mount_opts.mode));
 +	inc_nlink(inode);
 +	sb->s_root = d_make_root(inode);
 +	if ( !sb->s_root ) {
@@ -767,5 +768,5 @@ index 000000000000..5a5b012bec72
 +MODULE_AUTHOR("VMware Photon OS : Srinidhi Rao <srinidhir@vmware.com>");
 +MODULE_AUTHOR("VMware Photon OS : Ankit Jain <ankitja@vmware.com>");
 -- 
-2.23.1
+2.35.6
 

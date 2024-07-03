@@ -1,7 +1,7 @@
-From 2c3c00549cbb2978d6a455ab2d2fb3686a659a94 Mon Sep 17 00:00:00 2001
+From 6637240219cef7e19aaa8087d10395aacceddc75 Mon Sep 17 00:00:00 2001
 From: Vivek Thampi <vithampi@vmware.com>
 Date: Thu, 6 May 2021 10:41:52 -0700
-Subject: [PATCH 2/2] ptp/ptp_vmw: Add module param to probe device using
+Subject: [PATCH] ptp/ptp_vmw: Add module param to probe device using
  hypervisor command
 
 Add a module parameter probe_hv_port that allows ptp_vmw driver to be
@@ -21,11 +21,11 @@ the virtual machine.
 Reviewed-by: Deep Shah <sdeep@vmware.com>
 Signed-off-by: Vivek Thampi <vithampi@vmware.com>
 ---
- drivers/ptp/ptp_vmw.c | 57 ++++++++++++++++++++++++++++++++++++++++++---------
+ drivers/ptp/ptp_vmw.c | 57 +++++++++++++++++++++++++++++++++++--------
  1 file changed, 47 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/ptp/ptp_vmw.c b/drivers/ptp/ptp_vmw.c
-index d5458dd..84ff2d0 100644
+index cdf35dbcc155..d9911afdff0c 100644
 --- a/drivers/ptp/ptp_vmw.c
 +++ b/drivers/ptp/ptp_vmw.c
 @@ -21,6 +21,9 @@
@@ -38,7 +38,7 @@ index d5458dd..84ff2d0 100644
  static struct acpi_device *ptp_vmw_acpi_device;
  static struct ptp_clock *ptp_vmw_clock;
  
-@@ -112,25 +115,41 @@ static int ptp_vmw_enable(struct ptp_clock_info *info,
+@@ -113,25 +116,41 @@ static struct ptp_clock_info ptp_vmw_clock_info = {
  	.enable		= ptp_vmw_enable,
  };
  
@@ -80,15 +80,15 @@ index d5458dd..84ff2d0 100644
 +	return ret;
  }
  
- static int ptp_vmw_acpi_remove(struct acpi_device *device)
+ static void ptp_vmw_acpi_remove(struct acpi_device *device)
  {
 -	ptp_clock_unregister(ptp_vmw_clock);
 +	ptp_vmw_clock_unregister();
 +	ptp_vmw_acpi_device = NULL;
- 	return 0;
  }
  
-@@ -151,16 +170,34 @@ static int ptp_vmw_acpi_remove(struct acpi_device *device)
+ static const struct acpi_device_id ptp_vmw_acpi_device_ids[] = {
+@@ -151,16 +170,34 @@ static struct acpi_driver ptp_vmw_acpi_driver = {
  	.owner	= THIS_MODULE
  };
  
@@ -126,5 +126,5 @@ index d5458dd..84ff2d0 100644
  
  module_init(ptp_vmw_init);
 -- 
-1.8.3.1
+2.35.6
 

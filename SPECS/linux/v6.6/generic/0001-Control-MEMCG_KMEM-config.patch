@@ -1,4 +1,4 @@
-From 6a3debf8cf5e5ea64b1ab2b56e0af805528d51be Mon Sep 17 00:00:00 2001
+From e39a0d0d15f4a4ae0143f09825941fb8d1c120ad Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 6 Apr 2021 15:55:37 -0700
 Subject: [PATCH] Control MEMCG_KMEM config
@@ -8,21 +8,21 @@ Allow to disable (compile out) CONFIG_MEMCG_KMEM.
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
- init/Kconfig     | 9 ++++++++-
- mm/memcontrol.c  | 2 ++
- 2 files changed, 10 insertions(+), 1 deletions(-)
+ init/Kconfig    | 9 ++++++++-
+ mm/memcontrol.c | 2 ++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/init/Kconfig b/init/Kconfig
-index 5eb91dde4018..63194057e093 100644
+index 0f700e8f01bb..bc53489f3dc1 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -909,9 +909,16 @@ config MEMCG
+@@ -954,9 +954,16 @@ config MEMCG
  	  Provides control over the memory footprint of tasks in a cgroup.
  
  config MEMCG_KMEM
 -	bool
 +	bool "Memory Resource Controller Kernel Memory accounting"
- 	depends on MEMCG && !SLOB
+ 	depends on MEMCG
  	default y
 +	help
 +	  The Kernel Memory extension for Memory Resource Controller can limit
@@ -35,10 +35,10 @@ index 5eb91dde4018..63194057e093 100644
  config BLK_CGROUP
  	bool "IO controller"
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 87cd5bf1b487..b7ba6d13f1ec 100644
+index dd854cc65fd9..8d89304ee335 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
-@@ -4314,6 +4314,7 @@ static struct cftype mem_cgroup_legacy_files[] = {
+@@ -5085,6 +5085,7 @@ static struct cftype mem_cgroup_legacy_files[] = {
  		.seq_show = memcg_numa_stat_show,
  	},
  #endif
@@ -46,7 +46,7 @@ index 87cd5bf1b487..b7ba6d13f1ec 100644
  	{
  		.name = "kmem.limit_in_bytes",
  		.private = MEMFILE_PRIVATE(_KMEM, RES_LIMIT),
-@@ -4369,6 +4370,7 @@ static struct cftype mem_cgroup_legacy_files[] = {
+@@ -5138,6 +5139,7 @@ static struct cftype mem_cgroup_legacy_files[] = {
  		.write = mem_cgroup_reset,
  		.read_u64 = mem_cgroup_read_u64,
  	},
@@ -55,5 +55,5 @@ index 87cd5bf1b487..b7ba6d13f1ec 100644
  };
  
 -- 
-2.11.0
+2.35.6
 

@@ -1,0 +1,2206 @@
+From 1b93d728cdb28635e5fcfee724c8aca669193729 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhir@vmware.com>
+Date: Tue, 2 Jan 2024 08:52:12 +0000
+Subject: [PATCH] external_entropy: Enable External Entropy support
+
+  -  VMWare ESXi hypervisor can provide true random numbers
+     through ESXi port read call. The external_entropy driver is
+     intended to provide kernel side implementation to read the
+     random numbers from hypervisor though port command and add
+     it to an internal pool which can be read by user space apps.
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ drivers/char/hw_random/Kconfig                |  12 +
+ drivers/char/hw_random/Makefile               |   1 +
+ .../char/hw_random/external_entropy/Makefile  |  11 +
+ .../external_entropy/external-rng-io.c        |  81 +++
+ .../external_ent_config_params.c              | 204 ++++++
+ .../external_ent_config_params.h              |  36 +
+ .../external_entropy/external_ent_sysfs.c     | 420 ++++++++++++
+ .../external_entropy/external_ent_sysfs.h     |  28 +
+ .../external_entropy/external_entropy.c       | 618 ++++++++++++++++++
+ .../external_entropy/external_entropy.h       | 211 ++++++
+ .../external_entropy_threaded_work.c          | 443 +++++++++++++
+ .../external_entropy_threaded_work.h          |  22 +
+ 12 files changed, 2087 insertions(+)
+ create mode 100644 drivers/char/hw_random/external_entropy/Makefile
+ create mode 100644 drivers/char/hw_random/external_entropy/external-rng-io.c
+ create mode 100644 drivers/char/hw_random/external_entropy/external_ent_config_params.c
+ create mode 100644 drivers/char/hw_random/external_entropy/external_ent_config_params.h
+ create mode 100644 drivers/char/hw_random/external_entropy/external_ent_sysfs.c
+ create mode 100644 drivers/char/hw_random/external_entropy/external_ent_sysfs.h
+ create mode 100644 drivers/char/hw_random/external_entropy/external_entropy.c
+ create mode 100644 drivers/char/hw_random/external_entropy/external_entropy.h
+ create mode 100644 drivers/char/hw_random/external_entropy/external_entropy_threaded_work.c
+ create mode 100644 drivers/char/hw_random/external_entropy/external_entropy_threaded_work.h
+
+diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
+index 8de74dcfa18c..50a244f334f5 100644
+--- a/drivers/char/hw_random/Kconfig
++++ b/drivers/char/hw_random/Kconfig
+@@ -573,6 +573,18 @@ config HW_RANDOM_JH7110
+ 	  To compile this driver as a module, choose M here.
+ 	  The module will be called jh7110-trng.
+ 
++config HW_EXTERNAL_ENTROPY
++	tristate "VMWare ESXi based True Random Number Generator support"
++	depends on HW_RANDOM
++	default m
++	help
++	  This driver provides kernel-side support for VMWare ESXi hypervisor
++	  Random Number Generator.
++	  This driver obtains true random numbers through a call to VMWARE
++	  Hypervisor port on x86_64 architecture.
++	  To compile this driver as a module, choose M here: the
++	  module will be called external_entropy.
++
+ endif # HW_RANDOM
+ 
+ config UML_RANDOM
+diff --git a/drivers/char/hw_random/Makefile b/drivers/char/hw_random/Makefile
+index 32549a1186dc..dd98897f1210 100644
+--- a/drivers/char/hw_random/Makefile
++++ b/drivers/char/hw_random/Makefile
+@@ -49,3 +49,4 @@ obj-$(CONFIG_HW_RANDOM_ARM_SMCCC_TRNG) += arm_smccc_trng.o
+ obj-$(CONFIG_HW_RANDOM_CN10K) += cn10k-rng.o
+ obj-$(CONFIG_HW_RANDOM_POLARFIRE_SOC) += mpfs-rng.o
+ obj-$(CONFIG_HW_RANDOM_JH7110) += jh7110-trng.o
++obj-$(CONFIG_HW_EXTERNAL_ENTROPY) += external_entropy/
+diff --git a/drivers/char/hw_random/external_entropy/Makefile b/drivers/char/hw_random/external_entropy/Makefile
+new file mode 100644
+index 000000000000..cb37dff9a0ad
+--- /dev/null
++++ b/drivers/char/hw_random/external_entropy/Makefile
+@@ -0,0 +1,11 @@
++#
++# Makefile for the external-entropy routines.
++#
++
++obj-$(CONFIG_HW_EXTERNAL_ENTROPY) += external-entropy.o
++
++external-entropy-$(CONFIG_HW_EXTERNAL_ENTROPY) := external-rng-io.o      \
++					external_entropy_threaded_work.o \
++					external_ent_sysfs.o             \
++					external_ent_config_params.o     \
++					external_entropy.o
+diff --git a/drivers/char/hw_random/external_entropy/external-rng-io.c b/drivers/char/hw_random/external_entropy/external-rng-io.c
+new file mode 100644
+index 000000000000..284b8459a341
+--- /dev/null
++++ b/drivers/char/hw_random/external_entropy/external-rng-io.c
+@@ -0,0 +1,81 @@
++// SPDX-License-Identifier: GPL v2.0
++/*
++ * Copyright 2023 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2
++ * (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ */
++
++#include <linux/hw_random.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/workqueue.h>
++#include <linux/device.h>
++#include <linux/miscdevice.h>
++#include <linux/circ_buf.h>
++#include <linux/kthread.h>
++#include <uapi/linux/sched/types.h>
++
++#include "external_entropy.h"
++
++#define VMWARE_HYPERVISOR_MAGIC 0x564D5868
++#define VMWARE_CMD_GETENTROPY    101
++
++#define VMWARE_HYPERVISOR_PORT    0x5658
++
++#define VMWARE_PORT(cmd, eax, ebx, ecx, edx)                            \
++		__asm__("inl (%%dx), %%eax" :                           \
++		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :            \
++		"a"(VMWARE_HYPERVISOR_MAGIC),                           \
++		"c"(VMWARE_CMD_##cmd),                                  \
++		"d"(VMWARE_HYPERVISOR_PORT), "b"(UINT_MAX) :            \
++		"memory")
++
++#define VMWARE_CMD(cmd, eax, ebx, ecx, edx) do {             \
++		VMWARE_PORT(cmd, eax, ebx, ecx, edx);        \
++	} while (0)
++
++/*
++ * If the GETENTROPY Call is a SUCCESS, it return size of U32 as return code
++ * as we can only request 4 bytes of in one Hypercall. Hence,
++ * The return code will be 0x20.
++ */
++#define GETENTROPY_SUCCESS  0x20
++#define GETENTROPY_FAIL  0x00
++
++int rng_read_hypercall(struct ext_ent_t *data, u8 *buf, size_t max_bytes,
++						bool wait)
++{
++	int err = -EIO;
++	u32 eax, ebx, ecx, edx, status_code;
++
++	if (!buf) {
++		entropy_err("Hypercall read buffer not allocated\n");
++		return -ENOMEM;
++	}
++
++	VMWARE_CMD(GETENTROPY, eax, ebx, ecx, edx);
++	status_code = eax & 0x000000FF;
++	if (status_code == GETENTROPY_SUCCESS) {
++		memcpy(buf, &ebx, sizeof(u32));
++		err = 0;
++	} else if (status_code == GETENTROPY_FAIL)
++		return -EAGAIN;
++	else {
++		/* Should never be here */
++		entropy_err("VMWARE_CMD GETENTROPY abnormal status 0x%X\n",
++						status_code);
++		WARN_TAINT(1, TAINT_WARN,
++				"VMWARE_CMD GETENTROPY abnormal status");
++		return -EIO;
++	}
++
++	return err;
++}
++
++MODULE_AUTHOR("Srinidhi Rao <srinidhir@vmware.com>");
++MODULE_DESCRIPTION("RNG driver for external Hypercall based RNG");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/char/hw_random/external_entropy/external_ent_config_params.c b/drivers/char/hw_random/external_entropy/external_ent_config_params.c
+new file mode 100644
+index 000000000000..0503bc0df2d9
+--- /dev/null
++++ b/drivers/char/hw_random/external_entropy/external_ent_config_params.c
+@@ -0,0 +1,204 @@
++// SPDX-License-Identifier: GPL v2.0
++/*
++ * Copyright 2023 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2
++ * (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ */
++
++#include "external_entropy.h"
++#include "external_ent_sysfs.h"
++#include "external_ent_config_params.h"
++
++#define EXTENT_BLOCKING_STR "block"
++#define EXTENT_ERROR_STR "error"
++
++/*
++ * MODULE PARAMETERS : no_avail and fallback_auto_switch
++ */
++/*
++ * The parameter burst_bits configures the number of bits external entropy
++ * can emit in one shot.
++ */
++static unsigned short total_burst_bits = DEFAULT_TOTAL_BURST_BITS;
++module_param(total_burst_bits, ushort, 0644);
++MODULE_PARM_DESC(total_burst_bits,
++	"Total number of burst bits in burst mode.power of 2 and max is 8192");
++
++/*
++ * The parameter ms_per_bit configures the time taken to emit 1 bit of
++ * random data in replenish mode after the burst mode has elapsed.
++ */
++static unsigned short ms_per_bit = DEFAULT_MS_PER_BIT;
++module_param(ms_per_bit, ushort, 0644);
++MODULE_PARM_DESC(ms_per_bit,
++	"the time taken to emit 1 bit of random data in replenish mode");
++
++static char no_avail[10] = EXTENT_BLOCKING_STR;
++module_param_string(no_avail, no_avail, sizeof(no_avail), 0644);
++MODULE_PARM_DESC(no_avail, "When entropy is not available(default=BLOCKING)");
++
++/*
++ * This parameter will configure fallback automatic switching. When fallback
++ * source is set and if external entropy encounters any error or is exhausted,
++ * the dev_read will fetch bytes from fallback source till external_entropy
++ * becomes available. Once external entropy is able to give bytes either
++ * in burst mode or replenish mode, this fallback will be removed and dev_read
++ * will start to fill from external_entropy output.
++ */
++static char fallback_auto_switch[8] = {0};
++module_param_string(fallback_auto_switch, fallback_auto_switch,
++				sizeof(fallback_auto_switch), 0644);
++MODULE_PARM_DESC(fallback_auto_switch,
++				"switch to available source(default=none)");
++
++static char jent_src_name[32] = "jitterentropy_rng";
++module_param_string(jent_src_name, jent_src_name,
++				sizeof(jent_src_name), 0644);
++MODULE_PARM_DESC(jent_src_name,
++	"jitterentropy source name(default=jitterentropy_rng)");
++
++/*
++ * This parameter will configure the pool size of the circular buffer which
++ * will be filled from the extract entropy thread. This needs to be a
++ * configuration parameter and cannot be same as BURST Size because, each
++ * VM or Pod which runs the external entropy driver will have to share
++ * the hypervisor's external entropy stream. Hence it will be good to
++ * configure pool size less than BURST size if multiple VMs or PODs are going
++ * be spawned at the same time on a single hypervisor.
++ */
++static unsigned short config_pool_size = (DEFAULT_TOTAL_BURST_BITS / BITS_PER_BYTE);
++module_param(config_pool_size, ushort, 0644);
++MODULE_PARM_DESC(config_pool_size,
++	"MAX Pool (default=1024). power of 2 and max is 1024");
++
++void get_burst_bits(unsigned short *val)
++{
++	*val = total_burst_bits;
++}
++
++void get_ms_per_bit(unsigned short *val)
++{
++	*val = ms_per_bit;
++}
++
++void get_pool_size(int *val)
++{
++	*val = config_pool_size;
++}
++
++static inline bool is_power_of_two(unsigned short x)
++{
++	return x && (!(x & (x - 1)));
++}
++
++/* Get and Set functions for the config parameters */
++
++int get_no_avail_config(enum no_avail_def *val)
++{
++	if (!strncasecmp(no_avail, EXTENT_ERROR_STR,
++			strlen(EXTENT_ERROR_STR))) {
++		entropy_debug("No Avail RETURN_ERROR set\n");
++		*val = EXT_ENT_RETURN_AVAIL;
++		return -EAGAIN;
++	}
++	entropy_debug("No Avail BLOCKING set\n");
++	*val = EXT_ENT_BLOCKING; /* Default behaviour */
++	return 0;
++}
++
++int set_no_avail_config(enum no_avail_def val)
++{
++	switch (val) {
++
++	case EXT_ENT_RETURN_AVAIL:
++		strncpy(no_avail, EXTENT_ERROR_STR, strlen(EXTENT_ERROR_STR));
++		break;
++	case EXT_ENT_BLOCKING:
++		strncpy(no_avail, EXTENT_BLOCKING_STR,
++					strlen(EXTENT_BLOCKING_STR));
++		break;
++	default:
++		strncpy(no_avail, EXTENT_BLOCKING_STR,
++					strlen(EXTENT_BLOCKING_STR));
++		break;
++	}
++	return 0;
++}
++
++int get_fallback_auto_switch_config(enum entropy_src_t *val)
++{
++	if (!strncasecmp(fallback_auto_switch, "none", strlen("none")))
++		*val = EXTERNAL;
++	else if (!strncasecmp(fallback_auto_switch, "rd_rnd",
++						strlen("rd_rnd")))
++		*val = RD_RND;
++	else if (!strncasecmp(fallback_auto_switch, "jent", strlen("jent")))
++		*val = JENT;
++	else if (!strncasecmp(fallback_auto_switch, "random",
++						strlen("random")))
++		*val = RANDOM;
++	else  /* Default case */
++		*val = EXTERNAL;
++
++	return 0;
++}
++
++int set_fallback_auto_switch_config(enum entropy_src_t val)
++{
++
++	entropy_debug(" In %s, setting config to %s\n", __func__,
++					fallback_opt_def[val]);
++	strncpy(fallback_auto_switch, fallback_opt_def[val],
++				strlen(fallback_opt_def[val]));
++	return 0;
++}
++
++const char *get_jent_src_name(void)
++{
++	entropy_debug("User set jitterentropy rng name '%s'\n",
++						jent_src_name);
++
++	return jent_src_name;
++}
++
++static struct ctl_table external_entropy_table[] = {
++	{
++		.procname       = "fallback_auto_switch",
++		.data           = fallback_auto_switch,
++		.maxlen         = sizeof(fallback_auto_switch),
++		.mode           = 0644,
++		.proc_handler   = proc_dostring,
++	},
++	{
++		.procname       = "no_avail",
++		.data           = no_avail,
++		.maxlen         = sizeof(no_avail),
++		.mode           = 0644,
++		.proc_handler   = proc_dostring,
++	},
++	{}
++};
++
++/*static struct ctl_table external_entropy_dir_table[] = {
++	{
++		.procname       = "external_entropy",
++		.mode           = 0555,
++		.child          = external_entropy_table
++	},
++	{}
++};*/
++
++static struct ctl_table_header *external_entropy_sysctls;
++
++void external_entropy_proc_init(void)
++{
++	external_entropy_sysctls = register_sysctl("external_entropy", external_entropy_table);
++}
++
++void external_entropy_proc_exit(void)
++{
++	unregister_sysctl_table(external_entropy_sysctls);
++}
+diff --git a/drivers/char/hw_random/external_entropy/external_ent_config_params.h b/drivers/char/hw_random/external_entropy/external_ent_config_params.h
+new file mode 100644
+index 000000000000..e0f2733e89cd
+--- /dev/null
++++ b/drivers/char/hw_random/external_entropy/external_ent_config_params.h
+@@ -0,0 +1,36 @@
++/* SPDX-License-Identifier: GPL v2.0
++ *
++ * Copyright 2023 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2
++ * (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ */
++
++#ifndef EXTERNAL_ENTROPY_CONFIG_PARAMS_H
++#define EXTERNAL_ENTROPY_CONFIG_PARAMS_H
++
++/* Function Prototype Forward declaration */
++
++int get_no_avail_config(enum no_avail_def *val);
++
++int set_no_avail_config(enum no_avail_def val);
++
++int get_fallback_auto_switch_config(enum entropy_src_t *val);
++
++int set_fallback_auto_switch_config(enum entropy_src_t val);
++
++const char *get_jent_src_name(void);
++
++void external_entropy_proc_init(void);
++
++void external_entropy_proc_exit(void);
++
++void get_burst_bits(unsigned short *val);
++
++void get_ms_per_bit(unsigned short *val);
++
++void get_pool_size(int *val);
++
++#endif
+diff --git a/drivers/char/hw_random/external_entropy/external_ent_sysfs.c b/drivers/char/hw_random/external_entropy/external_ent_sysfs.c
+new file mode 100644
+index 000000000000..609f805bccce
+--- /dev/null
++++ b/drivers/char/hw_random/external_entropy/external_ent_sysfs.c
+@@ -0,0 +1,420 @@
++// SPDX-License-Identifier: GPL v2.0
++/*
++ * Copyright 2023 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2
++ * (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ */
++
++#include "external_entropy.h"
++#include "external_ent_sysfs.h"
++#include "external_ent_config_params.h"
++
++#define no_avail_block_str "block"
++#define no_avail_error_str "error"
++static const char * const no_avail_block[] = {
++	"block",
++	NULL
++};
++
++static const char * const no_avail_error[] = {
++	"error",
++	NULL
++};
++
++static ssize_t ext_ent_attr_fallback_opt_show(struct device *dev,
++				struct device_attribute *attr, char *buf);
++static ssize_t ext_ent_attr_fallback_opt_store(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf, size_t len);
++static ssize_t ext_ent_attr_ent_src_show(struct device *dev,
++				struct device_attribute *attr, char *buf);
++static ssize_t ext_ent_attr_ent_src_store(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf, size_t len);
++static ssize_t ext_ent_attr_op_state_show(struct device *dev,
++				struct device_attribute *attr, char *buf);
++static ssize_t ext_ent_attr_thread_op_show(struct device *dev,
++				struct device_attribute *attr, char *buf);
++static ssize_t ext_ent_attr_status_show(struct device *dev,
++				struct device_attribute *attr, char *buf);
++static ssize_t ext_ent_attr_available_entropy_show(struct device *dev,
++				struct device_attribute *attr, char *buf);
++
++static ssize_t ext_ent_attr_noavail_store(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf, size_t len);
++static ssize_t ext_ent_attr_noavail_show(struct device *dev,
++				struct device_attribute *attr, char *buf);
++
++static DEVICE_ATTR(ext_ent_attr_fallback_opt, 0644,
++	ext_ent_attr_fallback_opt_show, ext_ent_attr_fallback_opt_store);
++static DEVICE_ATTR(ext_ent_attr_ent_src, 0644,
++		ext_ent_attr_ent_src_show, ext_ent_attr_ent_src_store);
++static DEVICE_ATTR(ext_ent_attr_noavail, 0644,
++		ext_ent_attr_noavail_show, ext_ent_attr_noavail_store);
++static DEVICE_ATTR(ext_ent_attr_op_state, 0644,
++		ext_ent_attr_op_state_show, NULL);
++static DEVICE_ATTR(ext_ent_attr_thread_op, 0644,
++		ext_ent_attr_thread_op_show, NULL);
++static DEVICE_ATTR(ext_ent_attr_status, 0644,
++		ext_ent_attr_status_show, NULL);
++static DEVICE_ATTR(ext_ent_attr_available_entropy, 0644,
++		ext_ent_attr_available_entropy_show, NULL);
++
++static struct attribute *ext_ent_attributes[] = {
++		&dev_attr_ext_ent_attr_fallback_opt.attr,
++		&dev_attr_ext_ent_attr_ent_src.attr,
++		&dev_attr_ext_ent_attr_noavail.attr,
++		&dev_attr_ext_ent_attr_op_state.attr,
++		&dev_attr_ext_ent_attr_thread_op.attr,
++		&dev_attr_ext_ent_attr_status.attr,
++		&dev_attr_ext_ent_attr_available_entropy.attr,
++		NULL,
++};
++
++static const struct attribute_group ext_ent_attr_sysfs_attr_group = {
++		.attrs = ext_ent_attributes,
++};
++
++int ext_ent_attr_sysfs_init(struct ent_sysfs_info_t *info)
++{
++	int ret;
++
++	info->ent_misc.minor = MISC_DYNAMIC_MINOR;
++	info->ent_misc.name = "ext_ent_attr";
++	info->ent_misc.mode = 0644;
++	ret = misc_register(&info->ent_misc);
++	if (ret) {
++		dev_err(info->dev,
++			"Err %d in registering misc class\n", ret);
++		return ret;
++	}
++	entropy_debug("Created MISC DRIVER\n");
++	ret = sysfs_create_group(
++			&info->ent_misc.this_device->kobj,
++			&ext_ent_attr_sysfs_attr_group);
++	if (ret) {
++		dev_err(info->dev, "Err in creating sysfs grp\n");
++		misc_deregister(&info->ent_misc);
++	}
++
++	return ret;
++}
++
++void ext_ent_attr_sysfs_exit(struct ent_sysfs_info_t *info)
++{
++	sysfs_remove_group(
++		&info->ent_misc.this_device->kobj,
++		&ext_ent_attr_sysfs_attr_group);
++
++	if (info->ent_misc.this_device)
++		misc_deregister(&info->ent_misc);
++}
++
++static ssize_t ext_ent_attr_fallback_opt_show(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct ext_ent_t *ext_ent_data = NULL;
++	ssize_t ret = 0;
++
++	entropy_debug("In sysfs get fallback opt\n");
++
++	get_external_entropy_handle(&ext_ent_data);
++	get_fallback_auto_switch_config(&ext_ent_data->fb_src);
++	switch (ext_ent_data->fb_src)  {
++
++	case EXTERNAL:
++		ret = strlen("external");
++		strncpy(buf, "external", ret);
++		break;
++
++	case RD_RND:
++		ret = strlen("rd_rnd");
++		strncpy(buf, "rd_rnd", ret);
++		break;
++
++	case RANDOM:
++		ret = strlen("random");
++		strncpy(buf, "random", ret);
++		break;
++
++	case JENT:
++		ret = strlen("jent");
++		strncpy(buf, "jent", ret);
++		break;
++
++	default:
++		ret = strlen("external");
++		strncpy(buf, "external", ret);
++		break;
++	}
++	return ret;
++}
++
++static ssize_t ext_ent_attr_fallback_opt_store(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf, size_t len)
++{
++	struct ext_ent_t *ext_ent_data = NULL;
++
++	entropy_debug("In sysfs set fallback opt\n");
++
++	get_external_entropy_handle(&ext_ent_data);
++
++	if (!strncasecmp(buf, fallback_opt_def[EXTERNAL],
++				strlen(fallback_opt_def[EXTERNAL])))
++		set_fallback_auto_switch_config(EXTERNAL);
++	else if (!strncasecmp(buf, fallback_opt_def[JENT],
++				strlen(fallback_opt_def[JENT])))
++		set_fallback_auto_switch_config(JENT);
++	else if (!strncasecmp(buf, fallback_opt_def[RD_RND],
++				strlen(fallback_opt_def[RD_RND])))
++		set_fallback_auto_switch_config(RD_RND);
++	else if (!strncasecmp(buf, fallback_opt_def[RANDOM],
++				strlen(fallback_opt_def[RANDOM])))
++		set_fallback_auto_switch_config(RANDOM);
++	else /* Default behavior */
++		set_fallback_auto_switch_config(EXTERNAL);
++
++	return len;
++}
++
++static ssize_t ext_ent_attr_ent_src_show(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct ext_ent_t *ext_ent_data = NULL;
++	ssize_t ret = 0;
++
++	entropy_debug("In sysfs get_entropy_src\n");
++
++	get_external_entropy_handle(&ext_ent_data);
++	switch (ext_ent_data->ent_src) {
++
++	case EXTERNAL:
++		ret = strlen("external");
++		strncpy(buf, "external", ret);
++		break;
++
++	case RD_RND:
++		ret = strlen("rd_rnd");
++		strncpy(buf, "rd_rnd", ret);
++		break;
++
++	case JENT:
++		ret = strlen("jent");
++		strncpy(buf, "jent", ret);
++		break;
++
++	case RANDOM:
++		ret = strlen("random");
++		strncpy(buf, "random", ret);
++		break;
++
++	default:
++		ret = strlen("external");
++		strncpy(buf, "external", ret);
++		break;
++	}
++	return ret;
++}
++
++static ssize_t ext_ent_attr_ent_src_store(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf, size_t len)
++{
++	struct ext_ent_t *ext_ent_data = NULL;
++
++	entropy_debug("In sysfs set_entropy_src\n");
++
++	get_external_entropy_handle(&ext_ent_data);
++	if (!strncmp(buf, "external", strlen("external")))
++		ext_ent_data->ent_src = EXTERNAL;
++	else if (!strncmp(buf, "none", strlen("none")))
++		ext_ent_data->ent_src = EXTERNAL;
++	else if (!strncmp(buf, "rd_rnd", strlen("rd_rnd")))
++		ext_ent_data->ent_src = RD_RND;
++	else if (!strncmp(buf, "jent", strlen("jent"))) {
++		entropy_debug("Setting the source as JENT\n");
++		ext_ent_data->ent_src = JENT;
++	} else if (!strncmp(buf, "random", strlen("random")))
++		ext_ent_data->ent_src = RANDOM;
++	else
++		ext_ent_data->ent_src = EXTERNAL;
++
++	return len;
++}
++
++static ssize_t ext_ent_attr_noavail_show(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct ext_ent_t *ext_ent_data = NULL;
++	enum no_avail_def get_val;
++	ssize_t ret = 0;
++
++	entropy_debug("In sysfs noavail show\n");
++
++	get_external_entropy_handle(&ext_ent_data);
++	get_no_avail_config(&get_val);
++	switch (get_val) {
++
++	case EXT_ENT_RETURN_AVAIL:
++		ret = strlen(no_avail_error[0]);
++		strncpy(buf, no_avail_error[0], ret);
++		break;
++
++	case EXT_ENT_BLOCKING:
++		ret = strlen(no_avail_block[0]);
++		strncpy(buf, no_avail_block[0], ret);
++		break;
++
++	default:
++		ret = strlen(no_avail_block[0]);
++		strncpy(buf, no_avail_block[0], ret);
++		break;
++	}
++	return ret;
++}
++
++static ssize_t ext_ent_attr_noavail_store(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf, size_t len)
++{
++	enum no_avail_def set_val;
++	struct ext_ent_t *ext_ent_data = NULL;
++
++	entropy_debug("In sysfs noavail_store\n");
++
++	get_external_entropy_handle(&ext_ent_data);
++	if (strncmp(no_avail_error_str, buf, strlen(no_avail_error_str)) >= 0)
++		set_val = EXT_ENT_RETURN_AVAIL;
++	else if (strncmp(no_avail_block_str, buf,
++				strlen(no_avail_block_str)) >= 0)
++		set_val = EXT_ENT_BLOCKING;
++	else /* Default Behavior */
++		set_val = EXT_ENT_BLOCKING;
++
++	set_no_avail_config(set_val);
++
++	return len;
++}
++
++static ssize_t ext_ent_attr_op_state_show(struct device *dev,
++			struct device_attribute *attr, char *buf)
++{
++	struct ext_ent_t *ext_ent_data = NULL;
++	ssize_t ret = 0;
++
++	entropy_debug("In sysfs get error status\n");
++
++	get_external_entropy_handle(&ext_ent_data);
++	switch (ext_ent_data->err_status) {
++
++	case ALL_OK:
++		ret = strlen("all_ok");
++		strncpy(buf, "all_ok", ret);
++		break;
++
++	case ERROR:
++		ret = strlen("error");
++		strncpy(buf, "error", ret);
++		break;
++
++	case EXT_HYPERCALL_ERR:
++		ret = strlen("ext_hypercall_err");
++		strncpy(buf, "ext_hypercall_err", ret);
++		break;
++
++	default:
++		ret = strlen("all_ok");
++		strncpy(buf, "all_ok", ret);
++		break;
++	}
++	return ret;
++}
++
++static ssize_t ext_ent_attr_status_show(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++
++	struct ext_ent_t *ext_ent_data = NULL;
++	ssize_t ret = 0;
++
++	entropy_debug("In sysfs get status\n");
++
++	get_external_entropy_handle(&ext_ent_data);
++	switch (atomic_read(&ext_ent_data->thread_state)) {
++
++	case FILLING:
++		ret = strlen("filling");
++		strncpy(buf, "fillling", ret);
++		break;
++
++	case FULL:
++		ret = strlen("full");
++		strncpy(buf, "full", ret);
++		break;
++
++	default:
++		ret = strlen("filling");
++		strncpy(buf, "filling", ret);
++		break;
++	}
++	return ret;
++}
++
++static ssize_t ext_ent_attr_available_entropy_show(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct ext_ent_t *ext_ent_data = NULL;
++	ssize_t ret = 0, avail_cnt;
++	char bytes_str[32] = {0};
++
++	entropy_debug("In sysfs get available entropy\n");
++
++	get_external_entropy_handle(&ext_ent_data);
++	if (ext_ent_data->err_status == ALL_OK)
++		avail_cnt = get_avail_bytes(ext_ent_data);
++
++	snprintf(bytes_str, sizeof(bytes_str)-1, "%lu bytes", avail_cnt);
++	ret = strlen(bytes_str);
++	strncpy(buf, bytes_str, ret+1);
++
++	return ret;
++}
++
++static ssize_t ext_ent_attr_thread_op_show(struct device *dev,
++			struct device_attribute *attr, char *buf)
++{
++	struct ext_ent_t *ext_ent_data = NULL;
++	ssize_t ret = 0;
++
++	entropy_debug("In sysfs thread op show\n");
++
++	get_external_entropy_handle(&ext_ent_data);
++	switch (ext_ent_data->thread_op) {
++
++	case EXT_ENT_INTERRUPTIBLE:
++				ret = strlen("interruptible");
++				strncpy(buf, "interruptible", ret);
++				break;
++
++	case EXT_ENT_RUNNING:
++				ret = strlen("running");
++				strncpy(buf, "running", ret);
++				break;
++
++	case EXT_ENT_THREAD_ERROR:
++				ret = strlen("error_or_uninitialized");
++				strncpy(buf, "error_or_uninitialized", ret);
++				break;
++
++	default:
++				ret = strlen("interruptible");
++				strncpy(buf, "interruptible", ret);
++				break;
++	}
++	return ret;
++}
+diff --git a/drivers/char/hw_random/external_entropy/external_ent_sysfs.h b/drivers/char/hw_random/external_entropy/external_ent_sysfs.h
+new file mode 100644
+index 000000000000..404ca53d95db
+--- /dev/null
++++ b/drivers/char/hw_random/external_entropy/external_ent_sysfs.h
+@@ -0,0 +1,28 @@
++/* SPDX-License-Identifier: GPL v2.0
++ *
++ * Copyright 2023 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2
++ * (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ */
++
++#ifndef EXTERNAL_ENT_SYSFS_H
++#define EXTERNAL_ENT_SYSFS_H
++
++static const char * const fallback_opt_def[] = {
++	"external",
++	"jent",
++	"rd_rnd",
++	"random",
++	NULL
++};
++
++/* Function Prototype Forward declaration */
++int get_avail_bytes(struct ext_ent_t *data);
++
++int ext_ent_attr_sysfs_init(struct ent_sysfs_info_t *info);
++void ext_ent_attr_sysfs_exit(struct ent_sysfs_info_t *info);
++
++#endif
+diff --git a/drivers/char/hw_random/external_entropy/external_entropy.c b/drivers/char/hw_random/external_entropy/external_entropy.c
+new file mode 100644
+index 000000000000..bb8d6905c663
+--- /dev/null
++++ b/drivers/char/hw_random/external_entropy/external_entropy.c
+@@ -0,0 +1,618 @@
++// SPDX-License-Identifier: GPL v2.0
++/*
++ * Copyright 2023 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2
++ * (the "License");
++ * you may not use this file except in compliance with the License.
++ * The terms of the License are located in the LICENSE file of this
++ * distribution.
++ */
++
++#include "external_entropy.h"
++#include "external_ent_sysfs.h"
++#include "external_entropy_threaded_work.h"
++#include "external_ent_config_params.h"
++
++#define DEVICE_NAME "entropy"
++
++#define EXTENT_BLOCKING "block"
++#define EXTENT_ERROR "error"
++
++static struct class  *ext_ent_class;
++static struct device *ext_ent_device;
++static int major_num;
++static struct ext_ent_t *entropy_data;
++
++static int entropy_get_rdrnd(struct ext_ent_t *data, u8 *read_buf,
++						size_t len);
++static int ext_ent_get_jent_read_bytes(struct crypto_rng *jent_handle,
++				u8 *buf, int len);
++static ssize_t ext_ent_get_external_read_bytes(struct ext_ent_t *ext_ent_data,
++					struct ext_ent_wait_info_t *wait_info,
++					u8 *read_buf, size_t len);
++
++static void ext_ent_free_jent(struct crypto_rng *jent_handle);
++
++int rng_read_hypercall(struct ext_ent_t *data, u8 *buf,
++				size_t max_bytes, bool wait);
++
++static void calc_blocked_duration(struct work_struct *work);
++
++/**
++ * @brief Get the handle of allocated entropy_data.
++ * @param data: Pointer to store external entropy information object.
++ * @return 0 on success, -ENOENT for failure.
++ */
++int get_external_entropy_handle(struct ext_ent_t **data)
++{
++	int ret = -ENOENT;
++
++	if (entropy_data) {
++		*data = (struct ext_ent_t *)entropy_data;
++		ret = 0;
++	} else
++		*data = NULL;
++
++	return ret;
++}
++
++/**
++ * @brief Opens the external entropy dev node
++ * @param inode: the underlying inode associated with dev node.
++ *        filep: file pointer for the open call.
++ * @return 0 on success.
++ */
++static int dev_open(struct inode *inod, struct file *filep)
++{
++	int ret = 0;
++	struct ext_ent_wait_info_t *wait_info = NULL;
++
++	entropy_debug("%s device opened", DEVICE_NAME);
++
++	if (!entropy_data) {
++		entropy_err("Entropy data not initialized in dev open\n");
++		ret = -EINVAL;
++		goto dev_open_exit;
++	} else {
++		wait_info = devm_kzalloc(ext_ent_device,
++			sizeof(struct ext_ent_wait_info_t), GFP_KERNEL);
++		if (IS_ERR_OR_NULL(wait_info)) {
++			entropy_err("Fail to allocate mem for wait_info\n");
++			ret = -ENOMEM;
++		}
++		filep->private_data = wait_info;
++	}
++
++dev_open_exit:
++	return ret;
++}
++
++/**
++ * @brief Read handle of external entropy device interface.
++ * @param filep : file pointer associated with read operation.
++ *        buf: user buffer pointer for read.
++ *        len: requested length of bytes
++ *        off: offset pointer
++ * @return number of bytes read on success, error code on failure.
++ */
++static ssize_t dev_read(struct file *filep, char __user *buf,
++						size_t len, loff_t *off)
++{
++	int ret = -EINVAL;
++	struct ext_ent_t *ext_ent_data = NULL;
++	struct ext_ent_wait_info_t *wait_info = NULL;
++	u8 *read_buf = NULL;
++	size_t avl_cnt;
++
++	if (!filep || !filep->private_data || !buf || !off) {
++		entropy_err("Read device called with null buffer/file ptr\n");
++		return ret;
++	}
++	get_external_entropy_handle(&ext_ent_data);
++	avl_cnt = min_t(size_t, ext_ent_data->burst_bits, len);
++
++	read_buf = devm_kzalloc(ext_ent_device,
++			avl_cnt * sizeof(u8), GFP_KERNEL);
++	if (IS_ERR_OR_NULL(read_buf)) {
++		entropy_err("Error in allocating memory for read_buf\n");
++		return -ENOMEM;
++	}
++	/* Check whether entropy source has been changed or not */
++	entropy_debug("\n Source of entropy is %d\n", ext_ent_data->ent_src);
++	switch (ext_ent_data->ent_src) {
++	case RD_RND:
++	case RANDOM:
++		entropy_debug("Entropy SRC has changed to RD_RND\n");
++		ret = entropy_get_rdrnd(ext_ent_data, read_buf,
++						avl_cnt);
++		break;
++	case JENT:
++		entropy_debug("Entropy SRC has changed to JENT\n");
++		ret = ext_ent_get_jent_read_bytes(
++		ext_ent_data->jent_handle, (u8 *)read_buf, avl_cnt);
++		break;
++	case EXTERNAL:
++	default:
++		wait_info = (struct ext_ent_wait_info_t *)filep->private_data;
++		if (IS_ERR_OR_NULL(wait_info)) {
++			entropy_err("Err in %s, wait_info is NULL\n", __func__);
++			if (read_buf)
++				devm_kfree(ext_ent_device, read_buf);
++
++			return -EFAULT;
++		}
++		memzero_explicit(wait_info, sizeof(struct ext_ent_wait_info_t));
++		init_waitqueue_head(&wait_info->blk_q);
++		INIT_WORK(&wait_info->comp_work, calc_blocked_duration);
++		ret = ext_ent_get_external_read_bytes(ext_ent_data,
++					wait_info, (u8 *)read_buf, avl_cnt);
++		break;
++	}
++	if (ret < 0) {
++		entropy_err("Failed to read from ent src %d\n",
++					ext_ent_data->ent_src);
++		ext_ent_data->err_status = ERROR;
++		if (read_buf)
++			devm_kfree(ext_ent_device, read_buf);
++		return ret;
++	}
++	if (copy_to_user(buf, read_buf, ret)) {
++		entropy_err("Failed to copy rng output to user\n");
++		if (read_buf)
++			devm_kfree(ext_ent_device, read_buf);
++		return -EFAULT;
++	}
++	*off += ret;
++
++	if (read_buf)
++		devm_kfree(ext_ent_device, read_buf);
++	return ret;
++}
++
++/*
++ * @brief write handle of external entropy device interface.
++ * @param filep : file pointer associated with read operation.
++ *        buf: user buffer pointer for wrte.
++ *        len: length of bytes to be written.
++ *        off: offset pointer
++ * @return EINVAL error code as write operation is not supported.
++ */
++static ssize_t dev_write(struct file *filep, const char *buf, size_t len,
++					loff_t *off)
++{
++	return -EINVAL;
++}
++
++/**
++ * @brief release handle of external entropy device interface.
++ * @param filep : file pointer associated with read operation.
++ *        inode: underlying inode of external entropy device.
++ * @return 0 on success, error code on failure.
++ */
++static int dev_release(struct inode *inod, struct file *filep)
++{
++	struct ext_ent_wait_info_t *wait_info = NULL;
++
++	if (!filep->private_data) {
++		entropy_err("External Entropy device is NULL\n");
++		return -EINVAL;
++	}
++	wait_info = (struct ext_ent_wait_info_t *)filep->private_data;
++	if (wait_info) {
++		if (work_busy(&wait_info->comp_work))
++			flush_work(&wait_info->comp_work);
++		cancel_work_sync(&wait_info->comp_work);
++		devm_kfree(ext_ent_device, wait_info);
++		filep->private_data = NULL;
++	}
++	entropy_debug("device closed\n");
++	return 0;
++}
++
++static const struct file_operations fops = {
++		.read = dev_read,
++		.write = dev_write,
++		.open = dev_open,
++		.release = dev_release,
++	};
++
++/**
++ * @brief Module initialization function of external entropy device.
++ * @param None.
++ * @return 0 on success, error code on failure.
++ */
++static int __init ext_ent_init(void)
++{
++	int err = 0;
++	struct ext_ent_t *ext_ent_data = NULL;
++
++	major_num = register_chrdev(0, DEVICE_NAME, &fops);
++	if (major_num < 0)
++		entropy_err("device registration failed%d\n", major_num);
++
++	entropy_debug("Device %s registration success with major num %d\n",
++						DEVICE_NAME, major_num);
++
++	ext_ent_class = class_create("vmware_external_entropy");
++	if (IS_ERR(ext_ent_class)) {
++		entropy_err("Failed to register device class\n");
++		err = PTR_ERR(ext_ent_class);
++		goto error;
++	}
++
++	ext_ent_device = device_create(ext_ent_class, NULL,
++				MKDEV(major_num, 0), NULL, DEVICE_NAME);
++	if (IS_ERR(ext_ent_class)) {
++		class_destroy(ext_ent_class);
++		err = PTR_ERR(ext_ent_class);
++		goto error;
++	}
++	entropy_data = devm_kzalloc(ext_ent_device,
++					sizeof(struct ext_ent_t), GFP_KERNEL);
++	if (IS_ERR_OR_NULL(entropy_data)) {
++		entropy_err("Failed to allocate mem for Ext ent data\n");
++		err = -ENOMEM;
++		goto error_priv_data;
++	}
++	ext_ent_data = (struct ext_ent_t *)entropy_data;
++	rwlock_init(&ext_ent_data->sync_rw);
++	ext_ent_data->sch.sched_priority = 50;
++	ext_ent_data->hypcall_rd_siz = DEF_HYPCALL_RD_SIZE;
++
++	get_burst_bits(&ext_ent_data->burst_bits);
++	get_ms_per_bit(&ext_ent_data->ms_per_bit);
++	get_pool_size(&ext_ent_data->pool_size);
++
++	ext_ent_data->pool.buf = devm_kzalloc(ext_ent_device,
++		((ext_ent_data->pool_size) * sizeof(u8)), GFP_KERNEL);
++	if (IS_ERR_OR_NULL(ext_ent_data->pool.buf)) {
++		entropy_err("Fail to allocate mem for entropy pool\n");
++		err = -ENOMEM;
++		goto error_pool;
++	}
++	mutex_init(&ext_ent_data->avail_lock);
++
++	ext_ent_data->ent_sysfs_info.dev =  ext_ent_device;
++	ext_ent_attr_sysfs_init(&ext_ent_data->ent_sysfs_info);
++
++	ext_ent_data->jent_handle = crypto_alloc_rng(get_jent_src_name(),
++							0, 0);
++	if (IS_ERR_OR_NULL(ext_ent_data->jent_handle)) {
++		/*Failed to allocate jent. set dafualt src to none */
++		entropy_err("Failed to allocate Jitter entropy RNG\n");
++		ext_ent_data->jent_handle = NULL;
++	}
++	/* Initialize the /proc entries */
++	external_entropy_proc_init();
++	ext_ent_data->extract_work = kthread_create(entropy_work, ext_ent_data,
++					"external_entropy");
++	if (!ext_ent_data->extract_work) {
++		err = PTR_ERR(ext_ent_data->extract_work);
++		entropy_err("Failed to initialize kthread %d\n", err);
++		goto error_kthread;
++	} else {
++		/*
++		 * set the collector state to SEEDING & wakeup the
++		 * extract worker kthread.
++		 */
++		ext_ent_data->thread_op = EXT_ENT_THREAD_ERROR; /* Initial state */
++		atomic_set(&ext_ent_data->collec_state, EXT_ENT_SEEDING);
++		wake_up_process(ext_ent_data->extract_work);
++	}
++
++	return err;
++
++error_kthread:
++	if (ext_ent_data->pool.buf)
++		devm_kfree(ext_ent_device, ext_ent_data->pool.buf);
++error_pool:
++	if (entropy_data)
++		devm_kfree(ext_ent_device, entropy_data);
++error_priv_data:
++	device_destroy(ext_ent_class, MKDEV(major_num, 0));
++	class_destroy(ext_ent_class);
++error:
++	unregister_chrdev(major_num, DEVICE_NAME);
++	return err;
++}
++
++/**
++ * @brief Module exit function of external entropy device.
++ * @param None.
++ * @return void
++ */
++static void __exit ext_ent_exit(void)
++{
++	struct ext_ent_t *ext_ent_data = NULL;
++
++	entropy_debug("Exiting ext_en\n");
++	get_external_entropy_handle(&ext_ent_data);
++	if (ext_ent_data->extract_work)
++		kthread_stop(ext_ent_data->extract_work);
++
++	ext_ent_free_jent(ext_ent_data->jent_handle);
++	ext_ent_data->jent_handle = NULL;
++	ext_ent_attr_sysfs_exit(&ext_ent_data->ent_sysfs_info);
++	external_entropy_proc_exit();
++	mutex_destroy(&ext_ent_data->avail_lock);
++	if (ext_ent_data->pool.buf)
++		devm_kfree(ext_ent_device, ext_ent_data->pool.buf);
++	if (ext_ent_data)
++		devm_kfree(ext_ent_device, ext_ent_data);
++	device_destroy(ext_ent_class, MKDEV(major_num, 0));
++	class_destroy(ext_ent_class);
++	unregister_chrdev(major_num, DEVICE_NAME);
++}
++
++/*
++ * @brief This function updates the wait_info object with the current
++ *	  number of bytes limited by max pool size required from the
++ *        pool.
++ * @param wait_info: pointer to wait_info data.
++ *        pool_size: max pool size of the allocated pool
++ *        len: Number of bytes read from the pool.
++ * @return void.
++ */
++static void update_pre_wait_info(struct ext_ent_wait_info_t *info,
++				size_t pool_size, size_t len)
++{
++	if (info->remaining_req <= pool_size)
++		info->curr_req = info->remaining_req;
++	else
++		info->curr_req = pool_size;
++
++	entropy_debug("In %s, curr_req = %ld, remainig = %ld\n", __func__,
++		info->curr_req, info->remaining_req);
++}
++
++/*
++ * @brief This function updates the wait_info data object with the
++ *	  number of bytes read from the pool and updates the remaining
++ *        bytes required to complete the read operation.
++ * @param wait_info: pointer to wait_info data.
++ *        len: Number of bytes read from the pool.
++ * @return void.
++ */
++static void update_post_wait_info(struct ext_ent_wait_info_t *info, size_t len)
++{
++	info->read_len += len;
++	info->remaining_req = info->total_req - info->read_len;
++	entropy_debug("In %s, read_len = %ld, remaining = %ld\n", __func__,
++		info->read_len, info->remaining_req);
++}
++
++/*
++ * @brief When the read() operation is in progress and dev_read,
++ *	  was waiting for the extract worker to fill the pool, this
++ *        function will calculate whether the pool has been by worker,
++ *        & if bytes are ready, it will wakeup the wait event of read().
++ * @param data: work structure which has been queued by
++ *        ext_ent_get_external_read_bytes.
++ * @return void.
++ */
++static void calc_blocked_duration(struct work_struct *work)
++{
++	struct ext_ent_t *ent_data;
++	struct ext_ent_wait_info_t *winfo = container_of(work,
++			struct ext_ent_wait_info_t, comp_work);
++	u64 timeout;
++
++	get_external_entropy_handle(&ent_data);
++	timeout = msecs_to_jiffies(get_replenish_time(ent_data,
++					ent_data->hypcall_rd_siz));
++	winfo->complete = false;
++	while (ent_data->thread_op != EXT_ENT_THREAD_ERROR) {
++		if (atomic_read(&winfo->wait)) {
++			if (atomic_read(&ent_data->collec_state)
++						== EXT_ENT_FULL) {
++				winfo->complete = true;
++				break;
++			} else if (get_avail_bytes(ent_data) >=
++				winfo->curr_req) {
++				winfo->complete = true;
++				break;
++			} else if (winfo->remaining_req <= 0) {
++				winfo->complete = true;
++				break;
++			}
++		}
++		if (ent_data->mode == EXT_ENT_REPLENISH)
++			schedule_timeout(timeout);
++	}
++	atomic_set(&winfo->wait, false);
++	if (winfo->complete)
++		wake_up_interruptible(&winfo->blk_q);
++}
++
++/*
++ * @brief Once, the wakeup of extract worker thread has been invoked,
++ *	  it takes few miliseconds for the thread to be scheduled
++ *        & moved into running state. This function will wait till
++ *        event FILLING or FULL becomes true.
++ * @param data: external entropy information object.
++ *        wrk_state: state of the event that needs to be verified,
++ *        passed by func ext_ent_get_external_read_bytes.
++ * @return 0 if the even became true & -ERESTARTSYS timeout occurred.
++ */
++static int wait_for_worker_state_change(struct ext_ent_t *data)
++{
++	int ret = 0;
++
++	if (atomic_read(&data->thread_state) == FULL &&
++		get_avail_bytes(data) >= data->pool_size)
++		return ret;
++
++	ret = wait_event_interruptible_timeout(thrd_state_change,
++				atomic_read(&data->thread_state) == FILLING,
++						msecs_to_jiffies(10));
++	return ret <= 0 ? -ETIMEDOUT : 0;
++}
++
++/*
++ * @brief Fetches data from EXTERNAL Entropy's circular buffer into
++ * buffer handle.
++ * @param data: external entropy information object.
++ *        readbuf: read buffer to fetch from pool. This buffer is
++ *        passed by dev_read.
++ *        wait_info: pointer to wait_info data structure
++ *        total: to hold length of the random bytes copied.
++ * @return number of copied bytes on success, Error code on failure.
++ */
++static int read_from_entropy_pool(struct ext_ent_t *ext_ent_data,
++			u8 *read_buf, struct ext_ent_wait_info_t *wait_info,
++							ssize_t *total)
++{
++	int ret;
++
++	read_lock(&ext_ent_data->sync_rw);
++	ret = entropy_get_bytes(ext_ent_data,
++				read_buf + wait_info->read_len,
++				wait_info->curr_req, total);
++	if (*total < 0) {
++		entropy_err("Fail to copy ext_ent data %zd\n", *total);
++		ext_ent_data->err_status = EXT_HYPERCALL_ERR;
++		read_unlock(&ext_ent_data->sync_rw);
++		return -EFAULT;
++	}
++	read_unlock(&ext_ent_data->sync_rw);
++
++	return ret;
++}
++
++/*
++ * @brief Fetches data from EXTERNAL Entropy's circular buffer into
++ * buffer handle.
++ * @param data: external entropy information object.
++ *        readbuf: read buffer to fetch from RD RND. This buffer is
++ *        passed by dev_read.
++ *        len: length of the random bytes that needs to be copied.
++ * @return number of copied bytes on success, Error code on failure.
++ */
++static ssize_t ext_ent_get_external_read_bytes(struct ext_ent_t *ext_ent_data,
++					struct ext_ent_wait_info_t *wait_info,
++					u8 *read_buf, size_t len)
++{
++	size_t avl_cnt;
++	ssize_t total = 0;
++	int ret = -EINVAL;
++
++	entropy_debug("ext ent read,avl_cnt = %d, len = %zu\n",
++				get_avail_bytes(ext_ent_data), len);
++	wait_info->total_req = len;
++	wait_info->remaining_req = wait_info->total_req;
++	while (wait_info->remaining_req > 0) {
++
++		avl_cnt = get_avail_bytes(ext_ent_data);
++		if (unlikely(avl_cnt < 0))
++			return avl_cnt;
++		/*
++		 * If pool doesn't have sufficent requested bytes available,
++		 * wait till requested len is pooled or return err based upon
++		 * user configuration.
++		 */
++		get_no_avail_config(&ext_ent_data->no_avail);
++		if (ext_ent_data->no_avail == EXT_ENT_RETURN_AVAIL) {
++			if (!avl_cnt) {
++				entropy_debug("Insufficient & RET_ERROR set\n");
++				return -EAGAIN;
++			} else {
++				/* Set curr_req = avl for No Wait */
++				wait_info->curr_req = avl_cnt;
++				ret = read_from_entropy_pool(ext_ent_data,
++							read_buf,
++							wait_info, &total);
++				atomic_set(&ext_ent_data->collec_state,
++							EXT_ENT_SEEDING);
++				wake_up_process(ext_ent_data->extract_work);
++				entropy_debug("Returning with avl %d\n", ret);
++				return wait_info->read_len + ret;
++			}
++		}
++		/*
++		 * When avl_cnt is zero or state is changing from FULL to
++		 * SEEDING,extract work thread should be scheduled.
++		 * It might take few mili-secs & hence we need to wait.
++		 */
++		ret = wait_for_worker_state_change(ext_ent_data);
++		if (ret) {
++			entropy_err("Seeding not in progress or FULL %d %d\n",
++				atomic_read(&ext_ent_data->thread_state),
++						ext_ent_data->thread_op);
++			return -EAGAIN;
++		}
++		update_pre_wait_info(wait_info, ext_ent_data->pool_size, avl_cnt);
++		atomic_cmpxchg(&wait_info->wait, false, true);
++		queue_work(system_unbound_wq, &wait_info->comp_work);
++		ret = wait_event_interruptible_timeout(wait_info->blk_q,
++					wait_info->complete == true,
++				msecs_to_jiffies(ext_ent_data->burst_bits *
++				ext_ent_data->ms_per_bit * BITS_PER_BYTE));
++		if (ret <= 0) {
++			entropy_err("err wait for complete %d\n", ret);
++			return ret;
++		}
++		ret = read_from_entropy_pool(ext_ent_data, read_buf,
++							wait_info, &total);
++		update_post_wait_info(wait_info, ret);
++		flush_work(&wait_info->comp_work);
++
++		ext_ent_data->err_status = ALL_OK;
++		atomic_set(&ext_ent_data->collec_state, EXT_ENT_SEEDING);
++		wake_up_process(ext_ent_data->extract_work);
++	}
++
++	return wait_info->read_len;
++}
++
++/**
++ * @brief Fetches data from RD RND into buffer handle.
++ * @param data: external entropy information object.
++ *        readbuf: tentative read buffer to fetch from RD RND.
++ *        buf: read operation's buffer handle.
++ *        len: length of the random bytes that needs to be copied.
++ * @return number of copied bytes on success, Error code on failure.
++ */
++static int entropy_get_rdrnd(struct ext_ent_t *data, u8 *read_buf, size_t len)
++{
++	size_t avl_cnt;
++
++	if (rng_is_initialized()) {
++		avl_cnt = min_t(size_t, data->pool_size, len);
++		get_random_bytes(read_buf, avl_cnt);
++	} else {
++		entropy_err("RD_RND not yet ready. return err\n");
++		data->err_status = ERROR;
++		return -ERESTARTSYS;
++	}
++	return avl_cnt;
++}
++
++static int ext_ent_get_jent_read_bytes(struct crypto_rng *jent_handle,
++					u8 *buf, int len)
++{
++	int ret = 0;
++
++	entropy_debug("In sysfs jent_read_bytes %d\n", len);
++	if (!jent_handle) {
++		entropy_err("Jitter entropy RNG handle is NULL\n");
++		return -ENOENT;
++	}
++	ret = crypto_rng_get_bytes(jent_handle, buf, len);
++	if (ret < 0) {
++		entropy_err("Failed to read from Jitter entropy RNG\n");
++		return -EAGAIN;
++	}
++	return len;
++}
++
++static void ext_ent_free_jent(struct crypto_rng *jent_handle)
++{
++	if (jent_handle)
++		crypto_free_rng(jent_handle);
++}
++
++module_init(ext_ent_init);
++module_exit(ext_ent_exit);
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("VMware Photon OS : Srinidhi Rao<srinidhir@vmware.com>");
+diff --git a/drivers/char/hw_random/external_entropy/external_entropy.h b/drivers/char/hw_random/external_entropy/external_entropy.h
+new file mode 100644
+index 000000000000..ca76045237b6
+--- /dev/null
++++ b/drivers/char/hw_random/external_entropy/external_entropy.h
+@@ -0,0 +1,211 @@
++/* SPDX-License-Identifier: GPL v2.0
++ *
++ * Copyright 2023 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2
++ * (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ */
++
++#ifndef EXTERNAL_ENTROPY
++#define EXTERNAL_ENTROPY
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/fs.h>
++#include <linux/uaccess.h>
++#include <linux/types.h>
++#include <linux/device.h>
++#include <linux/errno.h>
++#include <linux/err.h>
++#include <linux/crypto.h>
++#include <linux/ctype.h>
++#include <linux/jiffies.h>
++#include <linux/delay.h>
++#include <linux/workqueue.h>
++#include <linux/rwlock.h>
++#include <asm/byteorder.h>
++
++#include <linux/kthread.h>
++#include <linux/sched.h>
++#include <uapi/linux/sched/types.h>
++#include <linux/circ_buf.h>
++#include <linux/sysfs.h>
++#include <linux/miscdevice.h>
++
++#include <linux/ktime.h>
++#include <linux/random.h>
++
++#include <crypto/rng.h>
++
++#define DEFAULT_TOTAL_BURST_BITS 8192
++#define DEFAULT_MS_PER_BIT       100
++
++#define DEF_HYPCALL_RD_SIZE      sizeof(u32)
++
++#define DEBUG_PRINT
++#ifdef DEBUG_PRINT
++#define entropy_debug(fmt, args...)  do {                     \
++	pr_debug("[ext_ent][%s:]" fmt, __func__, ##args);     \
++} while (0);
++#else
++#define entropy_debug(fmt, args...)
++#endif
++#define entropy_info(fmt, args...)  do {                      \
++	pr_info("[ext_ent][%s:]" fmt, __func__, ##args);      \
++} while (0);
++#define entropy_err(fmt, args...)  do {                       \
++	pr_err("[ext_ent][%s:]" fmt, __func__, ##args);       \
++} while (0);
++#define entropy_donotprint(fmt, args...)
++
++static DECLARE_WAIT_QUEUE_HEAD(thrd_state_change);
++
++struct ent_sysfs_info_t {
++	struct device *dev;
++	struct miscdevice ent_misc;
++};
++
++enum no_avail_def {
++	EXT_ENT_BLOCKING = 0,
++	EXT_ENT_RETURN_AVAIL,
++};
++
++enum entropy_src_t {
++	EXTERNAL = 0,
++	JENT,
++	RD_RND,
++	RANDOM,
++};
++
++enum entropy_err_status_t {
++	ALL_OK = 0,
++	ERROR,
++	EXT_HYPERCALL_ERR,
++};
++
++enum entropy_status_t {
++	FILLING = 0,
++	FULL,
++	UNKNOWN,
++};
++
++enum ext_ent_collector_state {
++	EXT_ENT_SEEDING, /* Maps it to FILLING of pool buf */
++	EXT_ENT_FULL,
++};
++
++enum ext_ent_thread_state {
++	EXT_ENT_INTERRUPTIBLE = 0, /* FOR FULL, READY */
++	EXT_ENT_RUNNING, /* FOR INIT, EMPTY, RESEED & SEEDING */
++	EXT_ENT_THREAD_ERROR,
++};
++
++enum ext_ent_collector_mode {
++	EXT_ENT_BURST = 0,
++	EXT_ENT_REPLENISH,
++	EXT_ENT_MODE_ERROR,
++};
++
++struct ext_ent_wait_info_t {
++	atomic_t wait;
++	ssize_t total_req;
++	ssize_t remaining_req;
++	ssize_t curr_req;
++	ssize_t read_len;
++	struct work_struct comp_work; /* Initialize this in dev_open */
++	wait_queue_head_t blk_q;
++	bool complete;
++};
++
++struct ext_ent_t {
++	/* Total burst bits and mili secs per bit in replenish mode */
++	unsigned short burst_bits;
++	unsigned short ms_per_bit;
++
++	int pool_size; /* Total num of random bytes to be stored */
++	struct circ_buf pool;
++	/* maximum bytes that can be read per 1 hypercall*/
++	int hypcall_rd_siz;
++
++	/* kthread */
++	struct task_struct *extract_work;
++	/* kthread scheduler*/
++	struct sched_param sch;
++	/* Synchronization mutex for get_avail */
++	struct mutex avail_lock;
++	rwlock_t sync_rw;
++
++	ktime_t prev_ts;
++	ktime_t new_ts;
++	int prev_ret_val;
++	/* Reserved for future use to calculate variable timeout
++	 * in an exponential manner
++	 */
++	int retry_count;
++
++	/* sysfs control */
++	struct ent_sysfs_info_t ent_sysfs_info;
++
++	enum no_avail_def no_avail;
++	bool fallback_state;
++	enum entropy_src_t ent_src;
++	/* To handle the Fallback option */
++	enum entropy_src_t fb_src;
++	struct crypto_rng *jent_handle;
++
++	enum entropy_err_status_t err_status;
++	/* Thread state */
++	atomic_t thread_state;
++	enum ext_ent_thread_state thread_op;
++	atomic_t collec_state;
++
++	enum ext_ent_collector_mode mode;
++	/* buffer (length=32bits) used to collect data from hypercall*/
++	u8 buf[DEF_HYPCALL_RD_SIZE];
++};
++
++int get_external_entropy_handle(struct ext_ent_t **data);
++int rng_read_hypercall(struct ext_ent_t *data, u8 *buf, size_t max_bytes,
++				bool wait);
++
++static inline void pool_read_update(struct ext_ent_t *data, int bytes)
++{
++	int idx = 0;
++
++	idx += data->pool.tail+bytes;
++	idx &= (data->pool_size - 1);
++	data->pool.tail = idx;
++}
++static inline void pool_write_update(struct ext_ent_t *data, int bytes)
++{
++	int idx = 0;
++
++	idx += data->pool.head+bytes;
++	idx &= (data->pool_size - 1);
++	data->pool.head = idx;
++}
++static inline size_t pool_space(struct ext_ent_t *data)
++{
++	return CIRC_SPACE(data->pool.head,
++			  data->pool.tail, data->pool_size);
++}
++static inline size_t pool_cnt_to_end(struct ext_ent_t *data)
++{
++	return CIRC_CNT_TO_END(data->pool.head,
++			  data->pool.tail, data->pool_size);
++}
++static inline size_t pool_space_to_end(struct ext_ent_t *data)
++{
++	return CIRC_SPACE_TO_END(data->pool.head,
++			  data->pool.tail, data->pool_size);
++}
++static inline size_t pool_cnt(struct ext_ent_t *data)
++{
++	return CIRC_CNT(data->pool.head,
++			  data->pool.tail, data->pool_size);
++}
++
++#endif
+diff --git a/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.c b/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.c
+new file mode 100644
+index 000000000000..d5bbe0c928ec
+--- /dev/null
++++ b/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.c
+@@ -0,0 +1,443 @@
++// SPDX-License-Identifier: GPL v2.0
++/*
++ * Copyright 2023 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2
++ * (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ */
++
++#include "external_entropy.h"
++#include "external_entropy_threaded_work.h"
++#include "external_ent_config_params.h"
++
++/*
++ * External Entropy replenishes at a reate of 10bits/sec. Hence,
++ * Total Time to replenish pool size of 8192bits = (8192)/10 = 820s.
++ * Time taken to replenish 4bytes = (4 * 8 * ms_per_bit) = 3200ms
++ * The IO operation to fetch 4 bytes from hypercall needs 10ms
++ * delay.
++ */
++#define HYPERCALL_IO_DELAY 10
++
++static int
++hypercall_timing_update(struct ext_ent_t *ent_data, int ret_code);
++
++/**
++ * @brief Gets total recovery time for external entropy to move back to
++ * BURST mode.
++ * @param data: external entropy information object.
++ * @return time required.
++ */
++static int get_total_replenish_time(struct ext_ent_t *ent_data)
++{
++	int total;
++
++	total = ((ent_data->burst_bits * ent_data->ms_per_bit) /
++				MSEC_PER_SEC);
++
++	return total;
++}
++
++/**
++ * @brief Gets time required to read 'n' bytes in REPLENISH mode.
++ * @param data: external entropy information object.
++ * @return time required.
++ */
++int get_replenish_time(struct ext_ent_t *ent_data, int len)
++{
++	int replenish;
++
++	replenish = (len * BITS_PER_BYTE * ent_data->ms_per_bit);
++	/* Add a cusion of 2 bits to allow the recovery of external entropy */
++	replenish += (2 * ent_data->ms_per_bit);
++
++	return replenish;
++}
++
++/**
++ * @brief Gets total available random bytes stored in pool.
++ * @param data: external entropy information object.
++ * @return number of available bytes for read.
++ */
++int get_avail_bytes(struct ext_ent_t *data)
++{
++	int num_avail = 0;
++
++	if (unlikely(mutex_lock_interruptible(&data->avail_lock)))
++		return -EINTR;
++	num_avail = pool_cnt(data);
++	mutex_unlock(&data->avail_lock);
++	/*
++	 * pool_cnt returns value from 0 to n-1 for a pool of n size.
++	 * Hence need to adjust by 1 byte.
++	 */
++	return num_avail + 1; /*Adjust for the pool size count*/
++}
++
++/**
++ * @brief Copies random data from pool to read buffer.
++ * @param data: external entropy information object.
++ *        buf: read buffer handle
++ *        len: length of the random bytes that needs to be copied.
++ * @return number of copied bytes.
++ */
++static size_t entropy_get_bytes_from_buf(struct ext_ent_t *data, void *buf,
++				size_t len)
++{
++	int ret = 0;
++	size_t copied, cnt, size, left, indx;
++	u8 *pool = (u8 *)data->pool.buf;
++
++	cnt = pool_cnt_to_end(data);
++	size = min_t(size_t, cnt, len);
++
++	memcpy(buf, &pool[data->pool.tail], size*sizeof(u8));
++	copied = size;
++	pool_read_update(data, size);
++	/*copy rest of the data into buf*/
++	left = len - copied;
++
++	if (left > 1 && pool_cnt(data)) {
++		cnt = pool_cnt(data);
++		size = min_t(size_t, cnt, left);
++		indx = pool_cnt_to_end(data);
++		memcpy(buf+copied, &pool[data->pool.tail], size*sizeof(u8));
++		copied += size;
++		pool_read_update(data, size);
++	}
++
++	ret = copied;
++	return ret;
++}
++
++/**
++ * @brief Fetches data stored in pool into read buffer handle.
++ * @param data: external entropy information object.
++ *        buf: read buffer handle
++ *        len: length of the random bytes that needs to be copied.
++ * @return number of copied bytes
++ */
++int entropy_get_bytes(struct ext_ent_t *data, void *buf, size_t len,
++						ssize_t *total)
++{
++	size_t num_copied = 0;
++	u8 *buffer_cp = (u8 *)buf;
++
++	if (!pool_cnt(data))
++		goto get_pool_exit;
++
++	num_copied = entropy_get_bytes_from_buf(data,
++				buffer_cp, len);
++get_pool_exit:
++	return num_copied;
++}
++
++/**
++ * @brief Copies random data from write buffer to pool.
++ * @param data: external entropy information object.
++ *        buf: write buffer handle
++ *        len: length of the random bytes that needs to be written.
++ * @return number of written bytes.
++ */
++static size_t entropy_set_bytes_to_buf(struct ext_ent_t *data, void *buf,
++				size_t len)
++{
++	int ret = 0;
++	size_t copied, cnt, size, left, indx;
++	u8 *pool = (u8 *)data->pool.buf;
++
++	cnt = pool_space_to_end(data);
++	size = min_t(size_t, cnt, len);
++
++	memcpy(&pool[data->pool.head], buf, size*sizeof(u8));
++	copied = size;
++	pool_write_update(data, size);
++	/*copy rest of the data into buf*/
++	left = len - size;
++
++	if (left > 1 && pool_space(data)) {
++		cnt = pool_space(data);
++		size = min_t(size_t, cnt, left);
++		indx = pool_space_to_end(data);
++		memcpy(&pool[data->pool.head], buf+copied, size*sizeof(u8));
++		copied += size;
++		pool_write_update(data, size);
++	}
++
++	ret = copied;
++	return ret;
++}
++
++/**
++ * @brief Copies random data from write buffer handle to pool.
++ * @param data: external entropy information object.
++ *        buf: write buffer handle
++ *        len: length of the random bytes that needs to be stored.
++ * @return number of stored bytes
++ */
++static size_t entropy_set_bytes(struct ext_ent_t *data, void *buf, size_t len)
++{
++	u8 *buffer_cp = (u8 *)buf;
++	size_t num_copied = 0;
++
++	if (pool_space(data)) {
++		num_copied = entropy_set_bytes_to_buf(data,
++				buffer_cp, len);
++	}
++	return num_copied;
++}
++
++/**
++ * @brief Updates whether the pool is FULL or still needs seeding.
++ * @param ent_data: external entropy data information object.
++ * @return 0 on success, negetive error code on failure.
++ */
++static int update_status(struct ext_ent_t *ent_data)
++{
++	int ret = 0;
++	size_t avl_cnt;
++	enum ext_ent_collector_state coll_st;
++
++	coll_st = atomic_read(&ent_data->collec_state);
++	avl_cnt = get_avail_bytes(ent_data);
++	if (avl_cnt >= ent_data->pool_size) {
++		/* Call print_avail_bytes(ent_data) to debug */
++		entropy_debug("Setting collector state to FULL\n");
++		atomic_set(&ent_data->collec_state, EXT_ENT_FULL);
++	}
++	if (ent_data->mode != EXT_ENT_MODE_ERROR) {
++		/*
++		 * Reset the fallback state to EXTERNAL if it was using
++		 * any other source upon encountering any error.
++		 */
++		get_fallback_auto_switch_config(&ent_data->fb_src);
++		if (ent_data->fallback_state == true &&
++			ent_data->fb_src != EXTERNAL) {
++			ent_data->ent_src = EXTERNAL;
++			ent_data->fallback_state = false;
++		}
++	}
++	return ret;
++}
++/**
++ * @brief Updates thread state and scheduling related info
++ * @param ent_data: external entropy data information object.
++ * @return 0 on success, negetive error code on failure.
++ */
++static int update_op_info(struct ext_ent_t *ent_data)
++{
++	int ret = 0;
++	enum ext_ent_collector_state coll_st;
++
++	coll_st = atomic_read(&ent_data->collec_state);
++	switch (coll_st) {
++
++	case EXT_ENT_SEEDING:
++		atomic_set(&ent_data->thread_state, FILLING);
++		ent_data->thread_op = EXT_ENT_RUNNING;
++		sched_set_fifo_low(ent_data->extract_work);
++		break;
++
++	case EXT_ENT_FULL:
++		sched_set_normal(ent_data->extract_work, 0);
++		set_current_state(TASK_INTERRUPTIBLE);
++		ent_data->thread_op = EXT_ENT_INTERRUPTIBLE;
++		atomic_set(&ent_data->thread_state, FULL);
++		break;
++
++	default:
++		sched_set_normal(ent_data->extract_work, 0);
++		set_current_state(TASK_INTERRUPTIBLE);
++		ent_data->thread_op = EXT_ENT_THREAD_ERROR;
++		atomic_set(&ent_data->thread_state, UNKNOWN);
++		break;
++	}
++	return ret;
++}
++/**
++ * @brief Collects entropy data by reading from external entropy hypercall.
++ * @param ent_data: external entropy data information object.
++ * @return 0 on success, negetive error code on failure.
++ */
++static int entropy_collector_func(struct ext_ent_t *ent_data)
++{
++	/*
++	 * This function will be scheduled by work queue
++	 * It reads u32 bytes and adds it to the buffer.
++	 */
++
++	int ret = -EINVAL;
++
++	/* Hold the synchronization spin lock */
++	if (!write_trylock(&ent_data->sync_rw)) {
++		entropy_debug("writer lock is busy in collector");
++		ret = -EAGAIN;
++		return ret;
++	}
++	memzero_explicit(ent_data->buf, ent_data->hypcall_rd_siz);
++	ret = rng_read_hypercall(ent_data, ent_data->buf, sizeof(u8), true);
++	hypercall_timing_update(ent_data, ret);
++	if (ret) {
++		memzero_explicit(ent_data->buf, ent_data->hypcall_rd_siz);
++		write_unlock(&ent_data->sync_rw);
++		return ret;
++	}
++	/* Add it to the buffer pool */
++	entropy_set_bytes(ent_data, ent_data->buf, ent_data->hypcall_rd_siz);
++	/* Wait for Hypercall timeout */
++	mdelay(HYPERCALL_IO_DELAY);
++	/*release the lock */
++	write_unlock(&ent_data->sync_rw);
++	return ret;
++}
++
++/**
++ * @brief Updates time stamps based on return value of rng_read.
++ * @param ent_data: external entropy data information object.
++ * @return 0 on success, negetive error code on failure.
++ */
++static int
++hypercall_timing_calc(struct ext_ent_t *ent_data, u64 *timeout)
++{
++	/*
++	 * based on the timestamps and status code, calculate the timeout
++	 * required to wait for the next hypercall.
++	 */
++	int ret = 0;
++	u64 new_ts, delta;
++
++	new_ts = ktime_get_boottime();
++	delta = ktime_ms_delta(new_ts, ent_data->prev_ts);
++
++	if (delta > get_total_replenish_time(ent_data))
++		*timeout = 0;
++	else if (delta < get_total_replenish_time(ent_data)) {
++
++		switch (ent_data->mode) {
++
++		case EXT_ENT_BURST:
++			*timeout = 0;
++			break;
++
++		case EXT_ENT_REPLENISH:
++			*timeout =
++			msecs_to_jiffies(get_replenish_time(ent_data,
++				ent_data->hypcall_rd_siz));
++			break;
++
++		case EXT_ENT_MODE_ERROR:
++			entropy_err(" Unknown Hypercall err\n");
++			*timeout =
++			msecs_to_jiffies(get_total_replenish_time(ent_data) *
++						MSEC_PER_SEC);
++			ret = -EIO;
++			break;
++
++		}
++	}
++	ent_data->prev_ts = new_ts;
++	return ret;
++}
++
++/**
++ * @brief Updates time stamps based on return value of rng_read.
++ * @param ent_data: external entropy data information object.
++ * @st_code : status code of the previous rng_read_hypercall.
++ * @ret_code : return value of the previous rng_read_hypercall.
++ * @return 0 on success, negetive error code on failure.
++ */
++static int
++hypercall_timing_update(struct ext_ent_t *ent_data, int ret_code)
++{
++	/*
++	 * Read the ktime_boot_get and store it in prev_ts timestamp.
++	 * clear new_ts timestamp.
++	 * based on the status code and return code, adjust mode based
++	 * on ret_code
++	 */
++	int ret = 0;
++
++	ent_data->prev_ret_val = ret_code;
++
++	ent_data->new_ts = ktime_get_boottime();
++
++	if (!ret_code)
++		ent_data->mode = EXT_ENT_BURST;
++	else if (ret_code == -EAGAIN)
++		ent_data->mode = EXT_ENT_REPLENISH;
++	else if (ret_code == -EIO) {
++		ent_data->mode = EXT_ENT_MODE_ERROR;
++		get_fallback_auto_switch_config(&ent_data->fb_src);
++		if (ent_data->fb_src != EXTERNAL) {
++			ent_data->fallback_state = true;
++			ent_data->ent_src = ent_data->fb_src;
++		}
++	} else {
++		entropy_err("Unknown error mode %d\n", ret_code);
++		ent_data->mode = EXT_ENT_MODE_ERROR;
++		WARN(1, "External Entropy Collector in Undefined Mode");
++	}
++
++	return ret;
++}
++
++/**
++ * @brief Worker thread function to trigger entropy collector.
++ * This worked thread, waits for the wake_up signal either
++ * during module initialization or after a dev read() call
++ * and reads from EXTERNAL ENTROPY through entropy_collector function & adds
++ * it to the entropy pool.
++ * This kthread initialy will have a normal priority. However, when the pool
++ * needs to be refilled, this thread will set the scheduler fifo to low i.e,
++ * HIGH PRIORITY till the bytes are added & set the kthread back to normal
++ * priority once pool has been added.
++ *
++ * @param data: external entropy information object.
++ * @return 0 on success, error code on failure.
++ */
++int entropy_work(void *data)
++{
++	struct ext_ent_t *ent_data = (struct ext_ent_t *)data;
++	int ret = 0;
++	u64 timeout;
++
++	allow_signal(SIGKILL);
++	while (!kthread_should_stop()) {
++		if (signal_pending(ent_data->extract_work))
++			break;
++
++		switch (atomic_read(&ent_data->collec_state)) {
++
++		case EXT_ENT_FULL:
++			/* Pool is full, unblock and send notifications */
++			update_op_info(ent_data);
++			schedule();
++			break;
++
++		case EXT_ENT_SEEDING:
++			/* Read u32 and save in the pool */
++			update_op_info(ent_data);
++			ret = entropy_collector_func(ent_data);
++			sched_set_normal(ent_data->extract_work, 0);
++			update_status(ent_data);
++
++			/* Put it into seeding mode */
++			hypercall_timing_calc(ent_data, &timeout);
++			wake_up_interruptible(&thrd_state_change);
++			set_current_state(TASK_INTERRUPTIBLE);
++			schedule_timeout(timeout);
++			break;
++
++		default:
++			entropy_err("Undefined collector state %d\n",
++				atomic_read(&ent_data->collec_state));
++			ent_data->thread_op = EXT_ENT_THREAD_ERROR;
++			schedule();
++			break;
++		}
++	}
++	kthread_complete_and_exit(NULL, 0);
++	return ret;
++}
+diff --git a/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.h b/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.h
+new file mode 100644
+index 000000000000..1b84f2387cbe
+--- /dev/null
++++ b/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.h
+@@ -0,0 +1,22 @@
++/* SPDX-License-Identifier: GPL v2.0
++ *
++ * Copyright 2023 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2
++ * (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ */
++
++#ifndef EXTERNAL_ENTROPY_THREADED_WORK_H
++#define EXTERNAL_ENTROPY_THREADED_WORK_H
++
++/* Function Prototype Forward declaration */
++int entropy_work(void *data);
++int get_avail_bytes(struct ext_ent_t *data);
++int get_filled(struct ext_ent_t *data);
++int entropy_get_bytes(struct ext_ent_t *data, void *buf, size_t len,
++						ssize_t *total);
++int get_replenish_time(struct ext_ent_t *ent_data, int len);
++
++#endif
+-- 
+2.35.6
+

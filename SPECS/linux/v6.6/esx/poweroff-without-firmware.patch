@@ -1,4 +1,4 @@
-From 76051c066f8acee863bb629e8235d64559986d0a Mon Sep 17 00:00:00 2001
+From e6ea9bbd823adfe717a2bffa5da8793072e4b1e3 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 20 Oct 2020 17:22:12 -0700
 Subject: [PATCH] vmware: poweroff support for no firmware case
@@ -34,10 +34,10 @@ not set.
  3 files changed, 17 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 2a589b6d6ed8..09a662f20583 100644
+index b3976dcb7..bd13e0b28 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -719,7 +719,19 @@ static void piix4_mem_quirk(struct pci_dev *dev, const char *name, unsigned int
+@@ -818,7 +818,19 @@ static void piix4_mem_quirk(struct pci_dev *dev, const char *name, unsigned int
  static void quirk_piix4_acpi(struct pci_dev *dev)
  {
  	u32 res_a;
@@ -58,20 +58,20 @@ index 2a589b6d6ed8..09a662f20583 100644
  	quirk_io_region(dev, 0x90, 16, PCI_BRIDGE_RESOURCES+1, "PIIX4 SMB");
  
 diff --git a/drivers/power/reset/Kconfig b/drivers/power/reset/Kconfig
-index 0a1fb5c74f83..bbf6c597b364 100644
+index 411e00b25..6dbffc8bd 100644
 --- a/drivers/power/reset/Kconfig
 +++ b/drivers/power/reset/Kconfig
-@@ -144,7 +144,7 @@ config POWER_RESET_OXNAS
- config POWER_RESET_PIIX4_POWEROFF
+@@ -152,7 +152,7 @@ config POWER_RESET_PIIX4_POWEROFF
  	tristate "Intel PIIX4 power-off driver"
  	depends on PCI
+ 	depends on HAS_IOPORT
 -	depends on MIPS || COMPILE_TEST
 +	depends on X86 || MIPS || COMPILE_TEST
  	help
  	  This driver supports powering off a system using the Intel PIIX4
  	  southbridge, for example the MIPS Malta development board. The
 diff --git a/drivers/power/reset/piix4-poweroff.c b/drivers/power/reset/piix4-poweroff.c
-index 7f308292d7e3..76cc7f3987e2 100644
+index 7f308292d..76cc7f398 100644
 --- a/drivers/power/reset/piix4-poweroff.c
 +++ b/drivers/power/reset/piix4-poweroff.c
 @@ -64,6 +64,10 @@ static int piix4_poweroff_probe(struct pci_dev *dev,
@@ -86,5 +86,5 @@ index 7f308292d7e3..76cc7f3987e2 100644
  		return -EINVAL;
  
 -- 
-2.11.0
+2.35.6
 

@@ -122,7 +122,7 @@ index 000000000..130de43ba
 +
 +	apicid = extconf_read_8(CPU_APICID_BASE + processor_id);
 +
-+	ret = generic_processor_info(apicid, boot_cpu_apic_version);
++	ret = generic_processor_info(apicid);
 +	if (ret < 0)
 +		return ret;
 +
