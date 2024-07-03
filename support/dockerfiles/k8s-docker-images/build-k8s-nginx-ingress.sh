@@ -4,15 +4,15 @@ set -e
 
 DIST_TAG=$1
 DIST_VER=$2
-SPEC_DIR=$3
-STAGE_DIR=$4
-PH_BUILDER_TAG=$5
+STAGE_DIR=$3
+PH_BUILDER_TAG=$4
 ARCH=x86_64
 
 source common.sh
 
 # Docker image for kubernetes nginx ingress controller
-fn="$(find -L "$SPEC_DIR" -type f -path "*/nginx-ingress/nginx-ingress.spec" )"
+fn=$(get_spec_path "*/nginx-ingress/nginx-ingress.spec" "${@:5}")
+
 NGINX_INC_VER=$(get_spec_ver "${fn}")
 NGINX_INC_VER_REL=${NGINX_INC_VER}-$(get_spec_rel "${fn}")
 NGINX_INC_RPM=nginx-ingress-${NGINX_INC_VER_REL}${DIST_TAG}.${ARCH}.rpm

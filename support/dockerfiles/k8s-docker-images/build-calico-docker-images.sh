@@ -4,15 +4,15 @@ set -e
 
 DIST_TAG=$1
 DIST_VER=$2
-SPEC_DIR=$3
-STAGE_DIR=$4
-PH_BUILDER_TAG=$5
+STAGE_DIR=$3
+PH_BUILDER_TAG=$4
 ARCH=x86_64
 
 source common.sh
 
 # Docker images for calico-node, calico-cni
-fn="$(find -L "$SPEC_DIR" -type f -path "*/calico/calico.spec" )"
+fn=$(get_spec_path "*/calico/calico.spec" "${@:5}")
+
 CALICO_VER=$(get_spec_ver "${fn}")
 CALICO_VER_REL=${CALICO_VER}-$(get_spec_rel "${fn}")
 CALICO_RPM=calico-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
@@ -30,31 +30,36 @@ CALICO_K8S_POLICY_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_K8S_POLICY_RPM}
 CONFD_RPM=confd-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CONFD_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CONFD_RPM}
 
-fn="$(find -L "$SPEC_DIR" -type f -path "*/calico-bgp-daemon/calico-bgp-daemon.spec" )"
+fn=$(get_spec_path "*/calico-bgp-daemon/calico-bgp-daemon.spec" "${@:5}")
+
 CALICO_BGP_VER=$(get_spec_ver "${fn}")
 CALICO_BGP_VER_REL=${CALICO_BGP_VER}-$(get_spec_rel "${fn}")
 CALICO_BGP_RPM=calico-bgp-daemon-${CALICO_BGP_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_BGP_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_BGP_RPM}
 
-fn="$(find -L "$SPEC_DIR" -type f -path "*/gobgp/gobgp.spec")"
+fn=$(get_spec_path "*/gobgp/gobgp.spec" "${@:5}")
+
 GO_BGP_VER=$(get_spec_ver "${fn}")
 GO_BGP_VER_REL=${GO_BGP_VER}-$(get_spec_rel "${fn}")
 GO_BGP_RPM=gobgp-${GO_BGP_VER_REL}${DIST_TAG}.${ARCH}.rpm
 GO_BGP_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${GO_BGP_RPM}
 
-fn="$(find -L "$SPEC_DIR" -type f -path "*/calico-bird/calico-bird.spec" )"
+fn=$(get_spec_path "*/calico-bird/calico-bird.spec" "${@:5}")
+
 CALICO_BIRD_VER=$(get_spec_ver "${fn}")
 CALICO_BIRD_VER_REL=${CALICO_BIRD_VER}-$(get_spec_rel "${fn}")
 CALICO_BIRD_RPM=calico-bird-${CALICO_BIRD_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_BIRD_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_BIRD_RPM}
 
-fn="$(find -L "$SPEC_DIR" -type f -path "*/calico-libnetwork/calico-libnetwork.spec" )"
+fn=$(get_spec_path "*/calico-libnetwork/calico-libnetwork.spec" "${@:5}")
+
 CALICO_LIBNET_VER=$(get_spec_ver "${fn}")
 CALICO_LIBNET_VER_REL=${CALICO_LIBNET_VER}-$(get_spec_rel "${fn}")
 CALICO_LIBNET_RPM=calico-libnetwork-${CALICO_LIBNET_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_LIBNET_RPM_FILE=${STAGE_DIR}/RPMS/$ARCH/${CALICO_LIBNET_RPM}
 
-fn="$(find -L "$SPEC_DIR" -type f -path "*/cni/cni.spec" )"
+fn=$(get_spec_path "*/cni/cni.spec" "${@:5}")
+
 K8S_CNI_VER=$(get_spec_ver "${fn}")
 K8S_CNI_VER_REL=${K8S_CNI_VER}-$(get_spec_rel "${fn}")
 K8S_CNI_RPM=cni-${K8S_CNI_VER_REL}${DIST_TAG}.${ARCH}.rpm

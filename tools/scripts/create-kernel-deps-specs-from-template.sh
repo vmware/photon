@@ -1,13 +1,5 @@
 #!/bin/bash
 
-script_dir="$(dirname ${BASH_SOURCE})"
-
-if [ -d "$script_dir/SPECS" ]; then
-  spec_dir="$(realpath $script_dir/SPECS)"
-else
-  spec_dir="$(realpath $script_dir/../../SPECS)"
-fi
-
 dist=".ph5"
 
 declare -A kvers
@@ -23,7 +15,7 @@ populate_kvers() {
   local sp=""
 
   for i in ${specs_map["linux_specs"]}; do
-    local k_specs=($(grep -lr "^Name:[[:space:]]*$i$" $spec_dir/linux/))
+    local k_specs=( $(find -L $@ -type f -path "*/${i}.spec") )
 
     local x="$(echo $i | tr '-' '_')"
 
@@ -105,15 +97,15 @@ create_specs() {
   done
 }
 
-populate_kvers
+populate_kvers $@
 
 specs=(${specs_map["other_specs"]})
 
 echo "Creating ${specs[@]} specs ..."
 
 for s in ${!specs[@]}; do
-  find -L "$spec_dir" -type f -path "*/${specs[$s]}/*.spec" -delete
-  specs[$s]="$(find -L "$spec_dir" -type f -name ${specs[$s]}.spec.in)"
+  find -L $@ -type f -path "*/${specs[$s]}/*.spec" -delete
+  specs[$s]="$(find -L $@ -type f -name ${specs[$s]}.spec.in)"
 done
 
 create_specs "linux"
@@ -122,9 +114,9 @@ kernel_drivers_intel=()
 specs=(${specs_map["kernel_drivers_intel"]})
 
 for s in ${!specs[@]}; do
-  specs[$s]="$(find -L "$spec_dir" -type f -name ${specs[$s]}.spec.in )"
+  specs[$s]="$(find -L $@ -type f -name ${specs[$s]}.spec.in )"
 done
-find -L "$spec_dir" -type f -path "*/kernels-drivers-intel/*.spec" -delete
+find -L $@ -type f -path "*/kernels-drivers-intel/*.spec" -delete
 
 declare -A d_info=()
 

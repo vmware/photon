@@ -4,15 +4,15 @@ set -e
 
 DIST_TAG=$1
 DIST_VER=$2
-SPEC_DIR=$3
-STAGE_DIR=$4
-PH_BUILDER_TAG=$5
+STAGE_DIR=$3
+PH_BUILDER_TAG=$4
 ARCH=x86_64
 
 source common.sh
 
 # Docker image for flannel
-fn="$(find -L "$SPEC_DIR" -type f -path "*/flannel/flannel.spec" )"
+fn=$(get_spec_path "*/flannel/flannel.spec" "${@:5}")
+
 FLANNEL_VER=$(get_spec_ver "${fn}")
 FLANNEL_VER_REL=${FLANNEL_VER}-$(get_spec_rel "${fn}")
 FLANNEL_RPM=flannel-${FLANNEL_VER_REL}${DIST_TAG}.${ARCH}.rpm

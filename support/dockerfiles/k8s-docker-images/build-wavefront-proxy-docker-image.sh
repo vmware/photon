@@ -4,15 +4,15 @@ set -e
 
 DIST_TAG=$1
 DIST_VER=$2
-SPEC_DIR=$3
-STAGE_DIR=$4
-PH_BUILDER_TAG=$5
+STAGE_DIR=$3
+PH_BUILDER_TAG=$4
 ARCH=noarch
 
 source common.sh
 
 # Docker image for wavefront-proxy
-fn="$(find -L "$SPEC_DIR" -type f -path "*/wavefront-proxy/wavefront-proxy.spec" )"
+fn=$(get_spec_path "*/wavefront-proxy/wavefront-proxy.spec" "${@:5}")
+
 WAVEFRONT_PROXY_VER=$(get_spec_ver "${fn}")
 WAVEFRONT_PROXY_VER_REL=${WAVEFRONT_PROXY_VER}-$(get_spec_rel "${fn}")
 WAVEFRONT_PROXY_RPM=wavefront-proxy-${WAVEFRONT_PROXY_VER_REL}${DIST_TAG}.${ARCH}.rpm

@@ -681,7 +681,8 @@ class RpmBuildTarget:
 
         CheckTools.check_spec_files()
 
-        runBashCmd("./tools/scripts/generate-specs-from-templates.sh")
+        specPaths = " ".join(constants.specPaths)
+        runBashCmd(f"./tools/scripts/generate-specs-from-templates.sh {specPaths}")
 
         Utilities(None).generate_dep_lists()
 
@@ -1321,11 +1322,11 @@ class BuildImage:
         cmd = f"{cmd} {Build_Config.stagePath}"
         runBashCmd(cmd)
 
-        
+        specPaths = " ".join(constants.specPaths)
         for script in k8s_build_scripts:
             cmd = f"./{script} {ph_dist_tag} {constants.releaseVersion}"
             cmd = f"{cmd} {Build_Config.stagePath}"
-            cmd = f"{cmd} {ph_builder_tag} {constants.specPaths}"
+            cmd = f"{cmd} {ph_builder_tag} {specPaths}"
             runBashCmd(cmd)
 
         print("Successfully built all the k8s docker images")
@@ -1382,9 +1383,9 @@ def initialize_constants():
     constants.addSpecPath(
         os.path.join(
             str(
-                PurePath(
+                Path(
                     configdict["photon-path"], configdict.get("spec-path", "")
-                )
+                ).resolve()
             ),
             "SPECS",
         )
@@ -1392,9 +1393,9 @@ def initialize_constants():
     constants.addSpecPath(
         os.path.join(
             str(
-                PurePath(
+                Path(
                     configdict["release-branch-path"], configdict.get("spec-path", "")
-                )
+                ).resolve()
             ),
             "SPECS",
         )

@@ -4,15 +4,15 @@ set -e
 
 DIST_TAG=$1
 DIST_VER=$2
-SPEC_DIR=$3
-STAGE_DIR=$4
-PH_BUILDER_TAG=$5
+STAGE_DIR=$3
+PH_BUILDER_TAG=$4
 ARCH=x86_64
 
 source common.sh
 
 # Docker images for heapster - kubernetes cluster monitoring tool.
-fn="$(find -L "$SPEC_DIR" -type f -path "*/heapster/heapster.spec" )"
+fn=$(get_spec_path "*/heapster/heapster.spec" "${@:5}")
+
 K8S_HEAPSTER_VER=$(get_spec_ver "${fn}")
 K8S_HEAPSTER_VER_REL=${K8S_HEAPSTER_VER}-$(get_spec_rel "${fn}")
 K8S_HEAPSTER_RPM=heapster-${K8S_HEAPSTER_VER_REL}${DIST_TAG}.${ARCH}.rpm

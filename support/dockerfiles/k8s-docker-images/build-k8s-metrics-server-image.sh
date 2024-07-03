@@ -4,15 +4,15 @@ set -e
 
 DIST_TAG=$1
 DIST_VER=$2
-SPEC_DIR=$3
-STAGE_DIR=$4
-PH_BUILDER_TAG=$5
+STAGE_DIR=$3
+PH_BUILDER_TAG=$4
 ARCH=x86_64
 
 source common.sh
 
 # Docker images for kubernetes-metrics-server
-fn="$(find -L "$SPEC_DIR" -type f -path "*/kubernetes-metrics-server/kubernetes-metrics-server.spec" )"
+fn=$(get_spec_path "*/kubernetes-metrics-server/kubernetes-metrics-server.spec" "${@:5}")
+
 K8S_MET_SERV_VER=$(get_spec_ver "${fn}")
 K8S_MET_SERV_VER_REL=${K8S_MET_SERV_VER}-$(get_spec_rel "${fn}")
 K8S_MET_SERV_RPM=kubernetes-metrics-server-${K8S_MET_SERV_VER_REL}${DIST_TAG}.${ARCH}.rpm

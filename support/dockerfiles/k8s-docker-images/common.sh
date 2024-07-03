@@ -138,3 +138,16 @@ get_spec_rel()
   local spec_fn="$1"
   rpmspec -q --qf "%{release}\n" "${spec_fn}" | head -n1
 }
+
+get_spec_path() {
+  # Used for finding spec over multiple spec folders
+  # find -L /root/ws/photon-rolling-linux/common/SPECS /root/ws/photon-rolling-linux/6.0/SPECS 
+  # -type f -path '*/kubernetes/kubernetes.spec'
+  fn="$(find -L "${@:2}" -type f -path "$1")"
+  if [ -n "$fn" ]; then
+      echo "$fn"
+      return 0
+  fi
+  echo "Error: Spec file '$1' not found in '${@:2}' directories."
+  exit 2
+}
