@@ -68,6 +68,7 @@
         "lvm2",
 	"btrfs-progs",
 	"xfsprogs",
+        "open-vm-tools",
         "photon-os-installer"],
 
     "packages_x86_64": ["grub2-pc"]

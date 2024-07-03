@@ -2,21 +2,22 @@
 
 Summary:       Photon OS Installer
 Name:          photon-os-installer
-Version:       2.4
-Release:       2%{?dist}
+Version:       2.7
+Release:       1%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/photon-os-installer
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 %{name}=a361c22234ed467c0cf1a827d1a3a15553ebde6f68e48c8d32f4867d26ca9326029d7840791bed0186565e935670ebcc273a5fe77c84a90dc80f2a80d5972dda
+%define sha512 %{name}=9c2b6df1e9136e94db1451064b51a286b2894849b309dde9539cb9df4fc82e807c74ccb0f7795d7d1d5b2c1ea856dfb38623e1c08e94c567696a637ca6f75fe8
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
 BuildRequires: python3-requests
 BuildRequires: python3-cracklib
 BuildRequires: python3-curses
+BuildRequires: python3-jc
 
 Requires: dosfstools
 Requires: efibootmgr
@@ -31,14 +32,15 @@ Requires: lvm2
 Requires: zlib
 Requires: cdrkit
 Requires: findutils
+# needed for --rpmdefine option
+Requires: tdnf >= 3.3.11-2
 
 Requires: python3-pyOpenSSL
 Requires: python3-requests
 Requires: python3-cracklib
 Requires: python3-curses
 Requires: python3-PyYAML
-
-Patch0: 0001-photon-os-installer-ostreeinstaller-Fix-tmp-mountpoi.patch
+Requires: python3-jc
 
 %description
 This is to create rpm for installer code
@@ -62,6 +64,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Fri May 24 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.7-1
+- Upgrade to v2.7
 * Wed Oct 25 2023 Ankit Jain <ankitja@vmware.com> 2.4-2
 - Fix tmpfs mount issue
 * Tue Oct 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.4-1

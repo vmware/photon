@@ -138,6 +138,10 @@ mkdir -p ${INITRD}/etc/systemd/scripts
 # Step 6 create fstab
 cp $SCRIPT_PATH/BUILD_DVD/fstab ${INITRD}/etc/fstab
 
+#- Step 7 - Disable vmtoolsd/vgauthd
+ln -s /dev/null ${INITRD}/etc/systemd/system/vmtoolsd.service
+ln -s /dev/null ${INITRD}/etc/systemd/system/vgauthd.service
+
 mkdir -p ${INITRD}/etc/yum.repos.d
 cat > ${INITRD}/etc/yum.repos.d/photon-iso.repo << EOF
 [photon-iso]
