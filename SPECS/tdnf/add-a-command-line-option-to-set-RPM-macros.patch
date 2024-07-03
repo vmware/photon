@@ -1,0 +1,53 @@
+From 8d88bdeacf270d8d66810e077edbd3ce9ed40755 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Thu, 7 Dec 2023 16:40:25 -0800
+Subject: [PATCH] add a command line option to set RPM macros
+
+---
+ client/api.c              | 10 ++++++++++
+ tools/cli/lib/parseargs.c |  1 +
+ 2 files changed, 11 insertions(+)
+
+diff --git a/client/api.c b/client/api.c
+index 3836ca5..25c5675 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -607,6 +607,7 @@ TDNFOpenHandle(
+     char *pszCacheDir = NULL;
+     char *pszRepoDir = NULL;
+     int nHasOptReposdir = 0;
++    PTDNF_CMD_OPT pOpt = NULL;
+ 
+     if(!pArgs || !ppTdnf)
+     {
+@@ -684,6 +685,15 @@ TDNFOpenHandle(
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+ 
++    /* set macros from command line */
++    for (pOpt = pTdnf->pArgs->pSetOpt; pOpt; pOpt = pOpt->pNext)
++    {
++        if (strcmp(pOpt->pszOptName, "rpmdefine") == 0)
++        {
++            rpmDefineMacro(NULL, pOpt->pszOptValue, 0);
++        }
++    }
++
+     dwError = TDNFLoadPlugins(pTdnf);
+     BAIL_ON_TDNF_ERROR(dwError);
+ 
+diff --git a/tools/cli/lib/parseargs.c b/tools/cli/lib/parseargs.c
+index d27f96b..c061760 100644
+--- a/tools/cli/lib/parseargs.c
++++ b/tools/cli/lib/parseargs.c
+@@ -48,6 +48,7 @@ static struct option pstOptions[] =
+     {"repofrompath",  required_argument, 0, 0},            //--repofrompath
+     {"repoid",        required_argument, 0, 0},            //--repoid (same as --repo)
+     {"rpmverbosity",  required_argument, 0, 0},            //--rpmverbosity
++    {"rpmdefine",     required_argument, 0, 0},
+     {"sec-severity",  required_argument, 0, 0},            //--sec-severity
+     {"security",      no_argument, 0, 0},                  //--security
+     {"setopt",        required_argument, 0, 0},            //--set or override options
+-- 
+2.7.4
+

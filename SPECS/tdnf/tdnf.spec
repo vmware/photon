@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.3.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -12,6 +12,7 @@ Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{versi
 %define sha512  %{name}=0c240a4e86264dcc6f47c3c3e9c99f5378ee18f937c03da17014a6617818655091f0865d22b78a24d697c2ef943d050d33157f764f478ecc3d96b5b770cb2ac8
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
+Patch1:         add-a-command-line-option-to-set-RPM-macros.patch
 
 Requires:       rpm-libs >= 4.16.1.3-1
 Requires:       curl-libs
@@ -227,6 +228,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Mon Jul 01 2024 Bo Gan <bo.gan@broadcom.com> 3.3.11-2
+- Backport patch for --rpmdefine option
 * Tue Apr 30 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.3.11-1
 - update to 3.3.11
 - fix multiple --repofrompath options
