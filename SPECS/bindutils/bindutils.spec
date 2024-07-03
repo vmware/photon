@@ -5,7 +5,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.19.21
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
@@ -81,10 +81,8 @@ EOF
 echo "d /run/named 0755 named named - -" > %{buildroot}%{_tmpfilesdir}/named.conf
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
-%posttrans
-if [ $1 -eq 1 ]; then
-  %sysusers_create_compat %{SOURCE1}
-fi
+%pre
+%sysusers_create_compat %{SOURCE1}
 
 %post
 /sbin/ldconfig
@@ -131,6 +129,8 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
+* Wed Jul 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.19.21-2
+- Create users pre install
 * Wed Feb 14 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.19.21-1
 - Upgrade to latest version to address CVEs
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.19.14-5
