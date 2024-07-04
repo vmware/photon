@@ -15,6 +15,7 @@ class PackageUtils(object):
             logName = "PackageUtils"
         if logPath is None:
             logPath = constants.logPath
+        self.scriptDir = os.path.dirname(__file__)
         self.logName = logName
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
@@ -279,14 +280,10 @@ class PackageUtils(object):
         return rpms.split()
 
     def adjustGCCSpecs(self, sandbox, package, version):
-        # TODO: need to harden cross compiller also
         opt = " " + SPECS.getData().getSecurityHardeningOption(
             package, version
         )
-        sandbox.put(
-            os.path.join(os.path.dirname(__file__), self.adjustGCCSpecScript),
-            "/tmp",
-        )
+        opt = " " + SPECS.getData().getSecurityHardeningOption(package, version)
         cmd = f"/tmp/{self.adjustGCCSpecScript}{opt}"
         if not sandbox.run(cmd, logfn=self.logger.debug):
             return
@@ -302,6 +299,15 @@ class PackageUtils(object):
 
         self.logger.error("Failed while adjusting gcc specs")
         raise Exception("Failed while adjusting gcc specs")
+
+    def copyFileToSandbox(self, sandbox, src, dest):
+        if not os.path.isfile(src):
+            raise Exception(f"'{src}' is not present ...")
+
+        if not os.path.isabs(src):
+            src = f"{constants.photonDir}/{src}"
+
+        sandbox.put(src, dest)
 
     def _verifyShaAndGetSourcePath(self, source, package, version):
         # Fetch/verify sources if checksum not None.

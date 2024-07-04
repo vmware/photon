@@ -1593,6 +1593,12 @@ def initialize_constants():
         )
     constants.srpcli = configdict.get("srpcli", None)
 
+    filesToCopyToSb = configdict.get("photon-build-param", {}).get("copy-to-sandbox", "")
+    for k, v in filesToCopyToSb.items():
+        if not v:
+            continue
+        constants.storeScriptsToCopy(k, v)
+
     constants.initialize()
 
     check_prerequesite["initialize-constants"] = True
@@ -1646,7 +1652,7 @@ def process_env_build_params(ph_build_param):
         "SCHEDULER_SERVER": "start-scheduler-server",
         "BUILD_EXTRA_PKGS": "build-extra-pkgs",
         "RESUME_BUILD": "resume-build",
-        "POI_IMAGE": "poi-image",
+        "POI_IMAGE": "poi-image"
     }
 
     os.environ["PHOTON_RELEASE_VER"] = ph_build_param["photon-release-version"]
