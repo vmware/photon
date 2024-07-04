@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # Security hardening consist of 5 compile and link time options
 # specified below:
@@ -8,13 +8,11 @@ USE_PIE=1
 USE_ZRELRO=1
 USE_ZNOW=1
 
-echo "Using options:" $@
+echo "Using options: $@"
 
-SPECFILE="`dirname $(gcc --print-libgcc-file-name)`/../specs"
-
+SPECFILE="$(dirname $(gcc --print-libgcc-file-name))/../specs"
 
 # Enable/disable triggers
-
 case $1 in
 none)
   rm -f $SPECFILE
@@ -33,9 +31,7 @@ nonow)
   ;;
 esac
 
-
 # Populate gcc spec variables in according to enabled triggers
-
 CC1_EXTRA=""
 CC1PLUS_EXTRA=""
 CPP_EXTRA=""
@@ -68,35 +64,33 @@ if [ $USE_ZNOW -eq 1 ]; then
 fi
 
 # Create gcc spec file
-
 echo "# Security hardening flags" > $SPECFILE
 if [ -n "$CC1_EXTRA" ]; then
-  echo >> $SPECFILE
-  echo "*cc1:" >> $SPECFILE
-  echo "+$CC1_EXTRA" >> $SPECFILE
+  echo -en "\n
+*cc1:
++$CC1_EXTRA" >> $SPECFILE
 fi
 
 if [ -n "$CC1PLUS_EXTRA" ]; then
-  echo >> $SPECFILE
-  echo "*cc1plus:" >> $SPECFILE
-  echo "+$CC1PLUS_EXTRA" >> $SPECFILE
+  echo -en "\n
+*cc1plus:
++$CC1PLUS_EXTRA" >> $SPECFILE
 fi
 
 if [ -n "$CPP_EXTRA" ]; then
-  echo >> $SPECFILE
-  echo "*cpp:" >> $SPECFILE
-  echo "+$CPP_EXTRA" >> $SPECFILE
+  echo -en "\n
+*cpp:
++$CPP_EXTRA" >> $SPECFILE
 fi
 
 if [ -n "$LIBGCC_EXTRA" ]; then
-  echo >> $SPECFILE
-  echo "*libgcc:" >> $SPECFILE
-  echo "+$LIBGCC_EXTRA" >> $SPECFILE
+  echo -en "\n
+*libgcc:
++$LIBGCC_EXTRA" >> $SPECFILE
 fi
 
 if [ -n "$LINK_EXTRA" ]; then
-  echo >> $SPECFILE
-  echo "*link:" >> $SPECFILE
-  echo "+$LINK_EXTRA" >> $SPECFILE
+  echo -en "\n
+*link:
++$LINK_EXTRA" >> $SPECFILE
 fi
-

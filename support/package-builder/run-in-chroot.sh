@@ -39,4 +39,4 @@ $CHROOT_CMD "${BUILDROOT}" \
   SHELL=/bin/bash \
   /bin/bash --login +h -c "$*"
 
-exit 0
+exit $?

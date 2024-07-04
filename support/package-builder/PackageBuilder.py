@@ -68,6 +68,8 @@ class PackageBuilder(object):
                     self._installDependencies(constants.targetArch)
 
             pkgUtils = PackageUtils(self.logName, self.logPath)
+            for _, v in constants.CopyToSandboxDict.items():
+                pkgUtils.copyFileToSandbox(self.sandbox, v["src"], v["dest"])
             pkgUtils.adjustGCCSpecs(self.sandbox, self.package, self.version)
             listRPMFiles, listSRPMFiles = pkgUtils.buildRPMSForGivenPackage(self.sandbox, self.package, self.version,
                                               self.logPath)
