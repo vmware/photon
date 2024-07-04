@@ -6,7 +6,7 @@
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
 Version:        9.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -23,6 +23,7 @@ Source1:        serial-console.sh
 Patch0: %{srcname}-%{version}-i18n-1.patch
 
 BuildRequires: libselinux-devel
+BuildRequires: attr-devel
 
 Requires: gmp
 
@@ -93,7 +94,7 @@ touch %{coreutils_selinux_present}
 
 %postun
 /sbin/ldconfig
-[ $1 = 0 ] && rm -f %{coreutils_selinux_present}
+[ $1 = 0 ] && rm -f %{coreutils_selinux_present} || :
 
 %files
 %defattr(-,root,root)
@@ -107,6 +108,8 @@ touch %{coreutils_selinux_present}
 %defattr(-,root,root)
 
 %changelog
+* Thu Jul 04 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 9.1-3
+- Enable xattr support
 * Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-2
 - Add lang sub package
 - Fix binary paths

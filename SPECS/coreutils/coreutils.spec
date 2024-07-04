@@ -4,7 +4,7 @@
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        9.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -19,6 +19,8 @@ Source1:        serial-console.sh
 # Patches are taken from:
 # www.linuxfromscratch.org/patches/downloads/coreutils/
 Patch0: coreutils-%{version}-i18n-1.patch
+
+BuildRequires:  attr-devel
 
 Requires:       gmp
 
@@ -83,7 +85,7 @@ touch %{coreutils_present}
 
 %postun
 /sbin/ldconfig
-[ $1 = 0 ] && rm -f %{coreutils_present}
+[ $1 = 0 ] && rm -f %{coreutils_present} || :
 
 %files
 %defattr(-,root,root)
@@ -97,6 +99,8 @@ touch %{coreutils_present}
 %defattr(-,root,root)
 
 %changelog
+* Thu Jul 04 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 9.1-3
+- Enable xattr support
 * Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-2
 - Fix binary paths
 - Add a flag file & use it in toybox trigger
