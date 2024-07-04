@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -34,6 +34,7 @@ Source7: %{fips_provider_srcname}.tar.xz
 
 Patch0: openssl-cnf.patch
 Patch1: CVE-2023-50782.patch
+Patch2: Fix-regression-in-EVP_PKEY_CTX_add1_hkdf_info.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -271,6 +272,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Jul 04 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.0.14-2
+- Fix regression in EVP_PKEY_CTX_add1_hkdf_info()
 * Tue Jun 18 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.14-1
 - Update to openssl-3.0.14 to fix CVE-2024-4741
 * Wed Apr 10 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.13-4
