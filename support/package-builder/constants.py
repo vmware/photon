@@ -2,6 +2,7 @@
 
 import platform
 
+from copy import deepcopy
 from Logger import Logger
 from CommandUtils import CommandUtils as cmdUtils
 
@@ -53,6 +54,7 @@ class constants(object):
     resume_build = False
     buildDbgInfoRpmList = []
     extraPackagesList = []
+    CopyToSandboxDict = {}
 
     noDepsPackageList = [
         "texinfo",
@@ -559,6 +561,10 @@ class constants(object):
                 k, v = m.split(" ", 1)
                 macros[k] = v
         return macros
+
+    @staticmethod
+    def storeScriptsToCopy(key, val):
+        constants.CopyToSandboxDict[key] = deepcopy(val)
 
     def checkIfHostRpmNotUsable():
         if constants.hostRpmIsNotUsable >= 0:

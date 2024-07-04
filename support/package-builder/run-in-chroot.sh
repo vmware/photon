@@ -40,4 +40,4 @@ $CHROOT_CMD "${BUILDROOT}" \
   LC_ALL=en_US.UTF-8 \
   /bin/bash --login +h -c "$*"
 
-exit 0
+exit $?

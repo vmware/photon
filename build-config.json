@@ -29,7 +29,11 @@
 
         "pull-sources-config": "https://packages.vmware.com/photon/photon_sources/1.0",
         "publishrpm-url": "https://packages.vmware.com/photon/photon_publish_rpms",
-        "publishXrpm-url": "https://packages.vmware.com/photon/photon_publish_x_rpms"
+        "publishXrpm-url": "https://packages.vmware.com/photon/photon_publish_x_rpms",
+        "copy-to-sandbox": {
+            "adjust-gcc-specs": {"src": "tools/scripts/adjust-gcc-specs.sh", "dest": "/tmp"},
+            "chroot-env-setup-script": {}
+        }
     },
     "photon-path": "",
     "stage-path": "",

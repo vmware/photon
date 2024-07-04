@@ -137,6 +137,8 @@ RPMCHECK
 THREADS
 - Number of packages to build in parallel, doesn't work like `make -j`
 
+CHROOT_ENV_SETUP_SCRIPT
+- Script's absolute path to customize chroot build environment
 
 Examples:
 

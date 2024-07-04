@@ -1534,6 +1534,12 @@ def initialize_constants():
             bool(configdict["photon-build-param"]["resume-build"])
         )
 
+    filesToCopyToSb = configdict.get("photon-build-param", {}).get("copy-to-sandbox", "")
+    for k, v in filesToCopyToSb.items():
+        if not v:
+            continue
+        constants.storeScriptsToCopy(k, v)
+
     constants.initialize()
 
     check_prerequesite["initialize-constants"] = True
