@@ -9,7 +9,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.34.1
-Release:        2%{?kernelsubrelease}%{?dist}
+Release:        3%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org
 Group:          Applications/System
@@ -21,6 +21,11 @@ Source0: https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
 
 Source1: https://github.com/falcosecurity/libs/archive/falconsecurity-libs-%{falcosecurity_libs_ver}.tar.gz
 %define sha512 falconsecurity-libs=e4c9ab4cd8bbe544f13403573df7751b21c977ecefe4ea7c0b71c576a77c308d2f64f5a3d933a2493f23aacbc63148f24be0e897ca779a73879a48c63cbbad33
+
+Source2: %{name}-%{version}-dependencies.tar.gz
+%define sha512 %{name}-%{version}-dependencies.tar.gz=27192269e2c8578e0440ad4a1e1ad7fde98a7f00f064f3b1b0d395bc7c24f9b1ce9354430e25c6f51ac74067c37f9cbcb7eb55e1c8f6e5a3912beb91193212b9
+
+Source3: uthash.h
 
 Patch0: get-googletest-sources-from-photonstage.patch
 Patch1: falcosecurity-libs-nodownload.patch
@@ -69,9 +74,12 @@ Sysdig is scriptable in Lua and includes a command line interface and a powerful
 that runs in your terminal
 
 %prep
-%autosetup -p1 -a0 -a1
+%autosetup -a0 -a1 -p1
+mkdir -p %{_arch}-vmware-linux
+tar xf %{SOURCE2} --strip-components=1 -C %{_arch}-vmware-linux
 
 %build
+cp %{SOURCE3} libs-%{falcosecurity_libs_ver}/userspace/libscap/
 export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
 
 %{cmake} \
@@ -139,6 +147,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko.xz
 
 %changelog
+* Fri Jul 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.34.1-3
+- Add changes to build offline
 * Tue Jan 09 2024 Ankit Jain <ankitja@vmware.com> 0.34.1-2
 - compress .ko and exclude debug from main package
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.34.1-1
