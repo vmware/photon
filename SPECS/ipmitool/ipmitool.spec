@@ -4,7 +4,7 @@
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.19
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
@@ -13,6 +13,8 @@ URL:            https://github.com/ipmitool/ipmitool
 
 Source0: https://github.com/ipmitool/ipmitool/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=2d91706e9feba4b2ce4808eca087b81b842c4292a5840830001919c06ec8babd8f8761b74bb9dcf8fbc7765f028a5b1a192a3c1b643f2adaa157fed6fb0d1ee3
+# https://www.iana.org/assignments/enterprise-numbers.txt
+Source1: enterprise-numbers
 
 BuildRequires:  autoconf
 BuildRequires:  autoconf-archive
@@ -21,7 +23,7 @@ BuildRequires:  libtool
 BuildRequires:  glib
 BuildRequires:  glibc
 BuildRequires:  openssl-devel
-BuildRequires:  curl-devel
+BuildRequires:  curl
 
 Requires:   openssl
 Requires:   curl
@@ -46,6 +48,7 @@ setting LAN configuration, and chassis power control.
 
 %build
 sh ./bootstrap
+install -Dm 644 %{SOURCE1} .
 %configure \
     --with-kerneldir \
     --with-rpm-distro=
@@ -76,6 +79,8 @@ rm -rf %{buildroot}
 %{_datadir}/misc/enterprise-numbers
 
 %changelog
+* Mon Jul 08 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.8.19-5
+- Locally store enterprise-numbers file to do offline build
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-4
 - Bump version as a part of openssl upgrade
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-3
