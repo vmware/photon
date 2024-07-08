@@ -1,7 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
-Version:        28.2
-Release:        2%{?dist}
+Version:        29.4
+Release:        1%{?dist}
 License:        GPLv3+ and CC0-1.0
 URL:            http://www.gnu.org/software/emacs
 Group:          Applications/Editors
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/emacs/%{name}-%{version}.tar.xz
-%define sha512 %{name}=a7cec7e3e82367815a1442f69af54102dbfc434069810a9dec5938a6660cb8b076e6f1fb0bfff9695b15603dbbe05eb9c7dfd92e90cf40fc4d1e5746bce83bd8
+%define sha512 %{name}=66b38081cb01d2c46ff7beefb45986cc225b4c922c30712ad0d456c6cae5507176ed99418c8f26948c5375c8afde4e4b2507d23ed997dbb5392d12150a121d80
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -63,7 +63,7 @@ rm -rf %{buildroot}%{_infodir} \
 %{_bindir}/etags
 %{_includedir}/%{name}-module.h
 %{_libdir}/systemd/user/%{name}.service
-%{_libexecdir}/%{name}/%{version}/%{_arch}-unknown-linux-gnu/%{name}.pdmp
+%{_libexecdir}/%{name}/%{version}/%{_arch}-unknown-linux-gnu/%{name}-*.pdmp
 %{_libexecdir}/%{name}/%{version}/%{_arch}-unknown-linux-gnu/hexl
 %{_libexecdir}/%{name}/%{version}/%{_arch}-unknown-linux-gnu/movemail
 %{_libexecdir}/%{name}/%{version}/%{_arch}-unknown-linux-gnu/rcs2log
@@ -74,6 +74,8 @@ rm -rf %{buildroot}%{_infodir} \
 %{_datadir}/metainfo/%{name}.metainfo.xml
 
 %changelog
+* Mon Jul 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 29.4-1
+- Upgrade to latest
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 28.2-2
 - Bump version as a part of gnutls upgrade
 * Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 28.2-1
