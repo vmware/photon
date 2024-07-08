@@ -1202,6 +1202,7 @@ class BuildImage:
         if self.poi_image is not None:
             args.append(f"--docker-image={self.poi_image}")
         args.append(f"--stage-dir={Build_Config.stagePath}")
+        args.append(f"--sha={constants.buildNumber}")
         args = " ".join(args)
         cmd = f"cd {photonDir}/support/poi && ./poi.py {args} {self.img_name} "
         print(f"running {cmd}")

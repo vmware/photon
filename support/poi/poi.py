@@ -38,7 +38,8 @@ class Poi(object):
                  poi_image=POI_IMAGE,
                  photon_dir=PHOTON_DIR,
                  stage_dir=STAGE_DIR,
-                 eula_path=EULA_PATH):
+                 eula_path=EULA_PATH,
+                 sha=None):
 
         self.arch = arch
         self.release_ver = release_ver
@@ -47,7 +48,10 @@ class Poi(object):
         self.photon_dir = photon_dir
         self.stage_dir = stage_dir
         self.eula_path = EULA_PATH
+        self.sha = sha
 
+        if self.sha is None:
+            self.sha = self.get_git_sha()
         if self.repo_dir is None:
             self.repo_dir = os.path.join(self.stage_dir, "RPMS")
 
@@ -377,22 +381,19 @@ class Poi(object):
 
     # ova, azure etc. have the type in the name
     def image_filename(self, type, ext="img"):
-        sha = self.get_git_sha()
-        return f"photon-{type}-{self.release_ver}-{sha}.{self.arch}.{ext}"
+        return f"photon-{type}-{self.release_ver}-{self.sha}.{self.arch}.{ext}"
 
     # full ISOs have no special name, but an extension
     def full_iso_name(self, type=None):
-        sha = self.get_git_sha()
         if type is None:
-            return f"photon-{self.release_ver}-{sha}.{self.arch}.iso"
+            return f"photon-{self.release_ver}-{self.sha}.{self.arch}.iso"
         else:
-            return f"photon-{self.release_ver}-{sha}.{self.arch}.{type}.iso"
+            return f"photon-{self.release_ver}-{self.sha}.{self.arch}.{type}.iso"
 
     # custom ISOs have the type in the name, and just an 'iso' extension
     # (debug/source not supported here)
     def iso_name(self, type=type):
-        sha = self.get_git_sha()
-        return f"photon-{type}-{self.release_ver}-{sha}.{self.arch}.iso"
+        return f"photon-{type}-{self.release_ver}-{self.sha}.{self.arch}.iso"
 
 
 def main():
@@ -401,12 +402,13 @@ def main():
     stage_dir = STAGE_DIR
     repo_dir = None
     arch = THIS_ARCH
+    sha= None
 
     try:
         opts, args = getopt.getopt(
                 sys.argv[1:],
                 "c:",
-                longopts=["config=", "docker-image=", "arch=", "stage-dir=", "repo-dir="])
+                longopts=["config=", "docker-image=", "arch=", "stage-dir=", "repo-dir=", "sha="])
     except getopt.GetoptError as e:
         print(e)
         sys.exit(2)
@@ -422,6 +424,8 @@ def main():
             stage_dir = a
         elif o == "--repo-dir":
             repo_dir = a
+        elif o == "--sha":
+            sha = a
         else:
             assert False, f"unhandled option {o}"
 
@@ -429,7 +433,7 @@ def main():
 
     target = args[0]
 
-    poi = Poi(arch=arch, poi_image=poi_image, stage_dir=stage_dir, repo_dir=repo_dir)
+    poi = Poi(arch=arch, poi_image=poi_image, stage_dir=stage_dir, repo_dir=repo_dir, sha=sha)
 
     if target in ["ova", "ova-stig", "azure", "ami", "gce", "rpi"]:
         assert target != "rpi" or arch == "aarch64", "arch must be aarch64 to build RPi image"
