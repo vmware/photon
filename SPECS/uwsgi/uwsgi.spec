@@ -1,7 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.21
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        GPLv2 with exceptions
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -236,6 +236,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Tue Jul 09 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-17
+- Version Bump up to consume httpd v2.4.61
 * Fri Apr 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-16
 - Version Bump up to consume httpd v2.4.59
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-15
