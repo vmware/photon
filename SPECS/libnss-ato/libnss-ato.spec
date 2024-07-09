@@ -1,9 +1,10 @@
-%global commit_id 574c5ab
+%global commit_id       574c5ab
+%define debug_package   %{nil}
 
 Summary:        libnss-ato
 Name:           libnss-ato
 Version:        20240514
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU General Public License
 URL:            https://github.com/donapieppo/libnss-ato
 Group:          Development/Tools
@@ -41,8 +42,10 @@ which allows to map every nss request for unknown user to a single predefined us
 %install
 %make_install %{?_smp_mflags}
 rm -rf %{buildroot}%{_mandir}
-cp %{SOURCE1} %{buildroot}%{_sysconfdir}
-cp %{SOURCE2} %{buildroot}%{_sysconfdir}
+
+cp %{SOURCE1} \
+   %{SOURCE2} \
+   %{buildroot}%{_sysconfdir}
 
 %check
 ./libnss_ato_test root
@@ -57,6 +60,8 @@ rm -rf %{buildroot}
 %{_libdir}/libnss_ato*.so*
 
 %changelog
+* Tue Jul 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20240514-2
+- Disable debuginfo rpm build
 * Tue May 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20240514-1
 - Upgrade to latest
 - Allow only desired programs

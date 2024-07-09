@@ -1,4 +1,5 @@
 Subject: [PATCH] allow only desired programs
+
 ---
  Makefile                      |   1 +
  libnss-ato-allowed-progs.conf |   5 ++
@@ -30,7 +31,7 @@ index 0000000..7f7a26d
 +#/usr/sbin/sshd
 +#/usr/bin/login
 diff --git a/libnss_ato.c b/libnss_ato.c
-index f2f1c38..88a473d 100644
+index f2f1c38..31d51e9 100644
 --- a/libnss_ato.c
 +++ b/libnss_ato.c
 @@ -26,6 +26,13 @@
@@ -127,7 +128,7 @@ index f2f1c38..88a473d 100644
 +
 +    while (fgets(line, sizeof(line), file)) {
 +        char *curr_prog;
-+        char full_path[PATH_MAX] = {};
++        char full_path[sizeof(exe)] = {};
 +
 +        line[strcspn(line, "\n")] = '\0';
 +
