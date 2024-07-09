@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.219
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -124,6 +124,10 @@ Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+
+# Fix for CVE-2022-48666
+Patch103: 0001-scsi-core-Fix-a-use-after-free.patch
+
 # Fix for CVE-2021-4204
 Patch105: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
@@ -534,6 +538,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jul 09 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.219-3
+- Fix for CVE-2022-48666
 * Thu Jun 27 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.219-2
 - Fix for CVE-2024-36901
 * Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.219-1
