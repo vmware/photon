@@ -2,7 +2,7 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.316
+Version:        4.19.317
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=89598e5d8653cba3fcac223769798d8c10ea50cd13c14772ce09bf95e24e12d4591faa658c74b2b24bd9157389478767dd6a5cf3a559dbcf22ec59b4e4a2d4ee
+%define sha512 linux=8b1f82767dd86224860951a312580e7e1c11d32e01531dc4817724feba2dec5a9b2b0e47c2b5b61bfb53f00569af5253a8bf3f60dcf962f3357b016fcf01aef9
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -141,11 +141,6 @@ Patch76: 0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch77: 0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch78: 0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch79: 0005-ovl-check-permission-to-open-real-file.patch
-
-# Fix for CVE-2022-3524 and CVE-2022-3567
-Patch81: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
-Patch85: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
-Patch86: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
 #Fix for CVE-2022-43945
 Patch87: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
@@ -864,6 +859,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Wed Jul 10 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.317-1
+- Update to version 4.19.317
 * Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.19.316-1
 - Update to version 4.19.316
 * Thu May 30 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.315-1

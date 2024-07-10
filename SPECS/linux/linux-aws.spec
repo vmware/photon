@@ -7,7 +7,7 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.316
+Version:        4.19.317
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -19,7 +19,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=89598e5d8653cba3fcac223769798d8c10ea50cd13c14772ce09bf95e24e12d4591faa658c74b2b24bd9157389478767dd6a5cf3a559dbcf22ec59b4e4a2d4ee
+%define sha512 linux=8b1f82767dd86224860951a312580e7e1c11d32e01531dc4817724feba2dec5a9b2b0e47c2b5b61bfb53f00569af5253a8bf3f60dcf962f3357b016fcf01aef9
 
 %ifarch x86_64
 Source1: config-aws
@@ -115,11 +115,6 @@ Patch70: 0001-x86-xen-Use-clear_bss-for-Xen-PV-guests.patch
 Patch72: 0001-xfs-ensure-that-the-inode-uid-gid-match-values-match.patch
 Patch73: 0002-xfs-remove-the-icdinode-di_uid-di_gid-members.patch
 Patch74: 0003-xfs-fix-up-non-directory-creation-in-SGID-directorie.patch
-
-# Fix for CVE-2022-3524 and CVE-2022-3567
-Patch76: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
-Patch80: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
-Patch81: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
 # CVE-2022-43945
 Patch82: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
@@ -587,6 +582,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jul 10 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.317-1
+- Update to version 4.19.317
 * Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.19.316-1
 - Update to version 4.19.316
 * Thu May 30 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.315-1

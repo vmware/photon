@@ -7,7 +7,7 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.316
+Version:        4.19.317
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=89598e5d8653cba3fcac223769798d8c10ea50cd13c14772ce09bf95e24e12d4591faa658c74b2b24bd9157389478767dd6a5cf3a559dbcf22ec59b4e4a2d4ee
+%define sha512 linux=8b1f82767dd86224860951a312580e7e1c11d32e01531dc4817724feba2dec5a9b2b0e47c2b5b61bfb53f00569af5253a8bf3f60dcf962f3357b016fcf01aef9
 
 %ifarch x86_64
 Source1: config-rt
@@ -147,11 +147,6 @@ Patch41: 0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch42: 0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 #Fix for CVE-2024-0565
 Patch44: 0001-smb-client-fix-OOB-in-receive_encrypted_standard.patch
-
-# Fix for CVE-2022-3524 and CVE-2022-3567
-Patch51: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
-Patch55: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
-Patch56: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
 
 # Fix for CVE-2020-16119
 Patch58: 0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
@@ -1266,6 +1261,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Wed Jul 10 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.317-1
+- Update to version 4.19.317
 * Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.19.316-1
 - Update to version 4.19.316
 * Thu May 30 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.315-1
