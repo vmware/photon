@@ -1,0 +1,101 @@
+From 1af821782ce8978f40b1e7178ef4692ad0e42406 Mon Sep 17 00:00:00 2001
+From: Nick Wellnhofer <wellnhofer@aevum.de>
+Date: Tue, 9 Jul 2024 12:29:53 +0200
+Subject: [PATCH] io: Fix return value of xmlFileRead
+
+This broke in commit 6d27c54.
+
+Fixes #766.
+
+[sshedi: backport fix to v2.13.0]
+---
+ CMakeLists.txt |  2 +-
+ testparser.c   | 31 +++++++++++++++++++++++++++++++
+ xmlIO.c        |  2 +-
+ 3 files changed, 33 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 723e2344..f99fd368 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -528,7 +528,7 @@ if(LIBXML2_WITH_TESTS)
+     endif()
+     add_test(NAME testchar COMMAND testchar)
+     add_test(NAME testdict COMMAND testdict)
+-    add_test(NAME testparser COMMAND testparser)
++    add_test(NAME testparser COMMAND testparser WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+     add_test(NAME testrecurse COMMAND testrecurse WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+     add_test(NAME testThreads COMMAND testThreads WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+ endif()
+diff --git a/testparser.c b/testparser.c
+index d19e9ea5..c2577ee7 100644
+--- a/testparser.c
++++ b/testparser.c
+@@ -11,6 +11,8 @@
+ 
+ #include <string.h>
+ 
++#define XML_DEPRECATED
++
+ static int
+ testStandaloneWithEncoding(void) {
+     xmlDocPtr doc;
+@@ -78,6 +80,34 @@ testNodeGetContent(void) {
+     return err;
+ }
+ 
++static int
++testCFileIO(void) {
++    xmlDocPtr doc;
++    int err = 0;
++
++    /* Deprecated FILE-based API */
++    xmlRegisterInputCallbacks(xmlFileMatch, xmlFileOpen, xmlFileRead,
++                              xmlFileClose);
++    doc = xmlReadFile("test/ent1", NULL, 0);
++
++    if (doc == NULL) {
++        err = 1;
++    } else {
++        xmlNodePtr root = xmlDocGetRootElement(doc);
++
++        if (root == NULL || !xmlStrEqual(root->name, BAD_CAST "EXAMPLE"))
++            err = 1;
++    }
++
++    xmlFreeDoc(doc);
++    xmlPopInputCallbacks();
++
++    if (err)
++        fprintf(stderr, "xmlReadFile failed with FILE input callbacks\n");
++
++    return err;
++}
++
+ #ifdef LIBXML_SAX1_ENABLED
+ static int
+ testBalancedChunk(void) {
+@@ -393,6 +423,7 @@ main(void) {
+     err |= testStandaloneWithEncoding();
+     err |= testUnsupportedEncoding();
+     err |= testNodeGetContent();
++    err |= testCFileIO();
+ #ifdef LIBXML_SAX1_ENABLED
+     err |= testBalancedChunk();
+ #endif
+diff --git a/xmlIO.c b/xmlIO.c
+index d4275cbf..b36c32be 100644
+--- a/xmlIO.c
++++ b/xmlIO.c
+@@ -776,7 +776,7 @@ xmlFileRead(void * context, char * buffer, int len) {
+     if ((bytes < (size_t) len) && (ferror(file)))
+         return(-xmlIOErr(0, "fread()"));
+ 
+-    return(len);
++    return(bytes);
+ }
+ 
+ #ifdef LIBXML_OUTPUT_ENABLED
+-- 
+2.45.2
+
