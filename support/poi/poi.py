@@ -259,16 +259,14 @@ class Poi(object):
         rpm_list = []
         pkg_info_json = os.path.join(self.stage_dir, "pkg_info.json")
 
-        if type != "source":
-            repo_dir = self.repo_dir
-        else:
-            repo_dir = os.path.abspath(self.repo_dir, "..", "SRPMS")
+        if type == "src":
+            self.repo_dir = os.path.abspath(os.path.join(self.repo_dir, "../SRPMS"))
 
         if os.path.isfile(pkg_info_json):
             print("using pkg_info.json for RPM list")
 
             key = 'rpm'
-            if type in ["source", "debug"]:
+            if type in ["src", "debug"]:
                 key = f'{type}rpm'
 
             with open(pkg_info_json, "rt") as f:
@@ -277,15 +275,15 @@ class Poi(object):
             for pkg_name, pkg in pkg_info.items():
                 pkg_file = pkg.get(key, None)
                 if pkg_file is not None:
-                    rpm_list.append(pkg_file.replace(repo_dir, "/repo"))
+                    rpm_list.append(pkg_file.replace(self.repo_dir, "/repo"))
         else:
             print("pkg_info.json not found, shipping all RPMs")
             for arch in ["noarch", self.arch]:
-                for p in glob.glob(os.path.join(repo_dir, arch, "*.rpm")):
+                for p in glob.glob(os.path.join(self.repo_dir, arch, "*.rpm")):
                     if ("-debuginfo-" in p) == (type == "debug"):
                         # replace leading directory path with path as seen
                         # in container
-                        rpm_list.append(p.replace(repo_dir.rstrip("/"), "/repo"))
+                        rpm_list.append(p.replace(self.repo_dir.rstrip("/"), "/repo"))
 
         if type is None:
             rpm_list_file = os.path.join(stage_cfg_dir, f"{basename}.rpm-list")
@@ -329,7 +327,7 @@ class Poi(object):
 
         if type == "debug":
             repo_subdir = "DEBUGRPMS"
-        elif type == "source":
+        elif type == "src":
             repo_subdir = "SRPMS"
         else:
             raise Exception(f"unknown iso type '{type}'")
@@ -391,7 +389,7 @@ class Poi(object):
             return f"photon-{self.release_ver}-{self.sha}.{self.arch}.{type}.iso"
 
     # custom ISOs have the type in the name, and just an 'iso' extension
-    # (debug/source not supported here)
+    # (debug/src not supported here)
     def iso_name(self, type=type):
         return f"photon-{type}-{self.release_ver}-{self.sha}.{self.arch}.iso"
 
@@ -459,16 +457,16 @@ def main():
         elif target == "rpi":
             poi.create_rpi(raw_image_file, subdir="rpi")
 
-    elif target in ["iso", "debug-iso", "source-iso"]:
+    elif target in ["iso", "debug-iso", "src-iso"]:
         poi.create_config("iso")
 
         # type is None indicates the 'normal' full ISO
-        # otherwise it's 'special' (source or debug)
+        # otherwise it's 'special' (src or debug)
         type = None
         if target.startswith("debug-"):
             type = "debug"
-        elif target.startswith("source-"):
-            type = "source"
+        elif target.startswith("src-"):
+            type = "src"
         iso_file = poi.full_iso_name(type=type)
         poi.create_rpm_list(iso_file, type=type)
 
