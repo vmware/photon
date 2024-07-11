@@ -1,0 +1,51 @@
+From 32024df6857d428f6d12ab6787ba872f29369734 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Thu, 27 Jun 2024 07:06:08 +0000
+Subject: [PATCH] Introduce __module_put_and_exit() function to address
+ canister build failure
+
+__module_put_and_exit() is replaced with __module_put_and_kthread_exit()
+from kernel v5.10.220 onwards. Re-introduce this function and call
+__module_put_and_kthread_exit() inside that to address canister code
+references to this missing function.
+
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ include/linux/module.h | 2 ++
+ kernel/module.c        | 6 ++++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/include/linux/module.h b/include/linux/module.h
+index a55a40c28..2f795ac41 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -606,6 +606,8 @@ unsigned long module_kallsyms_lookup_name(const char *name);
+ 
+ extern void __noreturn __module_put_and_kthread_exit(struct module *mod,
+ 			long code);
++extern void __noreturn __module_put_and_exit(struct module *mod,
++			long code);
+ #define module_put_and_kthread_exit(code) __module_put_and_kthread_exit(THIS_MODULE, code)
+ 
+ #ifdef CONFIG_MODULE_UNLOAD
+diff --git a/kernel/module.c b/kernel/module.c
+index edc7b99cb..86bd2e29a 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -343,6 +343,12 @@ void __noreturn __module_put_and_kthread_exit(struct module *mod, long code)
+ }
+ EXPORT_SYMBOL(__module_put_and_kthread_exit);
+ 
++void __noreturn __module_put_and_exit(struct module *mod, long code)
++{
++	__module_put_and_kthread_exit(mod, code);
++}
++EXPORT_SYMBOL(__module_put_and_exit);
++
+ /* Find a module section: 0 means not found. */
+ static unsigned int find_sec(const struct load_info *info, const char *name)
+ {
+-- 
+2.19.0
+
+

@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.219
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        5.10.222
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=e62d8262654054c3a05e5e0a62dcedc51499fcfa078a4c19cb52c6dca82a83125152b83aa9bc0fdd448f563fbd71409305402d1a12cc8c7a038b8bed76ac482e
+%define sha512 linux=384b3b816daea1579116f86e0e0271101093ed82854a986351b1a5936f003ed1c469856c26410ab503480531acfe9ba1fbc39dffea03d32ee58849ad20af8877
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -119,6 +119,11 @@ Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 Patch61: 0001-x86-boot-Avoid-VE-during-boot-for-TDX-platforms.patch
 %endif
 
+# LTP
+# fix for fsnotify22
+Patch81:  0001-ext4_fix_error_code_saved_on_super_block_during_file_system.patch
+Patch82:  0002-ext4_Send_notifications_on_error.patch
+
 #Secure:
 Patch90: 0001-bpf-ext4-bonding-Fix-compilation-errors.patch
 Patch91: 0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
@@ -157,17 +162,6 @@ Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
 
-# Fix for CVE-2022-3524 and CVE-2022-3567
-Patch122: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
-Patch126: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
-Patch127: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
-
-#Fix for CVE-2022-43945
-Patch130: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
-Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
-Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
-Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
-
 #Fix for CVE-2021-3699
 Patch136: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
 
@@ -204,10 +198,6 @@ Patch154: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
 # Fix CVE-2024-26904
 Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
 
-# Fix CVE-2024-36901
-Patch156: 0001-ipv6-annotate-data-races-around-cnf.disable_ipv6.pat.patch
-Patch157: 0001-ipv6-prevent-NULL-dereference-in-ip6_output.patch
-
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -228,6 +218,7 @@ Patch507: 0001-linux-crypto-Add-random-ready-callbacks-support.patch
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch510: 0001-Introduce_module_put_and_exit-function-to-address.patch
 %else
 %if 0%{?kat_build}
 Patch510: 0001-Skip-rap-plugin-for-aesni-intel-modules.patch
@@ -331,6 +322,9 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m61 -M61
 %endif
 
+# LTP
+%autopatch -p1 -m81 -M82
+
 #Secure
 %autopatch -p1 -m90 -M94
 
@@ -341,7 +335,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m500 -M507
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M509
+%autopatch -p1 -m508 -M510
 %else
 %if 0%{?kat_build}
 %autopatch -p1 -m510 -M511
@@ -480,6 +474,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jul 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.222-1
+- Update to version 5.10.222
+- Fix for LTP fanotify22
 * Tue Jul 09 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.219-3
 - Fix for CVE-2022-48666
 * Thu Jun 27 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.219-2

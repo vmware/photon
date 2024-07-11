@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.219
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.222
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=e62d8262654054c3a05e5e0a62dcedc51499fcfa078a4c19cb52c6dca82a83125152b83aa9bc0fdd448f563fbd71409305402d1a12cc8c7a038b8bed76ac482e
+%define sha512 linux=384b3b816daea1579116f86e0e0271101093ed82854a986351b1a5936f003ed1c469856c26410ab503480531acfe9ba1fbc39dffea03d32ee58849ad20af8877
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -163,6 +163,11 @@ Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
 Patch59: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 %endif
 
+# LTP
+# fix for fsnotify22
+Patch81:  0001-ext4_fix_error_code_saved_on_super_block_during_file_system.patch
+Patch82:  0002-ext4_Send_notifications_on_error.patch
+
 # CVE: [100..300]
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
@@ -193,17 +198,6 @@ Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
 Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
-
-# Fix for CVE-2022-3524 and CVE-2022-3567
-Patch122: 0001-ipv6-annotate-some-data-races-around-sk-sk_prot.patch
-Patch126: 0005-ipv6-Fix-data-races-around-sk-sk_prot.patch
-Patch127: 0006-tcp-Fix-data-races-around-icsk-icsk_af_ops.patch
-
-#Fix for CVE-2022-43945
-Patch130: 0001-NFSD-Cap-rsize_bop-result-based-on-send-buffer-size.patch
-Patch131: 0002-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
-Patch132: 0003-NFSD-Protect-against-send-buffer-overflow-in-NFSv2-R.patch
-Patch133: 0004-NFSD-Protect-against-send-buffer-overflow-in-NFSv3-R.patch
 
 #Fix for CVE-2021-3699
 Patch135: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
@@ -236,10 +230,6 @@ Patch148: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 
 # Fix CVE-2024-26589
 Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
-
-# Fix CVE-2024-36901
-Patch150: 0001-ipv6-annotate-data-races-around-cnf.disable_ipv6.pat.patch
-Patch151: 0001-ipv6-prevent-NULL-dereference-in-ip6_output.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -279,7 +269,7 @@ Patch507: 0001-linux-crypto-Add-random-ready-callbacks-support.patch
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
-
+Patch510: 0001-Introduce_module_put_and_exit-function-to-address.patch
 %else
 
 %if 0%{?kat_build}
@@ -499,6 +489,9 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m55 -M65
 %endif
 
+# LTP
+%autopatch -p1 -m81 -M82
+
 # CVE: [100..300]
 %autopatch -p1 -m100 -M158
 
@@ -517,7 +510,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m500 -M507
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M509
+%autopatch -p1 -m508 -M510
 %else
 %if 0%{?kat_build}
 %patch510 -p1
@@ -531,16 +524,7 @@ manipulation of eBPF programs and maps.
 %if 0%{?acvp_build:1} && 0%{?fips}
 #ACVP test harness patches.
 #Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
-%patch512 -p1
-%patch513 -p1
-%patch514 -p1
-%patch515 -p1
-%patch516 -p1
-%patch517 -p1
-%patch518 -p1
-%patch519 -p1
-%patch520 -p1
-%patch521 -p1
+%autopatch -p1 -m512 -M521
 %endif
 
 %ifarch x86_64
@@ -782,7 +766,7 @@ ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
      prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
 %endif
 
-%make_build install -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
+make install %{?_smp_mflags} -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
 cp -p %{SOURCE23} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
@@ -916,6 +900,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Jul 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.222-1
+- Update to version 5.10.222
+- Fix for LTP fanotify22
 * Tue Jul 09 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.219-3
 - Fix for CVE-2022-48666
 * Thu Jun 27 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.10.219-2

@@ -1,0 +1,80 @@
+From 2416dfe12403d6b69aa84b04511ffa218161d363 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Fri, 19 Jul 2024 14:02:48 +0530
+Subject: [PATCH] ext4: Send notifications on error
+
+[ Upstream commit 9a089b21f79b47eed240d4da7ea0d049de7c9b4d ]
+
+Send a FS_ERROR message via fsnotify to a userspace monitoring tool
+whenever a ext4 error condition is triggered.  This follows the existing
+error conditions in ext4, so it is hooked to the ext4_error* functions.
+
+Link: https://lore.kernel.org/r/20211025192746.66445-30-krisman@collabora.com
+Signed-off-by: Gabriel Krisman Bertazi <krisman@collabora.com>
+Acked-by: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Amir Goldstein <amir73il@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Jan Kara <jack@suse.cz>
+[Ajay: - Modified to apply on v5.10.y
+       - Added fsnotify for __ext4_abort()]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ fs/ext4/super.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index 18a493f..02236f2 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -46,6 +46,7 @@
+ #include <linux/part_stat.h>
+ #include <linux/kthread.h>
+ #include <linux/freezer.h>
++#include <linux/fsnotify.h>
+ 
+ #include "ext4.h"
+ #include "ext4_extents.h"	/* Needed for trace points definition */
+@@ -699,6 +700,7 @@ void __ext4_error(struct super_block *sb, const char *function,
+ 		       sb->s_id, function, line, current->comm, &vaf);
+ 		va_end(args);
+ 	}
++	fsnotify_sb_error(sb, NULL, error ? error : EFSCORRUPTED);
+ 	save_error_info(sb, error, 0, block, function, line);
+ 	ext4_handle_error(sb);
+ }
+@@ -730,6 +732,7 @@ void __ext4_error_inode(struct inode *inode, const char *function,
+ 			       current->comm, &vaf);
+ 		va_end(args);
+ 	}
++	fsnotify_sb_error(inode->i_sb, inode, error ? error : EFSCORRUPTED);
+ 	save_error_info(inode->i_sb, error, inode->i_ino, block,
+ 			function, line);
+ 	ext4_handle_error(inode->i_sb);
+@@ -769,6 +772,7 @@ void __ext4_error_file(struct file *file, const char *function,
+ 			       current->comm, path, &vaf);
+ 		va_end(args);
+ 	}
++	fsnotify_sb_error(inode->i_sb, inode, EFSCORRUPTED);
+ 	save_error_info(inode->i_sb, EFSCORRUPTED, inode->i_ino, block,
+ 			function, line);
+ 	ext4_handle_error(inode->i_sb);
+@@ -837,7 +841,7 @@ void __ext4_std_error(struct super_block *sb, const char *function,
+ 		printk(KERN_CRIT "EXT4-fs error (device %s) in %s:%d: %s\n",
+ 		       sb->s_id, function, line, errstr);
+ 	}
+-
++	fsnotify_sb_error(sb, NULL, errno ? errno : EFSCORRUPTED);
+ 	save_error_info(sb, -errno, 0, 0, function, line);
+ 	ext4_handle_error(sb);
+ }
+@@ -861,6 +865,7 @@ void __ext4_abort(struct super_block *sb, const char *function,
+ 	if (unlikely(ext4_forced_shutdown(EXT4_SB(sb))))
+ 		return;
+ 
++	fsnotify_sb_error(sb, NULL, error ? error : EFSCORRUPTED);
+ 	save_error_info(sb, error, 0, 0, function, line);
+ 	va_start(args, fmt);
+ 	vaf.fmt = fmt;
+-- 
+2.7.4
+

@@ -38,7 +38,9 @@ ${GDB} ${vmlinux} -q -ex="set pagination off" -x ${gdb_cmds} -ex q 2>${err_fn} |
 
 [ -s ${err_fn} ] && exit 1
 
-if ! diff ${sym_canister_fn} ${sym_vmlinux_fn}; then
+ignore_list='__u16 flags;'
+
+if ! diff ${sym_canister_fn} ${sym_vmlinux_fn} -I "${ignore_list}"; then
   echo "ERROR: Mismatch between ${sym_canister_fn} and ${sym_vmlinux_fn} symbols ..." 1>&2
   echo "Inspect diff between ${sym_canister_fn} and ${sym_vmlinux_fn} files ..." 1>&2
   exit 1

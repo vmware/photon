@@ -1,0 +1,40 @@
+From 124e7c61deb27d758df5ec0521c36cf08d417f7a Mon Sep 17 00:00:00 2001
+From: Gabriel Krisman Bertazi <krisman@collabora.com>
+Date: Tue, 26 Oct 2021 14:33:02 -0300
+Subject: ext4: fix error code saved on super block during file system abort
+
+[ Upstream commit 124e7c61deb27d758df5ec0521c36cf08d417f7a ]
+
+ext4_abort will eventually call ext4_errno_to_code, which translates the
+errno to an EXT4_ERR specific error.  This means that ext4_abort expects
+an errno.  By using EXT4_ERR_ here, it gets misinterpreted (as an errno),
+and ends up saving EXT4_ERR_EBUSY on the superblock during an abort,
+which makes no sense.
+
+ESHUTDOWN will get properly translated to EXT4_ERR_SHUTDOWN, so use that
+instead.
+
+Signed-off-by: Gabriel Krisman Bertazi <krisman@collabora.com>
+Link: https://lore.kernel.org/r/20211026173302.84000-1-krisman@collabora.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ fs/ext4/super.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index 160e5824948270..0e8406f5bf0aa0 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -5820,7 +5820,7 @@ static int ext4_remount(struct super_block *sb, int *flags, char *data)
+ 	}
+ 
+ 	if (ext4_test_mount_flag(sb, EXT4_MF_FS_ABORTED))
+-		ext4_abort(sb, EXT4_ERR_ESHUTDOWN, "Abort forced by user");
++		ext4_abort(sb, ESHUTDOWN, "Abort forced by user");
+ 
+ 	sb->s_flags = (sb->s_flags & ~SB_POSIXACL) |
+ 		(test_opt(sb, POSIX_ACL) ? SB_POSIXACL : 0);
+-- 
+cgit 1.2.3-korg
+
