@@ -2,40 +2,6 @@
 
 set -ex
 
-if false; then
-  topdir="${PWD}/.."
-  cwd="${PWD}"
-
-  ps_linux_ver="7.1.5"
-  libmi_tag="v1.6.9-0"
-
-  # Build libmi
-
-  # The default libmi.so file that comes with powershell (for example powershell-7.1.5-linux-x64.tar.gz)
-  # needs libcrypto.1.0.0, we need it to be linked with openssl-1.1.1 (what's present in Photon)
-  # Hence we need to re-build it.
-
-  # Pre requisites:
-
-  #tdnf install -y build-essential wget git openssl-devel Linux-PAM-devel krb5-devel e2fsprogs-devel which
-
-  cd "${topdir}"
-
-  wget https://raw.githubusercontent.com/OpenMandrivaSoftware/lsb-release/master/lsb_release
-  chmod +x lsb_release && mv lsb_release /usr/bin
-
-  ln -sfv /usr/lib/libssl.so.1.1 /usr/lib/libssl.so
-  ln -sfv /usr/lib/libcrypto.so.1.1 /usr/lib/libcrypto.so
-
-  # Actual task
-  git clone https://github.com/microsoft/omi.git
-  cd omi/Unix && git checkout -b "${libmi_tag}" tags/"${libmi_tag}" && ./configure && make -j32
-  mv ./output/lib/libmi.so "${topdir}"/powershell-linux-"${ps_linux_ver}"
-
-  cd "${cwd}"
-  rm -rf "${topdir}"/omi
-fi
-
 # Powershell related build instructions
 
 # See https://github.com/PowerShell/PowerShell/blob/master/docs/building/internals.md
