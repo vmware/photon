@@ -6,7 +6,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.3.1
-Release:       5%{?dist}
+Release:       6%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
@@ -19,10 +19,11 @@ Source0: %{name}-%{version}-src.tgz
 Source1:       %{name}.service
 Source2:       %{name}.sysusers
 
+Patch0: 0001-Use-proxy-if-available.patch
+
 Provides:   kafka
 Provides:   kafka-server
 
-BuildRequires: systemd
 BuildRequires: systemd-devel
 BuildRequires: openjdk11
 BuildRequires: curl
@@ -45,6 +46,12 @@ Messages are persisted on disk and replicated within the cluster to prevent data
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
+
+if [ -n "${GRADLE_PROXY_URL}" ]; then
+  PROP_FILE="gradle/wrapper/gradle-wrapper.properties"
+  sed -i "s|\(distributionUrl=\).*/\(gradle-.*.zip\)|\1${GRADLE_DISTRIBUTION_URL}/\2|" "$PROP_FILE"
+fi
+
 ./gradlew jar
 ./gradlew srcJar
 ./gradlew javadoc
@@ -112,6 +119,8 @@ rm -rf %{buildroot}
 %doc LICENSE
 
 %changelog
+* Fri Jul 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.1-6
+- Use proxy if available
 * Sun Aug 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.3.1-5
 - Require jdk11 or jdk17
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 3.3.1-4
