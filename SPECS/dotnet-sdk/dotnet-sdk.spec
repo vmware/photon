@@ -2,8 +2,8 @@
 
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        8.0.101
-Release:        2%{?dist}
+Version:        8.0.206
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -17,10 +17,11 @@ Group:          Development/Tools
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/17b6759f-1af0-41bc-ab12-209ba0377779/e8d02195dbf1434b940e0f05ae086453/dotnet-sdk-6.0.100-linux-x64.tar.gz
 Source0: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}=26df0151a3a59c4403b52ba0f0df61eaa904110d897be604f19dcaa27d50860c82296733329cb4a3cf20a2c2e518e8f5d5f36dfb7931bf714a45e46b11487c9a
+%define sha512 %{name}=d03cbb5ea44a6f4957d7c1fa0f7c19e3df2efcbf569b071082e37ac86776af0729540c3bbddc44668ae2eedcfcb4b098883bb560d26418f1583a558d60c99ef5
+
 BuildArch: x86_64
 
-Requires: dotnet-runtime
+Requires: dotnet-runtime = 8.0.7
 Requires: icu >= 70.1
 
 %description
@@ -33,9 +34,10 @@ applications, microservices and modern websites.
 %build
 
 %install
-mkdir -p %{buildroot}%{_libdir}/dotnet/sdk
-cp -pr sdk/%{version} %{buildroot}%{_libdir}/dotnet/sdk
-mkdir -p %{buildroot}%{_sysconfdir}/dotnet
+mkdir -p %{buildroot}%{_libdir}/dotnet/sdk \
+         %{buildroot}%{_sysconfdir}/dotnet
+
+cp -a sdk/%{version} %{buildroot}%{_libdir}/dotnet/sdk
 echo "%{_libdir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 
 %files
@@ -44,6 +46,8 @@ echo "%{_libdir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 %{_sysconfdir}/dotnet/install_location
 
 %changelog
+* Thu Jul 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.206-1
+- Upgrade to v8.0.206
 * Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 8.0.101-2
 - Bump version as a part to set env location
 * Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 8.0.101-1

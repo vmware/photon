@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        8.0.1
+Version:        8.0.7
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,11 +16,12 @@ Group:          Development/Tools
 # For example:
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
-Source0:        %{name}-%{version}-linux-x64.tar.gz
-%define sha512    %{name}=cbd03325280ff93cd0edab71c5564a50bb2423980f63d04602914db917c9c811a0068d848cab07d82e3260bff6684ad7cffacc2f449c06fc0b0aa8f845c399b6
+Source0: %{name}-%{version}-linux-x64.tar.gz
+%define sha512 %{name}=88e9ac34ad5ac76eec5499f2eb8d1aa35076518c842854ec1053953d34969c7bf1c5b2dbce245dbace3a18c3b8a4c79d2ef2d2ff105ce9d17cbbdbe813d8b16f
+
 BuildArch: x86_64
 
-BuildRequires: lttng-ust-devel >= 2.13.4-2
+BuildRequires: lttng-ust-devel
 
 Requires: curl
 Requires: libunwind
@@ -58,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*
 
 %changelog
+* Thu Jul 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.7-1
+- Upgrade to v8.0.7
 * Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 8.0.1-1
 - Version update
 * Thu Dec 21 2023 Anmol Jain <anmolja@vmware.com> 7.0.14-1
