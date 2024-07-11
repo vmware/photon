@@ -35,7 +35,7 @@ ${GDB} ${vmlinux} -q -ex="set pagination off" -x ${gdb_cmds} -ex q 2>${err_fn} |
 
 [ -s ${err_fn} ] && exit 1
 
-ignore_list='void \*module;\|struct module \*module;\|raw_spinlock_t lock;\|void \*lock;\|void \*drbg_mutex;\|struct mutex drbg_mutex;\|void \*cra_type;\|const struct crypto_type \*cra_type;\|void \*cra_module;\|struct module \*cra_module;'
+ignore_list='void \*module;\|struct module \*module;\|raw_spinlock_t lock;\|void \*lock;\|void \*drbg_mutex;\|struct mutex drbg_mutex;\|void \*cra_type;\|const struct crypto_type \*cra_type;\|void \*cra_module;\|struct module \*cra_module;\|__u16 flags;'
 
 echo "Comparing the symbols between canister and vmlinux ..."
 if ! diff ${sym_canister_fn} ${sym_vmlinux_fn} -I "${ignore_list}"; then

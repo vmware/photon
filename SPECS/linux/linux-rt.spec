@@ -13,7 +13,7 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.94
+Version:        6.1.97
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -22,12 +22,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt32
+%define rt_version rt35
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=41e37c17215783da64e855eac89a014811ea2aafd6687bc0381727083d270df55d979493f62d264ba221d34cc67494c25a8d5e146dc38e5a3a66f104c9227079
+%define sha512 linux=0688fed5cfe71137fb4072e25cdcccd4d2105c54314b72b30de3716a595d0adf1e2a9867f96bcc12b49958b081d404dca35a36747dd924ac510b001da5217b43
 
 %ifarch x86_64
 Source1: config-rt
@@ -470,6 +470,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Jul 10 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.97-1
+- Update to version 6.1.97, rt35
 * Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.1.94-1
 - Update to version 6.1.94, rt32
 * Mon May 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.90-2

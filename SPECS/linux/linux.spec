@@ -29,8 +29,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.94
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.97
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -41,7 +41,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=41e37c17215783da64e855eac89a014811ea2aafd6687bc0381727083d270df55d979493f62d264ba221d34cc67494c25a8d5e146dc38e5a3a66f104c9227079
+%define sha512 linux=0688fed5cfe71137fb4072e25cdcccd4d2105c54314b72b30de3716a595d0adf1e2a9867f96bcc12b49958b081d404dca35a36747dd924ac510b001da5217b43
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -871,6 +871,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jul 10 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.97-1
+- Update to version 6.1.97
 * Thu Jun 27 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.94-2
 - Ported HCX kernel patches and config changes
 * Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.1.94-1
