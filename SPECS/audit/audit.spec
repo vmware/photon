@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        32%{?dist}
+Release:        33%{?dist}
 Patch0:         audit-2.8.5-gcc-10.patch
 License:        GPLv2+
 Group:          System Environment/Security
@@ -153,6 +153,8 @@ end
 %{python3_sitelib}/*
 
 %changelog
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.8.5-33
+- Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 2.8.5-32
 - Bump version as a part of go upgrade
 * Thu Apr 18 2024 Mukul Sikka <msikka@vmware.com> 2.8.5-31
