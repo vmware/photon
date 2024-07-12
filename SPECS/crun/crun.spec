@@ -1,6 +1,6 @@
 Name:          crun
 Version:       1.8
-Release:       6%{?dist}
+Release:       7%{?dist}
 Summary:       OCI runtime in C
 License:       GPLv2+
 Group:         Development/Other
@@ -57,6 +57,8 @@ rm -f %{buildroot}%{_prefix}/lib/*.la \
 %{_mandir}/*
 
 %changelog
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8-7
+- Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.8-6
 - Bump version as a part of go upgrade
 * Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.8-5
