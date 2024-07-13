@@ -43,5 +43,6 @@ Once nfs-utils is installed, you can mount a file system by running the followin
 ```
 mount nfs
 ```
+```
 mount -t nfs nfs-ServernameOrIp:/exportfolder /mnt/folder
 ```
