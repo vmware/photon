@@ -67,7 +67,24 @@
 #include <openssl/proverr.h>
 #include <openssl/evp.h>
 
-#define UNUSED(var)		(void)(var)
+#define UNUSED(var)	(void)(var)
+
+#ifdef DEBUG_LOGS
+#define pr_dbg(fmt, ...) \
+	do { \
+		fprintf(stderr, "JENTROPY-DEBUG: [%s:%d] " fmt, \
+                __func__, __LINE__, ##__VA_ARGS__); \
+	} while (0)
+#else
+#define pr_dbg(fmt, ...)
+#endif // DEBUG_LOGS
+
+#define pr_err(fmt, ...) \
+	do { \
+		_pr_err(__LINE__, __func__, fmt, ##__VA_ARGS__); \
+	} while (0)
+
+static void _pr_err(int, const char *, const char *, ...);
 
 /* Required to make this shared object executable */
 const char service_interp[] __attribute__((section(".interp"))) = "/lib/" LD_SO;
@@ -80,10 +97,32 @@ int algif_rng_open(int do_accept);
 void algif_rng_close(int socket);
 ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len);
 
+static void _pr_err(int line, const char *func, const char *fmt, ...)
+{
+	va_list args;
+
+	va_start(args, fmt);
+
+	BIO *bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
+	if (bio_err == NULL) {
+        /* this is a fallback method, we should not miss errors */
+		fprintf(stderr, "JENTROPY-ERROR: %s():%d ", func, line);
+		vfprintf(stderr, fmt, args);
+        va_end(args);
+		return;
+	}
+
+	BIO_printf(bio_err, "JENTROPY-ERROR: %s():%d ", func, line);
+	BIO_vprintf(bio_err, fmt, args);
+	BIO_free(bio_err);
+	va_end(args);
+}
+
 int algif_rng_open(int do_accept)
 {
 	struct sockaddr_alg sa;
 	int sk, fd;
+	pr_dbg("do_accept: %d\n", do_accept);
 
 	sa.salg_family = AF_ALG;
 	strcpy((char *)sa.salg_type, "rng");
@@ -92,10 +131,13 @@ int algif_rng_open(int do_accept)
 	strcpy((char *)sa.salg_name, "jitterentropy_rng");
 
 	sk = socket(AF_ALG, SOCK_SEQPACKET, 0);
-	if (sk == -1)
+	if (sk == -1) {
+		pr_err("ERROR: socket(...) failed ...('%s')\n", strerror(errno));
 		return 0;
+	}
 
 	if (bind(sk, (struct sockaddr *)&sa, sizeof(sa)) == -1) {
+		pr_err("ERROR: bind(...) failed ...('%s')\n", strerror(errno));
 		close(sk);
 		return 0;
 	}
@@ -105,14 +147,17 @@ int algif_rng_open(int do_accept)
 
 	fd = accept(sk, NULL, 0);
 	close(sk);
-	if (fd == -1)
+	if (fd == -1) {
+		pr_err("ERROR: accept(...) failed ...('%s')\n", strerror(errno));
 		return 0;
+	}
 
 	return fd;
 }
 
 void algif_rng_close(int socket)
 {
+	pr_dbg("\n");
 	close(socket);
 }
 
@@ -121,6 +166,8 @@ ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len)
 	ssize_t out = 0;
 	struct iovec iov;
 	struct msghdr msg;
+
+	pr_dbg("len: %ld\n", len);
 
 	while (len) {
 		ssize_t r = 0;
@@ -136,12 +183,19 @@ ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len)
 		msg.msg_iovlen = 1;
 
 		r = recvmsg(socket, &msg, 0);
-		if (r <= 0)
+		pr_dbg("recvmsg: (r: %ld) (len: %lu) (out: %ld)\n", r, len, out);
+		if (r <= 0) {
+			if (r < 0 || len > 0) {
+				pr_err("ERROR: recvmsg(...) failed ...('%s')\n", strerror(errno));
+			}
 			break;
+		}
 		len -= (size_t)r;
 		out += r;
 		buffer += r;
 	}
+
+	pr_dbg("out: %ld\n", out);
 
 	return out;
 }
@@ -176,13 +230,17 @@ static void *rand_newctx(void *provctx, void *parent,
 
 	UNUSED(parent_dispatch);
 
+	pr_dbg("\n");
+
 	if (parent != NULL) {
+		pr_err("ERROR: parent == NULL\n");
 		ERR_raise(ERR_LIB_PROV, PROV_R_SEED_SOURCES_MUST_NOT_HAVE_A_PARENT);
 		return NULL;
 	}
 
 	s = OPENSSL_zalloc(sizeof(*s));
 	if (s == NULL) {
+		pr_err("ERROR: OPENSSL_zalloc\n");
 		ERR_raise(ERR_LIB_PROV, ERR_R_MALLOC_FAILURE);
 		return NULL;
 	}
@@ -194,6 +252,7 @@ static void *rand_newctx(void *provctx, void *parent,
 
 static void rand_freectx(void *vseed)
 {
+	pr_dbg("\n");
 	OPENSSL_free(vseed);
 }
 
@@ -209,6 +268,8 @@ static int rand_instantiate(void *vseed, unsigned int strength,
 	UNUSED(pstr);
 	UNUSED(pstr_len);
 
+	pr_dbg("\n");
+
 	s->state = EVP_RAND_STATE_READY;
 	return 1;
 }
@@ -216,6 +277,8 @@ static int rand_instantiate(void *vseed, unsigned int strength,
 static int rand_uninstantiate(void *vseed)
 {
 	PROV_SEED_SRC *s = (PROV_SEED_SRC *)vseed;
+
+	pr_dbg("\n");
 
 	s->state = EVP_RAND_STATE_UNINITIALISED;
 	return 1;
@@ -232,16 +295,19 @@ static int rand_generate(void *vseed, unsigned char *out, size_t outlen,
 
 	UNUSED(strength);
 
+	pr_dbg("\n");
+
 	if (s->state != EVP_RAND_STATE_READY) {
+		pr_err("ERROR: s->state != EVP_RAND_STATE_READY\n");
 		ERR_raise(ERR_LIB_PROV,
 				s->state == EVP_RAND_STATE_ERROR ? PROV_R_IN_ERROR_STATE
 				: PROV_R_NOT_INSTANTIATED);
 		return 0;
 	}
 
-
 	socket = algif_rng_open(1);
 	if (!socket) {
+		pr_err("ERROR: socket = 0\n");
 		ERR_raise(ERR_LIB_PROV, PROV_R_NOT_SUPPORTED);
 		return 0;
 	}
@@ -262,6 +328,7 @@ static int rand_reseed(void *vseed,
 	PROV_SEED_SRC *s = (PROV_SEED_SRC *)vseed;
 
 	if (s->state != EVP_RAND_STATE_READY) {
+		pr_err("ERROR: s->state != EVP_RAND_STATE_READY\n");
 		ERR_raise(ERR_LIB_PROV,
 				s->state == EVP_RAND_STATE_ERROR ? PROV_R_IN_ERROR_STATE
 				: PROV_R_NOT_INSTANTIATED);
@@ -274,6 +341,8 @@ static int rand_get_ctx_params(void *vseed, OSSL_PARAM params[])
 {
 	PROV_SEED_SRC *s = (PROV_SEED_SRC *)vseed;
 	OSSL_PARAM *p;
+
+	pr_dbg("\n");
 
 	p = OSSL_PARAM_locate(params, OSSL_RAND_PARAM_STATE);
 	if (p != NULL && !OSSL_PARAM_set_int(p, s->state))
@@ -299,20 +368,25 @@ static const OSSL_PARAM *rand_gettable_ctx_params(ossl_unused void *vseed,
 		OSSL_PARAM_END
 	};
 
+	pr_dbg("\n");
+
 	return known_gettable_ctx_params;
 }
 
 static int rand_lock(ossl_unused void *vctx)
 {
+	pr_dbg("\n");
 	return 1;
 }
 
 static void rand_unlock(ossl_unused void *vctx)
 {
+	pr_dbg("\n");
 }
 
 static int rand_verify_zeroization(ossl_unused void *vseed)
 {
+	pr_dbg("\n");
 	return 1;
 }
 
@@ -324,6 +398,12 @@ static size_t rand_get_seed(void *vseed, unsigned char **pout,
 	size_t bytes_needed;
 	unsigned char *p;
 
+	pr_dbg("entropy: %d min_len: %lu max_len: %lu\n",
+			entropy, min_len, max_len);
+
+	pr_dbg("prediction_resistance: %d adin_len: %lu\n",
+			prediction_resistance, adin_len);
+
 	/*
 	 * Figure out how many bytes we need.
 	 * This assumes that the seed sources provide eight bits of entropy
@@ -334,12 +414,14 @@ static size_t rand_get_seed(void *vseed, unsigned char **pout,
 	if (bytes_needed < min_len)
 		bytes_needed = min_len;
 	if (bytes_needed > max_len) {
+		pr_err("ERROR: bytes_needed > max_len\n");
 		ERR_raise(ERR_LIB_PROV, PROV_R_ENTROPY_SOURCE_STRENGTH_TOO_WEAK);
 		return 0;
 	}
 
 	p = OPENSSL_secure_malloc(bytes_needed);
 	if (p == NULL) {
+		pr_err("ERROR: p == NULL\n");
 		ERR_raise(ERR_LIB_PROV, ERR_R_MALLOC_FAILURE);
 		return 0;
 	}
@@ -355,6 +437,7 @@ static size_t rand_get_seed(void *vseed, unsigned char **pout,
 static void rand_clear_seed(ossl_unused void *vdrbg,
 		unsigned char *out, size_t outlen)
 {
+	pr_dbg("\n");
 	OPENSSL_secure_clear_free(out, outlen);
 }
 
@@ -404,6 +487,7 @@ static const OSSL_PARAM jitterentropy_param_types[] = {
 
 static void jitterentropy_teardown(void *provctx)
 {
+	pr_dbg("\n");
 	if (provctx) {
 		OSSL_LIB_CTX_free(PROV_LIBCTX_OF(provctx));
 		OPENSSL_free(provctx);
@@ -413,6 +497,7 @@ static void jitterentropy_teardown(void *provctx)
 static const OSSL_PARAM *jitterentropy_gettable_params(void *provctx)
 {
 	UNUSED(provctx);
+	pr_dbg("\n");
 	return jitterentropy_param_types;
 }
 
@@ -421,6 +506,7 @@ static int jitterentropy_get_params(void *provctx, OSSL_PARAM params[])
 	OSSL_PARAM *p;
 
 	UNUSED(provctx);
+	pr_dbg("\n");
 
 	p = OSSL_PARAM_locate(params, OSSL_PROV_PARAM_NAME);
 	if (p != NULL && !OSSL_PARAM_set_utf8_ptr(p, "OpenSSL Jitter Entropy Provider"))
@@ -432,11 +518,12 @@ static int jitterentropy_get_params(void *provctx, OSSL_PARAM params[])
 }
 
 static const OSSL_ALGORITHM *jitterentropy_query(void *provctx, int operation_id,
-                                         int *no_cache)
+		int *no_cache)
 {
 	*no_cache = 0;
 
 	UNUSED(provctx);
+	pr_dbg("\n");
 
 	if (operation_id == OSSL_OP_RAND)
 		return jitterentropy_rands;
@@ -455,17 +542,17 @@ static const OSSL_DISPATCH jitterentropy_dispatch_table[] = {
 
 /* Provider entry point */
 int OSSL_provider_init(const OSSL_CORE_HANDLE *handle,
-			const OSSL_DISPATCH *in,
-			const OSSL_DISPATCH **out,
-			void **provctx)
+		const OSSL_DISPATCH *in,
+		const OSSL_DISPATCH **out,
+		void **provctx)
 {
 	OSSL_LIB_CTX *libctx = NULL;
 	int socket;
 
-
 	/* Probe Kernel support */
 	socket = algif_rng_open(0);
 	if (!socket) {
+		pr_err("ERROR: algif_rng_open (%s)\n", strerror(errno));
 		ERR_raise(ERR_LIB_PROV, PROV_R_NOT_SUPPORTED);
 		return 0;
 	}
@@ -496,16 +583,15 @@ int main(void)
 	printf("Probing kernel capabilities: ");
 	socket = algif_rng_open(1);
 	if (!socket) {
-		printf("FAILED\n");
-		printf("\n  Please make sure kernel supports AF_ALG socket type and \"jitterentropy_rng\""
-		       "\n  crypto rng (should be present in /proc/crypto)\n");
+		fprintf(stderr, "FAILED\n");
+		fprintf(stderr, "\n  Please make sure kernel supports AF_ALG socket type and \"jitterentropy_rng\""
+				"\n  crypto rng (should be present in /proc/crypto)\n");
 		_exit(1);
 	}
 
 	printf("PASSED\n");
 	printf("\n  To verify openssl is using this provider as entropy source, run:"
-	       "\n  'strace -e socket,bind,accept,recvmsg openssl rand -hex 20'\n");
+			"\n  'strace -e socket,bind,accept,recvmsg openssl rand -hex 20'\n");
 	algif_rng_close(socket);
 	_exit(0);
 }
-

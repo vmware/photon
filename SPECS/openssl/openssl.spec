@@ -8,7 +8,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -24,8 +24,9 @@ Source4: user.cnf
 
 %if 0%{?with_certified_fips} || 0%{?with_latest_fips}
 Source5: provider_fips.cnf
-Source6: jitterentropy.c
 %endif
+
+Source6: jitterentropy.c
 
 %if 0%{?with_certified_fips}
 Source7: %{fips_provider_srcname}.tar.xz
@@ -58,6 +59,7 @@ web browsers (for accessing HTTPS sites).
 %package libs
 Summary: Core libraries and other files needed by openssl.
 Conflicts: %{name} < 3.0.8-1
+Conflicts: %{name}-fips-provider <= 3.0.8-3
 
 %description libs
 %{summary}
@@ -79,7 +81,9 @@ Group:      Applications/Internet
 
 %if 0%{?with_certified_fips}
 Requires:   %{name} >= %{fips_provider_version}
-%else
+%endif
+
+%if 0%{?with_latest_fips}
 Requires:   %{name} = %{version}-%{release}
 %endif
 
@@ -177,16 +181,20 @@ install -p -m 644 -D %{SOURCE5} %{buildroot}%{_sysconfdir}/ssl
 %if 0%{?with_certified_fips}
 install -p -m 644 %{fips_provider_srcname}/%{_arch}/fips.so %{buildroot}%{_libdir}/ossl-modules/
 %endif
-
-gcc -shared -Wall -Werror -Wextra -O2 -g -fPIC \
-        -I%{buildroot}%{_includedir} -lcrypto -L%{buildroot}%{_libdir} \
-        %{SOURCE6} -o %{buildroot}%{_libdir}/ossl-modules/jitterentropy.so
 %endif
 
-%if 0%{?with_check}
+fn="$(basename -s .c %{SOURCE6})"
+
+gcc -Wall -Werror -Wextra -O2 -g -fPIC \
+  -I%{buildroot}%{_includedir} \
+  -lcrypto -L%{buildroot}%{_libdir} \
+  -shared \
+  -Wl,-e,main \
+  -o %{buildroot}%{_libdir}/ossl-modules/${fn}.so \
+  %{SOURCE6}
+
 %check
-make tests %{?_smp_mflags}
-%endif
+%make_build tests
 
 %ldconfig_scriptlets libs
 
@@ -223,7 +231,6 @@ rm -rf %{buildroot}/*
 %files fips-provider
 %defattr(-,root,root)
 %{_libdir}/ossl-modules/fips.so
-%{_libdir}/ossl-modules/jitterentropy.so
 %{_sysconfdir}/ssl/provider_fips.cnf
 
 %if 0%{?with_latest_fips}
@@ -236,6 +243,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 %{_libdir}/engines*/*
 %{_libdir}/ossl-modules/legacy.so
+%{_libdir}/ossl-modules/jitterentropy.so
 %{_sysconfdir}/ssl/openssl.cnf.dist
 %config(noreplace) %{_sysconfdir}/ssl/openssl.cnf
 %config(noreplace) %{_sysconfdir}/ssl/user.cnf
@@ -273,6 +281,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Mon Jul 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.14-4
+- Improve logging in jitterentropy.c
+- Add `-Wl,-e,main` to make jitterentropy shared object run like a binary
+- Move jitterentropy.so to openssl-libs
 * Fri Jul 05 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.14-3
 - Fix for CVE-2024-5535
 * Thu Jul 04 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.0.14-2
