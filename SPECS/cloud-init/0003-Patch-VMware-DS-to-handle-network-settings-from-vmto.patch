@@ -1,27 +1,27 @@
-From 3a5ccd68c905d805ee89e9d29ae2b58b280b4b68 Mon Sep 17 00:00:00 2001
-From: Shreenidhi Shedi <sshedi@vmware.com>
+From b50e2d966e846f286632c9689ea7655ac0385a9a Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Thu, 17 Feb 2022 11:47:22 +0530
-Subject: [PATCH] Patch VMware DS to handle network settings from vmtoolsd
+Subject: [PATCH 3/8] Patch VMware DS to handle network settings from vmtoolsd
 
-Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  cloudinit/sources/DataSourceVMware.py | 142 +++++++++++++++++++++++++-
- 2 files changed, 171 insertions(+), 3 deletions(-)
+ 1 file changed, 139 insertions(+), 3 deletions(-)
 
 diff --git a/cloudinit/sources/DataSourceVMware.py b/cloudinit/sources/DataSourceVMware.py
-index 77a2de6..3e33a93 100644
+index 888060c..664f6f3 100644
 --- a/cloudinit/sources/DataSourceVMware.py
 +++ b/cloudinit/sources/DataSourceVMware.py
-@@ -77,6 +77,7 @@ import netifaces
- from cloudinit import atomic_helper, dmi, log, net, sources, util
+@@ -30,6 +30,7 @@ import time
+ from cloudinit import atomic_helper, dmi, log, net, netinfo, sources, util
  from cloudinit.sources.helpers.vmware.imc import guestcust_util
  from cloudinit.subp import ProcessExecutionError, subp, which
 +from cloudinit.net import network_state
 
  PRODUCT_UUID_FILE_PATH = "/sys/class/dmi/id/product_uuid"
 
-@@ -87,6 +88,7 @@ NOVAL = "No value found"
+@@ -40,6 +41,7 @@ NOVAL = "No value found"
  DATA_ACCESS_METHOD_ENVVAR = "envvar"
  DATA_ACCESS_METHOD_GUESTINFO = "guestinfo"
  DATA_ACCESS_METHOD_IMC = "imc"
@@ -29,7 +29,7 @@ index 77a2de6..3e33a93 100644
 
  REDACT = "redact"
  CLEANUP_GUESTINFO = "cleanup-guestinfo"
-@@ -186,6 +188,115 @@ class DataSourceVMware(sources.DataSource):
+@@ -139,6 +141,115 @@ class DataSourceVMware(sources.DataSource):
                  ],
              )
 
@@ -145,7 +145,7 @@ index 77a2de6..3e33a93 100644
      def __str__(self):
          root = sources.DataSource.__str__(self)
          return "%s [seed=%s]" % (root, self.data_access_method)
-@@ -222,6 +333,25 @@ class DataSourceVMware(sources.DataSource):
+@@ -175,6 +286,25 @@ class DataSourceVMware(sources.DataSource):
                  self.data_access_method = data_access_method
                  break
 
@@ -169,9 +169,9 @@ index 77a2de6..3e33a93 100644
 +                self.data_access_method = DATA_ACCESS_METHOD_VMTOOLSD
 +
          if not self.data_access_method:
-             LOG.error("failed to find a valid data access method")
+             LOG.debug("failed to find a valid data access method")
              return False
-@@ -229,7 +359,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -182,7 +312,8 @@ class DataSourceVMware(sources.DataSource):
          LOG.info("using data access method %s", self._get_subplatform())
 
          # Get the metadata.
@@ -181,7 +181,7 @@ index 77a2de6..3e33a93 100644
 
          # Get the user data.
          self.userdata_raw = ud
-@@ -244,8 +375,7 @@ class DataSourceVMware(sources.DataSource):
+@@ -197,8 +328,7 @@ class DataSourceVMware(sources.DataSource):
          # userdata, or vendordata.
          if self.metadata or self.userdata_raw or self.vendordata_raw:
              return True
@@ -191,7 +191,7 @@ index 77a2de6..3e33a93 100644
 
      def setup(self, is_new_instance):
          """setup(is_new_instance)
-@@ -283,6 +413,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -236,6 +366,8 @@ class DataSourceVMware(sources.DataSource):
              get_key_name_fn = get_guestinfo_key_name
          elif self.data_access_method == DATA_ACCESS_METHOD_IMC:
              get_key_name_fn = get_imc_key_name
@@ -200,7 +200,7 @@ index 77a2de6..3e33a93 100644
          else:
              return sources.METADATA_UNKNOWN
 
-@@ -626,6 +758,10 @@ def guestinfo_get_value(key, rpctool, rpctool_fn):
+@@ -591,6 +723,10 @@ def guestinfo_get_value(key, rpctool, rpctool_fn):
      """
      LOG.debug("Getting guestinfo value for key %s", key)
 
@@ -212,4 +212,4 @@ index 77a2de6..3e33a93 100644
          (stdout, stderr) = rpctool_fn(
              rpctool, "info-get " + get_guestinfo_key_name(key)
 --
-2.39.0
+2.34.1

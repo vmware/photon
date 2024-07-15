@@ -1,8 +1,8 @@
 %define cl_services cloud-config.service cloud-config.target cloud-final.service %{name}.service %{name}.target %{name}-local.service
 
 Name:           cloud-init
-Version:        24.1.4
-Release:        3%{?dist}
+Version:        24.2
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=374a5a10895f4f850457f3015687fb2c5b605841658b819244139fadf0075cd818cfdec5aeb8d0ca9ddbfa40de3b5070d2c4ffd0f6bcc306349b0db70edee2c7
+%define sha512 %{name}=2257de8c23f3a94324a7fe9e2105e6343ffe11cc86b27a68c7447b6e386a951bf2643988f3d26371420e3702a0b568107bb343d000ecae80d5e229b5a023513d
 
 Patch0: 0001-azure-ds.patch
 Patch1: 0002-Change-default-policy.patch
@@ -24,8 +24,7 @@ Patch4: 0005-test_vmware.py-fix-pkg-test-failure.patch
 
 Patch5: 0006-Change-log-level-to-info-to-make-GOSC-regression-tes.patch
 Patch6: 0007-cli-retain-file-argument-as-main-cmd-arg.patch
-Patch7: 0008-cacert-config.patch
-Patch8: 0009-Show-stdout-logs-in-journal-only.patch
+Patch7: 0008-Show-stdout-logs-in-journal-only.patch
 
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
@@ -147,6 +146,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 
 %changelog
+* Mon Jul 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.2-1
+- Upgrade to v24.2
 * Sat Jun 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.1.4-3
 - Fix cacert config
 * Wed May 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.1.4-2

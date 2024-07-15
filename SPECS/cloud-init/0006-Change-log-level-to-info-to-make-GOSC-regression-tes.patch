@@ -1,7 +1,8 @@
-From b58c221e87ab23962addeb78786797051f188ddb Mon Sep 17 00:00:00 2001
+From a714ddfcee801185898b20d79557761bd123850c Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Mon, 11 Dec 2023 16:52:27 +0530
-Subject: [PATCH] Change log level to info to make GOSC regression tests happy
+Subject: [PATCH 6/8] Change log level to info to make GOSC regression tests
+ happy
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
@@ -10,10 +11,10 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/cloudinit/subp.py b/cloudinit/subp.py
-index c94b44e..b217faf 100644
+index 4430734..281e9bc 100644
 --- a/cloudinit/subp.py
 +++ b/cloudinit/subp.py
-@@ -380,8 +380,8 @@ def runparts(dirp, skip_no_exist=True, exe_prefix=None):
+@@ -377,8 +377,8 @@ def runparts(dirp, skip_no_exist=True, exe_prefix=None):
                  LOG.debug(e)
                  failed.append(exe_name)
          elif os.path.isfile(exe_path):
@@ -25,5 +26,5 @@ index c94b44e..b217faf 100644
                  "executable permissions.",
                  exe_path,
 -- 
-2.39.0
+2.34.1
 
