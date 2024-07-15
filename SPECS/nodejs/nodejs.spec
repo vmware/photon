@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        20.12.1
+Version:        20.15.1
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define sha512  node=24a858477f087383b9a531247ecd5622810b8a1af3a3baf3c4f3e608cceacb90642230ddb0f2d9043c19e87459da45ea5d6f3ffe0874948b2be90be53f39cc8c
+%define sha512  node=0eb35b71a63d5894216fae82be859ed1649d955781abdc44ef9d99cf99972f4ec5120239d81c6b0820ddb07abfb264cee2b8b0baaf52acbfa50863e28a3eed0c
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -75,6 +75,8 @@ make %{?_smp_mflags} cctest
 %{_docdir}/node/gdbinit
 
 %changelog
+* Mon Jul 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 20.15.1-1
+- Upgrade to 20.15.1 to fix CVE-2024-22020, CVE-2024-36138, CVE-2024-22018, CVE-2024-37372, CVE-2024-36137
 * Wed Apr 10 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 20.12.1-1
 - Upgrade to 20.12.1 to fix CVE-2024-27982, CVE-2024-27983
 * Mon Feb 19 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 20.11.1-1
