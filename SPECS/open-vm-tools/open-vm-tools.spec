@@ -28,7 +28,7 @@ Patch2: gosc-change-order-of-args-to-cloud-init-in-Ph4-and-above.patch
 
 %ifarch aarch64
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
-Patch2: ovt-unknown-ioctl.patch
+Patch3: ovt-unknown-ioctl.patch
 %endif
 
 BuildRequires: glib-devel
