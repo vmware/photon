@@ -1,6 +1,6 @@
 Name:           uriparser
 Version:        0.9.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        URI parsing library - RFC 3986
 License:        BSD
 Group:          Development/Languages/Python
@@ -10,6 +10,8 @@ URL:            https://uriparser.github.io/
 Source0:        https://github.com/%{name}/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.bz2
 %define sha512  uriparser=7f69c9806665745c1bafe11f818434e27c2da03af387f009ef46c1427af8c008faa45e6f49bece66e0b96fd17b3924ba0af25476e796972c5e4b651f35f74c13
 Patch0:         remove_dot_dependency.patch
+Patch1:         CVE-2024-34402.patch
+Patch2:         CVE-2024-34403.patch
 BuildRequires:  cmake
 BuildRequires:  doxygen
 BuildRequires:  gtest
@@ -62,5 +64,7 @@ make %{?_smp_mflags} test
 %{_docdir}/%{name}/html
 
 %changelog
+* Mon Jul 15 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.9.7-2
+- Fix CVE-2024-34402, CVE-2024-34403
 * Fri Jan 13 2023 Anmol Jain <anmolja@vmware.com> - 0.9.7-1
 - Initial Build
