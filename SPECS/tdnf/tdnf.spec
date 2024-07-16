@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.7
+Version:        3.5.8
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=9b34fa9b2f8d39c61dc2e291042a83a8d55a80bdcb64fc6b22f112613ec02a2f1c641ae97dc95c7bb047f87601260259935fcba34eb0cc06cd4540c0e890a35c
+%define sha512  %{name}=0f517e256409687a467b67e12ac4c2e5ff66670f029bd04f7d70a41004be68efba92e2072cb1ef64c6c025b55cb6fe8044337720167f420a79a12c3b55a8ee6c
 Patch0:         0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 
 Requires:       rpm-libs
@@ -294,6 +294,9 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Jul 16 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.8-1
+- update to 3.5.8
+- priority fix and output repo information in json (PR #484 and PR #485)
 * Tue Jun 25 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.7-1
 - update to 3.5.7
 - epoch fix
