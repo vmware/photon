@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.222
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -197,6 +197,10 @@ Patch154: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
 
 # Fix CVE-2024-26904
 Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
+
+# Fix CVE-2024-27397
+Patch156: 0001-netfilter-nftables_add_nft_pernet_helper_function.patch
+Patch157: 0002-netfilter-nf_tables-use_timestamp_to_check_for_set_element_timeout.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -474,6 +478,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jul 23 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.222-2
+- Fix CVE-2024-27397
 * Fri Jul 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.222-1
 - Update to version 5.10.222
 - Fix for LTP fanotify22

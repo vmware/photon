@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.222
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -230,6 +230,10 @@ Patch148: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 
 # Fix CVE-2024-26589
 Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
+
+# Fix CVE-2024-27397
+patch150: 0001-netfilter-nftables_add_nft_pernet_helper_function.patch
+Patch151: 0002-netfilter-nf_tables-use_timestamp_to_check_for_set_element_timeout.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -493,7 +497,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M158
+%autopatch -p1 -m100 -M151
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -900,6 +904,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Jul 23 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.222-2
+- Fix CVE-2024-27397
 * Fri Jul 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.222-1
 - Update to version 5.10.222
 - Fix for LTP fanotify22

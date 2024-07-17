@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.222
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -185,6 +185,10 @@ Patch154: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 
 # Fix CVE-2024-26904
 Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
+
+#Fix CVE-2024-27397
+Patch156: 0001-netfilter-nftables_add_nft_pernet_helper_function.patch
+Patch157: 0002-netfilter-nf_tables-use_timestamp_to_check_for_set_element_timeout.patch
 
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
@@ -531,6 +535,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jul 23 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.222-2
+- Fix CVE-2024-27397
 * Fri Jul 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.222-1
 - Update to version 5.10.222
 - Fix for LTP fanotify22
