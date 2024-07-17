@@ -1,7 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
 Version:        2.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
 Group:          System/Libraries
@@ -34,25 +34,34 @@ GD is written in C, and "wrappers" are available for Perl, PHP and other languag
 %package    devel
 Summary:    Header and development files
 Requires:   %{name} = %{version}-%{release}
+Requires:   libpng-devel
+Requires:   fontconfig-devel
+
 %description    devel
 Header & Development files
 
 %prep
-%autosetup -n %{name}-%{version} -p1
+%autosetup -p1
 
 %build
 # To use the system installed automake latest version instead of given version in source
 sh ./bootstrap.sh
-%configure --with-webp --with-tiff --with-jpeg --with-png --disable-werror --disable-static
+
+%configure \
+    --with-webp \
+    --with-tiff \
+    --with-jpeg \
+    --with-png \
+    --disable-werror \
+    --disable-static
+
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} -k check
-%endif
+%make_build check
 
 %files
 %defattr(-,root,root)
@@ -66,6 +75,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Jul 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.3-2
+- Add libpng-devel, fontconfig-devel to devel package requires
 * Tue Jul 25 2023 Nitesh Kumar <kunitesh@vmware.com> 2.3.3-1
 - Version upgrade to v2.3.3 to fix CVE-2021-40812
 * Mon Jun 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.0-9
