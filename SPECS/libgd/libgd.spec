@@ -1,7 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
 Version:        2.3.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 URL:            https://libgd.github.io
 Group:          System/Libraries
@@ -33,6 +33,7 @@ GD is commonly used to generate charts, graphics, thumbnails, and most anything 
 %package        devel
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
+Requires:       libpng-devel
 
 %description    devel
 Header & Development files
@@ -66,6 +67,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Jul 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.3-7
+- Add libpng-devel to devel package requires
 * Wed Sep 20 2023 Kuntal Nayak <nkuntal@vmware.com> 2.3.3-6
 - Bump version as a part of libwebp upgrade
 * Fri Jul 28 2023 Kuntal Nayak <nkuntal@vmware.com> 2.3.3-5

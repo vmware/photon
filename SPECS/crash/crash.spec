@@ -3,7 +3,7 @@
 
 Name:          crash
 Version:       8.0.2
-Release:       4%{?dist}
+Release:       5%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -41,6 +41,7 @@ The core analysis suite is a self-contained tool that can be used to investigate
 Group:         Development/Libraries
 Summary:       Libraries and headers for %{name}
 Requires:      %{name} = %{version}-%{release}
+Requires:      zlib-devel
 
 %description devel
 The core analysis suite is a self-contained tool that can be used to investigate either live systems, kernel core dumps created from the netdump, diskdump and kdump packages from Red Hat Linux, the mcore kernel patch offered by Mission Critical Linux, or the LKCD kernel patch.
@@ -104,6 +105,8 @@ rm -rf "%{buildroot}"
 %{_includedir}/crash/*.h
 
 %changelog
+* Wed Jul 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.2-5
+- Add zlib-devel to devl package requires
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.0.2-4
 - Bump version as a part of ncurses upgrade to v6.4
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.2-3
