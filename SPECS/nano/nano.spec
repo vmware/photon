@@ -1,7 +1,7 @@
 Summary:        Text editor
 Name:           nano
 Version:        7.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+
 URL:            http://www.nano-editor.org
 Group:          Applications/Editors
@@ -62,6 +62,8 @@ make %{?_smp_mflags} check
 %exclude %{_infodir}/dir
 
 %changelog
+* Wed Jul 17 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 7.0-4
+- Add missing code snippet to CVE-2024-5742 patch
 * Tue Jul 09 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 7.0-3
 - Fix CVE-2024-5742
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 7.0-2
