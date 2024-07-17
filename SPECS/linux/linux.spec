@@ -5,6 +5,10 @@
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1
 
+# __debug_install_post extracts debug-info from modules. We need to
+# specify option for any customizations.
+%define _find_debuginfo_opts --keep-section '.BTF'
+
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
@@ -30,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.97
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -871,6 +875,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jul 19 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.97-3
+- Keep .BTF section in kernel modules
 * Fri Jul 19 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.97-2
 - Multiple HCX patch fixes.
 * Wed Jul 10 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.97-1
