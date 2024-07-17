@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -153,6 +153,7 @@ cd %{_builddir}/%{name}-build
         --infodir=%{_infodir} \
         --disable-profile \
         --disable-werror \
+        --enable-static-pie \
         --enable-kernel=3.2 \
         --enable-bind-now \
         --enable-stack-protector=strong \
@@ -359,6 +360,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Jul 17 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 2.36-12
+- Enable static-pie support
 * Tue May 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-11
 - Fix CVEs on nscd
 - Sync release branch patches
