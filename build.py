@@ -981,9 +981,10 @@ class CheckTools:
         check_prerequesite["check-spec-files"] = True
 
     def check_photon_installer():
+        version=SPECS.getData().getVersions("photon-os-installer")
         installer_path = f"{curDir}/stage/installer"
         url = "https://github.com/vmware/photon-os-installer.git"
-        tag = "v2.4"
+        tag = f"v{version[0]}"
         cmd = f"pip3 install git+{url}@{tag} --target={installer_path}"
 
         sys.path.insert(0, f"{installer_path}")
