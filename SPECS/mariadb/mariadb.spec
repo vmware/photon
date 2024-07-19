@@ -1,7 +1,9 @@
+%define libfmt_ver  8.0.1
+
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.9.4
-Release:          7%{?dist}
+Release:          8%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -10,7 +12,12 @@ Url:              https://mariadb.org
 
 Source0: https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9fc5d71c08cb07efc777ef3ebd97dc4953de8aa46750f52c2dabea5af63b52938ca4b54221184f1b4fbb71b94dade27c90756123ddef51959a7b5d43c3b8d986
-Source1: %{name}.sysusers
+
+Source1: https://github.com/fmtlib/fmt/archive/refs/tags/libfmt-%{libfmt_ver}.zip
+%define sha512 libfmt-%{libfmt_ver}.zip=53f781e33ffb3bc38d743b81c5755a7d71dce95dcf5cdf23d5b4cf880a8f29189ca1b790272ee8586cbcd552648bae040247e572b2a97cd8b3631c284873f57d
+
+Source2: %{name}.sysusers
+Patch0:        libfmt-nodownload.patch
 
 BuildRequires: cmake
 BuildRequires: Linux-PAM-devel
@@ -80,7 +87,9 @@ Summary:    errmsg for mariadb
 errmsg for maridb
 
 %prep
-%autosetup -p1 %{name}-%{version}
+%autosetup -a0 -p1 %{name}-%{version}
+cp %{SOURCE1} .
+
 # Remove PerconaFT from here because of AGPL licence
 rm -rf storage/tokudb/PerconaFT
 
@@ -120,7 +129,7 @@ mv %{buildroot}%{_datadir}/systemd/mariadb.service \
     %{buildroot}%{_datadir}/systemd/mariadb-extra@.socket \
     %{buildroot}%{_datadir}/systemd/mariadb@.socket \
     %{buildroot}%{_unitdir}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 rm %{buildroot}%{_sbindir}/rcmysql %{buildroot}%{_libdir}/*.a
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable mariadb.service" > %{buildroot}%{_presetdir}/50-mariadb.preset
@@ -136,7 +145,7 @@ make test %{?_smp_mflags}
 
 %pre server
 if [ $1 -eq 1 ]; then
-  %sysusers_create_compat %{SOURCE1}
+  %sysusers_create_compat %{SOURCE2}
 fi
 
 %post server
@@ -459,6 +468,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Fri Jul 19 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 10.9.4-8
+- Add changes to build offline
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.9.4-7
 - Bump version as a part of gnutls upgrade
 * Tue Oct 31 2023 Nitesh Kumar <kunitesh@vmware.com> 10.9.4-6
