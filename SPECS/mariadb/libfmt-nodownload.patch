@@ -1,0 +1,14 @@
+diff --git a/cmake/libfmt.cmake b/cmake/libfmt.cmake
+index 7eaa0dfa..810fcfa8 100644
+--- a/cmake/libfmt.cmake
++++ b/cmake/libfmt.cmake
+@@ -15,8 +15,7 @@ MACRO(BUNDLE_LIBFMT)
+   ExternalProject_Add(
+     libfmt
+     PREFIX   "${dir}"
+-    URL      "https://github.com/fmtlib/fmt/archive/refs/tags/8.0.1.zip"
+-    URL_MD5  e77873199e897ca9f780479ad68e25b1
++    URL      "${CMAKE_CURRENT_SOURCE_DIR}/libfmt-8.0.1.zip"
+     INSTALL_COMMAND ""
+     CONFIGURE_COMMAND ""
+     BUILD_COMMAND ""
