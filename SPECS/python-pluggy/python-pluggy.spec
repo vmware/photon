@@ -1,6 +1,6 @@
 Name:           python3-pluggy
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The plugin manager stripped of pytest specific details
 Group:          Development/Libraries
 License:        MIT
@@ -17,6 +17,8 @@ BuildRequires:  python3-packaging
 BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-wheel
+BuildRequires:  python3-typing-extensions
 
 Requires:       python3
 
@@ -40,6 +42,8 @@ The plugin manager stripped of pytest specific details.
 %{python3_sitelib}/*
 
 %changelog
+* Fri Jul 19 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 1.0.0-2
+- Use system provided packages to do offline build
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.0-1
 - Automatic Version Bump
 * Sun Sep 20 2020 Susant Sahani <ssahani@vmware.com> 0.13.1-1
