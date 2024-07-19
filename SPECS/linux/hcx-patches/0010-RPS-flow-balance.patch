@@ -66,7 +66,7 @@ index bc58f23af..d8601f0cd 100644
  					      struct sk_buff *skb, struct net_device *dev,
  					      bool more)
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 0a5566b6f..34367d7b2 100644
+index 20d8b9195..0697a9fe8 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
 @@ -4366,6 +4366,19 @@ EXPORT_SYMBOL(__dev_direct_xmit);
@@ -621,7 +621,7 @@ index 0a5566b6f..34367d7b2 100644
  		}
  	}
 diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-index 1ec23bf8b..ea7934fe8 100644
+index 1ec23bf8b..206ba4785 100644
 --- a/net/core/net-procfs.c
 +++ b/net/core/net-procfs.c
 @@ -153,6 +153,7 @@ static int softnet_seq_show(struct seq_file *seq, void *v)
@@ -654,10 +654,10 @@ index 1ec23bf8b..ea7934fe8 100644
  		   0,	/* was cpu_collision */
  		   sd->received_rps, flow_limit_count,
 -		   softnet_backlog_len(sd), (int)seq->index);
++		   softnet_backlog_len(sd), (int)seq->index,
 +		   qlen, sd->do_move,
 +		   sd->first_place, sd->keep_place,
-+		   sd->try_elephant, sd->try_mouse,
-+		   softnet_backlog_len(sd), (int)seq->index);
++		   sd->try_elephant, sd->try_mouse);
  	return 0;
  }
  
@@ -735,7 +735,7 @@ index 1ec23bf8b..ea7934fe8 100644
  			sizeof(struct seq_net_private)))
  		goto out_softnet;
 diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 8409d4140..8376ed247 100644
+index fdf3308b0..a356c0819 100644
 --- a/net/core/net-sysfs.c
 +++ b/net/core/net-sysfs.c
 @@ -27,6 +27,8 @@
@@ -747,7 +747,7 @@ index 8409d4140..8376ed247 100644
  #ifdef CONFIG_SYSFS
  static const char fmt_hex[] = "%#x\n";
  static const char fmt_dec[] = "%d\n";
-@@ -979,18 +981,198 @@ static ssize_t store_rps_dev_flow_table_cnt(struct netdev_rx_queue *queue,
+@@ -977,18 +979,198 @@ static ssize_t store_rps_dev_flow_table_cnt(struct netdev_rx_queue *queue,
  	return len;
  }
  
@@ -946,7 +946,7 @@ index 8409d4140..8376ed247 100644
  #endif
  	NULL
  };
-@@ -1014,6 +1196,11 @@ static void rx_queue_release(struct kobject *kobj)
+@@ -1012,6 +1194,11 @@ static void rx_queue_release(struct kobject *kobj)
  		RCU_INIT_POINTER(queue->rps_flow_table, NULL);
  		call_rcu(&flow_table->rcu, rps_dev_flow_table_release);
  	}
@@ -959,10 +959,10 @@ index 8409d4140..8376ed247 100644
  
  	memset(kobj, 0, sizeof(*kobj));
 diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index 5b1ce656b..ac326b872 100644
+index d281d5343..f778e17eb 100644
 --- a/net/core/sysctl_net_core.c
 +++ b/net/core/sysctl_net_core.c
-@@ -376,6 +376,48 @@ static struct ctl_table net_core_table[] = {
+@@ -385,6 +385,48 @@ static struct ctl_table net_core_table[] = {
  		.mode		= 0644,
  		.proc_handler	= proc_dointvec
  	},

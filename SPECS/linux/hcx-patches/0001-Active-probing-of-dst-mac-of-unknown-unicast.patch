@@ -25,14 +25,14 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
  include/linux/if_bridge.h    |   1 +
  include/uapi/linux/if_link.h |   1 +
  net/bridge/br.c              |  12 ++
- net/bridge/br_device.c       |  10 ++
+ net/bridge/br_device.c       |  11 ++
  net/bridge/br_input.c        | 231 +++++++++++++++++++++++++++++++++++
  net/bridge/br_netlink.c      |   5 +
  net/bridge/br_private.h      |   9 ++
  net/bridge/br_sysfs_br.c     |  24 ++++
  net/bridge/br_sysfs_if.c     |   2 +
- net/core/rtnetlink.c         |   4 +-
- 10 files changed, 298 insertions(+), 1 deletion(-)
+ net/core/rtnetlink.c         |   2 +
+ 10 files changed, 298 insertions(+)
 
 diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
 index d62ef428e..f39ae0d42 100644
@@ -42,7 +42,7 @@ index d62ef428e..f39ae0d42 100644
  #define BR_MRP_LOST_IN_CONT	BIT(19)
  #define BR_TX_FWD_OFFLOAD	BIT(20)
  #define BR_PORT_LOCKED		BIT(21)
-+#define BR_SINK_CONNECTED	BIT(17)
++#define BR_SINK_CONNECTED	BIT(22)
  
  #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
  
@@ -96,10 +96,10 @@ index 96e91d69a..591d26593 100644
  
  module_init(br_init)
 diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index b82906fc9..8f45e77ba 100644
+index 036ae99d0..90544ae26 100644
 --- a/net/bridge/br_device.c
 +++ b/net/bridge/br_device.c
-@@ -123,9 +123,16 @@ static int br_dev_init(struct net_device *dev)
+@@ -129,15 +129,23 @@ static int br_dev_init(struct net_device *dev)
  	if (!dev->tstats)
  		return -ENOMEM;
  
@@ -116,7 +116,14 @@ index b82906fc9..8f45e77ba 100644
  		return err;
  	}
  
-@@ -139,6 +146,7 @@ static int br_dev_init(struct net_device *dev)
+ 	err = br_mdb_hash_init(br);
+ 	if (err) {
+ 		free_percpu(dev->tstats);
++		free_percpu(br->ukn_stats);
+ 		br_fdb_hash_fini(br);
+ 		return err;
+ 	}
+@@ -145,6 +153,7 @@ static int br_dev_init(struct net_device *dev)
  	err = br_vlan_init(br);
  	if (err) {
  		free_percpu(dev->tstats);
@@ -124,7 +131,7 @@ index b82906fc9..8f45e77ba 100644
  		br_mdb_hash_fini(br);
  		br_fdb_hash_fini(br);
  		return err;
-@@ -147,6 +155,7 @@ static int br_dev_init(struct net_device *dev)
+@@ -153,6 +162,7 @@ static int br_dev_init(struct net_device *dev)
  	err = br_multicast_init_stats(br);
  	if (err) {
  		free_percpu(dev->tstats);
@@ -132,7 +139,7 @@ index b82906fc9..8f45e77ba 100644
  		br_vlan_flush(br);
  		br_mdb_hash_fini(br);
  		br_fdb_hash_fini(br);
-@@ -166,6 +175,7 @@ static void br_dev_uninit(struct net_device *dev)
+@@ -172,6 +182,7 @@ static void br_dev_uninit(struct net_device *dev)
  	br_mdb_hash_fini(br);
  	br_fdb_hash_fini(br);
  	free_percpu(dev->tstats);
@@ -404,7 +411,7 @@ index b94a17839..06cb4ced4 100644
  			br_flood(br, skb, pkt_type, local_rcv, false);
  		else
 diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index d38eff277..b88188e96 100644
+index e9e5c77ef..c6ee3151f 100644
 --- a/net/bridge/br_netlink.c
 +++ b/net/bridge/br_netlink.c
 @@ -188,6 +188,7 @@ static inline size_t br_port_info_size(void)
@@ -424,7 +431,7 @@ index d38eff277..b88188e96 100644
  	    nla_put(skb, IFLA_BRPORT_ROOT_ID, sizeof(struct ifla_bridge_id),
  		    &p->designated_root) ||
  	    nla_put(skb, IFLA_BRPORT_BRIDGE_ID, sizeof(struct ifla_bridge_id),
-@@ -867,6 +870,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
+@@ -868,6 +871,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
  	[IFLA_BRPORT_UNICAST_FLOOD] = { .type = NLA_U8 },
  	[IFLA_BRPORT_PROXYARP]	= { .type = NLA_U8 },
  	[IFLA_BRPORT_PROXYARP_WIFI] = { .type = NLA_U8 },
@@ -432,7 +439,7 @@ index d38eff277..b88188e96 100644
  	[IFLA_BRPORT_MULTICAST_ROUTER] = { .type = NLA_U8 },
  	[IFLA_BRPORT_MCAST_TO_UCAST] = { .type = NLA_U8 },
  	[IFLA_BRPORT_MCAST_FLOOD] = { .type = NLA_U8 },
-@@ -939,6 +943,7 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[],
+@@ -940,6 +944,7 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[],
  	br_set_port_flag(p, tb, IFLA_BRPORT_BCAST_FLOOD, BR_BCAST_FLOOD);
  	br_set_port_flag(p, tb, IFLA_BRPORT_PROXYARP, BR_PROXYARP);
  	br_set_port_flag(p, tb, IFLA_BRPORT_PROXYARP_WIFI, BR_PROXYARP_WIFI);
@@ -530,18 +537,9 @@ index 74fdd8105..8f8058d3b 100644
  };
  
 diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index ac379e459..f484ebcbd 100644
+index 1163226c0..9d2d693b7 100644
 --- a/net/core/rtnetlink.c
 +++ b/net/core/rtnetlink.c
-@@ -57,7 +57,7 @@
- #include "dev.h"
- 
- #define RTNL_MAX_TYPE		50
--#define RTNL_SLAVE_MAX_TYPE	40
-+#define RTNL_SLAVE_MAX_TYPE	42
- 
- struct rtnl_link {
- 	rtnl_doit_func		doit;
 @@ -4835,6 +4835,8 @@ int ndo_dflt_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
  				IFLA_BRPORT_LEARNING_SYNC, BR_LEARNING_SYNC) ||
  	    brport_nla_put_flag(skb, flags, mask,

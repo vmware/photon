@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.97
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -871,6 +871,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jul 19 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.97-2
+- Multiple HCX patch fixes.
 * Wed Jul 10 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.97-1
 - Update to version 6.1.97
 * Thu Jun 27 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.94-2

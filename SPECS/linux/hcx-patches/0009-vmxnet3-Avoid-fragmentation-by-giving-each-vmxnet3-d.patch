@@ -29,8 +29,8 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
  drivers/net/vmxnet3/vmxnet3_drv.c | 78 +++++++++++++++++++++++++++++--
  drivers/net/vmxnet3/vmxnet3_int.h |  2 +
  include/linux/skbuff.h            |  2 +
- net/core/skbuff.c                 | 18 +++++--
- 4 files changed, 90 insertions(+), 10 deletions(-)
+ net/core/skbuff.c                 | 21 ++++++---
+ 4 files changed, 92 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
 index da488cbb0..6c629a8aa 100644
@@ -184,10 +184,10 @@ index 3367db23a..62227b4f3 100644
  	/* Wake-on-LAN */
  	u32     wol;
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index bed2c8101..54f371ab0 100644
+index d0a456ec8..24e27e6ae 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -3156,6 +3156,8 @@ static inline void *netdev_alloc_frag_align(unsigned int fragsz,
+@@ -3188,6 +3188,8 @@ static inline void *netdev_alloc_frag_align(unsigned int fragsz,
  
  struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int length,
  				   gfp_t gfp_mask);
@@ -197,7 +197,7 @@ index bed2c8101..54f371ab0 100644
  /**
   *	netdev_alloc_skb - allocate an skbuff for rx on a specific device
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 73b1e0e53..e618db403 100644
+index 4d46788cd..adcf40fab 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
 @@ -548,10 +548,11 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
@@ -226,7 +226,7 @@ index 73b1e0e53..e618db403 100644
  	struct sk_buff *skb;
  	bool pfmemalloc;
  	void *data;
-@@ -588,7 +588,8 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
+@@ -588,12 +588,14 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
  		gfp_mask |= __GFP_MEMALLOC;
  
  	if (in_hardirq() || irqs_disabled()) {
@@ -236,7 +236,14 @@ index 73b1e0e53..e618db403 100644
  		data = page_frag_alloc(nc, len, gfp_mask);
  		pfmemalloc = nc->pfmemalloc;
  	} else {
-@@ -619,6 +620,13 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
+ 		local_bh_disable();
+-		nc = this_cpu_ptr(&napi_alloc_cache.page);
++		if (!nc)
++			nc = this_cpu_ptr(&napi_alloc_cache.page);
+ 		data = page_frag_alloc(nc, len, gfp_mask);
+ 		pfmemalloc = nc->pfmemalloc;
+ 		local_bh_enable();
+@@ -619,6 +621,13 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
  skb_fail:
  	return skb;
  }

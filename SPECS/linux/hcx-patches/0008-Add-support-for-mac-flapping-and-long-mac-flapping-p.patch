@@ -110,12 +110,25 @@ index e7f4fccb6..e43e52871 100644
  
  	fdb = fdb_find_rcu(&br->fdb_hash_tbl, addr, vid);
  	if (likely(fdb)) {
-@@ -871,14 +902,114 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+@@ -862,6 +893,7 @@ void br_fdb_update(struct net_bridge *br, struct net_b
+ 		} else {
+			unsigned long now = jiffies;
+			bool fdb_modified = false;
++			unsigned long fdb_updated_to_check = fdb->updated;
+
+ 			if (now != fdb->updated) {
+				fdb->updated = now;
+@@ -871,14 +903,119 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
  			/* fastpath: update of existing entry */
  			if (unlikely(source != READ_ONCE(fdb->dst) &&
  				     !test_bit(BR_FDB_STICKY, &fdb->flags))) {
 +				unsigned long delay;
-+				delay = fdb->updated + br->flap_threshold;
++
++				br_debug(br, "flap detection at %lu (current fdb->updated) "
++					"against %lu (original fdb->updated)\n",
++					fdb->updated, fdb_updated_to_check);
++
++				delay = fdb_updated_to_check + br->flap_threshold;
 +				if (time_before_eq(jiffies, delay)) {
 +					/* flap! */
 +					if (fdb->flap_port != source) {
@@ -141,7 +154,7 @@ index e7f4fccb6..e43e52871 100644
 +					if (br_mac_flap)
 +						return -EINVAL;
 +				}
-+				delay = fdb->updated + br->flap_long_threshold;
++				delay = fdb_updated_to_check + br->flap_long_threshold;
 +				if (br_skb_is_long_flap(skb) && time_before(jiffies, delay)) {
 +					/* long flap! probably VDR sending arp reply */
 +					fdb->flap_count++;
@@ -225,7 +238,7 @@ index e7f4fccb6..e43e52871 100644
  			}
  
  			if (unlikely(test_bit(BR_FDB_ADDED_BY_USER, &flags)))
-@@ -900,6 +1031,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+@@ -900,6 +1037,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
  		 */
  		spin_unlock(&br->hash_lock);
  	}
@@ -233,7 +246,7 @@ index e7f4fccb6..e43e52871 100644
  }
  
  /* Dump information about entries, in response to GETNEIGH */
-@@ -1115,7 +1247,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
+@@ -1115,7 +1253,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
  
  		local_bh_disable();
  		rcu_read_lock();
