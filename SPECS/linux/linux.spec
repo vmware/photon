@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.106
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -309,6 +309,7 @@ Patch713: 0013-set-max_mtu-as-IP_MAX_MTU_for_vlan.patch
 Patch714: 0014-iptunnel-mark-xfrm-multi-parts.patch
 Patch715: 0015-disable-pskb_inet_may_pull-in-tunnel.patch
 Patch716: 0016-gre_tap-interface-mss_clamp-support.patch
+Patch717: 0017-rps_cpus-skip-receive-packets-queuing-to-only-housek.patch
 
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
@@ -526,7 +527,7 @@ The kernel fips-canister
 %endif
 
 #HCX-Patches
-%autopatch -p1 -m701 -M716
+%autopatch -p1 -m701 -M717
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
@@ -878,6 +879,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Aug 29 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.106-3
+- HCX: Fix arp_probe_src_mac sysfs entry issue
+- HCX: Fix rps_cpus to honor isolcpus range
 * Tue Aug 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.106-2
 - Fix CVE-2024-42314
 * Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.106-1

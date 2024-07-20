@@ -13,11 +13,11 @@ Add a option arp_probe to enable or disable this function.
 Change value of arp_probe_per_packets to change the frequence
 of arp probing. Skip unknown unicast from gretap dev.
 
-Add proc variable arp_probe_src_mac to let user specify the 
+Add proc variable arp_probe_src_mac to let user specify the
 source mac of probing packet.
 
 Add port flag "sink_connected", if this flag on means
-this a l2c tapdevice connected. Do not send arp probe for the 
+this a l2c tapdevice connected. Do not send arp probe for the
 packet coming form port with this flag.
 
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
@@ -26,16 +26,16 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
  include/uapi/linux/if_link.h |   1 +
  net/bridge/br.c              |  12 ++
  net/bridge/br_device.c       |  11 ++
- net/bridge/br_input.c        | 231 +++++++++++++++++++++++++++++++++++
+ net/bridge/br_input.c        | 253 +++++++++++++++++++++++++++++++++++
  net/bridge/br_netlink.c      |   5 +
  net/bridge/br_private.h      |   9 ++
  net/bridge/br_sysfs_br.c     |  24 ++++
  net/bridge/br_sysfs_if.c     |   2 +
  net/core/rtnetlink.c         |   2 +
- 10 files changed, 298 insertions(+)
+ 10 files changed, 320 insertions(+)
 
 diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index d62ef428e..f39ae0d42 100644
+index d62ef428e..ef6e8848a 100644
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
 @@ -59,6 +59,7 @@ struct br_ip_list {
@@ -148,7 +148,7 @@ index 036ae99d0..90544ae26 100644
  
  static int br_dev_open(struct net_device *dev)
 diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index b94a17839..06cb4ced4 100644
+index b94a17839..fbbb80b2a 100644
 --- a/net/bridge/br_input.c
 +++ b/net/bridge/br_input.c
 @@ -23,6 +23,18 @@
@@ -170,7 +170,7 @@ index b94a17839..06cb4ced4 100644
  static int
  br_netif_receive_skb(struct net *net, struct sock *sk, struct sk_buff *skb)
  {
-@@ -30,6 +42,124 @@ br_netif_receive_skb(struct net *net, struct sock *sk, struct sk_buff *skb)
+@@ -30,6 +42,146 @@ br_netif_receive_skb(struct net *net, struct sock *sk, struct sk_buff *skb)
  	return netif_receive_skb(skb);
  }
  
@@ -191,13 +191,15 @@ index b94a17839..06cb4ced4 100644
 +}
 +
 +static int proc_arp_probe_src_mac(struct ctl_table *table, int write,
-+				void __user *buffer,
++				void *buffer,
 +				size_t *lenp, loff_t *ppos)
 +{
++	char *data;
++	char macs[ETH_ALEN * 3];
 +	char macz[ETH_ALEN+1] = {0};
 +	char mac[ETH_ALEN+1];
-+	char macs[18];
-+	size_t len;
++	size_t len, maxlen;
++	char *buf = buffer;
 +
 +	if (!*lenp || (*ppos && !write)) {
 +		*lenp = 0;
@@ -212,12 +214,11 @@ index b94a17839..06cb4ced4 100644
 +			return -EINVAL;
 +		}
 +
-+		if (copy_from_user(macs, buffer, len))
-+			return -EFAULT;
++		memcpy(macs, buffer, len);
 +
 +		macs[17] = 0;
 +
-+		if ( string_to_mac(mac, macs, len) ) {
++		if (string_to_mac(mac, macs, len) ) {
 +			printk(KERN_ERR "invalid format of mac address %s, should be in " \
 +				"format as 00:50:56:A8:EF:F3\n", macs);
 +			return -EINVAL;
@@ -225,30 +226,51 @@ index b94a17839..06cb4ced4 100644
 +
 +		memcpy(br_arp_probe_src_mac, mac, ETH_ALEN);
 +		br_arp_probe_src_mac[ETH_ALEN] = 0;
++
 +		if (memcmp(mac, macz, ETH_ALEN) == 0) {
 +			br_arp_probe_src_mac_set = 0;
-+		}else {
++		} else {
 +			br_arp_probe_src_mac_set = 1;
 +		}
 +
 +		*ppos += len;
 +
 +		return 0;
++
++	} else {
++		if (memcmp(br_arp_probe_src_mac, macz, ETH_ALEN))
++			snprintf(macs, sizeof(macs), "%*phC", ETH_ALEN, br_arp_probe_src_mac);
++		else
++			macs[0] = '\0';
++
++		buf = buffer;
++		data = macs;
++		len = strlen(macs);
++		maxlen = sizeof(macs);
++
++		if (len > maxlen)
++			len = maxlen;
++
++		if (*ppos > len) {
++			*lenp = 0;
++			return 0;
++		}
++
++		data += *ppos;
++		len  -= *ppos;
++
++		if (len > *lenp)
++			len = *lenp;
++		if (len)
++			memcpy(buffer, data, len);
++		if (len < *lenp) {
++			buf[len] = '\n';
++			len++;
++		}
++		*lenp = len;
++		*ppos += len;
++		return 0;
 +	}
-+
-+	len = sysfs_format_mac(macs, br_arp_probe_src_mac,
-+			strlen(br_arp_probe_src_mac));
-+
-+	if (len > *lenp) len = *lenp;
-+
-+	if (copy_to_user(buffer, macs, len))
-+		return -EFAULT;
-+
-+	*lenp = len;
-+	*ppos += len;
-+
-+	return 0;
-+
 +}
 +
 +static struct ctl_table br_input_table[] = {
@@ -269,7 +291,7 @@ index b94a17839..06cb4ced4 100644
 +	{
 +		.procname	= "arp_probe_src_mac",
 +		.data		= &br_arp_probe_src_mac,
-+		.maxlen		= 17,
++		.maxlen		= sizeof(int),
 +		.mode		= 0644,
 +		.proc_handler	= proc_arp_probe_src_mac,
 +	},
@@ -295,7 +317,7 @@ index b94a17839..06cb4ced4 100644
  static int br_pass_frame_up(struct sk_buff *skb, bool promisc)
  {
  	struct net_device *indev, *brdev = BR_INPUT_SKB_CB(skb)->brdev;
-@@ -72,6 +202,104 @@ static int br_pass_frame_up(struct sk_buff *skb, bool promisc)
+@@ -72,6 +224,104 @@ static int br_pass_frame_up(struct sk_buff *skb, bool promisc)
  		       br_netif_receive_skb);
  }
  
@@ -400,7 +422,7 @@ index b94a17839..06cb4ced4 100644
  /* note: already called with rcu_read_lock */
  int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
  {
-@@ -194,6 +422,9 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+@@ -194,6 +444,9 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
  			dst->used = now;
  		br_forward(dst->dst, skb, local_rcv, false);
  	} else {
