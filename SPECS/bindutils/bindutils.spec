@@ -3,12 +3,18 @@
 %define _home_dir       %{_sharedstatedir}/bind
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.16.48
+Version:        9.18.27
 Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        https://downloads.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512  bind=83829a5045e2a29dd2b491d3ab72b545f5664023fcd4aa205a44dbb7bcc5c737b4466c0d73f124b8d88fd33c56776871a07dde1ba0530d43eec8e7304a08d353
+%define sha512  bind=d0c89821fef38e531d65b465adeb5946589775e6a4d5e2068e969f1106c961d3b202af19247b9e20f9fbde645be10d610478edf89ed0d83b39d38fb4353c693a
+
+Patch0: bind-CVE-2024-0760.patch
+Patch1: bind-CVE-2024-1737.patch
+Patch2: bind-CVE-2024-1975.patch
+Patch3: bind-CVE-2024-4076.patch
+
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -20,11 +26,13 @@ BuildRequires:  libuv-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd-devel
+BuildRequires:  nghttp2-devel
 
 Requires: krb5
 Requires: e2fsprogs-libs
 Requires: openssl
 Requires: libuv
+Requires: nghttp2
 
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols
@@ -38,15 +46,11 @@ also production-grade software, suitable for use in high-volume and high-reliabi
 %configure \
     --without-python \
     --disable-linux-caps
-%make_build -C lib/dns
-%make_build -C lib/isc
-%make_build -C lib/bind9
-%make_build -C lib/isccfg
-%make_build -C lib/irs
-%make_build -C bin/dig
-%make_build -C bin/nsupdate
+%make_build
 
 %install
+%make_install -C lib %{?_smp_mflags}
+%{__rm} -rf %{buildroot}%{_includedir}
 %make_install -C bin/dig %{?_smp_mflags}
 %make_install -C bin/nsupdate %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
@@ -81,11 +85,14 @@ chmod 0770 %{_home_dir}
 %files
 %defattr(-,root,root)
 %{_bindir}/*
+%{_libdir}/*.so
 %{_sysconfdir}/*
 %{_home_dir}
 %{_tmpfilesdir}/named.conf
 
 %changelog
+* Mon Jul 22 2024 Dweep Advani <dweep.advani@broadcom.com> 9.18.27-1
+- Update to version 9.18.27 to fix CVE-2024-0760/1737/1975/4076
 * Mon Feb 12 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.16.48-1
 - Update to latest subversion to address CVEs
 * Thu Sep 28 2023 Prashant S Chauhan <psinghchauha@vmware.com> 9.16.42-3
