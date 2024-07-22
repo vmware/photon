@@ -6,7 +6,7 @@ Summary:        The PyPA recommended tool for installing Python packages.
 Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
-Version:        23.3.2
+Version:        24.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
@@ -15,7 +15,7 @@ Distribution:   Photon
 Url:            https://pypi.org/project/pip/
 
 Source0: https://files.pythonhosted.org/packages/6b/8b/0b16094553ecc680e43ded8f920c3873b01b1da79a54274c98f08cb29fca/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=b2d8bcff02fe196163e88e02702861bfccba202e5c71d8c6843eeebc84066efa6987574e26a89ff25f096645e99c824dde585fbae415b66d5eb88657bb4d9cb4
+%define sha512 %{srcname}=b687d9e7e2b0348a1c3355610bcf4e194dd157dc6e79638f8a0a383cf1ba7c4253be4b145e9a5029e089807d1feec9e444976f34f77a732f3ef527d9bc6bcebf
 
 Patch0: dummy-certifi.patch
 
@@ -85,5 +85,7 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Thu Jul 25 2024 Tapas Kundu <tapas.kundu@broadom.com> 24.0-1
+- Update to 24.0
 * Wed Feb 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.3.2-1
 - Initial addition. Seperated from python3 spec.

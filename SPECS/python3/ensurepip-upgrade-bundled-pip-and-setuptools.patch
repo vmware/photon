@@ -1,30 +1,25 @@
-From 084266c8feee75cf429a3321dbaed426396c4b83 Mon Sep 17 00:00:00 2001
-From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
-Date: Wed, 21 Feb 2024 18:53:19 +0530
-Subject: [PATCH] ensurepip: upgrade bundled pip to 23.3.2
+From 82ccc673bc2efe7f9bcf9872a84a05aafbf3bfb6 Mon Sep 17 00:00:00 2001
+From: Tapas Kundu <tapas.kundu@broadcom.com>
+Date: Sat, 27 Jul 2024 04:24:32 +0000
+Subject: [PATCH] upgrade setuptools to 69.0.3
 
-upgrade setuptools to 69.0.3
-
-Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Signed-off-by: Tapas Kundu <tapas.kundu@broadcom.com>
 ---
- Lib/ensurepip/__init__.py | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Lib/ensurepip/__init__.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Lib/ensurepip/__init__.py b/Lib/ensurepip/__init__.py
-index 81db9fa..98fad80 100644
+index 165f3963a6..a812f7e715 100644
 --- a/Lib/ensurepip/__init__.py
 +++ b/Lib/ensurepip/__init__.py
-@@ -10,8 +10,8 @@ from importlib import resources
- 
+@@ -10,7 +10,7 @@
+
  __all__ = ["version", "bootstrap"]
  _PACKAGE_NAMES = ('setuptools', 'pip')
 -_SETUPTOOLS_VERSION = "65.5.0"
--_PIP_VERSION = "23.2.1"
 +_SETUPTOOLS_VERSION = "69.0.3"
-+_PIP_VERSION = "23.3.2"
+ _PIP_VERSION = "24.0"
  _PROJECTS = [
      ("setuptools", _SETUPTOOLS_VERSION, "py3"),
-     ("pip", _PIP_VERSION, "py3"),
--- 
-2.25.1
-
+--
+2.39.4

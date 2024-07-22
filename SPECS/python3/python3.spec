@@ -3,8 +3,8 @@
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.11.7
-Release:        4%{?dist}
+Version:        3.11.9
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -12,14 +12,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha512 Python=11e06f2ffe1f66888cb5b4e9f607de815294d6863a77eda6ec6d7c724ef158df9f51881f4a956d4a6fa973c2fb6fd031d495e3496e9b0bb53793fb1cc8434c63
+%define sha512 Python=2b0a1d936b4ef8376f9655797aece8ffdff75031ad7bfa840f330cac2aed189aecc80c163edc12ea772851d7a011f3fc1960470a73d9d4290cf3ab8ad6ed7e6a
 
 Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
-Source2: setuptools-pip-wheels%{?dist}-1.0.tar.xz
-%define sha512 setuptools-pip-wheels=73f478b62e7716ec19f366bb8d0866af19c5afa55a8b90664efe3760a69903be2f4b79b41ca6946c8528eaad594e19974dbb6c8a2735722b1b35b2aa77bc1569
+Source2: setuptools-pip-wheels%{?dist}-1.0-1.tar.xz
+%define sha512 setuptools-pip-wheels=be455735f5293b38e1e51a946b9db137b5faa09012518c2f578e2183934aca2fd229c6db342bbd2310c46acdc330006829e83607f6befbb42ab00170aacd05fe
 
 Patch0: cgi3.patch
 Patch1: use-HMAC-SHA256-in-FIPS-mode.patch
@@ -303,6 +303,9 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Sat Jul 27 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.11.9-1
+- Update to 3.11.9
+- Update pip3 wheel to 24.0
 * Tue Jul 23 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.7-4
 - Fix CVE-2024-4032
 * Fri Mar 01 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.11.7-3
