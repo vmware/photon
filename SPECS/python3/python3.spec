@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -24,6 +24,7 @@ Source2: setuptools-pip-wheels%{?dist}-1.0.tar.xz
 Patch0: cgi3.patch
 Patch1: use-HMAC-SHA256-in-FIPS-mode.patch
 Patch2: ensurepip-upgrade-bundled-pip-and-setuptools.patch
+Patch3: CVE-2024-4032.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -302,6 +303,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Tue Jul 23 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.7-4
+- Fix CVE-2024-4032
 * Fri Mar 01 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.11.7-3
 - Bump version as a part of sqlite upgrade to v3.43.2
 * Wed Feb 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.7-2
