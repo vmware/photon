@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.4.0
+Version:        8.4.2
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://cdn.mysql.com/Downloads/MySQL-8.4/mysql-%{version}.tar.gz
-%define sha512 %{name}=59d54a8405b5cab0de95c67f3228b0b292a03b12147e8dc01f67b34b407c1e4f9644340d7dfdc1f23d1d081a749d5a49f6361b540bfc1789a9068b56dc5da08c
+%define sha512 %{name}=4274b78bf4e99e090adbb3ea58c3cffa84bd85aa0de7ded4567c6ad9a1994fbe6a4829b84c06b212b44d6c23530cb8080a92a8ec484f51d5d5edb2d5f15c5890
 
 Source1: %{name}.sysusers
 
@@ -180,6 +180,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Jul 23 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.2-1
+- Upgrade to v8.4.2 to fix a bunch of CVEs
 * Fri May 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.0-1
 - Upgrade to v8.4.0, fixes bunch of CVEs
 * Fri Jan 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.3.0-1
