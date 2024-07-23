@@ -7,7 +7,7 @@ Name:           python3-setuptools
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        69.0.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -16,6 +16,8 @@ Url:            https://pypi.org/project/setuptools
 
 Source0: https://files.pythonhosted.org/packages/5f/36/7374297692bb9dbd7569a0f84887c7e5e314c41d5d9518cb76fbb130620d/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=11df934931f4b73f7e07ea5713479593c6baa134d423556b2ae7aff0f1e5bdbdee1f5b516131adb169c838231ceb0293441fbf275ef7030dabecf74122565b6d
+
+Patch0: CVE-2024-6345.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-xml
@@ -72,6 +74,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Tue Jul 23 2024 Prashant S Chauhan <prashant.singhj-chauhan@broadcom.com> 69.0.3-4
+- Fix CVE-2024-6345
 * Thu May 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 69.0.3-3
 - Remove leftover empty setuptools dirs from install location
 * Wed Mar 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 69.0.3-2
