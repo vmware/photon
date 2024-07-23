@@ -1,14 +1,16 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.21.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.gz
-%define sha512  wget=29889ecbf590dff0f39183d9e0621741d731a554d990e5c995a4644725dca62e8e19601d40db0ef7d62ebf54e5457c7409965e4832b6e60e4ccbc9c8caa30718
+%define sha512  %{name}=29889ecbf590dff0f39183d9e0621741d731a554d990e5c995a4644725dca62e8e19601d40db0ef7d62ebf54e5457c7409965e4832b6e60e4ccbc9c8caa30718
+Patch0:         CVE-2024-38428.patch
+
 Requires:       openssl
 BuildRequires:  openssl-devel
 %if 0%{?with_check}
@@ -20,7 +22,7 @@ The Wget package contains a utility useful for non-interactive
 downloading of files from the Web.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure --with-ssl=openssl \
@@ -58,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Tue Jul 23 2024 Oliver Kurth <oliver.kurth@broadcom.com> 1.21.3-2
+- add patch to fix CVE-2024-38428
 * Thu Apr 21 2022 Oliver Kurth <okurth@vmware.com> 1.21.3-1
 - update to latest version
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.20.3-3
