@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
 Version:        0.7.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +10,8 @@ URL:            https://github.com/vmware/network-config-manager
 
 Source0: https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=34a587a87a91792b7063af57459f668b30436ad91a077f6a93eab32bb5a0d72862966a6a3c6b9473fae41ee638daad69534f4aca2014c56e04548e744c22df37
+
+Patch0: 0001-Fixed-incorrect-config-source-for-IPv6-address.patch
 
 BuildRequires: glib-devel
 BuildRequires: json-c-devel
@@ -80,6 +82,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.7.3-2
+- Patched to fix incorrect ConfigSource for IPv6 Address
 * Thu May 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.7.3-1
 - Version upgrade to v0.7.3
 * Thu Feb 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.1-2
