@@ -1,5 +1,6 @@
 #!/usr/bin/env/ python3
 
+import json
 import platform
 
 from Logger import Logger
@@ -55,284 +56,34 @@ class constants(object):
     resume_build = False
     buildDbgInfoRpmList = []
     extraPackagesList = []
+    releasePkgPreqPath = ""
 
-    noDepsPackageList = [
-        "texinfo",
-        "bzip2",
-        "bzip2-libs",
-        "gettext",
-        "gettext-libs",
-        "gettext-devel",
-        "nspr",
-        "bison",
-        "go",
-        "sqlite",
-        "sqlite-devel",
-        "sqlite-libs",
-    ]
+    # Update to below constants lists will be provided by release branch as pkgPreq data
+    noDepsPackageList = []
 
     # These packages will be built in first order as build-core-toolchain stage
     # Put only main pakage names here. Do not add subpackages such as libgcc
-    listCoreToolChainPackages = [
-        "filesystem",
-        "linux-api-headers",
-        "glibc",
-        "glibc-libs",
-        "zlib",
-        "file",
-        "binutils",
-        "gmp",
-        "mpfr",
-        "mpc",
-        "mpc-devel",
-        "gcc",
-        "pkg-config",
-        "ncurses",
-        "readline",
-        "bash",
-    ]
+    listCoreToolChainPackages = []
 
     # These packages will be built in a second stage to replace publish RPMS
     # Put only main pakage names here. Do not add subpackages such as libgcc
-    listToolChainPackages = [
-        "filesystem",
-        "linux-api-headers",
-        "glibc",
-        "glibc-libs",
-        "zlib",
-        "file",
-        "binutils",
-        "gmp",
-        "mpfr",
-        "mpc",
-        "mpc-devel",
-        "gcc",
-        "pkg-config",
-        "ncurses",
-        "bash",
-        "bzip2",
-        "sed",
-        "procps-ng",
-        "coreutils",
-        "m4",
-        "grep",
-        "readline",
-        "diffutils",
-        "gawk",
-        "findutils",
-        "gettext",
-        "gettext-libs",
-        "gettext-devel",
-        "gzip",
-        "make",
-        "patch",
-        "util-linux",
-        "attr",
-        "libacl",
-        "tar",
-        "xz",
-        "libtool",
-        "flex",
-        "bison",
-        "popt",
-        "nspr",
-        "sqlite",
-        "nss",
-        "elfutils",
-        "expat",
-        "libffi",
-        "libpipeline",
-        "gdbm",
-        "perl",
-        "texinfo",
-        "autoconf",
-        "automake",
-        "openssl-libs",
-        "zstd",
-        "rpm",
-        "dwz",
-        "debugedit",
-        "pandoc-bin",
-        "help2man",
-        "pcre-libs",
-    ]
+    listToolChainPackages = []
 
     # List or RPMS that will be installed in a chroot prior to build each
     # package. This list should be ordered by install order. On a stage1
     # and stage2 published rpms will/might be used after stage2 only local
     # RPMS will be used
-    listToolChainRPMsToInstall = [
-        "filesystem",
-        "linux-api-headers",
-        "glibc",
-        "glibc-libs",
-        "glibc-devel",
-        "glibc-iconv",
-        "glibc-tools",
-        "zlib",
-        "zlib-devel",
-        "file-libs",
-        "file",
-        "binutils",
-        "binutils-libs",
-        "binutils-devel",
-        "gmp",
-        "gmp-devel",
-        "mpfr",
-        "mpfr-devel",
-        "mpc",
-        "mpc-devel",
-        "libgcc",
-        "libgcc-devel",
-        "libgcc-atomic",
-        "libstdc++",
-        "libstdc++-devel",
-        "libgomp",
-        "libgomp-devel",
-        "gcc",
-        "pkg-config",
-        "ncurses",
-        "ncurses-libs",
-        "ncurses-devel",
-        "ncurses-terminfo",
-        "bash",
-        "bzip2",
-        "bzip2-libs",
-        "bzip2-devel",
-        "sed",
-        "procps-ng",
-        "coreutils",
-        "m4",
-        "grep",
-        "readline",
-        "diffutils",
-        "gawk",
-        "findutils",
-        "gettext",
-        "gettext-libs",
-        "gettext-devel",
-        "gzip",
-        "make",
-        "patch",
-        "util-linux",
-        "util-linux-libs",
-        "util-linux-devel",
-        "attr",
-        "libacl",
-        "tar",
-        "xz",
-        "xz-libs",
-        "libtool",
-        "flex",
-        "flex-devel",
-        "readline-devel",
-        "popt",
-        "popt-devel",
-        "nspr",
-        "nspr-devel",
-        "sqlite",
-        "sqlite-libs",
-        "nss",
-        "nss-libs",
-        "nss-devel",
-        "elfutils-libelf",
-        "elfutils",
-        "elfutils-libelf-devel",
-        "elfutils-devel",
-        "expat",
-        "expat-libs",
-        "libffi",
-        "libpipeline",
-        "gdbm",
-        "perl",
-        "texinfo",
-        "autoconf",
-        "automake",
-        "openssl",
-        "openssl-libs",
-        "openssl-devel",
-        "libcap",
-        "zstd",
-        "zstd-libs",
-        "zstd-devel",
-        "lua",
-        "lua-libs",
-        "lua-devel",
-        "rpm",
-        "rpm-build",
-        "rpm-devel",
-        "rpm-libs",
-        "rpm-build-libs",
-        "rpm-sign-libs",
-        "cpio",
-        "debugedit",
-        "pcre-libs",
-    ]
+    listToolChainRPMsToInstall = []
 
     # List of packages that will be installed in addition for each
     # package to make check
-    listMakeCheckRPMPkgtoInstall = [
-        "python3",
-        "python3-devel",
-        "python3-libs",
-        "python3-tools",
-        "python3-PyYAML",
-        "libyaml",
-        "libffi",
-        "python3-setuptools",
-        "ca-certificates",
-        "linux",
-        "createrepo_c",
-        "sudo",
-        "ruby",
-        "curl",
-        "pcre-devel",
-        "boost-devel",
-        "which",
-        "go",
-        "e2fsprogs-devel",
-        "shadow",
-        "check",
-        "libacl-devel",
-        "device-mapper",
-        "wget",
-        "attr",
-        "libacl",
-        "tar",
-        "pkg-config",
-        "git",
-        "openssl",
-        "openssl-libs",
-        "openssl-devel",
-        "net-tools",
-        "less",
-        "iana-etc",
-        "rpm-devel",
-        "rpm",
-        "libxml2",
-        "python3-xml",
-        "libacl",
-        "tzdata",
-        "Linux-PAM",
-        "unzip",
-        "systemd-devel",
-        "gnupg",
-        "ncurses-terminfo",
-    ]
+    listMakeCheckRPMPkgtoInstall = []
 
     """
     List of packages that requires privileged docker
     to run make check.
     """
-    listReqPrivilegedDockerForTest = [
-        "elfutils",  # SYS_PTRACE
-        "gdb",
-        "glibc",
-        "glibc-libs",
-        "attr",
-        "libacl",
-        "tar",
-    ]
+    listReqPrivilegedDockerForTest = []
 
     """
     List of Packages which causes "Makecheck" job
@@ -340,13 +91,7 @@ class constants(object):
     Until these pkgs %check is fixed, these pkgs will be
     skip to run makecheck.
     """
-    listMakeCheckPkgToSkip = [
-        "gtk-doc",
-        "libmspack",
-        "socat",
-        "bash",
-        "libical",
-    ]
+    listMakeCheckPkgToSkip = []
 
     """
     .spec file might contain lines such as
@@ -354,41 +99,15 @@ class constants(object):
     Build system should interpret it as
     Requires: shadow
     """
-    providedBy = {
-        "/usr/sbin/useradd": "shadow",
-        "/usr/sbin/userdel": "shadow",
-        "/usr/sbin/groupadd": "shadow",
-        "/sbin/service": "initscripts",
-        "/usr/bin/which": "which",
-        "/usr/bin/python": "python3",
-        "/bin/python": "python3",
-        "/bin/python3": "python3",
-        "/bin/awk": "gawk",
-        "/bin/gawk": "gawk",
-        "/bin/sed": "sed",
-        "/bin/grep": "grep",
-        "/bin/sh": "bash",
-        "/bin/bash": "bash",
-        "/bin/zsh": "zsh",
-        "/bin/tcsh": "tcsh",
-        "/bin/csh": "csh",
-        "/bin/perl": "perl",
-        "/bin/mergerepo": "createrepo_c",
-        "/bin/modifyrepo": "createrepo_c",
-        "/usr/bin/false": "coreutils",
-        "/usr/bin/ln": "coreutils",
-        "/usr/bin/chown": "coreutils",
-        "/usr/bin/cp": "coreutils",
-        "/usr/bin/rm": "coreutils",
-        "/usr/bin/mv": "coreutils",
-        "/sbin/ldconfig": "glibc",
-        "/usr/bin/containerd-shim-runc-v2": "containerd-extras",
-        "jre":"openjdk11"
-    }
+    providedBy = ""
 
     @staticmethod
     def addSpecPath(specPath):
         constants.specPaths.append(specPath)
+
+    @staticmethod
+    def setReleasePkgPreqPath(releasePkgPreqPath):
+        constants.releasePkgPreqPath = releasePkgPreqPath
 
     @staticmethod
     def setSpecPaths(specPaths):
@@ -546,6 +265,18 @@ class constants(object):
 
         if constants.acvpBuild:
             constants.addMacro("acvp_build", "1")
+
+        if constants.releasePkgPreqPath:
+            with open(constants.releasePkgPreqPath, 'r') as file:
+                pkgPreq = json.load(file)
+            constants.noDepsPackageList.extend(pkgPreq["noDepsPackageList"])
+            constants.listCoreToolChainPackages.extend(pkgPreq["listCoreToolChainPackages"])
+            constants.listToolChainPackages.extend(pkgPreq["listToolChainPackages"])
+            constants.listToolChainRPMsToInstall.extend(pkgPreq["listToolChainRPMsToInstall"])
+            constants.listMakeCheckRPMPkgtoInstall.extend(pkgPreq["listMakeCheckRPMPkgtoInstall"])
+            constants.listReqPrivilegedDockerForTest.extend(pkgPreq["listReqPrivilegedDockerForTest"])
+            constants.listMakeCheckPkgToSkip.extend(pkgPreq["listMakeCheckPkgToSkip"])
+            constants.providedBy = pkgPreq["providedBy"]
 
     @staticmethod
     def setTestForceRPMS(listsPackages):

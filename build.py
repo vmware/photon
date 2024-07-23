@@ -128,6 +128,7 @@ class Build_Config:
     rpmNoArchPath = ""
     chrootPath = ""
     generatedDataPath = ""
+    releaseDataPath = ""
     pullPublishRPMSDir = ""
     pullPublishRPMS = ""
     pullPublishRPMSCached = ""
@@ -204,6 +205,29 @@ class Build_Config:
     @staticmethod
     def setGeneratedDataDir(generatedDataDir):
         Build_Config.generatedDataPath = generatedDataDir
+
+    @staticmethod
+    def setReleaseDataDir(releaseDataDir):
+        # Check if the directory exists
+        if not os.path.isdir(releaseDataDir):
+            raise FileNotFoundError(f"The directory '{releaseDataDir}' does not exist.")
+
+        rpmlist_files = glob.glob(os.path.join(releaseDataDir, 'rpmfilelist*'))
+        if not rpmlist_files:
+            raise FileNotFoundError(f"No files starting with 'rpmfilelist' found in the directory '{releaseDataDir}'.")
+
+        xrpmlist_files = glob.glob(os.path.join(releaseDataDir, 'xrpmfilelist*'))
+        if not xrpmlist_files:
+            raise FileNotFoundError(f"No files starting with 'xrpmfilelist' found in the directory '{releaseDataDir}'.")
+
+        # Define the required JSON file
+        json_path = os.path.join(releaseDataDir, 'builder-pkg-preq.json')
+
+        # Check if 'builder-pkg-preq.json' file exists
+        if not os.path.isfile(json_path):
+            raise FileNotFoundError(f"The file 'builder-pkg-preq.json' is missing in the directory '{releaseDataDir}'.")
+
+        Build_Config.releaseDataPath = releaseDataDir
 
     @staticmethod
     def setCommonDir(commonDir):
@@ -460,7 +484,7 @@ class BuildEnvironmentSetup:
         if not configdict["additional-path"]["photon-publish-rpms-path"]:
             print("Pulling toolchain RPMS...")
             cmd = f"cd {Build_Config.pullPublishRPMSDir} && {Build_Config.pullPublishRPMS}"
-            cmd = f"{cmd} {constants.prevPublishRPMRepo} {constants.publishrpmurl} rpmfilelist"
+            cmd = f"{cmd} {constants.prevPublishRPMRepo} {constants.publishrpmurl} {Build_Config.releaseDataPath}/rpmfilelist"
 
             runBashCmd(cmd)
         else:
@@ -475,7 +499,7 @@ class BuildEnvironmentSetup:
         if not configdict["additional-path"]["photon-publish-x-rpms-path"]:
             print("Pulling toolchain XRPMS...")
             cmd = f"cd {Build_Config.pullPublishRPMSDir} && {Build_Config.pullPublishRPMS}"
-            cmd = f"{cmd} {constants.prevPublishXRPMRepo} {constants.publishXrpmurl} xrpmfilelist"
+            cmd = f"{cmd} {constants.prevPublishXRPMRepo} {constants.publishXrpmurl} {Build_Config.releaseDataPath}/xrpmfilelist"
 
             runBashCmd(cmd)
         else:
@@ -491,7 +515,7 @@ class BuildEnvironmentSetup:
         cmd = f"{cmd} {Build_Config.pullPublishRPMSCached} {constants.prevPublishRPMRepo} "
         cmd += (
             configdict["additional-path"]["photon-publish-rpms-path"]
-            + " rpmfilelist"
+            + f" {Build_Config.releaseDataPath}/rpmfilelist"
         )
         runBashCmd(cmd)
         check_prerequesite["publish-rpms-cached"] = True
@@ -504,7 +528,7 @@ class BuildEnvironmentSetup:
         cmd = f"{cmd} {Build_Config.pullPublishRPMSCached} {constants.prevPublishXRPMRepo} "
         cmd += (
             configdict["additional-path"]["photon-publish-x-rpms-path"]
-            + " xrpmfilelist"
+            + f" {Build_Config.releaseDataPath}/xrpmfilelist"
         )
         runBashCmd(cmd)
         check_prerequesite["publish-x-rpms-cached"] = True
@@ -1476,6 +1500,13 @@ def initialize_constants():
     Build_Config.setGeneratedDataDir(
         os.path.join(Build_Config.stagePath, "common/data")
     )
+    Build_Config.setReleaseDataDir(
+        os.path.join(
+            str(
+                Path(configdict["release-branch-path"]).resolve()
+            ), "data"
+        )
+    )
     constants.setTopDirPath("/usr/src/photon")
     Build_Config.setCommonDir(os.path.join(photonDir, "common"))
     Build_Config.setDataDir(os.path.join(photonDir, "common/data"))
@@ -1496,6 +1527,9 @@ def initialize_constants():
         os.path.join(
             Build_Config.pullPublishRPMSDir, "pullpublishrpms-cached.sh"
         )
+    )
+    constants.setReleasePkgPreqPath(
+        os.path.join(Build_Config.releaseDataPath, "builder-pkg-preq.json")
     )
     constants.setPackageWeightsPath(
         os.path.join(Build_Config.dataDir, "packageWeights.json")
