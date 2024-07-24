@@ -1,10 +1,14 @@
+From a35ad6996e8a565cf18f41deaf84e8568f16e4a3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 24 Jul 2024 14:30:10 +0530
 Subject: [PATCH] allow only desired programs
 
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
  Makefile                      |   1 +
  libnss-ato-allowed-progs.conf |   5 ++
- libnss_ato.c                  | 116 ++++++++++++++++++++++++++++++++--
- 3 files changed, 116 insertions(+), 6 deletions(-)
+ libnss_ato.c                  | 115 ++++++++++++++++++++++++++++++++--
+ 3 files changed, 115 insertions(+), 6 deletions(-)
  create mode 100644 libnss-ato-allowed-progs.conf
 
 diff --git a/Makefile b/Makefile
@@ -31,7 +35,7 @@ index 0000000..7f7a26d
 +#/usr/sbin/sshd
 +#/usr/bin/login
 diff --git a/libnss_ato.c b/libnss_ato.c
-index f2f1c38..31d51e9 100644
+index f2f1c38..1ab31ff 100644
 --- a/libnss_ato.c
 +++ b/libnss_ato.c
 @@ -26,6 +26,13 @@
@@ -152,13 +156,13 @@ index f2f1c38..31d51e9 100644
  enum nss_status
  _nss_ato_getpwnam_r( const char *name,
  		struct passwd *p,
-@@ -102,15 +189,24 @@ _nss_ato_getpwnam_r( const char *name,
+@@ -102,15 +189,23 @@ _nss_ato_getpwnam_r( const char *name,
  		int *errnop)
  {
  	struct passwd *conf;
 +    enum nss_status status = NSS_STATUS_NOTFOUND;
 +
-+    openlog(NULL, LOG_PID|LOG_PERROR, LOG_USER);
++    openlog(NULL, LOG_PID, LOG_USER);
 +    log_init_err = errno;
 
  	if ((conf = read_conf()) == NULL) {
@@ -167,7 +171,6 @@ index f2f1c38..31d51e9 100644
  	}
 
 +    if (allowed_programs()) {
-+        pr_err("allowed_programs");
 +        goto end;
 +    }
 +
@@ -179,7 +182,7 @@ index f2f1c38..31d51e9 100644
  		}
  	}
 
-@@ -118,19 +214,27 @@ _nss_ato_getpwnam_r( const char *name,
+@@ -118,19 +213,27 @@ _nss_ato_getpwnam_r( const char *name,
 
  	/* If out of memory */
  	if ((p->pw_name = get_static(&buffer, &buflen, strlen(name) + 1)) == NULL) {
@@ -212,4 +215,3 @@ index f2f1c38..31d51e9 100644
  enum nss_status
 --
 2.34.1
-
