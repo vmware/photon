@@ -1,21 +1,26 @@
+%define srcname oauthlib
+
 Summary:        An implementation of the OAuth request-signing logic
 Name:           python3-oauthlib
-Version:        3.2.0
-Release:        2%{?dist}
+Version:        3.2.2
+Release:        1%{?dist}
 License:        BSD
 Url:            https://pypi.python.org/pypi/python-oauthlib/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://pypi.python.org/packages/fa/2e/25f25e6c69d97cf921f0a8f7d520e0ef336dd3deca0142c0b634b0236a90/oauthlib-%{version}.tar.gz
-%define sha512  oauthlib=abb052cbaccb00a61e9a6c0028102927310d2d864d853cd0826c9a8eae8a9e921da33b79be554a3c6f6067cbcf43b25140f5224c8ab1e7f0a4eb6ab227d418a3
+
+Source0: https://files.pythonhosted.org/packages/6d/fa/fbf4001037904031639e6bfbfc02badfc7e12f137a8afa254df6c4c8a670/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=c147b96e0ab0d1a8845f525e80831cfd04495134dd1f17fd95eac62f3a95c91e6dca9d38e34206537d77f3c12dd5b553252239318ba39546979c350e96536b8b
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-pip
+BuildRequires:  python3-wheel
 BuildRequires:  libffi-devel
+
 Requires:       python3
-Requires:       python3-libs
 
 BuildArch:      noarch
 
@@ -23,25 +28,29 @@ BuildArch:      noarch
 OAuthLib is a generic utility which implements the logic of OAuth without assuming a specific HTTP request object or web framework
 
 %prep
-%autosetup -n oauthlib-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%{pyproject_wheel}
 
 %install
-rm -rf %{buildroot}
-%py3_install
+%{pyproject_install}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 mock
-python3 setup.py test
+pip3 install jwt
+%{python3} setup.py test
+
+%clean
+rm -rf %{buildroot}
 
 %files
-%defattr(-, root, root, -)
-%{python3_sitelib}/*
+%defattr(-,root,root)
+%{python3_sitelib}/%{srcname}/
+%{python3_sitelib}/%{srcname}-%{version}.dist-info/
 
 %changelog
+* Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.2-1
+- Upgrade to v3.2.2
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.2.0-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1

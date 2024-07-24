@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -32,11 +32,31 @@ BuildRequires:  json-c-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemd-devel
 BuildRequires:  systemd-rpm-macros
-BuildRequires:  python3-devel
 BuildRequires:  curl-devel
 BuildRequires:  ivykis-devel
 BuildRequires:  paho-c-devel
 BuildRequires:  bison
+BuildRequires:  python3-devel
+BuildRequires:  python3-pip
+BuildRequires:  python3-cachetools
+BuildRequires:  python3-certifi
+BuildRequires:  python3-charset-normalizer
+BuildRequires:  python3-google-auth
+BuildRequires:  python3-idna
+BuildRequires:  python3-kubernetes
+BuildRequires:  python3-oauthlib
+BuildRequires:  python3-pyasn1
+BuildRequires:  python3-pyasn1-modules
+BuildRequires:  python3-dateutil
+BuildRequires:  python3-PyYAML
+BuildRequires:  python3-requests
+BuildRequires:  python3-requests-oauthlib
+BuildRequires:  python3-rsa
+BuildRequires:  python3-six
+BuildRequires:  python3-urllib3
+BuildRequires:  python3-websocket-client
+BuildRequires:  python3-boto3
+BuildRequires:  python3-botocore
 
 Obsoletes: eventlog
 
@@ -46,9 +66,26 @@ system logging tool. It is often used to manage log messages and implement
 centralized logging, where the aim is to collect the log messages of several
 devices to a single, central log server.
 
-%package -n     python3-%{name}
-Summary:        python3-%{name}
-Requires:       python3
+%package -n python3-%{name}
+Summary:   python3-%{name}
+Requires:  python3
+Requires:  python3-cachetools
+Requires:  python3-certifi
+Requires:  python3-charset-normalizer
+Requires:  python3-google-auth
+Requires:  python3-idna
+Requires:  python3-kubernetes
+Requires:  python3-oauthlib
+Requires:  python3-pyasn1
+Requires:  python3-pyasn1-modules
+Requires:  python3-dateutil
+Requires:  python3-PyYAML
+Requires:  python3-requests
+Requires:  python3-requests-oauthlib
+Requires:  python3-rsa
+Requires:  python3-six
+Requires:  python3-urllib3
+Requires:  python3-websocket-client
 
 %description -n python3-%{name}
 Python 3 version.
@@ -95,12 +132,13 @@ sh ./configure --host=%{_host} --build=%{_build} \
    --disable-java \
    --disable-redis \
    --enable-python \
-   --with-python=3 \
    --with-ivykis=system \
    --enable-mqtt \
    --disable-static \
    --enable-dynamic-linking \
    --disable-cpp \
+   --with-python=3 \
+   --with-python-packages=system \
    PYTHON=%{python3} \
    PKG_CONFIG_PATH=%{_libdir}/pkgconfig/
 
@@ -174,6 +212,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Thu Jul 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-6
+- Do offline build
 * Thu Apr 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-5
 - Obsolete eventlog
 * Wed Mar 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-4
