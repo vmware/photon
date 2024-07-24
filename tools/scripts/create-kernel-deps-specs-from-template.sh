@@ -112,7 +112,7 @@ get_kernel_compatible_drivers() {
 }
 
 create_specs() {
-  if [ $# -ne 1 ]; then
+  if [ $# -lt 1 ]; then
     echo "ERROR: $FUNCNAME invalid args ..." 1>&2
     return 1
   fi
@@ -123,6 +123,7 @@ create_specs() {
   local ksubrel_str="%{?kernelsubrelease}"
 
   local pkg="$1"
+  local oot_experimental="$2"
 
   local x="$(echo $pkg | tr '-' '_')"
   local kver_arr=(${kvers[$x]})
@@ -157,10 +158,13 @@ create_specs() {
         for i in ${tmp[@]}; do
           [ "$i" != "$d_ver_macro" ] && d_vers+=("$i")
         done
-        get_kernel_compatible_drivers "$kver" "$d_bname" d_vers "$kernel_flavour"
-        if [[ ${#d_vers[@]} -eq 0 ]]; then
-          echo "ERROR: For kernel version:$kver, NO valid version of $d_bname found!!" 1>&2
-          return 1
+
+        if [[ -z "$oot_experimental" ]]; then
+          get_kernel_compatible_drivers "$kver" "$d_bname" d_vers "$kernel_flavour"
+          if [[ ${#d_vers[@]} -eq 0 ]]; then
+            echo "ERROR: For kernel version:$kver, NO valid version of $d_bname found!!" 1>&2
+            return 1
+          fi
         fi
 
         local d_ver=""
