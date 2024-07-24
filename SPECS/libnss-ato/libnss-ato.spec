@@ -4,7 +4,7 @@
 Summary:        libnss-ato
 Name:           libnss-ato
 Version:        20240514
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GNU General Public License
 URL:            https://github.com/donapieppo/libnss-ato
 Group:          Development/Tools
@@ -60,6 +60,8 @@ rm -rf %{buildroot}
 %{_libdir}/libnss_ato*.so*
 
 %changelog
+* Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20240514-3
+- Remove an error log which was intervening with bash completion
 * Tue Jul 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20240514-2
 - Disable debuginfo rpm build
 * Tue May 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20240514-1

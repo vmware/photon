@@ -1,10 +1,14 @@
+From a35ad6996e8a565cf18f41deaf84e8568f16e4a3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 24 Jul 2024 14:30:10 +0530
 Subject: [PATCH] allow only desired programs
 
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
  Makefile                      |   1 +
  libnss-ato-allowed-progs.conf |   5 ++
- libnss_ato.c                  | 116 ++++++++++++++++++++++++++++++++--
- 3 files changed, 116 insertions(+), 6 deletions(-)
+ libnss_ato.c                  | 115 ++++++++++++++++++++++++++++++++--
+ 3 files changed, 115 insertions(+), 6 deletions(-)
  create mode 100644 libnss-ato-allowed-progs.conf
 
 diff --git a/Makefile b/Makefile
@@ -16,7 +20,7 @@ index 147e0c4..ad4ae6d 100644
  	cd ${DESTDIR}/${prefix}/lib && ln -fs libnss_ato-2.3.6.so libnss_ato.so.2
  	${INSTALL_DATA} -D libnss-ato.conf ${DESTDIR}/${sysconfdir}/libnss-ato.conf
 +	${INSTALL_DATA} -D libnss-ato-allowed-progs.conf ${DESTDIR}/${sysconfdir}/libnss-ato-allowed-progs.conf
-
+ 
  clean:
  	rm -f libnss_ato.so.2 libnss_ato_test
 diff --git a/libnss-ato-allowed-progs.conf b/libnss-ato-allowed-progs.conf
@@ -31,7 +35,7 @@ index 0000000..7f7a26d
 +#/usr/sbin/sshd
 +#/usr/bin/login
 diff --git a/libnss_ato.c b/libnss_ato.c
-index f2f1c38..31d51e9 100644
+index f2f1c38..1ab31ff 100644
 --- a/libnss_ato.c
 +++ b/libnss_ato.c
 @@ -26,6 +26,13 @@
@@ -45,13 +49,13 @@ index f2f1c38..31d51e9 100644
 +#include <errno.h>
 +#include <syslog.h>
 +#include <stdarg.h>
-
+ 
  /* for security reasons */
  #define MIN_UID_NUMBER   500
 @@ -33,6 +40,31 @@
  #define BAD_CHARS ":"
  #define CONF_FILE "/etc/libnss-ato.conf"
-
+ 
 +#define ALLOWED_PROGS_CONF_FN   "/etc/libnss-ato-allowed-progs.conf"
 +
 +static int allowed_programs(void);
@@ -82,19 +86,19 @@ index f2f1c38..31d51e9 100644
   * with the local user data as in /etc/passwd. For example:
 @@ -51,8 +83,9 @@ read_conf(void)
  	}
-
+ 
  	conf = fgetpwent(fd);
 -    if (conf == NULL)
 +    if (conf == NULL) {
          goto end;
 +    }
-
+ 
  	if ( conf->pw_uid < MIN_UID_NUMBER )
  		conf->pw_uid = MIN_UID_NUMBER;
 @@ -94,6 +127,60 @@ get_static(char **buffer, size_t *buflen, int len)
  	return result;
  }
-
+ 
 +/*
 + * Restrict the module so that it only gets activated
 + * for programs given in ALLOWED_PROGS_CONF_FN
@@ -152,22 +156,21 @@ index f2f1c38..31d51e9 100644
  enum nss_status
  _nss_ato_getpwnam_r( const char *name,
  		struct passwd *p,
-@@ -102,15 +189,24 @@ _nss_ato_getpwnam_r( const char *name,
+@@ -102,15 +189,23 @@ _nss_ato_getpwnam_r( const char *name,
  		int *errnop)
  {
  	struct passwd *conf;
 +    enum nss_status status = NSS_STATUS_NOTFOUND;
 +
-+    openlog(NULL, LOG_PID|LOG_PERROR, LOG_USER);
++    openlog(NULL, LOG_PID, LOG_USER);
 +    log_init_err = errno;
-
+ 
  	if ((conf = read_conf()) == NULL) {
 -		return NSS_STATUS_NOTFOUND;
 +        goto end;
  	}
-
+ 
 +    if (allowed_programs()) {
-+        pr_err("allowed_programs");
 +        goto end;
 +    }
 +
@@ -178,27 +181,27 @@ index f2f1c38..31d51e9 100644
 +            goto end;
  		}
  	}
-
-@@ -118,19 +214,27 @@ _nss_ato_getpwnam_r( const char *name,
-
+ 
+@@ -118,19 +213,27 @@ _nss_ato_getpwnam_r( const char *name,
+ 
  	/* If out of memory */
  	if ((p->pw_name = get_static(&buffer, &buflen, strlen(name) + 1)) == NULL) {
 -		return NSS_STATUS_TRYAGAIN;
 +		status = NSS_STATUS_TRYAGAIN;
 +        goto end;
  	}
-
+ 
  	/* pw_name stay as the name given */
  	strcpy(p->pw_name, name);
-
+ 
  	if ((p->pw_passwd = get_static(&buffer, &buflen, (int)sizeof("x"))) == NULL) {
 -		return NSS_STATUS_TRYAGAIN;
 +		status = NSS_STATUS_TRYAGAIN;
 +        goto end;
  	}
-
+ 
  	strcpy(p->pw_passwd, "x");
-
+ 
 -	return NSS_STATUS_SUCCESS;
 +	status = NSS_STATUS_SUCCESS;
 +
@@ -208,8 +211,8 @@ index f2f1c38..31d51e9 100644
 +    }
 +    return status;
  }
-
+ 
  enum nss_status
---
+-- 
 2.34.1
 
