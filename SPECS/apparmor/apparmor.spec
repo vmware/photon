@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        2.13
-Release:        18%{?dist}
+Release:        19%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -235,6 +235,9 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../../profiles
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
+%files
+%defattr(-,root,root)
+
 %files -n libapparmor
 %defattr(-,root,root)
 %{_libdir}/libapparmor.so.*
@@ -354,6 +357,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.13-19
+- Version Bump up to consume httpd v2.4.62
 * Tue Jul 09 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.13-18
 - Version Bump up to consume httpd v2.4.61
 * Fri Apr 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.13-17

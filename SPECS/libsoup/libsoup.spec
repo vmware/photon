@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.64.0
-Release:         11%{?dist}
+Release:         12%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -104,6 +104,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.64.0-12
+- Version Bump up to consume httpd v2.4.62
 * Tue Jul 09 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.64.0-11
 - Version Bump up to consume httpd v2.4.61
 * Fri Apr 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.64.0-10
