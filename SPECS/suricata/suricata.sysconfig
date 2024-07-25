@@ -1,2 +1,0 @@
-# options to be passed to the suricata daemon
-OPTIONS="-i eth0"

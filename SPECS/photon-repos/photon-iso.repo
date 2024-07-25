@@ -1,7 +1,0 @@
-[photon-iso]
-name=VMWare Photon Linux ISO $releasever ($basearch)
-baseurl=file:///mnt/cdrom/RPMS
-gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY-4096
-gpgcheck=1
-enabled=0
-skip_if_unavailable=1

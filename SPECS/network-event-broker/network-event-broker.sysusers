@@ -1,2 +1,0 @@
-g network-broker -
-u network-broker - "Network Broker" /home/network-broker /sbin/nologin

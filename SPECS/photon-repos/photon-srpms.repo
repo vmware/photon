@@ -1,8 +1,0 @@
-[photon-srpms]
-name=VMware Photon Linux $releasever ($basearch) Source Packages
-baseurl=https://packages.vmware.com/photon/$releasever/photon_srpms_$releasever_$basearch
-gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY-4096
-gpgcheck=1
-enabled=0
-skip_if_unavailable=1
-skip_md_filelists=1

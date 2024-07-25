@@ -1,2 +1,0 @@
-g unbound -
-u unbound - "Unbound DNS resolver" /etc/unbound /sbin/nologin

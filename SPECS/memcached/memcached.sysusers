@@ -1,2 +1,0 @@
-g memcached -
-u memcached - "Memcached daemon" /run/memcached /sbin/nologin

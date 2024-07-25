@@ -1,8 +1,0 @@
-#
-# VMware HotPlug automatization
-#
-# Automatically bring on-line added processors and memory.
-#
-
-SUBSYSTEM=="cpu", ACTION=="add", TEST=="online", ATTR{online}=="0", ATTR{online}="1"
-SUBSYSTEM=="memory", ACTION=="add", TEST=="state", ATTR{state}=="offline", ATTR{state}="online"

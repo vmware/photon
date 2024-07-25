@@ -1,2 +1,0 @@
-g kafka 153
-u kafka 153 "Kafka" /usr/kafka /bin/bash
