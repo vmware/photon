@@ -1,3 +1,4 @@
+%define network_required 1
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
 Version:          13.4

@@ -1,3 +1,4 @@
+%define network_required 1
 %define debug_package %{nil}
 %define _conf_dir     %{_sysconfdir}/%{name}
 %define _log_dir      %{_var}/log/%{name}

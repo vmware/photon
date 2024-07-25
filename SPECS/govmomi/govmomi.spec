@@ -1,3 +1,4 @@
+%define network_required 1
 Summary:        GO interface to the VMware vSphere API.
 Name:           govmomi
 Version:        0.29.0

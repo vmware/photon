@@ -1,3 +1,4 @@
+%define network_required 1
 %ifarch aarch64
 %global gohostarch      arm64
 %else

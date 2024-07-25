@@ -1,3 +1,4 @@
+%define network_required 1
 Name:           influxdb
 Version:        1.8.10
 Release:        10%{?dist}

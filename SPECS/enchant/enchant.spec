@@ -1,3 +1,4 @@
+%define network_required 1
 Name:           enchant
 Version:        2.5.0
 Release:        1%{?dist}

@@ -1,3 +1,4 @@
+%define network_required 1
 Summary:    Linux-native fakeroot using user namespaces
 Name:       rootlesskit
 Version:    1.1.0

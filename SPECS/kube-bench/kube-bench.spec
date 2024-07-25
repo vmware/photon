@@ -1,3 +1,4 @@
+%define network_required 1
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
 Version:        0.6.12

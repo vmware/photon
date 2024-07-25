@@ -26,6 +26,7 @@ class SpecParser(object):
         self.packages = {}
         self.specAdditionalContent = ""
         self.globalSecurityHardening = ""
+        self.networkRequired = False
         self.defs = {}
         self.defs["_arch"] = arch
         self.conditionalCheckMacroEnabled = False
@@ -107,6 +108,8 @@ class SpecParser(object):
                     self._readPackageHeaders(line, self.packages[self.currentPkg])
                 elif self._isGlobalSecurityHardening(line):
                     self._readSecurityHardening(line)
+                elif self._isNetworkRequired(line):
+                    self._readNetworkRequired(line)
                 elif self._isChecksum(line):
                     self._readChecksum(line, self.packages[self.currentPkg])
                 elif self._isExtraBuildRequires(line):
@@ -302,6 +305,11 @@ class SpecParser(object):
             return True
         return False
 
+    def _isNetworkRequired(self, line):
+        if re.search('^%define network_required', line, flags=re.IGNORECASE):
+            return True
+        return False
+
     def _isChecksum(self, line):
         w = line.split()
         if len(w) != 3 or w[0] != "%define" or w[1] not in {"sha1", "sha512"}:
@@ -464,6 +472,19 @@ class SpecParser(object):
             print("Error: Invalid security_hardening value: " + words[2])
             return False
         self.globalSecurityHardening = words[2]
+        return True
+
+    def _readNetworkRequired(self, line):
+        data = line.lower().strip()
+        words = data.split()
+        nrWords = len(words)
+        if nrWords != 3:
+            print("Error: Unable to parse line: " + line)
+            return False
+        if words[2] != "0" and words[2] != "1":
+            print("Error: Invalid network_required value: " + words[2])
+            return False
+        self.networkRequired = bool(int(words[2]))
         return True
 
     def _readExtraBuildRequires(self, line, pkg):
@@ -652,6 +673,7 @@ class SpecParser(object):
         specObj.summary = defPkg.summary
         specObj.url = defPkg.URL
         specObj.securityHardening = self.globalSecurityHardening
+        specObj.networkRequired = self.networkRequired
         specObj.isCheckAvailable = self.checkMacro is not None
         specObj.buildRequires = self._getRequiresTypeAllPackages("build")
         specObj.installRequires = self._getRequiresTypeAllPackages("install")

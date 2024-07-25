@@ -1,3 +1,4 @@
+%define network_required 1
 %define java_min_ver_needed     3.3.3
 
 Summary:        Google's data interchange format

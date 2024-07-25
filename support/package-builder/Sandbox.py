@@ -101,7 +101,7 @@ class Chroot(Sandbox):
         self._unmountAll(chrootID)
         self._removeChroot(chrootID)
 
-    def run(self, cmd, logfile=None, logfn=None):
+    def run(self, cmd, logfile=None, logfn=None, network_required=False):
         self.logger.debug(f"Chroot.run() cmd: {self.chrootCmdPrefix}{cmd}")
         cmd = cmd.replace('"', '\\"')
         self.cmdlog(f"{self.chrootCmdPrefix}{cmd}")
@@ -215,7 +215,7 @@ class SystemdNspawn(Sandbox):
         self.cmdlog(cmd)
         self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
 
-    def run(self, cmd, logfile=None, logfn=None):
+    def run(self, cmd, logfile=None, logfn=None, network_required=False):
         self.logger.debug(f"systemd-nspawn.run() cmd: {self.nspawnCmdPrefix}{cmd}")
         self.cmdlog(f"{self.nspawnCmdPrefix}{cmd}")
         (_, _, retval) = self.cmdUtils.runBashCmd(f"{self.nspawnCmdPrefix}{cmd}", logfile, logfn)
@@ -292,7 +292,7 @@ class Container(Sandbox):
         self.logger.debug(f"Successfully created container: {containerID.short_id}")
         self.containerID = containerID
 
-    def run(self, cmd, logfile=None, logfn=None):
+    def run(self, cmd, logfile=None, logfn=None, network_required=False):
         self.cmdlog(cmd)
         result = self.containerID.exec_run(cmd)
         if result.output:

@@ -1,3 +1,4 @@
+%define network_required 1
 %define debug_package %{nil}
 Summary:        Overlay network for containers based on etcd
 Name:           flannel

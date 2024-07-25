@@ -1,3 +1,4 @@
+%define network_required 1
 %global security_hardening nopie
 %define debug_package       %{nil}
 %define __os_install_post   %{nil}

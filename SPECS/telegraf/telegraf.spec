@@ -1,3 +1,4 @@
+%define network_required 1
 %define debug_package   %{nil}
 %define plugin_ver      1.4.0
 
