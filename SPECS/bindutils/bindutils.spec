@@ -4,8 +4,8 @@
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.19.21
-Release:        2%{?dist}
+Version:        9.20.0
+Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
@@ -13,7 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512 bind=8a5bae4619b0093f5c81376b65a143499d4942c7624ecd7770d62244d88d5a695c1edede59b5f06665fae8bef784f774b144822ac541ebe826d1b267f7c40236
+%define sha512 bind=38dcb5d401b357127f11af521594daf2a7df1fbf444f80a823d10d1077903a59faac4299f925ad77283610c54c816ac0f53edb6d1cdb664abc36368457840e55
 
 Source1:        %{name}.sysusers
 
@@ -22,6 +22,7 @@ Requires:       e2fsprogs-libs
 Requires:       openssl-libs
 Requires:       libuv
 Requires:       userspace-rcu
+Requires:       nghttp2
 Requires:       %{name}-libs = %{version}-%{release}
 Requires(pre):  systemd-rpm-macros
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
@@ -129,6 +130,8 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
+* Wed Jul 24 2024 Dweep Advani <dweep.advani@broadcom.com> 9.20.0-1
+- Update to version 9.20.0
 * Wed Jul 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.19.21-2
 - Create users pre install
 * Wed Feb 14 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.19.21-1
