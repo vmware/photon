@@ -1,7 +1,7 @@
-From ae27211cbbfb63a0ad3c141cd1310d7f583ec40e Mon Sep 17 00:00:00 2001
+From a22708d868a964a8744ef01b304f3cd3e364b1fd Mon Sep 17 00:00:00 2001
 From: Mark Wielaard <mark@klomp.org>
 Date: Fri, 30 Jul 2021 18:09:46 +0200
-Subject: [PATCH] tests: Handle zero directory entry in .debug_line DWARF5
+Subject: [PATCH 3/3] tests: Handle zero directory entry in .debug_line DWARF5
  debugedit.at
 
 We were skipping the zero directory entry, because it was always
@@ -18,10 +18,10 @@ Signed-off-by: Mark Wielaard <mark@klomp.org>
  3 files changed, 27 insertions(+), 6 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index e5c9230..6a53365 100644
+index 85f2c4f..d644a79 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -87,6 +87,20 @@ CFLAGS="$save_CFLAGS"
+@@ -86,6 +86,20 @@ CFLAGS="$save_CFLAGS"
  GDWARF_5_FLAG=$ac_cv_gdwarf_5
  AC_SUBST([GDWARF_5_FLAG])
  
@@ -43,16 +43,16 @@ index e5c9230..6a53365 100644
  save_CFLAGS="$CFLAGS"
  CFLAGS="-gz=none"
 diff --git a/tests/atlocal.in b/tests/atlocal.in
-index 8399f8d..d916301 100644
+index 0eec351..2f12e60 100644
 --- a/tests/atlocal.in
 +++ b/tests/atlocal.in
-@@ -13,3 +13,4 @@ READELF="@READELF@"
+@@ -12,3 +12,4 @@ LDFLAGS=""
  
  GDWARF_5_FLAG=@GDWARF_5_FLAG@
  GZ_NONE_FLAG=@GZ_NONE_FLAG@
 +DWARF_5_DEBUGLINE=@DWARF_5_DEBUGLINE@
 diff --git a/tests/debugedit.at b/tests/debugedit.at
-index 0311d26..725e68e 100644
+index 608b1d0..1c59e86 100644
 --- a/tests/debugedit.at
 +++ b/tests/debugedit.at
 @@ -488,10 +488,12 @@ AT_CLEANUP
@@ -126,5 +126,5 @@ index 0311d26..725e68e 100644
  
  AT_CLEANUP
 -- 
-2.27.0
+2.34.1
 
