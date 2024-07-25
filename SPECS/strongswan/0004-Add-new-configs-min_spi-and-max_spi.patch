@@ -1,0 +1,503 @@
+From 0b1de23a189cdf133a03379ccd1e34ff4fbb77c6 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Thu, 7 Jul 2022 07:16:15 +0000
+Subject: [PATCH 4/4] Add new configs min_spi and max_spi
+
+---
+ src/libcharon/config/child_cfg.c              | 26 ++++++++++++
+ src/libcharon/config/child_cfg.h              | 18 ++++++++
+ src/libcharon/kernel/kernel_interface.c       |  4 +-
+ src/libcharon/kernel/kernel_interface.h       |  2 +-
+ src/libcharon/kernel/kernel_ipsec.h           |  2 +-
+ .../kernel_netlink/kernel_netlink_ipsec.c     | 12 +++++-
+ src/libcharon/plugins/stroke/stroke_config.c  |  8 ++++
+ src/libcharon/plugins/vici/vici_config.c      |  2 +
+ src/libcharon/sa/child_sa.c                   | 37 +++++++++++++++-
+ src/libcharon/sa/child_sa.h                   | 10 +++++
+ src/libipsec/ipsec_sa_mgr.c                   |  2 +-
+ src/libipsec/ipsec_sa_mgr.h                   |  2 +-
+ src/starter/args.c                            |  2 +
+ src/starter/confread.c                        | 42 +++++++++++++++++++
+ src/starter/confread.h                        |  2 +
+ src/starter/keywords.h.in                     |  3 +-
+ src/starter/keywords.txt                      |  2 +
+ src/starter/starterstroke.c                   |  2 +
+ src/stroke/stroke_msg.h                       |  2 +
+ 19 files changed, 170 insertions(+), 10 deletions(-)
+
+diff --git a/src/libcharon/config/child_cfg.c b/src/libcharon/config/child_cfg.c
+index 33e1439..d1f255d 100644
+--- a/src/libcharon/config/child_cfg.c
++++ b/src/libcharon/config/child_cfg.c
+@@ -188,6 +188,16 @@ struct private_child_cfg_t {
+ 	 * clear DF flag in outer IP header
+ 	 */
+ 	bool clear_df;
++	
++	/**
++	 * min SPI value to use
++	 */
++	u_int32_t min_spi;
++
++	/**
++	 * max SPI value to use
++	 */
++	u_int32_t max_spi;
+ };
+ 
+ METHOD(child_cfg_t, get_name, char*,
+@@ -738,6 +748,18 @@ METHOD(child_cfg_t, is_clear_df, bool,
+ 	return this->clear_df;
+ }
+ 
++METHOD(child_cfg_t, min_spi, u_int32_t,
++	private_child_cfg_t *this)
++{
++	return this->min_spi;
++}
++
++METHOD(child_cfg_t, max_spi, u_int32_t,
++	private_child_cfg_t *this)
++{
++	return this->max_spi;
++}
++
+ METHOD(child_cfg_t, destroy, void,
+ 	private_child_cfg_t *this)
+ {
+@@ -793,6 +815,8 @@ child_cfg_t *child_cfg_create(char *name, child_cfg_create_t *data)
+ 			.equals = _equals,
+ 			.get_ref = _get_ref,
+ 			.is_clear_df = _is_clear_df,
++			.min_spi = _min_spi,
++			.max_spi = _max_spi,
+ 			.destroy = _destroy,
+ 			.get_hw_offload = _get_hw_offload,
+ 			.get_copy_dscp = _get_copy_dscp,
+@@ -829,5 +853,7 @@ child_cfg_t *child_cfg_create(char *name, child_cfg_create_t *data)
+ 		.copy_dscp = data->copy_dscp,
+ 	);
+ 	this->clear_df = data->clear_df;
++	this->min_spi = data->min_spi;
++	this->max_spi = data->max_spi;
+ 	return &this->public;
+ }
+diff --git a/src/libcharon/config/child_cfg.h b/src/libcharon/config/child_cfg.h
+index 26fa897..2cdfde0 100644
+--- a/src/libcharon/config/child_cfg.h
++++ b/src/libcharon/config/child_cfg.h
+@@ -354,6 +354,20 @@ struct child_cfg_t {
+ 	 */
+ 	bool (*is_clear_df)(child_cfg_t *this);
+ 
++	/**
++	 * Get the min SPI value to use
++	 *
++	 * @return				min SPI value
++	 */
++	u_int32_t (*min_spi)(child_cfg_t *this);
++
++	/**
++	 * Get the max SPI value to use
++	 *
++	 * @return				max SPI value
++	 */
++	u_int32_t (*max_spi)(child_cfg_t *this);
++
+ 	/**
+ 	 * Destroys the child_cfg object.
+ 	 *
+@@ -446,6 +460,10 @@ struct child_cfg_create_t {
+ 	dscp_copy_t copy_dscp;
+ 	/** DF clear bit */
+ 	bool clear_df;
++	/** min SPI value to use */
++	u_int32_t min_spi;
++	/** max SPI value to use */
++	u_int32_t max_spi;
+ };
+ 
+ /**
+diff --git a/src/libcharon/kernel/kernel_interface.c b/src/libcharon/kernel/kernel_interface.c
+index 207cb8e..818d72e 100644
+--- a/src/libcharon/kernel/kernel_interface.c
++++ b/src/libcharon/kernel/kernel_interface.c
+@@ -171,13 +171,13 @@ METHOD(kernel_interface_t, get_features, kernel_feature_t,
+ 
+ METHOD(kernel_interface_t, get_spi, status_t,
+ 	private_kernel_interface_t *this, host_t *src, host_t *dst,
+-	uint8_t protocol, uint32_t *spi)
++	uint8_t protocol, u_int32_t min, u_int32_t max, uint32_t *spi)
+ {
+ 	if (!this->ipsec)
+ 	{
+ 		return NOT_SUPPORTED;
+ 	}
+-	return this->ipsec->get_spi(this->ipsec, src, dst, protocol, spi);
++	return this->ipsec->get_spi(this->ipsec, src, dst, protocol, min, max, spi);
+ }
+ 
+ METHOD(kernel_interface_t, get_cpi, status_t,
+diff --git a/src/libcharon/kernel/kernel_interface.h b/src/libcharon/kernel/kernel_interface.h
+index 657afd8..8eb68f6 100644
+--- a/src/libcharon/kernel/kernel_interface.h
++++ b/src/libcharon/kernel/kernel_interface.h
+@@ -116,7 +116,7 @@ struct kernel_interface_t {
+ 	 * @return			SUCCESS if operation completed
+ 	 */
+ 	status_t (*get_spi)(kernel_interface_t *this, host_t *src, host_t *dst,
+-						uint8_t protocol, uint32_t *spi);
++						uint8_t protocol, u_int32_t min, u_int32_t max, uint32_t *spi);
+ 
+ 	/**
+ 	 * Get a Compression Parameter Index (CPI) from the kernel.
+diff --git a/src/libcharon/kernel/kernel_ipsec.h b/src/libcharon/kernel/kernel_ipsec.h
+index 6c60850..5a2fa8b 100644
+--- a/src/libcharon/kernel/kernel_ipsec.h
++++ b/src/libcharon/kernel/kernel_ipsec.h
+@@ -224,7 +224,7 @@ struct kernel_ipsec_t {
+ 	 * @return			SUCCESS if operation completed
+ 	 */
+ 	status_t (*get_spi)(kernel_ipsec_t *this, host_t *src, host_t *dst,
+-						uint8_t protocol, uint32_t *spi);
++						uint8_t protocol, u_int32_t min, u_int32_t max, uint32_t *spi);
+ 
+ 	/**
+ 	 * Get a Compression Parameter Index (CPI) from the kernel.
+diff --git a/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c b/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c
+index 78df0da..0458993 100644
+--- a/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c
++++ b/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c
+@@ -1244,17 +1244,25 @@ static status_t get_spi_internal(private_kernel_netlink_ipsec_t *this,
+ 
+ METHOD(kernel_ipsec_t, get_spi, status_t,
+ 	private_kernel_netlink_ipsec_t *this, host_t *src, host_t *dst,
+-	uint8_t protocol, uint32_t *spi)
++	uint8_t protocol, u_int32_t min, u_int32_t max, uint32_t *spi)
+ {
+ 	uint32_t spi_min, spi_max;
++	uint32_t max_t;
++	bool is_hcx_enabled = false;
+ 
+ 	spi_min = lib->settings->get_int(lib->settings, "%s.spi_min",
+ 									 KERNEL_SPI_MIN, lib->ns);
+ 	spi_max = lib->settings->get_int(lib->settings, "%s.spi_max",
+ 									 KERNEL_SPI_MAX, lib->ns);
++	is_hcx_enabled = lib->settings->get_bool(lib->settings,
++				"%s.is_hcx_enabled", FALSE, lib->ns);
++	if (is_hcx_enabled)
++		max_t = max(min, max);
++	else
++		max_t = max(spi_min, spi_max);
+ 
+ 	if (get_spi_internal(this, src, dst, protocol, min(spi_min, spi_max),
+-						 max(spi_min, spi_max), spi) != SUCCESS)
++						 max_t, spi) != SUCCESS)
+ 	{
+ 		DBG1(DBG_KNL, "unable to get SPI");
+ 		return FAILED;
+diff --git a/src/libcharon/plugins/stroke/stroke_config.c b/src/libcharon/plugins/stroke/stroke_config.c
+index e271b3a..7edac87 100644
+--- a/src/libcharon/plugins/stroke/stroke_config.c
++++ b/src/libcharon/plugins/stroke/stroke_config.c
+@@ -1098,10 +1098,18 @@ static child_cfg_t *build_child_cfg(private_stroke_config_t *this,
+ 		.close_action = map_action(msg->add_conn.close_action),
+ 		.updown = msg->add_conn.me.updown,
+ 		.clear_df = msg->add_conn.clear_df != 0,
++		.min_spi = msg->add_conn.min_spi,
++		.max_spi = msg->add_conn.max_spi,
+ 	};
+ 
+ 	DBG1(DBG_CFG, "build_child_cfg: conn %s, clear_df %d",
+ 					msg->add_conn.name, msg->add_conn.clear_df);
++ 
++	DBG1(DBG_CFG, "build_child_cfg: conn %s, min_spi %u",
++					msg->add_conn.name, msg->add_conn.min_spi);
++
++	DBG1(DBG_CFG, "build_child_cfg: conn %s, max_spi %u",
++					msg->add_conn.name, msg->add_conn.max_spi);
+ 
+ 	child_cfg = child_cfg_create(msg->add_conn.name, &child);
+ 	if (msg->add_conn.replay_window != -1)
+diff --git a/src/libcharon/plugins/vici/vici_config.c b/src/libcharon/plugins/vici/vici_config.c
+index 87e93ed..afec9be 100644
+--- a/src/libcharon/plugins/vici/vici_config.c
++++ b/src/libcharon/plugins/vici/vici_config.c
+@@ -2082,6 +2082,8 @@ CALLBACK(children_sn, bool,
+ 	log_child_data(&child, name);
+ 
+ 	child.cfg.clear_df = false;
++	child.cfg.max_spi = 0;
++	child.cfg.min_spi = 0;
+ 
+ 	cfg = child_cfg_create(name, &child.cfg);
+ 
+diff --git a/src/libcharon/sa/child_sa.c b/src/libcharon/sa/child_sa.c
+index ab5a3d0..db119b4 100644
+--- a/src/libcharon/sa/child_sa.c
++++ b/src/libcharon/sa/child_sa.c
+@@ -284,6 +284,16 @@ struct private_child_sa_t {
+ 	 * clear DF bit in outer IP
+ 	 */
+ 	bool clear_df;
++
++	/**
++	 * min SPI value to use
++	 */
++	u_int32_t min_spi;
++
++	/**
++	 * max SPI value to use
++	 */
++	u_int32_t max_spi;
+ };
+ 
+ /**
+@@ -510,6 +520,17 @@ METHOD(child_sa_t, is_clear_df, bool,
+ 	return this->clear_df;
+ }
+ 
++METHOD(child_sa_t, min_spi, u_int32_t,
++	   private_child_sa_t *this)
++{
++	return this->min_spi;
++}
++
++METHOD(child_sa_t, max_spi, u_int32_t,
++	   private_child_sa_t *this)
++{
++	return this->max_spi;
++}
+ 
+ typedef struct policy_enumerator_t policy_enumerator_t;
+ 
+@@ -833,7 +854,7 @@ METHOD(child_sa_t, alloc_spi, uint32_t,
+ 	   private_child_sa_t *this, protocol_id_t protocol)
+ {
+ 	if (charon->kernel->get_spi(charon->kernel, this->other_addr, this->my_addr,
+-							proto_ike2ip(protocol), &this->my_spi) == SUCCESS)
++							proto_ike2ip(protocol), this->min_spi, this->max_spi, &this->my_spi) == SUCCESS)
+ 	{
+ 		/* if we allocate a SPI, but then are unable to establish the SA, we
+ 		 * need to know the protocol family to delete the partial SA */
+@@ -2067,6 +2088,8 @@ child_sa_t *child_sa_create(host_t *me, host_t *other, child_cfg_t *config,
+ 			.create_policy_enumerator = _create_policy_enumerator,
+ 			.destroy = _destroy,
+ 			.is_clear_df = _is_clear_df,
++			.min_spi = _min_spi,
++			.max_spi = _max_spi,
+ 		},
+ 		.encap = data->encap,
+ 		.ipcomp = IPCOMP_NONE,
+@@ -2097,6 +2120,18 @@ child_sa_t *child_sa_create(host_t *me, host_t *other, child_cfg_t *config,
+ 		this->clear_df = false;
+ 	}
+ 
++	if (config != NULL && config->min_spi != NULL) {
++		this->min_spi = config->min_spi(config);
++	} else {
++		this->min_spi = 0;
++	}
++
++	if (config != NULL && config->max_spi != NULL) {
++		this->max_spi = config->max_spi(config);
++	} else {
++		this->max_spi = 0;
++	}
++
+ 	if (data->mark_in)
+ 	{
+ 		this->mark_in.value = data->mark_in;
+diff --git a/src/libcharon/sa/child_sa.h b/src/libcharon/sa/child_sa.h
+index 742fa86..c1aad3b 100644
+--- a/src/libcharon/sa/child_sa.h
++++ b/src/libcharon/sa/child_sa.h
+@@ -527,6 +527,16 @@ struct child_sa_t {
+ 	 * Clear DF bit in outer IP
+ 	 */
+ 	bool (*is_clear_df) (child_sa_t *this);
++
++	/**
++	 * Min SPI to use
++	 */
++	u_int32_t (*min_spi) (child_sa_t *this);
++
++	/**
++	 * Max SPI to use
++	 */
++	u_int32_t (*max_spi) (child_sa_t *this);
+ };
+ 
+ /**
+diff --git a/src/libipsec/ipsec_sa_mgr.c b/src/libipsec/ipsec_sa_mgr.c
+index ab6a2f0..f258f5c 100644
+--- a/src/libipsec/ipsec_sa_mgr.c
++++ b/src/libipsec/ipsec_sa_mgr.c
+@@ -421,7 +421,7 @@ static bool allocate_spi(private_ipsec_sa_mgr_t *this, uint32_t spi)
+ 
+ METHOD(ipsec_sa_mgr_t, get_spi, status_t,
+ 	private_ipsec_sa_mgr_t *this, host_t *src, host_t *dst, uint8_t protocol,
+-	uint32_t *spi)
++	u_int32_t min, u_int32_t max, uint32_t *spi)
+ {
+ 	uint32_t spi_min, spi_max, spi_new;
+ 
+diff --git a/src/libipsec/ipsec_sa_mgr.h b/src/libipsec/ipsec_sa_mgr.h
+index 549b9f2..2092d86 100644
+--- a/src/libipsec/ipsec_sa_mgr.h
++++ b/src/libipsec/ipsec_sa_mgr.h
+@@ -50,7 +50,7 @@ struct ipsec_sa_mgr_t {
+ 	 * @return				SUCCESS of operation successful
+ 	 */
+ 	status_t (*get_spi)(ipsec_sa_mgr_t *this, host_t *src, host_t *dst,
+-						uint8_t protocol, uint32_t *spi);
++						uint8_t protocol, u_int32_t min, u_int32_t max, uint32_t *spi);
+ 
+ 	/**
+ 	 * Add a new SA
+diff --git a/src/starter/args.c b/src/starter/args.c
+index cd72730..eeaebb7 100644
+--- a/src/starter/args.c
++++ b/src/starter/args.c
+@@ -179,6 +179,8 @@ static const token_info_t token_info[] =
+ 	{ ARG_MISC, 0, NULL  /* KW_MARK_OUT */                                         },
+ 	{ ARG_MISC, 0, NULL  /* KW_TFC */                                              },
+ 	{ ARG_MISC, 0, NULL  /* KW_CLEAR_DF */                                         },
++	{ ARG_MISC, 0, NULL  /* KW_MIN_SPI */                                          },
++	{ ARG_MISC, 0, NULL  /* KW_MAX_SPI */                                          },
+ 	{ ARG_MISC, 0, NULL  /* KW_PFS_DEPRECATED */                                   },
+ 	{ ARG_MISC, 0, NULL  /* KW_CONN_DEPRECATED */                                  },
+ 
+diff --git a/src/starter/confread.c b/src/starter/confread.c
+index 1aa7ccc..6719759 100644
+--- a/src/starter/confread.c
++++ b/src/starter/confread.c
+@@ -213,6 +213,8 @@ static void conn_defaults(starter_conn_t *conn)
+ 	conn->dpd_timeout           = 150; /* seconds */
+ 	conn->replay_window         = SA_REPLAY_WINDOW_DEFAULT;
+ 	conn->clear_df              = false;
++	conn->min_spi               = 0;
++	conn->max_spi               = 0;
+ 	conn->fragmentation         = FRAGMENTATION_YES;
+ 
+ 	conn->left.sendcert = CERT_SEND_IF_ASKED;
+@@ -526,6 +528,46 @@ static void handle_keyword(kw_token_t token, starter_conn_t *conn, char *key,
+ 				conn->clear_df = false;
+ 			}
+ 			break;
++		case KW_MIN_SPI:
++			DBG1(DBG_APP, "handle_keyword: %s=%s", key, value);
++			{
++				char *endptr;
++
++				conn->min_spi = strtoul(value, &endptr, 0);
++				if (*endptr != '\0')
++				{
++					DBG1(DBG_APP, "# bad integer value: %s=%s", key, value);
++					cfg->err;
++				}
++				if ((conn->max_spi != 0) && (conn->min_spi >= conn->max_spi))
++				{
++					DBG1(DBG_APP, "# min spi %x >= max_spi %x", conn->min_spi,
++					     conn->max_spi);
++					cfg->err;
++				}
++			}
++			DBG1(DBG_APP, "confread min_spi: %x", conn->min_spi);
++			break;
++		case KW_MAX_SPI:
++			DBG1(DBG_APP, "handle_keyword: %s=%s", key, value);
++			{
++				char *endptr;
++
++				conn->max_spi = strtoul(value, &endptr, 0);
++				if (*endptr != '\0')
++				{
++					DBG1(DBG_APP, "# bad integer value: %s=%s", key, value);
++					cfg->err;
++				}
++				if ((conn->min_spi != 0) && (conn->max_spi <= conn->min_spi))
++				{
++					DBG1(DBG_APP, "# max spi %x <= min_spi %x", conn->max_spi,
++					     conn->min_spi);
++					cfg->err;
++				}
++			}
++			DBG1(DBG_APP, "confread max_spi: %x", conn->max_spi);
++			break;
+ 		default:
+ 			break;
+ 	}
+diff --git a/src/starter/confread.h b/src/starter/confread.h
+index fbbe85e..63ce7ad 100644
+--- a/src/starter/confread.h
++++ b/src/starter/confread.h
+@@ -148,6 +148,8 @@ struct starter_conn {
+ 		bool            install_policy;
+ 		bool            aggressive;
+ 		bool            clear_df;
++		u_int32_t       min_spi;
++		u_int32_t       max_spi;
+ 		starter_end_t   left, right;
+ 
+ 		unsigned long   id;
+diff --git a/src/starter/keywords.h.in b/src/starter/keywords.h.in
+index 071e344..f3d2b41 100644
+--- a/src/starter/keywords.h.in
++++ b/src/starter/keywords.h.in
+@@ -78,6 +78,8 @@ enum kw_token_t {
+ 	KW_MARK_OUT,
+ 	KW_TFC,
+ 	KW_CLEAR_DF,
++	KW_MIN_SPI,
++	KW_MAX_SPI,
+ 	KW_PFS_DEPRECATED,
+ 	KW_CONN_DEPRECATED,
+ 
+@@ -188,7 +190,6 @@ enum kw_token_t {
+ 	/* general section keywords */
+ 	KW_ALSO,
+ 	KW_AUTO,
+-
+ };
+ 
+ struct kw_entry_t {
+diff --git a/src/starter/keywords.txt b/src/starter/keywords.txt
+index c0005ba..2eadae0 100644
+--- a/src/starter/keywords.txt
++++ b/src/starter/keywords.txt
+@@ -167,3 +167,5 @@ eap,               KW_CONN_DEPRECATED
+ leftnexthop,       KW_LEFT_DEPRECATED
+ rightnexthop,      KW_RIGHT_DEPRECATED
+ cleardf,           KW_CLEAR_DF
++min_spi,           KW_MIN_SPI
++max_spi,           KW_MAX_SPI
+diff --git a/src/starter/starterstroke.c b/src/starter/starterstroke.c
+index 80e0620..c8ad0dc 100644
+--- a/src/starter/starterstroke.c
++++ b/src/starter/starterstroke.c
+@@ -243,6 +243,8 @@ int starter_stroke_add_conn(starter_config_t *cfg, starter_conn_t *conn)
+ 	msg->add_conn.mark_out.mask = conn->mark_out.mask;
+ 	msg->add_conn.tfc = conn->tfc;
+ 	msg->add_conn.clear_df = conn->clear_df ? 1 : 0;
++	msg->add_conn.min_spi = conn->min_spi ? conn->min_spi : 0xc0000000;
++	msg->add_conn.max_spi = conn->max_spi ? conn->max_spi : 0xcfffffff;
+ 
+ 	add_end(&msg, offsetof(stroke_msg_t, add_conn.me), &conn->left);
+ 	add_end(&msg, offsetof(stroke_msg_t, add_conn.other), &conn->right);
+diff --git a/src/stroke/stroke_msg.h b/src/stroke/stroke_msg.h
+index f5aa63b..0d49132 100644
+--- a/src/stroke/stroke_msg.h
++++ b/src/stroke/stroke_msg.h
+@@ -305,6 +305,8 @@ struct stroke_msg_t {
+ 			uint32_t replay_window;
+ 			bool sha256_96;
+ 			int clear_df;
++			u_int32_t min_spi;
++			u_int32_t max_spi;
+ 		} add_conn;
+ 
+ 		/* data for STR_ADD_CA */
+-- 
+2.35.6
+

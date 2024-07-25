@@ -1,0 +1,9 @@
+diff -urp suricata-2.0.9.orig/doc/Makefile.am suricata-2.0.9/doc/Makefile.am
+--- suricata-2.0.9.orig/doc/Makefile.am	2015-09-25 10:18:33.000000000 -0400
++++ suricata-2.0.9/doc/Makefile.am	2015-10-03 08:51:13.555518308 -0400
+@@ -32,4 +32,4 @@ Windows.txt
+ 
+ datarootdir=@datarootdir@
+ docdir = ${datarootdir}/doc/${PACKAGE}
+-dist_doc_DATA = ${EXTRA_DIST}
++dist_doc_DATA = 

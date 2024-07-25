@@ -1,0 +1,23 @@
+From 23a122eddaa28165a6c219000adcc31ff9a8a698 Mon Sep 17 00:00:00 2001
+From: "zhang.jiujiu" <282627424@qq.com>
+Date: Tue, 7 Dec 2021 22:37:02 +0800
+Subject: [PATCH] fix memory leaks
+
+---
+ src/yajl_tree.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/yajl_tree.c b/src/yajl_tree.c
+index b9e66043..0e7bde98 100644
+--- a/src/yajl_tree.c
++++ b/src/yajl_tree.c
+@@ -456,6 +456,9 @@ yajl_val yajl_tree_parse (const char *input,
+              yajl_tree_free(v);
+         }
+         yajl_free (handle);
++	//If the requested memory is not released in time, it will cause memory leakage
++	if(ctx.root)
++	     yajl_tree_free(ctx.root);
+         return NULL;
+     }
+ 

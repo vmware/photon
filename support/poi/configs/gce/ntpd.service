@@ -1,0 +1,12 @@
+[Unit]
+Description=Network Time Service
+After=network.target nss-lookup.target
+
+[Service]
+Type=forking
+PrivateTmp=true
+ExecStart=/usr/bin/ntpd -g -u ntp:ntp
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

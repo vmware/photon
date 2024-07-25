@@ -1,0 +1,2 @@
+g rabbitmq -
+u rabbitmq - "RabbitMQ messaging server" /var/lib/rabbitmq /sbin/nologin

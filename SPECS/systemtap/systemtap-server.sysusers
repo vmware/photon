@@ -1,0 +1,2 @@
+g stap-server 155
+u stap-server 155 "Systemtap Compile Server" /var/lib/stap-server /sbin/nologin

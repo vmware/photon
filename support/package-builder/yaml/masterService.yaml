@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: master-service
+spec:
+  selector:
+    app: master
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

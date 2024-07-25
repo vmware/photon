@@ -1,0 +1,26 @@
+From 6cef8c70317df332cc56bc8dfac11b981b5452ab Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Thu, 7 Jan 2021 17:29:28 +0000
+Subject: [PATCH] upstream-pi4-overlay: enable fb
+
+on rpi4, HDMI not working if fb is disabled.
+---
+ arch/arm/boot/dts/overlays/upstream-pi4-overlay.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/overlays/upstream-pi4-overlay.dts b/arch/arm/boot/dts/overlays/upstream-pi4-overlay.dts
+index e0f7cc8..e55a6ea 100644
+--- a/arch/arm/boot/dts/overlays/upstream-pi4-overlay.dts
++++ b/arch/arm/boot/dts/overlays/upstream-pi4-overlay.dts
+@@ -88,7 +88,7 @@
+ 	fragment@13 {
+ 		target = <&fb>;
+ 		__overlay__ {
+-			status = "disabled";
++			status = "okay";
+ 		};
+ 	};
+ 	fragment@14 {
+-- 
+2.19.0
+

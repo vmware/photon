@@ -1,0 +1,63 @@
+#!/usr/sbin/nft -f
+
+# Default photon ruleset.
+
+table inet firewall {
+
+    chain inbound {
+
+      # By default, drop all traffic unless it meets
+      # a filter criteria specified by the following rules.
+        type filter hook input priority 0; policy drop;
+
+        # --- GENERAL TRAFFIC --------------------------------------------------
+
+        # Allow traffic from established and related packets.
+        ct state established,related accept
+
+        # Drop invalid packets.
+        ct state invalid drop
+
+        # Allow loopback traffic.
+        iifname lo accept
+
+        # Allow all ICMP and IGMP traffic, but enforce a rate limit
+        # to help prevent some types of flood attacks.
+        ip protocol icmp limit rate 4/second accept
+        ip6 nexthdr ipv6-icmp limit rate 4/second accept
+        ip protocol igmp limit rate 4/second accept
+
+        # --- SPECIFIC TRAFFIC -------------------------------------------------
+
+        # Allow SSH on port 22.
+        tcp dport 22 accept
+
+        # Allow HTTP(S).
+        # -- From anywhere
+        tcp dport { http, https } accept
+        udp dport { http, https } accept
+
+        # Logging
+        # log prefix "[nftables] Inbound Denied: " flags all counter drop
+
+    }
+
+    chain forward {
+
+        # Drop everything (if not a router)
+        type filter hook forward priority 0; policy drop;
+
+        # Uncomment to enable logging
+        # log prefix "[nftables] Forward Denied: " flags all counter drop
+
+    }
+
+    chain outbound {
+
+        # Allow all outbound traffic
+        type filter hook output priority 0; policy accept;
+
+    }
+
+}
+

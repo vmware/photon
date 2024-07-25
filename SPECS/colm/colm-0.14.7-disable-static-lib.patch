@@ -1,0 +1,17 @@
+From: Ferdinand Thiessen <rpm@fthiessen.de>
+Date: 2021-04-26T19:48:55+0000
+
+Link shared library as the static one is disabled in the openSUSE build.
+
+diff -Nur colm-0.14.7/src/main.cc new/src/main.cc
+--- colm-0.14.7/src/main.cc	2020-12-24 00:37:24.000000000 +0100
++++ new/src/main.cc	2021-04-26 17:51:25.913611725 +0200
+@@ -485,7 +485,7 @@
+ 				" -I%s/../aapl"
+ 				" -I%s/include"
+ 				" -L%s"
+-				" %s/libcolm.a",
++				" %s/libcolm.so",
+ 				binaryFn, intermedFn, srcLocation,
+ 				srcLocation, location, location );
+ 	}

@@ -1,0 +1,67 @@
+From c4c733988fd2012cf517c021bb31ec13097b2d48 Mon Sep 17 00:00:00 2001
+From: "Bernhard M. Wiedemann" <bwiedemann@suse.de>
+Date: Fri, 16 Mar 2018 11:44:01 +0100
+Subject: [PATCH] Fix Time::Local tests
+
+in 2020, year 70 changes its meaning to 2070
+so we do what man Time::Local recommends and use 4-digit years
+---
+ cpan/Time-Local/t/Local.t | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/cpan/Time-Local/t/Local.t b/cpan/Time-Local/t/Local.t
+index 634139695f..e28c6d2129 100644
+--- a/cpan/Time-Local/t/Local.t
++++ b/cpan/Time-Local/t/Local.t
+@@ -96,7 +96,7 @@ SKIP: {
+ 
+         # Test timelocal()
+         {
+-            my $year_in = $year < 70 ? $year + 1900 : $year;
++            my $year_in = $year + 1900;
+             my $time = timelocal( $sec, $min, $hour, $mday, $mon, $year_in );
+ 
+             my ( $s, $m, $h, $D, $M, $Y ) = localtime($time);
+@@ -111,7 +111,7 @@ SKIP: {
+ 
+         # Test timegm()
+         {
+-            my $year_in = $year < 70 ? $year + 1900 : $year;
++            my $year_in = $year + 1900;
+             my $time = timegm( $sec, $min, $hour, $mday, $mon, $year_in );
+ 
+             my ( $s, $m, $h, $D, $M, $Y ) = gmtime($time);
+@@ -128,7 +128,6 @@ SKIP: {
+ 
+ for (@bad_time) {
+     my ( $year, $mon, $mday, $hour, $min, $sec ) = @$_;
+-    $year -= 1900;
+     $mon--;
+ 
+     eval { timegm( $sec, $min, $hour, $mday, $mon, $year ) };
+@@ -138,19 +137,19 @@ for (@bad_time) {
+ 
+ {
+     is(
+-        timelocal( 0, 0, 1, 1, 0, 90 ) - timelocal( 0, 0, 0, 1, 0, 90 ), 3600,
++        timelocal( 0, 0, 1, 1, 0, 1990 ) - timelocal( 0, 0, 0, 1, 0, 1990 ), 3600,
+         'one hour difference between two calls to timelocal'
+     );
+ 
+     is(
+-        timelocal( 1, 2, 3, 1, 0, 100 ) - timelocal( 1, 2, 3, 31, 11, 99 ),
++        timelocal( 1, 2, 3, 1, 0, 2000 ) - timelocal( 1, 2, 3, 31, 11, 1999 ),
+         24 * 3600,
+         'one day difference between two calls to timelocal'
+     );
+ 
+     # Diff beween Jan 1, 1980 and Mar 1, 1980 = (31 + 29 = 60 days)
+     is(
+-        timegm( 0, 0, 0, 1, 2, 80 ) - timegm( 0, 0, 0, 1, 0, 80 ),
++        timegm( 0, 0, 0, 1, 2, 1980 ) - timegm( 0, 0, 0, 1, 0, 1980 ),
+         60 * 24 * 3600,
+         '60 day difference between two calls to timegm'
+     );
+-- 
+2.13.6
+

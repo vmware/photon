@@ -1,0 +1,7 @@
+# k8s base container
+
+FROM scratch
+
+ADD photon-rootfs-5.0.tar.gz /
+
+CMD ["/bin/sh"]

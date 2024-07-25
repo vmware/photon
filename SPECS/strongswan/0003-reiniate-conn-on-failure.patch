@@ -1,0 +1,133 @@
+From 65a06e178e823a57c8772fcdfde955c68e8a89fd Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 6 Jul 2022 15:39:51 +0530
+Subject: [PATCH 3/4] reiniate conn on failure
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ src/starter/starter.c       | 29 ++++++++++++++++++++++++++++-
+ src/starter/starterstroke.c | 24 ++++++++++++++++++++++--
+ src/starter/starterstroke.h |  1 +
+ 3 files changed, 51 insertions(+), 3 deletions(-)
+
+diff --git a/src/starter/starter.c b/src/starter/starter.c
+index ade88bb..28524ba 100644
+--- a/src/starter/starter.c
++++ b/src/starter/starter.c
+@@ -358,6 +358,7 @@ int main (int argc, char **argv)
+ 	bool attach_gdb = FALSE;
+ 	bool load_warning = FALSE;
+ 	bool conftest = FALSE;
++	bool is_hcx_enabled = false;
+ 
+ 	library_init(NULL, "starter");
+ 	atexit(library_deinit);
+@@ -839,7 +840,33 @@ int main (int argc, char **argv)
+ 				}
+ 			}
+ 		}
+-
++		/*
++		 * Check connections if there is nothing better to do
++		 */
++		is_hcx_enabled = lib->settings->get_bool(lib->settings,
++					"charon.is_hcx_enabled", FALSE);
++		if (is_hcx_enabled && !_action_)
++		{
++			ts.tv_sec = 10;
++			ts.tv_nsec = 0;
++			if (pselect(0, NULL, NULL, NULL, &ts, &action.sa_mask) == 0)
++			{
++				for (conn = cfg->conn_first; conn; conn = conn->next)
++				{
++					if (conn->startup == STARTUP_START)
++					{
++						if (starter_charon_pid())
++						{
++							if (starter_stroke_check_conn(conn) == 1)
++							{
++								starter_stroke_initiate_conn(conn);
++							}
++						}
++					}
++				}
++				continue;
++			}
++		}
+ 		/*
+ 		 * If auto_update activated, when to stop select
+ 		 */
+diff --git a/src/starter/starterstroke.c b/src/starter/starterstroke.c
+index 147a32e..80e0620 100644
+--- a/src/starter/starterstroke.c
++++ b/src/starter/starterstroke.c
+@@ -78,6 +78,8 @@ static int send_stroke_msg(stroke_msg_t *msg)
+ 	stream_t *stream;
+ 	char *uri, buffer[64];
+ 	int count;
++	int result = 0;
++	bool is_hcx_enabled = false;
+ 
+ 	if (msg->length == UINT16_MAX)
+ 	{
+@@ -106,10 +108,19 @@ static int send_stroke_msg(stroke_msg_t *msg)
+ 		free(msg);
+ 		return -1;
+ 	}
++	is_hcx_enabled = lib->settings->get_bool(lib->settings,
++				"charon.is_hcx_enabled", FALSE);
+ 	while ((count = stream->read(stream, buffer, sizeof(buffer)-1, TRUE)) > 0)
+ 	{
+ 		buffer[count] = '\0';
+-		DBG1(DBG_APP, "%s", buffer);
++		if (is_hcx_enabled && msg->type == STR_STATUS)
++		{
++			result = strstr(buffer, "no match") ? 1 : 0;
++		}
++		else
++		{
++			DBG1(DBG_APP, "%s", buffer);
++		}
+ 	}
+ 	if (count < 0)
+ 	{
+@@ -117,7 +128,7 @@ static int send_stroke_msg(stroke_msg_t *msg)
+ 	}
+ 	stream->destroy(stream);
+ 	free(msg);
+-	return 0;
++	return result;
+ }
+ 
+ static char* connection_name(starter_conn_t *conn)
+@@ -317,6 +328,15 @@ int starter_stroke_initiate_conn(starter_conn_t *conn)
+ 	return send_stroke_msg(msg);
+ }
+ 
++int starter_stroke_check_conn(starter_conn_t *conn)
++{
++	stroke_msg_t *msg;
++
++	msg = create_stroke_msg(STR_STATUS);
++	push_string(&msg, initiate.name, connection_name(conn));
++	return send_stroke_msg(msg);
++}
++
+ int starter_stroke_add_ca(starter_ca_t *ca)
+ {
+ 	stroke_msg_t *msg;
+diff --git a/src/starter/starterstroke.h b/src/starter/starterstroke.h
+index 5450403..2d8fbd5 100644
+--- a/src/starter/starterstroke.h
++++ b/src/starter/starterstroke.h
+@@ -22,6 +22,7 @@ int starter_stroke_del_conn(starter_conn_t *conn);
+ int starter_stroke_route_conn(starter_conn_t *conn);
+ int starter_stroke_unroute_conn(starter_conn_t *conn);
+ int starter_stroke_initiate_conn(starter_conn_t *conn);
++int starter_stroke_check_conn(starter_conn_t *conn);
+ int starter_stroke_add_ca(starter_ca_t *ca);
+ int starter_stroke_del_ca(starter_ca_t *ca);
+ int starter_stroke_configure(starter_config_t *cfg);
+-- 
+2.35.6
+

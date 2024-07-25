@@ -1,0 +1,45 @@
+From 07d989c105522204dc1c1b5c90a1ffb2b81199eb Mon Sep 17 00:00:00 2001
+From: Susant Sahani <ssahani@vmware.com>
+Date: Mon, 30 May 2022 11:29:19 +0000
+Subject: [PATCH 1/2] enoX uses instance number for vmware hv
+
+---
+ src/udev/udev-builtin-net_id.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/src/udev/udev-builtin-net_id.c b/src/udev/udev-builtin-net_id.c
+index f2ea2a7cd5..a46880a566 100644
+--- a/src/udev/udev-builtin-net_id.c
++++ b/src/udev/udev-builtin-net_id.c
+@@ -193,6 +193,28 @@ static int dev_pci_onboard(sd_device *dev, const LinkInfo *info, NetNames *names
+         if (idx == 0 && !naming_scheme_has(NAMING_ZERO_ACPI_INDEX))
+                 return log_device_debug_errno(names->pcidev, SYNTHETIC_ERRNO(EINVAL),
+                                               "Naming scheme does not allow onboard index==0.");
++        if (idx >> 24) {
++                unsigned domain, bus, slot, func;
++                const char *device_sysname;
++                /*
++                 * VMware acpi_index format:
++                 * |31 instance 24|23     16|15     8|7    3|2    0|
++                 * |    number    | domain? |   bus  | slot | func |
++                 *
++                 * Let's use instance number to get enoX human readable
++                 */
++
++                r = sd_device_get_sysname(names->pcidev, &device_sysname);
++                if (r < 0)
++                        return r;
++
++                if (sscanf(device_sysname, "%x:%x:%x.%u", &domain, &bus, &slot, &func) != 4)
++                        return -ENOENT;
++
++                if ((idx & 0xffff) == ((bus << 8) | (slot << 3) | func))
++                        idx >>= 24;
++        }
++
+         if (!is_valid_onboard_index(idx))
+                 return log_device_debug_errno(names->pcidev, SYNTHETIC_ERRNO(ENOENT),
+                                               "Not a valid onboard index: %lu", idx);
+-- 
+2.30.3
+

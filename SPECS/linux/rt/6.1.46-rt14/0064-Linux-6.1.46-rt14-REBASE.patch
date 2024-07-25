@@ -1,0 +1,20 @@
+From 9a4151cf2de34976d549efe30094c39c597ea357 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clrkwllms@kernel.org>
+Date: Sun, 17 Sep 2023 15:48:57 -0500
+Subject: [PATCH 64/64] 'Linux 6.1.46-rt14 REBASE'
+
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 9f7d0bdbffb1..08b3e75841ad 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt13
++-rt14
+-- 
+2.41.0
+

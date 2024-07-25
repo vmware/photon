@@ -1,0 +1,11 @@
+--- a/Makefile	2020-11-24 19:00:32.735339436 +0530
++++ b/Makefile	2020-11-24 19:00:46.275743851 +0530
+@@ -103,7 +103,7 @@ do-test:
+ 	cd tests/fake-curl/libcurl && make
+ 	./tests/run.sh
+ 	./tests/ext/test-suite.sh
+-	$(PYFLAKES) python examples tests setup.py winbuild.py
++	$(PYFLAKES) python examples tests setup.py
+ 
+ test: build do-test
+ test-release: build-release do-test

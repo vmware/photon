@@ -1,0 +1,13 @@
+# Photon Base Build Container
+
+FROM photon:5.0
+
+COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
+
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y \
+        ebtables iptables iproute2 shadow socat --refresh
+
+ADD tmp/k8s/usr/bin/kube-proxy /usr/bin/kube-proxy
+RUN ln -s /usr/bin/kube-proxy /usr/local/bin/kube-proxy
+
+CMD ["/usr/bin/kube-proxy"]

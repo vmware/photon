@@ -1,0 +1,18 @@
+{
+    "installer": {
+        "hostname": "photon-machine",
+        "packagelist_file": "packages_ova.json",
+        "password": {
+            "age": 0,
+            "crypted": false,
+            "text": "changeme"
+        },
+        "public_key": "",
+        "linux_flavor": "linux-esx"
+    },
+    "image_type": "ova",
+    "size": 16384,
+    "artifacttype": "ova",
+    "ova_config": "photon.yaml",
+    "keeprawdisk": false
+}

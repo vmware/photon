@@ -1,0 +1,11 @@
+[Unit]
+Description=Synchronous Ethernet (SyncE) service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/synce4l -f /etc/synce4l.conf
+
+[Install]
+WantedBy=multi-user.target

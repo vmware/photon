@@ -1,0 +1,149 @@
+From a6e2786a03a31abac0131636d4e74bb4c6d3554a Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Fri, 10 Mar 2023 12:59:57 -0800
+Subject: [PATCH] update rpm keyring API calls 1/2 (AddKeyFileToKeyring())
+
+---
+ client/gpgcheck.c   | 93 +++++++++------------------------------------
+ client/prototypes.h |  7 ----
+ 2 files changed, 19 insertions(+), 81 deletions(-)
+
+diff --git a/client/gpgcheck.c b/client/gpgcheck.c
+index 094379b9..b8b3968d 100644
+--- a/client/gpgcheck.c
++++ b/client/gpgcheck.c
+@@ -103,12 +103,10 @@ AddKeyFileToKeyring(
+     )
+ {
+     uint32_t dwError = 0;
+-    uint8_t* pPkt = NULL;
+-    size_t nPktLen = 0;
+-    char* pszKeyData = NULL;
+-    int nKeyDataSize;
+-    int nKeys = 0;
+-    int nOffset = 0;
++
++    int subkeysCount, i;
++    rpmPubkey *subkeys = NULL;
++    rpmPubkey key = NULL;
+ 
+     if(IsNullOrEmptyString(pszFile) || !pKeyring)
+     {
+@@ -116,84 +114,31 @@ AddKeyFileToKeyring(
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+ 
+-    dwError = ReadGPGKeyFile(pszFile, &pszKeyData, &nKeyDataSize);
+-    BAIL_ON_TDNF_ERROR(dwError);
+-
+-    while (nOffset < nKeyDataSize)
+-    {
+-        pgpArmor nArmor = pgpParsePkts(pszKeyData + nOffset, &pPkt, &nPktLen);
+-        if(nArmor == PGPARMOR_PUBKEY)
+-        {
+-            dwError = AddKeyPktToKeyring(pKeyring, pPkt, nPktLen);
+-            BAIL_ON_TDNF_ERROR(dwError);
+-            nKeys++;
+-        }
+-        nOffset += nPktLen;
+-    }
+-    if (nKeys == 0) {
++    key = rpmPubkeyRead(pszFile);
++    if (key == NULL) {
++        pr_err("reading %s failed: %s (%d)", pszFile, strerror(errno), errno);
+         dwError = ERROR_TDNF_INVALID_PUBKEY_FILE;
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+-
+-cleanup:
+-    TDNF_SAFE_FREE_MEMORY(pszKeyData);
+-    return dwError;
+-error:
+-    goto cleanup;
+-}
+-
+-uint32_t
+-AddKeyPktToKeyring(
+-    rpmKeyring pKeyring,
+-    uint8_t* pPkt,
+-    size_t nPktLen
+-    )
+-{
+-    uint32_t dwError = 0;
+-    pgpDig pDig = NULL;
+-    rpmPubkey pPubkey = NULL;
+-
+-    if(!pKeyring || !pPkt || nPktLen == 0)
+-    {
+-        dwError = ERROR_TDNF_INVALID_PARAMETER;
+-        BAIL_ON_TDNF_ERROR(dwError);
+-    }
+-
+-    pPubkey = rpmPubkeyNew (pPkt, nPktLen);
+-    if(!pPubkey)
+-    {
+-        dwError = ERROR_TDNF_CREATE_PUBKEY_FAILED;
+-        BAIL_ON_TDNF_ERROR(dwError);
++    if (rpmKeyringAddKey(pKeyring, key) == 0) {
++        pr_info("added key %s to keyring");
+     }
++    subkeys = rpmGetSubkeys(key, &subkeysCount);
++    rpmPubkeyFree(key);
++    for (i = 0; i < subkeysCount; i++) {
++        rpmPubkey subkey = subkeys[i];
+ 
+-    pDig = rpmPubkeyDig(pPubkey);
+-    if(!pDig)
+-    {
+-        dwError = ERROR_TDNF_CREATE_PUBKEY_FAILED;
+-        BAIL_ON_TDNF_ERROR(dwError);
+-    }
+-
+-    dwError = rpmKeyringLookup(pKeyring, pDig);
+-    if(dwError == RPMRC_OK)
+-    {
+-        dwError = 0;//key exists
+-    }
+-    else
+-    {
+-        dwError = rpmKeyringAddKey(pKeyring, pPubkey);
+-        if(dwError == 1)
+-        {
+-            dwError = 0;//Already added. ignore
++        if (rpmKeyringAddKey(pKeyring, subkey) == 0) {
++            pr_info("added subkey %d of main key %s to keyring\n", i, pszFile);
+         }
+-        BAIL_ON_TDNF_ERROR(dwError);
++        rpmPubkeyFree(subkey);
+     }
++
+ cleanup:
++    if (subkeys)
++        free(subkeys);
+     return dwError;
+ error:
+-    if(pPubkey)
+-    {
+-        rpmPubkeyFree(pPubkey);
+-    }
+     goto cleanup;
+ }
+ 
+diff --git a/client/prototypes.h b/client/prototypes.h
+index 2c6a2b20..42244993 100644
+--- a/client/prototypes.h
++++ b/client/prototypes.h
+@@ -49,13 +49,6 @@ AddKeyFileToKeyring(
+     rpmKeyring pKeyring
+     );
+ 
+-uint32_t
+-AddKeyPktToKeyring(
+-    rpmKeyring pKeyring,
+-    uint8_t* pPkt,
+-    size_t nPktLen
+-    );
+-
+ uint32_t
+ VerifyRpmSig(
+     rpmKeyring pKeyring,

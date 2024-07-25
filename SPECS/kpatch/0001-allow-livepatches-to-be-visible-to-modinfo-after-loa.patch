@@ -1,0 +1,136 @@
+From ca27f78e8186fbcce8872a73a70bee64e57ea6da Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <blamoreaux@vmware.com>
+Date: Thu, 15 Dec 2022 21:33:31 +0000
+Subject: [PATCH] Allow livepatches to be visible to modinfo after loading
+
+There is a problem with kpatch where livepatch modules, once loaded, can be seen with lsmod, but not modinfo.
+This is because kpatch by default installs livepatches into /ver/lib/kpatch/<kernel-version>.
+This is fine for the purpose of loading livepatches, but it leaves the loaded
+and installed patches invisible to modinfo, which looks in /lib/modules/<kernel-version>.
+
+This patch changes the install directory of kpatch to /lib/modules/<kernel-version>/livepatches,
+and refreshes the kernel's module information with depmod to allow modinfo to see and print
+information about loaded/installed livepatch modules.
+---
+ kpatch/kpatch | 36 +++++++++++++++++++++++-------------
+ 1 file changed, 23 insertions(+), 13 deletions(-)
+
+diff --git a/kpatch/kpatch b/kpatch/kpatch
+index 2a00b07..3184b5a 100755
+--- a/kpatch/kpatch
++++ b/kpatch/kpatch
+@@ -23,7 +23,8 @@
+ # This is the kpatch user script that manages installing, loading, and
+ # displaying information about kernel patch modules installed on the system.
+ 
+-INSTALLDIR=/var/lib/kpatch
++KVER="$(uname -r)"
++INSTALLDIR="/lib/modules/$KVER/livepatches"
+ SCRIPTDIR="$(readlink -f "$(dirname "$(type -p "$0")")")"
+ VERSION="0.9.8"
+ POST_ENABLE_WAIT=15	# seconds
+@@ -76,7 +77,7 @@ __find_module () {
+ 	MODULE="$1"
+ 	[[ -f "$MODULE" ]] && return
+ 
+-	MODULE="$INSTALLDIR/$(uname -r)/$1"
++	MODULE="$INSTALLDIR/$1"
+ 	[[ -f "$MODULE" ]] && return
+ 
+ 	return 1
+@@ -95,7 +96,7 @@ find_module () {
+ 		mod_name "$MODULE"
+ 		return
+ 	else
+-		for i in "$INSTALLDIR/$(uname -r)"/*; do
++		for i in "$INSTALLDIR"/*; do
+ 			mod_name "$i"
+ 			if [[ "$MODNAME" == "$arg" ]]; then
+ 				MODULE="$i"
+@@ -460,7 +461,7 @@ case "$1" in
+ 	[[ "$#" -ne 2 ]] && usage
+ 	case "$2" in
+ 	"--all")
+-		for i in "$INSTALLDIR/$(uname -r)"/*.ko; do
++		for i in "$INSTALLDIR"/*.ko; do
+ 			[[ -e "$i" ]] || continue
+ 			load_module "$i" || die "failed to load module $i"
+ 		done
+@@ -468,9 +469,18 @@ case "$1" in
+ 	*)
+ 		PATCH="$2"
+ 		find_module "$PATCH" || die "can't find $PATCH"
++
+ 		load_module "$MODULE" || die "failed to load module $PATCH"
++
++		# move livepatch to correct directory so that modinfo will be able to find it
++		mkdir -p "$INSTALLDIR" || die "failed to create install directory"
++		cp -f -p "$PATCH" "$INSTALLDIR" || die "failed to install module $PATCH"
+ 		;;
++
+ 	esac
++
++	# refresh so that modinfo can find the newly loaded livepatch(es)
++	depmod -a
+ 	;;
+ 
+ "unload")
+@@ -518,7 +528,6 @@ case "$1" in
+ 	;;
+ 
+ "install")
+-	KVER="$(uname -r)"
+ 	shift
+ 	options="$(getopt -o k: -l "kernel-version:" -- "$@")" || die "getopt failed"
+ 	eval set -- "$options"
+@@ -542,16 +551,18 @@ case "$1" in
+ 	get_module_version "$PATCH" || die "modinfo failed"
+ 	[[ "$KVER" != "$MODVER" ]] && die "invalid module version $MODVER for kernel $KVER"
+ 
+-	[[ -e "$INSTALLDIR/$KVER/$(basename "$PATCH")" ]] && die "$PATCH is already installed"
++	[[ -e "$INSTALLDIR/$(basename "$PATCH")" ]] && exit 0
+ 
+ 	echo "installing $PATCH ($KVER)"
+-	mkdir -p "$INSTALLDIR/$KVER" || die "failed to create install directory"
+-	cp -f "$PATCH" "$INSTALLDIR/$KVER" || die "failed to install module $PATCH"
++	mkdir -p "$INSTALLDIR" || die "failed to create install directory"
++	cp -f -p "$PATCH" "$INSTALLDIR" || die "failed to install module $PATCH"
++
++    depmod -a
++
+ 	command -v systemctl > /dev/null 2>&1 && systemctl enable kpatch.service
+ 	;;
+ 
+ "uninstall")
+-	KVER="$(uname -r)"
+ 	shift
+ 	options="$(getopt -o k: -l "kernel-version:" -- "$@")" || die "getopt failed"
+ 	eval set -- "$options"
+@@ -570,11 +581,11 @@ case "$1" in
+ 		shift
+ 	done
+ 
+-	MODULE="$INSTALLDIR/$KVER/$PATCH"
++	MODULE="$INSTALLDIR/$PATCH"
+ 	if [[ ! -f "$MODULE" ]]; then
+ 		mod_name "$PATCH"
+ 		PATCHNAME="$MODNAME"
+-		for i in "$INSTALLDIR/$KVER"/*; do
++		for i in "$INSTALLDIR"/*; do
+ 			mod_name "$i"
+ 			if [[ "$MODNAME" == "$PATCHNAME" ]]; then
+ 				MODULE="$i"
+@@ -587,9 +598,8 @@ case "$1" in
+ 
+ 	echo "uninstalling $PATCH ($KVER)"
+ 	rm -f "$MODULE" || die "failed to uninstall module $PATCH"
+-	rmdir --ignore-fail-on-non-empty "$INSTALLDIR/$KVER" || die "failed to remove directory $INSTALLDIR/$KVER"
+ 	rmdir --ignore-fail-on-non-empty "$INSTALLDIR" || die "failed to remove directory $INSTALLDIR"
+-
++	depmod -a
+ 	;;
+ 
+ "list")
+-- 
+2.35.5
+

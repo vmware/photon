@@ -1,0 +1,9 @@
+# Photon Base Build Container
+
+FROM scratch
+
+ADD tcroot.tar.gz /
+ADD wait.sh /
+ADD adjust-gcc-specs.sh /
+
+CMD ["/usr/bin/bash", "--login"]

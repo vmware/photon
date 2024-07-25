@@ -1,0 +1,59 @@
+diff -Naur ktap-master.old/runtime/kp_obj.c ktap-master/runtime/kp_obj.c
+--- ktap-master.old/runtime/kp_obj.c	2015-12-03 15:26:28.000000000 -0800
++++ ktap-master/runtime/kp_obj.c	2016-04-22 20:03:46.509227970 -0700
+@@ -44,7 +44,7 @@
+ 
+ /* memory allocation flag */
+ #define KTAP_ALLOC_FLAGS ((GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN) \
+-			 & ~__GFP_WAIT)
++			 & ~__GFP_RECLAIM)
+ 
+ /*
+  * TODO: It's not safe to call into facilities in the kernel at-large,
+--- ktap-master.old/runtime/kp_events.c	2015-12-03 15:26:28.000000000 -0800
++++ ktap-master/runtime/kp_events.c	2016-12-15 13:06:37.497077460 -0800
+@@ -66,7 +66,7 @@
+ 	iter = kp_this_cpu_temp_buffer(ks);
+ 
+ 	trace_seq_init(&iter->seq);
+-	iter->ent = e->data->raw->data;
++	iter->ent = e->data->raw->frag.data;
+ 
+ 	ev = &(call->event);
+ 	if (ev)
+@@ -131,21 +131,21 @@
+ 
+ 	switch (event_fields->type)  {
+ 	case KTAP_EVENT_FIELD_TYPE_INT: {
+-		struct trace_entry *entry = e->data->raw->data;
++		struct trace_entry *entry = e->data->raw->frag.data;
+ 		void *value = (unsigned char *)entry + event_fields->offset;
+ 		int n = *(int *)value;
+ 		set_number(ra, n);
+ 		return;
+ 		}
+ 	case KTAP_EVENT_FIELD_TYPE_LONG: {
+-		struct trace_entry *entry = e->data->raw->data;
++		struct trace_entry *entry = e->data->raw->frag.data;
+ 		void *value = (unsigned char *)entry + event_fields->offset;
+ 		long n = *(long *)value;
+ 		set_number(ra, n);
+ 		return;
+ 		}
+ 	case KTAP_EVENT_FIELD_TYPE_STRING: {
+-		struct trace_entry *entry = e->data->raw->data;
++		struct trace_entry *entry = e->data->raw->frag.data;
+ 		ktap_str_t *ts;
+ 		void *value = (unsigned char *)entry + event_fields->offset;
+ 		ts = kp_str_newz(ks, (char *)value);
+--- ktap-master.old/runtime/kp_transport.c	2015-12-03 15:26:28.000000000 -0800
++++ ktap-master/runtime/kp_transport.c	2016-12-15 13:07:32.557078354 -0800
+@@ -516,7 +516,7 @@
+ {
+ 	struct ring_buffer *buffer = G(ks)->buffer;
+ 	struct ring_buffer_event *event;
+-	struct trace_entry *ev_entry = e->data->raw->data;
++	struct trace_entry *ev_entry = e->data->raw->frag.data;
+ 	struct trace_entry *entry;
+ 	int entry_size = e->data->raw->size;
+ 

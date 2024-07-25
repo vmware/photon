@@ -1,0 +1,2 @@
+g photon-mgmt -
+u photon-mgmt - "Photon mgmt" /home/photon-mgmt /sbin/nologin

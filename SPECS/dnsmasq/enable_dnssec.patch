@@ -1,0 +1,19 @@
+commit aae30906fcbaf850373bbf13d9b190a6373f5d6b
+Author: ashwin-h <ashwinh@vmware.com>
+Date:   Tue Aug 25 02:33:55 2020 +0530
+
+    [dnsmasq] Enable dnssec
+
+diff --git a/Makefile b/Makefile
+index 98ec760..d34e9c8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -26,7 +26,7 @@ BUILDDIR      = $(SRC)
+ DESTDIR       = 
+ CFLAGS        = -Wall -W -O2
+ LDFLAGS       = 
+-COPTS         = 
++COPTS         = -DHAVE_DNSSEC  
+ RPM_OPT_FLAGS = 
+ LIBS          = 
+ 

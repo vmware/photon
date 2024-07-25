@@ -1,0 +1,2 @@
+g polkitd 114
+u polkitd 114 "PolicyKit Daemon Owner" /etc/polkit-1 /bin/false

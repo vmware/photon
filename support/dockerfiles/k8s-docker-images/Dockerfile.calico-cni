@@ -1,0 +1,18 @@
+FROM k8s-base-image:5.0
+
+COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf erase -y toybox
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y coreutils sed --refresh
+
+COPY [ "./tmp/calico/opt/cni/bin/calico", \
+       "./tmp/calico/opt/cni/bin/calico-ipam", \
+       "./tmp/calico/opt/cni/bin/install", \
+       "./tmp/calico/opt/cni/bin/portmap", \
+       "./tmp/calico/opt/cni/bin/host-local", \
+       "./tmp/calico/opt/cni/bin/loopback", \
+       "/opt/cni/bin/" ]
+
+ENV PATH=$PATH:/opt/cni/bin
+VOLUME /opt/cni
+WORKDIR /opt/cni/bin
+CMD ["/opt/cni/bin/install"]

@@ -1,0 +1,93 @@
+From b72f5188856df0abf45e1a707856bb4e4e86153c Mon Sep 17 00:00:00 2001
+From: Alan Maguire <alan.maguire@oracle.com>
+Date: Fri, 21 Oct 2022 16:02:03 +0100
+Subject: [PATCH] dwarves: Zero-initialize struct cu in cu__new() to prevent
+ incorrect BTF types
+
+BTF deduplication was throwing some strange results, where core kernel
+data types were failing to deduplicate due to the return values
+of function type members being void (0) instead of the actual type
+(unsigned int).  An example of this can be seen below, where
+"struct dst_ops" was failing to deduplicate between kernel and
+module:
+
+struct dst_ops {
+        short unsigned int family;
+        unsigned int gc_thresh;
+        int (*gc)(struct dst_ops *);
+        struct dst_entry * (*check)(struct dst_entry *, __u32);
+        unsigned int (*default_advmss)(const struct dst_entry *);
+        unsigned int (*mtu)(const struct dst_entry *);
+...
+
+struct dst_ops___2 {
+        short unsigned int family;
+        unsigned int gc_thresh;
+        int (*gc)(struct dst_ops___2 *);
+        struct dst_entry___2 * (*check)(struct dst_entry___2 *, __u32);
+        void (*default_advmss)(const struct dst_entry___2 *);
+        void (*mtu)(const struct dst_entry___2 *);
+...
+
+This was seen with
+
+bcc648a10cbc ("btf_encoder: Encode DW_TAG_unspecified_type returning routines as void")
+
+...which rewrites the return value as 0 (void) when it is marked
+as matching DW_TAG_unspecified_type:
+
+static int32_t btf_encoder__tag_type(struct btf_encoder *encoder, uint32_t type_id_off, uint32_t tag_type)
+{
+       if (tag_type == 0)
+               return 0;
+
+       if (encoder->cu->unspecified_type.tag && tag_type == encoder->cu->unspecified_type.type) {
+               // No provision for encoding this, turn it into void.
+               return 0;
+       }
+
+       return type_id_off + tag_type;
+}
+
+However the odd thing was that on further examination, the unspecified type
+was not being set, so why was this logic being tripped?  Futher debugging
+showed that the encoder->cu->unspecified_type.tag value was garbage, and
+the type id happened to collide with "unsigned int"; as a result we
+were replacing unsigned ints with void return values, and since this
+was being done to function type members in structs, it triggered a
+type mismatch which failed deduplication between kernel and module.
+
+The fix is simply to calloc() the cu in cu__new() instead.
+
+Committer notes:
+
+We have zalloc(size) as an alias to calloc(1, size), use it instead.
+
+Fixes: bcc648a10cbcd0b9 ("btf_encoder: Encode DW_TAG_unspecified_type returning routines as void")
+Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Cc: bpf@vger.kernel.org
+Cc: dwarves@vger.kernel.org
+Link: https://lore.kernel.org/r/1666364523-9648-1-git-send-email-alan.maguire@oracle.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ dwarves.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/dwarves.c b/dwarves.c
+index fbebc1d..95a3bac 100644
+--- a/dwarves.c
++++ b/dwarves.c
+@@ -626,7 +626,7 @@ struct cu *cu__new(const char *name, uint8_t addr_size,
+ 		   const unsigned char *build_id, int build_id_len,
+ 		   const char *filename, bool use_obstack)
+ {
+-	struct cu *cu = malloc(sizeof(*cu) + build_id_len);
++	struct cu *cu = zalloc(sizeof(*cu) + build_id_len);
+ 
+ 	if (cu != NULL) {
+ 		uint32_t void_id;
+-- 
+2.34.1
+

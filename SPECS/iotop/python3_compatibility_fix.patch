@@ -1,0 +1,26 @@
+From 98a5985e52e7041eb96c80dd95fd5c70634f5ee7 Mon Sep 17 00:00:00 2001
+From: Justin Lecher <jlec@gentoo.org>
+Date: Tue, 18 Jun 2013 08:19:28 +0200
+Subject: [PATCH] Make setp.py compatible with python3
+
+Dictionaries in python 3 do not contain the itervalues() method anymore.
+The values() method should be used and can also safely applied for
+python 2.
+
+Signed-off-by: Justin Lecher <jlec@gentoo.org>
+---
+ setup.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/setup.py b/setup.py
+index 7150102..9de6068 100755
+--- a/setup.py
++++ b/setup.py
+@@ -7,7 +7,7 @@
+ # Dirty hack to make setup.py install the iotop script to sbin/ instead of bin/
+ # while still honoring the choice of installing into local/ or not.
+ if hasattr(distutils_install, 'INSTALL_SCHEMES'):
+-    for d in distutils_install.INSTALL_SCHEMES.itervalues():
++    for d in distutils_install.INSTALL_SCHEMES.values():
+         if d.get('scripts', '').endswith('/bin'):
+             d['scripts'] = d['scripts'][:-len('/bin')] + '/sbin'

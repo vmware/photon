@@ -1,0 +1,4 @@
+FROM k8s-base-image:5.0
+
+ADD tmp/k8dns/usr/bin/kube-dns /kube-dns
+ENTRYPOINT ["/kube-dns"]

@@ -1,0 +1,57 @@
+From d38847beb90d5ed549ded55386e916a0cb03df62 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 1 Jul 2022 07:47:39 +0000
+Subject: [PATCH 1/4] HCX: custom remote natt port
+
+Adds a new conf variable remote_port_nat_t.
+Remote natt port is set to its default value "IKEV2_NATT_PORT"
+if remote_port_nat_t is not configured
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ src/charon-cmd/cmd/cmd_connection.c |  8 +++++++-
+ src/libcharon/sa/ike_sa.c           | 10 +++++++++-
+ 2 files changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/src/charon-cmd/cmd/cmd_connection.c b/src/charon-cmd/cmd/cmd_connection.c
+index 37d9519..e22fcc4 100644
+--- a/src/charon-cmd/cmd/cmd_connection.c
++++ b/src/charon-cmd/cmd/cmd_connection.c
+@@ -184,7 +184,13 @@ static peer_cfg_t* create_peer_cfg(private_cmd_connection_t *this)
+ 	ike.local_port = charon->socket->get_port(charon->socket, FALSE);
+ 	if (ike.local_port != IKEV2_UDP_PORT)
+ 	{
+-		ike.remote_port = IKEV2_NATT_PORT;
++		bool is_hcx_enabled = lib->settings->get_bool(lib->settings,
++						"%s.hcx_enabled", FALSE, lib->ns);
++		if (is_hcx_enabled)
++			ike.remote_port = lib->settings->get_int(lib->settings,
++						"%s.remote_port_nat_t", IKEV2_NATT_PORT, lib->ns);
++		else
++			ike.remote_port = IKEV2_NATT_PORT;
+ 	}
+ 	ike_cfg = ike_cfg_create(&ike);
+ 	if (this->ike_proposals->get_count(this->ike_proposals))
+diff --git a/src/libcharon/sa/ike_sa.c b/src/libcharon/sa/ike_sa.c
+index b7db069..251343a 100644
+--- a/src/libcharon/sa/ike_sa.c
++++ b/src/libcharon/sa/ike_sa.c
+@@ -1127,7 +1127,15 @@ METHOD(ike_sa_t, float_ports, void,
+ 	if (this->other_host->get_port(this->other_host) == IKEV2_UDP_PORT ||
+ 		this->my_host->get_port(this->my_host) == IKEV2_UDP_PORT)
+ 	{
+-		this->other_host->set_port(this->other_host, IKEV2_NATT_PORT);
++		bool is_hcx_enabled = lib->settings->get_bool(lib->settings,
++						"%s.is_hcx_enabled", FALSE, lib->ns);
++		u_int16_t natt = IKEV2_NATT_PORT;
++		if (is_hcx_enabled)
++		{
++			natt = lib->settings->get_int(lib->settings,
++						"%s.remote_port_nat_t", IKEV2_NATT_PORT, lib->ns);
++		}
++		this->other_host->set_port(this->other_host, natt);
+ 	}
+ 	if (this->my_host->get_port(this->my_host) ==
+ 			charon->socket->get_port(charon->socket, FALSE))
+-- 
+2.28.0

@@ -1,0 +1,50 @@
+From 790cf09610a5097f933a3eff2468f541dfd7a913 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20P=C3=ADsa=C5=99?= <ppisar@redhat.com>
+Date: Tue, 30 Apr 2019 17:02:18 +0200
+Subject: [PATCH] Use ExtUtils::PkgConfig to discover OpenSSL if available
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Makefile.PL used to link to zlib regardless OpenSSL libraries needed
+that or not. Just based on the presente of zlib on the system.
+
+If OpenSSL required zlib but it was not installed, Crypt-SSLeay tests
+failed because of underlinking. If OpenSSL did not require zlib, but
+it was installed, Crypt/SSLeay.so pulled in useless zlib because of
+overlinking. Overlinking polutes a process address space, enlarges an
+attack surface and slows down execution.
+
+This patch modifies Makefile.PL to optionally use ExtUtils::PkgConfig
+to discover OpenSSL and its compiler and linker flags.
+
+Signed-off-by: Petr Písař <ppisar@redhat.com>
+---
+ Makefile.PL | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/Makefile.PL b/Makefile.PL
+index 4f485a2..8df0e52 100644
+--- a/Makefile.PL
++++ b/Makefile.PL
+@@ -284,6 +284,17 @@ sub filter_libs {
+     my $opt = shift;
+     my $libs = shift;
+ 
++    if (eval { require ExtUtils::PkgConfig } &&
++            ExtUtils::PkgConfig->exists('openssl')) {
++        my @libs = map { s/^-l//; $_ }
++            split(' ', ExtUtils::PkgConfig->libs_only_l('openssl'));
++        $opt->{libpath} = ExtUtils::PkgConfig->libs_only_L('openssl') // '';
++        $opt->{libpath} =~ s/^-L//;
++        $opt->{incpath} = ExtUtils::PkgConfig->cflags_only_I('openssl') // '';
++        $opt->{incpath} =~ s/-I//;
++        return \@libs;
++    }
++
+     return $libs unless eval {
+         require Devel::CheckLib;
+         Devel::CheckLib->import;
+-- 
+2.20.1
+

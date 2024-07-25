@@ -1,0 +1,48 @@
+From b934169be7ff51e614e8e78b09a2313d64e32861 Mon Sep 17 00:00:00 2001
+From: Cyprien Laplace <claplace@vmware.com>
+Date: Fri, 29 Nov 2019 16:27:46 -0500
+Subject: [PATCH] vmw_vmci: arm64 support (memory ordering)
+
+Add virtualization specific barriers for queue pair (de)queueing,
+following the core-api/circular-buffers.rst example, that will
+map to actual memory barrier instructions on arm64.
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ include/linux/vmw_vmci_defs.h | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/vmw_vmci_defs.h b/include/linux/vmw_vmci_defs.h
+index 6fb663b36f72..3b41452113f1 100644
+--- a/include/linux/vmw_vmci_defs.h
++++ b/include/linux/vmw_vmci_defs.h
+@@ -805,7 +805,12 @@ static inline void *vmci_event_data_payload(struct vmci_event_data *ev_data)
+  */
+ static inline u64 vmci_q_read_pointer(u64 *var)
+ {
+-	return READ_ONCE(*(unsigned long *)var);
++	/*
++	 * The virt_load_acquire() barrier ensures that all memory
++	 * accesses after the load cannot be speculated and executed
++	 * before it.
++	 */
++	return virt_load_acquire((unsigned long *)var);
+ }
+ 
+ /*
+@@ -817,7 +822,11 @@ static inline u64 vmci_q_read_pointer(u64 *var)
+ static inline void vmci_q_set_pointer(u64 *var, u64 new_val)
+ {
+ 	/* XXX buggered on big-endian */
+-	WRITE_ONCE(*(unsigned long *)var, (unsigned long)new_val);
++	/*
++	 * The virt_store_release() ensures that all memory operations
++	 * done before the store will appear to happen before it.
++	 */
++	virt_store_release((unsigned long *)var, (unsigned long)new_val);
+ }
+ 
+ /*
+-- 
+2.25.1
+

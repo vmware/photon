@@ -1,0 +1,133 @@
+#!/bin/bash
+
+# Author: Shreenidhi Shedi <sshedi@vmware.com>
+# Brief: lsb_release implementation in bash
+
+EXIT_STATUS=0
+ERROR_USER=1
+ERROR_PROGRAM=2
+
+MSG_RESULT=""
+
+Usage()
+{
+  cat << EOF
+Distribution information.
+
+Usage: lsb_release [options]
+
+Options:
+  -h, --help         show this help message and exit
+  -i, --id           show distributor ID
+  -d, --description  show description of this distribution
+  -r, --release      show release number of this distribution
+  -c, --codename     show code name of this distribution
+  -a, --all          show all of the above information
+  -s, --short        show requested information in short format
+EOF
+
+exit ${EXIT_STATUS}
+}
+
+EnhancedGetopt()
+{
+  NB_ARG=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -a|--all) SHOW_ALL="y"; NB_ARG="y"; shift;;
+      -c|--codename) SHOW_CODENAME="y"; NB_ARG="y"; shift;;
+      -d|--description) SHOW_DESCR="y"; NB_ARG="y"; shift;;
+      -i|--id) SHOW_ID="y"; NB_ARG="y"; shift;;
+      -r|--release) SHOW_REL="y"; NB_ARG="y"; shift;;
+      -s|--short) ARG_S="y"; shift;;
+      -h|--help) Usage;;
+      --) shift; break;;
+      *)  EXIT_STATUS=${ERROR_USER}
+        Usage;;
+    esac
+  done
+}
+
+GetLSBInfo()
+{
+  source "/etc/lsb-release" || exit ${ERROR_PROGRAM}
+}
+
+GetDistribInfo()
+{
+  local MSG_NA="n/a\n"
+
+  [ -n "${SHOW_DESCR}" ] && [ -z "$DISTRIB_DESCRIPTION" ] && DISTRIB_DESCRIPTION="${MSG_NA}"
+  [ -n "${SHOW_ID}" ] && [ -z "$DISTRIB_ID" ] && DISTRIB_ID="${MSG_NA}"
+  [ -n "${SHOW_REL}" ] && [ -z "$DISTRIB_RELEASE" ] && DISTRIB_RELEASE="${MSG_NA}"
+  [ -n "${SHOW_CODENAME}" ] && [ -z "$DISTRIB_CODENAME" ] && DISTRIB_CODENAME="${MSG_NA}"
+}
+
+DisplayID()
+{
+  if [ -z "${ARG_S}" ]; then
+    MSG_RESULT+="Distributor ID:\t${DISTRIB_ID}\n"
+  else
+    MSG_RESULT+="${DISTRIB_ID}\n"
+  fi
+}
+
+DisplayDescription()
+{
+  if [ -z "${ARG_S}" ]; then
+    MSG_RESULT+="Description:\t${DISTRIB_DESCRIPTION}\n"
+  else
+    MSG_RESULT+="${DISTRIB_DESCRIPTION}\n"
+  fi
+}
+
+DisplayRelease()
+{
+  if [ -z "${ARG_S}" ]; then
+    MSG_RESULT+="Release:\t${DISTRIB_RELEASE}\n"
+  else
+    MSG_RESULT+="${DISTRIB_RELEASE}\n"
+  fi
+}
+
+DisplayCodename()
+{
+  if [ -z "${ARG_S}" ]; then
+    MSG_RESULT+="Codename:\t${DISTRIB_CODENAME}\n"
+  else
+    MSG_RESULT+="${DISTRIB_CODENAME}\n"
+  fi
+}
+
+main()
+{
+  if [ -z "$1" ]; then
+    SHOW_ALL="y"
+  else
+    EnhancedGetopt "$@"
+    if [ -n "${ARG_S}" ] && [ -z "${NB_ARG}" ]; then
+      SHOW_ALL="y"
+    fi
+  fi
+
+  if [ -n "${SHOW_ALL}" ]; then
+    [ -z "${SHOW_CODENAME}" ] && SHOW_CODENAME="y"
+    [ -z "${SHOW_DESCR}" ] && SHOW_DESCR="y"
+    [ -z "${SHOW_ID}" ] && SHOW_ID="y"
+    [ -z "${SHOW_REL}" ] && SHOW_REL="y"
+  fi
+
+  GetLSBInfo
+  GetDistribInfo
+
+  [ -n "${SHOW_ID}" ] && DisplayID
+  [ -n "${SHOW_DESCR}" ] && DisplayDescription
+  [ -n "${SHOW_REL}" ] && DisplayRelease
+  [ -n "${SHOW_CODENAME}" ] && DisplayCodename
+
+  echo -ne "${MSG_RESULT}"
+
+  exit ${EXIT_STATUS}
+}
+
+main "$@"

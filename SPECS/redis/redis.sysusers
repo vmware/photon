@@ -1,0 +1,2 @@
+g redis -
+u redis - "Redis Database Server" /var/lib/redis /sbin/nologin

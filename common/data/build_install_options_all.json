@@ -1,0 +1,31 @@
+{
+    "minimal": {
+        "title": "1. Photon Minimal",
+        "packagelist_file": "packages_minimal.json",
+        "visible": true
+    },
+    "developer": {
+        "title": "2. Photon Developer",
+        "packagelist_file": "packages_developer.json",
+        "visible": true
+    },
+    "ostree_host": {
+        "title": "3. Photon OSTree Host",
+        "packagelist_file": "packages_ostree_host.json",
+        "visible": true,
+        "include": [],
+        "additional-files": [
+            "ostree-repo.tar.gz"
+        ]
+    },
+    "realtime": {
+        "title": "4. Photon Real Time",
+        "packagelist_file": "packages_rt.json",
+        "visible": true
+    },
+    "appliance": {
+        "title": "Minimal packages to support appliances.",
+        "packagelist_file": "packages_appliance.json",
+        "visible": false
+    }
+}
