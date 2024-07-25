@@ -1,14 +1,7 @@
-# once certified fips-provider rpm is published, with_certified_fips switch should be turned off
-# with_certified_fips & with_latest_fips can't be 1 at same time, we can have any one at a time
-%define with_certified_fips     0
-%define with_latest_fips        1
-%define fips_provider_version   3.0.8
-%define fips_provider_srcname   fips-provider-%{fips_provider_version}
-
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -23,16 +16,7 @@ Source2: provider_default.cnf
 Source3: distro.cnf
 Source4: user.cnf
 
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-Source5: provider_fips.cnf
-%endif
-
-Source6: jitterentropy.c
-
-%if 0%{?with_certified_fips}
-Source7: %{fips_provider_srcname}.tar.xz
-%define sha512 %{fips_provider_srcname}=3206c96f77ba5ab0553249e13ddf52145995909e68a9acb851c5db6be759e6f7647b9ad960f6da7c989c20b49fbd9e79a7305f2000f24281345c56a1a8b1148f
-%endif
+Source5: jitterentropy.c
 
 Patch0: openssl-cnf.patch
 
@@ -72,23 +56,6 @@ Obsoletes:  nxtgn-openssl-devel
 %description devel
 Header files for doing development with openssl.
 
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-%package fips-provider
-Summary:    FIPS Libraries for openssl
-Group:      Applications/Internet
-
-%if 0%{?with_certified_fips}
-Requires:   %{name} >= %{fips_provider_version}
-%endif
-
-%if 0%{?with_latest_fips}
-Requires:   %{name} = %{version}-%{release}
-%endif
-
-%description fips-provider
-Fips library for enabling fips.
-%endif
-
 %package perl
 Summary:    openssl perl scripts
 Group:      Applications/Internet
@@ -119,30 +86,9 @@ Requires:   %{name} = %{version}-%{release}
 The package contains openssl doc files.
 
 %prep
-%if 0%{?with_certified_fips} && 0%{?with_latest_fips}
-echo "ERROR: with_latest_fips and with_certified_fips both should not be enabled" 1>&2
-exit 1
-%endif
-
-%if 0%{?with_certified_fips}
-%autosetup -p1 -a0 -a7
-%else
-%autosetup -p1 -n %{name}-%{version}
-%endif
+%autosetup -p1
 
 %build
-# rpm 4.14.x doesn't understand elif, so keep it basic
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-  %if 0%{?with_certified_fips}
-    %undefine with_latest_fips
-  %else
-    %undefine with_certified_fips
-  %endif
-%else
-  %undefine with_certified_fips
-  %undefine with_latest_fips
-%endif
-
 if [ %{_host} != %{_build} ]; then
 #  export CROSS_COMPILE=%{_host}-
   export CC=%{_host}-gcc
@@ -161,7 +107,6 @@ export MACHINE=%{_arch}
     --shared \
     --with-rand-seed=os,egd \
     enable-egd \
-    %{?with_latest_fips: enable-fips} \
     -Wl,-z,noexecstack
 
 %make_build
@@ -173,15 +118,7 @@ install -p -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/ssl
 install -p -m 644 -D %{SOURCE3} %{buildroot}%{_sysconfdir}/ssl
 install -p -m 644 -D %{SOURCE4} %{buildroot}%{_sysconfdir}/ssl
 
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-install -p -m 644 -D %{SOURCE5} %{buildroot}%{_sysconfdir}/ssl
-
-%if 0%{?with_certified_fips}
-install -p -m 644 %{fips_provider_srcname}/%{_arch}/fips.so %{buildroot}%{_libdir}/ossl-modules/
-%endif
-%endif
-
-fn="$(basename -s .c %{SOURCE6})"
+fn="$(basename -s .c %{SOURCE5})"
 
 gcc -Wall -Werror -Wextra -O2 -g -fPIC \
   -I%{buildroot}%{_includedir} \
@@ -189,29 +126,12 @@ gcc -Wall -Werror -Wextra -O2 -g -fPIC \
   -shared \
   -Wl,-e,main \
   -o %{buildroot}%{_libdir}/ossl-modules/${fn}.so \
-  %{SOURCE6}
+  %{SOURCE5}
 
 %check
 %make_build tests
 
 %ldconfig_scriptlets libs
-
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-%post fips-provider
-if [ "$1" = 2 ]; then
-  # fips.so was just updated. Temporarily disable fips mode to regenerate new fipsmodule.cnf
-  sed -i '/^.include \/etc\/ssl\/provider_fips.cnf/s/^/#/g' %{_sysconfdir}/ssl/distro.cnf
-fi
-openssl fipsinstall -out %{_sysconfdir}/ssl/fipsmodule.cnf -module %{_libdir}/ossl-modules/fips.so
-sed -i '/^#.include \/etc\/ssl\/provider_fips.cnf/s/^#//g' %{_sysconfdir}/ssl/distro.cnf
-
-%postun fips-provider
-# complete uninstall, not an upgrade
-if [ "$1" = 0 ]; then
-  rm -f %{_sysconfdir}/ssl/fipsmodule.cnf
-  sed -i '/^.include \/etc\/ssl\/provider_fips.cnf/s/^/#/g' %{_sysconfdir}/ssl/distro.cnf
-fi
-%endif
 
 %post libs
 if [ "$1" = 2 ] && [ -s "%{_sysconfdir}/ssl/provider_fips.cnf" ]; then
@@ -224,17 +144,6 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/%{name}
-
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-%files fips-provider
-%defattr(-,root,root)
-%{_libdir}/ossl-modules/fips.so
-%{_sysconfdir}/ssl/provider_fips.cnf
-
-%if 0%{?with_latest_fips}
-%exclude %{_sysconfdir}/ssl/fipsmodule.cnf
-%endif
-%endif
 
 %files libs
 %defattr(-,root,root)
@@ -280,6 +189,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Jul 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-3
+- Move fips-provider out of openssl spec
 * Wed Jul 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-2
 - Improve logging in jitterentropy.c
 - Add `-Wl,-e,main` to make jitterentropy shared object run like a binary
