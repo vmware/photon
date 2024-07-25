@@ -1,3 +1,4 @@
+%define network_required 1
 Name:           kapacitor
 Version:        1.6.6
 Release:        6%{?dist}

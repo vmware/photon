@@ -1,3 +1,4 @@
+%define network_required 1
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 Summary:       Git extension for versioning large files

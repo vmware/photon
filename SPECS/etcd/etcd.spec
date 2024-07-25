@@ -1,3 +1,4 @@
+%define network_required 1
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.5.12

@@ -1,3 +1,4 @@
+%define network_required 1
 %global commit          68bd22b2219d043e2f4f982ff8aa03262888a277
 %global commitdate      20210115
 %global version         2.2.0

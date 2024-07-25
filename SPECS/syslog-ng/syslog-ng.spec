@@ -1,3 +1,4 @@
+%define network_required 1
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1

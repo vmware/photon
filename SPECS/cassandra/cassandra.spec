@@ -1,3 +1,4 @@
+%define network_required 1
 %global debug_package %{nil}
 %global __os_install_post %{nil}
 

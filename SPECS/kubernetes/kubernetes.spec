@@ -1,3 +1,4 @@
+%define network_required 1
 %ifarch x86_64
 %define archname amd64
 %endif

@@ -1,3 +1,4 @@
+%define network_required 1
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.26.1

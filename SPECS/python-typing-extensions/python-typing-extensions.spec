@@ -1,3 +1,4 @@
+%define network_required 1
 Name:           python3-typing-extensions
 Version:        4.3.0
 Release:        2%{?dist}
