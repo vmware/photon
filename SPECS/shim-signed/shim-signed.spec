@@ -2,7 +2,7 @@
 Summary:    Photon shim
 Name:       shim-signed
 Version:    15.8
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License
 Group:      System Environment/Base
 URL:        https://vmware.github.io/photon/
@@ -29,6 +29,8 @@ cp revocations.efi %{buildroot}/boot/efi/EFI/BOOT/revocations.efi
 /boot/efi/EFI/BOOT/revocations.efi
 
 %changelog
+* Thu Jul 25 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 15.8-2
+- Version bump to sign revocations
 * Wed Jul 17 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 15.8-1
 - Version update. Revocations support.
 * Wed Apr 28 2021 Alexey Makhalov <amakhalov@vmware.com> 15.4-1
