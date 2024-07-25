@@ -3,6 +3,7 @@
 %define with_latest_fips        0
 %define fips_provider_version   3.0.8
 %define fips_provider_srcname   fips-provider-%{fips_provider_version}
+%define debug_package           %{nil}
 
 Summary:        FIPS Libraries for openssl
 Name:           openssl-fips-provider
