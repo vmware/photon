@@ -322,6 +322,9 @@ class SpecData(object):
             package, version, field=lambda x: x.securityHardening
         )
 
+    def isNetworkRequired(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x: x.networkRequired)
+
     def isCheckAvailable(self, package, version):
         return self._getSpecObjField(
             package, version, field=lambda x: x.isCheckAvailable

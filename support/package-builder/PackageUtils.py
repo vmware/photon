@@ -429,7 +429,11 @@ class PackageUtils(object):
 
         self.logger.debug(f"Building rpm....\n{rpmBuildcmd}")
 
-        returnVal = sandbox.run(rpmBuildcmd, logfile=logFile)
+        network_required = SPECS.getData().isNetworkRequired(package, version)
+        if network_required:
+            self.logger.debug(f"{package} requires network to build...")
+
+        returnVal = sandbox.run(rpmBuildcmd, logfile=logFile, network_required=network_required)
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             if make_check_na:

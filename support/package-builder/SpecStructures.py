@@ -88,6 +88,7 @@ class SpecObject(object):
         self.checksums = {}
         self.listPatches = []
         self.securityHardening = ""
+        self.networkRequired = False
         self.url = ""
         self.sourceurl = ""
         self.license = ""
