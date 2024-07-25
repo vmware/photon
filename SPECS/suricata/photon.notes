@@ -1,3 +1,0 @@
-By default, Suricata is configured to use the eth0 interface in the file
-/etc/sysconfig/suricata. To use a different network interface, replace
-'eth0' with the name of your preferred interface in the same file.

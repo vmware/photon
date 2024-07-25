@@ -1,7 +1,0 @@
-{
-    "minimal": {
-        "title": "Photon Basic package Set",
-        "packagelist_file": "packages_basic.json",
-        "visible": false
-    }
-}

@@ -1,1 +1,0 @@
-OPTIONS="-f /etc/ts2phc.conf -s nmea -l 7 --leapfile /usr/share/zoneinfo/leap-seconds.list"
