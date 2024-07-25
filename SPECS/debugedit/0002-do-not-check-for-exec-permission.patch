@@ -1,0 +1,35 @@
+From 612ea1305998986d28887dcc0a45c70de0ef385e Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 25 Jul 2024 19:55:47 +0530
+Subject: [PATCH 2/3] do not check for exec permission
+
+With this check enabled, if a .so file is installed with 644 permission
+in buildroot, find-debuginfo tool will fail saying empty debugfiles.list
+
+Newer rpm by default installs .so files with 644 permission
+https://github.com/rpm-software-management/rpm/blob/rpm-4.18.x/scripts/brp-elfperms#L12
+
+So, checking if a file is ELF is enough to gather debuginfo from it.
+
+https://github.com/rpm-software-management/rpm/discussions/3195
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ scripts/find-debuginfo.in | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/scripts/find-debuginfo.in b/scripts/find-debuginfo.in
+index 8be3aa0..0a0f6b6 100755
+--- a/scripts/find-debuginfo.in
++++ b/scripts/find-debuginfo.in
+@@ -413,7 +413,6 @@ trap 'rm -rf "$temp"' EXIT
+ # Build a list of unstripped ELF files and their hardlinks
+ touch "$temp/primary"
+ find "$RPM_BUILD_ROOT" ! -path "${debugdir}/*.debug" -type f \
+-     		     \( -perm -0100 -or -perm -0010 -or -perm -0001 \) \
+ 		     -print | LC_ALL=C sort |
+ file -N -f - | sed -n -e 's/^\(.*\):[ 	]*.*ELF.*, not stripped.*/\1/p' |
+ xargs --no-run-if-empty stat -c '%h %D_%i %n' |
+-- 
+2.34.1
+
