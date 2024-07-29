@@ -2,8 +2,8 @@
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        255.2
-Release:        6%{?dist}
+Version:        255.10
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=0a9a43adc6d23f52349d298cdff3f3ae6accd7e43a33253608f7a9d241699c7cba3c9f6a0fa6da3ae3cba0e246e272076bfa2cdf5bade7bc019406f407be0bb9
+%define sha512 %{name}=f672cfff18ab80136dedb34908b73d8152f9cb07776c27405a90eb2ad49e22ef86b979a5125c66c6b17d9c76ea516ed920cdbc8e929dda1382f632b414a03df0
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -752,6 +752,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Jul 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 255.10-1
+- Upgrade to v255.10
 * Wed Jun 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 255.2-6
 - Patched to remove unused groups from systemd
 * Tue Jun 18 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 255.2-5
