@@ -89,7 +89,10 @@ class SpecParser(object):
                         description = None
                         while i+1 < totalLines:
                             line = lines[i+1].strip()
-                            if line and (self._isSpecMacro(line) or self._isPackageMacro(line) or self._isDefinition(line)):
+                            if line and (self._isSpecMacro(line) or
+                                         self._isPackageMacro(line) or
+                                         self._isDefinition(line) or
+                                         self._isIfCondition(line)):
                                 break
                             if description:
                                 description += f" {line}"
