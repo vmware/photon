@@ -152,6 +152,17 @@ class SRP(object):
         _cmd = cmd.replace("\"", "\\\"")
         self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action import-cmd --cmd=\"{_cmd}\"")
 
+    def addObservation(self, observationFile):
+        if not self.srpcli:
+            return
+
+        network_required = SPECS.getData().isNetworkRequired(self.package, self.fullVersion)
+        if network_required and not observationFile:
+            raise Exception("Observation file is required but not generated")
+
+        if observationFile:
+            self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action import-observation --name=build-observation --file={observationFile}")
+
     def finalize(self):
         if not self.srpcli:
             return
