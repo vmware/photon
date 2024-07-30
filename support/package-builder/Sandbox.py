@@ -4,6 +4,7 @@ import sys
 import os.path
 import shutil
 import time
+import tempfile
 
 from constants import constants
 from Logger import Logger
@@ -21,7 +22,7 @@ class Sandbox(object):
     def destroy(self):
         pass
 
-    def run(self, logfile, logfn):
+    def run(self, logfile, logfn, network_required):
         pass
 
     def put(self, src, dest):
@@ -32,6 +33,12 @@ class Sandbox(object):
 
     def hasToolchain(self):
         return False
+
+    def getObservationFile(self):
+        return None
+
+    def removeObservationFile(self):
+        pass
 
 class Chroot(Sandbox):
     def __init__(self, logger, cmdlog = lambda cmd: None):
@@ -160,10 +167,17 @@ class Chroot(Sandbox):
 
 class SystemdNspawn(Sandbox):
     def __init__(self, logger, cmdlog = lambda cmd: None):
+        import docker
+
         Sandbox.__init__(self, logger, cmdlog)
         self.chrootID = None
+        self.chrootName = None
         self.nspawnCmdPrefix = None
+        self.observationFile = None
         self.cmdUtils = CommandUtils()
+        self.dockerClient = docker.from_env(version="auto")
+        self.observerContainer = None
+        self.observerURL = "http://127.0.0.1:8989"
 
     def getID(self):
         return self.chrootID
@@ -172,6 +186,7 @@ class SystemdNspawn(Sandbox):
         if self.chrootID:
             raise Exception(f"Unable to create: {chrootName}. Chroot is already active: {self.chrootID}")
 
+        self.chrootName = chrootName
         chrootID = f"{constants.buildRootPath}/{chrootName}"
         self.chrootID = chrootID
         self.nspawnCmdPrefix = f"SYSTEMD_NSPAWN_TMPFS_TMP=0 systemd-nspawn --quiet --directory {chrootID} " \
@@ -215,10 +230,89 @@ class SystemdNspawn(Sandbox):
         self.cmdlog(cmd)
         self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
 
+    def _startObserver(self):
+        if not constants.observerDockerImage:
+            self.logger.warning("Unable to start an observer container. Docker image is not provided.")
+            return None
+        runArgs = {
+            "image": constants.observerDockerImage,
+            "command": "tail -f /dev/null",
+            "detach": True,
+            "privileged": False,
+            "name": self.chrootName,
+            # Map tls/certs folder of the sandbox in observer container. So, observer can modify certificates and hijack a traffic.
+            "volumes": {f"{self.chrootID}/etc/pki/tls/certs": {'bind': "/etc/pki/tls/certs", 'mode': 'rw'}}
+        }
+        if constants.isolatedDockerNetwork:
+            runArgs["network"] = constants.isolatedDockerNetwork
+        else:
+            runArgs["network_mode"] = "bridge"
+
+        observerContainer = self.dockerClient.containers.run(**runArgs)
+        if not observerContainer:
+            self.logger.warning("Unable to start an observer. Docker run failed.")
+            return None
+        self.observerContainer = observerContainer
+        result = self.observerContainer.exec_run("/observer/bin/observer_agent -m start_observer")
+        if result.exit_code:
+            self.logger.warning("Unable to start an observer daemon")
+            self.observerContainer.remove(force=True)
+            self.observerContainer = None
+            return None
+
+        # Update attributes
+        self.observerContainer.reload()
+        # Return network namespace path systemd-nspawn attach to
+        return self.observerContainer.attrs['NetworkSettings']['SandboxKey']
+
+    def _stopObserver(self):
+        result = self.observerContainer.exec_run("/observer/bin/observer_agent -m stop_observer")
+        if result.exit_code:
+            self.logger.warning("Unable to stop an observer daemon. No observation file provided")
+            self.observerContainer.remove(force=True)
+            self.observerContainer = None
+            return
+
+        result = self.observerContainer.exec_run("cat /provenance.json")
+        if result.exit_code:
+            self.logger.warning("No observation file provided")
+            self.observerContainer.remove(force=True)
+            self.observerContainer = None
+            return
+
+        with tempfile.NamedTemporaryFile(prefix=f"{self.chrootName}_", suffix="_observations.json", delete=False) as f:
+            filename = f.name
+            f.write(result.output)
+            f.flush()
+
+        self.observationFile = filename
+        self.observerContainer.remove(force=True)
+        self.observerContainer = None
+
     def run(self, cmd, logfile=None, logfn=None, network_required=False):
-        self.logger.debug(f"systemd-nspawn.run() cmd: {self.nspawnCmdPrefix}{cmd}")
-        self.cmdlog(f"{self.nspawnCmdPrefix}{cmd}")
-        (_, _, retval) = self.cmdUtils.runBashCmd(f"{self.nspawnCmdPrefix}{cmd}", logfile, logfn)
+        netnsPath = None
+        if network_required:
+            # Processes in a sandbox may access external resources only through proxy.
+            # We use SRP observer as a proxy, which also records all proxy activities to provenance observation file.
+            # Observer daemon will be run in a docker container, and systemd-nspawn instance will be attached to the
+            # same network namespace. It will allow rpmbuild children access observer via local 127.0.0.1:8989 port
+            netnsPath = self._startObserver()
+            if not netnsPath:
+                self.logger.warning("Observer is not available. Sandbox will not have a networking")
+
+
+        if netnsPath:
+            cmdPrefix = f"{self.nspawnCmdPrefix} --network-namespace-path={netnsPath} --setenv=HTTP_PROXY={self.observerURL} --setenv=HTTPS_PROXY={self.observerURL} --setenv=http_proxy={self.observerURL} --setenv=https_proxy={self.observerURL} "
+        else:
+            cmdPrefix = f"{self.nspawnCmdPrefix} --private-network "
+
+        self.logger.debug(f"systemd-nspawn.run() cmd: {cmdPrefix}{cmd}")
+        self.cmdlog(f"{cmdPrefix}{cmd}")
+        try:
+            (_, _, retval) = self.cmdUtils.runBashCmd(f"{cmdPrefix}{cmd}", logfile, logfn)
+        finally:
+            if netnsPath:
+                self._stopObserver()
         return retval
 
     def put(self, src, dest):
@@ -231,6 +325,14 @@ class SystemdNspawn(Sandbox):
         self.logger.debug(cmd)
         self.cmdlog(cmd)
         self.cmdUtils.runBashCmd(cmd)
+
+    def getObservationFile(self):
+        return self.observationFile
+
+    def removeObservationFile(self):
+        if self.observationFile and os.path.isfile(self.observationFile):
+            os.remove(self.observationFile)
+        self.observationFile = None
 
 
 class Container(Sandbox):

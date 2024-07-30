@@ -1380,6 +1380,9 @@ def initialize_constants():
             bool(configdict["photon-build-param"]["resume-build"])
         )
     constants.srpcli = configdict.get("srpcli", None)
+    constants.observerDockerImage = configdict.get("observer-docker-image", None)
+    # Isolated/firewalled network for sandbox attach to.
+    constants.isolatedDockerNetwork = configdict.get("isolated-docker-network", None)
 
     filesToCopyToSb = configdict.get("photon-build-param", {}).get("copy-to-sandbox", "")
     for k, v in filesToCopyToSb.items():

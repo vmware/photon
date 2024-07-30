@@ -42,6 +42,8 @@ class constants(object):
     tmpDirPath = "/dev/shm"
     buildOptions = {}
     srpcli = None
+    observerDockerImage = None
+    isolatedDockerNetwork = None
     # will be extended later from listMakeCheckRPMPkgtoInstall
     listMakeCheckRPMPkgWithVersionstoInstall = None
     buildArch = platform.machine()

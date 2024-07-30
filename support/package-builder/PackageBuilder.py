@@ -73,6 +73,8 @@ class PackageBuilder(object):
             pkgUtils.adjustGCCSpecs(self.sandbox, self.package, self.version)
             listRPMFiles, listSRPMFiles = pkgUtils.buildRPMSForGivenPackage(self.sandbox, self.package, self.version,
                                               self.logPath)
+            self.srp.addObservation(self.sandbox.getObservationFile())
+            self.sandbox.removeObservationFile()
             self.srp.addOutputRPMS(listRPMFiles + listSRPMFiles)
             self.logger.debug(f"Successfully built the package: {self.package}")
         except Exception as e:
