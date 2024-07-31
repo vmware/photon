@@ -1,11 +1,10 @@
-%define network_required 1
 %global debug_package %{nil}
 %define __os_install_post %{nil}
 
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        5.3.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License 2.0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -39,11 +38,10 @@ framework that you can use to develop your own build rules.
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
-export TMPDIR=%{_usr}/tmp
+export TMPDIR="%{_usr}/tmp"
 
-mkdir $TMPDIR
-
-./compile.sh
+mkdir -p $TMPDIR
+env EXTRA_BAZEL_ARGS="--tool_java_runtime_version=local_jdk" ./compile.sh
 
 pushd output
 ./bazel
@@ -58,6 +56,8 @@ cp output/bazel %{buildroot}%{_bindir}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Fri Jul 26 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 5.3.2-5
+- Offline build support
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-4
 - Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-3
