@@ -1,6 +1,6 @@
 Name:       debugedit
 Version:    5.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 Summary:    Tools for debuginfo creation
 License:    GPLv3+ and GPLv2+ and LGPLv2+
 URL:        https://sourceware.org/debugedit
@@ -12,8 +12,7 @@ Source0: https://sourceware.org/ftp/debugedit/%{version}/%{name}-%{version}.tar.
 %define sha512 %{name}=7e7f529eafe41b53f0b5bfc58282fdbfa0dfa93ed7908b70e81942d6d2b6f80fc9c6bff2ed9674fd98947e5750b615f4c8b222544989e2900c5f8ff5ae0efb92
 
 Patch0: 0001-tweak-find-debuginfo.patch
-Patch1: 0002-do-not-check-for-exec-permission.patch
-Patch2: 0003-tests-Handle-zero-directory-entry-in-.debug_line-DWA.patch
+Patch1: 0003-tests-Handle-zero-directory-entry-in-.debug_line-DWA.patch
 
 BuildRequires: make
 BuildRequires: gcc
@@ -75,6 +74,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/find-debuginfo.1*
 
 %changelog
+* Thu Aug 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-7
+- Revert exec permission check skip patch
 * Thu Jul 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-6
 - Remove exec permission check during debuginfo generation
 * Thu Jul 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-5
