@@ -1,7 +1,7 @@
 Summary:        The source repository for the TPM (Trusted Platform Module) 2 tools
 Name:           tpm2-tools
 Version:        4.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-tools
 Group:          System Environment/Security
@@ -11,11 +11,13 @@ Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha512    tpm2=1aa47c62c3d2a83195ec649e50c0be2c8be39f926806d8d7cb96edc499c385d527661813e02024e98f83ae9ebcb22d7dadc507ddfab48be9bbe428d9439d7ee1
 Patch0:         0001-support-for-openssl-3.0.0.patch
+Patch1:         CVE-2024-29039.patch
+Patch2:         CVE-2024-29038.patch
 
 BuildRequires:  openssl-devel curl-devel tpm2-tss-devel
 
 Requires:       openssl curl tpm2-tss
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  ibmtpm
 BuildRequires:  systemd
 %endif
@@ -50,6 +52,8 @@ fi
 /usr/share/bash-completion/*
 
 %changelog
+*   Thu Aug 01 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.3.2-2
+-   Fixes CVE-2024-29039 and CVE-2024-29038
 *   Tue Nov 29 2022 Anmol Jain <anmolja@vmware.com> 4.3.2-1
 -   Fix for CVE-2021-3565
 *   Thu Jul 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.3.0-5
