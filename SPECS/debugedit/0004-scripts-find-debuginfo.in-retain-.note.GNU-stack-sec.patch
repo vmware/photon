@@ -1,0 +1,35 @@
+From 4fe2a06ba92f1de3b924703959961d42443f39b1 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 2 Aug 2024 14:33:25 +0530
+Subject: [PATCH 4/4] scripts/find-debuginfo.in: retain .note.GNU-stack section
+ in object files
+
+After removing exec permission check to generate debuginfo data in
+find-debuginfo, object files provided by glibc are wrongly stripped and
+.note.GNU-stack is stripped out. This results in build errors while
+building packages like ruby, wayland due to configure errors in LDFLAGS.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ scripts/find-debuginfo.in | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/scripts/find-debuginfo.in b/scripts/find-debuginfo.in
+index 0a0f6b6..6994bbb 100755
+--- a/scripts/find-debuginfo.in
++++ b/scripts/find-debuginfo.in
+@@ -318,6 +318,11 @@ strip_to_debug()
+   $strip_glibs && case "$(file -bi "$2")" in
+     application/x-sharedlib*) g=-g ;;
+   esac
++
++  case "$(file -bi "$2")" in
++    application/x-object*) keep_remove_args="${keep_remove_args} --keep-section .note.GNU-stack"
++  esac
++
+   eu-strip --remove-comment $r $g ${keep_remove_args} -f "$1" "$2" || exit
+   chmod 444 "$1" || exit
+ }
+-- 
+2.45.2
+

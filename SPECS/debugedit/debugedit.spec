@@ -1,6 +1,6 @@
 Name:       debugedit
 Version:    5.0
-Release:    7%{?dist}
+Release:    8%{?dist}
 Summary:    Tools for debuginfo creation
 License:    GPLv3+ and GPLv2+ and LGPLv2+
 URL:        https://sourceware.org/debugedit
@@ -14,6 +14,7 @@ Source0: https://sourceware.org/ftp/debugedit/%{version}/%{name}-%{version}.tar.
 Patch0: 0001-tweak-find-debuginfo.patch
 Patch1: 0002-do-not-check-for-exec-permission.patch
 Patch2: 0003-tests-Handle-zero-directory-entry-in-.debug_line-DWA.patch
+Patch4: 0004-scripts-find-debuginfo.in-retain-.note.GNU-stack-sec.patch
 
 BuildRequires: make
 BuildRequires: gcc
@@ -49,20 +50,19 @@ read and write ELF files, DWARF data and build-ids.
 %autosetup -p1
 
 %build
-autoreconf -f -v -i
+autoreconf -fvi
 %configure
 %make_build
 
 %install
-%make_install
-cd %{buildroot}%{_bindir}
-ln -sfv find-debuginfo find-debuginfo.sh
+%make_install %{?_smp_mflags}
+pushd %{buildroot}%{_bindir}
+ln -srv find-debuginfo find-debuginfo.sh
+popd
 
-%if 0%{?with_check}
 %check
 sed -i 's/^\(C\|LD\)FLAGS=.*/\1FLAGS=""/' tests/atlocal
-make check %{?_smp_mflags}
-%endif
+%make_build check
 
 %files
 %defattr(-,root,root)
@@ -75,6 +75,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/find-debuginfo.1*
 
 %changelog
+* Fri Aug 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-8
+- Retain .note.GNU-stack while stripping object files
 * Fri Jul 26 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-7
 - Remove exec permission check during debuginfo generation
 * Fri Jul 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-6
