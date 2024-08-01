@@ -8,7 +8,7 @@
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
 Version:             1.1.4
-Release:             10%{?dist}
+Release:             11%{?dist}
 License:             ASL 2.0
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
@@ -20,6 +20,14 @@ Source0: https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
 
 Patch0:              CVE-2023-27561.patch
 Patch1:              CVE-2023-25809.patch
+Patch2:  0011-Fix-File-to-Close.patch
+Patch3:  0012-init-verify-after-chdir-that-cwd-is-inside-the-conta.patch
+Patch4:  0013-setns-init-do-explicit-lookup-of-execve-argument-ear.patch
+Patch5:  0014-init-close-internal-fds-before-execve.patch
+Patch6:  0015-cgroup-plug-leaks-of-sys-fs-cgroup-handle.patch
+Patch7:  0016-libcontainer-mark-all-non-stdio-fds-O_CLOEXEC-before.patch
+Patch8:  0017-init-don-t-special-case-logrus-fds.patch
+Patch9:  0018-Adapt-eaccess-check-for-runc-1.1.6.patch
 
 BuildRequires:       go
 BuildRequires:       which
@@ -44,8 +52,7 @@ Documentation for runc
 # Using autosetup is not feasible
 %setup -q -c
 pushd %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
+%autopatch -p1
 popd
 
 mkdir -p "$(dirname "src/%{gopath_comp}")"
@@ -74,6 +81,8 @@ cd src/%{gopath_comp}
 %{_mandir}/man8/*
 
 %changelog
+* Thu Aug 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.4-11
+- Fix CVE-2024-21626
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.4-10
 - Bump up version to compile with new go
 * Fri Nov 10 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.4-9
