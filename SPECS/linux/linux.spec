@@ -33,8 +33,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.97
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.102
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -45,7 +45,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=0688fed5cfe71137fb4072e25cdcccd4d2105c54314b72b30de3716a595d0adf1e2a9867f96bcc12b49958b081d404dca35a36747dd924ac510b001da5217b43
+%define sha512 linux=10b8a0a69750b5d9f7fa8a735707ef552da6224830847b1edd7e2641db16857684ae19c4d18a6bfb5fa45ce985d420c35fb8866ce80eaa5b86e77a9629440ef9
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -187,7 +187,6 @@ Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 %include %{SOURCE42}
 
 # Fix CVE-2023-52452
-Patch131: 0001-bpf-Allow-reads-from-uninit-stack.patch
 Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
 %ifarch aarch64
@@ -875,6 +874,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Aug 08 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.102-1
+- Upgrade to version 6.1.102
 * Tue Aug 06 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.97-4
 - Fix hcx crash while executing rmmod ipip
 * Fri Jul 19 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.97-3
