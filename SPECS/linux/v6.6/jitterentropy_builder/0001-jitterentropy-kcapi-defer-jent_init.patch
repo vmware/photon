@@ -1,0 +1,193 @@
+From 8cabb8b61f0ba0b981b9321bdf6fc492976f9022 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Thu, 28 Mar 2024 10:18:07 +0000
+Subject: [PATCH] jitterentropy-kcapi: defer jent_init.
+
+  -  jent_init can take up lot of time during initialization as
+     it runs POWERUP_TEST_LOOP. This increases the bootup time,
+     & in appliance which want to have bootup time as minimal as
+     possible can set kernel command line param defer_jent_init=1,
+     to defer jent_init() to a later stage of boot.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ crypto/jitterentropy-kcapi.c | 106 +++++++++++++++++++++++++++++++++--
+ 1 file changed, 102 insertions(+), 4 deletions(-)
+
+diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
+index 8b98d2e29..972aa2290 100644
+--- a/crypto/jitterentropy-kcapi.c
++++ b/crypto/jitterentropy-kcapi.c
+@@ -44,6 +44,9 @@
+ #include <linux/time.h>
+ #include <crypto/internal/rng.h>
+ 
++#include <linux/jiffies.h>
++#include <linux/workqueue.h>
++
+ #include "jitterentropy-3.4.1/jitterentropy.h"
+ #include "jitterentropy-3.4.1/jitterentropy-timer.h"
+ 
+@@ -67,6 +70,27 @@ void jent_memcpy(void *dest, const void *src, unsigned int n)
+ 	memcpy(dest, src, n);
+ }
+ 
++/***************************************************************************
++ * wait for jent init completion helpers
++ ***************************************************************************/
++
++static int sync_on_jent_init(void);
++static void jent_delayed_init(struct work_struct *work);
++
++static atomic_t jent_init_complete;
++static DECLARE_DELAYED_WORK(jent_init_work, jent_delayed_init);
++static DEFINE_MUTEX(jent_init_mutex);
++static int defer_jent_init_val = 0;
++
++/* Process kernel command-line param at boot time. defer_jent_init = 0 OR 1 */
++static int defer_jent_init_enable(char *str)
++{
++	defer_jent_init_val = !!simple_strtol(str, NULL, 0);
++	pr_devel("defer_jent_init: %s\n",
++		defer_jent_init_val ? "enabled" : "disabled");
++	return 1;
++}
++__setup("defer_jent_init=", defer_jent_init_enable);
+ 
+ /***************************************************************************
+  * Kernel crypto API interface
+@@ -82,6 +106,9 @@ static int jent_kcapi_init(struct crypto_tfm *tfm)
+ 	struct jitterentropy *rng = crypto_tfm_ctx(tfm);
+ 	int ret = 0;
+ 
++	if (!sync_on_jent_init())
++		pr_devel("Invoked %s\n", __func__);
++
+ 	rng->entropy_collector = jent_entropy_collector_alloc(1, 0);
+ 	if (!rng->entropy_collector)
+ 		ret = -ENOMEM;
+@@ -94,6 +121,12 @@ static void jent_kcapi_cleanup(struct crypto_tfm *tfm)
+ {
+ 	struct jitterentropy *rng = crypto_tfm_ctx(tfm);
+ 
++	if (!atomic_read(&jent_init_complete) && !fips_enabled &&
++						defer_jent_init_val) {
++		cancel_delayed_work_sync(&jent_init_work);
++		pr_devel("Invoked %s\n", __func__);
++	}
++
+ 	spin_lock(&rng->jent_lock);
+ 	if (rng->entropy_collector)
+ 		jent_entropy_collector_free(rng->entropy_collector);
+@@ -108,6 +141,9 @@ static int jent_kcapi_random(struct crypto_rng *tfm,
+ 	struct jitterentropy *rng = crypto_rng_ctx(tfm);
+ 	int ret = 0;
+ 
++	if (!sync_on_jent_init())
++		pr_devel("Invoked %s\n", __func__);
++
+ 	spin_lock(&rng->jent_lock);
+ 
+ 	ret = jent_read_entropy(rng->entropy_collector, rdata, dlen);
+@@ -144,7 +180,12 @@ static int jent_kcapi_random(struct crypto_rng *tfm,
+ static int jent_kcapi_reset(struct crypto_rng *tfm,
+ 			    const u8 *seed, unsigned int slen)
+ {
+-	return 0;
++	int ret = 0;
++
++	if (!sync_on_jent_init())
++		pr_devel("Invoked %s\n", __func__);
++
++	return ret;
+ }
+ 
+ static struct rng_alg jent_alg = {
+@@ -163,24 +204,81 @@ static struct rng_alg jent_alg = {
+ 	}
+ };
+ 
+-static int __init jent_mod_init(void)
++static int invoke_jent_init(void)
+ {
+ 	int ret = 0;
+ 
+ 	ret = jent_entropy_init();
+-	if (ret) {
++	if (unlikely(ret)) {
+ 		/* Handle permanent health test error */
+ 		if (fips_enabled)
+ 			panic("jitterentropy: Initialization failed with host not compliant with requirements: %d\n", ret);
+ 
+ 		pr_info("jitterentropy: Initialization failed with host not compliant with requirements: %d\n", ret);
+-		return -EFAULT;
++		ret = -EFAULT;
++	}
++	return ret;
++}
++
++static int sync_on_jent_init(void)
++{
++	int ret = -EALREADY;
++
++	if (unlikely(mutex_lock_interruptible(&jent_init_mutex)))
++		return -EINTR;
++	if (!atomic_read(&jent_init_complete) && !fips_enabled &&
++						defer_jent_init_val) {
++		if (cancel_delayed_work_sync(&jent_init_work)) {
++			ret = invoke_jent_init();
++			if (unlikely(ret)) {
++				WARN_ONCE(1, "jent: Init failed %d\n", ret);
++				crypto_unregister_rng(&jent_alg);
++				goto check_exit;
++			}
++		}
++		atomic_set(&jent_init_complete, true);
++		ret = 0;
+ 	}
++check_exit:
++	mutex_unlock(&jent_init_mutex);
++	return ret;
++}
++
++static void jent_delayed_init(struct work_struct *work)
++{
++	int ret = 0;
++
++	ret = invoke_jent_init();
++	if (unlikely(ret)) {
++		WARN_ONCE(1, "jitterentropy: Delayed Initialization Failure %d\n", ret);
++		crypto_unregister_rng(&jent_alg);
++	} else {
++		pr_devel("Jent delayed init completed successfully\n");
++		atomic_set(&jent_init_complete, true);
++	}
++}
++
++static int __init jent_mod_init(void)
++{
++	int ret = 0;
++
++	if (!fips_enabled && defer_jent_init_val)
++		schedule_delayed_work(&jent_init_work, HZ);
++	else {
++		ret = invoke_jent_init();
++		if (unlikely(ret))
++			return ret;
++	}
++
+ 	return crypto_register_rng(&jent_alg);
+ }
+ 
+ static void __exit jent_mod_exit(void)
+ {
++	if (!atomic_read(&jent_init_complete) && !fips_enabled
++					&& defer_jent_init_val)
++		cancel_delayed_work_sync(&jent_init_work);
++
+ 	crypto_unregister_rng(&jent_alg);
+ }
+ 
+-- 
+2.35.6
+

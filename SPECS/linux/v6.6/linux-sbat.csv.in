@@ -1,0 +1,2 @@
+sbat,1,SBAT Version,sbat,1,https://github.com/rhboot/shim/blob/main/SBAT.md
+linux.photon,@@LINUX_PH_GEN@@,VMware Photon OS,@@NAME@@,@@VERSION_RELEASE@@,https://github.com/vmware/photon

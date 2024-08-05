@@ -1,0 +1,48 @@
+From f5305072a7c45071853301c61caacc7d94239c93 Mon Sep 17 00:00:00 2001
+From: Todd Sabin <tsabin@vmware.com>
+Date: Thu, 22 Jul 2021 18:20:09 -0400
+Subject: [PATCH] Add PCI quirk for VMware PCIe Root Port
+
+Add a PCI quirk entry for the VMware virtual PCIe Root Port,
+which will allow multiple devices under the same virtual PCI
+bridge to be put into separate IOMMU groups.
+
+Signed-off-by: Todd Sabin <tsabin@vmware.com>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/pci/quirks.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 8d32a3834..15789cf85 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -4868,6 +4868,19 @@ static int  pci_quirk_wangxun_nic_acs(struct pci_dev *dev, u16 acs_flags)
+ 	return false;
+ }
+ 
++static int pci_quirk_vmw_rp_acs(struct pci_dev *dev, u16 acs_flags)
++{
++	/*
++	 * VMware virtual PCIe Root Ports do not indicate ACS
++	 * capability, but the ESXi hypervisor prevents direct
++	 * peer-to-peer transactions between Root Ports.  Claim
++	 * SV/RR/CR/UF bits to allow separate IOMMU groups per Root
++	 * Port.
++	 */
++	return pci_acs_ctrl_enabled(acs_flags,
++		PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF);
++}
++
+ static const struct pci_dev_acs_enabled {
+ 	u16 vendor;
+ 	u16 device;
+@@ -5015,6 +5028,8 @@ static const struct pci_dev_acs_enabled {
+ 	{ PCI_VENDOR_ID_ZHAOXIN, PCI_ANY_ID, pci_quirk_zhaoxin_pcie_ports_acs },
+ 	/* Wangxun nics */
+ 	{ PCI_VENDOR_ID_WANGXUN, PCI_ANY_ID, pci_quirk_wangxun_nic_acs },
++	/* VMware PCIe Root Port */
++	{ PCI_VENDOR_ID_VMWARE, 0x07a0, pci_quirk_vmw_rp_acs },
+ 	{ 0 }
+ };
+ 
