@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.317
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.319
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=8b1f82767dd86224860951a312580e7e1c11d32e01531dc4817724feba2dec5a9b2b0e47c2b5b61bfb53f00569af5253a8bf3f60dcf962f3357b016fcf01aef9
+%define sha512 linux=e388920c8d439497ccebf566788ca72da70d3afb52f86595bfbbb5845b363c872d8816b8e7caf56bd7823fecdbafae0afd0ad869327b6cca98baffbce7fb87b1
 
 Source1: config-secure
 Source2: initramfs.trigger
@@ -558,6 +558,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Aug 12 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.19.319-1
+- Update to version 4.19.319
 * Tue Aug 06 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.317-2
 - Fix hcx crash while executing rmmod ipip
 * Wed Jul 10 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.317-1
