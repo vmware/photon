@@ -1,6 +1,6 @@
-From bea9a593b54f50121e5aa2e753d6cb7c1e0e34d8 Mon Sep 17 00:00:00 2001
+From 32fa620f87aee15bca8d484f71cb61258ccaeaf8 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
-Date: Tue, 22 Sep 2020 16:23:24 +0530
+Date: Tue, 6 Aug 2024 13:21:14 +0530
 Subject: [PATCH 05/11] Add unknown fou tracking to kernel
 
 Keep unknown fou tuples in a hash table, aging them out, as
@@ -14,11 +14,11 @@ Fou NAT tunnels, instead of trying to monitor conntrack entries.
 
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
- net/ipv4/ipip.c | 548 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 548 insertions(+)
+ net/ipv4/ipip.c | 544 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 544 insertions(+)
 
 diff --git a/net/ipv4/ipip.c b/net/ipv4/ipip.c
-index 6eff9376b..9f6c9641f 100644
+index 6eff937..e57617e 100644
 --- a/net/ipv4/ipip.c
 +++ b/net/ipv4/ipip.c
 @@ -101,6 +101,8 @@
@@ -620,27 +620,24 @@ index 6eff9376b..9f6c9641f 100644
  rtnl_link_failed:
  #if IS_ENABLED(CONFIG_MPLS)
  	xfrm4_tunnel_deregister(&mplsip_handler, AF_MPLS);
-@@ -708,6 +1248,10 @@ static int __init ipip_init(void)
+@@ -708,6 +1248,8 @@ static int __init ipip_init(void)
  
  static void __exit ipip_fini(void)
  {
-+	if (fou_key_multi_port) {
-+		del_timer_sync(&ipip_fou_unk_gc_timer);
-+		genl_unregister_family(&fou_unknown_genl_family);
-+	}
++	del_timer_sync(&ipip_fou_unk_gc_timer);
++	genl_unregister_family(&fou_unknown_genl_family);
  	rtnl_link_unregister(&ipip_link_ops);
  	if (xfrm4_tunnel_deregister(&ipip_handler, AF_INET))
  		pr_info("%s: can't deregister tunnel\n", __func__);
-@@ -716,6 +1260,10 @@ static void __exit ipip_fini(void)
+@@ -716,6 +1258,8 @@ static void __exit ipip_fini(void)
  		pr_info("%s: can't deregister tunnel\n", __func__);
  #endif
  	unregister_pernet_device(&ipip_net_ops);
-+	if (fou_key_multi_port) {
-+		ipip_fou_unk_purge();
-+		rcu_barrier();
-+	}
++	ipip_fou_unk_purge();
++	rcu_barrier();
  #ifdef CONFIG_SYSCTL
  	unregister_net_sysctl_table(ipip_sysctl_header);
  #endif
 -- 
-2.39.0
+2.7.4
+

@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.97
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -875,6 +875,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 06 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.97-4
+- Fix hcx crash while executing rmmod ipip
 * Fri Jul 19 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.97-3
 - Keep .BTF section in kernel modules
 * Fri Jul 19 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.97-2
