@@ -2,7 +2,7 @@
 
 Summary:        Security client
 Name:           nss
-Version:        3.98
+Version:        3.101.2
 Release:        1%{?dist}
 License:        MPLv2.0
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
@@ -11,11 +11,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.mozilla.org/pub/security/nss/releases/NSS_%{rel_tag}_RTM/src/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4f335c5c284eff6424745cc15e32037715a915f6f61687ec36a8ffaef0e45d152602a1be275bbb2f14650c7d258d6488430cdcf512b18ba7cb73cd43ac625681
+%define sha512 %{name}=65ac338ee1b13ecc2b190f1ea39c987110a06f3b67610e094ffc1ef4117d487c34af1e11b90de0c28035bfc5cb10ca7996ed991d9afce7985973fabb48cd7ac8
 
 # taken from:
-# http://lfs.linux-sysadmin.com/patches/downloads/nss/nss-3.98-standalone-1.patch
-Patch0: %{name}-%{version}-standalone-1.patch
+# http://lfs.linux-sysadmin.com/patches/downloads/nss/nss-3.101-standalone-1.patch
+Patch0: %{name}-3.101-standalone-1.patch
 
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -132,6 +132,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Tue Aug 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.101.2-1
+- Upgrade to v3.101.2
 * Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.98-1
 - Upgrade to v3.98
 * Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.89.1-2

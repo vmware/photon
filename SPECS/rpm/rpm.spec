@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.19.1.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -368,6 +368,8 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}/*.md
 
 %changelog
+* Tue Aug 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.1.1-2
+- Bump version as a part of nss upgrade
 * Sun Jun 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.1.1-1
 - Upgrade to v4.19.1.1
 * Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-6

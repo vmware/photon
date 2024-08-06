@@ -1,6 +1,6 @@
-From f51d765a6a1ac263a0a9ce3c2f5561e3a94586f5 Mon Sep 17 00:00:00 2001
+From 3a94378ab466c80fea4efaf3ba17a51684e4f863 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
-Date: Thu, 14 Mar 2024 15:59:11 +0530
+Date: Tue, 6 Aug 2024 15:00:45 +0530
 Subject: [PATCH] Submitted By:            Xi Ruoyao
  <xry111_AT_mengyan1223_DOT_wang> Date:                    2020-08-22 Initial
  Package Version: 3.12.4 Upstream Status:         Not applicable Origin:      
@@ -10,6 +10,8 @@ Subject: [PATCH] Submitted By:            Xi Ruoyao
  Minimum NSPR version is now read out from package,                         
  instead of hardcoded value in the patch.
 
+sshedi: patch source
+https://linuxfromscratch.org/patches/downloads/nss/nss-3.101-standalone-1.patch
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
  nss/Makefile             |   4 +-
@@ -98,7 +100,7 @@ index 0000000..3a452b0
 +
 diff --git a/nss/config/nss-config.in b/nss/config/nss-config.in
 new file mode 100644
-index 0000000..aebba3a
+index 0000000..a9ea6bd
 --- /dev/null
 +++ b/nss/config/nss-config.in
 @@ -0,0 +1,153 @@
@@ -253,7 +255,7 @@ index 0000000..aebba3a
 +        libdirs="$libdirs -lsoftokn${major_version}"
 +      fi
 +      echo $libdirs
-+fi      
++fi
 +
 diff --git a/nss/config/nss.pc.in b/nss/config/nss.pc.in
 new file mode 100644
@@ -287,5 +289,5 @@ index fbc420a..b983d88 100644
  HAVE_ALL_TARGET := 1
  
 -- 
-2.44.0
+2.45.2
 
