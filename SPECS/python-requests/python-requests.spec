@@ -1,7 +1,7 @@
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python3-requests
 Version:        2.26.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -91,6 +91,8 @@ pytest3 -v -k "not test_https_warnings"
 %{python3_sitelib}/*
 
 %changelog
+* Tue Aug 06 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.26.0-3
+- Bump up as part of python3-urllib3 update
 * Fri Dec 22 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.26.0-2
 - Bump up as part of python-certifi update
 * Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.26.0-1
