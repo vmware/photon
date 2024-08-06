@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.72
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MPLv2.0
 URL:            https://wiki.mozilla.org/NSS
 Group:          Applications/System
@@ -17,6 +17,7 @@ Patch2: CVE-2022-36320-1.patch
 Patch3: CVE-2022-36320-2.patch
 Patch4: CVE-2023-0767.patch
 Patch5: CVE-2023-5388.patch
+Patch6: CVE-2024-0743.patch
 
 Requires:       nspr
 Requires:       nss-libs = %{version}-%{release}
@@ -133,6 +134,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Tue Aug 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.72-6
+- Fix CVE-2024-0743
 * Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.72-5
 - Fix CVE-2023-5388
 * Fri Jan 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.72-4
