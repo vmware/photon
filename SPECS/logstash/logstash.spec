@@ -1,7 +1,7 @@
 Summary:        Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.8.15
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -16,6 +16,7 @@ Source2:        %{name}.conf
 
 Patch0:         CVE-2021-44228.patch
 Patch1:         CVE-2021-45046.patch
+Patch2:         0001-Add-plugins.gradle.org-repo-to-fix-build-regression.patch
 
 BuildArch:      x86_64
 
@@ -96,15 +97,6 @@ exit 0
 %systemd_post %{name}.service
 
 %postun
-if [ $1 -eq 0 ]; then
-  # this is delete operation
-  if getent passwd %{name} >/dev/null; then
-      userdel %{name}
-  fi
-  if getent group %{name} >/dev/null; then
-      groupdel %{name}
-  fi
-fi
 %systemd_postun_with_restart %{name}.service
 
 %preun
@@ -121,6 +113,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+* Wed Aug 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.8.15-5
+- Add plugins.gradle.org repo to fix build regression
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 6.8.15-4
 - Bump version as a part of openjdk8 upgrade
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.8.15-3

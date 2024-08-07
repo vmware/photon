@@ -1,0 +1,92 @@
+From 0bc04baf35720e0d7995dabc59f606a3386934e5 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 7 Aug 2024 12:09:43 +0530
+Subject: [PATCH] Add plugins.gradle.org repo to fix build regression
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ logstash-core/benchmarks/build.gradle  | 2 ++
+ tools/benchmark-cli/build.gradle       | 2 ++
+ tools/dependencies-report/build.gradle | 2 ++
+ tools/ingest-converter/build.gradle    | 2 ++
+ 4 files changed, 8 insertions(+)
+
+diff --git a/logstash-core/benchmarks/build.gradle b/logstash-core/benchmarks/build.gradle
+index 7261b40..db630f0 100644
+--- a/logstash-core/benchmarks/build.gradle
++++ b/logstash-core/benchmarks/build.gradle
+@@ -10,12 +10,14 @@ String jrubyVersion = versionMap['jruby']['version']
+ repositories {
+   mavenCentral()
+   jcenter()
++  maven { url = uri("https://plugins.gradle.org/m2/") }
+ }
+ 
+ buildscript {
+   repositories {
+     mavenCentral()
+     jcenter()
++    maven { url = uri("https://plugins.gradle.org/m2/") }
+   }
+   dependencies {
+     classpath 'org.yaml:snakeyaml:1.17'
+diff --git a/tools/benchmark-cli/build.gradle b/tools/benchmark-cli/build.gradle
+index 9668d7b..5c330b4 100644
+--- a/tools/benchmark-cli/build.gradle
++++ b/tools/benchmark-cli/build.gradle
+@@ -9,12 +9,14 @@ version = versionMap['logstash-core']
+ repositories {
+   mavenCentral()
+   jcenter()
++  maven { url = uri("https://plugins.gradle.org/m2/") }
+ }
+ 
+ buildscript {
+   repositories {
+     mavenCentral()
+     jcenter()
++    maven { url = uri("https://plugins.gradle.org/m2/") }
+   }
+   dependencies {
+     classpath 'org.yaml:snakeyaml:1.17'
+diff --git a/tools/dependencies-report/build.gradle b/tools/dependencies-report/build.gradle
+index a75a33c..f95275c 100644
+--- a/tools/dependencies-report/build.gradle
++++ b/tools/dependencies-report/build.gradle
+@@ -10,12 +10,14 @@ String jacksonVersion = versionMap['jackson']
+ repositories {
+   mavenCentral()
+   jcenter()
++  maven { url = uri("https://plugins.gradle.org/m2/") }
+ }
+ 
+ buildscript {
+   repositories {
+     mavenCentral()
+     jcenter()
++    maven { url = uri("https://plugins.gradle.org/m2/") }
+   }
+   dependencies {
+     classpath 'org.yaml:snakeyaml:1.17'
+diff --git a/tools/ingest-converter/build.gradle b/tools/ingest-converter/build.gradle
+index 128b257..6ccdbe3 100644
+--- a/tools/ingest-converter/build.gradle
++++ b/tools/ingest-converter/build.gradle
+@@ -9,12 +9,14 @@ version = versionMap['logstash-core']
+ repositories {
+   mavenCentral()
+   jcenter()
++  maven { url = uri("https://plugins.gradle.org/m2/") }
+ }
+ 
+ buildscript {
+   repositories {
+     mavenCentral()
+     jcenter()
++    maven { url = uri("https://plugins.gradle.org/m2/") }
+   }
+   dependencies {
+     classpath 'org.yaml:snakeyaml:1.17'
+-- 
+2.45.2
+
