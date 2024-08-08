@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.14
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -27,7 +27,6 @@ Patch3: CVE-2024-5535.patch
 BuildRequires: zlib-devel
 %endif
 
-Requires: bash
 Requires: glibc
 Requires: libgcc
 Requires: %{name}-libs = %{version}-%{release}
@@ -45,6 +44,7 @@ web browsers (for accessing HTTPS sites).
 Summary: Core libraries and other files needed by openssl.
 Conflicts: %{name} < 3.0.8-1
 Conflicts: %{name}-fips-provider <= 3.0.8-3
+Requires: bash
 
 %description libs
 %{summary}
@@ -191,6 +191,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Aug 08 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.14-6
+- Resolve openssl-libs installation issue before bash
 * Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.14-5
 - Move fips-provider out of openssl spec
 * Mon Jul 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.14-4

@@ -4,7 +4,7 @@
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        9.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -78,13 +78,11 @@ make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 %clean
 rm -rf %{buildroot}/*
 
-%post
-/sbin/ldconfig
+%posttrans
 mkdir -p %{_sharedstatedir}/rpm-state
 touch %{coreutils_present}
 
 %postun
-/sbin/ldconfig
 [ $1 = 0 ] && rm -f %{coreutils_present} || :
 
 %files
@@ -99,6 +97,8 @@ touch %{coreutils_present}
 %defattr(-,root,root)
 
 %changelog
+* Thu Aug 08 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1-5
+- Resolve coreutils dependency issue on bash
 * Wed Jul 03 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 9.1-4
 - enable xattr support
 * Mon Feb 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-3
