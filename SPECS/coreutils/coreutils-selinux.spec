@@ -6,7 +6,7 @@
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
 Version:        9.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -86,14 +86,12 @@ make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 %clean
 rm -rf %{buildroot}/*
 
-%post
-/sbin/ldconfig
+%posttrans
 mkdir -p %{_sharedstatedir}/rpm-state
 touch %{coreutils_selinux_present}
 
 %postun
-/sbin/ldconfig
-[ $1 = 0 ] && rm -f %{coreutils_selinux_present}
+[ $1 = 0 ] && rm -f %{coreutils_selinux_present} || :
 
 %files
 %defattr(-,root,root)
@@ -107,6 +105,8 @@ touch %{coreutils_selinux_present}
 %defattr(-,root,root)
 
 %changelog
+* Mon Aug 12 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1-6
+- Resolve coreutils-selinux dependency issue on bash
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-5
 - Add lang sub package
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-4
