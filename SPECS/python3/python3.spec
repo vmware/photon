@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -32,7 +32,7 @@ BuildRequires: ncurses-devel
 BuildRequires: openssl-devel
 BuildRequires: readline-devel
 BuildRequires: xz-devel
-BuildRequires: expat-devel >= 2.1.0
+BuildRequires: expat-devel >= 2.6.0
 BuildRequires: libffi-devel >= 3.0.13
 BuildRequires: sqlite-devel
 BuildRequires: util-linux-devel
@@ -68,7 +68,7 @@ code. It is incompatible with Python 2.x releases.
 Summary: The libraries for python runtime
 Group: Applications/System
 Requires:       (coreutils or coreutils-selinux)
-Requires:       expat >= 2.1.0
+Requires:       expat >= 2.6.0
 Requires:       libffi >= 3.0.13
 Requires:       ncurses
 Requires:       sqlite-libs
@@ -102,7 +102,7 @@ The python3-curses package provides interface for ncurses library.
 Summary: The libraries and header files needed for Python development.
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-Requires:       expat-devel >= 2.1.0
+Requires:       expat-devel >= 2.6.0
 Requires:       %{name}-macros = %{version}-%{release}
 # Needed here because of the migration of Makefile from -devel to the main
 # package
@@ -303,6 +303,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Thu Aug 08 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.11.9-2
+- Update expat dependency
 * Sat Jul 27 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.11.9-1
 - Update to 3.11.9
 - Update pip3 wheel to 24.0
