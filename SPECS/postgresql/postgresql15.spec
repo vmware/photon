@@ -11,8 +11,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql15
-Version:        15.6
-Release:        2%{?dist}
+Version:        15.8
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -20,7 +20,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=d9f158d844ec21bc5a7eccad9193dfe026d3df46a011980412ad7d150b3894c01754be0053bed530976047d7eff657204ac321138ba8da6eac8fb7b93b9520ad
+%define sha512 %{srcname}=da610d878819179fcafe8adf6cbe72e188537dbaff82457c67013f9089ae8cbb1f6d8c4d5ea62e4ef54c3e2a90060bd1f36b71b8531354279181e574d903940c
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -304,6 +304,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Fri Aug 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.8-1
+- Upgrade to v15.8 to fix CVE-2024-7348
 * Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-2
 - Remove provides, only pgsql14 should provide pgsql
 * Mon May 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-1

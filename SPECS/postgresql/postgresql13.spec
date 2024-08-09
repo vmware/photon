@@ -12,8 +12,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql13
-Version:        13.14
-Release:        3%{?dist}
+Version:        13.16
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=25d545de69d6ac16b044e09939678af97b6574c71d47d98f95f0ef9ad11ff65e864e503ddff119d73fbb3c61e648e31219982d60da7fc2382ba10e0bfc370aa5
+%define sha512 %{srcname}=e874c77e2d1d27d724f45c576c9d815da55f36712d67e3ec0a1f14ce4ac535fb39b6f23cdcd818cff05788e2c1e12f79572d90f8c145d7478aa35157b0b40679
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -284,6 +284,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Fri Aug 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.16-1
+- Upgrade to v13.16 to fix CVE-2024-7348
 * Fri Mar 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-3
 - Use version specific bindir path in service file
 * Wed Feb 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-2
