@@ -12,8 +12,9 @@ from SpecParser import SpecParser
 
 
 class SpecData(object):
-    def __init__(self, arch, logPath, specFilesPaths):
+    def __init__(self, arch, logPath, specFilesPaths, dist):
         self.arch = arch
+        self.dist = dist
         self.logger = Logger.getLogger("SpecData", logPath, constants.logLevel)
 
         # map default package name to list of SpecObjects. Usually it is just
@@ -34,7 +35,7 @@ class SpecData(object):
     # creates corresponding SpecObjects and put them in internal mappings.
     def _readSpecs(self, specFilesPaths):
         for specFile in self._getListSpecFiles(specFilesPaths):
-            spec = SpecParser(specFile, self.arch)
+            spec = SpecParser(specFile, self.arch, self.dist)
 
             # skip the specfile if buildarch differs
             buildarch = spec.packages.get("default").buildarch
@@ -405,11 +406,12 @@ class SPECS(object):
 
     def initialize(self):
         # Full parsing
+        dist = constants.dist[1:]
         self.specData[constants.buildArch] = SpecData(
-            constants.buildArch, constants.logPath, constants.specPaths
+            constants.buildArch, constants.logPath, constants.specPaths, dist
         )
 
         if constants.buildArch != constants.targetArch:
             self.specData[constants.targetArch] = SpecData(
-                constants.targetArch, constants.logPath, constants.specPaths
+                constants.targetArch, constants.logPath, constants.specPaths, dist
             )

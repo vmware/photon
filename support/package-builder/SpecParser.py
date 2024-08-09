@@ -19,8 +19,9 @@ class SpecParser(object):
             self.position = -1
             self.endposition = -1
 
-    def __init__(self, specfile, arch):
+    def __init__(self, specfile, arch, dist):
         self.arch = arch
+        self.dist = dist
         self.cleanMacro = None
         self.prepMacro = None
         self.buildMacro = None
@@ -56,6 +57,9 @@ class SpecParser(object):
                     deep += 1
                 elif self._isConditionalMacroEnd(line):
                     deep -= 1
+
+        if not self._isConditionBranch(lines):
+            return
 
         while i < totalLines:
             line = lines[i].strip()
@@ -280,6 +284,61 @@ class SpecParser(object):
             or self._isConditionalMacroStart(line)
             or self._isConditionalMacroEnd(line)
         )
+
+    def _isConditionBranch(self, lines):
+        # Compile the regular expression pattern to match `%global build_for` and capture the value that follows
+        pattern = re.compile(r'%global\s+build_for (.+)')
+
+        # Iterate over each line
+        for line in lines:
+            match = pattern.search(line)
+            if match:
+                condition = match.group(1).strip()
+                return self._evaluateCondition(condition)
+        return True
+
+    def _evaluateCondition(self, condition):
+        err = ValueError(
+                "Invalid condition format. Correct formats are:\n"
+                "1. Simple value: ph5\n"
+                "2. Negation: !ph5\n"
+                "3. List of values: (ph5, ph6)\n"
+                "4. Negation list: !(ph5, ph6)\n"
+                "5. All: all\n"
+                "6. None: none\n"
+                "Examples:\n"
+                "   %global build_for ph5\n"
+                "   %global build_for !ph5\n"
+                "   %global build_for (ph5, ph6)\n"
+                "   %global build_for !(ph4, ph6)\n"
+                "   %global build_for all\n"
+                "   %global build_for none"
+            )
+        # Handle conditions with 'all' and 'none'
+        if condition.lower() == 'all':
+            return True
+        if condition.lower() == 'none':
+            return False
+
+        # Handle negation cases (starting with '!')
+        if condition.startswith('!'):
+            sub_condition = condition[1:].strip()
+            return not self._evaluateCondition(sub_condition)
+
+        # Handle lists within parentheses
+        if condition.startswith('(') and condition.endswith(')'):
+            options = condition[1:-1].strip()
+            # Handle the case where nested parentheses or negation inside parentheses
+            if '!' in options or '(' in options or ')' in options:
+                raise err
+            options_list = [opt.strip() for opt in options.split(',')]
+            return self.dist in options_list
+
+        # Handle the case where it's neither a list nor a simple value
+        if ',' in condition or '(' in condition or ')' in condition:
+            raise err
+
+        return self.dist == condition
 
     def _isConditionalArch(self, line):
         return re.search("^%ifarch", line)
