@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.7
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -11,6 +11,8 @@ Distribution:  Photon
 URL:           https://github.com/vmware/photon-os-installer
 Source0:       %{name}-%{version}.tar.gz
 %define sha512 %{name}=9c2b6df1e9136e94db1451064b51a286b2894849b309dde9539cb9df4fc82e807c74ccb0f7795d7d1d5b2c1ea856dfb38623e1c08e94c567696a637ca6f75fe8
+
+Patch0: 0001-photon-os-installer-Fix-copytree-compatiblity-issue.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -64,6 +66,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Fri Aug 09 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.7-2
+- Fix copytree() for old python version
 * Fri May 24 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.7-1
 - Upgrade to v2.7
 * Wed Oct 25 2023 Ankit Jain <ankitja@vmware.com> 2.4-2

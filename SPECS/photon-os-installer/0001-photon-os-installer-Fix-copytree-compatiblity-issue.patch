@@ -1,0 +1,43 @@
+From 129d21bbc317e7bd2d6440784f133c512414fc74 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Date: Fri, 9 Aug 2024 22:23:01 +0000
+Subject: [PATCH] photon-os-installer: Fix copytree() compatiblity issue
+
+- With python < 3.8 , copytree(src,dst, dirs_exits_ok)
+  'dirs_exits_ok' doesn't exist.
+- Thus, it was failing with old python version.
+- Utilising copy_tree() from distutils to achieve the
+  same for old version of python
+
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ photon_installer/installer.py | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index af30e06..3f846f5 100644
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -34,6 +34,7 @@ from window import Window
+ from networkmanager import NetworkManager
+ from enum import Enum
+ from collections import abc
++from distutils.dir_util import copy_tree
+ import tdnf
+ 
+ 
+@@ -1235,7 +1236,10 @@ class Installer(object):
+                     else:
+                         srcpath = self.getfile(src)
+                         if (os.path.isdir(srcpath)):
+-                            shutil.copytree(srcpath, self.photon_root + dest, dirs_exist_ok=True)
++                            if sys.version_info >= (3,8):
++                                shutil.copytree(srcpath, self.photon_root + dest, dirs_exist_ok=True)
++                            else:
++                                copy_tree(srcpath, self.photon_root + dest)
+                         else:
+                             os.makedirs(self.photon_root + os.path.dirname(dest), exist_ok=True)
+                             shutil.copyfile(srcpath, self.photon_root + dest)
+-- 
+2.39.4
+
