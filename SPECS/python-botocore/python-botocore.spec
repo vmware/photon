@@ -1,7 +1,7 @@
 Summary:        Amazon Web Services Library.
 Name:           python3-botocore
 Version:        1.27.56
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -53,6 +53,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Aug 06 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.56-3
+- Bump up as part of python3-urllib3 update
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.27.56-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.27.56-1

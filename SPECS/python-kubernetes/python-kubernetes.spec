@@ -3,7 +3,7 @@
 Summary:    Python client for the kubernetes API.
 Name:       python3-kubernetes
 Version:    30.1.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    ASL 2.0
 URL:        https://pypi.python.org/pypi/kubernetes
 Group:      Development/Languages/Python
@@ -54,5 +54,7 @@ Python client for the kubernetes API.
 %{python3_sitelib}/%{srcname}-*.egg-info
 
 %changelog
+* Fri Aug 09 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 30.1.0-2
+- Bump up as part of python3-urllib3 update
 * Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 30.1.0-1
 - Initial version. Needed by syslog-ng.
