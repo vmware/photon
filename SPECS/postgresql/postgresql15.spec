@@ -12,7 +12,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql15
-Version:        15.7
+Version:        15.8
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=8a03e2d7a267f0d11c27d90a2fb605725accb41cfebba2b56c735d4af45bb5f977d4ba051a02ac8d31f93253372df3d3b5efdd159e258d6fcc506b73e3ad6e27
+%define sha512 %{srcname}=da610d878819179fcafe8adf6cbe72e188537dbaff82457c67013f9089ae8cbb1f6d8c4d5ea62e4ef54c3e2a90060bd1f36b71b8531354279181e574d903940c
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -701,6 +701,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Fri Aug 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.8-1
+- Upgrade to v15.8 to fix CVE-2024-7348
 * Fri May 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.7-1
 - Upgrade to v15.7
 * Mon Apr 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-4

@@ -12,7 +12,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.12
+Version:        14.13
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=cb6729d0fba8aa705c92beecdc5cd1131e64337db6de038da6f5b75c7d9e65381f93f6ebfac601d5622399b9485e8ec558be53e6a7dcc59350a9b053f8836bf9
+%define sha512 %{srcname}=816e15b619a965b32a3afddebbf9cf5aabacc2440e88b11b0743767a353fe6966503c0e2a08c19d2de9705895f7aedadcf105732d0d3494c61402d379770c6d7
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -30,6 +30,8 @@ Source4: %{srcname}-env-vars.conf
 Source5: %{srcname}.preset
 Source6: %{srcname}.sysusers
 Source7: systemd-unit-instructions
+
+Patch0: perl-dependency.patch
 
 BuildRequires: clang-devel
 BuildRequires: gettext
@@ -697,6 +699,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Fri Aug 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.13-1
+- Upgrade to v14.13 to fix CVE-2024-7348
 * Fri May 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.12-1
 - Upgrade to v14.12
 * Mon Apr 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-4
