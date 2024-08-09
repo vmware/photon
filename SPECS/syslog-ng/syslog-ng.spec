@@ -2,7 +2,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -214,6 +214,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Fri Aug 09 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.1-6
+- Bump up as part of python3-urllib3 update
 * Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-5
 - Do offline build
 * Thu Apr 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-4

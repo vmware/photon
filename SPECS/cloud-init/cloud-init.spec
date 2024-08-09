@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        24.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -146,6 +146,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 
 %changelog
+* Tue Aug 06 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.2-3
+- Bump up as part of python3-urllib3 update
 * Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.2-2
 - Bump version as a part of python3-oauthlib upgrade
 * Mon Jul 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.2-1
