@@ -1,7 +1,7 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
 Version:        2.2.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.keepalived.org
 Group:          Applications/System
@@ -12,6 +12,13 @@ Source0: https://github.com/acassen/keepalived/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=617ea91a8fcf9cabb4a5c92e9131ed3efc40930e823c77359ec0c7e82bae3f899108443afbb214678437caac1b649a710fa5f783d370fd3030ae9319be522623
 
 Source1: %{name}.service
+# Backport of Upstream PR: https://github.com/acassen/keepalived/pull/2448/commits
+# to fix CVE-2024-41184
+Patch0: 0001-lib-don-t-return-subtracted-addresses-for-rb_find-co.patch
+Patch1: 0002-vrrp-Handle-empty-ipset-names-with-vrrp_ipsets-keywo.patch
+Patch2: 0003-vrrp-handle-empty-iptables-chain-names-vrrp_iptables.patch
+Patch3: 0004-vrrp-and-ipvs-handle-empty-nftables-chain-names.patch
+Patch4: 0005-configure-add-enable-sanitize-address-option.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  iptables-devel
@@ -95,6 +102,8 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
+* Fri Aug 09 2024 Ankit Jain <sshedi@vmware.com> 2.2.7-2
+- Fix for CVE-2024-41184
 * Tue May 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-1
 - Upgrade to v2.2.7
 * Mon Jan 23 2023 Ankit Jain <ankitja@vmware.com> 2.1.5-5
