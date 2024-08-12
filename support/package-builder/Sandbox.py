@@ -10,8 +10,9 @@ from CommandUtils import CommandUtils
 
 
 class Sandbox(object):
-    def __init__(self, logger):
+    def __init__(self, logger, cmdlog = lambda cmd: None):
         self.logger = logger
+        self.cmdlog = cmdlog
 
     def create(self, name):
         pass
@@ -33,8 +34,8 @@ class Sandbox(object):
 
 
 class Chroot(Sandbox):
-    def __init__(self, logger):
-        Sandbox.__init__(self, logger)
+    def __init__(self, logger, cmdlog = lambda cmd: None):
+        Sandbox.__init__(self, logger, cmdlog)
         self.chrootID = None
         self.prepareBuildRootCmd = os.path.join(
             os.path.dirname(__file__), "prepare-build-root.sh"
@@ -72,6 +73,7 @@ class Chroot(Sandbox):
         extra_dirs = "RPMS,SRPMS,SOURCES,SPECS,LOGS,BUILD,BUILDROOT"
         cmd = f"mkdir -p {chrootID}/{{{top_dirs}}} {chrootID}/{constants.topDirPath}/{{{extra_dirs}}}"  # noqa: E501
 
+        self.cmdlog(cmd)
         # Need to add timeout for this step
         # http://stackoverflow.com/questions/1191374/subprocess-with-timeout
         self.cmdUtils.runBashCmd(cmd)
@@ -79,6 +81,7 @@ class Chroot(Sandbox):
         self.logger.debug(f"Created new chroot: {chrootID}")
 
         prepareChrootCmd = f"{self.prepareBuildRootCmd} {chrootID}"
+        self.cmdlog(prepareChrootCmd)
         self.cmdUtils.runBashCmd(prepareChrootCmd, logfn=self.logger.debug)
 
         if os.geteuid() == 0:
@@ -91,6 +94,7 @@ class Chroot(Sandbox):
             if constants.inputRPMSPath:
                 cmd += f" && mount -o ro --bind {constants.inputRPMSPath} {chrootID}/inputrpms"  # noqa: E501
 
+            self.cmdlog(cmd)
             self.cmdUtils.runBashCmd(cmd)
 
         self.logger.debug(f"Successfully created chroot: {chrootID}")
@@ -109,6 +113,7 @@ class Chroot(Sandbox):
     def run(self, cmd, logfile=None, logfn=None):
         self.logger.debug(f"Chroot.run() cmd: {self.chrootCmdPrefix}{cmd}")
         cmd = cmd.replace('"', '\\"')
+        self.cmdlog(f"{self.chrootCmdPrefix}{cmd}")
         (_, _, retval) = self.cmdUtils.runBashCmd(
             f"{self.chrootCmdPrefix}{cmd}", logfile, logfn
         )
@@ -122,10 +127,12 @@ class Chroot(Sandbox):
             sources = " ".join(sources)
         cmd = f"cp -p {sources} {self.chrootID}{dest}"
         self.logger.debug(cmd)
+        self.cmdlog(cmd)
         self.cmdUtils.runBashCmd(cmd)
 
     def _removeChroot(self, chrootPath):
         cmd = f"rm -rf {chrootPath}"
+        self.cmdlog(cmd)
         self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
 
     def unmountAll(self):
@@ -137,16 +144,19 @@ class Chroot(Sandbox):
             return True
         for mountpoint in listmountpoints:
             cmd = f"umount {mountpoint} && sync"
+            self.cmdlog(cmd)
             _, _, rc = self.cmdUtils.runBashCmd(cmd, ignore_rc=True)
             if rc:
                 # Try unmount with lazy umount
                 cmd = f"umount -l {mountpoint} && sync"
+                self.cmdlog(cmd)
                 self.cmdUtils.runBashCmd(cmd)
 
     def _findmountpoints(self, chrootPath):
         if not chrootPath.endswith("/"):
             chrootPath += "/"
         cmd = f"mount | grep {chrootPath} | cut -d' ' -s -f3"
+        self.cmdlog(cmd)
         mountpoints, _, _ = self.cmdUtils.runBashCmd(cmd, capture=True)
 
         mountpoints = mountpoints.replace("\n", " ").strip()
@@ -158,11 +168,83 @@ class Chroot(Sandbox):
         listmountpoints.reverse()
         return listmountpoints
 
+class SystemdNspawn(Sandbox):
+    def __init__(self, logger, cmdlog = lambda cmd: None):
+        Sandbox.__init__(self, logger, cmdlog)
+        self.chrootID = None
+        self.nspawnCmdPrefix = None
+        self.cmdUtils = CommandUtils()
+
+    def getID(self):
+        return self.chrootID
+
+    def create(self, chrootName):
+        if self.chrootID:
+            raise Exception(f"Unable to create: {chrootName}. Chroot is already active: {self.chrootID}")
+
+        chrootID = f"{constants.buildRootPath}/{chrootName}"
+        self.chrootID = chrootID
+        self.nspawnCmdPrefix = f"SYSTEMD_NSPAWN_TMPFS_TMP=0 systemd-nspawn --quiet --directory {chrootID} " \
+            f"--bind {constants.rpmPath}:{constants.topDirPath}/RPMS " \
+            f"--bind {constants.sourceRpmPath}:{constants.topDirPath}/SRPMS " \
+            f"--bind-ro {constants.prevPublishRPMRepo}:/publishrpms " \
+            f"--bind-ro {constants.prevPublishXRPMRepo}:/publishxrpms "
+
+        if constants.inputRPMSPath:
+            self.nspawnCmdPrefix += f"--bind-ro {constants.inputRPMSPath}:/inputrpms "
+
+        if os.path.isdir(chrootID):
+            if constants.resume_build:
+                return
+            self._destroy(chrootID)
+
+        top_dirs = "dev,etc,proc,run,sys,tmp,publishrpms,publishxrpms,inputrpms"
+        extra_dirs = "RPMS,SRPMS,SOURCES,SPECS,LOGS,BUILD,BUILDROOT"
+        cmd = (
+            f"mkdir -p {chrootID}/{{{top_dirs}}} {chrootID}/{constants.topDirPath}/{{{extra_dirs}}}"
+        )
+
+        # Need to add timeout for this step
+        # http://stackoverflow.com/questions/1191374/subprocess-with-timeout
+        self.cmdlog(cmd)
+        self.cmdUtils.runBashCmd(cmd)
+
+        self.logger.debug(f"Created new chroot: {chrootID}")
+
+        self.logger.debug(f"Successfully created chroot: {chrootID}")
+
+    def destroy(self):
+        self._destroy(self.chrootID)
+        self.chrootID = None
+
+    def _destroy(self, chrootID):
+        if not chrootID:
+            return
+        self.logger.debug(f"Deleting chroot: {chrootID}")
+        cmd = f"rm -rf {chrootID}"
+        self.cmdlog(cmd)
+        self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
+
+    def run(self, cmd, logfile=None, logfn=None):
+        self.logger.debug(f"systemd-nspawn.run() cmd: {self.nspawnCmdPrefix}{cmd}")
+        self.cmdlog(f"{self.nspawnCmdPrefix}{cmd}")
+        (_, _, retval) = self.cmdUtils.runBashCmd(f"{self.nspawnCmdPrefix}{cmd}", logfile, logfn)
+        return retval
+
+    def put(self, src, dest):
+        shutil.copy2(src, f"{self.chrootID}{dest}")
+
+    def put_list_of_files(self, sources, dest):
+        if type(sources) == list:
+            sources = " ".join(sources)
+        cmd = f"cp -p {sources} {self.chrootID}{dest}"
+        self.logger.debug(cmd)
+        self.cmdlog(cmd)
+        self.cmdUtils.runBashCmd(cmd)
 
 class Container(Sandbox):
-    def __init__(self, logger):
-
-        Sandbox.__init__(self, logger)
+    def __init__(self, logger, cmdlog = lambda cmd: None):
+        Sandbox.__init__(self, logger, cmdlog)
         self.containerID = None
         self.dockerClient = docker.from_env(version="auto")
 
@@ -240,6 +322,7 @@ class Container(Sandbox):
         self.containerID = containerID
 
     def run(self, cmd, logfile=None, logfn=None):
+        self.cmdlog(cmd)
         result = self.containerID.exec_run(cmd)
         if result.output:
             if logfn:
@@ -256,6 +339,7 @@ class Container(Sandbox):
 
     def put(self, src, dest):
         copyCmd = f"docker cp {src} {self.containerID.short_id}:{dest}"
+        self.cmdlog(copyCmd)
         self.cmdUtils.runBashCmd(copyCmd)
 
     def hasToolchain(self):

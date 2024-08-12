@@ -9,7 +9,7 @@ from CommandUtils import CommandUtils
 from constants import constants
 from SpecData import SPECS
 from StringUtils import StringUtils
-from Sandbox import Chroot, Container
+from Sandbox import Chroot, SystemdNspawn, Container
 
 
 class PackageBuilder(object):
@@ -199,6 +199,8 @@ class PackageBuilder(object):
 
         if self.sandboxType == "chroot":
             sandbox = Chroot(self.logger)
+        elif self.sandboxType == "systemd-nspawn":
+            sandbox = SystemdNspawn(self.logger)
         elif self.sandboxType == "container":
             sandbox = Container(self.logger)
         else:
