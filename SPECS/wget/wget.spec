@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.21.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
@@ -17,6 +17,8 @@ BuildRequires:  openssl-devel
 %if 0%{?with_check}
 BuildRequires:  perl
 %endif
+
+Patch0: CVE-2024-38428.patch
 
 %description
 The Wget package contains a utility useful for non-interactive
@@ -63,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Mon Aug 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.21.3-2
+- Fix CVE-2024-38428
 * Fri Dec 16 2022 Srish Srinivasan <ssrish@vmware.com> 1.21.3-1
 - Upgraded to v1.21.3
 - Fix CVE-2021-31879
