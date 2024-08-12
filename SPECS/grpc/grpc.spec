@@ -6,7 +6,7 @@
 
 Summary:        Google RPC
 Name:           grpc
-Version:        1.59.3
+Version:        1.59.5
 Release:        1%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
@@ -15,7 +15,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/grpc/grpc/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=54344a124a16e979b30c8141a44be3a98e18d457a1b7d6c6eed3ee70b70cc2a5dbeab5d227d49de4480aa921fc947643252a5c80e9052138fc45c5f86ed18d5c
+%define sha512 %{name}=9f35ee3185c4cbb4140b86380e97d62dc6ecd886df3ec3aa3e917dc3f1e3acf518e2a28ed143f430869508f3c853b3f3f21226d74bab42f70b99a7096e0e18af
 
 Source1: https://github.com/envoyproxy/data-plane-api/archive/%{envoy_api_commit}/data-plane-api-%{envoy_api_commit}.tar.gz
 %define sha512 data-plane-api=9b1ceff5d018e70b36e02aa1b583f5495b0eb92506055bf6913d2e7ef401d3602cba8723efbc178ee31fdef9aba510fc2284612ebe22a24b5b4a703f07099897
@@ -114,6 +114,8 @@ rm -rf %{buildroot}%{_lib64dir}
 %{_libdir}/*.so
 
 %changelog
+* Mon Aug 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.59.5-1
+- Upgrade to v1.59.5
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.59.3-1
 - Upgrade to v1.59.3
 * Wed Aug 23 2023 Mukul Sikka <msikka@vmware.com> 1.54.3-1
