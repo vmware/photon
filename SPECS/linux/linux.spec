@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.222
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -904,6 +904,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Aug 13 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.222-3
+- Fix .config for aarch64
 * Tue Jul 23 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.222-2
 - Fix CVE-2024-27397
 * Fri Jul 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.222-1
