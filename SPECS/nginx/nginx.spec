@@ -4,7 +4,8 @@
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.27.0
+Epoch:          1
+Version:        1.26.2
 Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
@@ -13,7 +14,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://nginx.org/download/nginx-%{version}.tar.gz
-%define sha512 %{name}=251bfe65c717a8027ef05caae2ab2ea73b9b544577f539a1d419fe6adf0bcc846b73b58f54ea3f102df79aaf340e4fa56793ddadea3cd61bcbbe2364ef94bacb
+%define sha512 %{name}=470efe9ae5d6150ecbf133979c6c36415679a2156499a3b6820a85eb8f3038a8aa06f7b28ddd834cffb0e982f3ddc89e4b1649d536eba4f84019a72d4cfa3539
 
 Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
 %define sha512 %{name}-njs=450f6866141f6f370767149c8749e84c4373f401d6d2237ca85365a851ebe7bdbd8a3c25e85a55747673e8bef2238a979dd237d5fc5c641b2f3f2cf7f26dffc8
@@ -122,6 +123,11 @@ rm -rf %{buildroot}
 %{_var}/log/%{name}
 
 %changelog
+* Tue Aug 13 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.26.2-1
+- Downgrade version to v1.26.2
+- Adding Epoch to consider v1.26.2 latest instead of v1.27.0
+- nginx don't maintain stable branch for odd releases
+- Fix CVE-2024-7347
 * Wed Jun 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.27.0-1
 - Version upgrade to v1.27.0 to fix following issues:
 - Add headers-more-nginx-module
