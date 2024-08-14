@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -25,6 +25,7 @@ Patch10:        CVE-2023-36617-1.patch
 Patch11:        CVE-2023-36617-2.patch
 Patch12:        CVE-2023-28755.patch
 Patch13:        CVE-2024-27282.patch
+Patch14:        CVE-2021-43809.patch
 
 Source1: macros.ruby
 
@@ -112,6 +113,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Tue Aug 13 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-13
+- Fix CVE-2021-43809
 * Thu Jun 27 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-12
 - Fix Syntax error in macros.ruby file
 * Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-11
