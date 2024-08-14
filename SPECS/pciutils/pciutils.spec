@@ -1,7 +1,7 @@
 Summary:    System utilities to list pci devices
 Name:       pciutils
 Version:    3.7.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        https://www.kernel.org/pub/software/utils/pciutils/
 Group:      System Environment/System Utilities
@@ -25,15 +25,16 @@ Library files for doing development with pciutils.
 %build
 make %{?_smp_mflags} PREFIX=%{_prefix} \
     SHAREDIR=%{_datadir}/misc \
-    SHARED=yes
+    SHARED=yes STRIP=""
 
 %install
 make %{?_smp_mflags} DESTDIR=%{buildroot} \
     PREFIX=%{_prefix} \
     SHAREDIR=%{_datadir}/misc \
-    SHARED=yes \
+    SHARED=yes STRIP="" \
     install install-lib
-chmod -v 766 %{buildroot}%{_libdir}/libpci.so
+
+chmod 755 %{buildroot}%{_libdir}/*.so.*
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -55,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Wed Aug 14 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.7.0-3
+- Fix lib permission
 * Thu Nov 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.7.0-2
 - Add missing ldconfig after library installation.
 * Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7.0-1
