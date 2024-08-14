@@ -1,10 +1,10 @@
-Summary:	System utilities to list pci devices
-Name:		pciutils
-Version:	3.9.0
-Release:	1%{?dist}
-License:	GPLv2
-URL:		https://www.kernel.org/pub/software/utils/pciutils/
-Group:		System Environment/System Utilities
+Summary:        System utilities to list pci devices
+Name:           pciutils
+Version:        3.9.0
+Release:        2%{?dist}
+License:        GPLv2
+URL:            https://www.kernel.org/pub/software/utils/pciutils/
+Group:          System Environment/System Utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/utils/pciutils/%{name}-%{version}.tar.gz
@@ -28,17 +28,15 @@ Library files for doing development with pciutils.
 %build
 make %{?_smp_mflags} PREFIX=%{_prefix} \
     SHAREDIR=%{_datadir}/misc \
-    SHARED=yes
+    SHARED=yes STRIP=""
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} \
     PREFIX=%{_prefix} \
     SHAREDIR=%{_datadir}/misc \
     SHARED=yes \
-    %{?_smp_mflags} \
+    %{?_smp_mflags} STRIP="" \
     install install-lib
-chmod -v 766 %{buildroot}%{_libdir}/libpci.so
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -61,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Wed Aug 14 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.9.0-2
+-   Fix lib permission
 *   Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 3.9.0-1
 -   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.8.0-1
@@ -78,4 +78,4 @@ rm -rf %{buildroot}/*
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.1-2
 -   GA - Bump release of all rpms
 *   Thu Jul 2 2015 Sharath George <sharathg@vmware.com> 3.3.1-1
--   Initial build.	First version.
+-   Initial build. First version.
