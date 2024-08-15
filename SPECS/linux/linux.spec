@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.102
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -874,6 +874,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Aug 14 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.102-2
+- Enable CONFIG_GVE for gVNIC support
 * Thu Aug 08 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.102-1
 - Upgrade to version 6.1.102
 * Tue Aug 06 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.97-4
