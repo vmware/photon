@@ -1,5 +1,5 @@
 %define debug_package   %{nil}
-%define src_path        "${GOPATH}/src/github.com/projectcalico/libnetwork-plugin"
+%define gopath_comp_libnetwork_plugin github.com/projectcalico/libnetwork-plugin
 # if you are fetching glide dependencies freshly, set this to 1
 # for dev purpose only
 %define refetch_deps    0
@@ -7,7 +7,7 @@
 Summary:       Docker libnetwork plugin for Calico
 Name:          calico-libnetwork
 Version:       1.1.3
-Release:       20%{?dist}
+Release:       21%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -17,8 +17,10 @@ URL:           https://github.com/projectcalico/libnetwork-plugin
 Source0: https://github.com/projectcalico/libnetwork-plugin/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=40b7b0962e58fced7a02fa743b0f92aae2c6d1e43046cd0d59153f4022ad22ca0b29ac3a9cbc6e67218a35dce3306a1a88194d22248a2f589ee385d0c1ce3852
 
-Source1: glide-cache-for-calico-libnetwork-%{version}-15.tar.xz
-%define sha512 glide-cache-for-%{name}=9e8bc36c77f939e4c8a87e3461e0de8e9fe6b59235109f627b743b9c7317a1cf79d1b7fd41f6c89b8edb116d94912e658b3689a95bd14149487350f91bd919c4
+# Be aware that the source tarball has a different prefix as the package name: libnetwork-plugin vs. calico-libnetwork, thus use libnetwork-plugin-%{version} as prefix
+# Created by `glide install --strip-vendor && tar --owner=root --group=root --mtime='2000-01-01 00:00Z' --transform "s,^,libnetwork-plugin-${version}/," -c vendor | gzip -9`
+Source1: glide-vendor-for-%{name}-%{version}.tar.gz
+%define sha512 glide-vendor-for-%{name}=164866f261519403a420bf2746e5d34fbdf5be61c0141ddf9e9959e86ba93dc1b941210f4e8d9769f453da0dee8de082770e93bc05b2778dae80965eef8cee46
 
 BuildRequires: git
 BuildRequires: glide
@@ -28,33 +30,35 @@ BuildRequires: go
 Docker libnetwork plugin for Calico.
 
 %prep
-%autosetup -p1 -n libnetwork-plugin-%{version}
+# Using autosetup is not feasible
+%setup -q -c -n libnetwork-plugin-%{version}
 
-%build
-export GO111MODULE=auto
+# If not fetching dependencies, populate the vendor/ directory ourselves
+%if 0%{?refetch_deps} == 0
+tar -xf %{SOURCE1}
+%endif
 
-glide_cache_dir="${HOME}/.glide"
-mkdir -p ${glide_cache_dir} %{src_path}/dist
-tar -C ${glide_cache_dir} -xf %{SOURCE1}
+mkdir -p "$(dirname src/%{gopath_comp_libnetwork_plugin})"
+mv libnetwork-plugin-%{version} src/%{gopath_comp_libnetwork_plugin}
+
+# If fetching deoendencies, use `glide install -strip-vendor` the same as in Makefile
 %if 0%{?refetch_deps}
-pushd ${glide_cache_dir}/cache/src
-ln -srv https-cloud.google.com-go https-code.googlesource.com-gocloud
+export GOPATH="${PWD}"
+pushd src/%{gopath_comp_libnetwork_plugin}
+glide install --strip-vendor
 popd
 %endif
 
-cp -a * %{src_path}
-pushd %{src_path}
-%if 0%{?refetch_deps}
-glide mirror set https://cloud.google.com/go https://code.googlesource.com/gocloud
-%endif
-# glide install checks ~/.glide dir before downloading from the web.
-glide install --force --strip-vendor
+%build
+export GO111MODULE=auto
+export GOPATH="${PWD}"
 
+pushd src/%{gopath_comp_libnetwork_plugin}
 CGO_ENABLED=0 go build -v -o dist/libnetwork-plugin -ldflags "-X main.VERSION=%{version} -s -w" main.go
 popd
 
 %install
-pushd %{src_path}
+pushd src/%{gopath_comp_libnetwork_plugin}
 install -vdm 0755 %{buildroot}%{_datadir}/calico/docker
 install -vpm 0755 -t %{buildroot}%{_datadir}/calico/docker/ dist/libnetwork-plugin
 popd
@@ -67,6 +71,8 @@ rm -rf %{buildroot}
 %{_datadir}/calico/docker/libnetwork-plugin
 
 %changelog
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.1.3-21
+- Simplify build scripts
 * Mon Jul 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.3-20
 - Changes to help building offline
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.3-19

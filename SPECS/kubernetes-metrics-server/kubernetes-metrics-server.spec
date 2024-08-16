@@ -1,7 +1,18 @@
+%define gopath_comp_mserver github.com/kubernetes-incubator/metrics-server
+%ifarch aarch64
+%global gohostarch      arm64
+%else
+%global gohostarch      amd64
+%endif
+
+# Must be in sync with package version
+%define METRICS_SERVER_GIT_TAG v0.3.7
+%define METRICS_SERVER_GIT_COMMIT ce4a44e5341552d3b0b568cfe06b849a637fea53
+
 Summary:        Kubernetes Metrics Server
 Name:           kubernetes-metrics-server
 Version:        0.3.7
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/kubernetes-incubator/metrics-server
 Source0:        https://github.com/kubernetes-sigs/metrics-server/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -19,37 +30,29 @@ In Kubernetes, resource usage metrics, such as container CPU and memory usage, a
 These metrics can be either accessed directly by user, for example by using kubectl top command, or used by a controller
 in the cluster, e.g. Horizontal Pod Autoscaler, to make decisions.
 
-%prep -p exit
+%prep
 # Using autosetup is not feasible
-%setup -qn metrics-server-%{version}
+%setup -q -c -n metrics-server-%{version}
+
+mkdir -p "$(dirname src/%{gopath_comp_mserver})"
+mv metrics-server-%{version} src/%{gopath_comp_mserver}
+cd src/%{gopath_comp_mserver}
 
 pushd vendor/golang.org/x/net
 %autopatch -p1
 popd
 
 %build
-export GO111MODULE=auto
 #CGO_ENABLED=0 go build -ldflags -X sigs.k8s.io/metrics-server/pkg/version.gitVersion=v0.3.7 -o dist/metrics-server  cmd/metrics-server
-export GIT_TAG=v0.3.7
-export GIT_COMMIT=ce4a44e5341552d3b0b568cfe06b849a637fea53
-export ARCH=amd64
-export VERSION=%{version}
-export PKG=k8s.io/dns
-export GOARCH=${ARCH}
-export GOHOSTARCH=${ARCH}
-export GOOS=linux
-export GOHOSTOS=linux
-export GOROOT=/usr/lib/golang
-export GOPATH=/usr/share/gocode
-export CGO_ENABLED=0
-mkdir -p ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server
-cp -r * ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server/
-pushd ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server
-make all %{?_smp_mflags}
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+cd src/%{gopath_comp_mserver}
+ARCH=%{gohostarch} GIT_TAG=%{METRICS_SERVER_GIT_TAG} GIT_COMMIT=%{METRICS_SERVER_GIT_COMMIT} make all %{?_smp_mflags}
 
 %install
+cd src/%{gopath_comp_mserver}
 install -m 755 -d %{buildroot}%{_bindir}
-install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server/_output/amd64/metrics-server
+install -pm 755 -t %{buildroot}%{_bindir} _output/amd64/metrics-server
 
 %clean
 rm -rf %{buildroot}/*
@@ -59,6 +62,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/metrics-server
 
 %changelog
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 0.3.7-18
+- Simplify build scripts
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.3.7-17
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 0.3.7-16

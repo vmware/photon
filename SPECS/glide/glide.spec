@@ -1,7 +1,9 @@
+%define gopath_comp_glide github.com/Masterminds/glide
+
 Summary:        Vendor Package Management for Goland
 Name:           glide
 Version:        0.13.3
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        MIT
 URL:            https://github.com/Masterminds/glide
 Source0:        https://github.com/Masterminds/glide/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -17,23 +19,33 @@ BuildRequires:  perl
 Glide is a tool for managing the vendor directory within a Go package.
 
 %prep
-%autosetup -p1
+# Using autosetup is not feasible
+%setup -q -c -n glide-%{version}
+
+mkdir -p "$(dirname src/%{gopath_comp_glide})"
+mv glide-%{version} src/%{gopath_comp_glide}
 
 %build
-mkdir -p ${GOPATH}/src/github.com/Masterminds/glide
-cp -r * ${GOPATH}/src/github.com/Masterminds/glide/.
-pushd ${GOPATH}/src/github.com/Masterminds/glide
-go env -w GO111MODULE=auto
+export GOPATH="${PWD}"
+export GO111MODULE=auto
+export GOFLAGS=-mod=vendor
+pushd src/%{gopath_comp_glide}
 make VERSION=%{version} build %{?_smp_mflags}
 popd
 
 %check
-pushd ${GOPATH}/src/github.com/Masterminds/glide
+export GOPATH="${PWD}"
+export GO111MODULE=auto
+export GOFLAGS=-mod=vendor
+pushd src/%{gopath_comp_glide}
 make test %{?_smp_mflags}
 popd
 
 %install
-pushd ${GOPATH}/src/github.com/Masterminds/glide
+export GOPATH="${PWD}"
+export GO111MODULE=auto
+export GOFLAGS=-mod=vendor
+pushd src/%{gopath_comp_glide}
 make install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ ./glide
@@ -44,6 +56,8 @@ popd
 %{_bindir}/glide
 
 %changelog
+* Thu Aug 22 2024 Bo Gan <bo.gan@broadcom.com> 0.13.3-19
+- Fix build script
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.13.3-18
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 0.13.3-17

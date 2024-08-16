@@ -1,14 +1,15 @@
 %define network_required 1
+%define gopath_comp_influxdb github.com/influxdata/influxdb
+
 Name:           influxdb
 Version:        1.8.10
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
 Source0:        https://github.com/influxdata/influxdb/archive/%{name}-%{version}.tar.gz
 %define sha512  %{name}=4f5d20c190288d6397f0e87abd9b9136340b17f091c361cbc111ba661a3e63626edf5c74ddeeda164d82102dd06026e0037f50da546cda25e6c8647f4c739fae
-Source1:        golang-dep-0.3.0.tar.gz
-%define sha512  golang-dep-0.3.0=377869d69838a826499b9bc063eacc4b9db0d130d785901ae7fcbf28645276ba6bead33d251837646ded5f0a078e56b4a378c5227054b738cd6d581224977dc2
+
 Source2:        %{name}.sysusers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -26,26 +27,29 @@ InfluxDB is an open source time series database with no external dependencies.
 It's useful for recording metrics, events, and performing analytics.
 
 %prep
-%autosetup -p1
-mkdir -p ${GOPATH}/src/github.com/golang/dep
-tar xf %{SOURCE1} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.com/golang/dep/
+# Using autosetup is not feasible
+%setup -q -c -n %{name}-%{version}
+
+mkdir -p "$(dirname src/%{gopath_comp_influxdb})"
+mv %{name}-%{version} src/%{gopath_comp_influxdb}
 
 %build
 export GO111MODULE=auto
-pushd ${GOPATH}/src/github.com/golang/dep
-CGO_ENABLED=0 GOOS=linux go build -ldflags=-linkmode=external -v -ldflags "-s -w" -o ${GOPATH}/bin/dep ./cmd/dep/
-popd
-mkdir -p ${GOPATH}/src/github.com/influxdata/influxdb
-cp -r * ${GOPATH}/src/github.com/influxdata/influxdb/.
-pushd ${GOPATH}/src/github.com/influxdata/influxdb/
+export GOPATH="${PWD}"
+pushd src/%{gopath_comp_influxdb}
 go clean ./...
 go install ./...
+popd
 
 %check
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+pushd src/%{gopath_comp_influxdb}
 go test -run=TestDatabase . -v
+popd
 
 %install
-pushd ${GOPATH}/src/github.com/influxdata
+export GOPATH="${PWD}"
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_sysconfdir}/influxdb
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
@@ -54,21 +58,23 @@ mkdir -p %{buildroot}%{_mandir}/man1/
 mkdir -p %{buildroot}%{_sharedstatedir}/influxdb
 mkdir -p %{buildroot}%{_localstatedir}/log/influxdb
 mkdir -m 755 -p %{buildroot}%{_libdir}/influxdb/scripts
+cp -r bin/influx* %{buildroot}%{_bindir}
+pushd src/%{gopath_comp_influxdb}
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
-install -p -m 0755 %{name}/scripts/influxd-systemd-start.sh %{buildroot}%{_libdir}/influxdb/scripts/influxd-systemd-start.sh
-cp -r ${GOPATH}/bin/influx* %{buildroot}%{_bindir}
-cp %{name}/etc/config.sample.toml %{buildroot}%{_sysconfdir}/influxdb/influxdb.conf
-cp %{name}/scripts/logrotate %{buildroot}%{_sysconfdir}/logrotate.d/influxdb
-cp %{name}/scripts/influxdb.service %{buildroot}%{_prefix}/lib/systemd/system
-cp %{name}/man/influx.txt %{buildroot}%{_mandir}/man1/influx.1
-cp %{name}/man/influx_inspect.txt %{buildroot}%{_mandir}/man1/influx_inspect.1
-cp %{name}/man/influx_stress.txt %{buildroot}%{_mandir}/man1/influx_stress.1
-cp %{name}/man/influxd-backup.txt %{buildroot}%{_mandir}/man1/influxd-backup.1
-cp %{name}/man/influxd-config.txt %{buildroot}%{_mandir}/man1/influxd-config.1
-cp %{name}/man/influxd-restore.txt %{buildroot}%{_mandir}/man1/influxd-restore.1
-cp %{name}/man/influxd-run.txt %{buildroot}%{_mandir}/man1/influxd-run.1
-cp %{name}/man/influxd-version.txt %{buildroot}%{_mandir}/man1/influxd-version.1
-cp %{name}/man/influxd.txt %{buildroot}%{_mandir}/man1/influxd.1
+install -p -m 0755 scripts/influxd-systemd-start.sh %{buildroot}%{_libdir}/influxdb/scripts/influxd-systemd-start.sh
+cp etc/config.sample.toml %{buildroot}%{_sysconfdir}/influxdb/influxdb.conf
+cp scripts/logrotate %{buildroot}%{_sysconfdir}/logrotate.d/influxdb
+cp scripts/influxdb.service %{buildroot}%{_prefix}/lib/systemd/system
+cp man/influx.txt %{buildroot}%{_mandir}/man1/influx.1
+cp man/influx_inspect.txt %{buildroot}%{_mandir}/man1/influx_inspect.1
+cp man/influx_stress.txt %{buildroot}%{_mandir}/man1/influx_stress.1
+cp man/influxd-backup.txt %{buildroot}%{_mandir}/man1/influxd-backup.1
+cp man/influxd-config.txt %{buildroot}%{_mandir}/man1/influxd-config.1
+cp man/influxd-restore.txt %{buildroot}%{_mandir}/man1/influxd-restore.1
+cp man/influxd-run.txt %{buildroot}%{_mandir}/man1/influxd-run.1
+cp man/influxd-version.txt %{buildroot}%{_mandir}/man1/influxd-version.1
+cp man/influxd.txt %{buildroot}%{_mandir}/man1/influxd.1
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -105,6 +111,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.8.10-11
+- Simplify build scripts. Godep is removed in favor of gomod.
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.10-10
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.8.10-9

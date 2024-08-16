@@ -13,7 +13,6 @@ from Logger import Logger
 from constants import constants
 from kubernetes import client, config, watch
 from kubernetes import stream
-from CommandUtils import CommandUtils
 
 
 class DistributedBuilder:
@@ -33,7 +32,6 @@ class DistributedBuilder:
         self.coreV1ApiInstance = client.CoreV1Api(self.aApiClient)
         self.batchV1ApiInstance = client.BatchV1Api(self.aApiClient)
         self.AppsV1ApiInstance = client.AppsV1Api(self.aApiClient)
-        self.cmdUtils = CommandUtils()
 
     def getBuildGuid(self):
         guid = str(uuid.uuid4()).split("-")[1]
@@ -328,15 +326,11 @@ class DistributedBuilder:
             if status == "Running":
                 break
 
-        cmd = "kubectl cp "
-        cmd += str(
-            os.path.join(os.path.dirname(__file__)).replace(
-                "support/package-builder", ""
-            )
+        srcDir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        CommandUtils.runCmd(
+            ["kubectl", "cp", srcDir, f"{podName}:/root/build-{self.buildGuid}/photon"],
+            logfn=self.logger.info,
         )
-        cmd += f" {podName}:/root/build-{self.buildGuid}/photon"
-        self.logger.info(cmd)
-        self.cmdUtils.runBashCmd(cmd)
 
     def copyFromNfs(self):
         podName = f"nfspod-{self.buildGuid}"
@@ -348,17 +342,18 @@ class DistributedBuilder:
             if status == "Running":
                 break
 
-        cmd = f"kubectl cp {podName}:/root/build-{self.buildGuid}/photon/stage "
-        cmd += (
-            str(
-                os.path.join(os.path.dirname(__file__)).replace(
-                    "support/package-builder", ""
-                )
-            )
-            + "stage"
+        stageDir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "stage"
         )
-        self.logger.info(cmd)
-        self.cmdUtils.runBashCmd(cmd)
+        CommandUtils.runCmd(
+            [
+                "kubectl",
+                "cp",
+                f"{podName}:/root/build-{self.buildGuid}/photon/stage",
+                stageDir,
+            ],
+            logfn=self.logger.info,
+        )
 
     def monitorJob(self):
         w = watch.Watch()

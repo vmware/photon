@@ -11,7 +11,6 @@ import traceback
 from SpecData import SPECS
 from jsonwrapper import JsonWrapper
 from constants import constants
-from CommandUtils import CommandUtils
 from StringUtils import StringUtils
 from Logger import Logger
 from argparse import ArgumentParser
@@ -272,11 +271,9 @@ def main():
     constants.setLogLevel(options.log_level)
     constants.initialize()
 
-    cmdUtils = CommandUtils()
     logger = Logger.getLogger("SpecDeps", options.log_path, options.log_level)
 
-    if not os.path.isdir(options.output_dir):
-        cmdUtils.runBashCmd(f"mkdir -p {options.output_dir}")
+    os.makedirs(options.output_dir, exist_ok=True)
 
     if not options.input_data_dir.endswith("/"):
         options.input_data_dir += "/"

@@ -4,7 +4,9 @@ import os
 import threading
 import copy
 import docker
+import json
 
+from contextlib import suppress
 from Logger import Logger
 from constants import constants
 from CommandUtils import CommandUtils
@@ -34,7 +36,6 @@ class PackageManager(object):
         self.sortedPackageList = []
         self.listOfPackagesAlreadyBuilt = set()
         self.pkgBuildType = pkgBuildType
-        self.cmdUtils = CommandUtils()
         if self.pkgBuildType == "container":
             self.dockerClient = docker.from_env(version="auto")
 
@@ -275,33 +276,32 @@ class PackageManager(object):
         chroot = None
         try:
             # TODO: constants.tcrootname
-            chroot = Chroot(self.logger)
-            chroot.create("toolchain-chroot")
+            chroot = Chroot("toolchain-chroot", self.logger)
+            chroot.create()
             tcUtils = ToolChainUtils("toolchain-chroot", self.logPath)
             tcUtils.installToolchainRPMS(chroot, usePublishedRPMS=usePublishedRPMs)
         except Exception as e:
             if chroot:
                 chroot.destroy()
             raise e
-        self.logger.debug("createBuildContainer: " + chroot.getID())
+        self.logger.debug("createBuildContainer: " + chroot.getRootPath())
 
         # Create photon build container using toolchain chroot
-        chroot.unmountAll()
-        # TODO: Coalesce logging
-        cmd = "cd " + chroot.getID() + " && tar -czf ../tcroot.tar.gz ."
-        self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
-        cmd = "mv " + chroot.getID() + "/../tcroot.tar.gz ."
-        self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
+        importRes = self.dockerClient.api.import_image(src=chroot.archive(fmt="tar"))
+        tagHash = json.loads(importRes)["status"]
+        if not tagHash.startswith("sha256:"):
+            raise Exception(
+                f"docker: failed to import toolchain tarball: status={tagHash}"
+            )
+        tagHash = tagHash[7:]
         # TODO: Container name, docker file name from constants.
         self.dockerClient.images.build(
             tag=constants.buildContainerImage,
             path=".",
             rm=True,
+            buildargs={"PHOTON_TCBASE": tagHash},
             dockerfile="Dockerfile.photon_build_container",
         )
 
-        # Cleanup
-        cmd = "rm -f ./tcroot.tar.gz"
-        self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
         chroot.destroy()
         self.logger.debug("Photon build container successfully created.")

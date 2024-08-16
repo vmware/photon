@@ -446,8 +446,8 @@ def check_make_smp_flags(lines_dict, err_dict):
 
 
 def check_mentioned_but_unused_files(spec_fn, dirname):
-    parsed_spec, _, _ = CommandUtils.runBashCmd(
-        f'rpmspec -D "%_sourcedir {dirname}" -P {spec_fn}', capture=True
+    parsed_spec, _, _ = CommandUtils.runCmd(
+        ["rpmspec", "-D", f"%_sourcedir {dirname}", "-P", spec_fn], capture=True
     )
 
     parsed_spec = parsed_spec.split("\n")

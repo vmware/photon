@@ -1,15 +1,14 @@
 %define network_required 1
-%ifarch aarch64
-%global gohostarch      arm64
-%else
-%global gohostarch      amd64
-%endif
+%define gopath_comp_coredns github.com/coredns/coredns
 %define debug_package %{nil}
+
+# Must be in sync with package version
+%define COREDNS_GIT_COMMIT ae2bbc29b
 
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
@@ -26,32 +25,24 @@ BuildRequires: git
 CoreDNS is a DNS server that chains plugins
 
 %prep -p exit
-%autosetup -p1 -n %{name}-%{version}
+# Using autosetup is not feasible
+%setup -q -c -n %{name}-%{version}
+
+mkdir -p "$(dirname src/%{gopath_comp_coredns})"
+mv %{name}-%{version} src/%{gopath_comp_coredns}
 
 %build
-export ARCH=%{gohostarch}
-export VERSION=%{version}
-export PKG=github.com/%{name}/%{name}
-export GOARCH=${ARCH}
-export GOHOSTARCH=${ARCH}
-export GOOS=linux
-export GOHOSTOS=linux
-export GOROOT=%{_libdir}/golang
-export GOPATH=%{_datadir}/gocode
-export GOBIN=%{_datadir}/gocode/bin
-export PATH=$PATH:$GOBIN
-mkdir -p ${GOPATH}/src/${PKG}
-cp -rf . ${GOPATH}/src/${PKG}
-pushd ${GOPATH}/src/${PKG}
-# Just download (do not compile), since it's not compilable with go-1.9.
-# TODO: use prefetched tarball instead.
-sed -i 's#go get -u github.com/mholt/caddy#go get -u -d github.com/mholt/caddy#' Makefile
-sed -i 's#go get -u github.com/miekg/dns#go get -u -d github.com/miekg/dns#' Makefile
-%make_build
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+pushd src/%{gopath_comp_coredns}
+%make_build GITCOMMIT=%{COREDNS_GIT_COMMIT}
+popd
 
 %install
+pushd src/%{gopath_comp_coredns}
 install -m 755 -d %{buildroot}%{_bindir}
-install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/%{name}
+install -pm 755 -t %{buildroot}%{_bindir} coredns
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -61,6 +52,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.11.1-6
+- Simplify build scripts, and pass GITCOMMIT to make.
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-5
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.11.1-4

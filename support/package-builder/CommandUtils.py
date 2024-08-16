@@ -1,16 +1,27 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import subprocess
 
 
 class CommandUtils:
     @staticmethod
     def findFile(filename, sourcePath):
-        (out, _, _) = CommandUtils.runBashCmd(
-            f"find -L {sourcePath} -name {filename} -not -type d",
-            capture=True,
-            ignore_rc=True,
+        ret = subprocess.run(
+            [
+                "find",
+                "-L",
+                sourcePath,
+                "-name",
+                filename,
+                "-not",
+                "-type",
+                "d",
+                "-print0",
+            ],
+            capture_output=True,
+            check=False,
         )
         """
         We don't check the return val here because find could return 1 but still be
@@ -23,21 +34,39 @@ class CommandUtils:
         https://bugs.centos.org/view.php?id=13685
         """
 
-        return out.split() if out else None
+        return [f.decode() for f in ret.stdout.split(b"\x00") if f]
 
     @staticmethod
-    def runBashCmd(cmd, logfile=None, logfn=None, capture=False, ignore_rc=False):
+    def runCmd(
+        args,
+        logfile=None,
+        logfn=None,
+        cwd=None,
+        capture=False,
+        ignore_rc=False,
+        env=None,
+        clean_env=False,
+        shell=False,
+    ):
+        print(f"Running {args}", file=sys.stderr)
         fp = None
-        if logfile:
-            fp = open(logfile, "w")
-        elif capture or logfn:
+        if logfn is not None:
+            capture = True
+
+        if capture:
             fp = subprocess.PIPE
 
-        stdout = fp
-        stderr = fp
+        if logfile is not None:
+            if capture:
+                raise Exception("Cannot specify both logfn/capture and logfile")
+            fp = logfile
+
+        new_env = None
+        if env is not None:
+            new_env = env if clean_env else {**os.environ, **env}
 
         sp = subprocess.Popen(
-            cmd, shell=True, executable="/bin/bash", stdout=stdout, stderr=stdout
+            args, cwd=cwd, env=new_env, shell=shell, stdout=fp, stderr=fp
         )
 
         out, err = sp.communicate()
@@ -49,12 +78,9 @@ class CommandUtils:
         if logfn:
             logfn(out)
 
-        if logfile:
-            fp.close()
-
         if rc and not ignore_rc:
             print(f"Stdout: {out}\nStderr: {err}")
-            raise Exception(f"Error while running:\n{cmd}")
+            raise Exception(f"Error while running: {args}")
 
         return out, err, rc
 
@@ -69,3 +95,7 @@ class CommandUtils:
             return 0
 
         raise ValueError("invalid truth value {!r}".format(val))
+
+    @staticmethod
+    def splitlines(output):
+        return [line for line in output.split("\n") if line]

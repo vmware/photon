@@ -4,8 +4,6 @@ import sys
 
 from CommandUtils import CommandUtils
 
-cmdUtils = CommandUtils()
-
 
 def cleanUpChroot(chrootPath):
     returnVal, listmountpoints = findmountpoints(chrootPath)
@@ -27,8 +25,8 @@ def cleanUpChroot(chrootPath):
 
 
 def removeAllFilesFromChroot(chrootPath):
-    cmd = f"rm -rf {chrootPath}"
-    _, _, rc = cmdUtils.runBashCmd(cmd, capture=True, ignore_rc=True)
+    cmd = ["rm", "--one-file-system", "-rf", chrootPath]
+    _, _, rc = CommandUtils.runCmd(cmd, capture=True, ignore_rc=True)
     if rc:
         print("Unable to remove files from chroot " + chrootPath)
         return False
@@ -40,8 +38,8 @@ def unmountmountpoints(listmountpoints):
         return True
     result = True
     for mountpoint in listmountpoints:
-        cmd = f"umount {mountpoint}"
-        _, _, rc = cmdUtils.runBashCmd(cmd, capture=True, ignore_rc=True)
+        cmd = ["umount", mountpoint]
+        _, _, rc = CommandUtils.runCmd(cmd, capture=True, ignore_rc=True)
         if rc:
             result = False
             print("Unable to unmount " + mountpoint)
@@ -56,7 +54,9 @@ def findmountpoints(chrootPath):
     if not chrootPath.endswith("/"):
         chrootPath = f"{chrootPath}/"
     cmd = f"mount | grep {chrootPath} | cut -d' ' -s -f3"
-    mountpoints, _, rc = cmdUtils.runBashCmd(cmd, capture=True, ignore_rc=True)
+    mountpoints, _, rc = CommandUtils.runCmd(
+        ["bash", "-c", cmd], capture=True, ignore_rc=True
+    )
     if rc:
         print("Unable to find mountpoints in chroot")
         return False, None

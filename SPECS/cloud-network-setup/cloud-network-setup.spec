@@ -1,15 +1,11 @@
-%global debug_package %{nil}
+%define gopath_comp_cns github.com/vmware/cloud-network-setup
 
-%ifarch aarch64
-%global gohostarch      arm64
-%else
-%global gohostarch      amd64
-%endif
+%global debug_package %{nil}
 
 Summary:        Configures network interfaces in cloud enviroment
 Name:           cloud-network-setup
 Version:        0.2.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        Apache-2.0
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -33,42 +29,35 @@ configured then except the IP which is provided by DHCP others can't be fetched
 and configured. This project is adopting towards cloud network environment such
 as Azure, GCP and Amazon EC2.
 
-%prep -p exit
-%autosetup -p1 -n %{name}-%{version}
+%prep
+# Using autosetup is not feasible
+%setup -q -c -n %{name}-%{version}
+
+mkdir -p "$(dirname src/%{gopath_comp_cns})"
+mv %{name}-%{version} src/%{gopath_comp_cns}
 
 %build
-export ARCH=%{gohostarch}
-export VERSION=%{version}
-export PKG=github.com/%{name}/%{name}
-export GOARCH=${ARCH}
-export GOHOSTARCH=${ARCH}
-export GOOS=linux
-export GOHOSTOS=linux
-export GOROOT=/usr/lib/golang
-export GOPATH=/usr/share/gocode
-export GOBIN=/usr/share/gocode/bin
-export PATH=$PATH:$GOBIN
-
-mkdir -p ${GOPATH}/src/${PKG}
-cp -rf . ${GOPATH}/src/${PKG}
-pushd ${GOPATH}/src/${PKG}
-
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+export GOFLAGS=-mod=vendor
+pushd src/%{gopath_comp_cns}
 go build -o bin/cloud-network ./cmd/cloud-network
 go build -o bin/cnctl ./cmd/cnctl
-
 popd
 
 %install
+pushd src/%{gopath_comp_cns}
 install -m 755 -d %{buildroot}%{_bindir}
 install -m 755 -d %{buildroot}%{_sysconfdir}/cloud-network
 install -m 755 -d %{buildroot}%{_unitdir}
 
-install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/bin/cloud-network
-install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/bin/cnctl
+install -pm 755 -t %{buildroot}%{_bindir} bin/cloud-network
+install -pm 755 -t %{buildroot}%{_bindir} bin/cnctl
 
-install -pm 755 -t %{buildroot}%{_sysconfdir}/cloud-network ${GOPATH}/src/github.com/%{name}/%{name}/distribution/cloud-network.toml
-install -pm 755 -t %{buildroot}%{_unitdir}/ ${GOPATH}/src/github.com/%{name}/%{name}/distribution/cloud-network.service
+install -pm 755 -t %{buildroot}%{_sysconfdir}/cloud-network distribution/cloud-network.toml
+install -pm 755 -t %{buildroot}%{_unitdir}/ distribution/cloud-network.service
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -94,6 +83,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/cloud-network.service
 
 %changelog
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 0.2.2-11
+- Simplify build scripts
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.2.2-10
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 0.2.2-9

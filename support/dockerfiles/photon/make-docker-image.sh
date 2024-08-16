@@ -9,10 +9,10 @@ echoerr()
 
 echo PHOTON_RELEASE_VERSION=$PHOTON_RELEASE_VERSION
 arch="$(uname -m)"
-TEMP_CHROOT=$(pwd)/temp_chroot
-ROOTFS_TAR_FILENAME=photon-rootfs-$PHOTON_RELEASE_VERSION-$PHOTON_BUILD_NUMBER.${arch}.tar.gz
-STAGE_DIR=$(pwd)/stage
+SYSROOT=/sysroot
+ROOTFS_TAR_FILENAME="$(pwd)/stage/photon-rootfs-$PHOTON_RELEASE_VERSION-$PHOTON_BUILD_NUMBER.${arch}.tar.gz"
 
+mkdir -p $SYSROOT
 rm -rf /etc/yum.repos.d/*
 
 cat > /etc/yum.repos.d/photon-local.repo <<- EOF
@@ -25,20 +25,17 @@ enabled=1
 skip_if_unavailable=True
 EOF
 
-rm -rf $TEMP_CHROOT
-mkdir $TEMP_CHROOT
-
 tdnf install -y rpm tar gzip grep coreutils
 
-rpm --root $TEMP_CHROOT/ --initdb
+rpm --root $SYSROOT/ --initdb
 
 tdnf --releasever ${PHOTON_RELEASE_VERSION} \
-     --installroot $TEMP_CHROOT/ \
+     --installroot $SYSROOT/ \
      --rpmverbosity error \
      install -y \
      filesystem bash toybox tdnf photon-release photon-repos curl
 
-actual_pkg_list=($(tdnf --installroot $TEMP_CHROOT/ \
+actual_pkg_list=($(tdnf --installroot $SYSROOT/ \
                         --disablerepo=* -q \
                         list installed 2>/dev/null | cut -d'.' -f1))
 
@@ -60,20 +57,20 @@ if [ $expected_pkg_count -ne $actual_pkg_count ] || [ -n "${pkg_diff}" ]; then
   echoerr "Following package difference found in docker image:\n${pkg_diff}"
   echoerr "Expected package count: $expected_pkg_count"
   echoerr "Actual package count: $actual_pkg_count"
-  rm -rf $TEMP_CHROOT
   exit 1
 fi
 
-rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
+rpm --root $SYSROOT/ --import $SYSROOT/etc/pki/rpm-gpg/*
 
 # cleanup anything not needed inside rootfs
-pushd $TEMP_CHROOT
+pushd $SYSROOT
 rm -rf usr/src/ home/* var/log/* var/cache/tdnf/
 # set TERM to linux due to stripped terminfo
 echo "export TERM=linux" >> etc/bash.bashrc
 
-tar -I 'gzip -9' -cpf ../$ROOTFS_TAR_FILENAME .
 popd
+
+tar -I 'gzip -9' -C $SYSROOT -cpf $ROOTFS_TAR_FILENAME .
 
 # expected size plus 2% wiggle room
 max_size=17313736
@@ -83,11 +80,6 @@ if (( $actual_size > $max_size )); then
   echoerr "ERROR: docker image tarball size is bigger than expected"
   echoerr "Expected size(in bytes): $max_size"
   echoerr "Actual size(in bytes): $actual_size"
-  rm -rf $TEMP_CHROOT $ROOTFS_TAR_FILENAME
+  rm -f $ROOTFS_TAR_FILENAME
   exit 1
 fi
-
-mv $ROOTFS_TAR_FILENAME $STAGE_DIR/
-
-# cleanup
-rm -rf $TEMP_CHROOT

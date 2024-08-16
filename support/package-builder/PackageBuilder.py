@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
+import os
 import sys
-import os.path
 
 from PackageUtils import PackageUtils
 from Logger import Logger
@@ -15,19 +15,16 @@ from SRP import SRP
 
 
 class PackageBuilder(object):
-    def __init__(self, mapPackageToCycles, sandboxType):
+    def __init__(self, pkg, mapPackageToCycles, sandboxType):
         # will be initialized in buildPackageFunction()
-        self.logName = None
-        self.logPath = None
-        self.logger = None
-        self.package = None
-        self.version = None
-        self.doneList = None
-        self.sandboxType = sandboxType
-        self.sandbox = None
-        self.srp = None
-        self.cmdUtils = CommandUtils()
+        self.package, self.version = StringUtils.splitPackageNameAndVersion(pkg)
         self.mapPackageToCycles = mapPackageToCycles
+        self.logName = f"build-{pkg}"
+        self.logPath = os.path.join(constants.logPath, f"{pkg}.{constants.currentArch}")
+        # Cleanup the log directory
+        os.makedirs(self.logPath, exist_ok=True)
+        CommandUtils.runCmd(["find", self.logPath, "-name", "*.log", "-delete"])
+        self.logger = Logger.getLogger(self.logName, self.logPath, constants.logLevel)
         self.listNodepsPackages = [
             "glibc",
             "gmp",
@@ -47,29 +44,35 @@ class PackageBuilder(object):
             "go",
         ]
 
-    def build(self, pkg, doneList):
-        packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
+        self.srp = SRP(pkg, self.logger)
+        if sandboxType == "chroot":
+            self.sandbox = Chroot(pkg, self.logger, self.srpLogCommand)
+        elif sandboxType == "systemd-nspawn":
+            self.sandbox = SystemdNspawn(pkg, self.logger, self.srpLogCommand)
+        elif sandboxType == "container":
+            self.sandbox = Container(pkg, self.logger, self.srpLogCommand)
+        else:
+            raise Exception("Unknown sandbox type: " + sandboxType)
+
+    def build(self, doneList):
         # do not build if RPM is already built
         # test only if the package is in the testForceRPMS with rpmCheck
         # build only if the package is not in the testForceRPMS with rpmCheck
-
-        if not (constants.rpmCheck or packageName in constants.testForceRPMS):
-            if self._checkIfPackageIsAlreadyBuilt(
-                packageName, packageVersion, doneList
-            ):
+        if not (constants.rpmCheck or self.package in constants.testForceRPMS):
+            if self._checkIfPackageIsAlreadyBuilt(self.package, self.version, doneList):
                 return
 
-        self._buildPackagePrepareFunction(packageName, packageVersion, doneList)
         try:
-            self._buildPackage()
+            self._buildPackage(doneList)
         except Exception as e:
             # TODO: self.logger might be None
             self.logger.exception(e)
             raise e
 
-    def _buildPackage(self):
+    def _buildPackage(self, doneList):
         try:
-            self.sandbox.create(f"{self.package}-{self.version}")
+            self.srp.initialize()
+            self.sandbox.create()
 
             tUtils = ToolChainUtils(self.logName, self.logPath, self.srpLogCommand)
             if self.sandbox.hasToolchain():
@@ -78,12 +81,9 @@ class PackageBuilder(object):
                 )
             else:
                 inputRPMS = tUtils.installToolchainRPMS(
-                    self.sandbox,
-                    self.package,
-                    self.version,
-                    availablePackages=self.doneList,
+                    self.sandbox, self.package, self.version, availablePackages=doneList
                 )
-            self.srp.addInputRPMS(inputRPMS.split())
+            self.srp.addInputRPMS(inputRPMS)
 
             if (self.package not in constants.listCoreToolChainPackages) or (
                 constants.rpmCheck and self.package in constants.testForceRPMS
@@ -99,24 +99,26 @@ class PackageBuilder(object):
             listRPMFiles, listSRPMFiles = pkgUtils.buildRPMSForGivenPackage(
                 self.sandbox, self.package, self.version, self.logPath
             )
-            self.srp.addObservation(self.sandbox.getObservationFile())
-            self.sandbox.removeObservationFile()
+            self.srp.addObservation(self.sandbox.getObservation())
             self.srp.addOutputRPMS(listRPMFiles + listSRPMFiles)
             self.logger.debug(f"Successfully built the package: {self.package}")
         except Exception as e:
             self.logger.error(f"Failed while building package: {self.package}")
             self.logger.debug(
-                "Sandbox: " + self.sandbox.getID() + " not deleted for debugging."
+                f"Sandbox: {self.sandbox.name} not deleted for debugging."
             )
             if constants.rpmCheck and self.package in constants.testForceRPMS:
                 logFileName = os.path.join(self.logPath, f"{self.package}-test.log")
             else:
                 logFileName = os.path.join(self.logPath, f"{self.package}.log")
-            fileLog = os.popen(f"tail -n 100 {logFileName}").read()
-            self.logger.info(fileLog)
-            raise e
-        if self.sandbox:
-            self.sandbox.destroy()
+            CommandUtils.runCmd(
+                ["tail", "-n", "100", logFileName],
+                ignore_rc=True,
+                logfn=self.logger.info,
+            )
+            self.logger.exception(e)
+            raise
+        self.sandbox.destroy()
         self.srp.finalize()
 
     def _installDependencies(self, arch, deps=[]):
@@ -177,35 +179,8 @@ class PackageBuilder(object):
                 "Finished installing the build time dependent packages for " + arch
             )
 
-    def _buildPackagePrepareFunction(self, package, version, doneList):
-        self.package = package
-        self.version = version
-        pkg = f"{package}-{version}"
-        self.logName = f"build-{pkg}"
-        self.logPath = f"{constants.logPath}/{pkg}.{constants.currentArch}"
-        if not os.path.isdir(self.logPath):
-            self.cmdUtils.runBashCmd(f"mkdir -p {self.logPath}")
-        else:
-            self.cmdUtils.runBashCmd(f"rm -f {self.logPath}/*.log")
-        self.logger = Logger.getLogger(self.logName, self.logPath, constants.logLevel)
-        self.doneList = doneList
-
-        self.srp = SRP(pkg, self.logger)
-        self.srp.initialize()
-
-        if self.sandboxType == "chroot":
-            sandbox = Chroot(self.logger, self.srpLogCommand)
-        elif self.sandboxType == "systemd-nspawn":
-            sandbox = SystemdNspawn(self.logger, self.srpLogCommand)
-        elif self.sandboxType == "container":
-            sandbox = Container(self.logger, self.srpLogCommand)
-        else:
-            raise Exception("Unknown sandbox type: " + sandboxType)
-
-        self.sandbox = sandbox
-
-    def srpLogCommand(self, cmd):
-        self.srp.addCommand(cmd)
+    def srpLogCommand(self, cmd, env={}):
+        self.srp.addCommand(cmd, env)
 
     def _findPackageNameAndVersionFromRPMFile(self, rpmfile):
         rpmfile = os.path.basename(rpmfile)

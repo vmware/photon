@@ -1,14 +1,10 @@
 %define network_required 1
-%ifarch aarch64
-%global gohostarch      arm64
-%else
-%global gohostarch      amd64
-%endif
+%define gopath_comp_termshark github.com/gcla/termshark
 
 Summary:        A terminal user-interface for tshark, inspired by Wireshark
 Name:           termshark
 Version:        2.4.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        MIT
 URL:            https://github.com/gcla/%{name}/releases/tag/v%{version}.tar.gz
 Source0:        https://github.com/gcla/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -31,31 +27,25 @@ Termshark is the terminal user-interface tor Tshark, a source network protocol a
 TShark doesn't have an interactive terminal user interface though, and this is where
 Termshark comes in. Termshark is basically the futuristic terminal version of Wireshark.
 
-%prep -p exit
-%autosetup -p1 -n %{name}-%{version}
+%prep
+# Using autosetup is not feasible
+%setup -q -c -n %{name}-%{version}
+
+mkdir -p "$(dirname src/%{gopath_comp_termshark})"
+mv %{name}-%{version} src/%{gopath_comp_termshark}
 
 %build
-export ARCH=%{gohostarch}
-export VERSION=%{version}
-export PKG=github.com/%{name}/%{name}
-export GOARCH=${ARCH}
-export GOHOSTARCH=${ARCH}
-export GOOS=linux
-export GOHOSTOS=linux
-export GOROOT=/usr/lib/golang
-export GOPATH=/usr/share/gocode
-export GOBIN=/usr/share/gocode/bin
-export PATH=$PATH:$GOBIN
-
-mkdir -p ${GOPATH}/src/${PKG}
-cp -rf . ${GOPATH}/src/${PKG}
-pushd ${GOPATH}/src/${PKG}
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+pushd src/%{gopath_comp_termshark}
 go build -v ./cmd/...
 popd
 
 %install
+pushd src/%{gopath_comp_termshark}
 install -m 755 -d %{buildroot}%{_bindir}
-install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/termshark
+install -pm 755 -t %{buildroot}%{_bindir} termshark
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -65,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 2.4.0-14
+- Simplify build scripts
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.0-13
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 2.4.0-12

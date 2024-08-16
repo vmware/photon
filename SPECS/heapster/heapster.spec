@@ -1,7 +1,9 @@
+%define gopath_comp_heapster k8s.io/heapster
+
 Summary:        Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:           heapster
 Version:        1.5.4
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/cadvisor
 Group:          Development/Tools
@@ -26,7 +28,11 @@ Heapster collects and interprets various signals like compute resource usage, li
 
 %prep
 # Using autosetup is not feasible
-%setup -q
+%setup -q -c -n %{name}-%{version}
+
+mkdir -p "$(dirname src/%{gopath_comp_heapster})"
+mv %{name}-%{version} src/%{gopath_comp_heapster}
+cd src/%{gopath_comp_heapster}
 
 pushd vendor/golang.org/x/net
 %autopatch -p1
@@ -38,20 +44,21 @@ popd
 
 %build
 export GO111MODULE=auto
-mkdir -p $GOPATH/src/k8s.io/%{name}
-cp -r . $GOPATH/src/k8s.io/%{name}
-cd $GOPATH/src/k8s.io/%{name}
+export GOPATH="${PWD}"
+cd src/%{gopath_comp_heapster}
 %make_build
 
 %install
-cd $GOPATH/src/k8s.io/%{name}
+cd src/%{gopath_comp_heapster}
 install -d -p %{buildroot}%{_bindir}
 install -p -m 0755 %{name} %{buildroot}%{_bindir}
 install -p -m 0755 eventer %{buildroot}%{_bindir}
 
 %if 0%{?with_check}
 %check
-cd $GOPATH/src/k8s.io/%{name}
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+cd src/%{gopath_comp_heapster}
 make test-unit %{?_smp_mflags}
 %endif
 
@@ -61,6 +68,8 @@ make test-unit %{?_smp_mflags}
 %{_bindir}/eventer
 
 %changelog
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.5.4-20
+- Simplify build scripts
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.4-19
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.5.4-18
