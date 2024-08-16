@@ -1,7 +1,7 @@
 Summary:        VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
 #Version x.y.z corresponds v<x>r<y>-z tag in the repo. Eg 1.1.1 = v1r1-1
-Version:        1.3
+Version:        2.1
 Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
@@ -13,7 +13,7 @@ Distribution:   Photon
 #.ansible-lint .gitignore .yamllint .gitattributes .gitlab-ci.yml vars-cap.yml
 #Update this URL to github URL once the source code is available in github
 Source0: https://packages.vmware.com/photon/photon_sources/1.0/%{name}-ph5-%{version}.tar.gz
-%define sha512 %{name}-ph5-%{version}=6dec9c20078f4c1e08de0acea0eaa650e325b2727363e48e7f92d0e5a76a77c369db10aaf86760379734b0cd0ea5f767979c235ea4498963be9560e94e879b73
+%define sha512 %{name}-ph5-%{version}=32974725804e64eb8941872af0d1da7e839833e534b0b07f677c78f92e55ae5fcc8860c0d176193019ef28d3f7c63c351ceda50916834dc707f1accc0145ee51
 
 BuildArch: noarch
 
@@ -37,6 +37,8 @@ cp -rp %{_builddir}/%{name}-ph5-%{version}/ %{buildroot}%{_datadir}/ansible/%{na
 %{_datadir}/ansible/
 
 %changelog
+* Fri Aug 16 2024 Shivani Agarwal <shivani.agarwal@vmware.com> 2.1-1
+- Update to 2.1 version
 * Mon Jan 08 2024 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.3-1
 - Update to 1.3 version
 * Tue Dec 26 2023 Nitesh Kumar <kunitesh@vmware.com> 1.2-4
