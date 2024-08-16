@@ -44,9 +44,8 @@ def get(package, source, checksum, sourcesPath, URLs, logger):
     if not os.path.isdir(sourcesPath):
         os.mkdir(sourcesPath)
 
-    cmdUtils = CommandUtils()
-    sourcePath = cmdUtils.findFile(source, sourcesPath)
-    if sourcePath is not None and len(sourcePath) > 0:
+    sourcePath = CommandUtils.findFile(source, sourcesPath)
+    if sourcePath:
         if len(sourcePath) > 1:
             raise Exception(
                 f"Multiple sources found for source: {source}\n"

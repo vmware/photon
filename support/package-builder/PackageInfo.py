@@ -5,7 +5,6 @@ import os
 
 from Logger import Logger
 from constants import constants
-from CommandUtils import CommandUtils
 from PackageUtils import PackageUtils
 from SpecData import SPECS
 
@@ -20,7 +19,6 @@ class PackageInfo(object):
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
         self.pkgList = {}
-        self.cmdUtils = CommandUtils()
 
     def loadPackagesData(self):
         listPackages = SPECS.getData().getListPackages()
@@ -50,6 +48,6 @@ class PackageInfo(object):
         self.logger.debug("Writing package list to the json file")
         dirPath = os.path.dirname(fileName)
         if dirPath and not os.path.isdir(dirPath):
-            self.cmdUtils.runBashCmd(f"mkdir -p {dirPath}")
+            os.mkdir(dirPath)
         with open(fileName, "w+") as pkgInfoFile:
             json.dump(self.pkgList, pkgInfoFile, indent=4)

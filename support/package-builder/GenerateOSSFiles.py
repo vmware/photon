@@ -4,14 +4,13 @@ import os
 import json
 import sys
 import traceback
+import shutil
 
 from argparse import ArgumentParser
 from Logger import Logger
 from constants import constants
 from CommandUtils import CommandUtils
 from SpecData import SPECS
-
-cmdUtils = CommandUtils()
 
 
 def main():
@@ -105,7 +104,7 @@ def main():
 
         if options.generateYamlFiles:
             if not os.path.isdir(options.outputDirPath):
-                cmdUtils.runBashCmd(f"mkdir -p {options.outputDirPath}")
+                os.mkdir(options.outputDirPath)
 
         constants.setSpecPaths(options.specPaths)
         constants.setSourceRpmPath(options.sourceRpmPath)
@@ -180,9 +179,9 @@ def readBlackListPackages(pkgBlackListFile):
 def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
     yamlSourceDir = os.path.join(yamlDir, "yaml_sources")
     if not os.path.isdir(yamlSourceDir):
-        cmdUtils.runBashCmd(f"mkdir -p {yamlSourceDir}")
+        os.mkdir(yamlSourceDir)
     if singleFile:
-        yamlFile = open(f"{yamlSourceDir}/sources_list.yaml", "w")
+        yamlFile = open(os.path.join(yamlSourceDir, "sources_list.yaml"), "w")
     listPackages = SPECS.getData().getListPackages()
     listPackages.sort()
 
@@ -246,9 +245,9 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
 def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile=True):
     yamlSrpmDir = os.path.join(yamlDir, "yaml_srpms")
     if not os.path.isdir(yamlSrpmDir):
-        cmdUtils.runBashCmd(f"mkdir -p {yamlSrpmDir}")
+        os.mkdir(yamlSrpmDir)
     if singleFile:
-        yamlFile = open(f"{yamlSrpmDir}/srpm_list.yaml", "w")
+        yamlFile = open(os.path.join(yamlSrpmDir, "srpm_list.yaml"), "w")
     listPackages = SPECS.getData().getListPackages()
     listPackages.sort()
 
@@ -259,16 +258,13 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile
         for ossversion in SPECS.getData().getVersions(package):
             srpm_file_name = f"{ossname}-{ossversion}.src.rpm"
             logger.info(f"srpm name is {srpm_file_name}")
-            listFoundSRPMFiles = cmdUtils.findFile(srpm_file_name, srpmPath)
+            listFoundSRPMFiles = CommandUtils.findFile(srpm_file_name, srpmPath)
 
             srpmName = None
             if len(listFoundSRPMFiles) == 1:
                 srpmFullPath = listFoundSRPMFiles[0]
                 srpmName = os.path.basename(srpmFullPath)
-                cpcmd = f"cp {srpmFullPath} {yamlSrpmDir}/"
-                _, _, returnVal = cmdUtils.runBashCmd(cpcmd)
-                if returnVal:
-                    logger.error(f"Copy SRPM File is failed for package: {ossname}")
+                shutil.copyfile(srpmFullPath, yamlSrpmDir)
             else:
                 logger.error(f"SRPM file is not found: {ossname}")
 

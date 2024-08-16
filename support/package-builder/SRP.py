@@ -1,9 +1,11 @@
 import os
-import os.path
 import json
 import copy
 import csv
+import shutil
+import tempfile
 
+from contextlib import suppress
 from constants import constants
 from CommandUtils import CommandUtils
 from SpecData import SPECS
@@ -27,8 +29,10 @@ class SRP(object):
         self.fullVersion = f"{self.version}-{self.release}.{self.distTag}"
 
         self.logger = logger
-        self.cmdUtils = CommandUtils()
         self.srp_workdir = os.path.join(constants.stagePath, "SRP", f"{pkg}")
+        self.srpcli_run = lambda args: CommandUtils.runCmd(
+            [self.srpcli] + args, env={"SRP_WORKING_DIR": self.srp_workdir}
+        )
         # Will be used as a package schematic json file at finalize step.
         self.schematic = {
             "schema_id": "1.0",
@@ -61,15 +65,20 @@ class SRP(object):
     def initialize(self):
         if not self.srpcli:
             return
-        self.cmdUtils.runBashCmd(
-            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance init"
+        self.srpcli_run(["provenance", "init"])
+        self.srpcli_run(
+            [
+                "provenance",
+                "add-build",
+                "photon",
+                f"--package={self.package}",
+                f"--version={self.version}",
+                f"--release={self.release}",
+                f"--dist-tag={self.distTag}",
+                f"--arch={constants.targetArch}",
+            ]
         )
-        self.cmdUtils.runBashCmd(
-            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance add-build photon --package={self.package} --version={self.version} --release={self.release} --dist-tag={self.distTag} --arch={constants.targetArch}"
-        )
-        self.cmdUtils.runBashCmd(
-            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action start  --name=build-{self.pkg}"
-        )
+        self.srpcli_run(["provenance", "action", "start", f"--name=build-{self.pkg}"])
 
         # Add a compute resource information. From all available types vm.nimbus is closest to Photon build VM.
         # TODO: next 3 variables must be provided by CI/CD pipeline. Variable names can be different from what specified below.
@@ -77,15 +86,34 @@ class SRP(object):
         location = os.environ.get("LOCATION", "FIXME-LOCATION-NOT-DEFINED")
         build_id = os.environ.get("BUILD_ID", "FIXME-BUILD_ID-NOT-DEFINED")
         vm_template = os.environ.get("VM_TEMPLATE", "FIXME-VM_TEMPLATE-NOT-DEFINED")
-        self.cmdUtils.runBashCmd(
-            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action add-compute-resource vm.nimbus --os-type linux --kernel-version {os.uname()[2]} --distro-version '{self.getOSRelease()}' --machine {os.uname()[1]} --ephemeral=true --firewall-present=true --location {location} --build-id {build_id} --template {vm_template}"
+        self.srpcli_run(
+            [
+                "provenance",
+                "action",
+                "add-compute-resource",
+                "vm.nimbus",
+                "--ephemeral=true",
+                "--firewall-present=true",
+                "--os-type",
+                "linux",
+                "--machine",
+                os.uname()[1],
+                "--kernel-version",
+                os.uname()[2],
+                "--distro-version",
+                self.getOSRelease(),
+                "--location",
+                location,
+                "--build-id",
+                build_id,
+                "--template",
+                vm_template,
+            ]
         )
-        self.cmdUtils.runBashCmd(
-            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action set-process-debugger --enabled=false"
+        self.srpcli_run(
+            ["provenance", "action", "set-process-debugger", "--enabled=false"]
         )
-        self.cmdUtils.runBashCmd(
-            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action set-root-access --enabled=false"
-        )
+        self.srpcli_run(["provenance", "action", "set-root-access", "--enabled=false"])
 
     def rpmFileNameToUid(self, filename):
         rpm = StringUtils.splitRPMFilename(filename)
@@ -147,51 +175,76 @@ class SRP(object):
                 },
             }
 
-    def addCommand(self, cmd):
+    def addCommand(self, cmd, env):
         if not self.srpcli:
             return
 
-        _cmd = cmd.replace('"', '\\"')
-        self.cmdUtils.runBashCmd(
-            f'SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action import-cmd --cmd="{_cmd}"'
+        env_str = " ".join([f"{k}={v}" for k, v in env.items()])
+        if env_str:
+            env_str += " "
+        self.srpcli_run(
+            ["provenance", "action", "import-cmd", "--cmd", env_str + " ".join(cmd)]
         )
 
-    def addObservation(self, observationFile):
+    def addObservation(self, observation):
         if not self.srpcli:
+            if observation:
+                observation.close()
             return
 
         network_required = SPECS.getData().isNetworkRequired(
             self.package, self.fullVersion
         )
-        if network_required and not observationFile:
-            raise Exception("Observation file is required but not generated")
+        if not observation:
+            if network_required:
+                raise Exception("Observation file is required but not generated")
+            return
 
-        if observationFile:
-            self.cmdUtils.runBashCmd(
-                f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action import-observation --name=build-observation --file={observationFile}"
+        with tempfile.NamedTemporaryFile() as temp:
+            shutil.copyfileobj(observation, temp)
+            self.srpcli_run(
+                [
+                    "provenance",
+                    "action",
+                    "import-observation",
+                    "--name=build-observation",
+                    "--file",
+                    temp.name,
+                ]
             )
+
+        observation.close()
 
     def finalize(self):
         if not self.srpcli:
             return
 
-        schematic_filename = f"{self.srp_workdir}/package.schematic.json"
+        schematic_filename = os.path.join(self.srp_workdir, "package.schematic.json")
         with open(schematic_filename, "w") as f:
             json.dump(self.schematic, f)
-        self.cmdUtils.runBashCmd(
-            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action stop"
+        self.srpcli_run(["provenance", "action", "stop"])
+        self.srpcli_run(
+            [
+                "provenance",
+                "schematic",
+                "--verbose",
+                "--no-schematic",
+                "--path",
+                schematic_filename,
+            ]
         )
-        self.cmdUtils.runBashCmd(
-            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance schematic --verbose --no-schematic --path={schematic_filename}"
-        )
-        self.cmdUtils.runBashCmd(
-            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance compile --saveto={self.srp_workdir}/{self.pkg}.provenance.json"
+        self.srpcli_run(
+            [
+                "provenance",
+                "compile",
+                "--saveto",
+                os.path.join(self.srp_workdir, f"{self.pkg}.provenance.json"),
+            ]
         )
         if os.path.isfile(schematic_filename):
             os.remove(schematic_filename)
         # "_provenance.json" is a temporary file used by SRPCLI to store provenance content between SRPCLI invocations
         # It is created by "provenance init" and not removed by "compile".
         # Remove it manually.
-        provenance_tmp_filename = f"{self.srp_workdir}/_provenance.json"
-        if os.path.isfile(provenance_tmp_filename):
-            os.remove(provenance_tmp_filename)
+        with suppress(Exception):
+            os.remove(os.path.join(self.srp_workdir, "_provenance.json"))

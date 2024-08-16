@@ -1,6 +1,7 @@
 #!/usr/bin/env/ python3
 
 import json
+import os.path
 import platform
 
 from copy import deepcopy
@@ -65,6 +66,7 @@ class constants(object):
     extraPackagesList = []
     releasePkgPreqPath = ""
     CopyToSandboxDict = {}
+    adjustGCCSpecScript = None
 
     # Update to below constants lists will be provided by release branch as pkgPreq data
     noDepsPackageList = []
@@ -335,7 +337,12 @@ class constants(object):
     @staticmethod
     def storeScriptsToCopy(key, val):
         constants.CopyToSandboxDict[key] = deepcopy(val)
+        if key == "adjust-gcc-specs":
+            constants.adjustGCCSpecScript = os.path.join(
+                val["dest"], os.path.basename(val["src"])
+            )
 
+    @staticmethod
     def checkIfHostRpmNotUsable():
         if constants.hostRpmIsNotUsable >= 0:
             return constants.hostRpmIsNotUsable
@@ -349,8 +356,8 @@ class constants(object):
         ]
 
         for cmd in cmds:
-            _, _, retval = cmdUtils.runBashCmd(cmd, ignore_rc=True)
-            if retval:
+            _, _, retval = cmdUtils.runCmd(cmd, shell=True, ignore_rc=True)
+            if retval != 0:
                 constants.hostRpmIsNotUsable = 1
                 break
 
@@ -362,6 +369,7 @@ class constants(object):
     def enable_fips_in_make_check():
         constants.listMakeCheckRPMPkgtoInstall.append("openssl-fips-provider")
 
+    @staticmethod
     def set_resume_build(val):
         if val:
             constants.resume_build = True
