@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.222
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.223
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=384b3b816daea1579116f86e0e0271101093ed82854a986351b1a5936f003ed1c469856c26410ab503480531acfe9ba1fbc39dffea03d32ee58849ad20af8877
+%define sha512 linux=e764f12d1736261cff4c5a73264527d9341dce6268a0be236cb3fb5cf0521487844c341b0c34d6aeb05b4556726f53074cb1d2e2e34ed1df85b51831ebe7e96b
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -163,11 +163,6 @@ Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
 Patch59: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 %endif
 
-# LTP
-# fix for fsnotify22
-Patch81:  0001-ext4_fix_error_code_saved_on_super_block_during_file_system.patch
-Patch82:  0002-ext4_Send_notifications_on_error.patch
-
 # CVE: [100..300]
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
@@ -180,9 +175,6 @@ Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-48666
-Patch105: 0001-scsi-core-Fix-a-use-after-free.patch
 
 # Fix for CVE-2022-3522
 Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
@@ -904,6 +896,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Sun Aug 18 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.223-1
+- Update to version 5.10.223
 * Tue Aug 13 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.222-3
 - Fix .config for aarch64
 * Tue Jul 23 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.222-2
