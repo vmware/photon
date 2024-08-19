@@ -4,7 +4,7 @@
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.26.1
+Version:        1.26.2
 Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
@@ -13,7 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://nginx.org/download/nginx-%{version}.tar.gz
-%define sha512 %{name}=dfaadde78eb5cf8c8c3a43ead9ac49fc852c8de3e70e69754e3ffafc88c50c8bc08cdac0cc0ba8a9d8c155bdb334865e2e6c7dc1144c79959c426a9e087b3e37
+%define sha512 %{name}=470efe9ae5d6150ecbf133979c6c36415679a2156499a3b6820a85eb8f3038a8aa06f7b28ddd834cffb0e982f3ddc89e4b1649d536eba4f84019a72d4cfa3539
 
 Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
 %define sha512 %{name}-njs=c6d70167ba91305ff859fcbb389662eb7654074845349599d00586d87aa8b086308d154fe3be2ea773ddd015ae5b04e4fba40ec82d1c461d1a3a10c23a2fb7b4
@@ -122,6 +122,8 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Mon Aug 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.26.2-1
+- Version upgrade to v1.26.2 to fix CVE-2024-7347
 * Wed Jun 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.26.1-1
 - Version upgrade to v1.26.1 to fix following CVE's:
 - CVE-2024-31079, CVE-2024-32760, CVE-2024-34161 and CVE-2024-35200
