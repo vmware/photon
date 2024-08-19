@@ -24,10 +24,7 @@ class BuilderClient:
             return None
 
         if response.status_code != 200:
-            print(
-                f"No package to build\n"
-                f"Response Status = {response.status_code}"
-            )
+            print(f"No package to build\n" f"Response Status = {response.status_code}")
             return None
 
         return response.text
@@ -70,14 +67,12 @@ class BuilderClient:
         constants.setRPMCheck(constant_dict["rpmCheck"])
         constants.setRpmCheckStopOnError(constant_dict["rpmCheckStopOnError"])
 
-        constants.setPublishBuildDependencies(
-            constant_dict["publishBuildDependencies"]
-        )
+        constants.setPublishBuildDependencies(constant_dict["publishBuildDependencies"])
 
         constants.setPackageWeightsPath(constant_dict["packageWeightsPath"])
         constants.setKatBuild(constant_dict["katBuild"])
         constants.setCanisterBuild(constant_dict["canisterBuild"])
-        constants.setAcvpBuild(constant_dict['acvpBuild'])
+        constants.setAcvpBuild(constant_dict["acvpBuild"])
         constants.extrasourcesURLs = constant_dict["extrasourcesURLs"]
         constants.userDefinedMacros = constant_dict["userDefinedMacros"]
         constants.tmpDirPath = constant_dict["tmpDirPath"]
@@ -134,8 +129,7 @@ class BuilderClient:
             return True
 
         print(
-            "Unable to notify master, error code = %s"
-            % response.status_code,
+            "Unable to notify master, error code = %s" % response.status_code,
             ",response = %s" % response.json,
         )
         sys.exit(1)

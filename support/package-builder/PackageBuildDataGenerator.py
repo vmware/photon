@@ -139,9 +139,7 @@ class PackageBuildDataGenerator(object):
 
         nextPackagesToConstructGraph = set()
         if addBuildTimeGraph:
-            dependentRpmPackages = SPECS.getData().getBuildRequiresForPkg(
-                basePackage
-            )
+            dependentRpmPackages = SPECS.getData().getBuildRequiresForPkg(basePackage)
             dependentPackages = set()
             for dependentPkg in dependentRpmPackages:
                 dependentPackages.add(SPECS.getData().getBasePkg(dependentPkg))
@@ -151,9 +149,7 @@ class PackageBuildDataGenerator(object):
         if addRunTimeGraph:
             dependentPackages = set()
             for rpmPkg in SPECS.getData().getPackagesForPkg(basePackage):
-                dependentRpmPackages = SPECS.getData().getRequiresAllForPkg(
-                    rpmPkg
-                )
+                dependentRpmPackages = SPECS.getData().getRequiresAllForPkg(rpmPkg)
                 self.__runTimeDependencyGraph[rpmPkg] = copy.copy(
                     set(dependentRpmPackages)
                 )
@@ -224,10 +220,8 @@ class PackageBuildDataGenerator(object):
         dependentPackages = PackageBuildDataGenerator._buildDependentPackages(
             dependencyGraph, package
         )
-        dependentOfPackage = (
-            PackageBuildDataGenerator._buildDependentOfPackages(
-                dependentPackages
-            )
+        dependentOfPackage = PackageBuildDataGenerator._buildDependentOfPackages(
+            dependentPackages
         )
 
         """
@@ -292,9 +286,7 @@ class PackageBuildDataGenerator(object):
         if not cyclicDependencyGraph:
             return
         # step1: construct dependency map from dependency graph
-        constructDependencyMap = self._constructDependencyMap(
-            cyclicDependencyGraph
-        )
+        constructDependencyMap = self._constructDependencyMap(cyclicDependencyGraph)
 
         # step2: find cycles in dependency map
         self.logger.debug(
@@ -312,9 +304,7 @@ class PackageBuildDataGenerator(object):
 
                 if cycPkgs:
                     cycPkgs.append(node)
-                    cycleName = "cycle" + str(
-                        PackageBuildDataGenerator.cycleCount
-                    )
+                    cycleName = "cycle" + str(PackageBuildDataGenerator.cycleCount)
                     PackageBuildDataGenerator.cycleCount += 1
                     for x in cycPkgs:
                         self.__mapPackageToCycle[x] = cycleName
@@ -326,8 +316,7 @@ class PackageBuildDataGenerator(object):
         if cycleCount > 0:
             self.logger.debug(f"Found {cycleCount} cycles.")
             self.logger.debug(
-                "Successfully added all detected circular dependencies "
-                "to list."
+                "Successfully added all detected circular dependencies " "to list."
             )
         else:
             self.logger.debug("No circular dependencies found.")

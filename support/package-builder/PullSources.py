@@ -67,9 +67,7 @@ def get(package, source, checksum, sourcesPath, URLs, logger):
         try:
             downloadFile(url, destfile)
             if not isFileHashOkay(destfile, checksum):
-                raise Exception(
-                    f"Invalid checksum for package {package} file {source}"
-                )
+                raise Exception(f"Invalid checksum for package {package} file {source}")
             return
         except requests.exceptions.HTTPError as e:
             logger.exception(e)

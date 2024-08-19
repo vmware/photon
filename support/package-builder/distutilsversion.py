@@ -112,7 +112,6 @@ class Version:
 
 
 class StrictVersion(Version):
-
     """Version numbering for anal retentives and software idealists.
     Implements the standard interface for version number classes as
     described above.  A version number consists of two or three
@@ -157,9 +156,7 @@ class StrictVersion(Version):
         if not match:
             raise ValueError("invalid version number '%s'" % vstring)
 
-        (major, minor, patch, prerelease, prerelease_num) = match.group(
-            1, 2, 4, 5, 6
-        )
+        (major, minor, patch, prerelease, prerelease_num) = match.group(1, 2, 4, 5, 6)
 
         if patch:
             self.version = tuple(map(int, [major, minor, patch]))
@@ -290,7 +287,6 @@ class StrictVersion(Version):
 
 
 class LooseVersion(Version):
-
     """Version numbering for anarchists and software realists.
     Implements the standard interface for version number classes as
     described above.  A version number consists of a series of numbers,
@@ -329,9 +325,7 @@ class LooseVersion(Version):
         # from the parsed tuple -- so I just store the string here for
         # use by __str__
         self.vstring = vstring
-        components = [
-            x for x in self.component_re.split(vstring) if x and x != "."
-        ]
+        components = [x for x in self.component_re.split(vstring) if x and x != "."]
         for i, obj in enumerate(components):
             try:
                 components[i] = int(obj)

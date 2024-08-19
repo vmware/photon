@@ -12,7 +12,7 @@ from CommandUtils import CommandUtils
 
 
 class Sandbox(object):
-    def __init__(self, logger, cmdlog = lambda cmd: None):
+    def __init__(self, logger, cmdlog=lambda cmd: None):
         self.logger = logger
         self.cmdlog = cmdlog
 
@@ -40,8 +40,9 @@ class Sandbox(object):
     def removeObservationFile(self):
         pass
 
+
 class Chroot(Sandbox):
-    def __init__(self, logger, cmdlog = lambda cmd: None):
+    def __init__(self, logger, cmdlog=lambda cmd: None):
         Sandbox.__init__(self, logger, cmdlog)
         self.chrootID = None
         self.prepareBuildRootCmd = os.path.join(
@@ -50,9 +51,7 @@ class Chroot(Sandbox):
         self.runInChrootCommand = str(
             os.path.join(os.path.dirname(__file__), "run-in-chroot.sh")
         )
-        self.runInChrootCommand += (
-            f" {constants.sourcePath} {constants.rpmPath}"
-        )
+        self.runInChrootCommand += f" {constants.sourcePath} {constants.rpmPath}"
         self.chrootCmdPrefix = None
         self.cmdUtils = CommandUtils()
 
@@ -74,9 +73,7 @@ class Chroot(Sandbox):
                 return
             self._destroy(chrootID)
 
-        top_dirs = (
-            "dev,etc,proc,run,sys,tmp,publishrpms,publishxrpms,inputrpms"
-        )
+        top_dirs = "dev,etc,proc,run,sys,tmp,publishrpms,publishxrpms,inputrpms"
         extra_dirs = "RPMS,SRPMS,SOURCES,SPECS,LOGS,BUILD,BUILDROOT"
         cmd = f"mkdir -p {chrootID}/{{{top_dirs}}} {chrootID}/{constants.topDirPath}/{{{extra_dirs}}}"  # noqa: E501
 
@@ -175,8 +172,9 @@ class Chroot(Sandbox):
         listmountpoints.reverse()
         return listmountpoints
 
+
 class SystemdNspawn(Sandbox):
-    def __init__(self, logger, cmdlog = lambda cmd: None):
+    def __init__(self, logger, cmdlog=lambda cmd: None):
         import docker
 
         Sandbox.__init__(self, logger, cmdlog)
@@ -194,16 +192,20 @@ class SystemdNspawn(Sandbox):
 
     def create(self, chrootName):
         if self.chrootID:
-            raise Exception(f"Unable to create: {chrootName}. Chroot is already active: {self.chrootID}")
+            raise Exception(
+                f"Unable to create: {chrootName}. Chroot is already active: {self.chrootID}"
+            )
 
         self.chrootName = chrootName
         chrootID = f"{constants.buildRootPath}/{chrootName}"
         self.chrootID = chrootID
-        self.nspawnCmdPrefix = f"SYSTEMD_NSPAWN_TMPFS_TMP=0 systemd-nspawn --quiet --directory {chrootID} " \
-            f"--bind {constants.rpmPath}:{constants.topDirPath}/RPMS " \
-            f"--bind {constants.sourceRpmPath}:{constants.topDirPath}/SRPMS " \
-            f"--bind-ro {constants.prevPublishRPMRepo}:/publishrpms " \
+        self.nspawnCmdPrefix = (
+            f"SYSTEMD_NSPAWN_TMPFS_TMP=0 systemd-nspawn --quiet --directory {chrootID} "
+            f"--bind {constants.rpmPath}:{constants.topDirPath}/RPMS "
+            f"--bind {constants.sourceRpmPath}:{constants.topDirPath}/SRPMS "
+            f"--bind-ro {constants.prevPublishRPMRepo}:/publishrpms "
             f"--bind-ro {constants.prevPublishXRPMRepo}:/publishxrpms "
+        )
 
         if constants.inputRPMSPath:
             self.nspawnCmdPrefix += f"--bind-ro {constants.inputRPMSPath}:/inputrpms "
@@ -215,9 +217,7 @@ class SystemdNspawn(Sandbox):
 
         top_dirs = "dev,etc,proc,run,sys,tmp,publishrpms,publishxrpms,inputrpms"
         extra_dirs = "RPMS,SRPMS,SOURCES,SPECS,LOGS,BUILD,BUILDROOT"
-        cmd = (
-            f"mkdir -p {chrootID}/{{{top_dirs}}} {chrootID}/{constants.topDirPath}/{{{extra_dirs}}}"
-        )
+        cmd = f"mkdir -p {chrootID}/{{{top_dirs}}} {chrootID}/{constants.topDirPath}/{{{extra_dirs}}}"
 
         # Need to add timeout for this step
         # http://stackoverflow.com/questions/1191374/subprocess-with-timeout
@@ -242,7 +242,9 @@ class SystemdNspawn(Sandbox):
 
     def _startObserver(self):
         if not constants.observerDockerImage:
-            self.logger.warning("Unable to start an observer container. Docker image is not provided.")
+            self.logger.warning(
+                "Unable to start an observer container. Docker image is not provided."
+            )
             return None
         runArgs = {
             "image": constants.observerDockerImage,
@@ -251,7 +253,12 @@ class SystemdNspawn(Sandbox):
             "privileged": False,
             "name": self.chrootName,
             # Map tls/certs folder of the sandbox in observer container. So, observer can modify certificates and hijack a traffic.
-            "volumes": {f"{self.chrootID}/etc/pki/tls/certs": {'bind': "/etc/pki/tls/certs", 'mode': 'rw'}}
+            "volumes": {
+                f"{self.chrootID}/etc/pki/tls/certs": {
+                    "bind": "/etc/pki/tls/certs",
+                    "mode": "rw",
+                }
+            },
         }
         if constants.isolatedDockerNetwork:
             runArgs["network"] = constants.isolatedDockerNetwork
@@ -263,7 +270,9 @@ class SystemdNspawn(Sandbox):
             self.logger.warning("Unable to start an observer. Docker run failed.")
             return None
         self.observerContainer = observerContainer
-        result = self.observerContainer.exec_run("/observer/bin/observer_agent -m start_observer")
+        result = self.observerContainer.exec_run(
+            "/observer/bin/observer_agent -m start_observer"
+        )
         if result.exit_code:
             self.logger.warning("Unable to start an observer daemon")
             self.observerContainer.remove(force=True)
@@ -273,12 +282,16 @@ class SystemdNspawn(Sandbox):
         # Update attributes
         self.observerContainer.reload()
         # Return network namespace path systemd-nspawn attach to
-        return self.observerContainer.attrs['NetworkSettings']['SandboxKey']
+        return self.observerContainer.attrs["NetworkSettings"]["SandboxKey"]
 
     def _stopObserver(self):
-        result = self.observerContainer.exec_run("/observer/bin/observer_agent -m stop_observer")
+        result = self.observerContainer.exec_run(
+            "/observer/bin/observer_agent -m stop_observer"
+        )
         if result.exit_code:
-            self.logger.warning("Unable to stop an observer daemon. No observation file provided")
+            self.logger.warning(
+                "Unable to stop an observer daemon. No observation file provided"
+            )
             self.observerContainer.remove(force=True)
             self.observerContainer = None
             return
@@ -290,7 +303,9 @@ class SystemdNspawn(Sandbox):
             self.observerContainer = None
             return
 
-        with tempfile.NamedTemporaryFile(prefix=f"{self.chrootName}_", suffix="_observations.json", delete=False) as f:
+        with tempfile.NamedTemporaryFile(
+            prefix=f"{self.chrootName}_", suffix="_observations.json", delete=False
+        ) as f:
             filename = f.name
             f.write(result.output)
             f.flush()
@@ -308,8 +323,9 @@ class SystemdNspawn(Sandbox):
             # same network namespace. It will allow rpmbuild children access observer via local 127.0.0.1:8989 port
             netnsPath = self._startObserver()
             if not netnsPath:
-                self.logger.warning("Observer is not available. Sandbox will not have a networking")
-
+                self.logger.warning(
+                    "Observer is not available. Sandbox will not have a networking"
+                )
 
         if netnsPath:
             cmdPrefix = f"{self.nspawnCmdPrefix} --network-namespace-path={netnsPath} --setenv=HTTP_PROXY={self.observerURL} --setenv=HTTPS_PROXY={self.observerURL} --setenv=http_proxy={self.observerURL} --setenv=https_proxy={self.observerURL} "
@@ -319,7 +335,9 @@ class SystemdNspawn(Sandbox):
         self.logger.debug(f"systemd-nspawn.run() cmd: {cmdPrefix}{cmd}")
         self.cmdlog(f"{cmdPrefix}{cmd}")
         try:
-            (_, _, retval) = self.cmdUtils.runBashCmd(f"{cmdPrefix}{cmd}", logfile, logfn)
+            (_, _, retval) = self.cmdUtils.runBashCmd(
+                f"{cmdPrefix}{cmd}", logfile, logfn
+            )
         finally:
             if netnsPath:
                 self._stopObserver()
@@ -344,8 +362,9 @@ class SystemdNspawn(Sandbox):
             os.remove(self.observationFile)
         self.observationFile = None
 
+
 class Container(Sandbox):
-    def __init__(self, logger, cmdlog = lambda cmd: None):
+    def __init__(self, logger, cmdlog=lambda cmd: None):
         Sandbox.__init__(self, logger, cmdlog)
         self.containerID = None
         self.dockerClient = docker.from_env(version="auto")
@@ -415,12 +434,9 @@ class Container(Sandbox):
         )
         if not containerID:
             raise Exception(
-                "Unable to start Photon build container for task "
-                "tail -f /dev/null"
+                "Unable to start Photon build container for task " "tail -f /dev/null"
             )
-        self.logger.debug(
-            f"Successfully created container: {containerID.short_id}"
-        )
+        self.logger.debug(f"Successfully created container: {containerID.short_id}")
         self.containerID = containerID
 
     def run(self, cmd, logfile=None, logfn=None, network_required=False):

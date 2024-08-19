@@ -87,8 +87,7 @@ class PackageUtils(object):
         # TODO: Container sandbox might need  + self.forceRpmPackageOptions
         if self.noDepsRPMFilesToInstallInAOneShot != "":
             self.logger.debug(
-                f"Installing nodeps rpms: "
-                f"{self.noDepsPackagesToInstallInAOneShot}"
+                f"Installing nodeps rpms: " f"{self.noDepsPackagesToInstallInAOneShot}"
             )
             cmd = f"{rpmInstallcmd} {self.nodepsRPMPackageOptions} "
             cmd += f"{self.noDepsRPMFilesToInstallInAOneShot}"
@@ -97,9 +96,7 @@ class PackageUtils(object):
                 self.logger.error("Unable to install rpms.")
                 raise Exception("RPM installation failed")
         if self.rpmFilesToInstallInAOneShot != "":
-            self.logger.debug(
-                f"Installing rpms: {self.packagesToInstallInAOneShot}"
-            )
+            self.logger.debug(f"Installing rpms: {self.packagesToInstallInAOneShot}")
             cmd = f"{rpmInstallcmd} {self.rpmFilesToInstallInAOneShot}"
             if sandbox.run(cmd, logfn=self.logger.debug):
                 self.logger.debug(f"Command Executed: {cmd}")
@@ -127,17 +124,11 @@ class PackageUtils(object):
 
         sources_urls, macros = self._getAdditionalBuildOptions(package)
         self.logger.debug(f"Extra macros for {package}: " + str(macros))
-        self.logger.debug(
-            f"Extra source URLs for {package}: " + str(sources_urls)
-        )
+        self.logger.debug(f"Extra source URLs for {package}: " + str(sources_urls))
         constants.setExtraSourcesURLs(package, sources_urls)
 
-        self._copySources(
-            sandbox, listSourcesFiles, package, version, sourcePath
-        )
-        self._copySources(
-            sandbox, listPatchFiles, package, version, sourcePath
-        )
+        self._copySources(sandbox, listSourcesFiles, package, version, sourcePath)
+        self._copySources(sandbox, listPatchFiles, package, version, sourcePath)
 
         # Adding rpm macros
         listRPMMacros = constants.userDefinedMacros
@@ -161,9 +152,7 @@ class PackageUtils(object):
 
             logmsg = ""
             RpmsToCheck = []
-            self.logger.debug(
-                f"Checking for debug symbols in built rpms of: {package}"
-            )
+            self.logger.debug(f"Checking for debug symbols in built rpms of: {package}")
             for f in listRPMFiles:
                 f = os.path.basename(f)
                 logmsg += f"{f} "
@@ -200,9 +189,7 @@ class PackageUtils(object):
 
         for fn in RpmsToCheck:
             logs = []
-            rpm_full_path = (
-                f"{constants.rpmPath}/" + fn.split(".")[-2] + f"/{fn}"
-            )
+            rpm_full_path = f"{constants.rpmPath}/" + fn.split(".")[-2] + f"/{fn}"
             cmd = f"{self.rpmBinary} -qlp {rpm_full_path}"
             self.cmdUtils.runBashCmd(cmd, logfn=HandleLogs)
             if look_for in logs:
@@ -215,9 +202,7 @@ class PackageUtils(object):
             self.logger.error("Debug symbols found in following rpms:")
             self.logger.error("\n".join(faulty_rpms))
             self.logger.error("\n".join(result_logs))
-            self.logger.error(
-                "Use 'rpm -qlp <rpm>' to know more on the issue\n"
-            )
+            self.logger.error("Use 'rpm -qlp <rpm>' to know more on the issue\n")
 
         return dbg_symbols_found
 
@@ -280,21 +265,15 @@ class PackageUtils(object):
         return rpms.split()
 
     def adjustGCCSpecs(self, sandbox, package, version):
-        opt = " " + SPECS.getData().getSecurityHardeningOption(
-            package, version
-        )
+        opt = " " + SPECS.getData().getSecurityHardeningOption(package, version)
         opt = " " + SPECS.getData().getSecurityHardeningOption(package, version)
         cmd = f"/tmp/{self.adjustGCCSpecScript}{opt}"
         if not sandbox.run(cmd, logfn=self.logger.debug):
             return
 
         # in debugging ...
-        sandbox.run(
-            f"ls -la /tmp/{self.adjustGCCSpecScript}", logfn=self.logger.debug
-        )
-        sandbox.run(
-            f"lsof /tmp/{self.adjustGCCSpecScript}", logfn=self.logger.debug
-        )
+        sandbox.run(f"ls -la /tmp/{self.adjustGCCSpecScript}", logfn=self.logger.debug)
+        sandbox.run(f"lsof /tmp/{self.adjustGCCSpecScript}", logfn=self.logger.debug)
         sandbox.run("ps ax", logfn=self.logger.debug)
 
         self.logger.error("Failed while adjusting gcc specs")
@@ -350,15 +329,11 @@ class PackageUtils(object):
             raise Exception("Multiple sources found")
         return sourcePath
 
-    def _copySources(
-        self, sandbox, listSourceFiles, package, version, destDir
-    ):
+    def _copySources(self, sandbox, listSourceFiles, package, version, destDir):
         files_to_copy = []
         # Fetch and verify checksum if missing
         for source in listSourceFiles:
-            sourcePath = self._verifyShaAndGetSourcePath(
-                source, package, version
-            )
+            sourcePath = self._verifyShaAndGetSourcePath(source, package, version)
             files_to_copy.extend(sourcePath)
 
         if files_to_copy:
@@ -378,7 +353,7 @@ class PackageUtils(object):
         rpmBuildcmd = f"{self.rpmbuildBinary} {self.rpmbuildBuildallOption}"
 
         if constants.resume_build:
-            rpmBuildcmd += f" -D \"__spec_prep_cmd /bin/true\" "
+            rpmBuildcmd += f' -D "__spec_prep_cmd /bin/true" '
 
         if (
             not constants.buildDbgInfoRpm
@@ -389,9 +364,7 @@ class PackageUtils(object):
         if constants.rpmCheck and package in constants.testForceRPMS:
             pr_pounds = "#" * (68 + 2 * len(package))
             self.logger.debug(pr_pounds)
-            make_check_na = not SPECS.getData().isCheckAvailable(
-                package, version
-            )
+            make_check_na = not SPECS.getData().isCheckAvailable(package, version)
             if not make_check_na:
                 make_check_na = package in constants.listMakeCheckPkgToSkip
 
@@ -408,9 +381,7 @@ class PackageUtils(object):
                     "MakeCheck is available. "
                     f"Running MakeCheck TEST for {package} #######"
                 )
-                rpmBuildcmd = (
-                    f"{self.rpmbuildBinary} {self.rpmbuildCheckOption}"
-                )
+                rpmBuildcmd = f"{self.rpmbuildBinary} {self.rpmbuildCheckOption}"
             self.logger.debug(pr_pounds)
         else:
             rpmBuildcmd += f" {self.rpmbuildNocheckOption}"
@@ -433,7 +404,9 @@ class PackageUtils(object):
         if network_required:
             self.logger.debug(f"{package} requires network to build...")
 
-        returnVal = sandbox.run(rpmBuildcmd, logfile=logFile, network_required=network_required)
+        returnVal = sandbox.run(
+            rpmBuildcmd, logfile=logFile, network_required=network_required
+        )
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             if make_check_na:

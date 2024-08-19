@@ -9,6 +9,7 @@ from CommandUtils import CommandUtils
 from SpecData import SPECS
 from StringUtils import StringUtils
 
+
 class SRP(object):
 
     def __init__(self, pkg, logger):
@@ -34,14 +35,11 @@ class SRP(object):
             "sources": {
                 "source": {
                     "typename": "source_tree.git",
-                    "path": f"{constants.gitSourcePath}"
+                    "path": f"{constants.gitSourcePath}",
                 }
             },
-            "input_templates": {
-                "rpm-comps": {
-                }
-            },
-            "outputs": {}
+            "input_templates": {"rpm-comps": {}},
+            "outputs": {},
         }
         # SPDX template for output RPMs.
         self.spdx_package_common = {
@@ -49,7 +47,7 @@ class SRP(object):
                 "license_declared": f"{SPECS.getData().getLicense(self.package, self.fullVersion)}",
                 "home_page": f"{SPECS.getData().getURL(self.package, self.fullVersion)}",
                 "short_summary": f"{SPECS.getData().getSummary(self.package, self.fullVersion)}",
-                "supplier": "Organization: Broadcom, Inc."
+                "supplier": "Organization: Broadcom, Inc.",
             }
         }
 
@@ -63,9 +61,15 @@ class SRP(object):
     def initialize(self):
         if not self.srpcli:
             return
-        self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance init")
-        self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance add-build photon --package={self.package} --version={self.version} --release={self.release} --dist-tag={self.distTag} --arch={constants.targetArch}")
-        self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action start  --name=build-{self.pkg}")
+        self.cmdUtils.runBashCmd(
+            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance init"
+        )
+        self.cmdUtils.runBashCmd(
+            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance add-build photon --package={self.package} --version={self.version} --release={self.release} --dist-tag={self.distTag} --arch={constants.targetArch}"
+        )
+        self.cmdUtils.runBashCmd(
+            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action start  --name=build-{self.pkg}"
+        )
 
         # Add a compute resource information. From all available types vm.nimbus is closest to Photon build VM.
         # TODO: next 3 variables must be provided by CI/CD pipeline. Variable names can be different from what specified below.
@@ -73,9 +77,15 @@ class SRP(object):
         location = os.environ.get("LOCATION", "FIXME-LOCATION-NOT-DEFINED")
         build_id = os.environ.get("BUILD_ID", "FIXME-BUILD_ID-NOT-DEFINED")
         vm_template = os.environ.get("VM_TEMPLATE", "FIXME-VM_TEMPLATE-NOT-DEFINED")
-        self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action add-compute-resource vm.nimbus --os-type linux --kernel-version {os.uname()[2]} --distro-version '{self.getOSRelease()}' --machine {os.uname()[1]} --ephemeral=true --firewall-present=true --location {location} --build-id {build_id} --template {vm_template}")
-        self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action set-process-debugger --enabled=false")
-        self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action set-root-access --enabled=false")
+        self.cmdUtils.runBashCmd(
+            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action add-compute-resource vm.nimbus --os-type linux --kernel-version {os.uname()[2]} --distro-version '{self.getOSRelease()}' --machine {os.uname()[1]} --ephemeral=true --firewall-present=true --location {location} --build-id {build_id} --template {vm_template}"
+        )
+        self.cmdUtils.runBashCmd(
+            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action set-process-debugger --enabled=false"
+        )
+        self.cmdUtils.runBashCmd(
+            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action set-root-access --enabled=false"
+        )
 
     def rpmFileNameToUid(self, filename):
         rpm = StringUtils.splitRPMFilename(filename)
@@ -97,13 +107,9 @@ class SRP(object):
 
         for file in files:
             filename = os.path.basename(file)
-            self.schematic["input_templates"]["rpm-comps"][self.rpmFileNameToUid(filename)] = {
-                "incorporated": False,
-                "usages": [
-                    "building"
-                ]
-            }
-
+            self.schematic["input_templates"]["rpm-comps"][
+                self.rpmFileNameToUid(filename)
+            ] = {"incorporated": False, "usages": ["building"]}
 
     def addOutputRPMS(self, files):
         if not self.srpcli:
@@ -136,32 +142,34 @@ class SRP(object):
                     "$(sources:source_uid)": {
                         "is_components_source": True,
                         "incorporated": True,
-                        "usages": [
-                            "functionality",
-                            "building",
-                            "testing"
-                        ]
+                        "usages": ["functionality", "building", "testing"],
                     }
-                }
+                },
             }
 
     def addCommand(self, cmd):
         if not self.srpcli:
             return
 
-        _cmd = cmd.replace("\"", "\\\"")
-        self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action import-cmd --cmd=\"{_cmd}\"")
+        _cmd = cmd.replace('"', '\\"')
+        self.cmdUtils.runBashCmd(
+            f'SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action import-cmd --cmd="{_cmd}"'
+        )
 
     def addObservation(self, observationFile):
         if not self.srpcli:
             return
 
-        network_required = SPECS.getData().isNetworkRequired(self.package, self.fullVersion)
+        network_required = SPECS.getData().isNetworkRequired(
+            self.package, self.fullVersion
+        )
         if network_required and not observationFile:
             raise Exception("Observation file is required but not generated")
 
         if observationFile:
-            self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action import-observation --name=build-observation --file={observationFile}")
+            self.cmdUtils.runBashCmd(
+                f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action import-observation --name=build-observation --file={observationFile}"
+            )
 
     def finalize(self):
         if not self.srpcli:
@@ -170,9 +178,15 @@ class SRP(object):
         schematic_filename = f"{self.srp_workdir}/package.schematic.json"
         with open(schematic_filename, "w") as f:
             json.dump(self.schematic, f)
-        self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action stop")
-        self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance schematic --verbose --no-schematic --path={schematic_filename}")
-        self.cmdUtils.runBashCmd(f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance compile --saveto={self.srp_workdir}/{self.pkg}.provenance.json")
+        self.cmdUtils.runBashCmd(
+            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance action stop"
+        )
+        self.cmdUtils.runBashCmd(
+            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance schematic --verbose --no-schematic --path={schematic_filename}"
+        )
+        self.cmdUtils.runBashCmd(
+            f"SRP_WORKING_DIR={self.srp_workdir} {self.srpcli} provenance compile --saveto={self.srp_workdir}/{self.pkg}.provenance.json"
+        )
         if os.path.isfile(schematic_filename):
             os.remove(schematic_filename)
         # "_provenance.json" is a temporary file used by SRPCLI to store provenance content between SRPCLI invocations

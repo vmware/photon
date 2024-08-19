@@ -33,9 +33,7 @@ class Builder:
         if pkgInfoJsonFile:
             # Generating package info file which is required by installer
             if logger:
-                logger.debug(
-                    f"Writing Package info to the file: {pkgInfoJsonFile}"
-                )
+                logger.debug(f"Writing Package info to the file: {pkgInfoJsonFile}")
             pkgInfo = PackageInfo()
             pkgInfo.loadPackagesData()
             pkgInfo.writePkgListToFile(pkgInfoJsonFile)
@@ -55,9 +53,7 @@ class Builder:
             listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger
         )
 
-    def buildPackagesForAllSpecs(
-            buildThreads, pkgBuildType, pkgInfoJsonFile, logger
-    ):
+    def buildPackagesForAllSpecs(buildThreads, pkgBuildType, pkgInfoJsonFile, logger):
         listPackages = SPECS.getData().getListPackages()
         Builder.buildSpecifiedPackages(
             listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger

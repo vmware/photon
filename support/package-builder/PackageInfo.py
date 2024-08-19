@@ -30,9 +30,7 @@ class PackageInfo(object):
             for version in SPECS.getData().getVersions(package):
                 srpmFile = pkgUtils.findSourceRPMFile(package, version)
                 debugrpmFile = pkgUtils.findDebugRPMFile(package, version)
-                listRPMPackages = SPECS.getData().getRPMPackages(
-                    package, version
-                )
+                listRPMPackages = SPECS.getData().getRPMPackages(package, version)
                 for rpmPkg in listRPMPackages:
                     rpmFile = pkgUtils.findRPMFile(rpmPkg, version)
                     if rpmFile is not None:
@@ -46,9 +44,7 @@ class PackageInfo(object):
                             f"Added {rpmPkg}-{version} to package info json"
                         )
                     else:
-                        self.logger.debug(
-                            f"Missing rpm file for package: {rpmPkg}"
-                        )
+                        self.logger.debug(f"Missing rpm file for package: {rpmPkg}")
 
     def writePkgListToFile(self, fileName):
         self.logger.debug("Writing package list to the json file")

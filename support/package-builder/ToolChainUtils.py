@@ -44,9 +44,7 @@ class ToolChainUtils(object):
             self.rpmCommand = "fakeroot-ng rpm"
 
     def _findPublishedRPM(self, package, rpmdirPath):
-        listFoundRPMFiles = self.cmdUtils.findFile(
-            f"{package}-*.rpm", rpmdirPath
-        )
+        listFoundRPMFiles = self.cmdUtils.findFile(f"{package}-*.rpm", rpmdirPath)
         listFilterRPMFiles = []
         for f in listFoundRPMFiles:
             rpmFileName = os.path.basename(f)
@@ -124,9 +122,7 @@ class ToolChainUtils(object):
                     break
 
             if not version:
-                version = SPECS.getData(constants.buildArch).getHighestVersion(
-                    package
-                )
+                version = SPECS.getData(constants.buildArch).getHighestVersion(package)
 
             if availablePackages is not None:
                 basePkg = (
@@ -141,9 +137,7 @@ class ToolChainUtils(object):
                 isAvailable = True
 
             if constants.rpmCheck:
-                rpmFile = pkgUtils.findRPMFile(
-                    package, version, constants.buildArch
-                )
+                rpmFile = pkgUtils.findRPMFile(package, version, constants.buildArch)
 
             if rpmFile is None:
                 # Honor the toolchain list order.
@@ -164,24 +158,16 @@ class ToolChainUtils(object):
                     )
 
             if rpmFile is None:
-                if (
-                    not usePublishedRPMS
-                    or isAvailable
-                    or constants.crossCompiling
-                ):
+                if not usePublishedRPMS or isAvailable or constants.crossCompiling:
                     raise Exception(
                         "%s-%s.%s not found in available packages"
                         % (package, version, constants.buildArch)
                     )
 
                 # Safe to use published RPM
-                rpmFile = self._findPublishedRPM(
-                    package, constants.prevPublishRPMRepo
-                )
+                rpmFile = self._findPublishedRPM(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
-                    self.logger.error(
-                        f"Unable to find published rpm: {package}"
-                    )
+                    self.logger.error(f"Unable to find published rpm: {package}")
                     raise Exception("Input Error")
             rpmFiles += f" {rpmFile}"
             packages += f" {package}-{version}"
@@ -208,7 +194,9 @@ class ToolChainUtils(object):
         )
 
         if packageName:
-            rpmFiles = rpmFiles + self.installExtraToolchainRPMS(chroot, packageName, packageVersion)
+            rpmFiles = rpmFiles + self.installExtraToolchainRPMS(
+                chroot, packageName, packageVersion
+            )
 
         if constants.crossCompiling:
             rpmFiles = rpmFiles + self.installTargetToolchain(chroot, targetPackageName)
@@ -273,9 +261,7 @@ class ToolChainUtils(object):
             #               glibc-i18n, etc also to be installed
             subpackages = SPECS.getData().getRPMPackages(basePkg, version)
             for p in subpackages:
-                rpmFile = pkgUtils.findRPMFile(
-                    p, version, constants.targetArch
-                )
+                rpmFile = pkgUtils.findRPMFile(p, version, constants.targetArch)
                 rpmFiles += f" {rpmFile}"
                 packages += f" {package}-{version}"
 
@@ -293,7 +279,6 @@ class ToolChainUtils(object):
             self.cmdlog(cmd)
             self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
         self.logger.debug(
-            "Successfully installed target toolchain RPMS in chroot: "
-            f"{ChrootID}"
+            "Successfully installed target toolchain RPMS in chroot: " f"{ChrootID}"
         )
         return rpmFiles

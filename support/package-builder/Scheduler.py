@@ -227,12 +227,8 @@ class Scheduler(object):
                 dependencyLists[package].append(
                     childPkg.packageName + "-" + childPkg.packageVersion
                 )
-        with open(
-            str(constants.logPath) + "/BuildDependencies.json", "w"
-        ) as graphfile:
-            graphfile.write(
-                json.dumps(dependencyLists, sort_keys=True, indent=4)
-            )
+        with open(str(constants.logPath) + "/BuildDependencies.json", "w") as graphfile:
+            graphfile.write(json.dumps(dependencyLists, sort_keys=True, indent=4))
 
     @staticmethod
     def __getRequiredTypePackages(pkg, requiresType):
@@ -341,7 +337,6 @@ class Scheduler(object):
                 childPkgNode.parentPkgNodes.add(pkgNode)
 
     def _optimizeGraph():
-
         """
         GRAPH-BUILD STEP 3: Convert weak (install-requires) dependencies
                              into strong (aux-build-requires) dependencies.
@@ -420,9 +415,7 @@ class Scheduler(object):
         while nodesToVisit:
             pkgNode = nodesToVisit.pop()
 
-            pkgNode.accumInstallRequiresPkgNodes |= (
-                pkgNode.installRequiresPkgNodes
-            )
+            pkgNode.accumInstallRequiresPkgNodes |= pkgNode.installRequiresPkgNodes
 
             if len(pkgNode.childPkgNodes) == 0:
                 """
@@ -512,9 +505,7 @@ class Scheduler(object):
                     childPkgNodesToRemove.add(childPkgNode)
                     childPkgNode.parentPkgNodes.remove(pkgNode)
 
-            pkgNode.childPkgNodes = (
-                pkgNode.childPkgNodes - childPkgNodesToRemove
-            )
+            pkgNode.childPkgNodes = pkgNode.childPkgNodes - childPkgNodesToRemove
 
             for newChildPkgNode in pkgNode.auxBuildRequiresPkgNodes:
                 pkgNode.childPkgNodes.add(newChildPkgNode)
@@ -539,7 +530,6 @@ class Scheduler(object):
             )
 
     def _calculateCriticalChainWeights():
-
         """
         GRAPH-BUILD STEP 5: Calculate critical-chain-weight of packages.
 
@@ -625,8 +615,7 @@ class Scheduler(object):
                         "Child node visit count > number of parents "
                         f"Child node: {childPkgNode.packageName}"
                         f"Visit count: {childPkgNode.numVisits}"
-                        "Num of parents: "
-                        + str(len(childPkgNode.parentPkgNodes))
+                        "Num of parents: " + str(len(childPkgNode.parentPkgNodes))
                     )
 
                 childPkgNode.criticalChainWeight = max(
@@ -747,9 +736,7 @@ class Scheduler(object):
     @staticmethod
     def _markPkgNodeAsBuilt(package):
         pkgNode = Scheduler.mapPackagesToGraphNodes[package]
-        Scheduler.logger.debug(
-            f"Marking pkgNode as built = {pkgNode.packageName}"
-        )
+        Scheduler.logger.debug(f"Marking pkgNode as built = {pkgNode.packageName}")
         pkgNode.built = 1
 
     @staticmethod
@@ -757,10 +744,7 @@ class Scheduler(object):
         for pkg in Scheduler.listOfPackagesToBuild:
             if pkg in Scheduler.listOfPackagesCurrentlyBuilding:
                 continue
-            if (
-                constants.rpmCheck
-                or Scheduler._checkNextPackageIsReadyToBuild(pkg)
-            ):
+            if constants.rpmCheck or Scheduler._checkNextPackageIsReadyToBuild(pkg):
                 Scheduler.listOfPackagesNextToBuild.put(
                     (-Scheduler._getPriority(pkg), pkg)
                 )

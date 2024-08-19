@@ -26,9 +26,7 @@ class CommandUtils:
         return out.split() if out else None
 
     @staticmethod
-    def runBashCmd(
-        cmd, logfile=None, logfn=None, capture=False, ignore_rc=False
-    ):
+    def runBashCmd(cmd, logfile=None, logfn=None, capture=False, ignore_rc=False):
         fp = None
         if logfile:
             fp = open(logfile, "w")

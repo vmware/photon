@@ -24,17 +24,13 @@ class WorkerThread(threading.Thread):
             if pkg is None:
                 break
             doneList = Scheduler.Scheduler.getDoneList()
-            pkgBuilder = PackageBuilder(
-                self.mapPackageToCycle, self.pkgBuildType
-            )
+            pkgBuilder = PackageBuilder(self.mapPackageToCycle, self.pkgBuildType)
             try:
                 pkgBuilder.build(pkg, doneList)
             except Exception as e:
                 self.logger.exception(e)
                 Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
-                self.logger.debug(
-                    f"Thread {self.name} stopped building package: {pkg}"
-                )
+                self.logger.debug(f"Thread {self.name} stopped building package: {pkg}")
                 self.statusEvent.set()
                 break
             Scheduler.Scheduler.notifyPackageBuildCompleted(pkg)

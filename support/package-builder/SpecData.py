@@ -113,9 +113,11 @@ class SpecData(object):
         availableVersions = []
         for obj in specObjs:
             availableVersions.append(f"{obj.name}-{obj.version}")
-        raise Exception("Could not find package: "
-                        f"{depPkg.package}{depPkg.compare}{depPkg.version}"
-                        " available specs: " + " ".join(availableVersions))
+        raise Exception(
+            "Could not find package: "
+            f"{depPkg.package}{depPkg.compare}{depPkg.version}"
+            " available specs: " + " ".join(availableVersions)
+        )
 
     def _getSpecObjField(self, package, version, field):
         for specObj in self.getSpecObjects(package):
@@ -178,9 +180,7 @@ class SpecData(object):
     """
 
     def getRequiresTreeForPkg(self, pkg):
-        requires = self.getBuildRequiresForPkg(pkg) + self.getRequiresForPkg(
-            pkg
-        )
+        requires = self.getBuildRequiresForPkg(pkg) + self.getRequiresForPkg(pkg)
         for p in requires:
             for pc in SPECS.getData().getRequiresForPkg(p):
                 if pc not in requires:
@@ -243,9 +243,7 @@ class SpecData(object):
         return listPkgName
 
     def getRelease(self, package, version):
-        return self._getSpecObjField(
-            package, version, field=lambda x: x.release
-        )
+        return self._getSpecObjField(package, version, field=lambda x: x.release)
 
     def getVersions(self, package):
         versions = []
@@ -262,19 +260,13 @@ class SpecData(object):
         )
 
     def getSpecFile(self, package, version):
-        return self._getSpecObjField(
-            package, version, field=lambda x: x.specFile
-        )
+        return self._getSpecObjField(package, version, field=lambda x: x.specFile)
 
     def getPatches(self, package, version):
-        return self._getSpecObjField(
-            package, version, field=lambda x: x.listPatches
-        )
+        return self._getSpecObjField(package, version, field=lambda x: x.listPatches)
 
     def getSources(self, package, version):
-        return self._getSpecObjField(
-            package, version, field=lambda x: x.listSources
-        )
+        return self._getSpecObjField(package, version, field=lambda x: x.listSources)
 
     def getChecksum(self, package, version, source):
         return self._getSpecObjField(
@@ -283,9 +275,7 @@ class SpecData(object):
 
     # returns list of package names (no versions)
     def getPackages(self, package, version):
-        return self._getSpecObjField(
-            package, version, field=lambda x: x.listPackages
-        )
+        return self._getSpecObjField(package, version, field=lambda x: x.listPackages)
 
     def getPackagesForPkg(self, pkg):
         pkgs = []
@@ -323,7 +313,9 @@ class SpecData(object):
         )
 
     def isNetworkRequired(self, package, version):
-        return self._getSpecObjField(package, version, field=lambda x: x.networkRequired)
+        return self._getSpecObjField(
+            package, version, field=lambda x: x.networkRequired
+        )
 
     def isCheckAvailable(self, package, version):
         return self._getSpecObjField(
@@ -337,20 +329,18 @@ class SpecData(object):
         return self._getSpecObjField(package, version, field=lambda x: x.url)
 
     def getSourceURL(self, package, version):
-        return self._getSpecObjField(
-            package, version, field=lambda x: x.sourceurl
-        )
+        return self._getSpecObjField(package, version, field=lambda x: x.sourceurl)
 
     def getLicense(self, package, version):
-        return self._getSpecObjField(
-            package, version, field=lambda x: x.license
-        )
+        return self._getSpecObjField(package, version, field=lambda x: x.license)
 
     def getSummary(self, package, version):
-        return self._getSpecObjField(package, version, field=lambda x : x.summary)
+        return self._getSpecObjField(package, version, field=lambda x: x.summary)
 
     def getDescription(self, package, version):
-        return self._getSpecObjField(package, version, field=lambda x : x.descriptions[package])
+        return self._getSpecObjField(
+            package, version, field=lambda x: x.descriptions[package]
+        )
 
     # Converts "glibc-devel-2.28" into "glibc-2.28"
     def getBasePkg(self, pkg):
@@ -361,9 +351,7 @@ class SpecData(object):
         listSpecs = self.mapSpecObjects.keys()
         for spec in listSpecs:
             for specObj in self.mapSpecObjects[spec]:
-                self.logger.debug(
-                    f"-----------Spec: {specObj.name} --------------"
-                )
+                self.logger.debug(f"-----------Spec: {specObj.name} --------------")
                 self.logger.debug(f"Version: {specObj.version}")
                 self.logger.debug(f"Release: {specObj.release}")
                 self.logger.debug(f"SpecFile: {specObj.specFile}")
@@ -374,21 +362,13 @@ class SpecData(object):
                 self.logger.debug("List RPM packages")
                 self.logger.debug(specObj.listPackages)
                 self.logger.debug("Build require packages")
-                self.logger.debug(
-                    self.getPkgNamesFromObj(specObj.buildRequires)
-                )
+                self.logger.debug(self.getPkgNamesFromObj(specObj.buildRequires))
                 self.logger.debug("install require packages")
-                self.logger.debug(
-                    self.getPkgNamesFromObj(specObj.installRequires)
-                )
+                self.logger.debug(self.getPkgNamesFromObj(specObj.installRequires))
                 self.logger.debug(specObj.installRequiresPackages)
-                self.logger.debug(
-                    f"security_hardening: {specObj.securityHardening}"
-                )
+                self.logger.debug(f"security_hardening: {specObj.securityHardening}")
                 self.logger.debug(f"BuildArch: {specObj.buildarch}")
-                self.logger.debug(
-                    "------------------------------------------------"
-                )
+                self.logger.debug("------------------------------------------------")
 
 
 class SPECS(object):

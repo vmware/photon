@@ -59,9 +59,7 @@ class PackageManager(object):
         self.listOfPackagesAlreadyBuilt = set(doneList)
         pkgCount = len(coreToolChainYetToBuild)
         if coreToolChainYetToBuild:
-            self.logger.info(
-                "The following core toolchain packages need to be built: "
-            )
+            self.logger.info("The following core toolchain packages need to be built: ")
             self.logger.info(coreToolChainYetToBuild)
         else:
             self.logger.info("Core toolchain packages are already available")
@@ -89,9 +87,7 @@ class PackageManager(object):
             self.logger.info("Step 2: Building stage 2 of the toolchain...")
             self.logger.info(constants.listToolChainPackages)
             self.logger.info("")
-            self._buildGivenPackages(
-                constants.listToolChainPackages, buildThreads
-            )
+            self._buildGivenPackages(constants.listToolChainPackages, buildThreads)
             self.logger.info("The entire toolchain is now available")
             self.logger.info(45 * "-")
             self.logger.info("")
@@ -126,9 +122,7 @@ class PackageManager(object):
 
     def _readPackageBuildData(self, listPackages):
         try:
-            pkgBuildDataGen = PackageBuildDataGenerator(
-                self.logName, self.logPath
-            )
+            pkgBuildDataGen = PackageBuildDataGenerator(self.logName, self.logPath)
             (
                 self.mapCyclesToPackageList,
                 self.mapPackageToCycle,
@@ -147,6 +141,7 @@ class PackageManager(object):
     Returns set of package name and version like
     ["name1-vers1", "name2-vers2",..]
     """
+
     def _readAlreadyAvailablePackages(self):
         listAvailablePackages = set()
         pkgUtils = PackageUtils(self.logName, self.logPath)
@@ -155,9 +150,7 @@ class PackageManager(object):
             for version in SPECS.getData().getVersions(package):
                 # Mark package available only if all subpackages are available
                 packageIsAlreadyBuilt = True
-                listRPMPackages = SPECS.getData().getRPMPackages(
-                    package, version
-                )
+                listRPMPackages = SPECS.getData().getRPMPackages(package, version)
                 for rpmPkg in listRPMPackages:
                     if pkgUtils.findRPMFile(rpmPkg, version) is None:
                         packageIsAlreadyBuilt = False
@@ -179,10 +172,7 @@ class PackageManager(object):
 
         listPackagesToBuild = copy.copy(listPackages)
         for pkg in listPackages:
-            if (
-                pkg in self.listOfPackagesAlreadyBuilt
-                and not constants.rpmCheck
-            ):
+            if pkg in self.listOfPackagesAlreadyBuilt and not constants.rpmCheck:
                 listPackagesToBuild.remove(pkg)
 
         if constants.rpmCheck:
@@ -194,10 +184,7 @@ class PackageManager(object):
         if self.sortedPackageList:
             self.logger.info("List of packages yet to be built...")
             self.logger.info(
-                str(
-                    set(self.sortedPackageList)
-                    - set(self.listOfPackagesAlreadyBuilt)
-                )
+                str(set(self.sortedPackageList) - set(self.listOfPackagesAlreadyBuilt))
             )
             self.logger.info("")
 
@@ -205,9 +192,7 @@ class PackageManager(object):
 
     def _buildTestPackages(self, buildThreads):
         self.buildToolChain()
-        self._buildGivenPackages(
-            constants.listMakeCheckRPMPkgtoInstall, buildThreads
-        )
+        self._buildGivenPackages(constants.listMakeCheckRPMPkgtoInstall, buildThreads)
 
     def _initializeThreadPool(self, statusEvent):
         ThreadPool.clear()
@@ -218,9 +203,7 @@ class PackageManager(object):
 
     def _initializeScheduler(self, statusEvent):
         Scheduler.setLog(self.logName, self.logPath, self.logLevel)
-        Scheduler.setParams(
-            self.sortedPackageList, self.listOfPackagesAlreadyBuilt
-        )
+        Scheduler.setParams(self.sortedPackageList, self.listOfPackagesAlreadyBuilt)
         Scheduler.setEvent(statusEvent)
         Scheduler.stopScheduling = False
 
@@ -232,7 +215,7 @@ class PackageManager(object):
         for pkg in listPackages:
             versionGiven = None
             if "@" in pkg:
-                pkg, versionGiven = pkg.split('@')
+                pkg, versionGiven = pkg.split("@")
 
             base = SPECS.getData().getSpecName(pkg)
             for version in SPECS.getData().getVersions(base):
@@ -297,9 +280,7 @@ class PackageManager(object):
         self.logger.debug("Generating photon build container..")
         try:
             # TODO image name constants.buildContainerImageName
-            self.dockerClient.images.remove(
-                constants.buildContainerImage, force=True
-            )
+            self.dockerClient.images.remove(constants.buildContainerImage, force=True)
         except Exception:
             # TODO - better handling
             self.logger.debug("Photon build container image not found.")
@@ -311,9 +292,7 @@ class PackageManager(object):
             chroot = Chroot(self.logger)
             chroot.create("toolchain-chroot")
             tcUtils = ToolChainUtils("toolchain-chroot", self.logPath)
-            tcUtils.installToolchainRPMS(
-                chroot, usePublishedRPMS=usePublishedRPMs
-            )
+            tcUtils.installToolchainRPMS(chroot, usePublishedRPMS=usePublishedRPMs)
         except Exception as e:
             if chroot:
                 chroot.destroy()

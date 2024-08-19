@@ -19,7 +19,7 @@ EULA_PATH = os.path.join(PHOTON_DIR, "EULA.txt")
 STAGE_DIR = os.path.join(PHOTON_DIR, "stage")
 REPO_DIR = os.path.join(STAGE_DIR, "RPMS")
 
-ARCH_MAP = {'x86_64': "amd64", 'aarch64': "arm64"}
+ARCH_MAP = {"x86_64": "amd64", "aarch64": "arm64"}
 
 if THIS_ARCH == "x86_64":
     POI_IMAGE = "projects.registry.vmware.com/photon/installer:ob-22815435"
@@ -31,15 +31,17 @@ else:
 
 class Poi(object):
 
-    def __init__(self,
-                 arch=THIS_ARCH,
-                 release_ver=RELEASE_VER,
-                 repo_dir=None,
-                 poi_image=POI_IMAGE,
-                 photon_dir=PHOTON_DIR,
-                 stage_dir=STAGE_DIR,
-                 eula_path=EULA_PATH,
-                 sha=None):
+    def __init__(
+        self,
+        arch=THIS_ARCH,
+        release_ver=RELEASE_VER,
+        repo_dir=None,
+        poi_image=POI_IMAGE,
+        photon_dir=PHOTON_DIR,
+        stage_dir=STAGE_DIR,
+        eula_path=EULA_PATH,
+        sha=None,
+    ):
 
         self.arch = arch
         self.release_ver = release_ver
@@ -61,13 +63,24 @@ class Poi(object):
         if workdir is None:
             workdir = os.getcwd()
 
-        poi_cmd = ["docker", "run", "--rm", "--privileged",
-                   "-v", "/dev:/dev",
-                   "-v", f"{self.repo_dir}:/repo",
-                   "-v", f"{workdir}:/workdir",
-                   "-v", f"{self.photon_dir}:/photon",
-                   "-v", f"{self.stage_dir}:/photon/stage",
-                   "-w", "/workdir"]
+        poi_cmd = [
+            "docker",
+            "run",
+            "--rm",
+            "--privileged",
+            "-v",
+            "/dev:/dev",
+            "-v",
+            f"{self.repo_dir}:/repo",
+            "-v",
+            f"{workdir}:/workdir",
+            "-v",
+            f"{self.photon_dir}:/photon",
+            "-v",
+            f"{self.stage_dir}:/photon/stage",
+            "-w",
+            "/workdir",
+        ]
 
         if self.arch != THIS_ARCH:
             poi_cmd.append(f"--platform=linux/{self.docker_arch}")
@@ -97,18 +110,16 @@ class Poi(object):
         else:
             print(f"{cfg_dir} not found, ignoring")
 
-        pkg_list_file = os.path.join(self.photon_dir,
-                                     "common", "data",
-                                     f"packages_{subtype}.json")
+        pkg_list_file = os.path.join(
+            self.photon_dir, "common", "data", f"packages_{subtype}.json"
+        )
         if os.path.isfile(pkg_list_file):
             print(f"using pkg_list_file {pkg_list_file}")
             shutil.copy(pkg_list_file, stage_cfg_dir)
         else:
             print(f"{pkg_list_file} not found, ignoring")
 
-    def create_config_from_custom(self,
-                                  type, custom_file,
-                                  subtype=None, subdir=None):
+    def create_config_from_custom(self, type, custom_file, subtype=None, subdir=None):
         if subdir is None:
             subdir = type
         if subtype is None:
@@ -123,22 +134,21 @@ class Poi(object):
 
         with open(custom_file, "rt") as f:
             custom_config = json.load(f)
-        ks_config = custom_config['installer']
-        ks_config['disks'] = {
-            'default': {
-                'filename': image_file,
-                'size': custom_config['size']
-            }
+        ks_config = custom_config["installer"]
+        ks_config["disks"] = {
+            "default": {"filename": image_file, "size": custom_config["size"]}
         }
-        ks_config['live'] = False
+        ks_config["live"] = False
 
         # remove this code when "../relocate-rpmdb.sh" is removed from
         # build/photon-aarch64.json in photon-cfg
-        if 'postinstallscripts' in ks_config:
-            ks_config['postinstallscripts'] = list(filter(
-                lambda item: "relocate-rpmdb.sh" not in item,
-                ks_config['postinstallscripts']
-            ))
+        if "postinstallscripts" in ks_config:
+            ks_config["postinstallscripts"] = list(
+                filter(
+                    lambda item: "relocate-rpmdb.sh" not in item,
+                    ks_config["postinstallscripts"],
+                )
+            )
 
         # saving with .yaml extension although it's just json because that's
         # what we are going to use in create_image() - but json is a subset
@@ -146,9 +156,9 @@ class Poi(object):
         with open(ks_file, "wt") as f:
             json.dump(ks_config, f, indent=4)
 
-        pkg_list_file = os.path.join(self.photon_dir,
-                                     "common", "data",
-                                     ks_config['packagelist_file'])
+        pkg_list_file = os.path.join(
+            self.photon_dir, "common", "data", ks_config["packagelist_file"]
+        )
         if os.path.isfile(pkg_list_file):
             shutil.copy(pkg_list_file, stage_cfg_dir)
         else:
@@ -160,12 +170,18 @@ class Poi(object):
 
         stage_cfg_dir = os.path.join(self.stage_dir, subdir)
         ks_file = f"{type}_ks.yaml"
-        self.run_poi(["create-image",
-                      "-c", ks_file,
-                      "-v", self.release_ver,
-                      "--param", f"imgfile={image_file}"
-                     ],
-                     workdir=stage_cfg_dir)
+        self.run_poi(
+            [
+                "create-image",
+                "-c",
+                ks_file,
+                "-v",
+                self.release_ver,
+                "--param",
+                f"imgfile={image_file}",
+            ],
+            workdir=stage_cfg_dir,
+        )
         return os.path.join(stage_cfg_dir, image_file)
 
     def create_ova(self, image_file, subdir="ova", cleanup=True):
@@ -175,23 +191,34 @@ class Poi(object):
         # strip the extension:
         ova_name = image_file.rsplit(".", 1)[0]
 
-        self.run_poi(["create-ova",
-                      "--raw-images", image_file,
-                      "--ova-config", "photon.yaml",
-                      "--ova-name", ova_name,
-                      "--param", "eulafile=EULA.txt"
-                     ],
-                     workdir=stage_cfg_dir)
+        self.run_poi(
+            [
+                "create-ova",
+                "--raw-images",
+                image_file,
+                "--ova-config",
+                "photon.yaml",
+                "--ova-name",
+                ova_name,
+                "--param",
+                "eulafile=EULA.txt",
+            ],
+            workdir=stage_cfg_dir,
+        )
         if cleanup:
             os.remove(os.path.join(stage_cfg_dir, image_file))
 
     def create_azure(self, image_file, subdir="azure"):
         stage_cfg_dir = os.path.join(self.stage_dir, subdir)
 
-        self.run_poi(["create-azure",
-                      "--raw-image", image_file,
-                     ],
-                     workdir=stage_cfg_dir)
+        self.run_poi(
+            [
+                "create-azure",
+                "--raw-image",
+                image_file,
+            ],
+            workdir=stage_cfg_dir,
+        )
         # no cleanup, done by create-azure
 
     def _create_tar_gz(self, image_file, tarfile, subdir=None, cleanup=True):
@@ -200,8 +227,7 @@ class Poi(object):
 
         stage_cfg_dir = os.path.join(self.stage_dir, subdir)
         print(f"tarring {image_file} to {tarfile}")
-        subprocess.run(["tar", "zcf", tarfile, image_file],
-                       cwd=stage_cfg_dir)
+        subprocess.run(["tar", "zcf", tarfile, image_file], cwd=stage_cfg_dir)
         if cleanup:
             os.remove(os.path.join(stage_cfg_dir, image_file))
 
@@ -214,11 +240,14 @@ class Poi(object):
         basename = image_file.rsplit(".", 1)[0]
         # our scripts expect the extension ".raw":
         image_file_raw = f"{basename}.raw"
-        os.rename(os.path.join(stage_cfg_dir, image_file),
-                  os.path.join(stage_cfg_dir, image_file_raw))
+        os.rename(
+            os.path.join(stage_cfg_dir, image_file),
+            os.path.join(stage_cfg_dir, image_file_raw),
+        )
 
-        self._create_tar_gz(image_file_raw, f"{basename}.tar.gz",
-                            subdir=subdir, cleanup=cleanup)
+        self._create_tar_gz(
+            image_file_raw, f"{basename}.tar.gz", subdir=subdir, cleanup=cleanup
+        )
 
     def create_gce(self, image_file, subdir=None, cleanup=True):
         if subdir is None:
@@ -229,11 +258,14 @@ class Poi(object):
         basename = image_file.rsplit(".", 1)[0]
         # gce expects the name "disk.raw":
         image_file_raw = "disk.raw"
-        os.rename(os.path.join(stage_cfg_dir, image_file),
-                  os.path.join(stage_cfg_dir, image_file_raw))
+        os.rename(
+            os.path.join(stage_cfg_dir, image_file),
+            os.path.join(stage_cfg_dir, image_file_raw),
+        )
 
-        self._create_tar_gz(image_file_raw, f"{basename}.tar.gz",
-                            subdir=subdir, cleanup=cleanup)
+        self._create_tar_gz(
+            image_file_raw, f"{basename}.tar.gz", subdir=subdir, cleanup=cleanup
+        )
 
     def create_rpi(self, image_file, subdir=None, cleanup=True):
         if subdir is None:
@@ -245,9 +277,7 @@ class Poi(object):
         image_path_xz = os.path.join(stage_cfg_dir, f"{basename}.xz")
         print(f"compressing {image_file} to {basename}.xz")
         with open(image_path_xz, "w") as fout:
-            subprocess.run(["xz", "-c", image_file],
-                           stdout=fout,
-                           cwd=stage_cfg_dir)
+            subprocess.run(["xz", "-c", image_file], stdout=fout, cwd=stage_cfg_dir)
         if cleanup:
             os.remove(os.path.join(stage_cfg_dir, image_file))
 
@@ -265,9 +295,9 @@ class Poi(object):
         if os.path.isfile(pkg_info_json):
             print("using pkg_info.json for RPM list")
 
-            key = 'rpm'
+            key = "rpm"
             if type in ["src", "debug"]:
-                key = f'{type}rpm'
+                key = f"{type}rpm"
 
             with open(pkg_info_json, "rt") as f:
                 pkg_info = json.load(f)
@@ -288,8 +318,7 @@ class Poi(object):
         if type is None:
             rpm_list_file = os.path.join(stage_cfg_dir, f"{basename}.rpm-list")
         else:
-            rpm_list_file = os.path.join(stage_cfg_dir,
-                                         f"{basename}.{type}.rpm-list")
+            rpm_list_file = os.path.join(stage_cfg_dir, f"{basename}.{type}.rpm-list")
 
         with open(rpm_list_file, "wt") as f:
             for line in rpm_list:
@@ -301,25 +330,32 @@ class Poi(object):
 
         stage_cfg_dir = os.path.join(self.stage_dir, subdir)
 
-        for cfg_file in ["packages_installer_initrd.json",
-                         "packages_minimal.json"]:
-            cfg_path = os.path.join(self.photon_dir,
-                                    "common", "data",
-                                    cfg_file)
+        for cfg_file in ["packages_installer_initrd.json", "packages_minimal.json"]:
+            cfg_path = os.path.join(self.photon_dir, "common", "data", cfg_file)
             shutil.copy(cfg_path, stage_cfg_dir)
 
         basename = iso_file.rsplit(".", 1)[0]
-        self.run_poi(["photon-iso-builder",
-                      "-f", "build-iso",
-                      "-v", self.release_ver,
-                      "-p", "packages_minimal.json",
-                      "--initrd-pkgs-list-file", "packages_installer_initrd.json",
-                      "--repo-paths=/repo",
-                      "--rpms-list-file", f"{basename}.rpm-list",
-                      "--config", "iso.yaml",
-                      "--name", iso_file
-                     ],
-                     workdir=stage_cfg_dir)
+        self.run_poi(
+            [
+                "photon-iso-builder",
+                "-f",
+                "build-iso",
+                "-v",
+                self.release_ver,
+                "-p",
+                "packages_minimal.json",
+                "--initrd-pkgs-list-file",
+                "packages_installer_initrd.json",
+                "--repo-paths=/repo",
+                "--rpms-list-file",
+                f"{basename}.rpm-list",
+                "--config",
+                "iso.yaml",
+                "--name",
+                iso_file,
+            ],
+            workdir=stage_cfg_dir,
+        )
 
     def create_full_special_iso(self, iso_file, type=None, subdir=None):
         if subdir is None:
@@ -355,26 +391,36 @@ class Poi(object):
 
         stage_cfg_dir = os.path.join(self.stage_dir, subdir)
 
-        initrd_pkgs_list_path = os.path.join(self.photon_dir,
-                                             "common", "data",
-                                             "packages_installer_initrd.json")
+        initrd_pkgs_list_path = os.path.join(
+            self.photon_dir, "common", "data", "packages_installer_initrd.json"
+        )
         shutil.copy(initrd_pkgs_list_path, stage_cfg_dir)
 
-        self.run_poi(["photon-iso-builder",
-                      "-f", "build-iso",
-                      "-v", self.release_ver,
-                      "-p", f"packages_{type}.json",
-                      "--initrd-pkgs-list-file", "packages_installer_initrd.json",
-                      "--repo-paths=/repo",
-                      "--name", iso_file
-                     ],
-                     workdir=stage_cfg_dir)
+        self.run_poi(
+            [
+                "photon-iso-builder",
+                "-f",
+                "build-iso",
+                "-v",
+                self.release_ver,
+                "-p",
+                f"packages_{type}.json",
+                "--initrd-pkgs-list-file",
+                "packages_installer_initrd.json",
+                "--repo-paths=/repo",
+                "--name",
+                iso_file,
+            ],
+            workdir=stage_cfg_dir,
+        )
 
     def get_git_sha(self):
-        out = subprocess.run(["git", "rev-parse", "--short", "HEAD"],
-                             capture_output=True,
-                             check=True,
-                             cwd=self.photon_dir)
+        out = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            check=True,
+            cwd=self.photon_dir,
+        )
         return out.stdout.decode().strip()
 
     # ova, azure etc. have the type in the name
@@ -400,13 +446,21 @@ def main():
     stage_dir = STAGE_DIR
     repo_dir = None
     arch = THIS_ARCH
-    sha= None
+    sha = None
 
     try:
         opts, args = getopt.getopt(
-                sys.argv[1:],
-                "c:",
-                longopts=["config=", "docker-image=", "arch=", "stage-dir=", "repo-dir=", "sha="])
+            sys.argv[1:],
+            "c:",
+            longopts=[
+                "config=",
+                "docker-image=",
+                "arch=",
+                "stage-dir=",
+                "repo-dir=",
+                "sha=",
+            ],
+        )
     except getopt.GetoptError as e:
         print(e)
         sys.exit(2)
@@ -431,10 +485,14 @@ def main():
 
     target = args[0]
 
-    poi = Poi(arch=arch, poi_image=poi_image, stage_dir=stage_dir, repo_dir=repo_dir, sha=sha)
+    poi = Poi(
+        arch=arch, poi_image=poi_image, stage_dir=stage_dir, repo_dir=repo_dir, sha=sha
+    )
 
     if target in ["ova", "ova-stig", "azure", "ami", "gce", "rpi"]:
-        assert target != "rpi" or arch == "aarch64", "arch must be aarch64 to build RPi image"
+        assert (
+            target != "rpi" or arch == "aarch64"
+        ), "arch must be aarch64 to build RPi image"
 
         poi.create_config(target)
         if config is not None:
@@ -486,5 +544,5 @@ def main():
         assert False, f"unknown target {target}"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

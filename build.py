@@ -186,9 +186,7 @@ class Build_Config:
     def setUpdatedRpmPath(updatedRpmPath):
         Build_Config.updatedRpmPath = updatedRpmPath
         Build_Config.updatedRpmNoArchPath = f"{updatedRpmPath}/noarch"
-        Build_Config.updatedRpmArchPath = (
-            f"{updatedRpmPath}/{constants.buildArch}"
-        )
+        Build_Config.updatedRpmArchPath = f"{updatedRpmPath}/{constants.buildArch}"
 
     @staticmethod
     def setStagePath(stagePath):
@@ -212,20 +210,26 @@ class Build_Config:
         if not os.path.isdir(releaseDataDir):
             raise FileNotFoundError(f"The directory '{releaseDataDir}' does not exist.")
 
-        rpmlist_files = glob.glob(os.path.join(releaseDataDir, 'rpmfilelist*'))
+        rpmlist_files = glob.glob(os.path.join(releaseDataDir, "rpmfilelist*"))
         if not rpmlist_files:
-            raise FileNotFoundError(f"No files starting with 'rpmfilelist' found in the directory '{releaseDataDir}'.")
+            raise FileNotFoundError(
+                f"No files starting with 'rpmfilelist' found in the directory '{releaseDataDir}'."
+            )
 
-        xrpmlist_files = glob.glob(os.path.join(releaseDataDir, 'xrpmfilelist*'))
+        xrpmlist_files = glob.glob(os.path.join(releaseDataDir, "xrpmfilelist*"))
         if not xrpmlist_files:
-            raise FileNotFoundError(f"No files starting with 'xrpmfilelist' found in the directory '{releaseDataDir}'.")
+            raise FileNotFoundError(
+                f"No files starting with 'xrpmfilelist' found in the directory '{releaseDataDir}'."
+            )
 
         # Define the required JSON file
-        json_path = os.path.join(releaseDataDir, 'builder-pkg-preq.json')
+        json_path = os.path.join(releaseDataDir, "builder-pkg-preq.json")
 
         # Check if 'builder-pkg-preq.json' file exists
         if not os.path.isfile(json_path):
-            raise FileNotFoundError(f"The file 'builder-pkg-preq.json' is missing in the directory '{releaseDataDir}'.")
+            raise FileNotFoundError(
+                f"The file 'builder-pkg-preq.json' is missing in the directory '{releaseDataDir}'."
+            )
 
         Build_Config.releaseDataPath = releaseDataDir
 
@@ -265,15 +269,11 @@ class Utilities:
     def __init__(self, args):
 
         self.img = configdict.get("utility", {}).get("img", None)
-        self.json_file = configdict.get("utility", {}).get(
-            "file", "packages_*.json"
-        )
+        self.json_file = configdict.get("utility", {}).get("file", "packages_*.json")
         self.display_option = configdict.get("utility", {}).get(
             "display-option", "json"
         )
-        self.input_type = configdict.get("utility", {}).get(
-            "input-type", "json"
-        )
+        self.input_type = configdict.get("utility", {}).get("input-type", "json")
         self.pkg = configdict.get("utility", {}).get("pkg", None)
         self.args = args
 
@@ -310,9 +310,7 @@ class Utilities:
 
     def generate_dep_lists(self):
         check_prerequesite["generate-dep-lists"] = True
-        list_json_files = glob.glob(
-            os.path.join(Build_Config.dataDir, self.json_file)
-        )
+        list_json_files = glob.glob(os.path.join(Build_Config.dataDir, self.json_file))
         # Generate the expanded package dependencies json file based on package_list_file
         self.logger.info(
             "Generating the install time dependency list for all json files"
@@ -331,8 +329,7 @@ class Utilities:
             if self.display_option == "json":
                 output_file = os.path.join(
                     Build_Config.generatedDataPath,
-                    os.path.splitext(os.path.basename(json_file))[0]
-                    + "_expanded.json",
+                    os.path.splitext(os.path.basename(json_file))[0] + "_expanded.json",
                 )
                 self.specDepsObject.process(
                     self.input_type,
@@ -350,15 +347,11 @@ class Utilities:
 
     def pkgtree(self):
         self.input_type = "pkg"
-        self.specDepsObject.process(
-            self.input_type, self.pkg, self.display_option
-        )
+        self.specDepsObject.process(self.input_type, self.pkg, self.display_option)
 
     def who_needs(self):
         self.input_type = "who-needs"
-        self.specDepsObject.process(
-            self.input_type, self.pkg, self.display_option
-        )
+        self.specDepsObject.process(self.input_type, self.pkg, self.display_option)
 
     def imgtree(self):
         self.input_type = "json"
@@ -412,11 +405,7 @@ class Utilities:
             try:
                 os.remove(filePath)
             except Exception as error:
-                print(
-                    "Error while removing file {0}: {1}".format(
-                        filePath, error
-                    )
-                )
+                print("Error while removing file {0}: {1}".format(filePath, error))
 
 
 """
@@ -595,24 +584,16 @@ class CleanUp:
             runBashCmd(cmd)
 
     def removeUpwardDeps(pkg, display_option):
-        specDeps = SpecDependencyGenerator(
-            constants.logPath, constants.logLevel
-        )
-        isToolChainPkg = specDeps.process(
-            "is-toolchain-pkg", pkg, display_option
-        )
+        specDeps = SpecDependencyGenerator(constants.logPath, constants.logLevel)
+        isToolChainPkg = specDeps.process("is-toolchain-pkg", pkg, display_option)
         if isToolChainPkg:
             specDeps.logger.info(
                 "Removing all staged RPMs since toolchain packages were modified"
             )
             runBashCmd(f"rm -rf {constants.rpmPath}")
         else:
-            whoNeedsList = specDeps.process(
-                "get-upward-deps", pkg, display_option
-            )
-            specDeps.logger.info(
-                "Removing upward dependencies: " + str(whoNeedsList)
-            )
+            whoNeedsList = specDeps.process("get-upward-deps", pkg, display_option)
+            specDeps.logger.info("Removing upward dependencies: " + str(whoNeedsList))
             for pkg in whoNeedsList:
                 package, version = StringUtils.splitPackageNameAndVersion(pkg)
                 for p in SPECS.getData().getPackages(package, version):
@@ -676,24 +657,16 @@ class RpmBuildTarget:
     global check_prerequesite
 
     def __init__(self):
-        self.logger = Logger.getLogger(
-            "Main", constants.logPath, constants.logLevel
-        )
+        self.logger = Logger.getLogger("Main", constants.logPath, constants.logLevel)
 
         BuildEnvironmentSetup.photon_stage()
 
-        if (
-            configdict["additional-path"]["photon-publish-x-rpms-path"]
-            is not None
-        ):
+        if configdict["additional-path"]["photon-publish-x-rpms-path"] is not None:
             BuildEnvironmentSetup.publish_x_rpms_cached()
         else:
             BuildEnvironmentSetup.publish_x_rpms()
 
-        if (
-            configdict["additional-path"]["photon-publish-rpms-path"]
-            is not None
-        ):
+        if configdict["additional-path"]["photon-publish-rpms-path"] is not None:
             BuildEnvironmentSetup.publish_rpms_cached()
         else:
             BuildEnvironmentSetup.publish_rpms()
@@ -719,12 +692,8 @@ class RpmBuildTarget:
         self.logger.debug(f"Log Path : {constants.logPath}")
         self.logger.debug(f"Log Level : {constants.logLevel}")
         self.logger.debug(f"Top Dir Path : {constants.topDirPath}")
-        self.logger.debug(
-            f"Publish RPMS Path : {constants.prevPublishRPMRepo}"
-        )
-        self.logger.debug(
-            f"Publish X RPMS Path : {constants.prevPublishXRPMRepo}"
-        )
+        self.logger.debug(f"Publish RPMS Path : {constants.prevPublishRPMRepo}")
+        self.logger.debug(f"Publish X RPMS Path : {constants.prevPublishXRPMRepo}")
 
         Builder.get_packages_with_build_options(
             configdict["photon-build-param"]["pkg-build-options"]
@@ -750,7 +719,9 @@ class RpmBuildTarget:
             return
 
         createrepo_cmd = configdict["createrepo-cmd"]
-        runBashCmd(f"{createrepo_cmd} --general-compress-type=gz --update {constants.rpmPath}")
+        runBashCmd(
+            f"{createrepo_cmd} --general-compress-type=gz --update {constants.rpmPath}"
+        )
         check_prerequesite["create-repo"] = True
 
     @staticmethod
@@ -762,9 +733,7 @@ class RpmBuildTarget:
         if not os.path.isfile(
             os.path.join(Build_Config.stagePath, "ostree-repo.tar.gz")
         ):
-            print(
-                "Creating OSTree repo from local RPMs in ostree-repo.tar.gz..."
-            )
+            print("Creating OSTree repo from local RPMs in ostree-repo.tar.gz...")
             RpmBuildTarget.create_repo()
             cmd = (
                 f"{photonDir}/support/image-builder/ostree-tools/make-ostree-image.sh"
@@ -822,9 +791,7 @@ class RpmBuildTarget:
 
         if not configdict["additional-path"]["photon-cache-path"]:
             Builder.buildPackagesInJson(
-                os.path.join(
-                    Build_Config.dataDir, "packages_basic.json"
-                ),
+                os.path.join(Build_Config.dataDir, "packages_basic.json"),
                 Build_Config.buildThreads,
                 Build_Config.pkgBuildType,
                 Build_Config.pkgInfoFile,
@@ -855,9 +822,7 @@ class RpmBuildTarget:
             return
 
         Builder.buildPackagesInJson(
-            os.path.join(
-                Build_Config.dataDir, "packages_installer_initrd.json"
-            ),
+            os.path.join(Build_Config.dataDir, "packages_installer_initrd.json"),
             Build_Config.buildThreads,
             Build_Config.pkgBuildType,
             Build_Config.pkgInfoFile,
@@ -959,9 +924,7 @@ class RpmBuildTarget:
             )
         else:
             blackListPkgs = GenerateOSSFiles.readBlackListPackages(
-                configdict.get("additional-path", {}).get(
-                    "pkg-black-list-file", ""
-                )
+                configdict.get("additional-path", {}).get("pkg-black-list-file", "")
             )
             logger = Logger.getLogger(
                 "GenerateYamlFiles", constants.logPath, constants.logLevel
@@ -1004,14 +967,10 @@ class CheckTools:
 
     def create_ph_builder_img():
         ph_docker_img = configdict["photon-build-param"]["photon-docker-image"]
-        ph_docker_img_url = configdict["photon-build-param"][
-            "ph-docker-img-url"
-        ]
+        ph_docker_img_url = configdict["photon-build-param"]["ph-docker-img-url"]
         ph_builder_tag = configdict["photon-build-param"]["ph-builder-tag"]
 
-        ph_docker_img_url = ph_docker_img_url.replace(
-            "ARCH", constants.currentArch
-        )
+        ph_docker_img_url = ph_docker_img_url.replace("ARCH", constants.currentArch)
 
         cmd = (
             f"{photonDir}/tools/scripts/ph-docker-img-import.sh {ph_docker_img_url}"
@@ -1030,9 +989,7 @@ class CheckTools:
         for fn in {"commit-msg", "pre-push"}:
             if not os.path.exists(f"{git_hooks_path}/{fn}"):
                 print(f"{hook_scripts_path}/{fn} doesn't exist, create ...")
-                runBashCmd(
-                    f"ln -srv {hook_scripts_path}/{fn} {git_hooks_path}/{fn}"
-                )
+                runBashCmd(f"ln -srv {hook_scripts_path}/{fn} {git_hooks_path}/{fn}")
 
     def check_contain():
         if not os.path.exists(f"{photonDir}/tools/bin/contain_unpriv"):
@@ -1062,9 +1019,7 @@ class CheckTools:
         runBashCmd(script)
 
     def check_docker():
-        if not glob.glob(Build_Config.dockerEnv) and not shutil.which(
-            "docker"
-        ):
+        if not glob.glob(Build_Config.dockerEnv) and not shutil.which("docker"):
             raise Exception("docker not present")
 
         runBashCmd("systemctl start docker")
@@ -1073,13 +1028,8 @@ class CheckTools:
             runBashCmd("docker ps &>/dev/null")
 
         docker_py_ver = "2.3.0"
-        if (
-            not glob.glob(Build_Config.dockerEnv)
-            and docker.__version__ < docker_py_ver
-        ):
-            print(
-                f"\nError: Python3 package docker-{docker_py_ver} not installed."
-            )
+        if not glob.glob(Build_Config.dockerEnv) and docker.__version__ < docker_py_ver:
+            print(f"\nError: Python3 package docker-{docker_py_ver} not installed.")
             print(f"Please use: pip3 install docker=={docker_py_ver}\n")
             raise Exception()
 
@@ -1091,9 +1041,7 @@ class CheckTools:
         cmd = f"{script_fn} {configdict['photon-path']} && {script_fn} {configdict['release-branch-path']}"
 
         if "base-commit" in configdict["photon-build-param"]:
-            commit_id = str(
-                configdict["photon-build-param"].get("base-commit")
-            )
+            commit_id = str(configdict["photon-build-param"].get("base-commit"))
             if commit_id:
                 cmd = f"git -C {ph_path} diff --name-only {commit_id}"
 
@@ -1126,20 +1074,16 @@ class BuildImage:
 
         self.config_file = None
         if configdict["additional-path"]["conf-file"] is not None:
-            self.config_file = os.path.abspath(configdict["additional-path"]["conf-file"])
+            self.config_file = os.path.abspath(
+                configdict["additional-path"]["conf-file"]
+            )
 
         self.img_name = imgName
         self.rpm_path = constants.rpmPath
         self.srpm_path = constants.sourceRpmPath
-        self.pkg_to_rpm_map_file = os.path.join(
-            Build_Config.stagePath, "pkg_info.json"
-        )
-        self.ph_docker_image = configdict["photon-build-param"][
-            "photon-docker-image"
-        ]
-        self.ph_builder_tag = configdict["photon-build-param"][
-            "ph-builder-tag"
-        ]
+        self.pkg_to_rpm_map_file = os.path.join(Build_Config.stagePath, "pkg_info.json")
+        self.ph_docker_image = configdict["photon-build-param"]["photon-docker-image"]
+        self.ph_builder_tag = configdict["photon-build-param"]["ph-builder-tag"]
         self.poi_image = configdict["photon-build-param"].get("poi-image", None)
 
         self.ova_cloud_images = ["ami", "gce", "azure", "ova"]
@@ -1156,11 +1100,11 @@ class BuildImage:
             self.package_list_file = (
                 f"{Build_Config.dataDir}/build_install_options_{flavor}.json"
             )
-            self.pkg_to_be_copied_conf_file = f"{Build_Config.generatedDataPath}/build_install_options_{flavor}.json"
-        else:
             self.pkg_to_be_copied_conf_file = (
-                Build_Config.pkgToBeCopiedConfFile
+                f"{Build_Config.generatedDataPath}/build_install_options_{flavor}.json"
             )
+        else:
+            self.pkg_to_be_copied_conf_file = Build_Config.pkgToBeCopiedConfFile
             self.package_list_file = Build_Config.packageListFile
 
         self.iso_path = (
@@ -1269,9 +1213,7 @@ class BuildImage:
 
         BuildEnvironmentSetup.photon_stage()
 
-        local_build = not configdict["photon-build-param"][
-            "start-scheduler-server"
-        ]
+        local_build = not configdict["photon-build-param"]["start-scheduler-server"]
 
         if local_build:
             RpmBuildTarget.ostree_repo()
@@ -1318,9 +1260,7 @@ class BuildImage:
 
         BuildImage.photon_docker_image()
 
-        if not os.path.isdir(
-            os.path.join(Build_Config.stagePath, "docker_images")
-        ):
+        if not os.path.isdir(os.path.join(Build_Config.stagePath, "docker_images")):
             os.mkdir(os.path.join(Build_Config.stagePath, "docker_images"))
 
         os.chdir(f"{photonDir}/support/dockerfiles/k8s-docker-images")
@@ -1427,9 +1367,7 @@ def initialize_constants():
         )
     )
     Build_Config.setBuildThreads(configdict["photon-build-param"]["threads"])
-    Build_Config.setPkgBuildType(
-        configdict["photon-build-param"]["photon-build-type"]
-    )
+    Build_Config.setPkgBuildType(configdict["photon-build-param"]["photon-build-type"])
     Build_Config.setPkgJsonInput(
         configdict.get("additional-path", {}).get("pkg-json-input", None)
     )
@@ -1468,56 +1406,38 @@ def initialize_constants():
         raise Exception(f"publishXrpm-url is invalid {src_url}")
     constants.setPublishXRpmURL(src_url)
 
-    constants.setRPMCheck(
-        configdict["photon-build-param"].get("rpm-check-flag", False)
-    )
+    constants.setRPMCheck(configdict["photon-build-param"].get("rpm-check-flag", False))
     constants.setRpmCheckStopOnError(
         configdict["photon-build-param"].get("rpm-check-stop-on-error", False)
     )
     constants.setPublishBuildDependencies(
-        configdict["photon-build-param"].get(
-            "publish-build-dependencies", False
-        )
+        configdict["photon-build-param"].get("publish-build-dependencies", False)
     )
     constants.setStagePath(Build_Config.stagePath)
     constants.setRpmPath(os.path.join(Build_Config.stagePath, "RPMS"))
     Build_Config.setRpmNoArchPath()
     Build_Config.setRpmArchPath()
     constants.setSourceRpmPath(os.path.join(Build_Config.stagePath, "SRPMS"))
-    Build_Config.setUpdatedRpmPath(
-        os.path.join(Build_Config.stagePath, "UPDATED_RPMS")
-    )
+    Build_Config.setUpdatedRpmPath(os.path.join(Build_Config.stagePath, "UPDATED_RPMS"))
     constants.setSourcePath(os.path.join(Build_Config.stagePath, "SOURCES"))
-    constants.setPrevPublishRPMRepo(
-        os.path.join(Build_Config.stagePath, "PUBLISHRPMS")
-    )
+    constants.setPrevPublishRPMRepo(os.path.join(Build_Config.stagePath, "PUBLISHRPMS"))
     constants.setPrevPublishXRPMRepo(
         os.path.join(Build_Config.stagePath, "PUBLISHXRPMS")
     )
-    Build_Config.setPkgInfoFile(
-        os.path.join(Build_Config.stagePath, "pkg_info.json")
-    )
-    constants.setBuildRootPath(
-        os.path.join(Build_Config.stagePath, "photonroot")
-    )
+    Build_Config.setPkgInfoFile(os.path.join(Build_Config.stagePath, "pkg_info.json"))
+    constants.setBuildRootPath(os.path.join(Build_Config.stagePath, "photonroot"))
     Build_Config.setGeneratedDataDir(
         os.path.join(Build_Config.stagePath, "common/data")
     )
     Build_Config.setReleaseDataDir(
-        os.path.join(
-            str(
-                Path(configdict["release-branch-path"]).resolve()
-            ), "data"
-        )
+        os.path.join(str(Path(configdict["release-branch-path"]).resolve()), "data")
     )
     constants.setTopDirPath("/usr/src/photon")
     Build_Config.setCommonDir(os.path.join(photonDir, "common"))
     Build_Config.setDataDir(os.path.join(photonDir, "common/data"))
     constants.setInputRPMSPath(
         os.path.abspath(
-            configdict.get(
-                "input-rpms-path", os.path.join(photonDir, "inputRPMS")
-            )
+            configdict.get("input-rpms-path", os.path.join(photonDir, "inputRPMS"))
         )
     )
     Build_Config.setPullPublishRPMSDir(
@@ -1527,9 +1447,7 @@ def initialize_constants():
         os.path.join(Build_Config.pullPublishRPMSDir, "pullpublishrpms.sh")
     )
     Build_Config.setPullPublishRPMSCached(
-        os.path.join(
-            Build_Config.pullPublishRPMSDir, "pullpublishrpms-cached.sh"
-        )
+        os.path.join(Build_Config.pullPublishRPMSDir, "pullpublishrpms-cached.sh")
     )
     constants.setReleasePkgPreqPath(
         os.path.join(Build_Config.releaseDataPath, "builder-pkg-preq.json")
@@ -1537,15 +1455,11 @@ def initialize_constants():
     constants.setPackageWeightsPath(
         os.path.join(Build_Config.dataDir, "packageWeights.json")
     )
-    constants.setKatBuild(
-        configdict["photon-build-param"].get("kat-build", False)
-    )
+    constants.setKatBuild(configdict["photon-build-param"].get("kat-build", False))
     constants.setCanisterBuild(
         configdict["photon-build-param"].get("canister-build", False)
     )
-    constants.setAcvpBuild(
-        configdict["photon-build-param"].get("acvp-build", False)
-    )
+    constants.setAcvpBuild(configdict["photon-build-param"].get("acvp-build", False))
     Build_Config.setConfFile(configdict["additional-path"]["conf-file"])
     Build_Config.setPkgToBeCopiedConfFile(
         configdict.get("additional-path", {}).get("pkg-to-be-copied-conf-file")
@@ -1560,17 +1474,13 @@ def initialize_constants():
     constants.setStartSchedulerServer(
         configdict["photon-build-param"]["start-scheduler-server"]
     )
-    constants.setCompressionMacro(
-        configdict["photon-build-param"]["compression-macro"]
-    )
+    constants.setCompressionMacro(configdict["photon-build-param"]["compression-macro"])
 
     constants.setPhotonDir(photonDir)
 
     constants.phBuilderTag = configdict["photon-build-param"]["ph-builder-tag"]
 
-    constants.buildSrcRpm = int(
-        configdict["photon-build-param"]["build-src-rpm"]
-    )
+    constants.buildSrcRpm = int(configdict["photon-build-param"]["build-src-rpm"])
     constants.buildDbgInfoRpm = int(
         configdict["photon-build-param"]["build-dbginfo-rpm"]
     )
@@ -1578,9 +1488,7 @@ def initialize_constants():
         "build-dbginfo-rpm-list"
     ]
 
-    if configdict.get("photon-build-param", {}).get(
-        "ossl-fips-in-make-check", False
-    ):
+    if configdict.get("photon-build-param", {}).get("ossl-fips-in-make-check", False):
         constants.enable_fips_in_make_check()
 
     constants.extraPackagesList = configdict["photon-build-param"][
@@ -1596,7 +1504,9 @@ def initialize_constants():
     # Isolated/firewalled network for sandbox attach to.
     constants.isolatedDockerNetwork = configdict.get("isolated-docker-network", None)
 
-    filesToCopyToSb = configdict.get("photon-build-param", {}).get("copy-to-sandbox", "")
+    filesToCopyToSb = configdict.get("photon-build-param", {}).get(
+        "copy-to-sandbox", ""
+    )
     for k, v in filesToCopyToSb.items():
         if not v:
             continue
@@ -1605,6 +1515,7 @@ def initialize_constants():
     constants.initialize()
 
     check_prerequesite["initialize-constants"] = True
+
 
 def set_default_value_of_config():
     global configdict
@@ -1625,7 +1536,10 @@ def set_default_value_of_config():
     out, _, _ = runBashCmd("git rev-parse --short HEAD", capture=True)
     configdict[key]["input-photon-common-build-number"] = out.rstrip()
 
-    out, _, _ = runBashCmd(f"git -C {configdict['release-branch-path']} rev-parse --short HEAD", capture=True)
+    out, _, _ = runBashCmd(
+        f"git -C {configdict['release-branch-path']} rev-parse --short HEAD",
+        capture=True,
+    )
     configdict[key]["input-photon-build-number"] = out.rstrip()
 
     ret = f"{curDir}/common/data/" + configdict[key]["pkg-build-options"]
@@ -1655,13 +1569,11 @@ def process_env_build_params(ph_build_param):
         "SCHEDULER_SERVER": "start-scheduler-server",
         "BUILD_EXTRA_PKGS": "build-extra-pkgs",
         "RESUME_BUILD": "resume-build",
-        "POI_IMAGE": "poi-image"
+        "POI_IMAGE": "poi-image",
     }
 
     os.environ["PHOTON_RELEASE_VER"] = ph_build_param["photon-release-version"]
-    os.environ["PHOTON_BUILD_NUM"] = ph_build_param[
-        "input-photon-build-number"
-    ]
+    os.environ["PHOTON_BUILD_NUM"] = ph_build_param["input-photon-build-number"]
     os.environ["PHOTON_COMMON_BUILD_NUM"] = ph_build_param[
         "input-photon-common-build-number"
     ]
@@ -1714,19 +1626,29 @@ def process_additional_cfgs(cfgdict_additional_path):
             if val:
                 cfgdict_additional_path[v] = os.environ[k]
 
+
 def merge_dicts(dict1, dict2):
     """
     Merge two dictionaries with dict2 taking precedence over dict1.
     """
     merged_dict = dict1.copy()
     for key, value in dict2.items():
-        if isinstance(value, dict) and key in merged_dict and isinstance(merged_dict[key], dict):
+        if (
+            isinstance(value, dict)
+            and key in merged_dict
+            and isinstance(merged_dict[key], dict)
+        ):
             merged_dict[key] = merge_dicts(merged_dict[key], value)
         elif key in merged_dict:
-            raise Exception("ERROR: " + key + " is present in both configs.\nIt can only be present in one.")
+            raise Exception(
+                "ERROR: "
+                + key
+                + " is present in both configs.\nIt can only be present in one."
+            )
         else:
             merged_dict[key] = value
     return merged_dict
+
 
 def main():
 
@@ -1777,7 +1699,7 @@ def main():
 
     releaseDir = Path(
         configdict["photon-path"], configdict.get("release-branch-path", "")
-        ).resolve()
+    ).resolve()
 
     if not configdict.get("release-branch-path", ""):
         raise Exception("build-config.json: release-branch-path is empty")
@@ -1792,7 +1714,7 @@ def main():
         configdict["stage-path"] = os.environ["STAGE_PATH"]
         configdict["stage-path"] = Path(
             configdict["photon-path"], configdict.get("stage-path", "")
-            ).resolve()
+        ).resolve()
 
     set_default_value_of_config()
 
@@ -1838,7 +1760,7 @@ def main():
             check_prerequesite[item] = False
 
     commit_id = str(configdict["photon-build-param"].get("base-commit", ""))
-    check_hash=f"git -C {configdict['release-branch-path']} merge-base --is-ancestor {commit_id} HEAD"
+    check_hash = f"git -C {configdict['release-branch-path']} merge-base --is-ancestor {commit_id} HEAD"
     _, _, rc = runBashCmd(check_hash, capture=True, ignore_rc=True)
     ph_path = configdict["photon-path"] if rc else configdict["release-branch-path"]
 

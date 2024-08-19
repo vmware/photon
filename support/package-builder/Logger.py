@@ -28,13 +28,9 @@ class Logger(object):
             fhandler = logging.FileHandler(logfile)
             # create console handler
             ch = logging.StreamHandler()
-            fhformatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(message)s"
-            )
+            fhformatter = logging.Formatter("%(asctime)s - %(name)s - %(message)s")
             if loglevel == "debug":
-                chformatter = logging.Formatter(
-                    "%(asctime)s - %(name)s - %(message)s"
-                )
+                chformatter = logging.Formatter("%(asctime)s - %(name)s - %(message)s")
             else:
                 chformatter = logging.Formatter("%(message)s")
             if mymodule == "werkzeug":

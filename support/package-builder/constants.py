@@ -9,6 +9,7 @@ from CommandUtils import CommandUtils as cmdUtils
 
 PH_COMMIT_URI_PREFIX = "https://github.com/vmware/photon/commit/"
 
+
 class constants(object):
     specPaths = []
     gitSourcePath = ""
@@ -263,14 +264,18 @@ class constants(object):
         if constants.buildNumber is not None:
             constants.addMacro("photon_build_number", constants.buildNumber)
 
-        if constants.buildNumber is not None and constants.commonBuildNumber is not None:
-            constants.addMacro("phvcs", f'{PH_COMMIT_URI_PREFIX}{constants.buildNumber}\;{PH_COMMIT_URI_PREFIX}{constants.commonBuildNumber}')
+        if (
+            constants.buildNumber is not None
+            and constants.commonBuildNumber is not None
+        ):
+            constants.addMacro(
+                "phvcs",
+                f"{PH_COMMIT_URI_PREFIX}{constants.buildNumber}\;{PH_COMMIT_URI_PREFIX}{constants.commonBuildNumber}",
+            )
 
         # adding releasenumber rpm macro
         if constants.releaseVersion is not None:
-            constants.addMacro(
-                "photon_release_version", constants.releaseVersion
-            )
+            constants.addMacro("photon_release_version", constants.releaseVersion)
 
         if constants.katBuild:
             constants.addMacro("kat_build", "1")
@@ -282,14 +287,22 @@ class constants(object):
             constants.addMacro("acvp_build", "1")
 
         if constants.releasePkgPreqPath:
-            with open(constants.releasePkgPreqPath, 'r') as file:
+            with open(constants.releasePkgPreqPath, "r") as file:
                 pkgPreq = json.load(file)
             constants.noDepsPackageList.extend(pkgPreq["noDepsPackageList"])
-            constants.listCoreToolChainPackages.extend(pkgPreq["listCoreToolChainPackages"])
+            constants.listCoreToolChainPackages.extend(
+                pkgPreq["listCoreToolChainPackages"]
+            )
             constants.listToolChainPackages.extend(pkgPreq["listToolChainPackages"])
-            constants.listToolChainRPMsToInstall.extend(pkgPreq["listToolChainRPMsToInstall"])
-            constants.listMakeCheckRPMPkgtoInstall.extend(pkgPreq["listMakeCheckRPMPkgtoInstall"])
-            constants.listReqPrivilegedDockerForTest.extend(pkgPreq["listReqPrivilegedDockerForTest"])
+            constants.listToolChainRPMsToInstall.extend(
+                pkgPreq["listToolChainRPMsToInstall"]
+            )
+            constants.listMakeCheckRPMPkgtoInstall.extend(
+                pkgPreq["listMakeCheckRPMPkgtoInstall"]
+            )
+            constants.listReqPrivilegedDockerForTest.extend(
+                pkgPreq["listReqPrivilegedDockerForTest"]
+            )
             constants.listMakeCheckPkgToSkip.extend(pkgPreq["listMakeCheckPkgToSkip"])
             constants.providedBy = pkgPreq["providedBy"]
 

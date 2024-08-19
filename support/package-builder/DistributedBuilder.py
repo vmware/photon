@@ -41,23 +41,19 @@ class DistributedBuilder:
 
     def createPersistentVolume(self):
         with open(
-            os.path.join(
-                os.path.dirname(__file__), "yaml/persistentVolume.yaml"
-            ),
+            os.path.join(os.path.dirname(__file__), "yaml/persistentVolume.yaml"),
             "r",
         ) as f:
             for pvFile in yaml.safe_load_all(f):
                 pvFile["metadata"]["name"] += f"-{self.buildGuid}"
-                pvFile["metadata"]["labels"][
-                    "storage-tier"
-                ] += f"-{self.buildGuid}"
+                pvFile["metadata"]["labels"]["storage-tier"] += f"-{self.buildGuid}"
                 pvFile["spec"]["nfs"]["server"] = self.distributedBuildConfig[
                     "nfs-server-ip"
                 ]
                 if "nfspod" in pvFile["metadata"]["name"]:
-                    pvFile["spec"]["nfs"][
-                        "path"
-                    ] = self.distributedBuildConfig["nfs-server-path"]
+                    pvFile["spec"]["nfs"]["path"] = self.distributedBuildConfig[
+                        "nfs-server-path"
+                    ]
                 else:
                     pvFile["spec"]["nfs"]["path"] = (
                         self.distributedBuildConfig["nfs-server-path"]
@@ -66,9 +62,7 @@ class DistributedBuilder:
                     )
 
                 try:
-                    resp = self.coreV1ApiInstance.create_persistent_volume(
-                        body=pvFile
-                    )
+                    resp = self.coreV1ApiInstance.create_persistent_volume(body=pvFile)
                     self.logger.info(f"Created pv {resp.metadata.name}")
                 except client.rest.ApiException as e:
                     self.logger.error(
@@ -79,9 +73,7 @@ class DistributedBuilder:
 
     def createPersistentVolumeClaim(self):
         with open(
-            os.path.join(
-                os.path.dirname(__file__), "yaml/persistentVolumeClaim.yaml"
-            ),
+            os.path.join(os.path.dirname(__file__), "yaml/persistentVolumeClaim.yaml"),
             "r",
         ) as f:
             for pvcFile in yaml.safe_load_all(f):
@@ -104,9 +96,7 @@ class DistributedBuilder:
                     sys.exit(1)
 
     def createNfsPod(self):
-        with open(
-            os.path.join(os.path.dirname(__file__), "yaml/nfspod.yaml")
-        ) as f:
+        with open(os.path.join(os.path.dirname(__file__), "yaml/nfspod.yaml")) as f:
             nfspodFile = yaml.safe_load(f)
             nfspodFile["metadata"]["name"] += f"-{self.buildGuid}"
             nfspodFile["spec"]["containers"][0][
@@ -134,9 +124,7 @@ class DistributedBuilder:
         ) as f:
             masterServiceFile = yaml.safe_load(f)
             masterServiceFile["metadata"]["name"] += f"-{self.buildGuid}"
-            masterServiceFile["spec"]["selector"][
-                "app"
-            ] += f"-{self.buildGuid}"
+            masterServiceFile["spec"]["selector"]["app"] += f"-{self.buildGuid}"
             try:
                 resp = self.coreV1ApiInstance.create_namespaced_service(
                     namespace="default", body=masterServiceFile
@@ -151,9 +139,7 @@ class DistributedBuilder:
                 sys.exit(1)
 
     def createMasterJob(self):
-        with open(
-            os.path.join(os.path.dirname(__file__), "yaml/master.yaml")
-        ) as f:
+        with open(os.path.join(os.path.dirname(__file__), "yaml/master.yaml")) as f:
             masterFile = yaml.safe_load(f)
             masterFile["metadata"]["name"] += f"-{self.buildGuid}"
             masterFile["spec"]["template"]["metadata"]["labels"][
@@ -162,12 +148,10 @@ class DistributedBuilder:
             masterFile["spec"]["template"]["spec"]["volumes"][0][
                 "persistentVolumeClaim"
             ]["claimName"] += f"-{self.buildGuid}"
-            tmp_str = masterFile["spec"]["template"]["spec"]["containers"][0][
-                "args"
-            ][1]
-            masterFile["spec"]["template"]["spec"]["containers"][0]["args"][
-                1
-            ] = (f"{tmp_str} && " + self.distributedBuildConfig["command"])
+            tmp_str = masterFile["spec"]["template"]["spec"]["containers"][0]["args"][1]
+            masterFile["spec"]["template"]["spec"]["containers"][0]["args"][1] = (
+                f"{tmp_str} && " + self.distributedBuildConfig["command"]
+            )
             try:
                 resp = self.batchV1ApiInstance.create_namespaced_job(
                     namespace="default", body=masterFile
@@ -182,9 +166,7 @@ class DistributedBuilder:
                 sys.exit(1)
 
     def createDeployment(self):
-        with open(
-            os.path.join(os.path.dirname(__file__), "yaml/worker.yaml")
-        ) as f:
+        with open(os.path.join(os.path.dirname(__file__), "yaml/worker.yaml")) as f:
             guid = f"-{self.buildGuid}"
             workerFile = yaml.safe_load(f)
             workerFile["metadata"]["name"] += guid
@@ -209,9 +191,7 @@ class DistributedBuilder:
             workerFile["spec"]["template"]["spec"]["volumes"][5][
                 "persistentVolumeClaim"
             ]["claimName"] += guid
-            workerFile["spec"]["replicas"] = self.distributedBuildConfig[
-                "pods"
-            ]
+            workerFile["spec"]["replicas"] = self.distributedBuildConfig["pods"]
             try:
                 resp = self.AppsV1ApiInstance.create_namespaced_deployment(
                     body=workerFile, namespace="default"
@@ -316,9 +296,7 @@ class DistributedBuilder:
     def deleteNfsPod(self):
         try:
             pod = f"nfspod-{self.buildGuid}"
-            self.coreV1ApiInstance.delete_namespaced_pod(
-                name=pod, namespace="default"
-            )
+            self.coreV1ApiInstance.delete_namespaced_pod(name=pod, namespace="default")
             self.logger.info("deleted nfs pod")
         except client.rest.ApiException as e:
             self.logger.error(
@@ -385,9 +363,7 @@ class DistributedBuilder:
             if status == "Running":
                 break
 
-        cmd = (
-            f"kubectl cp {podName}:/root/build-{self.buildGuid}/photon/stage "
-        )
+        cmd = f"kubectl cp {podName}:/root/build-{self.buildGuid}/photon/stage "
         cmd += (
             str(
                 os.path.join(os.path.dirname(__file__)).replace(
@@ -491,9 +467,7 @@ if __name__ == "__main__":
         dest="distributedBuildOptionFile",
         default="../../common/data/distributed_build_options.json",
     )
-    parser.add_argument(
-        "-l", "--log-path", dest="logPath", default="../../stage/LOGS"
-    )
+    parser.add_argument("-l", "--log-path", dest="logPath", default="../../stage/LOGS")
     parser.add_argument("-y", "--log-level", dest="logLevel", default="info")
     options = parser.parse_args()
     constants.setLogPath(options.logPath)

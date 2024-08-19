@@ -47,9 +47,7 @@ class PackageBuilder(object):
         ]
 
     def build(self, pkg, doneList):
-        packageName, packageVersion = StringUtils.splitPackageNameAndVersion(
-            pkg
-        )
+        packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
         # do not build if RPM is already built
         # test only if the package is in the testForceRPMS with rpmCheck
         # build only if the package is not in the testForceRPMS with rpmCheck
@@ -60,9 +58,7 @@ class PackageBuilder(object):
             ):
                 return
 
-        self._buildPackagePrepareFunction(
-            packageName, packageVersion, doneList
-        )
+        self._buildPackagePrepareFunction(packageName, packageVersion, doneList)
         try:
             self._buildPackage()
         except Exception as e:
@@ -100,10 +96,8 @@ class PackageBuilder(object):
                 pkgUtils.copyFileToSandbox(self.sandbox, v["src"], v["dest"])
             pkgUtils.adjustGCCSpecs(self.sandbox, self.package, self.version)
             listRPMFiles, listSRPMFiles = pkgUtils.buildRPMSForGivenPackage(
-                                              self.sandbox,
-                                              self.package,
-                                              self.version,
-                                              self.logPath)
+                self.sandbox, self.package, self.version, self.logPath
+            )
             self.srp.addObservation(self.sandbox.getObservationFile())
             self.sandbox.removeObservationFile()
             self.srp.addOutputRPMS(listRPMFiles + listSRPMFiles)
@@ -111,14 +105,10 @@ class PackageBuilder(object):
         except Exception as e:
             self.logger.error(f"Failed while building package: {self.package}")
             self.logger.debug(
-                "Sandbox: "
-                + self.sandbox.getID()
-                + " not deleted for debugging."
+                "Sandbox: " + self.sandbox.getID() + " not deleted for debugging."
             )
             if constants.rpmCheck and self.package in constants.testForceRPMS:
-                logFileName = os.path.join(
-                    self.logPath, f"{self.package}-test.log"
-                )
+                logFileName = os.path.join(self.logPath, f"{self.package}-test.log")
             else:
                 logFileName = os.path.join(self.logPath, f"{self.package}.log")
             fileLog = os.popen(f"tail -n 100 {logFileName}").read()
@@ -185,25 +175,19 @@ class PackageBuilder(object):
                         arch,
                     )
             pkgUtils.installRPMSInOneShot(self.sandbox, arch)
-            self.logger.debug(
-                f"Finished installing the build dependencies for {arch}"
-            )
+            self.logger.debug(f"Finished installing the build dependencies for {arch}")
 
     def _buildPackagePrepareFunction(self, package, version, doneList):
         self.package = package
         self.version = version
         pkg = f"{package}-{version}"
         self.logName = f"build-{pkg}"
-        self.logPath = (
-            f"{constants.logPath}/{pkg}.{constants.currentArch}"
-        )
+        self.logPath = f"{constants.logPath}/{pkg}.{constants.currentArch}"
         if not os.path.isdir(self.logPath):
             self.cmdUtils.runBashCmd(f"mkdir -p {self.logPath}")
         else:
             self.cmdUtils.runBashCmd(f"rm -f {self.logPath}/*.log")
-        self.logger = Logger.getLogger(
-            self.logName, self.logPath, constants.logLevel
-        )
+        self.logger = Logger.getLogger(self.logName, self.logPath, constants.logLevel)
         self.doneList = doneList
 
         self.srp = SRP(pkg, self.logger)
@@ -219,7 +203,6 @@ class PackageBuilder(object):
             raise Exception(f"Unknown sandbox type: {self.sandboxType}")
 
         self.sandbox = sandbox
-
 
     def srpLogCommand(self, cmd):
         self.srp.addCommand(cmd)
@@ -284,10 +267,7 @@ class PackageBuilder(object):
         rpmfile = pkgUtils.findRPMFile(package, packageVersion, arch)
         if rpmfile is None:
             self.logger.error(
-                "No rpm file found for package: "
-                + package
-                + "-"
-                + packageVersion
+                "No rpm file found for package: " + package + "-" + packageVersion
             )
             raise Exception("Missing rpm file")
         specificRPM = os.path.basename(rpmfile.replace(".rpm", ""))
@@ -314,9 +294,7 @@ class PackageBuilder(object):
             or package in constants.noDepsPackageList
         ):
             noDeps = True
-        pkgUtils.prepRPMforInstall(
-            package, packageVersion, noDeps, destLogPath, arch
-        )
+        pkgUtils.prepRPMforInstall(package, packageVersion, noDeps, destLogPath, arch)
 
     def _installDependentRunTimePackages(
         self,
@@ -340,9 +318,7 @@ class PackageBuilder(object):
                     packageName,
                     packageVersion,
                 ) = StringUtils.splitPackageNameAndVersion(pkg)
-                rpmfile = pkgUtils.findRPMFile(
-                    packageName, packageVersion, arch, True
-                )
+                rpmfile = pkgUtils.findRPMFile(packageName, packageVersion, arch, True)
                 if rpmfile is None:
                     self.logger.error(
                         "No rpm file found for package: "
@@ -352,10 +328,7 @@ class PackageBuilder(object):
                     )
                     raise Exception("Missing rpm file")
                 latestPkgRPM = os.path.basename(rpmfile).replace(".rpm", "")
-                if (
-                    pkg in listInstalledPackages
-                    and latestPkgRPM in listInstalledRPMs
-                ):
+                if pkg in listInstalledPackages and latestPkgRPM in listInstalledRPMs:
                     continue
                 self._installPackage(
                     pkgUtils,
@@ -391,9 +364,7 @@ class PackageBuilder(object):
                         package + "-" + version
                     )
 
-            listDependentPackages.extend(
-                self._findBuildTimeCheckRequiredPackages()
-            )
+            listDependentPackages.extend(self._findBuildTimeCheckRequiredPackages())
             testPackages = (
                 set(constants.listMakeCheckRPMPkgWithVersionstoInstall)
                 - set(listInstalledPackages)

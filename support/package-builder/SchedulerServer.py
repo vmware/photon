@@ -56,10 +56,7 @@ def getNextPkgToBuild():
 @app.route("/notifybuild/", methods=["POST"])
 def notifyPackageBuildCompleted():
     logger.disabled = False
-    if (
-        "status" not in flask.request.json
-        or "package" not in flask.request.json
-    ):
+    if "status" not in flask.request.json or "package" not in flask.request.json:
         return {"message", "missing package or status in request"}, BAD_REQUEST
 
     if flask.request.json["status"] == 0:
@@ -108,14 +105,12 @@ def getConstants():
     constant_dict["inputRPMSPath"] = constants.inputRPMSPath
     constant_dict["rpmCheck"] = constants.rpmCheck
     constant_dict["rpmCheckStopOnError"] = constants.rpmCheckStopOnError
-    constant_dict[
-        "publishBuildDependencies"
-    ] = constants.publishBuildDependencies
+    constant_dict["publishBuildDependencies"] = constants.publishBuildDependencies
     constant_dict["packageWeightsPath"] = constants.packageWeightsPath
     constant_dict["userDefinedMacros"] = constants.userDefinedMacros
     constant_dict["katBuild"] = constants.katBuild
     constant_dict["canisterBuild"] = constants.canisterBuild
-    constant_dict['acvpBuild'] = constants.acvpBuild
+    constant_dict["acvpBuild"] = constants.acvpBuild
     constant_dict["tmpDirPath"] = constants.tmpDirPath
     constant_dict["buildArch"] = constants.buildArch
     constant_dict["currentArch"] = constants.currentArch

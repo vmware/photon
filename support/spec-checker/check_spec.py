@@ -531,10 +531,12 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
             mentioned_but_unused.remove(fn)
 
     if mentioned_but_unused:
-        msg = ("\nSome mentioned but unused files found in the spec.\n"
-                "If you think it's a false positive, try the following methods:\n"
-                "- If you are using Photon OS, update rpm version to latest using tdnf and retry\n"
-                "- If you are using any other distro, contact - 'shreenidhi.shedi@broadcom.com'\n")
+        msg = (
+            "\nSome mentioned but unused files found in the spec.\n"
+            "If you think it's a false positive, try the following methods:\n"
+            "- If you are using Photon OS, update rpm version to latest using tdnf and retry\n"
+            "- If you are using any other distro, contact - 'shreenidhi.shedi@broadcom.com'\n"
+        )
         print(msg)
 
     fns = list(set(other_files) - set(source_patch_list))
@@ -615,10 +617,7 @@ def create_altered_spec(spec_fn):
                 included_fn = v
                 break
 
-        included_fn = replace_macros(
-                        included_fn,
-                        Spec.from_file(spec_fn)
-                      )
+        included_fn = replace_macros(included_fn, Spec.from_file(spec_fn))
 
         g_ignore_list.append(included_fn)
         included_fn = find_file_in_dir(included_fn, dirname)

@@ -48,6 +48,7 @@ class SpecParser(object):
             totalLines = len(lines)
 
         i = 0
+
         def skip_conditional_body(line):
             deep = 1
             nonlocal i
@@ -86,21 +87,23 @@ class SpecParser(object):
                     pkg.name = packageName
                     self.currentPkg = packageName
                     self.packages[pkg.name] = pkg
-                elif line.startswith('%description'):
-                        description = None
-                        while i+1 < totalLines:
-                            line = lines[i+1].strip()
-                            if line and (self._isSpecMacro(line) or
-                                         self._isPackageMacro(line) or
-                                         self._isDefinition(line) or
-                                         self._isIfCondition(line)):
-                                break
-                            if description:
-                                description += f" {line}"
-                            else:
-                                description = line
-                            i += 1
-                        self.packages[self.currentPkg].description = description
+                elif line.startswith("%description"):
+                    description = None
+                    while i + 1 < totalLines:
+                        line = lines[i + 1].strip()
+                        if line and (
+                            self._isSpecMacro(line)
+                            or self._isPackageMacro(line)
+                            or self._isDefinition(line)
+                            or self._isIfCondition(line)
+                        ):
+                            break
+                        if description:
+                            description += f" {line}"
+                        else:
+                            description = line
+                        i += 1
+                    self.packages[self.currentPkg].description = description
                 else:
                     if defaultpkg.name == packageName:
                         packageName = "default"
@@ -110,9 +113,7 @@ class SpecParser(object):
                         continue
                     self.packages[packageName].updatePackageMacro(macro)
             elif self._isPackageHeaders(line):
-                self._readPackageHeaders(
-                    line, self.packages[self.currentPkg]
-                )
+                self._readPackageHeaders(line, self.packages[self.currentPkg])
             elif self._isGlobalSecurityHardening(line):
                 self._readSecurityHardening(line)
             elif self._isNetworkRequired(line):
@@ -120,20 +121,15 @@ class SpecParser(object):
             elif self._isChecksum(line):
                 self._readChecksum(line, self.packages[self.currentPkg])
             elif self._isExtraBuildRequires(line):
-                self._readExtraBuildRequires(
-                    line, self.packages[self.currentPkg]
-                )
+                self._readExtraBuildRequires(line, self.packages[self.currentPkg])
             elif self._isBuildRequiresNative(line):
-                self._readBuildRequiresNative(
-                    line, self.packages[self.currentPkg]
-                )
+                self._readBuildRequiresNative(line, self.packages[self.currentPkg])
             elif self._isDefinition(line):
                 self._readDefinition(line)
             elif self._isConditionalCheckMacro(line):
                 self.conditionalCheckMacroEnabled = True
-            elif (
-                self.conditionalCheckMacroEnabled
-                and self._isConditionalMacroEnd(line)
+            elif self.conditionalCheckMacroEnabled and self._isConditionalMacroEnd(
+                line
             ):
                 self.conditionalCheckMacroEnabled = False
             elif self._isInclude(line):
@@ -210,13 +206,11 @@ class SpecParser(object):
 
             if (
                 macro
-                in constants.getAdditionalMacros(
-                    self.packages["default"].name
-                ).keys()
+                in constants.getAdditionalMacros(self.packages["default"].name).keys()
             ):
-                return constants.getAdditionalMacros(
-                    self.packages["default"].name
-                )[macro]
+                return constants.getAdditionalMacros(self.packages["default"].name)[
+                    macro
+                ]
 
             raise Exception(f"Unknown macro: {macro}")
 
@@ -268,9 +262,7 @@ class SpecParser(object):
         else:
             macro.macroName = line
 
-        if currentPos + 1 < len(lines) and self._isMacro(
-            lines[currentPos + 1]
-        ):
+        if currentPos + 1 < len(lines) and self._isMacro(lines[currentPos + 1]):
             return macro, currentPos
 
         for j in range(currentPos + 1, endPos):
@@ -305,7 +297,7 @@ class SpecParser(object):
 
     def _isConditionBranch(self, lines):
         # Compile the regular expression pattern to match `%global build_for` and capture the value that follows
-        pattern = re.compile(r'%global\s+build_for (.+)')
+        pattern = re.compile(r"%global\s+build_for (.+)")
 
         # Iterate over each line
         for line in lines:
@@ -317,43 +309,43 @@ class SpecParser(object):
 
     def _evaluateCondition(self, condition):
         err = ValueError(
-                "Invalid condition format. Correct formats are:\n"
-                "1. Simple value: ph5\n"
-                "2. Negation: !ph5\n"
-                "3. List of values: (ph5, ph6)\n"
-                "4. Negation list: !(ph5, ph6)\n"
-                "5. All: all\n"
-                "6. None: none\n"
-                "Examples:\n"
-                "   %global build_for ph5\n"
-                "   %global build_for !ph5\n"
-                "   %global build_for (ph5, ph6)\n"
-                "   %global build_for !(ph4, ph6)\n"
-                "   %global build_for all\n"
-                "   %global build_for none"
-            )
+            "Invalid condition format. Correct formats are:\n"
+            "1. Simple value: ph5\n"
+            "2. Negation: !ph5\n"
+            "3. List of values: (ph5, ph6)\n"
+            "4. Negation list: !(ph5, ph6)\n"
+            "5. All: all\n"
+            "6. None: none\n"
+            "Examples:\n"
+            "   %global build_for ph5\n"
+            "   %global build_for !ph5\n"
+            "   %global build_for (ph5, ph6)\n"
+            "   %global build_for !(ph4, ph6)\n"
+            "   %global build_for all\n"
+            "   %global build_for none"
+        )
         # Handle conditions with 'all' and 'none'
-        if condition.lower() == 'all':
+        if condition.lower() == "all":
             return True
-        if condition.lower() == 'none':
+        if condition.lower() == "none":
             return False
 
         # Handle negation cases (starting with '!')
-        if condition.startswith('!'):
+        if condition.startswith("!"):
             sub_condition = condition[1:].strip()
             return not self._evaluateCondition(sub_condition)
 
         # Handle lists within parentheses
-        if condition.startswith('(') and condition.endswith(')'):
+        if condition.startswith("(") and condition.endswith(")"):
             options = condition[1:-1].strip()
             # Handle the case where nested parentheses or negation inside parentheses
-            if '!' in options or '(' in options or ')' in options:
+            if "!" in options or "(" in options or ")" in options:
                 raise err
-            options_list = [opt.strip() for opt in options.split(',')]
+            options_list = [opt.strip() for opt in options.split(",")]
             return self.dist in options_list
 
         # Handle the case where it's neither a list nor a simple value
-        if ',' in condition or '(' in condition or ')' in condition:
+        if "," in condition or "(" in condition or ")" in condition:
             raise err
 
         return self.dist == condition
@@ -393,27 +385,19 @@ class SpecParser(object):
             "^buildprovides:",
             "^buildarch:",
         ]
-        return any(
-            [re.search(r, line, flags=re.IGNORECASE) for r in headersPatterns]
-        )
+        return any([re.search(r, line, flags=re.IGNORECASE) for r in headersPatterns])
 
     def _isGlobalSecurityHardening(self, line):
-        return re.search(
-            "^%global *security_hardening", line, flags=re.IGNORECASE
-        )
+        return re.search("^%global *security_hardening", line, flags=re.IGNORECASE)
 
     def _isExtraBuildRequires(self, line):
-        return re.search(
-            "^%define *extrabuildrequires", line, flags=re.IGNORECASE
-        )
+        return re.search("^%define *extrabuildrequires", line, flags=re.IGNORECASE)
 
     def _isBuildRequiresNative(self, line):
-        return re.search(
-            "^%define *buildrequiresnative", line, flags=re.IGNORECASE
-        )
+        return re.search("^%define *buildrequiresnative", line, flags=re.IGNORECASE)
 
     def _isNetworkRequired(self, line):
-        if re.search('^%define network_required', line, flags=re.IGNORECASE):
+        if re.search("^%define network_required", line, flags=re.IGNORECASE):
             return True
         return False
 
