@@ -1,0 +1,53 @@
+From fb3aaccc88648d73fb1338757679a02ace97ede5 Mon Sep 17 00:00:00 2001
+From: Tuo Li <islituo@gmail.com>
+Date: Fri, 30 Jun 2023 10:47:48 +0800
+Subject: [PATCH] scsi: lpfc: Fix a possible data race in
+ lpfc_unregister_fcf_rescan()
+[ Upstream commit 0e881c0a4b6146b7e856735226208f48251facd8 ]
+
+The variable phba->fcf.fcf_flag is often protected by the lock
+phba->hbalock() when is accessed. Here is an example in
+lpfc_unregister_fcf_rescan():
+
+  spin_lock_irq(&phba->hbalock);
+  phba->fcf.fcf_flag |= FCF_INIT_DISC;
+  spin_unlock_irq(&phba->hbalock);
+
+However, in the same function, phba->fcf.fcf_flag is assigned with 0
+without holding the lock, and thus can cause a data race:
+
+  phba->fcf.fcf_flag = 0;
+
+To fix this possible data race, a lock and unlock pair is added when
+accessing the variable phba->fcf.fcf_flag.
+
+Reported-by: BassCheck <bass@buaa.edu.cn>
+Signed-off-by: Tuo Li <islituo@gmail.com>
+Link: https://lore.kernel.org/r/20230630024748.1035993-1-islituo@gmail.com
+Reviewed-by: Justin Tee <justin.tee@broadcom.com>
+Reviewed-by: Laurence Oberman <loberman@redhat.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Applied patch from https://lore.kernel.org/all/20230803130349.641732-1-sashal@kernel.org/ ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/scsi/lpfc/lpfc_hbadisc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/scsi/lpfc/lpfc_hbadisc.c b/drivers/scsi/lpfc/lpfc_hbadisc.c
+index 68ff233f936e..3ff76ca147a5 100644
+--- a/drivers/scsi/lpfc/lpfc_hbadisc.c
++++ b/drivers/scsi/lpfc/lpfc_hbadisc.c
+@@ -6790,7 +6790,9 @@ lpfc_unregister_fcf_rescan(struct lpfc_hba *phba)
+ 	if (rc)
+ 		return;
+ 	/* Reset HBA FCF states after successful unregister FCF */
++	spin_lock_irq(&phba->hbalock);
+ 	phba->fcf.fcf_flag = 0;
++	spin_unlock_irq(&phba->hbalock);
+ 	phba->fcf.current_rec.flag = 0;
+
+ 	/*
+--
+2.39.4
+

@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.224
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -209,6 +209,12 @@ Patch160: 0001-rcu-tasks-Fix-show_rcu_tasks_trace_gp_kthread-buffer.patch
 # Fix CVE-2024-42228
 Patch161: 0001-drm-amdgpu-Using-uninitialized-value-size-when-calli.patch
 
+# Fix CVE-2024-42246
+Patch162: 0001-net-sunrpc-Remap-EPERM-in-case-of-connection-failure.patch
+
+# Fix CVE-2024-24855
+Patch163: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -340,7 +346,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M161
+%autopatch -p1 -m100 -M163
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -486,6 +492,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 10 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-5
+- Fix CVE-2024-24855 and CVE-2024-42246
 * Sat Aug 31 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.224-4
 - Fix CVE-2024-38577, CVE-2024-42228
 * Wed Aug 28 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.224-3

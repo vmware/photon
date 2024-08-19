@@ -1,0 +1,64 @@
+From 644cbc8f54870a75a4d67ff7fa104255b0168010 Mon Sep 17 00:00:00 2001
+From: Daniel Borkmann <daniel@iogearbox.net>
+Date: Thu, 4 Jul 2024 08:41:57 +0200
+Subject: [PATCH] net, sunrpc: Remap EPERM in case of connection failure in
+ xs_tcp_setup_socket
+
+[ Upstream commit 626dfed5fa3bfb41e0dffd796032b555b69f9cde ]
+
+When using a BPF program on kernel_connect(), the call can return -EPERM. This
+causes xs_tcp_setup_socket() to loop forever, filling up the syslog and causing
+the kernel to potentially freeze up.
+
+Neil suggested:
+
+  This will propagate -EPERM up into other layers which might not be ready
+  to handle it. It might be safer to map EPERM to an error we would be more
+  likely to expect from the network system - such as ECONNREFUSED or ENETDOWN.
+
+ECONNREFUSED as error seems reasonable. For programs setting a different error
+can be out of reach (see handling in 4fbac77d2d09) in particular on kernels
+which do not have f10d05966196 ("bpf: Make BPF_PROG_RUN_ARRAY return -err
+instead of allow boolean"), thus given that it is better to simply remap for
+consistent behavior. UDP does handle EPERM in xs_udp_send_request().
+
+Fixes: d74bad4e74ee ("bpf: Hooks for sys_connect")
+Fixes: 4fbac77d2d09 ("bpf: Hooks for sys_bind")
+Co-developed-by: Lex Siegel <usiegl00@gmail.com>
+Signed-off-by: Lex Siegel <usiegl00@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Neil Brown <neilb@suse.de>
+Cc: Trond Myklebust <trondmy@kernel.org>
+Cc: Anna Schumaker <anna@kernel.org>
+Link: https://github.com/cilium/cilium/issues/33395
+Link: https://lore.kernel.org/bpf/171374175513.12877.8993642908082014881@noble.neil.brown.name
+Link: https://patch.msgid.link/9069ec1d59e4b2129fc23433349fd5580ad43921.1720075070.git.daniel@iogearbox.net
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Ported to from 6.1 to 5.10 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/sunrpc/xprtsock.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index 0666f981618a..e0cd6d735053 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -2314,6 +2314,13 @@ static void xs_tcp_setup_socket(struct work_struct *work)
+ 	case -EALREADY:
+ 		xprt_unlock_connect(xprt, transport);
+ 		return;
++	case -EPERM:
++		/* Happens, for instance, if a BPF program is preventing
++		 * the connect. Remap the error so upper layers can better
++		 * deal with it.
++		 */
++		status = -ECONNREFUSED;
++		fallthrough;
+ 	case -EINVAL:
+ 		/* Happens, for instance, if the user specified a link
+ 		 * local IPv6 address without a scope-id.
+--
+2.39.4
+
