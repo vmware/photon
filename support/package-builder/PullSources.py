@@ -13,6 +13,8 @@ TODO: need to remove sha1sum support from here in future
 All the spec files are using sha1sum currently
 Eventually it will be replaced with sha512 because of enforcement in check_spec.py
 """
+
+
 def isFileHashOkay(filepath, checksum):
     if "md5" in checksum:
         csum = hashlib.md5()
@@ -44,21 +46,28 @@ def get(package, source, checksum, sourcesPath, URLs, logger):
     sourcePath = cmdUtils.findFile(source, sourcesPath)
     if sourcePath is not None and len(sourcePath) > 0:
         if len(sourcePath) > 1:
-            raise Exception('Multiple sources found for source:' + source + '\n' +
-                            ','.join(sourcePath) +'\nUnable to determine one.')
+            raise Exception(
+                "Multiple sources found for source:"
+                + source
+                + "\n"
+                + ",".join(sourcePath)
+                + "\nUnable to determine one."
+            )
         if isFileHashOkay(sourcePath[0], checksum):
             # Use file from sourcesPath
             return
-        logger.info('checksum of ' + sourcePath[0] + ' does not match.')
+        logger.info("checksum of " + sourcePath[0] + " does not match.")
     for baseurl in URLs:
-        #form url: https://packages.vmware.com/photon/photon_sources/1.0/<filename>.
-        url = '%s/%s' % (baseurl, source)
+        # form url: https://packages.vmware.com/photon/photon_sources/1.0/<filename>.
+        url = "%s/%s" % (baseurl, source)
         destfile = os.path.join(sourcesPath, source)
-        logger.debug('Downloading: ' + url)
+        logger.debug("Downloading: " + url)
         try:
             downloadFile(url, destfile)
             if not isFileHashOkay(destfile, checksum):
-                raise Exception('Invalid checksum for package %s file %s' % (package, source))
+                raise Exception(
+                    "Invalid checksum for package %s file %s" % (package, source)
+                )
             return
         except requests.exceptions.HTTPError as e:
             logger.exception(e)
@@ -66,7 +75,7 @@ def get(package, source, checksum, sourcesPath, URLs, logger):
             continue
         except Exception as e:
             logger.exception(e)
-    raise Exception('Missing source: ' + source)
+    raise Exception("Missing source: " + source)
 
 
 def downloadFile(url, destfile):
@@ -76,9 +85,13 @@ def downloadFile(url, destfile):
     # download to a temporary location (on the same filesystem)
     # and then rename it to the final destination filename.
 
-    temp_file = destfile + '-' + \
-                ''.join([random.choice(
-                    string.ascii_letters + string.digits) for _ in range(6)])
+    temp_file = (
+        destfile
+        + "-"
+        + "".join(
+            [random.choice(string.ascii_letters + string.digits) for _ in range(6)]
+        )
+    )
 
     response = requests.get(url, stream=True)
 
@@ -86,7 +99,7 @@ def downloadFile(url, destfile):
         # Something went wrong
         response.raise_for_status()
 
-    with open(temp_file, 'wb') as handle:
+    with open(temp_file, "wb") as handle:
         for block in response.iter_content(4096):
             if not block:
                 break

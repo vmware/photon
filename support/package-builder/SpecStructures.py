@@ -1,10 +1,10 @@
-
 class dependentPackageData(object):
 
     def __init__(self):
         self.package = ""
         self.version = ""
         self.compare = ""
+
 
 class Package(object):
     def __init__(self, buildarch, basePkg=None):
@@ -50,6 +50,7 @@ class Package(object):
     def updatePackageMacro(self, macro):
         if macro.macroName == "%files":
             self.filesMacro = macro
+
 
 class SpecObject(object):
     def __init__(self):

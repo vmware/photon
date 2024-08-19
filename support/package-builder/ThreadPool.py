@@ -1,5 +1,6 @@
 import WorkerThread
 
+
 class ThreadPool(object):
 
     mapWorkerThreads = {}
@@ -23,7 +24,8 @@ class ThreadPool(object):
             workerThreadName,
             ThreadPool.mapPackageToCycle,
             ThreadPool.logger,
-            ThreadPool.pkgBuildType)
+            ThreadPool.pkgBuildType,
+        )
         ThreadPool.mapWorkerThreads[workerThreadName] = workerThread
 
     @staticmethod
@@ -53,7 +55,7 @@ class ThreadPool(object):
             ThreadPool.addWorkerThread(threadName)
             ThreadPool.startWorkerThread(threadName)
             ThreadPool.makeWorkerThreadActive(threadName)
-            numOfThreadsToActivate = numOfThreadsToActivate -1
+            numOfThreadsToActivate = numOfThreadsToActivate - 1
 
     @staticmethod
     def join_all():

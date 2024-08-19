@@ -36,12 +36,14 @@ class PackageInfo(object):
                     rpmFile = pkgUtils.findRPMFile(rpmPkg, version)
                     if rpmFile is not None:
                         listPkgAttributes = {
-                            "sourcerpm":srpmFile,
-                            "rpm":rpmFile,
-                            "debugrpm":debugrpmFile
+                            "sourcerpm": srpmFile,
+                            "rpm": rpmFile,
+                            "debugrpm": debugrpmFile,
                         }
                         self.pkgList[f"{rpmPkg}-{version}"] = listPkgAttributes
-                        self.logger.debug(f"Added {rpmPkg}-{version} to package info json")
+                        self.logger.debug(
+                            f"Added {rpmPkg}-{version} to package info json"
+                        )
                     else:
                         self.logger.debug(f"Missing rpm file for package: {rpmPkg}")
 
@@ -50,5 +52,5 @@ class PackageInfo(object):
         dirPath = os.path.dirname(fileName)
         if dirPath and not os.path.isdir(dirPath):
             self.cmdUtils.runBashCmd(f"mkdir -p {dirPath}")
-        with open(fileName, 'w+') as pkgInfoFile:
+        with open(fileName, "w+") as pkgInfoFile:
             json.dump(self.pkgList, pkgInfoFile, indent=4)

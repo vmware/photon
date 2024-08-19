@@ -13,6 +13,7 @@ from SpecData import SPECS
 from StringUtils import StringUtils
 from Sandbox import Chroot, Container
 
+
 class ToolChainUtils(object):
 
     def __init__(self, logName=None, logPath=None, cmdlog=lambda cmd: None):
@@ -57,32 +58,54 @@ class ToolChainUtils(object):
         if len(listFilterRPMFiles) == 0:
             return None
         if len(listFilterRPMFiles) > 1:
-            self.logger.error("Found multiple rpm files for given package in rpm directory." +
-                              "Unable to determine the rpm file for package:" + package)
+            self.logger.error(
+                "Found multiple rpm files for given package in rpm directory."
+                + "Unable to determine the rpm file for package:"
+                + package
+            )
             return None
 
     def getListDependentPackages(self, package, version):
-        listBuildRequiresPkg=SPECS.getData(constants.buildArch).getBuildRequiresForPackage(package, version)
-        listBuildRequiresPkg.extend(SPECS.getData(constants.buildArch).getCheckBuildRequiresForPackage(package, version))
+        listBuildRequiresPkg = SPECS.getData(
+            constants.buildArch
+        ).getBuildRequiresForPackage(package, version)
+        listBuildRequiresPkg.extend(
+            SPECS.getData(constants.buildArch).getCheckBuildRequiresForPackage(
+                package, version
+            )
+        )
         return listBuildRequiresPkg
 
-    def installToolchainRPMS(self, chroot, packageName=None, packageVersion=None, usePublishedRPMS=True, availablePackages=None):
+    def installToolchainRPMS(
+        self,
+        chroot,
+        packageName=None,
+        packageVersion=None,
+        usePublishedRPMS=True,
+        availablePackages=None,
+    ):
         self.logger.debug("Installing toolchain RPMS.......")
         rpmFiles = ""
         packages = ""
         listBuildRequiresPackages = []
-        ChrootID= chroot.getID()
+        ChrootID = chroot.getID()
 
-        listRPMsToInstall=list(constants.listToolChainRPMsToInstall)
+        listRPMsToInstall = list(constants.listToolChainRPMsToInstall)
         if constants.crossCompiling:
             targetPackageName = packageName
             packageName = None
             packageVersion = None
-            listRPMsToInstall.extend([f"binutils-{constants.targetArch}-linux-gnu",
-                                      f"gcc-{constants.targetArch}-linux-gnu"])
+            listRPMsToInstall.extend(
+                [
+                    f"binutils-{constants.targetArch}-linux-gnu",
+                    f"gcc-{constants.targetArch}-linux-gnu",
+                ]
+            )
 
         if packageName:
-            listBuildRequiresPackages = self.getListDependentPackages(packageName, packageVersion)
+            listBuildRequiresPackages = self.getListDependentPackages(
+                packageName, packageVersion
+            )
 
         pkgUtils = PackageUtils(self.logName, self.logPath)
         for package in listRPMsToInstall:
@@ -91,16 +114,22 @@ class ToolChainUtils(object):
 
             # Get proper package version
             for depPkg in listBuildRequiresPackages:
-                depPkgName, depPkgVersion = StringUtils.splitPackageNameAndVersion(depPkg)
+                depPkgName, depPkgVersion = StringUtils.splitPackageNameAndVersion(
+                    depPkg
+                )
                 if depPkgName == package:
-                        version = depPkgVersion
-                        break
+                    version = depPkgVersion
+                    break
 
             if not version:
                 version = SPECS.getData(constants.buildArch).getHighestVersion(package)
 
             if availablePackages is not None:
-                basePkg = SPECS.getData(constants.buildArch).getSpecName(package)+"-"+version
+                basePkg = (
+                    SPECS.getData(constants.buildArch).getSpecName(package)
+                    + "-"
+                    + version
+                )
                 isAvailable = basePkg in availablePackages
             else:
                 # if availablePackages is not provided (rear case) it is safe
@@ -116,17 +145,24 @@ class ToolChainUtils(object):
                 # then index of the current package that we are
                 # building ('packageName'), then we _must_ use published
                 # `package` rpm.
-                if (packageName and
-                    packageName in listRPMsToInstall and
-                    listRPMsToInstall.index(packageName) <
-                        listRPMsToInstall.index(package)):
+                if (
+                    packageName
+                    and packageName in listRPMsToInstall
+                    and listRPMsToInstall.index(packageName)
+                    < listRPMsToInstall.index(package)
+                ):
                     isAvailable = False
                 if isAvailable:
-                    rpmFile = pkgUtils.findRPMFile(package, version, constants.buildArch)
+                    rpmFile = pkgUtils.findRPMFile(
+                        package, version, constants.buildArch
+                    )
 
             if rpmFile is None:
                 if not usePublishedRPMS or isAvailable or constants.crossCompiling:
-                    raise Exception("%s-%s.%s not found in available packages" % (package, version, constants.buildArch))
+                    raise Exception(
+                        "%s-%s.%s not found in available packages"
+                        % (package, version, constants.buildArch)
+                    )
 
                 # Safe to use published RPM
                 rpmFile = self._findPublishedRPM(package, constants.prevPublishRPMRepo)
@@ -144,23 +180,29 @@ class ToolChainUtils(object):
             # if we are not root, make installed files owned by effective user to
             # support pure non-root package building.
             if os.geteuid():
-                cmd = cmd + "; chown -R {0}:{1} {ChrootID}".format(os.geteuid(), os.getegid())
+                cmd = cmd + "; chown -R {0}:{1} {ChrootID}".format(
+                    os.geteuid(), os.getegid()
+                )
             cmd = (
                 f"docker run --ulimit nofile=1024:1024 --rm -i"
                 f" -v {constants.prevPublishRPMRepo}:{constants.prevPublishRPMRepo}"
                 f" -v {constants.inputRPMSPath}:{constants.inputRPMSPath}"
                 f" -v {constants.rpmPath}:{constants.rpmPath} -v {ChrootID}:{ChrootID}"
                 f" {constants.phBuilderTag}"
-                f" /bin/bash -c \"{cmd}\""
+                f' /bin/bash -c "{cmd}"'
             )
 
         self.logger.debug(f"Executing cmd: {cmd}")
         self.cmdlog(cmd)
         self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
-        self.logger.debug(f"Successfully installed default toolchain RPMS in Chroot: {ChrootID}")
+        self.logger.debug(
+            f"Successfully installed default toolchain RPMS in Chroot: {ChrootID}"
+        )
 
         if packageName:
-            rpmFiles = rpmFiles + self.installExtraToolchainRPMS(chroot, packageName, packageVersion)
+            rpmFiles = rpmFiles + self.installExtraToolchainRPMS(
+                chroot, packageName, packageVersion
+            )
 
         if constants.crossCompiling:
             rpmFiles = rpmFiles + self.installTargetToolchain(chroot, targetPackageName)
@@ -168,16 +210,23 @@ class ToolChainUtils(object):
         return rpmFiles
 
     def installExtraToolchainRPMS(self, sandbox, packageName, packageVersion):
-        listOfToolChainPkgs = SPECS.getData(constants.buildArch).getExtraBuildRequiresForPackage(packageName, packageVersion)
+        listOfToolChainPkgs = SPECS.getData(
+            constants.buildArch
+        ).getExtraBuildRequiresForPackage(packageName, packageVersion)
         if not listOfToolChainPkgs:
             return ""
-        self.logger.debug(f"Installing package specific toolchain RPMs for {packageName}: " + str(listOfToolChainPkgs))
+        self.logger.debug(
+            f"Installing package specific toolchain RPMs for {packageName}: "
+            + str(listOfToolChainPkgs)
+        )
         rpmFiles = ""
         packages = ""
 
         pkgUtils = PackageUtils(self.logName, self.logPath)
         for package in listOfToolChainPkgs:
-            if re.match("openjre*", packageName) is not None or re.match("openjdk*", packageName):
+            if re.match("openjre*", packageName) is not None or re.match(
+                "openjdk*", packageName
+            ):
                 path = constants.prevPublishXRPMRepo
                 sandboxPath = "/publishxrpms"
             else:
@@ -185,7 +234,9 @@ class ToolChainUtils(object):
                 sandboxPath = "/publishrpms"
             rpmFile = self._findPublishedRPM(package, path)
             if rpmFile is None:
-                self.logger.error(f"Unable to find rpm {package} in current and previous versions")
+                self.logger.error(
+                    f"Unable to find rpm {package} in current and previous versions"
+                )
                 raise Exception("Input Error")
             rpmFiles += " " + rpmFile.replace(path, sandboxPath)
             packages += f" {package}"
@@ -205,7 +256,7 @@ class ToolChainUtils(object):
         pkgUtils = PackageUtils(self.logName, self.logPath)
         rpmFiles = ""
         packages = ""
-        ChrootID= chroot.getID()
+        ChrootID = chroot.getID()
 
         for package in constants.listCoreToolChainPackages:
             if stopAtPackage and package == stopAtPackage:
@@ -234,5 +285,7 @@ class ToolChainUtils(object):
             )
             self.cmdlog(cmd)
             self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
-        self.logger.debug(f"Successfully installed target toolchain RPMS in chroot: {ChrootID}")
+        self.logger.debug(
+            f"Successfully installed target toolchain RPMS in chroot: {ChrootID}"
+        )
         return rpmFiles

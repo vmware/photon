@@ -8,10 +8,10 @@ class CommandUtils:
     @staticmethod
     def findFile(filename, sourcePath):
         (out, _, _) = CommandUtils.runBashCmd(
-                        f"find -L {sourcePath} -name {filename} -not -type d",
-                        capture=True,
-                        ignore_rc=True,
-                    )
+            f"find -L {sourcePath} -name {filename} -not -type d",
+            capture=True,
+            ignore_rc=True,
+        )
         """
         We don't check the return val here because find could return 1 but still be
         able to find the result. We shouldn't blindly return None without even
@@ -36,9 +36,9 @@ class CommandUtils:
         stdout = fp
         stderr = fp
 
-        sp = subprocess.Popen(cmd,
-                              shell=True, executable="/bin/bash",
-                              stdout=stdout, stderr=stdout)
+        sp = subprocess.Popen(
+            cmd, shell=True, executable="/bin/bash", stdout=stdout, stderr=stdout
+        )
 
         out, err = sp.communicate()
         rc = sp.wait()

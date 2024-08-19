@@ -15,8 +15,8 @@ class DependencyGraphNode(object):
         self.packageName = packageName
         self.packageVersion = packageVersion
 
-        self.buildRequiresPkgNodes = set() # Same as in spec file
-        self.installRequiresPkgNodes = set() # Same as in spec file
+        self.buildRequiresPkgNodes = set()  # Same as in spec file
+        self.installRequiresPkgNodes = set()  # Same as in spec file
 
         # Auxiliary build-requires packages.
         #
@@ -35,11 +35,13 @@ class DependencyGraphNode(object):
         # auxBuildRequiredPkgNodes), and is later unused.
         self.accumInstallRequiresPkgNodes = set()
 
-        self.childPkgNodes = set() # Package nodes that I directly depend on.
-        self.allRequiredPackages = [] # Full packages list that I depend on to build myself.
-        self.parentPkgNodes = set() # Packages that depend on me.
+        self.childPkgNodes = set()  # Package nodes that I directly depend on.
+        self.allRequiredPackages = (
+            []
+        )  # Full packages list that I depend on to build myself.
+        self.parentPkgNodes = set()  # Packages that depend on me.
 
-        self.selfWeight = pkgWeight # Own package weight.
+        self.selfWeight = pkgWeight  # Own package weight.
 
         # Critical-chain-weight: The key scheduling metric.
         #
@@ -55,6 +57,7 @@ class DependencyGraphNode(object):
 
         # Internal flag to check if the package is built
         self.built = 0
+
 
 class Scheduler(object):
 
@@ -89,8 +92,10 @@ class Scheduler(object):
 
         for pkg in Scheduler.sortedList:
             pkgName, pkgVersion = StringUtils.splitPackageNameAndVersion(pkg)
-            if (pkg not in Scheduler.listOfAlreadyBuiltPackages
-               or pkgName in constants.testForceRPMS):
+            if (
+                pkg not in Scheduler.listOfAlreadyBuiltPackages
+                or pkgName in constants.testForceRPMS
+            ):
                 Scheduler.listOfPackagesToBuild.append(pkg)
 
         Scheduler.listOfPackagesCurrentlyBuilding = set()
@@ -117,7 +122,6 @@ class Scheduler(object):
             # This must be called only after calling _setPriorities(),
             # which builds the dependency graph.
             Scheduler._publishBuildDependencies()
-
 
     @staticmethod
     def notifyPackageBuildCompleted(package):
@@ -174,42 +178,47 @@ class Scheduler(object):
             packageTup = Scheduler.listOfPackagesNextToBuild.get()
 
             package = packageTup[1]
-            if not constants.startSchedulerServer and Scheduler.listOfPackagesNextToBuild.qsize() > 0:
+            if (
+                not constants.startSchedulerServer
+                and Scheduler.listOfPackagesNextToBuild.qsize() > 0
+            ):
                 ThreadPool.activateWorkerThreads(
-                    Scheduler.listOfPackagesNextToBuild.qsize())
+                    Scheduler.listOfPackagesNextToBuild.qsize()
+                )
             Scheduler.listOfPackagesCurrentlyBuilding.add(package)
             Scheduler.listOfPackagesToBuild.remove(package)
-            Scheduler.printStatus();
+            Scheduler.printStatus()
             return package
 
     @staticmethod
     def printStatus():
-        Scheduler.logger.info("Package Status: Total: {} Building: {} Broken: {} Pending: {} Done: {}"
-        .format(
-            len(Scheduler.sortedList),
-            len(Scheduler.listOfPackagesCurrentlyBuilding),
-            len(Scheduler.listOfFailedPackages),
-            len(Scheduler.listOfPackagesToBuild),
-            len(Scheduler.listOfAlreadyBuiltPackages)
-        ))
+        Scheduler.logger.info(
+            "Package Status: Total: {} Building: {} Broken: {} Pending: {} Done: {}".format(
+                len(Scheduler.sortedList),
+                len(Scheduler.listOfPackagesCurrentlyBuilding),
+                len(Scheduler.listOfFailedPackages),
+                len(Scheduler.listOfPackagesToBuild),
+                len(Scheduler.listOfAlreadyBuiltPackages),
+            )
+        )
 
     @staticmethod
     def getDoneList():
         return list(Scheduler.listOfAlreadyBuiltPackages)
 
-
     @staticmethod
     def _publishBuildDependencies():
-            Scheduler.logger.debug("Publishing Build dependencies")
-            dependencyLists = {}
-            for package in list(Scheduler.mapPackagesToGraphNodes.keys()):
-                dependencyLists[package] = []
-                pkgNode = Scheduler.mapPackagesToGraphNodes[package]
-                for childPkg in list(pkgNode.childPkgNodes):
-                    dependencyLists[package].append(childPkg.packageName + "-" + childPkg.packageVersion)
-            with open(str(constants.logPath) + "/BuildDependencies.json", 'w') as graphfile:
-                graphfile.write(json.dumps(dependencyLists, sort_keys=True, indent=4))
-
+        Scheduler.logger.debug("Publishing Build dependencies")
+        dependencyLists = {}
+        for package in list(Scheduler.mapPackagesToGraphNodes.keys()):
+            dependencyLists[package] = []
+            pkgNode = Scheduler.mapPackagesToGraphNodes[package]
+            for childPkg in list(pkgNode.childPkgNodes):
+                dependencyLists[package].append(
+                    childPkg.packageName + "-" + childPkg.packageVersion
+                )
+        with open(str(constants.logPath) + "/BuildDependencies.json", "w") as graphfile:
+            graphfile.write(json.dumps(dependencyLists, sort_keys=True, indent=4))
 
     @staticmethod
     def __getRequiredTypePackages(pkg, requiresType):
@@ -230,11 +239,9 @@ class Scheduler(object):
 
         return list(listPackages)
 
-
     @staticmethod
     def _getBuildRequiredPackages(pkg):
         return Scheduler.__getRequiredTypePackages(pkg, "build")
-
 
     @staticmethod
     def _getRequiredPackages(pkg):
@@ -243,9 +250,12 @@ class Scheduler(object):
     def _createNodes():
         # Create a graph node to represent every package
         for package in Scheduler.sortedList:
-            packageName, packageVersion = StringUtils.splitPackageNameAndVersion(package)
-            node = DependencyGraphNode(packageName, packageVersion,
-                                       Scheduler._getWeight(package))
+            packageName, packageVersion = StringUtils.splitPackageNameAndVersion(
+                package
+            )
+            node = DependencyGraphNode(
+                packageName, packageVersion, Scheduler._getWeight(package)
+            )
             Scheduler.mapPackagesToGraphNodes[package] = node
 
             if package in Scheduler.listOfAlreadyBuiltPackages:
@@ -258,7 +268,7 @@ class Scheduler(object):
         # GRAPH-BUILD STEP 2: Mark package dependencies in the graph.
         # The package dependency is linear like A - B - C - D in accordance to packages in sortedlist
         # Unless package A is build none other packages B,C,D are build
-        for index,package in enumerate(Scheduler.sortedList):
+        for index, package in enumerate(Scheduler.sortedList):
             pkgNode = Scheduler.mapPackagesToGraphNodes[package]
             for childPkg in Scheduler.sortedList[:index]:
                 childPkgNode = Scheduler.mapPackagesToGraphNodes[childPkg]
@@ -395,16 +405,25 @@ class Scheduler(object):
                 pkgNode.numVisits += 1
 
             for parentPkgNode in pkgNode.parentPkgNodes:
-                if (pkgNode not in parentPkgNode.buildRequiresPkgNodes) and \
-                   (pkgNode not in parentPkgNode.installRequiresPkgNodes):
-                    raise Exception ("Visitor to parent is not its child " + \
-                                     " Visitor: " + pkgNode.packageName + \
-                                     " Parent:  " + parentPkgNode.packageName)
+                if (pkgNode not in parentPkgNode.buildRequiresPkgNodes) and (
+                    pkgNode not in parentPkgNode.installRequiresPkgNodes
+                ):
+                    raise Exception(
+                        "Visitor to parent is not its child "
+                        + " Visitor: "
+                        + pkgNode.packageName
+                        + " Parent:  "
+                        + parentPkgNode.packageName
+                    )
 
                 if pkgNode in parentPkgNode.buildRequiresPkgNodes:
-                    parentPkgNode.auxBuildRequiresPkgNodes |= pkgNode.accumInstallRequiresPkgNodes
+                    parentPkgNode.auxBuildRequiresPkgNodes |= (
+                        pkgNode.accumInstallRequiresPkgNodes
+                    )
                 else:
-                    parentPkgNode.accumInstallRequiresPkgNodes |= pkgNode.accumInstallRequiresPkgNodes
+                    parentPkgNode.accumInstallRequiresPkgNodes |= (
+                        pkgNode.accumInstallRequiresPkgNodes
+                    )
 
                 parentPkgNode.numVisits += 1
                 # Each child is expected to visit the parent once.
@@ -415,10 +434,15 @@ class Scheduler(object):
                 if parentPkgNode.numVisits == numExpectedVisits:
                     nodesToVisit.add(parentPkgNode)
                 elif parentPkgNode.numVisits > numExpectedVisits:
-                    raise Exception ("Parent node visit count > num of children " + \
-                                     " Parent node: " + parentPkgNode.packageName + \
-                                     " Visit count: " + str(parentPkgNode.numVisits) + \
-                                     " Num of children: " + str(numExpectedVisits))
+                    raise Exception(
+                        "Parent node visit count > num of children "
+                        + " Parent node: "
+                        + parentPkgNode.packageName
+                        + " Visit count: "
+                        + str(parentPkgNode.numVisits)
+                        + " Num of children: "
+                        + str(numExpectedVisits)
+                    )
 
             pkgNode.accumInstallRequiresPkgNodes.clear()
 
@@ -426,8 +450,10 @@ class Scheduler(object):
         for package in Scheduler.sortedList:
             pkgNode = Scheduler.mapPackagesToGraphNodes[package]
             if pkgNode.numVisits == 0:
-                raise Exception ("aux-build-requires calculation never visited " \
-                                 "package " + pkgNode.packageName)
+                raise Exception(
+                    "aux-build-requires calculation never visited "
+                    "package " + pkgNode.packageName
+                )
             else:
                 pkgNode.numVisits = 0
 
@@ -448,16 +474,16 @@ class Scheduler(object):
             pkgNode = Scheduler.mapPackagesToGraphNodes[package]
             childPkgNodesToRemove = set()
             for childPkgNode in pkgNode.childPkgNodes:
-                if (childPkgNode not in pkgNode.buildRequiresPkgNodes) and \
-                   (childPkgNode not in pkgNode.auxBuildRequiresPkgNodes):
-                       # We can't modify a set during iteration, so we
-                       # accumulate the set of children we want to
-                       # remove, and delete them after the for-loop.
-                       childPkgNodesToRemove.add(childPkgNode)
-                       childPkgNode.parentPkgNodes.remove(pkgNode)
+                if (childPkgNode not in pkgNode.buildRequiresPkgNodes) and (
+                    childPkgNode not in pkgNode.auxBuildRequiresPkgNodes
+                ):
+                    # We can't modify a set during iteration, so we
+                    # accumulate the set of children we want to
+                    # remove, and delete them after the for-loop.
+                    childPkgNodesToRemove.add(childPkgNode)
+                    childPkgNode.parentPkgNodes.remove(pkgNode)
 
-            pkgNode.childPkgNodes = pkgNode.childPkgNodes - \
-                                    childPkgNodesToRemove
+            pkgNode.childPkgNodes = pkgNode.childPkgNodes - childPkgNodesToRemove
 
             for newChildPkgNode in pkgNode.auxBuildRequiresPkgNodes:
                 pkgNode.childPkgNodes.add(newChildPkgNode)
@@ -472,7 +498,9 @@ class Scheduler(object):
         # It shouldn't add much memory overhead.
         for package in Scheduler.sortedList:
             pkgNode = Scheduler.mapPackagesToGraphNodes[package]
-            pkgNode.allRequiredPackages.extend(SPECS.getData().getRequiresTreeOfBasePkgsForPkg(package))
+            pkgNode.allRequiredPackages.extend(
+                SPECS.getData().getRequiresTreeOfBasePkgsForPkg(package)
+            )
 
     def _calculateCriticalChainWeights():
 
@@ -547,20 +575,29 @@ class Scheduler(object):
 
             for childPkgNode in pkgNode.childPkgNodes:
                 if pkgNode not in childPkgNode.parentPkgNodes:
-                    raise Exception ("Visitor to child node is not its parent " + \
-                                     " Visitor: " + pkgNode.packageName + \
-                                     " Child node: " + childPkgNode.packageName)
+                    raise Exception(
+                        "Visitor to child node is not its parent "
+                        + " Visitor: "
+                        + pkgNode.packageName
+                        + " Child node: "
+                        + childPkgNode.packageName
+                    )
 
                 if childPkgNode.numVisits == len(childPkgNode.parentPkgNodes):
-                    raise Exception ("Child node visit count > number of parents " + \
-                                     " Child node: " + childPkgNode.packageName + \
-                                     " Visit count: " + childPkgNode.numVisits + \
-                                     " Num of parents: " + \
-                                     str(len(childPkgNode.parentPkgNodes)))
+                    raise Exception(
+                        "Child node visit count > number of parents "
+                        + " Child node: "
+                        + childPkgNode.packageName
+                        + " Visit count: "
+                        + childPkgNode.numVisits
+                        + " Num of parents: "
+                        + str(len(childPkgNode.parentPkgNodes))
+                    )
 
                 childPkgNode.criticalChainWeight = max(
                     childPkgNode.criticalChainWeight,
-                    pkgNode.criticalChainWeight + childPkgNode.selfWeight)
+                    pkgNode.criticalChainWeight + childPkgNode.selfWeight,
+                )
 
                 childPkgNode.numVisits += 1
                 # We can visit this package's children only after this
@@ -574,26 +611,27 @@ class Scheduler(object):
         for package in Scheduler.sortedList:
             pkgNode = Scheduler.mapPackagesToGraphNodes[package]
             if pkgNode.numVisits == 0:
-                raise Exception ("critical-chain-weight calculation never visited " + \
-                                 "package " + pkgNode.packageName)
+                raise Exception(
+                    "critical-chain-weight calculation never visited "
+                    + "package "
+                    + pkgNode.packageName
+                )
             else:
                 pkgNode.numVisits = 0
 
-
     def _buildGraph():
         if Scheduler.coreToolChainBuild:
-             Scheduler._createCoreToolChainGraphNodes()
+            Scheduler._createCoreToolChainGraphNodes()
         else:
             Scheduler._createGraphNodes()
             Scheduler._optimizeGraph()
             Scheduler._calculateAllRequiredPackagesPerNode()
         Scheduler._calculateCriticalChainWeights()
 
-
     @staticmethod
     def _parseWeights():
         Scheduler.pkgWeights.clear()
-        with open(constants.packageWeightsPath, 'r') as weightFile:
+        with open(constants.packageWeightsPath, "r") as weightFile:
             Scheduler.pkgWeights = json.load(weightFile)
 
     # A package's weight is an indicator of the time required to build
@@ -603,11 +641,11 @@ class Scheduler(object):
     # Package weights are positive integers, with a default value of 1.
     @staticmethod
     def _getWeight(package):
-	# Package weights are assumed to be independent of package
-	# version (i.e., in the case of multi-version packages such as
-	# Go or Kubernetes, all the versions have the same weight). So
-	# convert packageName-version to packageName before looking up
-	# the package weight.
+        # Package weights are assumed to be independent of package
+        # version (i.e., in the case of multi-version packages such as
+        # Go or Kubernetes, all the versions have the same weight). So
+        # convert packageName-version to packageName before looking up
+        # the package weight.
         package, _ = StringUtils.splitPackageNameAndVersion(package)
         try:
             return int(Scheduler.pkgWeights[package]) + 1
@@ -620,7 +658,6 @@ class Scheduler(object):
             return int(Scheduler.priorityMap[package])
         except KeyError:
             return 0
-
 
     @staticmethod
     def _setPriorities(skipGraphBuild):
@@ -638,14 +675,15 @@ class Scheduler(object):
         Scheduler.logger.debug("set Priorities: Priority of all packages")
         Scheduler.logger.debug(Scheduler.priorityMap)
 
-
     @staticmethod
     def _checkNextPackageIsReadyToBuild(package):
         pkgNode = Scheduler.mapPackagesToGraphNodes[package]
         if pkgNode.built == 1:
-            Scheduler.logger.warning("This pkg %s-%s is already built," \
-                                     "but still present in listOfPackagesToBuild" \
-                                     % (pkgNode.packageName, pkgNode.packageVersion))
+            Scheduler.logger.warning(
+                "This pkg %s-%s is already built,"
+                "but still present in listOfPackagesToBuild"
+                % (pkgNode.packageName, pkgNode.packageVersion)
+            )
             return False
 
         if Scheduler.coreToolChainBuild:
@@ -668,12 +706,13 @@ class Scheduler(object):
         Scheduler.logger.debug("Marking pkgNode as built = %s" % pkgNode.packageName)
         pkgNode.built = 1
 
-
     @staticmethod
     def _getListNextPackagesReadyToBuild():
         for pkg in Scheduler.listOfPackagesToBuild:
             if pkg in Scheduler.listOfPackagesCurrentlyBuilding:
                 continue
             if constants.rpmCheck or Scheduler._checkNextPackageIsReadyToBuild(pkg):
-                Scheduler.listOfPackagesNextToBuild.put((-Scheduler._getPriority(pkg), pkg))
+                Scheduler.listOfPackagesNextToBuild.put(
+                    (-Scheduler._getPriority(pkg), pkg)
+                )
                 Scheduler.logger.debug("Adding " + pkg + " to the schedule list")

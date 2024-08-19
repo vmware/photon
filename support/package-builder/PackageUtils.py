@@ -48,16 +48,18 @@ class PackageUtils(object):
         self.noDepsPackagesToInstallInAOneShot = ""
         self.logfnvalue = None
 
-    def prepRPMforInstall(self, package, version, noDeps=False, destLogPath=None, arch=None):
+    def prepRPMforInstall(
+        self, package, version, noDeps=False, destLogPath=None, arch=None
+    ):
         if not arch:
-            arch=constants.currentArch
+            arch = constants.currentArch
         rpmfile = self.findRPMFile(package, version, arch)
         if rpmfile is None:
             self.logger.error(f"No rpm file found for package: {package}")
             raise Exception("Missing rpm file")
 
         rpmName = os.path.basename(rpmfile)
-        #TODO: path from constants
+        # TODO: path from constants
         if "PUBLISHRPMS" in rpmfile:
             rpmDestFile = "/publishrpms/"
         elif "PUBLISHXRPMS" in rpmfile:
@@ -83,11 +85,15 @@ class PackageUtils(object):
     def installRPMSInOneShot(self, sandbox, arch):
         rpmInstallcmd = f"{self.rpmBinary} {self.installRPMPackageOptions}"
         if constants.crossCompiling and arch == constants.targetArch:
-            rpmInstallcmd += f" --ignorearch --noscripts --root /target-{constants.targetArch}"
+            rpmInstallcmd += (
+                f" --ignorearch --noscripts --root /target-{constants.targetArch}"
+            )
 
         # TODO: Container sandbox might need  + self.forceRpmPackageOptions
         if self.noDepsRPMFilesToInstallInAOneShot != "":
-            self.logger.debug(f"Installing nodeps rpms: {self.noDepsPackagesToInstallInAOneShot}")
+            self.logger.debug(
+                f"Installing nodeps rpms: {self.noDepsPackagesToInstallInAOneShot}"
+            )
             cmd = f"{rpmInstallcmd} {self.nodepsRPMPackageOptions} {self.noDepsRPMFilesToInstallInAOneShot}"
             if sandbox.run(cmd, logfn=self.logger.debug):
                 self.logger.debug(f"Command Executed: {cmd}")
@@ -110,9 +116,11 @@ class PackageUtils(object):
         specName = SPECS.getData().getSpecName(package) + ".spec"
         sourcePath = f"{constants.topDirPath}/SOURCES/"
         specPath = f"{constants.topDirPath}/SPECS/"
-        if (constants.rpmCheck and
-            package in constants.testForceRPMS and
-            SPECS.getData().isCheckAvailable(package, version)):
+        if (
+            constants.rpmCheck
+            and package in constants.testForceRPMS
+            and SPECS.getData().isCheckAvailable(package, version)
+        ):
             logFilePath = f"{destLogPath}/{package}-test.log"
         else:
             logFilePath = f"{destLogPath}/{package}.log"
@@ -134,8 +142,9 @@ class PackageUtils(object):
         listRPMFiles = []
         listSRPMFiles = []
         try:
-            listRPMFiles, listSRPMFiles = self._buildRPM(sandbox, f"{specPath}{specName}",
-                                                         logFilePath, package, version, macros)
+            listRPMFiles, listSRPMFiles = self._buildRPM(
+                sandbox, f"{specPath}{specName}", logFilePath, package, version, macros
+            )
 
             if constants.rpmCheck:
                 return listRPMFiles, listSRPMFiles
@@ -164,6 +173,7 @@ class PackageUtils(object):
     Check for unintended debug symbols in rpm. If present, stop the build.
     Upon rerun rpm won't be rebuilt but devs should carefully examine the faulty rpms.
     """
+
     def CheckForDbgSymbols(self, RpmsToCheck):
         logs = []
         result_logs = []
@@ -194,14 +204,14 @@ class PackageUtils(object):
 
         return dbg_symbols_found
 
-    def findRPMFile(self, package,version="*",arch=None, throw=False):
+    def findRPMFile(self, package, version="*", arch=None, throw=False):
         if not arch:
-            arch=constants.currentArch
+            arch = constants.currentArch
 
         if version == "*":
             version = SPECS.getData(arch).getHighestVersion(package)
-        buildarch=SPECS.getData(arch).getBuildArch(package, version)
-        filename= f"{package}-{version}.{buildarch}.rpm"
+        buildarch = SPECS.getData(arch).getBuildArch(package, version)
+        filename = f"{package}-{version}.{buildarch}.rpm"
 
         fullpath = f"{constants.rpmPath}/{buildarch}/{filename}"
         if os.path.isfile(fullpath):
@@ -216,23 +226,23 @@ class PackageUtils(object):
             raise Exception(f"RPM {filename} not found")
         return None
 
-    def findSourceRPMFile(self, package,version="*"):
+    def findSourceRPMFile(self, package, version="*"):
         if version == "*":
             version = SPECS.getData().getHighestVersion(package)
-        filename= f"{package}-{version}.src.rpm"
+        filename = f"{package}-{version}.src.rpm"
 
         fullpath = f"{constants.sourceRpmPath}/{filename}"
         if os.path.isfile(fullpath):
             return fullpath
         return None
 
-    def findDebugRPMFile(self, package,version="*",arch=None):
+    def findDebugRPMFile(self, package, version="*", arch=None):
         if not arch:
-            arch=constants.currentArch
+            arch = constants.currentArch
 
         if version == "*":
             version = SPECS.getData(arch).getHighestVersion(package)
-        filename= f"{package}-debuginfo-{version}.{arch}.rpm"
+        filename = f"{package}-debuginfo-{version}.{arch}.rpm"
 
         fullpath = f"{constants.rpmPath}/{arch}/{filename}"
         if os.path.isfile(fullpath):
@@ -241,9 +251,11 @@ class PackageUtils(object):
 
     def findInstalledRPMPackages(self, sandbox, arch):
         rpms = None
+
         def setOutValue(data):
             nonlocal rpms
             rpms = data
+
         cmd = f"{self.rpmBinary} {self.queryRpmPackageOptions}"
         if constants.crossCompiling and arch == constants.targetArch:
             cmd += f" --root /target-{constants.targetArch}"
@@ -277,12 +289,20 @@ class PackageUtils(object):
         # Fetch/verify sources if checksum not None.
         checksum = SPECS.getData().getChecksum(package, version, source)
         if checksum is not None:
-            PullSources.get(package, source, checksum, constants.sourcePath,
-                            constants.getPullSourcesURLs(package), self.logger)
+            PullSources.get(
+                package,
+                source,
+                checksum,
+                constants.sourcePath,
+                constants.getPullSourcesURLs(package),
+                self.logger,
+            )
 
         sourcePath = self.cmdUtils.findFile(source, constants.sourcePath)
         if not sourcePath:
-            sourcePath = self.cmdUtils.findFile(source, os.path.dirname(SPECS.getData().getSpecFile(package, version)))
+            sourcePath = self.cmdUtils.findFile(
+                source, os.path.dirname(SPECS.getData().getSpecFile(package, version))
+            )
             if not sourcePath:
                 if checksum is None:
                     msg = f"No checksum found or missing source for {source}"
@@ -296,8 +316,11 @@ class PackageUtils(object):
                 self.logger.error(msg)
                 raise Exception(msg)
         if len(sourcePath) > 1:
-            self.logger.error(f"Multiple sources found for source: {source}\n" +
-                              ",".join(sourcePath) +"\nUnable to determine one.")
+            self.logger.error(
+                f"Multiple sources found for source: {source}\n"
+                + ",".join(sourcePath)
+                + "\nUnable to determine one."
+            )
             raise Exception("Multiple sources found")
         return sourcePath
 
@@ -325,10 +348,13 @@ class PackageUtils(object):
         rpmBuildcmd = f"{self.rpmbuildBinary} {self.rpmbuildBuildallOption}"
 
         if constants.resume_build:
-            rpmBuildcmd += f" -D \"__spec_prep_cmd /bin/true\" "
+            rpmBuildcmd += f' -D "__spec_prep_cmd /bin/true" '
 
-        if not constants.buildDbgInfoRpm and package not in constants.buildDbgInfoRpmList:
-            rpmBuildcmd += " -D \"debug_package %{nil}\" "
+        if (
+            not constants.buildDbgInfoRpm
+            and package not in constants.buildDbgInfoRpmList
+        ):
+            rpmBuildcmd += ' -D "debug_package %{nil}" '
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             pr_pounds = "#" * (68 + 2 * len(package))
@@ -338,24 +364,28 @@ class PackageUtils(object):
                 make_check_na = package in constants.listMakeCheckPkgToSkip
 
             if make_check_na:
-                self.logger.info(f"####### {package}" +
-                                 f" MakeCheck is not available. Skipping MakeCheck TEST for {package} #######")
+                self.logger.info(
+                    f"####### {package}"
+                    + f" MakeCheck is not available. Skipping MakeCheck TEST for {package} #######"
+                )
                 rpmBuildcmd = f"{self.rpmbuildBinary} --clean"
             else:
-                self.logger.info(f"####### {package}" +
-                                 f" MakeCheck is available. Running MakeCheck TEST for {package} #######")
+                self.logger.info(
+                    f"####### {package}"
+                    + f" MakeCheck is available. Running MakeCheck TEST for {package} #######"
+                )
                 rpmBuildcmd = f"{self.rpmbuildBinary} {self.rpmbuildCheckOption}"
             self.logger.debug(pr_pounds)
         else:
             rpmBuildcmd += f" {self.rpmbuildNocheckOption}"
 
         for macro in macros:
-            rpmBuildcmd += f" -D \"{macro}\""
+            rpmBuildcmd += f' -D "{macro}"'
 
         if constants.crossCompiling:
             rpmBuildcmd += (
-                f" -D \"_build {constants.buildArch}-unknown-linux-gnu\""
-                f" -D \"_host {constants.targetArch}-unknown-linux-gnu\""
+                f' -D "_build {constants.buildArch}-unknown-linux-gnu"'
+                f' -D "_host {constants.targetArch}-unknown-linux-gnu"'
                 f" --target={constants.targetArch}-unknown-linux-gnu"
             )
 
@@ -367,7 +397,9 @@ class PackageUtils(object):
         if network_required:
             self.logger.debug(f"{package} requires network to build...")
 
-        returnVal = sandbox.run(rpmBuildcmd, logfile=logFile, network_required=network_required)
+        returnVal = sandbox.run(
+            rpmBuildcmd, logfile=logFile, network_required=network_required
+        )
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             if make_check_na:
@@ -391,13 +423,15 @@ class PackageUtils(object):
 
         # Fetch built rpm names from log file
         fileContents = []
-        stageLogFile = logFile.replace(f"{constants.topDirPath}/LOGS", constants.logPath)
+        stageLogFile = logFile.replace(
+            f"{constants.topDirPath}/LOGS", constants.logPath
+        )
 
         def HandleLogs(log):
             nonlocal fileContents
             fileContents += log.split("\n")
 
-        cmd = f"grep -aw \"^Wrote: \" {stageLogFile}"
+        cmd = f'grep -aw "^Wrote: " {stageLogFile}'
         (_, _, returnVal) = self.cmdUtils.runBashCmd(cmd, logfn=HandleLogs)
 
         if returnVal or not fileContents:

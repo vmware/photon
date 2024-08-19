@@ -43,8 +43,9 @@ class Builder:
             pkgInfo.loadPackagesData()
             pkgInfo.writePkgListToFile(pkgInfoJsonFile)
 
-
-    def buildPackagesInJson(pkgJsonInput, buildThreads, pkgBuildType, pkgInfoJsonFile, logger):
+    def buildPackagesInJson(
+        pkgJsonInput, buildThreads, pkgBuildType, pkgInfoJsonFile, logger
+    ):
         listPackages = []
         with open(pkgJsonInput) as jsonData:
             pkg_list_json = json.load(jsonData)
@@ -52,18 +53,22 @@ class Builder:
             archSpecificPkgs = "packages_" + constants.buildArch
             if archSpecificPkgs in pkg_list_json:
                 listPackages += pkg_list_json[archSpecificPkgs]
-        Builder.buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger)
-
+        Builder.buildSpecifiedPackages(
+            listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger
+        )
 
     def buildPackagesForAllSpecs(buildThreads, pkgBuildType, pkgInfoJsonFile, logger):
         listPackages = SPECS.getData().getListPackages()
-        Builder.buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger)
-
+        Builder.buildSpecifiedPackages(
+            listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger
+        )
 
     def get_packages_with_build_options(pkg_build_options_file):
         if os.path.exists(pkg_build_options_file):
             with open(pkg_build_options_file) as jsonData:
-                pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
+                pkg_build_option_json = json.load(
+                    jsonData, object_pairs_hook=collections.OrderedDict
+                )
                 constants.setBuildOptions(pkg_build_option_json)
 
     def get_baseurl(conf_file):
@@ -76,7 +81,9 @@ class Builder:
         packages = []
 
         with open(build_install_option) as jsonData:
-            option_list_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
+            option_list_json = json.load(
+                jsonData, object_pairs_hook=collections.OrderedDict
+            )
             options_sorted = option_list_json.items()
 
             for install_option in options_sorted:

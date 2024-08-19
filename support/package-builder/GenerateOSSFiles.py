@@ -17,26 +17,39 @@ cmdUtils = CommandUtils()
 def main():
     usage = "Usage: %prog [options] <package name>"
     parser = ArgumentParser(usage)
-    parser.add_argument("-s", "--spec-path", dest="specPath",
-                        default="../../SPECS")
-    parser.add_argument("-l", "--log-path", dest="logPath",
-                        default="../../stage/LOGS")
-    parser.add_argument("-a", "--source-rpm-path", dest="sourceRpmPath",
-                        default="../../stage/SRPMS")
-    parser.add_argument("-j", "--output-dir", dest="outputDirPath",
-                        default="../../stage/")
-    parser.add_argument("-z", "--log-level", dest="logLevel",
-                        default="info")
-    parser.add_argument("-c", "--pullsources-config", dest="pullsourcesConfig",
-                        default="pullsources.conf")
-    parser.add_argument("-f", "--pkg-blacklist-file", dest="pkgBlacklistFile",
-                        default=None)
-    parser.add_argument("-p", "--generate-pkg-list", dest="generatePkgList",
-                        default=False, action="store_true")
-    parser.add_argument("-y", "--generate-yaml-files", dest="generateYamlFiles",
-                        default=False, action="store_true")
-    parser.add_argument("-d",  "--dist-tag", dest="dist",
-                        default="")
+    parser.add_argument("-s", "--spec-path", dest="specPath", default="../../SPECS")
+    parser.add_argument("-l", "--log-path", dest="logPath", default="../../stage/LOGS")
+    parser.add_argument(
+        "-a", "--source-rpm-path", dest="sourceRpmPath", default="../../stage/SRPMS"
+    )
+    parser.add_argument(
+        "-j", "--output-dir", dest="outputDirPath", default="../../stage/"
+    )
+    parser.add_argument("-z", "--log-level", dest="logLevel", default="info")
+    parser.add_argument(
+        "-c",
+        "--pullsources-config",
+        dest="pullsourcesConfig",
+        default="pullsources.conf",
+    )
+    parser.add_argument(
+        "-f", "--pkg-blacklist-file", dest="pkgBlacklistFile", default=None
+    )
+    parser.add_argument(
+        "-p",
+        "--generate-pkg-list",
+        dest="generatePkgList",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "-y",
+        "--generate-yaml-files",
+        dest="generateYamlFiles",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument("-d", "--dist-tag", dest="dist", default="")
 
     options = parser.parse_args()
     errorFlag = False
@@ -46,11 +59,15 @@ def main():
         logger = Logger.getLogger(logName, options.logPath, options.logLevel)
 
         if options.generateYamlFiles:
-            if (options.pkgBlacklistFile is not None and
-                    options.pkgBlacklistFile != "" and
-                    not os.path.isfile(options.pkgBlacklistFile)):
-                logger.error("Given package blacklist file is not valid:"
-                             + options.pkgBlacklistFile)
+            if (
+                options.pkgBlacklistFile is not None
+                and options.pkgBlacklistFile != ""
+                and not os.path.isfile(options.pkgBlacklistFile)
+            ):
+                logger.error(
+                    "Given package blacklist file is not valid:"
+                    + options.pkgBlacklistFile
+                )
                 errorFlag = True
 
         if not os.path.isdir(options.specPath):
@@ -62,13 +79,15 @@ def main():
             errorFlag = True
 
         if options.generateYamlFiles and not os.path.isfile(options.pullsourcesConfig):
-            logger.error("Given Source config file is not a valid file:"
-                         + options.pullsourcesConfig)
+            logger.error(
+                "Given Source config file is not a valid file:"
+                + options.pullsourcesConfig
+            )
             errorFlag = True
 
         if options.dist:
-           dist_tag = options.dist
-           logger.info(f"release tag is {dist_tag}")
+            dist_tag = options.dist
+            logger.info(f"release tag is {dist_tag}")
 
         if errorFlag:
             logger.error("Found some errors. Please fix input options and re-run it.")
@@ -93,7 +112,13 @@ def main():
         elif options.generateYamlFiles:
             blackListPkgs = readBlackListPackages(options.pkgBlacklistFile)
             buildSourcesList(options.outputDirPath, blackListPkgs, logger)
-            buildSRPMList(options.sourceRpmPath, options.outputDirPath, blackListPkgs, dist_tag, logger)
+            buildSRPMList(
+                options.sourceRpmPath,
+                options.outputDirPath,
+                blackListPkgs,
+                dist_tag,
+                logger,
+            )
 
     except Exception as e:
         print(f"Caught Exception: {e}")
@@ -107,6 +132,7 @@ def get_baseurl(conf_file):
     with open(conf_file) as jsonFile:
         config = json.load(jsonFile)
     return config["baseurl"]
+
 
 def buildPackagesList(csvFilename):
     with open(csvFilename, "w") as csvFile:
@@ -128,6 +154,7 @@ def buildPackagesList(csvFilename):
                     sources = " ".join(listSourceNames)
                 data = f"{name},{version},{packagelicense},{url},{sources},{patches}\n"
                 csvFile.write(data)
+
 
 def readBlackListPackages(pkgBlackListFile):
     blackListPkgs = []
@@ -167,9 +194,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
             listSourceNames = SPECS.getData().getSources(package, version)
             if listSourceNames:
                 sourceName = listSourceNames[0]
-                sha512 = SPECS.getData().getChecksum(
-                    package, version, sourceName
-                )
+                sha512 = SPECS.getData().getChecksum(package, version, sourceName)
                 if sha512:
                     PullSources.get(
                         package,

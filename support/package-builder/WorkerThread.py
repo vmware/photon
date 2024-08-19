@@ -3,10 +3,10 @@ from PackageBuilder import PackageBuilder
 import Scheduler
 import ThreadPool
 
+
 class WorkerThread(threading.Thread):
 
-    def __init__(self, event, name, mapPackageToCycle, logger,
-                 pkgBuildType):
+    def __init__(self, event, name, mapPackageToCycle, logger, pkgBuildType):
         threading.Thread.__init__(self)
         self.statusEvent = event
         self.name = name
@@ -23,15 +23,16 @@ class WorkerThread(threading.Thread):
             doneList = Scheduler.Scheduler.getDoneList()
             if pkg is None:
                 break
-            pkgBuilder = PackageBuilder(self.mapPackageToCycle,
-                                              self.pkgBuildType)
+            pkgBuilder = PackageBuilder(self.mapPackageToCycle, self.pkgBuildType)
             try:
                 pkgBuilder.build(pkg, doneList)
             except Exception as e:
                 self.logger.exception(e)
                 buildThreadFailed = True
                 Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
-                self.logger.debug("Thread " + self.name + " stopped building package:" + pkg)
+                self.logger.debug(
+                    "Thread " + self.name + " stopped building package:" + pkg
+                )
                 self.statusEvent.set()
                 break
             Scheduler.Scheduler.notifyPackageBuildCompleted(pkg)

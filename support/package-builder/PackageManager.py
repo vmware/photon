@@ -39,7 +39,9 @@ class PackageManager(object):
             self.dockerClient = docker.from_env(version="auto")
 
     def buildToolChain(self):
-        self.logger.info(f"Step 1: Building the core toolchain packages for {constants.currentArch}")
+        self.logger.info(
+            f"Step 1: Building the core toolchain packages for {constants.currentArch}"
+        )
         self.logger.info(constants.listCoreToolChainPackages)
         self.logger.info("")
 
@@ -79,8 +81,10 @@ class PackageManager(object):
         if not constants.crossCompiling:
             if self.pkgBuildType == "container":
                 # Stage 1 build container
-                #TODO image name constants.buildContainerImageName
-                if pkgCount > 0 or not self.dockerClient.images.list(constants.buildContainerImage):
+                # TODO image name constants.buildContainerImageName
+                if pkgCount > 0 or not self.dockerClient.images.list(
+                    constants.buildContainerImage
+                ):
                     self._createBuildContainer(True)
             self.logger.info("Step 2: Building stage 2 of the toolchain...")
             self.logger.info(constants.listToolChainPackages)
@@ -91,7 +95,7 @@ class PackageManager(object):
             self.logger.info("")
         if self.pkgBuildType == "container":
             # Stage 2 build container
-            #TODO: rebuild container only if anything in listToolChainPackages was built
+            # TODO: rebuild container only if anything in listToolChainPackages was built
             self._createBuildContainer(False)
 
     def buildPackages(self, listPackages, buildThreads):
@@ -105,7 +109,9 @@ class PackageManager(object):
             self._buildGivenPackages(listPackages, buildThreads)
         else:
             self.buildToolChainPackages(buildThreads)
-            self.logger.info("Step 3: Building the following package(s) and dependencies...")
+            self.logger.info(
+                "Step 3: Building the following package(s) and dependencies..."
+            )
             self.logger.info(listPackages)
             self.logger.info("")
             self._buildGivenPackages(listPackages, buildThreads)
@@ -115,8 +121,11 @@ class PackageManager(object):
     def _readPackageBuildData(self, listPackages):
         try:
             pkgBuildDataGen = PackageBuildDataGenerator(self.logName, self.logPath)
-            self.mapCyclesToPackageList, self.mapPackageToCycle, self.sortedPackageList = (
-                pkgBuildDataGen.getPackageBuildData(listPackages))
+            (
+                self.mapCyclesToPackageList,
+                self.mapPackageToCycle,
+                self.sortedPackageList,
+            ) = pkgBuildDataGen.getPackageBuildData(listPackages)
 
         except Exception as e:
             self.logger.exception(e)
@@ -134,14 +143,14 @@ class PackageManager(object):
         for package in listPackages:
             for version in SPECS.getData().getVersions(package):
                 # Mark package available only if all subpackages are available
-                packageIsAlreadyBuilt=True
+                packageIsAlreadyBuilt = True
                 listRPMPackages = SPECS.getData().getRPMPackages(package, version)
                 for rpmPkg in listRPMPackages:
                     if pkgUtils.findRPMFile(rpmPkg, version) is None:
-                        packageIsAlreadyBuilt=False
-                        break;
+                        packageIsAlreadyBuilt = False
+                        break
                 if packageIsAlreadyBuilt:
-                    listAvailablePackages.add(package+"-"+version)
+                    listAvailablePackages.add(package + "-" + version)
 
         return listAvailablePackages
 
@@ -157,8 +166,7 @@ class PackageManager(object):
 
         listPackagesToBuild = copy.copy(listPackages)
         for pkg in listPackages:
-            if (pkg in self.listOfPackagesAlreadyBuilt and
-                    not constants.rpmCheck):
+            if pkg in self.listOfPackagesAlreadyBuilt and not constants.rpmCheck:
                 listPackagesToBuild.remove(pkg)
 
         if constants.rpmCheck:
@@ -169,7 +177,9 @@ class PackageManager(object):
 
         if self.sortedPackageList:
             self.logger.info("List of packages yet to be built...")
-            self.logger.info(str(set(self.sortedPackageList) - set(self.listOfPackagesAlreadyBuilt)))
+            self.logger.info(
+                str(set(self.sortedPackageList) - set(self.listOfPackagesAlreadyBuilt))
+            )
             self.logger.info("")
 
         return True
@@ -193,24 +203,29 @@ class PackageManager(object):
 
     def _buildGivenPackages(self, listPackages, buildThreads):
         # Extend listPackages from ["name1", "name2",..] to ["name1-vers1", "name2-vers2",..]
-        listPackageNamesAndVersions=set()
+        listPackageNamesAndVersions = set()
         for pkg in listPackages:
             base = SPECS.getData().getSpecName(pkg)
             for version in SPECS.getData().getVersions(base):
-                listPackageNamesAndVersions.add(base+"-"+version)
+                listPackageNamesAndVersions.add(base + "-" + version)
 
         returnVal = self._calculateParams(listPackageNamesAndVersions)
         if not returnVal:
-            self.logger.error("Unable to set parameters. Terminating the package manager.")
+            self.logger.error(
+                "Unable to set parameters. Terminating the package manager."
+            )
             raise Exception("Unable to set parameters")
         self._buildPackages(buildThreads)
 
     def _buildPackages(self, buildThreads):
         if constants.startSchedulerServer:
             import SchedulerServer
+
             self._initializeScheduler(None)
             SchedulerServer.mapPackageToCycle = self.mapPackageToCycle
-            serverThread = threading.Thread(target=SchedulerServer.startServer, name="serverthread")
+            serverThread = threading.Thread(
+                target=SchedulerServer.startServer, name="serverthread"
+            )
             serverThread.start()
             serverThread.join()
         else:
@@ -250,16 +265,16 @@ class PackageManager(object):
     def _createBuildContainer(self, usePublishedRPMs):
         self.logger.debug("Generating photon build container..")
         try:
-            #TODO image name constants.buildContainerImageName
+            # TODO image name constants.buildContainerImageName
             self.dockerClient.images.remove(constants.buildContainerImage, force=True)
         except Exception as e:
-            #TODO - better handling
+            # TODO - better handling
             self.logger.debug("Photon build container image not found.")
 
         # Create toolchain chroot and install toolchain RPMs
         chroot = None
         try:
-            #TODO: constants.tcrootname
+            # TODO: constants.tcrootname
             chroot = Chroot(self.logger)
             chroot.create("toolchain-chroot")
             tcUtils = ToolChainUtils("toolchain-chroot", self.logPath)
@@ -278,10 +293,12 @@ class PackageManager(object):
         cmd = "mv " + chroot.getID() + "/../tcroot.tar.gz ."
         self.cmdUtils.runBashCmd(cmd, logfn=self.logger.debug)
         # TODO: Container name, docker file name from constants.
-        self.dockerClient.images.build(tag=constants.buildContainerImage,
-                                       path=".",
-                                       rm=True,
-                                       dockerfile="Dockerfile.photon_build_container")
+        self.dockerClient.images.build(
+            tag=constants.buildContainerImage,
+            path=".",
+            rm=True,
+            dockerfile="Dockerfile.photon_build_container",
+        )
 
         # Cleanup
         cmd = "rm -f ./tcroot.tar.gz"

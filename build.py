@@ -672,7 +672,9 @@ class RpmBuildTarget:
             return
 
         createrepo_cmd = configdict["createrepo-cmd"]
-        runBashCmd(f"{createrepo_cmd} --general-compress-type=gz --update {constants.rpmPath}")
+        runBashCmd(
+            f"{createrepo_cmd} --general-compress-type=gz --update {constants.rpmPath}"
+        )
         check_prerequesite["create-repo"] = True
 
     @staticmethod
@@ -1008,20 +1010,16 @@ class BuildImage:
 
         self.config_file = None
         if configdict["additional-path"]["conf-file"] is not None:
-            self.config_file = os.path.abspath(configdict["additional-path"]["conf-file"])
+            self.config_file = os.path.abspath(
+                configdict["additional-path"]["conf-file"]
+            )
 
         self.img_name = imgName
         self.rpm_path = constants.rpmPath
         self.srpm_path = constants.sourceRpmPath
-        self.pkg_to_rpm_map_file = os.path.join(
-            Build_Config.stagePath, "pkg_info.json"
-        )
-        self.ph_docker_image = configdict["photon-build-param"][
-            "photon-docker-image"
-        ]
-        self.ph_builder_tag = configdict["photon-build-param"][
-            "ph-builder-tag"
-        ]
+        self.pkg_to_rpm_map_file = os.path.join(Build_Config.stagePath, "pkg_info.json")
+        self.ph_docker_image = configdict["photon-build-param"]["photon-docker-image"]
+        self.ph_builder_tag = configdict["photon-build-param"]["ph-builder-tag"]
         self.poi_image = configdict["photon-build-param"].get("poi-image", None)
 
         self.ova_cloud_images = ["ami", "gce", "azure", "ova"]
@@ -1096,7 +1094,7 @@ class BuildImage:
 
     def build_iso(self):
         if self.img_present(self.img_name):
-           return
+            return
 
         rpmBuildTarget = RpmBuildTarget()
         BuildEnvironmentSetup.photon_stage()
@@ -1141,9 +1139,7 @@ class BuildImage:
         if check_prerequesite["photon-docker-image"]:
             return
 
-        img_fname = (
-            f"photon-rootfs-{constants.releaseVersion}-{constants.buildNumber}.{constants.currentArch}.tar.gz"
-        )
+        img_fname = f"photon-rootfs-{constants.releaseVersion}-{constants.buildNumber}.{constants.currentArch}.tar.gz"
         if os.path.isfile(os.path.join(Build_Config.stagePath, img_fname)):
             check_prerequesite["photon-docker-image"] = True
             print(f"{img_fname} already exists ...")
@@ -1169,7 +1165,9 @@ class BuildImage:
 
     def k8s_docker_images(self):
         if glob.glob(f"{Build_Config.stagePath}/docker_images/*.gz"):
-            print(f"k8s images are already present in {Build_Config.stagePath}/docker_images")
+            print(
+                f"k8s images are already present in {Build_Config.stagePath}/docker_images"
+            )
             return
 
         BuildImage.photon_docker_image()
@@ -1344,9 +1342,7 @@ def initialize_constants():
     constants.setCanisterBuild(
         configdict["photon-build-param"].get("canister-build", False)
     )
-    constants.setAcvpBuild(
-        configdict["photon-build-param"].get("acvp-build", False)
-    )
+    constants.setAcvpBuild(configdict["photon-build-param"].get("acvp-build", False))
     Build_Config.setConfFile(configdict["additional-path"]["conf-file"])
     Build_Config.setPkgToBeCopiedConfFile(
         configdict.get("additional-path", {}).get("pkg-to-be-copied-conf-file")
@@ -1371,9 +1367,13 @@ def initialize_constants():
     constants.buildDbgInfoRpm = int(
         configdict["photon-build-param"]["build-dbginfo-rpm"]
     )
-    constants.buildDbgInfoRpmList = configdict["photon-build-param"]["build-dbginfo-rpm-list"]
+    constants.buildDbgInfoRpmList = configdict["photon-build-param"][
+        "build-dbginfo-rpm-list"
+    ]
 
-    constants.extraPackagesList = configdict["photon-build-param"]["extra-packages-list"]
+    constants.extraPackagesList = configdict["photon-build-param"][
+        "extra-packages-list"
+    ]
 
     if configdict.get("photon-build-param", {}).get("resume-build", False):
         constants.set_resume_build(
@@ -1384,7 +1384,9 @@ def initialize_constants():
     # Isolated/firewalled network for sandbox attach to.
     constants.isolatedDockerNetwork = configdict.get("isolated-docker-network", None)
 
-    filesToCopyToSb = configdict.get("photon-build-param", {}).get("copy-to-sandbox", "")
+    filesToCopyToSb = configdict.get("photon-build-param", {}).get(
+        "copy-to-sandbox", ""
+    )
     for k, v in filesToCopyToSb.items():
         if not v:
             continue
@@ -1441,7 +1443,7 @@ def process_env_build_params(ph_build_param):
         "SCHEDULER_SERVER": "start-scheduler-server",
         "BUILD_EXTRA_PKGS": "build-extra-pkgs",
         "RESUME_BUILD": "resume-build",
-        "POI_IMAGE": "poi-image"
+        "POI_IMAGE": "poi-image",
     }
 
     os.environ["PHOTON_RELEASE_VER"] = ph_build_param["photon-release-version"]
@@ -1457,8 +1459,15 @@ def process_env_build_params(ph_build_param):
 
         if k in {"THREADS", "BUILD_SRC_RPM", "BUILD_DBGINFO_RPM"}:
             val = int(val)
-        elif k in {"KAT_BUILD", "BUILDDEPS", "SCHEDULER_SERVER",
-                   "CANISTER_BUILD", "ACVP_BUILD", "BUILD_EXTRA_PKGS", "RESUME_BUILD"}:
+        elif k in {
+            "KAT_BUILD",
+            "BUILDDEPS",
+            "SCHEDULER_SERVER",
+            "CANISTER_BUILD",
+            "ACVP_BUILD",
+            "BUILD_EXTRA_PKGS",
+            "RESUME_BUILD",
+        }:
             val = cmdUtils.strtobool(val)
         elif k == "RPMCHECK":
             t = "enable_stop_on_error"
