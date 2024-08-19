@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -25,6 +25,7 @@ Patch0: cgi3.patch
 Patch1: use-HMAC-SHA256-in-FIPS-mode.patch
 Patch2: ensurepip-upgrade-bundled-pip-and-setuptools.patch
 Patch3: CVE-2024-4032.patch
+Patch4: CVE-2024-6923.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -303,6 +304,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Mon Aug 19 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.9-3
+- Fix CVE-2024-6923
 * Thu Aug 08 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.11.9-2
 - Update expat dependency
 * Sat Jul 27 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.11.9-1
