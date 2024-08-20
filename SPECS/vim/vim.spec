@@ -1,9 +1,9 @@
 %define debug_package %{nil}
-%global maj_ver vim90
+%global maj_ver vim91
 
 Summary:        Text editor
 Name:           vim
-Version:        9.0.2142
+Version:        9.1.0682
 Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=d5dae309a219c1775e5637f417e72ef164fbc85c77df8e2cad9767c5ba06f9ceb5b647e059b9148ad87ea7835837ede740caaf65e1a4418dd4f3dc190c52bdc2
+%define sha512 %{name}=b1ca82b27421b44e6bf75ca5c59859fd116646a4431301517b1543698b773d79b16cf2daed1cb1e9ac9762d6dd84fd5484a63761995431554aaf3eb62587cd42
 
 Source1: vimrc
 
@@ -141,6 +141,7 @@ fi
 %lang(sr) %{_datadir}/vim/vim*/lang/sr/LC_MESSAGES/vim.mo
 %lang(vi) %{_datadir}/vim/vim*/lang/vi/LC_MESSAGES/vim.mo
 %lang(tr) %{_datadir}/vim/vim*/lang/tr/LC_MESSAGES/vim.mo
+%lang(hu) %{_datadir}/vim/vim*/lang/hu/LC_MESSAGES/vim.mo
 %lang(zh_CN.UTF-8) %{_datadir}/vim/vim*/lang/zh_CN.UTF-8/LC_MESSAGES/vim.mo
 %lang(zh_CN) %{_datadir}/vim/vim*/lang/zh_CN/LC_MESSAGES/vim.mo
 %lang(zh_TW.UTF-8) %{_datadir}/vim/vim*/lang/zh_TW.UTF-8/LC_MESSAGES/vim.mo
@@ -176,6 +177,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Tue Aug 20 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.1.0682-1
+- Update to v9.1.0682
 * Fri Feb 16 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 9.0.2142-1
 - Update to v9.0.2142 to fix CVE-2024-22667
 * Sat Dec 16 2023 Srish Srinivasan <ssrish@vmware.com> 9.0.2121-1
