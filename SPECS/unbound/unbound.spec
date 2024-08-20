@@ -1,7 +1,7 @@
 Summary:        unbound dns server
 Name:           unbound
 Version:        1.17.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
@@ -15,6 +15,8 @@ Source1:        %{name}.service
 Source2:        %{name}.sysusers
 
 Patch0: CVE-2023-50387-CVE-2023-50868.patch
+Patch1: CVE-2024-43167.patch
+Patch2: CVE-2024-43168.patch
 
 Requires:       systemd
 Requires(pre):  systemd-rpm-macros
@@ -93,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Tue Aug 20 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.17.0-5
+- Fix CVE-2024-43167 and CVE-2024-43168
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.17.0-4
 - Fix CVE-2023-50387, CVE-2023-50868
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.17.0-3
