@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.225
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -193,6 +193,9 @@ Patch161: 0001-net-sunrpc-Remap-EPERM-in-case-of-connection-failure.patch
 
 # Fix CVE-2024-24855
 Patch162: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
+
+# Fix CVE-2024-42080
+Patch163: 0001-RDMA-restrack-Fix-potential-invalid-address-access.patch
 
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
@@ -540,6 +543,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Sep 13 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.225-2
+- Fix CVE-2024-42080
 * Wed Sep 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.225-1
 - Update to version 5.10.225
 * Tue Sep 10 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-5

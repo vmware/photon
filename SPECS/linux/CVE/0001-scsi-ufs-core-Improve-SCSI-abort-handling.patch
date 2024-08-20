@@ -1,0 +1,52 @@
+From f4e5226d3aa5caea852e649a22ba95841ac87a5a Mon Sep 17 00:00:00 2001
+From: Bart Van Assche <bvanassche@acm.org>
+Date: Thu, 4 Nov 2021 11:10:53 -0700
+Subject: [PATCH] scsi: ufs: core: Improve SCSI abort handling
+
+[ Upstream commit 3ff1f6b6ba6f97f50862aa50e79959cc8ddc2566 ]
+
+The following has been observed on a test setup:
+
+WARNING: CPU: 4 PID: 250 at drivers/scsi/ufs/ufshcd.c:2737 ufshcd_queuecommand+0x468/0x65c
+Call trace:
+ ufshcd_queuecommand+0x468/0x65c
+ scsi_send_eh_cmnd+0x224/0x6a0
+ scsi_eh_test_devices+0x248/0x418
+ scsi_eh_ready_devs+0xc34/0xe58
+ scsi_error_handler+0x204/0x80c
+ kthread+0x150/0x1b4
+ ret_from_fork+0x10/0x30
+
+That warning is triggered by the following statement:
+
+	WARN_ON(lrbp->cmd);
+
+Fix this warning by clearing lrbp->cmd from the abort handler.
+
+Link: https://lore.kernel.org/r/20211104181059.4129537-1-bvanassche@acm.org
+Fixes: 7a3e97b0dc4b ("[SCSI] ufshcd: UFS Host controller driver")
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Ported to v5.10 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/scsi/ufs/ufshcd.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index a4c70fbc809f..3b1db4d7b221 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -6786,6 +6786,7 @@ static int ufshcd_abort(struct scsi_cmnd *cmd)
+ 		__ufshcd_transfer_req_compl(hba, (1UL << tag));
+ 		spin_unlock_irqrestore(host->host_lock, flags);
+ out:
++		lrbp->cmd = NULL;
+ 		err = SUCCESS;
+ 	} else {
+ 		dev_err(hba->dev, "%s: failed with err %d\n", __func__, err);
+--
+2.39.4

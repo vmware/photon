@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.225
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -206,6 +206,12 @@ Patch161: 0001-net-sunrpc-Remap-EPERM-in-case-of-connection-failure.patch
 # Fix CVE-2024-24855
 Patch162: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
 
+# Fix CVE-2024-42080
+Patch163: 0001-RDMA-restrack-Fix-potential-invalid-address-access.patch
+
+# Fix CVE-2021-47188
+Patch164: 0001-scsi-ufs-core-Improve-SCSI-abort-handling.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -337,7 +343,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M163
+%autopatch -p1 -m100 -M164
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -483,6 +489,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Sep 13 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.225-2
+- Fix CVE-2024-42080, CVE-2021-47188
 * Wed Sep 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.225-1
 - Update to version 5.10.225
 * Tue Sep 10 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-5

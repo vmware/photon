@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.225
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -241,6 +241,12 @@ Patch156: 0001-net-sunrpc-Remap-EPERM-in-case-of-connection-failure.patch
 
 # Fix CVE-2024-24855
 Patch157: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
+
+# Fix CVE-2024-42080
+Patch158: 0001-RDMA-restrack-Fix-potential-invalid-address-access.patch
+
+# Fix CVE-2021-47188
+Patch159: 0001-scsi-ufs-core-Improve-SCSI-abort-handling.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -504,7 +510,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M158
+%autopatch -p1 -m100 -M159
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -912,6 +918,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Sep 13 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.225-2
+- Fix CVE-2024-42080 and CVE-2021-47188
 * Wed Sep 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.225-1
 - Update to version 5.10.225
 * Tue Sep 10 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-7
