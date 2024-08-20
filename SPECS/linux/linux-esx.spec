@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.102
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -224,6 +224,7 @@ Patch506: 0001-jitterentropy-kcapi-defer-jent_init.patch
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch510: 0001-LKCM-5.0-binary-patching-to-fix-struct-aesni_cpu_id-.patch
 %endif
 
 %ifarch x86_64
@@ -330,7 +331,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M509
+%autopatch -p1 -m508 -M510
 %endif
 
 %ifarch x86_64
@@ -466,6 +467,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.102-2
+- Binary patch aesni_cpu_id value in canister
 * Mon Aug 05 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.102-1
 - Update to version 6.1.102
 * Wed Jul 10 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.97-1

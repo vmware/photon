@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.102
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -191,6 +191,7 @@ Patch1005: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 # FIPS canister usage patch
 Patch1008: 0001-FIPS-canister-binary-usage.patch
 Patch1009: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch1010: 0001-LKCM-5.0-binary-patching-to-fix-struct-aesni_cpu_id-.patch
 %endif
 
 # stalld eBPF plugin patches
@@ -300,7 +301,7 @@ stalld to use eBPF based backend.
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m1008 -M1009
+%autopatch -p1 -m1008 -M1010
 %endif
 
 pushd ../stalld-v%{stalld_version}/
@@ -469,6 +470,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.102-2
+- Binary patch aesni_cpu_id value in canister
 * Mon Aug 05 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.102-1
 - Update to version 6.1.102
 * Wed Jul 10 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.97-1

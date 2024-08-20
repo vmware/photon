@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.102
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -258,6 +258,7 @@ Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch510: 0001-LKCM-5.0-binary-patching-to-fix-struct-aesni_cpu_id-.patch
 %endif
 
 %if 0%{?acvp_build:1}
@@ -504,7 +505,7 @@ The kernel fips-canister
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M509
+%autopatch -p1 -m508 -M510
 %endif
 
 %if 0%{?acvp_build:1}
@@ -874,6 +875,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.102-3
+- Binary patch aesni_cpu_id value in canister
 * Wed Aug 14 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.102-2
 - Enable CONFIG_GVE for gVNIC support
 * Thu Aug 08 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.102-1
