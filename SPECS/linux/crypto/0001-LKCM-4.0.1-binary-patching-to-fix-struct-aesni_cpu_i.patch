@@ -1,0 +1,134 @@
+From 188e055b83fadcc31ecd3d885fdbb0188ba1887d Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Thu, 22 Aug 2024 14:40:58 +0000
+Subject: [PATCH] LKCM 4.0.1 binary patching to fix struct aesni_cpu_id
+ mismatch
+
+x86_cpu_id structure in kernel v5.10.221 is changed. A new member flags
+is added just before the last member driver_data. As part of this
+change, the INTEL CPU detection code has also been modified to utilize
+the flags member. If flags member is not set, then x86_match_cpu will
+return NULL. It means the given CPU is not matched with the known array of
+available x86_cpu_ids.
+
+commit: https://github.com/gregkh/linux/commit/40a697e34517fdbb3a31bfd5077
+
+Problem:
+aesni_intel-glue.c declares and populates aesni_cpu_id. This file is
+part of fips_canister.o. So the new changes to struct x86_cpu_id will
+not be available for aesni_intel-glue.c.
+
+Fix:
+In order to make this work, we have to binary patch aesni_cpu_id value
+at runtime. Size of 'aesni_cpu_id[0]' before the commit is 24 bytes
+(actually 18 bytes but padded to make it 24 bytes). 6 bytes of padding
+is added after 'feature' and before 'driver_data'. Size of
+'aesni_cpu_id[0]' after the commit is also 24 bytes, as the flags member
+is placed in the padded region.
+
+Fix here is to set the 2 bytes located after 'feature' member
+in the padded region with value X86_CPU_ID_FLAG_ENTRY_VALID.
+This will act as u16 flags member of aesni_cpu_id.
+
+aesni_cpu_id symbol is located in .rodata section at offset 0x1A0 in fips_canister.o
+Logic is to locate the __canister_srodata symbol and add this offset to
+reach aesni_cpu_id value and set 10th byte (first 5 u16 members) with
+X86_CPU_ID_FLAG_ENTRY_VALID value.
+
+Memory dump of aesni_cpu_id before patching:
+
+ 6b920 ffff0000 00000000 99000000 00000000  ................
+ 6b930 00000000 00000000 00000000 00000000  ................
+ 6b940 00000000 00000000 00000000 00000000  ................
+
+Memory dump of aesni_cpu_ud after patching:
+
+ 6b920 ffff0000 00000000 99000100 00000000  ................
+ 6b930 00000000 00000000 00000000 00000000  ................
+ 6b940 00000000 00000000 00000000 00000000  ................
+
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ init/main.c | 56 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
+
+diff --git a/init/main.c b/init/main.c
+index 3e3d38ed4..1753af43e 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -103,6 +103,7 @@
+ #include <asm/setup.h>
+ #include <asm/sections.h>
+ #include <asm/cacheflush.h>
++#include <asm/cpu_device_id.h>
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/initcall.h>
+@@ -897,6 +898,61 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 			   NULL, 0, -1, -1, NULL, set_init_arg);
+ 
+ 	fips_integrity_init();
++
++	if(boot_cpu_data.x86_vendor == X86_VENDOR_INTEL &&
++	   boot_cpu_has(X86_FEATURE_AES)) {
++		u8 *s, *hmac, *start, *skip, *end, *pos, *aesni_val_pos;
++		u16 val = 0, flags_val = X86_CPU_ID_FLAG_ENTRY_VALID;
++		static struct x86_cpu_id aesni_cpu_id_value = X86_MATCH_FEATURE(X86_FEATURE_AES, NULL);
++		u8 canister_hmac[32] =
++			{'\xf4', '\x47', '\xff', '\xc8', '\x75', '\xb3', '\xc9', '\x76',
++			 '\xd1', '\x7c', '\x0d', '\x8c', '\x2e', '\xaf', '\x7b', '\x25',
++			 '\x30', '\x76', '\x13', '\xbc', '\xd5', '\xdb', '\xf5', '\x1c',
++			 '\x74', '\x3b', '\x78', '\x5c', '\xcd', '\x0e', '\xa2', '\x02'};
++
++		/* Check if the size of struct x86_cpu_id is same as expected size */
++		BUG_ON (sizeof(aesni_cpu_id_value) != 24);
++
++		/* Verify LKCM 4.0.1 signature before patching */
++		hmac = (unsigned char *)kallsyms_lookup_name("canister_hmac");
++		if (!hmac || memcmp (hmac, canister_hmac, 32)) {
++			pr_warn("LKCM 4.0.1 not found\n");
++			goto ret;
++		}
++		/* Patch location: <canister rodata start> + 0x3c0 + 0xA */
++		s = (u8 *)kallsyms_lookup_name("__canister_srodata");
++		if (!s) {
++			pr_warn("LKCM 4.0.1 patching failed!"
++				"Symbol __canister_srodata not present\n");
++			goto ret;
++		}
++		start = s + 0x1A0; // start of aesni_cpu_id structure value
++		skip = s + 0x1A0 + 0xA; // Location of flags member in the struct x86_cpu_id
++		end = s + 0x1A0 + 24; // End of aesni_cpu_id structure value
++		aesni_val_pos = (u8 *)&aesni_cpu_id_value;
++
++		for (pos = start; pos < end; pos++, aesni_val_pos++) {
++			/* Skip checking 2 bytes that contains flags */
++			if (pos == skip || pos == (skip+1))
++				continue;
++			/* Check if all the bytes in aesni_cpu_id
++			 * is same as aesni_cpu_id_value */
++			BUG_ON (memcmp (pos, aesni_val_pos, 1));
++		}
++		s = skip;
++		aesni_val_pos = (u8 *)&aesni_cpu_id_value + 0xA;
++
++		/* Verify the bytes that is going to be replaced has value 0 */
++		BUG_ON (memcmp(s, &val, 2));
++
++		/* Sanity check flags member 2 bytes */
++		BUG_ON (memcmp(aesni_val_pos, &flags_val, 2));
++
++		memcpy(s, &flags_val, 2); // Copy 2 bytes of flags
++		pr_info("LKCM 4.0.1 aesni_cpu_id was patched successfully\n");
++	}
++
++ret:
+ 	if (fips_enabled && boot_cpu_data.x86_vendor == X86_VENDOR_AMD) {
+ 		u8 *s, *hmac;
+ 
+-- 
+2.19.0
+

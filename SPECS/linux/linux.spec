@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.223
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -78,6 +78,7 @@ Source18:       fips_canister-kallsyms
 Source19:       FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 Source20:       Add-alg_request_report-cmdline.patch
 Source21:       0001-LKCM-4.0.1-binary-patching-to-fix-jent-on-AMD-EPYC.patch
+Source24:       0001-LKCM-4.0.1-binary-patching-to-fix-struct-aesni_cpu_i.patch
 %endif
 
 Source22:       spec_install_post.inc
@@ -575,6 +576,7 @@ cp %{SOURCE18} crypto/
 patch -p1 < %{SOURCE19}
 patch -p1 < %{SOURCE20}
 patch -p1 < %{SOURCE21}
+patch -p1 < %{SOURCE24}
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
@@ -896,6 +898,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.223-2
+- Binary patch aesni_cpu_id value in canister
 * Sun Aug 18 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.223-1
 - Update to version 5.10.223
 * Tue Aug 13 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.222-3
