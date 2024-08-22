@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        32%{?dist}
+Release:        33%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -13,8 +13,9 @@ Distribution:   Photon
 
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 %define sha512  Python=f4f3879881f260f58dbb041fb0f2f210d4b70b02a739e41e50e6fea67d31855a7a29ce4ebef66bfde3d0edf54b946a48f78490f986da965357b835d4dbb3f414
-Source1:        pip-setuptools-whl.tar.gz
-%define sha512  pip-setuptools-whl=82becf78541bf82029b53f14e17c433f69788ecf1b5de2d988fb75dd016c6a370af5f613f0e600d409a68bd4a1195008924ba839bb0365950b80d0812e70bc2d
+# To create this tar refer to README.txt inside
+Source1:        setuptools-pip-wheels%{?dist}-1.0.tar.xz
+%define sha512  setuptools-pip-wheels=ea18a801d6c5e696d5da0e99e3e92582ff79dd950e70b726568cbc4e3699178296bfaeb76cea124c4cbc671a6d127798d2e563b273f993fbea85db061605b064
 
 Patch0:         cgi3.patch
 Patch1:         python3-support-photon-platform.patch
@@ -288,6 +289,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python%{VER}/test/*
 
 %changelog
+* Fri Aug 23 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.7.5-33
+- New setuptools whl with fix for CVE-2024-6345
 * Fri Oct 20 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-32
 - Fix CVE-2023-40217
 * Fri Sep 29 2023 Harinadh D <hdommaraju@vmware.com> 3.7.5-31
