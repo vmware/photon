@@ -1,21 +1,21 @@
+%global debug_package   %{nil}
 %define srcname Twisted
 
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
-Version:        20.3.0
-Release:        4%{?dist}
+Version:        22.10.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://twistedmatrix.com
 
-Source0: https://pypi.python.org/packages/source/T/Twisted/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=1b850e5fc21a3630ead4c2cc3622c16e78bb3be38ab11d021779b7ce3d3c30acc4e19d79c7791a5fce6c5c6e09c2baa349901dffe952de67dd98eec419846365
+Source0: https://pypi.python.org/packages/source/T/Twisted/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=36adac424f6776c7db870d2291713da41054e974dfac0dbc1cbd55f76915a92073bcb25d4593b82e229d154d5297c67e7ba82d808921d206c97c8024bd5431a8
 
-Patch0: extra_dependency.patch
-Patch1: no_packet.patch
-Patch2: 0001-sslverify.py-use-fips-compatible-sha512-instead-of-m.patch
+Patch0: no_packet.patch
+Patch1: 0001-sslverify.py-use-fips-compatible-sha512-instead-of-m.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-incremental
@@ -42,6 +42,7 @@ Requires: python3-hyperlink
 Requires: python3-attrs
 Requires: python3-PyHamcrest
 Requires: python3-service_identity >= 18.1.0
+Requires: python3-typing-extensions
 
 %description
 Twisted is a networking engine written in Python, supporting numerous protocols.
@@ -85,6 +86,8 @@ rm -rf %{buildroot}
 %{_bindir}/cftp*
 
 %changelog
+* Thu Aug 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-1
+- Update to 22.10.0, Fixes multiple CVEs
 * Wed May 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 20.3.0-4
 - Use fips allowed hashing algorithms in sslverify
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 20.3.0-3
