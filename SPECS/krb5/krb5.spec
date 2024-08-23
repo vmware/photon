@@ -3,7 +3,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.20.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
@@ -16,6 +16,7 @@ Source0: http://web.mit.edu/kerberos/www/dist/%{name}/%{minor_ver}/%{name}-%{ver
 Patch0: CVE-2024-26458.patch
 Patch1: CVE-2024-26461.patch
 Patch2: CVE-2024-26462.patch
+Patch3: CVE-2024-37370-37371.patch
 
 Requires:       openssl-libs
 Requires:       e2fsprogs-libs
@@ -72,7 +73,6 @@ fi
         --enable-dns-for-realm \
         --enable-pkinit \
         --enable-shared
-
 %make_build
 
 %install
@@ -119,6 +119,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/locale/*
 
 %changelog
+* Fri Aug 23 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 1.20.2-4
+- patched CVE-2024-37370, CVE-2024-37371
 * Mon Jun 03 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 1.20.2-3
 - patched CVE-2024-26458, CVE-2024-26461 and CVE-2024-26462
 * Tue Apr 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.20.2-2
