@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.102
-Release:        2%{?dist}
+Version:        6.1.106
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,12 +22,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt35
+%define rt_version rt38
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=10b8a0a69750b5d9f7fa8a735707ef552da6224830847b1edd7e2641db16857684ae19c4d18a6bfb5fa45ce985d420c35fb8866ce80eaa5b86e77a9629440ef9
+%define sha512 linux=0ca73f9ac725dee2ebf7aece9ea0e5bb890ed7fa836eea4d1fa97417b2a2735dd5dbf9a5970683ca09f6bb469aa03bb9ead7927bd4c2d2476190be5f2f3118f9
 
 %ifarch x86_64
 Source1: config-rt
@@ -470,6 +470,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.106-1
+- Update to version 6.1.106, rt38
 * Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.102-2
 - Binary patch aesni_cpu_id value in canister
 * Mon Aug 05 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.102-1
