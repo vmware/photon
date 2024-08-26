@@ -1,0 +1,130 @@
+From 8ad6d7321e51a9d19370a4ce726705422fe92d96 Mon Sep 17 00:00:00 2001
+From: Nitesh <nitesh-nk.kumar@broadcom.com>
+Date: Wed, 4 Sep 2024 14:16:16 +0530
+Subject: [PATCH] Remove SpeexDSP library dependencies from photon wireshark
+
+---
+ CMakeLists.txt   | 17 -----------------
+ sharkd_session.c |  9 +++++++++
+ 2 files changed, 9 insertions(+), 17 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f30b842..3e28be2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1428,11 +1428,6 @@ find_package( XSLTPROC )
+ 
+ find_package(DOXYGEN)
+ 
+-# The SpeexDSP resampler is required iff building wireshark or sharkd.
+-if(BUILD_wireshark OR BUILD_logray OR BUILD_sharkd)
+-	find_package(SpeexDSP REQUIRED)
+-endif()
+-
+ # Generate the distribution tarball.
+ add_custom_target(dist
+ 	COMMAND ${CMAKE_BINARY_DIR}/packaging/source/git-export-release.sh -d "${CMAKE_BINARY_DIR}"
+@@ -1956,11 +1951,6 @@ set_package_properties(MaxMindDB PROPERTIES
+ 	DESCRIPTION "C library for the MaxMind DB file format"
+ 	PURPOSE "Support for GeoIP lookup"
+ )
+-set_package_properties(SpeexDSP PROPERTIES
+-	URL "https://www.speex.org/"
+-	DESCRIPTION "SpeexDSP is a patent-free, Open Source/Free Software DSP library"
+-	PURPOSE "RTP audio resampling"
+-)
+ set_package_properties(Minizip PROPERTIES
+ 	URL "https://github.com/madler/zlib"
+ 	DESCRIPTION "Mini zip and unzip based on zlib"
+@@ -2305,9 +2295,6 @@ if(USE_REPOSITORY)
+ 			list (APPEND THIRD_PARTY_DLLS "${BROTLI_DLL_DIR}/${_dll}")
+ 		endforeach(_dll)
+ 	endif(BROTLI_FOUND)
+-	if (SPEEXDSP_FOUND)
+-		list (APPEND THIRD_PARTY_DLLS "${SPEEXDSP_DLL_DIR}/${SPEEXDSP_DLL}")
+-	endif()
+ 	if (ZSTD_FOUND)
+ 		list (APPEND THIRD_PARTY_DLLS "${ZSTD_DLL_DIR}/${ZSTD_DLL}")
+ 	endif()
+@@ -2731,7 +2718,6 @@ if(BUILD_wireshark AND QT_FOUND)
+ 		${WIN_VERSION_LIBRARY}
+ 		${WINSPARKLE_LIBRARIES}
+ 		$<$<BOOL:${WIN32}>:uxtheme.lib>
+-		${SPEEXDSP_LIBRARIES}
+ 		${ZLIB_LIBRARIES}
+ 		${MINIZIP_LIBRARIES}
+ 	)
+@@ -2844,7 +2830,6 @@ if(BUILD_logray AND QT_FOUND)
+ 		${WIN_VERSION_LIBRARY}
+ 		${WINSPARKLE_LIBRARIES}
+ 		$<$<BOOL:${WIN32}>:uxtheme.lib>
+-		${SPEEXDSP_LIBRARIES}
+ 		${ZLIB_LIBRARIES}
+ 		${MINIZIP_LIBRARIES}
+ 	)
+@@ -3068,7 +3053,6 @@ if(BUILD_sharkd)
+ 		${APPLE_CORE_FOUNDATION_LIBRARY}
+ 		${APPLE_SYSTEM_CONFIGURATION_LIBRARY}
+ 		${WIN_WS2_32_LIBRARY}
+-		${SPEEXDSP_LIBRARIES}
+ 		${M_LIBRARIES}
+ 		${GCRYPT_LIBRARIES}
+ 	)
+@@ -3088,7 +3072,6 @@ if(BUILD_sharkd)
+ 	add_executable(sharkd ${sharkd_FILES})
+ 	set_extra_executable_properties(sharkd "Executables")
+ 	target_link_libraries(sharkd ${sharkd_LIBS})
+-	target_include_directories(sharkd SYSTEM PUBLIC ${SPEEXDSP_INCLUDE_DIRS})
+ 
+ 	install(TARGETS sharkd RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+ endif()
+diff --git a/sharkd_session.c b/sharkd_session.c
+index 3bc2f82..9d4e665 100644
+--- a/sharkd_session.c
++++ b/sharkd_session.c
+@@ -67,7 +67,10 @@
+ #include <epan/dissectors/packet-rtp.h>
+ #include <ui/rtp_media.h>
+ #include <ui/mcast_stream.h>
++
++#ifdef HAVE_SPEEXDSP
+ #include <speex/speex_resampler.h>
++#endif
+ 
+ #include <epan/maxmind_db.h>
+ 
+@@ -5490,11 +5493,15 @@ sharkd_rtp_download_decode(struct sharkd_download_rtp *req)
+ 
+     guint32 audio_out_rate_ = 0;
+     struct _GHashTable *decoders_hash_ = rtp_decoder_hash_table_new();
++#ifdef HAVE_SPEEXDSP
+     struct SpeexResamplerState_ *audio_resampler_ = NULL;
++#endif
+ 
+     gsize resample_buff_len = 0x1000;
+     SAMPLE *resample_buff = (SAMPLE *) g_malloc(resample_buff_len);
++#ifdef HAVE_SPEEXDSP
+     spx_uint32_t cur_in_rate = 0;
++#endif
+     char *write_buff = NULL;
+     size_t write_bytes = 0;
+     unsigned channels = 0;
+@@ -5563,6 +5570,7 @@ sharkd_rtp_download_decode(struct sharkd_download_rtp *req)
+         write_buff = (char *) decode_buff;
+         write_bytes = decoded_bytes;
+ 
++#ifdef HAVE_SPEEXDSP
+         if (audio_out_rate_ != sample_rate)
+         {
+             spx_uint32_t in_len, out_len;
+@@ -5598,6 +5606,7 @@ sharkd_rtp_download_decode(struct sharkd_download_rtp *req)
+             write_buff = (char *) resample_buff;
+             write_bytes = out_len * sample_bytes_;
+         }
++#endif
+ 
+         /* Write the decoded, possibly-resampled audio */
+         json_dumper_write_base64(&dumper, write_buff, write_bytes);
+-- 
+2.34.1
+
