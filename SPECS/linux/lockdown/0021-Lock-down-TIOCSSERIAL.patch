@@ -1,3 +1,4 @@
+From 0821dbff291ec7803163851d0d7701469eb4f3bf Mon Sep 17 00:00:00 2001
 From: David Howells <dhowells@redhat.com>
 Date: Wed, 8 Nov 2017 15:11:35 +0000
 Subject: [21/29] Lock down TIOCSSERIAL
@@ -16,19 +17,22 @@ cc: Jiri Slaby <jslaby@suse.com>
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 3a14cccbd7ff..41f0922ad842 100644
+index 148ae2882a63..c7ed39088af0 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -842,6 +842,12 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+@@ -857,6 +857,12 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
  	new_flags = (__force upf_t)new_info->flags;
  	old_custom_divisor = uport->custom_divisor;
- 
+
 +	if ((change_port || change_irq) &&
 +	    kernel_is_locked_down("Using TIOCSSERIAL to change device addresses, irqs and dma channels")) {
 +		retval = -EPERM;
 +		goto exit;
 +	}
 +
- 	if (!capable(CAP_SYS_ADMIN)) {
- 		retval = -EPERM;
- 		if (change_irq || change_port ||
+ 	if (!(uport->flags & UPF_FIXED_PORT)) {
+ 		unsigned int uartclk = new_info->baud_base * 16;
+ 		/* check needs to be done here before other settings made */
+--
+2.39.4
+
