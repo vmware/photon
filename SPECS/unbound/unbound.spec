@@ -1,7 +1,7 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.16.3
-Release:        3%{?dist}
+Version:        1.21.0
+Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
@@ -9,13 +9,9 @@ Distribution:   Photon
 URL:            http://www.unbound.net
 
 Source0: https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ef5cda926dd1082a750615d8687bccd756869c66e9f24f984fda4c6613f94f3e4884db328b8d7b490777a75d3e616dcb61c5258e7777923c0590e6fabacd207c
+%define sha512 %{name}=481534271f443d72635025c79b83bb71bb77b96ae81ec74c7f82f1e958160f5d75489931bdbdf460a72c871268d33628be990d6acf3c5303f04f7ff347ad83c1
 
 Source1: %{name}.service
-
-Patch0: CVE-2023-50387-CVE-2023-50868.patch
-Patch1: CVE-2024-43167.patch
-Patch2: CVE-2024-43168.patch
 
 Requires:       systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
@@ -93,6 +89,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Mon Aug 26 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.21.0-1
+- Upgrade to v1.12.0, fixes CVE-2024-33655
 * Tue Aug 20 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.16.3-3
 - Fix CVE-2024-43167 and CVE-2024-43168
 * Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 1.16.3-2
