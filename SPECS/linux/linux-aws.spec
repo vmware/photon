@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.223
-Release:        2%{?dist}
+Version:        5.10.224
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:    http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=e764f12d1736261cff4c5a73264527d9341dce6268a0be236cb3fb5cf0521487844c341b0c34d6aeb05b4556726f53074cb1d2e2e34ed1df85b51831ebe7e96b
+%define sha512 linux=43c038046601a32100056d67300ce32700d04c081935964b15732e749fce5bd70c54a3a2419f85a60ccad229726698d3e163e3b9959156fd6e0cb653dad27541
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -178,10 +178,6 @@ Patch154: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 
 # Fix CVE-2024-26904
 Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
-
-#Fix CVE-2024-27397
-Patch156: 0001-netfilter-nftables_add_nft_pernet_helper_function.patch
-Patch157: 0002-netfilter-nf_tables-use_timestamp_to_check_for_set_element_timeout.patch
 
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
@@ -348,7 +344,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M157
+%autopatch -p1 -m100 -M155
 
 #Amazon AWS
 %autopatch -p1 -m301 -M340
@@ -529,6 +525,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-1
+- Update to version 5.10.224
 * Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.223-2
 - Binary patch aesni_cpu_id value in canister
 * Sun Aug 18 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.223-1

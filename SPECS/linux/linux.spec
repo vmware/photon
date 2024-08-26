@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.223
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.224
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=e764f12d1736261cff4c5a73264527d9341dce6268a0be236cb3fb5cf0521487844c341b0c34d6aeb05b4556726f53074cb1d2e2e34ed1df85b51831ebe7e96b
+%define sha512 linux=43c038046601a32100056d67300ce32700d04c081935964b15732e749fce5bd70c54a3a2419f85a60ccad229726698d3e163e3b9959156fd6e0cb653dad27541
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -223,10 +223,6 @@ Patch148: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 
 # Fix CVE-2024-26589
 Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
-
-# Fix CVE-2024-27397
-patch150: 0001-netfilter-nftables_add_nft_pernet_helper_function.patch
-Patch151: 0002-netfilter-nf_tables-use_timestamp_to_check_for_set_element_timeout.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -490,7 +486,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M151
+%autopatch -p1 -m100 -M149
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -898,6 +894,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-1
+- Update to version 5.10.224
 * Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.223-2
 - Binary patch aesni_cpu_id value in canister
 * Sun Aug 18 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.223-1

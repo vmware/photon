@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.223
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.224
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=e764f12d1736261cff4c5a73264527d9341dce6268a0be236cb3fb5cf0521487844c341b0c34d6aeb05b4556726f53074cb1d2e2e34ed1df85b51831ebe7e96b
+%define sha512 linux=43c038046601a32100056d67300ce32700d04c081935964b15732e749fce5bd70c54a3a2419f85a60ccad229726698d3e163e3b9959156fd6e0cb653dad27541
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -191,10 +191,6 @@ Patch154: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
 # Fix CVE-2024-26904
 Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
 
-# Fix CVE-2024-27397
-Patch156: 0001-netfilter-nftables_add_nft_pernet_helper_function.patch
-Patch157: 0002-netfilter-nf_tables-use_timestamp_to_check_for_set_element_timeout.patch
-
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -326,7 +322,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M157
+%autopatch -p1 -m100 -M155
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -472,6 +468,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-1
+- Update to version 5.10.224
 * Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.223-2
 - Binary patch aesni_cpu_id value in canister
 * Sun Aug 18 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.223-1
