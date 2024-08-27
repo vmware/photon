@@ -1,12 +1,23 @@
 Summary:    Default file system
 Name:       filesystem
 Version:    1.1
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv3
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 URL:        http://www.linuxfromscratch.org
 Distribution:   Photon
+
+Source0: clock
+Source1: console
+Source2: hosts
+Source3: inputrc
+Source4: profile
+Source5: proxy
+Source6: proxy.sh
+Source7: usb.conf
+Source8: group
+Source9: passwd
 
 %description
 The filesystem package is one of the basic packages that is installed
@@ -15,7 +26,6 @@ layout for a Linux operating system, including the correct permissions
 for the directories. This version is for a system configured with systemd.
 
 %prep
-
 %build
 
 %install
@@ -58,341 +68,44 @@ install -vdm 755 %{buildroot}/mnt/hgfs
 
 #   6.6. Creating Essential Files and Symlinks
 ln -svfn /proc/self/mounts %{buildroot}%{_sysconfdir}/mtab
-#touch -f %{buildroot}%{_sysconfdir}/mtab
 
-touch %{buildroot}%{_var}/log/{btmp,lastlog,wtmp}
+touch %{buildroot}%{_var}/log/{btmp,wtmp}
 
 # Configuration files
-cat > %{buildroot}%{_sysconfdir}/passwd <<- "EOF"
-root:x:0:0:root:/root:/bin/bash
-bin:x:1:1:bin:/dev/null:/bin/false
-daemon:x:6:6:Daemon User:/dev/null:/bin/false
-messagebus:x:18:18:D-Bus Message Daemon User:%{_var}/run/dbus:/bin/false
-systemd-bus-proxy:x:72:72:systemd Bus Proxy:/:/bin/false
-systemd-journal-gateway:x:73:73:systemd Journal Gateway:/:/bin/false
-systemd-journal-remote:x:74:74:systemd Journal Remote:/:/bin/false
-systemd-journal-upload:x:75:75:systemd Journal Upload:/:/bin/false
-systemd-network:x:76:76:systemd Network Management:/:/bin/false
-systemd-resolve:x:77:77:systemd Resolver:/:/bin/false
-systemd-timesync:x:78:78:systemd Time Synchronization:/:/bin/false
-nobody:x:65534:65533:Unprivileged User:/dev/null:/bin/false
-EOF
+install -m 644 %{SOURCE8} %{buildroot}%{_sysconfdir}/group
+install -m 644 %{SOURCE9} %{buildroot}%{_sysconfdir}/passwd
 
-cat > %{buildroot}%{_sysconfdir}/group <<- "EOF"
-root:x:0:
-bin:x:1:daemon
-sys:x:2:
-kmem:x:3:
-tape:x:4:
-tty:x:5:
-daemon:x:6:
-floppy:x:7:
-disk:x:8:
-lp:x:9:
-dialout:x:10:
-audio:x:11:
-video:x:12:
-utmp:x:13:
-usb:x:14:
-cdrom:x:15:
-adm:x:16:
-messagebus:x:18:
-systemd-journal:x:23:
-input:x:24:
-mail:x:34:
-lock:x:54:
-dip:x:30:
-systemd-bus-proxy:x:72:
-systemd-journal-gateway:x:73:
-systemd-journal-remote:x:74:
-systemd-journal-upload:x:75:
-systemd-network:x:76:
-systemd-resolve:x:77:
-systemd-timesync:x:78:
-nogroup:x:65533:
-users:x:100:
-sudo:x:27:
-wheel:x:28:
-EOF
+# Creating Proxy Configuration
+install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/sysconfig/proxy
 
-# Creating Proxy Configuration"
-cat > %{buildroot}%{_sysconfdir}/sysconfig/proxy <<- "EOF"
-# Enable a generation of the proxy settings to the profile.
-# This setting allows to turn the proxy on and off while
-# preserving the particular proxy setup.
-#
-PROXY_ENABLED="no"
-
-# Some programs (e.g. wget) support proxies, if set in
-# the environment.
-# Example: HTTP_PROXY="http://proxy.provider.de:3128/"
-HTTP_PROXY=""
-
-# Example: HTTPS_PROXY="https://proxy.provider.de:3128/"
-HTTPS_PROXY=""
-
-# Example: FTP_PROXY="http://proxy.provider.de:3128/"
-FTP_PROXY=""
-
-# Example: GOPHER_PROXY="http://proxy.provider.de:3128/"
-GOPHER_PROXY=""
-
-# Example: SOCKS_PROXY="socks://proxy.example.com:8080"
-SOCKS_PROXY=""
-
-# Example: SOCKS5_SERVER="office-proxy.example.com:8881"
-SOCKS5_SERVER=""
-
-# Example: NO_PROXY="www.me.de, do.main, localhost"
-NO_PROXY="localhost, 127.0.0.1"
-EOF
-
-#   7.3. Customizing the /etc/hosts File"
-cat > %{buildroot}%{_sysconfdir}/hosts <<- "EOF"
-# Begin /etc/hosts (network card version)
-
-::1         ipv6-localhost ipv6-loopback
-127.0.0.1   localhost.localdomain
-127.0.0.1   localhost
-
-# End /etc/hosts (network card version)
-EOF
+#   7.3. Customizing the /etc/hosts File
+install -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/hosts
 
 #   7.9. Configuring the setclock Script"
-cat > %{buildroot}%{_sysconfdir}/sysconfig/clock <<- "EOF"
-# Begin /etc/sysconfig/clock
-
-UTC=1
-
-# Set this to any options you might need to give to hwclock,
-# such as machine hardware clock type for Alphas.
-CLOCKPARAMS=
-
-# End /etc/sysconfig/clock
-EOF
+install -m 644 %{SOURCE0} %{buildroot}%{_sysconfdir}/sysconfig/clock
 
 #   7.10. Configuring the Linux Console"
-cat > %{buildroot}%{_sysconfdir}/sysconfig/console <<- "EOF"
-# Begin /etc/sysconfig/console
-#       Begin /etc/sysconfig/console
-#       KEYMAP="us"
-#       FONT="lat1-16 -m utf8"
-#       FONT="lat1-16 -m 8859-1"
-#       KEYMAP_CORRECTIONS="euro2"
-#       UNICODE="1"
-#       LEGACY_CHARSET="iso-8859-1"
-# End /etc/sysconfig/console
-EOF
+install -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/sysconfig/console
 
 #   7.13. The Bash Shell Startup Files
-cat > %{buildroot}%{_sysconfdir}/profile <<- "EOF"
-# Begin /etc/profile
-# Written for Beyond Linux From Scratch
-# by James Robertson <jameswrobertson@earthlink.net>
-# modifications by Dagmar d'Surreal <rivyqntzne@pbzpnfg.arg>
-
-# System wide environment variables and startup programs.
-
-# System wide aliases and functions should go in /etc/bashrc.  Personal
-# environment variables and startup programs should go into
-# ~/.bash_profile.  Personal aliases and functions should go into
-# ~/.bashrc.
-
-# Functions to help us manage paths.  Second argument is the name of the
-# path variable to be modified (default: PATH)
-pathremove () {
-  local IFS=':'
-  local NEWPATH
-  local DIR
-  local PATHVARIABLE=${2:-PATH}
-  for DIR in ${!PATHVARIABLE}; do
-    if [ "$DIR" != "$1" ]; then
-      NEWPATH=${NEWPATH:+$NEWPATH:}$DIR
-    fi
-  done
-  export $PATHVARIABLE="$NEWPATH"
-}
-
-pathprepend () {
-  pathremove $1 $2
-  local PATHVARIABLE=${2:-PATH}
-  export $PATHVARIABLE="$1${!PATHVARIABLE:+:${!PATHVARIABLE}}"
-}
-
-pathappend () {
-  pathremove $1 $2
-  local PATHVARIABLE=${2:-PATH}
-  export $PATHVARIABLE="${!PATHVARIABLE:+${!PATHVARIABLE}:}$1"
-}
-
-export -f pathremove pathprepend pathappend
-
-# Set the initial path
-# Block unnessary as this is set elsewhere.
-# export PATH=$PATH:/bin:/usr/bin
-
-# if [ $EUID -eq 0 ]; then
-#   pathappend /sbin:/usr/sbin
-#   unset HISTFILE
-# fi
-
-# Setup some environment variables.
-export HISTSIZE=1000
-export HISTIGNORE="&:[bf]g:exit"
-
-# Set some defaults for graphical systems
-export XDG_DATA_DIRS=%{_datadir}/
-export XDG_CONFIG_DIRS=%{_sysconfdir}/xdg/
-
-# Setup a red prompt for root and a green one for users.
-NORMAL="\[\e[0m\]"
-RED="\[\e[1;31m\]"
-GREEN="\[\e[1;32m\]"
-if [[ $EUID == 0 ]] ; then
-  PS1="$RED\u@\h [ $NORMAL\w$RED ]# $NORMAL"
-else
-  PS1="$GREEN\u@\h [ $NORMAL\w$GREEN ]\$ $NORMAL"
-fi
-
-for script in %{_sysconfdir}/profile.d/*.sh; do
-  if [ -r $script ] ; then
-    . $script
-  fi
-done
-
-unset script RED GREEN NORMAL
-umask 027
-# End /etc/profile
-EOF
+install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/profile
 
 #   The Proxy Bash Shell Startup File
-cat > %{buildroot}%{_sysconfdir}/profile.d/proxy.sh <<- "EOF"
-#
-# proxy.sh:              Set proxy environment
-#
-
-sys=%{_sysconfdir}/sysconfig/proxy
-test -s $sys || exit 0
-while read line ; do
-    case "$line" in
-    \#*|"") continue ;;
-    esac
-    eval val=${line#*=}
-    case "$line" in
-    PROXY_ENABLED=*)
-        PROXY_ENABLED="${val}"
-        ;;
-    HTTP_PROXY=*)
-        test "$PROXY_ENABLED" = "yes" || continue
-        http_proxy="${val}"
-        export http_proxy
-        ;;
-    HTTPS_PROXY=*)
-        test "$PROXY_ENABLED" = "yes" || continue
-        https_proxy="${val}"
-        export https_proxy
-        ;;
-    FTP_PROXY=*)
-        test "$PROXY_ENABLED" = "yes" || continue
-        ftp_proxy="${val}"
-        export ftp_proxy
-        ;;
-    GOPHER_PROXY=*)
-        test "$PROXY_ENABLED" = "yes" || continue
-        gopher_proxy="${val}"
-        export gopher_proxy
-        ;;
-    SOCKS_PROXY=*)
-        test "$PROXY_ENABLED" = "yes" || continue
-        socks_proxy="${val}"
-        export socks_proxy
-        SOCKS_PROXY="${val}"
-        export SOCKS_PROXY
-        ;;
-    SOCKS5_SERVER=*)
-        test "$PROXY_ENABLED" = "yes" || continue
-        SOCKS5_SERVER="${val}"
-        export SOCKS5_SERVER
-        ;;
-    NO_PROXY=*)
-        test "$PROXY_ENABLED" = "yes" || continue
-        no_proxy="${val}"
-        export no_proxy
-        NO_PROXY="${val}"
-        export NO_PROXY
-    esac
-done < $sys
-unset sys line val
-
-if test "$PROXY_ENABLED" != "yes" ; then
-    unset http_proxy https_proxy ftp_proxy gopher_proxy no_proxy NO_PROXY socks_proxy SOCKS_PROXY SOCKS5_SERVER
-fi
-unset PROXY_ENABLED
-#
-# end of proxy.sh
-EOF
+install -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/profile.d/proxy.sh
 
 #   7.14. Creating the /etc/inputrc File
-cat > %{buildroot}%{_sysconfdir}/inputrc <<- "EOF"
-# Begin /etc/inputrc
-# Modified by Chris Lynn <roryo@roryo.dynup.net>
-
-# Allow the command prompt to wrap to the next line
-set horizontal-scroll-mode Off
-
-# Enable 8bit input
-set meta-flag On
-set input-meta On
-
-# Turns off 8th bit stripping
-set convert-meta Off
-
-# Keep the 8th bit for display
-set output-meta On
-
-# none, visible or audible
-set bell-style none
-
-# All of the following map the escape sequence of the value
-# contained in the 1st argument to the readline specific functions
-"\eOd": backward-word
-"\eOc": forward-word
-
-# for linux console
-"\e[1~": beginning-of-line
-"\e[4~": end-of-line
-# page up - history search backward
-"\e[5~": history-search-backward
-# page down - history search forward
-"\e[6~": history-search-forward
-"\e[3~": delete-char
-"\e[2~": quoted-insert
-
-# for xterm
-"\eOH": beginning-of-line
-"\eOF": end-of-line
-
-# for Konsole
-"\e[H": beginning-of-line
-"\e[F": end-of-line
-
-# End /etc/inputrc
-EOF
+install -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/inputrc
 
 #   8.2. Creating the /etc/fstab File
 touch %{buildroot}%{_sysconfdir}/fstab
 
 #   8.3.2. Configuring Linux Module Load Order
 install -vdm 755 %{buildroot}%{_sysconfdir}/modprobe.d
-cat > %{buildroot}%{_sysconfdir}/modprobe.d/usb.conf <<- "EOF"
-# Begin /etc/modprobe.d/usb.conf
-
-install ohci_hcd /sbin/modprobe ehci_hcd ; /sbin/modprobe -i ohci_hcd ; true
-install uhci_hcd /sbin/modprobe ehci_hcd ; /sbin/modprobe -i uhci_hcd ; true
-
-# End /etc/modprobe.d/usb.conf
-EOF
+install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/modprobe.d/usb.conf
 #       chapter 9.1. The End
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -509,7 +222,6 @@ EOF
 %dir %{_var}/spool
 %dir %{_var}/tmp
 %attr(-,root,root)  %{_var}/log/wtmp
-%attr(664,root,utmp) %{_var}/log/lastlog
 %attr(600,root,root) %{_var}/log/btmp
 %{_var}/lock
 %{_var}/run
@@ -521,6 +233,9 @@ EOF
 %{_libdir}/debug%{_lib64dir}
 
 %changelog
+* Tue Aug 27 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-5
+- Keep static data in files
+- Remove lastlog file and utmp group
 * Wed Sep 23 2020 Michelle Wang <michellew@vmware.com> 1.1-4
 - Add sources0 for OSSTP tickets
 * Wed May 8 2019 Alexey Makhalov <amakhalov@vmware.com> 1.1-3
