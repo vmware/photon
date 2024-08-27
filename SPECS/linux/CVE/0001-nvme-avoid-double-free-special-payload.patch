@@ -1,0 +1,36 @@
+From 08461bd4c08e030a0918ca09b75ae1cb04a6187f Mon Sep 17 00:00:00 2001
+From: Chunguang Xu <chunguang.xu@shopee.com>
+Date: Tue, 11 Jun 2024 18:02:08 +0800
+Subject: [PATCH] nvme: avoid double free special payload
+
+[ Upstream commit e5d574ab37f5f2e7937405613d9b1a724811e5ad ]
+
+If a discard request needs to be retried, and that retry may fail before
+a new special payload is added, a double free will result. Clear the
+RQF_SPECIAL_LOAD when the request is cleaned.
+
+Signed-off-by: Chunguang Xu <chunguang.xu@shopee.com>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+[ Brennan : Applied to 5.10 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/nvme/host/core.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 30a642c8f537..86ec52a50bc1 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -852,6 +852,7 @@ void nvme_cleanup_cmd(struct request *req)
+ 			clear_bit_unlock(0, &ns->ctrl->discard_page_busy);
+ 		else
+ 			kfree(page_address(page) + req->special_vec.bv_offset);
++		req->rq_flags &= ~RQF_SPECIAL_PAYLOAD;
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(nvme_cleanup_cmd);
+-- 
+2.39.4
+

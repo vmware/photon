@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.224
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -191,6 +191,9 @@ Patch154: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
 # Fix CVE-2024-26904
 Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
 
+# Fix CVE-2024-41073
+Patch156: 0001-nvme-avoid-double-free-special-payload.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -322,7 +325,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M155
+%autopatch -p1 -m100 -M156
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -468,6 +471,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Aug 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-2
+- Fix CVE-2024-41073
 * Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-1
 - Update to version 5.10.224
 * Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.223-2

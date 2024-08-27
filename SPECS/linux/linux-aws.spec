@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.224
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -178,6 +178,9 @@ Patch154: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 
 # Fix CVE-2024-26904
 Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
+
+# Fix CVE-2024-41073
+Patch156: 0001-nvme-avoid-double-free-special-payload.patch
 
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
@@ -344,7 +347,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M155
+%autopatch -p1 -m100 -M156
 
 #Amazon AWS
 %autopatch -p1 -m301 -M340
@@ -525,6 +528,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-2
+- Fix CVE-2024-41073
 * Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-1
 - Update to version 5.10.224
 * Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.223-2

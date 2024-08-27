@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.224
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -223,6 +223,9 @@ Patch148: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 
 # Fix CVE-2024-26589
 Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
+
+# Fix CVE-2024-41073
+Patch150: 0001-nvme-avoid-double-free-special-payload.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -486,7 +489,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M149
+%autopatch -p1 -m100 -M150
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -894,6 +897,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Aug 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-2
+- Fix CVE-2024-41073
 * Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-1
 - Update to version 5.10.224
 * Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.223-2
