@@ -1,0 +1,59 @@
+From 96521d045a3040e90ba4fa27773c5e4b70484dc1 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Date: Tue, 27 Aug 2024 13:33:58 +0000
+Subject: [PATCH] installer.py: fix df command parsing
+
+On some system, df command gives multi-line
+output such as:
+Filesystem           1K-blocks      Used Available Use% Mounted on
+/dev/mapper/sys_vg-root
+                      31441920   5288220  26153700  17% /
+/dev/mapper/build_vg-build_lv
+                     209608708  45546844 164061864  22% /build
+
+jc.parse("df") or `df | jc --df -p -dd` will result in following error:
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/site-packages/photon_installer/installer.py", line 680, in _install
+    self._unsafe_install()
+  File "/usr/lib/python3.10/site-packages/photon_installer/installer.py", line 728, in _unsafe_install
+    self._write_manifest()
+  File "/usr/lib/python3.10/site-packages/photon_installer/installer.py", line 883, in _write_manifest
+    df = jc.parse("df", subprocess.check_output(["df"], text=True))
+  File "/usr/lib/python3.10/site-packages/jc/lib.py", line 408, in parse
+    return jc_parser.parse(data, quiet=quiet, raw=raw, **kwargs)
+  File "/usr/lib/python3.10/site-packages/jc/parsers/df.py", line 251, in parse
+    return _process(raw_output)
+  File "/usr/lib/python3.10/site-packages/jc/parsers/df.py", line 153, in _process
+    entry['use_percent'] = entry['use_percent'].rstrip('%')
+AttributeError: 'NoneType' object has no attribute 'rstrip'
+
+This happens because jc consider each line of df output as one entry
+and since 'use%' has no value so it consider it as None value thus
+while doing rstrip on this None value above error occurs.
+
+Fix:
+Adding '-P' option to 'df' ensure single-line output
+also, -P uses POSIX output format so it is compatible across
+different systems.
+
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ photon_installer/installer.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index 0efa3bc..b48d114 100644
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -920,7 +920,7 @@ class Installer(object):
+         with open(os.path.join(self.photon_root, "etc/fstab"), "rt") as f:
+             manifest['fstab'] = jc.parse("fstab", f.read())
+ 
+-        df = jc.parse("df", subprocess.check_output(["df"], text=True))
++        df = jc.parse("df", subprocess.check_output(["df", "-P"], text=True))
+         df = [d for d in df if d['mounted_on'].startswith(self.photon_root)]
+         for d in df:
+             d['mounted_on'] = d['mounted_on'][len(self.photon_root):]
+-- 
+2.39.4
+
