@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.106
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -179,6 +179,9 @@ Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 # Fix CVE-2023-52452
 Patch133: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
+
+# Fix CVE-2024-42314
+Patch134: 0001-btrfs-fix-extent-map-use-after-free-when-adding-page.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -467,6 +470,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Aug 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.106-2
+- Fix CVE-2024-42314
 * Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.106-1
 - Update to version 6.1.106
 * Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.102-2

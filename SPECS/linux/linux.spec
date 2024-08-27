@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.106
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -188,6 +188,9 @@ Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 # Fix CVE-2023-52452
 Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
+
+# Fix CVE-2024-42314
+Patch133: 0001-btrfs-fix-extent-map-use-after-free-when-adding-page.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -875,6 +878,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.106-2
+- Fix CVE-2024-42314
 * Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.106-1
 - Update to version 6.1.106
 * Tue Aug 20 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.102-3
