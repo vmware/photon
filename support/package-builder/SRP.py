@@ -42,7 +42,7 @@ class SRP(object):
                     "path": f"{constants.gitSourcePath}",
                 }
             },
-            "input_templates": {"rpm-comps": {}},
+            "input_templates": {"rpm-comps": {}, "source-comps": {}},
             "outputs": {},
         }
         # SPDX template for output RPMs.
@@ -54,6 +54,9 @@ class SRP(object):
                 "supplier": "Organization: Broadcom, Inc.",
             }
         }
+
+    def isEnabled(self):
+        return self.srpcli is not None
 
     def getOSRelease(self):
         path = "/etc/os-release"
@@ -128,8 +131,17 @@ class SRP(object):
             raise Exception(
                 f"Can not parse dist tag: <{n}>-<{v}>-<{r}>-<{t}>-<{a}>, filename={filename}"
             )
-        repo = f"https://packages.vmware.com/photon/{branch}/photon_{branch}_{constants.targetArch}"
+        repo = f"https://packages-prod.broadcom.com/photon/{branch}/photon_{branch}_{constants.targetArch}"
         return f"uid.obj.comp.package.rpm(name='{n}',version='{v}',release='{r}.{t}',arch='{a}',original_repository='{repo}')"
+
+    def addInputSource(self, file, checksum):
+        if not self.srpcli:
+            return
+
+        filename = os.path.basename(file)
+        self.schematic["input_templates"]["source-comps"][
+            f"uid.obj.comp.fileset(org='photon.source',name='{filename}',build_id='{checksum}')"
+        ] = {"incorporated": True, "is_components_source": True, "usages": ["functionality", "building", "testing"]}
 
     def addInputRPMS(self, files):
         if not self.srpcli:
@@ -169,7 +181,7 @@ class SRP(object):
             spdx_info["package"]["detailed_description"] = description
 
             self.schematic["outputs"][self.rpmFileNameToUid(filename)] = {
-                "merge_input_templates": ["rpm-comps"],
+                "merge_input_templates": ["rpm-comps", "source-comps"],
                 "spdx_info": spdx_info,
                 "inputs": {
                     "$(sources:source_uid)": {

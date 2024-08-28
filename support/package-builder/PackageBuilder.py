@@ -2,6 +2,7 @@
 
 import os
 import sys
+import hashlib
 
 from PackageUtils import PackageUtils
 from Logger import Logger
@@ -71,6 +72,9 @@ class PackageBuilder(object):
 
     def _buildPackage(self, doneList):
         try:
+            listRPMFiles = []
+            listSRPMFiles = []
+
             self.srp.initialize()
             self.sandbox.create()
 
@@ -99,8 +103,29 @@ class PackageBuilder(object):
             listRPMFiles, listSRPMFiles = pkgUtils.buildRPMSForGivenPackage(
                 self.sandbox, self.package, self.version, self.logPath
             )
+            # SRP: Add input sources only after pkgUtils.buildRPMSForGivenPackage() as it
+            # also fetches any missing ones.
+            if self.srp.isEnabled():
+                for source in SPECS.getData().getSources(self.package, self.version):
+                    checksum = SPECS.getData().getChecksum(self.package, self.version, source)
+                    # If checksum present - report this source tarball.
+                    if checksum:
+                        # Use sha512 as a unique identifier.
+                        sha512 = checksum.get("sha512", None)
+                        # if specfile does not have sha512, calculate it.
+                        if not sha512:
+                            csum = hashlib.sha512()
+                            sourcePath = os.path.join(constants.sourcePath, source)
+                            with open(sourcePath, "rb") as f:
+                                csum.update(f.read())
+                            sha512 = csum.hexdigest()
+                        self.srp.addInputSource(source, sha512)
+
             self.srp.addObservation(self.sandbox.getObservation())
             self.srp.addOutputRPMS(listRPMFiles + listSRPMFiles)
+            if self.sandbox:
+                self.sandbox.destroy()
+            self.srp.finalize()
             self.logger.debug(f"Successfully built the package: {self.package}")
         except Exception as e:
             self.logger.error(f"Failed while building package: {self.package}")
@@ -116,10 +141,12 @@ class PackageBuilder(object):
                 ignore_rc=True,
                 logfn=self.logger.info,
             )
+            # Removing just built RPM files if any
+            for f in listRPMFiles + listSRPMFiles:
+                self.logger.info(f"Removing {f}")
+                self.sandbox.runCmd(["rm", "-f", f], logfn=self.logger.debug)
             self.logger.exception(e)
             raise
-        self.sandbox.destroy()
-        self.srp.finalize()
 
     def _installDependencies(self, arch, deps=[]):
         (
