@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.224
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -240,6 +240,15 @@ Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
 # Fix CVE-2024-41073
 Patch156: 0001-nvme-avoid-double-free-special-payload.patch
 
+# Fix CVE-2024-43853
+Patch157: 0001-cgroup-cpuset-Prevent-UAF-in-proc_cpuset_show.patch
+
+# Fix CVE-2024-43854
+Patch158: 0001-block-initialize-integrity-buffer-to-zero-before-wri.patch
+
+# Fix CVE-2024-43835
+Patch159: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -402,7 +411,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M97
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M156
+%autopatch -p1 -m100 -M159
 
 #Patches for ptp_vmw
 %autopatch -p1 -m301 -M302
@@ -622,6 +631,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Aug 28 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.224-3
+- Fix CVE-2024-43853, CVE-2024-43854
 * Tue Aug 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-2
 - Fix CVE-2024-41073
 * Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-1

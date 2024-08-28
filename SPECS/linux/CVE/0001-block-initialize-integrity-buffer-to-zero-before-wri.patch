@@ -1,0 +1,64 @@
+rom ca83995f9ac2f5d5f53f0f44dece46084ddbc53c Mon Sep 17 00:00:00 2001
+From: Christoph Hellwig <hch@lst.de>
+Date: Thu, 13 Jun 2024 10:48:11 +0200
+Subject: [PATCH] block: initialize integrity buffer to zero before writing it 
+ to media
+
+[ Upstream commit 899ee2c3829c5ac14bfc7d3c4a5846c0b709b78f ]
+
+Metadata added by bio_integrity_prep is using plain kmalloc, which leads
+to random kernel memory being written media.  For PI metadata this is
+limited to the app tag that isn't used by kernel generated metadata,
+but for non-PI metadata the entire buffer leaks kernel memory.
+
+Fix this by adding the __GFP_ZERO flag to allocations for writes.
+
+Fixes: 7ba1ba12eeef ("block: Block layer data integrity support")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reviewed-by: Kanchan Joshi <joshi.k@samsung.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Link: https://lore.kernel.org/r/20240613084839.1044015-2-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ block/bio-integrity.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/block/bio-integrity.c b/block/bio-integrity.c
+index a4cfc9727..499697330 100644
+--- a/block/bio-integrity.c
++++ b/block/bio-integrity.c
+@@ -216,6 +216,7 @@ bool bio_integrity_prep(struct bio *bio)
+ 	unsigned int bytes, offset, i;
+ 	unsigned int intervals;
+ 	blk_status_t status;
++	gfp_t gfp = GFP_NOIO;
+ 
+ 	if (!bi)
+ 		return true;
+@@ -238,12 +239,20 @@ bool bio_integrity_prep(struct bio *bio)
+ 		if (!bi->profile->generate_fn ||
+ 		    !(bi->flags & BLK_INTEGRITY_GENERATE))
+ 			return true;
++
++		/*
++		 * Zero the memory allocated to not leak uninitialized kernel
++		 * memory to disk.  For PI this only affects the app tag, but
++		 * for non-integrity metadata it affects the entire metadata
++		 * buffer.
++		 */
++		gfp |= __GFP_ZERO;
+ 	}
+ 	intervals = bio_integrity_intervals(bi, bio_sectors(bio));
+ 
+ 	/* Allocate kernel buffer for protection data */
+ 	len = intervals * bi->tuple_size;
+-	buf = kmalloc(len, GFP_NOIO | q->bounce_gfp);
++	buf = kmalloc(len, gfp | q->bounce_gfp);
+ 	status = BLK_STS_RESOURCE;
+ 	if (unlikely(buf == NULL)) {
+ 		printk(KERN_ERR "could not allocate integrity buffer\n");
+-- 
+2.39.4

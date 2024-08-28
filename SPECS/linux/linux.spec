@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.224
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -226,6 +226,15 @@ Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 
 # Fix CVE-2024-41073
 Patch150: 0001-nvme-avoid-double-free-special-payload.patch
+
+# Fix CVE-2024-43853
+Patch151: 0001-cgroup-cpuset-Prevent-UAF-in-proc_cpuset_show.patch
+
+# Fix CVE-2024-43854
+Patch152: 0001-block-initialize-integrity-buffer-to-zero-before-wri.patch
+
+# Fix CVE-2024-43835
+Patch153: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -489,7 +498,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M150
+%autopatch -p1 -m100 -M153
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -897,6 +906,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Sep 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.224-4
+- Fix CVE-2024-43853, CVE-2024-43854
 * Tue Sep 03 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-3
 - Enable CONFIG_ARM64_ERRATUM_3194386.
 * Tue Aug 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-2

@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.224
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -181,6 +181,15 @@ Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
 
 # Fix CVE-2024-41073
 Patch156: 0001-nvme-avoid-double-free-special-payload.patch
+
+# Fix CVE-2024-43853
+Patch157: 0001-cgroup-cpuset-Prevent-UAF-in-proc_cpuset_show.patch
+
+# Fix CVE-2024-43854
+Patch158: 0001-block-initialize-integrity-buffer-to-zero-before-wri.patch
+
+# Fix CVE-2024-43835
+Patch159: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
 
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
@@ -347,7 +356,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M156
+%autopatch -p1 -m100 -M159
 
 #Amazon AWS
 %autopatch -p1 -m301 -M340
@@ -528,6 +537,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Aug 28 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.224-3
+- Fix CVE-2024-43853, CVE-2024-43854
 * Tue Aug 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-2
 - Fix CVE-2024-41073
 * Tue Aug 20 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-1
