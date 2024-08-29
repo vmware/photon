@@ -1,0 +1,175 @@
+From d2710dda9ed4958380dbff94ae3ef945d5ab8260 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 26 Sep 2023 13:03:52 +0000
+Subject: [PATCH 147/196] printk: nbcon: Add printer thread wakeups
+
+Add a function to wakeup the printer threads. Use the new function
+when:
+
+  - records are added to the printk ringbuffer
+  - consoles are resumed
+  - triggered via printk_trigger_flush()
+
+The actual waking is performed via irq_work so that the wakeup can
+be triggered from any context.
+
+Co-developed-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Thomas Gleixner (Intel) <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/console.h  |  3 +++
+ kernel/printk/internal.h |  1 +
+ kernel/printk/nbcon.c    | 56 ++++++++++++++++++++++++++++++++++++++++
+ kernel/printk/printk.c   |  7 +++++
+ 4 files changed, 67 insertions(+)
+
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 5b5333faac7a..982c98280ae8 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -16,6 +16,7 @@
+ 
+ #include <linux/atomic.h>
+ #include <linux/bits.h>
++#include <linux/irq_work.h>
+ #include <linux/rculist.h>
+ #include <linux/rcuwait.h>
+ #include <linux/types.h>
+@@ -306,6 +307,7 @@ struct nbcon_write_context {
+  * @locked_port:	True, if the port lock is locked by nbcon
+  * @kthread:		Printer kthread for this console
+  * @rcuwait:		RCU-safe wait object for @kthread waking
++ * @irq_work:		Defer @kthread waking to IRQ work context
+  */
+ struct console {
+ 	char			name[16];
+@@ -339,6 +341,7 @@ struct console {
+ 	bool			locked_port;
+ 	struct task_struct	*kthread;
+ 	struct rcuwait		rcuwait;
++	struct irq_work		irq_work;
+ };
+ 
+ #ifdef CONFIG_LOCKDEP
+diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
+index e5eb7dc25e0a..578623e7f0fc 100644
+--- a/kernel/printk/internal.h
++++ b/kernel/printk/internal.h
+@@ -93,6 +93,7 @@ enum nbcon_prio nbcon_get_default_prio(void);
+ void nbcon_atomic_flush_all(void);
+ bool nbcon_atomic_emit_next_record(struct console *con, bool *handover, int cookie);
+ void nbcon_kthread_create(struct console *con);
++void nbcon_wake_threads(void);
+ 
+ /*
+  * Check if the given console is currently capable and allowed to print
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index bb071193ab6e..337ec7a10095 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -1052,6 +1052,61 @@ static int nbcon_kthread_func(void *__console)
+ 	goto wait_for_event;
+ }
+ 
++/**
++ * nbcon_irq_work - irq work to wake printk thread
++ * @irq_work:	The irq work to operate on
++ */
++static void nbcon_irq_work(struct irq_work *irq_work)
++{
++	struct console *con = container_of(irq_work, struct console, irq_work);
++
++	nbcon_kthread_wake(con);
++}
++
++static inline bool rcuwait_has_sleeper(struct rcuwait *w)
++{
++	bool has_sleeper;
++
++	rcu_read_lock();
++	/*
++	 * Guarantee any new records can be seen by tasks preparing to wait
++	 * before this context checks if the rcuwait is empty.
++	 *
++	 * This full memory barrier pairs with the full memory barrier within
++	 * set_current_state() of ___rcuwait_wait_event(), which is called
++	 * after prepare_to_rcuwait() adds the waiter but before it has
++	 * checked the wait condition.
++	 *
++	 * This pairs with nbcon_kthread_func:A.
++	 */
++	smp_mb(); /* LMM(rcuwait_has_sleeper:A) */
++	has_sleeper = !!rcu_dereference(w->task);
++	rcu_read_unlock();
++
++	return has_sleeper;
++}
++
++/**
++ * nbcon_wake_threads - Wake up printing threads using irq_work
++ */
++void nbcon_wake_threads(void)
++{
++	struct console *con;
++	int cookie;
++
++	cookie = console_srcu_read_lock();
++	for_each_console_srcu(con) {
++		/*
++		 * Only schedule irq_work if the printing thread is
++		 * actively waiting. If not waiting, the thread will
++		 * notice by itself that it has work to do.
++		 */
++		if (con->kthread && rcuwait_has_sleeper(&con->rcuwait))
++			irq_work_queue(&con->irq_work);
++	}
++	console_srcu_read_unlock(cookie);
++}
++
+ /* Track the nbcon emergency nesting per CPU. */
+ static DEFINE_PER_CPU(unsigned int, nbcon_pcpu_emergency_nesting);
+ static unsigned int early_nbcon_pcpu_emergency_nesting __initdata;
+@@ -1418,6 +1473,7 @@ void nbcon_init(struct console *con)
+ 	BUG_ON(!con->pbufs);
+ 
+ 	rcuwait_init(&con->rcuwait);
++	init_irq_work(&con->irq_work, nbcon_irq_work);
+ 	nbcon_seq_force(con, con->seq);
+ 	nbcon_state_set(con, &state);
+ }
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 3863e3dc3816..3cdda6dd8941 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2409,6 +2409,8 @@ asmlinkage int vprintk_emit(int facility, int level,
+ 		}
+ 	}
+ 
++	nbcon_wake_threads();
++
+ 	if (do_trylock_unlock) {
+ 		/*
+ 		 * The caller may be holding system-critical or
+@@ -2711,6 +2713,10 @@ void resume_console(void)
+ 	 */
+ 	synchronize_srcu(&console_srcu);
+ 
++	/*
++	 * Since this runs in task context, wake the threaded printers
++	 * directly rather than scheduling irq_work to do it.
++	 */
+ 	cookie = console_srcu_read_lock();
+ 	for_each_console_srcu(con) {
+ 		flags = console_srcu_read_flags(con);
+@@ -4118,6 +4124,7 @@ void defer_console_output(void)
+ 
+ void printk_trigger_flush(void)
+ {
++	nbcon_wake_threads();
+ 	defer_console_output();
+ }
+ 
+-- 
+2.44.0
+

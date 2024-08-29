@@ -1,0 +1,344 @@
+From 7774fa341f71568724752459c8a3d832def0a84a Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Wed, 13 Sep 2023 15:30:36 +0000
+Subject: [PATCH 154/196] serial: 8250: Switch to nbcon console
+
+Implement the necessary callbacks to switch the 8250 console driver
+to perform as an nbcon console.
+
+Add implementations for the nbcon consoles (write_atomic, write_thread,
+driver_enter, driver_exit) and add CON_NBCON to the initial flags.
+
+The legacy code is kept in order to easily switch back to legacy mode
+by defining CONFIG_SERIAL_8250_LEGACY_CONSOLE.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/8250/8250_core.c |  42 +++++++-
+ drivers/tty/serial/8250/8250_port.c | 156 +++++++++++++++++++++++++++-
+ include/linux/serial_8250.h         |   6 ++
+ 3 files changed, 201 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 904e319e6b4a..30434718fad8 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -592,6 +592,7 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+ 
+ #ifdef CONFIG_SERIAL_8250_CONSOLE
+ 
++#ifdef CONFIG_SERIAL_8250_LEGACY_CONSOLE
+ static void univ8250_console_write(struct console *co, const char *s,
+ 				   unsigned int count)
+ {
+@@ -599,6 +600,37 @@ static void univ8250_console_write(struct console *co, const char *s,
+ 
+ 	serial8250_console_write(up, s, count);
+ }
++#else
++static bool univ8250_console_write_atomic(struct console *co,
++					  struct nbcon_write_context *wctxt)
++{
++	struct uart_8250_port *up = &serial8250_ports[co->index];
++
++	return serial8250_console_write_atomic(up, wctxt);
++}
++
++static bool univ8250_console_write_thread(struct console *co,
++					  struct nbcon_write_context *wctxt)
++{
++	struct uart_8250_port *up = &serial8250_ports[co->index];
++
++	return serial8250_console_write_thread(up, wctxt);
++}
++
++static void univ8250_console_driver_enter(struct console *con, unsigned long *flags)
++{
++	struct uart_port *up = &serial8250_ports[con->index].port;
++
++	__uart_port_lock_irqsave(up, flags);
++}
++
++static void univ8250_console_driver_exit(struct console *con, unsigned long flags)
++{
++	struct uart_port *up = &serial8250_ports[con->index].port;
++
++	__uart_port_unlock_irqrestore(up, flags);
++}
++#endif /* CONFIG_SERIAL_8250_LEGACY_CONSOLE */
+ 
+ static int univ8250_console_setup(struct console *co, char *options)
+ {
+@@ -698,12 +730,20 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
+ 
+ static struct console univ8250_console = {
+ 	.name		= "ttyS",
++#ifdef CONFIG_SERIAL_8250_LEGACY_CONSOLE
+ 	.write		= univ8250_console_write,
++	.flags		= CON_PRINTBUFFER | CON_ANYTIME,
++#else
++	.write_atomic	= univ8250_console_write_atomic,
++	.write_thread	= univ8250_console_write_thread,
++	.driver_enter	= univ8250_console_driver_enter,
++	.driver_exit	= univ8250_console_driver_exit,
++	.flags		= CON_PRINTBUFFER | CON_ANYTIME | CON_NBCON,
++#endif
+ 	.device		= uart_console_device,
+ 	.setup		= univ8250_console_setup,
+ 	.exit		= univ8250_console_exit,
+ 	.match		= univ8250_console_match,
+-	.flags		= CON_PRINTBUFFER | CON_ANYTIME,
+ 	.index		= -1,
+ 	.data		= &serial8250_reg,
+ };
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index cba5a1b1030f..bc3ab612aec5 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -557,6 +557,11 @@ static int serial8250_em485_init(struct uart_8250_port *p)
+ 	if (!p->em485)
+ 		return -ENOMEM;
+ 
++#ifndef CONFIG_SERIAL_8250_LEGACY_CONSOLE
++	if (uart_console(&p->port))
++		dev_warn(p->port.dev, "no atomic printing for rs485 consoles\n");
++#endif
++
+ 	hrtimer_init(&p->em485->stop_tx_timer, CLOCK_MONOTONIC,
+ 		     HRTIMER_MODE_REL);
+ 	hrtimer_init(&p->em485->start_tx_timer, CLOCK_MONOTONIC,
+@@ -709,7 +714,11 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
+ 	serial8250_rpm_put(p);
+ }
+ 
+-static void serial8250_clear_IER(struct uart_8250_port *up)
++/*
++ * Only to be used by write_atomic() and the legacy write(), which do not
++ * require port lock.
++ */
++static void __serial8250_clear_IER(struct uart_8250_port *up)
+ {
+ 	if (up->capabilities & UART_CAP_UUE)
+ 		serial_out(up, UART_IER, UART_IER_UUE);
+@@ -717,6 +726,11 @@ static void serial8250_clear_IER(struct uart_8250_port *up)
+ 		serial_out(up, UART_IER, 0);
+ }
+ 
++static inline void serial8250_clear_IER(struct uart_8250_port *up)
++{
++	__serial8250_clear_IER(up);
++}
++
+ #ifdef CONFIG_SERIAL_8250_RSA
+ /*
+  * Attempts to turn on the RSA FIFO.  Returns zero on failure.
+@@ -3322,6 +3336,11 @@ static void serial8250_console_putchar(struct uart_port *port, unsigned char ch)
+ 
+ 	wait_for_xmitr(up, UART_LSR_THRE);
+ 	serial_port_out(port, UART_TX, ch);
++
++	if (ch == '\n')
++		up->console_newline_needed = false;
++	else
++		up->console_newline_needed = true;
+ }
+ 
+ /*
+@@ -3350,6 +3369,7 @@ static void serial8250_console_restore(struct uart_8250_port *up)
+ 	serial8250_out_MCR(up, up->mcr | UART_MCR_DTR | UART_MCR_RTS);
+ }
+ 
++#ifdef CONFIG_SERIAL_8250_LEGACY_CONSOLE
+ /*
+  * Print a string to the serial port using the device FIFO
+  *
+@@ -3408,7 +3428,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+ 	 *	First save the IER then disable the interrupts
+ 	 */
+ 	ier = serial_port_in(port, UART_IER);
+-	serial8250_clear_IER(up);
++	__serial8250_clear_IER(up);
+ 
+ 	/* check scratch reg to see if port powered off during system sleep */
+ 	if (up->canary && (up->canary != serial_port_in(port, UART_SCR))) {
+@@ -3474,6 +3494,135 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+ 	if (locked)
+ 		uart_port_unlock_irqrestore(port, flags);
+ }
++#else
++bool serial8250_console_write_thread(struct uart_8250_port *up,
++				     struct nbcon_write_context *wctxt)
++{
++	struct uart_8250_em485 *em485 = up->em485;
++	struct uart_port *port = &up->port;
++	bool done = false;
++	unsigned int ier;
++
++	touch_nmi_watchdog();
++
++	if (!nbcon_enter_unsafe(wctxt))
++		return false;
++
++	/* First save IER then disable the interrupts. */
++	ier = serial_port_in(port, UART_IER);
++	serial8250_clear_IER(up);
++
++	/* Check scratch reg if port powered off during system sleep. */
++	if (up->canary && (up->canary != serial_port_in(port, UART_SCR))) {
++		serial8250_console_restore(up);
++		up->canary = 0;
++	}
++
++	if (em485) {
++		if (em485->tx_stopped)
++			up->rs485_start_tx(up);
++		mdelay(port->rs485.delay_rts_before_send);
++	}
++
++	if (nbcon_exit_unsafe(wctxt)) {
++		int len = READ_ONCE(wctxt->len);
++		int i;
++
++		/*
++		 * Write out the message. Toggle unsafe for each byte in order
++		 * to give another (higher priority) context the opportunity
++		 * for a friendly takeover. If such a takeover occurs, this
++		 * context must reacquire ownership in order to perform final
++		 * actions (such as re-enabling the interrupts).
++		 *
++		 * IMPORTANT: wctxt->outbuf and wctxt->len are no longer valid
++		 *	      after a reacquire so writing the message must be
++		 *	      aborted.
++		 */
++		for (i = 0; i < len; i++) {
++			if (!nbcon_enter_unsafe(wctxt)) {
++				nbcon_reacquire(wctxt);
++				break;
++			}
++
++			uart_console_write(port, wctxt->outbuf + i, 1, serial8250_console_putchar);
++
++			if (!nbcon_exit_unsafe(wctxt)) {
++				nbcon_reacquire(wctxt);
++				break;
++			}
++		}
++		done = (i == len);
++	} else {
++		nbcon_reacquire(wctxt);
++	}
++
++	while (!nbcon_enter_unsafe(wctxt))
++		nbcon_reacquire(wctxt);
++
++	/* Finally, wait for transmitter to become empty and restore IER. */
++	wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
++	if (em485) {
++		mdelay(port->rs485.delay_rts_after_send);
++		if (em485->tx_stopped)
++			up->rs485_stop_tx(up);
++	}
++	serial_port_out(port, UART_IER, ier);
++
++	/*
++	 * The receive handling will happen properly because the receive ready
++	 * bit will still be set; it is not cleared on read.  However, modem
++	 * control will not, we must call it if we have saved something in the
++	 * saved flags while processing with interrupts off.
++	 */
++	if (up->msr_saved_flags)
++		serial8250_modem_status(up);
++
++	/* Success if no handover/takeover and message fully printed. */
++	return (nbcon_exit_unsafe(wctxt) && done);
++}
++
++bool serial8250_console_write_atomic(struct uart_8250_port *up,
++				     struct nbcon_write_context *wctxt)
++{
++	struct uart_port *port = &up->port;
++	unsigned int ier;
++
++	/* Atomic console not supported for rs485 mode. */
++	if (up->em485)
++		return false;
++
++	touch_nmi_watchdog();
++
++	if (!nbcon_enter_unsafe(wctxt))
++		return false;
++
++	/*
++	 * First save IER then disable the interrupts. The special variant to
++	 * clear IER is used because atomic printing may occur without holding
++	 * the port lock.
++	 */
++	ier = serial_port_in(port, UART_IER);
++	__serial8250_clear_IER(up);
++
++	/* Check scratch reg if port powered off during system sleep. */
++	if (up->canary && (up->canary != serial_port_in(port, UART_SCR))) {
++		serial8250_console_restore(up);
++		up->canary = 0;
++	}
++
++	if (up->console_newline_needed)
++		uart_console_write(port, "\n", 1, serial8250_console_putchar);
++	uart_console_write(port, wctxt->outbuf, wctxt->len, serial8250_console_putchar);
++
++	/* Finally, wait for transmitter to become empty and restore IER. */
++	wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
++	serial_port_out(port, UART_IER, ier);
++
++	/* Success if no handover/takeover. */
++	return nbcon_exit_unsafe(wctxt);
++}
++#endif /* CONFIG_SERIAL_8250_LEGACY_CONSOLE */
+ 
+ static unsigned int probe_baud(struct uart_port *port)
+ {
+@@ -3492,6 +3641,7 @@ static unsigned int probe_baud(struct uart_port *port)
+ 
+ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
+ {
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	int baud = 9600;
+ 	int bits = 8;
+ 	int parity = 'n';
+@@ -3501,6 +3651,8 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
+ 	if (!port->iobase && !port->membase)
+ 		return -ENODEV;
+ 
++	up->console_newline_needed = false;
++
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+ 	else if (probe)
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index be65de65fe61..ec46e3b49ee9 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -153,6 +153,8 @@ struct uart_8250_port {
+ #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
+ 	unsigned char		msr_saved_flags;
+ 
++	bool			console_newline_needed;
++
+ 	struct uart_8250_dma	*dma;
+ 	const struct uart_8250_ops *ops;
+ 
+@@ -204,6 +206,10 @@ void serial8250_init_port(struct uart_8250_port *up);
+ void serial8250_set_defaults(struct uart_8250_port *up);
+ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+ 			      unsigned int count);
++bool serial8250_console_write_atomic(struct uart_8250_port *up,
++				     struct nbcon_write_context *wctxt);
++bool serial8250_console_write_thread(struct uart_8250_port *up,
++				     struct nbcon_write_context *wctxt);
+ int serial8250_console_setup(struct uart_port *port, char *options, bool probe);
+ int serial8250_console_exit(struct uart_port *port);
+ 
+-- 
+2.44.0
+

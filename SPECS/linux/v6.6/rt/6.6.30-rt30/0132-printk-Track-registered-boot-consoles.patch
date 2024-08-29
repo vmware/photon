@@ -1,0 +1,83 @@
+From 2d56e8f9e20c2ed9ddc056f41db5cb6783ea460c Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Tue, 24 Oct 2023 14:13:14 +0000
+Subject: [PATCH 132/196] printk: Track registered boot consoles
+
+Unfortunately it is not known if a boot console and a regular
+(legacy or nbcon) console use the same hardware. For this reason
+they must not be allowed to print simultaneously.
+
+For legacy consoles this is not an issue because they are
+already synchronized with the boot consoles using the console
+lock. However nbcon consoles can be triggered separately.
+
+Add a global flag @have_boot_console to identify if any boot
+consoles are registered. This will be used in follow-up commits
+to ensure that boot consoles and nbcon consoles cannot print
+simultaneously.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 271865952a4d..4185c58f7915 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -463,6 +463,14 @@ static int console_msg_format = MSG_FORMAT_DEFAULT;
+ /* syslog_lock protects syslog_* variables and write access to clear_seq. */
+ static DEFINE_MUTEX(syslog_lock);
+ 
++/*
++ * Specifies if a boot console is registered. If boot consoles are present,
++ * nbcon consoles cannot print simultaneously and must be synchronized by
++ * the console lock. This is because boot consoles and nbcon consoles may
++ * have mapped the same hardware.
++ */
++bool have_boot_console;
++
+ #ifdef CONFIG_PRINTK
+ DECLARE_WAIT_QUEUE_HEAD(log_wait);
+ /* All 3 protected by @syslog_lock. */
+@@ -3521,6 +3529,9 @@ void register_console(struct console *newcon)
+ 	if (newcon->flags & CON_NBCON)
+ 		nbcon_init(newcon);
+ 
++	if (newcon->flags & CON_BOOT)
++		have_boot_console = true;
++
+ 	/*
+ 	 * Put this console in the list - keep the
+ 	 * preferred driver at the head of the list.
+@@ -3573,6 +3584,8 @@ EXPORT_SYMBOL(register_console);
+ /* Must be called under console_list_lock(). */
+ static int unregister_console_locked(struct console *console)
+ {
++	bool found_boot_con = false;
++	struct console *c;
+ 	int res;
+ 
+ 	lockdep_assert_console_list_lock_held();
+@@ -3620,6 +3633,17 @@ static int unregister_console_locked(struct console *console)
+ 	if (console->exit)
+ 		res = console->exit(console);
+ 
++	/*
++	 * With this console gone, the global flags tracking registered
++	 * console types may have changed. Update them.
++	 */
++	for_each_console(c) {
++		if (c->flags & CON_BOOT)
++			found_boot_con = true;
++	}
++	if (!found_boot_con)
++		have_boot_console = false;
++
+ 	return res;
+ }
+ 
+-- 
+2.44.0
+

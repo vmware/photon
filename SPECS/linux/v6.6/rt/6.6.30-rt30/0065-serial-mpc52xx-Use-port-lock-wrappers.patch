@@ -1,0 +1,94 @@
+From 3aed69bf3f34809b6fc9c5b3a523f51502541b65 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:43:56 +0206
+Subject: [PATCH 065/196] serial: mpc52xx: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-40-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/mpc52xx_uart.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+index 916507b8f31d..a252465e745f 100644
+--- a/drivers/tty/serial/mpc52xx_uart.c
++++ b/drivers/tty/serial/mpc52xx_uart.c
+@@ -1096,14 +1096,14 @@ static void
+ mpc52xx_uart_break_ctl(struct uart_port *port, int ctl)
+ {
+ 	unsigned long flags;
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	if (ctl == -1)
+ 		psc_ops->command(port, MPC52xx_PSC_START_BRK);
+ 	else
+ 		psc_ops->command(port, MPC52xx_PSC_STOP_BRK);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static int
+@@ -1214,7 +1214,7 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
+ 	}
+ 
+ 	/* Get the lock */
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	/* Do our best to flush TX & RX, so we don't lose anything */
+ 	/* But we don't wait indefinitely ! */
+@@ -1250,7 +1250,7 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
+ 	psc_ops->command(port, MPC52xx_PSC_RX_ENABLE);
+ 
+ 	/* We're all set, release the lock */
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static const char *
+@@ -1477,11 +1477,11 @@ mpc52xx_uart_int(int irq, void *dev_id)
+ 	struct uart_port *port = dev_id;
+ 	irqreturn_t ret;
+ 
+-	spin_lock(&port->lock);
++	uart_port_lock(port);
+ 
+ 	ret = psc_ops->handle_irq(port);
+ 
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ 
+ 	return ret;
+ }
+-- 
+2.44.0
+

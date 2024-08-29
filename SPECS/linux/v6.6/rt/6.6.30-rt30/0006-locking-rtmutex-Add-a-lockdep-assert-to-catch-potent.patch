@@ -1,0 +1,66 @@
+From a414f81a522e200b362eabeed8d82d8a127ede8e Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 8 Sep 2023 18:22:53 +0200
+Subject: [PATCH 006/196] locking/rtmutex: Add a lockdep assert to catch
+ potential nested blocking
+
+There used to be a BUG_ON(current->pi_blocked_on) in the lock acquisition
+functions, but that vanished in one of the rtmutex overhauls.
+
+Bring it back in form of a lockdep assert to catch code paths which take
+rtmutex based locks with current::pi_blocked_on != NULL.
+
+Reported-by: Crystal Wood <swood@redhat.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20230908162254.999499-7-bigeasy@linutronix.de
+---
+ kernel/locking/rtmutex.c     | 2 ++
+ kernel/locking/rwbase_rt.c   | 2 ++
+ kernel/locking/spinlock_rt.c | 2 ++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
+index a3fe05dfd0d8..4a10e8c16fd2 100644
+--- a/kernel/locking/rtmutex.c
++++ b/kernel/locking/rtmutex.c
+@@ -1784,6 +1784,8 @@ static int __sched rt_mutex_slowlock(struct rt_mutex_base *lock,
+ static __always_inline int __rt_mutex_lock(struct rt_mutex_base *lock,
+ 					   unsigned int state)
+ {
++	lockdep_assert(!current->pi_blocked_on);
++
+ 	if (likely(rt_mutex_try_acquire(lock)))
+ 		return 0;
+ 
+diff --git a/kernel/locking/rwbase_rt.c b/kernel/locking/rwbase_rt.c
+index c7258cb32d91..34a59569db6b 100644
+--- a/kernel/locking/rwbase_rt.c
++++ b/kernel/locking/rwbase_rt.c
+@@ -133,6 +133,8 @@ static int __sched __rwbase_read_lock(struct rwbase_rt *rwb,
+ static __always_inline int rwbase_read_lock(struct rwbase_rt *rwb,
+ 					    unsigned int state)
+ {
++	lockdep_assert(!current->pi_blocked_on);
++
+ 	if (rwbase_read_trylock(rwb))
+ 		return 0;
+ 
+diff --git a/kernel/locking/spinlock_rt.c b/kernel/locking/spinlock_rt.c
+index 842037b2ba54..38e292454fcc 100644
+--- a/kernel/locking/spinlock_rt.c
++++ b/kernel/locking/spinlock_rt.c
+@@ -37,6 +37,8 @@
+ 
+ static __always_inline void rtlock_lock(struct rt_mutex_base *rtm)
+ {
++	lockdep_assert(!current->pi_blocked_on);
++
+ 	if (unlikely(!rt_mutex_cmpxchg_acquire(rtm, NULL, current)))
+ 		rtlock_slowlock(rtm);
+ }
+-- 
+2.44.0
+

@@ -1,0 +1,96 @@
+From 54e5a12024b4c65eb2771862b56dd725568d5ef2 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Thu, 21 Sep 2023 16:15:15 +0200
+Subject: [PATCH 013/196] drm/amd/display: Move the memory allocation out of
+ dcn21_validate_bandwidth_fp().
+
+dcn21_validate_bandwidth_fp() is invoked while FPU access has been
+enabled. FPU access requires disabling preemption even on PREEMPT_RT.
+It is not possible to allocate memory with disabled preemption even with
+GFP_ATOMIC on PREEMPT_RT.
+
+Move the memory allocation before FPU access is enabled.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=217928
+Link: https://lore.kernel.org/r/20230921141516.520471-5-bigeasy@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c | 10 +++++++++-
+ drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c  |  7 ++-----
+ drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.h  |  5 ++---
+ 3 files changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
+index d1a25fe6c44f..5674c3450fc3 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
+@@ -953,9 +953,17 @@ static bool dcn21_validate_bandwidth(struct dc *dc, struct dc_state *context,
+ 		bool fast_validate)
+ {
+ 	bool voltage_supported;
++	display_e2e_pipe_params_st *pipes;
++
++	pipes = kcalloc(dc->res_pool->pipe_count, sizeof(display_e2e_pipe_params_st), GFP_KERNEL);
++	if (!pipes)
++		return false;
++
+ 	DC_FP_START();
+-	voltage_supported = dcn21_validate_bandwidth_fp(dc, context, fast_validate);
++	voltage_supported = dcn21_validate_bandwidth_fp(dc, context, fast_validate, pipes);
+ 	DC_FP_END();
++
++	kfree(pipes);
+ 	return voltage_supported;
+ }
+ 
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
+index 8a5a038fd855..89d4e969cfd8 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
+@@ -2311,9 +2311,8 @@ static void dcn21_calculate_wm(struct dc *dc, struct dc_state *context,
+ 						&context->bw_ctx.dml, pipes, pipe_cnt);
+ }
+ 
+-bool dcn21_validate_bandwidth_fp(struct dc *dc,
+-				 struct dc_state *context,
+-				 bool fast_validate)
++bool dcn21_validate_bandwidth_fp(struct dc *dc, struct dc_state *context,
++				 bool fast_validate, display_e2e_pipe_params_st *pipes)
+ {
+ 	bool out = false;
+ 
+@@ -2322,7 +2321,6 @@ bool dcn21_validate_bandwidth_fp(struct dc *dc,
+ 	int vlevel = 0;
+ 	int pipe_split_from[MAX_PIPES];
+ 	int pipe_cnt = 0;
+-	display_e2e_pipe_params_st *pipes = kzalloc(dc->res_pool->pipe_count * sizeof(display_e2e_pipe_params_st), GFP_ATOMIC);
+ 	DC_LOGGER_INIT(dc->ctx->logger);
+ 
+ 	BW_VAL_TRACE_COUNT();
+@@ -2362,7 +2360,6 @@ bool dcn21_validate_bandwidth_fp(struct dc *dc,
+ 	out = false;
+ 
+ validate_out:
+-	kfree(pipes);
+ 
+ 	BW_VAL_TRACE_FINISH();
+ 
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.h b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.h
+index c51badf7b68a..a81a0b9e6884 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.h
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.h
+@@ -77,9 +77,8 @@ int dcn21_populate_dml_pipes_from_context(struct dc *dc,
+ 					  struct dc_state *context,
+ 					  display_e2e_pipe_params_st *pipes,
+ 					  bool fast_validate);
+-bool dcn21_validate_bandwidth_fp(struct dc *dc,
+-				 struct dc_state *context,
+-				 bool fast_validate);
++bool dcn21_validate_bandwidth_fp(struct dc *dc, struct dc_state *context, bool
++				 fast_validate, display_e2e_pipe_params_st *pipes);
+ void dcn21_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_params);
+ 
+ void dcn21_clk_mgr_set_bw_params_wm_table(struct clk_bw_params *bw_params);
+-- 
+2.44.0
+

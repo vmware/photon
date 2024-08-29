@@ -1,0 +1,255 @@
+From 5e5bde7a78e26ac563df2d3f44f3846604f7d834 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Wed, 13 Sep 2023 08:35:23 +0000
+Subject: [PATCH 126/196] printk: nbcon: Implement processing in port->lock
+ wrapper
+
+Currently the port->lock wrappers uart_port_lock(),
+uart_port_unlock() (and their variants) only lock/unlock
+the spin_lock.
+
+If the port is an nbcon console, the wrappers must also
+acquire/release the console and mark the region as unsafe. This
+allows general port->lock synchronization to be synchronized
+with the nbcon console ownership.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/console.h     |  2 +
+ include/linux/printk.h      | 13 +++++++
+ include/linux/serial_core.h | 18 ++++++++-
+ kernel/printk/nbcon.c       | 77 +++++++++++++++++++++++++++++++++++++
+ 4 files changed, 108 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/console.h b/include/linux/console.h
+index e4fc6f7c1496..c27bd5189660 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -299,6 +299,7 @@ struct nbcon_write_context {
+  * @nbcon_state:	State for nbcon consoles
+  * @nbcon_seq:		Sequence number of the next record for nbcon to print
+  * @pbufs:		Pointer to nbcon private buffer
++ * @locked_port:	True, if the port lock is locked by nbcon
+  */
+ struct console {
+ 	char			name[16];
+@@ -325,6 +326,7 @@ struct console {
+ 	atomic_t		__private nbcon_state;
+ 	atomic_long_t		__private nbcon_seq;
+ 	struct printk_buffers	*pbufs;
++	bool			locked_port;
+ };
+ 
+ #ifdef CONFIG_LOCKDEP
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index f4502b036e48..2aa57a870caf 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -9,6 +9,8 @@
+ #include <linux/ratelimit_types.h>
+ #include <linux/once_lite.h>
+ 
++struct uart_port;
++
+ extern const char linux_banner[];
+ extern const char linux_proc_banner[];
+ 
+@@ -195,6 +197,8 @@ void show_regs_print_info(const char *log_lvl);
+ extern asmlinkage void dump_stack_lvl(const char *log_lvl) __cold;
+ extern asmlinkage void dump_stack(void) __cold;
+ void printk_trigger_flush(void);
++extern void nbcon_acquire(struct uart_port *up);
++extern void nbcon_release(struct uart_port *up);
+ #else
+ static inline __printf(1, 0)
+ int vprintk(const char *s, va_list args)
+@@ -274,6 +278,15 @@ static inline void dump_stack(void)
+ static inline void printk_trigger_flush(void)
+ {
+ }
++
++static inline void nbcon_acquire(struct uart_port *up)
++{
++}
++
++static inline void nbcon_release(struct uart_port *up)
++{
++}
++
+ #endif
+ 
+ #ifdef CONFIG_SMP
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 678409c47b88..150dcf1ea332 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -595,6 +595,7 @@ struct uart_port {
+ static inline void uart_port_lock(struct uart_port *up)
+ {
+ 	spin_lock(&up->lock);
++	nbcon_acquire(up);
+ }
+ 
+ /**
+@@ -604,6 +605,7 @@ static inline void uart_port_lock(struct uart_port *up)
+ static inline void uart_port_lock_irq(struct uart_port *up)
+ {
+ 	spin_lock_irq(&up->lock);
++	nbcon_acquire(up);
+ }
+ 
+ /**
+@@ -614,6 +616,7 @@ static inline void uart_port_lock_irq(struct uart_port *up)
+ static inline void uart_port_lock_irqsave(struct uart_port *up, unsigned long *flags)
+ {
+ 	spin_lock_irqsave(&up->lock, *flags);
++	nbcon_acquire(up);
+ }
+ 
+ /**
+@@ -624,7 +627,11 @@ static inline void uart_port_lock_irqsave(struct uart_port *up, unsigned long *f
+  */
+ static inline bool uart_port_trylock(struct uart_port *up)
+ {
+-	return spin_trylock(&up->lock);
++	if (!spin_trylock(&up->lock))
++		return false;
++
++	nbcon_acquire(up);
++	return true;
+ }
+ 
+ /**
+@@ -636,7 +643,11 @@ static inline bool uart_port_trylock(struct uart_port *up)
+  */
+ static inline bool uart_port_trylock_irqsave(struct uart_port *up, unsigned long *flags)
+ {
+-	return spin_trylock_irqsave(&up->lock, *flags);
++	if (!spin_trylock_irqsave(&up->lock, *flags))
++		return false;
++
++	nbcon_acquire(up);
++	return true;
+ }
+ 
+ /**
+@@ -645,6 +656,7 @@ static inline bool uart_port_trylock_irqsave(struct uart_port *up, unsigned long
+  */
+ static inline void uart_port_unlock(struct uart_port *up)
+ {
++	nbcon_release(up);
+ 	spin_unlock(&up->lock);
+ }
+ 
+@@ -654,6 +666,7 @@ static inline void uart_port_unlock(struct uart_port *up)
+  */
+ static inline void uart_port_unlock_irq(struct uart_port *up)
+ {
++	nbcon_release(up);
+ 	spin_unlock_irq(&up->lock);
+ }
+ 
+@@ -664,6 +677,7 @@ static inline void uart_port_unlock_irq(struct uart_port *up)
+  */
+ static inline void uart_port_unlock_irqrestore(struct uart_port *up, unsigned long flags)
+ {
++	nbcon_release(up);
+ 	spin_unlock_irqrestore(&up->lock, flags);
+ }
+ 
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index 8ecd76aa22e6..a5707fe1e95e 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -6,6 +6,7 @@
+ #include <linux/console.h>
+ #include <linux/delay.h>
+ #include <linux/slab.h>
++#include <linux/serial_core.h>
+ #include "internal.h"
+ /*
+  * Printk console printing implementation for consoles which does not depend
+@@ -995,3 +996,79 @@ void nbcon_free(struct console *con)
+ 
+ 	con->pbufs = NULL;
+ }
++
++static inline bool uart_is_nbcon(struct uart_port *up)
++{
++	int cookie;
++	bool ret;
++
++	if (!uart_console(up))
++		return false;
++
++	cookie = console_srcu_read_lock();
++	ret = (console_srcu_read_flags(up->cons) & CON_NBCON);
++	console_srcu_read_unlock(cookie);
++	return ret;
++}
++
++/**
++ * nbcon_acquire - The second half of the port locking wrapper
++ * @up:		The uart port whose @lock was locked
++ *
++ * The uart_port_lock() wrappers will first lock the spin_lock @up->lock.
++ * Then this function is called to implement nbcon-specific processing.
++ *
++ * If @up is an nbcon console, this console will be acquired and marked as
++ * unsafe. Otherwise this function does nothing.
++ */
++void nbcon_acquire(struct uart_port *up)
++{
++	struct console *con = up->cons;
++	struct nbcon_context ctxt;
++
++	if (!uart_is_nbcon(up))
++		return;
++
++	WARN_ON_ONCE(con->locked_port);
++
++	do {
++		do {
++			memset(&ctxt, 0, sizeof(ctxt));
++			ctxt.console	= con;
++			ctxt.prio	= NBCON_PRIO_NORMAL;
++		} while (!nbcon_context_try_acquire(&ctxt));
++
++	} while (!nbcon_context_enter_unsafe(&ctxt));
++
++	con->locked_port = true;
++}
++EXPORT_SYMBOL_GPL(nbcon_acquire);
++
++/**
++ * nbcon_release - The first half of the port unlocking wrapper
++ * @up:		The uart port whose @lock is about to be unlocked
++ *
++ * The uart_port_unlock() wrappers will first call this function to implement
++ * nbcon-specific processing. Then afterwards the uart_port_unlock() wrappers
++ * will unlock the spin_lock @up->lock.
++ *
++ * If @up is an nbcon console, the console will be marked as safe and
++ * released. Otherwise this function does nothing.
++ */
++void nbcon_release(struct uart_port *up)
++{
++	struct console *con = up->cons;
++	struct nbcon_context ctxt = {
++		.console	= con,
++		.prio		= NBCON_PRIO_NORMAL,
++	};
++
++	if (!con->locked_port)
++		return;
++
++	if (nbcon_context_exit_unsafe(&ctxt))
++		nbcon_context_release(&ctxt);
++
++	con->locked_port = false;
++}
++EXPORT_SYMBOL_GPL(nbcon_release);
+-- 
+2.44.0
+

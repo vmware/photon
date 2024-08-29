@@ -1,0 +1,56 @@
+From a8cd5fb07a8405b4ad3720ee91af74d4df594da3 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Wed, 22 Nov 2023 11:23:43 +0000
+Subject: [PATCH 122/196] printk: Consider nbcon boot consoles on seq init
+
+If a non-boot console is registering and boot consoles exist, the
+consoles are flushed before being unregistered. This allows the
+non-boot console to continue where the boot console left off.
+
+If for whatever reason flushing fails, the lowest seq found from
+any of the enabled boot consoles is used. Until now con->seq was
+checked. However, if it is an nbcon boot console, the function
+nbcon_seq_read() must be used to read seq because con->seq is
+always 0.
+
+Check if it is an nbcon boot console and if so call
+nbcon_seq_read() to read seq.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 7c5ab5c01abb..ae3bf0cf215a 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3413,11 +3413,20 @@ static void console_init_seq(struct console *newcon, bool bootcon_registered)
+ 
+ 				newcon->seq = prb_next_seq(prb);
+ 				for_each_console(con) {
+-					if ((con->flags & CON_BOOT) &&
+-					    (con->flags & CON_ENABLED) &&
+-					    con->seq < newcon->seq) {
+-						newcon->seq = con->seq;
++					u64 seq;
++
++					if (!((con->flags & CON_BOOT) &&
++					      (con->flags & CON_ENABLED))) {
++						continue;
+ 					}
++
++					if (con->flags & CON_NBCON)
++						seq = nbcon_seq_read(con);
++					else
++						seq = con->seq;
++
++					if (seq < newcon->seq)
++						newcon->seq = seq;
+ 				}
+ 			}
+ 
+-- 
+2.44.0
+

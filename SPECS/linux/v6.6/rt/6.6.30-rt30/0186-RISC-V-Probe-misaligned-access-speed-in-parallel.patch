@@ -1,0 +1,196 @@
+From fa23c8148e1fbe12e423aa717c149d6cc4c4b14d Mon Sep 17 00:00:00 2001
+From: Evan Green <evan@rivosinc.com>
+Date: Mon, 6 Nov 2023 14:58:55 -0800
+Subject: [PATCH 186/196] RISC-V: Probe misaligned access speed in parallel
+
+Probing for misaligned access speed takes about 0.06 seconds. On a
+system with 64 cores, doing this in smp_callin() means it's done
+serially, extending boot time by 3.8 seconds. That's a lot of boot time.
+
+Instead of measuring each CPU serially, let's do the measurements on
+all CPUs in parallel. If we disable preemption on all CPUs, the
+jiffies stop ticking, so we can do this in stages of 1) everybody
+except core 0, then 2) core 0. The allocations are all done outside of
+on_each_cpu() to avoid calling alloc_pages() with interrupts disabled.
+
+For hotplugged CPUs that come in after the boot time measurement,
+register CPU hotplug callbacks, and do the measurement there. Interrupts
+are enabled in those callbacks, so they're fine to do alloc_pages() in.
+
+[bigeasy: merge the individual patches into the final step.]
+
+Reported-by: Jisheng Zhang <jszhang@kernel.org>
+Closes: https://lore.kernel.org/all/mhng-9359993d-6872-4134-83ce-c97debe1cf9a@palmer-ri-x1c9/T/#mae9b8f40016f9df428829d33360144dc5026bcbf
+Fixes: 584ea6564bca ("RISC-V: Probe for unaligned access speed")
+Signed-off-by: Evan Green <evan@rivosinc.com>
+Link: https://lore.kernel.org/r/20231106225855.3121724-1-evan@rivosinc.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/riscv/include/asm/cpufeature.h |  2 -
+ arch/riscv/kernel/cpufeature.c      | 84 ++++++++++++++++++++++++++---
+ arch/riscv/kernel/smpboot.c         |  1 -
+ 3 files changed, 76 insertions(+), 11 deletions(-)
+
+diff --git a/arch/riscv/include/asm/cpufeature.h b/arch/riscv/include/asm/cpufeature.h
+index d0345bd659c9..23fed53b8815 100644
+--- a/arch/riscv/include/asm/cpufeature.h
++++ b/arch/riscv/include/asm/cpufeature.h
+@@ -30,6 +30,4 @@ DECLARE_PER_CPU(long, misaligned_access_speed);
+ /* Per-cpu ISA extensions. */
+ extern struct riscv_isainfo hart_isa[NR_CPUS];
+ 
+-void check_unaligned_access(int cpu);
+-
+ #endif
+diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+index e39a905aca24..9d8b6b463592 100644
+--- a/arch/riscv/kernel/cpufeature.c
++++ b/arch/riscv/kernel/cpufeature.c
+@@ -8,6 +8,7 @@
+ 
+ #include <linux/acpi.h>
+ #include <linux/bitmap.h>
++#include <linux/cpuhotplug.h>
+ #include <linux/ctype.h>
+ #include <linux/log2.h>
+ #include <linux/memory.h>
+@@ -30,6 +31,7 @@
+ 
+ #define MISALIGNED_ACCESS_JIFFIES_LG2 1
+ #define MISALIGNED_BUFFER_SIZE 0x4000
++#define MISALIGNED_BUFFER_ORDER get_order(MISALIGNED_BUFFER_SIZE)
+ #define MISALIGNED_COPY_SIZE ((MISALIGNED_BUFFER_SIZE / 2) - 0x80)
+ 
+ unsigned long elf_hwcap __read_mostly;
+@@ -571,14 +573,15 @@ unsigned long riscv_get_elf_hwcap(void)
+ 	return hwcap;
+ }
+ 
+-void check_unaligned_access(int cpu)
++static int check_unaligned_access(void *param)
+ {
++	int cpu = smp_processor_id();
+ 	u64 start_cycles, end_cycles;
+ 	u64 word_cycles;
+ 	u64 byte_cycles;
+ 	int ratio;
+ 	unsigned long start_jiffies, now;
+-	struct page *page;
++	struct page *page = param;
+ 	void *dst;
+ 	void *src;
+ 	long speed = RISCV_HWPROBE_MISALIGNED_SLOW;
+@@ -645,7 +648,7 @@ void check_unaligned_access(int cpu)
+ 		pr_warn("cpu%d: rdtime lacks granularity needed to measure unaligned access speed\n",
+ 			cpu);
+ 
+-		goto out;
++		return 0;
+ 	}
+ 
+ 	if (word_cycles < byte_cycles)
+@@ -659,18 +662,83 @@ void check_unaligned_access(int cpu)
+ 		(speed == RISCV_HWPROBE_MISALIGNED_FAST) ? "fast" : "slow");
+ 
+ 	per_cpu(misaligned_access_speed, cpu) = speed;
++	return 0;
++}
+ 
+-out:
+-	__free_pages(page, get_order(MISALIGNED_BUFFER_SIZE));
++static void check_unaligned_access_nonboot_cpu(void *param)
++{
++	unsigned int cpu = smp_processor_id();
++	struct page **pages = param;
++
++	if (smp_processor_id() != 0)
++		check_unaligned_access(pages[cpu]);
++}
++
++static int riscv_online_cpu(unsigned int cpu)
++{
++	static struct page *buf;
++
++	/* We are already set since the last check */
++	if (per_cpu(misaligned_access_speed, cpu) != RISCV_HWPROBE_MISALIGNED_UNKNOWN)
++		return 0;
++
++	buf = alloc_pages(GFP_KERNEL, MISALIGNED_BUFFER_ORDER);
++	if (!buf) {
++		pr_warn("Allocation failure, not measuring misaligned performance\n");
++		return -ENOMEM;
++	}
++
++	check_unaligned_access(buf);
++	__free_pages(buf, MISALIGNED_BUFFER_ORDER);
++	return 0;
+ }
+ 
+-static int check_unaligned_access_boot_cpu(void)
++/* Measure unaligned access on all CPUs present at boot in parallel. */
++static int check_unaligned_access_all_cpus(void)
+ {
+-	check_unaligned_access(0);
++	unsigned int cpu;
++	unsigned int cpu_count = num_possible_cpus();
++	struct page **bufs = kzalloc(cpu_count * sizeof(struct page *),
++				     GFP_KERNEL);
++
++	if (!bufs) {
++		pr_warn("Allocation failure, not measuring misaligned performance\n");
++		return 0;
++	}
++
++	/*
++	 * Allocate separate buffers for each CPU so there's no fighting over
++	 * cache lines.
++	 */
++	for_each_cpu(cpu, cpu_online_mask) {
++		bufs[cpu] = alloc_pages(GFP_KERNEL, MISALIGNED_BUFFER_ORDER);
++		if (!bufs[cpu]) {
++			pr_warn("Allocation failure, not measuring misaligned performance\n");
++			goto out;
++		}
++	}
++
++	/* Check everybody except 0, who stays behind to tend jiffies. */
++	on_each_cpu(check_unaligned_access_nonboot_cpu, bufs, 1);
++
++	/* Check core 0. */
++	smp_call_on_cpu(0, check_unaligned_access, bufs[0], true);
++
++	/* Setup hotplug callback for any new CPUs that come online. */
++	cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN, "riscv:online",
++				  riscv_online_cpu, NULL);
++
++out:
++	for_each_cpu(cpu, cpu_online_mask) {
++		if (bufs[cpu])
++			__free_pages(bufs[cpu], MISALIGNED_BUFFER_ORDER);
++	}
++
++	kfree(bufs);
+ 	return 0;
+ }
+ 
+-arch_initcall(check_unaligned_access_boot_cpu);
++arch_initcall(check_unaligned_access_all_cpus);
+ 
+ #ifdef CONFIG_RISCV_ALTERNATIVE
+ /*
+diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
+index 1b8da4e40a4d..2cb5e651412c 100644
+--- a/arch/riscv/kernel/smpboot.c
++++ b/arch/riscv/kernel/smpboot.c
+@@ -246,7 +246,6 @@ asmlinkage __visible void smp_callin(void)
+ 
+ 	numa_add_cpu(curr_cpuid);
+ 	set_cpu_online(curr_cpuid, 1);
+-	check_unaligned_access(curr_cpuid);
+ 
+ 	if (has_vector()) {
+ 		if (riscv_v_setup_vsize())
+-- 
+2.44.0
+

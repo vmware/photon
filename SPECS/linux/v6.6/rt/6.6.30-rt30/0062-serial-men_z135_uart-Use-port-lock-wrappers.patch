@@ -1,0 +1,81 @@
+From 584184c1b4adff2f3de3695176f9498bcbe7cef7 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:43:53 +0206
+Subject: [PATCH 062/196] serial: men_z135_uart: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-37-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/men_z135_uart.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
+index d2502aaa3e8c..8048fa542fc4 100644
+--- a/drivers/tty/serial/men_z135_uart.c
++++ b/drivers/tty/serial/men_z135_uart.c
+@@ -392,7 +392,7 @@ static irqreturn_t men_z135_intr(int irq, void *data)
+ 	if (!irq_id)
+ 		goto out;
+ 
+-	spin_lock(&port->lock);
++	uart_port_lock(port);
+ 	/* It's save to write to IIR[7:6] RXC[9:8] */
+ 	iowrite8(irq_id, port->membase + MEN_Z135_STAT_REG);
+ 
+@@ -418,7 +418,7 @@ static irqreturn_t men_z135_intr(int irq, void *data)
+ 		handled = true;
+ 	}
+ 
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ out:
+ 	return IRQ_RETVAL(handled);
+ }
+@@ -708,7 +708,7 @@ static void men_z135_set_termios(struct uart_port *port,
+ 
+ 	baud = uart_get_baud_rate(port, termios, old, 0, uart_freq / 16);
+ 
+-	spin_lock_irq(&port->lock);
++	uart_port_lock_irq(port);
+ 	if (tty_termios_baud_rate(termios))
+ 		tty_termios_encode_baud_rate(termios, baud, baud);
+ 
+@@ -716,7 +716,7 @@ static void men_z135_set_termios(struct uart_port *port,
+ 	iowrite32(bd_reg, port->membase + MEN_Z135_BAUD_REG);
+ 
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+-	spin_unlock_irq(&port->lock);
++	uart_port_unlock_irq(port);
+ }
+ 
+ static const char *men_z135_type(struct uart_port *port)
+-- 
+2.44.0
+

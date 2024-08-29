@@ -1,0 +1,31 @@
+From 8b92adcaba62fd8870c2303066af61c04d98f9ae Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Thu, 21 Sep 2023 16:15:14 +0200
+Subject: [PATCH 012/196] drm/amd/display: Add a warning if the FPU is used
+ outside from task context.
+
+Add a warning if the FPU is used from any context other than task
+context. This is only precaution since the code is not able to be used
+from softirq while the API allows it on x86 for instance.
+
+Link: https://lore.kernel.org/r/20230921141516.520471-4-bigeasy@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/gpu/drm/amd/display/amdgpu_dm/dc_fpu.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/dc_fpu.c b/drivers/gpu/drm/amd/display/amdgpu_dm/dc_fpu.c
+index 8bd5926b47e0..4ae4720535a5 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/dc_fpu.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/dc_fpu.c
+@@ -84,6 +84,7 @@ void dc_fpu_begin(const char *function_name, const int line)
+ {
+ 	int depth;
+ 
++	WARN_ON_ONCE(!in_task());
+ 	preempt_disable();
+ 	depth = __this_cpu_inc_return(fpu_recursion_depth);
+ 
+-- 
+2.44.0
+

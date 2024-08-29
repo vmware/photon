@@ -1,0 +1,50 @@
+From 0308b6420a2bd82377dfaf489cb106b4afd3a102 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 18 Sep 2023 20:27:41 +0000
+Subject: [PATCH 143/196] lockdep: Mark emergency section in lockdep splats
+
+Mark an emergency section within print_usage_bug(), where
+lockdep bugs are printed. In this section, the CPU will not
+perform console output for the printk() calls. Instead, a
+flushing of the console output will triggered when exiting
+the emergency section.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/locking/lockdep.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index 151bd3de5936..5c21ba41e308 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -56,6 +56,7 @@
+ #include <linux/kprobes.h>
+ #include <linux/lockdep.h>
+ #include <linux/context_tracking.h>
++#include <linux/console.h>
+ 
+ #include <asm/sections.h>
+ 
+@@ -3971,6 +3972,8 @@ print_usage_bug(struct task_struct *curr, struct held_lock *this,
+ 	if (!debug_locks_off() || debug_locks_silent)
+ 		return;
+ 
++	nbcon_cpu_emergency_enter();
++
+ 	pr_warn("\n");
+ 	pr_warn("================================\n");
+ 	pr_warn("WARNING: inconsistent lock state\n");
+@@ -3999,6 +4002,8 @@ print_usage_bug(struct task_struct *curr, struct held_lock *this,
+ 
+ 	pr_warn("\nstack backtrace:\n");
+ 	dump_stack();
++
++	nbcon_cpu_emergency_exit();
+ }
+ 
+ /*
+-- 
+2.44.0
+

@@ -1,0 +1,108 @@
+From 6938b2105d856ffe45509dc92191cf211abea906 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:43:57 +0206
+Subject: [PATCH 066/196] serial: mps2-uart: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-41-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/mps2-uart.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
+index ea5a7911cb15..2a4c09f3a834 100644
+--- a/drivers/tty/serial/mps2-uart.c
++++ b/drivers/tty/serial/mps2-uart.c
+@@ -188,12 +188,12 @@ static irqreturn_t mps2_uart_rxirq(int irq, void *data)
+ 	if (unlikely(!(irqflag & UARTn_INT_RX)))
+ 		return IRQ_NONE;
+ 
+-	spin_lock(&port->lock);
++	uart_port_lock(port);
+ 
+ 	mps2_uart_write8(port, UARTn_INT_RX, UARTn_INT);
+ 	mps2_uart_rx_chars(port);
+ 
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -206,12 +206,12 @@ static irqreturn_t mps2_uart_txirq(int irq, void *data)
+ 	if (unlikely(!(irqflag & UARTn_INT_TX)))
+ 		return IRQ_NONE;
+ 
+-	spin_lock(&port->lock);
++	uart_port_lock(port);
+ 
+ 	mps2_uart_write8(port, UARTn_INT_TX, UARTn_INT);
+ 	mps2_uart_tx_chars(port);
+ 
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -222,7 +222,7 @@ static irqreturn_t mps2_uart_oerrirq(int irq, void *data)
+ 	struct uart_port *port = data;
+ 	u8 irqflag = mps2_uart_read8(port, UARTn_INT);
+ 
+-	spin_lock(&port->lock);
++	uart_port_lock(port);
+ 
+ 	if (irqflag & UARTn_INT_RX_OVERRUN) {
+ 		struct tty_port *tport = &port->state->port;
+@@ -244,7 +244,7 @@ static irqreturn_t mps2_uart_oerrirq(int irq, void *data)
+ 		handled = IRQ_HANDLED;
+ 	}
+ 
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ 
+ 	return handled;
+ }
+@@ -356,12 +356,12 @@ mps2_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	bauddiv = DIV_ROUND_CLOSEST(port->uartclk, baud);
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 	mps2_uart_write32(port, bauddiv, UARTn_BAUDDIV);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	if (tty_termios_baud_rate(termios))
+ 		tty_termios_encode_baud_rate(termios, baud, baud);
+-- 
+2.44.0
+

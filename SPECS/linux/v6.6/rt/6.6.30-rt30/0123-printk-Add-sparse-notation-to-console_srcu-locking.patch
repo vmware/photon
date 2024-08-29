@@ -1,0 +1,41 @@
+From 00bcfcfd53dd19ed1f7ef4f3c01fc4b0fbcf2d79 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 9 Oct 2023 13:55:19 +0000
+Subject: [PATCH 123/196] printk: Add sparse notation to console_srcu locking
+
+kernel/printk/printk.c:284:5: sparse: sparse: context imbalance in
+'console_srcu_read_lock' - wrong count at exit
+include/linux/srcu.h:301:9: sparse: sparse: context imbalance in
+'console_srcu_read_unlock' - unexpected unlock
+
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 6c4afa79147e ("printk: Prepare for SRCU console list protection")
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index ae3bf0cf215a..ea13c808c282 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -282,6 +282,7 @@ EXPORT_SYMBOL(console_list_unlock);
+  * Return: A cookie to pass to console_srcu_read_unlock().
+  */
+ int console_srcu_read_lock(void)
++	__acquires(&console_srcu)
+ {
+ 	return srcu_read_lock_nmisafe(&console_srcu);
+ }
+@@ -295,6 +296,7 @@ EXPORT_SYMBOL(console_srcu_read_lock);
+  * Counterpart to console_srcu_read_lock()
+  */
+ void console_srcu_read_unlock(int cookie)
++	__releases(&console_srcu)
+ {
+ 	srcu_read_unlock_nmisafe(&console_srcu, cookie);
+ }
+-- 
+2.44.0
+

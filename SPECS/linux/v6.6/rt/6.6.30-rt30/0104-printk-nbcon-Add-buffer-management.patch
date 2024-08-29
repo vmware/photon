@@ -1,0 +1,322 @@
+From 2d758a6481e4e772a7619e6bbce83106cfa6b195 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sat, 16 Sep 2023 21:26:03 +0206
+Subject: [PATCH 104/196] printk: nbcon: Add buffer management
+
+In case of hostile takeovers it must be ensured that the previous
+owner cannot scribble over the output buffer of the emergency/panic
+context. This is achieved by:
+
+ - Adding a global output buffer instance for the panic context.
+   This is the only situation where hostile takeovers can occur and
+   there is always at most 1 panic context.
+
+ - Allocating an output buffer per non-boot console upon console
+   registration. This buffer is used by the console owner when not
+   in panic context. (For boot consoles, the existing shared global
+   legacy output buffer is used instead. Boot console printing will
+   be synchronized with legacy console printing.)
+
+ - Choosing the appropriate buffer is handled in the acquire/release
+   functions.
+
+Co-developed-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Thomas Gleixner (Intel) <tglx@linutronix.de>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20230916192007.608398-5-john.ogness@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/console.h  |  7 ++++
+ kernel/printk/internal.h | 12 +++++--
+ kernel/printk/nbcon.c    | 73 +++++++++++++++++++++++++++++++++++++---
+ kernel/printk/printk.c   | 22 +++++++-----
+ 4 files changed, 99 insertions(+), 15 deletions(-)
+
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 98210fd01f18..ca1ef8700e55 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -231,6 +231,7 @@ enum nbcon_prio {
+ };
+ 
+ struct console;
++struct printk_buffers;
+ 
+ /**
+  * struct nbcon_context - Context for console acquire/release
+@@ -241,6 +242,7 @@ struct console;
+  *				be used only with NBCON_PRIO_PANIC @prio. It
+  *				might cause a system freeze when the console
+  *				is used later.
++ * @pbufs:			Pointer to the text buffer for this context
+  */
+ struct nbcon_context {
+ 	/* members set by caller */
+@@ -248,6 +250,9 @@ struct nbcon_context {
+ 	unsigned int		spinwait_max_us;
+ 	enum nbcon_prio		prio;
+ 	unsigned int		allow_unsafe_takeover	: 1;
++
++	/* members set by acquire */
++	struct printk_buffers	*pbufs;
+ };
+ 
+ /**
+@@ -271,6 +276,7 @@ struct nbcon_context {
+  * @node:		hlist node for the console list
+  *
+  * @nbcon_state:	State for nbcon consoles
++ * @pbufs:		Pointer to nbcon private buffer
+  */
+ struct console {
+ 	char			name[16];
+@@ -293,6 +299,7 @@ struct console {
+ 
+ 	/* nbcon console specific members */
+ 	atomic_t		__private nbcon_state;
++	struct printk_buffers	*pbufs;
+ };
+ 
+ #ifdef CONFIG_LOCKDEP
+diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
+index 7199d60bfc25..f6161cd75d7d 100644
+--- a/kernel/printk/internal.h
++++ b/kernel/printk/internal.h
+@@ -13,6 +13,12 @@ int devkmsg_sysctl_set_loglvl(struct ctl_table *table, int write,
+ #define printk_sysctl_init() do { } while (0)
+ #endif
+ 
++#define con_printk(lvl, con, fmt, ...)				\
++	printk(lvl pr_fmt("%s%sconsole [%s%d] " fmt),		\
++		(con->flags & CON_NBCON) ? "" : "legacy ",	\
++		(con->flags & CON_BOOT) ? "boot" : "",		\
++		con->name, con->index, ##__VA_ARGS__)
++
+ #ifdef CONFIG_PRINTK
+ 
+ #ifdef CONFIG_PRINTK_CALLER
+@@ -63,8 +69,9 @@ void defer_console_output(void);
+ u16 printk_parse_prefix(const char *text, int *level,
+ 			enum printk_info_flags *flags);
+ 
++bool nbcon_alloc(struct console *con);
+ void nbcon_init(struct console *con);
+-void nbcon_cleanup(struct console *con);
++void nbcon_free(struct console *con);
+ 
+ #else
+ 
+@@ -81,8 +88,9 @@ void nbcon_cleanup(struct console *con);
+ #define printk_safe_exit_irqrestore(flags) local_irq_restore(flags)
+ 
+ static inline bool printk_percpu_data_ready(void) { return false; }
++static inline bool nbcon_alloc(struct console *con) { return false; }
+ static inline void nbcon_init(struct console *con) { }
+-static inline void nbcon_cleanup(struct console *con) { }
++static inline void nbcon_free(struct console *con) { }
+ 
+ #endif /* CONFIG_PRINTK */
+ 
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index a2a354f859f9..ba1febf15db6 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -5,6 +5,7 @@
+ #include <linux/kernel.h>
+ #include <linux/console.h>
+ #include <linux/delay.h>
++#include <linux/slab.h>
+ #include "internal.h"
+ /*
+  * Printk console printing implementation for consoles which does not depend
+@@ -70,6 +71,10 @@
+  *      console is an unsafe state. It is used only in panic() by the final
+  *      attempt to flush consoles in a try and hope mode.
+  *
++ *      Note that separate record buffers are used in panic(). As a result,
++ *      the messages can be read and formatted without any risk even after
++ *      using the hostile takeover in unsafe state.
++ *
+  * The release function simply clears the 'prio' field.
+  *
+  * All operations on @console::nbcon_state are atomic cmpxchg based to
+@@ -459,6 +464,8 @@ static int nbcon_context_try_acquire_hostile(struct nbcon_context *ctxt,
+ 	return 0;
+ }
+ 
++static struct printk_buffers panic_nbcon_pbufs;
++
+ /**
+  * nbcon_context_try_acquire - Try to acquire nbcon console
+  * @ctxt:	The context of the caller
+@@ -473,6 +480,7 @@ static int nbcon_context_try_acquire_hostile(struct nbcon_context *ctxt,
+ __maybe_unused
+ static bool nbcon_context_try_acquire(struct nbcon_context *ctxt)
+ {
++	unsigned int cpu = smp_processor_id();
+ 	struct console *con = ctxt->console;
+ 	struct nbcon_state cur;
+ 	int err;
+@@ -491,7 +499,18 @@ static bool nbcon_context_try_acquire(struct nbcon_context *ctxt)
+ 
+ 	err = nbcon_context_try_acquire_hostile(ctxt, &cur);
+ out:
+-	return !err;
++	if (err)
++		return false;
++
++	/* Acquire succeeded. */
++
++	/* Assign the appropriate buffer for this context. */
++	if (atomic_read(&panic_cpu) == cpu)
++		ctxt->pbufs = &panic_nbcon_pbufs;
++	else
++		ctxt->pbufs = con->pbufs;
++
++	return true;
+ }
+ 
+ static bool nbcon_owner_matches(struct nbcon_state *cur, int expected_cpu,
+@@ -530,7 +549,7 @@ static void nbcon_context_release(struct nbcon_context *ctxt)
+ 
+ 	do {
+ 		if (!nbcon_owner_matches(&cur, cpu, ctxt->prio))
+-			return;
++			break;
+ 
+ 		new.atom = cur.atom;
+ 		new.prio = NBCON_PRIO_NONE;
+@@ -542,26 +561,70 @@ static void nbcon_context_release(struct nbcon_context *ctxt)
+ 		new.unsafe |= cur.unsafe_takeover;
+ 
+ 	} while (!nbcon_state_try_cmpxchg(con, &cur, &new));
++
++	ctxt->pbufs = NULL;
++}
++
++/**
++ * nbcon_alloc - Allocate buffers needed by the nbcon console
++ * @con:	Console to allocate buffers for
++ *
++ * Return:	True on success. False otherwise and the console cannot
++ *		be used.
++ *
++ * This is not part of nbcon_init() because buffer allocation must
++ * be performed earlier in the console registration process.
++ */
++bool nbcon_alloc(struct console *con)
++{
++	if (con->flags & CON_BOOT) {
++		/*
++		 * Boot console printing is synchronized with legacy console
++		 * printing, so boot consoles can share the same global printk
++		 * buffers.
++		 */
++		con->pbufs = &printk_shared_pbufs;
++	} else {
++		con->pbufs = kmalloc(sizeof(*con->pbufs), GFP_KERNEL);
++		if (!con->pbufs) {
++			con_printk(KERN_ERR, con, "failed to allocate printing buffer\n");
++			return false;
++		}
++	}
++
++	return true;
+ }
+ 
+ /**
+  * nbcon_init - Initialize the nbcon console specific data
+  * @con:	Console to initialize
++ *
++ * nbcon_alloc() *must* be called and succeed before this function
++ * is called.
+  */
+ void nbcon_init(struct console *con)
+ {
+ 	struct nbcon_state state = { };
+ 
++	/* nbcon_alloc() must have been called and successful! */
++	BUG_ON(!con->pbufs);
++
+ 	nbcon_state_set(con, &state);
+ }
+ 
+ /**
+- * nbcon_cleanup - Cleanup the nbcon console specific data
+- * @con:	Console to cleanup
++ * nbcon_free - Free and cleanup the nbcon console specific data
++ * @con:	Console to free/cleanup nbcon data
+  */
+-void nbcon_cleanup(struct console *con)
++void nbcon_free(struct console *con)
+ {
+ 	struct nbcon_state state = { };
+ 
+ 	nbcon_state_set(con, &state);
++
++	/* Boot consoles share global printk buffers. */
++	if (!(con->flags & CON_BOOT))
++		kfree(con->pbufs);
++
++	con->pbufs = NULL;
+ }
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index dd68135cb371..58b57deb0cbe 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3380,12 +3380,6 @@ static void try_enable_default_console(struct console *newcon)
+ 		newcon->flags |= CON_CONSDEV;
+ }
+ 
+-#define con_printk(lvl, con, fmt, ...)				\
+-	printk(lvl pr_fmt("%s%sconsole [%s%d] " fmt),		\
+-	       (con->flags & CON_NBCON) ? "" : "legacy ",	\
+-	       (con->flags & CON_BOOT) ? "boot" : "",		\
+-	       con->name, con->index, ##__VA_ARGS__)
+-
+ static void console_init_seq(struct console *newcon, bool bootcon_registered)
+ {
+ 	struct console *con;
+@@ -3499,6 +3493,15 @@ void register_console(struct console *newcon)
+ 		goto unlock;
+ 	}
+ 
++	if (newcon->flags & CON_NBCON) {
++		/*
++		 * Ensure the nbcon console buffers can be allocated
++		 * before modifying any global data.
++		 */
++		if (!nbcon_alloc(newcon))
++			goto unlock;
++	}
++
+ 	/*
+ 	 * See if we want to enable this console driver by default.
+ 	 *
+@@ -3526,8 +3529,11 @@ void register_console(struct console *newcon)
+ 		err = try_enable_preferred_console(newcon, false);
+ 
+ 	/* printk() messages are not printed to the Braille console. */
+-	if (err || newcon->flags & CON_BRL)
++	if (err || newcon->flags & CON_BRL) {
++		if (newcon->flags & CON_NBCON)
++			nbcon_free(newcon);
+ 		goto unlock;
++	}
+ 
+ 	/*
+ 	 * If we have a bootconsole, and are switching to a real console,
+@@ -3638,7 +3644,7 @@ static int unregister_console_locked(struct console *console)
+ 	synchronize_srcu(&console_srcu);
+ 
+ 	if (console->flags & CON_NBCON)
+-		nbcon_cleanup(console);
++		nbcon_free(console);
+ 
+ 	console_sysfs_notify();
+ 
+-- 
+2.44.0
+

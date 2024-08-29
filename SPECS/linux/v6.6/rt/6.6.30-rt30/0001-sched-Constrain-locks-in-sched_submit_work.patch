@@ -1,0 +1,54 @@
+From 513c6c3ea1f00477a40392340ce5eb32fd812c41 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 8 Sep 2023 18:22:48 +0200
+Subject: [PATCH 001/196] sched: Constrain locks in sched_submit_work()
+
+Even though sched_submit_work() is ran from preemptible context,
+it is discouraged to have it use blocking locks due to the recursion
+potential.
+
+Enforce this.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20230908162254.999499-2-bigeasy@linutronix.de
+---
+ kernel/sched/core.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 1f91e2c12731..73949b8a55d2 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6721,11 +6721,18 @@ void __noreturn do_task_dead(void)
+ 
+ static inline void sched_submit_work(struct task_struct *tsk)
+ {
++	static DEFINE_WAIT_OVERRIDE_MAP(sched_map, LD_WAIT_CONFIG);
+ 	unsigned int task_flags;
+ 
+ 	if (task_is_running(tsk))
+ 		return;
+ 
++	/*
++	 * Establish LD_WAIT_CONFIG context to ensure none of the code called
++	 * will use a blocking primitive -- which would lead to recursion.
++	 */
++	lock_map_acquire_try(&sched_map);
++
+ 	task_flags = tsk->flags;
+ 	/*
+ 	 * If a worker goes to sleep, notify and ask workqueue whether it
+@@ -6750,6 +6757,8 @@ static inline void sched_submit_work(struct task_struct *tsk)
+ 	 * make sure to submit it to avoid deadlocks.
+ 	 */
+ 	blk_flush_plug(tsk->plug, true);
++
++	lock_map_release(&sched_map);
+ }
+ 
+ static void sched_update_worker(struct task_struct *tsk)
+-- 
+2.44.0
+

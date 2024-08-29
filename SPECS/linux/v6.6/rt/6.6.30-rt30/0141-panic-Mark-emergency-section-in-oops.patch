@@ -1,0 +1,44 @@
+From 27601e4c1ee35c702bc6946dfbd6fa630b543dba Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Tue, 19 Sep 2023 17:07:34 +0000
+Subject: [PATCH 141/196] panic: Mark emergency section in oops
+
+Mark an emergency section beginning with oops_enter() until the
+end of oops_exit(). In this section, the CPU will not perform
+console output for the printk() calls. Instead, a flushing of the
+console output will triggered when exiting the emergency section.
+
+The very end of oops_exit() performs a kmsg_dump(). This is not
+included in the emergency section because it is another
+flushing mechanism that should occur after the consoles have
+been triggered to flush.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/panic.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/kernel/panic.c b/kernel/panic.c
+index 147803c3a402..9215df21d8c2 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -630,6 +630,7 @@ bool oops_may_print(void)
+  */
+ void oops_enter(void)
+ {
++	nbcon_cpu_emergency_enter();
+ 	tracing_off();
+ 	/* can't trust the integrity of the kernel anymore: */
+ 	debug_locks_off();
+@@ -652,6 +653,7 @@ void oops_exit(void)
+ {
+ 	do_oops_enter_exit();
+ 	print_oops_end_marker();
++	nbcon_cpu_emergency_exit();
+ 	kmsg_dump(KMSG_DUMP_OOPS);
+ }
+ 
+-- 
+2.44.0
+

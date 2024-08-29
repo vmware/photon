@@ -1,0 +1,130 @@
+From 07acdd3e3a46965de9c10c29e868c4d3d7f8e620 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Thu, 21 Sep 2023 16:15:16 +0200
+Subject: [PATCH 014/196] drm/amd/display: Move the memory allocation out of
+ dcn20_validate_bandwidth_fp().
+
+dcn20_validate_bandwidth_fp() is invoked while FPU access has been
+enabled. FPU access requires disabling preemption even on PREEMPT_RT.
+It is not possible to allocate memory with disabled preemption even with
+GFP_ATOMIC on PREEMPT_RT.
+
+Move the memory allocation before FPU access is enabled.
+To preserve previous "clean" state of "pipes" add a memset() before the
+second invocation of dcn20_validate_bandwidth_internal() where the
+variable is used.
+
+Link: https://lore.kernel.org/r/20230921141516.520471-6-bigeasy@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ .../drm/amd/display/dc/dcn20/dcn20_resource.c    | 10 +++++++++-
+ .../gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c | 16 +++++++---------
+ .../gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.h |  5 ++---
+ 3 files changed, 18 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_resource.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_resource.c
+index d587f807dfd7..5036a3e60832 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_resource.c
+@@ -2141,9 +2141,17 @@ bool dcn20_validate_bandwidth(struct dc *dc, struct dc_state *context,
+ 		bool fast_validate)
+ {
+ 	bool voltage_supported;
++	display_e2e_pipe_params_st *pipes;
++
++	pipes = kcalloc(dc->res_pool->pipe_count, sizeof(display_e2e_pipe_params_st), GFP_KERNEL);
++	if (!pipes)
++		return false;
++
+ 	DC_FP_START();
+-	voltage_supported = dcn20_validate_bandwidth_fp(dc, context, fast_validate);
++	voltage_supported = dcn20_validate_bandwidth_fp(dc, context, fast_validate, pipes);
+ 	DC_FP_END();
++
++	kfree(pipes);
+ 	return voltage_supported;
+ }
+ 
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
+index 89d4e969cfd8..68970d6cf031 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
+@@ -2018,7 +2018,7 @@ void dcn20_patch_bounding_box(struct dc *dc, struct _vcs_dpi_soc_bounding_box_st
+ }
+ 
+ static bool dcn20_validate_bandwidth_internal(struct dc *dc, struct dc_state *context,
+-		bool fast_validate)
++		bool fast_validate, display_e2e_pipe_params_st *pipes)
+ {
+ 	bool out = false;
+ 
+@@ -2027,7 +2027,6 @@ static bool dcn20_validate_bandwidth_internal(struct dc *dc, struct dc_state *co
+ 	int vlevel = 0;
+ 	int pipe_split_from[MAX_PIPES];
+ 	int pipe_cnt = 0;
+-	display_e2e_pipe_params_st *pipes = kzalloc(dc->res_pool->pipe_count * sizeof(display_e2e_pipe_params_st), GFP_ATOMIC);
+ 	DC_LOGGER_INIT(dc->ctx->logger);
+ 
+ 	BW_VAL_TRACE_COUNT();
+@@ -2062,16 +2061,14 @@ static bool dcn20_validate_bandwidth_internal(struct dc *dc, struct dc_state *co
+ 	out = false;
+ 
+ validate_out:
+-	kfree(pipes);
+ 
+ 	BW_VAL_TRACE_FINISH();
+ 
+ 	return out;
+ }
+ 
+-bool dcn20_validate_bandwidth_fp(struct dc *dc,
+-				 struct dc_state *context,
+-				 bool fast_validate)
++bool dcn20_validate_bandwidth_fp(struct dc *dc, struct dc_state *context,
++				 bool fast_validate, display_e2e_pipe_params_st *pipes)
+ {
+ 	bool voltage_supported = false;
+ 	bool full_pstate_supported = false;
+@@ -2090,11 +2087,11 @@ bool dcn20_validate_bandwidth_fp(struct dc *dc,
+ 	ASSERT(context != dc->current_state);
+ 
+ 	if (fast_validate) {
+-		return dcn20_validate_bandwidth_internal(dc, context, true);
++		return dcn20_validate_bandwidth_internal(dc, context, true, pipes);
+ 	}
+ 
+ 	// Best case, we support full UCLK switch latency
+-	voltage_supported = dcn20_validate_bandwidth_internal(dc, context, false);
++	voltage_supported = dcn20_validate_bandwidth_internal(dc, context, false, pipes);
+ 	full_pstate_supported = context->bw_ctx.bw.dcn.clk.p_state_change_support;
+ 
+ 	if (context->bw_ctx.dml.soc.dummy_pstate_latency_us == 0 ||
+@@ -2106,7 +2103,8 @@ bool dcn20_validate_bandwidth_fp(struct dc *dc,
+ 	// Fallback: Try to only support G6 temperature read latency
+ 	context->bw_ctx.dml.soc.dram_clock_change_latency_us = context->bw_ctx.dml.soc.dummy_pstate_latency_us;
+ 
+-	voltage_supported = dcn20_validate_bandwidth_internal(dc, context, false);
++	memset(pipes, 0, dc->res_pool->pipe_count * sizeof(display_e2e_pipe_params_st));
++	voltage_supported = dcn20_validate_bandwidth_internal(dc, context, false, pipes);
+ 	dummy_pstate_supported = context->bw_ctx.bw.dcn.clk.p_state_change_support;
+ 
+ 	if (voltage_supported && (dummy_pstate_supported || !(context->stream_count))) {
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.h b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.h
+index a81a0b9e6884..b6c34198ddc8 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.h
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.h
+@@ -61,9 +61,8 @@ void dcn20_update_bounding_box(struct dc *dc,
+ 			       unsigned int num_states);
+ void dcn20_patch_bounding_box(struct dc *dc,
+ 			      struct _vcs_dpi_soc_bounding_box_st *bb);
+-bool dcn20_validate_bandwidth_fp(struct dc *dc,
+-				 struct dc_state *context,
+-				 bool fast_validate);
++bool dcn20_validate_bandwidth_fp(struct dc *dc, struct dc_state *context,
++				 bool fast_validate, display_e2e_pipe_params_st *pipes);
+ void dcn20_fpu_set_wm_ranges(int i,
+ 			     struct pp_smu_wm_range_sets *ranges,
+ 			     struct _vcs_dpi_soc_bounding_box_st *loaded_bb);
+-- 
+2.44.0
+

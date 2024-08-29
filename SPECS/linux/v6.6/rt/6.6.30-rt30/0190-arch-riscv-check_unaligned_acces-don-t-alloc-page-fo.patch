@@ -1,0 +1,35 @@
+From 1cc02ba6385f634283769d4e71b3b106eb66c161 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clark.williams@gmail.com>
+Date: Mon, 5 Feb 2024 14:04:38 -0600
+Subject: [PATCH 190/196] arch/riscv: check_unaligned_acces(): don't alloc page
+ for check
+
+Drop the alloc_pages() call since the page is passed in as
+a parameter and the alloced page will not be freed.
+
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Clark Williams <clark.williams@gmail.com>
+---
+ arch/riscv/kernel/cpufeature.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+index 9d8b6b463592..dd118773e717 100644
+--- a/arch/riscv/kernel/cpufeature.c
++++ b/arch/riscv/kernel/cpufeature.c
+@@ -590,12 +590,6 @@ static int check_unaligned_access(void *param)
+ 	if (per_cpu(misaligned_access_speed, cpu) != RISCV_HWPROBE_MISALIGNED_UNKNOWN)
+ 		return;
+ 
+-	page = alloc_pages(GFP_NOWAIT, get_order(MISALIGNED_BUFFER_SIZE));
+-	if (!page) {
+-		pr_warn("Can't alloc pages to measure memcpy performance");
+-		return;
+-	}
+-
+ 	/* Make an unaligned destination buffer. */
+ 	dst = (void *)((unsigned long)page_address(page) | 0x1);
+ 	/* Unalign src as well, but differently (off by 1 + 2 = 3). */
+-- 
+2.44.0
+

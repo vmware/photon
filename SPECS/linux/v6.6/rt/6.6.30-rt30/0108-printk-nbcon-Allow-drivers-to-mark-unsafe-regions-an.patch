@@ -1,0 +1,143 @@
+From acab335e7339f1a8d8273e9e13e9129c613a78d4 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sat, 16 Sep 2023 21:26:07 +0206
+Subject: [PATCH 108/196] printk: nbcon: Allow drivers to mark unsafe regions
+ and check state
+
+For the write_atomic callback, the console driver may have unsafe
+regions that need to be appropriately marked. Provide functions
+that accept the nbcon_write_context struct to allow for the driver
+to enter and exit unsafe regions.
+
+Also provide a function for drivers to check if they are still the
+owner of the console.
+
+Co-developed-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Thomas Gleixner (Intel) <tglx@linutronix.de>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20230916192007.608398-9-john.ogness@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/console.h | 10 ++++++
+ kernel/printk/nbcon.c   | 75 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 85 insertions(+)
+
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 14563dcb34b1..e4fc6f7c1496 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -451,6 +451,16 @@ static inline bool console_is_registered(const struct console *con)
+ 	lockdep_assert_console_list_lock_held();			\
+ 	hlist_for_each_entry(con, &console_list, node)
+ 
++#ifdef CONFIG_PRINTK
++extern bool nbcon_can_proceed(struct nbcon_write_context *wctxt);
++extern bool nbcon_enter_unsafe(struct nbcon_write_context *wctxt);
++extern bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt);
++#else
++static inline bool nbcon_can_proceed(struct nbcon_write_context *wctxt) { return false; }
++static inline bool nbcon_enter_unsafe(struct nbcon_write_context *wctxt) { return false; }
++static inline bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt) { return false; }
++#endif
++
+ extern int console_set_on_cmdline;
+ extern struct console *early_console;
+ 
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index 6e05d263fd22..b96077152f49 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -732,6 +732,41 @@ static bool nbcon_context_can_proceed(struct nbcon_context *ctxt, struct nbcon_s
+ 	return false;
+ }
+ 
++/**
++ * nbcon_can_proceed - Check whether ownership can proceed
++ * @wctxt:	The write context that was handed to the write function
++ *
++ * Return:	True if this context still owns the console. False if
++ *		ownership was handed over or taken.
++ *
++ * It is used in nbcon_enter_unsafe() to make sure that it still owns the
++ * lock. Also it is used in nbcon_exit_unsafe() to eventually free the lock
++ * for a higher priority context which asked for the friendly handover.
++ *
++ * It can be called inside an unsafe section when the console is just
++ * temporary in safe state instead of exiting and entering the unsafe state.
++ *
++ * Also it can be called in the safe context before doing an expensive safe
++ * operation. It does not make sense to do the operation when a higher
++ * priority context took the lock.
++ *
++ * When this function returns false then the calling context no longer owns
++ * the console and is no longer allowed to go forward. In this case it must
++ * back out immediately and carefully. The buffer content is also no longer
++ * trusted since it no longer belongs to the calling context.
++ */
++bool nbcon_can_proceed(struct nbcon_write_context *wctxt)
++{
++	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
++	struct console *con = ctxt->console;
++	struct nbcon_state cur;
++
++	nbcon_state_read(con, &cur);
++
++	return nbcon_context_can_proceed(ctxt, &cur);
++}
++EXPORT_SYMBOL_GPL(nbcon_can_proceed);
++
+ #define nbcon_context_enter_unsafe(c)	__nbcon_context_update_unsafe(c, true)
+ #define nbcon_context_exit_unsafe(c)	__nbcon_context_update_unsafe(c, false)
+ 
+@@ -782,6 +817,46 @@ static bool __nbcon_context_update_unsafe(struct nbcon_context *ctxt, bool unsaf
+ 	return nbcon_context_can_proceed(ctxt, &cur);
+ }
+ 
++/**
++ * nbcon_enter_unsafe - Enter an unsafe region in the driver
++ * @wctxt:	The write context that was handed to the write function
++ *
++ * Return:	True if this context still owns the console. False if
++ *		ownership was handed over or taken.
++ *
++ * When this function returns false then the calling context no longer owns
++ * the console and is no longer allowed to go forward. In this case it must
++ * back out immediately and carefully. The buffer content is also no longer
++ * trusted since it no longer belongs to the calling context.
++ */
++bool nbcon_enter_unsafe(struct nbcon_write_context *wctxt)
++{
++	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
++
++	return nbcon_context_enter_unsafe(ctxt);
++}
++EXPORT_SYMBOL_GPL(nbcon_enter_unsafe);
++
++/**
++ * nbcon_exit_unsafe - Exit an unsafe region in the driver
++ * @wctxt:	The write context that was handed to the write function
++ *
++ * Return:	True if this context still owns the console. False if
++ *		ownership was handed over or taken.
++ *
++ * When this function returns false then the calling context no longer owns
++ * the console and is no longer allowed to go forward. In this case it must
++ * back out immediately and carefully. The buffer content is also no longer
++ * trusted since it no longer belongs to the calling context.
++ */
++bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt)
++{
++	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
++
++	return nbcon_context_exit_unsafe(ctxt);
++}
++EXPORT_SYMBOL_GPL(nbcon_exit_unsafe);
++
+ /**
+  * nbcon_emit_next_record - Emit a record in the acquired context
+  * @wctxt:	The write context that will be handed to the write function
+-- 
+2.44.0
+

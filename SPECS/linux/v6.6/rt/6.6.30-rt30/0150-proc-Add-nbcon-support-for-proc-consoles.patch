@@ -1,0 +1,58 @@
+From 0f26f519f2a9fd753ec73cd27ea5880201272134 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Tue, 26 Sep 2023 13:31:00 +0000
+Subject: [PATCH 150/196] proc: Add nbcon support for /proc/consoles
+
+Update /proc/consoles output to show 'W' if an nbcon write
+callback is implemented (write_atomic or write_thread).
+
+Also update /proc/consoles output to show 'N' if it is an
+nbcon console.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ fs/proc/consoles.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/fs/proc/consoles.c b/fs/proc/consoles.c
+index e0758fe7936d..2703676549f5 100644
+--- a/fs/proc/consoles.c
++++ b/fs/proc/consoles.c
+@@ -21,12 +21,14 @@ static int show_console_dev(struct seq_file *m, void *v)
+ 		{ CON_ENABLED,		'E' },
+ 		{ CON_CONSDEV,		'C' },
+ 		{ CON_BOOT,		'B' },
++		{ CON_NBCON,		'N' },
+ 		{ CON_PRINTBUFFER,	'p' },
+ 		{ CON_BRL,		'b' },
+ 		{ CON_ANYTIME,		'a' },
+ 	};
+ 	char flags[ARRAY_SIZE(con_flags) + 1];
+ 	struct console *con = v;
++	char con_write = '-';
+ 	unsigned int a;
+ 	dev_t dev = 0;
+ 
+@@ -57,9 +59,15 @@ static int show_console_dev(struct seq_file *m, void *v)
+ 	seq_setwidth(m, 21 - 1);
+ 	seq_printf(m, "%s%d", con->name, con->index);
+ 	seq_pad(m, ' ');
+-	seq_printf(m, "%c%c%c (%s)", con->read ? 'R' : '-',
+-			con->write ? 'W' : '-', con->unblank ? 'U' : '-',
+-			flags);
++	if (con->flags & CON_NBCON) {
++		if (con->write_atomic || con->write_thread)
++			con_write = 'W';
++	} else {
++		if (con->write)
++			con_write = 'W';
++	}
++	seq_printf(m, "%c%c%c (%s)", con->read ? 'R' : '-', con_write,
++		   con->unblank ? 'U' : '-', flags);
+ 	if (dev)
+ 		seq_printf(m, " %4d:%d", MAJOR(dev), MINOR(dev));
+ 
+-- 
+2.44.0
+

@@ -29,8 +29,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.6.28
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.6.30
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -41,7 +41,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=fdf6def06de85656f8aa010edfb8b2f7f71cdeef9a70b5b35511833fbcf0e4fbfafb6224acfdf475975bc4bc8f05d0291745af5a6ae752a70cbd09ae2d3d17a8
+%define sha512 linux=1c1cb9449686fc334385e9997073503ac6312d6855e8ef26bb1e73267447cce14f1f0a22b5c585a0a3c6c8dd1ed0e3c246671773ab8990fdf3c2f081219a9212
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -857,6 +857,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Oct 23 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.6.30-1
+- Upgrade to version v6.6.30
 * Thu Sep 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-2
 - Fix backward compatibility issue
 * Thu Aug 29 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.6.28-1

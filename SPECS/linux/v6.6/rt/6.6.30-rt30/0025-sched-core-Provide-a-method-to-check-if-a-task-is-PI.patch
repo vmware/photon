@@ -1,0 +1,61 @@
+From 674805e879bf962a1cd7fb535e9262cba148cce9 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 4 Aug 2023 13:30:37 +0200
+Subject: [PATCH 025/196] sched/core: Provide a method to check if a task is
+ PI-boosted.
+
+Provide a method to check if a task inherited the priority from another
+task. This happens if a task owns a lock which is requested by a task
+with higher priority. This can be used as a hint to add a preemption
+point to the critical section.
+
+Provide a function which reports true if the task is PI-boosted.
+
+Link: https://lore.kernel.org/r/20230804113039.419794-2-bigeasy@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/sched.h |  1 +
+ kernel/sched/core.c   | 15 +++++++++++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 67623ffd4a8e..eab173e5d09b 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1905,6 +1905,7 @@ static inline int dl_task_check_affinity(struct task_struct *p, const struct cpu
+ }
+ #endif
+ 
++extern bool task_is_pi_boosted(const struct task_struct *p);
+ extern int yield_to(struct task_struct *p, bool preempt);
+ extern void set_user_nice(struct task_struct *p, long nice);
+ extern int task_prio(const struct task_struct *p);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index d703c5427cf2..c731c53d6bfd 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -8923,6 +8923,21 @@ static inline void preempt_dynamic_init(void) { }
+ 
+ #endif /* #ifdef CONFIG_PREEMPT_DYNAMIC */
+ 
++/*
++ * task_is_pi_boosted - Check if task has been PI boosted.
++ * @p:	Task to check.
++ *
++ * Return true if task is subject to priority inheritance.
++ */
++bool task_is_pi_boosted(const struct task_struct *p)
++{
++	int prio = p->prio;
++
++	if (!rt_prio(prio))
++		return false;
++	return prio != p->normal_prio;
++}
++
+ /**
+  * yield - yield the current processor to other threads.
+  *
+-- 
+2.44.0
+

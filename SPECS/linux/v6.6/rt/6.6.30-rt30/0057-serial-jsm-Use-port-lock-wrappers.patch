@@ -1,0 +1,131 @@
+From 8d6c5e90c541f58b85c1ccc96a94ea2944b6553e Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:43:48 +0206
+Subject: [PATCH 057/196] serial: jsm: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-32-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/jsm/jsm_neo.c |  4 ++--
+ drivers/tty/serial/jsm/jsm_tty.c | 16 ++++++++--------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+index 0c78f66276cd..2bd640428970 100644
+--- a/drivers/tty/serial/jsm/jsm_neo.c
++++ b/drivers/tty/serial/jsm/jsm_neo.c
+@@ -816,9 +816,9 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
+ 		/* Parse any modem signal changes */
+ 		jsm_dbg(INTR, &ch->ch_bd->pci_dev,
+ 			"MOD_STAT: sending to parse_modem_sigs\n");
+-		spin_lock_irqsave(&ch->uart_port.lock, lock_flags);
++		uart_port_lock_irqsave(&ch->uart_port, &lock_flags);
+ 		neo_parse_modem(ch, readb(&ch->ch_neo_uart->msr));
+-		spin_unlock_irqrestore(&ch->uart_port.lock, lock_flags);
++		uart_port_unlock_irqrestore(&ch->uart_port, lock_flags);
+ 	}
+ }
+ 
+diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
+index 222afc270c88..ce0fef7e2c66 100644
+--- a/drivers/tty/serial/jsm/jsm_tty.c
++++ b/drivers/tty/serial/jsm/jsm_tty.c
+@@ -152,14 +152,14 @@ static void jsm_tty_send_xchar(struct uart_port *port, char ch)
+ 		container_of(port, struct jsm_channel, uart_port);
+ 	struct ktermios *termios;
+ 
+-	spin_lock_irqsave(&port->lock, lock_flags);
++	uart_port_lock_irqsave(port, &lock_flags);
+ 	termios = &port->state->port.tty->termios;
+ 	if (ch == termios->c_cc[VSTART])
+ 		channel->ch_bd->bd_ops->send_start_character(channel);
+ 
+ 	if (ch == termios->c_cc[VSTOP])
+ 		channel->ch_bd->bd_ops->send_stop_character(channel);
+-	spin_unlock_irqrestore(&port->lock, lock_flags);
++	uart_port_unlock_irqrestore(port, lock_flags);
+ }
+ 
+ static void jsm_tty_stop_rx(struct uart_port *port)
+@@ -176,13 +176,13 @@ static void jsm_tty_break(struct uart_port *port, int break_state)
+ 	struct jsm_channel *channel =
+ 		container_of(port, struct jsm_channel, uart_port);
+ 
+-	spin_lock_irqsave(&port->lock, lock_flags);
++	uart_port_lock_irqsave(port, &lock_flags);
+ 	if (break_state == -1)
+ 		channel->ch_bd->bd_ops->send_break(channel);
+ 	else
+ 		channel->ch_bd->bd_ops->clear_break(channel);
+ 
+-	spin_unlock_irqrestore(&port->lock, lock_flags);
++	uart_port_unlock_irqrestore(port, lock_flags);
+ }
+ 
+ static int jsm_tty_open(struct uart_port *port)
+@@ -241,7 +241,7 @@ static int jsm_tty_open(struct uart_port *port)
+ 	channel->ch_cached_lsr = 0;
+ 	channel->ch_stops_sent = 0;
+ 
+-	spin_lock_irqsave(&port->lock, lock_flags);
++	uart_port_lock_irqsave(port, &lock_flags);
+ 	termios = &port->state->port.tty->termios;
+ 	channel->ch_c_cflag	= termios->c_cflag;
+ 	channel->ch_c_iflag	= termios->c_iflag;
+@@ -261,7 +261,7 @@ static int jsm_tty_open(struct uart_port *port)
+ 	jsm_carrier(channel);
+ 
+ 	channel->ch_open_count++;
+-	spin_unlock_irqrestore(&port->lock, lock_flags);
++	uart_port_unlock_irqrestore(port, lock_flags);
+ 
+ 	jsm_dbg(OPEN, &channel->ch_bd->pci_dev, "finish\n");
+ 	return 0;
+@@ -307,7 +307,7 @@ static void jsm_tty_set_termios(struct uart_port *port,
+ 	struct jsm_channel *channel =
+ 		container_of(port, struct jsm_channel, uart_port);
+ 
+-	spin_lock_irqsave(&port->lock, lock_flags);
++	uart_port_lock_irqsave(port, &lock_flags);
+ 	channel->ch_c_cflag	= termios->c_cflag;
+ 	channel->ch_c_iflag	= termios->c_iflag;
+ 	channel->ch_c_oflag	= termios->c_oflag;
+@@ -317,7 +317,7 @@ static void jsm_tty_set_termios(struct uart_port *port,
+ 
+ 	channel->ch_bd->bd_ops->param(channel);
+ 	jsm_carrier(channel);
+-	spin_unlock_irqrestore(&port->lock, lock_flags);
++	uart_port_unlock_irqrestore(port, lock_flags);
+ }
+ 
+ static const char *jsm_tty_type(struct uart_port *port)
+-- 
+2.44.0
+

@@ -1,0 +1,50 @@
+From 9c6f5b2f3e27a9f9af835a4597754f2bba49a398 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 11 Sep 2023 15:53:39 +0000
+Subject: [PATCH 142/196] rcu: Mark emergency section in rcu stalls
+
+Mark an emergency section within print_other_cpu_stall(), where
+RCU stall information is printed. In this section, the CPU will
+not perform console output for the printk() calls. Instead, a
+flushing of the console output will triggered when exiting the
+emergency section.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/rcu/tree_stall.h | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
+index e09f4f624261..3114830489ef 100644
+--- a/kernel/rcu/tree_stall.h
++++ b/kernel/rcu/tree_stall.h
+@@ -8,6 +8,7 @@
+  */
+ 
+ #include <linux/kvm_para.h>
++#include <linux/console.h>
+ 
+ //////////////////////////////////////////////////////////////////////////////
+ //
+@@ -603,6 +604,8 @@ static void print_other_cpu_stall(unsigned long gp_seq, unsigned long gps)
+ 	if (rcu_stall_is_suppressed())
+ 		return;
+ 
++	nbcon_cpu_emergency_enter();
++
+ 	/*
+ 	 * OK, time to rat on our buddy...
+ 	 * See Documentation/RCU/stallwarn.rst for info on how to debug
+@@ -657,6 +660,8 @@ static void print_other_cpu_stall(unsigned long gp_seq, unsigned long gps)
+ 	panic_on_rcu_stall();
+ 
+ 	rcu_force_quiescent_state();  /* Kick them all. */
++
++	nbcon_cpu_emergency_exit();
+ }
+ 
+ static void print_cpu_stall(unsigned long gps)
+-- 
+2.44.0
+

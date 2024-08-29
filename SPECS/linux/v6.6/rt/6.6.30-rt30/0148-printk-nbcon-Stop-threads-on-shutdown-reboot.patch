@@ -1,0 +1,65 @@
+From 0787557324207f713a3a76f62fc12b8bcb6615da Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Tue, 26 Sep 2023 13:04:15 +0000
+Subject: [PATCH 148/196] printk: nbcon: Stop threads on shutdown/reboot
+
+Register a syscore_ops shutdown function to stop all threaded
+printers on shutdown/reboot. This allows printk to transition back
+to atomic printing in order to provide a robust mechanism for
+outputting the final messages.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/nbcon.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index 337ec7a10095..57ed4968a653 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -8,6 +8,7 @@
+ #include <linux/kthread.h>
+ #include <linux/slab.h>
+ #include <linux/serial_core.h>
++#include <linux/syscore_ops.h>
+ #include "printk_ringbuffer.h"
+ #include "internal.h"
+ /*
+@@ -1577,3 +1578,33 @@ void nbcon_release(struct uart_port *up)
+ 	con->locked_port = false;
+ }
+ EXPORT_SYMBOL_GPL(nbcon_release);
++
++/**
++ * printk_kthread_shutdown - shutdown all threaded printers
++ *
++ * On system shutdown all threaded printers are stopped. This allows printk
++ * to transition back to atomic printing, thus providing a robust mechanism
++ * for the final shutdown/reboot messages to be output.
++ */
++static void printk_kthread_shutdown(void)
++{
++	struct console *con;
++
++	console_list_lock();
++	for_each_console(con) {
++		if (con->flags & CON_NBCON)
++			nbcon_kthread_stop(con);
++	}
++	console_list_unlock();
++}
++
++static struct syscore_ops printk_syscore_ops = {
++	.shutdown = printk_kthread_shutdown,
++};
++
++static int __init printk_init_ops(void)
++{
++	register_syscore_ops(&printk_syscore_ops);
++	return 0;
++}
++device_initcall(printk_init_ops);
+-- 
+2.44.0
+

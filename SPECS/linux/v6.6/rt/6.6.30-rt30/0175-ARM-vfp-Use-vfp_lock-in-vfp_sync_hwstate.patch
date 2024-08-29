@@ -1,0 +1,49 @@
+From 01cd619646c3989d0d86d9162f7df4f743f05ffd Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 19 May 2023 16:57:30 +0200
+Subject: [PATCH 175/196] ARM: vfp: Use vfp_lock() in vfp_sync_hwstate().
+
+vfp_sync_hwstate() uses preempt_disable() followed by local_bh_disable()
+to ensure that it won't get interrupted while checking the VFP state.
+This harms PREEMPT_RT because softirq handling can get preempted and
+local_bh_disable() synchronizes the related section with a sleeping lock
+which does not work with disabled preemption.
+
+Use the vfp_lock() to synchronize the access.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/arm/vfp/vfpmodule.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/vfp/vfpmodule.c b/arch/arm/vfp/vfpmodule.c
+index 8d321cdb7ac5..3b9360bfc508 100644
+--- a/arch/arm/vfp/vfpmodule.c
++++ b/arch/arm/vfp/vfpmodule.c
+@@ -540,11 +540,9 @@ static inline void vfp_pm_init(void) { }
+  */
+ void vfp_sync_hwstate(struct thread_info *thread)
+ {
+-	unsigned int cpu = get_cpu();
+-
+-	local_bh_disable();
++	vfp_lock();
+ 
+-	if (vfp_state_in_hw(cpu, thread)) {
++	if (vfp_state_in_hw(raw_smp_processor_id(), thread)) {
+ 		u32 fpexc = fmrx(FPEXC);
+ 
+ 		/*
+@@ -555,8 +553,7 @@ void vfp_sync_hwstate(struct thread_info *thread)
+ 		fmxr(FPEXC, fpexc);
+ 	}
+ 
+-	local_bh_enable();
+-	put_cpu();
++	vfp_unlock();
+ }
+ 
+ /* Ensure that the thread reloads the hardware VFP state on the next use. */
+-- 
+2.44.0
+

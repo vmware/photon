@@ -1,0 +1,48 @@
+From 3b2c9b404015ccf3b82f494e34cd1ec1edf4a9f0 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 11 Dec 2023 09:19:18 +0000
+Subject: [PATCH 153/196] serial: core: Provide low-level functions to port
+ lock
+
+The nbcon console's driver_enter() and driver_exit() callbacks need
+to lock the port lock in order to synchronize against other hardware
+activity (such as adjusting baud rates). However, they cannot use
+the uart_port_lock() wrappers because the printk subsystem will
+perform nbcon locking after calling the driver_enter() callback.
+
+Provide low-level variants __uart_port_lock_irqsave() and
+__uart_port_unlock_irqrestore() for this purpose. These are only
+to be used by the driver_enter()/driver_exit() callbacks.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/serial_core.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 150dcf1ea332..e5947b13f2f1 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -681,6 +681,18 @@ static inline void uart_port_unlock_irqrestore(struct uart_port *up, unsigned lo
+ 	spin_unlock_irqrestore(&up->lock, flags);
+ }
+ 
++/* Only for use in the console->driver_enter() callback. */
++static inline void __uart_port_lock_irqsave(struct uart_port *up, unsigned long *flags)
++{
++	spin_lock_irqsave(&up->lock, *flags);
++}
++
++/* Only for use in the console->driver_exit() callback. */
++static inline void __uart_port_unlock_irqrestore(struct uart_port *up, unsigned long flags)
++{
++	spin_unlock_irqrestore(&up->lock, flags);
++}
++
+ static inline int serial_port_in(struct uart_port *up, int offset)
+ {
+ 	return up->serial_in(up, offset);
+-- 
+2.44.0
+

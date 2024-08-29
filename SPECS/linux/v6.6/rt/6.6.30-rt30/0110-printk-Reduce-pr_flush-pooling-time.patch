@@ -1,0 +1,107 @@
+From 7bf810460d3ece7bac6a04c0c8f5d84c1204d008 Mon Sep 17 00:00:00 2001
+From: Petr Mladek <pmladek@suse.com>
+Date: Fri, 6 Oct 2023 10:21:51 +0200
+Subject: [PATCH 110/196] printk: Reduce pr_flush() pooling time
+
+pr_flush() does not guarantee that all messages would really get flushed
+to the console. The best it could do is to wait with a given timeout.[*]
+
+The current interval 100ms for checking the progress might seem too
+long in some situations. For example, such delays are not appreciated
+during suspend and resume especially when the consoles have been flushed
+"long" time before the check.
+
+On the other hand, the sleeping wait might be useful in other situations.
+Especially, it would allow flushing the messages using printk kthreads
+on the same CPU[*].
+
+Use msleep(1) as a compromise.
+
+Also measure the time using jiffies. msleep() does not guarantee
+precise wakeup after the given delay. It might be much longer,
+especially for times < 20s. See Documentation/timers/timers-howto.rst
+for more details.
+
+Note that msecs_to_jiffies() already translates a negative value into
+an infinite timeout.
+
+[*] console_unlock() does not guarantee flushing the consoles since
+    the commit dbdda842fe96f893 ("printk: Add console owner and waiter
+    logic to load balance console writes").
+
+    It would be possible to guarantee it another way. For example,
+    the spinning might be enabled only when the console_lock has been
+    taken via console_trylock().
+
+    But the load balancing is helpful. And more importantly, the flush
+    with a timeout has been added as a preparation step for introducing
+    printk kthreads.
+
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20231006082151.6969-3-pmladek@suse.com
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 3bf517ae8262..a30338aca084 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3791,7 +3791,8 @@ late_initcall(printk_late_init);
+ /* If @con is specified, only wait for that console. Otherwise wait for all. */
+ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress)
+ {
+-	int remaining = timeout_ms;
++	unsigned long timeout_jiffies = msecs_to_jiffies(timeout_ms);
++	unsigned long remaining_jiffies = timeout_jiffies;
+ 	struct console *c;
+ 	u64 last_diff = 0;
+ 	u64 printk_seq;
+@@ -3809,6 +3810,9 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
+ 	console_unlock();
+ 
+ 	for (;;) {
++		unsigned long begin_jiffies;
++		unsigned long slept_jiffies;
++
+ 		diff = 0;
+ 
+ 		/*
+@@ -3846,24 +3850,20 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
+ 		console_srcu_read_unlock(cookie);
+ 
+ 		if (diff != last_diff && reset_on_progress)
+-			remaining = timeout_ms;
++			remaining_jiffies = timeout_jiffies;
+ 
+ 		console_unlock();
+ 
+ 		/* Note: @diff is 0 if there are no usable consoles. */
+-		if (diff == 0 || remaining == 0)
++		if (diff == 0 || remaining_jiffies == 0)
+ 			break;
+ 
+-		if (remaining < 0) {
+-			/* no timeout limit */
+-			msleep(100);
+-		} else if (remaining < 100) {
+-			msleep(remaining);
+-			remaining = 0;
+-		} else {
+-			msleep(100);
+-			remaining -= 100;
+-		}
++		/* msleep(1) might sleep much longer. Check time by jiffies. */
++		begin_jiffies = jiffies;
++		msleep(1);
++		slept_jiffies = jiffies - begin_jiffies;
++
++		remaining_jiffies -= min(slept_jiffies, remaining_jiffies);
+ 
+ 		last_diff = diff;
+ 	}
+-- 
+2.44.0
+

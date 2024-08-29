@@ -1,0 +1,98 @@
+From 358bab456c50196b77ce67e79ea231a4d50adcf3 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:43:19 +0206
+Subject: [PATCH 028/196] serial: core: Use lock wrappers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-3-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/serial_core.h | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index a7d5fa892be2..678409c47b88 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -1058,14 +1058,14 @@ static inline void uart_unlock_and_check_sysrq(struct uart_port *port)
+ 	u8 sysrq_ch;
+ 
+ 	if (!port->has_sysrq) {
+-		spin_unlock(&port->lock);
++		uart_port_unlock(port);
+ 		return;
+ 	}
+ 
+ 	sysrq_ch = port->sysrq_ch;
+ 	port->sysrq_ch = 0;
+ 
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ 
+ 	if (sysrq_ch)
+ 		handle_sysrq(sysrq_ch);
+@@ -1077,14 +1077,14 @@ static inline void uart_unlock_and_check_sysrq_irqrestore(struct uart_port *port
+ 	u8 sysrq_ch;
+ 
+ 	if (!port->has_sysrq) {
+-		spin_unlock_irqrestore(&port->lock, flags);
++		uart_port_unlock_irqrestore(port, flags);
+ 		return;
+ 	}
+ 
+ 	sysrq_ch = port->sysrq_ch;
+ 	port->sysrq_ch = 0;
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	if (sysrq_ch)
+ 		handle_sysrq(sysrq_ch);
+@@ -1100,12 +1100,12 @@ static inline int uart_prepare_sysrq_char(struct uart_port *port, u8 ch)
+ }
+ static inline void uart_unlock_and_check_sysrq(struct uart_port *port)
+ {
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ }
+ static inline void uart_unlock_and_check_sysrq_irqrestore(struct uart_port *port,
+ 		unsigned long flags)
+ {
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ #endif	/* CONFIG_MAGIC_SYSRQ_SERIAL */
+ 
+-- 
+2.44.0
+

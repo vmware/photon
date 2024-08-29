@@ -1,0 +1,52 @@
+From a2483e420e52736b616cdcbdc453b06440b6508d Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Thu, 3 Aug 2023 12:09:31 +0200
+Subject: [PATCH 008/196] signal: Add proper comment about the preempt-disable
+ in ptrace_stop().
+
+Commit 53da1d9456fe7 ("fix ptrace slowness") added a preempt-disable section
+between read_unlock() and the following schedule() invocation without
+explaining why it is needed.
+
+Replace the comment with an explanation why this is needed. Clarify that
+it is needed for correctness but for performance reasons.
+
+Acked-by: Oleg Nesterov <oleg@redhat.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lore.kernel.org/r/20230803100932.325870-2-bigeasy@linutronix.de
+---
+ kernel/signal.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/signal.c b/kernel/signal.c
+index 09019017d669..051ed8114cd4 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -2329,10 +2329,21 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
+ 		do_notify_parent_cldstop(current, false, why);
+ 
+ 	/*
+-	 * Don't want to allow preemption here, because
+-	 * sys_ptrace() needs this task to be inactive.
++	 * The previous do_notify_parent_cldstop() invocation woke ptracer.
++	 * One a PREEMPTION kernel this can result in preemption requirement
++	 * which will be fulfilled after read_unlock() and the ptracer will be
++	 * put on the CPU.
++	 * The ptracer is in wait_task_inactive(, __TASK_TRACED) waiting for
++	 * this task wait in schedule(). If this task gets preempted then it
++	 * remains enqueued on the runqueue. The ptracer will observe this and
++	 * then sleep for a delay of one HZ tick. In the meantime this task
++	 * gets scheduled, enters schedule() and will wait for the ptracer.
+ 	 *
+-	 * XXX: implement read_unlock_no_resched().
++	 * This preemption point is not bad from correctness point of view but
++	 * extends the runtime by one HZ tick time due to the ptracer's sleep.
++	 * The preempt-disable section ensures that there will be no preemption
++	 * between unlock and schedule() and so improving the performance since
++	 * the ptracer has no reason to sleep.
+ 	 */
+ 	preempt_disable();
+ 	read_unlock(&tasklist_lock);
+-- 
+2.44.0
+

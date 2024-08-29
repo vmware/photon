@@ -1,0 +1,47 @@
+From 89c4ffe27e8309791ca674bc0d092e12bd21c807 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 8 Jan 2013 21:36:51 +0100
+Subject: [PATCH 173/196] tty/serial/pl011: Make the locking work on RT
+
+The lock is a sleeping lock and local_irq_save() is not the optimsation
+we are looking for. Redo it to make it work on -RT and non-RT.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ drivers/tty/serial/amba-pl011.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 16c770311069..9cd660edb165 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2328,13 +2328,10 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
+ 
+ 	clk_enable(uap->clk);
+ 
+-	local_irq_save(flags);
+-	if (uap->port.sysrq)
+-		locked = 0;
+-	else if (oops_in_progress)
+-		locked = uart_port_trylock(&uap->port);
++	if (uap->port.sysrq || oops_in_progress)
++		locked = uart_port_trylock_irqsave(&uap->port, &flags);
+ 	else
+-		uart_port_lock(&uap->port);
++		uart_port_lock_irqsave(&uap->port, &flags);
+ 
+ 	/*
+ 	 *	First save the CR then disable the interrupts
+@@ -2360,8 +2357,7 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
+ 		pl011_write(old_cr, uap, REG_CR);
+ 
+ 	if (locked)
+-		uart_port_unlock(&uap->port);
+-	local_irq_restore(flags);
++		uart_port_unlock_irqrestore(&uap->port, flags);
+ 
+ 	clk_disable(uap->clk);
+ }
+-- 
+2.44.0
+

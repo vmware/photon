@@ -1,0 +1,322 @@
+From fec1f6acc7b3a176512710d53696ad89baa8cc47 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sat, 16 Sep 2023 21:26:05 +0206
+Subject: [PATCH 106/196] printk: nbcon: Add sequence handling
+
+Add an atomic_long_t field @nbcon_seq to the console struct to
+store the sequence number for nbcon consoles. For nbcon consoles
+this will be used instead of the non-atomic @seq field. The new
+field allows for safe atomic sequence number updates without
+requiring any locking.
+
+On 64bit systems the new field stores the full sequence number.
+On 32bit systems the new field stores the lower 32 bits of the
+sequence number, which are expanded to 64bit as needed by
+folding the values based on the sequence numbers available in
+the ringbuffer.
+
+For 32bit systems, having a 32bit representation in the console
+is sufficient. If a console ever gets more than 2^31 records
+behind the ringbuffer then this is the least of the problems.
+
+Co-developed-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Thomas Gleixner (Intel) <tglx@linutronix.de>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20230916192007.608398-7-john.ogness@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/console.h  |   4 ++
+ kernel/printk/internal.h |   7 +++
+ kernel/printk/nbcon.c    | 101 +++++++++++++++++++++++++++++++++++++++
+ kernel/printk/printk.c   |  31 +++++++++---
+ 4 files changed, 136 insertions(+), 7 deletions(-)
+
+diff --git a/include/linux/console.h b/include/linux/console.h
+index ca1ef8700e55..20cd486b76ad 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -243,6 +243,7 @@ struct printk_buffers;
+  *				might cause a system freeze when the console
+  *				is used later.
+  * @pbufs:			Pointer to the text buffer for this context
++ * @seq:			The sequence number to print for this context
+  */
+ struct nbcon_context {
+ 	/* members set by caller */
+@@ -253,6 +254,7 @@ struct nbcon_context {
+ 
+ 	/* members set by acquire */
+ 	struct printk_buffers	*pbufs;
++	u64			seq;
+ };
+ 
+ /**
+@@ -276,6 +278,7 @@ struct nbcon_context {
+  * @node:		hlist node for the console list
+  *
+  * @nbcon_state:	State for nbcon consoles
++ * @nbcon_seq:		Sequence number of the next record for nbcon to print
+  * @pbufs:		Pointer to nbcon private buffer
+  */
+ struct console {
+@@ -299,6 +302,7 @@ struct console {
+ 
+ 	/* nbcon console specific members */
+ 	atomic_t		__private nbcon_state;
++	atomic_long_t		__private nbcon_seq;
+ 	struct printk_buffers	*pbufs;
+ };
+ 
+diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
+index f6161cd75d7d..6473f5ae4a18 100644
+--- a/kernel/printk/internal.h
++++ b/kernel/printk/internal.h
+@@ -4,6 +4,7 @@
+  */
+ #include <linux/percpu.h>
+ #include <linux/console.h>
++#include "printk_ringbuffer.h"
+ 
+ #if defined(CONFIG_PRINTK) && defined(CONFIG_SYSCTL)
+ void __init printk_sysctl_init(void);
+@@ -42,6 +43,8 @@ enum printk_info_flags {
+ 	LOG_CONT	= 8,	/* text is a fragment of a continuation line */
+ };
+ 
++extern struct printk_ringbuffer *prb;
++
+ __printf(4, 0)
+ int vprintk_store(int facility, int level,
+ 		  const struct dev_printk_info *dev_info,
+@@ -69,6 +72,8 @@ void defer_console_output(void);
+ u16 printk_parse_prefix(const char *text, int *level,
+ 			enum printk_info_flags *flags);
+ 
++u64 nbcon_seq_read(struct console *con);
++void nbcon_seq_force(struct console *con, u64 seq);
+ bool nbcon_alloc(struct console *con);
+ void nbcon_init(struct console *con);
+ void nbcon_free(struct console *con);
+@@ -88,6 +93,8 @@ void nbcon_free(struct console *con);
+ #define printk_safe_exit_irqrestore(flags) local_irq_restore(flags)
+ 
+ static inline bool printk_percpu_data_ready(void) { return false; }
++static inline u64 nbcon_seq_read(struct console *con) { return 0; }
++static inline void nbcon_seq_force(struct console *con, u64 seq) { }
+ static inline bool nbcon_alloc(struct console *con) { return false; }
+ static inline void nbcon_init(struct console *con) { }
+ static inline void nbcon_free(struct console *con) { }
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index 98e4be5429f0..e076096b31c0 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -140,6 +140,101 @@ static inline bool nbcon_state_try_cmpxchg(struct console *con, struct nbcon_sta
+ 	return atomic_try_cmpxchg(&ACCESS_PRIVATE(con, nbcon_state), &cur->atom, new->atom);
+ }
+ 
++#ifdef CONFIG_64BIT
++
++#define __seq_to_nbcon_seq(seq) (seq)
++#define __nbcon_seq_to_seq(seq) (seq)
++
++#else /* CONFIG_64BIT */
++
++#define __seq_to_nbcon_seq(seq) ((u32)seq)
++
++static inline u64 __nbcon_seq_to_seq(u32 nbcon_seq)
++{
++	u64 seq;
++	u64 rb_next_seq;
++
++	/*
++	 * The provided sequence is only the lower 32 bits of the ringbuffer
++	 * sequence. It needs to be expanded to 64bit. Get the next sequence
++	 * number from the ringbuffer and fold it.
++	 *
++	 * Having a 32bit representation in the console is sufficient.
++	 * If a console ever gets more than 2^31 records behind
++	 * the ringbuffer then this is the least of the problems.
++	 *
++	 * Also the access to the ring buffer is always safe.
++	 */
++	rb_next_seq = prb_next_seq(prb);
++	seq = rb_next_seq - ((u32)rb_next_seq - nbcon_seq);
++
++	return seq;
++}
++
++#endif /* CONFIG_64BIT */
++
++/**
++ * nbcon_seq_read - Read the current console sequence
++ * @con:	Console to read the sequence of
++ *
++ * Return:	Sequence number of the next record to print on @con.
++ */
++u64 nbcon_seq_read(struct console *con)
++{
++	unsigned long nbcon_seq = atomic_long_read(&ACCESS_PRIVATE(con, nbcon_seq));
++
++	return __nbcon_seq_to_seq(nbcon_seq);
++}
++
++/**
++ * nbcon_seq_force - Force console sequence to a specific value
++ * @con:	Console to work on
++ * @seq:	Sequence number value to set
++ *
++ * Only to be used during init (before registration) or in extreme situations
++ * (such as panic with CONSOLE_REPLAY_ALL).
++ */
++void nbcon_seq_force(struct console *con, u64 seq)
++{
++	/*
++	 * If the specified record no longer exists, the oldest available record
++	 * is chosen. This is especially important on 32bit systems because only
++	 * the lower 32 bits of the sequence number are stored. The upper 32 bits
++	 * are derived from the sequence numbers available in the ringbuffer.
++	 */
++	u64 valid_seq = max_t(u64, seq, prb_first_valid_seq(prb));
++
++	atomic_long_set(&ACCESS_PRIVATE(con, nbcon_seq), __seq_to_nbcon_seq(valid_seq));
++
++	/* Clear con->seq since nbcon consoles use con->nbcon_seq instead. */
++	con->seq = 0;
++}
++
++/**
++ * nbcon_seq_try_update - Try to update the console sequence number
++ * @ctxt:	Pointer to an acquire context that contains
++ *		all information about the acquire mode
++ * @new_seq:	The new sequence number to set
++ *
++ * @ctxt->seq is updated to the new value of @con::nbcon_seq (expanded to
++ * the 64bit value). This could be a different value than @new_seq if
++ * nbcon_seq_force() was used or the current context no longer owns the
++ * console. In the later case, it will stop printing anyway.
++ */
++__maybe_unused
++static void nbcon_seq_try_update(struct nbcon_context *ctxt, u64 new_seq)
++{
++	unsigned long nbcon_seq = __seq_to_nbcon_seq(ctxt->seq);
++	struct console *con = ctxt->console;
++
++	if (atomic_long_try_cmpxchg(&ACCESS_PRIVATE(con, nbcon_seq), &nbcon_seq,
++				    __seq_to_nbcon_seq(new_seq))) {
++		ctxt->seq = new_seq;
++	} else {
++		ctxt->seq = nbcon_seq_read(con);
++	}
++}
++
+ /**
+  * nbcon_context_try_acquire_direct - Try to acquire directly
+  * @ctxt:	The context of the caller
+@@ -510,6 +605,9 @@ static bool nbcon_context_try_acquire(struct nbcon_context *ctxt)
+ 	else
+ 		ctxt->pbufs = con->pbufs;
+ 
++	/* Set the record sequence for this context to print. */
++	ctxt->seq = nbcon_seq_read(ctxt->console);
++
+ 	return true;
+ }
+ 
+@@ -722,6 +820,8 @@ bool nbcon_alloc(struct console *con)
+  *
+  * nbcon_alloc() *must* be called and succeed before this function
+  * is called.
++ *
++ * This function expects that the legacy @con->seq has been set.
+  */
+ void nbcon_init(struct console *con)
+ {
+@@ -730,6 +830,7 @@ void nbcon_init(struct console *con)
+ 	/* nbcon_alloc() must have been called and successful! */
+ 	BUG_ON(!con->pbufs);
+ 
++	nbcon_seq_force(con, con->seq);
+ 	nbcon_state_set(con, &state);
+ }
+ 
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 58b57deb0cbe..a1ab4760f807 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -494,7 +494,7 @@ _DEFINE_PRINTKRB(printk_rb_static, CONFIG_LOG_BUF_SHIFT - PRB_AVGBITS,
+ 
+ static struct printk_ringbuffer printk_rb_dynamic;
+ 
+-static struct printk_ringbuffer *prb = &printk_rb_static;
++struct printk_ringbuffer *prb = &printk_rb_static;
+ 
+ /*
+  * We cannot access per-CPU data (e.g. per-CPU flush irq_work) before
+@@ -3202,6 +3202,7 @@ void console_flush_on_panic(enum con_flush_mode mode)
+ 
+ 	if (mode == CONSOLE_REPLAY_ALL) {
+ 		struct console *c;
++		short flags;
+ 		int cookie;
+ 		u64 seq;
+ 
+@@ -3209,11 +3210,17 @@ void console_flush_on_panic(enum con_flush_mode mode)
+ 
+ 		cookie = console_srcu_read_lock();
+ 		for_each_console_srcu(c) {
+-			/*
+-			 * This is an unsynchronized assignment, but the
+-			 * kernel is in "hope and pray" mode anyway.
+-			 */
+-			c->seq = seq;
++			flags = console_srcu_read_flags(c);
++
++			if (flags & CON_NBCON) {
++				nbcon_seq_force(c, seq);
++			} else {
++				/*
++				 * This is an unsynchronized assignment. On
++				 * panic legacy consoles are only best effort.
++				 */
++				c->seq = seq;
++			}
+ 		}
+ 		console_srcu_read_unlock(cookie);
+ 	}
+@@ -3799,6 +3806,7 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
+ 	struct console *c;
+ 	u64 last_diff = 0;
+ 	u64 printk_seq;
++	short flags;
+ 	int cookie;
+ 	u64 diff;
+ 	u64 seq;
+@@ -3826,6 +3834,9 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
+ 		for_each_console_srcu(c) {
+ 			if (con && con != c)
+ 				continue;
++
++			flags = console_srcu_read_flags(c);
++
+ 			/*
+ 			 * If consoles are not usable, it cannot be expected
+ 			 * that they make forward progress, so only increment
+@@ -3833,7 +3844,13 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
+ 			 */
+ 			if (!console_is_usable(c))
+ 				continue;
+-			printk_seq = c->seq;
++
++			if (flags & CON_NBCON) {
++				printk_seq = nbcon_seq_read(c);
++			} else {
++				printk_seq = c->seq;
++			}
++
+ 			if (printk_seq < seq)
+ 				diff += seq - printk_seq;
+ 		}
+-- 
+2.44.0
+

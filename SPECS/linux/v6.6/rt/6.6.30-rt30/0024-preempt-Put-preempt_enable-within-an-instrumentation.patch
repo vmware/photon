@@ -1,0 +1,52 @@
+From 6a87d93b9feacedfef17f4da38a2f9fd5db32ab6 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 8 Mar 2023 16:29:38 +0100
+Subject: [PATCH 024/196] preempt: Put preempt_enable() within an
+ instrumentation*() section.
+
+Callers of preempt_enable() can be within an noinstr section leading to:
+| vmlinux.o: warning: objtool: native_sched_clock+0x97: call to preempt_schedule_notrace_thunk() leaves .noinstr.text section
+| vmlinux.o: warning: objtool: kvm_clock_read+0x22: call to preempt_schedule_notrace_thunk() leaves .noinstr.text section
+| vmlinux.o: warning: objtool: local_clock+0xb4: call to preempt_schedule_notrace_thunk() leaves .noinstr.text section
+| vmlinux.o: warning: objtool: enter_from_user_mode+0xea: call to preempt_schedule_thunk() leaves .noinstr.text section
+| vmlinux.o: warning: objtool: syscall_enter_from_user_mode+0x140: call to preempt_schedule_thunk() leaves .noinstr.text section
+| vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare+0xf2: call to preempt_schedule_thunk() leaves .noinstr.text section
+| vmlinux.o: warning: objtool: irqentry_enter_from_user_mode+0xea: call to preempt_schedule_thunk() leaves .noinstr.text section
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lore.kernel.org/r/20230309072724.3F6zRkvw@linutronix.de
+---
+ include/linux/preempt.h | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/preempt.h b/include/linux/preempt.h
+index 9aa6358a1a16..cd16f0330fba 100644
+--- a/include/linux/preempt.h
++++ b/include/linux/preempt.h
+@@ -230,15 +230,21 @@ do { \
+ #define preempt_enable() \
+ do { \
+ 	barrier(); \
+-	if (unlikely(preempt_count_dec_and_test())) \
++	if (unlikely(preempt_count_dec_and_test())) { \
++		instrumentation_begin(); \
+ 		__preempt_schedule(); \
++		instrumentation_end(); \
++	} \
+ } while (0)
+ 
+ #define preempt_enable_notrace() \
+ do { \
+ 	barrier(); \
+-	if (unlikely(__preempt_count_dec_and_test())) \
++	if (unlikely(__preempt_count_dec_and_test())) { \
++		instrumentation_begin(); \
+ 		__preempt_schedule_notrace(); \
++		instrumentation_end(); \
++	} \
+ } while (0)
+ 
+ #define preempt_check_resched() \
+-- 
+2.44.0
+

@@ -1,0 +1,76 @@
+From 216f82425acc260e911d9bddb63c5d243f7c821a Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:44:27 +0206
+Subject: [PATCH 096/196] serial: timbuart: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-71-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/timbuart.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/timbuart.c b/drivers/tty/serial/timbuart.c
+index 0859394a78cd..0cc6524f5e8b 100644
+--- a/drivers/tty/serial/timbuart.c
++++ b/drivers/tty/serial/timbuart.c
+@@ -174,7 +174,7 @@ static void timbuart_tasklet(struct tasklet_struct *t)
+ 	struct timbuart_port *uart = from_tasklet(uart, t, tasklet);
+ 	u32 isr, ier = 0;
+ 
+-	spin_lock(&uart->port.lock);
++	uart_port_lock(&uart->port);
+ 
+ 	isr = ioread32(uart->port.membase + TIMBUART_ISR);
+ 	dev_dbg(uart->port.dev, "%s ISR: %x\n", __func__, isr);
+@@ -189,7 +189,7 @@ static void timbuart_tasklet(struct tasklet_struct *t)
+ 
+ 	iowrite32(ier, uart->port.membase + TIMBUART_IER);
+ 
+-	spin_unlock(&uart->port.lock);
++	uart_port_unlock(&uart->port);
+ 	dev_dbg(uart->port.dev, "%s leaving\n", __func__);
+ }
+ 
+@@ -295,10 +295,10 @@ static void timbuart_set_termios(struct uart_port *port,
+ 		tty_termios_copy_hw(termios, old);
+ 	tty_termios_encode_baud_rate(termios, baud, baud);
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	iowrite8((u8)bindex, port->membase + TIMBUART_BAUDRATE);
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static const char *timbuart_type(struct uart_port *port)
+-- 
+2.44.0
+

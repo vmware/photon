@@ -1,0 +1,52 @@
+From 3851d5b387b7dbd5cc2b3bb322870194bc47a610 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 4 Aug 2023 13:30:39 +0200
+Subject: [PATCH 027/196] time: Allow to preempt after a callback.
+
+The TIMER_SOFTIRQ handler invokes timer callbacks of the expired timers.
+Before each invocation the timer_base::lock is dropped. The only lock
+that is still held is the timer_base::expiry_lock and the per-CPU
+bh-lock as part of local_bh_disable(). The former is released as part
+of lock up prevention if the timer is preempted by the caller which is
+waiting for its completion.
+
+Both locks are already released as part of timer_sync_wait_running().
+This can be extended by also releasing in bh-lock. The timer core does
+not rely on any state that is serialized by the bh-lock. The timer
+callback expects the bh-state to be serialized by the lock but there is
+no need to keep state synchronized while invoking multiple callbacks.
+
+Preempt handling softirqs and release all locks after a timer invocation
+if the current has inherited priority.
+
+Link: https://lore.kernel.org/r/20230804113039.419794-4-bigeasy@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/time/timer.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 7cad6fe3c035..b3fbe97d1e34 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1470,9 +1470,16 @@ static inline void timer_base_unlock_expiry(struct timer_base *base)
+  */
+ static void timer_sync_wait_running(struct timer_base *base)
+ {
+-	if (atomic_read(&base->timer_waiters)) {
++	bool need_preempt;
++
++	need_preempt = task_is_pi_boosted(current);
++	if (need_preempt || atomic_read(&base->timer_waiters)) {
+ 		raw_spin_unlock_irq(&base->lock);
+ 		spin_unlock(&base->expiry_lock);
++
++		if (need_preempt)
++			softirq_preempt();
++
+ 		spin_lock(&base->expiry_lock);
+ 		raw_spin_lock_irq(&base->lock);
+ 	}
+-- 
+2.44.0
+

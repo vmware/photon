@@ -1,0 +1,243 @@
+From 818158362b9f95e7156b42920ae7a543a08de88c Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Mon, 11 Sep 2023 15:21:57 +0000
+Subject: [PATCH 139/196] printk: nbcon: Implement emergency sections
+
+In emergency situations (something has gone wrong but the
+system continues to operate), usually important information
+(such as a backtrace) is generated via printk(). Each
+individual printk record has little meaning. It is the
+collection of printk messages that is most often needed by
+developers and users.
+
+In order to help ensure that the collection of printk messages
+in an emergency situation are all stored to the ringbuffer as
+quickly as possible, disable console output for that CPU while
+it is in the emergency situation. When exiting the emergency
+situation, trigger the consoles to be flushed.
+
+Add per-CPU emergency nesting tracking because an emergency
+can arise while in an emergency situation.
+
+Add functions to mark the beginning and end of emergency
+sections where the urgent messages are generated.
+
+Do not print if the current CPU is in an emergency state.
+
+Trigger console flushing when exiting all emergency nesting.
+
+Note that the emergency state is not system-wide. While one CPU
+is in an emergency state, another CPU may continue to print
+console messages.
+
+Co-developed-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Thomas Gleixner (Intel) <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/console.h |  4 ++
+ include/linux/printk.h  |  7 +++-
+ kernel/printk/nbcon.c   | 81 +++++++++++++++++++++++++++++++++++++++++
+ kernel/printk/printk.c  | 25 ++++++++++---
+ 4 files changed, 109 insertions(+), 8 deletions(-)
+
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 73515c324347..2583f13c25ba 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -458,10 +458,14 @@ static inline bool console_is_registered(const struct console *con)
+ 	hlist_for_each_entry(con, &console_list, node)
+ 
+ #ifdef CONFIG_PRINTK
++extern void nbcon_cpu_emergency_enter(void);
++extern void nbcon_cpu_emergency_exit(void);
+ extern bool nbcon_can_proceed(struct nbcon_write_context *wctxt);
+ extern bool nbcon_enter_unsafe(struct nbcon_write_context *wctxt);
+ extern bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt);
+ #else
++static inline void nbcon_cpu_emergency_enter(void) { }
++static inline void nbcon_cpu_emergency_exit(void) { }
+ static inline bool nbcon_can_proceed(struct nbcon_write_context *wctxt) { return false; }
+ static inline bool nbcon_enter_unsafe(struct nbcon_write_context *wctxt) { return false; }
+ static inline bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt) { return false; }
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index cf545b76131f..7a942e987b16 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -197,6 +197,7 @@ void show_regs_print_info(const char *log_lvl);
+ extern asmlinkage void dump_stack_lvl(const char *log_lvl) __cold;
+ extern asmlinkage void dump_stack(void) __cold;
+ void printk_trigger_flush(void);
++void printk_legacy_allow_panic_sync(void);
+ extern void nbcon_acquire(struct uart_port *up);
+ extern void nbcon_release(struct uart_port *up);
+ void nbcon_atomic_flush_unsafe(void);
+@@ -280,6 +281,10 @@ static inline void printk_trigger_flush(void)
+ {
+ }
+ 
++static inline void printk_legacy_allow_panic_sync(void)
++{
++}
++
+ static inline void nbcon_acquire(struct uart_port *up)
+ {
+ }
+@@ -782,5 +787,3 @@ static inline void print_hex_dump_debug(const char *prefix_str, int prefix_type,
+ 	print_hex_dump_debug(prefix_str, prefix_type, 16, 1, buf, len, true)
+ 
+ #endif
+-
+-void printk_legacy_allow_panic_sync(void);
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index 1c01f88d596d..c3ee245397f6 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -929,6 +929,29 @@ static bool nbcon_emit_next_record(struct nbcon_write_context *wctxt)
+ 	return nbcon_context_exit_unsafe(ctxt);
+ }
+ 
++/* Track the nbcon emergency nesting per CPU. */
++static DEFINE_PER_CPU(unsigned int, nbcon_pcpu_emergency_nesting);
++static unsigned int early_nbcon_pcpu_emergency_nesting __initdata;
++
++/**
++ * nbcon_get_cpu_emergency_nesting - Get the per CPU emergency nesting pointer
++ *
++ * Return:	Either a pointer to the per CPU emergency nesting counter of
++ *		the current CPU or to the init data during early boot.
++ */
++static __ref unsigned int *nbcon_get_cpu_emergency_nesting(void)
++{
++	/*
++	 * The value of __printk_percpu_data_ready gets set in normal
++	 * context and before SMP initialization. As a result it could
++	 * never change while inside an nbcon emergency section.
++	 */
++	if (!printk_percpu_data_ready())
++		return &early_nbcon_pcpu_emergency_nesting;
++
++	return this_cpu_ptr(&nbcon_pcpu_emergency_nesting);
++}
++
+ /**
+  * nbcon_atomic_emit_one - Print one record for an nbcon console using the
+  *				write_atomic() callback
+@@ -971,9 +994,15 @@ static bool nbcon_atomic_emit_one(struct nbcon_write_context *wctxt)
+  */
+ enum nbcon_prio nbcon_get_default_prio(void)
+ {
++	unsigned int *cpu_emergency_nesting;
++
+ 	if (this_cpu_in_panic())
+ 		return NBCON_PRIO_PANIC;
+ 
++	cpu_emergency_nesting = nbcon_get_cpu_emergency_nesting();
++	if (*cpu_emergency_nesting)
++		return NBCON_PRIO_EMERGENCY;
++
+ 	return NBCON_PRIO_NORMAL;
+ }
+ 
+@@ -1110,6 +1139,58 @@ void nbcon_atomic_flush_unsafe(void)
+ 	__nbcon_atomic_flush_all(prb_next_reserve_seq(prb), true);
+ }
+ 
++/**
++ * nbcon_cpu_emergency_enter - Enter an emergency section where printk()
++ *	messages for that CPU are only stored
++ *
++ * Upon exiting the emergency section, all stored messages are flushed.
++ *
++ * Context:	Any context. Disables preemption.
++ *
++ * When within an emergency section, no printing occurs on that CPU. This
++ * is to allow all emergency messages to be dumped into the ringbuffer before
++ * flushing the ringbuffer. The actual printing occurs when exiting the
++ * outermost emergency section.
++ */
++void nbcon_cpu_emergency_enter(void)
++{
++	unsigned int *cpu_emergency_nesting;
++
++	preempt_disable();
++
++	cpu_emergency_nesting = nbcon_get_cpu_emergency_nesting();
++	(*cpu_emergency_nesting)++;
++}
++
++/**
++ * nbcon_cpu_emergency_exit - Exit an emergency section and flush the
++ *	stored messages
++ *
++ * Flushing only occurs when exiting all nesting for the CPU.
++ *
++ * Context:	Any context. Enables preemption.
++ */
++void nbcon_cpu_emergency_exit(void)
++{
++	unsigned int *cpu_emergency_nesting;
++	bool do_trigger_flush = false;
++
++	cpu_emergency_nesting = nbcon_get_cpu_emergency_nesting();
++
++	WARN_ON_ONCE(*cpu_emergency_nesting == 0);
++
++	if (*cpu_emergency_nesting == 1)
++		do_trigger_flush = true;
++
++	/* Undo the nesting count of nbcon_cpu_emergency_enter(). */
++	(*cpu_emergency_nesting)--;
++
++	preempt_enable();
++
++	if (do_trigger_flush)
++		printk_trigger_flush();
++}
++
+ /**
+  * nbcon_alloc - Allocate buffers needed by the nbcon console
+  * @con:	Console to allocate buffers for
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index e8d60e29c17f..4a0df41d32b8 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2411,16 +2411,29 @@ asmlinkage int vprintk_emit(int facility, int level,
+ 		 * printing of all remaining records to all consoles so that
+ 		 * this context can return as soon as possible. Hopefully
+ 		 * another printk() caller will take over the printing.
++		 *
++		 * Also, nbcon_get_default_prio() requires migration disabled.
+ 		 */
+ 		preempt_disable();
++
+ 		/*
+-		 * Try to acquire and then immediately release the console
+-		 * semaphore. The release will print out buffers. With the
+-		 * spinning variant, this context tries to take over the
+-		 * printing from another printing context.
++		 * Do not emit for EMERGENCY priority. The console will be
++		 * explicitly flushed when exiting the emergency section.
+ 		 */
+-		if (console_trylock_spinning())
+-			console_unlock();
++		if (nbcon_get_default_prio() == NBCON_PRIO_EMERGENCY) {
++			do_trylock_unlock = false;
++		} else {
++			/*
++			 * Try to acquire and then immediately release the
++			 * console semaphore. The release will print out
++			 * buffers. With the spinning variant, this context
++			 * tries to take over the printing from another
++			 * printing context.
++			 */
++			if (console_trylock_spinning())
++				console_unlock();
++		}
++
+ 		preempt_enable();
+ 	}
+ 
+-- 
+2.44.0
+

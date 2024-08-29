@@ -1,0 +1,76 @@
+From 9e98f1f6de4bc54e8a1d9f2403c07eb30aeb3234 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Thu, 7 Dec 2023 14:15:15 +0000
+Subject: [PATCH 112/196] printk: Adjust mapping for 32bit seq macros
+
+Note: This change only applies to 32bit architectures. On 64bit
+      architectures the macros are NOPs.
+
+__ulseq_to_u64seq() computes the upper 32 bits of the passed
+argument value (@ulseq). The upper bits are derived from a base
+value (@rb_next_seq) in a way that assumes @ulseq represents a
+64bit number that is less than or equal to @rb_next_seq.
+
+Until now this mapping has been correct for all call sites. However,
+in a follow-up commit, values of @ulseq will be passed in that are
+higher than the base value. This requires a change to how the 32bit
+value is mapped to a 64bit sequence number.
+
+Rather than mapping @ulseq such that the base value is the end of a
+32bit block, map @ulseq such that the base value is in the middle of
+a 32bit block. This allows supporting 31 bits before and after the
+base value, which is deemed acceptable for the console sequence
+number during runtime.
+
+Here is an example to illustrate the previous and new mappings.
+
+For a base value (@rb_next_seq) of 2 2000 0000...
+
+Before this change the range of possible return values was:
+
+1 2000 0001 to 2 2000 0000
+
+__ulseq_to_u64seq(1fff ffff) => 2 1fff ffff
+__ulseq_to_u64seq(2000 0000) => 2 2000 0000
+__ulseq_to_u64seq(2000 0001) => 1 2000 0001
+__ulseq_to_u64seq(9fff ffff) => 1 9fff ffff
+__ulseq_to_u64seq(a000 0000) => 1 a000 0000
+__ulseq_to_u64seq(a000 0001) => 1 a000 0001
+
+After this change the range of possible return values are:
+1 a000 0001 to 2 a000 0000
+
+__ulseq_to_u64seq(1fff ffff) => 2 1fff ffff
+__ulseq_to_u64seq(2000 0000) => 2 2000 0000
+__ulseq_to_u64seq(2000 0001) => 2 2000 0001
+__ulseq_to_u64seq(9fff ffff) => 2 9fff ffff
+__ulseq_to_u64seq(a000 0000) => 2 a000 0000
+__ulseq_to_u64seq(a000 0001) => 1 a000 0001
+
+[ john.ogness: Rewrite commit message. ]
+
+Reported-by: Francesco Dolcini <francesco@dolcini.it>
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk_ringbuffer.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/printk/printk_ringbuffer.h b/kernel/printk/printk_ringbuffer.h
+index b82a96dc2ea2..12f60c782e46 100644
+--- a/kernel/printk/printk_ringbuffer.h
++++ b/kernel/printk/printk_ringbuffer.h
+@@ -407,7 +407,7 @@ static inline u64 __ulseq_to_u64seq(struct printk_ringbuffer *rb, u32 ulseq)
+ 	 * Also the access to the ring buffer is always safe.
+ 	 */
+ 	rb_next_seq = prb_next_seq(rb);
+-	seq = rb_next_seq - ((u32)rb_next_seq - ulseq);
++	seq = rb_next_seq - (s32)((u32)rb_next_seq - ulseq);
+ 
+ 	return seq;
+ }
+-- 
+2.44.0
+

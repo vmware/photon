@@ -1,5 +1,3 @@
-%global build_for none
-
 %global security_hardening none
 
 # SBAT generation of "linux.photon" component
@@ -10,13 +8,13 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 %endif
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.83
-Release:        2%{?dist}
+Version:        6.6.30
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -24,12 +22,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt28
+%define rt_version rt30
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=51d3b7d1dbfe0ecba1bd1265723a8e7c1553d99ade785bb91fe39979108c38f5e933b018406bfdc303a96d50eccb88d629c8dc0fecc94b975efffe8e79b43fc5
+%define sha512 linux=1c1cb9449686fc334385e9997073503ac6312d6855e8ef26bb1e73267447cce14f1f0a22b5c585a0a3c6c8dd1ed0e3c246671773ab8990fdf3c2f081219a9212
 
 %ifarch x86_64
 Source1: config-rt
@@ -40,7 +38,7 @@ Source2: initramfs.trigger
 Source4: scriptlets.inc
 Source5: check_for_config_applicability.inc
 # Real-Time kernel (PREEMPT_RT patches)
-# Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
+# Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.6/
 Source6: preempt_rt.patches
 
 %define stalld_version 1.19.1
@@ -82,8 +80,6 @@ Source39: fips_canister_wrapper_common.h
 Source40: fips_canister_wrapper_internal.h
 Source41: fips_canister_wrapper_internal.c
 %endif
-# CVE
-Source42: CVE-2023-39191.patches
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -91,7 +87,6 @@ Patch1: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch2: 9p-transport-for-9p.patch
 Patch3: 9p-trans_fd-extend-port-variable-to-u32.patch
 Patch4: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
-Patch5: Discard-.note.gnu.property-sections-in-generic-NOTES.patch
 # Expose Photon kernel macros to identify kernel flavor and version
 Patch6: 0001-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch7: 0002-linux-rt-Makefile-Add-kernel-flavor-info-to-the-gene.patch
@@ -132,39 +127,24 @@ Patch57: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Secure Boot and Kernel Lockdown
 Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
+# Disabling sbat patches
+%if 0
 Patch59: 0002-Add-.sbat-section.patch
 Patch60: 0003-Verify-SBAT-on-kexec.patch
+%endif
 
 # SEV-ES, TDX
 %ifarch x86_64
 Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 %endif
 
+# Backward compatibility
+%if "%{dist}" == ".ph5"
+Patch62: 0001-block-Fix-validation-of-ioprio-level.patch
+%endif
+
 # CVE:
-Patch100: 0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
-# Fix CVE-2023-0597
-Patch102: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
-Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
-# Fix CVE-2023-39191
-%include %{SOURCE42}
-# Fix CVE-2024-23307
-Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
-# Fix CVE-2024-26584
-Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
-# Fix CVE-2024-26585
-Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
-# Fix CVE-2023-52585
 Patch130: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
-
-# Fix CVE-2023-52452
-Patch131: 0001-bpf-Allow-reads-from-uninit-stack.patch
-Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
-
-# Fix CVE-2024-26642
-Patch133: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
-
-# Fix CVE-2024-26643
-Patch134: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -232,6 +212,7 @@ BuildRequires:  bison
 BuildRequires:  dwarves-devel
 # stalld plugin requires libbpf-devel and clang-devel
 BuildRequires:  libbpf-devel
+BuildRequires:  libtraceevent-devel
 BuildRequires:  clang-devel
 
 %if 0%{?fips}
@@ -297,14 +278,21 @@ stalld to use eBPF based backend.
 %autopatch -p1 -m0 -M24
 
 #VMW
-%autopatch -p1 -m55 -M60
+%autopatch -p1 -m55 -M58
+# Disabling sbat patches
+%if 0
+%autopatch -p1 -m59 -M60
+%endif
 
 #SEV-ES, TDX
 %ifarch x86_64
 %autopatch -p1 -m61 -M61
 %endif
 
-%autopatch -p1 -m62 -M63
+# Backward compatibility
+%if "%{dist}" == ".ph5"
+%autopatch -p1 -m62 -M62
+%endif
 
 # CVE
 %autopatch -p1 -m100 -M134
@@ -488,6 +476,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Sun Aug 25 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.6.30-1
+- Upgrade to version v6.6
 * Mon Apr 29 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2
 - Patched CVE-2024-26643
 * Mon Apr 29 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-1

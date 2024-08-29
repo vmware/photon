@@ -1,0 +1,99 @@
+From b43b2028f6a0bf56f094053ee2ea836d250d680f Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 23 Oct 2023 11:11:05 +0000
+Subject: [PATCH 115/196] printk: ringbuffer: Clarify special lpos values
+
+For empty line records, no data blocks are created. Instead,
+these valid records are identified by special logical position
+values (in fields of @prb_desc.text_blk_lpos).
+
+Currently the macro NO_LPOS is used for empty line records.
+This name is confusing because it does not imply _why_ there is
+no data block.
+
+Rename NO_LPOS to EMPTY_LINE_LPOS so that it is clear why there
+is no data block.
+
+Also add comments explaining the use of EMPTY_LINE_LPOS as well
+as clarification to the values used to represent data-less
+blocks.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk_ringbuffer.c | 20 ++++++++++++++++----
+ kernel/printk/printk_ringbuffer.h | 16 +++++++++++++++-
+ 2 files changed, 31 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/printk/printk_ringbuffer.c b/kernel/printk/printk_ringbuffer.c
+index 04c26cca546f..244d991ffd73 100644
+--- a/kernel/printk/printk_ringbuffer.c
++++ b/kernel/printk/printk_ringbuffer.c
+@@ -1034,9 +1034,13 @@ static char *data_alloc(struct printk_ringbuffer *rb, unsigned int size,
+ 	unsigned long next_lpos;
+ 
+ 	if (size == 0) {
+-		/* Specify a data-less block. */
+-		blk_lpos->begin = NO_LPOS;
+-		blk_lpos->next = NO_LPOS;
++		/*
++		 * Data blocks are not created for empty lines. Instead, the
++		 * reader will recognize these special lpos values and handle
++		 * it appropriately.
++		 */
++		blk_lpos->begin = EMPTY_LINE_LPOS;
++		blk_lpos->next = EMPTY_LINE_LPOS;
+ 		return NULL;
+ 	}
+ 
+@@ -1214,10 +1218,18 @@ static const char *get_data(struct prb_data_ring *data_ring,
+ 
+ 	/* Data-less data block description. */
+ 	if (BLK_DATALESS(blk_lpos)) {
+-		if (blk_lpos->begin == NO_LPOS && blk_lpos->next == NO_LPOS) {
++		/*
++		 * Records that are just empty lines are also valid, even
++		 * though they do not have a data block. For such records
++		 * explicitly return empty string data to signify success.
++		 */
++		if (blk_lpos->begin == EMPTY_LINE_LPOS &&
++		    blk_lpos->next == EMPTY_LINE_LPOS) {
+ 			*data_size = 0;
+ 			return "";
+ 		}
++
++		/* Data lost, invalid, or otherwise unavailable. */
+ 		return NULL;
+ 	}
+ 
+diff --git a/kernel/printk/printk_ringbuffer.h b/kernel/printk/printk_ringbuffer.h
+index 2d948cc82b5b..d49460f7578e 100644
+--- a/kernel/printk/printk_ringbuffer.h
++++ b/kernel/printk/printk_ringbuffer.h
+@@ -127,8 +127,22 @@ enum desc_state {
+ #define DESC_SV(id, state)	(((unsigned long)state << DESC_FLAGS_SHIFT) | id)
+ #define DESC_ID_MASK		(~DESC_FLAGS_MASK)
+ #define DESC_ID(sv)		((sv) & DESC_ID_MASK)
++
++/*
++ * Special data block logical position values (for fields of
++ * @prb_desc.text_blk_lpos).
++ *
++ * - Bit0 is used to identify if the record has no data block. (Implemented in
++ *   the LPOS_DATALESS() macro.)
++ *
++ * - Bit1 specifies the reason for not having a data block.
++ *
++ * These special values could never be real lpos values because of the
++ * meta data and alignment padding of data blocks. (See to_blk_size() for
++ * details.)
++ */
+ #define FAILED_LPOS		0x1
+-#define NO_LPOS			0x3
++#define EMPTY_LINE_LPOS		0x3
+ 
+ #define FAILED_BLK_LPOS	\
+ {				\
+-- 
+2.44.0
+

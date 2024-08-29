@@ -1,0 +1,46 @@
+From c58edf2f19b8d01af9ec55df4db69ea227548824 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 23 Oct 2023 17:43:48 +0000
+Subject: [PATCH 145/196] printk: Atomic print in printk context on shutdown
+
+For nbcon consoles, normally the printing is handled by the
+dedicated console printing threads. However, on shutdown the
+printing threads may not get a chance to print the final
+messages.
+
+When shutting down or rebooting (system_state > SYSTEM_RUNNING),
+perform atomic printing from the printk() caller context.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 3e307d475d23..2a77a4ad5619 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2395,13 +2395,18 @@ asmlinkage int vprintk_emit(int facility, int level,
+ 		 *
+ 		 * - When this CPU is in panic.
+ 		 *
++		 * - During shutdown, since the printing threads may not get
++		 *   a chance to print the final messages.
++		 *
+ 		 * Note that if boot consoles are registered, the
+ 		 * console_lock/console_unlock dance must be relied upon
+ 		 * instead because nbcon consoles cannot print simultaneously
+ 		 * with boot consoles.
+ 		 */
+-		if (is_panic_context)
++		if (is_panic_context ||
++		    (system_state > SYSTEM_RUNNING)) {
+ 			nbcon_atomic_flush_all();
++		}
+ 	}
+ 
+ 	if (do_trylock_unlock) {
+-- 
+2.44.0
+

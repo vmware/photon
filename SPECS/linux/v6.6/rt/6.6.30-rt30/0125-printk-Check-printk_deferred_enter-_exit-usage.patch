@@ -1,0 +1,65 @@
+From d2cc6c8ea160106a59677f8129cfd1f028e95681 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 22 Sep 2023 14:58:18 +0000
+Subject: [PATCH 125/196] printk: Check printk_deferred_enter()/_exit() usage
+
+Add validation that printk_deferred_enter()/_exit() are called in
+non-migration contexts.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/printk.h      |  7 +++++--
+ kernel/printk/printk_safe.c | 12 ++++++++++++
+ 2 files changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index 8ef499ab3c1e..f4502b036e48 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -159,13 +159,16 @@ __printf(1, 2) __cold int _printk_deferred(const char *fmt, ...);
+ 
+ extern void __printk_safe_enter(void);
+ extern void __printk_safe_exit(void);
++extern void __printk_deferred_enter(void);
++extern void __printk_deferred_exit(void);
++
+ /*
+  * The printk_deferred_enter/exit macros are available only as a hack for
+  * some code paths that need to defer all printk console printing. Interrupts
+  * must be disabled for the deferred duration.
+  */
+-#define printk_deferred_enter __printk_safe_enter
+-#define printk_deferred_exit __printk_safe_exit
++#define printk_deferred_enter() __printk_deferred_enter()
++#define printk_deferred_exit() __printk_deferred_exit()
+ 
+ /*
+  * Please don't use printk_ratelimit(), because it shares ratelimiting state
+diff --git a/kernel/printk/printk_safe.c b/kernel/printk/printk_safe.c
+index 6d10927a07d8..8d9408d653de 100644
+--- a/kernel/printk/printk_safe.c
++++ b/kernel/printk/printk_safe.c
+@@ -26,6 +26,18 @@ void __printk_safe_exit(void)
+ 	this_cpu_dec(printk_context);
+ }
+ 
++void __printk_deferred_enter(void)
++{
++	cant_migrate();
++	this_cpu_inc(printk_context);
++}
++
++void __printk_deferred_exit(void)
++{
++	cant_migrate();
++	this_cpu_dec(printk_context);
++}
++
+ asmlinkage int vprintk(const char *fmt, va_list args)
+ {
+ #ifdef CONFIG_KGDB_KDB
+-- 
+2.44.0
+

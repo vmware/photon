@@ -1,0 +1,63 @@
+From d8475da44868b971c8bcc067a8152b1c3d93ad03 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 8 Sep 2023 18:22:50 +0200
+Subject: [PATCH 003/196] sched: Extract __schedule_loop()
+
+There are currently two implementations of this basic __schedule()
+loop, and there is soon to be a third.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20230908162254.999499-4-bigeasy@linutronix.de
+---
+ kernel/sched/core.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 73949b8a55d2..4498af52cf47 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6771,16 +6771,21 @@ static void sched_update_worker(struct task_struct *tsk)
+ 	}
+ }
+ 
+-asmlinkage __visible void __sched schedule(void)
++static __always_inline void __schedule_loop(unsigned int sched_mode)
+ {
+-	struct task_struct *tsk = current;
+-
+-	sched_submit_work(tsk);
+ 	do {
+ 		preempt_disable();
+-		__schedule(SM_NONE);
++		__schedule(sched_mode);
+ 		sched_preempt_enable_no_resched();
+ 	} while (need_resched());
++}
++
++asmlinkage __visible void __sched schedule(void)
++{
++	struct task_struct *tsk = current;
++
++	sched_submit_work(tsk);
++	__schedule_loop(SM_NONE);
+ 	sched_update_worker(tsk);
+ }
+ EXPORT_SYMBOL(schedule);
+@@ -6844,11 +6849,7 @@ void __sched schedule_preempt_disabled(void)
+ #ifdef CONFIG_PREEMPT_RT
+ void __sched notrace schedule_rtlock(void)
+ {
+-	do {
+-		preempt_disable();
+-		__schedule(SM_RTLOCK_WAIT);
+-		sched_preempt_enable_no_resched();
+-	} while (need_resched());
++	__schedule_loop(SM_RTLOCK_WAIT);
+ }
+ NOKPROBE_SYMBOL(schedule_rtlock);
+ #endif
+-- 
+2.44.0
+

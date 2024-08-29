@@ -1,0 +1,38 @@
+From 3c326674f26750acc58a8dbd5b1c8875f85636c1 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Fri, 22 Sep 2023 14:31:09 +0000
+Subject: [PATCH 151/196] tty: sysfs: Add nbcon support for 'active'
+
+Allow the 'active' attribute to list nbcon consoles.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/tty_io.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 493fc4742895..afa52883c498 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -3543,8 +3543,15 @@ static ssize_t show_cons_active(struct device *dev,
+ 	for_each_console(c) {
+ 		if (!c->device)
+ 			continue;
+-		if (!c->write)
+-			continue;
++		if (c->flags & CON_NBCON) {
++			if (!c->write_atomic &&
++			    !(c->write_thread && c->kthread)) {
++				continue;
++			}
++		} else {
++			if (!c->write)
++				continue;
++		}
+ 		if ((c->flags & CON_ENABLED) == 0)
+ 			continue;
+ 		cs[i++] = c;
+-- 
+2.44.0
+

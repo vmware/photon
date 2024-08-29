@@ -1,0 +1,66 @@
+From 6da16f55a13e409caeaa42019378c61244717cb1 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 20 Nov 2023 12:46:35 +0100
+Subject: [PATCH 120/196] printk: ringbuffer: Consider committed as finalized
+ in panic
+
+A descriptor in the committed state means the record does not yet
+exist for the reader. However, for the panic CPU, committed
+records should be handled as finalized records since they contain
+message data in a consistent state and may contain additional
+hints as to the cause of the panic.
+
+Add an exception for records in the commit state to not be
+considered non-existing when reading from the panic CPU.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk_ringbuffer.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/printk/printk_ringbuffer.c b/kernel/printk/printk_ringbuffer.c
+index d6ed33683b8b..e7b808b829a0 100644
+--- a/kernel/printk/printk_ringbuffer.c
++++ b/kernel/printk/printk_ringbuffer.c
+@@ -1857,6 +1857,8 @@ static bool copy_data(struct prb_data_ring *data_ring,
+  * descriptor. However, it also verifies that the record is finalized and has
+  * the sequence number @seq. On success, 0 is returned.
+  *
++ * For the panic CPU, committed descriptors are also considered finalized.
++ *
+  * Error return values:
+  * -EINVAL: A finalized record with sequence number @seq does not exist.
+  * -ENOENT: A finalized record with sequence number @seq exists, but its data
+@@ -1875,16 +1877,25 @@ static int desc_read_finalized_seq(struct prb_desc_ring *desc_ring,
+ 
+ 	/*
+ 	 * An unexpected @id (desc_miss) or @seq mismatch means the record
+-	 * does not exist. A descriptor in the reserved or committed state
+-	 * means the record does not yet exist for the reader.
++	 * does not exist. A descriptor in the reserved state means the
++	 * record does not yet exist for the reader.
+ 	 */
+ 	if (d_state == desc_miss ||
+ 	    d_state == desc_reserved ||
+-	    d_state == desc_committed ||
+ 	    s != seq) {
+ 		return -EINVAL;
+ 	}
+ 
++	/*
++	 * A descriptor in the committed state means the record does not yet
++	 * exist for the reader. However, for the panic CPU, committed
++	 * records are also handled as finalized records since they contain
++	 * message data in a consistent state and may contain additional
++	 * hints as to the cause of the panic.
++	 */
++	if (d_state == desc_committed && !this_cpu_in_panic())
++		return -EINVAL;
++
+ 	/*
+ 	 * A descriptor in the reusable state may no longer have its data
+ 	 * available; report it as existing but with lost data. Or the record
+-- 
+2.44.0
+

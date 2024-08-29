@@ -1,0 +1,71 @@
+From c8b000c7f040f3de186cf22130d44296b2b50cc4 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:43:30 +0206
+Subject: [PATCH 039/196] serial: 8250_pci1xxxx: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-14-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
+index a3b25779d921..53e238c8cc89 100644
+--- a/drivers/tty/serial/8250/8250_pci1xxxx.c
++++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+@@ -225,10 +225,10 @@ static bool pci1xxxx_port_suspend(int line)
+ 	if (port->suspended == 0 && port->dev) {
+ 		wakeup_mask = readb(up->port.membase + UART_WAKE_MASK_REG);
+ 
+-		spin_lock_irqsave(&port->lock, flags);
++		uart_port_lock_irqsave(port, &flags);
+ 		port->mctrl &= ~TIOCM_OUT2;
+ 		port->ops->set_mctrl(port, port->mctrl);
+-		spin_unlock_irqrestore(&port->lock, flags);
++		uart_port_unlock_irqrestore(port, flags);
+ 
+ 		ret = (wakeup_mask & UART_WAKE_SRCS) != UART_WAKE_SRCS;
+ 	}
+@@ -251,10 +251,10 @@ static void pci1xxxx_port_resume(int line)
+ 	writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
+ 
+ 	if (port->suspended == 0) {
+-		spin_lock_irqsave(&port->lock, flags);
++		uart_port_lock_irqsave(port, &flags);
+ 		port->mctrl |= TIOCM_OUT2;
+ 		port->ops->set_mctrl(port, port->mctrl);
+-		spin_unlock_irqrestore(&port->lock, flags);
++		uart_port_unlock_irqrestore(port, flags);
+ 	}
+ 	mutex_unlock(&tport->mutex);
+ }
+-- 
+2.44.0
+

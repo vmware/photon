@@ -1,0 +1,73 @@
+From 89f0ac695067ebacda72fe81425124af3e9030c9 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Fri, 13 Oct 2023 10:23:11 +0000
+Subject: [PATCH 119/196] printk: ringbuffer: Skip non-finalized records in
+ panic
+
+Normally a reader will stop once reaching a non-finalized
+record. However, when a panic happens, writers from other CPUs
+(or an interrupted context on the panic CPU) may have been
+writing a record and were unable to finalize it. The panic CPU
+will reserve/commit/finalize its panic records, but these will
+be located after the non-finalized records. This results in
+panic() not flushing the panic messages.
+
+Extend _prb_read_valid() to skip over non-finalized records if
+on the panic CPU.
+
+Fixes: 896fbe20b4e2 ("printk: use the lockless ringbuffer")
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk_ringbuffer.c | 28 ++++++++++++++++++++++++++--
+ 1 file changed, 26 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/printk/printk_ringbuffer.c b/kernel/printk/printk_ringbuffer.c
+index b7748d7c44c1..d6ed33683b8b 100644
+--- a/kernel/printk/printk_ringbuffer.c
++++ b/kernel/printk/printk_ringbuffer.c
+@@ -2107,6 +2107,10 @@ u64 prb_next_reserve_seq(struct printk_ringbuffer *rb)
+  *
+  * On failure @seq is updated to a record that is not yet available to the
+  * reader, but it will be the next record available to the reader.
++ *
++ * Note: When the current CPU is in panic, this function will skip over any
++ *       non-existent/non-finalized records in order to allow the panic CPU
++ *       to print any and all records that have been finalized.
+  */
+ static bool _prb_read_valid(struct printk_ringbuffer *rb, u64 *seq,
+ 			    struct printk_record *r, unsigned int *line_count)
+@@ -2129,8 +2133,28 @@ static bool _prb_read_valid(struct printk_ringbuffer *rb, u64 *seq,
+ 			(*seq)++;
+ 
+ 		} else {
+-			/* Non-existent/non-finalized record. Must stop. */
+-			return false;
++			/*
++			 * Non-existent/non-finalized record. Must stop.
++			 *
++			 * For panic situations it cannot be expected that
++			 * non-finalized records will become finalized. But
++			 * there may be other finalized records beyond that
++			 * need to be printed for a panic situation. If this
++			 * is the panic CPU, skip this
++			 * non-existent/non-finalized record unless it is
++			 * at or beyond the head, in which case it is not
++			 * possible to continue.
++			 *
++			 * Note that new messages printed on panic CPU are
++			 * finalized when we are here. The only exception
++			 * might be the last message without trailing newline.
++			 * But it would have the sequence number returned
++			 * by "prb_next_reserve_seq() - 1".
++			 */
++			if (this_cpu_in_panic() && ((*seq + 1) < prb_next_reserve_seq(rb)))
++				(*seq)++;
++			else
++				return false;
+ 		}
+ 	}
+ 
+-- 
+2.44.0
+

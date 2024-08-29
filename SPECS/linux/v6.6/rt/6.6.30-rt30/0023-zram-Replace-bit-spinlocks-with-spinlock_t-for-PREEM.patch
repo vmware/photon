@@ -1,0 +1,102 @@
+From 32055b9ab7700b39c24ca8b3e6585dd803eec457 Mon Sep 17 00:00:00 2001
+From: Mike Galbraith <umgwanakikbuti@gmail.com>
+Date: Thu, 31 Mar 2016 04:08:28 +0200
+Subject: [PATCH 023/196] zram: Replace bit spinlocks with spinlock_t for
+ PREEMPT_RT.
+
+The bit spinlock disables preemption. The spinlock_t lock becomes a sleeping
+lock on PREEMPT_RT and it can not be acquired in this context. In this locked
+section, zs_free() acquires a zs_pool::lock, and there is access to
+zram::wb_limit_lock.
+
+Use a spinlock_t on PREEMPT_RT for locking and set/ clear ZRAM_LOCK bit after
+the lock has been acquired/ dropped.
+
+Signed-off-by: Mike Galbraith <umgwanakikbuti@gmail.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lkml.kernel.org/r/YqIbMuHCPiQk+Ac2@linutronix.de
+Link: https://lore.kernel.org/20230323161830.jFbWCosd@linutronix.de
+---
+ drivers/block/zram/zram_drv.c | 37 +++++++++++++++++++++++++++++++++++
+ drivers/block/zram/zram_drv.h |  3 +++
+ 2 files changed, 40 insertions(+)
+
+diff --git a/drivers/block/zram/zram_drv.c b/drivers/block/zram/zram_drv.c
+index 06673c6ca255..a5d0f7c06342 100644
+--- a/drivers/block/zram/zram_drv.c
++++ b/drivers/block/zram/zram_drv.c
+@@ -57,6 +57,41 @@ static void zram_free_page(struct zram *zram, size_t index);
+ static int zram_read_page(struct zram *zram, struct page *page, u32 index,
+ 			  struct bio *parent);
+ 
++#ifdef CONFIG_PREEMPT_RT
++static void zram_meta_init_table_locks(struct zram *zram, size_t num_pages)
++{
++	size_t index;
++
++	for (index = 0; index < num_pages; index++)
++		spin_lock_init(&zram->table[index].lock);
++}
++
++static int zram_slot_trylock(struct zram *zram, u32 index)
++{
++	int ret;
++
++	ret = spin_trylock(&zram->table[index].lock);
++	if (ret)
++		__set_bit(ZRAM_LOCK, &zram->table[index].flags);
++	return ret;
++}
++
++static void zram_slot_lock(struct zram *zram, u32 index)
++{
++	spin_lock(&zram->table[index].lock);
++	__set_bit(ZRAM_LOCK, &zram->table[index].flags);
++}
++
++static void zram_slot_unlock(struct zram *zram, u32 index)
++{
++	__clear_bit(ZRAM_LOCK, &zram->table[index].flags);
++	spin_unlock(&zram->table[index].lock);
++}
++
++#else
++
++static void zram_meta_init_table_locks(struct zram *zram, size_t num_pages) { }
++
+ static int zram_slot_trylock(struct zram *zram, u32 index)
+ {
+ 	return bit_spin_trylock(ZRAM_LOCK, &zram->table[index].flags);
+@@ -71,6 +106,7 @@ static void zram_slot_unlock(struct zram *zram, u32 index)
+ {
+ 	bit_spin_unlock(ZRAM_LOCK, &zram->table[index].flags);
+ }
++#endif
+ 
+ static inline bool init_done(struct zram *zram)
+ {
+@@ -1245,6 +1281,7 @@ static bool zram_meta_alloc(struct zram *zram, u64 disksize)
+ 
+ 	if (!huge_class_size)
+ 		huge_class_size = zs_huge_class_size(zram->mem_pool);
++	zram_meta_init_table_locks(zram, num_pages);
+ 	return true;
+ }
+ 
+diff --git a/drivers/block/zram/zram_drv.h b/drivers/block/zram/zram_drv.h
+index ca7a15bd4845..e64eb607eb45 100644
+--- a/drivers/block/zram/zram_drv.h
++++ b/drivers/block/zram/zram_drv.h
+@@ -69,6 +69,9 @@ struct zram_table_entry {
+ 		unsigned long element;
+ 	};
+ 	unsigned long flags;
++#ifdef CONFIG_PREEMPT_RT
++	spinlock_t lock;
++#endif
+ #ifdef CONFIG_ZRAM_MEMORY_TRACKING
+ 	ktime_t ac_time;
+ #endif
+-- 
+2.44.0
+

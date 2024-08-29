@@ -1,0 +1,179 @@
+From 48e49b1a9195f8fb1a6b8e4c1479fcc6325b0963 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 6 Nov 2023 14:59:55 +0000
+Subject: [PATCH 118/196] printk: Wait for all reserved records with pr_flush()
+
+Currently pr_flush() will only wait for records that were
+available to readers at the time of the call (using
+prb_next_seq()). But there may be more records (non-finalized)
+that have following finalized records. pr_flush() should wait
+for these to print as well. Particularly because any trailing
+finalized records may be the messages that the calling context
+wants to ensure are printed.
+
+Add a new ringbuffer function prb_next_reserve_seq() to return
+the sequence number following the most recently reserved record.
+This guarantees that pr_flush() will wait until all current
+printk() messages (completed or in progress) have been printed.
+
+Fixes: 3b604ca81202 ("printk: add pr_flush()")
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c            |   2 +-
+ kernel/printk/printk_ringbuffer.c | 113 ++++++++++++++++++++++++++++++
+ kernel/printk/printk_ringbuffer.h |   1 +
+ 3 files changed, 115 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 2bb393009d4e..807692fd386a 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3806,7 +3806,7 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
+ 
+ 	might_sleep();
+ 
+-	seq = prb_next_seq(prb);
++	seq = prb_next_reserve_seq(prb);
+ 
+ 	/* Flush the consoles so that records up to @seq are printed. */
+ 	console_lock();
+diff --git a/kernel/printk/printk_ringbuffer.c b/kernel/printk/printk_ringbuffer.c
+index 67ee1c62fcd6..b7748d7c44c1 100644
+--- a/kernel/printk/printk_ringbuffer.c
++++ b/kernel/printk/printk_ringbuffer.c
+@@ -1986,6 +1986,119 @@ u64 prb_first_seq(struct printk_ringbuffer *rb)
+ 	return seq;
+ }
+ 
++/**
++ * prb_next_reserve_seq() - Get the sequence number after the most recently
++ *                  reserved record.
++ *
++ * @rb:  The ringbuffer to get the sequence number from.
++ *
++ * This is the public function available to readers to see what sequence
++ * number will be assigned to the next reserved record.
++ *
++ * Note that depending on the situation, this value can be equal to or
++ * higher than the sequence number returned by prb_next_seq().
++ *
++ * Context: Any context.
++ * Return: The sequence number that will be assigned to the next record
++ *         reserved.
++ */
++u64 prb_next_reserve_seq(struct printk_ringbuffer *rb)
++{
++	struct prb_desc_ring *desc_ring = &rb->desc_ring;
++	unsigned long last_finalized_id;
++	atomic_long_t *state_var;
++	u64 last_finalized_seq;
++	unsigned long head_id;
++	struct prb_desc desc;
++	unsigned long diff;
++	struct prb_desc *d;
++	int err;
++
++	/*
++	 * It may not be possible to read a sequence number for @head_id.
++	 * So the ID of @last_finailzed_seq is used to calculate what the
++	 * sequence number of @head_id will be.
++	 */
++
++try_again:
++	last_finalized_seq = desc_last_finalized_seq(rb);
++
++	/*
++	 * @head_id is loaded after @last_finalized_seq to ensure that it is
++	 * at or beyond @last_finalized_seq.
++	 *
++	 * Memory barrier involvement:
++	 *
++	 * If desc_last_finalized_seq:A reads from
++	 * desc_update_last_finalized:A, then
++	 * prb_next_reserve_seq:A reads from desc_reserve:D.
++	 *
++	 * Relies on:
++	 *
++	 * RELEASE from desc_reserve:D to desc_update_last_finalized:A
++	 *    matching
++	 * ACQUIRE from desc_last_finalized_seq:A to prb_next_reserve_seq:A
++	 *
++	 * Note: desc_reserve:D and desc_update_last_finalized:A can be
++	 *       different CPUs. However, the desc_update_last_finalized:A CPU
++	 *       (which performs the release) must have previously seen
++	 *       desc_read:C, which implies desc_reserve:D can be seen.
++	 */
++	head_id = atomic_long_read(&desc_ring->head_id); /* LMM(prb_next_reserve_seq:A) */
++
++	d = to_desc(desc_ring, last_finalized_seq);
++	state_var = &d->state_var;
++
++	/* Extract the ID, used to specify the descriptor to read. */
++	last_finalized_id = DESC_ID(atomic_long_read(state_var));
++
++	/* Ensure @last_finalized_id is correct. */
++	err = desc_read_finalized_seq(desc_ring, last_finalized_id, last_finalized_seq, &desc);
++
++	if (err == -EINVAL) {
++		if (last_finalized_seq == 0) {
++			/*
++			 * @last_finalized_seq still contains its initial
++			 * value. Probably no record has been finalized yet.
++			 * This means the ringbuffer is not yet full and the
++			 * @head_id value can be used directly (subtracting
++			 * off the id value corresponding to seq=0).
++			 */
++
++			/*
++			 * Because of hack#2 of the bootstrapping phase, the
++			 * @head_id initial value must be handled separately.
++			 */
++			if (head_id == DESC0_ID(desc_ring->count_bits))
++				return 0;
++
++			/*
++			 * The @head_id is initialized such that the first
++			 * increment will yield the first record (seq=0).
++			 * Therefore use the initial value +1 as the base to
++			 * subtract from @head_id.
++			 */
++			last_finalized_id = DESC0_ID(desc_ring->count_bits) + 1;
++		} else {
++			/* Record must have been overwritten. Try again. */
++			goto try_again;
++		}
++	}
++
++	/*
++	 * @diff is the number of records beyond the last record available
++	 * to readers.
++	 */
++	diff = head_id - last_finalized_id;
++
++	/*
++	 * @head_id points to the most recently reserved record, but this
++	 * function returns the sequence number that will be assigned to the
++	 * next (not yet reserved) record. Thus +1 is needed.
++	 */
++	return (last_finalized_seq + diff + 1);
++}
++
+ /*
+  * Non-blocking read of a record.
+  *
+diff --git a/kernel/printk/printk_ringbuffer.h b/kernel/printk/printk_ringbuffer.h
+index d49460f7578e..52626d0f1fa3 100644
+--- a/kernel/printk/printk_ringbuffer.h
++++ b/kernel/printk/printk_ringbuffer.h
+@@ -395,6 +395,7 @@ bool prb_read_valid_info(struct printk_ringbuffer *rb, u64 seq,
+ u64 prb_first_seq(struct printk_ringbuffer *rb);
+ u64 prb_first_valid_seq(struct printk_ringbuffer *rb);
+ u64 prb_next_seq(struct printk_ringbuffer *rb);
++u64 prb_next_reserve_seq(struct printk_ringbuffer *rb);
+ 
+ #ifdef CONFIG_64BIT
+ 
+-- 
+2.44.0
+

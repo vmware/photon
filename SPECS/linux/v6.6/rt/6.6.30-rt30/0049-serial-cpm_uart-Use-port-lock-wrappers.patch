@@ -1,0 +1,75 @@
+From 1ba17b189f3022419f0131e2569204081babade0 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:43:40 +0206
+Subject: [PATCH 049/196] serial: cpm_uart: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-24-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/cpm_uart.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/cpm_uart.c b/drivers/tty/serial/cpm_uart.c
+index 626423022d62..be4af6eda4c2 100644
+--- a/drivers/tty/serial/cpm_uart.c
++++ b/drivers/tty/serial/cpm_uart.c
+@@ -569,7 +569,7 @@ static void cpm_uart_set_termios(struct uart_port *port,
+ 	if ((termios->c_cflag & CREAD) == 0)
+ 		port->read_status_mask &= ~BD_SC_EMPTY;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	if (IS_SMC(pinfo)) {
+ 		unsigned int bits = tty_get_frame_size(termios->c_cflag);
+@@ -609,7 +609,7 @@ static void cpm_uart_set_termios(struct uart_port *port,
+ 		clk_set_rate(pinfo->clk, baud);
+ 	else
+ 		cpm_setbrg(pinfo->brg - 1, baud);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static const char *cpm_uart_type(struct uart_port *port)
+@@ -1386,9 +1386,9 @@ static void cpm_uart_console_write(struct console *co, const char *s,
+ 		cpm_uart_early_write(pinfo, s, count, true);
+ 		local_irq_restore(flags);
+ 	} else {
+-		spin_lock_irqsave(&pinfo->port.lock, flags);
++		uart_port_lock_irqsave(&pinfo->port, &flags);
+ 		cpm_uart_early_write(pinfo, s, count, true);
+-		spin_unlock_irqrestore(&pinfo->port.lock, flags);
++		uart_port_unlock_irqrestore(&pinfo->port, flags);
+ 	}
+ }
+ 
+-- 
+2.44.0
+

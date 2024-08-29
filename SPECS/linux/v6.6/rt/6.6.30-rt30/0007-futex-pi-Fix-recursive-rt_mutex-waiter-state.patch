@@ -1,0 +1,204 @@
+From ae5619abced998dc6a2ebd8efeb943936c76bc43 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 15 Sep 2023 17:19:44 +0200
+Subject: [PATCH 007/196] futex/pi: Fix recursive rt_mutex waiter state
+
+Some new assertions pointed out that the existing code has nested rt_mutex wait
+state in the futex code.
+
+Specifically, the futex_lock_pi() cancel case uses spin_lock() while there
+still is a rt_waiter enqueued for this task, resulting in a state where there
+are two waiters for the same task (and task_struct::pi_blocked_on gets
+scrambled).
+
+The reason to take hb->lock at this point is to avoid the wake_futex_pi()
+EAGAIN case.
+
+This happens when futex_top_waiter() and rt_mutex_top_waiter() state becomes
+inconsistent. The current rules are such that this inconsistency will not be
+observed.
+
+Notably the case that needs to be avoided is where futex_lock_pi() and
+futex_unlock_pi() interleave such that unlock will fail to observe a new
+waiter.
+
+*However* the case at hand is where a waiter is leaving, in this case the race
+means a waiter that is going away is not observed -- which is harmless,
+provided this race is explicitly handled.
+
+This is a somewhat dangerous proposition because the converse race is not
+observing a new waiter, which must absolutely not happen. But since the race is
+valid this cannot be asserted.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Tested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lkml.kernel.org/r/20230915151943.GD6743@noisy.programming.kicks-ass.net
+---
+ kernel/futex/pi.c      | 76 ++++++++++++++++++++++++++----------------
+ kernel/futex/requeue.c |  6 ++--
+ 2 files changed, 52 insertions(+), 30 deletions(-)
+
+diff --git a/kernel/futex/pi.c b/kernel/futex/pi.c
+index f8e65b27d9d6..d636a1bbd7d0 100644
+--- a/kernel/futex/pi.c
++++ b/kernel/futex/pi.c
+@@ -611,29 +611,16 @@ int futex_lock_pi_atomic(u32 __user *uaddr, struct futex_hash_bucket *hb,
+ /*
+  * Caller must hold a reference on @pi_state.
+  */
+-static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_pi_state *pi_state)
++static int wake_futex_pi(u32 __user *uaddr, u32 uval,
++			 struct futex_pi_state *pi_state,
++			 struct rt_mutex_waiter *top_waiter)
+ {
+-	struct rt_mutex_waiter *top_waiter;
+ 	struct task_struct *new_owner;
+ 	bool postunlock = false;
+ 	DEFINE_RT_WAKE_Q(wqh);
+ 	u32 curval, newval;
+ 	int ret = 0;
+ 
+-	top_waiter = rt_mutex_top_waiter(&pi_state->pi_mutex);
+-	if (WARN_ON_ONCE(!top_waiter)) {
+-		/*
+-		 * As per the comment in futex_unlock_pi() this should not happen.
+-		 *
+-		 * When this happens, give up our locks and try again, giving
+-		 * the futex_lock_pi() instance time to complete, either by
+-		 * waiting on the rtmutex or removing itself from the futex
+-		 * queue.
+-		 */
+-		ret = -EAGAIN;
+-		goto out_unlock;
+-	}
+-
+ 	new_owner = top_waiter->task;
+ 
+ 	/*
+@@ -1046,19 +1033,33 @@ int futex_lock_pi(u32 __user *uaddr, unsigned int flags, ktime_t *time, int tryl
+ 	ret = rt_mutex_wait_proxy_lock(&q.pi_state->pi_mutex, to, &rt_waiter);
+ 
+ cleanup:
+-	spin_lock(q.lock_ptr);
+ 	/*
+ 	 * If we failed to acquire the lock (deadlock/signal/timeout), we must
+-	 * first acquire the hb->lock before removing the lock from the
+-	 * rt_mutex waitqueue, such that we can keep the hb and rt_mutex wait
+-	 * lists consistent.
++	 * must unwind the above, however we canont lock hb->lock because
++	 * rt_mutex already has a waiter enqueued and hb->lock can itself try
++	 * and enqueue an rt_waiter through rtlock.
++	 *
++	 * Doing the cleanup without holding hb->lock can cause inconsistent
++	 * state between hb and pi_state, but only in the direction of not
++	 * seeing a waiter that is leaving.
++	 *
++	 * See futex_unlock_pi(), it deals with this inconsistency.
+ 	 *
+-	 * In particular; it is important that futex_unlock_pi() can not
+-	 * observe this inconsistency.
++	 * There be dragons here, since we must deal with the inconsistency on
++	 * the way out (here), it is impossible to detect/warn about the race
++	 * the other way around (missing an incoming waiter).
++	 *
++	 * What could possibly go wrong...
+ 	 */
+ 	if (ret && !rt_mutex_cleanup_proxy_lock(&q.pi_state->pi_mutex, &rt_waiter))
+ 		ret = 0;
+ 
++	/*
++	 * Now that the rt_waiter has been dequeued, it is safe to use
++	 * spinlock/rtlock (which might enqueue its own rt_waiter) and fix up
++	 * the
++	 */
++	spin_lock(q.lock_ptr);
+ 	/*
+ 	 * Waiter is unqueued.
+ 	 */
+@@ -1143,6 +1144,7 @@ int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
+ 	top_waiter = futex_top_waiter(hb, &key);
+ 	if (top_waiter) {
+ 		struct futex_pi_state *pi_state = top_waiter->pi_state;
++		struct rt_mutex_waiter *rt_waiter;
+ 
+ 		ret = -EINVAL;
+ 		if (!pi_state)
+@@ -1155,22 +1157,39 @@ int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
+ 		if (pi_state->owner != current)
+ 			goto out_unlock;
+ 
+-		get_pi_state(pi_state);
+ 		/*
+ 		 * By taking wait_lock while still holding hb->lock, we ensure
+-		 * there is no point where we hold neither; and therefore
+-		 * wake_futex_p() must observe a state consistent with what we
+-		 * observed.
++		 * there is no point where we hold neither; and thereby
++		 * wake_futex_pi() must observe any new waiters.
++		 *
++		 * Since the cleanup: case in futex_lock_pi() removes the
++		 * rt_waiter without holding hb->lock, it is possible for
++		 * wake_futex_pi() to not find a waiter while the above does,
++		 * in this case the waiter is on the way out and it can be
++		 * ignored.
+ 		 *
+ 		 * In particular; this forces __rt_mutex_start_proxy() to
+ 		 * complete such that we're guaranteed to observe the
+-		 * rt_waiter. Also see the WARN in wake_futex_pi().
++		 * rt_waiter.
+ 		 */
+ 		raw_spin_lock_irq(&pi_state->pi_mutex.wait_lock);
++
++		/*
++		 * Futex vs rt_mutex waiter state -- if there are no rt_mutex
++		 * waiters even though futex thinks there are, then the waiter
++		 * is leaving and the uncontended path is safe to take.
++		 */
++		rt_waiter = rt_mutex_top_waiter(&pi_state->pi_mutex);
++		if (!rt_waiter) {
++			raw_spin_unlock_irq(&pi_state->pi_mutex.wait_lock);
++			goto do_uncontended;
++		}
++
++		get_pi_state(pi_state);
+ 		spin_unlock(&hb->lock);
+ 
+ 		/* drops pi_state->pi_mutex.wait_lock */
+-		ret = wake_futex_pi(uaddr, uval, pi_state);
++		ret = wake_futex_pi(uaddr, uval, pi_state, rt_waiter);
+ 
+ 		put_pi_state(pi_state);
+ 
+@@ -1198,6 +1217,7 @@ int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
+ 		return ret;
+ 	}
+ 
++do_uncontended:
+ 	/*
+ 	 * We have no kernel internal state, i.e. no waiters in the
+ 	 * kernel. Waiters which are about to queue themselves are stuck
+diff --git a/kernel/futex/requeue.c b/kernel/futex/requeue.c
+index cba8b1a6a4cc..4c73e0b81acc 100644
+--- a/kernel/futex/requeue.c
++++ b/kernel/futex/requeue.c
+@@ -850,11 +850,13 @@ int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+ 		pi_mutex = &q.pi_state->pi_mutex;
+ 		ret = rt_mutex_wait_proxy_lock(pi_mutex, to, &rt_waiter);
+ 
+-		/* Current is not longer pi_blocked_on */
+-		spin_lock(q.lock_ptr);
++		/*
++		 * See futex_unlock_pi()'s cleanup: comment.
++		 */
+ 		if (ret && !rt_mutex_cleanup_proxy_lock(pi_mutex, &rt_waiter))
+ 			ret = 0;
+ 
++		spin_lock(q.lock_ptr);
+ 		debug_rt_mutex_free_waiter(&rt_waiter);
+ 		/*
+ 		 * Fixup the pi_state owner and possibly acquire the lock if we
+-- 
+2.44.0
+

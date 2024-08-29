@@ -1,0 +1,63 @@
+From b7d8af745b2e3815d7b1c7f3253a23b9625f8eb8 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Tue, 1 Aug 2023 17:26:48 +0200
+Subject: [PATCH 018/196] sched/rt: Don't try push tasks if there are none.
+
+I have a RT task X at a high priority and cyclictest on each CPU with
+lower priority than X's. If X is active and each CPU wakes their own
+cylictest thread then it ends in a longer rto_push storm.
+A random CPU determines via balance_rt() that the CPU on which X is
+running needs to push tasks. X has the highest priority, cyclictest is
+next in line so there is nothing that can be done since the task with
+the higher priority is not touched.
+
+tell_cpu_to_push() increments rto_loop_next and schedules
+rto_push_irq_work_func() on X's CPU. The other CPUs also increment the
+loop counter and do the same. Once rto_push_irq_work_func() is active it
+does nothing because it has _no_ pushable tasks on its runqueue. Then
+checks rto_next_cpu() and decides to queue irq_work on the local CPU
+because another CPU requested a push by incrementing the counter.
+
+I have traces where ~30 CPUs request this ~3 times each before it
+finally ends. This greatly increases X's runtime while X isn't making
+much progress.
+
+Teach rto_next_cpu() to only return CPUs which also have tasks on their
+runqueue which can be pushed away. This does not reduce the
+tell_cpu_to_push() invocations (rto_loop_next counter increments) but
+reduces the amount of issued rto_push_irq_work_func() if nothing can be
+done. As the result the overloaded CPU is blocked less often.
+
+There are still cases where the "same job" is repeated several times
+(for instance the current CPU needs to resched but didn't yet because
+the irq-work is repeated a few times and so the old task remains on the
+CPU) but the majority of request end in tell_cpu_to_push() before an IPI
+is issued.
+
+Reviewed-by: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Link: https://lore.kernel.org/r/20230801152648._y603AS_@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/sched/rt.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 4ac36eb4cdee..acd1510e8d47 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -2253,8 +2253,11 @@ static int rto_next_cpu(struct root_domain *rd)
+ 
+ 		rd->rto_cpu = cpu;
+ 
+-		if (cpu < nr_cpu_ids)
++		if (cpu < nr_cpu_ids) {
++			if (!has_pushable_tasks(cpu_rq(cpu)))
++				continue;
+ 			return cpu;
++		}
+ 
+ 		rd->rto_cpu = -1;
+ 
+-- 
+2.44.0
+

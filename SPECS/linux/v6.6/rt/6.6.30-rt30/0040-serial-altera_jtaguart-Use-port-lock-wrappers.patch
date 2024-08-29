@@ -1,0 +1,138 @@
+From ca8c544c8bd1c93f08a1d4e2030dba9bab5d0b81 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:43:31 +0206
+Subject: [PATCH 040/196] serial: altera_jtaguart: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-15-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/altera_jtaguart.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
+index 5fab4c978891..7090b251dd4d 100644
+--- a/drivers/tty/serial/altera_jtaguart.c
++++ b/drivers/tty/serial/altera_jtaguart.c
+@@ -147,14 +147,14 @@ static irqreturn_t altera_jtaguart_interrupt(int irq, void *data)
+ 	isr = (readl(port->membase + ALTERA_JTAGUART_CONTROL_REG) >>
+ 	       ALTERA_JTAGUART_CONTROL_RI_OFF) & port->read_status_mask;
+ 
+-	spin_lock(&port->lock);
++	uart_port_lock(port);
+ 
+ 	if (isr & ALTERA_JTAGUART_CONTROL_RE_MSK)
+ 		altera_jtaguart_rx_chars(port);
+ 	if (isr & ALTERA_JTAGUART_CONTROL_WE_MSK)
+ 		altera_jtaguart_tx_chars(port);
+ 
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ 
+ 	return IRQ_RETVAL(isr);
+ }
+@@ -180,14 +180,14 @@ static int altera_jtaguart_startup(struct uart_port *port)
+ 		return ret;
+ 	}
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	/* Enable RX interrupts now */
+ 	port->read_status_mask = ALTERA_JTAGUART_CONTROL_RE_MSK;
+ 	writel(port->read_status_mask,
+ 			port->membase + ALTERA_JTAGUART_CONTROL_REG);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	return 0;
+ }
+@@ -196,14 +196,14 @@ static void altera_jtaguart_shutdown(struct uart_port *port)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	/* Disable all interrupts now */
+ 	port->read_status_mask = 0;
+ 	writel(port->read_status_mask,
+ 			port->membase + ALTERA_JTAGUART_CONTROL_REG);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	free_irq(port->irq, port);
+ }
+@@ -264,33 +264,33 @@ static void altera_jtaguart_console_putc(struct uart_port *port, unsigned char c
+ 	unsigned long flags;
+ 	u32 status;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	while (!altera_jtaguart_tx_space(port, &status)) {
+-		spin_unlock_irqrestore(&port->lock, flags);
++		uart_port_unlock_irqrestore(port, flags);
+ 
+ 		if ((status & ALTERA_JTAGUART_CONTROL_AC_MSK) == 0) {
+ 			return;	/* no connection activity */
+ 		}
+ 
+ 		cpu_relax();
+-		spin_lock_irqsave(&port->lock, flags);
++		uart_port_lock_irqsave(port, &flags);
+ 	}
+ 	writel(c, port->membase + ALTERA_JTAGUART_DATA_REG);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ #else
+ static void altera_jtaguart_console_putc(struct uart_port *port, unsigned char c)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	while (!altera_jtaguart_tx_space(port, NULL)) {
+-		spin_unlock_irqrestore(&port->lock, flags);
++		uart_port_unlock_irqrestore(port, flags);
+ 		cpu_relax();
+-		spin_lock_irqsave(&port->lock, flags);
++		uart_port_lock_irqsave(port, &flags);
+ 	}
+ 	writel(c, port->membase + ALTERA_JTAGUART_DATA_REG);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ #endif
+ 
+-- 
+2.44.0
+

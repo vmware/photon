@@ -1,0 +1,99 @@
+From 82afc1b745ab1ccbd81b05d559c73265826d875e Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Fri, 20 Oct 2023 10:01:58 +0000
+Subject: [PATCH 152/196] printk: nbcon: Provide function to reacquire
+ ownership
+
+Contexts may become nbcon owners for various reasons, not just
+for printing. Indeed, the port->lock wrapper takes ownership
+for anything relating to the hardware.
+
+Since ownership can be lost at any time due to handover or
+takeover, a context _should_ be prepared to back out
+immediately and carefully. However, there are many scenarios
+where the context _must_ reacquire ownership in order to
+finalize or revert hardware changes.
+
+One such example is when interrupts are disabled by a context.
+No other context will automagically re-enable the interrupts.
+For this case, the disabling context _must_ reacquire nbcon
+ownership so that it can re-enable the interrupts.
+
+Provide nbcon_reacquire() for exactly this purpose.
+
+Note that for printing contexts, after a successful reacquire
+the context will have no output buffer because that has been
+lost. nbcon_reacquire() cannot be used to resume printing.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/console.h |  2 ++
+ kernel/printk/nbcon.c   | 32 ++++++++++++++++++++++++++++++++
+ 2 files changed, 34 insertions(+)
+
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 982c98280ae8..f8a062867888 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -474,12 +474,14 @@ extern void nbcon_cpu_emergency_exit(void);
+ extern bool nbcon_can_proceed(struct nbcon_write_context *wctxt);
+ extern bool nbcon_enter_unsafe(struct nbcon_write_context *wctxt);
+ extern bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt);
++extern void nbcon_reacquire(struct nbcon_write_context *wctxt);
+ #else
+ static inline void nbcon_cpu_emergency_enter(void) { }
+ static inline void nbcon_cpu_emergency_exit(void) { }
+ static inline bool nbcon_can_proceed(struct nbcon_write_context *wctxt) { return false; }
+ static inline bool nbcon_enter_unsafe(struct nbcon_write_context *wctxt) { return false; }
+ static inline bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt) { return false; }
++static inline void nbcon_reacquire(struct nbcon_write_context *wctxt) { }
+ #endif
+ 
+ extern int console_set_on_cmdline;
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index b866d0138fe0..f843df54ee82 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -830,6 +830,38 @@ bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt)
+ }
+ EXPORT_SYMBOL_GPL(nbcon_exit_unsafe);
+ 
++/**
++ * nbcon_reacquire - Reacquire a console after losing ownership
++ * @wctxt:	The write context that was handed to the write function
++ *
++ * Since ownership can be lost at any time due to handover or takeover, a
++ * printing context _should_ be prepared to back out immediately and
++ * carefully. However, there are many scenarios where the context _must_
++ * reacquire ownership in order to finalize or revert hardware changes.
++ *
++ * This function allows a context to reacquire ownership using the same
++ * priority as its previous ownership.
++ *
++ * Note that for printing contexts, after a successful reacquire the
++ * context will have no output buffer because that has been lost. This
++ * function cannot be used to resume printing.
++ */
++void nbcon_reacquire(struct nbcon_write_context *wctxt)
++{
++	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
++	struct console *con = ctxt->console;
++	struct nbcon_state cur;
++
++	while (!nbcon_context_try_acquire(ctxt))
++		cpu_relax();
++
++	wctxt->outbuf = NULL;
++	wctxt->len = 0;
++	nbcon_state_read(con, &cur);
++	wctxt->unsafe_takeover = cur.unsafe_takeover;
++}
++EXPORT_SYMBOL_GPL(nbcon_reacquire);
++
+ /**
+  * nbcon_emit_next_record - Emit a record in the acquired context
+  * @wctxt:	The write context that will be handed to the write function
+-- 
+2.44.0
+

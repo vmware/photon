@@ -1,0 +1,86 @@
+From 2567f714c6d3ae327a78dbc43305511b709dc6eb Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 8 Sep 2023 18:22:49 +0200
+Subject: [PATCH 002/196] locking/rtmutex: Avoid unconditional slowpath for
+ DEBUG_RT_MUTEXES
+
+With DEBUG_RT_MUTEXES enabled the fast-path rt_mutex_cmpxchg_acquire()
+always fails and all lock operations take the slow path.
+
+Provide a new helper inline rt_mutex_try_acquire() which maps to
+rt_mutex_cmpxchg_acquire() in the non-debug case. For the debug case
+it invokes rt_mutex_slowtrylock() which can acquire a non-contended
+rtmutex under full debug coverage.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20230908162254.999499-3-bigeasy@linutronix.de
+---
+ kernel/locking/rtmutex.c     | 21 ++++++++++++++++++++-
+ kernel/locking/ww_rt_mutex.c |  2 +-
+ 2 files changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
+index 21db0df0eb00..bcec0533a0cc 100644
+--- a/kernel/locking/rtmutex.c
++++ b/kernel/locking/rtmutex.c
+@@ -218,6 +218,11 @@ static __always_inline bool rt_mutex_cmpxchg_acquire(struct rt_mutex_base *lock,
+ 	return try_cmpxchg_acquire(&lock->owner, &old, new);
+ }
+ 
++static __always_inline bool rt_mutex_try_acquire(struct rt_mutex_base *lock)
++{
++	return rt_mutex_cmpxchg_acquire(lock, NULL, current);
++}
++
+ static __always_inline bool rt_mutex_cmpxchg_release(struct rt_mutex_base *lock,
+ 						     struct task_struct *old,
+ 						     struct task_struct *new)
+@@ -297,6 +302,20 @@ static __always_inline bool rt_mutex_cmpxchg_acquire(struct rt_mutex_base *lock,
+ 
+ }
+ 
++static int __sched rt_mutex_slowtrylock(struct rt_mutex_base *lock);
++
++static __always_inline bool rt_mutex_try_acquire(struct rt_mutex_base *lock)
++{
++	/*
++	 * With debug enabled rt_mutex_cmpxchg trylock() will always fail.
++	 *
++	 * Avoid unconditionally taking the slow path by using
++	 * rt_mutex_slow_trylock() which is covered by the debug code and can
++	 * acquire a non-contended rtmutex.
++	 */
++	return rt_mutex_slowtrylock(lock);
++}
++
+ static __always_inline bool rt_mutex_cmpxchg_release(struct rt_mutex_base *lock,
+ 						     struct task_struct *old,
+ 						     struct task_struct *new)
+@@ -1755,7 +1774,7 @@ static int __sched rt_mutex_slowlock(struct rt_mutex_base *lock,
+ static __always_inline int __rt_mutex_lock(struct rt_mutex_base *lock,
+ 					   unsigned int state)
+ {
+-	if (likely(rt_mutex_cmpxchg_acquire(lock, NULL, current)))
++	if (likely(rt_mutex_try_acquire(lock)))
+ 		return 0;
+ 
+ 	return rt_mutex_slowlock(lock, NULL, state);
+diff --git a/kernel/locking/ww_rt_mutex.c b/kernel/locking/ww_rt_mutex.c
+index d1473c624105..c7196de838ed 100644
+--- a/kernel/locking/ww_rt_mutex.c
++++ b/kernel/locking/ww_rt_mutex.c
+@@ -62,7 +62,7 @@ __ww_rt_mutex_lock(struct ww_mutex *lock, struct ww_acquire_ctx *ww_ctx,
+ 	}
+ 	mutex_acquire_nest(&rtm->dep_map, 0, 0, nest_lock, ip);
+ 
+-	if (likely(rt_mutex_cmpxchg_acquire(&rtm->rtmutex, NULL, current))) {
++	if (likely(rt_mutex_try_acquire(&rtm->rtmutex))) {
+ 		if (ww_ctx)
+ 			ww_mutex_set_context_fastpath(lock, ww_ctx);
+ 		return 0;
+-- 
+2.44.0
+

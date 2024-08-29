@@ -1,0 +1,51 @@
+From bd4b7c50be1bfe5c44508acad0c099caca6da9d9 Mon Sep 17 00:00:00 2001
+From: Jisheng Zhang <jszhang@kernel.org>
+Date: Tue, 31 Oct 2023 22:35:20 +0800
+Subject: [PATCH 187/196] riscv: add PREEMPT_AUTO support
+
+riscv has switched to GENERIC_ENTRY, so adding PREEMPT_AUTO is as simple
+as adding TIF_ARCH_RESCHED_LAZY related definitions and enabling
+HAVE_PREEMPT_AUTO.
+
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/riscv/Kconfig                   | 1 +
+ arch/riscv/include/asm/thread_info.h | 2 ++
+ 2 files changed, 3 insertions(+)
+
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index c785a0200573..ea01aa411e2c 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -135,6 +135,7 @@ config RISCV
+ 	select HAVE_PERF_USER_STACK_DUMP
+ 	select HAVE_POSIX_CPU_TIMERS_TASK_WORK
+ 	select HAVE_PREEMPT_DYNAMIC_KEY if !XIP_KERNEL
++	select HAVE_PREEMPT_AUTO
+ 	select HAVE_REGS_AND_STACK_ACCESS_API
+ 	select HAVE_RETHOOK if !XIP_KERNEL
+ 	select HAVE_RSEQ
+diff --git a/arch/riscv/include/asm/thread_info.h b/arch/riscv/include/asm/thread_info.h
+index d18ce0113ca1..e18710fe51f0 100644
+--- a/arch/riscv/include/asm/thread_info.h
++++ b/arch/riscv/include/asm/thread_info.h
+@@ -82,6 +82,7 @@ int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src);
+  * - pending work-to-be-done flags are in lowest half-word
+  * - other flags in upper half-word(s)
+  */
++#define TIF_ARCH_RESCHED_LAZY	0	/* Lazy rescheduling */
+ #define TIF_NOTIFY_RESUME	1	/* callback before returning to user */
+ #define TIF_SIGPENDING		2	/* signal pending */
+ #define TIF_NEED_RESCHED	3	/* rescheduling necessary */
+@@ -96,6 +97,7 @@ int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src);
+ #define _TIF_NEED_RESCHED	(1 << TIF_NEED_RESCHED)
+ #define _TIF_NOTIFY_SIGNAL	(1 << TIF_NOTIFY_SIGNAL)
+ #define _TIF_UPROBE		(1 << TIF_UPROBE)
++#define _TIF_ARCH_RESCHED_LAZY	(1 << TIF_ARCH_RESCHED_LAZY)
+ 
+ #define _TIF_WORK_MASK \
+ 	(_TIF_NOTIFY_RESUME | _TIF_SIGPENDING | _TIF_NEED_RESCHED | \
+-- 
+2.44.0
+

@@ -1,0 +1,195 @@
+From bc9bd5298297e7d18daa0cf0d57c1ba728836930 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 12 Sep 2023 12:00:08 +0000
+Subject: [PATCH 131/196] printk: nbcon: Provide function to flush using
+ write_atomic()
+
+Provide nbcon_atomic_flush_all() to perform flushing of all
+registered nbcon consoles using their write_atomic() callback.
+Like with legacy consoles, the nbcon consoles are flushed one
+record per console. This allows all nbcon consoles to print
+lines pseudo-simultaneously, rather than one console waiting
+for the full ringbuffer to dump to another console before
+printing anything.
+
+Unlike console_flush_all(), nbcon_atomic_flush_all() will only
+flush up through the newest record at the time of the call.
+This prevents a CPU from printing unbounded when other CPUs are
+adding records.
+
+Perform nbcon console atomic flushing in
+console_flush_on_panic(). This function is not only used in
+panic() but also other locations where there may be stored
+messages that need to be flushed.
+
+Co-developed-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Thomas Gleixner (Intel) <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/internal.h |   2 +
+ kernel/printk/nbcon.c    | 100 ++++++++++++++++++++++++++++++++++++++-
+ kernel/printk/printk.c   |   2 +
+ 3 files changed, 102 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
+index cd1ce0235f01..d6cb8d2be944 100644
+--- a/kernel/printk/internal.h
++++ b/kernel/printk/internal.h
+@@ -77,6 +77,7 @@ void nbcon_seq_force(struct console *con, u64 seq);
+ bool nbcon_alloc(struct console *con);
+ void nbcon_init(struct console *con);
+ void nbcon_free(struct console *con);
++void nbcon_atomic_flush_all(void);
+ 
+ /*
+  * Check if the given console is currently capable and allowed to print
+@@ -131,6 +132,7 @@ static inline void nbcon_seq_force(struct console *con, u64 seq) { }
+ static inline bool nbcon_alloc(struct console *con) { return false; }
+ static inline void nbcon_init(struct console *con) { }
+ static inline void nbcon_free(struct console *con) { }
++static inline void nbcon_atomic_flush_all(void) { }
+ 
+ static inline bool console_is_usable(struct console *con, short flags) { return false; }
+ 
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index a5707fe1e95e..d0780168e319 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -539,7 +539,6 @@ static struct printk_buffers panic_nbcon_pbufs;
+  * in an unsafe state. Otherwise, on success the caller may assume
+  * the console is not in an unsafe state.
+  */
+-__maybe_unused
+ static bool nbcon_context_try_acquire(struct nbcon_context *ctxt)
+ {
+ 	unsigned int cpu = smp_processor_id();
+@@ -841,7 +840,6 @@ EXPORT_SYMBOL_GPL(nbcon_exit_unsafe);
+  * When true is returned, @wctxt->ctxt.backlog indicates whether there are
+  * still records pending in the ringbuffer,
+  */
+-__maybe_unused
+ static bool nbcon_emit_next_record(struct nbcon_write_context *wctxt)
+ {
+ 	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
+@@ -930,6 +928,104 @@ static bool nbcon_emit_next_record(struct nbcon_write_context *wctxt)
+ 	return nbcon_context_exit_unsafe(ctxt);
+ }
+ 
++/**
++ * nbcon_atomic_emit_one - Print one record for an nbcon console using the
++ *				write_atomic() callback
++ * @wctxt:	An initialized write context struct to use
++ *		for this context
++ *
++ * Return:	False if the given console could not print a record or there
++ *		are no more records to print, otherwise true.
++ *
++ * This is an internal helper to handle the locking of the console before
++ * calling nbcon_emit_next_record().
++ */
++static bool nbcon_atomic_emit_one(struct nbcon_write_context *wctxt)
++{
++	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
++
++	if (!nbcon_context_try_acquire(ctxt))
++		return false;
++
++	/*
++	 * nbcon_emit_next_record() returns false when the console was
++	 * handed over or taken over. In both cases the context is no
++	 * longer valid.
++	 */
++	if (!nbcon_emit_next_record(wctxt))
++		return false;
++
++	nbcon_context_release(ctxt);
++
++	return ctxt->backlog;
++}
++
++/**
++ * __nbcon_atomic_flush_all - Flush all nbcon consoles using their
++ *					write_atomic() callback
++ * @stop_seq:			Flush up until this record
++ */
++static void __nbcon_atomic_flush_all(u64 stop_seq)
++{
++	struct nbcon_write_context wctxt = { };
++	struct nbcon_context *ctxt = &ACCESS_PRIVATE(&wctxt, ctxt);
++	struct console *con;
++	bool any_progress;
++	int cookie;
++
++	do {
++		any_progress = false;
++
++		cookie = console_srcu_read_lock();
++		for_each_console_srcu(con) {
++			short flags = console_srcu_read_flags(con);
++			unsigned long irq_flags;
++
++			if (!(flags & CON_NBCON))
++				continue;
++
++			if (!console_is_usable(con, flags))
++				continue;
++
++			if (nbcon_seq_read(con) >= stop_seq)
++				continue;
++
++			memset(ctxt, 0, sizeof(*ctxt));
++			ctxt->console			= con;
++			ctxt->spinwait_max_us		= 2000;
++			ctxt->prio			= NBCON_PRIO_NORMAL;
++
++			/*
++			 * Atomic flushing does not use console driver
++			 * synchronization (i.e. it does not hold the port
++			 * lock for uart consoles). Therefore IRQs must be
++			 * disabled to avoid being interrupted and then
++			 * calling into a driver that will deadlock trying
++			 * acquire console ownership.
++			 */
++			local_irq_save(irq_flags);
++
++			any_progress |= nbcon_atomic_emit_one(&wctxt);
++
++			local_irq_restore(irq_flags);
++		}
++		console_srcu_read_unlock(cookie);
++	} while (any_progress);
++}
++
++/**
++ * nbcon_atomic_flush_all - Flush all nbcon consoles using their
++ *				write_atomic() callback
++ *
++ * Flush the backlog up through the currently newest record. Any new
++ * records added while flushing will not be flushed. This is to avoid
++ * one CPU printing unbounded because other CPUs continue to add records.
++ */
++void nbcon_atomic_flush_all(void)
++{
++	__nbcon_atomic_flush_all(prb_next_reserve_seq(prb));
++}
++
+ /**
+  * nbcon_alloc - Allocate buffers needed by the nbcon console
+  * @con:	Console to allocate buffers for
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index bdd3d7e40e63..271865952a4d 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3176,6 +3176,8 @@ void console_flush_on_panic(enum con_flush_mode mode)
+ 		console_srcu_read_unlock(cookie);
+ 	}
+ 
++	nbcon_atomic_flush_all();
++
+ 	console_flush_all(false, &next_seq, &handover);
+ }
+ 
+-- 
+2.44.0
+

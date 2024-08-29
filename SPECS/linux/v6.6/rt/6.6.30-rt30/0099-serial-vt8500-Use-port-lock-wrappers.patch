@@ -1,0 +1,81 @@
+From b093871cef58eac09eb15d83005d4297c4ab940a Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:44:30 +0206
+Subject: [PATCH 099/196] serial: vt8500: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-74-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/vt8500_serial.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+index c5d5c2765119..78a1c1eea11b 100644
+--- a/drivers/tty/serial/vt8500_serial.c
++++ b/drivers/tty/serial/vt8500_serial.c
+@@ -227,7 +227,7 @@ static irqreturn_t vt8500_irq(int irq, void *dev_id)
+ 	struct uart_port *port = dev_id;
+ 	unsigned long isr;
+ 
+-	spin_lock(&port->lock);
++	uart_port_lock(port);
+ 	isr = vt8500_read(port, VT8500_URISR);
+ 
+ 	/* Acknowledge active status bits */
+@@ -240,7 +240,7 @@ static irqreturn_t vt8500_irq(int irq, void *dev_id)
+ 	if (isr & TCTS)
+ 		handle_delta_cts(port);
+ 
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -342,7 +342,7 @@ static void vt8500_set_termios(struct uart_port *port,
+ 	unsigned int baud, lcr;
+ 	unsigned int loops = 1000;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	/* calculate and set baud rate */
+ 	baud = uart_get_baud_rate(port, termios, old, 900, 921600);
+@@ -410,7 +410,7 @@ static void vt8500_set_termios(struct uart_port *port,
+ 	vt8500_write(&vt8500_port->uart, 0x881, VT8500_URFCR);
+ 	vt8500_write(&vt8500_port->uart, vt8500_port->ier, VT8500_URIER);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static const char *vt8500_type(struct uart_port *port)
+-- 
+2.44.0
+

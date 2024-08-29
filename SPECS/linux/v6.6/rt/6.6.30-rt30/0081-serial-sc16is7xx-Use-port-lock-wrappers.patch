@@ -1,0 +1,64 @@
+From 3a1f629099c343387995d751979eebc014888c61 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:44:12 +0206
+Subject: [PATCH 081/196] serial: sc16is7xx: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-56-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/sc16is7xx.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index f75b8bceb8ca..2d7470457af4 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -804,6 +804,7 @@ static void sc16is7xx_tx_proc(struct kthread_work *ws)
+ {
+ 	struct uart_port *port = &(to_sc16is7xx_one(ws, tx_work)->port);
+ 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
++	unsigned long flags;
+ 
+ 	if ((port->rs485.flags & SER_RS485_ENABLED) &&
+ 	    (port->rs485.delay_rts_before_send > 0))
+@@ -812,6 +813,10 @@ static void sc16is7xx_tx_proc(struct kthread_work *ws)
+ 	mutex_lock(&one->efr_lock);
+ 	sc16is7xx_handle_tx(port);
+ 	mutex_unlock(&one->efr_lock);
++
++	uart_port_lock_irqsave(port, &flags);
++	sc16is7xx_ier_set(port, SC16IS7XX_IER_THRI_BIT);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static void sc16is7xx_reconf_rs485(struct uart_port *port)
+-- 
+2.44.0
+

@@ -1,0 +1,74 @@
+From 55cc310faffe3965b7fab8cdba3effe2019a0288 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Tue, 12 Sep 2023 13:45:33 +0000
+Subject: [PATCH 130/196] printk: Add @flags argument for console_is_usable()
+
+The caller of console_is_usable() usually needs @console->flags
+for its own checks. Rather than having console_is_usable() read
+its own copy, make the caller pass in the @flags. This also
+ensures that the caller saw the same @flags value.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/internal.h | 8 ++------
+ kernel/printk/printk.c   | 5 +++--
+ 2 files changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
+index d741d19bb9db..cd1ce0235f01 100644
+--- a/kernel/printk/internal.h
++++ b/kernel/printk/internal.h
+@@ -83,13 +83,9 @@ void nbcon_free(struct console *con);
+  * records. Note that this function does not consider the current context,
+  * which can also play a role in deciding if @con can be used to print
+  * records.
+- *
+- * Requires the console_srcu_read_lock.
+  */
+-static inline bool console_is_usable(struct console *con)
++static inline bool console_is_usable(struct console *con, short flags)
+ {
+-	short flags = console_srcu_read_flags(con);
+-
+ 	if (!(flags & CON_ENABLED))
+ 		return false;
+ 
+@@ -136,7 +132,7 @@ static inline bool nbcon_alloc(struct console *con) { return false; }
+ static inline void nbcon_init(struct console *con) { }
+ static inline void nbcon_free(struct console *con) { }
+ 
+-static inline bool console_is_usable(struct console *con) { return false; }
++static inline bool console_is_usable(struct console *con, short flags) { return false; }
+ 
+ #endif /* CONFIG_PRINTK */
+ 
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index d959be5c4102..bdd3d7e40e63 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2946,9 +2946,10 @@ static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handove
+ 
+ 		cookie = console_srcu_read_lock();
+ 		for_each_console_srcu(con) {
++			short flags = console_srcu_read_flags(con);
+ 			bool progress;
+ 
+-			if (!console_is_usable(con))
++			if (!console_is_usable(con, flags))
+ 				continue;
+ 			any_usable = true;
+ 
+@@ -3805,7 +3806,7 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
+ 			 * that they make forward progress, so only increment
+ 			 * @diff for usable consoles.
+ 			 */
+-			if (!console_is_usable(c))
++			if (!console_is_usable(c, flags))
+ 				continue;
+ 
+ 			if (flags & CON_NBCON) {
+-- 
+2.44.0
+

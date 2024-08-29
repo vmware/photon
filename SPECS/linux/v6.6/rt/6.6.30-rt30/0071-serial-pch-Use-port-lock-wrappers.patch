@@ -1,0 +1,85 @@
+From 74f53a1ab0e5cf5c657be32cf04c4400657addda Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:44:02 +0206
+Subject: [PATCH 071/196] serial: pch: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-46-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/pch_uart.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index cc83b772b7ca..436cc6d52a11 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -1347,7 +1347,7 @@ static void pch_uart_set_termios(struct uart_port *port,
+ 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
+ 
+ 	spin_lock_irqsave(&priv->lock, flags);
+-	spin_lock(&port->lock);
++	uart_port_lock(port);
+ 
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 	rtn = pch_uart_hal_set_line(priv, baud, parity, bits, stb);
+@@ -1360,7 +1360,7 @@ static void pch_uart_set_termios(struct uart_port *port,
+ 		tty_termios_encode_baud_rate(termios, baud, baud);
+ 
+ out:
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ }
+ 
+@@ -1581,10 +1581,10 @@ pch_console_write(struct console *co, const char *s, unsigned int count)
+ 		port_locked = 0;
+ 	} else if (oops_in_progress) {
+ 		priv_locked = spin_trylock(&priv->lock);
+-		port_locked = spin_trylock(&priv->port.lock);
++		port_locked = uart_port_trylock(&priv->port);
+ 	} else {
+ 		spin_lock(&priv->lock);
+-		spin_lock(&priv->port.lock);
++		uart_port_lock(&priv->port);
+ 	}
+ 
+ 	/*
+@@ -1604,7 +1604,7 @@ pch_console_write(struct console *co, const char *s, unsigned int count)
+ 	iowrite8(ier, priv->membase + UART_IER);
+ 
+ 	if (port_locked)
+-		spin_unlock(&priv->port.lock);
++		uart_port_unlock(&priv->port);
+ 	if (priv_locked)
+ 		spin_unlock(&priv->lock);
+ 	local_irq_restore(flags);
+-- 
+2.44.0
+

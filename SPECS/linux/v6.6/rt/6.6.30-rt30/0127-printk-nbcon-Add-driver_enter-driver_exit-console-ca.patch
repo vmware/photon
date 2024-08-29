@@ -1,0 +1,47 @@
+From 6a8c187f5f92fc2e208bf8ebdb4d39ad08b92a84 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Fri, 8 Dec 2023 15:54:27 +0000
+Subject: [PATCH 127/196] printk: nbcon: Add driver_enter/driver_exit console
+ callbacks
+
+Console drivers need some mechanism to synchronize between "normal
+driver activity" and console printing. For uart serial drivers it
+is the port lock. Other types of console drivers (network,
+graphics, USB) will need something as well.
+
+Provide 2 new mandatory nbcon console callbacks (driver_enter and
+driver_exit) to allow the consoles drivers to implement the
+appropriate synchronization. The callbacks are also expected to
+disable/enable migration.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/console.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/include/linux/console.h b/include/linux/console.h
+index c27bd5189660..73515c324347 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -296,6 +296,8 @@ struct nbcon_write_context {
+  * @node:		hlist node for the console list
+  *
+  * @write_atomic:	Write callback for atomic context
++ * @driver_enter:	Callback to begin synchronization with driver code
++ * @driver_exit:	Callback to finish synchronization with driver code
+  * @nbcon_state:	State for nbcon consoles
+  * @nbcon_seq:		Sequence number of the next record for nbcon to print
+  * @pbufs:		Pointer to nbcon private buffer
+@@ -323,6 +325,8 @@ struct console {
+ 	/* nbcon console specific members */
+ 	bool			(*write_atomic)(struct console *con,
+ 						struct nbcon_write_context *wctxt);
++	void			(*driver_enter)(struct console *con, unsigned long *flags);
++	void			(*driver_exit)(struct console *con, unsigned long flags);
+ 	atomic_t		__private nbcon_state;
+ 	atomic_long_t		__private nbcon_seq;
+ 	struct printk_buffers	*pbufs;
+-- 
+2.44.0
+

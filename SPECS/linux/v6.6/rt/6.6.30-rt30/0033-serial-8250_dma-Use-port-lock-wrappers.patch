@@ -1,0 +1,85 @@
+From 6a7b19e1fe2b91de30164972f6201b0034a30d13 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:43:24 +0206
+Subject: [PATCH 033/196] serial: 8250_dma: Use port lock wrappers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-8-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/8250/8250_dma.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 7fa66501792d..8b30ca8fdd3f 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -22,7 +22,7 @@ static void __dma_tx_complete(void *param)
+ 	dma_sync_single_for_cpu(dma->txchan->device->dev, dma->tx_addr,
+ 				UART_XMIT_SIZE, DMA_TO_DEVICE);
+ 
+-	spin_lock_irqsave(&p->port.lock, flags);
++	uart_port_lock_irqsave(&p->port, &flags);
+ 
+ 	dma->tx_running = 0;
+ 
+@@ -35,7 +35,7 @@ static void __dma_tx_complete(void *param)
+ 	if (ret || !dma->tx_running)
+ 		serial8250_set_THRI(p);
+ 
+-	spin_unlock_irqrestore(&p->port.lock, flags);
++	uart_port_unlock_irqrestore(&p->port, flags);
+ }
+ 
+ static void __dma_rx_complete(struct uart_8250_port *p)
+@@ -70,7 +70,7 @@ static void dma_rx_complete(void *param)
+ 	struct uart_8250_dma *dma = p->dma;
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&p->port.lock, flags);
++	uart_port_lock_irqsave(&p->port, &flags);
+ 	if (dma->rx_running)
+ 		__dma_rx_complete(p);
+ 
+@@ -80,7 +80,7 @@ static void dma_rx_complete(void *param)
+ 	 */
+ 	if (!dma->rx_running && (serial_lsr_in(p) & UART_LSR_DR))
+ 		p->dma->rx_dma(p);
+-	spin_unlock_irqrestore(&p->port.lock, flags);
++	uart_port_unlock_irqrestore(&p->port, flags);
+ }
+ 
+ int serial8250_tx_dma(struct uart_8250_port *p)
+-- 
+2.44.0
+

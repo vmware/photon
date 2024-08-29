@@ -1,0 +1,119 @@
+From c90809f8e01126e54521d79e1dc45b9436d46eb8 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:44:08 +0206
+Subject: [PATCH 077/196] serial: rp2: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-52-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/rp2.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/tty/serial/rp2.c b/drivers/tty/serial/rp2.c
+index de220ac8ca54..d46a81cddfcd 100644
+--- a/drivers/tty/serial/rp2.c
++++ b/drivers/tty/serial/rp2.c
+@@ -276,9 +276,9 @@ static unsigned int rp2_uart_tx_empty(struct uart_port *port)
+ 	 * But the TXEMPTY bit doesn't seem to work unless the TX IRQ is
+ 	 * enabled.
+ 	 */
+-	spin_lock_irqsave(&up->port.lock, flags);
++	uart_port_lock_irqsave(&up->port, &flags);
+ 	tx_fifo_bytes = readw(up->base + RP2_TX_FIFO_COUNT);
+-	spin_unlock_irqrestore(&up->port.lock, flags);
++	uart_port_unlock_irqrestore(&up->port, flags);
+ 
+ 	return tx_fifo_bytes ? 0 : TIOCSER_TEMT;
+ }
+@@ -323,10 +323,10 @@ static void rp2_uart_break_ctl(struct uart_port *port, int break_state)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	rp2_rmw(port_to_up(port), RP2_TXRX_CTL, RP2_TXRX_CTL_BREAK_m,
+ 		break_state ? RP2_TXRX_CTL_BREAK_m : 0);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static void rp2_uart_enable_ms(struct uart_port *port)
+@@ -383,7 +383,7 @@ static void rp2_uart_set_termios(struct uart_port *port, struct ktermios *new,
+ 	if (tty_termios_baud_rate(new))
+ 		tty_termios_encode_baud_rate(new, baud, baud);
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	/* ignore all characters if CREAD is not set */
+ 	port->ignore_status_mask = (new->c_cflag & CREAD) ? 0 : RP2_DUMMY_READ;
+@@ -391,7 +391,7 @@ static void rp2_uart_set_termios(struct uart_port *port, struct ktermios *new,
+ 	__rp2_uart_set_termios(up, new->c_cflag, new->c_iflag, baud_div);
+ 	uart_update_timeout(port, new->c_cflag, baud);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static void rp2_rx_chars(struct rp2_uart_port *up)
+@@ -440,7 +440,7 @@ static void rp2_ch_interrupt(struct rp2_uart_port *up)
+ {
+ 	u32 status;
+ 
+-	spin_lock(&up->port.lock);
++	uart_port_lock(&up->port);
+ 
+ 	/*
+ 	 * The IRQ status bits are clear-on-write.  Other status bits in
+@@ -456,7 +456,7 @@ static void rp2_ch_interrupt(struct rp2_uart_port *up)
+ 	if (status & RP2_CHAN_STAT_MS_CHANGED_MASK)
+ 		wake_up_interruptible(&up->port.state->port.delta_msr_wait);
+ 
+-	spin_unlock(&up->port.lock);
++	uart_port_unlock(&up->port);
+ }
+ 
+ static int rp2_asic_interrupt(struct rp2_card *card, unsigned int asic_id)
+@@ -516,10 +516,10 @@ static void rp2_uart_shutdown(struct uart_port *port)
+ 
+ 	rp2_uart_break_ctl(port, 0);
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	rp2_mask_ch_irq(up, up->idx, 0);
+ 	rp2_rmw(up, RP2_CHAN_STAT, 0, 0);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static const char *rp2_uart_type(struct uart_port *port)
+-- 
+2.44.0
+

@@ -1,0 +1,104 @@
+From 09f4a685d461cf0bf9823ae39560cab86a665982 Mon Sep 17 00:00:00 2001
+From: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Date: Wed, 5 Jul 2023 10:30:25 +0100
+Subject: [PATCH 166/196] drm/i915: Do not disable preemption for resets
+
+Commit ade8a0f59844 ("drm/i915: Make all GPU resets atomic") added a
+preempt disable section over the hardware reset callback to prepare the
+driver for being able to reset from atomic contexts.
+
+In retrospect I can see that the work item at a time was about removing
+the struct mutex from the reset path. Code base also briefly entertained
+the idea of doing the reset under stop_machine in order to serialize
+userspace mmap and temporary glitch in the fence registers (see
+eb8d0f5af4ec ("drm/i915: Remove GPU reset dependence on struct_mutex"),
+but that never materialized and was soon removed in 2caffbf11762
+("drm/i915: Revoke mmaps and prevent access to fence registers across
+reset") and replaced with a SRCU based solution.
+
+As such, as far as I can see, today we still have a requirement that
+resets must not sleep (invoked from submission tasklets), but no need to
+support invoking them from a truly atomic context.
+
+Given that the preemption section is problematic on RT kernels, since the
+uncore lock becomes a sleeping lock and so is invalid in such section,
+lets try and remove it. Potential downside is that our short waits on GPU
+to complete the reset may get extended if CPU scheduling interferes, but
+in practice that probably isn't a deal breaker.
+
+In terms of mechanics, since the preemption disabled block is being
+removed we just need to replace a few of the wait_for_atomic macros into
+busy looping versions which will work (and not complain) when called from
+non-atomic sections.
+
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Cc: Chris Wilson <chris.p.wilson@intel.com>
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lore.kernel.org/r/20230705093025.3689748-1-tvrtko.ursulin@linux.intel.com
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/gpu/drm/i915/gt/intel_reset.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/gt/intel_reset.c b/drivers/gpu/drm/i915/gt/intel_reset.c
+index 13fb8e5042c5..b51fb0c97772 100644
+--- a/drivers/gpu/drm/i915/gt/intel_reset.c
++++ b/drivers/gpu/drm/i915/gt/intel_reset.c
+@@ -164,13 +164,13 @@ static int i915_do_reset(struct intel_gt *gt,
+ 	/* Assert reset for at least 20 usec, and wait for acknowledgement. */
+ 	pci_write_config_byte(pdev, I915_GDRST, GRDOM_RESET_ENABLE);
+ 	udelay(50);
+-	err = wait_for_atomic(i915_in_reset(pdev), 50);
++	err = _wait_for_atomic(i915_in_reset(pdev), 50, 0);
+ 
+ 	/* Clear the reset request. */
+ 	pci_write_config_byte(pdev, I915_GDRST, 0);
+ 	udelay(50);
+ 	if (!err)
+-		err = wait_for_atomic(!i915_in_reset(pdev), 50);
++		err = _wait_for_atomic(!i915_in_reset(pdev), 50, 0);
+ 
+ 	return err;
+ }
+@@ -190,7 +190,7 @@ static int g33_do_reset(struct intel_gt *gt,
+ 	struct pci_dev *pdev = to_pci_dev(gt->i915->drm.dev);
+ 
+ 	pci_write_config_byte(pdev, I915_GDRST, GRDOM_RESET_ENABLE);
+-	return wait_for_atomic(g4x_reset_complete(pdev), 50);
++	return _wait_for_atomic(g4x_reset_complete(pdev), 50, 0);
+ }
+ 
+ static int g4x_do_reset(struct intel_gt *gt,
+@@ -207,7 +207,7 @@ static int g4x_do_reset(struct intel_gt *gt,
+ 
+ 	pci_write_config_byte(pdev, I915_GDRST,
+ 			      GRDOM_MEDIA | GRDOM_RESET_ENABLE);
+-	ret =  wait_for_atomic(g4x_reset_complete(pdev), 50);
++	ret =  _wait_for_atomic(g4x_reset_complete(pdev), 50, 0);
+ 	if (ret) {
+ 		GT_TRACE(gt, "Wait for media reset failed\n");
+ 		goto out;
+@@ -215,7 +215,7 @@ static int g4x_do_reset(struct intel_gt *gt,
+ 
+ 	pci_write_config_byte(pdev, I915_GDRST,
+ 			      GRDOM_RENDER | GRDOM_RESET_ENABLE);
+-	ret =  wait_for_atomic(g4x_reset_complete(pdev), 50);
++	ret =  _wait_for_atomic(g4x_reset_complete(pdev), 50, 0);
+ 	if (ret) {
+ 		GT_TRACE(gt, "Wait for render reset failed\n");
+ 		goto out;
+@@ -785,9 +785,7 @@ int __intel_gt_reset(struct intel_gt *gt, intel_engine_mask_t engine_mask)
+ 		reset_mask = wa_14015076503_start(gt, engine_mask, !retry);
+ 
+ 		GT_TRACE(gt, "engine_mask=%x\n", reset_mask);
+-		preempt_disable();
+ 		ret = reset(gt, reset_mask, retry);
+-		preempt_enable();
+ 
+ 		wa_14015076503_end(gt, reset_mask);
+ 	}
+-- 
+2.44.0
+

@@ -1,0 +1,139 @@
+From 8578f8dd715d67611918f79cb5288a572a04a084 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Wed, 20 Sep 2023 17:58:38 +0206
+Subject: [PATCH 109/196] printk: fix illegal pbufs access for !CONFIG_PRINTK
+
+When CONFIG_PRINTK is not set, PRINTK_MESSAGE_MAX is 0. This
+leads to a zero-sized array @outbuf in @printk_shared_pbufs. In
+console_flush_all() a pointer to the first element of the array
+is assigned with:
+
+   char *outbuf = &printk_shared_pbufs.outbuf[0];
+
+For !CONFIG_PRINTK this leads to a compiler warning:
+
+   warning: array subscript 0 is outside array bounds of
+   'char[0]' [-Warray-bounds]
+
+This is not really dangerous because printk_get_next_message()
+always returns false for !CONFIG_PRINTK, which leads to @outbuf
+never being used. However, it makes no sense to even compile
+these functions for !CONFIG_PRINTK.
+
+Extend the existing '#ifdef CONFIG_PRINTK' block to contain
+the formatting and emitting functions since these have no
+purpose in !CONFIG_PRINTK. This also allows removing several
+more !CONFIG_PRINTK dummies as well as moving
+@suppress_panic_printk into a CONFIG_PRINTK block.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202309201724.M9BMAQIh-lkp@intel.com/
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20230920155238.670439-1-john.ogness@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c | 44 +++++++++++++++++-------------------------
+ 1 file changed, 18 insertions(+), 26 deletions(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 70f793b392e5..3bf517ae8262 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -102,12 +102,6 @@ DEFINE_STATIC_SRCU(console_srcu);
+  */
+ int __read_mostly suppress_printk;
+ 
+-/*
+- * During panic, heavy printk by other CPUs can delay the
+- * panic and risk deadlock on console resources.
+- */
+-static int __read_mostly suppress_panic_printk;
+-
+ #ifdef CONFIG_LOCKDEP
+ static struct lockdep_map console_lock_dep_map = {
+ 	.name = "console_lock"
+@@ -445,6 +439,12 @@ static int console_msg_format = MSG_FORMAT_DEFAULT;
+ static DEFINE_MUTEX(syslog_lock);
+ 
+ #ifdef CONFIG_PRINTK
++/*
++ * During panic, heavy printk by other CPUs can delay the
++ * panic and risk deadlock on console resources.
++ */
++static int __read_mostly suppress_panic_printk;
++
+ DECLARE_WAIT_QUEUE_HEAD(log_wait);
+ /* All 3 protected by @syslog_lock. */
+ /* the next printk record to read by syslog(READ) or /proc/kmsg */
+@@ -2380,22 +2380,6 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
+ 
+ static u64 syslog_seq;
+ 
+-static size_t record_print_text(const struct printk_record *r,
+-				bool syslog, bool time)
+-{
+-	return 0;
+-}
+-static ssize_t info_print_ext_header(char *buf, size_t size,
+-				     struct printk_info *info)
+-{
+-	return 0;
+-}
+-static ssize_t msg_print_ext_body(char *buf, size_t size,
+-				  char *text, size_t text_len,
+-				  struct dev_printk_info *dev_info) { return 0; }
+-static void console_lock_spinning_enable(void) { }
+-static int console_lock_spinning_disable_and_check(int cookie) { return 0; }
+-static bool suppress_message_printing(int level) { return false; }
+ static bool pr_flush(int timeout_ms, bool reset_on_progress) { return true; }
+ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress) { return true; }
+ 
+@@ -2749,6 +2733,8 @@ static void __console_unlock(void)
+ 	up_console_sem();
+ }
+ 
++#ifdef CONFIG_PRINTK
++
+ /*
+  * Prepend the message in @pmsg->pbufs->outbuf with a "dropped message". This
+  * is achieved by shifting the existing message over and inserting the dropped
+@@ -2763,7 +2749,6 @@ static void __console_unlock(void)
+  *
+  * If @pmsg->pbufs->outbuf is modified, @pmsg->outbuf_len is updated.
+  */
+-#ifdef CONFIG_PRINTK
+ void console_prepend_dropped(struct printk_message *pmsg, unsigned long dropped)
+ {
+ 	struct printk_buffers *pbufs = pmsg->pbufs;
+@@ -2795,9 +2780,6 @@ void console_prepend_dropped(struct printk_message *pmsg, unsigned long dropped)
+ 	memcpy(outbuf, scratchbuf, len);
+ 	pmsg->outbuf_len += len;
+ }
+-#else
+-#define console_prepend_dropped(pmsg, dropped)
+-#endif /* CONFIG_PRINTK */
+ 
+ /*
+  * Read and format the specified record (or a later record if the specified
+@@ -2955,6 +2937,16 @@ static bool console_emit_next_record(struct console *con, bool *handover, int co
+ 	return true;
+ }
+ 
++#else
++
++static bool console_emit_next_record(struct console *con, bool *handover, int cookie)
++{
++	*handover = false;
++	return false;
++}
++
++#endif /* CONFIG_PRINTK */
++
+ /*
+  * Print out all remaining records to all consoles.
+  *
+-- 
+2.44.0
+

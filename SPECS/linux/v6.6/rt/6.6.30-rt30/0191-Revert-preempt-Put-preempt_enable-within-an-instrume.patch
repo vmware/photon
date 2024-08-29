@@ -1,0 +1,47 @@
+From d7d58eb8fef9908a4ef6ce21fa44ad65d631eff7 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clark.williams@gmail.com>
+Date: Tue, 6 Feb 2024 12:17:19 -0600
+Subject: [PATCH 191/196] Revert "preempt: Put preempt_enable() within an
+ instrumentation*() section."
+
+This reverts commit cc3d27d9fdeddcb82db3ea176a44a5509e70eb1c.
+
+This code was fixed in 6.6 stable so no need for it in the RT series
+
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ include/linux/preempt.h | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
+
+diff --git a/include/linux/preempt.h b/include/linux/preempt.h
+index cd16f0330fba..9aa6358a1a16 100644
+--- a/include/linux/preempt.h
++++ b/include/linux/preempt.h
+@@ -230,21 +230,15 @@ do { \
+ #define preempt_enable() \
+ do { \
+ 	barrier(); \
+-	if (unlikely(preempt_count_dec_and_test())) { \
+-		instrumentation_begin(); \
++	if (unlikely(preempt_count_dec_and_test())) \
+ 		__preempt_schedule(); \
+-		instrumentation_end(); \
+-	} \
+ } while (0)
+ 
+ #define preempt_enable_notrace() \
+ do { \
+ 	barrier(); \
+-	if (unlikely(__preempt_count_dec_and_test())) { \
+-		instrumentation_begin(); \
++	if (unlikely(__preempt_count_dec_and_test())) \
+ 		__preempt_schedule_notrace(); \
+-		instrumentation_end(); \
+-	} \
+ } while (0)
+ 
+ #define preempt_check_resched() \
+-- 
+2.44.0
+

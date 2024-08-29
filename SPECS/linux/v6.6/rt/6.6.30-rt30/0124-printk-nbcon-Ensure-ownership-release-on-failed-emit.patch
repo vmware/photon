@@ -1,0 +1,63 @@
+From 22f50b656e83a57f1017b91eb05ec7f59e3b7627 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Fri, 20 Oct 2023 09:52:59 +0000
+Subject: [PATCH 124/196] printk: nbcon: Ensure ownership release on failed
+ emit
+
+Until now it was assumed that ownership has been lost when the
+write_atomic() callback fails. nbcon_emit_next_record() only
+returns false when ownership has been lost.
+
+Ensure ownership has been lost before reporting failure by
+explicitly attempting a release. If the current context is not
+the owner, the release has no effect.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/nbcon.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index c8093bcc01fe..8ecd76aa22e6 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -852,7 +852,7 @@ static bool nbcon_emit_next_record(struct nbcon_write_context *wctxt)
+ 	unsigned long con_dropped;
+ 	struct nbcon_state cur;
+ 	unsigned long dropped;
+-	bool done;
++	bool done = false;
+ 
+ 	/*
+ 	 * The printk buffers are filled within an unsafe section. This
+@@ -891,17 +891,18 @@ static bool nbcon_emit_next_record(struct nbcon_write_context *wctxt)
+ 	nbcon_state_read(con, &cur);
+ 	wctxt->unsafe_takeover = cur.unsafe_takeover;
+ 
+-	if (con->write_atomic) {
++	if (con->write_atomic)
+ 		done = con->write_atomic(con, wctxt);
+-	} else {
+-		nbcon_context_release(ctxt);
+-		WARN_ON_ONCE(1);
+-		done = false;
+-	}
+ 
+-	/* If not done, the emit was aborted. */
+-	if (!done)
++	if (!done) {
++		/*
++		 * The emit was aborted, probably due to a loss of ownership.
++		 * Ensure ownership was lost or released before reporting the
++		 * loss.
++		 */
++		nbcon_context_release(ctxt);
+ 		return false;
++	}
+ 
+ 	/*
+ 	 * Since any dropped message was successfully output, reset the
+-- 
+2.44.0
+

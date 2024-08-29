@@ -1,0 +1,123 @@
+From 67557cb0c4601db79a0ca843c29e105c4a646876 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Sep 2023 20:44:03 +0206
+Subject: [PATCH 072/196] serial: pic32: Use port lock wrappers
+
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
+
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-47-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/pic32_uart.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
+index e308d5022b3f..3a95bf5d55d3 100644
+--- a/drivers/tty/serial/pic32_uart.c
++++ b/drivers/tty/serial/pic32_uart.c
+@@ -243,7 +243,7 @@ static void pic32_uart_break_ctl(struct uart_port *port, int ctl)
+ 	struct pic32_sport *sport = to_pic32_sport(port);
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	if (ctl)
+ 		pic32_uart_writel(sport, PIC32_SET(PIC32_UART_STA),
+@@ -252,7 +252,7 @@ static void pic32_uart_break_ctl(struct uart_port *port, int ctl)
+ 		pic32_uart_writel(sport, PIC32_CLR(PIC32_UART_STA),
+ 					PIC32_UART_STA_UTXBRK);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ /* get port type in string format */
+@@ -274,7 +274,7 @@ static void pic32_uart_do_rx(struct uart_port *port)
+ 	 */
+ 	max_count = PIC32_UART_RX_FIFO_DEPTH;
+ 
+-	spin_lock(&port->lock);
++	uart_port_lock(port);
+ 
+ 	tty = &port->state->port;
+ 
+@@ -331,7 +331,7 @@ static void pic32_uart_do_rx(struct uart_port *port)
+ 
+ 	} while (--max_count);
+ 
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ 
+ 	tty_flip_buffer_push(tty);
+ }
+@@ -410,9 +410,9 @@ static irqreturn_t pic32_uart_tx_interrupt(int irq, void *dev_id)
+ 	struct uart_port *port = dev_id;
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	pic32_uart_do_tx(port);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -580,9 +580,9 @@ static void pic32_uart_shutdown(struct uart_port *port)
+ 	unsigned long flags;
+ 
+ 	/* disable uart */
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	pic32_uart_dsbl_and_mask(port);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 	clk_disable_unprepare(sport->clk);
+ 
+ 	/* free all 3 interrupts for this UART */
+@@ -604,7 +604,7 @@ static void pic32_uart_set_termios(struct uart_port *port,
+ 	unsigned int quot;
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	/* disable uart and mask all interrupts while changing speed */
+ 	pic32_uart_dsbl_and_mask(port);
+@@ -672,7 +672,7 @@ static void pic32_uart_set_termios(struct uart_port *port,
+ 	/* enable uart */
+ 	pic32_uart_en_and_unmask(port);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ /* serial core request to claim uart iomem */
+-- 
+2.44.0
+

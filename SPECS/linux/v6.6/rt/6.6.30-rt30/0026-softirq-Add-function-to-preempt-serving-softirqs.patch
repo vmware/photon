@@ -1,0 +1,67 @@
+From 50ae739f7d9080479dddd7e24c8764a46f918bae Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 4 Aug 2023 13:30:38 +0200
+Subject: [PATCH 026/196] softirq: Add function to preempt serving softirqs.
+
+Add a functionality for the softirq handler to preempt its current work
+if needed. The softirq core has no particular state. It reads and resets
+the pending softirq bits and then processes one after the other.
+It can already be preempted while it invokes a certain softirq handler.
+
+By enabling the BH the softirq core releases the per-CPU bh lock which
+serializes all softirq handler. It is safe to do as long as the code
+does not expect any serialisation in between. A typical scenarion would
+after the invocation of callback where no state needs to be preserved
+before the next callback is invoked.
+
+Add functionaliry to preempt the serving softirqs.
+
+Link: https://lore.kernel.org/r/20230804113039.419794-3-bigeasy@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/bottom_half.h |  2 ++
+ kernel/softirq.c            | 13 +++++++++++++
+ 2 files changed, 15 insertions(+)
+
+diff --git a/include/linux/bottom_half.h b/include/linux/bottom_half.h
+index fc53e0ad56d9..448bbef47456 100644
+--- a/include/linux/bottom_half.h
++++ b/include/linux/bottom_half.h
+@@ -35,8 +35,10 @@ static inline void local_bh_enable(void)
+ 
+ #ifdef CONFIG_PREEMPT_RT
+ extern bool local_bh_blocked(void);
++extern void softirq_preempt(void);
+ #else
+ static inline bool local_bh_blocked(void) { return false; }
++static inline void softirq_preempt(void) { }
+ #endif
+ 
+ #endif /* _LINUX_BH_H */
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index c2474cc4fa51..cae0ae2e2b0b 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -247,6 +247,19 @@ void __local_bh_enable_ip(unsigned long ip, unsigned int cnt)
+ }
+ EXPORT_SYMBOL(__local_bh_enable_ip);
+ 
++void softirq_preempt(void)
++{
++	if (WARN_ON_ONCE(!preemptible()))
++		return;
++
++	if (WARN_ON_ONCE(__this_cpu_read(softirq_ctrl.cnt) != SOFTIRQ_OFFSET))
++		return;
++
++	__local_bh_enable(SOFTIRQ_OFFSET, true);
++	/* preemption point */
++	__local_bh_disable_ip(_RET_IP_, SOFTIRQ_OFFSET);
++}
++
+ /*
+  * Invoked from ksoftirqd_run() outside of the interrupt disabled section
+  * to acquire the per CPU local lock for reentrancy protection.
+-- 
+2.44.0
+

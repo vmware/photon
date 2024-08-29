@@ -1,0 +1,91 @@
+From 0e3908c9ba721e7f477c590fb96f95186994a704 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Thu, 21 Sep 2023 16:15:12 +0200
+Subject: [PATCH 010/196] drm/amd/display: Remove migrate_en/dis from
+ dc_fpu_begin().
+
+This is a revert of the commit mentioned below while it is not wrong, as
+in the kernel will explode, having migrate_disable() here it is
+complete waste of resources.
+
+Additionally commit message is plain wrong the review tag does not make
+it any better. The migrate_disable() interface has a fat comment
+describing it and it includes the word "undesired" in the headline which
+should tickle people to read it before using it.
+Initially I assumed it is worded too harsh but now I beg to differ.
+
+The reviewer of the original commit, even not understanding what
+migrate_disable() does should ask the following:
+
+- migrate_disable() is added only to the CONFIG_X86 block and it claims
+  to protect fpu_recursion_depth. Why are the other the architectures
+  excluded?
+
+- migrate_disable() is added after fpu_recursion_depth was modified.
+  Shouldn't it be added before the modification or referencing takes
+  place?
+
+Moving on.
+Disabling preemption DOES prevent CPU migration. A task, that can not be
+pushed away from the CPU by the scheduler (due to disabled preemption)
+can not be pushed or migrated to another CPU.
+
+Disabling migration DOES NOT ensure consistency of per-CPU variables. It
+only ensures that the task acts always on the same per-CPU variable. The
+task remains preemptible meaning multiple tasks can access the same
+per-CPU variable. This in turn leads to inconsistency for the statement
+
+                  *pcpu -= 1;
+
+with two tasks on one CPU and a preemption point during the RMW
+operation:
+
+     Task A                           Task B
+     read pcpu to reg  # 0
+     inc reg           # 0 -> 1
+                                      read pcpu to reg  # 0
+                                      inc reg           # 0 -> 1
+                                      write reg to pcpu # 1
+     write reg to pcpu # 1
+
+At the end pcpu reads 1 but should read 2 instead. Boom.
+
+get_cpu_ptr() already contains a preempt_disable() statement. That means
+that the per-CPU variable can only be referenced by a single task which
+is currently running. The only inconsistency that can occur if the
+variable is additionally accessed from an interrupt.
+
+Remove migrate_disable/enable() from dc_fpu_begin/end().
+
+Cc: Tianci Yin <tianci.yin@amd.com>
+Cc: Aurabindo Pillai <aurabindo.pillai@amd.com>
+Fixes: 0c316556d1249 ("drm/amd/display: Disable migration to ensure consistency of per-CPU variable")
+Link: https://lore.kernel.org/r/20230921141516.520471-2-bigeasy@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/gpu/drm/amd/display/amdgpu_dm/dc_fpu.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/dc_fpu.c b/drivers/gpu/drm/amd/display/amdgpu_dm/dc_fpu.c
+index 172aa10a8800..86f4c0e04654 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/dc_fpu.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/dc_fpu.c
+@@ -91,7 +91,6 @@ void dc_fpu_begin(const char *function_name, const int line)
+ 
+ 	if (*pcpu == 1) {
+ #if defined(CONFIG_X86) || defined(CONFIG_LOONGARCH)
+-		migrate_disable();
+ 		kernel_fpu_begin();
+ #elif defined(CONFIG_PPC64)
+ 		if (cpu_has_feature(CPU_FTR_VSX_COMP)) {
+@@ -132,7 +131,6 @@ void dc_fpu_end(const char *function_name, const int line)
+ 	if (*pcpu <= 0) {
+ #if defined(CONFIG_X86) || defined(CONFIG_LOONGARCH)
+ 		kernel_fpu_end();
+-		migrate_enable();
+ #elif defined(CONFIG_PPC64)
+ 		if (cpu_has_feature(CPU_FTR_VSX_COMP)) {
+ 			disable_kernel_vsx();
+-- 
+2.44.0
+

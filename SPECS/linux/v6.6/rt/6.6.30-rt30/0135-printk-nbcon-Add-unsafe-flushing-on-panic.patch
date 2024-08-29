@@ -1,0 +1,105 @@
+From 0e517cbc21d01adbbc58086f320884bbdff1b200 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Fri, 20 Oct 2023 10:03:42 +0000
+Subject: [PATCH 135/196] printk: nbcon: Add unsafe flushing on panic
+
+Add nbcon_atomic_flush_unsafe() to flush all nbcon consoles
+using the write_atomic() callback and allowing unsafe hostile
+takeovers. Call this at the end of panic() as a final attempt
+to flush any pending messages.
+
+Note that legacy consoles use unsafe methods for flushing
+from the beginning of panic (see bust_spinlocks()). Therefore,
+systems using both legacy and nbcon consoles may still fail to
+see panic messages due to unsafe legacy console usage.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/printk.h |  5 +++++
+ kernel/panic.c         |  1 +
+ kernel/printk/nbcon.c  | 18 ++++++++++++++++--
+ 3 files changed, 22 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index 2aa57a870caf..e26dcf63efb1 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -199,6 +199,7 @@ extern asmlinkage void dump_stack(void) __cold;
+ void printk_trigger_flush(void);
+ extern void nbcon_acquire(struct uart_port *up);
+ extern void nbcon_release(struct uart_port *up);
++void nbcon_atomic_flush_unsafe(void);
+ #else
+ static inline __printf(1, 0)
+ int vprintk(const char *s, va_list args)
+@@ -287,6 +288,10 @@ static inline void nbcon_release(struct uart_port *up)
+ {
+ }
+ 
++static inline void nbcon_atomic_flush_unsafe(void)
++{
++}
++
+ #endif
+ 
+ #ifdef CONFIG_SMP
+diff --git a/kernel/panic.c b/kernel/panic.c
+index ef9f9a4e928d..219b69fbe829 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -449,6 +449,7 @@ void panic(const char *fmt, ...)
+ 	 * Explicitly flush the kernel log buffer one last time.
+ 	 */
+ 	console_flush_on_panic(CONSOLE_FLUSH_PENDING);
++	nbcon_atomic_flush_unsafe();
+ 
+ 	local_irq_enable();
+ 	for (i = 0; ; i += PANIC_TIMER_STEP) {
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index 3e999784ba5c..1c01f88d596d 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -1030,8 +1030,9 @@ bool nbcon_atomic_emit_next_record(struct console *con, bool *handover, int cook
+  * __nbcon_atomic_flush_all - Flush all nbcon consoles using their
+  *					write_atomic() callback
+  * @stop_seq:			Flush up until this record
++ * @allow_unsafe_takeover:	True, to allow unsafe hostile takeovers
+  */
+-static void __nbcon_atomic_flush_all(u64 stop_seq)
++static void __nbcon_atomic_flush_all(u64 stop_seq, bool allow_unsafe_takeover)
+ {
+ 	struct nbcon_write_context wctxt = { };
+ 	struct nbcon_context *ctxt = &ACCESS_PRIVATE(&wctxt, ctxt);
+@@ -1059,6 +1060,7 @@ static void __nbcon_atomic_flush_all(u64 stop_seq)
+ 			memset(ctxt, 0, sizeof(*ctxt));
+ 			ctxt->console			= con;
+ 			ctxt->spinwait_max_us		= 2000;
++			ctxt->allow_unsafe_takeover	= allow_unsafe_takeover;
+ 
+ 			/*
+ 			 * Atomic flushing does not use console driver
+@@ -1093,7 +1095,19 @@ static void __nbcon_atomic_flush_all(u64 stop_seq)
+  */
+ void nbcon_atomic_flush_all(void)
+ {
+-	__nbcon_atomic_flush_all(prb_next_reserve_seq(prb));
++	__nbcon_atomic_flush_all(prb_next_reserve_seq(prb), false);
++}
++
++/**
++ * nbcon_atomic_flush_unsafe - Flush all nbcon consoles using their
++ *	write_atomic() callback and allowing unsafe hostile takeovers
++ *
++ * Flush the backlog up through the currently newest record. Unsafe hostile
++ * takeovers will be performed, if necessary.
++ */
++void nbcon_atomic_flush_unsafe(void)
++{
++	__nbcon_atomic_flush_all(prb_next_reserve_seq(prb), true);
+ }
+ 
+ /**
+-- 
+2.44.0
+
