@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.106
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -183,6 +183,12 @@ Patch133: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 # Fix CVE-2024-42314
 Patch134: 0001-btrfs-fix-extent-map-use-after-free-when-adding-page.patch
 
+# Fix CVE-2024-43859
+Patch135: 0001-f2fs-fix-to-truncate-preallocated-blocks-in-f2fs_fil.patch
+
+# Fix CVE-2024-43835
+Patch136: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -316,7 +322,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M89
 
 # CVE
-%autopatch -p1 -m100 -M134
+%autopatch -p1 -m100 -M136
 
 %ifarch aarch64
 # aarch64 patches
@@ -470,6 +476,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.106-5
+- Fix CVE-2024-43859, CVE-2024-43835
 * Wed Sep 04 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.106-4
 - Enable CONFIG_NFT_OBJREF, so that we can refer counter by name
 * Tue Sep 03 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.106-3

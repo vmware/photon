@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.106
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -191,6 +191,12 @@ Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
 # Fix CVE-2024-42314
 Patch133: 0001-btrfs-fix-extent-map-use-after-free-when-adding-page.patch
+
+# Fix CVE-2024-43859
+Patch134: 0001-f2fs-fix-to-truncate-preallocated-blocks-in-f2fs_fil.patch
+
+# Fix CVE-2024-43835
+Patch135: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -487,7 +493,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M134
+%autopatch -p1 -m100 -M135
 
 %ifarch aarch64
 # aarch64 patches
@@ -879,6 +885,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Sep 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.106-6
+- Fix CVE-2024-43859, CVE-2024-43835
 * Wed Sep 04 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.106-5
 - Enable CONFIG_NFT_OBJREF, so that we can refer counter by name
 * Tue Sep 03 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.106-4

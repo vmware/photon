@@ -1,0 +1,155 @@
+From bc6ba11127d9450a718ba20996640bd1ac1d4306 Mon Sep 17 00:00:00 2001
+From: Chao Yu <chao@kernel.org>
+Date: Wed, 29 May 2024 18:01:03 +0800
+Subject: [PATCH] f2fs: fix to truncate preallocated blocks in f2fs_file_open()
+
+[ Upstream commit 298b1e4182d657c3e388adcc29477904e9600ed5 ]
+
+chenyuwen reports a f2fs bug as below:
+
+Unable to handle kernel NULL pointer dereference at virtual address 0000000000000011
+ fscrypt_set_bio_crypt_ctx+0x78/0x1e8
+ f2fs_grab_read_bio+0x78/0x208
+ f2fs_submit_page_read+0x44/0x154
+ f2fs_get_read_data_page+0x288/0x5f4
+ f2fs_get_lock_data_page+0x60/0x190
+ truncate_partial_data_page+0x108/0x4fc
+ f2fs_do_truncate_blocks+0x344/0x5f0
+ f2fs_truncate_blocks+0x6c/0x134
+ f2fs_truncate+0xd8/0x200
+ f2fs_iget+0x20c/0x5ac
+ do_garbage_collect+0x5d0/0xf6c
+ f2fs_gc+0x22c/0x6a4
+ f2fs_disable_checkpoint+0xc8/0x310
+ f2fs_fill_super+0x14bc/0x1764
+ mount_bdev+0x1b4/0x21c
+ f2fs_mount+0x20/0x30
+ legacy_get_tree+0x50/0xbc
+ vfs_get_tree+0x5c/0x1b0
+ do_new_mount+0x298/0x4cc
+ path_mount+0x33c/0x5fc
+ __arm64_sys_mount+0xcc/0x15c
+ invoke_syscall+0x60/0x150
+ el0_svc_common+0xb8/0xf8
+ do_el0_svc+0x28/0xa0
+ el0_svc+0x24/0x84
+ el0t_64_sync_handler+0x88/0xec
+
+It is because inode.i_crypt_info is not initialized during below path:
+- mount
+ - f2fs_fill_super
+  - f2fs_disable_checkpoint
+   - f2fs_gc
+    - f2fs_iget
+     - f2fs_truncate
+
+So, let's relocate truncation of preallocated blocks to f2fs_file_open(),
+after fscrypt_file_open().
+
+Fixes: d4dd19ec1ea0 ("f2fs: do not expose unwritten blocks to user by DIO")
+Reported-by: chenyuwen <yuwen.chen@xjmz.com>
+Closes: https://lore.kernel.org/linux-kernel/20240517085327.1188515-1-yuwen.chen@xjmz.com
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ fs/f2fs/f2fs.h  |  1 +
+ fs/f2fs/file.c  | 42 +++++++++++++++++++++++++++++++++++++++++-
+ fs/f2fs/inode.c |  8 --------
+ 3 files changed, 42 insertions(+), 9 deletions(-)
+
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index a02c74875..2b540d878 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -788,6 +788,7 @@ enum {
+ 	FI_ALIGNED_WRITE,	/* enable aligned write */
+ 	FI_COW_FILE,		/* indicate COW file */
+ 	FI_ATOMIC_COMMITTED,	/* indicate atomic commit completed except disk sync */
++	FI_OPENED_FILE,         /* indicate file has been opened */
+ 	FI_MAX,			/* max flag, never be used */
+ };
+ 
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index c6fb179f9..62f2521cd 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -538,6 +538,42 @@ static int f2fs_file_mmap(struct file *file, struct vm_area_struct *vma)
+ 	return 0;
+ }
+ 
++static int finish_preallocate_blocks(struct inode *inode)
++{
++	int ret;
++
++	inode_lock(inode);
++	if (is_inode_flag_set(inode, FI_OPENED_FILE)) {
++		inode_unlock(inode);
++		return 0;
++	}
++
++	if (!file_should_truncate(inode)) {
++		set_inode_flag(inode, FI_OPENED_FILE);
++		inode_unlock(inode);
++		return 0;
++	}
++
++	f2fs_down_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
++	filemap_invalidate_lock(inode->i_mapping);
++
++	truncate_setsize(inode, i_size_read(inode));
++	ret = f2fs_truncate(inode);
++
++	filemap_invalidate_unlock(inode->i_mapping);
++	f2fs_up_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
++
++	if (!ret)
++		set_inode_flag(inode, FI_OPENED_FILE);
++
++	inode_unlock(inode);
++	if (ret)
++		return ret;
++
++	file_dont_truncate(inode);
++	return 0;
++}
++
+ static int f2fs_file_open(struct inode *inode, struct file *filp)
+ {
+ 	int err = fscrypt_file_open(inode, filp);
+@@ -554,7 +590,11 @@ static int f2fs_file_open(struct inode *inode, struct file *filp)
+ 
+ 	filp->f_mode |= FMODE_NOWAIT;
+ 
+-	return dquot_file_open(inode, filp);
++	err = dquot_file_open(inode, filp);
++	if (err)
++		return err;
++
++	return finish_preallocate_blocks(inode);
+ }
+ 
+ void f2fs_truncate_data_blocks_range(struct dnode_of_data *dn, int count)
+diff --git a/fs/f2fs/inode.c b/fs/f2fs/inode.c
+index ff4a4e92a..5b672df19 100644
+--- a/fs/f2fs/inode.c
++++ b/fs/f2fs/inode.c
+@@ -549,14 +549,6 @@ struct inode *f2fs_iget(struct super_block *sb, unsigned long ino)
+ 	}
+ 	f2fs_set_inode_flags(inode);
+ 
+-	if (file_should_truncate(inode) &&
+-			!is_sbi_flag_set(sbi, SBI_POR_DOING)) {
+-		ret = f2fs_truncate(inode);
+-		if (ret)
+-			goto bad_inode;
+-		file_dont_truncate(inode);
+-	}
+-
+ 	unlock_new_inode(inode);
+ 	trace_f2fs_iget(inode);
+ 	return inode;
+-- 
+2.39.4
+
