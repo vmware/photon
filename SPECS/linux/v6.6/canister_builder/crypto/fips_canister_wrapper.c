@@ -67,6 +67,7 @@
 #include <crypto/sha512_base.h>
 #include <crypto/sha3.h>
 #include <crypto/internal/geniv.h>
+#include <crypto/sha256_base.h>
 #include "fips_canister_wrapper_common.h"
 
 static __ro_after_init bool alg_request_report = false;
@@ -445,6 +446,15 @@ static int build_test_sglist(struct test_sglist *tsgl,
 	return 0;
 }
 
+
+int fcw_lib_sha256_base_do_update(struct sha256_state *sctx,
+					 const u8 *data,
+					 unsigned int len,
+					 sha256_block_fn *block_fn)
+{
+	return lib_sha256_base_do_update(sctx, data, len, block_fn);
+}
+
 int fcw_build_hash_sglist(struct test_sglist *tsgl,
 			     const struct hash_testvec *vec,
 			     const struct testvec_config *cfg,
@@ -762,7 +772,6 @@ EXPORT_SYMBOL(aes_decrypt);
 EXPORT_SYMBOL(sha1_transform);
 EXPORT_SYMBOL(sha1_init);
 EXPORT_SYMBOL(sha256_update);
-EXPORT_SYMBOL(sha224_update);
 EXPORT_SYMBOL(sha256_final);
 EXPORT_SYMBOL(sha224_final);
 EXPORT_SYMBOL(sha256);

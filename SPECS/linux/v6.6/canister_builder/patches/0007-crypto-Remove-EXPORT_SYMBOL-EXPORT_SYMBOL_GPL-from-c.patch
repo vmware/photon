@@ -1,8 +1,7 @@
-From 45555b8e8ae2d97bf2e7f9425491e6bb83aa8b57 Mon Sep 17 00:00:00 2001
+From 688cf19a3f00b99936659efa4b4a782737798ee9 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 Date: Mon, 22 May 2023 13:27:58 +0530
-Subject: [PATCH 7/8] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from
- canister
+Subject: [PATCH] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from canister
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com
 ---
@@ -18,11 +17,11 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com
  crypto/testmgr.c        |  2 --
  lib/crypto/aes.c        |  6 ------
  lib/crypto/sha1.c       |  2 --
- lib/crypto/sha256.c     |  5 -----
- 13 files changed, 1 insertion(+), 63 deletions(-)
+ lib/crypto/sha256.c     |  4 ----
+ 13 files changed, 1 insertion(+), 62 deletions(-)
 
 diff --git a/crypto/aes_generic.c b/crypto/aes_generic.c
-index 27ab27931..f73022bed 100644
+index 666474b81..e784367c3 100644
 --- a/crypto/aes_generic.c
 +++ b/crypto/aes_generic.c
 @@ -1118,9 +1118,6 @@ static const u32 crypto_il_tab[4][256] ____cacheline_aligned = {
@@ -45,7 +44,7 @@ index 27ab27931..f73022bed 100644
  
  #define f_rn(bo, bi, n, k)	do {				\
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index ff9a0f156..f220aaac0 100644
+index a5a88caf6..2662afba0 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -50,7 +50,6 @@ const struct ecc_curve *ecc_get_curve25519(void)
@@ -152,7 +151,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* Point multiplication algorithm using Montgomery's ladder with co-Z
   * coordinates. From https://eprint.iacr.org/2011/338.pdf
-@@ -1411,7 +1398,6 @@ void ecc_point_mult_shamir(const struct ecc_point *result,
+@@ -1413,7 +1400,6 @@ void ecc_point_mult_shamir(const struct ecc_point *result,
  	vli_mod_inv(z, z, curve->p, ndigits);
  	apply_z(rx, ry, z, curve);
  }
@@ -160,7 +159,7 @@ index ff9a0f156..f220aaac0 100644
  
  static int __ecc_is_key_valid(const struct ecc_curve *curve,
  			      const u64 *private_key, unsigned int ndigits)
-@@ -1449,7 +1435,6 @@ int ecc_is_key_valid(unsigned int curve_id, unsigned int ndigits,
+@@ -1451,7 +1437,6 @@ int ecc_is_key_valid(unsigned int curve_id, unsigned int ndigits,
  
  	return __ecc_is_key_valid(curve, private_key, ndigits);
  }
@@ -168,7 +167,7 @@ index ff9a0f156..f220aaac0 100644
  
  /*
   * ECC private keys are generated using the method of extra random bits,
-@@ -1502,7 +1487,6 @@ int ecc_gen_privkey(unsigned int curve_id, unsigned int ndigits, u64 *privkey)
+@@ -1504,7 +1489,6 @@ int ecc_gen_privkey(unsigned int curve_id, unsigned int ndigits, u64 *privkey)
  
  	return 0;
  }
@@ -176,7 +175,7 @@ index ff9a0f156..f220aaac0 100644
  
  int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
  		     const u64 *private_key, u64 *public_key)
-@@ -1541,7 +1525,6 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
+@@ -1543,7 +1527,6 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
  out:
  	return ret;
  }
@@ -184,7 +183,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* SP800-56A section 5.6.2.3.4 partial verification: ephemeral keys only */
  int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
-@@ -1574,7 +1557,6 @@ int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
+@@ -1576,7 +1559,6 @@ int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
  
  	return 0;
  }
@@ -192,7 +191,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* SP800-56A section 5.6.2.3.3 full verification */
  int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
-@@ -1601,7 +1583,6 @@ int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
+@@ -1603,7 +1585,6 @@ int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
  
  	return ret;
  }
@@ -200,7 +199,7 @@ index ff9a0f156..f220aaac0 100644
  
  static int get_jitter_ent_random_bytes(u64 *buf, unsigned int len)
  {
-@@ -1685,6 +1666,5 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
+@@ -1687,6 +1668,5 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
  out:
  	return ret;
  }
@@ -345,7 +344,7 @@ index bf147b01e..c1147386d 100644
  static struct shash_alg sha256_algs[2] = { {
  	.digestsize	=	SHA256_DIGEST_SIZE,
 diff --git a/crypto/sha3_generic.c b/crypto/sha3_generic.c
-index 3e4069935..7d107460b 100644
+index a18bf7046..7d107460b 100644
 --- a/crypto/sha3_generic.c
 +++ b/crypto/sha3_generic.c
 @@ -171,7 +171,6 @@ int crypto_sha3_init(struct shash_desc *desc)
@@ -409,10 +408,10 @@ index 07e27910c..32ff5a0b1 100644
  static struct shash_alg sha512_algs[2] = { {
  	.digestsize	=	SHA512_DIGEST_SIZE,
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index cef1e92a4..866d7ed86 100644
+index dfa9cae7f..8d8c9df11 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -5970,5 +5970,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -6022,5 +6022,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  }
  
  #endif /* CONFIG_CRYPTO_MANAGER_DISABLE_TESTS */
@@ -476,38 +475,32 @@ index 1aebe7be9..9b2f423f0 100644
  
  MODULE_LICENSE("GPL");
 diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
-index 555ba2070..c0656c6f3 100644
+index 044681546..7bb7880b0 100644
 --- a/lib/crypto/sha256.c
 +++ b/lib/crypto/sha256.c
-@@ -159,13 +159,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
- 	memcpy(sctx->buf + partial, src, len - done);
+@@ -137,7 +137,6 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
+ 	lib_sha256_base_do_update(sctx, data, len, sha256_transform_blocks);
  #endif
  }
 -EXPORT_SYMBOL(sha256_update);
  
- void sha224_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
+ static void __sha256_final(struct sha256_state *sctx, u8 *out, int digest_size)
  {
- 	sha256_update(sctx, data, len);
- }
--EXPORT_SYMBOL(sha224_update);
- 
- static void __sha256_final(struct sha256_state *sctx, u8 *out, int digest_words)
+@@ -149,13 +148,11 @@ void sha256_final(struct sha256_state *sctx, u8 *out)
  {
-@@ -198,13 +196,11 @@ void sha256_final(struct sha256_state *sctx, u8 *out)
- {
- 	__sha256_final(sctx, out, 8);
+ 	__sha256_final(sctx, out, 32);
  }
 -EXPORT_SYMBOL(sha256_final);
  
  void sha224_final(struct sha256_state *sctx, u8 *out)
  {
- 	__sha256_final(sctx, out, 7);
+ 	__sha256_final(sctx, out, 28);
  }
 -EXPORT_SYMBOL(sha224_final);
  
  void sha256(const u8 *data, unsigned int len, u8 *out)
  {
-@@ -214,6 +210,5 @@ void sha256(const u8 *data, unsigned int len, u8 *out)
+@@ -165,6 +162,5 @@ void sha256(const u8 *data, unsigned int len, u8 *out)
  	sha256_update(&sctx, data, len);
  	sha256_final(&sctx, out);
  }
@@ -515,4 +508,5 @@ index 555ba2070..c0656c6f3 100644
  
  MODULE_LICENSE("GPL");
 -- 
-2.43.0
+2.35.6
+

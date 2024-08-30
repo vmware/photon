@@ -1,4 +1,4 @@
-From 6637e11e4ad22ff03183da0dbd36d65c98b81cf7 Mon Sep 17 00:00:00 2001
+From 499707f884ae5053a7df19b7b9d3f72d0277f5d9 Mon Sep 17 00:00:00 2001
 From: Mahmoud Adam <mngyadam@amazon.com>
 Date: Tue, 13 Jun 2023 16:17:31 +0000
 Subject: [PATCH] crypto: rsa - allow only odd e and restrict value in FIPS
@@ -21,47 +21,14 @@ Signed-off-by: Mahmoud Adam <mngyadam@amazon.com>
 Reviewed-by: Stephan Mueller <smueller@chronox.de>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 ---
- crypto/rsa.c | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ crypto/rsa.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/crypto/rsa.c b/crypto/rsa.c
-index c50f2d2a4d06..c79613cdce6e 100644
+index 88f152a50..a1d431b88 100644
 --- a/crypto/rsa.c
 +++ b/crypto/rsa.c
-@@ -205,6 +205,32 @@ static int rsa_check_key_length(unsigned int len)
- 	return -EINVAL;
- }
- 
-+static int rsa_check_exponent_fips(MPI e)
-+{
-+	MPI e_max = NULL;
-+
-+	/* check if odd */
-+	if (!mpi_test_bit(e, 0)) {
-+		return -EINVAL;
-+	}
-+
-+	/* check if 2^16 < e < 2^256. */
-+	if (mpi_cmp_ui(e, 65536) <= 0) {
-+		return -EINVAL;
-+	}
-+
-+	e_max = mpi_alloc(0);
-+	mpi_set_bit(e_max, 256);
-+
-+	if (mpi_cmp(e, e_max) >= 0) {
-+		mpi_free(e_max);
-+		return -EINVAL;
-+	}
-+
-+	mpi_free(e_max);
-+	return 0;
-+}
-+
- static int rsa_set_pub_key(struct crypto_akcipher *tfm, const void *key,
- 			   unsigned int keylen)
- {
-@@ -232,6 +258,11 @@ static int rsa_set_pub_key(struct crypto_akcipher *tfm, const void *key,
+@@ -264,6 +264,11 @@ static int rsa_set_pub_key(struct crypto_akcipher *tfm, const void *key,
  		return -EINVAL;
  	}
  
@@ -73,7 +40,7 @@ index c50f2d2a4d06..c79613cdce6e 100644
  	return 0;
  
  err:
-@@ -290,6 +321,11 @@ static int rsa_set_priv_key(struct crypto_akcipher *tfm, const void *key,
+@@ -327,6 +332,11 @@ static int rsa_set_priv_key(struct crypto_akcipher *tfm, const void *key,
  		return -EINVAL;
  	}
  
@@ -86,5 +53,5 @@ index c50f2d2a4d06..c79613cdce6e 100644
  
  err:
 -- 
-2.42.0
+2.35.6
 

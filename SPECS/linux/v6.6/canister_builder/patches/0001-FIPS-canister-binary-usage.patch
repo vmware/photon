@@ -15,13 +15,13 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 ---
  arch/x86/crypto/Makefile |   4 --
- crypto/Makefile          | 120 +++++++++++++++++++++++++++++++--------
- init/main.c              |   3 +
- lib/crypto/Makefile      |   9 ---
- 4 files changed, 98 insertions(+), 38 deletions(-)
+ crypto/Makefile          | 111 ++++++++++++++++++++++++++++++---------
+ init/main.c              |   3 ++
+ lib/crypto/Makefile      |   9 ----
+ 4 files changed, 89 insertions(+), 38 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
-index 3b1d701a4..3836c4e30 100644
+index 9aa46093c..18671653a 100644
 --- a/arch/x86/crypto/Makefile
 +++ b/arch/x86/crypto/Makefile
 @@ -46,10 +46,6 @@ obj-$(CONFIG_CRYPTO_CHACHA20_X86_64) += chacha-x86_64.o
@@ -36,21 +36,21 @@ index 3b1d701a4..3836c4e30 100644
  sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
  sha1-ssse3-$(CONFIG_AS_SHA1_NI) += sha1_ni_asm.o
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 515ca3a4c..851fbc4fb 100644
+index 5110df193..288e8e1e7 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -18,10 +18,8 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
  obj-$(CONFIG_CRYPTO_ALGAPI2) += crypto_algapi.o
  
  obj-$(CONFIG_CRYPTO_AEAD2) += aead.o
--obj-$(CONFIG_CRYPTO_AEAD2) += geniv.o
+-obj-$(CONFIG_CRYPTO_GENIV) += geniv.o
  
  obj-$(CONFIG_CRYPTO_SKCIPHER2) += skcipher.o
 -obj-$(CONFIG_CRYPTO_SEQIV) += seqiv.o
  obj-$(CONFIG_CRYPTO_ECHAINIV) += echainiv.o
  
  crypto_hash-y += ahash.o
-@@ -44,7 +42,6 @@ rsa_generic-y += rsaprivkey.asn1.o
+@@ -45,7 +43,6 @@ rsa_generic-y += rsaprivkey.asn1.o
  rsa_generic-y += rsa.o
  rsa_generic-y += rsa_helper.o
  rsa_generic-y += rsa-pkcs1pad.o
@@ -58,7 +58,7 @@ index 515ca3a4c..851fbc4fb 100644
  
  $(obj)/sm2signature.asn1.o: $(obj)/sm2signature.asn1.c $(obj)/sm2signature.asn1.h
  $(obj)/sm2.o: $(obj)/sm2signature.asn1.h
-@@ -53,13 +50,11 @@ sm2_generic-y += sm2signature.asn1.o
+@@ -54,13 +51,11 @@ sm2_generic-y += sm2signature.asn1.o
  sm2_generic-y += sm2.o
  
  obj-$(CONFIG_CRYPTO_SM2) += sm2_generic.o
@@ -72,7 +72,7 @@ index 515ca3a4c..851fbc4fb 100644
  
  crypto_acompress-y := acompress.o
  crypto_acompress-y += scompress.o
-@@ -67,22 +62,15 @@ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
+@@ -68,22 +63,15 @@ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
  
  cryptomgr-y := algboss.o testmgr.o
  
@@ -95,10 +95,10 @@ index 515ca3a4c..851fbc4fb 100644
  obj-$(CONFIG_CRYPTO_SM3) += sm3.o
  obj-$(CONFIG_CRYPTO_SM3_GENERIC) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -91,21 +79,13 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
+@@ -91,21 +79,13 @@ obj-$(CONFIG_CRYPTO_WP512) += wp512.o
+ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105930
- obj-$(CONFIG_CRYPTO_GF128MUL) += gf128mul.o
 -obj-$(CONFIG_CRYPTO_ECB) += ecb.o
 -obj-$(CONFIG_CRYPTO_CBC) += cbc.o
 -obj-$(CONFIG_CRYPTO_CFB) += cfb.o
@@ -125,7 +125,7 @@ index 515ca3a4c..851fbc4fb 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -171,12 +150,10 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+@@ -171,13 +150,11 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
  obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
@@ -133,12 +133,13 @@ index 515ca3a4c..851fbc4fb 100644
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
  UBSAN_SANITIZE_jitterentropy.o = n
+ obj-$(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE) += jitterentropy-testing.o
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
 -obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
  obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-@@ -185,13 +162,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -186,13 +163,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
@@ -152,7 +153,7 @@ index 515ca3a4c..851fbc4fb 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -215,3 +190,98 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -216,3 +191,89 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -165,12 +166,6 @@ index 515ca3a4c..851fbc4fb 100644
 +endif
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_AEAD)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_AEAD=y)
-+endif
-+ifneq ($(subst Y,y,$(CONFIG_CRYPTO_AEAD2)),y)
-+  $(error FIPS canister requires CONFIG_CRYPTO_AEAD2=y)
-+endif
-+ifneq ($(subst Y,y,$(CONFIG_CRYPTO_SEQIV)),y)
-+  $(error FIPS canister requires CONFIG_CRYPTO_SEQIV=y)
 +endif
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_RSA)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_RSA=y)
@@ -247,33 +242,30 @@ index 515ca3a4c..851fbc4fb 100644
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_SHA3)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_SHA3=y)
 +endif
-+ifneq ($(subst Y,y,$(CONFIG_CRYPTO_GHASH)),y)
-+  $(error FIPS canister requires CONFIG_CRYPTO_GHASH=y)
-+endif
 +endif
 diff --git a/init/main.c b/init/main.c
-index fe378351e..962edcc54 100644
+index 9e6ab6d59..c29e38406 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -882,6 +882,8 @@ static int __init early_randomize_kstack_offset(char *buf)
+@@ -823,6 +823,8 @@ static int __init early_randomize_kstack_offset(char *buf)
  early_param("randomize_kstack_offset", early_randomize_kstack_offset);
  #endif
  
 +extern int fips_integrity_init(void);
 +
- void __init __weak arch_call_rest_init(void)
+ void __init __weak __noreturn arch_call_rest_init(void)
  {
  	rest_init();
-@@ -983,6 +985,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+@@ -922,6 +924,7 @@ void start_kernel(void)
  	/* Architectural and non-timekeeping rng init, before allocator init */
  	random_init_early(command_line);
  
 +	fips_integrity_init();
  	/*
  	 * These use large bootmem allocations and must precede
- 	 * kmem_cache_init()
+ 	 * initalization of page allocator
 diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index c852f067a..33d229c6d 100644
+index 8d1446c2b..e81d892c7 100644
 --- a/lib/crypto/Makefile
 +++ b/lib/crypto/Makefile
 @@ -7,9 +7,6 @@ libcryptoutils-y				:= memneq.o utils.o
@@ -283,10 +275,10 @@ index c852f067a..33d229c6d 100644
 -obj-$(CONFIG_CRYPTO_LIB_AES)			+= libaes.o
 -libaes-y					:= aes.o
 -
- obj-$(CONFIG_CRYPTO_LIB_ARC4)			+= libarc4.o
- libarc4-y					:= arc4.o
+ obj-$(CONFIG_CRYPTO_LIB_AESGCM)			+= libaesgcm.o
+ libaesgcm-y					:= aesgcm.o
  
-@@ -37,12 +34,6 @@ libpoly1305-y					:= poly1305-donna32.o
+@@ -42,12 +39,6 @@ libpoly1305-y					:= poly1305-donna32.o
  libpoly1305-$(CONFIG_ARCH_SUPPORTS_INT128)	:= poly1305-donna64.o
  libpoly1305-y					+= poly1305.o
  
@@ -300,4 +292,5 @@ index c852f067a..33d229c6d 100644
  libblake2s-y					+= blake2s-selftest.o
  libchacha20poly1305-y				+= chacha20poly1305-selftest.o
 -- 
-2.43.0
+2.39.4
+

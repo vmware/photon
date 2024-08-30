@@ -1,7 +1,7 @@
-From 34c214214cea2669c9d36e43399746c504772d1b Mon Sep 17 00:00:00 2001
+From a1a504093803cea0c0238ef482448f738a16acb1 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 3 Nov 2023 07:51:23 +0000
-Subject: [PATCH] List canister objs in a file
+Subject: [PATCH 1/3] List canister objs in a file
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
@@ -9,10 +9,10 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  1 file changed, 4 insertions(+)
 
 diff --git a/crypto/Makefile b/crypto/Makefile
-index d3df694c0..1fd7da7f4 100644
+index b19245935..934761af2 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -222,14 +222,17 @@ OBJECT_FILES_NON_STANDARD_x86-aesni-intel_avx-x86_64.o := y
+@@ -226,14 +226,17 @@ OBJECT_FILES_NON_STANDARD_x86-aesni-intel_avx-x86_64.o := y
  crypto/x86-%.o: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
  	$(call cmd,force_checksrc)
  	$(call if_changed_rule,cc_o_c)
@@ -30,7 +30,7 @@ index d3df694c0..1fd7da7f4 100644
  
  canister += crypto_self_test.o
  
-@@ -238,6 +241,7 @@ canister += fips_integrity.o
+@@ -242,6 +245,7 @@ canister += fips_integrity.o
  extra-y += $(canister)
  $(obj)/canister.o: $(addprefix crypto/x86-,$(aesni-intel-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
  	$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $^ -o $@
@@ -39,5 +39,5 @@ index d3df694c0..1fd7da7f4 100644
    CFLAGS_$1 += -DFIPS_CANISTER
    CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 -- 
-2.19.0
+2.35.6
 

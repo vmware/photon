@@ -353,9 +353,7 @@ BuildRequires:  pciutils-devel
 BuildRequires:  libcap-devel
 %endif
 
-%if 0%{?fips}
 BuildRequires:  gdb
-%endif
 
 Requires: kmod
 Requires: filesystem

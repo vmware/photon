@@ -1,0 +1,51 @@
+From 81e99bebd18931ebd5693f38d6c6ed3507c69e58 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Thu, 2 May 2024 08:08:53 +0000
+Subject: [PATCH] crypto: Export symbol crypto_shash_alg_has_setkey
+
+  -  In the latest kernel 6.6.x, the function crypto_shash_alg_has_setkey
+     was made internal to shash, however, few of the patches in photon's
+     fips canister require this symbol to be exported. Hence define this
+     symbol in crypto/shash.c & export it.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ crypto/shash.c                 | 6 ++++++
+ include/crypto/internal/hash.h | 5 +----
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/crypto/shash.c b/crypto/shash.c
+index 1fadb6b59bdc..24d419040e86 100644
+--- a/crypto/shash.c
++++ b/crypto/shash.c
+@@ -38,6 +38,12 @@ int shash_no_setkey(struct crypto_shash *tfm, const u8 *key,
+ }
+ EXPORT_SYMBOL_GPL(shash_no_setkey);
+
++bool crypto_shash_alg_has_setkey(struct shash_alg *alg)
++{
++	return alg->setkey != shash_no_setkey;
++}
++EXPORT_SYMBOL_GPL(crypto_shash_alg_has_setkey);
++
+ static int shash_setkey_unaligned(struct crypto_shash *tfm, const u8 *key,
+				  unsigned int keylen)
+ {
+diff --git a/include/crypto/internal/hash.h b/include/crypto/internal/hash.h
+index cf65676e45f4..6fd69cccc0cf 100644
+--- a/include/crypto/internal/hash.h
++++ b/include/crypto/internal/hash.h
+@@ -78,10 +78,7 @@ int ahash_register_instance(struct crypto_template *tmpl,
+ int shash_no_setkey(struct crypto_shash *tfm, const u8 *key,
+		    unsigned int keylen);
+
+-static inline bool crypto_shash_alg_has_setkey(struct shash_alg *alg)
+-{
+-	return alg->setkey != shash_no_setkey;
+-}
++bool crypto_shash_alg_has_setkey(struct shash_alg *alg);
+
+ static inline bool crypto_shash_alg_needs_key(struct shash_alg *alg)
+ {
+--
+2.35.6

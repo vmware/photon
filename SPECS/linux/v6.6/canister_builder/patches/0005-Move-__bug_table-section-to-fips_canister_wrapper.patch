@@ -1,7 +1,7 @@
-From 426a6da48e195c99d2b217611cf99da054d917b2 Mon Sep 17 00:00:00 2001
+From 434351807cf633fb4ffce37100300ff161b575c8 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 17 May 2023 16:11:40 +0000
-Subject: [PATCH 5/8] Move __bug_table section to fips_canister_wrapper
+Subject: [PATCH] Move __bug_table section to fips_canister_wrapper
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
@@ -27,11 +27,11 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
  crypto/sha1_generic.c              |   5 +-
  crypto/sha512_generic.c            |   5 +-
  crypto/testmgr.c                   | 116 +++++++++++++++--------------
- lib/crypto/sha256.c                |  10 +++
- 22 files changed, 181 insertions(+), 163 deletions(-)
+ lib/crypto/sha256.c                |   2 +
+ 22 files changed, 173 insertions(+), 163 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index 0628c2bca..6a4378bac 100644
+index 2b506fdc7..b5f702124 100644
 --- a/arch/x86/crypto/aesni-intel_glue.c
 +++ b/arch/x86/crypto/aesni-intel_glue.c
 @@ -38,6 +38,10 @@
@@ -45,7 +45,7 @@ index 0628c2bca..6a4378bac 100644
  
  #define AESNI_ALIGN	16
  #define AESNI_ALIGN_ATTR __attribute__ ((__aligned__(AESNI_ALIGN)))
-@@ -590,7 +594,7 @@ static int xctr_crypt(struct skcipher_request *req)
+@@ -589,7 +593,7 @@ static int xctr_crypt(struct skcipher_request *req)
  		byte_ctr += walk.nbytes - nbytes;
  
  		if (walk.nbytes == walk.total && nbytes > 0) {
@@ -54,16 +54,16 @@ index 0628c2bca..6a4378bac 100644
  			block[0] ^= cpu_to_le32(1 + byte_ctr / AES_BLOCK_SIZE);
  			aesni_enc(ctx, keystream, (u8 *)block);
  			crypto_xor_cpy(walk.dst.virt.addr + walk.nbytes -
-@@ -636,7 +640,7 @@ static int common_rfc4106_set_key(struct crypto_aead *aead, const u8 *key,
+@@ -635,7 +639,7 @@ static int common_rfc4106_set_key(struct crypto_aead *aead, const u8 *key,
  	/*Account for 4 byte nonce at the end.*/
  	key_len -= 4;
  
 -	memcpy(ctx->nonce, key + key_len, sizeof(ctx->nonce));
 +	fcw_memcpy(ctx->nonce, key + key_len, sizeof(ctx->nonce));
  
- 	return aes_set_key_common(crypto_aead_tfm(aead),
- 				  &ctx->aes_key_expanded, key, key_len) ?:
-@@ -679,8 +683,6 @@ static int generic_gcmaes_set_authsize(struct crypto_aead *tfm,
+ 	return aes_set_key_common(&ctx->aes_key_expanded, key, key_len) ?:
+ 	       rfc4106_set_hash_subkey(ctx->hash_subkey, key, key_len);
+@@ -677,8 +681,6 @@ static int generic_gcmaes_set_authsize(struct crypto_aead *tfm,
  	return 0;
  }
  
@@ -72,7 +72,7 @@ index 0628c2bca..6a4378bac 100644
  static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
  			      unsigned int assoclen, u8 *hash_subkey,
  			      u8 *iv, void *aes_ctx, u8 *auth_tag,
-@@ -705,7 +707,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
+@@ -703,7 +705,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
  	/* Linearize assoc, if not already linear */
  	if (req->src->length >= assoclen && req->src->length) {
  		scatterwalk_start(&assoc_sg_walk, req->src);
@@ -81,7 +81,7 @@ index 0628c2bca..6a4378bac 100644
  	} else {
  		gfp_t flags = (req->base.flags & CRYPTO_TFM_REQ_MAY_SLEEP) ?
  			      GFP_KERNEL : GFP_ATOMIC;
-@@ -1177,7 +1179,7 @@ static int generic_gcmaes_encrypt(struct aead_request *req)
+@@ -1173,7 +1175,7 @@ static int generic_gcmaes_encrypt(struct aead_request *req)
  	u8 *iv = PTR_ALIGN(&ivbuf[0], AESNI_ALIGN);
  	__be32 counter = cpu_to_be32(1);
  
@@ -90,7 +90,7 @@ index 0628c2bca..6a4378bac 100644
  	*((__be32 *)(iv+12)) = counter;
  
  	return gcmaes_encrypt(req, req->assoclen, ctx->hash_subkey, iv,
-@@ -1193,7 +1195,7 @@ static int generic_gcmaes_decrypt(struct aead_request *req)
+@@ -1189,7 +1191,7 @@ static int generic_gcmaes_decrypt(struct aead_request *req)
  	u8 ivbuf[16 + (AESNI_ALIGN - 8)] __aligned(8);
  	u8 *iv = PTR_ALIGN(&ivbuf[0], AESNI_ALIGN);
  
@@ -100,7 +100,7 @@ index 0628c2bca..6a4378bac 100644
  
  	return gcmaes_decrypt(req, req->assoclen, ctx->hash_subkey, iv,
 diff --git a/crypto/algboss.c b/crypto/algboss.c
-index 62bb3eb18..328e000e6 100644
+index 2c64da757..eef91116c 100644
 --- a/crypto/algboss.c
 +++ b/crypto/algboss.c
 @@ -94,7 +94,7 @@ static int cryptomgr_schedule_probe(struct crypto_larval *larval)
@@ -121,7 +121,7 @@ index 62bb3eb18..328e000e6 100644
  
  		param->tb[i + 1] = &param->attrs[i].attr;
  		i++;
-@@ -207,8 +207,8 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
+@@ -201,8 +201,8 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
  	if (!param)
  		goto err_put_module;
  
@@ -129,10 +129,10 @@ index 62bb3eb18..328e000e6 100644
 -	memcpy(param->alg, alg->cra_name, sizeof(param->alg));
 +	fcw_memcpy(param->driver, alg->cra_driver_name, sizeof(param->driver));
 +	fcw_memcpy(param->alg, alg->cra_name, sizeof(param->alg));
- 	type = alg->cra_flags;
+ 	param->type = alg->cra_flags;
  
- 	/* Do not test internal algorithms. */
-@@ -258,7 +258,7 @@ static int __init cryptomgr_init(void)
+ 	thread = kthread_run(cryptomgr_test, param, "cryptomgr_test");
+@@ -246,7 +246,7 @@ static int __init cryptomgr_init(void)
  static void __exit cryptomgr_exit(void)
  {
  	int err = crypto_unregister_notifier(&cryptomgr_notifier);
@@ -199,7 +199,7 @@ index 6c03e96b9..2f266530e 100644
  	return nbytes;
  }
 diff --git a/crypto/ccm.c b/crypto/ccm.c
-index a22f6ec26..04ed0cd8b 100644
+index 1b77da008..60e2145f4 100644
 --- a/crypto/ccm.c
 +++ b/crypto/ccm.c
 @@ -80,7 +80,7 @@ static int set_msg_len(u8 *block, unsigned int msglen, int csize)
@@ -261,7 +261,7 @@ index a22f6ec26..04ed0cd8b 100644
  		sg = scatterwalk_ffwd(pctx->dst + 1, req->dst, req->assoclen);
  		if (sg != pctx->dst + 1)
  			sg_chain(pctx->dst, 2, sg);
-@@ -370,7 +370,7 @@ static int crypto_ccm_decrypt(struct aead_request *req)
+@@ -369,7 +369,7 @@ static int crypto_ccm_decrypt(struct aead_request *req)
  	if (req->src != req->dst)
  		dst = pctx->dst;
  
@@ -270,7 +270,7 @@ index a22f6ec26..04ed0cd8b 100644
  
  	skcipher_request_set_tfm(skreq, ctx->ctr);
  	skcipher_request_set_callback(skreq, pctx->flags,
-@@ -577,7 +577,7 @@ static int crypto_rfc4309_setkey(struct crypto_aead *parent, const u8 *key,
+@@ -576,7 +576,7 @@ static int crypto_rfc4309_setkey(struct crypto_aead *parent, const u8 *key,
  		return -EINVAL;
  
  	keylen -= 3;
@@ -279,7 +279,7 @@ index a22f6ec26..04ed0cd8b 100644
  
  	crypto_aead_clear_flags(child, CRYPTO_TFM_REQ_MASK);
  	crypto_aead_set_flags(child, crypto_aead_get_flags(parent) &
-@@ -616,20 +616,20 @@ static struct aead_request *crypto_rfc4309_crypt(struct aead_request *req)
+@@ -615,20 +615,20 @@ static struct aead_request *crypto_rfc4309_crypt(struct aead_request *req)
  	/* L' */
  	iv[0] = 3;
  
@@ -304,7 +304,7 @@ index a22f6ec26..04ed0cd8b 100644
  		sg = scatterwalk_ffwd(rctx->dst + 1, req->dst, req->assoclen);
  		if (sg != rctx->dst + 1)
  			sg_chain(rctx->dst, 2, sg);
-@@ -835,7 +835,7 @@ static int crypto_cbcmac_digest_final(struct shash_desc *pdesc, u8 *out)
+@@ -834,7 +834,7 @@ static int crypto_cbcmac_digest_final(struct shash_desc *pdesc, u8 *out)
  	if (ctx->len)
  		crypto_cipher_encrypt_one(tfm, dg, dg);
  
@@ -362,7 +362,7 @@ index 5c36b7b65..460b9d2f8 100644
  		src += bsize;
  	} while ((nbytes -= bsize) >= bsize);
 diff --git a/crypto/cmac.c b/crypto/cmac.c
-index 4ec1c1cc8..bd11953dc 100644
+index e5af76456..b7e58d081 100644
 --- a/crypto/cmac.c
 +++ b/crypto/cmac.c
 @@ -130,13 +130,13 @@ static int crypto_cmac_digest_update(struct shash_desc *pdesc, const u8 *p,
@@ -415,7 +415,7 @@ index 1906d0f8c..b4c6ae0ab 100644
  	/* initialize counter portion of counter block */
  	*(__be32 *)(iv + CTR_RFC3686_NONCE_SIZE + CTR_RFC3686_IV_SIZE) =
 diff --git a/crypto/cts.c b/crypto/cts.c
-index 06706abef..3d3f0b08e 100644
+index 06d08cf25..65a64c63d 100644
 --- a/crypto/cts.c
 +++ b/crypto/cts.c
 @@ -206,7 +206,7 @@ static int cts_cbc_decrypt(struct skcipher_request *req)
@@ -672,7 +672,7 @@ index d51275071..693579b52 100644
  
  	alg->base.cra_priority = priority;
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index 016f785b8..ff9a0f156 100644
+index a43831a4e..a5a88caf6 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -210,10 +210,7 @@ EXPORT_SYMBOL(vli_from_le64);
@@ -687,7 +687,7 @@ index 016f785b8..ff9a0f156 100644
  }
  
  /* Returns sign of left - right. */
-@@ -1552,7 +1549,7 @@ int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
+@@ -1554,7 +1551,7 @@ int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
  {
  	u64 yy[ECC_MAX_DIGITS], xxx[ECC_MAX_DIGITS], w[ECC_MAX_DIGITS];
  
@@ -762,7 +762,7 @@ index 13eb687bf..c4c631a3a 100644
  
  	ecc_swap_digits((u64 *)rawhash, hash, ctx->curve->g.ndigits);
 diff --git a/crypto/gcm.c b/crypto/gcm.c
-index ae81153a3..887033a38 100644
+index ac5577aa8..63ec9adc3 100644
 --- a/crypto/gcm.c
 +++ b/crypto/gcm.c
 @@ -157,18 +157,18 @@ static void crypto_gcm_init_common(struct aead_request *req)
@@ -797,7 +797,7 @@ index ae81153a3..887033a38 100644
  	sg_init_one(&pctx->sg, pctx->iauth_tag, 16);
  	ahash_request_set_callback(ahreq, flags, gcm_hash_len_done, req);
  	ahash_request_set_crypt(ahreq, &pctx->sg,
-@@ -699,7 +699,7 @@ static int crypto_rfc4106_setkey(struct crypto_aead *parent, const u8 *key,
+@@ -697,7 +697,7 @@ static int crypto_rfc4106_setkey(struct crypto_aead *parent, const u8 *key,
  		return -EINVAL;
  
  	keylen -= 4;
@@ -806,7 +806,7 @@ index ae81153a3..887033a38 100644
  
  	crypto_aead_clear_flags(child, CRYPTO_TFM_REQ_MASK);
  	crypto_aead_set_flags(child, crypto_aead_get_flags(parent) &
-@@ -733,18 +733,18 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
+@@ -731,18 +731,18 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
  
  	scatterwalk_map_and_copy(iv + GCM_AES_IV_SIZE, req->src, 0, req->assoclen - 8, 0);
  
@@ -829,7 +829,7 @@ index ae81153a3..887033a38 100644
  		sg = scatterwalk_ffwd(rctx->dst + 1, req->dst, req->assoclen);
  		if (sg != rctx->dst + 1)
  			sg_chain(rctx->dst, 2, sg);
-@@ -907,7 +907,7 @@ static int crypto_rfc4543_setkey(struct crypto_aead *parent, const u8 *key,
+@@ -905,7 +905,7 @@ static int crypto_rfc4543_setkey(struct crypto_aead *parent, const u8 *key,
  		return -EINVAL;
  
  	keylen -= 4;
@@ -838,7 +838,7 @@ index ae81153a3..887033a38 100644
  
  	crypto_aead_clear_flags(child, CRYPTO_TFM_REQ_MASK);
  	crypto_aead_set_flags(child, crypto_aead_get_flags(parent) &
-@@ -943,8 +943,8 @@ static int crypto_rfc4543_crypt(struct aead_request *req, bool enc)
+@@ -941,8 +941,8 @@ static int crypto_rfc4543_crypt(struct aead_request *req, bool enc)
  			return err;
  	}
  
@@ -850,7 +850,7 @@ index ae81153a3..887033a38 100644
  	aead_request_set_tfm(subreq, ctx->child);
  	aead_request_set_callback(subreq, req->base.flags,
 diff --git a/crypto/hmac.c b/crypto/hmac.c
-index 7c289df3b..b3e099505 100644
+index 90c849f0c..2755aa4ea 100644
 --- a/crypto/hmac.c
 +++ b/crypto/hmac.c
 @@ -67,10 +67,10 @@ static int hmac_setkey(struct crypto_shash *parent,
@@ -867,7 +867,7 @@ index 7c289df3b..b3e099505 100644
  	for (i = 0; i < bs; i++) {
  		ipad[i] ^= HMAC_IPAD_VALUE;
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index e3a77b398..f8983636f 100644
+index c01427af6..11fda291c 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
 @@ -166,7 +166,7 @@ static void pkcs1pad_sg_set_buf(struct scatterlist *sg, void *buf, size_t len,
@@ -879,7 +879,7 @@ index e3a77b398..f8983636f 100644
  
  	if (next)
  		sg_chain(sg, nsegs, next);
-@@ -410,7 +410,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
+@@ -408,7 +408,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
  	req_ctx->in_buf[ps_end] = 0x00;
  
  	if (digest_info)
@@ -888,17 +888,17 @@ index e3a77b398..f8983636f 100644
  		       digest_info->size);
  
  	pkcs1pad_sg_set_buf(req_ctx->in_sg, req_ctx->in_buf,
-@@ -538,7 +538,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
+@@ -535,7 +535,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
  	const unsigned int digest_size = req->dst_len;
  	int err;
  
 -	if (WARN_ON(req->dst) || WARN_ON(!digest_size) ||
-+	if (fcw_warn_on(req->dst) || fcw_warn_on(!digest_size) ||
++	if (fcw_warn_on(req->dst != NULL) || fcw_warn_on(!digest_size) ||
  	    !ctx->key_size || sig_size != ctx->key_size)
  		return -EINVAL;
  
 diff --git a/crypto/seqiv.c b/crypto/seqiv.c
-index b1bcfe537..c593c2947 100644
+index 17e11d51d..14d230ff6 100644
 --- a/crypto/seqiv.c
 +++ b/crypto/seqiv.c
 @@ -17,6 +17,7 @@
@@ -979,10 +979,10 @@ index be70e76d6..07e27910c 100644
  }
  EXPORT_SYMBOL(crypto_sha512_finup);
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 832bdbcde..cef1e92a4 100644
+index 6c36f88db..dfa9cae7f 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -587,7 +587,7 @@ static int build_test_sglist(struct test_sglist *tsgl,
+@@ -595,7 +595,7 @@ static int build_test_sglist(struct test_sglist *tsgl,
  	unsigned int i;
  
  	BUILD_BUG_ON(ARRAY_SIZE(partitions) != ARRAY_SIZE(tsgl->sgl));
@@ -991,7 +991,7 @@ index 832bdbcde..cef1e92a4 100644
  		return -EINVAL;
  
  	/* Calculate the (div, length) pairs */
-@@ -623,13 +623,13 @@ static int build_test_sglist(struct test_sglist *tsgl,
+@@ -631,13 +631,13 @@ static int build_test_sglist(struct test_sglist *tsgl,
  
  		while (offset + partitions[i].length + TESTMGR_POISON_LEN >
  		       2 * PAGE_SIZE) {
@@ -1007,7 +1007,7 @@ index 832bdbcde..cef1e92a4 100644
  
  		if (out_divs)
  			out_divs[i] = partitions[i].div;
-@@ -638,8 +638,8 @@ static int build_test_sglist(struct test_sglist *tsgl,
+@@ -646,8 +646,8 @@ static int build_test_sglist(struct test_sglist *tsgl,
  			size_t copy_len, copied;
  
  			copy_len = min(partitions[i].length, data->count);
@@ -1018,7 +1018,7 @@ index 832bdbcde..cef1e92a4 100644
  				return -EINVAL;
  			testmgr_poison(addr + copy_len, partitions[i].length +
  				       TESTMGR_POISON_LEN - copy_len);
-@@ -651,7 +651,7 @@ static int build_test_sglist(struct test_sglist *tsgl,
+@@ -659,7 +659,7 @@ static int build_test_sglist(struct test_sglist *tsgl,
  
  	sg_mark_end(&tsgl->sgl[tsgl->nents - 1]);
  	tsgl->sgl_ptr = tsgl->sgl;
@@ -1027,7 +1027,7 @@ index 832bdbcde..cef1e92a4 100644
  	return 0;
  }
  
-@@ -690,7 +690,7 @@ static int verify_correct_output(const struct test_sglist *tsgl,
+@@ -698,7 +698,7 @@ static int verify_correct_output(const struct test_sglist *tsgl,
  			unchecked_prefix_len = 0;
  		}
  		len = min(len, len_to_check);
@@ -1036,7 +1036,7 @@ index 832bdbcde..cef1e92a4 100644
  		if (memcmp(expected_output, actual_output, len) != 0)
  			return -EINVAL;
  		if (check_poison &&
-@@ -699,7 +699,7 @@ static int verify_correct_output(const struct test_sglist *tsgl,
+@@ -707,7 +707,7 @@ static int verify_correct_output(const struct test_sglist *tsgl,
  		len_to_check -= len;
  		expected_output += len;
  	}
@@ -1045,7 +1045,7 @@ index 832bdbcde..cef1e92a4 100644
  		return -EINVAL;
  	return 0;
  }
-@@ -793,9 +793,9 @@ static int build_cipher_test_sglists(struct cipher_test_sglists *tsgls,
+@@ -801,9 +801,9 @@ static int build_cipher_test_sglists(struct cipher_test_sglists *tsgls,
  		 * two scatterlists have identical entries, rather than
  		 * different entries that split up the same memory differently.
  		 */
@@ -1057,7 +1057,7 @@ index 832bdbcde..cef1e92a4 100644
  		       tsgls->src.nents * sizeof(tsgls->src.sgl[0]));
  		tsgls->dst.sgl_ptr = tsgls->dst.sgl;
  		tsgls->dst.nents = tsgls->src.nents;
-@@ -829,7 +829,7 @@ static int prepare_keybuf(const u8 *key, unsigned int ksize,
+@@ -837,7 +837,7 @@ static int prepare_keybuf(const u8 *key, unsigned int ksize,
  		if (!keybuf)
  			return -ENOMEM;
  		keyptr = keybuf + key_offset;
@@ -1066,7 +1066,7 @@ index 832bdbcde..cef1e92a4 100644
  	}
  	*keybuf_ret = keybuf;
  	*keyptr_ret = keyptr;
-@@ -1147,7 +1147,7 @@ static void generate_random_testvec_config(struct rnd_state *rng,
+@@ -1155,7 +1155,7 @@ static void generate_random_testvec_config(struct rnd_state *rng,
  		p += scnprintf(p, end - p, " key_offset=%u", cfg->key_offset);
  	}
  
@@ -1075,7 +1075,7 @@ index 832bdbcde..cef1e92a4 100644
  }
  
  static void crypto_disable_simd_for_test(void)
-@@ -1192,7 +1192,7 @@ static int build_generic_driver_name(const char *algname,
+@@ -1200,7 +1200,7 @@ static int build_generic_driver_name(const char *algname,
  			len += 8;
  			if (len >= CRYPTO_MAX_ALG_NAME)
  				goto too_long;
@@ -1084,7 +1084,7 @@ index 832bdbcde..cef1e92a4 100644
  			out += 8;
  		}
  	} while ((*out++ = *in++) != '\0');
-@@ -1316,7 +1316,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
+@@ -1324,7 +1324,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
  			return 0;
  		if (cfg->nosimd)
  			crypto_disable_simd_for_test();
@@ -1093,7 +1093,7 @@ index 832bdbcde..cef1e92a4 100644
  					  tsgl->sgl[0].length, result);
  		if (cfg->nosimd)
  			crypto_reenable_simd_for_test();
-@@ -1352,7 +1352,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
+@@ -1360,7 +1360,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
  		    cfg->finalization_type == FINALIZATION_TYPE_FINUP) {
  			if (divs[i]->nosimd)
  				crypto_disable_simd_for_test();
@@ -1102,7 +1102,7 @@ index 832bdbcde..cef1e92a4 100644
  						 tsgl->sgl[i].length, result);
  			if (divs[i]->nosimd)
  				crypto_reenable_simd_for_test();
-@@ -1364,7 +1364,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
+@@ -1372,7 +1372,7 @@ static int test_shash_vec_cfg(const struct hash_testvec *vec,
  		}
  		if (divs[i]->nosimd)
  			crypto_disable_simd_for_test();
@@ -1111,7 +1111,7 @@ index 832bdbcde..cef1e92a4 100644
  					  tsgl->sgl[i].length);
  		if (divs[i]->nosimd)
  			crypto_reenable_simd_for_test();
-@@ -2077,10 +2077,10 @@ static int test_aead_vec_cfg(int enc, const struct aead_testvec *vec,
+@@ -2085,10 +2085,10 @@ static int test_aead_vec_cfg(int enc, const struct aead_testvec *vec,
  		return 0;
  
  	/* The IV must be copied to a buffer, as the algorithm may modify it */
@@ -1124,7 +1124,7 @@ index 832bdbcde..cef1e92a4 100644
  	else
  		memset(iv, 0, ivsize);
  
-@@ -2315,7 +2315,7 @@ static void generate_aead_message(struct rnd_state *rng,
+@@ -2323,7 +2323,7 @@ static void generate_aead_message(struct rnd_state *rng,
  	generate_random_bytes(rng, (u8 *)vec->assoc, vec->alen);
  	if (suite->aad_iv && vec->alen >= ivsize)
  		/* Avoid implementation-defined behavior. */
@@ -1133,7 +1133,7 @@ index 832bdbcde..cef1e92a4 100644
  
  	if (inauthentic && prandom_bool(rng)) {
  		/* Generate a random ciphertext. */
-@@ -2329,13 +2329,13 @@ static void generate_aead_message(struct rnd_state *rng,
+@@ -2337,13 +2337,13 @@ static void generate_aead_message(struct rnd_state *rng,
  		/* Generate a random plaintext and encrypt it. */
  		sg_init_table(src, 2);
  		if (vec->alen)
@@ -1150,7 +1150,7 @@ index 832bdbcde..cef1e92a4 100644
  		aead_request_set_callback(req, 0, crypto_req_done, &wait);
  		aead_request_set_crypt(req, src, &dst, vec->plen, iv);
  		aead_request_set_ad(req, vec->alen);
-@@ -2396,7 +2396,7 @@ static void generate_random_aead_testvec(struct rnd_state *rng,
+@@ -2404,7 +2404,7 @@ static void generate_random_aead_testvec(struct rnd_state *rng,
  		authsize = prandom_u32_below(rng, maxauthsize + 1);
  	if (prefer_inauthentic && authsize < MIN_COLLISION_FREE_AUTHSIZE)
  		authsize = MIN_COLLISION_FREE_AUTHSIZE;
@@ -1159,7 +1159,7 @@ index 832bdbcde..cef1e92a4 100644
  		authsize = maxdatasize;
  	maxdatasize -= authsize;
  	vec->setauthsize_error = crypto_aead_setauthsize(tfm, authsize);
-@@ -2743,11 +2743,11 @@ static int test_cipher(struct crypto_cipher *tfm, int enc,
+@@ -2751,11 +2751,11 @@ static int test_cipher(struct crypto_cipher *tfm, int enc,
  		j++;
  
  		ret = -EINVAL;
@@ -1173,7 +1173,7 @@ index 832bdbcde..cef1e92a4 100644
  
  		crypto_cipher_clear_flags(tfm, ~0);
  		if (template[i].wk)
-@@ -2842,12 +2842,12 @@ static int test_skcipher_vec_cfg(int enc, const struct cipher_testvec *vec,
+@@ -2850,12 +2850,12 @@ static int test_skcipher_vec_cfg(int enc, const struct cipher_testvec *vec,
  
  	/* The IV must be copied to a buffer, as the algorithm may modify it */
  	if (ivsize) {
@@ -1189,7 +1189,7 @@ index 832bdbcde..cef1e92a4 100644
  		else
  			memset(iv, 0, ivsize);
  	} else {
-@@ -3045,7 +3045,7 @@ static void generate_random_cipher_testvec(struct rnd_state *rng,
+@@ -3053,7 +3053,7 @@ static void generate_random_cipher_testvec(struct rnd_state *rng,
  	/* Ciphertext */
  	sg_init_one(&src, vec->ptext, vec->len);
  	sg_init_one(&dst, vec->ctext, vec->len);
@@ -1198,7 +1198,7 @@ index 832bdbcde..cef1e92a4 100644
  	skcipher_request_set_callback(req, 0, crypto_req_done, &wait);
  	skcipher_request_set_crypt(req, &src, &dst, vec->len, iv);
  	vec->crypt_error = crypto_wait_req(crypto_skcipher_encrypt(req), &wait);
-@@ -3613,10 +3613,10 @@ static int test_cprng(struct crypto_rng *tfm,
+@@ -3621,10 +3621,10 @@ static int test_cprng(struct crypto_rng *tfm,
  	for (i = 0; i < tcount; i++) {
  		memset(result, 0, 32);
  
@@ -1212,7 +1212,7 @@ index 832bdbcde..cef1e92a4 100644
  		       template[i].dt, template[i].dtlen);
  
  		err = crypto_rng_reset(tfm, seed, seedsize);
-@@ -3930,14 +3930,14 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3938,14 +3938,14 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  
  	if (vec->genkey) {
  		/* Save party A's public key */
@@ -1229,7 +1229,7 @@ index 832bdbcde..cef1e92a4 100644
  			   vec->expected_a_public_size)) {
  			pr_err("alg: %s: Party A: generate public key test failed. Invalid output\n",
  			       alg);
-@@ -3969,7 +3969,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3977,7 +3977,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  
  	if (vec->genkey) {
  		/* Save the shared secret obtained by party A */
@@ -1238,7 +1238,7 @@ index 832bdbcde..cef1e92a4 100644
  		if (!a_ss) {
  			err = -ENOMEM;
  			goto free_all;
-@@ -4007,7 +4007,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -4015,7 +4015,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  	 * verify shared secret from which the user will derive
  	 * secret key by executing whatever hash it has chosen
  	 */
@@ -1247,7 +1247,7 @@ index 832bdbcde..cef1e92a4 100644
  		   vec->expected_ss_size)) {
  		pr_err("alg: %s: compute shared secret test failed. Invalid output\n",
  		       alg);
-@@ -4063,7 +4063,7 @@ static int alg_test_kpp(const struct alg_test_desc *desc, const char *driver,
+@@ -4071,7 +4071,7 @@ static int alg_test_kpp(const struct alg_test_desc *desc, const char *driver,
  
  static u8 *test_pack_u32(u8 *dst, u32 val)
  {
@@ -1256,7 +1256,7 @@ index 832bdbcde..cef1e92a4 100644
  	return dst + sizeof(val);
  }
  
-@@ -4096,11 +4096,11 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4104,11 +4104,11 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  		      GFP_KERNEL);
  	if (!key)
  		goto free_req;
@@ -1270,7 +1270,7 @@ index 832bdbcde..cef1e92a4 100644
  
  	if (vecs->public_key_vec)
  		err = crypto_akcipher_set_pub_key(tfm, key, vecs->key_len);
-@@ -4137,18 +4137,18 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4145,18 +4145,18 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  	}
  
  	err = -E2BIG;
@@ -1296,7 +1296,7 @@ index 832bdbcde..cef1e92a4 100644
  		akcipher_request_set_crypt(req, src_tab, NULL, m_size, c_size);
  	} else {
  		sg_init_one(&dst, outbuf_enc, out_len_max);
-@@ -4205,9 +4205,9 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4213,9 +4213,9 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  
  	err = -E2BIG;
  	op = vecs->siggen_sigver_test ? "sign" : "decrypt";
@@ -1308,7 +1308,7 @@ index 832bdbcde..cef1e92a4 100644
  
  	sg_init_one(&src, xbuf[0], c_size);
  	sg_init_one(&dst, outbuf_dec, out_len_max);
-@@ -5806,13 +5806,13 @@ static void alg_check_test_descs_order(void)
+@@ -5858,13 +5858,13 @@ static void alg_check_test_descs_order(void)
  		int diff = strcmp(alg_test_descs[i - 1].alg,
  				  alg_test_descs[i].alg);
  
@@ -1324,7 +1324,7 @@ index 832bdbcde..cef1e92a4 100644
  			pr_warn("testmgr: duplicate alg_test_descs entry: '%s'\n",
  				alg_test_descs[i].alg);
  		}
-@@ -5824,12 +5824,12 @@ static void alg_check_testvec_configs(void)
+@@ -5876,12 +5876,12 @@ static void alg_check_testvec_configs(void)
  	int i;
  
  	for (i = 0; i < ARRAY_SIZE(default_cipher_testvec_configs); i++)
@@ -1341,7 +1341,7 @@ index 832bdbcde..cef1e92a4 100644
  }
  
  static void testmgr_onetime_init(void)
-@@ -5945,9 +5945,11 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5997,9 +5997,11 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  		}
  		pr_warn("alg: self-tests for %s using %s failed (rc=%d)",
  			alg, driver, rc);
@@ -1357,41 +1357,32 @@ index 832bdbcde..cef1e92a4 100644
  		if (fips_enabled)
  			pr_info("alg: self-tests for %s (%s) passed\n",
 diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
-index 72a4b0b1d..555ba2070 100644
+index 3ac1ef867..044681546 100644
 --- a/lib/crypto/sha256.c
 +++ b/lib/crypto/sha256.c
-@@ -37,6 +37,8 @@ static const u32 SHA256_K[] = {
- 	0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
- };
+@@ -17,6 +17,10 @@
+ #include <linux/module.h>
+ #include <linux/string.h>
  
-+extern void *fcw_memcpy(void *dst, const void *src, size_t len);
-+
- static inline u32 Ch(u32 x, u32 y, u32 z)
++extern int fcw_lib_sha256_base_do_update(struct sha256_state *sctx,
++					 const u8 *data,
++					 unsigned int len,
++					 sha256_block_fn *block_fn);
+ static const u32 SHA256_K[] = {
+ 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
+ 	0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+@@ -135,7 +139,11 @@ static void sha256_transform_blocks(struct sha256_state *sctx,
+ 
+ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
  {
- 	return z ^ (x & (y ^ z));
-@@ -133,7 +135,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
- 	if ((partial + len) > 63) {
- 		if (partial) {
- 			done = -partial;
 +#ifdef FIPS_CANISTER
-+			fcw_memcpy(sctx->buf + partial, data, done + 64);
++	fcw_lib_sha256_base_do_update(sctx, data, len, sha256_transform_blocks);
 +#else
- 			memcpy(sctx->buf + partial, data, done + 64);
-+#endif
- 			src = sctx->buf;
- 		}
- 
-@@ -147,7 +153,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
- 
- 		partial = 0;
- 	}
-+#ifdef FIPS_CANISTER
-+	fcw_memcpy(sctx->buf + partial, src, len - done);
-+#else
- 	memcpy(sctx->buf + partial, src, len - done);
+ 	lib_sha256_base_do_update(sctx, data, len, sha256_transform_blocks);
 +#endif
  }
  EXPORT_SYMBOL(sha256_update);
  
 -- 
-2.43.0
+2.35.6
+

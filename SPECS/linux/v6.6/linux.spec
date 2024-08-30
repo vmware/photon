@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.6.30
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -88,6 +88,14 @@ Source37: fips_canister_wrapper.h
 Source38: fips_canister_wrapper_asm.S
 Source39: fips_canister_wrapper_common.h
 %endif
+
+%if 0%{?canister_build}
+Source36: fips_canister_wrapper.c
+Source37: fips_canister_wrapper.h
+Source38: fips_canister_wrapper_asm.S
+Source39: fips_canister_wrapper_common.h
+%endif
+
 # fips_canister_wrapper_internal{.c,.h} is the latest released
 # wrapper files. These files may differ between 2 canister versions.
 # During canister binary update, rename
@@ -247,6 +255,7 @@ Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 #Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
+Patch511: 0001-crypto-Export-symbol-crypto_shash_alg_has_setkey.patch
 %endif
 
 %if 0%{?acvp_build:1}
@@ -332,9 +341,7 @@ BuildRequires:  pciutils-devel
 BuildRequires:  libcap-devel
 %endif
 
-%if 0%{?fips}
 BuildRequires:  gdb
-%endif
 
 Requires: kmod
 Requires: filesystem
@@ -564,17 +571,17 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
 %endif
 
 %if 0%{?canister_build}
-cp %{SOURCE36} crypto/
-cp %{SOURCE37} crypto/
-cp %{SOURCE38} crypto/
-cp %{SOURCE39} crypto/
-cp %{SOURCE42} crypto/fips_canister_wrapper_internal.h
-cp %{SOURCE43} crypto/fips_canister_wrapper_internal.c
-cp %{SOURCE44} crypto/
-cp %{SOURCE45} crypto/
-cp %{SOURCE46} crypto/
-cp %{SOURCE47} crypto/
-cp %{SOURCE48} crypto/
+install %{SOURCE36} crypto/
+install %{SOURCE37} crypto/
+install %{SOURCE38} crypto/
+install %{SOURCE39} crypto/
+install %{SOURCE42} crypto/fips_canister_wrapper_internal.h
+install %{SOURCE43} crypto/fips_canister_wrapper_internal.c
+install %{SOURCE44} crypto/
+install %{SOURCE45} crypto/
+install -m 755 %{SOURCE46} crypto/
+install %{SOURCE47} crypto/
+install %{SOURCE48} crypto/
 %endif
 %endif
 
@@ -582,7 +589,7 @@ sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
 %if 0%{?canister_build}
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
-sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
+sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}\"/" crypto/fips_integrity.c
 
 %if 0%{?kat_build}
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_TAMPER_TEST=y' .config
@@ -653,14 +660,14 @@ popd
 %if 0%{?canister_build}
 install -vdm 755 %{buildroot}%{_libdir}/fips-canister/
 pushd crypto/
-mkdir fips-canister-%{lkcm_version}-%{version}-%{release}-secure
+mkdir fips-canister-%{lkcm_version}-%{version}-%{release}
 cp fips_canister.o \
    fips_canister-kallsyms \
    .fips_canister.o.cmd \
-   fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
-tar -cvjf fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
+   fips-canister-%{lkcm_version}-%{version}-%{release}/
+tar -cvjf fips-canister-%{lkcm_version}-%{version}-%{release}.tar.bz2 fips-canister-%{lkcm_version}-%{version}-%{release}/
 popd
-cp crypto/fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 %{buildroot}%{_libdir}/fips-canister/
+cp crypto/fips-canister-%{lkcm_version}-%{version}-%{release}.tar.bz2 %{buildroot}%{_libdir}/fips-canister/
 %endif
 
 install -vdm 755 %{buildroot}%{_sysconfdir}
@@ -857,6 +864,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jan 27 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.6.30-2
+- Build canister for 6.6.30 kernel
 * Wed Oct 23 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.6.30-1
 - Upgrade to version v6.6.30
 * Thu Sep 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-2

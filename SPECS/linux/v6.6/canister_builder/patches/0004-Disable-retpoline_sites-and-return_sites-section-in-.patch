@@ -15,37 +15,49 @@ diff --git a/arch/x86/crypto/aes_ctrby8_avx-x86_64.S b/arch/x86/crypto/aes_ctrby
 index 2402b9418..d81759263 100644
 --- a/arch/x86/crypto/aes_ctrby8_avx-x86_64.S
 +++ b/arch/x86/crypto/aes_ctrby8_avx-x86_64.S
-@@ -22,6 +22,7 @@
- #include <linux/linkage.h>
+@@ -23,6 +23,11 @@
  
  #define VMOVDQ		vmovdqu
-+#define RET ret
  
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
  /*
   * Note: the "x" prefix in these aliases means "this is an xmm register".  The
+  * alias prefixes have no relation to XCTR where the "X" prefix means "XOR
 diff --git a/arch/x86/crypto/aesni-intel_asm.S b/arch/x86/crypto/aesni-intel_asm.S
 index 837c1e0aa..0c6d52311 100644
 --- a/arch/x86/crypto/aesni-intel_asm.S
 +++ b/arch/x86/crypto/aesni-intel_asm.S
-@@ -39,6 +39,7 @@
-  */
+@@ -40,6 +40,11 @@
  #define MOVADQ	movaps
  #define MOVUDQ	movups
-+#define RET ret
  
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
  #ifdef __x86_64__
  
+ # constants in mergeable sections, linker can reorder and merge
 diff --git a/arch/x86/crypto/aesni-intel_avx-x86_64.S b/arch/x86/crypto/aesni-intel_avx-x86_64.S
 index 0852ab573..8bef0e67c 100644
 --- a/arch/x86/crypto/aesni-intel_avx-x86_64.S
 +++ b/arch/x86/crypto/aesni-intel_avx-x86_64.S
-@@ -120,6 +120,7 @@
- ##
+@@ -121,6 +121,11 @@
  
  #include <linux/linkage.h>
-+#define RET ret
  
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
  # constants in mergeable sections, linker can reorder and merge
  .section	.rodata.cst16.POLY, "aM", @progbits, 16
+ .align 16
 -- 
 2.43.0
