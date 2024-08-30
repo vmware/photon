@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.7
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       Apache 2.0 and GPL 2.0
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -67,6 +67,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Fri Aug 30 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.7-4
+- Added a none check while parsing df output
 * Tue Aug 27 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.7-3
 - Fix 'df' command parsing by 'jc'
 * Fri Aug 09 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.7-2

@@ -1,4 +1,4 @@
-From 96521d045a3040e90ba4fa27773c5e4b70484dc1 Mon Sep 17 00:00:00 2001
+From bbaa13e3c009b5593eeb344c594fc3e4148b9b87 Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankit-aj.jain@broadcom.com>
 Date: Tue, 27 Aug 2024 13:33:58 +0000
 Subject: [PATCH] installer.py: fix df command parsing
@@ -36,24 +36,35 @@ Adding '-P' option to 'df' ensure single-line output
 also, -P uses POSIX output format so it is compatible across
 different systems.
 
+Even after '-P' option, old version of df command may result in
+unalign column data such as:
+Filesystem         1024-blocks      Used Available Capacity Mounted on
+/dev/mapper/sys_vg-root  31441920   5292532  26149388      17% /
+
+In this case, jc.parse() will result in 'None' value for 'mounted_on' field
+so to fix this added a None value check before accessing it.
+
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
- photon_installer/installer.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ photon_installer/installer.py | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/photon_installer/installer.py b/photon_installer/installer.py
-index 0efa3bc..b48d114 100644
+index 0efa3bc..b52c9a4 100644
 --- a/photon_installer/installer.py
 +++ b/photon_installer/installer.py
-@@ -920,7 +920,7 @@ class Installer(object):
+@@ -920,8 +920,9 @@ class Installer(object):
          with open(os.path.join(self.photon_root, "etc/fstab"), "rt") as f:
              manifest['fstab'] = jc.parse("fstab", f.read())
  
 -        df = jc.parse("df", subprocess.check_output(["df"], text=True))
+-        df = [d for d in df if d['mounted_on'].startswith(self.photon_root)]
 +        df = jc.parse("df", subprocess.check_output(["df", "-P"], text=True))
-         df = [d for d in df if d['mounted_on'].startswith(self.photon_root)]
++        self.logger.info(f"df output: {df}")
++        df = [d for d in df if d['mounted_on'] and d['mounted_on'].startswith(self.photon_root)]
          for d in df:
              d['mounted_on'] = d['mounted_on'][len(self.photon_root):]
+         manifest['df'] = df
 -- 
 2.39.4
 
