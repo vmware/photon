@@ -1,0 +1,45 @@
+From d5892faf45bad1f59b490bc0aa597dd332921cb4 Mon Sep 17 00:00:00 2001
+From: Nikita Kiryushin <kiryushin@ancud.ru>
+Date: Wed, 28 Aug 2024 01:23:38 -0500
+Subject: [PATCH Internal v5.10-v5.15] rcu-tasks: Fix show_rcu_tasks_trace_gp_kthread buffer
+ overflow
+
+[ Upstream commit cc5645fddb0ce28492b15520306d092730dffa48 ]
+
+There is a possibility of buffer overflow in
+show_rcu_tasks_trace_gp_kthread() if counters, passed
+to sprintf() are huge. Counter numbers, needed for this
+are unrealistically high, but buffer overflow is still
+possible.
+
+Use snprintf() with buffer size instead of sprintf().
+
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Fixes: edf3775f0ad6 ("rcu-tasks: Add count for idle tasks on offline CPUs")
+Signed-off-by: Nikita Kiryushin <kiryushin@ancud.ru>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ kernel/rcu/tasks.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+index 105fdc2bb004..bede3a4f108e 100644
+--- a/kernel/rcu/tasks.h
++++ b/kernel/rcu/tasks.h
+@@ -1240,7 +1240,7 @@ static void show_rcu_tasks_trace_gp_kthread(void)
+ {
+ 	char buf[64];
+ 
+-	sprintf(buf, "N%d h:%lu/%lu/%lu", atomic_read(&trc_n_readers_need_end),
++	snprintf(buf, sizeof(buf), "N%d h:%lu/%lu/%lu", atomic_read(&trc_n_readers_need_end),
+ 		data_race(n_heavy_reader_ofl_updates),
+ 		data_race(n_heavy_reader_updates),
+ 		data_race(n_heavy_reader_attempts));
+-- 
+2.45.2
+

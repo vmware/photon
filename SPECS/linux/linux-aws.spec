@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.224
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -191,6 +191,12 @@ Patch158: 0001-block-initialize-integrity-buffer-to-zero-before-wri.patch
 # Fix CVE-2024-43835
 Patch159: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
 
+# Fix CVE-2024-38577
+Patch160: 0001-rcu-tasks-Fix-show_rcu_tasks_trace_gp_kthread-buffer.patch
+
+# Fix CVE-2024-42228
+Patch161: 0001-drm-amdgpu-Using-uninitialized-value-size-when-calli.patch
+
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
 Patch302: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
@@ -356,7 +362,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M159
+%autopatch -p1 -m100 -M161
 
 #Amazon AWS
 %autopatch -p1 -m301 -M340
@@ -537,6 +543,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sat Aug 31 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.224-4
+- Fix CVE-2024-38577, CVE-2024-42228
 * Wed Aug 28 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.224-3
 - Fix CVE-2024-43853, CVE-2024-43854
 * Tue Aug 27 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-2

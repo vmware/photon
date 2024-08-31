@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.224
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -235,6 +235,12 @@ Patch152: 0001-block-initialize-integrity-buffer-to-zero-before-wri.patch
 
 # Fix CVE-2024-43835
 Patch153: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
+
+# Fix CVE-2024-38577
+Patch154: 0001-rcu-tasks-Fix-show_rcu_tasks_trace_gp_kthread-buffer.patch
+
+# Fix CVE-2024-42228
+Patch155: 0001-drm-amdgpu-Using-uninitialized-value-size-when-calli.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -498,7 +504,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M153
+%autopatch -p1 -m100 -M155
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -906,6 +912,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Sep 04 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.224-5
+- Fix CVE-2024-38577, CVE-2024-42228
 * Wed Sep 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.224-4
 - Fix CVE-2024-43853, CVE-2024-43854
 * Tue Sep 03 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-3
