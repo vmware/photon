@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.106
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -879,6 +879,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 03 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.106-4
+- Enable CONFIG_ARM64_ERRATUM_3194386
 * Thu Aug 29 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.106-3
 - HCX: Fix arp_probe_src_mac sysfs entry issue
 - HCX: Fix rps_cpus to honor isolcpus range
