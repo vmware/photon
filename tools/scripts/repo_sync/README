@@ -1,0 +1,17 @@
+A script to synchronize RPM repositories from https://packages.vmware.com/photon/ to local directory.
+  - The script automatically reads input parameters from 'repo_sync.conf' in the current directory.
+  - At present, no command-line arguments are accepted except --help or -h.
+
+Example:
+  Simply run:
+  ./repo_sync.py  # Uses 'repo_sync.conf' in current directory for input parameters
+    
+usage: repo_sync.py [-h]
+
+optional arguments:
+  -h, --help  show this help message and exit
+
+TODO:
+   Add a command-line option to accept base_url. 
+   Add a command-line option to specify the local path where the remote repository will be synced. 
+   Add a command-line option to specify the configuration file.
