@@ -1,6 +1,6 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.0.15
+Version:        4.2.7
 Release:        1%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
@@ -9,7 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512 %{name}=6f1915c48860f79c25df8ac753aac4391393db9cf6d4b3d4ba11499fafb5cae8c1e56b7f735ea14b9f18560cb4156a3cbb65c567102db52b40e5d1f53e00be7a
+%define sha512  %{name}=22ef36bb18610c36d848277c95df17734ac266ea301e636fd19900da0ac49c3d5ce8b59c3fce3a2ef1e919c70fa4003647cbd417c06248dabe498f5772f62c15
+
+Patch0: 0001-Remove-SpeexDSP-library-dependencies-from-photon-wir.patch
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -74,7 +76,6 @@ and plugins.
        -DBUILD_dcerpcidl2wrs=OFF \
        -DBUILD_sdjournal=ON \
        -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-       -DBUILD_sharkd=off \
        -DCMAKE_BUILD_TYPE=Debug
 
 %cmake_build
@@ -94,11 +95,12 @@ rm -rf %{buildroot}%{_mandir} \
 %files devel
 %defattr(-,root,root)
 %doc doc/README.* ChangeLog
-%{_includedir}/wireshark
 %{_libdir}/lib*.so
-%{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Sep 03 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.2.7-1
+- Version update to v4.2.7 to fix following CVE's:
+- CVE-2024-24476, CVE-2024-24479 and CVE-2024-8250
 * Mon May 20 2024 Anmol Jain <anmol.jain@broadcom.com> 4.0.15-1
 - Version update to fix CVE-2024-4853, CVE-2024-4854 & CVE-2024-4855
 * Mon Apr 01 2024 Anmol Jain <anmol.jain@broadcom.com> 4.0.14-1
