@@ -1,7 +1,7 @@
 Summary:        An XML parser library
 Name:           expat
 Version:        2.6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://expat.sourceforge.net/
 Group:          System Environment/GeneralLibraries
@@ -10,7 +10,10 @@ Distribution:   Photon
 
 Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
 %define sha512    %{name}=d6f1c4a1a2ec8ffc04c04d6767cc8dd7dea3d132d10b8a2c45c5bfb405893c75db032b87a56cc88300b61c961dd7f9782b93aa74dddc7e66f25acb0c6c82b1fd
-Patch3:         CVE-2024-28757.patch
+Patch0:         CVE-2024-28757.patch
+Patch1:         CVE-2024-45490.patch
+Patch2:         CVE-2024-45491.patch
+Patch3:         CVE-2024-45492.patch
 Requires:       expat-libs = %{version}-%{release}
 
 %description
@@ -94,6 +97,8 @@ rm -rf %{buildroot}/*
 %exclude %{_mandir}/man1/xmlwf.1.gz
 
 %changelog
+* Tue Sep 03 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 2.6.0-3
+- Fix for CVE-2024-45490
 * Mon Mar 18 2024 Anmol Jain <anmol.jain@broadcom.com> 2.6.0-2
 - Fix for CVE-2024-28757
 * Tue Feb 13 2024 Anmol Jain <anmolja@vmware.com> 2.6.0-1
