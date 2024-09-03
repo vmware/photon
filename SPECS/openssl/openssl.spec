@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.14
-Release:        3%{?dist}
+Version:        3.0.15
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=1c59c01e60da902a20780d71f1fa5055d4037f38c4bc3fb27ed5b91f211b36a6018055409441ad4df58b5e9232b2528240d02067272c3c9ccb8c221449ca9ac0
+%define sha512 %{name}=acd80f2f7924d90c1416946a5c61eff461926ad60f4821bb6b08845ea18f8452fd5e88a2c2c5bd0d7590a792cb8341a3f3be042fd0a5b6c9c1b84a497c347bbf
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
@@ -22,7 +22,6 @@ Source5: dsapub_noparam.der
 
 Patch0: openssl-cnf.patch
 Patch1: CVE-2023-50782.patch
-Patch2: CVE-2024-5535.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -167,6 +166,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Sep 03 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.15-1
+- Update to 3.0.15
 * Thu Aug 01 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.14-3
 - Move fips-provider out of openssl spec
 * Fri Jul 05 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.14-2
