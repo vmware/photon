@@ -7,8 +7,8 @@ set -ex
 # See https://github.com/PowerShell/PowerShell/blob/master/docs/building/internals.md
 
 mkdir -p /usr/lib/dotnet/sdk-manifests
-for f in src/powershell-unix src/ResGen src/TypeCatalogGen; do
-  dotnet restore $f
+for f in powershell-unix ResGen TypeCatalogGen; do
+  dotnet restore src/${f} -s ${HOME}/.nuget
 done
 
 pushd src/ResGen
@@ -25,13 +25,17 @@ dotnet run ../System.Management.Automation/CoreCLR/CorePsTypeCatalog.cs powershe
 popd
 
 touch DELETE_ME_TO_DISABLE_CONSOLEHOST_TELEMETRY
-dotnet publish /property:GenerateFullPaths=true --configuration Linux --framework net8.0 --runtime linux-x64 src/powershell-unix --output bin
+dotnet publish /property:GenerateFullPaths=true \
+  --configuration Linux \
+  --framework net8.0 \
+  --runtime linux-x64 \
+  --output bin \
+  --no-restore \
+  src/powershell-unix
 
 # Even after powershell rpm built, dotnet processes are alive, following to stop them:
 for pid in $(pgrep dotnet); do
   if [ -n "${pid}" ]; then
-    if kill -0 "${pid}"; then
-      kill -15 "${pid}"
-    fi
+    kill -0 "${pid}" && kill -TERM "${pid}" || :
   fi
 done
