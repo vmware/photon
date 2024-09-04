@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          2.0.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          Apache License, Version 2.0
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
@@ -28,6 +28,9 @@ Source0: https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
 #
 # Ensure that no sources are fetched from web during build
 # If anything is fetched from web, it must be fixed
+#
+# Clear all built files
+# find . \( -name "*.so" -or -name "*.so.*" -or -name "*.o" -or -name "*.a" -or -name "*.beam" \) -delete
 #
 # Once all done, create vendor tarball
 #
@@ -74,8 +77,12 @@ mv ../%{name}_vendor-%{version}/plugins _build/default/
 
 cp %{SOURCE2} ./vars.config
 
+find . \( -name "*.so" -or -name "*.so.*" -or -name "*.o" -or -name "*.a" -or -name "*.beam" \) -delete
+
+cp -a _build/default/plugins/* _checkouts/
+
 # make doesn't support _smp_mflags
-make rel
+REBAR_OFFLINE=1 make rel
 
 %install
 install -vdm 0755 %{buildroot}%{_sharedstatedir}/%{name}/broker
@@ -148,6 +155,8 @@ rm -rf %{buildroot}
 %{_tmpfilesdir}/%{name}.conf
 
 %changelog
+* Wed Sep 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.1-2
+- Do fully offline build
 * Fri Jun 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.1-1
 - Upgrade to v2.0.1
 * Wed Nov 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.12.5-1
