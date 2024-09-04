@@ -4,7 +4,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -45,6 +45,14 @@ Source4: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 Source5: omi-%{libmi_tag}.tar.gz
 %define sha512 omi-%{libmi_tag}=73b60237173079707de8dbab29c3225643a8bf262348911724d542409b674f0a6593b046b87801e6998b0aad50b8dfe14748a2a6de115564e129bbb035b76759
 
+# After extracting Powershell original archive (Source0 in this spec), run:
+# dotnet restore .
+# Then archive $HOME/.nuget directory
+# mv $HOME/.nuget <NAME>-<VERSION>-nuget-deps
+# tar cJf <NAME>-<VERSION>-nuget-deps.tar.xz <NAME>-<VERSION>-nuget-deps
+Source6: %{name}-%{version}-nuget-deps.tar.xz
+%define sha512 %{name}-%{version}-nuget-deps=85fc3a9607a164cc851fc6bc5f91ca45983e1f2ad73ecbbc4755ed874c0632ab203fb859e1dc0854e36aa47c03d04612de0099f764aa3d3c78abd2d5dbdf49c2
+
 BuildArch:      x86_64
 
 BuildRequires:  dotnet-sdk
@@ -84,6 +92,10 @@ It consists of a cross-platform command-line shell and associated scripting lang
 %setup -qcTDa 2 -n %{name}-linux-%{version}
 # Using autosetup is not feasible
 %setup -qcTDa 5 -n omi
+
+tar xf %{SOURCE6}
+rm -rf ${HOME}/.nuget
+mv %{name}-%{version}-nuget-deps ${HOME}/.nuget
 
 %build
 # Build libmi
@@ -161,6 +173,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Wed Sep 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.3-2
+- Do fully offline build
 * Thu Jul 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.3-1
 - Upgrade to v7.4.3
 * Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 7.4.1-1
