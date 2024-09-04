@@ -250,7 +250,7 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile
             if len(listFoundSRPMFiles) == 1:
                 srpmFullPath = listFoundSRPMFiles[0]
                 srpmName = os.path.basename(srpmFullPath)
-                shutil.copyfile(srpmFullPath, yamlSrpmDir)
+                shutil.copy(srpmFullPath, yamlSrpmDir)
             else:
                 logger.error("SRPM file is not found:" + ossname)
 
