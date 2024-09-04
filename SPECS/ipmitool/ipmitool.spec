@@ -4,7 +4,7 @@
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.19
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
@@ -76,6 +76,8 @@ rm -rf %{buildroot}
 %{_datadir}/misc/enterprise-numbers
 
 %changelog
+* Wed Sep 04 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.8.19-5
+- update enterprise-numbers file
 * Mon Jul 08 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.8.19-4
 - Locally store enterprise-numbers file to do offline build
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-3
