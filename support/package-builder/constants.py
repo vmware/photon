@@ -66,6 +66,7 @@ class constants(object):
     extraPackagesList = []
     releasePkgPreqPath = ""
     CopyToSandboxDict = {}
+    SandboxEnv = {}
     adjustGCCSpecScript = None
 
     # Update to below constants lists will be provided by release branch as pkgPreq data
@@ -341,6 +342,10 @@ class constants(object):
             constants.adjustGCCSpecScript = os.path.join(
                 val["dest"], os.path.basename(val["src"])
             )
+
+    @staticmethod
+    def addSandboxEnv(key, val):
+        constants.SandboxEnv[key] = val
 
     @staticmethod
     def checkIfHostRpmNotUsable():

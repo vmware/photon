@@ -1610,6 +1610,10 @@ def initialize_constants():
             continue
         constants.storeScriptsToCopy(k, v)
 
+    sandboxEnv = configdict.get("photon-build-param", {}).get("sandbox-environ", {})
+    for k, v in sandboxEnv.items():
+        constants.addSandboxEnv(k, v)
+
     constants.initialize()
 
     check_prerequesite["initialize-constants"] = True
