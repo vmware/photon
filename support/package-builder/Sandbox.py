@@ -16,12 +16,15 @@ from constants import constants
 from Logger import Logger
 from CommandUtils import CommandUtils
 
-sandboxDefaultEnv = {
-    "HOME": "/root",
-    "TERM": "linux",
-    "PATH": "/bin:/usr/bin:/sbin:/usr/sbin",
-    "SHELL": "/bin/bash",
-}
+
+def sandbox_default_env():
+    return {
+        "HOME": "/root",
+        "TERM": "linux",
+        "PATH": "/bin:/usr/bin:/sbin:/usr/sbin",
+        "SHELL": "/bin/bash",
+        **constants.SandboxEnv,
+    }
 
 
 def prepare_chroot_dirs(rootPath):
@@ -173,7 +176,7 @@ class Chroot(Sandbox):
     ):
         if shell:
             raise Exception("Chroot.runCmd() does not support shell=True")
-        env = {**sandboxDefaultEnv, **env}
+        env = {**sandbox_default_env(), **env}
         self.logger.debug(f"Chroot.runCmd({cmd}, env={env})")
         return self._cmd(
             ["chroot", self.chrootPath] + cmd, clean_env=True, env=env, **kwargs
@@ -341,7 +344,7 @@ class SystemdNspawn(Sandbox):
         if shell:
             raise Exception("SystemdNspawn.runCmd() does not support shell=True")
         nspawnEnv = {"SYSTEMD_NSPAWN_TMPFS_TMP": "0"}
-        env = {**sandboxDefaultEnv, **env}
+        env = {**sandbox_default_env(), **env}
         self.logger.debug(f"SystemdNspawn.runCmd({cmd}, env={env})")
 
         nspawnCmd = [
@@ -495,7 +498,7 @@ class Container(Sandbox):
                 "Container.runCmd() does not support specifying both logfile and logfn/capture"
             )
 
-        env = {**sandboxDefaultEnv, **env}
+        env = {**sandbox_default_env(), **env}
         self.logger.debug(f"Container.runCmd({cmd}, env={env})")
         containerCmd = ["/usr/bin/env", "-i"]
         for k, v in env.items():

@@ -61,6 +61,7 @@ class constants(object):
     buildDbgInfoRpmList = []
     extraPackagesList = []
     CopyToSandboxDict = {}
+    SandboxEnv = {}
     adjustGCCSpecScript = None
 
     noDepsPackageList = [
@@ -561,6 +562,10 @@ class constants(object):
             constants.adjustGCCSpecScript = os.path.join(
                 val["dest"], os.path.basename(val["src"])
             )
+
+    @staticmethod
+    def addSandboxEnv(key, val):
+        constants.SandboxEnv[key] = val
 
     @staticmethod
     def checkIfHostRpmNotUsable():
