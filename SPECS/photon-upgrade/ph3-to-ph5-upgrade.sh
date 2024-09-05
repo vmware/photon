@@ -80,9 +80,9 @@ function fix_post_upgrade_config() {
   ${SED} -i -E 's/^(\s*\w+\s+\w+\s+)pam_tally2?\.so.*$/\1pam_faillock.so/' /etc/pam.d/*
   ${SED} -i -E 's/pam_cracklib.so/pam_pwquality.so/' /etc/pam.d/*
   # noacl option is no longer supported for ext4, hence remove them from fstab
-  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+.*?),noacl,(.*)$/\1,\2/' $FSTAB
-  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+)noacl,(.*)$/\1\2/' $FSTAB
-  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+\S+),noacl(\s+.*)$/\1\2/' $FSTAB
+  $SED -i -E 's/^(\S+\s+\S+\s+ext[2-4]\s+.*?),noacl,(.*)$/\1,\2/' $FSTAB
+  $SED -i -E 's/^(\S+\s+\S+\s+ext[2-4]\s+)noacl,(.*)$/\1\2/' $FSTAB
+  $SED -i -E 's/^(\S+\s+\S+\s+ext[2-4]\s+\S+),noacl(\s+.*)$/\1\2/' $FSTAB
   echo "Setting $python_link."
   test -e $python_link || $LN -s python3 $python_link
 }

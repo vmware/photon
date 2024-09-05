@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -56,6 +56,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Thu Sep 05 2024 Dweep Advani <dweep.advani@broadcom.com> 1.1-3
+- Remove noacl mount option even for ext2 and ext3 in /etc/fstab
 * Fri Jun 07 2024 Dweep Advani <dweep.advani@broadcom.com> 1.1-2
 - Erase renamed package before OS upgrade only when it does not provide soruce package
 * Sun Apr 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-1
