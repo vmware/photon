@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -52,6 +52,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Thu Sep 05 2024 Dweep Advani <dweep.advani@broadcom.com> 1.1-2
+- Remove noacl mount option even for ext2 and ext3 in /etc/fstab
 * Wed May 29 2024 Dweep Advani <dweep.advani@broadcom.com> 1.1-1
 - Avoid coredumps during upgrade and revert logfile change
 * Thu Apr 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-20

@@ -79,8 +79,8 @@ function relocate_rpmdb() {
 function fix_post_upgrade_config() {
   local FSTAB=/etc/fstab
   # noacl option is no longer supported for ext4, hence remove them from fstab
-  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+.*?),noacl,(.*)$/\1,\2/' $FSTAB
-  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+)noacl,(.*)$/\1\2/' $FSTAB
-  $SED -i -E 's/^(\S+\s+\S+\s+ext4\s+\S+),noacl(\s+.*)$/\1\2/' $FSTAB
+  $SED -i -E 's/^(\S+\s+\S+\s+ext[2-4]\s+.*?),noacl,(.*)$/\1,\2/' $FSTAB
+  $SED -i -E 's/^(\S+\s+\S+\s+ext[2-4]\s+)noacl,(.*)$/\1\2/' $FSTAB
+  $SED -i -E 's/^(\S+\s+\S+\s+ext[2-4]\s+\S+),noacl(\s+.*)$/\1\2/' $FSTAB
   return
 }
