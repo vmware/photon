@@ -1,0 +1,31 @@
+From 37556b1dcd986399097df77fbac9f1de55066997 Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivania2@vmware.com>
+Date: Sun, 8 Sep 2024 10:10:11 +0000
+Subject: [PATCH] Remove Java11 and Java8 Javadoc link
+
+Kafka is pulling Javadoc from Java11 and Java8 oracle website.
+Which is not a necessity for kafka, For kafka RPM kafka doc's are
+already present in kafka source code.
+---
+ build.gradle | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/build.gradle b/build.gradle
+index cacda19..bb762f8 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -581,11 +581,6 @@ subprojects {
+     // Turn off doclint for now, see https://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html for rationale
+     options.addStringOption('Xdoclint:none', '-quiet')
+ 
+-    // The URL structure was changed to include the locale after Java 8
+-    if (JavaVersion.current().isJava11Compatible())
+-      options.links "https://docs.oracle.com/en/java/javase/${JavaVersion.current().majorVersion}/docs/api/"
+-    else
+-      options.links "https://docs.oracle.com/javase/8/docs/api/"
+   }
+ 
+   task systemTestLibs(dependsOn: jar)
+-- 
+2.39.4
+
