@@ -7,7 +7,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.4.0
-Release:       5%{?dist}
+Release:       6%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
@@ -20,7 +20,12 @@ Source0: %{name}-%{version}-src.tgz
 Source1:       %{name}.service
 Source2:       %{name}.sysusers
 
-Patch0: 0001-Use-proxy-if-available.patch
+#Download https://raw.githubusercontent.com/gradle/gradle/v7.6.0/gradle/wrapper/gradle-wrapper.jar
+Source3:       gradle-wrapper-7.6.0-jar.tar.gz
+%define sha512 gradle-wrapper-7.6.0-jar.tar.gz=70a4bd98e9c220b1a06ffc416a7345bda8ae5abaa57c7bd3f392516e46e211b1934086bcfb4a58e8e613c105a012e80e2da1de53b4ab900e85e74f467018f4c1
+
+Patch0:     0001-Use-proxy-if-available.patch
+Patch1:     kafka_doc.patch
 
 Provides:   kafka
 Provides:   kafka-server
@@ -43,10 +48,12 @@ Data streams are partitioned and spread over a cluster of machines to allow data
 Messages are persisted on disk and replicated within the cluster to prevent data loss.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}-src
+%autosetup -p1 -n %{name}-%{version}-src -a3
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
+
+cp gradle-wrapper.jar gradle/wrapper/
 
 if [ -n "${GRADLE_PROXY_URL}" ]; then
   PROP_FILE="gradle/wrapper/gradle-wrapper.properties"
@@ -120,6 +127,8 @@ rm -rf %{buildroot}
 %doc LICENSE
 
 %changelog
+* Wed Sep 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-6
+- Removed javadoc oracle links
 * Tue Jul 16 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-5
 - Use proxy if available
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.0-4
