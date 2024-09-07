@@ -1,6 +1,6 @@
 Summary:        Time zone data
 Name:           tzdata
-Version:        2024a
+Version:        2024b
 Release:        1%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha512  tzdata=1f09f1b2327cc9e1afc7e9045e83ee3377918dafe1bee2f282b6991828d03b3c70a4d3a17f9207dfb1361bb25bc214a8922a756e84fa114e9ba476226db57236
+%define sha512  tzdata=0d86686e215672343debb3471b7e7ccb8a27f063f085c9b532d5e0470377843daa0dfb6aee0db4fb9068dd52810c69aeee914a1a7c7e603fdecda7e855020193
 BuildArch:      noarch
 %define blddir  %{name}-%{version}
 
@@ -43,6 +43,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Sat Sep 07 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2024b-1
+-   Upgrade to 2024b
 *   Fri Jun 28 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 2024a-1
 -   Upgrade package version
 *   Mon Mar 06 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2022g-2
