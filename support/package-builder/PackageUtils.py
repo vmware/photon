@@ -130,7 +130,7 @@ class PackageUtils(object):
             logFilePath = os.path.join(destLogPath, f"{package}-test.log")
         else:
             logFilePath = os.path.join(destLogPath, f"{package}.log")
-        sandbox.putFiles([specFile], sandboxSpecPath)
+        sandbox.putFiles(specFile, sandboxSpecPath)
 
         sources_urls, macros = self._getAdditionalBuildOptions(package)
         self.logger.debug(f"Extra macros for {package}: " + str(macros))
@@ -297,7 +297,7 @@ class PackageUtils(object):
             src = os.path.join(constants.photonDir, src)
 
         self.logger.debug(f"Copying {src} to {dest} in sandbox {sandbox.name}")
-        sandbox.putFiles([src], dest)
+        sandbox.putFiles(src, dest)
 
     def _verifyShaAndGetSourcePath(self, source, package, version):
         # Fetch/verify sources if checksum not None.

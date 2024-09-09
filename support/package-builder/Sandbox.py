@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import io
 import sys
 import shutil
 import os.path
@@ -12,7 +11,7 @@ import tarfile
 import subprocess
 
 from datetime import datetime
-from contextlib import suppress
+from contextlib import suppress, ExitStack
 from constants import constants
 from CommandUtils import CommandUtils
 
@@ -44,6 +43,28 @@ def prepare_chroot_dirs(rootPath):
         os.makedirs(os.path.join(rootPath, d), exist_ok=True)
     for d in extra_dirs:
         os.makedirs(os.path.join(rootPath + constants.topDirPath, d), exist_ok=True)
+
+
+def copy_file_from_container(container, path):
+    f = tempfile.NamedTemporaryFile()
+    try:
+        with tempfile.TemporaryFile(mode="w+b") as tarf:
+            archive, stat = container.get_archive(path)
+            for buf in archive:
+                tarf.write(buf)
+
+            tarf.seek(0, 0)
+            tar = tarfile.open(fileobj=tarf, mode="r:")
+            shutil.copyfileobj(
+                tar.extractfile(os.path.basename(path)),
+                f,
+            )
+            # Go back to the beginning of the file
+            f.seek(0, 0)
+    except:
+        f.close()
+        raise
+    return f
 
 
 def tar_chroot(rootPath, fmt):
@@ -188,9 +209,14 @@ class Chroot(Sandbox):
     def putFiles(self, files, dest):
         if not os.path.isabs(dest):
             raise Exception(f"{dest} is not an absolute path")
+        destDir = dest
+        if isinstance(files, str):
+            files = [files]
+            destDir = os.path.dirname(dest)
+        # Do NOT use os.pain.join(), as dest is an absolute path
+        # os.path.join() will discard chrootPath, and return dest instead
+        os.makedirs(self.chrootPath + destDir, exist_ok=True)
         for f in files:
-            # Do NOT use os.pain.join(), as dest is an absolute path
-            # os.path.join() will discard chrootPath, and return dest instead
             shutil.copy2(f, self.chrootPath + dest)
 
     def getRootPath(self):
@@ -236,10 +262,7 @@ class SystemdNspawn(Sandbox):
 
         Sandbox.__init__(self, name, logger, cmdAudit)
         self.nspawnRootPath = os.path.join(constants.buildRootPath, self.name)
-        self.dockerClient = docker.from_env(version="auto")
         self.observationFile = None
-        self.observerContainer = None
-        self.observerURL = "http://127.0.0.1:8989"
 
     def create(self):
         if os.path.isdir(self.nspawnRootPath):
@@ -255,90 +278,6 @@ class SystemdNspawn(Sandbox):
         self.logger.debug(f"Deleting nspawn chroot: {self.nspawnRootPath}")
         self._cmd(["rm", "--one-file-system", "-rf", self.nspawnRootPath])
 
-    def _startObserver(self):
-        if not constants.observerDockerImage:
-            self.logger.warning(
-                "Unable to start an observer container. Docker image is not provided."
-            )
-            return None
-
-        runArgs = {
-            "image": constants.observerDockerImage,
-            "command": ["tail", "-f", "/dev/null"],
-            "detach": True,
-            "privileged": False,
-            "name": f"ph-build-observer-{self.name}",
-            # Map tls/certs folder of the sandbox in observer container. So, observer can modify certificates and hijack a traffic.
-            "volumes": {
-                os.path.join(self.nspawnRootPath, "/etc/pki/tls/certs"): {
-                    "bind": "/etc/pki/tls/certs",
-                    "mode": "rw",
-                }
-            },
-        }
-        if constants.isolatedDockerNetwork:
-            runArgs["network"] = constants.isolatedDockerNetwork
-        else:
-            runArgs["network_mode"] = "bridge"
-
-        observerContainer = self.dockerClient.containers.run(**runArgs)
-        if not observerContainer:
-            self.logger.warning("Unable to start an observer. Docker run failed.")
-            return None
-        self.observerContainer = observerContainer
-        result = self.observerContainer.exec_run(
-            ["/observer/bin/observer_agent", "-m", "start_observer"]
-        )
-        if result.exit_code:
-            self.logger.warning("Unable to start an observer daemon")
-            self.observerContainer.remove(force=True)
-            self.observerContainer = None
-            return None
-
-        # Update attributes
-        self.observerContainer.reload()
-        # Return network namespace path systemd-nspawn attach to
-        return self.observerContainer.attrs["NetworkSettings"]["SandboxKey"]
-
-    def _stopObserver(self):
-        result = self.observerContainer.exec_run(
-            ["/observer/bin/observer_agent", "-m", "stop_observer"]
-        )
-        if result.exit_code:
-            self.logger.warning(
-                "Unable to stop an observer daemon. No observation file provided"
-            )
-            self.observerContainer.remove(force=True)
-            self.observerContainer = None
-            return
-
-        self.observationFile = tempfile.TemporaryFile()
-        try:
-            with tempfile.TemporaryFile(mode="w+b") as tarf:
-                archive, stat = self.observerContainer.get_archive("/provenance.json")
-                for buf in archive:
-                    tarf.write(buf)
-
-                tarf.seek(0, 0)
-                tar = tarfile.open(fileobj=tarf, mode="r:")
-                shutil.copyfileobj(
-                    io.TextIOWrapper(
-                        tar.extractfile("provenance.json"), encoding="utf-8"
-                    ),
-                    self.observationFile,
-                )
-
-                # Go back to the beginning of the file
-                self.observationFile.seek(0, 0)
-        except Exception as e:
-            self.logger.exception(e)
-            self.logger.error("Failed to extract observation file")
-            self.observationFile.close()
-            raise
-        finally:
-            self.observerContainer.remove(force=True)
-            self.observerContainer = None
-
     def runCmd(
         self, cmd, network_required=False, env={}, clean_env=True, shell=False, **kwargs
     ):
@@ -350,6 +289,7 @@ class SystemdNspawn(Sandbox):
 
         nspawnCmd = [
             "systemd-nspawn",
+            "--property=DeviceAllow=char-*",  # Allows mknod char devices
             "--quiet",
             "--console=pipe",
             "--directory",
@@ -367,34 +307,30 @@ class SystemdNspawn(Sandbox):
         if constants.inputRPMSPath:
             nspawnCmd += ["--bind-ro", f"{constants.inputRPMSPath}:/inputrpms"]
 
-        netnsPath = None
-        if network_required:
+        with ExitStack() as stack:
             # Processes in a sandbox may access external resources only through proxy.
             # We use SRP observer as a proxy, which also records all proxy activities to provenance observation file.
             # Observer daemon will be run in a docker container, and systemd-nspawn instance will be attached to the
             # same network namespace. It will allow rpmbuild children access observer via local 127.0.0.1:8989 port
-            netnsPath = self._startObserver()
-            if not netnsPath:
-                self.logger.warning(
-                    "Observer is not available. Sandbox will not have a networking"
-                )
+            if network_required:
+                observer = stack.enter_context(Observer(self))
+                if observer is None:
+                    self.logger.warning(
+                        "Observer is not available. Sandbox will not have a networking"
+                    )
+                    network_required = False
+                else:
+                    observer.injectCaCert()
+                    env = {**env, **observer.getProxyEnv()}
 
-        if netnsPath:
-            nspawnCmd += ["--network-namespace-path", netnsPath]
-            env["HTTP_PROXY"] = self.observerURL
-            env["http_proxy"] = self.observerURL
-            env["HTTPS_PROXY"] = self.observerURL
-            env["https_proxy"] = self.observerURL
-        else:
-            nspawnCmd += ["--private-network"]
+            if network_required:
+                nspawnCmd += ["--network-namespace-path", observer.getNetworkNS()]
+            else:
+                nspawnCmd += ["--private-network"]
 
-        for k, v in env.items():
-            nspawnCmd += ["--setenv", f"{k}={v}"]
-        try:
+            for k, v in env.items():
+                nspawnCmd += ["--setenv", f"{k}={v}"]
             return self._cmd(nspawnCmd + cmd, clean_env=True, env=nspawnEnv, **kwargs)
-        finally:
-            if netnsPath:
-                self._stopObserver()
 
     def archive(self, fmt="tar"):
         return tar_chroot(self.nspawnRootPath, fmt)
@@ -402,9 +338,14 @@ class SystemdNspawn(Sandbox):
     def putFiles(self, files, dest):
         if not os.path.isabs(dest):
             raise Exception(f"{dest} is not an absolute path")
+        destDir = dest
+        if isinstance(files, str):
+            files = [files]
+            destDir = os.path.dirname(dest)
+        # Do NOT use os.pain.join(), as dest is an absolute path
+        # os.path.join() will discard chrootPath, and return dest instead
+        os.makedirs(self.nspawnRootPath + destDir, exist_ok=True)
         for f in files:
-            # Do NOT use os.pain.join(), as dest is an absolute path
-            # os.path.join() will discard chrootPath, and return dest instead
             shutil.copy2(f, self.nspawnRootPath + dest)
 
     def getRootPath(self):
@@ -550,10 +491,15 @@ class Container(Sandbox):
     def putFiles(self, files, dest):
         if not os.path.isabs(dest):
             raise Exception(f"{dest} is not an absolute path")
+        if isinstance(files, str):
+            arcnames = os.path.basename(dest)
+            dest = os.path.dirname(dest)
+        else:
+            arcnames = [os.path.basename(f) for f in files]
         with tempfile.TemporaryFile(mode="w+b") as tarf:
             tar = tarfile.open(fileobj=tarf, mode="w:")
-            for f in files:
-                tar.add(f)
+            for i, f in enumerate(files):
+                tar.add(f, arcnames[i])
             tar.close()
             tarf.seek(0, 0)
             if not self.container.put_archive(dest, tarf):
@@ -566,3 +512,123 @@ class Container(Sandbox):
 
     def hasToolchain(self):
         return True
+
+
+class Observer(object):
+    def __init__(self, sandbox):
+        import docker
+
+        # Observer has reference to sandbox, not the other way around
+        self.sandbox = sandbox
+        self.dockerClient = docker.from_env(version="auto")
+        self.container = None
+
+    def getNetworkNS(self):
+        # Return network namespace path systemd-nspawn attach to
+        return self.container.attrs["NetworkSettings"]["SandboxKey"]
+
+    def getProxyEnv(self):
+        observerURL = "http://127.0.0.1:8989"
+        return {
+            "HTTP_PROXY": observerURL,
+            "http_proxy": observerURL,
+            "HTTPS_PROXY": observerURL,
+            "https_proxy": observerURL,
+        }
+
+    def getCaCertFile(self):
+        return copy_file_from_container(
+            self.container,
+            "/observer/bin/runtime/observer/.mitmproxy/mitmproxy-ca-cert.pem",
+        )
+
+    def injectCaCert(self):
+        caFile = self.getCaCertFile()
+        tempCaPath = f"/root/mitm-ca-cert-{self.container.short_id}.crt"
+        self.sandbox.putFiles(caFile.name, tempCaPath)
+        caFile.close()
+        # Append the MITM ca-cert to ca-bundle
+        self.sandbox.runCmd(
+            [
+                "dd",
+                f"if={tempCaPath}",
+                "of=/etc/pki/tls/certs/ca-bundle.crt",
+                "oflag=append",
+                "conv=notrunc",
+                "status=none",
+            ]
+        )
+        # Optionally use keytool to import ca-cert into java keystore
+        javaHome, _, retval = self.sandbox.runCmd(
+            ["java", "/root/print-java-home.java"], ignore_rc=True, capture=True
+        )
+        if retval == 0:
+            self.sandbox.logger.debug(
+                f"observer: java.home at {javaHome}, import mitm ca-cert to java keystore"
+            )
+            self.sandbox.runCmd(
+                [
+                    "keytool",
+                    "-import",
+                    "-noprompt",
+                    "-storepass",
+                    "changeit",
+                    "-trustcacerts",
+                    "-keystore",
+                    f"{javaHome}/lib/security/cacerts",
+                    "-file",
+                    tempCaPath,
+                    "-alias",
+                    f"mitm-proxy-{self.container.short_id}",
+                ]
+            )
+
+    def __enter__(self):
+        if not constants.observerDockerImage:
+            self.sandbox.logger.warning(
+                "Unable to start an observer container. Docker image is not provided."
+            )
+            return None
+        runArgs = {
+            "image": constants.observerDockerImage,
+            "command": ["tail", "-f", "/dev/null"],
+            "detach": True,
+            "privileged": False,
+            "name": f"ph-build-observer-{self.sandbox.name}",
+        }
+        if constants.isolatedDockerNetwork:
+            runArgs["network"] = constants.isolatedDockerNetwork
+        else:
+            runArgs["network_mode"] = "bridge"
+
+        self.container = self.dockerClient.containers.run(**runArgs)
+        if not self.container:
+            raise Exception("Unable to start an observer. Docker run failed.")
+        result = self.container.exec_run(
+            ["/observer/bin/observer_agent", "-m", "start_observer"]
+        )
+        if result.exit_code:
+            self.container.remove(force=True)
+            self.container = None
+            raise Exception("Unable to start an observer daemon")
+
+        # Update attributes
+        self.container.reload()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.container is None:
+            return
+        if exc_type is None:
+            # Only reap observations when there's no exception
+            result = self.container.exec_run(
+                ["/observer/bin/observer_agent", "-m", "stop_observer"]
+            )
+            if result.exit_code:
+                raise Exception("Unable to stop the observer daemon.")
+
+            self.sandbox.observationFile = copy_file_from_container(
+                self.container, "/provenance.json"
+            )
+        self.container.remove(force=True)
+        self.container = None

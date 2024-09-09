@@ -24,9 +24,12 @@
     "copy-to-sandbox": {
       "adjust-gcc-specs": {
         "src": "tools/scripts/adjust-gcc-specs.sh",
-        "dest": "/tmp"
+        "dest": "/root/adjust-gcc-specs.sh"
       },
-      "chroot-env-setup-script": {}
+      "print-java-home": {
+        "src": "tools/scripts/print-java-home.java",
+        "dest": "/root/print-java-home.java"
+      }
     }
   },
   "photon-path": "",

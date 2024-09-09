@@ -125,7 +125,9 @@ class SRP(object):
         if t.startswith("ph"):
             branch = f"{t[2:]}.0"
         else:
-            raise Exception("Can not parse dist tag.")
+            raise Exception(
+                f"Can not parse dist tag: <{n}>-<{v}>-<{r}>-<{t}>-<{a}>, filename={filename}"
+            )
         repo = f"https://packages.vmware.com/photon/{branch}/photon_{branch}_{constants.targetArch}"
         return f"uid.obj.comp.package.rpm(name='{n}',version='{v}',release='{r}.{t}',arch='{a}',original_repository='{repo}')"
 
@@ -135,9 +137,12 @@ class SRP(object):
 
         for file in files:
             filename = os.path.basename(file)
-            self.schematic["input_templates"]["rpm-comps"][
-                self.rpmFileNameToUid(filename)
-            ] = {"incorporated": False, "usages": ["building"]}
+            try:
+                self.schematic["input_templates"]["rpm-comps"][
+                    self.rpmFileNameToUid(filename)
+                ] = {"incorporated": False, "usages": ["building"]}
+            except Exception as e:
+                self.logger.exception(e)
 
     def addOutputRPMS(self, files):
         if not self.srpcli:
@@ -202,6 +207,7 @@ class SRP(object):
 
         with tempfile.NamedTemporaryFile() as temp:
             shutil.copyfileobj(observation, temp)
+            temp.flush()
             self.srpcli_run(
                 [
                     "provenance",
