@@ -1,34 +1,34 @@
 {
-    "photon-build-param": {
-        "photon-build-type": "chroot",
-        "threads": 4,
-        "loglevel": "info",
-        "full-package-list-file": "build_install_options_all.json",
-        "pkg-build-options": "pkg_build_options.json",
-
-        "ossl-fips-in-make-check": true,
-
-        "build-src-rpm": true,
-        "build-dbginfo-rpm": true,
-        "build-dbginfo-rpm-list": [
-            "glibc",
-            "linux",
-            "linux-esx"
-        ],
-        "extra-packages-list": [
-            "chromium"
-        ],
-        "target": "iso",
-        "compression-macro": "w19.zstdio",
-
-        "pull-sources-config": "https://packages.vmware.com/photon/photon_sources/1.0",
-        "publishrpm-url": "https://packages.vmware.com/photon/photon_publish_rpms",
-        "publishXrpm-url": "https://packages.vmware.com/photon/photon_publish_x_rpms",
-        "copy-to-sandbox": {
-            "adjust-gcc-specs": {"src": "tools/scripts/adjust-gcc-specs.sh", "dest": "/tmp"},
-            "chroot-env-setup-script": {}
-        }
-    },
-    "photon-path": "",
-    "release-branch-path": ""
+  "photon-build-param": {
+    "photon-build-type": "chroot",
+    "threads": 4,
+    "loglevel": "info",
+    "full-package-list-file": "build_install_options_all.json",
+    "pkg-build-options": "pkg_build_options.json",
+    "ossl-fips-in-make-check": true,
+    "build-src-rpm": true,
+    "build-dbginfo-rpm": true,
+    "build-dbginfo-rpm-list": [
+      "glibc",
+      "linux",
+      "linux-esx"
+    ],
+    "extra-packages-list": [
+      "chromium"
+    ],
+    "target": "iso",
+    "compression-macro": "w19.zstdio",
+    "pull-sources-config": "https://packages.vmware.com/photon/photon_sources/1.0",
+    "publishrpm-url": "https://packages.vmware.com/photon/photon_publish_rpms",
+    "publishXrpm-url": "https://packages.vmware.com/photon/photon_publish_x_rpms",
+    "copy-to-sandbox": {
+      "adjust-gcc-specs": {
+        "src": "tools/scripts/adjust-gcc-specs.sh",
+        "dest": "/tmp"
+      },
+      "chroot-env-setup-script": {}
+    }
+  },
+  "photon-path": "",
+  "release-branch-path": ""
 }
