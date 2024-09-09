@@ -559,9 +559,7 @@ class constants(object):
     def storeScriptsToCopy(key, val):
         constants.CopyToSandboxDict[key] = deepcopy(val)
         if key == "adjust-gcc-specs":
-            constants.adjustGCCSpecScript = os.path.join(
-                val["dest"], os.path.basename(val["src"])
-            )
+            constants.adjustGCCSpecScript = val["dest"]
 
     @staticmethod
     def addSandboxEnv(key, val):

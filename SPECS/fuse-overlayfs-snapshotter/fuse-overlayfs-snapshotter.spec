@@ -1,3 +1,4 @@
+%define network_required 1
 %define debug_package %{nil}
 # git commit hash
 # update commit id upon every new version release

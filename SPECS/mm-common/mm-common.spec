@@ -17,6 +17,8 @@ Source0: https://gitlab.gnome.org/GNOME/mm-common/-/archive/%{version}/%{name}-%
 Source1: https://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++-%{version}.ph5.tar.xz
 %define sha512 libstdc++=c5073c558252ef1238fd310d428033f58252649a3ae5ba5a780047fb62727cf3335b22742f363155957bc94dfba58727bdbecf13ac94fb124fed71512bd494b7
 
+BuildRequires:  ca-certificates
+
 %description
 This module is part of the GNOME C++ bindings effort <http://www.gtkmm.org/>.
 The mm-common module provides the build infrastructure and utilities shared among the GNOME C++ binding libraries.
