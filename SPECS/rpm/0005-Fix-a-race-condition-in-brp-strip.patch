@@ -1,7 +1,7 @@
-From ae2e75a129150b808ff1edf80dc8851e4a63a226 Mon Sep 17 00:00:00 2001
+From 558c81336fe4c7fb6942de065d14e6b33ed9bc29 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 8 Aug 2022 01:39:02 +0530
-Subject: [PATCH] Fix a race condition in brp-strip
+Subject: [PATCH 5/6] Fix a race condition in brp-strip
 
 brp-strip script runs strip command on deliverables paralley and if
 deliverables are hard linked inside buildroot, it will create
@@ -36,7 +36,7 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
  1 file changed, 33 insertions(+), 3 deletions(-)
 
 diff --git a/scripts/brp-strip b/scripts/brp-strip
-index 6825e41c77..799bf2bc2b 100755
+index 6825e41..799bf2b 100755
 --- a/scripts/brp-strip
 +++ b/scripts/brp-strip
 @@ -1,4 +1,5 @@
@@ -89,3 +89,6 @@ index 6825e41c77..799bf2bc2b 100755
 +
 +# strip all binaries with more than 1 link
 +strip_elf_binaries "+1" "1"
+-- 
+2.46.0
+

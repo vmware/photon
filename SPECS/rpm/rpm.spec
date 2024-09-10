@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -19,11 +19,12 @@ Source3:    macros.perl
 Source4:    macros.vpath
 Source5:    macros.ldconfig
 
-Patch0:     silence-warning.patch
-Patch1:     sync-buf-cache.patch
-Patch2:     wait-for-lock.patch
-Patch3:     migrate-rpmdb.patch
-Patch4:     fix-race-condition-in-brp-strip.patch
+Patch0: 0001-This-patch-fixes-a-warning-that-is-shown-upon-every-.patch
+Patch1: 0002-commit-buffer-cache-to-disk-after-ending-rpm-transac.patch
+Patch2: 0003-If-rpm-is-not-triggered-from-tty-rpm-transactions-wo.patch
+Patch3: 0004-Migrate-rpmdb-to-usr-lib-sysimage-rpm.patch
+Patch4: 0005-Fix-a-race-condition-in-brp-strip.patch
+Patch5: 0006-Disable-removing-exec-permission-from-shared-objects.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -327,6 +328,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Sep 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-3
+- Remove brp-elfperms script
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.18.2-2
 - Bump version as a part of sqlite upgrade to v3.43.2
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.2-1
