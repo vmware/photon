@@ -5,7 +5,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.8
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
@@ -28,6 +28,15 @@ BuildRequires: freetype2-devel
 BuildRequires: glib-devel
 BuildRequires: harfbuzz-devel
 BuildRequires: elfutils-libelf-devel
+BuildRequires: icu icu-devel
+BuildRequires: cups cups-devel
+BuildRequires: libXtst libXtst-devel libXi libXi-devel
+BuildRequires: alsa-lib alsa-lib-devel util-macros
+BuildRequires: xcb-proto libXdmcp libXdmcp-devel libXau-devel
+BuildRequires: xtrans libxcb-devel proto libxcb libXau
+BuildRequires: libX11 libX11-devel libXext libXext-devel
+BuildRequires: libXt libXt-devel libXrender libXrender-devel
+BuildRequires: libXrandr libXrandr-devel
 
 Requires: chkconfig
 Requires(postun): chkconfig
@@ -38,13 +47,7 @@ Obsoletes: openjdk <= %{version}
 
 AutoReqProv: no
 
-%ifarch x86_64
-%define ExtraBuildRequires icu-devel, cups, cups-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, libX11, libX11-devel, libXext, libXext-devel, libXt, libXt-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel, openjdk17
-%endif
-
-%ifarch aarch64
-%define ExtraBuildRequires icu-devel, cups, cups-devel, openjdk17, libXtst, libXtst-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, libX11, libX11-devel, libXext, libXext-devel, libXt, libXt-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel
-%endif
+%define ExtraBuildRequires openjdk17
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
@@ -237,6 +240,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.0.8-7
+- Cleanup Extra BuildRequires
 * Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 17.0.8-6
 - Version bump as a part of cups upgrade
 * Mon Sep 04 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.8-5
