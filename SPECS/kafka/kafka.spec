@@ -52,6 +52,10 @@ Messages are persisted on disk and replicated within the cluster to prevent data
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
+# Use system proxy (if enabled) for gradle
+JAVA_HTTP_PROXY_OPTS="$(echo "$HTTP_PROXY" | sed -ne 's|^http://\(.*\):\(.*\)|-Dhttp.proxyHost=\1 -Dhttp.proxyPort=\2|p')"
+JAVA_HTTPS_PROXY_OPTS="$(echo "$HTTPS_PROXY" | sed -ne 's|^http://\(.*\):\(.*\)|-Dhttps.proxyHost=\1 -Dhttps.proxyPort=\2|p')"
+export GRADLE_OPTS="$JAVA_HTTP_PROXY_OPTS $JAVA_HTTPS_PROXY_OPTS"
 
 cp gradle-wrapper.jar gradle/wrapper/
 
