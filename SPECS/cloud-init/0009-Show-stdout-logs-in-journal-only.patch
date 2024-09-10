@@ -1,15 +1,15 @@
-From 7b09fd5539072b12686e6933aa300f7d21ea3232 Mon Sep 17 00:00:00 2001
+From 695226cbfe3aa1a6087372e459960b71526fb5b0 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Mon, 10 Jun 2024 11:05:50 +0530
-Subject: [PATCH 8/8] Show stdout logs in journal only
+Subject: [PATCH 9/9] Show stdout logs in journal only
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
  systemd/cloud-config.service.tmpl     | 3 +--
  systemd/cloud-final.service.tmpl      | 5 +----
  systemd/cloud-init-local.service.tmpl | 3 +--
- systemd/cloud-init.service.tmpl       | 3 +--
- 4 files changed, 4 insertions(+), 10 deletions(-)
+ systemd/cloud-init.service.tmpl       | 2 +-
+ 4 files changed, 4 insertions(+), 9 deletions(-)
 
 diff --git a/systemd/cloud-config.service.tmpl b/systemd/cloud-config.service.tmpl
 index 79c75c7..648773f 100644
@@ -63,19 +63,18 @@ index 0da2d83..068bcb9 100644
  [Install]
  WantedBy=cloud-init.target
 diff --git a/systemd/cloud-init.service.tmpl b/systemd/cloud-init.service.tmpl
-index 58031cc..a0f4ff5 100644
+index 58031cc..a3143ce 100644
 --- a/systemd/cloud-init.service.tmpl
 +++ b/systemd/cloud-init.service.tmpl
-@@ -50,8 +50,7 @@ ExecStart=/usr/bin/cloud-init init
- RemainAfterExit=yes
+@@ -51,7 +51,7 @@ RemainAfterExit=yes
  TimeoutSec=0
  
--# Output needs to appear in instance console output
+ # Output needs to appear in instance console output
 -StandardOutput=journal+console
 +StandardOutput=journal
  
  [Install]
  WantedBy=cloud-init.target
 -- 
-2.34.1
+2.46.0
 
