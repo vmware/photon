@@ -2,22 +2,22 @@
 %define __os_install_post %{nil}
 
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.1.12
+%define RUNC_VERSION 1.1.14
 %define RUNC_BRANCH  v%{RUNC_VERSION}
 %define gopath_comp  github.com/opencontainers/runc
 
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
-Version:             1.1.12
-Release:             4%{?dist}
-License:             ASL 2.0
+Version:             1.1.14
+Release:             1%{?dist}
+License:             GNU LGPL v2.1
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
 Vendor:              VMware, Inc.
 Distribution:        Photon
 
-Source0: https://github.com/opencontainers/runc/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=92e8ac54a77d7ebcc76b5a9cc08d9a064211f12e9d26f064070cc203a5afb11c3af28d8f556f297513f797a2933d50bf10a8f22e307724041d66aa8c5ca1d9d3
+Source0: https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
+%define sha512 %{name}=bdefbf34cf57485c6b961babc8294d0e6b2e003eb836b8e99c49ef4d00acf11f30a46ad0bcd399ee9346610419591daf1eecb3b6b127962357d629bf5f252e22
 
 BuildRequires: go
 BuildRequires: which
@@ -64,6 +64,8 @@ make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot
 %{_mandir}/man8/*
 
 %changelog
+* Tue Sep 10 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.1.14-1
+- Version upgrade to v1.1.14 to address CVE-2024-45310
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.12-4
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.1.12-3
