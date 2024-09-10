@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.224
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        5.10.225
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=43c038046601a32100056d67300ce32700d04c081935964b15732e749fce5bd70c54a3a2419f85a60ccad229726698d3e163e3b9959156fd6e0cb653dad27541
+%define sha512 linux=db8466b9c16afc824df8a06d3f2239c0199502a402103b8aace37a0b7cda34408de664b90156e1fd9bc554fb48d547c5c13843d8a899f8c29a828d87d39dc377
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -201,9 +201,6 @@ Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
 
-#Fix for CVE-2021-3699
-Patch136: ipc-replace-costly-bailout-check-in-sysvipc_find_ipc.patch
-
 #Fix for CVE-2023-0597
 Patch137: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch138: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
@@ -240,9 +237,6 @@ Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
 # Fix CVE-2024-41073
 Patch156: 0001-nvme-avoid-double-free-special-payload.patch
 
-# Fix CVE-2024-43853
-Patch157: 0001-cgroup-cpuset-Prevent-UAF-in-proc_cpuset_show.patch
-
 # Fix CVE-2024-43854
 Patch158: 0001-block-initialize-integrity-buffer-to-zero-before-wri.patch
 
@@ -252,14 +246,11 @@ Patch159: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
 # Fix CVE-2024-38577
 Patch160: 0001-rcu-tasks-Fix-show_rcu_tasks_trace_gp_kthread-buffer.patch
 
-# Fix CVE-2024-42228
-Patch161: 0001-drm-amdgpu-Using-uninitialized-value-size-when-calli.patch
-
 # Fix CVE-2024-42246
-Patch162: 0001-net-sunrpc-Remap-EPERM-in-case-of-connection-failure.patch
+Patch161: 0001-net-sunrpc-Remap-EPERM-in-case-of-connection-failure.patch
 
 # Fix CVE-2024-24855
-Patch163: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
+Patch162: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
 
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -643,6 +634,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.225-1
+- Update to version 5.10.225
 * Tue Sep 10 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.224-5
 - Fix CVE-2024-24855 and CVE-2024-42246
 * Sat Aug 31 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.224-4
