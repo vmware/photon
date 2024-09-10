@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.224
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -241,6 +241,9 @@ Patch154: 0001-rcu-tasks-Fix-show_rcu_tasks_trace_gp_kthread-buffer.patch
 
 # Fix CVE-2024-42228
 Patch155: 0001-drm-amdgpu-Using-uninitialized-value-size-when-calli.patch
+
+# Fix CVE-2024-41071
+Patch156: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -504,7 +507,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M155
+%autopatch -p1 -m100 -M156
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -912,6 +915,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.224-6
+- Fix CVE-2024-41071
 * Wed Sep 04 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.224-5
 - Fix CVE-2024-38577, CVE-2024-42228
 * Wed Sep 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.224-4
