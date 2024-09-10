@@ -52,7 +52,7 @@ ARCH=%{gohostarch} GIT_TAG=%{METRICS_SERVER_GIT_TAG} GIT_COMMIT=%{METRICS_SERVER
 %install
 cd src/%{gopath_comp_mserver}
 install -m 755 -d %{buildroot}%{_bindir}
-install -pm 755 -t %{buildroot}%{_bindir} _output/amd64/metrics-server
+install -pm 755 -t %{buildroot}%{_bindir} _output/%{gohostarch}/metrics-server
 
 %clean
 rm -rf %{buildroot}/*
