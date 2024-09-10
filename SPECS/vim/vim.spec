@@ -3,7 +3,7 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        9.1.0682
+Version:        9.1.0724
 Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b1ca82b27421b44e6bf75ca5c59859fd116646a4431301517b1543698b773d79b16cf2daed1cb1e9ac9762d6dd84fd5484a63761995431554aaf3eb62587cd42
+%define sha512 %{name}=47d49ce7f7c93eee38512c86c8071d6d72eca3e0284ecc53f1d9f22caf1ede3da1ebb5e60c11b213485b41eaf7784785216225316ddf1f92dd7b0ca32abb3e47
 
 Source1: vimrc
 
@@ -177,6 +177,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Tue Sep 10 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.1.0724-1
+- Update to v9.1.0724
 * Tue Aug 20 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.1.0682-1
 - Update to v9.1.0682
 * Fri Feb 16 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 9.0.2142-1
