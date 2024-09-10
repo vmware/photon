@@ -10,7 +10,7 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.320
+Version:        4.19.321
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=7c2c79dcd6ae82a0142f795f46200f7eda40732ededb9dd5bdaebcbd41b06ea7e0c959bcf8d88332bd454b551c9b5641ac662b5a030393eeb4c1f74ca3620014
+%define sha512 linux=db50304ab281f8bfa88dab373c0134c5e48ab2d9cc4020a6cd7ffe6ed0231eca219a8fc59dc6cdf3c2d7c929bbaf25bfe2357f85f732ff887101129dd5027526
 
 %ifarch x86_64
 Source1: config
@@ -565,9 +565,6 @@ Patch1560: 0001-btrfs-fix-race-between-quota-disable-and-quota-assig.patch
 Patch1561: 0001-net-add-sock_init_data_uid.patch
 Patch1562: 0001-tap-tap_open-correctly-initialize-socket-uid.patch
 Patch1563: 0001-tun-tun_chr_open-correctly-initialize-socket-uid.patch
-
-#Fix for CVE-2021-3759
-Patch1565: 0001-memcg-enable-accounting-of-ipc-resources.patch
 
 #Fix for CVE-2023-2124
 Patch1566: 0001-xfs-verify-buffer-contents-when-we-skip-log-replay.patch
@@ -1180,6 +1177,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Sep 10 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-1
+- Update to version 4.19.321
 * Wed Aug 21 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.320-1
 - Update to version 4.19.320
 * Mon Aug 05 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.19.319-1
