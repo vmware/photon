@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.106
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -189,6 +189,9 @@ Patch135: 0001-f2fs-fix-to-truncate-preallocated-blocks-in-f2fs_fil.patch
 # Fix CVE-2024-43835
 Patch136: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
 
+# Fix CVE-2024-42228
+Patch137: 0001-drm-amdgpu-Using-uninitialized-value-size-when-calli.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -322,7 +325,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M89
 
 # CVE
-%autopatch -p1 -m100 -M136
+%autopatch -p1 -m100 -M137
 
 %ifarch aarch64
 # aarch64 patches
@@ -476,6 +479,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.106-6
+- Fix CVE-2024-42228
 * Wed Sep 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.106-5
 - Fix CVE-2024-43859, CVE-2024-43835
 * Wed Sep 04 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.106-4

@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.106
-Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -200,6 +200,9 @@ Patch135: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
 
 # Fix CVE-2024-41071
 Patch136: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
+
+# Fix CVE-2024-42228
+Patch137: 0001-drm-amdgpu-Using-uninitialized-value-size-when-calli.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -496,7 +499,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M136
+%autopatch -p1 -m100 -M137
 
 %ifarch aarch64
 # aarch64 patches
@@ -888,6 +891,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.106-8
+- Fix CVE-2024-42228
 * Sat Sep 07 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.106-7
 - Fix CVE-2024-41071
 * Wed Sep 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.106-6

@@ -1,0 +1,41 @@
+From 3175144fcd13d411e3cd28f06787debfa58279c3 Mon Sep 17 00:00:00 2001
+From: Jesse Zhang <jesse.zhang@amd.com>
+Date: Thu, 22 Aug 2024 07:14:30 +0000
+Subject: [PATCH Internal v4.19-v6.1] drm/amdgpu: Using uninitialized value *size when calling
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[ Upstream commit 88a9a467c548d0b3c7761b4fd54a68e70f9c0944 ]
+
+Initialize the size before calling amdgpu_vce_cs_reloc, such as case 0x03000001.
+V2: To really improve the handling we would actually
+   need to have a separate value of 0xffffffff.(Christian)
+
+Signed-off-by: Jesse Zhang <jesse.zhang@amd.com>
+Suggested-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_vce.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vce.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_vce.c
+index ecaa2d748..0a28daa14 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vce.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vce.c
+@@ -725,7 +725,8 @@ int amdgpu_vce_ring_parse_cs(struct amdgpu_cs_parser *p, uint32_t ib_idx)
+ 	uint32_t created = 0;
+ 	uint32_t allocated = 0;
+ 	uint32_t tmp, handle = 0;
+-	uint32_t *size = &tmp;
++	uint32_t dummy = 0xffffffff;
++	uint32_t *size = &dummy;
+ 	unsigned idx;
+ 	int i, r = 0;
+ 
+-- 
+2.39.4
+

@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.106
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -161,6 +161,9 @@ Patch135: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
 # Fix CVE-2024-41071
 Patch136: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
 
+# Fix CVE-2024-42228
+Patch137: 0001-drm-amdgpu-Using-uninitialized-value-size-when-calli.patch
+
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 %include %{SOURCE6}
@@ -301,7 +304,7 @@ stalld to use eBPF based backend.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M136
+%autopatch -p1 -m100 -M137
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -482,6 +485,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.106-6
+- Fix CVE-2024-42228
 * Sat Sep 07 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.106-5
 - Fix CVE-2024-41071
 * Thu Sep 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.106-4
