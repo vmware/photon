@@ -1,8 +1,8 @@
 %define cl_services cloud-config.service cloud-config.target cloud-final.service %{name}.service %{name}.target %{name}-local.service
 
 Name:           cloud-init
-Version:        24.2
-Release:        2%{?dist}
+Version:        24.3.1
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=2257de8c23f3a94324a7fe9e2105e6343ffe11cc86b27a68c7447b6e386a951bf2643988f3d26371420e3702a0b568107bb343d000ecae80d5e229b5a023513d
+%define sha512 %{name}=01b798d67328ecd66229568233fb674f45c055ac469adb31a55a909b6b2c8fd1901a833accb66423923b8945210aa4dc6a0d61945787aabe414c01b501b1416d
 
 Patch0: 0001-azure-ds.patch
 Patch1: 0002-Change-default-policy.patch
@@ -24,8 +24,10 @@ Patch4: 0005-test_vmware.py-fix-pkg-test-failure.patch
 
 Patch5: 0006-Change-log-level-to-info-to-make-GOSC-regression-tes.patch
 Patch6: 0007-cli-retain-file-argument-as-main-cmd-arg.patch
-Patch7: 0008-Show-stdout-logs-in-journal-only.patch
+Patch7: 0008-No-single-process.patch
+Patch8: 0009-Show-stdout-logs-in-journal-only.patch
 
+BuildRequires: photon-release
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
 BuildRequires: dbus
@@ -140,13 +142,17 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/cloud/templates/*
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
-%{_unitdir}/*
+%{_unitdir}/*.service
+%{_unitdir}/*.target
+%{_unitdir}/*.socket
+%{_unitdir}/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 %{_systemdgeneratordir}/%{name}-generator
 %{_udevrulesdir}/66-azure-ephemeral.rules
 %{_datadir}/bash-completion/completions/%{name}
-%{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 
 %changelog
+* Wed Sep 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.3.1-1
+- Upgrade to v24.3
 * Tue Aug 06 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.2-2
 - Bump up as part of python3-urllib3 update
 * Mon Jul 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.2-1
