@@ -1,7 +1,7 @@
 Summary:        A high performance C-based HTTP client library built upon the Apache Portable Runtime (APR) library
 Name:           serf
 Version:        1.3.9
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        Apache License 2.0
 URL:            https://serf.apache.org
 Group:          System Environment/Libraries
@@ -31,6 +31,8 @@ kept to a minimum to provide high performance operation.
 %package        devel
 Summary:        Header and development files
 Requires:       %{name} = %{version}
+Requires:       apr-devel
+Requires:       apr-util-devel
 %description    devel
 It contains the libraries and header files to create serf applications.
 
@@ -63,6 +65,8 @@ scons check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.3.9-11
+- Bump version as a part of apr upgrade
 * Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.9-10
 - Bump version as a part of apr-util v1.6.3 upgrade
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.9-9

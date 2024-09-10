@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.62
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
 Group:          Applications/System
@@ -198,6 +198,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 2.4.62-2
+- Bump version as a part of apr upgrade
 * Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.4.62-1
 - Version upgrade to v2.4.62 to fix following CVE's:
 - CVE-2024-40725 and CVE-2024-40898

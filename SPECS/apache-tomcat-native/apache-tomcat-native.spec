@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat Native
 Name:           apache-tomcat-native
 Version:        2.0.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache 2.0
 URL:            https://tomcat.apache.org/native-doc/
 Group:          Applications/System
@@ -68,6 +68,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libtcnative*.so
 
 %changelog
+* Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 2.0.3-5
+- Bump version as a part of apr upgrade
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.3-4
 - Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.3-3
