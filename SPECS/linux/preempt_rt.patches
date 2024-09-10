@@ -59,8 +59,7 @@ Patch356: 0056-debugobjects-locking-Annotate-debug_object_fill_pool.patch
 Patch357: 0057-sched-avoid-false-lockdep-splat-in-put_task_struct.patch
 Patch358: 0058-mm-page_alloc-Use-write_seqlock_irqsave-instead-writ.patch
 Patch359: 0059-bpf-Remove-in_atomic-from-bpf_link_put.patch
-Patch360: 0060-posix-timers-Ensure-timer-ID-search-loop-limit-is-va.patch
-Patch361: 0061-drm-i915-Do-not-disable-preemption-for-resets.patch
-Patch362: 0062-Linux-6.1.79-rt25-REBASE.patch
-Patch363: 0063-arm-Disable-FAST_GUP-on-PREEMPT_RT-if-HIGHPTE-is-als.patch
-Patch364: 0064-Linux-6.1.105-rt38-REBASE.patch
+Patch360: 0060-drm-i915-Do-not-disable-preemption-for-resets.patch
+Patch361: 0061-Linux-6.1.79-rt25-REBASE.patch
+Patch362: 0062-arm-Disable-FAST_GUP-on-PREEMPT_RT-if-HIGHPTE-is-als.patch
+Patch363: 0063-Linux-6.1.108-rt40-REBASE.patch

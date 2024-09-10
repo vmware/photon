@@ -20,8 +20,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.106
-Release:        6%{?dist}
+Version:        6.1.109
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -32,7 +32,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=0ca73f9ac725dee2ebf7aece9ea0e5bb890ed7fa836eea4d1fa97417b2a2735dd5dbf9a5970683ca09f6bb469aa03bb9ead7927bd4c2d2476190be5f2f3118f9
+%define sha512 linux=a435b89320e8af19532bbd40c30c5c1e1b6f796f062a015f3c1bcf7a30b00eba4c51a568078c6dac9fc60040153305237910e6f9d701b9a7bf86475bd0a61dfc
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -179,18 +179,6 @@ Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 # Fix CVE-2023-52452
 Patch133: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
-
-# Fix CVE-2024-42314
-Patch134: 0001-btrfs-fix-extent-map-use-after-free-when-adding-page.patch
-
-# Fix CVE-2024-43859
-Patch135: 0001-f2fs-fix-to-truncate-preallocated-blocks-in-f2fs_fil.patch
-
-# Fix CVE-2024-43835
-Patch136: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
-
-# Fix CVE-2024-42228
-Patch137: 0001-drm-amdgpu-Using-uninitialized-value-size-when-calli.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -479,6 +467,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 10 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.109-1
+- Update to version 6.1.109
 * Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.106-6
 - Fix CVE-2024-42228
 * Wed Sep 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.106-5
