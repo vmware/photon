@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.109
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -151,6 +151,9 @@ Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
 # Fix CVE-2024-41071
 Patch136: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
+
+# Fix CVE-2024-24855
+Patch137: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -473,6 +476,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Sep 11 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.109-2
+- Fix CVE-2024-24855
 * Tue Sep 10 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.109-1
 - Update to version 6.1.109
 * Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.106-6
