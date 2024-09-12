@@ -1779,6 +1779,9 @@ def main():
         configdict["photon-path"], configdict.get("release-branch-path", "")
         ).resolve()
 
+    if not configdict.get("release-branch-path", ""):
+        raise Exception("build-config.json: release-branch-path is empty")
+
     releaseCfgPath = f"{releaseDir}/{build_cfg}"
     with open(releaseCfgPath) as jsonData:
         releasedict = json.load(jsonData)
