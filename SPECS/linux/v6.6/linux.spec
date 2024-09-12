@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.6.28
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -169,6 +169,11 @@ Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 Patch61: 0001-gcc-rap-plugin-with-kcfi.patch
 Patch62: 0002-objtool-Return-error-in-case-of-failures.patch
 Patch63: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
+
+# Backward compatibility
+%if "%{dist}" == ".ph5"
+Patch71: 0001-block-Fix-validation-of-ioprio-level.patch
+%endif
 
 # CVE: [100..199]
 # Fix CVE-2017-1000252
@@ -450,6 +455,11 @@ The kernel fips-canister
 
 #Secure
 %autopatch -p1 -m61 -M63
+
+# Backward compatibility
+%if "%{dist}" == ".ph5"
+%autopatch -p1 -m71 -M71
+%endif
 
 # CVE
 %autopatch -p1 -m100 -M130
@@ -847,6 +857,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Sep 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-2
+- Fix backward compatibility issue
 * Thu Aug 29 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.6.28-1
 - Upgrade to version 6.6.x.
 * Fri May 17 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.83-6
