@@ -1,14 +1,14 @@
 Summary:        Persistent/Functional/Immutable data structures
 Name:           python3-pyrsistent
 Version:        0.17.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT License (MIT)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pyrsistent
 Source0:        https://files.pythonhosted.org/packages/9f/0d/cbca4d0bbc5671822a59f270e4ce3f2195f8a899c97d0d5abb81b191efb5/pyrsistent-%{version}.tar.gz
-%define sha1    pyrsistent=d762223188b86093fa89ddb239a24bdf972a1259
+%define sha512  pyrsistent=2d18e1d4cfe9a0a576fd363f466ba920094af0b1cbbb49aec11b32df6c23e59f6552235a496838dab00928cc7f6dad2a4a8aaa0b52cb6a38eba6faedd12846c8
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-six
@@ -53,11 +53,13 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.17.3-3
--   Bump up to compile with python 3.10
-*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.17.3-2
--   Fix build with new rpm
-*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.17.3-1
--   Automatic Version Bump
-*   Thu Jul 30 2020 Tapas Kundu <tkundu@vmware.com> 0.16.0-1
--   Initial packaging for Photon
+* Fri Sep 13 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 0.17.3-4
+- Bump-up to compile with python3-attrs-22.2.0
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.17.3-3
+- Bump up to compile with python 3.10
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.17.3-2
+- Fix build with new rpm
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.17.3-1
+- Automatic Version Bump
+* Thu Jul 30 2020 Tapas Kundu <tkundu@vmware.com> 0.16.0-1
+- Initial packaging for Photon

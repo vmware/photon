@@ -1,14 +1,14 @@
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python3-automat
 Version:        20.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Automat
 Source0:        https://files.pythonhosted.org/packages/source/A/Automat/Automat-%{version}.tar.gz
-%define sha1    Automat=7e1827bbfed916fd0f754f632af8b06bfabce8c5
+%define sha512  Automat=715cb5dc087288492e6465a29e7d8502a84fadf451bc3d29da86335ea1c20f8efd9549f0c1eaac8800559dd8001dd73736c3bfacdc6321c83a35d2288d69632c
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -54,21 +54,23 @@ python3 setup.py test
 %{_bindir}/automat-visualize3
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 20.2.0-3
--   Bump up to compile with python 3.10
-*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2.0-2
--   Fix build with new rpm
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.2.0-1
--   Automatic Version Bump
-*   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.7.0-2
--   Mass removal python2
-*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.7.0-1
--   Update to version 0.7.0
-*   Mon Jul 17 2017 Divya Thaluru <dthaluru@vmware.com> 0.5.0-4
--   Fixed run time dependencies
-*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-3
--   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
-*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.5.0-2
--   Separate the python3 and python2 scripts in bin directory
-*   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-1
--   Initial packaging for Photon
+* Fri Sep 13 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 20.2.0-4
+- Bump-up to compile with python3-attrs-22.2.0
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 20.2.0-3
+- Bump up to compile with python 3.10
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2.0-2
+- Fix build with new rpm
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.2.0-1
+- Automatic Version Bump
+* Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.7.0-2
+- Mass removal python2
+* Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.7.0-1
+- Update to version 0.7.0
+* Mon Jul 17 2017 Divya Thaluru <dthaluru@vmware.com> 0.5.0-4
+- Fixed run time dependencies
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-3
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+* Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.5.0-2
+- Separate the python3 and python2 scripts in bin directory
+* Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-1
+- Initial packaging for Photon

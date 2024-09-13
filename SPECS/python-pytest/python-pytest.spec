@@ -1,6 +1,6 @@
 Name:           python3-pytest
 Version:        6.2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 License:        MIT
 Group:          Development/Languages/Python
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://files.pythonhosted.org/packages/4b/24/7d1f2d2537de114bdf1e6875115113ca80091520948d370c964b88070af2/pytest-%{version}.tar.gz
-%define sha1    pytest=0cf5f7e3495f89faf5e4cc9797fd16cef4a27230
+%define sha512  pytest=7624563a9d967da4cbf82cfff90bae8c0cca07b32e291dc7c5efa787725ed1a255edd066bf0d5fbd89b8cbed8cf5b619fe7c7017f44a7f8a014e3310c06bdbf9
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -65,6 +65,8 @@ make %{_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Sep 13 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.2.5-2
+- Bump-up to compile with python3-attrs-22.2.0
 * Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 6.2.5-1
 - Upgrade to 6.2.5 which is python3.10 compatible
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 6.1.2-3

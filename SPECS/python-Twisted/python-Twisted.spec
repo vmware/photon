@@ -4,7 +4,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
 Version:        22.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -39,7 +39,7 @@ Requires: python3-netaddr
 Requires: python3-incremental
 Requires: python3-constantly
 Requires: python3-hyperlink
-Requires: python3-attrs
+Requires: python3-attrs >= 22.2.0
 Requires: python3-PyHamcrest
 Requires: python3-service_identity >= 18.1.0
 Requires: python3-typing-extensions
@@ -86,6 +86,8 @@ rm -rf %{buildroot}
 %{_bindir}/cftp*
 
 %changelog
+* Fri Sep 13 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 22.10.0-2
+- Bump-up to compile with python3-attrs-22.2.0
 * Thu Aug 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-1
 - Update to 22.10.0, Fixes multiple CVEs
 * Wed May 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 20.3.0-4
