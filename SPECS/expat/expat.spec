@@ -1,12 +1,12 @@
-Summary:	An XML parser library
-Name:		expat
-Version:	2.2.9
-Release:	11%{?dist}
-License:	MIT
-URL:		http://expat.sourceforge.net/
-Group:		System Environment/GeneralLibraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        An XML parser library
+Name:           expat
+Version:        2.2.9
+Release:        12%{?dist}
+License:        MIT
+URL:            http://expat.sourceforge.net/
+Group:          System Environment/GeneralLibraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
 Source0:    https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=e082874efcc4b00709e2c0192c88fb15dfc4f33fc3a2b09e619b010ea93baaf7e7572683f738463db0ce2350cab3de48a0c38af6b74d1c4f5a9e311f499edab0
@@ -20,6 +20,9 @@ Patch5:         CVE-2022-25314_25315.patch
 Patch6:         CVE-2022-25313.patch
 Patch7:         expat-CVE-2022-40674.patch
 Patch8:         expat-CVE-2022-43680.patch
+Patch9:         expat-CVE-2024-45490.patch
+Patch10:        expat-CVE-2024-45491.patch
+Patch11:        expat-CVE-2024-45492.patch
 Requires:       expat-libs = %{version}-%{release}
 
 %description
@@ -41,11 +44,11 @@ This package contains minimal set of shared expat libraries.
 %autosetup -p1
 %build
 %configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--disable-static
+        CFLAGS="%{optflags}" \
+        CXXFLAGS="%{optflags}" \
+        --bindir=%{_bindir} \
+        --libdir=%{_libdir} \
+        --disable-static
 %make_build
 
 %install
@@ -89,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libexpat.so.*
 
 %changelog
+* Mon Sep 16 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 2.2.9-12
+- Fix CVE-2024-45490,CVE-2024-45491,CVE-2024-45492
 * Thu Oct 27 2022 Harinadh D <hdommaraju@vmware.com> 2.2.9-11
 - Fix CVE-2022-43680
 * Mon Sep 19 2022 Harinadh D <hdommaraju@vmware.com> 2.2.9-10
