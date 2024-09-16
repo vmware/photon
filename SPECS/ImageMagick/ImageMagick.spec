@@ -1,25 +1,26 @@
 %global VER 7.1.1
-%global Patchlevel 11
+%global Patchlevel 38
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.1.11
-Release:        3%{?dist}
+Version:        7.1.1.38
+Release:        1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        ImageMagick
 Url:            http://www.imagemagick.org
-Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.gz
-%define sha512  %{name}=27247fe66565ba97acf10c8eec2e25de8103da3b4abf5efea15525c83c9d4607e93633ac752f1c5970ec8fff0c16394595951e77021b55d688528eb292e882c5
-Patch0:         CVE-2023-3428.patch
-Patch1:         CVE-2023-5341.patch
+
+Source0:        https://imagemagick.org/archive/releases/%{name}-%{VER}-%{Patchlevel}.tar.xz
+%define sha512  %{name}=636e2061c11c012e2607a53a893eb227569f3a4e04e331499722f2c84dc0db3eedae63525bd530972a639e3a262ab4f61383a21ca8603f8f81e5629a29f54b89
+
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libgomp
 Requires:       bzip2-libs
 Requires:       glibc
 Requires:       zlib
+
 %description
 ImageMagick is an image display and manipulation tool for the X
 Window System. ImageMagick can read and write JPEG, TIFF, PNM, GIF,
@@ -110,12 +111,10 @@ however.
 
 rm -f %{buildroot}%{_libdir}/*.a
 
-%if 0%{?with_check}
 %check
 export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %make_build check
 rm PerlMagick/demo/Generic.ttf
-%endif
 
 %post libs -p /sbin/ldconfig
 
@@ -173,6 +172,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.*
 
 %changelog
+* Mon Sep 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.1.38-1
+- Upgrade to v7.1.1.38, fixes CVE-2024-41817
 * Tue Dec 05 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.1.1.11-3
 - Fix for CVE-2023-5341
 * Fri Jul 07 2023 Anmol Jain <anmolja@vmware.com> 7.1.1.11-2
