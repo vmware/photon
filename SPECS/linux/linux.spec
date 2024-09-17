@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.226
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -235,6 +235,17 @@ Patch158: 0001-RDMA-restrack-Fix-potential-invalid-address-access.patch
 
 # Fix CVE-2021-47188
 Patch159: 0001-scsi-ufs-core-Improve-SCSI-abort-handling.patch
+
+# Fix CVE-2024-44934
+Patch160: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
+
+# Fix CVE-2024-44986
+Patch161: 0001-skbuff-introduce-skb_expand_head.patch
+Patch162: 0002-ipv6-use-skb_expand_head-in-ip6_finish_output2.patch
+Patch163: 0003-ipv6-fix-possible-UAF-in-ip6_finish_output2.patch
+
+# Fix CVE-2024-38538
+Patch164: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -498,7 +509,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M159
+%autopatch -p1 -m100 -M164
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -906,6 +917,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.226-2
+- Fix for CVE-2024-44934, CVE-2024-44986, CVE-2024-38538
 * Mon Sep 23 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.226-1
 - Update to version 5.10.226
 * Fri Sep 13 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.225-2

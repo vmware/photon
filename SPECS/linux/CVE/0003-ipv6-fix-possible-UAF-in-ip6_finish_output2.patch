@@ -1,0 +1,49 @@
+From 63624f0fd7f1756be1cc3cdb336074a52d5ed97c Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 20 Aug 2024 16:08:58 +0000
+Subject: [PATCH 3/3] ipv6: fix possible UAF in ip6_finish_output2()
+
+[ Upstream commit da273b377ae0d9bd255281ed3c2adb228321687b ]
+
+If skb_expand_head() returns NULL, skb has been freed
+and associated dst/idev could also have been freed.
+
+We need to hold rcu_read_lock() to make sure the dst and
+associated idev are alive.
+
+Fixes: 5796015fa968 ("ipv6: allocate enough headroom in ip6_finish_output2()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Vasily Averin <vasily.averin@linux.dev>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://patch.msgid.link/20240820160859.3786976-3-edumazet@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Ankit: Ported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ net/ipv6/ip6_output.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 1f44ae1928aa..913d7dc1b832 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -69,11 +69,15 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+ 
+ 	/* Be paranoid, rather than too clever. */
+ 	if (unlikely(hh_len > skb_headroom(skb)) && dev->header_ops) {
++		/* Make sure idev stays alive */
++		rcu_read_lock();
+ 		skb = skb_expand_head(skb, hh_len);
+ 		if (!skb) {
+ 			IP6_INC_STATS(net, idev, IPSTATS_MIB_OUTDISCARDS);
++			rcu_read_unlock();
+ 			return -ENOMEM;
+ 		}
++		rcu_read_unlock();
+ 	}
+ 
+ 	hdr = ipv6_hdr(skb);
+-- 
+2.39.4
+

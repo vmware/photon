@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.226
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -185,6 +185,17 @@ Patch162: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
 # Fix CVE-2024-42080
 Patch163: 0001-RDMA-restrack-Fix-potential-invalid-address-access.patch
 
+# Fix CVE-2024-44934
+Patch164: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
+
+# Fix CVE-2024-44986
+Patch165: 0001-skbuff-introduce-skb_expand_head.patch
+Patch166: 0002-ipv6-use-skb_expand_head-in-ip6_finish_output2.patch
+Patch167: 0003-ipv6-fix-possible-UAF-in-ip6_finish_output2.patch
+
+# Fix CVE-2024-38538
+Patch168: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
+
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
 Patch302: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
@@ -350,7 +361,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M163
+%autopatch -p1 -m100 -M168
 
 #Amazon AWS
 %autopatch -p1 -m301 -M340
@@ -531,6 +542,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.226-2
+- Fix for CVE-2024-44934, CVE-2024-44986, CVE-2024-38538
 * Mon Sep 23 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.226-1
 - Update to version 5.10.226
 * Fri Sep 13 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.225-2
