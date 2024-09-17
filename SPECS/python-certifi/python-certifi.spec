@@ -3,7 +3,7 @@
 Summary:        Python package for providing Mozilla's CA Bundle
 Name:           python-certifi
 Version:        2023.11.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/certifi
 License:        MPL-2.0
 Group:          Development/Languages/Python
@@ -11,6 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/certifi/python-certifi/archive/certifi-%{version}.tar.gz
 %define sha512  certifi=873eb3a34c5061f164484eec5bc659d4869882c96477395eec7d9d52242a033f9d82d293b07bcb094d04e62dc9af8a65caf2385a1a2a78c7058252af1b3d715b
+Patch0:         CVE-2024-39689.patch
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
@@ -40,7 +41,7 @@ Requires:       ca-certificates
 Python 3 version of certifi.
 
 %prep
-%autosetup -n python-certifi-%{version}
+%autosetup -p1
 
 %build
 python2 setup.py build
@@ -63,6 +64,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 17 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2023.11.17-2
+- Fix CVE-2024-39689
 * Tue Dec 19 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2023.11.17-1
 - Update to 2023.11.17, Fixes CVE-2023-37920
 * Wed Sep 19 2018 Ajay Kaher <akaher@vmware.com> 2018.08.24-1
