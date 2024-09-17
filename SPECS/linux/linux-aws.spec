@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.226
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -212,6 +212,13 @@ Patch170: 0001-btrfs-don-t-BUG_ON-on-ENOMEM-from-btrfs_lookuip_exte.patch
 Patch171: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
 Patch172: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
 
+# Fix CVE-2024-41013
+Patch173: 0001-xfs-No-need-for-inode-number-error-injection-in-__xf.patch
+Patch174: 0002-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
+
+# Fix CVE-2024-41014
+Patch175: 0001-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
+
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
 Patch302: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
@@ -377,7 +384,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M172
+%autopatch -p1 -m100 -M175
 
 #Amazon AWS
 %autopatch -p1 -m301 -M340
@@ -558,6 +565,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.226-5
+- Fix CVE-2024-41013 and CVE-2024-41014
 * Thu Oct 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.226-4
 - Fix CVE-2024-46809, CVE-2024-46841, CVE-2024-46834
 * Mon Sep 30 2024 Guruswamy Basavaiah <guruswamy.basavaih@broadcom.com> 5.10.226-3

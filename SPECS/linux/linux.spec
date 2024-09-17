@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.226
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -262,6 +262,13 @@ Patch168: 0001-btrfs-don-t-BUG_ON-on-ENOMEM-from-btrfs_lookuip_exte.patch
 # Fix CVE-2024-46834
 Patch169: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
 Patch170: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
+
+# Fix CVE-2024-41013
+Patch171: 0001-xfs-No-need-for-inode-number-error-injection-in-__xf.patch
+Patch172: 0002-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
+
+# Fix CVE-2024-41014
+Patch173: 0001-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -525,7 +532,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M170
+%autopatch -p1 -m100 -M173
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -933,6 +940,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Oct 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.226-5
+- Fix CVE-2024-41013 and CVE-2024-41014
 * Thu Oct 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.226-4
 - Fix CVE-2024-46809, CVE-2024-46841, CVE-2024-46834
 * Mon Sep 30 2024 Guruswamy Basavaiah <guruswamy.basavaih@broadcom.com> 5.10.226-3

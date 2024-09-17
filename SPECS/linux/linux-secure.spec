@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.226
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -227,6 +227,13 @@ Patch171: 0001-btrfs-don-t-BUG_ON-on-ENOMEM-from-btrfs_lookuip_exte.patch
 Patch172: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
 Patch173: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
 
+# Fix CVE-2024-41013
+Patch174: 0001-xfs-No-need-for-inode-number-error-injection-in-__xf.patch
+Patch175: 0002-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
+
+# Fix CVE-2024-41014
+Patch176: 0001-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -358,7 +365,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M173
+%autopatch -p1 -m100 -M176
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -504,6 +511,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.226-5
+- Fix CVE-2024-41013 and CVE-2024-41014
 * Thu Oct 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.226-4
 - Fix CVE-2024-46809, CVE-2024-46841, CVE-2024-46834
 * Mon Sep 30 2024 Guruswamy Basavaiah <guruswamy.basavaih@broadcom.com> 5.10.226-3
