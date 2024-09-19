@@ -14,7 +14,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.13
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -265,6 +265,8 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-6
+- Bump version as a part of go upgrade
 * Wed Sep 04 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-5
 - Adding env variable to compile with host go in build section
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-4

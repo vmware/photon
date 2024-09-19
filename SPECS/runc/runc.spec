@@ -9,7 +9,7 @@
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
 Version:             1.1.14
-Release:             1%{?dist}
+Release:             2%{?dist}
 License:             GNU LGPL v2.1
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
@@ -64,6 +64,8 @@ make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot
 %{_mandir}/man8/*
 
 %changelog
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.14-2
+- Bump version as a part of go upgrade
 * Tue Sep 10 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.1.14-1
 - Version upgrade to v1.1.14 to address CVE-2024-45310
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.12-4

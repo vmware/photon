@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        20%{?dist}
+Release:        21%{?dist}
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -167,6 +167,8 @@ end
 %{python3_sitelib}/*
 
 %changelog
+* Fri Oct 18 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.9-21
+- Bump version as a part of go upgrade
 * Tue Oct 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-20
 - Remove preun scriptlet
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.9-19

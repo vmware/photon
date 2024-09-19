@@ -3,7 +3,7 @@
 %define network_required 1
 Name:           kapacitor
 Version:        1.6.6
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
@@ -107,6 +107,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.6-11
+- Bump version as a part of go upgrade
 * Sun Sep 08 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.6-10
 - Support offline build
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.6-9

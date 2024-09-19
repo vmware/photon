@@ -3,7 +3,7 @@
 
 Name:           influxdb
 Version:        1.8.10
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
@@ -111,6 +111,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.10-12
+- Bump version as a part of go upgrade
 * Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.8.10-11
 - Simplify build scripts. Godep is removed in favor of gomod.
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.10-10

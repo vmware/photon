@@ -3,7 +3,7 @@
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.3
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -77,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/network-broker.service
 
 %changelog
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.3-14
+- Bump version as a part of go upgrade
 * Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 0.3-13
 - Simplify build scripts
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.3-12

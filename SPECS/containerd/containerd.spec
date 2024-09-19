@@ -5,7 +5,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.21
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs
 Group:          Applications/File
@@ -135,6 +135,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.21-12
+- Bump version as a part of go upgrade
 * Tue Sep 10 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.6.21-11
 - Bump up version as a part of runc upgrade to v1.1.14
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.21-10
