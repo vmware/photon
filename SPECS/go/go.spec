@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.20.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -31,6 +31,8 @@ Patch2:         CVE-2024-24791.patch
 Patch3:         CVE-2024-24784.patch
 Patch4:         CVE-2023-24531-1.patch
 Patch5:         CVE-2023-24531-2.patch
+Patch6:         CVE-2024-34156.patch
+Patch7:         CVE-2024-34158.patch
 
 %define ExtraBuildRequires go
 
@@ -118,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Thu Sep 19 2024 Mukul Sikka <msikka@vmware.com> 1.20.14-4
+- Fix CVE-2024-34156 and CVE-2024-34158
 * Fri Aug 23 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.20.14-3
 - Fix for CVE-2023-24531
 * Tue Aug 20 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.20.14-2
