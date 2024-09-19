@@ -1,7 +1,7 @@
 Summary:       Docker libnetwork plugin for Calico
 Name:          calico-libnetwork
 Version:       1.1.3
-Release:       26%{?dist}
+Release:       27%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -50,6 +50,8 @@ install -vpm 0755 -t %{buildroot}/usr/share/calico/docker/ dist/libnetwork-plugi
 /usr/share/calico/docker/libnetwork-plugin
 
 %changelog
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.3-27
+- Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.3-26
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.1.3-25

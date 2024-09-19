@@ -8,7 +8,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-6
+- Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-5
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.11.1-4
