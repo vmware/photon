@@ -8,7 +8,7 @@
 Summary:        FIPS Libraries for openssl
 Name:           openssl-fips-provider
 Version:        3.3.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -36,7 +36,7 @@ Requires: openssl >= %{fips_provider_version}
 %endif
 
 %if 0%{?with_latest_fips}
-Requires: openssl = %{version}-%{release}
+Requires: openssl >= %{version}-%{release}
 %endif
 
 %description
@@ -116,5 +116,7 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Thu Sep 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-4
+- Fix requires for latest fips
 * Thu Jul 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-3
 - Move fips provider to spec of its own
