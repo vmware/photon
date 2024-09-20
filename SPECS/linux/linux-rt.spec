@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.109
-Release:        2%{?dist}
+Version:        6.1.111
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,12 +22,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt40
+%define rt_version rt41
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=a435b89320e8af19532bbd40c30c5c1e1b6f796f062a015f3c1bcf7a30b00eba4c51a568078c6dac9fc60040153305237910e6f9d701b9a7bf86475bd0a61dfc
+%define sha512 linux=239a37cc75c6f19d9f8480cc1fed27e885a60b1d68b127848d3e00ed6e2ffe3fe5d9bea0ada95dad1e39c6e829446f10722b2d8ab062f85aab189ee74512ca9a
 
 %ifarch x86_64
 Source1: config-rt
@@ -476,6 +476,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri Sep 20 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.111-1
+- Update to version 6.1.111, rt41
 * Wed Sep 11 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.109-2
 - Fix CVE-2024-24855
 * Tue Sep 10 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.109-1
