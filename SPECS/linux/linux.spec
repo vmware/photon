@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.225
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.226
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=db8466b9c16afc824df8a06d3f2239c0199502a402103b8aace37a0b7cda34408de664b90156e1fd9bc554fb48d547c5c13843d8a899f8c29a828d87d39dc377
+%define sha512 linux=99f43ac2679bb9f90df4a7cad39b98a44e8904fe50cd2c5c40ea766e86af24f16c258836c0edbfee27fda4830b773d5a0c13ced8d304b88f5d4ee12aafbd6da9
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -224,20 +224,8 @@ Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 # Fix CVE-2024-41073
 Patch150: 0001-nvme-avoid-double-free-special-payload.patch
 
-# Fix CVE-2024-43854
-Patch152: 0001-block-initialize-integrity-buffer-to-zero-before-wri.patch
-
-# Fix CVE-2024-43835
-Patch153: 0001-virtio_net-Fix-napi_skb_cache_put-warning.patch
-
-# Fix CVE-2024-38577
-Patch154: 0001-rcu-tasks-Fix-show_rcu_tasks_trace_gp_kthread-buffer.patch
-
 # Fix CVE-2024-41071
 Patch155: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
-
-# Fix CVE-2024-42246
-Patch156: 0001-net-sunrpc-Remap-EPERM-in-case-of-connection-failure.patch
 
 # Fix CVE-2024-24855
 Patch157: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
@@ -918,6 +906,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Sep 23 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.226-1
+- Update to version 5.10.226
 * Fri Sep 13 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.225-2
 - Fix CVE-2024-42080 and CVE-2021-47188
 * Wed Sep 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.225-1
