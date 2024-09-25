@@ -1,12 +1,12 @@
 /*
  * Jitterentropy provider for OpenSSL 3.0.
- * It pulls in-kernel FIPS compliant entropy "jitterentropy_rng" through
- * AF_ALG socket API.
+ * It pulls in-kernel FIPS compliant jitterentropy through AF_ALG socket API.
  * Jitterentropy documentation:
  * http://www.chronox.de/jent/doc/CPU-Jitter-NPTRNG.pdf
  *
  * Copyright (C) 2022, VMware, Inc.
- * Author : Alexey Makhalov <amakhalov@vmware.com>
+ * Copyright (C) 2024, Broadcom, Inc.
+ * Author : Alexey Makhalov <alexey.makhalov@broadcom.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@
 #include <stdint.h>
 #include <errno.h>
 #include <string.h>
+#include <fcntl.h>
 #include <gnu/lib-names.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -84,6 +85,11 @@
 		_pr_err(__LINE__, __func__, fmt, ##__VA_ARGS__); \
 	} while (0)
 
+#define PROVIDER_NAME "OpenSSL Jitter Entropy Provider"
+#define PROVIDER_VERSION "0.2"
+
+#define JENT_ALG_NAME "jitterentropy_rng"
+
 static void _pr_err(int, const char *, const char *, ...);
 
 /* Required to make this shared object executable */
@@ -93,9 +99,9 @@ const char service_interp[] __attribute__((section(".interp"))) = "/lib/" LD_SO;
  * API to the kernel                                       *
  ***********************************************************/
 
-int algif_rng_open(int do_accept);
-void algif_rng_close(int socket);
-ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len);
+static int algif_rng_open(int do_accept);
+static void algif_rng_close(int socket);
+static ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len);
 
 static void _pr_err(int line, const char *func, const char *fmt, ...)
 {
@@ -118,28 +124,31 @@ static void _pr_err(int line, const char *func, const char *fmt, ...)
 	va_end(args);
 }
 
-int algif_rng_open(int do_accept)
+/*
+ * Open AF_ALG socket for "jitterentropy_rng".
+ * On success, returns a file descriptor for the socket.
+ * On error, -1 is returned, errno is set to indicate the error.
+ */
+static int algif_rng_open(int do_accept)
 {
-	struct sockaddr_alg sa;
 	int sk, fd;
+	struct sockaddr_alg sa = {0};
 	pr_dbg("do_accept: %d\n", do_accept);
 
 	sa.salg_family = AF_ALG;
 	strcpy((char *)sa.salg_type, "rng");
-	sa.salg_feat = 0;
-	sa.salg_mask = 0;
-	strcpy((char *)sa.salg_name, "jitterentropy_rng");
+	strncpy((char *)sa.salg_name, JENT_ALG_NAME, sizeof(sa.salg_name) - 1);
 
 	sk = socket(AF_ALG, SOCK_SEQPACKET, 0);
 	if (sk == -1) {
 		pr_err("ERROR: socket(...) failed ...('%s')\n", strerror(errno));
-		return 0;
+		return -1;
 	}
 
 	if (bind(sk, (struct sockaddr *)&sa, sizeof(sa)) == -1) {
 		pr_err("ERROR: bind(...) failed ...('%s')\n", strerror(errno));
 		close(sk);
-		return 0;
+		return -1;
 	}
 
 	if (!do_accept)
@@ -149,19 +158,19 @@ int algif_rng_open(int do_accept)
 	close(sk);
 	if (fd == -1) {
 		pr_err("ERROR: accept(...) failed ...('%s')\n", strerror(errno));
-		return 0;
+		return -1;
 	}
 
 	return fd;
 }
 
-void algif_rng_close(int socket)
+static void algif_rng_close(int socket)
 {
 	pr_dbg("\n");
 	close(socket);
 }
 
-ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len)
+static ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len)
 {
 	ssize_t out = 0;
 	struct iovec iov;
@@ -200,6 +209,21 @@ ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len)
 	return out;
 }
 
+static int jent_in_fips_mode(void)
+{
+	int fd;
+	static char buf[2] = "0";
+
+	if (buf[0] == '1')
+		return 1;
+
+	if ((fd = open("/proc/sys/crypto/fips_enabled", O_RDONLY)) >= 0) {
+		while (read(fd, buf, sizeof(buf)) < 0 && errno == EINTR);
+		close(fd);
+	}
+	return buf[0] == '1';
+}
+
 /***********************************************************
  * Provider API to the OpenSSL                             *
  ***********************************************************/
@@ -221,6 +245,7 @@ static OSSL_FUNC_rand_clear_seed_fn rand_clear_seed;
 typedef struct {
 	void *provctx;
 	int state;
+	int socket;
 } PROV_SEED_SRC;
 
 static void *rand_newctx(void *provctx, void *parent,
@@ -270,6 +295,13 @@ static int rand_instantiate(void *vseed, unsigned int strength,
 
 	pr_dbg("\n");
 
+	s->socket = algif_rng_open(1);
+	if (s->socket == -1) {
+		/* algif_rng_open() has thrown an error message already */
+		ERR_raise(ERR_LIB_PROV, PROV_R_NOT_SUPPORTED);
+		return 0;
+	}
+
 	s->state = EVP_RAND_STATE_READY;
 	return 1;
 }
@@ -279,6 +311,9 @@ static int rand_uninstantiate(void *vseed)
 	PROV_SEED_SRC *s = (PROV_SEED_SRC *)vseed;
 
 	pr_dbg("\n");
+
+	if (s->socket)
+		algif_rng_close(s->socket);
 
 	s->state = EVP_RAND_STATE_UNINITIALISED;
 	return 1;
@@ -290,7 +325,6 @@ static int rand_generate(void *vseed, unsigned char *out, size_t outlen,
 		ossl_unused const unsigned char *adin,
 		ossl_unused size_t adin_len)
 {
-	int socket, ret;
 	PROV_SEED_SRC *s = (PROV_SEED_SRC *)vseed;
 
 	UNUSED(strength);
@@ -305,17 +339,7 @@ static int rand_generate(void *vseed, unsigned char *out, size_t outlen,
 		return 0;
 	}
 
-	socket = algif_rng_open(1);
-	if (!socket) {
-		pr_err("ERROR: socket = 0\n");
-		ERR_raise(ERR_LIB_PROV, PROV_R_NOT_SUPPORTED);
-		return 0;
-	}
-
-	ret = algif_rng_get(socket, out, outlen);
-	algif_rng_close(socket);
-
-	return ret;
+	return algif_rng_get(s->socket, out, outlen);
 }
 
 static int rand_reseed(void *vseed,
@@ -482,6 +506,7 @@ static OSSL_FUNC_provider_query_operation_fn jitterentropy_query;
 static const OSSL_PARAM jitterentropy_param_types[] = {
 	OSSL_PARAM_DEFN(OSSL_PROV_PARAM_NAME, OSSL_PARAM_UTF8_PTR, NULL, 0),
 	OSSL_PARAM_DEFN(OSSL_PROV_PARAM_VERSION, OSSL_PARAM_UTF8_PTR, NULL, 0),
+	OSSL_PARAM_DEFN(OSSL_PROV_PARAM_STATUS, OSSL_PARAM_INTEGER, NULL, 0),
 	OSSL_PARAM_END
 };
 
@@ -509,10 +534,13 @@ static int jitterentropy_get_params(void *provctx, OSSL_PARAM params[])
 	pr_dbg("\n");
 
 	p = OSSL_PARAM_locate(params, OSSL_PROV_PARAM_NAME);
-	if (p != NULL && !OSSL_PARAM_set_utf8_ptr(p, "OpenSSL Jitter Entropy Provider"))
+	if (p != NULL && !OSSL_PARAM_set_utf8_ptr(p, PROVIDER_NAME))
 		return 0;
 	p = OSSL_PARAM_locate(params, OSSL_PROV_PARAM_VERSION);
-	if (p != NULL && !OSSL_PARAM_set_utf8_ptr(p, "0.1"))
+	if (p != NULL && !OSSL_PARAM_set_utf8_ptr(p, PROVIDER_VERSION))
+		return 0;
+	p = OSSL_PARAM_locate(params, OSSL_PROV_PARAM_STATUS);
+	if (p != NULL && !OSSL_PARAM_set_int(p, 1 /* provider is running */))
 		return 0;
 	return 1;
 }
@@ -549,10 +577,21 @@ int OSSL_provider_init(const OSSL_CORE_HANDLE *handle,
 	OSSL_LIB_CTX *libctx = NULL;
 	int socket;
 
+	if (!jent_in_fips_mode()) {
+		pr_err("ERROR: Kernel FIPS must be enabled in order to use Jitterentropy\n");
+/*
+ * Do not break ph5 users.
+ * TODO: Uncomment in ph6.
+
+		ERR_raise(ERR_LIB_PROV, PROV_R_NOT_SUPPORTED);
+		return 0;
+ */
+	}
+
 	/* Probe Kernel support */
 	socket = algif_rng_open(0);
-	if (!socket) {
-		pr_err("ERROR: algif_rng_open (%s)\n", strerror(errno));
+	if (socket == -1) {
+		/* algif_rng_open() has thrown an error message already */
 		ERR_raise(ERR_LIB_PROV, PROV_R_NOT_SUPPORTED);
 		return 0;
 	}
@@ -579,19 +618,28 @@ int main(void)
 {
 	int socket;
 
-	printf("Jitterentropy provider for OpenSSL 3.0\n");
-	printf("Probing kernel capabilities: ");
+	printf("%s version %s\n", PROVIDER_NAME, PROVIDER_VERSION);
+
+	printf("Checking kernel FIPS mode: ");
+	if (jent_in_fips_mode())
+		printf(	"PASSED\n"
+			"  Jitterentropy operates in FIPS mode.\n");
+	else
+		printf( "FAILED\n"
+			"  Kernel FIPS mode is disabled. Add following kernel command line 'fips=1' to enable it.\n");
+
+	printf("\nProbing kernel capabilities: ");
 	socket = algif_rng_open(1);
-	if (!socket) {
-		fprintf(stderr, "FAILED\n");
-		fprintf(stderr, "\n  Please make sure kernel supports AF_ALG socket type and \"jitterentropy_rng\""
-				"\n  crypto rng (should be present in /proc/crypto)\n");
+	if (socket == -1) {
+		printf( "FAILED\n"
+			"  Please make sure kernel supports AF_ALG socket type and \"" JENT_ALG_NAME "\"\n"
+			"  crypto rng (should be present in /proc/crypto)\n");
 		_exit(1);
 	}
 
-	printf("PASSED\n");
-	printf("\n  To verify openssl is using this provider as entropy source, run:"
-			"\n  'strace -e socket,bind,accept,recvmsg openssl rand -hex 20'\n");
+	printf(	"PASSED\n"
+		"  To verify openssl is using this provider as entropy source, run:\n"
+		"  'strace -e socket,bind,accept,recvmsg openssl rand -hex 20'\n");
 	algif_rng_close(socket);
 	_exit(0);
 }
