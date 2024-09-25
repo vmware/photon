@@ -1,58 +1,37 @@
-# if you are building latest fips, it will be same as openssl version
-# if unsure, keep it 0
-%define with_latest_fips        1
-%define fips_provider_version   3.0.8
-%define fips_provider_srcname   fips-provider-%{fips_provider_version}
-%define debug_package           %{nil}
-
 Summary:        FIPS Libraries for openssl
 Name:           openssl-fips-provider
 Version:        3.3.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-%if 0%{?with_latest_fips}
 Source0: http://www.openssl.org/source/openssl-%{version}.tar.gz
 %define sha512 openssl=1f9daeee6542e1b831c65f1f87befaef98ccedc3abc958c9d17f064ef771924c30849e3ff880f94eed4aaa9d81ea105e3bc8815e6d2e4d6b60b5e890f14fc5da
-%endif
-
-%if "0%{?with_latest_fips}" == "00"
-Source0: %{fips_provider_srcname}.tar.xz
-%define sha512 %{fips_provider_srcname}=3206c96f77ba5ab0553249e13ddf52145995909e68a9acb851c5db6be759e6f7647b9ad960f6da7c989c20b49fbd9e79a7305f2000f24281345c56a1a8b1148f
-%endif
 
 Source1: provider_fips.cnf
 
 Requires: bash
 Requires: glibc
 Requires: libgcc
-
-%if "0%{?with_latest_fips}" == "00"
-Requires: openssl >= %{fips_provider_version}
-%endif
-
-%if 0%{?with_latest_fips}
-Requires: openssl >= %{version}-%{release}
-%endif
+Requires: openssl = %{version}
 
 %description
 Fips library for enabling fips.
 
 %prep
-%if "0%{?with_latest_fips}" == "00"
-%autosetup -p1 -n %{fips_provider_srcname}
-%endif
+if grep -q "^Patch[0-9]*:" %{_specdir}/%{name}.spec; then
+  echo "ERROR: Patches detected in the %{name} spec file" 1>&2
+  exit 1
+fi
 
-%if 0%{?with_latest_fips}
-%autosetup -p1 -n openssl-%{version}
-%endif
+# Don't use -p1 or any kind of patching during setup
+# We should not patch fips sources
+%autosetup -n openssl-%{version}
 
 %build
-%if 0%{?with_latest_fips}
 if [ %{_host} != %{_build} ]; then
 #  export CROSS_COMPILE=%{_host}-
   export CC=%{_host}-gcc
@@ -75,18 +54,11 @@ export MACHINE=%{_arch}
   -Wl,-z,noexecstack
 
 %make_build
-%endif
 
 %install
-%if 0%{?with_latest_fips}
 make install_fips DESTDIR=%{buildroot} %{?_smp_mflags}
-%endif
 
 install -p -m 644 -D %{SOURCE1} %{buildroot}%{_sysconfdir}/ssl/$(basename %{SOURCE1})
-
-%if "0%{?with_latest_fips}" == "00"
-install -p -m 644 -D %{_arch}/fips.so %{buildroot}%{_libdir}/ossl-modules/fips.so
-%endif
 
 %post
 if [ "$1" = 2 ]; then
@@ -110,12 +82,11 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/ossl-modules/fips.so
 %{_sysconfdir}/ssl/provider_fips.cnf
-
-%if 0%{?with_latest_fips}
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
-%endif
 
 %changelog
+* Wed Sep 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-5
+- Build fips.so from source
 * Thu Sep 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-4
 - Fix requires for latest fips
 * Thu Jul 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-3
