@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.321
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.323
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=db50304ab281f8bfa88dab373c0134c5e48ab2d9cc4020a6cd7ffe6ed0231eca219a8fc59dc6cdf3c2d7c929bbaf25bfe2357f85f732ff887101129dd5027526
+%define sha512 linux=c9385f44eaf06eb33ee1ff49d7a9f62060186c9398ccbda3d8ee493d134b8ce167316b243276a5797f87642afff3b3fbf626154b95dd8697ee6a29b5b8e8b147
 
 %ifarch x86_64
 Source1: config-rt
@@ -378,6 +378,9 @@ Patch718: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
 # No functional change for !RT kernels.
 Patch719: 0001-eventfd-Make-signal-recursion-protection-a-task-bit.patch
 Patch720: 0002-aio-Fix-incorrect-usage-of-eventfd_signal_allowed.patch
+
+# Fix CVE-2024-38588
+Patch721: 0001-ftrace-Fix-possible-use-after-free-issue-in-ftrace_l.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -762,7 +765,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M641
 
 # CVE Fixes
-%autopatch -p1 -m700 -M720
+%autopatch -p1 -m700 -M721
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -1267,6 +1270,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Mon Nov 04 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.323-1
+- Update to version 4.19.323
+- Fix CVE-2024-38588
 * Tue Oct 29 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-3
 - Changes eventfd_wake signal from per-cpu to per-task
 * Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-2

@@ -1,0 +1,71 @@
+From 8c3ebd2d1c97e88a643499bca56ec36857cdaa65 Mon Sep 17 00:00:00 2001
+From: "Brennan Lamoreaux (VMware)" <brennanlamoreaux@gmail.com>
+Date: Tue, 28 Feb 2023 14:49:38 -0800
+Subject: [PATCH 349/351] workqueue: Fix deadlock due to recursive locking of
+ pool->lock
+
+Upstream commit d8bb65ab70f7 ("workqueue: Use rcuwait for wq_manager_wait")
+replaced the waitqueue with rcuwait in the workqueue code. This change
+involved removing the acquisition of pool->lock in put_unbound_pool(),
+as it also adds the function wq_manager_inactive() which acquires this same
+lock and is called one line later as a parameter to rcu_wait_event().
+
+However, the backport of this commit in the PREEMPT_RT patchset
+4.19.255-rt114 (patch 347) missed the removal of the acquisition of
+pool->lock in put_unbound_pool(). This leads to a deadlock due to
+recursive locking of pool->lock, as shown below in lockdep:
+
+[  252.083713] WARNING: possible recursive locking detected
+[  252.083718] 4.19.269-3.ph3-rt #1-photon Not tainted
+[  252.083721] --------------------------------------------
+[  252.083733] kworker/2:0/33 is trying to acquire lock:
+[  252.083747] 000000000b7b1ceb (&pool->lock/1){....}, at:
+put_unbound_pool+0x10d/0x260
+
+[  252.083857]
+               but task is already holding lock:
+[  252.083860] 000000000b7b1ceb (&pool->lock/1){....}, at:
+put_unbound_pool+0xbd/0x260
+
+[  252.083876]
+               other info that might help us debug this:
+[  252.083897]  Possible unsafe locking scenario:
+
+[  252.083900]        CPU0
+[  252.083903]        ----
+[  252.083904]   lock(&pool->lock/1);
+[  252.083911]   lock(&pool->lock/1);
+[  252.083919]
+                *** DEADLOCK ***
+
+[  252.083921]  May be due to missing lock nesting notation
+
+Fix this deadlock by removing the pool->lock acquisition in
+put_unbound_pool().
+
+Signed-off-by: Brennan Lamoreaux (VMware) <brennanlamoreaux@gmail.com>
+Cc: Daniel Wagner <wagi@monom.org>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Tejun Heo <tj@kernel.org>
+Reviewed-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+Link: https://lore.kernel.org/r/20230228224938.88035-1-brennanlamoreaux@gmail.com
+Signed-off-by: Daniel Wagner <wagi@monom.org>
+---
+ kernel/workqueue.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 0c7033deaef2..e6e1923c88eb 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -3397,7 +3397,6 @@ static void put_unbound_pool(struct worker_pool *pool)
+ 	 * Because of how wq_manager_inactive() works, we will hold the
+ 	 * spinlock after a successful wait.
+ 	 */
+-	raw_spin_lock_irq(&pool->lock);
+ 	rcuwait_wait_event(&manager_wait, wq_manager_inactive(pool),
+ 			   TASK_UNINTERRUPTIBLE);
+ 	pool->flags |= POOL_MANAGER_ACTIVE;
+-- 
+2.46.0
+

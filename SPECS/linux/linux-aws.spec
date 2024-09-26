@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.321
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.323
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -19,7 +19,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=db50304ab281f8bfa88dab373c0134c5e48ab2d9cc4020a6cd7ffe6ed0231eca219a8fc59dc6cdf3c2d7c929bbaf25bfe2357f85f732ff887101129dd5027526
+%define sha512 linux=c9385f44eaf06eb33ee1ff49d7a9f62060186c9398ccbda3d8ee493d134b8ce167316b243276a5797f87642afff3b3fbf626154b95dd8697ee6a29b5b8e8b147
 
 %ifarch x86_64
 Source1: config-aws
@@ -266,6 +266,9 @@ Patch322: 0001-NFS-fs_context-validate-UDP-retrans-to-prevent-shift.patch
 # Fix CVE-2024-38538
 Patch323: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
 
+# Fix CVE-2024-38588
+Patch324: 0001-ftrace-Fix-possible-use-after-free-issue-in-ftrace_l.patch
+
 # Usermode helper fixes
 Patch400: 0001-umh-Add-command-line-to-user-mode-helpers.patch
 Patch401: 0002-umh-add-exit-routine-for-UMH-process.patch
@@ -377,7 +380,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m191 -M194
 
 # CVE fixes
-%autopatch -p1 -m300 -M325
+%autopatch -p1 -m300 -M324
 
 # Usermode helper patches
 %autopatch -p1 -m400 -M401
@@ -582,6 +585,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Nov 04 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.323-1
+- Update to version 4.19.323
+- Fix CVE-2024-38588
 * Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-2
 - Fix for CVE-2024-38538
 * Tue Sep 10 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-1

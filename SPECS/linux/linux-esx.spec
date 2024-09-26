@@ -2,8 +2,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.321
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.323
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=db50304ab281f8bfa88dab373c0134c5e48ab2d9cc4020a6cd7ffe6ed0231eca219a8fc59dc6cdf3c2d7c929bbaf25bfe2357f85f732ff887101129dd5027526
+%define sha512 linux=c9385f44eaf06eb33ee1ff49d7a9f62060186c9398ccbda3d8ee493d134b8ce167316b243276a5797f87642afff3b3fbf626154b95dd8697ee6a29b5b8e8b147
 
 Source1: config-esx
 Source2: initramfs.trigger
@@ -500,6 +500,9 @@ Patch720: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 # Fix CVE-2024-38538
 Patch721: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
 
+# Fix CVE-2024-38588
+Patch722: 0001-ftrace-Fix-possible-use-after-free-issue-in-ftrace_l.patch
+
 # Patches for i40e driver
 Patch803: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
 Patch804: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
@@ -859,6 +862,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Mon Nov 04 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.323-1
+- Update to version 4.19.323
+- Fix CVE-2024-38588
 * Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-2
 - Fix for CVE-2024-38538
 * Tue Sep 10 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-1

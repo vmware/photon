@@ -20,6 +20,7 @@ For some packets, do an additional flap check with a longer
 timeout. This is for handling the case where VDR may send an
 ARP reply (which is seen by the bridge) to a different host,
 without the bridge having seen the real arp request or reply.
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
 ---
  net/bridge/br_device.c   |   3 +
  net/bridge/br_fdb.c      | 141 +++++++++++++++++++++++++++++++++++++--
@@ -29,7 +30,7 @@ without the bridge having seen the real arp request or reply.
  5 files changed, 253 insertions(+), 10 deletions(-)
 
 diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index 30c19f9f3..9f2efc162 100644
+index ed963fac1..d22056374 100644
 --- a/net/bridge/br_device.c
 +++ b/net/bridge/br_device.c
 @@ -464,5 +464,8 @@ void br_dev_setup(struct net_device *dev)
@@ -42,7 +43,7 @@ index 30c19f9f3..9f2efc162 100644
  	INIT_DELAYED_WORK(&br->gc_work, br_fdb_cleanup);
  }
 diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 4d4b9b5ea..87df1c91d 100644
+index a6e490190..91d23a51d 100644
 --- a/net/bridge/br_fdb.c
 +++ b/net/bridge/br_fdb.c
 @@ -27,6 +27,13 @@
@@ -59,8 +60,8 @@ index 4d4b9b5ea..87df1c91d 100644
  
  static const struct rhashtable_params br_fdb_rht_params = {
  	.head_offset = offsetof(struct net_bridge_fdb_entry, rhnode),
-@@ -505,6 +512,10 @@ static struct net_bridge_fdb_entry *fdb_create(struct net_bridge *br,
- 		fdb->added_by_external_learn = 0;
+@@ -513,6 +520,10 @@ static struct net_bridge_fdb_entry *fdb_create(struct net_bridge *br,
+ 			set_bit(BR_FDB_STATIC, &fdb->flags);
  		fdb->offloaded = 0;
  		fdb->updated = fdb->used = jiffies;
 +		fdb->last_flap = 0;
@@ -70,7 +71,7 @@ index 4d4b9b5ea..87df1c91d 100644
  		if (rhashtable_lookup_insert_fast(&br->fdb_hash_tbl,
  						  &fdb->rhnode,
  						  br_fdb_rht_params)) {
-@@ -558,20 +569,39 @@ int br_fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
+@@ -566,20 +577,39 @@ int br_fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
  	return ret;
  }
  
@@ -114,10 +115,10 @@ index 4d4b9b5ea..87df1c91d 100644
  
  	fdb = fdb_find_rcu(&br->fdb_hash_tbl, addr, vid);
  	if (likely(fdb)) {
-@@ -585,11 +615,111 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
- 
+@@ -594,11 +624,111 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
  			/* fastpath: update of existing entry */
- 			if (unlikely(source != fdb->dst)) {
+ 			if (unlikely(source != fdb->dst &&
+ 				     !test_bit(BR_FDB_STICKY, &fdb->flags))) {
 +				unsigned long delay;
 +				delay = fdb->updated + br->flap_threshold;
 +				if (time_before_eq(jiffies, delay)) {
@@ -185,8 +186,8 @@ index 4d4b9b5ea..87df1c91d 100644
 +				fdb->flap_drops = 0;
 +				fdb->flap_count = 0;
  				/* Take over HW learned entry */
- 				if (unlikely(fdb->added_by_external_learn))
- 					fdb->added_by_external_learn = 0;
+ 				test_and_clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
+ 						   &fdb->flags);
 +			} else {
 +				/* flap back?  or clear flapping? */
 +				if (unlikely(fdb->last_flap)) {
@@ -226,7 +227,7 @@ index 4d4b9b5ea..87df1c91d 100644
  			}
  			if (now != fdb->updated)
  				fdb->updated = now;
-@@ -615,6 +745,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+@@ -624,6 +754,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
  		 */
  		spin_unlock(&br->hash_lock);
  	}
@@ -234,7 +235,7 @@ index 4d4b9b5ea..87df1c91d 100644
  }
  
  static int fdb_to_nud(const struct net_bridge *br,
-@@ -857,7 +988,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
+@@ -873,7 +1004,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
  		}
  		local_bh_disable();
  		rcu_read_lock();
@@ -244,7 +245,7 @@ index 4d4b9b5ea..87df1c91d 100644
  		local_bh_enable();
  	} else if (ndm->ndm_flags & NTF_EXT_LEARNED) {
 diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 6d2a951cd..554eba9be 100644
+index 975af5fe3..d872153d6 100644
 --- a/net/bridge/br_input.c
 +++ b/net/bridge/br_input.c
 @@ -30,9 +30,11 @@ int br_arp_probe __read_mostly = 1;
@@ -273,7 +274,7 @@ index 6d2a951cd..554eba9be 100644
  	{}
  };
  
-@@ -320,8 +329,15 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+@@ -327,8 +336,15 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
  
  	/* insert into forwarding database after filtering to avoid spoofing */
  	br = p->br;
@@ -291,7 +292,7 @@ index 6d2a951cd..554eba9be 100644
  
  	local_rcv = !!(br->dev->flags & IFF_PROMISC);
  	if (is_multicast_ether_addr(eth_hdr(skb)->h_dest)) {
-@@ -418,7 +434,7 @@ static void __br_handle_local_finish(struct sk_buff *skb)
+@@ -425,7 +441,7 @@ static void __br_handle_local_finish(struct sk_buff *skb)
  
  	/* check if vlan is allowed, to avoid spoofing */
  	if (p->flags & BR_LEARNING && br_should_learn(p, skb, &vid))
@@ -301,10 +302,10 @@ index 6d2a951cd..554eba9be 100644
  
  /* note: already called with rcu_read_lock */
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 59fb86993..fd06e699a 100644
+index a720d0fbf..dbf3bdaac 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -188,6 +188,10 @@ struct net_bridge_fdb_entry {
+@@ -194,6 +194,10 @@ struct net_bridge_fdb_entry {
  	/* write-heavy members should not affect lookups */
  	unsigned long			updated ____cacheline_aligned_in_smp;
  	unsigned long			used;
@@ -315,7 +316,7 @@ index 59fb86993..fd06e699a 100644
  
  	struct rcu_head			rcu;
  };
-@@ -425,6 +429,12 @@ struct net_bridge {
+@@ -431,6 +435,12 @@ struct net_bridge {
  	bool				mtu_set_by_user;
  	struct hlist_head		fdb_list;
  	struct ukn_unicast_stats __percpu *ukn_stats;
@@ -328,7 +329,7 @@ index 59fb86993..fd06e699a 100644
  };
  
  struct br_input_skb_cb {
-@@ -555,8 +565,8 @@ int br_fdb_fillbuf(struct net_bridge *br, void *buf, unsigned long count,
+@@ -561,8 +571,8 @@ int br_fdb_fillbuf(struct net_bridge *br, void *buf, unsigned long count,
  		   unsigned long off);
  int br_fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
  		  const unsigned char *addr, u16 vid);
@@ -441,5 +442,5 @@ index 14bd30081..76c337688 100644
  };
  
 -- 
-2.28.0
+2.39.3
 
