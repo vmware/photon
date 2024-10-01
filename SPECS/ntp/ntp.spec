@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NTP
 URL:            http://www.ntp.org
 Group:          System Environment/NetworkingPrograms
@@ -17,6 +17,7 @@ Source1:        ntpstat-master.zip
 
 Source2:        %{name}.sysconfig
 Source3:        %{name}.sysusers
+Patch0:         Revert-Bug-3913-Avoid-duplicate-IPv6-link-local-manycast-associations.patch
 
 BuildRequires:  which
 BuildRequires:  libcap-devel
@@ -187,6 +188,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Tue Oct 01 2024 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.8p18-2
+- Revert the following patch
+- [Bug 3913] Avoid duplicate IPv6 link-local manycast associations.
+- Complete the switch from struct interface to endpt.
 * Wed Jun 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.2.8p18-1
 - Upgrade to v4.2.8p18
 * Tue Jun 27 2023 Michelle Wang <michellew@vmware.com> 4.2.8p17-1

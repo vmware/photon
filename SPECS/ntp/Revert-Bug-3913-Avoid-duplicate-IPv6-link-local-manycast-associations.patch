@@ -1,0 +1,991 @@
+This reverts the following patch: https://bk.ntp.org/ntp-stable/?PAGE=patch&REV=66175036S5k_ytBPitNVGEf7s2KXtg
+2024-04-11 02:51:34+00:00, davehart@tl.ntp.md
+  [Bug 3913] Avoid duplicate IPv6 link-local manycast associations.
+  Complete the switch from struct interface to endpt.
+
+--- a/libntp/socket.c	2024-10-01 17:18:02.494304026 +0000
++++ b/libntp/socket.c	2024-10-01 17:19:27.164976026 +0000
+@@ -195,11 +195,11 @@ open_socket(
+ 	)
+ void
+ sendpkt(
+-	sockaddr_u *	dest,
+-	endpt *		ep,
+-	int		ttl,
+-	struct pkt *	pkt,
+-	int		len
++	sockaddr_u *		dest,
++	struct interface *	ep,
++	int			ttl,
++	struct pkt *		pkt,
++	int			len
+ 	)
+ 
+ static inline int
+@@ -207,9 +207,9 @@ read_refclock_packet(SOCKET fd, struct r
+ 
+ static inline int
+ read_network_packet(
+-	SOCKET	fd,
+-	endpt *	itf,
+-	l_fp	ts
++	SOCKET			fd,
++	struct interface *	itf,
++	l_fp			ts
+ 	)
+ 
+ void
+--- a/ntpd/ntp_config.c	2024-10-01 17:20:35.379128710 +0000
++++ b/ntpd/ntp_config.c	2024-10-01 17:21:34.524995214 +0000
+@@ -3757,7 +3757,7 @@ config_trap(
+ 	attr_val *curr_opt;
+ 	sockaddr_u addr_sock;
+ 	sockaddr_u peeraddr;
+-	endpt *localaddr;
++	struct interface *localaddr;
+ 	struct addrinfo hints;
+ 	char port_text[8];
+ 	settrap_parms *pstp;
+@@ -3891,7 +3891,7 @@ trap_name_resolved(
+ 	)
+ {
+ 	settrap_parms *pstp;
+-	endpt *localaddr;
++	struct interface *localaddr;
+ 	sockaddr_u peeraddr;
+ 
+ 	(void)gai_errno;
+--- a/ntpd/ntp_control.c	2024-10-01 17:22:39.131034028 +0000
++++ b/ntpd/ntp_control.c	2024-10-01 17:27:02.563347305 +0000
+@@ -109,7 +109,7 @@ static	int	validate_nonce	(const char *,
+ static	void	req_nonce	(struct recvbuf *, int);
+ static	void	unset_trap	(struct recvbuf *, int);
+ static	struct ctl_trap *ctlfindtrap(sockaddr_u *,
+-				     endpt *);
++				     struct interface *);
+ 
+ int/*BOOL*/ is_safe_filename(const char * name);
+ 
+@@ -803,7 +803,7 @@ static int	datalinelen;
+ static int	datasent;	/* flag to avoid initial ", " */
+ static int	datanotbinflag;
+ static sockaddr_u *rmt_addr;
+-static endpt *lcl_inter;
++static struct interface *lcl_inter;
+ 
+ static u_char	res_authenticate;
+ static u_char	res_authokay;
+@@ -3178,8 +3178,8 @@ ctl_getitem(
+ 	    if (quiet_until <= current_time) {
+ 		    quiet_until = current_time + 300;
+ 		    msyslog(LOG_WARNING,
+-			    "Possible 'ntpdx' exploit from %s (possibly spoofed)",
+-			    sptoa(rmt_addr));
++			    "Possible 'ntpdx' exploit from %s#%u (possibly spoofed)",
++			    stoa(rmt_addr), SRCPORT(rmt_addr));
+ 	    }
+ 	reqpt = reqend; /* never again for this packet! */
+ 	return NULL;
+@@ -3974,7 +3974,7 @@ static void read_mru_list(
+ 	int			mincount;
+ 	u_int			maxlstint;
+ 	sockaddr_u		laddr;
+-	endpt *			lcladr;
++	struct interface *	lcladr;
+ 	u_int			count;
+ 	u_int			ui;
+ 	u_int			uf;
+@@ -4775,7 +4775,7 @@ unset_trap(
+ int
+ ctlsettrap(
+ 	sockaddr_u *raddr,
+-	endpt *linter,
++	struct interface *linter,
+ 	int traptype,
+ 	int version
+ 	)
+@@ -4898,7 +4898,7 @@ ctlsettrap(
+ int
+ ctlclrtrap(
+ 	sockaddr_u *raddr,
+-	endpt *linter,
++	struct interface *linter,
+ 	int traptype
+ 	)
+ {
+@@ -4923,7 +4923,7 @@ ctlclrtrap(
+ static struct ctl_trap *
+ ctlfindtrap(
+ 	sockaddr_u *raddr,
+-	endpt *linter
++	struct interface *linter
+ 	)
+ {
+ 	size_t	n;
+--- a/include/ntp_control.h	2024-10-01 17:13:54.838506001 +0000
++++ b/include/ntp_control.h	2024-10-01 17:14:47.692184596 +0000
+@@ -159,7 +159,7 @@ struct ntp_control {
+  */
+ struct ctl_trap {
+ 	sockaddr_u tr_addr;		/* address of trap recipient */
+-	endpt *tr_localaddr;		/* interface to send this through */
++	struct interface *tr_localaddr;	/* interface to send this through */
+ 	u_long tr_settime;		/* time trap was set */
+ 	u_long tr_count;		/* async messages sent to this guy */
+ 	u_long tr_origtime;		/* time trap was originally set */
+--- a/ntpd/ntp_crypto.c	2024-10-01 17:28:36.630315835 +0000
++++ b/ntpd/ntp_crypto.c	2024-10-01 17:29:02.487131822 +0000
+@@ -301,7 +301,7 @@ session_key(
+ int
+ make_keylist(
+ 	struct peer *peer,	/* peer structure pointer */
+-	endpt *dstadr		/* interface */
++	struct interface *dstadr /* interface */
+ 	)
+ {
+ 	EVP_MD_CTX *ctx;	/* signature context */
+--- a/include/ntpd.h	2024-10-01 17:16:18.651035837 +0000
++++ b/include/ntpd.h	2024-10-01 17:17:18.436913683 +0000
+@@ -71,9 +71,9 @@ extern	char *	saveconfigdir;	/* ntpq sav
+ 
+ extern	void	getconfig	(int, char **);
+ extern	void	ctl_clr_stats	(void);
+-extern	int	ctlclrtrap	(sockaddr_u *, endpt *, int);
++extern	int	ctlclrtrap	(sockaddr_u *, struct interface *, int);
+ extern	u_short ctlpeerstatus	(struct peer *);
+-extern	int	ctlsettrap	(sockaddr_u *, endpt *, int, int);
++extern	int	ctlsettrap	(sockaddr_u *, struct interface *, int, int);
+ extern	u_short ctlsysstatus	(void);
+ extern	void	init_control	(void);
+ extern	void	process_control (struct recvbuf *, int);
+@@ -218,7 +218,7 @@ extern	int	crypto_xmit	(struct peer *, s
+ 				    struct exten *, keyid_t);
+ extern	keyid_t	session_key	(sockaddr_u *, sockaddr_u *, keyid_t,
+ 				    keyid_t, u_long);
+-extern	int	make_keylist	(struct peer *, endpt *);
++extern	int	make_keylist	(struct peer *, struct interface *);
+ extern	void	key_expire	(struct peer *);
+ extern	void	crypto_update	(void);
+ extern	void	crypto_update_taichange(void);
+--- a/include/ntp.h	2024-10-01 17:10:36.088009178 +0000
++++ b/include/ntp.h	2024-10-01 17:12:49.964445638 +0000
+@@ -171,8 +171,8 @@ typedef char s_char;
+  * Eventually the struct tag will change from interface to endpt_tag.
+  * endpt is unrelated to the select algorithm's struct endpoint.
+  */
+-typedef struct endpt_tag endpt;
+-struct endpt_tag {
++typedef struct interface endpt;
++struct interface {
+ 	endpt *		elink;		/* endpt list link */
+ 	endpt *		mclink;		/* per-AF_* multicast list */
+ 	void *		ioreg_ctx;	/* IO registration context */
+@@ -216,7 +216,6 @@ struct endpt_tag {
+ #define INT_MCASTIF	0x100	/* bound directly to MCAST address */
+ #define INT_PRIVACY	0x200	/* RFC 4941 IPv6 privacy address */
+ #define INT_BCASTXMIT	0x400	/* socket setup to allow broadcasts */
+-#define INT_LL_OF_GLOB	0x800	/* IPv6 link-local duplicate of global */
+ 
+ /*
+  * Define flasher bits (tests 1 through 11 in packet procedure)
+@@ -798,7 +797,7 @@ typedef struct mon_data	mon_entry;
+ struct mon_data {
+ 	mon_entry *	hash_next;	/* next structure in hash list */
+ 	DECL_DLIST_LINK(mon_entry, mru);/* MRU list link pointers */
+-	endpt *		lcladr;	/* address on which this arrived */
++	struct interface * lcladr;	/* address on which this arrived */
+ 	l_fp		first;		/* first time seen */
+ 	l_fp		last;		/* last time seen */
+ 	int		leak;		/* leaky bucket accumulator */
+--- a/ntpd/ntp_io.c	2024-10-01 17:30:51.978587106 +0000
++++ b/ntpd/ntp_io.c	2024-10-01 18:24:51.286358233 +0000
+@@ -232,6 +232,7 @@ static	isc_boolean_t	socket_multicast_di
+ 
+ #ifdef DEBUG
+ static void interface_dump	(const endpt *);
++static void sockaddr_dump	(const sockaddr_u *);
+ static void print_interface	(const endpt *, const char *, const char *);
+ #define DPRINT_INTERFACE(level, args) do { if (debug >= (level)) { print_interface args; } } while (0)
+ #else
+@@ -282,13 +283,13 @@ static int	addr_samesubnet	(const sockad
+ static	int	create_sockets	(u_short);
+ static	SOCKET	open_socket	(sockaddr_u *, int, int, endpt *);
+ static	void	set_reuseaddr	(int);
+-static	isc_boolean_t	socket_broadcast_enable	 (endpt *, SOCKET, sockaddr_u *);
++static	isc_boolean_t	socket_broadcast_enable	 (struct interface *, SOCKET, sockaddr_u *);
+ 
+ #if !defined(HAVE_IO_COMPLETION_PORT) && !defined(HAVE_SIGNALED_IO)
+ static	char *	fdbits		(int, const fd_set *);
+ #endif
+ #ifdef  OS_MISSES_SPECIFIC_ROUTE_UPDATES
+-static	isc_boolean_t	socket_broadcast_disable (endpt *, sockaddr_u *);
++static	isc_boolean_t	socket_broadcast_disable (struct interface *, sockaddr_u *);
+ #endif
+ 
+ typedef struct remaddr remaddr_t;
+@@ -345,7 +346,7 @@ static int		cmp_addr_distance(const sock
+  * Routines to read the ntp packets
+  */
+ #if !defined(HAVE_IO_COMPLETION_PORT)
+-static inline int	read_network_packet	(SOCKET, endpt *, l_fp);
++static inline int	read_network_packet	(SOCKET, struct interface *, l_fp);
+ static void		ntpd_addremove_io_fd	(int, int, int);
+ static void 		input_handler_scan	(const l_fp*, const fd_set*);
+ static int/*BOOL*/	sanitize_fdset		(int errc);
+@@ -535,8 +536,11 @@ interface_dump(const endpt *itf)
+ 	printf("fd = %lld\n", (long long)itf->fd);
+ 	printf("bfd = %lld\n", (long long)itf->bfd);
+ 	printf("sin = %s,\n", stoa(&itf->sin));
++	sockaddr_dump(&itf->sin);
+ 	printf("bcast = %s,\n", stoa(&itf->bcast));
++	sockaddr_dump(&itf->bcast);
+ 	printf("mask = %s,\n", stoa(&itf->mask));
++	sockaddr_dump(&itf->bcast);
+ 	printf("name = %s\n", itf->name);
+ 	printf("flags = 0x%08x\n", itf->flags);
+ 	printf("last_ttl = %d\n", itf->last_ttl);
+@@ -550,6 +554,27 @@ interface_dump(const endpt *itf)
+ 	printf("phase = %u\n", itf->phase);
+ }
+ 
++/*
++ * sockaddr_dump - hex dump the start of a sockaddr_u
++ */
++static void
++sockaddr_dump(const sockaddr_u *psau)
++{
++	/* Limit the size of the sockaddr_in6 hex dump */
++	const int maxsize = min(32, sizeof(psau->sa6));
++	const u_char *	cp;
++	int		i;
++
++	/* XXX: Should we limit maxsize based on psau->saX.sin_family? */
++	cp = (const void *)&psau->sa6;
++
++	for(i = 0; i < maxsize; i++) {
++		printf("%02x", *cp++);
++		if (!((i + 1) % 4))
++			printf(" ");
++	}
++	printf("\n");
++}
+ 
+ /*
+  * print_interface - helper to output debug information
+@@ -743,19 +768,18 @@ init_interface(
+  * template structure or via standard initialization
+  * function
+  */
+-static endpt *
++static struct interface *
+ new_interface(
+-	endpt *protot
++	struct interface *interface
+ 	)
+ {
+-	endpt *	iface;
++	struct interface *iface;
+ 
+ 	iface = emalloc(sizeof(*iface));
+-	if (NULL == protot) {
+-		ZERO(*iface);
+-	} else {
+-		memcpy(iface, protot, sizeof(*iface));
+-	}
++	if (NULL == interface)
++		init_interface(iface);
++	else				/* use the template */
++		memcpy(iface, interface, sizeof(*iface));
+ 	/* count every new instance of an interface in the system */
+ 	iface->ifnum = sys_ifnum++;
+ 	iface->starttime = current_time;
+@@ -796,7 +820,14 @@ add_interface(
+ 	endpt **	pmclisthead;
+ 	endpt *		scan;
+ 	endpt *		scan_next;
+-	int		same_subnet;
++	endpt *		unlinked;
++	int		ep_local;
++	int		scan_local;
++ 	int		same_subnet;
++	int		ep_univ_iid;	/* iface ID from MAC address */
++	int		scan_univ_iid;	/* see RFC 4291 */
++	int		ep_privacy;	/* random local iface ID */
++	int		scan_privacy;	/* see RFC 4941 */
+ 	int		rc;
+ 
+ 	/* Calculate the refid */
+@@ -821,27 +852,92 @@ add_interface(
+ 	pmclisthead = (AF_INET == ep->family)
+ 			 ? &mc4_list
+ 			 : &mc6_list;
+-
+-	/*
+-	 * If we have multiple global addresses from the same prefix
+-	 * on the same network interface, multicast from one.
++	ep_local = is_linklocal(&ep->sin);
++	if (AF_INET6 == ep->family) {
++		ep_univ_iid = IS_IID_UNIV(&ep->sin);
++		ep_privacy = !!(INT_PRIVACY & ep->flags);
++	} else {
++		ep_univ_iid = FALSE;
++		ep_privacy = FALSE;
++	}
++	DPRINTF(4, ("add_interface mcast-capable %s%s%s%s\n",
++		    stoa(&ep->sin),
++		    (ep_local) ? " link/scope-local" : "",
++		    (ep_univ_iid) ? " univ-IID" : "",
++		    (ep_privacy) ? " privacy" : ""));
++ 	/*
++	 * If we have multiple local addresses on the same network
++	 * interface, and some are link- or site-local, do not multicast
++	 * out from the link-/site-local addresses by default, to avoid
++	 * duplicate manycastclient associations between v6 peers using
++	 * link-local and global addresses.  link-local can still be
++	 * chosen using "nic ignore myv6globalprefix::/64".
++	 * Similarly, if we have multiple global addresses from the same
++	 * prefix on the same network interface, multicast from one,
++	 * preferring EUI-64, then static, then least RFC 4941 privacy
++	 * addresses.
+ 	 */
+ 	for (scan = *pmclisthead; scan != NULL; scan = scan_next) {
+ 		scan_next = scan->mclink;
+-		if (   ep->family != scan->family
+-		    || ep->ifindex != scan->ifindex) {
++		if (ep->family != scan->family)
++			continue;
++		if (strcmp(ep->name, scan->name))
+ 			continue;
+-		}
+ 		same_subnet = addr_samesubnet(&ep->sin, &ep->mask,
+ 					      &scan->sin, &scan->mask);
+-		if (same_subnet) {
+-			DPRINTF(4, ("did not add %s to multicast-capable list"
+-				    "which already has %s\n",
+-				    stoa(&ep->sin), stoa(&scan->sin)));
+-			return;
++		scan_local = is_linklocal(&scan->sin);
++		if (AF_INET6 == ep->family) {
++			scan_univ_iid = IS_IID_UNIV(&scan->sin);
++			scan_privacy = !!(INT_PRIVACY & scan->flags);
++		} else {
++			scan_univ_iid = FALSE;
++			scan_privacy = FALSE;
++		}
++		DPRINTF(4, ("add_interface mcast-capable scan %s%s%s%s\n",
++			    stoa(&scan->sin),
++			    (scan_local) ? " link/scope-local" : "",
++			    (scan_univ_iid) ? " univ-IID" : "",
++			    (scan_privacy) ? " privacy" : ""));
++		if ((ep_local && !scan_local) || (same_subnet &&
++		    ((ep_privacy && !scan_privacy) ||
++		     (!ep_univ_iid && scan_univ_iid)))) {
++			DPRINTF(4, ("did not add %s to %s of IPv6 multicast-capable list which already has %s\n",
++				stoa(&ep->sin),
++				(ep_local)
++				    ? "tail"
++				    : "head",
++				stoa(&scan->sin)));
++		}
++		if ((scan_local && !ep_local) || (same_subnet &&
++		    ((scan_privacy && !ep_privacy) ||
++		     (!scan_univ_iid && ep_univ_iid)))) {
++			UNLINK_SLIST(unlinked, *pmclisthead,
++				     scan, mclink, endpt);
++			DPRINTF(4, ("%s %s from IPv6 multicast-capable list to add %s\n",
++				(unlinked != scan)
++				    ? "Failed to remove"
++				    : "removed",
++				stoa(&scan->sin), stoa(&ep->sin)));
+ 		}
+ 	}
+-	LINK_SLIST(*pmclisthead, ep, mclink);
++	/*
++	 * Add link/site local at the tail of the multicast-
++	 * capable unicast interfaces list, so that ntpd will
++	 * send from global addresses before link-/site-local
++	 * ones.
++	 */
++	if (ep_local)
++		LINK_TAIL_SLIST(*pmclisthead, ep, mclink, endpt);
++	else
++		LINK_SLIST(*pmclisthead, ep, mclink);
++	DPRINTF(4, ("added %s to %s of IPv%s multicast-capable unicast local address list\n",
++		stoa(&ep->sin),
++		(ep_local)
++		    ? "tail"
++		    : "head",
++		(AF_INET == ep->family)
++		    ? "4"
++		    : "6"));
+ 	if (INVALID_SOCKET == ep->fd)
+ 		return;
+ 
+@@ -980,7 +1076,7 @@ create_wildcards(
+ #endif
+ 	sockaddr_u		wildaddr;
+ 	nic_rule_action		action;
+-	endpt *			wildif;
++	struct interface *	wildif;
+ 
+ 	/*
+ 	 * silence "potentially uninitialized" warnings from VC9
+@@ -1377,33 +1473,33 @@ convert_isc_if(
+  */
+ static int
+ refresh_interface(
+-	endpt *	iface
++	struct interface * interface
+ 	)
+ {
+ #ifdef  OS_MISSES_SPECIFIC_ROUTE_UPDATES
+-	if (iface->fd != INVALID_SOCKET) {
+-		int bcast = (iface->flags & INT_BCASTXMIT) != 0;
++	if (interface->fd != INVALID_SOCKET) {
++		int bcast = (interface->flags & INT_BCASTXMIT) != 0;
+ 		/* as we forcibly close() the socket remove the
+ 		   broadcast permission indication */
+ 		if (bcast)
+-			socket_broadcast_disable(iface, &iface->sin);
++			socket_broadcast_disable(interface, &interface->sin);
+ 
+-		close_and_delete_fd_from_list(iface->fd);
++		close_and_delete_fd_from_list(interface->fd);
+ 
+ 		/* create new socket picking up a new first hop binding
+ 		   at connect() time */
+-		iface->fd = open_socket(&iface->sin,
+-					    bcast, 0, iface);
++		interface->fd = open_socket(&interface->sin,
++					    bcast, 0, interface);
+ 		 /*
+ 		  * reset TTL indication so TTL is is set again
+ 		  * next time around
+ 		  */
+-		iface->last_ttl = 0;
+-		return (iface->fd != INVALID_SOCKET);
++		interface->last_ttl = 0;
++		return (interface->fd != INVALID_SOCKET);
+ 	} else
+ 		return 0;	/* invalid sockets are not refreshable */
+ #else /* !OS_MISSES_SPECIFIC_ROUTE_UPDATES */
+-	return (iface->fd != INVALID_SOCKET);
++	return (interface->fd != INVALID_SOCKET);
+ #endif /* !OS_MISSES_SPECIFIC_ROUTE_UPDATES */
+ }
+ 
+@@ -1511,7 +1607,7 @@ set_wildcard_reuse(
+ 	int	on
+ 	)
+ {
+-	endpt *any;
++	struct interface *any;
+ 	SOCKET fd = INVALID_SOCKET;
+ 
+ 	any = ANY_INTERFACE_BYFAM(family);
+@@ -1684,9 +1780,6 @@ update_interfaces(
+ 	endpt			enumep;
+ 	endpt *			ep;
+ 	endpt *			next_ep;
+-	endpt *			newaddrs;
+-	endpt *			newaddrs_tail;
+-	endpt *			ep2;
+ 
+ 	DPRINTF(3, ("update_interfaces(%d)\n", port));
+ 
+@@ -1699,7 +1792,6 @@ update_interfaces(
+ 	new_interface_found = FALSE;
+ 	nonlocal_v4_addr_up = nonlocal_v6_addr_up = FALSE;
+ 	iter = NULL;
+-	newaddrs = newaddrs_tail = NULL;
+ 	result = isc_interfaceiter_create(mctx, &iter);
+ 
+ 	if (result != ISC_R_SUCCESS)
+@@ -1712,8 +1804,8 @@ update_interfaces(
+ 	sys_interphase ^= 0x1;
+ 
+ 	for (result = isc_interfaceiter_first(iter);
+-	     ISC_R_SUCCESS == result;
+-	     result = isc_interfaceiter_next(iter)) {
++		ISC_R_SUCCESS == result;
++		result = isc_interfaceiter_next(iter)) {
+ 
+ 		result = isc_interfaceiter_current(iter, &isc_if);
+ 
+@@ -1805,56 +1897,69 @@ update_interfaces(
+ 		 */
+ 		ep = getinterface(&enumep.sin, INT_WILDCARD);
+ 
+-		if (NULL == ep) {
+-			ep = emalloc(sizeof(*ep));
+-			memcpy(ep, &enumep, sizeof(*ep));
+-			if (NULL != newaddrs_tail) {
+-				newaddrs_tail->elink = ep;
+-				newaddrs_tail = ep;
+-			} else {
+-				newaddrs_tail = newaddrs = ep;
+-			}
+-			continue;
+-		}
+-
+-		if (!refresh_interface(ep)) {
+-			/*
+-			 * Refreshing failed, we will delete the endpt
+-			 * in phase 2 because it was not marked current.
+-			 * We can bind to the address as the refresh
+-			 * code already closed the endpt's socket.
+-			*/
+-			continue;
+-		}
+-		/*
+-		 * found existing and up to date interface -
+-		 * mark present.
+-		 */
+-		if (ep->phase != sys_interphase) {
+-			/*
+-			 * On a new round we reset the name so
+-			 * the interface name shows up again if
+-			 * this address is no longer shared.
+-			 * We reset ignore_packets from the
+-			 * new prototype to respect any runtime
+-			 * changes to the nic rules.
+-			 */
+-			strlcpy(ep->name, enumep.name, sizeof(ep->name));
+-			ep->ignore_packets = enumep.ignore_packets;
+-		} else {
++		if (ep != NULL && refresh_interface(ep)) {
+ 			/*
+-			 * DLH: else branch might be dead code from
+-			 * when both address and name were compared.
++			 * found existing and up to date interface -
++			 * mark present.
+ 			 */
+-			msyslog(LOG_INFO, "%s on %u %s -> *multiple*",
+-				stoa(&ep->sin), ep->ifnum, ep->name);
+-			/* name collision - rename interface */
+-			strlcpy(ep->name, "*multiple*", sizeof(ep->name));
+-		}
++			if (ep->phase != sys_interphase) {
++				/*
++				 * On a new round we reset the name so
++				 * the interface name shows up again if
++				 * this address is no longer shared.
++				 * We reset ignore_packets from the
++				 * new prototype to respect any runtime
++				 * changes to the nic rules.
++				 */
++				strlcpy(ep->name, enumep.name,
++					sizeof(ep->name));
++				ep->ignore_packets =
++					    enumep.ignore_packets;
++			} else {
++				/* name collision - rename interface */
++				strlcpy(ep->name, "*multiple*",
++					sizeof(ep->name));
++			}
++			DPRINT_INTERFACE(4, (ep, "updating ",
++					     " present\n"));
+ 
+-		DPRINT_INTERFACE(4, (ep, "updating ", " present\n"));
++			if (ep->ignore_packets !=
++			    enumep.ignore_packets) {
++				/*
++				 * We have conflicting configurations
++				 * for the interface address. This is
++				 * caused by using -I <interfacename>
++				 * for an interface that shares its
++				 * address with other interfaces. We
++				 * can not disambiguate incoming
++				 * packets delivered to this socket
++				 * without extra syscalls/features.
++				 * These are not (commonly) available.
++				 * Note this is a more unusual
++				 * configuration where several
++				 * interfaces share an address but
++				 * filtering via interface name is
++				 * attempted.  We resolve the
++				 * configuration conflict by disabling
++				 * the processing of received packets.
++				 * This leads to no service on the
++				 * interface address where the conflict
++				 * occurs.
++				 */
++				msyslog(LOG_ERR,
++					"WARNING: conflicting enable configuration for interfaces %s and %s for address %s - unsupported configuration - address DISABLED",
++					enumep.name, ep->name,
++					stoa(&enumep.sin));
+ 
+-		if (ep->ignore_packets != enumep.ignore_packets) {
++				ep->ignore_packets = ISC_TRUE;
++			}
++			ep->phase = sys_interphase;
++			ifi.action = IFS_EXISTS;
++			ifi.ep = ep;
++			if (receiver != NULL) {
++				(*receiver)(data, &ifi);
++			}
++		} else {
+ 			/*
+ 			 * We have conflicting configurations for the
+ 			 * address. This can happen with
+@@ -1870,65 +1975,28 @@ update_interfaces(
+ 			 * This leads to no service on the address where
+ 			 * the conflict occurs.
+ 			 */
+-			msyslog(LOG_WARNING,
+-				"conflicting listen configuration between"
+-				" %s and %s for %s, disabled",
+-				enumep.name, ep->name, stoa(&enumep.sin));
+-
+-			ep->ignore_packets = TRUE;
+-		}
+-
+-		ep->phase = sys_interphase;
+-
+-		ifi.action = IFS_EXISTS;
+-		ifi.ep = ep;
+-		if (receiver != NULL) {
+-			(*receiver)(data, &ifi);
+-		}
+-	}
+-
+-	isc_interfaceiter_destroy(&iter);
+-
+-	/*
+-	 * Phase 1b
+-	 */
+-	for (ep = newaddrs; ep != NULL; ep = ep->elink) {
+-		if (IS_IPV6(&ep->sin) && is_linklocal(&ep->sin)) {
+-			for (ep2 = newaddrs; ep2 != NULL; ep2 = ep2->elink) {
+-				if (   IS_IPV6(&ep2->sin)
+-				    && ep != ep2
+-				    && !is_linklocal(&ep2->sin)) {
+-
+-					ep->flags |= INT_LL_OF_GLOB;
+-					break;
+-				}
+-			}
+-		}
+-	}
+-	for (ep2 = newaddrs; ep2 != NULL; ep2 = next_ep) {
+-		next_ep = ep2->elink;
+-		ep2->elink = NULL;
+-		ep = create_interface(port, ep2);
+-		if (ep != NULL) {
+-			ifi.action = IFS_CREATED;
+-			ifi.ep = ep;
+-			if (receiver != NULL) {
+-				(*receiver)(data, &ifi);
++			ep = create_interface(port, &enumep);
++			if (ep != NULL) {
++				ifi.action = IFS_CREATED;
++				ifi.ep = ep;
++				if (receiver != NULL)
++					(*receiver)(data, &ifi);
++				new_interface_found = TRUE;
++				DPRINT_INTERFACE(3,
++					(ep, "updating ",
++					 " new - created\n"));
++			} else {
++				DPRINT_INTERFACE(3,
++					(&enumep, "updating ",
++					 " new - creation FAILED"));
++				msyslog(LOG_INFO,
++					"failed to init interface for address %s",
++					stoa(&enumep.sin));
++				continue;
+ 			}
+-			new_interface_found = TRUE;
+-			DPRINT_INTERFACE(3,
+-				(ep, "updating ", " new - created\n"));
+-		}
+-		else {
+-			DPRINT_INTERFACE(3,
+-				(ep, "updating ", " new - FAILED"));
+-
+-			msyslog(LOG_ERR,
+-				"cannot bind address %s",
+-				stoa(&ep->sin));
+ 		}
+-		free(ep2);
+ 	}
++	isc_interfaceiter_destroy(&iter);
+ 
+ 	/*
+ 	 * phase 2 - delete gone interfaces - reassigning peers to
+@@ -2052,10 +2120,10 @@ create_sockets(
+  * create_interface - create a new interface for a given prototype
+  *		      binding the socket.
+  */
+-static endpt *
++static struct interface *
+ create_interface(
+-	u_short	port,
+-	endpt *	protot
++	u_short			port,
++	struct interface *	protot
+ 	)
+ {
+ 	sockaddr_u	resmask;
+@@ -2065,7 +2133,8 @@ create_interface(
+ 	remaddr_t *	entry;
+ 	remaddr_t *	next_entry;
+ #endif
+-	DPRINTF(2, ("create_interface(%s)\n", sptoa(&protot->sin)));
++	DPRINTF(2, ("create_interface(%s#%d)\n", stoa(&protot->sin),
++		    port));
+ 
+ 	/* build an interface */
+ 	iface = new_interface(protot);
+@@ -2080,15 +2149,16 @@ create_interface(
+ 
+ 	if ((INT_BROADCAST & iface->flags)
+ 	    && iface->bfd != INVALID_SOCKET)
+-		msyslog(LOG_INFO, "Listening on broadcast address %s",
+-			sptoa(&iface->bcast));
++		msyslog(LOG_INFO, "Listening on broadcast address %s#%d",
++			stoa((&iface->bcast)), port);
+ 
+ 	if (INVALID_SOCKET == iface->fd
+ 	    && INVALID_SOCKET == iface->bfd) {
+-		msyslog(LOG_ERR, "unable to create socket on %s (%d) for %s",
++		msyslog(LOG_ERR, "unable to create socket on %s (%d) for %s#%d",
+ 			iface->name,
+ 			iface->ifnum,
+-			sptoa(&iface->sin));
++			stoa((&iface->sin)),
++			port);
+ 		delete_interface(iface);
+ 		return NULL;
+ 	}
+@@ -2220,11 +2290,6 @@ iflags_str(
+ 		append_flagstr(ifs, sz, "bcastxmit");
+ 	}
+ 
+-	if (iflags & INT_LL_OF_GLOB) {
+-		CLEAR_BIT_IF_DEBUG(INT_LL_OF_GLOB, iflags);
+-		append_flagstr(ifs, sz, "linklocal-w-global");
+-	}
+-
+ 	DEBUG_INVARIANT(!iflags);
+ 
+ 	return ifs;
+@@ -2314,8 +2379,8 @@ set_reuseaddr(
+  */
+ void
+ enable_broadcast(
+-	endpt *		iface,
+-	sockaddr_u *	baddr
++	struct interface *	iface,
++	sockaddr_u *		baddr
+ 	)
+ {
+ #ifdef OPEN_BCAST_SOCKET
+@@ -2331,9 +2396,9 @@ enable_broadcast(
+  */
+ static isc_boolean_t
+ socket_broadcast_enable(
+-	endpt *		iface,
+-	SOCKET		fd,
+-	sockaddr_u *	baddr
++	struct interface *	iface,
++	SOCKET			fd,
++	sockaddr_u *		baddr
+ 	)
+ {
+ #ifdef SO_BROADCAST
+@@ -2365,7 +2430,7 @@ socket_broadcast_enable(
+  */
+ static isc_boolean_t
+ socket_broadcast_disable(
+-	endpt *	iface,
++	struct interface *	iface,
+ 	sockaddr_u *		baddr
+ 	)
+ {
+@@ -2423,8 +2488,8 @@ addr_ismulticast(
+  */
+ void
+ enable_multicast_if(
+-	endpt *		iface,
+-	sockaddr_u *	maddr
++	struct interface *	iface,
++	sockaddr_u *		maddr
+ 	)
+ {
+ #ifdef MCAST
+@@ -2568,7 +2633,7 @@ socket_multicast_enable(
+ #ifdef MCAST
+ static isc_boolean_t
+ socket_multicast_disable(
+-	endpt *	iface,
++	struct interface *	iface,
+ 	sockaddr_u *		maddr
+ 	)
+ {
+@@ -2797,6 +2862,9 @@ io_multicast_add(
+ 
+ 	/* If we already have it we can just return */
+ 	if (NULL != find_flagged_addr_in_list(addr, INT_MCASTOPEN)) {
++		msyslog(LOG_INFO,
++			"Duplicate request found for multicast address %s",
++			stoa(addr));
+ 		return;
+ 	}
+ 
+@@ -3080,9 +3148,9 @@ open_socket(
+ #endif
+ 		    ) {
+ 			msyslog(LOG_ERR,
+-				"bind(%d) AF_INET%s %s%s flags 0x%x failed: %m",
++				"bind(%d) AF_INET%s %s#%d%s flags 0x%x failed: %m",
+ 				fd, IS_IPV6(addr) ? "6" : "",
+-				sptoa(addr),
++				stoa(addr), SRCPORT(addr),
+ 				IS_MCAST(addr) ? " (multicast)" : "",
+ 				interf->flags);
+ 		}
+@@ -3129,9 +3197,9 @@ open_socket(
+ 	}
+ #endif
+ 
+-	DPRINTF(4, ("bind(%d) addr %s, flags 0x%x\n",
+-		    fd, sptoa(addr), interf->flags));
+-
++	DPRINTF(4, ("bind(%d) AF_INET%s, addr %s%%%d#%d, flags 0x%x\n",
++		   fd, IS_IPV6(addr) ? "6" : "", stoa(addr),
++		   SCOPE(addr), SRCPORT(addr), interf->flags));
+ 	make_socket_nonblocking(fd);
+ 
+ #ifdef HAVE_SIGNALED_IO
+@@ -3185,9 +3253,6 @@ sendpkt(
+ 	if (!ismcast) {
+ 		src = ep;
+ 	} else {
+-#ifndef MCAST
+-		return;
+-#endif
+ 		src = (IS_IPV4(dest))
+ 			? mc4_list
+ 			: mc6_list;
+@@ -3205,10 +3270,6 @@ sendpkt(
+ 	}
+ 
+ 	do {
+-		if (INT_LL_OF_GLOB & src->flags) {
+-			/* avoid duplicate multicasts on same IPv6 net */
+-			goto loop;
+-		}
+ 		DPRINTF(2, ("%ssendpkt(%d, dst=%s, src=%s, ttl=%d, len=%d)\n",
+ 			    ismcast ? "\tMCAST\t***** " : "", src->fd,
+ 			    stoa(dest), stoa(&src->sin), ttl, len));
+@@ -3253,7 +3314,7 @@ sendpkt(
+ 		cc = simulate_server(dest, src, pkt);
+ #elif defined(HAVE_IO_COMPLETION_PORT)
+ 		cc = io_completion_port_sendto(src, src->fd, pkt,
+-			(size_t)len, dest);
++			(size_t)len, (sockaddr_u *)&dest->sa);
+ #else
+ 		cc = sendto(src->fd, (char *)pkt, (u_int)len, 0,
+ 			    &dest->sa, SOCKLEN(dest));
+@@ -3265,7 +3326,6 @@ sendpkt(
+ 			src->sent++;
+ 			packets_sent++;
+ 		}
+-	    loop:
+ 		if (ismcast)
+ 			src = src->mclink;
+ 	} while (ismcast && src != NULL);
+@@ -3284,6 +3344,7 @@ sendpkt(
+ 			FPTOD(NTOHS_FP(pkt->rootdelay)),
+ 			FPTOD(NTOHS_FP(pkt->rootdisp)),  pkt->refid,
+ 			len - MIN_V4_PKT_LEN, (u_char *)&pkt->exten);
++	return;
+ }
+ 
+ 
+@@ -4674,7 +4735,7 @@ delete_interface_from_list(
+ }
+ 
+ 
+-static endpt *
++static struct interface *
+ find_addr_in_list(
+ 	sockaddr_u *addr
+ 	)
+--- a/ntpd/ntp_proto.c	2024-10-01 18:26:37.866172041 +0000
++++ b/ntpd/ntp_proto.c	2024-10-01 18:30:22.838222382 +0000
+@@ -1390,17 +1390,6 @@ receive(
+ 		}
+ 
+ 		/*
+-		 * Do not respond if the packet came into an IPv6 link-local
+-		 * address on an interface where we also have a usable
+-		 * global address, to avoid duplicate associations.
+-		 */
+-		if (INT_LL_OF_GLOB & rbufp->dstadr->flags) {
+-			DPRINTF(2, ("receive: declining manycast solicitation on link-local IPv6\n"));
+-			sys_declined++;
+-			return;
+-		}
+-
+-		/*
+ 		 * Respond only if authentication succeeds. Don't do a
+ 		 * crypto-NAK, as that would not be useful.
+ 		 */
+@@ -1458,12 +1447,6 @@ receive(
+ 			return;
+ 		}
+ #endif /* AUTOKEY */
+-		/* Do not spin up duplicate manycast associations */
+-		if (INT_LL_OF_GLOB & rbufp->dstadr->flags) {
+-			DPRINTF(2, ("receive: AM_MANYCAST drop: link-local server\n"));
+-			sys_declined++;
+-			return;
+-		}
+ 		if ((peer2 = findmanycastpeer(rbufp)) == NULL) {
+ 			DPRINTF(2, ("receive: AM_MANYCAST drop: No manycast peer\n"));
+ 			sys_restricted++;
+@@ -3231,7 +3214,6 @@ peer_clear(
+ 	const char *ident		/* tally lights */
+ 	)
+ {
+-	static u_long	earliest;
+ 	u_char		u;
+ 	l_fp		bxmt = peer->bxmt;	/* bcast clients retain this! */
+ 
+@@ -3310,11 +3292,6 @@ peer_clear(
+ 		peer->nextdate += peer_associations;
+ 	} else if (!(FLAG_CONFIG & peer->flags)) {
+ 		peer->nextdate += ntp_minpkt + 1;
+-		/* space out manycastclient first polls */
+-		if (peer->nextdate < earliest) {
+-			peer->nextdate = earliest;
+-		}
+-		earliest = peer->nextdate + 1;
+ 	} else {
+ 		peer->nextdate += ntp_random() % (1 << peer->minpoll);
+ 	}
+@@ -4859,14 +4836,14 @@ pool_xmit(
+ 	)
+ {
+ #ifdef WORKER
+-	struct pkt	xpkt;	/* transmit packet structure */
+-	struct addrinfo	hints;
+-	int		rc;
+-	endpt *		lcladr;
+-	sockaddr_u *	rmtadr;
+-	u_short		af;
+-	struct peer *	p;
+-	l_fp		xmt_tx;
++	struct pkt		xpkt;	/* transmit packet structure */
++	struct addrinfo		hints;
++	int			rc;
++	struct interface *	lcladr;
++	sockaddr_u *		rmtadr;
++	u_short			af;
++	struct peer *		p;
++	l_fp			xmt_tx;
+ 
+ 	DEBUG_REQUIRE(pool);
+ 	if (NULL == pool->ai) {
