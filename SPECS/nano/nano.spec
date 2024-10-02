@@ -1,7 +1,7 @@
 Summary:        Text editor
 Name:           nano
-Version:        7.0
-Release:        2%{?dist}
+Version:        8.2
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://www.nano-editor.org
 Group:          Applications/Editors
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.nano-editor.org/dist/v3/%{name}-%{version}.tar.xz
-%define sha512 %{name}=927db4dec1fcde316104a59ab208ffadea52a65c63888187794d4b47c5d49b591c39d490fdc31255b82f04d77a4321b2f6bb150022a5f88dd3c2500df327b983
+%define sha512 %{name}=07c69d6894f87cb386afa89e984ded7e11fe7575cf3af1c18237e3b2c00de371015c9ea126e505c7c0e7200f7359d5ae7c3779198e188fbbc617154d09c4ba14
 
 BuildRequires:  ncurses-devel
 
@@ -60,6 +60,8 @@ make %{?_smp_mflags} check
 %exclude %{_infodir}/dir
 
 %changelog
+* Tue Oct 01 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 8.2-1
+- Upgrade package version
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 7.0-2
 - Bump version as a part of ncurses upgrade to v6.4
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 7.0-1
