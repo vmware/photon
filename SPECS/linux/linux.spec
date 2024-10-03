@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.226
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -246,6 +246,12 @@ Patch163: 0003-ipv6-fix-possible-UAF-in-ip6_finish_output2.patch
 
 # Fix CVE-2024-38538
 Patch164: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
+
+# Fix CVE-2024-42322
+Patch165: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
+
+# Fix CVE-2024-38591
+Patch166: 0001-RDMA-hns-Fix-deadlock-on-SRQ-async-events.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -509,7 +515,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M164
+%autopatch -p1 -m100 -M166
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -917,6 +923,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Sep 30 2024 Guruswamy Basavaiah <guruswamy.basavaih@broadcom.com> 5.10.226-3
+- Fix CVE-2024-42322 and CVE-2024-38591
 * Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.226-2
 - Fix for CVE-2024-44934, CVE-2024-44986, CVE-2024-38538
 * Mon Sep 23 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.226-1

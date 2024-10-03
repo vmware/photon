@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.226
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -190,6 +190,12 @@ Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
 
 # Fix CVE-2024-41073
 Patch156: 0001-nvme-avoid-double-free-special-payload.patch
+
+# Fix CVE-2024-42322
+Patch157: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
+
+# Fix CVE-2024-38591
+Patch158: 0001-RDMA-hns-Fix-deadlock-on-SRQ-async-events.patch
 
 # Fix CVE-2024-24855
 Patch162: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
@@ -488,6 +494,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Sep 30 2024 Guruswamy Basavaiah <guruswamy.basavaih@broadcom.com> 5.10.226-3
+- Fix CVE-2024-42322 and CVE-2024-38591
 * Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.226-2
 - Fix for CVE-2024-44934, CVE-2024-44986, CVE-2024-38538
 * Mon Sep 23 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.226-1
