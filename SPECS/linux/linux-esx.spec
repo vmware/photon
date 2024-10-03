@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.111
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -467,6 +467,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Oct 03 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.111-2
+- In jitterentropy, use vzalloc instead of kzalloc.
 * Fri Sep 20 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.111-1
 - Update to version 6.1.111
 * Tue Sep 10 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.109-1

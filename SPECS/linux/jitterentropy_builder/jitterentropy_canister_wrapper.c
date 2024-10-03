@@ -9,6 +9,7 @@
 #include <linux/string.h>
 #include <linux/cacheinfo.h>
 #include <linux/mutex.h>
+#include <linux/vmalloc.h>
 #include <linux/slab.h>
 #include <linux/fips.h>
 #include "jitterentropy.h"
@@ -34,7 +35,7 @@ void jcw_mutex_unlock(void *m)
 
 void *jcw_kzalloc(size_t size)
 {
-	return kzalloc(size, GFP_KERNEL);
+	return vzalloc(size);
 }
 
 void *jcw_memcpy(void *dst, const void *src, size_t len)
@@ -82,7 +83,7 @@ int jcw_fips_enabled(void)
 void jcw_zfree(void *ptr, unsigned int len)
 {
 	memzero_explicit(ptr, len);
-	kfree_sensitive(ptr);
+	vfree(ptr);
 }
 
 u64 jcw_ktime_get_ns(void)
