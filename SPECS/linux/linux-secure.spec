@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.321
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -288,6 +288,9 @@ Patch217: 0001-NFS-fs_context-validate-UDP-retrans-to-prevent-shift.patch
 #Fix CVE-2024-26882
 Patch221: 0001-net-ip_tunnel-make-sure-to-pull-inner-header-in-ip_tunnel_rcv.patch
 
+# Fix CVE-2024-38538
+Patch222: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
+
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
 %endif
@@ -381,7 +384,7 @@ popd
 %autopatch -p1 -m100 -M191
 
 # CVE Fixes
-%autopatch -p1 -m192 -M221
+%autopatch -p1 -m192 -M222
 
 %if 0%{?kat_build}
 %patch1000 -p1
@@ -555,6 +558,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-2
+- Fix for CVE-2024-38538
 * Tue Sep 10 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-1
 - Update to version 4.19.321
 * Wed Aug 21 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.320-1

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.321
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -497,6 +497,9 @@ Patch719: 0001-ravb-Fix-use-after-free-issue-in-ravb_tx_timeout_wor.patch
 #Fix CVE-2023-52458
 Patch720: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
+# Fix CVE-2024-38538
+Patch721: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
+
 # Patches for i40e driver
 Patch803: i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
 Patch804: i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
@@ -856,6 +859,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+* Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-2
+- Fix for CVE-2024-38538
 * Tue Sep 10 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-1
 - Update to version 4.19.321
 * Wed Aug 21 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.320-1

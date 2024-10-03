@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.321
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -262,6 +262,9 @@ Patch320: 0001-block-add-check-that-partition-length-needs-to-be-al.patch
 
 # Fix CVE-2021-46952
 Patch322: 0001-NFS-fs_context-validate-UDP-retrans-to-prevent-shift.patch
+
+# Fix CVE-2024-38538
+Patch323: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
 
 # Usermode helper fixes
 Patch400: 0001-umh-Add-command-line-to-user-mode-helpers.patch
@@ -579,6 +582,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-2
+- Fix for CVE-2024-38538
 * Tue Sep 10 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-1
 - Update to version 4.19.321
 * Wed Aug 21 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.320-1
