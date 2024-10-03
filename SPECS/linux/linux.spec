@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.226
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -252,6 +252,16 @@ Patch165: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
 
 # Fix CVE-2024-38591
 Patch166: 0001-RDMA-hns-Fix-deadlock-on-SRQ-async-events.patch
+
+# Fix CVE-2024-46809
+Patch167: 0001-drm-amd-display-Check-BIOS-images-before-it-is-used.patch
+
+# Fix CVE-2024-46841
+Patch168: 0001-btrfs-don-t-BUG_ON-on-ENOMEM-from-btrfs_lookuip_exte.patch
+
+# Fix CVE-2024-46834
+Patch169: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
+Patch170: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -515,7 +525,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M166
+%autopatch -p1 -m100 -M170
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -923,6 +933,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Oct 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.226-4
+- Fix CVE-2024-46809, CVE-2024-46841, CVE-2024-46834
 * Mon Sep 30 2024 Guruswamy Basavaiah <guruswamy.basavaih@broadcom.com> 5.10.226-3
 - Fix CVE-2024-42322 and CVE-2024-38591
 * Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.226-2

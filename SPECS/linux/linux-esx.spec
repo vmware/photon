@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.226
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -257,6 +257,16 @@ Patch166: 0003-ipv6-fix-possible-UAF-in-ip6_finish_output2.patch
 # Fix CVE-2024-38538
 Patch167: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
 
+# Fix CVE-2024-46809
+Patch168: 0001-drm-amd-display-Check-BIOS-images-before-it-is-used.patch
+
+# Fix CVE-2024-46841
+Patch169: 0001-btrfs-don-t-BUG_ON-on-ENOMEM-from-btrfs_lookuip_exte.patch
+
+# Fix CVE-2024-46834
+Patch170: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
+Patch171: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -419,7 +429,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M97
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M167
+%autopatch -p1 -m100 -M171
 
 #Patches for ptp_vmw
 %autopatch -p1 -m301 -M302
@@ -639,6 +649,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Oct 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.226-4
+- Fix CVE-2024-46809, CVE-2024-46841, CVE-2024-46834
 * Mon Sep 30 2024 Guruswamy Basavaiah <guruswamy.basavaih@broadcom.com> 5.10.226-3
 - Fix CVE-2024-42322 and CVE-2024-38591
 * Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.226-2
