@@ -62,4 +62,4 @@ Patch359: 0059-bpf-Remove-in_atomic-from-bpf_link_put.patch
 Patch360: 0060-drm-i915-Do-not-disable-preemption-for-resets.patch
 Patch361: 0061-Linux-6.1.79-rt25-REBASE.patch
 Patch362: 0062-arm-Disable-FAST_GUP-on-PREEMPT_RT-if-HIGHPTE-is-als.patch
-Patch363: 0063-Linux-6.1.109-rt41-REBASE.patch
+Patch363: 0063-Linux-6.1.112-rt43-REBASE.patch

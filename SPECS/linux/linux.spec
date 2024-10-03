@@ -33,8 +33,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.111
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.112
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -45,7 +45,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=239a37cc75c6f19d9f8480cc1fed27e885a60b1d68b127848d3e00ed6e2ffe3fe5d9bea0ada95dad1e39c6e829446f10722b2d8ab062f85aab189ee74512ca9a
+%define sha512 linux=3fb3fea3efe0be30d58c8638e14f13ef7ec7ef61c8bdff2007ca4777a72bca9a41d5e2f92bd054dc932ace4a2fd23e9a02baf7e47ff0f774d034a78554ae08db
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -197,6 +197,22 @@ Patch136: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
 
 # Fix CVE-2024-24855
 Patch137: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
+
+# Fix CVE-2024-46809
+Patch138: 0001-drm-amd-display-Check-BIOS-images-before-it-is-used.patch
+
+# Fix CVE-2024-46811
+Patch139: 0001-drm-amd-display-Fix-index-may-exceed-array-range-wit.patch
+
+# Fix CVE-2024-46841
+Patch140: 0001-btrfs-don-t-BUG_ON-on-ENOMEM-from-btrfs_lookuip_exte.patch
+
+# Fix CVE-2024-46834
+Patch141: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
+Patch142: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
+
+# Fix CVE-2024-46786
+Patch143: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -493,7 +509,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M137
+%autopatch -p1 -m100 -M143
 
 %ifarch aarch64
 # aarch64 patches
@@ -885,6 +901,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Oct 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.112-1
+- Update to version 6.1.112
+- Fix CVE-2024-46809, CVE-2024-46811, CVE-2024-46841, CVE-2024-46834, CVE-2024-46786
 * Tue Oct 08 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.111-3
 - Fix CVE-2024-42322
 * Thu Oct 03 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.111-2
