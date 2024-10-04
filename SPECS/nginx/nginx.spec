@@ -5,7 +5,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.27.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -57,6 +57,7 @@ sh ./configure \
     --http-log-path=%{_var}/log/%{name}/access.log \
     --add-module=njs-%{njs_ver}/%{name} \
     --add-dynamic-module=./headers-more-nginx-module-%{headers_more_nginx_module_ver} \
+    --with-http_dav_module \
     --with-http_ssl_module \
     --with-pcre \
     --with-ipv6 \
@@ -122,6 +123,8 @@ rm -rf %{buildroot}
 %{_var}/log/%{name}
 
 %changelog
+* Fri Oct 4 2024 Etienne Le Sueur <etienne.le-sueur@broadcom.com> 1.27.1-2
+- Include WebDAV module
 * Mon Aug 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.27.1-1
 - Version upgrade to v1.27.1 to fix CVE-2024-7347
 * Tue Jun 18 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.27.0-1
