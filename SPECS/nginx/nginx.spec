@@ -6,7 +6,7 @@ Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
 Version:        1.26.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -58,6 +58,7 @@ sh ./configure \
     --http-log-path=%{_var}/log/%{name}/access.log \
     --add-module=njs-%{njs_ver}/%{name} \
     --add-dynamic-module=./headers-more-nginx-module-%{headers_more_nginx_module_ver} \
+    --with-http_dav_module \
     --with-http_ssl_module \
     --with-pcre \
     --with-ipv6 \
@@ -123,6 +124,8 @@ rm -rf %{buildroot}
 %{_var}/log/%{name}
 
 %changelog
+* Fri Oct 4 2024 Etienne Le Sueur <etienne.le-sueur@broadcom.com> 1.26.2-2
+- Include WebDAV module
 * Tue Aug 13 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.26.2-1
 - Downgrade version to v1.26.2
 - Adding Epoch to consider v1.26.2 latest instead of v1.27.0
