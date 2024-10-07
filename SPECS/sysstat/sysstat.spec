@@ -1,7 +1,7 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
 Version:        12.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://sebastien.godard.pagesperso-orange.fr/
 Group:          Development/Debuggers
@@ -15,6 +15,7 @@ Patch1:         0001-Fix-an-overflow-which-is-still-possible-for-some-val.patch
 
 BuildRequires:  cronie
 Requires:       cronie
+Requires(pre):  coreutils
 %description
  The Sysstat package contains utilities to monitor system performance and usage activity. Sysstat contains the sar utility, common to many commercial Unixes, and tools you can schedule via cron to collect and historize performance and activity data.
 
@@ -47,6 +48,26 @@ make test %{?_smp_mflags}
 %clean
 rm -rf %{buildroot}/*
 
+%pre
+sa_location="%{_var}/log/sa"
+sa_fn_backup="%{_var}/log/sa-$(date +%s)"
+
+# For upgrade, if /var/log/sa is a file copy that with date in /var/log/sa directory
+if [[ $1 -eq 2 ]]; then
+    if [ ! -d "%{sa_location}" ]; then
+        mv ${sa_location} ${sa_fn_backup}
+        rm -f ${sa_location}
+        install -vdm 755 ${sa_location}
+        mv ${sa_fn_backup} ${sa_location}/
+    fi
+fi
+
+%preun
+if [[ $1 -eq 0 ]]; then
+    # Remove sa logs if removing sysstat completely
+    rm -rf %{_var}/log/sa/*
+fi
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/sysconfig/*
@@ -57,8 +78,11 @@ rm -rf %{buildroot}/*
 %{_datadir}/doc/%{name}-%{version}/*
 %{_mandir}/man*/*
 %{_libdir}/systemd/system/*
+%{_var}/log/sa
 
 %changelog
+*   Mon Oct 07 2024 Tapas Kundu <tapas.kundu@broadcom.com> 12.7.2-2
+-   Fix logging
 *   Mon Jun 12 2023 Srinidhi Rao <srinidhir@vmware.com> 12.7.2-1
 -   Update to version 12.7.2
 *   Fri Nov 18 2022 Srinidhi Rao <srinidhir@vmware.com> 12.7.1-1
