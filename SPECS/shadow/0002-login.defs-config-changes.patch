@@ -1,0 +1,210 @@
+From cc5f19425df9ffd2aeae998664cc82b4be510c3f Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Tue, 8 Oct 2024 19:13:03 +0530
+Subject: [PATCH 2/2] login.defs config changes
+
+Use yescrypt encrypt method as default
+
+Use pw_dict instead of cracklib_dict
+
+Disable usergroups. Use "users" group by default (see /usr/sbin/useradd)
+for all nonroot users.
+
+Comment out few functionalities by default
+
+Set default password expiry to 90 days
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ etc/login.defs | 46 +++++++++++++++++++++++-----------------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
+
+diff --git a/etc/login.defs b/etc/login.defs
+index 114dbcd..4808f55 100644
+--- a/etc/login.defs
++++ b/etc/login.defs
+@@ -9,12 +9,12 @@
+ # Note: When PAM is used, some modules may enforce a minimum delay (e.g.
+ #       pam_unix(8) enforces a 2s delay)
+ #
+-FAIL_DELAY		3
++# FAIL_DELAY		3
+ 
+ #
+ # Enable logging and display of /var/log/faillog login(1) failure info.
+ #
+-FAILLOG_ENAB		yes
++# FAILLOG_ENAB		yes
+ 
+ #
+ # Enable display of unknown usernames when login(1) failures are recorded.
+@@ -29,7 +29,7 @@ LOG_OK_LOGINS		no
+ #
+ # Enable logging and display of /var/log/lastlog login(1) time info.
+ #
+-LASTLOG_ENAB		yes
++# LASTLOG_ENAB		yes
+ 
+ #
+ # Limit the highest user ID number for which the lastlog entries should
+@@ -46,22 +46,22 @@ LASTLOG_ENAB		yes
+ # Disable if the shell startup files already check for mail
+ # ("mailx -e" or equivalent).
+ #
+-MAIL_CHECK_ENAB		yes
++# MAIL_CHECK_ENAB		yes
+ 
+ #
+ # Enable additional checks upon password changes.
+ #
+-OBSCURE_CHECKS_ENAB	yes
++# OBSCURE_CHECKS_ENAB	yes
+ 
+ #
+ # Enable checking of time restrictions specified in /etc/porttime.
+ #
+-PORTTIME_CHECKS_ENAB	yes
++# PORTTIME_CHECKS_ENAB	yes
+ 
+ #
+ # Enable setting of ulimit, umask, and niceness from passwd(5) gecos field.
+ #
+-QUOTAS_ENAB		yes
++# QUOTAS_ENAB		yes
+ 
+ #
+ # Enable "syslog" logging of su(1) activity - in addition to sulog file logging.
+@@ -75,7 +75,7 @@ SYSLOG_SG_ENAB		yes
+ # a ":" delimited list of device names.  Root logins will be allowed only
+ # from these devices.
+ #
+-CONSOLE		/etc/securetty
++# CONSOLE		/etc/securetty
+ #CONSOLE	console:tty01:tty02:tty03:tty04
+ 
+ #
+@@ -87,7 +87,7 @@ CONSOLE		/etc/securetty
+ # If defined, ":" delimited list of "message of the day" files to
+ # be displayed upon login.
+ #
+-MOTD_FILE	/etc/motd
++# MOTD_FILE	/etc/motd
+ #MOTD_FILE	/etc/motd:/usr/lib/news/news-motd
+ 
+ #
+@@ -105,14 +105,14 @@ MOTD_FILE	/etc/motd
+ # If defined, login(1) failures will be logged here in a utmp format.
+ # last(1), when invoked as lastb(1), will read /var/log/btmp, so...
+ #
+-FTMP_FILE	/var/log/btmp
++# FTMP_FILE	/var/log/btmp
+ 
+ #
+ # If defined, name of file whose presence will inhibit non-root
+ # logins.  The content of this file should be a message indicating
+ # why logins are inhibited.
+ #
+-NOLOGINS_FILE	/etc/nologin
++# NOLOGINS_FILE	/etc/nologin
+ 
+ #
+ # If defined, the command name to display when running "su -".  For
+@@ -127,7 +127,7 @@ SU_NAME		su
+ #   Directory where mailboxes reside, _or_ name of file, relative to the
+ #   home directory.  If you _do_ define both, MAIL_DIR takes precedence.
+ #
+-MAIL_DIR	/var/spool/mail
++MAIL_DIR	/var/mail
+ #MAIL_FILE	.mail
+ 
+ #
+@@ -150,7 +150,7 @@ HUSHLOGIN_FILE	.hushlogin
+ # If defined, an HZ environment parameter spec.
+ #
+ # for Linux/x86
+-ENV_HZ		HZ=100
++# ENV_HZ		HZ=100
+ # For Linux/Alpha...
+ #ENV_HZ		HZ=1024
+ 
+@@ -214,9 +214,9 @@ UMASK		022
+ #	PASS_MIN_LEN	Minimum acceptable password length.
+ #	PASS_WARN_AGE	Number of days warning given before a password expires.
+ #
+-PASS_MAX_DAYS	99999
++PASS_MAX_DAYS    90
+ PASS_MIN_DAYS	0
+-PASS_MIN_LEN	5
++# PASS_MIN_LEN	5
+ PASS_WARN_AGE	7
+ 
+ #
+@@ -225,12 +225,12 @@ PASS_WARN_AGE	7
+ # to uid 0 accounts.  If the group doesn't exist or is empty, no one
+ # will be able to "su" to uid 0.
+ #
+-SU_WHEEL_ONLY	no
++# SU_WHEEL_ONLY	no
+ 
+ #
+ # If compiled with cracklib support, sets the path to the dictionaries
+ #
+-CRACKLIB_DICTPATH	/var/cache/cracklib/cracklib_dict
++# CRACKLIB_DICTPATH	/usr/share/cracklib/pw_dict
+ 
+ #
+ # Min/max values for automatic uid selection in useradd(8)
+@@ -271,12 +271,12 @@ LOGIN_TIMEOUT		60
+ #
+ # Maximum number of attempts to change password if rejected (too easy)
+ #
+-PASS_CHANGE_TRIES	5
++# PASS_CHANGE_TRIES	5
+ 
+ #
+ # Warn about weak passwords (but still allow them) if you are root.
+ #
+-PASS_ALWAYS_WARN	yes
++# PASS_ALWAYS_WARN	yes
+ 
+ #
+ # Number of significant characters in the password for crypt().
+@@ -288,7 +288,7 @@ PASS_ALWAYS_WARN	yes
+ #
+ # Require password before chfn(1)/chsh(1) can make any changes.
+ #
+-CHFN_AUTH		yes
++# CHFN_AUTH		yes
+ 
+ #
+ # Which fields may be changed by regular users using chfn(1) - use
+@@ -334,7 +334,7 @@ CHFN_RESTRICT		rwh
+ # Note: If you use PAM, it is recommended to use a value consistent with
+ # the PAM modules configuration.
+ #
+-#ENCRYPT_METHOD DES
++# ENCRYPT_METHOD YESCRYPT
+ 
+ #
+ # Only works if ENCRYPT_METHOD is set to SHA256 or SHA512.
+@@ -410,7 +410,7 @@ NONEXISTENT	/nonexistent
+ # If this file exists and is readable, login environment will be
+ # read from it.  Every line should be in the form name=value.
+ #
+-ENVIRON_FILE	/etc/environment
++# ENVIRON_FILE	/etc/environment
+ 
+ #
+ # If defined, this command is run when removing a user.
+@@ -426,7 +426,7 @@ ENVIRON_FILE	/etc/environment
+ #
+ # This also enables userdel(8) to remove user groups if no members exist.
+ #
+-USERGROUPS_ENAB yes
++USERGROUPS_ENAB no
+ 
+ #
+ # If set to a non-zero number, the shadow utilities will make sure that
+-- 
+2.46.2
+

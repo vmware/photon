@@ -53,6 +53,8 @@ aarch64/libpipeline-1.5.6-1.ph5.aarch64.rpm
 aarch64/libstdc++-12.2.0-1.ph5.aarch64.rpm
 aarch64/libstdc++-devel-12.2.0-1.ph5.aarch64.rpm
 aarch64/libtool-2.4.7-1.ph5.aarch64.rpm
+aarch64/libxcrypt-4.4.36-1.ph5.aarch64.rpm
+aarch64/libxcrypt-devel-4.4.36-1.ph5.aarch64.rpm
 aarch64/lua-5.4.4-5.ph5.aarch64.rpm
 aarch64/lua-devel-5.4.4-5.ph5.aarch64.rpm
 aarch64/lua-libs-5.4.4-5.ph5.aarch64.rpm

@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -160,6 +160,7 @@ cd %{_builddir}/%{name}-build
         --enable-stack-protector=strong \
         --disable-experimental-malloc \
         --disable-silent-rules \
+        --disable-crypt \
         libc_cv_slibdir=%{_libdir}
 
 # Sometimes we have false "out of memory" make error
@@ -361,6 +362,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Thu Nov 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.36-15
+- Disable libcrypt as a part of yescrypt addition
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.36-14
 - Remove standalone license exceptions
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.36-13
