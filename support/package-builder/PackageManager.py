@@ -228,9 +228,16 @@ class PackageManager(object):
         # Extend listPackages from ["name1", "name2",..] to
         # ["name1-vers1", "name2-vers2",..]
         listPackageNamesAndVersions = set()
+
         for pkg in listPackages:
+            versionGiven = None
+            if "@" in pkg:
+                pkg, versionGiven = pkg.split('@')
+
             base = SPECS.getData().getSpecName(pkg)
             for version in SPECS.getData().getVersions(base):
+                if versionGiven and versionGiven not in version:
+                    continue
                 listPackageNamesAndVersions.add(f"{base}-{version}")
 
         returnVal = self._calculateParams(listPackageNamesAndVersions)
