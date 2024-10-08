@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.111
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -188,6 +188,9 @@ Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
 # Fix CVE-2023-52452
 Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
+
+# Fix CVE-2024-42322
+Patch133: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
 
 # Fix CVE-2024-41071
 Patch136: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
@@ -882,6 +885,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Oct 08 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.111-3
+- Fix CVE-2024-42322
 * Thu Oct 03 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.111-2
 - In jitterentropy, use vzalloc instead of kzalloc.
 * Fri Sep 20 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.111-1
