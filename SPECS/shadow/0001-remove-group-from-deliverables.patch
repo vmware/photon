@@ -1,0 +1,222 @@
+From e5ff710ce32a4240ed0ad4a7fd6a229a14bca755 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Tue, 8 Oct 2024 19:11:17 +0530
+Subject: [PATCH 1/2] remove group from deliverables
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ man/Makefile.in       | 2 +-
+ man/cs/Makefile.in    | 2 +-
+ man/da/Makefile.in    | 2 +-
+ man/de/Makefile.in    | 2 +-
+ man/fr/Makefile.in    | 2 +-
+ man/hu/Makefile.in    | 2 +-
+ man/it/Makefile.in    | 2 +-
+ man/ja/Makefile.in    | 2 +-
+ man/ko/Makefile.in    | 2 +-
+ man/pl/Makefile.in    | 2 +-
+ man/ru/Makefile.in    | 2 +-
+ man/sv/Makefile.in    | 2 +-
+ man/uk/Makefile.in    | 2 +-
+ man/zh_CN/Makefile.in | 2 +-
+ src/Makefile.in       | 2 +-
+ 15 files changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/man/Makefile.in b/man/Makefile.in
+index fa8a0ea..7ae9816 100644
+--- a/man/Makefile.in
++++ b/man/Makefile.in
+@@ -397,7 +397,7 @@ top_srcdir = @top_srcdir@
+ man_MANS = man1/chage.1 man1/chfn.1 man8/chgpasswd.8 man8/chpasswd.8 \
+ 	man1/chsh.1 man1/expiry.1 man5/faillog.5 man8/faillog.8 \
+ 	man3/getspnam.3 man1/gpasswd.1 man8/groupadd.8 man8/groupdel.8 \
+-	man8/groupmems.8 man8/groupmod.8 man1/groups.1 man8/grpck.8 \
++	man8/groupmems.8 man8/groupmod.8 man1/ man8/grpck.8 \
+ 	man8/grpconv.8 man8/grpunconv.8 man5/gshadow.5 man8/lastlog.8 \
+ 	man1/login.1 man5/login.defs.5 man8/logoutd.8 man1/newgrp.1 \
+ 	man8/newusers.8 man8/nologin.8 man1/passwd.1 man5/passwd.5 \
+diff --git a/man/cs/Makefile.in b/man/cs/Makefile.in
+index 516c58d..ce8e5d4 100644
+--- a/man/cs/Makefile.in
++++ b/man/cs/Makefile.in
+@@ -332,7 +332,7 @@ man_MANS = \
+ 	man8/groupadd.8 \
+ 	man8/groupdel.8 \
+ 	man8/groupmod.8 \
+-	man1/groups.1 \
++	man1/ \
+ 	man8/grpck.8 \
+ 	man5/gshadow.5 \
+ 	man8/lastlog.8 \
+diff --git a/man/da/Makefile.in b/man/da/Makefile.in
+index 3ed052b..00f8bf6 100644
+--- a/man/da/Makefile.in
++++ b/man/da/Makefile.in
+@@ -329,7 +329,7 @@ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ 
+ # 2012.01.28 - activate manpages with more than 50% translated messages
+-man_MANS = man1/chfn.1 man8/groupdel.8 man1/groups.1 man5/gshadow.5 \
++man_MANS = man1/chfn.1 man8/groupdel.8 man1/ man5/gshadow.5 \
+ 	man8/logoutd.8 man1/newgrp.1 man8/nologin.8 man1/sg.1 \
+ 	man8/vigr.8 man8/vipw.8 $(am__append_1)
+ man_nopam = 
+diff --git a/man/de/Makefile.in b/man/de/Makefile.in
+index 20899d3..68e5f5c 100644
+--- a/man/de/Makefile.in
++++ b/man/de/Makefile.in
+@@ -331,7 +331,7 @@ top_srcdir = @top_srcdir@
+ man_MANS = man1/chage.1 man1/chfn.1 man8/chgpasswd.8 man8/chpasswd.8 \
+ 	man1/chsh.1 man1/expiry.1 man5/faillog.5 man8/faillog.8 \
+ 	man3/getspnam.3 man1/gpasswd.1 man8/groupadd.8 man8/groupdel.8 \
+-	man8/groupmems.8 man8/groupmod.8 man1/groups.1 man8/grpck.8 \
++	man8/groupmems.8 man8/groupmod.8 man1/ man8/grpck.8 \
+ 	man8/grpconv.8 man8/grpunconv.8 man5/gshadow.5 man8/lastlog.8 \
+ 	man1/login.1 man5/login.defs.5 man8/logoutd.8 man1/newgrp.1 \
+ 	man8/newusers.8 man8/nologin.8 man1/passwd.1 man5/passwd.5 \
+diff --git a/man/fr/Makefile.in b/man/fr/Makefile.in
+index fb0cf81..5b14295 100644
+--- a/man/fr/Makefile.in
++++ b/man/fr/Makefile.in
+@@ -333,7 +333,7 @@ top_srcdir = @top_srcdir@
+ man_MANS = man1/chage.1 man1/chfn.1 man8/chgpasswd.8 man8/chpasswd.8 \
+ 	man1/chsh.1 man1/expiry.1 man5/faillog.5 man8/faillog.8 \
+ 	man3/getspnam.3 man1/gpasswd.1 man8/groupadd.8 man8/groupdel.8 \
+-	man8/groupmems.8 man8/groupmod.8 man1/groups.1 man8/grpck.8 \
++	man8/groupmems.8 man8/groupmod.8 man1/ man8/grpck.8 \
+ 	man8/grpconv.8 man8/grpunconv.8 man5/gshadow.5 man8/lastlog.8 \
+ 	man1/login.1 man5/login.defs.5 man8/logoutd.8 man1/newgrp.1 \
+ 	man8/newusers.8 man8/nologin.8 man1/passwd.1 man5/passwd.5 \
+diff --git a/man/hu/Makefile.in b/man/hu/Makefile.in
+index 6785ad3..f2960a5 100644
+--- a/man/hu/Makefile.in
++++ b/man/hu/Makefile.in
+@@ -327,7 +327,7 @@ top_srcdir = @top_srcdir@
+ man_MANS = \
+ 	man1/chsh.1 \
+ 	man1/gpasswd.1 \
+-	man1/groups.1 \
++	man1/ \
+ 	man8/lastlog.8 \
+ 	man1/login.1 \
+ 	man1/newgrp.1 \
+diff --git a/man/it/Makefile.in b/man/it/Makefile.in
+index 46f6a42..e24a8df 100644
+--- a/man/it/Makefile.in
++++ b/man/it/Makefile.in
+@@ -331,7 +331,7 @@ top_srcdir = @top_srcdir@
+ man_MANS = man1/chage.1 man1/chfn.1 man8/chgpasswd.8 man8/chpasswd.8 \
+ 	man1/chsh.1 man1/expiry.1 man5/faillog.5 man8/faillog.8 \
+ 	man3/getspnam.3 man1/gpasswd.1 man8/groupadd.8 man8/groupdel.8 \
+-	man8/groupmems.8 man8/groupmod.8 man1/groups.1 man8/grpck.8 \
++	man8/groupmems.8 man8/groupmod.8 man1/ man8/grpck.8 \
+ 	man8/grpconv.8 man8/grpunconv.8 man5/gshadow.5 man8/lastlog.8 \
+ 	man1/login.1 man5/login.defs.5 man8/logoutd.8 man1/newgrp.1 \
+ 	man8/newusers.8 man8/nologin.8 man1/passwd.1 man5/passwd.5 \
+diff --git a/man/ja/Makefile.in b/man/ja/Makefile.in
+index 1caa670..db149a3 100644
+--- a/man/ja/Makefile.in
++++ b/man/ja/Makefile.in
+@@ -328,7 +328,7 @@ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ man_MANS = man1/chage.1 man1/chfn.1 man8/chpasswd.8 man1/chsh.1 \
+ 	man1/expiry.1 man5/faillog.5 man8/faillog.8 man1/gpasswd.1 \
+-	man8/groupadd.8 man8/groupdel.8 man8/groupmod.8 man1/groups.1 \
++	man8/groupadd.8 man8/groupdel.8 man8/groupmod.8 man1/ \
+ 	man8/grpck.8 man8/grpconv.8 man8/grpunconv.8 man8/lastlog.8 \
+ 	man1/login.1 man5/login.defs.5 man8/logoutd.8 man1/newgrp.1 \
+ 	man8/newusers.8 man1/passwd.1 man5/passwd.5 man8/pwck.8 \
+diff --git a/man/ko/Makefile.in b/man/ko/Makefile.in
+index 661e1e8..17736d3 100644
+--- a/man/ko/Makefile.in
++++ b/man/ko/Makefile.in
+@@ -327,7 +327,7 @@ top_srcdir = @top_srcdir@
+ man_MANS = \
+ 	man1/chfn.1 \
+ 	man1/chsh.1 \
+-	man1/groups.1 \
++	man1/ \
+ 	man1/login.1 \
+ 	man5/passwd.5 \
+ 	man1/su.1 \
+diff --git a/man/pl/Makefile.in b/man/pl/Makefile.in
+index d6350e5..2843c75 100644
+--- a/man/pl/Makefile.in
++++ b/man/pl/Makefile.in
+@@ -332,7 +332,7 @@ top_srcdir = @top_srcdir@
+ # 2012.01.28 - activate manpages with more than 50% translated messages
+ man_MANS = man1/chage.1 man1/chsh.1 man1/expiry.1 man5/faillog.5 \
+ 	man8/faillog.8 man3/getspnam.3 man8/groupadd.8 man8/groupdel.8 \
+-	man8/groupmems.8 man8/groupmod.8 man1/groups.1 man8/grpck.8 \
++	man8/groupmems.8 man8/groupmod.8 man1/ man8/grpck.8 \
+ 	man8/lastlog.8 man8/logoutd.8 man1/newgrp.1 man1/sg.1 \
+ 	man3/shadow.3 man8/userdel.8 man8/usermod.8 man8/vigr.8 \
+ 	man8/vipw.8 $(am__append_1)
+diff --git a/man/ru/Makefile.in b/man/ru/Makefile.in
+index cbdffd7..dc0ec3e 100644
+--- a/man/ru/Makefile.in
++++ b/man/ru/Makefile.in
+@@ -331,7 +331,7 @@ top_srcdir = @top_srcdir@
+ man_MANS = man1/chage.1 man1/chfn.1 man8/chgpasswd.8 man8/chpasswd.8 \
+ 	man1/chsh.1 man1/expiry.1 man5/faillog.5 man8/faillog.8 \
+ 	man3/getspnam.3 man1/gpasswd.1 man8/groupadd.8 man8/groupdel.8 \
+-	man8/groupmems.8 man8/groupmod.8 man1/groups.1 man8/grpck.8 \
++	man8/groupmems.8 man8/groupmod.8 man1/ man8/grpck.8 \
+ 	man8/grpconv.8 man8/grpunconv.8 man5/gshadow.5 man8/lastlog.8 \
+ 	man1/login.1 man5/login.defs.5 man8/logoutd.8 man1/newgrp.1 \
+ 	man8/newusers.8 man8/nologin.8 man1/passwd.1 man5/passwd.5 \
+diff --git a/man/sv/Makefile.in b/man/sv/Makefile.in
+index d6b562c..6a979b8 100644
+--- a/man/sv/Makefile.in
++++ b/man/sv/Makefile.in
+@@ -332,7 +332,7 @@ top_srcdir = @top_srcdir@
+ # 2012.01.28 - activate manpages with more than 50% translated messages
+ man_MANS = man1/chage.1 man1/chsh.1 man1/expiry.1 man5/faillog.5 \
+ 	man8/faillog.8 man3/getspnam.3 man8/groupadd.8 man8/groupdel.8 \
+-	man8/groupmems.8 man8/groupmod.8 man1/groups.1 man8/grpck.8 \
++	man8/groupmems.8 man8/groupmod.8 man1/ man8/grpck.8 \
+ 	man5/gshadow.5 man8/lastlog.8 man8/logoutd.8 man1/newgrp.1 \
+ 	man8/nologin.8 man1/passwd.1 man5/passwd.5 man8/pwck.8 \
+ 	man1/sg.1 man3/shadow.3 man5/suauth.5 man8/userdel.8 \
+diff --git a/man/uk/Makefile.in b/man/uk/Makefile.in
+index ce192e6..c7097e2 100644
+--- a/man/uk/Makefile.in
++++ b/man/uk/Makefile.in
+@@ -331,7 +331,7 @@ top_srcdir = @top_srcdir@
+ man_MANS = man1/chage.1 man1/chfn.1 man8/chgpasswd.8 man8/chpasswd.8 \
+ 	man1/chsh.1 man1/expiry.1 man5/faillog.5 man8/faillog.8 \
+ 	man3/getspnam.3 man1/gpasswd.1 man8/groupadd.8 man8/groupdel.8 \
+-	man8/groupmems.8 man8/groupmod.8 man1/groups.1 man8/grpck.8 \
++	man8/groupmems.8 man8/groupmod.8 man1/ man8/grpck.8 \
+ 	man8/grpconv.8 man8/grpunconv.8 man5/gshadow.5 man8/lastlog.8 \
+ 	man1/login.1 man5/login.defs.5 man8/logoutd.8 man1/newgrp.1 \
+ 	man8/newusers.8 man8/nologin.8 man1/passwd.1 man5/passwd.5 \
+diff --git a/man/zh_CN/Makefile.in b/man/zh_CN/Makefile.in
+index 58e4b9d..c03766f 100644
+--- a/man/zh_CN/Makefile.in
++++ b/man/zh_CN/Makefile.in
+@@ -331,7 +331,7 @@ top_srcdir = @top_srcdir@
+ man_MANS = man1/chage.1 man1/chfn.1 man8/chgpasswd.8 man8/chpasswd.8 \
+ 	man1/chsh.1 man1/expiry.1 man5/faillog.5 man8/faillog.8 \
+ 	man3/getspnam.3 man1/gpasswd.1 man8/groupadd.8 man8/groupdel.8 \
+-	man8/groupmems.8 man8/groupmod.8 man1/groups.1 man8/grpck.8 \
++	man8/groupmems.8 man8/groupmod.8 man1/ man8/grpck.8 \
+ 	man8/grpconv.8 man8/grpunconv.8 man5/gshadow.5 man8/lastlog.8 \
+ 	man1/login.1 man5/login.defs.5 man8/logoutd.8 man1/newgrp.1 \
+ 	man8/newusers.8 man8/nologin.8 man1/passwd.1 man5/passwd.5 \
+diff --git a/src/Makefile.in b/src/Makefile.in
+index da31572..2339520 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
+ POST_UNINSTALL = :
+ build_triplet = @build@
+ host_triplet = @host@
+-bin_PROGRAMS = groups$(EXEEXT) login$(EXEEXT) $(am__EXEEXT_1) \
++bin_PROGRAMS = login$(EXEEXT) $(am__EXEEXT_1) \
+ 	$(am__EXEEXT_2)
+ sbin_PROGRAMS = nologin$(EXEEXT)
+ ubin_PROGRAMS = faillog$(EXEEXT) lastlog$(EXEEXT) chage$(EXEEXT) \
+-- 
+2.46.2
+

@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -155,6 +155,7 @@ cd %{_builddir}/%{name}-build
         --enable-stack-protector=strong \
         --disable-experimental-malloc \
         --disable-silent-rules \
+        --disable-crypt \
         libc_cv_slibdir=%{_libdir}
 
 # Sometimes we have false "out of memory" make error
@@ -354,6 +355,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Oct 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.36-7
+- Disable libcrypt as a part of yescrypt addition
 * Wed Jul 17 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 2.36-6
 - Enable static-pie support
 * Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.36-5

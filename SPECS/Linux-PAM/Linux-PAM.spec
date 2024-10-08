@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
@@ -18,9 +18,11 @@ Patch0: 0001-faillock-add-support-to-print-login-failures.patch
 
 BuildRequires:  libselinux-devel
 BuildRequires:  gdbm-devel
+BuildRequires:  libxcrypt-devel
 
 Requires: libselinux
 Requires: gdbm
+Requires: libxcrypt
 
 %define ExtraBuildRequires systemd-rpm-macros
 
@@ -135,6 +137,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Oct 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.1-2
+- Bump version to use yescrypt
 * Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.1-1
 - Upgrade to v1.6.1
 * Wed May 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.3-1
