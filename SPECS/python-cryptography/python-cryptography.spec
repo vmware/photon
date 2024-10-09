@@ -1,7 +1,7 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        41.0.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -21,6 +21,7 @@ Source1: %{name}-registry%{?dist}-%{version}.tar.gz
 %define sha512 %{name}-registry%{?dist}=903d3aea41799d6e889194c50464ce651d283c977706104b1d30a803882d7e5faa427b4aa0c0fcd655d2c9b39e3a716b945648b774e5613db4ec2d75741b7d34
 
 Patch0: CVE-2024-26130.patch
+Patch1: default-openssl-legacy-false.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  python3-devel
@@ -83,6 +84,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 08 2024 Tapas Kundu <tapas.kundu@broadcom.com> 41.0.7-5
+- disable legacy openssl cryptos by default
 * Tue May 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 41.0.7-4
 - Do offline build
 * Mon Mar 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 41.0.7-3
