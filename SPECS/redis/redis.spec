@@ -1,6 +1,6 @@
 Summary:       advanced key-value store
 Name:          redis
-Version:       7.2.4
+Version:       7.2.6
 Release:       1%{?dist}
 License:       BSD
 URL:           http://redis.io
@@ -9,7 +9,7 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=d15ec5ccb610eded6d0c54f4a29fefaa1906e4db8479c3fa291d0a4474d3ed4795373e7fcb3d55dbb1ae840eac5ec50b56c0127054e406bca04ca71650f9fecd
+%define sha512 %{name}=4635a3c5b23f3985ae7dbec9655eacedfdb16356014b30f864232467094f85fbc1c6af35837b05040f6d2a3b5fd1413c8716b541c8b2c4b24d8d4fbdc7884136
 
 Source1: %{name}.sysusers
 
@@ -90,6 +90,8 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Oct 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.6-1
+- Upgrade to v7.2.6
 * Wed Jan 17 2024 Nitesh Kumar <kunitesh@vmware.com> 7.2.4-1
 - Version upgrade to v7.2.4 to fix CVE-2023-41056
 * Tue Dec 19 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.3-1
