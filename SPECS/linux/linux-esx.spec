@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.114
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -67,19 +67,20 @@ Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
+Source36: jitterentropy_rng_proxy.c
 %endif
 
 %if 0%{?fips}
-Source36: fips_canister_wrapper.c
-Source37: fips_canister_wrapper.h
-Source38: fips_canister_wrapper_asm.S
-Source39: fips_canister_wrapper_common.h
-Source40: fips_canister_wrapper_internal.h
-Source41: fips_canister_wrapper_internal.c
+Source37: fips_canister_wrapper.c
+Source38: fips_canister_wrapper.h
+Source39: fips_canister_wrapper_asm.S
+Source40: fips_canister_wrapper_common.h
+Source41: fips_canister_wrapper_internal.h
+Source42: fips_canister_wrapper_internal.c
 %endif
 
 # CVE
-Source42: CVE-2023-39191.patches
+Source43: CVE-2023-39191.patches
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
 Patch1: net-Double-tcp_mem-limits.patch
@@ -178,7 +179,7 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2023-39191 [110..128]
-%include %{SOURCE42}
+%include %{SOURCE43}
 
 # Fix CVE-2024-50047
 Patch131: 0001-smb-client-fix-UAF-in-async-decryption.patch
@@ -256,14 +257,16 @@ Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 %ifarch x86_64
 Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 Patch506: 0001-jitterentropy-kcapi-defer-jent_init.patch
+Patch507: 0001-compile-jitterentropy-rng-proxy.patch
+Patch508: 0001-change-jitterentropy_rng-driver-name.patch
 %endif
 
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch508: 0001-FIPS-canister-binary-usage.patch
-Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
-Patch510: 0001-LKCM-5.0-binary-patching-to-fix-struct-aesni_cpu_id-.patch
-Patch511: 0001-canister-Change-spinlock_t-lock-to-void-reserved.patch
+Patch509: 0001-FIPS-canister-binary-usage.patch
+Patch510: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch511: 0001-LKCM-5.0-binary-patching-to-fix-struct-aesni_cpu_id-.patch
+Patch512: 0001-canister-Change-spinlock_t-lock-to-void-reserved.patch
 %endif
 
 %ifarch x86_64
@@ -369,11 +372,11 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m500 -M504
 
 %ifarch x86_64
-%autopatch -p1 -m505 -M506
+%autopatch -p1 -m505 -M508
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M511
+%autopatch -p1 -m509 -M512
 %endif
 
 %ifarch x86_64
@@ -387,17 +390,18 @@ cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
 cp %{SOURCE33} crypto/jitterentropy-%{jent_major_version}/
 cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
 cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
+cp %{SOURCE36} crypto/
 %endif
 
 %make_build mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
-cp %{SOURCE36} crypto/
 cp %{SOURCE37} crypto/
 cp %{SOURCE38} crypto/
 cp %{SOURCE39} crypto/
 cp %{SOURCE40} crypto/
 cp %{SOURCE41} crypto/
+cp %{SOURCE42} crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
@@ -511,6 +515,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 18 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.114-6
+- New addition of jitterentropy RNG proxy.
 * Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-5
 - Fix CVE-2024-46816
 * Thu Nov 14 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-4

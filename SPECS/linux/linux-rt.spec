@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.114
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -72,19 +72,20 @@ Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
+Source36: jitterentropy_rng_proxy.c
 %endif
 
 %if 0%{?fips}
-Source36: fips_canister_wrapper.c
-Source37: fips_canister_wrapper.h
-Source38: fips_canister_wrapper_asm.S
-Source39: fips_canister_wrapper_common.h
-Source40: fips_canister_wrapper_internal.h
-Source41: fips_canister_wrapper_internal.c
+Source37: fips_canister_wrapper.c
+Source38: fips_canister_wrapper.h
+Source39: fips_canister_wrapper_asm.S
+Source40: fips_canister_wrapper_common.h
+Source41: fips_canister_wrapper_internal.h
+Source42: fips_canister_wrapper_internal.c
 %endif
 
 # CVE
-Source42: CVE-2023-39191.patches
+Source43: CVE-2023-39191.patches
 # common
 Patch0: net-Double-tcp_mem-limits.patch
 Patch1: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
@@ -146,7 +147,7 @@ Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch102: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2023-39191 [110..128]
-%include %{SOURCE42}
+%include %{SOURCE43}
 
 # Fix CVE-2023-52452
 Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
@@ -225,6 +226,8 @@ Patch1004: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
 %ifarch x86_64
 Patch1005: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+Patch1006: 0001-compile-jitterentropy-rng-proxy.patch
+Patch1007: 0001-change-jitterentropy_rng-driver-name.patch
 %endif
 
 %if 0%{?fips}
@@ -338,7 +341,7 @@ stalld to use eBPF based backend.
 %autopatch -p1 -m1000 -M1004
 
 %ifarch x86_64
-%autopatch -p1 -m1005 -M1005
+%autopatch -p1 -m1005 -M1007
 %endif
 
 %if 0%{?fips}
@@ -355,6 +358,7 @@ cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
 cp %{SOURCE33} crypto/jitterentropy-%{jent_major_version}/
 cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
 cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
+cp %{SOURCE36} crypto/
 %endif
 
 %make_build mrproper
@@ -364,12 +368,12 @@ cp %{SOURCE21} photon_sb2020.pem
 cp %{SOURCE1} .config
 %endif
 %if 0%{?fips}
-cp %{SOURCE36} crypto/
 cp %{SOURCE37} crypto/
 cp %{SOURCE38} crypto/
 cp %{SOURCE39} crypto/
 cp %{SOURCE40} crypto/
 cp %{SOURCE41} crypto/
+cp %{SOURCE42} crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
@@ -513,6 +517,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Nov 18 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.114-5
+- New addition of jitterentropy RNG proxy.
 * Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-4
 - Fix CVE-2024-46816
 * Thu Nov 14 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-3

@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.114
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -112,6 +112,8 @@ Source48: canister_combine.lds
 Source49: gen_canister_relocs.c
 Source50: check_kernel_struct_in_canister.inc
 %endif
+
+Source51: jitterentropy_rng_proxy.c
 %endif
 
 # CVE
@@ -292,6 +294,8 @@ Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
 %ifarch x86_64
 Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
+Patch506: 0001-compile-jitterentropy-rng-proxy.patch
+Patch507: 0001-change-jitterentropy_rng-driver-name.patch
 %endif
 
 %if 0%{?fips}
@@ -546,7 +550,7 @@ The kernel fips-canister
 %autopatch -p1 -m500 -M504
 
 %ifarch x86_64
-%autopatch -p1 -m505 -M505
+%autopatch -p1 -m505 -M507
 %endif
 
 %if 0%{?fips}
@@ -629,6 +633,7 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    crypto/
 cp %{SOURCE10} ${PWD}/
 cp %{SOURCE11} ${PWD}/
+cp %{SOURCE51} crypto/
 %endif
 
 %if 0%{?canister_build}
@@ -922,6 +927,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Nov 18 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.114-6
+- New addition of jitterentropy RNG proxy.
 * Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-5
 - Fix CVE-2024-46816
 * Thu Nov 14 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-4
