@@ -3,7 +3,7 @@
 
 Name:           rubygem-llhttp-ffi
 Version:        0.5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -25,8 +25,6 @@ Requires: rubygem-http-parser
 Requires: rubygem-ffi-compiler
 Requires: ruby
 
-BuildArch: noarch
-
 %description
 An easy-to-use client library for making requests from Ruby. It uses a simple
 method chaining system for building requests, similar to Python's Requests.
@@ -45,6 +43,8 @@ method chaining system for building requests, similar to Python's Requests.
 %{gem_base}
 
 %changelog
+* Mon Oct 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.5.0-3
+- Remove noarch
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.5.0-2
 - Add gem macros
 * Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.5.0-1

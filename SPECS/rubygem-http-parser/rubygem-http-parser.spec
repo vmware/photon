@@ -3,7 +3,7 @@
 
 Name:           rubygem-http-parser
 Version:        1.2.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -19,8 +19,6 @@ BuildRequires: rubygem-ffi-compiler
 
 Requires: rubygem-ffi-compiler
 Requires: ruby
-
-BuildArch: noarch
 
 %description
 An easy-to-use client library for making requests from Ruby. It uses a simple
@@ -40,6 +38,8 @@ method chaining system for building requests, similar to Python's Requests.
 %{gem_base}
 
 %changelog
+* Mon Oct 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-4
+- Remove noarch
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.3-3
 - Add gem macros
 * Wed Feb 28 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.3-2

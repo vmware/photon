@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.19.1.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -25,6 +25,7 @@ Patch2:     0003-wait-for-lock.patch
 Patch3:     0004-migrate-rpmdb.patch
 Patch4:     0005-dilute-user-group-requires.patch
 Patch5:     0006-disable-sysusers.patch
+Patch6:     0007-remove-brp-elfperms-script.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -368,6 +369,8 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}/*.md
 
 %changelog
+* Mon Oct 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.1.1-3
+- Remove brp-elfperms script
 * Tue Aug 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.1.1-2
 - Bump version as a part of nss upgrade
 * Sun Jun 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.1.1-1

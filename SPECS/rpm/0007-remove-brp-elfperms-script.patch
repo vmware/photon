@@ -1,0 +1,65 @@
+From bcf06fded9ff0d94d5104b53344eb959a8dd0c92 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Mon, 23 Sep 2024 11:00:55 +0530
+Subject: [PATCH] Remove brp-elfperms script
+
+This is done based on discussion at:
+https://github.com/rpm-software-management/rpm/discussions/3195
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ platform.in            |  2 --
+ scripts/CMakeLists.txt |  2 +-
+ scripts/brp-elfperms   | 13 -------------
+ 3 files changed, 1 insertion(+), 16 deletions(-)
+ delete mode 100755 scripts/brp-elfperms
+
+diff --git a/platform.in b/platform.in
+index 2e7c6b50a7..30ce585b8b 100644
+--- a/platform.in
++++ b/platform.in
+@@ -80,12 +80,10 @@
+ %__brp_strip %{_rpmconfigdir}/brp-strip %{__strip}
+ %__brp_strip_comment_note %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}
+ %__brp_strip_static_archive %{_rpmconfigdir}/brp-strip-static-archive %{__strip}
+-%__brp_elfperms %{_rpmconfigdir}/brp-elfperms
+ %__brp_remove_la_files %{_rpmconfigdir}/brp-remove-la-files
+ 
+ %__os_install_post    \
+     %{?__brp_compress} \
+-    %{?__brp_elfperms} \
+     %{?__brp_strip} \
+     %{?__brp_strip_static_archive} \
+     %{?__brp_strip_comment_note} \
+diff --git a/scripts/CMakeLists.txt b/scripts/CMakeLists.txt
+index cc9d84e5cf..e449f3e716 100644
+--- a/scripts/CMakeLists.txt
++++ b/scripts/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ install(PROGRAMS gendiff TYPE BIN)
+ install(PROGRAMS
+ 	brp-compress brp-strip brp-strip-comment-note
+-	brp-strip-static-archive brp-elfperms brp-remove-la-files
++	brp-strip-static-archive brp-remove-la-files
+ 	check-files check-prereqs
+ 	check-buildroot check-rpaths check-rpaths-worker
+ 	find-lang.sh find-requires find-provides
+diff --git a/scripts/brp-elfperms b/scripts/brp-elfperms
+deleted file mode 100755
+index 0749f36a5e..0000000000
+--- a/scripts/brp-elfperms
++++ /dev/null
+@@ -1,13 +0,0 @@
+-#!/bin/sh
+-# If using normal root, avoid changing anything.
+-if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
+-	exit 0
+-fi
+-
+-ELFCLASSIFY=/usr/bin/eu-elfclassify
+-
+-[ -x ${ELFCLASSIFY} ] || exit 0
+-
+-# Strip executable bits from ELF DSO's which are not actually executable
+-find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) | ${ELFCLASSIFY} --shared --print0 --stdin | xargs -0 -r chmod a-x
+-

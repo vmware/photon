@@ -3,7 +3,7 @@
 
 Name:           rubygem-io-event
 Version:        1.4.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An event loop.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -17,8 +17,6 @@ Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 BuildRequires:  ruby-devel
 
 Requires: ruby
-
-BuildArch: noarch
 
 %description
 Provides low level cross-platform primitives for constructing
@@ -38,6 +36,8 @@ event loops, with support for select, kqueue, epoll and io_uring.
 %{gem_base}
 
 %changelog
+* Mon Oct 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.4-3
+- Remove noarch
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.4-2
 - Add gem macros
 * Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.4-1
