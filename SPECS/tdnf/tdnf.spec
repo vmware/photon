@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.8
+Version:        3.5.9
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=0f517e256409687a467b67e12ac4c2e5ff66670f029bd04f7d70a41004be68efba92e2072cb1ef64c6c025b55cb6fe8044337720167f420a79a12c3b55a8ee6c
+%define sha512  %{name}=75d5b35763f06c6258ee8585c850547b4e55bde8c538936895a247d4ea04aa65ef70e4eff31d4f33ab58bfcb0b4deb8a131a2c947b1f07e6f19f62ab9a5e78fa
 Patch0:         0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 
 Requires:       rpm-libs
@@ -294,6 +294,11 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Oct 15 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.9-1
+- update to 3.5.9
+- allow unprivileged user to run 'makecache'
+- show complex (relational) deps in repoquery
+- remove pthread_mutex API
 * Tue Jul 16 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.8-1
 - update to 3.5.8
 - priority fix and output repo information in json (PR #484 and PR #485)
