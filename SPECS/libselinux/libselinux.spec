@@ -1,7 +1,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -19,6 +19,10 @@ BuildRequires:  swig
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-pip
+
+# this is not really needed to build libselinux
+# this is added to avoid a build failure while forming chroot
+BuildRequires: util-linux-devel
 
 %define ExtraBuildRequires systemd-rpm-macros
 
@@ -122,6 +126,8 @@ rm -rf %{buildroot}%{_mandir}/ru \
 %{python3_sitelib}/*
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-4
+- Add libselinux-devel to BuildRequires to handle build failure
 * Thu Sep 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5-3
 - Spec cleanups & use /run instead of /var/run
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 3.5-2

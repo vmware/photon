@@ -1,6 +1,6 @@
 Name:       debugedit
 Version:    5.0
-Release:    8%{?dist}
+Release:    9%{?dist}
 Summary:    Tools for debuginfo creation
 License:    GPLv3+ and GPLv2+ and LGPLv2+
 URL:        https://sourceware.org/debugedit
@@ -30,7 +30,7 @@ Requires: elfutils
 # For add_minidebug, readelf, awk, nm, sort, comm, objcopy, xz
 Requires: gawk
 Requires: xz
-Requires: (coreutils or coreutils-selinux)
+Requires: coreutils >= 9.1-7
 # For do_file, gdb_add_index
 # We only need gdb-add-index, so suggest gdb-minimal (full gdb is also ok)
 Requires: (gdb or gdb-minimal)
@@ -75,6 +75,8 @@ sed -i 's/^\(C\|LD\)FLAGS=.*/\1FLAGS=""/' tests/atlocal
 %{_mandir}/man1/find-debuginfo.1*
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-9
+- Require coreutils only
 * Fri Aug 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-8
 - Retain .note.GNU-stack while stripping object files
 * Fri Jul 26 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-7

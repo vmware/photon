@@ -1,7 +1,7 @@
 Summary:          Z shell
 Name:             zsh
 Version:          5.9
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          MIT
 URL:              http://zsh.org
 Group:            System Environment/Shells
@@ -14,7 +14,7 @@ Source0: http://www.zsh.org/pub/%{name}-%{version}.tar.xz
 Source1: zprofile.rhs
 Source2: zshrc
 
-BuildRequires:    (coreutils or coreutils-selinux)
+BuildRequires:    coreutils >= 9.1-7
 BuildRequires:    tar
 BuildRequires:    patch
 BuildRequires:    diffutils
@@ -31,7 +31,7 @@ BuildRequires:    elfutils
 
 Requires(post):   /bin/grep
 Requires(postun): /bin/grep
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils >= 9.1-7
 
 Provides:         /bin/%{name}
 
@@ -124,6 +124,8 @@ fi
 %config(noreplace) %{_sysconfdir}/z*
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.9-5
+- Require coreutils only
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.9-4
 - Bump version as a part of elfutils upgrade
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.9-3

@@ -1,7 +1,7 @@
 Summary:        Handle Common Gateway Interface requests and responses
 Name:           perl-CGI
 Version:        4.54
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/CGI
@@ -14,7 +14,7 @@ Source0: https://cpan.metacpan.org/authors/id/L/LE/LEEJO/CGI-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  perl
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils >= 9.1-7
 BuildRequires:  findutils
 BuildRequires:  make
 BuildRequires:  sed
@@ -72,6 +72,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*.3*
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.54-3
+- Require coreutils only
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.54-2
 - Fix build requires
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 4.54-1

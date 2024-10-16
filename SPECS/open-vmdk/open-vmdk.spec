@@ -1,7 +1,7 @@
 Summary:       Tools to create OVA files from raw disk images
 Name:          open-vmdk
 Version:       0.3.8
-Release:       2%{?dist}
+Release:       3%{?dist}
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       Apache License 2.0
@@ -13,7 +13,7 @@ Source0:       https://github.com/vmware/open-vmdk/archive/refs/tags/%{name}-%{v
 
 BuildRequires: zlib-devel
 
-Requires: coreutils
+Requires: coreutils >= 9.1-7
 Requires: grep
 Requires: python3-lxml
 Requires: python3-PyYAML
@@ -48,6 +48,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/*
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.3.8-3
+- Require coreutils only
 * Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.3.8-2
 - Bump version as a part of util-linux upgrade
 * Thu Mar 07 2024 Oliver Kurth <okurth@vmware.com> 0.3.8-1

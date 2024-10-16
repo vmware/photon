@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.3.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -35,7 +35,7 @@ Summary:    Development Libraries for ruby
 Group:      Development/Libraries
 Requires:   findutils
 Requires:   libselinux-devel
-Requires:   (coreutils or coreutils-selinux)
+Requires:   coreutils >= 9.1-7
 Requires:   %{name} = %{version}-%{release}
 
 %description devel
@@ -98,6 +98,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-4
+- Require coreutils only
 * Thu Jun 27 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.3.0-3
 - Fix Syntax error in macros.ruby file
 * Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.3.0-2

@@ -4,7 +4,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        41.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -36,7 +36,7 @@ BuildRequires: libselinux-devel
 BuildRequires: policycoreutils
 
 Requires: policycoreutils
-Requires: coreutils-selinux
+Requires: coreutils >= 9.1-7
 Requires: libselinux-utils
 
 %description
@@ -111,6 +111,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Tue Nov 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 41.3-2
+- Require coreutils only
 * Mon Jun 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 41.3-1
 - Upgrade to v41.2
 * Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-7

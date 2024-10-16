@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        255.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -114,7 +114,7 @@ resolution.
 Summary:        systemd libraries
 License:        LGPLv2+ and MIT
 Provides:       nss-myhostname = 0.4
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(post): coreutils >= 9.1-7
 Requires(post): sed
 Requires(post): grep
 
@@ -752,6 +752,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 255.10-2
+- Require coreutils only
 * Mon Jul 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 255.10-1
 - Upgrade to v255.10
 * Wed Jun 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 255.2-6

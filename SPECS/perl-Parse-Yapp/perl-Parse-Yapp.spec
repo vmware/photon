@@ -1,7 +1,7 @@
 Summary:        Perl extension for generating and using LALR parsers
 Name:           perl-Parse-Yapp
 Version:        1.21
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL+ or Artistic
 URL:            https://metacpan.org/release/Parse-Yapp
 Group:          Development/Libraries/Perl
@@ -13,7 +13,7 @@ Source0: https://www.cpan.org/authors/id/W/WB/WBRASWELL/Parse-Yapp-%{version}.ta
 
 BuildArch:      noarch
 
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils >= 9.1-7
 BuildRequires:  make
 BuildRequires:  perl
 
@@ -49,6 +49,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man3/*.3*
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.21-4
+- Require coreutils only
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21-3
 - Fix build requires
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.21-2

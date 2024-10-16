@@ -1,6 +1,6 @@
 Name:           perl-libwww-perl
 Version:        6.72
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Perl interface to the World-Wide Web
 License:        GPL-1.0-or-later OR Artistic-1.0-Perl
 URL:            https://metacpan.org/release/libwww-perl
@@ -13,7 +13,7 @@ Source0: https://cpan.metacpan.org/authors/id/O/OA/OALDERS/libwww-perl-%{version
 
 BuildArch:      noarch
 
-BuildRequires:  coreutils
+BuildRequires:  coreutils >= 9.1-7
 BuildRequires:  findutils
 BuildRequires:  make
 BuildRequires:  perl
@@ -60,5 +60,7 @@ unset COVERAGE PERL_LWP_ENV_HTTP_TEST_SERVER_TIMEOUT PERL_LWP_ENV_HTTP_TEST_URL
 %{_mandir}/man3/*.3*
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.72-2
+- Require coreutils only
 * Sun Oct 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.72-1
 - Intial version. Needed by perl-Crypt-SSLeay.

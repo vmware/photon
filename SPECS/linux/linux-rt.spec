@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.83
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -238,10 +238,10 @@ BuildRequires: gdb
 
 Requires: kmod
 Requires: filesystem
-Requires(pre):    (coreutils or coreutils-selinux)
-Requires(preun):  (coreutils or coreutils-selinux)
-Requires(post):   (coreutils or coreutils-selinux)
-Requires(postun): (coreutils or coreutils-selinux)
+Requires(pre):    coreutils >= 9.1-7
+Requires(preun):  coreutils >= 9.1-7
+Requires(post):   coreutils >= 9.1-7
+Requires(postun): coreutils >= 9.1-7
 
 %description
 The Linux package contains the Linux kernel with RT (real-time)
@@ -486,6 +486,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.83-3
+- Require coreutils only
 * Mon Apr 29 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2
 - Patched CVE-2024-26643
 * Mon Apr 29 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-1

@@ -1,7 +1,7 @@
 Summary:    Programs that show the differences between files or directories
 Name:       diffutils
 Version:    3.8
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/diffutils
 Group:      System Environment/Base
@@ -11,7 +11,7 @@ Distribution:   Photon
 Source0: http://ftp.gnu.org/gnu/diffutils/%{name}-%{version}.tar.xz
 %define sha512 %{name}=279441270987e70d5ecfaf84b6285a4866929c43ec877e50f154a788858d548a8a316f2fc26ad62f7348c8d289cb29a09d06dfadce1806e3d8b4ea88c8b1aa7c
 
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils >= 9.1-7
 
 Conflicts:      toybox < 0.8.2-2
 
@@ -44,6 +44,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.8-3
+- Require coreutils only
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8-2
 - Fix build requires
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.8-1

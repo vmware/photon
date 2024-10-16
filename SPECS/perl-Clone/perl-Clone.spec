@@ -1,6 +1,6 @@
 Name:           perl-Clone
 Version:        0.46
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Recursively copy perl data types
 License:        GPL-1.0-or-later OR Artistic-1.0-Perl
 URL:            https://metacpan.org/release/Clone
@@ -11,7 +11,7 @@ Distribution:   Photon
 Source0: https://cpan.metacpan.org/modules/by-module/Clone/Clone-%{version}.tar.gz
 %define sha512 Clone=f8bb1010364e94c7cc8bba25681cd9fd737ec2935a8be960ac53099359729fc679190a115dd082fccd239b35762dee2b3be3adbddce37e4ceae6fe934fbad545
 
-BuildRequires:  coreutils
+BuildRequires:  coreutils >= 9.1-7
 BuildRequires:  findutils
 BuildRequires:  perl
 
@@ -47,5 +47,7 @@ find %{buildroot} -type f -name '*.bs' -empty -delete
 %{_mandir}/man3/Clone.3*
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.46-2
+- Require coreutils only
 * Sun Oct 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.46-1
 - Intial version. Needed by perl-Crypt-SSLeay.

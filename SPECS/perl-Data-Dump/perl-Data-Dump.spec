@@ -1,6 +1,6 @@
 Name:           perl-Data-Dump
 Version:        1.25
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Pretty printing of data structures
 License:        GPL-1.0-or-later OR Artistic-1.0-Perl
 URL:            https://metacpan.org/release/Data-Dump
@@ -13,7 +13,7 @@ Source0: https://cpan.metacpan.org/modules/by-module/Data/Data-Dump-%{version}.t
 
 BuildArch:      noarch
 
-BuildRequires:  coreutils
+BuildRequires:  coreutils >= 9.1-7
 BuildRequires:  make
 BuildRequires:  perl
 
@@ -47,5 +47,7 @@ perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1 NO_PERLLOCAL=1
 %{_mandir}/man3/Data::Dump::Trace.3*
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.25-2
+- Require coreutils only
 * Sun Oct 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25-1
 - Intial version. Needed by perl-Crypt-SSLeay.

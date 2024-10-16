@@ -1,6 +1,6 @@
 Name:           perl-HTTP-Message
 Version:        6.45
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        HTTP style message
 License:        (GPL-1.0-or-later OR Artistic-1.0-Perl) AND CC0-1.0
 URL:            https://metacpan.org/release/HTTP-Message
@@ -13,7 +13,7 @@ Source0:        https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Message-%
 
 BuildArch:      noarch
 
-BuildRequires:  coreutils
+BuildRequires:  coreutils >= 9.1-7
 BuildRequires:  make
 BuildRequires:  perl
 
@@ -55,5 +55,7 @@ export HARNESS_OPTIONS=j$(perl -e 'if ($ARGV[0] =~ /.*-j([0-9][0-9]*).*/) {print
 %{_mandir}/man3/*
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.45-2
+- Require coreutils only
 * Sun Oct 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.45-1
 - Intial version. Needed by perl-Crypt-SSLeay.

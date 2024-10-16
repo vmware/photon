@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -34,7 +34,7 @@ BuildRequires:  systemd-rpm-macros
 Requires:       kmod
 Requires:       bash
 Requires:       rpm-build
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils >= 9.1-7
 Requires:       gawk
 Requires:       util-linux
 Requires:       binutils
@@ -122,6 +122,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.9.8-5
+- Require coreutils only
 * Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.9.8-4
 - Bump version as a part of util-linux upgrade
 * Mon Nov 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.8-3

@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        20.15.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,13 +11,13 @@ URL:            https://github.com/nodejs/node
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
 %define sha512 node=0eb35b71a63d5894216fae82be859ed1649d955781abdc44ef9d99cf99972f4ec5120239d81c6b0820ddb07abfb264cee2b8b0baaf52acbfa50863e28a3eed0c
 
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils >= 9.1-7
 BuildRequires:  zlib-devel
 BuildRequires:  python3-devel
 BuildRequires:  which
 
 Requires:       python3
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils >= 9.1-7
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -75,6 +75,8 @@ make %{?_smp_mflags} cctest
 %{_docdir}/node/gdbinit
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20.15.1-2
+- Require coreutils only
 * Tue Jul 16 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 20.15.1-1
 - Upgrade to 20.15.1
 * Fri Jun 21 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 20.15.0-1

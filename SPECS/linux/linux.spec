@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.83
-Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -361,10 +361,10 @@ BuildRequires:  gdb
 
 Requires: kmod
 Requires: filesystem
-Requires(pre):    (coreutils or coreutils-selinux)
-Requires(preun):  (coreutils or coreutils-selinux)
-Requires(post):   (coreutils or coreutils-selinux)
-Requires(postun): (coreutils or coreutils-selinux)
+Requires(pre):    coreutils >= 9.1-7
+Requires(preun):  coreutils >= 9.1-7
+Requires(post):   coreutils >= 9.1-7
+Requires(postun): coreutils >= 9.1-7
 
 Obsoletes:  linux-aws
 Obsoletes:  linux-secure
@@ -852,6 +852,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.83-8
+- Require coreutils only
 * Thu Jun 13 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.83-7
 - Fix build error in canister build and some spec refinement
 * Fri May 17 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.83-6
