@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.6.28
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -439,6 +439,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Oct 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-2
+- Fix ptp_vmw for ptp_vmw_adjfine
 * Thu Sep 05 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.6.28-1
 - Upgrade to version 6.6.x.
 * Mon Apr 29 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2
