@@ -1,7 +1,7 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
 Version:        12.7.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://sebastien.godard.pagesperso-orange.fr/
 Group:          Development/Debuggers
@@ -49,11 +49,10 @@ rm -rf %{buildroot}/*
 
 %pre
 sa_location="%{_var}/log/sa"
-sa_fn_backup="%{_var}/log/sa-$(date +%s)"
-
 # For upgrade, if /var/log/sa is a file copy that with date in /var/log/sa directory
 if [[ $1 -eq 2 ]]; then
-    if [ ! -d "${sa_location}" ]; then
+    if [ -e "${sa_location}" ] && [ ! -d "${sa_location}" ]; then
+        sa_fn_backup="%{_var}/log/sa-$(date +%s)"
         mv ${sa_location} ${sa_fn_backup}
         rm -f ${sa_location}
         install -vdm 755 ${sa_location}
@@ -80,6 +79,8 @@ fi
 %{_var}/log/sa
 
 %changelog
+*   Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> - 12.7.2-3
+-   Check for path existence before checking if it is directory in %pre
 *   Mon Oct 07 2024 Tapas Kundu <tapas.kundu@broadcom.com> 12.7.2-2
 -   Fix logging while upgrade
 *   Mon Jun 12 2023 Srinidhi Rao <srinidhir@vmware.com> 12.7.2-1
