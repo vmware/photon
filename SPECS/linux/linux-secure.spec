@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.226
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -234,6 +234,9 @@ Patch175: 0002-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
 # Fix CVE-2024-41014
 Patch176: 0001-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
 
+# Fix CVE-2024-46821
+Patch177: 0001-drm-amd-pm-Fix-negative-array-index-read.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -365,7 +368,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M176
+%autopatch -p1 -m100 -M177
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -511,6 +514,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Oct 25 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.226-6
+- Fix CVE-2024-46821
 * Mon Oct 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.226-5
 - Fix CVE-2024-41013 and CVE-2024-41014
 * Thu Oct 03 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.226-4
