@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -16,8 +16,12 @@ Patch2:         CVE-2024-27280.patch
 Patch3:         CVE-2023-36617-1.patch
 Patch4:         CVE-2023-36617-2.patch
 Patch5:         CVE-2024-27282.patch
+Patch6:         0001-Modify-code-to-upgrade-rexml-3.2.5-to-rexml-3.3.3.patch
 
-Source1: macros.ruby
+Source1:        macros.ruby
+
+Source2:        rexml-3.3.3.tar.gz
+%define sha512  rexml-3.3.3.tar.gz=3070e2fdf0748d807f7c9d5c27024194b05f2f7d848d8d913aa99cc1242de8ad50d524494456f0da5e2fe28eb5b517e8f7af44b4acc363c6975a54af6b14288b
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -58,6 +62,13 @@ Header files for doing development with ruby.
 %autosetup -p1
 
 %build
+# Modification to upgrade rexml-3.2.5 to rexml-3.3.3
+rm -rf .bundle/gems/rexml-3.2.5
+tar -xvpf %{SOURCE2} -C .bundle/gems
+
+rm gems/rexml-3.2.5.gem
+cp -p .bundle/gems/rexml-3.3.3/rexml-3.3.3.gem gems/
+
 # below loop fixes the files in libexec to point correct ruby
 # Only verfied and to be used with ruby version 2.7.1
 # Any future versions needs to be verified
@@ -111,6 +122,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Mon Oct 21 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-5
+- Fix CVE-2024-49416 and, CVE-2024-41123 Upgrade rexml to rexml-3.3.3 from rexml-3.2.5
 * Thu Jun 27 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-4
 - Fix Syntax error in macros.ruby file
 * Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-3
