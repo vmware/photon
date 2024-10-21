@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.2.0
-Release:       6%{?dist}
+Release:       7%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -13,6 +13,7 @@ Source0: https://github.com/vmware/photonos-netmgr/archive/refs/tags/%{name}-%{v
 
 Patch0: fix-section-name-parsing-logic.patch
 Patch1: 0001-destination-address-parsing-fix-in-case-of-ip-route.patch
+Patch2: fix-dupe-string.patch
 
 BuildRequires: autoconf
 BuildRequires: check-devel
@@ -84,6 +85,8 @@ export CFLAGS
 %{_libdir}/libnetmgrcli.so
 
 %changelog
+* Mon Oct 21 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.0-7
+- Patched strstr issue in nm_space_delimited_string_append
 * Fri Feb 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.2.0-6
 - Patched for ip_route fix
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.2.0-5

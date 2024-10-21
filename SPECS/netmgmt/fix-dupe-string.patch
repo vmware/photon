@@ -1,0 +1,107 @@
+commit 2e6b4c1fa729dff65459d9bf246132b5d81d5175
+Author: Tapas Kundu <tapas.kundu@broadcom.com>
+Date:   Wed Dec 18 06:57:15 2024 +0000
+
+    Fix the logic for dupe string
+    
+    In case there are multiple dns servers provided
+    as an input, if the latter is a substring of
+    any of the prior dns server, its ignored.
+    
+    Signed-off-by: Tapas Kundu <tapas.kundu@broadcom.com>
+
+diff --git a/src/netmgr.c b/src/netmgr.c
+index f1bc1fa..e2f2684 100644
+--- a/src/netmgr.c
++++ b/src/netmgr.c
+@@ -4230,6 +4230,66 @@ error:
+     goto cleanup;
+ }
+ 
++static uint32_t
++nm_store_unique_strings(
++    const char **ppszString,
++    int n,
++    char *pszResultString
++)
++{
++    uint32_t err = 0;
++
++    if (ppszString == NULL)
++    {
++        err = NM_ERR_INVALID_PARAMETER;
++        bail_on_error(err);
++    }
++    for (int i = 0; i < n; ++i) {
++        int j;
++        for (j = 0; j < i; ++j) {
++            if (!strcmp(ppszString[i], ppszString[j]))
++                break;
++        }
++
++        if (j == i) {
++            strcat(pszResultString, ppszString[i]);
++            strcat(pszResultString, " ");
++        }
++    }
++cleanup:
++    return err;
++
++error:
++    goto cleanup;
++}
++
++static uint32_t
++nm_right_trim(
++    char *pszString
++)
++{
++    char *pszEnd = NULL;
++    uint32_t err = 0;
++
++    if (pszString == NULL)
++    {
++        err = NM_ERR_INVALID_PARAMETER;
++        bail_on_error(err);
++    }
++
++    pszEnd = pszString + strlen(pszString) - 1;
++
++    while((pszEnd > pszString) && isspace(*pszEnd))
++        --pszEnd;
++
++    pszEnd[1] = '\0';
++
++cleanup:
++    return err;
++
++error:
++    goto cleanup;
++}
+ 
+ /*
+  * DNS configuration APIs
+@@ -4275,19 +4335,12 @@ nm_space_delimited_string_append(
+         {
+             strcpy(pszNewString, pszCurrentString);
+         }
+-        for (i = 0; i < count; i++)
+-        {
+-            if (strlen(pszNewString) > 0)
+-            {
+-                strcat(pszNewString, " ");
+-            }
+-            if (strstr(pszNewString, ppszStrings[i]) == NULL)
+-            {
+-                strcat(pszNewString, ppszStrings[i]);
+-            }
+-        }
++        err = nm_store_unique_strings(ppszStrings, count, pszNewString);
++        bail_on_error(err);
+     }
+ 
++    err = nm_right_trim(pszNewString);
++    bail_on_error(err);
+     *ppszNewString = pszNewString;
+ 
+ cleanup:
