@@ -1,7 +1,7 @@
 Summary:        unbound dns server
 Name:           unbound
 Version:        1.21.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
@@ -18,6 +18,8 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
 BuildRequires:  systemd
 BuildRequires:  expat-devel
+
+Patch0:         CVE-2024-8508.patch
 
 %description
 Unbound is a validating, recursive, and caching DNS resolver.
@@ -89,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Tue Oct 22 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.21.0-2
+- Fix CVE-2024-8508
 * Mon Aug 26 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.21.0-1
 - Upgrade to v1.12.0, fixes CVE-2024-33655
 * Tue Aug 20 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.16.3-3
