@@ -831,14 +831,8 @@ elif [ "$UPDATE_PKGS" = 'y' ]; then
   # The script is run without --upgrade-os option.
   # Upgrading all installed RPMs to latest versions.
   write_to_syslog "Starting update of packages with command line: $CMDLINE"
-  is_repo_config_valid_for_release $FROM_VERSION
-  rc=$?
-  find_incorrect_units
-  ((rc+=$?))
-  find_files_for_review
-
-  remove_debuginfo_packages
   backup_rpms_list_n_db $RPMDB_PATH
+  remove_debuginfo_packages
   pre_upgrade_rm_pkgs
   tdnf_makecache
   rebuilddb
