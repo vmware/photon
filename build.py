@@ -1814,11 +1814,11 @@ def main():
     if not configdict.get("release-branch-path", ""):
         raise Exception("build-config.json: release-branch-path is empty")
 
-    releaseCfgPath = f"{releaseDir}/{build_cfg}"
-    with open(releaseCfgPath) as jsonData:
-        releasedict = json.load(jsonData)
+    # releaseCfgPath = f"{releaseDir}/{build_cfg}"
+    # with open(releaseCfgPath) as jsonData:
+    #     releasedict = json.load(jsonData)
 
-    configdict = merge_dicts(releasedict, configdict)
+    # configdict = merge_dicts(releasedict, configdict)
 
     if os.environ.get("STAGE_PATH") is not None:
         configdict["stage-path"] = os.environ["STAGE_PATH"]

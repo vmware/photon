@@ -4,6 +4,7 @@ dist=".ph5"
 
 declare -A kvers
 declare -A krels
+declare -A build_for
 declare -A specs_map=(
 [linux_specs]="linux linux-esx linux-rt"
 [kernel_drivers_intel]="kernels-drivers-intel-iavf kernels-drivers-intel-i40e kernels-drivers-intel-ice"
@@ -83,6 +84,16 @@ populate_kvers() {
           kvers[$x]+="$kver "
           krels[$x]+="${rel%%.ph*} "
       fi
+
+      # Get the build_for value
+      build_for_value="$(grep -E '^\s*%global\s+build_for' "$sp" | sed -E 's/^\s*%global\s+build_for\s+//; s/^\s*|\s*$//g; s/!\s*\(\s*/!(/; s/\s*\),/),/g; s/\s*,\s*/,/g')"
+
+      # Check if build_for_value is empty and append accordingly
+      if [[ -z "$build_for_value" ]]; then
+          build_for[$x]+="all "  # Append "all" to the array
+      else
+          build_for[$x]+="$build_for_value "  # Append the found value
+      fi
     done
     kvers[$x]=$(echo "${kvers[$x]}" | sed 's/[[:space:]]*$//')
   done
@@ -128,6 +139,7 @@ create_specs() {
   local x="$(echo $pkg | tr '-' '_')"
   local kver_arr=(${kvers[$x]})
   local krel_arr=(${krels[$x]})
+  local build_for_arr=(${build_for[$x]})
   #local kver_arr=("6.1.75" "6.6.66" "6.8.88")
   #local krel_arr=("1" "2" "4")
   local sp=""
@@ -135,6 +147,7 @@ create_specs() {
   for i in ${!kver_arr[@]}; do
     local kver="${kver_arr[$i]}"
     local krel="${krel_arr[$i]}${dist}"
+    local build_for_value="${build_for_arr[$i]}"
 
     local a="$(echo $kver | cut -d. -f1)"
     local b="$(echo $kver | cut -d. -f2)"
@@ -177,6 +190,7 @@ create_specs() {
             -e "s|$ksubrel_str|${ksubrel}|" \
             -e "s|$d_ver_macro|${d_ver}|" \
             -e "s|$kernel_flavour_macro|${kernel_flavour}|" \
+            -e "s|"%{BUILD_FOR}"|${build_for_value}|" \
             ${sp} > ${target_dir}/${target_fn}
         done
       else
@@ -185,6 +199,7 @@ create_specs() {
         sed -e "s|$kver_str|${kver}|" \
           -e "s|$krel_str|${krel}|" \
           -e "s|$ksubrel_str|${ksubrel}|" \
+          -e "s|"%{BUILD_FOR}"|${build_for_value}|" \
           ${sp} > ${target_dir}/${target_fn}
       fi
     done
