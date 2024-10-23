@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.226
-Release:        6%{?dist}
+Version:        5.10.229
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:    http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=99f43ac2679bb9f90df4a7cad39b98a44e8904fe50cd2c5c40ea766e86af24f16c258836c0edbfee27fda4830b773d5a0c13ced8d304b88f5d4ee12aafbd6da9
+%define sha512 linux=786a151093bb11118b1b7b360e62f29c959b08fb208e112ea9b09f67dee4133866e3183d347ffa57e9f476566a8ab13f21f5263f82fdbae90abef395a0936692
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -222,6 +222,9 @@ Patch175: 0001-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
 # Fix CVE-2024-46821
 Patch176: 0001-drm-amd-pm-Fix-negative-array-index-read.patch
 
+# Fix CVE-2024-47673
+Patch177: 0001-wifi-iwlwifi-mvm-pause-TCM-when-the-firmware-is-stop.patch
+
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
 Patch302: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
@@ -387,7 +390,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M176
+%autopatch -p1 -m100 -M177
 
 #Amazon AWS
 %autopatch -p1 -m301 -M340
@@ -568,6 +571,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 28 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.229-1
+- Update to version 5.10.229
+- Fix CVE-2024-49983 & CVE-2024-49967
 * Fri Oct 25 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.226-6
 - Fix CVE-2024-46821
 * Mon Oct 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.226-5

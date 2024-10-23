@@ -1,0 +1,86 @@
+From acaa69e4c8246d34f11f2b63ad3b20fce8ae2017 Mon Sep 17 00:00:00 2001
+From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Date: Sun, 25 Aug 2024 19:17:10 +0300
+Subject: [PATCH] wifi: iwlwifi: mvm: pause TCM when the firmware is stopped
+
+[ Upstream commit 0668ebc8c2282ca1e7eb96092a347baefffb5fe7 ]
+
+Not doing so will make us send a host command to the transport while the
+firmware is not alive, which will trigger a WARNING.
+
+bad state = 0
+WARNING: CPU: 2 PID: 17434 at drivers/net/wireless/intel/iwlwifi/iwl-trans.c:115 iwl_trans_send_cmd+0x1cb/0x1e0 [iwlwifi]
+RIP: 0010:iwl_trans_send_cmd+0x1cb/0x1e0 [iwlwifi]
+Call Trace:
+ <TASK>
+ iwl_mvm_send_cmd+0x40/0xc0 [iwlmvm]
+ iwl_mvm_config_scan+0x198/0x260 [iwlmvm]
+ iwl_mvm_recalc_tcm+0x730/0x11d0 [iwlmvm]
+ iwl_mvm_tcm_work+0x1d/0x30 [iwlmvm]
+ process_one_work+0x29e/0x640
+ worker_thread+0x2df/0x690
+ ? rescuer_thread+0x540/0x540
+ kthread+0x192/0x1e0
+ ? set_kthread_struct+0x90/0x90
+ ret_from_fork+0x22/0x30
+
+Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+Link: https://patch.msgid.link/20240825191257.5abe71ca1b6b.I97a968cb8be1f24f94652d9b110ecbf6af73f89e@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Backported this fix to linux-5.10.x]
+Push the implementation of function 'iwl_mvm_stop_device' further down,
+After the prototype declarations related to 'iwl_mvm_pause_tcm'.
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/mvm.h | 25 +++++++++++---------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mvm.h b/drivers/net/wireless/intel/iwlwifi/mvm/mvm.h
+index 8b779c3a92d4..99560314e0e5 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mvm.h
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mvm.h
+@@ -1948,17 +1948,6 @@ static inline u32 iwl_mvm_flushable_queues(struct iwl_mvm *mvm)
+ 		~BIT(IWL_MVM_DQA_CMD_QUEUE));
+ }
+ 
+-static inline void iwl_mvm_stop_device(struct iwl_mvm *mvm)
+-{
+-	lockdep_assert_held(&mvm->mutex);
+-	iwl_fw_cancel_timestamp(&mvm->fwrt);
+-	clear_bit(IWL_MVM_STATUS_FIRMWARE_RUNNING, &mvm->status);
+-	iwl_fw_dbg_stop_sync(&mvm->fwrt);
+-	iwl_trans_stop_device(mvm->trans);
+-	iwl_free_fw_paging(&mvm->fwrt);
+-	iwl_fw_dump_conf_clear(&mvm->fwrt);
+-}
+-
+ /* Re-configure the SCD for a queue that has already been configured */
+ int iwl_mvm_reconfig_scd(struct iwl_mvm *mvm, int queue, int fifo, int sta_id,
+ 			 int tid, int frame_limit, u16 ssn);
+@@ -2096,6 +2085,20 @@ void iwl_mvm_sta_add_debugfs(struct ieee80211_hw *hw,
+ 			     struct dentry *dir);
+ #endif
+ 
++static inline void iwl_mvm_stop_device(struct iwl_mvm *mvm)
++{
++	lockdep_assert_held(&mvm->mutex);
++	iwl_fw_cancel_timestamp(&mvm->fwrt);
++	clear_bit(IWL_MVM_STATUS_FIRMWARE_RUNNING, &mvm->status);
++
++	iwl_mvm_pause_tcm(mvm, false);
++
++	iwl_fw_dbg_stop_sync(&mvm->fwrt);
++	iwl_trans_stop_device(mvm->trans);
++	iwl_free_fw_paging(&mvm->fwrt);
++	iwl_fw_dump_conf_clear(&mvm->fwrt);
++}
++
+ static inline u8 iwl_mvm_phy_band_from_nl80211(enum nl80211_band band)
+ {
+ 	switch (band) {
+-- 
+2.39.4
+
