@@ -1,3 +1,4 @@
+%global build_for %{BUILD_FOR}
 %define network_required 1
 %global security_hardening none
 %define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
