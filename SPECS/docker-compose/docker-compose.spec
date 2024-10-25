@@ -1,8 +1,9 @@
-%global debug_package %{nil}
+%global debug_package   %{nil}
+%define plugins_dir     %{_libexecdir}/docker/cli-plugins
 
 Name:           docker-compose
 Version:        2.26.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
 Vendor:         VMware, Inc.
@@ -27,29 +28,34 @@ Docker Compose V1 ('docker-compose').
 %autosetup -p1 -n compose-%{version}
 
 %build
-make VERSION=%{version} build %{?_smp_mflags}
+%make_build VERSION=%{version} build
 
 %install
-install -D -p -m 0755 bin/build/docker-compose %{buildroot}%{_bindir}/docker-compose
+install -D -p -m 0755 ./bin/build/%{name} %{buildroot}%{_bindir}/%{name}
+
+mkdir -p %{buildroot}%{plugins_dir}
+ln -srv %{buildroot}%{_bindir}/%{name} %{buildroot}%{plugins_dir}/
+
 for f in LICENSE MAINTAINERS NOTICE README.md; do
-    install -D -p -m 0644 "$f" "docker-compose-docs/$f"
+    install -D -p -m 0644 "$f" "%{name}-docs/$f"
 done
 
-%if 0%{?with_check}
 %check
-ver="$(%{buildroot}%{_bindir}/docker-compose docker-cli-plugin-metadata | awk '{ gsub(/[",:]/,"")}; $1 == "Version" { print $2 }')"; \
-    test "$ver" = %{version} && echo "PASS: docker-compose version OK" || (echo "FAIL: docker-compose version ($ver) did not match" && exit 1)
-%endif
+ver="$(%{buildroot}%{_bindir}/%{name} docker-cli-plugin-metadata | awk '{ gsub(/[",:]/,"")}; $1 == "Version" { print $2 }')"; \
+    test "$ver" = %{version} && echo "PASS: %{name} version OK" || (echo "FAIL: %{name} version ($ver) did not match" && exit 1)
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc docker-compose-docs/*
-%{_bindir}/*
+%doc %{name}-docs/*
+%{_bindir}/%{name}
+%{plugins_dir}/%{name}
 
 %changelog
+* Fri Oct 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.26.1-5
+- Create a sym link to make `docker compose` work.
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.26.1-4
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.26.1-3
