@@ -12,8 +12,8 @@
 
 Summary:        Docker
 Name:           docker
-Version:        24.0.5
-Release:        6%{?dist}
+Version:        24.0.9
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-%define sha512 moby=cde2e47e7658b153399ee29154ec21eebf54b292185e07d43b968895dcfdfead95e4507fefb713859a4540f21d8007116d3ebeaa1fb7ba305fb2a0449ba1bee6
+%define sha512 moby=b71a058f32fb80676bb4c83f5d2236c9496ffc5c7f216ebff5bcac6f5959e121be3b2bfd2ff9aa5cccee27f71947dfe5b76090e82020806cc9ee452cd1f21084
 
 Source1: https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
 %define sha512 tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
@@ -30,7 +30,7 @@ Source2: https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
 %define sha512 libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 
 Source3: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
-%define sha512 docker-cli=765c67634d91d248b156d3e407398b98b7a0a89507bbac0310d4a68b95aa1a05e3af43c8b90bc10166748749d8cc36670619fc9efca110beefbdcd4385dc96be
+%define sha512 docker-cli=7abfbf593783ffaadf84461b7e6dcbef7fbb857166721ba8004531212a231f4630a747c09ef8a3a5cf119861c51465ba3d5bc4b63f0e4d76936fd3b1baff530f
 
 Source4:       docker-post19.service
 Source5:       docker-post19.socket
@@ -321,6 +321,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Oct 24 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.0.9-1
+- Update to 24.0.9, Fixes CVE-2024-24557
 * Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.0.5-6
 - Bump version as a part of dbus upgrade
 * Fri Mar 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.0.5-5
