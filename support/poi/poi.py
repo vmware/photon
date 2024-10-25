@@ -22,7 +22,7 @@ REPO_DIR = os.path.join(STAGE_DIR, "RPMS")
 ARCH_MAP = {"x86_64": "amd64", "aarch64": "arm64"}
 
 if THIS_ARCH == "x86_64":
-    POI_IMAGE = "projects.registry.vmware.com/photon/installer:ob-22815435"
+    POI_IMAGE = "projects.registry.vmware.com/photon/installer:ob-23999758"
 elif THIS_ARCH == "aarch64":
     POI_IMAGE = "projects.registry.vmware.com/photon/installer-arm64:ob-22815437"
 else:
