@@ -33,8 +33,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.112
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.114
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -45,7 +45,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=3fb3fea3efe0be30d58c8638e14f13ef7ec7ef61c8bdff2007ca4777a72bca9a41d5e2f92bd054dc932ace4a2fd23e9a02baf7e47ff0f774d034a78554ae08db
+%define sha512 linux=6aa571b2489b075824698901393fd80b48a5cd44142e28d7fc71c329756adf8ac9a9013b86354a57d82dd155ba401b993837f1cf6d80d367297b741602542061
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -191,9 +191,6 @@ Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
 # Fix CVE-2024-42322
 Patch133: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
-
-# Fix CVE-2024-41071
-Patch136: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
 
 # Fix CVE-2024-24855
 Patch137: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
@@ -907,6 +904,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 05 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.114-1
+- Update to version 6.1.114
 * Mon Oct 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.112-2
 - Fix CVE-2024-41013, CVE-2024-41014
 * Fri Oct 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.112-1
