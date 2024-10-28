@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.112
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -200,6 +200,12 @@ Patch139: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
 # Fix CVE-2024-46786
 Patch140: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
 
+# Fix CVE-2024-41013
+Patch141: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
+
+# Fix CVE-2024-41014
+Patch142: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -333,7 +339,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M89
 
 # CVE
-%autopatch -p1 -m100 -M140
+%autopatch -p1 -m100 -M142
 
 %ifarch aarch64
 # aarch64 patches
@@ -487,6 +493,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 28 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.112-3
+- Fix CVE-2024-41013, CVE-2024-41014
 * Fri Oct 25 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.112-2
 - newca: avoid modifications of initrd pages.
 * Fri Oct 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.112-1

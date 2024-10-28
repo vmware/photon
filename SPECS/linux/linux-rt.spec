@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.112
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -174,6 +174,12 @@ Patch142: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
 # Fix CVE-2024-46786
 Patch143: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
 
+# Fix CVE-2024-41013
+Patch144: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
+
+# Fix CVE-2024-41014
+Patch145: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
+
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 %include %{SOURCE6}
@@ -314,7 +320,7 @@ stalld to use eBPF based backend.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M143
+%autopatch -p1 -m100 -M145
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -495,6 +501,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Oct 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.112-2
+- Fix CVE-2024-41013, CVE-2024-41014
 * Fri Oct 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.112-1
 - Update to version 6.1.112
 - Fix CVE-2024-46809, CVE-2024-46811, CVE-2024-46841, CVE-2024-46834, CVE-2024-46786

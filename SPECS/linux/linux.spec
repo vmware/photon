@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.112
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -213,6 +213,12 @@ Patch142: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
 
 # Fix CVE-2024-46786
 Patch143: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
+
+# Fix CVE-2024-41013
+Patch144: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
+
+# Fix CVE-2024-41014
+Patch145: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -509,7 +515,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M143
+%autopatch -p1 -m100 -M145
 
 %ifarch aarch64
 # aarch64 patches
@@ -901,6 +907,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.112-2
+- Fix CVE-2024-41013, CVE-2024-41014
 * Fri Oct 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.112-1
 - Update to version 6.1.112
 - Fix CVE-2024-46809, CVE-2024-46811, CVE-2024-46841, CVE-2024-46834, CVE-2024-46786
