@@ -4,16 +4,16 @@
 
 Summary:    OpenJDK
 Name:       openjdk17
-Version:    17.0.8
-Release:    7%{?dist}
+Version:    17.0.13
+Release:    1%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-5.tar.gz
-%define sha512 jdk-17=af6ae3759dda8e7612b8860ccc9c69df260ffa18c80fd73ca71737854aa926442c02e1f56d7bd39dc6ec7f24095a47fc1e448bdcf6f0531ad8bbf403056c0dec
+Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
+%define sha512 jdk-17=6f2220b3b0b9ab4441968d487858449f0e58400bfbbf8cc322b6c9393ab44869ea27285bed1022ac531f0a9eec5b7d6a07db4f7e78b094bb5ca8cedd5f40711a
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -88,7 +88,7 @@ Provides:       jre = %{version}
 This package provides the runtime library class sources.
 
 %prep
-%autosetup -p1 -n jdk17u-jdk-%{version}-5
+%autosetup -p1 -n jdk17u-jdk-%{version}-ga
 
 %build
 chmod a+x ./configur*
@@ -240,6 +240,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Tue Oct 29 2024 Tapas Kundu <tapas.kundu@broadcom.com> 17.0.13-1
+- Update to version 17.0.13
 * Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.0.8-7
 - Cleanup Extra BuildRequires
 * Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 17.0.8-6
