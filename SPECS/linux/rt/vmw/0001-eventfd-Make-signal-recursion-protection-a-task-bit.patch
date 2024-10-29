@@ -1,0 +1,149 @@
+From 9824159365a0cd84900414e7e1ad81cf732efd02 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 29 Jul 2021 13:01:59 +0200
+Subject: [PATCH 1/2] eventfd: Make signal recursion protection a task bit
+
+commit b542e383d8c005f06a131e2b40d5889b812f19c6 upstream
+
+The recursion protection for eventfd_signal() is based on a per CPU
+variable and relies on the !RT semantics of spin_lock_irqsave() for
+protecting this per CPU variable. On RT kernels spin_lock_irqsave() neither
+disables preemption nor interrupts which allows the spin lock held section
+to be preempted. If the preempting task invokes eventfd_signal() as well,
+then the recursion warning triggers.
+
+Paolo suggested to protect the per CPU variable with a local lock, but
+that's heavyweight and actually not necessary. The goal of this protection
+is to prevent the task stack from overflowing, which can be achieved with a
+per task recursion protection as well.
+
+Replace the per CPU variable with a per task bit similar to other recursion
+protection bits like task_struct::in_page_owner. This works on both !RT and
+RT kernels and removes as a side effect the extra per CPU storage.
+
+No functional change for !RT kernels.
+
+Reported-by: Daniel Bristot de Oliveira <bristot@redhat.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Daniel Bristot de Oliveira <bristot@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Link: https://lore.kernel.org/r/87wnp9idso.ffs@tglx
+[Ankit: Backported for v4.19]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ fs/aio.c                |  2 +-
+ fs/eventfd.c            | 12 +++++-------
+ include/linux/eventfd.h | 11 +++++------
+ include/linux/sched.h   |  4 ++++
+ 4 files changed, 15 insertions(+), 14 deletions(-)
+
+diff --git a/fs/aio.c b/fs/aio.c
+index 146681fb7e8a..9d19a60e716e 100644
+--- a/fs/aio.c
++++ b/fs/aio.c
+@@ -1772,7 +1772,7 @@ static int aio_poll_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
+ 		list_del_init(&req->wait.entry);
+ 		list_del(&iocb->ki_list);
+ 		iocb->ki_res.res = mangle_poll(mask);
+-		if (iocb->ki_eventfd && eventfd_signal_count()) {
++		if (iocb->ki_eventfd && eventfd_signal_allowed()) {
+ 			iocb = NULL;
+ 			INIT_WORK(&req->work, aio_poll_put_work);
+ 			schedule_work(&req->work);
+diff --git a/fs/eventfd.c b/fs/eventfd.c
+index 66864100b823..b5aa51ed79f0 100644
+--- a/fs/eventfd.c
++++ b/fs/eventfd.c
+@@ -22,8 +22,6 @@
+ #include <linux/proc_fs.h>
+ #include <linux/seq_file.h>
+ 
+-DEFINE_PER_CPU(int, eventfd_wake_count);
+-
+ struct eventfd_ctx {
+ 	struct kref kref;
+ 	wait_queue_head_t wqh;
+@@ -61,21 +59,21 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
+ 	 * Deadlock or stack overflow issues can happen if we recurse here
+ 	 * through waitqueue wakeup handlers. If the caller users potentially
+ 	 * nested waitqueues with custom wakeup handlers, then it should
+-	 * check eventfd_signal_count() before calling this function. If
+-	 * it returns true, the eventfd_signal() call should be deferred to a
++	 * check eventfd_signal_allowed() before calling this function. If
++	 * it returns false, the eventfd_signal() call should be deferred to a
+ 	 * safe context.
+ 	 */
+-	if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count)))
++	if (WARN_ON_ONCE(current->in_eventfd_signal))
+ 		return 0;
+ 
+ 	spin_lock_irqsave(&ctx->wqh.lock, flags);
+-	this_cpu_inc(eventfd_wake_count);
++	current->in_eventfd_signal = 1;
+ 	if (ULLONG_MAX - ctx->count < n)
+ 		n = ULLONG_MAX - ctx->count;
+ 	ctx->count += n;
+ 	if (waitqueue_active(&ctx->wqh))
+ 		wake_up_locked_poll(&ctx->wqh, EPOLLIN);
+-	this_cpu_dec(eventfd_wake_count);
++	current->in_eventfd_signal = 0;
+ 	spin_unlock_irqrestore(&ctx->wqh.lock, flags);
+ 
+ 	return n;
+diff --git a/include/linux/eventfd.h b/include/linux/eventfd.h
+index de0ad39d4281..07f81c186ce0 100644
+--- a/include/linux/eventfd.h
++++ b/include/linux/eventfd.h
+@@ -14,6 +14,7 @@
+ #include <linux/err.h>
+ #include <linux/percpu-defs.h>
+ #include <linux/percpu.h>
++#include <linux/sched.h>
+ 
+ /*
+  * CAREFUL: Check include/uapi/asm-generic/fcntl.h when defining
+@@ -43,11 +44,9 @@ int eventfd_ctx_remove_wait_queue(struct eventfd_ctx *ctx, wait_queue_entry_t *w
+ 				  __u64 *cnt);
+ void eventfd_ctx_do_read(struct eventfd_ctx *ctx, __u64 *cnt);
+ 
+-DECLARE_PER_CPU(int, eventfd_wake_count);
+-
+-static inline bool eventfd_signal_count(void)
++static inline bool eventfd_signal_allowed(void)
+ {
+-	return this_cpu_read(eventfd_wake_count);
++	return !current->in_eventfd_signal;
+ }
+ 
+ #else /* CONFIG_EVENTFD */
+@@ -78,9 +77,9 @@ static inline int eventfd_ctx_remove_wait_queue(struct eventfd_ctx *ctx,
+ 	return -ENOSYS;
+ }
+ 
+-static inline bool eventfd_signal_count(void)
++static inline bool eventfd_signal_allowed(void)
+ {
+-	return false;
++	return true;
+ }
+ 
+ static inline void eventfd_ctx_do_read(struct eventfd_ctx *ctx, __u64 *cnt)
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index fd4899236037..10849f972c8d 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -742,6 +742,10 @@ struct task_struct {
+ 	/* to be used once the psi infrastructure lands upstream. */
+ 	unsigned			use_memdelay:1;
+ #endif
++#ifdef CONFIG_EVENTFD
++	/* Recursion prevention for eventfd_signal() */
++	unsigned			in_eventfd_signal:1;
++#endif
+ 
+ 	unsigned long			atomic_flags; /* Flags requiring atomic access. */
+ 
+-- 
+2.39.4
+

@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.321
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -372,6 +372,12 @@ Patch717: 0001-NFS-fs_context-validate-UDP-retrans-to-prevent-shift.patch
 
 # Fix CVE-2024-38538
 Patch718: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
+
+# Eventfd delivery can be swallowed if same path is executing for another
+# task on the same CPU. The check has to be per task, and not per CPU.
+# No functional change for !RT kernels.
+Patch719: 0001-eventfd-Make-signal-recursion-protection-a-task-bit.patch
+Patch720: 0002-aio-Fix-incorrect-usage-of-eventfd_signal_allowed.patch
 
 %if 0%{?kat_build}
 Patch1000: fips-kat-tests.patch
@@ -1261,6 +1267,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/*
 
 %changelog
+* Tue Oct 29 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-3
+- Changes eventfd_wake signal from per-cpu to per-task
 * Thu Sep 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-2
 - Fix for CVE-2024-38538
 * Tue Sep 10 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.321-1
