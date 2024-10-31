@@ -4,8 +4,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.2.0
-Release:        2%{?dist}
-License:        GPLv2+
+Release:        3%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -13,6 +12,9 @@ Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
 %define sha512  %{name}=e9e857bd81bf7a370307d6848c81b2f5403db8c7b5207f54bce3f3faac3bde63445684092c2bc1a2427cddb6f7746496d9fbbef05fbbd77f2810b2998f1f9173
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         PLUGIN_TYPE_CAST.patch
 
@@ -242,6 +244,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 12.2.0-3
+- Bump version to generate SRP provenance file
 * Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.2.0-2
 - Add provides & obsolets gcc-10
 * Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 12.2.0-1

@@ -1,15 +1,20 @@
 Summary:        Contains a utility for determining file types
 Name:           file
 Version:        5.43
-Release:        1%{?dist}
-License:        BSD
+Release:        2%{?dist}
 URL:            http://www.darwinsys.com/file
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
 %define sha512  file=9d02f4e7a69d90468d6bd35df5ec240ddee8c2408b7df3e73427d7f18736baf77db0638a1fe8283f4e6abd1d5ad653890ed3a5a0d48bb52d4023ca4070ecdf06
+
+Source1: license.txt
+%include %{SOURCE1}
+
 Requires:       %{name}-libs = %{version}-%{release}
+
 Conflicts:      toybox < 0.8.2-2
 
 %description
@@ -63,6 +68,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libmagic.pc
 
 %changelog
+*   Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 5.43-2
+-   Bump version to generate SRP provenance file
 *   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 5.43-1
 -   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.41-1

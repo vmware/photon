@@ -5,8 +5,7 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.4
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 URL:            http://invisible-island.net/ncurses
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -14,6 +13,9 @@ Distribution:   Photon
 
 Source0: https://invisible-island.net/archives/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
 %define sha512 %{name}=5f62eeeba3a826a9c7e447cfe673d3b1f176dd39c930ddfac2550531588dbe7c73c5cc99ef0b844629c6dcd3676d4a93b5cb78d607fee824bdccfc030bdb6541
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: ncurses-libs = %{version}-%{release}
 Requires: glibc
@@ -197,6 +199,8 @@ sh ./configure
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 6.4-3
+- Bump version to generate SRP provenance file
 * Mon Oct 16 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.4-2
 - Avoid hard coded versioning
 - Check for source file existence before sym link creation.

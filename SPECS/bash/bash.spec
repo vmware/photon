@@ -1,8 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.2
-Release:        2%{?dist}
-License:        GPLv3
+Release:        3%{?dist}
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -12,6 +11,8 @@ Source0: https://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
 %define sha512 %{name}=5647636223ba336bf33e0c65e516d8ebcf6932de8b44f37bc468eedb87579c628ad44213f78534beb10f47aebb9c6fa670cb0bed3b4e7717e5faf7e9a1ef81ae
 
 Source1: bash_completion
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0: enable-SYS_BASHRC-SSH_SOURCE_BASHRC.patch
 
@@ -333,6 +334,8 @@ fi
 %{_mandir}/*/*
 
 %changelog
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 5.2-3
+- Bump version to generate SRP provenance file
 * Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.2-2
 - Remove umask.sh, have systemd wide common umask value
 * Mon Jan 09 2023 Susant Sahani <ssahani@vmware.com> 5.2-1

@@ -1,14 +1,18 @@
-Summary:	Build tool
-Name:		pkg-config
-Version:	0.29.2
-Release:	3%{?dist}
-License:	GPLv2+
-URL:		http://www.freedesktop.org/wiki/Software/pkg-config
-Group:		Development/Tools
-Vendor:		VMware, Inc.
+Summary:        Build tool
+Name:           pkg-config
+Version:        0.29.2
+Release:        4%{?dist}
+URL:            http://www.freedesktop.org/wiki/Software/pkg-config
+Group:          Development/Tools
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:	http://pkgconfig.freedesktop.org/releases/%{name}-%{version}.tar.gz
-%define sha1 pkg-config=76e501663b29cb7580245720edfb6106164fad2b
+
+Source0: http://pkgconfig.freedesktop.org/releases/%{name}-%{version}.tar.gz
+%define sha512 %{name}=4861ec6428fead416f5cbbbb0bbad10b9152967e481d4b0ff2eb396a9f297f552984c9bb72f6864a37dcd8fca1d9ccceda3ef18d8f121938dbe4fdf2b870fe75
+
+Source1: license.txt
+%include %{SOURCE1}
+
 Patch0:         pkg-config-glib-CVE-2018-16428.patch
 Patch1:         pkg-config-glib-CVE-2018-16429.patch
 
@@ -17,6 +21,7 @@ Contains a tool for passing the include path and/or library paths
 to build tools during the configure and make file execution.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 cd glib  # patches need to apply to internal glib
 %patch0 -p1
@@ -41,7 +46,7 @@ fi
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -53,6 +58,8 @@ make %{?_smp_mflags} check
 %{_docdir}/pkg-config-*/pkg-config-guide.html
 %{_mandir}/man1/pkg-config.1.gz
 %changelog
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.29.2-4
+- Bump version to generate SRP provenance file
 * Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 0.29.2-3
 - Cross compilation support
 * Fri Jan 18 2019 Ajay Kaher <akaher@vmware.com> 0.29.2-2

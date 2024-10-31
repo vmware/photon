@@ -5,8 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        12%{?dist}
-License:        LGPLv2+
+Release:        13%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -18,6 +17,8 @@ Source0: http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
 Source3:        v2.36.patches
+Source4:        license.txt
+%include        %{SOURCE4}
 
 #Patch taken from http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
 Patch0:         glibc-2.31-fhs-1.patch
@@ -360,6 +361,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.36-13
+- Bump version to generate SRP provenance file
 * Wed Jul 17 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 2.36-12
 - Enable static-pie support
 * Tue May 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-11

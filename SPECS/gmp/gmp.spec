@@ -1,14 +1,17 @@
 Summary:         Math libraries
 Name:            gmp
 Version:         6.2.1
-Release:         2%{?dist}
-License:         LGPLv3+
+Release:         3%{?dist}
 URL:             http://www.gnu.org/software/gmp
 Group:           Applications/System
 Vendor:          VMware, Inc.
 Distribution:    Photon
-Source0:         http://ftp.gnu.org/gnu/gmp/%{name}-%{version}.tar.xz
-%define sha512   %{name}=c99be0950a1d05a0297d65641dd35b75b74466f7bf03c9e8a99895a3b2f9a0856cd17887738fa51cf7499781b65c049769271cbcb77d057d2e9f1ec52e07dd84
+
+Source0: http://ftp.gnu.org/gnu/gmp/%{name}-%{version}.tar.xz
+%define sha512 %{name}=c99be0950a1d05a0297d65641dd35b75b74466f7bf03c9e8a99895a3b2f9a0856cd17887738fa51cf7499781b65c049769271cbcb77d057d2e9f1ec52e07dd84
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: mpz-inp_raw-avoid-bit-size-overflows.patch
 
@@ -70,6 +73,8 @@ make %{?_smp_mflags} check
 %{_docdir}/%{name}-%{version}/isa_abi_headache
 
 %changelog
+*   Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 6.2.1-3
+-   Bump version to generate SRP provenance file
 *   Mon Nov 13 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 6.2.1-2
 -   Add patch to fix CVE-2021-43618
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 6.2.1-1

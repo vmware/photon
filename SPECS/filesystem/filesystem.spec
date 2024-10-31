@@ -1,8 +1,7 @@
 Summary:    Default file system
 Name:       filesystem
 Version:    1.1
-Release:    5%{?dist}
-License:    GPLv3
+Release:    6%{?dist}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 URL:        http://www.linuxfromscratch.org
@@ -18,6 +17,9 @@ Source6: proxy.sh
 Source7: usb.conf
 Source8: group
 Source9: passwd
+
+Source10: license.txt
+%include %{SOURCE10}
 
 %description
 The filesystem package is one of the basic packages that is installed
@@ -104,6 +106,10 @@ install -vdm 755 %{buildroot}%{_sysconfdir}/modprobe.d
 install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/modprobe.d/usb.conf
 #       chapter 9.1. The End
 
+%pretrans -p <lua>
+posix.mkdir("/sys")
+posix.chmod("/sys", 0555)
+
 %clean
 rm -rf %{buildroot}
 
@@ -124,7 +130,10 @@ rm -rf %{buildroot}
 %dir /run
 /sbin
 /srv
-%dir /sys
+# if this is not marked ghost, filesystem rpm upgrade fails inside container workloads
+# unpacking of archive failed on file /sys: cpio: chmod failed - Device or resource busy
+# this directory gets created in pretrans
+%ghost %dir /sys
 %dir /tmp
 %dir %{_usr}
 %dir %{_var}
@@ -233,6 +242,8 @@ rm -rf %{buildroot}
 %{_libdir}/debug%{_lib64dir}
 
 %changelog
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1-6
+- Bump version to generate SRP provenance file
 * Tue Aug 27 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-5
 - Keep static data in files
 - Remove lastlog file and utmp group
