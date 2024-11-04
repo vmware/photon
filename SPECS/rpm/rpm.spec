@@ -3,8 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    3%{?dist}
-License:    GPLv2+
+Release:    4%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -18,6 +17,9 @@ Source2:    macros.php
 Source3:    macros.perl
 Source4:    macros.vpath
 Source5:    macros.ldconfig
+
+Source6: license.txt
+%include %{SOURCE6}
 
 Patch0: 0001-This-patch-fixes-a-warning-that-is-shown-upon-every-.patch
 Patch1: 0002-commit-buffer-cache-to-disk-after-ending-rpm-transac.patch
@@ -328,6 +330,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-4
+- Release bump for SRP compliance
 * Tue Sep 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-3
 - Remove brp-elfperms script
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.18.2-2

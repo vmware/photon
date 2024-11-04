@@ -1,8 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.12.6
-Release:        3%{?dist}
-License:        MIT
+Release:        4%{?dist}
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://download.gnome.org/sources/libxml2/2.12/%{name}-%{version}.tar.xz
 %define sha512 %{name}=19d6901c0f189813e8bd20ffdfbb29d8545ca30154d1f3cc82624d64e4db3cfbe8eef7e8ccc1e195289f1bf94bb50fefcf11a95badb0ddeb845b4e4ea5a819ac
+
+Source1: license.txt
+%include %{SOURCE1}
 
 #Note:   If you are fixing a CVE here, please check for the same in gettext libxml2
 Patch0:  libxml2-CVE-2024-34459.patch
@@ -93,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.12.6-4
+- Release bump for SRP compliance
 * Mon Aug 19 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.6-3
 - Fix CVE-2024-40896
 * Tue Jun 11 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.12.6-2

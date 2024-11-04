@@ -1,8 +1,7 @@
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python3-markupsafe
 Version:        2.1.1
-Release:        2%{?dist}
-License:        BSD
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            https://github.com/pallets/markupsafe
 
 Source0: https://github.com/pallets/markupsafe/archive/refs/tags/markupsafe-%{version}.tar.gz
 %define sha512 markupsafe=6b06a5f470858409eb186d20edd129be90f31030be91fcc73e989b0a4ee51c3755cce0938edd9a7c73471d307385260f868101b5e11cc4d97c309420b5a573da
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -47,6 +49,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.1-3
+- Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.1.1-2
 - Update release to compile with python 3.11
 * Mon Sep 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.1.1-1

@@ -1,0 +1,1 @@
+License: libselinux-1.0 AND GPL-2.0-only

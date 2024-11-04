@@ -1,15 +1,17 @@
 Summary:        XML and HTML with Python
 Name:           python3-lxml
 Version:        4.9.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
-License:        BSD
 URL:            https://github.com/lxml/lxml
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/lxml/lxml/archive/refs/tags/lxml-%{version}.tar.gz
 %define sha512 lxml=d7ec55c7db2c63a716ca5f4d833706d90fc76c944885e010fcdb96786bcfe796994e438450cf4e8e6e75d702e21fb16971f28f854d7a1f76c34e4ae315414d84
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libxslt-devel
 BuildRequires:  libxml2-devel
@@ -48,6 +50,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.9.1-4
+- Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.1-3
 - Bump version as a part of libxml2 upgrade
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.9.1-2

@@ -1,14 +1,17 @@
 Summary:        Platform-neutral API
 Name:           nspr
 Version:        4.33
-Release:        1%{?dist}
-License:        MPLv2.0
-URL:            http://ftp.mozilla.org/pub/mozilla.org
+Release:        2%{?dist}
+URL:            https://firefox-source-docs.mozilla.org/nspr/index.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://ftp.mozilla.org/pub/nspr/releases/v%{version}/src/%{name}-%{version}.tar.gz
 %define sha512  nspr=8064f826c977f1302a341ca7a7aaf7977b5d10102062c030b1d42b856638e3408ab262447e8c7cfd5a98879b9b1043d17ceae66fbb1e5ed86d6bc3531f26667e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 Netscape Portable Runtime (NSPR) provides a platform-neutral API
@@ -17,6 +20,7 @@ for system level and libc like functions.
 %package        devel
 Summary:        Header and development files for nspr
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications
 
@@ -52,9 +56,11 @@ make DESTDIR=%{buildroot} %{?_smp_mflags} install
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*.pc
-%{_datarootdir}/aclocal/*
+%{_datadir}/aclocal/*
 
 %changelog
+*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.33-2
+-   Release bump for SRP compliance
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.33-1
 -   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 4.30-1

@@ -1,9 +1,8 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/shadow-maint/shadow
-License:        BSD
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -23,6 +22,8 @@ Source9: system-auth
 Source10: system-password
 Source11: system-session
 Source12: useradd
+Source13: license.txt
+%include %{SOURCE13}
 
 Patch0:         CVE-2023-29383.patch
 Patch1:         CVE-2023-29383.1.patch
@@ -209,6 +210,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-6
+- Release bump for SRP compliance
 * Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.13-5
 - Use pam_umask.so to set system-wide umask
 * Sat Dec 16 2023 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.13-4

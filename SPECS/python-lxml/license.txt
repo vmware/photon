@@ -1,0 +1,1 @@
+License: MIT AND GPL-2.0-or-later AND MIT-CMU AND BSD-3-Clause AND Zlib AND GPL-1.0-or-later AND OFL-1.1 AND GPL-2.0-only

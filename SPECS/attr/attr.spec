@@ -1,8 +1,7 @@
 Summary:    Attr-2.5.1
 Name:       attr
 Version:    2.5.1
-Release:    2%{?dist}
-License:    GPLv2+
+Release:    3%{?dist}
 URL:        https://savannah.nongnu.org/projects/attr
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://download.savannah.gnu.org/releases/attr/%{name}-%{version}.tar.gz
 %define sha512 %{name}=8b4c043d61f8f3e0cd098e701181069f51117b85fd6ba18bfe9af77d894ea671232377d4793ffc822e9259ceee6ac71d75732eb93b2830c6cb5d0d918ba2d21b
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 The attr package contains utilities to administer the extended attributes on filesystem objects.
@@ -75,6 +77,8 @@ rm -fv %{buildroot}/%{_libdir}/*.la \
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.5.1-3
+- Release bump for SRP compliance
 * Mon Jul 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.5.1-2
 - Fix spec issues
 - Move *.so to devel package

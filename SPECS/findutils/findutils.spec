@@ -1,8 +1,7 @@
 Summary:    This package contains programs to find files
 Name:       findutils
 Version:    4.9.0
-Release:    2%{?dist}
-License:    GPLv3+
+Release:    3%{?dist}
 URL:        http://www.gnu.org/software/findutils
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    http://ftp.gnu.org/gnu/findutils/%{name}-%{version}.tar.xz
 %define sha512 %{name}=ba4844f4403de0148ad14b46a3dbefd5a721f6257c864bf41a6789b11705408524751c627420b15a52af95564d8e5b52f0978474f640a62ab86a41d20cf14be9
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Conflicts:      toybox < 0.8.2-2
 
@@ -87,6 +89,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.9.0-3
+- Release bump for SRP compliance
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.9.0-2
 - Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.9.0-1

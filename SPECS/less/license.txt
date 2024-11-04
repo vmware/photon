@@ -1,0 +1,1 @@
+License: GPL-3.0-or-later AND FSFUL AND ((GPL-3.0-or-later OR BSD-2-Clause)) AND BSD-2-Clause AND X11 AND (BSD-2-Clause OR GPL-3.0-or-later) AND GPL-3.0-only AND Spencer-86 AND (GPL-3.0-or-later OR BSD-2-Clause)

@@ -1,8 +1,7 @@
 Summary:        Crypto Libraries
 Name:           libgcrypt
 Version:        1.10.1
-Release:        3%{?dist}
-License:        GPLv2+ and LGPLv2+
+Release:        4%{?dist}
 URL:            http://www.gnu.org/software/libgcrypt
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
 %define sha512  %{name}=e5ca7966624fff16c3013795836a2c4377f0193dbb4ac5ad2b79654b1fa8992e17d83816569a402212dc8367a7980d4141f5d6ac282bae6b9f02186365b61f13
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libgpg-error-devel
 
@@ -67,6 +69,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libgcrypt.pc
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.1-4
+- Release bump for SRP compliance
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.10.1-3
 - Bump release as a part of libgpg-error upgrade to 1.46
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.1-2

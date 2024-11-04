@@ -9,8 +9,7 @@
 Summary:        Programming language
 Name:           lua
 Version:        5.4.6
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 URL:            http://www.lua.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -23,6 +22,9 @@ Source0: http://www.lua.org/ftp/%{name}-%{version}.tar.gz
 Source1: http://www.lua.org/ftp/%{name}-%{bootstrap_version}.tar.gz
 %define sha512 %{name}-%{bootstrap_version}=ccc380d5e114d54504de0bfb0321ca25ec325d6ff1bfee44b11870b660762d1a9bf120490c027a0088128b58bb6b5271bbc648400cab84d2dc22b512c4841681
 %endif
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0: lua-%{version}-shared-library.patch
 
@@ -162,6 +164,8 @@ rm -rf %{buildroot}
 %{_mandir}/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.4.6-2
+- Release bump for SRP compliance
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.4.6-1
 - Upgrade to v5.4.6
 * Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.4.4-5

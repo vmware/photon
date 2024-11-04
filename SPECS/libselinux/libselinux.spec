@@ -1,8 +1,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.4
-Release:        3%{?dist}
-License:        Public Domain
+Release:        4%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=7ffa6d2159d2333d836bde3f75dfc78a278283b66ae1e441c178371adb6f463aa6f2d62439079e2068d1135c39dd2b367b001d917c0bdc6871a73630919ef81e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         Add-Wno-error-stringop-truncation-to-EXTRA_CFLAGS.patch
 
@@ -122,6 +124,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-4
+- Release bump for SRP compliance
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.4-3
 - Bump up version no. as part of swig upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.4-2

@@ -1,14 +1,18 @@
 Summary:        Reading, writing, and converting info pages
 Name:           texinfo
 Version:        7.0.2
-Release:        1%{?dist}
-License:        GPLv3+
+Release:        2%{?dist}
 URL:            http://ftp.gnu.org/gnu/texinfo/texinfo-%{version}.tar.xz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        %{name}-%{version}.tar.xz
 %define sha512  texinfo=26dd5bb1392f2197ecde296ba157d4533f4b11fadf1238481da4cf2b3796c665ce96049df8d2f9a6d4fa22b7e9013d9978d195e525288663f0a54482bbc22b2b
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  perl
 
 %description
@@ -54,6 +58,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/texinfo/*
 
 %changelog
+*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.0.2-2
+-   Release bump for SRP compliance
 *   Thu Feb 16 2023 Gerrit Photon <photon-checkins@vmware.com> 7.0.2-1
 -   Automatic Version Bump
 *   Thu Nov 10 2022 Dweep Advani <dadvani@vmware.com> 6.8-2

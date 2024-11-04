@@ -3,8 +3,7 @@
 Summary:        Conversion between markup formats
 Name:           pandoc-bin
 Version:        2.19.2
-Release:        1%{?dist}
-License:        GPLv2+
+Release:        2%{?dist}
 URL:            https://github.com/jgm/pandoc
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -22,6 +21,9 @@ Distribution:   Photon
 # cd .. && tar cJf pandoc-2.17.1.1.tar.xz pandoc-2.17.1.1
 Source0:        pandoc-%{version}.tar.xz
 %define sha512  pandoc=067bffafcb8efe217b3fa1b5135115f037e8a524e255f8e4b86409db7c9648aa1b80dde7f0af2b195a79c984fba5f48ad409dc10a12734ec44b3df50b68ad820
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 Pandoc - executable only, without Haskell depends/makedepends
@@ -53,6 +55,8 @@ popd
 %{_mandir}/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.19.2-2
+- Release bump for SRP compliance
 * Tue Nov 1 2022 Gerrit Photon <photon-checkins@vmware.com> 2.19.2-1
 - Automatic Version Bump
 * Sun Dec 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.17.1.1-1

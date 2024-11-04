@@ -1,8 +1,7 @@
 Name:       debugedit
 Version:    5.0
-Release:    7%{?dist}
+Release:    8%{?dist}
 Summary:    Tools for debuginfo creation
-License:    GPLv3+ and GPLv2+ and LGPLv2+
 URL:        https://sourceware.org/debugedit
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://sourceware.org/ftp/debugedit/%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=7e7f529eafe41b53f0b5bfc58282fdbfa0dfa93ed7908b70e81942d6d2b6f80fc9c6bff2ed9674fd98947e5750b615f4c8b222544989e2900c5f8ff5ae0efb92
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: 0001-tweak-find-debuginfo.patch
 Patch1: 0003-tests-Handle-zero-directory-entry-in-.debug_line-DWA.patch
@@ -74,6 +76,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/find-debuginfo.1*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-8
+- Release bump for SRP compliance
 * Thu Aug 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-7
 - Revert exec permission check skip patch
 * Thu Jul 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-6

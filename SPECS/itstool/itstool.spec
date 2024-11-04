@@ -1,43 +1,54 @@
 Summary:        Itstool-2.0.6
 Name:           itstool
 Version:        2.0.7
-Release:        3%{?dist}
-License:        GPLv3+
+Release:        4%{?dist}
 URL:            http://itstool.org
-Source0:        http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
-%define sha512  itstool=710c188e518a7eccbf9d31df59692fd6acc79430589a93ef4333f33f74440c311c340614ca74cc43191830567a98024d0981325ccd83a8fd9b75410d9dd91992
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
+%define sha512  itstool=710c188e518a7eccbf9d31df59692fd6acc79430589a93ef4333f33f74440c311c340614ca74cc43191830567a98024d0981325ccd83a8fd9b75410d9dd91992
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  docbook-xml >= 4.5
 BuildRequires:  libxml2
 BuildRequires:  python3-libxml2
-BuildRequires:  python3
-BuildRequires:  python3-libs
+BuildRequires:  python3-devel
+
 Requires:       python3
 Requires:       python3-libxml2
+
 BuildArch:      noarch
 
 %description
 Itstool extracts messages from XML files and outputs PO template files, then merges
 translations from MO files to create translated XML files. It determines what
 to translate and how to chunk it into messages using the W3C Internationalization Tag Set (ITS).
+
 %prep
 %autosetup -p1
+
 %build
-export PYTHON=/usr/bin/python3
+export PYTHON=%{python3}
+
 %configure
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-/usr/share/%{name}/*
+%{_datadir}/%{name}/*
 %{_mandir}/man1/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.7-4
+- Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.7-3
 - Bump version as a part of libxml2 upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.7-2

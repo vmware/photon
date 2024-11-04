@@ -4,8 +4,7 @@
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        9.1
-Release:        5%{?dist}
-License:        GPLv3
+Release:        6%{?dist}
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -15,6 +14,9 @@ Source0: http://ftp.gnu.org/gnu/coreutils/%{name}-%{version}.tar.xz
 %define sha512 %{name}=a6ee2c549140b189e8c1b35e119d4289ec27244ec0ed9da0ac55202f365a7e33778b1dc7c4e64d1669599ff81a8297fe4f5adbcc8a3a2f75c919a43cd4b9bdfa
 # make this package to own serial console profile since it utilizes stty tool
 Source1:        serial-console.sh
+
+Source2: license.txt
+%include %{SOURCE2}
 
 # Patches are taken from:
 # www.linuxfromscratch.org/patches/downloads/coreutils/
@@ -97,6 +99,8 @@ touch %{coreutils_present}
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-6
+- Release bump for SRP compliance
 * Thu Aug 08 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1-5
 - Resolve coreutils dependency issue on bash
 * Wed Jul 03 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 9.1-4

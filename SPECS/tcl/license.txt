@@ -1,0 +1,1 @@
+License: (GPL-2.0-or-later WITH GNAT-exception) AND MIT-Modern-Variant AND HPND-UC AND TCL AND FSFUL AND BSD-2-Clause AND BSD-3-Clause AND X11 AND BSL-1.0 AND Zlib AND GPL-1.0-or-later AND (GPL-3.0-or-later WITH Bison-exception-2.2) AND BSD-4-Clause-UC AND Unlicense AND Spencer-99

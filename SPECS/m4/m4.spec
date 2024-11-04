@@ -1,27 +1,32 @@
 Summary:       A macro processor
 Name:          m4
 Version:       1.4.19
-Release:       1%{?dist}
-License:       GPLv3+
+Release:       2%{?dist}
 URL:           http://www.gnu.org/software/m4
-Group:		   Development/Tools
-Vendor:		   VMware, Inc.
+Group:         Development/Tools
+Vendor:        VMware, Inc.
 Distribution:  Photon
+
 Source0:       http://ftp.gnu.org/gnu/m4/%{name}-%{version}.tar.gz
 %define sha512 m4=f5dd0f02fcae65a176a16af9a8e1747c26e9440c6c224003ba458d3298b777a75ffb189aee9051fb0c4840b2a48278be4a51d959381af0b1d627570f478c58f2
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 The M4 package contains a macro processor
 
 %prep
 %autosetup
+
 %build
 #make some fixes required by glibc-2.28:
 sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
 echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
 
 %configure \
-	--disable-silent-rules
+    --disable-silent-rules
+
 %make_build
 
 %install
@@ -39,6 +44,8 @@ make  %{?_smp_mflags}  check
 %{_mandir}/*/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.19-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.4.19-1
 - Fix compilation issue against glibc-2.36
 * Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.4.18-3

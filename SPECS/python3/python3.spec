@@ -4,8 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.9
-Release:        4%{?dist}
-License:        PSF
+Release:        5%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -20,6 +19,9 @@ Source1: macros.python
 # how to create this tarball
 Source2: setuptools-pip-wheels%{?dist}-1.0-1.tar.xz
 %define sha512 setuptools-pip-wheels=be455735f5293b38e1e51a946b9db137b5faa09012518c2f578e2183934aca2fd229c6db342bbd2310c46acdc330006829e83607f6befbb42ab00170aacd05fe
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Patch0: cgi3.patch
 Patch1: use-HMAC-SHA256-in-FIPS-mode.patch
@@ -307,6 +309,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.9-5
+- Release bump for SRP compliance
 * Tue Oct 01 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.9-4
 - Fix CVE-2024-6232, CVE-2024-7592 & CVE-2023-27043
 * Mon Aug 19 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.9-3

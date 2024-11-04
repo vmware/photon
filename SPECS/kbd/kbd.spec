@@ -1,8 +1,7 @@
 Summary:    Key table files, console fonts, and keyboard utilities
 Name:       kbd
 Version:    2.2.0
-Release:    1%{?dist}
-License:    GPLv2
+Release:    2%{?dist}
 URL:        http://ftp.altlinux.org/pub/people/legion/kbd
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.altlinux.org/pub/people/legion/kbd/%{name}-%{version}.tar.xz
 %define sha512 %{name}=5f407c20739487e423e8390e429d30838a1a69a0a50db083803ce56da919e25ce480b63fd1bcfac9eb362095f17e575783b09eaa55e26b442bfa3ed838e04f13
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:     kbd-2.0.4-backspace-1.patch
 
@@ -34,9 +36,9 @@ export PKG_CONFIG_PATH=/tools/lib/pkgconfig
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-cp -R -v docs/doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-rm -f %{buildroot}%{_defaultdocdir}/%{name}-%{version}/kbd.FAQ*
+install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{version}
+cp -R -v docs/doc/* %{buildroot}%{_docdir}/%{name}-%{version}
+rm -f %{buildroot}%{_docdir}/%{name}-%{version}/kbd.FAQ*
 %find_lang %{name}
 
 %check
@@ -48,14 +50,16 @@ make %{?_smp_mflags} check
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
-%{_defaultdocdir}/%{name}-%{version}/*
-%{_datarootdir}/consolefonts/*
-%{_datarootdir}/consoletrans/*
-%{_datarootdir}/keymaps/*
-%{_datarootdir}/unimaps/*
+%{_docdir}/%{name}-%{version}/*
+%{_datadir}/consolefonts/*
+%{_datadir}/consoletrans/*
+%{_datadir}/keymaps/*
+%{_datadir}/unimaps/*
 %{_mandir}/*/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2.0-2
+- Release bump for SRP compliance
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1
 - Automatic Version Bump
 * Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1

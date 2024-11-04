@@ -1,8 +1,7 @@
 Summary:    Intltool
 Name:       intltool
 Version:    0.51.0
-Release:    5%{?dist}
-License:    GPLv2+
+Release:    6%{?dist}
 URL:        https://freedesktop.org/wiki/Software/intltool
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:  Photon
 
 Source0:    https://launchpad.net/intltool/+download/%{name}-%{version}.tar.gz
 %define sha512  %{name}=4c93cb26592ed0b1622d3b7800b5d6622ffa36f58ac73f2ef0bddfab522565fdfb8fa73d81914b9a202f1d62bc995a08960f8adb9f62c86918e75498e85fbfdf
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:      XML-Parser
 
@@ -46,6 +48,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.51.0-6
+- Release bump for SRP compliance
 * Fri Feb 25 2022 Susant Sahani <ssahani@vmware.com> 0.51.0-5
 - Rebuild
 * Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 0.51.0-4

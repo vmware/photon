@@ -1,14 +1,17 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
 Version:        0.21.1
-Release:        2%{?dist}
-License:        GPLv3
+Release:        3%{?dist}
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
 %define sha512  gettext=61e93bc9876effd3ca1c4e64ff6ba5bd84b24951ec2cc6f40a0e3248410e60f887552f29ca1f70541fb5524f6a4e8191fed288713c3e280e18922dd5bff1a2c9
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         libxml2-CVE-2016-3709.patch
 Patch1:         libxml2-CVE-2019-19956.patch
@@ -82,6 +85,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.21.1-3
+- Release bump for SRP compliance
 * Fri Jun 14 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 0.21.1-2
 - Fix CVE-2016-3709/2019-19956/2021-3517/2021-3518/
 - 2021-3541/2022-23308/2022-40303/2022-40304/2024-25062

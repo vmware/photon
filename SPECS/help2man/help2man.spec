@@ -1,8 +1,7 @@
 Name:       help2man
 Summary:    Create simple man pages from --help output
 Version:    1.48.5
-Release:    2%{?dist}
-License:    GPLv3+
+Release:    3%{?dist}
 URL:        https://www.gnu.org/software/help2man
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source:         https://ftp.gnu.org/gnu/help2man/%{name}-%{version}.tar.xz
 %define sha512 %{name}=800eb0daa9daef8e423d52ede55eee2960122ea0269865295afada4cf4fcc1c6791da8429c3a57c0fc1bf0a14c8a77953952325413a8faa5dd07b1bc5bc0edd1
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  gcc
 BuildRequires:  make
@@ -47,6 +49,8 @@ make install_l10n DESTDIR=%{buildroot} %{?_smp_mflags}
 %{_mandir}/man1/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.48.5-3
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.48.5-2
 - Rebuild for perl version upgrade to 5.36.0
 * Fri Dec 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.48.5-1

@@ -1,28 +1,32 @@
-Summary:	Gperf-3.0.4
-Name:		gperf
-Version:	3.1
-Release:	2%{?dist}
-License:	GPLv3+
-URL:		http://freedesktop.org/wiki/Software/%{name}l/
-Source0:	http://ftp.gnu.org/gnu/gperf/%{name}-%{version}.tar.gz
-%define sha1 gperf=e3c0618c2d2e5586eda9498c867d5e4858a3b0e2
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:    Gperf-3.0.4
+Name:       gperf
+Version:    3.1
+Release:    3%{?dist}
+URL:        https://www.gnu.org/software/gperf
+Group:      Development/Tools
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0:    http://ftp.gnu.org/gnu/gperf/%{name}-%{version}.tar.gz
+%define sha512 %{name}=855ebce5ff36753238a44f14c95be7afdc3990b085960345ca2caf1a2db884f7db74d406ce9eec2f4a52abb8a063d4ed000a36b317c9a353ef4e25e2cca9a3f4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 Gperf generates a perfect hash function from a key set.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
-	--docdir=%{_defaultdocdir}/%{name}-%{version}
+    --docdir=%{_docdir}/%{name}-%{version}
+
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -v -m644 doc/gperf.{dvi,ps,pdf} %{buildroot}/%{_docdir}/%{name}-%{version}
 pushd  %{buildroot}/usr/share/info &&
   for FILENAME in *; do
@@ -41,6 +45,8 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 
 %changelog
+*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1-3
+-   Release bump for SRP compliance
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 3.1-2
 -   Cross compilation support
 *   Thu Apr 13 2017 Danut Moraru <dmoraru@vmware.com> 3.1-1

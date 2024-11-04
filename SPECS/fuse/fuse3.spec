@@ -1,28 +1,30 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.12.0
-Release:        1%{?dist}
-License:        GPL+
+Release:        2%{?dist}
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/libfuse/libfuse/archive/%{name}-%{version}.tar.gz
 %define sha512  fuse3=70acaa11ba976f4fb83ce25017725aa486d490ba8f7c1cdf9f98e93e6e0a331b5e3fd78c746d1b4dbb783987397ff30ccc5f6e49e150e34c5b2dfc977fc22d01
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  meson >= 0.38.0
 BuildRequires:  systemd-devel
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-devel
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:	python3-setuptools
+BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-pytest
 BuildRequires:  python3-six
 BuildRequires:  python3-attrs
+BuildRequires:  python3-pip
 BuildRequires:  python3-atomicwrites
 BuildRequires:  which
 %endif
@@ -34,8 +36,8 @@ userspace program.
 %package        devel
 Summary:        Header and development files
 Group:          Development/Libraries
-Requires:       %{name} = %{version}
-Requires:	systemd-devel
+Requires:       %{name} = %{version}-%{release}
+Requires:       systemd-devel
 
 %description    devel
 It contains the libraries and header files to create fuse applications.
@@ -72,8 +74,7 @@ rm -f %{buildroot}/%{_libdir}/*.a
 rm -f %{buildroot}%{_sysconfdir}/init.d/fuse3
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pluggy more_itertools
+pip3 install pluggy more_itertools
 python3 -m pytest test/
 
 %files
@@ -91,6 +92,8 @@ python3 -m pytest test/
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.12.0-2
+-   Release bump for SRP compliance
 *   Wed Nov 30 2022 Piyush Gupta <gpiyush@vmware.com> 3.12.0-1
 -   Upgrade to 3.12.0.
 *   Wed Jun 01 2022 Gerrit Photon <photon-checkins@vmware.com> 3.11.0-1

@@ -3,8 +3,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        13.2
-Release:        1%{?dist}
-License:        GPLv2+
+Release:        2%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -14,6 +13,8 @@ Source0: http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
 %define sha512 %{name}=8185d3e11ab60dafff5860a5016577bfe7dd7547ef01ebc867bc247603d82b74ff74c4f29492c7d2aee57076f52be33e289f4c6b414a4b870d4b3004909f4c34
 
 Source1: gdbinit
+Source2: license.txt
+%include %{SOURCE2}
 
 Requires: expat
 Requires: ncurses
@@ -179,6 +180,8 @@ sed -i 's/hex in)/hex in )/g' %{name}/testsuite/%{name}.arch/i386-signal.exp
 %endif
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.2-2
+- Release bump for SRP compliance
 * Fri Jul 28 2023 Anmol Jain <anmolja@vmware.com> 13.2-1
 - Version Update
 * Tue Jul 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.2-10

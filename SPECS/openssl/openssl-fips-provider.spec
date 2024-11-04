@@ -1,8 +1,7 @@
 Summary:        FIPS Libraries for openssl
 Name:           openssl-fips-provider
 Version:        3.0.8
-Release:        5%{?dist}
-License:        OpenSSL
+Release:        6%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Source0: http://www.openssl.org/source/openssl-%{version}.tar.gz
 %define sha512 openssl=8ce10be000d7d4092c8efc5b96b1d2f7da04c1c3a624d3a7923899c6b1de06f369016be957e36e8ab6d4c9102eaeec5d1973295d547f7893a7f11f132ae42b0d
 
 Source1: provider_fips.cnf
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Requires: bash
 Requires: glibc
@@ -82,6 +84,8 @@ rm -rf %{buildroot}/*
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.8-6
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.8-5
 - Fix requires for latest fips
 - Build fips.so from source

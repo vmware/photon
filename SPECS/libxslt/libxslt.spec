@@ -1,8 +1,7 @@
 Summary:        Libxslt
 Name:           libxslt
 Version:        1.1.37
-Release:        3%{?dist}
-License:        MIT
+Release:        4%{?dist}
 URL:            http://http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.gz
 %define sha512 %{name}=4e7a57cbe02ceea34404213a88bdbb63a756edfab63063ce3979b670816ae3f6fb3637a49508204e6e46b936628e0a3b8b77e9201530a1184225bd68da403b25
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       libxml2
 Requires:       libgcrypt
@@ -80,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.37-4
+- Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.37-3
 - Bump version as a part of libxml2 upgrade
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.1.37-2

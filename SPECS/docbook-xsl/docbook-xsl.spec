@@ -1,15 +1,17 @@
 Summary:        Docbook-xsl-1.79.1
 Name:           docbook-xsl
 Version:        1.79.1
-Release:        9%{?dist}
-License:        Apache License
+Release:        10%{?dist}
 URL:            http://www.docbook.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
-%define sha512  docbook-xsl=83325cbaf1545da6b9b8b77f5f0e6fdece26e3c455164b300a1aa3d19e3bd29ae71fd563553a714a5394968d1a65684c6c7987c77524469358d18b8c227025c7
+%define sha512  %{name}=83325cbaf1545da6b9b8b77f5f0e6fdece26e3c455164b300a1aa3d19e3bd29ae71fd563553a714a5394968d1a65684c6c7987c77524469358d18b8c227025c7
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       libxml2
 
@@ -98,6 +100,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.79.1-10
+- Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.79.1-9
 - Bump version as a part of libxml2 upgrade
 * Mon Nov 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.79.1-8

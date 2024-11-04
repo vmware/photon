@@ -1,8 +1,7 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.46.5
-Release:        3%{?dist}
-License:        GPLv2+
+Release:        4%{?dist}
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -10,7 +9,12 @@ Distribution:   Photon
 
 Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
 %define sha512  %{name}=1a3496cb6ac575c7a5c523cc4eede39bc77c313a6d1fea2d303fc967792d75d94e42d7821e1a61b7513509320aae4a7170506decf5753ddbd1dda9d304cc392e
+
+Source1: license.txt
+%include %{SOURCE1}
+
 Patch0:         CVE-2022-1304.patch
+
 Requires:       %{name}-libs = %{version}-%{release}
 
 Conflicts:      toybox < 0.8.2-2
@@ -143,6 +147,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.46.5-4
+- Release bump for SRP compliance
 * Fri Apr 19 2024 Oliver Kurth <oliver.kurth@broadcom.com> 1.46.5-3
 - build and install fuse2fs
 * Wed Dec 06 2023 Roye Eshed <reshed@vmware.com> 1.46.5-2

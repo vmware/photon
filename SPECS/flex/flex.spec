@@ -1,16 +1,22 @@
-Summary:	A utility for generating programs that recognize patterns in text
-Name:		flex
-Version:	2.6.4
-Release:	3%{?dist}
-License:	BSD
-URL:		https://github.com/westes/flex/releases
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	https://github.com/westes/flex/releases/%{name}-%{version}.tar.gz
-%define sha1 flex=fafece095a0d9890ebd618adb1f242d8908076e1
-BuildRequires:	m4
-Requires:	m4
+Summary:    A utility for generating programs that recognize patterns in text
+Name:       flex
+Version:    2.6.4
+Release:    4%{?dist}
+URL:        https://github.com/westes/flex/releases
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0: https://github.com/westes/flex/releases/%{name}-%{version}.tar.gz
+%define sha512 %{name}=e9785f3d620a204b7d20222888917dc065c2036cae28667065bf7862dfa1b25235095a12fd04efdbd09bfd17d3452e6b9ef953a8c1137862ff671c97132a082e
+
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires:  m4
+
+Requires:   m4
+
 %description
 The Flex package contains a utility for generating programs
 that recognize patterns in text.
@@ -25,23 +31,26 @@ The flex-devel package contains the development libraries and header files for
 flex.
 
 %prep
-%setup -q
+%autosetup -p1
 sed -i -e '/test-bison/d' tests/Makefile.in
 sed -i "/math.h/a #include <malloc.h>" src/flexdef.h
+
 %build
 autoreconf -fiv
 %configure \
-	--docdir=%{_defaultdocdir}/%{name}-%{version} \
-	--disable-silent-rules
+    --docdir=%{_docdir}/%{name}-%{version} \
+    --disable-silent-rules
+
 make VERBOSE=1 %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}%{_libdir} -name '*.la' -delete
 cat > %{buildroot}/usr/bin/lex <<- "EOF"
 #!/bin/sh
 # Begin /usr/bin/lex
 
-	exec /usr/bin/flex -l "$@"
+exec /usr/bin/flex -l "$@"
 
 # End /usr/bin/lex
 EOF
@@ -51,8 +60,9 @@ rm -rf %{buildroot}%{_infodir}
 %check
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/flex
@@ -69,6 +79,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
+*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.6.4-4
+-   Release bump for SRP compliance
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.6.4-3
 -   Cross compilation support
 *   Fri Aug 4 2017 Alexey Makhalov <amakhalov@vmware.com> 2.6.4-2

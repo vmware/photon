@@ -1,8 +1,7 @@
 Summary:    Archiving program
 Name:       tar
 Version:    1.34
-Release:    5%{?dist}
-License:    GPLv3+
+Release:    6%{?dist}
 URL:        http://www.gnu.org/software/tar
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/tar/%{name}-%{version}.tar.xz
 %define sha512 %{name}=5e77c4a7b49983ad7d15238c2bce28be7a8aa437b4b1815fc00abd13096da308b6bba196cc6e3ed79d85e62823d520ae0d8fcda2d93873842cf84dc3369fc902
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: CVE-2022-48303.patch
 Patch1: CVE-2023-39804.patch
@@ -51,6 +53,8 @@ rm -rf %{buildroot}{%{_infodir},%{_mandir}}
 %{_libexecdir}/rmt
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34-6
+- Release bump for SRP compliance
 * Tue Dec 19 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.34-5
 - Add patch for CVE-2023-39804
 * Mon Jul 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.34-4

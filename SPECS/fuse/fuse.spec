@@ -1,15 +1,21 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse
 Version:        2.9.9
-Release:        2%{?dist}
-License:        GPL+
+Release:        3%{?dist}
 URL:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/libfuse/libfuse/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
 %define sha512  fuse=1acd51a647ec3dbf9eaafb80cec92bd8542bcbb2cf4510fc8b079b4f8aaa8f4b301e469ddefe4f1cc4ae2bf941e028077601c20d97f187cc618cea8710cbe331
+
+Source1: license.txt
+%include %{SOURCE1}
+
+%ifarch aarch64
 Patch0:         fuse-types.patch
+%endif
 Patch1:         fuse-prevent-silent-truncation.patch
 Patch2:         fuse2-0007-util-ulockmgr_server.c-conditionally-define-closefro.patch
 
@@ -20,7 +26,7 @@ userspace program.
 %package        devel
 Summary:        Header and development files
 Group:          Development/Libraries
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 %description    devel
 It contains the libraries and header files to create fuse applications.
 
@@ -65,6 +71,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/fuse.pc
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.9-3
+- Release bump for SRP compliance
 * Mon Aug 22 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.9.9-2
 - Fix build with glibc 2.36
 * Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.9-1

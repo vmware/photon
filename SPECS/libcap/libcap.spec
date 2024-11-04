@@ -1,14 +1,18 @@
 Summary:        Libcap
 Name:           libcap
 Version:        2.66
-Release:        2%{?dist}
-License:        GPLv2+
+Release:        3%{?dist}
 URL:            https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
-Source0:        https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
-%define sha512  libcap=ac005b622f6e065f30ce282a5c87240e7b9da75366ee537aa4835bc501b44bc242c10a4ba4dc070e2415fc7f635d1c3c4e45fbeeaf962cf7973dda82bf6377f0
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
+%define sha512  libcap=ac005b622f6e065f30ce282a5c87240e7b9da75366ee537aa4835bc501b44bc242c10a4ba4dc070e2415fc7f635d1c3c4e45fbeeaf962cf7973dda82bf6377f0
+
+Source1: license.txt
+%include %{SOURCE1}
+
 Patch0:         CVE-2023-2602.patch
 Patch1:         CVE-2023-2603.patch
 
@@ -73,6 +77,8 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.66-3
+-   Release bump for SRP compliance
 *   Fri Jun 02 2023 Piyush Gupta <gpiyush@vmware.com> 2.66-2
 -   Fix CVE-2023-2602, CVE-2023-2603.
 *   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.66-1

@@ -1,10 +1,9 @@
 Summary:          A password strength-checking library.
 Name:             cracklib
 Version:          2.9.8
-Release:          1%{?dist}
+Release:          2%{?dist}
 Group:            System Environment/Libraries
 URL:              https://github.com/cracklib/cracklib
-License:          GPL
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
@@ -13,6 +12,9 @@ Source0: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{na
 
 Source1: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-words-%{version}.gz
 %define sha512  %{name}-words-%{version}=1700c56b9776b7ae4684b9ab1e784dd7707550bce2149301f662618a4f00a2eb0ba2d1a206c09aac22f7d95bc561544d412d2fdac5008fc3aabc4872e8a74afc
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:    python3-devel
 BuildRequires:    python3-setuptools
@@ -204,6 +206,8 @@ rm -f %{_datadir}/%{name}/pw_dict.hwm \
 %{_datadir}/locale/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.8-2
+- Release bump for SRP compliance
 * Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 2.9.8-1
 - Automatic Version Bump
 * Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9.7-2

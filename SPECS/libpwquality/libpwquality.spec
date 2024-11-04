@@ -1,14 +1,17 @@
 Summary:        It provides common functions for password quality checking
 Name:           libpwquality
 Version:        1.4.4
-Release:        3%{?dist}
-License:        BSD or GPLv2+
+Release:        4%{?dist}
 URL:            https://github.com/libpwquality/libpwquality
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/libpwquality/libpwquality/releases/download/libpwquality-%{version}/libpwquality-%{version}.tar.bz2
-%define sha512  libpwquality=2d49b79105361663f009f7183fde9123e6f1e63bd678dfe5418143f611e763af8dd44374b826b3c22a00e721047c539741dc44d99a2289b9ab229791768d6e76
+
+Source0:        https://github.com/libpwquality/libpwquality/releases/download/%{name}-%{version}/%{name}-%{version}.tar.bz2
+%define sha512  %{name}=2d49b79105361663f009f7183fde9123e6f1e63bd678dfe5418143f611e763af8dd44374b826b3c22a00e721047c539741dc44d99a2289b9ab229791768d6e76
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cracklib-devel
 BuildRequires:  Linux-PAM-devel
@@ -44,10 +47,10 @@ for the libpwquality library.
 
 %build
 %configure \
-	--with-securedir=%{_libdir}/security \
-	--with-pythonsitedir=%{python3_sitearch} \
-	--with-python-binary=%{__python3} \
-	--disable-static
+    --with-securedir=%{_libdir}/security \
+    --with-pythonsitedir=%{python3_sitearch} \
+    --with-python-binary=%{__python3} \
+    --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -86,6 +89,8 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
 %{python3_sitearch}/pwquality-*.egg/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.4-4
+- Release bump for SRP compliance
 * Mon Jan 02 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.4.4-3
 - Rebuild with new cracklib
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.4-2

@@ -1,0 +1,1 @@
+License: Zlib AND Info-ZIP AND BSD-3-Clause

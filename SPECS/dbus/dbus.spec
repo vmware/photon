@@ -1,8 +1,7 @@
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.15.4
-Release:        3%{?dist}
-License:        GPLv2+ or AFL
+Release:        4%{?dist}
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
 %define sha512 %{name}=53a5b7161940c5d4432b902c3c0ac1f1965978e3791a640d1a71f2d819474b727497f7a13c95d7c5850baef659062f1434296a3f5e56701383cc573dfbf187ee
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: CVE-2023-34969.patch
 
@@ -97,6 +99,8 @@ make %{?_smp_mflags} check
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-4
+- Release bump for SRP compliance
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-3
 - Fix CVE-2023-34969
 * Tue Mar 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-2

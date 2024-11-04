@@ -1,8 +1,7 @@
 Summary:        SELinux binary policy manipulation library
 Name:           libsepol
 Version:        3.4
-Release:        2%{?dist}
-License:        LGPLv2+
+Release:        3%{?dist}
 Group:          System Environment/Libraries
 URL:            http://www.selinuxproject.org
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=5e47e6ac626f2bfc10a9f2f24c2e66c4d7f291ca778ebd81c7d565326e036e821d3eb92e5d7540517b1c715466232a7d7da895ab48811d037ad92d423ed934b6
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: fix-validation-of-user.patch
 
@@ -93,6 +95,8 @@ rm -rf %{buildroot}%{_mandir}/ru \
 %{_libdir}/libsepol.so.*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-3
+- Release bump for SRP compliance
 * Fri Sep 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.4-2
 - Fix user validation
 * Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1

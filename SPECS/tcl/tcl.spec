@@ -3,15 +3,17 @@
 Summary:         Tool Command Language - the language and library.
 Name:            tcl
 Version:         8.6.12
-Release:         1%{?dist}
+Release:         2%{?dist}
 URL:             http://tcl.sourceforge.net/
-License:         LGPLv2+
 Group:           System Environment/Libraries
 Vendor:          VMware, Inc.
 Distribution:    Photon
 
-Source0:         http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
-%define sha512   tcl-core=7144a50d19d3855edbda14b538cc94fe26c0dd357b979676c3fe02d599dab61ba777bf14f6aaebb63e238aeff1d0bad25ea7b0ff31b2398468f67fc0a305b9f3
+Source0: http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
+%define sha512 %{name}=7144a50d19d3855edbda14b538cc94fe26c0dd357b979676c3fe02d599dab61ba777bf14f6aaebb63e238aeff1d0bad25ea7b0ff31b2398468f67fc0a305b9f3
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:   cmake
 
@@ -99,6 +101,8 @@ cd unix && make test %{?_smp_mflags}
 %exclude %{_mandir}/man3/Thread.3.gz
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.6.12-2
+- Release bump for SRP compliance
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 8.6.12-1
 - Automatic Version Bump
 * Thu Jul 15 2021 Nitesh Kumar <kunitesh@vmware.com> 8.6.10-2

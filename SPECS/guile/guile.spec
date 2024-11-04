@@ -3,8 +3,7 @@
 Summary:        GNU Ubiquitous Intelligent Language for Extensions
 Name:           guile
 Version:        2.2.7
-Release:        5%{?dist}
-License:        LGPLv3+
+Release:        6%{?dist}
 URL:            http://www.gnu.org/software/guile
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/guile/%{name}-%{version}.tar.gz
 %define sha512 %{name}=ad11885ffeb7655ef6c8543e67233992dc37bdcf91ed82188e6a144169c6b7d4e31cf7a6d01509c573d00904cb002719b851f71cdf1359a86de401daf613d773
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libltdl-devel
 BuildRequires:  libunistring-devel
@@ -36,6 +38,7 @@ Summary:        Development libraries and header files for guile
 Requires:       %{name} = %{version}-%{release}
 Requires:       libltdl-devel
 Requires:       libunistring-devel
+Requires:       gc-devel
 
 %description    devel
 The package contains libraries and header files for
@@ -83,6 +86,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2.7-6
+- Release bump for SRP compliance
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-5
 - Bump version as a part of readline upgrade
 * Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-4

@@ -1,8 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.78
-Release:        9%{?dist}
-License:        MPLv2.0
+Release:        10%{?dist}
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,6 +10,11 @@ Distribution:   Photon
 Source0: http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_78_RTM/src/%{name}-%{version}.tar.gz
 %define sha512 %{name}=ab54d838f41f963fdd4b87477b1e769186ae1f138f7c5d764cd6873be4791146d14dcc85697a2ca92e08f3bfcbeb61d64e26e7b5398095272c18a8196d43ac6c
 
+Source1: license.txt
+%include %{SOURCE1}
+
+# taken from:
+# http://lfs.linux-sysadmin.com/patches/downloads/nss/nss-3.78-standalone-1.patch
 Patch0: %{name}-%{version}-standalone-1.patch
 Patch1: CVE-2022-36320-1.patch
 Patch2: CVE-2022-36320-2.patch
@@ -134,6 +138,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-10
+- Release bump for SRP compliance
 * Tue Aug 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-9
 - Fix CVE-2024-0743
 * Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-8

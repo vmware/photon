@@ -1,8 +1,7 @@
 Summary:       Enhanced seccomp library
 Name:          libseccomp
 Version:       2.5.4
-Release:       2%{?dist}
-License:       LGPLv2
+Release:       3%{?dist}
 Group:         System Environment/Libraries
 Url:           https://github.com/seccomp/libseccomp/wiki
 Vendor:        VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:  Photon
 
 Source0:       https://github.com/seccomp/libseccomp/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=6b07e25e63fed380bfe1dc89b9336b68cc1828c8413b6574f191450b92503a9f0a904bb0d1b7c129de976cc421b4d3f28e19d953e2591fdcbf126f4755ec7aad
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: which
 BuildRequires: gperf
@@ -76,6 +78,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.5.4-3
+- Release bump for SRP compliance
 * Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.5.4-2
 - Remove .la files
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.5.4-1

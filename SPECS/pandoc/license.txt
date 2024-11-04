@@ -1,0 +1,1 @@
+License: GFDL-1.2-invariants-or-later AND Classpath-exception-2.0 AND TU-Berlin-2.0 AND OFL-1.1-no-RFN AND CC-BY-SA-3.0 AND GPL-2.0-or-later AND CC-BY-SA-4.0 AND GFDL-1.1-no-invariants-or-later AND GFDL-1.2-no-invariants-only AND CERN-OHL-P-2.0 AND GPL-1.0-or-later AND GPL-3.0-linking-exception AND GPL-2.0-only AND BSD-2-Clause-Patent AND CC-BY-SA-2.0 AND BSD-4-Clause-Shortened

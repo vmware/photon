@@ -1,8 +1,7 @@
 Summary:        Multi-format archive and compression library
 Name:           libarchive
 Version:        3.7.1
-Release:        2%{?dist}
-License:        BSD 2-Clause License
+Release:        3%{?dist}
 URL:            http://www.libarchive.org
 Group:          System Environment/Development
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
 %define sha512  %{name}=ccd36fc5e24e5feaad15b08496c4f6373f1bbb6ba657af5dc633b9d1454c98aba9a59ccffc48b41afc1219119d46c15d4db09c5855950422946e4dc058f17b88
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: CVE-2024-26256.patch
 
@@ -65,6 +67,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.7.1-3
+- Release bump for SRP compliance
 * Wed Jun 19 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 3.7.1-2
 - Fix CVE-2024-26256
 * Tue Aug 22 2023 Harinadh D <hdommaraju@vmware.com> 3.7.1-1

@@ -1,0 +1,1 @@
+License: Apache-2.0 AND MIT AND Vim AND BSD-3-Clause AND BSL-1.0 AND GPL-1.0-or-later AND FSFAP

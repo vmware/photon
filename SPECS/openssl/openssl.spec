@@ -1,8 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.15
-Release:        1%{?dist}
-License:        OpenSSL
+Release:        2%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -17,6 +16,9 @@ Source3: distro.cnf
 Source4: user.cnf
 
 Source5: jitterentropy.c
+
+Source6: license.txt
+%include %{SOURCE6}
 
 Patch0: openssl-cnf.patch
 Patch1: CVE-2023-50782.patch
@@ -189,6 +191,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.15-2
+- Release bump for SRP compliance
 * Tue Sep 03 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.15-1
 - Update to 3.0.15
 * Thu Aug 08 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.14-6

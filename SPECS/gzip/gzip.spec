@@ -1,8 +1,7 @@
 Summary:    Programs for compressing and decompressing files
 Name:       gzip
 Version:    1.12
-Release:    2%{?dist}
-License:    GPLv3+
+Release:    3%{?dist}
 URL:        http://www.gnu.org/software
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    http://ftp.gnu.org/gnu/gzip/%{name}-%{version}.tar.xz
 %define sha512 %{name}=116326fe991828227de150336a0c016f4fe932dfbb728a16b4a84965256d9929574a4f5cfaf3cf6bb4154972ef0d110f26ab472c93e62ec9a5fd7a5d65abea24
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  less
 
@@ -44,6 +46,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12-3
+- Release bump for SRP compliance
 * Wed May 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.12-2
 - Add less to BuildRequires, required to build zless binary
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.12-1

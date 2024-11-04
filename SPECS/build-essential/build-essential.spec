@@ -1,11 +1,14 @@
 Name:       build-essential
 Summary:    Metapackage to install all build tools
 Version:    0.1
-Release:    4%{?dist}
+Release:    5%{?dist}
 Group:      Development/Tools
-License:    GPLv2
 Vendor:     VMware, Inc.
+URL:        https://github.com/vmware/photon
 Distribution:   Photon
+
+Source0: license.txt
+%include %{SOURCE0}
 
 Requires:   autoconf
 Requires:   automake
@@ -35,6 +38,8 @@ Metapackage to install all build tools
 %defattr(-,root,root,0755)
 
 %changelog
+*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1-5
+-   Release bump for SRP compliance
 *   Mon Jul 25 2022 Oliver Kurth <okurth@vmware.com> 0.1-4
 -   Add file, gzip, pkg-config and tar
 *   Fri Dec 07 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.1-3

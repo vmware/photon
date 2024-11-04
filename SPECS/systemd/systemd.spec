@@ -3,8 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        5%{?dist}
-License:        LGPLv2+ and GPLv2+ and MIT
+Release:        6%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -26,6 +25,9 @@ Source11:       macros.sysusers
 Source12:       sysusers.attr
 Source13:       sysusers.prov
 Source14:       sysusers.generate-pre.sh
+
+Source15: license.txt
+%include %{SOURCE15}
 
 Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
@@ -118,7 +120,6 @@ resolution.
 
 %package libs
 Summary:        systemd libraries
-License:        LGPLv2+ and MIT
 Provides:       nss-myhostname = 0.4
 Requires(post): (coreutils or coreutils-selinux or toybox)
 Requires(post): sed
@@ -153,7 +154,6 @@ Development headers for developing applications linking to libsystemd
 
 %package udev
 Summary: Rule-based device node and kernel event manager
-License:        LGPLv2+
 
 Requires:       %{name} = %{version}-%{release}
 Requires(post):   %{name} = %{version}-%{release}
@@ -175,7 +175,6 @@ Requires:       %{name} = %{version}-%{release}
 Requires(post):   %{name} = %{version}-%{release}
 Requires(preun):  %{name} = %{version}-%{release}
 Requires(postun): %{name} = %{version}-%{release}
-License:          LGPLv2+
 
 %description container
 Systemd tools to spawn and manage containers and virtual machines.
@@ -186,7 +185,6 @@ and %{name}-importd.
 %package journal-remote
 Summary:        Tools to send journal events over the network
 Requires:       %{name} = %{version}-%{release}
-License:        LGPLv2+
 Requires(post):   %{name} = %{version}-%{release}
 Requires(preun):  %{name} = %{version}-%{release}
 Requires(postun): %{name} = %{version}-%{release}
@@ -210,7 +208,6 @@ Language pack for systemd
 %package tests
 Summary:       Internal unit tests for systemd
 Requires:      %{name} = %{version}-%{release}
-License:       LGPLv2+
 
 %description tests
 "Installed tests" that are usually run as part of the build system.
@@ -705,6 +702,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-6
+- Release bump for SRP compliance
 * Tue Jun 18 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 253.19-5
 - Disable sysupdate services through build
 * Fri Jun 14 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 253.19-4

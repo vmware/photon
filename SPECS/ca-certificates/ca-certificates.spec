@@ -5,8 +5,7 @@
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
 Version:        20230315
-Release:        3%{?dist}
-License:        Custom
+Release:        4%{?dist}
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -16,6 +15,8 @@ Source0: certdata.txt
 Source1: make-ca.sh
 Source2: make-cert.pl
 Source3: remove-expired-certs.sh
+Source4: license.txt
+%include %{SOURCE4}
 
 Requires: openssl-libs
 Requires: %{name}-pki = %{version}-%{release}
@@ -90,6 +91,8 @@ rm -rf %{buildroot}
 %{crt_dir}/ca-bundle.crt
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-4
+- Release bump for SRP compliance
 * Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-3
 - Spec cleanups, don't generate helper scripts everytime
 - Create cert symlinks at build time

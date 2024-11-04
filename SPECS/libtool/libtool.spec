@@ -1,28 +1,36 @@
 Summary:        Shared libraries, portable interface
 Name:           libtool
 Version:        2.4.7
-Release:        1%{?dist}
-License:        GPLv2
+Release:        2%{?dist}
 URL:            http://www.gnu.org/software/libtool
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://ftp.gnu.org/gnu/libtool/%{name}-%{version}.tar.xz
 %define sha512    libtool=47f4c6de40927254ff9ba452612c0702aea6f4edc7e797f0966c8c6bf0340d533598976cdba17f0bdc64545572e71cd319bbb587aa5f47cd2e7c1d96f873a3da
+
+Source1: license.txt
+%include %{SOURCE1}
+
 %description
 It wraps the complexity of using shared libraries in a
 consistent, portable interface.
+
 %package -n libltdl
 Summary:       Shared library files for %{name}
 Group:         Development/Libraries
+
 %description -n libltdl
 The libtool package contains the GNU libtool, a set of shell scripts which automatically configure UNIX and UNIX-like architectures to generically build shared libraries.
 Libtool provides a consistent, portable interface which simplifies the process of using shared libraries.
 Shared library files for libtool DLL library from the libtool package.
+
 %package -n libltdl-devel
 Summary:       Development files for %{name}
 Group:         Development/Libraries
-Requires:      libltdl = %{version}
+Requires:      libltdl = %{version}-%{release}
+
 %description -n libltdl-devel
 The libtool package contains the GNU libtool, a set of shell scripts which automatically configure UNIX and UNIX-like architectures to generically build shared libraries.
 Libtool provides a consistent, portable interface which simplifies the process of using shared libraries.
@@ -34,6 +42,7 @@ This package contains static libraries and header files need for development.
 %build
 %configure \
     --disable-silent-rules
+
 make %{?_smp_mflags}
 
 %install
@@ -46,10 +55,13 @@ make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %post -n libltdl
 /sbin/ldconfig
+
 %postun -n libltdl
 /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_bindir}/libtoolize
@@ -66,6 +78,7 @@ make %{?_smp_mflags} check
 %{_datadir}/libtool/build-aux
 
 %files -n libltdl-devel
+%defattr(-,root,root)
 %{_includedir}/libltdl/lt_dlloader.h
 %{_includedir}/libltdl/lt_system.h
 %{_includedir}/libltdl/lt_error.h
@@ -76,10 +89,12 @@ make %{?_smp_mflags} check
 %exclude %{_datadir}/libtool/build-aux
 
 %files -n libltdl
-%{_libdir}/libltdl.so.7
-%{_libdir}/libltdl.so.7.3.2
+%defattr(-,root,root)
+%{_libdir}/libltdl.so.*
 
 %changelog
+*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.7-2
+-   Release bump for SRP compliance
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.7-1
 -   Automatic Version Bump
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.6-3

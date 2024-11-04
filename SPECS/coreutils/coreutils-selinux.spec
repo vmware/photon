@@ -6,8 +6,7 @@
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
 Version:        9.1
-Release:        7%{?dist}
-License:        GPLv3
+Release:        8%{?dist}
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -17,6 +16,9 @@ Source0: http://ftp.gnu.org/gnu/coreutils/%{srcname}-%{version}.tar.xz
 %define sha512 %{srcname}=a6ee2c549140b189e8c1b35e119d4289ec27244ec0ed9da0ac55202f365a7e33778b1dc7c4e64d1669599ff81a8297fe4f5adbcc8a3a2f75c919a43cd4b9bdfa
 # make this package to own serial console profile since it utilizes stty tool
 Source1:        serial-console.sh
+
+Source2: license.txt
+%include %{SOURCE2}
 
 # Patches are taken from:
 # www.linuxfromscratch.org/patches/downloads/coreutils/
@@ -106,6 +108,8 @@ touch %{coreutils_selinux_present}
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-8
+- Release bump for SRP compliance
 * Thu Aug 08 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1-7
 - Resolve coreutils-selinux dependency issue on bash
 * Wed Jul 03 2024 Harinadh D <harinadh.Dommaraju@broadcom.com> 9.1-6

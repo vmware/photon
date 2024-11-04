@@ -1,8 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        8.7.1
-Release:        4%{?dist}
-License:        MIT
+Release:        5%{?dist}
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
@@ -11,11 +10,14 @@ Distribution:   Photon
 Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
 %define sha512 %{name}=5bbde9d5648e9226f5490fa951690aaf159149345f3a315df2ba58b2468f3e59ca32e8a49734338afc861803a4f81caac6d642a4699b72c6310ebfb1f618aad2
 
+Source1: license.txt
+%include %{SOURCE1}
+
 Patch0:        CVE-2024-6197.patch
-patch1:        0001-CVE-2024-7264.patch
-patch2:        0002-CVE-2024-7264.patch
-patch3:        CVE-2024-9681_prep.patch
-patch4:        CVE-2024-9681.patch
+Patch1:        0001-CVE-2024-7264.patch
+Patch2:        0002-CVE-2024-7264.patch
+Patch3:        CVE-2024-9681_prep.patch
+Patch4:        CVE-2024-9681.patch
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
@@ -78,10 +80,8 @@ This package contains minimal set of shared curl libraries.
 install -v -d -m755 %{buildroot}%{_docdir}/%{name}-%{version}
 %{_fixperms} %{buildroot}/*
 
-%if 0%{?with_check}
 %check
 %make_build check
-%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -108,6 +108,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.7.1-5
+- Release bump for SRP compliance
 * Mon Nov 04 2024 Tapas Kundu <tapas.kundu@broadcom.com> 8.7.1-4
 - Fix CVE-2024-9681
 * Wed Jul 31 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 8.7.1-3

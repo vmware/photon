@@ -3,8 +3,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.20.2
-Release:        4%{?dist}
-License:        MIT
+Release:        5%{?dist}
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: http://web.mit.edu/kerberos/www/dist/%{name}/%{minor_ver}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=69e263ef74116a3332c632a2a243499bcc47b01b1e57d02fe35aa6c2ff655674b6cf2b815457145f788bceac4d466d3f55f8c20ec9ee4a6051128417e1e7e99e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: CVE-2024-26458.patch
 Patch1: CVE-2024-26461.patch
@@ -119,6 +121,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/locale/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.20.2-5
+- Release bump for SRP compliance
 * Fri Aug 23 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 1.20.2-4
 - patched CVE-2024-37370, CVE-2024-37371
 * Mon Jun 03 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 1.20.2-3

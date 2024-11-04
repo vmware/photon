@@ -1,8 +1,7 @@
 Summary:    Text file viewer
 Name:       less
 Version:    654
-Release:    1%{?dist}
-License:    GPLv3+
+Release:    2%{?dist}
 URL:        http://www.greenwoodsoftware.com/less
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://www.greenwoodsoftware.com/less/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b8fa6688fb2aac4b015dbc000429db45f94c7484f388d1af60ff8fee7f72fec35614e0a3f6eb811583cd899f647b2e01fe47533ab6a7633dac04c155dd415678
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: ncurses-devel
 
@@ -34,6 +36,8 @@ The Less package contains a text file viewer
 %{_mandir}/*/*
 
 %changelog
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 654-2
+- Release bump for SRP compliance
 * Tue May 14 2024 Mukul Sikka <msikka@vmware.com> 654-1
 - Upgrade version to 654
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 608-3
