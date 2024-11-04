@@ -4,7 +4,7 @@
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.7.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org/
 Group:          System Environment/Libraries
@@ -17,6 +17,8 @@ Source0: http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
 %if 0%{?with_check}
 Patch0:         apr-skip-getservbyname-test.patch
 %endif
+
+Patch1:         CVE-2023-49582.patch
 
 Requires:       util-linux-libs
 
@@ -68,6 +70,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_libdir}/pkgconfig
 
 %changelog
+* Mon Nov 04 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.7.2-3
+- Fix CVE-2023-49582
 * Mon Dec 18 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.7.2-2
 - Fix devel package requires
 * Thu Feb 09 2023 Ankit Jain <ankitja@vmware.com> 1.7.2-1
