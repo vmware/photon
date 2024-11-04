@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        8.7.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -14,6 +14,8 @@ Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
 Patch0:        CVE-2024-6197.patch
 patch1:        0001-CVE-2024-7264.patch
 patch2:        0002-CVE-2024-7264.patch
+patch3:        CVE-2024-9681_prep.patch
+patch4:        CVE-2024-9681.patch
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
@@ -106,6 +108,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Mon Nov 04 2024 Tapas Kundu <tapas.kundu@broadcom.com> 8.7.1-4
+- Fix CVE-2024-9681
 * Wed Jul 31 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 8.7.1-3
 - Fix CVE-2024-7264
 * Tue Jul 16 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 8.7.1-2
