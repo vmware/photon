@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.229
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -286,6 +286,16 @@ Patch174: 0001-drm-amd-pm-Fix-negative-array-index-read.patch
 # Fix CVE-2024-47673
 Patch175: 0001-wifi-iwlwifi-mvm-pause-TCM-when-the-firmware-is-stop.patch
 
+# Fix CVE-2024-46848
+Patch176: 0001-perf-x86-intel-Limit-the-period-on-Haswell.patch
+
+# Fix CVE-2024-46802
+Patch177: 0001-drm-amd-display-added-NULL-check-at-start-of-dc_vali.patch
+
+# Fix CVE-2024-46816
+Patch178: 0001-drm-amd-display-handle-invalid-connector-indices.patch
+Patch179: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
+
 %ifarch aarch64
 # Rpi of_configfs patches
 Patch301: 0001-OF-DT-Overlay-configfs-interface.patch
@@ -548,7 +558,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M175
+%autopatch -p1 -m100 -M179
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -956,6 +966,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.229-3
+- Fix CVE-2024-46848, CVE-2024-46802, CVE-2024-46816
 * Mon Nov 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.229-2
 - Fix CVE-2024-50125, CVE-2024-50256, CVE-2024-50121
 * Mon Oct 28 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.229-1

@@ -1,0 +1,43 @@
+From 356fcce9cdbfe338a275e9e1836adfdd7f5c52a9 Mon Sep 17 00:00:00 2001
+From: winstang <winstang@amd.com>
+Date: Mon, 27 May 2024 08:51:19 -0400
+Subject: [PATCH] drm/amd/display: added NULL check at start of
+ dc_validate_stream
+
+[ Upstream commit 26c56049cc4f1705b498df013949427692a4b0d5 ]
+
+[Why]
+prevent invalid memory access
+
+[How]
+check if dc and stream are NULL
+
+Co-authored-by: winstang <winstang@amd.com>
+Reviewed-by: Alvin Lee <alvin.lee2@amd.com>
+Acked-by: Zaeem Mohamed <zaeem.mohamed@amd.com>
+Signed-off-by: winstang <winstang@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ drivers/gpu/drm/amd/display/dc/core/dc_resource.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
+index 0a13c06ee..6a993cdb1 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
+@@ -2914,6 +2914,9 @@ void resource_build_bit_depth_reduction_params(struct dc_stream_state *stream,
+ 
+ enum dc_status dc_validate_stream(struct dc *dc, struct dc_stream_state *stream)
+ {
++	if (dc == NULL || stream == NULL)
++		return DC_ERROR_UNEXPECTED;
++
+ 	struct dc_link *link = stream->link;
+ 	struct timing_generator *tg = dc->res_pool->timing_generators[0];
+ 	enum dc_status res = DC_OK;
+-- 
+2.39.4
+

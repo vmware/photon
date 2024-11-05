@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.229
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -246,6 +246,16 @@ Patch177: 0001-drm-amd-pm-Fix-negative-array-index-read.patch
 # Fix CVE-2024-47673
 Patch178: 0001-wifi-iwlwifi-mvm-pause-TCM-when-the-firmware-is-stop.patch
 
+# Fix CVE-2024-46848
+Patch179: 0001-perf-x86-intel-Limit-the-period-on-Haswell.patch
+
+# Fix CVE-2024-46802
+Patch180: 0001-drm-amd-display-added-NULL-check-at-start-of-dc_vali.patch
+
+# Fix CVE-2024-46816
+Patch181: 0001-drm-amd-display-handle-invalid-connector-indices.patch
+Patch182: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -377,7 +387,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m90 -M94
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M178
+%autopatch -p1 -m100 -M182
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -523,6 +533,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.229-3
+- Fix CVE-2024-46848, CVE-2024-46802, CVE-2024-46816
 * Mon Nov 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.229-2
 - CVE-2024-50256, CVE-2024-50121
 * Mon Oct 28 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.229-1

@@ -1,0 +1,117 @@
+From 15210b7c8caff4929f25d049ef8404557f8ae468 Mon Sep 17 00:00:00 2001
+From: Kan Liang <kan.liang@linux.intel.com>
+Date: Mon, 19 Aug 2024 11:30:04 -0700
+Subject: [PATCH] perf/x86/intel: Limit the period on Haswell
+
+commit 25dfc9e357af8aed1ca79b318a73f2c59c1f0b2b upstream.
+
+Running the ltp test cve-2015-3290 concurrently reports the following
+warnings.
+
+perfevents: irq loop stuck!
+  WARNING: CPU: 31 PID: 32438 at arch/x86/events/intel/core.c:3174
+  intel_pmu_handle_irq+0x285/0x370
+  Call Trace:
+   <NMI>
+   ? __warn+0xa4/0x220
+   ? intel_pmu_handle_irq+0x285/0x370
+   ? __report_bug+0x123/0x130
+   ? intel_pmu_handle_irq+0x285/0x370
+   ? __report_bug+0x123/0x130
+   ? intel_pmu_handle_irq+0x285/0x370
+   ? report_bug+0x3e/0xa0
+   ? handle_bug+0x3c/0x70
+   ? exc_invalid_op+0x18/0x50
+   ? asm_exc_invalid_op+0x1a/0x20
+   ? irq_work_claim+0x1e/0x40
+   ? intel_pmu_handle_irq+0x285/0x370
+   perf_event_nmi_handler+0x3d/0x60
+   nmi_handle+0x104/0x330
+
+Thanks to Thomas Gleixner's analysis, the issue is caused by the low
+initial period (1) of the frequency estimation algorithm, which triggers
+the defects of the HW, specifically erratum HSW11 and HSW143. (For the
+details, please refer https://lore.kernel.org/lkml/87plq9l5d2.ffs@tglx/)
+
+The HSW11 requires a period larger than 100 for the INST_RETIRED.ALL
+event, but the initial period in the freq mode is 1. The erratum is the
+same as the BDM11, which has been supported in the kernel. A minimum
+period of 128 is enforced as well on HSW.
+
+HSW143 is regarding that the fixed counter 1 may overcount 32 with the
+Hyper-Threading is enabled. However, based on the test, the hardware
+has more issues than it tells. Besides the fixed counter 1, the message
+'interrupt took too long' can be observed on any counter which was armed
+with a period < 32 and two events expired in the same NMI. A minimum
+period of 32 is enforced for the rest of the events.
+The recommended workaround code of the HSW143 is not implemented.
+Because it only addresses the issue for the fixed counter. It brings
+extra overhead through extra MSR writing. No related overcounting issue
+has been reported so far.
+
+Fixes: 3a632cb229bf ("perf/x86/intel: Add simple Haswell PMU support")
+Reported-by: Li Huafei <lihuafei1@huawei.com>
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/all/20240819183004.3132920-1-kan.liang@linux.intel.com
+Closes: https://lore.kernel.org/lkml/20240729223328.327835-1-lihuafei1@huawei.com/
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ arch/x86/events/intel/core.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index 990d5543e..12f0ae77f 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -3921,6 +3921,26 @@ tfa_get_event_constraints(struct cpu_hw_events *cpuc, int idx,
+ 	return c;
+ }
+ 
++static inline bool erratum_hsw11(struct perf_event *event)
++{
++	return (event->hw.config & INTEL_ARCH_EVENT_MASK) ==
++		X86_CONFIG(.event=0xc0, .umask=0x01);
++}
++
++/*
++ * The HSW11 requires a period larger than 100 which is the same as the BDM11.
++ * A minimum period of 128 is enforced as well for the INST_RETIRED.ALL.
++ *
++ * The message 'interrupt took too long' can be observed on any counter which
++ * was armed with a period < 32 and two events expired in the same NMI.
++ * A minimum period of 32 is enforced for the rest of the events.
++ */
++static u64 hsw_limit_period(struct perf_event *event, u64 left)
++{
++	left = max(left, erratum_hsw11(event) ? 128 : 32);
++	return left;
++}
++
+ /*
+  * Broadwell:
+  *
+@@ -3938,8 +3958,7 @@ tfa_get_event_constraints(struct cpu_hw_events *cpuc, int idx,
+  */
+ static u64 bdw_limit_period(struct perf_event *event, u64 left)
+ {
+-	if ((event->hw.config & INTEL_ARCH_EVENT_MASK) ==
+-			X86_CONFIG(.event=0xc0, .umask=0x01)) {
++	if (erratum_hsw11(event)) {
+ 		if (left < 128)
+ 			left = 128;
+ 		left &= ~0x3fULL;
+@@ -5341,6 +5340,7 @@ __init int intel_pmu_init(void)
+ 
+ 		x86_pmu.hw_config = hsw_hw_config;
+ 		x86_pmu.get_event_constraints = hsw_get_event_constraints;
++		x86_pmu.limit_period = hsw_limit_period;
+ 		x86_pmu.lbr_double_abort = true;
+ 		extra_attr = boot_cpu_has(X86_FEATURE_RTM) ?
+ 			hsw_format_attr : nhm_format_attr;
+-- 
+2.39.4
+
