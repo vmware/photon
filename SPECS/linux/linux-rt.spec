@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.114
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -185,6 +185,10 @@ Patch144: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
 # Fix CVE-2024-41014
 Patch145: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
 
+# Fix CVE-2024-46816
+Patch146: 0001-drm-amd-display-handle-invalid-connector-indices.patch
+Patch147: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
+
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 %include %{SOURCE6}
@@ -326,7 +330,7 @@ stalld to use eBPF based backend.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M145
+%autopatch -p1 -m100 -M147
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -509,6 +513,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-4
+- Fix CVE-2024-46816
 * Thu Nov 14 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-3
 - Fix strcture aead_geniv_ctx incompatibility between canister and vmlinux
 * Thu Nov 07 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.114-2

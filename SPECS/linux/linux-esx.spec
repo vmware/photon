@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.114
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -214,6 +214,10 @@ Patch141: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
 # Fix CVE-2024-41014
 Patch142: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
 
+# Fix CVE-2024-46816
+Patch143: 0001-drm-amd-display-handle-invalid-connector-indices.patch
+Patch144: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -351,7 +355,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M89
 
 # CVE
-%autopatch -p1 -m100 -M142
+%autopatch -p1 -m100 -M144
 
 %ifarch aarch64
 # aarch64 patches
@@ -507,6 +511,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-5
+- Fix CVE-2024-46816
 * Thu Nov 14 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-4
 - Fix strcture aead_geniv_ctx incompatibility between canister and vmlinux
 * Tue Nov 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.114-3

@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.114
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -224,6 +224,10 @@ Patch144: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
 
 # Fix CVE-2024-41014
 Patch145: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
+
+# Fix CVE-2024-46816
+Patch146: 0001-drm-amd-display-handle-invalid-connector-indices.patch
+Patch147: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -524,7 +528,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M145
+%autopatch -p1 -m100 -M147
 
 %ifarch aarch64
 # aarch64 patches
@@ -918,6 +922,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-5
+- Fix CVE-2024-46816
 * Thu Nov 14 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-4
 - Fix strcture aead_geniv_ctx incompatibility between canister and vmlinux
 * Tue Nov 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.114-3
