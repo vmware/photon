@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.114
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -151,6 +151,12 @@ Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
 # Fix CVE-2024-42322
 Patch133: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
+
+# Fix CVE-2024-50047
+Patch134: 0001-smb-client-fix-UAF-in-async-decryption.patch
+
+# Fix CVE-2024-50029
+Patch135: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
 
 # Fix CVE-2024-24855
 Patch137: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
@@ -498,6 +504,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Thu Nov 07 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.114-2
+- CVE-2024-50029, CVE-2024-50047
 * Tue Nov 05 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.114-1
 - Update to version 6.1.114
 * Mon Oct 21 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.112-2

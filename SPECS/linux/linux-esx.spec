@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.114
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -177,6 +177,12 @@ Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2023-39191 [110..128]
 %include %{SOURCE42}
+
+# Fix CVE-2024-50047
+Patch131: 0001-smb-client-fix-UAF-in-async-decryption.patch
+
+# Fix CVE-2024-50029
+Patch132: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
 
 # Fix CVE-2023-52452
 Patch133: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
@@ -493,6 +499,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 07 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.114-2
+- CVE-2024-50029, CVE-2024-50047
 * Tue Nov 05 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.114-1
 - Update to version 6.1.114
 * Mon Oct 28 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.112-3
