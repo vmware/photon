@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -334,6 +334,8 @@ fi
 %{_mandir}/*/*
 
 %changelog
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.2-4
+- Remove standalone license exceptions
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 5.2-3
 - Bump version to generate SRP provenance file
 * Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.2-2

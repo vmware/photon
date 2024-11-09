@@ -1,1 +1,1 @@
-License: GPLv2
+License: GPL-2.0-only

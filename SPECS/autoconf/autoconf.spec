@@ -1,7 +1,7 @@
 Summary:        The package automatically configure source code
 Name:           autoconf
 Version:        2.71
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.gnu.org/software/autoconf
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ make -k check %{?_smp_mflags} TESTSUITEFLAGS="1-500"
 %{_datadir}/autoconf/*
 
 %changelog
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.71-5
+- Remove standalone license exceptions
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.71-4
 - Release bump for SRP compliance
 * Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.71-3

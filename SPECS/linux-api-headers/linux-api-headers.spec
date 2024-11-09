@@ -3,7 +3,7 @@
 Summary:        Linux API header files
 Name:           linux-api-headers
 Version:        6.1.79
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ find %{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -del
 %{_includedir}/*
 
 %changelog
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.79-3
+- Remove standalone license exceptions
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.79-2
 - Release bump for SRP compliance
 * Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.79-1

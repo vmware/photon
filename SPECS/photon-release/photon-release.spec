@@ -1,7 +1,7 @@
 Summary:        Photon release files
 Name:           photon-release
 Version:        5.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
 Vendor:         VMware, Inc.
@@ -80,6 +80,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/issue.net
 
 %changelog
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.0-4
+- Remove standalone license exceptions
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-3
 - Release bump for SRP compliance
 * Tue Jan 17 2023 Tapas Kundu <tkundu@vmware.com> 5.0-2

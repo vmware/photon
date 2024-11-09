@@ -1,7 +1,7 @@
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
 Version:        10.40
-Release:        6%{?dist}
+Release:        7%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -101,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 
 %changelog
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 10.40-7
+- Remove standalone license exceptions
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.40-6
 - Release bump for SRP compliance
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.40-5

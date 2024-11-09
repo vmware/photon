@@ -1,7 +1,7 @@
 Summary:    Check-0.12.0
 Name:       check
 Version:    0.15.2
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        https://github.com/libcheck/check
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -64,6 +64,8 @@ make %{?_smp_mflags} check
 %{_datadir}/aclocal/*
 
 %changelog
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.15.2-4
+- Remove standalone license exceptions
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.15.2-3
 - Release bump for SRP compliance
 * Thu Sep 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.15.2-2

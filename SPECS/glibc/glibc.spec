@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -361,6 +361,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.36-14
+- Remove standalone license exceptions
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.36-13
 - Bump version to generate SRP provenance file
 * Wed Jul 17 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 2.36-12
