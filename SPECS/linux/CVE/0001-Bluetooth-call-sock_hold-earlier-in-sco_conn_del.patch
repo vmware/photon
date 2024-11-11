@@ -1,0 +1,45 @@
+From b409dc5462df24895bc610b2c6ad269d5303341a Mon Sep 17 00:00:00 2001
+From: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+Date: Thu, 2 Sep 2021 23:13:05 -0400
+Subject: [PATCH 1/2] Bluetooth: call sock_hold earlier in sco_conn_del
+
+commit f4712fa993f688d0a48e0c28728fcdeb88c1ea58 upstream
+
+In sco_conn_del, conn->sk is read while holding on to the
+sco_conn.lock to avoid races with a socket that could be released
+concurrently.
+
+However, in between unlocking sco_conn.lock and calling sock_hold,
+it's possible for the socket to be freed, which would cause a
+use-after-free write when sock_hold is finally called.
+
+To fix this, the reference count of the socket should be increased
+while the sco_conn.lock is still held.
+
+Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ net/bluetooth/sco.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index ae788d3e0..6d6eff079 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -193,10 +193,11 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
+ 	/* Kill socket */
+ 	sco_conn_lock(conn);
+ 	sk = conn->sk;
++	if (sk)
++		sock_hold(sk);
+ 	sco_conn_unlock(conn);
+ 
+ 	if (sk) {
+-		sock_hold(sk);
+ 		bh_lock_sock(sk);
+ 		sco_sock_clear_timer(sk);
+ 		sco_chan_del(sk, err);
+-- 
+2.39.4
+

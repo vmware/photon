@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.229
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -190,6 +190,12 @@ Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
 Patch107: 0002-mm_hugetlb_fix_race_condition_of_uffd_missing_minor_handling.patch
 Patch108: 0003-mm_hugetlb_use_hugetlb_pte_stable_in_migration_race_check.patch
+
+# Fix for CVE-2024-50256
+Patch109:  0001-netfilter-nf_reject_ipv6-fix-potential-crash-in-nf_s.patch
+
+# Fix for CVE-2024-50121
+Patch110: 0001-nfsd-cancel-nfsd_shrinker_work-using-sync-mode-in-nf.patch
 
 # Fix for CVE-2022-0500
 Patch114: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
@@ -662,6 +668,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.229-2
+- CVE-2024-50256, CVE-2024-50121
 * Mon Oct 28 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.229-1
 - Update to version 5.10.229
 - Fix CVE-2024-49983 & CVE-2024-49967

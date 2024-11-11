@@ -1,0 +1,117 @@
+From d0d406c572d53f3d805f270b87494b4aa25b80a1 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Mon, 11 Nov 2024 17:18:17 +0000
+Subject: [PATCH 2/2] Bluetooth: SCO: Fix UAF on sco_sock_timeout
+
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+
+[ Upstream commit 1bf4470a3939c678fb822073e9ea77a0560bc6bb ]
+
+conn->sk maybe have been unlinked/freed while waiting for sco_conn_lock
+so this checks if the conn->sk is still valid by checking if it part of
+sco_sk_list.
+
+Reported-by: syzbot+4c0d0c4cde787116d465@syzkaller.appspotmail.com
+Tested-by: syzbot+4c0d0c4cde787116d465@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=4c0d0c4cde787116d465
+Fixes: ba316be1b6a0 ("Bluetooth: schedule SCO timeouts with delayed_work")
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ include/net/bluetooth/bluetooth.h |  1 +
+ net/bluetooth/af_bluetooth.c      | 22 ++++++++++++++++++++++
+ net/bluetooth/sco.c               | 18 ++++++++++++------
+ 3 files changed, 35 insertions(+), 6 deletions(-)
+
+diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetooth/bluetooth.h
+index 7d2bd562d..b08b559f5 100644
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -314,6 +314,7 @@ int  bt_sock_register(int proto, const struct net_proto_family *ops);
+ void bt_sock_unregister(int proto);
+ void bt_sock_link(struct bt_sock_list *l, struct sock *s);
+ void bt_sock_unlink(struct bt_sock_list *l, struct sock *s);
++bool bt_sock_linked(struct bt_sock_list *l, struct sock *s);
+ int  bt_sock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 		     int flags);
+ int  bt_sock_stream_recvmsg(struct socket *sock, struct msghdr *msg,
+diff --git a/net/bluetooth/af_bluetooth.c b/net/bluetooth/af_bluetooth.c
+index 14a917e70..506819186 100644
+--- a/net/bluetooth/af_bluetooth.c
++++ b/net/bluetooth/af_bluetooth.c
+@@ -154,6 +154,28 @@ void bt_sock_unlink(struct bt_sock_list *l, struct sock *sk)
+ }
+ EXPORT_SYMBOL(bt_sock_unlink);
+ 
++bool bt_sock_linked(struct bt_sock_list *l, struct sock *s)
++{
++	struct sock *sk;
++
++	if (!l || !s)
++		return false;
++
++	read_lock(&l->lock);
++
++	sk_for_each(sk, &l->head) {
++		if (s == sk) {
++			read_unlock(&l->lock);
++			return true;
++		}
++	}
++
++	read_unlock(&l->lock);
++
++	return false;
++}
++EXPORT_SYMBOL(bt_sock_linked);
++
+ void bt_accept_enqueue(struct sock *parent, struct sock *sk, bool bh)
+ {
+ 	BT_DBG("parent %p, sk %p", parent, sk);
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 6d6eff079..d38e0c6da 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -76,6 +76,16 @@ struct sco_pinfo {
+ #define SCO_CONN_TIMEOUT	(HZ * 40)
+ #define SCO_DISCONN_TIMEOUT	(HZ * 2)
+ 
++static struct sock *sco_sock_hold(struct sco_conn *conn)
++{
++	if (!conn || !bt_sock_linked(&sco_sk_list, conn->sk))
++		return NULL;
++
++	sock_hold(conn->sk);
++
++	return conn->sk;
++}
++
+ static void sco_sock_timeout(struct work_struct *work)
+ {
+ 	struct sco_conn *conn = container_of(work, struct sco_conn,
+@@ -87,9 +97,7 @@ static void sco_sock_timeout(struct work_struct *work)
+ 		sco_conn_unlock(conn);
+ 		return;
+ 	}
+-	sk = conn->sk;
+-	if (sk)
+-		sock_hold(sk);
++	sk = sco_sock_hold(conn);
+ 	sco_conn_unlock(conn);
+ 
+ 	if (!sk)
+@@ -192,9 +200,7 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
+ 
+ 	/* Kill socket */
+ 	sco_conn_lock(conn);
+-	sk = conn->sk;
+-	if (sk)
+-		sock_hold(sk);
++	sk = sco_sock_hold(conn);
+ 	sco_conn_unlock(conn);
+ 
+ 	if (sk) {
+-- 
+2.39.4
+

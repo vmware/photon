@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.229
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -182,6 +182,12 @@ Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
 Patch107: 0002-mm_hugetlb_fix_race_condition_of_uffd_missing_minor_handling.patch
 Patch108: 0003-mm_hugetlb_use_hugetlb_pte_stable_in_migration_race_check.patch
 
+# Fix for CVE-2024-50256
+Patch109:  0001-netfilter-nf_reject_ipv6-fix-potential-crash-in-nf_s.patch
+
+# Fix for CVE-2024-50121
+Patch110: 0001-nfsd-cancel-nfsd_shrinker_work-using-sync-mode-in-nf.patch
+
 # Fix for CVE-2022-0500
 Patch114: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
 Patch115: 0002-bpf-Replace-ARG_XXX_OR_NULL-with-ARG_XXX-PTR_MAYBE_N.patch
@@ -191,6 +197,10 @@ Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
 Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
+
+#Fix for CVE-2024-50125
+Patch122: 0001-Bluetooth-call-sock_hold-earlier-in-sco_conn_del.patch
+Patch123: 0002-Bluetooth-SCO-Fix-UAF-on-sco_sock_timeout.patch
 
 #Fix for CVE-2023-0597
 Patch136: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
@@ -946,6 +956,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Nov 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.229-2
+- Fix CVE-2024-50125, CVE-2024-50256, CVE-2024-50121
 * Mon Oct 28 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.229-1
 - Update to version 5.10.229
 - Fix CVE-2024-49983 & CVE-2024-49967
