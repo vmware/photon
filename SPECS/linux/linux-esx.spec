@@ -20,8 +20,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.114
-Release:        6%{?dist}
+Version:        6.1.118
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -32,7 +32,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=6aa571b2489b075824698901393fd80b48a5cd44142e28d7fc71c329756adf8ac9a9013b86354a57d82dd155ba401b993837f1cf6d80d367297b741602542061
+%define sha512 linux=f2c6f9735e551099538eae410212c10244eac765a5769d7ec4d6b8727137dad09b295a002bdd95afa3da92090374239a502ddfda09feff76c93ff69a0c7bb5ff
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -515,6 +515,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Nov 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-1
+- Update to version 6.1.118
 * Mon Nov 18 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.114-6
 - New addition of jitterentropy RNG proxy.
 * Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-5
