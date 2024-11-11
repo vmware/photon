@@ -1219,7 +1219,11 @@ class BuildImage:
         if check_prerequesite["photon-docker-image"]:
             return
 
-        img_fname = f"photon-rootfs-{constants.releaseVersion}-{constants.buildNumber}.{constants.currentArch}.tar.gz"
+        img_fname = (
+            f"photon-rootfs-{constants.releaseVersion}-"
+            f"{constants.buildNumber}.{constants.currentArch}.tar.gz"
+        )
+
         if os.path.isfile(os.path.join(Build_Config.stagePath, img_fname)):
             check_prerequesite["photon-docker-image"] = True
             print(f"{img_fname} already exists ...")
@@ -1231,18 +1235,19 @@ class BuildImage:
 
         dockerClient = docker.from_env(version="auto")
         vol = dockerClient.volumes.create(driver="local")
+
+        script_path = "support/dockerfiles/photon/make-docker-image.sh"
+
         try:
-            out = dockerClient.containers.run(
+            container = dockerClient.containers.run(
                 "photon:5.0",
-                command=["/workspace/support/dockerfiles/photon/make-docker-image.sh"],
+                command=[f"/workspace/{script_path}"],
                 working_dir="/workspace",
                 environment={
                     "PHOTON_BUILD_NUMBER": constants.buildNumber,
                     "PHOTON_RELEASE_VERSION": constants.releaseVersion,
                 },
-                stdout=True,
-                stderr=True,
-                remove=True,
+                detach=True,
                 ulimits=[docker.types.Ulimit(name="nofile", soft=1024, hard=1024)],
                 volumes={
                     vol.name: {"bind": "/sysroot", "mode": "rw"},
@@ -1252,7 +1257,14 @@ class BuildImage:
                     },
                 },
             )
+            for log in container.logs(stream=True, stdout=True, stderr=True):
+                print(log.decode("utf-8"), end="")
+
+            if container.wait()["StatusCode"]:
+                raise Exception("ERROR: while building photon docker image ...")
+
         finally:
+            container.remove()
             vol.remove(force=True)
 
         check_prerequesite["photon-docker-image"] = True
