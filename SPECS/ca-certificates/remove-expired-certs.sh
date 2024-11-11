@@ -28,6 +28,11 @@ function mydate() {
 }
 
 OPENSSL=/usr/bin/openssl
+if ! test -x ${OPENSSL}; then
+  echo "ERROR: ${OPENSSL} not present, quit ..." 1>&2
+  exit 1
+fi
+
 DIR=/etc/ssl/certs
 if [ $# -gt 0 ]; then
   DIR="$1"
