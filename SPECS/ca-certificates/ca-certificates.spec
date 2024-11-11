@@ -5,7 +5,7 @@
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
 Version:        20230315
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -74,7 +74,7 @@ popd
 %{_fixperms} %{buildroot}/*
 
 %posttrans
-bash %{_bindir}/remove-expired-certs.sh %{ssl_certs_dir}
+bash %{_bindir}/remove-expired-certs.sh %{ssl_certs_dir} || :
 
 %clean
 rm -rf %{buildroot}
@@ -91,6 +91,8 @@ rm -rf %{buildroot}
 %{crt_dir}/ca-bundle.crt
 
 %changelog
+* Mon Nov 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-5
+- Check for openssl binary presence in remove expired certs script
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-4
 - Release bump for SRP compliance
 * Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-3
