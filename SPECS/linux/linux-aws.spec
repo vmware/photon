@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.229
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -167,6 +167,9 @@ Patch142: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
 Patch144: 0001-tls-rx-simplify-async-wait.patch
 Patch145: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
 Patch146: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
+
+#Fix CVE-2024-49960
+Patch150: 0001-ext4-fix-timer-use-after-free-on-failed-mount.patch
 
 # Fix CVE-2023-1192
 Patch151: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
@@ -587,6 +590,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 26 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.229-4
+- Fix CVE-2024-49960
 * Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.229-3
 - Fix CVE-2024-46848, CVE-2024-46802, CVE-2024-46816
 * Mon Nov 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.229-2

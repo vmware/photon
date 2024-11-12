@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.229
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -233,6 +233,9 @@ Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 
 # Fix CVE-2024-41073
 Patch150: 0001-nvme-avoid-double-free-special-payload.patch
+
+#Fix CVE-2024-49960
+Patch151: 0001-ext4-fix-timer-use-after-free-on-failed-mount.patch
 
 # Fix CVE-2024-41071
 Patch155: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
@@ -966,6 +969,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Nov 26 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.229-4
+- Fix CVE-2024-49960
 * Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.229-3
 - Fix CVE-2024-46848, CVE-2024-46802, CVE-2024-46816
 * Mon Nov 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.229-2
