@@ -1,7 +1,7 @@
 Summary:        Multi-format archive and compression library
 Name:           libarchive
 Version:        3.7.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.libarchive.org
 Group:          System Environment/Development
 Vendor:         VMware, Inc.
@@ -14,6 +14,8 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: CVE-2024-26256.patch
+Patch1: CVE-2024-48957.patch
+Patch2: CVE-2024-48958.patch
 
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
@@ -67,6 +69,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Nov 12 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.7.1-4
+- Fix CVE-2024-48957,CVE-2024-48958
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.7.1-3
 - Release bump for SRP compliance
 * Wed Jun 19 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 3.7.1-2
