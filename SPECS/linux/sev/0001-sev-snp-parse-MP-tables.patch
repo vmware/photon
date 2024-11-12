@@ -1,0 +1,51 @@
+From b9a312030b66b4f68b13868114d62d63aff21408 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Thu, 14 Nov 2024 09:31:44 +0000
+Subject: [PATCH] sev-snp: parse MP tables
+
+For VMware hypervisor, SEV-SNP enabled VM's could boot without UEFI.
+In this case, default_find_smp_config() has to be called to parse
+MP tables which contains boot information.
+
+Tested-by: Ye Li <ye.li@broadcom.com>
+Signed-off-by: Ye Li <ye.li@broadcom.com>
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ arch/x86/kernel/cpu/vmware.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index a5b1bb9..8045c1a 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -26,6 +26,7 @@
+ #include <linux/export.h>
+ #include <linux/clocksource.h>
+ #include <linux/cpu.h>
++#include <linux/efi.h>
+ #include <linux/reboot.h>
+ #include <linux/static_call.h>
+ #include <linux/kmsg_dump.h>
+@@ -38,6 +39,8 @@
+ #include <asm/apic.h>
+ #include <asm/vmware.h>
+ #include <asm/svm.h>
++#include <asm/mem_encrypt.h>
++#include <asm/efi.h>
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt)	"vmware: " fmt
+@@ -467,6 +470,10 @@ static void __init vmware_platform_setup(void)
+ 		pr_warn("Failed to get TSC freq from the hypervisor\n");
+ 	}
+ 
++	if (sev_status & MSR_AMD64_SEV_SNP_ENABLED &&
++	    !efi_enabled(EFI_BOOT))
++		x86_init.mpparse.find_smp_config = default_find_smp_config;
++
+ 	vmware_paravirt_ops_setup();
+ 
+ #ifdef CONFIG_X86_IO_APIC
+-- 
+2.39.4
+

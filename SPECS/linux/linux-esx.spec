@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.114
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -265,6 +265,9 @@ Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 # TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
+
+# SEV-SNP:
+Patch605: 0001-sev-snp-parse-MP-tables.patch
 %endif
 
 BuildRequires: bc
@@ -499,6 +502,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Nov 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.114-3
+- sev-snp: fix boot issue by parsing MP tables
 * Thu Nov 07 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.114-2
 - CVE-2024-50029, CVE-2024-50047
 * Tue Nov 05 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.114-1
