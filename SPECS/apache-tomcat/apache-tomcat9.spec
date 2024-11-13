@@ -11,7 +11,7 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.86
+Version:        9.0.97
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -22,8 +22,7 @@ Obsoletes:      apache-tomcat-9 < 9.0.82-1%{?dist}
 Provides:       apache-tomcat-9 = %{version}-%{release}
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=02b5100f18233b4b20e6f03e455daf67b842ec2f894ff6f6971383f1a8f8c8ebbb098cb7f16be73f69e3f8cd1f3a2ce1ca78948aa7cc788fc316e0e8f68f4cde
-
+%define sha512 %{_origname}=e0500e0c7e4af40f0a6db845b73f41423a7b7746e110053c36744fc376a0db96d141069035171f5b6efdf6011c155cbc29815cd286a0508cefaddb776909a00a
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
 # base-for-apache-tomcat is a cached -Dbase.path folder
@@ -34,7 +33,7 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=9a5547015e419ee48ab3bc0a04ecdc856f60b6d64ffb2ba4d3bf4a38fc2babfe74ce3a1c4b8a51d6ac1981397548f1e6ed61d4954777b6ee66219672900d84d0
+%define sha512 base=306d9bff21d90654ae889de327620790f65ebaca8dba366c41f91559429a0f9e1733c227d2bb2e79f22062f77caa3ad779f1c3a4ca7bcb951440a9b9d4691d74
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
@@ -150,6 +149,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed Nov 13 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.0.97-1
+- Version upgrade to v9.0.97
 * Tue Mar 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 9.0.86-1
 - Version upgrade to v9.0.86
 * Tue Feb 20 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 9.0.83-1
