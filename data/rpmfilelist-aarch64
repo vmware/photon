@@ -1,5 +1,5 @@
 aarch64/apache-maven-3.8.6-2.ph5.aarch64.rpm
-aarch64/attr-2.5.1-2.ph5.aarch64.rpm
+aarch64/attr-2.5.1-3.ph5.aarch64.rpm
 aarch64/bash-5.2-1.ph5.aarch64.rpm
 aarch64/binutils-2.39-2.ph5.aarch64.rpm
 aarch64/binutils-devel-2.39-2.ph5.aarch64.rpm
@@ -41,7 +41,7 @@ aarch64/go-1.19.3-2.ph5.aarch64.rpm
 aarch64/grep-3.7-3.ph5.aarch64.rpm
 aarch64/groff-1.22.4-1.ph5.aarch64.rpm
 aarch64/gzip-1.12-2.ph5.aarch64.rpm
-aarch64/libacl-2.3.1-2.ph5.aarch64.rpm
+aarch64/libacl-2.3.1-3.ph5.aarch64.rpm
 aarch64/libcap-2.66-1.ph5.aarch64.rpm
 aarch64/libffi-3.4.2-1.ph5.aarch64.rpm
 aarch64/libgcc-12.2.0-1.ph5.aarch64.rpm
@@ -75,7 +75,7 @@ aarch64/openssl-3.0.8-1.ph5.aarch64.rpm
 aarch64/openssl-devel-3.0.8-1.ph5.aarch64.rpm
 aarch64/openssl-libs-3.0.8-1.ph5.aarch64.rpm
 aarch64/patch-2.7.6-5.ph5.aarch64.rpm
-aarch64/pcre-libs-8.45-3.ph5.aarch64.rpm
+aarch64/pcre-libs-8.45-4.ph5.aarch64.rpm
 aarch64/perl-5.36.0-1.ph5.aarch64.rpm
 aarch64/pkg-config-0.29.2-3.ph5.aarch64.rpm
 aarch64/popt-1.16-5.ph5.aarch64.rpm
