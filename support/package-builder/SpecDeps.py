@@ -228,8 +228,7 @@ class SpecDependencyGenerator(object):
             for depPackage in SPECS.getData().mapPackageToSpec:
                 pkg = f"{inputValue}-" + SPECS.getData().getHighestVersion(inputValue)
                 for version in SPECS.getData().getVersions(depPackage):
-                    depPkg = f"{depPackage}-{version}"
-                    self.logger.info(depPkg)
+                    depPkg = depPackage + "-" + version
                     if pkg in SPECS.getData().getRequiresForPkg(depPkg):
                         whoNeedsList.append(depPkg)
             self.logger.info(whoNeedsList)
