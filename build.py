@@ -1909,7 +1909,8 @@ def main():
 
     configdict["targetName"] = targetName.replace("-", "_")
 
-    CheckTools.check_pre_reqs()
+    if targetName != "clean":
+        CheckTools.check_pre_reqs()
 
     try:
         attr = None
