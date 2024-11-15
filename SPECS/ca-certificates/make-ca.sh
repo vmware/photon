@@ -10,13 +10,13 @@
 
 certdata="certdata.txt"
 if [ ! -r $certdata ]; then
-  echo "$certdata must be in the local directory"
+  echo "ERROR: ${certdata} must be in the local directory" >&2
   exit 1
 fi
 
 REVISION=$(grep CVS_ID $certdata | cut -f4 -d'$')
 if [ -z "${REVISION}" ]; then
-  echo "$certfile has no 'Revision' in CVS_ID"
+  echo "ERROR: ${certdata} has no 'Revision' in CVS_ID" >&2
   exit 1
 fi
 
@@ -53,7 +53,7 @@ rm -rf certs/*
 
 for tempfile in ${TEMPDIR}/certs/*.tmp; do
   # Make sure that the cert is trusted...
-  grep "CKA_TRUST_SERVER_AUTH" "${tempfile}" | \
+  grep "${TRUSTATTRIBUTES}" "${tempfile}" | \
     egrep "TRUST_UNKNOWN|NOT_TRUSTED" > /dev/null
   if test "${?}" = "0"; then
     # Throw a meaningful error and remove the file

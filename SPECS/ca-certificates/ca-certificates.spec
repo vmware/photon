@@ -5,7 +5,7 @@
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
 Version:        20230315
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Custom
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
@@ -90,6 +90,8 @@ rm -rf %{buildroot}
 %{crt_dir}/ca-bundle.crt
 
 %changelog
+* Fri Nov 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-7
+- Tweak remove-expired-certificates script to do the removal properly
 * Mon Oct 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-6
 - Check for openssl binary presence in remove expired certs script
 * Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-5
