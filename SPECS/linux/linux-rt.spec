@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.114
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -47,6 +47,8 @@ Source7: https://gitlab.com/rt-linux-tools/stalld/-/archive/v%{stalld_version}/s
 
 %if 0%{?fips}
 Source10: check_fips_canister_struct_compatibility.inc
+Source11:       canister_known_struct_diff_list
+Source12:       canister_known_struct_def_vmlinux
 
 %define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
 Source16: fips-canister-%{fips_canister_version}.tar.bz2
@@ -226,6 +228,7 @@ Patch1005: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
 Patch1008: 0001-FIPS-canister-binary-usage.patch
 Patch1009: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch1010: 0001-LKCM-5.0-binary-patching-to-fix-struct-aesni_cpu_id-.patch
+Patch1011: 0001-canister-Change-spinlock_t-lock-to-void-reserved.patch
 %endif
 
 # stalld eBPF plugin patches
@@ -335,7 +338,7 @@ stalld to use eBPF based backend.
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m1008 -M1010
+%autopatch -p1 -m1008 -M1011
 %endif
 
 pushd ../stalld-v%{stalld_version}/
@@ -367,6 +370,8 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
+cp %{SOURCE11} ${PWD}/
+cp %{SOURCE12} ${PWD}/
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .config
@@ -504,6 +509,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Thu Nov 14 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-3
+- Fix strcture aead_geniv_ctx incompatibility between canister and vmlinux
 * Thu Nov 07 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.114-2
 - CVE-2024-50029, CVE-2024-50047
 * Tue Nov 05 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.114-1

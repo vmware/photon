@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.114
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -42,6 +42,8 @@ Source4:        check_for_config_applicability.inc
 
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
+Source10:       canister_known_struct_diff_list
+Source11:       canister_known_struct_def_vmlinux
 
 %define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
@@ -257,6 +259,7 @@ Patch506: 0001-jitterentropy-kcapi-defer-jent_init.patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: 0001-LKCM-5.0-binary-patching-to-fix-struct-aesni_cpu_id-.patch
+Patch511: 0001-canister-Change-spinlock_t-lock-to-void-reserved.patch
 %endif
 
 %ifarch x86_64
@@ -366,7 +369,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M510
+%autopatch -p1 -m508 -M511
 %endif
 
 %ifarch x86_64
@@ -397,6 +400,8 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    crypto/
 # Patch canister wrapper
 patch -p1 < %{SOURCE18}
+cp %{SOURCE10} ${PWD}/
+cp %{SOURCE11} ${PWD}/
 %endif
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
 
@@ -502,6 +507,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Nov 14 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.114-4
+- Fix strcture aead_geniv_ctx incompatibility between canister and vmlinux
 * Tue Nov 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.114-3
 - sev-snp: fix boot issue by parsing MP tables
 * Thu Nov 07 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.114-2

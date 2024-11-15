@@ -1,0 +1,4 @@
+struct x86_cpu_id
+struct swait_queue_head
+struct completion
+struct crypto_wait

@@ -150,10 +150,7 @@ void fcw_mutex_lock(void *m)
 
 void *fcw_spin_lock_init(void)
 {
-	spinlock_t *lock = kzalloc(sizeof(struct spinlock), GFP_KERNEL);
-	if (lock)
-		spin_lock_init(lock);
-	return (void *)lock;
+	return (void *)1;
 }
 void fcw_mutex_unlock(void *m)
 {
