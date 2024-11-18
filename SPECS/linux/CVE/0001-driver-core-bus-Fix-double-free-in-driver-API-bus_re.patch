@@ -1,0 +1,38 @@
+From d7a396a8e47df16df5151a5bf57dea59b1035fd4 Mon Sep 17 00:00:00 2001
+From: Zijun Hu <quic_zijuhu@quicinc.com>
+Date: Sat, 27 Jul 2024 16:34:01 +0800
+Subject: [PATCH] driver core: bus: Fix double free in driver API
+ bus_register()
+
+[ Upstream commit bfa54a793ba77ef696755b66f3ac4ed00c7d1248 ]
+
+For bus_register(), any error which happens after kset_register() will
+cause that @priv are freed twice, fixed by setting @priv with NULL after
+the first free.
+
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+Link: https://lore.kernel.org/r/20240727-bus_register_fix-v1-1-fed8dd0dba7a@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Set bus->p = NULL for 5.10.y instead of priv = NULL ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/base/bus.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/base/bus.c b/drivers/base/bus.c
+index 47ab755aee94..811d5e9de988 100644
+--- a/drivers/base/bus.c
++++ b/drivers/base/bus.c
+@@ -874,6 +874,8 @@ int bus_register(struct bus_type *bus)
+ 	bus_remove_file(bus, &bus_attr_uevent);
+ bus_uevent_fail:
+ 	kset_unregister(&bus->p->subsys);
++	/* Above kset_unregister() will kfree @bus->p */
++	bus->p = NULL;
+ out:
+ 	kfree(bus->p);
+ 	bus->p = NULL;
+-- 
+2.39.4
+

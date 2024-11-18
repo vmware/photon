@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.229
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -299,6 +299,25 @@ Patch178: 0001-drm-amd-display-added-NULL-check-at-start-of-dc_vali.patch
 Patch179: 0001-drm-amd-display-handle-invalid-connector-indices.patch
 Patch180: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
 
+# Fix CVE-2024-50143
+Patch181: 0001-udf-fix-uninit-value-use-in-udf_get_fileshortad.patch
+
+# Fix CVE-2024-50154
+Patch182: 0001-tcp-dccp-Don-t-use-timer_pending-in-reqsk_queue_unli.patch
+
+# Fix CVE-2024-50055
+Patch183: 0001-driver-core-bus-Fix-double-free-in-driver-API-bus_re.patch
+
+# Fix CVE-2024-50014
+Patch184: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
+
+# Fix CVE-2024-50018
+Patch185: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
+
+# Fix CVE-2024-50038
+Patch186: 0001-netfilter-xtables-avoid-NFPROTO_UNSPEC-where-needed.patch
+Patch187: 0002-netfilter-xtables-fix-typo-causing-some-targets-not-.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -461,7 +480,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M97
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M180
+%autopatch -p1 -m100 -M187
 
 #Patches for ptp_vmw
 %autopatch -p1 -m301 -M302
@@ -681,6 +700,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.229-5
+- Fix CVE-2024-50154, CVE-2024-50055, CVE-2024-50143, CVE-2024-50014, CVE-2024-50018,
+- CVE-2024-50038
 * Tue Nov 26 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.229-4
 - Fix CVE-2024-49960
 * Mon Nov 18 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.229-3

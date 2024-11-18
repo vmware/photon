@@ -1,0 +1,170 @@
+From 3f1123f9594324745df8a4fa620f4ea69ea6180b Mon Sep 17 00:00:00 2001
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+Date: Mon, 14 Oct 2024 15:33:12 -0700
+Subject: [PATCH] tcp/dccp: Don't use timer_pending() in reqsk_queue_unlink().
+
+[ Upstream commit e8c526f2bdf1845bedaf6a478816a3d06fa78b8f ]
+
+Martin KaFai Lau reported use-after-free [0] in reqsk_timer_handler().
+
+  """
+  We are seeing a use-after-free from a bpf prog attached to
+  trace_tcp_retransmit_synack. The program passes the req->sk to the
+  bpf_sk_storage_get_tracing kernel helper which does check for null
+  before using it.
+  """
+
+The commit 83fccfc3940c ("inet: fix potential deadlock in
+reqsk_queue_unlink()") added timer_pending() in reqsk_queue_unlink() not
+to call del_timer_sync() from reqsk_timer_handler(), but it introduced a
+small race window.
+
+Before the timer is called, expire_timers() calls detach_timer(timer, true)
+to clear timer->entry.pprev and marks it as not pending.
+
+If reqsk_queue_unlink() checks timer_pending() just after expire_timers()
+calls detach_timer(), TCP will miss del_timer_sync(); the reqsk timer will
+continue running and send multiple SYN+ACKs until it expires.
+
+The reported UAF could happen if req->sk is close()d earlier than the timer
+expiration, which is 63s by default.
+
+The scenario would be
+
+  1. inet_csk_complete_hashdance() calls inet_csk_reqsk_queue_drop(),
+     but del_timer_sync() is missed
+
+  2. reqsk timer is executed and scheduled again
+
+  3. req->sk is accept()ed and reqsk_put() decrements rsk_refcnt, but
+     reqsk timer still has another one, and inet_csk_accept() does not
+     clear req->sk for non-TFO sockets
+
+  4. sk is close()d
+
+  5. reqsk timer is executed again, and BPF touches req->sk
+
+Let's not use timer_pending() by passing the caller context to
+__inet_csk_reqsk_queue_drop().
+
+Note that reqsk timer is pinned, so the issue does not happen in most
+use cases. [1]
+
+[0]
+BUG: KFENCE: use-after-free read in bpf_sk_storage_get_tracing+0x2e/0x1b0
+
+Use-after-free read at 0x00000000a891fb3a (in kfence-#1):
+bpf_sk_storage_get_tracing+0x2e/0x1b0
+bpf_prog_5ea3e95db6da0438_tcp_retransmit_synack+0x1d20/0x1dda
+bpf_trace_run2+0x4c/0xc0
+tcp_rtx_synack+0xf9/0x100
+reqsk_timer_handler+0xda/0x3d0
+run_timer_softirq+0x292/0x8a0
+irq_exit_rcu+0xf5/0x320
+sysvec_apic_timer_interrupt+0x6d/0x80
+asm_sysvec_apic_timer_interrupt+0x16/0x20
+intel_idle_irq+0x5a/0xa0
+cpuidle_enter_state+0x94/0x273
+cpu_startup_entry+0x15e/0x260
+start_secondary+0x8a/0x90
+secondary_startup_64_no_verify+0xfa/0xfb
+
+kfence-#1: 0x00000000a72cc7b6-0x00000000d97616d9, size=2376, cache=TCPv6
+
+allocated by task 0 on cpu 9 at 260507.901592s:
+sk_prot_alloc+0x35/0x140
+sk_clone_lock+0x1f/0x3f0
+inet_csk_clone_lock+0x15/0x160
+tcp_create_openreq_child+0x1f/0x410
+tcp_v6_syn_recv_sock+0x1da/0x700
+tcp_check_req+0x1fb/0x510
+tcp_v6_rcv+0x98b/0x1420
+ipv6_list_rcv+0x2258/0x26e0
+napi_complete_done+0x5b1/0x2990
+mlx5e_napi_poll+0x2ae/0x8d0
+net_rx_action+0x13e/0x590
+irq_exit_rcu+0xf5/0x320
+common_interrupt+0x80/0x90
+asm_common_interrupt+0x22/0x40
+cpuidle_enter_state+0xfb/0x273
+cpu_startup_entry+0x15e/0x260
+start_secondary+0x8a/0x90
+secondary_startup_64_no_verify+0xfa/0xfb
+
+freed by task 0 on cpu 9 at 260507.927527s:
+rcu_core_si+0x4ff/0xf10
+irq_exit_rcu+0xf5/0x320
+sysvec_apic_timer_interrupt+0x6d/0x80
+asm_sysvec_apic_timer_interrupt+0x16/0x20
+cpuidle_enter_state+0xfb/0x273
+cpu_startup_entry+0x15e/0x260
+start_secondary+0x8a/0x90
+secondary_startup_64_no_verify+0xfa/0xfb
+
+Fixes: 83fccfc3940c ("inet: fix potential deadlock in reqsk_queue_unlink()")
+Reported-by: Martin KaFai Lau <martin.lau@kernel.org>
+Closes: https://lore.kernel.org/netdev/eb6684d0-ffd9-4bdc-9196-33f690c25824@linux.dev/
+Link: https://lore.kernel.org/netdev/b55e2ca0-42f2-4b7c-b445-6ffd87ca74a0@linux.dev/ [1]
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Martin KaFai Lau <martin.lau@kernel.org>
+Link: https://patch.msgid.link/20241014223312.4254-1-kuniyu@amazon.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/ipv4/inet_connection_sock.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index 6ebe43b4d28f..723aab818b52 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -722,21 +722,31 @@ static bool reqsk_queue_unlink(struct request_sock *req)
+ 		found = __sk_nulls_del_node_init_rcu(req_to_sk(req));
+ 		spin_unlock(lock);
+ 	}
+-	if (timer_pending(&req->rsk_timer) && del_timer_sync(&req->rsk_timer))
+-		reqsk_put(req);
++
+ 	return found;
+ }
+ 
+-bool inet_csk_reqsk_queue_drop(struct sock *sk, struct request_sock *req)
++static bool __inet_csk_reqsk_queue_drop(struct sock *sk,
++					struct request_sock *req,
++					bool from_timer)
+ {
+ 	bool unlinked = reqsk_queue_unlink(req);
+ 
++	if (!from_timer && timer_delete_sync(&req->rsk_timer))
++		reqsk_put(req);
++
+ 	if (unlinked) {
+ 		reqsk_queue_removed(&inet_csk(sk)->icsk_accept_queue, req);
+ 		reqsk_put(req);
+ 	}
++
+ 	return unlinked;
+ }
++
++bool inet_csk_reqsk_queue_drop(struct sock *sk, struct request_sock *req)
++{
++	return __inet_csk_reqsk_queue_drop(sk, req, false);
++}
+ EXPORT_SYMBOL(inet_csk_reqsk_queue_drop);
+ 
+ void inet_csk_reqsk_queue_drop_and_put(struct sock *sk, struct request_sock *req)
+@@ -804,7 +814,8 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 		return;
+ 	}
+ drop:
+-	inet_csk_reqsk_queue_drop_and_put(sk_listener, req);
++	__inet_csk_reqsk_queue_drop(sk_listener, req, true);
++	reqsk_put(req);
+ }
+ 
+ static void reqsk_queue_hash_req(struct request_sock *req,
+-- 
+2.39.4
+

@@ -1,0 +1,53 @@
+From 1d6e92bd960d73713f07ad15dc9f33e343426776 Mon Sep 17 00:00:00 2001
+From: Gianfranco Trad <gianf.trad@gmail.com>
+Date: Wed, 25 Sep 2024 09:46:15 +0200
+Subject: [PATCH] udf: fix uninit-value use in udf_get_fileshortad
+
+[ Upstream commit 264db9d666ad9a35075cc9ed9ec09d021580fbb1 ]
+
+Check for overflow when computing alen in udf_current_aext to mitigate
+later uninit-value use in udf_get_fileshortad KMSAN bug[1].
+After applying the patch reproducer did not trigger any issue[2].
+
+[1] https://syzkaller.appspot.com/bug?extid=8901c4560b7ab5c2f9df
+[2] https://syzkaller.appspot.com/x/log.txt?x=10242227980000
+
+Reported-by: syzbot+8901c4560b7ab5c2f9df@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=8901c4560b7ab5c2f9df
+Tested-by: syzbot+8901c4560b7ab5c2f9df@syzkaller.appspotmail.com
+Suggested-by: Jan Kara <jack@suse.com>
+Signed-off-by: Gianfranco Trad <gianf.trad@gmail.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://patch.msgid.link/20240925074613.8475-3-gianf.trad@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ fs/udf/inode.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/fs/udf/inode.c b/fs/udf/inode.c
+index 499a27372a40..f6dbd65b8559 100644
+--- a/fs/udf/inode.c
++++ b/fs/udf/inode.c
+@@ -2190,12 +2190,15 @@ int8_t udf_current_aext(struct inode *inode, struct extent_position *epos,
+ 		alen = udf_file_entry_alloc_offset(inode) +
+ 							iinfo->i_lenAlloc;
+ 	} else {
++		struct allocExtDesc *header =
++			(struct allocExtDesc *)epos->bh->b_data;
++
+ 		if (!epos->offset)
+ 			epos->offset = sizeof(struct allocExtDesc);
+ 		ptr = epos->bh->b_data + epos->offset;
+-		alen = sizeof(struct allocExtDesc) +
+-			le32_to_cpu(((struct allocExtDesc *)epos->bh->b_data)->
+-							lengthAllocDescs);
++		if (check_add_overflow(sizeof(struct allocExtDesc),
++				le32_to_cpu(header->lengthAllocDescs), &alen))
++			return -1;
+ 	}
+
+ 	switch (iinfo->i_alloc_type) {
+--
+2.39.4
+
