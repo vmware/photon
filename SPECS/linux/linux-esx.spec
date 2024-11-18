@@ -28,7 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.118
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -226,6 +226,15 @@ Patch142: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
 Patch143: 0001-drm-amd-display-handle-invalid-connector-indices.patch
 Patch144: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
 
+# Fix CVE-2024-50055
+Patch145: 0001-driver-core-bus-Fix-double-free-in-driver-API-bus_re.patch
+
+# Fix CVE-2024-50014
+Patch146: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
+
+# Fix CVE-2024-50018
+Patch147: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -367,7 +376,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M89
 
 # CVE
-%autopatch -p1 -m100 -M144
+%autopatch -p1 -m100 -M147
 
 %ifarch aarch64
 # aarch64 patches
@@ -524,6 +533,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-4
+- Fix CVE-2024-50055, Fix CVE-2024-50014, CVE-2024-50018
 * Tue Nov 26 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.118-3
 - Disable unique naming for *.ko.debug to make crash utility happy
 * Fri Nov 22 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-2

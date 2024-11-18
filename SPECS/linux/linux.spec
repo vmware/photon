@@ -41,7 +41,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.118
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -237,6 +237,15 @@ Patch145: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
 # Fix CVE-2024-46816
 Patch146: 0001-drm-amd-display-handle-invalid-connector-indices.patch
 Patch147: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
+
+# Fix CVE-2024-50055
+Patch148: 0001-driver-core-bus-Fix-double-free-in-driver-API-bus_re.patch
+
+# Fix CVE-2024-50014
+Patch149: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
+
+# Fix CVE-2024-50018
+Patch150: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -543,7 +552,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M147
+%autopatch -p1 -m100 -M150
 
 %ifarch aarch64
 # aarch64 patches
@@ -938,6 +947,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-5
+- Fix CVE-2024-50055, Fix CVE-2024-50014, CVE-2024-50018
 * Tue Nov 26 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.118-4
 - Disable unique naming for *.ko.debug to make crash utility happy
 * Tue Nov 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.118-3

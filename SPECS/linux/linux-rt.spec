@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.118
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -197,6 +197,15 @@ Patch145: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
 Patch146: 0001-drm-amd-display-handle-invalid-connector-indices.patch
 Patch147: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
 
+# Fix CVE-2024-50055
+Patch148: 0001-driver-core-bus-Fix-double-free-in-driver-API-bus_re.patch
+
+# Fix CVE-2024-50014
+Patch149: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
+
+# Fix CVE-2024-50018
+Patch150: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
+
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 %include %{SOURCE6}
@@ -340,7 +349,7 @@ stalld to use eBPF based backend.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M147
+%autopatch -p1 -m100 -M150
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -524,6 +533,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-3
+- Fix CVE-2024-50055, Fix CVE-2024-50014, CVE-2024-50018
 * Tue Nov 26 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.118-2
 - Disable unique naming for *.ko.debug to make crash utility happy
 * Tue Nov 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-1
