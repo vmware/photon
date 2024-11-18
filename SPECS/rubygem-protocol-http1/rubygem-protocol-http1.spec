@@ -3,8 +3,8 @@
 %global gem_name protocol-http1
 
 Name: rubygem-protocol-http1
-Version:        0.13.1
-Release:        2%{?dist}
+Version:        0.15.1
+Release:        1%{?dist}
 Summary:        A low level implementation of the HTTP/1 protocol.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -13,7 +13,7 @@ License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 
-%define sha512  protocol-http1=be0b8db0b4cec59e9b051f8fd236842ea69ec253b59e16924d978bfdcb45e28aa591759c0e89b24a627864ef033882b6ff1244eaae49e17518ad2b4404c85000
+%define sha512  protocol-http1=7ecebe21b9d1177f1d0c232ce2d1eab17be0498eaeeab27e9083bea46038378d72cf9f55d8f2bb603ec93545ba7fd36cb9b5ecd54371ef3a9a9f07adeab77c55
 
 BuildRequires:  ruby
 
@@ -28,7 +28,7 @@ BuildArch: noarch
 Provides a low-level implementation of the HTTP/1 protocol.
 
 %prep
-%autosetup -c -T
+%autosetup -c -T -p1
 
 %build
 
@@ -40,6 +40,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Oct 23 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.15.1-1
+-   Fix CVE-2023-38697
 *   Mon Jan 08 2024 Shivani Agarwal <shivania2@vmware.com> 0.13.1-2
 -   Fix requires
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.13.1-1
