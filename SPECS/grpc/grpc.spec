@@ -1,10 +1,12 @@
-%define re2_ver 2020-08-01
-%define abseil_ver 20200225.2
+%define envoy_api_commit 9c42588c956220b48eb3099d186487c2f04d32ec
+%define opencensus_proto_version 0.3.0
+%define googleapis_commit 2f9af297c84c55c8b871ba4495e01ade42476c92
+%define xds_commit cb28da3451f158a947dfc45090fe92b07b243bc1
 
 Summary:        Google RPC
 Name:           grpc
-Version:        1.32.0
-Release:        6%{?dist}
+Version:        1.59.3
+Release:        1%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
 Group:          Development/Libraries
@@ -12,13 +14,19 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/grpc/grpc/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=90136042327cea4e3680e19484f23cc00322914a7aae7987bf00b6e0901721d14c487555fdd94888192d6beb950172361ac57fbd02d43b40552f7ff5cac442ed
+%define sha512 %{name}=54344a124a16e979b30c8141a44be3a98e18d457a1b7d6c6eed3ee70b70cc2a5dbeab5d227d49de4480aa921fc947643252a5c80e9052138fc45c5f86ed18d5c
 
-Source1: https://github.com/google/re2/archive/re2-%{re2_ver}.tar.gz
-%define sha512 re2=1ae261155a1eb96606788eb736faa4dc3240d85f47e3b4c412a4f85f7e4cc69f7c7cbab98397aaf725def1cbc9c5da2c679cfb5573a442d60897740766ae2967
+Source1: https://github.com/envoyproxy/data-plane-api/archive/%{envoy_api_commit}/data-plane-api-%{envoy_api_commit}.tar.gz
+%define sha512 data-plane-api=9b1ceff5d018e70b36e02aa1b583f5495b0eb92506055bf6913d2e7ef401d3602cba8723efbc178ee31fdef9aba510fc2284612ebe22a24b5b4a703f07099897
 
-Source2: https://github.com/abseil/abseil-cpp/archive/abseil-cpp-%{abseil_ver}.tar.gz
-%define sha512 abseil=75a607dee825e83c10dcd5e509515461f1b12c4aca861e4739ac4d41357b8e893dbfbe33873aa5c05463dde0891dedd7535af2ec59f173de29488e1b1321b335
+Source2: https://github.com/googleapis/googleapis/archive/%{googleapis_commit}/googleapis-%{googleapis_commit}.tar.gz
+%define sha512 googleapis=cdeefae807df7097174b4bb28c0900b06a68d424c00ebba4ff5add260c9c651351d5e429bfc5de42f95ebb75dadec313f7bd3991c2fa476c9104f9ea656acad4
+
+Source3: https://github.com/census-instrumentation/opencensus-proto/archive/v%{opencensus_proto_version}/opencensus-proto-%{opencensus_proto_version}.tar.gz
+%define sha512 opencensus-proto=39231a495dfdccfc8267d1e6af2ac624feea611a8691c10ec570de2194b352e4a9c3b0ce1606414fb98e5d77c66873bed4a9e56512efa12b267b8a91e0c5851e
+
+Source4: https://github.com/cncf/xds/archive/%{xds_commit}/xds-%{xds_commit}.tar.gz
+%define sha512 xds=eb5878764503872c18b8750b20e2c2e2224e73d9601197752cea7e1e4171899474ad4f39aacc80d6c1b57a50b2161d39f219df64ffb250d045af482dae01ea79
 
 BuildRequires:  build-essential
 BuildRequires:  which
@@ -26,13 +34,17 @@ BuildRequires:  c-ares-devel
 BuildRequires:  zlib-devel
 BuildRequires:  cmake
 BuildRequires:  gperftools-devel
-BuildRequires:  protobuf-devel >= 3.6.0
+BuildRequires:  protobuf-devel
+BuildRequires:  re2-devel
+BuildRequires:  abseil-cpp-devel
 
 Requires:       protobuf >= 3.6.0
 Requires:       protobuf-c
 Requires:       c-ares-devel
 Requires:       zlib-devel
 Requires:       openssl-devel
+Requires:       re2
+Requires:       abseil-cpp
 
 %description
 Remote Procedure Calls (RPCs) provide a useful abstraction for building
@@ -44,37 +56,43 @@ combination of the supported languages.
 %package        devel
 Summary:        Development files for grpc
 Group:          Development/Libraries
-Requires:       %{name} = %{version}-%{release}
+Requires:       grpc = %{version}-%{release}
 Requires:       protobuf-devel >= 3.6.0
+Requires:       re2-devel
+Requires:       abseil-cpp-devel
 
 %description    devel
 The grpc-devel package contains libraries and header files for
 developing applications that use grpc.
 
 %prep
+%autosetup -p1
 # Using autosetup is not feasible
-%setup -q
-# Using autosetup is not feasible
-%setup -q -T -D -b1 -b2
+%setup -q -T -D -b 1 -b 2 -b 3 -b 4
+# Overwrite third party sources
+rm -r %{_builddir}/%{name}-%{version}/third_party/{envoy-api,googleapis,opencensus-proto,xds}
+mv %{_builddir}/data-plane-api-%{envoy_api_commit} %{_builddir}/%{name}-%{version}/third_party/envoy-api
+mv %{_builddir}/googleapis-%{googleapis_commit} %{_builddir}/%{name}-%{version}/third_party/googleapis
+mv %{_builddir}/opencensus-proto-%{opencensus_proto_version} %{_builddir}/%{name}-%{version}/third_party/opencensus-proto
+mv %{_builddir}/xds-%{xds_commit} %{_builddir}/%{name}-%{version}/third_party/xds
 
 %build
-%cmake \
-      -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+%{cmake} \
       -DBUILD_SHARED_LIBS=ON \
+      -DABSL_PROPAGATE_CXX_STD=ON \
       -DgRPC_BUILD_TESTS=OFF \
       -DgRPC_ZLIB_PROVIDER=package \
       -DgRPC_SSL_PROVIDER=package \
       -DgRPC_PROTOBUF_PROVIDER=package \
       -DgRPC_CARES_PROVIDER=package \
-      -DABSL_ROOT_DIR=%{_builddir}/abseil-cpp-%{abseil_ver} \
-      -DRE2_ROOT_DIR=%{_builddir}/re2-%{re2_ver} \
+      -DgRPC_RE2_PROVIDER=package \
       -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
       -DCMAKE_BUILD_TYPE=Debug
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 # remove libre2 duplicates.
 rm -rf %{buildroot}%{_lib64dir}
 
@@ -85,7 +103,7 @@ rm -rf %{buildroot}%{_lib64dir}
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_datarootdir}/%{name}
+%{_datadir}/%{name}
 
 %files devel
 %defattr(-,root,root,-)
@@ -95,6 +113,8 @@ rm -rf %{buildroot}%{_lib64dir}
 %{_libdir}/*.so
 
 %changelog
+* Tue Nov 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.59.3-1
+- Fix CVE-2023-44487, upgrade version to 1.59.3
 * Thu Jun 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.32.0-6
 - Bump version as a part of protobuf upgrade
 * Mon Mar 28 2022 Harinadh D <hdommaraju@vmware.com> 1.32.0-5

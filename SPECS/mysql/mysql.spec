@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.39
+Version:        8.0.40
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=2a2785c89b59cb198d1cf383584d453d058352f0d42e485e5315163fd03e404ea4c6281ab9eb0eb7103768057af52a99dd93cb1890b61edada0d27e0ba32ed44
+%define sha512 %{name}-boost=fcece6e3c09dc4733767effb5c22a55e4add1c9f6b6b911e1eccdd0444f08dc5714b3c8b2a40c85a75a63ff117b6c9881904b6b4732b5ca9bef96de1cb2e284a
 
 BuildRequires: cmake
 BuildRequires: rpcsvc-proto-devel
@@ -19,7 +19,6 @@ BuildRequires: libevent-devel
 BuildRequires: curl-devel
 BuildRequires: zstd-devel
 BuildRequires: lz4-devel
-BuildRequires: protobuf-devel
 BuildRequires: openssl-devel
 BuildRequires: libtirpc-devel
 BuildRequires: ncurses-devel
@@ -33,7 +32,6 @@ Requires: libevent
 Requires: curl-libs
 Requires: zstd-libs
 Requires: lz4
-Requires: protobuf
 Requires: openssl
 Requires: libtirpc
 Requires: perl
@@ -91,8 +89,10 @@ This package contains ICU data files needed by MySQL regular expressions.
   -DWITH_SYSTEMD=1 \
   -DSYSTEMD_SERVICE_NAME="mysqld" \
   -DSYSTEMD_PID_DIR="/run/mysqld" \
+  -DWITH_PROTOBUF=bundled \
   -DWITH_FIDO=bundled \
-  -DWITH_ZLIB=bundled
+  -DWITH_ZLIB=bundled \
+  -DBUILD_SHARED_LIBS=OFF
 
 %{cmake_build}
 
@@ -166,6 +166,8 @@ fi
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/*.so.*
+%dir %{_lib64dir}/%{name}/private
+%attr(755,root,root) %{_lib64dir}/%{name}/private/libprotobuf*.so.*
 %{_libdir}/plugin/*
 %{_datadir}/*
 %{_unitdir}/*.service
@@ -182,6 +184,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Nov 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.40-1
+- Upgrade to v8.0.40
 * Tue Jul 23 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.39-1
 - Upgrade to v8.0.39 to fix a bunch of CVEs
 * Fri May 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.37-1

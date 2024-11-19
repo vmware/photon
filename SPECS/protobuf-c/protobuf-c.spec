@@ -1,20 +1,17 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
-Version:        1.3.3
-Release:        6%{?dist}
+Version:        1.5.0
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf-c/
 
-Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=237b6e6df6ebf4e62a1d402053182f1224c0f35656f30d8fb55ac79945d3d1acf264a7da9f100c1836b90c4acfc1fd96e9a5a95cb47a77d0ddf043aacc99f359
+Source0: https://github.com/protobuf-c/protobuf-c/releases/download/v1.4.1/%{name}-%{version}.tar.gz
+%define sha512 %{name}=175c9fc901cab88308730eea982dd62b1e0decdceb80aa53be163f17a440b4acecb834a784beab5cd71186413a322a323f4539758a8727ca51801cf92f9bd3da
 
-Patch0:         CVE-2022-33070.patch
-Patch1:         CVE-2022-48468.patch
-
-BuildRequires:  protobuf-devel >= 2.6.0
+BuildRequires:  protobuf-devel
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -47,12 +44,10 @@ The protobuf-c-static package contains static protobuf-c libraries.
 
 %prep
 %autosetup -p1
-autoreconf -iv
 
 %build
 %configure \
-    --disable-silent-rules \
-    --disable-static
+    --disable-silent-rules
 
 %make_build
 
@@ -61,6 +56,9 @@ autoreconf -iv
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -76,8 +74,11 @@ autoreconf -iv
 
 %files static
 %defattr(-,root,root)
+%{_libdir}/libprotobuf-c.a
 
 %changelog
+* Tue Nov 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.0-1
+- Upgrade protobuf-c to 1.5.0
 * Thu Jun 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.3-6
 - Bump version as a part of protobuf upgrade
 * Wed May 10 2023 Mukul Sikka <msikka@vmware.com> 1.3.3-5

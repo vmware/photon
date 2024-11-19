@@ -4,11 +4,11 @@
 
 # check the release bundle & use the right version, example:
 # https://github.com/draios/sysdig/blob/0.30.2/cmake/modules/falcosecurity-libs.cmake#L35
-%define falcosecurity_libs_ver  0.9.1
+%define falcosecurity_libs_ver  0.13.4
 
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
-Version:        0.30.2
+Version:        0.34.1
 Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org
@@ -17,11 +17,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=08e5c4f6e393838fca0b8b72f152fde9873af2095fe28084463f22238c65ad45f699c724b21f2d25051eae803f253f41a319fb38b405977de382809a74a4f625
+%define sha512 %{name}=2d7c6369eb6ae85cb7fca50da049470830eb8a88002414f257e5ccf1eb438fe36890d51107ffd782b2cd3b7358094de0795641a1cb6b086a4e29b9a5b6edad4f
 
-Source1: https://github.com/falcosecurity/libs/archive/falconsecurity-libs-0.9.1.tar.gz
-%define sha512 falconsecurity-libs=06d894e6ea8cd66c80682dcce64e38667f6d7315c1c552898b3944fa16cf57ae49932bd283e2b5d09e2e0462f438df217c722f98e437aa0989fdef69aefd79a2
-
+Source1: https://github.com/falcosecurity/libs/archive/falconsecurity-libs-%{falcosecurity_libs_ver}.tar.gz
+%define sha512 falconsecurity-libs=e4c9ab4cd8bbe544f13403573df7751b21c977ecefe4ea7c0b71c576a77c308d2f64f5a3d933a2493f23aacbc63148f24be0e897ca779a73879a48c63cbbad33
 Patch0: get-googletest-sources-from-photonstage.patch
 Patch1: falcosecurity-libs-nodownload.patch
 Patch2: bashcomp-location.patch
@@ -43,6 +42,10 @@ BuildRequires: protobuf-devel
 BuildRequires: git
 BuildRequires: net-tools
 BuildRequires: jsoncpp-devel
+BuildRequires: re2-devel
+BuildRequires: abseil-cpp-devel
+BuildRequires: elfutils-devel
+BuildRequires: tinydir-devel
 
 Requires: linux = %{uname_r}
 Requires: zlib
@@ -54,6 +57,9 @@ Requires: jq
 Requires: c-ares
 Requires: protobuf
 Requires: jsoncpp
+Requires: re2
+Requires: abseil-cpp
+Requires: elfutils-libelf
 
 %description
 Sysdig is open source, system-level exploration, capture system state and activity from a running Linux instance.
@@ -65,10 +71,11 @@ that runs in your terminal
 %autosetup -p1 -a0 -a1
 
 %build
-export CFLAGS="-Wno-error=misleading-indentation"
+export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
 
 %{cmake} \
     -DUSE_BUNDLED_OPENSSL=OFF \
+    -DCMAKE_CXX_STANDARD=17 \
     -DUSE_BUNDLED_CURL=OFF \
     -DUSE_BUNDLED_ZLIB=OFF \
     -DUSE_BUNDLED_CARES=OFF \
@@ -78,6 +85,8 @@ export CFLAGS="-Wno-error=misleading-indentation"
     -DUSE_BUNDLED_JSONCPP=OFF \
     -DUSE_BUNDLED_NJSON=OFF \
     -DUSE_BUNDLED_NCURSES=OFF \
+    -DUSE_BUNDLED_LIBELF=OFF \
+    -DLIBELF_LIB=%{_libdir}/libelf.so \
     -DBUILD_DRIVER=ON \
     -DBUILD_LIBSCAP_EXAMPLES=OFF \
     -DBUILD_LIBSINSP_EXAMPLES=OFF \
@@ -102,9 +111,12 @@ export KERNELDIR="%{_modulesdir}/build"
 export KERNELDIR="%{_modulesdir}/build"
 %{cmake_install}
 
-rm -rf %{buildroot}%{_datadir}/zsh/
+rm -rf %{buildroot}%{_datadir}/zsh/ \
+       %{buildroot}{%{_includedir},%{_libdir}}
+
 mkdir -p %{buildroot}%{_modulesdir}/extra
 mv %{__cmake_builddir}/driver/scap.ko %{buildroot}%{_modulesdir}/extra
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
 
 %clean
 rm -rf %{buildroot}/*
@@ -118,15 +130,16 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_includedir}/%{name}
-%{_libdir}/%{name}
-%exclude %{_usrsrc}
+%exclude %{_usrsrc}/debug
+%{_usrsrc}/scap*
 %{_datadir}/%{name}/*
 %{_datadir}/bash-completion/*
 %{_mandir}/*
-%{_modulesdir}/extra/scap.ko
+%{_modulesdir}/extra/scap.ko*
 
 %changelog
+* Mon Nov 25 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.34.1-1
+- Fix build requires as part of grpc upgrade
 * Wed Jun 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.30.2-1
 - Upgrade to v0.30.2
 * Thu Jun 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.27.0-9

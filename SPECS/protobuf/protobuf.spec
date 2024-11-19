@@ -1,9 +1,10 @@
-%define java_min_ver_needed     1.8.0.45
+%define network_required 1
+%define java_min_ver_needed     3.3.3
 
 Summary:        Google's data interchange format
 Name:           protobuf
-Version:        3.19.6
-Release:        5%{?dist}
+Version:        3.23.3
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -11,17 +12,27 @@ Distribution:   Photon
 URL:            https://github.com/google/protobuf
 
 Source0: https://github.com/protocolbuffers/protobuf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8f92242f2be8e1bbfba41341c87709ad91ad83b8b3e3df88bb430411541d3399295f49291fd52b50e3487b0fce33181cb4d175685fd25aac72adfaee26a612d4
+%define sha512 %{name}=d6f360c3d0a205b012c2db6d5c32fc7cde075941e12dd7cb9da8c03ab1f6cb81044acac34b39bb699dde5bea4558159a5e47beafd87e47d6b91d06b37ea6e886
 
-BuildRequires:  build-essential
-BuildRequires:  curl
-BuildRequires:  unzip
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  chkconfig
-BuildRequires:  openjdk8
-BuildRequires:  apache-maven
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
+BuildRequires: libstdc++
+BuildRequires: curl
+BuildRequires: make
+BuildRequires: unzip
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
+BuildRequires: chkconfig
+BuildRequires: openjdk11
+BuildRequires: apache-maven
+BuildRequires: cmake
+BuildRequires: gtest-devel
+BuildRequires: gmock-devel
+BuildRequires: abseil-cpp-devel
+
+Requires: abseil-cpp
 
 %description
 Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data.
@@ -31,6 +42,7 @@ You can find protobuf's documentation on the Google Developers site.
 Summary:        Development files for protobuf
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+Requires:       abseil-cpp-devel
 
 %description    devel
 The protobuf-devel package contains libraries and header files for
@@ -56,7 +68,7 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf java
 Group:          Development/Libraries
-Requires:       (openjre8 >= %{java_min_ver_needed} or openjdk11-jre or openjdk17-jre)
+Requires:       (openjdk8 or openjdk11-jre or openjdk17-jre)
 
 %description    java
 This contains protobuf java package.
@@ -66,40 +78,50 @@ This contains protobuf java package.
 
 # This test is incredibly slow on arm
 # https://github.com/google/protobuf/issues/2389
-%if "%{_arch}" == "aarch64"
 rm -f java/core/src/test/java/com/google/%{name}/IsValidUtf8Test.java \
       java/core/src/test/java/com/google/%{name}/DecodeUtf8Test.java
-%endif
-
-autoreconf -vfi
 
 %build
-%configure \
-    --disable-silent-rules \
-    --disable-static
+%{cmake} \
+    -Dprotobuf_BUILD_TESTS=OFF \
+    -Dprotobuf_ABSL_PROVIDER=package \
+    -Dprotobuf_BUILD_SHARED_LIBS=ON \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
-%make_build
+%{cmake_build}
+
+export PROTOC="${PWD}/%{__cmake_builddir}/protoc"
 
 pushd python
 %{py3_build}
 popd
 
 pushd java
-mvn package
+ln -sfrv ${PROTOC} ../
+mvn -e -B package \
+    -Dhttps.protocols=TLSv1.2 \
+    -Dmaven.test.skip=true
 popd
 
 %install
-%make_install %{?_smp_mflags}
+%{cmake_install}
+
+export PROTOC="%{_builddir}/%{name}-%{version}/%{__cmake_builddir}/protoc"
 
 pushd python
 %{py3_install}
 popd
 
 pushd java
-mvn install
+mvn -e -B install \
+    -Dhttps.protocols=TLSv1.2 \
+    -Dmaven.test.skip=true
+
 install -vdm755 %{buildroot}%{_libdir}/java/%{name}
-install -vm644 core/target/%{name}-java-%{version}.jar %{buildroot}%{_libdir}/java/%{name}
-install -vm644 util/target/%{name}-java-util-%{version}.jar %{buildroot}%{_libdir}/java/%{name}
+
+for fn in $(find . -name "*.jar"); do
+  install -vm644 ${fn} %{buildroot}%{_libdir}/java/%{name}
+done
 popd
 
 %post -p /sbin/ldconfig
@@ -107,7 +129,7 @@ popd
 
 %files
 %defattr(-,root,root)
-%{_bindir}/protoc
+%{_bindir}/protoc*
 %{_libdir}/*.so.*
 
 %files devel
@@ -115,6 +137,8 @@ popd
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 %{_libdir}/*.so
+%{_libdir}/cmake/*
+%{_libdir}/*.a
 
 %files static
 %defattr(-,root,root)
@@ -128,6 +152,8 @@ popd
 %{_libdir}/java/%{name}/*.jar
 
 %changelog
+* Tue Nov 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.23.3-1
+- Upgrade protobuf to 3.23.3
 * Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.19.6-5
 - Fix requires of protobuf
 - jre is needed by protobuf-java, not protobuf

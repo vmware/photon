@@ -1,9 +1,11 @@
 %global security_hardening none
+%define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+%define _modulesdir /lib/modules/%{uname_r}
 
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.35.0
-Release:        11%{?kernelsubrelease}%{?dist}
+Version:        0.36.2
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
@@ -11,11 +13,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=16c76d5d6013ae67a4d103248d9ac910f92d906d1565cd7043c94e4b1deee05db6be0e98aa23b90b45e12adc59c4e59d4c8a9e46e22c1738a3dee597dbe28011
+%define sha512 %{name}=a3fef235ab4f3121bd0400827712652530ec417498c44ada8b6bf565f7631d035673b53dad94ea6ae9c854d45202ed71b2771f19e0c92eea3fc3503e5b75b02e
 
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 Patch1:         0001-build-plugins-locally.patch
-Patch2:         0002-falcoctl-build-locally.patch
 
 BuildArch:      x86_64
 
@@ -24,7 +25,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  ncurses-devel
-BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+BuildRequires:  linux-devel = %{uname_r}
 BuildRequires:  jq-devel
 BuildRequires:  git
 BuildRequires:  lua-devel
@@ -36,8 +37,10 @@ BuildRequires:  grpc-devel
 BuildRequires:  c-ares-devel
 BuildRequires:  protobuf-devel
 BuildRequires:  go
+BuildRequires:  re2-devel
+BuildRequires:  yaml-cpp-devel
 
-Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+Requires:       linux = %{uname_r}
 Requires:       zlib
 Requires:       ncurses
 Requires:       openssl
@@ -50,9 +53,16 @@ Requires:       grpc
 Requires:       jq
 Requires:       protobuf
 Requires:       c-ares
+Requires:       re2
+Requires:       yaml-cpp
 
-%define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
-%define _modulesdir /lib/modules/%{uname_r}
+%package    devel
+Summary:    falco
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+
+%description devel
+Development files for %{name}
 
 %description
 Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules.
@@ -66,9 +76,11 @@ Sysdig falco is an open source, behavioral activity monitor designed to detect a
     -DUSE_BUNDLED_DEPS:BOOL=OFF \
     -DUSE_BUNDLED_OPENSSL:BOOL=OFF \
     -DUSE_BUNDLED_JQ:BOOL=OFF \
-    -DUSE_BUNDLED_YAMLCPP:BOOL=ON \
+    -DUSE_BUNDLED_YAMLCPP:BOOL=OFF \
     -DBUILD_SHARED_LIBS:BOOL=OFF \
-    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DUSE_BUNDLED_LIBELF=OFF \
+    -DLIBELF_LIB=%{_libdir}/libelf.so \
+    -DCMAKE_INSTALL_LIBDIR=%{_lib} \
     -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir}
 
 export KERNELDIR="%{_modulesdir}/build"
@@ -92,15 +104,24 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%exclude %{_usrsrc}
+%{_usrsrc}/*
 %exclude %{_includedir}
 %exclude %{_libdir}/{falcosecurity,pkgconfig}
 %{_sysconfdir}/falco
 %{_sysconfdir}/falcoctl
 %{_datadir}/falco
 %{_modulesdir}/extra/falco.ko
+%{_sysconfdir}/falcoctl/falcoctl.yaml
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/pkgconfig/*.pc
+%{_libdir}/falcosecurity/*
+%{_includedir}/falcosecurity/*
 
 %changelog
+* Mon Nov 25 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-1
+- Upgrade to v0.36.2
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.35.0-11
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.35.0-10
