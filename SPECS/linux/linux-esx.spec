@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.118
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -278,6 +278,8 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 
 # SEV-SNP:
 Patch605: 0001-sev-snp-parse-MP-tables.patch
+Patch606: 0001-drm-ttm-Make-sure-the-mapped-tt-pages-are-decrypted-.patch
+Patch607: 0002-drm-ttm-Print-the-memory-decryption-status-just-once.patch
 %endif
 
 BuildRequires: bc
@@ -515,6 +517,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Nov 22 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-2
+- sev-snp: fix vmwgfx crash
 * Tue Nov 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-1
 - Update to version 6.1.118
 * Mon Nov 18 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.114-6
