@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.229
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.230
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=786a151093bb11118b1b7b360e62f29c959b08fb208e112ea9b09f67dee4133866e3183d347ffa57e9f476566a8ab13f21f5263f82fdbae90abef395a0936692
+%define sha512 linux=8f22f82a74a99022df3261e246a28d6f0c9a2626fc6547f133d4bd87bc418186d2c1dc234d837391dc5302f7e843c744a01eaaa616f5c71dd6b746ce3c4f047b
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -256,9 +256,6 @@ Patch160: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
 Patch161: 0001-skbuff-introduce-skb_expand_head.patch
 Patch162: 0002-ipv6-use-skb_expand_head-in-ip6_finish_output2.patch
 Patch163: 0003-ipv6-fix-possible-UAF-in-ip6_finish_output2.patch
-
-# Fix CVE-2024-38538
-Patch164: 0001-net-bridge-xmit-make-sure-we-have-at-least-eth-heade.patch
 
 # Fix CVE-2024-42322
 Patch165: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
@@ -988,6 +985,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Nov 26 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.230-1
+- Update to version 5.10.230
 * Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.229-5
 - Fix CVE-2024-50154, CVE-2024-50055, CVE-2024-50143, CVE-2024-50014, CVE-2024-50018,
 - CVE-2024-50038
