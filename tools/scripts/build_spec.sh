@@ -20,16 +20,38 @@ RPM_MACROS=()
 
 test "$#" -lt 1 && echo "Usage: $0 <spec-file-to-build.spec> [path-to-output-directory]" && exit 1
 
+CP="cp"
+READLINK="readlink"
+
+if [[ $OSTYPE = 'darwin'* ]]; then
+  CP="gcp"
+  READLINK="greadlink"
+
+  export PATH=$PATH:"/opt/homebrew/bin"
+
+  if ! $CP --version 2>&1 | grep -w coreutils; then
+    echo -n '
+You are running this script on MacOS
+
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+Please install brew using above command. And do: $ brew install coreutils
+GNU Tools are needed for this script to run properly.
+'
+    exit 1
+  fi
+fi
+
 CONTAINER=build_spec
 SOURCES_BASEURL=https://packages.vmware.com/photon/photon_sources/1.0
-SPECPATH=$(readlink -m "$1")
+SPECPATH=$($READLINK -m "$1")
 SPECFILE=$(basename "$SPECPATH")
 SPECDIR=$(dirname "$SPECPATH")
 
 if [ -z "$2" ]; then
   STAGE="$SPECDIR/stage"
 else
-  STAGE=$(readlink -m "$2")
+  STAGE=$($READLINK -m "$2")
 fi
 
 mkdir -p "$STAGE/LOGS"
@@ -37,8 +59,7 @@ LOGFILE=stage/LOGS/$(basename "$SPECFILE" .spec).log
 
 RPM_MACROS+=( --define \"dist .ph$VERSION\" --define \"with_check $WITH_CHECK\" )
 
-mkdir -p "$STAGE/RPMS"
-mkdir -p "$STAGE/SRPMS"
+mkdir -p "$STAGE/{RPMS,SRPMS}"
 
 # use &3 for user output
 exec 3>&1
@@ -127,7 +148,7 @@ function create_sandbox() {
 function prepare_buildenv() {
   mkdir -p "$SPECDIR/SOURCES"
   in_sandbox mkdir -p /usr/src/photon/SOURCES
-  run "Create source folder" find "$SPECDIR" -type f -exec cp -u {} "$SPECDIR/SOURCES" \;
+  run "Create source folder" find "$SPECDIR" -type f -exec $CP -u {} "$SPECDIR/SOURCES" \;
   run "Copy sources from $SPECDIR" docker cp "$SPECDIR/SOURCES/." $CONTAINER:/usr/src/photon/SOURCES
 
   for url in $(in_sandbox rpmspec ${RPM_MACROS[@]} -P /usr/src/photon/SOURCES/"$SPECFILE" | grep "Source[[:digit:]]*:" | grep -o '[^[:space:]]\+$');
