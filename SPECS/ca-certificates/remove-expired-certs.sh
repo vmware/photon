@@ -13,7 +13,7 @@ fi
 
 certs=($(find ${DIR} -type f -name "*.pem" -o -name "*.crt"))
 for cert in ${certs[@]}; do
-  cert_expiry_date="$(openssl x509 -dateopt iso_8601 -enddate -in ${cert} -noout | cut -d '=' -f 2)"
+  cert_expiry_date="$(${OPENSSL} x509 -dateopt iso_8601 -enddate -in ${cert} -noout | cut -d '=' -f 2)"
   cert_expiry_epoch=$(date -u -d "${cert_expiry_date}" '+%s')
   cur_time_in_epoch="$(date -u '+%s')"
   if [ ${cert_expiry_epoch} -lt ${cur_time_in_epoch} ]; then

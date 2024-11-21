@@ -5,7 +5,7 @@
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
 Version:        20230315
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Custom
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
@@ -16,6 +16,7 @@ Source0: certdata.txt
 Source1: make-ca.sh
 Source2: make-cert.pl
 Source3: remove-expired-certs.sh
+Source4: make-cert.sh
 
 Requires: openssl-libs
 Requires: %{name}-pki = %{version}-%{release}
@@ -59,7 +60,7 @@ install BLFS-ca-bundle*.crt %{buildroot}%{crt_dir}/ca-bundle.crt
 unset SSLDIR
 
 mkdir -p %{buildroot}%{_bindir}
-cp -pv %{SOURCE1} %{SOURCE2} %{SOURCE3} %{buildroot}%{_bindir}
+cp -pv %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{buildroot}%{_bindir}
 chmod +x %{buildroot}%{_bindir}/*
 
 pushd %{buildroot}%{ssl_certs_dir}
@@ -84,12 +85,16 @@ rm -rf %{buildroot}
 %{_bindir}/make-ca.sh
 %{_bindir}/remove-expired-certs.sh
 %{_bindir}/make-cert.pl
+%{_bindir}/make-cert.sh
 
 %files pki
 %defattr(-,root,root)
 %{crt_dir}/ca-bundle.crt
 
 %changelog
+* Thu Nov 21 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-8
+- Cleanup make-ca.sh
+- Add a bash script equivalent of make-cert.pl, useful in minimal deployments
 * Fri Nov 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-7
 - Tweak remove-expired-certificates script to do the removal properly
 * Mon Oct 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-6
