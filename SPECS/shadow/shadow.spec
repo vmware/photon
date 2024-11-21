@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 License:        BSD
 Group:          Applications/System
@@ -183,6 +183,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Thu Nov 21 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-8
+- Use yescrypt as default password encryption backend
 * Tue Oct 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-7
 - Enable yescrypt
 * Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.13-6
