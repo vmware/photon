@@ -24,6 +24,9 @@ kernel/bpf/core.c:1410:3: note: in expansion of macro ‘__bpf_call_base_args’
 
 Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
 Signed-off-by: Roye Eshed <eshedr@vmware.com>
+[Ajay: Dropping include/net/bond_alb.h changes as these
+       have been upstreamed]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
 ---
  drivers/gpu/drm/nouveau/Kbuild          | 2 ++
  drivers/gpu/drm/nouveau/dispnv50/wndw.h | 4 ++--
@@ -55,20 +58,5 @@ index b0b6428..0770683 100644
  void nv50_wndw_init(struct nv50_wndw *);
  void nv50_wndw_fini(struct nv50_wndw *);
  void nv50_wndw_flush_set(struct nv50_wndw *, u32 *interlock,
-diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
-index 313a8d3..092e434 100644
---- a/include/net/bond_alb.h
-+++ b/include/net/bond_alb.h
-@@ -172,8 +172,8 @@ int bond_alb_init_slave(struct bonding *bond, struct slave *slave);
- void bond_alb_deinit_slave(struct bonding *bond, struct slave *slave);
- void bond_alb_handle_link_change(struct bonding *bond, struct slave *slave, char link);
- void bond_alb_handle_active_change(struct bonding *bond, struct slave *new_slave);
--int bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
--int bond_tlb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
-+netdev_tx_t bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
-+netdev_tx_t bond_tlb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
- void bond_alb_monitor(struct work_struct *);
- int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr);
- void bond_alb_clear_vlan(struct bonding *bond, unsigned short vlan_id);
 -- 
 2.7.4

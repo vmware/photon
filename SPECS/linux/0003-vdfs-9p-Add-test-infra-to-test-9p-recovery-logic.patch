@@ -1,29 +1,29 @@
-From 71b8dde30b26b5633c9003832b03bc2c4ecd792b Mon Sep 17 00:00:00 2001
+From d6e252f40b573066eb87b5f025e0a57caaf4e079 Mon Sep 17 00:00:00 2001
 From: Mounesh Badiger <badigerm@vmware.com>
-Date: Sun, 9 Aug 2020 04:34:55 -0700
+Date: Mon, 25 Nov 2024 05:56:02 +0000
 Subject: [PATCH 3/5] kernels:Add test infra to test 9p recovery logic
 
-        puppet master runs along with server and listens
-        on tcp port, 9p client connects to puppet master
-        port and sends breakpoints.
+puppet master runs along with server and listens
+on tcp port, 9p client connects to puppet master
+port and sends breakpoints.
 
-        this change introduces breakpoint module and takes ip:port
-        as mount arguments and connects to the puppet master.
+This change introduces breakpoint module and takes ip:port
+as mount arguments and connects to the puppet master.
 
-        Change introduces function which sends breakpoint to
-        puppet master and waits for puppet master to respond
-        9p will be blocked until puppet master responds.
+Change introduces function which sends breakpoint to
+puppet master and waits for puppet master to respond
+9p will be blocked until puppet master responds.
 ---
- include/net/9p/client.h    |   8 +++
+ include/net/9p/client.h    |   8 ++
  include/net/9p/transport.h |   1 +
- net/9p/client.c            |  62 +++++++++++++++++-
- net/9p/recovery.c          | 156 +++++++++++++++++++++++++++++++++++++++++++++
+ net/9p/client.c            |  61 ++++++++++++++-
+ net/9p/recovery.c          | 156 +++++++++++++++++++++++++++++++++++++
  net/9p/recovery.h          |   7 ++
  net/9p/trans_fd.c          |   4 +-
- 6 files changed, 234 insertions(+), 4 deletions(-)
+ 6 files changed, 234 insertions(+), 3 deletions(-)
 
 diff --git a/include/net/9p/client.h b/include/net/9p/client.h
-index 49ecf0e20..7749068 100644
+index 49ecf0e..7749068 100644
 --- a/include/net/9p/client.h
 +++ b/include/net/9p/client.h
 @@ -135,6 +135,10 @@ enum recovery_state {
@@ -59,7 +59,7 @@ index 1625fb8..d4754b5 100644
 +int p9_is_valid_ipaddr4(const char *buf);
  #endif /* NET_9P_TRANSPORT_H */
 diff --git a/net/9p/client.c b/net/9p/client.c
-index 8da7ba0..a1c0303 100644
+index e946efe..59c6464 100644
 --- a/net/9p/client.c
 +++ b/net/9p/client.c
 @@ -62,6 +62,9 @@ enum {
@@ -132,7 +132,7 @@ index 8da7ba0..a1c0303 100644
  		case Opt_version:
  			s = match_strdup(&args[0]);
  			if (!s) {
-@@ -1142,6 +1184,9 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+@@ -1146,6 +1188,9 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
          clnt->is_dotx_ok = 0;
          clnt->minzcpages = 1;
  	clnt->recovery_enabled = false;
@@ -142,21 +142,20 @@ index 8da7ba0..a1c0303 100644
  
  	client_id = utsname()->nodename;
  	memcpy(clnt->name, client_id, strlen(client_id) + 1);
-@@ -1195,7 +1240,12 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 	err = p9_client_version(clnt);
- 	if (err)
+@@ -1207,6 +1252,12 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
  		goto close_trans;
-- 
-+
+ 	}
+ 
 +	if (p9_is_client_test_enabled(clnt)) {
 +		err = p9_recovery_test_init(clnt);
 +		if (err)
 +			goto close_trans;
 +	}
++
  	/* P9_HDRSZ + 4 is the smallest packet header we can have that is
  	 * followed by data accessed from userspace by read
  	 */
-@@ -1208,6 +1258,8 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+@@ -1220,6 +1271,8 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
  	return clnt;
  
  close_trans:
@@ -165,7 +164,7 @@ index 8da7ba0..a1c0303 100644
          kfree(clnt->options);
          kfree(clnt->dev_name);
  	clnt->trans_mod->close(clnt);
-@@ -1236,13 +1288,19 @@ void p9_client_destroy(struct p9_client *clnt)
+@@ -1248,13 +1301,19 @@ void p9_client_destroy(struct p9_client *clnt)
  		p9_fid_destroy(fid);
  	}
  
@@ -387,10 +386,10 @@ index 02f6f07..30fc7a4 100644
 +void p9_recovery_breakpoint(struct p9_client *client, char *breakpoint);
 +#endif // NET_9P_RECOVERY_H
 diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index 23d8167..14e02cc 100644
+index 6c724cb..17e3fb5 100644
 --- a/net/9p/trans_fd.c
 +++ b/net/9p/trans_fd.c
-@@ -967,7 +967,7 @@ static void p9_fd_close(struct p9_client *client)
+@@ -996,7 +996,7 @@ static void p9_fd_close(struct p9_client *client)
  /*
   * stolen from NFS - maybe should be made a generic function?
   */
@@ -399,7 +398,7 @@ index 23d8167..14e02cc 100644
  {
  	int rc, count, in[4];
  
-@@ -1064,7 +1064,7 @@ p9_fd_create_tcp(struct p9_client *client, const char *addr, char *args)
+@@ -1093,7 +1093,7 @@ p9_fd_create_tcp(struct p9_client *client, const char *addr, char *args)
  	if (err < 0)
  		return err;
  
@@ -409,5 +408,5 @@ index 23d8167..14e02cc 100644
  
  	csocket = NULL;
 -- 
-2.7.4
+2.39.4
 

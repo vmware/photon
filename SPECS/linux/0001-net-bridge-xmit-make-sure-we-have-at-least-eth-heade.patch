@@ -1,6 +1,6 @@
-From 2576b64aaaa58b22e39b796cb445349da4c1bb02 Mon Sep 17 00:00:00 2001
+From 47a1f9106a51442f96689a673a5c209210ffe42c Mon Sep 17 00:00:00 2001
 From: Nikolay Aleksandrov <razor@blackwall.org>
-Date: Mon, 13 May 2024 13:34:19 +0300
+Date: Fri, 22 Nov 2024 07:58:30 +0000
 Subject: [PATCH] net: bridge: xmit: make sure we have at least eth header len
  bytes
 
@@ -65,12 +65,12 @@ Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
  1 file changed, 5 insertions(+)
 
 diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index 9475e0443ff9..728ef5de8d1f 100644
+index 233d4bb..e651ddf 100644
 --- a/net/bridge/br_device.c
 +++ b/net/bridge/br_device.c
-@@ -41,6 +41,11 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
- 	const unsigned char *dest;
- 	u16 vid = 0;
+@@ -46,6 +46,11 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		return NETDEV_TX_OK;
+ 	}
  
 +	if (unlikely(pskb_may_pull(skb, ETH_HLEN) == false)) {
 +		kfree_skb(skb);

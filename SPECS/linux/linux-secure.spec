@@ -2,7 +2,7 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.323
+Version:        4.19.324
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -14,7 +14,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0: http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha512 linux=c9385f44eaf06eb33ee1ff49d7a9f62060186c9398ccbda3d8ee493d134b8ce167316b243276a5797f87642afff3b3fbf626154b95dd8697ee6a29b5b8e8b147
+%define sha512 linux=42cf5e8f14c12077661c7426ed1637e2fc984205ea39d3e87d2d2fb85210587c87bd9b97fe4b1abc1a4fab3e2d625a0997a1cec3c33b1ca547b0e150b71f2021
 
 Source1: config-secure
 Source2: initramfs.trigger
@@ -561,6 +561,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Nov 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.324-1
+- Update to version 4.19.324
 * Mon Nov 04 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 4.19.323-1
 - Update to version 4.19.323
 - Fix CVE-2024-38588
