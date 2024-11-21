@@ -3,8 +3,8 @@
 %define __os_install_post %{nil}
 
 # Must be in sync with package version
-%define DOCKER_ENGINE_GITCOMMIT a61e2b4
-%define DOCKER_CLI_GITCOMMIT ced0996
+%define DOCKER_ENGINE_GITCOMMIT 3ab5c7d
+%define DOCKER_CLI_GITCOMMIT 3ab4256
 %define TINI_GITCOMMIT de40ad0
 
 %define gopath_comp_engine github.com/docker/docker
@@ -13,7 +13,7 @@
 
 Summary:        Docker
 Name:           docker
-Version:        24.0.9
+Version:        27.2.0
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
@@ -22,7 +22,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-%define sha512 moby=b71a058f32fb80676bb4c83f5d2236c9496ffc5c7f216ebff5bcac6f5959e121be3b2bfd2ff9aa5cccee27f71947dfe5b76090e82020806cc9ee452cd1f21084
+%define sha512 moby=97abaf56d2249c1514beacf17fc9096848b960846e064f1a9bd800a59762a1f1888b32e83b3e8289e23656496ca0293fea65931210d68faaa8a713aab6e48b65
 
 Source1: https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
 %define sha512 tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
@@ -31,7 +31,7 @@ Source2: https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
 %define sha512 libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 
 Source3: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
-%define sha512 docker-cli=7abfbf593783ffaadf84461b7e6dcbef7fbb857166721ba8004531212a231f4630a747c09ef8a3a5cf119861c51465ba3d5bc4b63f0e4d76936fd3b1baff530f
+%define sha512 docker-cli=5dce9e974a96b2518a73d50a9421d12feeb9cc792bb89000f26e04a91fdddade2648dea39aa721e48c9b07bfc18f7a6676fb7e286ae779556753886ec45e86c3
 
 Source4:       docker-post19.service
 Source5:       docker-post19.socket
@@ -322,6 +322,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Nov 21 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 27.2.0-1
+- Update to 27.2.0
 * Thu Oct 24 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.0.9-1
 - Update to 24.0.9, Fixes CVE-2024-24557
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.5-9

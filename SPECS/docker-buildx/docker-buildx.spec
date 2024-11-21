@@ -4,7 +4,7 @@
 Name:       docker-buildx
 Summary:    Docker CLI plugin for extended build capabilities with BuildKit
 Version:    0.17.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        https://github.com/docker/buildx
 License:    Apache-2.0
 Group:      Applications
@@ -43,5 +43,7 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Fri Nov 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.17.1-2
+- Bump up as part of docker upgrade
 * Sat Oct 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.17.1-1
 - Initial version.
