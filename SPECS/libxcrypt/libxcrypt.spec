@@ -1,7 +1,7 @@
 Name:           libxcrypt
 Summary:        Extended crypt library for DES, MD5, Blowfish and others
 Version:        4.4.36
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and BSD and Public Domain
 URL:            https://github.com/besser82/%{name}
 Distribution:   Photon
@@ -36,6 +36,7 @@ servers that must field thousands of login attempts per minute.
 Summary:    Development files for %{name}
 Requires:   glibc-devel
 Requires:   %{name} = %{version}-%{release}
+Conflicts:  glibc-devel < 2.36-7%{?dist}
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -79,5 +80,7 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+* Mon Nov 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.4.36-2
+- libxcrypt-devel should conflict with earlier versions of glibc-devel
 * Tue Oct 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.4.36-1
 - Initial version.
