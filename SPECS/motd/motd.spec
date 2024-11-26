@@ -1,46 +1,43 @@
-%define commit0 a152954dcf0583a6efd1af31c42f9e27e6a15bea
+%define srcname photon-motdgen
 
 Summary:        Message of the Day
 Name:           motd
-Version:        0.1.3
-Release:        7%{?dist}
+Version:        1.0
+Release:        1%{?dist}
 License:        GPLv3
-URL:            http://github.com/rtnpro/fedora-motd
+URL:            https://github-vcf.devops.broadcom.net/vcf/photon-motdgen
 Group:          Applications/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/rtnpro/motdgen/archive/motdgen-a152954.tar.gz
-%define sha512  motdgen-a152954.tar.gz=784d6fa426c48386a584c7d026a585718a8665a249cae9450073f812b5b4935fa20d4127dcb9c937ac4470b4f19e9349974bf0e4c341d95a162a04438ce98276
+Source0: https://github-vcf.devops.broadcom.net/vcf/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=031d2209e0a582bab9457cf82e80d920b2b121eab9a685dee54aaa0e4556598b949462e4e1fba6342dbbef22231ba29cd9c66d72139a0ed727b093d75eed5004
 
-Patch0:         strip-dnf.patch
+Source1: %{name}.conf
 
 BuildArch: noarch
 
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  systemd-devel
+BuildRequires: make
+BuildRequires: coreutils
+BuildRequires: systemd-devel
 
-Requires:       Linux-PAM
-Requires:       systemd
-Requires:       python3
-Requires:       /bin/grep
+Requires: bash
+Requires: Linux-PAM
+Requires: systemd
 
 %description
 Generates Dynamic MOTD.
 
 %prep
-%autosetup -p1 -n motdgen-%{commit0}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%make_build
 
 %install
-python3 setup.py install -O1 --skip-build --install-data=%{_datadir} --root %{buildroot}
+%make_install %{?_smp_mflags}
 # SELinux: let systemd create our runtime directory and label it properly.
-mkdir -p %{buildroot}%{_tmpfilesdir}
-echo "d /run/motdgen 0755 root root" > %{buildroot}%{_tmpfilesdir}/motd.conf
+install -D -m 644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/motd.conf
 
 #shadow is providing /etc/pam.d/sshd with (noreplace)
 
@@ -60,20 +57,22 @@ sed -i '/^\s*session\s*include\s*motdgen.*$/d' \
 
 %postun
 [ $1 -eq 0 ] || exit 0
-rm -rf %{_localstatedir}/run/motdgen
+rm -rf %{_rundir}/motdgen
 
 %files
-%doc README.md
 %defattr(-,root,root)
-%{python3_sitelib}/*
 %{_sysconfdir}/pam.d/motdgen
 %{_sysconfdir}/motdgen.d
 %{_sysconfdir}/profile.d/motdgen.sh
 %{_bindir}/motdgen
-%{_sysconfdir}/systemd/system/motdgen.service
+%{_unitdir}/motdgen.service
+%{_unitdir}/motdgen.timer
 %{_tmpfilesdir}/motd.conf
 
 %changelog
+* Tue Nov 26 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-1
+- Upgrade to v1.0
+- Switch to photon-motdgen
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.1.3-7
 - Update release to compile with python 3.11
 * Thu Apr 30 2020 Alexey Makhalov <amakhalov@vmware.com> 0.1.3-6

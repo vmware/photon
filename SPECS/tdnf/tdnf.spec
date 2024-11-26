@@ -1,7 +1,15 @@
+%define hist_db_dir     %{_libdir}/sysimage/%{name}
+%define history_db_fn   %{hist_db_dir}/history.db
+%define history_autoins %{_sharedstatedir}/%{name}/autoinstalled
+%define history_util    %{_libdir}/%{name}/%{name}-history-util
+%define _tdnfpluginsdir %{_libdir}/%{name}-plugins
+
+%global automatic_services %{name}-automatic.timer %{name}-automatic-notifyonly.timer %{name}-automatic-install.timer
+
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.5.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -14,6 +22,7 @@ Source0: https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 Patch1: rpm-keyring-API-calls-1.patch
 Patch2: rpm-keyring-API-calls-2.patch
+Patch3: updateinfo.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -56,9 +65,6 @@ Provides:       yum
 
 %description
 %{name} is a yum/dnf equivalent which uses libsolv and libcurl
-
-%define _tdnfpluginsdir %{_libdir}/%{name}-plugins
-%define _tdnf_history_db_dir /usr/lib/sysimage/%{name}
 
 %package    devel
 Summary:    A Library providing C API for %{name}
@@ -138,42 +144,43 @@ Systemd units that can periodically download package upgrades and apply them.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-%cmake \
+%{cmake} \
   -DCMAKE_BUILD_TYPE=Debug \
   -DBUILD_SHARED_LIBS=OFF \
   -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
   -DSYSTEMD_DIR=%{_unitdir} \
-  -DHISTORY_DB_DIR=%{_tdnf_history_db_dir}
+  -DHISTORY_DB_DIR=%{hist_db_dir}
 
-%cmake_build
+%{cmake_build}
 
-cd %{__cmake_builddir}
-%make_build python
-
-%if 0%{?with_check}
-%check
-pip3 install flake8
-cd %{__cmake_builddir} && make %{?_smp_mflags} check
-%endif
+%make_build -C %{__cmake_builddir} python
 
 %install
-%cmake_install
-find %{buildroot} -name '*.a' -delete
-mkdir -p %{buildroot}/var/cache/%{name} %{buildroot}%{_unitdir}
-mkdir -p %{buildroot}%{_tdnf_history_db_dir}
+%{cmake_install}
+
+protected_dir="%{_sysconfdir}/%{name}/protected.d"
+
+mkdir -p %{buildroot}{%{_var}/cache/%{name},%{_unitdir}} \
+          %{buildroot}%{hist_db_dir} \
+          %{buildroot}${protected_dir}
+
 ln -sfv %{name} %{buildroot}%{_bindir}/tyum
 ln -sfv %{name} %{buildroot}%{_bindir}/yum
 ln -sfv %{name} %{buildroot}%{_bindir}/tdnfj
 
-mkdir -p %{buildroot}%{_sysconfdir}/%{name}/protected.d && \
-    echo %{name} > %{buildroot}%{_sysconfdir}/%{name}/protected.d/%{name}.conf
+echo %{name} > %{buildroot}${protected_dir}/%{name}.conf
 
 pushd %{__cmake_builddir}/python
 %py3_install
 popd
-find %{buildroot} -name '*.pyc' -delete
 
-%pre
+find %{buildroot} \( -name '*.a' -o -name '*.pyc' \) -delete
+
+rm %{buildroot}%{_unitdir}/%{name}-cache-updateinfo.{timer,service}
+
+%check
+pip3 install flake8
+%make_build -C %{__cmake_builddir} check
 
 %post
 /sbin/ldconfig
@@ -183,19 +190,17 @@ find %{buildroot} -name '*.pyc' -delete
 # to the new db.
 # must be postrans because we read the rpm db
 # cannot use tdnf because that is still running even in postrans
-[ -f %{_tdnf_history_db_dir}/history.db ] || %{_libdir}/tdnf/tdnf-history-util init
-if [ -f %{_sharedstatedir}/tdnf/autoinstalled ] ; then
-    %{_libdir}/tdnf/tdnf-history-util mark remove $(cat %{_sharedstatedir}/tdnf/autoinstalled) && \
-        rm %{_sharedstatedir}/tdnf/autoinstalled
+[ -d %{hist_db_dir} ] || mkdir -p %{hist_db_dir}
+[ -f %{history_db_fn} ] || %{history_util} init
+if [ -f %{history_autoins} ]; then
+  %{history_util} mark remove $(cat %{history_autoins})
+  mv %{history_autoins} %{history_autoins}.backup
 fi
+exit 0
 
 %triggerin -- motd
 [ $2 -eq 1 ] || exit 0
-if [ $1 -eq 1 ]; then
-  echo "detected install of %{name}/motd, enabling %{name}-cache-updateinfo.timer" >&2
-  systemctl enable %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
-  systemctl start %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
-elif [ $1 -eq 2 ]; then
+if [ $1 -eq 2 ]; then
   echo "detected upgrade of %{name}, daemon-reload" >&2
   systemctl daemon-reload >/dev/null 2>&1 || :
 fi
@@ -203,25 +208,17 @@ fi
 %preun
 %triggerun -- motd
 [ $1 -eq 1 ] && [ $2 -eq 1 ] && exit 0
-echo "detected uninstall of %{name}/motd, disabling %{name}-cache-updateinfo.timer" >&2
-systemctl --no-reload disable %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
-systemctl stop %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
-rm -f /var/cache/%{name}/cached-updateinfo.txt
+echo "detected uninstall of %{name}/motd" >&2
+rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 
 %postun
 /sbin/ldconfig
-%triggerpostun -- motd
-[ $1 -eq 1 ] && [ $2 -eq 1 ] || exit 0
-echo "detected upgrade of %{name}/motd, restarting %{name}-cache-updateinfo.timer" >&2
-systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 
 %post cli-libs
 /sbin/ldconfig
 
 %postun cli-libs
 /sbin/ldconfig
-
-%global automatic_services %{name}-automatic.timer %{name}-automatic-notifyonly.timer %{name}-automatic-install.timer
 
 %post automatic
 %systemd_post %{automatic_services}
@@ -239,16 +236,13 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_bindir}/yum
 %{_bindir}/tdnfj
 %{_bindir}/tdnf-config
-%{_bindir}/tdnf-cache-updateinfo
 %{_libdir}/libtdnf.so.*
 %{_libdir}/tdnf/tdnf-history-util
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/%{name}/protected.d/%{name}.conf
-%config %{_unitdir}/%{name}-cache-updateinfo.service
-%config(noreplace) %{_unitdir}/%{name}-cache-updateinfo.timer
 %config %{_sysconfdir}/motdgen.d/02-%{name}-updateinfo.sh
-%dir /var/cache/%{name}
-%dir %{_tdnf_history_db_dir}
+%dir %{_var}/cache/%{name}
+%dir %{hist_db_dir}
 %{_datadir}/bash-completion/completions/%{name}
 
 %files devel
@@ -297,6 +291,9 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Jan 31 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.10-2
+- Remove updateinfo timer
+- MOTD has its own timer now
 * Wed Dec 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.10-1
 - Upgrade to v3.5.10
 * Tue Jun 25 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.7-1

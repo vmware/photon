@@ -1,0 +1,79 @@
+From 938816ad9a924ab3c3b00b9d15c359737bdd900d Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 4 Dec 2024 05:47:27 +0000
+Subject: [PATCH] Fix updateinfo script
+
+Move instructions from bin/tdnf-cache-updateinfo to 02-tdnf-updateinfo,
+when motd triggers it, it will generate the right data.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ CMakeLists.txt                      |  1 -
+ bin/CMakeLists.txt                  |  1 -
+ bin/tdnf-cache-updateinfo.in        | 15 ---------------
+ etc/motdgen.d/02-tdnf-updateinfo.sh | 10 +++++++---
+ 4 files changed, 7 insertions(+), 20 deletions(-)
+ delete mode 100755 bin/tdnf-cache-updateinfo.in
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c0aa5071..4cc4d7da 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -101,6 +101,5 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/tools")
+ add_subdirectory("${PROJECT_SOURCE_DIR}/pytests")
+ 
+ CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/bin/tdnf-automatic.in ${PROJECT_SOURCE_DIR}/bin/tdnf-automatic @ONLY)
+-CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/bin/tdnf-cache-updateinfo.in ${PROJECT_SOURCE_DIR}/bin/tdnf-cache-updateinfo @ONLY)
+ CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/tdnf.spec.in ${CMAKE_SOURCE_DIR}/tdnf.spec @ONLY)
+ CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/scripts/build-tdnf-rpms.in ${CMAKE_SOURCE_DIR}/scripts/build-tdnf-rpms @ONLY)
+diff --git a/bin/CMakeLists.txt b/bin/CMakeLists.txt
+index 3becd28a..49f3a2f9 100644
+--- a/bin/CMakeLists.txt
++++ b/bin/CMakeLists.txt
+@@ -7,4 +7,3 @@
+ #
+ 
+ install(PROGRAMS "tdnf-automatic" DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT binary)
+-install(PROGRAMS "tdnf-cache-updateinfo" DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT binary)
+diff --git a/bin/tdnf-cache-updateinfo.in b/bin/tdnf-cache-updateinfo.in
+deleted file mode 100755
+index 6ab77161..00000000
+--- a/bin/tdnf-cache-updateinfo.in
++++ /dev/null
+@@ -1,15 +0,0 @@
+-#!/usr/bin/env bash
+-
+-#
+-# Copyright (C) 2020 VMware, Inc. All Rights Reserved.
+-#
+-# Licensed under the GNU General Public License v2 (the "License");
+-# you may not use this file except in compliance with the License. The terms
+-# of the License are located in the COPYING file of this distribution.
+-#
+-
+-exec > /var/cache/tdnf/cached-updateinfo.txt
+-
+-tdnf -q --refresh updateinfo | grep -vE '^Refreshing|^Disabling'
+-
+-exit ${PIPESTATUS[0]}
+diff --git a/etc/motdgen.d/02-tdnf-updateinfo.sh b/etc/motdgen.d/02-tdnf-updateinfo.sh
+index fb386a08..031ab1f5 100755
+--- a/etc/motdgen.d/02-tdnf-updateinfo.sh
++++ b/etc/motdgen.d/02-tdnf-updateinfo.sh
+@@ -10,9 +10,13 @@
+ 
+ path="/var/cache/tdnf/cached-updateinfo.txt"
+ 
++tdnf -q --refresh updateinfo | grep -vE '^Refreshing|^Disabling' > "${path}"
++
+ if [ -s "${path}" ]; then
+-    grep -qE 'Security|Bugfix|Enhancement' "${path}" || exit 0
+-    echo; cat "${path}"; echo "Run 'tdnf updateinfo info' to see the details."
++  grep -qE 'Security|Bugfix|Enhancement' "${path}" || exit 0
++  echo
++  cat "${path}"
++  echo "Run 'tdnf updateinfo info' to see the details."
+ else
+-    echo "tdnf update info not available yet!"
++  echo "tdnf update info not available yet!"
+ fi
