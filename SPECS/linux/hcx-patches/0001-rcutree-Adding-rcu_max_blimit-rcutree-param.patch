@@ -1,0 +1,61 @@
+From 23fdc51c90309d37abd157823cc4e3d751866183 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Date: Mon, 11 Nov 2024 08:54:27 +0000
+Subject: [PATCH] rcutree: Adding "rcu_max_blimit" rcutree param
+
+- In usecase, where rcu callbacks are more than 10K
+ and responsible for freeing some objects.
+- 10K blimit seems low value due to high traffic causes
+ more allocs and freeing of objects depends on rcu callbacks
+- Thus, due to 10K blimit invocation of rcu callbacks can't
+ keep up with allocs and causes OOM after certain duration.
+
+- To fix this, introducing new rcutree param "rcu_max_blimit"
+ through which we can set default max value of blimit instead
+ of hardcoding it with 10K.
+- Value can be either via boot kernel cmdline param as
+  "rcutree.rcu_max_blimit = <long>" or set it post boot as
+  "echo <long> > /sys/module/rcutree/parameters/rcu_max_blimit"
+- Default value of "/sys/module/rcutree/parameters/rcu_max_blimit"
+  set to 10000
+
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ kernel/rcu/tree.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index dd6e15ca63b0..71a1f9cd654f 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -427,6 +427,9 @@ module_param(rcu_divisor, int, 0644);
+ static long rcu_resched_ns = 3 * NSEC_PER_MSEC;
+ module_param(rcu_resched_ns, long, 0644);
+ 
++static long rcu_max_blimit = DEFAULT_MAX_RCU_BLIMIT;
++module_param(rcu_max_blimit, long, 0644);
++
+ /*
+  * How long the grace period must be before we start recruiting
+  * quiescent-state help from rcu_note_context_switch().
+@@ -2335,7 +2338,7 @@ static void rcu_do_batch(struct rcu_data *rdp)
+ 
+ 	/* Reinstate batch limit if we have worked down the excess. */
+ 	count = rcu_segcblist_n_cbs(&rdp->cblist);
+-	if (rdp->blimit >= DEFAULT_MAX_RCU_BLIMIT && count <= qlowmark)
++	if (rdp->blimit >= rcu_max_blimit && count <= qlowmark)
+ 		rdp->blimit = blimit;
+ 
+ 	/* Reset ->qlen_last_fqs_check trigger if enough CBs have drained. */
+@@ -2718,7 +2721,7 @@ static void __call_rcu_core(struct rcu_data *rdp, struct rcu_head *head,
+ 			rcu_accelerate_cbs_unlocked(rdp->mynode, rdp);
+ 		} else {
+ 			/* Give the grace period a kick. */
+-			rdp->blimit = DEFAULT_MAX_RCU_BLIMIT;
++			rdp->blimit = rcu_max_blimit;
+ 			if (READ_ONCE(rcu_state.n_force_qs) == rdp->n_force_qs_snap &&
+ 			    rcu_segcblist_first_pend_cb(&rdp->cblist) != head)
+ 				rcu_force_quiescent_state();
+-- 
+2.39.4
+

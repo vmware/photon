@@ -34,7 +34,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.118
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -357,6 +357,8 @@ Patch714: 0014-iptunnel-mark-xfrm-multi-parts.patch
 Patch715: 0015-disable-pskb_inet_may_pull-in-tunnel.patch
 Patch716: 0016-gre_tap-interface-mss_clamp-support.patch
 Patch717: 0017-rps_cpus-skip-receive-packets-queuing-to-only-housek.patch
+# RCU callbacks invocation max batch limit control for HCX usecase
+Patch718: 0001-rcutree-Adding-rcu_max_blimit-rcutree-param.patch
 
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
@@ -574,7 +576,7 @@ The kernel fips-canister
 %endif
 
 #HCX-Patches
-%autopatch -p1 -m701 -M717
+%autopatch -p1 -m701 -M718
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
@@ -929,6 +931,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 26 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.118-3
+- Disabled DYNAMIC_PREEMPT config
+- rcutree: added new rcutree param to control max batch limit for cb
 * Fri Nov 22 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-2
 - sev-snp: fix vmwgfx crash
 * Tue Nov 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-1
