@@ -13,7 +13,7 @@
 
 Summary:        Docker
 Name:           docker
-Version:        27.2.0
+Version:        27.3.1
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
@@ -22,7 +22,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-%define sha512 moby=97abaf56d2249c1514beacf17fc9096848b960846e064f1a9bd800a59762a1f1888b32e83b3e8289e23656496ca0293fea65931210d68faaa8a713aab6e48b65
+%define sha512 moby=0fddcc8314eed2e7b131af78f1fa01292cfc4fcb7fd0af94b79d5435349ab54a21b0a78cffbf29dd4c58747d8bcd1f47473cc5f5ab2596e133828b2e6540d172
 
 Source1: https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
 %define sha512 tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
@@ -31,13 +31,14 @@ Source2: https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
 %define sha512 libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 
 Source3: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
-%define sha512 docker-cli=5dce9e974a96b2518a73d50a9421d12feeb9cc792bb89000f26e04a91fdddade2648dea39aa721e48c9b07bfc18f7a6676fb7e286ae779556753886ec45e86c3
+%define sha512 docker-cli=6e80e94a0e9e16aaf2b19bc97c99ead39184745f601aea94e47c066a19b6436850d5269962e0802e9f7fa9f7dcb357ec0756c9466afa2c0a6ae239d61ef15961
 
 Source4:       docker-post19.service
 Source5:       docker-post19.socket
 Source6:       default-disable.preset
 
 Patch0:        tini-disable-git.patch
+Patch1:        bridge-networking.patch
 
 BuildRequires:  systemd-devel
 BuildRequires:  device-mapper-devel
@@ -110,6 +111,9 @@ Use dockerd-rootless-setuptool.sh to setup systemd for dockerd-rootless.sh.
 %prep
 # Using autosetup is not feasible
 %setup -q -c -n moby-%{version}
+pushd moby-%{version}
+%autopatch -p1 1
+popd
 
 mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
          "$(dirname "src/%{gopath_comp_cli}")" \
@@ -128,7 +132,7 @@ tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
 
 # Patch sources
 pushd tini
-%autopatch -p1 -M0
+%autopatch -p1 0
 popd
 
 %build
@@ -322,6 +326,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Mon Nov 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 27.3.1-1
+- Upgrade to v27.3.1
 * Thu Nov 21 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 27.2.0-1
 - Update to 27.2.0
 * Thu Oct 24 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.0.9-1
