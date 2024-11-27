@@ -1,4 +1,4 @@
-From 41290625a341067649751508452a0f2d386fbe83 Mon Sep 17 00:00:00 2001
+From 3cf28679dc1f1750129ec578a113883efb8022bc Mon Sep 17 00:00:00 2001
 From: Ajay Kaher <akaher@vmware.com>
 Date: Mon, 31 Jul 2023 13:15:23 +0530
 Subject: [PATCH] x86/boot: unconditional preserve CR4.MCE
@@ -12,44 +12,46 @@ and CONFIG_INTEL_TDX_GUEST should not select CONFIG_X86_MCE.
 Signed-off-by: Ajay Kaher <akaher@vmware.com>
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Ported this patch to v6.12.y]
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
  arch/x86/Kconfig          | 1 -
- arch/x86/kernel/head_64.S | 4 ----
- 2 files changed, 5 deletions(-)
+ arch/x86/kernel/head_64.S | 2 --
+ 2 files changed, 3 deletions(-)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 66bfabae8..833cc8c03 100644
+index b57579ccb0f7..9891cc4eb79e 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -882,7 +882,6 @@ config INTEL_TDX_GUEST
-	depends on EFI_STUB
-	select ARCH_HAS_CC_PLATFORM
-	select X86_MEM_ENCRYPT
+@@ -892,7 +892,6 @@ config INTEL_TDX_GUEST
+ 	depends on EFI_STUB
+ 	select ARCH_HAS_CC_PLATFORM
+ 	select X86_MEM_ENCRYPT
 -	select X86_MCE
-	select UNACCEPTED_MEMORY
-	help
-	  Support running as a guest under Intel TDX.  Without this support,
+ 	select UNACCEPTED_MEMORY
+ 	help
+ 	  Support running as a guest under Intel TDX.  Without this support,
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index ea6995920..4baaa1559 100644
+index 330922b328bf..2b85158b0a34 100644
 --- a/arch/x86/kernel/head_64.S
 +++ b/arch/x86/kernel/head_64.S
-@@ -166,7 +166,6 @@ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
-	addq	$(init_top_pgt - __START_KERNEL_map), %rax
- 1:
-
+@@ -206,7 +206,6 @@ SYM_INNER_LABEL(common_startup_64, SYM_L_LOCAL)
+ 	 *  there will be no global TLB entries after the execution."
+ 	 */
+ 	movl	$(X86_CR4_PAE | X86_CR4_LA57), %edx
 -#ifdef CONFIG_X86_MCE
-	/*
-	 * Preserve CR4.MCE if the kernel will enable #MC support.
-	 * Clearing MCE may fault in some environments (that also force #MC
-@@ -176,9 +175,6 @@ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
-	 */
-	movq	%cr4, %rcx
-	andl	$X86_CR4_MCE, %ecx
--#else
--	movl	$0, %ecx
+ 	/*
+ 	 * Preserve CR4.MCE if the kernel will enable #MC support.
+ 	 * Clearing MCE may fault in some environments (that also force #MC
+@@ -215,7 +214,6 @@ SYM_INNER_LABEL(common_startup_64, SYM_L_LOCAL)
+ 	 * here.
+ 	 */
+ 	orl	$X86_CR4_MCE, %edx
 -#endif
+ 	movq	%cr4, %rcx
+ 	andl	%edx, %ecx
+ 
+-- 
+2.39.4
 
-	/* Enable PAE mode, PGE and LA57 */
-	orl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
---
-2.41.0

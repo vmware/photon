@@ -1,4 +1,4 @@
-From 64fe9dc4bb6d06c7722fe5d3c931799cf2b8804b Mon Sep 17 00:00:00 2001
+From f8073890a69d7de12780a218c1b2208c2c2aeb95 Mon Sep 17 00:00:00 2001
 From: Munehisa Kamata <kamatam@amazon.com>
 Date: Sat, 11 Feb 2017 00:53:56 +0000
 Subject: [PATCH] x86/xen: add system core suspend and resume callbacks
@@ -22,19 +22,19 @@ CR: https://cr.amazon.com/r/8273204/
  3 files changed, 56 insertions(+)
 
 diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
-index 9623be6bdd6e..9a284196a372 100644
+index 24d2957a4726..156d1f02a9f5 100644
 --- a/arch/x86/xen/enlighten_hvm.c
 +++ b/arch/x86/xen/enlighten_hvm.c
-@@ -234,6 +234,7 @@ static void __init xen_hvm_guest_init(void)
-
+@@ -227,6 +227,7 @@ static void __init xen_hvm_guest_init(void)
+ 
  	xen_panic_handler_init();
-
+ 
 +	xen_setup_syscore_ops();
  	xen_hvm_smp_init();
  	WARN_ON(xen_cpuhp_setup(xen_cpu_up_prepare_hvm, xen_cpu_dead_hvm));
  	xen_unplug_emulated_devices();
 diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
-index 1d83152c761b..784c4484100b 100644
+index 77a6ea1c60e4..a0fe823b96cd 100644
 --- a/arch/x86/xen/suspend.c
 +++ b/arch/x86/xen/suspend.c
 @@ -2,17 +2,22 @@
@@ -43,25 +43,25 @@ index 1d83152c761b..784c4484100b 100644
  #include <linux/percpu-defs.h>
 +#include <linux/syscore_ops.h>
 +#include <linux/kernel_stat.h>
-
+ 
  #include <xen/xen.h>
  #include <xen/interface/xen.h>
 +#include <xen/interface/memory.h>
  #include <xen/grant_table.h>
  #include <xen/events.h>
 +#include <xen/xen-ops.h>
-
+ 
  #include <asm/cpufeatures.h>
  #include <asm/msr-index.h>
  #include <asm/xen/hypercall.h>
  #include <asm/xen/page.h>
  #include <asm/fixmap.h>
 +#include <asm/pvclock.h>
-
+ 
  #include "xen-ops.h"
- #include "mmu.h"
-@@ -82,3 +87,51 @@ void xen_arch_suspend(void)
-
+ 
+@@ -80,3 +85,51 @@ void xen_arch_suspend(void)
+ 
  	on_each_cpu(xen_vcpu_notify_suspend, NULL, 1);
  }
 +
@@ -113,18 +113,18 @@ index 1d83152c761b..784c4484100b 100644
 +		register_syscore_ops(&xen_hvm_syscore_ops);
 +}
 diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-index c6f64f8d3d63..4385b39242f6 100644
+index 47f11bec5e90..b0064615eeb5 100644
 --- a/include/xen/xen-ops.h
 +++ b/include/xen/xen-ops.h
-@@ -45,6 +45,8 @@ bool xen_suspend_mode_is_xen_suspend(void);
- bool xen_suspend_mode_is_pm_suspend(void);
- bool xen_suspend_mode_is_pm_hibernation(void);
-
+@@ -41,6 +41,8 @@ u64 xen_steal_clock(int cpu);
+ 
+ int xen_setup_shutdown_event(void);
+ 
 +void xen_setup_syscore_ops(void);
 +
- extern unsigned long *xen_contiguous_bitmap;
-
- #if defined(CONFIG_XEN_PV)
---
-2.35.6
+ bool xen_suspend_mode_is_xen_suspend(void);
+ bool xen_suspend_mode_is_pm_suspend(void);
+ bool xen_suspend_mode_is_pm_hibernation(void);
+-- 
+2.39.4
 

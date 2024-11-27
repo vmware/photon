@@ -1,8 +1,7 @@
-From 0dd719a950c776f212226690e429e80e53ab867a Mon Sep 17 00:00:00 2001
+From 2d72b59683c85409ee1509e8d94d519f4f2f2fa6 Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhir@vmware.com>
 Date: Mon, 1 Mar 2021 19:51:03 +0000
-Subject: [PATCH] FIPS:crypto:rng: Jitterentropy RNG as the only RND
- source
+Subject: [PATCH] FIPS:crypto:rng: Jitterentropy RNG as the only RND source
 
   -  RNG module uses urandom during crypto reset if
 prediction reset information is not provides. However,
@@ -17,12 +16,15 @@ Jitter entropy rng can be accessed by any crypto module
 
 Signed-off-by: srinidhira0 <srinidhir@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Ported this patch to v6.12.y]
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
- crypto/rng.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+ crypto/rng.c | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
 diff --git a/crypto/rng.c b/crypto/rng.c
-index 279dffdeb..a80aba452 100644
+index 9d8804e46422..7eb4c82c7fee 100644
 --- a/crypto/rng.c
 +++ b/crypto/rng.c
 @@ -19,6 +19,7 @@
@@ -31,13 +33,13 @@ index 279dffdeb..a80aba452 100644
  #include <linux/string.h>
 +#include <linux/fips.h>
  #include <net/netlink.h>
-
+ 
  #include "internal.h"
 @@ -28,6 +29,25 @@ struct crypto_rng *crypto_default_rng;
  EXPORT_SYMBOL_GPL(crypto_default_rng);
  static int crypto_default_rng_refcnt;
-
-+int get_jent_random_bytes(u8 * buf, unsigned int slen)
+ 
++static int get_jent_random_bytes(u8 * buf, unsigned int slen)
 +{
 +	struct crypto_rng *jitter_entropy =
 +		crypto_alloc_rng("jitterentropy_rng", 0, 0);
@@ -58,20 +60,20 @@ index 279dffdeb..a80aba452 100644
 +}
  int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
  {
-	struct rng_alg *alg = crypto_rng_alg(tfm);
-@@ -42,8 +62,11 @@ int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
-		err = -ENOMEM;
-		if (!buf)
-			goto out;
--
+ 	u8 *buf = NULL;
+@@ -38,7 +58,11 @@ int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
+ 		if (!buf)
+ 			return -ENOMEM;
+ 
 -		err = get_random_bytes_wait(buf, slen);
 +		if (fips_enabled) {
 +			err = get_jent_random_bytes(buf, slen);
 +		} else {
 +			err = get_random_bytes_wait(buf, slen);
 +		}
-		if (err)
-			goto free_buf;
-		seed = buf;
---
-2.41.0
+ 		if (err)
+ 			goto out;
+ 		seed = buf;
+-- 
+2.39.4
+

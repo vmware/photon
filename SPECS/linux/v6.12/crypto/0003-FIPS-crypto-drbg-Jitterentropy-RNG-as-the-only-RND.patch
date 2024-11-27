@@ -1,4 +1,4 @@
-From 009a1fc5cf8a63275a224dd895f7e1c5791d1f2b Mon Sep 17 00:00:00 2001
+From cbd39b5b51509db4a13afa72b61ddf56957928f3 Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhir@vmware.com>
 Date: Thu, 18 Feb 2021 21:17:40 +0000
 Subject: [PATCH] FIPS:crypto:drbg: Jitterentropy RNG as the only RND source
@@ -17,16 +17,19 @@ using crypto_alloc_rng for "jitternetropy_rng".
 
 Signed-off-by: srinidhira0 <srinidhir@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Ported this patch to v6.12.x]
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
- crypto/drbg.c | 93 +++++++++++++++++++++++++++++++++++++++------------
+ crypto/drbg.c | 95 ++++++++++++++++++++++++++++++++++++++-------------
  crypto/ecc.c  | 26 +++++++++++++-
- 2 files changed, 97 insertions(+), 22 deletions(-)
+ 2 files changed, 96 insertions(+), 25 deletions(-)
 
 diff --git a/crypto/drbg.c b/crypto/drbg.c
-index 177983b6a..9baf2ec07 100644
+index 3addce90930c..1ff3052d4f42 100644
 --- a/crypto/drbg.c
 +++ b/crypto/drbg.c
-@@ -1148,7 +1148,7 @@ static bool drbg_nopr_reseed_interval_elapsed(struct drbg_state *drbg)
+@@ -1132,7 +1132,7 @@ static bool drbg_nopr_reseed_interval_elapsed(struct drbg_state *drbg)
  static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
  		     bool reseed)
  {
@@ -35,7 +38,7 @@ index 177983b6a..9baf2ec07 100644
  	unsigned char entropy[((32 + 16) * 2)];
  	unsigned int entropylen = drbg_sec_strength(drbg->core->flags);
  	struct drbg_string data1;
-@@ -1181,27 +1181,26 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
+@@ -1165,27 +1165,26 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
  		BUG_ON((entropylen * 2) > sizeof(entropy));
  
  		/* Get seed from in-kernel /dev/urandom */
@@ -78,7 +81,7 @@ index 177983b6a..9baf2ec07 100644
  
  				/*
  				 * Do not treat the transient failure of the
-@@ -1216,15 +1215,49 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
+@@ -1200,15 +1199,49 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
  				 * However, we mandate that at least the first
  				 * seeding operation must succeed with the
  				 * Jitter RNG.
@@ -132,7 +135,7 @@ index 177983b6a..9baf2ec07 100644
  	}
  	list_add_tail(&data1.list, &seedlist);
  
-@@ -1440,9 +1473,23 @@ static int drbg_generate(struct drbg_state *drbg,
+@@ -1424,9 +1457,23 @@ static int drbg_generate(struct drbg_state *drbg,
  	} else if (rng_is_initialized() &&
  		   (drbg->seeded == DRBG_SEED_STATE_PARTIAL ||
  		    drbg_nopr_reseed_interval_elapsed(drbg))) {
@@ -160,18 +163,18 @@ index 177983b6a..9baf2ec07 100644
  
  	if (addtl && 0 < addtl->len)
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index 7315217c8..b2a412d94 100644
+index 50ad2d4ed672..234eb2b89c6d 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -35,6 +35,7 @@
  #include <crypto/internal/ecc.h>
- #include <asm/unaligned.h>
+ #include <linux/unaligned.h>
  #include <linux/ratelimit.h>
 +#include <linux/fips.h>
  
  #include "ecc_curve_defs.h"
  
-@@ -1604,6 +1605,26 @@ int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
+@@ -1659,6 +1660,26 @@ int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
  }
  EXPORT_SYMBOL(ecc_is_pubkey_valid_full);
  
@@ -198,7 +201,7 @@ index 7315217c8..b2a412d94 100644
  int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
  			      const u64 *private_key, const u64 *public_key,
  			      u64 *secret)
-@@ -1623,7 +1644,10 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
+@@ -1676,7 +1697,10 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
  
  	nbytes = ndigits << ECC_DIGITS_TO_BYTES_SHIFT;
  
@@ -211,5 +214,5 @@ index 7315217c8..b2a412d94 100644
  	pk = ecc_alloc_point(ndigits);
  	if (!pk) {
 -- 
-2.23.3
+2.39.4
 

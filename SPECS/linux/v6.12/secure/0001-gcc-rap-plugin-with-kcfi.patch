@@ -1,4 +1,4 @@
-From 00fd6ab91b030d203b9f5d0fadc5bb91958838e2 Mon Sep 17 00:00:00 2001
+From 9057b8f857f868e7607ecc7184b58a25394d0ff4 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Fri, 26 Jul 2024 10:51:50 +0000
 Subject: [PATCH] gcc rap plugin with kcfi
@@ -34,11 +34,10 @@ Following changes are made to adopt KCFI in GCC RAP plugin:
   replaced __CFI_TYPE macro with __RAP_TYPE for adding rap_hash for
   callers of SYM_TYPED_FUNC_START when CONFIG_PAX_RAP is enabled.
 
-[Srinidhi Rao<srinidhi.rao@broadcom.com> Back ported this patch to v6.6.x]
-
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Signed-off-by: Mukul Sikka <mukul.sikka@broadcom.com>
 
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Back ported this patch to v6.12.x]
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
  Makefile                                      |   2 +
@@ -50,26 +49,8 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  arch/x86/kernel/cpu/vmware.c                  |   9 +-
  arch/x86/kernel/module.c                      |   6 +-
  arch/x86/kernel/traps.c                       |   4 +
- arch/x86/tools/relocs.c                       |   3 +
- drivers/block/floppy.c                        |  11 +-
- drivers/firmware/dmi-id.c                     |   7 +-
- drivers/net/ethernet/brocade/bna/bnad.c       |  11 +-
- drivers/scsi/bfa/bfa.h                        |   4 +-
- drivers/scsi/bfa/bfa_cs.h                     | 124 +++-
- drivers/scsi/bfa/bfa_fcpim.h                  |  12 +-
- drivers/scsi/bfa/bfa_fcs.h                    |  34 +-
- drivers/scsi/bfa/bfa_fcs_fcpim.c              |   6 +-
- drivers/scsi/bfa/bfa_fcs_lport.c              |   4 +-
- drivers/scsi/bfa/bfa_fcs_rport.c              |   4 +-
- drivers/scsi/bfa/bfa_ioc.c                    |   8 +-
- drivers/scsi/bfa/bfa_ioc.h                    |  12 +-
- drivers/scsi/bfa/bfa_svc.c                    |  12 +-
- drivers/scsi/bfa/bfa_svc.h                    |  20 +-
- drivers/scsi/bfa/bfad.c                       |  12 +-
- drivers/scsi/bfa/bfad_drv.h                   |   5 +-
  include/linux/compiler_types.h                |   6 +-
  include/linux/moduleparam.h                   |   4 +-
- include/linux/pci.h                           |   2 +-
  include/linux/syscalls.h                      |  17 +-
  kernel/bpf/core.c                             |  21 +
  kernel/events/core.c                          |   3 +-
@@ -86,7 +67,7 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  scripts/gcc-plugins/rap_plugin/sip.c          |  96 +++
  scripts/mod/modpost.c                         |   6 -
  security/Kconfig                              |  29 +
- 51 files changed, 1798 insertions(+), 148 deletions(-)
+ 27 files changed, 1457 insertions(+), 26 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -94,27 +75,30 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  create mode 100644 scripts/gcc-plugins/rap_plugin/sip.c
 
 diff --git a/Makefile b/Makefile
-index a3839877aafd..13bb55d6347a 100644
+index 68a8faff2543..919427a37107 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -976,10 +976,12 @@ export CC_FLAGS_LTO
+@@ -950,6 +950,7 @@ export CC_FLAGS_LTO
  endif
  
  ifdef CONFIG_CFI_CLANG
 +ifdef CONFIG_KCFI_CLANG
  CC_FLAGS_CFI	:= -fsanitize=kcfi
+ ifdef CONFIG_CFI_ICALL_NORMALIZE_INTEGERS
+ 	CC_FLAGS_CFI	+= -fsanitize-cfi-icall-experimental-normalize-integers
+@@ -964,6 +965,7 @@ endif
  KBUILD_CFLAGS	+= $(CC_FLAGS_CFI)
  export CC_FLAGS_CFI
  endif
 +endif
  
- ifneq ($(CONFIG_FUNCTION_ALIGNMENT),0)
- KBUILD_CFLAGS += -falign-functions=$(CONFIG_FUNCTION_ALIGNMENT)
+ # Architectures can define flags to add/remove for floating-point support
+ CC_FLAGS_FPU	+= -D_LINUX_FPU_COMPILATION_UNIT
 diff --git a/arch/Kconfig b/arch/Kconfig
-index 20c2c93d2c88..6c5bb9651096 100644
+index bd9f095d69fa..0d1da16a93ba 100644
 --- a/arch/Kconfig
 +++ b/arch/Kconfig
-@@ -802,10 +802,16 @@ config ARCH_SUPPORTS_CFI_CLANG
+@@ -820,10 +820,16 @@ config ARCH_SUPPORTS_CFI_CLANG
  config ARCH_USES_CFI_TRAPS
  	bool
  
@@ -130,26 +114,26 @@ index 20c2c93d2c88..6c5bb9651096 100644
 -	depends on $(cc-option,-fsanitize=kcfi)
 +	depends on GCC_PLUGINS || KCFI_CLANG
  	help
- 	  This option enables Clang’s forward-edge Control Flow Integrity
+ 	  This option enables Clang's forward-edge Control Flow Integrity
  	  (CFI) checking, where the compiler injects a runtime check to each
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 0ca3130c6c8f..c737526635f5 100644
+index 7b9a7e8f39ac..33d0970f8a76 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -2406,7 +2406,7 @@ config CALL_PADDING
+@@ -2477,7 +2477,7 @@ config CALL_PADDING
  
  config FINEIBT
  	def_bool y
--	depends on X86_KERNEL_IBT && CFI_CLANG && RETPOLINE
+-	depends on X86_KERNEL_IBT && CFI_CLANG && MITIGATION_RETPOLINE
 +	depends on X86_KERNEL_IBT && KCFI_CLANG && MITIGATION_RETPOLINE
  	select CALL_PADDING
  
  config HAVE_CALL_THUNKS
 diff --git a/arch/x86/include/asm/text-patching.h b/arch/x86/include/asm/text-patching.h
-index 29832c338cdc..a73ecab16ead 100644
+index 6259f1937fe7..d4489e292e3c 100644
 --- a/arch/x86/include/asm/text-patching.h
 +++ b/arch/x86/include/asm/text-patching.h
-@@ -53,6 +53,10 @@ extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void
+@@ -43,6 +43,10 @@ extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void
  extern void text_poke_queue(void *addr, const void *opcode, size_t len, const void *emulate);
  extern void text_poke_finish(void);
  
@@ -189,10 +173,10 @@ index 75884d2cdec3..266f5ce89639 100644
 +
  #endif /* _ASM_VERMAGIC_H */
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index aae7456ece07..4528ef4726b9 100644
+index d17518ca19b8..d3871f43c314 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -1915,6 +1915,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
+@@ -1984,6 +1984,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
  	return __text_poke(text_poke_memcpy, addr, opcode, len);
  }
  
@@ -207,10 +191,10 @@ index aae7456ece07..4528ef4726b9 100644
   * text_poke_kgdb - Update instructions on a live kernel by kgdb
   * @addr: address to modify
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 11f83d07925e..e26d67eed850 100644
+index 00189cdeb775..27132984b3ad 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -326,10 +326,17 @@ static __init int activate_jump_labels(void)
+@@ -334,10 +334,17 @@ static __init int activate_jump_labels(void)
  }
  arch_initcall(activate_jump_labels);
  
@@ -230,10 +214,10 @@ index 11f83d07925e..e26d67eed850 100644
  	if (vmware_tsc_khz == 0)
  		return;
 diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index 5f71a0cf4399..a87b476e27ed 100644
+index 837450b6e882..1f2d07440fa9 100644
 --- a/arch/x86/kernel/module.c
 +++ b/arch/x86/kernel/module.c
-@@ -231,7 +231,11 @@ static int write_relocate_add(Elf64_Shdr *sechdrs,
+@@ -180,7 +180,11 @@ static int write_relocate_add(Elf64_Shdr *sechdrs,
  {
  	int ret;
  	bool early = me->state == MODULE_STATE_UNFORMED;
@@ -247,10 +231,10 @@ index 5f71a0cf4399..a87b476e27ed 100644
  	if (!early) {
  		write = text_poke;
 diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index c876f1d36a81..e833c1fc48ce 100644
+index 2dbadf347b5f..c67578032f66 100644
 --- a/arch/x86/kernel/traps.c
 +++ b/arch/x86/kernel/traps.c
-@@ -109,6 +109,10 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, const char *str,
+@@ -153,6 +153,10 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, const char *str,
  
  		tsk->thread.error_code = error_code;
  		tsk->thread.trap_nr = trapnr;
@@ -261,831 +245,11 @@ index c876f1d36a81..e833c1fc48ce 100644
  		die(str, regs, error_code);
  	} else {
  		if (fixup_vdso_exception(regs, trapnr, error_code, 0))
-diff --git a/arch/x86/tools/relocs.c b/arch/x86/tools/relocs.c
-index e7013283640f..3d78c48e4460 100644
---- a/arch/x86/tools/relocs.c
-+++ b/arch/x86/tools/relocs.c
-@@ -57,6 +57,9 @@ static const char * const sym_regex_kernel[S_NSYMTYPES] = {
- 	"xen_save_fl_direct_reloc$|"
- 	"VDSO|"
- 	"__kcfi_typeid_|"
-+#if 0
-+	"__rap_hash_|"
-+#endif
- 	"__crc_)",
- 
- /*
-diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-index ea4eb88a2e45..c754ce9282bd 100644
---- a/drivers/block/floppy.c
-+++ b/drivers/block/floppy.c
-@@ -530,14 +530,13 @@ static struct format_descr format_req;
- static char *floppy_track_buffer;
- static int max_buffer_sectors;
- 
--typedef void (*done_f)(int);
- static const struct cont_t {
- 	void (*interrupt)(void);
- 				/* this is called after the interrupt of the
- 				 * main command */
- 	void (*redo)(void);	/* this is called to retry the operation */
- 	void (*error)(void);	/* this is called to tally an error */
--	done_f done;		/* this is called to say if the operation has
-+	void (*done)(int);		/* this is called to say if the operation has
- 				 * succeeded/failed */
- } *cont;
- 
-@@ -985,6 +984,10 @@ static void empty(void)
- {
- }
- 
-+static void empty_done(int)
-+{
-+}
-+
- static void (*floppy_work_fn)(void);
- 
- static void floppy_work_workfn(struct work_struct *work)
-@@ -1998,14 +2001,14 @@ static const struct cont_t wakeup_cont = {
- 	.interrupt	= empty,
- 	.redo		= do_wakeup,
- 	.error		= empty,
--	.done		= (done_f)empty
-+	.done		= empty_done
- };
- 
- static const struct cont_t intr_cont = {
- 	.interrupt	= empty,
- 	.redo		= process_fd_request,
- 	.error		= empty,
--	.done		= (done_f)empty
-+	.done		= empty_done
- };
- 
- /* schedules handler, waiting for completion. May be interrupted, will then
-diff --git a/drivers/firmware/dmi-id.c b/drivers/firmware/dmi-id.c
-index 5f3a3e913d28..d19c78a78ae3 100644
---- a/drivers/firmware/dmi-id.c
-+++ b/drivers/firmware/dmi-id.c
-@@ -169,9 +169,14 @@ static int dmi_dev_uevent(const struct device *dev, struct kobj_uevent_env *env)
- 	return 0;
- }
- 
-+static void dmi_dev_release(struct device *dev)
-+{
-+	kfree(dev);
-+}
-+
- static struct class dmi_class = {
- 	.name = "dmi",
--	.dev_release = (void(*)(struct device *)) kfree,
-+	.dev_release = dmi_dev_release,
- 	.dev_uevent = dmi_dev_uevent,
- };
- 
-diff --git a/drivers/net/ethernet/brocade/bna/bnad.c b/drivers/net/ethernet/brocade/bna/bnad.c
-index 31191b520b58..d5ce711a9ade 100644
---- a/drivers/net/ethernet/brocade/bna/bnad.c
-+++ b/drivers/net/ethernet/brocade/bna/bnad.c
-@@ -1091,8 +1091,9 @@ bnad_cb_tx_resume(struct bnad *bnad, struct bna_tx *tx)
-  * Free all TxQs buffers and then notify TX_E_CLEANUP_DONE to Tx fsm.
-  */
- static void
--bnad_tx_cleanup(struct delayed_work *work)
-+bnad_tx_cleanup(struct work_struct *_work)
- {
-+	struct delayed_work *work = (struct delayed_work *)_work;
- 	struct bnad_tx_info *tx_info =
- 		container_of(work, struct bnad_tx_info, tx_cleanup_work);
- 	struct bnad *bnad = NULL;
-@@ -1170,7 +1171,7 @@ bnad_cb_rx_stall(struct bnad *bnad, struct bna_rx *rx)
-  * Free all RxQs buffers and then notify RX_E_CLEANUP_DONE to Rx fsm.
-  */
- static void
--bnad_rx_cleanup(void *work)
-+bnad_rx_cleanup(struct work_struct *work)
- {
- 	struct bnad_rx_info *rx_info =
- 		container_of(work, struct bnad_rx_info, rx_cleanup_work);
-@@ -1991,8 +1992,7 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
- 	}
- 	tx_info->tx = tx;
- 
--	INIT_DELAYED_WORK(&tx_info->tx_cleanup_work,
--			(work_func_t)bnad_tx_cleanup);
-+	INIT_DELAYED_WORK(&tx_info->tx_cleanup_work, bnad_tx_cleanup);
- 
- 	/* Register ISR for the Tx object */
- 	if (intr_info->intr_type == BNA_INTR_T_MSIX) {
-@@ -2248,8 +2248,7 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
- 	rx_info->rx = rx;
- 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
- 
--	INIT_WORK(&rx_info->rx_cleanup_work,
--			(work_func_t)(bnad_rx_cleanup));
-+	INIT_WORK(&rx_info->rx_cleanup_work, bnad_rx_cleanup);
- 
- 	/*
- 	 * Init NAPI, so that state is set to NAPI_STATE_SCHED,
-diff --git a/drivers/scsi/bfa/bfa.h b/drivers/scsi/bfa/bfa.h
-index f30fe324e6ec..f4a755651c03 100644
---- a/drivers/scsi/bfa/bfa.h
-+++ b/drivers/scsi/bfa/bfa.h
-@@ -215,8 +215,10 @@ struct bfa_faa_args_s {
- 	bfa_boolean_t		busy;
- };
- 
-+enum iocfc_event;
-+
- struct bfa_iocfc_s {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bfa_iocfc_s *, enum iocfc_event);
- 	struct bfa_s		*bfa;
- 	struct bfa_iocfc_cfg_s	cfg;
- 	u32		req_cq_pi[BFI_IOC_MAX_CQS];
-diff --git a/drivers/scsi/bfa/bfa_cs.h b/drivers/scsi/bfa/bfa_cs.h
-index 6b606bf589b4..aac8ad1f50d3 100644
---- a/drivers/scsi/bfa/bfa_cs.h
-+++ b/drivers/scsi/bfa/bfa_cs.h
-@@ -176,8 +176,6 @@ bfa_q_is_on_q_func(struct list_head *q, struct list_head *qe)
-  * @ BFA state machine interfaces
-  */
- 
--typedef void (*bfa_sm_t)(void *sm, int event);
--
- /*
-  * oc - object class eg. bfa_ioc
-  * st - state, eg. reset
-@@ -187,20 +185,75 @@ typedef void (*bfa_sm_t)(void *sm, int event);
- #define bfa_sm_state_decl(oc, st, otype, etype)		\
- 	static void oc ## _sm_ ## st(otype * fsm, etype event)
- 
--#define bfa_sm_set_state(_sm, _state)	((_sm)->sm = (bfa_sm_t)(_state))
-+#define bfa_sm_set_state(_sm, _state)	((_sm)->sm = (_state))
- #define bfa_sm_send_event(_sm, _event)	((_sm)->sm((_sm), (_event)))
- #define bfa_sm_get_state(_sm)		((_sm)->sm)
--#define bfa_sm_cmp_state(_sm, _state)	((_sm)->sm == (bfa_sm_t)(_state))
-+#define bfa_sm_cmp_state(_sm, _state)	((_sm)->sm == (_state))
- 
- /*
-  * For converting from state machine function to state encoding.
-  */
--struct bfa_sm_table_s {
--	bfa_sm_t	sm;	/*  state machine function	*/
-+struct bfa_iocpf_s;
-+enum iocpf_event;
-+typedef void (*bfa_fsm_iocpf_t)(struct bfa_iocpf_s *, enum iocpf_event);
-+
-+struct iocpf_sm_table_s {
-+	bfa_fsm_iocpf_t sm;	/*  state machine function	*/
-+	int		state;	/*  state machine encoding	*/
-+	char		*name;	/*  state name for display	*/
-+};
-+
-+struct bfa_ioc_s;
-+enum ioc_event;
-+typedef void (*bfa_fsm_ioc_t)(struct bfa_ioc_s *, enum ioc_event);
-+
-+struct ioc_sm_table_s {
-+	bfa_fsm_ioc_t sm;	/*  state machine function	*/
- 	int		state;	/*  state machine encoding	*/
- 	char		*name;	/*  state name for display	*/
- };
--#define BFA_SM(_sm)	((bfa_sm_t)(_sm))
-+
-+struct bfa_fcs_rport_s;
-+enum rport_event;
-+typedef void(*bfa_fcs_rport_t)(struct bfa_fcs_rport_s *, enum rport_event);
-+
-+struct rport_sm_table_s {
-+	bfa_fcs_rport_t sm;	/*  state machine function	*/
-+	int		state;	/*  state machine encoding	*/
-+	char		*name;	/*  state name for display	*/
-+};
-+
-+struct bfa_fcs_vport_s;
-+enum bfa_fcs_vport_event;
-+typedef void(*bfa_fcs_vport_t)(struct bfa_fcs_vport_s *, enum bfa_fcs_vport_event);
-+
-+struct vport_sm_table_s {
-+	bfa_fcs_vport_t sm;	/*  state machine function	*/
-+	int		state;	/*  state machine encoding	*/
-+	char		*name;	/*  state name for display	*/
-+};
-+
-+struct bfa_fcs_itnim_s;
-+enum bfa_fcs_itnim_event;
-+typedef void(*bfa_fcs_itnim_t)(struct bfa_fcs_itnim_s *, enum bfa_fcs_itnim_event);
-+
-+struct itnim_sm_table_s {
-+	bfa_fcs_itnim_t sm;	/*  state machine function	*/
-+	int		state;	/*  state machine encoding	*/
-+	char		*name;	/*  state name for display	*/
-+};
-+
-+struct bfa_fcport_s;
-+enum bfa_fcport_sm_event;
-+typedef void(*bfa_fcport_t)(struct bfa_fcport_s *, enum bfa_fcport_sm_event);
-+
-+struct fcport_sm_table_s {
-+	bfa_fcport_t sm;	/*  state machine function	*/
-+	int		state;	/*  state machine encoding	*/
-+	char		*name;	/*  state name for display	*/
-+};
-+
-+#define BFA_SM(_sm)	(_sm)
- 
- /*
-  * State machine with entry actions.
-@@ -218,17 +271,66 @@ typedef void (*bfa_fsm_t)(void *fsm, int event);
- 	static void oc ## _sm_ ## st ## _entry(otype * fsm)
- 
- #define bfa_fsm_set_state(_fsm, _state) do {	\
--	(_fsm)->fsm = (bfa_fsm_t)(_state);      \
-+	(_fsm)->fsm = (_state);      \
- 	_state ## _entry(_fsm);      \
- } while (0)
- 
- #define bfa_fsm_send_event(_fsm, _event)	((_fsm)->fsm((_fsm), (_event)))
- #define bfa_fsm_get_state(_fsm)			((_fsm)->fsm)
--#define bfa_fsm_cmp_state(_fsm, _state)		\
--	((_fsm)->fsm == (bfa_fsm_t)(_state))
-+#define bfa_fsm_cmp_state(_fsm, _state)		((_fsm)->fsm == (_state))
-+
-+static inline int
-+iocpf_sm_to_state(struct iocpf_sm_table_s *smt, bfa_fsm_iocpf_t sm)
-+{
-+	int	i = 0;
-+
-+	while (smt[i].sm && smt[i].sm != sm)
-+		i++;
-+	return smt[i].state;
-+}
-+
-+static inline int
-+ioc_sm_to_state(struct ioc_sm_table_s *smt, bfa_fsm_ioc_t sm)
-+{
-+	int	i = 0;
-+
-+	while (smt[i].sm && smt[i].sm != sm)
-+		i++;
-+	return smt[i].state;
-+}
-+
-+static inline int
-+rport_sm_to_state(struct rport_sm_table_s *smt, bfa_fcs_rport_t sm)
-+{
-+	int	i = 0;
-+
-+	while (smt[i].sm && smt[i].sm != sm)
-+		i++;
-+	return smt[i].state;
-+}
-+
-+static inline int
-+vport_sm_to_state(struct vport_sm_table_s *smt, bfa_fcs_vport_t sm)
-+{
-+	int	i = 0;
-+
-+	while (smt[i].sm && smt[i].sm != sm)
-+		i++;
-+	return smt[i].state;
-+}
-+
-+static inline int
-+itnim_sm_to_state(struct itnim_sm_table_s *smt, bfa_fcs_itnim_t sm)
-+{
-+	int	i = 0;
-+
-+	while (smt[i].sm && smt[i].sm != sm)
-+		i++;
-+	return smt[i].state;
-+}
- 
- static inline int
--bfa_sm_to_state(struct bfa_sm_table_s *smt, bfa_sm_t sm)
-+fcport_sm_to_state(struct fcport_sm_table_s *smt, bfa_fcport_t sm)
- {
- 	int	i = 0;
- 
-diff --git a/drivers/scsi/bfa/bfa_fcpim.h b/drivers/scsi/bfa/bfa_fcpim.h
-index 8bf09433549b..060af3ac4fa2 100644
---- a/drivers/scsi/bfa/bfa_fcpim.h
-+++ b/drivers/scsi/bfa/bfa_fcpim.h
-@@ -157,9 +157,11 @@ struct bfa_fcp_mod_s {
- /*
-  * BFA IO (initiator mode)
-  */
-+enum bfa_ioim_event;
-+
- struct bfa_ioim_s {
- 	struct list_head	qe;		/*  queue elememt	*/
--	bfa_sm_t		sm;		/*  BFA ioim state machine */
-+	void (*sm)(struct bfa_ioim_s *, enum bfa_ioim_event);/*  BFA ioim state machine */
- 	struct bfa_s		*bfa;		/*  BFA module	*/
- 	struct bfa_fcpim_s	*fcpim;		/*  parent fcpim module */
- 	struct bfa_itnim_s	*itnim;		/*  i-t-n nexus for this IO  */
-@@ -189,9 +191,11 @@ struct bfa_ioim_sp_s {
- /*
-  * BFA Task management command (initiator mode)
-  */
-+enum bfa_tskim_event;
-+
- struct bfa_tskim_s {
- 	struct list_head	qe;
--	bfa_sm_t		sm;
-+	void (*sm)(struct bfa_tskim_s *, enum bfa_tskim_event);
- 	struct bfa_s		*bfa;	/*  BFA module  */
- 	struct bfa_fcpim_s	*fcpim;	/*  parent fcpim module	*/
- 	struct bfa_itnim_s	*itnim;	/*  i-t-n nexus for this IO  */
-@@ -211,9 +215,11 @@ struct bfa_tskim_s {
- /*
-  * BFA i-t-n (initiator mode)
-  */
-+enum bfa_itnim_event;
-+
- struct bfa_itnim_s {
- 	struct list_head	qe;	/*  queue element	*/
--	bfa_sm_t		sm;	/*  i-t-n im BFA state machine  */
-+	void (*sm)(struct bfa_itnim_s *, enum bfa_itnim_event);/*  i-t-n im BFA state machine  */
- 	struct bfa_s		*bfa;	/*  bfa instance	*/
- 	struct bfa_rport_s	*rport;	/*  bfa rport	*/
- 	void			*ditn;	/*  driver i-t-n structure	*/
-diff --git a/drivers/scsi/bfa/bfa_fcs.h b/drivers/scsi/bfa/bfa_fcs.h
-index c1baf5cd0d3e..733a2993b78a 100644
---- a/drivers/scsi/bfa/bfa_fcs.h
-+++ b/drivers/scsi/bfa/bfa_fcs.h
-@@ -59,8 +59,10 @@ struct bfa_fcs_s;
- #define BFA_FCS_PID_IS_WKA(pid)  ((bfa_ntoh3b(pid) > 0xFFF000) ?  1 : 0)
- #define BFA_FCS_MAX_RPORT_LOGINS 1024
- 
-+enum vport_ns_event;
-+
- struct bfa_fcs_lport_ns_s {
--	bfa_sm_t        sm;		/*  state machine */
-+	void (*sm)(struct bfa_fcs_lport_ns_s *, enum vport_ns_event);/*  state machine */
- 	struct bfa_timer_s timer;
- 	struct bfa_fcs_lport_s *port;	/*  parent port */
- 	struct bfa_fcxp_s *fcxp;
-@@ -69,18 +71,20 @@ struct bfa_fcs_lport_ns_s {
- 	u8	num_rsnn_nn_retries;
- };
- 
-+enum port_scn_event;
- 
- struct bfa_fcs_lport_scn_s {
--	bfa_sm_t        sm;		/*  state machine */
-+	void (*sm)(struct bfa_fcs_lport_scn_s *, enum port_scn_event);/*  state machine */
- 	struct bfa_timer_s timer;
- 	struct bfa_fcs_lport_s *port;	/*  parent port */
- 	struct bfa_fcxp_s *fcxp;
- 	struct bfa_fcxp_wqe_s fcxp_wqe;
- };
- 
-+enum port_fdmi_event;
- 
- struct bfa_fcs_lport_fdmi_s {
--	bfa_sm_t        sm;		/*  state machine */
-+	void (*sm)(struct bfa_fcs_lport_fdmi_s *, enum port_fdmi_event);/*  state machine */
- 	struct bfa_timer_s timer;
- 	struct bfa_fcs_lport_ms_s *ms;	/*  parent ms */
- 	struct bfa_fcxp_s *fcxp;
-@@ -89,9 +93,10 @@ struct bfa_fcs_lport_fdmi_s {
- 	u8	rsvd[3];
- };
- 
-+enum port_ms_event;
- 
- struct bfa_fcs_lport_ms_s {
--	bfa_sm_t        sm;		/*  state machine */
-+	void (*sm)(struct bfa_fcs_lport_ms_s *, enum port_ms_event);/*  state machine */
- 	struct bfa_timer_s timer;
- 	struct bfa_fcs_lport_s *port;	/*  parent port */
- 	struct bfa_fcxp_s *fcxp;
-@@ -131,10 +136,11 @@ union bfa_fcs_lport_topo_u {
- 	struct bfa_fcs_lport_n2n_s pn2n;
- };
- 
-+enum bfa_fcs_lport_event;
- 
- struct bfa_fcs_lport_s {
- 	struct list_head         qe;	/*  used by port/vport */
--	bfa_sm_t               sm;	/*  state machine */
-+	void (*sm)(struct bfa_fcs_lport_s *, enum bfa_fcs_lport_event);	/*  state machine */
- 	struct bfa_fcs_fabric_s *fabric;	/*  parent fabric */
- 	struct bfa_lport_cfg_s  port_cfg;	/*  port configuration */
- 	struct bfa_timer_s link_timer;	/*  timer for link offline */
-@@ -171,10 +177,11 @@ enum bfa_fcs_fabric_type {
- 	BFA_FCS_FABRIC_LOOP = 3,
- };
- 
-+enum bfa_fcs_fabric_event;
- 
- struct bfa_fcs_fabric_s {
- 	struct list_head   qe;		/*  queue element */
--	bfa_sm_t	 sm;		/*  state machine */
-+	void (*sm)(struct bfa_fcs_fabric_s *, enum bfa_fcs_fabric_event); /*  state machine */
- 	struct bfa_fcs_s *fcs;		/*  FCS instance */
- 	struct bfa_fcs_lport_s  bport;	/*  base logical port */
- 	enum bfa_fcs_fabric_type fab_type; /*  fabric type */
-@@ -344,9 +351,11 @@ void            bfa_fcs_lport_scn_process_rscn(struct bfa_fcs_lport_s *port,
- 					      struct fchs_s *rx_frame, u32 len);
- void		bfa_fcs_lport_lip_scn_online(bfa_fcs_lport_t *port);
- 
-+enum bfa_fcs_vport_event;
-+
- struct bfa_fcs_vport_s {
- 	struct list_head		qe;		/*  queue elem	*/
--	bfa_sm_t		sm;		/*  state machine	*/
-+	void (*sm)(struct bfa_fcs_vport_s *, enum bfa_fcs_vport_event);/*  state machine	*/
- 	bfa_fcs_lport_t		lport;		/*  logical port	*/
- 	struct bfa_timer_s	timer;
- 	struct bfad_vport_s	*vport_drv;	/*  Driver private	*/
-@@ -398,8 +407,10 @@ struct bfa_fcs_tin_s;
- struct bfa_fcs_iprp_s;
- 
- /* Rport Features (RPF) */
-+enum rpf_event;
-+
- struct bfa_fcs_rpf_s {
--	bfa_sm_t	sm;	/*  state machine */
-+	void (*sm)(struct bfa_fcs_rpf_s *, enum rpf_event); /*  state machine */
- 	struct bfa_fcs_rport_s *rport;	/*  parent rport */
- 	struct bfa_timer_s	timer;	/*  general purpose timer */
- 	struct bfa_fcxp_s	*fcxp;	/*  FCXP needed for discarding */
-@@ -414,6 +425,8 @@ struct bfa_fcs_rpf_s {
- 	 */
- };
- 
-+enum rport_event;
-+
- struct bfa_fcs_rport_s {
- 	struct list_head	qe;	/*  used by port/vport */
- 	struct bfa_fcs_lport_s *port;	/*  parent FCS port */
-@@ -430,7 +443,7 @@ struct bfa_fcs_rport_s {
- 	wwn_t	pwwn;	/*  port wwn of rport */
- 	wwn_t	nwwn;	/*  node wwn of rport */
- 	struct bfa_rport_symname_s psym_name; /*  port symbolic name  */
--	bfa_sm_t	sm;		/*  state machine */
-+	void (*sm)(struct bfa_fcs_rport_s *, enum rport_event); /*  state machine */
- 	struct bfa_timer_s timer;	/*  general purpose timer */
- 	struct bfa_fcs_itnim_s *itnim;	/*  ITN initiator mode role */
- 	struct bfa_fcs_tin_s *tin;	/*  ITN initiator mode role */
-@@ -491,9 +504,10 @@ void  bfa_fcs_rpf_rport_offline(struct bfa_fcs_rport_s *rport);
-  * forward declarations
-  */
- struct bfad_itnim_s;
-+enum bfa_fcs_itnim_event;
- 
- struct bfa_fcs_itnim_s {
--	bfa_sm_t		sm;		/*  state machine */
-+	void (*sm)(struct bfa_fcs_itnim_s *, enum bfa_fcs_itnim_event);/*  state machine */
- 	struct bfa_fcs_rport_s	*rport;		/*  parent remote rport  */
- 	struct bfad_itnim_s	*itnim_drv;	/*  driver peer instance */
- 	struct bfa_fcs_s	*fcs;		/*  fcs instance	*/
-diff --git a/drivers/scsi/bfa/bfa_fcs_fcpim.c b/drivers/scsi/bfa/bfa_fcs_fcpim.c
-index c7de62baeec9..27ccaf6a4786 100644
---- a/drivers/scsi/bfa/bfa_fcs_fcpim.c
-+++ b/drivers/scsi/bfa/bfa_fcs_fcpim.c
-@@ -52,7 +52,7 @@ static void	bfa_fcs_itnim_sm_hcb_offline(struct bfa_fcs_itnim_s *itnim,
- static void	bfa_fcs_itnim_sm_initiator(struct bfa_fcs_itnim_s *itnim,
- 					   enum bfa_fcs_itnim_event event);
- 
--static struct bfa_sm_table_s itnim_sm_table[] = {
-+static struct itnim_sm_table_s itnim_sm_table[] = {
- 	{BFA_SM(bfa_fcs_itnim_sm_offline), BFA_ITNIM_OFFLINE},
- 	{BFA_SM(bfa_fcs_itnim_sm_prli_send), BFA_ITNIM_PRLI_SEND},
- 	{BFA_SM(bfa_fcs_itnim_sm_prli), BFA_ITNIM_PRLI_SENT},
-@@ -665,7 +665,7 @@ bfa_status_t
- bfa_fcs_itnim_get_online_state(struct bfa_fcs_itnim_s *itnim)
- {
- 	bfa_trc(itnim->fcs, itnim->rport->pid);
--	switch (bfa_sm_to_state(itnim_sm_table, itnim->sm)) {
-+	switch (itnim_sm_to_state(itnim_sm_table, itnim->sm)) {
- 	case BFA_ITNIM_ONLINE:
- 	case BFA_ITNIM_INITIATIOR:
- 		return BFA_STATUS_OK;
-@@ -765,7 +765,7 @@ bfa_fcs_itnim_attr_get(struct bfa_fcs_lport_s *port, wwn_t rpwwn,
- 	if (itnim == NULL)
- 		return BFA_STATUS_NO_FCPIM_NEXUS;
- 
--	attr->state	    = bfa_sm_to_state(itnim_sm_table, itnim->sm);
-+	attr->state	    = itnim_sm_to_state(itnim_sm_table, itnim->sm);
- 	attr->retry	    = itnim->seq_rec;
- 	attr->rec_support   = itnim->rec_support;
- 	attr->conf_comp	    = itnim->conf_comp;
-diff --git a/drivers/scsi/bfa/bfa_fcs_lport.c b/drivers/scsi/bfa/bfa_fcs_lport.c
-index 008afd817087..198b2495e949 100644
---- a/drivers/scsi/bfa/bfa_fcs_lport.c
-+++ b/drivers/scsi/bfa/bfa_fcs_lport.c
-@@ -6037,7 +6037,7 @@ static void	bfa_fcs_vport_sm_stopping(struct bfa_fcs_vport_s *vport,
- static void	bfa_fcs_vport_sm_logo_for_stop(struct bfa_fcs_vport_s *vport,
- 					enum bfa_fcs_vport_event event);
- 
--static struct bfa_sm_table_s  vport_sm_table[] = {
-+static struct vport_sm_table_s vport_sm_table[] = {
- 	{BFA_SM(bfa_fcs_vport_sm_uninit), BFA_FCS_VPORT_UNINIT},
- 	{BFA_SM(bfa_fcs_vport_sm_created), BFA_FCS_VPORT_CREATED},
- 	{BFA_SM(bfa_fcs_vport_sm_offline), BFA_FCS_VPORT_OFFLINE},
-@@ -6864,7 +6864,7 @@ bfa_fcs_vport_get_attr(struct bfa_fcs_vport_s *vport,
- 	memset(attr, 0, sizeof(struct bfa_vport_attr_s));
- 
- 	bfa_fcs_lport_get_attr(&vport->lport, &attr->port_attr);
--	attr->vport_state = bfa_sm_to_state(vport_sm_table, vport->sm);
-+	attr->vport_state = vport_sm_to_state(vport_sm_table, vport->sm);
- }
- 
- 
-diff --git a/drivers/scsi/bfa/bfa_fcs_rport.c b/drivers/scsi/bfa/bfa_fcs_rport.c
-index c21aa37b8adb..6db306c600e5 100644
---- a/drivers/scsi/bfa/bfa_fcs_rport.c
-+++ b/drivers/scsi/bfa/bfa_fcs_rport.c
-@@ -136,7 +136,7 @@ static void	bfa_fcs_rport_sm_fc4_off_delete(struct bfa_fcs_rport_s *rport,
- static void	bfa_fcs_rport_sm_delete_pending(struct bfa_fcs_rport_s *rport,
- 						enum rport_event event);
- 
--static struct bfa_sm_table_s rport_sm_table[] = {
-+static struct rport_sm_table_s rport_sm_table[] = {
- 	{BFA_SM(bfa_fcs_rport_sm_uninit), BFA_RPORT_UNINIT},
- 	{BFA_SM(bfa_fcs_rport_sm_plogi_sending), BFA_RPORT_PLOGI},
- 	{BFA_SM(bfa_fcs_rport_sm_plogiacc_sending), BFA_RPORT_ONLINE},
-@@ -2964,7 +2964,7 @@ bfa_fcs_rport_send_ls_rjt(struct bfa_fcs_rport_s *rport, struct fchs_s *rx_fchs,
- int
- bfa_fcs_rport_get_state(struct bfa_fcs_rport_s *rport)
- {
--	return bfa_sm_to_state(rport_sm_table, rport->sm);
-+	return rport_sm_to_state(rport_sm_table, rport->sm);
- }
- 
- 
-diff --git a/drivers/scsi/bfa/bfa_ioc.c b/drivers/scsi/bfa/bfa_ioc.c
-index e1ed1424fddb..478f67bd5fa6 100644
---- a/drivers/scsi/bfa/bfa_ioc.c
-+++ b/drivers/scsi/bfa/bfa_ioc.c
-@@ -140,7 +140,7 @@ bfa_fsm_state_decl(bfa_ioc, disabling, struct bfa_ioc_s, enum ioc_event);
- bfa_fsm_state_decl(bfa_ioc, disabled, struct bfa_ioc_s, enum ioc_event);
- bfa_fsm_state_decl(bfa_ioc, hwfail, struct bfa_ioc_s, enum ioc_event);
- 
--static struct bfa_sm_table_s ioc_sm_table[] = {
-+static struct ioc_sm_table_s ioc_sm_table[] = {
- 	{BFA_SM(bfa_ioc_sm_uninit), BFA_IOC_UNINIT},
- 	{BFA_SM(bfa_ioc_sm_reset), BFA_IOC_RESET},
- 	{BFA_SM(bfa_ioc_sm_enabling), BFA_IOC_ENABLING},
-@@ -228,7 +228,7 @@ bfa_fsm_state_decl(bfa_iocpf, disabling_sync, struct bfa_iocpf_s,
- 						enum iocpf_event);
- bfa_fsm_state_decl(bfa_iocpf, disabled, struct bfa_iocpf_s, enum iocpf_event);
- 
--static struct bfa_sm_table_s iocpf_sm_table[] = {
-+static struct iocpf_sm_table_s iocpf_sm_table[] = {
- 	{BFA_SM(bfa_iocpf_sm_reset), BFA_IOCPF_RESET},
- 	{BFA_SM(bfa_iocpf_sm_fwcheck), BFA_IOCPF_FWMISMATCH},
- 	{BFA_SM(bfa_iocpf_sm_mismatch), BFA_IOCPF_FWMISMATCH},
-@@ -2815,12 +2815,12 @@ enum bfa_ioc_state
- bfa_ioc_get_state(struct bfa_ioc_s *ioc)
- {
- 	enum bfa_iocpf_state iocpf_st;
--	enum bfa_ioc_state ioc_st = bfa_sm_to_state(ioc_sm_table, ioc->fsm);
-+	enum bfa_ioc_state ioc_st = ioc_sm_to_state(ioc_sm_table, ioc->fsm);
- 
- 	if (ioc_st == BFA_IOC_ENABLING ||
- 		ioc_st == BFA_IOC_FAIL || ioc_st == BFA_IOC_INITFAIL) {
- 
--		iocpf_st = bfa_sm_to_state(iocpf_sm_table, ioc->iocpf.fsm);
-+		iocpf_st = iocpf_sm_to_state(iocpf_sm_table, ioc->iocpf.fsm);
- 
- 		switch (iocpf_st) {
- 		case BFA_IOCPF_SEMWAIT:
-diff --git a/drivers/scsi/bfa/bfa_ioc.h b/drivers/scsi/bfa/bfa_ioc.h
-index 5e568d6d7b26..cbf6c3f9250a 100644
---- a/drivers/scsi/bfa/bfa_ioc.h
-+++ b/drivers/scsi/bfa/bfa_ioc.h
-@@ -282,16 +282,20 @@ struct bfa_ioc_notify_s {
- 	(__notify)->cbarg = (__cbarg);      \
- } while (0)
- 
-+enum iocpf_event;
-+
- struct bfa_iocpf_s {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bfa_iocpf_s *, enum iocpf_event);
- 	struct bfa_ioc_s	*ioc;
- 	bfa_boolean_t		fw_mismatch_notified;
- 	bfa_boolean_t		auto_recover;
- 	u32			poll_time;
- };
- 
-+enum ioc_event;
-+
- struct bfa_ioc_s {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bfa_ioc_s *, enum ioc_event);
- 	struct bfa_s		*bfa;
- 	struct bfa_pcidev_s	pcidev;
- 	struct bfa_timer_mod_s	*timer_mod;
-@@ -779,8 +783,10 @@ struct bfa_dconf_s {
- };
- #pragma pack()
- 
-+enum bfa_dconf_event;
-+
- struct bfa_dconf_mod_s {
--	bfa_sm_t		sm;
-+	void (*sm)(struct bfa_dconf_mod_s *, enum bfa_dconf_event);
- 	u8			instance;
- 	bfa_boolean_t		read_data_valid;
- 	bfa_boolean_t		min_cfg;
-diff --git a/drivers/scsi/bfa/bfa_svc.c b/drivers/scsi/bfa/bfa_svc.c
-index c9745c0b4eee..500f6885587d 100644
---- a/drivers/scsi/bfa/bfa_svc.c
-+++ b/drivers/scsi/bfa/bfa_svc.c
-@@ -201,7 +201,7 @@ static void     bfa_fcport_ln_sm_up_dn_nf(struct bfa_fcport_ln_s *ln,
- static void     bfa_fcport_ln_sm_up_dn_up_nf(struct bfa_fcport_ln_s *ln,
- 					enum bfa_fcport_ln_sm_event event);
- 
--static struct bfa_sm_table_s hal_port_sm_table[] = {
-+static struct fcport_sm_table_s hal_port_sm_table[] = {
- 	{BFA_SM(bfa_fcport_sm_uninit), BFA_PORT_ST_UNINIT},
- 	{BFA_SM(bfa_fcport_sm_enabling_qwait), BFA_PORT_ST_ENABLING_QWAIT},
- 	{BFA_SM(bfa_fcport_sm_enabling), BFA_PORT_ST_ENABLING},
-@@ -3545,7 +3545,7 @@ bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
- 	fcport->event_arg.i2hmsg = i2hmsg;
- 
- 	bfa_trc(bfa, msg->mhdr.msg_id);
--	bfa_trc(bfa, bfa_sm_to_state(hal_port_sm_table, fcport->sm));
-+	bfa_trc(bfa, fcport_sm_to_state(hal_port_sm_table, fcport->sm));
- 
- 	switch (msg->mhdr.msg_id) {
- 	case BFI_FCPORT_I2H_ENABLE_RSP:
-@@ -3980,7 +3980,7 @@ bfa_fcport_get_attr(struct bfa_s *bfa, struct bfa_port_attr_s *attr)
- 
- 	attr->pport_cfg.path_tov  = bfa_fcpim_path_tov_get(bfa);
- 	attr->pport_cfg.q_depth  = bfa_fcpim_qdepth_get(bfa);
--	attr->port_state = bfa_sm_to_state(hal_port_sm_table, fcport->sm);
-+	attr->port_state = fcport_sm_to_state(hal_port_sm_table, fcport->sm);
- 
- 	attr->fec_state = fcport->fec_state;
- 
-@@ -4062,7 +4062,7 @@ bfa_fcport_is_disabled(struct bfa_s *bfa)
- {
- 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
- 
--	return bfa_sm_to_state(hal_port_sm_table, fcport->sm) ==
-+	return fcport_sm_to_state(hal_port_sm_table, fcport->sm) ==
- 		BFA_PORT_ST_DISABLED;
- 
- }
-@@ -4072,7 +4072,7 @@ bfa_fcport_is_dport(struct bfa_s *bfa)
- {
- 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
- 
--	return (bfa_sm_to_state(hal_port_sm_table, fcport->sm) ==
-+	return (fcport_sm_to_state(hal_port_sm_table, fcport->sm) ==
- 		BFA_PORT_ST_DPORT);
- }
- 
-@@ -4081,7 +4081,7 @@ bfa_fcport_is_ddport(struct bfa_s *bfa)
- {
- 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
- 
--	return (bfa_sm_to_state(hal_port_sm_table, fcport->sm) ==
-+	return (fcport_sm_to_state(hal_port_sm_table, fcport->sm) ==
- 		BFA_PORT_ST_DDPORT);
- }
- 
-diff --git a/drivers/scsi/bfa/bfa_svc.h b/drivers/scsi/bfa/bfa_svc.h
-index 9c83109574e9..5a4ad66bcbff 100644
---- a/drivers/scsi/bfa/bfa_svc.h
-+++ b/drivers/scsi/bfa/bfa_svc.h
-@@ -152,6 +152,8 @@ struct bfa_fcxp_rsp_info_s {
- 	u32	rsp_maxlen;	/*  max response length expected */
- };
- 
-+typedef void (*bfa_sm_t)(void *sm, int event);
-+
- struct bfa_fcxp_s {
- 	struct list_head	qe;		/*  fcxp queue element */
- 	bfa_sm_t	sm;		/*  state machine */
-@@ -287,9 +289,11 @@ struct bfa_rport_info_s {
- /*
-  * BFA rport data structure
-  */
-+enum bfa_rport_event;
-+
- struct bfa_rport_s {
- 	struct list_head	qe;	/*  queue element		    */
--	bfa_sm_t	sm;		/*  state machine		    */
-+	void (*sm)(struct bfa_rport_s *, enum bfa_rport_event);/*  state machine		    */
- 	struct bfa_s	*bfa;		/*  backpointer to BFA		    */
- 	void		*rport_drv;	/*  fcs/driver rport object	    */
- 	u16	fw_handle;	/*  firmware rport handle	    */
-@@ -380,10 +384,12 @@ void	bfa_uf_res_recfg(struct bfa_s *bfa, u16 num_uf_fw);
- /*
-  * LPS - bfa lport login/logout service interface
-  */
-+enum bfa_lps_event;
-+
- struct bfa_lps_s {
- 	struct list_head	qe;	/*  queue element		*/
- 	struct bfa_s	*bfa;		/*  parent bfa instance	*/
--	bfa_sm_t	sm;		/*  finite state machine	*/
-+	void (*sm)(struct bfa_lps_s *, enum bfa_lps_event);/*  finite state machine	*/
- 	u8		bfa_tag;	/*  lport tag		*/
- 	u8		fw_tag;		/*  lport fw tag                */
- 	u8		reqq;		/*  lport request queue	*/
-@@ -442,9 +448,11 @@ void	bfa_lps_isr(struct bfa_s *bfa, struct bfi_msg_s *msg);
- /*
-  * Link notification data structure
-  */
-+enum bfa_fcport_ln_sm_event;
-+
- struct bfa_fcport_ln_s {
- 	struct bfa_fcport_s	*fcport;
--	bfa_sm_t		sm;
-+	void (*sm)(struct bfa_fcport_ln_s *, enum bfa_fcport_ln_sm_event);
- 	struct bfa_cb_qe_s	ln_qe;	/*  BFA callback queue elem for ln */
- 	enum bfa_port_linkstate ln_event; /*  ln event for callback */
- };
-@@ -458,7 +466,7 @@ struct bfa_fcport_trunk_s {
-  */
- struct bfa_fcport_s {
- 	struct bfa_s		*bfa;	/*  parent BFA instance */
--	bfa_sm_t		sm;	/*  port state machine */
-+	void (*sm)(struct bfa_fcport_s *, enum bfa_fcport_sm_event);	/*  port state machine */
- 	wwn_t			nwwn;	/*  node wwn of physical port */
- 	wwn_t			pwwn;	/*  port wwn of physical oprt */
- 	enum bfa_port_speed speed_sup;
-@@ -706,9 +714,11 @@ struct bfa_fcdiag_lb_s {
- 	u32        status;
- };
- 
-+enum bfa_dport_sm_event;
-+
- struct bfa_dport_s {
- 	struct bfa_s	*bfa;		/* Back pointer to BFA	*/
--	bfa_sm_t	sm;		/* finite state machine */
-+	void (*sm)(struct bfa_dport_s *, enum bfa_dport_sm_event);/* finite state machine */
- 	struct bfa_reqq_wait_s reqq_wait;
- 	bfa_cb_diag_t	cbfn;
- 	void		*cbarg;
-diff --git a/drivers/scsi/bfa/bfad.c b/drivers/scsi/bfa/bfad.c
-index 62cb7a864fd5..13dcfb37edd3 100644
---- a/drivers/scsi/bfa/bfad.c
-+++ b/drivers/scsi/bfa/bfad.c
-@@ -400,6 +400,16 @@ bfad_hcb_comp(void *arg, bfa_status_t status)
- 	complete(&fcomp->comp);
- }
- 
-+void
-+bfad_stats_comp(void *arg, bfa_boolean_t _status)
-+{
-+	struct bfad_hal_comp *fcomp = (struct bfad_hal_comp *)arg;
-+	bfa_status_t status = (bfa_status_t)_status;
-+
-+	fcomp->status = status;
-+	complete(&fcomp->comp);
-+}
-+
- /*
-  * bfa_init callback
-  */
-@@ -1424,7 +1434,7 @@ bfad_pci_remove(struct pci_dev *pdev)
-  * PCI Error Recovery entry, error detected.
-  */
- static pci_ers_result_t
--bfad_pci_error_detected(struct pci_dev *pdev, pci_channel_state_t state)
-+bfad_pci_error_detected(struct pci_dev *pdev, enum pci_channel_state state)
- {
- 	struct bfad_s *bfad = pci_get_drvdata(pdev);
- 	unsigned long	flags;
-diff --git a/drivers/scsi/bfa/bfad_drv.h b/drivers/scsi/bfa/bfad_drv.h
-index 7682cfa34265..bb815507fa8b 100644
---- a/drivers/scsi/bfa/bfad_drv.h
-+++ b/drivers/scsi/bfa/bfad_drv.h
-@@ -178,8 +178,10 @@ union bfad_tmp_buf {
- /*
-  * BFAD (PCI function) data structure
-  */
-+enum bfad_sm_event;
-+
- struct bfad_s {
--	bfa_sm_t	sm;	/* state machine */
-+	void (*sm)(struct bfad_s *, enum bfad_sm_event); /* state machine */
- 	struct list_head list_entry;
- 	struct bfa_s	bfa;
- 	struct bfa_fcs_s bfa_fcs;
-@@ -300,6 +302,7 @@ void		bfad_fcs_stop(struct bfad_s *bfad);
- void		bfad_remove_intr(struct bfad_s *bfad);
- void		bfad_hal_mem_release(struct bfad_s *bfad);
- void		bfad_hcb_comp(void *arg, bfa_status_t status);
-+void		bfad_stats_comp(void *arg, bfa_boolean_t _status);
- 
- int		bfad_setup_intr(struct bfad_s *bfad);
- void		bfad_remove_intr(struct bfad_s *bfad);
 diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index b2f9e2c409cf..f3a17f64c5d6 100644
+index 1a957ea2f4fe..a99f4da405b3 100644
 --- a/include/linux/compiler_types.h
 +++ b/include/linux/compiler_types.h
-@@ -79,7 +79,7 @@ static inline void __chk_io_ptr(const volatile void __iomem *ptr) { }
+@@ -88,7 +88,7 @@ static inline void __chk_io_ptr(const volatile void __iomem *ptr) { }
  /* Attributes */
  #include <linux/compiler_attributes.h>
  
@@ -1094,7 +258,7 @@ index b2f9e2c409cf..f3a17f64c5d6 100644
  #define __function_aligned		__aligned(CONFIG_FUNCTION_ALIGNMENT)
  #else
  #define __function_aligned
-@@ -394,6 +394,10 @@ struct ftrace_likely_data {
+@@ -479,6 +479,10 @@ struct ftrace_likely_data {
  			 __scalar_type_to_expr_cases(long long),	\
  			 default: (x)))
  
@@ -1106,10 +270,10 @@ index b2f9e2c409cf..f3a17f64c5d6 100644
  #define __native_word(t) \
  	(sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
 diff --git a/include/linux/moduleparam.h b/include/linux/moduleparam.h
-index 962cd41a2cb5..b503411267ad 100644
+index bfb85fd13e1f..fd12a9ed34a7 100644
 --- a/include/linux/moduleparam.h
 +++ b/include/linux/moduleparam.h
-@@ -354,7 +354,7 @@ static inline void kernel_param_unlock(struct module *mod)
+@@ -358,7 +358,7 @@ static inline void kernel_param_unlock(struct module *mod)
   * @len is usually just sizeof(string).
   */
  #define module_param_string(name, string, len, perm)			\
@@ -1118,7 +282,7 @@ index 962cd41a2cb5..b503411267ad 100644
  		= { len, string };					\
  	__module_param_call(MODULE_PARAM_PREFIX, name,			\
  			    &param_ops_string,				\
-@@ -513,7 +513,7 @@ extern int param_set_bint(const char *val, const struct kernel_param *kp);
+@@ -517,7 +517,7 @@ extern int param_set_bint(const char *val, const struct kernel_param *kp);
   */
  #define module_param_array_named(name, array, type, nump, perm)		\
  	param_check_##type(name, &(array)[0]);				\
@@ -1127,24 +291,11 @@ index 962cd41a2cb5..b503411267ad 100644
  	= { .max = ARRAY_SIZE(array), .num = nump,                      \
  	    .ops = &param_ops_##type,					\
  	    .elemsize = sizeof(array[0]), .elem = array };		\
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index b548d5646a86..c70da725d8b6 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -195,7 +195,7 @@ static inline const char *pci_power_name(pci_power_t state)
-  */
- typedef unsigned int __bitwise pci_channel_state_t;
- 
--enum {
-+enum pci_channel_state {
- 	/* I/O channel is in normal state */
- 	pci_channel_io_normal = (__force pci_channel_state_t) 1,
- 
 diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-index bbbd6fac3aff..9ee89dec0864 100644
+index 5758104921e6..ee2a8e9e26e3 100644
 --- a/include/linux/syscalls.h
 +++ b/include/linux/syscalls.h
-@@ -124,8 +124,14 @@ struct cachestat;
+@@ -127,8 +127,14 @@ struct mnt_id_req;
  #define __TYPE_IS_UL(t)	(__TYPE_AS(t, 0UL))
  #define __TYPE_IS_LL(t) (__TYPE_AS(t, 0LL) || __TYPE_AS(t, 0ULL))
  #define __SC_LONG(t, a) __typeof(__builtin_choose_expr(__TYPE_IS_LL(t), 0LL, 0L)) a
@@ -1160,7 +311,7 @@ index bbbd6fac3aff..9ee89dec0864 100644
  #define __SC_ARGS(t, a)	a
  #define __SC_TEST(t, a) (void)BUILD_BUG_ON_ZERO(!__TYPE_IS_LL(t) && sizeof(t) > sizeof(long))
  
-@@ -242,18 +248,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
+@@ -245,18 +251,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
  	__diag_push();							\
  	__diag_ignore(GCC, 8, "-Wattribute-alias",			\
  		      "Type aliasing is used to sanitize syscall arguments");\
@@ -1185,10 +336,10 @@ index bbbd6fac3aff..9ee89dec0864 100644
  	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  #endif /* __SYSCALL_DEFINEx */
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 1333273a71de..54ae1a1d4183 100644
+index 5e77c58e0601..55235e0898be 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -1075,6 +1075,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
+@@ -1119,6 +1119,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
  	bpf_jit_uncharge_modmem(size);
  }
  
@@ -1199,7 +350,7 @@ index 1333273a71de..54ae1a1d4183 100644
  /* Allocate jit binary from bpf_prog_pack allocator.
   * Since the allocated memory is RO+X, the JIT engine cannot write directly
   * to the memory. To solve this problem, a RW buffer is also allocated at
-@@ -1092,6 +1096,10 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -1136,6 +1140,10 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
  {
  	struct bpf_binary_header *ro_header;
  	u32 size, hole, start;
@@ -1210,7 +361,7 @@ index 1333273a71de..54ae1a1d4183 100644
  
  	WARN_ON_ONCE(!is_power_of_2(alignment) ||
  		     alignment > BPF_IMAGE_ALIGNMENT);
-@@ -1121,10 +1129,23 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -1164,10 +1172,23 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
  
  	hole = min_t(unsigned int, size - (proglen + sizeof(*ro_header)),
  		     BPF_PROG_CHUNK_SIZE - sizeof(*ro_header));
@@ -1235,10 +386,10 @@ index 1333273a71de..54ae1a1d4183 100644
  	return ro_header;
  }
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index fe543e7898f5..6ba94752f1c1 100644
+index df27d08a7232..e209121a9e43 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
-@@ -1119,8 +1119,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_pmu_context *cpc, int cpu)
+@@ -1155,8 +1155,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_pmu_context *cpc, int cpu)
  	timer->function = perf_mux_hrtimer_handler;
  }
  
@@ -1250,10 +401,10 @@ index fe543e7898f5..6ba94752f1c1 100644
  	unsigned long flags;
  
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 34d9e718c2c7..c28f9b9481f3 100644
+index 49b9bca9de12..44c46d5577b1 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2076,8 +2076,17 @@ static void module_augment_kernel_taints(struct module *mod, struct load_info *i
+@@ -2094,8 +2094,17 @@ static void module_augment_kernel_taints(struct module *mod, struct load_info *i
  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  {
  	const char *modmagic = get_modinfo(info, "vermagic");
@@ -1272,10 +423,10 @@ index 34d9e718c2c7..c28f9b9481f3 100644
  		modmagic = NULL;
  
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 1f91e2c12731..60a530d51d6e 100644
+index a1c353a62c56..5bcb20d1b3eb 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -5019,7 +5019,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
+@@ -4972,7 +4972,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
  	lockdep_assert_rq_held(rq);
  
  	while (head) {
@@ -1285,10 +436,10 @@ index 1f91e2c12731..60a530d51d6e 100644
  		head->next = NULL;
  		head = next;
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 82e63908dce8..83f37c4d2477 100644
+index 041f6e571a20..8c0ad5c4b101 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -921,7 +921,8 @@ void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
+@@ -927,7 +927,8 @@ void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
  
  static inline bool br_rx_handler_check_rcu(const struct net_device *dev)
  {
@@ -1299,10 +450,10 @@ index 82e63908dce8..83f37c4d2477 100644
  
  static inline bool br_rx_handler_check_rtnl(const struct net_device *dev)
 diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index 3184cc6be4c9..c0c14fceed21 100644
+index 61431690cbd5..e4c386f0af3c 100644
 --- a/net/netfilter/ipset/ip_set_core.c
 +++ b/net/netfilter/ipset/ip_set_core.c
-@@ -391,7 +391,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
+@@ -392,7 +392,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
  	rcu_assign_pointer(comment->c, NULL);
  }
  
@@ -2710,15 +1861,15 @@ index 000000000000..65bc1cdea580
 +	U64TO8_LE(out, b);
 +}
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 269bd79bcd9a..367f5a30b77d 100644
+index 107393a8c48a..0a80e61fbfd9 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -1774,15 +1774,9 @@ static void check_exports(struct module *mod)
+@@ -1683,15 +1683,9 @@ static void check_exports(struct module *mod)
  		const char *basename;
  		exp = find_symbol(s->name);
  		if (!exp) {
 -			if (!s->weak && nr_unresolved++ < MAX_UNRESOLVED_REPORTS)
--				modpost_log(warn_unresolved ? LOG_WARN : LOG_ERROR,
+-				modpost_log(!warn_unresolved,
 -					    "\"%s\" [%s.ko] undefined!\n",
 -					    s->name, mod->name);
  			continue;
@@ -2730,7 +1881,7 @@ index 269bd79bcd9a..367f5a30b77d 100644
  		}
  
 diff --git a/security/Kconfig b/security/Kconfig
-index 52c9af08ad35..0581ff078066 100644
+index 28e685f53bd1..c1b1c69df447 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -5,6 +5,35 @@
@@ -2770,5 +1921,5 @@ index 52c9af08ad35..0581ff078066 100644
  
  config SECURITY_DMESG_RESTRICT
 -- 
-2.35.6
+2.39.4
 

@@ -1,7 +1,7 @@
-From 4952362d0954b0a61057971578fa68b1de4be484 Mon Sep 17 00:00:00 2001
+From 69563d90e2f51ccffef2067ece678cde782146ad Mon Sep 17 00:00:00 2001
 From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
 Date: Fri, 31 Mar 2023 13:56:48 -0700
-Subject: [PATCH 2/2] linux, Makefile: Add kernel flavor info to the generated
+Subject: [PATCH] linux, Makefile: Add kernel flavor info to the generated
  version.h file
 
 Add "PHOTON_KERNEL_FLAVOR_GENERIC" macro definition to the generated file
@@ -14,10 +14,10 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 55f1c4f1c8c1..ca7a91885f0a 100644
+index fa5f08d5e76d..5a5a5393e08c 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1349,7 +1349,7 @@ define filechk_version.h
+@@ -1260,7 +1260,7 @@ define filechk_version.h
  	echo '#define PHOTON_KERNEL';                                                   \
  	echo '#define PHOTON_KERNEL_RELEASE                                             \
  	$(shell echo -n "$(KERNELRELEASE)" | cut -d'-' -f2 | cut -d'.' -f1)';           \
@@ -25,7 +25,7 @@ index 55f1c4f1c8c1..ca7a91885f0a 100644
 +	echo '#define PHOTON_KERNEL_FLAVOR_GENERIC'
  endef
  
- $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
+ $(version_h): private PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 -- 
-2.25.1
+2.35.6
 

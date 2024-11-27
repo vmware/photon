@@ -1,4 +1,4 @@
-From c7a2e9da4ceaa0608bb2afbae8b8dfbc77a36e40 Mon Sep 17 00:00:00 2001
+From 3f7d953c5851efb29d494bb9b13382573363750e Mon Sep 17 00:00:00 2001
 From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
 Date: Tue, 21 Feb 2023 13:38:44 -0800
 Subject: [PATCH] tools/power turbostat: Skip some CPUID checks if running on
@@ -25,23 +25,31 @@ such as the CPU frequency, thermal and power statistics.)
 Based-on-patch-by: Jim White <jameswhite@vmware.com>
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
- tools/power/x86/turbostat/turbostat.c | 40 +++++++++++++++++++++++++--
- 1 file changed, 37 insertions(+), 3 deletions(-)
+ tools/power/x86/turbostat/turbostat.c | 38 ++++++++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
 
 diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
-index b7d2a0cd0ac2..b18800a55549 100644
+index 089220aaa5c9..ec3ed1b7df63 100644
 --- a/tools/power/x86/turbostat/turbostat.c
 +++ b/tools/power/x86/turbostat/turbostat.c
-@@ -5506,6 +5506,8 @@ void process_cpuid()
- 	unsigned int eax, ebx, ecx, edx;
+@@ -7943,6 +7943,8 @@ void process_cpuid()
  	unsigned int fms, family, model, stepping, ecx_flags, edx_flags;
  	unsigned long long ucode_patch = 0;
+ 	bool ucode_patch_valid = false;
 +	unsigned int hyper_vendor_id[3];
 +	int retry_count;
  
  	eax = ebx = ecx = edx = 0;
  
-@@ -5583,18 +5585,50 @@ void process_cpuid()
+@@ -7982,6 +7984,7 @@ void process_cpuid()
+ 	 * This is needed to check for invariant TSC.
+ 	 * This check is valid for both Intel and AMD.
+ 	 */
++
+ 	ebx = ecx = edx = 0;
+ 	__cpuid(0x80000000, max_extended_level, ebx, ecx, edx);
+ 
+@@ -8025,13 +8028,46 @@ void process_cpuid()
  	 * this check is valid for both Intel and AMD
  	 */
  
@@ -76,25 +84,19 @@ index b7d2a0cd0ac2..b18800a55549 100644
 +
 +	if (!has_aperf)
 +		has_aperf = ecx & (1 << 0);
- 	if (has_aperf) {
- 		BIC_PRESENT(BIC_Avg_MHz);
- 		BIC_PRESENT(BIC_Busy);
- 		BIC_PRESENT(BIC_Bzy_MHz);
- 	}
--	do_dts = eax & (1 << 0);
+ 	do_dts = eax & (1 << 0);
 +
 +	if (!do_dts)
 +		do_dts = eax & (1 << 0);
  	if (do_dts)
  		BIC_PRESENT(BIC_CoreTmp);
  	has_turbo = eax & (1 << 1);
--	do_ptm = eax & (1 << 6);
-+
+ 	do_ptm = eax & (1 << 6);
 +	if (!do_ptm)
 +		do_ptm = eax & (1 << 6);
  	if (do_ptm)
  		BIC_PRESENT(BIC_PkgTmp);
  	has_hwp = eax & (1 << 7);
 -- 
-2.25.1
+2.39.4
 

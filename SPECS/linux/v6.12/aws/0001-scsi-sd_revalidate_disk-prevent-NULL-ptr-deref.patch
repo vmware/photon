@@ -1,4 +1,4 @@
-From fc55d3ff5b1e94173a425f9dee34b49743f0a9cb Mon Sep 17 00:00:00 2001
+From 2430ca8bd62684286a3055ebd835234e5fac250d Mon Sep 17 00:00:00 2001
 From: "kernel-team@fedoraproject.org" <kernel-team@fedoraproject.org>
 Date: Fri, 10 Feb 2012 14:56:13 -0500
 Subject: [PATCH] scsi: sd_revalidate_disk prevent NULL ptr deref
@@ -17,42 +17,41 @@ Reviewed-by: Frederick Lefebvre <fredlef@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
 CR: https://cr.amazon.com/r/8209723/
-[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
+
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.12.x]
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
- drivers/scsi/sd.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/scsi/sd.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 1335119a4993..7470ae827f08 100644
+index 9db86943d04c..61386183764f 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
-@@ -3430,15 +3430,22 @@ static void sd_read_block_zero(struct scsi_disk *sdkp)
+@@ -3699,9 +3699,9 @@ static void sd_read_block_zero(struct scsi_disk *sdkp)
  static int sd_revalidate_disk(struct gendisk *disk)
  {
  	struct scsi_disk *sdkp = scsi_disk(disk);
 -	struct scsi_device *sdp = sdkp->device;
--	struct request_queue *q = sdkp->disk->queue;
 -	sector_t old_capacity = sdkp->capacity;
+ 	struct queue_limits lim;
 +	struct scsi_device *sdp;
-+	struct request_queue *q;
 +	sector_t old_capacity;
  	unsigned char *buffer;
- 	unsigned int dev_max, rw_max;
-
+ 	unsigned int dev_max;
+ 	int err;
+@@ -3709,6 +3709,11 @@ static int sd_revalidate_disk(struct gendisk *disk)
  	SCSI_LOG_HLQUEUE(3, sd_printk(KERN_INFO, sdkp,
  				      "sd_revalidate_disk\n"));
-
+ 
 +	if (WARN_ONCE((!sdkp), "Invalid scsi_disk from %p\n", disk))
 +		goto out;
 +
 +	sdp = sdkp->device;
-+	q = sdkp->disk->queue;
 +	old_capacity = sdkp->capacity;
-+
  	/*
  	 * If the device is offline, don't try and read capacity or any
  	 * of the other niceties.
---
-2.35.6
+-- 
+2.39.4
 
