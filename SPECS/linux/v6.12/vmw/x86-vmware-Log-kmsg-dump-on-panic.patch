@@ -1,4 +1,4 @@
-From 35d48897601962c412b03b3468e11108ff9bfe56 Mon Sep 17 00:00:00 2001
+From da36664987d27ab567bf59b56aebf636f90a741a Mon Sep 17 00:00:00 2001
 From: Bo Gan <ganb@vmware.com>
 Date: Tue, 2 Jun 2020 19:35:47 -0700
 Subject: [PATCH] x86/vmware: Log kmsg dump on panic
@@ -7,12 +7,15 @@ In case of panic kmsg will be dumped to vmware.log file
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Bo Gan <ganb@vmware.com>
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> ported this patch to v6.12.y]
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
- arch/x86/kernel/cpu/vmware.c | 144 +++++++++++++++++++++++++++++++++++
- 1 file changed, 144 insertions(+)
+ arch/x86/kernel/cpu/vmware.c | 207 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 207 insertions(+)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 6cd310305..66c913dd2 100644
+index 00189cdeb775..c0a1058c50c4 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -28,6 +28,8 @@
@@ -24,30 +27,20 @@ index 6cd310305..66c913dd2 100644
  #include <asm/div64.h>
  #include <asm/x86_init.h>
  #include <asm/hypervisor.h>
-@@ -45,6 +47,7 @@
- #define VMWARE_CMD_GETHZ         45
- #define VMWARE_CMD_GETVCPU_INFO  68
- #define VMWARE_CMD_LEGACY_X2APIC  3
-+#define VMWARE_CMD_MESSAGE       30
- #define VMWARE_CMD_VCPU_RESERVED 31
- #define VMWARE_CMD_STEALCLOCK    91
-
-@@ -52,6 +55,8 @@
- #define STEALCLOCK_DISABLED        0
- #define STEALCLOCK_ENABLED         1
-
-+#define VMWARE_HB_CMD_MESSAGE      0
-+
- #define VMWARE_CMD(cmd, eax, ebx, ecx, edx)				\
-	__asm__(VMWARE_HYPERCALL :					\
-		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
-@@ -117,6 +122,13 @@ static unsigned long vmware_get_tsc_khz(void)
-	return vmware_tsc_khz;
+@@ -35,6 +37,7 @@
+ #include <asm/apic.h>
+ #include <asm/vmware.h>
+ #include <asm/svm.h>
++#include <asm/mem_encrypt.h>
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt)	"vmware: " fmt
+@@ -139,6 +142,12 @@ static unsigned long vmware_get_tsc_khz(void)
+ 	return vmware_tsc_khz;
  }
-
+ 
 +static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
-+				enum kmsg_dump_reason reason);
-+
++					struct kmsg_dump_detail *detail);
 +static struct kmsg_dumper kmsg_dumper = {
 +	.dump = kmsg_dumper_vmware_log
 +};
@@ -55,133 +48,191 @@ index 6cd310305..66c913dd2 100644
  #ifdef CONFIG_PARAVIRT
  static struct cyc2ns_data vmware_cyc2ns __ro_after_init;
  static bool vmw_sched_clock __initdata = true;
-@@ -424,6 +436,8 @@ static void __init vmware_platform_setup(void)
+@@ -436,6 +445,204 @@ static void __init vmware_platform_setup(void)
  #endif
-
-	vmware_set_capabilities();
+ 
+ 	vmware_set_capabilities();
 +
 +	kmsg_dump_register(&kmsg_dumper);
- }
-
- static u8 __init vmware_select_hypercall(void)
-@@ -522,3 +536,133 @@ const __initconst struct hypervisor_x86 x86_hyper_vmware = {
-	.runtime.sev_es_hcall_finish	= vmware_sev_es_hcall_finish,
- #endif
- };
-+
-+#define MESSAGE_STATUS_SUCCESS  (0x01 << 16)
-+#define MESSAGE_STATUS_CPT      (0x10 << 16)
-+#define MESSAGE_STATUS_HB       (0x80 << 16)
-+#define  VMWARE_HB_CMD_MSGST_SUCCESS \
-+	(VMWARE_HB_CMD_MESSAGE | MESSAGE_STATUS_SUCCESS)
-+#define  VMWARE_HB_CMD_MSGST_CPT \
-+	(VMWARE_HB_CMD_MESSAGE | MESSAGE_STATUS_CPT)
-+#define  VMWARE_HB_CMD_MSGST_HB \
-+	(VMWARE_HB_CMD_MESSAGE | MESSAGE_STATUS_HB)
++}
++#define RETRIES_MAX		3
++#define MESSAGE_STATUS_SUCCESS  0x0001
++#define MESSAGE_STATUS_CPT      0x0010
++#define MESSAGE_STATUS_HB       0x0080
 +
 +#define RPCI_PROTOCOL_NUM       0x49435052 /* 'RPCI' */
 +#define GUESTMSG_FLAG_COOKIE    0x80000000
 +
-+#define MESSAGE_TYPE_OPEN	(0 << 16)
-+#define MESSAGE_TYPE_SENDSIZE	(1 << 16)
-+#define MESSAGE_TYPE_SEND	(2 << 16)
-+#define MESSAGE_TYPE_CLOSE	(6 << 16)
-+#define  VMWARE_CMD_MSG_OPEN \
-+	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_OPEN)
-+#define  VMWARE_CMD_MSG_SENDSIZE \
-+	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_SENDSIZE)
-+#define  VMWARE_CMD_MSG_SEND \
-+	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_SEND)
-+#define  VMWARE_CMD_MSG_CLOSE \
-+	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_CLOSE)
++enum rpc_msg_type {
++	MSG_TYPE_OPEN,
++	MSG_TYPE_SENDSIZE,
++	MSG_TYPE_SENDPAYLOAD,
++	MSG_TYPE_RECVSIZE,
++	MSG_TYPE_RECVPAYLOAD,
++	MSG_TYPE_RECVSTATUS,
++	MSG_TYPE_CLOSE,
++};
 +
-+typedef struct {
-+	uint32_t id;
-+	uint32_t cookieHigh;
-+	uint32_t cookieLow;
-+} vmw_msg;
++struct vmw_msg {
++	u16 id;
++	u32 cookie_high;
++	u32 cookie_low;
++};
 +
++#define VMW_CMD_MSG		30
++#define VMW_HB_CMD_MSG		0
++#define VMW_CMD_OPEN_MSG	(MSG_TYPE_OPEN << 16 | VMW_CMD_MSG)
++#define VMW_CMD_CLOSE_MSG	(MSG_TYPE_CLOSE << 16 | VMW_CMD_MSG)
++#define VMW_CMD_SENDSIZE	(MSG_TYPE_SENDSIZE << 16 | VMW_CMD_MSG)
++#define VMW_CMD_RECVSIZE	(MSG_TYPE_RECVSIZE << 16 | VMW_CMD_MSG)
++#define VMW_CMD_RECVSTATUS	(MSG_TYPE_RECVSTATUS << 16 | VMW_CMD_MSG)
++
++#define HIGH_WORD(X) ((X & 0xFFFF0000) >> 16)
++
++#define MAX_USER_MSG_LENGTH     PAGE_SIZE
++
++/*
++ * vmware_log_open
++ *
++ * @msg: VMWare Message info
++ *
++ * Returns: 0 on success
++ */
 +static int
-+vmware_log_open(vmw_msg *msg)
++vmware_log_open(struct vmw_msg *msg)
 +{
-+	uint32_t result, info, ebx = RPCI_PROTOCOL_NUM | GUESTMSG_FLAG_COOKIE;
++	u32 ecx, edx, esi, edi;
 +
-+	VMWARE_CMD_6(MSG_OPEN, result, ebx,
-+		info, msg->id, msg->cookieHigh, msg->cookieLow);
++	vmware_hypercall6(VMW_CMD_OPEN_MSG,
++				RPCI_PROTOCOL_NUM | GUESTMSG_FLAG_COOKIE, 0,
++				&ecx, &edx, &esi, &edi);
 +
-+	if ((info & MESSAGE_STATUS_SUCCESS) == 0)
-+		return 1;
++	if ((HIGH_WORD(ecx) & MESSAGE_STATUS_SUCCESS) == 0)
++		return -EINVAL;
 +
-+	msg->id &= 0xffff0000UL;
++	msg->id = HIGH_WORD(edx);
++	msg->cookie_high = esi;
++	msg->cookie_low = edi;
 +	return 0;
 +}
 +
++/*
++ * vmware_log_close
++ *
++ * @msg: VMWare Message info
++ *
++ * Returns: 0 on success
++ */
 +static int
-+vmware_log_close(vmw_msg *msg)
++vmware_log_close(struct vmw_msg *msg)
 +{
-+	uint32_t result, info, ebx = 0, edx = msg->id;
++	u32 ecx;
 +
-+	VMWARE_CMD_6(MSG_CLOSE, result, ebx, info, edx,
-+		msg->cookieHigh, msg->cookieLow);
++	vmware_hypercall5(VMW_CMD_CLOSE_MSG, 0, msg->id << 16,
++				msg->cookie_high, msg->cookie_low, &ecx);
 +
-+	if ((info & MESSAGE_STATUS_SUCCESS) == 0)
-+		return 1;
++	if ((HIGH_WORD(ecx) & MESSAGE_STATUS_SUCCESS) == 0)
++		return -EINVAL;
++
 +	return 0;
 +}
 +
-+static int
-+vmware_log_send(vmw_msg *msg, const char *string)
++/**
++ * vmw_port_hb_out - Send the message payload either through the
++ * high-bandwidth port if available, or through the backdoor otherwise.
++ * @channel: The rpc channel.
++ * @msg: NULL-terminated message.
++ * @hb: Whether the high-bandwidth port is available.
++ *
++ * Return: The port status.
++ */
++static unsigned long vmw_msg_hb_out(struct vmw_msg *msg,
++					const char *log_string, bool hb)
 +{
-+	uint32_t result, info;
++	u32 ebx, ecx;
++	unsigned long log_len = strlen(log_string);
++
++	/* HB port can't access encrypted memory. */
++	if (hb && !cc_platform_has(CC_ATTR_MEM_ENCRYPT)) {
++		vmware_hypercall_hb_out(
++			(MESSAGE_STATUS_SUCCESS << 16) | VMW_HB_CMD_MSG,
++			log_len,
++			msg->id << 16,
++			(uintptr_t) log_string, msg->cookie_low,
++			msg->cookie_high,
++			&ebx);
++
++		return ebx;
++	}
++	/* HB port not available. Send the message 4 bytes at a time. */
++	ecx = MESSAGE_STATUS_SUCCESS << 16;
++	while (log_len && (HIGH_WORD(ecx) & MESSAGE_STATUS_SUCCESS)) {
++		unsigned int bytes = min_t(size_t, log_len, 4);
++		unsigned long word = 0;
++
++		memcpy(&word, log_string, bytes);
++		log_len -= bytes;
++		log_string += bytes;
++
++		vmware_hypercall5(VMW_CMD_MSG |
++				(MSG_TYPE_SENDPAYLOAD << 16),
++				word, msg->id << 16,
++				msg->cookie_high,
++				msg->cookie_low,
++				&ecx);
++	}
++
++	return ecx;
++}
++
++static int
++vmware_log_send(struct vmw_msg *msg, const char *string)
++{
 +	uint32_t len = strlen(string);
-+	uint32_t ecx, edx, ebx;
++	uint32_t ebx, ecx;
++	int retries = 0;
++	bool hb = false;
 +
-+retry:
-+	ebx = len;
-+	edx = msg->id;
-+	VMWARE_CMD_6(MSG_SENDSIZE, result, ebx, info, edx,
-+		msg->cookieHigh, msg->cookieLow);
++	while (retries < RETRIES_MAX) {
++		retries++;
++		vmware_hypercall5(VMW_CMD_SENDSIZE, len, msg->id << 16,
++				msg->cookie_high, msg->cookie_low, &ecx);
++		if ((HIGH_WORD(ecx) & MESSAGE_STATUS_SUCCESS) == 0) {
++			/* Expected success. Give up. */
++			return -EINVAL;
++		}
++		/* Send msg */
++		hb = !(sev_status & MSR_AMD64_SEV_ENABLED) &&
++				(HIGH_WORD(ecx) & MESSAGE_STATUS_HB);
 +
-+	if (!(info & MESSAGE_STATUS_SUCCESS))
-+		return 1;
-+
-+	edx = msg->id;
-+	if (!(sev_status & MSR_AMD64_SEV_ENABLED) && (info & MESSAGE_STATUS_HB)) {
-+		ecx = len;
-+		VMWARE_HB_OUT(MSGST_SUCCESS, result, info, ecx, edx,
-+			string, msg->cookieLow, msg->cookieHigh);
-+	} else {
-+		do {
-+			size_t s = len > sizeof(ebx) ? sizeof(ebx) : len;
-+
-+			memcpy(&ebx, string, s);
-+
-+			len -= s;
-+			string += s;
-+
-+			VMWARE_CMD_6(MSG_SEND, result, ebx, info, edx,
-+					msg->cookieHigh, msg->cookieLow);
-+		} while(len && (info & MESSAGE_STATUS_SUCCESS));
-+	}
-+
-+	if ((info & MESSAGE_STATUS_SUCCESS) == 0) {
-+		if (info & MESSAGE_STATUS_CPT)
++		ebx = vmw_msg_hb_out(msg, string, hb);
++		if ((HIGH_WORD(ebx) & MESSAGE_STATUS_SUCCESS) != 0) {
++			return 0;
++		} else if ((HIGH_WORD(ebx) & MESSAGE_STATUS_CPT) != 0) {
 +			/* A checkpoint occurred. Retry. */
-+			goto retry;
-+		return 1;
++			continue;
++		} else {
++			break;
++		}
 +	}
-+	return 0;
++
++	return -EINVAL;
 +}
 +STACK_FRAME_NON_STANDARD(vmware_log_send);
 +
 +static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
-+				enum kmsg_dump_reason reason)
++				struct kmsg_dump_detail *detail)
 +{
-+	vmw_msg msg;
++	struct vmw_msg msg;
 +	static char line[1024];
 +	size_t len = 0;
 +	bool fail = false;
 +	struct kmsg_dump_iter iter;
++
++	if (detail->reason != KMSG_DUMP_PANIC &&
++			detail->reason != KMSG_DUMP_OOPS &&
++			detail->reason != KMSG_DUMP_EMERG)
++		return;
 +
 +	line[0] = 'l';
 +	line[1] = 'o';
@@ -192,11 +243,16 @@ index 6cd310305..66c913dd2 100644
 +	while (!fail && kmsg_dump_get_line(&iter, true,
 +		line + 4, sizeof(line) - 4, &len)) {
 +		line[len + 4] = '\0';
++
 +		if (vmware_log_open(&msg))
 +			return;
++
 +		fail = vmware_log_send(&msg, line);
 +		vmware_log_close(&msg);
 +	}
-+}
---
-2.41.0
+ }
+ 
+ static u8 __init vmware_select_hypercall(void)
+-- 
+2.39.4
+

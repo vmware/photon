@@ -1,0 +1,45 @@
+From addd2bc952dea388aa9622b4369213f96b1cca29 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Mon, 25 Nov 2024 06:41:42 +0000
+Subject: [PATCH] x86/vmware: Redefine the macro of CPUID_VMWARE
+
+  -  Redefine the Macro definitions related to CPUI_VMWARE in
+     early_serial_console as it is required to initialize
+     early console for vmware specific platforms.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ arch/x86/boot/early_serial_console.c | 4 +++-
+ arch/x86/include/asm/vmware.h        | 1 +
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/boot/early_serial_console.c b/arch/x86/boot/early_serial_console.c
+index 9efbc1f6e..d649668d1 100644
+--- a/arch/x86/boot/early_serial_console.c
++++ b/arch/x86/boot/early_serial_console.c
+@@ -5,7 +5,9 @@
+  */
+ #include "boot.h"
+ #include "string.h"
+-#include <asm/vmware.h>
++
++#define CPUID_VMWARE_INFO_LEAF               0x40000000
++#define CPUID_VMWARE_FEATURES_LEAF           0x40000010
+ 
+ #define DEFAULT_SERIAL_PORT 0x3f8 /* ttyS0 */
+ 
+diff --git a/arch/x86/include/asm/vmware.h b/arch/x86/include/asm/vmware.h
+index c9cf43d5e..f71e4b5de 100644
+--- a/arch/x86/include/asm/vmware.h
++++ b/arch/x86/include/asm/vmware.h
+@@ -2,6 +2,7 @@
+ #ifndef _ASM_X86_VMWARE_H
+ #define _ASM_X86_VMWARE_H
+ 
++#include <asm/cpufeature.h>
+ #include <asm/cpufeatures.h>
+ #include <asm/alternative.h>
+ #include <linux/stringify.h>
+-- 
+2.39.4
+

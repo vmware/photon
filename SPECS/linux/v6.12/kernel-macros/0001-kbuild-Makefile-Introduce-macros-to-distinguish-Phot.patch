@@ -1,7 +1,7 @@
-From 954ca342be38673ba93261ee813a1629ff1c9482 Mon Sep 17 00:00:00 2001
+From 2c8701e376091a97bbfbaa59e9c26bdb77ddcacc Mon Sep 17 00:00:00 2001
 From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
 Date: Fri, 31 Mar 2023 13:42:43 -0700
-Subject: [PATCH 1/2] kbuild, Makefile: Introduce macros to distinguish Photon
+Subject: [PATCH] kbuild, Makefile: Introduce macros to distinguish Photon
  kernel flavors/versions
 
 Out-of-tree drivers such as Intel i40e, iavf and ice, which support
@@ -71,15 +71,15 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  1 file changed, 21 insertions(+), 2 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 6e34c942744e..55f1c4f1c8c1 100644
+index d57cfc6896b8..fa5f08d5e76d 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1330,12 +1330,31 @@ define filechk_version.h
+@@ -1241,12 +1241,31 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
 -	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
-+	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);		 \
++	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);                \
 +	echo -e "\n\
 +	/*\n\
 +	* Sample Photon kernel versioning from uname -r output: 6.1.10-14.ph5-xyz\n\
@@ -101,13 +101,13 @@ index 6e34c942744e..55f1c4f1c8c1 100644
 +	echo '#define PHOTON_KERNEL_FLAVOR_'
  endef
  
- $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
- $(version_h): SUBLEVEL := $(or $(SUBLEVEL), 0)
+ $(version_h): private PATCHLEVEL := $(or $(PATCHLEVEL), 0)
+ $(version_h): private SUBLEVEL := $(or $(SUBLEVEL), 0)
 -$(version_h): FORCE
 +$(version_h): include/config/kernel.release FORCE
  	$(call filechk,version.h)
  
  include/generated/utsrelease.h: include/config/kernel.release FORCE
 -- 
-2.25.1
+2.35.6
 

@@ -1,7 +1,7 @@
-From f46f799e03c6cdca9c24bcc2483f82752ee75b58 Mon Sep 17 00:00:00 2001
+From 62d57d3a4f8ff92caa910a2f5df703da5b3c73bd Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Tue, 5 Jan 2021 10:45:39 +0000
-Subject: FIPS crypto self tests
+Subject: [PATCH] FIPS crypto self tests
 
 - crypto_self_test module invokes test of crypto algorithms
 - Added testmgr test vectors for all the self test combinations
@@ -13,23 +13,26 @@ Subject: FIPS crypto self tests
 
 Alexey: add FIPS_NOT_ALLOWED macro
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Ported this patch to v6.12.y]
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
  crypto/Kconfig            |   21 +
- crypto/Makefile           |    1 +
+ crypto/Makefile           |    2 +
  crypto/crypto_self_test.c |  119 ++
- crypto/testmgr.c          |   84 +-
- crypto/testmgr.h          | 2340 ++++++++++++++++++++++++++++++++++++-
- 5 files changed, 2549 insertions(+), 16 deletions(-)
+ crypto/testmgr.c          |   69 +-
+ crypto/testmgr.h          | 2315 ++++++++++++++++++++++++++++++++++++-
+ 5 files changed, 2513 insertions(+), 13 deletions(-)
  create mode 100644 crypto/crypto_self_test.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
-index 650b1b362..bef3e2310 100644
+index 72e2decb8c6a..f525dcdf63d8 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -234,6 +234,27 @@ config CRYPTO_TEST
-	help
-	  Quick & dirty crypto test module.
-
+@@ -235,6 +235,27 @@ config CRYPTO_TEST
+ 	help
+ 	  Quick & dirty crypto test module.
+ 
 +config CRYPTO_SELF_TEST
 +	bool "Crypto self test"
 +	select CRYPTO_MANAGER
@@ -52,23 +55,24 @@ index 650b1b362..bef3e2310 100644
 +	  Crypto self test module for FIPS.
 +
  config CRYPTO_SIMD
-	tristate
-	select CRYPTO_CRYPTD
+ 	tristate
+ 	select CRYPTO_CRYPTD
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 953a7e105..e68702518 100644
+index 4c99e5d376f6..3b1c1218fef8 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -50,6 +50,7 @@ sm2_generic-y += sm2signature.asn1.o
- sm2_generic-y += sm2.o
-
- obj-$(CONFIG_CRYPTO_SM2) += sm2_generic.o
+@@ -50,6 +50,8 @@ rsa_generic-y += rsa_helper.o
+ rsa_generic-y += rsa-pkcs1pad.o
+ obj-$(CONFIG_CRYPTO_RSA) += rsa_generic.o
+ 
 +obj-$(CONFIG_CRYPTO_SELF_TEST) += crypto_self_test.o
-
++
  $(obj)/ecdsasignature.asn1.o: $(obj)/ecdsasignature.asn1.c $(obj)/ecdsasignature.asn1.h
  $(obj)/ecdsa.o: $(obj)/ecdsasignature.asn1.h
+ ecdsa_generic-y += ecdsa.o
 diff --git a/crypto/crypto_self_test.c b/crypto/crypto_self_test.c
 new file mode 100644
-index 000000000..385a56479
+index 000000000000..385a56479396
 --- /dev/null
 +++ b/crypto/crypto_self_test.c
 @@ -0,0 +1,119 @@
@@ -192,149 +196,121 @@ index 000000000..385a56479
 +}
 +module_init(crypto_self_test_init);
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 216878c8b..f038b7657 100644
+index f02cb075bd68..9baa2ee75fa8 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -3933,6 +3933,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
-		       alg, err);
-		goto free_output;
-	}
+@@ -3956,6 +3956,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+ 		       alg, err);
+ 		goto free_output;
+ 	}
 +	printk(KERN_INFO "alg: %s: Party A: generate public key test passed.", alg);
-
-	if (vec->genkey) {
-		/* Save party A's public key */
-@@ -3950,6 +3951,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
-			err = -EINVAL;
-			goto free_output;
-		}
+ 
+ 	if (vec->genkey) {
+ 		/* Save party A's public key */
+@@ -3973,6 +3974,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+ 			err = -EINVAL;
+ 			goto free_output;
+ 		}
 +		printk(KERN_INFO "alg: %s: Party A: verify public key test passed.", alg);
-	}
-
-	/* Calculate shared secret key by using counter part (b) public key. */
-@@ -4856,7 +4858,10 @@ static const struct alg_test_desc alg_test_descs[] = {
-		 */
-		.alg = "drbg_nopr_hmac_sha1",
-		.fips_allowed = 1,
--		.test = alg_test_null,
-+		.test = alg_test_drbg,
-+		.suite = {
-+			.drbg = __VECS(drbg_nopr_hmac_sha1_tv_template)
-+		}
-	}, {
-		.alg = "drbg_nopr_hmac_sha256",
-		.test = alg_test_drbg,
-@@ -4867,7 +4872,10 @@ static const struct alg_test_desc alg_test_descs[] = {
-	}, {
-		/* covered by drbg_nopr_hmac_sha256 test */
-		.alg = "drbg_nopr_hmac_sha384",
+ 	}
+ 
+ 	/* Calculate shared secret key by using counter part (b) public key. */
+@@ -4876,7 +4878,10 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 		 * backend cipher -- covered by drbg_nopr_hmac_sha512 test
+ 		 */
+ 		.alg = "drbg_nopr_hmac_sha384",
 -		.test = alg_test_null,
 +		.test = alg_test_drbg,
 +		.suite = {
 +			.drbg = __VECS(drbg_nopr_hmac_sha384_tv_template)
 +		}
-	}, {
-		.alg = "drbg_nopr_hmac_sha512",
-		.test = alg_test_drbg,
-@@ -4889,11 +4897,17 @@ static const struct alg_test_desc alg_test_descs[] = {
-	}, {
-		/* covered by drbg_nopr_sha256 test */
-		.alg = "drbg_nopr_sha384",
+ 	}, {
+ 		.alg = "drbg_nopr_hmac_sha512",
+ 		.test = alg_test_drbg,
+@@ -4894,11 +4899,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		/* covered by drbg_nopr_sha256 test */
+ 		.alg = "drbg_nopr_sha384",
 -		.test = alg_test_null,
 +		.test = alg_test_drbg,
 +		.suite = {
 +			.drbg = __VECS(drbg_nopr_sha384_tv_template)
 +		}
-	}, {
-		.alg = "drbg_nopr_sha512",
-		.fips_allowed = 1,
+ 	}, {
+ 		.alg = "drbg_nopr_sha512",
+ 		.fips_allowed = 1,
 -		.test = alg_test_null,
 +		.test = alg_test_drbg,
 +		.suite = {
 +			.drbg = __VECS(drbg_nopr_sha512_tv_template)
 +		}
-	}, {
-		.alg = "drbg_pr_ctr_aes128",
-		.test = alg_test_drbg,
-@@ -4905,15 +4919,24 @@ static const struct alg_test_desc alg_test_descs[] = {
-		/* covered by drbg_pr_ctr_aes128 test */
-		.alg = "drbg_pr_ctr_aes192",
-		.fips_allowed = 1,
+ 	}, {
+ 		.alg = "drbg_pr_ctr_aes128",
+ 		.test = alg_test_drbg,
+@@ -4910,11 +4921,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 		/* covered by drbg_pr_ctr_aes128 test */
+ 		.alg = "drbg_pr_ctr_aes192",
+ 		.fips_allowed = 1,
 -		.test = alg_test_null,
 +		.test = alg_test_drbg,
 +		.suite = {
 +			.drbg = __VECS(drbg_pr_ctr_aes192_tv_template)
 +		}
-	}, {
-		.alg = "drbg_pr_ctr_aes256",
-		.fips_allowed = 1,
+ 	}, {
+ 		.alg = "drbg_pr_ctr_aes256",
+ 		.fips_allowed = 1,
 -		.test = alg_test_null,
 +		.test = alg_test_drbg,
 +		.suite = {
 +			.drbg = __VECS(drbg_pr_ctr_aes256_tv_template)
 +		}
-	}, {
-		.alg = "drbg_pr_hmac_sha1",
-		.fips_allowed = 1,
--		.test = alg_test_null,
-+		.test = alg_test_drbg,
-+		.suite = {
-+			.drbg = __VECS(drbg_pr_hmac_sha1_tv_template)
-+		}
-	}, {
-		.alg = "drbg_pr_hmac_sha256",
-		.test = alg_test_drbg,
-@@ -4924,15 +4947,24 @@ static const struct alg_test_desc alg_test_descs[] = {
-	}, {
-		/* covered by drbg_pr_hmac_sha256 test */
-		.alg = "drbg_pr_hmac_sha384",
+ 	}, {
+ 		.alg = "drbg_pr_hmac_sha256",
+ 		.test = alg_test_drbg,
+@@ -4925,11 +4942,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		/* covered by drbg_pr_hmac_sha256 test */
+ 		.alg = "drbg_pr_hmac_sha384",
 -		.test = alg_test_null,
 +		.test = alg_test_drbg,
 +		.suite = {
 +			.drbg = __VECS(drbg_pr_hmac_sha384_tv_template)
 +		}
-	}, {
-		.alg = "drbg_pr_hmac_sha512",
+ 	}, {
+ 		.alg = "drbg_pr_hmac_sha512",
 -		.test = alg_test_null,
 +		.test = alg_test_drbg,
-		.fips_allowed = 1,
+ 		.fips_allowed = 1,
 +		.suite = {
 +			.drbg = __VECS(drbg_pr_hmac_sha512_tv_template)
 +		}
-	}, {
-		.alg = "drbg_pr_sha1",
-		.fips_allowed = 1,
--		.test = alg_test_null,
-+		.test = alg_test_drbg,
-+		.suite = {
-+			.drbg = __VECS(drbg_pr_sha1_tv_template)
-+		}
-	}, {
-		.alg = "drbg_pr_sha256",
-		.test = alg_test_drbg,
-@@ -4943,11 +4975,17 @@ static const struct alg_test_desc alg_test_descs[] = {
-	}, {
-		/* covered by drbg_pr_sha256 test */
-		.alg = "drbg_pr_sha384",
+ 	}, {
+ 		.alg = "drbg_pr_sha256",
+ 		.test = alg_test_drbg,
+@@ -4940,11 +4963,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		/* covered by drbg_pr_sha256 test */
+ 		.alg = "drbg_pr_sha384",
 -		.test = alg_test_null,
 +		.test = alg_test_drbg,
 +		.suite = {
 +			.drbg = __VECS(drbg_pr_sha384_tv_template)
 +		}
-	}, {
-		.alg = "drbg_pr_sha512",
-		.fips_allowed = 1,
+ 	}, {
+ 		.alg = "drbg_pr_sha512",
+ 		.fips_allowed = 1,
 -		.test = alg_test_null,
 +		.test = alg_test_drbg,
 +		.suite = {
 +			.drbg = __VECS(drbg_pr_sha512_tv_template)
 +		}
-	}, {
-		.alg = "ecb(aes)",
-		.test = alg_test_skcipher,
-@@ -5449,10 +5487,20 @@ static const struct alg_test_desc alg_test_descs[] = {
-		.suite = {
-			.cipher = __VECS(fcrypt_pcbc_tv_template)
-		}
+ 	}, {
+ 		.alg = "ecb(aes)",
+ 		.test = alg_test_skcipher,
+@@ -5433,10 +5462,20 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 		.suite = {
+ 			.cipher = __VECS(fcrypt_pcbc_tv_template)
+ 		}
 +	}, {
 +		.alg = "pkcs1pad(rsa,sha1)",
 +		.test = alg_test_akcipher,
@@ -342,43 +318,43 @@ index 216878c8b..f038b7657 100644
 +		.suite = {
 +			.akcipher = __VECS(pkcs1pad_rsa_sha1_tv_template)
 +		}
-	}, {
-		.alg = "pkcs1pad(rsa,sha224)",
+ 	}, {
+ 		.alg = "pkcs1pad(rsa,sha224)",
 -		.test = alg_test_null,
 +		.test = alg_test_akcipher,
-		.fips_allowed = 1,
+ 		.fips_allowed = 1,
 +		.suite = {
 +			.akcipher = __VECS(pkcs1pad_rsa_sha224_tv_template)
 +		}
-	}, {
-		.alg = "pkcs1pad(rsa,sha256)",
-		.test = alg_test_akcipher,
-@@ -5462,12 +5510,18 @@ static const struct alg_test_desc alg_test_descs[] = {
-		}
-	}, {
-		.alg = "pkcs1pad(rsa,sha384)",
+ 	}, {
+ 		.alg = "pkcs1pad(rsa,sha256)",
+ 		.test = alg_test_akcipher,
+@@ -5458,12 +5497,18 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 		.fips_allowed = 1,
+ 	}, {
+ 		.alg = "pkcs1pad(rsa,sha384)",
 -		.test = alg_test_null,
 +		.test = alg_test_akcipher,
-		.fips_allowed = 1,
+ 		.fips_allowed = 1,
 +		.suite = {
 +			.akcipher = __VECS(pkcs1pad_rsa_sha384_tv_template)
 +		}
-	}, {
-		.alg = "pkcs1pad(rsa,sha512)",
+ 	}, {
+ 		.alg = "pkcs1pad(rsa,sha512)",
 -		.test = alg_test_null,
 +		.test = alg_test_akcipher,
-		.fips_allowed = 1,
+ 		.fips_allowed = 1,
 +		.suite = {
 +			.akcipher = __VECS(pkcs1pad_rsa_sha512_tv_template)
 +		}
-	}, {
-		.alg = "poly1305",
-		.test = alg_test_hash,
+ 	}, {
+ 		.alg = "poly1305",
+ 		.test = alg_test_hash,
 diff --git a/crypto/testmgr.h b/crypto/testmgr.h
-index 5ca7a4125..a9694d25b 100644
+index 9b38501a17b2..712b4fde0a08 100644
 --- a/crypto/testmgr.h
 +++ b/crypto/testmgr.h
-@@ -1228,6 +1228,726 @@ static const struct akcipher_testvec ecrdsa_tv_template[] = {
+@@ -1374,6 +1374,726 @@ static const struct akcipher_testvec ecrdsa_tv_template[] = {
  /*
   * PKCS#1 RSA test vectors. Obtained from CAVS testing.
   */
@@ -1103,12 +1079,12 @@ index 5ca7a4125..a9694d25b 100644
 +};
 +
  static const struct akcipher_testvec pkcs1pad_rsa_tv_template[] = {
-	{
-	.key =
-@@ -1344,6 +2064,845 @@ static const struct akcipher_testvec pkcs1pad_rsa_tv_template[] = {
-	}
+ 	{
+ 	.key =
+@@ -1490,6 +2210,845 @@ static const struct akcipher_testvec pkcs1pad_rsa_tv_template[] = {
+ 	}
  };
-
+ 
 +static const struct akcipher_testvec pkcs1pad_rsa_sha384_tv_template[] = {
 +	{
 +	.key =
@@ -1949,12 +1925,12 @@ index 5ca7a4125..a9694d25b 100644
 +};
 +
  static const struct kpp_testvec dh_tv_template[] = {
-	{
-	.secret =
-@@ -4399,6 +5958,52 @@ static const struct kpp_testvec ecdh_p384_tv_template[] = {
-	.b_public_size = 96,
-	.expected_a_public_size = 96,
-	.expected_ss_size = 48
+ 	{
+ 	.secret =
+@@ -4545,6 +6104,52 @@ static const struct kpp_testvec ecdh_p384_tv_template[] = {
+ 	.b_public_size = 96,
+ 	.expected_a_public_size = 96,
+ 	.expected_ss_size = 48
 +	}, {
 +	.secret =
 +#ifdef __LITTLE_ENDIAN
@@ -2001,13 +1977,13 @@ index 5ca7a4125..a9694d25b 100644
 +	.expected_a_public_size = 96,
 +	.expected_ss_size = 48,
 +	.genkey = true,
-	}
+ 	}
  };
-
-@@ -7640,6 +9245,98 @@ static const struct hash_testvec aes_cmac128_tv_template[] = {
-				  "\x69\x6a\x2c\x05\x6c\x31\x54\x10",
-		.psize		= 64,
-		.ksize		= 32,
+ 
+@@ -7727,6 +9332,98 @@ static const struct hash_testvec aes_cmac128_tv_template[] = {
+ 				  "\x69\x6a\x2c\x05\x6c\x31\x54\x10",
+ 		.psize		= 64,
+ 		.ksize		= 32,
 +	}, {	/* keyLen = 24 */
 +		.key		= "\xb2\x03\xc6\xb8\xdd\xb2\xb3\x9b"
 +				  "\xab\xe6\xed\x55\xc7\x08\x33\x7b"
@@ -2100,13 +2076,54 @@ index 5ca7a4125..a9694d25b 100644
 +				  "\xa4\x95\x9a\x9d\x48\xdf\xd0\x03",
 +		.psize		= 670,
 +		.ksize		= 24,
-	}
+ 	}
  };
-
-@@ -23971,6 +25668,185 @@ static const struct cprng_testvec ansi_cprng_aes_tv_template[] = {
-	},
+ 
+@@ -24137,6 +25834,40 @@ static const struct drbg_testvec drbg_pr_hmac_sha256_tv_template[] = {
+ 	},
  };
-
+ 
++static const struct drbg_testvec drbg_pr_ctr_aes192_tv_template[] = {
++	{
++		.entropy = (unsigned char *)
++			"\x96\x5f\xa6\xa2\xc4\x00\x9c\x04\x5c\xff"
++			"\x72\x8f\x24\x42\x38\x26\x25\x08\xbf\x00"
++			"\x8d\xcc\xef\x30\x1d\x22\x59\x1b\x09\x78"
++			"\x73\xd1\x24\xc3\xf8\xc4\x08\xf8\x91\x61",
++		.entropylen = 40,
++		.entpra = (unsigned char *)
++			"\x97\x18\xb8\x80\x42\xa4\xb6\x07\x67\xca"
++			"\xe0\xff\xc7\x97\xe6\x88\xb0\xfe\x38\x19"
++			"\xdb\x2a\x4b\xcb",
++		.entprb = (unsigned char *)
++			"\x73\xe3\xf0\xfd\xf3\x80\xe5\xe6\x12\x6f"
++			"\xf9\xf3\xad\xb3\x4f\xf5\xbc\xc4\x5f\xba"
++			"\x0c\xe1\xd2\x48",
++		.entprlen = 24,
++		.expected = (unsigned char *)
++			"\x90\x9f\xd2\xc9\x71\x92\x1c\x77\x32\x2e"
++			"\x1d\xf2\x73\xa0\x7d\x19\xf5\x27\x13\x3e"
++			"\x56\xa9\xbe\x38\x8c\x29\x8c\xa6\x83\x08"
++			"\x73\xd1\xe8\x47\xb8\xcc\x65\x4d\xd3\xc5"
++			"\x7c\x1c\x8b\x25\xfd\x39\x09\xbe\x84\x7c"
++			"\x1a\x28\x11\x08\x94\x0f\xe7\xf0\x6d\x9d"
++			"\xb6\x0a\xd7\xb4",
++		.expectedlen = 64,
++		.addtla = NULL,
++		.addtlb = NULL,
++		.addtllen = 0,
++		.pers = NULL,
++		.perslen = 0,
++	}
++};
++
+ static const struct drbg_testvec drbg_pr_ctr_aes128_tv_template[] = {
+ 	{
+ 		.entropy = (unsigned char *)
+@@ -24253,6 +25984,185 @@ static const struct drbg_testvec drbg_pr_ctr_aes128_tv_template[] = {
+ 	},
+ };
+ 
 +static const struct drbg_testvec drbg_pr_ctr_aes256_tv_template[] = {
 +	{
 +		.entropy = (unsigned char *)
@@ -2289,36 +2306,41 @@ index 5ca7a4125..a9694d25b 100644
  /*
   * SP800-90A DRBG Test vectors from
   * http://csrc.nist.gov/groups/STM/cavp/documents/drbg/drbgtestvectors.zip
-@@ -24295,6 +26171,40 @@ static const struct drbg_testvec drbg_pr_hmac_sha256_tv_template[] = {
-	},
+@@ -24383,6 +26293,45 @@ static const struct drbg_testvec drbg_nopr_sha256_tv_template[] = {
+ 	},
  };
-
-+static const struct drbg_testvec drbg_pr_ctr_aes192_tv_template[] = {
+ 
++static const struct drbg_testvec drbg_nopr_hmac_sha384_tv_template[] = {
 +	{
 +		.entropy = (unsigned char *)
-+			"\x96\x5f\xa6\xa2\xc4\x00\x9c\x04\x5c\xff"
-+			"\x72\x8f\x24\x42\x38\x26\x25\x08\xbf\x00"
-+			"\x8d\xcc\xef\x30\x1d\x22\x59\x1b\x09\x78"
-+			"\x73\xd1\x24\xc3\xf8\xc4\x08\xf8\x91\x61",
-+		.entropylen = 40,
-+		.entpra = (unsigned char *)
-+			"\x97\x18\xb8\x80\x42\xa4\xb6\x07\x67\xca"
-+			"\xe0\xff\xc7\x97\xe6\x88\xb0\xfe\x38\x19"
-+			"\xdb\x2a\x4b\xcb",
-+		.entprb = (unsigned char *)
-+			"\x73\xe3\xf0\xfd\xf3\x80\xe5\xe6\x12\x6f"
-+			"\xf9\xf3\xad\xb3\x4f\xf5\xbc\xc4\x5f\xba"
-+			"\x0c\xe1\xd2\x48",
-+		.entprlen = 24,
++			"\xa1\xdc\x2d\xfe\xda\x4f\x3a\x11\x24\xe0"
++			"\xe7\x5e\xbf\xbe\x5f\x98\xca\xc1\x10\x18"
++			"\x22\x1d\xda\x3f\xdc\xf8\xf9\x12\x5d\x68"
++			"\x44\x7a\xba\xe5\xea\x27\x16\x65\x40\x51"
++			"\x52\x68\xa4\x93\xa9\x6b\x51\x87",
++		.entropylen = 48,
 +		.expected = (unsigned char *)
-+			"\x90\x9f\xd2\xc9\x71\x92\x1c\x77\x32\x2e"
-+			"\x1d\xf2\x73\xa0\x7d\x19\xf5\x27\x13\x3e"
-+			"\x56\xa9\xbe\x38\x8c\x29\x8c\xa6\x83\x08"
-+			"\x73\xd1\xe8\x47\xb8\xcc\x65\x4d\xd3\xc5"
-+			"\x7c\x1c\x8b\x25\xfd\x39\x09\xbe\x84\x7c"
-+			"\x1a\x28\x11\x08\x94\x0f\xe7\xf0\x6d\x9d"
-+			"\xb6\x0a\xd7\xb4",
-+		.expectedlen = 64,
++			"\x22\x82\x93\xe5\x9b\x1e\x45\x45\xa4\xff"
++			"\x9f\x23\x26\x16\xfc\x51\x08\xa1\x12\x8d"
++			"\xeb\xd0\xf7\xc2\x0a\xce\x83\x7c\xa1\x05"
++			"\xcb\xf2\x4c\x0d\xac\x1f\x98\x47\xda\xfd"
++			"\x0d\x05\x00\x72\x1f\xfa\xd3\xc6\x84\xa9"
++			"\x92\xd1\x10\xa5\x49\xa2\x64\xd1\x4a\x89"
++			"\x11\xc5\x0b\xe8\xcd\x6a\x7e\x8f\xac\x78"
++			"\x3a\xd9\x5b\x24\xf6\x4f\xd8\xcc\x4c\x8b"
++			"\x64\x9e\xac\x2b\x15\xb3\x63\xe3\x0d\xf7"
++			"\x95\x41\xa6\xb8\xa1\xca\xac\x23\x89\x49"
++			"\xb4\x66\x43\x69\x4c\x85\xe1\xd5\xfc\xbc"
++			"\xd9\xaa\xae\x62\x60\xac\xee\x66\x0b\x8a"
++			"\x79\xbe\xa4\x8e\x07\x9c\xeb\x6a\x5e\xaf"
++			"\x49\x93\xa8\x2c\x3f\x1b\x75\x8d\x7c\x53"
++			"\xe3\x09\x4e\xea\xc6\x3d\xc2\x55\xbe\x6d"
++			"\xcd\xcc\x2b\x51\xe5\xca\x45\xd2\xb2\x06"
++			"\x84\xa5\xa8\xfa\x58\x06\xb9\x6f\x84\x61"
++			"\xeb\xf5\x1b\xc5\x15\xa7\xdd\x8c\x54\x75"
++			"\xc0\xe7\x0f\x2f\xd0\xfa\xf7\x86\x9a\x99"
++			"\xab\x6c",
++		.expectedlen = 192,
 +		.addtla = NULL,
 +		.addtlb = NULL,
 +		.addtllen = 0,
@@ -2327,13 +2349,13 @@ index 5ca7a4125..a9694d25b 100644
 +	},
 +};
 +
- static const struct drbg_testvec drbg_pr_ctr_aes128_tv_template[] = {
-	{
-		.entropy = (unsigned char *)
-@@ -24411,6 +26321,283 @@ static const struct drbg_testvec drbg_pr_ctr_aes128_tv_template[] = {
-	},
+ static const struct drbg_testvec drbg_nopr_hmac_sha256_tv_template[] = {
+ 	{
+ 		.entropy = (unsigned char *)
+@@ -25128,6 +27077,283 @@ static const struct cipher_testvec cast5_ctr_tv_template[] = {
+ 	},
  };
-
+ 
 +static const struct drbg_testvec drbg_pr_hmac_sha1_tv_template[] = {
 +	{
 +		.entropy = (unsigned char *)
@@ -2612,83 +2634,12 @@ index 5ca7a4125..a9694d25b 100644
 +};
 +
  /*
-  * SP800-90A DRBG Test vectors from
-  * http://csrc.nist.gov/groups/STM/cavp/documents/drbg/drbgtestvectors.zip
-@@ -24541,6 +26728,70 @@ static const struct drbg_testvec drbg_nopr_sha256_tv_template[] = {
-	},
- };
-
-+static const struct drbg_testvec drbg_nopr_hmac_sha1_tv_template[] = {
-+	{
-+		.entropy = (unsigned char *)
-+			"\xe9\x1b\x63\x30\x9e\x93\xd1\xd0\x8e\x30"
-+			"\xe8\xd5\x56\x90\x68\x75\xf5\x97\x47\xc4"
-+			"\x68\xb0\xd0\xda",
-+		.entropylen = 24,
-+		.expected = (unsigned char *)
-+			"\xb7\x92\x8f\x95\x03\xa4\x17\x11\x07\x88"
-+			"\xf9\xd0\xc2\x58\x5f\x8a\xee\x6f\xb7\x3b"
-+			"\x22\x0a\x62\x6b\x3a\xb9\x82\x5b\x7a\x9f"
-+			"\xac\xc7\x97\x23\xd7\xe1\xba\x92\x55\xe4"
-+			"\x0e\x65\xc2\x49\xb6\x08\x2a\x7b\xc5\xe3"
-+			"\xf1\x29\xd3\xd8\xf6\x9b\x04\xed\x11\x83"
-+			"\x41\x9d\x6c\x4f\x2a\x13\xb3\x04\xd2\xc5"
-+			"\x74\x3f\x41\xc8\xb0\xee\x73\x22\x53\x47",
-+		.expectedlen = 80,
-+		.addtla = NULL,
-+		.addtlb = NULL,
-+		.addtllen = 0,
-+		.pers = NULL,
-+		.perslen = 0,
-+	},
-+};
-+
-+static const struct drbg_testvec drbg_nopr_hmac_sha384_tv_template[] = {
-+	{
-+		.entropy = (unsigned char *)
-+			"\xa1\xdc\x2d\xfe\xda\x4f\x3a\x11\x24\xe0"
-+			"\xe7\x5e\xbf\xbe\x5f\x98\xca\xc1\x10\x18"
-+			"\x22\x1d\xda\x3f\xdc\xf8\xf9\x12\x5d\x68"
-+			"\x44\x7a\xba\xe5\xea\x27\x16\x65\x40\x51"
-+			"\x52\x68\xa4\x93\xa9\x6b\x51\x87",
-+		.entropylen = 48,
-+		.expected = (unsigned char *)
-+			"\x22\x82\x93\xe5\x9b\x1e\x45\x45\xa4\xff"
-+			"\x9f\x23\x26\x16\xfc\x51\x08\xa1\x12\x8d"
-+			"\xeb\xd0\xf7\xc2\x0a\xce\x83\x7c\xa1\x05"
-+			"\xcb\xf2\x4c\x0d\xac\x1f\x98\x47\xda\xfd"
-+			"\x0d\x05\x00\x72\x1f\xfa\xd3\xc6\x84\xa9"
-+			"\x92\xd1\x10\xa5\x49\xa2\x64\xd1\x4a\x89"
-+			"\x11\xc5\x0b\xe8\xcd\x6a\x7e\x8f\xac\x78"
-+			"\x3a\xd9\x5b\x24\xf6\x4f\xd8\xcc\x4c\x8b"
-+			"\x64\x9e\xac\x2b\x15\xb3\x63\xe3\x0d\xf7"
-+			"\x95\x41\xa6\xb8\xa1\xca\xac\x23\x89\x49"
-+			"\xb4\x66\x43\x69\x4c\x85\xe1\xd5\xfc\xbc"
-+			"\xd9\xaa\xae\x62\x60\xac\xee\x66\x0b\x8a"
-+			"\x79\xbe\xa4\x8e\x07\x9c\xeb\x6a\x5e\xaf"
-+			"\x49\x93\xa8\x2c\x3f\x1b\x75\x8d\x7c\x53"
-+			"\xe3\x09\x4e\xea\xc6\x3d\xc2\x55\xbe\x6d"
-+			"\xcd\xcc\x2b\x51\xe5\xca\x45\xd2\xb2\x06"
-+			"\x84\xa5\xa8\xfa\x58\x06\xb9\x6f\x84\x61"
-+			"\xeb\xf5\x1b\xc5\x15\xa7\xdd\x8c\x54\x75"
-+			"\xc0\xe7\x0f\x2f\xd0\xfa\xf7\x86\x9a\x99"
-+			"\xab\x6c",
-+		.expectedlen = 192,
-+		.addtla = NULL,
-+		.addtlb = NULL,
-+		.addtllen = 0,
-+		.pers = NULL,
-+		.perslen = 0,
-+	},
-+};
-+
- static const struct drbg_testvec drbg_nopr_hmac_sha256_tv_template[] = {
-	{
-		.entropy = (unsigned char *)
-@@ -35564,7 +37815,94 @@ static const struct cipher_testvec adiantum_xchacha20_aes_tv_template[] = {
-			  "\xe9\xe1\xa0\xfe\xb2\xc3\x80\x77"
-			  "\x20\x05\xe4\x9b\x47\x3b\xb2\xbd",
-		.len	= 4096,
+  * ARC4 test vectors from OpenSSL
+  */
+@@ -34503,7 +36729,94 @@ static const struct cipher_testvec adiantum_xchacha20_aes_tv_template[] = {
+ 			  "\xe9\xe1\xa0\xfe\xb2\xc3\x80\x77"
+ 			  "\x20\x05\xe4\x9b\x47\x3b\xb2\xbd",
+ 		.len	= 4096,
 -	}
 +	}, {	/* keyLen = 24 */
 +		.klen	= 24,
@@ -2779,7 +2730,8 @@ index 5ca7a4125..a9694d25b 100644
 +			  "\x7f",
 + 	}
  };
-
+ 
  /*
---
-2.41.0
+-- 
+2.39.4
+

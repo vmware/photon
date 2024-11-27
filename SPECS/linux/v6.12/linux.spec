@@ -1,5 +1,3 @@
-%global build_for none
-
 %global security_hardening none
 %global __cmake_in_source_build 0
 %global lkcm_version 5.0.0
@@ -31,8 +29,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.6.28
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.1
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -43,18 +41,18 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=fdf6def06de85656f8aa010edfb8b2f7f71cdeef9a70b5b35511833fbcf0e4fbfafb6224acfdf475975bc4bc8f05d0291745af5a6ae752a70cbd09ae2d3d17a8
+%define sha512 linux=c7523dc5b012367301ab43a685b766dce025c4993041acd3dacd085b052b3fccc7f50c892357acf481e24ccad512770ef46a13d2da16c2a178c44a27f7022932
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
-%define ena_version 2.8.3
+%define ena_version 2.13.1
 Source3:        https://github.com/amzn/amzn-drivers/archive/refs/tags/ena_linux_%{ena_version}.tar.gz
-%define sha512 ena_linux=173435137b6fe47d110db376c4c3eff8da7a10803dde5f41f694d04e74319861c16398f257a1c917a4fc05477c86e6e7b42e6a63e2f42de7ea9166f77ba9b01d
+%define sha512 ena_linux=a75f47aa491d1afbf756334b105d9447fe74b9a45c02d20b908be49ff9e31f32f6be6d75d6f76a72bfd8928bf5720ff8e84216f77981f41dc1f926ffed6e9ed4
 
-%define efa_version 2.1.1
+%define efa_version 2.13.0
 Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux_%{efa_version}.tar.gz
-%define sha512 efa_linux=2ceb5a4011a6b5f69d0a389e3d6f188d29cb87373202b42fe6c1f29ac2a310d1180a9ffad3e362680b675edc8007850b541e477b918781ef406afc55ca0d1c6e
+%define sha512 efa_linux=d76d46ba844b2a552dfdcf8a75448937aaf881df54d43d7e28f4cbd01db360326283883391aa9e3974d0341815a5451c53b832b6650ee8e0ba32e2028a75e2ad
 
 # contains pre, postun, filetriggerun tasks
 Source6:        scriptlets.inc
@@ -121,7 +119,6 @@ Patch4: 9p-trans_fd-extend-port-variable-to-u32.patch
 Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch6: 0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
 
 # Expose Photon kernel macros to identify kernel flavor and version
 Patch9:  0001-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
@@ -157,9 +154,8 @@ Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 %ifarch x86_64
 # VMW: [50..59]
-Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
-Patch56: x86-vmware-Log-kmsg-dump-on-panic.patch
-Patch57: x86-vmware-Fix-steal-time-clock-under-SEV.patch
+Patch55: x86-vmware-Log-kmsg-dump-on-panic.patch
+Patch56: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 
 # Secure Boot and Kernel Lockdown
 Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
@@ -180,8 +176,6 @@ Patch71: 0001-block-Fix-validation-of-ioprio-level.patch
 # CVE: [100..199]
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-# Fix CVE-2023-52585
-Patch130: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -240,10 +234,6 @@ Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
-%ifarch x86_64
-Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
-%endif
-
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
@@ -277,13 +267,17 @@ Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 # TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
+Patch603: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
 %endif
 
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
+#Patch1401: 0001-efa-Modify-function-names-for-v6.12.x.patch
 
 # Patches for ena [1500..1409]
-Patch1500: 0001-ena-Change-the-devlink_param_driverinit_value_get.patch
+#Patch1500: 0001-ena-Change-the-devlink_param_driverinit_value_get.patch
+#Patch1501: 0001-ena-Modify-function-names-for-v6.12.x.patch
+#Patch1502: 0002-ena-fix-rxfh-function-signatures.patch
 
 %if 0%{?canister_build}
 # Below patches are common for fips and canister_build flags
@@ -507,9 +501,9 @@ pushd ../amzn-drivers-efa_linux_%{efa_version}
 popd
 
 # Patches for ena driver
-pushd ../amzn-drivers-ena_linux_%{ena_version}
-%autopatch -p1 -m1500 -M1500
-popd
+#pushd ../amzn-drivers-ena_linux_%{ena_version}
+#%autopatch -p1 -m1500 -M1500
+#popd
 
 %if 0%{?canister_build}
 %autopatch -p1 -m10000 -M10013
@@ -635,6 +629,8 @@ make %{?_smp_mflags} ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
 # build ENA module
 bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
+cp configure.sh ena-conf.sh
+./ena-conf.sh --kernel-dir ${bldroot}
 make %{?_smp_mflags} -C ${bldroot} M="${PWD}" V=1 modules %{?_smp_mflags}
 popd
 
@@ -821,7 +817,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %files tools
 %defattr(-,root,root)
 %ifarch x86_64
-%exclude %{_lib64}/traceevent
+%exclude %{_lib}/traceevent
 %endif
 %ifarch aarch64
 %exclude %{_libdir}/traceevent
@@ -835,7 +831,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %ifarch x86_64
 %{_includedir}/cpufreq.h
 %{_includedir}/cpuidle.h
-%{_lib64dir}/libcpupower.so*
+%{_libdir}/libcpupower.so*
 %{_docdir}/packages/cpupower
 %{_datadir}/bash-completion/completions/cpupower
 %config(noreplace) %{_sysconfdir}/cpufreq-bench.conf
@@ -859,6 +855,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Feb 04 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-1
+- Upgrade to version 6.12.x.
 * Thu Sep 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-2
 - Fix backward compatibility issue
 * Thu Aug 29 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.6.28-1

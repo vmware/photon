@@ -1,4 +1,4 @@
-From 4f4d9349568ea1b8d5c0f0a5737a505bd511e3e7 Mon Sep 17 00:00:00 2001
+From 3565af60f563e6b5cb086c7c01c779aeedff8502 Mon Sep 17 00:00:00 2001
 From: Serge Hallyn <serge.hallyn@canonical.com>
 Date: Fri, 31 May 2013 19:12:12 +0100
 Subject: [PATCH] fork: add sysctl to disallow unprivileged CLONE_NEWUSER by
@@ -24,13 +24,13 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
  3 files changed, 30 insertions(+)
 
 diff --git a/kernel/fork.c b/kernel/fork.c
-index 9f7fe3541897..74a04980f87c 100644
+index cc760491f201..894370be7c01 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -108,6 +108,11 @@
- 
- #define CREATE_TRACE_POINTS
+@@ -117,6 +117,11 @@
  #include <trace/events/task.h>
+ 
+ #include <kunit/visibility.h>
 +#ifdef CONFIG_USER_NS
 +extern int unprivileged_userns_clone;
 +#else
@@ -39,7 +39,7 @@ index 9f7fe3541897..74a04980f87c 100644
  
  /*
   * Minimum number of threads to boot the kernel
-@@ -2030,6 +2035,10 @@ static __latent_entropy struct task_struct *copy_process(
+@@ -2138,6 +2143,10 @@ __latent_entropy struct task_struct *copy_process(
  	if ((clone_flags & (CLONE_NEWUSER|CLONE_FS)) == (CLONE_NEWUSER|CLONE_FS))
  		return ERR_PTR(-EINVAL);
  
@@ -50,7 +50,7 @@ index 9f7fe3541897..74a04980f87c 100644
  	/*
  	 * Thread groups must share signals as well, and detached threads
  	 * can only be started up within the thread group.
-@@ -3180,6 +3189,12 @@ int ksys_unshare(unsigned long unshare_flags)
+@@ -3287,6 +3296,12 @@ int ksys_unshare(unsigned long unshare_flags)
  	if (unshare_flags & CLONE_NEWNS)
  		unshare_flags |= CLONE_FS;
  
@@ -64,10 +64,10 @@ index 9f7fe3541897..74a04980f87c 100644
  	if (err)
  		goto bad_unshare_out;
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 137d4abe3eda..fd83a0ebdc4e 100644
+index 79e6cb1d5c48..956887cd69c2 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -91,6 +91,9 @@ EXPORT_SYMBOL_GPL(sysctl_long_vals);
+@@ -90,6 +90,9 @@ EXPORT_SYMBOL_GPL(sysctl_long_vals);
  
  #if defined(CONFIG_SYSCTL)
  
@@ -77,7 +77,7 @@ index 137d4abe3eda..fd83a0ebdc4e 100644
  /* Constants used for minimum and maximum */
  
  #ifdef CONFIG_PERF_EVENTS
-@@ -1783,6 +1786,15 @@ static struct ctl_table kern_table[] = {
+@@ -1761,6 +1764,15 @@ static struct ctl_table kern_table[] = {
  		.proc_handler	= sysrq_sysctl_handler,
  	},
  #endif
@@ -94,7 +94,7 @@ index 137d4abe3eda..fd83a0ebdc4e 100644
  	{
  		.procname	= "cad_pid",
 diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
-index 54211dbd516c..47c420be8da3 100644
+index 0b0b95418b16..69fb9d5fc3d5 100644
 --- a/kernel/user_namespace.c
 +++ b/kernel/user_namespace.c
 @@ -22,6 +22,9 @@
@@ -104,9 +104,9 @@ index 54211dbd516c..47c420be8da3 100644
 +/* sysctl */
 +int unprivileged_userns_clone;
 +
- static struct kmem_cache *user_ns_cachep __read_mostly;
+ static struct kmem_cache *user_ns_cachep __ro_after_init;
  static DEFINE_MUTEX(userns_state_mutex);
  
 -- 
-2.39.1
+2.39.4
 

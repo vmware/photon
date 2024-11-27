@@ -1,12 +1,10 @@
-From 5453be987dc8f1c4d9dc4a69458134c6b487f6fd Mon Sep 17 00:00:00 2001
+From 65f62f0702ddbc435e794a7280bd16e0e6691dde Mon Sep 17 00:00:00 2001
 From: John Johansen <john.johansen@canonical.com>
-Date: Wed, 7 Sep 2022 12:46:30 -0700
+Date: Thu, 10 Oct 2024 10:34:26 +0000
 Subject: [PATCH] apparmor: af_unix mediation
 
 af_socket mediation did not make it into 4.17 so add remaining out
 of tree patch
-
-[Srinidhi Rao<srinidhi.rao@broadcom.com> Back ported this patch to v6.6.x]
 
 Signed-off-by: John Johansen <john.johansen@canonical.com>
 (cherry picked from https://gitlab.com/jjohansen/apparmor-kernel)
@@ -14,6 +12,9 @@ Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
 (cherry picked from commit 651f0b2cc1d78cb7afbc0fcadc166ed0bcc78dd3
 https://git.launchpad.net/~apparmor-dev/ubuntu-kernel-next)
 Signed-off-by: Paolo Pisati <paolo.pisati@canonical.com>
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Back ported this patch to v6.12.x]
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
  security/apparmor/Makefile          |   2 +-
  security/apparmor/af_unix.c         | 702 ++++++++++++++++++++++++++++
@@ -22,12 +23,12 @@ Signed-off-by: Paolo Pisati <paolo.pisati@canonical.com>
  security/apparmor/include/af_unix.h | 122 +++++
  security/apparmor/include/file.h    |   4 +
  security/apparmor/include/label.h   |   5 +-
- security/apparmor/include/net.h     |   4 +
+ security/apparmor/include/net.h     |   5 +
  security/apparmor/include/path.h    |   1 +
  security/apparmor/include/policy.h  |   7 +-
- security/apparmor/lsm.c             | 131 +++++-
+ security/apparmor/lsm.c             | 130 +++++-
  security/apparmor/net.c             |  61 ++-
- 12 files changed, 1039 insertions(+), 19 deletions(-)
+ 12 files changed, 1040 insertions(+), 18 deletions(-)
  create mode 100644 security/apparmor/af_unix.c
  create mode 100644 security/apparmor/include/af_unix.h
 
@@ -42,11 +43,11 @@ index b9c5879dd599..be51607f52b6 100644
 -              policy_compat.o
 +              policy_compat.o af_unix.o
  apparmor-$(CONFIG_SECURITY_APPARMOR_HASH) += crypto.o
-
+ 
  obj-$(CONFIG_SECURITY_APPARMOR_KUNIT_TEST) += apparmor_policy_unpack_test.o
 diff --git a/security/apparmor/af_unix.c b/security/apparmor/af_unix.c
 new file mode 100644
-index 000000000000..7a0eac60d8bd
+index 000000000000..fa6f44bf6a4d
 --- /dev/null
 +++ b/security/apparmor/af_unix.c
 @@ -0,0 +1,702 @@
@@ -252,7 +253,7 @@ index 000000000000..7a0eac60d8bd
 +
 +	AA_BUG(!profile);
 +
-+	perms = *aa_lookup_perms(&rule->policy, state);
++	perms = *aa_lookup_perms(rule->policy, state);
 +	aa_apply_modes_to_perms(profile, &perms);
 +	return aa_check_perms(profile, &perms, request, ad,
 +			      audit_net_cb);
@@ -268,7 +269,7 @@ index 000000000000..7a0eac60d8bd
 +	ad->peer = &peer->label;
 +
 +	if (state) {
-+		state = aa_dfa_match(rule->policy.dfa, state,
++		state = aa_dfa_match(rule->policy->dfa, state,
 +				     peer->base.hname);
 +		if (!state)
 +			ad->info = "failed peer label match";
@@ -295,7 +296,7 @@ index 000000000000..7a0eac60d8bd
 +
 +	state = RULE_MEDIATES_AF(rules, AF_UNIX);
 +	if (state) {
-+		state = match_to_prot(rules->policy.dfa, state, type, protocol,
++		state = match_to_prot(rules->policy->dfa, state, type, protocol,
 +				      &ad.info);
 +		return do_perms(profile, rules, state, AA_MAY_CREATE, &ad);
 +	}
@@ -332,7 +333,7 @@ index 000000000000..7a0eac60d8bd
 +
 +	state = RULE_MEDIATES_AF(rules, AF_UNIX);
 +	if (state) {
-+		state = match_to_sk(rules->policy.dfa, state, unix_sk(sk),
++		state = match_to_sk(rules->policy->dfa, state, unix_sk(sk),
 +				    &ad->info);
 +		return do_perms(profile, rules, state, request, ad);
 +	}
@@ -402,7 +403,7 @@ index 000000000000..7a0eac60d8bd
 +		ad.net.addr = unix_addr(addr);
 +		ad.net.addrlen = addrlen;
 +
-+		state = match_to_local(rules->policy.dfa, state,
++		state = match_to_local(rules->policy->dfa, state,
 +				       sk->sk_type, sk->sk_protocol,
 +				       unix_addr(addr), addrlen,
 +				       &ad.info);
@@ -457,10 +458,10 @@ index 000000000000..7a0eac60d8bd
 +	if (state) {
 +		__be16 b = cpu_to_be16(backlog);
 +
-+		state = match_to_cmd(rules->policy.dfa, state, unix_sk(sk),
++		state = match_to_cmd(rules->policy->dfa, state, unix_sk(sk),
 +				     CMD_LISTEN, &ad.info);
 +		if (state) {
-+			state = aa_dfa_match_len(rules->policy.dfa, state,
++			state = aa_dfa_match_len(rules->policy->dfa, state,
 +						 (char *) &b, 2);
 +			if (!state)
 +				ad.info = "failed listen backlog match";
@@ -504,7 +505,7 @@ index 000000000000..7a0eac60d8bd
 +
 +	state = RULE_MEDIATES_AF(rules, AF_UNIX);
 +	if (state) {
-+		state = match_to_sk(rules->policy.dfa, state, unix_sk(sk),
++		state = match_to_sk(rules->policy->dfa, state, unix_sk(sk),
 +				    &ad.info);
 +		return do_perms(profile, rules, state, AA_MAY_ACCEPT, &ad);
 +	}
@@ -558,10 +559,10 @@ index 000000000000..7a0eac60d8bd
 +	if (state) {
 +		__be16 b = cpu_to_be16(optname);
 +
-+		state = match_to_cmd(rules->policy.dfa, state, unix_sk(sk),
++		state = match_to_cmd(rules->policy->dfa, state, unix_sk(sk),
 +				     CMD_OPT, &ad.info);
 +		if (state) {
-+			state = aa_dfa_match_len(rules->policy.dfa, state,
++			state = aa_dfa_match_len(rules->policy->dfa, state,
 +						 (char *) &b, 2);
 +			if (!state)
 +				ad.info = "failed sockopt match";
@@ -616,7 +617,7 @@ index 000000000000..7a0eac60d8bd
 +			addr = unix_sk(peer_sk)->addr->name;
 +			len = unix_sk(peer_sk)->addr->len;
 +		}
-+		state = match_to_peer(rules->policy.dfa, state, unix_sk(sk),
++		state = match_to_peer(rules->policy->dfa, state, unix_sk(sk),
 +				      addr, len, &ad->info);
 +		if (!peer_label)
 +			peer_label = peer_ctx->label;
@@ -655,8 +656,8 @@ index 000000000000..7a0eac60d8bd
 +		ad.net.peer_sk = peer_sk;
 +		ad.subj_cred = subj_cred;
 +		/* TODO: ns!!! */
-+		if (!net_eq(sock_net(sk), sock_net(peer_sk)))
-+			;
++		if (!net_eq(sock_net(sk), sock_net(peer_sk))) {
++		}
 +
 +		if (unconfined(label))
 +			return 0;
@@ -677,10 +678,10 @@ index 000000000000..7a0eac60d8bd
 +	}
 +	if (sk1 < sk2) {
 +		unix_state_lock(sk1);
-+		unix_state_lock_nested(sk2, U_LOCK_SECOND);
++		unix_state_lock(sk2);
 +	} else {
 +		unix_state_lock(sk2);
-+		unix_state_lock_nested(sk1, U_LOCK_SECOND);
++		unix_state_lock(sk1);
 +	}
 +}
 +
@@ -714,8 +715,8 @@ index 000000000000..7a0eac60d8bd
 +	if (!unix_connected(sock) && sk_req) {
 +		error = unix_label_sock_perm(subj_cred, label, op, sk_req,
 +					     sock);
-+		if (!error)
-+			; // TODO: update label
++		if (!error) {
++		} // TODO: update label
 +	}
 +	unix_state_unlock(sock->sk);
 +	if (!peer_sk)
@@ -753,45 +754,45 @@ index 000000000000..7a0eac60d8bd
 +	return error;
 +}
 diff --git a/security/apparmor/apparmorfs.c b/security/apparmor/apparmorfs.c
-index 2d51c3e17bdc..dae3235ea453 100644
+index 01b923d97a44..74e22eaec6fc 100644
 --- a/security/apparmor/apparmorfs.c
 +++ b/security/apparmor/apparmorfs.c
-@@ -2374,6 +2374,11 @@ static struct aa_sfs_entry aa_sfs_entry_ns[] = {
-	{ }
+@@ -2383,6 +2383,11 @@ static struct aa_sfs_entry aa_sfs_entry_ns[] = {
+ 	{ }
  };
-
+ 
 +static struct aa_sfs_entry aa_sfs_entry_dbus[] = {
 +	AA_SFS_FILE_STRING("mask", "acquire send receive"),
 +	{ }
 +};
 +
  static struct aa_sfs_entry aa_sfs_entry_query_label[] = {
-	AA_SFS_FILE_STRING("perms", "allow deny audit quiet"),
-	AA_SFS_FILE_BOOLEAN("data",		1),
-@@ -2398,6 +2403,7 @@ static struct aa_sfs_entry aa_sfs_entry_features[] = {
-	AA_SFS_DIR("caps",			aa_sfs_entry_caps),
-	AA_SFS_DIR("ptrace",			aa_sfs_entry_ptrace),
-	AA_SFS_DIR("signal",			aa_sfs_entry_signal),
+ 	AA_SFS_FILE_STRING("perms", "allow deny audit quiet"),
+ 	AA_SFS_FILE_BOOLEAN("data",		1),
+@@ -2412,6 +2417,7 @@ static struct aa_sfs_entry aa_sfs_entry_features[] = {
+ 	AA_SFS_DIR("caps",			aa_sfs_entry_caps),
+ 	AA_SFS_DIR("ptrace",			aa_sfs_entry_ptrace),
+ 	AA_SFS_DIR("signal",			aa_sfs_entry_signal),
 +	AA_SFS_DIR("dbus",                      aa_sfs_entry_dbus),
-	AA_SFS_DIR("query",			aa_sfs_entry_query),
-	{ }
- };
+ 	AA_SFS_DIR("query",			aa_sfs_entry_query),
+ 	AA_SFS_DIR("io_uring",			aa_sfs_entry_io_uring),
+ 	{ }
 diff --git a/security/apparmor/file.c b/security/apparmor/file.c
-index 6fd21324a097..0e65dec20b4a 100644
+index d52a5b14dad4..30e6dfc7ed3b 100644
 --- a/security/apparmor/file.c
 +++ b/security/apparmor/file.c
 @@ -14,6 +14,7 @@
  #include <linux/fs.h>
  #include <linux/mount.h>
-
+ 
 +#include "include/af_unix.h"
  #include "include/apparmor.h"
  #include "include/audit.h"
  #include "include/cred.h"
-@@ -225,16 +226,18 @@ aa_state_t aa_str_perms(struct aa_policydb *file_rules, aa_state_t start,
-	return state;
+@@ -212,16 +213,18 @@ aa_state_t aa_str_perms(struct aa_policydb *file_rules, aa_state_t start,
+ 	return state;
  }
-
+ 
 -static int __aa_path_perm(const char *op, const struct cred *subj_cred,
 -			  struct aa_profile *profile, const char *name,
 -			  u32 request, struct path_cond *cond, int flags,
@@ -801,17 +802,17 @@ index 6fd21324a097..0e65dec20b4a 100644
 +			u32 request, struct path_cond *cond, int flags,
 +			struct aa_perms *perms)
  {
-	struct aa_ruleset *rules = list_first_entry(&profile->rules,
-						    typeof(*rules), list);
-	int e = 0;
-
+ 	struct aa_ruleset *rules = list_first_entry(&profile->rules,
+ 						    typeof(*rules), list);
+ 	int e = 0;
+ 
 -	if (profile_unconfined(profile))
 +	if (profile_unconfined(profile) ||
 +		((flags & PATH_SOCK_COND) &&
 +		!RULE_MEDIATES_AF(rules, AF_UNIX)))
-		return 0;
-	aa_str_perms(&(rules->file), rules->file.start[AA_CLASS_FILE],
-		     name, cond, perms);
+ 		return 0;
+ 	aa_str_perms(rules->file, rules->file->start[AA_CLASS_FILE],
+ 		     name, cond, perms);
 diff --git a/security/apparmor/include/af_unix.h b/security/apparmor/include/af_unix.h
 new file mode 100644
 index 000000000000..bd0fb49bea96
@@ -941,78 +942,81 @@ index 000000000000..bd0fb49bea96
 +
 +#endif /* __AA_AF_UNIX_H */
 diff --git a/security/apparmor/include/file.h b/security/apparmor/include/file.h
-index 64dc6d1a7a05..b3a336a233b6 100644
+index 6e8f2aa66cd6..d5b3c1ff33b6 100644
 --- a/security/apparmor/include/file.h
 +++ b/security/apparmor/include/file.h
-@@ -120,6 +120,10 @@ aa_state_t aa_str_perms(struct aa_policydb *file_rules, aa_state_t start,
-			const char *name, struct path_cond *cond,
-			struct aa_perms *perms);
-
+@@ -83,6 +83,10 @@ aa_state_t aa_str_perms(struct aa_policydb *file_rules, aa_state_t start,
+ 			const char *name, struct path_cond *cond,
+ 			struct aa_perms *perms);
+ 
 +int __aa_path_perm(const char *op,  const struct cred *subj_cred,
 +		   struct aa_profile *profile, const char *name,
 +		   u32 request, struct path_cond *cond, int flags,
 +		   struct aa_perms *perms);
  int aa_path_perm(const char *op, const struct cred *subj_cred,
-		 struct aa_label *label, const struct path *path,
-		 int flags, u32 request, struct path_cond *cond);
+ 		 struct aa_label *label, const struct path *path,
+ 		 int flags, u32 request, struct path_cond *cond);
 diff --git a/security/apparmor/include/label.h b/security/apparmor/include/label.h
 index 2a72e6b17d68..1ac9e1066fc9 100644
 --- a/security/apparmor/include/label.h
 +++ b/security/apparmor/include/label.h
 @@ -261,7 +261,10 @@ for ((I).i = (I).j = 0;							\
-	struct label_it i;						\
-	int ret = 0;							\
-	label_for_each(i, (L), profile) {				\
+ 	struct label_it i;						\
+ 	int ret = 0;							\
+ 	label_for_each(i, (L), profile) {				\
 -		if (RULE_MEDIATES(&profile->rules, (C))) {		\
 +		struct aa_ruleset *rules =				\
 +			list_first_entry(&profile->rules, typeof(*rules),\
 +					 list);				\
 +		if (RULE_MEDIATES(rules, (C))) {			\
-			ret = 1;					\
-			break;						\
-		}							\
+ 			ret = 1;					\
+ 			break;						\
+ 		}							\
 diff --git a/security/apparmor/include/net.h b/security/apparmor/include/net.h
-index 5bd7e7779613..e00e027059b5 100644
+index c42ed8a73f1c..fa5659794c83 100644
 --- a/security/apparmor/include/net.h
 +++ b/security/apparmor/include/net.h
-@@ -49,6 +49,7 @@
+@@ -49,8 +49,10 @@
  struct aa_sk_ctx {
-	struct aa_label *label;
-	struct aa_label *peer;
+ 	struct aa_label *label;
+ 	struct aa_label *peer;
 +	struct path path;
  };
-
- #define SK_CTX(X) ((X)->sk_security)
-@@ -84,6 +85,9 @@ struct aa_net_compat {
+ 
++#define SK_CTX(X) ((X)->sk_security)
+ static inline struct aa_sk_ctx *aa_sock(const struct sock *sk)
+ {
+ 	return sk->sk_security + apparmor_blob_sizes.lbs_sock;
+@@ -77,6 +79,9 @@ static inline struct aa_sk_ctx *aa_sock(const struct sock *sk)
  ({						\
-	int __e;				\
-	switch ((FAMILY)) {			\
+ 	int __e;				\
+ 	switch ((FAMILY)) {			\
 +	case AF_UNIX:				\
 +		__e = aa_unix_ ## FN;		\
 +		break;				\
-	default:				\
-		__e = DEF_FN;			\
-	}					\
+ 	default:				\
+ 		__e = DEF_FN;			\
+ 	}					\
 diff --git a/security/apparmor/include/path.h b/security/apparmor/include/path.h
 index 343189903dba..8bb915d48dc7 100644
 --- a/security/apparmor/include/path.h
 +++ b/security/apparmor/include/path.h
 @@ -13,6 +13,7 @@
-
+ 
  enum path_flags {
-	PATH_IS_DIR = 0x1,		/* path is a directory */
+ 	PATH_IS_DIR = 0x1,		/* path is a directory */
 +	PATH_SOCK_COND = 0x2,
-	PATH_CONNECT_PATH = 0x4,	/* connect disconnected paths to / */
-	PATH_CHROOT_REL = 0x8,		/* do path lookup relative to chroot */
-	PATH_CHROOT_NSCONNECT = 0x10,	/* connect paths that are at ns root */
+ 	PATH_CONNECT_PATH = 0x4,	/* connect disconnected paths to / */
+ 	PATH_CHROOT_REL = 0x8,		/* do path lookup relative to chroot */
+ 	PATH_CHROOT_NSCONNECT = 0x10,	/* connect paths that are at ns root */
 diff --git a/security/apparmor/include/policy.h b/security/apparmor/include/policy.h
-index 0922f1bf9629..0c5751f79564 100644
+index 75088cc310b6..b54b4e166423 100644
 --- a/security/apparmor/include/policy.h
 +++ b/security/apparmor/include/policy.h
-@@ -289,8 +289,11 @@ static inline aa_state_t RULE_MEDIATES_AF(struct aa_ruleset *rules, u16 AF)
-	aa_state_t state = RULE_MEDIATES(rules, AA_CLASS_NET);
-	__be16 be_af = cpu_to_be16(AF);
-
+@@ -304,8 +304,11 @@ static inline aa_state_t RULE_MEDIATES_AF(struct aa_ruleset *rules, u16 AF)
+ 	aa_state_t state = RULE_MEDIATES(rules, AA_CLASS_NET);
+ 	__be16 be_af = cpu_to_be16(AF);
+ 
 -	if (!state)
 -		return DFA_NOMATCH;
 +	if (!state) {
@@ -1020,33 +1024,33 @@ index 0922f1bf9629..0c5751f79564 100644
 +		if (!state)
 +			return DFA_NOMATCH;
 +	}
-	return aa_dfa_match_len(rules->policy.dfa, state, (char *) &be_af, 2);
+ 	return aa_dfa_match_len(rules->policy->dfa, state, (char *) &be_af, 2);
  }
-
+ 
 diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-index 366cdfd6a7ba..887370652250 100644
+index f5d05297d59e..929e35b2d8a5 100644
 --- a/security/apparmor/lsm.c
 +++ b/security/apparmor/lsm.c
-@@ -25,6 +25,7 @@
- #include <net/sock.h>
+@@ -26,6 +26,7 @@
  #include <uapi/linux/mount.h>
-
+ #include <uapi/linux/lsm.h>
+ 
 +#include "include/af_unix.h"
  #include "include/apparmor.h"
  #include "include/apparmorfs.h"
  #include "include/audit.h"
-@@ -876,6 +877,7 @@ static void apparmor_sk_free_security(struct sock *sk)
-	SK_CTX(sk) = NULL;
-	aa_put_label(ctx->label);
-	aa_put_label(ctx->peer);
+@@ -1064,6 +1065,7 @@ static void apparmor_sk_free_security(struct sock *sk)
+ 
+ 	aa_put_label(ctx->label);
+ 	aa_put_label(ctx->peer);
 +	path_put(&ctx->path);
-	kfree(ctx);
  }
-
-@@ -895,6 +897,102 @@ static void apparmor_sk_clone_security(const struct sock *sk,
-	if (new->peer)
-		aa_put_label(new->peer);
-	new->peer = aa_get_label(ctx->peer);
+ 
+ /**
+@@ -1084,6 +1086,102 @@ static void apparmor_sk_clone_security(const struct sock *sk,
+ 	if (new->peer)
+ 		aa_put_label(new->peer);
+ 	new->peer = aa_get_label(ctx->peer);
 +	new->path = ctx->path;
 +	path_get(&new->path);
 +}
@@ -1144,27 +1148,26 @@ index 366cdfd6a7ba..887370652250 100644
 +
 +	return error;
  }
-
- /**
-@@ -1135,15 +1233,30 @@ static int apparmor_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
- }
+ 
+ static int apparmor_socket_create(int family, int type, int protocol, int kern)
+@@ -1303,14 +1401,30 @@ static int apparmor_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
  #endif
-
--
+ 
+ 
 -static struct aa_label *sk_peer_label(struct sock *sk)
 +static struct aa_label *sk_peer_get_label(struct sock *sk)
  {
 +	struct sock *peer_sk;
-	struct aa_sk_ctx *ctx = SK_CTX(sk);
+ 	struct aa_sk_ctx *ctx = aa_sock(sk);
 +	struct aa_label *label = ERR_PTR(-ENOPROTOOPT);
-
-	if (ctx->peer)
+ 
+ 	if (ctx->peer)
 -		return ctx->peer;
 +		return aa_get_label(ctx->peer);
 +
 +	if (sk->sk_family != PF_UNIX)
 +		return ERR_PTR(-ENOPROTOOPT);
-
+ 
 -	return ERR_PTR(-ENOPROTOOPT);
 +	/* check for sockpair peering which does not go through
 +	 * security_unix_stream_connect
@@ -1179,70 +1182,70 @@ index 366cdfd6a7ba..887370652250 100644
 +
 +	return label;
  }
-
+ 
  /**
-@@ -1161,7 +1274,7 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
-	struct aa_label *peer;
-
-	label = begin_current_label_crit_section();
+@@ -1333,7 +1447,7 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
+ 	struct aa_label *peer;
+ 
+ 	label = begin_current_label_crit_section();
 -	peer = sk_peer_label(sock->sk);
 +	peer = sk_peer_get_label(sock->sk);
-	if (IS_ERR(peer)) {
-		error = PTR_ERR(peer);
-		goto done;
-@@ -1172,7 +1285,7 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
-	/* don't include terminating \0 in slen, it breaks some apps */
-	if (slen < 0) {
-		error = -ENOMEM;
+ 	if (IS_ERR(peer)) {
+ 		error = PTR_ERR(peer);
+ 		goto done;
+@@ -1344,7 +1458,7 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
+ 	/* don't include terminating \0 in slen, it breaks some apps */
+ 	if (slen < 0) {
+ 		error = -ENOMEM;
 -		goto done;
 +		goto done_put;
-	}
-	if (slen > len) {
-		error = -ERANGE;
-@@ -1184,6 +1297,9 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
+ 	}
+ 	if (slen > len) {
+ 		error = -ERANGE;
+@@ -1356,6 +1470,9 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
  done_len:
-	if (copy_to_sockptr(optlen, &slen, sizeof(slen)))
-		error = -EFAULT;
+ 	if (copy_to_sockptr(optlen, &slen, sizeof(slen)))
+ 		error = -EFAULT;
 +
 +done_put:
 +	aa_put_label(peer);
  done:
-	end_current_label_crit_section(label);
-	kfree(name);
-@@ -1288,6 +1404,9 @@ static struct security_hook_list apparmor_hooks[] __ro_after_init = {
-	LSM_HOOK_INIT(sk_free_security, apparmor_sk_free_security),
-	LSM_HOOK_INIT(sk_clone_security, apparmor_sk_clone_security),
-
+ 	end_current_label_crit_section(label);
+ 	kfree(name);
+@@ -1467,6 +1584,9 @@ static struct security_hook_list apparmor_hooks[] __ro_after_init = {
+ 	LSM_HOOK_INIT(sk_free_security, apparmor_sk_free_security),
+ 	LSM_HOOK_INIT(sk_clone_security, apparmor_sk_clone_security),
+ 
 +	LSM_HOOK_INIT(unix_stream_connect, apparmor_unix_stream_connect),
 +	LSM_HOOK_INIT(unix_may_send, apparmor_unix_may_send),
 +
-	LSM_HOOK_INIT(socket_create, apparmor_socket_create),
-	LSM_HOOK_INIT(socket_post_create, apparmor_socket_post_create),
-	LSM_HOOK_INIT(socket_bind, apparmor_socket_bind),
+ 	LSM_HOOK_INIT(socket_create, apparmor_socket_create),
+ 	LSM_HOOK_INIT(socket_post_create, apparmor_socket_post_create),
+ 	LSM_HOOK_INIT(socket_bind, apparmor_socket_bind),
 diff --git a/security/apparmor/net.c b/security/apparmor/net.c
-index ffb09729f7f1..dadb52fe9eed 100644
+index 77413a519117..589c36109129 100644
 --- a/security/apparmor/net.c
 +++ b/security/apparmor/net.c
 @@ -8,6 +8,7 @@
   * Copyright 2009-2017 Canonical Ltd.
   */
-
+ 
 +#include "include/af_unix.h"
  #include "include/apparmor.h"
  #include "include/audit.h"
  #include "include/cred.h"
-@@ -26,6 +27,7 @@ struct aa_sfs_entry aa_sfs_entry_network[] = {
-
- struct aa_sfs_entry aa_sfs_entry_network_compat[] = {
-	AA_SFS_FILE_STRING("af_mask",	AA_SFS_AF_MASK),
-+	AA_SFS_FILE_BOOLEAN("af_unix",	1),
-	{ }
+@@ -21,6 +22,7 @@
+ 
+ struct aa_sfs_entry aa_sfs_entry_network[] = {
+ 	AA_SFS_FILE_STRING("af_mask",	AA_SFS_AF_MASK),
++	AA_SFS_FILE_BOOLEAN("af_unix",  1),
+ 	{ }
  };
-
-@@ -71,6 +73,37 @@ static const char * const net_mask_names[] = {
-	"unknown",
+ 
+@@ -66,6 +68,37 @@ static const char * const net_mask_names[] = {
+ 	"unknown",
  };
-
+ 
 +static void audit_unix_addr(struct audit_buffer *ab, const char *str,
 +			    struct sockaddr_un *addr, int addrlen)
 +{
@@ -1274,29 +1277,29 @@ index ffb09729f7f1..dadb52fe9eed 100644
 +	else
 +		audit_unix_addr(ab, str, NULL, 0);
 +}
-
+ 
  /* audit callback for net specific fields */
  void audit_net_cb(struct audit_buffer *ab, void *va)
-@@ -78,12 +111,12 @@ void audit_net_cb(struct audit_buffer *ab, void *va)
-	struct common_audit_data *sa = va;
-	struct apparmor_audit_data *ad = aad(sa);
-
+@@ -73,12 +106,12 @@ void audit_net_cb(struct audit_buffer *ab, void *va)
+ 	struct common_audit_data *sa = va;
+ 	struct apparmor_audit_data *ad = aad(sa);
+ 
 -	if (address_family_names[sa->u.net->family])
 +	if (address_family_names[ad->common.u.net->family])
-		audit_log_format(ab, " family=\"%s\"",
+ 		audit_log_format(ab, " family=\"%s\"",
 -				 address_family_names[sa->u.net->family]);
 +				 address_family_names[ad->common.u.net->family]);
-	else
-		audit_log_format(ab, " family=\"unknown(%d)\"",
+ 	else
+ 		audit_log_format(ab, " family=\"unknown(%d)\"",
 -				 sa->u.net->family);
 +				 ad->common.u.net->family);
-	if (sock_type_names[ad->net.type])
-		audit_log_format(ab, " sock_type=\"%s\"",
-				 sock_type_names[ad->net.type]);
-@@ -103,6 +136,23 @@ void audit_net_cb(struct audit_buffer *ab, void *va)
-					   net_mask_names, NET_PERMS_MASK);
-		}
-	}
+ 	if (sock_type_names[ad->net.type])
+ 		audit_log_format(ab, " sock_type=\"%s\"",
+ 				 sock_type_names[ad->net.type]);
+@@ -98,6 +131,23 @@ void audit_net_cb(struct audit_buffer *ab, void *va)
+ 					   net_mask_names, NET_PERMS_MASK);
+ 		}
+ 	}
 +	if (ad->common.u.net->family == AF_UNIX) {
 +		if ((ad->request & ~NET_PEER_MASK) && ad->net.addr)
 +			audit_unix_addr(ab, "addr",
@@ -1314,20 +1317,21 @@ index ffb09729f7f1..dadb52fe9eed 100644
 +						   ad->net.peer_sk);
 +		}
 +	}
-	if (ad->peer) {
-		audit_log_format(ab, " peer=");
-		aa_label_xaudit(ab, labels_ns(ad->subj_label), ad->peer,
-@@ -212,7 +262,10 @@ int aa_sock_file_perm(const struct cred *subj_cred, struct aa_label *label,
-	AA_BUG(!sock);
-	AA_BUG(!sock->sk);
-
+ 	if (ad->peer) {
+ 		audit_log_format(ab, " peer=");
+ 		aa_label_xaudit(ab, labels_ns(ad->subj_label), ad->peer,
+@@ -193,7 +243,10 @@ int aa_sock_file_perm(const struct cred *subj_cred, struct aa_label *label,
+ 	AA_BUG(!sock);
+ 	AA_BUG(!sock->sk);
+ 
 -	return aa_label_sk_perm(subj_cred, label, op, request, sock->sk);
 +	return af_select(sock->sk->sk_family,
 +			 file_perm(subj_cred, label, op, request, sock),
 +			 aa_label_sk_perm(subj_cred, label, op, request,
 +					  sock->sk));
  }
-
+ 
  #ifdef CONFIG_NETWORK_SECMARK
---
-2.35.6
+-- 
+2.39.4
+
