@@ -3,6 +3,13 @@
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1
 
+# Do not add unique suffix to *.ko.debug files
+# If _unique_debug_names defined, then __debug_install_post expands
+# *.ko to *.ko-<version>-<release>.<arch>.debug.
+# Undefining this option keeps filenames simple: *.ko.debug.
+# This is what crash utility is looking for.
+%undefine _unique_debug_names
+
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
@@ -14,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.118
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -517,6 +524,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue Nov 26 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.118-2
+- Disable unique naming for *.ko.debug to make crash utility happy
 * Tue Nov 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-1
 - Update to version 6.1.118
 * Mon Nov 18 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.114-5
