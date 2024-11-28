@@ -5,7 +5,7 @@
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
 Version:        20230315
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Custom
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
@@ -74,6 +74,12 @@ popd
 %{_fixperms} %{buildroot}/*
 
 %posttrans
+# rehash certs to avoid regression during upgrade from v <= 20201001
+if ! openssl rehash %{ssl_certs_dir}; then
+  echo "Error while c_rehashing" >&2
+fi
+cat %{ssl_certs_dir}/*.pem > %{crt_dir}/ca-bundle.crt
+
 bash %{_bindir}/remove-expired-certs.sh %{ssl_certs_dir} || :
 
 %clean
@@ -92,6 +98,8 @@ rm -rf %{buildroot}
 %{crt_dir}/ca-bundle.crt
 
 %changelog
+* Thu Nov 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-2
+- Rehash ca-certs post upgrade
 * Thu Nov 21 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-1
 - Upgrade to v20230315
 - Spec cleanups, don't generate helper scripts everytime
