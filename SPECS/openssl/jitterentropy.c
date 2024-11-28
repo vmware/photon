@@ -212,15 +212,16 @@ static ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len)
 static int jent_in_fips_mode(void)
 {
 	int fd;
-	static char buf[2] = "0";
+	static char buf[2] = {'X', '0'};
 
-	if (buf[0] == '1')
-		return 1;
+	if (buf[0] != 'X')
+		return buf[0] == '1';
 
 	if ((fd = open("/proc/sys/crypto/fips_enabled", O_RDONLY)) >= 0) {
 		while (read(fd, buf, sizeof(buf)) < 0 && errno == EINTR);
 		close(fd);
 	}
+
 	return buf[0] == '1';
 }
 
