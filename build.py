@@ -585,7 +585,7 @@ class CleanUp:
                     rpmFile = os.path.join(
                         constants.rpmPath,
                         buildarch,
-                        f"{p}-{version}*{buildarch}.rpm",
+                        f"{p}-{version}.{buildarch}.rpm",
                     )
                     with suppress(FileNotFoundError):
                         os.unlink(rpmFile)
