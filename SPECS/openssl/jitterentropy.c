@@ -57,6 +57,8 @@
 #include <gnu/lib-names.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <syslog.h>
+#include <stdarg.h>
 #include <linux/if_alg.h>
 #include <openssl/core.h>
 #include <openssl/core_dispatch.h>
@@ -105,23 +107,12 @@ static ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len);
 
 static void _pr_err(int line, const char *func, const char *fmt, ...)
 {
-	va_list args;
+	va_list ap;
 
-	va_start(args, fmt);
-
-	BIO *bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
-	if (bio_err == NULL) {
-        /* this is a fallback method, we should not miss errors */
-		fprintf(stderr, "JENTROPY-ERROR: %s():%d ", func, line);
-		vfprintf(stderr, fmt, args);
-        va_end(args);
-		return;
-	}
-
-	BIO_printf(bio_err, "JENTROPY-ERROR: %s():%d ", func, line);
-	BIO_vprintf(bio_err, fmt, args);
-	BIO_free(bio_err);
-	va_end(args);
+	va_start(ap, fmt);
+	syslog(LOG_ERR, "JENTROPY-ERROR: %s():%d", func, line);
+	vsyslog(LOG_ERR, fmt, ap);
+	va_end(ap);
 }
 
 /*
