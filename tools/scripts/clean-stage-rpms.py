@@ -30,27 +30,31 @@ def listRPMfilenames():
 
 
 def clean_stage_rpms():
-    keepFiles = listRPMfilenames()
-    rpmpath = os.path.join(constants.rpmPath, constants.buildArch)
-
     allFiles = []
-    for f in os.listdir(rpmpath):
-        if os.path.isfile(f"{rpmpath}/{f}"):
-            allFiles.append(f"{constants.buildArch}/{f}")
+    arch = constants.buildArch
+    rpmPath = constants.rpmPath
 
-    rpmpath = f"{constants.rpmPath}/noarch"
-    for f in os.listdir(rpmpath):
-        if os.path.isfile(f"{rpmpath}/{f}"):
-            allFiles.append(f"noarch/{f}")
+    for i in ["noarch", arch]:
+        d_path = f"{rpmPath}/{i}"
+        if not os.path.exists(d_path):
+            continue
+        for f in os.listdir(d_path):
+            if os.path.isfile(f"{d_path}/{f}"):
+                allFiles.append(f"{i}/{f}")
 
+    if not allFiles:
+        print("Nothing to clean ...")
+        return
+
+    keepFiles = listRPMfilenames()
     removeFiles = list(set(allFiles) - set(keepFiles))
     for f in removeFiles:
-        filePath = os.path.join(constants.rpmPath, f)
-        print("Removing {}".format(f))
+        filePath = f"{rpmPath}/{f}"
+        print(f"Removing {f}")
         try:
             os.remove(filePath)
-        except Exception as error:
-            print("Error while removing file {0}: {1}".format(filePath, error))
+        except Exception as e:
+            print(f"ERROR: while removing file {filePath}: {e}")
 
 
 if __name__ == "__main__":
