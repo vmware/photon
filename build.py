@@ -84,6 +84,7 @@ targetDict = {
         "clean",
         "clean-install",
         "clean-chroot",
+        "clean-stage-rpms",
         "clean-stage-for-incremental-build",
     ],
     "tool-checkup": [
@@ -98,7 +99,6 @@ targetDict = {
         "who-needs",
         "print-upward-deps",
         "pull-stage-rpms",
-        "clean-stage-rpms",
     ],
 }
 
@@ -366,32 +366,6 @@ class Utilities:
         if notFound:
             self.logger.info("List of missing files: " + str(notFound))
 
-    def clean_stage_rpms(self):
-        keepFiles = self.specDepsObject.listRPMfilenames(True)
-        rpmpath = os.path.join(constants.rpmPath, constants.currentArch)
-
-        allFiles = []
-        for f in os.listdir(rpmpath):
-            if os.path.isfile(f"{rpmpath}/{f}"):
-                allFiles.append(f"{constants.currentArch}/{f}")
-
-        rpmpath = f"{constants.rpmPath}/noarch"
-        for f in os.listdir(rpmpath):
-            if os.path.isfile(f"{rpmpath}/{f}"):
-                allFiles.append(f"noarch/{f}")
-
-        removeFiles = list(set(allFiles) - set(keepFiles))
-        for f in removeFiles:
-            filePath = os.path.join(constants.rpmPath, f)
-            print("Removing {}".format(f))
-            try:
-                os.remove(filePath)
-            except Exception as error:
-                print(
-                    "Error while removing file {0}: {1}".format(
-                        filePath, error
-                    )
-                )
 
 
 """
@@ -637,6 +611,37 @@ class CleanUp:
             CleanUp.removeUpwardDeps(spec_fns, "tree")
         except Exception as error:
             print(f"Error in clean_stage_for_incremental_build: {error}")
+
+    def clean_stage_rpms():
+        allFiles = []
+        arch = constants.currentArch
+        rpmPath = constants.rpmPath
+
+        for i in ["noarch", arch]:
+            d_path = f"{rpmPath}/{i}"
+            if not os.path.exists(d_path):
+                continue
+            for f in os.listdir(d_path):
+                if os.path.isfile(f"{d_path}/{f}"):
+                    allFiles.append(f"{i}/{f}")
+
+        if not allFiles:
+            print("Nothing to clean ...")
+            return
+
+        specDepsObject = SpecDependencyGenerator(
+            constants.logPath, constants.logLevel
+        )
+        keepFiles = specDepsObject.listRPMfilenames(True)
+
+        removeFiles = list(set(allFiles) - set(keepFiles))
+        for f in removeFiles:
+            filePath = f"{rpmPath}/{f}"
+            print(f"Removing {f}")
+            try:
+                os.remove(filePath)
+            except Exception as e:
+                print(f"ERROR: while removing file {filePath}: {e}")
 
 
 """
@@ -1012,12 +1017,10 @@ class CheckTools:
             runBashCmd(f"bash {photonDir}/tools/src/contain/make.sh")
 
     def check_all_tools():
-        tools = ["bison", "g++", "gawk", "makeinfo", "kpartx"]
+        tools = ["g++", "gawk", "docker"]
         for tool in tools:
             if not shutil.which(tool):
-                raise Exception(f"{tool} not present")
-
-        runBashCmd("pip3 show pyOpenSSL &>/dev/null")
+                raise Exception(f"ERROR: {tool} not present")
 
         createrepo_cmd = ""
         for tool in {"createrepo", "createrepo_c"}:
@@ -1026,7 +1029,7 @@ class CheckTools:
                 break
 
         if not createrepo_cmd:
-            raise Exception("createrepo not found")
+            raise Exception("ERROR: createrepo not found")
 
         configdict["createrepo-cmd"] = createrepo_cmd
 
@@ -1035,11 +1038,6 @@ class CheckTools:
         runBashCmd(script)
 
     def check_docker():
-        if not glob.glob(Build_Config.dockerEnv) and not shutil.which(
-            "docker"
-        ):
-            raise Exception("docker not present")
-
         runBashCmd("systemctl start docker")
 
         if not glob.glob(Build_Config.dockerEnv):
@@ -1051,7 +1049,7 @@ class CheckTools:
             and docker.__version__ < docker_py_ver
         ):
             print(
-                f"\nError: Python3 package docker-{docker_py_ver} not installed."
+                f"\nERROR: Python3 package docker-{docker_py_ver} not installed."
             )
             print(f"Please use: pip3 install docker=={docker_py_ver}\n")
             raise Exception()
@@ -1760,7 +1758,7 @@ def main():
 
     configdict["targetName"] = targetName.replace("-", "_")
 
-    if targetName != "clean":
+    if targetName not in targetDict["cleanup"]:
         CheckTools.check_pre_reqs()
 
     try:
