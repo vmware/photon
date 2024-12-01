@@ -3,8 +3,6 @@ From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Tue, 8 Oct 2024 19:13:03 +0530
 Subject: [PATCH 2/2] login.defs config changes
 
-Use yescrypt encrypt method as default
-
 Use pw_dict instead of cracklib_dict
 
 Disable usergroups. Use "users" group by default (see /usr/sbin/useradd)
@@ -183,7 +181,7 @@ index 114dbcd..4808f55 100644
  # the PAM modules configuration.
  #
 -#ENCRYPT_METHOD DES
-+# ENCRYPT_METHOD YESCRYPT
++# ENCRYPT_METHOD SHA512
  
  #
  # Only works if ENCRYPT_METHOD is set to SHA256 or SHA512.
