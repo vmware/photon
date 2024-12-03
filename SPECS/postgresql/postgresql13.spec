@@ -11,7 +11,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql13
-Version:        13.16
+Version:        13.18
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -20,7 +20,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=e874c77e2d1d27d724f45c576c9d815da55f36712d67e3ec0a1f14ce4ac535fb39b6f23cdcd818cff05788e2c1e12f79572d90f8c145d7478aa35157b0b40679
+%define sha512 %{srcname}=2694ff9402683c90ccfbb53a465f6b6a09702b9b5b44e2db84a3a41175427d889d1b823897fd361b04a53dd3596289822e36a77215cb45dd972d79850fbdb97b
 
 BuildRequires: krb5-devel
 BuildRequires: libedit-devel
@@ -267,6 +267,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Tue Dec 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.18-1
+- Version upgrade to fix CVEs
 * Mon Aug 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.16-1
 - Upgrade to v13.16 to fix CVE-2024-7348
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-1
