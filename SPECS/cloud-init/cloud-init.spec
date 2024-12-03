@@ -1,8 +1,8 @@
 %define cl_services cloud-config.service cloud-config.target cloud-final.service %{name}.service %{name}.target %{name}-local.service
 
 Name:           cloud-init
-Version:        24.3.1
-Release:        2%{?dist}
+Version:        24.4
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=01b798d67328ecd66229568233fb674f45c055ac469adb31a55a909b6b2c8fd1901a833accb66423923b8945210aa4dc6a0d61945787aabe414c01b501b1416d
+%define sha512 %{name}=df42fb0c97aba37599e3c9431e1dfffc0a3c0ce6d639fd9a980fe0da190c998da3130ab65e3288eecd193967dbaad41aac3c0040244cf6036db9584a3c87538d
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -152,6 +152,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Mon Jan 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.4-1
+- Upgrade to v24.4
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.3.1-2
 - Release bump for SRP compliance
 * Tue Sep 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.3.1-1

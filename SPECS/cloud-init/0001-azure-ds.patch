@@ -1,7 +1,7 @@
-From 7764e3a8134b4819f6c7984aec59c4ba281b974b Mon Sep 17 00:00:00 2001
+From 7ad096e50d3cf9e6019205e4ad851cad04873056 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Thu, 7 Sep 2023 12:53:58 +0530
-Subject: [PATCH 1/8] azure ds
+Subject: [PATCH 1/9] azure ds
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
@@ -10,7 +10,7 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  1 file changed, 30 insertions(+)
 
 diff --git a/cloudinit/sources/helpers/azure.py b/cloudinit/sources/helpers/azure.py
-index 1493afc..bfa8933 100644
+index 7e79f19..52ab7f1 100644
 --- a/cloudinit/sources/helpers/azure.py
 +++ b/cloudinit/sources/helpers/azure.py
 @@ -3,6 +3,7 @@
@@ -24,24 +24,24 @@ index 1493afc..bfa8933 100644
 @@ -11,6 +12,7 @@ import textwrap
  import zlib
  from contextlib import contextmanager
- from datetime import datetime
+ from datetime import datetime, timezone
 +from io import StringIO
  from time import sleep, time
  from typing import Callable, List, Optional, TypeVar, Union
- from xml.etree import ElementTree  # nosec B405
+ from xml.etree import ElementTree as ET  # nosec B405
 @@ -37,6 +39,8 @@ azure_ds_reporter = events.ReportEventStack(
-
+ 
  T = TypeVar("T")
-
+ 
 +NETWORKD_LEASES_DIR = '/run/systemd/netif/leases'
 +
-
+ 
  def azure_ds_telemetry_reporter(func: Callable[..., T]) -> Callable[..., T]:
      def impl(*args, **kwargs):
-@@ -847,6 +851,32 @@ class WALinuxAgentShim:
+@@ -849,6 +853,32 @@ class WALinuxAgentShim:
          report_diagnostic_event(msg, logger_func=LOG.debug)
          return goal_state
-
+ 
 +    @staticmethod
 +    def networkd_parse_lease(content):
 +        """Parse a systemd lease file content as in /run/systemd/netif/leases/
@@ -71,5 +71,6 @@ index 1493afc..bfa8933 100644
      @azure_ds_telemetry_reporter
      def _get_user_pubkeys(
          self, goal_state: GoalState, pubkey_info: list
---
-2.34.1
+-- 
+2.47.1
+
