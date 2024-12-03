@@ -1,3 +1,4 @@
+%global build_for %{BUILD_FOR}
 %global security_hardening none
 %define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %define _modulesdir /lib/modules/%{uname_r}

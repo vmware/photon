@@ -1,3 +1,4 @@
+%global build_for %{BUILD_FOR}
 %global security_hardening  none
 %define src_ver             %{ICE_VERSION}
 %define kernel_ver          %{KERNEL_VERSION}-%{KERNEL_RELEASE}
