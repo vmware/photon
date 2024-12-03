@@ -1,7 +1,7 @@
-From 6b8419527d75445558d0ba468dd3328feaa752b3 Mon Sep 17 00:00:00 2001
+From 2bbbeddf5aab33dc0c614bfd5ab71bf28525ebb1 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Wed, 25 Aug 2021 19:48:43 +0530
-Subject: [PATCH 2/8] Change default policy
+Subject: [PATCH 2/9] Change default policy
 
 Let's have DI_DEFAULT_POLICY as DI_ENABLED if no DS is found, or else
 cloud-init services won't get started during boot and gosc tests fail.
@@ -12,11 +12,11 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tools/ds-identify b/tools/ds-identify
-index 31a15fe..ee54fdd 100755
+index e00b05e..e4abd64 100755
 --- a/tools/ds-identify
 +++ b/tools/ds-identify
 @@ -100,7 +100,7 @@ DI_MAIN=${DI_MAIN:-main}
-
+ 
  DI_BLKID_EXPORT_OUT=""
  DI_GEOM_LABEL_STATUS_OUT=""
 -DI_DEFAULT_POLICY="search,found=all,maybe=all,notfound=${DI_DISABLED}"
@@ -24,5 +24,6 @@ index 31a15fe..ee54fdd 100755
  DI_DEFAULT_POLICY_NO_DMI="search,found=all,maybe=all,notfound=${DI_ENABLED}"
  DI_DMI_BOARD_NAME=""
  DI_DMI_CHASSIS_ASSET_TAG=""
---
-2.34.1
+-- 
+2.47.1
+
