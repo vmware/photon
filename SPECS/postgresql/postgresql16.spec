@@ -12,7 +12,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql16
-Version:        16.4
+Version:        16.6
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=f2070299f0857a270317ac984f8393374cf00d4f32a082fe3c5481e36c560595ea711fed95e40d1bc90c5089edf8f165649d443d8b9c68614e1c83fc91268e96
+%define sha512 %{srcname}=ffd6d39fb7aed87241237d68af4934fba1b4ac1be4d3c2833e308e50c21a693796fe54b73e0905365d7557009c40049a23b966aa86765b969797434a0d4bd5f8
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -699,6 +699,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Tue Dec 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.6-1
+- Version upgrade to fix CVEs
 * Fri Aug 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.4-1
 - Upgrade to v16.4 to fix CVE-2024-7348
 * Fri May 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.3-1
