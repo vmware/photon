@@ -134,7 +134,16 @@ class SRP(object):
             raise Exception(
                 f"Can not parse dist tag: <{n}>-<{v}>-<{r}>-<{t}>-<{a}>, filename={filename}"
             )
-        repo = f"https://packages-prod.broadcom.com/photon/{branch}/photon_{branch}_{constants.targetArch}"
+
+        reponame = "photon"
+        if n in constants.extraPackagesList:
+            reponame = f"{reponame}_extras"
+        elif n.endswith("-debuginfo"):
+            reponame = f"{reponame}_debuginfo"
+        elif a == "src":
+            reponame = f"{reponame}_srpms"
+
+        repo = f"https://packages-prod.broadcom.com/photon/{branch}/{reponame}_{branch}_{constants.targetArch}"
         return f"uid.obj.comp.package.rpm(name='{n}',version='{v}',release='{r}.{t}',arch='{a}',original_repository='{repo}')"
 
     def goDepPathToUid(self, path):
@@ -229,7 +238,7 @@ class SRP(object):
             t = rpm["tag"]
             a = rpm["arch"]
 
-            if n == self.package + "-debuginfo":
+            if n == f"{self.package}-debuginfo":
                 description = f"Debuginfo for {self.package}"
             elif a == "src":
                 description = f"Source RPM for {self.package}"
