@@ -1,11 +1,16 @@
-From ca195dd0b5b3217841ac14850c0c41ca2ad382fa Mon Sep 17 00:00:00 2001
+From c7e0472756a8f66952762f77504f79727e18ad0f Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
-Date: Wed, 11 Sep 2024 13:55:41 +0530
+Date: Tue, 3 Dec 2024 16:02:13 +0530
 Subject: [PATCH 8/9] No single process
 
+Description: remove single process optimization This optimization is a big change in behavior, patch it out.
+
+Author: Brett Holman <brett.holman@canonical.com>
+Last-Update: 2024-08-02
+
+[sshedi]:
 Taken from:
 https://github.com/canonical/cloud-init/blob/ubuntu/noble/debian/patches/no-single-process.patch
-
 Refer:
 https://github.com/canonical/cloud-init/blob/313390f81f44be0e52d5447b4112209b282ddb87/doc/rtd/reference/breaking_changes.rst#243
 
@@ -14,19 +19,19 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  cloudinit/cmd/status.py                       |  3 +-
  cloudinit/config/cc_mounts.py                 |  2 +-
  .../schemas/schema-cloud-config-v1.json       |  4 +-
- systemd/cloud-config.service.tmpl             |  9 +---
+ systemd/cloud-config.service                  |  9 +---
  systemd/cloud-config.target                   |  4 +-
- systemd/cloud-final.service.tmpl              | 10 +---
- systemd/cloud-init-local.service.tmpl         | 10 +---
- systemd/cloud-init-main.service.tmpl          | 52 -------------------
- ...k.service.tmpl => cloud-init.service.tmpl} |  9 +---
+ systemd/cloud-final.service                   | 10 +----
+ systemd/cloud-init-local.service.tmpl         | 10 +----
+ systemd/cloud-init-main.service.tmpl          | 42 -------------------
+ ...k.service.tmpl => cloud-init.service.tmpl} | 12 +-----
  tests/unittests/config/test_cc_mounts.py      |  4 +-
- 10 files changed, 14 insertions(+), 93 deletions(-)
+ 10 files changed, 15 insertions(+), 85 deletions(-)
  delete mode 100644 systemd/cloud-init-main.service.tmpl
- rename systemd/{cloud-init-network.service.tmpl => cloud-init.service.tmpl} (71%)
+ rename systemd/{cloud-init-network.service.tmpl => cloud-init.service.tmpl} (69%)
 
 diff --git a/cloudinit/cmd/status.py b/cloudinit/cmd/status.py
-index f027321..3908980 100644
+index 98084a4..882492d 100644
 --- a/cloudinit/cmd/status.py
 +++ b/cloudinit/cmd/status.py
 @@ -318,9 +318,8 @@ def systemd_failed(wait: bool) -> bool:
@@ -41,10 +46,10 @@ index f027321..3908980 100644
          try:
              stdout = query_systemctl(
 diff --git a/cloudinit/config/cc_mounts.py b/cloudinit/config/cc_mounts.py
-index 20e2329..e056e49 100644
+index cec0929..cb36bdb 100644
 --- a/cloudinit/config/cc_mounts.py
 +++ b/cloudinit/config/cc_mounts.py
-@@ -525,7 +525,7 @@ def handle(name: str, cfg: Config, cloud: Cloud, args: list) -> None:
+@@ -521,7 +521,7 @@ def handle(name: str, cfg: Config, cloud: Cloud, args: list) -> None:
      # fs_spec, fs_file, fs_vfstype, fs_mntops, fs-freq, fs_passno
      uses_systemd = cloud.distro.uses_systemd()
      default_mount_options = (
@@ -54,10 +59,10 @@ index 20e2329..e056e49 100644
          else "defaults,nobootwait"
      )
 diff --git a/cloudinit/config/schemas/schema-cloud-config-v1.json b/cloudinit/config/schemas/schema-cloud-config-v1.json
-index d131372..dca6010 100644
+index fffa04b..7d5c87c 100644
 --- a/cloudinit/config/schemas/schema-cloud-config-v1.json
 +++ b/cloudinit/config/schemas/schema-cloud-config-v1.json
-@@ -2022,12 +2022,12 @@
+@@ -2029,12 +2029,12 @@
          },
          "mount_default_fields": {
            "type": "array",
@@ -72,11 +77,11 @@ index d131372..dca6010 100644
              "0",
              "2"
            ],
-diff --git a/systemd/cloud-config.service.tmpl b/systemd/cloud-config.service.tmpl
-index 9067d6e..79c75c7 100644
---- a/systemd/cloud-config.service.tmpl
-+++ b/systemd/cloud-config.service.tmpl
-@@ -10,14 +10,7 @@ ConditionEnvironment=!KERNEL_CMDLINE=cloud-init=disabled
+diff --git a/systemd/cloud-config.service b/systemd/cloud-config.service
+index 54599b3..79ff733 100644
+--- a/systemd/cloud-config.service
++++ b/systemd/cloud-config.service
+@@ -9,14 +9,7 @@ ConditionEnvironment=!KERNEL_CMDLINE=cloud-init=disabled
  
  [Service]
  Type=oneshot
@@ -87,7 +92,7 @@ index 9067d6e..79c75c7 100644
 -# process has completed this stage. The output from the return socket is piped
 -# into a shell so that the process can send a completion message (defaults to
 -# "done", otherwise includes an error message) and an exit code to systemd.
--ExecStart=sh -c 'echo "start" | nc.openbsd -Uu -W1 /run/cloud-init/share/config.sock -s /run/cloud-init/share/config-return.sock | sh'
+-ExecStart=sh -c 'echo "start" | netcat -Uu -W1 /run/cloud-init/share/config.sock -s /run/cloud-init/share/config-return.sock | sh'
 +ExecStart=/usr/bin/cloud-init modules --mode=config
  RemainAfterExit=yes
  TimeoutSec=0
@@ -104,11 +109,11 @@ index be754bb..2d65e34 100644
 -After=cloud-init-local.service cloud-init-network.service
 +Wants=cloud-init-local.service cloud-init.service
 +After=cloud-init-local.service cloud-init.service
-diff --git a/systemd/cloud-final.service.tmpl b/systemd/cloud-final.service.tmpl
-index 9fb2f68..b665336 100644
---- a/systemd/cloud-final.service.tmpl
-+++ b/systemd/cloud-final.service.tmpl
-@@ -15,16 +15,10 @@ ConditionEnvironment=!KERNEL_CMDLINE=cloud-init=disabled
+diff --git a/systemd/cloud-final.service b/systemd/cloud-final.service
+index c48f95c..1489eb3 100644
+--- a/systemd/cloud-final.service
++++ b/systemd/cloud-final.service
+@@ -12,16 +12,10 @@ ConditionEnvironment=!KERNEL_CMDLINE=cloud-init=disabled
  
  [Service]
  Type=oneshot
@@ -119,16 +124,16 @@ index 9fb2f68..b665336 100644
 -# process has completed this stage. The output from the return socket is piped
 -# into a shell so that the process can send a completion message (defaults to
 -# "done", otherwise includes an error message) and an exit code to systemd.
--ExecStart=sh -c 'echo "start" | nc.openbsd -Uu -W1 /run/cloud-init/share/final.sock -s /run/cloud-init/share/final-return.sock | sh'
+-ExecStart=sh -c 'echo "start" | netcat -Uu -W1 /run/cloud-init/share/final.sock -s /run/cloud-init/share/final-return.sock | sh'
 +ExecStart=/usr/bin/cloud-init modules --mode=final
  RemainAfterExit=yes
  TimeoutSec=0
 +KillMode=process
- {% if variant in ["almalinux", "cloudlinux", "rhel"] %}
- # Restart NetworkManager if it is present and running.
- ExecStartPost=/bin/sh -c 'u=NetworkManager.service; \
+ TasksMax=infinity
+ 
+ # Output needs to appear in instance console output
 diff --git a/systemd/cloud-init-local.service.tmpl b/systemd/cloud-init-local.service.tmpl
-index b0a534b..0da2d83 100644
+index e6a300f..1f2128a 100644
 --- a/systemd/cloud-init-local.service.tmpl
 +++ b/systemd/cloud-init-local.service.tmpl
 @@ -7,6 +7,7 @@ DefaultDependencies=no
@@ -136,12 +141,12 @@ index b0a534b..0da2d83 100644
  Wants=network-pre.target
  After=hv_kvp_daemon.service
 +After=systemd-remount-fs.service
+ Before=network-pre.target
+ Before=shutdown.target
  {% if variant in ["almalinux", "cloudlinux", "rhel"] %}
- Requires=dbus.socket
- After=dbus.socket
-@@ -37,14 +38,7 @@ ExecStartPre=/bin/mkdir -p /run/cloud-init
+@@ -25,14 +26,7 @@ Type=oneshot
+ {% if variant in ["almalinux", "cloudlinux", "rhel"] %}
  ExecStartPre=/sbin/restorecon /run/cloud-init
- ExecStartPre=/usr/bin/touch /run/cloud-init/enabled
  {% endif %}
 -# This service is a shim which preserves systemd ordering while allowing a
 -# single Python process to run cloud-init's logic. This works by communicating
@@ -150,17 +155,17 @@ index b0a534b..0da2d83 100644
 -# process has completed this stage. The output from the return socket is piped
 -# into a shell so that the process can send a completion message (defaults to
 -# "done", otherwise includes an error message) and an exit code to systemd.
--ExecStart=sh -c 'echo "start" | nc.openbsd -Uu -W1 /run/cloud-init/share/local.sock -s /run/cloud-init/share/local-return.sock | sh'
+-ExecStart=sh -c 'echo "start" | netcat -Uu -W1 /run/cloud-init/share/local.sock -s /run/cloud-init/share/local-return.sock | sh'
 +ExecStart=/usr/bin/cloud-init init --local
  RemainAfterExit=yes
  TimeoutSec=0
  
 diff --git a/systemd/cloud-init-main.service.tmpl b/systemd/cloud-init-main.service.tmpl
 deleted file mode 100644
-index 1ddfd62..0000000
+index b80f324..0000000
 --- a/systemd/cloud-init-main.service.tmpl
 +++ /dev/null
-@@ -1,52 +0,0 @@
+@@ -1,42 +0,0 @@
 -## template:jinja
 -# systemd ordering resources
 -# ==========================
@@ -171,25 +176,17 @@ index 1ddfd62..0000000
 -# https://www.freedesktop.org/software/systemd/man/latest/systemd-remount-fs.service.html
 -[Unit]
 -Description=Cloud-init: Single Process
--Wants=network-pre.target
 -{% if variant in ["almalinux", "cloudlinux", "ubuntu", "unknown", "debian", "rhel"] %}
 -DefaultDependencies=no
 -{% endif %}
 -{% if variant in ["almalinux", "cloudlinux", "rhel"] %}
 -Requires=dbus.socket
 -After=dbus.socket
--Before=network.service
--Before=firewalld.target
--Conflicts=shutdown.target
--{% endif %}
--{% if variant in ["ubuntu", "unknown", "debian"] %}
--Before=sysinit.target
--Conflicts=shutdown.target
 -{% endif %}
 -
 -After=systemd-remount-fs.service
--Before=sysinit.target
 -Before=cloud-init-local.service
+-Before=shutdown.target
 -Conflicts=shutdown.target
 -RequiresMountsFor=/var/lib/cloud
 -ConditionPathExists=!/etc/cloud/cloud-init.disabled
@@ -203,9 +200,7 @@ index 1ddfd62..0000000
 -TasksMax=infinity
 -TimeoutStartSec=infinity
 -{% if variant in ["almalinux", "cloudlinux", "rhel"] %}
--ExecStartPre=/bin/mkdir -p /run/cloud-init
 -ExecStartPre=/sbin/restorecon /run/cloud-init
--ExecStartPre=/usr/bin/touch /run/cloud-init/enabled
 -{% endif %}
 -
 -# Output needs to appear in instance console output
@@ -214,13 +209,30 @@ index 1ddfd62..0000000
 -[Install]
 -WantedBy=cloud-init.target
 diff --git a/systemd/cloud-init-network.service.tmpl b/systemd/cloud-init.service.tmpl
-similarity index 71%
+similarity index 69%
 rename from systemd/cloud-init-network.service.tmpl
 rename to systemd/cloud-init.service.tmpl
-index 6957b39..58031cc 100644
+index af09fff..9395443 100644
 --- a/systemd/cloud-init-network.service.tmpl
 +++ b/systemd/cloud-init.service.tmpl
-@@ -46,14 +46,7 @@ ConditionEnvironment=!KERNEL_CMDLINE=cloud-init=disabled
+@@ -9,15 +9,14 @@ Wants=cloud-init-local.service
+ Wants=sshd-keygen.service
+ Wants=sshd.service
+ After=cloud-init-local.service
+-{% if variant not in ["ubuntu"] %}
+ After=systemd-networkd-wait-online.service
+-{% endif %}
+ {% if variant in ["ubuntu", "unknown", "debian"] %}
+ After=networking.service
+ {% endif %}
+ {% if variant in ["almalinux", "centos", "cloudlinux", "eurolinux", "fedora",
+                   "miraclelinux", "openeuler", "OpenCloudOS", "openmandriva", "rhel", "rocky",
+                   "suse", "TencentOS", "virtuozzo"] %}
++
+ After=NetworkManager.service
+ After=NetworkManager-wait-online.service
+ {% endif %}
+@@ -46,14 +45,7 @@ ConditionEnvironment=!KERNEL_CMDLINE=cloud-init=disabled
  
  [Service]
  Type=oneshot
@@ -231,7 +243,7 @@ index 6957b39..58031cc 100644
 -# process has completed this stage. The output from the return socket is piped
 -# into a shell so that the process can send a completion message (defaults to
 -# "done", otherwise includes an error message) and an exit code to systemd.
--ExecStart=sh -c 'echo "start" | nc.openbsd -Uu -W1 /run/cloud-init/share/network.sock -s /run/cloud-init/share/network-return.sock | sh'
+-ExecStart=sh -c 'echo "start" | netcat -Uu -W1 /run/cloud-init/share/network.sock -s /run/cloud-init/share/network-return.sock | sh'
 +ExecStart=/usr/bin/cloud-init init
  RemainAfterExit=yes
  TimeoutSec=0
@@ -253,5 +265,5 @@ index 0e6d837..f710d8a 100644
              """  # noqa: E501
              ).strip()
 -- 
-2.46.0
+2.47.1
 

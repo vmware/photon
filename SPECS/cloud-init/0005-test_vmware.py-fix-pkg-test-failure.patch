@@ -1,7 +1,7 @@
-From a32552bb898dd838a3d834804089a1dacb416087 Mon Sep 17 00:00:00 2001
+From 95880b9c5f2d67d5cb5cd5471d0fae8f0709cb63 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Tue, 14 Mar 2023 14:49:58 +0530
-Subject: [PATCH 5/8] test_vmware.py: fix pkg test failure
+Subject: [PATCH 5/9] test_vmware.py: fix pkg test failure
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
@@ -15,11 +15,12 @@ index cfeff6d..22754f5 100644
 @@ -728,7 +728,7 @@ class TestDataSourceVMwareGuestInfo_InvalidPlatform(FilesystemMockingTestCase):
          system_type = dmi.read_dmi_data("system-product-name")
          self.assertEqual(system_type, None)
-
+ 
 -        m_fn.side_effect = [VMW_METADATA_YAML, "", "", "", "", ""]
 +        m_fn.side_effect = ["", "", "", "", "", ""]
          ds = get_ds(self.tmp)
          ret = ds.get_data()
          self.assertFalse(ret)
---
-2.34.1
+-- 
+2.47.1
+

@@ -1,7 +1,7 @@
-From b50e2d966e846f286632c9689ea7655ac0385a9a Mon Sep 17 00:00:00 2001
+From 445b50b76e97d54957286dd9262b059966958a10 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Thu, 17 Feb 2022 11:47:22 +0530
-Subject: [PATCH 3/8] Patch VMware DS to handle network settings from vmtoolsd
+Subject: [PATCH 3/9] Patch VMware DS to handle network settings from vmtoolsd
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
@@ -10,29 +10,29 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  1 file changed, 139 insertions(+), 3 deletions(-)
 
 diff --git a/cloudinit/sources/DataSourceVMware.py b/cloudinit/sources/DataSourceVMware.py
-index 888060c..664f6f3 100644
+index 0e328cf..9da47c9 100644
 --- a/cloudinit/sources/DataSourceVMware.py
 +++ b/cloudinit/sources/DataSourceVMware.py
-@@ -30,6 +30,7 @@ import time
- from cloudinit import atomic_helper, dmi, log, net, netinfo, sources, util
+@@ -31,6 +31,7 @@ from cloudinit import atomic_helper, dmi, net, netinfo, sources, util
+ from cloudinit.log import loggers
  from cloudinit.sources.helpers.vmware.imc import guestcust_util
  from cloudinit.subp import ProcessExecutionError, subp, which
 +from cloudinit.net import network_state
-
+ 
  PRODUCT_UUID_FILE_PATH = "/sys/class/dmi/id/product_uuid"
-
-@@ -40,6 +41,7 @@ NOVAL = "No value found"
+ 
+@@ -41,6 +42,7 @@ NOVAL = "No value found"
  DATA_ACCESS_METHOD_ENVVAR = "envvar"
  DATA_ACCESS_METHOD_GUESTINFO = "guestinfo"
  DATA_ACCESS_METHOD_IMC = "imc"
 +DATA_ACCESS_METHOD_VMTOOLSD = "vmtoolsd-guestinfo"
-
+ 
  REDACT = "redact"
  CLEANUP_GUESTINFO = "cleanup-guestinfo"
-@@ -139,6 +141,115 @@ class DataSourceVMware(sources.DataSource):
+@@ -140,6 +142,115 @@ class DataSourceVMware(sources.DataSource):
                  ],
              )
-
+ 
 +    def get_nwk_cfgs_from_guestinfo(self):
 +        net_cfg = {'version': 2, 'ethernets': {}}
 +        eth_cfg = net_cfg['ethernets']
@@ -145,10 +145,10 @@ index 888060c..664f6f3 100644
      def __str__(self):
          root = sources.DataSource.__str__(self)
          return "%s [seed=%s]" % (root, self.data_access_method)
-@@ -175,6 +286,25 @@ class DataSourceVMware(sources.DataSource):
+@@ -176,6 +287,25 @@ class DataSourceVMware(sources.DataSource):
                  self.data_access_method = data_access_method
                  break
-
+ 
 +        if not self.data_access_method:
 +            md = {}
 +            key = 'local-hostname'
@@ -171,27 +171,27 @@ index 888060c..664f6f3 100644
          if not self.data_access_method:
              LOG.debug("failed to find a valid data access method")
              return False
-@@ -182,7 +312,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -183,7 +313,8 @@ class DataSourceVMware(sources.DataSource):
          LOG.info("using data access method %s", self._get_subplatform())
-
+ 
          # Get the metadata.
 -        self.metadata = process_metadata(load_json_or_yaml(md))
 +        if not self.metadata:
 +            self.metadata = process_metadata(load_json_or_yaml(md))
-
+ 
          # Get the user data.
          self.userdata_raw = ud
-@@ -197,8 +328,7 @@ class DataSourceVMware(sources.DataSource):
+@@ -198,8 +329,7 @@ class DataSourceVMware(sources.DataSource):
          # userdata, or vendordata.
          if self.metadata or self.userdata_raw or self.vendordata_raw:
              return True
 -        else:
 -            return False
 +        return False
-
+ 
      def setup(self, is_new_instance):
          """setup(is_new_instance)
-@@ -236,6 +366,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -237,6 +367,8 @@ class DataSourceVMware(sources.DataSource):
              get_key_name_fn = get_guestinfo_key_name
          elif self.data_access_method == DATA_ACCESS_METHOD_IMC:
              get_key_name_fn = get_imc_key_name
@@ -199,11 +199,11 @@ index 888060c..664f6f3 100644
 +            get_key_name_fn = get_guestinfo_key_name
          else:
              return sources.METADATA_UNKNOWN
-
-@@ -591,6 +723,10 @@ def guestinfo_get_value(key, rpctool, rpctool_fn):
+ 
+@@ -593,6 +725,10 @@ def guestinfo_get_value(key, rpctool, rpctool_fn):
      """
      LOG.debug("Getting guestinfo value for key %s", key)
-
+ 
 +    if not rpctool_fn or not rpctool:
 +        LOG.error("One of rpctool or rpctool_fn is none")
 +        return None
@@ -211,5 +211,6 @@ index 888060c..664f6f3 100644
      try:
          (stdout, stderr) = rpctool_fn(
              rpctool, "info-get " + get_guestinfo_key_name(key)
---
-2.34.1
+-- 
+2.47.1
+

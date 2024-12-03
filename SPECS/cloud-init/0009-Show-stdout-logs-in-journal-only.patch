@@ -1,58 +1,47 @@
-From 695226cbfe3aa1a6087372e459960b71526fb5b0 Mon Sep 17 00:00:00 2001
+From 9fb4f076cf464d477a4b2373a49cc5cb026bd329 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Mon, 10 Jun 2024 11:05:50 +0530
 Subject: [PATCH 9/9] Show stdout logs in journal only
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
- systemd/cloud-config.service.tmpl     | 3 +--
- systemd/cloud-final.service.tmpl      | 5 +----
+ systemd/cloud-config.service          | 2 +-
+ systemd/cloud-final.service           | 2 +-
  systemd/cloud-init-local.service.tmpl | 3 +--
  systemd/cloud-init.service.tmpl       | 2 +-
- 4 files changed, 4 insertions(+), 9 deletions(-)
+ 4 files changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/systemd/cloud-config.service.tmpl b/systemd/cloud-config.service.tmpl
-index 79c75c7..648773f 100644
---- a/systemd/cloud-config.service.tmpl
-+++ b/systemd/cloud-config.service.tmpl
-@@ -14,8 +14,7 @@ ExecStart=/usr/bin/cloud-init modules --mode=config
- RemainAfterExit=yes
+diff --git a/systemd/cloud-config.service b/systemd/cloud-config.service
+index 79ff733..bc798bc 100644
+--- a/systemd/cloud-config.service
++++ b/systemd/cloud-config.service
+@@ -14,7 +14,7 @@ RemainAfterExit=yes
  TimeoutSec=0
  
--# Output needs to appear in instance console output
+ # Output needs to appear in instance console output
 -StandardOutput=journal+console
 +StandardOutput=journal
  
  [Install]
  WantedBy=cloud-init.target
-diff --git a/systemd/cloud-final.service.tmpl b/systemd/cloud-final.service.tmpl
-index b665336..94297aa 100644
---- a/systemd/cloud-final.service.tmpl
-+++ b/systemd/cloud-final.service.tmpl
-@@ -12,7 +12,6 @@ ConditionPathExists=!/etc/cloud/cloud-init.disabled
- ConditionKernelCommandLine=!cloud-init=disabled
- ConditionEnvironment=!KERNEL_CMDLINE=cloud-init=disabled
- 
--
- [Service]
- Type=oneshot
- ExecStart=/usr/bin/cloud-init modules --mode=final
-@@ -29,9 +28,7 @@ ExecStartPost=/bin/sh -c 'u=NetworkManager.service; \
+diff --git a/systemd/cloud-final.service b/systemd/cloud-final.service
+index 1489eb3..5f49079 100644
+--- a/systemd/cloud-final.service
++++ b/systemd/cloud-final.service
+@@ -19,7 +19,7 @@ KillMode=process
  TasksMax=infinity
- {% endif %}
  
--
--# Output needs to appear in instance console output
+ # Output needs to appear in instance console output
 -StandardOutput=journal+console
 +StandardOutput=journal
  
  [Install]
  WantedBy=cloud-init.target
 diff --git a/systemd/cloud-init-local.service.tmpl b/systemd/cloud-init-local.service.tmpl
-index 0da2d83..068bcb9 100644
+index 1f2128a..ad96b66 100644
 --- a/systemd/cloud-init-local.service.tmpl
 +++ b/systemd/cloud-init-local.service.tmpl
-@@ -42,8 +42,7 @@ ExecStart=/usr/bin/cloud-init init --local
+@@ -30,8 +30,7 @@ ExecStart=/usr/bin/cloud-init init --local
  RemainAfterExit=yes
  TimeoutSec=0
  
@@ -63,10 +52,10 @@ index 0da2d83..068bcb9 100644
  [Install]
  WantedBy=cloud-init.target
 diff --git a/systemd/cloud-init.service.tmpl b/systemd/cloud-init.service.tmpl
-index 58031cc..a3143ce 100644
+index 9395443..35d1a06 100644
 --- a/systemd/cloud-init.service.tmpl
 +++ b/systemd/cloud-init.service.tmpl
-@@ -51,7 +51,7 @@ RemainAfterExit=yes
+@@ -50,7 +50,7 @@ RemainAfterExit=yes
  TimeoutSec=0
  
  # Output needs to appear in instance console output
@@ -76,5 +65,5 @@ index 58031cc..a3143ce 100644
  [Install]
  WantedBy=cloud-init.target
 -- 
-2.46.0
+2.47.1
 

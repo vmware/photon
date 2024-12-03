@@ -3,7 +3,7 @@
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        12.4.5
+Version:        12.5.0
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=78815d95d0be651909120e869d65d2b1e33edf2d1fb65e4ffb61e78ca21aceac063c4806425d3e8698640041e43157ff2380c4a5ba5bc0e191773ca0e761169c
+%define sha512 %{name}=a7c1920c93baa1189e6d40cb14ecdb9dfefcf74a3bef4f09ad5816bf4f9be255b8983f5ebf2c6c42de1d4bb4e405f22ffb00f20b382498b4ab71ee4d7544a694
 
 Source1: https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
 %define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
@@ -179,6 +179,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Mon Jan 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.5.0-1
+- Upgrade to v12.5.0
 * Mon Jul 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.4.5-1
 - Upgrade to v12.4.5
 * Wed May 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.3.5-5
