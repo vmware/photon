@@ -178,9 +178,6 @@ install -D -p -m 0755 %{SOURCE1} %{buildroot}%{_sbindir}
 rm -rf %{buildroot}%{_infodir}
 #       Install configuration files
 
-# Spaces should not be used in nsswitch.conf in the begining of new line
-# Only tab should be used as it expects the same in source code.
-# Otherwise "altfiles" will not be added. which may cause dbus.service failure
 cat > %{buildroot}%{_sysconfdir}/nsswitch.conf <<- "EOF"
 #       Begin /etc/nsswitch.conf
 
