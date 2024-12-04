@@ -41,7 +41,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.118
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -421,6 +421,8 @@ BuildRequires:  cmake
 BuildRequires:  bison
 BuildRequires:  dwarves-devel
 BuildRequires:  which
+BuildRequires:  gmp-devel
+BuildRequires:  mpfr-devel
 
 %ifarch x86_64
 BuildRequires:  pciutils-devel
@@ -947,6 +949,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Dec 09 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-7
+- Disable CONFIG_GCC_PLUGIN_LATENT_ENTROPY
 * Fri Dec 06 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-6
 - fix aarch64 build
 * Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-5

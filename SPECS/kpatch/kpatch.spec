@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -24,6 +24,11 @@ Patch2:         0001-allow-livepatches-to-be-visible-to-modinfo-after-loa.patch
 
 # Bug fix
 Patch3:         kpatch-build-ignore-init-version-timestamp-o.patch
+
+# Compatibility with linux-secure->linux merger
+Patch4:         0001-create-diff-object-support-x86-NOP-padded-functions.patch
+Patch5:         0002-kpatch-compatibility-with-Photon-gcc-RAP-patch.patch
+Patch6:         0003-patch-hook-fix-cast-errors.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -115,6 +120,8 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Wed Dec 4 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.9.8-3
+- Patches for compatibility after linux-secure->linux merger
 * Fri Nov 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.9.8-2
 - Bump up as part of docker upgrade
 * Fri Mar 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.8-1
