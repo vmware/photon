@@ -1240,8 +1240,8 @@ class BuildImage:
             opts += ["--config", self.config_file]
         if self.poi_image is not None:
             opts += ["--docker-image", self.poi_image]
-            opts += ["--stage-dir", Build_Config.stagePath]
-            opts += ["--sha", constants.buildNumber]
+        opts += ["--stage-dir", Build_Config.stagePath]
+        opts += ["--sha", constants.buildNumber]
         runCmd(
             ["./poi.py"] + opts + [self.img_name],
             cwd=os.path.join(photonDir, "support", "poi"),

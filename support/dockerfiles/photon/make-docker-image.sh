@@ -9,7 +9,8 @@ echoerr() {
 echo "PHOTON_RELEASE_VERSION=${PHOTON_RELEASE_VERSION}"
 arch="$(uname -m)"
 SYSROOT=/sysroot
-ROOTFS_TAR_FILENAME="$(pwd)/stage/photon-rootfs-$PHOTON_RELEASE_VERSION-$PHOTON_BUILD_NUMBER.${arch}.tar.gz"
+ROOTFS_TAR_FILENAME="/photon/stage/photon-rootfs-$PHOTON_RELEASE_VERSION-$PHOTON_BUILD_NUMBER.${arch}.tar.gz"
+STAGE_DIR="/photon/stage"
 
 mkdir -p $SYSROOT
 rm -rf /etc/yum.repos.d/*
@@ -24,7 +25,6 @@ enabled=1
 skip_if_unavailable=True
 EOF
 
-<<<<<<< HEAD
 tdnf install -y --setopt=tsflags=nodocs rpm tar gzip grep coreutils
 
 rpm --root $SYSROOT/ --initdb
