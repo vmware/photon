@@ -1,13 +1,14 @@
 Name:       minimal
 Summary:    Metapackage to install minimal profile for cloud images
 Version:    5.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache 2.0
 Group:      System Environment/Base
 URL:        https://vmware.github.io/photon
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
+Requires: bash-completion
 Requires: bc
 Requires: bridge-utils
 Requires: bzip2
@@ -51,6 +52,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root,0755)
 
 %changelog
+* Fri Dec 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-2
+- Add bash-completion to requires
 * Sat Jul 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.0-1
 - Sort the require list and chop down package into basic
 * Mon Jul 18 2022 <okurth@vmware.com> 0.1-7
