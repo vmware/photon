@@ -1,0 +1,186 @@
+From 79cce661df1961da7bc2224d106930b8c055f5c2 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 1 Sep 2023 12:06:43 +0000
+Subject: [PATCH] Add eBPF object interface and build it
+
+- Added interface to open/load/attach/destroy
+  BPF object.
+- Makefile to build and provide this interface
+  as shared library for stalld to consume it.
+
+Co-Authored-By: Ankit Jain <ankit-ja.jain@broadcom.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Ankit Jain <ankit-ja.jain@broadcom.com>
+---
+ bpf/Makefile     | 61 ++++++++++++++++++++++++++++++++++++++++++++++
+ bpf/stalld_bpf.c | 63 ++++++++++++++++++++++++++++++++++++++++++++++++
+ bpf/stalld_bpf.h | 19 +++++++++++++++
+ 3 files changed, 143 insertions(+)
+ create mode 100644 bpf/Makefile
+ create mode 100644 bpf/stalld_bpf.c
+ create mode 100644 bpf/stalld_bpf.h
+
+diff --git a/bpf/Makefile b/bpf/Makefile
+new file mode 100644
+index 0000000..9bcc9e7
+--- /dev/null
++++ b/bpf/Makefile
+@@ -0,0 +1,61 @@
++CC      :=      gcc
++FOPTS   :=      -flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
++                -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fPIC
++MOPTS   :=      -m64 -mtune=generic
++WOPTS   :=      -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS
++CFLAGS  :=      -O2 -g $(FOPTS) $(MOPTS) $(WOPTS)
++LDFLAGS :=      -ggdb
++LIBS    :=       -lpthread -lbpf
++CLANG			?= clang
++CP			?= cp
++RM 			?= rm
++MKDIR			?= mkdir
++LLVM_STRIP		?= llvm-strip
++KSRC			?= /
++DEFAULT_BPFTOOL 	:= bpftool
++BPFTOOL                 ?= $(DEFAULT_BPFTOOL)
++ARCH 			:= __x86_64__
++PREFIX                  ?= /usr/local
++CLANG_BPF_SYS_INCLUDES := $(shell $(CLANG) -v -E - </dev/null 2>&1 | sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }')
++
++KERNEL_REL              := $(shell uname -r)
++VMLINUX_BTF_PATHS       := /sys/kernel/btf/vmlinux /boot/vmlinuz-$(KERNEL_REL)
++VMLINUX_BTF_PATH        := $(or $(VMLINUX_BTF),$(firstword                     \
++                                          $(wildcard $(VMLINUX_BTF_PATHS))))
++
++.PHONY: all clean
++
++all: libstalld_bpf.so
++
++vmlinux.h:
++	@if [ ! -e "$(VMLINUX_BTF_PATH)" ] ; then                               \
++		echo "Couldn't find kernel BTF; set VMLINUX_BTF to"             \
++			"specify its location." >&2;                            \
++		exit 1;                                                         \
++	fi
++	$(BPFTOOL) btf dump file $(VMLINUX_BTF_PATH) format c > $@
++
++# This is the first step into compiling eBPF code.
++# The .bpf.c needs to be transformed into the .bpf.o.
++# The .bpf.o is then required to build the .skel.h.
++stalld.bpf.o: vmlinux.h stalld.bpf.c
++	$(CLANG) -g -O2 -target bpf -D$(ARCH) $(CLANG_BPF_SYS_INCLUDES) -c $(filter %.c,$^) -o $@
++	$(LLVM_STRIP) -g $@ # strip useless DWARF info
++
++stalld.skel.h: stalld.bpf.o
++	$(BPFTOOL) gen skeleton $< > $@
++
++stalld_bpf.o: stalld_bpf.c stalld.skel.h
++	$(CC) $(CFLAGS) -c $< -o $@
++
++libstalld_bpf.so: stalld_bpf.o
++	$(CC) -shared $^ -o $@
++
++clean:
++	$(RM) *.o *.so stalld.skel.h vmlinux.h
++
++install:
++	$(CP) -n libstalld_bpf.so $(PREFIX)/lib
++	$(MKDIR) -p $(PREFIX)/include/stalld
++	$(CP) -n stalld.skel.h $(PREFIX)/include/stalld
++	$(CP) -n stalld_bpf.h $(PREFIX)/include/stalld
+diff --git a/bpf/stalld_bpf.c b/bpf/stalld_bpf.c
+new file mode 100644
+index 0000000..0d73f27
+--- /dev/null
++++ b/bpf/stalld_bpf.c
+@@ -0,0 +1,63 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0
++ *
++ * Copyright (C) 2024 Broadcom Inc, Ankit Jain <ankit-ja.jain@broadcom.com>
++ */
++
++#include <stdio.h>
++#include "stalld.skel.h"
++
++struct stalld_bpf *stalld_bpf_open()
++{
++	struct stalld_bpf *stalld_obj;
++
++	stalld_obj = stalld_bpf__open();
++	if (!stalld_obj) {
++		fprintf(stderr, "ERROR: failed to open and/or load BPF object\n");
++		return NULL;
++	}
++	return stalld_obj;
++}
++
++int stalld_bpf_load(struct stalld_bpf *stalld_obj)
++{
++	int err;
++
++	if (!stalld_obj) {
++		fprintf(stderr, "ERROR: BPF object is NULL!!\n");
++		return -1;
++	}
++
++	err = stalld_bpf__load(stalld_obj);
++	if (err) {
++		fprintf(stderr, "ERROR: failed to load BPF object: %d\n", err);
++	}
++	return err;
++}
++
++int stalld_bpf_attach(struct stalld_bpf *stalld_obj)
++{
++	int err;
++
++	if (!stalld_obj) {
++		fprintf(stderr, "ERROR: BPF object is NULL!!\n");
++		return -1;
++	}
++
++	err = stalld_bpf__attach(stalld_obj);
++	if (err) {
++		fprintf(stderr, "ERROR: failed to attach BPF object: %d\n", err);
++	}
++	return err;
++}
++
++void stalld_bpf_destroy(struct stalld_bpf *stalld_obj)
++{
++	if (!stalld_obj) {
++		fprintf(stderr, "ERROR: BPF object is NULL!!\n");
++		return;
++	}
++
++	stalld_bpf__destroy(stalld_obj);
++}
++
+diff --git a/bpf/stalld_bpf.h b/bpf/stalld_bpf.h
+new file mode 100644
+index 0000000..9a57060
+--- /dev/null
++++ b/bpf/stalld_bpf.h
+@@ -0,0 +1,19 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0
++ *
++ * Copyright (C) 2024 Broadcom Inc, Ankit Jain <ankit-ja.jain@broadcom.com>
++ */
++#ifndef __STALLD_BPF_H__
++#define __STALLD_BPF_H__
++
++#include <stalld/stalld.skel.h>
++
++struct stalld_bpf *stalld_bpf_open();
++
++int stalld_bpf_load(struct stalld_bpf *stalld_obj);
++
++int stalld_bpf_attach(struct stalld_bpf *stalld_obj);
++
++void stalld_bpf_destroy(struct stalld_bpf *stalld_obj);
++
++#endif /* __STALLD_BPF_H__ */
+-- 
+2.39.0
+

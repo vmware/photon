@@ -1,0 +1,148 @@
+From 1216f535bb8c385e2ec10ed7e892695cef673438 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Sun, 15 Oct 2023 03:25:33 +0000
+Subject: [PATCH] ecc: Add pairwise consistency test for every generated ECC
+ keypairs
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ crypto/ecc.c | 116 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 116 insertions(+)
+
+diff --git a/crypto/ecc.c b/crypto/ecc.c
+index fe3792c41..095d2032c 100644
+--- a/crypto/ecc.c
++++ b/crypto/ecc.c
+@@ -1492,6 +1492,119 @@ int ecc_gen_privkey(unsigned int curve_id, unsigned int ndigits, u64 *privkey)
+ 	return 0;
+ }
+ 
++#define ECC_MAX_PRIV_KEY_SZ 8
++#define ECC_MAX_PUB_KEY_SZ 12
++#define ECC_P256_SS_SZ 32
++#define ECC_P384_SS_SZ 48
++
++struct static_keypair {
++	u64 priv_key[ECC_MAX_PRIV_KEY_SZ];
++	u64 pub_key[ECC_MAX_PUB_KEY_SZ];
++};
++
++static const struct static_keypair ecc_p256 = {
++		.priv_key = {
++				9452439779319861540ULL,
++				11761858801976435446ULL,
++				10581797902970445963ULL,
++				9419536734775104336ULL,
++				0, 0, 0, 0,
++		},
++		.pub_key = {
++				3547918415549923098ULL,
++				14179485049500513917ULL,
++				17671096273477813563ULL,
++				6890828708320535478ULL,
++				216030908325808746ULL,
++				7709452682360784951ULL,
++				8590731219336823402ULL,
++				16071639722929465850ULL,
++				0, 0, 0, 0,
++		},
++};
++
++static const struct static_keypair ecc_p384 = {
++		.priv_key = {
++				14313235887423266569ULL,
++				9198168633825396889ULL,
++				1589555625840288886ULL,
++				6189876718282884870ULL,
++				17170508223326936035ULL,
++				10714409278094487103ULL,
++				0, 0,
++
++		},
++		.pub_key = {
++				3219089472411039846ULL,
++				6338061617631358942ULL,
++				16389706391199467349ULL,
++				16599922655348274198ULL,
++				13023764348400057054ULL,
++				12268192317188507592ULL,
++				14607969375289705108ULL,
++				4594462565568104956ULL,
++				12485352420393681765ULL,
++				10300752922574070944ULL,
++				15728762062766055403ULL,
++				2065027171005275110ULL,
++		},
++};
++
++static int ecc_pct(unsigned int curve_id, unsigned int ndigits,
++	    const u64 *private_key, const u64 *public_key)
++{
++	int ret = 0;
++	u64 *shared_secret_a = NULL;
++	u64 *shared_secret_b = NULL;
++	unsigned short ss_size = 0;
++	const u64* static_priv_key = NULL;
++	const u64* static_pub_key = NULL;
++
++	if (curve_id == 2) {
++		ss_size = ECC_P256_SS_SZ;
++		static_priv_key = ecc_p256.priv_key;
++		static_pub_key = ecc_p256.pub_key;
++	} else if (curve_id == 3) {
++		ss_size = ECC_P384_SS_SZ;
++		static_priv_key = ecc_p384.priv_key;
++		static_pub_key = ecc_p384.pub_key;
++	} else {
++		return ret;
++	}
++
++	shared_secret_a = fcw_kmalloc(ss_size, GFP_KERNEL);
++	if (!shared_secret_a) {
++		ret = -ENOMEM;
++		goto out;
++	}
++	shared_secret_b = fcw_kmalloc(ss_size, GFP_KERNEL);
++	if (!shared_secret_b) {
++		ret = -ENOMEM;
++		goto out;
++	}
++
++	ret = crypto_ecdh_shared_secret(curve_id, ndigits,
++					static_priv_key, public_key, shared_secret_a);
++	if (ret < 0)
++		goto out;
++	ret = crypto_ecdh_shared_secret(curve_id, ndigits,
++					private_key, static_pub_key, shared_secret_b);
++	if (ret < 0)
++		goto out;
++
++	if (memcmp(shared_secret_a, shared_secret_b, ss_size)) {
++		fcw_printk("Pairwise Consistency Test for ECC keys failed\n");
++		ret = -EFAULT;
++		goto out;
++	}
++	fcw_printk("Pairwise Consistency Test for ECC keys passed\n");
++
++out:
++	kfree(shared_secret_a);
++	kfree(shared_secret_b);
++	return ret;
++}
++
+ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
+ 		     const u64 *private_key, u64 *public_key)
+ {
+@@ -1524,6 +1637,9 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
+ 	ecc_swap_digits(pk->x, public_key, ndigits);
+ 	ecc_swap_digits(pk->y, &public_key[ndigits], ndigits);
+ 
++	if (fips_enabled)
++		ret = ecc_pct(curve_id, ndigits, private_key, public_key);
++
+ err_free_point:
+ 	ecc_free_point(pk);
+ out:
+-- 
+2.19.0
+

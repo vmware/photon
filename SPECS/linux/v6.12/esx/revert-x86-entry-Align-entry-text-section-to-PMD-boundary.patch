@@ -1,0 +1,80 @@
+From b2476d9be165707fc939c008b448861517b60667 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 30 Aug 2023 11:38:29 +0530
+Subject: [PATCH] x86/entry: Align entry text section to PMD boundary
+
+The (irq)entry text must be visible in the user space page tables. To allow
+simple PMD based sharing, make the entry text PMD aligned.
+
+[Alexey] Reverting this commit.
+Idea of original commit is related to KPTI, with intention to
+map with userspace minimal possible .text section, when hardware
+allowes it (for example, if hardware does not support PCID, entire
+.text will be mapped).
+By reverting in, we stil do not map data/rodata to use userspace,
+but little increase "visible" .text area in addition to just entry
+code. There is no security risk of doing that. As a bonus, we reduce
+kernel size by 40%. 2MB aligning increases kernel .text size from
+6MB to 10MB, by adding padding between and after entry text.
+
+[Ajay] Reverting only ALIGN_ENTRY_TEXT_END, ALIGN_ENTRY_TEXT_BEGIN
+requires for SRSO (Speculative Return Stack Overflow).
+
+Signed-off-by: Roye Eshed <eshedr@vmware.com>
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Brian Gerst <brgerst@gmail.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: David Laight <David.Laight@aculab.com>
+Cc: Denys Vlasenko <dvlasenk@redhat.com>
+Cc: Eduardo Valentin <eduval@amazon.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: aliguori@amazon.com
+Cc: daniel.gruss@iaik.tugraz.at
+Cc: hughd@google.com
+Cc: keescook@google.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+---
+ arch/x86/kernel/vmlinux.lds.S | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
+index 54a5596ad..661b0ebc3 100644
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -67,7 +67,6 @@ jiffies = jiffies_64;
+ 		__end_rodata_aligned = .;
+ 
+ #define ALIGN_ENTRY_TEXT_BEGIN	. = ALIGN(PMD_SIZE);
+-#define ALIGN_ENTRY_TEXT_END	. = ALIGN(PMD_SIZE);
+ 
+ /*
+  * This section contains data which will be mapped as decrypted. Memory
+@@ -94,7 +93,6 @@ jiffies = jiffies_64;
+ 		__end_rodata_aligned = .;
+ 
+ #define ALIGN_ENTRY_TEXT_BEGIN
+-#define ALIGN_ENTRY_TEXT_END
+ #define BSS_DECRYPTED
+ 
+ #endif
+@@ -150,7 +148,6 @@ SECTIONS
+ 		. = srso_alias_untrain_ret | (1 << 2) | (1 << 8) | (1 << 14) | (1 << 20);
+ 		*(.text..__x86.rethunk_safe)
+ #endif
+-		ALIGN_ENTRY_TEXT_END
+ 		*(.gnu.warning)
+ 
+ 	} :text = 0xcccccccc
+-- 
+2.35.6
+

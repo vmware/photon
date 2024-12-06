@@ -1,0 +1,50 @@
+From 2146f0130cbf0c7c403a6bf0e07af40dc2489e79 Mon Sep 17 00:00:00 2001
+From: Tighe Barris <tbarri@amazon.com>
+Date: Wed, 25 May 2022 16:43:55 +0000
+Subject: [PATCH] Correct read overflow in page touching DMA ops binding
+
+To force a page into residence, a read operation is performed on behalf
+of devices without an IOMMU. This functionality is required to facilitate
+memory overcommitted hosts.
+
+Commit 25d4ce2 ("Introduce page touching DMA ops binding") initially
+introduced this logic by invoking a '__raw_readl' function. This function
+can however read past the bounds of memory mapped for DMA. Instead,
+it is replaced with '__raw_readb'. This limits the length of memory read
+to a byte, and prevents reading past the range of mapped memory.
+
+[Srinidhi Rao <srinidhi.rao@broadcom.com> ported this patch to v6.6.x]
+
+Fixes: 25d4ce2 ("Introduce page touching DMA ops binding")
+Signed-off-by: Tighe Barris <tbarri@amazon.com>
+Cc-Team: kaos-brimstone <kaos-brimstone@amazon.com>
+Cc-Team: ec2-memo <ec2-memo@amazon.com>
+---
+ kernel/dma/page_touching.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/dma/page_touching.c b/kernel/dma/page_touching.c
+index a9bb7901d769..c5ffb90a40a5 100644
+--- a/kernel/dma/page_touching.c
++++ b/kernel/dma/page_touching.c
+@@ -36,7 +36,7 @@
+ #include <linux/moduleparam.h>
+
+ /*
+- * A wrapper around dma_direct which does a readl on the memory being mapped
++ * A wrapper around dma_direct which does a readb on the memory being mapped
+  * for DMA to ensure that it becomes resident.
+  * Useful when running in a memory overcommit environment with lazy allocation
+  * and free page reporting.
+@@ -56,7 +56,7 @@ static void touch_each_page(void *start_addr, size_t size)
+ 	int addr_offset;
+
+ 	for (addr_offset = 0; addr_offset < size; addr_offset += PAGE_SIZE)
+-		__raw_readl((char *)start_addr + addr_offset);
++		__raw_readb((char *)start_addr + addr_offset);
+ }
+
+ static void *page_touching_dma_alloc(struct device *dev, size_t size,
+--
+2.35.6
+

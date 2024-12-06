@@ -1,0 +1,37 @@
+From 36811c5d55b2fec60bdde6c0a33a74ef57848b8a Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 25 May 2022 12:53:16 +0000
+Subject: [PATCH 6/6] vmxnet3: build only for x86 and arm64
+
+The vmxnet3 is already supporting arm64, so there's only Kconfig
+changes here.
+
+Build vmxnet3 driver only for x86 and now arm64 architectures.
+
+Disable driver if 16KB or 64KB pages are selected as the VMware
+hypervisor assumes 4KB pages at the moment.
+
+Signed-off-by: Cyprien Laplace <claplace@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ drivers/net/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index b2a4f998c180..0593cd0d7bfa 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -565,8 +565,8 @@ config XEN_NETDEV_BACKEND
+ 
+ config VMXNET3
+ 	tristate "VMware VMXNET3 ethernet driver"
+-	depends on PCI && INET
+-	depends on PAGE_SIZE_LESS_THAN_64KB
++	depends on PCI && INET && (X86 || ARM64)
++	depends on PAGE_SIZE_LESS_THAN_64KB && !ARM64_16K_PAGES && !CPU_BIG_ENDIAN
+ 	help
+ 	  This driver supports VMware's vmxnet3 virtual ethernet NIC.
+ 	  To compile this driver as a module, choose M here: the
+-- 
+2.28.0
+

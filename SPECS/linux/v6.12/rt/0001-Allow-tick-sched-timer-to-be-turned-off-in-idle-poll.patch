@@ -1,0 +1,33 @@
+From e42af578d6af4bf790be3174f0b3adb17e68918a Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Wed, 26 May 2021 19:09:32 -0700
+Subject: [PATCH] Allow tick sched timer to be turned off in idle poll
+
+If the tick timer is enabled in idle poll, it is possible that the
+tick_sched_timer and wakeup timer goes off very close to each other.
+This scenario can be very cosly in a virtualized environment.
+---
+ kernel/sched/idle.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
+index 44a17366c8ec..bb71391164c2 100644
+--- a/kernel/sched/idle.c
++++ b/kernel/sched/idle.c
+@@ -256,9 +256,12 @@ static void do_idle(void)
+ 		 * broadcast device expired for us, we don't want to go deep
+ 		 * idle as we know that the IPI is going to arrive right away.
+ 		 */
+-		if (cpu_idle_force_poll || tick_check_broadcast_expired()) {
++		if (tick_check_broadcast_expired()) {
+ 			tick_nohz_idle_restart_tick();
+ 			cpu_idle_poll();
++		} else if (cpu_idle_force_poll) {
++			tick_nohz_idle_stop_tick();
++			cpu_idle_poll();
+ 		} else {
+ 			cpuidle_idle_call();
+ 		}
+--
+2.17.1
+

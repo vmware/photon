@@ -1,0 +1,56 @@
+From 06e988b1547114c603a337f10c8a6f944b911f24 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Date: Sun, 5 Mar 2023 18:43:14 +0530
+Subject: [PATCH 6/8] crypto: Add prandom, module_kthread_exit to canister
+ wrapper
+
+prandom_u32_max is a static inline function whose definition changed
+across versions.
+
+module_put_and_kthread_exit is not available in older kernels,
+module_put_and_exit was used earlier, added specific implementation
+in wrapper.
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ crypto/algboss.c      | 4 ++--
+ crypto/rsa-pkcs1pad.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/crypto/algboss.c b/crypto/algboss.c
+index 328e000e6..757e5222f 100644
+--- a/crypto/algboss.c
++++ b/crypto/algboss.c
+@@ -68,7 +68,7 @@ static int cryptomgr_probe(void *data)
+ 	complete_all(&param->larval->completion);
+ 	crypto_alg_put(&param->larval->alg);
+ 	kfree(param);
+-	module_put_and_kthread_exit(0);
++	fcw_module_put_and_kthread_exit(0);
+ }
+ 
+ static int cryptomgr_schedule_probe(struct crypto_larval *larval)
+@@ -191,7 +191,7 @@ static int cryptomgr_test(void *data)
+ 	crypto_alg_tested(param->driver, err);
+ 
+ 	kfree(param);
+-	module_put_and_kthread_exit(0);
++	fcw_module_put_and_kthread_exit(0);
+ }
+ 
+ static int cryptomgr_schedule_test(struct crypto_alg *alg)
+diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
+index f8983636f..82e5eb5e2 100644
+--- a/crypto/rsa-pkcs1pad.c
++++ b/crypto/rsa-pkcs1pad.c
+@@ -254,7 +254,7 @@ static int pkcs1pad_encrypt(struct akcipher_request *req)
+ 	ps_end = ctx->key_size - req->src_len - 2;
+ 	req_ctx->in_buf[0] = 0x02;
+ 	for (i = 1; i < ps_end; i++)
+-		req_ctx->in_buf[i] = 1 + prandom_u32_max(255);
++		req_ctx->in_buf[i] = 1 + fcw_prandom_u32_max(255);
+ 	req_ctx->in_buf[ps_end] = 0x00;
+ 
+ 	pkcs1pad_sg_set_buf(req_ctx->in_sg, req_ctx->in_buf,
+-- 
+2.43.0
