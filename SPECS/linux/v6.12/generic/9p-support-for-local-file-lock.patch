@@ -1,0 +1,124 @@
+From ca6ad55ed9bd661d88a3099ba66c52f97a0f54d8 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Fri, 22 May 2020 05:16:15 +0000
+Subject: [PATCH] 9p: support for local file lock
+
+Implementation of the local lock only from the perspective
+of current kernel. Can be used to speedup performance when
+the client has monopoly access to server resource or/and
+where 9p server does not support file locking.
+Can be enabled by "local_lock" mount options.
+---
+ Documentation/filesystems/9p.rst |  4 ++++
+ fs/9p/v9fs.c                     |  7 +++++++
+ fs/9p/v9fs.h                     |  3 ++-
+ fs/9p/vfs_file.c                 | 11 +++++++++--
+ 4 files changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/filesystems/9p.rst b/Documentation/filesystems/9p.rst
+index 1e0e0bb6fdf9..bb4a71704351 100644
+--- a/Documentation/filesystems/9p.rst
++++ b/Documentation/filesystems/9p.rst
+@@ -182,6 +182,10 @@ Options
+   cachetag	cache tag to use the specified persistent cache.
+ 		cache tags for existing cache sessions can be listed at
+ 		/sys/fs/9p/caches. (applies only to cache=fscache)
++
++  local_lock	Use only local posix locking from the perspective of "this"
++		kernel. Do not perform server side locking.
++
+   ============= ===============================================================
+ 
+ Behavior
+diff --git a/fs/9p/v9fs.c b/fs/9p/v9fs.c
+index d525957594b6..5b57f2fcea62 100644
+--- a/fs/9p/v9fs.c
++++ b/fs/9p/v9fs.c
+@@ -43,6 +43,8 @@ enum {
+ 	Opt_access, Opt_posixacl,
+ 	/* Lock timeout option */
+ 	Opt_locktimeout,
++	/* Local lock */
++	Opt_local_lock,
+ 	/* Error token */
+ 	Opt_err
+ };
+@@ -63,6 +65,7 @@ static const match_table_t tokens = {
+ 	{Opt_access, "access=%s"},
+ 	{Opt_posixacl, "posixacl"},
+ 	{Opt_locktimeout, "locktimeout=%u"},
++	{Opt_local_lock, "local_lock"},
+ 	{Opt_err, NULL}
+ };
+ 
+@@ -369,6 +372,10 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
+ 			v9ses->session_lock_timeout = (long)option * HZ;
+ 			break;
+ 
++		case Opt_local_lock:
++			v9ses->flags |= V9FS_LOCAL_LOCK;
++			break;
++
+ 		default:
+ 			continue;
+ 		}
+diff --git a/fs/9p/v9fs.h b/fs/9p/v9fs.h
+index 698c43dd5dc8..9dd33721d27f 100644
+--- a/fs/9p/v9fs.h
++++ b/fs/9p/v9fs.h
+@@ -40,7 +40,8 @@ enum p9_session_flags {
+ 	V9FS_NO_XATTR       = 0x40,
+ 	V9FS_IGNORE_QV      = 0x80, /* ignore qid.version for cache hints */
+ 	V9FS_DIRECT_IO      = 0x100,
+-	V9FS_SYNC           = 0x200
++	V9FS_SYNC           = 0x200,
++	V9FS_LOCAL_LOCK	    = 0x400
+ };
+ 
+ /**
+diff --git a/fs/9p/vfs_file.c b/fs/9p/vfs_file.c
+index 11cd8d23f6f2..7e361c3391db 100644
+--- a/fs/9p/vfs_file.c
++++ b/fs/9p/vfs_file.c
+@@ -133,6 +133,10 @@ static int v9fs_file_do_lock(struct file *filp, int cmd, struct file_lock *fl)
+ 	if (res < 0)
+ 		goto out;
+ 
++	v9ses = v9fs_inode2v9ses(file_inode(filp));
++	if (v9ses->flags & V9FS_LOCAL_LOCK)
++		goto out;
++
+ 	/* convert posix lock to p9 tlock args */
+ 	memset(&flock, 0, sizeof(flock));
+ 	/* map the lock type */
+@@ -157,8 +161,6 @@ static int v9fs_file_do_lock(struct file *filp, int cmd, struct file_lock *fl)
+ 	if (IS_SETLKW(cmd))
+ 		flock.flags = P9_LOCK_FLAGS_BLOCK;
+ 
+-	v9ses = v9fs_inode2v9ses(file_inode(filp));
+-
+ 	/*
+ 	 * if its a blocked request and we get P9_LOCK_BLOCKED as the status
+ 	 * for lock request, keep on trying
+@@ -224,6 +226,7 @@ static int v9fs_file_getlock(struct file *filp, struct file_lock *fl)
+ {
+ 	struct p9_getlock glock;
+ 	struct p9_fid *fid;
++	struct v9fs_session_info *v9ses;
+ 	int res = 0;
+ 
+ 	fid = filp->private_data;
+@@ -237,6 +240,10 @@ static int v9fs_file_getlock(struct file *filp, struct file_lock *fl)
+ 	if (fl->fl_type != F_UNLCK)
+ 		return res;
+ 
++	v9ses = v9fs_inode2v9ses(file_inode(filp));
++	if (v9ses->flags & V9FS_LOCAL_LOCK)
++		return res;
++
+ 	/* convert posix lock to p9 tgetlock args */
+ 	memset(&glock, 0, sizeof(glock));
+ 	glock.type  = P9_LOCK_TYPE_UNLCK;
+-- 
+2.35.6
+

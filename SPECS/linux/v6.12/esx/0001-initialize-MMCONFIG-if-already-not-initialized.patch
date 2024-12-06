@@ -1,0 +1,88 @@
+From dc3b95ed280bfae1791fe8841e5be60f1c6512db Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Thu, 14 Apr 2022 15:38:33 +0530
+Subject: [PATCH] initialize MMCONFIG, if already not initialized
+
+For CRX, guest needs to initialize MMCONFIG.
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ arch/x86/pci/mmconfig-shared.c | 47 +++++++++++++++++++++++++++++++---
+ 1 file changed, 44 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/pci/mmconfig-shared.c b/arch/x86/pci/mmconfig-shared.c
+index e9497ee0f..f670f583d 100644
+--- a/arch/x86/pci/mmconfig-shared.c
++++ b/arch/x86/pci/mmconfig-shared.c
+@@ -23,6 +23,7 @@
+ #include <asm/e820/api.h>
+ #include <asm/pci_x86.h>
+ #include <asm/acpi.h>
++#include <asm/hypervisor.h>
+ 
+ #define PREFIX "PCI: "
+ 
+@@ -568,9 +569,12 @@ pci_mmcfg_check_reserved(struct device *dev, struct pci_mmcfg_region *cfg, int e
+ 
+ 	/* Don't try to do this check unless configuration
+ 	   type 1 is available. how about type 2 ?*/
+-	if (raw_pci_ops)
+-		return is_mmconf_reserved(e820__mapped_all, cfg, dev,
+-					  "E820 entry");
++	if (raw_pci_ops && is_mmconf_reserved(e820__mapped_all, cfg, dev,
++					"E820 entry"))
++		return true;
++
++	if(cfg->res.flags & IORESOURCE_BUSY)
++		return true;
+ 
+ 	return false;
+ }
+@@ -702,6 +706,43 @@ static void __init __pci_mmcfg_init(int early)
+ 
+ static int __initdata known_bridge;
+ 
++#define PCI_REG_MMCONFIG 0xc4
++#define VMW_EXTCFG_MMCFG_SIZE (128 << 20)
++
++int __init pci_mmcfg_self_init(void)
++{
++	u32 mm_config = 0x0;
++	struct pci_mmcfg_region *cfg;
++
++	if (x86_hyper_type != X86_HYPER_VMWARE)
++		return 0;
++
++	/* Read current MMCONFIG address from chipset */
++	if (pci_direct_conf1.read(0, 0, 0, PCI_REG_MMCONFIG, 4,
++					&mm_config) < 0)
++		return -EINVAL;
++
++	if(!mm_config) {
++		mm_config = 0xe0000000;
++
++                if (pci_direct_conf1.write(0, 0, 0, PCI_REG_MMCONFIG, 4,
++                                        mm_config | 0x3 ) < 0) {
++                        return -EINVAL;
++                }
++
++		cfg = pci_mmconfig_add(0, 0x0, 0x7f, mm_config);
++		if (cfg == NULL) {
++			return -ENOMEM;
++		}
++                __pci_mmcfg_init(0);
++
++		if (!cfg->res.parent)
++			insert_resource(&iomem_resource, &cfg->res);
++	}
++	return 0;
++}
++subsys_initcall(pci_mmcfg_self_init);
++
+ void __init pci_mmcfg_early_init(void)
+ {
+ 	if (pci_probe & PCI_PROBE_MMCONF) {
+-- 
+2.35.6
+

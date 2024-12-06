@@ -1,0 +1,1333 @@
+From 5453be987dc8f1c4d9dc4a69458134c6b487f6fd Mon Sep 17 00:00:00 2001
+From: John Johansen <john.johansen@canonical.com>
+Date: Wed, 7 Sep 2022 12:46:30 -0700
+Subject: [PATCH] apparmor: af_unix mediation
+
+af_socket mediation did not make it into 4.17 so add remaining out
+of tree patch
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Back ported this patch to v6.6.x]
+
+Signed-off-by: John Johansen <john.johansen@canonical.com>
+(cherry picked from https://gitlab.com/jjohansen/apparmor-kernel)
+Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
+(cherry picked from commit 651f0b2cc1d78cb7afbc0fcadc166ed0bcc78dd3
+https://git.launchpad.net/~apparmor-dev/ubuntu-kernel-next)
+Signed-off-by: Paolo Pisati <paolo.pisati@canonical.com>
+---
+ security/apparmor/Makefile          |   2 +-
+ security/apparmor/af_unix.c         | 702 ++++++++++++++++++++++++++++
+ security/apparmor/apparmorfs.c      |   6 +
+ security/apparmor/file.c            |  13 +-
+ security/apparmor/include/af_unix.h | 122 +++++
+ security/apparmor/include/file.h    |   4 +
+ security/apparmor/include/label.h   |   5 +-
+ security/apparmor/include/net.h     |   4 +
+ security/apparmor/include/path.h    |   1 +
+ security/apparmor/include/policy.h  |   7 +-
+ security/apparmor/lsm.c             | 131 +++++-
+ security/apparmor/net.c             |  61 ++-
+ 12 files changed, 1039 insertions(+), 19 deletions(-)
+ create mode 100644 security/apparmor/af_unix.c
+ create mode 100644 security/apparmor/include/af_unix.h
+
+diff --git a/security/apparmor/Makefile b/security/apparmor/Makefile
+index b9c5879dd599..be51607f52b6 100644
+--- a/security/apparmor/Makefile
++++ b/security/apparmor/Makefile
+@@ -6,7 +6,7 @@ obj-$(CONFIG_SECURITY_APPARMOR) += apparmor.o
+ apparmor-y := apparmorfs.o audit.o capability.o task.o ipc.o lib.o match.o \
+               path.o domain.o policy.o policy_unpack.o procattr.o lsm.o \
+               resource.o secid.o file.o policy_ns.o label.o mount.o net.o \
+-              policy_compat.o
++              policy_compat.o af_unix.o
+ apparmor-$(CONFIG_SECURITY_APPARMOR_HASH) += crypto.o
+
+ obj-$(CONFIG_SECURITY_APPARMOR_KUNIT_TEST) += apparmor_policy_unpack_test.o
+diff --git a/security/apparmor/af_unix.c b/security/apparmor/af_unix.c
+new file mode 100644
+index 000000000000..7a0eac60d8bd
+--- /dev/null
++++ b/security/apparmor/af_unix.c
+@@ -0,0 +1,702 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * AppArmor security module
++ *
++ * This file contains AppArmor af_unix fine grained mediation
++ *
++ * Copyright 2018 Canonical Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, version 2 of the
++ * License.
++ */
++
++#include <net/tcp_states.h>
++
++#include "include/audit.h"
++#include "include/af_unix.h"
++#include "include/apparmor.h"
++#include "include/file.h"
++#include "include/label.h"
++#include "include/path.h"
++#include "include/policy.h"
++#include "include/cred.h"
++
++static inline struct sock *aa_unix_sk(struct unix_sock *u)
++{
++	return &u->sk;
++}
++
++static umode_t sock_i_mode(struct sock *sk)
++{
++	umode_t mode;
++
++	read_lock_bh(&sk->sk_callback_lock);
++	mode = sk->sk_socket ? SOCK_INODE(sk->sk_socket)->i_mode : 0;
++	read_unlock_bh(&sk->sk_callback_lock);
++	return mode;
++}
++
++static inline int unix_fs_perm(const char *op, u32 mask,
++			       const struct cred *subj_cred,
++			       struct aa_label *label,
++			       struct unix_sock *u, int flags)
++{
++	AA_BUG(!label);
++	AA_BUG(!u);
++	AA_BUG(!UNIX_FS(aa_unix_sk(u)));
++
++	if (unconfined(label) || !LABEL_MEDIATES(label, AA_CLASS_FILE))
++		return 0;
++
++	mask &= NET_FS_PERMS;
++	if (!u->path.dentry) {
++		struct path_cond cond = {
++			.uid = sock_i_uid(&u->sk),
++			.mode = sock_i_mode(&u->sk),
++		};
++		struct aa_perms perms = { };
++		struct aa_profile *profile;
++
++		/* socket path has been cleared because it is being shutdown
++		 * can only fall back to original sun_path request
++		 */
++		struct aa_sk_ctx *ctx = SK_CTX(aa_unix_sk(u));
++
++		if (ctx->path.dentry)
++			return aa_path_perm(op, subj_cred, label, &ctx->path,
++					    flags, mask,
++					    &cond);
++		return fn_for_each_confined(label, profile,
++			((flags | profile->path_flags) & PATH_MEDIATE_DELETED) ?
++				__aa_path_perm(op, subj_cred, profile,
++					       u->addr->name->sun_path, mask,
++					       &cond, flags, &perms) :
++				aa_audit_file(subj_cred, profile, &nullperms,
++					      op, mask,
++					      u->addr->name->sun_path, NULL,
++					      NULL, cond.uid,
++					      "Failed name lookup - deleted entry",
++					      -EACCES));
++	} else {
++		/* the sunpath may not be valid for this ns so use the path */
++		struct path_cond cond = { u->path.dentry->d_inode->i_uid,
++					  u->path.dentry->d_inode->i_mode
++		};
++
++		return aa_path_perm(op, subj_cred, label, &u->path, flags,
++				    mask, &cond);
++	}
++
++	return 0;
++}
++
++/* passing in state returned by PROFILE_MEDIATES_AF */
++static unsigned int match_to_prot(struct aa_dfa *dfa,
++				  unsigned int state, int type, int protocol,
++				  const char **info)
++{
++	__be16 buffer[2];
++
++	buffer[0] = cpu_to_be16(type);
++	buffer[1] = cpu_to_be16(protocol);
++	state = aa_dfa_match_len(dfa, state, (char *) &buffer, 4);
++	if (!state)
++		*info = "failed type and protocol match";
++	return state;
++}
++
++static unsigned int match_addr(struct aa_dfa *dfa, unsigned int state,
++			       struct sockaddr_un *addr, int addrlen)
++{
++	if (addr)
++		/* include leading \0 */
++		state = aa_dfa_match_len(dfa, state, addr->sun_path,
++					 unix_addr_len(addrlen));
++	else
++		/* anonymous end point */
++		state = aa_dfa_match_len(dfa, state, "\x01", 1);
++	/* todo change to out of band */
++	state = aa_dfa_null_transition(dfa, state);
++	return state;
++}
++
++static unsigned int match_to_local(struct aa_dfa *dfa,
++				   unsigned int state, int type, int protocol,
++				   struct sockaddr_un *addr, int addrlen,
++				   const char **info)
++{
++	state = match_to_prot(dfa, state, type, protocol, info);
++	if (state) {
++		state = match_addr(dfa, state, addr, addrlen);
++		if (state) {
++			/* todo: local label matching */
++			state = aa_dfa_null_transition(dfa, state);
++			if (!state)
++				*info = "failed local label match";
++		} else
++			*info = "failed local address match";
++	}
++
++	return state;
++}
++
++static unsigned int match_to_sk(struct aa_dfa *dfa,
++				unsigned int state, struct unix_sock *u,
++				const char **info)
++{
++	struct sockaddr_un *addr = NULL;
++	int addrlen = 0;
++
++	if (u->addr) {
++		addr = u->addr->name;
++		addrlen = u->addr->len;
++	}
++
++	return match_to_local(dfa, state, u->sk.sk_type, u->sk.sk_protocol,
++			      addr, addrlen, info);
++}
++
++#define CMD_ADDR	1
++#define CMD_LISTEN	2
++#define CMD_OPT		4
++
++static inline unsigned int match_to_cmd(struct aa_dfa *dfa,
++					unsigned int state, struct unix_sock *u,
++					char cmd, const char **info)
++{
++	state = match_to_sk(dfa, state, u, info);
++	if (state) {
++		state = aa_dfa_match_len(dfa, state, &cmd, 1);
++		if (!state)
++			*info = "failed cmd selection match";
++	}
++
++	return state;
++}
++
++static inline unsigned int match_to_peer(struct aa_dfa *dfa,
++					 unsigned int state,
++					 struct unix_sock *u,
++					 struct sockaddr_un *peer_addr,
++					 int peer_addrlen,
++					 const char **info)
++{
++	state = match_to_cmd(dfa, state, u, CMD_ADDR, info);
++	if (state) {
++		state = match_addr(dfa, state, peer_addr, peer_addrlen);
++		if (!state)
++			*info = "failed peer address match";
++	}
++	return state;
++}
++
++static int do_perms(struct aa_profile *profile, struct aa_ruleset *rule,
++		    unsigned int state, u32 request,
++		    struct apparmor_audit_data *ad)
++{
++	struct aa_perms perms;
++
++	AA_BUG(!profile);
++
++	perms = *aa_lookup_perms(&rule->policy, state);
++	aa_apply_modes_to_perms(profile, &perms);
++	return aa_check_perms(profile, &perms, request, ad,
++			      audit_net_cb);
++}
++
++static int match_label(struct aa_profile *profile, struct aa_ruleset *rule,
++		       struct aa_profile *peer, unsigned int state, u32 request,
++		       struct apparmor_audit_data *ad)
++{
++	AA_BUG(!profile);
++	AA_BUG(!peer);
++
++	ad->peer = &peer->label;
++
++	if (state) {
++		state = aa_dfa_match(rule->policy.dfa, state,
++				     peer->base.hname);
++		if (!state)
++			ad->info = "failed peer label match";
++	}
++	return do_perms(profile, rule, state, request, ad);
++}
++
++
++/* unix sock creation comes before we know if the socket will be an fs
++ * socket
++ * v6 - semantics are handled by mapping in profile load
++ * v7 - semantics require sock create for tasks creating an fs socket.
++ */
++static int profile_create_perm(struct aa_profile *profile, int family,
++			       int type, int protocol)
++{
++	struct aa_ruleset *rules = list_first_entry(&profile->rules,
++						    typeof(*rules), list);
++	aa_state_t state;
++	DEFINE_AUDIT_NET(ad, OP_CREATE, NULL, family, type, protocol);
++
++	AA_BUG(!profile);
++	AA_BUG(profile_unconfined(profile));
++
++	state = RULE_MEDIATES_AF(rules, AF_UNIX);
++	if (state) {
++		state = match_to_prot(rules->policy.dfa, state, type, protocol,
++				      &ad.info);
++		return do_perms(profile, rules, state, AA_MAY_CREATE, &ad);
++	}
++
++	return aa_profile_af_perm(profile, &ad, AA_MAY_CREATE, family, type);
++}
++
++int aa_unix_create_perm(struct aa_label *label, int family, int type,
++			int protocol)
++{
++	struct aa_profile *profile;
++
++	if (unconfined(label))
++		return 0;
++
++	return fn_for_each_confined(label, profile,
++			profile_create_perm(profile, family, type, protocol));
++}
++
++
++static inline int profile_sk_perm(struct aa_profile *profile,
++				  struct apparmor_audit_data *ad,
++				  u32 request, struct sock *sk)
++{
++	struct aa_ruleset *rules = list_first_entry(&profile->rules,
++						    typeof(*rules),
++						    list);
++	unsigned int state;
++
++	AA_BUG(!profile);
++	AA_BUG(!sk);
++	AA_BUG(UNIX_FS(sk));
++	AA_BUG(profile_unconfined(profile));
++
++	state = RULE_MEDIATES_AF(rules, AF_UNIX);
++	if (state) {
++		state = match_to_sk(rules->policy.dfa, state, unix_sk(sk),
++				    &ad->info);
++		return do_perms(profile, rules, state, request, ad);
++	}
++
++	return aa_profile_af_sk_perm(profile, ad, request, sk);
++}
++
++int aa_unix_label_sk_perm(const struct cred *subj_cred,
++			  struct aa_label *label, const char *op, u32 request,
++			  struct sock *sk)
++{
++	if (!unconfined(label)) {
++		struct aa_profile *profile;
++		DEFINE_AUDIT_SK(ad, op, sk);
++
++		ad.subj_cred = subj_cred;
++		return fn_for_each_confined(label, profile,
++				profile_sk_perm(profile, &ad, request, sk));
++	}
++	return 0;
++}
++
++static int unix_label_sock_perm(const struct cred *subj_cred,
++				struct aa_label *label, const char *op,
++				u32 request, struct socket *sock)
++{
++	if (unconfined(label))
++		return 0;
++	if (UNIX_FS(sock->sk))
++		return unix_fs_perm(op, request, subj_cred, label,
++				    unix_sk(sock->sk), 0);
++
++	return aa_unix_label_sk_perm(subj_cred, label, op, request, sock->sk);
++}
++
++/* revaliation, get/set attr */
++int aa_unix_sock_perm(const char *op, u32 request, struct socket *sock)
++{
++	struct aa_label *label;
++	int error;
++
++	label = begin_current_label_crit_section();
++	error = unix_label_sock_perm(current_cred(), label, op, request, sock);
++	end_current_label_crit_section(label);
++
++	return error;
++}
++
++static int profile_bind_perm(struct aa_profile *profile, struct sock *sk,
++			     struct sockaddr *addr, int addrlen)
++{
++	struct aa_ruleset *rules = list_first_entry(&profile->rules,
++						    typeof(*rules), list);
++	unsigned int state;
++	DEFINE_AUDIT_SK(ad, OP_BIND, sk);
++
++	ad.subj_cred = current_cred();
++	AA_BUG(!profile);
++	AA_BUG(!sk);
++	AA_BUG(addr->sa_family != AF_UNIX);
++	AA_BUG(profile_unconfined(profile));
++	AA_BUG(unix_addr_fs(addr, addrlen));
++
++	state = RULE_MEDIATES_AF(rules, AF_UNIX);
++	if (state) {
++		/* bind for abstract socket */
++		ad.net.addr = unix_addr(addr);
++		ad.net.addrlen = addrlen;
++
++		state = match_to_local(rules->policy.dfa, state,
++				       sk->sk_type, sk->sk_protocol,
++				       unix_addr(addr), addrlen,
++				       &ad.info);
++		return do_perms(profile, rules, state, AA_MAY_BIND, &ad);
++	}
++
++	return aa_profile_af_sk_perm(profile, &ad, AA_MAY_BIND, sk);
++}
++
++int aa_unix_bind_perm(struct socket *sock, struct sockaddr *address,
++		      int addrlen)
++{
++	struct aa_profile *profile;
++	struct aa_label *label;
++	int error = 0;
++
++	 label = begin_current_label_crit_section();
++	 /* fs bind is handled by mknod */
++	if (!(unconfined(label) || unix_addr_fs(address, addrlen)))
++		error = fn_for_each_confined(label, profile,
++				profile_bind_perm(profile, sock->sk, address,
++						  addrlen));
++	end_current_label_crit_section(label);
++
++	return error;
++}
++
++int aa_unix_connect_perm(struct socket *sock, struct sockaddr *address,
++			 int addrlen)
++{
++	/* unix connections are covered by the
++	 * - unix_stream_connect (stream) and unix_may_send hooks (dgram)
++	 * - fs connect is handled by open
++	 */
++	return 0;
++}
++
++static int profile_listen_perm(struct aa_profile *profile, struct sock *sk,
++			       int backlog)
++{
++	struct aa_ruleset *rules = list_first_entry(&profile->rules,
++						    typeof(*rules), list);
++	unsigned int state;
++	DEFINE_AUDIT_SK(ad, OP_LISTEN, sk);
++
++	AA_BUG(!profile);
++	AA_BUG(!sk);
++	AA_BUG(UNIX_FS(sk));
++	AA_BUG(profile_unconfined(profile));
++
++	state = RULE_MEDIATES_AF(rules, AF_UNIX);
++	if (state) {
++		__be16 b = cpu_to_be16(backlog);
++
++		state = match_to_cmd(rules->policy.dfa, state, unix_sk(sk),
++				     CMD_LISTEN, &ad.info);
++		if (state) {
++			state = aa_dfa_match_len(rules->policy.dfa, state,
++						 (char *) &b, 2);
++			if (!state)
++				ad.info = "failed listen backlog match";
++		}
++		return do_perms(profile, rules, state, AA_MAY_LISTEN, &ad);
++	}
++
++	return aa_profile_af_sk_perm(profile, &ad, AA_MAY_LISTEN, sk);
++}
++
++int aa_unix_listen_perm(struct socket *sock, int backlog)
++{
++	struct aa_profile *profile;
++	struct aa_label *label;
++	int error = 0;
++
++	label = begin_current_label_crit_section();
++	if (!(unconfined(label) || UNIX_FS(sock->sk)))
++		error = fn_for_each_confined(label, profile,
++				profile_listen_perm(profile, sock->sk,
++						    backlog));
++	end_current_label_crit_section(label);
++
++	return error;
++}
++
++
++static inline int profile_accept_perm(struct aa_profile *profile,
++				      struct sock *sk,
++				      struct sock *newsk)
++{
++	struct aa_ruleset *rules = list_first_entry(&profile->rules,
++						    typeof(*rules), list);
++	unsigned int state;
++	DEFINE_AUDIT_SK(ad, OP_ACCEPT, sk);
++
++	AA_BUG(!profile);
++	AA_BUG(!sk);
++	AA_BUG(UNIX_FS(sk));
++	AA_BUG(profile_unconfined(profile));
++
++	state = RULE_MEDIATES_AF(rules, AF_UNIX);
++	if (state) {
++		state = match_to_sk(rules->policy.dfa, state, unix_sk(sk),
++				    &ad.info);
++		return do_perms(profile, rules, state, AA_MAY_ACCEPT, &ad);
++	}
++
++	return aa_profile_af_sk_perm(profile, &ad, AA_MAY_ACCEPT, sk);
++}
++
++/* ability of sock to connect, not peer address binding */
++int aa_unix_accept_perm(struct socket *sock, struct socket *newsock)
++{
++	struct aa_profile *profile;
++	struct aa_label *label;
++	int error = 0;
++
++	label = begin_current_label_crit_section();
++	if (!(unconfined(label) || UNIX_FS(sock->sk)))
++		error = fn_for_each_confined(label, profile,
++				profile_accept_perm(profile, sock->sk,
++						    newsock->sk));
++	end_current_label_crit_section(label);
++
++	return error;
++}
++
++
++/* dgram handled by unix_may_sendmsg, right to send on stream done at connect
++ * could do per msg unix_stream here
++ */
++/* sendmsg, recvmsg */
++int aa_unix_msg_perm(const char *op, u32 request, struct socket *sock,
++		     struct msghdr *msg, int size)
++{
++	return 0;
++}
++
++
++static int profile_opt_perm(struct aa_profile *profile, const char *op, u32 request,
++			    struct sock *sk, int level, int optname)
++{
++	struct aa_ruleset *rules = list_first_entry(&profile->rules,
++						    typeof(*rules), list);
++	unsigned int state;
++	DEFINE_AUDIT_SK(ad, op, sk);
++
++	AA_BUG(!profile);
++	AA_BUG(!sk);
++	AA_BUG(UNIX_FS(sk));
++	AA_BUG(profile_unconfined(profile));
++
++	state = RULE_MEDIATES_AF(rules, AF_UNIX);
++	if (state) {
++		__be16 b = cpu_to_be16(optname);
++
++		state = match_to_cmd(rules->policy.dfa, state, unix_sk(sk),
++				     CMD_OPT, &ad.info);
++		if (state) {
++			state = aa_dfa_match_len(rules->policy.dfa, state,
++						 (char *) &b, 2);
++			if (!state)
++				ad.info = "failed sockopt match";
++		}
++		return do_perms(profile, rules, state, request, &ad);
++	}
++
++	return aa_profile_af_sk_perm(profile, &ad, request, sk);
++}
++
++int aa_unix_opt_perm(const char *op, u32 request, struct socket *sock, int level,
++		     int optname)
++{
++	struct aa_profile *profile;
++	struct aa_label *label;
++	int error = 0;
++
++	label = begin_current_label_crit_section();
++	if (!(unconfined(label) || UNIX_FS(sock->sk)))
++		error = fn_for_each_confined(label, profile,
++				profile_opt_perm(profile, op, request,
++						 sock->sk, level, optname));
++	end_current_label_crit_section(label);
++
++	return error;
++}
++
++/* null peer_label is allowed, in which case the peer_sk label is used */
++static int profile_peer_perm(struct aa_profile *profile, const char *op, u32 request,
++			     struct sock *sk, struct sock *peer_sk,
++			     struct aa_label *peer_label,
++			     struct apparmor_audit_data *ad)
++{
++	struct aa_ruleset *rules = list_first_entry(&profile->rules,
++						    typeof(*rules), list);
++	unsigned int state;
++
++	AA_BUG(!profile);
++	AA_BUG(profile_unconfined(profile));
++	AA_BUG(!sk);
++	AA_BUG(!peer_sk);
++	AA_BUG(UNIX_FS(peer_sk));
++
++	state = RULE_MEDIATES_AF(rules, AF_UNIX);
++	if (state) {
++		struct aa_sk_ctx *peer_ctx = SK_CTX(peer_sk);
++		struct aa_profile *peerp;
++		struct sockaddr_un *addr = NULL;
++		int len = 0;
++
++		if (unix_sk(peer_sk)->addr) {
++			addr = unix_sk(peer_sk)->addr->name;
++			len = unix_sk(peer_sk)->addr->len;
++		}
++		state = match_to_peer(rules->policy.dfa, state, unix_sk(sk),
++				      addr, len, &ad->info);
++		if (!peer_label)
++			peer_label = peer_ctx->label;
++		return fn_for_each_in_ns(peer_label, peerp,
++				match_label(profile, rules, peerp, state,
++					    request, ad));
++	}
++
++	return aa_profile_af_sk_perm(profile, ad, request, sk);
++}
++
++/**
++ *
++ * Requires: lock held on both @sk and @peer_sk
++ */
++int aa_unix_peer_perm(const struct cred *subj_cred,
++		      struct aa_label *label, const char *op, u32 request,
++		      struct sock *sk, struct sock *peer_sk,
++		      struct aa_label *peer_label)
++{
++	struct unix_sock *peeru = unix_sk(peer_sk);
++	struct unix_sock *u = unix_sk(sk);
++
++	AA_BUG(!label);
++	AA_BUG(!sk);
++	AA_BUG(!peer_sk);
++
++	if (UNIX_FS(aa_unix_sk(peeru))) {
++		return unix_fs_perm(op, request, subj_cred, label, peeru, 0);
++	} else if (UNIX_FS(aa_unix_sk(u))) {
++		return unix_fs_perm(op, request, subj_cred, label, u, 0);
++	} else {
++		struct aa_profile *profile;
++		DEFINE_AUDIT_SK(ad, op, sk);
++
++		ad.net.peer_sk = peer_sk;
++		ad.subj_cred = subj_cred;
++		/* TODO: ns!!! */
++		if (!net_eq(sock_net(sk), sock_net(peer_sk)))
++			;
++
++		if (unconfined(label))
++			return 0;
++
++		return fn_for_each_confined(label, profile,
++				profile_peer_perm(profile, op, request, sk,
++						  peer_sk, peer_label, &ad));
++	}
++}
++
++
++/* from net/unix/af_unix.c */
++static void unix_state_double_lock(struct sock *sk1, struct sock *sk2)
++{
++	if (unlikely(sk1 == sk2) || !sk2) {
++		unix_state_lock(sk1);
++		return;
++	}
++	if (sk1 < sk2) {
++		unix_state_lock(sk1);
++		unix_state_lock_nested(sk2, U_LOCK_SECOND);
++	} else {
++		unix_state_lock(sk2);
++		unix_state_lock_nested(sk1, U_LOCK_SECOND);
++	}
++}
++
++static void unix_state_double_unlock(struct sock *sk1, struct sock *sk2)
++{
++	if (unlikely(sk1 == sk2) || !sk2) {
++		unix_state_unlock(sk1);
++		return;
++	}
++	unix_state_unlock(sk1);
++	unix_state_unlock(sk2);
++}
++
++int aa_unix_file_perm(const struct cred *subj_cred, struct aa_label *label,
++		      const char *op, u32 request, struct socket *sock)
++{
++	struct sock *peer_sk = NULL;
++	u32 sk_req = request & ~NET_PEER_MASK;
++	int error = 0;
++
++	AA_BUG(!label);
++	AA_BUG(!sock);
++	AA_BUG(!sock->sk);
++	AA_BUG(sock->sk->sk_family != AF_UNIX);
++
++	/* TODO: update sock label with new task label */
++	unix_state_lock(sock->sk);
++	peer_sk = unix_peer(sock->sk);
++	if (peer_sk)
++		sock_hold(peer_sk);
++	if (!unix_connected(sock) && sk_req) {
++		error = unix_label_sock_perm(subj_cred, label, op, sk_req,
++					     sock);
++		if (!error)
++			; // TODO: update label
++	}
++	unix_state_unlock(sock->sk);
++	if (!peer_sk)
++		return error;
++
++	unix_state_double_lock(sock->sk, peer_sk);
++	if (UNIX_FS(sock->sk)) {
++		error = unix_fs_perm(op, request, subj_cred, label,
++				     unix_sk(sock->sk),
++				     PATH_SOCK_COND);
++	} else if (UNIX_FS(peer_sk)) {
++		error = unix_fs_perm(op, request, subj_cred, label,
++				     unix_sk(peer_sk),
++				     PATH_SOCK_COND);
++	} else {
++		struct aa_sk_ctx *pctx = SK_CTX(peer_sk);
++
++		if (sk_req)
++			error = aa_unix_label_sk_perm(subj_cred,
++						      label, op, sk_req,
++						      sock->sk);
++		last_error(error,
++			xcheck(aa_unix_peer_perm(subj_cred, label, op,
++						 MAY_READ | MAY_WRITE,
++						 sock->sk, peer_sk, NULL),
++			       aa_unix_peer_perm(sock->file ? sock->file->f_cred : NULL,
++						 pctx->label, op,
++						 MAY_READ | MAY_WRITE,
++						 peer_sk, sock->sk, label)));
++	}
++
++	unix_state_double_unlock(sock->sk, peer_sk);
++	sock_put(peer_sk);
++
++	return error;
++}
+diff --git a/security/apparmor/apparmorfs.c b/security/apparmor/apparmorfs.c
+index 2d51c3e17bdc..dae3235ea453 100644
+--- a/security/apparmor/apparmorfs.c
++++ b/security/apparmor/apparmorfs.c
+@@ -2374,6 +2374,11 @@ static struct aa_sfs_entry aa_sfs_entry_ns[] = {
+	{ }
+ };
+
++static struct aa_sfs_entry aa_sfs_entry_dbus[] = {
++	AA_SFS_FILE_STRING("mask", "acquire send receive"),
++	{ }
++};
++
+ static struct aa_sfs_entry aa_sfs_entry_query_label[] = {
+	AA_SFS_FILE_STRING("perms", "allow deny audit quiet"),
+	AA_SFS_FILE_BOOLEAN("data",		1),
+@@ -2398,6 +2403,7 @@ static struct aa_sfs_entry aa_sfs_entry_features[] = {
+	AA_SFS_DIR("caps",			aa_sfs_entry_caps),
+	AA_SFS_DIR("ptrace",			aa_sfs_entry_ptrace),
+	AA_SFS_DIR("signal",			aa_sfs_entry_signal),
++	AA_SFS_DIR("dbus",                      aa_sfs_entry_dbus),
+	AA_SFS_DIR("query",			aa_sfs_entry_query),
+	{ }
+ };
+diff --git a/security/apparmor/file.c b/security/apparmor/file.c
+index 6fd21324a097..0e65dec20b4a 100644
+--- a/security/apparmor/file.c
++++ b/security/apparmor/file.c
+@@ -14,6 +14,7 @@
+ #include <linux/fs.h>
+ #include <linux/mount.h>
+
++#include "include/af_unix.h"
+ #include "include/apparmor.h"
+ #include "include/audit.h"
+ #include "include/cred.h"
+@@ -225,16 +226,18 @@ aa_state_t aa_str_perms(struct aa_policydb *file_rules, aa_state_t start,
+	return state;
+ }
+
+-static int __aa_path_perm(const char *op, const struct cred *subj_cred,
+-			  struct aa_profile *profile, const char *name,
+-			  u32 request, struct path_cond *cond, int flags,
+-			  struct aa_perms *perms)
++int __aa_path_perm(const char *op,  const struct cred *subj_cred,
++			struct aa_profile *profile, const char *name,
++			u32 request, struct path_cond *cond, int flags,
++			struct aa_perms *perms)
+ {
+	struct aa_ruleset *rules = list_first_entry(&profile->rules,
+						    typeof(*rules), list);
+	int e = 0;
+
+-	if (profile_unconfined(profile))
++	if (profile_unconfined(profile) ||
++		((flags & PATH_SOCK_COND) &&
++		!RULE_MEDIATES_AF(rules, AF_UNIX)))
+		return 0;
+	aa_str_perms(&(rules->file), rules->file.start[AA_CLASS_FILE],
+		     name, cond, perms);
+diff --git a/security/apparmor/include/af_unix.h b/security/apparmor/include/af_unix.h
+new file mode 100644
+index 000000000000..bd0fb49bea96
+--- /dev/null
++++ b/security/apparmor/include/af_unix.h
+@@ -0,0 +1,122 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * AppArmor security module
++ *
++ * This file contains AppArmor af_unix fine grained mediation
++ *
++ * Copyright 2014 Canonical Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, version 2 of the
++ * License.
++ */
++#ifndef __AA_AF_UNIX_H
++
++#include <net/af_unix.h>
++
++#include "label.h"
++//#include "include/net.h"
++
++#define unix_addr_len(L) ((L) - sizeof(sa_family_t))
++#define unix_abstract_name_len(L) (unix_addr_len(L) - 1)
++#define unix_abstract_len(U) (unix_abstract_name_len((U)->addr->len))
++#define addr_unix_abstract_name(B) ((B)[0] == 0)
++#define addr_unix_anonymous(U) (addr_unix_len(U) <= 0)
++#define addr_unix_abstract(U) (!addr_unix_anonymous(U) && addr_unix_abstract_name((U)->addr))
++//#define unix_addr_fs(U) (!unix_addr_anonymous(U) && !unix_addr_abstract_name((U)->addr))
++
++#define unix_addr(A) ((struct sockaddr_un *)(A))
++#define unix_addr_anon(A, L) ((A) && unix_addr_len(L) <= 0)
++#define unix_addr_fs(A, L) (!unix_addr_anon(A, L) && \
++			    !addr_unix_abstract_name(unix_addr(A)->sun_path))
++
++#define UNIX_ANONYMOUS(U) (!unix_sk(U)->addr)
++/* from net/unix/af_unix.c */
++#define UNIX_ABSTRACT(U) (!UNIX_ANONYMOUS(U) &&				\
++			  unix_sk(U)->addr->hash < UNIX_HASH_SIZE)
++#define UNIX_FS(U) (!UNIX_ANONYMOUS(U) && unix_sk(U)->addr->name->sun_path[0])
++#define unix_peer(sk) (unix_sk(sk)->peer)
++#define unix_connected(S) ((S)->state == SS_CONNECTED)
++
++static inline void print_unix_addr(struct sockaddr_un *A, int L)
++{
++	char *buf = (A) ? (char *) &(A)->sun_path : NULL;
++	int len = unix_addr_len(L);
++
++	if (!buf || len <= 0)
++		pr_warn(" <anonymous>");
++	else if (buf[0])
++		pr_warn(" %s", buf);
++	else
++		/* abstract name len includes leading \0 */
++		pr_warn(" %d @%.*s", len - 1, len - 1, buf+1);
++};
++
++#define print_unix_sk(SK)						\
++do {									\
++	struct unix_sock *u = unix_sk(SK);				\
++									\
++	pr_warn("%s: f %d, t %d, p %d",	#SK,				\
++	       (SK)->sk_family, (SK)->sk_type, (SK)->sk_protocol);	\
++	if (u->addr)							\
++		print_unix_addr(u->addr->name, u->addr->len);		\
++	else								\
++		print_unix_addr(NULL, sizeof(sa_family_t));		\
++} while (0)
++
++#define print_sk(SK)							\
++do {									\
++	if (!(SK)) {							\
++		pr_warn("%s: %s is null\n", __func__, #SK);		\
++	} else if ((SK)->sk_family == PF_UNIX) {			\
++		print_unix_sk(SK);					\
++		pr_warn("\n");						\
++	} else {							\
++		pr_warn("%s: %s: family %d\n", __func__, #SK,	\
++		       (SK)->sk_family);				\
++	}								\
++} while (0)
++
++#define print_sock_addr(U)						\
++do {									\
++	pr_warn("%s:\n", __func__);					\
++	pr_warn"    sock %s:", sock_ctx && sock_ctx->label ?		\
++		aa_label_printk(sock_ctx->label, GFP_ATOMIC); :		\
++		"<null>"); print_sk(sock);				\
++	pr_warn("    other %s:", other_ctx && other_ctx->label ?	\
++		aa_label_printk(other_ctx->label, GFP_ATOMIC); :	\
++		"<null>"); print_sk(other);				\
++	pr_warn("    new %s", new_ctx && new_ctx->label ?		\
++		aa_label_printk(new_ctx->label, GFP_ATOMIC); :		\
++		"<null>"); print_sk(newsk);				\
++} while (0)
++
++
++
++
++int aa_unix_peer_perm(const struct cred *subj_cred,
++		      struct aa_label *label, const char *op, u32 request,
++		      struct sock *sk, struct sock *peer_sk,
++		      struct aa_label *peer_label);
++int aa_unix_label_sk_perm(const struct cred *subj_cred,
++			  struct aa_label *label, const char *op, u32 request,
++			  struct sock *sk);
++int aa_unix_sock_perm(const char *op, u32 request, struct socket *sock);
++int aa_unix_create_perm(struct aa_label *label, int family, int type,
++			int protocol);
++int aa_unix_bind_perm(struct socket *sock, struct sockaddr *address,
++		      int addrlen);
++int aa_unix_connect_perm(struct socket *sock, struct sockaddr *address,
++			 int addrlen);
++int aa_unix_listen_perm(struct socket *sock, int backlog);
++int aa_unix_accept_perm(struct socket *sock, struct socket *newsock);
++int aa_unix_msg_perm(const char *op, u32 request, struct socket *sock,
++		     struct msghdr *msg, int size);
++int aa_unix_opt_perm(const char *op, u32 request, struct socket *sock, int level,
++		     int optname);
++int aa_unix_file_perm(const struct cred *subj_cred,
++		      struct aa_label *label, const char *op, u32 request,
++		      struct socket *sock);
++
++#endif /* __AA_AF_UNIX_H */
+diff --git a/security/apparmor/include/file.h b/security/apparmor/include/file.h
+index 64dc6d1a7a05..b3a336a233b6 100644
+--- a/security/apparmor/include/file.h
++++ b/security/apparmor/include/file.h
+@@ -120,6 +120,10 @@ aa_state_t aa_str_perms(struct aa_policydb *file_rules, aa_state_t start,
+			const char *name, struct path_cond *cond,
+			struct aa_perms *perms);
+
++int __aa_path_perm(const char *op,  const struct cred *subj_cred,
++		   struct aa_profile *profile, const char *name,
++		   u32 request, struct path_cond *cond, int flags,
++		   struct aa_perms *perms);
+ int aa_path_perm(const char *op, const struct cred *subj_cred,
+		 struct aa_label *label, const struct path *path,
+		 int flags, u32 request, struct path_cond *cond);
+diff --git a/security/apparmor/include/label.h b/security/apparmor/include/label.h
+index 2a72e6b17d68..1ac9e1066fc9 100644
+--- a/security/apparmor/include/label.h
++++ b/security/apparmor/include/label.h
+@@ -261,7 +261,10 @@ for ((I).i = (I).j = 0;							\
+	struct label_it i;						\
+	int ret = 0;							\
+	label_for_each(i, (L), profile) {				\
+-		if (RULE_MEDIATES(&profile->rules, (C))) {		\
++		struct aa_ruleset *rules =				\
++			list_first_entry(&profile->rules, typeof(*rules),\
++					 list);				\
++		if (RULE_MEDIATES(rules, (C))) {			\
+			ret = 1;					\
+			break;						\
+		}							\
+diff --git a/security/apparmor/include/net.h b/security/apparmor/include/net.h
+index 5bd7e7779613..e00e027059b5 100644
+--- a/security/apparmor/include/net.h
++++ b/security/apparmor/include/net.h
+@@ -49,6 +49,7 @@
+ struct aa_sk_ctx {
+	struct aa_label *label;
+	struct aa_label *peer;
++	struct path path;
+ };
+
+ #define SK_CTX(X) ((X)->sk_security)
+@@ -84,6 +85,9 @@ struct aa_net_compat {
+ ({						\
+	int __e;				\
+	switch ((FAMILY)) {			\
++	case AF_UNIX:				\
++		__e = aa_unix_ ## FN;		\
++		break;				\
+	default:				\
+		__e = DEF_FN;			\
+	}					\
+diff --git a/security/apparmor/include/path.h b/security/apparmor/include/path.h
+index 343189903dba..8bb915d48dc7 100644
+--- a/security/apparmor/include/path.h
++++ b/security/apparmor/include/path.h
+@@ -13,6 +13,7 @@
+
+ enum path_flags {
+	PATH_IS_DIR = 0x1,		/* path is a directory */
++	PATH_SOCK_COND = 0x2,
+	PATH_CONNECT_PATH = 0x4,	/* connect disconnected paths to / */
+	PATH_CHROOT_REL = 0x8,		/* do path lookup relative to chroot */
+	PATH_CHROOT_NSCONNECT = 0x10,	/* connect paths that are at ns root */
+diff --git a/security/apparmor/include/policy.h b/security/apparmor/include/policy.h
+index 0922f1bf9629..0c5751f79564 100644
+--- a/security/apparmor/include/policy.h
++++ b/security/apparmor/include/policy.h
+@@ -289,8 +289,11 @@ static inline aa_state_t RULE_MEDIATES_AF(struct aa_ruleset *rules, u16 AF)
+	aa_state_t state = RULE_MEDIATES(rules, AA_CLASS_NET);
+	__be16 be_af = cpu_to_be16(AF);
+
+-	if (!state)
+-		return DFA_NOMATCH;
++	if (!state) {
++		state = RULE_MEDIATES(rules, AA_CLASS_NET_COMPAT);
++		if (!state)
++			return DFA_NOMATCH;
++	}
+	return aa_dfa_match_len(rules->policy.dfa, state, (char *) &be_af, 2);
+ }
+
+diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
+index 366cdfd6a7ba..887370652250 100644
+--- a/security/apparmor/lsm.c
++++ b/security/apparmor/lsm.c
+@@ -25,6 +25,7 @@
+ #include <net/sock.h>
+ #include <uapi/linux/mount.h>
+
++#include "include/af_unix.h"
+ #include "include/apparmor.h"
+ #include "include/apparmorfs.h"
+ #include "include/audit.h"
+@@ -876,6 +877,7 @@ static void apparmor_sk_free_security(struct sock *sk)
+	SK_CTX(sk) = NULL;
+	aa_put_label(ctx->label);
+	aa_put_label(ctx->peer);
++	path_put(&ctx->path);
+	kfree(ctx);
+ }
+
+@@ -895,6 +897,102 @@ static void apparmor_sk_clone_security(const struct sock *sk,
+	if (new->peer)
+		aa_put_label(new->peer);
+	new->peer = aa_get_label(ctx->peer);
++	new->path = ctx->path;
++	path_get(&new->path);
++}
++
++static struct path *UNIX_FS_CONN_PATH(struct sock *sk, struct sock *newsk)
++{
++	if (sk->sk_family == PF_UNIX && UNIX_FS(sk))
++		return &unix_sk(sk)->path;
++	else if (newsk->sk_family == PF_UNIX && UNIX_FS(newsk))
++		return &unix_sk(newsk)->path;
++	return NULL;
++}
++
++/**
++  * apparmor_unix_stream_connect - check perms before making unix domain conn
++  *
++  * peer is locked when this hook is called
++  */
++static int apparmor_unix_stream_connect(struct sock *sk, struct sock *peer_sk,
++                                       struct sock *newsk)
++{
++	struct aa_sk_ctx *sk_ctx = SK_CTX(sk);
++	struct aa_sk_ctx *peer_ctx = SK_CTX(peer_sk);
++	struct aa_sk_ctx *new_ctx = SK_CTX(newsk);
++	struct aa_label *label;
++	struct path *path;
++	int error;
++
++	label = __begin_current_label_crit_section();
++	error = aa_unix_peer_perm(current_cred(), label, OP_CONNECT,
++			(AA_MAY_CONNECT | AA_MAY_SEND | AA_MAY_RECEIVE),
++			sk, peer_sk, NULL);
++	if (!UNIX_FS(peer_sk)) {
++		last_error(error,
++			aa_unix_peer_perm(current_cred(),
++			peer_ctx->label, OP_CONNECT,
++			(AA_MAY_ACCEPT | AA_MAY_SEND | AA_MAY_RECEIVE),
++			peer_sk, sk, label));
++	}
++	__end_current_label_crit_section(label);
++
++	if (error)
++		return error;
++
++	/* label newsk if it wasn't labeled in post_create. Normally this
++	 * would be done in sock_graft, but because we are directly looking
++	 * at the peer_sk to obtain peer_labeling for unix socks this
++	 * does not work
++	 */
++	if (!new_ctx->label)
++		new_ctx->label = aa_get_label(peer_ctx->label);
++
++	/* Cross reference the peer labels for SO_PEERSEC */
++	if (new_ctx->peer)
++		aa_put_label(new_ctx->peer);
++
++	if (sk_ctx->peer)
++		aa_put_label(sk_ctx->peer);
++
++	new_ctx->peer = aa_get_label(sk_ctx->label);
++	sk_ctx->peer = aa_get_label(peer_ctx->label);
++
++	path = UNIX_FS_CONN_PATH(sk, peer_sk);
++	if (path) {
++		new_ctx->path = *path;
++		sk_ctx->path = *path;
++		path_get(path);
++		path_get(path);
++	}
++	return 0;
++}
++
++/**
++  * apparmor_unix_may_send - check perms before conn or sending unix dgrams
++  *
++  * other is locked when this hook is called
++  *
++  * dgram connect calls may_send, peer setup but path not copied?????
++  */
++static int apparmor_unix_may_send(struct socket *sock, struct socket *peer)
++{
++	struct aa_sk_ctx *peer_ctx = SK_CTX(peer->sk);
++	struct aa_label *label;
++	int error;
++
++	label = __begin_current_label_crit_section();
++	error = xcheck(aa_unix_peer_perm(current_cred(),
++				label, OP_SENDMSG, AA_MAY_SEND,
++				sock->sk, peer->sk, NULL),
++		aa_unix_peer_perm(peer->file ? peer->file->f_cred : NULL,
++				peer_ctx->label, OP_SENDMSG,
++				AA_MAY_RECEIVE,
++				peer->sk, sock->sk, label));
++	__end_current_label_crit_section(label);
++
++	return error;
+ }
+
+ /**
+@@ -1135,15 +1233,30 @@ static int apparmor_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ }
+ #endif
+
+-
+-static struct aa_label *sk_peer_label(struct sock *sk)
++static struct aa_label *sk_peer_get_label(struct sock *sk)
+ {
++	struct sock *peer_sk;
+	struct aa_sk_ctx *ctx = SK_CTX(sk);
++	struct aa_label *label = ERR_PTR(-ENOPROTOOPT);
+
+	if (ctx->peer)
+-		return ctx->peer;
++		return aa_get_label(ctx->peer);
++
++	if (sk->sk_family != PF_UNIX)
++		return ERR_PTR(-ENOPROTOOPT);
+
+-	return ERR_PTR(-ENOPROTOOPT);
++	/* check for sockpair peering which does not go through
++	 * security_unix_stream_connect
++	 */
++	peer_sk = unix_peer_get(sk);
++	if (peer_sk) {
++		ctx = SK_CTX(peer_sk);
++		if (ctx->label)
++			label = aa_get_label(ctx->label);
++		sock_put(peer_sk);
++	}
++
++	return label;
+ }
+
+ /**
+@@ -1161,7 +1274,7 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
+	struct aa_label *peer;
+
+	label = begin_current_label_crit_section();
+-	peer = sk_peer_label(sock->sk);
++	peer = sk_peer_get_label(sock->sk);
+	if (IS_ERR(peer)) {
+		error = PTR_ERR(peer);
+		goto done;
+@@ -1172,7 +1285,7 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
+	/* don't include terminating \0 in slen, it breaks some apps */
+	if (slen < 0) {
+		error = -ENOMEM;
+-		goto done;
++		goto done_put;
+	}
+	if (slen > len) {
+		error = -ERANGE;
+@@ -1184,6 +1297,9 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
+ done_len:
+	if (copy_to_sockptr(optlen, &slen, sizeof(slen)))
+		error = -EFAULT;
++
++done_put:
++	aa_put_label(peer);
+ done:
+	end_current_label_crit_section(label);
+	kfree(name);
+@@ -1288,6 +1404,9 @@ static struct security_hook_list apparmor_hooks[] __ro_after_init = {
+	LSM_HOOK_INIT(sk_free_security, apparmor_sk_free_security),
+	LSM_HOOK_INIT(sk_clone_security, apparmor_sk_clone_security),
+
++	LSM_HOOK_INIT(unix_stream_connect, apparmor_unix_stream_connect),
++	LSM_HOOK_INIT(unix_may_send, apparmor_unix_may_send),
++
+	LSM_HOOK_INIT(socket_create, apparmor_socket_create),
+	LSM_HOOK_INIT(socket_post_create, apparmor_socket_post_create),
+	LSM_HOOK_INIT(socket_bind, apparmor_socket_bind),
+diff --git a/security/apparmor/net.c b/security/apparmor/net.c
+index ffb09729f7f1..dadb52fe9eed 100644
+--- a/security/apparmor/net.c
++++ b/security/apparmor/net.c
+@@ -8,6 +8,7 @@
+  * Copyright 2009-2017 Canonical Ltd.
+  */
+
++#include "include/af_unix.h"
+ #include "include/apparmor.h"
+ #include "include/audit.h"
+ #include "include/cred.h"
+@@ -26,6 +27,7 @@ struct aa_sfs_entry aa_sfs_entry_network[] = {
+
+ struct aa_sfs_entry aa_sfs_entry_network_compat[] = {
+	AA_SFS_FILE_STRING("af_mask",	AA_SFS_AF_MASK),
++	AA_SFS_FILE_BOOLEAN("af_unix",	1),
+	{ }
+ };
+
+@@ -71,6 +73,37 @@ static const char * const net_mask_names[] = {
+	"unknown",
+ };
+
++static void audit_unix_addr(struct audit_buffer *ab, const char *str,
++			    struct sockaddr_un *addr, int addrlen)
++{
++	int len = unix_addr_len(addrlen);
++
++	if (!addr || len <= 0) {
++		audit_log_format(ab, " %s=none", str);
++	} else if (addr->sun_path[0]) {
++		audit_log_format(ab, " %s=", str);
++		audit_log_untrustedstring(ab, addr->sun_path);
++	} else {
++		audit_log_format(ab, " %s=\"@", str);
++		if (audit_string_contains_control(&addr->sun_path[1], len - 1))
++			audit_log_n_hex(ab, &addr->sun_path[1], len - 1);
++		else
++			audit_log_format(ab, "%.*s", len - 1,
++					 &addr->sun_path[1]);
++		audit_log_format(ab, "\"");
++	}
++}
++
++static void audit_unix_sk_addr(struct audit_buffer *ab, const char *str,
++			       const struct sock *sk)
++{
++	const struct unix_sock *u = unix_sk(sk);
++
++	if (u && u->addr)
++		audit_unix_addr(ab, str, u->addr->name, u->addr->len);
++	else
++		audit_unix_addr(ab, str, NULL, 0);
++}
+
+ /* audit callback for net specific fields */
+ void audit_net_cb(struct audit_buffer *ab, void *va)
+@@ -78,12 +111,12 @@ void audit_net_cb(struct audit_buffer *ab, void *va)
+	struct common_audit_data *sa = va;
+	struct apparmor_audit_data *ad = aad(sa);
+
+-	if (address_family_names[sa->u.net->family])
++	if (address_family_names[ad->common.u.net->family])
+		audit_log_format(ab, " family=\"%s\"",
+-				 address_family_names[sa->u.net->family]);
++				 address_family_names[ad->common.u.net->family]);
+	else
+		audit_log_format(ab, " family=\"unknown(%d)\"",
+-				 sa->u.net->family);
++				 ad->common.u.net->family);
+	if (sock_type_names[ad->net.type])
+		audit_log_format(ab, " sock_type=\"%s\"",
+				 sock_type_names[ad->net.type]);
+@@ -103,6 +136,23 @@ void audit_net_cb(struct audit_buffer *ab, void *va)
+					   net_mask_names, NET_PERMS_MASK);
+		}
+	}
++	if (ad->common.u.net->family == AF_UNIX) {
++		if ((ad->request & ~NET_PEER_MASK) && ad->net.addr)
++			audit_unix_addr(ab, "addr",
++					unix_addr(ad->net.addr),
++					ad->net.addrlen);
++		else
++			audit_unix_sk_addr(ab, "addr", ad->common.u.net->sk);
++		if (ad->request & NET_PEER_MASK) {
++			if (ad->net.addr)
++				audit_unix_addr(ab, "peer_addr",
++						unix_addr(ad->net.addr),
++						ad->net.addrlen);
++			else
++				audit_unix_sk_addr(ab, "peer_addr",
++						   ad->net.peer_sk);
++		}
++	}
+	if (ad->peer) {
+		audit_log_format(ab, " peer=");
+		aa_label_xaudit(ab, labels_ns(ad->subj_label), ad->peer,
+@@ -212,7 +262,10 @@ int aa_sock_file_perm(const struct cred *subj_cred, struct aa_label *label,
+	AA_BUG(!sock);
+	AA_BUG(!sock->sk);
+
+-	return aa_label_sk_perm(subj_cred, label, op, request, sock->sk);
++	return af_select(sock->sk->sk_family,
++			 file_perm(subj_cred, label, op, request, sock),
++			 aa_label_sk_perm(subj_cred, label, op, request,
++					  sock->sk));
+ }
+
+ #ifdef CONFIG_NETWORK_SECMARK
+--
+2.35.6

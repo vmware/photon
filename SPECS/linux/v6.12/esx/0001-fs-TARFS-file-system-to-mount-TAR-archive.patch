@@ -1,0 +1,1684 @@
+From d0196e01e76746a41a923631837cb087fa9c81a9 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Sun, 14 Nov 2021 19:38:28 +0000
+Subject: [PATCH] fs: TARFS file system to mount TAR archive
+
+- GNU/POSIX TAR Archive consists of header with information of the
+files and directories. The start address of the file stored in a
+field in the header itself which help to navigate to the file content.
+
+- Tar archive can be attach to loop device and passed as input
+that can be easily mounted instead of extraction using tarfs.
+Tarfs does block device mount.
+- TARFS only creates and maintains metadata, inodes and dentries
+of files & directries. For a file, the entry for that particular
+file will point to the start address offset of the TAR archive
+whenever the file is read or executed.
+
+- Mounting operation is very quick and avoids additional memory
+allocation for file content data.
+
+Signed-off-by: Srinidhi Rao <srinidhir@vmware.com>
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
+Signed-off-by: Bo Gan <ganb@vmware.com>
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ fs/Kconfig                    |   1 +
+ fs/Makefile                   |   1 +
+ fs/tarfs/Kconfig              |  18 +
+ fs/tarfs/Makefile             |  15 +
+ fs/tarfs/README.md            |  64 +++
+ fs/tarfs/tarfs.h              | 183 +++++++++
+ fs/tarfs/tarfs_file_dir_ops.c | 588 ++++++++++++++++++++++++++++
+ fs/tarfs/tarfs_inode.c        | 714 ++++++++++++++++++++++++++++++++++
+ 8 files changed, 1584 insertions(+)
+ create mode 100644 fs/tarfs/Kconfig
+ create mode 100644 fs/tarfs/Makefile
+ create mode 100644 fs/tarfs/README.md
+ create mode 100644 fs/tarfs/tarfs.h
+ create mode 100644 fs/tarfs/tarfs_file_dir_ops.c
+ create mode 100644 fs/tarfs/tarfs_inode.c
+
+diff --git a/fs/Kconfig b/fs/Kconfig
+index 055c4d5f1..4450042f0 100644
+--- a/fs/Kconfig
++++ b/fs/Kconfig
+@@ -321,6 +321,7 @@ source "fs/erofs/Kconfig"
+ source "fs/vboxsf/Kconfig"
+ source "fs/vtar/Kconfig"
+ source "fs/vtarfs/Kconfig"
++source "fs/tarfs/Kconfig"
+ 
+ endif # MISC_FILESYSTEMS
+ 
+diff --git a/fs/Makefile b/fs/Makefile
+index b675a2067..75aed184b 100644
+--- a/fs/Makefile
++++ b/fs/Makefile
+@@ -139,3 +139,4 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
+ obj-$(CONFIG_ZONEFS_FS)		+= zonefs/
+ obj-$(CONFIG_VTAR)		+= vtar/
+ obj-$(CONFIG_VTARFS)		+= vtarfs/
++obj-$(CONFIG_TARFS)		+= tarfs/
+diff --git a/fs/tarfs/Kconfig b/fs/tarfs/Kconfig
+new file mode 100644
+index 000000000..ff60b7e09
+--- /dev/null
++++ b/fs/tarfs/Kconfig
+@@ -0,0 +1,18 @@
++config TARFS
++       tristate "TARFS file system support"
++       depends on TMPFS
++       help
++       TARFS is a read-only filesystem use to mount the GNU/POSIX format
++       tar archive as block device so that extracting such archive will
++       no longer be necessary. The files will appear in the mounted directory
++       path. The start address of each file is stored as an offset in the
++       TAR Header itself which helps to navigate to the start of file content.
++
++       This file system will mount the TAR archive as READ ONLY.
++
++       Usually container base images are stored as TAR archive.
++
++       Say Y or M if you want to mount files from TAR archive.
++
++       To compile this file system support as a module, choose M here: the
++       module will be called tarfs. If unsure, say N.
+diff --git a/fs/tarfs/Makefile b/fs/tarfs/Makefile
+new file mode 100644
+index 000000000..592e207bb
+--- /dev/null
++++ b/fs/tarfs/Makefile
+@@ -0,0 +1,15 @@
++#
++# Makefile for the tarfs routines.
++#
++
++obj-m += tarfs.o
++
++#CFLAGS_tarfs_file_dir_ops.o := -I$(src)
++#CFLAGS_tarfs_inode.o := -I$(src)
++tarfs-objs := tarfs_file_dir_ops.o tarfs_inode.o
++
++all:
++	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
++
++clean:
++	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+diff --git a/fs/tarfs/README.md b/fs/tarfs/README.md
+new file mode 100644
+index 000000000..2a816e9ff
+--- /dev/null
++++ b/fs/tarfs/README.md
+@@ -0,0 +1,64 @@
++# tarfs
++
++tarfs is implemented as Linux kernel module filesystem driver.
++
++## Features
++
++* Supports GNU and POSIX format tar files
++* Regular files, directories and symlinks
++* UID, GID, access/modification/creation time
++* Read-only access to files and directories
++
++## Compiling
++
++You'll require the linux development files.  For ArchLinux, you need the
++`linux-headers` packet.
++
++After that, just run `make` to build the `tarfs.ko`, which is a loadable
++kernel module.
++
++**Note**: The module was tested with Linux `5.10.xxx`, on a `x64 ArchLinux`
++          computer.
++
++## Usage
++
++```sh
++# If not already done, build the module
++make
++
++# Now you can load the module:
++sudo insmod tarfs.ko
++
++# You need a mount directory
++mkdir mnt
++
++# Mount some tar archive.  A test one is included:
++sudo mount test.tar -o loop -t tarfs mnt
++
++# Discover the archives content
++ls mnt -R
++cat mnt/hello.c
++
++# Unmount
++sudo umount mnt
++
++# And unload the kernel module
++sudo rmmod tarfs.ko
++```
++
++## File overview
++
++* **tarfs_inode.c** Code to read the underlying block device and creates metadata
++* **tarfs_file_dir_ops.c** Code for file and directory operations
++* **tarfs.h** Header definition for tar files, taken from
++  https://www.gnu.org/software/tar/manual/html_node/Standard.html
++
++## Implementation
++
++This project focuses on the interaction part with Linux.  That's why the
++implementation of the Tar reading code is kept really simple: On mount, all
++file entries are read from the tar file, and stored as a radix tree.
++
++File system operations are quite faster as they are implemented
++as radix tree (A trie data structure)
++
+diff --git a/fs/tarfs/tarfs.h b/fs/tarfs/tarfs.h
+new file mode 100644
+index 000000000..911bd20fb
+--- /dev/null
++++ b/fs/tarfs/tarfs.h
+@@ -0,0 +1,183 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Filesystem to directly mount tar archive.
++ *
++ * Copyright 2021 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2 (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ *
++ */
++
++#ifndef tarfs
++#define tarfs
++
++#include<linux/fs.h>
++#include<linux/radix-tree.h>
++
++#define MAX_FILE_NAME_SIZE 100
++#define TARFS_BLOCK_SIZE_BITS (9)
++#define TARFS_BLOCK_SIZE (1U << TARFS_BLOCK_SIZE_BITS)
++#define DEBUG_PRINT
++#ifdef DEBUG_PRINT
++#define tarfs_debug(fmt, args...) pr_debug("[tarfs][%s:]" fmt, __func__, ##args)
++#else
++#define tarfs_debug(fmt, args...)
++#endif
++#define tarfs_info(fmt, args...) pr_info("[tarfs][%s:]" fmt, __func__, ##args)
++#define tarfs_err(fmt, args...)  pr_err("[tarfs][%s:]" fmt, __func__, ##args)
++#define MIN(a, b) (((a) < (b)) ? (a) : (b))
++
++/* Following is based on
++ * https://www.gnu.org/software/tar/manual/html_node/Standard.html
++ * which in turn references `src/tar.h` from the GNU tar project.
++ */
++#define REGTYPE  '0'            /* regular file */
++#define AREGTYPE '\0'           /* regular file */
++#define LNKTYPE  '1'            /* link */
++#define SYMTYPE  '2'            /* reserved */
++#define CHRTYPE  '3'            /* character special */
++#define BLKTYPE  '4'            /* block special */
++#define DIRTYPE  '5'            /* directory */
++#define FIFOTYPE '6'            /* FIFO special */
++#define CONTTYPE '7'            /* reserved */
++/* Identifies the *next* file on the tape as having a long linkname.  */
++#define GNUTYPE_LONGLINK 'K'
++
++/* Identifies the *next* file on the tape as having a long name.  */
++#define GNUTYPE_LONGNAME 'L'
++
++/* OLDGNU_MAGIC uses both magic and version fields, which are contiguous.
++ * Found in an archive, it indicates an old GNU header format, which will be
++ * hopefully become obsolescent.  With OLDGNU_MAGIC, uname and gname are
++ * valid, though the header is not truly POSIX conforming.
++ */
++#define OLDGNU_MAGIC "ustar  "	/* 7 chars and a null */
++#define TMAGIC   "ustar"        /* ustar and a null */
++
++struct star_header {		/* byte offset */
++	char name[100];		/*   0 */
++	char mode[8];		/* 100 */
++	char uid[8];		/* 108 */
++	char gid[8];		/* 116 */
++	char size[12];		/* 124 */
++	char mtime[12];		/* 136 */
++	char chksum[8];		/* 148 */
++	char typeflag;		/* 156 */
++	char linkname[100];	/* 157 */
++	char magic[6];		/* 257 */
++	char version[2];	/* 263 */
++	char uname[32];		/* 265 */
++	char gname[32];		/* 297 */
++	char devmajor[8];	/* 329 */
++	char devminor[8];	/* 337 */
++	char prefix[131];	/* 345 */
++	char atime[12];		/* 476 */
++	char ctime[12];		/* 488 */
++				/* 500 */
++};
++
++#define TARFS_HDR_SIZE (sizeof(struct star_header))
++static_assert(TARFS_HDR_SIZE == 500);
++
++struct tarfs_entry {
++	struct star_header	header;
++	char			*dir_name;
++	char			*base_name;
++	char			*link_name;
++	loff_t			offset;
++	loff_t			data_offset;
++	size_t			data_size;
++	unsigned long		inode;
++	struct inode		*ptr_inode;
++	umode_t			mode;
++	uid_t			uid;
++	gid_t			gid;
++	struct timespec64	atime;
++	struct timespec64	mtime;
++	struct timespec64	ctime;
++	struct tarfs_entry	*next;
++	spinlock_t		lock;
++	struct radix_tree_root	root_tree;
++	unsigned long		radix_root_key;
++};
++
++struct tarfs_mount_opts {
++	umode_t			mode;
++};
++
++struct tarfs_sbi {
++	struct tarfs_entry	*first;
++	u64			blocks;
++	u64			files;
++};
++
++static inline struct tarfs_sbi *TARFS_SB(struct super_block *sb)
++{
++	return sb->s_fs_info;
++}
++
++static inline struct tarfs_entry *tarfs_get_first_entry(struct super_block *sb)
++{
++	return TARFS_SB(sb)->first;
++}
++
++extern int tarfs_getattr(struct mnt_idmap *idmap, const struct path *path,
++			 struct kstat *stat, u32 request_mask, unsigned int flags);
++extern int tarfs_read_dir(struct file *file, struct dir_context *ctx);
++extern mode_t tarfs_entry_mode(struct tarfs_entry *entry);
++extern ssize_t tarfs_file_read_iter(struct kiocb *iocb, struct iov_iter *to);
++extern struct dentry *tarfs_lookup(struct inode *inode, struct dentry *dentry,
++				   unsigned int flags);
++extern int tarfs_statfs(struct dentry *d, struct kstatfs *ks);
++extern struct tarfs_entry *tarfs_find(struct tarfs_entry *entry,
++				      const char *dir_name, const char *base_name);
++extern sector_t tarfs_bmap(struct address_space *mapping, sector_t block);
++extern int tarfs_read_folio(struct file *file, struct folio *folio);
++extern void tarfs_readahead(struct readahead_control *rac);
++extern struct inode *tarfs_create_inode(struct super_block *sb,
++					struct tarfs_entry *entry, umode_t mode);
++
++static const struct file_operations tarfs_file_operations = {
++	.llseek		= generic_file_llseek,
++	.read_iter	= tarfs_file_read_iter,
++	.mmap		= generic_file_readonly_mmap,
++	.fsync		= generic_file_fsync,
++	.open		= generic_file_open,
++	.splice_read    = filemap_splice_read,
++};
++
++static const struct inode_operations tarfs_file_inode_operations = {
++	.getattr	= tarfs_getattr,
++};
++
++static const struct inode_operations tarfs_dir_inode_operations = {
++	.lookup		= tarfs_lookup,
++	.getattr	= tarfs_getattr,
++};
++
++static const struct inode_operations tarfs_symlink_inode_operations = {
++	.get_link	= simple_get_link,
++	.getattr	= tarfs_getattr,
++};
++
++static const struct file_operations tarfs_dir_operations = {
++	.llseek		= generic_file_llseek,
++	.read		= generic_read_dir,
++	.iterate_shared = tarfs_read_dir,
++	.fsync		= generic_file_fsync,
++};
++
++
++static const struct super_operations tarfs_super_ops = {
++	.statfs         = tarfs_statfs,
++};
++
++static const struct address_space_operations tarfs_ram_addr_ops = {
++	.read_folio	= tarfs_read_folio,
++	.readahead	= tarfs_readahead,
++	.bmap           = tarfs_bmap,
++};
++
++#endif
+diff --git a/fs/tarfs/tarfs_file_dir_ops.c b/fs/tarfs/tarfs_file_dir_ops.c
+new file mode 100644
+index 000000000..41fa448a0
+--- /dev/null
++++ b/fs/tarfs/tarfs_file_dir_ops.c
+@@ -0,0 +1,588 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Filesystem to directly mount tar archive.
++ *
++ * Copyright 2021 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2 (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/mm.h>
++#include <linux/init.h>
++#include <linux/string.h>
++#include <linux/slab.h>
++#include <linux/uio.h>
++#include <linux/buffer_head.h>
++#include <linux/statfs.h>
++#include <linux/file.h>
++#include <linux/mpage.h>
++
++#include "tarfs.h"
++
++#define WRITE_MASK (0222)
++
++mode_t tar_type_to_posix(int typeflag)
++{
++	switch (typeflag) {
++	case REGTYPE:
++	case AREGTYPE:
++	case CONTTYPE:
++		return S_IFREG;
++	case DIRTYPE:
++		return S_IFDIR;
++	case SYMTYPE:
++		return S_IFLNK;
++	case CHRTYPE:
++		return S_IFCHR;
++	case BLKTYPE:
++		return S_IFBLK;
++	case FIFOTYPE:
++		return S_IFIFO;
++	default:
++		return 0;
++	}
++}
++
++/**
++ * @brief Returns the POSIX file mode of \a entry.
++ * @param entry the entry to get the file mode from
++ * @return the file mode
++ */
++mode_t tarfs_entry_mode(struct tarfs_entry *entry)
++{
++	mode_t mode = entry->mode & ~WRITE_MASK;
++
++	mode |= tar_type_to_posix(entry->header.typeflag);
++	return mode;
++}
++EXPORT_SYMBOL(tarfs_entry_mode);
++
++/**
++ * @brief Returns the tarfs entry by searching based on inode number.
++ * @param  entry: Pointer to the ROOT entry of tarfs
++ * inode: inode number which is mapped to the entry to be found.
++ * @return the tarfs entry containing the inode number.
++ */
++static struct tarfs_entry *tarfs_find_by_inode(struct tarfs_entry *entry, unsigned long inode)
++{
++	struct tarfs_entry *f_entry = NULL;
++
++	if (entry) {
++		rcu_read_lock();
++		f_entry = radix_tree_lookup(&entry->root_tree, inode);
++		rcu_read_unlock();
++	}
++	return f_entry;
++}
++
++/**
++ * @brief Returns the tarfs entry by searching based on name of the file.
++ * @param  entry: Pointer to the ROOT entry of tarfs
++ * dir_name: Directory name/path in which the file resides.
++ * base_name: Name of the file.
++ * @return the tarfs entry containing the name.
++ */
++struct tarfs_entry *tarfs_find(struct tarfs_entry *entry,
++			       const char *dir_name, const char *base_name)
++{
++	struct tarfs_entry *entry_node = NULL;
++	struct radix_tree_iter iter;
++	void **slot = NULL;
++
++	if (!entry) {
++		tarfs_err("Invalid Entry!!");
++		return NULL;
++	}
++	radix_tree_for_each_slot(slot, &entry->root_tree, &iter, 0) {
++		entry_node = radix_tree_deref_slot(slot);
++
++		if (unlikely(!entry_node))
++			continue;
++
++		if (radix_tree_exception(entry_node)) {
++			if (radix_tree_deref_retry(entry_node))
++				slot = radix_tree_iter_retry(&iter);
++			continue;
++		}
++
++		if  (!strcmp(entry_node->base_name, base_name) &&
++				!strcmp(entry_node->dir_name, dir_name)) {
++			return entry_node;
++		}
++	}
++	return NULL;
++}
++
++/*
++ * @brief Returns the Full name of a file by combining path and file name.
++ * @param  entry: Pointer to the entry of tarfs file
++ * @return the full name.
++ */
++static char *tarfs_full_name(struct tarfs_entry *entry)
++{
++	size_t dir_len = strlen(entry->dir_name);
++	size_t base_len = strlen(entry->base_name);
++	size_t len = dir_len + base_len + 2;
++	char *name = kzalloc(len, GFP_KERNEL);
++
++	if (!name) {
++		tarfs_err("Error in allocating memory for name %ld", PTR_ERR(name));
++		return NULL;
++	}
++
++	/* Ignore the first / for a top level directory */
++	if (dir_len < 1)
++		strncpy(name, entry->base_name, base_len);
++	else if (dir_len == 1)
++		strncpy(name, entry->dir_name, dir_len);
++	else
++		snprintf(name, len, "%s/%s", entry->dir_name, entry->base_name);
++
++	return name;
++
++}
++
++/*
++ * @brief Returns the Full name of a file based on inode number.
++ * @param  root_entry: Pointer to the ROOT entry of tarfs file
++ *	   inode: inode pointer of the tarfs file.
++ * @return the full name.
++ */
++static char *build_lookup_path(struct inode *inode, struct tarfs_entry *root_entry)
++{
++	struct tarfs_entry *entry;
++
++	if (!inode || !root_entry) {
++		tarfs_err("Invalid inode or root_entry!!");
++		return NULL;
++	}
++
++	if (inode->i_ino == root_entry->radix_root_key)
++		return kzalloc(1, GFP_KERNEL);
++
++	entry = tarfs_find_by_inode(root_entry, inode->i_ino);
++	if (!entry) {
++		tarfs_err("Failed to find inode by entry, root->entry=%s inode=%p ino=%ld",
++				root_entry->base_name, inode, inode->i_ino);
++		return NULL;
++	}
++	return tarfs_full_name(entry);
++}
++
++/*
++ * @brief Get attributes of a file or dir.
++ * @param  path: real path of the file or directory.
++ *         stat: pointer to stat structure to be filled.
++ *         request_mask: Currently unused.
++ *         flags: Currently unused.
++ * @return dentry of the file or sub dir.
++ */
++int tarfs_getattr(struct mnt_idmap *idmap, const struct path *path,
++		  struct kstat *stat, u32 request_mask, unsigned int flags)
++{
++	struct inode *inode = d_inode(path->dentry);
++
++	generic_fillattr(&nop_mnt_idmap, request_mask, inode, stat);
++	if (stat->blocks == 0)
++		stat->blocks = inode->i_mapping->nrpages << (PAGE_SHIFT - TARFS_BLOCK_SIZE_BITS);
++
++	return 0;
++}
++EXPORT_SYMBOL(tarfs_getattr);
++
++
++static struct inode *tarfs_revalidate_entry(struct super_block *sb, struct tarfs_entry *found_entry)
++{
++	struct tarfs_entry *entry;
++	struct inode *build_inode = NULL;
++	struct tarfs_entry *rentry = tarfs_get_first_entry(sb);
++	int err = 0;
++
++	if (!found_entry->ptr_inode || (found_entry->ptr_inode->i_state & (I_FREEING | I_CLEAR))
++			|| found_entry->ptr_inode->i_ino != found_entry->inode) {
++		tarfs_debug("inode in freeing state [%px]!!", found_entry->ptr_inode);
++		spin_lock(&found_entry->lock);
++		entry = radix_tree_delete(&rentry->root_tree, found_entry->inode);
++		if (!entry)
++			tarfs_err("Radix tree delete fails [%ld]!!", found_entry->inode);
++
++		tarfs_debug("entry[%px] %s/%s [%ld]",
++				entry, entry->dir_name, entry->base_name, entry->inode);
++		build_inode = tarfs_create_inode(sb, found_entry, found_entry->mode);
++		if (!build_inode) {
++			spin_unlock(&found_entry->lock);
++			tarfs_err("new inode doesn't get created[%s/%s]",
++					found_entry->dir_name, found_entry->base_name);
++			goto out;
++		}
++		radix_tree_preload(GFP_NOIO);
++		err = radix_tree_insert(&rentry->root_tree,
++				(unsigned long)build_inode->i_ino, found_entry);
++		if (err) {
++			spin_unlock(&found_entry->lock);
++			tarfs_err("Radix tree insert fails err=%d, inode %ld",
++					err, build_inode->i_ino);
++			goto out1;
++		}
++		radix_tree_preload_end();
++		spin_unlock(&found_entry->lock);
++		tarfs_debug("entry[%px] %s/%s (%ld == %ld) state=%ld inserted into radix tree!!",
++				entry, entry->dir_name, entry->base_name,
++				entry->inode, entry->ptr_inode->i_ino,
++				entry->ptr_inode->i_state);
++		if (entry != radix_tree_lookup(&rentry->root_tree, build_inode->i_ino)) {
++			tarfs_err("Dynamic Inode creation unsuccessful err=%d, inode %ld",
++					err, build_inode->i_ino);
++			goto out1;
++		}
++		tarfs_debug("found entry->name = %s/%s & entry->inode = (%ld == %ld) inode=%px state=%lu pages=%lu",
++				found_entry->dir_name, found_entry->base_name,
++				found_entry->inode, build_inode->i_ino, build_inode,
++				build_inode->i_state, build_inode->i_mapping->nrpages);
++	} else {
++		build_inode = found_entry->ptr_inode;
++		if (!build_inode) {
++			tarfs_err("inode doesn't exist[%s/%s]",
++					found_entry->dir_name, found_entry->base_name);
++			return NULL;
++		}
++	}
++	return build_inode;
++out1:
++	iput(build_inode);
++out:
++	found_entry->ptr_inode = NULL;
++	found_entry->inode = 0;
++	return NULL;
++}
++
++/*
++ * @brief Ignore all pos beyond file size
++ * @pararm inode: Pointer to inode of the directory
++ *         ctx_pos: requested pos to check
++ * @return non-zero if requested pos is less than the size of inode
++ *         else zero
++ */
++static int beyond_eof(struct inode *inode, loff_t ctx_pos)
++{
++	loff_t pos = ctx_pos << inode->i_sb->s_blocksize_bits;
++
++	return pos >= i_size_read(inode);
++}
++
++/*
++ * @brief Emits the contents of a directory.
++ * @param  file: file pointer of a directory
++ *	   ctx: context of fs on how dir entries will be filled.
++ * @return 0 on SUCCESS negetive errno on failure.
++ */
++int tarfs_read_dir(struct file *file, struct dir_context *ctx)
++{
++	struct inode *inode = file_inode(file);
++	struct tarfs_entry *entry = tarfs_get_first_entry(inode->i_sb);
++	char *dir_path;
++	int namelen = 0;
++	struct tarfs_entry *entry_node = NULL;
++	struct radix_tree_iter iter;
++	void **slot = NULL;
++
++	if (beyond_eof(inode, ctx->pos))
++		return 0;
++
++	/* Loop through the entry to find matching entry node with inode */
++	if (!dir_emit_dots(file, ctx)) {
++		tarfs_err("dir_emit_dots err=%lld", ctx->pos);
++		return 0;
++	}
++	tarfs_debug("[%lld] [%d] [%lld] [%lu] [%lu]",
++			ctx->pos, inode->i_sb->s_blocksize_bits,
++			inode->i_size, inode->i_state, inode->i_ino);
++	if (!entry)
++		return 0;
++
++	dir_path = build_lookup_path(inode, entry);
++	if (!dir_path) {
++		tarfs_err("Failed to get dir path %ld", PTR_ERR(dir_path));
++		return PTR_ERR(dir_path);
++	}
++	tarfs_debug("dir_path=%s", dir_path);
++
++	radix_tree_for_each_slot(slot, &entry->root_tree, &iter, 0) {
++		entry_node = radix_tree_deref_slot(slot);
++
++		if (unlikely(!entry_node))
++			continue;
++
++		if (radix_tree_exception(entry_node)) {
++			if (radix_tree_deref_retry(entry_node))
++				slot = radix_tree_iter_retry(&iter);
++			continue;
++		}
++		if  (!strcmp(entry_node->dir_name, dir_path)) {
++			// Print all sub dirs by iterating through entry
++			tarfs_debug("dir_path=%s entry->dir_name = %s base_name=%s ino=%ld state=%lu sz=%lu",
++				dir_path, entry_node->dir_name, entry_node->base_name,
++				entry_node->inode, entry_node->ptr_inode->i_state,
++				entry->data_size);
++			if (!tarfs_revalidate_entry(inode->i_sb, entry_node)) {
++				kfree(dir_path);
++				tarfs_err("entry revalidation failed!!");
++				return PTR_ERR(NULL);
++			}
++			namelen = strlen(entry_node->base_name);
++			if (!dir_emit(ctx, entry_node->base_name, namelen,
++					   entry_node->inode, (entry_node->mode >> 12))) {
++				tarfs_err("dir emit fails!!");
++				break;
++			}
++			ctx->pos++;
++		}
++	}
++	kfree(dir_path);
++	return 0;
++}
++EXPORT_SYMBOL(tarfs_read_dir);
++
++/*
++ * @brief get statfs info related to super block.
++ * @param dentry: dentry information of the superblock
++ *	  buf:    pointer to kstatfs
++ * @return NULL
++ */
++int tarfs_statfs(struct dentry *dentry,  struct kstatfs *buf)
++{
++	struct super_block *sb = dentry->d_sb;
++	struct tarfs_sbi *sb_info = TARFS_SB(sb);
++
++	buf->f_type = sb->s_magic;
++	buf->f_bsize = sb->s_blocksize;
++	buf->f_blocks = sb_info->blocks;
++	buf->f_files = sb_info->files;
++	buf->f_namelen = MAX_FILE_NAME_SIZE;
++	buf->f_bfree = buf->f_ffree = 0;
++	return 0;
++}
++EXPORT_SYMBOL(tarfs_statfs);
++
++/*
++ * @brief lookup function to iterate through the contents of a directory.
++ * @param  dir: inode pointer of a directory
++ *	   dentry: dentry information of the entry of a file or sub dir.
++ *	   flags: Currently unused.
++ * @return dentry of the file or sub dir.
++ */
++struct dentry *tarfs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
++{
++	struct tarfs_entry *found_entry = NULL;
++	char *dir_path = NULL;
++	struct inode *build_inode = NULL;
++	struct tarfs_entry *rentry;
++
++	if (!dir || !dentry) {
++		tarfs_err("Error: Null pointer occur");
++		return ERR_PTR(-ENOENT);
++	}
++	if (!dir->i_sb) {
++		tarfs_err("Error Missing superblock");
++		return ERR_PTR(-ENOENT);
++	}
++	tarfs_debug("inode=%px[ino=%ld] and dentry=%px name=%s [%u]",
++		dir, dir->i_ino, dentry, dentry->d_name.name, dentry->d_name.len);
++
++	if (simple_positive(dentry)) {
++		tarfs_err("dentry is positive [%px][%px][%px=%s]",
++			dentry->d_inode, dir, dentry, dentry->d_name.name);
++		d_invalidate(dentry);
++		return ERR_PTR(-ENOENT);
++	}
++
++	rentry = tarfs_get_first_entry(dir->i_sb);
++	dir_path = build_lookup_path(dir, rentry);
++	tarfs_debug("ends dir_path=%s", dir_path);
++	found_entry = tarfs_find(rentry, dir_path, dentry->d_name.name);
++	kfree(dir_path);
++
++	if (found_entry) {
++		build_inode = tarfs_revalidate_entry(dir->i_sb, found_entry);
++		if (!build_inode) {
++			tarfs_err("entry revalidation failed found entry->name = %s/%s!!",
++					found_entry->dir_name, found_entry->base_name);
++			return NULL;
++		}
++		tarfs_debug("found entry->name = %s/%s & entry->inode = (%ld == %ld) inode=%px state=%lu pages=%lu",
++				found_entry->dir_name, found_entry->base_name,
++				found_entry->inode, build_inode->i_ino, build_inode,
++				build_inode->i_state, build_inode->i_mapping->nrpages);
++	} else {
++		tarfs_err("Dir entry not found [%px][%px=%s]!!", dir, dentry, dentry->d_name.name);
++		return ERR_PTR(-ENOENT);
++	}
++	return d_splice_alias(build_inode, dentry);
++}
++EXPORT_SYMBOL(tarfs_lookup);
++
++/*
++ * @brief Iteratively read a file using IO Vectors..
++ * @param  iocb: iov object.
++ *         to: info about the stage of iteration.
++ * @return number of bytes read.
++ */
++ssize_t tarfs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
++{
++	struct file *file = iocb->ki_filp;
++	struct inode *inode  = file_inode(file);
++	struct tarfs_entry *root_entry = tarfs_get_first_entry(inode->i_sb);
++	struct tarfs_entry *entry;
++	size_t count, to_read, inner_size, copied;
++	loff_t pos = iocb->ki_pos, inner_off;
++	sector_t block;
++	struct buffer_head *bh;
++
++	entry = tarfs_find_by_inode(root_entry, inode->i_ino);
++	if (!entry) {
++		tarfs_err("No entry found for the file ");
++		return -ENOENT;
++	}
++	if (pos < 0)
++		return -EINVAL;
++
++	count = min_t(size_t, iov_iter_count(to), entry->data_size - pos);
++	if (pos >= entry->data_size || !count) {
++		tarfs_debug("File read complete[%s/%s][%px] pos=%llu size=%ld nrpages=%lu",
++				entry->dir_name, entry->base_name, entry->ptr_inode, pos,
++				entry->data_size, inode->i_mapping->nrpages);
++		return 0;
++	}
++
++	to_read = count;
++	while (to_read > 0) {
++		block = (entry->data_offset + pos) / inode->i_sb->s_blocksize;
++		inner_off = (entry->data_offset + pos) % inode->i_sb->s_blocksize;
++		inner_size = min_t(size_t, inode->i_sb->s_blocksize - inner_off, to_read);
++
++		bh = sb_bread(inode->i_sb, block);
++
++		if (!bh) {
++			tarfs_err("Failed to read block %llu", block);
++			return -EINVAL;
++		}
++
++		if (bh->b_size != inode->i_sb->s_blocksize) {
++			tarfs_err("Wanted %lu byte block, but got %lu",
++				inode->i_sb->s_blocksize, bh->b_size);
++			break;
++		}
++
++		copied = copy_to_iter(bh->b_data + inner_off, inner_size, to);
++		brelse(bh);
++
++		pos += copied;
++		to_read -= copied;
++	}
++
++	if (count == to_read)
++		tarfs_err("Failed to read any bytes %ld", to_read);
++
++	iocb->ki_pos += (count - to_read);
++	return (count - to_read);
++}
++EXPORT_SYMBOL_GPL(tarfs_file_read_iter);
++
++/**
++ * tarfs_get_block - locate buffer for given inode,block tuple
++ * @ip:		inode
++ * @block:	phy block
++ * @bp:		buffer skeleton
++ * @create:	%TRUE if blocks may be newly allocated.
++ *
++ * Description:
++ *   The tarfs_get_block function fills @bp with the right physical
++ *   block and device number to perform a lowlevel read/write on
++ *   it.
++ *
++ * Returns:
++ *   Zero on success, else a negativ error code (-EIO).
++ */
++static int tarfs_getblk(struct inode *inode, sector_t block, struct buffer_head *bp, int create)
++{
++	struct tarfs_entry *root;
++	struct tarfs_entry *entry;
++	sector_t blk_offset;
++
++	if (!inode) {
++		tarfs_err("Null Inode!!");
++		return -EIO;
++	}
++	root = tarfs_get_first_entry(inode->i_sb);
++	entry = tarfs_find_by_inode(root, inode->i_ino);
++	if (!entry) {
++		tarfs_err("Entry Not Found [%px][%ld]!!", inode, inode->i_ino);
++		return -EIO;
++	}
++	blk_offset = entry->data_offset / inode->i_sb->s_blocksize;
++	map_bh(bp, inode->i_sb, block + blk_offset);
++	return 0;
++}
++
++/**
++ * tarfs_read_folio - read one page synchronously into the pagecache
++ * @file:	file context (unused)
++ * @folio:	folio to fill in.
++ *
++ * Description:
++ *   The tarfs_readpage routine reads @folio synchronously into the
++ *   pagecache.
++ *
++ * Returns:
++ *   Zero on success, else a negative error code.
++ *
++ * Locking status:
++ *   @folio is locked and will be unlocked.
++ */
++int tarfs_read_folio(struct file *file, struct folio *folio)
++{
++	tarfs_debug("Read folio");
++	return block_read_full_folio(folio, tarfs_getblk);
++}
++EXPORT_SYMBOL_GPL(tarfs_read_folio);
++
++/**
++ * tarfs_readahead - start reads against pages
++ * @rac: Describes which pages to read.
++ * @get_block: The filesystem's block mapper function.
++ *
++ * This function walks the pages and the blocks within each page, building and
++ * emitting large BIOs.
++ */
++void tarfs_readahead(struct readahead_control *rac)
++{
++	tarfs_debug("Readahead [%px]", rac);
++	mpage_readahead(rac, tarfs_getblk);
++}
++EXPORT_SYMBOL_GPL(tarfs_readahead);
++
++/**
++ * tarfs_bmap - perform logical to physical block mapping
++ * @mapping:	logical to physical mapping to use
++ * @block:	logical block (relative to @mapping).
++ *
++ * Description:
++ *   tarfs_bmap find out the corresponding phsical block to the
++ *   @mapping, @block pair.
++ *
++ * Returns:
++ *   Physical block number on success, else Zero.
++ *
++ * Locking status:
++ *   We are under the bkl.
++ */
++sector_t tarfs_bmap(struct address_space *mapping, sector_t block)
++{
++	tarfs_debug("block=[%llu]", block);
++	return generic_block_bmap(mapping, block, tarfs_getblk);
++}
++EXPORT_SYMBOL_GPL(tarfs_bmap);
+diff --git a/fs/tarfs/tarfs_inode.c b/fs/tarfs/tarfs_inode.c
+new file mode 100644
+index 000000000..4231476f3
+--- /dev/null
++++ b/fs/tarfs/tarfs_inode.c
+@@ -0,0 +1,714 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Filesystem to directly mount tar archive.
++ *
++ * Copyright 2021 VMware, Inc. All Rights Reserved.
++ *
++ * Licensed under the GNU Lesser General Public License version 2 (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ *
++ */
++
++#include <linux/init.h>
++#include <linux/types.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/string.h>
++#include <linux/slab.h>
++#include <linux/blkdev.h>
++#include <linux/fs.h>
++#include <linux/cred.h>
++#include <linux/buffer_head.h>
++
++#include "tarfs.h"
++
++#define ROOT_INO_MODE (S_IFDIR | 0555)
++#define ALIGN_SECTOR(x) \
++	(((x) % TARFS_BLOCK_SIZE > 0) ? TARFS_BLOCK_SIZE - ((x) % TARFS_BLOCK_SIZE) : 0)
++#define OCTAL (8)
++
++static void tarfs_kill_super(struct super_block *sb);
++
++/*
++ * tarfs_get_inode : Allocate inode
++ * sb : Superblock of the file system
++ * mode : Permissions
++ **/
++struct inode *tarfs_get_inode(struct super_block *sb, umode_t mode)
++{
++	struct inode *inode = new_inode(sb);
++
++	if (inode) {
++		INIT_HLIST_NODE(&inode->i_hash);
++		inode->i_ino = get_next_ino();
++		inode->i_mode = mode;
++		inode->i_mapping->a_ops = &tarfs_ram_addr_ops;
++		mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
++		mapping_set_unevictable(inode->i_mapping);
++		inode->i_sb = sb;
++		tarfs_debug("inode created [%px][%ld]!!", inode, inode->i_ino);
++	}
++	return inode;
++}
++
++static char *build_dir_path(const char *link_path, char **link_name)
++{
++	char *dir_path;
++	char *name;
++	int len;
++
++	name = strrchr(link_path, '/');
++	name = (name) ? (name + 1) : (char *)(link_path);
++	*link_name = name;
++	len = strlen(link_path) - strlen(name);
++	len = (len > 0) ? (len) : (1);
++	dir_path = kzalloc(len, GFP_KERNEL);
++	if (!dir_path) {
++		tarfs_err("Error in allocating memory for dir_path %ld", PTR_ERR(dir_path));
++		return NULL;
++	}
++	memcpy(dir_path, link_path, len - 1);
++	tarfs_debug("dir_path=[%s]", dir_path);
++	return dir_path;
++}
++
++/*
++ * tarfs_create_inode : Allocate inode for file, dir and symlinks
++ * sb : Superblock of the file system
++ * entry : tarfs entry of ROOT
++ * mode : Permissions
++ **/
++struct inode *tarfs_create_inode(struct super_block *sb,
++				 struct tarfs_entry *entry, umode_t mode)
++{
++	struct inode *inode = NULL;
++	struct inode *dentry_inode = d_inode(sb->s_root);
++	struct tarfs_sbi *sb_info = TARFS_SB(sb);
++	struct tarfs_entry *link_entry = NULL;
++	char *link_name = NULL;
++	char *link_dir_path = NULL;
++
++	inode = tarfs_get_inode(sb, tarfs_entry_mode(entry));
++	if (!inode) {
++		tarfs_err("Failed to allocate new inode");
++		return NULL;
++	}
++	i_uid_write(inode, entry->uid);
++	i_gid_write(inode, entry->gid);
++	inode->i_size = entry->data_size;
++	inode->i_blocks =
++		(inode->i_size + sb->s_blocksize - 1) >> sb->s_blocksize_bits;
++	inode->i_atime = entry->atime;
++	inode->i_mtime = entry->mtime;
++	inode->__i_ctime = entry->ctime;
++	__insert_inode_hash(inode, dentry_inode->i_ino);
++	entry->inode = inode->i_ino;
++	entry->ptr_inode = inode;
++	switch (entry->header.typeflag) {
++	case DIRTYPE:
++		inode->i_op = &tarfs_dir_inode_operations;
++		inode->i_fop = &tarfs_dir_operations;
++		if (inode->i_size == 0)
++			inode->i_size = sb->s_blocksize;
++		inode->i_blocks = (inode->i_size + sb->s_blocksize - 1) >> sb->s_blocksize_bits;
++		inc_nlink(inode);
++		break;
++	case LNKTYPE:
++		link_dir_path = build_dir_path(entry->link_name, &link_name);
++		if (link_dir_path) {
++			link_entry = tarfs_find(sb_info->first, link_dir_path, link_name);
++			kfree(link_dir_path);
++		}
++		tarfs_debug("HARDLINK: [%s] [%s] [%s]", entry->link_name, link_dir_path, link_name);
++		if (link_entry) {
++			tarfs_debug("HARDLINK: [%s]->[%ld]",
++					link_entry->base_name, link_entry->inode);
++			entry->inode = link_entry->inode;
++			entry->ptr_inode = link_entry->ptr_inode;
++		} else {
++			tarfs_err("HARDLINK: Fail to find the linked file entry!! [%s] [%s] [%s]",
++					entry->link_name, link_dir_path, link_name);
++		}
++		break;
++	case SYMTYPE:
++		inode->i_op = &tarfs_symlink_inode_operations;
++		inode->i_link = entry->link_name;
++		inode->i_size = strlen(inode->i_link);
++		inode_nohighmem(inode);
++		break;
++	default:
++		inode->i_op = &tarfs_file_inode_operations;
++		inode->i_fop = &tarfs_file_operations;
++		break;
++	}
++	tarfs_debug("inode created = %ld", entry->inode);
++	return inode;
++}
++
++static char *build_name(struct star_header *header, char *longname, char type)
++{
++	char *name = longname;
++	char *src = header->name;
++	char *prefix_end = memchr(header->prefix, 0, sizeof(header->prefix));
++	size_t prefix_len;
++	size_t name_len;
++	char *name_end = NULL;
++
++	if (!prefix_end) {
++		tarfs_err("Header name is not proper, prefix_end is NULL!!");
++		return NULL;
++	}
++
++	prefix_len = prefix_end - header->prefix;
++	if (type == GNUTYPE_LONGNAME) {
++		name_len = strlen(longname);
++		src = longname;
++		tarfs_debug("[%ld] [%ld] [%c] [%s] [%s]",
++				prefix_len, name_len, type, header->prefix, longname);
++	} else {
++		name_end = memchr(header->name, 0, sizeof(header->name));
++		if (!name_end) {
++			/*
++			 * Handle the case where header->name is exact 100 bytes long or more
++			 */
++			if (strnlen(header->name, sizeof(header->name)) == sizeof(header->name)) {
++				tarfs_info("Header name is exact 100 bytes long!! Handling it properly!!");
++				name_end = header->name + sizeof(header->name);
++			} else {
++				tarfs_err("Header name is not proper [%s][%ld][%ld], name_end is NULL!!",
++					header->name, sizeof(header->name), strnlen(header->name, sizeof(header->name)));
++				return NULL;
++			}
++		}
++		name_len = name_end - header->name;
++		tarfs_debug("[%ld] [%ld] [%c] [%s] [%s]", prefix_len, name_len,
++				header->typeflag, header->prefix, header->name);
++	}
++	if (prefix_len != 0 || type != GNUTYPE_LONGNAME) {
++		name = kzalloc(prefix_len + name_len + 1, GFP_KERNEL);
++		if (!name) {
++			tarfs_err("Unable to allocate memory for full name");
++			return NULL;
++		}
++		memcpy(name, header->prefix, prefix_len);
++		memcpy(name + prefix_len, src, name_len);
++		if (type == GNUTYPE_LONGNAME) {
++			kfree(longname);
++			longname = NULL;
++		}
++	}
++
++	/* The path name ends with a slash if the entry is a directory */
++	if (name[prefix_len + name_len - 1] == '/')
++		name[prefix_len + name_len - 1] = 0x0;
++
++	return name;
++}
++
++/* Returns the checksum for the given ustar format HEADER. */
++static unsigned int calculate_chksum(const struct star_header *h)
++{
++	const uint8_t *header = (const uint8_t *) h;
++	const size_t chksum_start = offsetof(struct star_header, chksum);
++	const size_t chksum_end = chksum_start + sizeof(h->chksum);
++	unsigned int chksum = 0;
++	size_t i;
++
++	for (i = 0; i < TARFS_HDR_SIZE; i++) {
++		/* The star checksum is calculated as if the chksum field
++		 * were all spaces.
++		 */
++		chksum += (i >= chksum_start && i < chksum_end) ? ' ' : header[i];
++	}
++	return chksum;
++}
++
++static bool is_chksum_match(const struct star_header *h)
++{
++	unsigned int chksum, cal_chksum;
++
++	if (kstrtouint(h->chksum, OCTAL, (unsigned int *)&chksum) != 0) {
++		/* Reached EOF */
++		if (h->chksum[0] == 0)
++			return false;
++		tarfs_err("failed to read chksum");
++		return false;
++	}
++	cal_chksum = calculate_chksum(h);
++	if (cal_chksum != chksum) {
++		tarfs_err("Chksum Mismatch!! Calculated chksum=%d , stored chksum=%d",
++				cal_chksum, chksum);
++		return false;
++	}
++	return true;
++}
++
++size_t tarfs_read(void *buffer, size_t size, loff_t offset, struct super_block *sb)
++{
++	struct buffer_head *bh;
++	size_t pos = 0;
++	sector_t block;
++	loff_t inner_off;
++	size_t inner_size;
++
++	while (size > 0) {
++		block = (offset + pos) / sb->s_blocksize;
++		inner_off = (offset + pos) % sb->s_blocksize;
++		inner_size = min_t(size_t, sb->s_blocksize - inner_off, size);
++
++		tarfs_debug("blk=[%llu] offset=[%lld] pos=[%ld] inneroff=[%lld] innersize=[%ld] blksize=[%ld] size=[%ld]",
++				block, offset, pos, inner_off,
++				inner_size, sb->s_blocksize, size);
++		bh = sb_bread(sb, block);
++		if (!bh) {
++			tarfs_err("Failed to read block %llu Err=%ld", block, PTR_ERR(bh));
++			break;
++		}
++
++		if (bh->b_size != sb->s_blocksize) {
++			tarfs_err("Wanted %lu byte block, but got %lu",
++					sb->s_blocksize, bh->b_size);
++			break;
++		}
++
++		memcpy(buffer, bh->b_data + inner_off, inner_size);
++		brelse(bh);
++
++		pos += inner_size;
++		size -= inner_size;
++		buffer += inner_size;
++	}
++
++	return pos;
++}
++
++/**
++ * @brief Reads a tar header at the \a offset.
++ * @param sb the superblock to read from
++ * @param offset the 512-byte aligned offset
++ * @return the entry on success, else \c NULL
++ */
++struct tarfs_entry *tarfs_read_entry(struct super_block *sb, loff_t offset)
++{
++	struct star_header header;
++	struct tarfs_entry *entry = NULL;
++	char *full_name = NULL, *basename = NULL, *longname = NULL;
++	size_t namelen = 0;
++	size_t curlen = 0;
++	char typeflag = 0;
++	size_t length = 0;
++	unsigned int mode = 0;
++	uid_t uid = 0;
++	gid_t gid = 0;
++	struct timespec64 atime, mtime, ctime;
++	bool gnutar = true;
++
++	if (tarfs_read(&header, sizeof(header), offset, sb) != sizeof(header)) {
++		tarfs_err("Header data reading fails!!");
++		return NULL;
++	}
++	tarfs_debug("Header Data:\n"
++			"header.name = [%s]\n"
++			"header.mode = [%s]\n"
++			"header.uid = [%s]\n"
++			"header.gid = [%s]\n"
++			"header.size = [%s]\n"
++			"header.mtime = [%s]\n"
++			"header.chksum = [%s]\n"
++			"header.typeflag = [%c]\n"
++			"header.linkname = [%s]\n"
++			"header.magic = [%s]\n"
++			"header.version = [%s]\n"
++			"header.uname = [%s]\n"
++			"header.gname = [%s]\n"
++			"header.devmajor = [%s]\n"
++			"header.devminor = [%s]\n"
++			"header.prefix = [%s]\n",
++			header.name, header.mode, header.uid, header.gid, header.size,
++			header.mtime, header.chksum, header.typeflag, header.linkname,
++			header.magic, header.version, header.uname, header.gname,
++			header.devmajor, header.devminor, header.prefix);
++	if (!is_chksum_match(&header))
++		return NULL;
++
++	if ((header.typeflag == GNUTYPE_LONGLINK) || (header.typeflag == GNUTYPE_LONGNAME)) {
++		/**
++		 * 512-byte header.... [@LongLink/LongName]
++		 *			 typeflag=K/L hdr.size=strlen(LongName/LongLink)
++		 * 512-byte header.... [Read LongName/LongLink]
++		 * ...                 [Read again 512-bytes header if Name more than 512-bytes ]
++		 * 512-byte header.... [Actual header data, replace hdr.name with @LongName if [L]
++		 *                       else replace hdr.linkname with @LongLink if [K]]
++		 **/
++		if (kstrtoul(header.size, OCTAL, (size_t *)&namelen) != 0) {
++			tarfs_err("failed to read size");
++			return NULL;
++		}
++		typeflag = header.typeflag;
++		longname = kzalloc(namelen + 1, GFP_KERNEL);
++		if (IS_ERR_OR_NULL(longname)) {
++			tarfs_err("Error in allocating mem for longname %ld", PTR_ERR(longname));
++			return NULL;
++		}
++		while (curlen < namelen) {
++			offset = offset + TARFS_HDR_SIZE + ALIGN_SECTOR(TARFS_HDR_SIZE);
++			if (tarfs_read(&header, sizeof(header), offset, sb) != sizeof(header)) {
++				tarfs_err("Header data reading fails!!");
++				goto err_lvl1;
++			}
++			memcpy(longname + curlen, &header, MIN(namelen - curlen, TARFS_HDR_SIZE));
++			curlen += TARFS_HDR_SIZE;
++		}
++		tarfs_debug("longname=[%s] len=[%lu] type=[%c]", longname, namelen, typeflag);
++		offset = offset + TARFS_HDR_SIZE + ALIGN_SECTOR(TARFS_HDR_SIZE);
++		if (tarfs_read(&header, sizeof(header), offset, sb) != sizeof(header)) {
++			tarfs_err("Header data reading fails!!");
++			goto err_lvl1;
++		}
++	}
++	if (!is_chksum_match(&header))
++		goto err_lvl1;
++
++	/**
++	 * Check for the header magic value
++	 * Supported Formats:
++	 *	GNU
++	 *	POSIX
++	 **/
++	gnutar = !memcmp(header.magic, OLDGNU_MAGIC, sizeof(header.magic)) ||
++		 !memcmp(header.magic, TMAGIC, sizeof(header.magic));
++	if (!gnutar) {
++		tarfs_err("magic=%.8s", header.magic);
++		goto err_lvl1;
++	}
++	// Parse the data length from the header
++	if (kstrtoul(header.size, OCTAL, (size_t *)&length) != 0) {
++		tarfs_err("failed to read size");
++		goto err_lvl1;
++	}
++	if (kstrtouint(header.mode, OCTAL, (unsigned int *)&mode) != 0) {
++		tarfs_err("failed to read mode, mode=%s", header.mode);
++		/* set default mode as r+w+x for all user */
++		mode = 0777;
++	}
++	if (kstrtouint(header.uid, OCTAL, (unsigned int *)&uid) != 0) {
++		tarfs_err("failed to read uid, uid=%s", header.uid);
++		/* set default uid as nobody */
++		uid = 0xfffe;
++	}
++	if (kstrtouint(header.gid, OCTAL, (unsigned int *)&gid) != 0) {
++		tarfs_err("failed to read gid, gid=%s", header.gid);
++		/* set default gid as nobody */
++		gid = 0xfffd;
++	}
++	if (kstrtoul(header.mtime, OCTAL, (unsigned long *)&mtime.tv_sec) != 0) {
++		mtime.tv_sec = 0;
++		mtime.tv_nsec = 0;
++	}
++	if (gnutar && kstrtoul(header.atime, OCTAL, (unsigned long *)&atime.tv_sec) != 0)
++		atime = mtime;
++
++	if (gnutar && kstrtoul(header.ctime, OCTAL, (unsigned long *)&ctime.tv_sec) != 0)
++		ctime = mtime;
++
++	if (!gnutar) {
++		atime = mtime;
++		ctime = mtime;
++	}
++	full_name = build_name(&header, longname, typeflag);
++	if (!full_name) {
++		tarfs_err("name allocation error");
++		goto err_lvl1;
++	}
++	basename = strrchr(full_name, '/');
++	if (basename) {
++		*basename = 0x0;
++		basename++;
++	} else {
++		basename = full_name;
++		full_name = basename + strlen(basename);
++	}
++
++	entry = kzalloc(sizeof(struct tarfs_entry), GFP_KERNEL);
++	if (IS_ERR_OR_NULL(entry)) {
++		tarfs_err("Error in allocating mem for entry %ld", PTR_ERR(entry));
++		goto err_lvl1;
++	}
++	entry->header = header;
++	entry->dir_name = full_name;
++	entry->base_name = basename;
++	entry->data_size = length;
++	entry->mode = mode;
++	entry->uid = uid;
++	entry->gid = gid;
++	entry->mtime = mtime;
++	entry->atime = atime;
++	entry->ctime = ctime;
++	entry->offset = offset;
++	entry->data_offset = offset + TARFS_HDR_SIZE + ALIGN_SECTOR(TARFS_HDR_SIZE);
++	entry->link_name = (typeflag == GNUTYPE_LONGLINK) ? (longname) : (entry->header.linkname);
++	tarfs_debug("full_name = [%s] [%s] linkname=[%s]",
++			entry->dir_name, entry->base_name, entry->link_name);
++	return entry;
++
++err_lvl1:
++	kfree(longname);
++	return NULL;
++}
++
++
++
++
++/**
++ * @brief Reads all file headers from the \a sb
++ * @param sb the underlying super block
++ * @return the first entry, pointing at all other entries
++ */
++struct tarfs_entry *tarfs_open(struct super_block *sb)
++{
++	struct tarfs_entry *first = tarfs_read_entry(sb, 0);
++	struct tarfs_entry *parent = first;
++	struct tarfs_sbi *sb_info = TARFS_SB(sb);
++	struct tarfs_entry *next;
++	struct inode *alloc_inode;
++	loff_t length;
++	int err;
++
++	if (first) {
++		sb_info->files++;
++		sb_info->first = first;
++		alloc_inode = tarfs_create_inode(sb, parent, parent->mode);
++		if (IS_ERR_OR_NULL(alloc_inode)) {
++			tarfs_err("alloc_inode failed !!");
++			return NULL;
++		}
++		sb_info->blocks += first->ptr_inode->i_blocks;
++		radix_tree_preload(GFP_NOIO);
++		INIT_RADIX_TREE(&first->root_tree, GFP_NOIO);
++		err = radix_tree_insert(&first->root_tree,
++				(unsigned long)first->ptr_inode->i_ino, first);
++		if (err) {
++			tarfs_err("Radix tree insert first err=%d, inode %ld",
++					err, first->ptr_inode->i_ino);
++			radix_tree_preload_end();
++			return NULL;
++		}
++		radix_tree_preload_end();
++	}
++	while (parent) {
++		sb_info->files++;
++		/* Skipping the data of previous entry */
++		length = parent->data_offset + parent->data_size;
++		next = tarfs_read_entry(sb, length + ALIGN_SECTOR(length));
++		parent->next = next;
++		if (IS_ERR_OR_NULL(next))
++			break;
++		parent->next->radix_root_key = parent->inode;
++		parent = next;
++		alloc_inode = tarfs_create_inode(sb, parent, parent->mode);
++		if (IS_ERR_OR_NULL(alloc_inode)) {
++			tarfs_err("alloc_inode failed !!");
++			parent->inode = 2;
++			break;
++		}
++		sb_info->blocks += parent->ptr_inode->i_blocks;
++		radix_tree_preload(GFP_NOIO);
++		err = radix_tree_insert(&first->root_tree,
++				(unsigned long)alloc_inode->i_ino, parent);
++		if (err) {
++			tarfs_err("Radix tree insert err=%d, inode %ld", err, alloc_inode->i_ino);
++			radix_tree_preload_end();
++			break;
++		}
++		radix_tree_preload_end();
++		if (parent->header.typeflag == LNKTYPE)
++			iput(alloc_inode);
++	}
++	return first;
++}
++
++static int tarfs_parse_mount_ops(char *data, struct tarfs_mount_opts *opts)
++{
++	/*TODO: Hardcode it to Read Only mode */
++	opts->mode = S_IRUGO | S_IXUGO;
++	return 0;
++}
++
++/**
++ * @brief Sets up the \a sb.
++ * @param sb the super block
++ * @param data
++ * @param silent if messages shall be suppressed
++ * @return an error code
++ */
++static int tarfs_fill_sb(struct super_block *sb, void *data, int silent)
++{
++	struct tarfs_entry *entry = NULL;
++	struct inode *inode = NULL;
++	struct tarfs_mount_opts mount_opts;
++	int err = -EINVAL;
++	struct tarfs_sbi *sb_info;
++
++	sb_info = kzalloc(sizeof(struct tarfs_sbi), GFP_KERNEL);
++	if (IS_ERR_OR_NULL(sb_info)) {
++		tarfs_err("Error in allocating mem for sb_info! Err: %ld", PTR_ERR(sb_info));
++		return -ENOMEM;
++	}
++	sb->s_fs_info = sb_info;
++
++	err = tarfs_parse_mount_ops(data, &mount_opts);
++	if (err) {
++		tarfs_err("Error in reading mount options for tarfs");
++		goto error;
++	}
++	sb->s_op = &tarfs_super_ops;
++	sb->s_time_gran = 1;
++	sb->s_flags |= SB_RDONLY | SB_NOATIME | SB_ACTIVE; /*Read only file system*/
++	sb->s_maxbytes = MAX_LFS_FILESIZE;
++	if (!sb_set_blocksize(sb, TARFS_BLOCK_SIZE)) {
++		tarfs_err("device does not support %d byte blocks", TARFS_BLOCK_SIZE);
++		err = -EINVAL;
++		goto error;
++	}
++
++	inode = tarfs_get_inode(sb, S_IFDIR | mount_opts.mode);
++	if (!inode) {
++		tarfs_err("Failed to create new inode!!");
++		err = -ENOMEM;
++		goto error;
++	}
++	inode->i_uid = current_fsuid();
++	inode->i_gid = current_fsgid();
++	inode->i_atime = inode->i_mtime = inode->__i_ctime = current_time(inode);
++	inode->i_size = sb->s_blocksize;
++	inode->i_blocks = (inode->i_size + sb->s_blocksize - 1) >> sb->s_blocksize_bits;
++	inode->i_op = &tarfs_dir_inode_operations;
++	inode->i_fop = &tarfs_dir_operations;
++	inode_init_owner(&nop_mnt_idmap, inode, NULL, ROOT_INO_MODE);
++	/*directory inodes start off with i_nlink=2(for "." entry)*/
++	inc_nlink(inode);
++	inc_nlink(inode);
++
++	sb_info->blocks = inode->i_blocks;
++	sb->s_root = d_make_root(inode);
++	if (!sb->s_root) {
++		iput(inode);
++		tarfs_err("Error in creating root point for tarfs");
++		err = -ENOMEM;
++		goto error;
++	}
++
++	tarfs_debug("populate_first_entry");
++	__insert_inode_hash(inode, inode->i_ino);
++	entry = tarfs_open(sb);
++	if (!entry) {
++		tarfs_err("Failed to read first entry!!");
++		sb->s_magic = (unsigned long)OLDGNU_MAGIC;
++	} else {
++		entry->radix_root_key = inode->i_ino;
++		sb->s_magic = (unsigned long)entry->header.magic;
++	}
++	tarfs_debug("first allocated root inode num = %ld and sb = %p magic=[%s]",
++			inode->i_ino, sb, (char *)sb->s_magic);
++	return 0;
++
++error:
++	kfree(sb_info);
++	sb->s_fs_info = NULL;
++	return err;
++}
++
++/**
++ * @brief Called by linux to mount \a dev.
++ * @param type our file system type
++ * @param flags mount flags
++ * @param dev the device path to mount
++ * @param data
++ * @return the root directory entry
++ */
++static struct dentry *tarfs_mount(struct file_system_type *type, int flags,
++		char const *dev, void *data)
++{
++	return mount_bdev(type, SB_RDONLY | flags, dev, data, tarfs_fill_sb);
++}
++
++/**
++ * @brief Called by linux to unmount \a sb.
++ * @param sb the super block of the instance to unmount
++ */
++static void tarfs_kill_super(struct super_block *sb)
++{
++	struct tarfs_sbi *sb_info = TARFS_SB(sb);
++	struct tarfs_entry *entry = sb_info ? (sb_info->first) : NULL;
++	struct tarfs_entry *next;
++
++	tarfs_debug("Kill super");
++	while (entry) {
++		next = entry->next;
++		tarfs_debug("basename=%s dirn=%s", entry->base_name, entry->dir_name);
++
++		if (entry->dir_name < entry->base_name)
++			kfree(entry->dir_name);
++		else
++			kfree(entry->base_name);
++		if (strlen(entry->link_name) > MAX_FILE_NAME_SIZE)
++			kfree(entry->link_name);
++		kfree(entry);
++		entry = next;
++	}
++	if (sb->s_root)
++		kfree(sb->s_root->d_fsdata);
++
++	kfree(sb_info);
++
++	generic_shutdown_super(sb);
++}
++
++static struct file_system_type tarfs_type = {
++	.owner     = THIS_MODULE,
++	.name      = "tarfs",
++	.mount     = tarfs_mount,
++	.kill_sb   = tarfs_kill_super,
++	.fs_flags  = FS_REQUIRES_DEV,
++};
++
++/** @brief Called by linux to initialize the module. */
++static int __init tarfs_init(void)
++{
++	int err = 0;
++
++	tarfs_info("filesystem module load start");
++
++	err = register_filesystem(&tarfs_type);
++	if (unlikely(err)) {
++		tarfs_err("Failed to register tarfs type %d. Exiting!!", err);
++		goto err;
++	}
++	tarfs_debug("filesystem module registered");
++
++	return 0;
++err:
++	return err;
++}
++
++/** @brief Called by linux to unload the module. */
++static void __exit tarfs_exit(void)
++{
++	int err = 0;
++
++	tarfs_info("filesystem module unload");
++	err = unregister_filesystem(&tarfs_type);
++	if (unlikely(err))
++		tarfs_err("Failed to unregister tarfs filesystem %d", err);
++}
++
++module_init(tarfs_init);
++module_exit(tarfs_exit);
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("A tar filesystem driver");
++MODULE_AUTHOR("VMware Photon OS : Srinidhi Rao <srinidhir@vmware.com>");
++MODULE_AUTHOR("VMware Photon OS : Alexey Makhalov <amakhalov@vmware.com>");
++MODULE_AUTHOR("VMware Photon OS : Ankit Jain <ankitja@vmware.com>");
++MODULE_AUTHOR("VMware Photon OS : Ashwin Dayanand Kamat <kashwindayan@vmware.com>");
+-- 
+2.23.1
+

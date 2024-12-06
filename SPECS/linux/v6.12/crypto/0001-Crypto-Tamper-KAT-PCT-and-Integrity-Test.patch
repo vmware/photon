@@ -1,0 +1,348 @@
+From cc521bf50581c6adef9b5fafa1ffb20b4f965a3a Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 22 Nov 2023 08:47:46 +0000
+Subject: [PATCH] Crypto: Tamper KAT, PCT and Integrity Test
+
+- Introduced new kernel command line parameter(tampertest) to tamper KAT,
+  PCT and integrity test for FIPS CMVP testing.
+- tampertest parameter takes values [-2,-1,1,2,...56]. Each corresponds to
+  breaking a test.
+- Value of -2 tampers Pairwise Consistency Test and simulate a failure.
+- Value of -1 tampers Canister Integrity test.
+- Values [1,..56] tampers KAT test for the supported algorithms
+  in LKCM 5.0.
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+---
+ crypto/Kconfig              |  29 +++++++++
+ crypto/Makefile             |   1 +
+ crypto/crypto_tamper_test.c | 114 ++++++++++++++++++++++++++++++++++++
+ crypto/ecc.c                |  11 ++++
+ crypto/testmgr.c            |  68 +++++++++++++++++++++
+ init/main.c                 |  10 ++++
+ 6 files changed, 233 insertions(+)
+ create mode 100644 crypto/crypto_tamper_test.c
+
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index c849bb918..93bcc5ae7 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -250,6 +250,35 @@ config CRYPTO_SELF_TEST
+ 	help
+ 	  Crypto self test module for FIPS.
+ 
++config CRYPTO_TAMPER_TEST
++	bool "Tamper KAT, PCT and Integrity Test module"
++	select CRYPTO_MANAGER
++	select CRYPTO_FIPS
++	select CRYPTO_AES
++	select CRYPTO_CBC
++	select CRYPTO_ECB
++	select CRYPTO_CTR
++	select CRYPTO_XTS
++	select CRYPTO_HMAC
++	select CRYPTO_SHA256
++	select CRYPTO_SHA512
++	select CRYPTO_RSA
++	select CRYPTO_DRBG
++	select CRYPTO_ECDH
++	select CRYPTO_ECDSA
++	select CRYPTO_GCM
++	select CRYPTO_CCM
++	select CRYPTO_CFB
++	select CRYPTO_CTS
++	select CRYPTO_CMAC
++	select CRYPTO_SHA1
++	select CRYPTO_SHA256
++	select CRYPTO_SHA512
++	select CRYPTO_SHA3
++	help
++	  Tamper Known Answer Test, Pairwise Consistency
++	  Test and Integrity Test for FIPS CMVP testing.
++
+ config CRYPTO_SIMD
+ 	tristate
+ 	select CRYPTO_CRYPTD
+diff --git a/crypto/Makefile b/crypto/Makefile
+index 1fd7da7f4..ec0bbdd4c 100644
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -235,6 +235,7 @@ crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORC
+ 	@$(foreach obj,$(lib-crypto-y),echo lib-crypto-$(obj) >> objs;)
+ 
+ canister += crypto_self_test.o
++canister += crypto_tamper_test.o
+ 
+ canister += fips_integrity.o
+ 
+diff --git a/crypto/crypto_tamper_test.c b/crypto/crypto_tamper_test.c
+new file mode 100644
+index 000000000..a6cfbf627
+--- /dev/null
++++ b/crypto/crypto_tamper_test.c
+@@ -0,0 +1,114 @@
++/*
++ * Tamper test module
++ *
++ * Copyright (c) 2020-2023 VMware
++ *
++ */
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/export.h>
++#include <linux/fips.h>
++#include "fips_canister_wrapper.h"
++
++int tamper_testbuild;
++/* Process kernel command-line parameter at boot time.
+++ * tampertest=1 tampertest=2 etc
+++ */
++static int tamper_test(char *str)
++{
++	tamper_testbuild = simple_strtol(str, NULL, 0);
++	fcw_printk(KERN_INFO "Broken KAT, PCT and Integrity test : %d\n", tamper_testbuild);
++	return 1;
++}
++
++__setup("tampertest=", tamper_test);
++
++extern void tamper_ecc_static_keypairs(void);
++
++static const char * const alg_list[] = {
++	"cbc(aes)",
++	"ecb(aes)",
++	"xts(aes)",
++	"ctr(aes)",
++	"hmac(sha1)",
++	"hmac(sha224)",
++	"hmac(sha256)",
++	"hmac(sha384)",
++	"hmac(sha512)",
++	"rsa",
++	"pkcs1pad(rsa,sha256)",
++	"drbg_pr_ctr_aes128",
++	"drbg_pr_ctr_aes192",
++	"drbg_pr_ctr_aes256",
++	"drbg_pr_sha1",
++	"drbg_pr_sha256",
++	"drbg_pr_sha384",
++	"drbg_pr_sha512",
++	"drbg_pr_hmac_sha1",
++	"drbg_pr_hmac_sha256",
++	"drbg_pr_hmac_sha384",
++	"drbg_pr_hmac_sha512",
++	"drbg_nopr_ctr_aes128",
++	"drbg_nopr_ctr_aes192",
++	"drbg_nopr_ctr_aes256",
++	"drbg_nopr_sha1",
++	"drbg_nopr_sha256",
++	"drbg_nopr_sha384",
++	"drbg_nopr_sha512",
++	"drbg_nopr_hmac_sha1",
++	"drbg_nopr_hmac_sha256",
++	"drbg_nopr_hmac_sha384",
++	"drbg_nopr_hmac_sha512",
++	"ecdh-nist-p256",
++	"ecdh-nist-p384",
++	"ecdsa-nist-p256",
++	"ecdsa-nist-p384",
++	"gcm(aes)",
++	"rfc4106(gcm(aes))",
++	"ccm(aes)",
++	"cfb(aes)",
++	"cts(cbc(aes))",
++	"cmac(aes)",
++	"hmac(sha3-224)",
++	"hmac(sha3-256)",
++	"hmac(sha3-384)",
++	"hmac(sha3-512)",
++	"sha1",
++	"sha224",
++	"sha256",
++	"sha384",
++	"sha512",
++	"sha3-224",
++	"sha3-256",
++	"sha3-384",
++	"sha3-512",
++};
++
++void tamper_input_vector(const char *alg, const char *driver, const char *vector)
++{
++	int idx = tamper_testbuild - 1;
++	char *test = "\x23\x32\x23\x32\x23\x32\x23\x32";
++
++	switch (tamper_testbuild) {
++		case 1 ... 56:
++			if (strcmp(alg, alg_list[idx]) && strcmp(driver, alg_list[idx]))
++				break;
++
++			memcpy((char *)vector, test, strlen(test));
++			break;
++	}
++}
++
++static int __init crypto_tamper_test_init(void)
++{
++	if (fips_enabled && tamper_testbuild == -2)
++		tamper_ecc_static_keypairs();
++
++	return 1;
++}
++
++static void __exit crypto_tamper_test_exit(void) {}
++
++arch_initcall(crypto_tamper_test_init);
++module_exit(crypto_tamper_test_exit);
+diff --git a/crypto/ecc.c b/crypto/ecc.c
+index 6805210a8..5ab88d2ac 100644
+--- a/crypto/ecc.c
++++ b/crypto/ecc.c
+@@ -1646,6 +1646,17 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
+ 	return ret;
+ }
+ 
++void tamper_ecc_static_keypairs(void)
++{
++	u64 *test = fcw_kmalloc(sizeof(u64), GFP_KERNEL);
++	u64 *p256_priv_key = ecc_p256.priv_key;
++	u64 *p384_priv_key = ecc_p384.priv_key;
++	memset(test, 0, sizeof(u64));
++	memcpy(p256_priv_key, test, sizeof(u64));
++	memcpy(p384_priv_key, test, sizeof(u64));
++	kfree(test);
++}
++
+ /* SP800-56A section 5.6.2.3.4 partial verification: ephemeral keys only */
+ int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
+ 				struct ecc_point *pk)
+diff --git a/crypto/testmgr.c b/crypto/testmgr.c
+index 1ee694edb..a5a18a456 100644
+--- a/crypto/testmgr.c
++++ b/crypto/testmgr.c
+@@ -39,11 +39,75 @@
+ #include "fips_canister_wrapper.h"
+ #include "fips_canister_wrapper_common.h"
+ 
++#include "testmgr.h"
++
++extern int tamper_testbuild;
++const char ** poison_alg_strs[] = {
++   (const char **)&aes_cbc_tv_template[2].ctext,
++   (const char **)&aes_tv_template[3].ctext,
++   (const char **)&aes_xts_tv_template[4].ctext,
++   (const char **)&aes_ctr_tv_template[2].ctext,
++   (const char **)&hmac_sha1_tv_template[0].digest,
++   (const char **)&hmac_sha224_tv_template[2].digest,
++   (const char **)&hmac_sha256_tv_template[0].digest,
++   (const char **)&hmac_sha384_tv_template[0].digest,
++   (const char **)&hmac_sha512_tv_template[0].digest,
++   (const char **)&rsa_tv_template[0].c,
++   (const char **)&pkcs1pad_rsa_tv_template[0].c,
++   (const char **)&drbg_pr_ctr_aes128_tv_template[0].expected,
++   (const char **)&drbg_pr_ctr_aes192_tv_template[0].expected,
++   (const char **)&drbg_pr_ctr_aes256_tv_template[0].expected,
++   (const char **)&drbg_pr_sha1_tv_template[0].expected,
++   (const char **)&drbg_pr_sha256_tv_template[0].expected,
++   (const char **)&drbg_pr_sha384_tv_template[0].expected,
++   (const char **)&drbg_pr_sha512_tv_template[0].expected,
++   (const char **)&drbg_pr_hmac_sha1_tv_template[0].expected,
++   (const char **)&drbg_pr_hmac_sha256_tv_template[0].expected,
++   (const char **)&drbg_pr_hmac_sha384_tv_template[0].expected,
++   (const char **)&drbg_pr_hmac_sha512_tv_template[0].expected,
++   (const char **)&drbg_nopr_ctr_aes128_tv_template[0].expected,
++   (const char **)&drbg_nopr_ctr_aes192_tv_template[0].expected,
++   (const char **)&drbg_nopr_ctr_aes256_tv_template[0].expected,
++   (const char **)&drbg_nopr_sha1_tv_template[0].expected,
++   (const char **)&drbg_nopr_sha256_tv_template[0].expected,
++   (const char **)&drbg_nopr_sha384_tv_template[0].expected,
++   (const char **)&drbg_nopr_sha512_tv_template[0].expected,
++   (const char **)&drbg_nopr_hmac_sha1_tv_template[0].expected,
++   (const char **)&drbg_nopr_hmac_sha256_tv_template[0].expected,
++   (const char **)&drbg_nopr_hmac_sha384_tv_template[0].expected,
++   (const char **)&drbg_nopr_hmac_sha512_tv_template[0].expected,
++   (const char **)&ecdh_p256_tv_template[0].expected_ss,
++   (const char **)&ecdh_p384_tv_template[0].expected_ss,
++   (const char **)&ecdsa_nist_p256_tv_template[0].c,
++   (const char **)&ecdsa_nist_p384_tv_template[0].c,
++   (const char **)&aes_gcm_tv_template[0].ctext,
++   (const char **)&aes_gcm_rfc4106_tv_template[0].ctext,
++   (const char **)&aes_ccm_tv_template[0].ctext,
++   (const char **)&aes_cfb_tv_template[0].ctext,
++   (const char **)&cts_mode_tv_template[0].ctext,
++   (const char **)&aes_cmac128_tv_template[0].digest,
++   (const char **)&hmac_sha3_224_tv_template[0].digest,
++   (const char **)&hmac_sha3_256_tv_template[0].digest,
++   (const char **)&hmac_sha3_384_tv_template[0].digest,
++   (const char **)&hmac_sha3_512_tv_template[0].digest,
++   (const char **)&sha1_tv_template[0].digest,
++   (const char **)&sha224_tv_template[0].digest,
++   (const char **)&sha256_tv_template[0].digest,
++   (const char **)&sha384_tv_template[0].digest,
++   (const char **)&sha512_tv_template[0].digest,
++   (const char **)&sha3_224_tv_template[0].digest,
++   (const char **)&sha3_256_tv_template[0].digest,
++   (const char **)&sha3_384_tv_template[0].digest,
++   (const char **)&sha3_512_tv_template[0].digest,
++};
++
+ #ifdef CONFIG_CRYPTO_MANAGER_EXTRA_TESTS
+ static bool noextratests;
+ static unsigned int fuzz_iterations = 100;
+ #endif
+ 
++extern void tamper_input_vector(const char *alg, const char *driver, const char *vector);
++
+ #ifdef CONFIG_CRYPTO_MANAGER_DISABLE_TESTS
+ 
+ /* a perfect nop */
+@@ -5646,6 +5710,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+ 			goto non_fips_alg;
+ 	}
+ 
++	if (fips_enabled && tamper_testbuild > 0 && tamper_testbuild < 57) {
++		tamper_input_vector(alg, driver, *poison_alg_strs[tamper_testbuild-1]);
++	}
++
+ 	rc = 0;
+ 	if (i >= 0)
+ 		rc |= alg_test_descs[i].test(alg_test_descs + i, driver,
+diff --git a/init/main.c b/init/main.c
+index 962edcc54..14836bd5f 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -20,6 +20,7 @@
+ #include <linux/kernel.h>
+ #include <linux/syscalls.h>
+ #include <linux/stackprotector.h>
++#include <linux/fips.h>
+ #include <linux/string.h>
+ #include <linux/ctype.h>
+ #include <linux/delay.h>
+@@ -883,6 +884,8 @@ early_param("randomize_kstack_offset", early_randomize_kstack_offset);
+ #endif
+ 
+ extern int fips_integrity_init(void);
++extern int tamper_testbuild;
++extern char canister_sections[];
+ 
+ void __init __weak arch_call_rest_init(void)
+ {
+@@ -985,6 +988,13 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 	/* Architectural and non-timekeeping rng init, before allocator init */
+ 	random_init_early(command_line);
+ 
++	if (fips_enabled && tamper_testbuild == -1) {
++		unsigned long *p = kallsyms_lookup_name(canister_sections);
++		printk("Simulating broken Integrity test... corrupting canister section\n");
++		p+=2;
++		*p = 0;
++	}
++
+ 	fips_integrity_init();
+ 	/*
+ 	 * These use large bootmem allocations and must precede
+-- 
+2.42.0
