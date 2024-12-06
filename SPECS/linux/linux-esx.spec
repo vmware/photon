@@ -28,7 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.118
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -533,6 +533,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Dec 06 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-5
+- fix aarch64 build
 * Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-4
 - Fix CVE-2024-50055, Fix CVE-2024-50014, CVE-2024-50018
 * Tue Nov 26 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.118-3
