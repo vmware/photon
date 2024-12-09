@@ -50,3 +50,5 @@ Patch049: 0049-gdbus-Never-buffer-reads-during-server-authenticatio.patch
 # Fix CVE-2023-32643
 Patch050: 0001-gvariant-Check-offset-table-doesn-t-fall-outside-var.patch
 Patch051: 0002-gvariant-Propagate-trust-when-getting-a-child-of-a-s.patch
+# Fix CVE-2024-52533
+Patch052: CVE-2024-52533.patch
