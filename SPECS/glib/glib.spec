@@ -1,7 +1,7 @@
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
 Version:      2.75.2
-Release:      5%{?dist}
+Release:      6%{?dist}
 URL:          https://developer.gnome.org/glib/
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -62,6 +62,7 @@ Patch17: 0017-gdbus-proxy-test-Wait-before-asserting-name-owner-ha.patch
 # Upstream MR to fix regression due to above MR 4040
 # https://gitlab.gnome.org/GNOME/glib/-/merge_requests/4056
 Patch18: 0001-gdbusconnection-Allow-name-owners-to-have-the-syntax.patch
+Patch19: CVE-2024-52533.patch
 
 %description
 The GLib package contains a low-level libraries useful for providing data structure handling for C,
@@ -138,6 +139,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Mon Dec 09 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.75.2-6
+- Fix CVE-2024-52533
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.75.2-5
 - Remove standalone license exceptions
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.75.2-4
