@@ -1,7 +1,7 @@
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
 Version:      2.58.3
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      LGPLv2+
 URL:          https://developer.gnome.org/glib/
 Group:        Applications/System
@@ -56,6 +56,8 @@ Patch39:    2-0001-gvariant-Check-offset-table-doesn-t-fall-outside-var.patch
 Patch40:    2-0002-gvariant-Propagate-trust-when-getting-a-child-of-a-s.patch
 Patch41:    0001-gvariant-Realign-data-on-construction-if-it-s-not-pr.patch
 Patch42:    call-g_test_bug_base.patch
+
+Patch43:    CVE-2024-52533.patch
 
 BuildRequires: pcre-devel
 BuildRequires: libffi-devel
@@ -139,6 +141,8 @@ Gsettings schemas compiling tool
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Mon Dec 09 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.58.3-2
+- Fix CVE-2024-52533.patch
 * Wed Nov 15 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.58.3-1
 - Upgrade to 2.58.3 to apply relevant CVE fix patches from debian
 - https://salsa.debian.org/gnome-team/glib/-/commits/debian/2.58.3-2+deb10u5?ref_type=tags
