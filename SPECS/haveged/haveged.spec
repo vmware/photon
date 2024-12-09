@@ -17,7 +17,7 @@ Requires:       systemd
 
 BuildRequires:  systemd-devel
 BuildRequires:  automake
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils >= 9.1-7
 BuildRequires:  glibc
 
 %description

@@ -1,0 +1,1 @@
+License: MIT AND BSD-3-Clause AND Zlib AND BSL-1.0 AND (BSL-1.0 OR MIT)

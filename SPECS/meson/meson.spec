@@ -2,14 +2,16 @@ Name:           meson
 Summary:        Extremely fast and user friendly build system
 Group:          Development/Tools
 Version:        1.0.0
-Release:        2%{?dist}
-License:        ASL 2.0
+Release:        4%{?dist}
 URL:            https://mesonbuild.com
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/mesonbuild/meson/archive/%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9b1195cfe856c1aa51bc79f6eb4d0f94925bb02d0a9fbd68a6a6ced6e5c252b09b22d9aac812640687e49b8d64a313ce48d0a69a3bf83ea8ffb8c9dab559fc23
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -19,7 +21,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  ninja-build
 BuildRequires:  gtest-devel
 BuildRequires:  gmock-devel
-BuildRequires:  gettext-devel
+BuildRequires:  gettext
 
 Requires:       ninja-build
 Requires:       python3
@@ -60,6 +62,10 @@ python3 ./run_tests.py
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.0.0-4
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.0-3
+- Release bump for SRP compliance
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.0.0-2
 - Bump version as a part of gettext upgrade
 * Wed Jan 04 2023 Susant Sahani <ssahani@vmware.com> 1.0.0-1

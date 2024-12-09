@@ -1,10 +1,6 @@
 # System settings
 %_topdir            /usr/src/photon
 
-%_host                  %{_arch}-unknown-linux-gnu
-%_host_alias            %{_arch}-unknown-linux-gnu%{nil}
-%_host_cpu              %{_arch}
-
 # Some standard locations
 %_sysconfdir        /etc
 %_lib               /usr/lib

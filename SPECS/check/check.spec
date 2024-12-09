@@ -1,8 +1,7 @@
 Summary:    Check-0.12.0
 Name:       check
 Version:    0.15.2
-Release:    2%{?dist}
-License:    LGPLv2+
+Release:    5%{?dist}
 URL:        https://github.com/libcheck/check
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution: Photon
 
 Source0: https://github.com/libcheck/check/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=77fb34348bc1b1517801865afee5064121a245c10685e6bb6b8f743552646a0643cfdf9fd3dfbf9b2297d9430dfdd49616cf7daf41298d2dbd699f10d654a025
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: gawk
 
@@ -62,6 +64,12 @@ make %{?_smp_mflags} check
 %{_datadir}/aclocal/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.15.2-5
+- Release bump for SRP compliance
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.15.2-4
+- Remove standalone license exceptions
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.15.2-3
+- Release bump for SRP compliance
 * Thu Sep 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.15.2-2
 - Introduce devel subpackage
 * Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 0.15.2-1

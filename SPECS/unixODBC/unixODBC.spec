@@ -1,19 +1,23 @@
 Summary:       ODBC driver manager
 Name:          unixODBC
-Version:       2.3.11
+Version:       2.3.12
 Release:       2%{?dist}
-License:       GPLv2+ and LGPLv2+
 URL:           http://www.unixodbc.org/
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: ftp://ftp.unixodbc.org/pub/unixODBC/%{name}-%{version}.tar.gz
-%define sha512 %{name}=dddc32f90a7962e6988e1130a8093c6fb8b9ff532cad270d572250324aecbc739f45f9d8021d217313910bab25b08e69009b4f87456575535e93be1f46f5f13d
+%define sha512 %{name}=ca9d8db943195679a44db1fc09391dc6662ab1721112c93d448f04011e98502462ffe14b8364eb03707d851db456eced20eb61a22370392ca88d917038d45b56
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: automake
 BuildRequires: autoconf
 BuildRequires: libtool
+
+Patch0: PostgreSQL-driver-fix.patch
 
 %description
 The unixODBC package is an Open Source ODBC (Open DataBase Connectivity) sub-system and an ODBC SDK for Linux, Mac OSX, and UNIX.
@@ -42,9 +46,6 @@ ODBC, you need to install this package.
 %install
 %make_install %{?_smp_mflags}
 find doc -name "Makefile*" -delete
-chmod 644 doc/{lst,ProgrammerManual/Tutorial}/*
-install -v -m755 -d /usr/share/doc/%{name}-%{version}
-cp -v -R doc/* /usr/share/doc/%{name}-%{version}
 rm -rf %{buildroot}%{_libdir}/*.a \
        %{buildroot}%{_libdir}/*.la \
        %{buildroot}%{_libdir}/libltdl.* \
@@ -72,6 +73,10 @@ rm -rf %{buildroot}%{_libdir}/*.a \
 %{_libdir}/pkgconfig
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3.12-2
+- Release bump for SRP compliance
+* Mon Apr 15 2024 Roye Eshed <roye.eshed@broadcom.com> 2.3.12-1
+- Update to 2.3.12 and Fix for CVE-2024-1013
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.11-2
 - Bump version as a part of readline upgrade
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 2.3.11-1

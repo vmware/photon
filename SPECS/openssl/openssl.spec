@@ -1,45 +1,32 @@
-# once certified fips-provider rpm is published, with_certified_fips switch should be turned off
-# with_certified_fips & with_latest_fips can't be 1 at same time, we can have any one at a time
-%define with_certified_fips     0
-%define with_latest_fips        1
-%define fips_provider_version   3.0.8
-%define fips_provider_srcname   fips-provider-%{fips_provider_version}
-
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.2.0
-Release:        3%{?dist}
-License:        OpenSSL
+Version:        3.0.15
+Release:        6%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.openssl.org/source/%{name}-%{version}-beta1.tar.gz
-%define sha512 %{name}=07ce7d1c5c84371a1aeb64a208fbc74f89275765f9bb00a0e3262fcae7ecb83cdd73cba30a01fe44b60a0616b9c6bb4c9c42c43fc42ecf0b6fdde57a621813c6
+Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
+%define sha512 %{name}=acd80f2f7924d90c1416946a5c61eff461926ad60f4821bb6b08845ea18f8452fd5e88a2c2c5bd0d7590a792cb8341a3f3be042fd0a5b6c9c1b84a497c347bbf
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
 Source3: distro.cnf
 Source4: user.cnf
 
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-Source5: provider_fips.cnf
-Source6: jitterentropy.c
-%endif
+Source5: jitterentropy.c
 
-%if 0%{?with_certified_fips}
-Source7: %{fips_provider_srcname}.tar.xz
-%define sha512 %{fips_provider_srcname}=3206c96f77ba5ab0553249e13ddf52145995909e68a9acb851c5db6be759e6f7647b9ad960f6da7c989c20b49fbd9e79a7305f2000f24281345c56a1a8b1148f
-%endif
+Source6: license.txt
+%include %{SOURCE6}
 
 Patch0: openssl-cnf.patch
+Patch1: CVE-2023-50782.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
 %endif
 
-Requires: bash
 Requires: glibc
 Requires: libgcc
 Requires: %{name}-libs = %{version}-%{release}
@@ -56,6 +43,8 @@ web browsers (for accessing HTTPS sites).
 %package libs
 Summary: Core libraries and other files needed by openssl.
 Conflicts: %{name} < 3.0.8-1
+Conflicts: %{name}-fips-provider <= 3.0.8-3
+Requires: bash
 
 %description libs
 %{summary}
@@ -69,21 +58,6 @@ Obsoletes:  nxtgn-openssl-devel
 
 %description devel
 Header files for doing development with openssl.
-
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-%package fips-provider
-Summary:    FIPS Libraries for openssl
-Group:      Applications/Internet
-
-%if 0%{?with_certified_fips}
-Requires:   %{name} >= %{fips_provider_version}
-%else
-Requires:   %{name} = %{version}-%{release}
-%endif
-
-%description fips-provider
-Fips library for enabling fips.
-%endif
 
 %package perl
 Summary:    openssl perl scripts
@@ -115,30 +89,9 @@ Requires:   %{name} = %{version}-%{release}
 The package contains openssl doc files.
 
 %prep
-%if 0%{?with_certified_fips} && 0%{?with_latest_fips}
-echo "ERROR: with_latest_fips and with_certified_fips both should not be enabled" 1>&2
-exit 1
-%endif
-
-%if 0%{?with_certified_fips}
-%autosetup -p1 -a0 -a7
-%else
-%autosetup -p1 -n %{name}-%{version}-beta1
-%endif
+%autosetup -p1
 
 %build
-# rpm 4.14.x doesn't understand elif, so keep it basic
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-  %if 0%{?with_certified_fips}
-    %undefine with_latest_fips
-  %else
-    %undefine with_certified_fips
-  %endif
-%else
-  %undefine with_certified_fips
-  %undefine with_latest_fips
-%endif
-
 if [ %{_host} != %{_build} ]; then
 #  export CROSS_COMPILE=%{_host}-
   export CC=%{_host}-gcc
@@ -157,7 +110,6 @@ export MACHINE=%{_arch}
     --shared \
     --with-rand-seed=os,egd \
     enable-egd \
-    %{?with_latest_fips: enable-fips} \
     -Wl,-z,noexecstack
 
 %make_build
@@ -169,41 +121,20 @@ install -p -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/ssl
 install -p -m 644 -D %{SOURCE3} %{buildroot}%{_sysconfdir}/ssl
 install -p -m 644 -D %{SOURCE4} %{buildroot}%{_sysconfdir}/ssl
 
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-install -p -m 644 -D %{SOURCE5} %{buildroot}%{_sysconfdir}/ssl
+fn="$(basename -s .c %{SOURCE5})"
 
-%if 0%{?with_certified_fips}
-install -p -m 644 %{fips_provider_srcname}/%{_arch}/fips.so %{buildroot}%{_libdir}/ossl-modules/
-%endif
+gcc -Wall -Werror -Wextra -O2 -g -fPIC \
+  -I%{buildroot}%{_includedir} \
+  -lcrypto -L%{buildroot}%{_libdir} \
+  -shared \
+  -Wl,-e,main \
+  -o %{buildroot}%{_libdir}/ossl-modules/${fn}.so \
+  %{SOURCE5}
 
-gcc -shared -Wall -Werror -Wextra -O2 -g -fPIC \
-        -I%{buildroot}%{_includedir} -lcrypto -L%{buildroot}%{_libdir} \
-        %{SOURCE6} -o %{buildroot}%{_libdir}/ossl-modules/jitterentropy.so
-%endif
-
-%if 0%{?with_check}
 %check
-make tests %{?_smp_mflags}
-%endif
+%make_build tests
 
 %ldconfig_scriptlets libs
-
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-%post fips-provider
-if [ "$1" = 2 ]; then
-  # fips.so was just updated. Temporarily disable fips mode to regenerate new fipsmodule.cnf
-  sed -i '/^.include \/etc\/ssl\/provider_fips.cnf/s/^/#/g' %{_sysconfdir}/ssl/distro.cnf
-fi
-openssl fipsinstall -out %{_sysconfdir}/ssl/fipsmodule.cnf -module %{_libdir}/ossl-modules/fips.so
-sed -i '/^#.include \/etc\/ssl\/provider_fips.cnf/s/^#//g' %{_sysconfdir}/ssl/distro.cnf
-
-%postun fips-provider
-# complete uninstall, not an upgrade
-if [ "$1" = 0 ]; then
-  rm -f %{_sysconfdir}/ssl/fipsmodule.cnf
-  sed -i '/^.include \/etc\/ssl\/provider_fips.cnf/s/^/#/g' %{_sysconfdir}/ssl/distro.cnf
-fi
-%endif
 
 %post libs
 if [ "$1" = 2 ] && [ -s "%{_sysconfdir}/ssl/provider_fips.cnf" ]; then
@@ -217,23 +148,12 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/%{name}
 
-%if 0%{?with_certified_fips} || 0%{?with_latest_fips}
-%files fips-provider
-%defattr(-,root,root)
-%{_libdir}/ossl-modules/fips.so
-%{_libdir}/ossl-modules/jitterentropy.so
-%{_sysconfdir}/ssl/provider_fips.cnf
-
-%if 0%{?with_latest_fips}
-%exclude %{_sysconfdir}/ssl/fipsmodule.cnf
-%endif
-%endif
-
 %files libs
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_libdir}/engines*/*
 %{_libdir}/ossl-modules/legacy.so
+%{_libdir}/ossl-modules/jitterentropy.so
 %{_sysconfdir}/ssl/openssl.cnf.dist
 %config(noreplace) %{_sysconfdir}/ssl/openssl.cnf
 %config(noreplace) %{_sysconfdir}/ssl/user.cnf
@@ -271,14 +191,58 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
-* Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.0-3
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.15-6
+- Release bump for SRP compliance
+* Fri Nov 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.15-5
+- Use syslog to log jitterentropy errors
+* Thu Nov 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.15-4
+- Optimize checking fips mode function in jitterentropy.c
+* Tue Nov 19 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 3.0.15-3
+- Jitterentropy provider enhancements (v0.2)
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.15-2
+- Release bump for SRP compliance
+* Tue Sep 03 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.15-1
+- Update to 3.0.15
+* Thu Aug 08 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.14-6
+- Resolve openssl-libs installation issue before bash
+* Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.14-5
+- Move fips-provider out of openssl spec
+* Mon Jul 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.14-4
+- Improve logging in jitterentropy.c
+- Add `-Wl,-e,main` to make jitterentropy shared object run like a binary
+- Move jitterentropy.so to openssl-libs
+* Fri Jul 05 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.14-3
+- Fix for CVE-2024-5535
+* Thu Jul 04 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.0.14-2
+- Fix regression in EVP_PKEY_CTX_add1_hkdf_info()
+* Tue Jun 18 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.14-1
+- Update to openssl-3.0.14 to fix CVE-2024-4741
+* Wed Apr 10 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.13-4
+- Fix CVE-2024-2511
+* Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.13-3
 - Remove dead symlinks during certificate rehash
-* Fri Dec 29 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.0-2
+* Mon Mar 04 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.13-2
+- Fix CVE-2023-50782
+* Thu Feb 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.13-1
+- Update to openssl-3.0.13
+* Tue Jan 30 2024 Mukul Sikka <msikka@vmware.com> 3.0.9-10
+- Fix for CVE-2024-0727
+* Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.9-9
 - Add provides & obsoletes for nxtgn-openssl
-* Sat Nov 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-1
-- Upgrade to v3.2.0-beta1
-* Thu Aug 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.9-2
+* Fri Nov 17 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-8
+- Fix for CVE-2023-5678
+* Mon Oct 16 2023 Srinidhi Rao <srinidhir@vmware.com> 3.0.9-7
+- Fix for CVE-2023-5363
+* Wed Sep 13 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-6
+- Fix for CVE-2023-4807
+* Thu Aug 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.9-5
 - Re-enable fips in distro.cnf if fips is enabled
+* Wed Aug 09 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-4
+- Fix for CVE-2023-3817
+* Mon Jul 24 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-3
+- Fix for CVE-2023-3446
+* Wed Jul 19 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-2
+- Fix for CVE-2023-2975
 * Fri Jun 23 2023 Mukul Sikka <msikka@vmware.com> 3.0.9-1
 - Update to openssl-3.0.9
 * Fri Jun 16 2023 Mukul Sikka <msikka@vmware.com> 3.0.8-3

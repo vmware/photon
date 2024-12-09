@@ -1,8 +1,7 @@
 Name:           python3-py
 Version:        1.11.0
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        Python development support library
-License:        MIT
 Group:          Development/Languages/Python
 Url:            https://github.com/pytest-dev/py
 Vendor:         VMware, Inc.
@@ -11,12 +10,17 @@ Distribution:   Photon
 Source0: https://github.com/pytest-dev/py/archive/refs/tags/py-%{version}.tar.gz
 %define sha512 py=ce8dd791f9f6dd7e60a6caad32ff5cb816389a0840436efdedf4e0d4b0bfa09f7aea9e7c31d89903c72fe6ef17170a85af480525ba92c458ed73501a0420f2c4
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-packaging
 BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-setuptools_scm
 BuildRequires:  python3-xml
+BuildRequires:  python3-wheel
+BuildRequires:  python3-typing-extensions
 
 %if 0%{?with_check}
 BuildRequires: python3-pytest
@@ -53,6 +57,10 @@ py.code: dynamic code generation and introspection
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.11.0-3
+- Release bump for SRP compliance
+* Fri Jul 19 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 1.11.0-2
+- Use system provided packages to do offline build
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.11.0-1
 - Automatic Version Bump
 * Mon Jun 21 2021 Dweep Advani <dadvani@vmware.com> 1.9.0-2

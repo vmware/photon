@@ -4,7 +4,6 @@ Summary:    A fast JSON parser/generator for C++ with both SAX/DOM style API
 Name:       rapidjson
 Version:    1.1.0
 Release:    7%{?dist}
-License:    BSD, JSON, MIT
 URL:        https://github.com/gcc-mirror/gcc/blob/master/gcc/gcov.c
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0:    https://github.com/miloyip/rapidjson/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=2e82a4bddcd6c4669541f5945c2d240fb1b4fdd6e239200246d3dd50ce98733f0a4f6d3daa56f865d8c88779c036099c52a9ae85d47ad263686b68a88d832dff
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: rapidjson-fix-Wclass-memaccess-warnings-errors.patch
 Patch1: 0001-Supress-implicit-fallthrough-in-GCC.patch
@@ -30,7 +32,7 @@ RapidJSON is a JSON parser and generator for C++. It was inspired by RapidXml.
 Summary:        Fast JSON parser and generator for C++
 Group:          Development/Libraries/C and C++
 Requires:       %{name} = %{version}-%{release}
-Provides:       %{name} = %{version}-%{release}
+Provides:       %{name} == %{version}
 
 %description devel
 RapidJSON is a header-only JSON parser and generator for C++.
@@ -40,31 +42,33 @@ This package contains development headers and examples.
 %autosetup -p1
 
 %build
-%{cmake} \
+%cmake \
     -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DCMAKE_BUILD_TYPE=Debug
 
-%{cmake_build}
+%cmake_build
 
 %install
-%{cmake_install}
+%cmake_install
 
+%if 0%{?with_check}
 %check
 cd %{__cmake_builddir}
-%make_build test
+make test %{?_smp_mflags}
+%endif
 
 %files devel
 %defattr(-,root,root)
 %dir %{_libdir}/cmake/RapidJSON
 %{_libdir}/cmake/RapidJSON/*
 %{_libdir}/pkgconfig/*.pc
-%{_includedir}/*
-%{_datadir}/*
+%{_includedir}
+%{_datadir}
 
 %changelog
-* Tue Oct 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-7
-- Fix spec issues
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.0-7
+- Release bump for SRP compliance
 * Tue Jul 19 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-6
 - Use cmake macros for build
 * Tue Feb 09 2021 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-5

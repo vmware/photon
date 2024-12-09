@@ -1,0 +1,1 @@
+License: BSD-3-Clause AND BSD-4-Clause-UC AND LGPL-2.0-or-later AND BSD-4-Clause AND GPL-2.0-or-later AND Sendmail AND lsof

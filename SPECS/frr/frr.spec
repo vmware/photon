@@ -3,8 +3,7 @@
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        9.1
-Release:        1%{?dist}
-License:        GPLv2+
+Release:        2%{?dist}
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -15,6 +14,9 @@ Source0: https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.t
 
 Source1: %{name}-tmpfiles.conf
 Source2: %{name}-sysusers.conf
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Patch0: 0000-remove-babeld-and-ldpd.patch
 Patch1: 0002-enable-openssl.patch
@@ -217,21 +219,17 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 9.1-2
+- Release bump for SRP compliance
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-1
 - Upgrade to v9.1
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.5.2-3
-- Bump version as a part of openssl upgrade
-* Tue Sep 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.5.2-2
-- Remove systemd_postun from postun section
-* Wed Aug 09 2023 Mukul Sikka <msikka@vmware.com> 8.5.2-1
+* Wed Aug 23 2023 Mukul Sikka <msikka@vmware.com> 8.5.2-2
+- Bump version as a part of grpc upgrade
+* Wed Aug 02 2023 Mukul Sikka <msikka@vmware.com> 8.5.2-1
 - Update to latest version
-* Mon Jul 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.4.1-6
-- Add protobuf to requires
-* Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 8.4.1-5
-- Version bump as part of pcre2 update
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.4.1-4
-- Bump version as a part of elfutils upgrade
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 8.4.1-3
+* Mon Jul 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.4.1-4
+- Bump version as a part of protobuf upgrade
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.4.1-3
 - Bump version as a part of ncurses upgrade to v6.4
 * Tue Apr 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 8.4.1-2
 - Bump version as part of libyang upgrade

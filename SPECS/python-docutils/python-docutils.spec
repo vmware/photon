@@ -3,8 +3,7 @@
 Summary:        Docutils -- Python Documentation Utilities.
 Name:           python3-docutils
 Version:        0.19
-Release:        2%{?dist}
-License:        public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,6 +11,9 @@ Url:            https://pypi.python.org/pypi/docutils
 
 Source0: https://files.pythonhosted.org/packages/source/d/docutils/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=fb904a899f2b6f3c07c5079577bd7c52a3182cb85f6a4149391e523498df15bfa317f0c04095b890beeb3f89c2b444875a2a609d880ac4d7fbc3125e46b37ea5
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -59,6 +61,8 @@ PATH=%{buildroot}%{_bindir}:${PATH} \
 %{_bindir}/rst2html4.py
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.19-3
+- Release bump for SRP compliance
 * Tue Aug 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.19-2
 - Add python3-lxml to requires
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.19-1

@@ -1,14 +1,17 @@
 Summary:        X11 SM runtime library.
 Name:           libSM
 Version:        1.2.4
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.xz
 %define sha512  libSM=7f1d41b7b6c5dd456c49ccad7740c3ba9791a2793fa50fd94814a4164ce2e20c4a0a0ad42a87708e494ed5c23f611be6d3ccd9ef1e9add6d46ac545e2b0f6f86
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  proto
 BuildRequires:  libICE-devel
 Requires:       libICE
@@ -52,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.4-2
+-   Release bump for SRP compliance
 *   Sun Feb 12 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.4-1
 -   Upgrade version to 1.2.4
 *   Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 1.2.2-1

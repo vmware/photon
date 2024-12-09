@@ -2,13 +2,15 @@ Summary:        Pexpect is a Pure Python Expect-like module
 Name:           python3-pexpect
 Version:        4.8.0
 Release:        4%{?dist}
-License:        ISC
 Url:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/pexpect/pexpect/archive/pexpect-%{version}.tar.gz
 %define sha512  pexpect=7447ae2d1e13be422c894a8fd51c5aaa788e37ea7f0c798c88b77afd401fb3631400a637077ccbb83c2e3876b0d0c5e1dbd5fdc9d3739d785b4d5ad7c0192580
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -22,8 +24,8 @@ BuildRequires:  python3-attrs
 BuildRequires:  python3-ptyprocess
 BuildRequires:  python3-xml
 %endif
-
 Requires:       python3
+Requires:       python3-libs
 Requires:       python3-ptyprocess
 
 BuildArch:      noarch
@@ -41,14 +43,21 @@ were typing commands.
 %py3_build
 
 %install
+rm -rf %{buildroot}
 %py3_install
+
+%check
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pathlib2 funcsigs pluggy more_itertools
+LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python3_sitelib} \
+py.test3
 
 %files
 %{python3_sitelib}/*
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8.0-4
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.8.0-4
+- Release bump for SRP compliance
 * Mon Nov 28 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.8.0-3
 - Update release to compile with python 3.11
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.8.0-2

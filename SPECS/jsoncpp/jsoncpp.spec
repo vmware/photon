@@ -1,8 +1,7 @@
 Summary:        A JSON implementation in C++
 Name:           jsoncpp
 Version:        1.9.5
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 URL:            https://github.com/open-source-parsers/jsoncpp
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/open-source-parsers/jsoncpp/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=1d06e044759b1e1a4cc4960189dd7e001a0a4389d7239a6d59295af995a553518e4e0337b4b4b817e70da5d9731a4c98655af90791b6287870b5ff8d73ad8873
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -79,6 +81,8 @@ cd %{__cmake_builddir}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.9.5-3
+- Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.9.5-2
 - Update release to compile with python 3.11
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.5-1

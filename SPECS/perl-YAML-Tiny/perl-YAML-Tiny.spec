@@ -2,12 +2,14 @@
 Summary:        Read/Write YAML files with as little code as possible
 Name:           perl-YAML-Tiny
 Version:        1.73
-Release:        3%{?dist}
-License:        GPL+ or Artistic
+Release:        4%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML-Tiny/
 Source0:        https://cpan.metacpan.org/authors/id/E/ET/ETHER/YAML-Tiny-%{version}.tar.gz
 %define sha512  YAML-Tiny=5999e220025aa8076e5e0e9e73e80c2da21660e77f6744d73e8e29962221d02d33a36e9829c44abf7d4f45abae069d8e121c8019bd1600b7e64db5e54efd9987
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -38,6 +40,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/YAML::Tiny.3*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.73-4
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.73-3
 - Perl version upgrade to 5.36.0
 * Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 1.73-2

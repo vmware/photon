@@ -5,8 +5,7 @@
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
 Version:        20230315
-Release:        5%{?dist}
-License:        Custom
+Release:        6%{?dist}
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -16,6 +15,11 @@ Source0: certdata.txt
 Source1: make-ca.sh
 Source2: make-cert.pl
 Source3: remove-expired-certs.sh
+
+Source4: license.txt
+%include %{SOURCE4}
+
+Source5: make-cert.sh
 
 Requires: openssl-libs
 Requires: %{name}-pki = %{version}-%{release}
@@ -59,7 +63,7 @@ install BLFS-ca-bundle*.crt %{buildroot}%{crt_dir}/ca-bundle.crt
 unset SSLDIR
 
 mkdir -p %{buildroot}%{_bindir}
-cp -pv %{SOURCE1} %{SOURCE2} %{SOURCE3} %{buildroot}%{_bindir}
+cp -pv %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE5} %{buildroot}%{_bindir}
 chmod +x %{buildroot}%{_bindir}/*
 
 pushd %{buildroot}%{ssl_certs_dir}
@@ -73,7 +77,7 @@ popd
 %{_fixperms} %{buildroot}/*
 
 %posttrans
-bash %{_bindir}/remove-expired-certs.sh %{ssl_certs_dir}
+bash %{_bindir}/remove-expired-certs.sh %{ssl_certs_dir} || :
 
 %clean
 rm -rf %{buildroot}
@@ -84,20 +88,26 @@ rm -rf %{buildroot}
 %{_bindir}/make-ca.sh
 %{_bindir}/remove-expired-certs.sh
 %{_bindir}/make-cert.pl
+%{_bindir}/make-cert.sh
 
 %files pki
 %defattr(-,root,root)
 %{crt_dir}/ca-bundle.crt
 
 %changelog
-* Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-5
-- Create cert symlinks at build time
-* Fri Jan 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-4
+* Thu Nov 21 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-6
+- Cleanup make-ca.sh
+- Tweak remove-expired-certificates script to do the removal properly
+- Add a bash script equivalent of make-cert.pl, useful in minimal deployments
+* Mon Nov 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-5
+- Check for openssl binary presence in remove expired certs script
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-4
+- Release bump for SRP compliance
+* Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-3
 - Spec cleanups, don't generate helper scripts everytime
-* Mon Jan 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-3
+- Create cert symlinks at build time
+* Mon Jan 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-2
 - Clean up broken symlinks for which files are not present
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 20230315-2
-- Bump version as a part of openssl upgrade
 * Thu Mar 16 2023 Gerrit Photon <photon-checkins@vmware.com> 20230315-1
 - Automatic Version Bump
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 20220706-2

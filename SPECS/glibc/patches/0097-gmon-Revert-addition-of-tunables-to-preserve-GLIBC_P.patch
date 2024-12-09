@@ -1,0 +1,88 @@
+From dee43b346059ca677e6810569e44aa0b9b6dc05e Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 28 Apr 2023 17:07:38 +0200
+Subject: [PATCH 097/175] gmon: Revert addition of tunables to preserve
+ GLIBC_PRIVATE ABI
+
+Otherwise, processes are likely to crash during concurrent updates
+to a new glibc version on the stable release branch.
+
+The test gmon/tst-mcount-overflow depends on those tunables, so
+it has to be removed as well.
+---
+ gmon/Makefile | 14 +-------------
+ gmon/gmon.c   | 16 ----------------
+ 2 files changed, 1 insertion(+), 29 deletions(-)
+
+diff --git a/gmon/Makefile b/gmon/Makefile
+index 213622a7adc7a1f5ed5f96f9041f51789c90b758..fbe2b0ba5c5787e9f90a1799477cd916da294481 100644
+--- a/gmon/Makefile
++++ b/gmon/Makefile
+@@ -26,7 +26,7 @@ include ../Makeconfig
+ headers	:= sys/gmon.h sys/gmon_out.h sys/profil.h
+ routines := gmon mcount profil sprofil prof-freq
+ 
+-tests	= tst-sprofil tst-gmon tst-mcount-overflow tst-mcleanup
++tests	= tst-sprofil tst-gmon tst-mcleanup
+ ifeq ($(build-profile),yes)
+ tests	+= tst-profile-static
+ tests-static	+= tst-profile-static
+@@ -57,18 +57,6 @@ ifeq ($(run-built-tests),yes)
+ tests-special += $(objpfx)tst-gmon-gprof.out
+ endif
+ 
+-CFLAGS-tst-mcount-overflow.c := -fno-omit-frame-pointer -pg
+-tst-mcount-overflow-no-pie = yes
+-CRT-tst-mcount-overflow := $(csu-objpfx)g$(start-installed-name)
+-# Intentionally use invalid config where maxarcs<minarcs to check warning is printed
+-tst-mcount-overflow-ENV := GMON_OUT_PREFIX=$(objpfx)tst-mcount-overflow.data \
+-                           GLIBC_TUNABLES=glibc.gmon.minarcs=51:glibc.gmon.maxarcs=50
+-# Send stderr into output file because we make sure expected messages are printed
+-tst-mcount-overflow-ARGS := 2>&1 1>/dev/null | cat
+-ifeq ($(run-built-tests),yes)
+-tests-special += $(objpfx)tst-mcount-overflow-check.out
+-endif
+-
+ CFLAGS-tst-mcleanup.c := -fno-omit-frame-pointer -pg
+ tst-mcleanup-no-pie = yes
+ CRT-tst-mcleanup := $(csu-objpfx)g$(start-installed-name)
+diff --git a/gmon/gmon.c b/gmon/gmon.c
+index 5e99a7351dc716660583b34b54922c680f62b9f6..97be1f72caa163e10e8c0df39426f5870ff3fd92 100644
+--- a/gmon/gmon.c
++++ b/gmon/gmon.c
+@@ -46,11 +46,6 @@
+ #include <libc-internal.h>
+ #include <not-cancel.h>
+ 
+-#if HAVE_TUNABLES
+-# define TUNABLE_NAMESPACE gmon
+-# include <elf/dl-tunables.h>
+-#endif
+-
+ #ifdef PIC
+ # include <link.h>
+ 
+@@ -130,20 +125,9 @@ __monstartup (u_long lowpc, u_long highpc)
+   struct gmonparam *p = &_gmonparam;
+   long int minarcs, maxarcs;
+ 
+-#if HAVE_TUNABLES
+-  /* Read minarcs/maxarcs tunables. */
+-  minarcs = TUNABLE_GET (minarcs, int32_t, NULL);
+-  maxarcs = TUNABLE_GET (maxarcs, int32_t, NULL);
+-  if (maxarcs < minarcs)
+-    {
+-      ERR("monstartup: maxarcs < minarcs, setting maxarcs = minarcs\n");
+-      maxarcs = minarcs;
+-    }
+-#else
+   /* No tunables, we use hardcoded defaults */
+   minarcs = MINARCS;
+   maxarcs = MAXARCS;
+-#endif
+ 
+   /*
+    * If we are incorrectly called twice in a row (without an
+-- 
+2.35.6
+

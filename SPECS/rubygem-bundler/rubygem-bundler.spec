@@ -2,16 +2,18 @@
 %global gem_name bundler
 
 Name:           rubygem-bundler
-Version:        2.5.6
-Release:        2%{?dist}
+Version:        2.3.24
+Release:        4%{?dist}
 Summary:        manages an application's dependencies
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/bundler-%{version}.gem
-%define sha512  bundler=1444030a4e1406d8f2a1ab2ce43b786f02667dfcb7d11d8768257d5bf4368d61365ee0f1a0e9d8e2b8faa2098ef728bd492008b04b93df660a66faa3dee3b862
+%define sha512  bundler=1d59bfa0bb8b748c8f4a7c30eb1603f05033bd59ca66496442224c563a95d8d8d2173e2f005a090a6b22e1a25664f20a3cf45b3d12ff7791712e327f194f242c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby-devel
 BuildRequires:  findutils
@@ -34,10 +36,12 @@ across many machines, systematically and repeatably.
 %{gem_base}
 
 %changelog
-*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.5.6-2
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.24-4
+-   Release bump for SRP compliance
+*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.24-3
 -   Add gem macros
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.5.6-1
--   Update to version 2.5.6
+*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.24-2
+-   Build from source
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.3.24-1
 -   Automatic Version Bump
 *   Mon Nov 01 2021 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.2.21-2

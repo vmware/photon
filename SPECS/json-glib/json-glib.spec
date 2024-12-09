@@ -1,15 +1,17 @@
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
 Version:        1.6.6
-Release:        2%{?dist}
-License:        LGPLv2+
+Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            http://live.gnome.org/JsonGlib
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
-%define sha512 %{name}=b9a737e4ba3ecdfb9cb8f5fb751cc74e5b1553664d3088c44a1f9e5396d4037958af214dcd290ddf5af98088f46167e10e371e134e1de5cbb7aec84c5c0fd017
+Source0:        http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
+%define sha512    %{name}=b9a737e4ba3ecdfb9cb8f5fb751cc74e5b1553664d3088c44a1f9e5396d4037958af214dcd290ddf5af98088f46167e10e371e134e1de5cbb7aec84c5c0fd017
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -19,12 +21,13 @@ BuildRequires:  glib-devel
 BuildRequires:  libtool
 BuildRequires:  which
 BuildRequires:  meson
-BuildRequires:  python3-devel
+BuildRequires:  python3
+BuildRequires:  python3-libs
 BuildRequires:  gtk-doc
 
-Requires:   glib
+Requires:       glib
 
-Provides:   pkgconfig(json-glib-1.4)
+Provides:       pkgconfig(json-glib-1.4)
 
 %description
 JSON-GLib is a library providing serialization and deserialization
@@ -42,7 +45,7 @@ Requires:       gobject-introspection-devel
 Header files for the json-glib library.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 export LANG=en_US.UTF-8
@@ -68,7 +71,7 @@ rm -rf %{buildroot}
 %postun -p /sbin/ldconfig
 
 %files -f json-glib-1.0.lang
-%defattr(-, root, root)
+#%%defattr(-, root, root)
 %doc NEWS
 %attr(755,root,root) %{_bindir}/json-glib-format
 %attr(755,root,root) %{_bindir}/json-glib-validate
@@ -76,7 +79,7 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{_libdir}/libjson-glib-1.0.so.*.*.*
 
 %files devel
-%defattr(-, root, root)
+#%%defattr(-, root, root)
 %{_libdir}/libjson-glib-1.0.so
 %{_includedir}/json-glib-1.0
 %{_libdir}/pkgconfig/json-glib-1.0.pc
@@ -86,6 +89,8 @@ rm -rf %{buildroot}
 %{_datadir}/installed-tests/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.6-3
+- Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.6-2
 - Update release to compile with python 3.11
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.6-1
@@ -112,4 +117,4 @@ rm -rf %{buildroot}
 * Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-3
 - Added more requirements for devel subpackage.
 * Fri Jun 26 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-2
-- Added Provides:   pkgconfig(json-glib-1.0)
+- Added Provides:pkgconfig(json-glib-1.0)

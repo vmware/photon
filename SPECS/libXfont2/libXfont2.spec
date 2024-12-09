@@ -1,8 +1,7 @@
 Summary:        X11 Xfont2 runtime library.
 Name:           libXfont2
 Version:        2.0.3
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 URL:            http://www.x.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=648b664e2aa58cbc7366a1b05873aa06bd4a38060f64085783043388244af8ceced77b29a22c3ac8b6d34cd226e093bbbcc785ea1748ea65720fe7ea05b4b44b
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  freetype2-devel
 BuildRequires:  xtrans
@@ -55,6 +57,8 @@ It contains the libraries and header files to create applications
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.0.3-3
+- Release bump for SRP compliance
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.3-2
 - Bump version as a part of freetype2 upgrade
 * Thu Jun 13 2019 Alexey Makhalov <amakhalov@vmware.com> 2.0.3-1

@@ -1,23 +1,21 @@
 Name:           scons
-Version:        4.5.2
-Release:        1%{?dist}
+Version:        4.1.0
+Release:        3%{?dist}
 Summary:        An Open Source software construction tool
 Group:          Development/Tools
-License:        MIT
 URL:            https://sourceforge.net/projects/scons
+Source0:        https://sourceforge.net/projects/scons/files/scons/%{version}/%{name}-%{version}.tar.gz
+%define sha512  scons=f79b86bb09783767b3872cfb8efb665372714a604af2aaf3adc66eee63d3afe27bc6b2aab83813743c83f71c81c800d42842e916501787ba402ce2726dda9b44
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0: https://sourceforge.net/projects/scons/files/scons/%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a9675f4b4dbedf8c7375d4d099216cd935c38944d57b0a08de2b9c133bb53184de0d5803edf5cb9f800f205b1252ceca3aaf33a10bf5d8b48eacd58866cf776c
-
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-
 Requires:       python3-xml
 Requires:       python3
-
 BuildArch:      noarch
 
 %description
@@ -27,13 +25,16 @@ with integrated functionality similar to autoconf/automake and compiler caches s
 In short, SCons is an easier, more reliable and faster way to build software.
 
 %prep
-%autosetup -p1 -n SCons-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
-%{py3_build}
+python3 scripts/scons.py --help
 
 %install
-%py3_install -- --install-data=%{_datadir}
+python3 setup.py install \
+    --root=%{buildroot} \
+    --prefix=%{_prefix} \
+    --install-data=%{_datadir}
 
 %clean
 rm -rf %{buildroot}
@@ -45,8 +46,8 @@ rm -rf %{buildroot}
 %{_datadir}/*.1
 
 %changelog
-* Tue Oct 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.5.2-1
-- Ugrade to v4.5.2
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.1.0-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.1.0-2
 - Update release to compile with python 3.11
 * Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 4.1.0-1

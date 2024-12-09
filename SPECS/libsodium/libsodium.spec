@@ -1,8 +1,7 @@
 Summary:        libsodium is a community accepted C library for cryptography
 Name:           libsodium
 Version:        1.0.18
-Release:        2%{?dist}
-License:        ISC
+Release:        3%{?dist}
 Group:          Development/Tools
 URL:            https://github.com/jedisct1/libsodium
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://download.libsodium.org/libsodium/releases/%{name}-%{version}-stable.tar.gz
 %define sha512  %{name}=bc11652786ce62feb898a266f3cbeb0d21d3db05c3c88611cbdfe9f3eddff9520c2ba5560cb9d848224ba5ab265c66a35ed7a452775753dc06e1b9355b4ac3fb
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  gcc
 
@@ -58,6 +60,8 @@ rm -rf %{buildroot}
 %{_includedir}/sodium.h
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.18-3
+- Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.18-2
 - Remove .la files
 * Fri Nov 20 2020 Sharan Turlapati <sturlapati@vmware.com> 1.0.18-1

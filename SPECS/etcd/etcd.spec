@@ -2,31 +2,26 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.5.12
-Release:        1%{?dist}
-License:        Apache License
+Release:        6%{?dist}
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0: https://github.com/etcd-io/etcd/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0:        https://github.com/etcd-io/etcd/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  etcd=6fc8bd64ad63cff71c7645253273418fb3fa262c2da1742dc345576caa733af7cd75acad2f57610c5883e6bf16cffd36bc5a0c89cbbb0793c00c2a4db1c6d14b
-
-Source1:        %{name}.service
+Source1:        etcd.service
 %ifarch aarch64
-Source2:        %{name}.sysconfig
+Source2:        etcd.sysconfig
 %endif
-Source3:        %{name}.sysusers
+Source3:        etcd.sysusers
 
+Source4: license.txt
+%include %{SOURCE4}
 BuildRequires:  go
 BuildRequires:  git
 BuildRequires:  systemd-devel
-
-Requires: systemd
-
-Requires(pre): shadow
-Requires(pre): systemd-rpm-macros
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
+Requires(pre):  systemd-rpm-macros
+Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 A highly-available key value store for shared configuration and service discovery.
@@ -45,14 +40,14 @@ install -vdm755 %{buildroot}%{_unitdir}
 %ifarch aarch64
 install -vdm 0755 %{buildroot}%{_sysconfdir}/sysconfig
 %endif
-install -vdm 0755 %{buildroot}%{_sysconfdir}/%{name}
-install -vpm 0755 -T %{name}.conf.yml.sample %{buildroot}%{_sysconfdir}/%{name}/%{name}-default-conf.yml
+install -vdm 0755 %{buildroot}%{_sysconfdir}/etcd
+install -vpm 0755 -T etcd.conf.yml.sample %{buildroot}%{_sysconfdir}/etcd/etcd-default-conf.yml
 install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 chown -R root:root %{buildroot}%{_bindir}
 chown -R root:root %{buildroot}/%{_docdir}/%{name}-%{version}
 
-mv %{_builddir}/%{name}-%{version}/bin/%{name} \
+mv %{_builddir}/%{name}-%{version}/bin/etcd \
    %{_builddir}/%{name}-%{version}/bin/etcdctl \
    %{buildroot}%{_bindir}
 
@@ -61,19 +56,18 @@ mv %{_builddir}/%{name}-%{version}/etcdctl/README.md %{buildroot}/%{_docdir}/%{n
 mv %{_builddir}/%{name}-%{version}/etcdctl/READMEv2.md %{buildroot}/%{_docdir}/%{name}-%{version}/READMEv2-etcdctl.md
 
 install -vdm755 %{buildroot}%{_presetdir}
-echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
+echo "disable etcd.service" > %{buildroot}%{_presetdir}/50-etcd.preset
 
 cp %{SOURCE1} %{buildroot}%{_unitdir}
 %ifarch aarch64
-cp %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
+cp %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/etcd
 %endif
-install -vdm755 %{buildroot}%{_sharedstatedir}/%{name}
+install -vdm755 %{buildroot}%{_sharedstatedir}/etcd
 
 %pre
 %sysusers_create_compat %{SOURCE3}
 
-%post
-/sbin/ldconfig
+%post -p /sbin/ldconfig
 
 %postun
 /sbin/ldconfig
@@ -82,36 +76,44 @@ install -vdm755 %{buildroot}%{_sharedstatedir}/%{name}
 rm -rf %{buildroot}/*
 
 %files
-%{_bindir}/%{name}*
+%{_bindir}/etcd*
 %{_docdir}/%{name}-%{version}/*
-%{_unitdir}/%{name}.service
-%{_presetdir}/50-%{name}.preset
-%attr(0700,%{name},%{name}) %dir %{_sharedstatedir}/%{name}
-%config(noreplace) %{_sysconfdir}/%{name}/%{name}-default-conf.yml
+%{_unitdir}/etcd.service
+%{_presetdir}/50-etcd.preset
+%attr(0700,%{name},%{name}) %dir %{_sharedstatedir}/etcd
+%config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 %{_sysusersdir}/%{name}.sysusers
 %ifarch aarch64
-%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%config(noreplace) %{_sysconfdir}/sysconfig/etcd
 %endif
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.5.12-6
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.5.12-5
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.5.12-4
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 3.5.12-3
+- Bump version as a part of go upgrade
+* Wed Mar 13 2024 Mukul Sikka <msikka@vmware.com> 3.5.12-2
+- Bump version as a part of go upgrade
 * Fri Mar 01 2024 Anmol Jain <anmol.jain@broadcom.com> 3.5.12-1
 - Version upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.9-7
 - Bump up version to compile with new go
-* Sun Nov 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.9-6
-- Fix requires
-* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.9-5
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.9-6
 - Bump up version to compile with new go
-* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.9-4
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.9-5
 - Bump up version to compile with new go
-* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 3.5.9-3
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 3.5.9-4
 - Resolving systemd-rpm-macros for group creation
-* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.9-2
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.9-3
 - Bump up version to compile with new go
-* Thu Jul 06 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.5.9-1
-- Update to 3.5.9
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.7-3
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.9-2
 - Bump up version to compile with new go
+* Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 3.5.9-1
+- Update to 3.5.9 to fix CVE-2023-32082
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.5.7-2
 - Bump up version to compile with new go
 * Sun Mar 12 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.5.7-1

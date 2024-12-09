@@ -1,12 +1,14 @@
 Summary:        Canary to check perl compatibility for Schmorp's modules
 Name:           perl-Canary-Stability
 Version:        2013
-Release:        2%{?dist}
-License:        GPL+ or Artistic
+Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Canary-Stability/
 Source0:        http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/Canary-Stability-%{version}.tar.gz
 %define sha512  Canary-Stability=9dfb0e6d136048050aac7c29e1fc79dc2a7703c8800582aa837c5d9b9934c48bfcb0a9ef1c6b5bb7e71a10a709e7f7431b3c79ea12b8d9f374b33bfd4a3e468d
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -40,6 +42,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2013-3
+-   Release bump for SRP compliance
 *   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 2013-2
 -   Perl version upgrade to 5.36.0
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 2013-1

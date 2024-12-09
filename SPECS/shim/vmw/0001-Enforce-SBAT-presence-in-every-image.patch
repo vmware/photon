@@ -1,0 +1,50 @@
+From 27394e21ddb59f3006a47c18af492115a4750ebc Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 19 Sep 2023 15:01:30 -0700
+Subject: [PATCH] Enforce SBAT presence in every image
+
+Fail SB if EFI image does not have .sbat section.
+Only image that currently does not have .sbat is Linux kernel.
+There was a discussion[1] about adding it.
+Linux distros must add .sbat section to bzImage/zImage before signing.
+Photon has added support for .sbat in its kernel,
+the signed shim may be used to boot other/older kernels
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ pe.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/pe.c b/pe.c
+index 3305601..f7f3689 100644
+--- a/pe.c
++++ b/pe.c
+@@ -342,19 +342,19 @@ verify_sbat_section(char *SBATBase, size_t SBATSize)
+ 	char *sbat_data;
+ 	size_t sbat_size;
+ 
+-	if (list_empty(&sbat_var))
+-		return EFI_SUCCESS;
+-
+ 	if (SBATBase == NULL || SBATSize == 0) {
+ 		dprint(L"No .sbat section data\n");
+ 		/*
+-		 * SBAT is mandatory for binaries loaded by shim, but optional
++		 * SBAT is mandatory for binaries loaded by shim, and
+ 		 * for binaries loaded outside of shim but verified via the
+ 		 * protocol.
+ 		 */
+-		return in_protocol ? EFI_SUCCESS : EFI_SECURITY_VIOLATION;
++		return EFI_SECURITY_VIOLATION;
+ 	}
+ 
++	if (list_empty(&sbat_var))
++		return EFI_SUCCESS;
++
+ 	if (checked_add(SBATSize, 1, &sbat_size)) {
+ 		dprint(L"SBATSize + 1 would overflow\n");
+ 		return EFI_SECURITY_VIOLATION;
+-- 
+2.43.0
+

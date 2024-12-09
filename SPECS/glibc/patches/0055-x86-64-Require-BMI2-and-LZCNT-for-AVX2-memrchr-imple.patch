@@ -1,0 +1,74 @@
+From 923c3f3c373f499e62160e00831dda576443317b Mon Sep 17 00:00:00 2001
+From: Aurelien Jarno <aurelien@aurel32.net>
+Date: Mon, 3 Oct 2022 23:46:11 +0200
+Subject: [PATCH 055/175] x86-64: Require BMI2 and LZCNT for AVX2 memrchr
+ implementation
+
+The AVX2 memrchr implementation uses the 'shlxl' instruction, which
+belongs to the BMI2 CPU feature and uses the 'lzcnt' instruction, which
+belongs to the LZCNT CPU feature.
+
+Fixes: af5306a735eb ("x86: Optimize memrchr-avx2.S")
+Partially resolves: BZ #29611
+
+Reviewed-by: Noah Goldstein  <goldstein.w.n@gmail.com>
+(cherry picked from commit 3c0c78afabfed4b6fc161c159e628fbf14ff370b)
+---
+ sysdeps/x86/isa-level.h                    |  1 +
+ sysdeps/x86_64/multiarch/ifunc-avx2.h      |  1 +
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c | 10 ++++++++--
+ 3 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/sysdeps/x86/isa-level.h b/sysdeps/x86/isa-level.h
+index 3c4480aba70193a22cc07703a421a81dde82fd3c..bbb90f5c5e97960102caae3d0ff7a42b681757a2 100644
+--- a/sysdeps/x86/isa-level.h
++++ b/sysdeps/x86/isa-level.h
+@@ -80,6 +80,7 @@
+ #define AVX_X86_ISA_LEVEL 3
+ #define AVX2_X86_ISA_LEVEL 3
+ #define BMI2_X86_ISA_LEVEL 3
++#define LZCNT_X86_ISA_LEVEL 3
+ #define MOVBE_X86_ISA_LEVEL 3
+ 
+ /* ISA level >= 2 guaranteed includes.  */
+diff --git a/sysdeps/x86_64/multiarch/ifunc-avx2.h b/sysdeps/x86_64/multiarch/ifunc-avx2.h
+index a57a9952f31ff97cd64464565e11f284dfe9956b..f1741083fdeb0d29cf4aff03cc72e6464479d3db 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-avx2.h
++++ b/sysdeps/x86_64/multiarch/ifunc-avx2.h
+@@ -37,6 +37,7 @@ IFUNC_SELECTOR (void)
+ 
+   if (X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, AVX2)
+       && X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, BMI2)
++      && X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, LZCNT)
+       && X86_ISA_CPU_FEATURES_ARCH_P (cpu_features,
+ 				      AVX_Fast_Unaligned_Load, ))
+     {
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index 7c84963d92ca08bca186956c697b6a06b7e872cb..ec1c5b55fb7cf3d2f0b6769a6652a9f7eb84a65e 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -209,13 +209,19 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   IFUNC_IMPL (i, name, memrchr,
+ 	      X86_IFUNC_IMPL_ADD_V4 (array, i, memrchr,
+ 				     (CPU_FEATURE_USABLE (AVX512VL)
+-				      && CPU_FEATURE_USABLE (AVX512BW)),
++				      && CPU_FEATURE_USABLE (AVX512BW)
++				      && CPU_FEATURE_USABLE (BMI2)
++				      && CPU_FEATURE_USABLE (LZCNT)),
+ 				     __memrchr_evex)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memrchr,
+-				     CPU_FEATURE_USABLE (AVX2),
++				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)
++				      && CPU_FEATURE_USABLE (LZCNT)),
+ 				     __memrchr_avx2)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memrchr,
+ 				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)
++				      && CPU_FEATURE_USABLE (LZCNT)
+ 				      && CPU_FEATURE_USABLE (RTM)),
+ 				     __memrchr_avx2_rtm)
+ 	      /* ISA V2 wrapper for SSE2 implementation because the SSE2
+-- 
+2.35.6
+

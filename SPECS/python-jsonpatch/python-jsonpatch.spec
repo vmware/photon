@@ -1,14 +1,16 @@
 Name:           python3-jsonpatch
 Version:        1.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Applying JSON Patches in Python
-License:        Modified BSD License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/jsonpatch
 Source0: https://pypi.python.org/packages/be/c1/947048a839120acefc13a614280be3289db404901d1a2d49b6310c6d5757/jsonpatch-%{version}.tar.gz
 %define sha512  jsonpatch=edd5d7433b1bd0513b9998c989778ae3ede47251aab2e19b7111fe5f6ae7fda75202df473f258cd13e73aae1f5908d85ec046c59d99ad8264a454a84a00bf75f
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -43,6 +45,8 @@ python3 ext_tests.py && python3 tests.py
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.32-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.32-1
 - Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.26-1

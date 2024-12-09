@@ -5,8 +5,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.20
-Release:        6%{?dist}
-License:        GNU General Public License V2
+Release:        8%{?dist}
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -14,6 +13,9 @@ Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}.tar.gz
 %define sha512 jdk-11.0=59dd536c613d58d5cd333ed680a8d51b88fc41e8cf2ec11c9996890b0ad704132b2f0f086a6ba280da84565853cb4e21a030e04280ea3d888ecb156c21e8ca29
+
+Source1: license-openjdk11.txt
+%include %{SOURCE1}
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -28,6 +30,15 @@ BuildRequires: freetype2-devel
 BuildRequires: glib-devel
 BuildRequires: harfbuzz-devel
 BuildRequires: elfutils-libelf-devel
+BuildRequires: icu icu-devel
+BuildRequires: cups cups-devel
+BuildRequires: libXtst libXtst-devel libXi libXi-devel
+BuildRequires: alsa-lib alsa-lib-devel util-macros
+BuildRequires: xcb-proto libXdmcp libXdmcp-devel libXau-devel
+BuildRequires: xtrans libxcb-devel proto libxcb libXau
+BuildRequires: libX11 libX11-devel libXext libXext-devel
+BuildRequires: libXt libXt-devel libXrender libXrender-devel
+BuildRequires: libXrandr libXrandr-devel
 
 Requires: chkconfig
 Requires(postun): chkconfig
@@ -38,13 +49,7 @@ Obsoletes: openjdk <= %{version}
 
 AutoReqProv: no
 
-%ifarch x86_64
-%define ExtraBuildRequires icu-devel, cups, cups-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, libX11, libX11-devel, libXext, libXext-devel, libXt, libXt-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel, openjdk11
-%endif
-
-%ifarch aarch64
-%define ExtraBuildRequires icu-devel, cups, cups-devel, libXtst, libXtst-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, libX11, libX11-devel, libXext, libXext-devel, libXt, libXt-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel, openjdk11
-%endif
+%define ExtraBuildRequires  openjdk11
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
@@ -246,6 +251,10 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 11.0.20-8
+- Release bump for SRP compliance
+* Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 11.0.20-7
+- Cleanup Extra BuildRequires
 * Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 11.0.20-6
 - Version bump as a part of cups upgrade
 * Mon Sep 04 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.20-5
@@ -253,10 +262,10 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 * Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.20-4
 - Add jre subpackage
 - Change alternatives accordingly
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.20-3
-- Bump version as a part of elfutils upgrade
-* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 11.0.20-2
+* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 11.0.20-3
 - Bump version as a part of cups upgrade
+* Tue Jun 27 2023 Kuntal Nayak <nkuntal@vmware.com> 11.0.20-2
+- Version upgrade for CVE-2016-7945 fix
 * Fri Jun 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.20-1
 - Upgrade to v11.0.20
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 11.0.18-3

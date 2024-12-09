@@ -3,8 +3,7 @@
 Summary:      The Apache Portable Runtime Utility Library
 Name:         apr-util
 Version:      1.6.3
-Release:      7%{?dist}
-License:      Apache License 2.0
+Release:      4%{?dist}
 URL:          https://apr.apache.org
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
@@ -13,13 +12,16 @@ Distribution: Photon
 Source0: http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
 %define sha512 %{name}=25f078413dc552b3391845b3dc1da72773efe181634deb2f88a9c72a1a49c82883113704bf97db8327012ccafb84a68370267925e3c7cc092ed82fc33fd7954e
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires: apr-devel
 BuildRequires: sqlite-devel
 BuildRequires: openssl-devel
 BuildRequires: nss-devel
 BuildRequires: expat-devel
 BuildRequires: openldap-devel
-BuildRequires: postgresql16-devel
+BuildRequires: postgresql15-devel
 
 Requires: apr
 Requires: openssl
@@ -55,7 +57,7 @@ This package provides the LDAP support for the %{name}.
 Group:      Development/Libraries
 Summary:    APR utility library PostgreSQL DBD driver
 Requires:   %{name} = %{version}-%{release}
-Requires:   (postgresql16 or postgresql15 or postgresql14 or postgresql13)
+Requires:   (postgresql15 or postgresql14 or postgresql13)
 
 %description pgsql
 This package provides the PostgreSQL driver for the %{name} DBD (database abstraction) interface.
@@ -127,26 +129,20 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-7
-- Bump version as a part of util-linux upgrade
-* Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-6
-- Bump version as a part of nss upgrade
-* Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.6.3-5
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-4
+- Release bump for SRP compliance
+* Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.6.3-3
 - Bump version as a part of apr upgrade
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.6.3-4
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.6.3-2
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Thu Dec 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.3-3
-- Build with pgsql16
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.3-2
-- Bump version as a part of openssl upgrade
 * Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 1.6.3-1
 - Version upgrade to v1.6.3 to fix CVE-2022-25147
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 1.6.1-13
 - Bump version as a part of openldap v2.6.4 upgrade
 * Fri Aug 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-12
 - Fix devel package requires
-* Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-11
-- Bump version as a part of nss upgrade
+* Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 1.6.1-11
+- Bump version as a part of apr version upgrade
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-10
 - Bump version as a part of openldap upgrade
 * Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-9

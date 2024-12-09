@@ -1,8 +1,7 @@
 Summary:        Packet Analyzer
 Name:           tcpdump
 Version:        4.99.4
-Release:        2%{?dist}
-License:        BSD
+Release:        3%{?dist}
 URL:            http://www.tcpdump.org
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
 %define sha512 tcpdump=cb51e19574707d07c0de90dd4c301955897f2c9f2a69beb7162c08f59189f55625346d1602c8d66ab2b4c626ea4b0df1f08ed8734d2d7f536d0a7840c2d6d8df
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: CVE-2024-2397.patch
 
@@ -44,6 +46,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/tcpdump.1.gz
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.99.4-3
+- Release bump for SRP compliance
 * Thu Mar 28 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.99.4-2
 - Patched for CVE-2024-2397
 * Thu May 18 2023 Nitesh Kumar <kunitesh@vmware.com> 4.99.4-1

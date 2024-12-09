@@ -1,21 +1,22 @@
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.17.5
-Release:        11%{?dist}
-License:        GPLv3+ and LGPLv3+
+Version:        4.18.8
+Release:        4%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
 
-Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha512 samba=352ae8bc161fb07ac6c7330c6ebd02c27eb453ffc1c32c8437edc441ba3044cb2e9b31c8cf181664a2b47098c75a55f06c105f5397c57ce75826ef2af331afa9
+%define samba_ver %{version}-%{release}
 
+Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
+%define sha512 samba=2924c360f6299129527457547b13c1b282e2907a0ecde1036dbca894c752935d693914b4846a9eab436b33798c53c9974692e51fd071301b1174598be944a246
 Source1: smb.conf.vendor
 
-Patch0: rename_dcerpc_to_smbdcerpc_%{version}.patch
+Source2: license.txt
+%include %{SOURCE2}
 
-%define samba_ver %{version}-%{release}
+Patch1: 0001-rename_dcerpc_to_smbdcerpc-4.18.3.patch
 
 BuildRequires: libtirpc-devel
 BuildRequires: rpcsvc-proto-devel
@@ -37,11 +38,14 @@ BuildRequires: openldap-devel
 BuildRequires: perl-Parse-Yapp
 BuildRequires: dbus-devel
 BuildRequires: sudo
-BuildRequires: libtdb-devel
-BuildRequires: libldb-devel
-BuildRequires: libtevent-devel
+BuildRequires: libtdb-devel >= 1.4.8
+BuildRequires: libtalloc-devel >= 2.4.0
+BuildRequires: libldb-devel >= 2.7.2
+BuildRequires: libtevent-devel >= 0.14.1
 BuildRequires: bison
 BuildRequires: perl-JSON
+BuildRequires: zlib-devel
+BuildRequires: ncurses-devel
 
 Requires: %{name}-libs = %{samba_ver}
 Requires: libtirpc
@@ -60,13 +64,17 @@ Requires: libtalloc
 Requires: ncurses-libs
 Requires: popt
 Requires: bindutils
-Requires: libtdb
-Requires: libldb
-Requires: libtevent
+Requires: libtdb >= 1.4.8
+Requires: libldb >= 2.7.2
+Requires: libtalloc >= 2.4.0
+Requires: libtevent >= 0.14.1
+Requires: zlib
+Requires: ncurses
+
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
-Provides: samba4-client = %{samba_ver}
+Provides:      samba4-client = %{samba_ver}
 
 # Samba Client
 %description
@@ -511,6 +519,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/samba/libsmbd-base-samba4.so
 %{_libdir}/samba/libsmbd-shim-samba4.so
 %{_libdir}/samba/libsmbldaphelper-samba4.so
+%{_libdir}/samba/libstable-sort-samba4.so
 %{_libdir}/samba/libsys-rw-samba4.so
 %{_libdir}/samba/libsocket-blocking-samba4.so
 %{_libdir}/samba/libtalloc-report-printf-samba4.so
@@ -578,25 +587,27 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
-* Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.17.5-11
-- Bump version as a part of dbus upgrade
-* Tue Apr 02 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.17.5-10
-- Version bump for gnutls upgrade
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.17.5-9
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.17.5-8
-- Bump version as a part of libxml2 upgrade
-* Tue Jan 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.17.5-7
-- Version bump for gnutls upgrade
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.17.5-6
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.8-4
+- Release bump for SRP compliance
+* Fri Jan 05 2024 Mukul Sikka <msikka@vmwrae.com> 4.18.8-3
+- Bump version as a part of sudo upgrade
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.8-2
 - Bump version as a part of gnutls upgrade
-* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 4.17.5-5
+* Mon Nov 27 2023 Harinadh D <hdommaraju@vmwrae.com> 4.18.8-1
+- fix CVE-2023-3961
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 4.18.5-3
 - Bump version as a part of openldap v2.6.4 upgrade
-* Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 4.17.5-4
-- Upgrade to 1.9.14p3 to fix CVE-2023-28486 and CVE-2023-28487
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 4.17.5-3
+* Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 4.18.5-2
+- Bump version as a part of sudo upgrade
+* Thu Jul 27 2023 Oliver Kurth <okurth@vmware.com> 4.18.5-1
+- update to 4.18.5 including various CVE fixes
+* Thu Jun 29 2023 Anmol Jain <anmolja@vmware.com> 4.18.3-2
+- Version bump up to use sudo
+* Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 4.18.3-1
+- update to 4.18.3 including various CVE fixes
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 4.17.5-3
 - Bump version as a part of ncurses upgrade to v6.4
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.17.5-2
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.17.5-2
 - Bump version as a part of libxml2 upgrade
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.17.5-1
 - Upgrade version for SSSD addition. Include some additional needed libraries.

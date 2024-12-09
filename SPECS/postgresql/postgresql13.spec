@@ -12,16 +12,15 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql13
-Version:        13.14
-Release:        7%{?dist}
-License:        PostgreSQL
+Version:        13.18
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=25d545de69d6ac16b044e09939678af97b6574c71d47d98f95f0ef9ad11ff65e864e503ddff119d73fbb3c61e648e31219982d60da7fc2382ba10e0bfc370aa5
+%define sha512 %{srcname}=2694ff9402683c90ccfbb53a465f6b6a09702b9b5b44e2db84a3a41175427d889d1b823897fd361b04a53dd3596289822e36a77215cb45dd972d79850fbdb97b
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -31,8 +30,11 @@ Source5: %{srcname}.preset
 Source6: %{srcname}.sysusers
 Source7: systemd-unit-instructions
 
+Source8: license-postgresql13.txt
+%include %{SOURCE8}
+
 BuildRequires: clang-devel
-BuildRequires: gettext-devel
+BuildRequires: gettext
 BuildRequires: krb5-devel
 BuildRequires: icu-devel
 BuildRequires: libedit-devel
@@ -82,7 +84,7 @@ Requires: tzdata
 Requires: zlib
 Requires: %{name}-libs = %{version}-%{release}
 
-Conflicts: %{name} < 13.14-6%{?dist}
+Conflicts: %{name} < 13.14-4%{?dist}
 
 %description client
 %{summary}
@@ -197,7 +199,7 @@ for the backend.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/%{srcname}@' src/include/pg_config_manual.h
+sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
 
 # Note that %configure is not used here as this command relies on non-default
 # values.
@@ -682,34 +684,34 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
-* Wed Apr 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-7
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.18-2
+- Release bump for SRP compliance
+* Tue Dec 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.18-1
+- Version upgrade to fix CVEs
+* Fri Aug 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.16-1
+- Upgrade to v13.16 to fix CVE-2024-7348
+* Wed Apr 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-5
 - Fix libs package requires
-* Tue Apr 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-6
+* Mon Apr 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-4
 - Introduce client subpackage, make main package a meta package
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 13.14-5
-- Bump version as a part of libxml2 upgrade
-* Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-4
+* Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-3
 - Use version specific bindir path in service file
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 13.14-3
-- Bump version as a part of libxml2 upgrade
 * Sat Feb 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-2
 - Add systemd unit file
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.14-1
 - Upgrade to v13.14
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.13-2
-- Bump version as a part of openssl upgrade
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.13-1
 - Upgrade to v13.13
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 13.12-2
 - Bump version as a part of openldap v2.6.4 upgrade
 * Sun Aug 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.12-1
 - Upgrade to v13.12
-* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 13.11-2
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 13.11-3
 - Bump version as a part of krb5 upgrade
-* Tue May 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.11-1
-- Upgrade to v13.11
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 13.10-3
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 13.11-2
 - Bump version as a part of libxml2 upgrade
+* Fri May 19 2023 Julien Rouhaud <<jrouhaud@vmware.com> 13.11-1
+- Update to version 13.11, fixing CVE-2023-2454 and CVE-2023-2455
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 13.10-2
 - Bump version as a part of zlib upgrade
 * Wed Feb 15 2023 Julien Rouhaud <jrouhaud@vmware.com> 13.10-1

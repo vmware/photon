@@ -1,13 +1,19 @@
+%define libflux_version 0.191.0
+%define libflux_vendor kapacitor-libflux-vendor-%{libflux_version}.tar.gz
 %define network_required 1
 Name:           kapacitor
 Version:        1.6.6
-Release:        6%{?dist}
+Release:        12%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
-License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
 %define sha512  %{name}=55f8452c47220034928c4a8d22b88083c60d71ed3f2be8468599493bcf6d5167f4666e785dfd44926bd8e9a2af8011e9d4bb332db8b5c119085677a5eb017158
-Source1:        %{name}.sysusers
+Source1:        %{libflux_vendor}
+%define sha512  %{name}-libflux-vendor=fb2b13caea5235090db5b0439111c98d97f82ddaf27db7608c21183ac73f1a57c89376aa7767983d7fa4fa6730ab093b93330defc3089aa00aaae44989d6a0f9
+Source2:        %{name}.sysusers
+
+Source3: license.txt
+%include %{SOURCE3}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System/Monitoring
@@ -25,7 +31,16 @@ Patch1:         fix-build-2.patch
 Kapacitor is an Open source framework for processing, monitoring, and alerting on time series data.
 
 %prep
-%autosetup -n %{name}-%{version} -p1
+%autosetup -a 1 -n %{name}-%{version} -p1
+mkdir -p ~/.cargo
+mv kapacitor-libflux-vendor-%{libflux_version} ~/.cargo/vendor
+cat > ~/.cargo/config.toml << _EOF
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "${HOME}/.cargo/vendor"
+_EOF
 
 %build
 go env -w GO111MODULE=auto
@@ -35,6 +50,7 @@ mv %{name}-%{version}/* build/src/github.com/influxdata/%{name}
 cd build
 export GOPATH=$PWD
 export PKG_CONFIG=${GOPATH}/src/github.com/influxdata/kapacitor/pkg-config.sh
+export CARGO_NET_OFFLINE=true
 cd src/github.com/influxdata/kapacitor
 go build ./cmd/kapacitor
 go build ./cmd/kapacitord
@@ -56,7 +72,7 @@ cp -r usr/share/bash-completion/completions/kapacitor %{buildroot}%{_datadir}/ba
 cp -r scripts/kapacitor.service %{buildroot}%{_libdir}/systemd/system/
 cp -r etc/logrotate.d/kapacitor %{buildroot}%{_sysconfdir}/logrotate.d/
 cp -r etc/kapacitor/kapacitor.conf %{buildroot}%{_sysconfdir}/kapacitor
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %clean
 rm -rf %{buildroot}/*
@@ -64,7 +80,7 @@ rm -rf %{buildroot}/*
 %pre
 if [ $1 -eq 1 ]; then
     # Initial installation.
-    %sysusers_create_compat %{SOURCE1}
+    %sysusers_create_compat %{SOURCE2}
 fi
 
 %post
@@ -93,6 +109,18 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.6-12
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.6-11
+- Bump version as a part of go upgrade
+* Sun Sep 08 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.6-10
+- Support offline build
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.6-9
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.6.6-8
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.6.6-7
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.6-6
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.6-5
@@ -105,7 +133,7 @@ chown -R %{name}:%{name} /var/log/%{name}
 - Bump up version to compile with new go
 * Mon Jul 03 2023 Srish Srinivasan <ssrish@vmware.com> 1.6.6-1
 - Update to v1.6.6 to fix multiple CVEs
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.9-9
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.9-9
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.9-8
 - Bump up version to compile with new go

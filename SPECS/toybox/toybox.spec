@@ -5,7 +5,6 @@
 Name:           toybox
 Version:        0.8.9
 Release:        6%{?dist}
-License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -19,6 +18,9 @@ Patch0: %{name}-change-toys-path.patch
 
 Source1: config-%{name}
 Source2: %{name}-toys
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
@@ -715,8 +717,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.9-6
-- Bump version as a part of openssl upgrade
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.8.9-6
+- Release bump for SRP compliance
 * Fri Jul 28 2023 Oliver Kurth <okurth@vmware.com> 0.8.9-5
 - enable httpd
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.8.9-4

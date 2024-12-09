@@ -4,27 +4,30 @@
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.19.21
-Release:        1%{?dist}
-License:        ISC
+Version:        9.20.0
+Release:        2%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512 bind=8a5bae4619b0093f5c81376b65a143499d4942c7624ecd7770d62244d88d5a695c1edede59b5f06665fae8bef784f774b144822ac541ebe826d1b267f7c40236
+%define sha512 bind=38dcb5d401b357127f11af521594daf2a7df1fbf444f80a823d10d1077903a59faac4299f925ad77283610c54c816ac0f53edb6d1cdb664abc36368457840e55
 
 Source1:        %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Requires:       krb5
 Requires:       e2fsprogs-libs
 Requires:       openssl-libs
 Requires:       libuv
 Requires:       userspace-rcu
+Requires:       nghttp2
 Requires:       %{name}-libs = %{version}-%{release}
 Requires(pre):  systemd-rpm-macros
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
+Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
@@ -81,10 +84,8 @@ EOF
 echo "d /run/named 0755 named named - -" > %{buildroot}%{_tmpfilesdir}/named.conf
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
-%posttrans
-if [ $1 -eq 1 ]; then
-  %sysusers_create_compat %{SOURCE1}
-fi
+%pre
+%sysusers_create_compat %{SOURCE1}
 
 %post
 /sbin/ldconfig
@@ -131,10 +132,16 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
-* Wed Feb 14 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.19.21-1
-- Upgrade to latest version to address CVEs
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.19.14-5
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 9.20.0-2
+- Release bump for SRP compliance
+* Thu Jul 18 2024 Dweep Advani <dweep.advani@broadcom.com> 9.20.0-1
+- Update to version 9.20.0 to fix CVE-2024-0760/1737/1975/4076
+* Wed Jul 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.19.21-2
+- Create users pre install
+* Mon Feb 12 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.19.21-1
+- Upgrade subversion to address critical CVEs
+* Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.19.14-5
+- Version bump as part of nghtttp2 upgrade
 * Wed Oct 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.19.14-4
 - Change home directory permission & owner
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 9.19.14-3
@@ -142,7 +149,7 @@ chmod 0770 %{_home_dir}
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 9.19.14-2
 - Bump version as a part of krb5 upgrade
 * Thu Jun 22 2023 Dweep Advani <dadvani@vmware.com> 9.19.14-1
-- Upgrade to 9.19.14
+- Upgrade to 9.19.14 to fix CVE-2023-2828
 * Mon May 15 2023 Mukul Sikka <msikka@vmware.com> 9.19.7-4
 - Resolving systemd user creation issue
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 9.19.7-3

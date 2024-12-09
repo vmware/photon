@@ -4,8 +4,7 @@
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.19
-Release:        4%{?dist}
-License:        BSD
+Release:        6%{?dist}
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,6 +12,11 @@ URL:            https://github.com/ipmitool/ipmitool
 
 Source0: https://github.com/ipmitool/ipmitool/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=2d91706e9feba4b2ce4808eca087b81b842c4292a5840830001919c06ec8babd8f8761b74bb9dcf8fbc7765f028a5b1a192a3c1b643f2adaa157fed6fb0d1ee3
+# https://www.iana.org/assignments/enterprise-numbers.txt
+Source1: enterprise-numbers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  autoconf
 BuildRequires:  autoconf-archive
@@ -21,7 +25,7 @@ BuildRequires:  libtool
 BuildRequires:  glib
 BuildRequires:  glibc
 BuildRequires:  openssl-devel
-BuildRequires:  curl-devel
+BuildRequires:  curl
 
 Requires:   openssl
 Requires:   curl
@@ -46,6 +50,7 @@ setting LAN configuration, and chassis power control.
 
 %build
 sh ./bootstrap
+install -Dm 644 %{SOURCE1} .
 %configure \
     --with-kerneldir \
     --with-rpm-distro=
@@ -53,15 +58,12 @@ sh ./bootstrap
 %make_build
 
 %install
-%ifarch x86_64
 %make_install install-strip %{?_smp_mflags}
-%endif
-%ifarch aarch64
-%make_install install-strip
-%endif
 
+%if 0%{?with_check}
 %check
-%make_build check
+make %{?_smp_mflags} check
+%endif
 
 %clean
 rm -rf %{buildroot}
@@ -76,8 +78,12 @@ rm -rf %{buildroot}
 %{_datadir}/misc/enterprise-numbers
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-4
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.8.19-6
+- Release bump for SRP compliance
+* Wed Sep 04 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.8.19-5
+- update enterprise-numbers file
+* Mon Jul 08 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.8.19-4
+- Locally store enterprise-numbers file to do offline build
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-3
 - Bump version as a part of readline upgrade
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.19-2

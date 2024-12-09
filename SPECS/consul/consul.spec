@@ -2,19 +2,21 @@
 %global debug_package %{nil}
 
 Name:           consul
-Version:        1.15.4
-Release:        6%{?dist}
+Version:        1.14.8
+Release:        11%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
-License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/hashicorp/consul
 
 Source0: https://github.com/hashicorp/consul/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=a03d0f71fc4f6e42a0c0efbc8477701356c40d7221ede565985ba6775a7a2ffb75cb99e609b0ec428875731ecc20941cc4bba7d1d1551ea859563a02a3c41e95
+%define sha512 %{name}-%{version}=d13c7291774a9884d04ace7d731f64c3efe0970fba18debe8fc30792342c267104b0e4a6ddfb1636270213fa7ff8189cdbeb2e4f2655192b341ec281da0dc804
 Source1: %{name}.service
 Source2: %{name}.sysusers
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires: systemd-devel
 BuildRequires: go
@@ -83,20 +85,30 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
-* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.15.4-6
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.14.8-11
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.14.8-10
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.14.8-9
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.14.8-8
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.14.8-7
+- Bump version as a part of go upgrade
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.14.8-6
 - Bump up version to compile with new go
-* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.15.4-5
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.14.8-5
 - Bump up version to compile with new go
-* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.15.4-4
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.14.8-4
 - Bump up version to compile with new go
-* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.15.4-3
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.14.8-3
 - Resolving systemd-rpm-macros for group creation
-* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.15.4-2
+* Wed Jul 19 2023 Piyush Gupta <gpiyush@vmware.com> 1.14.8-2
 - Bump up version to compile with new go
-* Mon Jul 17 2023 Nitesh Kumar <kunitesh@vmware.com> 1.15.4-1
-- Version upgrade to v1.15.4 to fix following CVE's:
+* Mon Jul 17 2023 Nitesh Kumar <kunitesh@vmware.com> 1.14.8-1
+- Version upgrade to v1.14.8 to fix following CVE's:
 - CVE-2023-1297, CVE-2023-0845
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.14.2-5
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.14.2-5
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.14.2-4
 - Bump up version to compile with new go

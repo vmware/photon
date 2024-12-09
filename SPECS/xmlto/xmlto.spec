@@ -1,8 +1,7 @@
 Summary:    The  purpose  of  xmlto is to convert an XML file to the desired format
 Name:       xmlto
 Version:    0.0.28
-Release:    4%{?dist}
-License:    GPLv2+
+Release:    5%{?dist}
 URL:        https://pagure.io/xmlto
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution: Photon
 
 Source0: http://releases.pagure.org/xmlto/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b4de619c840ed9329aed15e6a2bcd830864c250cd134474aeb157571019fa443835e17f68851d35971f775ba5e5c65c61429cf0616c7839cdc51e83f80916a80
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:    docbook-xsl
 BuildRequires:    docbook-xml
@@ -50,6 +52,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.0.28-5
+- Release bump for SRP compliance
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.0.28-4
 - Bump version as a part of libxslt upgrade
 * Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.0.28-3

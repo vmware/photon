@@ -3,8 +3,7 @@
 Summary:           The Xorg fonts.
 Name:              xorg-fonts
 Version:           7.7
-Release:           3%{?dist}
-License:           MIT
+Release:           4%{?dist}
 URL:               http://www.x.org
 Group:             Development/System
 Vendor:            VMware, Inc.
@@ -118,6 +117,9 @@ Source34: http://ftp.x.org/pub/individual/font/font-winitzki-cyrillic-1.0.3.tar.
 Source35: http://ftp.x.org/pub/individual/font/font-xfree86-type1-1.0.4.tar.bz2
 %define sha512 font-xfree86-type1-1.0.4.tar.bz2=2b4afc6cbb7953f8ba4aab7862d16b7b988ea6a4df6de8d41c8340d35a1cd53d6fcc26479ff88189d1de9f42804e4f56d70e9dbd7e75820eab4ac6ae3a96840c
 
+Source36: license.txt
+%include %{SOURCE36}
+
 BuildRequires:     pkg-config
 BuildRequires:     xorg-applications
 BuildRequires:     util-macros
@@ -160,6 +162,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 7.7-4
+- Release bump for SRP compliance
 * Wed Jan 11 2023 Shivani Agarwal <shivania2@vmware.com> 7.7-3
 - Upgrade encodings, font-alias, font-misc-ethiopic
 * Sat Dec 3 2022 Shivani Agarwal <shivania2@vmware.com> 7.7-2

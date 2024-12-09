@@ -1,8 +1,7 @@
 Summary:        Utilities for managing the SQUASHFS filesystem
 Name:           squashfs-tools
 Version:        4.5.1
-Release:        5%{?dist}
-License:        GNU GPLv2
+Release:        6%{?dist}
 URL:            https://github.com/plougher/squashfs-tools/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/plougher/squashfs-tools/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b3934ea1e26c7508110312711465644a6d9674b6b5332a7d011e191fa3c1d4b8be694214794a0f6005263d0f4e18bab96af2f7ed66a178f8e3bb3a781cd44896
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  which
 BuildRequires:  autoconf-archive
@@ -46,6 +48,8 @@ sed -i 's#ln -fs $(INSTALL_DIR)/unsquashfs#ln -fs unsquashfs#' Makefile
 %{_bindir}/unsquashfs
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.5.1-6
+- Release bump for SRP compliance
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.5.1-5
 - Bump version as a part of zstd upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.5.1-4

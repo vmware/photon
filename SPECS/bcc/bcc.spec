@@ -3,8 +3,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.28.0
-Release:         1%{?dist}
-License:         ASL 2.0
+Release:         2%{?dist}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
@@ -12,6 +11,9 @@ URL:             https://github.com/iovisor/bcc
 
 Source0: https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=792ce93dba64b1f87390b2602dcaeba04ac8b2863652b06eb9a907b93bc6137a944b856cc6fa9c7a38671c89814740967561ca4f3b29c267babca7dc5e78aa02
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: cmake
 BuildRequires: build-essential
@@ -122,10 +124,12 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.28.0-2
+- Release bump for SRP compliance
 * Sun Aug 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.28.0-1
 - Upgrade to v0.28.0
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.25.0-4
-- Bump version as a part of elfutils upgrade
+* Thu Apr 13 2023 Harinadh D <hdommaraju@vmware.com> 0.25.0-4
+- Bump up to use curl 8.0.1
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.25.0-3
 - Bump up due to change in elfutils
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.25.0-2

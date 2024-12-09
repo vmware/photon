@@ -1,18 +1,16 @@
-%ifarch aarch64
-%global gohostarch      arm64
-%else
-%global gohostarch      amd64
-%endif
+%define gopath_comp_neb github.com/vmware/network-event-broker
 
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.3
-Release:        9%{?dist}
-License:        Apache-2.0
+Release:        15%{?dist}
 URL:            https://github.com/vmware/%{name}
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=3560c1e25b0df04071b43492d9b043140d95c05fe96a1216ae19992965b99c0bef23141771c1f1d36b7af8ea1772d2d222011705c2321ac42ee408ee19647b2d
 Source1:        %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -31,37 +29,32 @@ A daemon that configures the network and executes scripts on network events such
 systemd-networkd's DBus events or dhclient gaining a lease. It also watches
 when an address gets added/removed/modified or links get added/removed.
 
-%prep -p exit
-%autosetup -p1 -n %{name}-%{version}
+%prep
+# Using autosetup is not feasible
+%setup -q -c -n %{name}-%{version}
+
+mkdir -p "$(dirname src/%{gopath_comp_neb})"
+mv %{name}-%{version} src/%{gopath_comp_neb}
 
 %build
-export ARCH=%{gohostarch}
-export VERSION=%{version}
-export PKG=github.com/%{name}/%{name}
-export GOARCH=${ARCH}
-export GOHOSTARCH=${ARCH}
-export GOOS=linux
-export GOHOSTOS=linux
-export GOROOT=/usr/lib/golang
-export GOPATH=/usr/share/gocode
-export GOBIN=/usr/share/gocode/bin
-export PATH=$PATH:$GOBIN
-
-mkdir -p ${GOPATH}/src/${PKG}
-cp -rf . ${GOPATH}/src/${PKG}
-pushd ${GOPATH}/src/${PKG}
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+export GOFLAGS=-mod=vendor
+pushd src/%{gopath_comp_neb}
 go build -o bin/network-broker ./cmd/network-broker
 popd
 
 %install
+pushd src/%{gopath_comp_neb}
 install -m 755 -d %{buildroot}%{_bindir}
 install -m 755 -d %{buildroot}%{_sysconfdir}/network-broker
 install -m 755 -d %{buildroot}%{_unitdir}
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
-install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/bin/network-broker
+install -pm 755 -t %{buildroot}%{_bindir} bin/network-broker
 
-install -pm 755 -t %{buildroot}%{_sysconfdir}/network-broker ${GOPATH}/src/github.com/%{name}/%{name}/distribution/network-broker.toml
-install -pm 755 -t %{buildroot}%{_unitdir}/ ${GOPATH}/src/github.com/%{name}/%{name}/distribution/network-broker.service
+install -pm 755 -t %{buildroot}%{_sysconfdir}/network-broker distribution/network-broker.toml
+install -pm 755 -t %{buildroot}%{_unitdir}/ distribution/network-broker.service
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -86,6 +79,18 @@ rm -rf %{buildroot}/*
 %{_unitdir}/network-broker.service
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.3-15
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.3-14
+- Bump version as a part of go upgrade
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 0.3-13
+- Simplify build scripts
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.3-12
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 0.3-11
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 0.3-10
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 0.3-9
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 0.3-8
@@ -94,7 +99,7 @@ rm -rf %{buildroot}/*
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 0.3-6
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.3-5
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 0.3-5
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.3-4
 - Bump up version to compile with new go

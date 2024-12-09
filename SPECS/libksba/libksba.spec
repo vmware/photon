@@ -1,21 +1,21 @@
 Summary:    Library for accessing X.509 and CMS data structure.
 Name:       libksba
-Version:    1.6.2
-Release:    3%{?dist}
-License:    GPLv3+
+Version:    1.6.3
+Release:    2%{?dist}
 URL:        https://www.gnupg.org/(fr)/download/index.html#libksba
 Group:      Security/Libraries.
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    https://www.gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=50533887942921f8009cedd636915c2b27f231151a3b8316af6801a5f8637d66896ba5a24207bf82d8b03e26624133e80c6dd69f1196f06ada929090ef0f178c
+%define sha512 %{name}=188f6d27b4904c10cd54ba949c1132dd6c167f53dd1b77eae39c5b8e3ac8b15e87b2a54cdfddac95ac4ed41ee83c3d4e1b17d95126f245b6c204fade6739a2ce
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: libgpg-error-devel >= 1.2
 
 Requires: libgpg-error
-
-Patch0: Fix-for-CVE-2022-47629.patch
 
 %description
 Libksba is a library to make the tasks of working with X.509 certificates,
@@ -35,10 +35,10 @@ Requires: pkg-config
 
 %build
 %configure --disable-static
-%make_build %{?_smp_mflags}
+make %{?_smp_mflags}
 
 %install
-%{make_install} %{?_smp_mflags}
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}%{_libdir} -name '*.la' -delete
 rm %{buildroot}%{_infodir}/dir
 
@@ -64,8 +64,10 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/ksba.pc
 
 %changelog
-* Thu Jan 05 2023 Srish Srinivasan <ssrish@vmware.com> 1.6.2-3
-- Fix for CVE-2022-47629
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.3-2
+- Release bump for SRP compliance
+* Thu May 18 2023 Srish Srinivasan <ssrish@vmware.com> 1.6.3-1
+- Update to v1.6.3 to fix CVE-2022-47629
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.6.2-2
 - Bump release as a part of libgpg-error upgrade to 1.46
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1

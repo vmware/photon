@@ -3,8 +3,7 @@
 Summary:        Autoconf macro archive
 Name:           autoconf-archive
 Version:        2022.09.03
-Release:        1%{?dist}
-License:        GPLv3+
+Release:        2%{?dist}
 URL:            http://www.gnu.org/software/autoconf-archive
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=157b5b6a979d5ec5bfab6ddf34422da620fec1e95f4c901821abbb7361544af77747b4a449029b84750d75679d6130a591e98da8772de2c121ecdea163f0340b
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -38,6 +40,8 @@ rm -frv %{buildroot}%{_docdir}/%{name}
 %{_datadir}/aclocal/*.m4
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2022.09.03-2
+- Release bump for SRP compliance
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2022.09.03-1
 - Upgrade to v2022.09.03
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2021.02.19-1

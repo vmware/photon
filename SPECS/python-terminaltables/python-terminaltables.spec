@@ -1,14 +1,16 @@
 Summary:        Draw tables in terminal/console applications from a list of lists of strings
 Name:           python3-terminaltables
 Version:        3.1.0
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://robpol86.github.io/terminaltables/
 Source0:        terminaltables-%{version}.tar.gz
 %define sha512  terminaltables=dc49458652fff8bc6094d316d84c9b8e9fca1a26e3230c0b668bc03ec8528793f4ef024e8032d4a56fbfabfdfd4a1142870f550f0b373ba6a42dd2e3ead3f501
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
@@ -46,5 +48,7 @@ python3 -m pytest tests
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.0-2
+- Release bump for SRP compliance
 * Fri May 27 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.1.0-1
 - Python terminaltables initial built

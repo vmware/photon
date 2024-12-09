@@ -3,8 +3,7 @@
 Summary:       Python to transform XML to JSON
 Name:          python3-%{pypi_name}
 Version:       0.13.0
-Release:       1%{?dist}
-License:       MIT
+Release:       2%{?dist}
 URL:           https://github.com/martinblech/%{pypi_name}
 Group:         Development/Languages/Python
 Vendor:        VMware, Inc.
@@ -13,6 +12,9 @@ BuildArch:     noarch
 
 Source0: https://github.com/martinblech/%{pypi_name}/archive/refs/tags/%{pypi_name}-%{version}.tar.gz
 %define sha512 %{pypi_name}=a7c12efa3c8d9b30a36a4b0ed2a8215f9833728d7988e74ef36458790a786c4c7517e536e8a82939623069716cdff258da5aab378a74f884a0fa245e7951f0bf
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -53,5 +55,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/%{pypi_name}-%{version}-*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.13.0-2
+- Release bump for SRP compliance
 * Sat Oct 14 2023 Oliver Kurth <okurth@vmware.com> 0.13.0-1
 - Initial build

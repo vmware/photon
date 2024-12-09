@@ -1,0 +1,16 @@
+[Unit]
+Description=Lighttpd Daemon
+After=network-online.target
+
+[Service]
+Type=forking
+PIDFile=/run/lighttpd.pid
+ExecStart=/usr/libexec/lighttpd/start-server.sh
+ExecReload=/bin/kill -USR1 $MAINPID
+Restart=on-failure
+RemainAfterExit=yes
+GuessMainPID=no
+IgnoreSIGPIPE=no
+
+[Install]
+WantedBy=multi-user.target

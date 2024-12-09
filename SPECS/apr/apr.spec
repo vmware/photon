@@ -3,16 +3,18 @@
 
 Summary:        The Apache Portable Runtime
 Name:           apr
-Version:        1.7.4
+Version:        1.7.5
 Release:        2%{?dist}
-License:        Apache License 2.0
 URL:            https://apr.apache.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a8c90062eb78b6a33efc968959d1aadc1a73a4d40dbdb7d2745be54471de6d4c28dc154c85e9c5b9a172ac81735b69636d22b3b85d0b7d7c7f7e2670609da3cc
+%define sha512 %{name}=8a4ad426614378918053a1f67727ab8aee5d9a49f0f9b12edea69cb5c4bc5b436f4834d76b13c16a50be0ef1cdaf7db93abc1d2eef3d38e9b3e53ae232b4bc90
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %if 0%{?with_check}
 Patch0: apr-skip-getservbyname-test.patch
@@ -68,12 +70,16 @@ It contains the libraries and header files to create applications.
 %{_libdir}/pkgconfig
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.4-2
-- Bump version as a part of util-linux upgrade
-* Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.7.4-1
-- Upgrade apr package to v1.7.4
-* Fri Aug 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-5
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.5-2
+- Release bump for SRP compliance
+* Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.7.5-1
+- Upgrade version to fix CVE-2024-41071
+* Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.7.4-3
+- Add util-linux-libs package under Requires section
+* Fri Aug 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.4-2
 - Fix devel package requires
+* Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 1.7.4-1
+- Update to v1.7.4 to fix CVE-2022-24963
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-4
 - Don't remove .la files, needed during subversion build
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-3

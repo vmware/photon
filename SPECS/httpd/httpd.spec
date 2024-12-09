@@ -1,16 +1,18 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.59
-Release:        1%{?dist}
-License:        Apache License 2.0
+Version:        2.4.62
+Release:        3%{?dist}
 URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=209da0bbac5e2564d4590302515b35495be6402273ff4024aa93e85e44554c95e053201d606383936425a41e1b5b97e6b40055dcbb385eb691a5029a6f3158c2
+%define sha512 %{name}=7db1876805d5c0f60f49bcb51f75cdf567120f2ff6349e68f084e9a86ae38265d9f1c67e7fca0082c9db136f3c408a88501ee11f26b1b68724ba240867171d77
 Source1: %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
@@ -198,20 +200,29 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.4.62-3
+- Release bump for SRP compliance
+* Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 2.4.62-2
+- Bump version as a part of apr upgrade
+* Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.4.62-1
+- Version upgrade to v2.4.62 to fix following CVE's:
+- CVE-2024-40725 and CVE-2024-40898
+* Tue Jul 09 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.4.61-1
+- Version upgrade to v2.4.61 to fix CVE-2024-39573
 * Fri Apr 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.4.59-1
 - Version upgrade to v2.4.59 to fix CVE-2024-27316
-* Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.4.58-3
-- Bump version as a part of apr upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.58-2
-- Bump version as a part of openssl upgrade
 * Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.58-1
 - Version upgrade to v2.4.58 to fix CVE-2023-31122
-* Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.56-4
+* Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.4.56-6
+- Version bump as part of nghtttp2 upgrade
+* Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.56-5
 - Bump version as a part of apr-util v1.6.3 upgrade
-* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.56-3
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.56-4
 - Bump version as a part of openldap v2.6.4 upgrade
-* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.56-2
+* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.56-3
 - Bump version as a part of lua upgrade
+* Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 2.4.56-2
+- Bump version as a part of apr version upgrade
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.4.56-1
 - Upgrade to v2.4.56 to fix following CVE's:
 - CVE-2023-25690, and CVE-2023-27522

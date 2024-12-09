@@ -1,15 +1,17 @@
 Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python3-urllib3
-Version:        1.25.11
-Release:        4%{?dist}
+Version:        1.26.19
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/urllib3
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/shazow/urllib3/archive/urllib3-%{version}.tar.gz
-%define sha512  urllib3=58f77edb9ced62cbac7b0baf2651c07f9f413267f103730ee25f08c5d4d0bf52a2ace02f58841bcd55652db677c7a1dc9a756681e7e32d590bc69d8b93e8f173
+Source0: https://github.com/shazow/urllib3/archive/urllib3-%{version}.tar.gz
+%define sha512 urllib3=6b72012dbd85434b2441229cbdea2a94583693f904dde349780e1290d581c8a5e10fe00a287a032ed1276349d0078b530f16a133e0f164dcea18105fa3dec79a
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -68,8 +70,14 @@ ulimit -n $nofiles
 %{python3_sitelib}/*
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25.11-4
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.26.19-2
+- Release bump for SRP compliance
+* Tue Jul 30 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.26.19-1
+- Update to 1.26.19, Fixes CVE-2024-37891
+* Thu Feb 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.25.11-5
+- Fix CVE-2023-45803
+* Mon Nov 20 2023 Mukul Sikka <msikka@vmware.com> 1.25.11-4
+- Fix CVE-2023-43804
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.25.11-3
 - Update release to compile with python 3.11
 * Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.25.11-2

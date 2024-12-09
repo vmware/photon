@@ -1,14 +1,16 @@
 Summary:        file locking module
 Name:           python3-lockfile
 Version:        0.12.2
-Release:        5%{?dist}
-License:        MIT
+Release:        6%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/openstack/pylockfile
 Source0:        https://pypi.python.org/packages/source/l/lockfile/lockfile-%{version}.tar.gz
 %define sha512  lockfile=67b7d651d7e963a497c2604912c61eed90181cdd09c744a0ceaa26e6bbe09d1a871ce48be3949b7da7ea6b366b15492c8c8de589edeca2641ca5e6cb3804df07
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
@@ -40,6 +42,8 @@ as a demonstration of the possibilities it provides than as production-quality c
 %{python3_sitelib}/lockfile
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.12.2-6
+- Release bump for SRP compliance
 * Mon Nov 28 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.12.2-5
 - Update release to compile with python 3.11
 * Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.12.2-4

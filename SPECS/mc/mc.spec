@@ -1,8 +1,7 @@
 Summary:        File manager
 Name:           mc
 Version:        4.8.28
-Release:        2%{?dist}
-License:        GPLv3+
+Release:        3%{?dist}
 URL:            https://www.midnight-commander.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://ftp.midnight-commander.orgtar/%{name}-%{version}.tar.xz
 %define sha512  %{name}=ca3b3a57281e9387cb52bf1fcfc3f39a4d5f438aafc256dc492c192678824f67c983a852c759664efc5bc6d0de471c9b3929834f8301f6302ca1ebeee513fdfd
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       glib
 Requires:       pcre
@@ -47,6 +49,8 @@ make %{?_smp_mflags} -k check
 %exclude %dir %{_libdir}
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.8.28-3
+- Release bump for SRP compliance
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.8.28-2
 - Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.8.28-1

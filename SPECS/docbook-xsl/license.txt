@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND MIT AND X11 AND (MIT OR GPL-2.0-only) AND BSD-3-Clause AND Zlib AND Apache-2.0 AND Unicode-3.0 AND Python-2.0 AND (MIT OR GPL-1.0-or-later) AND MPL-1.0 AND EPL-1.0

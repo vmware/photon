@@ -1,17 +1,19 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.4.0
-Release:        1%{?dist}
-License:        GPLv2
+Version:        8.4.2
+Release:        2%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://cdn.mysql.com/Downloads/MySQL-8.4/mysql-%{version}.tar.gz
-%define sha512 %{name}=59d54a8405b5cab0de95c67f3228b0b292a03b12147e8dc01f67b34b407c1e4f9644340d7dfdc1f23d1d081a749d5a49f6361b540bfc1789a9068b56dc5da08c
+%define sha512 %{name}=4274b78bf4e99e090adbb3ea58c3cffa84bd85aa0de7ded4567c6ad9a1994fbe6a4829b84c06b212b44d6c23530cb8080a92a8ec484f51d5d5edb2d5f15c5890
 
 Source1: %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: cmake
 BuildRequires: rpcsvc-proto-devel
@@ -180,17 +182,18 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 8.4.2-2
+- Release bump for SRP compliance
+* Tue Jul 23 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.2-1
+- Upgrade to v8.4.2 to fix a bunch of CVEs
 * Fri May 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.0-1
-- Upgrade to v8.4.0, fixes a bunch of CVEs
+- Upgrade to v8.4.0, fixes bunch of CVEs
 * Fri Jan 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.3.0-1
 - Upgrade to v8.3.0
-* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-3
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-2
 - Use bundled protobuf, build breaks with latest protobuf provided by system
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-2
-- Bump version as a part of openssl upgrade
 * Wed Nov 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.35-1
 - Upgrade to v8.0.35
-* Sun Oct 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.34-2
 - Add systemd service files for mysql-server
 * Sun Jul 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.34-1
 - Upgrade to v8.0.34
@@ -198,7 +201,7 @@ fi
 - Use system libs
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.33-3
 - Bump version as a part of protobuf upgrade
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 8.0.33-2
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.0.33-2
 - Bump version as a part of ncurses upgrade to v6.4
 * Wed May 10 2023 Oliver Kurth <okurth@vmware.com> 8.0.33-1
 - Upgrade to v8.0.33, fixing CVE-2023-21980 and others

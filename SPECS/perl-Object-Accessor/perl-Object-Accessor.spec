@@ -3,12 +3,14 @@
 Summary:        Interface to create per object accessors
 Name:           perl-Object-Accessor
 Version:        0.48
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Libraries
-License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/Object-Accessor/
 Source0:        http://www.cpan.org/authors/id/B/BI/BINGOS/Object-Accessor-%{version}.tar.gz
 %define sha512  Object-Accessor=fbce10e8db2cfb360cdc093355a95c9d49909069beb725fca9812ee6e6b77e0648d63d56db9fbdcdf03f885b3954a67c516fa066229280279940704231d48448
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -40,6 +42,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.48-6
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 0.48-5
 - Perl version upgrade to 5.36.0
 * Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 0.48-4

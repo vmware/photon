@@ -1,20 +1,21 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        2.7.0
-Release:        11%{?dist}
-License:        Apache-2.0
+Release:        21%{?dist}
 URL:            https://github.com/kubernetes/dashboard
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildArch: x86_64
-
 Source0: https://github.com/kubernetes/dashboard/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=bd5567bd5a8163cf13de5b935ce90aafb4acba58acc07740eb1ed22ae761c68a7d160a22cfe3d49a9e700a4139c3cc1bef6a76a1bebd88caabef909cd85607b3
-
 Source1: dashboard-dist-%{version}.v1.tar.gz
 %define sha512 dashboard-dist=1ade7bdbdce573027f3e94f1ef0614e04cc72762671d225bb67f22c3b3f0ecbfc83f6744aba179d153c1800611a07348a6cd901d31981f6951f038f806b1cf1d
+
+Source2: license.txt
+%include %{SOURCE2}
+
+BuildArch:      x86_64
 
 BuildRequires:  gcc
 BuildRequires:  git
@@ -72,24 +73,44 @@ cp -pr ./dist/amd64/locale_conf.json ./dist/amd64/public \
 /opt/k8dashboard/public/*
 
 %changelog
-* Fri Dec 22 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.0-11
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.0-21
+- Release bump for SRP compliance
+* Wed Dec 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-20
+- Bump version as a part of nodejs upgrade
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.0-19
+- Bump version as a part of go upgrade
+* Wed Aug 21 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.0-18
+- Bump version as a part of nodejs upgrade
+* Tue Jul 16 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.0-17
+- Bump version as a part of go upgrade
+* Mon Jul 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-16
+- Bump version as a part of nodejs upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 2.7.0-15
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 2.7.0-14
+- Bump version as a part of go upgrade
+* Mon Feb 19 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-13
+- Bump up version to compile with nodejs-20.11.1
+* Fri Dec 22 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.0-12
 - Bump up as part of nodejs
-* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-10
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-11
 - Bump up version to compile with new go
-* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-9
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-10
 - Bump up version to compile with new go
-* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-8
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-9
 - Bump up version to compile with new go
-* Sun Aug 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.0-7
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.0-8
 - Require jdk11 or jdk17
-* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-6
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-7
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-5
-- Bump up version to compile with new go
-* Tue Jun 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.0-4
+* Tue Jun 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.0-6
 - Compiled with go 1.20.5, Fixes multiple second level CVEs
-* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.0-3
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-5
+- Bump up version to compile with new go
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.0-4
 - Bump version as a part of openjdk11 upgrade
+* Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 2.7.0-3
+- Bump up version to compile with new nodejs
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.0-2
 - Bump up version to compile with new go
 * Mon Apr 17 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.0-1

@@ -1,0 +1,94 @@
+From 558c81336fe4c7fb6942de065d14e6b33ed9bc29 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 8 Aug 2022 01:39:02 +0530
+Subject: [PATCH 5/6] Fix a race condition in brp-strip
+
+brp-strip script runs strip command on deliverables paralley and if
+deliverables are hard linked inside buildroot, it will create
+contention.
+
+One good example for such package is git.
+https://github.com/vmware/photon/blob/master/SPECS/git/git.spec
+
+```
+Sample output:
+$ rpm -ql git | grep libexec | xargs ls -li
+668153 -rwxr-xr-x  137 root root 3401056 Aug  2 08:30 /usr/libexec/git-core/git
+668153 -rwxr-xr-x  137 root root 3401056 Aug  2 08:30 /usr/libexec/git-core/git-add
+787238 -rwxr-xr-x    1 root root   47770 Aug  2 08:30 /usr/libexec/git-core/git-add--interactive
+668153 -rwxr-xr-x  137 root root 3401056 Aug  2 08:30 /usr/libexec/git-core/git-am
+```
+
+To overcome this, we run strip twice once for all files with no
+hardlinks, this is a parallel job, meaning multiple binaries will be
+stripped in parallel.
+
+And once for files with hardlinks, in this case we disable parallel
+processing and strip binaries in sequential order.
+
+RH bug link:
+https://bugzilla.redhat.com/show_bug.cgi?id=1959049
+
+Co-authored-by: Dweep Advani <dadvani@vmware.com>
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ scripts/brp-strip | 36 +++++++++++++++++++++++++++++++++---
+ 1 file changed, 33 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/brp-strip b/scripts/brp-strip
+index 6825e41..799bf2b 100755
+--- a/scripts/brp-strip
++++ b/scripts/brp-strip
+@@ -1,4 +1,5 @@
+ #!/bin/sh
++
+ # If using normal root, avoid changing anything.
+ if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
+ 	exit 0
+@@ -7,11 +8,40 @@ fi
+ STRIP=${1:-strip}
+ NCPUS=${RPM_BUILD_NCPUS:-1}
+ 
++# 32 was chosen as a compromise between reducing the overhead of starting new
++# processes and distributing the work load evenly over as much processors as
++# possible
++MAX_ARGS=32
++
+ case `uname -a` in
+ Darwin*) exit 0 ;;
+ *) ;;
+ esac
+ 
+-# Strip ELF binaries
+-find "$RPM_BUILD_ROOT" -type f \! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" \! -name "*.go" -print0 | \
+-    xargs -0 -r -P$NCPUS -n32 sh -c "file \"\$@\" | sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | grep -v 'no machine' | xargs -I\{\} $STRIP -g \{\}" ARG0
++# Below is the explanation of commands in the order of their appearance
++# Ignore /usr/lib/debug entries
++# Ignore all go(guile objects & golang) files
++# Consider files with only single link
++# Run the file command to find relevant non-stripped binaries, with bundle size of 32
++# Ignore all 'no machine' files
++# Only operate on non-stripped binaries
++
++strip_elf_binaries()
++{
++  local nlinks="${1}"
++  local nprocs="${2}"
++
++  find "$RPM_BUILD_ROOT" -type f \
++    ! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" \
++    ! -name "*.go" -links "${nlinks}" -print0 | \
++    xargs -0 -r -P${nprocs} -n${MAX_ARGS} sh -c "file \"\$@\" | \
++    sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | \
++    grep -v 'no machine' | \
++    xargs -I\{\} $STRIP -g \{\}" ARG0
++}
++
++# strip all binaries with single link
++strip_elf_binaries "1" "${NCPUS}"
++
++# strip all binaries with more than 1 link
++strip_elf_binaries "+1" "1"
+-- 
+2.46.0
+

@@ -1,8 +1,7 @@
 Summary:        The GNU Database Manager
 Name:           gdbm
 Version:        1.23
-Release:        2%{?dist}
-License:        GPLv3+
+Release:        4%{?dist}
 URL:            http://www.gnu.org/software/gdbm
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/gdbm/%{name}-%{version}.tar.gz
 %define sha512 %{name}=918080cb0225b221c11eb7339634a95e00c526072395f7a3d46ccf42ef020dea7c4c5bec34aff2c4f16033e1fff6583252b7e978f68b8d7f8736b0e025838e10
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 This is a disk file format database which stores key/data-pairs in
@@ -69,6 +71,10 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.23-4
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.23-3
+- Release bump for SRP compliance
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.23-2
 - Bump version as a part of readline upgrade
 * Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 1.23-1

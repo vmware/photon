@@ -4,27 +4,25 @@
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
 Version:        1.0.2
-Release:        4%{?dist}
-License:        GPLv3+
+Release:        5%{?dist}
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
-Vendor:         VMware, Inc.
-Distribution:   Photon
+Source0:        thin-provisioning-tools-%{version}.tar.gz
+%define sha512  thin-provisioning-tools=f5401631f0d10cb0fbd8e4b2979b38d2dc42621de558ffb23b2bcc12f1b7fead49ffa8b143af61227917edce9abc7b5a48c94036ae74c035a181661f82e80ed1
+Source1:        thin-provisioning-tools-deps-%{version}p1.tar.xz
+%define sha512  thin-provisioning-tools-deps-%{version}p1=f9219cca4bfcb3ace17417fc4de8581c306d7c19013e0d5b9273ebcd96cea3a90945b4abe2df36e73a44a1054c3a49fa40661b1af2880350de7717860981e50c
 
-Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=f5401631f0d10cb0fbd8e4b2979b38d2dc42621de558ffb23b2bcc12f1b7fead49ffa8b143af61227917edce9abc7b5a48c94036ae74c035a181661f82e80ed1
-
-Source1: %{name}-deps-%{version}p1.tar.xz
-%define sha512 %{name}-deps-%{version}p1=f9219cca4bfcb3ace17417fc4de8581c306d7c19013e0d5b9273ebcd96cea3a90945b4abe2df36e73a44a1054c3a49fa40661b1af2880350de7717860981e50c
-
+Source2: license.txt
+%include %{SOURCE2}
 BuildRequires:  expat-devel
 BuildRequires:  libaio-devel
 BuildRequires:  boost-devel
 BuildRequires:  rust
-
 Requires:       expat
 Requires:       libaio
 Requires:       libgcc
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
 %description
 thin-provisioning-tools contains check,dump, restore, repair, rmap and metadata_size tools to manage device-mapper thin provisioning target metadata devices;
@@ -49,6 +47,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0.2-5
+- Release bump for SRP compliance
 * Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.2-4
 - Bump up version as part of rust upgrade.
 * Thu Mar 23 2023 Srish Srinivasan <ssrish@vmware.com> 1.0.2-3

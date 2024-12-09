@@ -1,17 +1,20 @@
 Summary:        Preload library to back text, data, malloc() or shared memory with hugepages
 Name:           libhugetlbfs
 Version:        2.23
-Release:        3%{?dist}
-License:        LGPL-2.1
+Release:        4%{?dist}
 URL:            https://github.com/libhugetlbfs/libhugetlbfs
 Source0:        https://github.com/libhugetlbfs/libhugetlbfs/releases/download/%{version}/libhugetlbfs-%{version}.tar.gz
 %define sha512  libhuge=b509ff60179e3dc52532bc16b1a414b4993bb79019733a30a7bfa69311f627606b196aced4457bdb88edccdbe7070df755aaab37c6599f4cecdfcb0015aee212
+
+Source1: license.txt
+%include %{SOURCE1}
 Patch0:         Disable-hugepage-backend-malloc.patch
 Group:          System/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  which
-%if %{with_check}
+
+%if 0%{?with_check}
 BuildRequires:  python3
 %endif
 
@@ -54,6 +57,8 @@ make PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib check
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.23-4
+- Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.23-3
 - Update release to compile with python 3.11
 * Mon Sep 19 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.23-2

@@ -1,0 +1,1 @@
+License: Spencer-86 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL

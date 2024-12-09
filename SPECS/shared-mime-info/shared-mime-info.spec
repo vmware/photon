@@ -1,8 +1,7 @@
 Summary:        MIME database
 Name:           shared-mime-info
 Version:        2.2
-Release:        5%{?dist}
-License:        GPLv2+
+Release:        4%{?dist}
 URL:            http://freedesktop.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://freedesktop.org/~hadess/%{name}-%{version}.tar.gz
 %define sha512 %{name}=490d96daf4214ab6ac537761b67f3ff4716b95d7ea3fedd2e2ab7b0b02d946acad49790a25efcb5e949551dc4c39ba08911e59f06b198b61dcb1bc44799a2b2e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  meson
 BuildRequires:  cmake
@@ -49,11 +51,9 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.2-5
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.2-4
-- Bump version as a part of libxml2 upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.2-3
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2-4
+- Release bump for SRP compliance
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.2-3
 - Bump version as a part of libxml2 upgrade
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.2-2
 - Bump version as a part of gettext upgrade

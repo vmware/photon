@@ -1,10 +1,9 @@
 Name:           hunspell
 Version:        1.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A spell checker and morphological analyzer library
 Group:          Development/Languages
 Vendor:         VMware, Inc.
-License:        LGPL-2.1-or-later OR GPL-2.0-or-later OR MPL-1.1
 URL:            https://github.com/hunspell/hunspell
 Distribution:   Photon
 
@@ -17,6 +16,9 @@ Source0: https://github.com/hunspell/hunspell/releases/download/v%{version}/huns
 # URL: https://github.com/wooorm/dictionaries
 Source1: dictionaries-1.0.tar.gz
 %define sha512 dictionaries=c91251de5be9c9673fe54649ef431051f38c60b21549af9f343e895cc1275ab2c4e3c3f56943b5a26c18a6c65d2c483ca24fb620908eb6443ba6890a06939aea
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: perl
 BuildRequires: libtool
@@ -74,5 +76,7 @@ install -m0644 dictionaries/*.dic %{buildroot}%{_datadir}/%{name}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.7.2-2
+- Release bump for SRP compliance
 * Mon Feb 12 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.7.2-1
 - Initial version, required by enchant

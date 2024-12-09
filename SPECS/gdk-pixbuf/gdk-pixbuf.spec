@@ -1,8 +1,7 @@
 Summary:        toolkit for image loading and pixel buffer manipulation.
 Name:           gdk-pixbuf
 Version:        2.42.0
-Release:        4%{?dist}
-License:        LGPLv2+
+Release:        8%{?dist}
 URL:            http://www.gt.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,12 @@ Distribution:   Photon
 
 Source0: http://ftp.gnome.org/pub/gnome/sources/%{name}/2.42/%{name}-%{version}.tar.xz
 %define sha512 %{name}=c9962d42e5bf13514091234342e259be1e06b2c4dea2936e16104a3b58f0b6837f070224c04be9541d75f5ea34d1da398f178a1eed1f9059f6429faf5c223e34
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0:         gdk-pixbuf-CVE-2021-46829.patch
+Patch1:         CVE-2020-29385.patch
 
 BuildRequires:  meson
 BuildRequires:  cmake
@@ -80,10 +85,18 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig
 
 %changelog
-* Tue Jun 27 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.42.0-4
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.42.0-8
+- Release bump for SRP compliance
+* Fri Nov 03 2023 Kuntal Nayak <nkuntal@vmware.com> 2.42.0-7
+- Fix CVE-2020-29385
+* Wed Jul 19 2023 Harinadh D <hdommaraju@vmware.com> 2.42.0-6
+- Fix CVE-2021-46829
+* Tue Jul 04 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.42.0-5
 - Bump version as a part of libtiff upgrade
-* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 2.42.0-3
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 2.42.0-4
 - Bump version as a part of libX11 upgrade
+* Fri May 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.42.0-3
+- Bump version as a part of libtiff upgrade
 * Tue Dec 13 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.42.0-2
 - Bump release as a part of libpng upgrade
 * Tue Sep 06 2022 Shivani Agarwal <shivania2@vmware.com> 2.42.0-1

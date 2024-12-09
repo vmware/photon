@@ -1,8 +1,7 @@
 Summary:        Container Network Interface (CNI) plugins
 Name:           cni
 Version:        1.1.1
-Release:        8%{?dist}
-License:        ASL 2.0
+Release:        13%{?dist}
 URL:            https://github.com/containernetworking/plugins
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/containernetworking/plugins/archive/%{name}-v%{version}.tar.gz
 %define sha512 %{name}=03da31caee5f9595abf65d4a551984b995bc18c5e97409549f08997c5a6a2b41a8950144f8a5b4f810cb401ddbe312232d2be76ec977acf8108eb490786b1817
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  go
 
@@ -40,6 +42,16 @@ make -k check %{?_smp_mflags}
 %{_default_cni_plugins_dir}/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.1.1-13
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.1-12
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.1-11
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.1.1-10
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.1.1-9
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.1-8
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.1-7
@@ -48,7 +60,7 @@ make -k check %{?_smp_mflags}
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.1-5
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.1-4
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.1-4
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.1-3
 - Bump up version to compile with new go

@@ -1,8 +1,7 @@
 Summary:        The package automatically configure source code
 Name:           autoconf
 Version:        2.71
-Release:        3%{?dist}
-License:        GPLv2
+Release:        6%{?dist}
 URL:            http://www.gnu.org/software/autoconf
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/autoconf/%{name}-%{version}.tar.xz
 %define sha512 %{name}=73d32b4adcbe24e3bafa9f43f59ed3b6efbd3de0f194e5ec90375f35da1199c583f5d3e89139b7edbad35171403709270e339ffa56a2ecb9b3123e9285021ff0
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       perl
 Requires:       m4
@@ -46,7 +48,13 @@ make -k check %{?_smp_mflags} TESTSUITEFLAGS="1-500"
 %{_datadir}/autoconf/*
 
 %changelog
-* Fri Dec 29 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.71-3
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.71-6
+- Release bump for SRP compliance
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.71-5
+- Remove standalone license exceptions
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.71-4
+- Release bump for SRP compliance
+* Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.71-3
 - Add provides & obsoletes autoconf213
 * Thu Nov 10 2022 Dweep Advani <dadvani@vmware.com> 2.71-2
 - Rebuild with perl 5.36.0

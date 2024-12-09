@@ -3,8 +3,8 @@
 %define __os_install_post %{nil}
 
 # Must be in sync with package version
-%define DOCKER_ENGINE_GITCOMMIT a61e2b4
-%define DOCKER_CLI_GITCOMMIT ced0996
+%define DOCKER_ENGINE_GITCOMMIT 3ab5c7d
+%define DOCKER_CLI_GITCOMMIT 3ab4256
 %define TINI_GITCOMMIT de40ad0
 
 %define gopath_comp_engine github.com/docker/docker
@@ -13,16 +13,15 @@
 
 Summary:        Docker
 Name:           docker
-Version:        24.0.5
-Release:        6%{?dist}
-License:        ASL 2.0
+Version:        27.3.1
+Release:        2%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-%define sha512 moby=cde2e47e7658b153399ee29154ec21eebf54b292185e07d43b968895dcfdfead95e4507fefb713859a4540f21d8007116d3ebeaa1fb7ba305fb2a0449ba1bee6
+%define sha512 moby=0fddcc8314eed2e7b131af78f1fa01292cfc4fcb7fd0af94b79d5435349ab54a21b0a78cffbf29dd4c58747d8bcd1f47473cc5f5ab2596e133828b2e6540d172
 
 Source1: https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
 %define sha512 tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
@@ -31,13 +30,17 @@ Source2: https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
 %define sha512 libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
 
 Source3: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
-%define sha512 docker-cli=765c67634d91d248b156d3e407398b98b7a0a89507bbac0310d4a68b95aa1a05e3af43c8b90bc10166748749d8cc36670619fc9efca110beefbdcd4385dc96be
+%define sha512 docker-cli=6e80e94a0e9e16aaf2b19bc97c99ead39184745f601aea94e47c066a19b6436850d5269962e0802e9f7fa9f7dcb357ec0756c9466afa2c0a6ae239d61ef15961
 
 Source4:       docker-post19.service
 Source5:       docker-post19.socket
 Source6:       default-disable.preset
 
+Source7: license.txt
+%include %{SOURCE7}
+
 Patch0:        tini-disable-git.patch
+Patch1:        bridge-networking.patch
 
 BuildRequires:  systemd-devel
 BuildRequires:  device-mapper-devel
@@ -110,6 +113,9 @@ Use dockerd-rootless-setuptool.sh to setup systemd for dockerd-rootless.sh.
 %prep
 # Using autosetup is not feasible
 %setup -q -c -n moby-%{version}
+pushd moby-%{version}
+%autopatch -p1 1
+popd
 
 mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
          "$(dirname "src/%{gopath_comp_cli}")" \
@@ -128,7 +134,7 @@ tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
 
 # Patch sources
 pushd tini
-%autopatch -p1 -M0
+%autopatch -p1 0
 popd
 
 %build
@@ -322,20 +328,36 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
-* Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.0.5-6
-- Bump version as a part of dbus upgrade
-* Fri Mar 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.0.5-5
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 27.3.1-2
+- Release bump for SRP compliance
+* Mon Nov 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 27.3.1-1
+- Upgrade to v27.3.1
+* Thu Nov 21 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 27.2.0-1
+- Update to 27.2.0
+* Thu Oct 24 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.0.9-1
+- Update to 24.0.9, Fixes CVE-2024-24557
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.5-9
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.5-8
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 24.0.5-7
+- Bump version as a part of go upgrade
+* Fri Mar 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.0.5-6
 - Add iptables to docker-engine requires
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 24.0.5-5
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-4
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-3
 - Bump up version to compile with new go
 * Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-2
 - Bump up version to compile with new go
-* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-1
-- Upgrade to v24.0.5.
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 23.0.2-3
+* Thu Jul 20 2023 Piyush Gupta <gpiyush@vmware.com> 24.0.5-1
+- Upgrade to 24.0.5.
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 23.0.2-4
 - Bump up version to compile with new go
+* Fri May 19 2023 Piyush Gupta <gpiyush@vmware.com> 23.0.2-3
+- Bump up version to compile with containerd upgrade
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 23.0.2-2
 - Bump up version to compile with new go
 * Thu Mar 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.0.2-1

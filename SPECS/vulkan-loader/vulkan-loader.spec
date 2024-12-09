@@ -1,14 +1,16 @@
 Name:           vulkan-loader
 Version:        1.3.237
-Release:        5%{?dist}
+Release:        4%{?dist}
 Summary:        Vulkan ICD desktop loader
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/Vulkan-Loader
 Source0:        https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/Vulkan-Loader-%{version}.tar.gz
 %define sha512  Vulkan-Loader=54d9503ec575380d49ccf20dcedefa38baf29483c1fa125059cf2535021ed4c618781317dfca659cdbadb40331da4ffb61d88849504d6cfb688ea24cc92254e8
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  python3-devel
@@ -92,13 +94,11 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.3.237-5
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.3.237-4
-- Bump version as a part of libxml2 upgrade
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.3.237-4
+- Release bump for SRP compliance
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.3.237-3
 - Bump version as a part of libX11 upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.237-2
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.237-2
 - Bump version as a part of libxml2 upgrade
 * Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.237-1
 - Automatic Version Bump

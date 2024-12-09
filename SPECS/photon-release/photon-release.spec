@@ -1,17 +1,16 @@
 Summary:        Photon release files
 Name:           photon-release
 Version:        5.0
-Release:        2%{?dist}
-License:        Apache License
+Release:        5%{?dist}
 Group:          System Environment/Base
-URL:            https://vmware.github.io/photon/
+URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=a991501455f5291d3075e9b900327cf3537527cc1b2c890dc7b01555381afc6fb3d124d7f86a3c58246fdd33ea69b0dafb231b1669ce757770aba55555ff09bd
+Source1: lsb_release
 
-Source1:        lsb_release
+Source2: license.txt
+%include %{SOURCE2}
 
 Provides:       system-release
 Provides:       system-release(%{version})
@@ -25,16 +24,14 @@ BuildArch:      noarch
 Photon release files such as yum configs and other %{_sysconfdir}/ release related files
 
 %install
-rm -rf %{buildroot}
-install -d %{buildroot}%{_sysconfdir}
-install -d %{buildroot}%{_libdir}
+mkdir -m755 -p %{buildroot}{%{_sysconfdir},%{_libdir}}
 
-mkdir -p %{buildroot}%{_bindir}
-cp %{SOURCE1} %{buildroot}%{_bindir}
-chmod +x %{buildroot}%{_bindir}/lsb_release
+install -D -m 755 %{SOURCE1} %{buildroot}%{_bindir}/lsb_release
 
-echo "VMware Photon OS %{photon_release_version}" > %{buildroot}%{_sysconfdir}/photon-release
-echo "PHOTON_BUILD_NUMBER=%{photon_build_number}" >> %{buildroot}%{_sysconfdir}/photon-release
+cat > %{buildroot}%{_sysconfdir}/photon-release <<- "EOF"
+VMware Photon OS %{photon_release_version}
+PHOTON_BUILD_NUMBER=%{photon_build_number}
+EOF
 
 cat > %{buildroot}%{_sysconfdir}/lsb-release <<- "EOF"
 DISTRIB_ID="VMware Photon OS"
@@ -43,19 +40,19 @@ DISTRIB_CODENAME=Photon
 DISTRIB_DESCRIPTION="VMware Photon OS %{photon_release_version}"
 EOF
 
-version_id=`echo %{photon_release_version} | grep -o -E '[0-9]+.[0-9]+'`
+version_id=$(echo %{photon_release_version} | grep -o -E '[0-9]+.[0-9]+')
 cat > %{buildroot}%{_libdir}/os-release << EOF
 NAME="VMware Photon OS"
 VERSION="%{photon_release_version}"
 ID=photon
-VERSION_ID=$version_id
+VERSION_ID=${version_id}
 PRETTY_NAME="VMware Photon OS/Linux"
 ANSI_COLOR="1;34"
 HOME_URL="https://vmware.github.io/photon/"
 BUG_REPORT_URL="https://github.com/vmware/photon/issues"
 EOF
 
-ln -sv ..%{_libdir}/os-release %{buildroot}%{_sysconfdir}/os-release
+ln -srv %{buildroot}%{_libdir}/os-release %{buildroot}%{_sysconfdir}/os-release
 
 cat > %{buildroot}%{_sysconfdir}/issue <<- EOF
 Welcome to Photon %{photon_release_version} (\m) - Kernel \r (\l)
@@ -65,22 +62,29 @@ cat > %{buildroot}%{_sysconfdir}/issue.net <<- EOF
 Welcome to Photon %{photon_release_version} (%m) - Kernel %r (%t)
 EOF
 
-%post
-
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/lsb_release
-%config(noreplace) %{_sysconfdir}/photon-release
-%config(noreplace) %{_sysconfdir}/lsb-release
-%config(noreplace) %{_libdir}/os-release
+%dir %attr(0755,-,-) %{_libdir}
+%dir %attr(0755,-,-) %{_bindir}
+%dir %attr(0755,-,-) %{_sysconfdir}
+%attr(0755,-,-) %{_bindir}/lsb_release
+%config(noreplace) %attr(0644,-,-) %{_sysconfdir}/photon-release
+%config(noreplace) %attr(0644,-,-) %{_sysconfdir}/lsb-release
+%config(noreplace) %attr(0644,-,-) %{_libdir}/os-release
 %config(noreplace) %{_sysconfdir}/os-release
-%config(noreplace) %{_sysconfdir}/issue
-%config(noreplace) %{_sysconfdir}/issue.net
+%config(noreplace) %attr(0644,-,-) %{_sysconfdir}/issue
+%config(noreplace) %attr(0644,-,-) %{_sysconfdir}/issue.net
 
 %changelog
+* Thu Nov 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-5
+- Fix file and directory permissions
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.0-4
+- Remove standalone license exceptions
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-3
+- Release bump for SRP compliance
 * Tue Jan 17 2023 Tapas Kundu <tkundu@vmware.com> 5.0-2
 - Requires bash
 * Wed Dec 21 2022 Tapas Kundu <tkundu@vmware.com> 5.0-1

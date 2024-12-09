@@ -2,7 +2,6 @@ Summary:        Modern asynchronous API to the DNS
 Name:           getdns
 Version:        1.7.2
 Release:        2%{?dist}
-License:        BSD
 Url:            http://www.getdnsapi.net
 Group:          Applications
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://www.getdnsapi.net/dist/%{name}-%{version}.tar.gz
 %define sha512 %{name}=6c4a75a4696c46ec8bd9e9659a93fd81f3490b43da28a4c95f99a766027c7588fc493a8ac51563afb8f975c0e5b77d5ea67014d80e78ee2bb17fba1d1073d19f
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  check-devel
@@ -98,8 +100,8 @@ rm -rf %{buildroot}
 %doc spec
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.2-2
-- Bump version as a part of openssl upgrade
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.7.2-2
+- Release bump for SRP compliance
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.2-1
 - Upgrade to v1.7.2
 * Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-2

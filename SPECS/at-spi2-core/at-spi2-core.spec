@@ -1,8 +1,7 @@
 Summary:        Service Provider Interface for the Assistive Technologies.
 Name:           at-spi2-core
 Version:        2.46.0
-Release:        8%{?dist}
-License:        LGPLv2+
+Release:        6%{?dist}
 URL:            http://www.linuxfoundation.org/en/AT-SPI_on_D-Bus
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://ftp.gnome.org/pub/gnome/sources/%{name}/2.46/%{name}-%{version}.tar.xz
 %define sha512  at-spi2-core=633af2c02fab3b8cb02e37f929ce80dd5ce28ca5641046ef5e25cb29299530b90028e6c6f318a0c098a4270bed3eab48fb55d6967a76bfadd2520f49de47c770
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  meson >= 0.50
 BuildRequires:  libxml2-devel
@@ -92,19 +94,15 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.46.0-8
-- Bump version as a part of dbus upgrade
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.46.0-7
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.46.0-6
-- Bump version as a part of libxml2 upgrade
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.46.0-6
+- Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.46.0-5
 - Add atk-devel to devel package requires
 * Wed Jun 21 2023 Kuntal Nayak <nkuntal@vmware.com> 2.46.0-4
 - Bump version as a part of libXi upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 2.46.0-3
 - Bump version as a part of libX11 upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.46.0-2
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.46.0-2
 - Bump version as a part of libxml2 upgrade
 * Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 2.46.0-1
 - Automatic Version Bump

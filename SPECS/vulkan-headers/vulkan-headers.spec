@@ -1,15 +1,17 @@
 Summary:        Vulkan Header files and API registry
 Name:           vulkan-headers
 Version:        1.3.237
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        ASL 2.0
 URL:            https://github.com/KhronosGroup/Vulkan-Headers
 
 Source0:        https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/Vulkan-Headers-%{version}.tar.gz
 %define sha512  Vulkan-Headers=6c259fc0ea02a8e2f6b1f5597559f6dfc0f5b5c8553a9c8aa81ac73414a1e672dc45e5e3499bcad70ac27a4802a98cfeb6eada5497a980832fdd7f947da508f8
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 
@@ -57,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/cmake/*
 
 %changelog
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.3.237-2
+- Release bump for SRP compliance
 * Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.237-1
 - Automatic Version Bump
 * Fri Nov 11 2022 Michelle Wang <michellew@vmware.com> 1.3.234-1

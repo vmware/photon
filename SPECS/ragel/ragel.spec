@@ -2,16 +2,18 @@
 
 Name:           ragel
 Version:        7.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Finite state machine compiler
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        GPL
 URL:            https://github.com/adrian-thurston/ragel
 
 Source0: https://github.com/adrian-thurston/ragel/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=234efc74300877f2bff1e84ffe50bd926c372dee1bab0b734e748e3fc61a6a86d1cfbfb1002e05d4adb70119f9f964ef555fb79f5aab8a12f3e0fc7ae2b23bcc
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: ragel-7.0.4-link-colm-properly.patch
 
@@ -74,5 +76,7 @@ rm -rf %{buildroot}
 %{_datadir}/*.lm
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.0.4-2
+- Release bump for SRP compliance
 * Mon Sep 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.4-1
 - Initial Build

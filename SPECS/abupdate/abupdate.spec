@@ -5,7 +5,6 @@ Summary:        A/B partition set update and rollback
 Version:        1.0
 Release:        5%{?dist}
 URL:            http://github.com/vmware/photon
-License:        GPLv2
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,6 +14,9 @@ Source0:        abupdate
 Source1:        abupdate.conf
 Source2:        abupdate.service
 Source3:        README
+
+Source4: license.txt
+%include %{SOURCE4}
 
 BuildRequires:  systemd-rpm-macros
 
@@ -39,7 +41,7 @@ as well as switch between sets, and rollback from A to B.
 
 %install
 mkdir -p %{buildroot}{%{_sbindir},%{_sysconfdir},%{_unitdir},%{_docdir}}
-install -D -p -m 0755 %{SOURCE0} %{buildroot}%{_sbindir}
+cp %{SOURCE0} %{buildroot}%{_sbindir}
 cp %{SOURCE1} %{buildroot}%{_sysconfdir}
 cp %{SOURCE2} %{buildroot}%{_unitdir}
 cp %{SOURCE3} %{buildroot}%{_docdir}
@@ -52,8 +54,8 @@ cp %{SOURCE3} %{buildroot}%{_docdir}
 %{_unitdir}/abupdate.service
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-5
-- Bump version as a part of util-linux upgrade
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.0-5
+- Release bump for SRP compliance
 * Tue Nov 28 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.0-4
 - Don't reinstall grub on EFI
 * Thu Feb 23 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.0-3

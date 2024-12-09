@@ -1,0 +1,68 @@
+From 2bd815d8347851212b9a91dbdca8053f4dbdac87 Mon Sep 17 00:00:00 2001
+From: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Date: Tue, 4 Oct 2022 18:43:50 -0400
+Subject: [PATCH 057/175] nscd: Drop local address tuple variable [BZ #29607]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When a request needs to be resent (e.g. due to insufficient buffer
+space), the references to subsequent tuples in the local variable are
+stale and should not be used.  This used to work by accident before, but
+since 1d495912a it no longer does.  Instead of trying to reset it, just
+let gethostbyname4_r write into TUMPBUF6 for us, thus maintaining a
+consistent state at all times.  This is now consistent with what is done
+in gaih_inet for getaddrinfo.
+
+Resolves: BZ #29607
+Reported-by: Holger Hoffstätte <holger@applied-asynchrony.com>
+Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 6e33e5c4b73cea7b8aa3de0947123db16200fb65)
+---
+ NEWS           | 2 ++
+ nscd/aicache.c | 5 ++---
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 91bcfeb7a6f1197d089c4ef949a6630578445064..63e26d7062b78ceac9543e1f09c1f4e22a29e8d2 100644
+--- a/NEWS
++++ b/NEWS
+@@ -28,6 +28,8 @@ The following bugs are resolved with this release:
+   [29537] libc: [2.34 regression]: Alignment issue on m68k when using
+   [29539] libc: LD_TRACE_LOADED_OBJECTS changed how vDSO library are
+   [29583] Use 64-bit interfaces in gconv_parseconfdir
++  [29607] nscd repeatably crashes calling __strlen_avx2 when hosts cache is
++    enabled
+   [29638] libc: stdlib: arc4random fallback is never used
+ 
+ Version 2.36
+diff --git a/nscd/aicache.c b/nscd/aicache.c
+index 51e793199fff83137548501949b553bc2cad2f37..e0baed170b36d6d1ca2ca6c3f758e50c131d5e97 100644
+--- a/nscd/aicache.c
++++ b/nscd/aicache.c
+@@ -110,11 +110,10 @@ addhstaiX (struct database_dyn *db, int fd, request_header *req,
+ 							  "gethostbyname4_r");
+       if (fct4 != NULL)
+ 	{
+-	  struct gaih_addrtuple atmem;
+ 	  struct gaih_addrtuple *at;
+ 	  while (1)
+ 	    {
+-	      at = &atmem;
++	      at = NULL;
+ 	      rc6 = 0;
+ 	      herrno = 0;
+ 	      status[1] = DL_CALL_FCT (fct4, (key, &at,
+@@ -137,7 +136,7 @@ addhstaiX (struct database_dyn *db, int fd, request_header *req,
+ 	    goto next_nip;
+ 
+ 	  /* We found the data.  Count the addresses and the size.  */
+-	  for (const struct gaih_addrtuple *at2 = at = &atmem; at2 != NULL;
++	  for (const struct gaih_addrtuple *at2 = at; at2 != NULL;
+ 	       at2 = at2->next)
+ 	    {
+ 	      ++naddrs;
+-- 
+2.35.6
+

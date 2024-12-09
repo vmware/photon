@@ -1,14 +1,16 @@
 Name:           python3-hatch-vcs
 Version:        0.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Hatch plugin for versioning with your preferred VCS
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/ofek/hatch-vcs
 Source0:        https://files.pythonhosted.org/packages/source/h/hatch_vcs/hatch_vcs-%{version}.tar.gz
 %define sha512  hatch_vcs=3eb0b04022d4801a982d90a3a0e34e59fcf7dd04c0c2db91c0306b4187ba466ac85ecbb80943a35f4a6a4912bc2ddf2633fab897e8820f5e1ee9d200147b5faf
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
@@ -40,5 +42,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.2.0-2
+- Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.2.0-1
 - Initial version

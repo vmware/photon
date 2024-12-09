@@ -1,0 +1,46 @@
+From 735cc668131e830d6d61820e06999505f29ed25c Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Tue, 30 May 2023 16:40:38 -0300
+Subject: [PATCH 102/175] io: Fix F_GETLK, F_SETLK, and F_SETLKW for powerpc64
+
+Different than other 64 bit architectures, powerpc64 defines the
+LFS POSIX lock constants  with values similar to 32 ABI, which
+are meant to be used with fcntl64 syscall.  Since powerpc64 kABI
+does not have fcntl, the constants are adjusted with the
+FCNTL_ADJUST_CMD macro.
+
+The 4d0fe291aed3a476a changed the logic of generic constants
+LFS value are equal to the default values; which is now wrong
+for powerpc64.
+
+Fix the value by explicit define the previous glibc constants
+(powerpc64 does not need to use the 32 kABI value, but it simplifies
+the FCNTL_ADJUST_CMD which should be kept as compatibility).
+
+Checked on powerpc64-linux-gnu and powerpc-linux-gnu.
+
+(cherry picked from commit 5f828ff824e3b7cd133ef905b8ae25ab8a8f3d66)
+---
+ sysdeps/unix/sysv/linux/powerpc/bits/fcntl.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/sysdeps/unix/sysv/linux/powerpc/bits/fcntl.h b/sysdeps/unix/sysv/linux/powerpc/bits/fcntl.h
+index d7cf158b338b4fe83b1af599154e4bfc38916c3b..49c8fac0fb38ed70b85cb8d0f524f7159900d4cb 100644
+--- a/sysdeps/unix/sysv/linux/powerpc/bits/fcntl.h
++++ b/sysdeps/unix/sysv/linux/powerpc/bits/fcntl.h
+@@ -33,6 +33,12 @@
+ # define __O_LARGEFILE	0200000
+ #endif
+ 
++#if __WORDSIZE == 64
++# define F_GETLK	5
++# define F_SETLK	6
++# define F_SETLKW	7
++#endif
++
+ struct flock
+   {
+     short int l_type;	/* Type of lock: F_RDLCK, F_WRLCK, or F_UNLCK.	*/
+-- 
+2.35.6
+

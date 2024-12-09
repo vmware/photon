@@ -1,0 +1,60 @@
+From 76e05613ee28f4ac4a0ab97effc32e0e78e37a56 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Thu, 29 Sep 2022 16:15:20 -0300
+Subject: [PATCH 046/175] stdlib: Fix __getrandom_nocancel type and arc4random
+ usage (BZ #29638)
+
+Using an unsigned type prevents the fallback to be used if kernel
+does not support getrandom syscall.
+
+Checked on x86_64-linux-gnu.
+
+Reviewed-by: Wilco Dijkstra  <Wilco.Dijkstra@arm.com>
+(cherry picked from commit 13db9ee2cb3b77e25f852be7d6952882e1be6f00)
+---
+ NEWS                                 | 1 +
+ stdlib/arc4random.c                  | 2 +-
+ sysdeps/unix/sysv/linux/not-cancel.h | 2 +-
+ 3 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 1cc9a16bbfcb63babf980fcd81d465abb584f3e9..91bcfeb7a6f1197d089c4ef949a6630578445064 100644
+--- a/NEWS
++++ b/NEWS
+@@ -28,6 +28,7 @@ The following bugs are resolved with this release:
+   [29537] libc: [2.34 regression]: Alignment issue on m68k when using
+   [29539] libc: LD_TRACE_LOADED_OBJECTS changed how vDSO library are
+   [29583] Use 64-bit interfaces in gconv_parseconfdir
++  [29638] libc: stdlib: arc4random fallback is never used
+ 
+ Version 2.36
+ 
+diff --git a/stdlib/arc4random.c b/stdlib/arc4random.c
+index e417ef624d72952ed1bf68fa9006773a6c8fdb3c..960a38f2954d84e0011793ff893deefd87443496 100644
+--- a/stdlib/arc4random.c
++++ b/stdlib/arc4random.c
+@@ -34,7 +34,7 @@ void
+ __arc4random_buf (void *p, size_t n)
+ {
+   static int seen_initialized;
+-  size_t l;
++  ssize_t l;
+   int fd;
+ 
+   if (n == 0)
+diff --git a/sysdeps/unix/sysv/linux/not-cancel.h b/sysdeps/unix/sysv/linux/not-cancel.h
+index a263d294b1bbfd00726667ae872ed829133a78a6..cf35c8bfc9043ec99b368fa9362d585c16f59c9c 100644
+--- a/sysdeps/unix/sysv/linux/not-cancel.h
++++ b/sysdeps/unix/sysv/linux/not-cancel.h
+@@ -68,7 +68,7 @@ __writev_nocancel_nostatus (int fd, const struct iovec *iov, int iovcnt)
+   INTERNAL_SYSCALL_CALL (writev, fd, iov, iovcnt);
+ }
+ 
+-static inline int
++static inline ssize_t
+ __getrandom_nocancel (void *buf, size_t buflen, unsigned int flags)
+ {
+   return INLINE_SYSCALL_CALL (getrandom, buf, buflen, flags);
+-- 
+2.35.6
+

@@ -1,0 +1,1 @@
+License: MIT AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT-Modern-Variant AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-macro AND HPND-sell-variant AND FSFAP AND LGPL-2.1-or-later AND FSFUL AND GPL-2.0-or-later AND FSFULLR AND FSFULLRWD AND GPL-2.0-only

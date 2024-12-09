@@ -1,0 +1,1 @@
+License: LGPL-2.1-only AND MIT AND curl AND LGPL-2.0-or-later

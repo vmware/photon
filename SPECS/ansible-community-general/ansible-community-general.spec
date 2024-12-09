@@ -3,16 +3,18 @@
 
 Summary:        Modules and plugins supported by Ansible community
 Name:           ansible-community-general
-Version:        8.1.0
-Release:        1%{?dist}
-License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND PSF-2.0
+Version:        6.3.0
+Release:        3%{?dist}
 URL:            https://github.com/ansible-collections/community.general
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/ansible-collections/community.general/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=dcb42234f135b1c6ad41aa42d430b83ef9355b03e71d8db5555b9685d5fef2278491cf1ea604991a4ca3455a0b707dcffd5f4028bfca256d874b70e9a60a347a
+%define sha512 %{name}-%{version}=33881ae519e6378152cf5ef9d9dcc209bc7e5e218190ba48b61a7635890c6abf5089b8d199e78518d1a06a3e8e0e8c25b5da1d03fc6cbb8929c3bd07cd0798f4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch: noarch
 
@@ -45,8 +47,10 @@ rm -vr %{buildroot}%{ansible_collection_files}/%{collection_name}/tests
 %{ansible_collection_files}
 
 %changelog
-* Tue Dec 26 2023 Nitesh Kumar <kunitesh@vmware.com> 8.1.0-1
-- Version upgrade to v8.1.0
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 6.3.0-3
+- Release bump for SRP compliance
+* Tue Dec 26 2023 Nitesh Kumar <kunitesh@vmware.com> 6.3.0-2
+- Version bump up as a part of ansible v2.14.12 upgrade
 * Wed Feb 22 2023 Nitesh Kumar <kunitesh@vmware.com> 6.3.0-1
 - Version upgrade to v6.3.0
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 6.1.0-1

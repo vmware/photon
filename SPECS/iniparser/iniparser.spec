@@ -1,8 +1,7 @@
 Name:       iniparser
 Version:    4.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    C library for parsing "INI-style" files
-License:    MIT
 URL:        https://github.com/ndevilla/%{name}
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    https://github.com/ndevilla/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %define sha512 %{name}=a8125aaaead1f9dfde380fa1e45bae31ca2312be029f2c53b4072cb3b127d16578a95c7c0aee1e3dda5e7b8db7a865ba6dfe8a1d80eb673061b3babef744e968
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: gcc
 BuildRequires: make
@@ -71,5 +73,7 @@ cd example && make %{?_smp_mflags}
 %{_includedir}/*.h
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 4.1-2
+- Release bump for SRP compliance
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.1-1
 - First build. Needed by ndctl v73.

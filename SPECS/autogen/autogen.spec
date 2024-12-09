@@ -2,8 +2,7 @@ Summary:    The Automated Text and Program Generation Tool
 Name:       autogen
 Version:    5.18.16
 # TODO: try to remove CFLAGS on next version update
-Release:    6%{?dist}
-License:    GPLv3+
+Release:    8%{?dist}
 URL:        http://www.gnu.org/software/autogen
 Group:      System Environment/Tools
 Vendor:     VMware, Inc.
@@ -11,6 +10,9 @@ Distribution:   Photon
 
 Source0:    https://ftp.gnu.org/gnu/autogen/rel%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=5f12c982dbe27873f5649a96049bf019ff183c90cc0c8a9196556b0ca02e72940cd422f6d6601f68cc7d8763b1124f2765c3b1a6335fc92ba07f84b03d2a53a1
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  guile-devel
 BuildRequires:  gc-devel
@@ -28,7 +30,6 @@ AutoGen is a tool designed to simplify the creation and maintenance of programs 
 
 %package libopts
 Summary:    Automated option processing library.
-License:    LGPLv3+
 Group:      System Environment/Libraries
 
 %description libopts
@@ -36,7 +37,6 @@ Libopts is very powerful command line option parser.
 
 %package libopts-devel
 Summary:    Development files for libopts
-License:    LGPLv3+
 Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
 Requires:   %{name}-libopts = %{version}-%{release}
@@ -90,6 +90,10 @@ make check
 %{_libdir}/*.a
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.18.16-8
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.18.16-7
+- Release bump for SRP compliance
 * Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.18.16-6
 - Bump version as a part of gc upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.18.16-5

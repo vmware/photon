@@ -18,6 +18,7 @@
       "linux-api-headers",
       "glibc",
       "glibc-libs",
+      "libxcrypt",
       "zlib",
       "file",
       "binutils",
@@ -40,6 +41,7 @@
         "file",
         "binutils",
         "gmp",
+        "libselinux",
         "mpfr",
         "mpc",
         "mpc-devel",
@@ -85,13 +87,16 @@
         "autoconf",
         "automake",
         "openssl-libs",
+        "openssl",
         "zstd",
         "rpm",
         "dwz",
         "debugedit",
         "pandoc-bin",
         "help2man",
-        "pcre-libs"
+        "pcre-libs",
+        "pcre",
+        "pcre2"
     ],
     "listToolChainRPMsToInstall": [
         "filesystem",
@@ -101,6 +106,8 @@
         "glibc-devel",
         "glibc-iconv",
         "glibc-tools",
+        "libxcrypt",
+        "libxcrypt-devel",
         "zlib",
         "zlib-devel",
         "file-libs",
@@ -110,6 +117,7 @@
         "binutils-devel",
         "gmp",
         "gmp-devel",
+        "libselinux",
         "mpfr",
         "mpfr-devel",
         "mpc",
@@ -198,7 +206,10 @@
         "rpm-sign-libs",
         "cpio",
         "debugedit",
-        "pcre-libs"
+        "pcre-libs",
+        "pcre2",
+        "pcre2-libs",
+        "pcre2-devel"
     ],
     "listMakeCheckRPMPkgtoInstall": [
         "python3",

@@ -1,30 +1,31 @@
-%define network_required 1
 %global debug_package %{nil}
 %define __os_install_post %{nil}
 
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        5.3.2
-Release:        5%{?dist}
-License:        Apache License 2.0
+Release:        6%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:            http://bazel.build
+URL:            http://bazel.build/
 
 Source0: https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name}-%{version}-dist.zip
 %define sha512 %{name}=a63895c224d51619cf83e6e55872aa6d55d17c7dcea59eaf467069d2c95259f5964fbf8fa5994df0e3c030234a7adf70a2715edb4edbbe2bf69d21dd698c0833
 
-BuildRequires: openjdk11
-BuildRequires: which
-BuildRequires: findutils
-BuildRequires: tar
-BuildRequires: gzip
-BuildRequires: zip
-BuildRequires: unzip
-BuildRequires: gcc
-BuildRequires: python3-devel
-BuildRequires: zlib-devel
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires:  openjdk11
+BuildRequires:  zlib-devel
+BuildRequires:  which
+BuildRequires:  findutils
+BuildRequires:  tar
+BuildRequires:  gzip
+BuildRequires:  zip
+BuildRequires:  unzip
+BuildRequires:  gcc
+BuildRequires:  python3
 
 Requires: (openjdk11 or openjdk17)
 
@@ -35,32 +36,32 @@ applications for both Android and iOS platforms. It also provides an extensible
 framework that you can use to develop your own build rules.
 
 %prep
-%autosetup -p1 -c
+%autosetup -p1 -c -n %{name}-%{version}
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
-mkdir -p %{_usr}/tmp
-export TMPDIR=%{_usr}/tmp
-./compile.sh
+export TMPDIR="%{_usr}/tmp"
+
+mkdir -p $TMPDIR
+env EXTRA_BAZEL_ARGS="--tool_java_runtime_version=local_jdk" ./compile.sh
 
 pushd output
-./%{name}
+./bazel
 popd
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-cp output/%{name} %{buildroot}%{_bindir}
-
-%clean
-rm -rf %{buildroot}
+cp output/bazel %{buildroot}%{_bindir}
 
 %files
 %defattr(-,root,root)
-%attr(755,root,root) %{_bindir}/%{name}
+%attr(755,root,root) %{_bindir}/bazel
 
 %changelog
-* Fri Dec 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-5
-- Fix spec shoes
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.3.2-6
+- Release bump for SRP compliance
+* Fri Jul 26 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 5.3.2-5
+- Offline build support
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-4
 - Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-3

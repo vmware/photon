@@ -1,14 +1,16 @@
 Summary:        MessagePack (de)serializer.
 Name:           python3-msgpack
 Version:        1.0.4
-Release:        2%{?dist}
-License:        Apache Software License
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://msgpack.org/
 Source0:        https://pypi.io/packages/source/m/msgpack-python/msgpack-%{version}.tar.gz
 %define sha512  msgpack=dcd59bf77408acf7171bdcc46c4d6bf875d36e80b216b7721544855e6c2b20be469415ee768b2195e74fe4650621ee6bfaa7897e709ac0d8d59cdb30772cb90b
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -35,6 +37,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.4-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.4-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.4-1

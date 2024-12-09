@@ -1,15 +1,17 @@
 Summary:        GSSAPI NTLMSSP Mechanism
 Name:           gssntlmssp
 Version:        1.1.0
-Release:        15%{?dist}
+Release:        16%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        LGPLv3+
 URL:            https://github.com/gssapi/gss-ntlmssp
 Group:          Applications/System
 
 Source0: https://github.com/gssapi/gss-ntlmssp/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=6cd20542aa18dba6f2b777cea8f481e7d73eb1034e14c8aba4ce8984f138ba445a82547b10297ee99f7042920bd910ca10dd67692f3b242696fcc27dfcab123f
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: krb5
 Requires: libtasn1
@@ -25,9 +27,10 @@ BuildRequires: automake
 BuildRequires: libtool
 BuildRequires: m4
 BuildRequires: libxslt-devel
+BuildRequires: libxml2
 BuildRequires: docbook-xsl
 BuildRequires: doxygen
-BuildRequires: gettext-devel
+BuildRequires: gettext
 BuildRequires: pkg-config
 BuildRequires: krb5-devel
 BuildRequires: libunistring-devel
@@ -38,6 +41,7 @@ BuildRequires: libtirpc-devel
 BuildRequires: openldap-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: jansson-devel
+BuildRequires: gnutls-devel
 BuildRequires: samba-client-libs
 BuildRequires: libwbclient
 BuildRequires: libwbclient-devel
@@ -49,7 +53,6 @@ A GSSAPI Mechanism that implements NTLMSSP
 
 %package devel
 Summary: Development header for GSSAPI NTLMSSP
-License: LGPLv3+
 Requires: %{name} = %{version}-%{release}
 
 %description devel
@@ -92,19 +95,21 @@ rm -rf %{buildroot}/*
 %{_includedir}/gssapi/gssapi_ntlmssp.h
 
 %changelog
-* Tue Apr 02 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.1.0-15
-- Version bump for gnutls upgrade
-* Tue Jan 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.1.0-14
-- Version bump for gnutls upgrade
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-13
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.1.0-16
+- Release bump for SRP compliance
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-15
 - Bump version as a part of gnutls upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-12
-- Bump version as a part of openssl upgrade
-* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 1.1.0-11
+* Mon Nov 27 2023 Harinadh D <hdommaraju@vmware.com> 1.1.0-14
+- Bump version as part of samba-client upgrade
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 1.1.0-13
 - Bump version as a part of openldap v2.6.4 upgrade
-* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.1.0-10
+* Mon Jul 31 2023 Oliver Kurth <okurth@vmware.com> 1.1.0-12
+- Bump version as part of samba-client upgrade
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.1.0-11
 - Bump version as a part of krb5 upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.0-9
+* Thu Jun 22 2023 Oliver Kurth <okurth@vmware.com> 1.1.0-10
+- Bump version as part of samba-client upgrade
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.0-9
 - Bump version as a part of libxml2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-8
 - Bump version as a part of zlib upgrade

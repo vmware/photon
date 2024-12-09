@@ -1,0 +1,1526 @@
+From a0639a6fa906047a9f24f9a7cf3a72d3c3a7f7d7 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Thu, 22 Jun 2023 12:58:53 -0700
+Subject: [PATCH] rename_dcerpc_to_smbdcerpc-4.18.3
+
+---
+ librpc/wscript_build                |   2 +-
+ librpc/wscript_build.orig           | 777 ++++++++++++++++++++++++++++
+ source4/dsdb/wscript_build          |   2 +-
+ source4/lib/messaging/wscript_build |   2 +-
+ source4/lib/registry/wscript_build  |   2 +-
+ source4/libcli/wscript_build        |   2 +-
+ source4/libnet/wscript_build        |   2 +-
+ source4/librpc/wscript_build        |  12 +-
+ source4/librpc/wscript_build.orig   | 517 ++++++++++++++++++
+ source4/rpc_server/wscript_build    |   2 +-
+ source4/torture/drs/wscript_build   |   2 +-
+ source4/torture/wscript_build       |   4 +-
+ source4/wscript_build               |   2 +-
+ 13 files changed, 1311 insertions(+), 17 deletions(-)
+ create mode 100644 librpc/wscript_build.orig
+ create mode 100644 source4/librpc/wscript_build.orig
+
+diff --git a/librpc/wscript_build b/librpc/wscript_build
+index eef57d47844..31a60e81d6d 100644
+--- a/librpc/wscript_build
++++ b/librpc/wscript_build
+@@ -731,7 +731,7 @@ bld.SAMBA_SUBSYSTEM('NDR_WINBIND',
+ 
+ bld.SAMBA_SUBSYSTEM('RPC_NDR_WINBIND',
+ 	source='gen_ndr/ndr_winbind_c.c',
+-	public_deps='dcerpc NDR_WINBIND'
++	public_deps='smbdcerpc NDR_WINBIND'
+ 	)
+ 
+ bld.SAMBA_SUBSYSTEM('NDR_FSRVP_STATE',
+diff --git a/librpc/wscript_build.orig b/librpc/wscript_build.orig
+new file mode 100644
+index 00000000000..eef57d47844
+--- /dev/null
++++ b/librpc/wscript_build.orig
+@@ -0,0 +1,777 @@
++#!/usr/bin/env python
++
++bld.RECURSE('idl')
++bld.RECURSE('../lib/compression')
++
++bld.SAMBA_SUBSYSTEM('NDR_AUDIOSRV',
++    source='gen_ndr/ndr_audiosrv.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_AUTH',
++    source='gen_ndr/ndr_auth.c ndr/ndr_auth.c',
++    public_headers='gen_ndr/auth.h',
++    header_path='gen_ndr',
++    public_deps='ndr NDR_SECURITY ndr-krb5pac'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_ATSVC',
++    source='gen_ndr/ndr_atsvc.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_NAMED_PIPE_AUTH',
++    source='gen_ndr/ndr_named_pipe_auth.c',
++    public_deps='ndr NDR_AUTH'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DNSSERVER',
++    source='gen_ndr/ndr_dnsserver.c ndr/ndr_dnsserver.c',
++    public_deps='ndr NDR_DNSP'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DNS',
++    source='gen_ndr/ndr_dns.c ndr/ndr_dns.c ndr/ndr_dns_utils.c',
++    public_deps='ndr NDR_DNSP'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DSBACKUP',
++    source='gen_ndr/ndr_dsbackup.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DFS',
++    source='gen_ndr/ndr_dfs.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_WINREG',
++    source='gen_ndr/ndr_winreg.c',
++    public_deps='ndr NDR_SECURITY NDR_LSA'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_EFS',
++    source='gen_ndr/ndr_efs.c',
++    public_deps='ndr NDR_SECURITY'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_ROT',
++    source='gen_ndr/ndr_rot.c',
++    public_deps='ndr NDR_ORPC'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_FRSRPC',
++    source='ndr/ndr_frsrpc.c gen_ndr/ndr_frsrpc.c',
++    public_deps='ndr NDR_FSCC'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_FRSAPI',
++    source='gen_ndr/ndr_frsapi.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_FRSTRANS',
++    source='gen_ndr/ndr_frstrans.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DFSBLOBS',
++    source='gen_ndr/ndr_dfsblobs.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_BKUPBLOBS',
++	source='ndr/ndr_bkupblobs.c gen_ndr/ndr_bkupblobs.c',
++	public_deps='ndr NDR_SECURITY NDR_FSCC'
++	)
++
++bld.SAMBA_SUBSYSTEM('NDR_FSCC',
++	source='gen_ndr/ndr_fscc.c',
++	public_deps='ndr'
++	)
++
++bld.SAMBA_SUBSYSTEM('NDR_POLICYAGENT',
++    source='gen_ndr/ndr_policyagent.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_UNIXINFO',
++    source='gen_ndr/ndr_unixinfo.c',
++    public_deps='ndr NDR_SECURITY'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_SPOOLSS',
++    source='gen_ndr/ndr_spoolss.c',
++    public_deps='ndr NDR_SPOOLSS_BUF NDR_SECURITY'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_SPOOLSS_BUF',
++    source='ndr/ndr_spoolss_buf.c',
++    deps='talloc'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_WINSPOOL',
++    source='gen_ndr/ndr_winspool.c',
++    public_deps='ndr NDR_SPOOLSS'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_PRINTCAP',
++    source='gen_ndr/ndr_printcap.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_EPMAPPER',
++    source='gen_ndr/ndr_epmapper.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DBGIDL',
++    source='gen_ndr/ndr_dbgidl.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DSSETUP',
++    source='gen_ndr/ndr_dssetup.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_MSGSVC',
++    source='gen_ndr/ndr_msgsvc.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_MGMT',
++    source='gen_ndr/ndr_mgmt.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_ORPC',
++    source='ndr/ndr_orpc.c gen_ndr/ndr_orpc.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_OXIDRESOLVER',
++    source='gen_ndr/ndr_oxidresolver.c',
++    public_deps='ndr NDR_ORPC'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_REMACT',
++    source='gen_ndr/ndr_remact.c',
++    public_deps='ndr NDR_ORPC'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DCOM',
++    source='gen_ndr/ndr_dcom.c',
++    public_deps='ndr NDR_SECURITY NDR_ORPC'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_WMI',
++    source='ndr/ndr_wmi.c gen_ndr/ndr_wmi.c',
++    public_deps='ndr NDR_SECURITY NDR_DCOM'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_WZCSVC',
++    source='gen_ndr/ndr_wzcsvc.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_BROWSER',
++    source='gen_ndr/ndr_browser.c',
++    public_deps='ndr NDR_SRVSVC'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_W32TIME',
++    source='gen_ndr/ndr_w32time.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_SCERPC',
++    source='gen_ndr/ndr_scerpc.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_SERVER_ID',
++    source='gen_ndr/ndr_server_id.c',
++    deps='ndr',
++    public_headers='gen_ndr/server_id.h',
++    header_path='gen_ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_TRKWKS',
++    source='gen_ndr/ndr_trkwks.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_KEYSVC',
++    source='gen_ndr/ndr_keysvc.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_RAP',
++    source='gen_ndr/ndr_rap.c ndr/ndr_rap.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_IDMAP',
++    source='gen_ndr/ndr_idmap.c',
++    public_deps='ndr ndr-standard'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_NOTIFY',
++    source='gen_ndr/ndr_notify.c',
++    public_deps='ndr ndr-standard NDR_SERVER_ID NDR_FILE_ID'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_NTLMSSP',
++    source='ndr/ndr_ntlmssp.c gen_ndr/ndr_ntlmssp.c',
++    public_deps='ndr ndr-standard'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_NEGOEX',
++    source='ndr/ndr_negoex.c gen_ndr/ndr_negoex.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DNSP',
++    source='gen_ndr/ndr_dnsp.c ndr/ndr_dnsp.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_NFS4ACL',
++    source='gen_ndr/ndr_nfs4acl.c',
++    public_deps='ndr NDR_SECURITY'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_NTPRINTING',
++    source='gen_ndr/ndr_ntprinting.c ndr/ndr_ntprinting.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_SAMR',
++    source='gen_ndr/ndr_samr.c',
++    public_deps='ndr NDR_SECURITY NDR_LSA'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_LSA',
++    source='gen_ndr/ndr_lsa.c',
++    public_deps='ndr NDR_SECURITY'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_SECURITY',
++    source='gen_ndr/ndr_security.c ndr/ndr_sec_helper.c',
++    deps='ndr samba-security',
++    public_headers='gen_ndr/security.h',
++    header_path='gen_ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_SMB_ACL',
++    source='gen_ndr/ndr_smb_acl.c',
++    deps='ndr',
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_SVCCTL',
++    source='gen_ndr/ndr_svcctl.c ndr/ndr_svcctl.c',
++    public_deps='ndr NDR_SECURITY'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_SRVSVC',
++    source='gen_ndr/ndr_srvsvc.c',
++    public_deps='ndr NDR_SECURITY NDR_SVCCTL'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_NETLOGON',
++    source='gen_ndr/ndr_netlogon.c ndr/ndr_netlogon.c',
++    public_deps='ndr NDR_SECURITY NDR_LSA NDR_SAMR ndr_nbt'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_EVENTLOG',
++    source='gen_ndr/ndr_eventlog.c',
++    public_deps='ndr NDR_SECURITY NDR_LSA'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_EVENTLOG6',
++    source='gen_ndr/ndr_eventlog6.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_NTSVCS',
++    source='gen_ndr/ndr_ntsvcs.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_WKSSVC',
++    source='gen_ndr/ndr_wkssvc.c',
++    public_deps='ndr NDR_SECURITY NDR_SRVSVC NDR_LSA'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_ECHO',
++    source='gen_ndr/ndr_echo.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_INITSHUTDOWN',
++    source='gen_ndr/ndr_initshutdown.c',
++    public_deps='ndr NDR_LSA'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_COMPRESSION',
++    source='ndr/ndr_compression.c',
++    public_deps='samba-errors ndr',
++    deps='z LZXPRESS'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_FSRVP',
++	source='gen_ndr/ndr_fsrvp.c',
++	public_deps='ndr'
++	)
++
++bld.SAMBA_SUBSYSTEM('NDR_WITNESS',
++    source='gen_ndr/ndr_witness.c ndr/ndr_witness.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_CLUSAPI',
++    source='gen_ndr/ndr_clusapi.c',
++    public_deps='ndr NDR_WINREG'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_MDSSVC',
++    source='gen_ndr/ndr_mdssvc.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DCERPC',
++    source='gen_ndr/ndr_dcerpc.c ndr/ndr_dcerpc.c',
++    public_deps='ndr',
++    public_headers='gen_ndr/ndr_dcerpc.h gen_ndr/dcerpc.h ndr/ndr_dcerpc.h',
++    header_path=[ ('gen_ndr*', 'gen_ndr'), ('ndr*', 'ndr')]
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DRSUAPI',
++    source='ndr/ndr_drsuapi.c gen_ndr/ndr_drsuapi.c',
++    public_deps='ndr NDR_COMPRESSION NDR_SECURITY ndr-standard asn1util',
++    public_headers='gen_ndr/ndr_drsuapi.h gen_ndr/drsuapi.h ndr/ndr_drsuapi.h',
++    header_path=[ ('gen_ndr*', 'gen_ndr'), ('ndr*', 'ndr')]
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_DRSBLOBS',
++    source='ndr/ndr_drsblobs.c gen_ndr/ndr_drsblobs.c',
++    public_deps='ndr NDR_DRSUAPI',
++    public_headers='gen_ndr/ndr_drsblobs.h gen_ndr/drsblobs.h ndr/ndr_drsblobs.h',
++    header_path=[ ('gen_ndr*', 'gen_ndr'), ('ndr*', 'ndr')]
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_ODJ',
++    source='gen_ndr/ndr_ODJ.c ndr/ndr_ODJ.c',
++    public_deps='NDR_LSA NDR_NETLOGON NDR_SECURITY',
++    deps='ndr')
++
++bld.SAMBA_SUBSYSTEM('NDR_KRB5PAC',
++                    source='',
++                    deps='ndr-krb5pac')
++
++bld.SAMBA_LIBRARY('ndr-krb5pac',
++    source='ndr/ndr_krb5pac.c gen_ndr/ndr_krb5pac.c',
++    public_deps='ndr ndr-standard NDR_SECURITY NDR_CLAIMS',
++    public_headers='gen_ndr/krb5pac.h gen_ndr/ndr_krb5pac.h ndr/ndr_krb5pac.h',
++    header_path=[ ('gen_ndr*', 'gen_ndr'), ('ndr*', 'ndr')],
++    pc_files='ndr_krb5pac.pc',
++    vnum='0.0.1'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_KRB5CCACHE',
++    source='gen_ndr/ndr_krb5ccache.c',
++    deps='ndr NDR_COMPRESSION NDR_SECURITY ndr-standard asn1util'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_CLAIMS',
++    source='gen_ndr/ndr_claims.c',
++    deps='ndr')
++
++bld.SAMBA_LIBRARY('ndr-standard',
++    source='',
++    vnum='0.0.1',
++    pc_files='ndr_standard.pc',
++    deps='''NDR_SECURITY NDR_LSA NDR_SAMR NDR_NETLOGON
++    NDR_EVENTLOG NDR_EVENTLOG6 NDR_DFS
++    NDR_NTSVCS NDR_SVCCTL NDR_INITSHUTDOWN NDR_WKSSVC NDR_SRVSVC NDR_WINREG
++    NDR_ECHO security NDR_DNS NDR_DNSP NDR_ATSVC NDR_SPOOLSS NDR_DSSETUP
++    NDR_SERVER_ID NDR_NOTIFY''',
++    public_deps='ndr',
++    public_headers='gen_ndr/samr.h gen_ndr/ndr_samr.h gen_ndr/lsa.h gen_ndr/netlogon.h gen_ndr/atsvc.h gen_ndr/ndr_atsvc.h gen_ndr/ndr_svcctl.h gen_ndr/svcctl.h gen_ndr/claims.h',
++    header_path='gen_ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_XATTR',
++    source='ndr/ndr_xattr.c gen_ndr/ndr_xattr.c',
++    public_deps='ndr NDR_SECURITY'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_SMB2_LEASE_STRUCT',
++    source='gen_ndr/ndr_smb2_lease_struct.c',
++    public_deps='ndr',
++    public_headers='gen_ndr/smb2_lease_struct.h'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_QUOTA',
++    source='gen_ndr/ndr_quota.c',
++    public_deps='ndr',
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_SCHANNEL',
++    source='ndr/ndr_schannel.c gen_ndr/ndr_schannel.c',
++    public_deps='ndr ndr_nbt'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_NBT',
++                    source='',
++                    deps='ndr_nbt')
++
++bld.SAMBA_LIBRARY('ndr_nbt',
++    source='gen_ndr/ndr_nbt.c ndr/ndr_nbt.c',
++    public_deps='ndr NDR_NBT_BUF NDR_SECURITY NDR_DNS',
++    public_headers='gen_ndr/nbt.h gen_ndr/ndr_nbt.h ndr/ndr_nbt.h',
++    header_path=[ ('gen_ndr*', 'gen_ndr'), ('ndr*', 'ndr')],
++    pc_files='ndr_nbt.pc',
++    vnum='0.0.1'
++)
++
++bld.SAMBA_SUBSYSTEM('NDR_BACKUPKEY',
++    source='ndr/ndr_backupkey.c gen_ndr/ndr_backupkey.c',
++    public_deps='ndr NDR_SECURITY'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_PREG',
++    source='gen_ndr/ndr_preg.c ndr/ndr_preg.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_CAB',
++    source='''
++           gen_ndr/ndr_cab.c
++           ndr/ndr_cab.c
++           ''',
++    public_deps='ndr NDR_COMPRESSION')
++
++bld.SAMBA_SUBSYSTEM('NDR_FILE_ID',
++    source='gen_ndr/ndr_file_id.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_MESSAGING',
++    source='gen_ndr/ndr_messaging.c',
++    public_deps='ndr NDR_SERVER_ID'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_WINSTATION',
++	source='gen_ndr/ndr_winstation.c',
++	public_deps='ndr'
++	)
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_ATSVC',
++    source='gen_ndr/ndr_atsvc_c.c',
++    public_deps='dcerpc-binding NDR_ATSVC'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_ECHO',
++    source='gen_ndr/ndr_echo_c.c',
++    public_deps='dcerpc-binding NDR_ECHO'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_LSA',
++    source='gen_ndr/ndr_lsa_c.c',
++    public_deps='dcerpc-binding ndr-standard'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_SAMR',
++    source='gen_ndr/ndr_samr_c.c',
++    public_deps='dcerpc-binding NDR_SAMR'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_DFS',
++    source='gen_ndr/ndr_dfs_c.c',
++    public_deps='dcerpc-binding ndr-standard'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_FRSAPI',
++    source='gen_ndr/ndr_frsapi_c.c',
++    public_deps='dcerpc-binding NDR_FRSAPI'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_DRSUAPI',
++    source='gen_ndr/ndr_drsuapi_c.c',
++    public_deps='dcerpc-binding NDR_DRSUAPI'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_UNIXINFO',
++    source='gen_ndr/ndr_unixinfo_c.c',
++    public_deps='dcerpc-binding NDR_UNIXINFO'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_BROWSER',
++    source='gen_ndr/ndr_browser_c.c',
++    public_deps='dcerpc-binding NDR_BROWSER'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_SPOOLSS',
++    source='gen_ndr/ndr_spoolss_c.c',
++    public_deps='dcerpc-binding NDR_SPOOLSS'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_WINSPOOL',
++    source='gen_ndr/ndr_winspool_c.c',
++    public_deps='dcerpc-binding NDR_WINSPOOL'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_WKSSVC',
++    source='gen_ndr/ndr_wkssvc_c.c',
++    public_deps='dcerpc-binding ndr-standard'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_SRVSVC',
++    source='gen_ndr/ndr_srvsvc_c.c',
++    public_deps='dcerpc-binding NDR_SRVSVC'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_SVCCTL',
++    source='gen_ndr/ndr_svcctl_c.c',
++    public_deps='dcerpc-binding ndr-standard',
++    public_headers='gen_ndr/ndr_svcctl_c.h ndr/ndr_svcctl.h',
++    header_path=[ ('gen_ndr*', 'gen_ndr'), ('ndr*', 'ndr')]
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_EVENTLOG',
++    source='gen_ndr/ndr_eventlog_c.c',
++    public_deps='dcerpc-binding ndr-standard'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_EPMAPPER',
++    source='gen_ndr/ndr_epmapper_c.c',
++    public_deps='tevent NDR_EPMAPPER'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_DSSETUP',
++    source='gen_ndr/ndr_dssetup_c.c',
++    public_deps='dcerpc-binding NDR_DSSETUP'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_WINREG',
++    source='gen_ndr/ndr_winreg_c.c',
++    public_deps='dcerpc-binding ndr-standard'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_INITSHUTDOWN',
++    source='gen_ndr/ndr_initshutdown_c.c',
++    public_deps='dcerpc-binding ndr-standard'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_MGMT',
++    source='gen_ndr/ndr_mgmt_c.c',
++    deps='tevent NDR_MGMT'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_OXIDRESOLVER',
++    source='gen_ndr/ndr_oxidresolver_c.c',
++    public_deps='dcerpc-binding NDR_OXIDRESOLVER'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_REMACT',
++    source='gen_ndr/ndr_remact_c.c',
++    public_deps='dcerpc-binding NDR_REMACT'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_NTSVCS',
++    source='gen_ndr/ndr_ntsvcs_c.c',
++    public_deps='dcerpc-binding ndr-standard'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_NETLOGON',
++    source='gen_ndr/ndr_netlogon_c.c',
++    public_deps='ndr-standard tevent'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_BACKUPKEY',
++    source='gen_ndr/ndr_backupkey_c.c',
++    public_deps='dcerpc-binding NDR_BACKUPKEY'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_DNSSERVER',
++    source='gen_ndr/ndr_dnsserver_c.c',
++    public_deps='dcerpc-binding ndr-standard'
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_IOCTL',
++    source='gen_ndr/ndr_ioctl.c ndr/ndr_ioctl.c',
++    public_deps='ndr'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_FSRVP',
++	source='gen_ndr/ndr_fsrvp_c.c',
++	public_deps='dcerpc-binding NDR_FSRVP'
++	)
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_WITNESS',
++    source='gen_ndr/ndr_witness_c.c',
++    public_deps='dcerpc-binding NDR_WITNESS'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_CLUSAPI',
++    source='gen_ndr/ndr_clusapi_c.c',
++    public_deps='dcerpc-binding NDR_CLUSAPI'
++    )
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_MDSSVC',
++    source='gen_ndr/ndr_mdssvc_c.c',
++    public_deps='dcerpc-binding NDR_MDSSVC'
++    )
++
++# a grouping library for NDR subsystems that may be used by more than one target
++bld.SAMBA_LIBRARY('ndr-samba',
++    source=[],
++    deps='''NDR_DRSBLOBS NDR_DRSUAPI NDR_IDMAP NDR_NTLMSSP NDR_NEGOEX NDR_SCHANNEL NDR_MGMT
++    NDR_DNSSERVER NDR_EPMAPPER NDR_XATTR NDR_UNIXINFO NDR_NAMED_PIPE_AUTH NDR_DCOM
++    NDR_NTPRINTING NDR_FSRVP NDR_WITNESS NDR_MDSSVC NDR_OPEN_FILES NDR_SMBXSRV
++    NDR_KRB5CCACHE''',
++    private_library=True,
++    grouping_library=True
++    )
++
++# a grouping library for RPC_NDR subsystems that may be used by more than one target
++bld.SAMBA_LIBRARY('dcerpc-samba',
++    source='',
++    deps='''RPC_NDR_LSA RPC_NDR_SAMR RPC_NDR_NETLOGON RPC_NDR_EVENTLOG
++    RPC_NDR_DFS RPC_NDR_NTSVCS RPC_NDR_SVCCTL RPC_NDR_INITSHUTDOWN
++    RPC_NDR_WKSSVC RPC_NDR_SRVSVC RPC_NDR_WINREG RPC_NDR_ECHO RPC_NDR_EPMAPPER
++    RPC_NDR_ATSVC RPC_NDR_SPOOLSS RPC_NDR_DNSSERVER''',
++    public_deps='ndr-standard',
++    private_library=True,
++    grouping_library=True
++    )
++
++bld.SAMBA_SUBSYSTEM('NDR_MISC',
++                    source='',
++                    deps='ndr')
++
++bld.SAMBA_LIBRARY('ndr',
++    source='ndr/ndr_string.c ndr/ndr_basic.c ndr/uuid.c ndr/ndr.c ndr/ndr_misc.c gen_ndr/ndr_misc.c ndr/util.c',
++    pc_files='ndr.pc',
++    public_deps='samba-errors talloc samba-util util_str_hex',
++    public_headers='gen_ndr/misc.h gen_ndr/ndr_misc.h ndr/libndr.h:ndr.h',
++    header_path= [('*gen_ndr*', 'gen_ndr')],
++    vnum='3.0.0',
++    abi_directory='ABI',
++    abi_match='!ndr_table_* ndr_* GUID_* _ndr_pull_error* _ndr_push_error*',
++    )
++
++bld.SAMBA_LIBRARY('dcerpc-binding',
++    source='''
++    rpc/dcerpc_error.c
++    rpc/binding.c
++    rpc/dcerpc_util.c
++    rpc/binding_handle.c
++    ''',
++    deps='ndr tevent NDR_DCERPC LIBTSOCKET tevent-util',
++    pc_files=[],
++    public_headers='rpc/rpc_common.h',
++    vnum='0.0.1')
++
++bld.SAMBA_LIBRARY('dcerpc-pkt-auth',
++                  private_library=True,
++                  source='''
++                   rpc/dcerpc_pkt_auth.c
++                   ''',
++                  deps='dcerpc-binding gensec')
++
++bld.SAMBA_SUBSYSTEM('DCERPC_SERVER_NETLOGON',
++                    source='''
++                           rpc/server/netlogon/schannel_util.c
++                           ''',
++                    deps='''
++                         talloc
++                         util_str_escape
++                         samba-hostconfig
++                         NDR_NETLOGON
++                         dcerpc-server-core
++                         ''')
++
++bld.SAMBA_LIBRARY('dcerpc-server-core',
++    source='''
++           rpc/dcesrv_core.c
++           rpc/dcesrv_auth.c
++           rpc/dcesrv_mgmt.c
++           rpc/dcesrv_reply.c
++           rpc/dcesrv_handles.c
++           ''',
++    deps='''
++    ndr
++    dcerpc-binding
++    samba-util-core
++    gnutls
++    GNUTLS_HELPERS
++    dcerpc-pkt-auth
++    ''',
++    pc_files=[],
++    public_headers='rpc/dcesrv_core.h',
++    autoproto='rpc/dcesrv_core_proto.h',
++    vnum='0.0.1')
++
++bld.SAMBA_SUBSYSTEM('DCERPC_HELPER',
++                    source='rpc/dcerpc_helper.c',
++                    public_deps='''
++                                samba-hostconfig
++                                samba-security
++                                gnutls
++                                GNUTLS_HELPERS
++                                ''')
++
++bld.SAMBA_SUBSYSTEM('NDR_WINBIND',
++	source='gen_ndr/ndr_winbind.c',
++	public_deps='ndr NDR_LSA'
++	)
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_WINBIND',
++	source='gen_ndr/ndr_winbind_c.c',
++	public_deps='dcerpc NDR_WINBIND'
++	)
++
++bld.SAMBA_SUBSYSTEM('NDR_FSRVP_STATE',
++    source='gen_ndr/ndr_fsrvp_state.c',
++    public_deps='ndr'
++    )
++#
++# Cmocka tests
++#
++
++bld.SAMBA_BINARY('test_ndr_macros',
++                 source='tests/test_ndr_macros.c',
++                 deps='''
++                      cmocka
++                      ndr
++                      ''',
++                 for_selftest=True)
++
++bld.SAMBA_BINARY('test_ndr_string',
++                 source='tests/test_ndr_string.c',
++                 deps='''
++                      cmocka
++                      talloc
++                      ndr
++                      ''',
++                 for_selftest=True)
++
++bld.SAMBA_BINARY('test_ndr',
++                 source='tests/test_ndr.c',
++                 deps='''
++                      cmocka
++                      ndr
++                      ''',
++                 for_selftest=True)
++
++bld.SAMBA_BINARY('test_ndr_dns_nbt',
++                 source='tests/test_ndr_dns_nbt.c',
++                 deps='''
++                      cmocka
++                      ndr
++                      ndr_nbt
++                      ''',
++                 for_selftest=True)
+diff --git a/source4/dsdb/wscript_build b/source4/dsdb/wscript_build
+index 7f9b8fe7874..6891579eec1 100644
+--- a/source4/dsdb/wscript_build
++++ b/source4/dsdb/wscript_build
+@@ -77,7 +77,7 @@ bld.SAMBA_PYTHON('python_dsdb',
+                  # the dependency on dcerpc here is because gensec
+                  # depends on dcerpc but the waf circular dependency finder
+                  # removes it so we end up with unresolved symbols.
+-                 deps='samdb %s dcerpc com_err %s %s dsdb_garbage_collect_tombstones scavenge_dns_records' %\
++                 deps='samdb %s smbdcerpc com_err %s %s dsdb_garbage_collect_tombstones scavenge_dns_records' %\
+                  (pyldb_util, pyrpc_util, pyparam_util),
+                  realname='samba/dsdb.so'
+                  )
+diff --git a/source4/lib/messaging/wscript_build b/source4/lib/messaging/wscript_build
+index 3408396ebd0..a85da70c674 100644
+--- a/source4/lib/messaging/wscript_build
++++ b/source4/lib/messaging/wscript_build
+@@ -15,7 +15,7 @@ bld.SAMBA_LIBRARY('MESSAGING',
+             UNIX_PRIVS
+             cluster
+             ndr
+-            dcerpc
++            smbdcerpc
+             messages_util
+             server_id_db
+             talloc_report_printf
+diff --git a/source4/lib/registry/wscript_build b/source4/lib/registry/wscript_build
+index 2e01e43d4aa..d3c89681e8a 100644
+--- a/source4/lib/registry/wscript_build
++++ b/source4/lib/registry/wscript_build
+@@ -12,7 +12,7 @@ bld.SAMBA_SUBSYSTEM('TDR_REGF',
+ 
+ bld.SAMBA_LIBRARY('registry',
+ 	source='interface.c util.c samba.c patchfile_dotreg.c patchfile_preg.c patchfile.c regf.c hive.c local.c ldb.c rpc.c',
+-	public_deps='dcerpc samba-util TDR_REGF ldb RPC_NDR_WINREG ldbsamba util_reg',
++	public_deps='smbdcerpc samba-util TDR_REGF ldb RPC_NDR_WINREG ldbsamba util_reg',
+ 	private_headers='registry.h',
+ 	private_library=True
+ 	)
+diff --git a/source4/libcli/wscript_build b/source4/libcli/wscript_build
+index b3a44104687..e21f6239446 100644
+--- a/source4/libcli/wscript_build
++++ b/source4/libcli/wscript_build
+@@ -12,7 +12,7 @@ bld.SAMBA_SUBSYSTEM('LIBSAMBA_TSOCKET',
+ bld.SAMBA_SUBSYSTEM('LIBCLI_LSA',
+ 	source='util/clilsa.c',
+ 	autoproto='util/clilsa.h',
+-	public_deps='RPC_NDR_LSA dcerpc',
++	public_deps='RPC_NDR_LSA smbdcerpc',
+ 	deps='samba-security'
+ 	)
+ 
+diff --git a/source4/libnet/wscript_build b/source4/libnet/wscript_build
+index 0ec06f29496..b55d7255854 100644
+--- a/source4/libnet/wscript_build
++++ b/source4/libnet/wscript_build
+@@ -9,7 +9,7 @@ bld.SAMBA_LIBRARY(name,
+         source='libnet.c libnet_passwd.c libnet_time.c libnet_rpc.c libnet_join.c libnet_site.c libnet_become_dc.c libnet_unbecome_dc.c libnet_vampire.c libnet_user.c libnet_group.c libnet_share.c libnet_lookup.c libnet_domain.c userinfo.c groupinfo.c userman.c groupman.c prereq_domain.c',
+         autoproto=auto_proto,
+         deps='INIT_SAMR',
+-        public_deps='samba-credentials dcerpc dcerpc-samr RPC_NDR_LSA RPC_NDR_SRVSVC RPC_NDR_DRSUAPI cli_composite LIBCLI_RESOLVE LIBCLI_FINDDCS cli_cldap LIBCLI_FINDDCS gensec_schannel LIBCLI_AUTH ndr smbpasswdparser %s LIBCLI_SAMSYNC LIBTSOCKET GNUTLS_HELPERS' % (provision),
++        public_deps='samba-credentials smbdcerpc dcerpc-samr RPC_NDR_LSA RPC_NDR_SRVSVC RPC_NDR_DRSUAPI cli_composite LIBCLI_RESOLVE LIBCLI_FINDDCS cli_cldap LIBCLI_FINDDCS gensec_schannel LIBCLI_AUTH ndr smbpasswdparser %s LIBCLI_SAMSYNC LIBTSOCKET GNUTLS_HELPERS' % (provision),
+         private_library=True,
+         pyembed=True,
+         enabled=bld.PYTHON_BUILD_IS_ENABLED()
+diff --git a/source4/librpc/wscript_build b/source4/librpc/wscript_build
+index a1c97cbddb3..bc346a9a322 100644
+--- a/source4/librpc/wscript_build
++++ b/source4/librpc/wscript_build
+@@ -140,20 +140,20 @@ bld.SAMBA_SUBSYSTEM('ndr-table',
+ 
+ bld.SAMBA_SUBSYSTEM('RPC_NDR_IRPC',
+ 	source='gen_ndr/ndr_irpc_c.c',
+-	public_deps='dcerpc NDR_IRPC'
++	public_deps='smbdcerpc NDR_IRPC'
+ 	)
+ 
+ bld.SAMBA_LIBRARY('dcerpc-samr',
+ 	source='',
+ 	pc_files='dcerpc_samr.pc',
+ 	vnum='0.0.1',
+-	public_deps='dcerpc ndr-standard RPC_NDR_SAMR',
++	public_deps='smbdcerpc ndr-standard RPC_NDR_SAMR',
+ 	public_headers='../../librpc/gen_ndr/ndr_samr_c.h',
+ 	header_path='gen_ndr'
+ 	)
+ 
+ 
+-bld.SAMBA_LIBRARY('dcerpc',
++bld.SAMBA_LIBRARY('smbdcerpc',
+ 	source='''rpc/dcerpc.c rpc/dcerpc_auth.c rpc/dcerpc_schannel.c
+ 	rpc/dcerpc_util.c rpc/dcerpc_smb.c rpc/dcerpc_sock.c
+ 	rpc/dcerpc_roh_channel_in.c rpc/dcerpc_roh_channel_out.c rpc/dcerpc_roh.c
+@@ -203,7 +203,7 @@ pyparam_util = bld.pyembed_libname('pyparam_util')
+ 
+ bld.SAMBA_SUBSYSTEM(pyrpc_util,
+         source='rpc/pyrpc_util.c',
+-        public_deps='%s %s dcerpc MESSAGING' % (pytalloc_util, pyparam_util),
++        public_deps='%s %s smbdcerpc MESSAGING' % (pytalloc_util, pyparam_util),
+         pyext=True,
+         enabled=bld.PYTHON_BUILD_IS_ENABLED(),
+         )
+@@ -362,7 +362,7 @@ bld.SAMBA_PYTHON('python_initshutdown',
+ 
+ bld.SAMBA_PYTHON('python_epmapper',
+         source='../../librpc/gen_ndr/py_epmapper.c',
+-        deps='dcerpc %s %s' % (pytalloc_util, pyrpc_util),
++        deps='smbdcerpc %s %s' % (pytalloc_util, pyrpc_util),
+         realname='samba/dcerpc/epmapper.so',
+         cflags_end=gen_cflags
+         )
+@@ -370,7 +370,7 @@ bld.SAMBA_PYTHON('python_epmapper',
+ 
+ bld.SAMBA_PYTHON('python_mgmt',
+         source='../../librpc/gen_ndr/py_mgmt.c',
+-        deps='dcerpc %s %s' % (pytalloc_util, pyrpc_util),
++        deps='smbdcerpc %s %s' % (pytalloc_util, pyrpc_util),
+         realname='samba/dcerpc/mgmt.so',
+         cflags_end=gen_cflags
+         )
+diff --git a/source4/librpc/wscript_build.orig b/source4/librpc/wscript_build.orig
+new file mode 100644
+index 00000000000..a1c97cbddb3
+--- /dev/null
++++ b/source4/librpc/wscript_build.orig
+@@ -0,0 +1,517 @@
++#!/usr/bin/env python
++
++bld.RECURSE('../../librpc/idl')
++bld.RECURSE('../../librpc/tools')
++bld.RECURSE('idl')
++
++
++bld.SAMBA_SUBSYSTEM('NDR_IRPC',
++	source='gen_ndr/ndr_irpc.c',
++	public_deps='ndr NDR_SECURITY ndr_nbt'
++	)
++
++
++bld.SAMBA_SUBSYSTEM('NDR_SASL_HELPERS',
++	source='gen_ndr/ndr_sasl_helpers.c',
++	public_deps='ndr'
++	)
++
++
++
++bld.SAMBA_SUBSYSTEM('NDR_WINSIF',
++	source='gen_ndr/ndr_winsif.c',
++	public_deps='ndr NDR_WINSREPL'
++	)
++
++
++bld.SAMBA_SUBSYSTEM('NDR_OPENDB',
++	source='gen_ndr/ndr_opendb.c',
++	public_deps='ndr'
++	)
++
++
++bld.SAMBA_SUBSYSTEM('NDR_NTP_SIGND',
++	source='gen_ndr/ndr_ntp_signd.c',
++	public_deps='ndr'
++	)
++
++
++bld.SAMBA_SUBSYSTEM('NDR_WINSREPL',
++	source='gen_ndr/ndr_winsrepl.c',
++	public_deps='ndr ndr_nbt'
++	)
++
++
++# create a grouping library to consolidate our samba4 specific NDR code
++bld.SAMBA_LIBRARY('ndr-samba4',
++	source=[],
++	deps='NDR_WINBIND NDR_IRPC NDR_NFS4ACL NDR_OPENDB ndr-table',
++	private_library=True,
++	grouping_library=True
++	)
++
++# a grouping library for RPC_NDR subsystems that may be used by more than one target
++bld.SAMBA_LIBRARY('dcerpc-samba4',
++	source=[],
++	deps='RPC_NDR_WINBIND',
++	private_library=True,
++	grouping_library=True
++	)
++
++
++bld.SAMBA_PIDL_TABLES('GEN_NDR_TABLES', 'gen_ndr/tables.c')
++
++bld.SAMBA_SUBSYSTEM('ndr-table',
++	source='../../librpc/ndr/ndr_table.c gen_ndr/tables.c',
++        public_deps='''
++                    ndr-standard
++                    NDR_AUDIOSRV
++                    NDR_DSBACKUP
++                    NDR_EFS
++                    NDR_DRSUAPI
++                    NDR_POLICYAGENT
++                    NDR_UNIXINFO
++                    NDR_SPOOLSS
++                    NDR_EPMAPPER
++                    NDR_DBGIDL
++                    NDR_DSSETUP
++                    NDR_MSGSVC
++                    NDR_WINSIF
++                    NDR_MGMT
++                    NDR_OXIDRESOLVER
++                    NDR_REMACT
++                    NDR_WZCSVC
++                    NDR_BROWSER
++                    NDR_W32TIME
++                    NDR_SCERPC
++                    NDR_TRKWKS
++                    NDR_KEYSVC
++                    ndr-krb5pac
++                    NDR_SCHANNEL
++                    NDR_ROT
++                    NDR_DRSBLOBS
++                    ndr_nbt
++                    NDR_WINSREPL
++                    NDR_SECURITY
++                    NDR_DNSSERVER
++                    NDR_WINSTATION
++                    NDR_IRPC
++                    NDR_OPENDB
++                    NDR_SASL_HELPERS
++                    NDR_NOTIFY
++                    NDR_WINBIND
++                    NDR_FRSRPC
++                    NDR_FRSAPI
++                    NDR_FRSTRANS
++                    NDR_NTP_SIGND
++                    NDR_DCOM
++                    NDR_WMI
++                    NDR_NAMED_PIPE_AUTH
++                    NDR_NTLMSSP
++                    NDR_DFSBLOBS
++                    NDR_DNSP
++                    NDR_NTPRINTING
++                    NDR_DNS
++                    NDR_BACKUPKEY
++                    NDR_PREG
++                    NDR_BKUPBLOBS
++                    NDR_FSCC
++                    NDR_CLUSAPI
++                    NDR_WINSPOOL
++                    NDR_CAB
++                    NDR_FSRVP_STATE
++                    NDR_IOCTL
++                    NDR_COMPRESSION
++                    NDR_PRINTCAP
++                    NDR_QUOTA
++                    NDR_RAP
++                    NDR_DCERPC
++                    NDR_MESSAGING
++                    NDR_SMB_ACL
++                    NDR_PERFCOUNT
++                    NDR_SECRETS
++                    NDR_LEASES_DB
++                    NDR_ODJ
++                    NDR_ADS
++                    ''',
++        depends_on='GEN_NDR_TABLES'
++        )
++
++
++bld.SAMBA_SUBSYSTEM('RPC_NDR_IRPC',
++	source='gen_ndr/ndr_irpc_c.c',
++	public_deps='dcerpc NDR_IRPC'
++	)
++
++bld.SAMBA_LIBRARY('dcerpc-samr',
++	source='',
++	pc_files='dcerpc_samr.pc',
++	vnum='0.0.1',
++	public_deps='dcerpc ndr-standard RPC_NDR_SAMR',
++	public_headers='../../librpc/gen_ndr/ndr_samr_c.h',
++	header_path='gen_ndr'
++	)
++
++
++bld.SAMBA_LIBRARY('dcerpc',
++	source='''rpc/dcerpc.c rpc/dcerpc_auth.c rpc/dcerpc_schannel.c
++	rpc/dcerpc_util.c rpc/dcerpc_smb.c rpc/dcerpc_sock.c
++	rpc/dcerpc_roh_channel_in.c rpc/dcerpc_roh_channel_out.c rpc/dcerpc_roh.c
++	rpc/dcerpc_connect.c rpc/dcerpc_secondary.c''',
++	pc_files='dcerpc.pc',
++	deps='''
++        samba_socket
++        LIBCLI_RESOLVE
++        LIBCLI_SMB
++        LIBCLI_SMB2
++        ndr
++        NDR_DCERPC
++        RPC_NDR_EPMAPPER
++        NDR_SCHANNEL
++        RPC_NDR_NETLOGON
++        RPC_NDR_MGMT
++        gensec
++        LIBCLI_AUTH
++        smbclient-raw
++        LP_RESOLVE
++        tevent-util
++        dcerpc-binding
++        dcerpc-pkt-auth
++        param_options
++        http''',
++	autoproto='rpc/dcerpc_proto.h',
++	public_deps='samba-credentials tevent talloc',
++	public_headers='''rpc/dcerpc.h''',
++	# It's very important to keep this form of construction
++	# it force the sambawaf extension to put everything that match the first element
++	# (*gen_ndr*) into the dir named by the second element (gen_ndr).
++	# If we just put header_path = 'gen_ndr' then all the public_headers will go
++	# in 'gen_ndr' and for dcerpc.h (at least) it will cause a problem as
++	# we have already a dcerpc.h installed by librpc/wscript_build
++	# and one will overright the other which is not what we expect.
++	header_path=[ ('*gen_ndr*', 'gen_ndr') ],
++	vnum='0.0.1'
++	)
++
++gen_cflags = ''
++if bld.CONFIG_SET('HAVE_WNO_UNUSED_FUNCTION'):
++    gen_cflags = '-Wno-unused-function'
++
++pyrpc_util = bld.pyembed_libname('pyrpc_util')
++pytalloc_util = bld.pyembed_libname('pytalloc-util')
++pyparam_util = bld.pyembed_libname('pyparam_util')
++
++bld.SAMBA_SUBSYSTEM(pyrpc_util,
++        source='rpc/pyrpc_util.c',
++        public_deps='%s %s dcerpc MESSAGING' % (pytalloc_util, pyparam_util),
++        pyext=True,
++        enabled=bld.PYTHON_BUILD_IS_ENABLED(),
++        )
++
++bld.SAMBA_PYTHON('python_dcerpc',
++        source='rpc/pyrpc.c',
++        public_deps='LIBCLI_SMB samba-util samba-hostconfig dcerpc-samr RPC_NDR_LSA DYNCONFIG %s gensec' % pyrpc_util,
++        realname='samba/dcerpc/base.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_dcerpc_misc',
++        source='../../librpc/gen_ndr/py_misc.c',
++        deps='%s %s ndr-krb5pac' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/misc.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_auth',
++        source='../../librpc/gen_ndr/py_auth.c',
++        deps='NDR_AUTH %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/auth.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_dcerpc_security',
++        source='../../librpc/gen_ndr/py_security.c',
++        deps='%s %s NDR_SECURITY' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/security.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_lsa',
++        source='../../librpc/gen_ndr/py_lsa.c',
++        deps='RPC_NDR_LSA %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/lsa.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_krb5pac',
++        source='../../librpc/gen_ndr/py_krb5pac.c',
++        deps='ndr-krb5pac %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/krb5pac.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_krb5ccache',
++        source='../../librpc/gen_ndr/py_krb5ccache.c',
++        deps='NDR_KRB5CCACHE %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/krb5ccache.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_claims',
++        source='../../librpc/gen_ndr/py_claims.c',
++        deps='NDR_CLAIMS %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/claims.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_netlogon',
++        source='../../librpc/gen_ndr/py_netlogon.c',
++        deps='RPC_NDR_NETLOGON %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/netlogon.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_samr',
++        source='../../librpc/gen_ndr/py_samr.c',
++        deps='dcerpc-samr %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/samr.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_spoolss',
++        source='../../librpc/gen_ndr/py_spoolss.c',
++        deps='RPC_NDR_SPOOLSS %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/spoolss.so'
++        )
++
++bld.SAMBA_PYTHON('python_winspool',
++        source='../../librpc/gen_ndr/py_winspool.c',
++        deps='RPC_NDR_WINSPOOL %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/winspool.so'
++        )
++
++bld.SAMBA_PYTHON('python_witness',
++        source='../../librpc/gen_ndr/py_witness.c',
++        deps='RPC_NDR_WITNESS %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/witness.so'
++        )
++
++bld.SAMBA_PYTHON('python_dcerpc_nbt',
++        source='../../librpc/gen_ndr/py_nbt.c',
++        deps='ndr_nbt %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/nbt.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_dcerpc_drsblobs',
++        source='../../librpc/gen_ndr/py_drsblobs.c',
++        deps='%s %s NDR_SECURITY NDR_DRSBLOBS' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/drsblobs.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_dcerpc_ntlmssp',
++        source='../../librpc/gen_ndr/py_ntlmssp.c',
++        deps='%s %s NDR_NTLMSSP' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/ntlmssp.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_srvsvc',
++    source='../../librpc/gen_ndr/py_srvsvc.c',
++    deps='RPC_NDR_SRVSVC %s %s' % (pytalloc_util, pyrpc_util),
++    realname='samba/dcerpc/srvsvc.so',
++    cflags_end=gen_cflags
++    )
++
++bld.SAMBA_PYTHON('python_echo',
++        source='../../librpc/gen_ndr/py_echo.c',
++        deps='RPC_NDR_ECHO %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/echo.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_dns',
++        source='../../librpc/gen_ndr/py_dns.c',
++        deps='NDR_DNS %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/dns.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_winreg',
++        source='../../librpc/gen_ndr/py_winreg.c',
++        deps='RPC_NDR_WINREG %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/winreg.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_preg',
++        source='../../librpc/gen_ndr/py_preg.c',
++        deps='NDR_PREG %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/preg.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_initshutdown',
++        source='../../librpc/gen_ndr/py_initshutdown.c',
++        deps='RPC_NDR_INITSHUTDOWN %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/initshutdown.so',
++        cflags_end=gen_cflags
++        )
++
++
++bld.SAMBA_PYTHON('python_epmapper',
++        source='../../librpc/gen_ndr/py_epmapper.c',
++        deps='dcerpc %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/epmapper.so',
++        cflags_end=gen_cflags
++        )
++
++
++bld.SAMBA_PYTHON('python_mgmt',
++        source='../../librpc/gen_ndr/py_mgmt.c',
++        deps='dcerpc %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/mgmt.so',
++        cflags_end=gen_cflags
++        )
++
++
++bld.SAMBA_PYTHON('python_atsvc',
++        source='../../librpc/gen_ndr/py_atsvc.c',
++        deps='RPC_NDR_ATSVC %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/atsvc.so',
++        cflags_end=gen_cflags
++        )
++
++
++bld.SAMBA_PYTHON('python_svcctl',
++        source='../../librpc/gen_ndr/py_svcctl.c',
++        deps='RPC_NDR_SVCCTL %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/svcctl.so',
++        cflags_end=gen_cflags
++        )
++
++
++bld.SAMBA_PYTHON('python_wkssvc',
++        source='../../librpc/gen_ndr/py_wkssvc.c',
++        deps='RPC_NDR_WKSSVC %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/wkssvc.so',
++        cflags_end=gen_cflags
++        )
++
++
++bld.SAMBA_PYTHON('python_dfs',
++        source='../../librpc/gen_ndr/py_dfs.c',
++        deps='RPC_NDR_DFS %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/dfs.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_dcerpc_dcerpc',
++        source='../../librpc/gen_ndr/py_dcerpc.c',
++        deps='NDR_DCERPC %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/dcerpc.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_unixinfo',
++        source='../../librpc/gen_ndr/py_unixinfo.c',
++        deps='RPC_NDR_UNIXINFO %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/unixinfo.so',
++        cflags_end=gen_cflags
++        )
++
++
++bld.SAMBA_PYTHON('python_irpc',
++        source='gen_ndr/py_irpc.c',
++        deps='RPC_NDR_IRPC %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/irpc.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_server_id',
++        source='../../librpc/gen_ndr/py_server_id.c',
++        deps='NDR_SERVER_ID %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/server_id.so',
++        cflags_end=gen_cflags
++        )
++
++python_netlogon = 'python_netlogon'
++bld.SAMBA_PYTHON('python_winbind',
++        source='../../librpc/gen_ndr/py_winbind.c',
++        deps='RPC_NDR_WINBIND %s %s %s' % (pytalloc_util, pyrpc_util, python_netlogon),
++        realname='samba/dcerpc/winbind.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_drsuapi',
++        source='../../librpc/gen_ndr/py_drsuapi.c',
++        deps='RPC_NDR_DRSUAPI %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/drsuapi.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_dcerpc_dnsp',
++        source='../../librpc/gen_ndr/py_dnsp.c',
++        deps='%s %s NDR_SECURITY NDR_DNSP' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/dnsp.so',
++        cflags_end=gen_cflags
++        )
++
++
++bld.SAMBA_PYTHON('python_dcerpc_xattr',
++        source='../../librpc/gen_ndr/py_xattr.c',
++        deps='%s %s NDR_XATTR' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/xattr.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_dcerpc_idmap',
++        source='../../librpc/gen_ndr/py_idmap.c',
++        deps='%s %s NDR_IDMAP' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/idmap.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_dnsserver',
++        source='../../librpc/gen_ndr/py_dnsserver.c',
++        deps='RPC_NDR_DNSSERVER %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/dnsserver.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_dcerpc_smb_acl',
++        source='../../librpc/gen_ndr/py_smb_acl.c',
++        deps='%s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/smb_acl.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('dcerpc_python_messaging',
++        source='../../librpc/gen_ndr/py_messaging.c',
++        deps='%s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/messaging.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('dcerpc_windows_event_ids',
++        source='../../librpc/gen_ndr/py_windows_event_ids.c',
++        deps='%s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/windows_event_ids.so',
++        cflags_end=gen_cflags
++        )
++
++bld.SAMBA_PYTHON('python_mdssvc',
++        source='../../librpc/gen_ndr/py_mdssvc.c',
++        deps='RPC_NDR_MDSSVC %s %s' % (pytalloc_util, pyrpc_util),
++        realname='samba/dcerpc/mdssvc.so',
++        cflags_end=gen_cflags
++        )
++
++if bld.PYTHON_BUILD_IS_ENABLED():
++    bld.SAMBA_SCRIPT('python_dcerpc_init',
++		    pattern='rpc/dcerpc.py',
++		     installdir='python/samba/dcerpc',
++		     installname='__init__.py')
++
++    bld.INSTALL_FILES('${PYTHONARCHDIR}/samba/dcerpc', 'rpc/dcerpc.py', destname='__init__.py')
+diff --git a/source4/rpc_server/wscript_build b/source4/rpc_server/wscript_build
+index 0e44a3c2bae..ac3a7418e64 100644
+--- a/source4/rpc_server/wscript_build
++++ b/source4/rpc_server/wscript_build
+@@ -22,7 +22,7 @@ bld.SAMBA_LIBRARY('dcerpc_server',
+                   source='dcerpc_server.c',
+                   pc_files='dcerpc_server.pc',
+                   deps='LIBCLI_AUTH ndr samba_server_gensec service auth',
+-                  public_deps='dcerpc dcerpc-server-core',
++                  public_deps='smbdcerpc dcerpc-server-core',
+                   autoproto='dcerpc_server_proto.h',
+                   public_headers='dcerpc_server.h',
+                   vnum='0.0.1',
+diff --git a/source4/torture/drs/wscript_build b/source4/torture/drs/wscript_build
+index 0dc26d67cd8..f50ef6b0cee 100644
+--- a/source4/torture/drs/wscript_build
++++ b/source4/torture/drs/wscript_build
+@@ -5,7 +5,7 @@ bld.SAMBA_MODULE('TORTURE_DRS',
+ 	autoproto='proto.h',
+ 	subsystem='smbtorture',
+ 	init_function='torture_drs_init',
+-	deps='samba-util ldb samba-errors torture ldbsamba talloc dcerpc ndr NDR_DRSUAPI gensec samba-hostconfig RPC_NDR_DRSUAPI DSDB_MODULE_HELPERS asn1util samdb NDR_DRSBLOBS samba-credentials samdb-common LIBCLI_RESOLVE LP_RESOLVE torturemain',
++	deps='samba-util ldb samba-errors torture ldbsamba talloc smbdcerpc ndr NDR_DRSUAPI gensec samba-hostconfig RPC_NDR_DRSUAPI DSDB_MODULE_HELPERS asn1util samdb NDR_DRSBLOBS samba-credentials samdb-common LIBCLI_RESOLVE LP_RESOLVE torturemain',
+ 	internal_module=True,
+ 	enabled=bld.PYTHON_BUILD_IS_ENABLED()
+ 	)
+diff --git a/source4/torture/wscript_build b/source4/torture/wscript_build
+index d870a3ab807..8b41ad7be46 100644
+--- a/source4/torture/wscript_build
++++ b/source4/torture/wscript_build
+@@ -317,7 +317,7 @@ TORTURE_MODULES = 'TORTURE_BASIC TORTURE_RAW torture_rpc TORTURE_RAP TORTURE_AUT
+ bld.SAMBA_SUBSYSTEM('torturemain',
+                     source='smbtorture.c torture.c shell.c',
+                     subsystem_name='smbtorture',
+-                    deps='torture dcerpc LIBCLI_SMB SMBREADLINE ' + TORTURE_MODULES,
++                    deps='torture smbdcerpc LIBCLI_SMB SMBREADLINE ' + TORTURE_MODULES,
+                     enabled=bld.PYTHON_BUILD_IS_ENABLED()
+                     )
+ 
+@@ -325,7 +325,7 @@ bld.SAMBA_BINARY('smbtorture',
+                  source=[],
+                  manpages='man/smbtorture.1',
+                  private_headers='smbtorture.h',
+-                 deps='torturemain torture popt CMDLINE_S4 dcerpc LIBCLI_SMB SMBREADLINE ' + TORTURE_MODULES,
++                 deps='torturemain torture popt CMDLINE_S4 smbdcerpc LIBCLI_SMB SMBREADLINE ' + TORTURE_MODULES,
+                  pyembed=True,
+                  enabled=bld.PYTHON_BUILD_IS_ENABLED()
+                  )
+diff --git a/source4/wscript_build b/source4/wscript_build
+index d20444135eb..bf16575a3d8 100644
+--- a/source4/wscript_build
++++ b/source4/wscript_build
+@@ -2,7 +2,7 @@
+ 
+ bld.SAMBA_BINARY('client/smbclient'  + bld.env.suffix4,
+ 	source='client/client.c',
+-	deps='samba-hostconfig SMBREADLINE samba-util LIBCLI_SMB RPC_NDR_SRVSVC LIBCLI_LSA CMDLINE_S4 smbclient-raw dcerpc',
++	deps='samba-hostconfig SMBREADLINE samba-util LIBCLI_SMB RPC_NDR_SRVSVC LIBCLI_LSA CMDLINE_S4 smbclient-raw smbdcerpc',
+ 	install=False
+ 	)
+ 
+-- 
+2.34.1
+

@@ -1,19 +1,17 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.39
-Release:        7%{?dist}
-License:        GPLv2+
+Release:        9%{?dist}
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Requires:       %{name}-libs = %{version}-%{release}
-%if 0%{?with_check}
-BuildRequires:  dejagnu
-BuildRequires:  bc
-%endif
+
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
 %define sha512  binutils=68e038f339a8c21faa19a57bbc447a51c817f47c2e06d740847c6e9cc3396c025d35d5369fa8c3f8b70414757c89f0e577939ddc0d70f283182504920f53b0a3
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         binutils-sync-libiberty-add-no-recurse-limit-make-check-fix.patch
 Patch1:         binutils-do-not-link-with-static-libstdc++.patch
@@ -40,6 +38,13 @@ Patch21:        binutils-CVE-2023-25585.patch
 Patch22:        binutils-CVE-2022-48064.patch
 Patch23:        binutils-CVE-2022-48065.patch
 Patch24:        binutils-CVE-2022-48063.patch
+
+Requires:       %{name}-libs = %{version}-%{release}
+
+%if 0%{?with_check}
+BuildRequires:  dejagnu
+BuildRequires:  bc
+%endif
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -164,6 +169,10 @@ make %{?_smp_mflags} -k check > tests.sum 2>&1
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.39-9
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-8
+- Release bump for SRP compliance
 * Tue Sep 12 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.39-7
 - Fix CVE-2022-48064, CVE-2022-48065 and CVE-2022-48063
 * Mon Aug 28 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.39-6

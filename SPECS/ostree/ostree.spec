@@ -1,17 +1,19 @@
 Summary:        Git for operating system binaries
 Name:           ostree
-Version:        2023.7
+Version:        2023.5
 Release:        3%{?dist}
-License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/ostreedev/ostree/archive/lib%{name}-%{version}.tar.xz
-%define sha512 lib%{name}-%{version}=12398c1c30df11e899204e0b798ee650c6099d983b3e20e4f6da4a3a0e4c0b1fcee7c8e123919ccca8e45324102f2378f63a6597c1fd4c3bae14fb89241879b1
+%define sha512 lib%{name}-%{version}=0bb19f199344d8db7299cf710f2ba0b2657cdcb5b1fc6d85446cef9538b069e470b47fc0c2c1029e12b8b9adb978f32a6f44f48949ff5c97a01051a425a9f2d5
 
 Source1: 91-%{name}.preset
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0: 0001-dualboot-support.patch
 Patch1: 0002-ostree-Copying-photon-config-to-boot-directory.patch
@@ -73,7 +75,6 @@ Summary:    Development headers for %{name}
 Group:      Development/Libraries
 Requires:   %{name}-libs = %{version}-%{release}
 Requires:   %{name} = %{version}-%{release}
-Requires:   glib-devel
 
 %description devel
 The %{name}-devel package includes the header files for the %{name} library.
@@ -168,14 +169,10 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/libostree/grub2*
 
 %changelog
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2023.7-3
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2023.5-3
+- Release bump for SRP compliance
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2023.5-2
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.7-2
-- Bump version as a part of openssl upgrade
-* Mon Nov 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.7-1
-- Upgrade to v2023.7
-* Thu Oct 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.5-2
-- Fix devel package requires
 * Tue Jul 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.5-1
 - Upgrade to v2023.5
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.5-6

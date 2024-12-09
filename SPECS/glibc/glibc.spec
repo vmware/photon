@@ -5,8 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        5%{?dist}
-License:        LGPLv2+
+Release:        16%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -17,11 +16,17 @@ Source0: http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
+Source3:        v2.36.patches
+Source4:        license.txt
+%include        %{SOURCE4}
 
 #Patch taken from http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
 Patch0:         glibc-2.31-fhs-1.patch
 Patch1:         0002-malloc-arena-fix.patch
-Patch2:         Fix-sys-mount.h-usage-with-kernel-headers.patch
+
+#release branch patches
+#generate using ./tools/scripts/generate-glibc-release-patches.sh %{version}
+%include %{SOURCE3}
 
 Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
@@ -149,11 +154,13 @@ cd %{_builddir}/%{name}-build
         --infodir=%{_infodir} \
         --disable-profile \
         --disable-werror \
+        --enable-static-pie \
         --enable-kernel=3.2 \
         --enable-bind-now \
         --enable-stack-protector=strong \
         --disable-experimental-malloc \
         --disable-silent-rules \
+        --disable-crypt \
         libc_cv_slibdir=%{_libdir}
 
 # Sometimes we have false "out of memory" make error
@@ -171,14 +178,11 @@ install -vdm 755 %{buildroot}%{_libdir}/locale
 cp -v ../%{name}-%{version}/nscd/nscd.conf %{buildroot}%{_sysconfdir}/nscd.conf
 #       Install locale generation script and config file
 cp -v %{SOURCE2} %{buildroot}%{_sysconfdir}
-install -D -p -m 0755 %{SOURCE1} %{buildroot}%{_sbindir}
+cp -v %{SOURCE1} %{buildroot}%{_sbindir}
 #       Remove unwanted cruft
 rm -rf %{buildroot}%{_infodir}
 #       Install configuration files
 
-# Spaces should not be used in nsswitch.conf in the begining of new line
-# Only tab should be used as it expects the same in source code.
-# Otherwise "altfiles" will not be added. which may cause dbus.service failure
 cat > %{buildroot}%{_sysconfdir}/nsswitch.conf <<- "EOF"
 #       Begin /etc/nsswitch.conf
 
@@ -224,6 +228,7 @@ popd
 mv %{buildroot}/sbin/* %{buildroot}/%{_sbindir}
 rmdir %{buildroot}/sbin
 
+%if 0%{?with_check}
 %check
 cd %{_builddir}/glibc-build
 make %{?_smp_mflags} check ||:
@@ -252,6 +257,7 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 # check for exact 'n' failures
 [ $(grep ^FAIL tests.sum | wc -l) -ne $n ] && exit 1 ||:
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -353,6 +359,30 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-16
+- Release bump for SRP compliance
+* Thu Nov 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.36-15
+- Disable libcrypt as a part of yescrypt addition
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.36-14
+- Remove standalone license exceptions
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.36-13
+- Bump version to generate SRP provenance file
+* Wed Jul 17 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 2.36-12
+- Enable static-pie support
+* Tue May 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-11
+- Fix CVEs on nscd
+- Sync release branch patches
+* Tue Apr 16 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-10
+- Fix for CVE-2024-2961.patch
+* Tue Jan 23 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-9
+- Fix for CVE-2023-6246, CVE-2023-6779, CVE-2023-6780
+* Thu Oct 05 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.36-8
+- Update patches from release branch
+- Fix for CVE-2023-4527
+* Tue Oct 03 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.36-7
+- Fix for CVE-2023-4806/2023-5156
+* Tue Jun 27 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.36-6
+- Fix for CVE-2022-39046
 * Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.36-5
 - Add libs sub package
 * Fri Apr 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.36-4

@@ -1,0 +1,497 @@
+From 28e599e64682407cb3d81bd49b59636d5343ae6c Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <him-kalyan.bordoloi@broadcom.com>
+Date: Tue, 13 Feb 2024 03:13:44 +0000
+Subject: [PATCH 1/2] stalld: Move logging to dedicated thread
+
+All logging in stalld is synchronous. Moreover stalld operates in an
+environment where system hangs due to various reasons are common.
+We have encountered several instances where IO is stuck across the system.
+As a consequence stalld also gets stuck in uninterruptible sleep state.
+
+We are moving all logging to a dedicated thread, so that even if IO is
+blocked, stalld can continue boosting starving threads.
+---
+ src/stalld.c           | 118 ++++++++++++++++++++++++++++++++++
+ src/stalld.h           |  46 +++++++++++++-
+ src/utils.c            | 141 +++++++++++++++++++++++++++++++++++------
+ systemd/stalld.service |   2 +-
+ 4 files changed, 282 insertions(+), 25 deletions(-)
+
+diff --git a/src/stalld.c b/src/stalld.c
+index 7b715f3..a554cc8 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -55,6 +55,10 @@ int config_write_kmesg = 0;
+ int config_log_syslog = 1;
+ int config_log_only = 0;
+ int config_foreground = 0;
++int config_threaded_log = 0;
++struct log_queue log_queue;
++struct log_thread logging_thread;
++unsigned long config_log_buffer_size = 1000;
+ 
+ /*
+  * Denylisting feature.
+@@ -1398,6 +1402,109 @@ int check_policies(void)
+ 	return boosted;
+ }
+ 
++void* logging_main(void* arg) {
++	struct timespec timeout;
++	unsigned long missed_logs;
++	char missed_log_msg[70];
++
++	while (1) {
++		missed_logs = 0;
++		pthread_mutex_lock(&log_queue.mutex);
++		/*
++		 * Wait here until there is something to log
++		 */
++		while (log_queue.count == 0 && running) {
++			clock_gettime(CLOCK_REALTIME, &timeout);
++			timeout.tv_sec += config_granularity;
++			pthread_cond_timedwait(&log_queue.not_empty, &log_queue.mutex, &timeout);
++		}
++
++		/*
++		 * Exit when stalld has stopped and all pending logs are printed
++		 */
++		if (log_queue.count == 0 && !running) {
++			pthread_mutex_unlock(&log_queue.mutex);
++			logging_thread.thread_running = 0;
++			break;
++		}
++
++		struct log_message message = log_queue.messages[log_queue.front];
++		log_queue.front = (log_queue.front + 1) % log_queue.size;
++		log_queue.count--;
++
++		missed_logs = log_queue.missed_logs;
++		log_queue.missed_logs = 0;
++
++		pthread_mutex_unlock(&log_queue.mutex);
++
++		if (missed_logs) {
++			snprintf(missed_log_msg, sizeof(missed_log_msg), "stalld: %lu logs missed due to log buffer overflow\n", missed_logs);
++			__log_msg(missed_log_msg);
++		}
++
++		switch (message.type) {
++			case WARN:
++				print_to_stderr("   ");
++				print_to_stderr(message.message);
++				break;
++			case INFO:
++				print_to_stderr(message.message);
++				break;
++			case LOG_MSG:
++			default:
++				__log_msg(message.message);
++				break;
++		}
++		free(message.message);
++	}
++
++	logging_thread.thread_running = 0;
++	pthread_exit(NULL);
++}
++
++void init_threaded_logging() {
++	pthread_attr_t attr;
++	struct sched_param param;
++	int retry, retval;
++	int retry_count = 3;
++
++	log_queue.size = config_log_buffer_size;
++	log_queue.messages = (struct log_message*)malloc(sizeof(struct log_message) * log_queue.size);
++	if (log_queue.messages == NULL) {
++	    die ("Failed to allocate memory for log queue.\n");
++	}
++
++	log_queue.front = 0;
++	log_queue.rear = -1;
++	log_queue.count = 0;
++	log_queue.missed_logs = 0;
++	pthread_attr_init(&attr);
++	pthread_mutex_init(&log_queue.mutex, NULL);
++	pthread_cond_init(&log_queue.not_empty, NULL);
++
++	pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
++	pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
++	pthread_attr_setschedparam(&attr, &param);
++
++	for (retry = 0; retry < retry_count; retry++) {
++		logging_thread.thread_running = 1;
++		retval = pthread_create(&logging_thread.thread, &attr, logging_main, NULL);
++		if (!retval) {
++			retval = pthread_setname_np(logging_thread.thread, "stalld-logging");
++			if (retval != 0) {
++				warn("Not able to set name for logging pthread error:%d", retval);
++			}
++			break;
++		}
++		if (retval != EAGAIN || retry == retry_count - 1) {
++			logging_thread.thread_running = 0;
++			cleanup_logging();
++			die("Failed to create logging thread\n");
++			break;
++		}
++	}
++}
++
+ int main(int argc, char **argv)
+ {
+ 	struct cpu_info *cpus;
+@@ -1414,6 +1521,9 @@ int main(int argc, char **argv)
+ 
+ 	parse_args(argc, argv);
+ 
++	if (config_threaded_log)
++		init_threaded_logging();
++
+ 	/*
+ 	 * it will not die...
+ 	 */
+@@ -1493,6 +1603,14 @@ int main(int argc, char **argv)
+ 
+ 	cleanup_regex(&nr_thread_ignore, &compiled_regex_thread);
+ 	cleanup_regex(&nr_process_ignore, &compiled_regex_process);
++
++	if (config_threaded_log) {
++		if (join_thread(&logging_thread.thread) != 0) {
++			warn ("Failed to join logging thread.\n");
++		}
++		cleanup_logging();
++	}
++
+ 	if (config_log_syslog)
+ 		closelog();
+ 
+diff --git a/src/stalld.h b/src/stalld.h
+index 05f66e6..158f6b7 100644
+--- a/src/stalld.h
++++ b/src/stalld.h
+@@ -14,6 +14,7 @@
+ 
+ #define BUFFER_PAGES		10
+ #define MAX_WAITING_PIDS	30
++#define MAX_LOG_LENGTH		1024
+ 
+ /*
+  * Workqueue worker names are now more verbose and needs to be
+@@ -113,6 +114,34 @@ struct stalld_backend {
+ 	void (*destroy)(void);
+ };
+ 
++enum log_types {
++	WARN,
++	INFO,
++	LOG_MSG
++};
++
++struct log_message {
++	enum log_types type;
++	char* message;
++};
++
++/* logging */
++struct log_queue {
++	struct log_message* messages;
++	int front;
++	int rear;
++	int count;
++	int size;
++	pthread_mutex_t mutex;
++	pthread_cond_t not_empty;
++	unsigned long missed_logs;
++};
++
++struct log_thread {
++	int thread_running;
++	pthread_t thread;
++};
++
+ #ifdef __x86_64__
+ # define __NR_sched_setattr 314
+ # define __NR_sched_getattr 315
+@@ -165,6 +194,11 @@ static inline void normalize_timespec(struct timespec *ts)
+         }
+ }
+ 
++static inline void print_to_stderr(const char* message)
++{
++	fprintf(stderr, "%s\n", message);
++}
++
+ /*
+  * Forward function definitions.
+  */
+@@ -172,11 +206,12 @@ void __die(const char *fmt, ...);
+ void __warn(const char *fmt, ...);
+ void __info(const char *fmt, ...);
+ 
+-#define die(fmt, ...)	__die("%s: " fmt, __func__, ##__VA_ARGS__)
+-#define warn(fmt, ...)	__warn("%s: " fmt, __func__, ##__VA_ARGS__)
+-#define info(fmt, ...)	__info("%s: " fmt, __func__, ##__VA_ARGS__)
++#define die(fmt, ...)	__die("[DIE] %s : " fmt, __func__, ##__VA_ARGS__)
++#define warn(fmt, ...)	__warn("[WARN] %s : " fmt, __func__, ##__VA_ARGS__)
++#define info(fmt, ...)	__info("[INFO] %s : " fmt, __func__, ##__VA_ARGS__)
+ 
+ void log_msg(const char *fmt, ...);
++void __log_msg(const char *msg);
+ 
+ long get_long_from_str(char *start);
+ long get_long_after_colon(char *start);
+@@ -193,6 +228,7 @@ int parse_args(int argc, char **argv);
+ int rt_throttling_is_off(void);
+ int turn_off_rt_throttling(void);
+ void cleanup_regex();
++void cleanup_logging();
+ void find_sched_debug_path(void);
+ int set_reservation(int period, int reservation);
+ int get_tgid(int pid);
+@@ -209,6 +245,10 @@ extern int config_write_kmesg;
+ extern int config_log_syslog;
+ extern int config_log_only;
+ extern int config_foreground;
++extern int config_threaded_log;
++extern struct log_queue log_queue;
++extern struct log_thread logging_thread;
++extern unsigned long config_log_buffer_size;
+ extern int config_ignore;
+ extern unsigned long config_dl_period;
+ extern unsigned long config_dl_runtime;
+diff --git a/src/utils.c b/src/utils.c
+index 70e93af..c8ae762 100644
+--- a/src/utils.c
++++ b/src/utils.c
+@@ -210,6 +210,41 @@ int setup_signal_handling(void)
+ 	return 0;
+ }
+ 
++char* parse_messages(const char *fmt, va_list ap)
++{
++	const char *log_prefix = "stalld: ";
++	char* message = NULL;
++	size_t bufsz, messagelen;
++	char *log;
++
++	messagelen = sizeof(char) * MAX_LOG_LENGTH;
++	message = malloc(messagelen);
++	if (!message) {
++		return NULL;
++	}
++
++	strncpy(message, log_prefix, messagelen);
++	log = message + strlen(log_prefix);
++	bufsz = messagelen - strlen(log_prefix);
++	vsnprintf(log, bufsz, fmt, ap);
++	return message;
++}
++
++void enqueue_log(struct log_message message)
++{
++	pthread_mutex_lock(&log_queue.mutex);
++	if (log_queue.count == log_queue.size) {
++		log_queue.missed_logs++;
++	} else {
++		log_queue.rear = (log_queue.rear + 1) % log_queue.size;
++		log_queue.messages[log_queue.rear].type = message.type;
++		log_queue.messages[log_queue.rear].message = message.message;
++		log_queue.count++;
++		pthread_cond_signal(&log_queue.not_empty);
++	}
++	pthread_mutex_unlock(&log_queue.mutex);
++}
++
+ /*
+  * Print any error messages and exit.
+  */
+@@ -243,17 +278,43 @@ void __die(const char *fmt, ...)
+  */
+ void __warn(const char *fmt, ...)
+ {
++	const char *log_prefix = "stalld: ";
+ 	va_list ap;
+-
+-	if (errno)
+-		perror("stalld");
++	struct log_message message;
++	struct log_message errmsg;
++	size_t bufsz, errlen;
++	char *errstr;
++
++	if (errno) {
++		if (config_threaded_log && logging_thread.thread_running) {
++			errlen = sizeof(char) * MAX_LOG_LENGTH;
++			errmsg.message = malloc(errlen);
++			if (errmsg.message) {
++				strncpy(errmsg.message, log_prefix, errlen);
++				errstr = errmsg.message + strlen(log_prefix);
++				bufsz = errlen - strlen(log_prefix) - 1;
++				strncpy(errstr, strerror(errno), bufsz);
++				errmsg.type = WARN;
++				enqueue_log(errmsg);
++			}
++		} else {
++			perror("stalld");
++		}
++	}
+ 
+ 	va_start(ap, fmt);
+-	fprintf(stderr, "  ");
+-	vfprintf(stderr, fmt, ap);
++	message.message = parse_messages(fmt, ap);
+ 	va_end(ap);
+ 
+-	fprintf(stderr, "\n");
++	message.type = WARN;
++
++	if (config_threaded_log && logging_thread.thread_running) {
++		enqueue_log(message);
++	} else {
++		print_to_stderr("   ");
++		print_to_stderr(message.message);
++		free(message.message);
++	}
+ }
+ 
+ /*
+@@ -262,29 +323,31 @@ void __warn(const char *fmt, ...)
+ void __info(const char *fmt, ...)
+ {
+ 	va_list ap;
++	struct log_message message;
++
++	if (!config_verbose)
++		return;
+ 
+-	if (config_verbose) {
+-		va_start(ap, fmt);
+-		vfprintf(stderr, fmt, ap);
+-		va_end(ap);
++	va_start(ap, fmt);
++	message.message = parse_messages(fmt, ap);
++	va_end(ap);
++	message.type = INFO;
++
++	if (config_threaded_log && logging_thread.thread_running) {
++		enqueue_log(message);
++	} else {
++		print_to_stderr(message.message);
++		free(message.message);
+ 	}
+ }
+ 
+-void log_msg(const char *fmt, ...)
++void __log_msg(const char *message)
+ {
+ 	const char *log_prefix = "stalld: ";
+-	char message[1024];
+-	size_t bufsz;
++	const char *log;
+ 	int kmesg_fd;
+-	va_list ap;
+-	char *log;
+ 
+-	strncpy(message, log_prefix, sizeof(message));
+ 	log = message + strlen(log_prefix);
+-	bufsz = sizeof(message) - strlen(log_prefix);
+-	va_start(ap, fmt);
+-	vsnprintf(log, bufsz, fmt, ap);
+-	va_end(ap);
+ 
+ 	/* Print the entire message (including PREFIX). */
+ 	if (config_verbose)
+@@ -307,6 +370,32 @@ void log_msg(const char *fmt, ...)
+ 		syslog(LOG_INFO, "%s", log);
+ }
+ 
++void log_msg(const char *fmt, ...)
++{
++	va_list ap;
++	struct log_message message;
++
++	va_start(ap, fmt);
++	message.message = parse_messages(fmt, ap);
++	va_end(ap);
++	message.type = LOG_MSG;
++
++	if (config_threaded_log && logging_thread.thread_running) {
++	        enqueue_log(message);
++	} else {
++	        __log_msg(message.message);
++	        free(message.message);
++	}
++}
++
++void cleanup_logging() {
++	pthread_mutex_destroy(&log_queue.mutex);
++	pthread_cond_destroy(&log_queue.not_empty);
++	if (log_queue.missed_logs)
++	        log_msg("%lu logs dropped\n", log_queue.missed_logs);
++	free(log_queue.messages);
++}
++
+ /*
+  * Based on:
+  * https://github.com/pasce/daemon-skeleton-linux-c
+@@ -760,6 +849,8 @@ static void print_usage(void)
+ 		"          -k/--log_kmsg: print log to the kernel buffer",
+ 		"          -s/--log_syslog: print log to syslog",
+ 		"          -f/--foreground: run in foreground [implict when -v]",
++		"          -T/--threaded_logging: logging runs in its own thread",
++		"          -B/--log_buffer_size: size of buffer for the logging thread",
+ 		"        boosting options:",
+ 		"          -p/--boost_period: SCHED_DEADLINE period [ns] that the starving task will receive",
+ 		"          -r/--boost_runtime: SCHED_DEADLINE runtime [ns] that the starving task will receive",
+@@ -997,9 +1088,11 @@ int parse_args(int argc, char **argv)
+ 		static struct option long_options[] = {
+ 			{"cpu",			required_argument, 0, 'c'},
+ 			{"log_only",		no_argument,	   0, 'l'},
++			{"threaded_logging",	no_argument,	   0, 'T'},
+ 			{"verbose",		no_argument,	   0, 'v'},
+ 			{"log_kmsg",		no_argument,	   0, 'k'},
+ 			{"log_syslog",		no_argument,	   0, 's'},
++			{"log_buffer_size",	required_argument, 0, 'B'},
+ 			{"foreground",		no_argument,	   0, 'f'},
+ 			{"aggressive_mode",	no_argument,	   0, 'A'},
+ 			{"power_mode",		no_argument,	   0, 'O'},
+@@ -1025,7 +1118,7 @@ int parse_args(int argc, char **argv)
+ 		/* getopt_long stores the option index here. */
+ 		int option_index = 0;
+ 
+-		c = getopt_long(argc, argv, "lvkfAOMhsp:r:d:t:c:FVSg:i:I:R:b:a:",
++		c = getopt_long(argc, argv, "lvkTfAOMhsB:p:r:d:t:c:FVSg:i:I:R:b:a:",
+ 				 long_options, &option_index);
+ 
+ 		/* Detect the end of the options. */
+@@ -1058,6 +1151,12 @@ int parse_args(int argc, char **argv)
+ 		case 's':
+ 			config_log_syslog = 1;
+ 			break;
++		case 'T':
++			config_threaded_log = 1;
++			break;
++		case 'B':
++			config_log_buffer_size = get_long_from_str(optarg);
++			break;
+ 		case 'f':
+ 			config_foreground = 1;
+ 			break;
+diff --git a/systemd/stalld.service b/systemd/stalld.service
+index 33996cb..e055bd4 100644
+--- a/systemd/stalld.service
++++ b/systemd/stalld.service
+@@ -10,7 +10,7 @@ ExecStartPre=/usr/bin/throttlectl off
+ 
+ # In case the regex passed to IT or IP includes C escape sequences,
+ # use ${IT} or ${IP} instead of $IT or $IP
+-ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP $VB $FF $CG
++ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $LB $FG $PF $IT $IP $VB $FF $CG
+ ExecStopPost=/usr/bin/throttlectl on
+ CPUSchedulingPolicy=fifo
+ CPUSchedulingPriority=10
+-- 
+2.39.0
+

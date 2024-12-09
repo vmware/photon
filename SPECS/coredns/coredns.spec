@@ -1,16 +1,14 @@
 %define network_required 1
-%ifarch aarch64
-%global gohostarch      arm64
-%else
-%global gohostarch      amd64
-%endif
+%define gopath_comp_coredns github.com/coredns/coredns
 %define debug_package %{nil}
+
+# Must be in sync with package version
+%define COREDNS_GIT_COMMIT ae2bbc29b
 
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        2%{?dist}
-License:        Apache License 2.0
+Release:        8%{?dist}
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -19,6 +17,9 @@ Distribution:   Photon
 Source0: https://github.com/coredns/coredns/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=f8752811e9e7913311f47ae13f35c755ac86ea240572be1c1dabc1712b6c42380c60ac385fa9573c77d6fcf4c144df2bc00574f18e8d7b70da21ed8ae4fb87cd
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires: go
 BuildRequires: git
 
@@ -26,32 +27,24 @@ BuildRequires: git
 CoreDNS is a DNS server that chains plugins
 
 %prep -p exit
-%autosetup -p1 -n %{name}-%{version}
+# Using autosetup is not feasible
+%setup -q -c -n %{name}-%{version}
+
+mkdir -p "$(dirname src/%{gopath_comp_coredns})"
+mv %{name}-%{version} src/%{gopath_comp_coredns}
 
 %build
-export ARCH=%{gohostarch}
-export VERSION=%{version}
-export PKG=github.com/%{name}/%{name}
-export GOARCH=${ARCH}
-export GOHOSTARCH=${ARCH}
-export GOOS=linux
-export GOHOSTOS=linux
-export GOROOT=%{_libdir}/golang
-export GOPATH=%{_datadir}/gocode
-export GOBIN=%{_datadir}/gocode/bin
-export PATH=$PATH:$GOBIN
-mkdir -p ${GOPATH}/src/${PKG}
-cp -rf . ${GOPATH}/src/${PKG}
-pushd ${GOPATH}/src/${PKG}
-# Just download (do not compile), since it's not compilable with go-1.9.
-# TODO: use prefetched tarball instead.
-sed -i 's#go get -u github.com/mholt/caddy#go get -u -d github.com/mholt/caddy#' Makefile
-sed -i 's#go get -u github.com/miekg/dns#go get -u -d github.com/miekg/dns#' Makefile
-%make_build
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+pushd src/%{gopath_comp_coredns}
+%make_build GITCOMMIT=%{COREDNS_GIT_COMMIT}
+popd
 
 %install
+pushd src/%{gopath_comp_coredns}
 install -m 755 -d %{buildroot}%{_bindir}
-install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/%{name}
+install -pm 755 -t %{buildroot}%{_bindir} coredns
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -61,21 +54,33 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.11.1-8
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-7
+- Bump version as a part of go upgrade
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.11.1-6
+- Simplify build scripts, and pass GITCOMMIT to make.
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-5
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.11.1-4
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.11.1-3
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.11.1-2
 - Bump up version to compile with new go
 * Fri Nov 03 2023 Nitesh Kumar <kunitesh@vmware.com> 1.11.1-1
 - Version upgrade to v1.11.1 to fix following CVE's:
 - CVE-2021-28235 and CVE-2023-32082
-* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-5
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-4
 - Bump up version to compile with new go
-* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-4
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-3
 - Bump up version to compile with new go
-* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-3
-- Bump up version to compile with new go
-* Tue Jul 04 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-2
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-2
 - Bump up version to compile with new go
 * Tue Jul 04 2023 Nitesh Kumar <kunitesh@vmware.com> 1.10.1-1
 - Version upgrade to v1.10.1 to fix CVE-2023-0296
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.0-5
+- Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.0-4
 - Bump up version to compile with new go
 * Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.0-3

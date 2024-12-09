@@ -4,22 +4,24 @@
 
 Summary:        Containerd
 Name:           containerd
-Version:        1.6.17
-Release:        10%{?dist}
-License:        ASL 2.0
+Version:        1.6.21
+Release:        13%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha512 %{name}=673153b6007b2bd6b0148aef79a9e495c8fde47132c8f2880c22873ac8b8b428f94e8ecca5cf0b670658ab941d2e412f8c63cf1249f9e4765342547b4d30f196
+Source0: https://github.com/containerd/containerd/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=a94ed8b8b9e153c9dc370228b659fcba1b03b3c47c8b5fcb001bb1b4b158ea048159f5d8d8c5294e7da3444edd76fbd903d7b7faa84e3382807a583d757325e1
 
 # Must be in sync with package version
-%define CONTAINERD_GITCOMMIT 9cd3357b7fd7218e4aec3eae239db1f68a5a6ec6
+%define CONTAINERD_GITCOMMIT 3dce8eb055cbb6872793272b4f20ed16117344f8
 
 Source1: %{name}-config.toml
 Source2: disable-%{name}-by-default.preset
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Patch0: %{name}-service.patch
 Patch1: build-bin-gen-manpages-instead-of-using-go-run.patch
@@ -135,18 +137,32 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
-* Tue Feb 06 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.6.17-10
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.6.21-13
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.21-12
+- Bump version as a part of go upgrade
+* Tue Sep 10 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.6.21-11
+- Bump up version as a part of runc upgrade to v1.1.14
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.21-10
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.6.21-9
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.6.21-8
+- Bump version as a part of go upgrade
+* Tue Feb 06 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.6.21-7
 - Bump up version as a part of runc upgrade to v1.1.12
-* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.17-9
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.21-6
 - Bump up version to compile with new go
-* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.17-8
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.21-5
 - Bump up version to compile with new go
-* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.17-7
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.21-4
 - Bump up version to compile with new go
-* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.17-6
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.21-3
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.17-5
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.21-2
 - Bump up version to compile with new go
+* Fri May 19 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.21-1
+- Upgrade to v1.6.21.
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.17-4
 - Bump up version to compile with new go
 * Fri Apr 28 2023 Nitesh Kumar <kunitesh@vmware.com> 1.6.17-3

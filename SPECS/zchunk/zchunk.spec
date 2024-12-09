@@ -1,8 +1,7 @@
 Summary:        Compressed file format
 Name:           zchunk
 Version:        1.2.3
-Release:        2%{?dist}
-License:        BSD-2-Clause AND MIT
+Release:        3%{?dist}
 URL:            https://github.com/zchunk/zchunk
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,11 +10,16 @@ Distribution:   Photon
 Source0: https://github.com/zchunk/zchunk/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=5e46d8c3e36034de8424937cdfac59acdfaf332203e6e5d8b290614cbbe0340998d53b0583b0ef93189f41dc89219a75f50572757ebcea9abd83bd9aad861a73
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  meson
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 
 Requires:       %{name}-libs = %{version}-%{release}
+
+Patch0: 0001-Handle-overflow-errors-in-malformed-zchunk-files.patch
 
 %description
 zchunk is a compressed file format that splits the file into independent
@@ -54,7 +58,7 @@ This package contains the headers necessary for building against the zchunk
 library, libzck.
 
 %prep
-%autosetup
+%autosetup -p1
 # Remove bundled sha libraries
 rm -rf src/lib/hash/sha*
 
@@ -103,8 +107,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*.gz
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.3-2
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.3-3
+- Release bump for SRP compliance
+* Tue Oct 31 2023 Ankit Jain <ankitja@vmware.com> 1.2.3-2
+- Fix for CVE-2023-46228
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.3-1
 - Upgrade to v1.2.3
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.7-2

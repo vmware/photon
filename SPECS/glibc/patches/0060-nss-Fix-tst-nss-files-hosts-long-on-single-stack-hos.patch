@@ -1,0 +1,57 @@
+From 2681d38cafaceafeb330bc0536fa710b75ed5947 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Tue, 13 Sep 2022 16:11:40 +0200
+Subject: [PATCH 060/175] nss: Fix tst-nss-files-hosts-long on single-stack
+ hosts (bug 24816)
+
+getent implicitly passes AI_ADDRCONFIG to getaddrinfo by default.
+Use --no-addrconfig to suppress that, so that both IPv4 and IPv6
+lookups succeed even if the address family is not supported by the
+host.
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit c75d20b5b27b0a60f0678236f51a4d3b0b058c00)
+---
+ NEWS                           | 1 +
+ nss/tst-nss-files-hosts-long.c | 9 +++++----
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 462a12253d8dc2d67513de8cb3f2b81a67cad0fe..de775ab116483c58de2d756bfc33ba2f97eccb2c 100644
+--- a/NEWS
++++ b/NEWS
+@@ -24,6 +24,7 @@ Security related changes:
+ The following bugs are resolved with this release:
+ 
+   [12154] Do not fail DNS resolution for CNAMEs which are not host names
++  [24816] Fix tst-nss-files-hosts-long on single-stack hosts
+   [28846] CMSG_NXTHDR may trigger -Wstrict-overflow warning
+   [29305] Conserve NSS buffer space during DNS packet parsing
+   [29415] nscd: Fix netlink cache invalidation if epoll is used
+diff --git a/nss/tst-nss-files-hosts-long.c b/nss/tst-nss-files-hosts-long.c
+index 3942cf5fca5d4961e26657df3e9e2305e43f11df..a7697e31431fc77cb41e8b1e92a73c5d6117b229 100644
+--- a/nss/tst-nss-files-hosts-long.c
++++ b/nss/tst-nss-files-hosts-long.c
+@@ -28,14 +28,15 @@ do_test (void)
+ {
+   int ret;
+ 
+-  /* Run getent to fetch the IPv4 address for host test4.
+-     This forces /etc/hosts to be parsed.  */
+-  ret = system("getent ahostsv4 test4");
++  /* Run getent to fetch the IPv4 address for host test4.  This forces
++     /etc/hosts to be parsed.  Use --no-addrconfig to return addresses
++     even in an IPv6-only environment.  */
++  ret = system("getent --no-addrconfig ahostsv4 test4");
+   if (ret != 0)
+     FAIL_EXIT1("ahostsv4 failed");
+ 
+   /* Likewise for IPv6.  */
+-  ret = system("getent ahostsv6 test6");
++  ret = system("getent --no-addrconfig  ahostsv6 test6");
+   if (ret != 0)
+     FAIL_EXIT1("ahostsv6 failed");
+ 
+-- 
+2.35.6
+

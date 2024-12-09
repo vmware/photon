@@ -1,0 +1,118 @@
+From 46479e5d10ed87825aa277da158d6a687974518b Mon Sep 17 00:00:00 2001
+From: Aurelien Jarno <aurelien@aurel32.net>
+Date: Mon, 3 Oct 2022 23:46:11 +0200
+Subject: [PATCH 050/175] x86-64: Require BMI2 for AVX2 str(n)casecmp
+ implementations
+
+The AVX2 str(n)casecmp implementations use the 'bzhi' instruction, which
+belongs to the BMI2 CPU feature.
+
+NB: It also uses the 'tzcnt' BMI1 instruction, but it is executed as BSF
+as BSF if the CPU doesn't support TZCNT, and produces the same result
+for non-zero input.
+
+Partially fixes: b77b06e0e296 ("x86: Optimize strcmp-avx2.S")
+Partially resolves: BZ #29611
+
+Reviewed-by: Noah Goldstein  <goldstein.w.n@gmail.com>
+(cherry picked from commit 10f79d3670b036925da63dc532b122d27ce65ff8)
+---
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c  | 28 +++++++++++++++------
+ sysdeps/x86_64/multiarch/ifunc-strcasecmp.h |  1 +
+ 2 files changed, 21 insertions(+), 8 deletions(-)
+
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index a71444eccb3cb7cf59775408b3b2524397aaa2ec..d208fae4bfc57c3d09225b12668641cb8a8b6369 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -448,13 +448,16 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   IFUNC_IMPL (i, name, strcasecmp,
+ 	      X86_IFUNC_IMPL_ADD_V4 (array, i, strcasecmp,
+ 				     (CPU_FEATURE_USABLE (AVX512VL)
+-				      && CPU_FEATURE_USABLE (AVX512BW)),
++				      && CPU_FEATURE_USABLE (AVX512BW)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strcasecmp_evex)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strcasecmp,
+-				     CPU_FEATURE_USABLE (AVX2),
++				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strcasecmp_avx2)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strcasecmp,
+ 				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)
+ 				      && CPU_FEATURE_USABLE (RTM)),
+ 				     __strcasecmp_avx2_rtm)
+ 	      X86_IFUNC_IMPL_ADD_V2 (array, i, strcasecmp,
+@@ -470,13 +473,16 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   IFUNC_IMPL (i, name, strcasecmp_l,
+ 	      X86_IFUNC_IMPL_ADD_V4 (array, i, strcasecmp,
+ 				     (CPU_FEATURE_USABLE (AVX512VL)
+-				      && CPU_FEATURE_USABLE (AVX512BW)),
++				      && CPU_FEATURE_USABLE (AVX512BW)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strcasecmp_l_evex)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strcasecmp,
+-				     CPU_FEATURE_USABLE (AVX2),
++				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strcasecmp_l_avx2)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strcasecmp,
+ 				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)
+ 				      && CPU_FEATURE_USABLE (RTM)),
+ 				     __strcasecmp_l_avx2_rtm)
+ 	      X86_IFUNC_IMPL_ADD_V2 (array, i, strcasecmp_l,
+@@ -638,13 +644,16 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   IFUNC_IMPL (i, name, strncasecmp,
+ 	      X86_IFUNC_IMPL_ADD_V4 (array, i, strncasecmp,
+ 				     (CPU_FEATURE_USABLE (AVX512VL)
+-				      && CPU_FEATURE_USABLE (AVX512BW)),
++				      && CPU_FEATURE_USABLE (AVX512BW)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strncasecmp_evex)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strncasecmp,
+-				     CPU_FEATURE_USABLE (AVX2),
++				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strncasecmp_avx2)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strncasecmp,
+ 				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)
+ 				      && CPU_FEATURE_USABLE (RTM)),
+ 				     __strncasecmp_avx2_rtm)
+ 	      X86_IFUNC_IMPL_ADD_V2 (array, i, strncasecmp,
+@@ -660,13 +669,16 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   IFUNC_IMPL (i, name, strncasecmp_l,
+ 	      X86_IFUNC_IMPL_ADD_V4 (array, i, strncasecmp,
+ 				     (CPU_FEATURE_USABLE (AVX512VL)
+-				      && CPU_FEATURE_USABLE (AVX512BW)),
++				      & CPU_FEATURE_USABLE (AVX512BW)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strncasecmp_l_evex)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strncasecmp,
+-				     CPU_FEATURE_USABLE (AVX2),
++				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strncasecmp_l_avx2)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strncasecmp,
+ 				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)
+ 				      && CPU_FEATURE_USABLE (RTM)),
+ 				     __strncasecmp_l_avx2_rtm)
+ 	      X86_IFUNC_IMPL_ADD_V2 (array, i, strncasecmp_l,
+diff --git a/sysdeps/x86_64/multiarch/ifunc-strcasecmp.h b/sysdeps/x86_64/multiarch/ifunc-strcasecmp.h
+index 68646ef199ecb71ce93af9cdc98460c2c771437a..7622af259ca5c08fb0d7c0943d67c2cd5dc85cac 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-strcasecmp.h
++++ b/sysdeps/x86_64/multiarch/ifunc-strcasecmp.h
+@@ -34,6 +34,7 @@ IFUNC_SELECTOR (void)
+   const struct cpu_features *cpu_features = __get_cpu_features ();
+ 
+   if (X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, AVX2)
++      && X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, BMI2)
+       && X86_ISA_CPU_FEATURES_ARCH_P (cpu_features,
+ 				      AVX_Fast_Unaligned_Load, ))
+     {
+-- 
+2.35.6
+

@@ -1,21 +1,23 @@
 Summary:        World timezone definitions, modern and historical
 Name:           python3-pytz
 Version:        2022.2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pytz
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/pytz/pytz-%{version}.tar.gz
 %define sha512  pytz=9c78d9f484e2e0e101ca7e10fba8e6c9870255b2c320b3499a0cc9b480adac64b07f2f124048aa957c6bc9311a4ac43060368e1f0d85d8e8c8f7df598e47912b
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  unzip
 
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
 BuildRequires: python3-pytest
@@ -51,6 +53,8 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2022.2.1-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2022.2.1-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2022.2.1-1

@@ -1,8 +1,7 @@
 Summary:    Programs for searching through files
 Name:       grep
 Version:    3.7
-Release:    3%{?dist}
-License:    GPLv3+
+Release:    5%{?dist}
 URL:        http://www.gnu.org/software/grep
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/grep/%{name}-%{version}.tar.xz
 %define sha512  %{name}=e9e45dcd40af8367f819f2b93c5e1b4e98a251a9aa251841fa67a875380fae52cfa27c68c6dbdd6a4dde1b1017ee0f6b9833ef6dd6e419d32d71b6df5e972b82
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: pcre-devel
 
@@ -60,6 +62,10 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.7-5
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.7-4
+- Release bump for SRP compliance
 * Tue Jan 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7-3
 - Enable perl regex support
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7-2

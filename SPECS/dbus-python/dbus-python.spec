@@ -2,11 +2,13 @@ Name:           dbus-python3
 Version:        1.3.2
 Release:        3%{?dist}
 Summary:        Python bindings for D-Bus
-License:        MIT
 Group:          Development/Libraries/Python
 Url:            http://www.freedesktop.org/wiki/Software/DBusBindings/
 Source0:        http://dbus.freedesktop.org/releases/dbus-python/dbus-python-%{version}.tar.gz
 %define         sha512 dbus-python=9b2885c9c2914142c72487f766b1cdd28a255d9f5a87eaf8f4eb420c6e096a77f210ac5a4fac9843c6531974872880cc28b7e45940e198856e984dcc0715519a
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -62,8 +64,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/dbus-python.pc
 
 %changelog
-* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.2-3
-- Bump version as a part of dbus upgrade
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.3.2-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.2-2
 - Update release to compile with python 3.11
 * Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com> 1.3.2-1

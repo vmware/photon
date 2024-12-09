@@ -1,22 +1,26 @@
 Summary:      Dynamic host configuration protocol
 Name:         dhcp
 Version:      4.4.3
-Release:      2%{?dist}
-License:      ISC
-Url:          https://www.isc.org/dhcp
+Release:      3%{?dist}
+Url:          http://isc.org/products/DHCP/
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
 Distribution: Photon
 
-Source0: https://ftp.isc.org/isc/dhcp/%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4472d6794af80b482560956cee6895889cc1aca39980f851faf56824627e95731f2983cf7c7454bc3decb0a12c874fcbd29bd6c5a9695412def6bc14c6df17e0
+Source0:      ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
+%define sha512 dhcp=4472d6794af80b482560956cee6895889cc1aca39980f851faf56824627e95731f2983cf7c7454bc3decb0a12c874fcbd29bd6c5a9695412def6bc14c6df17e0
+Source1:      dhclient-script
+Source2:      dhclient.conf
+Source3:      dhcp.service
+Source4:      dhcrelay.service
 
-Source1: dhclient-script
-Source2: dhclient.conf
-Source3: %{name}.service
-Source4: dhcrelay.service
+Source5: license.txt
+%include %{SOURCE5}
 
-BuildRequires: systemd-devel
+Patch0:       CVE-2022-2928.4-4-3.patch
+Patch1:       CVE-2022-2929.4-4-3.patch
+
+BuildRequires:  systemd-devel
 
 %description
 The ISC DHCP package contains both the client and server programs for DHCP.
@@ -26,21 +30,18 @@ addresses on private networks.
 
 %package libs
 Summary:    Libraries for dhcp
-
 %description libs
 Libraries for the dhcp.
 
 %package devel
 Summary:    Development Libraries and header files for dhcp
-Requires:   %{name}-libs = %{version}-%{release}
-
+Requires:   dhcp-libs
 %description devel
 Headers and libraries for the dhcp.
 
 %package server
 Summary:    Provides the ISC DHCP server
-Requires:   %{name}-libs = %{version}-%{release}
-
+Requires:   dhcp-libs
 %description server
 dhcpd is the name of a program that operates as a daemon on a server to
 provide Dynamic Host Configuration Protocol (DHCP) service to a network.
@@ -48,81 +49,83 @@ Clients may solicit an IP address (IP) from a DHCP server when they need one
 
 %package client
 Summary:    Provides the ISC DHCP client daemon and dhclient-script
-Requires:   %{name}-libs = %{version}-%{release}
+Requires:   dhcp-libs
 Requires:   ipcalc
 Requires:   iputils
-Provides:   dhclient = %{version}-%{release}
-
 %description client
+
 The ISC DHCP Client, dhclient, provides a means for configuring one or
 more network interfaces using the Dynamic Host Configuration Protocol,
 BOOTP protocol, or if these protocols fail, by statically assigning an address.
 
 %prep
-%autosetup -p1
+%autosetup -p1 %{name}-%{version}
 
 %build
-autoreconf -vif
-
-export CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"' \
-        -D_PATH_DHCPD_CONF='\"/etc/%{name}/dhcpd.conf\"' \
-        -D_PATH_DHCLIENT_CONF='\"/etc/%{name}/dhclient.conf\"'"
+autoreconf --verbose --force --install
+export CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'  \
+        -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
+        -D_PATH_DHCLIENT_CONF='\"/etc/dhcp/dhclient.conf\"'"        \
 
 %configure \
-   --with-srv-lease-file=%{_sharedstatedir}/dhcpd/dhcpd.leases \
-   --with-srv6-lease-file=%{_sharedstatedir}/dhcpd/dhcpd6.leases \
-   --with-cli-lease-file=%{_sharedstatedir}/dhclient/dhclient.leases \
-   --with-cli6-lease-file=%{_sharedstatedir}/dhclient/dhclient6.leases \
-   --with-srv-pid-file=/run/dhcpd.pid \
-   --with-srv6-pid-file=/run/dhcpd6.pid \
-   --with-cli-pid-file=/run/dhclient.pid \
-   --with-cli6-pid-file=/run/dhclient6.pid \
-   --with-relay-pid-file=/run/dhcrelay.pid \
-   --enable-log-pid \
-   --enable-paranoia \
-   --enable-early-chroot \
-   --enable-binary-leases \
-   --with-systemd
+       --with-srv-lease-file=%{_localstatedir}/lib/dhcpd/dhcpd.leases \
+       --with-srv6-lease-file=%{_localstatedir}/lib/dhcpd/dhcpd6.leases \
+       --with-cli-lease-file=%{_localstatedir}/lib/dhclient/dhclient.leases \
+       --with-cli6-lease-file=%{_localstatedir}/lib/dhclient/dhclient6.leases \
+       --with-srv-pid-file=%{_localstatedir}/run/dhcpd.pid \
+       --with-srv6-pid-file=%{_localstatedir}/run/dhcpd6.pid \
+       --with-cli-pid-file=%{_localstatedir}/run/dhclient.pid \
+       --with-cli6-pid-file=%{_localstatedir}/run/dhclient6.pid \
+       --with-relay-pid-file=%{_localstatedir}/run/dhcrelay.pid \
+       --enable-log-pid \
+       --enable-paranoia \
+       --enable-early-chroot \
+       --enable-binary-leases \
+       --with-systemd
 
-%make_build
+# make doesn't support _smp_mflags
+make -j1
 
 %install
 %make_install %{?_smp_mflags}
 install -D -p -m 0755 %{SOURCE1} %{buildroot}%{_sbindir}/dhclient-script
 
-mkdir -p %{buildroot}%{_sysconfdir}/%{name} \
-         %{buildroot}%{_unitdir} \
-         %{buildroot}%{_sysconfdir}/%{name} \
-         %{buildroot}%{_sharedstatedir}/dhcpd/ \
-         %{buildroot}%{_sharedstatedir}/dhclient/
+mkdir -p %{buildroot}/%{_sysconfdir}/dhcp
+install -D -p -m 0755 %{SOURCE2} %{buildroot}%{_sysconfdir}/dhcp/
 
-install -D -p -m 0755 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/
-
+mkdir -p %{buildroot}/%{_unitdir}
 install -D -p -m 0755 %{SOURCE3} %{buildroot}%{_unitdir}/
 install -D -p -m 0755 %{SOURCE4} %{buildroot}%{_unitdir}/
 
-install -v -dm 755 %{buildroot}%{_sharedstatedir}/dhclient
+install -v -dm 755 %{buildroot}%{_localstatedir}/lib/dhclient
 install -v -dm 755 %{buildroot}%{_sysconfdir}/default
 
 cat > %{buildroot}%{_sysconfdir}/default/dhcpd << "EOF"
 DHCPD_OPTS=
 EOF
 
-touch %{buildroot}%{_sysconfdir}/%{name}/{dhcpd.conf,dhcpd6.conf}
+mkdir -p %{buildroot}%{_sysconfdir}/dhcp
+touch %{buildroot}%{_sysconfdir}/dhcp/dhcpd.conf
+touch %{buildroot}%{_sysconfdir}/dhcp/dhcpd6.conf
 
-touch %{buildroot}%{_sharedstatedir}/dhcpd/{dhcpd.leases,dhcpd6.leases}
+mkdir -p %{buildroot}%{_localstatedir}/lib/dhcpd/
+touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd.leases
+touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd6.leases
+mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 
-rm -f %{buildroot}%{_sysconfdir}/dhclient.conf.example \
-      %{buildroot}%{_sysconfdir}/dhcpd.conf.example \
-      %{buildroot}%{_libdir}/*.a
+rm -f %{buildroot}%{_sysconfdir}/dhclient.conf.example
+rm -f %{buildroot}%{_sysconfdir}/dhcpd.conf.example
+
+#%%check
+#Commented out %check due to missing support of ATF.
 
 %ldconfig_scriptlets
 
-%files
-%defattr(-,root,root)
-
 %files libs
 %defattr(-,root,root)
+%{_libdir}/libdhcpctl.a
+%{_libdir}/libomapi.a
+%{_libdir}/libdhcp.a
 
 %files devel
 %defattr(-,root,root)
@@ -131,42 +134,45 @@ rm -f %{buildroot}%{_sysconfdir}/dhclient.conf.example \
 
 %files server
 %defattr(-,root,root)
-%dir %{_sysconfdir}/%{name}
-%dir %{_sharedstatedir}/dhcpd
+%dir %{_sysconfdir}/dhcp
+%dir %{_localstatedir}/lib/dhcpd
 %config(noreplace) %{_sysconfdir}/default/dhcpd
-%config(noreplace) %{_sysconfdir}/%{name}/dhcpd.conf
-%config(noreplace) %{_sysconfdir}/%{name}/dhcpd6.conf
-%config(noreplace) %{_sharedstatedir}/dhcpd/dhcpd.leases
-%config(noreplace) %{_sharedstatedir}/dhcpd/dhcpd6.leases
+%config(noreplace) %{_sysconfdir}/dhcp/dhcpd.conf
+%config(noreplace) %{_sysconfdir}/dhcp/dhcpd6.conf
+%config(noreplace) %{_localstatedir}/lib/dhcpd/dhcpd.leases
+%config(noreplace) %{_localstatedir}/lib/dhcpd/dhcpd6.leases
+
 %{_bindir}/omshell
 %{_sbindir}/dhcpd
 %{_sbindir}/dhcrelay
 %{_mandir}/man1/*
 %{_mandir}/man3/*
-%{_mandir}/man5/%{name}-eval.5.gz
-%{_mandir}/man5/%{name}-options.5.gz
+%{_mandir}/man5/dhcp-eval.5.gz
+%{_mandir}/man5/dhcp-options.5.gz
 %{_mandir}/man5/dhcpd.conf.5.gz
 %{_mandir}/man5/dhcpd.leases.5.gz
 %{_mandir}/man8/dhcpd.8.gz
 %{_mandir}/man8/dhcrelay.8.gz
-%{_unitdir}/%{name}.service
+%{_unitdir}/dhcp.service
 %{_unitdir}/dhcrelay.service
 
 %files client
 %defattr(-,root,root)
-%dir %{_sysconfdir}/%{name}
-%config(noreplace) %{_sysconfdir}/%{name}/dhclient.conf
+%dir %{_sysconfdir}/dhcp
+%config(noreplace) %{_sysconfdir}/dhcp/dhclient.conf
 %{_sbindir}/dhclient
 %{_sbindir}/dhclient-script
-%dir %{_sharedstatedir}/dhclient
+%dir %{_localstatedir}/lib/dhclient
 %{_mandir}/man5/dhclient.conf.5.gz
 %{_mandir}/man5/dhclient.leases.5.gz
 %{_mandir}/man8/dhclient-script.8.gz
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
-* Thu Sep 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.4.3-2
-- fix spec issues
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.4.3-3
+- Release bump for SRP compliance
+* Mon Sep 25 2023 Harinadh D <hdommaraju@vmware.com> 4.4.3-2
+- Fix CVE-2022-2928,CVE-2022-2929
 * Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 4.4.3-1
 - Version bump
 * Tue Nov 02 2021 Susant Sahani <ssahani@vmware.com> 4.4.2-5

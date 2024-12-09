@@ -1,9 +1,8 @@
 Name:           salt3
 Version:        3006.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
-License:        ASL 2.0
 URL:            http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,6 +15,9 @@ Source4:        salt-minion.service
 Source5:        salt-api.service
 Source6:        logrotate.salt
 Source7:        salt-default.preset
+
+Source8: license.txt
+%include %{SOURCE8}
 
 Patch0:         requirements.patch
 
@@ -257,6 +259,8 @@ rm -rf %{buildroot}
 %{_bindir}/spm
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3006.7-3
+- Release bump for SRP compliance
 * Mon May 13 2024 Etienne Le Sueur <etienne.le-sueur@broadcom.com> 3006.7-2
 - Update requirements to include python3-jmespath to fix issue listing minions
 * Wed Apr 17 2024 Prafful Mehrotra <prafful.mehrotra@broadcom.com> 3006.7-1

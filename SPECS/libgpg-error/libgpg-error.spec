@@ -1,14 +1,17 @@
-Summary:      	libgpg-error
-Name:         	libgpg-error
-Version:      	1.46
-Release:      	1%{?dist}
-License:      	GPLv2+
-URL:          	ftp://ftp.gnupg.org/gcrypt/libgpg-error/
-Group:		Development/Libraries
-Source0:	ftp://ftp.gnupg.org/gcrypt/libgpg-error/%{name}-%{version}.tar.bz2
+Summary:        libgpg-error
+Name:           libgpg-error
+Version:        1.46
+Release:        3%{?dist}
+URL:            https://www.gnupg.org/software/libgpg-error/index.html
+Group:          Development/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0:    https://www.gnupg.org/ftp/gcrypt/libgpg-error/%{name}-%{version}.tar.bz2
 %define sha512  libgpg-error=b06223bb2b0f67d3db5d0d9ab116361a0eda175d4667352b5c0941408d37f2b0ba8e507297e480ccebb88cbba9d0a133820b896914b07d264fb3edaac7b8c99d
-Vendor:		VMware, Inc.
-Distribution:	Photon
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 This is a library that defines common error values for all GnuPG
@@ -16,15 +19,15 @@ components.  Among these are GPG, GPGSM, GPGME, GPG-Agent, libgcrypt,
 pinentry, SmartCard Daemon and possibly more in the future.
 
 %package        devel
-Summary:	Libraries and header files for libgpg-error
-Requires:	%{name} = %{version}-%{release}
+Summary:    Libraries and header files for libgpg-error
+Requires:   %{name} = %{version}-%{release}
 
 %description    devel
 Static libraries and header files for the support library for libgpg-error
 
 %package        lang
 Summary:        Additional language files for libgpg-error
-Group:		Applications/System
+Group:          Applications/System
 Requires:       %{name} = %{version}-%{release}
 
 %description    lang
@@ -74,6 +77,10 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.46-3
+-   Release bump for SRP compliance
+*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.46-2
+-   Release bump for SRP compliance
 *   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.46-1
 -   Automatic Version Bump. Added --enable-install-gpg-error-config to configure.
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.45-1

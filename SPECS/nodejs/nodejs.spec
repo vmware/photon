@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        20.10.0
+Version:        22.12.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -9,15 +9,15 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define sha512 node=3ebb10903cb2c30daced132acd408e2dd3c972cc73c945a2ba4f30cbe6ed315a3b2fc4b49a5cfba7166be8df0d31571f2c624d666584054efbf15b48d658e2cb
+%define sha512  node=438c80d1d1dde96c3a39b94ffd5ca0cdc636526c3d8e50ec69270fcadcb4dfaa9025d36b359f24db8c1b30f888fe825375ced0cf8b5bb5f79df5e69403f5fec7
 
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils >= 9.1-7
 BuildRequires:  zlib-devel
 BuildRequires:  python3-devel
 BuildRequires:  which
 
 Requires:       python3
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils >= 9.1-7
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -75,11 +75,30 @@ make %{?_smp_mflags} cctest
 %{_docdir}/node/gdbinit
 
 %changelog
+* Wed Dec 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.12.0-1
+- Upgrade to 22.12.0
+* Wed Aug 21 2024 Mukul Sikka <mukul.sikka@broadcom.com> 20.16.0-1
+- Upgrade to 20.16.0
+* Mon Jul 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 20.15.1-1
+- Upgrade to 20.15.1 to fix CVE-2024-22020, CVE-2024-36138, CVE-2024-22018, CVE-2024-37372, CVE-2024-36137
+* Wed Apr 10 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 20.12.1-1
+- Upgrade to 20.12.1 to fix CVE-2024-27982, CVE-2024-27983
+* Mon Feb 19 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 20.11.1-1
+- Upgrade to 20.11.1 to fix CVE-2024-21892, CVE-2024-22017, CVE-2024-22019,
+- CVE-2023-46809, CVE-2024-22025, CVE-2024-21891, CVE-2024-21896, CVE-2024-21890
 * Wed Dec 06 2023 Prashant S Chauhan <psinghchauha@vmware.com> 20.10.0-1
 - Upgrade to 20.10.0
 - Remove node.stp as systemtap support has been removed
+* Mon Oct 30 2023 Shivani Agarwal <shivania2@vmware.com> 18.18.2-1
+- Upgrade to 18.18.2 to fix CVE-2023-38552
 * Thu Aug 24 2023 Shivani Agarwal <shivania2@vmware.com> 18.17.1-1
-- Upgrade to 18.17.1 to CVE-2023-32006, CVE-2023-32002
+- Upgrade to 18.17.1 to CVE-2023-32006
+* Tue Jun 27 2023 Siju Maliakkal <smaliakkal@vmware.com> 18.16.1-1
+- Upgrade to 18.16.1 to fix CVE-2023-30581, CVE-2023-30585
+- CVE-2023-30588, CVE-2023-30589, CVE-2023-30590
+* Wed May 17 2023 Shivani Agarwal <shivania2@vmware.com> 18.16.0-1
+- Upgrade version to Fix CVE-2022-43548, CVE-2023-23918, CVE-2023-23920
+- CVE-2023-23919, CVE-2022-3602, CVE-2022-3786
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 18.10.0-4
 - Bump version as a part of zlib upgrade
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 18.10.0-3

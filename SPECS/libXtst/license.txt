@@ -1,0 +1,1 @@
+License: HPND-doc AND X11 AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT-open-group AND GPL-3.0-or-later WITH Autoconf-exception-macro AND HPND-doc-sell AND HPND-sell-variant AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR AND FSFULLRWD

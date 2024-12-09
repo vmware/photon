@@ -2,12 +2,14 @@
 Summary:       Simple data types for common serialization formats
 Name:          perl-Types-Serialiser
 Version:       1.01
-Release:       1%{?dist}
-License:       GPL+ or Artistic
+Release:       2%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/Types-Serialiser/
 Source0:       http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/Types-Serialiser-%{version}.tar.gz
 %define sha512 Types-Serialiser=419b24cae85fba045de2f4593e1d17784f2016d5f9cd9ea96d23bbeaa86c1c6b866875871a787cacba1299616d371cc8806760e4c53e4f635deec4bc28fa81b5
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:        VMware, Inc.
 Distribution:  Photon
 BuildArch:     noarch
@@ -53,6 +55,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.01-2
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.01-1
 - Automatic Version Bump
 * Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 1.0-4

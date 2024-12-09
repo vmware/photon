@@ -1,8 +1,7 @@
 Summary:    slirp for network namespaces
 Name:       slirp4netns
 Version:    1.2.0
-Release:    1%{?dist}
-License:    GPLv2
+Release:    6%{?dist}
 URL:        https://github.com/rootless-containers/%{name}
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    %{url}/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=4ede7323aab92d0ad0026bc5e1aefc07898a5b50c4ff57c13eb9d8e75d73a4bb5ac992f021404053fcba2b05c56dcafcbfefbc4bbc47f72a0797ab62bd76a60a
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: autoconf
 BuildRequires: automake
@@ -50,5 +52,15 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/%{name}.1.gz
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.2.0-6
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.0-5
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.0-4
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.2.0-3
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.2.0-2
+- Bump version as a part of go upgrade
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.0-1
 - Introduce slirp4netns. Needed for rootlesskit

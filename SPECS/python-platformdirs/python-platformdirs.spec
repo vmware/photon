@@ -2,9 +2,8 @@
 
 Name:           python3-platformdirs
 Version:        3.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python module for determining appropriate platform-specific dirs
-License:        MIT
 URL:            https://github.com/platformdirs/platformdirs
 Vendor:         VMware, Inc.
 Group:          Development/Languages/Python
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://github.com/platformdirs/platformdirs/archive/refs/tags/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=39c068dad3fe6ec85247a8957c0fcfb27207e78041686a0231d836eeb431bba82583e2fcb609903bb0f479cd04e4c7866b6126e52a708e7e71eed7631bd121b0
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-wheel
@@ -57,5 +59,7 @@ pip3 install tomli pytest-mock
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.0-2
+- Release bump for SRP compliance
 * Tue Aug 22 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.10.0-1
 - New addtion. Needed by python3-virtualenv.

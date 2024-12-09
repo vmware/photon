@@ -1,8 +1,9 @@
+%define gopath_comp_heapster k8s.io/heapster
+
 Summary:        Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:           heapster
 Version:        1.5.4
-Release:        16%{?dist}
-License:        Apache 2.0
+Release:        22%{?dist}
 URL:            https://github.com/wavefrontHQ/cadvisor
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -10,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://github.com/kubernetes/heapster/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9c5f1e11b224efe6aaa42aad0daecede2c22d86d692a9d008643d9731d78becce98c8332ebe8d17568a93abe1f56dabf868dcd7ebc1e7b48e1f6f6f8f3878152
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: go-27704.patch
 Patch1: go-27842.patch
@@ -26,7 +30,11 @@ Heapster collects and interprets various signals like compute resource usage, li
 
 %prep
 # Using autosetup is not feasible
-%setup -q
+%setup -q -c -n %{name}-%{version}
+
+mkdir -p "$(dirname src/%{gopath_comp_heapster})"
+mv %{name}-%{version} src/%{gopath_comp_heapster}
+cd src/%{gopath_comp_heapster}
 
 pushd vendor/golang.org/x/net
 %autopatch -p1
@@ -38,20 +46,21 @@ popd
 
 %build
 export GO111MODULE=auto
-mkdir -p $GOPATH/src/k8s.io/%{name}
-cp -r . $GOPATH/src/k8s.io/%{name}
-cd $GOPATH/src/k8s.io/%{name}
+export GOPATH="${PWD}"
+cd src/%{gopath_comp_heapster}
 %make_build
 
 %install
-cd $GOPATH/src/k8s.io/%{name}
+cd src/%{gopath_comp_heapster}
 install -d -p %{buildroot}%{_bindir}
 install -p -m 0755 %{name} %{buildroot}%{_bindir}
 install -p -m 0755 eventer %{buildroot}%{_bindir}
 
 %if 0%{?with_check}
 %check
-cd $GOPATH/src/k8s.io/%{name}
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+cd src/%{gopath_comp_heapster}
 make test-unit %{?_smp_mflags}
 %endif
 
@@ -61,6 +70,18 @@ make test-unit %{?_smp_mflags}
 %{_bindir}/eventer
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.5.4-22
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.4-21
+- Bump version as a part of go upgrade
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.5.4-20
+- Simplify build scripts
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.4-19
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.5.4-18
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.5.4-17
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.4-16
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.4-15
@@ -69,7 +90,7 @@ make test-unit %{?_smp_mflags}
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.4-13
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.4-12
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.4-12
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.4-11
 - Bump up version to compile with new go

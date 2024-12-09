@@ -1,16 +1,18 @@
 Summary:        Perl wrapper for JSON. Provides JSON.pm
 Name:           perl-JSON
 Version:        4.10
-Release:        1%{?dist}
-License:        Perl 5 License (Artistic 1 & GPL 1)
+Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/pod/JSON
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 
-Source:         https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/JSON-%{version}.tar.gz
+Source0:        https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/JSON-%{version}.tar.gz
 %define sha512 JSON-%{version}=2aa0c40fbff23d3df84cfa729d00a32a69e06ea83d082b25b7223f90cb157fa3c2e72342fadcd2ebe09b5848a0e3a7d2caec6d1753e95952a56e3e9367f343e3
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       perl >= 5.28.0
 BuildRequires:  perl >= 5.28.0
@@ -43,5 +45,7 @@ make test %{?_smp_mflags}
 %exclude %{_mandir}/man?/*
 
 %changelog
+*   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.10-2
+-   Release bump for SRP compliance
 *   Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.10-1
 -   Initial addition

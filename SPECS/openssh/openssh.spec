@@ -1,11 +1,10 @@
 %define privsep_path %{_datadir}/empty.sshd
-%global sshd_services sshd.service sshd.socket sshd-keygen.service
+%global sshd_services sshd.service sshd-keygen.service
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        4%{?dist}
-License:        BSD
+Release:        11%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -23,22 +22,29 @@ Source3: sshd-keygen.service
 Source4: sshdat.service
 Source5: %{name}.sysusers
 
+Source6: license.txt
+%include %{SOURCE6}
+
 Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
+Patch2: CVE-2023-51385.patch
+Patch3: openssh-CVE-2023-48795.patch
+Patch4: CVE-2023-51384.patch
+Patch5: 0003-disable-async-signal-unsafe-code.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
-BuildRequires:  openssl-devel
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  krb5-devel
-BuildRequires:  e2fsprogs-devel
-BuildRequires:  systemd-devel
-BuildRequires:  groff
+BuildRequires: openssl-devel
+BuildRequires: Linux-PAM-devel
+BuildRequires: krb5-devel
+BuildRequires: e2fsprogs-devel
+BuildRequires: systemd-devel
+BuildRequires: groff
 
-Requires:       %{name}-clients = %{version}-%{release}
-Requires:       %{name}-server = %{version}-%{release}
-Requires:       systemd
-Requires:       openssl
-Requires(pre):  systemd-rpm-macros
+Requires:      %{name}-clients = %{version}-%{release}
+Requires:      %{name}-server = %{version}-%{release}
+Requires:      systemd
+Requires:      openssl
+Requires(pre): systemd-rpm-macros
 
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
@@ -71,7 +77,7 @@ This provides the ssh server daemons, utilities, configuration and service files
 Summary: sshd.socket units
 Requires:   %{name}-server = %{version}-%{release}
 
-Conflicts: %{name}-server < 9.3p2-4%{?dist}
+Conflicts: %{name}-server < 9.3p2-8%{?dist}
 
 %description socket
 Users should install this only if they want to use socket mechanism
@@ -122,10 +128,9 @@ install -p -D -m 0644 %{SOURCE5} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %{_fixperms} %{buildroot}/*
 
-%if 0%{?with_check}
 %check
 if ! getent passwd sshd >/dev/null; then
-   useradd sshd
+  useradd sshd
 fi
 if [ ! -d %{privsep_path} ]; then
   mkdir %{privsep_path}
@@ -135,7 +140,6 @@ cp %{buildroot}%{_bindir}/scp %{_bindir}
 chmod g+w . -R
 useradd test -G root -m
 sudo -u test -s /bin/bash -c "PATH=$PATH make tests -j$(nproc)"
-%endif
 
 %pre server
 %sysusers_create_compat %{SOURCE5}
@@ -209,19 +213,33 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
-* Mon Mar 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-4
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-11
+- Release bump for SRP compliance
+* Tue Jul 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-10
+- Remove sshd.socket from sshd_services list
+* Tue Jun 25 2024 Tapas Kundu <tapas.kundu@broadcom.com> 9.3p2-9
+- commenting out the async-signal-unsafe code from the
+- sshsigdie() function
+* Mon Mar 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-8
 - Introduce socket sub package
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-3
-- Bump version as a part of openssl upgrade
-* Tue Nov 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-2
+* Tue Jan 09 2024 Shivani Agarwal <shivania2@vmware.com> 9.3p2-7
+- Fix CVE-2023-51384
+* Wed Jan 03 2024 Harinadh D <hdommaraju@vmware.com> 9.3p2-6
+- Fix CVE-2023-48795
+* Tue Dec 26 2023 Mukul Sikka <msikka@vmware.com> 9.3p2-5
+- Fix for CVE-2023-51385
+* Tue Nov 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-4
 - Fix sshd.socket failure issue upon graceful session exit
-* Wed Aug 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-1
-- Upgrade to v9.3p2
+* Wed Aug 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3p2-3
 - Keyscan fips mode fix
-* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 9.1p1-10
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 9.3p2-2
 - Bump version as a part of krb5 upgrade
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 9.1p1-9
+* Tue Jul 25 2023 Shivani Agarwal <shivania2@vmware.com> 9.3p2-1
+- Update to 9.3p2 to fix CVE-2023-38408
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 9.3p1-2
 - Bump version as a part of ncurses upgrade to v6.4
+* Tue May 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.3p1-1
+- Update to 9.3p1
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1p1-8
 - Bump version as a part of zlib upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 9.1p1-7

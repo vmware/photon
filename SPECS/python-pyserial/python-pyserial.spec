@@ -1,8 +1,7 @@
 Summary:    Python serial port access library
 Name:       python3-pyserial
 Version:    3.5
-Release:    1%{?dist}
-License:    BSD
+Release:    2%{?dist}
 Vendor:     VMware, Inc.
 Group:      Development/Libraries
 Distribution: Photon
@@ -10,6 +9,9 @@ URL:        http://pypi.python.org/pypi/pyserial
 
 Source0: https://github.com/pyserial/pyserial/archive/refs/tags/pyserial-%{version}.tar.gz
 %define sha512 pyserial=c2a700f5e08905bdab070c95cec41d6d423c20d2a9648c8c2f048db86de72f39fe2b8df560172d5b9d480be44c35ff0799df8f1d684d3f41f8fc61174105256e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -47,5 +49,7 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{_bindir}/pyserial-ports
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-2
+- Release bump for SRP compliance
 * Mon Aug 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.5-1
 - Initial build, needed for cloud-init >= v22.3

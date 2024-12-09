@@ -1,0 +1,218 @@
+From a35ad6996e8a565cf18f41deaf84e8568f16e4a3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 24 Jul 2024 14:30:10 +0530
+Subject: [PATCH] allow only desired programs
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ Makefile                      |   1 +
+ libnss-ato-allowed-progs.conf |   5 ++
+ libnss_ato.c                  | 115 ++++++++++++++++++++++++++++++++--
+ 3 files changed, 115 insertions(+), 6 deletions(-)
+ create mode 100644 libnss-ato-allowed-progs.conf
+
+diff --git a/Makefile b/Makefile
+index 147e0c4..ad4ae6d 100644
+--- a/Makefile
++++ b/Makefile
+@@ -37,6 +37,7 @@ install:
+ 	${INSTALL_DATA} -D libnss-ato.3 ${DESTDIR}/${manprefix}/man3/libnss-ato.3
+ 	cd ${DESTDIR}/${prefix}/lib && ln -fs libnss_ato-2.3.6.so libnss_ato.so.2
+ 	${INSTALL_DATA} -D libnss-ato.conf ${DESTDIR}/${sysconfdir}/libnss-ato.conf
++	${INSTALL_DATA} -D libnss-ato-allowed-progs.conf ${DESTDIR}/${sysconfdir}/libnss-ato-allowed-progs.conf
+ 
+ clean:
+ 	rm -f libnss_ato.so.2 libnss_ato_test
+diff --git a/libnss-ato-allowed-progs.conf b/libnss-ato-allowed-progs.conf
+new file mode 100644
+index 0000000..7f7a26d
+--- /dev/null
++++ b/libnss-ato-allowed-progs.conf
+@@ -0,0 +1,5 @@
++# accepts a list allowed programs
++# one entry per line
++# example:
++#/usr/sbin/sshd
++#/usr/bin/login
+diff --git a/libnss_ato.c b/libnss_ato.c
+index f2f1c38..1ab31ff 100644
+--- a/libnss_ato.c
++++ b/libnss_ato.c
+@@ -26,6 +26,13 @@
+ #include <shadow.h>
+ #include <string.h>
+ #include <stdio.h>
++#include <linux/limits.h>
++#include <fcntl.h>
++#include <unistd.h>
++#include <stdlib.h>
++#include <errno.h>
++#include <syslog.h>
++#include <stdarg.h>
+ 
+ /* for security reasons */
+ #define MIN_UID_NUMBER   500
+@@ -33,6 +40,31 @@
+ #define BAD_CHARS ":"
+ #define CONF_FILE "/etc/libnss-ato.conf"
+ 
++#define ALLOWED_PROGS_CONF_FN   "/etc/libnss-ato-allowed-progs.conf"
++
++static int allowed_programs(void);
++static void _pr_err(const char *, ...);
++
++/* non zero log_init_err indicates openlog() failure */
++int log_init_err;
++
++#define pr_err(fmt, ...) \
++    _pr_err("ERROR: (%d) (%s:%d) " fmt "(%m)\n", errno, __func__, __LINE__, ##__VA_ARGS__)
++
++static void
++_pr_err(const char *format, ...)
++{
++    va_list ap;
++
++    if (log_init_err) {
++        return;
++    }
++
++    va_start(ap, format);
++    vsyslog(LOG_ERR, format, ap);
++    va_end(ap);
++}
++
+ /*
+  * the configuration /etc/libnss-ato.conf is just one line
+  * with the local user data as in /etc/passwd. For example:
+@@ -51,8 +83,9 @@ read_conf(void)
+ 	}
+ 
+ 	conf = fgetpwent(fd);
+-    if (conf == NULL)
++    if (conf == NULL) {
+         goto end;
++    }
+ 
+ 	if ( conf->pw_uid < MIN_UID_NUMBER )
+ 		conf->pw_uid = MIN_UID_NUMBER;
+@@ -94,6 +127,60 @@ get_static(char **buffer, size_t *buflen, int len)
+ 	return result;
+ }
+ 
++/*
++ * Restrict the module so that it only gets activated
++ * for programs given in ALLOWED_PROGS_CONF_FN
++ */
++static int
++allowed_programs(void)
++{
++    FILE *file;
++    int ret = 1;
++    char exe[PATH_MAX+1] = {};
++    char line[PATH_MAX+2] = {}; /* string+\n+\0 */
++    const char *filename = ALLOWED_PROGS_CONF_FN;
++
++    file = fopen(filename, "r");
++    if (file == NULL) {
++        /*
++         * If file is not present, ignore and proceed
++         * There is no mandate that allowed progs has to be setup
++         */
++        if (errno == ENOENT) {
++            return 0;
++        }
++        pr_err("fopen(%s)", filename);
++        return ret;
++    }
++
++    if (readlink("/proc/self/exe", exe, sizeof(exe) - 1) < 0) {
++        pr_err("readlink");
++        goto end;
++    }
++
++    while (fgets(line, sizeof(line), file)) {
++        char *curr_prog;
++        char full_path[sizeof(exe)] = {};
++
++        line[strcspn(line, "\n")] = '\0';
++
++        curr_prog = realpath(line, full_path);
++        if (curr_prog == NULL) {
++            pr_err("realpath(full_path: %s, allowed_prog: %s)", full_path, line);
++            continue;
++        }
++
++        if (strcmp(exe, curr_prog) == 0) {
++            ret = 0;
++            break;
++        }
++    }
++
++end:
++    fclose(file);
++    return ret;
++}
++
+ enum nss_status
+ _nss_ato_getpwnam_r( const char *name,
+ 		struct passwd *p,
+@@ -102,15 +189,23 @@ _nss_ato_getpwnam_r( const char *name,
+ 		int *errnop)
+ {
+ 	struct passwd *conf;
++    enum nss_status status = NSS_STATUS_NOTFOUND;
++
++    openlog(NULL, LOG_PID, LOG_USER);
++    log_init_err = errno;
+ 
+ 	if ((conf = read_conf()) == NULL) {
+-		return NSS_STATUS_NOTFOUND;
++        goto end;
+ 	}
+ 
++    if (allowed_programs()) {
++        goto end;
++    }
++
+ 	int len = strlen(BAD_CHARS);
+ 	for (int i=0; i<len; i++) {
+ 		if (strchr(name, BAD_CHARS[i]) != NULL) {
+-			return NSS_STATUS_NOTFOUND;
++            goto end;
+ 		}
+ 	}
+ 
+@@ -118,19 +213,27 @@ _nss_ato_getpwnam_r( const char *name,
+ 
+ 	/* If out of memory */
+ 	if ((p->pw_name = get_static(&buffer, &buflen, strlen(name) + 1)) == NULL) {
+-		return NSS_STATUS_TRYAGAIN;
++		status = NSS_STATUS_TRYAGAIN;
++        goto end;
+ 	}
+ 
+ 	/* pw_name stay as the name given */
+ 	strcpy(p->pw_name, name);
+ 
+ 	if ((p->pw_passwd = get_static(&buffer, &buflen, (int)sizeof("x"))) == NULL) {
+-		return NSS_STATUS_TRYAGAIN;
++		status = NSS_STATUS_TRYAGAIN;
++        goto end;
+ 	}
+ 
+ 	strcpy(p->pw_passwd, "x");
+ 
+-	return NSS_STATUS_SUCCESS;
++	status = NSS_STATUS_SUCCESS;
++
++end:
++    if (!log_init_err) {
++        closelog();
++    }
++    return status;
+ }
+ 
+ enum nss_status
+-- 
+2.34.1
+

@@ -1,15 +1,18 @@
 Name:           ninja-build
 Summary:        Small build system with focus on speed
 Version:        1.11.1
-Release:        1%{?dist}
-License:        ASL 2.0
+Release:        3%{?dist}
 URL:            https://ninja-build.org
 Vendor:         VMware, Inc.
 Group:          Development/Tools
 Distribution:   Photon
-Source0:        https://github.com/ninja-build/ninja/archive/%{name}-%{version}.tar.gz
-%define sha512  ninja-build=1bca38877c70ee6613f347ffccef5adc02ba0a3947c62ae004ea97f918442b5a3de92378e4f820ae2a7676bc7609d25fbc7d41f6cfb3a61e5e4b26ec3639e403
+
+Source0: https://github.com/ninja-build/ninja/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=1bca38877c70ee6613f347ffccef5adc02ba0a3947c62ae004ea97f918442b5a3de92378e4f820ae2a7676bc7609d25fbc7d41f6cfb3a61e5e4b26ec3639e403
+
 Source1:        macros.ninja
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  gcc
 BuildRequires:  python3-devel
@@ -48,6 +51,10 @@ install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.ninja
 %{_libdir}/rpm/macros.d/macros.ninja
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.11.1-3
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.1-2
+- Release bump for SRP compliance
 * Wed Jan 04 2023 Susant Sahani <ssahani@vmware.com> 1.11.1-1
 - Version Bump
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.11.0-2

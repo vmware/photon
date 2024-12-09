@@ -2,16 +2,18 @@
 %global gem_name msgpack
 
 Name: rubygem-msgpack
-Version:        1.7.2
-Release:        2%{?dist}
+Version:        1.6.0
+Release:        4%{?dist}
 Summary:        A binary-based efficient object serialization library
 Group:          Development/Languages
-License:        Apache 2.0
 Distribution:   Photon
 Vendor:         VMware, Inc.
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/msgpack-%{version}.gem
-%define sha512  msgpack=1ff8027f39971729e0af3a293a7ddc56e06ac6a5dd4aeb444b4f0e0ac0a9dfb5ab99e6cdbd4077655c5d17406b2a895c27ebdd310ff8d298ad7ea4601d2bc2c9
+%define sha512  msgpack=9aaa01a5ba3782cf8a6170b055c6d6914260ad4303a029d3fb0efe6a64eb415f3ff6bda34449444fe102c767ec892256fa9b568abc9c45f5713e94bbab86b92c
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby-devel
 Requires:       ruby
 
@@ -34,10 +36,12 @@ But unlike JSON, it is very fast and small.
 %{gem_base}
 
 %changelog
-*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.2-2
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-4
+-   Release bump for SRP compliance
+*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-3
 -   Add gem macros
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.2-1
--   Update to version 1.7.2
+*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-2
+-   Build from source
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
 -   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.3-1

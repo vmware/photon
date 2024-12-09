@@ -2,7 +2,6 @@ Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.6
 Release:        15%{?dist}
-License:        GPL2+
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
 %define sha512 %{name}=5e4d6c4addc15b2a0245b5caef80fda3020f1cac83ed4aa436ef3f1703d1d761060c931c2536fa68de7ad5bab002b79c8b2d1e5f7695d46249f4562f5a1569a0
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: use-correct-includes.patch
 
@@ -122,13 +124,13 @@ Python bindings.
 %{_libdir}/python%{python3_version}/*
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.3.6-15
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.6-15
+- Release bump for SRP compliance
+* Tue Mar 12 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.3.6-14
 - Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.3.6-14
-- Bump version as a part of libxml2 upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.6-13
-- Bump version as a part of openssl upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.6-12
+* Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.6-13
+- Bump version as a part of rpm upgrade
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.6-12
 - Bump version as a part of libxml2 upgrade
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.3.6-11
 - Bump up version no. as part of swig upgrade

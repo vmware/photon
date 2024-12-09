@@ -1,15 +1,17 @@
 Summary:        Python C parser
 Name:           python3-pycparser
 Version:        2.21
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pycparser
-License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://pypi.python.org/packages/source/p/pycparser/pycparser-%{version}.tar.gz
 %define sha512  pycparser=e61fbdde484d1cf74d4b27bdde40cf2da4b7028ca8ecd37c83d77473dab707d457321aecaf97da3b114c1d58a4eb200290b76f9c958044b57e5fed949895b5f0
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -42,6 +44,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.21-2
+- Release bump for SRP compliance
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.21-1
 - Update to 2.21
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.20-1

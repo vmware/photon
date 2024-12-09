@@ -3,16 +3,18 @@
 %global gem_name aws-sdk-core
 
 Name: rubygem-aws-sdk-core
-Version:        3.191.3
-Release:        1%{?dist}
+Version:        3.166.0
+Release:        2%{?dist}
 Summary:        Provides API clients for AWS.
 Group:          Development/Languages
-License:        Apache 2.0
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/aws-sdk-core-%{version}.gem
-%define sha512    aws-sdk-core=e9e1f4d6b76b4df43a2043b9ac9eae69c20f8cf3de03ae56204b553dc38b7fb26ed68daa97e8048599609d57fba69928fa25ecab88e665538d2f636343648036
+%define sha512    aws-sdk-core=bb06f9e9a06a2e8154485ec560f3b629759c8c144dc1d778d5f0517d9b07756f7cf16c8ce5fd80c2de413e6bdf9ff18c5f8b31ee6cf576cca355656349461dd3
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby
 
 Requires: rubygem-aws-eventstream >= 1.0
@@ -36,8 +38,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.191.3-1
--   Update to version 3.191.3
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.166.0-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.166.0-1
 -   Automatic Version Bump
 *   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.109.0-1

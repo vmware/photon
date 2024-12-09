@@ -1,10 +1,7 @@
-%define maj_ver 1.16
-
 Summary:    Programs for generating Makefiles
 Name:       automake
 Version:    1.16.5
-Release:    1%{?dist}
-License:    GPLv2+
+Release:    3%{?dist}
 URL:        http://www.gnu.org/software/automake
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -12,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.xz
 %define sha512 %{name}=3084ae543aa3fb5a05104ffb2e66cfa9a53080f2343c44809707fd648516869511500dba50dae67ff10f92a1bf3b5a92b2a0fa01cda30adb69b9da03994d9d88
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  autoconf
 
@@ -26,7 +26,7 @@ Contains programs for generating Makefiles for use with Autoconf.
 %build
 sed -i 's:/\\\${:/\\\$\\{:' bin/automake.in
 %configure \
-    --docdir=%{_docdir}/%{name}-%{version} \
+    --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-silent-rules
 
 %make_build
@@ -35,24 +35,26 @@ sed -i 's:/\\\${:/\\\$\\{:' bin/automake.in
 %make_install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 
-%if 0%{?with_check}
 %check
 sed -i "s:./configure:LEXLIB=/usr/lib/libfl.a &:" t/lex-{clean,depend}-cxx.sh
 sed -i "s|test ! -s stderr||g" t/distcheck-no-prefix-or-srcdir-override.sh
 sed -i '53d' t/nobase-python.sh
 make %{?_smp_mflags} check
-%endif
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_datadir}/aclocal/README
-%{_datadir}/%{name}-%{maj_ver}/*
-%{_datadir}/aclocal-%{maj_ver}/*
-%{_docdir}/%{name}-%{version}/*
+%{_datarootdir}/aclocal/README
+%{_datarootdir}/%{name}-1.16/*
+%{_datarootdir}/aclocal-1.16/*
+%{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.16.5-3
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.5-2
+- Release bump for SRP compliance
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.16.5-1
 - Upgrade to v1.16.5
 * Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.16.1-2

@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND MIT AND MPL-2.0 AND NTP-0 AND BSD-3-Clause AND CC-BY-3.0 AND Apache-2.0 AND BSD-2-Clause-Views AND JSON

@@ -1,22 +1,27 @@
 Summary:        Program for modifying or creating files
 Name:           patch
 Version:        2.7.6
-Release:        6%{?dist}
-License:        GPLv3+
+Release:        8%{?dist}
 URL:            http://www.gnu.org/software/%{name}
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.gz
 %define sha512  patch=75d4e1544484da12185418cd4a1571994398140a91ac606fa08dd067004187dad77d1413f0eb3319b3fe4df076714615c98b29df06af052bb65960fa8b0c86bf
+
+Source1: license.txt
+%include %{SOURCE1}
+
 Patch0:         CVE-2018-6951.patch
 Patch1:         CVE-2018-1000156.patch
 #CVE-2018-6952.patch is an incomplete fix which introduced CVE-2019-20633
 #CVE-2018-6952 is just Crash in CLI tool, no security impact,complete fix not yet available
 #in upstream.
 #Patch2         CVE-2018-6952.patch
-patch3:         CVE-2019-13636.patch
+Patch3:         CVE-2019-13636.patch
 Patch4:         CVE-2019-13638.patch
-Group:          Development/Tools
-Vendor:         VMware, Inc.
-Distribution:   Photon
+
 Conflicts:      toybox < 0.8.2-2
 
 %description
@@ -25,6 +30,7 @@ file typically created by the diff program.
 
 %prep
 %autosetup -p1
+
 %build
 %configure --disable-silent-rules
 %make_build
@@ -34,7 +40,7 @@ file typically created by the diff program.
 
 %check
 sed -i "s/ulimit -n 32/ulimit -n 1024/g" tests/deep-directories
-make  %{?_smp_mflags} check
+make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
@@ -42,6 +48,10 @@ make  %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.7.6-8
+-   Release bump for SRP compliance
+*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7.6-7
+-   Release bump for SRP compliance
 *   Wed Feb 07 2024 Harinadh D <hdommaraju@vmware.com> 2.7.6-6
 -   Avoid applying in-complete fix for CVE-2018-6952
 *   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 2.7.6-5

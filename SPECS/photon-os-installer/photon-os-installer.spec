@@ -3,8 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.7
-Release:       1%{?dist}
-License:       Apache 2.0 and GPL 2.0
+Release:       2%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -12,21 +11,15 @@ URL:           https://github.com/vmware/photon-os-installer
 Source0:       %{name}-%{version}.tar.gz
 %define sha512 %{name}=9c2b6df1e9136e94db1451064b51a286b2894849b309dde9539cb9df4fc82e807c74ccb0f7795d7d1d5b2c1ea856dfb38623e1c08e94c567696a637ca6f75fe8
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
 BuildRequires: python3-requests
 BuildRequires: python3-cracklib
 BuildRequires: python3-curses
-BuildRequires: python3-PyYAML
 BuildRequires: python3-jc
-
-Requires: python3-pyinstaller
-Requires: python3-pyOpenSSL
-Requires: python3-requests
-Requires: python3-cracklib
-Requires: python3-curses
-Requires: python3-PyYAML
-Requires: python3-jc
 
 Requires: dosfstools
 Requires: efibootmgr
@@ -43,6 +36,13 @@ Requires: cdrkit
 Requires: findutils
 # needed for --rpmdefine option
 Requires: tdnf >= 3.5.6
+
+Requires: python3-pyOpenSSL
+Requires: python3-requests
+Requires: python3-cracklib
+Requires: python3-curses
+Requires: python3-PyYAML
+Requires: python3-jc
 
 %description
 Installer to build Photon images
@@ -66,17 +66,21 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
-* Mon Jun 24 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.7-1
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7-2
+- Release bump for SRP compliance
+* Fri May 24 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.7-1
 - Upgrade to v2.7
-* Fri Apr 12 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.4-3
-- Add "jc" dependency
+* Tue Dec 26 2023 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4-3
+- Bump up as part of python3-pyOpenSSL update
 * Wed Oct 25 2023 Ankit Jain <ankitja@vmware.com> 2.4-2
 - Fix tmpfs mount issue
-* Fri Oct 13 2023 Piyush Gupta <gpiyush@vmware.com> 2.4-1
-- Upgrade to 2.4.
+* Mon Oct 09 2023 Oliver Kurth <okurth@vmware.com> 2.4-1
+- Upgrade to v2.4
 - Add missing requires.
-* Mon May 15 2023 Oliver Kurth <okurth@vmware.com> 2.2-3
-- add all python requirements
+* Tue Apr 18 2023 Ankit Jain <ankitja@vmware.com> 2.3-1
+- Upgrade to v2.3
+* Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 2.2-3
+- cleanup vgs if exists any before installation
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2-2
 - Bump version as a part of zlib upgrade
 * Fri Mar 10 2023 Ankit Jain <ankitja@vmware.com> 2.2-1

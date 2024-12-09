@@ -1,12 +1,14 @@
 Summary:        Cron Daemon
 Name:           cronie
 Version:        1.6.1
-Release:        1%{?dist}
-License:        GPLv2+ and MIT and BSD and ISC
+Release:        3%{?dist}
 URL:            https://github.com/cronie-crond/cronie
 Source0:        https://github.com/cronie-crond/cronie/releases/download/cronie-%{version}/cronie-%{version}.tar.gz
 %define sha512  cronie=1e095df9670ec25d6629f4cf2cacd82c6c1cb1487a859815a7881a1d130e4f18f9976396f773abae24dadc232166bb6467bbaeac1cb0254209fcadf3530d5e6f
 Source1:        run-parts.sh
+
+Source2: license.txt
+%include %{SOURCE2}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,6 +18,7 @@ BuildRequires:  systemd
 Requires:       systemd
 Requires:       libselinux
 Requires:       Linux-PAM
+Requires:       shadow
 
 %description
 Cronie contains the standard UNIX daemon crond that runs specified programs at
@@ -122,6 +125,10 @@ make %{?_smp_mflags} check
 %ghost %attr(0600,root,root) %{_localstatedir}/spool/anacron/cron.weekly
 
 %changelog
+*   Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.6.1-3
+-   Release bump for SRP compliance
+*   Thu May 30 2024 Anmol Jain <anmol.jain@broadcom.com> 1.6.1-2
+-   Added shadow pkg in Requires
 *   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.1-1
 -   Automatic Version Bump
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1

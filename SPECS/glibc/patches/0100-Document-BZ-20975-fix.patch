@@ -1,0 +1,24 @@
+From 93bd77104cdd7380823d80c778776d2eafb69a91 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Tue, 23 May 2023 16:45:03 -0700
+Subject: [PATCH 100/175] Document BZ #20975 fix
+
+---
+ NEWS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/NEWS b/NEWS
+index 0b3ee2ad14352254af09104fdb42816bb75aad9e..43f2deb49dfebaeb95c7d5ed9b1c184c38e01dd8 100644
+--- a/NEWS
++++ b/NEWS
+@@ -24,6 +24,7 @@ Security related changes:
+ The following bugs are resolved with this release:
+ 
+   [12154] Do not fail DNS resolution for CNAMEs which are not host names
++  [20975] Deferred cancellation triggers in __check_pf and looses lock leading to deadlock
+   [24816] Fix tst-nss-files-hosts-long on single-stack hosts
+   [27576] gmon: improve mcount overflow handling
+   [28846] CMSG_NXTHDR may trigger -Wstrict-overflow warning
+-- 
+2.35.6
+

@@ -5,12 +5,14 @@
 Summary:       "Common sense" Perl defaults
 Name:          perl-common-sense
 Version:       3.75
-Release:       2%{?dist}
-License:       GPL+ or Artistic
+Release:       3%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/common-sense
 Source0:       http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/common-sense-%{version}.tar.gz
 %define sha512 common-sense=cb6034d9ff721a4122e0215db8ad5279ec4b189c3364593d427d70a1e84a1583a0e1447e276aa9a4fcaeb2f9d47a465a5bc4c0f842c803d3ddf91755311f4af4
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:        VMware, Inc.
 Distribution:  Photon
 BuildRequires: perl
@@ -24,17 +26,17 @@ Perl coders:
 
 It's supposed to be mostly the same, with much lower memory usage, as:
 
-	use utf8;
-	use strict qw(vars subs);
-	use feature qw(say state switch);
-	use feature qw(unicode_strings unicode_eval current_sub fc evalbytes);
-	no feature qw(array_base);
-	no warnings;
-	use warnings qw(FATAL closed threads internal debugging pack
-			portable prototype inplace io pipe unpack malloc
-			deprecated glob digit printf layer
-			reserved taint closure semicolon);
-	no warnings qw(exec newline unopened);
+        use utf8;
+        use strict qw(vars subs);
+        use feature qw(say state switch);
+        use feature qw(unicode_strings unicode_eval current_sub fc evalbytes);
+        no feature qw(array_base);
+        no warnings;
+        use warnings qw(FATAL closed threads internal debugging pack
+                        portable prototype inplace io pipe unpack malloc
+                        deprecated glob digit printf layer
+                        reserved taint closure semicolon);
+        no warnings qw(exec newline unopened);
 
 %prep
 %autosetup -n common-sense-%{version}
@@ -65,6 +67,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/common::sense.3*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 3.75-3
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 3.75-2
 - Perl version upgrade to 5.36.0
 * Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 3.75-1

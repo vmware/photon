@@ -1,8 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.3
-Release:        1%{?dist}
-License:        BSD and GPLv2+
+Release:        6%{?dist}
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -13,14 +12,21 @@ Source0: https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{
 
 Source1: pamtmp.conf
 Source2: default-faillock.conf
+Source3: license.txt
+%include %{SOURCE3}
 
-Patch0: faillock-add-support-to-print-login-failures.patch
+Patch0: 0001-faillock-add-support-to-print-login-failures.patch
+Patch1: 0002-Linux-PAM-protect-dir.patch
+Patch2: 0003-pam_pwhistory-fix-passing-NULL-filename-argument-to-.patch
+Patch3: fix-build-if-crypt_r_isnt-available.patch
 
 BuildRequires:  libselinux-devel
 BuildRequires:  gdbm-devel
+BuildRequires:  libxcrypt-devel
 
 Requires: libselinux
 Requires: gdbm
+Requires: libxcrypt
 
 %define ExtraBuildRequires systemd-rpm-macros
 
@@ -136,6 +142,16 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.5.3-6
+- Release bump for SRP compliance
+* Wed Nov 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-5
+- Bump version to use yescrypt
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-4
+- Release bump for SRP compliance
+* Fri May 31 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-3
+- Fix passing NULL filename argument to pwhistory helper
+* Fri Jan 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.5.3-2
+- prevent DoS in protect_dir method
 * Wed May 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.3-1
 - Upgrade to v1.5.3
 * Mon Nov 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-3

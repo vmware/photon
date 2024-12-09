@@ -3,7 +3,6 @@ Name:           openipmi
 Version:        2.0.33
 Release:        7%{?dist}
 URL:            https://sourceforge.net/projects/openipmi
-License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,18 +10,21 @@ Distribution:   Photon
 Source0: https://sourceforge.net/projects/openipmi/files/latest/download/OpenIPMI-%{version}.tar.gz
 %define sha512 OpenIPMI=615fccd1ffd4af18584c1b0e54667ba2de60b6d42b44e7448f27808114180fa3b31b4834276bdf69c3df1e5210df871fd888deec8186377524838390fe41e641
 
-Source1:        openipmi-helper
-Source2:        ipmi.service
+Source1: openipmi-helper
+Source2: ipmi.service
 
-BuildRequires:  systemd-devel
-BuildRequires:  perl
-BuildRequires:  popt-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  openssl-devel
-BuildRequires:  swig
-BuildRequires:  python3-devel
+Source3: license.txt
+%include %{SOURCE3}
 
-Requires:       systemd
+BuildRequires: systemd-devel
+BuildRequires: perl
+BuildRequires: popt-devel
+BuildRequires: ncurses-devel
+BuildRequires: openssl-devel
+BuildRequires: swig
+BuildRequires: python3-devel
+
+Requires: systemd
 
 %description
 This package contains a shared library implementation of IPMI and the
@@ -178,9 +180,9 @@ echo "disable ipmi.service" > %{buildroot}%{_presetdir}/50-ipmi.preset
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.33-7
-- Bump version as a part of openssl upgrade
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.33-6
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.33-7
+- Release bump for SRP compliance
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.33-6
 - Bump version as a part of ncurses upgrade to v6.4
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0.33-5
 - Bump up version no. as part of swig upgrade

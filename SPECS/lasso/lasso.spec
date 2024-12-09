@@ -1,23 +1,22 @@
 Summary:        Liberty Alliance Single Sign On
 Name:           lasso
 Version:        2.8.0
-Release:        8%{?dist}
-License:        GPLv2+
+Release:        5%{?dist}
 Group:          Development/Libraries/C++
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://lasso.entrouvert.org
+Url:            https://lasso.entrouvert.org/
+Source0:        http://dev.entrouvert.org/lasso/lasso-%{version}.tar.gz
+%define sha512 lasso=d1b26608ea7cd08e4e2c40cec0ddc41e3235fd5c2cee64d989ae752bbbc276fe056455e3943a778abcc7f8e8596c85beada75df4290579e6af15e82d0e2fb5ca
 
-Source0: http://dev.entrouvert.org/lasso/lasso-%{version}.tar.gz
-%define sha512 %{name}=d1b26608ea7cd08e4e2c40cec0ddc41e3235fd5c2cee64d989ae752bbbc276fe056455e3943a778abcc7f8e8596c85beada75df4290579e6af15e82d0e2fb5ca
-
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires: libxml2-devel
 BuildRequires: glib-devel
 BuildRequires: openssl-devel
 BuildRequires: python3-six
 BuildRequires: which
 BuildRequires: xmlsec1-devel
-
 Requires:      xmlsec1
 
 %description
@@ -30,56 +29,51 @@ for multiple languages.
 Summary: Lasso development headers and documentation
 Group: Development/Libraries/C++
 Requires: %{name} = %{version}-%{release}
-Requires: glib-devel
 
 %description devel
 This package contains the header files, static libraries and development
 documentation for Lasso
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
-sh ./autogen.sh --disable-java \
+./autogen.sh --disable-java \
              --disable-perl \
              --enable-php5=no \
              --disable-python \
              --disable-gtk-doc \
              --prefix=%{_prefix}
 
-%make_build
+%make_build %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_mflags}
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
 
 %check
-%make_build check
+%make_build %{?_smp_mflags} check
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
-%defattr(-,root,root)
-%{_libdir}/liblasso.so.*
+%{_libdir}/liblasso.so.3*
+%doc AUTHORS NEWS README
+%license COPYING
 
 %files devel
-%defattr(-,root,root)
+
 %{_libdir}/liblasso.so
 %{_libdir}/pkgconfig/lasso.pc
 %{_includedir}/%{name}
-%{_docdir}/%{name}
+%{_defaultdocdir}/%{name}
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.8.0-8
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.8.0-7
-- Bump version as a part of libxml2 upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.8.0-6
-- Bump version as a part of openssl upgrade
-* Mon Sep 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.8.0-5
-- Fix devel package requires
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.0-4
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.8.0-5
+- Release bump for SRP compliance
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.0-4
 - Bump version as a part of libxml2 upgrade
 * Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.0-3
 - Bump version as a part of xmlsec1 upgrade

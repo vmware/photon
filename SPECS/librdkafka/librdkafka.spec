@@ -1,24 +1,27 @@
 Summary:        C library implementation of the Apache Kafka protocol
 Name:           librdkafka
 Version:        1.8.2
-Release:        1%{?dist}
-License:        BSD
+Release:        3%{?dist}
 URL:            https://github.com/edenhill/librdkafka
 Group:          System Environment/Development
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha512  %{name}=8c8ae291129b78e3b8367307ad1b1715af1438cd76d7160d64d13a58adf84c7c9f51efeba4656f55e101c25e4cb744db0d8bb5c01a2decb229e4567d16bdcb22
+
+Source1: license.txt
+%include %{SOURCE1}
 Patch0:         0001-compatibility-with-openssl-3.0.0.patch
+Patch1:         lz4-CVE-2021-3520.patch
 
 %description
 librdkafka is a C library implementation of the Apache Kafka protocol, providing Producer, Consumer and Admin clients.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
 
-%description	devel
+%description    devel
 It contains the libraries and header files
 
 %prep
@@ -26,12 +29,10 @@ It contains the libraries and header files
 
 %build
 %configure
-
-make %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf %{buildroot}
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install
 find %{buildroot}%{_libdir} -name '*.a' -delete
 
 %check
@@ -58,6 +59,10 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.2-3
+-   Release bump for SRP compliance
+*   Sun Nov 05 2023 Harinadh D <hdommaraju@vmware.com> 1.8.2-2
+-   fix CVE-2021-3520
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.8.2-1
 -   Automatic Version Bump
 *   Fri Jun 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.6.1-2

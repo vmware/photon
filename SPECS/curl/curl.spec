@@ -1,17 +1,23 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.1.2
-Release:        4%{?dist}
-License:        MIT
+Version:        8.7.1
+Release:        7%{?dist}
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
-%define sha512 %{name}=532ab96eba6dea66d272f3be56f5af5c5da922480f9a10e203de98037c311f12f8145ba6bf813831e42815e068874ccfd108f84f7650743f5dbb3ebc3bc9c4f4
+%define sha512 %{name}=5bbde9d5648e9226f5490fa951690aaf159149345f3a315df2ba58b2468f3e59ca32e8a49734338afc861803a4f81caac6d642a4699b72c6310ebfb1f618aad2
 
-Patch0:        curl-CVE-2023-38039.patch
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0:        CVE-2024-6197.patch
+Patch1:        0001-CVE-2024-7264.patch
+Patch2:        0002-CVE-2024-7264.patch
+Patch3:        CVE-2024-9681_prep.patch
+Patch4:        CVE-2024-9681.patch
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
@@ -25,7 +31,7 @@ BuildRequires: python3
 Requires: ca-certificates
 Requires: openssl-libs
 Requires: krb5
-Requires: libssh2
+Requires: libssh2 >= 1.11.0
 Requires: %{name}-libs = %{version}-%{release}
 
 %description
@@ -47,7 +53,7 @@ Static libraries and header files for the support library for curl
 Summary:        Libraries for curl
 Group:          System Environment/Libraries
 Requires:       ca-certificates-pki
-Requires:       libssh2
+Requires:       libssh2 >= 1.11.0
 Requires:       krb5
 
 %description    libs
@@ -67,7 +73,6 @@ This package contains minimal set of shared curl libraries.
     --with-gssapi \
     --with-libssh2 \
     --with-ca-bundle=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
-
 %make_build
 
 %install
@@ -75,10 +80,8 @@ This package contains minimal set of shared curl libraries.
 install -v -d -m755 %{buildroot}%{_docdir}/%{name}-%{version}
 %{_fixperms} %{buildroot}/*
 
-%if 0%{?with_check}
 %check
 %make_build check
-%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -105,14 +108,40 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.1.2-4
-- Bump version as a part of openssl upgrade
-* Tue Sep 12 2023 Dweep Advani <dadvani@vmware.com> 8.1.2-3
-- Fix for CVE-2023-38039
-* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 8.1.2-2
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.7.1-7
+- Release bump for SRP compliance
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 8.7.1-6
+- Remove standalone license exceptions
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.7.1-5
+- Release bump for SRP compliance
+* Mon Nov 04 2024 Tapas Kundu <tapas.kundu@broadcom.com> 8.7.1-4
+- Fix CVE-2024-9681
+* Wed Jul 31 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 8.7.1-3
+- Fix CVE-2024-7264
+* Tue Jul 16 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 8.7.1-2
+- Fix CVE-2024-6197
+* Mon May 06 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 8.7.1-1
+- Version upgrade
+* Mon Mar 25 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 8.1.2-8
+- Fix of CVE-2024-2004,CVE-2024-2398
+* Tue Dec 05 2023 Harinadh D <hdommaraju@vmware.com> 8.1.2-7
+- Fix of CVE-2023-46218,CVE-2023-46219
+* Fri Oct 06 2023 Harinadh D <hdommaraju@vmware.com> 8.1.2-6
+- Fix of CVE-2023-38546,CVE-2023-38545
+* Tue Sep 12 2023 Dweep Advani <dadvani@vmware.com> 8.1.2-5
+- Fix of CVE-2023-38039
+* Thu Sep 07 2023 Harinadh D <hdommaraju@vmware.com> 8.1.2-4
+- Version bump to use libssh2 1.11.0
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 8.1.2-3
 - Bump version as a part of krb5 upgrade
+* Fri Jul 14 2023 Shivani Agarwal <shivania2@vmware.com> 8.1.2-2
+- Fix CVE-2023-32001
 * Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.1.2-1
 - Upgrade to v8.1.2
+* Mon Jun 19 2023 Harinadh D <hdommaraju@vmware.com> 8.0.1-2
+- curl-libs requires krb5
+* Thu Apr 13 2023 Harinadh D <hdommaraju@vmware.com> 8.0.1-1
+- version upgrade
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.86.0-3
 - Require openssl-libs
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.86.0-2

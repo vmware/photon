@@ -1,8 +1,7 @@
 Name:           glslang
 Version:        11.13.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        OpenGL and OpenGL ES shader front end and validator
-License:        BSD and GPLv3+ and ASL 2.0
 URL:            https://github.com/KhronosGroup/glslang
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/KhronosGroup/glslang/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=20c2a6543b002648f459f26bd36b5c445afd6d8eae175e400dbe45632f11ca8de1f9e6f6e98fd6f910aa75d90063e174c095e7df26d9d4982192b84d08b0dc8b
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -63,6 +65,8 @@ interpretation of the specifications for these languages.
 %{_libdir}/cmake/*
 
 %changelog
+*   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 11.13.0-3
+-   Release bump for SRP compliance
 *   Thu Dec 15 2022 Shivani Agarwal <shivania2@vmware.com> 11.13.0-2
 -   Add support for shared libraries
 *   Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 11.13.0-1

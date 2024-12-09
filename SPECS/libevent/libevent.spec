@@ -2,18 +2,17 @@ Summary:        An Event notification library.
 Name:           libevent
 Version:        2.1.12
 Release:        2%{?dist}
-License:        BSD
 URL:            http://libevent.org
+Source0:        https://github.com/%{name}/%{name}/releases/download/release-%{version}-stable/%{name}-%{version}-stable.tar.gz
+%define sha512  libevent=88d8944cd75cbe78bc4e56a6741ca67c017a3686d5349100f1c74f8a68ac0b6410ce64dff160be4a4ba0696ee29540dfed59aaf3c9a02f0c164b00307fcfe84f
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          System/Library
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0: https://github.com/%{name}/%{name}/releases/download/release-%{version}-stable/%{name}-%{version}-stable.tar.gz
-%define sha512 %{name}=88d8944cd75cbe78bc4e56a6741ca67c017a3686d5349100f1c74f8a68ac0b6410ce64dff160be4a4ba0696ee29540dfed59aaf3c9a02f0c164b00307fcfe84f
-
 BuildRequires:  pkg-config
-BuildRequires:  openssl-devel
-
+BuildRequires:  openssl-devel >= 1.1.1
 Requires:       openssl >= 1.1.1
 
 %description
@@ -34,10 +33,11 @@ The subpackage includes all development related headers and library.
 
 %build
 %configure --disable-static --disable-libevent-regress
-%make_build
+make %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_mflags}
+%makeinstall
+find %{buildroot} -name '*.la' -delete
 
 %check
 make %{?_smp_mflags} -k check
@@ -60,8 +60,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/libevent_extra.pc
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.1.12-2
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.12-2
+- Release bump for SRP compliance
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.12-1
 - Automatic Version Bump
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.12-2

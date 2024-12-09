@@ -1,14 +1,16 @@
 Summary:        POSIX capability Library
 Name:           libcap-ng
 Version:        0.8.3
-Release:        3%{?dist}
-License:        LGPLv2+
+Release:        4%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://people.redhat.com/sgrubb/libcap-ng
 Source0:        http://people.redhat.com/sgrubb/libcap-ng/%{name}-%{version}.tar.gz
 %define sha512  libcap-ng=0ef9bc7bc6b7b59991f43b79aa6cde3e8d2c22c4b9ced2af8deae501e01d51e893033d109cb8aa0fdcba190140110993089245346334d7b114d18f1bb1b55b97
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  swig
@@ -22,7 +24,6 @@ capabilities escalation for apps retaining uid 0 simply by calling execve.
 
 %package  -n    python3-libcap-ng
 Summary:        Python3 bindings for libaudit
-License:        LGPLv2+
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3
 
@@ -74,6 +75,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/*.a
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.8.3-4
+- Release bump for SRP compliance
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.8.3-3
 - Bump up version no. as part of swig upgrade
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.3-2

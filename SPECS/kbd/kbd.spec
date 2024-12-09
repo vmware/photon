@@ -1,8 +1,7 @@
 Summary:    Key table files, console fonts, and keyboard utilities
 Name:       kbd
 Version:    2.2.0
-Release:    1%{?dist}
-License:    GPLv2
+Release:    3%{?dist}
 URL:        http://ftp.altlinux.org/pub/people/legion/kbd
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.altlinux.org/pub/people/legion/kbd/%{name}-%{version}.tar.xz
 %define sha512 %{name}=5f407c20739487e423e8390e429d30838a1a69a0a50db083803ce56da919e25ce480b63fd1bcfac9eb362095f17e575783b09eaa55e26b442bfa3ed838e04f13
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:     kbd-2.0.4-backspace-1.patch
 
@@ -48,14 +50,18 @@ make %{?_smp_mflags} check
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
+%{_docdir}/%{name}-%{version}/*
 %{_datadir}/consolefonts/*
 %{_datadir}/consoletrans/*
 %{_datadir}/keymaps/*
 %{_datadir}/unimaps/*
-%{_docdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.2.0-3
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2.0-2
+- Release bump for SRP compliance
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1
 - Automatic Version Bump
 * Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1

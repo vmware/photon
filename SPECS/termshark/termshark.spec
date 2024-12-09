@@ -1,18 +1,16 @@
 %define network_required 1
-%ifarch aarch64
-%global gohostarch      arm64
-%else
-%global gohostarch      amd64
-%endif
+%define gopath_comp_termshark github.com/gcla/termshark
 
 Summary:        A terminal user-interface for tshark, inspired by Wireshark
 Name:           termshark
 Version:        2.4.0
-Release:        9%{?dist}
-License:        MIT
+Release:        17%{?dist}
 URL:            https://github.com/gcla/%{name}/releases/tag/v%{version}.tar.gz
 Source0:        https://github.com/gcla/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=378bb67ff50a8dfa80f614540371f326627e73bdf63bceb183ed73afbbf9dead4e0597fb969ba49c4ee3d3de00ac7bb91166421c19c788df47ff8d9fcbc5b9fc
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -31,31 +29,25 @@ Termshark is the terminal user-interface tor Tshark, a source network protocol a
 TShark doesn't have an interactive terminal user interface though, and this is where
 Termshark comes in. Termshark is basically the futuristic terminal version of Wireshark.
 
-%prep -p exit
-%autosetup -p1 -n %{name}-%{version}
+%prep
+# Using autosetup is not feasible
+%setup -q -c -n %{name}-%{version}
+
+mkdir -p "$(dirname src/%{gopath_comp_termshark})"
+mv %{name}-%{version} src/%{gopath_comp_termshark}
 
 %build
-export ARCH=%{gohostarch}
-export VERSION=%{version}
-export PKG=github.com/%{name}/%{name}
-export GOARCH=${ARCH}
-export GOHOSTARCH=${ARCH}
-export GOOS=linux
-export GOHOSTOS=linux
-export GOROOT=/usr/lib/golang
-export GOPATH=/usr/share/gocode
-export GOBIN=/usr/share/gocode/bin
-export PATH=$PATH:$GOBIN
-
-mkdir -p ${GOPATH}/src/${PKG}
-cp -rf . ${GOPATH}/src/${PKG}
-pushd ${GOPATH}/src/${PKG}
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+pushd src/%{gopath_comp_termshark}
 go build -v ./cmd/...
 popd
 
 %install
+pushd src/%{gopath_comp_termshark}
 install -m 755 -d %{buildroot}%{_bindir}
-install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/termshark
+install -pm 755 -t %{buildroot}%{_bindir} termshark
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -65,6 +57,22 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.4.0-17
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.0-16
+- Bump version as a part of go upgrade
+* Tue Sep 03 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.4.0-15
+- Version bump up to consume wireshark v4.2.7
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 2.4.0-14
+- Simplify build scripts
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.0-13
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 2.4.0-12
+- Bump version as a part of go upgrade
+* Mon Apr 01 2024 Anmol Jain <anmol.jain@broadcom.com> 2.4.0-11
+- Bump version as a part of wireshark upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 2.4.0-10
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.0-9
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.0-8
@@ -73,7 +81,7 @@ rm -rf %{buildroot}/*
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.0-6
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.0-5
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.0-5
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.0-4
 - Bump up version to compile with new go

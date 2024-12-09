@@ -1,5 +1,5 @@
-aarch64/attr-2.5.1-2.ph5.aarch64.rpm
 aarch64/apache-maven-3.8.6-2.ph5.aarch64.rpm
+aarch64/attr-2.5.1-4.ph5.aarch64.rpm
 aarch64/bash-5.2-1.ph5.aarch64.rpm
 aarch64/binutils-2.39-2.ph5.aarch64.rpm
 aarch64/binutils-devel-2.39-2.ph5.aarch64.rpm
@@ -8,7 +8,7 @@ aarch64/bison-3.8.2-3.ph5.aarch64.rpm
 aarch64/bzip2-1.0.8-5.ph5.aarch64.rpm
 aarch64/bzip2-devel-1.0.8-5.ph5.aarch64.rpm
 aarch64/bzip2-libs-1.0.8-5.ph5.aarch64.rpm
-aarch64/coreutils-9.1-2.ph5.aarch64.rpm
+aarch64/coreutils-9.1-7.ph5.aarch64.rpm
 aarch64/cpio-2.13-6.ph5.aarch64.rpm
 aarch64/debugedit-5.0-3.ph5.aarch64.rpm
 aarch64/diffutils-3.8-1.ph5.aarch64.rpm
@@ -43,7 +43,7 @@ aarch64/go-1.19.3-2.ph5.aarch64.rpm
 aarch64/grep-3.7-3.ph5.aarch64.rpm
 aarch64/groff-1.22.4-1.ph5.aarch64.rpm
 aarch64/gzip-1.12-2.ph5.aarch64.rpm
-aarch64/libacl-2.3.1-2.ph5.aarch64.rpm
+aarch64/libacl-2.3.1-4.ph5.aarch64.rpm
 aarch64/libcap-2.66-1.ph5.aarch64.rpm
 aarch64/libffi-3.4.2-1.ph5.aarch64.rpm
 aarch64/libgcc-12.2.0-1.ph5.aarch64.rpm
@@ -52,9 +52,13 @@ aarch64/libgcc-devel-12.2.0-1.ph5.aarch64.rpm
 aarch64/libgomp-12.2.0-1.ph5.aarch64.rpm
 aarch64/libgomp-devel-12.2.0-1.ph5.aarch64.rpm
 aarch64/libpipeline-1.5.6-1.ph5.aarch64.rpm
+aarch64/libselinux-3.4-3.ph5.aarch64.rpm
+aarch64/libselinux-devel-3.4-3.ph5.aarch64.rpm
 aarch64/libstdc++-12.2.0-1.ph5.aarch64.rpm
 aarch64/libstdc++-devel-12.2.0-1.ph5.aarch64.rpm
 aarch64/libtool-2.4.7-1.ph5.aarch64.rpm
+aarch64/libxcrypt-4.4.36-1.ph5.aarch64.rpm
+aarch64/libxcrypt-devel-4.4.36-1.ph5.aarch64.rpm
 aarch64/lua-5.4.4-5.ph5.aarch64.rpm
 aarch64/lua-devel-5.4.4-5.ph5.aarch64.rpm
 aarch64/lua-libs-5.4.4-5.ph5.aarch64.rpm
@@ -78,7 +82,10 @@ aarch64/openssl-3.0.8-1.ph5.aarch64.rpm
 aarch64/openssl-devel-3.0.8-1.ph5.aarch64.rpm
 aarch64/openssl-libs-3.0.8-1.ph5.aarch64.rpm
 aarch64/patch-2.7.6-5.ph5.aarch64.rpm
-aarch64/pcre-libs-8.45-3.ph5.aarch64.rpm
+aarch64/pcre2-10.40-5.ph5.aarch64.rpm
+aarch64/pcre2-devel-10.40-5.ph5.aarch64.rpm
+aarch64/pcre2-libs-10.40-5.ph5.aarch64.rpm
+aarch64/pcre-libs-8.45-5.ph5.aarch64.rpm
 aarch64/perl-5.36.0-1.ph5.aarch64.rpm
 aarch64/pkg-config-0.29.2-3.ph5.aarch64.rpm
 aarch64/popt-1.16-5.ph5.aarch64.rpm

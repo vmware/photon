@@ -1,19 +1,21 @@
 Summary:        Service identity verification for pyOpenSSL.
 Name:           python3-service_identity
 Version:        21.1.0
-Release:        1%{?dist}
-License:        MIT
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/service_identity
 Source0:        service_identity-%{version}.tar.gz
 %define sha512  service_identity=36a6f7cb30871bd38da865521503c622a70318f8c5cdc74b0565bdc292bb3b84682bf3afe050d007b21f27d0c54ba0bfe1cd71b63fb13fa42cbaef66cb115c2b
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-pip
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pyasn1-modules
@@ -59,6 +61,10 @@ PYTHONPATH="%{buildroot}%{python3_sitelib}" py.test3
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.1.0-3
+- Release bump for SRP compliance
+* Tue Dec 26 2023 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.1.0-2
+- Bump up as part of python3-pyOpenSSL update
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 21.1.0-1
 - Automatic Version Bump
 * Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 18.1.0-2

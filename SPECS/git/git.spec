@@ -1,23 +1,25 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.45.1
-Release:        1%{?dist}
-License:        GPLv2
+Version:        2.39.4
+Release:        2%{?dist}
 URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512 %{name}=28461855e03f3dd5af73a1c6d26cc3e2b7b71f5eb90852f1daf582d24503b4dd5c4e4dac359e9eba1c2ba542aeb0940e0482506f19d02a354654b181c56c5317
+%define sha512 %{name}=4d79b22eda772283d79bf8bad5260f139ff66bf942c9fa0e7b2be0888c1f2f941fd7dbb301ab5ee0e6f92444c0e8d3b1b0fdb4d3a41b9d8d242c866c9593f87f
 
-BuildRequires:  curl-devel
-BuildRequires:  python3-devel
-BuildRequires:  openssl-devel
+Source1: license.txt
+%include %{SOURCE1}
 
-Requires:   expat
-Requires:   curl
-Requires:   openssl
+BuildRequires: curl-devel
+BuildRequires: python3-devel
+BuildRequires: openssl-devel
+
+Requires: expat
+Requires: curl
+Requires: openssl
 
 %description
 Git is a free and open source, distributed version control system
@@ -47,7 +49,7 @@ Requires:   perl-YAML
 Requires:   subversion-perl
 Requires:   python3
 
-Conflicts: %{name} < 2.39.0-3
+Conflicts: %{name} < 2.39.0-4
 
 %description extras
 These are the supported files for perl interface to the git, core package of git,
@@ -62,12 +64,11 @@ and git bash completion files.
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --libexec=%{_libexecdir} \
-    --with-gitconfig=%{_sysconfdir}/gitconfig
-
-%make_build CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
+    --with-gitconfig=/etc/gitconfig
+make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
 
 %install
-%make_install %{?_smp_mflags}
+%make_install DESTDIR=%{buildroot} %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_datadir}/bash-completion/completions
 install -m 0644 contrib/completion/git-completion.bash %{buildroot}%{_datadir}/bash-completion/completions/git
 %find_lang %{name}
@@ -81,9 +82,9 @@ sudo -u test make %{?_smp_mflags} test
 
 %post
 if [ $1 -eq 1 ];then
-  # This is first installation.
-  git config --system http.sslCAPath %{_sysconfdir}/ssl/certs
-  exit 0
+    # This is first installation.
+    git config --system http.sslCAPath /etc/ssl/certs
+    exit 0
 fi
 
 %clean
@@ -102,6 +103,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libexecdir}/git-core/git-instaweb
 %exclude %{_libexecdir}/git-core/git-filter-branch
 %exclude %{_libexecdir}/git-core/git-archimport
+%exclude %{_libexecdir}/git-core/git-add--interactive
 %exclude %{_libexecdir}/git-core/git-gui--askpass
 %exclude %{_libexecdir}/git-core/git-gui
 %exclude %{_libexecdir}/git-core/git-citool
@@ -121,6 +123,7 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/git-core/git-instaweb
 %{_libexecdir}/git-core/git-filter-branch
 %{_libexecdir}/git-core/git-archimport
+%{_libexecdir}/git-core/git-add--interactive
 %{_libexecdir}/git-core/git-gui--askpass
 %{_libexecdir}/git-core/git-gui
 %{_libexecdir}/git-core/git-citool
@@ -137,11 +140,17 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
-* Wed May 15 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.45.1-1
-- Version upgrade to v2.45.1
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.39.0-4
-- Bump version as a part of openssl upgrade
-* Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-3
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.39.4-2
+- Release bump for SRP compliance
+* Wed May 15 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.39.4-1
+- Version upgrade to v2.39.4 to remove last commit patches
+* Tue May 14 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.39.3-1
+- Patched on v2.39.3 to fix following CVE's:
+- CVE-2024-32002, CVE-2024-32004, CVE-2024-32020,
+- CVE-2024-32021 and CVE-2024-32465
+* Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-4
+- Adding conflict to git-extras
+* Thu May 25 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-3
 - Moving bash-completion to main package
 * Tue Feb 28 2023 Nitesh Kumar <kunitesh@vmware.com> 2.39.0-2
 - Adding subpackage to minimize git dependencies

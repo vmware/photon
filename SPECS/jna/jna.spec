@@ -5,8 +5,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        5.12.1
-Release:        4%{?dist}
-License:        Apache
+Release:        5%{?dist}
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -14,6 +13,9 @@ Distribution:   Photon
 
 Source0: https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=6cabccc27792ac7779932c38b163d7d77465ebca3eff3eb7f8104fe739be1934b7b69d766dcf178bb98bb782ddbb68e89f390d6d0de1dc41ed095b5a24b33840
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: jna_remove_clover_jar.patch
 
@@ -84,6 +86,8 @@ rm -rf %{buildroot}
 %{_prefix}/*.aar
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 5.12.1-5
+- Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.12.1-4
 - Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.12.1-3

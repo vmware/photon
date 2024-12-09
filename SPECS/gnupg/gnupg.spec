@@ -1,15 +1,17 @@
 Summary:        OpenPGP standard implementation used for encrypted communication and data storage.
 Name:           gnupg
-Version:        2.2.27
-Release:        4%{?dist}
-License:        GPLv3+
+Version:        2.2.41
+Release:        2%{?dist}
 URL:            https://gnupg.org/index.html
 Group:          Applications/Cryptography.
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://gnupg.org/ftp/gcrypt/gnupg/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=cf336962116c9c08ac80b1299654b94948033ef51d6d5e7f54c2f07bbf7d92c7b0bddb606ceee2cdd837063f519b8d59af5a82816b840a0fc47d90c07b0e95ab
+%define sha512 %{name}=f472e5058ea9881355f0c754a47acd0b5360c36e8976b8563dbc763a7cef792bf88227cc15fe5172d3e9bb9fc34d8448dd5c183949031e91a1997cc7f0f83b55
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  zlib-devel
 BuildRequires:  bzip2-devel
@@ -63,6 +65,12 @@ make %{?_smp_mflags} check
 %exclude %{_docdir}/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.2.41-2
+- Release bump for SRP compliance
+* Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 2.2.41-1
+- Upgrade version to Fix CVE-2022-3515, CVE-2022-34903
+* Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 2.2.27-5
+- Bump version as a part of libksba version upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2.27-4
 - Bump version as a part of zlib upgrade
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.2.27-3

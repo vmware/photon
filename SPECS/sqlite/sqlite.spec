@@ -3,8 +3,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.43.2
-Release:        1%{?dist}
-License:        Public Domain
+Release:        3%{?dist}
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: http://sqlite.org/2022/%{name}-autoconf-%{sourcever}.tar.gz
 %define sha512 %{name}=2cb69335aad278c175e680783081bdf48110c31ed31abb6b44b9a012f92ec67cca49c3bf3ec8212c3c9d72a3ec5d5a48ae556d04262bfa23882b6b05140d5901
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
@@ -93,10 +95,16 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.43.2-1
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.43.2-3
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.43.2-2
+- Release bump for SRP compliance
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.43.2-1
 - Version upgrade to v3.43.2
-* Tue Jan 09 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 3.40.1-2
+* Tue Jan 09 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 3.40.1-3
 - Patched CVE-2023-7104
+* Fri Aug 25 2023 Kuntal Nayak <nkuntal@vmware.com> 3.40.1-2
+- Fix for CVE-2023-36191
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.40.1-1
 - bump version to 3.40.1
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.39.4-2

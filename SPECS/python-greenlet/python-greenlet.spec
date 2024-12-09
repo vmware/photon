@@ -1,14 +1,16 @@
 Summary:        Lightweight in-process concurrent programming
 Name:           python3-greenlet
 Version:        2.0.0
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.python.org/pypi/greenlet
 Source0:        greenlet-%{version}.tar.gz
 %define sha512  greenlet=2c4ae0623e8258a85012fca3c4c419cab3634679dc05a51b9079bcae3afb6f6c3c5052b249dbdb48a8dac3d20b9313343b217862ab34f3ae6dd5cda66e53dc35
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -42,6 +44,8 @@ A “greenlet”, on the other hand, is a still more primitive notion of micro-t
 /usr/include/python%{python3_version}/greenlet/greenlet.h
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-2
+- Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.0-1
 - Update to 2.0.0
 * Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 0.4.17-2

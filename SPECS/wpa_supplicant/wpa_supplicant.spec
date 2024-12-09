@@ -2,7 +2,6 @@ Summary:          WPA client
 Name:             wpa_supplicant
 Version:          2.10
 Release:          3%{?dist}
-License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:     Photon
 
 Source0: https://w1.fi/releases/%{name}-%{version}.tar.gz
 %define sha512 wpa=021c2a48f45d39c1dc6557730be5debaee071bc0ff82a271638beee6e32314e353e49d39e2f0dc8dff6e094dcc7008cfe1c32d0c7a34a1a345a12a3f1c1e11a1
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:    libnl-devel
 BuildRequires:    openssl-devel
@@ -103,8 +105,8 @@ EOF
 %{_sysconfdir}/%{name}/%{name}-wlan0.conf
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.10-3
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.10-3
+- Release bump for SRP compliance
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.10-2
 - Bump version as a part of readline upgrade
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 2.10-1

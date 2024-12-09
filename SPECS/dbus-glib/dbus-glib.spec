@@ -2,7 +2,6 @@ Summary:        Glib interfaces to D-Bus API
 Name:           dbus-glib
 Version:        0.112
 Release:        5%{?dist}
-License:        AFL and GPLv2+
 Group:          System Environment/Libraries
 URL:            https://dbus.freedesktop.org/doc/dbus-glib
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://dbus.freedesktop.org/releases/dbus-glib/%{name}-%{version}.tar.gz
 %define sha512 %{name}=7c9f393f065dfb3d698f35e6554caf15fe539f5dd52d2b2bb6ed1770e130f5dab8e45379232520301455bae9bb77e25a109faf175153fcd4b9dd11d7de4a546e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  glib-devel
 BuildRequires:  dbus-devel
@@ -70,8 +72,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.112-5
-- Bump version as a part of dbus upgrade
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.112-5
+- Release bump for SRP compliance
 * Wed Sep 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.112-4
 - Add URL to spec header
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.112-3

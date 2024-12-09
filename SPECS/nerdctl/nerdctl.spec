@@ -7,8 +7,7 @@
 Summary:        Docker-compatible CLI for containerd
 Name:           nerdctl
 Version:        1.4.0
-Release:        8%{?dist}
-License:        Apache 2.0
+Release:        10%{?dist}
 URL:            https://github.com/containerd/nerdctl
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -16,6 +15,9 @@ Distribution:   Photon
 
 Source0: https://github.com/containerd/nerdctl/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b14cd92b76d9699b4042fcd7a6906b1c714221b30cff1074a1d59ea038cf74ea6437d4a4d9a265e7b0f4c96397c82d53856f9e43d08aa8abcb98af5e9fb6e8dc
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  go
 BuildRequires:  build-essential
@@ -58,22 +60,30 @@ rm -rf %{buildroot}/*
 %{_bindir}/containerd-rootless-setuptool.sh
 
 %changelog
-* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.0-8
-- Bump version as a part of dbus upgrade
-* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.4.0-7
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.4.0-10
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.0-9
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.0-8
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.4.0-7
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.4.0-6
+- Bump version as a part of go upgrade
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.4.0-5
 - Bump up version to compile with new go
-* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.4.0-6
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.4.0-4
 - Bump up version to compile with new go
-* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.4.0-5
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.4.0-3
 - Bump up version to compile with new go
-* Tue Aug 08 2023 Piyush Gupta <gpiyush@vmware.com> 1.4.0-4
-- Bump up version to compile with new go
-* Thu Jul 13 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.0-3
-- Version bump up to use fuse-overlayfs v1.12
-* Wed Jul 05 2023 Piyush Gupta <gpiyush@vmware.com> 1.4.0-2
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.4.0-2
 - Bump up version to compile with new go
 * Tue Jul 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.4.0-1
 - Upgrade to v1.4.0
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.0-8
+- Bump up version to compile with new go
+* Fri May 19 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.0-7
+- Bump up version to compile with containerd upgrade.
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.1.0-6
 - Bump up version to compile with new go
 * Tue Mar 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-5

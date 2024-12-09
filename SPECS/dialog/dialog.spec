@@ -3,8 +3,7 @@
 Summary:       A utility for creating TTY dialog boxes
 Name:          dialog
 Version:       1.3
-Release:       9.20220728%{?dist}
-License:       LGPLv2
+Release:       10.20220728%{?dist}
 URL:           http://invisible-island.net/dialog/dialog.html
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -13,8 +12,11 @@ Distribution:  Photon
 Source0: https://invisible-mirror.net/archives/dialog/%{name}-%{version}-%{dialogsubversion}.tgz
 %define sha512 %{name}=dddceaf00bfec4b53f2cf67e51d4c54841d9db337536657c21bc8f324a0eb9c6d621f00e09bfb741bd263f171dde38cfea87568f86daf04a9e88575a0ed61218
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires: ncurses-devel
-BuildRequires: gettext-devel
+BuildRequires: gettext
 BuildRequires: findutils
 BuildRequires: libtool
 
@@ -47,7 +49,6 @@ dialog library.
     --enable-nls \
     --with-libtool \
     --with-ncursesw
-
 %make_build
 
 %install
@@ -84,7 +85,9 @@ rm -rf %{buildroot}%{_libdir}/.libs
 %{_mandir}/man3/dialog.*
 
 %changelog
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3-9.20220728
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.3-10.20220728
+- Release bump for SRP compliance
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3-9.20220728
 - Bump version as a part of ncurses upgrade to v6.4
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3-8.20220728
 - Bump version as a part of gettext upgrade

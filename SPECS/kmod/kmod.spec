@@ -1,8 +1,7 @@
 Summary:        Utilities for loading kernel modules
 Name:           kmod
 Version:        30
-Release:        5%{?dist}
-License:        LGPLv2.1+ and GPLv2+
+Release:        6%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://www.kernel.org/pub/linux/utils/kernel/kmod/%{name}-%{version}.tar.xz
 %define sha512 %{name}-%{version}=e2cd34e600a72e44710760dfda9364b790b8352a99eafbd43e683e4a06f37e6b5c0b5d14e7c28070e30fc5fc6ceddedf7b97f3b6c2c5c2d91204fefd630b9a3e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: modinfo-show-signature-info-only-when-openssl.patch
 
@@ -67,8 +69,10 @@ done
 %{_libdir}/*.so
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 30-5
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 30-6
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 30-5
+- Release bump for SRP compliance
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 30-4
 - Bump version as a part of zlib upgrade
 * Mon Mar 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 30-3

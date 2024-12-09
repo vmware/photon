@@ -1,8 +1,7 @@
 Summary:    Wayland Compositor Infrastructure
 Name:       wayland
 Version:    1.21.0
-Release:    5%{?dist}
-License:    MIT
+Release:    4%{?dist}
 URL:        http://wayland.freedesktop.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution: Photon
 
 Source0: https://wayland.freedesktop.org/releases/%{name}-%{version}.tar.xz
 %define sha512 wayland=5575216d30fdf5c63caa6bcad071e15f2a4f3acb12df776806073f65db37a50b5b5b3cc7957c5497636f4ac01893e2eaab26e453ded44b287acde01762f5fdc3
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: libxml2-devel
 BuildRequires: meson
@@ -117,13 +119,11 @@ rm -rf %{buildroot}/*
 %{_libdir}/libwayland-server.so.0*
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.21.0-5
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.21.0-4
-- Bump version as a part of libxml2 upgrade
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.21.0-4
+- Release bump for SRP compliance
 * Mon Jul 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21.0-3
 - Add libffi-devel to requires of libwayland-server
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.21.0-2
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.21.0-2
 - Bump version as a part of libxml2 upgrade
 * Mon Oct 10 2022 Gerrit Photon <photon-checkins@vmware.com> 1.21.0-1
 - Automatic Version Bump

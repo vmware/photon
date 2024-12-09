@@ -2,14 +2,16 @@
 Summary:        GO interface to the VMware vSphere API.
 Name:           govmomi
 Version:        0.29.0
-Release:        10%{?dist}
+Release:        15%{?dist}
 Group:          Development/Languages
-License:        Apache License 2.0
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/govmomi
 Source0:        https://github.com/vmware/govmomi/%{name}-%{version}.tar.gz
 %define sha512  govmomi=f43cdb8333775689ede39bc2f488433de1a8c6be9cffd534f50023557f5fde3bddc6f2ead88d9f23d0de3a7ed16191bc4daa1e7f31dceb80055feb202c94ab7e
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  go
 BuildRequires:  which
 BuildRequires:  ca-certificates
@@ -55,6 +57,16 @@ rm -rf %{buildroot}/*
 %{_bindir}/vcsim
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 0.29.0-15
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.29.0-14
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.29.0-13
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 0.29.0-12
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 0.29.0-11
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 0.29.0-10
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 0.29.0-9
@@ -63,7 +75,7 @@ rm -rf %{buildroot}/*
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 0.29.0-7
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.29.0-6
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 0.29.0-6
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.29.0-5
 - Bump up version to compile with new go

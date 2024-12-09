@@ -1,26 +1,23 @@
 %define network_required 1
 %define debug_package %{nil}
-
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
 Version:        0.22.0
-Release:        7%{?dist}
-License:        ASL 2.0
+Release:        11%{?dist}
 URL:            https://github.com/coreos/flannel
+Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.tar.gz
+%define sha512  flannel=ddb13b0f23689f19a5ef84c311005a5dc3393e8c32a93af37de09ccebd625b6c7c9adad14264fd374df1f538b1387a01a05d107e4a461535737cc1e07118e361
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0: https://github.com/coreos/flannel/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ddb13b0f23689f19a5ef84c311005a5dc3393e8c32a93af37de09ccebd625b6c7c9adad14264fd374df1f538b1387a01a05d107e4a461535737cc1e07118e361
-
-BuildRequires:  etcd
+BuildRequires:  etcd >= 3.5.4
 BuildRequires:  gcc
 BuildRequires:  unzip
 BuildRequires:  go
 BuildRequires:  ca-certificates
-BuildRequires:  systemd-devel
-
 Requires:       etcd >= 3.5.4
 
 %description
@@ -36,19 +33,19 @@ export GOPATH=%{_builddir}
 echo $GOAPTH
 mv %{name}-%{version}  %{name}
 pushd %{name}
-%make_build dist/flanneld
+make dist/flanneld %{?_smp_mflags}
 popd
 
 %install
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ %{name}/dist/flanneld
 
-install -vdm 0755 %{buildroot}%{_datadir}/%{name}/docker
-install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ %{name}/dist/mk-docker-opts.sh
+install -vdm 0755 %{buildroot}/usr/share/flannel/docker
+install -vpm 0755 -t %{buildroot}/usr/share/flannel/docker/ %{name}/dist/mk-docker-opts.sh
 
 install -vdm 0755 %{buildroot}%{_sysconfdir}/flannel
 cat << EOF >> %{buildroot}%{_sysconfdir}/flannel/flanneld.conf
-#
+###
 # flanneld configuration
 #
 
@@ -65,8 +62,8 @@ KUBE_API_URL="http://localhost:8080"
 FLANNEL_OPTIONS=""
 EOF
 
-mkdir -p %{buildroot}%{_unitdir}
-cat << EOF > %{buildroot}%{_unitdir}/flanneld.service
+mkdir -p %{buildroot}/usr/lib/systemd/system
+cat << EOF >> %{buildroot}/usr/lib/systemd/system/flanneld.service
 [Unit]
 Description=flanneld overlay network service
 After=network.target etcd.service
@@ -75,8 +72,8 @@ Before=docker.service
 [Service]
 Type=notify
 EnvironmentFile=-/etc/flannel/flanneld.conf
-ExecStartPre=-%{_bindir}/etcdctl mk /vmware/network/config \${FLANNEL_NETWORK_CONF}
-ExecStart=%{_bindir}/flanneld -etcd-prefix=/vmware/network -etcd-endpoints=\${ETCD_ENDPOINTS} --kube-api-url=\${KUBE_API_URL} \${FLANNEL_OPTIONS}
+ExecStartPre=-/usr/bin/etcdctl mk /vmware/network/config \${FLANNEL_NETWORK_CONF}
+ExecStart=/usr/bin/flanneld -etcd-prefix=/vmware/network -etcd-endpoints=\${ETCD_ENDPOINTS} --kube-api-url=\${KUBE_API_URL} \${FLANNEL_OPTIONS}
 Restart=on-failure
 
 [Install]
@@ -86,22 +83,34 @@ EOF
 
 %check
 cd %{name}
-GOPATH=%{_builddir} %make_build test
+GOPATH=%{_builddir} make test %{?_smp_mflags}
+
+%post
+
+%postun
 
 %files
 %defattr(-,root,root)
 %{_bindir}/flanneld
-%{_unitdir}/flanneld.service
-%{_datadir}/%{name}/docker/mk-docker-opts.sh
-%config(noreplace) %{_sysconfdir}/%{name}/flanneld.conf
+%{_libdir}/systemd/system/flanneld.service
+/usr/share/flannel/docker/mk-docker-opts.sh
+%config(noreplace) %{_sysconfdir}/flannel/flanneld.conf
 
 %changelog
-* Fri Mar 08 2024 Anmol Jain <anmol.jain@broadcom.com> 0.22.0-7
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.22.0-11
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.22.0-10
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.22.0-9
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 0.22.0-8
+- Bump version as a part of go upgrade
+* Wed Mar 13 2024 Mukul Sikka <msikka@vmware.com> 0.22.0-7
+- Bump version as a part of go upgrade
+* Fri Mar 08 2024 Anmol Jain <anmol.jain@broadcom.com> 0.22.0-6
 - Bump version as a part of etcd upgrade
-* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 0.22.0-6
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 0.22.0-5
 - Bump up version to compile with new go
-* Sun Nov 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.22.0-5
-- Fix spec issues
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 0.22.0-4
 - Bump up version to compile with new go
 * Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 0.22.0-3
@@ -110,8 +119,10 @@ GOPATH=%{_builddir} %make_build test
 - Bump up version to compile with new go
 * Tue Jul 04 2023 Prashant S Chauhan <psinghchauha@vmware.com> 0.22.0-1
 - Update to 0.22.0
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.21.3-3
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 0.21.3-4
 - Bump up version to compile with new go
+* Wed May 24 2023 Shivani Agarwal <shivania2@vmware.com> 0.21.3-3
+- Bump up version to compile with new etcd
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.21.3-2
 - Bump up version to compile with new go
 * Thu Mar 09 2023 Prashant S Chauhan <psinghchauha@vmware.com> 0.21.3-1

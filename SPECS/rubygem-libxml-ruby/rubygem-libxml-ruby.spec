@@ -6,13 +6,14 @@ Version:        5.0.2
 Release:        4%{?dist}
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group:          Applications/Programming
-License:        BSD
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/libxml-ruby-%{version}.gem
-
 %define sha512    libxml-ruby=449464107c1b533c25ec3ba4e722f5805f1e487609939306ee4535ba9b8197e47d79d50fa69571f0dff9d7ab974ee848ce95679a6f64da84aaf109c367ef6829
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby-devel
 BuildRequires:  libxml2-devel
@@ -64,15 +65,15 @@ rake test
 %{gem_base}
 
 %changelog
-*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.2-4
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.2-4
+-   Release bump for SRP compliance
+*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.2-3
 -   Add gem macros
-*   Tue Apr 02 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.2-3
--   Build with source
-*   Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.0.2-2
--   Bump version as a part of libxml2 upgrade
-*   Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.0.2-1
+*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.2-2
+-   Build from source
+*   Tue Mar 12 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.0.2-1
 -   Upgrade to v5.0.2
-*   Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.4-2
+*   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.4-2
 -   Bump version as a part of libxml2 upgrade
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.4-1
 -   Automatic Version Bump

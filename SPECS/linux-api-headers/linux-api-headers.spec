@@ -1,23 +1,31 @@
 %define debug_package %{nil}
+
 Summary:        Linux API header files
 Name:           linux-api-headers
 Version:        6.1.79
-Release:        1%{?dist}
-License:        GPLv2
+Release:        4%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
 %define sha512 linux=a8d0940c683744c713403304de8970b55beda7cfd339c00f7888236982b68d6577ea9f11f700f0181b66771e3daca2c41dbedce201662d36e9372bda11e10c2e
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildArch:      noarch
+
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
+
 %prep
 %autosetup -n linux-%{version}
 
 %build
 make %{?_smp_mflags} mrproper
+
 %install
 [ "%{_arch}" = "x86_64" ] && ARCH=x86_64
 [ "%{_arch}" = "aarch64" ] && ARCH=arm64
@@ -33,12 +41,19 @@ find usr/include -name '.*' -delete
 rm usr/include/Makefile
 mkdir -p %{buildroot}%{_prefix}
 cp -r usr/include %{buildroot}%{_prefix}
-find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -delete
+find %{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -delete
+
 %files
 %defattr(-,root,root)
 %{_includedir}/*
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.79-4
+- Release bump for SRP compliance
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.79-3
+- Remove standalone license exceptions
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.79-2
+- Release bump for SRP compliance
 * Mon Feb 26 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.79-1
 - Update to version 6.1.79
 * Tue Feb 06 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.77-1

@@ -9,11 +9,13 @@ Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=6e43a8ae379d7c8a807a9a03c87bfb5ad1719f9838e26ac7a695220ee2bc50344accc2db268d30da175328fd5468b87ec8532d17ce42a5b74d6c2c4c281d1bc9
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: ruby
 
@@ -44,8 +46,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.4.1-2
-- Bump Version to build with new ruby
-* Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.4.1-1
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.4.1-2
+- Release bump for SRP compliance
+* Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 4.4.1-1
 - Initial version.
 - Needed by rubygem-http.

@@ -1,0 +1,51 @@
+From 2ba9801d9f222de9fe1f5f04dcd1c276e56b4245 Mon Sep 17 00:00:00 2001
+From: Vladislav Khmelevsky <och95@yandex.ru>
+Date: Thu, 17 Nov 2022 12:47:29 +0400
+Subject: [PATCH 073/175] elf: Fix rtld-audit trampoline for aarch64
+
+This patch fixes two problems with audit:
+
+  1. The DL_OFFSET_RV_VPCS offset was mixed up with DL_OFFSET_RG_VPCS,
+     resulting in x2 register value nulling in RG structure.
+
+  2. We need to preserve the x8 register before function call, but
+     don't have to save it's new value and restore it before return.
+
+Anyway the final restore was using OFFSET_RV instead of OFFSET_RG value
+which is wrong (althoug doesn't affect anything).
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit eb4181e9f4a512de37dad4ba623c921671584dea)
+---
+ sysdeps/aarch64/dl-trampoline.S | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/sysdeps/aarch64/dl-trampoline.S b/sysdeps/aarch64/dl-trampoline.S
+index 909b208578225b22dd62a6d184809a9032e17ca9..d66f0b9c4579ef2fc95f9cb083ef3b87b8c56300 100644
+--- a/sysdeps/aarch64/dl-trampoline.S
++++ b/sysdeps/aarch64/dl-trampoline.S
+@@ -298,12 +298,11 @@ _dl_runtime_profile:
+ 	stp	x2, x3, [x29, #OFFSET_RV + DL_OFFSET_RV_X0 + 16*1]
+ 	stp	x4, x5, [x29, #OFFSET_RV + DL_OFFSET_RV_X0 + 16*2]
+ 	stp	x6, x7, [x29, #OFFSET_RV + DL_OFFSET_RV_X0 + 16*3]
+-	str	x8,     [x29, #OFFSET_RG + DL_OFFSET_RG_X0 + 16*4]
+ 	stp	q0, q1, [x29, #OFFSET_RV + DL_OFFSET_RV_V0 + 32*0]
+ 	stp	q2, q3, [x29, #OFFSET_RV + DL_OFFSET_RV_V0 + 32*1]
+ 	stp	q4, q5, [x29, #OFFSET_RV + DL_OFFSET_RV_V0 + 32*2]
+ 	stp	q6, q7, [x29, #OFFSET_RV + DL_OFFSET_RV_V0 + 32*3]
+-	str	xzr,    [X29, #OFFSET_RV + DL_OFFSET_RG_VPCS]
++	str	xzr,    [X29, #OFFSET_RV + DL_OFFSET_RV_VPCS]
+ 
+ 	/* Setup call to pltexit  */
+ 	ldp	x0, x1, [x29, #OFFSET_SAVED_CALL_X0]
+@@ -315,7 +314,6 @@ _dl_runtime_profile:
+ 	ldp	x2, x3, [x29, #OFFSET_RV + DL_OFFSET_RV_X0 + 16*1]
+ 	ldp	x4, x5, [x29, #OFFSET_RV + DL_OFFSET_RV_X0 + 16*2]
+ 	ldp	x6, x7, [x29, #OFFSET_RV + DL_OFFSET_RV_X0 + 16*3]
+-	ldr	x8,     [x29, #OFFSET_RV + DL_OFFSET_RV_X0 + 16*4]
+ 	ldp	q0, q1, [x29, #OFFSET_RV + DL_OFFSET_RV_V0 + 32*0]
+ 	ldp	q2, q3, [x29, #OFFSET_RV + DL_OFFSET_RV_V0 + 32*1]
+ 	ldp	q4, q5, [x29, #OFFSET_RV + DL_OFFSET_RV_V0 + 32*2]
+-- 
+2.35.6
+

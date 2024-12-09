@@ -1,0 +1,1 @@
+License: OpenSSL AND NTP AND GPL-2.0-only AND GPL-1.0-or-later AND FSFUL AND LGPL-2.1-or-later AND GFDL-1.1-or-later

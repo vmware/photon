@@ -53,5 +53,5 @@ index b7db069..251343a 100644
  	}
  	if (this->my_host->get_port(this->my_host) ==
  			charon->socket->get_port(charon->socket, FALSE))
--- 
+--
 2.28.0

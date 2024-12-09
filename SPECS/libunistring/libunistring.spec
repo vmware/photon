@@ -1,8 +1,7 @@
 Summary:    GNU Unicode string library
 Name:       libunistring
 Version:    1.0
-Release:    2%{?dist}
-License:    LGPLv3+
+Release:    4%{?dist}
 URL:        http://www.gnu.org/software/libunistring
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    http://ftp.gnu.org/gnu/libunistring/%{name}-%{version}.tar.xz
 %define sha512 %{name}=70d5ad82722844dbeacdfcb4d7593358e4a00a9222a98537add4b7f0bf4a2bb503dfb3cd627e52e2a5ca1d3da9e5daf38a6bd521197f92002e11e715fb1662d1
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 libunistring is a library that provides functions for manipulating Unicode strings and for manipulating C strings according to the Unicode standard.
@@ -54,6 +56,10 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0-4
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-3
+- Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0-2
 - Remove .la files
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0-1

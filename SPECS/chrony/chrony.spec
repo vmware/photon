@@ -2,7 +2,6 @@ Name:           chrony
 Version:        4.3
 Release:        2%{?dist}
 Summary:        An NTP client/server
-License:        GPLv2
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/NetworkingPrograms
@@ -10,6 +9,9 @@ URL:            https://chrony.tuxfamily.org
 
 Source0: https://download.tuxfamily.org/chrony/chrony-%{version}.tar.gz
 %define sha512 %{name}=1394bac3ed684352fe89b7fef7da50e61f9f522abee807627ae1fc4c2dde891017bc8e5b13759fced028f3a1e875d5e4e5a4f85de65c63b5f83d0ca03bb4c5df
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  systemd
 BuildRequires:  libcap-devel
@@ -115,8 +117,8 @@ rm -rf %{buildroot}
 %dir %attr(-,root,root) %{_localstatedir}/log/chrony
 
 %changelog
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3-2
-- Bump version as a part of nettle upgrade
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 4.3-2
+- Release bump for SRP compliance
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 4.3-1
 - Automatic Version Bump
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.2-2

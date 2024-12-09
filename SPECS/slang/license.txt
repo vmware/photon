@@ -1,0 +1,1 @@
+License: BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Artistic-2.0 AND LGPL-2.0-or-later AND HPND-sell-variant AND NTP AND X11-distribute-modifications-variant AND GPL-1.0-or-later AND FSFUL AND GPL-2.0-only AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-2.0-or-later AND LGPL-2.1-or-later

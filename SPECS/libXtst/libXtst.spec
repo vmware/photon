@@ -1,8 +1,7 @@
 Summary:        X11 libXtst runtime library.
 Name:           libXtst
 Version:        1.2.3
-Release:        3%{?dist}
-License:        MIT
+Release:        4%{?dist}
 URL:            http://www.x.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=6f6741fd3596775eaa056465319f78c29c91b3893a851a4899df651a2023a4d762497b112a33d7d3e8865fe85d173d03e4b49daef76a66af1ae1eaab82a12765
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libXi-devel
 BuildRequires:  proto
@@ -57,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.2.3-4
+- Release bump for SRP compliance
 * Wed Jun 21 2023 Kuntal Nayak <nkuntal@vmware.com> 1.2.3-3
 - Bump version as a part of libXi upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.3-2

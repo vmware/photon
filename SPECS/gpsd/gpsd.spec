@@ -1,15 +1,17 @@
 Name:           gpsd
 Version:        3.25
-Release:        6%{?dist}
+Release:        3%{?dist}
 Summary:        Service daemon for mediating access to a GPS
 Group:          System Environment
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        BSD-2-Clause
 URL:            https://gpsd.gitlab.io/gpsd
 
 Source0:        https://download-mirror.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=0684cbd30defa1a328898589e1d61b2431462a774aff56c588bd00c1fbd92ac94cf6fc1f2b981debac78c34ab09fa24f48ed6334f3ecd09e6b8f5faa92ae1085
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  dbus-devel
 BuildRequires:  dbus-glib-devel
@@ -63,7 +65,6 @@ Summary: Python libraries and modules for use with gpsd
 Requires: %{name}-libs = %{version}-%{release}
 Requires: python3
 Provides: python-%{name}
-
 BuildArch: noarch
 
 %description -n python3-%{name}
@@ -72,7 +73,7 @@ applications, and commonly useful python applications for use with gpsd.
 
 %package devel
 Summary: Development files for the gpsd library
-Requires: %{name} = %{version}-%{release}
+Requires: %{name}-libs = %{version}-%{release}
 
 %description devel
 This package provides C header files for the gpsd shared libraries that
@@ -143,8 +144,8 @@ DESTDIR=%{buildroot} scons install systemd_install udev-install
 # use the old name for udev rules
 mv %{buildroot}%{_udevrulesdir}/{25,99}-%{name}.rules
 
-install -d -m 0755 %{buildroot}%{_sysconfdir}/sysconfig
-install -p -m 0644 packaging/rpm/%{name}.sysconfig \
+%{__install} -d -m 0755 %{buildroot}%{_sysconfdir}/sysconfig
+%{__install} -p -m 0644 packaging/rpm/%{name}.sysconfig \
     %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
 # Delete the .desktop files (no GUI in Photon)
@@ -154,7 +155,7 @@ rm -f packaging/X11/xgpsspeed.desktop packaging/X11/xgps.desktop
 rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man*
 
 # Missed in scons install
-install -p -m 0755 gpsinit %{buildroot}%{_sbindir}
+%{__install} -p -m 0755 gpsinit %{buildroot}%{_sbindir}
 
 %post
 %systemd_post %{name}.service %{name}.socket
@@ -229,16 +230,10 @@ install -p -m 0755 gpsinit %{buildroot}%{_sbindir}
 %exclude %{_datadir}/%{name}/gpsd-logo.png
 
 %changelog
-* Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.25-6
-- Bump version as a part of dbus upgrade
-* Sat Apr 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.25-5
-- Bump version as a part of util-linux upgrade
-* Tue Apr 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.25-4
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.25-3
+- Release bump for SRP compliance
+* Tue Apr 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.25-2
 - Version Bump up to consume bluez v5.71
-* Tue Oct 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.25-3
-- Bump version as a part of scons upgrade
-* Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.25-2
-- Fix devel package requires
 * Tue Jun 06 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 3.25-1
 - Initial addition to Photon. Adapted from provided spec file
 - in the gpsd gitlab repository.

@@ -1,8 +1,7 @@
 Summary:       Set of scripts and tools to get compatbility with other distributions.
 Name:          distrib-compat
 Version:       0.1
-Release:       3%{?dist}
-License:       GPLv2
+Release:       4%{?dist}
 URL:           http://photon.org
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -14,6 +13,9 @@ Source1:       rc.status
 Source2:       90-va-tune-up.conf
 Source3:       ifup
 Source4:       ifdown
+
+Source5: license.txt
+%include %{SOURCE5}
 
 Patch0:        distrib-compat-gen-debuginfo.patch
 
@@ -46,6 +48,8 @@ ln -sfv sysctl.d/99-compat.conf %{buildroot}%{_sysconfdir}/sysctl.conf
 %{_sbindir}/*
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.1-4
+- Release bump for SRP compliance
 * Thu Aug 04 2022 Ankit Jain <ankitja@vmware.com> 0.1-3
 - preserve the configuartion
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.1-2

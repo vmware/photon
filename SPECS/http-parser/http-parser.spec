@@ -1,14 +1,16 @@
-Summary:	C based http parser for high performance applications.
-Name:		http-parser
-Version:	2.9.4
-Release:	1%{?dist}
-License:	MIT
-URL:		https://github.com/nodejs/http-parser
-Source0:	%{name}-v%{version}.tar.gz
-%define sha1    http-parser=8df5277feefe79f3d4472b8f2c5ca9224b2221dd
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:        C based http parser for high performance applications.
+Name:           http-parser
+Version:        2.9.4
+Release:        2%{?dist}
+URL:            https://github.com/nodejs/http-parser
+Source0:        %{name}-v%{version}.tar.gz
+%define sha512  http-parser=b45df7b94d1c51079d44687d0a7f901f44faae51df4e84c7e3fe38f130c2d809d0e7c2a146c57b3723e60732aededc246bf44eadb10a95b710963d641f9fe7cd
+
+Source1: license.txt
+%include %{SOURCE1}
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildRequires:  gcc
 
 %description
@@ -22,13 +24,13 @@ Requires:       %{name} = %{version}-%{release}
 This contains development tools and libraries for http-parser.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 make PREFIX=%{_prefix} %{?_smp_mflags}
 
 %install
-make PREFIX="%{_prefix}" DESTDIR="%{buildroot}" install
+make PREFIX="%{_prefix}" DESTDIR="%{buildroot}" install %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 
@@ -44,6 +46,8 @@ make PREFIX="%{_prefix}" DESTDIR="%{buildroot}" install
 %{_libdir}/libhttp_parser.so
 
 %changelog
+*    Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.9.4-2
+-    Release bump for SRP compliance
 *    Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.4-1
 -    Automatic Version Bump
 *    Fri Aug 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.8.1-1

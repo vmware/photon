@@ -2,16 +2,18 @@
 %global gem_name oj
 
 Name: rubygem-oj
-Version:        3.16.3
-Release:        2%{?dist}
+Version:        3.13.21
+Release:        4%{?dist}
 Summary:        The fastest JSON parser and object serializer.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512  oj=98d5610b1a71b31cd7c9d5f789f3aa6a751c950ba9003d5b54c823a85aabc7e7a51dd11cf8a9ad1ea74173cc51e221f5896f58642becfd064fd0c2fbc8e35d64
+%define sha512  oj=9a1429cf6197a1ab7b679185dc48570d17bc387e1d62bf0758b36797976ba60c9fca0680af3b64c0b4e1c8e873fe4a892018f571644650fa32bd67a4d03a0c05
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby-devel
 BuildRequires:  gmp-devel
 Requires:       ruby
@@ -33,10 +35,12 @@ The fastest JSON parser and object serializer.
 %{gem_base}
 
 %changelog
-*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.16.3-2
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.13.21-4
+-   Release bump for SRP compliance
+*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.13.21-3
 -   Add gem macros
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.16.3-1
--   Update to version 3.16.3
+*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.13.21-2
+-   Build from source
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.13.21-1
 -   Automatic Version Bump
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 3.10.14-1

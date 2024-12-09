@@ -2,7 +2,6 @@ Summary:        OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:           tpm2-pkcs11
 Version:        1.8.0
 Release:        7%{?dist}
-License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-pkcs11
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/tpm2-software/tpm2-pkcs11/releases/download/1.6.0/%{name}-%{version}.tar.gz
 %define sha512 tpm2=006943b3853dc80e44d2322ea0278d6a9f2139c3b3e2a2c5f33436d479d698c5b9d685fb1166d22562bcf3d52edb1075efe7592c27a8c3a0cd05356cab3c9874
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -104,12 +106,12 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
-* Thu Mar 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0-7
-- Bump version as a part of dbus upgrade
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.8.0-6
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.8.0-7
+- Release bump for SRP compliance
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.8.0-6
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-5
-- Bump version as a part of openssl upgrade
+* Tue Dec 19 2023 Prashant S Chauhan <psingchauha@vmware.com> 1.8.0-5
+- Bump up to compile with latest python3-cryptography
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 1.8.0-4
 - bump release as part of sqlite update
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.0-3

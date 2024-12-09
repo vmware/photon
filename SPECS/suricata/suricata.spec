@@ -1,18 +1,20 @@
 Summary:        Intrusion Detection System
 Name:           suricata
-Version:        7.0.0
+Version:        7.0.6
 Release:        2%{?dist}
-License:        GPLv2
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://suricata.io
 Group:          System Environment/Security
 Source0:        https://www.openinfosecfoundation.org/download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b512a8d9e7ce26b362be4e4b1e27b97c0fd6dad109e440d6227916a373e85341336782c0870a2b380fa215f4d2e8d86728f105a6af75d8662d746cee1752347d
+%define sha512 %{name}=628f1d4f7307ad5a8f9f7e52b698dcd8cccebfe089f1328fa5bf6f790669aff1a4e19fff921ff7102125b77c45b7671b88bcf7ae8865d06a5836a9e8d030866c
 
 Source1: suricata.sysconfig
 Source2: photon.notes
 Source3: suricata-tmpfiles.conf
+
+Source4: license.txt
+%include %{SOURCE4}
 
 # Patches from https://github.com/jasonish/suricata-rpms.git
 # Irrelevant docs are getting installed, drop them
@@ -169,15 +171,19 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/rules
 
 %changelog
-* Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.0.0-2
-- Bump version as a part of nss upgrade
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 7.0.6-2
+- Release bump for SRP compliance
+* Mon Jul 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 7.0.6-1
+- Update to v7.0.6 to fix multiple CVEs
+* Fri May 10 2024 Mukul Sikka <mukul.sikka@broadcom.com> 7.0.5-1
+- Update to v7.0.5 to fix multiple CVEs
+* Fri Apr 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 7.0.4-1
+- Update to v7.0.4 to fix CVE-2024-28870
 * Fri Sep 08 2023 Mukul Sikka <msikka@vmware.com> 7.0.0-1
 - Update to v7.0.0 to fix multiple CVEs
-* Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 6.0.12-4
+* Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 6.0.12-3
 - Bump version as a part of rust upgrade.
-* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.12-3
+* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.0.12-2
 - Bump version as a part of lua upgrade
-* Tue May 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.0.12-2
-- Exclude suricata dependency on hyperscan in ARM
 * Fri Apr 28 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.0.12-1
 - Initial packaging

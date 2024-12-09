@@ -1,9 +1,8 @@
 Name:           colm
 Version:        0.14.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Programming language designed for the analysis of computer languages
 # aapl/ and some headers from src/ are the LGPLv2+
-License:        MIT and LGPLv2+
 URL:            https://github.com/adrian-thurston/colm
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -11,6 +10,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/adrian-thurston/colm/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9328689be147ec5310a45e5a1adf8e420c01cc5c1a10def22229721698fabb320d99f4ecd3a599b1d92abc75e579d46a73a6a1fc16f9c6c46f1f5da9c39cbdf4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: colm-0.14.7-disable-static-lib.patch
 
@@ -82,5 +84,7 @@ rm -rf %{buildroot}
 %{_includedir}/libfsm/*.h
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.14.7-2
+- Release bump for SRP compliance
 * Mon Sep 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.14.7-1
 - Initial build, needed for ragel.

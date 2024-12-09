@@ -1,13 +1,15 @@
 Summary:    initramfs
 Name:       initramfs
 Version:    2.0
-Release:    8%{?dist}
-License:    Apache License
+Release:    9%{?dist}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 Distribution:   Photon
-
+URL:            https://vmware.github.io/photon
 Source0:    fscks.conf
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Provides:   initramfs
 
@@ -112,6 +114,8 @@ echo "initramfs" %{version}-%{release} "postun" >&2
 %{_sysconfdir}/dracut.conf.d/fscks.conf
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.0-9
+- Release bump for SRP compliance
 * Wed Mar 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0-8
 - Fix dracut dependency
 * Mon Jul 12 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.0-7

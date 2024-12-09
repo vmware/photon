@@ -1,0 +1,16 @@
+If CRYPTOGRAPHY_OPENSSL_NO_LEGACY is not set or set to 1, we would not load openssl
+legacy crypto.
+If CRYPTOGRAPHY_OPENSSL_NO_LEGACY is set to 0, we will load openssl legacy crypto
+
+--- a/src/cryptography/hazmat/bindings/openssl/binding.py	2024-10-08 17:20:13.921025953 +0000
++++ b/src/cryptography/hazmat/bindings/openssl/binding.py	2024-10-09 06:44:20.090147566 +0000
+@@ -113,7 +113,8 @@ class Binding:
+                 # are ugly legacy, but we aren't going to get rid of them
+                 # any time soon.
+                 if cls.lib.CRYPTOGRAPHY_OPENSSL_300_OR_GREATER:
+-                    if not os.environ.get("CRYPTOGRAPHY_OPENSSL_NO_LEGACY"):
++                    load_openssl_legacy_provider = os.environ.get("CRYPTOGRAPHY_OPENSSL_NO_LEGACY")
++                    if load_openssl_legacy_provider != None and int(load_openssl_legacy_provider) == 0:
+                         cls._legacy_provider = cls.lib.OSSL_PROVIDER_load(
+                             cls.ffi.NULL, b"legacy"
+                         )

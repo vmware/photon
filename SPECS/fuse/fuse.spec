@@ -1,21 +1,23 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse
 Version:        2.9.9
-Release:        3%{?dist}
-License:        GPL+
-URL:            https://github.com/libfuse/libfuse
+Release:        4%{?dist}
+URL:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/libfuse/libfuse/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=1acd51a647ec3dbf9eaafb80cec92bd8542bcbb2cf4510fc8b079b4f8aaa8f4b301e469ddefe4f1cc4ae2bf941e028077601c20d97f187cc618cea8710cbe331
+Source0:        https://github.com/libfuse/libfuse/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
+%define sha512  fuse=1acd51a647ec3dbf9eaafb80cec92bd8542bcbb2cf4510fc8b079b4f8aaa8f4b301e469ddefe4f1cc4ae2bf941e028077601c20d97f187cc618cea8710cbe331
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %ifarch aarch64
-Patch0: fuse-types.patch
+Patch0:         fuse-types.patch
 %endif
-Patch1: fuse-prevent-silent-truncation.patch
-Patch2: fuse2-0007-util-ulockmgr_server.c-conditionally-define-closefro.patch
+Patch1:         fuse-prevent-silent-truncation.patch
+Patch2:         fuse2-0007-util-ulockmgr_server.c-conditionally-define-closefro.patch
 
 %description
 With FUSE it is possible to implement a fully functional filesystem in a
@@ -25,44 +27,54 @@ userspace program.
 Summary:        Header and development files
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-
 %description    devel
 It contains the libraries and header files to create fuse applications.
 
 %prep
-%autosetup -p1 -n libfuse-%{name}-%{version}
+# Using autosetup is not feasible
+%setup -qn libfuse-%{name}-%{version}
+%ifarch aarch64
+%patch0 -p1
+%endif
+%patch1 -p1
+%patch2 -p1
 
 %build
-export MOUNT_FUSE_PATH="%{_sbindir}"
-sh ./makeconf.sh
-%configure --disable-static INIT_D_PATH=/tmp/init.d
+./makeconf.sh
+%configure --disable-static INIT_D_PATH=/tmp/init.d &&
 %make_build
 
 %install
 mkdir -p %{buildroot}%{_libdir}/%{name}
 %make_install %{?_smp_mflags}
+install -v -m755 -d /usr/share/doc/%{name}-%{version} &&
+install -v -m644    doc/{how-fuse-works,kernel.txt} \
+                    /usr/share/doc/%{name}-%{version}
+find %{buildroot} -name '*.la' -delete
 
 %files
-%defattr(-,root,root)
+%defattr(-, root, root)
+/sbin/mount.fuse
 %{_libdir}/libfuse.so.*
 %{_libdir}/libulockmgr.so.*
 %{_bindir}/*
-%{_sbindir}/mount.fuse
 %{_mandir}/man1/*
 %exclude %{_mandir}/man8/*
 %exclude /tmp/init.d/fuse
 %exclude %{_sysconfdir}/udev/rules.d/99-fuse.rules
 
 %files devel
-%defattr(-,root,root)
+%doc ChangeLog
 %{_libdir}/libfuse.so
 %{_libdir}/libulockmgr.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/fuse.pc
 
 %changelog
-* Wed May 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.9-3
-- Fix requires
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.9.9-4
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.9-3
+- Release bump for SRP compliance
 * Mon Aug 22 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.9.9-2
 - Fix build with glibc 2.36
 * Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.9-1

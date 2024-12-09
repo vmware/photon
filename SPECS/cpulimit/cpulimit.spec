@@ -1,15 +1,17 @@
 Name:           cpulimit
 Version:        2.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        CPU Usage Limiter for Linux
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Applications/System
-License:        GPLv2+
 URL:            https://sourceforge.net/projects/limitcpu
 
 Source0: https://sourceforge.net/projects/limitcpu/files/limitcpu/%{name}-%{version}.tar.gz
 %define sha512 %{name}=aeb121739a5dc9f94c6ddb0905ed05eb7d146c9d0e71c34ba46aad798bda2c30b7ccc548338b4c468f9885f09d97a4565c00199c8df6af74dc9b6f23940c540e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  glibc-devel
 
@@ -43,6 +45,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.8-2
+- Release bump for SRP compliance
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 2.8-1
 - Automatic Version Bump
 * Mon May 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2-1

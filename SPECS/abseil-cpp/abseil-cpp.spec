@@ -1,8 +1,7 @@
 Summary:        C++ Common Libraries
 Name:           abseil-cpp
 Version:        20230125.3
-Release:        1%{?dist}
-License:        Apache-2.0 AND LicenseRef-Fedora-Public-Domain
+Release:        2%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            https://abseil.io
 
 Source0: https://github.com/abseil/abseil-cpp/archive/%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=50509acfc4128fd31435631f71ac8cd0350acd9e290f78502723149016e7f07c9d84182ba99e0938b1873fecda09393d3fd7af8dabfb0d89cdcdd8a69a917e70
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: ninja-build
 BuildRequires: build-essential
@@ -75,5 +77,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/absl_*.pc
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 20230125.3-2
+- Release bump for SRP compliance
 * Wed Jun 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 20230125.3-1
 - Initial version, needed by protobuf.

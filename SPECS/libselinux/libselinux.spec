@@ -2,7 +2,6 @@ Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.5
 Release:        3%{?dist}
-License:        Public Domain
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=4e13261a5821018a5f3cdce676f180bb62e5bc225981ca8a498ece0d1c88d9ba8eaa0ce4099dd0849309a8a7c5a9a0953df841a9922f2c284e5a109e5d937ba7
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         Add-Wno-error-stringop-truncation-to-EXTRA_CFLAGS.patch
 
@@ -19,6 +21,10 @@ BuildRequires:  swig
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-pip
+
+# this is not really needed to build libselinux
+# this is added to avoid a build failure while forming chroot
+BuildRequires: util-linux-devel
 
 %define ExtraBuildRequires systemd-rpm-macros
 
@@ -122,12 +128,8 @@ rm -rf %{buildroot}%{_mandir}/ru \
 %{python3_sitelib}/*
 
 %changelog
-* Thu Sep 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5-3
-- Spec cleanups & use /run instead of /var/run
-* Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 3.5-2
-- Version bump as part of pcre2 update
-* Wed Apr 05 2023 Gerrit Photon <photon-checkins@vmware.com> 3.5-1
-- Automatic Version Bump
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-3
+- Release bump for SRP compliance
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.4-3
 - Bump up version no. as part of swig upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.4-2

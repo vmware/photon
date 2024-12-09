@@ -1,14 +1,16 @@
 Summary:        Incremental is a small library that versions your Python projects.
 Name:           python3-incremental
 Version:        21.3.0
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/incremental
 Source0:        incremental-%{version}.tar.gz
 %define sha512  incremental=b8b50151cd2467e552d9268decadbb839b047cf58a450b72e0437ffc5f9af7d78c20a24193c0668cf48dd6264b852d9cee68e59529018e0ca07825e0c185d1e8
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -40,6 +42,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.3.0-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 21.3.0-1
 - Automatic Version Bump
 * Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 17.5.0-2

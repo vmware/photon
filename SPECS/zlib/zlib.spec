@@ -1,15 +1,17 @@
 Summary:        Compression and decompression routines
 Name:           zlib
 Version:        1.2.13
-Release:        2%{?dist}
+Release:        4%{?dist}
 URL:            http://www.zlib.net
-License:        zlib
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.zlib.net/%{name}-%{version}.tar.xz
 %define sha512 %{name}=9e7ac71a1824855ae526506883e439456b74ac0b811d54e94f6908249ba8719bec4c8d7672903c5280658b26cb6b5e93ecaaafe5cdc2980c760fa196773f0725
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:       CVE-2023-45853.patch
 
@@ -69,6 +71,10 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/zlib.3.gz
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.13-4
+- Release bump for SRP compliance
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.13-3
+- Bump version to generate SRP provenance file
 * Wed Oct 25 2023 Harinadh D <hdommaraju@vmware.com> 1.2.13-2
 - fix CVE-2023-45853
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.13-1

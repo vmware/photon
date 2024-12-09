@@ -3,52 +3,60 @@
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.11.7
-Release:        4%{?dist}
-License:        PSF
+Version:        3.11.9
+Release:        5%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha512 Python=11e06f2ffe1f66888cb5b4e9f607de815294d6863a77eda6ec6d7c724ef158df9f51881f4a956d4a6fa973c2fb6fd031d495e3496e9b0bb53793fb1cc8434c63
+%define sha512 Python=2b0a1d936b4ef8376f9655797aece8ffdff75031ad7bfa840f330cac2aed189aecc80c163edc12ea772851d7a011f3fc1960470a73d9d4290cf3ab8ad6ed7e6a
 
 Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
-Source2: setuptools-pip-wheels%{?dist}-1.0.tar.xz
-%define sha512 setuptools-pip-wheels=73f478b62e7716ec19f366bb8d0866af19c5afa55a8b90664efe3760a69903be2f4b79b41ca6946c8528eaad594e19974dbb6c8a2735722b1b35b2aa77bc1569
+Source2: setuptools-pip-wheels%{?dist}-1.0-1.tar.xz
+%define sha512 setuptools-pip-wheels=be455735f5293b38e1e51a946b9db137b5faa09012518c2f578e2183934aca2fd229c6db342bbd2310c46acdc330006829e83607f6befbb42ab00170aacd05fe
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Patch0: cgi3.patch
 Patch1: use-HMAC-SHA256-in-FIPS-mode.patch
 Patch2: ensurepip-upgrade-bundled-pip-and-setuptools.patch
+Patch3: CVE-2024-4032.patch
+Patch4: CVE-2024-6923.patch
+Patch5: CVE-2024-6232.patch
+Patch6: CVE-2024-7592.patch
+Patch7: CVE-2023-27043.patch
 
-BuildRequires:  pkg-config >= 0.28
-BuildRequires:  bzip2-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  openssl-devel
-BuildRequires:  readline-devel
-BuildRequires:  xz-devel
-BuildRequires:  expat-devel >= 2.1.0
-BuildRequires:  libffi-devel >= 3.0.13
-BuildRequires:  sqlite-devel
-BuildRequires:  util-linux-devel
+BuildRequires: pkg-config >= 0.28
+BuildRequires: bzip2-devel
+BuildRequires: ncurses-devel
+BuildRequires: openssl-devel
+BuildRequires: readline-devel
+BuildRequires: xz-devel
+BuildRequires: expat-devel >= 2.6.0
+BuildRequires: libffi-devel >= 3.0.13
+BuildRequires: sqlite-devel
+BuildRequires: util-linux-devel
+
 # cross compilation requires native python3 installed for ensurepip
 %define BuildRequiresNative %{name}-xml
 
-Requires:       ncurses
-Requires:       openssl
-Requires:       %{name}-libs = %{version}-%{release}
-Requires:       readline
-Requires:       xz
-Provides:       python-sqlite
-Provides:       python(abi)
+Requires: ncurses
+Requires: openssl
+Requires: %{name}-libs = %{version}-%{release}
+Requires: readline
+Requires: xz
+Provides: python-sqlite
+Provides: python(abi)
 
-Provides:       /usr/bin/python
-Provides:       /bin/python
-Provides:       /bin/%{name}
+Provides: /usr/bin/python
+Provides: /bin/python
+Provides: /bin/%{name}
 
 %if 0%{?with_check}
 BuildRequires:  iana-etc
@@ -65,8 +73,8 @@ code. It is incompatible with Python 2.x releases.
 %package libs
 Summary: The libraries for python runtime
 Group: Applications/System
-Requires:       (coreutils or coreutils-selinux)
-Requires:       expat >= 2.1.0
+Requires:       coreutils >= 9.1-7
+Requires:       expat >= 2.6.0
 Requires:       libffi >= 3.0.13
 Requires:       ncurses
 Requires:       sqlite-libs
@@ -100,7 +108,7 @@ The python3-curses package provides interface for ncurses library.
 Summary: The libraries and header files needed for Python development.
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-Requires:       expat-devel >= 2.1.0
+Requires:       expat-devel >= 2.6.0
 Requires:       %{name}-macros = %{version}-%{release}
 # Needed here because of the migration of Makefile from -devel to the main
 # package
@@ -301,20 +309,33 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.7-4
-- Bump version as a part of util-linux upgrade
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.11.7-3
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.9-5
+- Release bump for SRP compliance
+* Tue Oct 01 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.9-4
+- Fix CVE-2024-6232, CVE-2024-7592 & CVE-2023-27043
+* Mon Aug 19 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.9-3
+- Fix CVE-2024-6923
+* Thu Aug 08 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.11.9-2
+- Update expat dependency
+* Sat Jul 27 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.11.9-1
+- Update to 3.11.9
+- Update pip3 wheel to 24.0
+* Tue Jul 23 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.7-4
+- Fix CVE-2024-4032
+* Fri Mar 01 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.11.7-3
 - Bump version as a part of sqlite upgrade to v3.43.2
 * Wed Feb 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.7-2
 - Seperate pip & setuptools
 - Use pip & setuptools whl from system
 * Mon Dec 11 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.7-1
 - Update to 3.11.7
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-9
-- Bump version as a part of openssl upgrade
+* Fri Nov 03 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.0-10
+- Fix CVE-2007-4559
+* Mon Sep 11 2023 Prashant S Chauhan <psingchauha@vmware.com> 3.11.0-9
+- Fix CVE-2023-24329, CVE-2022-45061, CVE-2023-41105, CVE-2023-40217
 * Fri Sep 08 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.0-8
 - Add patch for multiprocessing library to use sha256  in FIPS mode
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 3.11.0-7
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 3.11.0-7
 - Bump version as a part of ncurses upgrade to v6.4
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.11.0-6
 - Fix requires

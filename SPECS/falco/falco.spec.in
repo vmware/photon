@@ -1,4 +1,5 @@
 %global build_for %{BUILD_FOR}
+%define network_required 1
 %global security_hardening none
 %define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %define _modulesdir /lib/modules/%{uname_r}
@@ -6,7 +7,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.36.2
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        9%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://falco.org
 Group:          Applications/System
@@ -15,6 +16,12 @@ Distribution:   Photon
 
 Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=a3fef235ab4f3121bd0400827712652530ec417498c44ada8b6bf565f7631d035673b53dad94ea6ae9c854d45202ed71b2771f19e0c92eea3fc3503e5b75b02e
+
+Source1: %{name}-%{version}-dependencies.tar.gz
+%define sha512 %{name}-%{version}-dependencies.tar.gz=f3fb2ebc4d1e46ad5db81921480d4d8e1a55b5482957b64332637ad20b30b788763f54ee78089ab7c143b0359168f365357af806a7e4f67624da520fd3ef56d3
+
+#https://raw.githubusercontent.com/troydhanson/uthash/v1.9.8/src/uthash.h
+Source2: uthash.h
 
 Patch0: build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 Patch1: 0001-build-plugins-locally.patch
@@ -71,6 +78,8 @@ Falco lets you continuously monitor and detect container, application, host, and
 
 %prep
 %autosetup -p1
+mkdir -p %{_arch}-vmware-linux
+tar xf %{SOURCE1} --strip-components=1 -C %{_arch}-vmware-linux
 
 %build
 %{cmake} \
@@ -85,6 +94,7 @@ Falco lets you continuously monitor and detect container, application, host, and
     -DCMAKE_INSTALL_LIBDIR=%{_lib} \
     -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir}
 
+cp %{SOURCE2} %{_arch}-vmware-linux/falcosecurity-libs-repo/falcosecurity-libs-prefix/src/falcosecurity-libs/userspace/libscap/
 export KERNELDIR="%{_modulesdir}/build"
 %{cmake_build}
 
@@ -121,6 +131,18 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-9
+- Bump version as a part of go upgrade
+* Wed Sep 04 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-8
+- Add changes to build offline
+* Fri Aug 16 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-7
+- Bump version as a part of grpc upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-6
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 0.36.2-5
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 0.36.2-4
+- Bump version as a part of go upgrade
 * Tue Jan 09 2024 Ankit Jain <ankitja@vmware.com> 0.36.2-3
 - compress .ko and exclude debug from main package
 * Thu Dec 14 2023 Piyush Gupta <gpiyush@vmware.com> 0.36.2-2

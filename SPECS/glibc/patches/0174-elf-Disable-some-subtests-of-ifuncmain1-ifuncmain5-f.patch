@@ -1,0 +1,98 @@
+From 6c9e3708912ef1a0a2148b2719aa1533dfa68aa8 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 4 Nov 2022 18:37:16 +0100
+Subject: [PATCH 174/175] elf: Disable some subtests of ifuncmain1, ifuncmain5
+ for !PIE
+
+(cherry picked from commit 9cc9d61ee12f2f8620d8e0ea3c42af02bf07fe1e)
+---
+ elf/ifuncmain1.c | 13 +++++++++++++
+ elf/ifuncmain5.c |  9 +++++++++
+ 2 files changed, 22 insertions(+)
+
+diff --git a/elf/ifuncmain1.c b/elf/ifuncmain1.c
+index 747fc02648a5493eb6a8b0f21cfc96e4aaa55c41..6effce3d77b1f7067f07045bf0af898dcdcce508 100644
+--- a/elf/ifuncmain1.c
++++ b/elf/ifuncmain1.c
+@@ -19,7 +19,14 @@ typedef int (*foo_p) (void);
+ #endif
+ 
+ foo_p foo_ptr = foo;
++
++/* Address-significant access to protected symbols is not supported in
++   position-dependent mode on several architectures because GCC
++   generates relocations that assume that the address is local to the
++   main program.  */
++#ifdef __PIE__
+ foo_p foo_procted_ptr = foo_protected;
++#endif
+ 
+ extern foo_p get_foo_p (void);
+ extern foo_p get_foo_hidden_p (void);
+@@ -37,12 +44,16 @@ main (void)
+   if ((*foo_ptr) () != -1)
+     abort ();
+ 
++#ifdef __PIE__
+   if (foo_procted_ptr != foo_protected)
+     abort ();
++#endif
+   if (foo_protected () != 0)
+     abort ();
++#ifdef __PIE__
+   if ((*foo_procted_ptr) () != 0)
+     abort ();
++#endif
+ 
+   p = get_foo_p ();
+   if (p != foo)
+@@ -55,8 +66,10 @@ main (void)
+     abort ();
+ 
+   p = get_foo_protected_p ();
++#ifdef __PIE__
+   if (p != foo_protected)
+     abort ();
++#endif
+   if (ret_foo_protected != 0 || (*p) () != ret_foo_protected)
+     abort ();
+ 
+diff --git a/elf/ifuncmain5.c b/elf/ifuncmain5.c
+index f398085cb46719d18950533e3178de578face344..6fda768fb6908aed552e3150a478ad2c60c06cdf 100644
+--- a/elf/ifuncmain5.c
++++ b/elf/ifuncmain5.c
+@@ -14,12 +14,19 @@ get_foo (void)
+   return foo;
+ }
+ 
++
++/* Address-significant access to protected symbols is not supported in
++   position-dependent mode on several architectures because GCC
++   generates relocations that assume that the address is local to the
++   main program.  */
++#ifdef __PIE__
+ foo_p
+ __attribute__ ((noinline))
+ get_foo_protected (void)
+ {
+   return foo_protected;
+ }
++#endif
+ 
+ int
+ main (void)
+@@ -30,9 +37,11 @@ main (void)
+   if ((*p) () != -1)
+     abort ();
+ 
++#ifdef __PIE__
+   p = get_foo_protected ();
+   if ((*p) () != 0)
+     abort ();
++#endif
+ 
+   return 0;
+ }
+-- 
+2.35.6
+

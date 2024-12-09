@@ -1,3 +1,4 @@
+%define network_required 1
 %define debug_package %{nil}
 # git commit hash
 # update commit id upon every new version release
@@ -6,8 +7,7 @@
 Summary:        fuse-overlayfs plugin for rootless containerd
 Name:           fuse-overlayfs-snapshotter
 Version:        1.0.6
-Release:        5%{?dist}
-License:        GPL3
+Release:        10%{?dist}
 URL:            https://github.com/containerd/fuse-overlayfs-snapshotter
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -15,6 +15,9 @@ Distribution:   Photon
 
 Source0: https://github.com/containerd/fuse-overlayfs-snapshotter/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=7ad7f1e433695045ecb09cda6a49b9822779c953105001fa20773b61128e73b1d57d15c05043ff52a2c9415ae899f75ce1ae5ac62843c4d94640c42aee26a7d3
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  go
 BuildRequires:  ca-certificates
@@ -48,17 +51,27 @@ rm -rf %{buildroot}/*
 %{_bindir}/containerd-fuse-overlayfs-grpc
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.0.6-10
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.6-9
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.6-8
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.0.6-7
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.0.6-6
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.6-5
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.6-4
 - Bump up version to compile with new go
 * Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.6-3
 - Bump up version to compile with new go
-* Tue Aug 08 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.6-2
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.6-2
 - Bump up version to compile with new go
-* Thu Jul 13 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.6-1
-- Update to 1.0.6
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.5-5
+* Fri Jun 30 2023 Shreenidhi Shedi <gpiyush@vmware.com> 1.0.6-1
+- Upgrade to v1.0.6.
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.5-5
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.5-4
 - Bump up version to compile with new go

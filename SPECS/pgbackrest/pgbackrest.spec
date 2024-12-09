@@ -1,9 +1,8 @@
 Summary:        Reliable PostgreSQL Backup & Restore
 Name:           pgbackrest
 Version:        2.48
-Release:        5%{?dist}
+Release:        3%{?dist}
 Url:            https://pgbackrest.org
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,10 +12,13 @@ Source0: https://github.com/pgbackrest/pgbackrest/archive/refs/tags/release/%{na
 
 Source1: %{name}.conf
 
+Source2: license.txt
+%include %{SOURCE2}
+
 BuildRequires: openssl-devel
 BuildRequires: libxml2-devel
 BuildRequires: lz4-devel
-BuildRequires: postgresql16-devel
+BuildRequires: postgresql15-devel
 BuildRequires: cmake
 BuildRequires: libyaml-devel
 
@@ -26,7 +28,7 @@ Requires: zstd-libs
 Requires: bzip2-libs
 Requires: lz4
 Requires: libxml2
-Requires: (postgresql16-libs or postgresql15-libs or postgresql14-libs or postgresql13-libs)
+Requires: (postgresql15-libs or postgresql14-libs or postgresql13-libs)
 
 %description
 pgBackRest aims to be a reliable, easy-to-use backup and restore solution
@@ -61,13 +63,9 @@ cp %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
 %config(noreplace) %attr(0640,root,root) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.48-5
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.48-4
-- Bump version as a part of libxml2 upgrade
-* Thu Dec 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.48-3
-- Build with pgsql16
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.48-2
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.48-3
+- Release bump for SRP compliance
+* Thu Dec 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.48-2
+- Build with pgsql15, this was a mishap during cherry picking
 * Thu Nov 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.48-1
 - Initial version.

@@ -1,24 +1,23 @@
-%define srcname tomcat-native
-
 Summary:        Apache Tomcat Native
 Name:           apache-tomcat-native
 Version:        2.0.3
-Release:        5%{?dist}
-License:        Apache 2.0
+Release:        6%{?dist}
 URL:            https://tomcat.apache.org/native-doc/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildArch:      x86_64
 
-BuildArch: x86_64
+Source0: https://dlcdn.apache.org/tomcat/tomcat-connectors/native/%{version}/source/tomcat-native-%{version}-src.tar.gz
+%define sha512 tomcat-native=d80e6b76295bb253eaf6eab4d722f3ba2f683f33a96310838b4c44b99f0b47a49ed9c09bb53ed23698db057ce765e3fcbfcd4ac4b75d2bdbe691f916be3be339
 
-Source0: https://dlcdn.apache.org/tomcat/tomcat-connectors/native/%{version}/source/%{srcname}-%{version}-src.tar.gz
-%define sha512 %{srcname}=d80e6b76295bb253eaf6eab4d722f3ba2f683f33a96310838b4c44b99f0b47a49ed9c09bb53ed23698db057ce765e3fcbfcd4ac4b75d2bdbe691f916be3be339
+Source1: license.txt
+%include %{SOURCE1}
 
-Patch0: openssl_3_0_7_compatibility.patch
+Patch0:         openssl_3_0_7_compatibility.patch
 
-BuildRequires:  (openjdk11 or openjdk117)
-BuildRequires:  openssl-devel
+BuildRequires:  openjdk11
+BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  apr-devel
 
 Requires:       apr
@@ -32,13 +31,13 @@ that allows Tomcat to use certain native resources for performance, compatibilit
 Summary:        Apache Tomcat Native development package
 Requires:       %{name} = %{version}-%{release}
 
-Conflicts:      %{name} < 2.0.3-3%{?dist}
+Conflicts:      %{name} < 2.0.3-4%{?dist}
 
 %description    devel
 Apache Tomcat Native development package
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}-src
+%autosetup -p1 -n tomcat-native-%{version}-src
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
@@ -71,14 +70,16 @@ rm -rf %{buildroot}/*
 %{_libdir}/libtcnative*.so
 
 %changelog
-* Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.0.3-5
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.0.3-6
+- Release bump for SRP compliance
+* Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 2.0.3-5
 - Bump version as a part of apr upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.3-4
-- Bump version as a part of openssl upgrade
-* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.3-3
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.3-4
 - Require jdk11 or jdk17
-* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.3-2
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.3-3
 - Bump version as a part of openjdk11 upgrade
+* Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 2.0.3-2
+- Bump version as a part of apr version upgrade
 * Fri Mar 03 2023 Srish Srinivasan <ssrish@vmware.com> 2.0.3-1
 - Update to v2.0.3
 * Wed Sep 21 2022 Vamsi Krishna Brahmajosuyula <vbrahmajosyula@vmware.com> 1.2.24-4

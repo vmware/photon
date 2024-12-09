@@ -1,8 +1,7 @@
 Summary:    A garbage collector for C and C++
 Name:       gc
 Version:    8.2.2
-Release:    1%{?dist}
-License:    BSD
+Release:    3%{?dist}
 Url:        http://www.hboehm.info/gc
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://www.hboehm.info/gc/gc_source/%{name}-%{version}.tar.gz
 %define sha512 %{name}=4a7b26789ce22ab72bfaadf3029362c5fe26737df1e856e43db7d9b24ee8acf625e35d596bb3f698f91d6a5ddfb6c45a952a1dbd18d47359569696a544c9c248
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: libatomic_ops-devel
 
@@ -62,6 +64,10 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.2.2-3
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.2.2-2
+- Release bump for SRP compliance
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2.2-1
 - Upgrade to v8.2.2
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.0.4-2

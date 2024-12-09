@@ -2,7 +2,6 @@ Name:           python3-ndg-httpsclient
 Version:        0.5.1
 Release:        6%{?dist}
 Summary:        Enhanced HTTPS support for httplib and urllib2 using PyOpenSSL.
-License:        BSD
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/ndg-httpsclient
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: ndg_httpsclient-%{version}.tar.gz
 %define sha512 ndg_httpsclient=b2b4c1b1df87ea1a94811b9ae831e7bf32af27258f487fd5ec319e0e6e0d79dfdb1f7bfadaf397d0693a8a7f0720df170a7fc946aaf10c82e3957ac5464f672e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-pip
@@ -75,8 +77,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.5.1-6
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.5.1-6
+- Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.5.1-5
 - Update release to compile with python 3.11
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.5.1-4

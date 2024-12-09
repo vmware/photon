@@ -1,8 +1,7 @@
 Summary:        Tool for static C/C++ code analysis
 Name:           cppcheck
 Version:        2.9.3
-Release:        4%{?dist}
-License:        GPLv3+
+Release:        3%{?dist}
 URL:            https://cppcheck.sourceforge.io
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,10 +10,13 @@ Distribution:   Photon
 Source0: https://github.com/danmar/cppcheck/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=c75162b988415ee2ed255f7c648bdea1903c6a2471923f8430ab52f4e7c1ab8d2d1249585ac9db81f7c02fa90e8c0cf59d2bc0402d286c63344def5a171d9967
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires: build-essential
 
 %if 0%{?with_check}
-BuildRequires: libxml2-devel
+BuildRequires: libxml2
 BuildRequires: xmlstarlet
 %endif
 
@@ -65,11 +67,9 @@ make checkcfg %{?_smp_mflags}
 %{_datadir}/%{name}/addons/*
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.9.3-4
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.9.3-3
-- Bump version as a part of libxml2 upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.3-2
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.9.3-3
+- Release bump for SRP compliance
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.3-2
 - Bump version as a part of libxml2 upgrade
 * Fri Nov 25 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.3-1
 - Initial version

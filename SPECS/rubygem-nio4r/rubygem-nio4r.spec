@@ -2,16 +2,18 @@
 %global gem_name nio4r
 
 Name: rubygem-nio4r
-Version:        2.7.0
-Release:        2%{?dist}
+Version:        2.5.8
+Release:        4%{?dist}
 Summary:        Cross-platform asynchronous I/O primitives for scalable network clients and servers.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512  nio4r=aeb0bd3e727fa6999a314cd2b15a35035694f41294f7e9c406a72fd50a7a7a02311efec8c5795a116fd3793bf6b81e17d884e156b844722933e45d056f0cbeb9
+%define sha512  nio4r=3942403147882380b86f42c54a6d4e92c4e85dd3c0b5b9f473a05fcf98c041853e21d11d0481d1973342b5a4bfb59e02cfd523a44e9e45c3740627a45f7f99c7
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  gmp-devel
 BuildRequires:  ruby-devel
 Requires:       ruby
@@ -34,10 +36,12 @@ Inspired by the Java NIO API, but simplified for ease-of-use.
 %{gem_base}
 
 %changelog
-*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-2
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.5.8-4
+-   Release bump for SRP compliance
+*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.5.8-3
 -   Add gem macros
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-1
--   Update to version 2.7.0
+*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.5.8-2
+-   Build from source
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.5.8-1
 -   Automatic Version Bump
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.4-1

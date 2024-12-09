@@ -1,0 +1,1 @@
+License: Bitstream-Vera AND BSD-3-Clause AND ICU AND LGPL-2.0-only AND LGPL-2.0-or-later AND OFL-1.1 AND TCL AND LGPL-2.1-or-later

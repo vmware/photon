@@ -25,7 +25,7 @@ Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 Requires: cyrus-sasl
 Requires: tinycdb
-Requires: (coreutils or coreutils-selinux)
+Requires: coreutils >= 9.1-7
 Requires: systemd
 Requires: m4
 Requires: openldap
@@ -191,10 +191,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
-* Wed Jan 17 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 8.18.0.2-1
+* Tue Jan 16 2024 Nitesh Kumar <kunitesh@vmware.com> 8.18.0.2-1
 - Version upgrade to v8.18.0.2 to address CVE-2023-51765
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.17.1-10
-- Bump version as a part of openssl upgrade
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-9
 - Bump version as a part of openldap v2.6.4 upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 8.17.1-8

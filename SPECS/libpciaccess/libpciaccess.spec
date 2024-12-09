@@ -1,15 +1,17 @@
 Summary:        PCI access library.
 Name:           libpciaccess
 Version:        0.16
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:	http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
+Source0:        http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 %define sha512  libpciaccess=2f250048a270dfc0823d4bdd613aa272c58a80eaafd922850f56c4b6f7a45a263ed4cf521b52b49f04484ea44ebefb7407d079aa058318a5751ffb181e38fed1
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  pkg-config
 Provides:       pkgconfig(pciaccess)
@@ -52,6 +54,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpciaccess.so
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.16-2
+- Release bump for SRP compliance
 * Thu Oct 06 2022 Gerrit Photon <photon-checkins@vmware.com> 0.16-1
 - Automatic Version Bump
 * Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 0.13.3-1

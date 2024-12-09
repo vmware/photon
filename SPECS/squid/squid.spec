@@ -3,23 +3,24 @@
 
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
-Version:        6.9
+Version:        6.12
 Release:        1%{?dist}
-License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.squid-cache.org/Versions/v6/%{name}-%{version}.tar.xz
-%define sha512 %{name}=2666551caca39fa6ca49b56b537645dd043ee0c99b805c433cf714172e6062590fd6ed942043df1a3b543f30c039f3ab701493187dc6a0a4a8311217417c366e
-
+%define sha512 %{name}=7ab61f19416426fb8284de7bddc1ea9a5a7b3148fc54c018a243071ba5854610ef38a248f6a22634a2acb7d3ea408b582af1f48818dfe698ade0b7b8c00fd183
 Source1: %{name}.sysconfig
 Source2: %{name}.pam
 Source3: %{name}.service
 Source4: cache_swap.sh
 Source5: %{name}.logrotate
 Source6: %{name}.sysusers
+
+Source7: license.txt
+%include %{SOURCE7}
 
 BuildRequires: Linux-PAM-devel
 BuildRequires: ed
@@ -43,7 +44,6 @@ Requires: shadow
 Requires: perl-URI
 Requires: systemd
 Requires: libxml2
-Requires: nettle
 Requires: perl
 Requires: Linux-PAM
 Requires: cyrus-sasl
@@ -112,7 +112,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
       --enable-ssl-crtd \
       --enable-diskio \
       --enable-wccpv2 \
-      --enable-esi \
+      --disable-esi \
       --with-aio \
       --with-default-user="%{name}" \
       --with-dl \
@@ -165,17 +165,6 @@ cat > %{buildroot}%{_tmpfilesdir}/%{name}.conf <<EOF
 d /run/%{name} 0755 %{name} %{name} - -
 EOF
 
-%pre
-%sysusers_create_compat %{SOURCE6}
-
-for i in %{_var}/log/%{name} %{_var}/spool/%{name}; do
-  if [ -d $i ]; then
-    for adir in $(find $i -maxdepth 0 \! -user %{name}); do
-      chown -R %{name}:%{name} $adir
-    done
-  fi
-done
-
 %pretrans -p <lua>
 -- previously /usr/share/squid/errors/es-mx was symlink, now it is directory since squid v5
 -- see https://docs.fedoraproject.org/en-US/packaging-guidelines/Directory_Replacement/
@@ -186,6 +175,17 @@ st = posix.stat(path)
 if st and st.type == "link" then
   os.remove(path)
 end
+
+%pre
+%sysusers_create_compat %{SOURCE6}
+
+for i in %{_var}/log/%{name} %{_var}/spool/%{name}; do
+  if [ -d $i ]; then
+    for adir in $(find $i -maxdepth 0 \! -user %{name}); do
+      chown -R %{name}:%{name} $adir
+    done
+  fi
+done
 
 %post
 %systemd_post %{name}.service
@@ -237,30 +237,31 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
-* Tue Apr 16 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.9-1
-- Update to version 6.9
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.6-3
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.6-2
-- Bump version as a part of libxml2 upgrade
+* Thu Dec 12 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.12-1
+- Disable ESI support to fix CVE-2024-45802
+- Update to v6.12
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 6.6-4
+- Release bump for SRP compliance
+* Mon Jul 01 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 6.6-3
+- Patched for CVE-2024-37894
+* Mon Apr 15 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.6-2
+- Patched CVE-2024-25111
 * Tue Jan 02 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.6-1
 - Update to v6.6 to fix CVE-2023-50269
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.5-2
-- Bump version as a part of nettle upgrade
 * Wed Nov 22 2023 Srish Srinivasan <ssrish@vmware.com> 6.5-1
 - Update to v6.5 to fix multiple CVEs
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.7-11
-- Bump version as a part of openssl upgrade
-* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 5.7-10
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 5.7-11
 - Bump version as a part of openldap v2.6.4 upgrade
-* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 5.7-9
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 5.7-10
 - Resolving systemd-rpm-macros for group creation
-* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 5.7-8
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 5.7-9
 - Bump version as a part of krb5 upgrade
-* Sat May 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.7-7
+* Fri Jun 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.7-8
 - Fix for - squid update attempts fail with file conflicts
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.7-6
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.7-7
 - Bump version as a part of libxml2 upgrade
+* Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 5.7-6
+- Bump up version to compile with new gnupg
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 5.7-5
 - Use systemd-rpm-macros for user creation
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.7-4

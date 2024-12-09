@@ -1,5 +1,5 @@
-%gem_binary                        /usr/bin/gem
-%rb_binary                         /usr/bin/ruby
+%gem_binary                        %{_bindir}/gem
+%rb_binary                         %{_bindir}/ruby
 %rb_arch                           %(%{rb_binary} -e 'print RUBY_PLATFORM')
 %rb_ver                            %(%{rb_binary} -r rbconfig -e 'print RbConfig::CONFIG["ruby_version"]')
 
@@ -48,8 +48,8 @@ cd $GEMSPEC_SOURCE_DIR && %{gem_binary} build --verbose %{gem_name}.gemspec \
 #   %gem_install my_gem 1.0
 #
 %gem_install() \
-  cd /usr/src/photon/BUILD/%{gem_name}-%{version} \
-  %{gem_binary} install --bindir %{gem_base}/bin/ --build-root %{buildroot} %{gem_name}-%{version}.gem
+  cd %{_builddir}/%{gem_name}-%{version} \
+  %{gem_binary} install --bindir %{gem_base}/bin/ --build-root %{buildroot} %{gem_name}-%{version}.gem \
 %{nil}
 
 %gem_base %(%{rb_binary} -rrubygems -e 'print Gem::Specification.new.base_dir' )

@@ -1,15 +1,17 @@
 Name:           memcached
-Version:        1.6.15
-Release:        3%{?dist}
+Version:        1.6.22
+Release:        2%{?dist}
 Summary:        High Performance, Distributed Memory Object Cache
-License:        BSD
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.memcached.org/
 Source0:        https://www.memcached.org/files/%{name}-%{version}.tar.gz
-%define sha512  %{name}=00ee15eb7932420a25f3ce973bc7fcc5ba77a514091883f8b4e58ea861073caa91c676c0020f03c768077e20c76f34bca96616be104af3fbc8e7e78303958f3d
+%define sha512  %{name}=a30adc4f14c32051d2fc112eaa71de96f7ba614bd7f940ab5dd86365fe5e4df1399fa6fe6591cee903c8b914f2156050edef3139bafe38cd4a2b6424ba973e8e
 Source1:        %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -83,6 +85,10 @@ make test %{?_smp_mflags}
 %{_includedir}/%{name}/*
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.6.22-2
+- Release bump for SRP compliance
+* Thu Nov 09 2023 Mukul Sikka <msikka@vmware.com> 1.6.22-1
+- Version update to fix CVE-2023-46853 and CVE-2023-46852
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.6.15-3
 - Use systemd-rpm-macros for user creation
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.6.15-2

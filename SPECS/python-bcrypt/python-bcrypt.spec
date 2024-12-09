@@ -1,14 +1,16 @@
 Name:           python3-bcrypt
 Version:        3.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Good password hashing for your software and your servers.
-License:        Apache License, Version 2.0
 Group:          Development/Languages/Python
 Url:            https://github.com/pyca/bcrypt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0: https://github.com/pyca/bcrypt/archive/refs/tags/bcrypt-%{version}.tar.gz
 %define sha512  bcrypt=2f3b88bffaa9ff820aba6fb3143253b7936a1440ae93caff13cbdff58c1f8427f132cce60299cda523659b7026751a954b476857f2b9841cdd2a1a50c430a626
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -44,6 +46,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.2-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.2-1
 - Automatic Version Bump
 * Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1

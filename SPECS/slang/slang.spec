@@ -1,8 +1,7 @@
 Summary:    An interpreted language that may be embedded into an application to make the application extensible.
 Name:       slang
 Version:    2.3.2
-Release:    3%{?dist}
-License:    GNU General Public License
+Release:    4%{?dist}
 URL:        http://www.jedsoft.org/slang/index.html
 Group:      Development/Languages
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    http://www.jedsoft.org/releases/%{name}/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=35cdfe8af66dac62ee89cca60fa87ddbd02cae63b30d5c0e3786e77b1893c45697ace4ac7e82d9832b8a9ac342560bc35997674846c5022341481013e76f74b5
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  readline-devel
 
@@ -65,6 +67,8 @@ make check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.3.2-4
+- Release bump for SRP compliance
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.3.2-3
 - Bump release as a part of readline upgrade
 * Sun Jan 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.2-2

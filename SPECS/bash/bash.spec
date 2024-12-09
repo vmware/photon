@@ -1,8 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.2
-Release:        3%{?dist}
-License:        GPLv3
+Release:        6%{?dist}
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -10,6 +9,10 @@ Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
 %define sha512 %{name}=5647636223ba336bf33e0c65e516d8ebcf6932de8b44f37bc468eedb87579c628ad44213f78534beb10f47aebb9c6fa670cb0bed3b4e7717e5faf7e9a1ef81ae
+
+Source1: bash_completion
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0: enable-SYS_BASHRC-SSH_SOURCE_BASHRC.patch
 
@@ -53,7 +56,7 @@ The package contains bash doc files.
 %build
 %configure \
     "CFLAGS=-fPIC" \
-    --htmldir=%{_docdir}/%{name}-%{version} \
+    --htmldir=%{_defaultdocdir}/%{name}-%{version} \
     --without-bash-malloc \
     --with-installed-readline
 
@@ -65,6 +68,8 @@ ln -sv bash %{buildroot}%{_bindir}/sh
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}%{_sysconfdir}/profile.d
 install -vdm 755 %{buildroot}%{_sysconfdir}/skel
+install -vdm 755 %{buildroot}%{_datadir}/bash-completion
+install -m 0644 %{SOURCE1} %{buildroot}%{_datadir}/bash-completion
 rm %{buildroot}%{_libdir}/bash/Makefile.inc
 
 # Create dircolors
@@ -131,6 +136,20 @@ export LANG="${LANG:-C}"
 [ -n "$LC_IDENTIFICATION" ] && export LC_IDENTIFICATION
 
 # End /etc/profile.d/i18n.sh
+EOF
+
+# bash completion
+cat > %{buildroot}%{_sysconfdir}/profile.d/bash_completion.sh << "EOF"
+# check for interactive bash and only bash
+if [ -n "$BASH_VERSION" -a -n "$PS1" ]; then
+
+  # enable bash completion in interactive shells
+  if ! shopt -oq posix; then
+    if [ -f %{_datadir}/bash-completion/bash_completion ]; then
+      . %{_datadir}/bash-completion/bash_completion
+    fi
+  fi
+fi
 EOF
 
 cat > %{buildroot}%{_sysconfdir}/bash.bashrc << "EOF"
@@ -298,10 +317,10 @@ fi
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/%{name}/*
-%{_sysconfdir}/*
+%{_sysconfdir}/
+%{_datadir}/bash-completion/
 
 %files devel
-%defattr(-,root,root)
 %{_includedir}/%{name}/*
 %{_libdir}/pkgconfig/*
 
@@ -310,16 +329,21 @@ fi
 
 %files docs
 %defattr(-,root,root)
-%{_docdir}/%{name}-%{version}/*
-%{_docdir}/%{name}/*
+%{_defaultdocdir}/%{name}-%{version}/*
+%{_defaultdocdir}/%{name}/*
 %{_mandir}/*/*
 
 %changelog
-* Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.2-3
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.2-6
+- Release bump for SRP compliance
+* Tue Nov 19 2024 Alexey Makhalov <amakhalov@vmware.com> 5.2-5
+- Update bash_completion file
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.2-4
+- Remove standalone license exceptions
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 5.2-3
+- Bump version to generate SRP provenance file
+* Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.2-2
 - Remove umask.sh, have systemd wide common umask value
-* Mon May 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.2-2
-- Remove bash-completion related files
-- bash-completion is a new package now
 * Mon Jan 09 2023 Susant Sahani <ssahani@vmware.com> 5.2-1
 - Update version
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 5.1.16-2

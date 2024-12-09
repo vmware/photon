@@ -1,14 +1,16 @@
 Summary:        A collection of ASN.1-based protocols modules.
 Name:           python3-pyasn1-modules
 Version:        0.2.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pyasn1-modules
-License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pyasn1-modules-%{version}.tar.gz
 %define sha512  pyasn1-modules=fdfcaa065deffdd732deaa1fa30dec2fc4a90ffe15bd12de40636ce0212f447611096d2f4e652ed786b5c47544439e6a93721fabe121f3320f13965692a1ca5b
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -16,7 +18,7 @@ BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-pyasn1
 %endif
 Requires:       python3-pyasn1
@@ -52,6 +54,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.2.8-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.2.8-2
 - Update release to compile with python 3.11
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.2.8-1

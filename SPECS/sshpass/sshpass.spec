@@ -1,11 +1,13 @@
 Summary:        Noninteractive ssh password provider
 Name:           sshpass
 Version:        1.10
-Release:        1%{?dist}
-License:        GPLv2+
+Release:        2%{?dist}
 URL:            http://sourceforge.net/projects/sshpass/
 Source0:        http://downloads.sourceforge.net/project/sshpass/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=d0fbceb956baee79803fec8bd9a2e0d1e342cbc90fb8bb4baa5a01914f870393f43bd07b62aa1da208318b4971005b9bbccf0e926c590124de11a272169db81d
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          Applications/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -36,6 +38,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.10-2
+- Release bump for SRP compliance
 * Fri Sep 22 2023 Oliver Kurth <okurth@vmware.com> 1.10-1
 - update to 1.10
 - require openssh-clients instead of openssh

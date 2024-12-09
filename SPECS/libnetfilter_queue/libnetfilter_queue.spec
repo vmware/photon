@@ -2,14 +2,16 @@ Summary:      Provides API to packets queued by kernel packet filter
 Name:         libnetfilter_queue
 Version:      1.0.5
 Release:      4%{?dist}
-License:      GPLv2
 URL:          http://www.netfilter.org/projects/libnetfilter_queue/index.html
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
 Distribution: Photon
 
-Source0: http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=732a44b602e5efaa4f5582ea25ff8f5ec8f4dca5c0e725cd93fe2d441db80416b25c6018147be90acb262d7428eb5b21b3f7b5920e612d115061ec6a19d67f85
+Source0:      http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
+%define sha512  %{name}=732a44b602e5efaa4f5582ea25ff8f5ec8f4dca5c0e725cd93fe2d441db80416b25c6018147be90acb262d7428eb5b21b3f7b5920e612d115061ec6a19d67f85
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libmnl-devel
 BuildRequires:  libnfnetlink-devel
@@ -27,7 +29,6 @@ Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Requires:       libnfnetlink-devel
 Requires:       linux-api-headers
-Requires:       libmnl-devel
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -55,8 +56,8 @@ developing applications that use %{name}.
 %{_libdir}/*.so
 
 %changelog
-* Tue Sep 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0.5-4
-- Fix devel package requires
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.5-4
+- Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.5-3
 - Remove .la files
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 1.0.5-2

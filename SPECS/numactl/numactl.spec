@@ -1,8 +1,7 @@
 Summary:        NUMA support for Linux
 Name:           numactl
 Version:        2.0.16
-Release:        1%{?dist}
-License:        GPLv2
+Release:        2%{?dist}
 URL:            https://github.com/numactl/numactl
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/numactl/numactl/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=de89bd9f4a9be0e27b21d096aa17a554c209414b5d08b6a2dbd03f8f4830fe4fc5adc88fa8cb08ae1cf75884835dacbde5b6f5d31386244a2582924d2260fcb6
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %if 0%{?with_check}
 Patch0: 0001-numactl-fix-physcpubind-for-single-cpu.patch
@@ -19,7 +21,6 @@ Patch0: 0001-numactl-fix-physcpubind-for-single-cpu.patch
 Simple NUMA policy support. It consists of a numactl program to run other programs with a specific NUMA policy.
 
 %package -n libnuma
-License:        LGPLv2.1
 Summary:        Development libraries and header files for numactl
 Requires:       %{name} = %{version}-%{release}
 %description -n libnuma
@@ -68,6 +69,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.16-2
+- Release bump for SRP compliance
 * Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.16-1
 - Automatic Version Bump
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.14-3

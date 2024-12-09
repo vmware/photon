@@ -6,7 +6,6 @@ Summary:      Simple kernel loader which boots from a FAT filesystem
 Name:         syslinux
 Version:      6.04
 Release:      11%{?dist}
-License:      GPLv2+
 URL:          http://www.syslinux.org
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -20,6 +19,9 @@ Source1:        https://sourceforge.net/projects/libpng/files/libpng16/%{libpngv
 
 Source2:        https://www.zlib.net/zlib-%{zlibver}.tar.gz
 %define sha512  zlib=99f0e843f52290e6950cc328820c0f322a4d934a504f66c7caa76bd0cc17ece4bf0546424fc95135de85a2656fed5115abb835fd8d8a390d60ffaf946c8887ad
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Patch0:     0001-Add-install-all-target-to-top-side-of-HAVE_FIRMWARE.patch
 Patch1:     syslinux-6.04_pre1-fcommon.patch
@@ -91,8 +93,8 @@ rm %{buildroot}%{_bindir}/sha1pass
 %{_datadir}/%{name}/com32/*
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.04-11
-- Bump version as a part of util-linux upgrade
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 6.04-11
+- Release bump for SRP compliance
 * Fri Jun 16 2023 Srish Srinivasan <ssrish@vmware.com> 6.04-10
 - Update libpng and zlib source to the latest versions to fix multiple CVEs
 * Mon Apr 17 2023 Nitesh Kumar <kunitesh@vmware.com> 6.04-9

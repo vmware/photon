@@ -1,8 +1,7 @@
 Summary:        Library that Implements a typesafe callback system for standard C++.
 Name:           libsigc++
 Version:        3.2.0
-Release:        1%{?dist}
-License:        LGPLv2+
+Release:        2%{?dist}
 URL:            http://libsigc.sourceforge.net
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.gnome.org/pub/GNOME/sources/libsigc++/2.99/%{name}-%{version}.tar.xz
 %define sha512 libsigc=91315cecc79a1ad6ea165b66a13a5afd4e5bc101842f9d4c58811ea78536c07fc8821c51aa5110a032ed71c09f85790b3a02f2ad7fe8cc3aed6e03b2bafcd70c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  mm-common
 BuildRequires:  libxslt-devel
@@ -64,6 +66,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-2
+- Release bump for SRP compliance
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.0-1
 - Upgrade to v3.2.0
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.4-5

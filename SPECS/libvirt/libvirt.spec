@@ -1,15 +1,23 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
-Version:        8.10.0
-Release:        6%{?dist}
-License:        LGPL
+Version:        9.3.0
+Release:        10%{?dist}
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha512 %{name}=1d4006e909e185a89f9163e6d2309841f4086da65b9165c42eb512e2f6ae964749eeb72f74e86476768a09061e2e311cfcc31f4024b4ecbaba04cd3f5f5d849d
+%define sha512 %{name}=b9349dcd7798c76d75bb20afad67d6e676758cb201acaf7aed5109f0e91422b2bcca964a2f19aa8dc4fd0eca2923902474e16e3839bf8b15aca827028e88ddb7
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0:         CVE-2023-3750.patch
+Patch1:         CVE-2024-2494.patch
+Patch2:         CVE-2024-2496.patch
+Patch3:         CVE-2024-4418.patch
+Patch4:         CVE-2024-1441.patch
 
 BuildRequires:  audit-devel
 BuildRequires:  cyrus-sasl-devel
@@ -45,7 +53,7 @@ Requires:       libcap-ng
 Requires:       libnl
 Requires:       libpcap
 Requires:       libselinux
-Requires:       libssh2
+Requires:       libssh2 >= 1.11.0
 Requires:       libtirpc
 Requires:       libxml2
 Requires:       lvm2
@@ -77,7 +85,8 @@ This contains development tools and libraries for libvirt.
 %package        docs
 Summary:        libvirt docs
 Group:          Development/Tools
-Conflicts:      %{name} < 8.10.0-3
+
+Conflicts:     %{name} < 8.10.0-3
 
 %description    docs
 The contains libvirt package doc files.
@@ -168,49 +177,63 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_sbindir}/*
-%{_libdir}/%{name}*.so.*
-%{_libdir}/%{name}/connection-driver/*
-%{_libdir}/%{name}/lock-driver/lockd.so
-%{_libdir}/%{name}/storage-backend/*
-%{_libdir}/%{name}/storage-file/libvirt_storage_file_fs.so
+%{_libdir}/libvirt*.so.*
+%{_libdir}/libvirt/connection-driver/*
+%{_libdir}/libvirt/lock-driver/lockd.so
+%{_libdir}/libvirt/storage-backend/*
+%{_libdir}/libvirt/storage-file/libvirt_storage_file_fs.so
 %{_libdir}/sysctl.d/60-libvirtd.conf
-%{_unitdir}/*
-%{_libexecdir}/%{name}*
+%{_libdir}/systemd/system/*
+%{_libexecdir}/libvirt*
 %{_libexecdir}/virt-login-shell-helper
-%{_sysconfdir}/%{name}/nwfilter/
-%{_sysconfdir}/%{name}/qemu/networks/autostart/default.xml
-%{_sysconfdir}/%{name}/qemu/networks/default.xml
+%{_sysconfdir}/libvirt/nwfilter/
+%{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
+%{_sysconfdir}/libvirt/qemu/networks/default.xml
 %{_sysconfdir}/logrotate.d/*
 
-%config(noreplace)%{_sysconfdir}/%{name}/*.conf
-%config(noreplace)%{_sysconfdir}/sasl2/%{name}.conf
+%config(noreplace)%{_sysconfdir}/libvirt/*.conf
+%config(noreplace)%{_sysconfdir}/sasl2/libvirt.conf
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/%{name}/*
-%{_libdir}/%{name}*.so
-%{_libdir}/pkgconfig/%{name}*
+%{_includedir}/libvirt/*
+%{_libdir}/libvirt*.so
+%{_libdir}/pkgconfig/libvirt*
 
 %files docs
 %defattr(-,root,root)
-%{_docdir}/%{name}/*
+%{_docdir}/libvirt/*
 %{_datadir}/locale/*
-%{_datadir}/%{name}/test-screenshot.png
-%{_datadir}/%{name}/schemas/*.rng
+%{_datadir}/libvirt/test-screenshot.png
+%{_datadir}/libvirt/schemas/*.rng
 %{_datadir}/augeas/*
-%{_datadir}/%{name}/cpu_map/*
+%{_datadir}/libvirt/cpu_map/*
 %{_datadir}/polkit-1/*
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 8.10.0-6
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 8.10.0-5
-- Bump version as a part of libxml2 upgrade
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.10.0-4
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 9.3.0-10
+- Release bump for SRP compliance
+* Tue Sep 03 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 9.3.0-9
+- Version bump up to consume wireshark v4.2.7
+* Thu Jun 06 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.3.0-8
+- Fix CVE-2024-1441
+* Mon May 13 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.3.0-7
+- Fix CVE-2024-4418
+* Fri Apr 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.3.0-6
+- Fix CVE-2024-2494 and CVE-2024-2496
+* Mon Apr 01 2024 Anmol Jain <anmol.jain@broadcom.com> 9.3.0-5
+- Bump version as a part of wireshark upgrade
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.3.0-4
 - Bump version as a part of gnutls upgrade
-* Thu Jun 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.10.0-3
+* Thu Sep 07 2023 Harinadh D <hdommaraju@vmware.com> 9.3.0-3
+- version bump to use libssh2 1.11.0
+* Mon Jul 24 2023 Mukul Sikka <msikka@vmware.com> 9.3.0-2
+- Fix CVE-2023-3750
+* Tue Jun 06 2023 Mukul Sikka <msikka@vmware.com> 9.3.0-1
+- Version upgrade to v9.3.0
+* Fri Jun 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.10.0-3
 - Move doc files to docs sub package
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 8.10.0-2
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 8.10.0-2
 - Bump version as a part of libxml2 upgrade
 * Sat Jan 07 2023 Susant Sahani <ssahani@vmware.com> 8.10.0-1
 - Version Bump

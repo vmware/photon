@@ -1,0 +1,1 @@
+License: MIT AND HPND-Markus-Kuhn AND JSON

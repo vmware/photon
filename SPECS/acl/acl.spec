@@ -1,8 +1,7 @@
 Summary:        Access control list utilities
 Name:           acl
 Version:        2.3.1
-Release:        2%{?dist}
-License:        GPLv2+
+Release:        4%{?dist}
 Group:          System Environment/Base
 URL:            https://savannah.nongnu.org/projects/%{name}
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=f101e27058c959f4c412f475c3fc77a90d1ead8728701e4ce04ff08b34139d35e0e72278c9ac7622ba6054e81c0aeca066e09491b5f5666462e3866705a0e892
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       libacl = %{version}-%{release}
 
@@ -21,7 +23,6 @@ manipulating access control lists.
 
 %package -n libacl
 Summary:    Dynamic library for access control list support
-License:    LGPLv2+
 Group:      System Environment/Libraries
 Requires:   attr
 
@@ -32,7 +33,6 @@ control lists.
 
 %package -n libacl-devel
 Summary:    Files needed for building programs with libacl
-License:    LGPLv2+
 Group:      Development/Libraries
 Requires:   libacl = %{version}-%{release}
 Requires:   attr-devel
@@ -93,6 +93,10 @@ fi
 %{_libdir}/libacl.so.*
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.3.1-4
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.1-3
+- Release bump for SRP compliance
 * Mon Jul 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.3.1-2
 - Fix spec issues
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.1-1

@@ -1,8 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
 Version:        2.3.3
-Release:        6%{?dist}
-License:        MIT
+Release:        8%{?dist}
 URL:            https://libgd.github.io
 Group:          System/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/libgd/libgd/releases/download/gd-%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=aa49d4381d604a4360d556419d603df2ffd689a6dcc10f8e5e1d158ddaa3ab89912f6077ca77da4e370055074007971cf6d356ec9bf26dcf39bcff3208bc7e6c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
@@ -67,13 +69,17 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
-* Sat Sep 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.3.3-6
-- Fix devel package requires
-* Wed Sep 20 2023 Kuntal Nayak <nkuntal@vmware.com> 2.3.3-5
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.3-8
+- Release bump for SRP compliance
+* Wed Jul 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.3-7
+- Add libpng-devel to devel package requires
+* Wed Sep 20 2023 Kuntal Nayak <nkuntal@vmware.com> 2.3.3-6
 - Bump version as a part of libwebp upgrade
-* Fri Jul 28 2023 Kuntal Nayak <nkuntal@vmware.com> 2.3.3-4
+* Fri Jul 28 2023 Kuntal Nayak <nkuntal@vmware.com> 2.3.3-5
 - Bump version as a part of libwebp upgrade
-* Tue Jun 27 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.3-3
+* Tue Jul 04 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.3-4
+- Bump version as a part of libtiff upgrade
+* Fri May 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.3.3-3
 - Bump version as a part of libtiff upgrade
 * Tue Dec 13 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.3.3-2
 - Bump release as a part of libpng upgrade

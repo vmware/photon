@@ -1,8 +1,7 @@
 Summary:    A portable, high level programming interface to various calling conventions
 Name:       libffi
 Version:    3.4.2
-Release:    2%{?dist}
-License:    BSD
+Release:    3%{?dist}
 URL:        http://sourceware.org/libffi
 Group:      System Environment/GeneralLibraries
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://sourceware.org/pub/libffi/%{name}-%{version}.tar.gz
 %define sha512 %{name}=31bad35251bf5c0adb998c88ff065085ca6105cf22071b9bd4b5d5d69db4fadf16cadeec9baca944c4bb97b619b035bb8279de8794b922531fddeb0779eb7fb1
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Provides:   pkgconfig(libffi)
 
@@ -30,17 +32,26 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
+sed -e '/^includesdir/ s:$(libdir)/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:$(includedir):' \
+    -i include/Makefile.in
+
+sed -e '/^includedir/ s:${libdir}/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:@includedir@:' \
+    -e 's/^Cflags: -I${includedir}/Cflags:/' \
+    -i libffi.pc.in
+
 %configure \
     --disable-static
 
-%make_build
+make %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_mflags}
-rm -rf %{buildroot}%{_infodir}
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+install -D -m644 LICENSE %{buildroot}/usr/share/licenses/%{name}/LICENSE
+find %{buildroot}/%{_lib64dir} -name '*.la' -delete
+rm -rf %{buildroot}/%{_infodir}
 %{_fixperms} %{buildroot}/*
 
 %check
@@ -53,18 +64,20 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_lib64dir}/*.so.*
+%{_lib64dir}/*.so*
 
 %files devel
 %defattr(-,root,root)
-%{_lib64dir}/*.so
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
+%{_datadir}/licenses/libffi/LICENSE
 %{_mandir}/man3/*
 
 %changelog
-* Sat May 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.2-2
-- Fix file packaging
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4.2-3
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4.2-2
+- Release bump for SRP compliance
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4.2-1
 - Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3-1

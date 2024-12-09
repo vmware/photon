@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        3.1.2
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -11,7 +11,7 @@ Group:          Productivity/Security
 Source0: https://launchpad.net/%{name}/3.1/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=e4fa8e0985472c00d3b68044f4150659787cf15b384b901af32b5aba3f0b2839f33bfe0b0675bf8ea7a1f5727152756a276c75b1dec383a33b92b0a1b8615a11
 
-Patch0: 0001-fix-syslog-ng-profile.patch
+Patch0: 0001-apparmor-profile-fix-for-sbin.syslog-ng.patch
 
 BuildRequires: perl
 BuildRequires: python3-devel
@@ -193,6 +193,7 @@ done
 mv %{buildroot}/lib/* %{buildroot}%{_libdir}
 mv %{buildroot}/sbin/* %{buildroot}%{_sbindir}
 
+%if 0%{?with_check}
 %check
 pip3 install notify2 dbus-python psutil
 ln -sfv %{_bindir}/pyflakes %{_bindir}/pyflakes3
@@ -200,8 +201,9 @@ ln -sfv %{_bindir}/pyflakes %{_bindir}/pyflakes3
 for target in libraries/libapparmor \
               binutils \
               utils; do
-%make_build check -C ${target}
+make check %{?_smp_mflags} -C ${target}
 done
+%endif
 
 %post -n libapparmor
 /sbin/ldconfig
@@ -335,20 +337,22 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
-* Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.2-13
-- Bump version as a part of dbus upgrade
-* Fri Apr 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.1.2-12
-- Version Bump up to consume httpd v2.4.59
-* Wed Mar 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.2-11
-- sbin.syslog-ng profile fix
-* Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.1.2-10
+* Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 3.1.2-14
 - Bump version as a part of apr upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1.2-9
-- Bump version as a part of openssl upgrade
-* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-8
+* Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.1.2-13
+- Version Bump up to consume httpd v2.4.62
+* Tue Jul 09 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.1.2-12
+- Version Bump up to consume httpd v2.4.61
+* Fri Apr 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.1.2-11
+- Version Bump up to consume httpd v2.4.59
+* Mon Feb 26 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.1.2-10
+- Patching apparmor sbin.syslog-ng profile fix
+* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-9
 - Bump version as a part of httpd v2.4.58 upgrade
-* Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-7
+* Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-8
 - Bump version as a part of apr-util v1.6.3 upgrade
+* Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 3.1.2-7
+- Bump version as a part of apr version upgrade
 * Tue Apr 11 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 3.1.2-6
 - Added apparmor-parser dependency on apparmor-profiles
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-5

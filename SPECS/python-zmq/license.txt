@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND GPL-3.0-only AND BSD-3-Clause AND Apache-2.0 AND LGPL-2.0-or-later AND LGPL-3.0-or-later AND LGPL-3.0-only AND GPL-1.0-or-later AND LGPL-2.1-only AND CC-BY-SA-3.0

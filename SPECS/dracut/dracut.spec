@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        12%{?dist}
+Release:        9%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
@@ -23,7 +23,6 @@ Patch5: 0005-mkinitrd-verbose-fix.patch
 Patch6: 0006-dracut.sh-validate-instmods-calls.patch
 Patch7: 0007-feat-dracut.sh-support-multiple-config-dirs.patch
 Patch8: 0008-fix-dracut-systemd-rootfs-generator-cannot-write-out.patch
-Patch9: 0009-install-systemd-executor.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
@@ -44,7 +43,7 @@ Requires:       findutils
 Requires:       procps-ng
 Requires:       systemd
 Requires:       systemd-udev
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils >= 9.1-7
 
 %description
 dracut contains tools to create a bootable initramfs for 2.6 Linux kernels.
@@ -61,13 +60,14 @@ Requires: %{name} = %{version}-%{release}
 This package contains tools to assemble the local initrd and host configuration.
 
 %prep
-%autosetup -n %{name}-%{version} -p1
+%autosetup -p1
 
 %build
-%configure --systemdsystemunitdir=%{_unitdir} \
-           --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
-           --libdir=%{_libdir} \
-           --disable-documentation
+%configure \
+  --systemdsystemunitdir=%{_unitdir} \
+  --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
+  --libdir=%{_libdir} \
+  --disable-documentation
 
 %make_build
 
@@ -158,19 +158,14 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 059-12
-- Bump version as a part of util-linux upgrade
-* Wed Jan 03 2024 Susant Sahani <susant.sahani@broadcom.com> 059-11
-- Include systemd-executor if available
-* Tue Oct 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-10
+* Tue Oct 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-9
 - Add gzip, procps-ng, xz to requires
-* Thu Jul 27 2023 Piyush Gupta <gpiyush@vmware.com> 059-9
+* Thu Jul 27 2023 Piyush Gupta <gpiyush@vmware.com> 059-8
 - fix(dracut-systemd): rootfs-generator cannot write outside of generator dir
-* Mon Jul 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-8
+* Mon Jul 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-7
 - Fix a bug in finding installed kernel versions during mkinitrd
-* Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-7
+* Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-6
 - Code improvements in multiple conf dir support
-* Sat Apr 1 2023 Laszlo Gombos <laszlo.gombos@gmail.com> 059-6
 - Update wiki link and remove obsolete references
 * Wed Mar 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-5
 - Add systemd-udev to requires

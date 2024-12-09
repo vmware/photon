@@ -1,0 +1,85 @@
+From 9273b2d0e93e7355656cad3be3a1ca76489df483 Mon Sep 17 00:00:00 2001
+From: Aurelien Jarno <aurelien@aurel32.net>
+Date: Mon, 10 Oct 2022 00:39:33 +0200
+Subject: [PATCH 064/175] Avoid undefined behaviour in ibm128 implementation of
+ llroundl (BZ #29488)
+
+Detecting an overflow edge case depended on signed overflow of a long
+long. Replace the additions and the overflow checks by
+__builtin_add_overflow().
+
+Reviewed-by: Tulio Magno Quites Machado Filho <tuliom@linux.ibm.com>
+(cherry picked from commit 2b5478569e72ee4820a6e163d306690c9c0eaf5e)
+---
+ NEWS                                     |  2 ++
+ sysdeps/ieee754/ldbl-128ibm/s_llroundl.c | 21 +++++++++------------
+ 2 files changed, 11 insertions(+), 12 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index a6da588c8595c7ae5a8cb3d2dcb04404a2ae7413..8c60d3dc8dff8852fca383266b4132c2b5488ff9 100644
+--- a/NEWS
++++ b/NEWS
+@@ -33,6 +33,8 @@ The following bugs are resolved with this release:
+   [29485] Linux: Terminate subprocess on late failure in tst-pidfd
+   [29490] alpha: New __brk_call implementation is broken
+   [29463] math/test-float128-y1 fails on x86_64
++  [29488] test-ibm128-llround fails on ppc64el when built with gcc-12 and -O2
++    or higher
+   [29528] elf: Call __libc_early_init for reused namespaces
+   [29537] libc: [2.34 regression]: Alignment issue on m68k when using
+   [29539] libc: LD_TRACE_LOADED_OBJECTS changed how vDSO library are
+diff --git a/sysdeps/ieee754/ldbl-128ibm/s_llroundl.c b/sysdeps/ieee754/ldbl-128ibm/s_llroundl.c
+index d85154e73ac062e6c9ed403fe3cfc3889726ff72..d8c0de1faf29fd03180d6839e44818a8959cb045 100644
+--- a/sysdeps/ieee754/ldbl-128ibm/s_llroundl.c
++++ b/sysdeps/ieee754/ldbl-128ibm/s_llroundl.c
+@@ -66,38 +66,35 @@ __llroundl (long double x)
+       /* Peg at max/min values, assuming that the above conversions do so.
+          Strictly speaking, we can return anything for values that overflow,
+          but this is more useful.  */
+-      res = hi + lo;
+-
+-      /* This is just sign(hi) == sign(lo) && sign(res) != sign(hi).  */
+-      if (__glibc_unlikely (((~(hi ^ lo) & (res ^ hi)) < 0)))
++      if (__glibc_unlikely (__builtin_add_overflow (hi, lo, &res)))
+ 	goto overflow;
+ 
+       xh -= lo;
+       ldbl_canonicalize (&xh, &xl);
+ 
+-      hi = res;
+       if (xh > 0.5)
+ 	{
+-	  res += 1;
++	  if (__glibc_unlikely (__builtin_add_overflow (res, 1, &res)))
++	    goto overflow;
+ 	}
+       else if (xh == 0.5)
+ 	{
+ 	  if (xl > 0.0 || (xl == 0.0 && res >= 0))
+-	    res += 1;
++	    if (__glibc_unlikely (__builtin_add_overflow (res, 1, &res)))
++	      goto overflow;
+ 	}
+       else if (-xh > 0.5)
+ 	{
+-	  res -= 1;
++	  if (__glibc_unlikely (__builtin_add_overflow (res, -1, &res)))
++	    goto overflow;
+ 	}
+       else if (-xh == 0.5)
+ 	{
+ 	  if (xl < 0.0 || (xl == 0.0 && res <= 0))
+-	    res -= 1;
++	    if (__glibc_unlikely (__builtin_add_overflow (res, -1, &res)))
++	      goto overflow;
+ 	}
+ 
+-      if (__glibc_unlikely (((~(hi ^ (res - hi)) & (res ^ hi)) < 0)))
+-	goto overflow;
+-
+       return res;
+     }
+   else
+-- 
+2.35.6
+

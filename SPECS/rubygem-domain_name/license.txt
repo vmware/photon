@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND BSD-3-Clause AND MPL-2.0

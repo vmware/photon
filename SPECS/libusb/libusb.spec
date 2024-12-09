@@ -1,8 +1,7 @@
 Summary:        A library which allows userspace access to USB devices
 Name:           libusb
 Version:        1.0.26
-Release:        2%{?dist}
-License:        LGPLv2+
+Release:        3%{?dist}
 URL:            http://sourceforge.net/projects/libusb
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://downloads.sourceforge.net/libusb/libusb-%{version}.tar.bz2
 %define sha512  libusb=fcdb85c98f21639668693c2fd522814d440972d65883984c4ae53d0555bdbdb7e8c7a32199cd4b01113556a1eb5be7841b750cc73c9f6bda79bfe1af80914e71
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  systemd-devel
 
@@ -56,6 +58,8 @@ popd
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.0.26-3
+- Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.26-2
 - Remove .la files
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.26-1

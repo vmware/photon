@@ -1,8 +1,7 @@
 Summary:        GNU Parted manipulates partition tables
 Name:           parted
 Version:        3.5
-Release:        2%{?dist}
-License:        GPLv3+
+Release:        3%{?dist}
 URL:            https://www.gnu.org/software/parted
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/gnu/parted/%{name}-%{version}.tar.xz
 %define sha512 %{name}=87fc69e947de5f0b670ee5373a7cdf86180cd782f6d7280f970f217f73f55ee1b1b018563f48954f3a54fdde5974b33e07eee68c9ccdf08e621d3dc0e3ce126a
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         parted-freelocale.patch
 
@@ -65,6 +67,8 @@ sed -i '/utsname.h/a#include <sys/sysmacros.h>' libparted/arch/linux.c &&
 %exclude %{_infodir}/dir
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-3
+- Release bump for SRP compliance
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.5-2
 - Remove .la files
 - Introduce deve subpackage

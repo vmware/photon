@@ -1,0 +1,1 @@
+License: Zlib AND GPL-1.0-or-later AND Info-ZIP AND bzip2-1.0.6

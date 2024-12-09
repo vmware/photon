@@ -1,0 +1,42 @@
+From 88d5d70b1e89c0a449352286134946e26f7a498a Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Thu, 19 Oct 2023 09:29:42 +0200
+Subject: [PATCH 121/175] Revert "elf: Move l_init_called_next to old place of
+ l_text_end in link map"
+
+This reverts commit f441cb9a70fa3f55e9bbd615924879d692d21a6c.
+
+Reason for revert: Preserve internal ABI.
+---
+ include/link.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/include/link.h b/include/link.h
+index 8176e23da918f68fa4c0c4d074424cdd179c4ec6..87966e839701095e753e1aec0a9d395041cc6f06 100644
+--- a/include/link.h
++++ b/include/link.h
+@@ -256,10 +256,6 @@ struct link_map
+     /* End of the executable part of the mapping.  */
+     ElfW(Addr) l_text_end;
+ 
+-    /* Linked list of objects in reverse ELF constructor execution
+-       order.  Head of list is stored in _dl_init_called_list.  */
+-    struct link_map *l_init_called_next;
+-
+     /* Default array for 'l_scope'.  */
+     struct r_scope_elem *l_scope_mem[4];
+     /* Size of array allocated for 'l_scope'.  */
+@@ -282,6 +278,10 @@ struct link_map
+     /* List of object in order of the init and fini calls.  */
+     struct link_map **l_initfini;
+ 
++    /* Linked list of objects in reverse ELF constructor execution
++       order.  Head of list is stored in _dl_init_called_list.  */
++    struct link_map *l_init_called_next;
++
+     /* List of the dependencies introduced through symbol binding.  */
+     struct link_map_reldeps
+       {
+-- 
+2.35.6
+

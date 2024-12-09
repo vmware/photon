@@ -1,17 +1,19 @@
 %define cl_services cloud-config.service cloud-config.target cloud-final.service %{name}.service %{name}.target %{name}-local.service
 
 Name:           cloud-init
-Version:        24.1.4
-Release:        1%{?dist}
+Version:        24.3.1
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
-License:        GPLv3
 URL:            http://launchpad.net/cloud-init
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=374a5a10895f4f850457f3015687fb2c5b605841658b819244139fadf0075cd818cfdec5aeb8d0ca9ddbfa40de3b5070d2c4ffd0f6bcc306349b0db70edee2c7
+%define sha512 %{name}=01b798d67328ecd66229568233fb674f45c055ac469adb31a55a909b6b2c8fd1901a833accb66423923b8945210aa4dc6a0d61945787aabe414c01b501b1416d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: 0001-azure-ds.patch
 Patch1: 0002-Change-default-policy.patch
@@ -23,7 +25,11 @@ Patch4: 0005-test_vmware.py-fix-pkg-test-failure.patch
 %endif
 
 Patch5: 0006-Change-log-level-to-info-to-make-GOSC-regression-tes.patch
+Patch6: 0007-cli-retain-file-argument-as-main-cmd-arg.patch
+Patch7: 0008-No-single-process.patch
+Patch8: 0009-Show-stdout-logs-in-journal-only.patch
 
+BuildRequires: photon-release
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
 BuildRequires: dbus
@@ -76,6 +82,7 @@ Requires: python3-jsonschema
 Requires: python3-netifaces
 Requires: python3-pyserial
 Requires: dhcp-client
+Requires: openssl-c_rehash
 
 BuildArch: noarch
 
@@ -86,9 +93,6 @@ ssh keys and to let the user run various scripts.
 
 %prep
 %autosetup -p1
-
-find systemd -name "cloud*.service*" | \
-    xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
 %build
 %{py3_build}
@@ -139,19 +143,36 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/cloud/templates/*
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
-%{_unitdir}/*
+%{_unitdir}/*.service
+%{_unitdir}/*.target
+%{_unitdir}/*.socket
+%{_unitdir}/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 %{_systemdgeneratordir}/%{name}-generator
 %{_udevrulesdir}/66-azure-ephemeral.rules
 %{_datadir}/bash-completion/completions/%{name}
-%{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-%{name}-active.conf
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.3.1-2
+- Release bump for SRP compliance
+* Tue Sep 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.3.1-1
+- Upgrade to v24.3.1
+* Tue Aug 06 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.2-3
+- Bump up as part of python3-urllib3 update
+* Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.2-2
+- Bump version as a part of python3-oauthlib upgrade
+* Mon Jul 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.2-1
+- Upgrade to v24.2
+* Sat Jun 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.1.4-3
+- Fix cacert config
+* Wed May 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.1.4-2
+- Fix --file argument parsing bug
+- Refer: https://github.com/canonical/cloud-init/issues/5302
 * Wed May 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.1.4-1
 - Upgrade to v24.1.4
-* Wed Feb 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.4-3
-- Bump version as a part of dbus upgrade
-* Thu Jan 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.4-2
+* Thu Jan 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.4-3
 - Call home fix
+* Fri Dec 22 2023 Prashant S Chauhan <psinghchauha@vmware.com> 23.4-2
+- Bump up as part of python-certifi update
 * Thu Dec 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.4-1
 - Upgrade to v23.4
 * Tue Oct 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.3.2-1

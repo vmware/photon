@@ -1,17 +1,20 @@
 Summary:        Itstool-2.0.6
 Name:           itstool
 Version:        2.0.7
-Release:        3%{?dist}
-License:        GPLv3+
+Release:        5%{?dist}
 URL:            http://itstool.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=710c188e518a7eccbf9d31df59692fd6acc79430589a93ef4333f33f74440c311c340614ca74cc43191830567a98024d0981325ccd83a8fd9b75410d9dd91992
+Source0:        http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
+%define sha512  itstool=710c188e518a7eccbf9d31df59692fd6acc79430589a93ef4333f33f74440c311c340614ca74cc43191830567a98024d0981325ccd83a8fd9b75410d9dd91992
 
-BuildRequires:  docbook-xml
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires:  docbook-xml >= 4.5
+BuildRequires:  libxml2
 BuildRequires:  python3-libxml2
 BuildRequires:  python3-devel
 
@@ -32,10 +35,10 @@ to translate and how to chunk it into messages using the W3C Internationalizatio
 export PYTHON=%{python3}
 
 %configure
-%make_build
+make %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_mflags}
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -44,7 +47,11 @@ export PYTHON=%{python3}
 %{_mandir}/man1/*
 
 %changelog
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.7-3
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.7-5
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.7-4
+- Release bump for SRP compliance
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.7-3
 - Bump version as a part of libxml2 upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.7-2
 - Update release to compile with python 3.11

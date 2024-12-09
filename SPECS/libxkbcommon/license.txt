@@ -1,0 +1,1 @@
+License: MIT AND BSD-3-Clause AND MIT-open-group AND HPND-sell-variant AND GPL-2.0-only AND HPND

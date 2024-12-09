@@ -34,11 +34,13 @@
 Summary:        Common configuration and documentation for containers
 Name:           containers-common
 Version:        4
-Release:        1%{?dist}
-License:        ASL 2.0
+Release:        2%{?dist}
 URL:            https://github.com/containers
 Source0:        %{name}-%{version}.tar.gz
 %define sha512  %{name}=de6484566b3115a278bcbd1959ba31cd8ae58aed711cce90824bce50465d9553316651f6d5c883d681f0bc7b4aed7f2d608db5008c6b07fb128288353fff98e4
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          Tools/Podman
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -104,6 +106,8 @@ ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
 %{_datadir}/rhel/secrets/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 4-2
+- Release bump for SRP compliance
 * Fri Jun 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 4-1
 - Upgrade to v4
 * Sun Feb 12 2023 Piyush Gupta <gpiyush@vmware.com> 3-1

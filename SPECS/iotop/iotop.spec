@@ -1,14 +1,16 @@
-Summary:	Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity.
-Name:		iotop
-Version:	0.6
-Release:	8%{?dist}
-License:	GPLv2
-URL:		http://guichaz.free.fr/iotop/
-Group:		System/Monitoring
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://guichaz.free.fr/iotop/files/%{name}-%{version}.tar.gz
+Summary:        Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity.
+Name:           iotop
+Version:        0.6
+Release:        9%{?dist}
+URL:            http://guichaz.free.fr/iotop/
+Group:          System/Monitoring
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://guichaz.free.fr/iotop/files/%{name}-%{version}.tar.gz
 %define sha512 iotop=8ba9edcff5106534b5267fbbd8e2fc1ba79583d66e00b5271ac764ab5a0b3c48294465671b6c919d97f72db615e151b4f09b5776058731332cbb6219d97a9818
+
+Source1: license.txt
+%include %{SOURCE1}
 Patch0:         python3_compatibility_fix.patch
 BuildRequires:  python3-devel
 Requires:       python3
@@ -46,6 +48,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 0.6-9
+- Release bump for SRP compliance
 * Mon Nov 28 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.6-8
 - Update release to compile with python 3.11
 * Mon Oct 12 2020 Sharan Turlapati <sturlapati@vmware.com> 0.6-7
@@ -62,4 +66,4 @@ rm -rf %{buildroot}/*
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6-2
 - GA - Bump release of all rpms
 * Mon Nov 30 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.6-1
-- Initial build.	First version
+- Initial build.First version

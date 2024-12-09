@@ -1,8 +1,7 @@
 Summary:        DejaGnu test framework
 Name:           dejagnu
 Version:        1.6.2
-Release:        2%{?dist}
-License:        GPLv2+
+Release:        3%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -11,11 +10,16 @@ Distribution:   Photon
 Source0: https://ftp.gnu.org/pub/gnu/dejagnu/%{name}-%{version}.tar.gz
 %define sha512 %{name}=ae527ce245871d49b84773d0d14b1ea6b2316c88097eeb84091a3aa885ff007eeaa1cd9c5b002d94a956d218451079b5e170561ffa43a291d9d82283aa834042
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildArch:      noarch
 
 BuildRequires:  expect-devel
 
 Requires:       expect
+Requires(post): texinfo
+Requires(postun): texinfo
 
 %description
 DejaGnu is a framework for testing other programs. Its purpose is to provide
@@ -26,10 +30,10 @@ Each program can have multiple testsuites, all supported by a single test
 harness. DejaGnu is written in Expect, which in turn uses Tcl.
 
 %package devel
-Summary:    Headers and development libraries for dejagnu
-Group:      Development/Libraries
-Requires:   %{name} = %{version}-%{release}
-Requires:   expect-devel
+Summary: Headers and development libraries for dejagnu
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+Requires: expect-devel
 
 %description devel
 Headers and development libraries for dejagnu
@@ -38,11 +42,18 @@ Headers and development libraries for dejagnu
 %autosetup -p1
 
 %build
-%configure
-%make_build
+sh ./configure --prefix=%{_usr}
+
+make %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_mflags}
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+
+%post
+%{_bindir}/install-info --info-dir=%{_infodir} %{_infodir}/%{name}.info.gz
+
+%postun
+%{_bindir}/install-info --delete --info-dir=%{_infodir} %{_infodir}/%{name}.info.gz
 
 %files
 %defattr(-,root,root)
@@ -57,11 +68,13 @@ Headers and development libraries for dejagnu
 %{_includedir}/*
 
 %changelog
-* Sun Oct 15 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.2-2
-- Fix spec issues
-* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1
-- Automatic Version Bump
-* Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 1.6-1
-- Upgraded to version 1.6
-* Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.5.3-1
-- Initial build. First version
+*   Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.6.2-3
+-   Release bump for SRP compliance
+*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.2-2
+-   Release bump for SRP compliance
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1
+-   Automatic Version Bump
+*   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 1.6-1
+-   Upgraded to version 1.6
+*   Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.5.3-1
+-   Initial build. First version

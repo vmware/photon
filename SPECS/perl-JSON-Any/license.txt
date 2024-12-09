@@ -1,0 +1,1 @@
+License: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-1.0-only AND Artistic-1.0 AND (GPL-1.0-or-later OR Artistic-1.0)

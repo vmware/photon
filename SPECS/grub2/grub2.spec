@@ -5,8 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    12%{?dist}
-License:    GPLv3+
+Release:    17%{?dist}
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -18,6 +17,9 @@ Source0: https://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
 Source1: fedora.patches
 Source2: grub-sbat.csv.in
 
+Source3: license.txt
+%include %{SOURCE3}
+
 Patch0: Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
 
 #fedora patches
@@ -27,6 +29,14 @@ Patch0: Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
 Patch1501: 0001-grub2-emu-hide-menu-skip-retry.patch
 Patch1502: 0002-grub2-emu-fix-if-boot-as-partition.patch
 
+# CVE-2023-4692, CVE-2023-4693
+Patch1601: 0001-fs-ntfs-Fix-an-OOB-write-when-parsing-the-ATTRIBUTE_.patch
+Patch1602: 0002-fs-ntfs-Fix-an-OOB-read-when-reading-data-from-the-r.patch
+Patch1603: 0003-fs-ntfs-Fix-an-OOB-read-when-parsing-directory-entri.patch
+Patch1604: 0004-fs-ntfs-Fix-an-OOB-read-when-parsing-bitmaps-for-ind.patch
+Patch1605: 0005-fs-ntfs-Fix-an-OOB-read-when-parsing-a-volume-label.patch
+Patch1606: 0006-fs-ntfs-Make-code-more-readable.patch
+
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
 BuildRequires:  systemd-devel
@@ -35,6 +45,7 @@ BuildRequires:  bison
 Requires:   xz-libs
 Requires:   device-mapper-libs
 Requires:   systemd-udev
+Requires:   grub2-theme
 
 %description
 The GRUB package contains the GRand Unified Bootloader.
@@ -75,6 +86,7 @@ Group:      System Environment/Base
 %ifarch x86_64
 Requires:   shim-signed >= 15.4
 %endif
+Requires:   grub2-theme
 %description efi-image
 GRUB UEFI image signed by vendor key
 
@@ -185,7 +197,7 @@ EOF
 diff -sr install-for-efi/sbin install-for-pc/sbin
 diff -sr install-for-efi%{_bindir} install-for-pc%{_bindir}
 diff -sr install-for-efi%{_sysconfdir} install-for-pc%{_sysconfdir}
-diff -sr install-for-efi%{_datadir} install-for-pc%{_datadir}
+diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %endif
 %endif
 
@@ -205,8 +217,8 @@ diff -sr install-for-efi%{_datadir} install-for-pc%{_datadir}
 %{_sysconfdir}/grub.d/README
 %{_sbindir}/*
 %{_bindir}/*
-%{_datadir}/bash-completion/completions/grub
-%{_datadir}/grub/*
+%{_datarootdir}/bash-completion/completions/grub
+%{_datarootdir}/grub/*
 %{_sysconfdir}/sysconfig/grub
 %{_sysconfdir}/default/grub
 %ghost %config(noreplace) /boot/%{name}/grub.cfg
@@ -237,12 +249,24 @@ diff -sr install-for-efi%{_datadir} install-for-pc%{_datadir}
 
 %files lang
 %defattr(-,root,root)
-%{_datadir}/locale/*
+%{_datarootdir}/locale/*
 
 %changelog
-* Thu Aug 31 2023 Ajay Kaher <akaher@vmware.com> 2.06-12
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.06-17
+- Release bump for SRP compliance
+* Wed Mar 06 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-16
+- Sync fedora grub patches to latest
+- Update grub sbat to gen 4 since the NFTS CVEs are in place.
+* Fri Mar 01 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 2.06-15
+- Adding requires 'grub2-theme' so that boot menu screen
+- doesn't comeup scrambled.
+* Sun Feb 04 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-14
+- Fix CVE-2024-1048
+* Wed Oct 25 2023 Ajay Kaher <akaher@vmware.com> 2.06-13
+- Fix for CVE-2023-4692, CVE-2023-4693
+* Mon Jun 12 2023 Ajay Kaher <akaher@vmware.com> 2.06-12
 - Fix path issues if /boot is mounted to boot partition
-* Thu Aug 31 2023 Ajay Kaher <akaher@vmware.com> 2.06-11
+* Mon Jun 12 2023 Ajay Kaher <akaher@vmware.com> 2.06-11
 - Add grub2-emu sub pkg
 * Tue Mar 28 2023 Piyush Gupta <gpiyush@vmware.com> 2.06-10
 - Remove verification for font files during secure boot.

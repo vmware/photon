@@ -9,9 +9,8 @@ Name:       open-sans-fonts
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
 Version:    1.10
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Open Sans is a humanist sans-serif typeface designed by Steve Matteson
-License:    ASL 2.0
 URL:        http://www.google.com/fonts/specimen/Open+Sans
 Group:      System Utility
 Vendor:     VMware, Inc.
@@ -23,6 +22,9 @@ Source0: %{name}-%{version}.tar.xz
 %define sha512 %{name}=7e49f5ec6eeb6f7c95ca28ec9ebf170b126e1d1e07bc42a15029374ecb594756a7cf130d1da435f28df37e1385e183ccc07f08dd0f0dd468b830cdccd33c0b71
 
 Source1: %{name}-fontconfig.conf
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildArch: noarch
 
@@ -63,5 +65,7 @@ rm -rf %{buildroot}/*
 %{_fontconfig_templatedir}/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10-2
+- Release bump for SRP compliance
 * Thu Jun 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10-1
 - Initial version, needed by chromium.

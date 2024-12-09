@@ -11,8 +11,7 @@
 Summary:        Command-line editing and history capabilities
 Name:           readline
 Version:        8.2
-Release:        2%{?dist}
-License:        GPLv3+
+Release:        4%{?dist}
 URL:            http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -25,6 +24,9 @@ Source0: http://ftp.gnu.org/gnu/readline/%{name}-%{version}.tar.gz
 Source1: http://ftp.gnu.org/gnu/readline/%{name}-%{bootstrap_major_version}.tar.gz
 %define sha512 readline-%{bootstrap_major_version}=18243189d39bf0d4c8a76cddcce75243c1bae8824c686e9b6ba352667607e5b10c5feb79372a1093c1c388d821841670702e940df12eae94bcebdeed90047870
 %endif
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  ncurses-devel
 
@@ -83,9 +85,9 @@ pushd %{name}-%{major_version}
 %make_install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libreadline.so) %{buildroot}%{_libdir}/libreadline.so
-ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libhistory.so) %{buildroot}%{_libdir}/libhistory.so
-install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{version}
-install -v -m644 doc/*.{ps,pdf,html,dvi} %{buildroot}%{_docdir}/%{name}-%{version}
+ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libhistory.so ) %{buildroot}%{_libdir}/libhistory.so
+install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+install -v -m644 doc/*.{ps,pdf,html,dvi} %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 rm -rf %{buildroot}%{_infodir}
 popd
 
@@ -156,7 +158,11 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/readline.3.gz
 
 %changelog
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 8.2-2
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.2-4
+- Release bump for SRP compliance
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 8.2-3
+- Bump version to generate SRP provenance file
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.2-2
 - Bump version as a part of ncurses upgrade to v6.4
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2-1
 - Upgrade to v8.2

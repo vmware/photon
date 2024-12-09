@@ -1,8 +1,7 @@
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        5.0
-Release:        4%{?dist}
-License:        Apache License
+Release:        5%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
 Source1:        VMWARE-RPM-GPG-KEY
@@ -14,6 +13,9 @@ Source6:        photon-debuginfo.repo
 Source7:        photon-release.repo
 Source8:        photon-srpms.repo
 Source9:        photon-extras.repo
+
+Source10: license.txt
+%include %{SOURCE10}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Requires:       photon-release
@@ -58,6 +60,8 @@ rm -rf %{buildroot}
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*   Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-5
+-   Release bump for SRP compliance
 *   Tue Jul 18 2023 Piyush Gupta <gpiyush@vmware.com> 5.0-4
 -   Add photon-extras.repo.
 *   Fri Mar 24 2023 Tapas Kundu <tkundu@vmware.com> 5.0-3

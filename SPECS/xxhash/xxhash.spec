@@ -1,8 +1,7 @@
 Name:       xxhash
 Version:    0.8.1
-Release:    1%{?dist}
+Release:    3%{?dist}
 Summary:    Extremely fast hash algorithm
-License:    BSD and GPLv2+
 URL:        http://www.xxhash.com
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    https://github.com/Cyan4973/xxHash/archive/v%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=12feedd6a1859ef55e27218dbd6dcceccbb5a4da34cd80240d2f7d44cd246c7afdeb59830c2d5b90189bb5159293532208bf5bb622250102e12d6e1bad14a193
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -25,7 +27,6 @@ platforms (little / big endian).
 
 %package libs
 Summary:    Extremely fast hash algorithm - library
-License:    BSD
 
 %description libs
 xxHash is an Extremely fast Hash algorithm, running at RAM speed
@@ -36,7 +37,6 @@ platforms (little / big endian).
 
 %package devel
 Summary:    Extremely fast hash algorithm - development files
-License:    BSD
 Requires:   %{name} = %{version}-%{release}
 
 %description devel
@@ -85,5 +85,9 @@ make test-xxhsum-c %{?_smp_mflags}
 %{_libdir}/pkgconfig/libxxhash.pc
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 0.8.1-3
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.1-2
+- Release bump for SRP compliance
 * Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.8.1-1
 - Initial version. Needed for rsync

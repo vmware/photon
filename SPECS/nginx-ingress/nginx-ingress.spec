@@ -4,11 +4,13 @@
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
 Version:        2.4.2
-Release:        8%{?dist}
-License:        Apache-2.0
+Release:        14%{?dist}
 URL:            https://github.com/nginxinc/kubernetes-ingress
 Source0:        https://github.com/nginxinc/kubernetes-ingress/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  nginx-ingress=1d2415b73afab9c3338e2cfa717bae6e12f7bbd98f8a20606e274b09c3e4724e56fff0acdc261215ca95107e175489fef4aba9df6e3f9cb5b72d9f98859ae7d9
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -56,6 +58,18 @@ install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
 %{_datadir}/%{name}/docker/nginx.*
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.4.2-14
+- Release bump for SRP compliance
+* Fri Nov 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4.2-13
+- Bump up as part of docker upgrade
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.2-12
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.2-11
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 2.4.2-10
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 2.4.2-9
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.2-8
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.2-7
@@ -64,7 +78,7 @@ install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.2-5
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.2-4
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.2-4
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.4.2-3
 - Bump up version to compile with new go

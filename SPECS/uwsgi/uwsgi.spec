@@ -1,8 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.21
-Release:        18%{?dist}
-License:        GPLv2 with exceptions
+Release:        19%{?dist}
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,11 +9,15 @@ Url:            https://github.com/unbit/uwsgi
 
 Source0: http://projects.unbit.it/downloads/%{name}-%{version}.tar.gz
 %define sha512 %{name}=36a9c1b87a4c3d08482b9045d2227f56b006acb53f38ddf1b510880ae5fc24c0177a077338ec8af3ef0b8f8e220bc4fc7f8311dab8066e13cbcbb616f736c795
-
 Source1: photon.ini
 Source2: %{name}.service
 Source3: %{name}.ini
 Source4: %{name}.sysusers
+
+Source5: license.txt
+%include %{SOURCE5}
+
+Patch0: CVE-2023-27522.patch
 
 BuildRequires: python3-devel
 BuildRequires: jansson-devel
@@ -94,7 +97,7 @@ Requires:       %{name} = %{version}-%{release}
 This package contains support for Python 3 applications via the WSGI protocol.
 
 %prep
-%autosetup
+%autosetup -p1
 cp -p %{SOURCE1} buildconf/
 
 %build
@@ -235,28 +238,30 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
-* Fri Apr 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-18
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.0.21-19
+- Release bump for SRP compliance
+* Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-18
+- Version Bump up to consume httpd v2.4.62
+* Tue Jul 09 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-17
+- Version Bump up to consume httpd v2.4.61
+* Fri Apr 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-16
 - Version Bump up to consume httpd v2.4.59
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.21-17
-- Bump version as a part of util-linux upgrade
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.0.21-16
-- Bump version as a part of libxml2 upgrade
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-15
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-15
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.0.21-14
-- Bump version as a part of libxml2 upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.21-13
-- Bump version as a part of openssl upgrade
-* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.21-12
+* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.21-14
 - Bump version as a part of httpd v2.4.58 upgrade
-* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.21-11
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.21-13
 - Bump version as a part of openldap v2.6.4 upgrade
-* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 2.0.21-10
+* Tue Aug 29 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.21-12
+- Fix CVE-2023-27522.
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 2.0.21-11
 - Resolving systemd-rpm-macros for group creation
-* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 2.0.21-9
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 2.0.21-10
 - Bump version as a part of krb5 upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.21-8
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.21-9
 - Bump version as a part of libxml2 upgrade
+* Thu Apr 13 2023 Harinadh D <hdommaraju@vmware.com> 2.0.21-8
+- version bump to use curl 8.0.1
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 2.0.21-7
 - Bump version as a part of httpd v2.4.56 upgrade
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 2.0.21-6

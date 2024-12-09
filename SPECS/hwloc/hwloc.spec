@@ -1,14 +1,18 @@
 Summary:        Portable Hardware Locality
 Name:           hwloc
 Version:        2.8.0
-Release:        1%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        BSD
 Url:            http://www.open-mpi.org/projects/hwloc
 Group:          Applications/Utilities
 Source0:        https://github.com/open-mpi/hwloc/archive/%{name}-%{version}.tar.gz
 %define sha512  hwloc=a6bd694f7d8903b0bf165c6db57413fceb5119e6078e1aee75268752d8a6f818dcd006dc58e9f55a4a4d89ecc9fa76d613f35f891d1fb65e8d8221afd3fe8202
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0: CVE-2022-47022.patch
 
 %description
 The Portable Hardware Locality (hwloc) software package provides a portable abstraction (across OS, versions, architectures, ...)
@@ -30,7 +34,7 @@ Requires:       %{name} = %{version}-%{release}
 Documentation for hwloc
 
 %prep
-%autosetup -n %{name}-%{name}-%{version}
+%autosetup -p1 -n %{name}-%{name}-%{version}
 
 %build
 sh ./autogen.sh
@@ -94,6 +98,10 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.8.0-3
+- Release bump for SRP compliance
+* Wed Aug 30 2023 Kuntal Nayak <nkuntal@vmware.com> 2.8.0-2
+- Fix for CVE-2022-47022
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 2.8.0-1
 - Automatic Version Bump
 * Fri May 20 2022 Gerrit Photon <photon-checkins@vmware.com> 2.7.1-1

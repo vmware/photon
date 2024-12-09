@@ -1,8 +1,7 @@
 Summary:        GUI library.
 Name:           gtk3
 Version:        3.23.3
-Release:        9%{?dist}
-License:        LGPLv2+
+Release:        10%{?dist}
 URL:            http://www.gtk.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.gnome.org/pub/gnome/sources/gtk/3.23/gtk+-%{version}.tar.xz
 %define sha512 gtk+-3=c4d519735d0292e1e503e2dfdf764f9a5b039a77d055ba4d8b98e9acd0451a2f9f4b92ec4051722f234e652f895a2712a5e56d1387a52ea583c4bf6ef346403c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  meson >= 0.50
 BuildRequires:  cmake
@@ -160,17 +162,19 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/gtk-3.0/
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.23.3-9
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.23.3-8
-- Bump version as a part of libxml2 upgrade
-* Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 3.23.3-7
+* Thu Dec 12 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.23.3-10
+- Release bump for SRP compliance
+* Fri Dec 08 2023 Shivani Agarwal <shivania2@vmware.com> 3.23.3-9
+- Bump version as part of gst-plugins-bad
+* Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 3.23.3-8
 - Version bump as a part of cups upgrade
+* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.23.3-7
+- Bump version as a part of cups upgrade
 * Wed Jun 21 2023 Kuntal Nayak <nkuntal@vmware.com> 3.23.3-6
 - Bump version as a part of libXi upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 3.23.3-5
 - Bump version as a part of libX11 upgrade
-* Thu Apr 20 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.23.3-4
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.23.3-4
 - Bump version as a part of libxml2 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.23.3-3
 - Bump version as a part of freetype2 upgrade

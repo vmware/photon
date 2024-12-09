@@ -12,8 +12,7 @@
 Summary:        A sidecar process for managing HAProxy.
 Name:           haproxy-%{repo}
 Version:        2.7.1
-Release:        12%{?dist}
-License:        Apache License 2.0
+Release:        15%{?dist}
 URL:            https://github.com/haproxytech/%{repo}
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -21,6 +20,9 @@ Distribution:   Photon
 
 Source0: https://github.com/haproxytech/%{name}-%{version}.tar.gz
 %define sha512 %{name}=f534e6a6622e09cfe505201317f9a6237df6bf347758b844c92266fb9606d493fc43bdb11f6bd16e63372caf1fb3642c6c944805a5c1e7e5791433b64a73dacc
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: go
 BuildRequires: ca-certificates
@@ -42,7 +44,7 @@ and provides API endpoints for managing HAProxy.
 # - the work-around https://github.com/aws/amazon-ssm-agent/issues/268
 %define build_id %(head -c20 /dev/urandom|od -An -tx1|tr -d '[:space:]')
 %define ldflags_for_build_id -s -w -B 0x%{build_id} -extldflags=-Wl,-z,now,-z,relro,-z,defs
-%define ldflags_for_build_metadata -X main.GitRepo=%{SOURCE0} -X main.GitTag=v%{version} -X main.GitCommit=%{commit} -X main.GitDirty= -X main.BuildTime=%{build_date}
+%define ldflags_for_build_metadata -X main.GitRepo=%{Source0} -X main.GitTag=v%{version} -X main.GitCommit=%{commit} -X main.GitDirty= -X main.BuildTime=%{build_date}
 %define ldflags %{ldflags_for_build_id} %{ldflags_for_build_metadata}
 export CGO_ENABLED=0
 go build -gcflags "%{gcflags}" -ldflags "%{ldflags}" -o %{cmd} ./cmd/%{cmd}/
@@ -58,21 +60,27 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/haproxy/%{cmd}
 
 %changelog
-* Thu Dec 14 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-12
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.7.1-15
+- Release bump for SRP compliance
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.1-14
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 2.7.1-13
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 2.7.1-12
+- Bump version as a part of go upgrade
+* Thu Dec 14 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-11
 - Bump up version to compile with new go
-* Fri Dec 08 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.1-11
+* Fri Dec 08 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.1-10
 - Version bump up to use haproxy v2.8.2
-* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-10
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-9
 - Bump up version to compile with new go
-* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-9
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-8
 - Bump up version to compile with new go
-* Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.1-8
-- Fix a source0 mishap while building
 * Mon Aug 21 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.1-7
 - Version bump up to use haproxy v2.7.10
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-6
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-5
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-5
 - Bump up version to compile with new go
 * Thu May 18 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.1-4
 - Version bump up to use haproxy v2.7.3

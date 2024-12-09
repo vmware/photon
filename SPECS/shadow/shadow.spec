@@ -1,9 +1,8 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        6%{?dist}
+Release:        9%{?dist}
 URL:            https://github.com/shadow-maint/shadow
-License:        BSD
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -23,13 +22,18 @@ Source9: system-auth
 Source10: system-password
 Source11: system-session
 Source12: useradd
+Source13: license.txt
+%include %{SOURCE13}
 
-Patch0:         CVE-2023-29383.patch
-Patch1:         CVE-2023-29383.1.patch
-Patch2:         CVE-2023-4641.patch
+Patch0: 0001-remove-group-from-deliverables.patch
+Patch1: 0002-login.defs-config-changes.patch
+Patch2: CVE-2023-29383.patch
+Patch3: CVE-2023-29383.1.patch
+Patch4: CVE-2023-4641.patch
 
 BuildRequires: cracklib-devel
 BuildRequires: Linux-PAM-devel
+BuildRequires: libxcrypt-devel
 
 Requires: cracklib
 Requires: Linux-PAM
@@ -68,57 +72,31 @@ Development libraries and headers for %{name}.
 
 %package        libs
 Summary:        Libraries needed by %{name}.
+Requires:       libxcrypt
 
 %description    libs
 Libraries needed by %{name}.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
-sed -i 's/groups$(EXEEXT) //' src/Makefile.in
-find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
-sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
-    -e 's@/var/spool/mail@/var/mail@' etc/login.defs
-
-sed -i 's@DICTPATH.*@DICTPATH\t/usr/share/cracklib/pw_dict@' \
-    etc/login.defs
+%autosetup -p1
 
 %build
 %configure \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --with-libpam \
     --with-libcrack \
-    --with-group-name-max-length=32
+    --with-group-name-max-length=32 \
+    --with-yescrypt
 
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
+
 mkdir -p %{buildroot}%{_sysconfdir}/default
 cp %{SOURCE12} %{buildroot}%{_sysconfdir}/default
-# Disable usergroups. Use "users" group by default (see /usr/sbin/useradd)
-# for all nonroot users.
-sed -i 's/USERGROUPS_ENAB.*/USERGROUPS_ENAB no/' %{buildroot}%{_sysconfdir}/login.defs
-cp etc/{limits,login.access} %{buildroot}%{_sysconfdir}
-for FUNCTION in FAIL_DELAY \
-                FAILLOG_ENAB \
-                LASTLOG_ENAB \
-                MAIL_CHECK_ENAB \
-                OBSCURE_CHECKS_ENAB \
-                PORTTIME_CHECKS_ENAB \
-                QUOTAS_ENAB \
-                CONSOLE MOTD_FILE \
-                FTMP_FILE NOLOGINS_FILE \
-                ENV_HZ PASS_MIN_LEN \
-                SU_WHEEL_ONLY \
-                CRACKLIB_DICTPATH \
-                PASS_CHANGE_TRIES \
-                PASS_ALWAYS_WARN \
-                CHFN_AUTH ENCRYPT_METHOD \
-                ENVIRON_FILE; do
-  sed -i "s/^${FUNCTION}/# &/" %{buildroot}%{_sysconfdir}/login.defs
-done
 
-sed -i "s/^PASS_MAX_DAYS.*/PASS_MAX_DAYS    90/" %{buildroot}%{_sysconfdir}/login.defs
+cp etc/{limits,login.access} %{buildroot}%{_sysconfdir}
 
 install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pam.d/
 install -vm644 %{SOURCE2} %{buildroot}%{_sysconfdir}/pam.d/
@@ -142,10 +120,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %find_lang %{name}
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %post
 /sbin/ldconfig
@@ -208,12 +184,18 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
-* Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.13-6
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-9
+- Release bump for SRP compliance
+* Sun Dec 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-8
+- Use sha512 backend for system password backend
+* Wed Nov 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-7
+- Enable yescrypt
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-6
+- Release bump for SRP compliance
+* Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.13-5
 - Use pam_umask.so to set system-wide umask
-* Thu Dec 21 2023 Srish Srinivasan <ssrish@vmware.com> 4.13-5
+* Sat Dec 16 2023 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.13-4
 - Patched CVE-2023-29383, CVE-2023-4641
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.13-4
-- Bump version as a part of openssl upgrade
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.13-3
 - Exclude passwd from main package
 * Mon Jan 02 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.13-2

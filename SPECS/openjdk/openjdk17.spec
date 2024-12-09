@@ -4,16 +4,18 @@
 
 Summary:    OpenJDK
 Name:       openjdk17
-Version:    17.0.8
+Version:    17.0.13
 Release:    2%{?dist}
-License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-5.tar.gz
-%define sha512 jdk-17=af6ae3759dda8e7612b8860ccc9c69df260ffa18c80fd73ca71737854aa926442c02e1f56d7bd39dc6ec7f24095a47fc1e448bdcf6f0531ad8bbf403056c0dec
+Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
+%define sha512 jdk-17=6f2220b3b0b9ab4441968d487858449f0e58400bfbbf8cc322b6c9393ab44869ea27285bed1022ac531f0a9eec5b7d6a07db4f7e78b094bb5ca8cedd5f40711a
+
+Source1: license-openjdk17.txt
+%include %{SOURCE1}
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -28,21 +30,26 @@ BuildRequires: freetype2-devel
 BuildRequires: glib-devel
 BuildRequires: harfbuzz-devel
 BuildRequires: elfutils-libelf-devel
+BuildRequires: icu icu-devel
+BuildRequires: cups cups-devel
+BuildRequires: libXtst libXtst-devel libXi libXi-devel
+BuildRequires: alsa-lib alsa-lib-devel util-macros
+BuildRequires: xcb-proto libXdmcp libXdmcp-devel libXau-devel
+BuildRequires: xtrans libxcb-devel proto libxcb libXau
+BuildRequires: libX11 libX11-devel libXext libXext-devel
+BuildRequires: libXt libXt-devel libXrender libXrender-devel
+BuildRequires: libXrandr libXrandr-devel
 
 Requires: chkconfig
 Requires(postun): chkconfig
 
 Requires: %{name}-jre = %{version}-%{release}
 
+Obsoletes: openjdk <= %{version}
+
 AutoReqProv: no
 
-%ifarch x86_64
-%define ExtraBuildRequires icu-devel, cups, cups-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, libX11, libX11-devel, libXext, libXext-devel, libXt, libXt-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel, openjdk17
-%endif
-
-%ifarch aarch64
-%define ExtraBuildRequires icu-devel, cups, cups-devel, openjdk17, libXtst, libXtst-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, libX11, libX11-devel, libXext, libXext-devel, libXt, libXt-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel
-%endif
+%define ExtraBuildRequires openjdk17
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
@@ -57,7 +64,7 @@ Requires:       libstdc++
 Requires:       libgcc
 Requires:       zlib
 
-Conflicts:      %{name} < 17.0.8-1%{?dist}
+Conflicts:      %{name} < 17.0.8-4%{?dist}
 
 %description    jre
 %{summary}
@@ -65,6 +72,7 @@ Conflicts:      %{name} < 17.0.8-1%{?dist}
 %package        doc
 Summary:        Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
+Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
 
 %description    doc
@@ -73,13 +81,16 @@ It contains the documentation and demo applications for openjdk
 %package        src
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
+Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
+
+Provides:       jre = %{version}
 
 %description    src
 This package provides the runtime library class sources.
 
 %prep
-%autosetup -p1 -n jdk17u-jdk-%{version}-5
+%autosetup -p1 -n jdk17u-jdk-%{version}-ga
 
 %build
 chmod a+x ./configur*
@@ -231,16 +242,26 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
-* Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 17.0.8-2
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 17.0.13-2
+- Release bump for SRP compliance
+* Tue Oct 29 2024 Tapas Kundu <tapas.kundu@broadcom.com> 17.0.13-1
+- Update to version 17.0.13
+* Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.0.8-7
+- Cleanup Extra BuildRequires
+* Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 17.0.8-6
 - Version bump as a part of cups upgrade
-* Wed Aug 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.8-1
+* Mon Sep 04 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.8-5
+- Add provides java for jre subpackage
+* Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.8-4
 - Add jre subpackage
 - Change alternatives accordingly
+* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 17.0.8-3
 - Bump version as a part of cups upgrade
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.6-5
-- Bump version as a part of elfutils upgrade
-* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 17.0.6-4
-- Bump version as a part of cups upgrade
+* Tue Jun 27 2023 Kuntal Nayak <nkuntal@vmware.com> 17.0.8-2
+- Version upgrade for CVE-2016-7945 fix
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 17.0.8-1
+- Update to jdk-17.0.8-5 to fix CVE-2023-21937, CVE-2023-21938, CVE-2023-21930, CVE-2023-21968, CVE-2023-21967,
+- CVE-2023-21939, CVE-2022-21360, CVE-2023-21843, CVE-2023-21835, CVE-2023-21954
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 17.0.6-3
 - Bump version as a part of freetype2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.6-2

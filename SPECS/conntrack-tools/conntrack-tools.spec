@@ -1,8 +1,7 @@
 Summary:        Connection tracking userspace tools for Linux.
 Name:           conntrack-tools
 Version:        1.4.7
-Release:        2%{?dist}
-License:        GPLv2
+Release:        4%{?dist}
 URL:            http://conntrack-tools.netfilter.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -14,6 +13,9 @@ Source0: http://netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
 Source1:        conntrackd.conf
 
 Source2:        conntrackd.service
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires: gcc
 BuildRequires: systemd-devel
@@ -87,6 +89,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.4.7-4
+- Release bump for SRP compliance
+* Fri Jun 14 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.7-3
+- Fix conntrackd.service failure
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.7-2
 - Bump version as a part of libtirpc upgrade
 * Tue Nov 01 2022 Susant Sahani <ssahani@vmware.com.com> 1.4.7-1

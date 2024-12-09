@@ -2,16 +2,15 @@
 
 Summary:    Package manager
 Name:       rpm
-Version:    4.19.0
-Release:    7%{?dist}
-License:    GPLv2+
+Version:    4.18.2
+Release:    5%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=84801954eab8390af86388c96e0a446b0924bc3791dabcb8641dbaa53586ca852400c0b53c969c06e716949aa36ce337de7d6ba1ffc09eca31900af250f205cb
+%define sha512 %{name}=1544efef04190299ac988f52c4f6e58ba9ff8943fe1f3e1353fb2bf4d73248935dac65a8a73b32c5d2d96f6875ce25c5196a78ed645d9504465cf1e89e0a268a
 
 Source1:    macros
 Source2:    macros.php
@@ -19,19 +18,20 @@ Source3:    macros.perl
 Source4:    macros.vpath
 Source5:    macros.ldconfig
 
-Patch0:     silence-warning.patch
-Patch1:     sync-buf-cache.patch
-Patch2:     wait-for-lock.patch
-Patch3:     migrate-rpmdb.patch
-Patch4:     dilute-user-group-requires.patch
-Patch5:     0001-Add-RPMTAG_VCS-to-optionalTags.patch
+Source6: license.txt
+%include %{SOURCE6}
+
+Patch0: 0001-This-patch-fixes-a-warning-that-is-shown-upon-every-.patch
+Patch1: 0002-commit-buffer-cache-to-disk-after-ending-rpm-transac.patch
+Patch2: 0003-If-rpm-is-not-triggered-from-tty-rpm-transactions-wo.patch
+Patch3: 0004-Migrate-rpmdb-to-usr-lib-sysimage-rpm.patch
+Patch4: 0005-Fix-a-race-condition-in-brp-strip.patch
+Patch5: 0006-Disable-removing-exec-permission-from-shared-objects.patch
 
 Requires:   bash
 Requires:   zstd-libs
 Requires:   %{name}-libs = %{version}-%{release}
 
-BuildRequires:  cmake
-BuildRequires:  photon-release
 BuildRequires:  pandoc-bin
 BuildRequires:  systemd-devel
 BuildRequires:  dbus-devel >= 1.3
@@ -43,12 +43,12 @@ BuildRequires:  elfutils-devel
 BuildRequires:  libcap-devel
 BuildRequires:  xz-devel
 BuildRequires:  file-devel
+BuildRequires:  python3-devel
 BuildRequires:  openssl-devel
 BuildRequires:  zstd-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  debugedit
 BuildRequires:  dwz
-BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 
 %description
@@ -124,8 +124,6 @@ Requires: file
 Requires: %{name}-devel = %{version}-%{release}
 Requires: %{name}-build-libs = %{version}-%{release}
 
-Conflicts: systemd < 254.1-6%{?dist}
-
 %description build
 Binaries, libraries and scripts to build rpms.
 
@@ -158,66 +156,43 @@ Requires: systemd
 This plugin blocks systemd from entering idle, sleep or shutdown while an rpm
 transaction is running using the systemd-inhibit mechanism.
 
-%package plugin-selinux
-Summary: Rpm plugin for SELinux functionality
-Requires: %{name}-libs = %{version}-%{release}
-Requires: libselinux
-
-%description plugin-selinux
-%{summary}.
-
-%package plugin-dbus-announce
-Summary: Rpm plugin for announcing transactions on the DBUS
-Requires: %{name}-libs = %{version}-%{release}
-
-%description plugin-dbus-announce
-The plugin announces basic information about rpm transactions to the
-system DBUS - like packages installed or removed.  Other programs can
-subscribe to the signals to get notified when packages on the system
-change.
-
-%package apidocs
-Summary:    API documentation for RPM libraries
-BuildArch:  noarch
-Requires:   %{name} = %{version}-%{release}
-
-%description apidocs
-This package contains API documentation for developing applications
-that will manipulate RPM packages and databases.
-
 %prep
 %autosetup -p1
 
 %build
-%{cmake} \
-    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-    -DENABLE_BDB_RO=ON \
-    -DENABLE_SQLITE=ON \
-    -DRPM_VENDOR="unknown" \
-    -DWITH_OPENSSL=ON \
-    -DWITH_SELINUX=ON \
-    -DENABLE_PYTHON=ON \
-    -DWITH_INTERNAL_OPENPGP=ON \
-    -DENABLE_PLUGINS=ON \
-    -DWITH_CAP=ON \
-    -DWITH_ACL=OFF \
-    -DWITH_ARCHIVE=OFF \
-    -DWITH_AUDIT=OFF \
-    -DENABLE_NDB=OFF \
-    -DENABLE_OPENMP=OFF
+# pass -L opts to gcc as well to prioritize it over standard libs
+sed -i 's/-Wl,-L//g' python/setup.py.in
+sed -i '/library_dirs/d' python/setup.py.in
+sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
-pushd %{__cmake_builddir}
+sh autogen.sh --noconfigure
+
+%configure \
+  CPPFLAGS='-I%{_includedir}/nspr -I%{_includedir}/nss -DLUA_COMPAT_APIINTCASTS' \
+    --disable-dependency-tracking \
+    --disable-static \
+    --enable-python \
+    --with-cap \
+    --with-vendor=vmware \
+    --disable-silent-rules \
+    --enable-zstd \
+    --without-archive \
+    --enable-sqlite \
+    --enable-bdb-ro \
+    --enable-plugins \
+    --with-crypto=openssl \
+    --enable-nls
+
 %make_build
-popd
 
 %install
-pushd %{__cmake_builddir}
-
 %make_install %{?_smp_mflags}
+find %{buildroot} -name '*.la' -delete
 
-ln -sfrv %{_bindir}/find-debuginfo %{buildroot}%{rpmhome}/find-debuginfo.sh
+ln -sfrv %{buildroot}%{_bindir}/find-debuginfo \
+       %{buildroot}%{rpmhome}/find-debuginfo.sh
+
 %find_lang %{name}
-popd
 
 # System macros and prefix
 install -dm644 %{buildroot}%{_sysconfdir}/%{name}
@@ -228,7 +203,7 @@ install -vm644 %{SOURCE4} %{buildroot}%{_rpmmacrodir}
 install -vm644 %{SOURCE5} %{buildroot}%{_rpmmacrodir}
 
 %check
-make check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
+%make_build check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
 %make_build clean
 
 %post libs -p /sbin/ldconfig
@@ -239,12 +214,6 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%license COPYING
-%doc %{_docdir}/%{name}/CONTRIBUTING.md
-%doc %{_docdir}/%{name}/COPYING
-%doc %{_docdir}/%{name}/INSTALL
-%doc %{_docdir}/%{name}/README
-%doc %{_docdir}/%{name}/CREDITS
 %{_bindir}/%{name}
 %{_bindir}/gendiff
 %{_bindir}/rpm2cpio
@@ -252,7 +221,6 @@ rm -rf %{buildroot}
 %{_bindir}/rpmkeys
 %{_bindir}/rpmquery
 %{_bindir}/rpmverify
-%{_bindir}/rpmsort
 %{rpmhome}/rpmpopt-*
 %{rpmhome}/%{name}.daily
 %{rpmhome}/%{name}.log
@@ -260,22 +228,32 @@ rm -rf %{buildroot}
 %{rpmhome}/rpm2cpio.sh
 %{rpmhome}/tgpg
 %{rpmhome}/platform
-%{rpmhome}/sysusers.sh
-%exclude %{_libdir}/%{name}-plugins/syslog.so
-%exclude %{_libdir}/%{name}-plugins/prioreset.so
-%exclude %{_libdir}/%{name}-plugins/fapolicyd.so
+%{_libdir}/%{name}-plugins/ima.so
+%{_libdir}/%{name}-plugins/syslog.so
+%{_libdir}/%{name}-plugins/prioreset.so
+%{_libdir}/%{name}-plugins/fsverity.so
+%exclude %{_libdir}/%{name}-plugins/dbus_announce.so
+
+%{_sysconfdir}/dbus-1/system.d/org.%{name}.conf
 
 %{_mandir}/man8/rpm2cpio.8.gz
 %{_mandir}/man8/rpmdb.8.gz
 %{_mandir}/man8/rpmgraph.8.gz
 %{_mandir}/man8/rpmkeys.8.gz
-%{_mandir}/man8/rpmsort.8.gz
 %{_mandir}/man8/%{name}-misc.8.gz
+%{_mandir}/man8/%{name}-plugin-ima.8.gz
 %{_mandir}/man8/%{name}-plugin-prioreset.8.gz
 %{_mandir}/man8/%{name}-plugin-syslog.8.gz
 %{_mandir}/man8/%{name}-plugins.8.gz
 %{_mandir}/man8/%{name}.8.gz
-%{_mandir}/man8/rpm-plugin-fapolicyd.8.gz
+%{_mandir}/man8/%{name}-plugin-dbus-announce.8.gz
+%exclude %{_mandir}/fr/man8/*.gz
+%exclude %{_mandir}/ja/man8/*.gz
+%exclude %{_mandir}/ko/man8/*.gz
+%exclude %{_mandir}/pl/man1/*.gz
+%exclude %{_mandir}/pl/man8/*.gz
+%exclude %{_mandir}/ru/man8/*.gz
+%exclude %{_mandir}/sk/man8/*.gz
 
 %files libs
 %defattr(-,root,root)
@@ -315,6 +293,7 @@ rm -rf %{buildroot}
 %{rpmhome}/check-rpaths
 %{rpmhome}/check-rpaths-worker
 %{rpmhome}/elfdeps
+%{rpmhome}/mkinstalldirs
 %{rpmhome}/pkgconfigdeps.sh
 %{rpmhome}/ocamldeps.sh
 %{rpmhome}/*.prov
@@ -337,59 +316,35 @@ rm -rf %{buildroot}
 %{_libdir}/librpm.so
 %{_libdir}/librpmsign.so
 %{_libdir}/librpmbuild.so
-%{_libdir}/cmake/%{name}/*
 
-%files lang -f %{__cmake_builddir}/%{name}.lang
+%files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %files -n python3-%{name}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
-%{_docdir}/%{name}/examples/*.py
 
 %files plugin-systemd-inhibit
 %defattr(-,root,root)
 %{_libdir}/%{name}-plugins/systemd_inhibit.so
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
-%files plugin-dbus-announce
-%defattr(-,root,root)
-%{_libdir}/%{name}-plugins/dbus_announce.so
-%{_mandir}/man8/%{name}-plugin-dbus-announce.8*
-%{_datadir}/dbus-1/system.d/org.%{name}.conf
-
-%files plugin-selinux
-%{_libdir}/%{name}-plugins/selinux.so
-%{_mandir}/man8/%{name}-plugin-selinux.8*
-
-%files apidocs
-%defattr(-,root,root)
-%doc %{_docdir}/%{name}/API/
-%{_docdir}/%{name}/*.md
-
 %changelog
-* Wed Jun 19 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.19.0-7
-- adding build numbers to RPMTAG_VCS
-* Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-6
-- Bump version as a part of dbus upgrade
-* Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-5
-- Bump version as a part of nss upgrade
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.19.0-4
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.18.2-5
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-4
+- Release bump for SRP compliance
+* Tue Sep 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-3
+- Remove brp-elfperms script
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.18.2-2
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.19.0-3
-- Bump version as a part of openssl upgrade
-* Sat Nov 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.19.0-2
-- Move sysusers.sh out of rpm-build to rpm
-* Sun Sep 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.19.0-1
-- Upgrade to v4.19.0
-* Fri Aug 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-16
+* Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.2-1
+- Upgrade to v4.18.2
+- Drop setup.py-based Python build
+* Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-14
 - Add build-libs, sign-libs sub packages
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-15
-- Bump version as a part of elfutils upgrade
-* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-14
+* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-13
 - Bump version as a part of lua upgrade
-* Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-13
-- Bump version as a part of nss upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-12
 - Bump version as a part of zstd upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.0-11

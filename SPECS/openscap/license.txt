@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND MIT AND BSD-3-Clause AND W3C-19980720 AND LGPL-2.0-only AND Apache-2.0 AND LGPL-2.0-or-later AND (GPL-2.0-only OR MIT) AND GPL-1.0-or-later AND GPL-2.0-or-later AND LGPL-2.1-or-later AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND LGPL-2.1-only

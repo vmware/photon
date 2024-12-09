@@ -1,8 +1,7 @@
 Summary:        X11 XFIXES extension.
 Name:           libXfixes
 Version:        5.0.3
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 URL:            http://www.x.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=72d5ee496e5c0520c95ef6bbb52deff1ee4c29792f11aa17aeb25c8ec5eb992ca502de040c77ad95835d1b1432f315b6cb7a3308b434847c28b9c2c6f9d1ac10
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  proto
 BuildRequires:  libXext-devel
@@ -58,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.0.3-3
+- Release bump for SRP compliance
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 5.0.3-2
 - Bump version as a part of libX11 upgrade
 * Thu Aug 18 2022 Shivani Agarwal <shivania2@vmware.com> 5.0.3-1

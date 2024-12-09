@@ -1,14 +1,16 @@
 Summary:        Python PAM module using ctypes, py3/py2
 Name:           python3-pam
 Version:        2.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/python-pam/
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        python-pam-%{version}.tar.gz
 %define sha512  python-pam=a33279d47de07b32c5c5cadb0f666ea18b407de061cb80e0b1d6cd7370fd70ff14af8d2802a2e4dbdaaf102efd6cac83c4f2c5673615b3d174edca20a4f8b00a
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 BuildRequires:  python3
@@ -42,6 +44,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.2-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.2-1
 - Automatic Version Bump
 * Thu Feb 18 2021 Tapas Kundu <tkundu@vmware.com> 1.8.4-1

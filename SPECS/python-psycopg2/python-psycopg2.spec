@@ -5,7 +5,6 @@ Name:           python3-psycopg2
 Version:        2.9.3
 Release:        5%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
-License:        LGPL with exceptions or ZPL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,12 +12,15 @@ Distribution:   Photon
 Source0: https://files.pythonhosted.org/packages/source/p/psycopg2/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=048184d1d162a371fc0fba711448a6fa8a6aac193421f4484c7f7b91c39065d5b632fa34fc15a901eca055d597302b1f9e38330b248ed0e4653dcdc544b0d660
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-BuildRequires:  postgresql16-devel
+BuildRequires:  postgresql15-devel
 
 Requires:   python3
-Requires:   (postgresql16 or postgresql15 or postgresql14 or postgresql13)
+Requires:   (postgresql15 or postgresql14 or postgresql13)
 
 %description
 Psycopg is the most popular PostgreSQL database adapter for the Python programming language. Its main features are the complete implementation of the Python DB API 2.0 specification and the thread safety (several threads can share the same connection). It was designed for heavily multi-threaded applications that create and destroy lots of cursors and make a large number of concurrent “INSERT”s or “UPDATE”s.
@@ -36,6 +38,7 @@ Psycopg 2 is both Unicode and Python 3 friendly.
 %install
 %py3_install
 
+%if 0%{?with_check}
 %check
 %define user postgres
 %define data_dir "/home/%{user}/data"
@@ -64,14 +67,15 @@ su - %{user} -c 'pg_ctl -D %{data_dir} stop'
 rm -rf %{data_dir}
 userdel -rf %{user}
 groupdel -f %{user}
+%endif
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-* Thu Dec 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.3-5
-- Build with pgsql16
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.3-5
+- Release bump for SRP compliance
 * Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.3-4
 - Remove pgsql-12 dependency
 * Thu Jan 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.3-3

@@ -4,8 +4,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
 Version:        22.10.0
-Release:        3%{?dist}
-License:        MIT
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,6 +12,9 @@ Url:            https://twistedmatrix.com
 
 Source0: https://pypi.python.org/packages/source/T/Twisted/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=36adac424f6776c7db870d2291713da41054e974dfac0dbc1cbd55f76915a92073bcb25d4593b82e229d154d5297c67e7ba82d808921d206c97c8024bd5431a8
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: no_packet.patch
 Patch1: 0001-sslverify.py-use-fips-compatible-sha512-instead-of-m.patch
@@ -87,6 +89,8 @@ rm -rf %{buildroot}
 %{_bindir}/cftp*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-4
+- Release bump for SRP compliance
 * Mon May 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.10.0-3
 - Use fips allowed hashing algorithms in sslverify
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.10.0-2

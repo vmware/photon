@@ -7,49 +7,51 @@
 %define _tmpdir     %{_sharedstatedir}/%{name}
 %define nginx_user  nginx
 
-Summary:    A Fast and Scalable Web Platform by Extending NGINX with Lua
-Name:       openresty
-Version:    1.21.4.1
-Release:    9%{?dist}
-License:    BSD
-URL:        https://openresty.org/en
-Group:      Applications/System
-Vendor:     VMware, Inc.
+Summary:        A Fast and Scalable Web Platform by Extending NGINX with Lua
+Name:           openresty
+Version:        1.21.4.3
+Release:        2%{?dist}
+URL:            https://openresty.org/en
+Group:          Applications/System
+Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://openresty.org/download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a388d9219b709c8e8042c65137db0ad3abd2094473f3cc65f389ab00d5884368e4e797466e0068787c8601be563da5f852d4294bd81bda47b329a22d76ccccb2
+Source0:        https://openresty.org/download/%{name}-%{version}.tar.gz
+%define sha512  %{name}=dd0f36a367177a2d03378abf7995bad466965705fb549fa1f2a3bfc1cf5ba153de2849f789a718e1a4abb85996fde90f79f7f7571677ec32ee596aa076261c52
 
-Source1: %{name}.service
-Source2: %{name}.sh
-Source3: %{name}.sysusers
+Source1:        %{name}.service
+Source2:        %{name}.sh
+Source3:        %{name}.sysusers
 
-AutoReqProv: no
+Source4: license.txt
+%include %{SOURCE4}
+Patch0:         CVE-2022-41741-and-CVE-2022-41742-nginx.patch
 
-Conflicts: nginx
+AutoReqProv:    no
 
-BuildRequires: gcc
-BuildRequires: openssl-devel
-BuildRequires: pcre-devel
-BuildRequires: readline-devel
-BuildRequires: zlib-devel
-BuildRequires: systemd-devel
-BuildRequires: perl
-BuildRequires: lua-devel
+Conflicts:      nginx
 
-Requires: openssl
-Requires: pcre
-Requires: zlib
-Requires: systemd
-Requires: perl
-Requires: lua
+BuildRequires:  gcc
+BuildRequires:  openssl-devel
+BuildRequires:  pcre-devel
+BuildRequires:  readline-devel
+BuildRequires:  zlib-devel
+BuildRequires:  systemd-devel
+BuildRequires:  perl
+BuildRequires:  lua-devel
 
-Requires(pre): systemd-rpm-macros
-Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+Requires:       openssl
+Requires:       pcre
+Requires:       zlib
+Requires:       systemd
+Requires:       perl
+Requires:       lua
+
+Requires(pre):  systemd-rpm-macros
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
-This package contains the core server for OpenResty. Built for production
-uses.
+This package contains the core server for OpenResty. Built for production uses.
 
 OpenResty is a full-fledged web platform by integrating the standard Nginx
 core, LuaJIT, many carefully written Lua libraries, lots of high quality
@@ -65,12 +67,12 @@ nginx C modules and Lua modules and construct extremely high-performance
 web applications that are capable to handle 10K ~ 1000K+ connections in
 a single box.
 
-%package resty
+%package        resty
 Summary:        OpenResty command-line utility, resty
 Requires:       %{name} = %{version}-%{release}
 BuildArch:      noarch
 
-%description resty
+%description    resty
 This package contains the "resty" command-line utility for OpenResty, which
 runs OpenResty Lua scripts on the terminal using a headless NGINX behind the
 scene.
@@ -81,7 +83,7 @@ core, LuaJIT, many carefully written Lua libraries, lots of high quality
 designed to help developers easily build scalable web applications, web
 services, and dynamic web gateways.
 
-%package opm
+%package        opm
 Summary:        OpenResty Package Manager
 Group:          Development/Tools
 Requires:       %{name} = %{version}-%{release}
@@ -91,10 +93,10 @@ Requires:       tar
 Requires:       gzip
 BuildArch:      noarch
 
-%description opm
+%description    opm
 This package provides the client side tool, opm, for OpenResty Pakcage Manager (OPM).
 
-%package doc
+%package        doc
 Summary:        OpenResty documentation tool, restydoc
 Requires:       perl
 Requires:       groff
@@ -103,7 +105,7 @@ Provides:       restydoc-index
 Provides:       md2pod.pl
 BuildArch:      noarch
 
-%description doc
+%description    doc
 This package contains the official OpenResty documentation index and
 the "restydoc" command-line utility for viewing it.
 
@@ -223,10 +225,14 @@ rm -rf %{buildroot}
 %{orprefix}/resty.index
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21.4.1-9
-- Bump version as a part of openssl upgrade
-* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.21.4.1-8
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.21.4.3-2
+- Release bump for SRP compliance
+* Wed Jan 03 2024 Michelle Wang <michellew@vmware.com> 1.21.4.3-1
+- Upgrade to 1.21.4.3 for CVE-2023-44487
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.21.4.1-9
 - Resolving systemd-rpm-macros for group creation
+* Mon Jul 17 2023 Michelle Wang <michellew@vmware.com> 1.21.4.1-8
+- fix for CVE-2022-41741 and CVE-2022-41742
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21.4.1-7
 - Bump version as a part of lua upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21.4.1-6

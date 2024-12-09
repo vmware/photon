@@ -1,15 +1,17 @@
 Summary:        Programs for compressing and decompressing files
 Name:           xz
 Version:        5.4.0
-Release:        1%{?dist}
+Release:        3%{?dist}
 URL:            http://tukaani.org/xz
-License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://tukaani.org/xz/%{name}-%{version}.tar.xz
 %define sha512  %{name}=29b2cd25bb5b234b329ffe9547692d2c29be393db9d8d4ce70a66dfdaebd54433e79a89d80c57e58cd4559c3c68b9845507d5fedf3eec1c528a81e3d9ddbd811
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       xz-libs = %{version}-%{release}
 
@@ -41,16 +43,17 @@ This package contains minimal set of shared xz libraries.
 
 %build
 %configure \
-    --docdir=%{_docdir}/%{name}-%{version} \
+    --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-static \
     --disable-silent-rules
 
 %make_build
 
 %install
-%make_install pkgconfigdir=%{_libdir}/pkgconfig %{?_smp_mflags}
+make DESTDIR=%{buildroot} pkgconfigdir=%{_libdir}/pkgconfig install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/{%{_bindir},%{_lib}}
 ln -svf "../..%{_lib}/$(readlink %{buildroot}%{_libdir}/liblzma.so)" %{buildroot}%{_libdir}/liblzma.so
+find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %find_lang %{name}
 
@@ -95,7 +98,7 @@ make %{?_smp_mflags} check
 %{_includedir}/lzma/*.h
 %{_libdir}/pkgconfig/liblzma.pc
 %{_libdir}/liblzma.so
-%{_docdir}/%{name}-%{version}/*
+%{_defaultdocdir}/%{name}-%{version}/*
 
 %files libs
 %{_libdir}/liblzma.so.*
@@ -104,6 +107,10 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.4.0-3
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.4.0-2
+- Release bump for SRP compliance
 * Thu Dec 22 2022 Oliver Kurth <okurth@vmware.com> 5.4.0-1
 - Automatic Version Bump
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.2.5-2

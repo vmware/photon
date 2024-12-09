@@ -1,0 +1,1 @@
+License: CC-BY-SA-4.0 AND LGPL-2.0-or-later AND (CC0-1.0 OR Apache-2.0) AND GPL-2.0-only AND GPL-2.0-or-later AND CC0-1.0 AND LGPL-2.1-only AND LGPL-2.1-or-later AND CC-BY-SA-3.0

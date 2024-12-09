@@ -1,0 +1,271 @@
+From b59fe45a88cc689d4434f02ec7544b0b8d25086d Mon Sep 17 00:00:00 2001
+From: Joe Lawrence <joe.lawrence@redhat.com>
+Date: Mon, 16 Jan 2023 09:33:55 -0500
+Subject: [PATCH 1/3] create-diff-object: support x86 NOP-padded functions
+
+commit 3e54c63b175b68cf48654c119e62bda398d0c018 upstream
+
+Kernel v6.2+ commit bea75b33895f ("x86/Kconfig: Introduce function
+padding") added 16 bytes of NOP padding in front of each function.
+
+For objects built with --function-sections, this means that function
+symbols no longer sit at the beginning of their respective ELF sections,
+but 16 bytes offset.
+
+In the same release, kernel v6.2+ commit 9f2899fe36a6 ("objtool: Add
+option to generate prefix symbols") adds ELF function symbols with
+prefix "__pfx_" to indicate the start of a function, inclusive of
+NOP-padding.
+
+For example:
+
+  $ objdump -Dr -j.text.cmdline_proc_show fs/proc/cmdline.o
+  ...
+  Disassembly of section .text.cmdline_proc_show:
+
+  0000000000000000 <__pfx_cmdline_proc_show>:
+     0:   90                      nop
+     1:   90                      nop
+     2:   90                      nop
+     3:   90                      nop
+     4:   90                      nop
+     5:   90                      nop
+     6:   90                      nop
+     7:   90                      nop
+     8:   90                      nop
+     9:   90                      nop
+     a:   90                      nop
+     b:   90                      nop
+     c:   90                      nop
+     d:   90                      nop
+     e:   90                      nop
+     f:   90                      nop
+
+  0000000000000010 <cmdline_proc_show>:
+    10:   e8 00 00 00 00          callq  15 <cmdline_proc_show+0x5>
+                          11: R_X86_64_PLT32      __fentry__-0x4
+    15:   55                      push   %rbp
+    16:   48 8b 35 00 00 00 00    mov    0x0(%rip),%rsi        # 1d <cmdline_proc_show+0xd>
+                          19: R_X86_64_PC32       saved_command_line-0x4
+    1d:   48 89 fd                mov    %rdi,%rbp
+    20:   e8 00 00 00 00          callq  25 <cmdline_proc_show+0x15>
+                          21: R_X86_64_PLT32      seq_puts-0x4
+    25:   48 89 ef                mov    %rbp,%rdi
+    28:   be 0a 00 00 00          mov    $0xa,%esi
+    2d:   e8 00 00 00 00          callq  32 <cmdline_proc_show+0x22>
+                          2e: R_X86_64_PLT32      seq_putc-0x4
+    32:   31 c0                   xor    %eax,%eax
+    34:   5d                      pop    %rbp
+    35:   e9 00 00 00 00          jmpq   3a <cmdline_proc_show+0x2a>
+                          36: R_X86_64_PLT32      __x86_return_thunk-0x4
+
+Kpatch-build needs to gracefully handle NOP-padding when it is present.
+At the same time, it should include "__pfx_<function>" symbols when
+their respective functions change, but not treat prefix such functions
+as first-class functions.
+
+This also adds support for CONFIG_CFI_CLANG, which also creates prefixed
+symbols with the name "__cfi_<function>".
+
+Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+[ Brennan : Applied to v0.9.8 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ kpatch-build/create-diff-object.c | 23 ++++++--
+ kpatch-build/kpatch-elf.c         | 92 +++++++++++++++++++++++++++++++
+ kpatch-build/kpatch-elf.h         |  2 +
+ 3 files changed, 111 insertions(+), 6 deletions(-)
+
+diff --git a/kpatch-build/create-diff-object.c b/kpatch-build/create-diff-object.c
+index 0aa8190..7c61ef5 100644
+--- a/kpatch-build/create-diff-object.c
++++ b/kpatch-build/create-diff-object.c
+@@ -236,14 +236,21 @@ static struct rela *toc_rela(const struct rela *rela)
+ static void kpatch_bundle_symbols(struct kpatch_elf *kelf)
+ {
+ 	struct symbol *sym;
++	unsigned int expected_offset;
+ 
+ 	list_for_each_entry(sym, &kelf->symbols, list) {
+ 		if (is_bundleable(sym)) {
+-			if (sym->sym.st_value != 0 &&
+-			    !is_gcc6_localentry_bundled_sym(kelf, sym)) {
+-				ERROR("symbol %s at offset %lu within section %s, expected 0",
++			if (sym->pfx)
++				expected_offset = 16;
++			else if (is_gcc6_localentry_bundled_sym(kelf, sym))
++				expected_offset = 8;
++			else
++				expected_offset = 0;
++
++			if (sym->sym.st_value != expected_offset) {
++				ERROR("symbol %s at offset %lu within section %s, expected %u",
+ 				      sym->name, sym->sym.st_value,
+-				      sym->sec->name);
++				      sym->sec->name, expected_offset);
+ 			}
+ 
+ 			sym->sec->sym = sym;
+@@ -1913,6 +1920,8 @@ static int kpatch_include_changed_functions(struct kpatch_elf *kelf)
+ 		    sym->type == STT_FUNC) {
+ 			changed_nr++;
+ 			kpatch_include_symbol(sym);
++			if (sym->pfx)
++				kpatch_include_symbol(sym->pfx);
+ 		}
+ 
+ 		if (sym->type == STT_FILE)
+@@ -1927,7 +1936,8 @@ static void kpatch_print_changes(struct kpatch_elf *kelf)
+ 	struct symbol *sym;
+ 
+ 	list_for_each_entry(sym, &kelf->symbols, list) {
+-		if (!sym->include || !sym->sec || sym->type != STT_FUNC || sym->parent)
++		if (!sym->include || !sym->sec || sym->type != STT_FUNC ||
++		    sym->parent || sym->is_pfx)
+ 			continue;
+ 		if (sym->status == NEW)
+ 			log_normal("new function: %s\n", sym->name);
+@@ -3912,7 +3922,8 @@ static void kpatch_find_func_profiling_calls(struct kpatch_elf *kelf)
+ 	struct rela *rela;
+ 	unsigned char *insn;
+ 	list_for_each_entry(sym, &kelf->symbols, list) {
+-		if (sym->type != STT_FUNC || !sym->sec || !sym->sec->rela)
++		if (sym->type != STT_FUNC || sym->is_pfx ||
++		    !sym->sec || !sym->sec->rela)
+ 			continue;
+ 
+ 		switch(kelf->arch) {
+diff --git a/kpatch-build/kpatch-elf.c b/kpatch-build/kpatch-elf.c
+index c7d12ec..99f2cb9 100644
+--- a/kpatch-build/kpatch-elf.c
++++ b/kpatch-build/kpatch-elf.c
+@@ -397,6 +397,97 @@ static void kpatch_create_section_list(struct kpatch_elf *kelf)
+ 		ERROR("expected NULL");
+ }
+ 
++/*
++ * Some x86 kernels have NOP function padding [1] for which objtool [2]
++ * adds ELF function symbols with prefix "__pfx_" to indicate the start
++ * of a function, inclusive of NOP-padding.  Find the prefix symbols and
++ * link them to their corresponding function symbols at an expected
++ * offset.
++ *
++ * A few examples:
++ *
++ *    Value          Size Type    Bind   Vis      Ndx Name
++ * (fork.o, simple case)
++ * 0000000000000000     0 SECTION LOCAL  DEFAULT   31 .text.get_task_mm
++ * 0000000000000000    16 FUNC    GLOBAL DEFAULT   31 __pfx_get_task_mm
++ * 0000000000000010    91 FUNC    GLOBAL DEFAULT   31 get_task_mm
++ *
++ * (fork.o, multiple function aliases)
++ * 0000000000000000     0 SECTION LOCAL  DEFAULT  190 .text.__do_sys_fork
++ * 0000000000000000    16 FUNC    GLOBAL DEFAULT  190 __pfx___x64_sys_fork
++ * 0000000000000010    49 FUNC    LOCAL  DEFAULT  190 __do_sys_fork
++ * 0000000000000010    49 FUNC    GLOBAL DEFAULT  190 __ia32_sys_fork
++ * 0000000000000010    49 FUNC    GLOBAL DEFAULT  190 __x64_sys_fork
++ *
++ * (fork.o multiple functions in one section)
++ * 0000000000000000     0 SECTION LOCAL  DEFAULT   59 .init.text
++ * 0000000000000000    16 FUNC    LOCAL  DEFAULT   59 __pfx_coredump_filter_setup
++ * 0000000000000010    40 FUNC    LOCAL  DEFAULT   59 coredump_filter_setup
++ * 0000000000000038    16 FUNC    WEAK   DEFAULT   59 __pfx_arch_task_cache_init
++ * 0000000000000048    10 FUNC    WEAK   DEFAULT   59 arch_task_cache_init
++ * 0000000000000052    16 FUNC    GLOBAL DEFAULT   59 __pfx_fork_init
++ * 0000000000000062   357 FUNC    GLOBAL DEFAULT   59 fork_init
++ * 00000000000001c7    16 FUNC    GLOBAL DEFAULT   59 __pfx_fork_idle
++ * 00000000000001d7   214 FUNC    GLOBAL DEFAULT   59 fork_idle
++ * 00000000000002ad    16 FUNC    GLOBAL DEFAULT   59 __pfx_mm_cache_init
++ * 00000000000002bd    72 FUNC    GLOBAL DEFAULT   59 mm_cache_init
++ * 0000000000000305    16 FUNC    GLOBAL DEFAULT   59 __pfx_proc_caches_init
++ * 0000000000000315   192 FUNC    GLOBAL DEFAULT   59 proc_caches_init
++ *
++ * (fork.o, function without nop padding / __pfx_ symbol)
++ * 0000000000000000     0 SECTION LOCAL  DEFAULT   99 .text.unlikely.__mmdrop
++ * 0000000000000000    48 FUNC    LOCAL  DEFAULT   99 __mmdrop.cold
++ *
++ * (kpatch-build generated tmp.ko, multple functions in one section, no __pfx_ symbols)
++ * 0000000000000000     0 SECTION LOCAL  DEFAULT   10 .text.unlikely.callback_info.isra.0
++ * 0000000000000010    65 FUNC    LOCAL  DEFAULT   10 callback_info.isra.0
++ * 0000000000000061    54 FUNC    LOCAL  DEFAULT   10 callback_info.isra.0
++ * 00000000000000a7    54 FUNC    LOCAL  DEFAULT   10 callback_info.isra.0
++ *
++ * CONFIG_CFI_CLANG uses something very similar, except the symbol is created
++ * by the compiler and its prefix is "__cfi_".
++ *
++ * [1] bea75b33895f ("x86/Kconfig: Introduce function padding")
++ * [2] 9f2899fe36a6 ("objtool: Add option to generate prefix symbols")
++ */
++static void kpatch_link_prefixed_functions(struct kpatch_elf *kelf)
++{
++	struct symbol *func, *pfx;
++	bool found;
++
++	if (kelf->arch != X86_64)
++		return;
++
++	list_for_each_entry(pfx, &kelf->symbols, list) {
++		if (!pfx->name || pfx->type != STT_FUNC)
++			continue;
++
++		if (strncmp(pfx->name, "__pfx_", 6) &&
++		    strncmp(pfx->name, "__cfi_", 6))
++			continue;
++
++		found = false;
++
++		list_for_each_entry(func, &kelf->symbols, list) {
++			if (func->type == STT_FUNC && func->sec == pfx->sec &&
++			    func->sym.st_value == pfx->sym.st_value + 16) {
++
++				/*
++				 * If a func has aliases, it's possible for
++				 * multiple functions to have the same 'pfx'.
++				 */
++
++				pfx->is_pfx = true;
++				func->pfx = pfx;
++				found = true;
++			}
++		}
++
++		if (!found)
++			ERROR("missing func for %s", pfx->name);
++	}
++}
++
+ static void kpatch_create_symbol_list(struct kpatch_elf *kelf)
+ {
+ 	struct section *symtab;
+@@ -459,6 +550,7 @@ static void kpatch_create_symbol_list(struct kpatch_elf *kelf)
+ 		log_debug("\n");
+ 	}
+ 
++	kpatch_link_prefixed_functions(kelf);
+ }
+ 
+ struct kpatch_elf *kpatch_elf_open(const char *name)
+diff --git a/kpatch-build/kpatch-elf.h b/kpatch-build/kpatch-elf.h
+index cd2900c..956c1c2 100644
+--- a/kpatch-build/kpatch-elf.h
++++ b/kpatch-build/kpatch-elf.h
+@@ -77,6 +77,7 @@ struct symbol {
+ 	struct list_head list;
+ 	struct symbol *twin;
+ 	struct symbol *parent;
++	struct symbol *pfx;
+ 	struct list_head children;
+ 	struct list_head subfunction_node;
+ 	struct section *sec;
+@@ -91,6 +92,7 @@ struct symbol {
+ 		enum symbol_strip strip; /* used in the output elf */
+ 	};
+ 	int has_func_profiling;
++	bool is_pfx;
+ };
+ 
+ struct rela {
+-- 
+2.39.4
+

@@ -1,8 +1,7 @@
 Summary:        Unzip-6.0
 Name:           unzip
 Version:        6.0
-Release:        16%{?dist}
-License:        BSD
+Release:        18%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://downloads.sourceforge.net/infozip/unzip60.tar.gz
 %define sha512 %{name}=0694e403ebc57b37218e00ec1a406cae5cc9c5b52b6798e0d4590840b6cdbf9ddc0d9471f67af783e960f8fa2e620394d51384257dca23d06bcd90224a80ce5d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:  CVE-2014-9636.patch
 Patch1:  CVE-2015-1315.patch
@@ -55,6 +57,10 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.0-18
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0-17
+- Release bump for SRP compliance
 * Mon Jul 24 2023 Nitesh Kumar <kunitesh@vmware.com> 6.0-16
 - Patched for CVE-2021-4217
 * Fri May 19 2023 Nitesh Kumar <kunitesh@vmware.com> 6.0-15

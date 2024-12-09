@@ -1,15 +1,19 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.0.12
-Release:        1%{?dist}
-License:        GPL+
+Version:        4.2.9
+Release:        2%{?dist}
 URL:            http://www.wireshark.org
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512  %{name}=01a2723a39e3887e90b61369533f05ff082867eacc778c49f4d79bb5c0d14ea9b58f113f31cd368d48e55de183a15ca4b07e5fa5fccada2d57548f0c486e2790
+%define sha512  %{name}=6ad9318549ab60794c967a071a267e9642e97bb52289570e36c8221e6e160bafb346f789ad879ae1a87c0789ce3352b6a795a5a2ccf723891615a0b8c62eb668
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0: 0001-Remove-SpeexDSP-library-dependencies-from-photon-wir.patch
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -74,9 +78,8 @@ and plugins.
        -DENABLE_NETLINK=ON \
        -DBUILD_dcerpcidl2wrs=OFF \
        -DBUILD_sdjournal=ON \
-       -DBUILD_sharkd=off \
-       -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-       -DCMAKE_BUILD_TYPE=Debug
+        -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+        -DCMAKE_BUILD_TYPE=Debug
 
 %cmake_build
 
@@ -95,23 +98,35 @@ rm -rf %{buildroot}%{_mandir} \
 
 %files devel
 %doc doc/README.* ChangeLog
-%{_includedir}/%{name}
 %{_libdir}/lib*.so
-%{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.2.9-2
+- Release bump for SRP compliance
+* Tue Dec 10 2024 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.9-1
+- Fix CVE-2024-11595 and CVE-2024-11596
+* Tue Oct 15 2024 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.8-1
+- Fix CVE-2024-9781.
+* Tue Sep 03 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.2.7-1
+- Version update to v4.2.7 to fix following CVE's:
+- CVE-2024-24476, CVE-2024-24479 and CVE-2024-8250
+* Mon May 20 2024 Anmol Jain <anmol.jain@broadcom.com> 4.0.15-1
+- Version update to fix CVE-2024-4853, CVE-2024-4854 & CVE-2024-4855
+* Mon Apr 01 2024 Anmol Jain <anmol.jain@broadcom.com> 4.0.14-1
+- Version update to fix CVE-2024-2955
 * Tue Jan 23 2024 Anmol Jain <anmolja@vmware.com> 4.0.12-1
-- Version update
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.11-2
+- Version update to fix CVE-2024-0208, CVE-2024-0209
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.11-2
 - Bump version as a part of gnutls upgrade
 * Tue Nov 21 2023 Susant Sahani <ssahani@vmware.com> 4.0.11-1
 - Update version and fix CVE-2023-6174
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.8-2
-- Bump version as a part of openssl upgrade
-* Mon Aug 28 2023 Susant Sahani <ssahani@vmware.com> 4.0.8-1
+* Tue Oct 10 2023 Susant Sahani <ssahani@vmware.com> 4.0.10-1
+- Update version and fix CVE-2023-5371
+* Tue Sep 05 2023 Susant Sahani <ssahani@vmware.com> 4.0.8-1
 - Update version and fix CVE-2023-4513
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.6-2
-- Bump version as a part of elfutils upgrade
+* Mon Jul 17 2023 Susant Sahani <ssahani@vmware.com> 4.0.7-1
+- Update version and fix CVE-2023-3649, CVE-2023-2952
+- CVE-2023-0666, CVE-2023-3648
 * Tue Jun 06 2023 Susant Sahani <ssahani@vmware.com> 4.0.6-1
 - Update version and fix CVE-2023-2953
 * Tue Apr 18 2023 Susant Sahani <ssahani@vmware.com> 4.0.5-1

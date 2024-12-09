@@ -12,16 +12,15 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql15
-Version:        15.7
-Release:        1%{?dist}
-License:        PostgreSQL
+Version:        15.10
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=8a03e2d7a267f0d11c27d90a2fb605725accb41cfebba2b56c735d4af45bb5f977d4ba051a02ac8d31f93253372df3d3b5efdd159e258d6fcc506b73e3ad6e27
+%define sha512 %{srcname}=73513f5f688f470aadd95dddef3b39b5d140d539bdf3171e053a89b3eed4c769f7951280468e9f11102f2de9fe8742bb38676c8d5d43418544b9482d83957ef4
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -30,6 +29,9 @@ Source4: %{srcname}-env-vars.conf
 Source5: %{srcname}.preset
 Source6: %{srcname}.sysusers
 Source7: systemd-unit-instructions
+
+Source8: license-postgresql15.txt
+%include %{SOURCE8}
 
 BuildRequires: clang-devel
 BuildRequires: gettext
@@ -83,7 +85,7 @@ Requires: tzdata
 Requires: zlib
 Requires: %{name}-libs = %{version}-%{release}
 
-Conflicts: %{name} < 15.6-6%{?dist}
+Conflicts: %{name} < 15.6-4%{?dist}
 
 %description client
 %{summary}
@@ -701,34 +703,34 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.10-2
+- Release bump for SRP compliance
+* Tue Dec 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.10-1
+- Version upgrade to fix CVEs
+* Fri Aug 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.8-1
+- Upgrade to v15.8 to fix CVE-2024-7348
 * Fri May 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.7-1
 - Upgrade to v15.7
-* Tue Apr 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-6
+* Mon Apr 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-4
 - Introduce client subpackage, make main package a meta package
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.6-5
-- Bump version as a part of libxml2 upgrade
-* Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-4
+* Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-3
 - Use version specific bindir path in service file
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.6-3
-- Bump version as a part of libxml2 upgrade
 * Sat Feb 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-2
 - Add systemd unit file
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.6-1
 - Upgrade to v15.6
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.5-2
-- Bump version as a part of openssl upgrade
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.5-1
 - Upgrade to v15.5
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 15.4-2
 - Bump version as a part of openldap v2.6.4 upgrade
 * Sun Aug 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.4-1
 - Upgrade to v15.4
-* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 15.3-2
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 15.3-3
 - Bump version as a part of krb5 upgrade
-* Tue May 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.3-1
-- Upgrade to v15.3
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 15.2-3
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 15.3-2
 - Bump version as a part of libxml2 upgrade
+* Fri May 19 2023 Julien Rouhaud <<jrouhaud@vmware.com> 15.3-1
+- Update to version 15.3, fixing CVE-2023-2454 and CVE-2023-2455
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.2-2
 - Bump version as a part of zlib upgrade
 * Wed Feb 15 2023 Julien Rouhaud <jrouhaud@vmware.com> 15.2-1

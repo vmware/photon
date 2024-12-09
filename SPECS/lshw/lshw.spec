@@ -1,11 +1,13 @@
 Summary:        Hardware lister
 Name:           lshw
 Version:        B.02.19
-Release:        1%{?dist}
-License:        GPLv2
+Release:        2%{?dist}
 URL:            https://github.com/lyonel/lshw/releases
 Source0:        http://www.ezix.org/software/files/%{name}-%{version}.tar.gz
-%define sha1 lshw=c4751be7292e8f2d8f5d82ba25acaebf24d9e7d7
+%define sha512 lshw=168e7cf053d270f695da09dbdd4ee5207d447a13de3601f3861ab194f09c7358fe618551caf03adb628e0293f187d8fd5a842d1516b0dd16c4128ccc2126027b
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -24,13 +26,13 @@ Group:          Applications/System
 The package contains lshw doc files.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -41,6 +43,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*    Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> B.02.19-2
+-    Release bump for SRP compliance
 *    Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> B.02.19-1
 -    Automatic Version Bump
 *    Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> B.02.18-1

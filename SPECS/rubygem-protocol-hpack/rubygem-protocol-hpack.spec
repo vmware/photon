@@ -9,10 +9,12 @@ Summary:        A compresssor and decompressor for HTTP 2.0 HPACK.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  protocol-hpack=bbe3c70503214aea46d48113e225c5995128944201ee6cc567dab348aa2bed5da5b4faccf7b3114f8142ae1a9b73a31bdc2bde2947761c7366bf0357dac1282e
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby
 
 BuildArch: noarch
@@ -33,8 +35,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.2-2
--   Bump Version to build with new ruby
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.2-2
+-   Release bump for SRP compliance
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.2-1
 -   Automatic Version Bump
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.4.1-1

@@ -1,14 +1,16 @@
 Name:          perl-TermReadKey
 Version:       2.38
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       TermReadKey Perl module
-License:       GPL+ or Artistic
 Group:         Development/Perl
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Url:           https://metacpan.org/release/TermReadKey
 Source0:       https://cpan.metacpan.org/authors/id/J/JS/JSTOWE/TermReadKey-%{version}.tar.gz
 %define sha512 TermReadKey=fb09f013f9f0d8a4397e39f6f3db7a6d023259219af8f76744094e396437a01b19141b3cdb39a158d3b518903fb010088bc37406763bfbeb3fcab810bb0bb157
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires: perl
 BuildRequires: perl-List-MoreUtils
 Requires:      perl
@@ -36,6 +38,8 @@ perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1 NO_PERLLOCAL=1
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.38-3
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 2.38-2
 - Perl version upgrade to 5.36.0
 * Tue May 24 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.38-1

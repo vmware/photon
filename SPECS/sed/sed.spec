@@ -1,8 +1,7 @@
 Summary:    Stream editor
 Name:       sed
 Version:    4.8
-Release:    3%{?dist}
-License:    GPLv3
+Release:    5%{?dist}
 URL:        http://www.gnu.org/software/sed
 Group:      Applications/Editors
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    http://ftp.gnu.org/gnu/sed/%{name}-%{version}.tar.xz
 %define sha512  %{name}=7de25d9bc2981c63321c2223f3fbcab61d7b0df4fcf7d4394b72400b91993e1288d8bf53948ed5fffcf5a98c75265726a68ad4fb98e1d571bf768603a108c1c8
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libacl-devel
 
@@ -35,7 +37,7 @@ These are the additional language files of sed.
 
 %build
 %configure \
-    --htmldir=%{_docdir}/%{name}-%{version} \
+    --htmldir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-silent-rules
 
 %make_build
@@ -62,6 +64,10 @@ make check %{?_smp_mflags}
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.8-5
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.8-4
+- Release bump for SRP compliance
 * Wed Nov 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.8-3
 - Add libacl-devel to BuildRequires for ACL support
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.8-2

@@ -1,8 +1,7 @@
 Summary:        cpio archive utility
 Name:           cpio
 Version:        2.13
-Release:        8%{?dist}
-License:        GPLv3+
+Release:        10%{?dist}
 URL:            http://www.gnu.org/software/cpio
 Group:          System Environment/System utilities
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
 %define sha512  %{name}=459398e69f7f48201c04d1080218c50f75edcf114ffcbb236644ff6fcade5fcc566929bdab2ebe9be5314828d6902e43b348a8adf28351df978c8989590e93a3
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         newca-new-archive-format.patch
 Patch1:         newca-large-files-support.patch
@@ -72,6 +74,10 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.13-10
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13-9
+- Release bump for SRP compliance
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.13-8
 - Bump version as a part of lua upgrade
 * Wed Mar 29 2023 Shivani Agarwal <shivania2@vmware.com> 2.13-7

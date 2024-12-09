@@ -1,8 +1,7 @@
 Summary:        Fast lossless compression algorithm
 Name:           zstd
 Version:        1.5.5
-Release:        2%{?dist}
-License:        BSD and GPLv2
+Release:        4%{?dist}
 URL:            https://github.com/facebook/zstd
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/facebook/zstd/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=356994e0d8188ce97590bf86b602eb50cbcb2f951594afb9c2d6e03cc68f966862505afc4a50e76efd55e4cfb11dbc9b15c7837b7827a961a1311ef72cd23505
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       zstd-libs = %{version}-%{release}
 
@@ -80,6 +82,10 @@ library, libzstd.
 %exclude %{_libdir}/libzstd.a
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.5.5-4
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.5-3
+- Release bump for SRP compliance
 * Fri Dec 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.5-2
 - Generate pc file properly
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com>  1.5.5-1

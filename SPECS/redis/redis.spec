@@ -1,17 +1,19 @@
 Summary:       advanced key-value store
 Name:          redis
-Version:       7.2.4
-Release:       1%{?dist}
-License:       BSD
+Version:       7.2.6
+Release:       2%{?dist}
 URL:           http://redis.io
 Group:         Applications/Databases
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=d15ec5ccb610eded6d0c54f4a29fefaa1906e4db8479c3fa291d0a4474d3ed4795373e7fcb3d55dbb1ae840eac5ec50b56c0127054e406bca04ca71650f9fecd
+%define sha512 %{name}=4635a3c5b23f3985ae7dbec9655eacedfdb16356014b30f864232467094f85fbc1c6af35837b05040f6d2a3b5fd1413c8716b541c8b2c4b24d8d4fbdc7884136
 
 Source1: %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0: %{name}-conf.patch
 
@@ -90,12 +92,14 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
-* Wed Jan 17 2024 Nitesh Kumar <kunitesh@vmware.com> 7.2.4-1
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2.6-2
+- Release bump for SRP compliance
+* Fri Oct 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.6-1
+- Upgrade to v7.2.6
+* Thu Jan 18 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 7.2.4-1
 - Version upgrade to v7.2.4 to fix CVE-2023-41056
 * Tue Dec 19 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.3-1
 - Upgrade to v7.2.3
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.2.2-2
-- Bump version as a part of openssl upgrade
 * Wed Oct 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.2.2-1
 - Upgrade to v7.2.2
 * Mon Sep 11 2023 Nitesh Kumar <kunitesh@vmware.com> 7.0.13-1
@@ -105,8 +109,8 @@ make check %{?_smp_mflags}
 * Thu Jul 13 2023 Nitesh Kumar <kunitesh@vmware.com> 7.0.12-1
 - Upgrade to v7.0.12 to fix following CVE's:
 - CVE-2022-24834, CVE-2023-36824
-* Thu Apr 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.11-1
-- Upgrade to v7.0.11
+* Thu Apr 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.9-3
+- Fix CVE-2023-28856
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 7.0.9-2
 - Use systemd-rpm-macros for user creation
 * Thu Mar 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.9-1

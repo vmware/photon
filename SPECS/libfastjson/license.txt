@@ -1,0 +1,1 @@
+License: FSFAP AND MIT AND Apache-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-macro

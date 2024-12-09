@@ -1,8 +1,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.14.5
-Release:        7%{?dist}
-License:        LGPLv2+
+Release:        6%{?dist}
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=9dda5067142b04e46e8ee344a47df21dae89a9c26e91588fc92bcbaee5291348a38ee79a5e807d7a8cba6cb13af78985e8b2e9b23d7f9eabecd0123459c43935
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -38,6 +40,7 @@ metadata.
 
 %package devel
 Summary:        Repodata downloading library
+Requires:       curl-libs
 Requires:       curl-devel
 Requires:       glib-devel
 Requires:       libxml2-devel
@@ -101,16 +104,14 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/%{name}/
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.14.5-7
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.14.5-6
+- Release bump for SRP compliance
+* Wed Jan 03 2024 Anmol Jain <anmol.jain@broadcom.com> 1.14.5-5
+- Fix for test failure
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.14.5-4
 - Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.14.5-6
-- Bump version as a part of libxml2 upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.14.5-5
-- Bump version as a part of openssl upgrade
-* Fri Sep 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.14.5-4
-- Fix devel package requires
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.14.5-3
-- Bump version as a part of libxml2 upgrade
+* Thu Apr 13 2023 Harinadh D <hdommaraju@vmware.com> 1.14.5-3
+- version bump to use curl 8.0.1
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.14.5-2
 - Update release to compile with python 3.11
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.5-1

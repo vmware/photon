@@ -1,19 +1,18 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.6
-Release:        5%{?dist}
+Version:        3.5.9
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        LGPLv2.1,GPLv2
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
-Source0: https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=e7c371cabf094c417fe7f11f8bd81dc201b9750b3dbe8ea5626288c66d39bee7f5c71133cd0b2465a14284313abf1afd096d09ecbd9d26c61874b2b7a9416d9d
+Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=75d5b35763f06c6258ee8585c850547b4e55bde8c538936895a247d4ea04aa65ef70e4eff31d4f33ab58bfcb0b4deb8a131a2c947b1f07e6f19f62ab9a5e78fa
 
-Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
-Patch1: rpm-keyring-API-calls-1.patch
-Patch2: rpm-keyring-API-calls-2.patch
+Source1: license.txt
+%include %{SOURCE1}
+Patch0:         0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -297,38 +296,42 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.6-5
-- Bump version as a part of util-linux upgrade
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.5.6-4
-- Bump version as a part of libxml2 upgrade
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.5.6-3
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 3.5.9-2
+- Release bump for SRP compliance
+* Tue Oct 15 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.9-1
+- update to 3.5.9
+- allow unprivileged user to run 'makecache'
+- show complex (relational) deps in repoquery
+- remove pthread_mutex API
+* Tue Jul 16 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.8-1
+- update to 3.5.8
+- priority fix and output repo information in json (PR #484 and PR #485)
+* Tue Jun 25 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.7-1
+- update to 3.5.7
+- epoch fix
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.5.6-2
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.5.6-2
-- Bump version as a part of libxml2 upgrade
 * Tue Dec 12 2023 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.6-1
 - update to 3.5.6
 - adds --rpmdefine option and fixes
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.5-3
-- Bump version as a part of openssl upgrade
-* Mon Nov 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.5-2
-- Fix kepyring api calls issue
+* Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.5-2
+- Bump version as a part of rpm upgrade
 * Fri Aug 25 2023 Oliver Kurth <okurth@vmware.com> 3.5.5-1
 - update to 3.5.5
 - checksum check for packages and other minor fixes
 * Wed Jul 26 2023 Oliver Kurth <okurth@vmware.com> 3.5.4-1
 - update to 3.5.4
 - fix rpm verbosity default, and fix rpm scriptlet output when json is enabled #438
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.3-2
-- Bump version as a part of curl upgrade
 * Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 3.5.3-1
 - update to 3.5.3
 - fix python test for python >= 3.11 #425
 - Fix history rollback for public key and protected packages #430
 - Fix error when a repo was disabled because it's unavailable. Fixes #431 #432
-* Fri Jun 02 2023 Oliver Kurth <okurth@vmware.com> 3.5.2-4
 - add -pytests package
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.5.2-3
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.5.2-4
 - Bump version as a part of libxml2 upgrade
+* Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 3.5.2-3
+- version bump to use curl 8.0.1
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.5.2-2
 - Bump version as a part of zlib upgrade
 * Tue Apr 04 2023 Oliver Kurth <okurth@vmware.com> 3.5.2-1

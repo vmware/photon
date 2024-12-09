@@ -1,15 +1,17 @@
 Summary:       unit testing framework for C
 Name:          cmocka
 Version:       1.1.5
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
-License:       Apache 2.0
 URL:           https://cmocka.org
 Distribution:  Photon
 
 Source0:       https://cmocka.org/files/1.1/%{name}-%{version}.tar.xz
 %define sha512 %{name}=cad7f04757183d004f6eaad39036fc0e24c5e0e987f80e85bc43bc66dba22389cb02b08e25531cc28a541d0a24a86b29be134a2d6fc339128e87d66952f502bd
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: cmake
 
@@ -61,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.1.5-4
+- Release bump for SRP compliance
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.5-3
 - Introduce devel sub package
 - Use cmake macros for build

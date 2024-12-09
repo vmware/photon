@@ -32,12 +32,11 @@ index 9d3e987..55f11ed 100644
 @@ -56,7 +56,7 @@ set(
    "${YAMLCPP_LIB}"
  )
- 
+
 -if(USE_BUNDLED_DEPS)
 +if(USE_BUNDLED_YAMLCPP)
    list(APPEND FALCO_DEPENDENCIES yamlcpp)
  endif()
- 
--- 
-2.25.1
 
+--
+2.25.1

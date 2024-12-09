@@ -1,23 +1,25 @@
-Summary:	Data for network services and protocols
-Name:		iana-etc
-Version:	2.30
-Release:	2%{?dist}
-License:	OSLv3
-URL:		http://freshmeat.net/projects/iana-etc
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-BuildArch:	noarch
-Source0:	http://anduin.linuxfromscratch.org/sources/LFS/lfs-packages/conglomeration//iana-etc/%{name}-%{version}.tar.bz2
-%define sha1 iana-etc=218593bcb9264014c4e397d838b2c218eac9df06
+Summary:        Data for network services and protocols
+Name:           iana-etc
+Version:        2.30
+Release:        3%{?dist}
+URL:            http://freshmeat.net/projects/iana-etc
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildArch:      noarch
+Source0:        http://anduin.linuxfromscratch.org/sources/LFS/lfs-packages/conglomeration//iana-etc/%{name}-%{version}.tar.bz2
+%define sha512 iana-etc=d841b9c177fb0675bab10c9b0ebc4d3c2b743754c615e3fabcaebb29ffefaf2491278d0e672b99af3cbc9b300138700f56c1026f6d41659783150aea97583936
+
+Source1: license.txt
+%include %{SOURCE1}
 %description
 The Iana-Etc package provides data for network services and protocols.
 %prep
-%setup -q
+%autosetup -p1
 %build
 make %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} test
@@ -27,7 +29,9 @@ make %{?_smp_mflags} test
 %config %_sysconfdir/protocols
 %config %_sysconfdir/services
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.30-2
--	GA - Bump release of all rpms
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.30-1
--	Initial build.	First version
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.30-3
+- Release bump for SRP compliance
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.30-2
+- GA - Bump release of all rpms
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.30-1
+- Initial build. First version

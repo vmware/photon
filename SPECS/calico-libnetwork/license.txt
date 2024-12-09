@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND CDDL-1.0 AND MIT AND BSD-3-Clause AND ISC AND Apache-2.0 AND CC-BY-SA-2.0 AND CC-BY-SA-2.5 AND CC-BY-SA-3.0 AND LGPL-3.0-only AND LGPL-3.0-or-later WITH LGPL-3.0-linking-exception AND CC-BY-4.0 AND GPL-1.0-or-later AND GPL-2.0-only AND JSON AND CC-BY-SA-1.0

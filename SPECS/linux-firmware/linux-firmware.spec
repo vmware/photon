@@ -3,18 +3,20 @@
 %global _firmwarepath    /lib/firmware
 %define _binaries_in_noarch_packages_terminate_build   0
 
-Summary:	Linux Firmware
-Name:		linux-firmware
-Version:	20230207
-Release:	1%{?dist}
-License:	GPL+ and GPLv2+ and MIT and Redistributable, no modification permitted
-URL:		http://www.kernel.org/
-Group:		System Environment/Kernel
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        Linux Firmware
+Name:           linux-firmware
+Version:        20230207
+Release:        2%{?dist}
+URL:            http://www.kernel.org/
+Group:          System Environment/Kernel
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha512  %{name}=f8862c6a58a8a2d79da14fe4d64265407bd1a4062beb821494d1a2b738bae526feb61755f133317458aa1dcadf84275d49d8916d9cae13d291fbb69aa11c2e6b
-BuildArch:	noarch
+
+Source1:        license.txt
+%include        %{SOURCE1}
+BuildArch:      noarch
 
 %description
 This package includes firmware files required for some devices to operate.
@@ -34,6 +36,8 @@ cp -r * %{buildroot}%{_firmwarepath}
 %{_firmwarepath}/*
 
 %changelog
+*   Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 20230207-2
+-   Release bump for SRP compliance
 *   Tue Feb 07 2023 Ankit Jain <ankitja@vmware.com> 20230207-1
 -   Updated ice firmware version as per linux.spec
 *   Mon Dec 12 2022 Ajay Kaher <akaher@vmware.com> 20221212-1

@@ -1,8 +1,7 @@
 Summary:    Contains a parser generator
 Name:       bison
 Version:    3.8.2
-Release:    3%{?dist}
-License:    GPLv3+
+Release:    6%{?dist}
 URL:        http://www.gnu.org/software/bison
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/bison/%{name}-%{version}.tar.xz
 %define sha512 %{name}=d4d23af6671406e97257892f90651b67f2ab95219831372be032190b7156c10a3435d457857e677445df8b2327aacccc15344acbbc3808a6f332a93cce23b444
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  m4
 BuildRequires:  flex
@@ -22,7 +24,7 @@ Requires:   glibc
 This package contains a parser generator
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %configure \
@@ -42,12 +44,18 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.a
-%{_datadir}/%{name}/*
-%{_datadir}/aclocal/*
+%{_datarootdir}/%{name}/*
+%{_datarootdir}/aclocal/*
 %{_mandir}/*/*
-%{_docdir}/%{name}/*
+%{_docdir}/bison/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.8.2-6
+- Release bump for SRP compliance
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.8.2-5
+- Remove standalone license exceptions
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.8.2-4
+- Release bump for SRP compliance
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.8.2-3
 - Bump version as a part of gettext upgrade
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.8.2-2

@@ -1,15 +1,17 @@
 Name:           python3-charset-normalizer
 Version:        2.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The Real First Universal Charset Detector
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://github.com/ousret/charset_normalizer
 
 Source0: charset-normalizer-%{version}.tar.gz
 %define sha512 charset-normalizer=f52abab683ebda4100d67ec6ee0349713baee453a742d60a1356f405c5ce2c3b4d850b0891527f08f92fa1217d59c46d6b181dc4ff1b962ce60d9c5ef8c913d1
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -46,6 +48,8 @@ sed -i "/addopts = --cov/d" setup.cfg
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.1.1-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.1-1
 - Automatic Version Bump
 * Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.0.9-1

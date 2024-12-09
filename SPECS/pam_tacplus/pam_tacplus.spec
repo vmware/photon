@@ -1,24 +1,29 @@
 Summary:        PAM Tacacs+ module
 Name:           pam_tacplus
 Version:        1.6.1
-Release:        2%{?dist}
-License:        GPL
+Release:        3%{?dist}
 URL:            http://tacplus.sourceforge.net/
 Group:          System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    pam_tacplus=d39193bb09286492a33131aa193184484a6c1183
+Source0: %{name}-%{version}.tar.gz
+%define sha512 %{name}=c994c21b2ce0febea4510ce6d301c80dcc20b10512bfaae634d82ec717b684d8de9d192e7b8f174eb9811ef405616dd63d095f640804fb2d5065d69b9cc7a3a4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  Linux-PAM-devel
 
 %description
-PAM Tacacs+ module based on code produced by Pawel Krawczyk <pawel.krawczyk@hush.com> and Jeroen Nijhof <jeroen@jeroennijhof.nl>
+PAM Tacacs+ module based on code produced by
+Pawel Krawczyk <pawel.krawczyk@hush.com> and
+Jeroen Nijhof <jeroen@jeroennijhof.nl>
 
 %package devel
 Summary:    Development files for pam_tacplus
 Requires:   %{name} = %{version}-%{release}
+
 %description devel
 Development files for pam_tacplus.
 
@@ -29,23 +34,21 @@ Development files for pam_tacplus.
 autoreconf -i
 %configure --disable-static
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}
-mkdir -p %{buildroot}/etc/pam.d
-mkdir -p %{buildroot}/%{_lib}/security
+mkdir -p %{buildroot}%{_sysconfdir}/pam.d \
+         %{buildroot}%{_lib}/security
 
-install -m 755 .libs/pam_tacplus.so %{buildroot}/%{_lib}/security/
-install -m 644 sample.pam %{buildroot}/etc/pam.d/tacacs
+install -m 755 .libs/pam_tacplus.so %{buildroot}%{_lib}/security/
+install -m 644 sample.pam %{buildroot}%{_sysconfdir}/pam.d/tacacs
 
-chmod 755 %{buildroot}/%{_lib}/security/*.so*
+chmod 755 %{buildroot}%{_lib}/security/*.so*
 
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-find %{buildroot}/usr/lib/ -name '*.la' -delete
+%make_install %{?_smp_mflags}
 
 %check
-make %{?_smp_mflags} check
+%make_build check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -69,6 +72,8 @@ rm -rf %{buildroot}/*
 %doc %{_docdir}/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.1-3
+- Release bump for SRP compliance
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.6.1-2
 - Bump up release for openssl
 * Thu Nov 05 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-1

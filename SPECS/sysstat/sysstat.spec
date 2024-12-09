@@ -1,17 +1,19 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
-Version:        12.7.1
-Release:        1%{?dist}
+Version:        12.7.2
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://sebastien.godard.pagesperso-orange.fr/
 Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://perso.wanadoo.fr/sebastien.godard/%{name}-%{version}.tar.xz
-%define sha512  sysstat=8aa1b98e4aaa86cbdc522ba292e5d2c4a881bf2bd4c2332a34e666302597de3545818360b821b2c5206a4e8e6d2e1c3821379fd75e996e4942b99ddeec9c338f
+%define sha512  sysstat=3dd2fceb89faf2a0b20f4215a5a64298c62277f1c06175ca224fe2c897e86bf94bcf7b4b66f36536848b31743d4d38f765b06923052466cdcde0768990e9e769
 Patch0:         sysstat.sysconfig.in.patch
+Patch1:         0001-Fix-an-overflow-which-is-still-possible-for-some-val.patch
 BuildRequires:  cronie
 Requires:       cronie
+Requires(pre):  coreutils >= 9.1-7
 
 %description
 The Sysstat package contains utilities to monitor system performance and usage activity. Sysstat contains the sar utility, common to many commercial Unixes, and tools you can schedule via cron to collect and historize performance and activity data.
@@ -45,6 +47,25 @@ make test %{?_smp_mflags}
 %clean
 rm -rf %{buildroot}/*
 
+%pre
+sa_location="%{_var}/log/sa"
+# For upgrade, if /var/log/sa is a file copy that with date in /var/log/sa directory
+if [[ $1 -eq 2 ]]; then
+    if [ -e "${sa_location}" ] && [ ! -d "${sa_location}" ]; then
+        sa_fn_backup="%{_var}/log/sa-$(date +%s)"
+        mv ${sa_location} ${sa_fn_backup}
+        rm -f ${sa_location}
+        install -vdm 755 ${sa_location}
+        mv ${sa_fn_backup} ${sa_location}/
+    fi
+fi
+
+%preun
+if [[ $1 -eq 0 ]]; then
+    # Remove sa logs if removing sysstat completely
+    rm -rf %{_var}/log/sa/*
+fi
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/sysconfig/*
@@ -55,8 +76,15 @@ rm -rf %{buildroot}/*
 %{_datadir}/doc/%{name}-%{version}/*
 %{_mandir}/man*/*
 %{_libdir}/systemd/system/*
+%{_var}/log/sa
 
 %changelog
+*   Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> - 12.7.2-3
+-   Check for path existence before checking if it is directory in %pre
+*   Mon Oct 07 2024 Tapas Kundu <tapas.kundu@broadcom.com> 12.7.2-2
+-   Fix logging while upgrade
+*   Mon Jun 12 2023 Srinidhi Rao <srinidhir@vmware.com> 12.7.2-1
+-   Update to version 12.7.2
 *   Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 12.7.1-1
 -   Automatic Version Bump
 *   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 12.6.0-1

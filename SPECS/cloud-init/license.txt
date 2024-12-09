@@ -1,0 +1,1 @@
+License: GPL-3.0-only AND (GPL-3.0-only OR Apache-2.0) AND BSD-3-Clause AND Apache-2.0 AND CC-BY-4.0

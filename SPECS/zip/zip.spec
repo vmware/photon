@@ -1,15 +1,19 @@
 Summary:      zip-3.0
 Name:         zip
 Version:      3.0
-Release:      3%{?dist}
-License:      BSD
+Release:      5%{?dist}
 URL:          http://downloads.sourceforge.net/infozip
-Source0:      http://downloads.sourceforge.net/infozip/zip30.tar.gz
-%define       sha512 zip=c1c3d62bf1426476c0f9919b568013d6d7b03514912035f09ee283226d94c978791ad2af5310021e96c4c2bf320bfc9d0b8f4045c48e4667e034d98197e1a9b3
-Patch0:       zip-passwd-as-stdin.patch
 Group:        SystemUtilities
 Vendor:       VMware, Inc.
 Distribution: Photon
+
+Source0: http://downloads.sourceforge.net/infozip/zip30.tar.gz
+%define sha512 zip=c1c3d62bf1426476c0f9919b568013d6d7b03514912035f09ee283226d94c978791ad2af5310021e96c4c2bf320bfc9d0b8f4045c48e4667e034d98197e1a9b3
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0:       zip-passwd-as-stdin.patch
 
 %description
 The Zip package contains Zip utilities.
@@ -30,6 +34,10 @@ make %{?_smp_mflags} prefix=%{buildroot}/%{_prefix} MANDIR=%{buildroot}/usr/shar
 %{_mandir}/*
 
 %changelog
+* Sun Dec 15 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.0-5
+- Bump up for generating provenance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0-4
+- Release bump for SRP compliance
 * Wed Oct 07 2020 Prashant Singh Chauhan <psinghchauha@vmware.com> 3.0-3
 - Added one compiler flags to give passwd as stdin
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-2

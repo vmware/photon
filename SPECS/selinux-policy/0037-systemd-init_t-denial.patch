@@ -1,0 +1,29 @@
+From b035451b5666d991b10d99d5c84cc2a015853e9a Mon Sep 17 00:00:00 2001
+From b2f04a659eb9421dd1ee3a1f29516966d22163ee Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivania2@vmware.com>
+Date: Mon, 10 Jun 2024 09:50:47 +0000
+Subject: [PATCH 37/37] systemd denial fix
+
+AVC avc:  denied  { audit_control } for  pid=1 comm="systemd" capability=30  scontext=system_u:system_r:init_t:s0 tcontext=system_u:system_r:init_t:s0 tclass=capability permissive=0
+
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ policy/modules/system/init.te | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/policy/modules/system/init.te b/policy/modules/system/init.te
+index 1da55cc..db4e397 100644
+--- a/policy/modules/system/init.te
++++ b/policy/modules/system/init.te
+@@ -174,7 +174,7 @@ ifdef(`enable_mls',`
+ #
+ 
+ # Use capabilities. old rule:
+-allow init_t self:capability ~{ audit_control audit_write sys_module };
++allow init_t self:capability ~{ audit_write sys_module };
+ allow init_t self:capability2 ~{ mac_admin mac_override };
+ allow init_t self:cap_userns all_cap_userns_perms;
+ allow init_t self:tcp_socket { listen accept };
+-- 
+2.39.4
+

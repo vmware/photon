@@ -1,8 +1,7 @@
 Summary:        A CBOR parsing C library
 Name:           libcbor
 Version:        0.9.0
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 URL:            http://libcbor.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/PJK/%{name}/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=710239f69d770212a82e933e59df1aba0fb3ec516ef6666a366f30a950565a52981b0d46ca7e0eea739f5785d79cc21fc19acd857a4a0b135f4f6aa3ef5fd3b0
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  glibc-devel
 BuildRequires:  cmake
@@ -56,6 +58,8 @@ Requires:       %{name} = %{version}-%{release}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.9.0-3
+- Release bump for SRP compliance
 * Tue Jun 14 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.9.0-2
 - Fix packaging & fix build with latest cmake
 * Fri May 13 2022 Nitesh Kumar <kunitesh@vmware.com> 0.9.0-1

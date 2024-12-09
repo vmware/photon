@@ -1,15 +1,17 @@
 Summary:        Log for C++
 Name:           log4cpp
 Version:        1.1.3
-Release:        2%{?dist}
-License:        LGPL
+Release:        3%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://log4cpp.sourceforge.net/
-Source:         ftp://download.sourceforge.net/pub/sourceforge/log4cpp/%{name}-%{version}.tar.gz
-%define sha1    log4cpp=74f0fea7931dc1bc4e5cd34a6318cd2a51322041
+Source0:         ftp://download.sourceforge.net/pub/sourceforge/log4cpp/%{name}-%{version}.tar.gz
+%define sha512  log4cpp=88e5e10bce8d7d6421c3dcf14aa25385159c4ae52becdc1f3666ab86e1ad3f633786d82afe398c517d4faaa57b3e7b7c0b524361d81c6b9040dbded5cecc19de
 BuildArch:      x86_64
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 Log for C++ is a library of classes for flexible logging to files, syslog,
@@ -25,26 +27,22 @@ Requires: %{name} = %{version}-%{release}
 The %name-devel package contains the static libraries and header files
 needed for development with %name.
 
-
 %prep
-%{__rm} -rf $RPM_BUILD_ROOT
-
-%setup -q -n log4cpp
-CC=%{__cc} CXX=%{__cxx} ./configure --prefix=%{_prefix} 
+%autosetup -p1 -n log4cpp
+CC=%{__cc} CXX=%{__cxx} ./configure --prefix=%{_prefix}
 
 %build
-%{__make}
+make %{?_smp_mflags}
 
 %install
-%{__rm} -rf $RPM_BUILD_ROOT
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %clean
-%{__rm} -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}/*
 
-%post	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
 
-%postun	-p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -60,6 +58,8 @@ make DESTDIR=%{buildroot} install
 %_prefix/share/aclocal/*.m4
 
 %changelog
+*   Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.1.3-3
+-   Release bump for SRP compliance
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.1.3-2
 -   Adding BuildArch
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.1.3-1

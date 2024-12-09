@@ -1,8 +1,7 @@
 Summary:        Software and/or Hardware watchdog daemon
 Name:           watchdog
 Version:        5.16
-Release:        1%{?dist}
-License:        GPLv2+
+Release:        2%{?dist}
 URL:            http://sourceforge.net/projects/watchdog/
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 %define sha512  watchdog=1c9c921570ec7ddc3e4ff88b2029f1c3865277e547fb8970575df4b61fdf1f06f443f49ad09f11c29d913ca7d6ab05c5b19ec049ac218a8bcebd20b1bf5f0bbd
 Source1:        watchdog.service
+
+Source2: license.txt
+%include %{SOURCE2}
 BuildRequires:  systemd-devel
 
 Requires:       systemd
@@ -66,5 +68,7 @@ make %{?_smp_mflags} check
 %config(noreplace) %{_sysconfdir}/watchdog.conf
 
 %changelog
+*   Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.16-2
+-   Release bump for SRP compliance
 *   Thu May 19 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.16-1
 -   Initial version

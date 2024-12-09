@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND MIT AND (Apache-2.0 OR LGPL-2.1-or-later) AND BSD-3-Clause AND Apache-2.0 AND CC-BY-4.0 AND LGPL-2.1-or-later AND GPL-1.0-or-later

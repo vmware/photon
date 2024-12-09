@@ -2,23 +2,23 @@
 %global gem_name io-event
 
 Name:           rubygem-io-event
-Version:        1.4.4
-Release:        2%{?dist}
+Version:        1.1.0
+Release:        5%{?dist}
 Summary:        An event loop.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512 %{gem_name}=8a11aecb9019a2154110b900e99fe19325daa554d15a60261093b56edae9c23ceec4d54616cd11be4a5dede5e73c4bba144d40621e80ad2203a3d2261f06d178
+%define sha512 %{gem_name}=b95e0a9c7e38e4116af1cdd3a00d3f5c59b676e11393789f3859d8b03310ccb177c0d240f00e6a0c184548f9316322a416ad4a4960da645e1c787d96b0495a11
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby-devel
 
 Requires: ruby
-
-BuildArch: noarch
 
 %description
 Provides low level cross-platform primitives for constructing
@@ -38,9 +38,13 @@ event loops, with support for select, kqueue, epoll and io_uring.
 %{gem_base}
 
 %changelog
-* Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.4-2
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.0-5
+- Release bump for SRP compliance
+* Wed Sep 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.0-4
+- Remove noarch
+* Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.0-3
 - Add gem macros
-* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.4-1
-- Update to version 1.4.4
-* Wed Oct 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-1
+* Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.0-2
+- Build from source
+* Fri Dec 15 2023 Shivani Agrawal <shivania2@vmware.com> 1.1.0-1
 - Initial version. Needed by fiber-local.

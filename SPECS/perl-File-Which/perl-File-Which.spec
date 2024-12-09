@@ -1,12 +1,14 @@
 Summary:        File-Which
 Name:           perl-File-Which
 Version:        1.27
-Release:        1%{?dist}
-License:        The Perl 5 License (Artistic 1 & GPL 1)
+Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-Which/
 Source0:        https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/File-Which-%{version}.tar.gz
 %define sha512  File-Which=8a6164c4af915e93924b1d62864e492b1c5067856e505c50b9a5cce0600d73bdcda5f7e35a9f37134d9e89949b45bbd0a5426cb56121604aea1a3cfe48d55e5c
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -51,6 +53,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/File::Which.3.gz
 
 %changelog
+*  Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.27-2
+-  Release bump for SRP compliance
 *  Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.27-1
 -  Automatic Version Bump
 *  Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.23-1

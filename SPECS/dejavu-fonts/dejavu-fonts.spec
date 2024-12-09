@@ -4,14 +4,16 @@
 Summary:        The DejaVu fonts are a font family based on the Vera Fonts.
 Name:           dejavu-fonts
 Version:        2.37
-Release:        1%{?dist}
-License:        GNU General Public License V2
+Release:        2%{?dist}
 URL:            https://dejavu-fonts.github.io/Download.html
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sourceforge.net/projects/dejavu/files/dejavu/%{version}/dejavu-fonts-ttf-%{version}.tar.bz2
 %define sha512 dejavu-fonts-ttf=bafa39321021097432777f0825d700190c23f917d754a4504722cd8946716c22c083836294dab7f3ae7cf20af63c4d0944f3423bf4aa25dbca562d1f30e00654
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildArch:      noarch
 
 %description
@@ -41,5 +43,7 @@ rm -fr %{buildroot}
 %{fontsdir}/*
 
 %changelog
+*   Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.37-2
+-   Release bump for SRP compliance
 *   Thu Jun 15 2023 Harinadh D <hdommaraju@vmware.com> 2.37-1
 -   Initial release

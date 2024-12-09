@@ -1,14 +1,16 @@
 Summary:        Persistent/Functional/Immutable data structures
 Name:           python3-pyrsistent
 Version:        0.18.1
-Release:        1%{?dist}
-License:        MIT License (MIT)
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pyrsistent
 Source0:        https://files.pythonhosted.org/packages/9f/0d/cbca4d0bbc5671822a59f270e4ce3f2195f8a899c97d0d5abb81b191efb5/pyrsistent-%{version}.tar.gz
 %define sha512  pyrsistent=353ad6e9165e1afdde37730a9289cf8dde28491abb688d702a8c8f5279e24f5ce387a5d00ac4a077322299f9c1a535781bcacdcd1cb914ddb317b3ca9641778b
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-six
@@ -53,6 +55,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.18.1-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.18.1-1
 - Automatic Version Bump
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.17.3-2

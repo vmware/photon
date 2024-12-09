@@ -1,12 +1,14 @@
 Name:           python3-nocaselist
 Version:        1.0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A case-insensitive list for Python
-License:        Apache Software License (Apache Software License 2.0)
 Group:          Development/Languages/Python
 Url:            https://files.pythonhosted.org/packages/fe/5c/bfb5a421027852e577491ebfa6f9e454066bd430b4b7007692776c45da62/nocaselist-1.0.4.tar.gz
 Source0:        nocaselist-%{version}.tar.gz
 %define sha512  nocaselist=1898bfda570450dd843fd07f25eb5abe1eed0e96be317b90b1f4b8dd847eeb6790f5deabf4f12228b932bf069f6fa6a73eeae1d6873aafe67f710a7bb47b6682
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -38,6 +40,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.6-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.6-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.6-1

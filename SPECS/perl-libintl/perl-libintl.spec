@@ -2,12 +2,14 @@
 Summary:       Internationalization library for Perl, compatible with gettext
 Name:          perl-libintl
 Version:       1.32
-Release:       2%{?dist}
-License:       LGPLv2+
+Release:       3%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/libintl-perl/
-Source:        https://cpan.metacpan.org/authors/id/G/GU/GUIDO/libintl-perl-%{version}.tar.gz
+Source0:       https://cpan.metacpan.org/authors/id/G/GU/GUIDO/libintl-perl-%{version}.tar.gz
 %define sha512 libintl-perl=fca6c8863dfd36c7604bc80a401e825eb707bc75016521c09006c34c170a41b009d30ec93d7e2a7f61caa1dbdf0333511c3d515d4fdc0fea32242eca68a7e35d
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Requires:      perl
@@ -32,7 +34,7 @@ make %{?_smp_mflags}
 %install
 make %{?_smp_mflags} pure_install DESTDIR=%{buildroot}
 find %{buildroot} -type f \( -name .packlist -o \
-			-name '*.bs' -size 0 \) -exec rm -f {} ';'
+                             -name '*.bs' -size 0 \) -exec rm -f {} ';'
 chmod -R u+w %{buildroot}/*
 
 %check
@@ -44,6 +46,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man?/*
 
 %changelog
+*   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.32-3
+-   Release bump for SRP compliance
 *   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.32-2
 -   Rebuild for perl version upgrade to 5.36.0
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.32-1

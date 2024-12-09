@@ -4,16 +4,16 @@ Version:        1.2.4
 Release:        2%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
-License:        GPLv2+
-URL:            http://netfilter.org/projects/libnftnl
-Distribution:   Photon
-
-Source0: https://netfilter.org/projects/libnftnl/files/%{name}-%{version}.tar.bz2
+URL:            http://netfilter.org/projects/libnftnl/
+Source0:        https://netfilter.org/projects/libnftnl/files/%{name}-%{version}.tar.bz2
 %define sha512 %{name}-%{version}=5375d1d15627aabf25129433630395f53009b22a255fcd113b302af7f2f0a234fd54c827b0ef1c8fd3a13e272a1696f780560672d4af6abad0e19805f9d56326
 
-BuildRequires:  libmnl-devel
+Source1: license.txt
+%include %{SOURCE1}
+Distribution:   Photon
 
-Requires: libmnl
+BuildRequires:  libmnl-devel
+BuildRequires:  jansson-devel
 
 %description
 libnftnl is a userspace library providing a low-level netlink programming interface (API) to the in-kernel nf_tables subsystem.
@@ -22,8 +22,6 @@ libnftnl is a userspace library providing a low-level netlink programming interf
 Summary:    Development files for %{name}
 Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
-Requires:   libmnl-devel
-
 %description    devel
 Development files for %{name}
 
@@ -31,17 +29,16 @@ Development files for %{name}
 %autosetup -p1
 
 %build
-%configure \
-  --disable-static \
-  --disable-silent-rules
-
-%make_build
-
-%install
-%make_install %{?_smp_mflags}
+%configure  --disable-static --disable-silent-rules --with-json-parsing
+%make_build %{?_smp_mflags}
 
 %check
-%make_build check
+# make doesn't support _smp_mflags
+make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
+%install
+%make_install
+find %{buildroot} -name '*.la' -delete
 
 %ldconfig_scriptlets
 
@@ -57,8 +54,8 @@ Development files for %{name}
 %{_includedir}/%{name}
 
 %changelog
-* Wed Sep 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.4-2
-- Fix devel package requires
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.4-2
+- Release bump for SRP compliance
 * Thu Jan 05 2023 Susant sahani <ssahani@vmware.com> 1.2.4-1
 - Version bump
 * Tue Aug 30 2022 Susant sahani <ssahani@vmware.com> 1.2.3-1

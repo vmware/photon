@@ -1,8 +1,7 @@
 Summary:    RELP Library
 Name:       librelp
 Version:    1.10.0
-Release:    5%{?dist}
-License:    GPLv3+
+Release:    6%{?dist}
 URL:        http://www.librelp.com
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
 %define sha512 %{name}=a38840231902bec034edb497166deded7577c989e4f735e406c8488384972925de1ca6132b3080472f7919d2439559c8774c02a49c356e90ad791dfbba2a4865
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  gnutls-devel
 BuildRequires:  autogen
@@ -73,7 +75,9 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.0-5
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.0-6
+- Release bump for SRP compliance
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.0-5
 - Bump version as a part of gnutls upgrade
 * Tue Sep 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.0-4
 - Remove .la files

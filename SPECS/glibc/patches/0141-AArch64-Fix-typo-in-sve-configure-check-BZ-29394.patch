@@ -1,0 +1,53 @@
+From c21dfb30188557fb39c8016a60cc88b3b87f3f55 Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wdijkstr@arm.com>
+Date: Thu, 11 Aug 2022 17:52:00 +0100
+Subject: [PATCH 141/175] AArch64: Fix typo in sve configure check (BZ# 29394)
+
+Fix a typo in the SVE configure check. This fixes [BZ# 29394].
+
+(cherry picked from commit 12182ba18dabda791a4f63a11ee2e9d828f40f9b)
+---
+ sysdeps/aarch64/configure    | 6 +++---
+ sysdeps/aarch64/configure.ac | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/sysdeps/aarch64/configure b/sysdeps/aarch64/configure
+index bf972122b199e1dd7ef04c58dee99ed864274174..2130f6b8f8b423fbdc97b066e9cfe2cd977aa792 100644
+--- a/sysdeps/aarch64/configure
++++ b/sysdeps/aarch64/configure
+@@ -303,7 +303,7 @@ aarch64-variant-pcs = $libc_cv_aarch64_variant_pcs"
+ # Check if asm support armv8.2-a+sve
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SVE support in assembler" >&5
+ $as_echo_n "checking for SVE support in assembler... " >&6; }
+-if ${libc_cv_asm_sve+:} false; then :
++if ${libc_cv_aarch64_sve_asm+:} false; then :
+   $as_echo_n "(cached) " >&6
+ else
+   cat > conftest.s <<\EOF
+@@ -321,8 +321,8 @@ else
+ fi
+ rm -f conftest*
+ fi
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_sve" >&5
+-$as_echo "$libc_cv_asm_sve" >&6; }
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv_aarch64_sve_asm" >&5
++$as_echo "$libc_cv_aarch64_sve_asm" >&6; }
+ if test $libc_cv_aarch64_sve_asm = yes; then
+   $as_echo "#define HAVE_AARCH64_SVE_ASM 1" >>confdefs.h
+ 
+diff --git a/sysdeps/aarch64/configure.ac b/sysdeps/aarch64/configure.ac
+index 51253d98025b6f5956575558e459d72e0763c674..85c6f765082811f5e8312eebda8d615eabcf39a1 100644
+--- a/sysdeps/aarch64/configure.ac
++++ b/sysdeps/aarch64/configure.ac
+@@ -88,7 +88,7 @@ EOF
+ LIBC_CONFIG_VAR([aarch64-variant-pcs], [$libc_cv_aarch64_variant_pcs])
+ 
+ # Check if asm support armv8.2-a+sve
+-AC_CACHE_CHECK(for SVE support in assembler, libc_cv_asm_sve, [dnl
++AC_CACHE_CHECK([for SVE support in assembler], [libc_cv_aarch64_sve_asm], [dnl
+ cat > conftest.s <<\EOF
+         ptrue p0.b
+ EOF
+-- 
+2.35.6
+

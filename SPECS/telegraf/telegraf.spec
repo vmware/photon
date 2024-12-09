@@ -5,8 +5,7 @@
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
 Version:          1.28.1
-Release:          2%{?dist}
-License:          MIT
+Release:          7%{?dist}
 URL:              https://github.com/influxdata/telegraf
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -20,6 +19,9 @@ Source1: https://github.com/wavefrontHQ/telegraf/archive/%{name}-plugin-%{plugin
 
 Source2: %{name}.conf
 Source3: %{name}.sysusers
+
+Source4: license.txt
+%include %{SOURCE4}
 
 Patch0: fix-compile-error.patch
 
@@ -102,23 +104,33 @@ systemctl daemon-reload
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.28.1-7
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.28.1-6
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.28.1-5
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.28.1-4
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.28.1-3
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.28.1-2
 - Bump up version to compile with new go
 * Tue Oct 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.28.1-1
 - Upgrade to v1.28.1
 - Change homedir ownership
-* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.1-6
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.1-5
 - Bump up version to compile with new go
-* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.1-5
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.1-4
 - Bump up version to compile with new go
-* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.27.1-4
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.27.1-3
 - Resolving systemd-rpm-macros for group creation
-* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.1-3
-- Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.1-2
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.1-2
 - Bump up version to compile with new go
 * Tue Jun 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.27.1-1
 - Update to 1.27.1, Fixes second level CVEs
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.18.2-9
+- Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.18.2-8
 - Bump up version to compile with new go
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.18.2-7

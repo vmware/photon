@@ -19,7 +19,7 @@ index ade88bb..28524ba 100644
  	bool load_warning = FALSE;
  	bool conftest = FALSE;
 +	bool is_hcx_enabled = false;
- 
+
  	library_init(NULL, "starter");
  	atexit(library_deinit);
 @@ -839,7 +840,33 @@ int main (int argc, char **argv)
@@ -67,7 +67,7 @@ index 147a32e..80e0620 100644
  	int count;
 +	int result = 0;
 +	bool is_hcx_enabled = false;
- 
+
  	if (msg->length == UINT16_MAX)
  	{
 @@ -106,10 +108,19 @@ static int send_stroke_msg(stroke_msg_t *msg)
@@ -98,12 +98,12 @@ index 147a32e..80e0620 100644
 -	return 0;
 +	return result;
  }
- 
+
  static char* connection_name(starter_conn_t *conn)
 @@ -317,6 +328,15 @@ int starter_stroke_initiate_conn(starter_conn_t *conn)
  	return send_stroke_msg(msg);
  }
- 
+
 +int starter_stroke_check_conn(starter_conn_t *conn)
 +{
 +	stroke_msg_t *msg;
@@ -128,6 +128,6 @@ index 5450403..2d8fbd5 100644
  int starter_stroke_add_ca(starter_ca_t *ca);
  int starter_stroke_del_ca(starter_ca_t *ca);
  int starter_stroke_configure(starter_config_t *cfg);
--- 
+--
 2.35.6
 

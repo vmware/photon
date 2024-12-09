@@ -1,15 +1,19 @@
 Summary:        nghttp2 is an implementation of HTTP/2 and its header compression algorithm, HPACK.
 Name:           nghttp2
-Version:        1.48.0
-Release:        7%{?dist}
-License:        MIT
+Version:        1.57.0
+Release:        3%{?dist}
 URL:            https://nghttp2.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/nghttp2/nghttp2/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=77c22371290f77e8a538b9efea225d23567cc27cb60b71703cbcb057839b5f117cf50796aa82bf4518f22b38a5773e90a1c273eafff4b17c435ac5858bdf7c6f
+%define sha512 %{name}=d914eb48afd1ea182c1b2a454bf5e7963a7e28165f1d6d29bb83dd61a1b611c8c469e72a7a22daf23b8037f6e5ae9d4e791150b7d135746c1a5ec71ceb777f92
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0:  CVE-2024-28182.patch
 
 BuildRequires:  c-ares-devel
 BuildRequires:  openssl-devel
@@ -59,13 +63,13 @@ These are the header files of nghttp2.
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.48.0-7
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.48.0-6
-- Bump version as a part of libxml2 upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.48.0-5
-- Bump version as a part of openssl upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.48.0-4
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.57.0-3
+- Release bump for SRP compliance
+* Fri Apr 05 2024 Harinadh D <hdommaraju@vmware.com> 1.57.0-2
+- Fix for CVE-2024-28182
+* Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.57.0-1
+- Upgrade to version 1.57.0
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.48.0-4
 - Bump version as a part of libxml2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.48.0-3
 - Bump version as a part of zlib upgrade

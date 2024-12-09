@@ -3,8 +3,7 @@
 Summary:        GNU Ubiquitous Intelligent Language for Extensions
 Name:           guile
 Version:        2.2.7
-Release:        6%{?dist}
-License:        LGPLv3+
+Release:        7%{?dist}
 URL:            http://www.gnu.org/software/guile
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/guile/%{name}-%{version}.tar.gz
 %define sha512 %{name}=ad11885ffeb7655ef6c8543e67233992dc37bdcf91ed82188e6a144169c6b7d4e31cf7a6d01509c573d00904cb002719b851f71cdf1359a86de401daf613d773
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libltdl-devel
 BuildRequires:  libunistring-devel
@@ -59,8 +61,10 @@ rm -f %{buildroot}%{_libdir}/*.scm \
       %{buildroot}%{_infodir}/* \
       %{buildroot}%{_libdir}/*.la
 
+%if 0%{?with_check}
 %check
-%make_build check
+make %{?_smp_mflags} check
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -82,8 +86,10 @@ rm -f %{buildroot}%{_libdir}/*.scm \
 %{_datadir}/%{name}/*
 
 %changelog
-* Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-6
-- Fix devel package requires
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.2.7-7
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2.7-6
+- Release bump for SRP compliance
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-5
 - Bump version as a part of readline upgrade
 * Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-4

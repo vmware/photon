@@ -1,19 +1,22 @@
 Summary:        Pygments is a syntax highlighting package written in Python.
 Name:           python3-Pygments
 Version:        2.13.0
-Release:        3%{?dist}
-License:        BSD
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Pygments
 
-Source0: https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-%{version}.tar.gz
-%define sha512 Pygments=d492acf112423fa997f35d6d3cae18b89bf11619c696879c6df49697dca933b6d54d7cb22907e06812e0a562f03e8ed5ccefde5247bc1c51cf2d3d69e7d65422
+Source0:        https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-%{version}.tar.gz
+%define sha512  Pygments=d492acf112423fa997f35d6d3cae18b89bf11619c696879c6df49697dca933b6d54d7cb22907e06812e0a562f03e8ed5ccefde5247bc1c51cf2d3d69e7d65422
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+
 %if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -42,14 +45,26 @@ it is usable as a command-line tool and as a library.
 %install
 %{py3_install}
 
+%check
+#pushd ../p3dir
+#easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+#$easy_install_3 nose
+#PYTHON=python3 make test
+#popd
+#test incompatible with python3.7
+
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 %{_bindir}/*
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.13.0-3
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.13.0-5
+- Release bump for SRP compliance
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.13.0-4
+- Remove standalone license exceptions
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13.0-3
+- Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.13.0-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.13.0-1

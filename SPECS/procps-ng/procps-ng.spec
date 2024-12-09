@@ -1,8 +1,7 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        4.0.4
-Release:        1%{?dist}
-License:        GPLv2
+Release:        3%{?dist}
 URL:            https://sourceforge.net/projects/procps-ng
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
 %define sha512 %{name}=94375544e2422fefc23d7634063c49ef1be62394c46039444f85e6d2e87e45cfadc33accba5ca43c96897b4295bfb0f88d55a30204598ddb26ef66f0420cefb4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: ncurses-devel
 
@@ -45,10 +47,10 @@ if [ %{_host} != %{_build} ]; then
 fi
 
 %configure \
-  --docdir=%{_docdir}/%{name}-%{version} \
-  --disable-static \
-  --disable-kill \
-  --disable-silent-rules
+   --docdir=%{_docdir}/%{name}-%{version} \
+   --disable-static \
+   --disable-kill \
+   --disable-silent-rules
 
 %make_build
 
@@ -94,7 +96,7 @@ rm -rf %{buildroot}
 %{_sbindir}/sysctl
 %{_sbindir}/pidof
 %_datadir/locale/*
-%{_docdir}/%{name}-*/*
+%{_docdir}/procps-ng-*/*
 %{_mandir}/man8/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
@@ -105,17 +107,21 @@ rm -rf %{buildroot}
 %{_includedir}/libproc2/*.h
 %{_libdir}/pkgconfig/libproc2.pc
 %{_libdir}/*.so
-%{_mandir}/man3/*.gz
+%{_mandir}/man3/*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.4-3
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.0.4-2
+- Release bump for SRP compliance
 * Mon Apr 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.0.4-1
 - Upgrade to v4.0.4
-* Mon Jan 22 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.0.0-4
+* Tue Jan 16 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.0.0-4
 - Patched CVE-2023-4016
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 4.0.0-3
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 4.0.0-3
 - Bump version as a part of ncurses upgrade to v6.4
 * Thu Mar 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.0-2
 - Remove invalid symlink

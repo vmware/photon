@@ -1,8 +1,7 @@
 Summary:        gptfdisk-1.0.4
 Name:           gptfdisk
 Version:        1.0.9
-Release:        3%{?dist}
-License:        GPLv2+
+Release:        4%{?dist}
 URL:            http://sourceforge.net/projects/gptfdisk
 Group:          System Environment/Filesystem and Disk management
 Vendor:         VMware, Inc.
@@ -11,20 +10,24 @@ Distribution:   Photon
 Source0: http://downloads.sourceforge.net/project/gptfdisk/%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=c2489ac7e196cb53b9fdb18d0e421571eca43c366de8922c5c7f550aadf192558e7af69b181c30747d6cf607c1670126223465eaa5e231cc589402d94a4e97a2
 
+Source1: license.txt
+%include %{SOURCE1}
+
 # Patch0 taken from:
 # http://ftp.oregonstate.edu/.1/blfs/conglomeration/gptfdisk/gptfdisk-1.0.9-convenience-1.patch
 Patch0: %{name}-%{version}-convenience-1.patch
 Patch1: gptfdisk-Makefile.patch
+Patch2: 0001-Updated-guid.cc-to-deal-with-minor-change-in-libuuid.patch
 
-BuildRequires:  popt-devel
-BuildRequires:  ncurses-devel
-BuildRequires:  util-linux-devel
+BuildRequires: popt-devel
+BuildRequires: ncurses-devel
+BuildRequires: util-linux-devel
 
-Requires:       popt >= 1.16
-Requires:       ncurses
-Requires:       ncurses-devel
-Requires:       libstdc++
-Requires:       util-linux
+Requires: popt >= 1.16
+Requires: ncurses
+Requires: ncurses-devel
+Requires: libstdc++
+Requires: util-linux
 
 %description
 The gptfdisk package is a set of programs for creation and maintenance of GUID Partition
@@ -58,9 +61,11 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.9-3
-- Bump version as a part of util-linux upgrade
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 1.0.9-2
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.9-4
+- Release bump for SRP compliance
+* Wed Sep 20 2023 Oliver Kurth <okurth@vmware.com> 1.0.9-3
+- add patch to fix "Unable to generate a proper UUID" error
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 1.0.9-2
 - Bump version as a part of ncurses upgrade to v6.4
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.9-1
 - Upgrade to v1.0.9

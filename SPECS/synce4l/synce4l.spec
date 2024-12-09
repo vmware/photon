@@ -1,25 +1,23 @@
 Summary:        Linux SyncE implementation
 Name:           synce4l
-Version:        0.8.0
-Release:        1%{?dist}
-License:        GPL v2
+Version:        1.0.0
+Release:        2%{?dist}
 Group:          Productivity/Networking/Other
 URL:            https://github.com/intel/synce4l
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/intel/synce4l/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=62be68c7c4b0476b8e7eb217fe90f5688db7415d4983abcb934c7ea1733918551228041816ce3525a8d59b294a15b8c60d0eca81ff425ff48fce7839bcde8dff
+%define sha512 %{name}=b97656a50ee4cabdaddde166c2b74b16ebca339defb69e265c5222198c6d469af4e30328c3af47dcbe916f8474f04369e49f5fe98feb509cf7bb41e69e5d429b
 
 Source1: %{name}.service
-Source2: %{name}.conf.default
 
-Patch0: version.patch
-Patch1: gcc-flags.patch
-Patch2: warning-fix.patch
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  ethtool
 BuildRequires:  systemd-devel
+BuildRequires:  libnl-devel
 
 Requires: systemd
 Requires: ethtool
@@ -48,7 +46,7 @@ mkdir -p %{buildroot}%{_unitdir} \
          %{buildroot}%{_sysconfdir}
 
 install -Dm 0644 %{SOURCE1} %{buildroot}%{_unitdir}
-install -Dm 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}.conf
+install -Dm 0644 configs/%{name}_dpll.cfg %{buildroot}%{_sysconfdir}/%{name}.conf
 
 echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 
@@ -73,6 +71,10 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}.8.gz
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0.0-2
+- Release bump for SRP compliance
+* Wed Jan 24 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 1.0.0-1
+- Update to 1.0.0
 * Mon Mar 06 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.8.0-1
 - Add patch to show version
 - Initial version.

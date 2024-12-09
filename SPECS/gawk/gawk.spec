@@ -1,8 +1,7 @@
 Summary:      Contains programs for manipulating text files
 Name:         gawk
 Version:      5.1.1
-Release:      2%{?dist}
-License:      GPLv3
+Release:      4%{?dist}
 URL:          http://www.gnu.org/software/gawk
 Group:        Applications/File
 Vendor:       VMware, Inc.
@@ -10,6 +9,9 @@ Distribution: Photon
 
 Source0: http://ftp.gnu.org/gnu/gawk/%{name}-%{version}.tar.xz
 %define sha512 %{name}=794538fff03fdb9a8527a6898b26383d01988e8f8456f8d48131676387669a8bb3e706fa1a17f6b6316ddba0ebe653c24ad5dd769f357de509d6ec25f3ff1a43
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Provides:   /bin/awk
 Provides:   /bin/gawk
@@ -34,9 +36,10 @@ The Gawk package contains programs for manipulating text files.
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{version}
-cp -v doc/{awkforai.txt,*.{eps,pdf,jpg}} %{buildroot}%{_docdir}/%{name}-%{version}
+install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+cp -v doc/{awkforai.txt,*.{eps,pdf,jpg}} %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 rm -rf %{buildroot}%{_infodir}
+find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %find_lang %{name}
 
@@ -54,13 +57,17 @@ make %{?_smp_mflags} check
 %{_libdir}/%{name}/*
 %{_includedir}/*
 %{_libexecdir}/*
-%{_datadir}/awk/*
-%{_docdir}/%{name}-%{version}/*
+%{_datarootdir}/awk/*
+%{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %{_sysconfdir}/profile.d/gawk.csh
 %{_sysconfdir}/profile.d/gawk.sh
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.1.1-4
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.1.1-3
+- Release bump for SRP compliance
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.1-2
 - Bump version as a part of readline upgrade
 * Thu Dec 02 2021 Susant Sahani <ssahani@vmware.com> 5.1.1-1

@@ -1,12 +1,14 @@
 Name:           kexec-tools
 Summary:        The kexec kdump tools
 Version:        2.0.25
-Release:        3%{?dist}
-License:        GPLv2
+Release:        4%{?dist}
 Group:          Applications/System
 Url:            https://www.kernel.org/doc/Documentation/kdump/kdump.txt
 Source0:        https://www.kernel.org/pub/linux/utils/kernel/kexec/%{name}-%{version}.tar.xz
 %define sha512  kexec-tools=6fd3fe11d428c5bb2ce318744146e03ddf752cc77632064bdd7418ef3ad355ad2e2db212d68a5bc73554d78f786901beb42d72bd62e2a4dae34fb224b667ec6b
+
+Source1: license.txt
+%include %{SOURCE1}
 Patch0:         kexec-tools-disable-test.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -35,6 +37,8 @@ make install DESTDIR=%{buildroot} %{?_smp_mflags}
 %doc TODO
 
 %changelog
+*   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.25-4
+-   Release bump for SRP compliance
 *   Mon Apr 17 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.0.25-3
 -   Enable build for ARM
 *   Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.25-2

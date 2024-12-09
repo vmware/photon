@@ -1,22 +1,20 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.9.14p3
+Version:        1.9.15p5
 Release:        2%{?dist}
-License:        ISC
-URL:            https://www.sudo.ws
+URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha512  %{name}=d4af836e3316c35d8b81a2c869ca199e8f2d5cb26dbd98b8ad031f29be62b154452afdf5a506ddabad21b80e5988a49f1f7c8f1ec44718ffcbd7e89ccbdef612
+%define sha512  %{name}=ebac69719de2fe7bd587924701bdd24149bf376a68b17ec02f69b2b96d4bb6fa5eb8260a073ec5ea046d3ac69bb5b1c0b9d61709fe6a56f1f66e40817a70b15a
 Source1:        %{name}.sysusers
 
+Source2: license.txt
+%include %{SOURCE2}
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
-BuildRequires:  systemd-rpm-macros
-
 Requires:       Linux-PAM
 Requires:       shadow
 
@@ -25,7 +23,7 @@ The Sudo package allows a system administrator to give certain users (or groups 
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
 
 %prep
-%autosetup -p1
+%autosetup -n sudo-%{version}
 
 %build
 %configure --host=%{_host} --build=%{_build} \
@@ -41,18 +39,19 @@ the ability to run some (or all) commands as root or another user while logging 
     --with-env-editor \
     --with-pam \
     --with-passprompt="[sudo] password for %p"
-
-%make_build
+make %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_mflags}
-install -v -dm755 %{buildroot}%{_docdir}/%{name}-%{version}
-find %{buildroot}%{_libdir} -name '*.so~' -delete
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
+install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
+find %{buildroot}/%{_libdir} -name '*.la' -delete
+find %{buildroot}/%{_libdir} -name '*.so~' -delete
 sed -i '/@includedir.*/i \
 %wheel ALL=(ALL) ALL \
-%sudo   ALL=(ALL) ALL' %{buildroot}%{_sysconfdir}/sudoers
-install -vdm755 %{buildroot}%{_sysconfdir}/pam.d
-cat > %{buildroot}%{_sysconfdir}/pam.d/sudo << EOF
+%sudo   ALL=(ALL) ALL' %{buildroot}/etc/sudoers
+install -vdm755 %{buildroot}/etc/pam.d
+cat > %{buildroot}/etc/pam.d/sudo << EOF
 #%%PAM-1.0
 auth       include      system-auth
 account    include      system-account
@@ -60,8 +59,8 @@ password   include      system-password
 session    include      system-session
 session    required     pam_env.so
 EOF
-mkdir -p %{buildroot}%{_tmpfilesdir}
-touch %{buildroot}%{_tmpfilesdir}/sudo.conf
+mkdir -p %{buildroot}%{_libdir}/tmpfiles.d
+touch %{buildroot}%{_libdir}/tmpfiles.d/sudo.conf
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
@@ -83,28 +82,35 @@ rm -rf %{buildroot}/*
 %files -f %{name}.lang
 %defattr(-,root,root)
 %attr(0440,root,root) %config(noreplace) %{_sysconfdir}/sudoers
-%attr(0640,root,root) %config(noreplace) %{_sysconfdir}/sudo.conf
-%attr(0640,root,root) %config(noreplace) %{_sysconfdir}/sudo_logsrvd.conf
+%attr(0640,root,root) %config(noreplace) /etc/sudo.conf
+%attr(0640,root,root) %config(noreplace) /etc/sudo_logsrvd.conf
 %attr(0750,root,root) %dir %{_sysconfdir}/sudoers.d/
 %config(noreplace) %{_sysconfdir}/pam.d/sudo
 %{_bindir}/*
-%{_datadir}/locale/*
 %{_includedir}/*
 %{_sbindir}/*
-%{_libexecdir}/sudo/*.so
-%{_libexecdir}/sudo/*.so.*
+%{_prefix}/libexec/sudo/*.so
+%{_prefix}/libexec/sudo/*.so.*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_docdir}/%{name}-%{version}/*
-%attr(0644,root,root) %{_tmpfilesdir}/sudo.conf
-%exclude %{_sysconfdir}/sudoers.dist
+%{_datarootdir}/locale/*
 %{_sysusersdir}/%{name}.sysusers
+%attr(0644,root,root) %{_libdir}/tmpfiles.d/sudo.conf
+%exclude  /etc/sudoers.dist
+%exclude %{_prefix}/libexec/sudo/*.la
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.9.15p5-2
+- Release bump for SRP compliance
+* Fri Jan 05 2024 Mukul Sikka <msikka@vmware.com> 1.9.15p5-1
+- Upgrade sudo to v1.9.15p5
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.9.14p3-2
 - Resolving systemd-rpm-macros for group creation
 * Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 1.9.14p3-1
+- Version update
+* Thu Jun 01 2023 Anmol Jain <anmolja@vmware.com> 1.9.13p3-1
 - Version update
 * Wed Jan 18 2023 Shivani Agarwal <shivania2@vmware.com> 1.9.12p1-2
 - Fix CVE-2023-22809

@@ -14,7 +14,7 @@ Source0: https://cpan.metacpan.org/authors/id/L/LE/LEEJO/CGI-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  perl
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils >= 9.1-7
 BuildRequires:  findutils
 BuildRequires:  make
 BuildRequires:  sed

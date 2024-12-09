@@ -8,7 +8,6 @@
 
 # Determine the location of the LDB modules directory
 %global ldb_modulesdir %{_libdir}/ldb/modules/ldb
-%global ldb_version 2.7.1
 
 # directory variables
 %global servicename sssd
@@ -25,9 +24,8 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.9.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://github.com/SSSD/sssd
-License:        GPLv3+
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -36,6 +34,9 @@ Source0: https://github.com/SSSD/sssd/releases/download/%{version}/%{name}-%{ver
 %define sha512 sssd=9546cf074628f32137b16ca0c763988785271124244b645d1e786762e8578f10d983793a29bffcc004b064452fe8d465476a3041688d2f3c11c2751fb5bec3e2
 
 Source1: sssd.conf
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0: 0001-replace-python-with-python3-in-sss_obfuscate.patch
 Patch1: CVE-2023-3758.patch
@@ -93,7 +94,7 @@ BuildRequires: libdhash-devel
 BuildRequires: libini-config-devel
 BuildRequires: e2fsprogs-devel
 BuildRequires: Linux-PAM-devel
-BuildRequires: gettext-devel
+BuildRequires: gettext
 BuildRequires: libwbclient
 BuildRequires: jansson-devel
 BuildRequires: keyutils-devel
@@ -128,12 +129,12 @@ the existing back ends.
 
 %package common
 Summary: Common files for the SSSD
-License: GPLv3+
 # libsss_simpleifp is removed starting 2.9.0
 Obsoletes: libsss_simpleifp < 2.9.0
 Obsoletes: libsss_simpleifp-debuginfo < 2.9.0
+
 # Requires
-Requires: samba-client >= %{ldb_version}
+Requires: samba-client
 Requires: sssd-client = %{version}-%{release}
 Requires: libsss_sudo = %{version}-%{release}
 Requires: libsss_autofs = %{version}-%{release}
@@ -153,7 +154,6 @@ subpackages such as sssd-ldap.
 
 %package client
 Summary: SSSD Client libraries for NSS and PAM
-License: LGPLv3+
 Requires: libsss_nss_idmap = %{version}-%{release}
 Requires: libsss_idmap = %{version}-%{release}
 Requires: e2fsprogs-libs
@@ -167,7 +167,6 @@ service.
 
 %package -n libsss_sudo
 Summary: A library to allow communication between SUDO and SSSD
-License: LGPLv3+
 Conflicts: sssd-common < %{version}-%{release}
 
 %description -n libsss_sudo
@@ -175,7 +174,6 @@ A utility library to allow communication between SUDO and SSSD
 
 %package -n libsss_autofs
 Summary: A library to allow communication between Autofs and SSSD
-License: LGPLv3+
 Conflicts: sssd-common < %{version}-%{release}
 
 %description -n libsss_autofs
@@ -183,7 +181,6 @@ A utility library to allow communication between Autofs and SSSD
 
 %package tools
 Summary: Userspace tools for use with the SSSD
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 # required by sss_obfuscate
 Requires: python3-sss = %{version}-%{release}
@@ -203,7 +200,6 @@ Provides several administrative tools:
 
 %package -n python3-sssdconfig
 Summary: SSSD and IPA configuration file manipulation classes and functions
-License: GPLv3+
 BuildArch: noarch
 Requires: python3
 
@@ -212,7 +208,6 @@ Provides python3 files for manipulation SSSD and IPA configuration files.
 
 %package -n python3-sss
 Summary: Python3 bindings for sssd
-License: LGPLv3+
 Requires: sssd-common = %{version}-%{release}
 Requires: python3
 Requires: libunistring
@@ -227,7 +222,6 @@ Provides python3 bindings:
 
 %package -n python3-sss-murmur
 Summary: Python3 bindings for murmur hash function
-License: LGPLv3+
 Requires: python3
 
 %description -n python3-sss-murmur
@@ -235,7 +229,6 @@ Provides python3 module for calculating the murmur hash version 3
 
 %package ldap
 Summary: The LDAP back end of the SSSD
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 Requires: sssd-krb5-common = %{version}-%{release}
 Requires: libsss_idmap = %{version}-%{release}
@@ -247,7 +240,6 @@ from and authenticate against an LDAP server.
 
 %package krb5-common
 Summary: SSSD helpers needed for Kerberos and GSSAPI authentication
-License: GPLv3+
 # cyrus-sasl should contain gssapi
 Requires: cyrus-sasl
 Requires: sssd-common = %{version}-%{release}
@@ -258,7 +250,6 @@ Kerberos user or host authentication.
 
 %package krb5
 Summary: The Kerberos authentication back end for the SSSD
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 Requires: sssd-krb5-common = %{version}-%{release}
 
@@ -268,7 +259,6 @@ against a Kerberos server.
 
 %package common-pac
 Summary: Common files needed for supporting PAC processing
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 Requires: libsss_idmap = %{version}-%{release}
 
@@ -278,7 +268,6 @@ for handling Kerberos PACs.
 
 %package ipa
 Summary: The IPA back end of the SSSD
-License: GPLv3+
 Requires: samba-client-libs
 Requires: sssd-common = %{version}-%{release}
 Requires: sssd-krb5-common = %{version}-%{release}
@@ -293,7 +282,6 @@ from and authenticate against an IPA server.
 
 %package ad
 Summary: The AD back end of the SSSD
-License: GPLv3+
 Requires: samba-client-libs
 Requires: sssd-common = %{version}-%{release}
 Requires: sssd-krb5-common = %{version}-%{release}
@@ -318,9 +306,7 @@ identity data from and authenticate against an Active Directory server.
 
 %package proxy
 Summary: The proxy back end of the SSSD
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
-Requires: libsss_certmap = %{version}-%{release}
 
 %description proxy
 Provides the proxy back end which can be used to wrap an existing NSS and/or
@@ -328,14 +314,12 @@ PAM modules to leverage SSSD caching.
 
 %package -n libsss_idmap
 Summary: FreeIPA Idmap library
-License: LGPLv3+
 
 %description -n libsss_idmap
 Utility library to convert SIDs to Unix uids and gids
 
 %package -n libsss_idmap-devel
 Summary: FreeIPA Idmap library
-License: LGPLv3+
 Requires: libsss_idmap = %{version}-%{release}
 
 %description -n libsss_idmap-devel
@@ -343,14 +327,12 @@ Utility library to SIDs to Unix uids and gids
 
 %package -n libipa_hbac
 Summary: FreeIPA HBAC Evaluator library
-License: LGPLv3+
 
 %description -n libipa_hbac
 Utility library to validate FreeIPA HBAC rules for authorization requests
 
 %package -n libipa_hbac-devel
 Summary: FreeIPA HBAC Evaluator library
-License: LGPLv3+
 Requires: libipa_hbac = %{version}-%{release}
 
 %description -n libipa_hbac-devel
@@ -358,7 +340,6 @@ Utility library to validate FreeIPA HBAC rules for authorization requests
 
 %package -n python3-libipa_hbac
 Summary: Python3 bindings for the FreeIPA HBAC Evaluator library
-License: LGPLv3+
 Requires: libipa_hbac = %{version}-%{release}
 Requires: python3
 
@@ -368,14 +349,12 @@ used by Python applications.
 
 %package -n libsss_nss_idmap
 Summary: Library for SID and certificate based lookups
-License: LGPLv3+
 
 %description -n libsss_nss_idmap
 Utility library for SID and certificate based lookups
 
 %package -n libsss_nss_idmap-devel
 Summary: Library for SID and certificate based lookups
-License: LGPLv3+
 Requires: libsss_nss_idmap = %{version}-%{release}
 
 %description -n libsss_nss_idmap-devel
@@ -383,7 +362,6 @@ Utility library for SID and certificate based lookups
 
 %package -n python3-libsss_nss_idmap
 Summary: Python3 bindings for libsss_nss_idmap
-License: LGPLv3+
 Requires: libsss_nss_idmap = %{version}-%{release}
 Requires: python3
 
@@ -393,7 +371,6 @@ be used by Python applications.
 
 %package dbus
 Summary: The D-Bus responder of the SSSD
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 %{?systemd_requires}
 
@@ -404,7 +381,6 @@ the information from the SSSD to be transmitted over the system bus.
 %package polkit-rules
 Summary: Rules for polkit integration for SSSD
 Group: Applications/System
-License: GPLv3+
 Requires: polkit >= 0.106
 Requires: sssd-common = %{version}-%{release}
 
@@ -414,7 +390,6 @@ for smartcard support.
 
 %package winbind_idmap
 Summary: SSSD's idmap_sss Backend for Winbind
-License: GPLv3+ and LGPLv3+
 Requires: libsss_nss_idmap = %{version}-%{release}
 Requires: libsss_idmap = %{version}-%{release}
 Conflicts: sssd-common < %{version}-%{release}
@@ -425,7 +400,6 @@ and SIDs.
 
 %package nfs_idmap
 Summary: SSSD plug-in for NFSv4 rpc.idmapd
-License: GPLv3+
 Requires: libnfsidmap
 Conflicts: sssd-common < %{version}-%{release}
 
@@ -436,7 +410,6 @@ UIDs/GIDs to names and vice versa. It can be also used for mapping principal
 
 %package -n libsss_certmap
 Summary: SSSD Certificate Mapping Library
-License: LGPLv3+
 Conflicts: sssd-common < %{version}-%{release}
 
 %description -n libsss_certmap
@@ -444,7 +417,6 @@ Library to map certificates to users based on rules
 
 %package -n libsss_certmap-devel
 Summary: SSSD Certificate Mapping Library
-License: LGPLv3+
 Requires: libsss_certmap = %{version}-%{release}
 
 %description -n libsss_certmap-devel
@@ -452,7 +424,6 @@ Library to map certificates to users based on rules
 
 %package kcm
 Summary: An implementation of a Kerberos KCM server
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 %{?systemd_requires}
 
@@ -462,7 +433,6 @@ use the KCM: Kerberos credentials cache.
 
 %package idp
 Summary: Kerberos plugins and OIDC helper for external identity providers.
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 
 %description idp
@@ -502,8 +472,7 @@ autoreconf -ivf
 %make_build
 
 %install
-%make_install %{?_smp_mflags} || \
-    %make_install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 # Prepare language files
 %find_lang %{name}
@@ -997,30 +966,30 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
-* Fri Apr 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.9.4-1
+* Tue Dec 24 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.9.4-1
 - Upgrade to latest 2.9.4 and add patch for CVE-2023-3758
-* Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.2-13
-- Bump version as a part of dbus upgrade
-* Tue Apr 02 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-12
-- Version bump for gnutls upgrade
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.2-11
-- Bump version as a part of util-linux upgrade
-* Tue Jan 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-10
-- Version bump for gnutls upgrade
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.8.2-9
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.8.2-13
+- Release bump for SRP compliance
+* Wed Apr 24 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-12
+- Fix CVE-2023-3758
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.8.2-11
 - Bump version as a part of gnutls upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.8.2-8
-- Bump version as a part of openssl upgrade
-* Thu Nov 9 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.8.2-7
+* Mon Nov 27 2023 Harinadh D <hdommaraju@vmware.com> 2.8.2-10
+- Bump version as part of samba upgrade
+* Thu Nov 9 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.8.2-9
 - Remove autoconfiguration scripts
-* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.8.2-6
+* Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.8.2-8
+- Version bump as part of nghtttp2 upgrade
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.8.2-7
 - Bump version as a part of openldap v2.6.4 upgrade
+* Mon Jul 31 2023 Oliver Kurth <okurth@vmware.com> 2.8.2-6
+- bump version as part of samba update
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 2.8.2-5
 - Bump version as a part of krb5 upgrade
-* Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.8.2-4
-- Version bump as part of pcre2 update
-* Mon Jul 10 2023 Piyush Gupta <gpiyush@vmware.com> 2.8.2-3
+* Fri Jun 30 2023 Piyush Gupta <gpiyush@vmware.com> 2.8.2-4
 - Replace Requires and BuildRequires from nfs-utils to libnfsidmap.
+* Thu Jun 22 2023 Oliver Kurth <okurth@vmware.com> 2.8.2-3
+- bump version as part of samba and libldb update
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.8.2-2
 - Bump version as a part of zlib upgrade
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.8.2-1

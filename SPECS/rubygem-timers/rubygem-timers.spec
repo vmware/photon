@@ -9,10 +9,12 @@ Summary:        Schedule procs to run after a certain time, or at periodic inter
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  timers=075b9c530b62e91ec4de995d1fc88667aac71372ef455343059294f075d57d6bcd52a36e182bd6b735852c9bfd8f0319d676ae377aaf060b857f5f3060b9e7c2
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby >= 2.2.1
 
 BuildArch: noarch
@@ -33,8 +35,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.3.5-2
--   Bump Version to build with new ruby
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.3.5-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 4.3.5-1
 -   Automatic Version Bump
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3.2-1

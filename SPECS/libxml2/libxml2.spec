@@ -1,8 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.12.6
-Release:        1%{?dist}
-License:        MIT
+Release:        5%{?dist}
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -10,16 +9,24 @@ Distribution:   Photon
 
 Source0: https://download.gnome.org/sources/libxml2/2.12/%{name}-%{version}.tar.xz
 %define sha512 %{name}=19d6901c0f189813e8bd20ffdfbb29d8545ca30154d1f3cc82624d64e4db3cfbe8eef7e8ccc1e195289f1bf94bb50fefcf11a95badb0ddeb845b4e4ea5a819ac
-BuildRequires:  python3-devel
-BuildRequires:  python3-xml
-BuildRequires:  zlib-devel
-BuildRequires:  pkg-config
-BuildRequires:  readline-devel
-BuildRequires:  ncurses-devel
 
-Requires:  readline
-Requires:  ncurses-libs
-Requires:  zlib
+Source1: license.txt
+%include %{SOURCE1}
+
+#Note:   If you are fixing a CVE here, please check for the same in gettext libxml2
+Patch0:  libxml2-CVE-2024-34459.patch
+Patch1:  libxml2-CVE-2024-40896.patch
+
+BuildRequires: python3-devel
+BuildRequires: python3-xml
+BuildRequires: zlib-devel
+BuildRequires: pkg-config
+BuildRequires: readline-devel
+BuildRequires: ncurses-devel
+
+Requires: readline
+Requires: ncurses-libs
+Requires: zlib
 
 Provides:       pkgconfig(libxml-2.0)
 
@@ -88,14 +95,32 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.12.6-5
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.12.6-4
+- Release bump for SRP compliance
+* Mon Aug 19 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.6-3
+- Fix CVE-2024-40896
+* Tue Jun 11 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.12.6-2
+- Fix for CVE-2024-34459
 * Wed Mar 27 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.12.6-1
 - Update to v2.12.6
-* Mon Feb 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.12.5-1
+* Tue Mar 12 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.12.5-1
 - Update to v2.12.5
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 2.10.4-2
+* Mon Feb 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.11.4-5
+- Fix for CVE-2024-25062
+* Fri Oct 13 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.11.4-4
+- Fix for CVE-2023-45322
+* Fri Sep 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.11.4-3
+- Fix for CVE-2023-39615
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 2.11.4-2
 - Bump version as a part of ncurses upgrade to v6.4
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.10.4-1
-- Update to v2.10.4
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.11.4-1
+- Upgrade to v2.11.4
+* Wed May 17 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.14-8
+- Fix for CVE-2022-40304
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.14-7
+- Fix for CVE-2023-29469/CVE-2023-28484
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.14-6
 - Bump version as a part of zlib upgrade
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.9.14-5

@@ -1,14 +1,16 @@
 Summary:        Header files from the SPIR-V registry
 Name:           spirv-headers
 Version:        1.3.231.1
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 URL:            https://github.com/KhronosGroup/SPIRV-Headers/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/SPIRV-Headers-%{version}.tar.gz
 %define sha512  SPIRV-Headers-%{version}.tar.gz=d2c47127fd81430383e8656917f76933b713ca6cb93b2a9c16c9e0b125e2f62f8c497cab3a4fcc2a711decd911ec5d15f1eb0270add05442aff6672e08c890d7
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -58,5 +60,7 @@ rm -rf %{buildroot}/*
 %{_includedir}/spirv/
 
 %changelog
+*   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.3.231.1-2
+-   Release bump for SRP compliance
 *   Tue Nov 15 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.231.1-1
 -   initial version

@@ -5,8 +5,7 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.4
-Release:        2%{?dist}
-License:        MIT
+Release:        4%{?dist}
 URL:            http://invisible-island.net/ncurses
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -14,6 +13,9 @@ Distribution:   Photon
 
 Source0: https://invisible-island.net/archives/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
 %define sha512 %{name}=5f62eeeba3a826a9c7e447cfe673d3b1f176dd39c930ddfac2550531588dbe7c73c5cc99ef0b844629c6dcd3676d4a93b5cb78d607fee824bdccfc030bdb6541
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: ncurses-libs = %{version}-%{release}
 Requires: glibc
@@ -154,19 +156,16 @@ sh ./configure
 %{_mandir}/man5/*
 
 %files libs
-%defattr(-,root,root)
 %{_datadir}/terminfo/l/linux
 %{_datadir}/tabset/*
 %{_libdir}/terminfo
 %{_libdir}/lib*.so.6*
 
 %files compat
-%defattr(-,root,root)
 %{_libdir}/lib*.so.5*
 %{_bindir}/ncursesw5-config
 
 %files devel
-%defattr(-,root,root)
 %{_bindir}/ncursesw6-config
 %{_includedir}/*.h
 %{_libdir}/libpanelw.so
@@ -200,10 +199,14 @@ sh ./configure
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
-* Thu Oct 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.4-2
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.4-4
+- Release bump for SRP compliance
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 6.4-3
+- Bump version to generate SRP provenance file
+* Mon Oct 16 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 6.4-2
 - Avoid hard coded versioning
 - Check for source file existence before sym link creation.
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 6.4-1
+* Tue May 30 2023 Nitesh Kumar <kunitesh@vmware.com> 6.4-1
 - Version upgrade to 6.4 to fix CVE-2023-29491
 * Mon Oct 31 2022 Susant Sahani <ssahani@vmware.com> 6.3-1
 - Update to version 6.3.

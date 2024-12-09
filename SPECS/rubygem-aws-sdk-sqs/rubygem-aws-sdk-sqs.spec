@@ -3,16 +3,18 @@
 %global gem_name aws-sdk-sqs
 
 Name: rubygem-aws-sdk-sqs
-Version:        1.70.0
-Release:        1%{?dist}
+Version:        1.52.0
+Release:        2%{?dist}
 Summary:        Official AWS Ruby gem for Amazon Simple Queue Service (Amazon SQS).
 Group:          Development/Languages
-License:        Apache 2.0
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/aws-sdk-sqs-%{version}.gem
-%define sha512    aws-sdk-sqs=41b6d077927d0ab360a3ddd47751d991357146ecb4b3ea77c2cadffeff657e52526e7ced538110d760f035ef581c6a9f5339690a4ade919813e2cf9c3ae807fa
+%define sha512    aws-sdk-sqs=db747e42102a383d37c07a7d77f7ea600ec33e86c99cf817bff85a9271a1329385ae8f9f23ce9768f3712196b6d16184d2922f4d25bd7f8f319882011b54b657
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby
 
 Requires: rubygem-aws-sdk-core >= 3
@@ -35,8 +37,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.70.0-1
--   Update to version 1.70.0
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.52.0-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.52.0-1
 -   Automatic Version Bump
 *   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.34.0-1

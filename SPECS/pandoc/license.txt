@@ -1,0 +1,1 @@
+License: GFDL-1.2-no-invariants-only AND CC-BY-SA-4.0 AND CC-BY-SA-2.0 AND GFDL-1.1-no-invariants-or-later AND OFL-1.1-no-RFN AND TU-Berlin-2.0 AND BSD-2-Clause-Patent AND GPL-2.0-only AND GPL-2.0-or-later AND CERN-OHL-P-2.0 AND GPL-1.0-or-later AND BSD-4-Clause-Shortened AND GFDL-1.2-invariants-or-later AND CC-BY-SA-3.0

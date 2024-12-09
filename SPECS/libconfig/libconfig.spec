@@ -2,66 +2,56 @@ Summary:       C/C++ configuration file library
 Name:          libconfig
 Version:       1.7.3
 Release:       2%{?dist}
-License:       LGPLv2
 URL:           http://www.hyperrealm.com/libconfig
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
-
-Source0: %{name}-%{version}.tar.gz
+Source0:       %{name}-%{version}.tar.gz
 %define sha512 %{name}=3749bf9eb29bab0f6b14f4fc759f0c419ed27a843842aaabed1ec1fbe0faa8c93322ff875ca1291d69cb28a39ece86d512aec42c2140d566c38c56dc616734f4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 Libconfig is a simple library for processing structured configuration files,
 like this one: test.cfg. This file format is more compact and more readable than XML.
 And unlike XML, it is type-aware, so it is not necessary to do string parsing in application code.
 
-%package devel
-Summary:    Development files for libconfig
-Requires:   %{name} = %{version}-%{release}
-
-Conflicts: %{name} < 1.7.3-2%{?dist}
-
-%description devel
-Development libraries and headers for developing software with
-libconfig.
-
 %prep
-%autosetup -p1
+%autosetup
 
 %build
-autoreconf -vfi
+autoreconf -fi
 %configure --disable-static
-
-%make_build
+make %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_flags}
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
-rm -rf %{buildroot}%{_infodir}/dir
+rm -rf %{buildroot}%{_libdir}/*.la \
+       %{buildroot}%{_infodir}/dir
 
 %check
-%make_build test
+%if 0%{?with_check}
+make test %{?_smp_mflags}
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
-%defattr(-,root,root)
 %doc AUTHORS ChangeLog COPYING.LIB README
-%{_libdir}/%{name}*.so.*
-
-%files devel
-%defattr(-,root,root)
-%{_includedir}/*
-%{_libdir}/%{name}*.so
-%{_libdir}/pkgconfig/%{name}*.pc
-%{_infodir}/%{name}.info*
-%exclude %{_libdir}/cmake/*
+%{_libdir}/libconfig*.so.*
+%{_includedir}/libconfig*
+%{_libdir}/libconfig*.so
+%{_libdir}/pkgconfig/libconfig*.pc
+%exclude %{_libdir}/cmake/libconfig++/libconfig++Config.cmake
+%exclude %{_libdir}/cmake/libconfig/libconfigConfig.cmake
+%{_infodir}/libconfig.info*
 
 %changelog
-* Tue Sep 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.3-2
-- Introduce deve sub package
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.7.3-2
+- Release bump for SRP compliance
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.7.3-1
 - Automatic Version Bump
 * Wed Aug 12 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.2-1

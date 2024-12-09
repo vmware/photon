@@ -1,0 +1,1 @@
+License: MIT AND GPL-2.0-or-later

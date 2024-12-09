@@ -1,23 +1,23 @@
 Summary:        DBus message bus
 Name:           dbus
-Version:        1.15.8
-Release:        1%{?dist}
-License:        GPLv2+ or AFL
+Version:        1.15.4
+Release:        6%{?dist}
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
-%define sha512 %{name}=84b8ac194ede3bf300f4501395b7253538469a4f9d59ea4adaf800282e359ef43494d81941b338081d3704317d39f0aba14906c6490419f04f946eb9d815f46c
+%define sha512 %{name}=53a5b7161940c5d4432b902c3c0ac1f1965978e3791a640d1a71f2d819474b727497f7a13c95d7c5850baef659062f1434296a3f5e56701383cc573dfbf187ee
 
-Source1: %{name}.sysusers
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0: CVE-2023-34969.patch
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
 BuildRequires:  xz-devel
-BuildRequires:  meson
-BuildRequires:  shadow
 
 Requires:       expat
 Requires:       systemd
@@ -30,7 +30,6 @@ The dbus package contains dbus.
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
 Requires:       expat-devel
-Requires:       systemd-devel
 
 %description    devel
 It contains the libraries and header files to create applications
@@ -47,52 +46,29 @@ simple interprocess messaging system (systemd --user integration)
 %autosetup -p1
 
 %build
-CONFIGURE_OPTS=(
-  -Dlibaudit=disabled
-  -Dselinux=disabled
-  -Druntime_dir=/run
-  -Duser_session=true
-  -Dsystemd_user_unitdir=%{_userunitdir}
-  -Dsystemd_system_unitdir=%{_unitdir}
-  -Dsystemd=enabled
-  -Drelocation=enabled
-  -Ddbus_user="dbus"
-  --auto-features=disabled
-)
+%configure \
+    --docdir=%{_defaultdocdir}/%{name}-%{version} \
+    --enable-libaudit=no \
+    --enable-selinux=no \
+    --with-console-auth-dir=/run/console \
+    --enable-user-session
 
-%{meson} "${CONFIGURE_OPTS[@]}"
-%{meson_build}
+%make_build
 
 %install
-groupadd dbus
-%{meson_install}
+%make_install %{?_smp_mflags}
+install -vdm755 %{buildroot}%{_lib}
 
-install -pDm 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
+rm -f %{buildroot}%{_libdir}/*.la
+
+mkdir -p %{buildroot}%{_userunitdir}
+
 rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket
 
+%if 0%{?with_check}
 %check
-%{meson_test}
-
-%pre
-%sysusers_create_compat %{SOURCE1}
-
-%post
-%systemd_post %{name}.socket
-%systemd_user_post %{name}.socket
-%systemd_post %{name}.service
-%systemd_user_post %{name}.service
-
-%preun
-%systemd_preun %{name}.socket
-%systemd_user_preun %{name}.socket
-%systemd_preun %{name}.service
-%systemd_user_preun %{name}.service
-
-%postun
-%systemd_postun %{name}.socket
-%systemd_user_postun %{name}.socket
-%systemd_postun %{name}.service
-%systemd_user_postun %{name}.service
+make %{?_smp_mflags} check
+%endif
 
 %files
 %defattr(-,root,root)
@@ -101,9 +77,9 @@ rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket
 %{_libdir}/libdbus-1.so.*
 %{_tmpfilesdir}/%{name}.conf
 %{_unitdir}/*
+%exclude %{_sysusersdir}
 %{_libexecdir}/*
 %{_datadir}/%{name}-1
-%{_sysusersdir}/%{name}.conf
 
 %files devel
 %defattr(-,root,root)
@@ -114,6 +90,7 @@ rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket
 %dir %{_libdir}/%{name}-1.0
 %{_libdir}/%{name}-1.0/include/
 %{_libdir}/pkgconfig/*.pc
+%{_libdir}/*.a
 %{_libdir}/*.so
 
 %files user-session
@@ -122,12 +99,14 @@ rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket
 %{_userunitdir}/%{name}.socket
 
 %changelog
-* Tue Feb 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.8-1
-- Upgrade to v1.15.8
-* Fri Sep 22 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-4
-- Create dbus user
-* Thu Sep 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-3
-- Use /run for runstatedir
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.15.4-6
+- Release bump for SRP compliance
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.15.4-5
+- Remove standalone license exceptions
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-4
+- Release bump for SRP compliance
+* Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-3
+- Fix CVE-2023-34969
 * Tue Mar 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.4-2
 - Enable user-session config flag
 * Thu Feb 16 2023 Susant Sahani <ssahani@vmware.com> 1.15.4-1

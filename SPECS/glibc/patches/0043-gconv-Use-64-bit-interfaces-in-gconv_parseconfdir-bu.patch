@@ -1,0 +1,81 @@
+From 52c037f3574eb9062b111d78a4cbeb79681d07d3 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Tue, 20 Sep 2022 12:12:43 +0200
+Subject: [PATCH 043/175] gconv: Use 64-bit interfaces in gconv_parseconfdir
+ (bug 29583)
+
+It's possible that inode numbers are outside the 32-bit range.
+The existing code only handles the in-libc case correctly, and
+still uses the legacy interfaces when building iconv.
+
+Suggested-by: Helge Deller <deller@gmx.de>
+(cherry picked from commit f97905f24631097af325d6a231093071c3077a5f)
+---
+ NEWS                       |  1 +
+ iconv/gconv_parseconfdir.h | 16 ++++++++--------
+ 2 files changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 5b4753416f1f464fdf6773ac4e1b7c81d9982ce2..eab882987bb9f19275a2861d88c11b8a4dd32e8c 100644
+--- a/NEWS
++++ b/NEWS
+@@ -26,6 +26,7 @@ The following bugs are resolved with this release:
+   [29490] alpha: New __brk_call implementation is broken
+   [29528] elf: Call __libc_early_init for reused namespaces
+   [29539] libc: LD_TRACE_LOADED_OBJECTS changed how vDSO library are
++  [29583] Use 64-bit interfaces in gconv_parseconfdir
+ 
+ Version 2.36
+ 
+diff --git a/iconv/gconv_parseconfdir.h b/iconv/gconv_parseconfdir.h
+index debb96b322b0ceee27b203871a0e4a7b25c79993..b72933b526d0363ef829e1571c7ad49d0ea62b83 100644
+--- a/iconv/gconv_parseconfdir.h
++++ b/iconv/gconv_parseconfdir.h
+@@ -29,14 +29,14 @@
+ # define isspace(__c) __isspace_l ((__c), _nl_C_locobj_ptr)
+ # define asprintf __asprintf
+ # define opendir __opendir
+-# define readdir __readdir
++# define readdir64 __readdir64
+ # define closedir __closedir
+ # define mempcpy __mempcpy
+-# define struct_stat struct __stat64_t64
+-# define lstat __lstat64_time64
++# define struct_stat64 struct __stat64_t64
++# define lstat64 __lstat64_time64
+ # define feof_unlocked __feof_unlocked
+ #else
+-# define struct_stat struct stat
++# define struct_stat64 struct stat64
+ #endif
+ 
+ /* Name of the file containing the module information in the directories
+@@ -148,8 +148,8 @@ gconv_parseconfdir (const char *prefix, const char *dir, size_t dir_len)
+   DIR *confdir = opendir (buf);
+   if (confdir != NULL)
+     {
+-      struct dirent *ent;
+-      while ((ent = readdir (confdir)) != NULL)
++      struct dirent64 *ent;
++      while ((ent = readdir64 (confdir)) != NULL)
+ 	{
+ 	  if (ent->d_type != DT_REG && ent->d_type != DT_UNKNOWN)
+ 	    continue;
+@@ -161,12 +161,12 @@ gconv_parseconfdir (const char *prefix, const char *dir, size_t dir_len)
+ 	      && strcmp (ent->d_name + len - strlen (suffix), suffix) == 0)
+ 	    {
+ 	      char *conf;
+-	      struct_stat st;
++	      struct_stat64 st;
+ 	      if (asprintf (&conf, "%s/%s", buf, ent->d_name) < 0)
+ 		continue;
+ 
+ 	      if (ent->d_type != DT_UNKNOWN
+-		  || (lstat (conf, &st) != -1 && S_ISREG (st.st_mode)))
++		  || (lstat64 (conf, &st) != -1 && S_ISREG (st.st_mode)))
+ 		found |= read_conf_file (conf, dir, dir_len);
+ 
+ 	      free (conf);
+-- 
+2.35.6
+

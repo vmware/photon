@@ -2,14 +2,16 @@ Summary:       Netfilter conntrack userspace library
 Name:          libnetfilter_conntrack
 Version:       1.0.9
 Release:       3%{?dist}
-License:       GPLv2+
 URL:           http://www.netfilter.org/projects/libnetfilter_conntrack/index.html
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0: http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
+Source0:       http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=e8b03425aaba3b72e6034c215656c34176d0550c08e0455aaeb1365d9141505d0c4feaa8978c8ccf2b7af9db6c9e874ceb866347e533b41cb03a189884f4004c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: libmnl-devel
 BuildRequires: libnfnetlink-devel
@@ -30,7 +32,6 @@ Group:         Development/Libraries
 Requires:      %{name} = %{version}-%{release}
 Requires:      libnfnetlink-devel
 Requires:      linux-api-headers
-Requires:      libmnl-devel
 
 %description   devel
 The %{name}-devel package contains libraries and header files for
@@ -58,8 +59,8 @@ developing applications that use %{name}.
 %{_libdir}/*.so
 
 %changelog
-* Tue Sep 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0.9-3
-- Fix devel package requires
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.9-3
+- Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.9-2
 - Remove .la files
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.9-1

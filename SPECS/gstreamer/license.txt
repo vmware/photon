@@ -1,0 +1,1 @@
+License: MPL-2.0 AND MIT AND BSD-3-Clause AND MPL-1.1 AND Apache-2.0 AND LGPL-2.0-or-later AND CC-BY-SA-4.0 AND GPL-1.0-or-later AND GPL-2.0-or-later AND LGPL-2.1-or-later AND 0BSD AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later) AND GFDL-1.1-or-later AND LGPL-2.1-only AND MPL-1.0

@@ -1,8 +1,7 @@
 Summary:        Libraries for Transport Independent RPC
 Name:           libtirpc
 Version:        1.3.3
-Release:        3%{?dist}
-License:        BSD
+Release:        4%{?dist}
 Group:          System Environment/Libraries
 URL:            http://nfsv4.bullopensource.org/
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=df0781a74ff9ded2d3c4f5eb7e05496b9f58eac8060c02c68331dc14c4a00304dcd19f46836f5756fe0d9d27095fd463d42dd696fcdff891516711b7d63deabe
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
@@ -70,6 +72,8 @@ sed '/stdlib.h/a#include <stdint.h>' -i src/xdr_sizeof.c
 %{_libdir}/*.a
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.3.3-4
+- Release bump for SRP compliance
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.3.3-3
 - Bump version as a part of krb5 upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.3-2

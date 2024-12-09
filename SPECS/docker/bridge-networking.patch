@@ -1,0 +1,51 @@
+From 264c15bfc427d1321c5b302e48e16d113b06ef92 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 27 Nov 2024 00:59:33 +0530
+Subject: [PATCH] Fix br_netfilter module loading logic
+
+Checking for `/proc/sys/net/bridge` directory alone is not enough to
+decide if bridge, br_netfilter module to be loaded.
+Check for specific file for br_netfilter module and then
+do modprobe if the file is not found under `/proc/sys/net/bridge`
+
+Loading br_netfilter implicitly loads bridge module.
+
+fixes: #48948
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ .../bridge/setup_bridgenetfiltering.go        | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
+
+diff --git a/libnetwork/drivers/bridge/setup_bridgenetfiltering.go b/libnetwork/drivers/bridge/setup_bridgenetfiltering.go
+index 9fb367d9fbe6c..0508a86050ed2 100644
+--- a/libnetwork/drivers/bridge/setup_bridgenetfiltering.go
++++ b/libnetwork/drivers/bridge/setup_bridgenetfiltering.go
+@@ -45,13 +45,22 @@ func setupIPv6BridgeNetFiltering(config *networkConfiguration, _ *bridgeInterfac
+ 	return nil
+ }
+
++func loadBridgeNetFilterModule(fullPath string) error {
++	// br_netfilter implictly loads bridge module upon modprobe
++	modName := "br_netfilter"
++	if _, err := os.Stat(fullPath); err != nil {
++		if out, err := exec.Command("modprobe", "-va", modName).CombinedOutput(); err != nil {
++			log.G(context.TODO()).WithError(err).Errorf("Running modprobe %s failed with message: %s", modName, out)
++			return fmt.Errorf("cannot restrict inter-container communication: modprobe %s failed: %w", modName, err)
++		}
++	}
++	return nil
++}
++
+ // Enable bridge net filtering if not already enabled. See GitHub issue #11404
+ func enableBridgeNetFiltering(nfParam string) error {
+-	if _, err := os.Stat("/proc/sys/net/bridge"); err != nil {
+-		if out, err := exec.Command("modprobe", "-va", "bridge", "br_netfilter").CombinedOutput(); err != nil {
+-			log.G(context.TODO()).WithError(err).Errorf("Running modprobe bridge br_netfilter failed with message: %s", out)
+-			return fmt.Errorf("cannot restrict inter-container communication: modprobe br_netfilter failed: %w", err)
+-		}
++	if err := loadBridgeNetFilterModule(nfParam); err != nil {
++		return fmt.Errorf("loadBridgeNetFilterModule failed: %s", err)
+ 	}
+ 	enabled, err := getKernelBoolParam(nfParam)
+ 	if err != nil {

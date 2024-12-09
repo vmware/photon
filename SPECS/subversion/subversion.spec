@@ -1,8 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.2
-Release:        9%{?dist}
-License:        Apache License 2.0
+Release:        11%{?dist}
 URL:            http://subversion.apache.org
 Group:          Utilities/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=20ada4688ca07d9fb8da4b7d53b5084568652a3b9418c65e688886bae950a16a3ff37710fcfc9c29ef14a89e75b2ceec4e9cf35d5876a7896ebc2b512cfb9ecc
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: apr
 Requires: apr-util
@@ -101,12 +103,16 @@ userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
-* Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.14.2-9
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.14.2-11
+- Release bump for SRP compliance
+* Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.14.2-10
 - Bump version as a part of apr upgrade
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.14.2-8
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.14.2-9
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 1.14.2-7
+* Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 1.14.2-8
 - Bump version as a part of apr-util v1.6.3 upgrade
+* Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 1.14.2-7
+- Bump version as a part of apr version upgrade
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.14.2-6
 - Bump up version no. as part of swig upgrade
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 1.14.2-5

@@ -1,8 +1,7 @@
 Summary:    Google's C++ logging module
 Name:       glog
 Version:    0.6.0
-Release:    3%{?dist}
-License:    BSD
+Release:    4%{?dist}
 URL:        https://github.com/google/glog
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/google/glog/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=fd2c42583d0dd72c790a8cf888f328a64447c5fb9d99b2e2a3833d70c102cb0eb9ae874632c2732424cc86216c8a076a3e24b23a793eaddb5da8a1dc52ba9226
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  build-essential
 BuildRequires:  automake
@@ -66,6 +68,8 @@ make test %{?_smp_mflags}
 %{_libdir}/cmake/glog/*.cmake
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 0.6.0-4
+- Release bump for SRP compliance
 * Mon Feb 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.6.0-3
 - Fix spec issues
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.6.0-2

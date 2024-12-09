@@ -1,8 +1,7 @@
 Summary:       Tools and libraries to manipulate EFI variables
 Name:          efibootmgr
 Version:       18
-Release:       2%{?dist}
-License:       GPLv2
+Release:       3%{?dist}
 URL:           https://github.com/rhinstaller/efibootmgr/
 Group:         System Environment/System Utilities
 Vendor:        VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:  Photon
 
 Source0:      https://github.com/rhinstaller/efibootmgr/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=04e40a705cb82440fd823043b598ef9fd1acc2ceda3e8d043a93e49d43ea9481b7386cad0f46de9862beff19b8a5480d79e7d6522ae584aff6655472f967764d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: efivar-devel
 BuildRequires: pciutils
@@ -38,6 +40,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 18-3
+- Release bump for SRP compliance
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 18-2
 - Bump version as a part of zlib upgrade
 * Mon Feb 20 2023 Gerrit Photon <photon-checkins@vmware.com> 18-1

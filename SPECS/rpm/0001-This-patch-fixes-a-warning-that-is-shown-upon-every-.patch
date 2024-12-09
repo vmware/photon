@@ -1,0 +1,30 @@
+From d15e96ccf74e29e2d76f33dc49756da2a3fd039a Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Tue, 10 Sep 2024 17:02:42 +0530
+Subject: [PATCH 1/6] This patch fixes a warning that is shown upon every rpm
+ usage.
+
+Without this change, package builder throws a warning message upon
+building every package.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ lib/backend/dbi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/backend/dbi.c b/lib/backend/dbi.c
+index 401a557..d76ef06 100644
+--- a/lib/backend/dbi.c
++++ b/lib/backend/dbi.c
+@@ -113,7 +113,7 @@ dbDetectBackend(rpmdb rdb)
+ 			    _("Converting database from %s to %s backend\n"),
+ 			    ondisk->name, db_backend);
+ 		} else {
+-		    rpmlog(RPMLOG_WARNING,
++		    rpmlog(RPMLOG_DEBUG,
+ 			_("Found %s %s database while attempting %s backend: "
+ 			"using %s backend.\n"),
+ 			ondisk->name, ondisk->path, db_backend, ondisk->name);
+-- 
+2.46.0
+

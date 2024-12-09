@@ -1,21 +1,27 @@
-%define rel_tag 3_98
-
 Summary:        Security client
 Name:           nss
-Version:        3.98
-Release:        1%{?dist}
-License:        MPLv2.0
+Version:        3.78
+Release:        11%{?dist}
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://ftp.mozilla.org/pub/security/nss/releases/NSS_%{rel_tag}_RTM/src/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4f335c5c284eff6424745cc15e32037715a915f6f61687ec36a8ffaef0e45d152602a1be275bbb2f14650c7d258d6488430cdcf512b18ba7cb73cd43ac625681
+Source0: http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_78_RTM/src/%{name}-%{version}.tar.gz
+%define sha512 %{name}=ab54d838f41f963fdd4b87477b1e769186ae1f138f7c5d764cd6873be4791146d14dcc85697a2ca92e08f3bfcbeb61d64e26e7b5398095272c18a8196d43ac6c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 # taken from:
-# http://lfs.linux-sysadmin.com/patches/downloads/nss/nss-3.98-standalone-1.patch
+# http://lfs.linux-sysadmin.com/patches/downloads/nss/nss-3.78-standalone-1.patch
 Patch0: %{name}-%{version}-standalone-1.patch
+Patch1: CVE-2022-36320-1.patch
+Patch2: CVE-2022-36320-2.patch
+Patch3: CVE-2022-3479.patch
+Patch4: CVE-2023-0767.patch
+Patch5: CVE-2023-5388.patch
+Patch6: CVE-2024-0743.patch
 
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -132,12 +138,22 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
-* Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.98-1
-- Upgrade to v3.98
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.89.1-2
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.78-11
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-10
+- Release bump for SRP compliance
+* Tue Aug 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-9
+- Fix CVE-2024-0743
+* Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-8
+- Fix CVE-2023-5388
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.78-7
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.89.1-1
-- Upgrade to v3.89.1
+* Fri Jan 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-6
+- Fix CVE-2023-0767
+* Fri May 26 2023 Nitesh Kumar <kunitesh@vmware.com> 3.78-5
+- Patched for CVE-2022-3479
+* Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.78-4
+- Fix CVE-2022-36320
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 3.78-3
 - bump release as part of sqlite update
 * Sat Jul 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.78-2

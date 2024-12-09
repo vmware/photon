@@ -3,16 +3,18 @@
 %global gem_name public_suffix
 
 Name: rubygem-public_suffix
-Version:        5.0.4
-Release:        1%{?dist}
+Version:        5.0.0
+Release:        2%{?dist}
 Summary:        PublicSuffix can parse and decompose a domain name into top level domain, domain and subdomains.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512    public_suffix=a9bfce01a5d6c075ed626ea91ea6458b40611b42d18ccb82a6e96586793c570fc934d4268742fd7e44aa73632fada9cda2b63179b018255ad64f6d3a41672c9c
+%define sha512    public_suffix=89dc076e6c55790b1459ceb0b0587d20b80d8a681bab6db2dd213e06f9bf9e55200e86cf891c92b310e691e7b0e1bb5ae95e28e3a3307541c2f020e5f69abeb5
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby >= 2.1.0
 
 BuildArch: noarch
@@ -33,8 +35,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.4-1
--   Update to version 5.0.4
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.0-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 5.0.0-1
 -   Automatic Version Bump
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.6-1

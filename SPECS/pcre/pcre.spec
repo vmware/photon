@@ -1,15 +1,17 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
 Version:        8.45
-Release:        3%{?dist}
-License:        BSD
+Release:        5%{?dist}
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.bz2
+Source0:        ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=91bff52eed4a2dfc3f3bfdc9c672b88e7e2ffcf3c4b121540af8a4ae8c1ce05178430aa6b8000658b9bb7b4252239357250890e20ceb84b79cdfcde05154061a
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
@@ -46,20 +48,20 @@ This package contains minimal set of shared pcre libraries.
 
 %build
 %configure \
-    --docdir=%{_docdir}/%{name}-%{version} \
-    --enable-unicode-properties \
-    --enable-pcre16 \
-    --enable-pcre32 \
-    --enable-pcregrep-libz \
-    --enable-pcregrep-libbz2 \
-    --enable-pcretest-libreadline \
-    --with-match-limit-recursion=16000 \
-    --disable-static
+            --docdir=%{_docdir}/%{name}-%{version} \
+            --enable-unicode-properties \
+            --enable-pcre16 \
+            --enable-pcre32 \
+            --enable-pcregrep-libz \
+            --enable-pcregrep-libbz2 \
+            --enable-pcretest-libreadline \
+            --with-match-limit-recursion=16000 \
+            --disable-static
 
 %make_build
 
 %install
-%make_install %{?_smp_mflags}
+%make_install
 ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libpcre.so) %{buildroot}%{_libdir}/libpcre.so
 ln -sfv $(readlink %{buildroot}%{_libdir}/libpcre.so) %{buildroot}%{_libdir}/libpcre.so.0
 
@@ -85,7 +87,7 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %exclude %{_bindir}/pcregrep
 %exclude %{_bindir}/pcretest
-%{_docdir}/%{name}-%{version}/*
+%{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
@@ -96,6 +98,10 @@ make %{?_smp_mflags} check
 %{_libdir}/libpcre.so.*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.45-5
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.45-4
+- Release bump for SRP compliance
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 8.45-3
 - Bump release as a part of readline upgrade
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.45-2

@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND CDDL-1.0 AND BSD-3-Clause AND LGPL-2.0-or-later AND GPL-2.0-only WITH Linux-syscall-note AND GPL-1.0-or-later AND FSFUL AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-2.1-only

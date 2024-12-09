@@ -1,8 +1,7 @@
 Summary:    Logging Libraries
 Name:       liblogging
 Version:    1.0.6
-Release:    2%{?dist}
-License:    BSD
+Release:    3%{?dist}
 URL:        http://www.liblogging.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    http://download.rsyslog.com/liblogging/liblogging-%{version}.tar.gz
 %define sha512 %{name}=09c90a93b2d32afa44be5a800705a64690810a56d21bed1455cb70680b01fecd4efef3881a43f98ebcafa996b6046ed8e5af935eacc12014f330a7fd23674964
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 liblogging (the upstream project) is a collection of several components.
@@ -64,6 +66,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/liblogging/*.h
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.6-3
+- Release bump for SRP compliance
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.6-2
 - Remove .la files
 * Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.6-1

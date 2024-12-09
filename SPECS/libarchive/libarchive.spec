@@ -1,15 +1,21 @@
 Summary:        Multi-format archive and compression library
 Name:           libarchive
-Version:        3.6.1
-Release:        6%{?dist}
-License:        BSD 2-Clause License
+Version:        3.7.1
+Release:        5%{?dist}
 URL:            http://www.libarchive.org
 Group:          System Environment/Development
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
-%define sha512  %{name}=58f7ac0c52116f73326a07dec10ff232be33b318862078785dc39f1fb2f8773b5194eabfa14764bb51ce6a5a1aa8820526e7f4c76087a6f4fcbe7789a22275b4
+%define sha512  %{name}=ccd36fc5e24e5feaad15b08496c4f6373f1bbb6ba657af5dc633b9d1454c98aba9a59ccffc48b41afc1219119d46c15d4db09c5855950422946e4dc058f17b88
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0: CVE-2024-26256.patch
+Patch1: CVE-2024-48957.patch
+Patch2: CVE-2024-48958.patch
 
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
@@ -63,8 +69,16 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.1-6
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.7.1-5
+- Release bump for SRP compliance
+* Tue Nov 12 2024 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.7.1-4
+- Fix CVE-2024-48957,CVE-2024-48958
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.7.1-3
+- Release bump for SRP compliance
+* Wed Jun 19 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 3.7.1-2
+- Fix CVE-2024-26256
+* Tue Aug 22 2023 Harinadh D <hdommaraju@vmware.com> 3.7.1-1
+- Version Upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.1-5
 - Bump version as a part of zstd upgrade
 * Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 3.6.1-4

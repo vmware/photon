@@ -1,0 +1,438 @@
+From 8920855c4568fa99c67cb1c7d6b29465c25f51c2 Mon Sep 17 00:00:00 2001
+From: Simon Kissane <skissane@gmail.com>
+Date: Sat, 11 Feb 2023 20:12:13 +1100
+Subject: [PATCH 095/175] gmon: improve mcount overflow handling [BZ# 27576]
+
+When mcount overflows, no gmon.out file is generated, but no message is printed
+to the user, leaving the user with no idea why, and thinking maybe there is
+some bug - which is how BZ 27576 ended up being logged. Print a message to
+stderr in this case so the user knows what is going on.
+
+As a comment in sys/gmon.h acknowledges, the hardcoded MAXARCS value is too
+small for some large applications, including the test case in that BZ. Rather
+than increase it, add tunables to enable MINARCS and MAXARCS to be overridden
+at runtime (glibc.gmon.minarcs and glibc.gmon.maxarcs). So if a user gets the
+mcount overflow error, they can try increasing maxarcs (they might need to
+increase minarcs too if the heuristic is wrong in their case.)
+
+Note setting minarcs/maxarcs too large can cause monstartup to fail with an
+out of memory error. If you set them large enough, it can cause an integer
+overflow in calculating the buffer size. I haven't done anything to defend
+against that - it would not generally be a security vulnerability, since these
+tunables will be ignored in suid/sgid programs (due to the SXID_ERASE default),
+and if you can set GLIBC_TUNABLES in the environment of a process, you can take
+it over anyway (LD_PRELOAD, LD_LIBRARY_PATH, etc). I thought about modifying
+the code of monstartup to defend against integer overflows, but doing so is
+complicated, and I realise the existing code is susceptible to them even prior
+to this change (e.g. try passing a pathologically large highpc argument to
+monstartup), so I decided just to leave that possibility in-place.
+
+Add a test case which demonstrates mcount overflow and the tunables.
+
+Document the new tunables in the manual.
+
+Signed-off-by: Simon Kissane <skissane@gmail.com>
+Reviewed-by: DJ Delorie <dj@redhat.com>
+(cherry picked from commit 31be941e4367c001b2009308839db5c67bf9dcbc)
+---
+ NEWS                              |  1 +
+ elf/dl-tunables.list              | 13 ++++++
+ gmon/Makefile                     | 22 +++++++++-
+ gmon/gmon.c                       | 29 +++++++++++--
+ gmon/mcount.c                     |  5 +++
+ gmon/sys/gmon.h                   |  6 ++-
+ gmon/tst-mcount-overflow-check.sh | 45 +++++++++++++++++++
+ gmon/tst-mcount-overflow.c        | 72 +++++++++++++++++++++++++++++++
+ manual/tunables.texi              | 59 +++++++++++++++++++++++++
+ 9 files changed, 245 insertions(+), 7 deletions(-)
+ create mode 100644 gmon/tst-mcount-overflow-check.sh
+ create mode 100644 gmon/tst-mcount-overflow.c
+
+diff --git a/NEWS b/NEWS
+index 52b0ba91d58925cdd8901f23c25149049132c30e..850f9f78023ee6da246681fec33fffd94ea8969c 100644
+--- a/NEWS
++++ b/NEWS
+@@ -25,6 +25,7 @@ The following bugs are resolved with this release:
+ 
+   [12154] Do not fail DNS resolution for CNAMEs which are not host names
+   [24816] Fix tst-nss-files-hosts-long on single-stack hosts
++  [27576] gmon: improve mcount overflow handling
+   [28846] CMSG_NXTHDR may trigger -Wstrict-overflow warning
+   [29444] gmon: Fix allocated buffer overflow (bug 29444)
+   [29864] libc: __libc_start_main() should obtain program headers
+diff --git a/elf/dl-tunables.list b/elf/dl-tunables.list
+index e6a56b307053a5f9e443f6cebf6c50c25cb559cc..9fa3b484cfc8d4c28027c4d62d54ecf6d2fa3311 100644
+--- a/elf/dl-tunables.list
++++ b/elf/dl-tunables.list
+@@ -169,4 +169,17 @@ glibc {
+       default: 2
+     }
+   }
++
++  gmon {
++    minarcs {
++      type: INT_32
++      minval: 50
++      default: 50
++    }
++    maxarcs {
++      type: INT_32
++      minval: 50
++      default: 1048576
++    }
++  }
+ }
+diff --git a/gmon/Makefile b/gmon/Makefile
+index 552b7d77512be975921bdb959e1ea27885d56c46..58ea34aa7e2c46777c63c385d47ea4246677f0c0 100644
+--- a/gmon/Makefile
++++ b/gmon/Makefile
+@@ -25,7 +25,7 @@ include ../Makeconfig
+ headers	:= sys/gmon.h sys/gmon_out.h sys/profil.h
+ routines := gmon mcount profil sprofil prof-freq
+ 
+-tests	= tst-sprofil tst-gmon
++tests	= tst-sprofil tst-gmon tst-mcount-overflow
+ ifeq ($(build-profile),yes)
+ tests	+= tst-profile-static
+ tests-static	+= tst-profile-static
+@@ -56,6 +56,18 @@ ifeq ($(run-built-tests),yes)
+ tests-special += $(objpfx)tst-gmon-gprof.out
+ endif
+ 
++CFLAGS-tst-mcount-overflow.c := -fno-omit-frame-pointer -pg
++tst-mcount-overflow-no-pie = yes
++CRT-tst-mcount-overflow := $(csu-objpfx)g$(start-installed-name)
++# Intentionally use invalid config where maxarcs<minarcs to check warning is printed
++tst-mcount-overflow-ENV := GMON_OUT_PREFIX=$(objpfx)tst-mcount-overflow.data \
++                           GLIBC_TUNABLES=glibc.gmon.minarcs=51:glibc.gmon.maxarcs=50
++# Send stderr into output file because we make sure expected messages are printed
++tst-mcount-overflow-ARGS := 2>&1 1>/dev/null | cat
++ifeq ($(run-built-tests),yes)
++tests-special += $(objpfx)tst-mcount-overflow-check.out
++endif
++
+ CFLAGS-tst-gmon-static.c := $(PIE-ccflag) -fno-omit-frame-pointer -pg
+ CRT-tst-gmon-static := $(csu-objpfx)g$(static-start-installed-name)
+ tst-gmon-static-no-pie = yes
+@@ -103,6 +115,14 @@ $(objpfx)tst-gmon.out: clean-tst-gmon-data
+ clean-tst-gmon-data:
+ 	rm -f $(objpfx)tst-gmon.data.*
+ 
++$(objpfx)tst-mcount-overflow.o: clean-tst-mcount-overflow-data
++clean-tst-mcount-overflow-data:
++	rm -f $(objpfx)tst-mcount-overflow.data.*
++
++$(objpfx)tst-mcount-overflow-check.out: tst-mcount-overflow-check.sh $(objpfx)tst-mcount-overflow.out
++	$(SHELL) $< $(objpfx)tst-mcount-overflow > $@; \
++	$(evaluate-test)
++
+ $(objpfx)tst-gmon-gprof.out: tst-gmon-gprof.sh $(objpfx)tst-gmon.out
+ 	$(SHELL) $< $(GPROF) $(objpfx)tst-gmon $(objpfx)tst-gmon.data.* > $@; \
+ 	$(evaluate-test)
+diff --git a/gmon/gmon.c b/gmon/gmon.c
+index bf76358d5b1aa2da25093f3aa15cc209fe1e8993..689bf80141e559ca65bc41ba11dd8bc702b72480 100644
+--- a/gmon/gmon.c
++++ b/gmon/gmon.c
+@@ -46,6 +46,11 @@
+ #include <libc-internal.h>
+ #include <not-cancel.h>
+ 
++#if HAVE_TUNABLES
++# define TUNABLE_NAMESPACE gmon
++# include <elf/dl-tunables.h>
++#endif
++
+ #ifdef PIC
+ # include <link.h>
+ 
+@@ -124,6 +129,22 @@ __monstartup (u_long lowpc, u_long highpc)
+   int o;
+   char *cp;
+   struct gmonparam *p = &_gmonparam;
++  long int minarcs, maxarcs;
++
++#if HAVE_TUNABLES
++  /* Read minarcs/maxarcs tunables. */
++  minarcs = TUNABLE_GET (minarcs, int32_t, NULL);
++  maxarcs = TUNABLE_GET (maxarcs, int32_t, NULL);
++  if (maxarcs < minarcs)
++    {
++      ERR("monstartup: maxarcs < minarcs, setting maxarcs = minarcs\n");
++      maxarcs = minarcs;
++    }
++#else
++  /* No tunables, we use hardcoded defaults */
++  minarcs = MINARCS;
++  maxarcs = MAXARCS;
++#endif
+ 
+   /*
+    * round lowpc and highpc to multiples of the density we're using
+@@ -146,10 +167,10 @@ __monstartup (u_long lowpc, u_long highpc)
+   }
+   p->fromssize = ROUNDUP(p->textsize / HASHFRACTION, sizeof(*p->froms));
+   p->tolimit = p->textsize * ARCDENSITY / 100;
+-  if (p->tolimit < MINARCS)
+-    p->tolimit = MINARCS;
+-  else if (p->tolimit > MAXARCS)
+-    p->tolimit = MAXARCS;
++  if (p->tolimit < minarcs)
++    p->tolimit = minarcs;
++  else if (p->tolimit > maxarcs)
++    p->tolimit = maxarcs;
+   p->tossize = p->tolimit * sizeof(struct tostruct);
+ 
+   cp = calloc (p->kcountsize + p->fromssize + p->tossize, 1);
+diff --git a/gmon/mcount.c b/gmon/mcount.c
+index 9d4a1a50fa6ab21af97293c4ec59a199c06f0a5d..f7180fdb83399a1426b64fbe23b385d4f10255b9 100644
+--- a/gmon/mcount.c
++++ b/gmon/mcount.c
+@@ -41,6 +41,10 @@ static char sccsid[] = "@(#)mcount.c	8.1 (Berkeley) 6/4/93";
+ 
+ #include <atomic.h>
+ 
++#include <not-cancel.h>
++#include <unistd.h>
++#define ERR(s) __write_nocancel (STDERR_FILENO, s, sizeof (s) - 1)
++
+ /*
+  * mcount is called on entry to each function compiled with the profiling
+  * switch set.  _mcount(), which is declared in a machine-dependent way
+@@ -170,6 +174,7 @@ done:
+ 	return;
+ overflow:
+ 	p->state = GMON_PROF_ERROR;
++	ERR("mcount: call graph buffer size limit exceeded, gmon.out will not be generated\n");
+ 	return;
+ }
+ 
+diff --git a/gmon/sys/gmon.h b/gmon/sys/gmon.h
+index b4cc3b043a2aec77d55d4bb819cf24ae6c9a0ed0..af0582a3717085b531954ef1b94587f79acb3e66 100644
+--- a/gmon/sys/gmon.h
++++ b/gmon/sys/gmon.h
+@@ -111,6 +111,8 @@ extern struct __bb *__bb_head;
+  * Always allocate at least this many tostructs.  This
+  * hides the inadequacy of the ARCDENSITY heuristic, at least
+  * for small programs.
++ *
++ * Value can be overridden at runtime by glibc.gmon.minarcs tunable.
+  */
+ #define MINARCS		50
+ 
+@@ -124,8 +126,8 @@ extern struct __bb *__bb_head;
+  * Used to be max representable value of ARCINDEX minus 2, but now
+  * that ARCINDEX is a long, that's too large; we don't really want
+  * to allow a 48 gigabyte table.
+- * The old value of 1<<16 wasn't high enough in practice for large C++
+- * programs; will 1<<20 be adequate for long?  FIXME
++ *
++ * Value can be overridden at runtime by glibc.gmon.maxarcs tunable.
+  */
+ #define MAXARCS		(1 << 20)
+ 
+diff --git a/gmon/tst-mcount-overflow-check.sh b/gmon/tst-mcount-overflow-check.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..27eb5538fd573a6e678cfb83571ca3490b00733f
+--- /dev/null
++++ b/gmon/tst-mcount-overflow-check.sh
+@@ -0,0 +1,45 @@
++#!/bin/sh
++# Test expected messages generated when mcount overflows
++# Copyright (C) 2017-2023 Free Software Foundation, Inc.
++# Copyright The GNU Toolchain Authors.
++# This file is part of the GNU C Library.
++
++# The GNU C Library is free software; you can redistribute it and/or
++# modify it under the terms of the GNU Lesser General Public
++# License as published by the Free Software Foundation; either
++# version 2.1 of the License, or (at your option) any later version.
++
++# The GNU C Library is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++# Lesser General Public License for more details.
++
++# You should have received a copy of the GNU Lesser General Public
++# License along with the GNU C Library; if not, see
++# <https://www.gnu.org/licenses/>.
++
++LC_ALL=C
++export LC_ALL
++set -e
++exec 2>&1
++
++program="$1"
++
++check_msg() {
++    if ! grep -q "$1" "$program.out"; then
++       echo "FAIL: expected message not in output: $1"
++       exit 1
++    fi
++}
++
++check_msg 'monstartup: maxarcs < minarcs, setting maxarcs = minarcs'
++check_msg 'mcount: call graph buffer size limit exceeded, gmon.out will not be generated'
++
++for data_file in $1.data.*; do
++  if [ -f "$data_file" ]; then
++    echo "FAIL: expected no data files, but found $data_file"
++    exit 1
++  fi
++done
++
++echo PASS
+diff --git a/gmon/tst-mcount-overflow.c b/gmon/tst-mcount-overflow.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..06cc93ef872eb7c1ef21ab62a0dc72c7b2a6ab87
+--- /dev/null
++++ b/gmon/tst-mcount-overflow.c
+@@ -0,0 +1,72 @@
++/* Test program to trigger mcount overflow in profiling collection.
++   Copyright (C) 2017-2023 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++/* Program with sufficiently complex, yet pointless, call graph
++   that it will trigger an mcount overflow, when you set the
++   minarcs/maxarcs tunables to very low values. */
++
++#define PREVENT_TAIL_CALL asm volatile ("")
++
++/* Calls REP(n) macro 16 times, for n=0..15.
++ * You need to define REP(n) before using this.
++ */
++#define REPS \
++  REP(0) REP(1) REP(2) REP(3) REP(4) REP(5) REP(6) REP(7) \
++  REP(8) REP(9) REP(10) REP(11) REP(12) REP(13) REP(14) REP(15)
++
++/* Defines 16 leaf functions named f1_0 to f1_15 */
++#define REP(n) \
++  __attribute__ ((noinline, noclone, weak)) void f1_##n (void) {};
++REPS
++#undef REP
++
++/* Calls all 16 leaf functions f1_* in succession */
++__attribute__ ((noinline, noclone, weak)) void
++f2 (void)
++{
++# define REP(n) f1_##n();
++  REPS
++# undef REP
++  PREVENT_TAIL_CALL;
++}
++
++/* Defines 16 functions named f2_0 to f2_15, which all just call f2 */
++#define REP(n) \
++  __attribute__ ((noinline, noclone, weak)) void \
++  f2_##n (void) { f2(); PREVENT_TAIL_CALL; };
++REPS
++#undef REP
++
++__attribute__ ((noinline, noclone, weak)) void
++f3 (int count)
++{
++  for (int i = 0; i < count; ++i)
++    {
++      /* Calls f1_0(), f2_0(), f1_1(), f2_1(), f3_0(), etc */
++#     define REP(n) f1_##n(); f2_##n();
++      REPS
++#     undef REP
++    }
++}
++
++int
++main (void)
++{
++  f3 (1000);
++  return 0;
++}
+diff --git a/manual/tunables.texi b/manual/tunables.texi
+index 83cdcdac6dc70098b0408133d4a6f1987bd84eca..8bb2f29ea56bf23d4e0a9d53a05d210498211dee 100644
+--- a/manual/tunables.texi
++++ b/manual/tunables.texi
+@@ -77,6 +77,9 @@ glibc.malloc.check: 0 (min: 0, max: 3)
+ 				  capabilities seen by @theglibc{}
+ * Memory Related Tunables::  Tunables that control the use of memory by
+ 			     @theglibc{}.
++* gmon Tunables::  Tunables that control the gmon profiler, used in
++                   conjunction with gprof
++
+ @end menu
+ 
+ @node Tunable names
+@@ -612,3 +615,59 @@ support in the kernel if this tunable has any non-zero value.
+ 
+ The default value is @samp{0}, which disables all memory tagging.
+ @end deftp
++
++@node gmon Tunables
++@section gmon Tunables
++@cindex gmon tunables
++
++@deftp {Tunable namespace} glibc.gmon
++This tunable namespace affects the behaviour of the gmon profiler.
++gmon is a component of @theglibc{} which is normally used in
++conjunction with gprof.
++
++When GCC compiles a program with the @code{-pg} option, it instruments
++the program with calls to the @code{mcount} function, to record the
++program's call graph. At program startup, a memory buffer is allocated
++to store this call graph; the size of the buffer is calculated using a
++heuristic based on code size. If during execution, the buffer is found
++to be too small, profiling will be aborted and no @file{gmon.out} file
++will be produced. In that case, you will see the following message
++printed to standard error:
++
++@example
++mcount: call graph buffer size limit exceeded, gmon.out will not be generated
++@end example
++
++Most of the symbols discussed in this section are defined in the header
++@code{sys/gmon.h}. However, some symbols (for example @code{mcount})
++are not defined in any header file, since they are only intended to be
++called from code generated by the compiler.
++@end deftp
++
++@deftp Tunable glibc.mem.minarcs
++The heuristic for sizing the call graph buffer is known to be
++insufficient for small programs; hence, the calculated value is clamped
++to be at least a minimum size. The default minimum (in units of
++call graph entries, @code{struct tostruct}), is given by the macro
++@code{MINARCS}. If you have some program with an unusually complex
++call graph, for which the heuristic fails to allocate enough space,
++you can use this tunable to increase the minimum to a larger value.
++@end deftp
++
++@deftp Tunable glibc.mem.maxarcs
++To prevent excessive memory consumption when profiling very large
++programs, the call graph buffer is allowed to have a maximum of
++@code{MAXARCS} entries. For some very large programs, the default
++value of @code{MAXARCS} defined in @file{sys/gmon.h} is too small; in
++that case, you can use this tunable to increase it.
++
++Note the value of the @code{maxarcs} tunable must be greater or equal
++to that of the @code{minarcs} tunable; if this constraint is violated,
++a warning will printed to standard error at program startup, and
++the @code{minarcs} value will be used as the maximum as well.
++
++Setting either tunable too high may result in a call graph buffer
++whose size exceeds the available memory; in that case, an out of memory
++error will be printed at program startup, the profiler will be
++disabled, and no @file{gmon.out} file will be generated.
++@end deftp
+-- 
+2.35.6
+

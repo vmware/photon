@@ -3,11 +3,13 @@
 Summary:        A C programming language indexing and/or cross-reference tool
 Name:           ctags
 Version:        6.0
-Release:        4%{?dist}
-License:        GPL
+Release:        3%{?dist}
 URL:            https://ctags.io/
-Source:         https://github.com/universal-ctags/ctags/archive/%{name}-%{version}.%{upstreamversion}.tar.gz
+Source0:         https://github.com/universal-ctags/ctags/archive/%{name}-%{version}.%{upstreamversion}.tar.gz
 %define sha512 ctags=976aaf8c87ab35019ea621ed67781f652ac43250a042708a80e063faa827fa9ecf69ad751a28a09ecb56a9f767a3c79d3a91fbb6cf9625daf3426f8c7f4eb871
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -55,11 +57,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.0-4
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 6.0-3
-- Bump version as a part of libxml2 upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0-2
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.0-3
+- Release bump for SRP compliance
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0-2
 - Bump version as a part of libxml2 upgrade
 * Fri Feb 17 2023 Anmol Jain <anmolja@vmware.com> 6.0-1
 - Automatic Version Bump

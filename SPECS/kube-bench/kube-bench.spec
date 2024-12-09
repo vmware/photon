@@ -2,15 +2,17 @@
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
 Version:        0.6.12
-Release:        7%{?dist}
+Release:        12%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        Apache-2.0
 URL:            https://github.com/aquasecurity/%{name}
 Group:          Development/Tools
 
 Source0: https://github.com/aquasecurity/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=dc222f6fd1da5d40bdcf1b9bc366361274a00f6c90494df4006bd617aa2b5de8269ceb46b8197c787a3da3964db3b73e18334aed223e86083ea52ea544264a10
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  git
 BuildRequires:  go
@@ -42,6 +44,16 @@ make tests %{?_smp_mflags}
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.6.12-12
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.6.12-11
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.6.12-10
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 0.6.12-9
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 0.6.12-8
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 0.6.12-7
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 0.6.12-6
@@ -50,7 +62,7 @@ make tests %{?_smp_mflags}
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 0.6.12-4
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.6.12-3
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 0.6.12-3
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.6.12-2
 - Bump up version to compile with new go

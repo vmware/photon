@@ -2,7 +2,6 @@ Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         3.2.1
 Release:         16%{?dist}
-License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:    Photon
 
 Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/3.2/%{name}-%{version}.tar.xz
 %define sha512 %{name}=e5f60fd700f4cda041d869eec50e787b2fbe9323949b90710405cff296e108bab6d1323ab96e89855c5396ce73c7b7574b424dbe957ae10b48740b272889be51
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: glib-devel
 BuildRequires: libxml2-devel
@@ -95,27 +97,27 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
-* Fri Apr 12 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.2.1-16
-- Version bump for gnutls upgrade
-* Fri Apr 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.2.1-15
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.1-16
+- Release bump for SRP compliance
+* Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.2.1-15
+- Version Bump up to consume httpd v2.4.62
+* Tue Jul 09 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.2.1-14
+- Version Bump up to consume httpd v2.4.61
+* Fri Apr 05 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.2.1-13
 - Version Bump up to consume httpd v2.4.59
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.2.1-14
-- Bump version as a part of libxml2 upgrade
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.2.1-13
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.2.1-12
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.2.1-12
-- Bump version as a part of libxml2 upgrade
-* Tue Jan 23 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.2.1-11
-- Version bump for gnutls upgrade
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.1-10
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.1-11
 - Bump version as a part of gnutls upgrade
-* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 3.2.1-9
+* Mon Oct 30 2023 Nitesh Kumar <kunitesh@vmware.com> 3.2.1-10
 - Bump version as a part of httpd v2.4.58 upgrade
+* Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.2.1-9
+- Version bump as part of nghtttp2 upgrade
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 3.2.1-8
 - Bump version as a part of krb5 upgrade
-* Wed Jul 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.1-7
+* Tue Jul 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.1-7
 - Add nghttp2-devel to devel package requires
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.1-6
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.1-6
 - Bump version as a part of libxml2 upgrade
 * Mon Apr 03 2023 Nitesh Kumar <kunitesh@vmware.com> 3.2.1-5
 - Bump version as a part of httpd v2.4.56 upgrade

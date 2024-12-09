@@ -7,4 +7,3 @@ enable systemd-timesyncd.service
 enable systemd-networkd.service
 enable systemd-networkd-wait-online.service
 enable systemd-resolved.service
-

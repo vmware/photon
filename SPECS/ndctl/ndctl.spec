@@ -1,8 +1,7 @@
 Summary:        Manage "libnvdimm" subsystem devices (Non-volatile Memory)
 Name:           ndctl
 Version:        74
-Release:        1%{?dist}
-License:        GPLv2
+Release:        2%{?dist}
 Group:          System Environment/Base
 Url:            https://github.com/pmem/ndctl
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/pmem/%{name}/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b8c4f8ee39aeb85679a97c46cb1ec345041ad91074be35f04de3a688957164374f92b3efc4f745c3b28098086689db861fd22799b056230267b3327406749473
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  meson
 BuildRequires:  asciidoc3
@@ -31,7 +33,6 @@ platform NVDIMM resources.
 
 %package        devel
 Summary:        Development files for ndctl
-License:        LGPLv2
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 
@@ -41,7 +42,6 @@ developing applications that use %{name}.
 
 %package -n     daxctl
 Summary:        Manage Device-DAX instances
-License:        GPLv2
 Group:          System Environment/Base
 
 %description -n daxctl
@@ -52,7 +52,6 @@ filesystem.
 
 %package -n     daxctl-devel
 Summary:        Development files for daxctl
-License:        LGPLv2
 Group:          Development/Libraries
 Requires:       daxctl = %{version}-%{release}
 
@@ -63,17 +62,15 @@ developing applications that use %{name}, a library for enumerating
 mappings of performance / feature-differentiated memory.
 
 %package -n cxl
-Summary:	Manage CXL devices
-License:	GPLv2
+Summary:        Manage CXL devices
 
 %description -n cxl
 The cxl utility provides enumeration and provisioning commands for
 the Linux kernel CXL devices.
 
 %package -n cxl-devel
-Summary:	Development files for libcxl
-License:	LGPLv2
-Requires:	cxl = %{version}-%{release}
+Summary:        Development files for libcxl
+Requires:       cxl = %{version}-%{release}
 
 %description -n cxl-devel
 This package contains libraries and header files for developing applications
@@ -151,6 +148,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libcxl.pc
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 74-2
+- Release bump for SRP compliance
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 74-1
 - Automatic Version Bump
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 73-1

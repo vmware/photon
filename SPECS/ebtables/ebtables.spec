@@ -1,8 +1,7 @@
 Summary:        A filtering tool for a Linux-based bridging firewall.
 Name:           ebtables
 Version:        2.0.11
-Release:        2%{?dist}
-License:        GPLv2+
+Release:        3%{?dist}
 URL:            http://ebtables.netfilter.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -13,6 +12,9 @@ Source0:        https://www.netfilter.org/pub/ebtables/%{name}-%{version}.tar.gz
 Source1:        %{name}
 Source2:        %{name}.service
 Source3:        %{name}-config
+
+Source4: license.txt
+%include %{SOURCE4}
 
 Patch0:         0001-ebtables-Initialise-len-and-flags-in-ebt_nflog_info-.patch
 
@@ -97,6 +99,8 @@ rm -rf %{buildroot}/*
 %ghost %{_sbindir}/ebtables{,-save,-restore}
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.0.11-3
+- Release bump for SRP compliance
 * Sun Jan 22 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.0.11-2
 - Use alternatives for ebtables
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.11-1

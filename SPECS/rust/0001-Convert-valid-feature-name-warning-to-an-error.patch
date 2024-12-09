@@ -1,0 +1,427 @@
+From 242e37318f1f64ace3ccd7c4094f9a0a192a0853 Mon Sep 17 00:00:00 2001
+From: Eric Huss <eric@huss.org>
+Date: Sun, 11 Jun 2023 12:52:25 -0700
+Subject: [PATCH] Convert valid feature name warning to an error.
+
+Upstream commit 9835622853f08be9a4b58ebe29dcec8f43b64b33
+
+[Ankit: Backported for rust v1.71.1]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ crates/resolver-tests/src/lib.rs         |  4 -
+ src/cargo/core/resolver/version_prefs.rs |  3 -
+ src/cargo/core/summary.rs                | 68 +++++++++++-----
+ src/cargo/sources/registry/index.rs      | 32 +++-----
+ src/cargo/util/toml/mod.rs               |  1 -
+ tests/testsuite/features.rs              | 99 ++++++++++--------------
+ 6 files changed, 102 insertions(+), 105 deletions(-)
+
+diff --git a/crates/resolver-tests/src/lib.rs b/crates/resolver-tests/src/lib.rs
+index 01d9b5e..ab34e86 100644
+--- a/crates/resolver-tests/src/lib.rs
++++ b/crates/resolver-tests/src/lib.rs
+@@ -179,7 +179,6 @@ pub fn resolve_with_config_raw(
+         used: HashSet::new(),
+     };
+     let summary = Summary::new(
+-        config,
+         pkg_id("root"),
+         deps,
+         &BTreeMap::new(),
+@@ -581,7 +580,6 @@ pub fn pkg_dep<T: ToPkgId>(name: T, dep: Vec<Dependency>) -> Summary {
+         None
+     };
+     Summary::new(
+-        &Config::default().unwrap(),
+         name.to_pkgid(),
+         dep,
+         &BTreeMap::new(),
+@@ -610,7 +608,6 @@ pub fn pkg_loc(name: &str, loc: &str) -> Summary {
+         None
+     };
+     Summary::new(
+-        &Config::default().unwrap(),
+         pkg_id_loc(name, loc),
+         Vec::new(),
+         &BTreeMap::new(),
+@@ -625,7 +622,6 @@ pub fn remove_dep(sum: &Summary, ind: usize) -> Summary {
+     deps.remove(ind);
+     // note: more things will need to be copied over in the future, but it works for now.
+     Summary::new(
+-        &Config::default().unwrap(),
+         sum.package_id(),
+         deps,
+         &BTreeMap::new(),
+diff --git a/src/cargo/core/resolver/version_prefs.rs b/src/cargo/core/resolver/version_prefs.rs
+index 002f11f..bf26d04 100644
+--- a/src/cargo/core/resolver/version_prefs.rs
++++ b/src/cargo/core/resolver/version_prefs.rs
+@@ -81,7 +81,6 @@ impl VersionPreferences {
+ mod test {
+     use super::*;
+     use crate::core::SourceId;
+-    use crate::util::Config;
+     use std::collections::BTreeMap;
+ 
+     fn pkgid(name: &str, version: &str) -> PackageId {
+@@ -98,10 +97,8 @@ mod test {
+ 
+     fn summ(name: &str, version: &str) -> Summary {
+         let pkg_id = pkgid(name, version);
+-        let config = Config::default().unwrap();
+         let features = BTreeMap::new();
+         Summary::new(
+-            &config,
+             pkg_id,
+             Vec::new(),
+             &features,
+diff --git a/src/cargo/core/summary.rs b/src/cargo/core/summary.rs
+index 2535c44..1883df3 100644
+--- a/src/cargo/core/summary.rs
++++ b/src/cargo/core/summary.rs
+@@ -1,6 +1,6 @@
+ use crate::core::{Dependency, PackageId, SourceId};
+ use crate::util::interning::InternedString;
+-use crate::util::{CargoResult, Config};
++use crate::util::CargoResult;
+ use anyhow::bail;
+ use semver::Version;
+ use std::collections::{BTreeMap, HashMap, HashSet};
+@@ -30,7 +30,6 @@ struct Inner {
+ 
+ impl Summary {
+     pub fn new(
+-        config: &Config,
+         pkg_id: PackageId,
+         dependencies: Vec<Dependency>,
+         features: &BTreeMap<InternedString, Vec<InternedString>>,
+@@ -49,7 +48,7 @@ impl Summary {
+                 )
+             }
+         }
+-        let feature_map = build_feature_map(config, pkg_id, features, &dependencies)?;
++        let feature_map = build_feature_map(pkg_id, features, &dependencies)?;
+         Ok(Summary {
+             inner: Rc::new(Inner {
+                 package_id: pkg_id,
+@@ -140,7 +139,6 @@ impl Hash for Summary {
+ /// Checks features for errors, bailing out a CargoResult:Err if invalid,
+ /// and creates FeatureValues for each feature.
+ fn build_feature_map(
+-    config: &Config,
+     pkg_id: PackageId,
+     features: &BTreeMap<InternedString, Vec<InternedString>>,
+     dependencies: &[Dependency],
+@@ -204,7 +202,7 @@ fn build_feature_map(
+                 feature
+             );
+         }
+-        validate_feature_name(config, pkg_id, feature)?;
++        validate_feature_name(pkg_id, feature)?;
+         for fv in fvs {
+             // Find data for the referenced dependency...
+             let dep_data = {
+@@ -431,33 +429,63 @@ impl fmt::Display for FeatureValue {
+ 
+ pub type FeatureMap = BTreeMap<InternedString, Vec<FeatureValue>>;
+ 
+-fn validate_feature_name(config: &Config, pkg_id: PackageId, name: &str) -> CargoResult<()> {
++fn validate_feature_name(pkg_id: PackageId, name: &str) -> CargoResult<()> {
+     let mut chars = name.chars();
+-    const FUTURE: &str = "This was previously accepted but is being phased out; \
+-        it will become a hard error in a future release.\n\
+-        For more information, see issue #8813 <https://github.com/rust-lang/cargo/issues/8813>, \
+-        and please leave a comment if this will be a problem for your project.";
+     if let Some(ch) = chars.next() {
+         if !(unicode_xid::UnicodeXID::is_xid_start(ch) || ch == '_' || ch.is_digit(10)) {
+-            config.shell().warn(&format!(
++            bail!(
+                 "invalid character `{}` in feature `{}` in package {}, \
+                 the first character must be a Unicode XID start character or digit \
+-                (most letters or `_` or `0` to `9`)\n\
+-                {}",
+-                ch, name, pkg_id, FUTURE
+-            ))?;
++                (most letters or `_` or `0` to `9`)",
++                ch,
++                name,
++                pkg_id
++            );
+         }
+     }
+     for ch in chars {
+         if !(unicode_xid::UnicodeXID::is_xid_continue(ch) || ch == '-' || ch == '+' || ch == '.') {
+-            config.shell().warn(&format!(
++            bail!(
+                 "invalid character `{}` in feature `{}` in package {}, \
+                 characters must be Unicode XID characters, `+`, or `.` \
+-                (numbers, `+`, `-`, `_`, `.`, or most letters)\n\
+-                {}",
+-                ch, name, pkg_id, FUTURE
+-            ))?;
++                (numbers, `+`, `-`, `_`, `.`, or most letters)",
++                ch,
++                name,
++                pkg_id
++            );
+         }
+     }
+     Ok(())
+ }
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use crate::sources::CRATES_IO_INDEX;
++    use crate::util::into_url::IntoUrl;
++
++    use crate::core::SourceId;
++
++    #[test]
++    fn valid_feature_names() {
++        let loc = CRATES_IO_INDEX.into_url().unwrap();
++        let source_id = SourceId::for_registry(&loc).unwrap();
++        let pkg_id = PackageId::new("foo", "1.0.0", source_id).unwrap();
++
++        assert!(validate_feature_name(pkg_id, "c++17").is_ok());
++        assert!(validate_feature_name(pkg_id, "128bit").is_ok());
++        assert!(validate_feature_name(pkg_id, "_foo").is_ok());
++        assert!(validate_feature_name(pkg_id, "feat-name").is_ok());
++        assert!(validate_feature_name(pkg_id, "feat_name").is_ok());
++        assert!(validate_feature_name(pkg_id, "foo.bar").is_ok());
++
++        assert!(validate_feature_name(pkg_id, "+foo").is_err());
++        assert!(validate_feature_name(pkg_id, "-foo").is_err());
++        assert!(validate_feature_name(pkg_id, ".foo").is_err());
++        assert!(validate_feature_name(pkg_id, "foo:bar").is_err());
++        assert!(validate_feature_name(pkg_id, "foo?").is_err());
++        assert!(validate_feature_name(pkg_id, "?foo").is_err());
++        assert!(validate_feature_name(pkg_id, "ⒶⒷⒸ").is_err());
++        assert!(validate_feature_name(pkg_id, "a¼").is_err());
++    }
++}
+diff --git a/src/cargo/sources/registry/index.rs b/src/cargo/sources/registry/index.rs
+index d857a05..d926983 100644
+--- a/src/cargo/sources/registry/index.rs
++++ b/src/cargo/sources/registry/index.rs
+@@ -207,7 +207,6 @@ impl<'cfg> RegistryIndex<'cfg> {
+         'a: 'b,
+     {
+         let source_id = self.source_id;
+-        let config = self.config;
+ 
+         // First up actually parse what summaries we have available. If Cargo
+         // has run previously this will parse a Cargo-specific cache file rather
+@@ -227,15 +226,13 @@ impl<'cfg> RegistryIndex<'cfg> {
+             .versions
+             .iter_mut()
+             .filter_map(move |(k, v)| if req.matches(k) { Some(v) } else { None })
+-            .filter_map(
+-                move |maybe| match maybe.parse(config, raw_data, source_id) {
+-                    Ok(summary) => Some(summary),
+-                    Err(e) => {
+-                        info!("failed to parse `{}` registry package: {}", name, e);
+-                        None
+-                    }
+-                },
+-            )
++            .filter_map(move |maybe| match maybe.parse(raw_data, source_id) {
++                Ok(summary) => Some(summary),
++                Err(e) => {
++                    info!("failed to parse `{}` registry package: {}", name, e);
++                    None
++                }
++            })
+             .filter(move |is| {
+                 if is.v > INDEX_V_MAX {
+                     debug!(
+@@ -495,7 +492,7 @@ impl Summaries {
+                     // allow future cargo implementations to break the
+                     // interpretation of each line here and older cargo will simply
+                     // ignore the new lines.
+-                    let summary = match IndexSummary::parse(config, line, source_id) {
++                    let summary = match IndexSummary::parse(line, source_id) {
+                         Ok(summary) => summary,
+                         Err(e) => {
+                             // This should only happen when there is an index
+@@ -683,17 +680,12 @@ impl MaybeIndexSummary {
+     /// Does nothing if this is already `Parsed`, and otherwise the `raw_data`
+     /// passed in is sliced with the bounds in `Unparsed` and then actually
+     /// parsed.
+-    fn parse(
+-        &mut self,
+-        config: &Config,
+-        raw_data: &[u8],
+-        source_id: SourceId,
+-    ) -> CargoResult<&IndexSummary> {
++    fn parse(&mut self, raw_data: &[u8], source_id: SourceId) -> CargoResult<&IndexSummary> {
+         let (start, end) = match self {
+             MaybeIndexSummary::Unparsed { start, end } => (*start, *end),
+             MaybeIndexSummary::Parsed(summary) => return Ok(summary),
+         };
+-        let summary = IndexSummary::parse(config, &raw_data[start..end], source_id)?;
++        let summary = IndexSummary::parse(&raw_data[start..end], source_id)?;
+         *self = MaybeIndexSummary::Parsed(summary);
+         match self {
+             MaybeIndexSummary::Unparsed { .. } => unreachable!(),
+@@ -713,7 +705,7 @@ impl IndexSummary {
+     /// a package.
+     ///
+     /// The `line` provided is expected to be valid JSON.
+-    fn parse(config: &Config, line: &[u8], source_id: SourceId) -> CargoResult<IndexSummary> {
++    fn parse(line: &[u8], source_id: SourceId) -> CargoResult<IndexSummary> {
+         // ****CAUTION**** Please be extremely careful with returning errors
+         // from this function. Entries that error are not included in the
+         // index cache, and can cause cargo to get confused when switching
+@@ -744,7 +736,7 @@ impl IndexSummary {
+                 features.entry(name).or_default().extend(values);
+             }
+         }
+-        let mut summary = Summary::new(config, pkgid, deps, &features, links, rust_version)?;
++        let mut summary = Summary::new(pkgid, deps, &features, links, rust_version)?;
+         summary.set_checksum(cksum);
+         Ok(IndexSummary {
+             summary,
+diff --git a/src/cargo/util/toml/mod.rs b/src/cargo/util/toml/mod.rs
+index 2c213b7..87dee2a 100644
+--- a/src/cargo/util/toml/mod.rs
++++ b/src/cargo/util/toml/mod.rs
+@@ -2412,7 +2412,6 @@ impl TomlManifest {
+         let empty_features = BTreeMap::new();
+ 
+         let summary = Summary::new(
+-            config,
+             pkgid,
+             deps,
+             me.features.as_ref().unwrap_or(&empty_features),
+diff --git a/tests/testsuite/features.rs b/tests/testsuite/features.rs
+index 848e056..557fab1 100644
+--- a/tests/testsuite/features.rs
++++ b/tests/testsuite/features.rs
+@@ -1937,8 +1937,8 @@ fn nonexistent_required_features() {
+ }
+ 
+ #[cargo_test]
+-fn invalid_feature_names_warning() {
+-    // Warnings for more restricted feature syntax.
++fn invalid_feature_names_error() {
++    // Errors for more restricted feature syntax.
+     let p = project()
+         .file(
+             "Cargo.toml",
+@@ -1948,72 +1948,57 @@ fn invalid_feature_names_warning() {
+                 version = "0.1.0"
+ 
+                 [features]
+-                # Some valid, but unusual names, shouldn't warn.
+-                "c++17" = []
+-                "128bit" = []
+-                "_foo" = []
+-                "feat-name" = []
+-                "feat_name" = []
+-                "foo.bar" = []
+-
+-                # Invalid names.
++                # Invalid start character.
+                 "+foo" = []
+-                "-foo" = []
+-                ".foo" = []
+-                "foo:bar" = []
+-                "foo?" = []
+-                "?foo" = []
+-                "ⒶⒷⒸ" = []
+-                "a¼" = []
+             "#,
+         )
+         .file("src/lib.rs", "")
+         .build();
+ 
+-    // Unfortunately the warnings are duplicated due to the Summary being
+-    // loaded twice (once in the Workspace, and once in PackageRegistry) and
+-    // Cargo does not have a de-duplication system. This should probably be
+-    // OK, since I'm not expecting this to affect anyone.
+     p.cargo("check")
+-        .with_stderr("\
+-[WARNING] invalid character `+` in feature `+foo` in package foo v0.1.0 ([ROOT]/foo), the first character must be a Unicode XID start character or digit (most letters or `_` or `0` to `9`)
+-This was previously accepted but is being phased out; it will become a hard error in a future release.
+-For more information, see issue #8813 <https://github.com/rust-lang/cargo/issues/8813>, and please leave a comment if this will be a problem for your project.
+-[WARNING] invalid character `-` in feature `-foo` in package foo v0.1.0 ([ROOT]/foo), the first character must be a Unicode XID start character or digit (most letters or `_` or `0` to `9`)
+-This was previously accepted but is being phased out; it will become a hard error in a future release.
+-For more information, see issue #8813 <https://github.com/rust-lang/cargo/issues/8813>, and please leave a comment if this will be a problem for your project.
+-[WARNING] invalid character `.` in feature `.foo` in package foo v0.1.0 ([ROOT]/foo), the first character must be a Unicode XID start character or digit (most letters or `_` or `0` to `9`)
+-This was previously accepted but is being phased out; it will become a hard error in a future release.
+-For more information, see issue #8813 <https://github.com/rust-lang/cargo/issues/8813>, and please leave a comment if this will be a problem for your project.
+-[WARNING] invalid character `?` in feature `?foo` in package foo v0.1.0 ([ROOT]/foo), the first character must be a Unicode XID start character or digit (most letters or `_` or `0` to `9`)
+-This was previously accepted but is being phased out; it will become a hard error in a future release.
+-For more information, see issue #8813 <https://github.com/rust-lang/cargo/issues/8813>, and please leave a comment if this will be a problem for your project.
+-[WARNING] invalid character `¼` in feature `a¼` in package foo v0.1.0 ([ROOT]/foo), characters must be Unicode XID characters, `+`, or `.` (numbers, `+`, `-`, `_`, `.`, or most letters)
+-This was previously accepted but is being phased out; it will become a hard error in a future release.
+-For more information, see issue #8813 <https://github.com/rust-lang/cargo/issues/8813>, and please leave a comment if this will be a problem for your project.
+-[WARNING] invalid character `:` in feature `foo:bar` in package foo v0.1.0 ([ROOT]/foo), characters must be Unicode XID characters, `+`, or `.` (numbers, `+`, `-`, `_`, `.`, or most letters)
+-This was previously accepted but is being phased out; it will become a hard error in a future release.
+-For more information, see issue #8813 <https://github.com/rust-lang/cargo/issues/8813>, and please leave a comment if this will be a problem for your project.
+-[WARNING] invalid character `?` in feature `foo?` in package foo v0.1.0 ([ROOT]/foo), characters must be Unicode XID characters, `+`, or `.` (numbers, `+`, `-`, `_`, `.`, or most letters)
+-This was previously accepted but is being phased out; it will become a hard error in a future release.
+-For more information, see issue #8813 <https://github.com/rust-lang/cargo/issues/8813>, and please leave a comment if this will be a problem for your project.
+-[WARNING] invalid character `Ⓐ` in feature `ⒶⒷⒸ` in package foo v0.1.0 ([ROOT]/foo), the first character must be a Unicode XID start character or digit (most letters or `_` or `0` to `9`)
+-This was previously accepted but is being phased out; it will become a hard error in a future release.
+-For more information, see issue #8813 <https://github.com/rust-lang/cargo/issues/8813>, and please leave a comment if this will be a problem for your project.
+-[WARNING] invalid character `Ⓑ` in feature `ⒶⒷⒸ` in package foo v0.1.0 ([ROOT]/foo), characters must be Unicode XID characters, `+`, or `.` (numbers, `+`, `-`, `_`, `.`, or most letters)
+-This was previously accepted but is being phased out; it will become a hard error in a future release.
+-For more information, see issue #8813 <https://github.com/rust-lang/cargo/issues/8813>, and please leave a comment if this will be a problem for your project.
+-[WARNING] invalid character `Ⓒ` in feature `ⒶⒷⒸ` in package foo v0.1.0 ([ROOT]/foo), characters must be Unicode XID characters, `+`, or `.` (numbers, `+`, `-`, `_`, `.`, or most letters)
+-This was previously accepted but is being phased out; it will become a hard error in a future release.
+-For more information, see issue #8813 <https://github.com/rust-lang/cargo/issues/8813>, and please leave a comment if this will be a problem for your project.
+-[CHECKING] foo v0.1.0 [..]
+-[FINISHED] [..]
+-")
++        .with_status(101)
++        .with_stderr(
++            "\
++error: failed to parse manifest at `[ROOT]/foo/Cargo.toml`
++
++Caused by:
++  invalid character `+` in feature `+foo` in package foo v0.1.0 ([ROOT]/foo), \
++  the first character must be a Unicode XID start character or digit \
++  (most letters or `_` or `0` to `9`)
++",
++        )
++        .run();
++
++    p.change_file(
++        "Cargo.toml",
++        r#"
++            [package]
++            name = "foo"
++            version = "0.1.0"
++
++            [features]
++            # Invalid continue character.
++            "a&b" = []
++        "#,
++    );
++
++    p.cargo("check")
++        .with_status(101)
++        .with_stderr(
++            "\
++error: failed to parse manifest at `[ROOT]/foo/Cargo.toml`
++
++Caused by:
++  invalid character `&` in feature `a&b` in package foo v0.1.0 ([ROOT]/foo), \
++  characters must be Unicode XID characters, `+`, or `.` \
++  (numbers, `+`, `-`, `_`, `.`, or most letters)
++",
++        )
+         .run();
+ }
+ 
+ #[cargo_test]
+-fn invalid_feature_names_error() {
++fn invalid_feature_name_slash_error() {
+     // Errors for more restricted feature syntax.
+     let p = project()
+         .file(
+-- 
+2.23.1
+

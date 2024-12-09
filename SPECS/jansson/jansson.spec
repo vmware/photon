@@ -1,13 +1,14 @@
 Summary:       Jansson json parser
 Name:          jansson
 Version:       2.13.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
-License:       MIT
 URL:           http://www.digip.org/jansson
 Source0:       http://www.digip.org/jansson/releases/%{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}=c70e94a9f3daeb16d54fb037b3e115db3ce3372d
+%define sha512 %{name}-%{version}=e32be6665e41cf1763608c2f1ac4ce0824d4d7ffa5f4a5824cefde279250fdd399d49ba93d8894e16a473731f629b846554654347f027ca9a0a96ed047f10192
+Source1: license.txt
+%include %{SOURCE1}
 Distribution:  Photon
 
 %description
@@ -22,20 +23,18 @@ Requires:   %{name} = %{version}-%{release}
 Development files for jansson
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --disable-static
+%configure --disable-static
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{?_smp_mflags}
 
 %post
 
@@ -57,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*  Thu Dec 12 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.13.1-2
+-  Release bump for SRP compliance
 *  Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.13.1-1
 -  Automatic Version Bump
 *  Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 2.11-1

@@ -6,32 +6,40 @@
 
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
-Version:       3.3.1
-Release:       5%{?dist}
-License:       Apache License, Version 2.0
+Version:       3.4.0
+Release:       7%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: %{name}-%{version}-src.tgz
-%define sha512 %{name}=1c9386ee7ab98d41d22afa3d1c985d36eed8bb2874f1c12959234c21b08b504f3c0bee8e38fdbb82f45a7b6c300de585fb6728ffc1fa65ce532b7d2cdcaaf1f3
+%define sha512 %{name}=84e368c6d5e6487ab7a9892a4f7859fa1f7a4c90880706d0b6a855affdf165fd1aa1ae25e098d5ef11f452a71f76e5edab083db98d6eec5ff5e61c69cb65d302
 
 Source1:       %{name}.service
 Source2:       %{name}.sysusers
 
+#Download https://raw.githubusercontent.com/gradle/gradle/v7.6.0/gradle/wrapper/gradle-wrapper.jar
+Source3:       gradle-wrapper-7.6.0-jar.tar.gz
+%define sha512 gradle-wrapper-7.6.0-jar.tar.gz=70a4bd98e9c220b1a06ffc416a7345bda8ae5abaa57c7bd3f392516e46e211b1934086bcfb4a58e8e613c105a012e80e2da1de53b4ab900e85e74f467018f4c1
+
+Source4: license.txt
+%include %{SOURCE4}
+
+Patch0:     0001-Use-proxy-if-available.patch
+Patch1:     kafka_doc.patch
+
 Provides:   kafka
 Provides:   kafka-server
 
-BuildRequires: systemd
 BuildRequires: systemd-devel
-BuildRequires: openjdk11
 BuildRequires: curl
 BuildRequires: zookeeper
+BuildRequires: openjdk11
 
-Requires: (openjdk11-jre or openjdk17-jre)
 Requires: zookeeper
 Requires: systemd-rpm-macros
+Requires: (openjdk11-jre or openjdk17-jre)
 
 %{?systemd_requires}
 
@@ -42,10 +50,22 @@ Data streams are partitioned and spread over a cluster of machines to allow data
 Messages are persisted on disk and replicated within the cluster to prevent data loss.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}-src
+%autosetup -p1 -n %{name}-%{version}-src -a3
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
+# Use system proxy (if enabled) for gradle
+JAVA_HTTP_PROXY_OPTS="$(echo "$HTTP_PROXY" | sed -ne 's|^http://\(.*\):\(.*\)|-Dhttp.proxyHost=\1 -Dhttp.proxyPort=\2|p')"
+JAVA_HTTPS_PROXY_OPTS="$(echo "$HTTPS_PROXY" | sed -ne 's|^http://\(.*\):\(.*\)|-Dhttps.proxyHost=\1 -Dhttps.proxyPort=\2|p')"
+export GRADLE_OPTS="$JAVA_HTTP_PROXY_OPTS $JAVA_HTTPS_PROXY_OPTS"
+
+cp gradle-wrapper.jar gradle/wrapper/
+
+if [ -n "${GRADLE_PROXY_URL}" ]; then
+  PROP_FILE="gradle/wrapper/gradle-wrapper.properties"
+  sed -i "s|\(distributionUrl=\).*/\(gradle-.*.zip\)|\1${GRADLE_DISTRIBUTION_URL}/\2|" "$PROP_FILE"
+fi
+
 ./gradlew jar
 ./gradlew srcJar
 ./gradlew javadoc
@@ -71,8 +91,8 @@ install -p -D -m 755 %{S:1} %{buildroot}/%{_unitdir}/
 install -p -D -m 644 config/log4j.properties %{buildroot}/%{_conf_dir}/
 install -p -D -m 644 connect/mirror/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/runtime/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 tools/build/dependant-libs-2.13.8/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 core/build/dependant-libs-2.13.8/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 tools/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 core/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 core/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 clients/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/api/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
@@ -81,7 +101,7 @@ install -p -D -m 644 connect/json/build/libs/* %{buildroot}/%{_prefix}/%{name}/l
 install -p -D -m 644 connect/transforms/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/file/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/mirror-client/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 streams/examples/build/dependant-libs-2.13.8/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 streams/examples/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 streams/upgrade-system-tests-0100/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 streams/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
@@ -113,12 +133,20 @@ rm -rf %{buildroot}
 %doc LICENSE
 
 %changelog
-* Sun Aug 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.3.1-5
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.4.0-7
+- Release bump for SRP compliance
+* Wed Sep 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-6
+- Removed javadoc oracle links
+* Tue Jul 16 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-5
+- Use proxy if available
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.0-4
 - Require jdk11 or jdk17
-* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 3.3.1-4
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 3.4.0-3
 - Resolving systemd-rpm-macros for group creation
-* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.3.1-3
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.4.0-2
 - Bump version as a part of openjdk11 upgrade
+* Fri May 19 2023 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.0-1
+- Update to 3.4.0, Fixes CVE-2023-25194
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.3.1-2
 - Use systemd-rpm-macros for user creation
 * Tue Nov 1 2022 Gerrit Photon <photon-checkins@vmware.com> 3.3.1-1

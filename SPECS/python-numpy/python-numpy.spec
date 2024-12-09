@@ -3,8 +3,7 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python3-numpy
 Version:        1.23.4
-Release:        2%{?dist}
-License:        BSD
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,6 +11,9 @@ Url:            https://pypi.python.org/pypi/numpy
 
 Source0: https://files.pythonhosted.org/packages/64/8e/9929b64e146d240507edaac2185cd5516f00b133be5b39250d253be25a64/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=727ca8950b0fbd5670e939b1c9c5cea852781ec4254d56a1659a91dc0430fc10b01ffdd16e1bb28a62319f91029e087024f4c6298bfc859a6050bfb507edcff8
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-setuptools
 BuildRequires: python3-devel
@@ -60,6 +62,8 @@ PATH=%{buildroot}%{_bindir}:${PATH} \
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.23.4-3
+- Release bump for SRP compliance
 * Sat Aug 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.23.4-2
 - Add lapack to requires
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.23.4-1

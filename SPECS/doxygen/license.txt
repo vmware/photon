@@ -1,0 +1,1 @@
+License: MIT AND HPND-Pbmplus AND BSD-3-Clause AND ISC AND Zlib AND LGPL-2.0-or-later AND (GPL-2.0-only OR MIT) AND GPL-3.0-or-later WITH Bison-exception-2.2 AND BSD-2-Clause-Views AND GPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later AND LGPL-2.1-or-later

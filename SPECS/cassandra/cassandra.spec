@@ -4,19 +4,23 @@
 
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        4.0.8
-Release:        5%{?dist}
+Version:        4.0.10
+Release:        6%{?dist}
 URL:            http://cassandra.apache.org/
-License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://archive.apache.org/dist/cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha512 apache-%{name}=c34a23940ea7e935a6ba629f30614a700b0d58ddbe3257b918fe1da0c666eb75820961b9f8cb9b315614bb98c3f536565402027efa17a142a57a3c404dda1077
+%define sha512 apache-%{name}=986b79556e5d375ee6f385919509555bb79a6ae3c3dd338003ca8bb2145d2311a170eee17e98025f08b61b0ea0bc3712da696207644c6db05f15d0ec54c1022a
 
 Source1:        %{name}.service
 Source2:        %{name}.sysusers
+Source3:        %{name}-%{version}-dependencies.tar.gz
+%define sha512  %{name}-%{version}-dependencies.tar.gz=3532aea87265980716d0f920376b135f65e1729bc8a101ad7aa4088d1477948c4897e8b1a0687bacbb5af50315069245da7bafa8ec2b2da7ae637d5e07f8057a
+
+Source4: license.txt
+%include %{SOURCE4}
 
 BuildRequires:  apache-ant
 BuildRequires:  unzip
@@ -39,9 +43,23 @@ Cassandra brings together the distributed systems technologies from Dynamo and t
 
 %prep
 %autosetup -p1 -n apache-%{name}-%{version}-src
+mkdir -p $HOME/.m2/repository/org/
+tar xf %{SOURCE3} -C $HOME/.m2/repository/org/
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
+
+if [ -n "${MAVEN_PROXY_URL}" ]; then
+  PROP_FILE="build.properties.default"
+  if grep -q "https://repo1.maven.org/maven2" "$PROP_FILE" && grep -q "https://repo.maven.apache.org/maven2" "$PROP_FILE"; then
+      sed -i "s|https://repo1.maven.org/maven2|${MAVEN_PROXY_URL}/|" "$PROP_FILE"
+      sed -i "s|https://repo.maven.apache.org/maven2|${MAVEN_PROXY_URL}/|" "$PROP_FILE"
+  else
+      echo "One or both URLs not found in the property file."
+      exit 1
+  fi
+fi
+
 ant jar javadoc -Drelease=true -Duse.jdk11=true
 #Remove libraries of other arch
 %ifarch x86_64
@@ -117,14 +135,20 @@ source %{_sysconfdir}/profile.d/%{name}.sh
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
-* Sun Aug 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.8-5
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 4.0.10-6
+- Release bump for SRP compliance
+* Wed Jul 24 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.10-5
+- Add changes to build offline cassandra
+* Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.10-4
 - Require jdk11
 - cassandra doesn't work with jdk17 yet
 - https://issues.apache.org/jira/browse/CASSANDRA-16895
-* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 4.0.8-4
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 4.0.10-3
 - Resolving systemd-rpm-macros for group creation
-* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.8-3
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.10-2
 - Bump version as a part of openjdk11 upgrade
+* Fri Jun 02 2023 Ankit Jain <ankitja@vmware.com> 4.0.10-1
+- Updated to v4.0.10.
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 4.0.8-2
 - Use systemd-rpm-macros for user creation
 * Tue Feb 21 2023 Ankit Jain <ankitja@vmware.com> 4.0.8-1

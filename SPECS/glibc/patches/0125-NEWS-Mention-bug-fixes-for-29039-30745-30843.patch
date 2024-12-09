@@ -1,0 +1,36 @@
+From cc5b5da1353e9e4c1486c12befcce9f76ed1e34b Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Sat, 23 Dec 2023 06:27:50 -0800
+Subject: [PATCH 125/175] NEWS: Mention bug fixes for 29039/30745/30843
+
+---
+ NEWS | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/NEWS b/NEWS
+index 8ac1be6cb9d23f11d27970f1223a38b2d3895996..0f0ebce3f066989de6170227f32fff0007e233ff 100644
+--- a/NEWS
++++ b/NEWS
+@@ -48,6 +48,7 @@ The following bugs are resolved with this release:
+   [24816] Fix tst-nss-files-hosts-long on single-stack hosts
+   [27576] gmon: improve mcount overflow handling
+   [28846] CMSG_NXTHDR may trigger -Wstrict-overflow warning
++  [29039] Corrupt DTV after reuse of a TLS module ID following dlclose with unused TLS
+   [29444] gmon: Fix allocated buffer overflow (bug 29444)
+   [29864] libc: __libc_start_main() should obtain program headers
+     address (_dl_phdr) from the auxv, not the ELF header.
+@@ -84,9 +85,11 @@ The following bugs are resolved with this release:
+   [30305] x86_64: Fix asm constraints in feraiseexcept
+   [30477] libc: [RISCV]: time64 does not work on riscv32
+   [30515] _dl_find_object incorrectly returns 1 during early startup
++  [30745] Slight bug in cache info codes for x86
+   [30804] F_GETLK, F_SETLK, and F_SETLKW value change for powerpc64 with
+     -D_FILE_OFFSET_BITS=64
+   [30842] Stack read overflow in getaddrinfo in no-aaaa mode (CVE-2023-4527)
++  [30843] potential use-after-free in getcanonname (CVE-2023-4806)
+   [31184] FAIL: elf/tst-tlsgap
+   [31185] Incorrect thread point access in _dl_tlsdesc_undefweak and _dl_tlsdesc_dynamic
+ 
+-- 
+2.35.6
+

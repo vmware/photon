@@ -1,17 +1,24 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.8.4
-Release:        1%{?dist}
-License:        GPLv3+ and LGPLv2+
+Version:        3.7.10
+Release:        5%{?dist}
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.8/%{name}-%{version}.tar.xz
-%define sha512 %{name}=af748610392b7eec8a6294d28d088f323450207cdcda1aa2138a0fd71023994c662f7aff72b2b3cd888e7b770750611981c2cde5f2ddc45f852fc0034cdebaff
+Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
+%define sha512 %{name}=23e0890abd00c433f11c2d4ceb328fe4ac0a0b765de89dff52f16e7d20694a7c61a6acb084d9f58f15c1a9609d70efdac489ac4759963c0ff1d1b8bb7183269e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: default-priority.patch
+Patch1: CVE-2023-5981.patch
+Patch2: CVE-2024-0553.patch
+Patch3: CVE-2024-0567.patch
+Patch4: CVE-2024-28835.patch
+Patch5: CVE-2024-28834.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -35,13 +42,13 @@ GnuTLS is a secure communications library implementing the SSL, TLS and DTLS pro
 It provides a simple C language application programming interface (API) to access the secure communications protocols as well as APIs to parse and write X.509,
 PKCS #12, OpenPGP and other required structures. It is aimed to be portable and efficient with focus on security and interoperability.
 
-%package        devel
-Summary:        Development libraries and header files for gnutls
-Requires:       %{name} = %{version}-%{release}
-Requires:       libtasn1-devel
-Requires:       nettle-devel
+%package devel
+Summary:    Development libraries and header files for gnutls
+Requires:   %{name} = %{version}-%{release}
+Requires:   libtasn1-devel
+Requires:   nettle-devel
 
-%description    devel
+%description devel
 The package contains libraries and header files for
 developing applications that use gnutls.
 
@@ -51,6 +58,7 @@ developing applications that use gnutls.
 %build
 # check for trust store file presence
 [ -f %{_sysconfdir}/pki/tls/certs/ca-bundle.crt ] || exit 1
+
 %configure \
     --without-p11-kit \
     --disable-static \
@@ -63,7 +71,6 @@ developing applications that use gnutls.
 
 %install
 %make_install %{?_smp_mflags}
-
 rm %{buildroot}%{_infodir}/*
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}
 chmod 755 %{buildroot}%{_sysconfdir}/%{name}
@@ -75,7 +82,11 @@ EOF
 sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %make_build check
 
-%ldconfig_scriptlets
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -84,6 +95,9 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man1/*
 %{_datadir}/locale/*
 %{_docdir}/%{name}/*.png
+%{_libdir}/guile/2.2/extensions/*.so*
+%{_libdir}/guile/2.2/site-ccache/%{name}*
+%{_datadir}/guile/site/2.2/%{name}*
 %config(noreplace) %{_sysconfdir}/%{name}/default-priorities
 
 %files devel
@@ -94,14 +108,16 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man3/*
 
 %changelog
-* Tue Mar 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.8.4-1
-- Upgrade to 3.8.4
-* Mon Jan 22 2024 Brennan Lamoreaux <brennan.lamoreaux@vmware.com> 3.8.3-1
-- Upgrade to 3.8.3
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8.2-1
-- Upgrade to v3.8.2
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-4
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.7.10-5
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.7.10-4
+- Release bump for SRP compliance
+* Tue Mar 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.7.10-3
+- Fix for CVE-2024-28835 and CVE-2024-28835
+* Mon Jan 22 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.7.10-2
+- Fix for CVE-2024-0553 and CVE-2024-0567
+* Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.10-1
+- Upgrade to v3.7.10
 * Fri Feb 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-3
 - Fix CVE-2023-0361
 * Sat Oct 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.7-2

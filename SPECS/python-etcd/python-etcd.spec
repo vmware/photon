@@ -2,9 +2,8 @@
 
 Name:           python3-etcd
 Version:        0.4.5
-Release:        7%{?dist}
+Release:        9%{?dist}
 Summary:        Python API for etcd
-License:        MIT
 Group:          Development/Languages/Python
 Url:            https://github.com/jplana/python-etcd
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://github.com/jplana/python-etcd/archive/refs/tags/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=c59d7a67492a2e4e72b1ae3ea73ac85a073b9d4516d1ebc48601ba67ac9609fbc45574d97e8dfae3ed4f511f090343ff980160043676252125ce2e2edc7bd154
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: auth-api-compatibility.patch
 
@@ -60,10 +62,14 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-* Fri Mar 08 2024 Anmol Jain <anmol.jain@broadcom.com> 0.4.5-7
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.5-9
+- Release bump for SRP compliance
+* Tue Aug 06 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.5-8
+- Bump up as part of python3-urllib3 update
+* Thu Jul 25 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.5-7
+- Bump up as part of dnspython update
+* Fri Mar 08 2024 Anmol Jain <anmol.jain@broadcom.com> 0.4.5-6
 - Bump version as a part of etcd upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.4.5-6
-- Bump version as a part of openssl upgrade
 * Wed Aug 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.4.5-5
 - Add python3-dnspython to requires
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.4.5-4

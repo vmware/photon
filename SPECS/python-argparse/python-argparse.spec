@@ -1,15 +1,17 @@
 Name:           python3-argparse
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.org/project/argparse
 Summary:        Python command-line parsing library
-License:        Python Software Foundation License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: argparse-%{version}.tar.gz
 %define sha512 argparse=9941f9d26c43169f947c9efadda6239349e1f9df80ff5fcdba3070bc7b43c43ab6bb4b7f0c7eee8e5d06231a17a7e9ee9eb73c7a9bb68ebe5d13f879686d61b2
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -52,5 +54,7 @@ in a number of ways including:
 %python3_sitelib/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.0-2
+- Release bump for SRP compliance
 * Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 1.4.0-1
 - Initial build.  First version

@@ -3,22 +3,24 @@
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        12.3.5
-Release:        5%{?dist}
-License:        LGPLv2+
+Version:        12.4.5
+Release:        2%{?dist}
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=e2a485d7bc5a26717c1e93ff174403fa8a93132d8bd6fc0f78b65ad200927398c88b6d97895da38b0c28bf3f0edfd501b9ec6ed8a84efd2f697d7b66e582a4ee
+%define sha512 %{name}=78815d95d0be651909120e869d65d2b1e33edf2d1fb65e4ffb61e78ca21aceac063c4806425d3e8698640041e43157ff2380c4a5ba5bc0e191773ca0e761169c
 
 Source1: https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
 %define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
 
 Source2: vmtoolsd.service
 Source3: vgauthd.service
+
+Source4: license.txt
+%include %{SOURCE4}
 
 # If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
@@ -91,7 +93,7 @@ GOSC scripts
 
 %build
 cd %{name}
-autoreconf -i
+autoreconf -vif
 %configure --enable-photon-gosc \
            --without-x \
            --without-kernel-modules \
@@ -112,8 +114,7 @@ install -p -m 644 %{SOURCE3} %{buildroot}%{_unitdir}
 
 cd %{name}
 %make_install %{?_smp_mflags}
-
-chmod -x %{buildroot}/etc/pam.d/vmtoolsd
+chmod -x %{buildroot}%{_sysconfdir}/pam.d/vmtoolsd
 
 %post
 /sbin/ldconfig
@@ -180,21 +181,25 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
-* Wed May 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.3.5-5
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 12.4.5-2
+- Release bump for SRP compliance
+* Mon Jul 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.4.5-1
+- Upgrade to v12.4.5
+* Wed May 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.3.5-2
 - Invoke cloud-init with proper args
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 12.3.5-4
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 12.3.5-3
-- Bump version as a part of libxml2 upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.3.5-2
-- Bump version as a part of openssl upgrade
 * Mon Oct 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.3.5-1
 - Upgrade to v12.3.5
+* Fri Oct 20 2023 Shivani Agarwal <shivania2@vmware.com> 12.3.0-2
+- Fix CVE-2023-34058, CVE-2023-34059
 * Thu Sep 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.3.0-1
 - Upgrade to v12.3.0
+* Tue Aug 29 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.5-2
+- Fix CVE-2023-20900
 * Tue Jun 20 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.5-1
 - Upgrade to version 12.2.5
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 12.2.0-2
+* Thu Jun 8 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.0-3
+- Fix CVE-2023-20867
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 12.2.0-2
 - Bump version as a part of libxml2 upgrade
 * Fri Mar 10 2023 Shivani Agarwal <shivania2@vmware.com> 12.2.0-1
 - Upgrade to version 12.2.0

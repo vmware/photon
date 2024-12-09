@@ -1,8 +1,7 @@
 Summary:        trace-cmd is a user-space front-end command-line tool for Ftrace
 Name:           trace-cmd
 Version:        3.1.4
-Release:        6%{?dist}
-License:        GPL-2.0 and LGPL-2.1
+Release:        5%{?dist}
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git/snapshot/%{name}-v%{version}.tar.gz
 %define sha512 %{name}=93ad775c1767d2a02b72386a29867c3bc141171403c152c0c4cb907da16b5ae69100924279d9529083449c1774c97c35d5b4790b188bcd4930cfa69076cef0b8
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  audit-devel
 BuildRequires:  swig
@@ -52,11 +54,9 @@ rm -rf %{buildroot}
 %{_sysconfdir}/bash_completion.d/%{name}.bash
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.1.4-6
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.1.4-5
-- Bump version as a part of libxml2 upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.1.4-4
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.1.4-5
+- Release bump for SRP compliance
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.1.4-4
 - Bump version as a part of libxml2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1.4-3
 - Bump version as a part of zstd upgrade

@@ -7,7 +7,6 @@ Version:        1.11.117
 Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        Apache 2.0
 URL:            https://github.com/aws/aws-sdk-cpp
 
 # Steps to create source tarball
@@ -20,6 +19,9 @@ URL:            https://github.com/aws/aws-sdk-cpp
 # tar -I 'gzip -9' -cpf aws-sdk-cpp-1.10.20.tar.gz aws-sdk-cpp-1.10.20
 Source0: https://github.com/aws/aws-sdk-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=c398d2e5176d7369ea571aaa58ac240876929d5f97226de17282baeaadc0d7e20a3f2e8d4d348fbd3eaa365e09ad55631c0f6bb0d52b8a38c3ac935def5165c6
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: openssl-devel
 Requires: curl-devel
@@ -218,12 +220,14 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/*.a
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.11.117-3
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.11.117-3
+- Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.11.117-2
 - Build CRT deps
 * Wed Jul 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.11.117-1
 - Upgrade to v1.11.117
+* Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 1.11.58-1
+- version upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.30-2
 - Bump version as a part of zlib upgrade
 * Thu Dec 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.10.30-1

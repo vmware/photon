@@ -1,9 +1,8 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
 Version:          3.8.0
-Release:          5%{?dist}
+Release:          6%{?dist}
 URL:              http://zookeeper.apache.org/
-License:          Apache License, Version 2.0
 Group:            Applications/System
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -14,6 +13,9 @@ Source0: %{name}-%{version}.tar.gz
 Source1: zookeeper.service
 Source2: zkEnv.sh
 Source3: %{name}.sysusers
+
+Source4: license.txt
+%include %{SOURCE4}
 
 Patch0: zkSever_remove_cygwin_cypath.patch
 
@@ -89,6 +91,8 @@ install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %{_prefix}/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.8.0-6
+- Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8.0-5
 - Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8.0-4

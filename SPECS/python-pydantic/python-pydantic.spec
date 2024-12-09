@@ -1,15 +1,17 @@
 Summary:        Data validation using Python type hinting
 Name:           python3-pydantic
 Version:        1.10.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Tools
-License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.org/project/pydantic
 
 Source0:        https://files.pythonhosted.org/packages/d5/eb/d5ee9e58b2a4608c320fc72e5d471ba0cd949e8ef6f2689d30d1bd782d9f/pydantic-1.10.1.tar.gz
 %define sha512  pydantic=e0394b90c39fd5294b7f4f280548d07113d771737943c390405d5bdbaf05216dc20c6adb7860cbbe1f8ee9698909447e72a8a5245009c710fe9b172d53bb2260
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -56,5 +58,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/pydantic-%{version}-py%{python3_version}.egg-info
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.10.1-2
+- Release bump for SRP compliance
 * Wed Oct 12 2022 Nitesh Kumar <kunitesh@vmware.com> 1.10.1-1
 - Initial version

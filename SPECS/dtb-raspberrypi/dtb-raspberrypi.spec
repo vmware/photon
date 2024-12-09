@@ -3,13 +3,15 @@ Summary:        Device trees and overlays for Raspberry Pi
 Name:           dtb-raspberrypi
 Version:        6.1.10.2023.02.28
 # Version Scheme: {kernel_ver}.{year}.{month}.{day}
-Release:        1%{?dist}
-License:        GPLv2
+Release:        2%{?dist}
 %define rpi_linux_branch rpi-6.1.y
 %define rpi_linux_req 6.1.10
 URL:            https://github.com/raspberrypi/linux
 Source0:        https://github.com/raspberrypi/linux/archive/rpi-linux-%{version}.tar.gz
 %define sha512  rpi-linux=ec9c213d9a2d9be5e59a63c0f146a109095960aaa1e62f34d8f4b7744da7321678f4216ea15c64642f6e80d8e78486420da046be25a398809fc995b3b467b88f
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          System/Boot
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -91,6 +93,8 @@ popd
 /boot/efi/overlays
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.10.2023.02.28-2
+- Release bump for SRP compliance
 * Mon Mar 06 2023 Ajay Kaher <akaher@vmware.com> 6.1.10.2023.02.28-1
 - Update to v6.1.10.2023.02.28
 * Fri Mar 03 2023 Piyush Gupta <gpiyush@vmware.com> 5.10.4.2021.01.07-3

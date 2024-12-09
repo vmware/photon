@@ -1,0 +1,1 @@
+License: GPL-3.0-only AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND (GPL-2.0-only OR GPL-3.0-only) AND GPL-3.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND FSFUL AND FSFULLR AND FSFULLRWD

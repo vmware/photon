@@ -1,15 +1,17 @@
 Name:           wireguard-tools
 Version:        1.0.20210914
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.wireguard.com/
 Summary:        Fast, modern, secure VPN tunnel
-License:        GPLv2
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://git.zx2c4.com/wireguard-tools/snapshot/wireguard-tools-%{version}.tar.xz
 %define sha512 %{name}=6727ea65551dbb064457449b93a943bd6534ca93bc7fa5704c2f6826266c98688ee9ea28731fda57a5245d5f63c05f3899fcca54e40c0b6251b7c4796e957445
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: make
 BuildRequires: systemd-devel
@@ -55,5 +57,7 @@ WITH_BASHCOMPLETION=yes WITH_WGQUICK=yes WITH_SYSTEMDUNITS=yes -C src
 %{_mandir}/man8/wg-quick.8*
 
 %changelog
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.0.20210914-2
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Susant Sahani <ssahani@vmware.com> 1.0.20210914-1
 - Initial rpm release

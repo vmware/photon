@@ -1,8 +1,7 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
 Version:        6.4.0
-Release:        2%{?dist}
-License:        GPL+ and LGPLv2+
+Release:        3%{?dist}
 URL:            http://oss.sgi.com/projects/xfs
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -11,7 +10,10 @@ Distribution:   Photon
 Source0:        http://kernel.org/pub/linux/utils/fs/xfs/xfsprogs/%{name}-%{version}.tar.xz
 %define sha512  %{name}=831e7747640bc2964b182226d8bb6f637610b123aeec9b3cb97a5de5d5b65bde30c6b40ad2e78de6a5214e823dd75de3a2bdfddd8ab1638f5c7340a760c91b3f
 
-BuildRequires: gettext-devel
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires: gettext
 BuildRequires: inih-devel
 BuildRequires: readline-devel
 BuildRequires: userspace-rcu-devel
@@ -55,13 +57,12 @@ make DEBUG=-DNDEBUG \
 
 %install
 make DESTDIR=%{buildroot} PKG_DOC_DIR=%{_docdir}/%{name}-%{version} \
-             PKG_ROOT_LIB_DIR=%{_libdir} PKG_ROOT_SBIN_DIR=%{_sbindir} \
-             install %{?_smp_mflags}
+             PKG_ROOT_LIB_DIR=%{_libdir} PKG_ROOT_SBIN_DIR=%{_sbindir} install %{?_smp_mflags}
 
 make DESTDIR=%{buildroot} PKG_DOC_DIR=%{_docdir}/%{name}-%{version} \
-             PKG_ROOT_LIB_DIR=%{_libdir} PKG_ROOT_SBIN_DIR=%{_sbindir} \
-             install-dev %{?_smp_mflags}
+             PKG_ROOT_LIB_DIR=%{_libdir} PKG_ROOT_SBIN_DIR=%{_sbindir} install-dev %{?_smp_mflags}
 
+find %{buildroot}%{_lib64dir} -name '*.la' -delete
 find %{buildroot}%{_lib64dir} -name '*.a' -delete
 
 %find_lang %{name}
@@ -94,10 +95,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.4.0-2
-- Bump version as a part of util-linux upgrade
-* Wed Aug 23 2023 Susant Sahani <ssahani@vmware.com> 6.4.0-1
-- update to 6.4.0
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.4.0-3
+- Release bump for SRP compliance
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0.0-2
 - Bump version as a part of gettext upgrade
 * Fri Jan 06 2023 Oliver Kurth <okurth@vmware.com> 6.0.0-1

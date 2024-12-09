@@ -2,16 +2,15 @@
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        255.2
-Release:        3%{?dist}
-License:        LGPLv2+ and GPLv2+ and MIT
+Version:        253.19
+Release:        8%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=0a9a43adc6d23f52349d298cdff3f3ae6accd7e43a33253608f7a9d241699c7cba3c9f6a0fa6da3ae3cba0e246e272076bfa2cdf5bade7bc019406f407be0bb9
+%define sha512 %{name}=42798768a5859ded6bb5f65bed2d0ced81c86eca06ebed275967352435e4bac93df8c95a4a3f841f43e1450457629c92e9e1a5f51159607055484dc53ffa1699
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
@@ -23,11 +22,21 @@ Source5:        10-rdrand-rng.conf
 Source6:        10-defaults.preset
 
 Source11:       macros.sysusers
+Source12:       sysusers.attr
 Source13:       sysusers.prov
 Source14:       sysusers.generate-pre.sh
 
+Source15: license.txt
+%include %{SOURCE15}
+
 Patch0: enoX-uses-instance-number-for-vmware-hv.patch
 Patch1: fetch-dns-servers-from-environment.patch
+Patch2: execute-suppress-credentials-mount-if-empty.patch
+Patch3: fix-lvrename-unmount.patch
+Patch4: revert-network-delay-to-configure-address-until-it-i.patch
+Patch5: do-not-build-with-trivial-auto-var-init-zero.patch
+Patch6: do-not-allocate-1m-on-stack.patch
+Patch7: 0001-Remove-unused-default-groups-rules-and-tmpfiles.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -56,7 +65,7 @@ BuildRequires:  bzip2-devel
 BuildRequires:  curl-devel
 BuildRequires:  docbook-xml
 BuildRequires:  docbook-xsl
-BuildRequires:  gettext-devel
+BuildRequires:  gettext
 BuildRequires:  glib-devel
 BuildRequires:  gnutls-devel
 BuildRequires:  gperf
@@ -111,9 +120,8 @@ resolution.
 
 %package libs
 Summary:        systemd libraries
-License:        LGPLv2+ and MIT
 Provides:       nss-myhostname = 0.4
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(post): coreutils >= 9.1-7
 Requires(post): sed
 Requires(post): grep
 
@@ -146,7 +154,6 @@ Development headers for developing applications linking to libsystemd
 
 %package udev
 Summary: Rule-based device node and kernel event manager
-License:        LGPLv2+
 
 Requires:       %{name} = %{version}-%{release}
 Requires(post):   %{name} = %{version}-%{release}
@@ -162,28 +169,12 @@ This package contains systemd-udev and the rules and hardware database
 needed to manage device nodes. This package is necessary on physical
 machines and in virtual machines, but not in containers.
 
-%package ukify
-Summary:        Tool to build Unified Kernel Images
-Requires:       %{name} = %{version}-%{release}
-
-Requires:       (llvm or binutils)
-Recommends:     llvm
-
-Requires:       python3-pyelftools
-BuildArch:      noarch
-
-%description ukify
-This package provides ukify, a script that combines a kernel image, an initrd,
-with a command line, and possibly PCR measurements and other metadata, into a
-Unified Kernel Image (UKI).
-
 %package container
 Summary: Tools for containers and VMs
 Requires:       %{name} = %{version}-%{release}
 Requires(post):   %{name} = %{version}-%{release}
 Requires(preun):  %{name} = %{version}-%{release}
 Requires(postun): %{name} = %{version}-%{release}
-License:          LGPLv2+
 
 %description container
 Systemd tools to spawn and manage containers and virtual machines.
@@ -194,7 +185,6 @@ and %{name}-importd.
 %package journal-remote
 Summary:        Tools to send journal events over the network
 Requires:       %{name} = %{version}-%{release}
-License:        LGPLv2+
 Requires(post):   %{name} = %{version}-%{release}
 Requires(preun):  %{name} = %{version}-%{release}
 Requires(postun): %{name} = %{version}-%{release}
@@ -218,7 +208,6 @@ Language pack for systemd
 %package tests
 Summary:       Internal unit tests for systemd
 Requires:      %{name} = %{version}-%{release}
-License:       LGPLv2+
 
 %description tests
 "Installed tests" that are usually run as part of the build system.
@@ -266,34 +255,31 @@ fi
 
 CONFIGURE_OPTS=(
        -Dmode=release
-       -Dkmod=enabled
+       -Dkmod=true
        -Duser-path=%{_usr}/local/bin:%{_usr}/local/sbin:%{_bindir}:%{_sbindir}
        -Dservice-watchdog=
-       -Dblkid=enabled
-       -Dseccomp=enabled
+       -Dblkid=true
+       -Dseccomp=true
+       -Ddefault-dnssec=no
        -Dfirstboot=false
        -Dldconfig=false
-       -Dxz=enabled
-       -Dzlib=enabled
-       -Dbzip2=enabled
-       -Dlz4=enabled
-       -Dacl=enabled
+       -Dxz=true
+       -Dzlib=true
+       -Dbzip2=true
+       -Dlz4=true
+       -Dacl=true
        -Dsmack=true
-       -Dgcrypt=enabled
+       -Dgcrypt=true
+       -Dsplit-usr=true
        -Dsysusers=true
-       -Dpam=enabled
-       -Dpolkit=enabled
-       -Dselinux=enabled
-       -Dlibcurl=enabled
-       -Dgnutls=enabled
-       -Ddefault-network=true
-       -Dvmspawn=enabled
+       -Dpam=true
+       -Dpolkit=true
+       -Dselinux=true
+       -Dlibcurl=true
+       -Dgnutls=true
+       -Ddefault-dns-over-tls=opportunistic
        -Ddns-over-tls=true
-       -Ddefault-dnssec=no
-       -Ddefault-dns-over-tls=no
-       -Ddefault-mdns=no
-       -Ddefault-llmnr=resolve
-       -Dopenssl=enabled
+       -Dopenssl=true
        -Db_ndebug=false
        -Dhwdb=true
        -Ddefault-kill-user-processes=false
@@ -301,41 +287,21 @@ CONFIGURE_OPTS=(
        -Dinstall-tests=true
        -Dnobody-user=nobody
        -Dnobody-group=nobody
+       -Dsplit-usr=false
        -Dsplit-bin=true
        -Db_lto=true
        -Db_ndebug=false
        -Ddefault-hierarchy=hybrid
        -Dsysvinit-path=%{_sysconfdir}/rc.d/init.d
        -Drc-local=%{_sysconfdir}/rc.d/rc.local
-       -Dfallback-hostname=localhost
+       -Dfallback-hostname=photon
        -Doomd=false
-       -Dhomed=disabled
-       -Dbootloader=disabled
+       -Dhomed=false
        -Dversion-tag=v%{version}-%{release}
        -Dsystemd-network-uid=76
        -Dsystemd-resolve-uid=77
        -Dsystemd-timesync-uid=78
-       -Defi=false
-       -Dstatus-unit-format-default=combined
-       -Ddefault-timeout-sec=45
-       -Ddefault-user-timeout-sec=45
-       -Dapparmor=disabled
-       -Dbpf-framework=disabled
-       -Daudit=disabled
-       -Dxenctrl=disabled
-       -Dlibcryptsetup=disabled
-       -Dlibcryptsetup-plugins=disabled
-       -Dlibidn2=disabled
-       -Dlibidn=disabled
-       -Dlibiptc=disabled
-       -Dqrencode=disabled
-       -Dp11kit=disabled
-       -Dlibfido2=disabled
-       -Dtpm2=disabled
-       -Dxkbcommon=disabled
-       -Dpwquality=disabled
-       -Dpasswdqc=disabled
-       -Ddbus=disabled
+       -Dsysupdate=false
        $CROSS_COMPILE_CONFIG
 )
 
@@ -380,6 +346,7 @@ install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
 %endif
 
 install -m 0644 -D -t %{buildroot}%{_rpmmacrodir}/ %{SOURCE11}
+install -m 0644 -D -t %{buildroot}%{_rpmconfigdir}/fileattrs/ %{SOURCE12}
 install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE13}
 install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE14}
 
@@ -408,9 +375,6 @@ rm -rf %{buildroot}/*
 
 %post udev
 udevadm hwdb --update &>/dev/null || :
-if [ $1 -eq 1 ] || [ $1 -eq 2 ]; then
-  [ "$(bootctl is-installed)" = "no" ] && bootctl install || :
-fi
 
 %systemd_post %udev_services
 
@@ -452,36 +416,17 @@ fi
 %endif
 %config(noreplace) %{_sysconfdir}/%{name}/network/99-dhcp-en.network
 
-%{_bindir}/%{name}-ac-power
-%{_bindir}/%{name}-analyze
-%{_bindir}/%{name}-ask-password
-%{_bindir}/%{name}-cat
-%{_bindir}/%{name}-cgls
-%{_bindir}/%{name}-cgtop
-%{_bindir}/%{name}-confext
-%{_bindir}/%{name}-creds
-%{_bindir}/%{name}-delta
-%{_bindir}/%{name}-detect-virt
-%{_bindir}/%{name}-dissect
-%{_bindir}/%{name}-escape
-%{_bindir}/%{name}-id128
-%{_bindir}/%{name}-inhibit
-%{_bindir}/%{name}-machine-id-setup
-%{_bindir}/%{name}-mount
-%{_bindir}/%{name}-notify
-%{_bindir}/%{name}-path
-%{_bindir}/%{name}-repart
-%{_bindir}/%{name}-resolve
-%{_bindir}/%{name}-run
-%{_bindir}/%{name}-socket-activate
-%{_bindir}/%{name}-stdio-bridge
-%{_bindir}/%{name}-sysext
-%{_bindir}/%{name}-sysusers
-%{_bindir}/%{name}-tmpfiles
-%{_bindir}/%{name}-tty-ask-password-agent
-%{_bindir}/%{name}-umount
+%config(noreplace) /boot/%{name}.cfg
 
-%{_bindir}/bootctl
+%{_sbindir}/halt
+%{_sbindir}/init
+%{_sbindir}/poweroff
+%{_sbindir}/reboot
+%{_sbindir}/runlevel
+%{_sbindir}/shutdown
+%{_sbindir}/telinit
+%{_sbindir}/resolvconf
+
 %{_bindir}/busctl
 %{_bindir}/coredumpctl
 %{_bindir}/hostnamectl
@@ -492,38 +437,53 @@ fi
 %{_bindir}/portablectl
 %{_bindir}/resolvectl
 %{_bindir}/systemctl
+%{_bindir}/%{name}-sysusers
+%{_bindir}/%{name}-analyze
+%{_bindir}/%{name}-ask-password
+%{_bindir}/%{name}-cat
+%{_bindir}/%{name}-cgls
+%{_bindir}/%{name}-cgtop
+%{_bindir}/%{name}-delta
+%{_bindir}/%{name}-detect-virt
+%{_bindir}/%{name}-escape
+%{_bindir}/%{name}-id128
+%{_bindir}/%{name}-inhibit
+%{_bindir}/%{name}-machine-id-setup
+%{_bindir}/%{name}-mount
+%{_bindir}/%{name}-notify
+%{_bindir}/%{name}-path
+%{_bindir}/%{name}-resolve
+%{_bindir}/%{name}-run
+%{_bindir}/%{name}-socket-activate
+%{_bindir}/%{name}-stdio-bridge
+%{_bindir}/%{name}-tmpfiles
+%{_bindir}/%{name}-tty-ask-password-agent
+%{_bindir}/%{name}-umount
 %{_bindir}/timedatectl
 %{_bindir}/userdbctl
-%{_bindir}/varlinkctl
+%{_bindir}/%{name}-repart
+%{_bindir}/%{name}-dissect
+%{_bindir}/%{name}-sysext
+%{_bindir}/%{name}-creds
+%{_bindir}/%{name}-ac-power
 
-%{_sbindir}/halt
-%{_sbindir}/init
-%{_sbindir}/mount.ddi
-%{_sbindir}/poweroff
-%{_sbindir}/reboot
-%{_sbindir}/resolvconf
-%{_sbindir}/runlevel
-%{_sbindir}/shutdown
-%{_sbindir}/telinit
-
-%config(noreplace) /boot/%{name}.cfg
-%{_tmpfilesdir}/%{name}-network.conf
-%{_tmpfilesdir}/%{name}-nologin.conf
-%{_tmpfilesdir}/%{name}-resolve.conf
-%{_tmpfilesdir}/%{name}-tmp.conf
-%{_tmpfilesdir}/%{name}.conf
-%{_tmpfilesdir}/README
-%{_tmpfilesdir}/credstore.conf
 %{_tmpfilesdir}/etc.conf
 %{_tmpfilesdir}/home.conf
 %{_tmpfilesdir}/journal-nocow.conf
 %{_tmpfilesdir}/legacy.conf
 %{_tmpfilesdir}/portables.conf
-%{_tmpfilesdir}/provision.conf
 %{_tmpfilesdir}/static-nodes-permissions.conf
+%{_tmpfilesdir}/provision.conf
+%{_tmpfilesdir}/%{name}-nologin.conf
+%{_tmpfilesdir}/%{name}-tmp.conf
+%{_tmpfilesdir}/%{name}.conf
+%{_tmpfilesdir}/%{name}-resolve.conf
+%{_tmpfilesdir}/%{name}-network.conf
 %{_tmpfilesdir}/tmp.conf
 %{_tmpfilesdir}/var.conf
 %{_tmpfilesdir}/x11.conf
+%{_tmpfilesdir}/credstore.conf
+%{_tmpfilesdir}/README
 
 %{_environmentdir}/99-environment.conf
 %exclude %{_datadir}/locale
@@ -538,9 +498,7 @@ fi
 %{_systemd_util_dir}/resolv.conf
 %{_systemd_util_dir}/%{name}*
 %{_systemd_util_dir}/user*
-%{_systemd_util_dir}/ukify
 %{_systemd_util_dir}/import-pubring.gpg
-%{_systemd_util_dir}/repart/*
 %{_unitdir}/*
 %{_presetdir}/*
 %{_systemdgeneratordir}/*
@@ -586,7 +544,6 @@ fi
 %defattr(-,root,root)
 %dir %{_sysconfdir}/udev
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
-%{_sysconfdir}/udev/iocost.conf
 %dir %{_sysconfdir}/kernel
 %dir %{_sysconfdir}/modules-load.d
 %{_sysconfdir}/%{name}/pstore.conf
@@ -600,7 +557,6 @@ fi
 
 %{_libdir}/udev/v4l_id
 %{_libdir}/udev/dmi_memory_id
-%{_libdir}/udev/iocost
 %{_libdir}/kernel
 %{_libdir}/modprobe.d
 %{_libdir}/modules-load.d
@@ -627,6 +583,7 @@ fi
 %{_unitdir}/%{name}-backlight@.service
 %{_unitdir}/%{name}-fsck-root.service
 %{_unitdir}/%{name}-fsck@.service
+%{_unitdir}/%{name}-hibernate-resume@.service
 %{_unitdir}/%{name}-hibernate.service
 %{_unitdir}/%{name}-hwdb-update.service
 %{_unitdir}/%{name}-hybrid-sleep.service
@@ -699,19 +656,11 @@ fi
 %files pam
 %defattr(-,root,root)
 %{_libdir}/security/pam_systemd.so
-%{_libdir}/security/pam_systemd_loadkey.so
 %{_libdir}/pam.d/%{name}-user
-
-%files ukify
-%defattr(-,root,root)
-%{_libdir}/kernel/install.d/60-ukify.install
-%{_libdir}/systemd/ukify
-%{_bindir}/ukify
 
 %files container
 %defattr(-,root,root)
 %{_bindir}/%{name}-nspawn
-%{_bindir}/%{name}-vmspawn
 %{_bindir}/machinectl
 
 %{_systemd_util_dir}/%{name}-machined
@@ -753,32 +702,47 @@ fi
 %files lang -f ../%{name}.lang
 
 %changelog
-* Thu Mar 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 255.2-3
-- Bump version as a part of dbus upgrade
-* Tue Feb 27 2024 Susant Sahani <guruswamy.basavaiah@broadcom.com> 255.2-2
-- Remove use-bfq-scheduler.patch
-* Thu Jan 04 2024 Susant Sahani <susant.sahani@broadcom.com> 255.2-1
-- Version bump.
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-8
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 253.19-8
+- Release bump for SRP compliance
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 253.19-7
+- Remove standalone license exceptions
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-6
+- Release bump for SRP compliance
+* Tue Jun 18 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 253.19-5
+- Disable sysupdate services through build
+* Fri Jun 14 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 253.19-4
+- Disable sysupdate timer through preset
+* Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-3
+- Disable sysupdate services through preset
+* Thu May 30 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 253.19-2
+- Patched to remove unused groups from systemd
+* Tue May 21 2024 Dweep Advani <dweep.advani@broadcom.com> 253.19-1
+- Version upgrade to 253.19, avoid -ftrivial-auto-var-init=zero and do not alloc 1m on stack
+* Mon Apr 29 2024 Susant Sahani <susant.sahani@broadcom.com> 253.17-1
+- Upgrade to v253.17
+* Sun Mar 24 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 253.12-7
+- Fix issue with VM reconfigure + static ip
+* Tue Jan 09 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 253.12-6
+- Remove '60-ioschedulers.rules' and 'use-bfq-scheduler.patch' files
+* Tue Jan 02 2024 Ankit Jain <ankitja@vmware.com> 253.12-5
+- Disable 'efi' and 'gnu-efi' support
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 253.12-4
 - Bump version as a part of gnutls upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-7
-- Bump version as a part of openssl upgrade
-* Sun Nov 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-6
-- Remove sysusers.attr, provided by rpm-4.19.0 now.
-* Sun Oct 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 254.1-5
-- Fix lvrename unmount issue
-* Wed Sep 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 254.1-4
+* Mon Nov 20 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253.12-3
+- Make mq-deadline default IO scheduler
+* Fri Oct 27 2023 Harinadh D <hdommaraju@vmware.com> 253.12-2
+- fix for lvrename unmounts the mount point
+* Wed Oct 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 253.12-1
+- Upgrade to v253.12
+* Wed Sep 27 2023 Prashant S Chauhan <psinghchauha@vmware.com> 253-9
 - Add kbd in Requires for systemd-udev
-* Wed Sep 13 2023 Srish Srinivasan <ssrish@vmware.com> 254.1-3
+* Wed Sep 13 2023 Srish Srinivasan <ssrish@vmware.com> 253-8
 - Version bump as a part of libmicrohttpd version update
-* Wed Sep 13 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 254.1-2
-- This is revert of commit ad51424a532e4b689ff38707c0f7f83080afb2b6
-* Mon Aug 14 2023 Susant Sahani <ssahani@vmware.com> 254.1-1
-- Version bump.
-* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 253-7
+* Fri Sep 01 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253-7
+- Remove systemd.setenv=SYSTEMD_DEFAULT_MOUNT_RATE_LIMIT_BURST=20
+- https://github.com/systemd/systemd/commit/21dd1de
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 253-6
 - Revert https://github.com/systemd/systemd/pull/26494.patch.
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 253-6
-- Bump version as a part of elfutils upgrade
 * Fri Jun 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253-5
 - Increase SYSTEMD_DEFAULT_MOUNT_RATE_LIMIT_BURST to 20
 * Tue May 23 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 253-4

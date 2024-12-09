@@ -1,14 +1,16 @@
 Summary:        Minimal try/catch with proper preservation of $@
 Name:           perl-Try-Tiny
 Version:        0.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://search.cpan.org/~ether/Try-Tiny-0.28/
-License:        The MIT (X11) License
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source:         https://cpan.metacpan.org/authors/id/E/ET/ETHER/Try-Tiny-%{version}.tar.gz
+Source0:        https://cpan.metacpan.org/authors/id/E/ET/ETHER/Try-Tiny-%{version}.tar.gz
 %define sha512  Try-Tiny=1a3c852e56797d81da60a4f4887cb70fc575eca83d10b8cd12fe5d5d0008a967801218f3a5277a2f1347ade95b9515c1f237333e491742d06614c0beecf44768
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 Requires:       perl
@@ -38,6 +40,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man?/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.31-2
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 0.31-1
 - Automatic Version Bump
 * Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 0.30-2

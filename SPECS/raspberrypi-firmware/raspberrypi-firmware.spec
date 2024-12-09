@@ -5,8 +5,7 @@
 Name:       raspberrypi-firmware
 Summary:    Raspberry Pi firmware
 Version:    1.20230106
-Release:    1%{?dist}
-License:    Broadcom Corporation and Raspberry Pi (Trading) Ltd
+Release:    2%{?dist}
 URL:        https://github.com/raspberrypi/firmware
 Group:      System Environment/Boot
 Vendor:     VMware, Inc.
@@ -17,6 +16,9 @@ Source0: %{name}-%{version}.tar.gz
 
 Source1:    rpi-config-txt.txt
 
+Source2: license.txt
+%include %{SOURCE2}
+
 BuildArch:  noarch
 
 %description
@@ -26,8 +28,8 @@ Firmware files for Raspberry Pi
 Summary:    Raspberry Pi 3 firmware
 Group:      System Environment/Boot
 Requires:   raspberrypi-firmware = %{version}-%{release}
-Requires(preun): (coreutils or coreutils-selinux or toybox)
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(preun): coreutils >= 9.1-7
+Requires(post): coreutils >= 9.1-7
 
 %description pi3
 Firmware files for Raspberry Pi 3
@@ -36,8 +38,8 @@ Firmware files for Raspberry Pi 3
 Summary:    Extra files for Raspberry Pi 3 firmware
 Group:      System Environment/Boot
 Requires:   raspberrypi-firmware-pi3 = %{version}-%{release}
-Requires(preun): (coreutils or coreutils-selinux or toybox)
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(preun): coreutils >= 9.1-7
+Requires(post): coreutils >= 9.1-7
 
 %description pi3-extra
 Extra Firmware files for Raspberry Pi 3
@@ -46,8 +48,8 @@ Extra Firmware files for Raspberry Pi 3
 Summary:    Raspberry Pi 4 firmware
 Group:      System Environment/Boot
 Requires:   raspberrypi-firmware = %{version}-%{release}
-Requires(preun): (coreutils or coreutils-selinux or toybox)
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(preun): coreutils >= 9.1-7
+Requires(post): coreutils >= 9.1-7
 
 %description pi4
 Firmware files for Raspberry Pi 4
@@ -56,8 +58,8 @@ Firmware files for Raspberry Pi 4
 Summary:    Extra files for Raspberry Pi 4 firmware
 Group:      System Environment/Boot
 Requires:   raspberrypi-firmware-pi4 = %{version}-%{release}
-Requires(preun): (coreutils or coreutils-selinux or toybox)
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(preun): coreutils >= 9.1-7
+Requires(post): coreutils >= 9.1-7
 
 %description pi4-extra
 Extra Firmware files for Raspberry Pi 4
@@ -114,6 +116,8 @@ install -vm 644 %{SOURCE1} %{buildroot}/boot/efi/config.txt
 /boot/efi/fixup4x.dat
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.20230106-2
+- Release bump for SRP compliance
 * Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 1.20230106-1
 - Automatic Version Bump
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20210303-2

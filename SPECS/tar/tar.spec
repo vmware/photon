@@ -1,17 +1,20 @@
 Summary:    Archiving program
 Name:       tar
-Version:    1.35
-Release:    1%{?dist}
-License:    GPLv3+
+Version:    1.34
+Release:    7%{?dist}
 URL:        http://www.gnu.org/software/tar
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/tar/%{name}-%{version}.tar.xz
-%define sha512 %{name}=8b84ed661e6c878fa33eb5c1808d20351e6f40551ac63f96014fb0d0b9c72d5d94d8865d39e36bcb184fd250f84778a3b271bbd8bd2ceb69eece0c3568577510
+%define sha512 %{name}=5e77c4a7b49983ad7d15238c2bce28be7a8aa437b4b1815fc00abd13096da308b6bba196cc6e3ed79d85e62823d520ae0d8fcda2d93873842cf84dc3369fc902
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: CVE-2022-48303.patch
+Patch1: CVE-2023-39804.patch
 
 BuildRequires: libacl-devel
 
@@ -50,11 +53,16 @@ rm -rf %{buildroot}{%{_infodir},%{_mandir}}
 %{_libexecdir}/rmt
 
 %changelog
-* Wed Dec 20 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.35-1
-- Update to version 1.35
-* Tue Jul 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.34-3
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.34-7
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34-6
+- Release bump for SRP compliance
+* Tue Dec 19 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.34-5
+- Add patch for CVE-2023-39804
+* Mon Jul 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.34-4
 - Add acl support
-- Fix CVE-2022-48303
+* Thu Jul 06 2023 Kuntal Nayak <nkuntal@vmware.com> 1.34-3
+- Fixed CVE-2022-48303 with patch
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.34-2
 - Fix binary path
 * Thu Apr 08 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.34-1

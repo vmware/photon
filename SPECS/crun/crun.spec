@@ -1,14 +1,16 @@
 Name:          crun
 Version:       1.8
-Release:       2%{?dist}
+Release:       8%{?dist}
 Summary:       OCI runtime in C
-License:       GPLv2+
 Group:         Development/Other
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/containers/crun
 Source0:       https://github.com/containers/crun/releases/download/%{version}/%{name}-%{version}.tar.xz
 %define sha512 crun=373d4fa69085b1ffecff32b4f2da0ab7dd0ec80d68e24ab262127e71cdfcbee50b932aa109980ad683444fdfe288a6495fc40cd81beb8b56af5c244218c7157c
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires: libcap-devel
 BuildRequires: libseccomp-devel
 BuildRequires: systemd-devel
@@ -57,8 +59,20 @@ rm -f %{buildroot}%{_prefix}/lib/*.la \
 %{_mandir}/*
 
 %changelog
-* Sat Jun 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8-2
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.8-8
+- Release bump for SRP compliance
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8-7
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.8-6
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.8-5
+- Bump version as a part of go upgrade
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8-4
 - Bump version as a part of protobuf upgrade
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8-3
+- Bump version as a part of protobuf upgrade
+* Tue Jun 06 2023 Mukul Sikka <msikka@vmware.com> 1.8-2
+- Bump up release for protobuf-c
 * Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 1.8-1
 - Automatic Version Bump
 * Wed Jun 08 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.4.5-1

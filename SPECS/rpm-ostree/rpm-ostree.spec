@@ -1,21 +1,23 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
-Version:        2023.10
-Release:        6%{?dist}
-License:        LGPLv2+
+Version:        2022.19
+Release:        9%{?dist}
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha512 %{name}=835a3c03fb8d65386aff4163d95ef1ccc717bb810d3f9f00f4a37ae456178c0f6964bac52a04cf2fc5329f602866807a45ec6fac4ea8ce47bff5df8f4a1ed1a2
-
+%define sha512 %{name}=0afec5019ab3d2e94578acadcf62b698b3f5880b8755575bf12300368d9e3b0e9e94492d4a311af282d0535dc6df30dd4e3fa58e2f671c30dbfdc788c96a3d7e
 Source1:        mk-ostree-host.sh
 Source2:        function.inc
 Source3:        mkostreerepo
 
+Source4: license.txt
+%include %{SOURCE4}
+
 Patch0:         rpm-ostree-libdnf-build.patch
+Patch1:         rpm-ostree-use-a-socket-in-run.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -41,7 +43,7 @@ BuildRequires:  librepo-devel
 BuildRequires:  attr-devel
 BuildRequires:  python3-devel
 BuildRequires:  autogen
-BuildRequires:  libsolv-devel
+BuildRequires:  libsolv-devel >= 0.7.22
 BuildRequires:  systemd-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  gperf
@@ -71,6 +73,7 @@ Requires:       libgcc
 Requires:       librepo
 Requires:       openssl
 Requires:       ostree
+Requires:       ostree-libs
 Requires:       ostree-grub2
 Requires:       json-glib
 Requires:       bubblewrap
@@ -83,6 +86,7 @@ repository.  At the moment, it is intended for use on build servers.
 Summary: Development headers for %{name}
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
+Requires: glib-devel
 
 %description devel
 Includes the header files for the %{name} library.
@@ -162,21 +166,15 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
-* Tue Apr 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2023.10-6
-- Bump version as a part of dbus upgrade
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2023.10-5
-- Bump version as a part of libxml2 upgrade
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2023.10-4
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2022.19-9
+- Release bump for SRP compliance
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2022.19-8
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2023.10-3
-- Bump version as a part of libxml2 upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.10-2
-- Bump version as a part of openssl upgrade
-* Mon Nov 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 2023.10-1
-- Upgrade to v2023.10
+* Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.19-7
+- Bump version as a part of rpm upgrade
 * Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 2022.19-6
 - Bump version as a part of rust upgrade.
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2022.19-5
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2022.19-5
 - Bump version as a part of libxml2 upgrade
 * Fri Mar 10 2023 Ankit Jain <ankitja@vmware.com> 2022.19-4
 - Fix /tmp symlink issue after systemd-v253 upgrade

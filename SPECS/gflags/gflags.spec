@@ -1,8 +1,7 @@
 Summary:        Library for commandline flag processing
 Name:           gflags
 Version:        2.2.2
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 Group:          Development/Libraries/C++
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ Url:            https://gflags.github.io/gflags
 
 Source0: https://github.com/%{name}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=98c4703aab24e81fe551f7831ab797fb73d0f7dfc516addb34b9ff6d0914e5fd398207889b1ae555bac039537b1d4677067dae403b64903577078d99c1bdb447
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -67,5 +69,7 @@ Development files for %{name} library.
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.2.2-2
+- Release bump for SRP compliance
 * Mon Apr 04 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.2.2-1
 - gflags initial build

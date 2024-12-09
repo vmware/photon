@@ -1,8 +1,7 @@
 Summary:        A tool that inspect which pages of a file or files are being cached by the Linux kernel
 Name:           pcstat
 Version:        1
-Release:        19%{?dist}
-License:        Apache
+Release:        24%{?dist}
 URL:            https://github.com/tobert/%{name}
 Group:          Development/Debuggers
 Vendor:         VMware, Inc.
@@ -11,6 +10,9 @@ Source0:        https://github.com/tobert/%{name}/archive/%{name}-1.zip
 %define sha512  %{name}=7f62d16447fe5f8e9c126fb4f0e00df697bb253ea0213ece2be2ce0b919ccaa175e009987a4f01252225c35b05c55685da4db684d68b7bd4501fe781163d01d3
 Source1:        https://github.com/golang/sys/golang-sys-08-02-2017.zip
 %define sha512  golang-sys=0c40f2acd0466637b5b01f75eed593939075fc742c8991b4ff884076852a5c02eb6ed0a162be8539ff73eba665ae04fb011efe739c4bda999f5365241945015a
+
+Source2: license.txt
+%include %{SOURCE2}
 Patch0:         %{name}-aarch64-support.patch
 BuildRequires:  unzip go audit git
 Requires:       go
@@ -52,6 +54,16 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1-24
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1-23
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1-22
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1-21
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1-20
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1-19
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1-18
@@ -60,7 +72,7 @@ rm -rf %{buildroot}/*
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1-16
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1-15
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1-15
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1-14
 - Bump up version to compile with new go

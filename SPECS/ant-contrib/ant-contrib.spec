@@ -3,8 +3,7 @@
 Summary:    Ant contrib
 Name:       ant-contrib
 Version:    1.0b3
-Release:    18%{?dist}
-License:    Apache
+Release:    19%{?dist}
 URL:        http://ant-contrib.sourceforget.net
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -14,6 +13,9 @@ BuildArch:      noarch
 
 Source0: https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
 %define sha512 %{name}=fe59ad4867a00429719a7401701a433a90ed9c6ddb49a37072f8486ae0ca9c3da685a49d9376c8bb7b38f114a5293e1698b7fb314e71198bbb80f729547402eb
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: use-system-provided-commons-httpclient-jar.patch
 Patch1: ant-contrib-java-8.patch
@@ -58,6 +60,8 @@ rm -rf %{buildroot}
 %{ant_prefix}/lib/*.jar
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.0b3-19
+- Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0b3-18
 - Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0b3-17

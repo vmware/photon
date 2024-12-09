@@ -12,16 +12,15 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.12
-Release:        1%{?dist}
-License:        PostgreSQL
+Version:        14.15
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=cb6729d0fba8aa705c92beecdc5cd1131e64337db6de038da6f5b75c7d9e65381f93f6ebfac601d5622399b9485e8ec558be53e6a7dcc59350a9b053f8836bf9
+%define sha512 %{srcname}=227f9551167ee62e5185d6f6777e100ecc09f497b9ee1b5a8e659de8d4c237b0f9a97005706bbf64c3e839271e2630f6a417ba98dfce47bcb4c27e8641a7c6ef
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -31,8 +30,11 @@ Source5: %{srcname}.preset
 Source6: %{srcname}.sysusers
 Source7: systemd-unit-instructions
 
+Source8: license-postgresql14.txt
+%include %{SOURCE8}
+
 BuildRequires: clang-devel
-BuildRequires: gettext-devel
+BuildRequires: gettext
 BuildRequires: krb5-devel
 BuildRequires: icu-devel
 BuildRequires: libedit-devel
@@ -83,7 +85,7 @@ Requires: tzdata
 Requires: zlib
 Requires: %{name}-libs = %{version}-%{release}
 
-Conflicts: %{name} < 14.11-6%{?dist}
+Conflicts: %{name} < 14.11-4%{?dist}
 
 %description client
 %{summary}
@@ -697,34 +699,34 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.15-2
+- Release bump for SRP compliance
+* Tue Dec 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.15-1
+- Version upgrade to fix CVEs
+* Fri Aug 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.13-1
+- Upgrade to v14.13 to fix CVE-2024-7348
 * Fri May 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.12-1
 - Upgrade to v14.12
-* Tue Apr 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-6
+* Mon Apr 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-4
 - Introduce client subpackage, make main package a meta package
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 14.11-5
-- Bump version as a part of libxml2 upgrade
-* Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-4
+* Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-3
 - Use version specific bindir path in service file
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 14.11-3
-- Bump version as a part of libxml2 upgrade
 * Sat Feb 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-2
 - Add systemd unit file
 * Mon Feb 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.11-1
 - Upgrade to v14.11
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.10-2
-- Bump version as a part of openssl upgrade
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.10-1
 - Upgrade to v14.10
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 14.9-2
 - Bump version as a part of openldap v2.6.4 upgrade
 * Sun Aug 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.9-1
 - Upgrade to v14.9
-* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 14.8-2
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 14.8-3
 - Bump version as a part of krb5 upgrade
-* Tue May 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.8-1
-- Upgrade to v14.8
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 14.7-3
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 14.8-2
 - Bump version as a part of libxml2 upgrade
+* Fri May 19 2023 Julien Rouhaud <<jrouhaud@vmware.com> 14.8-1
+- Update to version 14.8, fixing CVE-2023-2454 and CVE-2023-2455
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 14.7-2
 - Bump version as a part of zlib upgrade
 * Wed Feb 15 2023 Julien Rouhaud <jrouhaud@vmware.com> 14.7-1

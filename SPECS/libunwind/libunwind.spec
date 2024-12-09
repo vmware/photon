@@ -1,11 +1,13 @@
 Summary:        Portable and efficient C programming interface (API) to determine the call-chain of a program.
 Name:           libunwind
 Version:        1.6.2
-Release:        1%{?dist}
-License:        X11
+Release:        2%{?dist}
 URL:            http://www.nongnu.org/libunwind/
 Source0:        http://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
 %define sha512    libunwind=1d17dfb14f99a894a6cda256caf9ec481c14068aaf8f3a85fa3befa7c7cca7fca0f544a91a3a7c2f2fc55bab19b06a67ca79f55ac9081151d94478c7f611f8f7
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          Utilities/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -29,8 +31,7 @@ This contains development tools and libraries for libunwind.
 %autosetup
 
 %build
-%configure \
-	--disable-silent-rules
+%configure --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -48,6 +49,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libunwind*
 
 %changelog
+*   Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.6.2-2
+-   Release bump for SRP compliance
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1
 -   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.0-1

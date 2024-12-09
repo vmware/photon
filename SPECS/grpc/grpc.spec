@@ -6,16 +6,15 @@
 
 Summary:        Google RPC
 Name:           grpc
-Version:        1.59.3
-Release:        1%{?dist}
-License:        Apache License, Version 2.0
+Version:        1.59.5
+Release:        2%{?dist}
 URL:            https://grpc.io
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/grpc/grpc/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=54344a124a16e979b30c8141a44be3a98e18d457a1b7d6c6eed3ee70b70cc2a5dbeab5d227d49de4480aa921fc947643252a5c80e9052138fc45c5f86ed18d5c
+%define sha512 %{name}=9f35ee3185c4cbb4140b86380e97d62dc6ecd886df3ec3aa3e917dc3f1e3acf518e2a28ed143f430869508f3c853b3f3f21226d74bab42f70b99a7096e0e18af
 
 Source1: https://github.com/envoyproxy/data-plane-api/archive/%{envoy_api_commit}/data-plane-api-%{envoy_api_commit}.tar.gz
 %define sha512 data-plane-api=9b1ceff5d018e70b36e02aa1b583f5495b0eb92506055bf6913d2e7ef401d3602cba8723efbc178ee31fdef9aba510fc2284612ebe22a24b5b4a703f07099897
@@ -28,6 +27,9 @@ Source3: https://github.com/census-instrumentation/opencensus-proto/archive/v%{o
 
 Source4: https://github.com/cncf/xds/archive/%{xds_commit}/xds-%{xds_commit}.tar.gz
 %define sha512 xds=eb5878764503872c18b8750b20e2c2e2224e73d9601197752cea7e1e4171899474ad4f39aacc80d6c1b57a50b2161d39f219df64ffb250d045af482dae01ea79
+
+Source5: license.txt
+%include %{SOURCE5}
 
 BuildRequires:  build-essential
 BuildRequires:  which
@@ -114,14 +116,20 @@ rm -rf %{buildroot}%{_lib64dir}
 %{_libdir}/*.so
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.59.5-2
+- Release bump for SRP compliance
+* Mon Aug 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.59.5-1
+- Upgrade to v1.59.5
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.59.3-1
 - Upgrade to v1.59.3
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.54.2-2
-- Bump version as a part of openssl upgrade
-* Wed Aug 09 2023 Mukul Sikka <msikka@vmware.com> 1.54.2-1
+* Wed Aug 23 2023 Mukul Sikka <msikka@vmware.com> 1.54.3-1
+- Updated to 1.54.3 to fix CVE-2023-33953
+* Wed Jul 26 2023 Mukul Sikka <msikka@vmware.com> 1.54.2-1
 - Updated to latest version
-* Sat Jun 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.48.1-3
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.48.1-4
 - Bump version as a part of protobuf upgrade
+* Tue Jun 06 2023 Mukul Sikka <msikka@vmware.com> 1.48.1-3
+- Bump version as a part of protobuf-c
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.48.1-2
 - Bump version as a part of zlib upgrade
 * Tue Aug 30 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.48.1-1

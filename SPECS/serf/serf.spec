@@ -1,15 +1,17 @@
 Summary:        A high performance C-based HTTP client library built upon the Apache Portable Runtime (APR) library
 Name:           serf
 Version:        1.3.9
-Release:        13%{?dist}
-License:        Apache License 2.0
+Release:        12%{?dist}
 URL:            https://serf.apache.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.apache.org/dist/serf/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=9f5418d991840a08d293d1ecba70cd9534a207696d002f22dbe62354e7b005955112a0d144a76c89c7f7ad3b4c882e54974441fafa0c09c4aa25c49c021ca75d
+%define sha512 serf=9f5418d991840a08d293d1ecba70cd9534a207696d002f22dbe62354e7b005955112a0d144a76c89c7f7ad3b4c882e54974441fafa0c09c4aa25c49c021ca75d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: 0001-openssl-3.0.0-compatibility.patch
 
@@ -30,10 +32,9 @@ kept to a minimum to provide high performance operation.
 
 %package        devel
 Summary:        Header and development files
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}
 Requires:       apr-devel
 Requires:       apr-util-devel
-
 %description    devel
 It contains the libraries and header files to create serf applications.
 
@@ -51,8 +52,10 @@ scons PREFIX=%{_prefix}
 %install
 scons PREFIX=%{buildroot}%{_prefix} install
 
+%if 0%{?with_check}
 %check
 scons check
+%endif
 
 %files
 %defattr(-,root,root)
@@ -64,18 +67,16 @@ scons check
 %{_libdir}/pkgconfig/*
 
 %changelog
-* Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.3.9-13
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.9-12
+- Release bump for SRP compliance
+* Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.3.9-11
 - Bump version as a part of apr upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.9-12
-- Bump version as a part of openssl upgrade
-* Wed Oct 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.9-11
-- Fix devel package requires
-* Tue Oct 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.9-10
-- Bump version as a part of scons upgrade
-* Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.9-9
+* Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.9-10
 - Bump version as a part of apr-util v1.6.3 upgrade
-* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.9-8
+* Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.9-9
 - Bump version as a part of openldap v2.6.4 upgrade
+* Fri May 19 2023 Srish Srinivasan <ssrish@vmware.com> 1.3.9-8
+- Bump version as a part of apr version upgrade
 * Wed Feb 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.9-7
 - Bump version as a part of openldap upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.9-6

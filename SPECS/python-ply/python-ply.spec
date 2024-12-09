@@ -1,16 +1,18 @@
 Name:           python3-ply
 Version:        3.11
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Python Lex & Yacc
-License:        BSD-3-Clause
 Group:          Development/Languages/Python
 Url:            http://www.dabeaz.com/ply/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/dabeaz/ply/archive/ply-%{version}.tar.gz
 %define sha512  ply=37e39a4f930874933223be58a3da7f259e155b75135f1edd47069b3b40e5e96af883ebf1c8a1bbd32f914a9e92cfc12e29fec05cf61b518f46c1d37421b20008
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  python3-devel
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-six
 %endif
 Requires:       python3
@@ -55,6 +57,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11-7
+- Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.11-6
 - Update release to compile with python 3.11
 * Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 3.11-5

@@ -1,19 +1,23 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.16.2
-Release:        1%{?dist}
-License:        GPLv3+
+Version:        2.14.12
+Release:        3%{?dist}
 URL:            https://www.ansible.com
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e76ee6de939ca09923cc7e19956ef2a673426059b4eb8bc9ae34c14b1b84248ac927daa68a0ef48adc94f28909c042be3be50cc1f6359feab1f9e257969a202c
+Source0: https://github.com/ansible/ansible/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=4a44739bb10743b3bdf11de5d53ec5273f50f805a9f984ad5ddf330d1070205f03e8328d35bc66421b478ee55226e4e9b99b8ccd514c747e1cd688e620f4bd12
 
 Source1: tdnf.py
 Source2: macros.ansible
 Source3: ansible_collection.py
+
+Source4: license.txt
+%include %{SOURCE4}
+
+Patch0: CVE-2024-0690.patch
 
 BuildArch: noarch
 
@@ -72,8 +76,12 @@ touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 %{_rpmconfigdir}/%{name}_collection.py
 
 %changelog
-* Tue Dec 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.16.2-1
-- Version upgrade to v2.16.2 to fix CVE-2023-5764
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.14.12-3
+- Release bump for SRP compliance
+* Thu Feb 01 2024 Kuntal Nayak <nkuntal@vmware.com> 2.14.12-2
+- Fix CVE-2024-0690
+* Tue Dec 26 2023 Nitesh Kumar <kunitesh@vmware.com> 2.14.12-1
+- Version upgrade to v2.14.12 to fix CVE-2023-5764
 * Mon Nov 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.14.2-2
 - Fix requires
 - Fix an issue in upgrade using playbook.

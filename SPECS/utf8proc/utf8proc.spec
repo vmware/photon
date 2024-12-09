@@ -1,12 +1,14 @@
 Summary:        C library that provide processing for data in the UTF-8 encoding
 Name:           utf8proc
 Version:        2.8.0
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/JuliaStrings/utf8proc
 Source0:        %{name}-%{version}.tar.gz
 %define sha512  %{name}=4b9853fc95db38bee1d7435bef219907e25b249e0c2ec26f7096b8506ab2a139a8d4b71f7133b7550bff59d8f997fe01c2957d362cad18d890ad82bcf158aa06
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  cmake
@@ -57,6 +59,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/libutf8proc.pc
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8.0-2
+- Release bump for SRP compliance
 * Tue Nov 01 2022 Gerrit Photon <photon-checkins@vmware.com> 2.8.0-1
 - Automatic Version Bump
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7.0-2

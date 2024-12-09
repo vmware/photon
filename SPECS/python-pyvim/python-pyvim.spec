@@ -2,7 +2,6 @@ Summary:        Pure Python Vi Implementation.
 Name:           python3-pyvim
 Version:        3.0.3
 Release:        3%{?dist}
-License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,7 +10,18 @@ Url:            https://pypi.python.org/pypi/service_identity
 Source0:        pyvim-%{version}.tar.gz
 %define sha512  pyvim=913c1785e9ce8a8db3c89207f924cccffeac120eb917c4d601917e2bbf2be658b8eec6c91fd16b3b3efb8479ee5d0da02891eca8e3652694e22a34a008ee4e47
 
+Source1: license.txt
+%include %{SOURCE1}
+
+# To get tests:
+# git clone https://github.com/jonathanslenders/pyvim.git && cd pyvim
+# git checkout 6860c413 && tar -czvf ../pyvim-tests-0.0.20.tar.gz tests/
+#Source1:        pyvim-tests-%{version}.tar.gz
+#%%define sha1 pyvim-tests=2aa4465890b9c6687a7419722949fce20b521766
+#do not see test updated after 2.0.24, hence not packaging tests
+
 BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-pyflakes
@@ -27,9 +37,9 @@ BuildRequires:  python3-pip
 %endif
 
 Requires:       python3
+Requires:       python3-libs
 Requires:       python3-prompt_toolkit
 Requires:       python3-pyflakes
-
 BuildArch:      noarch
 
 %description
@@ -37,13 +47,14 @@ An implementation of Vim in Python.
 
 %prep
 %autosetup -p1 -n pyvim-%{version}
+#tar -xf %{SOURCE1} --no-same-owner
 
 %build
 %py3_build
 
 %install
 %py3_install
-mv %{buildroot}%{_bindir}/pyvim %{buildroot}%{_bindir}/pyvim3
+mv %{buildroot}/%{_bindir}/pyvim %{buildroot}/%{_bindir}/pyvim3
 
 %check
 pip3 install pathlib2 funcsigs pluggy more-itertools pyflakes
@@ -55,8 +66,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.3-3
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.3-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.3-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.3-1

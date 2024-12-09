@@ -1,0 +1,1 @@
+License: MIT AND X11 AND BSD-3-Clause AND BSD-4-Clause-UC AND HPND-Markus-Kuhn AND X11-distribute-modifications-variant AND GPL-2.0-only AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND HPND

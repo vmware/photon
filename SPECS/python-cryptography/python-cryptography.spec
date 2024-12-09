@@ -1,15 +1,29 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
-Version:        38.0.1
-Release:        2%{?dist}
+Version:        41.0.7
+Release:        6%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
-License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
-%define sha512 cryptography=a0e9eb645888a74e01377c0ed79427d066a50d10a9b628828195e82b7ee44ff59866f3659f2028541856bba818340c404e00061645c2676bc63f8ece42fd511e
+Source0: https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
+%define sha512 cryptography=9a870d45296de6af1331e73b102226b8269892216cd7bc0adfb2f63ce1ca7021d338effd09182128253d8d8df154bbd19d46c47f10ddac86e739fcbf6df78307
+
+# Steps to generate this tarball:
+# Extract cryptography tarball
+# Trigger build
+# cd ~/.cargo
+# tar czf <tar-name>.tar.gz registry-<version>
+
+Source1: %{name}-registry%{?dist}-%{version}.tar.gz
+%define sha512 %{name}-registry%{?dist}=903d3aea41799d6e889194c50464ce651d283c977706104b1d30a803882d7e5faa427b4aa0c0fcd655d2c9b39e3a716b945648b774e5613db4ec2d75741b7d34
+
+Source2: license.txt
+%include %{SOURCE2}
+
+Patch0: CVE-2024-26130.patch
+Patch1: default-openssl-legacy-false.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  python3-devel
@@ -26,7 +40,7 @@ BuildRequires:  python3-pip
 BuildRequires:  curl-devel
 %endif
 
-Requires:       openssl
+Requires:       openssl >= 3.0.13-2
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-cffi
@@ -40,12 +54,16 @@ Requires:       python3-asn1crypto
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
 
 %prep
-%autosetup -p1 -n cryptography-%{version}
+%autosetup -p1 -a0 -a1 -n cryptography-%{version}
+mkdir -p $HOME/.cargo/
+mv registry $HOME/.cargo/
 
 %build
+export CARGO_NET_OFFLINE=true
 %{py3_build}
 
 %install
+export CARGO_NET_OFFLINE=true
 %{py3_install}
 
 %check
@@ -68,8 +86,18 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 38.0.1-2
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 41.0.7-6
+- Release bump for SRP compliance
+* Tue Oct 08 2024 Tapas Kundu <tapas.kundu@broadcom.com> 41.0.7-5
+- disable legacy openssl cryptos by default
+* Tue May 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 41.0.7-4
+- Do offline build
+* Mon Mar 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 41.0.7-3
+- Fix CVE-2024-26130
+* Mon Mar 04 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 41.0.7-2
+- Bump up to use fixed openssl, Fixes CVE-2023-50782
+* Tue Dec 19 2023 Prashant S Chauhan <psinghchauha@vmware.com> 41.0.7-1
+- Update to v41.0.7
 * Mon Oct 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 38.0.1-1
 - Update to 38.0.1
 * Sat Nov 13 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.3.2-1

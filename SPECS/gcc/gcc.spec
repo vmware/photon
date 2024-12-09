@@ -4,8 +4,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.2.0
-Release:        2%{?dist}
-License:        GPLv2+
+Release:        5%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -14,13 +13,15 @@ Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
 %define sha512  %{name}=e9e857bd81bf7a370307d6848c81b2f5403db8c7b5207f54bce3f3faac3bde63445684092c2bc1a2427cddb6f7746496d9fbbef05fbbd77f2810b2998f1f9173
 
+Source1: license.txt
+%include %{SOURCE1}
+
 Patch0:         PLUGIN_TYPE_CAST.patch
 
 Requires:       libstdc++-devel = %{version}-%{release}
 Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
 Requires:       libgcc-atomic = %{version}-%{release}
-Requires:       mpc-devel
 Requires:       gmp
 
 %if 0%{?with_check}
@@ -128,8 +129,8 @@ test %{_host} != %{_build} && export gcc_cv_objdump=%{_arch}-unknown-linux-gnu-o
 install -vdm 755 %{buildroot}%{_lib}
 ln -sv %{_bindir}/cpp %{buildroot}%{_lib}
 ln -sv gcc %{buildroot}%{_bindir}/cc
-install -vdm 755 %{buildroot}%{_datadir}/gdb/auto-load%{_lib}
-mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datadir}/gdb/auto-load%{_lib}
+install -vdm 755 %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 chmod 755 %{buildroot}/%{_lib64dir}/libgcc_s.so.1
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name} --all-name
@@ -222,8 +223,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %files -n libstdc++
 %defattr(-,root,root)
 %{_lib64dir}/libstdc++.so.*
-%dir %{_datadir}/gcc-%{version}/python/libstdcxx
-%{_datadir}/gcc-%{version}/python/libstdcxx/*
+%dir %{_datarootdir}/gcc-%{version}/python/libstdcxx
+%{_datarootdir}/gcc-%{version}/python/libstdcxx/*
 
 %files -n libstdc++-devel
 %defattr(-,root,root)
@@ -243,6 +244,12 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-5
+- Release bump for SRP compliance
+* Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 12.2.0-4
+- Remove standalone license exceptions
+* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 12.2.0-3
+- Bump version to generate SRP provenance file
 * Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 12.2.0-2
 - Add provides & obsolets gcc-10
 * Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 12.2.0-1

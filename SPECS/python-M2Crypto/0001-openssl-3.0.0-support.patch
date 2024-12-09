@@ -1,0 +1,27 @@
+From 8c8c921b97e0d0ce565e3910d3561457882f43bf Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh Vasamsetty <svasamsetty@vmware.com>
+Date: Tue, 13 Apr 2021 21:27:11 +0530
+Subject: [PATCH] openssl 3.0.0 support
+
+---
+ SWIG/_m2crypto_wrap.c | 1 -
+ SWIG/_rsa.i           | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/src/SWIG/_rsa.i b/src/SWIG/_rsa.i
+index bc714e0..baa7072 100644
+--- a/src/SWIG/_rsa.i
++++ b/src/SWIG/_rsa.i
+@@ -23,9 +23,6 @@ extern int RSA_check_key(const RSA *);
+
+ %constant int no_padding        = RSA_NO_PADDING;
+ %constant int pkcs1_padding     = RSA_PKCS1_PADDING;
+-#ifdef RSA_SSLV23_PADDING
+-%constant int sslv23_padding    = RSA_SSLV23_PADDING;
+-#endif
+ %constant int pkcs1_oaep_padding = RSA_PKCS1_OAEP_PADDING;
+
+ %constant int NID_sha1 = NID_sha1;
+-- 
+2.7.4
+

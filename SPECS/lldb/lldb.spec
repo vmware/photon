@@ -3,8 +3,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        15.0.7
-Release:        7%{?dist}
-License:        NCSA
+Release:        6%{?dist}
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -13,23 +12,26 @@ Distribution:   Photon
 Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
 %define sha512 %{name}=27f94fd87827d08959a572038c22fd558e1776f94e1678e900d6e28517ae6fe2d89cbc719d9c65cd2879fc6bd97d291f90c4b8e6fe283f02fdf210ed138c80fa
 
-BuildRequires:  cmake
-BuildRequires:  llvm-devel = %{version}
-BuildRequires:  clang-devel = %{version}
-BuildRequires:  ncurses-devel
-BuildRequires:  swig
-BuildRequires:  zlib-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  python3-devel
-BuildRequires:  lua-devel
-BuildRequires:  ninja-build
+Source1: license.txt
+%include %{SOURCE1}
 
-Requires:       lua
-Requires:       llvm = %{version}
-Requires:       clang = %{version}
-Requires:       ncurses
-Requires:       zlib
-Requires:       libxml2
+BuildRequires: cmake
+BuildRequires: llvm-devel = %{version}
+BuildRequires: clang-devel = %{version}
+BuildRequires: ncurses-devel
+BuildRequires: swig
+BuildRequires: zlib-devel
+BuildRequires: libxml2-devel
+BuildRequires: python3-devel
+BuildRequires: lua-devel
+BuildRequires: ninja-build
+
+Requires: lua
+Requires: llvm = %{version}
+Requires: clang = %{version}
+Requires: ncurses
+Requires: zlib
+Requires: libxml2
 
 %description
 LLDB is a next generation, high-performance debugger.
@@ -100,15 +102,13 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-7
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-6
-- Bump version as a part of libxml2 upgrade
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 15.0.7-6
+- Release bump for SRP compliance
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.0.7-5
 - Bump version as a part of lua upgrade
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 15.0.7-4
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 15.0.7-4
 - Bump version as a part of ncurses upgrade to v6.4
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 15.0.7-3
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 15.0.7-3
 - Bump version as a part of libxml2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.0.7-2
 - Bump version as a part of zlib upgrade

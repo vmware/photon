@@ -1,0 +1,1 @@
+License: GPL-1.0-only AND Artistic-1.0-Perl AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 AND (Artistic-1.0-Perl OR GPL-1.0-or-later)

@@ -1,19 +1,23 @@
-Summary:	Program for compiling packages
-Name:		make
-Version:	4.3
-Release:	2%{?dist}
-License:	GPLv3+
-URL:		http://www.gnu.org/software/make
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/make/%{name}-%{version}.tar.gz
-%define sha1 make=3c40e5b49b893dbb14f1e2e1f8fe89b7298cc51d
+Summary:    Program for compiling packages
+Name:       make
+Version:    4.3
+Release:    4%{?dist}
+URL:        http://www.gnu.org/software/make
+Group:      Development/Tools
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0: http://ftp.gnu.org/gnu/make/%{name}-%{version}.tar.gz
+%define sha512 %{name}=9a1185cc468368f4ec06478b1cfa343bf90b5cd7c92c0536567db0315b0ee909af53ecce3d44cfd93dd137dbca1ed13af5713e8663590c4fdd21ea635d78496b
+
+Source1: license.txt
+%include %{SOURCE1}
+
 %description
 The Make package contains a program for compiling packages.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 #work around an error caused by glibc-2.27
@@ -21,11 +25,12 @@ The Make package contains a program for compiling packages.
 sed -i '211,217 d; 219,229 d' lib/glob.c
 
 %configure \
-	--disable-silent-rules
+    --disable-silent-rules
+
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 
 %find_lang %{name}
@@ -40,6 +45,10 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.3-4
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3-3
+- Release bump for SRP compliance
 * Tue Jan 19 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.3-2
 - Fix make check
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3-1

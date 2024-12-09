@@ -3,11 +3,10 @@
 Name:           p11-kit
 Summary:        Library for loading and sharing PKCS11 modules
 Version:        0.24.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Development/Libraries
-License:        BSD
 URL:            http://p11-glue.freedesktop.org/p11-kit.html
 
 Source0: https://github.com/p11-glue/p11-kit/releases/download/%{version}/%{name}-%{version}.tar.xz
@@ -15,8 +14,11 @@ Source0: https://github.com/p11-glue/p11-kit/releases/download/%{version}/%{name
 
 Source1: update-ca-trust
 
+Source2: license.txt
+%include %{SOURCE2}
+
 BuildRequires: gcc
-BuildRequires: libtasn1-devel
+BuildRequires: libtasn1-devel >= 2.3
 BuildRequires: libffi-devel
 BuildRequires: gettext
 BuildRequires: gtk-doc
@@ -96,15 +98,17 @@ Update CA trust tool
 mkdir -p %{buildroot}%{_sysconfdir}/pkcs11/modules \
          %{buildroot}%{_ca_trust_dir}/extracted/{pem,openssl,java,edk2}
 
-install -D -p -m 0755 %{SOURCE1} %{buildroot}%{_bindir}/update-ca-trust
+cp -p %{SOURCE1} %{buildroot}%{_bindir}/update-ca-trust
 
 mv %{buildroot}%{_sysconfdir}/pkcs11/pkcs11.conf.example \
        %{buildroot}%{_sysconfdir}/pkcs11/pkcs11.conf
 
 rm -rf %{buildroot}%{_datadir}/gtk-doc
 
+%if 0%{?with_check}
 %check
 %make_build check
+%endif
 
 %clean
 rm -rf %{buildroot}/*
@@ -158,8 +162,10 @@ rm -rf %{buildroot}/*
 %{_bindir}/update-ca-trust
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.24.1-3
-- Bump version as a part of util-linux upgrade
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.24.1-4
+- Release bump for SRP compliance
+* Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 0.24.1-3
+- Bump up version to compile with new gnupg
 * Thu May 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.24.1-2
 - Add update-ca-trust sub package
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.24.1-1

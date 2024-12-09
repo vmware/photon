@@ -4,7 +4,6 @@ Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.28
 Release:        5%{?dist}
-License:        Custom
 URL:            https://github.com/cyrusimap/cyrus-sasl
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://github.com/cyrusimap/cyrus-sasl/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=dbf908f3d08d97741e7bbee1943f7ed6cce14b30b23a255b41e1a44c317926d1e17394f9a11f2ed4c453f76e2c690eb5adcad3cb04c4ca573c6092da05e1e567
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  systemd-devel
 BuildRequires:  openssl-devel
@@ -147,8 +149,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.1.28-5
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.1.28-5
+- Release bump for SRP compliance
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 2.1.28-4
 - Bump version as a part of krb5 upgrade
 * Tue Feb 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.1.28-3

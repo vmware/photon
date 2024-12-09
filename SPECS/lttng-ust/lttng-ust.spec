@@ -1,15 +1,17 @@
 Summary:       LTTng-UST is an Userspace Tracer library
 Name:          lttng-ust
 Version:       2.13.5
-Release:       1%{?dist}
-License:       GPLv2, LGPLv2.1 and MIT
+Release:       2%{?dist}
 URL:           https://lttng.org/download/
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source:        https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
+Source0:        https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=3bf969e9deb6ce05a1ae30ad48676ae8ff63a73198583e98ce083d52b78e9fc2d171a6e3890c201abfa364600d4471d1ee8b1ee23de3faeec1f0ca84e0f0acd4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: userspace-rcu-devel
 
@@ -36,9 +38,9 @@ The libraries and header files needed for LTTng-UST development.
 
 %build
 %configure \
-	--docdir=%{_docdir}/%{name} \
-	--disable-static \
-	--disable-numa
+        --docdir=%{_docdir}/%{name} \
+        --disable-static \
+        --disable-numa
 
 %make_build
 
@@ -64,6 +66,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/lttng-ust*.pc
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.13.5-2
+- Release bump for SRP compliance
 * Tue Jan 31 2023 Gerrit Photon <photon-checkins@vmware.com> 2.13.5-1
 - Automatic Version Bump
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.13.4-2

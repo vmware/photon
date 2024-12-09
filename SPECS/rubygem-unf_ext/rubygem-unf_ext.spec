@@ -2,16 +2,18 @@
 %global gem_name unf_ext
 
 Name: rubygem-unf_ext
-Version:        0.0.9.1
-Release:        2%{?dist}
+Version:        0.0.8.2
+Release:        4%{?dist}
 Summary:        Unicode Normalization Form support library for CRuby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512  unf_ext=f2d0d58dc0ed30e3e99ac75022c8ea78bf4ad51c8803009c059de087b1cd439e06a8e7ef4c1be5c75048f85afe6c301f402ed21405ff02ad36ea73209416994d
+%define sha512  unf_ext=c9d3e54c96a525031d3b2fe349b5ffa1d03e3f28f74c3a2715af299e5274c7514526d07be5d7244a2cf9561c11e170b15c75d34c5e2a7143cef1ee25d32d2137
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby-devel
 BuildRequires:  gmp-devel
 Requires:       ruby
@@ -33,10 +35,12 @@ Unicode Normalization Form support library for CRuby.
 %{gem_base}
 
 %changelog
-*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.9.1-2
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.8.2-4
+-   Release bump for SRP compliance
+*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.8.2-3
 -   Add gem macros
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.9.1-1
--   Update to version 0.0.9.1
+*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.8.2-2
+-   Build from source
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 0.0.8.2-1
 -   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 0.0.7.7-1

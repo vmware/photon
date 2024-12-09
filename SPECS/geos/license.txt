@@ -1,0 +1,1 @@
+License: MIT AND Zlib AND Apache-2.0 AND LGPL-2.0-or-later AND BSL-1.0 AND CC0-1.0 AND LGPL-2.1-only

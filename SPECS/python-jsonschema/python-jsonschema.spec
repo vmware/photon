@@ -1,8 +1,7 @@
 Name:           python3-jsonschema
 Version:        4.16.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An implementation of JSON Schema validation for Python
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            https://python-jsonschema.readthedocs.io/en/stable
 
 Source0: https://github.com/python-jsonschema/jsonschema/archive/refs/tags/jsonschema-%{version}.tar.gz
 %define sha512 jsonschema=c84abc992f410e9d558e2ce06c7172e9e2d298cff469baf8a23b1ea5b4777e6addfa757c5cc62b2e28e257721ee55e04bec0852e5f525adfa87392cbf712828f
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-pip
@@ -53,6 +55,8 @@ python3 setup test
 %{_bindir}/jsonschema3
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.16.0-2
+- Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.16.0-1
 - Update to 4.16.0
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1

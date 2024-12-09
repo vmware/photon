@@ -1,0 +1,1 @@
+License: PSF-2.0 AND MIT AND Python-2.0

@@ -1,19 +1,20 @@
 %global major_version 3
 
-Summary:    Cross-platform make system
-Name:       cmake
-Version:    3.25.2
-Release:    3%{?dist}
-License:    BSD and LGPLv2+
-URL:        http://www.cmake.org
-Group:      Development/Tools
-Vendor:     VMware, Inc.
-Distribution:   Photon
+Summary:      Cross-platform make system
+Name:         cmake
+Version:      3.25.2
+Release:      6%{?dist}
+URL:          http://www.cmake.org
+Group:        Development/Tools
+Vendor:       VMware, Inc.
+Distribution: Photon
 
 Source0: https://github.com/Kitware/CMake/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=20146d06a1722c36249192944a58e4780aad334d2bc5ce2a3d8c4f24656630c5b71ca0ae7ed53587e3d46f488bd773452fa60c3fc7045fe54db2dbc6ffd86390
 
 Source1: macros.cmake
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: ncurses-devel
 BuildRequires: xz-devel
@@ -23,7 +24,7 @@ BuildRequires: zlib-devel
 BuildRequires: libarchive-devel
 BuildRequires: bzip2-devel
 BuildRequires: libgcrypt-devel
-BuildRequires: (coreutils or coreutils-selinux)
+BuildRequires: coreutils >= 9.1-7
 
 Requires: libgcrypt
 Requires: ncurses
@@ -31,6 +32,7 @@ Requires: expat
 Requires: zlib
 Requires: libarchive
 Requires: bzip2
+Requires: curl-libs
 
 %description
 CMake is an extensible, open-source system that manages the build process in an
@@ -43,6 +45,7 @@ operating system and in a compiler-independent manner.
 ./bootstrap --prefix=%{_prefix} \
             --system-expat \
             --system-zlib \
+            --system-curl \
             --system-libarchive \
             --system-bzip2 \
             --parallel=$(nproc)
@@ -72,7 +75,13 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
-* Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 3.25.2-3
+* Tue Dec 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.25.2-6
+- Require coreutils only
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.25.2-5
+- Release bump for SRP compliance
+* Fri Jun 16 2023 Anmol Jain <anmolja@vmware.com> 3.25.2-4
+- Use system curl
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 3.25.2-3
 - Bump version as a part of ncurses upgrade to v6.4
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.25.2-2
 - Bump version as a part of zlib upgrade

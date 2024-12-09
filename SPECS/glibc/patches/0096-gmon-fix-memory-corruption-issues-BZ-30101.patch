@@ -1,0 +1,209 @@
+From 3c98431da5d628074882e37287667c7e99560996 Mon Sep 17 00:00:00 2001
+From: Simon Kissane <skissane@gmail.com>
+Date: Sat, 11 Feb 2023 08:58:02 +1100
+Subject: [PATCH 096/175] gmon: fix memory corruption issues [BZ# 30101]
+
+V2 of this patch fixes an issue in V1, where the state was changed to ON not
+OFF at end of _mcleanup. I hadn't noticed that (counterintuitively) ON=0 and
+OFF=3, hence zeroing the buffer turned it back on. So set the state to OFF
+after the memset.
+
+1. Prevent double free, and reads from unallocated memory, when
+   _mcleanup is (incorrectly) called two or more times in a row,
+   without an intervening call to __monstartup; with this patch, the
+   second and subsequent calls effectively become no-ops instead.
+   While setting tos=NULL is minimal fix, safest action is to zero the
+   whole gmonparam buffer.
+
+2. Prevent memory leak when __monstartup is (incorrectly) called two
+   or more times in a row, without an intervening call to _mcleanup;
+   with this patch, the second and subsequent calls effectively become
+   no-ops instead.
+
+3. After _mcleanup, treat __moncontrol(1) as __moncontrol(0) instead.
+   With zeroing of gmonparam buffer in _mcleanup, this stops the
+   state incorrectly being changed to GMON_PROF_ON despite profiling
+   actually being off. If we'd just done the minimal fix to _mcleanup
+   of setting tos=NULL, there is risk of far worse memory corruption:
+   kcount would point to deallocated memory, and the __profil syscall
+   would make the kernel write profiling data into that memory,
+   which could have since been reallocated to something unrelated.
+
+4. Ensure __moncontrol(0) still turns off profiling even in error
+   state. Otherwise, if mcount overflows and sets state to
+   GMON_PROF_ERROR, when _mcleanup calls __moncontrol(0), the __profil
+   syscall to disable profiling will not be invoked. _mcleanup will
+   free the buffer, but the kernel will still be writing profiling
+   data into it, potentially corrupted arbitrary memory.
+
+Also adds a test case for (1). Issues (2)-(4) are not feasible to test.
+
+Signed-off-by: Simon Kissane <skissane@gmail.com>
+Reviewed-by: DJ Delorie <dj@redhat.com>
+(cherry picked from commit bde121872001d8f3224eeafa5b7effb871c3fbca)
+---
+ NEWS                |  1 +
+ gmon/Makefile       | 17 +++++++++++++++--
+ gmon/gmon.c         | 26 +++++++++++++++++++-------
+ gmon/tst-mcleanup.c | 31 +++++++++++++++++++++++++++++++
+ 4 files changed, 66 insertions(+), 9 deletions(-)
+ create mode 100644 gmon/tst-mcleanup.c
+
+diff --git a/NEWS b/NEWS
+index 850f9f78023ee6da246681fec33fffd94ea8969c..0b3ee2ad14352254af09104fdb42816bb75aad9e 100644
+--- a/NEWS
++++ b/NEWS
+@@ -57,6 +57,7 @@ The following bugs are resolved with this release:
+   [29776] elf/tst-tlsopt-powerpc fails when compiled with -mcpu=power10
+   [29951] time: Set daylight to 1 for matching DST/offset change
+   [30053] time: strftime %s returns -1 after 2038 on 32 bits systems
++  [30101] gmon: fix memory corruption issues
+   [30151] gshadow: Matching sgetsgent, sgetsgent_r ERANGE handling
+   [30163] posix: Fix system blocks SIGCHLD erroneously
+   [30305] x86_64: Fix asm constraints in feraiseexcept
+diff --git a/gmon/Makefile b/gmon/Makefile
+index 58ea34aa7e2c46777c63c385d47ea4246677f0c0..213622a7adc7a1f5ed5f96f9041f51789c90b758 100644
+--- a/gmon/Makefile
++++ b/gmon/Makefile
+@@ -1,4 +1,5 @@
+-# Copyright (C) 1995-2022 Free Software Foundation, Inc.
++# Copyright (C) 1995-2023 Free Software Foundation, Inc.
++# Copyright The GNU Toolchain Authors.
+ # This file is part of the GNU C Library.
+ 
+ # The GNU C Library is free software; you can redistribute it and/or
+@@ -25,7 +26,7 @@ include ../Makeconfig
+ headers	:= sys/gmon.h sys/gmon_out.h sys/profil.h
+ routines := gmon mcount profil sprofil prof-freq
+ 
+-tests	= tst-sprofil tst-gmon tst-mcount-overflow
++tests	= tst-sprofil tst-gmon tst-mcount-overflow tst-mcleanup
+ ifeq ($(build-profile),yes)
+ tests	+= tst-profile-static
+ tests-static	+= tst-profile-static
+@@ -68,6 +69,14 @@ ifeq ($(run-built-tests),yes)
+ tests-special += $(objpfx)tst-mcount-overflow-check.out
+ endif
+ 
++CFLAGS-tst-mcleanup.c := -fno-omit-frame-pointer -pg
++tst-mcleanup-no-pie = yes
++CRT-tst-mcleanup := $(csu-objpfx)g$(start-installed-name)
++tst-mcleanup-ENV := GMON_OUT_PREFIX=$(objpfx)tst-mcleanup.data
++ifeq ($(run-built-tests),yes)
++tests-special += $(objpfx)tst-mcleanup.out
++endif
++
+ CFLAGS-tst-gmon-static.c := $(PIE-ccflag) -fno-omit-frame-pointer -pg
+ CRT-tst-gmon-static := $(csu-objpfx)g$(static-start-installed-name)
+ tst-gmon-static-no-pie = yes
+@@ -123,6 +132,10 @@ $(objpfx)tst-mcount-overflow-check.out: tst-mcount-overflow-check.sh $(objpfx)ts
+ 	$(SHELL) $< $(objpfx)tst-mcount-overflow > $@; \
+ 	$(evaluate-test)
+ 
++$(objpfx)tst-mcleanup.out: clean-tst-mcleanup-data
++clean-tst-mcleanup-data:
++	rm -f $(objpfx)tst-mcleanup.data.*
++
+ $(objpfx)tst-gmon-gprof.out: tst-gmon-gprof.sh $(objpfx)tst-gmon.out
+ 	$(SHELL) $< $(GPROF) $(objpfx)tst-gmon $(objpfx)tst-gmon.data.* > $@; \
+ 	$(evaluate-test)
+diff --git a/gmon/gmon.c b/gmon/gmon.c
+index 689bf80141e559ca65bc41ba11dd8bc702b72480..5e99a7351dc716660583b34b54922c680f62b9f6 100644
+--- a/gmon/gmon.c
++++ b/gmon/gmon.c
+@@ -102,11 +102,8 @@ __moncontrol (int mode)
+ {
+   struct gmonparam *p = &_gmonparam;
+ 
+-  /* Don't change the state if we ran into an error.  */
+-  if (p->state == GMON_PROF_ERROR)
+-    return;
+-
+-  if (mode)
++  /* Treat start request as stop if error or gmon not initialized. */
++  if (mode && p->state != GMON_PROF_ERROR && p->tos != NULL)
+     {
+       /* start */
+       __profil((void *) p->kcount, p->kcountsize, p->lowpc, s_scale);
+@@ -116,7 +113,9 @@ __moncontrol (int mode)
+     {
+       /* stop */
+       __profil(NULL, 0, 0, 0);
+-      p->state = GMON_PROF_OFF;
++      /* Don't change the state if we ran into an error. */
++      if (p->state != GMON_PROF_ERROR)
++        p->state = GMON_PROF_OFF;
+     }
+ }
+ libc_hidden_def (__moncontrol)
+@@ -146,6 +145,14 @@ __monstartup (u_long lowpc, u_long highpc)
+   maxarcs = MAXARCS;
+ #endif
+ 
++  /*
++   * If we are incorrectly called twice in a row (without an
++   * intervening call to _mcleanup), ignore the second call to
++   * prevent leaking memory.
++   */
++  if (p->tos != NULL)
++      return;
++
+   /*
+    * round lowpc and highpc to multiples of the density we're using
+    * so the rest of the scaling (here and in gprof) stays in ints.
+@@ -463,9 +470,14 @@ _mcleanup (void)
+ {
+   __moncontrol (0);
+ 
+-  if (_gmonparam.state != GMON_PROF_ERROR)
++  if (_gmonparam.state != GMON_PROF_ERROR && _gmonparam.tos != NULL)
+     write_gmon ();
+ 
+   /* free the memory. */
+   free (_gmonparam.tos);
++
++  /* reset buffer to initial state for safety */
++  memset(&_gmonparam, 0, sizeof _gmonparam);
++  /* somewhat confusingly, ON=0, OFF=3 */
++  _gmonparam.state = GMON_PROF_OFF;
+ }
+diff --git a/gmon/tst-mcleanup.c b/gmon/tst-mcleanup.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..b259653ec833aca44650bcb4358629062af3e9dd
+--- /dev/null
++++ b/gmon/tst-mcleanup.c
+@@ -0,0 +1,31 @@
++/* Test program for repeated invocation of _mcleanup
++   Copyright The GNU Toolchain Authors.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++/* Intentionally calls _mcleanup() twice: once manually, it will be
++   called again as an atexit handler. This is incorrect use of the API,
++   but the point of the test is to make sure we don't crash when the
++   API is misused in this way. */
++
++#include <sys/gmon.h>
++
++int
++main (void)
++{
++  _mcleanup();
++  return 0;
++}
+-- 
+2.35.6
+

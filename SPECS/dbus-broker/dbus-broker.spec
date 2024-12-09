@@ -2,16 +2,16 @@ Name:           dbus-broker
 Version:        33
 Release:        2%{?dist}
 Summary:        Linux D-Bus Message Broker
-License:        ASL 2.0
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/Security
+
 URL:            https://github.com/bus1/dbus-broker
+Source0:        https://github.com/bus1/dbus-broker/releases/download/v%{version}/dbus-broker-%{version}.tar.xz
+%define sha512  dbus-broker=776684a5d19a6c25fc46dff19821014a32d967f8132385b86c5281f2d69192dce64b3ad92ae6a158d1d64753e89d918385a1a31f32811f54060504113f065baa
 
-Source0: https://github.com/bus1/dbus-broker/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=776684a5d19a6c25fc46dff19821014a32d967f8132385b86c5281f2d69192dce64b3ad92ae6a158d1d64753e89d918385a1a31f32811f54060504113f065baa
-
-Source1: %{name}.sysusers
+Source1: license.txt
+%include %{SOURCE1}
 
 Provides:       bundled(c-dvar) = 1
 Provides:       bundled(c-ini) = 1
@@ -22,15 +22,13 @@ Provides:       bundled(c-shquote) = 1
 BuildRequires:  expat-devel
 BuildRequires:  libcap-ng
 BuildRequires:  gcc
+BuildRequires:  git
 BuildRequires:  glibc-devel
 BuildRequires:  meson
 BuildRequires:  ninja-build
 BuildRequires:  python3-docutils
+BuildRequires:  systemd
 BuildRequires:  systemd-devel
-BuildRequires:  audit-devel
-BuildRequires:  libcap-ng-devel
-
-Requires: systemd
 
 %description
 dbus-broker is an implementation of a message bus as defined by the D-Bus
@@ -40,64 +38,53 @@ written for Linux systems, and makes use of many modern features provided by
 recent Linux kernel releases.
 
 %prep
-%autosetup -p1
+%autosetup -p1 %{name}-%{version}
 
 %build
-%{meson} \
-    --prefix=%{_usr} \
-    -Dselinux=true \
-    -Daudit=true
-
-%{meson_build}
+CONFIGURE_OPTS=(
+   --prefix=/usr
+)
+%meson "${CONFIGURE_OPTS[@]}"
+%meson_build
 
 %install
-%{meson_install}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+%meson_install
 
 %check
-%{meson_test}
-
-%pre
-%sysusers_create_compat %{SOURCE1}
+%meson_test
 
 %post
-%systemd_post %{name}.service
-%systemd_user_post %{name}.service
+
+if [ $1 -eq 1 ] ; then
+        systemctl --no-reload          disable dbus-daemon.service &>/dev/null || :
+        systemctl --no-reload --global disable dbus-daemon.service &>/dev/null || :
+        systemctl --no-reload          enable dbus-broker.service &>/dev/null || :
+        systemctl --no-reload --global enable dbus-broker.service &>/dev/null || :
+fi
+
 %journal_catalog_update
 
 %preun
-%systemd_preun %{name}.service
-%systemd_user_preun %{name}.service
+%systemd_preun dbus-broker.service
+%systemd_user_preun dbus-broker.service
 
 %postun
-%systemd_postun %{name}.service
-%systemd_user_postun %{name}.service
-
-%triggerpostun -- dbus
-if [ $2 -eq 0 ] && [ -x %{_bindir}/systemctl ]; then
-  # The `dbus-daemon` package used to provide the default D-Bus
-  # implementation. We continue to make sure that if you uninstall it, we
-  # re-evaluate whether to enable dbus-broker to replace it. If we don't,
-  # you might end up without any bus implementation active.
-  systemctl --no-reload          preset dbus-broker.service || :
-  systemctl --no-reload --global preset dbus-broker.service || :
-fi
+%systemd_postun dbus-broker.service
+%systemd_user_postun dbus-broker.service
 
 %files
 %license AUTHORS
 %license LICENSE
-%{_bindir}/%{name}
-%{_bindir}/%{name}-launch
-%{_journalcatalogdir}/%{name}.catalog
-%{_journalcatalogdir}/%{name}-launch.catalog
-%{_unitdir}/%{name}.service
-%{_userunitdir}/%{name}.service
-%{_sysusersdir}/%{name}.sysusers
+%{_bindir}/dbus-broker
+%{_bindir}/dbus-broker-launch
+%{_journalcatalogdir}/dbus-broker.catalog
+%{_journalcatalogdir}/dbus-broker-launch.catalog
+%{_unitdir}/dbus-broker.service
+%{_userunitdir}/dbus-broker.service
 
 %changelog
-* Wed Sep 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 33-2
-- Fix spec issues
-- Create dbus user
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 33-2
+- Release bump for SRP compliance
 * Thu Feb 16 2023 Susant Sahani <ssahani@vmware.com> 33-1
 - Update version
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 32-2

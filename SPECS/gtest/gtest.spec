@@ -1,8 +1,7 @@
 Summary:        Google's C++ gtest framework
 Name:           gtest
 Version:        1.12.1
-Release:        2%{?dist}
-License:        ASL 2.0
+Release:        4%{?dist}
 URL:            https://github.com/google/googletest
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/google/googletest/archive/googletest-%{version}.tar.gz
 %define sha512 googletest=a9104dc6c53747e36e7dd7bb93dfce51a558bd31b487a9ef08def095518e1296da140e0db263e0644d9055dbd903c0cb69380cb2322941dbfb04780ef247df9c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  build-essential
 BuildRequires:  cmake
@@ -110,6 +112,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/libgmock_main.a
 
 %changelog
+* Sun Dec 15 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.12.1-4
+- Bump up for generating provenance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12.1-3
+- Release bump for SRP compliance
 * Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.12.1-2
 - Fix requires in all packages
 * Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 1.12.1-1

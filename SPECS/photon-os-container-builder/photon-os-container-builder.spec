@@ -7,8 +7,7 @@
 Summary:        photon-os-container-builder is an open source project to compose and deploy photon OS containers
 Name:           photon-os-container-builder
 Version:        0.1.1
-Release:        7%{?dist}
-License:        Apache-2.0
+Release:        12%{?dist}
 Group:          Deployment/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,6 +16,9 @@ URL:            https://github.com/vmware-samples/%{name}/archive/refs/tags/v%{v
 Source0:        %{name}-%{version}.tar.gz
 %define sha512  %{name}=309ec46806fe33e70dcaff4076fee4e748d3889b3122f72771621ecc514b70740fef2352afa8bfe2b0201470cb09ae30b60ecc31d0d31d1d421953f16754b847
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  glibc
 BuildRequires:  git
 BuildRequires:  go
@@ -24,6 +26,7 @@ BuildRequires:  systemd-devel
 
 Requires(pre): systemd-rpm-macros
 Requires: systemd
+Requires: dbus
 Requires: systemd-container
 Requires: glibc
 
@@ -60,6 +63,16 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/photon-os-container/photon-os-container.toml
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1.1-12
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.1.1-11
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.1.1-10
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 0.1.1-9
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 0.1.1-8
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 0.1.1-7
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 0.1.1-6
@@ -68,7 +81,7 @@ rm -rf %{buildroot}/*
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 0.1.1-4
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.1.1-3
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 0.1.1-3
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 0.1.1-2
 - Bump up version to compile with new go

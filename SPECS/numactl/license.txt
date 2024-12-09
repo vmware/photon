@@ -1,0 +1,1 @@
+License: LGPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-macro AND Linux-man-pages-copyleft-2-para AND Linux-man-pages-copyleft-var AND FSFAP AND GPL-2.0-only AND LGPL-2.1-only

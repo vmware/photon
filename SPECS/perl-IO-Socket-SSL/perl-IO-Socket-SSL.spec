@@ -1,15 +1,17 @@
 Summary:        SSL sockets with IO::Socket interface
 Name:           perl-IO-Socket-SSL
 Version:        2.075
-Release:        1%{?dist}
-License:        Perl Artistic License 2.0
+Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~sullr/IO-Socket-SSL-2.024/lib/IO/Socket/SSL.pod
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source:         https://cpan.metacpan.org/authors/id/S/SU/SULLR/IO-Socket-SSL-%{version}.tar.gz
+Source0:        https://cpan.metacpan.org/authors/id/S/SU/SULLR/IO-Socket-SSL-%{version}.tar.gz
 %define sha512 IO-Socket-SSL=ed693aa360e669401d5d2b81d988d6d2bd39f042452d7194cc8a7ec2dccf1dfa213ecb29572178a3abfdd20af999217d19a3d9a4c7978207a2edaac5148c9853
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -46,6 +48,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man?/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.075-2
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 2.075-1
 - Automatic Version Bump
 * Fri Jan 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.068-2

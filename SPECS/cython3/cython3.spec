@@ -1,18 +1,21 @@
 Summary:        C extensions for Python3
 Name:           cython3
 Version:        0.29.32
-Release:        2%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        Apache License
 URL:            http://cython.org/
+
 Source0:        https://github.com/cython/cython/archive/Cython-%{version}.tar.gz
 %define sha512  Cython=55462792fa70d8edf60aa470627ab494918d7297fd7d282a7a54da76ee5a180233108404a1c8f3d79f6408f19b6e4f46b36e59fd47c38ede24f061f374437b6f
-BuildRequires:  python3
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-xml
+
 Requires:       python3
 
 %description
@@ -21,7 +24,7 @@ and the extended Cython programming language (based on Pyrex).
 It makes writing C extensions for Python as easy as Python itself.
 
 %prep
-%autosetup -n cython-%{version}
+%autosetup -p1 -n cython-%{version}
 
 %build
 %py3_build
@@ -49,6 +52,10 @@ rm -rf %{buildroot}
 %{python3_sitelib}/__pycache__/*
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.29.32-4
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.29.32-3
+- Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.29.32-2
 - Update release to compile with python 3.11
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 0.29.32-1

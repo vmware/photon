@@ -1,8 +1,7 @@
 Summary:       Convert output of command line tools and others to JSON
 Name:          jc
 Version:       1.23.6
-Release:       2%{?dist}
-License:       MIT
+Release:       3%{?dist}
 URL:           https://github.com/kellyjonbrazil/jc
 Group:         Development/Languages/Python
 Vendor:        VMware, Inc.
@@ -11,6 +10,9 @@ BuildArch:     noarch
 
 Source0: https://github.com/kellyjonbrazil/jc/archive/refs/tags/jc-%{version}.tar.gz
 %define sha512 %{name}=a79a289f9d30dc8827f1276e34dcd80af60800b5b4b4eb8d0c4bfbea4a996e932efe2242adad2e1b58cbfb4f1ff8a0bcc591df5c9d630226201d347d0d8d9c47
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -80,7 +82,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/%{name}-%{version}-py%{python3_version}.egg-info
 
 %changelog
-* Fri Apr 12 2024 Oliver Kurth <oliver.kurth@broadcom.com> 1.23.6-2
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.23.6-3
+- Release bump for SRP compliance
+* Sat Dec 09 2023 Oliver Kurth <oliver.kurth@broadcom.com> 1.23.6-2
 - fix requires by moving them to the python package
 * Tue Oct 24 2023 Oliver Kurth <okurth@vmware.com> 1.23.6-1
 - Initial build

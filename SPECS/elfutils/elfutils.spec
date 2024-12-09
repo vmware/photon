@@ -4,8 +4,7 @@
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
 Version:        0.189
-Release:        4%{?dist}
-License:        GPLv3+ and (GPLv2+ or LGPLv3+)
+Release:        5%{?dist}
 Group:          Development/Tools
 URL:            https://sourceware.org/elfutils
 Vendor:         VMware, Inc.
@@ -13,6 +12,9 @@ Distribution:   Photon
 
 Source0: https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=93a877e34db93e5498581d0ab2d702b08c0d87e4cafd9cec9d6636dfa85a168095c305c11583a5b0fb79374dd93bc8d0e9ce6016e6c172764bcea12861605b71
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: %{name}-libelf = %{version}-%{release}
 Requires: glibc >= 2.7
@@ -22,18 +24,18 @@ Requires: curl
 Requires: libarchive
 Requires: zstd
 
-BuildRequires: gcc
-BuildRequires: glibc
-BuildRequires: bison
-BuildRequires: flex
-BuildRequires: m4
-BuildRequires: gettext-devel
-BuildRequires: bzip2-devel
-BuildRequires: libmicrohttpd-devel
-BuildRequires: curl-devel
-BuildRequires: libarchive-devel
-BuildRequires: sqlite-devel
-BuildRequires: zstd-devel
+BuildRequires:  gcc >= 4.1.2-33
+BuildRequires:  glibc >= 2.7
+BuildRequires:  bison >= 1.875
+BuildRequires:  flex >= 2.5.4a
+BuildRequires:  m4
+BuildRequires:  gettext
+BuildRequires:  bzip2-devel
+BuildRequires:  libmicrohttpd-devel
+BuildRequires:  curl-devel
+BuildRequires:  libarchive-devel
+BuildRequires:  sqlite-devel
+BuildRequires:  zstd-devel
 
 %description
 Elfutils is a collection of utilities, including ld (a linker),
@@ -115,9 +117,7 @@ These are the additional language files of %{name}.
 %autosetup -p1
 
 %build
-%configure \
-    --program-prefix=%{_programprefix}
-
+%configure --program-prefix=%{_programprefix}
 %make_build
 
 %install
@@ -139,18 +139,18 @@ chmod +x %{buildroot}%{_libdir}/lib*.so*
 
 %if 0%{?with_check}
 %check
-%make_build check
+make %{?_smp_mflags} check
 %endif
 
 %clean
 rm -rf %{buildroot}
 
 %ldconfig_scriptlets
-
 %ldconfig_scriptlets libelf
 
 %files
 %defattr(-,root,root)
+%doc COPYING COPYING-GPLV2 COPYING-LGPLV3 README TODO CONTRIBUTING
 %{_bindir}/eu-*
 %{_bindir}/debuginfod
 %{_bindir}/debuginfod-find
@@ -200,21 +200,22 @@ rm -rf %{buildroot}
 %{_libdir}/libelf.so
 
 %files libelf-devel-static
-%defattr(-,root,root)
 %{_libdir}/libelf.a
 
 %files libelf-lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.189-4
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.189-5
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.189-4
+- Release bump for SRP compliance
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 0.189-3
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Wed Sep 13 2023 Srish Srinivasan <ssrish@vmware.com> 0.189-3
+* Wed Sep 13 2023 Srish Srinivasan <ssrish@vmware.com> 0.189-2
 - Version bump as a part of libmicrohttpd version update
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.189-2
-- Bump version as a part of curl upgrade
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.189-1
-- Upgrade to v0.189
+* Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 0.189-1
+- version upgrade to use curl 8.0.1
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.188-5
 - Bump version as a part of zstd upgrade
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.188-4

@@ -46,7 +46,7 @@ index e1023cc..e712a06 100644
  		.mode = MODE_TUNNEL,
 +		.clear_df = false,
  	};
- 
+
  	child_cfg = child_cfg_create("cmd", &child);
 diff --git a/src/charon-nm/nm/nm_service.c b/src/charon-nm/nm/nm_service.c
 index 5d6d329..cf57960 100644
@@ -70,7 +70,7 @@ index a6dc61f..ab7e84a 100644
  								  0, config, child);
 +	data.clear_df = false;
  	child_cfg = child_cfg_create(child, &data);
- 
+
  	token = settings->get_str(settings, "configs.%s.%s.proposal",
 diff --git a/src/libcharon/config/child_cfg.c b/src/libcharon/config/child_cfg.c
 index bc9cff7..33e1439 100644
@@ -86,12 +86,12 @@ index bc9cff7..33e1439 100644
 +	 */
 +	bool clear_df;
  };
- 
+
  METHOD(child_cfg_t, get_name, char*,
 @@ -727,6 +732,12 @@ METHOD(child_cfg_t, get_ref, child_cfg_t*,
  	return &this->public;
  }
- 
+
 +METHOD(child_cfg_t, is_clear_df, bool,
 +	private_child_cfg_t *this)
 +{
@@ -124,7 +124,7 @@ index 9c44252..26fa897 100644
 @@ -346,6 +346,14 @@ struct child_cfg_t {
  	 */
  	child_cfg_t* (*get_ref) (child_cfg_t *this);
- 
+
 +	/**
 +	 * Check whether DF bit has to be cleared in Outer IP
 +	 *
@@ -143,14 +143,14 @@ index 9c44252..26fa897 100644
 +	/** DF clear bit */
 +	bool clear_df;
  };
- 
+
  /**
 diff --git a/src/libcharon/kernel/kernel_interface.c b/src/libcharon/kernel/kernel_interface.c
 index 4f4a997..207cb8e 100644
 --- a/src/libcharon/kernel/kernel_interface.c
 +++ b/src/libcharon/kernel/kernel_interface.c
 @@ -472,13 +472,13 @@ METHOD(kernel_interface_t, release_reqid, status_t,
- 
+
  METHOD(kernel_interface_t, add_sa, status_t,
  	private_kernel_interface_t *this, kernel_ipsec_sa_id_t *id,
 -	kernel_ipsec_add_sa_t *data)
@@ -163,7 +163,7 @@ index 4f4a997..207cb8e 100644
 -	return this->ipsec->add_sa(this->ipsec, id, data);
 +	return this->ipsec->add_sa(this->ipsec, id, data, clear_df);
  }
- 
+
  METHOD(kernel_interface_t, update_sa, status_t,
 diff --git a/src/libcharon/kernel/kernel_interface.h b/src/libcharon/kernel/kernel_interface.h
 index 21b777a..657afd8 100644
@@ -175,7 +175,7 @@ index 21b777a..657afd8 100644
  	status_t (*add_sa)(kernel_interface_t *this, kernel_ipsec_sa_id_t *id,
 -					   kernel_ipsec_add_sa_t *data);
 +					   kernel_ipsec_add_sa_t *data, bool clear_df);
- 
+
  	/**
  	 * Update the hosts on an installed SA.
 diff --git a/src/libcharon/kernel/kernel_ipsec.h b/src/libcharon/kernel/kernel_ipsec.h
@@ -188,7 +188,7 @@ index ae8b82a..6c60850 100644
  	status_t (*add_sa)(kernel_ipsec_t *this, kernel_ipsec_sa_id_t *id,
 -					   kernel_ipsec_add_sa_t *data);
 +					   kernel_ipsec_add_sa_t *data, bool clear_df);
- 
+
  	/**
  	 * Update the hosts on an installed SA.
 diff --git a/src/libcharon/plugins/bypass_lan/bypass_lan_listener.c b/src/libcharon/plugins/bypass_lan/bypass_lan_listener.c
@@ -213,14 +213,14 @@ index d7e83a0..05d7c77 100644
  		.mode = MODE_TRANSPORT,
 +		.clear_df = false,
  	};
- 
+
  	/* setup credentials */
 diff --git a/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c b/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c
 index 6f7b50f..78df0da 100644
 --- a/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c
 +++ b/src/libcharon/plugins/kernel_netlink/kernel_netlink_ipsec.c
 @@ -1580,7 +1580,7 @@ out:
- 
+
  METHOD(kernel_ipsec_t, add_sa, status_t,
  	private_kernel_netlink_ipsec_t *this, kernel_ipsec_sa_id_t *id,
 -	kernel_ipsec_add_sa_t *data)
@@ -233,7 +233,7 @@ index 6f7b50f..78df0da 100644
  	traffic_selector_t *first_src_ts, *first_dst_ts;
  	status_t status = FAILED;
 +	bool is_hcx_enabled = false;
- 
+
  	/* if IPComp is used, we install an additional IPComp SA. if the cpi is 0
  	 * we are in the recursive call below */
 @@ -1619,7 +1620,7 @@ METHOD(kernel_ipsec_t, add_sa, status_t,
@@ -255,14 +255,14 @@ index 6f7b50f..78df0da 100644
 +		sa->flags |= XFRM_STATE_NOPMTUDISC;
 +	}
  	sa->mode = mode2kernel(mode);
- 
+
  	if (!data->copy_df)
 diff --git a/src/libcharon/plugins/kernel_pfkey/kernel_pfkey_ipsec.c b/src/libcharon/plugins/kernel_pfkey/kernel_pfkey_ipsec.c
 index e73767d..74265ec 100644
 --- a/src/libcharon/plugins/kernel_pfkey/kernel_pfkey_ipsec.c
 +++ b/src/libcharon/plugins/kernel_pfkey/kernel_pfkey_ipsec.c
 @@ -1704,7 +1704,7 @@ METHOD(kernel_ipsec_t, get_cpi, status_t,
- 
+
  METHOD(kernel_ipsec_t, add_sa, status_t,
  	private_kernel_pfkey_ipsec_t *this, kernel_ipsec_sa_id_t *id,
 -	kernel_ipsec_add_sa_t *data)
@@ -280,7 +280,7 @@ index 58e1cd9..cd037a9 100644
  		.mode = MODE_TUNNEL,
 +		.clear_df = false,
  	};
- 
+
  	if (num)
 diff --git a/src/libcharon/plugins/medcli/medcli_config.c b/src/libcharon/plugins/medcli/medcli_config.c
 index f50f79d..edff21f 100644
@@ -292,7 +292,7 @@ index f50f79d..edff21f 100644
  		.mode = MODE_TUNNEL,
 +		.clear_df = false,
  	};
- 
+
  	if (streq(name, "medcli-mediation"))
 @@ -253,6 +254,7 @@ METHOD(enumerator_t, peer_enumerator_enumerate, bool,
  			},
@@ -300,7 +300,7 @@ index f50f79d..edff21f 100644
  		.mode = MODE_TUNNEL,
 +		.clear_df = false,
  	};
- 
+
  	VA_ARGS_VGET(args, cfg);
 diff --git a/src/libcharon/plugins/sql/sql_config.c b/src/libcharon/plugins/sql/sql_config.c
 index aef1e1c..583a70d 100644
@@ -324,7 +324,7 @@ index 55db379..e271b3a 100644
  		.updown = msg->add_conn.me.updown,
 +		.clear_df = msg->add_conn.clear_df != 0,
  	};
- 
+
 +	DBG1(DBG_CFG, "build_child_cfg: conn %s, clear_df %d",
 +					msg->add_conn.name, msg->add_conn.clear_df);
 +
@@ -341,7 +341,7 @@ index 3a7fc7a..ecd0c51 100644
  		.mode = MODE_TUNNEL,
 +		.clear_df = false,
  	};
- 
+
  	VA_ARGS_VGET(args, cfg);
 diff --git a/src/libcharon/plugins/unity/unity_handler.c b/src/libcharon/plugins/unity/unity_handler.c
 index 9a45275..a83bfed 100644
@@ -360,13 +360,13 @@ index 0c061d4..87e93ed 100644
 --- a/src/libcharon/plugins/vici/vici_config.c
 +++ b/src/libcharon/plugins/vici/vici_config.c
 @@ -2081,6 +2081,8 @@ CALLBACK(children_sn, bool,
- 
+
  	log_child_data(&child, name);
- 
+
 +	child.cfg.clear_df = false;
 +
  	cfg = child_cfg_create(name, &child.cfg);
- 
+
  	if (child.replay_window != REPLAY_UNDEFINED)
 diff --git a/src/libcharon/sa/child_sa.c b/src/libcharon/sa/child_sa.c
 index 2c77ee2..ab5a3d0 100644
@@ -382,12 +382,12 @@ index 2c77ee2..ab5a3d0 100644
 +	 */
 +	bool clear_df;
  };
- 
+
  /**
 @@ -499,6 +504,13 @@ METHOD(child_sa_t, create_ts_enumerator, enumerator_t*,
  	return array_create_enumerator(this->other_ts);
  }
- 
+
 +METHOD(child_sa_t, is_clear_df, bool,
 +	   private_child_sa_t *this)
 +{
@@ -396,15 +396,15 @@ index 2c77ee2..ab5a3d0 100644
 +
 +
  typedef struct policy_enumerator_t policy_enumerator_t;
- 
+
  /**
 @@ -1001,7 +1013,7 @@ static status_t install_internal(private_child_sa_t *this, chunk_t encr,
  		sa.mark.value = inbound ? this->mark_in.value : this->mark_out.value;
  	}
- 
+
 -	status = charon->kernel->add_sa(charon->kernel, &id, &sa);
 +	status = charon->kernel->add_sa(charon->kernel, &id, &sa, this->clear_df);
- 
+
  	my_ts->destroy(my_ts);
  	other_ts->destroy(other_ts);
 @@ -2054,6 +2066,7 @@ child_sa_t *child_sa_create(host_t *me, host_t *other, child_cfg_t *config,
@@ -418,7 +418,7 @@ index 2c77ee2..ab5a3d0 100644
 @@ -2078,6 +2091,12 @@ child_sa_t *child_sa_create(host_t *me, host_t *other, child_cfg_t *config,
  	this->config = config;
  	config->get_ref(config);
- 
+
 +	if (config != NULL && config->is_clear_df != NULL) {
 +		this->clear_df = config->is_clear_df(config);
 +	} else {
@@ -442,7 +442,7 @@ index 37f0027..742fa86 100644
 +	 */
 +	bool (*is_clear_df) (child_sa_t *this);
  };
- 
+
  /**
 diff --git a/src/starter/args.c b/src/starter/args.c
 index b71a216..cd72730 100644
@@ -455,7 +455,7 @@ index b71a216..cd72730 100644
 +	{ ARG_MISC, 0, NULL  /* KW_CLEAR_DF */                                         },
  	{ ARG_MISC, 0, NULL  /* KW_PFS_DEPRECATED */                                   },
  	{ ARG_MISC, 0, NULL  /* KW_CONN_DEPRECATED */                                  },
- 
+
 diff --git a/src/starter/confread.c b/src/starter/confread.c
 index 5065bc3..1aa7ccc 100644
 --- a/src/starter/confread.c
@@ -466,7 +466,7 @@ index 5065bc3..1aa7ccc 100644
  	conn->replay_window         = SA_REPLAY_WINDOW_DEFAULT;
 +	conn->clear_df              = false;
  	conn->fragmentation         = FRAGMENTATION_YES;
- 
+
  	conn->left.sendcert = CERT_SEND_IF_ASKED;
 @@ -514,6 +515,17 @@ static void handle_keyword(kw_token_t token, starter_conn_t *conn, char *key,
  		case KW_XAUTH:
@@ -496,7 +496,7 @@ index 0c22481..fbbe85e 100644
  		bool            aggressive;
 +		bool            clear_df;
  		starter_end_t   left, right;
- 
+
  		unsigned long   id;
 diff --git a/src/starter/keywords.h.in b/src/starter/keywords.h.in
 index 258dc2b..071e344 100644
@@ -509,7 +509,7 @@ index 258dc2b..071e344 100644
 +	KW_CLEAR_DF,
  	KW_PFS_DEPRECATED,
  	KW_CONN_DEPRECATED,
- 
+
 diff --git a/src/starter/keywords.txt b/src/starter/keywords.txt
 index 52845f3..c0005ba 100644
 --- a/src/starter/keywords.txt
@@ -528,7 +528,7 @@ index f4cfc15..147a32e 100644
  	msg->add_conn.mark_out.mask = conn->mark_out.mask;
  	msg->add_conn.tfc = conn->tfc;
 +	msg->add_conn.clear_df = conn->clear_df ? 1 : 0;
- 
+
  	add_end(&msg, offsetof(stroke_msg_t, add_conn.me), &conn->left);
  	add_end(&msg, offsetof(stroke_msg_t, add_conn.other), &conn->right);
 diff --git a/src/stroke/stroke_msg.h b/src/stroke/stroke_msg.h
@@ -541,8 +541,8 @@ index 8ec08ad..f5aa63b 100644
  			bool sha256_96;
 +			int clear_df;
  		} add_conn;
- 
+
  		/* data for STR_ADD_CA */
--- 
+--
 2.35.6
 

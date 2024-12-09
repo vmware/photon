@@ -1,0 +1,83 @@
+From 81fab3ad3993ff965adfcfc14e0fa1705050fa38 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Fri, 5 Apr 2024 03:11:56 -0500
+Subject: [PATCH] Introduce support for revocations build
+
+---
+ Make.defaults | 3 +++
+ Makefile      | 6 ++++++
+ revocations.c | 9 +++++++++
+ 3 files changed, 18 insertions(+)
+ create mode 100644 revocations.c
+
+diff --git a/Make.defaults b/Make.defaults
+index ecb4ee4..fe298c0 100644
+--- a/Make.defaults
++++ b/Make.defaults
+@@ -179,6 +179,9 @@ SHIMSONAME	= $(SHIMSTEM).so
+ SHIMHASHNAME	= $(SHIMSTEM).hash
+ BOOTEFINAME	?= BOOT$(ARCH_SUFFIX_UPPER).EFI
+ BOOTCSVNAME	?= BOOT$(ARCH_SUFFIX_UPPER).CSV
++REVOCSTEM	?= revocations
++REVOCNAME	= $(REVOCSTEM).efi
++REVOCSONAME	= $(REVOCSTEM).so
+ 
+ DEFINES		+= -DEFI_ARCH='L"$(ARCH_SUFFIX)"' \
+ 		   -DDEBUGDIR='L"/usr/lib/debug/usr/share/shim/$(ARCH_SUFFIX)-$(VERSION)$(DASHRELEASE)/"'
+diff --git a/Makefile b/Makefile
+index 9fa1989..5160f5d 100644
+--- a/Makefile
++++ b/Makefile
+@@ -38,6 +38,7 @@ CFLAGS += -DENABLE_SHIM_CERT
+ else
+ TARGETS += $(MMNAME) $(FBNAME)
+ endif
++TARGETS += $(REVOCNAME)
+ OBJS	= shim.o globals.o mok.o cert.o replacements.o tpm.o version.o errlog.o sbat.o sbat_data.o sbat_var.o pe.o pe-relocate.o csv.o load-options.o
+ KEYS	= shim_cert.h ocsp.* ca.* shim.crt shim.csr shim.p12 shim.pem shim.key shim.cer
+ ORIG_SOURCES	= shim.c globals.c mok.c replacements.c tpm.c errlog.c sbat.c pe.c pe-relocate.c shim.h version.h $(wildcard include/*.h) cert.S sbat_var.S
+@@ -45,6 +46,7 @@ MOK_OBJS = MokManager.o PasswordCrypt.o crypt_blowfish.o errlog.o sbat_data.o gl
+ ORIG_MOK_SOURCES = MokManager.c PasswordCrypt.c crypt_blowfish.c shim.h $(wildcard include/*.h)
+ FALLBACK_OBJS = fallback.o tpm.o errlog.o sbat_data.o globals.o
+ ORIG_FALLBACK_SRCS = fallback.c
++REVOC_OBJS	= revocations.o sbat_data.o
+ SBATPATH = $(TOPDIR)/data/sbat.csv
+ 
+ ifeq ($(SOURCE_DATE_EPOCH),)
+@@ -137,6 +139,7 @@ sbat_data.o : /dev/null
+ $(SHIMNAME) : $(SHIMSONAME) post-process-pe
+ $(MMNAME) : $(MMSONAME) post-process-pe
+ $(FBNAME) : $(FBSONAME) post-process-pe
++$(REVOCNAME) : $(REVOCSONAME) post-process-pe
+ $(SHIMNAME) $(MMNAME) $(FBNAME) : | post-process-pe
+ 
+ LIBS = Cryptlib/libcryptlib.a \
+@@ -158,6 +161,9 @@ MokManager.o: $(MOK_SOURCES)
+ $(MMSONAME): $(MOK_OBJS) $(LIBS)
+ 	$(LD) -o $@ $(LDFLAGS) $^ $(EFI_LIBS) lib/lib.a
+ 
++$(REVOCSONAME): $(REVOC_OBJS) $(LIBS)
++	$(LD) -o $@ $(LDFLAGS) $^ $(EFI_LIBS) lib/lib.a
++
+ gnu-efi/$(ARCH_GNUEFI)/gnuefi/libgnuefi.a gnu-efi/$(ARCH_GNUEFI)/lib/libefi.a: CFLAGS+=-DGNU_EFI_USE_EXTERNAL_STDARG
+ gnu-efi/$(ARCH_GNUEFI)/gnuefi/libgnuefi.a gnu-efi/$(ARCH_GNUEFI)/lib/libefi.a:
+ 	mkdir -p gnu-efi/lib gnu-efi/gnuefi
+diff --git a/revocations.c b/revocations.c
+new file mode 100644
+index 0000000..93d6903
+--- /dev/null
++++ b/revocations.c
+@@ -0,0 +1,9 @@
++#include <efi.h>
++#include <efilib.h>
++
++EFI_STATUS
++EFIAPI
++efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
++   InitializeLib(ImageHandle, SystemTable);
++   return EFI_SUCCESS;
++}
+\ No newline at end of file
+-- 
+2.44.0
+

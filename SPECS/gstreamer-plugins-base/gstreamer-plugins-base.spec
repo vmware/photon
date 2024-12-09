@@ -1,15 +1,19 @@
 Summary:        GStreamer streaming media framework plug-ins
 Name:           gstreamer-plugins-base
-Version:        1.21.3
-Release:        2%{?dist}
-License:        LGPLv2+
+Version:        1.22.7
+Release:        3%{?dist}
 URL:            http://gstreamer.freedesktop.org
 Group:          Applications/Multimedia
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-%{version}.tar.xz
-%define sha512 gst-plugins-base=06fc939f967efb60118245613ca13ddeb75701a994f93e519f306165290063d6a3dc3b8b393adfe56878bae7d9e8675ad51f73059af65bab0cb560754923d8e0
+%define sha512 gst-plugins-base=a33d332aebf5e209380c2740e0fc6762e49b78a9921822adfc07efdd4780cbe038867d9924a2df334c8a624e8be49b5d46e276538d6d77ff8ac9f002ced052e3
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0:         CVE-2024-4453.patch
 
 BuildRequires:  meson
 BuildRequires:  cmake
@@ -92,6 +96,14 @@ rm -rf %{buildroot}
 %{_datadir}/*
 
 %changelog
+*   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.22.7-3
+-   Release bump for SRP compliance
+*   Tue Jun 18 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.22.7-2
+-   Fix CVE-2024-4453
+*   Fri Dec 08 2023 Shivani Agarwal <shivania2@vmware.com> 1.22.7-1
+-   Upgrade version
+*   Thu Sep 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.21.3-3
+-   Fix CVE-2023-37327, CVE-2023-37328
 *   Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.21.3-2
 -   Bump version as a part of libX11 upgrade
 *   Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 1.21.3-1

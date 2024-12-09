@@ -2,8 +2,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        5%{?dist}
-License:        GPL + LGPL
+Release:        7%{?dist}
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -15,6 +14,9 @@ Source0: https://github.com/balabit/%{name}/releases/download/%{name}-%{version}
 Source1:        60-%{name}-journald.conf
 Source2:        %{name}.service
 
+Source3: license.txt
+%include %{SOURCE3}
+
 Requires:       glib
 Requires:       openssl
 Requires:       glibc
@@ -23,7 +25,7 @@ Requires:       json-c
 Requires:       systemd
 Requires:       ivykis
 Requires:       paho-c
-Requires:       pcre2-libs >= 10.42-2
+Requires:       pcre2-libs >= 10.40-5
 
 BuildRequires:  pcre2-devel
 BuildRequires:  which
@@ -33,13 +35,33 @@ BuildRequires:  json-c-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemd-devel
 BuildRequires:  systemd-rpm-macros
-BuildRequires:  python3-devel
 BuildRequires:  curl-devel
 BuildRequires:  ivykis-devel
 BuildRequires:  paho-c-devel
 BuildRequires:  bison
+BuildRequires:  python3-devel
+BuildRequires:  python3-pip
+BuildRequires:  python3-cachetools
+BuildRequires:  python3-certifi
+BuildRequires:  python3-charset-normalizer
+BuildRequires:  python3-google-auth
+BuildRequires:  python3-idna
+BuildRequires:  python3-kubernetes
+BuildRequires:  python3-oauthlib
+BuildRequires:  python3-pyasn1
+BuildRequires:  python3-pyasn1-modules
+BuildRequires:  python3-dateutil
+BuildRequires:  python3-PyYAML
+BuildRequires:  python3-requests
+BuildRequires:  python3-requests-oauthlib
+BuildRequires:  python3-rsa
+BuildRequires:  python3-six
+BuildRequires:  python3-urllib3
+BuildRequires:  python3-websocket-client
+BuildRequires:  python3-boto3
+BuildRequires:  python3-botocore
 
-Obsoletes: eventlog
+Obsoletes:      eventlog
 
 %description
 The syslog-ng application is a flexible and highly scalable
@@ -47,9 +69,26 @@ system logging tool. It is often used to manage log messages and implement
 centralized logging, where the aim is to collect the log messages of several
 devices to a single, central log server.
 
-%package -n     python3-%{name}
-Summary:        python3-%{name}
-Requires:       python3
+%package -n python3-%{name}
+Summary:   python3-%{name}
+Requires:  python3
+Requires:  python3-cachetools
+Requires:  python3-certifi
+Requires:  python3-charset-normalizer
+Requires:  python3-google-auth
+Requires:  python3-idna
+Requires:  python3-kubernetes
+Requires:  python3-oauthlib
+Requires:  python3-pyasn1
+Requires:  python3-pyasn1-modules
+Requires:  python3-dateutil
+Requires:  python3-PyYAML
+Requires:  python3-requests
+Requires:  python3-requests-oauthlib
+Requires:  python3-rsa
+Requires:  python3-six
+Requires:  python3-urllib3
+Requires:  python3-websocket-client
 
 %description -n python3-%{name}
 Python 3 version.
@@ -70,6 +109,7 @@ needed to build applications using syslog-ng APIs.
 
 %build
 autoreconf -vif
+
 sh ./configure --host=%{_host} --build=%{_build} \
    CFLAGS="%{optflags}" \
    CXXFLAGS="%{optflags}" \
@@ -96,12 +136,13 @@ sh ./configure --host=%{_host} --build=%{_build} \
    --disable-java \
    --disable-redis \
    --enable-python \
-   --with-python=3 \
    --with-ivykis=system \
    --enable-mqtt \
    --disable-static \
    --enable-dynamic-linking \
    --disable-cpp \
+   --with-python=3 \
+   --with-python-packages=system \
    PYTHON=%{python3} \
    PKG_CONFIG_PATH=%{_libdir}/pkgconfig/
 
@@ -175,16 +216,22 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
-* Thu Apr 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-5
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.3.1-7
+- Release bump for SRP compliance
+* Fri Aug 09 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.1-6
+- Bump up as part of python3-urllib3 update
+* Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-5
+- Do offline build
+* Thu Apr 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-4
 - Obsolete eventlog
-* Wed Mar 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-4
-- Fix localstatedir path to match with apparmor profile
-* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-3
+* Mon Feb 26 2024 Nitesh Kumar <nitesh-nk.kumar@brodcom.com> 4.3.1-3
+- Fixing localstatedir path
+* Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-2
 - Rebuild with jit enabled pcre2
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-2
-- Bump version as a part of openssl upgrade
 * Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.3.1-1
 - Upgrade to v4.3.1
+* Mon Sep 11 2023 Ankit Jain <ankitja@vmware.com> 3.37.1-3
+- Fix for CVE-2022-38725
 * Thu Jul 28 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-2
 - add OCSP stapling support
 * Thu Jun 09 2022 Oliver Kurth <okurth@vmware.com> 3.37.1-1

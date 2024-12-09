@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.8
-Release:        4%{?dist}
+Release:        2%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -34,7 +34,7 @@ BuildRequires:  systemd-rpm-macros
 Requires:       kmod
 Requires:       bash
 Requires:       rpm-build
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils >= 9.1-7
 Requires:       gawk
 Requires:       util-linux
 Requires:       binutils
@@ -88,13 +88,6 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_bindir}
 cp %{SOURCE3} %{buildroot}%{_sysconfdir}/auto_livepatch
 cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 
-chmod +x %{buildroot}%{_bindir}/*
-
-%{_fixperms} %{buildroot}/*
-
-%clean
-rm -rf %{buildroot}
-
 %files
 %defattr(-,root,root,-)
 %{_sbindir}/kpatch
@@ -122,12 +115,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.9.8-4
-- Bump version as a part of util-linux upgrade
-* Mon Nov 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.8-3
-- Bump version as a part of rpm upgrade
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.8-2
-- Bump version as a part of elfutils upgrade
+* Fri Nov 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.9.8-2
+- Bump up as part of docker upgrade
 * Fri Mar 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.8-1
 - Update to 0.9.8
 * Wed Feb 15 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.7-4

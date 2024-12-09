@@ -1,11 +1,10 @@
 %global dnsnamevers 1.3.1
-%global gvisorvers 0.6.2
+%global gvisorvers 0.7.3
 
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
 Version:        4.5.1
-Release:        5%{?dist}
-License:        ASL 2.0
+Release:        10%{?dist}
 URL:            https://github.com/containers/podman
 Group:          Podman
 Vendor:         VMware, Inc.
@@ -18,7 +17,10 @@ Source1: https://github.com/containers/dnsname/archive/refs/tags/dnsname-%{dnsna
 %define sha512 dnsname=ebebbe62394b981e86cd21fa8b92639a6d67e007a18c576ffdbac8067084a4cffdc9d077213bf7c9ee1e2731c7d69e4d4c02465f2340556c8723b6e302238aad
 
 Source2: https://github.com/containers/gvisor-tap-vsock/archive/refs/tags/gvisor-tap-vsock-%{gvisorvers}.tar.gz
-%define sha512 gvisor-tap-vsock-%{gvisorvers}=c509c69c545584e7d95e0ec7f8399e6038f71f5d17a7dd280acff59c7a572a1a8a786d541ea1d92469dcd3087efce3c1b01608fb1642f6bf217108900393243f
+%define sha512 gvisor-tap-vsock-%{gvisorvers}=cf49a555192c869751009bfc14ef192067851ef79197307c84bf3c96a3abc3a8954fdb5d1c2490942920cc663b200fd09cf2330d976e50376c39d5da588cf471
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -175,17 +177,27 @@ rm -rf %{buildroot}%{_datadir}/zsh \
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5.1-10
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-9
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-8
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 4.5.1-7
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 4.5.1-6
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 4.5.1-5
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 4.5.1-4
 - Bump up version to compile with new go
 * Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 4.5.1-3
 - Bump up version to compile with new go
-* Tue Aug 08 2023 Piyush Gupta <gpiyush@vmware.com> 4.5.1-2
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 4.5.1-2
 - Bump up version to compile with new go
-* Thu Jul 13 2023 Prashant S Chauhan <psingchauha@vmware.com> 4.5.1-1
+* Tue Jun 27 2023 Prashant S Chauhan <psingchauha@vmware.com> 4.5.1-1
 - Update to 4.5.1, Fixes second level CVE-2022-2990, CVE-2023-25173
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 4.3.1-5
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 4.3.1-5
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 4.3.1-4
 - Bump up version to compile with new go

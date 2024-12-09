@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND MIT AND Apache-2.0

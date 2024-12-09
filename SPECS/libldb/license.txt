@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND X11 AND AGPL-3.0-or-later AND BSD-3-Clause AND ISC AND Apache-2.0 AND snprintf AND LGPL-2.0-or-later AND LGPL-3.0-or-later AND LGPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.1-or-later AND PostgreSQL

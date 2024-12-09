@@ -1,8 +1,7 @@
 Name:           python3-appdirs
 Version:        1.4.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ Url:            https://pypi.python.org/pypi/appdirs
 
 Source0: https://pypi.python.org/packages/48/69/d87c60746b393309ca30761f8e2b49473d43450b150cb08f3c6df5c11be5/appdirs-%{version}.tar.gz
 %define sha512 appdirs=8b0cdd9fd471d45b186aa47607691cf378dabd3edc7b7026a57bd6d6f57698e86f440818a5e23ba4288b35d6bb8cb6eb0106eae8aab09d8863ee15025d300883
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 Requires:       python3
@@ -44,6 +46,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.4-4
+- Release bump for SRP compliance
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.4-3
 - Update release to compile with python 3.11
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.4.4-2

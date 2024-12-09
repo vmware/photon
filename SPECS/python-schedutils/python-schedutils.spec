@@ -5,14 +5,17 @@
 Name:           python3-schedutils
 Summary:        Linux scheduler python bindings
 Version:        0.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        GPLv2
 URL:            https://git.kernel.org/pub/scm/libs/python/python-schedutils/python-schedutils.git/
-Source:         https://cdn.kernel.org/pub/software/libs/python/python-schedutils/python-schedutils-%{version}.tar.xz
+Source0:         https://cdn.kernel.org/pub/software/libs/python/python-schedutils/python-schedutils-%{version}.tar.xz
 %define sha512  python-schedutils=1373eb0ae7594aeaf0ffa75abeb89424208531049f93d4bd068b0cedc603380c374361c87c09bb01acd6346dfe0de654a2112321f0b9110ec103d51549b8f4d2
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  python3-devel
 BuildRequires:  gcc
 
@@ -40,6 +43,8 @@ python3 setup.py install --skip-build --root %{buildroot}
 %{python3_sitearch}/*.egg-info
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.6-4
+- Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.6-3
 - Update release to compile with python 3.11
 * Thu May 28 2020 Shreyas B. <shreyasb@vmware.com> 0.6-2

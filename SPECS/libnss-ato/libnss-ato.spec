@@ -1,19 +1,25 @@
-%global commit_id 603cae8
+%global commit_id       574c5ab
+%define debug_package   %{nil}
 
 Summary:        libnss-ato
 Name:           libnss-ato
-Version:        20201005
-Release:        1%{?dist}
-License:        GNU General Public License
+Version:        20240514
+Release:        4%{?dist}
 URL:            https://github.com/donapieppo/libnss-ato
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=f9583d8ec91644e6528bb4e9824682d1266895c7bce2784a7fcaf29ad155fb6ac83359cd996cf3fd03b114d4363ff341e58fee730520f278422b4dffcbc2c85e
+%define sha512 %{name}=506e0fa07c4d67e9e2d2f6f101bcd0e8c21c60e60cfa92c3cc7e81577655e68da4f4cfd14a361e9897947f6b5aa0752f5cacec0d519289550188789cb2e28ddd
 
 Source1: %{name}.conf
+Source2: %{name}-allowed-progs.conf
+
+Source3: license.txt
+%include %{SOURCE3}
+
+Patch0: 0001-allow-only-desired-programs.patch
 
 Provides: libnss_ato = %{version}-%{release}
 
@@ -36,9 +42,12 @@ which allows to map every nss request for unknown user to a single predefined us
 %make_build
 
 %install
-mkdir -p %{buildroot}{%{_libdir},%{_sysconfdir}}
-mv libnss_ato*.so* %{buildroot}%{_libdir}
-cp %{SOURCE1} %{buildroot}%{_sysconfdir}
+%make_install %{?_smp_mflags}
+rm -rf %{buildroot}%{_mandir}
+
+cp %{SOURCE1} \
+   %{SOURCE2} \
+   %{buildroot}%{_sysconfdir}
 
 %check
 ./libnss_ato_test root
@@ -48,10 +57,20 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/%{name}.conf
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/%{name}.conf
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/%{name}-allowed-progs.conf
 %{_libdir}/libnss_ato*.so*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 20240514-4
+- Release bump for SRP compliance
+* Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20240514-3
+- Remove an error log which was intervening with bash completion
+* Tue Jul 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20240514-2
+- Disable debuginfo rpm build
+* Tue May 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20240514-1
+- Upgrade to latest
+- Allow only desired programs
 * Fri Mar 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20201005-1
 - Re-introduce libnss-ato (https://github.com/donapieppo/libnss-ato/issues/21)
 - Kept changelog intact from Ph4

@@ -2,14 +2,16 @@ Summary:      Squid interface for embedded adaptation modules
 Name:         libecap
 Version:      1.0.1
 Release:      2%{?dist}
-License:      BSD
-URL:          http://www.e-cap.org
+URL:          http://www.e-cap.org/
+Source0:      http://www.e-cap.org/archive/%{name}-%{version}.tar.gz
+%define sha512 libecap=0054ad11b3f558d7c623060a69207a1b8e679803cabdf1a2bce4b04335d71c016eec770fc9d2cbf3d0a93502c255cb528305f9f8e6df4e095fcb980667045919
+
+Source1: license.txt
+%include %{SOURCE1}
+
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
 Distribution: Photon
-
-Source0: http://www.e-cap.org/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=0054ad11b3f558d7c623060a69207a1b8e679803cabdf1a2bce4b04335d71c016eec770fc9d2cbf3d0a93502c255cb528305f9f8e6df4e095fcb980667045919
 
 %description
 eCAP is a software interface that allows a network application, such as an
@@ -30,41 +32,39 @@ replaced with function calls to an adaptation module.
 
 %package devel
 Summary:    Libraries and header files for the libecap library
-Requires:   %{name} = %{version}-%{release}
+Requires:   %{name}%{?_isa} = %{version}-%{release}
 
 %description devel
 This package provides the libraries, include files, and other
 resources needed for developing libecap applications.
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 %configure
-%make_build
+
+make %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_mflags}
-rm %{buildroot}%{_libdir}/libecap.a
-
-%clean
-rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+rm -f %{buildroot}%{_libdir}/libecap.a
+rm -f %{buildroot}%{_libdir}/libecap.la
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
-%defattr(-,root,root)
+%doc LICENSE CREDITS NOTICE README
 %{_libdir}/libecap.so.*
 
 %files devel
-%defattr(-,root,root)
 %{_libdir}/libecap.so
 %{_libdir}/pkgconfig/libecap.pc
 %{_includedir}/libecap
 
 %changelog
-* Fri May 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0.1-2
-- Remove _isa entries
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.1-2
+- Release bump for SRP compliance
 * Fri Apr 30 2021 Susant Sahani <ssahani@vmware.com> 1.0.1-1
 - Initial rpm release.

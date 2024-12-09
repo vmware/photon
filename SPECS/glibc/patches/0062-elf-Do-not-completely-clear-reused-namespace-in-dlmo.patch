@@ -1,0 +1,111 @@
+From 19535f3b57306ea3ec559a6c0b10d2d7a87418a7 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 14 Oct 2022 11:02:25 +0200
+Subject: [PATCH 062/175] elf: Do not completely clear reused namespace in
+ dlmopen (bug 29600)
+
+The data in the _ns_debug member must be preserved, otherwise
+_dl_debug_initialize enters an infinite loop.  To be conservative,
+only clear the libc_map member for now, to fix bug 29528.
+
+Fixes commit d0e357ff45a75553dee3b17ed7d303bfa544f6fe
+("elf: Call __libc_early_init for reused namespaces (bug 29528)"),
+by reverting most of it.
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+Tested-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 2c42257314536b94cc8d52edede86e94e98c1436)
+---
+ NEWS                    |  1 +
+ elf/dl-open.c           | 14 ++++++--------
+ elf/tst-dlmopen-twice.c | 28 ++++++++++++++++++++++++----
+ 3 files changed, 31 insertions(+), 12 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index de775ab116483c58de2d756bfc33ba2f97eccb2c..a6da588c8595c7ae5a8cb3d2dcb04404a2ae7413 100644
+--- a/NEWS
++++ b/NEWS
+@@ -37,6 +37,7 @@ The following bugs are resolved with this release:
+   [29537] libc: [2.34 regression]: Alignment issue on m68k when using
+   [29539] libc: LD_TRACE_LOADED_OBJECTS changed how vDSO library are
+   [29583] Use 64-bit interfaces in gconv_parseconfdir
++  [29600] Do not completely clear reused namespace in dlmopen
+   [29607] nscd repeatably crashes calling __strlen_avx2 when hosts cache is
+     enabled
+   [29638] libc: stdlib: arc4random fallback is never used
+diff --git a/elf/dl-open.c b/elf/dl-open.c
+index 46e8066fd89f0627d7456210f6cc15f85b0cef06..e7db5e9642fd2b532f61f8a4f362521f519a6cf4 100644
+--- a/elf/dl-open.c
++++ b/elf/dl-open.c
+@@ -844,15 +844,13 @@ _dl_open (const char *file, int mode, const void *caller_dlopen, Lmid_t nsid,
+ 	  _dl_signal_error (EINVAL, file, NULL, N_("\
+ no more namespaces available for dlmopen()"));
+ 	}
++      else if (nsid == GL(dl_nns))
++	{
++	  __rtld_lock_initialize (GL(dl_ns)[nsid]._ns_unique_sym_table.lock);
++	  ++GL(dl_nns);
++	}
+ 
+-      if (nsid == GL(dl_nns))
+-	++GL(dl_nns);
+-
+-      /* Initialize the new namespace.  Most members are
+-	 zero-initialized, only the lock needs special treatment.  */
+-      memset (&GL(dl_ns)[nsid], 0, sizeof (GL(dl_ns)[nsid]));
+-      __rtld_lock_initialize (GL(dl_ns)[nsid]._ns_unique_sym_table.lock);
+-
++      GL(dl_ns)[nsid].libc_map = NULL;
+       _dl_debug_update (nsid)->r_state = RT_CONSISTENT;
+     }
+   /* Never allow loading a DSO in a namespace which is empty.  Such
+diff --git a/elf/tst-dlmopen-twice.c b/elf/tst-dlmopen-twice.c
+index 449f3c8fa9f2aa01c590c6680e85d7b0ccdfd77e..70c71fe19c7d0bf9d46c3b84df962405eee67ce0 100644
+--- a/elf/tst-dlmopen-twice.c
++++ b/elf/tst-dlmopen-twice.c
+@@ -16,18 +16,38 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
+-#include <support/xdlfcn.h>
++#include <stdio.h>
+ #include <support/check.h>
++#include <support/xdlfcn.h>
+ 
+-static int
+-do_test (void)
++/* Run the test multiple times, to check finding a new namespace while
++   another namespace is already in use.  This used to trigger bug 29600.  */
++static void
++recurse (int depth)
+ {
+-  void *handle = xdlmopen (LM_ID_NEWLM, "tst-dlmopen-twice-mod1.so", RTLD_NOW);
++  if (depth == 0)
++    return;
++
++  printf ("info: running at depth %d\n", depth);
++  void *handle = xdlmopen (LM_ID_NEWLM, "tst-dlmopen-twice-mod1.so",
++                           RTLD_NOW);
+   xdlclose (handle);
+   handle = xdlmopen (LM_ID_NEWLM, "tst-dlmopen-twice-mod2.so", RTLD_NOW);
+   int (*run_check) (void) = xdlsym (handle, "run_check");
+   TEST_COMPARE (run_check (), 0);
++  recurse (depth - 1);
+   xdlclose (handle);
++}
++
++static int
++do_test (void)
++{
++  /* First run the test without nesting.  */
++  recurse (1);
++
++  /* Then with nesting.  The constant needs to be less than the
++     internal DL_NNS namespace constant.  */
++  recurse (10);
+   return 0;
+ }
+ 
+-- 
+2.35.6
+

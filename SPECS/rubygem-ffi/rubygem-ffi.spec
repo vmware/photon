@@ -2,17 +2,19 @@
 %global gem_name ffi
 
 Name:           rubygem-ffi
-Version:        1.16.3
-Release:        2%{?dist}
+Version:        1.15.5
+Release:        4%{?dist}
 Summary:        Ruby FFI library
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        BSD-2-Clause
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0:        https://rubygems.org/downloads/ffi-%{version}.gem
-%define sha512  ffi=b3d823a03055412a85ae3dbc10c3b50615614f0b66830e144ca47610b1f93f588ff693a95d364b4f686968b79bba91f9f9fa60b932479c6bf9ceb10e15575b98
+%define sha512  ffi=074df34edffc7038ab08199350a97b32280d61ea15dd85d459b008bd3363ec5403b4e533621c8e460e5288f01fec944bff9b149851b819e85bab75ad2362227c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby-devel
 BuildRequires:  gcc
@@ -38,10 +40,12 @@ Ruby FFI library
 %{gem_base}
 
 %changelog
-* Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.3-2
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.5-4
+- Release bump for SRP compliance
+* Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.5-3
 - Add gem macros
-* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.3-1
-- Update to version 1.16.3
+* Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.5-2
+- Build from source
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.5-1
 - Automatic Version Bump
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.13.1-3

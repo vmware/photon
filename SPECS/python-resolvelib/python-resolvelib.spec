@@ -1,14 +1,16 @@
 Name:           python3-resolvelib
 Version:        0.8.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Resolve abstract dependencies into concrete ones
-License:        ISC
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/sarugaku/resolvelib
 Source0:        https://github.com/sarugaku/resolvelib/archive/refs/tags/resolvelib-%{version}.tar.gz
 %define sha512  resolvelib=4e1a7d84ee3fb86433701562aff71d0c867428f2bcb58ce998aee13896945b54a0915540dea7dcc3fd1e2544b43ef276df8a1804cbbc9330936169bef98a1c5d
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildArch:      noarch
 
 BuildRequires:  python3
@@ -46,6 +48,8 @@ with them, and it will spit out a resolution result.
 %{python3_sitelib}/resolvelib
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.8.1-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.8.1-1
 - Automatic Version Bump
 * Wed Jun 02 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.5.5-1

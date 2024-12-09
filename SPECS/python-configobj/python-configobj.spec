@@ -1,8 +1,7 @@
 Name:           python3-configobj
 Version:        5.0.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Config file reading, writing and validation
-License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            https://configobj.readthedocs.io/en/latest
 
 Source0: https://github.com/DiffSK/configobj/archive/refs/tags/configobj-%{version}.tar.gz
 %define sha512 configobj=f253fdd0bc3fcd37f56c9ceb28f5c8c739b0861e099b07a3929645907c97b2261f0529850a95c1a42507846f72d88a0992fcd1e1d6fa8654dc713d120f769963
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -39,6 +41,8 @@ python3 validate.py
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.6-7
+- Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.0.6-6
 - Update release to compile with python 3.11
 * Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 5.0.6-5

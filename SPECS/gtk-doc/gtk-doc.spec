@@ -1,8 +1,7 @@
 Summary:    Program to generate documenation
 Name:       gtk-doc
 Version:    1.33.2
-Release:    3%{?dist}
-License:    GPLv2+
+Release:    5%{?dist}
 URL:        http://www.gnu.org/software/%{name}
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.acc.umu.se/pub/gnome/sources/gtk-doc/1.33/gtk-doc-%{version}.tar.xz
 %define sha512 %{name}=f50f68ab6b4bc59f55e84b49c1481f05700171cbf79eca9ba8f3a142a30a4ba88fe096983ebb8d117a9ef8bcea40934674096683d956f5c54cae457d31f651ab
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  docbook-xml >= 4.5
 BuildRequires:  docbook-xsl >= 1.78.1
@@ -53,6 +55,10 @@ cd tests && make check-TESTS %{?_smp_mflags}
 %{_datadir}/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.33.2-5
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.33.2-4
+- Release bump for SRP compliance
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.33.2-3
 - Bump version as a part of libxslt upgrade
 * Thu Jun 16 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.33.2-2

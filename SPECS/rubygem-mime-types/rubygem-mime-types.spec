@@ -3,16 +3,18 @@
 %global gem_name mime-types
 
 Name: rubygem-mime-types
-Version:        3.5.2
-Release:        1%{?dist}
+Version:        3.4.1
+Release:        2%{?dist}
 Summary:        The mime-types library provides a library and registry for information about MIME content type definitions.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512    mime-types=099e3b984d3637dfeaf00a76e56427c278ce3c48b77aaa45ed63521e73b1877d773d0ebe4fbe1ec21113987f7d39cda0deeefb7c9ded5f2a3024577e3e6ab6ff
+%define sha512    mime-types=d0cec7afbe1685c008765997c3047f23bbb0bd10989cd82475805f932e61c400b3d2e60f5f95804c46919b57f0d3644c866be358b0c4c653ace43d62bbc98e4f
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby >= 2.0
 
 Requires: rubygem-mime-types-data >= 3.2015.0, rubygem-mime-types-data < 4.0.0
@@ -42,8 +44,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.5.2-1
--   Update to version 3.5.2
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.1-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4.1-1
 -   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3.1-1

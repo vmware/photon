@@ -1,14 +1,16 @@
 Name:           jemalloc
 Version:        5.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A general purpose malloc implementation that emphasizes fragmentation avoidance and scalable concurrency support.
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        BSD-2-Clause
 URL:            https://github.com/jemalloc/jemalloc/
 Source0:        https://github.com/jemalloc/jemalloc/releases/download/%{version}/%{name}-%{version}.tar.bz2
 %define sha512  jemalloc=22907bb052096e2caffb6e4e23548aecc5cc9283dce476896a2b1127eee64170e3562fa2e7db9571298814a7a2c7df6e8d1fbe152bd3f3b0c1abec22a2de34b1
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  bzip2
 
 %description
@@ -39,8 +41,8 @@ make %{?_smp_mflags}
 %install
 %make_install
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -60,6 +62,8 @@ make %{?_smp_mflags}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*       Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 5.3.0-2
+-       Release bump for SRP compliance
 *       Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 5.3.0-1
 -       Automatic Version Bump
 *       Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 5.2.1-1

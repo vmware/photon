@@ -1,0 +1,96 @@
+From d3e85cf3620714b88b0ea089121b227c1b3bf412 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Tue, 3 Dec 2024 19:04:26 +0000
+Subject: [PATCH 2/3] kpatch: compatibility with Photon gcc RAP patch
+
+In commit [1], kpatch added support for function padding,
+and CONFIG_CFI_CLANG, which hardcoded a value of 16 for
+the prefix size.
+
+The length of padding around __cfi prefixed functions can vary,
+depending on certain things such as config options, like
+CONFIG_CALL_PADDING [2]. In Photon, with our patch
+SPECS/linux/secure/gcc-rap-plugin-with-kcfi.patch,
+we also add extra int3 (0xcc) instructions to the __cfi
+function padding, but without the NOPs.
+
+I don't see any good reason to keep this as hardcoded,
+so let's make it more flexible and use the prefix size
+that we read in.
+
+Also, we need to account for __rap_hash_##name format
+objects appearing in the symbol table. kpatch will fail
+as it tries to bundle these, but they have no section
+info. They should not be bundled, nor are they dynamic
+debug symbols, so patch accordingly to get kpatch to work.
+
+Ref:
+1. https://github.com/dynup/kpatch/commit/3e54c63b175b68cf48654c119e62bda398d0c018
+2. https://github.com/torvalds/linux/blob/master/arch/x86/include/asm/cfi.h#L51
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ kpatch-build/create-diff-object.c | 19 ++++++++++++++++++-
+ kpatch-build/kpatch-elf.c         |  2 +-
+ 2 files changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/kpatch-build/create-diff-object.c b/kpatch-build/create-diff-object.c
+index 7c61ef5..f10c021 100644
+--- a/kpatch-build/create-diff-object.c
++++ b/kpatch-build/create-diff-object.c
+@@ -91,6 +91,21 @@ struct special_section {
+ 
+ static bool is_bundleable(struct symbol *sym)
+ {
++	/*
++	 * Photon patch for RAP plugin will link
++	 * global objects with the prefix __rap_hash_##func_name
++	 * into the symbol table.
++	 *
++	 * I believe these are the hashed RAP values,
++	 * so there is no need to bundle these. They are
++	 * not bundleable since they have no section info.
++	 *
++	 * Besides, in any other cases, if there is no section info
++	 * then we can't bundle it anyhow.
++	 */
++	if (sym->type == STT_OBJECT && !sym->sec)
++		return false;
++
+ 	if (sym->type == STT_FUNC &&
+ 	    !strncmp(sym->sec->name, ".text.",6) &&
+ 	    !strcmp(sym->sec->name + 6, sym->name))
+@@ -241,7 +256,7 @@ static void kpatch_bundle_symbols(struct kpatch_elf *kelf)
+ 	list_for_each_entry(sym, &kelf->symbols, list) {
+ 		if (is_bundleable(sym)) {
+ 			if (sym->pfx)
+-				expected_offset = 16;
++				expected_offset = (unsigned int) sym->pfx->sym.st_size;
+ 			else if (is_gcc6_localentry_bundled_sym(kelf, sym))
+ 				expected_offset = 8;
+ 			else
+@@ -315,6 +330,8 @@ static void kpatch_detect_child_functions(struct kpatch_elf *kelf)
+ 
+ static bool is_dynamic_debug_symbol(struct symbol *sym)
+ {
++	if (sym->type == STT_OBJECT && !strncmp(sym->name, "__rap_hash", 10))
++		return false;
+ 	if (sym->type == STT_OBJECT && !strcmp(sym->sec->name, "__verbose"))
+ 		return true;
+ 	if (sym->type == STT_OBJECT && !strcmp(sym->sec->name, "__dyndbg"))
+diff --git a/kpatch-build/kpatch-elf.c b/kpatch-build/kpatch-elf.c
+index 99f2cb9..3cd57bb 100644
+--- a/kpatch-build/kpatch-elf.c
++++ b/kpatch-build/kpatch-elf.c
+@@ -470,7 +470,7 @@ static void kpatch_link_prefixed_functions(struct kpatch_elf *kelf)
+ 
+ 		list_for_each_entry(func, &kelf->symbols, list) {
+ 			if (func->type == STT_FUNC && func->sec == pfx->sec &&
+-			    func->sym.st_value == pfx->sym.st_value + 16) {
++			    func->sym.st_value == pfx->sym.st_value + pfx->sym.st_size) {
+ 
+ 				/*
+ 				 * If a func has aliases, it's possible for
+-- 
+2.39.4
+

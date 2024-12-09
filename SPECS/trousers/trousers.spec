@@ -2,21 +2,20 @@ Summary:        TCG Software Stack (TSS)
 Name:           trousers
 Version:        0.3.15
 Release:        5%{?dist}
-License:        BSD
 URL:            https://sourceforge.net/projects/trousers
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://sourceforge.net/projects/trousers/files/trousers/0.3.15/%{name}-%{version}.tar.gz
-%define sha512 %{name}=769c7d891c6306c1b3252448f86e3043ee837e566c9431f5b4353512113e2907f6ce29c91e8044c420025b79c5f3ff2396ddce93f73b1eb2a15ea1de89ac0fdb
+Source0:        https://sourceforge.net/projects/trousers/files/trousers/0.3.15/%{name}-%{version}.tar.gz
+%define sha512  %{name}=769c7d891c6306c1b3252448f86e3043ee837e566c9431f5b4353512113e2907f6ce29c91e8044c420025b79c5f3ff2396ddce93f73b1eb2a15ea1de89ac0fdb
+Source1:        %{name}.sysusers
 
-Source1: %{name}.sysusers
-
-BuildRequires: systemd-devel
-
-Requires: systemd-rpm-macros
-Requires: libtspi = %{version}-%{release}
+Source2: license.txt
+%include %{SOURCE2}
+BuildRequires:  systemd-devel
+Requires:       systemd-rpm-macros
+Requires:       libtspi = %{version}-%{release}
 
 %description
 Trousers is an open-source TCG Software Stack (TSS), released under
@@ -52,19 +51,18 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %sysusers_create_compat %{SOURCE1}
 mkdir -p %{_sharedstatedir}/tpm
 chown -R tss:tss %{_sharedstatedir}/tpm
-chown root:tss %{_sysconfdir}/tcsd.conf
 
 %post -n libtspi -p /sbin/ldconfig
 %postun -n libtspi -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
-%config(noreplace) %attr(0640,root,tss) %{_sysconfdir}/tcsd.conf
+%{_sysconfdir}/*
 %{_sbindir}/*
 %{_mandir}/man5
 %{_mandir}/man8
 %{_sysusersdir}/%{name}.sysusers
-%exclude %dir %{_var}
+%exclude %dir /var
 
 %files devel
 %defattr(-,root,root)
@@ -80,8 +78,8 @@ chown root:tss %{_sysconfdir}/tcsd.conf
 %exclude %{_libdir}/libtddl.a
 
 %changelog
-* Thu Oct 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.3.15-5
-- Fix conf file ownership
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.3.15-5
+- Release bump for SRP compliance
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 0.3.15-4
 - Use systemd-rpm-macros for user creation
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.3.15-3

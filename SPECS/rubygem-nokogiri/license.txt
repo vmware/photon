@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND MIT AND Apache-1.1 AND X11 AND BSD-3-Clause AND Zlib AND LGPL-2.0-only AND Apache-2.0

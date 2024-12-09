@@ -6,7 +6,6 @@ Summary:        A collection of modular and reusable compiler and toolchain tech
 Name:           llvm
 Version:        15.0.7
 Release:        4%{?dist}
-License:        NCSA
 URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -17,6 +16,9 @@ Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.sr
 
 Source1: https://github.com/llvm/llvm-project/releases/download/cmake-%{version}.src.tar.xz
 %define sha512 cmake=a87c3c0976c7295e5d51f7a3dbd4129c4b5ff0dc95bac494a5011641743a5950a0aa7d9c44fae570284573b9f673a395fc3160b45b6b4ba54ced9ed5f21dd717
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
@@ -43,7 +45,6 @@ for developing applications that use llvm.
 
 %package -n     libllvm
 Summary:        llvm shared library
-Requires:       %{name} = %{version}-%{release}
 Group:          System Environment/Libraries
 %description -n libllvm
 The libllvm package contains shared libraries for llvm
@@ -57,11 +58,19 @@ mv cmake-%{version}.src/Modules/*.cmake cmake/modules
 # if we use a bigger value, we will hit OOM, so don't increase it
 # unless you are absolutely sure
 
+%ifarch aarch64
+%define build_concurrency 4
+%define link_concurrency 2
+%else
+%define build_concurrency $(nproc)
+%define link_concurrency 4
+%endif
+
 %cmake -G Ninja \
       -DCMAKE_INSTALL_PREFIX=%{_usr} \
       -DBUILD_SHARED_LIBS:BOOL=OFF \
-      -DLLVM_PARALLEL_LINK_JOBS=4 \
-      -DLLVM_PARALLEL_COMPILE_JOBS=$(nproc) \
+      -DLLVM_PARALLEL_LINK_JOBS=%{link_concurrency} \
+      -DLLVM_PARALLEL_COMPILE_JOBS=%{build_concurrency} \
       -DLLVM_ENABLE_FFI:BOOL=ON \
       -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON \
@@ -117,11 +126,11 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-4
-- Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-3
-- Bump version as a part of libxml2 upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 15.0.7-2
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 15.0.7-4
+- Release bump for SRP compliance
+* Mon Oct 30 2023 Harinadh D <hdommaraju@vmware.com> 15.0.7-3
+- remove llvm dependency for libllvm
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 15.0.7-2
 - Bump version as a part of libxml2 upgrade
 * Sat Feb 18 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 15.0.7-1
 - Upgrade to v15.0.7

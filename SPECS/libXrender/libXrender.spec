@@ -1,8 +1,7 @@
 Summary:        X11 Xrender runtime library.
 Name:           libXrender
 Version:        0.9.10
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 %define sha512  libXrender=16ea0cf638b32d7df54b270457ef8c9d9a80da27fa845b105b560cb31027b4c7fe799cf23d6b6bac492be5961264e96d7845d316a9af4de9ff38bf40885ea6fe
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libX11-devel
 Requires:       libX11
@@ -53,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.9.10-3
+- Release bump for SRP compliance
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 0.9.10-2
 - Bump version as a part of libX11 upgrade
 * Tue Jul 12 2022 Shivani Agarwal <shivania2@vmware.com> 0.9.10-1

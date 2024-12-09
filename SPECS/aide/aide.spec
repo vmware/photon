@@ -96,13 +96,13 @@ rm -rf %{buildroot}/*
 %{_var}/log/%{name}
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.17.4-6
-- Bump version as a part of openssl upgrade
-* Wed Aug 23 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.17.4-5
+* Thu Aug 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.17.4-6
 - Use database_in inplace of database in aide.conf
+* Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 0.17.4-5
+- version bump to use curl 8.0.1
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.17.4-4
 - Bump version as a part of zlib upgrade
-* Sat Mar 25 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 0.17.4-3
+* Tue Mar 28 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 0.17.4-3
 - In aide.conf removed verbose option and introduced log_level option
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 0.17.4-2
 - Bump release as a part of libgpg-error upgrade to 1.46

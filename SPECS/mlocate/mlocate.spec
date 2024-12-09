@@ -1,8 +1,7 @@
 Name:           mlocate
 Version:        0.26
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        An utility for finding files by name.
-License:        GPL-2.0
 URL:            https://pagure.io/mlocate
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,10 +12,13 @@ Source0: http://releases.pagure.org/mlocate/%{name}-%{version}.tar.xz
 
 Source1: %{name}.sysusers
 
+Source2: license.txt
+%include %{SOURCE2}
+
 BuildRequires:  sed
 BuildRequires:  grep
 BuildRequires:  xz
-BuildRequires:  gettext-devel
+BuildRequires:  gettext
 BuildRequires:  systemd-devel
 
 %description
@@ -62,6 +64,8 @@ fi
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.26-5
+- Release bump for SRP compliance
 * Sun Oct 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.26-4
 - Create mlocate group
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.26-3

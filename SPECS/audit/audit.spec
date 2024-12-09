@@ -3,8 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        16%{?dist}
-License:        GPLv2+
+Release:        22%{?dist}
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha512 %{name}=5219eb0b41746eca3406008a97731c0083e7be50ec88563a39537de22cb69fe88490f5fe5a11535930f360b11a62538e2ff6cbe39e059cd760038363954ef4d6
+
+Source1: license.txt
+%include %{SOURCE1}
 
 # patches for audit workaround for linux-headers >= 5.17
 # https://github.com/linux-audit/audit-userspace/issues/252
@@ -28,6 +30,7 @@ BuildRequires: libcap-ng-devel
 BuildRequires: swig
 BuildRequires: e2fsprogs-devel
 BuildRequires: python3-devel
+BuildRequires: python3-libs
 BuildRequires: systemd-devel
 
 %if 0%{?with_golang}
@@ -55,7 +58,6 @@ The libraries and header files needed for audit development.
 
 %package  -n    python3-%{name}
 Summary:        Python3 bindings for libaudit
-License:        LGPLv2+
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3
 
@@ -103,10 +105,8 @@ patch --fuzz=1 -p0 < %{PATCH1}
 find . -name '*.orig' -delete
 popd
 
-%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
-%endif
+%make_build check
 
 %pretrans -p <lua>
 path = "/var/log/audit"
@@ -122,9 +122,6 @@ end
 %postun
 /sbin/ldconfig
 %systemd_postun_with_restart auditd.service
-
-%preun
-%systemd_preun auditd.service
 
 %files
 %defattr(-,root,root)
@@ -171,6 +168,18 @@ end
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.0.9-22
+- Release bump for SRP compliance
+* Fri Oct 18 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.9-21
+- Bump version as a part of go upgrade
+* Tue Oct 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-20
+- Remove preun scriptlet
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.9-19
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 3.0.9-18
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 3.0.9-17
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-16
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-15
@@ -179,11 +188,11 @@ end
 - Bump up version to compile with new go
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 3.0.9-13
 - Bump version as a part of openldap v2.6.4 upgrade
-* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 3.0.9-12
-- Bump version as a part of krb5 upgrade
-* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-11
+* Mon Jul 31 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-12
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-10
+* Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 3.0.9-11
+- Bump version as a part of krb5 upgrade
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 3.0.9-10
 - Bump up version to compile with new go
 * Sat May 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.9-9
 - Fix conflict during upgrade

@@ -1,14 +1,16 @@
 Name:           python3-mako
 Version:        1.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python templating language
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.makotemplates.org
 Source0: https://github.com/sqlalchemy/mako/archive/refs/tags/Mako-%{version}.tar.gz
 %define sha512 Mako=02393054c9e3857ee412f494b01d702b5f367165d2f57a5ff9df34ba1a042b60c7b6c059ce2c53bcb91e3a4a21179eca884ee051bf5f5f3522c05253088d38a5
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -45,6 +47,8 @@ python3 setup.py test
 %{_bindir}/mako-render3
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.1-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.1-1
 - Automatic Version Bump
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.1.3-2

@@ -1,14 +1,16 @@
 Summary:        Ed - A line-oriented text editor
 Name:           ed
 Version:        1.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.gnu.org/software/ed/
-License:        GPLv3
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://fossies.org/linux/privat/%{name}-%{version}.tar.gz
 %define sha512  ed=5d515db9710ec485e5f4b727052a5237bdf7efcfd2efaee0ce8ff4f0b970dbfa444820d39fb86b3393cc342fab64f0ecc9c2e5572f63dc84adf17dca33a8fa1b
+
+Source1: license.txt
+%include %{SOURCE1}
 %description
 Ed - A line-oriented text editor
 
@@ -38,6 +40,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/man1/*
 
 %changelog
+*   Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.19-2
+-   Release bump for SRP compliance
 *   Tue May 23 2023 Siju Maliakal <smaliakkal@vmware.com> 1.19-1
 -   Upgrading to latest version for CVE-2017-5357
 *   Fri Jun 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.4-2

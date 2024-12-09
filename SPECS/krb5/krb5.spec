@@ -3,8 +3,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.20.2
-Release:        3%{?dist}
-License:        MIT
+Release:        6%{?dist}
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -12,6 +11,14 @@ Distribution:   Photon
 
 Source0: http://web.mit.edu/kerberos/www/dist/%{name}/%{minor_ver}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=69e263ef74116a3332c632a2a243499bcc47b01b1e57d02fe35aa6c2ff655674b6cf2b815457145f788bceac4d466d3f55f8c20ec9ee4a6051128417e1e7e99e
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0: CVE-2024-26458.patch
+Patch1: CVE-2024-26461.patch
+Patch2: CVE-2024-26462.patch
+Patch3: CVE-2024-37370-37371.patch
 
 Requires:       openssl-libs
 Requires:       e2fsprogs-libs
@@ -32,6 +39,8 @@ practice of clear text passwords.
 Summary:    Libraries and header files for krb5
 Requires:   %{name} = %{version}-%{release}
 Requires:   e2fsprogs-devel
+
+Conflicts: %{name} < 1.20.2-2%{?dist}
 
 %description devel
 Static libraries and header files for the support library for krb5
@@ -66,7 +75,6 @@ fi
         --enable-dns-for-realm \
         --enable-pkinit \
         --enable-shared
-
 %make_build
 
 %install
@@ -113,14 +121,18 @@ rm -rf %{buildroot}/*
 %{_datadir}/locale/*
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.2-3
-- Bump version as a part of openssl upgrade
-* Mon Sep 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.2-2
-- Fix devel package requires
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.20.2-6
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.20.2-5
+- Release bump for SRP compliance
+* Fri Aug 23 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 1.20.2-4
+- patched CVE-2024-37370, CVE-2024-37371
+* Mon Jun 03 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 1.20.2-3
+- patched CVE-2024-26458, CVE-2024-26461 and CVE-2024-26462
+* Tue Apr 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.20.2-2
+- Fix spec issues
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.20.2-1
 - Update to v1.20.2 to fix CVE-2023-36054
-* Sun May 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.1-4
-- Fix spec issues
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20.1-3
 - Require openssl-libs
 * Mon Feb 20 2023 Tapas Kundu <tkundu@vmware.com> 1.20.1-2

@@ -2,11 +2,13 @@
 Summary:        Converts markdown into roff (man pages)
 Name:           go-md2man
 Version:        2.0.2
-Release:        8%{?dist}
-License:        MIT
+Release:        13%{?dist}
 URL:            https://github.com/cpuguy83/go-md2man
 Source0:        https://github.com/cpuguy83/go-md2man/archive/%{name}-%{version}.tar.gz
 %define sha512  go-md2man=c81edfdc0b6647ef699cc908a1a7038d98da34df6d48b223b83a0699de91a7e322e70d67645acf1fc848918f4c1ea310160c7ccb75e6f97b53af7103c7aa18b3
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -41,6 +43,16 @@ install -v -m644 -D -t %{buildroot}%{_docdir}/licenses/%{name} LICENSE.md
 %{_docdir}/licenses/%{name}
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.2-13
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.2-12
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.2-11
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 2.0.2-10
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 2.0.2-9
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.2-8
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.2-7
@@ -49,7 +61,7 @@ install -v -m644 -D -t %{buildroot}%{_docdir}/licenses/%{name} LICENSE.md
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.2-5
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.2-4
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.2-4
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 2.0.2-3
 - Bump up version to compile with new go

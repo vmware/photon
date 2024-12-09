@@ -3,13 +3,14 @@ Name:           python3-attrs
 Version:        22.1.0
 Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/attrs
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Source0:        attrs-%{version}.tar.gz
+%define sha512  attrs=447637bc82b31d565479e364869b996eaf7b67e526ad97f79ba1c27f287bbb25a2c40663e35437bc19037f605fac9322bd35f303f2769f0eb2ee673900551885
 
-Source0: attrs-%{version}.tar.gz
-%define sha512 attrs=447637bc82b31d565479e364869b996eaf7b67e526ad97f79ba1c27f287bbb25a2c40663e35437bc19037f605fac9322bd35f303f2769f0eb2ee673900551885
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -21,7 +22,6 @@ BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 BuildRequires:  python3-zope.interface
 BuildRequires:  python3-pip
-BuildRequires:  python3-pytest
 %endif
 
 Requires:       python3
@@ -42,7 +42,8 @@ Attributes without boilerplate.
 %py3_install
 
 %check
-pip3 install hypothesis==4.38.0
+#python2 does not support for tests
+pip3 install pytest hypothesis==4.38.0
 python3 setup.py test
 
 %files
@@ -50,8 +51,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.1.0-3
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.1.0-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.1.0-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 22.1.0-1

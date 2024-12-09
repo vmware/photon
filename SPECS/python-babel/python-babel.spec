@@ -2,14 +2,16 @@ Name:           python3-babel
 Version:        2.10.3
 Release:        3%{?dist}
 Summary:        An integrated collection of utilities that assist in internationalizing and localizing Python applications
-License:        BSD3
 Group:          Development/Languages/Python
 Url:            http://babel.pocoo.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://files.pythonhosted.org/packages/17/e6/ec9aa6ac3d00c383a5731cc97ed7c619d3996232c977bb8326bcbb6c687e/Babel-%{version}.tar.gz
-%define sha512 Babel=72a5759d2cfa239df56f3d2809b23367b9691e21de92535b30f9b3455d253682f6c18ca919f3fb039deed2663db9276307f6343cbbab56fca96ff1ac9c214fa7
+Source0:        https://files.pythonhosted.org/packages/17/e6/ec9aa6ac3d00c383a5731cc97ed7c619d3996232c977bb8326bcbb6c687e/Babel-%{version}.tar.gz
+%define sha512  Babel=72a5759d2cfa239df56f3d2809b23367b9691e21de92535b30f9b3455d253682f6c18ca919f3fb039deed2663db9276307f6343cbbab56fca96ff1ac9c214fa7
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -26,6 +28,7 @@ BuildRequires:  python3-attrs
 %endif
 
 Requires:       python3
+Requires:       python3-libs
 Requires:       python3-pytz
 
 BuildArch:      noarch
@@ -48,14 +51,19 @@ The functionality Babel provides for internationalization (I18n) and localizatio
 %py3_install
 mv %{buildroot}/%{_bindir}/pybabel %{buildroot}/%{_bindir}/pybabel3
 
+%check
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pytest freezegun funcsigs pathlib2 pluggy utils
+python3 setup.py test
+
 %files
 %defattr(-,root,root,-)
 %{_bindir}/pybabel3
 %{python3_sitelib}/*
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.10.3-3
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.10.3-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.10.3-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.10.3-1

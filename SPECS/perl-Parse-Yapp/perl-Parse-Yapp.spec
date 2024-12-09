@@ -13,7 +13,7 @@ Source0: https://www.cpan.org/authors/id/W/WB/WBRASWELL/Parse-Yapp-%{version}.ta
 
 BuildArch:      noarch
 
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils >= 9.1-7
 BuildRequires:  make
 BuildRequires:  perl
 

@@ -13,16 +13,15 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.27.3
-Release:        9%{?dist}
-License:        ASL 2.0
+Version:        1.27.13
+Release:        7%{?dist}
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}.tar.gz=51cf0178c8a2a00798cc618c9918f556c418de137566db60a66a0c7556ee625b34cf86b1da241856599784588c0e3e8b81225dca627fea70a87c94adb073bb7a
+%define sha512 %{name}-%{version}.tar.gz=cffb7b0b29ef65bbf234a2743afac284ab119976eb12a0ea3b26582ae65d58b2b584781f72a252ea8dd1b950aa27622839eaafb3b561447bedd8edde09003b1f
 
 Source1: https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.gz
 %define sha512 contrib-%{contrib_ver}=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
@@ -35,6 +34,9 @@ Source4:        %{name}.sysusers
 # Source tarball of https://opendev.org/starlingx/integ/src/commit/c15e3e1a3af2c797caa1bc408315beb0101ae623/kubernetes/plugins/isolcpus-device-plugin/files
 Source5:        isolcpu-plugin-%{isolcpu_ver}.tar.bz2
 %define sha512 isolcpu=9b7f8f45b4b27d9507f37b41547cd0e3204ca6b6b4101c33b17d7272235d56a36f47d33d403377a193af3806ca1ea82eba73e4afa2e0d8f9d1ceeab0a13c0950
+
+Source6: license.txt
+%include %{SOURCE6}
 
 Patch0:         0001-kubelet-cpumanager-introduce-concept-of-isolated-CPU.patch
 Patch1:         0001-Use-vmware.com-isolcpu-property-name.patch
@@ -93,6 +95,7 @@ sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-%{contrib_ver}/init/system
 sed -i '/KUBE_ALLOW_PRIV/d' contrib-%{contrib_ver}/init/systemd/kubelet.service
 
 %build
+export FORCE_HOST_GO=y
 make WHAT="cmd/kube-proxy" %{?_smp_mflags}
 make WHAT="cmd/kube-apiserver" %{?_smp_mflags}
 make WHAT="cmd/kube-controller-manager" %{?_smp_mflags}
@@ -264,16 +267,32 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
-* Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.27.3-9
-- Bump version as a part of util-linux upgrade
-* Fri Mar 08 2024 Anmol Jain <anmol.jain@broadcom.com> 1.27.3-8
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-7
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-6
+- Bump version as a part of go upgrade
+* Wed Sep 04 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-5
+- Adding env variable to compile with host go in build section
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-4
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.27.13-3
+- Bump version as a part of go upgrade
+* Thu Jun 06 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-2
+- Update release to compile with host go
+* Mon Apr 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.13-1
+- Update to 1.27.13, fixes CVE-2024-3177
+* Wed Mar 13 2024 Mukul Sikka <msikka@vmware.com> 1.27.3-10
+- Bump version as a part of go upgrade
+* Fri Mar 08 2024 Anmol Jain <anmol.jain@broadcom.com> 1.27.3-9
 - Bump version as a part of etcd upgrade
-* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-7
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-8
 - Bump up version to compile with new go
-* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-6
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-7
 - Bump up version to compile with new go
-* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-5
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-6
 - Bump up version to compile with new go
+* Thu Sep 07 2023 Alexey Makhalov <amakhalov@vmware.com> 1.27.3-5
+- Fix for previous change to apply all patches.
 * Wed Aug 23 2023 Alexey Makhalov <amakhalov@vmware.com> 1.27.3-4
 - Introduction of vmware.com/isolcpu POD property.
 - isolcpus allocations support for RT workloads.
@@ -283,8 +302,10 @@ fi
 - Bump up version to compile with new go
 * Tue Jul 04 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.27.3-1
 - Update to 1.27.3, Fixes multiple second level CVEs
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.26.1-3
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.26.1-4
 - Bump up version to compile with new go
+* Wed May 24 2023 Shivani Agarwal <shivania2@vmware.com> 1.26.1-3
+- Bump up version to compile with new etcd
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.26.1-2
 - Bump up version to compile with new go
 * Thu Mar 16 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.26.1-1

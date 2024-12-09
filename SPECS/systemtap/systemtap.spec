@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       17%{?dist}
+Release:       13%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -18,7 +18,6 @@ License:       GPLv2+
 
 Source0: http://sourceware.org/systemtap/ftp/releases/%{name}-%{version}.tar.gz
 %define sha512 %{name}=a72f39a24c3eb4a7703a033c435ab8ad75e9d7fedf8d8580db705bac529ffd0f8aabd4b510becc68547d2178d47bb918dd090aced957f94faa62f847d8341af8
-
 Source1: systemtap-runtime.sysusers
 Source2: systemtap-server.sysusers
 Source3: systemtap.sysusers
@@ -35,11 +34,11 @@ BuildRequires: libtirpc-devel
 BuildRequires: libxml2-devel
 BuildRequires: perl
 BuildRequires: python3-setuptools
+BuildRequires: nss
 BuildRequires: shadow
 BuildRequires: curl-devel
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
-
 %if 0%{?with_boost}
 BuildRequires: boost-devel
 %endif
@@ -101,7 +100,7 @@ Group:         System/Tools
 Summary:       Instrumentation System Server
 Requires:      %{name} = %{version}-%{release}
 Requires:      %{name}-runtime = %{version}-%{release}
-Requires:      (coreutils or coreutils-selinux)
+Requires:      coreutils >= 9.1-7
 Requires:      nss
 Requires:      unzip
 Requires:      gzip
@@ -193,14 +192,15 @@ mv %{buildroot}%{_datadir}/%{name}/SystemTap_Beginners_Guide docs.installed/
 %endif
 
 install -m 755 initscript/stap-server %{buildroot}%{_sysconfdir}/rc.d/init.d/
-mkdir -p %{buildroot}%{_sysconfdir}/stap-server/conf.d \
-         %{buildroot}%{_sysconfdir}/sysconfig \
-         %{buildroot}%{_localstatedir}/opt/stap-server/log \
-         %{buildroot}%{_sysconfdir}/logrotate.d \
-         %{buildroot}%{_localstatedir}/log
+mkdir -p %{buildroot}%{_sysconfdir}/stap-server
+mkdir -p %{buildroot}%{_sysconfdir}/stap-server/conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 install -m 644 initscript/config.stap-server %{buildroot}%{_sysconfdir}/sysconfig/stap-server
+mkdir -p %{buildroot}%{_localstatedir}/log
+mkdir -p %{buildroot}%{_localstatedir}/opt/stap-server/log
 ln -sfv %{_localstatedir}/opt/stap-server/log %{buildroot}%{_localstatedir}/log/stap-server
 touch %{buildroot}%{_localstatedir}/opt/stap-server/log/log
+mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -m 644 initscript/logrotate.stap-server %{buildroot}%{_sysconfdir}/logrotate.d/stap-server
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/systemtap_runtime.sysusers
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/systemtap_server.sysusers
@@ -391,21 +391,13 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.8-17
-- Bump version as a part of libxml2 upgrade
-* Thu Mar 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.8-16
-- Bump version as a part of nss upgrade
-* Mon Mar 04 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.8-15
+* Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.8-13
 - Bump version as a part of sqlite upgrade to v3.43.2
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 4.8-14
-- Bump version as a part of libxml2 upgrade
-* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 4.8-13
+* Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-12
+- Bump version as a part of rpm upgrade
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 4.8-11
 - Resolving systemd-rpm-macros for group creation
-* Tue Jul 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-12
-- Bump version as a part of elfutils upgrade
-* Tue May 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-11
-- Bump version as a part of nss upgrade
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.8-10
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.8-10
 - Bump version as a part of libxml2 upgrade
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-9
 - Bump version as a part of zlib upgrade

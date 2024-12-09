@@ -1,0 +1,241 @@
+From b6c713557688bfb42c6279ec3d8dfab5884510fe Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Thu, 27 Oct 2022 11:36:44 +0200
+Subject: [PATCH 108/175] elf: Introduce to _dl_call_fini
+
+This consolidates the destructor invocations from _dl_fini and
+dlclose.  Remove the micro-optimization that avoids
+calling _dl_call_fini if they are no destructors (as dlclose is quite
+expensive anyway).  The debug log message is now printed
+unconditionally.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+---
+ elf/Makefile               |  1 +
+ elf/dl-call_fini.c         | 50 ++++++++++++++++++++++++++++++++++++++
+ elf/dl-close.c             | 42 +-------------------------------
+ elf/dl-fini.c              | 38 +----------------------------
+ sysdeps/generic/ldsodefs.h |  8 ++++++
+ 5 files changed, 61 insertions(+), 78 deletions(-)
+ create mode 100644 elf/dl-call_fini.c
+
+diff --git a/elf/Makefile b/elf/Makefile
+index 48788fcdb884cb126f91db3b47c085c75c232612..30c9af1de978f9d6752dfc71613e3c1ae4ea57dc 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -53,6 +53,7 @@ routines = \
+ # profiled libraries.
+ dl-routines = \
+   dl-call-libc-early-init \
++  dl-call_fini \
+   dl-close \
+   dl-debug \
+   dl-debug-symbols \
+diff --git a/elf/dl-call_fini.c b/elf/dl-call_fini.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..9e7ba10fa2a4df77f142374fe3455b80f47420de
+--- /dev/null
++++ b/elf/dl-call_fini.c
+@@ -0,0 +1,50 @@
++/* Invoke DT_FINI and DT_FINI_ARRAY callbacks.
++   Copyright (C) 1996-2022 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <ldsodefs.h>
++#include <sysdep.h>
++
++void
++_dl_call_fini (void *closure_map)
++{
++  struct link_map *map = closure_map;
++
++  /* When debugging print a message first.  */
++  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_IMPCALLS))
++    _dl_debug_printf ("\ncalling fini: %s [%lu]\n\n", map->l_name, map->l_ns);
++
++  /* Make sure nothing happens if we are called twice.  */
++  map->l_init_called = 0;
++
++  ElfW(Dyn) *fini_array = map->l_info[DT_FINI_ARRAY];
++  if (fini_array != NULL)
++    {
++      ElfW(Addr) *array = (ElfW(Addr) *) (map->l_addr
++                                          + fini_array->d_un.d_ptr);
++      size_t sz = (map->l_info[DT_FINI_ARRAYSZ]->d_un.d_val
++                   / sizeof (ElfW(Addr)));
++
++      while (sz-- > 0)
++        ((fini_t) array[sz]) ();
++    }
++
++  /* Next try the old-style destructor.  */
++  ElfW(Dyn) *fini = map->l_info[DT_FINI];
++  if (fini != NULL)
++    DL_CALL_DT_FINI (map, ((void *) map->l_addr + fini->d_un.d_ptr));
++}
+diff --git a/elf/dl-close.c b/elf/dl-close.c
+index bcd6e206e94b1c67cbe0b884f82eed847ccd228e..14deca2e2b0d4f61a3bebafc6796943922544226 100644
+--- a/elf/dl-close.c
++++ b/elf/dl-close.c
+@@ -36,11 +36,6 @@
+ 
+ #include <dl-unmap-segments.h>
+ 
+-
+-/* Type of the constructor functions.  */
+-typedef void (*fini_t) (void);
+-
+-
+ /* Special l_idx value used to indicate which objects remain loaded.  */
+ #define IDX_STILL_USED -1
+ 
+@@ -110,31 +105,6 @@ remove_slotinfo (size_t idx, struct dtv_slotinfo_list *listp, size_t disp,
+   return false;
+ }
+ 
+-/* Invoke dstructors for CLOSURE (a struct link_map *).  Called with
+-   exception handling temporarily disabled, to make errors fatal.  */
+-static void
+-call_destructors (void *closure)
+-{
+-  struct link_map *map = closure;
+-
+-  if (map->l_info[DT_FINI_ARRAY] != NULL)
+-    {
+-      ElfW(Addr) *array =
+-	(ElfW(Addr) *) (map->l_addr
+-			+ map->l_info[DT_FINI_ARRAY]->d_un.d_ptr);
+-      unsigned int sz = (map->l_info[DT_FINI_ARRAYSZ]->d_un.d_val
+-			 / sizeof (ElfW(Addr)));
+-
+-      while (sz-- > 0)
+-	((fini_t) array[sz]) ();
+-    }
+-
+-  /* Next try the old-style destructor.  */
+-  if (map->l_info[DT_FINI] != NULL)
+-    DL_CALL_DT_FINI (map, ((void *) map->l_addr
+-			   + map->l_info[DT_FINI]->d_un.d_ptr));
+-}
+-
+ void
+ _dl_close_worker (struct link_map *map, bool force)
+ {
+@@ -280,17 +250,7 @@ _dl_close_worker (struct link_map *map, bool force)
+ 	     half-cooked objects.  Temporarily disable exception
+ 	     handling, so that errors are fatal.  */
+ 	  if (imap->l_init_called)
+-	    {
+-	      /* When debugging print a message first.  */
+-	      if (__builtin_expect (GLRO(dl_debug_mask) & DL_DEBUG_IMPCALLS,
+-				    0))
+-		_dl_debug_printf ("\ncalling fini: %s [%lu]\n\n",
+-				  imap->l_name, nsid);
+-
+-	      if (imap->l_info[DT_FINI_ARRAY] != NULL
+-		  || imap->l_info[DT_FINI] != NULL)
+-		_dl_catch_exception (NULL, call_destructors, imap);
+-	    }
++	    _dl_catch_exception (NULL, _dl_call_fini, imap);
+ 
+ #ifdef SHARED
+ 	  /* Auditing checkpoint: we remove an object.  */
+diff --git a/elf/dl-fini.c b/elf/dl-fini.c
+index 030b1fcbcdc3018d7874ca4760eacbfb5fa66760..50ff94db16308aaa28a6604b742a600b617d3579 100644
+--- a/elf/dl-fini.c
++++ b/elf/dl-fini.c
+@@ -21,11 +21,6 @@
+ #include <ldsodefs.h>
+ #include <elf-initfini.h>
+ 
+-
+-/* Type of the constructor functions.  */
+-typedef void (*fini_t) (void);
+-
+-
+ void
+ _dl_fini (void)
+ {
+@@ -116,38 +111,7 @@ _dl_fini (void)
+ 
+ 	      if (l->l_init_called)
+ 		{
+-		  /* Make sure nothing happens if we are called twice.  */
+-		  l->l_init_called = 0;
+-
+-		  /* Is there a destructor function?  */
+-		  if (l->l_info[DT_FINI_ARRAY] != NULL
+-		      || (ELF_INITFINI && l->l_info[DT_FINI] != NULL))
+-		    {
+-		      /* When debugging print a message first.  */
+-		      if (__builtin_expect (GLRO(dl_debug_mask)
+-					    & DL_DEBUG_IMPCALLS, 0))
+-			_dl_debug_printf ("\ncalling fini: %s [%lu]\n\n",
+-					  DSO_FILENAME (l->l_name),
+-					  ns);
+-
+-		      /* First see whether an array is given.  */
+-		      if (l->l_info[DT_FINI_ARRAY] != NULL)
+-			{
+-			  ElfW(Addr) *array =
+-			    (ElfW(Addr) *) (l->l_addr
+-					    + l->l_info[DT_FINI_ARRAY]->d_un.d_ptr);
+-			  unsigned int i = (l->l_info[DT_FINI_ARRAYSZ]->d_un.d_val
+-					    / sizeof (ElfW(Addr)));
+-			  while (i-- > 0)
+-			    ((fini_t) array[i]) ();
+-			}
+-
+-		      /* Next try the old-style destructor.  */
+-		      if (ELF_INITFINI && l->l_info[DT_FINI] != NULL)
+-			DL_CALL_DT_FINI
+-			  (l, l->l_addr + l->l_info[DT_FINI]->d_un.d_ptr);
+-		    }
+-
++		  _dl_call_fini (l);
+ #ifdef SHARED
+ 		  /* Auditing checkpoint: another object closed.  */
+ 		  _dl_audit_objclose (l);
+diff --git a/sysdeps/generic/ldsodefs.h b/sysdeps/generic/ldsodefs.h
+index 6b256b83880cea967ea010d804d7288dd8d0cbad..c2627fced763913f6f47ac002e6c3793dc041dbc 100644
+--- a/sysdeps/generic/ldsodefs.h
++++ b/sysdeps/generic/ldsodefs.h
+@@ -105,6 +105,9 @@ typedef struct link_map *lookup_t;
+    DT_PREINIT_ARRAY.  */
+ typedef void (*dl_init_t) (int, char **, char **);
+ 
++/* Type of a constructor function, in DT_FINI, DT_FINI_ARRAY.  */
++typedef void (*fini_t) (void);
++
+ /* On some architectures a pointer to a function is not just a pointer
+    to the actual code of the function but rather an architecture
+    specific descriptor. */
+@@ -1048,6 +1051,11 @@ extern void _dl_init (struct link_map *main_map, int argc, char **argv,
+    initializer functions have completed.  */
+ extern void _dl_fini (void) attribute_hidden;
+ 
++/* Invoke the DT_FINI_ARRAY and DT_FINI destructors for MAP, which
++   must be a struct link_map *.  Can be used as an argument to
++   _dl_catch_exception.  */
++void _dl_call_fini (void *map) attribute_hidden;
++
+ /* Sort array MAPS according to dependencies of the contained objects.
+    If FORCE_FIRST, MAPS[0] keeps its place even if the dependencies
+    say otherwise.  */
+-- 
+2.35.6
+

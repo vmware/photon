@@ -1,27 +1,31 @@
-%define njs_ver     0.8.0
+%define njs_ver     0.8.4
 %define nginx_user  %{name}
+%define headers_more_nginx_module_ver 0.37
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.25.2
-Release:        5%{?dist}
-License:        BSD-2-Clause
+Epoch:          1
+Version:        1.26.2
+Release:        3%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://nginx.org/download/nginx-%{version}.tar.gz
-%define sha512 %{name}=47da46d823f336432aca6c4cd54c76660af60620518d5c518504033a9fd6b411fd6d41e4aac2c8200311a53f96159aa3da8920145e8ed85596c9c2c14e20cb27
+%define sha512 %{name}=470efe9ae5d6150ecbf133979c6c36415679a2156499a3b6820a85eb8f3038a8aa06f7b28ddd834cffb0e982f3ddc89e4b1649d536eba4f84019a72d4cfa3539
 
 Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
-%define sha512 %{name}-njs=5e5fd3b0aba9d1a0b47207081e59d577cbd3db41e141cfa529526a778bbcd4fec1cd4dacaa1dc63ee07868ccf35f4d4cc465abff831bb03d128b0b1f1b04bb28
+%define sha512 %{name}-njs=450f6866141f6f370767149c8749e84c4373f401d6d2237ca85365a851ebe7bdbd8a3c25e85a55747673e8bef2238a979dd237d5fc5c641b2f3f2cf7f26dffc8
 
-Source2: %{name}.service
-Source3: %{name}.sysusers
+Source2: https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/headers-more-nginx-module-%{headers_more_nginx_module_ver}.tar.gz
+%define sha512 headers-more-nginx-module=0cc2fffe506194d439e3669644d41b7943e2c3cffa3483eb70b92067930b358d506a14646eff8362b191a11c624db29f6b53d830876929dcb4ce1c9d7b2bc40d
 
-Patch0: CVE-2023-44487.patch
-Patch1: 0001-XML-fixed-building-with-libxml2-2.12-and-later.patch
+Source3: %{name}.service
+Source4: %{name}.sysusers
+
+Source5: license.txt
+%include %{SOURCE5}
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -41,9 +45,11 @@ Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server.
 
 %prep
-%autosetup -p1 -a0 -a1
+# Using autosetup is not feasible
+%setup -q -a1 -a2
 
 %build
+export CFLAGS="-O2 -g -Wno-discarded-qualifiers"
 sh ./configure \
     --prefix=%{_sysconfdir}/%{name} \
     --sbin-path=%{_sbindir}/%{name} \
@@ -53,6 +59,8 @@ sh ./configure \
     --error-log-path=%{_var}/log/%{name}/error.log \
     --http-log-path=%{_var}/log/%{name}/access.log \
     --add-module=njs-%{njs_ver}/%{name} \
+    --add-dynamic-module=./headers-more-nginx-module-%{headers_more_nginx_module_ver} \
+    --with-http_dav_module \
     --with-http_ssl_module \
     --with-pcre \
     --with-ipv6 \
@@ -62,6 +70,7 @@ sh ./configure \
     --with-http_stub_status_module \
     --with-http_v2_module \
     --with-http_realip_module \
+    --with-stream_ssl_preread_module \
     --user=%{nginx_user} \
     --group=%{nginx_user}
 
@@ -73,14 +82,14 @@ install -vdm755 %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}%{_var}/log
 install -vdm755 %{buildroot}%{_var}/opt/%{name}/log
 ln -sfrv %{buildroot}%{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
-install -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
-install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -m 0644 %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %clean
 rm -rf %{buildroot}
 
 %pre
-%sysusers_create_compat %{SOURCE3}
+%sysusers_create_compat %{SOURCE4}
 
 %post
 %systemd_post %{name}.service
@@ -107,6 +116,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}/scgi_params.default
 %config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params
 %config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params.default
+%{_sysconfdir}/%{name}/modules/ngx_http_headers_more_filter_module.so
 %{_sysconfdir}/%{name}/win-utf
 %{_sysconfdir}/%{name}/html/*
 %{_sysusersdir}/%{name}.sysusers
@@ -116,15 +126,26 @@ rm -rf %{buildroot}
 %{_var}/log/%{name}
 
 %changelog
-* Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.25.2-5
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.26.2-3
+- Release bump for SRP compliance
+* Fri Oct 4 2024 Etienne Le Sueur <etienne.le-sueur@broadcom.com> 1.26.2-2
+- Include WebDAV module
+* Tue Aug 13 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.26.2-1
+- Downgrade version to v1.26.2
+- Adding Epoch to consider v1.26.2 latest instead of v1.27.0
+- nginx don't maintain stable branch for odd releases
+- Fix CVE-2024-7347
+* Wed Jun 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.27.0-1
+- Version upgrade to v1.27.0 to fix following issues:
+- Add headers-more-nginx-module
+- CVE-2024-31079, CVE-2024-32760, CVE-2024-34161 and CVE-2024-35200
+* Wed May 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.25.2-4
+- Enable support for ssl_preread_module
+* Tue Mar 12 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.25.2-3
 - Bump version as a part of libxml2 upgrade
-* Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.25.2-4
-- Bump version as a part of libxml2 upgrade
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25.2-3
-- Bump version as a part of openssl upgrade
 * Thu Oct 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.25.2-2
 - Fix CVE-2023-44487
-* Tue Oct 10 2023 Harinadh D <hdommaraju@vmware.com> 1.25.2-1
+* Tue Aug 22 2023 Harinadh D <hdommaraju@vmware.com> 1.25.2-1
 - Version upgrade
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.23.1-5
 - Resolving systemd-rpm-macros for group creation

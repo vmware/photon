@@ -2,14 +2,16 @@ Summary:        Utilities for internationalization and localization
 Name:           gettext
 Version:        0.22
 Release:        1%{?dist}
-License:        GPL-3.0-or-later and LGPL-2.0-or-later and GFDL-1.2-or-later
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-%define sha512 %{name}=c6368344aa4e0f6fd7c4a93023a5f7b377c7bb97b8ea688fd54f4c385c069d9ff27611d8763b1aed6328b6d3c4db7b34bd89bfbf6525ecaef11eb58434a4d4fa
+Source0:        http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
+%define sha512  gettext=c6368344aa4e0f6fd7c4a93023a5f7b377c7bb97b8ea688fd54f4c385c069d9ff27611d8763b1aed6328b6d3c4db7b34bd89bfbf6525ecaef11eb58434a4d4fa
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: libgcc
 Requires: libstdc++
@@ -102,10 +104,13 @@ make %{?_smp_mflags} check
 %{_docdir}/*
 
 %changelog
-* Mon Aug 14 2023 Susant Sahani <ssahani@vmware.com> 0.22-1
+* Mon Dec 09 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.22-1
 - Version bump.
-* Mon May 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.21.1-2
-- Introduce deve & libs sub packages
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.21.1-3
+- Release bump for SRP compliance
+* Fri Jun 14 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 0.21.1-2
+- Fix CVE-2016-3709/2019-19956/2021-3517/2021-3518/
+- 2021-3541/2022-23308/2022-40303/2022-40304/2024-25062
 * Thu Jan 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.21.1-1
 - Update to version 0.21.1
 * Mon Nov 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.21-2

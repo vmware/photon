@@ -3,13 +3,15 @@ Name:           libyang
 Version:        2.1.55
 Release:        2%{?dist}
 Url:            https://github.com/CESNET/libyang
-License:        BSD-3-Clause
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/CESNET/libyang/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=dd0b58aec7e2d84f62636c62c9e7f67f0b4819e8d5ce9236874a3531607aa6fb58ccdcf537534eae8bfa700c37b8e3524be659929f4e7e03f8f67968bc352cb4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -84,8 +86,8 @@ YANG validator tools.
 %{_includedir}/%{name}/*.h
 
 %changelog
-* Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.55-2
-- Version bump as part of pcre2 update
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.1.55-2
+- Release bump for SRP compliance
 * Tue Apr 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.55-1
 - Update to latest version to resolve CVE-2023-26917 and
 - CVE-2023-26916

@@ -13,18 +13,24 @@
 
 Summary:        Go
 Name:           go
-Version:        1.20.12
-Release:        1%{?dist}
-License:        BSD
+Version:        1.21.13
+Release:        2%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha512  go=3f4d1a22a0f1dd7e8feb008517e43b32c3600ce77168e5edfb75b4060577362ae62f28c9891de0f7bf553407bd8e09efc1563d34ee8af5285b3c80b3946f4b65
+%define sha512  %{name}=f316984154ead8256d9ec0613e3cfef5699553387d87c24bb2a96265f986bf4450838e6451841def3713d65ebaa9bf55e36ff39c5690d79522e1c1ba7655be2f
+
+Source1: license.txt
+%include %{SOURCE1}
+
 Requires:       glibc
 Requires:       gcc
+
+Patch1: CVE-2024-34156.patch
+Patch2: CVE-2024-34158.patch
 
 %define ExtraBuildRequires go
 
@@ -52,7 +58,7 @@ rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir} %{buildroot}%{goroot}
 
-cp -R api bin doc lib pkg src misc VERSION %{buildroot}%{goroot}
+cp -R api bin doc lib pkg src misc VERSION go.env %{buildroot}%{goroot}
 
 # remove the unnecessary zoneinfo file (Go will always use the system one first)
 rm -rfv %{buildroot}%{goroot}/lib/time
@@ -116,15 +122,28 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.21.13-2
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <msikka@vmware.com> 1.21.13-1
+- Upgrade to 1.21.13
+- Fix CVE-2024-34156 and CVE-2024-34158
+* Fri Jul 12 2024 Mukul Sikka <msikka@vmware.com> 1.21.12-1
+- Upgrade to 1.21.12
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.21.11-1
+- Upgrade to 1.21.11
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.21.7-2
+- Fix for CVE-2023-45288
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.21.7-1
+- Upgrade to 1.21.7
 * Fri Dec 15 2023 Mukul Sikka <msikka@vmware.com> 1.20.12-1
 - Upgrade to 1.20.12.
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.10-1
 - Upgrade to 1.20.10.
-* Tue Aug 08 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.8-1
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.8-1
 - Upgrade to 1.20.8.
-* Tue Aug 08 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.7-1
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.7-1
 - Upgrade to 1.20.7
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.5-1
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.5-1
 - Upgrade to 1.20.5
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.4-1
 - Upgrade to 1.20.4

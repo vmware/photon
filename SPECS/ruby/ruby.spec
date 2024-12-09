@@ -1,30 +1,51 @@
+%define rexml_version    3.3.9
+
 Summary:        Ruby
 Name:           ruby
-Version:        3.3.0
-Release:        2%{?dist}
-License:        BSDL
+Version:        3.1.4
+Release:        7%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://cache.ruby-lang.org/pub/ruby/3.3/%{name}-%{version}.tar.gz
-%define sha512 %{name}=26074009b501fc793d71a74e419f34a6033c9353433919ca74ba2d24a3de432dbb11fd92c2bc285f0e4d951a6d6c74bf5b69a2ab36200c8c26e871746d6e0fc6
+Source0:        https://cache.ruby-lang.org/pub/ruby/3.1/%{name}-%{version}.tar.gz
+%define sha512 %{name}=41cf1561dd7eb249bb2c2f5ea958884880648cc1d11da9315f14158a2d0ff94b2c5c7d75291a67e57e1813d2ec7b618e5372a9f18ee93be6ed306f47b0d3199a
 
-Source1: macros.ruby
+Patch1:         CVE-2024-27281.patch
+Patch2:         CVE-2024-27280.patch
+Patch3:         CVE-2023-36617-1.patch
+Patch4:         CVE-2023-36617-2.patch
+Patch5:         CVE-2024-27282.patch
+Patch6:         0001-Modify-code-to-upgrade-rexml-3.2.5-to-rexml-3.3.9.patch
+
+Source1:        macros.ruby
+
+Source2:        rexml-%{rexml_version}.tar.gz
+%define sha512  rexml-%{rexml_version}.tar.gz=cc38609e5321f157b0a9ea793386017c8d4f743aabd66fc31a8f450f68c57e89825ec1d549efc4e2459ae952e57bbc87d47f9a0affa457639b89b9374e0bb137
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
 BuildRequires:  readline
 BuildRequires:  tzdata
-BuildRequires:  libffi-devel
-BuildRequires:  libyaml-devel
 
 Requires:       ca-certificates
 Requires:       openssl
 Requires:       gmp
-Requires:       libyaml
+
+Obsoletes:      rubygem-base64
+Obsoletes:      rubygem-connection_pool
+Obsoletes:      rubygem-drb
+Obsoletes:      rubygem-ruby2-keywords
+
+Provides:      rubygem-base64
+Provides:      rubygem-connection_pool
+Provides:      rubygem-drb
+Provides:      rubygem-ruby2-keywords
 
 %description
 The Ruby package contains the Ruby development environment.
@@ -35,7 +56,7 @@ Summary:    Development Libraries for ruby
 Group:      Development/Libraries
 Requires:   findutils
 Requires:   libselinux-devel
-Requires:   (coreutils or coreutils-selinux)
+Requires:   coreutils >= 9.1-7
 Requires:   %{name} = %{version}-%{release}
 
 %description devel
@@ -45,6 +66,13 @@ Header files for doing development with ruby.
 %autosetup -p1
 
 %build
+# Modification to upgrade rexml-3.2.5 to rexml-3.3.9
+rm -rf .bundle/gems/rexml-3.2.5
+tar -xvpf %{SOURCE2} -C .bundle/gems
+
+rm gems/rexml-3.2.5.gem
+cp -p .bundle/gems/rexml-%{rexml_version}/rexml-%{rexml_version}.gem gems/
+
 # below loop fixes the files in libexec to point correct ruby
 # Only verfied and to be used with ruby version 2.7.1
 # Any future versions needs to be verified
@@ -98,12 +126,28 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
-* Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.3.0-2
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-7
+- Release bump for SRP compliance
+* Tue Dec 10 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-6
+- Fix CVE-2024-49761 Upgrade rexml to rexml-3.3.9 from rexml-3.2.5
+* Mon Oct 21 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-5
+- Fix CVE-2024-49416 and, CVE-2024-41123 Upgrade rexml to rexml-3.3.3 from rexml-3.2.5
+* Thu Jun 27 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-4
+- Fix Syntax error in macros.ruby file
+* Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-3
 - Add Macro definition macros.ruby file
-* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.3.0-1
-- Update to version 3.3.0
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1.2-3
-- Bump version as a part of openssl upgrade
+* Mon Apr 29 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-2
+- Fix CVE-2024-27282
+* Mon Apr 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-1
+- Upgrade to 3.1.4 to Fix CVE-2024-27280, CVE-2023-36617, CVE-2023-28755
+* Tue Mar 26 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-6
+- Fix CVE-2024-27281
+* Wed Feb 07 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-5
+- Fix CVE-2021-33621
+* Tue Jan 30 2024 Shivani Agarwal <shivania2@vmware.com> 3.1.2-4
+- Add provides for package rubygem-base64, rubygem-drb, rubygem-connection_pool, rubygem-ruby2-keywords
+* Mon Jan 22 2024 Shivani Agarwal <shivania2@vmware.com> 3.1.2-3
+- Add obsolete package
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 3.1.2-2
 - Bump release as a part of readline upgrade
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.1.2-1

@@ -1,8 +1,7 @@
 Summary:        Wayland protocols that adds functionality not available in the core protocol
 Name:           wayland-protocols
 Version:        1.31
-Release:        4%{?dist}
-License:        MIT
+Release:        3%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            http://wayland.freedesktop.org/
 
 Source0:        https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/%{version}/downloads/%{name}-%{version}.tar.xz
 %define sha512  %{name}=402ce1915300e29afe554d77965ee0a28a5f22fdb5b901c4c640e59b9f3a9c11094e1edae87eea1e76eea557f6faf0c34a0c28ee7f6babb4dc3719329c4e25bf
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -64,11 +66,9 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/
 
 %changelog
-*       Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.31-4
--       Bump version as a part of libxml2 upgrade
-*       Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.31-3
--       Bump version as a part of libxml2 upgrade
-*       Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.31-2
+*       Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.31-3
+-       Release bump for SRP compliance
+*       Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.31-2
 -       Bump version as a part of libxml2 upgrade
 *       Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 1.31-1
 -       Automatic Version Bump

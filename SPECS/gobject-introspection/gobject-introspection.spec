@@ -1,9 +1,8 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.74.0
-Release:        12%{?dist}
+Release:        17%{?dist}
 Group:          Development/Libraries
-License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
 Distribution:   Photon
 Vendor:         VMware, Inc.
@@ -11,11 +10,15 @@ Vendor:         VMware, Inc.
 Source0: https://gitlab.gnome.org/GNOME/gobject-introspection/-/archive/%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=decff5dda0ec5ec0afda4d6bcd3bdadcbf34289002c0d9c0c77ecf8c5d3f15d196b24d8035041545031006acbdfe76af47c42da061c40e200c87f2c74cd301f0
 
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires:  gettext
 BuildRequires:  intltool
 BuildRequires:  flex
 BuildRequires:  bison
 BuildRequires:  which
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.58.0
 BuildRequires:  libffi-devel
 BuildRequires:  go
 BuildRequires:  autoconf-archive
@@ -71,10 +74,10 @@ Libraries and headers for gobject-introspection.
 # Move the python3 modules to the correct location
 mkdir -p %{buildroot}%{python3_sitelib}
 mv %{buildroot}%{_libdir}/%{name}/giscanner %{buildroot}%{python3_sitelib}
-rm -rf %{buildroot}%{_datadir}/gtk-doc/html
+rm -rf %{buildroot}%{_datarootdir}/gtk-doc/html
 
-%if 0%{?with_check}
 %check
+%if 0%{?with_check}
 %{meson_test}
 %endif
 
@@ -106,6 +109,16 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.74.0-17
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.74.0-16
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.74.0-15
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.74.0-14
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.74.0-13
+- Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.74.0-12
 - Bump up version to compile with new go
 * Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.74.0-11
@@ -114,7 +127,7 @@ rm -rf %{buildroot}
 - Bump up version to compile with new go
 * Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.74.0-9
 - Bump up version to compile with new go
-* Mon Jul 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.74.0-8
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.74.0-8
 - Bump up version to compile with new go
 * Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.74.0-7
 - Bump up version to compile with new go

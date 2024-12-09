@@ -1,15 +1,17 @@
 Summary:        Library for talking to WWAN modems and devices
 Name:           libmbim
 Version:        1.26.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://www.freedesktop.org
-License:        GPLv2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.freedesktop.org/software/libmbim/libmbim-%{version}.tar.xz
 %define sha512  %{name}=7cce1fa6ff5630a1cc565a2198544de9f4a1db20b30304fac96de6c698eaf56b17fe6ccb089151623d4484d88fda6abe980bced19dfbf0d3ef425fc954fb5844
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libgudev-devel
 BuildRequires:  libgudev
@@ -71,6 +73,8 @@ make %{?_smp_mflags} check
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.2-6
+- Release bump for SRP compliance
 * Tue Jan 03 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.26.2-5
 - Bump release as a part of libgudev upgrade to 237-1
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.26.2-4

@@ -4,12 +4,14 @@ Name:           python3-pyinstaller
 Version:        5.5
 Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
-License:        GPLv2+
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/1e/d7/214b25c912d5f7d9c31d266821a8be6a35df80535056fe83997688721927/pyinstaller-%{version}.tar.gz
 %define sha512  pyinstaller=aaff7fe272d70b597691d398344289333b11343f9ef37cd797a264310db140e8ec391c8aef7a0661f18487222fb945a5f797f31e21c932585277335f5c30ace6
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  cmocka-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -70,8 +72,8 @@ python3 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
-* Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.5-3
-- Bump version as a part of openssl upgrade
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.5-3
+- Release bump for SRP compliance
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.5-2
 - Bump version as a part of zlib upgrade
 * Wed Nov 30 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.5-1

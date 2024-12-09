@@ -5,8 +5,7 @@
 Summary:        iPXE open source boot firmware
 Name:           ipxe
 Version:        1.21.1
-Release:        5%{?dist}
-License:        GPLv2
+Release:        6%{?dist}
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -15,6 +14,9 @@ Distribution:   Photon
 #Download URL:  https://github.com/ipxe/ipxe/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
 %define sha512  %{name}=47400975110ed4ab95835aa1b7c8d5a6917c19c5713c6ab88bc0741a3adcd62245a9c4251d1f46fffc45289c6b18bf893f86dbc3b67d3189c41b7f198367ecaa
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      x86_64
 
@@ -66,6 +68,8 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}%{_datadir}/%{name}/
 %{_datadir}/%{name}/rtl8139.rom
 
 %changelog
+*   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.21.1-6
+-   Release bump for SRP compliance
 *   Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21.1-5
 -   Bump version as a part of zlib upgrade
 *   Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 1.21.1-4

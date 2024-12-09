@@ -5,7 +5,7 @@ noarch/man-pages-5.13-1.ph5.noarch.rpm
 noarch/python3-wheel-0.37.1-2.ph5.noarch.rpm
 noarch/systemd-rpm-macros-252.4-8.ph5.noarch.rpm
 x86_64/apache-maven-3.8.6-2.ph5.x86_64.rpm
-x86_64/attr-2.5.1-2.ph5.x86_64.rpm
+x86_64/attr-2.5.1-4.ph5.x86_64.rpm
 x86_64/bash-5.2-1.ph5.x86_64.rpm
 x86_64/binutils-2.39-2.ph5.x86_64.rpm
 x86_64/binutils-devel-2.39-2.ph5.x86_64.rpm
@@ -14,7 +14,7 @@ x86_64/bison-3.8.2-3.ph5.x86_64.rpm
 x86_64/bzip2-1.0.8-5.ph5.x86_64.rpm
 x86_64/bzip2-devel-1.0.8-5.ph5.x86_64.rpm
 x86_64/bzip2-libs-1.0.8-5.ph5.x86_64.rpm
-x86_64/coreutils-9.1-2.ph5.x86_64.rpm
+x86_64/coreutils-9.1-7.ph5.x86_64.rpm
 x86_64/cpio-2.13-6.ph5.x86_64.rpm
 x86_64/debugedit-5.0-3.ph5.x86_64.rpm
 x86_64/diffutils-3.8-1.ph5.x86_64.rpm
@@ -50,7 +50,7 @@ x86_64/go-1.19.3-2.ph5.x86_64.rpm
 x86_64/grep-3.7-3.ph5.x86_64.rpm
 x86_64/groff-1.22.4-1.ph5.x86_64.rpm
 x86_64/gzip-1.12-2.ph5.x86_64.rpm
-x86_64/libacl-2.3.1-2.ph5.x86_64.rpm
+x86_64/libacl-2.3.1-4.ph5.x86_64.rpm
 x86_64/libcap-2.66-1.ph5.x86_64.rpm
 x86_64/libffi-3.4.2-1.ph5.x86_64.rpm
 x86_64/libgcc-12.2.0-1.ph5.x86_64.rpm
@@ -59,9 +59,13 @@ x86_64/libgcc-devel-12.2.0-1.ph5.x86_64.rpm
 x86_64/libgomp-12.2.0-1.ph5.x86_64.rpm
 x86_64/libgomp-devel-12.2.0-1.ph5.x86_64.rpm
 x86_64/libpipeline-1.5.6-1.ph5.x86_64.rpm
+x86_64/libselinux-3.4-3.ph5.x86_64.rpm
+x86_64/libselinux-devel-3.4-3.ph5.x86_64.rpm
 x86_64/libstdc++-12.2.0-1.ph5.x86_64.rpm
 x86_64/libstdc++-devel-12.2.0-1.ph5.x86_64.rpm
 x86_64/libtool-2.4.7-1.ph5.x86_64.rpm
+x86_64/libxcrypt-4.4.36-1.ph5.x86_64.rpm
+x86_64/libxcrypt-devel-4.4.36-1.ph5.x86_64.rpm
 x86_64/lua-5.4.4-5.ph5.x86_64.rpm
 x86_64/lua-devel-5.4.4-5.ph5.x86_64.rpm
 x86_64/lua-libs-5.4.4-5.ph5.x86_64.rpm
@@ -85,7 +89,10 @@ x86_64/openssl-3.0.8-1.ph5.x86_64.rpm
 x86_64/openssl-devel-3.0.8-1.ph5.x86_64.rpm
 x86_64/openssl-libs-3.0.8-1.ph5.x86_64.rpm
 x86_64/patch-2.7.6-5.ph5.x86_64.rpm
-x86_64/pcre-libs-8.45-3.ph5.x86_64.rpm
+x86_64/pcre2-10.40-5.ph5.x86_64.rpm
+x86_64/pcre2-devel-10.40-5.ph5.x86_64.rpm
+x86_64/pcre2-libs-10.40-5.ph5.x86_64.rpm
+x86_64/pcre-libs-8.45-5.ph5.x86_64.rpm
 x86_64/perl-5.36.0-1.ph5.x86_64.rpm
 x86_64/pkg-config-0.29.2-3.ph5.x86_64.rpm
 x86_64/popt-1.16-5.ph5.x86_64.rpm

@@ -1,14 +1,16 @@
 Summary:        Utility to send ICMP echo probes to network hosts
 Name:           fping
 Version:        5.1
-Release:        1%{?dist}
-License:        Charityware
+Release:        2%{?dist}
 Group:          Productivity/Networking/Diagnostic
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.fping.org/
 Source0:        http://fping.org/dist/%{name}-%{version}.tar.gz
 %define sha512  fping=1a208da8dcd99093d0512af5d85ba5e7b5743ec97993d24c1fe612bb58d93090ac1ba0952f648aa075f16d390a77c4be65e394ae56dbede2a6914e0e8c68e2bd
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  autoconf
 BuildRequires:  automake
 
@@ -39,6 +41,8 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man8/fping.8*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.1-2
+- Release bump for SRP compliance
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.1-1
 - Automatic Version Bump
 * Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.0-1

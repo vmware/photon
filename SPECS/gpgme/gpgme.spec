@@ -1,8 +1,7 @@
 Summary:    High-Level Crypto API
 Name:       gpgme
 Version:    1.18.0
-Release:    3%{?dist}
-License:    GPLv2+
+Release:    4%{?dist}
 URL:        https://www.gnupg.org/(it)/related_software/gpgme/index.html
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    https://www.gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
 %define sha512  %{name}=c0cb0b337d017793a15dd477a7f5eaef24587fcda3d67676bf746bb342398d04792c51abe3c26ae496e799c769ce667d4196d91d86e8a690d02c6718c8f6b4ac
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:   libassuan
 Requires:   libgpg-error >= 1.32
@@ -27,9 +29,8 @@ The GPGME package is a C language library that allows to add support for cryptog
 Group:      Development/Libraries
 Summary:    Static libraries and header files from GPGME, GnuPG Made Easy.
 Requires:   %{name} = %{version}-%{release}
-Requires:   libassuan-devel
+Requires:    libassuan-devel
 Requires:   libgpg-error-devel >= 1.32
-Requires:   glib-devel
 
 %description    devel
 Static libraries and header files from GPGME, GnuPG Made Easy.
@@ -45,17 +46,18 @@ Static libraries and header files from GPGME, GnuPG Made Easy.
     --enable-languages=cl \
     --disable-gpgsm-test
 
-%make_build
+make %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_mflags}
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 
 rm -rf %{buildroot}%{_libdir}/*.la \
        %{buildroot}/%{_infodir}
 
+%if 0%{?with_check}
 %check
-cd tests
-%make_build check-TESTS
+cd tests && make check-TESTS %{?_smp_mflags}
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -74,8 +76,10 @@ cd tests
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.18.0-3
-- Fix devel package requires
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.18.0-4
+- Release bump for SRP compliance
+* Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 1.18.0-3
+- Bump up version to compile with new gnupg
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.18.0-2
 - Bump release as a part of libgpg-error upgrade to 1.46
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.18.0-1

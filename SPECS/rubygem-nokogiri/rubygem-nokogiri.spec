@@ -3,15 +3,17 @@
 
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
-Version:        1.16.2
-Release:        2%{?dist}
-License:        MIT
+Version:        1.13.9
+Release:        6%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/nokogiri/
 Source0:        https://rubygems.org/downloads/nokogiri-%{version}.gem
-%define sha512  nokogiri=4a973610855ef9ac5cced69cd43cf723273f23dbf14586021ffaa8787b0c54fb3d63f94239636166bdeb8668d6e67d269899ebc1ad0a232d95389aeee8dad642
+%define sha512  nokogiri=207161fcf74aa1d1550841765268746e72d74b7516b34daf61cc5e7dc6af8fec4866f2734cd53afaf17fc546c92c3709a72f9e72da13071f65465855abf89bfa
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby-devel
 BuildRequires:  rubygem-mini_portile2
 BuildRequires:  libxml2-devel
@@ -41,15 +43,13 @@ rm -rf %{buildroot}/*
 %{gem_base}
 
 %changelog
-*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.2-2
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.13.9-6
+-   Release bump for SRP compliance
+*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.13.9-5
 -   Add gem macros
-*   Tue Apr 02 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.2-1
--   Update to version 1.16.2
-*   Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.13.9-5
--   Bump version as a part of libxml2 upgrade
-*   Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.13.9-4
--   Bump version as a part of libxml2 upgrade
-*   Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.13.9-3
+*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.13.9-4
+-   Build from source
+*   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.13.9-3
 -   Bump version as a part of libxml2 upgrade
 *   Fri Mar 10 2023 Shivani Agarwal <shivania2@vmware.com> 1.13.9-2
 -   Fix the Directory and file permission

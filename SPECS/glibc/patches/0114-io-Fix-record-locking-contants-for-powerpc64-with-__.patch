@@ -1,0 +1,101 @@
+From 0ae2afe45ee0e88b37b89399b6a8cf0330f46937 Mon Sep 17 00:00:00 2001
+From: Aurelien Jarno <aurelien@aurel32.net>
+Date: Mon, 28 Aug 2023 23:30:37 +0200
+Subject: [PATCH 114/175] io: Fix record locking contants for powerpc64 with
+ __USE_FILE_OFFSET64
+
+Commit 5f828ff824e3b7cd1 ("io: Fix F_GETLK, F_SETLK, and F_SETLKW for
+powerpc64") fixed an issue with the value of the lock constants on
+powerpc64 when not using __USE_FILE_OFFSET64, but it ended-up also
+changing the value when using __USE_FILE_OFFSET64 causing an API change.
+
+Fix that by also checking that define, restoring the pre
+4d0fe291aed3a476a commit values:
+
+Default values:
+- F_GETLK: 5
+- F_SETLK: 6
+- F_SETLKW: 7
+
+With -D_FILE_OFFSET_BITS=64:
+- F_GETLK: 12
+- F_SETLK: 13
+- F_SETLKW: 14
+
+At the same time, it has been noticed that there was no test for io lock
+with __USE_FILE_OFFSET64, so just add one.
+
+Tested on x86_64-linux-gnu, i686-linux-gnu and
+powerpc64le-unknown-linux-gnu.
+
+Resolves: BZ #30804.
+Co-authored-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+Signed-off-by: Aurelien Jarno <aurelien@aurel32.net>
+(cherry picked from commit 434bf72a94de68f0cc7fbf3c44bf38c1911b70cb)
+---
+ NEWS                                         | 2 ++
+ io/Makefile                                  | 4 +++-
+ io/tst-fcntl-lock-lfs.c                      | 2 ++
+ sysdeps/unix/sysv/linux/powerpc/bits/fcntl.h | 2 +-
+ 4 files changed, 8 insertions(+), 2 deletions(-)
+ create mode 100644 io/tst-fcntl-lock-lfs.c
+
+diff --git a/NEWS b/NEWS
+index c1456869adbeb4d4438288054c02263f848d6ae5..8923c708206589aceb10616a4803973599ae0664 100644
+--- a/NEWS
++++ b/NEWS
+@@ -71,6 +71,8 @@ The following bugs are resolved with this release:
+   [30477] libc: [RISCV]: time64 does not work on riscv32
+   [30515] _dl_find_object incorrectly returns 1 during early startup
+   [30785] Always call destructors in reverse constructor order
++  [30804] F_GETLK, F_SETLK, and F_SETLKW value change for powerpc64 with
++    -D_FILE_OFFSET_BITS=64
+   [30842] Stack read overflow in getaddrinfo in no-aaaa mode (CVE-2023-4527)
+ 
+ Version 2.36
+diff --git a/io/Makefile b/io/Makefile
+index fb363c612cd96acdc331d0121990feeaa69cefcf..b896484320d35c00cc2816203404886dbe454888 100644
+--- a/io/Makefile
++++ b/io/Makefile
+@@ -59,6 +59,7 @@ routines :=								\
+ 	ftw64-time64							\
+ 	closefrom close_range
+ 
++
+ others		:= pwd
+ test-srcs	:= ftwtest ftwtest-time64
+ tests		:= test-utime test-stat test-stat2 test-lfs tst-getcwd \
+@@ -81,7 +82,8 @@ tests		:= test-utime test-stat test-stat2 test-lfs tst-getcwd \
+ 		   tst-closefrom \
+ 		   tst-close_range \
+ 		   tst-ftw-bz28126 \
+-		   tst-fcntl-lock
++		   tst-fcntl-lock \
++		   tst-fcntl-lock-lfs
+ 
+ tests-time64 := \
+   tst-fcntl-time64 \
+diff --git a/io/tst-fcntl-lock-lfs.c b/io/tst-fcntl-lock-lfs.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..f2a909fb023c94e62eb111d83dace7dca8a6bf06
+--- /dev/null
++++ b/io/tst-fcntl-lock-lfs.c
+@@ -0,0 +1,2 @@
++#define _FILE_OFFSET_BITS 64
++#include <io/tst-fcntl-lock.c>
+diff --git a/sysdeps/unix/sysv/linux/powerpc/bits/fcntl.h b/sysdeps/unix/sysv/linux/powerpc/bits/fcntl.h
+index 49c8fac0fb38ed70b85cb8d0f524f7159900d4cb..0ca6e69ee90257b99d56c6524e55f9c202d88f29 100644
+--- a/sysdeps/unix/sysv/linux/powerpc/bits/fcntl.h
++++ b/sysdeps/unix/sysv/linux/powerpc/bits/fcntl.h
+@@ -33,7 +33,7 @@
+ # define __O_LARGEFILE	0200000
+ #endif
+ 
+-#if __WORDSIZE == 64
++#if __WORDSIZE == 64 && !defined __USE_FILE_OFFSET64
+ # define F_GETLK	5
+ # define F_SETLK	6
+ # define F_SETLKW	7
+-- 
+2.35.6
+
