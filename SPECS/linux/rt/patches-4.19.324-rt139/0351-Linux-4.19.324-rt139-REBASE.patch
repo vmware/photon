@@ -1,0 +1,20 @@
+From bbfca39f8820b1d3c9605402a2f2d1fdef4eb264 Mon Sep 17 00:00:00 2001
+From: Daniel Wagner <wagi@monom.org>
+Date: Thu, 5 Dec 2024 14:43:53 +0100
+Subject: [PATCH 351/351] Linux 4.19.324-rt139 REBASE
+
+Signed-off-by: Daniel Wagner <wagi@monom.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 1199ebade17b..e0b93414dc30 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt16
++-rt139
+-- 
+2.47.1
+

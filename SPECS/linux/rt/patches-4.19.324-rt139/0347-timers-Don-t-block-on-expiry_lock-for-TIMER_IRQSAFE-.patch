@@ -1,0 +1,58 @@
+From fd8de374b4a7e5f82535f20a6c60159c67bde8ad Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Mon, 31 Oct 2022 16:50:06 +0100
+Subject: [PATCH 347/351] timers: Don't block on ->expiry_lock for
+ TIMER_IRQSAFE timers
+
+Upstream commit c725dafc95f1b37027840aaeaa8b7e4e9cd20516
+
+PREEMPT_RT does not spin and wait until a running timer completes its
+callback but instead it blocks on a sleeping lock to prevent a livelock in
+the case that the task waiting for the callback completion preempted the
+callback.
+
+This cannot be done for timers flagged with TIMER_IRQSAFE. These timers can
+be canceled from an interrupt disabled context even on RT kernels.
+
+The expiry callback of such timers is invoked with interrupts disabled so
+there is no need to use the expiry lock mechanism because obviously the
+callback cannot be preempted even on RT kernels.
+
+Do not use the timer_base::expiry_lock mechanism when waiting for a running
+callback to complete if the timer is flagged with TIMER_IRQSAFE.
+
+Also add a lockdep assertion for RT kernels to validate that the expiry
+lock mechanism is always invoked in preemptible context.
+
+[ bigeasy: Dropping that lockdep_assert_preemption_enabled() check in
+           backport ]
+
+Reported-by: Mike Galbraith <efault@gmx.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20201103190937.hga67rqhvknki3tp@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Daniel Wagner <wagi@monom.org>
+---
+ kernel/time/timer.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index c51154702b6b..9a148475039f 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1423,8 +1423,10 @@ int timer_delete_sync(struct timer_list *timer)
+ 	 * Must be able to sleep on PREEMPT_RT because of the slowpath in
+ 	 * del_timer_wait_running().
+ 	 */
++#if 0
+ 	if (IS_ENABLED(CONFIG_PREEMPT_RT) && !(timer->flags & TIMER_IRQSAFE))
+-		might_sleep();
++		lockdep_assert_preemption_enabled();
++#endif
+ 
+ 	do {
+ 		ret = try_to_del_timer_sync(timer);
+-- 
+2.47.1
+

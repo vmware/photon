@@ -350,4 +350,4 @@ Patch547: 0347-timers-Don-t-block-on-expiry_lock-for-TIMER_IRQSAFE-.patch
 Patch548: 0348-Revert-percpu-include-irqflags.h-for-raw_local_irq_s.patch
 Patch549: 0349-workqueue-Fix-deadlock-due-to-recursive-locking-of-p.patch
 Patch550: 0350-Revert-sched-rt-Provide-migrate_disable-enable-inlin.patch
-Patch551: 0351-Linux-4.19.322-rt138-REBASE.patch
+Patch551: 0351-Linux-4.19.324-rt139-REBASE.patch
