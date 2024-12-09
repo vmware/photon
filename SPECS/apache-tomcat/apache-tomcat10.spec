@@ -11,7 +11,7 @@
 
 Summary:        Apache Tomcat 10.1
 Name:           apache-tomcat10
-Version:        10.1.19
+Version:        10.1.34
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -22,19 +22,20 @@ Obsoletes:      %{_origname} < 10.1.15-1%{?dist}
 Provides:       %{_origname} = %{version}-%{release}
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=ee9bd20979a53f2151ac10dd8be4d4c0b82cabb60c10f33572460094a199832434b4f55aed4ab0334a2daf2795dbbfa345a55144132dbfecc7b3ab2d74999e77
+%define sha512 %{_origname}=0124d92eb1d184bdce1a50d5934958a0c796460a7157a8622aeee2b21060f5377198939a0260285bcdaa25cea42b880cb97575469a63f7b33ec22d532927e6ca
 
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
+#
 # base-for-apache-tomcat is a cached -Dbase.path folder
-# generate base-for-apache-tomcat code with following steps:
+# Generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
 # 2. cd %{_origname}-%{version}-src && ant deploy dist-prepare dist-source
 # 3. generated code will be exist to default location $HOME/tomcat-build-libs
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=480d9fe053a0de25e560306bd98c0489a22237ac1ad8132ad5f78a116531aa08cd23b799ff7b69e04936086503656b51e715b1d3300cc3f27cfc6d4ea6a113a4
+%define sha512 base=c764124c351e8b22a7bd65026d1039a27027adfe651b97757ea4e07c3f81779557cfbaab741866dbf37942be5b302c92216f905e31c2aae27594aa590fc9f446
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
@@ -68,8 +69,11 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 %build
-ant -Dant.build.javac.source=11 -Dant.build.javac.target=11 \
--Dbase.path="../base-for-%{_origname}-%{version}" deploy dist-prepare dist-source
+ant \
+  -Dant.build.javac.source=11 \
+  -Dant.build.javac.target=11 \
+  -Dbase.path="../base-for-%{_origname}-%{version}" \
+  deploy dist-prepare dist-source
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
@@ -79,10 +83,10 @@ install -vdm 755 %{buildroot}%{_confdir}
 install -vdm 755 %{buildroot}%{_webappsdir}
 install -vdm 755 %{buildroot}%{_logsdir}
 install -vdm 755 %{buildroot}%{_tempdir}
-cp -a -r %{_builddir}/%{_origname}-%{version}-src/output/build/bin/* %{buildroot}%{_bindir}
-cp -a -r %{_builddir}/%{_origname}-%{version}-src/output/build/lib/* %{buildroot}%{_libdir}
-cp -a -r %{_builddir}/%{_origname}-%{version}-src/output/build/conf/* %{buildroot}%{_confdir}
-cp -a -r %{_builddir}/%{_origname}-%{version}-src/output/build/webapps/* %{buildroot}%{_webappsdir}
+cp -a %{_builddir}/%{_origname}-%{version}-src/output/build/bin/* %{buildroot}%{_bindir}
+cp -a %{_builddir}/%{_origname}-%{version}-src/output/build/lib/* %{buildroot}%{_libdir}
+cp -a %{_builddir}/%{_origname}-%{version}-src/output/build/conf/* %{buildroot}%{_confdir}
+cp -a %{_builddir}/%{_origname}-%{version}-src/output/build/webapps/* %{buildroot}%{_webappsdir}
 
 cp -a %{_builddir}/%{_origname}-%{version}-src/LICENSE %{buildroot}%{_prefix}
 cp -a %{_builddir}/%{_origname}-%{version}-src/NOTICE %{buildroot}%{_prefix}
@@ -101,6 +105,16 @@ popd
 
 %clean
 rm -rf %{buildroot}/*
+
+%post
+alternatives --install %{_origprefix} apache-tomcat %{_prefix} 20000 \
+  --slave %{_datadir}/java/tomcat tomcat %{_datadir}/java/tomcat10
+
+%postun
+# Do alternative remove only in case of uninstall
+if [ $1 -eq 0 ]; then
+  alternatives --remove apache-tomcat %{_prefix}
+fi
 
 %files
 %defattr(-,root,root)
@@ -139,17 +153,9 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/manager/*
 %{_webappsdir}/host-manager/*
 
-%post
-alternatives --install %{_origprefix} apache-tomcat %{_prefix} 20000 \
-  --slave %{_datadir}/java/tomcat tomcat %{_datadir}/java/tomcat10
-
-%postun
-# Do alternative remove only in case of uninstall
-if [ $1 -eq 0 ]; then
-alternatives --remove apache-tomcat %{_prefix}
-fi
-
 %changelog
+* Tue Dec 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.1.34-1
+- Upgrade to v10.1.34 to fix CVE-2024-52316
 * Tue Mar 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 10.1.19-1
 - Version upgrade to v10.1.19
 * Tue Feb 20 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 10.1.16-1
