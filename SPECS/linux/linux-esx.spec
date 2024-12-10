@@ -28,7 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.118
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -130,6 +130,9 @@ Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
+
+# UDF directory traversal regression fix
+Patch32: 0001-udf-Fix-directory-iteration-for-longer-tail-extents.patch
 
 %ifarch x86_64
 # VMW: [50..59]
@@ -533,6 +536,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.118-6
+- Fix UDF directory traversal regression
 * Fri Dec 06 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-5
 - fix aarch64 build
 * Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-4

@@ -1,0 +1,31 @@
+From 1ea1cd11c72d1405a6b98440a9d5ea82dfa07166 Mon Sep 17 00:00:00 2001
+From: Jan Kara <jack@suse.cz>
+Date: Wed, 25 Jan 2023 11:43:03 +0100
+Subject: [PATCH] udf: Fix directory iteration for longer tail extents
+
+When directory's last extent has more that one block and its length is
+not multiple of a block side, the code wrongly decided to move to the
+next extent instead of processing the last partial block. This led to
+directory corruption. Fix the rounding issue.
+
+Signed-off-by: Jan Kara <jack@suse.cz>
+---
+ fs/udf/directory.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/udf/directory.c b/fs/udf/directory.c
+index b1424e2aa868..31f1bf8ab848 100644
+--- a/fs/udf/directory.c
++++ b/fs/udf/directory.c
+@@ -170,7 +170,7 @@ static struct buffer_head *udf_fiiter_bread_blk(struct udf_fileident_iter *iter)
+ static int udf_fiiter_advance_blk(struct udf_fileident_iter *iter)
+ {
+ 	iter->loffset++;
+-	if (iter->loffset < iter->elen >> iter->dir->i_blkbits)
++	if (iter->loffset < DIV_ROUND_UP(iter->elen, 1<<iter->dir->i_blkbits))
+ 		return 0;
+ 
+ 	iter->loffset = 0;
+-- 
+2.47.1
+

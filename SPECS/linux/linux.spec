@@ -41,7 +41,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.118
-Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -169,6 +169,9 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
 #VMCI/VSOCK
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
+
+# UDF directory traversal regression fix
+Patch32: 0001-udf-Fix-directory-iteration-for-longer-tail-extents.patch
 
 %ifarch x86_64
 # VMW: [50..59]
@@ -949,6 +952,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.118-8
+- Fix UDF directory traversal regression
 * Mon Dec 09 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-7
 - Disable CONFIG_GCC_PLUGIN_LATENT_ENTROPY
 * Fri Dec 06 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-6

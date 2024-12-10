@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.118
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -130,6 +130,9 @@ Patch23: 6.0-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
 
 #VMCI/VSOCK
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
+
+# UDF directory traversal regression fix
+Patch32: 0001-udf-Fix-directory-iteration-for-longer-tail-extents.patch
 
 # VMW: [55..60]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -338,7 +341,7 @@ stalld to use eBPF based backend.
 %setup -q -T -D -b 32 -n linux-%{version}
 %endif
 
-%autopatch -p1 -m0 -M24
+%autopatch -p1 -m0 -M50
 
 #VMW
 %autopatch -p1 -m55 -M60
@@ -533,6 +536,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.118-4
+- Fix UDF directory traversal regression
 * Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-3
 - Fix CVE-2024-50055, Fix CVE-2024-50014, CVE-2024-50018
 * Tue Nov 26 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.118-2
