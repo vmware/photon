@@ -1115,7 +1115,7 @@ class CheckTools:
             if commit_id:
                 cmd = f"git diff --name-only {commit_id}"
 
-        files, _, _ = runCmd(cmd, capture=True, shell=True)
+        files, _, _ = runCmd(cmd, capture=True, shell=True, cwd=ph_path)
         files = files.splitlines()
 
         if check_specs(files):
