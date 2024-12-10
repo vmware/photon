@@ -1,7 +1,7 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
 Version:        3.2.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org
 Group:          Appication/Internet
@@ -10,6 +10,8 @@ Distribution:   Photon
 
 Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
 %define sha512  %{name}=c2afba11a352fd88133f9e96e19d6df80eb864450c83eced13a7faa23df947bccf2ef093f2101df6ee30abff4cbbd39ac802e9aa5f726e42c9caff274fad8377
+
+Patch0:         checksum_buffer_fix.patch
 
 BuildRequires:  zlib-devel
 BuildRequires:  systemd
@@ -86,6 +88,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue Dec 10 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.2.7-3
+- Some checksum buffer fixes
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2.7-2
 - Bump version as a part of zlib upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.7-1
