@@ -1,35 +1,35 @@
-From 7c3f2c6c06d42d2fb084405298bc0b0d158bc3cd Mon Sep 17 00:00:00 2001
+From fd0288b16cb2ca780600e7b64d933e6d334841b1 Mon Sep 17 00:00:00 2001
 From: Shivani Agarwal <shivani.agarwal@broadcom.com>
-Date: Tue, 22 Oct 2024 06:36:57 +0000
-Subject: [PATCH] Modify code to upgrade rexml-3.2.5 to rexml-3.3.3
+Date: Tue, 10 Dec 2024 08:08:57 +0000
+Subject: [PATCH] Modify code to upgrade rexml-3.2.5 to rexml 3.3.9
 
 ---
- .../{rexml-3.2.5.gemspec => rexml-3.3.3.gemspec}              | 4 ++--
+ .../{rexml-3.2.5.gemspec => rexml-3.3.9.gemspec}              | 4 ++--
  gems/bundled_gems                                             | 2 +-
  2 files changed, 3 insertions(+), 3 deletions(-)
- rename .bundle/specifications/{rexml-3.2.5.gemspec => rexml-3.3.3.gemspec} (98%)
+ rename .bundle/specifications/{rexml-3.2.5.gemspec => rexml-3.3.9.gemspec} (98%)
 
-diff --git a/.bundle/specifications/rexml-3.2.5.gemspec b/.bundle/specifications/rexml-3.3.3.gemspec
+diff --git a/.bundle/specifications/rexml-3.2.5.gemspec b/.bundle/specifications/rexml-3.3.9.gemspec
 similarity index 98%
 rename from .bundle/specifications/rexml-3.2.5.gemspec
-rename to .bundle/specifications/rexml-3.3.3.gemspec
-index 5901070..99032dd 100644
+rename to .bundle/specifications/rexml-3.3.9.gemspec
+index 5901070..9d8ce64 100644
 --- a/.bundle/specifications/rexml-3.2.5.gemspec
-+++ b/.bundle/specifications/rexml-3.3.3.gemspec
++++ b/.bundle/specifications/rexml-3.3.9.gemspec
 @@ -1,9 +1,9 @@
  # -*- encoding: utf-8 -*-
 -# stub: rexml 3.2.5 ruby lib
-+# stub: rexml 3.3.3 ruby lib
++# stub: rexml 3.3.9 ruby lib
  
  Gem::Specification.new do |s|
    s.name = "rexml".freeze
 -  s.version = "3.2.5"
-+  s.version = "3.3.3"
++  s.version = "3.3.9"
  
    s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
    s.require_paths = ["lib".freeze]
 diff --git a/gems/bundled_gems b/gems/bundled_gems
-index f113516..16a770c 100644
+index f113516..2a13748 100644
 --- a/gems/bundled_gems
 +++ b/gems/bundled_gems
 @@ -3,7 +3,7 @@ minitest 5.15.0 https://github.com/seattlerb/minitest
@@ -37,7 +37,7 @@ index f113516..16a770c 100644
  rake 13.0.6 https://github.com/ruby/rake
  test-unit 3.5.3 https://github.com/test-unit/test-unit
 -rexml 3.2.5 https://github.com/ruby/rexml
-+rexml 3.3.3 https://github.com/ruby/rexml
++rexml 3.3.9 https://github.com/ruby/rexml
  rss 0.2.9 https://github.com/ruby/rss
  net-ftp 0.1.3 https://github.com/ruby/net-ftp
  net-imap 0.2.3 https://github.com/ruby/net-imap

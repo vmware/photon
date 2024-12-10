@@ -1,7 +1,9 @@
+%define rexml_version    3.3.9
+
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -16,12 +18,12 @@ Patch2:         CVE-2024-27280.patch
 Patch3:         CVE-2023-36617-1.patch
 Patch4:         CVE-2023-36617-2.patch
 Patch5:         CVE-2024-27282.patch
-Patch6:         0001-Modify-code-to-upgrade-rexml-3.2.5-to-rexml-3.3.3.patch
+Patch6:         0001-Modify-code-to-upgrade-rexml-3.2.5-to-rexml-3.3.9.patch
 
 Source1:        macros.ruby
 
-Source2:        rexml-3.3.3.tar.gz
-%define sha512  rexml-3.3.3.tar.gz=3070e2fdf0748d807f7c9d5c27024194b05f2f7d848d8d913aa99cc1242de8ad50d524494456f0da5e2fe28eb5b517e8f7af44b4acc363c6975a54af6b14288b
+Source2:        rexml-%{rexml_version}.tar.gz
+%define sha512  rexml-%{rexml_version}.tar.gz=cc38609e5321f157b0a9ea793386017c8d4f743aabd66fc31a8f450f68c57e89825ec1d549efc4e2459ae952e57bbc87d47f9a0affa457639b89b9374e0bb137
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -62,12 +64,12 @@ Header files for doing development with ruby.
 %autosetup -p1
 
 %build
-# Modification to upgrade rexml-3.2.5 to rexml-3.3.3
+# Modification to upgrade rexml-3.2.5 to rexml-3.3.9
 rm -rf .bundle/gems/rexml-3.2.5
 tar -xvpf %{SOURCE2} -C .bundle/gems
 
 rm gems/rexml-3.2.5.gem
-cp -p .bundle/gems/rexml-3.3.3/rexml-3.3.3.gem gems/
+cp -p .bundle/gems/rexml-%{rexml_version}/rexml-%{rexml_version}.gem gems/
 
 # below loop fixes the files in libexec to point correct ruby
 # Only verfied and to be used with ruby version 2.7.1
@@ -122,6 +124,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Tue Dec 10 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-6
+- Fix CVE-2024-49761 Upgrade rexml to rexml-3.3.9 from rexml-3.2.5
 * Mon Oct 21 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-5
 - Fix CVE-2024-49416 and, CVE-2024-41123 Upgrade rexml to rexml-3.3.3 from rexml-3.2.5
 * Thu Jun 27 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-4
