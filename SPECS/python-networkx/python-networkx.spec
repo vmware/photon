@@ -2,9 +2,8 @@
 
 Name:           python3-networkx
 Version:        3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Creates and Manipulates Graphs and Networks
-License:        BSD-3-Clause
 URL:            https://networkx.org
 Vendor:         VMware, Inc.
 Group:          Development/Languages/Python
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://github.com/networkx/networkx/archive/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=f9fdfbe0c716c5cc6cf3f47b44e02bbd8a166724c2ef7044497b01baf468f354123aeac3c032e31293c7eedd762a29f89628cbe2ecfea280cf6012d7b0d9bdfe
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch: noarch
 
@@ -45,5 +47,7 @@ pip3 install tomli
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2-2
+- Release bump for SRP compliance
 * Tue Oct 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.2-1
 - Initial version. Needed by selinux-python.

@@ -1,7 +1,7 @@
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python3-markupsafe
 Version:        2.1.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -49,6 +49,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.1.1-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.1-3
 - Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.1.1-2

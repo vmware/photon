@@ -1,12 +1,14 @@
 Summary:        Python binding for libudev
 Name:           python3-pyudev
 Version:        0.23.2
-Release:        1%{?dist}
-License:        GNU Library or Lesser General Public License (LGPL) (LGPL 2.1+)
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 URL:            https://pypi.org/project/pyudev
 Source0:        pyudev-%{version}.tar.gz
 %define sha512  pyudev=40b947d363dca73789f5ab77cbda4b48349e28fe04f2f5cafb93d20799d842ebeb2b7d78d1f16dcbcaac5c20aff1b931b372c75852706e731337e6e1d30b8538
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -19,7 +21,7 @@ Requires:       systemd
 Requires:       python3
 Requires:       python3-pip
 Requires:       python3-six
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-pip
 BuildRequires:  curl-devel
 BuildRequires:  python3-six
@@ -58,6 +60,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.23.2-2
+-   Release bump for SRP compliance
 *   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.23.2-1
 -   Automatic Version Bump
 *   Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 0.22.0-1

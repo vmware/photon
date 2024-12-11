@@ -1,18 +1,20 @@
 Summary:        Core utilities for Python packages
 Name:           python3-packaging
 Version:        21.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
-License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pypi.python.org/packages/source/p/packaging/packaging-%{version}.tar.gz
 %define sha512  packaging=2e3aa276a4229ac7dc0654d586799473ced9761a83aa4159660d37ae1a2a8f30e987248dd0e260e2834106b589f259a57ce9936eef0dcc3c430a99ac6b663e05
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-setuptools
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -52,6 +54,8 @@ PYTHONPATH=./ pytest
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.3-2
+- Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 21.3-1
 - Update to 21.3
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.4-3

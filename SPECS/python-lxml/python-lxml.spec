@@ -1,7 +1,7 @@
 Summary:        XML and HTML with Python
 Name:           python3-lxml
 Version:        4.9.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Libraries
 URL:            https://github.com/lxml/lxml
 Vendor:         VMware, Inc.
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9.1-5
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.9.1-4
 - Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.1-3

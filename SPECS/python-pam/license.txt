@@ -1,0 +1,1 @@
+License: MIT AND Python-2.0

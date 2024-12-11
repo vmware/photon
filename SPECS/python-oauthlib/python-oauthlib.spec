@@ -3,8 +3,7 @@
 Summary:        An implementation of the OAuth request-signing logic
 Name:           python3-oauthlib
 Version:        3.2.2
-Release:        1%{?dist}
-License:        BSD
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/python-oauthlib/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/6d/fa/fbf4001037904031639e6bfbfc02badfc7e12f137a8afa254df6c4c8a670/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=c147b96e0ab0d1a8845f525e80831cfd04495134dd1f17fd95eac62f3a95c91e6dca9d38e34206537d77f3c12dd5b553252239318ba39546979c350e96536b8b
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -49,6 +51,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/%{srcname}-%{version}.dist-info/
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.2-2
+- Release bump for SRP compliance
 * Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.2-1
 - Upgrade to v3.2.2
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.2.0-2

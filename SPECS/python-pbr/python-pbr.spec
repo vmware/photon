@@ -1,20 +1,22 @@
 Summary:        Python Build Reasonableness
 Name:           python3-pbr
 Version:        5.10.0
-Release:        2%{?dist}
-License:        ASL 2.0
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://docs.openstack.org/developer/pbr/
 Source0:        https://pypi.io/packages/source/p/pbr/pbr-%{version}.tar.gz
 %define sha512  pbr=a5f4393407a17f4de5977483f3c7fa651780b9b9069a0a1898a5b511742262dfb06f891cfcb632c5b64ecfd041188095ceb880c6e71c99c81f0eace59e4e1976
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  python3-docutils
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
 BuildRequires:  python3-xml
 %if 0
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  git
 BuildRequires:  gnupg
 %endif
@@ -60,6 +62,8 @@ python3 setup.py test
 %{python3_sitelib}/pbr
 
 %changelog
+*   Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.10.0-3
+-   Release bump for SRP compliance
 *   Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 5.10.0-2
 -   Bump up version to compile with new gnupg
 *   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 5.10.0-1

@@ -3,15 +3,17 @@
 Summary:        Python-PostgreSQL Database Adapter
 Name:           python3-psycopg2
 Version:        2.9.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
-License:        LGPL with exceptions or ZPL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/source/p/psycopg2/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=048184d1d162a371fc0fba711448a6fa8a6aac193421f4484c7f7b91c39065d5b632fa34fc15a901eca055d597302b1f9e38330b248ed0e4653dcdc544b0d660
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -72,6 +74,8 @@ groupdel -f %{user}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.3-5
+- Release bump for SRP compliance
 * Fri Jan 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.3-4
 - Remove pgsql-12 dependency
 * Thu Jan 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.3-3

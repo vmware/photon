@@ -1,0 +1,1 @@
+License: BSD-3-Clause-Clear AND BSD-3-Clause AND CC-BY-SA-3.0

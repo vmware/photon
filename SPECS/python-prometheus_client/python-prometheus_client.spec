@@ -1,14 +1,16 @@
 Name:           python3-prometheus_client
 Version:        0.14.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python client for the Prometheus monitoring system.
-License:        Apache-2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/prometheus_client
 Source0: prometheus_client-%{version}.tar.gz
 %define sha512  prometheus_client=3ba1389f23566ecab1371452ec717e06c4e444d1ac8a37cb27429493e64f3931e6876734c0947cb43ba086ed51ca47a0c7764d488ea6e7f2d0864447f49b09e4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -45,6 +47,8 @@ python3 setup.py tests
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.14.1-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.14.1-1
 - Automatic Version Bump
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.8.0-2

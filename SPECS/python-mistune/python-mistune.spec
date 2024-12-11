@@ -3,8 +3,7 @@
 Summary:        The fastest markdown parser in pure Python.
 Name:           python3-mistune
 Version:        2.0.5
-Release:        1%{?dist}
-License:        BSD
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,6 +11,9 @@ Url:            https://pypi.python.org/pypi/mistune
 
 Source0: https://files.pythonhosted.org/packages/source/m/mistune/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=109447977a441ebbedfca2abbe62415139d94c48ae56c3d8cae04df3f93ccd1e8333b3dbb8bf61a2096b903df6c3aab2fadd0893fb82815416f17555465e98c7
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -47,6 +49,8 @@ pip3 install tomli
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.5-2
+- Release bump for SRP compliance
 * Sun Aug 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.5-1
 - Upgrade to v2.0.5
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.4-2

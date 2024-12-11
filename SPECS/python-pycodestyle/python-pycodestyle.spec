@@ -1,14 +1,16 @@
 Summary:        A tool to check your Python code
 Name:           python3-pycodestyle
 Version:        2.9.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/python-pam/
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pycodestyle-%{version}.tar.gz
 %define sha512  pycodestyle=da1c67815b50d13c8eb70cebcc12c761a6407518a4ed4a8780ee7064089c9e89a5c3246d05f19916c0ec293fc1a372d3b2adb72e11f775b1cfbd1fbbe07a1a83
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -38,6 +40,8 @@ python3 setup.py test
 %{_bindir}/pycodestyle
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.1-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.1-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.9.1-1

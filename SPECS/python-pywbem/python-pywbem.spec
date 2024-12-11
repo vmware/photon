@@ -1,15 +1,18 @@
 Name:           python3-pywbem
 Version:        1.4.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python WBEM Client
 Group:          Development/Libraries
-License:        LGPLv2+
 URL:            http://pywbem.sourceforge.net
 Source0:        http://downloads.sourceforge.net/pywbem-%{version}.tar.gz
+%define sha512 pywbem=a39a2200ec9c831b5d21768d91cab7f16e8d4b351881c27bdcf195ac3704b1ebea0355c259a7c9a9ba055999df50025a03d787a1033130de764d183af512c3c8
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-%define sha512 pywbem=a39a2200ec9c831b5d21768d91cab7f16e8d4b351881c27bdcf195ac3704b1ebea0355c259a7c9a9ba055999df50025a03d787a1033130de764d183af512c3c8
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-pip
 BuildRequires:  python3-xml
@@ -69,6 +72,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-3
+- Release bump for SRP compliance
 * Tue Jun 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-2
 - Add python3-requests to Requires
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.4.1-1

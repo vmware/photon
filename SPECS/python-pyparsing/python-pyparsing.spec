@@ -1,15 +1,17 @@
 Summary:        Python parsing module.
 Name:           python3-pyparsing
 Version:        3.0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pyparsing/%{version}
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        pyparsing-%{version}.tar.gz
 %define sha512  pyparsing=8877f8733196c757e36e062ddc216153f9cdc51bf43795855a607340bab73fdf4d44745c9f410d151cc4a4d6d0db06133945a4d7d0fee52f3aee521b8095e6b0
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -43,6 +45,8 @@ Python parsing module.
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.9-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.9-1
 - Update to version 3.0.9
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.7-1

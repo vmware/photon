@@ -1,8 +1,7 @@
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        2.12.0
-Release:        6%{?dist}
-License:        LGPL
+Release:        7%{?dist}
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            http://www.paramiko.org
 
 Source0: https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
 %define sha512 paramiko=1bf325ffd393447cb90009d01dc1104d0d43a6acdd08cc6d28310063a649a333323748800dab119ab5e10833975e68f5f5702044fc247a2e8058122a5327f2c7
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -56,6 +58,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.0-7
+- Release bump for SRP compliance
 * Mon Apr 15 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.0-6
 - Bump to compile with python3-pycryptodome v3.20.0
 * Tue Dec 26 2023 Prashant S Chauhan <psingchauha@vmware.com> 2.12.0-5

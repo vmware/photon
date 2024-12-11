@@ -1,12 +1,14 @@
 Name:           python3-pyflakes
 Version:        2.5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A simple program which checks Python source files for errors
-License:        MIT
 Group:          Development/Languages/Python
 Url:            https://github.com/PyCQA/pyflakes/archive/refs/tags/%{version}.tar.gz
 Source0:        pyflakes-%{version}.tar.gz
 %define sha512  pyflakes=e47303c4b445e0c010dfc96244b6fa991bd1870072c61cc7acd309947af3d81581276b012b56b7db0d8df3f91a4216a5ec502720c149f5707d5d1d28654aeeb4
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -42,6 +44,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.5.0-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.5.0-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1

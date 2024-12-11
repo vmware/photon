@@ -2,9 +2,8 @@
 
 Name:       python3-pytz-deprecation-shim
 Version:    0.1.0.post0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Shims to help you safely remove pytz
-License:    Apache-2.0
 Group:      Development/Languages/Python
 URL:        https://github.com/pganssle/pytz-deprecation-shim
 Vendor:     VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://github.com/pganssle/pytz-deprecation-shim/archive/refs/tags/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=e71f34cd8e931fffb3d118726cffab3820268678ab32e0f314a11aed8dabba99292c5abfdd99b8ba4120da5d45d2fa5437e048c48d991921d62984e22088d31f
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -68,5 +70,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.1.0.post0-2
+- Release bump for SRP compliance
 * Sat Aug 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.1.0.post0-1
 - New addition, needed by python3-tzlocal

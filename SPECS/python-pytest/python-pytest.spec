@@ -1,8 +1,7 @@
 Name:           python3-pytest
 Version:        7.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
-License:        MIT
 Group:          Development/Languages/Python
 URL:            https://docs.pytest.org
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/4b/24/7d1f2d2537de114bdf1e6875115113ca80091520948d370c964b88070af2/pytest-%{version}.tar.gz
 %define sha512 pytest=e61c9b0a8fc053626da307d6bac1f5caab451c4948ef7c7f2e2f991c3433a55f81ec0d9412fca646c02f22e695c71e873ee48fc0ab0aad337ce01b70628df494
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -66,6 +68,8 @@ make %{_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.1.2-3
+- Release bump for SRP compliance
 * Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.1.2-2
 - Use system provided packages to do offline build
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 7.1.2-1

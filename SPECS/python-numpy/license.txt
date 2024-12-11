@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND GPL-3.0-only AND MIT AND SunPro AND BSD-3-Clause AND Zlib AND Apache-2.0 AND NCSA AND GPL-3.0-or-later AND BSD-2-Clause-Views AND CC-BY-4.0 AND CC0-1.0 AND GPL-3.0-or-later WITH GCC-exception-3.1 AND BSD-3-Clause-Open-MPI

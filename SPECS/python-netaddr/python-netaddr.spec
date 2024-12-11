@@ -1,8 +1,7 @@
 Name:           python3-netaddr
 Version:        0.8.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A network address manipulation library for Python
-License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            https://files.pythonhosted.org/packages/source/n/netaddr/netaddr
 
 Source0: netaddr-%{version}.tar.gz
 %define sha512 netaddr=a158bef87e862330c583f8b6709c4f575ec036dd31d725dad679e583ad4bef1a34f43225453bc93970ab720ae5f9f0fc2a6a3b92cbb922ed6f201414fd1e96d3
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -53,6 +55,8 @@ LANG=en_US.UTF-8 PYTHONPATH=./ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.8.0-3
+- Release bump for SRP compliance
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.0-2
 - openssl 1.1.1
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8.0-1

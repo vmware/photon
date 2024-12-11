@@ -1,8 +1,7 @@
 Summary:        Pure Python Vi Implementation.
 Name:           python3-pyvim
 Version:        3.0.3
-Release:        2%{?dist}
-License:        UNKNOWN
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ Url:            https://pypi.python.org/pypi/service_identity
 
 Source0:        pyvim-%{version}.tar.gz
 %define sha512  pyvim=913c1785e9ce8a8db3c89207f924cccffeac120eb917c4d601917e2bbf2be658b8eec6c91fd16b3b3efb8479ee5d0da02891eca8e3652694e22a34a008ee4e47
+
+Source1: license.txt
+%include %{SOURCE1}
 
 # To get tests:
 # git clone https://github.com/jonathanslenders/pyvim.git && cd pyvim
@@ -23,7 +25,7 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-pyflakes
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-pytest
 BuildRequires:  python3-prompt_toolkit
 BuildRequires:  curl-devel
@@ -64,6 +66,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.3-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.3-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.3-1
