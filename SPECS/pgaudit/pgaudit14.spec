@@ -6,9 +6,8 @@
 
 Name:       pgaudit14
 Version:    1.6.2
-Release:    3%{?dist}
+Release:    4%{?dist}
 Summary:    PostgreSQL Audit Extension
-License:    PostgreSQL
 URL:        http://pgaudit.org
 Group:      Applications/Databases
 Vendor:     VMware, Inc.
@@ -16,6 +15,9 @@ Distribution:   Photon
 
 Source0: https://github.com/pgaudit/pgaudit/archive/refs/tags/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=ab05432c06c61ef8b3b6bedf6789a57cfc71a8f263a4905e1400f18a58716aa981791d30629a03bb725fc7ac66ef12248abfa7bcbe9b6579fe9a03a58c9995c0
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: build-essential
 BuildRequires: postgresql%{pgmajorversion}-devel
@@ -60,6 +62,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/bitcode/%{srcname}/%{srcname}.bc
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.2-4
+- Release bump for SRP compliance
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.6.2-3
 - Bump version as a part of krb5 upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.6.2-2

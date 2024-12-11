@@ -3,8 +3,7 @@
 Summary:      The Apache Portable Runtime Utility Library
 Name:         apr-util
 Version:      1.6.3
-Release:      3%{?dist}
-License:      Apache License 2.0
+Release:      4%{?dist}
 URL:          https://apr.apache.org
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
@@ -12,6 +11,9 @@ Distribution: Photon
 
 Source0: http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
 %define sha512 %{name}=25f078413dc552b3391845b3dc1da72773efe181634deb2f88a9c72a1a49c82883113704bf97db8327012ccafb84a68370267925e3c7cc092ed82fc33fd7954e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: apr-devel
 BuildRequires: sqlite-devel
@@ -127,6 +129,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-4
+- Release bump for SRP compliance
 * Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.6.3-3
 - Bump version as a part of apr upgrade
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.6.3-2

@@ -1,0 +1,1 @@
+License: MIT AND Caldera-no-preamble AND BSD-3-Clause AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Zlib AND BSD-4-Clause-UC AND Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception AND FSFAP AND GPL-2.0-only AND FSFUL AND GPL-2.0-or-later AND FSFULLR

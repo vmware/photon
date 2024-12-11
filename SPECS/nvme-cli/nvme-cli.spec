@@ -1,14 +1,16 @@
 Name:          nvme-cli
 Summary:       NVM-Express user space tooling for Linux
 Version:       2.3
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
-License:       GPLv2
 URL:           https://github.com/linux-nvme/nvme-cli
 Source0:       %{name}-%{version}.tar.gz
 %define sha512 nvme-cli=9ef654e782ba737d3858fb11f24caf27aea820480179d07d32599731be204e52693062cdb86786ab5cdd1d94fe32ae9028baa0a58693d2eaee5a2b71155e3db2
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires: meson
 BuildRequires: cmake
 BuildRequires: libnvme-devel
@@ -50,6 +52,8 @@ rm -rf %{buildroot}%{_datadir}/zsh/*
 %{_datadir}/bash-completion/completions/nvme
 
 %changelog
+*  Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3-3
+-  Release bump for SRP compliance
 *  Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.3-2
 -  Bump version as a part of zlib upgrade
 *  Fri Mar 10 2023 Srish Srinivasan <ssrish@vmware.com> 2.3-1

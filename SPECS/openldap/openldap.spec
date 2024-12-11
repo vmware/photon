@@ -4,8 +4,7 @@
 Summary:        OpenLdap-2.6.4
 Name:           openldap
 Version:        2.6.4
-Release:        2%{?dist}
-License:        OpenLDAP
+Release:        3%{?dist}
 URL:            https://www.openldap.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -17,6 +16,9 @@ Source0: https://www.openldap.org/software/download/OpenLDAP/openldap-release/%{
 Source1: %{name}.sysusers
 Source2: slapd.service
 Source3: default-disable.preset
+
+Source4: license.txt
+%include %{SOURCE4}
 
 # Patch0 is downloaded from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
@@ -180,6 +182,8 @@ rm -rf %{buildroot}/*
 %dir %attr(-,ldap,ldap) %{_sharedstatedir}/%{name}
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.6.4-3
+- Release bump for SRP compliance
 * Mon May 27 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.6.4-2
 - Adding subpackage slapd servers
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.6.4-1

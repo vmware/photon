@@ -1,8 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        22.12.0
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
 %define sha512  node=438c80d1d1dde96c3a39b94ffd5ca0cdc636526c3d8e50ec69270fcadcb4dfaa9025d36b359f24db8c1b30f888fe825375ced0cf8b5bb5f79df5e69403f5fec7
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -75,6 +77,8 @@ make %{?_smp_mflags} cctest
 %{_docdir}/node/gdbinit
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 22.12.0-2
+- Release bump for SRP compliance
 * Wed Dec 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.12.0-1
 - Upgrade to 22.12.0
 * Wed Aug 21 2024 Mukul Sikka <mukul.sikka@broadcom.com> 20.16.0-1

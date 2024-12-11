@@ -1,47 +1,58 @@
 Summary:        iSNS server and client for Linux
 Name:           open-isns
 Version:        0.101
-Release:        2%{?dist}
-License:        LGPLv2.1
+Release:        3%{?dist}
 URL:            https://github.com/open-iscsi/open-isns
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    open=df4c87a162206673049dfc153dcc0e6d24c88e8c
+
+Source0: %{name}-%{version}.tar.gz
+%define sha512 %{name}=e5a392127b0d85f36e9e4aa963c0c502af8c5aea0aba6d12abb4425649969dcc20ba6e87a99083626d981438439b17b71a86320f816042d82ed5dbe7e7a63e77
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  openssl-devel
+BuildRequires:  systemd-devel
+
 Requires:       openssl
+Requires:       systemd
 
 %description
 iSNS server and client for Linux
 
 %package devel
-Summary: Development Libraries for open-isns
-Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
+Summary:    Development Libraries for open-isns
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+
 %description devel
 Header files for doing development with open-isns.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 export CFLAGS="-Werror=unused-result"
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-make DESTDIR=%{buildroot} install_hdrs %{?_smp_mflags}
-make DESTDIR=%{buildroot} install_lib %{?_smp_mflags}
+%make_install %{?_smp_mflags}
+%make_install %{?_smp_mflags} install_hdrs
+%make_install %{?_smp_mflags} install_lib
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/isns/isnsadm.conf
 %config(noreplace) %{_sysconfdir}/isns/isnsd.conf
 %config(noreplace) %{_sysconfdir}/isns/isnsdd.conf
-%{_libdir}/systemd/system/isnsd.service
-%{_libdir}/systemd/system/isnsd.socket
+%{_unitdir}/isnsd.service
+%{_unitdir}/isnsd.socket
 %{_sbindir}/isnsadm
 %{_sbindir}/isnsd
 %{_sbindir}/isnsdd
@@ -57,6 +68,8 @@ make DESTDIR=%{buildroot} install_lib %{?_smp_mflags}
 %{_libdir}/libisns.a
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.101-3
+- Release bump for SRP compliance
 * Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.101-2
 - Increment for openssl 3.0.0 compatibility
 * Wed Feb 17 2021 Ankit Jain <ankitja@vmware.com> 0.101-1

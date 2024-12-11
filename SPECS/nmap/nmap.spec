@@ -1,8 +1,7 @@
 Summary:        Nmap (“Network Mapper”) is a utility for network discovery and security auditing
 Name:           nmap
 Version:        7.93
-Release:        8%{?dist}
-License:        Nmap
+Release:        9%{?dist}
 URL:            http://nmap.org
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://nmap.org/dist/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=4ec9295e25bd7a215e718c3dbbf09bfe6339b60850f4a8d09b5ad0cbf41a0da8ece0168efc5ca91ba1ecbd83b1d31735d77dacd5f1ec1a9fd212454dd1f0f0fd
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  build-essential
 BuildRequires:  e2fsprogs-devel
@@ -88,6 +90,8 @@ rm -rf %{buildroot}%{_datadir}/man/ \
 %{_bindir}/ncat
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.93-9
+- Release bump for SRP compliance
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 7.93-8
 - Bump version as a part of krb5 upgrade
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.93-7

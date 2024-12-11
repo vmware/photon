@@ -4,8 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        10%{?dist}
-License:        BSD
+Release:        11%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -22,6 +21,9 @@ Source2: sshd.service
 Source3: sshd-keygen.service
 Source4: sshdat.service
 Source5: %{name}.sysusers
+
+Source6: license.txt
+%include %{SOURCE6}
 
 Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
@@ -211,6 +213,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-11
+- Release bump for SRP compliance
 * Tue Jul 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-10
 - Remove sshd.socket from sshd_services list
 * Tue Jun 25 2024 Tapas Kundu <tapas.kundu@broadcom.com> 9.3p2-9

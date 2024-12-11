@@ -1,8 +1,7 @@
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.3
-Release:        1%{?dist}
-License:        BSD-2-Clause AND NTP AND BSD-3-Clause AND MIT
+Release:        2%{?dist}
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ Url:            https://www.ntpsec.org/
 Source0:        https://ftp.ntpsec.org/pub/releases/%{name}-%{version}.tar.gz
 %define sha512  ntpsec=cec0c6ddff81c3da48157f3437945c11832b29577482c86c9d6df997d0194fea9df43ad05189c63efbf5a491a9a7f98eaae78065445d5e31499b1f1d78e217fb
 Source1:        %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0:         ntpstats_path.patch
 
@@ -126,6 +128,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/ntp*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-2
+- Release bump for SRP compliance
 * Mon Jan 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.3-1
 - Update to 1.2.3, Fixes CVE-2023-4012
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.2.2-2

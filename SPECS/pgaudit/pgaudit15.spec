@@ -6,9 +6,8 @@
 
 Name:       pgaudit15
 Version:    1.7.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 Summary:    PostgreSQL Audit Extension
-License:    PostgreSQL
 URL:        http://pgaudit.org
 Group:      Applications/Databases
 Vendor:     VMware, Inc.
@@ -16,6 +15,9 @@ Distribution:   Photon
 
 Source0: https://github.com/pgaudit/pgaudit/archive/refs/tags/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=34a8b6e448a99add4c5d659095632aa0ec421b27289a0c220d198b9352e9225617b5904a23a30da45a4918823847d2fb995470e3b66060754436f9cf2dcb65f4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: build-essential
 BuildRequires: postgresql%{pgmajorversion}-devel
@@ -60,6 +62,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/bitcode/%{srcname}/%{srcname}.bc
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.0-4
+- Release bump for SRP compliance
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.7.0-3
 - Bump version as a part of krb5 upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.7.0-2

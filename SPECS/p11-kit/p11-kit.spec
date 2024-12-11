@@ -3,17 +3,19 @@
 Name:           p11-kit
 Summary:        Library for loading and sharing PKCS11 modules
 Version:        0.24.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Development/Libraries
-License:        BSD
 URL:            http://p11-glue.freedesktop.org/p11-kit.html
 
 Source0: https://github.com/p11-glue/p11-kit/releases/download/%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=8cf170c714bb9e0cf3df93e8ec55b8e3c55cabf2c6a27f177ac6de8b8028985df2ca0216d3215d6828dc2ae3095c4e1a4febe8cb26b88ec321defc66bb011e81
 
 Source1: update-ca-trust
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: gcc
 BuildRequires: libtasn1-devel >= 2.3
@@ -160,6 +162,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/update-ca-trust
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.24.1-4
+- Release bump for SRP compliance
 * Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 0.24.1-3
 - Bump up version to compile with new gnupg
 * Thu May 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.24.1-2

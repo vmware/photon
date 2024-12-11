@@ -1,14 +1,16 @@
 Summary:       A secure password manager for unix systems.
 Name:          password-store
 Version:       1.7.4
-Release:       2%{?dist}
-License:       GPLv2
+Release:       3%{?dist}
 URL:           https://www.passwordstore.org/
 Group:         System Environment/Development
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://git.zx2c4.com/password-store/snapshot/%{name}-%{version}.tar.xz
 %define sha512 password-store=1fe108895b224451b54e545d399b6a97040e094049448509f92ae33164a5cf9044a91f52edfc705fcf333f6526df1a478deeebc4df109764d58100f9e3e22681
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildArch:     noarch
 Requires:      tree
 Requires:      gnupg
@@ -41,6 +43,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man1/*
 
 %changelog
+*   Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.4-3
+-   Release bump for SRP compliance
 *   Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 1.7.4-2
 -   Bump up version to compile with new gnupg
 *   Mon Oct 11 2021 Nitesh Kumar <kunitesh@vmware.com> 1.7.4-1

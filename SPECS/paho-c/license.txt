@@ -1,0 +1,1 @@
+License: MIT AND Apache-1.1 AND (BSD-3-Clause OR EPL-2.0) AND BSD-3-Clause AND MPL-1.1 AND Apache-2.0 AND (GPL-2.0-only OR MIT) AND (BSD-3-Clause OR EPL-2.0) AND GPL-2.0-only AND GPL-2.0-or-later AND CPL-1.0 AND EPL-2.0 AND EPL-1.0

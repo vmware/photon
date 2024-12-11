@@ -2,16 +2,18 @@
 
 Name:           cloud-init
 Version:        24.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
-License:        GPLv3
 URL:            http://launchpad.net/cloud-init
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=01b798d67328ecd66229568233fb674f45c055ac469adb31a55a909b6b2c8fd1901a833accb66423923b8945210aa4dc6a0d61945787aabe414c01b501b1416d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: 0001-azure-ds.patch
 Patch1: 0002-Change-default-policy.patch
@@ -150,6 +152,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.3.1-2
+- Release bump for SRP compliance
 * Tue Sep 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.3.1-1
 - Upgrade to v24.3.1
 * Tue Aug 06 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.2-3

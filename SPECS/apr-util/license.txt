@@ -1,0 +1,1 @@
+License: MIT AND RSA-MD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Apache-2.0 AND Sleepycat AND BSD-4.3RENO AND NTP AND FSFUL AND CC0-1.0 AND Beerware AND OLDAP-2.8

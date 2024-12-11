@@ -1,7 +1,6 @@
 Name:           oniguruma
 Version:        6.9.8
-Release:        1%{?dist}
-License:        BSD
+Release:        2%{?dist}
 Summary:        Regular expressions library
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -9,6 +8,9 @@ Distribution:   Photon
 URL:            https://github.com/kkos/oniguruma/
 Source0:        https://github.com/kkos/oniguruma/releases/download/v%{version}/onig-%{version}.tar.gz
 %define sha512    onig=6f541e8cecf73b029e54d4e11a6ddffe058d6c47674086df5a3921323351032819aca2719d35584648c3bffce6779d976a7513eabd4645362b3af701e59c67ca
+
+Source1: license.txt
+%include %{SOURCE1}
 %description
 Oniguruma is a regular expressions library.
 The characteristics of this library is that different character encoding
@@ -62,6 +64,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.9.8-2
+- Release bump for SRP compliance
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 6.9.8-1
 - Automatic Version Bump
 * Wed Apr 14 2021 Gerrit Photon <photon-checkins@vmware.com> 6.9.7-1

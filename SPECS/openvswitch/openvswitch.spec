@@ -1,14 +1,16 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        3.0.2
-Release:        3%{?dist}
-License:        ASL 2.0 and LGPLv2+
+Release:        4%{?dist}
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
 %define sha512  openvswitch=875f043fcd80dabdba5d7a35e950c804926ef307977d8bec10c9f2f225d4cc7c851f1b65f6c9af838950344c0b103531c266738e61da16900966ff8da0ba76aa
+
+Source1: license.txt
+%include %{SOURCE1}
 Patch0:         CVE-2022-4337.patch
 Patch1:         CVE-2022-4337-tests.patch
 Patch2:         openvswitch-CVE-2023-1668.patch
@@ -147,6 +149,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{_smp_mflags}
 %{_mandir}/man5/ovsdb.local-config.5.gz
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.2-4
+- Release bump for SRP compliance
 * Mon Sep 11 2023 Dweep Advani <dadvani@vmware.com> 3.0.2-3
 - Fix CVE-2023-1668
 * Tue Sep 05 2023 Anmol Jain <anmolja@vmware.com> 3.0.2-2

@@ -2,9 +2,8 @@
 
 Name:           nss-pam-ldapd
 Version:        0.9.12
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        nsswitch module which uses directory servers
-License:        LGPLv2+
 URL:            https://github.com/arthurdejong/nss-pam-ldapd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -16,6 +15,9 @@ Source0: http://arthurdejong.org/nss-pam-ldapd/nss-pam-ldapd-%{version}.tar.gz
 Source1: nslcd.tmpfiles
 Source2: nslcd.service
 Source3: %{name}.sysusers
+
+Source4: license.txt
+%include %{SOURCE4}
 
 BuildRequires: openldap-devel
 BuildRequires: krb5-devel
@@ -95,6 +97,8 @@ rm -rf %{buildroot}/*
 %attr(0775,nslcd,root) /run/nslcd
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.9.12-9
+- Release bump for SRP compliance
 * Tue Oct 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.12-8
 - Fix typo in group name
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 0.9.12-7

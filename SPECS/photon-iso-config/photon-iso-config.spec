@@ -3,8 +3,7 @@
 Summary:       Photon iso config
 Name:          photon-iso-config
 Version:       5.0
-Release:       2%{?dist}
-License:       Apache 2.0 and GPL 2.0
+Release:       3%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -12,6 +11,9 @@ URL:           https://github.com/vmware/photon/tree/4.0/support/image-builder/i
 Source0:       %{name}-%{version}.tar.gz
 %define sha512 %{name}=e199a1bda8b715a96107dd8ed8ca4ac0372d2b8dadbec19b7d97e96747b20bf0c3c96ba59eb637a6b3001123a528cbdb84ebae351e9da7402fe7e8eef96fb1f3
 Source1:       splash.png
+
+Source2: license.txt
+%include %{SOURCE2}
 
 %description
 Boot menu cfg files and splash screen image to create Photon iso images.
@@ -35,6 +37,8 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-3
+- Release bump for SRP compliance
 * Thu Mar 23 2023 Piyush Gupta <gpiyush@vmware.com> 5.0-2
 - Update splash screen.
 * Fri Dec 09 2022 Piyush Gupta <gpiyush@vmware.com> 5.0-1
