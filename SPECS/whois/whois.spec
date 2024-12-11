@@ -1,8 +1,7 @@
 Summary:      Improved WHOIS client
 Name:         whois
 Version:      5.5.15
-Release:      1%{?dist}
-License:      GPLv2+
+Release:      2%{?dist}
 URL:          https://github.com/rfc1036/whois
 Group:        Productivity/Networking/Other
 Vendor:       VMware, Inc.
@@ -10,6 +9,9 @@ Distribution: Photon
 
 Source0: https://ftp.debian.org/debian/pool/main/w/%{name}/%{name}_%{version}.tar.xz
 %define sha512 %{name}=e173927fd3428d27bc8ab34b1a66b82d6a2cfc107245755868bdd33cb7eb1b8159e87774c3a751d9694e65b3d870b9904dc9a3c657dca385950c8a19be1fa61c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  pkg-config
 BuildRequires:  xz-devel
@@ -69,5 +71,7 @@ using a given salt.
 %{_mandir}/man1/mkpasswd.*
 
 %changelog
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.5.15-2
+- Release bump for SRP compliance
 * Tue Feb 14 2023 Nitesh Kumar <kunitesh@vmware.com> 5.5.15-1
 - Initial version, needed by fail2ban.

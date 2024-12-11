@@ -1,0 +1,1 @@
+License: Apache-2.0 AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-only WITH GCC-exception-2.0

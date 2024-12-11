@@ -1,7 +1,7 @@
 Summary:    Program shows full path of (shell) commands
 Name:       which
 Version:    2.21
-Release:    7%{?dist}
+Release:    8%{?dist}
 URL:        http://savannah.gnu.org/projects/which
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -35,6 +35,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_mandir}/man1/*
 
 %changelog
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.21-8
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.21-7
 - Release bump for SRP compliance
 * Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 2.21-6

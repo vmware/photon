@@ -1,8 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.9.1.1
-Release:        1%{?dist}
-License:        Apache License Version 2.0
+Release:        2%{?dist}
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/Azure/WALinuxAgent/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=3f44aecc16ac545db4b550586f168dbbdef34289aad6775973517bf645e5a1d486864c01e974f03a71b3e946c14e1ca140673a75c1cd602aac28725eaa68e83d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -81,6 +83,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.9.1.1-2
+- Release bump for SRP compliance
 * Thu Sep 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.9.1.1-1
 - Upgrade to v2.9.1.1
 * Tue Jul 25 2023 Shivani Agarwal <shivania2@vmware.com> 2.7.3.0-6

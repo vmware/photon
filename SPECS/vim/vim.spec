@@ -4,8 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        9.1.0724
-Release:        2%{?dist}
-License:        Charityware
+Release:        3%{?dist}
 URL:            http://www.vim.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -15,6 +14,9 @@ Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=47d49ce7f7c93eee38512c86c8071d6d72eca3e0284ecc53f1d9f22caf1ede3da1ebb5e60c11b213485b41eaf7784785216225316ddf1f92dd7b0ca32abb3e47
 
 Source1: vimrc
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0:         CVE-2024-47814.patch
 
@@ -179,6 +181,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 9.1.0724-3
+- Release bump for SRP compliance
 * Mon Oct 14 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1.0724-2
 - Fix CVE-2024-47814
 * Tue Sep 10 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.1.0724-1

@@ -2,12 +2,14 @@
 Summary:        Memory Management Debugger.
 Name:           valgrind
 Version:        3.20.0
-Release:        1%{?dist}
-License:        GPLv2+
+Release:        2%{?dist}
 URL:            http://valgrind.org
 Group:          Development/Debuggers
 Source0:        http://valgrind.org/downloads/%{name}-%{version}.tar.bz2
 %define sha512    valgrind=d6bfb9284d0410134ee7e2a5975b13c01508dd5587b562947d8197b3c113b76fdfac88c4072948be68bbf0dbeb17b4d1acb1412ce898adaa83c30ae2c6a1c12b
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  pkg-config
@@ -44,6 +46,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/doc/valgrind/*
 
 %changelog
+*   Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.20.0-2
+-   Release bump for SRP compliance
 *   Tue Nov 1 2022 Oliver Kurth <okurth@vmware.com> 3.20.0-1
 -   Update to version 3.20.0
 *   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 3.19.0-1

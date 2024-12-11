@@ -1,8 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          2.0.1
-Release:          2%{?dist}
-License:          Apache License, Version 2.0
+Release:          3%{?dist}
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
 Vendor:           VMware, Inc.
@@ -41,6 +40,9 @@ Source1: %{name}_vendor-%{version}.tar.xz
 Source2: vars.config
 Source3: %{name}.service
 Source4: %{name}.sysusers
+
+Source5: license.txt
+%include %{SOURCE5}
 
 Patch0: 0001-local_version.patch
 
@@ -170,6 +172,8 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.0.1-3
+- Release bump for SRP compliance
 * Wed Sep 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.1-2
 - Do fully offline build
 * Fri Jun 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.1-1

@@ -1,8 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.21
-Release:        18%{?dist}
-License:        GPLv2 with exceptions
+Release:        19%{?dist}
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,6 +13,9 @@ Source1: photon.ini
 Source2: %{name}.service
 Source3: %{name}.ini
 Source4: %{name}.sysusers
+
+Source5: license.txt
+%include %{SOURCE5}
 
 Patch0: CVE-2023-27522.patch
 
@@ -236,6 +238,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.0.21-19
+- Release bump for SRP compliance
 * Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-18
 - Version Bump up to consume httpd v2.4.62
 * Tue Jul 09 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-17
