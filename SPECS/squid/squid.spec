@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        6.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -116,7 +116,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
       --enable-ssl-crtd \
       --enable-diskio \
       --enable-wccpv2 \
-      --enable-esi \
+      --disable-esi \
       --with-aio \
       --with-default-user="squid" \
       --with-dl \
@@ -226,6 +226,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Mon Dec 09 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.6-5
+- Disable ESI support to fix CVE-2024-45802
 * Mon Jul 01 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 6.6-4
 - Patched for CVE-2024-37894
 * Mon Apr 15 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.6-3
