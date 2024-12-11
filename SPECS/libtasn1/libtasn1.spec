@@ -1,7 +1,7 @@
 Summary:        ASN.1 library
 Name:           libtasn1
 Version:        4.19.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.gnu.org/software/libtasn1/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -61,6 +61,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.19.0-3
+-   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-2
 -   Release bump for SRP compliance
 *   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 4.19.0-1

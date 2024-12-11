@@ -1,7 +1,7 @@
 Summary:    GNU Unicode string library
 Name:       libunistring
 Version:    1.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://www.gnu.org/software/libunistring
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
@@ -56,6 +56,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-3
 - Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0-2

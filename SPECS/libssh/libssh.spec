@@ -1,8 +1,7 @@
 Summary:        A library implementing the SSH protocol
 Name:           libssh
 Version:        0.10.6
-Release:        1%{?dist}
-License:        LGPLv2+
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/NetworkingLibraries
@@ -13,6 +12,9 @@ Source0: https://www.libssh.org/files/0.10/%{name}-%{version}.tar.xz
 
 Source1: libssh_client.config
 Source2: libssh_server.config
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires: build-essential
 BuildRequires: cmake
@@ -109,6 +111,8 @@ install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.confi
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/%{name}/%{name}_server.config
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.10.6-2
+- Release bump for SRP compliance
 * Fri Dec 22 2023 Mukul Sikka <msikka@vmware.com> 0.10.6-1
 - Version upgrade to v0.10.6 to fix CVE-2023-48795
 * Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 0.10.5-1

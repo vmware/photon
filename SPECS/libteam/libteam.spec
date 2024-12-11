@@ -1,8 +1,7 @@
 Summary:       Team driver
 Name:          libteam
 Version:       1.31
-Release:       3%{?dist}
-License:       GPLv2+
+Release:       4%{?dist}
 URL:           http://www.libteam.org
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:  Photon
 
 Source0:       http://libteam.org/files/%{name}-%{version}.tar.gz
 %define sha512 %{name}=f18cbe7316f6ac8ddf019d2e4b52e19fbdbc75d637f8cacda15b29d679508919230e1af3eb656febe7aafdf8a94c4334f2ae95ecd60bc89ac379622b99d3b615
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: libnl-devel
 BuildRequires: libdaemon-devel
@@ -97,6 +99,8 @@ install -p -m 644 teamd/example_configs/* %{buildroot}%{_datadir}/teamd/example_
 %{_datadir}/teamd/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.31-4
+- Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.31-3
 - Remove .la files
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 1.31-2

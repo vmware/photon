@@ -2,9 +2,8 @@
 
 Name:           libtevent
 Version:        0.14.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The tevent library
-License:        LGPLv3+
 URL:            http://tevent.samba.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,6 +11,9 @@ Group:          Development/Libraries
 
 Source0: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
 %define sha512 tevent=0bcc87c10f84e947edad8f8c31f3923253c599b7a69a1db1c21ab292e02937ccb8bad9f0f70e27420ead687aaed1a9b3830b6daa903b8a9bd48cc035a6e5f4ec
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: docbook-xsl
 BuildRequires: gcc
@@ -88,5 +90,7 @@ Python 3 bindings for libtevent
 %{python3_sitearch}/_tevent.cpython*.so
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.14.1-2
+- Release bump for SRP compliance
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.14.1-1
 - Initial addition to Photon. Needed for SSSD addition.

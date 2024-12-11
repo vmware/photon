@@ -1,7 +1,7 @@
 Summary:        SELinux binary policy manipulation library
 Name:           libsepol
 Version:        3.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          System Environment/Libraries
 URL:            http://www.selinuxproject.org
 Vendor:         VMware, Inc.
@@ -95,6 +95,8 @@ rm -rf %{buildroot}%{_mandir}/ru \
 %{_libdir}/libsepol.so.*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.4-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-3
 - Release bump for SRP compliance
 * Fri Sep 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.4-2

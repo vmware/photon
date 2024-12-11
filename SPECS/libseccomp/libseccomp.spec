@@ -1,7 +1,7 @@
 Summary:       Enhanced seccomp library
 Name:          libseccomp
 Version:       2.5.4
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         System Environment/Libraries
 Url:           https://github.com/seccomp/libseccomp/wiki
 Vendor:        VMware, Inc.
@@ -78,6 +78,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.5.4-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.5.4-3
 - Release bump for SRP compliance
 * Mon Aug 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.5.4-2

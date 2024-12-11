@@ -1,8 +1,7 @@
 Summary:        Linux kernel trace event library
 Name:           libtraceevent
 Version:        1.6.3
-Release:        1%{?dist}
-License:        GPL-2.0 and LGPL-2.1
+Release:        2%{?dist}
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/snapshot/%{name}-%{version}.tar.gz
 %define sha512 %{name}=8064eb18dda6fdbff020759ed92e785b87d34be9ebc30cb6085785edeb8d7252cabf8d33d8738a3ec407672a3d891884d0f0b4c551fce26c76fa8eaf61b9e2f5
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 The libtraceevent(3) library provides APIs to access kernel tracepoint events, located in the tracefs file system under the events directory.
@@ -60,5 +62,7 @@ rm -rf %{buildroot}
 %{_libdir}/traceevent/plugins/*.so
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.3-2
+- Release bump for SRP compliance
 * Mon Nov 14 2022 Michelle Wang <michellew@vmware.com> 1.6.3-1
 - Initial Version

@@ -1,7 +1,7 @@
 Summary:        libssh2 is a library implementing the SSH2 protocol.
 Name:           libssh2
 Version:        1.11.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.libssh2.org
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
@@ -64,6 +64,8 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.0-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.0-3
 - Release bump for SRP compliance
 * Fri Dec 22 2023 Harinadh D <hdommaraju@vmware.com> 1.11.0-2

@@ -1,8 +1,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.14.5
-Release:        5%{?dist}
-License:        LGPLv2+
+Release:        6%{?dist}
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=9dda5067142b04e46e8ee344a47df21dae89a9c26e91588fc92bcbaee5291348a38ee79a5e807d7a8cba6cb13af78985e8b2e9b23d7f9eabecd0123459c43935
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -102,6 +104,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/%{name}/
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.14.5-6
+- Release bump for SRP compliance
 * Wed Jan 03 2024 Anmol Jain <anmol.jain@broadcom.com> 1.14.5-5
 - Fix for test failure
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.14.5-4
