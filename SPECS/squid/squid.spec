@@ -3,15 +3,15 @@
 
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
-Version:        6.6
-Release:        4%{?dist}
+Version:        6.12
+Release:        1%{?dist}
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.squid-cache.org/Versions/v6/%{name}-%{version}.tar.xz
-%define sha512 %{name}=4ab261ed85ad674288467500aca9d8a48e3918b55f777635c0ba7a2551f248d35536848a5fbf2c946490a818004727f2aed33144f0a3ebab0be36cc4cffb020c
+%define sha512 %{name}=7ab61f19416426fb8284de7bddc1ea9a5a7b3148fc54c018a243071ba5854610ef38a248f6a22634a2acb7d3ea408b582af1f48818dfe698ade0b7b8c00fd183
 Source1: %{name}.sysconfig
 Source2: %{name}.pam
 Source3: %{name}.service
@@ -21,9 +21,6 @@ Source6: %{name}.sysusers
 
 Source7: license.txt
 %include %{SOURCE7}
-
-Patch0: CVE-2024-25111.patch
-Patch1: CVE-2024-37894.patch
 
 BuildRequires: Linux-PAM-devel
 BuildRequires: ed
@@ -115,7 +112,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
       --enable-ssl-crtd \
       --enable-diskio \
       --enable-wccpv2 \
-      --enable-esi \
+      --disable-esi \
       --with-aio \
       --with-default-user="%{name}" \
       --with-dl \
@@ -240,6 +237,9 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Thu Dec 12 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.12-1
+- Disable ESI support to fix CVE-2024-45802
+- Update to v6.12
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 6.6-4
 - Release bump for SRP compliance
 * Mon Jul 01 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 6.6-3
