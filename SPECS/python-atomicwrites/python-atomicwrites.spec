@@ -1,8 +1,7 @@
 Summary:        Python Atomic file writes
 Name:           python3-atomicwrites
 Version:        1.4.1
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,7 +9,10 @@ Url:            https://github.com/untitaker/python-atomicwrites
 Source0:        https://pypi.python.org/packages/a1/e1/2d9bc76838e6e6667fde5814aa25d7feb93d6fa471bf6816daac2596e8b2/atomicwrites-%{version}.tar.gz
 %define sha512  atomicwrites=d02f58ba639a3ba677eedd78016d366a6e77c79d31903ad34f0a50202aba9b9616f933e9763c42da197ada124abd3510c54d0b10099159308c186bccc6270f32
 
-%if %{with_check}
+Source1: license.txt
+%include %{SOURCE1}
+
+%if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 BuildRequires:  python3-attrs
@@ -47,6 +49,8 @@ python3 test_atomicwrites.py
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.1-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.4.1-1

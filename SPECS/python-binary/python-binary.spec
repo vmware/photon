@@ -1,8 +1,7 @@
 Name:           python3-binary
 Version:        1.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Library to convert between binary and SI units
-License:        Apache-2.0 OR MIT
 Group:          Development/Languages/Python
 Url:            https://github.com/ofek/binary
 Vendor:         VMware, Inc.
@@ -10,9 +9,12 @@ Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/b/binary/binary-%{version}.tar.gz
 %define sha512  binary=474ba683ecd8864fa50fdf4e2533947460449241abf34b15199a1b478e6e9a4ad56c888b6bf54c05be2936c32f7fa8d783004fc0466c3458433e0dc3e8ee711f
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pip
 BuildRequires:  python3-six
@@ -43,6 +45,8 @@ python3 -m pytest tests
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.0-3
+- Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.0-2
 - Update release to compile with python 3.11
 * Tue Sep 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.0-1

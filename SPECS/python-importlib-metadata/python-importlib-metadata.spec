@@ -3,15 +3,17 @@
 Summary:        Library to access the metadata for a Python package
 Name:           python3-importlib-metadata
 Version:        6.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
-License:        ASL 2.0
 URL:            https://github.com/python/importlib_metadata
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/90/07/6397ad02d31bddf1841c9ad3ec30a693a3ff208e09c2ef45c9a8a5f85156/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=7d5cea465bf02722b28542f374e36ed55ab09455e1e548e838acf0cb38dcd84a79f5ef7cd673400852ff3a33271078ec8476f02aa7bf7748d3b85f4cefe3f678
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:     noarch
 
@@ -65,6 +67,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-3
+- Release bump for SRP compliance
 * Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-2
 - Use system provided packages to do offline build
 * Thu Jan 12 2023 Srish Srinivasan <ssrish@vmware.com> 6.0.0-1

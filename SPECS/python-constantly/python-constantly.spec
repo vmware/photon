@@ -1,14 +1,16 @@
 Summary:        Symbolic constants in Python.
 Name:           python3-constantly
 Version:        15.1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://pypi.python.org/pypi/constantly
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        constantly-%{version}.tar.gz
 %define sha512  constantly=ccc6f41b0bd552d2bb5346cc9d64cd7b91a59dd30e0cf66b01e82f7e0e079c01c34bc6c66b69c5fee9d2eed35ae5455258d309e66278d708d5f576ddf2e00ac3
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -40,6 +42,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 15.1.0-5
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 15.1.0-4
 - Update release to compile with python 3.11
 * Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 15.1.0-3

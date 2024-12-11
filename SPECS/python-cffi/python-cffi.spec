@@ -1,15 +1,17 @@
 Summary:        Interface for Python to call C code
 Name:           python3-cffi
 Version:        1.15.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
 %define sha512  cffi=e99cafcb029076abc29e435b490fa0573ee2856f4051b7ca8a5b38cd125d56dd9dae8b189f59ceb3d728a675da8ee83239e09e19f8b0feeddea4b186ab5173a5
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -20,7 +22,7 @@ BuildRequires:  python3-pycparser
 BuildRequires:  python3-xml
 
 %if 0%{?with_check}
-BuildRequires:	openssl-devel
+BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-pip
 %endif
@@ -50,6 +52,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.15.1-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.1-1
 - Automatic Version Bump
 * Wed May 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.14.3-3

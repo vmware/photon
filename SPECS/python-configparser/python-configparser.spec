@@ -1,14 +1,16 @@
 Summary:        This library brings the updated configparser from Python 3.5 to Python 2.6-3.5.
 Name:           python3-configparser
 Version:        5.3.0
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/configparser
 Source0:        configparser-%{version}.tar.gz
 %define sha512  configparser=d93998978062dfb9c6a1462bf943be856c7420df29b458faba13d00ccb8238b3a1017f1ee719f1f830dee5d99f46151837b132374e092d75bfabbf4afec0b722
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -45,6 +47,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.3.0-2
+- Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.3.0-1
 - Update to 5.3.0
 * Sun Aug 29 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.0.1-3

@@ -3,8 +3,7 @@
 Summary:        Coroutine-based network library
 Name:           python3-gevent
 Version:        23.7.0
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,6 +11,9 @@ Url:            https://pypi.python.org/pypi/gevent
 
 Source0: https://pypi.org/project/%{srcname}/%{version}/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=d452e58e96ba5b7f995b9a762fe378cef24a728a5291b3df069ff50815b336c6ad7bdbe0341c6c9c821dea6fc1a6601aec9d8c9c18aea8045bbcddb2f9240198
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -64,6 +66,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.7.0-2
+- Release bump for SRP compliance
 * Thu Aug 24 2023 Nitesh Kumar <kunitesh@vmware.com> 23.7.0-1
 - Version upgrade to v23.7.0 to fix following CVE's:
 - CVE-2023-31130, CVE-2023-31147, CVE-2023-32067, CVE-2023-31124

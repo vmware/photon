@@ -3,8 +3,7 @@
 Summary:    Google Auth Python Library
 Name:       python3-google-auth
 Version:    2.32.0
-Release:    1%{?dist}
-License:    Apache-2.0
+Release:    2%{?dist}
 URL:        https://github.com/googleapis/google-auth-library-python
 Group:      Development/Languages/Python
 Vendor:     VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://github.com/googleapis/google-auth-library-python/archive/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=d72d9c367a47b3496dcaae9deec29315c65e43ddf9b3ee2838232ed2ac8aabdf5c91978a6d66700b5e9e77a0de8820ecf12b798fb65383600e08d47b732d1981
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:  noarch
 
@@ -66,5 +68,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/google_auth-%{version}.dist-info/
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.32.0-2
+- Release bump for SRP compliance
 * Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.32.0-1
 - Initial version. Neede by syslog-ng.

@@ -1,8 +1,7 @@
 Summary:        Amazon Web Services Library.
 Name:           python3-boto
 Version:        2.49.0
-Release:        3%{?dist}
-License:        MIT License
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ Url:            https://github.com/boto/boto
 
 Source0: https://files.pythonhosted.org/packages/source/b/boto/boto-%{version}.tar.gz
 %define sha512 boto=2175cf30cd25bbc05812e83e5ade7668c3e21b1bb09aa1b43f0f0ac7d6967a646394fb52c9be673ebb65618c5b33a52d6f31f6da702f5cd1d6c9a18169476dd4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -75,6 +77,8 @@ done
 %{_bindir}/taskadmin-%{python3_version}
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.49.0-4
+- Release bump for SRP compliance
 * Wed Feb 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.49.0-3
 - Fix makecheck
 * Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 2.49.0-2

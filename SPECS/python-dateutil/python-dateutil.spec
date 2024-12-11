@@ -1,14 +1,16 @@
 Summary:        Extensions to the standard Python datetime module
 Name:           python3-dateutil
 Version:        2.8.2
-Release:        2%{?dist}
-License:        Apache Software License, BSD License (Dual License)
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/python-dateutil
 Source0:        https://pypi.python.org/packages/54/bb/f1db86504f7a49e1d9b9301531181b00a1c7325dc85a29160ee3eaa73a54/python-dateutil-%{version}.tar.gz
 %define sha512  python-dateutil=6538858e4a3e2d1de1bf25b6d8b25e3a8d20bf60fb85e32d07ac491c90ce193e268bb5641371b8a79fb0f033a184bac9896b3bc643c1aca9ee9c6478286ac20c
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-packaging
@@ -43,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-3
+- Release bump for SRP compliance
 * Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-2
 - Add typing-extensions in BuildRequires
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.8.2-1

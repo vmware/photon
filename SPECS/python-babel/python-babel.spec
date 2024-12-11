@@ -1,8 +1,7 @@
 Name:           python3-babel
 Version:        2.10.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An integrated collection of utilities that assist in internationalizing and localizing Python applications
-License:        BSD3
 Group:          Development/Languages/Python
 Url:            http://babel.pocoo.org
 Vendor:         VMware, Inc.
@@ -11,13 +10,16 @@ Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/17/e6/ec9aa6ac3d00c383a5731cc97ed7c619d3996232c977bb8326bcbb6c687e/Babel-%{version}.tar.gz
 %define sha512  Babel=72a5759d2cfa239df56f3d2809b23367b9691e21de92535b30f9b3455d253682f6c18ca919f3fb039deed2663db9276307f6343cbbab56fca96ff1ac9c214fa7
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-pytz
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  python3-pytest
 BuildRequires:  openssl-devel
@@ -60,6 +62,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.10.3-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.10.3-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.10.3-1

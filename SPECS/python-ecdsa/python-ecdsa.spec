@@ -1,14 +1,17 @@
 Summary:        ECDSA cryptographic signature library (pure python)
 Name:           python3-ecdsa
 Version:        0.18.0
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.python.org/pypi/ecdsa
 Source0:        https://pypi.python.org/packages/source/e/ecdsa/ecdsa-%{version}.tar.gz
 %define         sha512 ecdsa=f26dbeccd8e6ec832405d419b7244ca97b43a2811513493913a4f2f2fd1d2f453068fe0ba7b90b972f42a0d7b9834212fbd4d4559475cffeb1d80075fa954d78
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -54,6 +57,8 @@ tox -e coverage
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.18.0-2
+- Release bump for SRP compliance
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 0.18.0-1
 - Automatic Version Bump.
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.17.0-2

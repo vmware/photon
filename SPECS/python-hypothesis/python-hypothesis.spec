@@ -1,14 +1,16 @@
 Name:           python3-hypothesis
 Version:        6.54.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python library for creating unit tests which are simpler to write and more powerful
-License:        MPLv2.0
 Group:          Development/Languages/Python
 Url:            https://github.com/HypothesisWorks/hypothesis-python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0: https://pypi.python.org/packages/cf/d5/b3d491e4b5094be0ef69b910d637096c8e23f84a9bdc4eba0b869220d1f0/hypothesis-%{version}.tar.gz
 %define sha512 hypothesis=5c40daa2acb56fa0d4e7b84351eaf86bf470311a50608075c58f26b305d3e5811eceb50349b898da92e5d6a257e753f5ee68e14dcafd01731647e4aa42322e4a
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -43,6 +45,8 @@ and then generates simple and comprehensible examples that make your tests fail.
 %{_bindir}/hypothesis
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.54.4-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 6.54.4-1
 - Automatic Version Bump
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 5.41.1-2

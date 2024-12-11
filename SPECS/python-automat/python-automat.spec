@@ -3,8 +3,7 @@
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python3-automat
 Version:        22.10.0
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,6 +11,9 @@ Url:            https://pypi.python.org/pypi/Automat
 
 Source0: https://files.pythonhosted.org/packages/source/A/Automat/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=5819cfe0687bf391949891562f3657f449cf9a8e8ea90c1537e89509dc618da1160856f92ab52dc450e0a7d51d0e4644bfe2db3d4108126a42ee1bea2f06bb7a
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-wheel
@@ -68,6 +70,8 @@ ln -sv automat-visualize3 %{buildroot}%{_bindir}/automat-visualize
 %{_bindir}/automat-visualize*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-3
+- Release bump for SRP compliance
 * Tue Jun 04 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-2
 - Add python3-wheels & typing-extensions in BuildRequires
 * Sun Aug 13 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.10.0-1

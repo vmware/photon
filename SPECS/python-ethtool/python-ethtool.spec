@@ -5,15 +5,17 @@
 %global pypi_name ethtool
 Name:           python3-ethtool
 Version:        0.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python module to interface with ethtool
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        GPLv2
 URL:            https://pypi.org/project/ethtool/
 Source0:        python-ethtool-%{version}.tar.gz
 %define sha512  python-ethtool=82a9c08d1794f8f44e2a797d4631bacef3d492c8274d161f74d789e299f3de4830e03e863e428a14dea9713c43f10a1c743a30a504bb4c8eac03bded5c708670
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  gcc
 BuildRequires:  python3-devel
@@ -26,7 +28,7 @@ BuildRequires: xmlto
 BuildRequires: python3-defusedxml
 Requires:      libnl
 
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires: net-tools
 BuildRequires: ethtool
 %endif
@@ -69,6 +71,8 @@ LANG=en_US.UTF-8 python3 -m unittest discover -v
 %{python3_sitearch}/%{pypi_name}-%{version}-py*.egg-info
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.15-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.15-1
 - Automatic Version Bump
 * Sun Oct 11 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.14-3
