@@ -1,7 +1,7 @@
 Summary:        Crypto Libraries
 Name:           libgcrypt
 Version:        1.10.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.gnu.org/software/libgcrypt
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -69,6 +69,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libgcrypt.pc
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.1-5
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.1-4
 - Release bump for SRP compliance
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.10.1-3

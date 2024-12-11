@@ -1,7 +1,7 @@
 Summary:    Text file viewer
 Name:       less
 Version:    654
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        http://www.greenwoodsoftware.com/less
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -36,6 +36,8 @@ The Less package contains a text file viewer
 %{_mandir}/*/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 654-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 654-2
 - Release bump for SRP compliance
 * Tue May 14 2024 Mukul Sikka <msikka@vmware.com> 654-1

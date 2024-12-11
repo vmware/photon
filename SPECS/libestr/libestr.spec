@@ -1,8 +1,7 @@
 Summary:    String handling essentials library
 Name:       libestr
 Version:    0.1.11
-Release:    2%{?dist}
-License:    LGPLv2+
+Release:    3%{?dist}
 URL:        http://libestr.adiscon.com/
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    http://libestr.adiscon.com/files/download/%{name}-%{version}.tar.gz
 %define sha512  %{name}=0ab98c2fa4b58cf6fee89c88602725b8b5e8e5a171a6976cdd8cff4dfc1cd3e5b747868da74fccd1bca66b9fa524ceae1c4f1ad5ee653a44ff81df6916ab5328
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 This package compiles the string handling essentials library
@@ -48,6 +50,8 @@ developing applications that use libestr.
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.1.11-3
+- Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.1.11-2
 - Remove .la files
 * Tue Jul 07 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.1.11-1

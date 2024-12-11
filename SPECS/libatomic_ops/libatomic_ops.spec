@@ -1,7 +1,7 @@
 Summary:       Atomic memory update operations portable implementation
 Name:          libatomic_ops
 Version:       7.6.14
-Release:       2%{?dist}
+Release:       3%{?dist}
 URL:           https://github.com/ivmai/libatomic_ops
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
@@ -68,6 +68,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/atomic_ops.pc
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 7.6.14-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.6.14-2
 - Release bump for SRP compliance
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.6.14-1

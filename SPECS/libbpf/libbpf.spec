@@ -1,15 +1,17 @@
 Summary:        Libbpf library
 Name:           libbpf
 Version:        1.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        GPL-2.1 OR BSD-2-Clause
 URL:            https://github.com/libbpf/libbpf
 
 Source0: https://github.com/libbpf/libbpf/archive/refs/tags/libbpf-%{version}.tar.gz
 %define sha512 %{name}=bc7620207e6f521b9b5baab00bd81346084b8eabf81bff3ec24e5367d389f2a331a0b082798f8bb5d4fea836c3c0cc961fc881abc3a4e05d91152150bdfe47be
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  elfutils-devel
@@ -54,6 +56,8 @@ rm -rf %{buildroot}
 %attr(0644,-,-) %{_libdir}/pkgconfig/libbpf.pc
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.2-2
+- Release bump for SRP compliance
 * Sun Aug 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.2-1
 - Upgrade to v1.2.2
 * Fri Apr 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.0-1

@@ -1,8 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        2.7.0
-Release:        20%{?dist}
-License:        Apache-2.0
+Release:        21%{?dist}
 URL:            https://github.com/kubernetes/dashboard
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Source0: https://github.com/kubernetes/dashboard/archive/refs/tags/%{name}-%{ver
 %define sha512 %{name}=bd5567bd5a8163cf13de5b935ce90aafb4acba58acc07740eb1ed22ae761c68a7d160a22cfe3d49a9e700a4139c3cc1bef6a76a1bebd88caabef909cd85607b3
 Source1: dashboard-dist-%{version}.v1.tar.gz
 %define sha512 dashboard-dist=1ade7bdbdce573027f3e94f1ef0614e04cc72762671d225bb67f22c3b3f0ecbfc83f6744aba179d153c1800611a07348a6cd901d31981f6951f038f806b1cf1d
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildArch:      x86_64
 
@@ -71,6 +73,8 @@ cp -pr ./dist/amd64/locale_conf.json ./dist/amd64/public \
 /opt/k8dashboard/public/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.0-21
+- Release bump for SRP compliance
 * Wed Dec 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-20
 - Bump version as a part of nodejs upgrade
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.0-19

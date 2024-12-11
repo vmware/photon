@@ -1,15 +1,17 @@
 Summary:        linear algebra package
 Name:           lapack
 Version:        3.11.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.netlib.org/lapack
-License:        BSD
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.netlib.org/%{name}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=fc3258b9d91a833149a68a89c5589b5113e90a8f9f41c3a73fbfccb1ecddd92d9462802c0f870f1c3dab392623452de4ef512727f5874ffdcba6a4845f78fc9a
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  gfortran
@@ -62,6 +64,8 @@ mv %{buildroot}%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
 %exclude %{_libdir}/cmake/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.11.0-2
+- Release bump for SRP compliance
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 3.11.0-1
 - Automatic Version Bump
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.10.1-2

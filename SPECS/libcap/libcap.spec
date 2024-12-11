@@ -1,7 +1,7 @@
 Summary:        Libcap
 Name:           libcap
 Version:        2.66
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -77,6 +77,8 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.66-4
+-   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.66-3
 -   Release bump for SRP compliance
 *   Fri Jun 02 2023 Piyush Gupta <gpiyush@vmware.com> 2.66-2

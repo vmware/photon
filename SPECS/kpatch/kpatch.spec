@@ -1,9 +1,8 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://github.com/dynup/kpatch
-License:        GPLv2
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,6 +14,9 @@ Source1:        scripts/auto_livepatch.sh
 Source2:        scripts/gen_livepatch.sh
 Source3:        scripts/README.txt
 Source4:        scripts/rpm/spec.file
+
+Source5: license.txt
+%include %{SOURCE5}
 
 BuildArch:      x86_64
 
@@ -120,6 +122,8 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.9.8-4
+- Release bump for SRP compliance
 * Wed Dec 4 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.9.8-3
 - Patches for compatibility after linux-secure->linux merger
 * Fri Nov 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.9.8-2

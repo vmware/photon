@@ -1,11 +1,13 @@
 Summary:	A full-featured and high-performance event loop
 Name:		libev
 Version:	4.33
-Release:	2%{?dist}
-License:	BSD-2-Clause
+Release:	3%{?dist}
 URL:		http://software.schmorp.de/pkg/libev.html
 Source0:	http://dist.schmorp.de/libev/%{name}-%{version}.tar.gz
 %define sha1 libev=133587b89c34dba0b3a2d2a90ba59f6748f6c368
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:		System/Library
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -51,6 +53,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/*.so
 
 %changelog
+*       Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.33-3
+-       Release bump for SRP compliance
 *       Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.33-2
 -       openssl 1.1.1
 *       Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 4.33-1

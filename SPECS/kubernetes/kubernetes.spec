@@ -14,8 +14,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.13
-Release:        6%{?dist}
-License:        ASL 2.0
+Release:        7%{?dist}
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -35,6 +34,9 @@ Source4:        %{name}.sysusers
 # Source tarball of https://opendev.org/starlingx/integ/src/commit/c15e3e1a3af2c797caa1bc408315beb0101ae623/kubernetes/plugins/isolcpus-device-plugin/files
 Source5:        isolcpu-plugin-%{isolcpu_ver}.tar.bz2
 %define sha512 isolcpu=9b7f8f45b4b27d9507f37b41547cd0e3204ca6b6b4101c33b17d7272235d56a36f47d33d403377a193af3806ca1ea82eba73e4afa2e0d8f9d1ceeab0a13c0950
+
+Source6: license.txt
+%include %{SOURCE6}
 
 Patch0:         0001-kubelet-cpumanager-introduce-concept-of-isolated-CPU.patch
 Patch1:         0001-Use-vmware.com-isolcpu-property-name.patch
@@ -265,6 +267,8 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-7
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-6
 - Bump version as a part of go upgrade
 * Wed Sep 04 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-5

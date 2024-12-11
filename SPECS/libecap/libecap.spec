@@ -1,11 +1,13 @@
 Summary:      Squid interface for embedded adaptation modules
 Name:         libecap
 Version:      1.0.1
-Release:      1%{?dist}
-License:      BSD
+Release:      2%{?dist}
 URL:          http://www.e-cap.org/
 Source0:      http://www.e-cap.org/archive/%{name}-%{version}.tar.gz
 %define sha1 libecap=89533c2ac77fee7b26f53c20c25a1423ce1498b7
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
 Distribution: Photon
@@ -61,6 +63,8 @@ rm -f %{buildroot}%{_libdir}/libecap.la
 %{_includedir}/libecap
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.1-2
+- Release bump for SRP compliance
 * Fri Apr 30 2021 Susant Sahani <ssahani@vmware.com> 1.0.1-1
 - Initial rpm release.
 

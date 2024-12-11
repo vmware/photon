@@ -1,8 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
 Version:        2.3.3
-Release:        7%{?dist}
-License:        MIT
+Release:        8%{?dist}
 URL:            https://libgd.github.io
 Group:          System/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/libgd/libgd/releases/download/gd-%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=aa49d4381d604a4360d556419d603df2ffd689a6dcc10f8e5e1d158ddaa3ab89912f6077ca77da4e370055074007971cf6d356ec9bf26dcf39bcff3208bc7e6c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
@@ -67,6 +69,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.3-8
+- Release bump for SRP compliance
 * Wed Jul 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.3-7
 - Add libpng-devel to devel package requires
 * Wed Sep 20 2023 Kuntal Nayak <nkuntal@vmware.com> 2.3.3-6

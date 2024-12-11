@@ -1,13 +1,15 @@
 Summary:        A simplified, portable interface to several low-level networking routines
 Name:           libdnet
 Version:        1.11
-Release:        7%{?dist}
-License:        BSD
+Release:        8%{?dist}
 URL:            http://prdownloads.sourceforge.net/libdnet/libdnet-1.11.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://prdownloads.sourceforge.net/libdnet/%{name}-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
 Patch0:         DisableMakeCheckCases.patch
 %define sha1    libdnet=e2ae8c7f0ca95655ae9f77fd4a0e2235dc4716bf
 %description
@@ -49,6 +51,8 @@ make  %{?_smp_mflags} check
 %{_libdir}/libdnet.a
 
 %changelog
+*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11-8
+-   Release bump for SRP compliance
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.11-7
 -   Cross compilation support
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.11-6

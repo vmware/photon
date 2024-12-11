@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND BSD-3-Clause AND WTFPL AND OFL-1.1 AND CC-BY-4.0 AND LGPL-2.1-or-later AND CC0-1.0 AND MPL-2.0 AND CC-BY-3.0 AND Zlib AND Apache-2.0 AND LGPL-3.0-only AND BSD-2-Clause-Views AND dtoa AND GPL-3.0-only AND MIT AND (OpenSSL OR BSD-3-Clause) AND ISC AND CC-BY-SA-4.0 AND LGPL-3.0-or-later WITH LGPL-3.0-linking-exception AND JSON AND GPL-1.0-or-later

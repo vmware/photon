@@ -1,17 +1,19 @@
 Summary:      Library to control and monitor control groups
 Name:         libcgroup
 Version:      3.0.0
-Release:      1%{?dist}
+Release:      2%{?dist}
 Group:        Development/Libraries
 Distribution: Photon
 Vendor:       VMware, Inc.
-License:      LGPLv2+
 URL:          http://libcg.sourceforge.net
 
 Source0: https://github.com/libcgroup/libcgroup/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=1e8a7c9a71d928ab0e354254b007b30fc159a30e441bd52a03ded142420c94e130594bb512680c62fc22f5193934fb78afc31453342b032d1db3197fd4c3e606
 
 Source1:      cgconfig.service
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0:       photon-config.patch
 %if 0%{?with_check}
@@ -144,5 +146,7 @@ make %{?_smp_mflags} -C tests/gunit check
 %{_libdir}/*.a
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.0-2
+- Release bump for SRP compliance
 * Tue Sep 13 2022 Roye Eshed <eshedr@vmware.com> 3.0.0-1
 - Creation of the libcgroup spec file for photon based on the Fedora SPEC file.

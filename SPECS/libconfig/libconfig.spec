@@ -1,14 +1,16 @@
 Summary:       C/C++ configuration file library
 Name:          libconfig
 Version:       1.7.3
-Release:       1%{?dist}
-License:       LGPLv2
+Release:       2%{?dist}
 URL:           http://www.hyperrealm.com/libconfig
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       %{name}-%{version}.tar.gz
 %define sha512 %{name}=3749bf9eb29bab0f6b14f4fc759f0c419ed27a843842aaabed1ec1fbe0faa8c93322ff875ca1291d69cb28a39ece86d512aec42c2140d566c38c56dc616734f4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 Libconfig is a simple library for processing structured configuration files,
@@ -48,6 +50,8 @@ make test %{?_smp_mflags}
 %{_infodir}/libconfig.info*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.7.3-2
+- Release bump for SRP compliance
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.7.3-1
 - Automatic Version Bump
 * Wed Aug 12 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.2-1
