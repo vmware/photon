@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.78
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -138,6 +138,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.78-11
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-10
 - Release bump for SRP compliance
 * Tue Aug 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-9

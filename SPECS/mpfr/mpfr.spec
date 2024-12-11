@@ -1,7 +1,7 @@
 Summary:        Functions for multiple precision math
 Name:           mpfr
 Version:        4.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.mpfr.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -71,6 +71,8 @@ make %{?_smp_mflags} check
 %{_docdir}/mpfr-%{version}/COPYING
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.0-3
+- Release bump for SRP compliance
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.1.0-2
 - Bump version to generate SRP provenance file
 * Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 4.1.0-1

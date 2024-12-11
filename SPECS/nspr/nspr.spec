@@ -1,7 +1,7 @@
 Summary:        Platform-neutral API
 Name:           nspr
 Version:        4.33
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://firefox-source-docs.mozilla.org/nspr/index.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -59,6 +59,8 @@ make DESTDIR=%{buildroot} %{?_smp_mflags} install
 %{_datadir}/aclocal/*
 
 %changelog
+*   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.33-3
+-   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.33-2
 -   Release bump for SRP compliance
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.33-1

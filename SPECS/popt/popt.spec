@@ -1,7 +1,7 @@
 Summary:    Programs to parse command-line options
 Name:       popt
 Version:    1.16
-Release:    6%{?dist}
+Release:    7%{?dist}
 URL:        http://rpm5.org/files/popt
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -66,6 +66,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.16-7
+-   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16-6
 -   Release bump for SRP compliance
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.16-5

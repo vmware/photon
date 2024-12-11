@@ -1,14 +1,16 @@
 Summary:        user space RCU (read-copy-update)
 Name:           userspace-rcu
 Version:        0.13.2
-Release:        3%{?dist}
-License:        LGPLv2+
+Release:        4%{?dist}
 URL:            https://github.com/urcu/userspace-rcu/releases
-Source:         %{name}-%{version}.tar.gz
+Source0:         %{name}-%{version}.tar.gz
 %define sha512  userspace-rcu=a59daf9908acad3bd21e36d90c831ec2df8259d29743fb86066a82433a4a228ae79ca3b66e12120c0e6cad651a1007e77d6ac23ab083c55ab9b283b7d36a3ddc
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libxml2-devel
 BuildRequires:  nss-devel
@@ -54,6 +56,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.13.2-4
+- Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.13.2-3
 - Bump version as a part of libxml2 upgrade
 * Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.13.2-2

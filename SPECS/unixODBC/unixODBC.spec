@@ -1,8 +1,7 @@
 Summary:       ODBC driver manager
 Name:          unixODBC
 Version:       2.3.12
-Release:       1%{?dist}
-License:       GPLv2+ and LGPLv2+
+Release:       2%{?dist}
 URL:           http://www.unixodbc.org/
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:  Photon
 
 Source0: ftp://ftp.unixodbc.org/pub/unixODBC/%{name}-%{version}.tar.gz
 %define sha512 %{name}=ca9d8db943195679a44db1fc09391dc6662ab1721112c93d448f04011e98502462ffe14b8364eb03707d851db456eced20eb61a22370392ca88d917038d45b56
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: automake
 BuildRequires: autoconf
@@ -71,6 +73,8 @@ rm -rf %{buildroot}%{_libdir}/*.a \
 %{_libdir}/pkgconfig
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3.12-2
+- Release bump for SRP compliance
 * Mon Apr 15 2024 Roye Eshed <roye.eshed@broadcom.com> 2.3.12-1
 - Update to 2.3.12 and Fix for CVE-2024-1013
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.11-2

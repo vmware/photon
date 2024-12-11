@@ -1,7 +1,7 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        4.0.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://sourceforge.net/projects/procps-ng
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -113,6 +113,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.4-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.0.4-2
 - Release bump for SRP compliance
 * Mon Apr 08 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.0.4-1

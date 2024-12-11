@@ -1,7 +1,7 @@
 Summary:        Reading, writing, and converting info pages
 Name:           texinfo
 Version:        7.0.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://ftp.gnu.org/gnu/texinfo/texinfo-%{version}.tar.xz
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -58,6 +58,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/texinfo/*
 
 %changelog
+*   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.0.2-3
+-   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.0.2-2
 -   Release bump for SRP compliance
 *   Thu Feb 16 2023 Gerrit Photon <photon-checkins@vmware.com> 7.0.2-1

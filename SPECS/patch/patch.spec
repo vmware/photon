@@ -1,7 +1,7 @@
 Summary:        Program for modifying or creating files
 Name:           patch
 Version:        2.7.6
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.7.6-8
+-   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7.6-7
 -   Release bump for SRP compliance
 *   Wed Feb 07 2024 Harinadh D <hdommaraju@vmware.com> 2.7.6-6

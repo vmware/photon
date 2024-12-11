@@ -1,7 +1,7 @@
 Summary:        Compression and decompression routines
 Name:           zlib
 Version:        1.2.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.zlib.net
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -71,6 +71,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/zlib.3.gz
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.13-4
+- Release bump for SRP compliance
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.13-3
 - Bump version to generate SRP provenance file
 * Wed Oct 25 2023 Harinadh D <hdommaraju@vmware.com> 1.2.13-2

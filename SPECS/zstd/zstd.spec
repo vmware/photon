@@ -1,7 +1,7 @@
 Summary:        Fast lossless compression algorithm
 Name:           zstd
 Version:        1.5.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/facebook/zstd
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -82,6 +82,8 @@ library, libzstd.
 %exclude %{_libdir}/libzstd.a
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.5.5-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.5-3
 - Release bump for SRP compliance
 * Fri Dec 01 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.5-2

@@ -1,7 +1,7 @@
 Summary:    Stream editor
 Name:       sed
 Version:    4.8
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        http://www.gnu.org/software/sed
 Group:      Applications/Editors
 Vendor:     VMware, Inc.
@@ -64,6 +64,8 @@ make check %{?_smp_mflags}
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.8-5
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.8-4
 - Release bump for SRP compliance
 * Wed Nov 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.8-3

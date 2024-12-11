@@ -1,7 +1,7 @@
 Summary:        Build tool
 Name:           pkg-config
 Version:        0.29.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.freedesktop.org/wiki/Software/pkg-config
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -58,6 +58,8 @@ make %{?_smp_mflags} check
 %{_docdir}/pkg-config-*/pkg-config-guide.html
 %{_mandir}/man1/pkg-config.1.gz
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.29.2-5
+- Release bump for SRP compliance
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.29.2-4
 - Bump version to generate SRP provenance file
 * Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 0.29.2-3

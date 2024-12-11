@@ -1,8 +1,7 @@
 Name:           tuned
 Version:        2.21.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
-License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
 URL:            https://github.com/redhat-performance/tuned
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: tuned-%{version}.tar.gz
 %define sha512  %{name}=f1f58d582997db7789af990895c63c1fd4f6329b95cda7fa0fb314f95f05be120b90228e347d0239e4a4bed13baad66a42f006880e369f46741ecf8705bb92d0
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         remove_desktop_utils_dependency.patch
 Patch1:         tuned-fix-bug-in-sysctl-verify.patch
@@ -149,6 +151,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.21.0-2
+- Release bump for SRP compliance
 * Tue Jan 23 2024 Roye Eshed <roye.eshed@broadcom.com> 2.21.0-1
 - Update Tuned to 2.21.0
 * Tue Sep 12 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.19.0-10

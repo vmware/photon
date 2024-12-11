@@ -1,10 +1,9 @@
 Summary:        unbound dns server
 Name:           unbound
 Version:        1.21.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
-License:        BSD
 Distribution:   Photon
 URL:            http://www.unbound.net
 
@@ -13,6 +12,9 @@ Source0: https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
 
 Source1:        %{name}.service
 Source2:        %{name}.sysusers
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Requires:       systemd
 Requires(pre):  systemd-rpm-macros
@@ -93,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.21.0-3
+- Release bump for SRP compliance
 * Tue Oct 22 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.21.0-2
 - Fix CVE-2024-8508
 * Mon Aug 26 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.21.0-1

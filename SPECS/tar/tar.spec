@@ -1,7 +1,7 @@
 Summary:    Archiving program
 Name:       tar
 Version:    1.34
-Release:    6%{?dist}
+Release:    7%{?dist}
 URL:        http://www.gnu.org/software/tar
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -53,6 +53,8 @@ rm -rf %{buildroot}{%{_infodir},%{_mandir}}
 %{_libexecdir}/rmt
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.34-7
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34-6
 - Release bump for SRP compliance
 * Tue Dec 19 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.34-5
