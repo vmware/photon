@@ -1,12 +1,14 @@
 Name:           ddclient
 Version:        3.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://sourceforge.net/p/ddclient/wiki/Home/
 Summary:        Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider
-License:        GPLv2
 Group:          Applications
 Source0:        http://downloads.sourceforge.net/project/ddclient/ddclient/ddclient-%{version}.tar.gz
-%define sha1 ddclient=442d1fce361ac1d89c33a86d723f0dbbc74bc395
+%define sha512 ddclient=a8a4d6cb94e4239a7b7b4fc7d9ebef703cbd6c45fc3394b644694a053b5b8aa8d109410b5b8b3676a5f30b18474d24c7feb16c65c30b28bd7d941d8a214b1346
+
+Source1: license.txt
+%include %{SOURCE1}
 Requires:       perl
 Requires:       perl-IO-Socket-SSL
 Requires:       perl-JSON-Any
@@ -20,7 +22,7 @@ It was originally written by Paul Burry and is now mostly by wimpunk.
 It has the capability to update more than just dyndns and it can fetch your WAN-ipaddress in a few different ways.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %install
 
@@ -56,6 +58,8 @@ EOF
 %dir /var/cache/ddclient
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.9.1-2
+- Release bump for SRP compliance
 * Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 3.9.1-1
 - Automatic Version Bump
 * Thu Sep 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 3.9.0-2

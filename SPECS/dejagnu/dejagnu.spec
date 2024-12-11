@@ -1,7 +1,7 @@
 Summary:        DejaGnu test framework
 Name:           dejagnu
 Version:        1.6.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -68,6 +68,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_includedir}/*
 
 %changelog
+*   Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.6.2-3
+-   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.2-2
 -   Release bump for SRP compliance
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1

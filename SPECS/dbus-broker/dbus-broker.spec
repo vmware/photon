@@ -1,8 +1,7 @@
 Name:           dbus-broker
 Version:        33
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Linux D-Bus Message Broker
-License:        ASL 2.0
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/Security
@@ -10,6 +9,9 @@ Group:          System Environment/Security
 URL:            https://github.com/bus1/dbus-broker
 Source0:        https://github.com/bus1/dbus-broker/releases/download/v%{version}/dbus-broker-%{version}.tar.xz
 %define sha512  dbus-broker=776684a5d19a6c25fc46dff19821014a32d967f8132385b86c5281f2d69192dce64b3ad92ae6a158d1d64753e89d918385a1a31f32811f54060504113f065baa
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Provides:       bundled(c-dvar) = 1
 Provides:       bundled(c-ini) = 1
@@ -81,6 +83,8 @@ fi
 %{_userunitdir}/dbus-broker.service
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 33-2
+- Release bump for SRP compliance
 * Thu Feb 16 2023 Susant Sahani <ssahani@vmware.com> 33-1
 - Update version
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 32-2

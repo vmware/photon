@@ -1,14 +1,16 @@
 Name:          crun
 Version:       1.8
-Release:       7%{?dist}
+Release:       8%{?dist}
 Summary:       OCI runtime in C
-License:       GPLv2+
 Group:         Development/Other
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/containers/crun
 Source0:       https://github.com/containers/crun/releases/download/%{version}/%{name}-%{version}.tar.xz
 %define sha512 crun=373d4fa69085b1ffecff32b4f2da0ab7dd0ec80d68e24ab262127e71cdfcbee50b932aa109980ad683444fdfe288a6495fc40cd81beb8b56af5c244218c7157c
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires: libcap-devel
 BuildRequires: libseccomp-devel
 BuildRequires: systemd-devel
@@ -57,6 +59,8 @@ rm -f %{buildroot}%{_prefix}/lib/*.la \
 %{_mandir}/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.8-8
+- Release bump for SRP compliance
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8-7
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.8-6

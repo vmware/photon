@@ -1,15 +1,17 @@
 Name:           ding-libs
 Version:        0.6.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        "Ding is not GLib" assorted utility libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Development/Libraries
-License:        LGPLv3+
 URL:            https://github.com/SSSD/ding-libs
 
 Source0: https://github.com/SSSD/%{name}/releases/download/%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=566172e0addb0ee6e0ebd12874d3b72f2fa6bcb1ecc628c0c529984193290fae554efc40f52d2cec675bffab32a36183e47ec629db25e83ed2995f1049c64703
+
+Source1: license.txt
+%include %{SOURCE1}
 
 # ding-libs is a meta-package that will pull in all of its own
 # sub-packages
@@ -35,7 +37,6 @@ librefarray and libpath-utils.
 %package devel
 Summary: Development packages for ding-libs
 Group: Development/Libraries
-License: LGPLv3+
 
 Requires: %{name} = %{version}-%{release}
 Requires: libpath-utils-devel = %{version}-%{release}
@@ -51,7 +52,6 @@ Header files for ding-libs.
 %package -n libpath-utils
 Summary: Filesystem Path Utilities
 Group: Development/Libraries
-License: LGPLv3+
 
 %description -n libpath-utils
 Utility functions to manipulate filesystem pathnames
@@ -60,7 +60,6 @@ Utility functions to manipulate filesystem pathnames
 Summary: Development files for libpath-utils
 Group: Development/Libraries
 Requires: libpath-utils = %{version}-%{release}
-License: LGPLv3+
 
 %description -n libpath-utils-devel
 Utility functions to manipulate filesystem pathnames
@@ -68,7 +67,6 @@ Utility functions to manipulate filesystem pathnames
 %package -n libdhash
 Group: Development/Libraries
 Summary: Dynamic hash table
-License: LGPLv3+
 
 %description -n libdhash
 A hash table which will dynamically resize to achieve optimal storage & access
@@ -78,7 +76,6 @@ time properties
 Summary: Development files for libdhash
 Group: Development/Libraries
 Requires: libdhash = %{version}-%{release}
-License: LGPLv3+
 
 %description -n libdhash-devel
 A hash table which will dynamically resize to achieve optimal storage & access
@@ -87,7 +84,6 @@ time properties
 %package -n libcollection
 Summary: Collection data-type for C
 Group: Development/Libraries
-License: LGPLv3+
 
 %description -n libcollection
 A data-type to collect data in a hierarchical structure for easy iteration
@@ -96,7 +92,6 @@ and serialization
 %package -n libcollection-devel
 Summary: Development files for libcollection
 Group: Development/Libraries
-License: LGPLv3+
 Requires: libcollection = %{version}-%{release}
 
 %description -n libcollection-devel
@@ -105,7 +100,6 @@ Header/development files for libcollection.
 %package -n libref-array
 Summary: A refcounted array for C
 Group: Development/Libraries
-License: LGPLv3+
 
 %description -n libref-array
 A dynamically-growing, reference-counted array
@@ -114,7 +108,6 @@ A dynamically-growing, reference-counted array
 Summary: Development files for libref-array
 Group: Development/Libraries
 Requires: libref-array = %{version}-%{release}
-License: LGPLv3+
 
 %description -n libref-array-devel
 Header/development files for libref-array
@@ -122,7 +115,6 @@ Header/development files for libref-array
 %package -n libbasicobjects
 Summary: Basic object types for C
 Group: Development/Libraries
-License: GPLv3+
 
 %description -n libbasicobjects
 Basic object types
@@ -130,7 +122,6 @@ Basic object types
 %package -n libbasicobjects-devel
 Summary: Development files for libbasicobjects
 Group: Development/Libraries
-License: GPLv3+
 Requires: libbasicobjects = %{version}-%{release}
 
 %description -n libbasicobjects-devel
@@ -139,7 +130,6 @@ Headers/development files for libbasicobjects
 %package -n libini-config
 Summary: INI file parser for C
 Group: Development/Libraries
-License: LGPLv3+
 Requires: libcollection = %{version}-%{release}
 Requires: libref-array = %{version}-%{release}
 Requires: libbasicobjects = %{version}-%{release}
@@ -152,7 +142,6 @@ structure
 %package -n libini-config-devel
 Summary: Development files for libini-config
 Group: Development/Libraries
-License: LGPLv3+
 Requires: libini-config = %{version}-%{release}
 Requires: libcollection-devel = %{version}-%{release}
 Requires: libref-array-devel = %{version}-%{release}
@@ -271,6 +260,8 @@ rm -rf %{buildroot}%{_datadir}/doc/%{name}/*
 %{_libdir}/pkgconfig/ini_config.pc
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.6.2-2
+- Release bump for SRP compliance
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.6.2-1
 - Initial addition to Photon. Needed for addition of SSSD.
 - Modified from provided spec file in GitHub repository.

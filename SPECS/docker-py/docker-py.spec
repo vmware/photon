@@ -1,8 +1,7 @@
 Name:           docker-py3
 Version:        6.0.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Python API for docker
-License:        ASL2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            https://github.com/docker/docker-py
 
 Source0: https://github.com/docker/docker-py/releases/download/%{version}/docker-%{version}.tar.gz
 %define sha512 docker=09edf7b058d38d34d0fe0432b336d6fc494648c0e41cf4ae7f7bbf3db158143ca8fbea87e51d3b354c5f40bd7f1481e003e4b55f879ef562e91f19b62143c271
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-ipaddress
@@ -63,6 +65,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.0.0-5
+- Release bump for SRP compliance
 * Fri Nov 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-4
 - Bump up as part of docker upgrade
 * Tue Jun 04 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-3

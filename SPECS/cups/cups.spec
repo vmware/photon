@@ -1,8 +1,7 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
 Version:        2.4.7
-Release:        3%{?dist}
-License:        LGPLv2+
+Release:        4%{?dist}
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/OpenPrinting/cups/releases/download/v%{version}/cups-%{version}.tar.gz
 %define sha512  %{name}=27ca505a2868aa7bc248bac892aafe2a837633e73b6059d3ab4812264e3b0e786ef075751e8cc4300ce6bc43ef095e3d77dd3fce88ce8e72ca69b65093427bca
+
+Source1: license.txt
+%include %{SOURCE1}
 Patch0:         0001-Fix-domain-socket-handling.patch
 
 BuildRequires:  automake
@@ -32,7 +34,6 @@ It is based on the "Internet Printing Protocol" and provides printing services t
 
 %package        devel
 Summary:        Header and development files
-License:        LGPLv2
 Group:          Development/Libraries/C and C++
 Requires:       %{name} = %{version}-%{release}
 
@@ -93,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.7-4
+- Release bump for SRP compliance
 * Thu Jun 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 2.4.7-3
 - Fix CVE-2024-35235
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.4.7-2

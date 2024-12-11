@@ -1,8 +1,7 @@
 Summary:        Dynamic Kernel Module Support
 Name:           dkms
 Version:        3.0.10
-Release:        2%{?dist}
-License:        GPLv2+
+Release:        3%{?dist}
 URL:            http://linux.dell.com/dkms
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/dell/dkms/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b271453497a004177137e972cb45cacb2dd3ac124a1fd2526218cf690f5ce77250195e73b6f9c75de4661a718d928e546bd85770ab98c2fd9af44fe777492ad7
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -57,6 +59,8 @@ echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 %{_mandir}/man8/%{name}.8.gz
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.0.10-3
+- Release bump for SRP compliance
 * Tue Sep 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.10-2
 - Fix spec issues
 * Fri Jan 20 2023 Alexey Makhalov <amakhalov@vmware.com> 3.0.10-1

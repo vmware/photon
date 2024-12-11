@@ -1,8 +1,7 @@
 Summary:    Provide tools to manage multipath devices
 Name:       device-mapper-multipath
 Version:    0.9.4
-Release:    2%{?dist}
-License:    GPL+
+Release:    3%{?dist}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 URL:        http://christophe.varoqui.free.fr
@@ -10,6 +9,9 @@ Distribution: Photon
 
 Source0: https://github.com/opensvc/multipath-tools/archive/refs/tags/multipath-tools-%{version}.tar.gz
 %define sha512 multipath-tools=5e0dcea610fc215e345444c04453a38f39c73e493c2bc53f6b3a90cd701266aabdf7c4693dfc321099af836d0019bf27355e265ad5db5deff48f8bb94ed4719d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: userspace-rcu-devel
 BuildRequires: libaio-devel
@@ -99,6 +101,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.4-3
+- Release bump for SRP compliance
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 0.9.4-2
 - Bump version as a part of ncurses upgrade to v6.4
 * Mon Jan 02 2023 Gerrit Photon <photon-checkins@vmware.com> 0.9.4-1

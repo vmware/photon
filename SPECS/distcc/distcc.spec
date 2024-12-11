@@ -1,8 +1,7 @@
 Name:         distcc
 Version:      3.4
-Release:      3%{?dist}
+Release:      4%{?dist}
 Summary:      Distributed C/C++ compilation
-License:      GPLv2+
 URL:          https://github.com/distcc/distcc
 Group:        Applications/File
 Vendor:       VMware, Inc.
@@ -11,6 +10,9 @@ Source0:      https://github.com/distcc/distcc/archive/v%{version}/%{name}-%{ver
 %define sha512  %{name}=de09329fdfa25e08a9b9529190ddaa9ceccb34c8655692edb86f367a8db4a71b750c6e928cb8e5a670f51fbbc02fd1c8524f72e01b3ebaacc1106dc676d18eef
 Source1:      hosts.sample
 Source2:      distccd.service
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires: automake
 BuildRequires: autoconf
@@ -103,6 +105,8 @@ rm -rf %{buildroot}%{_docdir}/*
 %dir /usr/lib/gcc-cross
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.4-4
+- Release bump for SRP compliance
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 3.4-3
 - Bump version as a part of krb5 upgrade
 * Thu Jan 26 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.4-2

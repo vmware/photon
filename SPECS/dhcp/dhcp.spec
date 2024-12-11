@@ -1,8 +1,7 @@
 Summary:      Dynamic host configuration protocol
 Name:         dhcp
 Version:      4.4.3
-Release:      2%{?dist}
-License:      ISC
+Release:      3%{?dist}
 Url:          http://isc.org/products/DHCP/
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
@@ -13,7 +12,10 @@ Source0:      ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
 Source1:      dhclient-script
 Source2:      dhclient.conf
 Source3:      dhcp.service
-Source:       dhcrelay.service
+Source4:      dhcrelay.service
+
+Source5: license.txt
+%include %{SOURCE5}
 
 Patch0:       CVE-2022-2928.4-4-3.patch
 Patch1:       CVE-2022-2929.4-4-3.patch
@@ -167,6 +169,8 @@ rm -f %{buildroot}%{_sysconfdir}/dhcpd.conf.example
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.4.3-3
+- Release bump for SRP compliance
 * Mon Sep 25 2023 Harinadh D <hdommaraju@vmware.com> 4.4.3-2
 - Fix CVE-2022-2928,CVE-2022-2929
 * Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 4.4.3-1

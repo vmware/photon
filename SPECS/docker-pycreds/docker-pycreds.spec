@@ -1,8 +1,7 @@
 Name:           docker-pycreds3
 Version:        0.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python API for docker credentials store
-License:        ASL2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            https://github.com/shin-/dockerpy-creds
 
 Source0: https://github.com/shin-/dockerpy-creds/archive/refs/tags/docker-pycreds-%{version}.tar.gz
 %define sha512 docker-pycreds=ca5f68ef2405cc57c0b54224d4f8199c9a4c9217d78f627bffeb950998b09a69b608d1e365cac6859661346fd078c3d081828bb4ff2e18bf7a9384451ae2225a
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -46,6 +48,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.4.0-3
+- Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.4.0-2
 - Update release to compile with python 3.11
 * Thu Oct 15 2020 Ashwin H <ashwinh@vmware.com> 0.4.0-1

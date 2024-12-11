@@ -1,7 +1,7 @@
 Summary:        Docbook-xsl-1.79.1
 Name:           docbook-xsl
 Version:        1.79.1
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://www.docbook.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -100,6 +100,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.79.1-11
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.79.1-10
 - Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.79.1-9
