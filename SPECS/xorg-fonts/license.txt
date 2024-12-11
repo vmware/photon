@@ -1,0 +1,1 @@
+License: MIT AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT-open-group AND Lucida-Bitmap-Fonts AND Bitstream-Charter AND GPL-3.0-or-later WITH Autoconf-exception-macro AND HPND-sell-variant AND Cronyx AND FSFAP AND NTP AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR AND FSFULLRWD AND HPND

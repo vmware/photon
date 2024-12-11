@@ -1,8 +1,7 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
 Version:        2.2.7
-Release:        3%{?dist}
-License:        GPL
+Release:        4%{?dist}
 URL:            http://www.keepalived.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Source0: https://github.com/acassen/keepalived/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=617ea91a8fcf9cabb4a5c92e9131ed3efc40930e823c77359ec0c7e82bae3f899108443afbb214678437caac1b649a710fa5f783d370fd3030ae9319be522623
 
 Source1: %{name}.service
+
+Source2: license.txt
+%include %{SOURCE2}
 # Backport of Upstream PR: https://github.com/acassen/keepalived/pull/2448/commits
 # to fix CVE-2024-41184
 Patch0: 0001-lib-don-t-return-subtracted-addresses-for-rb_find-co.patch
@@ -100,6 +102,8 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.2.7-4
+- Release bump for SRP compliance
 * Fri Aug 09 2024 Ankit Jain <sshedi@vmware.com> 2.2.7-3
 - Fix for CVE-2024-41184
 * Tue May 02 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-2

@@ -1,7 +1,7 @@
 Summary:    Key table files, console fonts, and keyboard utilities
 Name:       kbd
 Version:    2.2.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        http://ftp.altlinux.org/pub/people/legion/kbd
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -58,6 +58,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.2.0-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2.0-2
 - Release bump for SRP compliance
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1

@@ -1,8 +1,7 @@
 Summary:    Linux Key Management Utilities
 Name:       keyutils
 Version:    1.6.1
-Release:    2%{?dist}
-License:    GPL-2.0+ and LGPL-2.1+
+Release:    3%{?dist}
 URL:        http://people.redhat.com/~dhowells/keyutils
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    http://people.redhat.com/~dhowells/keyutils/keyutils-%{version}.tar.bz2
 %define sha512  %{name}=ea6e20b2594234c7f51581eef2b8fd19c109fa9eacaaef8dfbb4f237bd1d6fdf071ec23b4ff334cb22a46461d09d17cf499987fd1f00e66f27506888876961e1
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 Utilities to control the kernel key management facility and to provide
@@ -70,6 +72,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.1-3
+- Release bump for SRP compliance
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-2
 - Fix binary path
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.1-1

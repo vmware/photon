@@ -1,8 +1,7 @@
 Summary:        YAML parser and emitter in C++
 Name:           yaml-cpp
 Version:        0.7.0
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 Group:          Development/Libraries/C and C++
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ Url:            https://github.com/jbeder/yaml-cpp
 
 Source0:        https://github.com/jbeder/yaml-cpp/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=2de0f0ec8f003cd3c498d571cda7a796bf220517bad2dc02cba70c522dddde398f33cf1ad20da251adaacb2a07b77844111f297e99d45a7c46ebc01706bbafb5
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -58,6 +60,8 @@ Development files for %{name} library.
 %{_libdir}/libyaml-cpp.so
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 0.7.0-3
+- Release bump for SRP compliance
 * Sat Jun 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.0-2
 - Fix build with latest cmake
 * Mon Apr 04 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.7.0-1

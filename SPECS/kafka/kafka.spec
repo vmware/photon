@@ -7,8 +7,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.4.0
-Release:       6%{?dist}
-License:       Apache License, Version 2.0
+Release:       7%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -23,6 +22,9 @@ Source2:       %{name}.sysusers
 #Download https://raw.githubusercontent.com/gradle/gradle/v7.6.0/gradle/wrapper/gradle-wrapper.jar
 Source3:       gradle-wrapper-7.6.0-jar.tar.gz
 %define sha512 gradle-wrapper-7.6.0-jar.tar.gz=70a4bd98e9c220b1a06ffc416a7345bda8ae5abaa57c7bd3f392516e46e211b1934086bcfb4a58e8e613c105a012e80e2da1de53b4ab900e85e74f467018f4c1
+
+Source4: license.txt
+%include %{SOURCE4}
 
 Patch0:     0001-Use-proxy-if-available.patch
 Patch1:     kafka_doc.patch
@@ -131,6 +133,8 @@ rm -rf %{buildroot}
 %doc LICENSE
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.4.0-7
+- Release bump for SRP compliance
 * Wed Sep 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-6
 - Removed javadoc oracle links
 * Tue Jul 16 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-5

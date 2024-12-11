@@ -1,8 +1,7 @@
 Summary:         ISO-9660 and Rock Ridge image manipulation tool
 Name:            xorriso
 Version:         1.5.4
-Release:         3%{?dist}
-License:         GPL-2.0 GPL-3.0 LGPL-2.1
+Release:         4%{?dist}
 URL:             https://mirrors.kernel.org/gnu/xorriso/%{name}-%{version}.tar.gz
 Group:           Development/Tools
 Vendor:          VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:    Photon
 
 Source0: https://mirrors.kernel.org/gnu/xorriso/%{name}-%{version}.tar.gz
 %define sha512 %{name}=d12c7769e5cca74fc0a15d9cba6bbc652976aab45df1291e524e1b0841d6be1fac15c17f2c34bbc3fbdd320f2c74dcdf663968b766f80a2e95d203d9b9d6c581
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: acl
 BuildRequires: attr-devel
@@ -69,6 +71,8 @@ export LANG=C
 %exclude %{_infodir}/dir
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.5.4-4
+- Release bump for SRP compliance
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.4-3
 - Bump version as a part of zlib upgrade
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.4-2

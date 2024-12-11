@@ -1,8 +1,7 @@
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
 Version:        1.6.6
-Release:        2%{?dist}
-License:        LGPLv2+
+Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            http://live.gnome.org/JsonGlib
 Vendor:         VMware, Inc.
@@ -11,6 +10,9 @@ Distribution:   Photon
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
 %define sha512    %{name}=b9a737e4ba3ecdfb9cb8f5fb751cc74e5b1553664d3088c44a1f9e5396d4037958af214dcd290ddf5af98088f46167e10e371e134e1de5cbb7aec84c5c0fd017
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  python3-gobject-introspection
@@ -18,14 +20,14 @@ BuildRequires:  gobject-introspection-devel
 BuildRequires:  glib-devel
 BuildRequires:  libtool
 BuildRequires:  which
-BuildRequires:	meson
-BuildRequires:	python3
-BuildRequires:	python3-libs
+BuildRequires:  meson
+BuildRequires:  python3
+BuildRequires:  python3-libs
 BuildRequires:  gtk-doc
 
-Requires:	glib
+Requires:       glib
 
-Provides:	pkgconfig(json-glib-1.4)
+Provides:       pkgconfig(json-glib-1.4)
 
 %description
 JSON-GLib is a library providing serialization and deserialization
@@ -87,6 +89,8 @@ rm -rf %{buildroot}
 %{_datadir}/installed-tests/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.6-3
+- Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.6-2
 - Update release to compile with python 3.11
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.6-1
@@ -113,4 +117,4 @@ rm -rf %{buildroot}
 * Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-3
 - Added more requirements for devel subpackage.
 * Fri Jun 26 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-2
-- Added Provides:	pkgconfig(json-glib-1.0)
+- Added Provides:pkgconfig(json-glib-1.0)

@@ -1,0 +1,1 @@
+License: MIT AND BSD-3-Clause AND Apache-2.0 AND EPL-2.0 AND EPL-1.0

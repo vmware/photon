@@ -3,15 +3,17 @@
 %define network_required 1
 Name:           kapacitor
 Version:        1.6.6
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
-License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
 %define sha512  %{name}=55f8452c47220034928c4a8d22b88083c60d71ed3f2be8468599493bcf6d5167f4666e785dfd44926bd8e9a2af8011e9d4bb332db8b5c119085677a5eb017158
 Source1:        %{libflux_vendor}
 %define sha512  %{name}-libflux-vendor=fb2b13caea5235090db5b0439111c98d97f82ddaf27db7608c21183ac73f1a57c89376aa7767983d7fa4fa6730ab093b93330defc3089aa00aaae44989d6a0f9
 Source2:        %{name}.sysusers
+
+Source3: license.txt
+%include %{SOURCE3}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System/Monitoring
@@ -107,6 +109,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.6-12
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.6-11
 - Bump version as a part of go upgrade
 * Sun Sep 08 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.6-10

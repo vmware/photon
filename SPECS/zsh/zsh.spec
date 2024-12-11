@@ -1,8 +1,7 @@
 Summary:          Z shell
 Name:             zsh
 Version:          5.9
-Release:          3%{?dist}
-License:          MIT
+Release:          4%{?dist}
 URL:              http://zsh.org
 Group:            System Environment/Shells
 Vendor:           VMware, Inc.
@@ -13,6 +12,9 @@ Source0: http://www.zsh.org/pub/%{name}-%{version}.tar.xz
 
 Source1: zprofile.rhs
 Source2: zshrc
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires:    (coreutils or coreutils-selinux)
 BuildRequires:    tar
@@ -124,6 +126,8 @@ fi
 %config(noreplace) %{_sysconfdir}/z*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 5.9-4
+- Release bump for SRP compliance
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.9-3
 - Fix requires
 - Remove html sub package

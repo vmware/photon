@@ -1,6 +1,6 @@
 Name:       xxhash
 Version:    0.8.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 Summary:    Extremely fast hash algorithm
 URL:        http://www.xxhash.com
 Group:      System Environment/Security
@@ -85,6 +85,8 @@ make test-xxhsum-c %{?_smp_mflags}
 %{_libdir}/pkgconfig/libxxhash.pc
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 0.8.1-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.1-2
 - Release bump for SRP compliance
 * Wed Aug 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.8.1-1
