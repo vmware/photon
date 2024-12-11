@@ -1,8 +1,7 @@
 Summary:        WebOb provides objects for HTTP requests and responses..
 Name:           python3-webob
 Version:        1.8.7
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,9 +9,12 @@ Url:            https://pypi.python.org/pypi/WebOb
 Source0:        https://pypi.python.org/packages/1a/2b/322d6e01ba19c1e28349efe46dab1bd480c81a55af0658d63dc48ed62ee6/WebOb-%{version}.tar.gz
 %define sha512  WebOb=ff6a1ce796a59d9c078dc908a0d6307a080230a5c806be2278eebcbb78016bed43067e78e3e4a6d72a5f51184c137e8267ac75cbb92b057db008b51a792ff489
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildArch:      noarch
 
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-pytest
 %endif
 BuildRequires:  python3
@@ -46,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8.7-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.8.7-1
 - Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.6-1

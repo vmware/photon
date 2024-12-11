@@ -1,14 +1,16 @@
 Summary:        The Python SQL Toolkit and Object Relational Mapper
 Name:           python3-sqlalchemy
 Version:        1.4.40
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            http://www.sqlalchemy.org
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/29/18/a78469bc449d9f92f6269cc62d0d6fbe6bf394d1031b447ad5e54463c3a0/SQLAlchemy-%{version}.tar.gz
 %define sha512  SQLAlchemy=49b8ad8becd6fb2c43615890ef05554ce151f44cda20971a585ff5b325a6a91bb356a3c4320f4b1ac877a9eccdca9bec65cc9942bc5948d4143495b5c884f458
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -39,6 +41,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.40-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.40-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.4.40-1

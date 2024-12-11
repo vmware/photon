@@ -3,15 +3,17 @@
 Summary:       Python documentation generator
 Name:          python3-sphinx
 Version:       5.1.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Development/Tools
-License:       BSD-2-Clause
 URL:           www.sphinx-doc.org
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://github.com/sphinx-doc/sphinx/archive/refs/tags/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=82cb4c435b0f6cee6bf80b81028f06e425e3d6fb5614e64b1f5a8c715ece80b697b5b55e04f3afe26236bb4590de9cd41008d6480c4b3d895803d83e914afff3
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -97,6 +99,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.1.1-4
+- Release bump for SRP compliance
 * Sun Aug 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.1.1-3
 - Fix file packaging
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.1.1-2

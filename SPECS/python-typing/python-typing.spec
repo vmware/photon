@@ -1,14 +1,16 @@
 Name:           python3-typing
 Version:        3.10.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Type Hints for Python
-License:        PSF
 Group:          Development/Tools
 Url:            https://docs.python.org/3/library/typing.html
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/05/d9/6eebe19d46bd05360c9a9aae822e67a80f9242aabbfc58b641b957546607/typing-%{version}.tar.gz
 %define sha512  typing=2ae48da0f409f03f8b9df893d9c53e2fa351b2041b7280eb19e633c708da88a4e8109e60679156e3009cf5d0a713d588de2a4049b46ef58a33df093107bbb8d5
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -46,6 +48,8 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.0.0-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.10.0.0-1
 - Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7.4.3-1

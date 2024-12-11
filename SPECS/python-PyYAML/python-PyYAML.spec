@@ -2,15 +2,17 @@
 
 Name:           python3-PyYAML
 Version:        5.4.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
-License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/PyYAML-%{version}.tar.gz
 %define sha512  PyYAML=359c45d843fd839797572efeab121f17b1947647960dfb062f3618f25f71e1a6bc4bab14a1720b6b67f256089d5d48c452ec5419e3130222765c7ca41db11dad
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libyaml-devel
 BuildRequires:  python3-devel
@@ -60,6 +62,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.1-3
+- Release bump for SRP compliance
 * Wed Mar 01 2023 Nitesh Kumar <kunitesh@vmware.com> 5.4.1-2
 - Adding Requires cython3 to build with binding libyaml
 - as needed by ansible-posix v1.5.1

@@ -1,8 +1,7 @@
 Summary:       advanced key-value store
 Name:          redis
 Version:       7.2.6
-Release:       1%{?dist}
-License:       BSD
+Release:       2%{?dist}
 URL:           http://redis.io
 Group:         Applications/Databases
 Vendor:        VMware, Inc.
@@ -12,6 +11,9 @@ Source0: https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar
 %define sha512 %{name}=4635a3c5b23f3985ae7dbec9655eacedfdb16356014b30f864232467094f85fbc1c6af35837b05040f6d2a3b5fd1413c8716b541c8b2c4b24d8d4fbdc7884136
 
 Source1: %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0: %{name}-conf.patch
 
@@ -90,6 +92,8 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2.6-2
+- Release bump for SRP compliance
 * Fri Oct 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.6-1
 - Upgrade to v7.2.6
 * Thu Jan 18 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 7.2.4-1

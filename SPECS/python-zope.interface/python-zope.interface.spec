@@ -2,16 +2,18 @@
 
 Name:           python3-zope.interface
 Version:        5.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
-License:        ZPL 2.1
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://pypi.python.org/packages/source/z/zope.interface/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=ef15d63397e05ad9fc44b2d5d786b0399b6973bb5f4866fab839ff612756f3157f2099d0f5c0469b574a5c8b5920a7c2a5c6eab8e8f84c24d5c43e816669bffe
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -57,6 +59,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.4.0-2
 - Update release to compile with python 3.11
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 5.4.0-1

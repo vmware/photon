@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND MIT AND MPL-2.0 AND BSD-3-Clause AND ISC AND (BSD-2-Clause OR Apache-2.0) AND Apache-2.0 AND (BSD-2-Clause OR Apache-2.0) AND (BSD-3-Clause OR Apache-2.0) AND LGPL-2.1-or-later AND Python-2.0 AND 0BSD AND LGPL-2.1-only

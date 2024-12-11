@@ -2,9 +2,8 @@
 
 Name:           python3-requests-toolbelt
 Version:        0.10.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Utility belt for advanced users of python-requests
-License:        Apache-2.0
 Group:          Development/Languages/Python
 URL:            https://toolbelt.readthedocs.io
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/0c/4c/07f01c6ac44f7784fa399137fbc8d0cdc1b5d35304e8c0f278ad82105b58/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=e4dfc58bd9d84f3590582853345602ba4e0dcb292733cc3c5d92057f5fd1d414bc1058d06d3c825d6f9eb802281592515f24473c6e8a59c91eb8836ad31e45d7
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %if 0%{?with_check}
 BuildRequires: python3-pip
@@ -57,6 +59,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/requests_toolbelt-*.egg-info/
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.10.1-3
+- Release bump for SRP compliance
 * Tue Dec 26 2023 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.10.1-2
 - Bump up as part of python3-pyOpenSSL update
 * Thu Aug 25 2022 Mukul Sikka <msikka@vmware.com> 0.10.1-1

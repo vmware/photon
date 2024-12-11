@@ -1,12 +1,14 @@
 Summary:        rt-tests tests various real-time features of linux
 Name:           rt-tests
 Version:        2.4
-Release:        2%{?dist}
-License:        GPL-2.0
+Release:        3%{?dist}
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git/
 Source0:        %{name}-%{version}.tar.gz
 %define sha512  rt-tests=34c157cc0ad049146560812ea61be073730610081723c5d1ab93c8d0c83017991a6c5b06eac7bb6dc974b35a57591f0056a1e0ab912906e2c6d31ba8a1ced497
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  build-essential
@@ -43,6 +45,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.4-2
 - Update release to compile with python 3.11
 * Thu Sep 08 2022 Sharan Turlapati <sturlapati@vmware.com> 2.4-1

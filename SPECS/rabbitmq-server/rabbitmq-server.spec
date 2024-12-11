@@ -19,11 +19,10 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.13.3
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
-License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
 
 # use only .xz bundle from release page of github
@@ -33,6 +32,9 @@ Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{versio
 Source1: %{name}.tmpfiles
 Source2: %{name}.logrotate
 Source3: %{name}.service
+
+Source4: license.txt
+%include %{SOURCE4}
 
 BuildRequires: erlang >= %{erlang_minver}, erlang < %{erlang_maxver}
 BuildRequires: rsync
@@ -154,6 +156,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.13.3-2
+- Release bump for SRP compliance
 * Tue Jun 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.13.3-1
 - Upgrade to v3.13.3
 * Wed Dec 20 2023 Harinadh D <hdommaraju@vmware.com> 3.12.4-1

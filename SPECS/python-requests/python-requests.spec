@@ -1,8 +1,7 @@
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python3-requests
 Version:        2.28.1
-Release:        4%{?dist}
-License:        Apache2
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ Url:            http://python-requests.org
 
 Source0: http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
 %define sha512 requests=c123ec07171c2c7c34e4173b97750adfa313b4312d91c0d58e4eb8750361604017e5b370c23ec886d2cbf704f9074ec5ad0fa9c2cd8e6f9521532adafff39d41
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %if 0%{?with_check}
 Patch0:         fix_makecheck.patch
@@ -88,6 +90,8 @@ pytest3 -v -k "not test_https_warnings"
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.28.1-5
+- Release bump for SRP compliance
 * Tue Aug 06 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.28.1-4
 - Bump up as part of python3-urllib3 update
 * Tue Dec 26 2023 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.28.1-3

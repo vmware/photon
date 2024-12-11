@@ -1,8 +1,7 @@
 Summary:         RPC program number mapper
 Name:            rpcbind
 Version:         1.2.6
-Release:         4%{?dist}
-License:         BSD
+Release:         5%{?dist}
 URL:             http://nfsv4.bullopensource.org
 Group:           Applications/Daemons
 Vendor:          VMware, Inc.
@@ -15,6 +14,9 @@ Source1:         %{name}.service
 Source2:         %{name}.socket
 Source3:         %{name}.sysconfig
 Source4:         %{name}.sysusers
+
+Source5: license.txt
+%include %{SOURCE5}
 BuildRequires:   libtirpc-devel
 BuildRequires:   systemd-devel
 
@@ -96,6 +98,8 @@ fi
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.6-5
+- Release bump for SRP compliance
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.2.6-4
 - Use systemd-rpm-macros for user creation
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.6-3

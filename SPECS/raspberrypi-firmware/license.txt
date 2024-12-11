@@ -1,0 +1,1 @@
+License: Bitstream-Vera AND MIT AND AGPL-3.0-or-later AND BSD-3-Clause AND GPL-2.0-only WITH Linux-syscall-note AND (BSD-3-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) AND SGI-B-2.0 AND GPL-2.0-only AND GPL-1.0-or-later AND (MIT OR GPL-2.0-only)

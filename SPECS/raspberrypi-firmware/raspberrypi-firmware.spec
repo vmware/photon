@@ -5,8 +5,7 @@
 Name:       raspberrypi-firmware
 Summary:    Raspberry Pi firmware
 Version:    1.20230106
-Release:    1%{?dist}
-License:    Broadcom Corporation and Raspberry Pi (Trading) Ltd
+Release:    2%{?dist}
 URL:        https://github.com/raspberrypi/firmware
 Group:      System Environment/Boot
 Vendor:     VMware, Inc.
@@ -16,6 +15,9 @@ Source0: %{name}-%{version}.tar.gz
 %define sha512 %{name}=7ac48195062e57b0afe660d7ff31a1841565384accd487c8b9b7bbf32b88aff126b1d5e859d1b350b73e568d78ac58e58e447729387fb069aaf31c59006c72b5
 
 Source1:    rpi-config-txt.txt
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildArch:  noarch
 
@@ -114,6 +116,8 @@ install -vm 644 %{SOURCE1} %{buildroot}/boot/efi/config.txt
 /boot/efi/fixup4x.dat
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.20230106-2
+- Release bump for SRP compliance
 * Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 1.20230106-1
 - Automatic Version Bump
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.20210303-2

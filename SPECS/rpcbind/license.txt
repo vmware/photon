@@ -1,0 +1,1 @@
+License: X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-3-Clause AND FSFAP AND BSD-4-Clause AND FSFUL AND FSFULLR AND FSFULLRWD

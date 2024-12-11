@@ -1,8 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2022.19
-Release:        8%{?dist}
-License:        LGPLv2+
+Release:        9%{?dist}
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -13,6 +12,9 @@ Source0: https://github.com/projectatomic/rpm-ostree/releases/download/v%{versio
 Source1:        mk-ostree-host.sh
 Source2:        function.inc
 Source3:        mkostreerepo
+
+Source4: license.txt
+%include %{SOURCE4}
 
 Patch0:         rpm-ostree-libdnf-build.patch
 Patch1:         rpm-ostree-use-a-socket-in-run.patch
@@ -164,6 +166,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2022.19-9
+- Release bump for SRP compliance
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2022.19-8
 - Bump version as a part of sqlite upgrade to v3.43.2
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2022.19-7

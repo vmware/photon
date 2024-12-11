@@ -1,15 +1,17 @@
 Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python3-urllib3
 Version:        1.26.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/urllib3
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/shazow/urllib3/archive/urllib3-%{version}.tar.gz
 %define sha512 urllib3=6b72012dbd85434b2441229cbdea2a94583693f904dde349780e1290d581c8a5e10fe00a287a032ed1276349d0078b530f16a133e0f164dcea18105fa3dec79a
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -68,6 +70,8 @@ ulimit -n $nofiles
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.26.19-2
+- Release bump for SRP compliance
 * Tue Jul 30 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.26.19-1
 - Update to 1.26.19, Fixes CVE-2024-37891
 * Thu Feb 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.25.11-5

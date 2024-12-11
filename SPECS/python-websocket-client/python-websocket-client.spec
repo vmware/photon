@@ -1,14 +1,16 @@
 Name:           python3-websocket-client
 Version:        1.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        WebSocket client for python
-License:        LGPL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/websocket-client/websocket-client
 Source0:        https://files.pythonhosted.org/packages/99/11/01fe7ebcb7545a1990c53c11f31230afe1388b0b34256e3fd20e49482245/websocket-client-%{version}.tar.gz
 %define sha512  websocket-client=a2804421e97ccbfb61cb2e8a2be6ecd5d5d60210971e27ca4e00a4854fb49df2e3c87ec87c0ec11565d7ce03f419dc3cbd8c2402843a8fced49d75d65d07b502
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %if 0%{?with_check}
 BuildRequires:  openssl-devel
@@ -46,6 +48,8 @@ python3 setup.py test
 %{_bindir}/wsdump
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-2
+- Release bump for SRP compliance
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.1-1
 - Update release to compile with python 3.11
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.57.0-2

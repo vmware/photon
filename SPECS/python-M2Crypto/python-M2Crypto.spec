@@ -1,17 +1,21 @@
 Name:           python3-M2Crypto
 Version:        0.38.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
-License:        MIT
 URL:            https://pypi.python.org/pypi/M2Crypto/0.26.0
 Source0:        https://pypi.python.org/packages/11/29/0b075f51c38df4649a24ecff9ead1ffc57b164710821048e3d997f1363b9/M2Crypto-%{version}.tar.gz
-%if %{with_check}
+%define sha512  M2Crypto=b1e24e3101ce0dd9f17be4cabeddc2ec0f1228b270d74ef2fb38bae8807c5025b031d0743185f06370786a3dd5c3f42129720534dcff07ea4de3c727613f8d20
+
+Source1: license.txt
+%include %{SOURCE1}
+
+%if 0%{?with_check}
 Patch0:         makecheck.patch
 %endif
 Vendor:         VMware, Inc.
 Distribution:   Photon
-%define sha512  M2Crypto=b1e24e3101ce0dd9f17be4cabeddc2ec0f1228b270d74ef2fb38bae8807c5025b031d0743185f06370786a3dd5c3f42129720534dcff07ea4de3c727613f8d20
+
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  python3-devel
@@ -37,7 +41,7 @@ messenger for Zope.
 %prep
 # Using autosetup is not feasible
 %setup -q -n M2Crypto-%{version}
-%if %{with_check}
+%if 0%{?with_check}
 %patch0 -p1
 %endif
 %patch1 -p1
@@ -60,6 +64,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.38.0-3
+- Release bump for SRP compliance
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.38.0-2
 - Bump up version no. as part of swig upgrade
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.38.0-1

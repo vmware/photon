@@ -3,8 +3,7 @@
 Summary:        tzinfo object for the local timezone.
 Name:           python3-tzlocal
 Version:        4.2
-Release:        2%{?dist}
-License:        MIT License
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,6 +11,9 @@ Url:            https://github.com/regebro/tzlocal
 
 Source0: https://files.pythonhosted.org/packages/source/t/tzlocal/tzlocal-%{version}.tar.gz
 %define sha512 %{srcname}=5d1000bd8756ca2678655dbeedcfd6ef8d709503293303c98a48af234aca0d1525913585d679759c6fd7d4c5ef046c98384ee6e7a9eba769f81d05173ff0d77f
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-six
@@ -63,6 +65,8 @@ pip3 install tomli mocker pytest-mock
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.2-3
+- Release bump for SRP compliance
 * Sat Aug 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.2-2
 - Add python3-pytz-deprecation-shim to requires
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 4.2-1

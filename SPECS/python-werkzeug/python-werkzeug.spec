@@ -1,8 +1,7 @@
 Summary:        The Swiss Army knife of Python web development
 Name:           python3-werkzeug
 Version:        2.2.2
-Release:        1%{?dist}
-License:        BSD
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,12 +10,15 @@ Url:            https://pypi.python.org/pypi/Werkzeug
 Source0:        https://pypi.python.org/packages/ab/65/d3f1edd1109cb1beb6b82f4139addad482df5b5ea113bdc98242383bf402/Werkzeug-%{version}.tar.gz
 %define sha512  Werkzeug=b37a63ba1d6970b10ba17b87575c2d030ad6c4c00ab50669d678297b9801e319f4f81f98bfc2d89fc2e645c5e192dd81ed2d653c03dbaef06565de0bdac2bcf7
 
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-requests
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -49,6 +51,8 @@ LANG=en_US.UTF-8 PYTHONPATH=./  python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.2-2
+- Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.2-1
 - Automatic Version Bump
 * Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.0.1-3

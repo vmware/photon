@@ -3,8 +3,7 @@
 Summary:       Python module wrapping libsystemd functionality
 Name:          python3-systemd
 Version:       235
-Release:       1%{?dist}
-License:       LGPLv2+
+Release:       2%{?dist}
 URL:           https://github.com/systemd/python-systemd
 Group:         Development/Languages/Python
 Vendor:        VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:  Photon
 
 Source0: https://github.com/systemd/%{srcname}/archive/refs/tags/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=f1286a477200cc7b4d2c44b43452da576e8e660925711466659795775bcee44796688e1ede6cc22e61cb5b03e631c396d22f9a133327ae1147506bce09bab47f
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: systemd-devel
 BuildRequires: python3-devel
@@ -52,5 +54,7 @@ rm -rf %{buildroot}
 %{python3_sitearch}/systemd_python*.egg-info
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 235-2
+- Release bump for SRP compliance
 * Tue Feb 14 2023 Nitesh Kumar <kunitesh@vmware.com> 235-1
 - Initial build

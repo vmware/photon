@@ -1,8 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2306.0
-Release:        3%{?dist}
-License:        GPLv3+ and ASL 2.0
+Release:        4%{?dist}
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -13,6 +12,9 @@ Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
+
+Source4: license.txt
+%include %{SOURCE4}
 
 BuildRequires:  systemd-devel
 BuildRequires:  libestr-devel
@@ -101,6 +103,8 @@ make %{?_smp_mflags} check
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.2306.0-4
+- Release bump for SRP compliance
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.2306.0-3
 - Bump version as a part of gnutls upgrade
 * Wed Nov 15 2023 Harinadh D <hdommaraju@vmware.com> 8.2306.0-2

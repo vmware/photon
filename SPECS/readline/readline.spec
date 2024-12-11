@@ -11,7 +11,7 @@
 Summary:        Command-line editing and history capabilities
 Name:           readline
 Version:        8.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -158,6 +158,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/readline.3.gz
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.2-4
+- Release bump for SRP compliance
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 8.2-3
 - Bump version to generate SRP provenance file
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.2-2

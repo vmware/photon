@@ -1,0 +1,1 @@
+License: MIT AND CC-BY-SA-4.0 AND WTFPL AND Python-2.0 AND CC-BY-SA-3.0

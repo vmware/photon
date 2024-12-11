@@ -5,8 +5,7 @@
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr15
 Version:        5.3.3
-Release:        3%{?dist}
-License:        GNU Public License (GPL) v3
+Release:        4%{?dist}
 URL:            https://repmgr.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -14,6 +13,9 @@ Distribution:   Photon
 
 Source0: https://repmgr.org/download/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=938eabd6a73296e657c199878050a7fac82285da9613d0fff861e969865a4c3725a13b548e84a17ee035ef536a738b67411b9c93fdafd8698bb76844f0834d15
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: cpio
 BuildRequires: Linux-PAM-devel
@@ -56,6 +58,8 @@ rm -rf %{buildroot}
 %{_pg15basedir}/share/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.3.3-4
+- Release bump for SRP compliance
 * Wed Sep 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.3-3
 - repmgr15 for pgsql15
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.3-2

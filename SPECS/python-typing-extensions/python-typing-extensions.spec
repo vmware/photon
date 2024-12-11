@@ -1,9 +1,8 @@
 %define network_required 1
 Name:           python3-typing-extensions
 Version:        4.3.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Backported and Experimental Type Hints for Python 3.7+
-License:        PSF
 Group:          Development/Tools
 Url:            https://pypi.org/project/typing-extensions
 Vendor:         VMware, Inc.
@@ -11,6 +10,9 @@ Distribution:   Photon
 
 Source0:        https://files.pythonhosted.org/packages/9e/1d/d128169ff58c501059330f1ad96ed62b79114a2eb30b8238af63a2e27f70/typing_extensions-4.3.0.tar.gz
 %define sha512  typing_extensions=69e4a393aaaaa45d20f32027cc35c77a950bf1f9b82f0eb2906a4b466eb319b867b5f53c0afc71ca613817d7e37d305fe73c50e93b1d4b389fdb8f1e4d5f8535
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         backport-generic-typedict.patch
 BuildRequires:  python3-devel
@@ -52,6 +54,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.0-4
+- Release bump for SRP compliance
 * Thu Jun 06 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.3.0-3
 - Update release to compile with host python3-flit-core
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.3.0-2

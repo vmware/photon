@@ -1,14 +1,16 @@
 Name:           python3-PyJWT
 Version:        2.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        JSON Web Token implementation in Python
-License:        MIT
 Group:          Development/Languages/Python
 URL:            https://github.com/jpadilla/pyjwt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/jpadilla/pyjwt/archive/refs/tags/PyJWT-2.8.0.tar.gz
 %define sha512  PyJWT=9d631c20c5207d5ab3137c9d56825f9e197688181abae4f3d6aac766530a35e07a2dfd5e3ba6e530dd5a29a27f54e961cb01075f3bc831b73816aa7c357eb0d4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -36,6 +38,8 @@ A Python implementation of JSON Web Token draft 01. This library provides a mean
 %doc README.rst
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.0-2
+- Release bump for SRP compliance
 * Mon Sep 11 2023 Felippe Burkf <burkf@vmware.com> 2.8.0-1
 - update to 2.8.0
 * Mon Nov 28 2022 Anmol Jain <anmolja@vmware.com> 2.6.0-1

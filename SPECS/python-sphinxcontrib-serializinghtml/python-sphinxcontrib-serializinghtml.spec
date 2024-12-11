@@ -2,9 +2,8 @@
 
 Name:           python3-sphinxcontrib-serializinghtml
 Version:        1.1.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Sphinx extension for serialized HTML
-License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,6 +11,9 @@ URL:            https://pypi.org/project/sphinxcontrib-serializinghtml
 
 Source0: https://files.pythonhosted.org/packages/ac/86/021876a9dd4eac9dae0b1d454d848acbd56d5574d350d0f835043b5ac2cd/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=c5aabe4d29fd0455c269f8054089fdd61e1de5c35aa407740fc3baae4cfb3235d9fd5515c0489b0becd12abc8f18d0f42aa169ed315c00f30ba87e64ce851667
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch: noarch
 
@@ -42,6 +44,8 @@ HTML files (json and pickle).
 %doc README.rst
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.5-3
+- Release bump for SRP compliance
 * Sun Aug 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.5-2
 - Fix summary & description
 * Mon Sep 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.5-1

@@ -1,12 +1,14 @@
 Name:           python3-yamlloader
 Version:        1.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Ordered YAML loader and dumper for PyYAML.
-License:        MIT License
 Group:          Development/Languages/Python
 Url:            https://files.pythonhosted.org/packages/9e/10/fbb1fb0d600f167b4ddeb83a5e66307c5c0d56860595e02c9387861b686d/yamlloader-1.1.0.tar.gz
 Source0:        yamlloader-%{version}.tar.gz
 %define sha512  yamlloader=dfd85de2a3488f312edbe1ebe3594612d76034221fe1e06ee036229060ddccb8a36b83ca46f0adca58e4581c345f2c57dac2bbdebb59b0fd9bc13ce80162ce46
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -38,6 +40,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.0-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.1.0-2
 - Update release to compile with python 3.11
 * Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.1.0-1

@@ -3,8 +3,7 @@
 Summary:    Pure-Python RSA implementation
 Name:       python3-rsa
 Version:    4.9
-Release:    1%{?dist}
-License:    Apache-2.0
+Release:    2%{?dist}
 URL:        http://stuvel.eu/rsa
 Group:      Development/Languages/Python
 Vendor:     VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://pypi.python.org/packages/source/r/%{srcname}/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=85f359cc448a42f267f425fcf761597eeeab942523de49284b01d6ea2bcca8bddf0fac26926b487ae91c15889a7c4897a33ee00de859f28fe9cca19ef98c3f19
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch: noarch
 
@@ -72,5 +74,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/%{srcname}-%{version}-py%{python3_version}.egg-info/
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9-2
+- Release bump for SRP compliance
 * Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.9-1
 - Initial version. Needed by syslog-ng.
