@@ -3,8 +3,7 @@
 Summary:        Utilities for aufs
 Name:           aufs-util
 Version:        6.0
-Release:        2%{?dist}
-License:        GPLv2
+Release:        3%{?dist}
 URL:            https://sourceforge.net/p/aufs/aufs-util/ref/master/branches/
 Group:          System Environment
 Vendor:         VMware, Inc.
@@ -15,6 +14,9 @@ Source0: %{name}-%{version}.tar.gz
 
 Source1: aufs-standalone-aufs%{version}.tar.gz
 %define sha512 aufs-standalone-aufs%{version}=7028ad5671a4d0b473e6c7613bad18a6fcf0b01d9e908b4d5851bba4f686c01da157ab55a9f15448ac9575e63fa5fe6d0ebee4a4f9d2f7a93d6902462d1b6612
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0: 0001-aufs_type.h-remove-__user.patch
 Patch1: 0001-Makefile-remove-static-ldflag.patch
@@ -53,6 +55,8 @@ export CPPFLAGS="-I ${PWD}/%{aufs_include_dir}/uapi"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 6.0-3
+- Release bump for SRP compliance
 * Sat May 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0-2
 - Require linux
 - Use patches instead of using sed commands to modify source at build time

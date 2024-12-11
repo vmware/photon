@@ -3,8 +3,7 @@
 Summary:        A kernel-based automounter for Linux
 Name:           autofs
 Version:        5.1.8
-Release:        2%{?dist}
-License:        GPLv2+
+Release:        3%{?dist}
 URL:            http://www.kernel.org/pub/linux/daemons/autofs
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -14,6 +13,9 @@ Source0: http://www.kernel.org/pub/linux/daemons/%{name}/v5/%{name}-%{version}.t
 %define sha512 %{name}=6ee6283c0977c82848a654dc24745ee687f6916de441c3688fa91f67ca7295e632ee3808cc2358984a4b9f19841e6e1a91ab48aad6341ac8e63827fe8c32d223
 
 Source1:        %{name}.service
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  systemd-devel
 BuildRequires:  rpcsvc-proto-devel
@@ -84,6 +86,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/autofs.service
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.1.8-3
+- Release bump for SRP compliance
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.8-2
 - Bump version as a part of libtirpc upgrade
 * Thu Aug 25 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.1.8-1

@@ -12,8 +12,7 @@
 Summary:        Apache Tomcat 10.1
 Name:           apache-tomcat10
 Version:        10.1.34
-Release:        1%{?dist}
-License:        Apache
+Release:        2%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -36,6 +35,9 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{_ori
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
 %define sha512 base=c764124c351e8b22a7bd65026d1039a27027adfe651b97757ea4e07c3f81779557cfbaab741866dbf37942be5b302c92216f905e31c2aae27594aa590fc9f446
+
+Source2: license-apache-tomcat10.txt
+%include %{SOURCE2}
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
@@ -154,6 +156,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 10.1.34-2
+- Release bump for SRP compliance
 * Tue Dec 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.1.34-1
 - Upgrade to v10.1.34 to fix CVE-2024-52316
 * Tue Mar 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 10.1.19-1

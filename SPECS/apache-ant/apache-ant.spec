@@ -8,8 +8,7 @@
 Summary:    Apache Ant
 Name:       apache-ant
 Version:    1.10.12
-Release:    3%{?dist}
-License:    Apache
+Release:    4%{?dist}
 URL:        http://ant.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -23,6 +22,9 @@ Source1: https://repo1.maven.org/maven2/org/hamcrest/hamcrest/%{hamcrest_ver}/ha
 
 Source2: https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-%{maven_tasks_ver}.tar.gz
 %define sha512 maven-ant-tasks=4df5b96a11819f82732c54656db8b0e0f4697079113d644622b4f82dc218ac1829b97aa8dc2427d3903ebdb0eb82e2ee35f9d3160647edb09bb243d8ba266fd8
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires: openjdk11
 
@@ -134,6 +136,8 @@ rm -rf %{buildroot}
 %{ant_bindir}/runant.pl
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.10.12-4
+- Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.12-3
 - Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.12-2

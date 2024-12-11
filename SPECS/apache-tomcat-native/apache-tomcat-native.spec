@@ -1,8 +1,7 @@
 Summary:        Apache Tomcat Native
 Name:           apache-tomcat-native
 Version:        2.0.3
-Release:        5%{?dist}
-License:        Apache 2.0
+Release:        6%{?dist}
 URL:            https://tomcat.apache.org/native-doc/
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,6 +10,9 @@ BuildArch:      x86_64
 
 Source0: https://dlcdn.apache.org/tomcat/tomcat-connectors/native/%{version}/source/tomcat-native-%{version}-src.tar.gz
 %define sha512 tomcat-native=d80e6b76295bb253eaf6eab4d722f3ba2f683f33a96310838b4c44b99f0b47a49ed9c09bb53ed23698db057ce765e3fcbfcd4ac4b75d2bdbe691f916be3be339
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         openssl_3_0_7_compatibility.patch
 
@@ -68,6 +70,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libtcnative*.so
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.0.3-6
+- Release bump for SRP compliance
 * Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 2.0.3-5
 - Bump version as a part of apr upgrade
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.3-4

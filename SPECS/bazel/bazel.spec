@@ -4,8 +4,7 @@
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        5.3.2
-Release:        5%{?dist}
-License:        Apache License 2.0
+Release:        6%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,6 +12,9 @@ URL:            http://bazel.build/
 
 Source0: https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name}-%{version}-dist.zip
 %define sha512 %{name}=a63895c224d51619cf83e6e55872aa6d55d17c7dcea59eaf467069d2c95259f5964fbf8fa5994df0e3c030234a7adf70a2715edb4edbbe2bf69d21dd698c0833
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  openjdk11
 BuildRequires:  zlib-devel
@@ -56,6 +58,8 @@ cp output/bazel %{buildroot}%{_bindir}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.3.2-6
+- Release bump for SRP compliance
 * Fri Jul 26 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 5.3.2-5
 - Offline build support
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.2-4

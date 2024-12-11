@@ -1,0 +1,1 @@
+License: MIT AND (GPL-2.0-only WITH Classpath-exception-2.0 OR CDDL-1.1) AND BSD-3-Clause AND Apache-2.0 AND CPL-1.0 AND EPL-1.0

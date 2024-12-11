@@ -1,15 +1,17 @@
 Summary:        Bash Automated Testing System
 Name:           bats
 Version:        1.8.2
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 Group:          System Environment/Tool
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 URL:            https://github.com/bats-core/bats-core
-SOURCE0:        https://github.com/bats-core/bats-core/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0:        https://github.com/bats-core/bats-core/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=7eace32f19789e081112af1ce8ab33ff210d52bd3ea84962bbec226349b3b8d8912b6a495f5524f9cc7cfe692f1d23d684c93c24e182752e2b30731670d6eeea
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -45,6 +47,8 @@ program.
 %{_mandir}/man7/%{name}.7.gz
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.8.2-2
+- Release bump for SRP compliance
 * Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 1.8.2-1
 - Automatic Version Bump
 * Thu Oct 06 2022 Gerrit Photon <photon-checkins@vmware.com> 1.8.0-1

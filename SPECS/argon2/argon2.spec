@@ -3,13 +3,15 @@
 Summary:        Tools for password hashing
 Name:           argon2
 Version:        20190702
-Release:        2%{?dist}
-License:        Apache 2.0
+Release:        3%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/P-H-C/phc-winner-argon2/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha1    %{name}=4b1de90ec1ccfb6e91001e849f2cbe0222cc8b4c
+%define sha512  %{name}=0a4cb89e8e63399f7df069e2862ccd05308b7652bf4ab74372842f66bcc60776399e0eaf979a7b7e31436b5e6913fe5b0a6949549d8c82ebd06e0629b106e85f
+
+Source1: license.txt
+%include %{SOURCE1}
 URL:            https://github.com/P-H-C/phc-winner-argon2
 BuildRequires:  gcc
 BuildRequires:  make
@@ -72,6 +74,8 @@ make test %{?_smp_mflags}
 %{_libdir}/pkgconfig/%{libname}.pc
 
 %changelog
+*   Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 20190702-3
+-   Release bump for SRP compliance
 *   Thu Jul 29 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 20190702-2
 -   Pass OPTTARGET=%{_arch} to make to avoid building package for native instruction set
 *   Thu Apr 8 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 20190702-1

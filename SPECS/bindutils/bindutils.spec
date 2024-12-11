@@ -5,8 +5,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.20.0
-Release:        1%{?dist}
-License:        ISC
+Release:        2%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -16,6 +15,9 @@ Source0: https://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
 %define sha512 bind=38dcb5d401b357127f11af521594daf2a7df1fbf444f80a823d10d1077903a59faac4299f925ad77283610c54c816ac0f53edb6d1cdb664abc36368457840e55
 
 Source1:        %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Requires:       krb5
 Requires:       e2fsprogs-libs
@@ -130,6 +132,8 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 9.20.0-2
+- Release bump for SRP compliance
 * Thu Jul 18 2024 Dweep Advani <dweep.advani@broadcom.com> 9.20.0-1
 - Update to version 9.20.0 to fix CVE-2024-0760/1737/1975/4076
 * Wed Jul 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.19.21-2

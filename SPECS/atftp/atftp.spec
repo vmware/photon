@@ -1,9 +1,8 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
 Version:          0.8.0
-Release:          6%{?dist}
+Release:          7%{?dist}
 URL:              http://sourceforge.net/projects/atftp
-License:          GPLv2+ and GPLv3+ and LGPLv2+
 Group:            System Environment/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -14,6 +13,9 @@ Source0: http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%
 Source1: %{name}.sysusers
 Source2: atftpd.socket
 Source3: atftpd.service
+
+Source4: license.txt
+%include %{SOURCE4}
 
 BuildRequires:    systemd-devel
 BuildRequires:    readline-devel
@@ -112,6 +114,8 @@ rm -rf %{buildroot}
 %{_bindir}/%{name}
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.8.0-7
+- Release bump for SRP compliance
 * Tue Jan 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.0-6
 - Install socket unit when atftpd service is enabled
 * Fri Jan 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.0-5

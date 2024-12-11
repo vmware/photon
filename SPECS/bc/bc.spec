@@ -1,23 +1,26 @@
-Summary:	precision numeric processing language
-Name:		bc
-Version:	1.07.1
-Release:	4%{?dist}
-License:	GPLv2+
-URL:		https://ftp.gnu.org/gnu/bc/
-Group:		System Environment/base
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	https://ftp.gnu.org/gnu/bc/%{name}-%{version}.tar.gz
-%define sha1 bc=b4475c6d66590a5911d30f9747361db47231640a
+Summary:        precision numeric processing language
+Name:           bc
+Version:        1.07.1
+Release:        5%{?dist}
+URL:            https://ftp.gnu.org/gnu/bc/
+Group:          System Environment/base
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://ftp.gnu.org/gnu/bc/%{name}-%{version}.tar.gz
+%define sha512  bc=02126d0db6b6ed06d56cfc292d6f5475ff1e574779d7e69c7809bbb1e13f946f57ea07da2a7666baa092507a951a822044b0970075f75eefe65a5c1999b75d34
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ed
 Requires: flex
-Patch0:		do-not-generate-libmath-h.patch
-Patch1:		pregenerated-libmath-h.patch
+Patch0:         do-not-generate-libmath-h.patch
+Patch1:         pregenerated-libmath-h.patch
 
 %description
 The Bc package contains an arbitrary precision numeric processing language.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 if [ %{_host} != %{_build} ]; then
 # bc is not cross-compile friendly.
@@ -34,7 +37,7 @@ fi
 %build
 autoreconf -fiv
 %configure \
-	--disable-silent-rules
+          --disable-silent-rules
 make %{?_smp_mflags}
 # check that our pregenerated libmath.h is up to date.
 if [ %{_host} = %{_build} ]; then
@@ -42,7 +45,7 @@ if [ %{_host} = %{_build} ]; then
 fi
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/%{_mandir}
 rm -rf %{buildroot}%{_infodir}
 
@@ -62,6 +65,8 @@ cd Test
 %{_mandir}/*/*
 
 %changelog
+*   Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.07.1-5
+-   Release bump for SRP compliance
 *   Mon Sep 28 2020 Sujay G <gsujay@vmware.com> 1.07.1-4
 -   Fix %check
 *   Fri Nov 01 2019 Alexey Makhalov <amakhalov@vmware.com> 1.07.1-3

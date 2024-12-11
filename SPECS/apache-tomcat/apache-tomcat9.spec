@@ -12,8 +12,7 @@
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
 Version:        9.0.97
-Release:        1%{?dist}
-License:        Apache
+Release:        2%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -34,6 +33,9 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
 %define sha512 base=306d9bff21d90654ae889de327620790f65ebaca8dba366c41f91559429a0f9e1733c227d2bb2e79f22062f77caa3ad779f1c3a4ca7bcb951440a9b9d4691d74
+
+Source2: license-apache-tomcat9.txt
+%include %{SOURCE2}
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
@@ -149,6 +151,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 9.0.97-2
+- Release bump for SRP compliance
 * Wed Nov 13 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.0.97-1
 - Version upgrade to v9.0.97
 * Tue Mar 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 9.0.86-1
