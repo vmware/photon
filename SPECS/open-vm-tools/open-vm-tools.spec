@@ -4,8 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        12.4.5
-Release:        1%{?dist}
-License:        LGPLv2+
+Release:        2%{?dist}
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -19,6 +18,9 @@ Source1: https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc
 
 Source2: vmtoolsd.service
 Source3: vgauthd.service
+
+Source4: license.txt
+%include %{SOURCE4}
 
 # If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
@@ -179,6 +181,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 12.4.5-2
+- Release bump for SRP compliance
 * Mon Jul 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.4.5-1
 - Upgrade to v12.4.5
 * Wed May 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.3.5-2
