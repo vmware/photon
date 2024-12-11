@@ -5,7 +5,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.20
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -251,6 +251,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 11.0.20-9
+- Version bump as a part of cups upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 11.0.20-8
 - Release bump for SRP compliance
 * Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 11.0.20-7

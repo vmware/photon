@@ -5,7 +5,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.13
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -242,6 +242,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.13-3
+- Version bump as a part of cups upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 17.0.13-2
 - Release bump for SRP compliance
 * Tue Oct 29 2024 Tapas Kundu <tapas.kundu@broadcom.com> 17.0.13-1

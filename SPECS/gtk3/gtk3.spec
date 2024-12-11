@@ -1,7 +1,7 @@
 Summary:        GUI library.
 Name:           gtk3
 Version:        3.23.3
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://www.gtk.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -162,6 +162,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/gtk-3.0/
 
 %changelog
+* Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.23.3-11
+- Bump version as part of cups upgrade
 * Thu Dec 12 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.23.3-10
 - Release bump for SRP compliance
 * Fri Dec 08 2023 Shivani Agarwal <shivania2@vmware.com> 3.23.3-9
