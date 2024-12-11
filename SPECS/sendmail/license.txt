@@ -1,0 +1,1 @@
+License: CDDL-1.0 AND MIT AND Sendmail AND BSD-3-Clause AND ISC AND BSD-4-Clause-UC AND HPND-sell-variant AND MIT-CMU AND BSD-4-Clause AND PostgreSQL AND mailprio

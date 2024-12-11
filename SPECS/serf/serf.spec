@@ -1,8 +1,7 @@
 Summary:        A high performance C-based HTTP client library built upon the Apache Portable Runtime (APR) library
 Name:           serf
 Version:        1.3.9
-Release:        11%{?dist}
-License:        Apache License 2.0
+Release:        12%{?dist}
 URL:            https://serf.apache.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://www.apache.org/dist/serf/%{name}-%{version}.tar.bz2
 %define sha512 serf=9f5418d991840a08d293d1ecba70cd9534a207696d002f22dbe62354e7b005955112a0d144a76c89c7f7ad3b4c882e54974441fafa0c09c4aa25c49c021ca75d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: 0001-openssl-3.0.0-compatibility.patch
 
@@ -65,6 +67,8 @@ scons check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.9-12
+- Release bump for SRP compliance
 * Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.3.9-11
 - Bump version as a part of apr upgrade
 * Fri Sep 29 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3.9-10

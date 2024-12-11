@@ -1,12 +1,14 @@
 Name:           scons
 Version:        4.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An Open Source software construction tool
 Group:          Development/Tools
-License:        MIT
 URL:            https://sourceforge.net/projects/scons
 Source0:        https://sourceforge.net/projects/scons/files/scons/%{version}/%{name}-%{version}.tar.gz
 %define sha512  scons=f79b86bb09783767b3872cfb8efb665372714a604af2aaf3adc66eee63d3afe27bc6b2aab83813743c83f71c81c800d42842e916501787ba402ce2726dda9b44
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -44,6 +46,8 @@ rm -rf %{buildroot}
 %{_datadir}/*.1
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.1.0-3
+- Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.1.0-2
 - Update release to compile with python 3.11
 * Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 4.1.0-1

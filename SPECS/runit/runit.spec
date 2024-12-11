@@ -2,18 +2,25 @@
 Summary:        A UNIX init scheme with service supervision
 Name:           runit
 Version:        2.1.2
-Release:        5%{?dist}
-License:        BSD
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Release:        6%{?dist}
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Url:            http://smarden.org/runit/
-Source0:        http://smarden.org/runit/runit-%{version}.tar.gz
-%define sha1 runit=398f7bf995acd58797c1d4a7bcd75cc1fc83aa66
-Source1:	runit.service
+
+Source0: http://smarden.org/runit/runit-%{version}.tar.gz
+%define sha512 %{name}=a18773ebf1aa22305dd89ed67363165b9fcf86c192b2be4e268d08005dd82d51265160c637abe072f2f2e378c4b315a75bd3d3e602c3e75bdd451a3b0190f8cf
+
+Source1:    runit.service
+
+Source2: license.txt
+%include %{SOURCE2}
+
 #Patch source: https://github.com/imeyer/runit-rpm
-Patch0:		runit-default-service.patch
-Patch1:		runit-gen-debug.patch
+Patch0:     runit-default-service.patch
+Patch1:     runit-gen-debug.patch
+
+BuildRequires: systemd-rpm-macros
 
 %description
 runit is a cross-platform Unix init scheme with service supervision; a
@@ -22,7 +29,7 @@ Mac OS X, and Solaris, and can easily be adapted to other Unix operating
 systems.
 
 %prep
-%autosetup -n admin/%{name}-%{version} -p1
+%autosetup -p1 -n admin/%{name}-%{version}
 
 %build
 sh package/compile
@@ -34,9 +41,9 @@ done
 for i in man/*8 ; do
     install -D -m 0755 $i %{buildroot}%{_mandir}/man8/${i##man/}
 done
-install -d -m 0755 %{buildroot}/etc/service
+install -d -m 0755 %{buildroot}%{_sysconfdir}/service
 install -D -m 0750 etc/2 %{buildroot}%{_sbindir}/runsvdir-start
-install -D -m 0755 %{SOURCE1} %{buildroot}/%{_libdir}/systemd/system/runit.service
+install -D -m 0755 %{SOURCE1} %{buildroot}%{_unitdir}/runit.service
 
 %check
 sh package/check
@@ -48,17 +55,19 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{_sbindir}/*
 %{_mandir}/man8/*
-%{_libdir}/systemd/system/runit.service
-%dir /etc/service
+%{_unitdir}/runit.service
+%dir %{_sysconfdir}/service
 
 %changelog
-*       Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 2.1.2-5
--       Bump up version to compile with new glibc
-*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-4
--	Ensure non empty debuginfo
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.1.2-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-2
--	GA - Bump release of all rpms
-*	Tue Aug 4 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
--	Initial build
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.2-6
+- Release bump for SRP compliance
+* Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 2.1.2-5
+- Bump up version to compile with new glibc
+* Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-4
+- Ensure non empty debuginfo
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.1.2-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-2
+- GA - Bump release of all rpms
+* Tue Aug 4 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
+- Initial build

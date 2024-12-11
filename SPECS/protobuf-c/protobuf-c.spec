@@ -1,8 +1,7 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
 Version:        1.5.0
-Release:        1%{?dist}
-License:        BSD-3-Clause
+Release:        2%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            https://github.com/protobuf-c/protobuf-c
 
 Source0: https://github.com/protobuf-c/protobuf-c/releases/download/v1.4.1/%{name}-%{version}.tar.gz
 %define sha512 %{name}=175c9fc901cab88308730eea982dd62b1e0decdceb80aa53be163f17a440b4acecb834a784beab5cd71186413a322a323f4539758a8727ca51801cf92f9bd3da
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  protobuf-devel
 BuildRequires:  autoconf
@@ -75,6 +77,8 @@ rm -rf %{buildroot}
 %{_libdir}/libprotobuf-c.a
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.0-2
+- Release bump for SRP compliance
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.0-1
 - Upgrade to v1.5.0
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.4.1-2

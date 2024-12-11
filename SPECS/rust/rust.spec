@@ -4,8 +4,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.71.1
-Release:        4%{?dist}
-License:        Apache License Version 2.0 and MIT
+Release:        5%{?dist}
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -37,6 +36,9 @@ Source3: https://static.rust-lang.org/dist/%{toolchain_prefix}/rust-std-%{bootst
 %ifarch aarch64
 %define sha512 rust-std-%{bootstrap_toolchain_ver}-aarch64-unknown-linux-gnu=8c472c23c4911c96ceea8c67c8a29aa7c99501df09ae078d6506860f5613e96039a08684ecb488b95a941550fceafec58726ea99139542cd0e27f6e126fa1b05
 %endif
+
+Source4: license.txt
+%include %{SOURCE4}
 
 Patch0: 0001-Convert-valid-feature-name-warning-to-an-error.patch
 
@@ -129,6 +131,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.71.1-5
+- Release bump for SRP compliance
 * Thu Jul 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.71.1-4
 - Do offline build using vendor provided sources
 - Don't remove any vendor provided sources for the same reason

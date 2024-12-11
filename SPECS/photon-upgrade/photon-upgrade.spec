@@ -1,8 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        4%{?dist}
-License:        Apache License
+Release:        5%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -15,11 +14,13 @@ Source3:        utils.sh
 Source4:        common.sh
 Source5:        ph5-to-ph6-deprecated-pkgs.txt
 
+Source6: license.txt
+%include %{SOURCE6}
+
 BuildArch:      noarch
 
 Requires:       rpm
 Requires:       tdnf
-Requires:       coreutils
 Requires:       gawk
 Requires:       sed
 Requires:       (coreutils or coreutils-selinux)
@@ -53,6 +54,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-5
+- Release bump for SRP compliance
 * Tue Oct 22 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0-4
 - Removes validation of repo while updating OS packages
 * Fri Jan 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0-3

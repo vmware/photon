@@ -1,19 +1,21 @@
-Summary:	The GNU portable thread library.
-Name:		pth
-Version:	2.0.7
-Release:	1%{?dist}
-License:	LGPLv2+
-URL:		http://www.gnu.org/software/pth/
-Group:		System Environment/Libraries.
+Summary:    The GNU portable thread library.
+Name:       pth
+Version:    2.0.7
+Release:    2%{?dist}
+URL:        http://www.gnu.org/software/pth/
+Group:      System Environment/Libraries.
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
 Source0:        http://open-source-box.org/%{name}/%{name}-%{version}.tar.gz
-%define sha1 pth=9a71915c89ff2414de69fe104ae1016d513afeee
-Vendor:		VMware, Inc.
-Distribution:	Photon
+%define sha512 pth=f79d74047c50e06f3198356f88647c5c1c8a04ebdd94641fc31d5ab0fd2750d86615fcb81da2f98d7ea73d012a501195d3fa09060571d18dcfdaec5d7a0ecb12
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
-
-Pth is a very portable POSIX/ANSI-C based library for Unix platforms which 
-provides non-preemptive priority-based scheduling for multiple threads of 
+Pth is a very portable POSIX/ANSI-C based library for Unix platforms which
+provides non-preemptive priority-based scheduling for multiple threads of
 execution (aka ``multithreading'') inside event-driven applications. All
 threads run in the same address space of the server application, but each
 thread has it's own individual program-counter, run-time stack, signal
@@ -22,25 +24,25 @@ mask and errno variable.
 %package devel
 Summary:       GNU pth development header and libraries.
 Group:         Development/Libraries.
-Requires:      pth = %{version}
+Requires:      %{name} = %{version}-%{release}
 
 %description devel
 Development package for pth.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-%configure --disable-static \
-           --prefix=%{_prefix}
+%configure --disable-static
+
+# make doesn't support _smp_mflags
 make
 
 %install
-make DESTDIR=%{buildroot} install
-find %{buildroot}%{_libdir} -name '*.la' -delete
+%make_install
 
 %check
-make %{?_smp_mflags} -k check
+%make_build check
 
 %post -p /sbin/ldconfig
 
@@ -59,5 +61,7 @@ make %{?_smp_mflags} -k check
 %{_datadir}/aclocal/*
 
 %changelog
-*       Wed Jul 27 2016 Kumar Kaushik <kaushikk@vmware.com> 2.0.7-1
--       Initial Build.
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.7-2
+- Release bump for SRP compliance
+* Wed Jul 27 2016 Kumar Kaushik <kaushikk@vmware.com> 2.0.7-1
+- Initial Build.

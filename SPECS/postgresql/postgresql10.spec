@@ -11,8 +11,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql10
 Version:        10.23
-Release:        1%{?dist}
-License:        PostgreSQL
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -20,6 +19,9 @@ Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
 %define sha512 %{srcname}=9fd031cad0c3caacae105215167abd5dc4fdd15dea77a12cb0a977fab6e245e3fda163f202cc7786e50c69e5c3f180d32676a3b18ea30a9a14f0bcab56aa19dd
+
+Source1: license-postgresql10.txt
+%include %{SOURCE1}
 
 BuildRequires: krb5-devel
 BuildRequires: libxml2-devel
@@ -256,5 +258,7 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.23-2
+- Release bump for SRP compliance
 * Fri Dec 15 2023 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.23-1
 - Initial version

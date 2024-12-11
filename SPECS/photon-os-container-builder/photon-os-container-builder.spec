@@ -7,8 +7,7 @@
 Summary:        photon-os-container-builder is an open source project to compose and deploy photon OS containers
 Name:           photon-os-container-builder
 Version:        0.1.1
-Release:        11%{?dist}
-License:        Apache-2.0
+Release:        12%{?dist}
 Group:          Deployment/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,6 +15,9 @@ Distribution:   Photon
 URL:            https://github.com/vmware-samples/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
 %define sha512  %{name}=309ec46806fe33e70dcaff4076fee4e748d3889b3122f72771621ecc514b70740fef2352afa8bfe2b0201470cb09ae30b60ecc31d0d31d1d421953f16754b847
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  glibc
 BuildRequires:  git
@@ -61,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/photon-os-container/photon-os-container.toml
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1.1-12
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.1.1-11
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.1.1-10

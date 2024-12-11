@@ -17,8 +17,7 @@
 Summary:        The Xorg protocol headers.
 Name:           proto
 Version:        7.7
-Release:        5%{?dist}
-License:        MIT
+Release:        6%{?dist}
 URL:            http://www.x.org
 Group:          Development/System
 BuildArch:      noarch
@@ -70,6 +69,9 @@ Source13: http://ftp.x.org/pub/individual/proto/fontsproto-%{fontsproto_ver}.tar
 Source14: http://ftp.x.org/pub/individual/proto/dri2proto-%{dri2proto_ver}.tar.bz2
 %define sha512  dri2proto=1602f58cd8a3371dacf894cde4889b9147fc08e83f98d8e0d1c748abe43ecb74cf4e0e3d5eb2f33568ba5e6d9f310303b98ba43ae3bc956ae693824b1ae0745a
 
+Source15: license.txt
+%include %{SOURCE15}
+
 BuildRequires:  pkg-config
 Provides:       pkgconfig(xproto)
 
@@ -104,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.7-6
+- Release bump for SRP compliance
 * Fri Mar 17 2023 Shivani Agarwal <shivania2@vmware.com> 7.7-5
 - Added dri2proto
 * Thu Sep 8 2022 Shivani Agarwal <shivania2@vmware.com> 7.7-4

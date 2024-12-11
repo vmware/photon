@@ -3,14 +3,16 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.7
-Release:       1%{?dist}
-License:       Apache 2.0 and GPL 2.0
+Release:       2%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/photon-os-installer
 Source0:       %{name}-%{version}.tar.gz
 %define sha512 %{name}=9c2b6df1e9136e94db1451064b51a286b2894849b309dde9539cb9df4fc82e807c74ccb0f7795d7d1d5b2c1ea856dfb38623e1c08e94c567696a637ca6f75fe8
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -64,6 +66,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7-2
+- Release bump for SRP compliance
 * Fri May 24 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.7-1
 - Upgrade to v2.7
 * Tue Dec 26 2023 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4-3

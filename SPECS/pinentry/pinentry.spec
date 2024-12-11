@@ -1,8 +1,7 @@
 Summary:        A collection of PIN or passphrase entry dialogs
 Name:           pinentry
 Version:        1.2.0
-Release:        2%{?dist}
-License:        GPLv2
+Release:        3%{?dist}
 URL:            https://gnupg.org/software/pinentry/index.html
 Group:          Applications/Cryptography.
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
 %define sha512  %{name}=19cea79aa3982d1f0d75220c8e24ca38d6c49475c6f4c5aa7101151b4690db23ed316096a4a411136e716ba4eb471f48f9b09556e5c9837533c2356b9b384b63
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libassuan-devel
 BuildRequires:  libgpg-error-devel
@@ -42,6 +44,8 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %exclude %{_infodir}/dir
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.0-3
+- Release bump for SRP compliance
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.2.0-2
 - Bump release as a part of libgpg-error upgrade to 1.46
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.0-1

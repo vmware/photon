@@ -1,16 +1,18 @@
 Summary:           A toolkit for defining and handling authorizations.
 Name:              polkit
 Version:           121
-Release:           3%{?dist}
+Release:           4%{?dist}
 Group:             Applications/System
 Vendor:            VMware, Inc.
-License:           LGPLv2+
 URL:               https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
 Distribution:      Photon
 
 Source0: https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
 %define sha512 %{name}=f565027b80f32833c558900b612e089ab25027da5bf9a90c421a292467d4db9a291f6dc9850c4bca8f9ee890d476fd064a643a5f7e28497661ba1e31d4227624
 Source1:           %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:     autoconf
 BuildRequires:     meson
@@ -117,6 +119,8 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 121-4
+- Release bump for SRP compliance
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 121-3
 - Use systemd-rpm-macros for user creation
 * Tue Jan 17 2023 Piyush Gupta <gpiyush@vmware.com> 121-2

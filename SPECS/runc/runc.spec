@@ -9,8 +9,7 @@
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
 Version:             1.1.14
-Release:             2%{?dist}
-License:             GNU LGPL v2.1
+Release:             3%{?dist}
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
 Vendor:              VMware, Inc.
@@ -18,6 +17,9 @@ Distribution:        Photon
 
 Source0: https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
 %define sha512 %{name}=bdefbf34cf57485c6b961babc8294d0e6b2e003eb836b8e99c49ef4d00acf11f30a46ad0bcd399ee9346610419591daf1eecb3b6b127962357d629bf5f252e22
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: go
 BuildRequires: which
@@ -64,6 +66,8 @@ make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot
 %{_mandir}/man8/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.14-3
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.14-2
 - Bump version as a part of go upgrade
 * Tue Sep 10 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.1.14-1

@@ -1,8 +1,7 @@
 Summary:        Displays information about running processes
 Name:           psmisc
 Version:        23.6
-Release:        3%{?dist}
-License:        GPLv2+
+Release:        4%{?dist}
 URL:            https://gitlab.com/psmisc/psmisc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://sourceforge.net/projects/%{name}/files/%{name}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=4daffbd1726e50d9344f8578dd4c10f0b8f7971929ec667490de31122e5f3828747e1bafb3ed3c37ed7e1758ab9ec43b8f4556b676a416a8efbc7c6c88b6985d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: ncurses-devel
 
@@ -41,6 +43,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.6-4
+- Release bump for SRP compliance
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 23.6-3
 - Bump version as a part of ncurses upgrade to v6.4
 * Wed Mar 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 23.6-2

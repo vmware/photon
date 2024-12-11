@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -184,6 +184,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-9
+- Release bump for SRP compliance
 * Sun Dec 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-8
 - Use sha512 backend for system password backend
 * Wed Nov 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-7

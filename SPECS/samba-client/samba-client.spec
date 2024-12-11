@@ -1,8 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.18.8
-Release:        3%{?dist}
-License:        GPLv3+ and LGPLv3+
+Release:        4%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,6 +12,9 @@ URL:            https://www.samba.org
 Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
 %define sha512 samba=2924c360f6299129527457547b13c1b282e2907a0ecde1036dbca894c752935d693914b4846a9eab436b33798c53c9974692e51fd071301b1174598be944a246
 Source1: smb.conf.vendor
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch1: 0001-rename_dcerpc_to_smbdcerpc-4.18.3.patch
 
@@ -585,6 +587,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.8-4
+- Release bump for SRP compliance
 * Fri Jan 05 2024 Mukul Sikka <msikka@vmwrae.com> 4.18.8-3
 - Bump version as a part of sudo upgrade
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.8-2

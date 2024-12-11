@@ -1,8 +1,7 @@
 Summary:        Tools and Utilities for interaction with SCSI devices.
 Name:           sg3_utils
 Version:        1.47
-Release:        2%{?dist}
-License:        BSD
+Release:        3%{?dist}
 URL:            https://github.com/doug-gilbert/sg3_utils
 Group:          System/Tools.
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://sg.danny.cz/sg/p/%{name}-%{version}.tar.xz
 %define sha512 %{name}=ef072b8f0012d0944e21d2134aff7125e24ea24d1cbbb1aa79160e844f9a60236f1e244437a3bc08a22a7e99f613adad4a05ae5cc3916ded5a72d162cd3aa163
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         0001-sg3_utils-Fix-issue-with-rescan-scsi-bus.sh-removing.patch
 
@@ -55,6 +57,8 @@ install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}%{_bindir}
 %{_includedir}/scsi/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.47-3
+- Release bump for SRP compliance
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.47-2
 - Bump version as a part of lua upgrade
 * Tue Apr 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.47-1

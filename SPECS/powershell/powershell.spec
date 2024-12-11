@@ -4,10 +4,9 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.4.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 Url:            https://microsoft.com/powershell
 Group:          shells
 
@@ -52,6 +51,9 @@ Source5: omi-%{libmi_tag}.tar.gz
 # tar cJf <NAME>-<VERSION>-nuget-deps.tar.xz <NAME>-<VERSION>-nuget-deps
 Source6: %{name}-%{version}-nuget-deps.tar.xz
 %define sha512 %{name}-%{version}-nuget-deps=85fc3a9607a164cc851fc6bc5f91ca45983e1f2ad73ecbbc4755ed874c0632ab203fb859e1dc0854e36aa47c03d04612de0099f764aa3d3c78abd2d5dbdf49c2
+
+Source7: license.txt
+%include %{SOURCE7}
 
 BuildArch:      x86_64
 
@@ -173,6 +175,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.3-3
+- Release bump for SRP compliance
 * Wed Sep 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.3-2
 - Do fully offline build
 * Thu Jul 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.3-1

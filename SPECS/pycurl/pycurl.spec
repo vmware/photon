@@ -1,15 +1,17 @@
 Name:           pycurl3
 Version:        7.45.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
-License:        LGPLv2+ and an MIT/X
 URL:            http://pycurl.sourceforge.net
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
 %define sha512 pycurl=05639d484aac6d6688677589e391975158c5ef778456a47df575ad13fb8bd0db67ff8f5a39bdd99d82a67926aca421c01e687eec9d4fd87f32822b492b429635
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %if 0%{?with_check}
 Patch0: Fix_makecheck.patch
@@ -81,6 +83,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.45.1-4
+- Release bump for SRP compliance
 * Thu Apr 13 2023 Harinadh D <hdommaraju@vmware.com> 7.45.1-3
 - version bump to use curl 8.0.1
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 7.45.1-2

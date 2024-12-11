@@ -13,8 +13,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.18
-Release:        1%{?dist}
-License:        PostgreSQL
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -30,6 +29,9 @@ Source4: %{srcname}-env-vars.conf
 Source5: %{srcname}.preset
 Source6: %{srcname}.sysusers
 Source7: systemd-unit-instructions
+
+Source8: license-postgresql13.txt
+%include %{SOURCE8}
 
 BuildRequires: clang-devel
 BuildRequires: gettext
@@ -682,6 +684,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.18-2
+- Release bump for SRP compliance
 * Tue Dec 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.18-1
 - Version upgrade to fix CVEs
 * Fri Aug 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.16-1

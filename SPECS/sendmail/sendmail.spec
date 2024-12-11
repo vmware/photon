@@ -1,9 +1,8 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.18.0.2
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              http://www.sendmail.org
-License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -11,6 +10,9 @@ Distribution:     Photon
 Source0: https://ftp.sendmail.org/snapshots/sendmail.%{version}.tar.gz
 %define sha512 %{name}.%{version}=b2ee60595285bf79e5216fcc039c3b321f4719311f6ab3fbd6ad787254b17997639ca9f709036d6a5b552ffc573d22efbc392fafba5952bf77b8b9c1f55edc70
 Source1: %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0: fix-compatibility-with-openssl-3.0.patch
 
@@ -191,6 +193,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.18.0.2-2
+- Release bump for SRP compliance
 * Tue Jan 16 2024 Nitesh Kumar <kunitesh@vmware.com> 8.18.0.2-1
 - Version upgrade to v8.18.0.2 to address CVE-2023-51765
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 8.17.1-9
