@@ -5,7 +5,7 @@ noarch/man-pages-5.13-1.ph5.noarch.rpm
 noarch/python3-wheel-0.37.1-2.ph5.noarch.rpm
 noarch/systemd-rpm-macros-252.4-8.ph5.noarch.rpm
 x86_64/apache-maven-3.8.6-2.ph5.x86_64.rpm
-x86_64/attr-2.5.1-3.ph5.x86_64.rpm
+x86_64/attr-2.5.1-4.ph5.x86_64.rpm
 x86_64/bash-5.2-1.ph5.x86_64.rpm
 x86_64/binutils-2.39-2.ph5.x86_64.rpm
 x86_64/binutils-devel-2.39-2.ph5.x86_64.rpm
@@ -84,7 +84,7 @@ x86_64/openssl-3.0.8-1.ph5.x86_64.rpm
 x86_64/openssl-devel-3.0.8-1.ph5.x86_64.rpm
 x86_64/openssl-libs-3.0.8-1.ph5.x86_64.rpm
 x86_64/patch-2.7.6-5.ph5.x86_64.rpm
-x86_64/pcre-libs-8.45-4.ph5.x86_64.rpm
+x86_64/pcre-libs-8.45-5.ph5.x86_64.rpm
 x86_64/perl-5.36.0-1.ph5.x86_64.rpm
 x86_64/pkg-config-0.29.2-3.ph5.x86_64.rpm
 x86_64/popt-1.16-5.ph5.x86_64.rpm

@@ -1,7 +1,7 @@
 Summary:    Default file system
 Name:       filesystem
 Version:    1.1
-Release:    6%{?dist}
+Release:    7%{?dist}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 URL:        http://www.linuxfromscratch.org
@@ -242,6 +242,8 @@ rm -rf %{buildroot}
 %{_libdir}/debug%{_lib64dir}
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1-7
+- Release bump for SRP compliance
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1-6
 - Bump version to generate SRP provenance file
 * Tue Aug 27 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-5

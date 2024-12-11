@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.39
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -169,6 +169,8 @@ make %{?_smp_mflags} -k check > tests.sum 2>&1
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.39-9
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-8
 - Release bump for SRP compliance
 * Tue Sep 12 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 2.39-7

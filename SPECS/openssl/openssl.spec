@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.15
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -191,6 +191,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.15-6
+- Release bump for SRP compliance
 * Fri Nov 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.15-5
 - Use syslog to log jitterentropy errors
 * Thu Nov 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.15-4

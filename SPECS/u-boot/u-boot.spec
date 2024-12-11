@@ -3,8 +3,7 @@
 Summary:        U-Boot EFI firmware
 Name:           u-boot
 Version:        2023.01
-Release:        5%{?dist}
-License:        GPLv2
+Release:        6%{?dist}
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,6 +13,9 @@ Source1:        rpi_3_photon_defconfig
 Source2:        rpi_4_photon_defconfig
 Source3:        rpi_photon_defconfig
 Source4:        fw_env.config
+
+Source5: license.txt
+%include %{SOURCE5}
 Patch0:         0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
 Patch2:         0005-Fix-no-usb.patch
 Patch3:         add-saveenv-in-bootcmd.patch
@@ -90,6 +92,8 @@ install -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/fw_env.config
 /boot/efi/u-boot-rpi4.bin
 
 %changelog
+*   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2023.01-6
+-   Release bump for SRP compliance
 *   Mon Mar 20 2023 Ajay Kaher <akaher@vmware.com> 2023.01-5
 -   Fix rpi4 xhci for Unexpected XHCI event TRB
 *   Fri Mar 17 2023 Ajay Kaher <akaher@vmware.com> 2023.01-4
