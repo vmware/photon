@@ -4,15 +4,17 @@
 
 Name: rubygem-fluentd
 Version:        1.15.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        Apache 2
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluentd-%{version}.gem
 %define sha512    fluentd=0e10ccf9ee33def27cc841162f4368f09753c733b4b9cf924b77fcb410b1b79ffb6b3294128575faa7324d1b696596344f202880b6292c437f5b22111056a686
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby
 
@@ -59,6 +61,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.2-3
+-   Release bump for SRP compliance
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 1.15.2-2
 -   Add webrick to requires
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.2-1

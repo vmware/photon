@@ -3,15 +3,17 @@
 %define gem_name terminal-table
 Name:           rubygem-terminal-table
 Version:        3.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Simple, feature rich ascii table generation library
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        BSD
 URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/terminal-table-%{version}.gem
 %define sha512    terminal-table=9d625a5903c7511f59f2e083ed2db72d337405019c41461b97590411a5028a061ce4a42eeb75c19b0e6deb2ef81f18ad80bb74d4ebdb9eca9ff6004631ddd994
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby
 Requires:       ruby
 Requires:       rubygem-unicode-display_width
@@ -31,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.2-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.2-1
 -   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.8.0-2

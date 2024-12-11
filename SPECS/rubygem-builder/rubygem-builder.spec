@@ -5,9 +5,8 @@
 Summary:        Builders for MarkUp
 Name:           rubygem-builder
 Version:        3.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
-License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://onestepback.org
@@ -16,6 +15,9 @@ Source0: http://rubygems.org/gems/builder-%{version}.gem
 
 Source1: https://get.rvm.io/rvm-installer
 %define sha512 rvm-installer=a48915efe196c0ff8f101c4a71c7720a0bde8511bdedf72559b12c5f447dd4e3a3dec7b002daa4949a94988a6d4b1d7f45f6a3027ada8dff1ba2b26f911cc12d
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  ruby
 
@@ -45,6 +47,8 @@ popd
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.4-2
+-   Release bump for SRP compliance
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.4-1
 -   Automatic Version Bump
 *   Wed Mar 22 2017 Chang Lee <changlee@vmware.com> 3.2.3-2

@@ -4,15 +4,17 @@
 
 Name:           rubygem-http
 Version:        5.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512    http=b99da5318da54e7b64abd48df0b68cde9a02e1ae92b51fc43302e3dea28ba9672e2b7a25e31c342235835e16b2e1b98c94b6d4efa7916a0aa99258fc8290260f
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby
 
@@ -42,6 +44,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.1.0-3
+-   Release bump for SRP compliance
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 5.1.0-2
 -   Fix requires
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1

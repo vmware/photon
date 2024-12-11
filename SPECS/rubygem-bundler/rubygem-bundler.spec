@@ -3,15 +3,17 @@
 
 Name:           rubygem-bundler
 Version:        2.3.24
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        manages an application's dependencies
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/bundler-%{version}.gem
 %define sha512  bundler=1d59bfa0bb8b748c8f4a7c30eb1603f05033bd59ca66496442224c563a95d8d8d2173e2f005a090a6b22e1a25664f20a3cf45b3d12ff7791712e327f194f242c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby-devel
 BuildRequires:  findutils
@@ -34,6 +36,8 @@ across many machines, systematically and repeatably.
 %{gem_base}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.24-4
+-   Release bump for SRP compliance
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.24-3
 -   Add gem macros
 *   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.24-2

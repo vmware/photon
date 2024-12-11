@@ -4,15 +4,17 @@
 
 Name: rubygem-async-http
 Version:        0.60.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A HTTP client and server library.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  async-http=33e6ee63b25f79664cf6c586a2c8a1d8572557c3212921b1a657df7b67424db23cec5e2d09ffb5ebca443c95e11ccbdb8b1d26cdad07ea7f35791517d3ae19b4
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby
 
 Requires: rubygem-async >= 1.19.0, rubygem-async < 2.2.2
@@ -45,6 +47,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.60.2-2
+-   Release bump for SRP compliance
 *   Fri Nov 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.60.2-1
 -   Bump version with the version upgrade of rubygem-protocol-http1
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 0.59.2-2

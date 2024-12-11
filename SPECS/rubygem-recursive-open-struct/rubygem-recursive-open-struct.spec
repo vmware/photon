@@ -4,15 +4,17 @@
 
 Name: rubygem-recursive-open-struct
 Version:        1.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A subclass of OpenStruct that allows nested hashes to be treated in a recursive fashion
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512    recursive-open-struct=f092c87a321a36eef2fff947383126f1da5865ab557c6cc359f91b1fe7e265d1cf7fa476d88ce5d2947bbfa63c8c956ac9a9487f249ef04977c94af04b8af8e3
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby
 
 BuildArch: noarch
@@ -34,6 +36,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.3-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.1.3-1
 -   Automatic Version Bump
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.2-1

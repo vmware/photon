@@ -4,16 +4,18 @@
 
 Name:           rubygem-traces
 Version:        0.11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An event loop.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=1be8f690d6074b4f9c4f0df8465e9f1ebf059d89a9ba36579fa5e011d496244350f947d65d980a3b3d9f97b7f8eab069a97d24e6d4d67c6abad8d34c72b65b3c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby
 
@@ -38,5 +40,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.11.1-2
+- Release bump for SRP compliance
 * Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 0.11.1-1
 - Initial version. Needed by rubygem-async-http.

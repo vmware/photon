@@ -3,8 +3,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.4
-Release:        6%{?dist}
-License:        BSDL
+Release:        7%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -24,6 +23,9 @@ Source1:        macros.ruby
 
 Source2:        rexml-%{rexml_version}.tar.gz
 %define sha512  rexml-%{rexml_version}.tar.gz=cc38609e5321f157b0a9ea793386017c8d4f743aabd66fc31a8f450f68c57e89825ec1d549efc4e2459ae952e57bbc87d47f9a0affa457639b89b9374e0bb137
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -124,6 +126,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-7
+- Release bump for SRP compliance
 * Tue Dec 10 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-6
 - Fix CVE-2024-49761 Upgrade rexml to rexml-3.3.9 from rexml-3.2.5
 * Mon Oct 21 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-5

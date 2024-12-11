@@ -4,15 +4,17 @@
 
 Name: rubygem-jmespath
 Version:        1.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Implements JMESPath for Ruby.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        Apache 2.0
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/jmespath-%{version}.gem
 %define sha512    jmespath=e06f6f4d47abbe552cff4055fff3841380ee8779b61c5f68b184e1acbcc588a97ad7d83225671a9f547d1077041592553f5f44649d6ceb76d369a0fc462439f3
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby
 
 %description
@@ -31,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.1-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.1-1
 -   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.4.0-2

@@ -4,15 +4,17 @@
 
 Name:           rubygem-protocol-http2
 Version:        0.15.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A low level implementation of the HTTP/2 protocol.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  protocol-http2=11b1403afa5ac0ca9c075d6eac05c8b3b80c6dcd4a80a5a672bd7b6aa3b773aa528af3ce6a5fc417a71e1ca147880777063bc54a41677ea9d7a15caef6433428
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby
 
@@ -40,6 +42,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.15.0-2
+-   Release bump for SRP compliance
 *   Fri Nov 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.15.0-1
 -   Bump version with the version upgrade of rubygem-async-http
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 0.14.2-2

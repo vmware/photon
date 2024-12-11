@@ -4,15 +4,17 @@
 
 Name: rubygem-rest-client
 Version:        2.1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A simple HTTP and REST client for Ruby, inspired by the Sinatra microframework style of specifying actions: get, put, post, delete.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  rest-client=fe5d44409dfe607566b4c0324441d9a3981776699027bfbc92283b1cd425f204211fc872593cb0784e0ca7a5e061e98793540eedfeb1891d9a8afd53a5ce01de
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby
 
@@ -43,6 +45,8 @@ ln -srv %{buildroot}%{gemdir}/bin/restclient %{buildroot}/%{_bindir}/restclient
 %{_bindir}/restclient
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.1.0-5
+-   Release bump for SRP compliance
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 2.1.0-4
 -   Fix requires
 *   Tue Nov 29 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.0-3

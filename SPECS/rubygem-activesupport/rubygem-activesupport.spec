@@ -4,15 +4,17 @@
 
 Name: rubygem-activesupport
 Version:        7.0.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
-License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/activesupport/versions/%{version}
 Source0:        https://rubygems.org/downloads/activesupport-%{version}.gem
 %define sha512    activesupport=54859a1cccda0940a91be3be8a68087a4cb8ae6f5850dc3ae92bb79a722b04f34a5d9a61456146c2d7c994e95cd5f1b40c16766e0ef54828acc91edb5aba1d2b
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby
 
 Requires: ruby
@@ -38,6 +40,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.0.4-3
+-   Release bump for SRP compliance
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 7.0.4-2
 -   Fix requires
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 7.0.4-1

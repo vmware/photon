@@ -3,15 +3,17 @@
 
 Name: rubygem-strptime
 Version:        0.2.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        a fast strptime/strftime engine which uses VM
 Group:          Development/Languages
-License:        BSD 2
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/strptime-%{version}.gem
 %define sha512  strptime=2f4493c6143f4984d7410c5b5270b8f93db211ae758ba3d5ca6f9e198733ad7e6d4d6996d9599f691b34d3329a242b99bd326767e52df0721b944e299ab03140
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby-devel
 Requires:       ruby
 
@@ -32,6 +34,8 @@ a fast strptime/strftime engine which uses VM
 %{gem_base}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-5
+-   Release bump for SRP compliance
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-4
 -   Add gem macros
 *   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-3

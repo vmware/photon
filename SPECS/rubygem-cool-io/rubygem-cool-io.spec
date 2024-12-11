@@ -3,15 +3,17 @@
 
 Name:           rubygem-cool-io
 Version:        1.7.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        a high performance event framework for Ruby which uses the libev C library
 Group:          Development/Languages
-License:        N/A
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/cool.io-%{version}.gem
 %define sha512  cool.io=9ab3e6ddd1689b2825f9bd82714b4ef5ac921dc4b2f84786971c3ec448577613cee73084c99090382878b0da43c9228cb2fd3a8627dc8f62ceeeff274dbdc929
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby-devel
 Requires:       ruby >= 3.1.2
 
@@ -32,6 +34,8 @@ a high performance event framework for Ruby which uses the libev C library
 %{gem_base}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.1-4
+-   Release bump for SRP compliance
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.1-3
 -   Add gem macros
 *   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.1-2

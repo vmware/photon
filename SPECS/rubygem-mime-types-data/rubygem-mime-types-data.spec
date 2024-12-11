@@ -4,15 +4,17 @@
 
 Name: rubygem-mime-types-data
 Version:        3.2022.0105
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides a registry for information about MIME media type definitions.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512    mime-types-data=4b5998fb5d39ba89d4ee4f2f1fe20ec93a6b7214b28b77421dd9f7647b14c88342ba17f709f34640f65ce4c1bda08bd2be4aa35c7f99ea1ba2f9e21458540a00
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby >= 2.0
 
 BuildArch: noarch
@@ -36,6 +38,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2022.0105-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2022.0105-1
 -   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2020.0512-1

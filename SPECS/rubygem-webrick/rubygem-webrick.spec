@@ -4,16 +4,18 @@
 
 Name:           rubygem-webrick
 Version:        1.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        HTTP server toolkit
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        Apache 2
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=5f242b50300046fe7c22ecd1640a73e5815e05a72bedfebe6bc39c24c92bd61abdd180860de0d194c0eebbc640b507b6892de181d3b577c5372ace0ca6faf2a3
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby
 
@@ -38,5 +40,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.0-2
+- Release bump for SRP compliance
 * Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-1
 - Initial version. Needed by rubygem-fluentd.

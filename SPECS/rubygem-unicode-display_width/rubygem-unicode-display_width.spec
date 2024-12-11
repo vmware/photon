@@ -5,14 +5,16 @@
 Summary:        Unicode::DisplayWidth.
 Name:           rubygem-unicode-display_width
 Version:        2.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
-License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/janlelis/unicode-display_width
 Source0:        http://rubygems.org/gems/unicode-display_width-%{version}.gem
 %define sha512  unicode-display_width=5c8b5cad378baee9a449d1f06edccbea12f26f8d269ba39ef500dfc6bd5c0b478aa9e0a7262ac07ad3f3e75ee66bbcd4b2d450eae78ac67a3c912804ae9ae1ec
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby
 Requires:       ruby
 
@@ -37,6 +39,8 @@ rake test
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.0-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1

@@ -4,15 +4,17 @@
 
 Name:           rubygem-zip
 Version:        2.0.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Ruby library for reading and writing Zip files
 Group:          Applications/Programming
-License:        BSD
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL: https://rubygems.org/gems/%{gem_name}
 Source0: https://rubygems.org/downloads/zip-%{version}.gem
-%define sha1 zip=6fabc32da123f7013b2db804273df428a50bc6a4
+%define sha512   zip=5a4c16173d52dc59206d414e88d4f218373d8d145b2996d0c7099036a57f30acb69f18131a550be4fb9973f1b6cf4de53b82d1d9e5da4e375e81a482399867b5
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: ruby
 Requires: ruby
@@ -21,7 +23,7 @@ Requires: ruby
 Ruby library for reading and writing Zip files
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -38,6 +40,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.0.2-7
+- Release bump for SRP compliance
 * Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 2.0.2-6
 - Rebuilt using ruby-2.7.1
 * Fri Jun 23 2017 Chang Lee <changlee@vmware.com> 2.0.2-5
@@ -50,4 +54,3 @@ rake test
 - GA - Bump release of all rpms
 * Wed Nov 11 2015 Anish Swaminathan <anishs@vmware.com> 2.0.2-1
 - Initial build
-

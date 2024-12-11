@@ -4,15 +4,17 @@
 
 Name: rubygem-aws-partitions
 Version:        1.654.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides interfaces to enumerate AWS partitions, regions & services.
 Group:          Development/Languages
-License:        Apache 2.0
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/aws-partitions-%{version}.gem
 %define sha512    aws-partitions=8c6b38c5facfb7dc4c915daba3f160f21e277998aa4887edbc20037b20ca356cd9133057407833c34a08cb76495ea61dd61fb7c24e9e43a8f1626a98cf1c59d3
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby
 
 %description
@@ -31,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.654.0-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.654.0-1
 -   Automatic Version Bump
 *   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.379.0-1

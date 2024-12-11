@@ -3,15 +3,17 @@
 
 Name: rubygem-unf_ext
 Version:        0.0.8.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Unicode Normalization Form support library for CRuby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  unf_ext=c9d3e54c96a525031d3b2fe349b5ffa1d03e3f28f74c3a2715af299e5274c7514526d07be5d7244a2cf9561c11e170b15c75d34c5e2a7143cef1ee25d32d2137
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby-devel
 BuildRequires:  gmp-devel
 Requires:       ruby
@@ -33,6 +35,8 @@ Unicode Normalization Form support library for CRuby.
 %{gem_base}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.8.2-4
+-   Release bump for SRP compliance
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.8.2-3
 -   Add gem macros
 *   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.8.2-2

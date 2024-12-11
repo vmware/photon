@@ -4,15 +4,17 @@
 
 Name: rubygem-tzinfo
 Version:        2.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Timezone related support for Ruby.
 Group:          Development/Languages
-License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/tzinfo/versions/%{version}
 Source0:        https://rubygems.org/downloads/tzinfo-%{version}.gem
 %define sha512    tzinfo=d3248d9226b974095392c17916701c7318df895fb1d5581d3bafd73672fbb1ec30f4c1bac690379c714df66856558011c27bcedf2d53beb51031441f7bfee0ae
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby
 
 %description
@@ -36,6 +38,8 @@ rake test
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.0.5-2
+-   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.5-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.2-1

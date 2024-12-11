@@ -3,13 +3,15 @@
 
 Name: rubygem-rdiscount
 Version:        2.2.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Fast Implementation of Gruber's Markdown in C
 Group:          Development/Languages
-License:        BSD-3-CLAUSE
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  rdiscount=4f60dc0dbfb6b8f95f80d577c872c2a747d7d15e9fc1f1bd3640f1207a5d262068754dcb6d7b53348fd69de20b85534a390aace35d1eff31112bfbe0f77569d1
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  ruby-devel
@@ -34,6 +36,8 @@ and thereby inherits Discount’s numerous useful extensions to the Markdown lan
 %{gem_base}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7-4
+-   Release bump for SRP compliance
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7-3
 -   Add gem macros
 *   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7-2

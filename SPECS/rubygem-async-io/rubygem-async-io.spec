@@ -4,15 +4,17 @@
 
 Name: rubygem-async-io
 Version:        1.34.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Provides support for asynchonous TCP, UDP, UNIX and SSL sockets.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512    async-io=513bf5f97e2653ee46395c3f67d3a092ed94dedfb74183cde2479d9fb7cd21ff1ca22939ff4e406ef7845ad301c14e251b61c6ec3cc27c81b7dd9bb387115276
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  ruby >= 2.3.0, ruby < 3.1.5
 
 Requires: rubygem-async >= 1.14.0, rubygem-async < 2.2.2
@@ -37,6 +39,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.34.0-4
+-   Release bump for SRP compliance
 *   Tue Apr 16 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.34.0-3
 -   Fix ruby version in buildrequires
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 1.34.0-2
