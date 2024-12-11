@@ -1,7 +1,7 @@
 Summary:        Contains programs for compressing and decompressing files
 Name:           bzip2
 Version:        1.0.8
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://www.sourceware.org/bzip2
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -109,6 +109,8 @@ make %{?_smp_mflags} check
 %{_lib}/libbz2.so.*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0.8-7
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.8-6
 - Release bump for SRP compliance
 * Wed Sep 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.8-5

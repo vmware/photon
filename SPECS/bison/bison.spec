@@ -1,7 +1,7 @@
 Summary:    Contains a parser generator
 Name:       bison
 Version:    3.8.2
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        http://www.gnu.org/software/bison
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -50,6 +50,8 @@ make %{?_smp_mflags} check
 %{_docdir}/bison/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.8.2-6
+- Release bump for SRP compliance
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.8.2-5
 - Remove standalone license exceptions
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.8.2-4

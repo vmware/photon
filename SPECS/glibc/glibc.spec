@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        15%{?dist}
+Release:        16%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -359,6 +359,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-16
+- Release bump for SRP compliance
 * Thu Nov 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.36-15
 - Disable libcrypt as a part of yescrypt addition
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.36-14

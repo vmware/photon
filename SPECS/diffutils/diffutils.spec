@@ -1,7 +1,7 @@
 Summary:    Programs that show the differences between files or directories
 Name:       diffutils
 Version:    3.8
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://www.gnu.org/software/diffutils
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -44,6 +44,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.8-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.8-3
 - Release bump for SRP compliance
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8-2

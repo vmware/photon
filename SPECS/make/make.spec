@@ -1,7 +1,7 @@
 Summary:    Program for compiling packages
 Name:       make
 Version:    4.3
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://www.gnu.org/software/make
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -45,6 +45,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.3-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3-3
 - Release bump for SRP compliance
 * Tue Jan 19 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.3-2

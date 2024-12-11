@@ -1,7 +1,7 @@
 Summary:      Contains programs for manipulating text files
 Name:         gawk
 Version:      5.1.1
-Release:      3%{?dist}
+Release:      4%{?dist}
 URL:          http://www.gnu.org/software/gawk
 Group:        Applications/File
 Vendor:       VMware, Inc.
@@ -64,6 +64,8 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/profile.d/gawk.sh
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.1.1-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.1.1-3
 - Release bump for SRP compliance
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.1-2

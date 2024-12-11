@@ -1,7 +1,7 @@
 Summary:    Programs for compressing and decompressing files
 Name:       gzip
 Version:    1.12
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://www.gnu.org/software
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -46,6 +46,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.12-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12-3
 - Release bump for SRP compliance
 * Wed May 18 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.12-2

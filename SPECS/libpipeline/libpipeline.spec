@@ -1,7 +1,7 @@
 Summary:    Library for manipulating pipelines
 Name:       libpipeline
 Version:    1.5.6
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        http://libpipeline.nongnu.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -63,6 +63,8 @@ make -C tests check %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.5.6-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.6-2
 - Release bump for SRP compliance
 * Thu Sep 29 2022 Gerrit Photon <photon-checkins@vmware.com> 1.5.6-1

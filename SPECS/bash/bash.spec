@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -334,6 +334,8 @@ fi
 %{_mandir}/*/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.2-6
+- Release bump for SRP compliance
 * Tue Nov 19 2024 Alexey Makhalov <amakhalov@vmware.com> 5.2-5
 - Update bash_completion file
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.2-4

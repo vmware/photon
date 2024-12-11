@@ -1,7 +1,7 @@
 Summary:        The GNU Database Manager
 Name:           gdbm
 Version:        1.23
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.gnu.org/software/gdbm
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -71,6 +71,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.23-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.23-3
 - Release bump for SRP compliance
 * Wed Dec 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.23-2

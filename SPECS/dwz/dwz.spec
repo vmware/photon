@@ -1,7 +1,7 @@
 Summary:    DWARF optimization and duplicate removal tool
 Name:       dwz
 Version:    0.15
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        https://sourceware.org/dwz
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -53,6 +53,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.15-5
+- Release bump for SRP compliance
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.15-4
 - Remove standalone license exceptions
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.15-3

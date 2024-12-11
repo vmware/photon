@@ -1,7 +1,7 @@
 Summary:    This package contains programs to find files
 Name:       findutils
 Version:    4.9.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://www.gnu.org/software/findutils
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -89,6 +89,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.9.0-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.9.0-3
 - Release bump for SRP compliance
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.9.0-2

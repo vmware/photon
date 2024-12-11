@@ -1,7 +1,7 @@
 Summary:    Attr-2.5.1
 Name:       attr
 Version:    2.5.1
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        https://savannah.nongnu.org/projects/attr
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
@@ -77,6 +77,8 @@ rm -fv %{buildroot}/%{_libdir}/*.la \
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.5.1-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.5.1-3
 - Release bump for SRP compliance
 * Mon Jul 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.5.1-2

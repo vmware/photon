@@ -1,1 +1,1 @@
-License: (GPL-1.0-or-later WITH PS-or-PDF-font-exception-20170817) AND OFL-1.1 AND bzip2-1.0.6 AND BSD-3-Clause
+License: OFL-1.1 AND GPL-1.0-or-later WITH PS-or-PDF-font-exception-20170817 AND bzip2-1.0.6 AND BSD-3-Clause

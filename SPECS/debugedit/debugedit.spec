@@ -1,6 +1,6 @@
 Name:       debugedit
 Version:    5.0
-Release:    8%{?dist}
+Release:    9%{?dist}
 Summary:    Tools for debuginfo creation
 URL:        https://sourceware.org/debugedit
 Group:      System Environment/Base
@@ -76,6 +76,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/find-debuginfo.1*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.0-9
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-8
 - Release bump for SRP compliance
 * Thu Aug 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-7

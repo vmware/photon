@@ -1,7 +1,7 @@
 Summary:    A utility for generating programs that recognize patterns in text
 Name:       flex
 Version:    2.6.4
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        https://github.com/westes/flex/releases
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -79,6 +79,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
+*   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.6.4-5
+-   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.6.4-4
 -   Release bump for SRP compliance
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.6.4-3

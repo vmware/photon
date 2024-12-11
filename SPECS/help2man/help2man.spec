@@ -1,7 +1,7 @@
 Name:       help2man
 Summary:    Create simple man pages from --help output
 Version:    1.48.5
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        https://www.gnu.org/software/help2man
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -49,6 +49,8 @@ make install_l10n DESTDIR=%{buildroot} %{?_smp_mflags}
 %{_mandir}/man1/*
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.48.5-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.48.5-3
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.48.5-2

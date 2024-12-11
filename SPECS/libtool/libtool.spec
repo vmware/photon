@@ -1,7 +1,7 @@
 Summary:        Shared libraries, portable interface
 Name:           libtool
 Version:        2.4.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.gnu.org/software/libtool
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -93,6 +93,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libltdl.so.*
 
 %changelog
+*   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.7-3
+-   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.7-2
 -   Release bump for SRP compliance
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.7-1

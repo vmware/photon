@@ -1,7 +1,7 @@
 Summary:        Contains a utility for determining file types
 Name:           file
 Version:        5.43
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.darwinsys.com/file
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -68,6 +68,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libmagic.pc
 
 %changelog
+*   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.43-3
+-   Release bump for SRP compliance
 *   Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 5.43-2
 -   Bump version to generate SRP provenance file
 *   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 5.43-1

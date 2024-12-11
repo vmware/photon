@@ -3,7 +3,7 @@
 Summary:      Cross-platform make system
 Name:         cmake
 Version:      3.25.2
-Release:      5%{?dist}
+Release:      6%{?dist}
 URL:          http://www.cmake.org
 Group:        Development/Tools
 Vendor:       VMware, Inc.
@@ -75,6 +75,8 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.25.2-6
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.25.2-5
 - Release bump for SRP compliance
 * Fri Jun 16 2023 Anmol Jain <anmolja@vmware.com> 3.25.2-4
