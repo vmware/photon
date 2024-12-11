@@ -5,7 +5,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU General Public License V2
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
@@ -245,6 +245,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 11.0.22-2
+- Version bump as a part of cups upgrade
 * Mon Mar 11 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 11.0.22-1
 - Updating to jdk-11.0.22-ga
 * Wed Oct 11 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.20-7

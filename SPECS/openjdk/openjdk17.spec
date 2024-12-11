@@ -5,7 +5,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.10
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
@@ -236,6 +236,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.10-2
+- Version bump as a part of cups upgrade
 * Mon Mar 11 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 17.0.10-1
 - Update to jdk-17.0.10-ga
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.8-6
