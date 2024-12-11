@@ -1,0 +1,1 @@
+License: MIT AND HPND-Pbmplus AND BSD-3-Clause AND Zlib AND (GPL-2.0-only OR MIT) AND GPL-2.0-or-later AND Beerware AND IJG

@@ -7,11 +7,13 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://prdownloads.sourceforge.net/libdnet/%{name}-%{version}.tar.gz
+%define sha512 %{name}=62d6aee6836f8e56fa7d941866416baae71916318a94e4adc3305a4d9634596845b112a500368763c813f7da32557ca85a4942fe7d245d34069137e6516b10af
 
 Source1: license.txt
 %include %{SOURCE1}
+
 Patch0:         DisableMakeCheckCases.patch
-%define sha1    libdnet=e2ae8c7f0ca95655ae9f77fd4a0e2235dc4716bf
+
 %description
 libdnet provides a simplified, portable interface to several low-level networking routines.
 
@@ -22,13 +24,14 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
+
 %build
 %configure "CFLAGS=-fPIC"
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install  %{?_smp_mflags}
 find %{buildroot}/usr/lib/ -name '*.la' -delete
 
 %check
@@ -51,19 +54,19 @@ make  %{?_smp_mflags} check
 %{_libdir}/libdnet.a
 
 %changelog
-*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11-8
--   Release bump for SRP compliance
-*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.11-7
--   Cross compilation support
-*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.11-6
--   Aarch64 support
-*   Thu Aug 03 2017 Kumar Kaushik <kaushikk@vmware.com> 1.11-5
--   Applying patch for makecheck bug #1633615.
-*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.11-4
--   Move man files to /usr/share, add devel package
-*   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.11-3
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11-2
--   GA - Bump release of all rpms
-*   Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 1.11-1
-    Initial version
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11-8
+- Release bump for SRP compliance
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.11-7
+- Cross compilation support
+* Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.11-6
+- Aarch64 support
+* Thu Aug 03 2017 Kumar Kaushik <kaushikk@vmware.com> 1.11-5
+- Applying patch for makecheck bug #1633615.
+* Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.11-4
+- Move man files to /usr/share, add devel package
+* Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.11-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11-2
+- GA - Bump release of all rpms
+* Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 1.11-1
+- Initial version

@@ -4,10 +4,11 @@ Version:      1.0.1
 Release:      2%{?dist}
 URL:          http://www.e-cap.org/
 Source0:      http://www.e-cap.org/archive/%{name}-%{version}.tar.gz
-%define sha1 libecap=89533c2ac77fee7b26f53c20c25a1423ce1498b7
+%define sha512 libecap=0054ad11b3f558d7c623060a69207a1b8e679803cabdf1a2bce4b04335d71c016eec770fc9d2cbf3d0a93502c255cb528305f9f8e6df4e095fcb980667045919
 
 Source1: license.txt
 %include %{SOURCE1}
+
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
 Distribution: Photon
@@ -46,7 +47,7 @@ resources needed for developing libecap applications.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -f %{buildroot}%{_libdir}/libecap.a
 rm -f %{buildroot}%{_libdir}/libecap.la
 
@@ -67,5 +68,3 @@ rm -f %{buildroot}%{_libdir}/libecap.la
 - Release bump for SRP compliance
 * Fri Apr 30 2021 Susant Sahani <ssahani@vmware.com> 1.0.1-1
 - Initial rpm release.
-
-

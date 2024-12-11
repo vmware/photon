@@ -1,8 +1,7 @@
 Summary:        libpsl - C library to handle the Public Suffix List
 Name:           libpsl
 Version:        0.21.1
-Release:        7%{?dist}
-License:        MIT
+Release:        8%{?dist}
 URL:            https://github.com/rockdaboot/libpsl
 Group:          System Environment/Development
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/rockdaboot/libpsl/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=a5084b9df4ff2a0b1f5074b20972efe0da846473396d27b57967c7f6aa190ab3c910b4bfc4f8f03802f08decbbad5820d850c36ad59610262ae37fe77de0c7f5
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  icu-devel >= 70.1
 BuildRequires:  python3
@@ -96,6 +98,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.21.1-8
+- Release bump for SRP compliance
 * Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.21.1-7
 - Bump version as a part of icu upgrade
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.21.1-6

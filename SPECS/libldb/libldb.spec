@@ -5,9 +5,8 @@
 
 Name:           libldb
 Version:        2.7.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A schema-less, ldap like, API and database
-License:        LGPLv3+
 Distribution:   Photon
 Vendor:         VMware, Inc.
 Group:          Development/Libraries
@@ -15,6 +14,9 @@ URL:            http://ldb.samba.org/
 
 Source0: https://www.samba.org/ftp/ldb/ldb-%{version}.tar.gz
 %define sha512 ldb=beb2cd83a8f128713e0b43ec6e80d0f87ab0883c6c8f0cefbbf5bf49e29dfa327b245b78467d1906917cb5f3f11e01cb76cc6bcca58a47c5deac4f05c2e9dfbd
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: cmocka-devel >= %{cmocka_version}
 BuildRequires: gcc
@@ -154,6 +156,8 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.2-3
+- Release bump for SRP compliance
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.2-2
 - Bump version as a part of openldap v2.6.4 upgrade
 * Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 2.7.2-1

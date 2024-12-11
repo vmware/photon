@@ -1,8 +1,7 @@
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
 Version:        2.14.0
-Release:        4%{?dist}
-License:        MIT
+Release:        5%{?dist}
 URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/fedora-modularity/libmodulemd/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}-%{version}=8c48995aa6a9c6370a07a6887c7237614c502e335173dcba004037ffa41c8fbca8bdf36dfd59ba7d1d125dff6c8722ddc924e14173e3995e147c01a39c6f0ed1
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  meson
 BuildRequires:  clang-devel
@@ -79,6 +81,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/modulemd-2.0/*.h
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.14.0-5
+- Release bump for SRP compliance
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.14.0-4
 - Bump version as a part of rpm upgrade
 * Tue Jan 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.14.0-3

@@ -1,14 +1,17 @@
 Summary:        Libical — an implementation of iCalendar protocols and data formats
 Name:           libical
 Version:        3.0.14
-Release:        5%{?dist}
-License:        MPL-2.0
+Release:        6%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+URL:            https://github.com/libical/libical
 
 Source0:        https://github.com/libical/libical/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=36da5516672976c71b049a12af36164d91f9b655f81f1884766558149f25e80c30e64d15da848842f8a629295d708f39ce6fa63a3b0da39b5cbeb91911a4e6d8
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  glib-devel
@@ -74,6 +77,8 @@ make test ARGS="-V" %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.14-6
+- Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.0.14-5
 - Bump version as a part of libxml2 upgrade
 * Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.0.14-4

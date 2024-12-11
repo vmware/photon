@@ -1,8 +1,7 @@
 Summary:       Netlink Protocol Library Suite
 Name:          libnl
 Version:       3.7.0
-Release:       2%{?dist}
-License:       LGPLv2+
+Release:       3%{?dist}
 Group:         System Environment/Libraries
 URL:           https://github.com/thom311/libnl
 Vendor:        VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:  Photon
 
 Source0: https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name}-%{version}.tar.gz
 %define sha512 %{name}=80fbbc079299c90afd2a5eda62e4d4f98bf4ef23958c3ce5101f4ed4d81d783af733213bb3bab15f218555d8460bc2394898f909f4ac024fc27281faec86a041
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: glib-devel
 BuildRequires: dbus-devel
@@ -65,6 +67,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.7.0-3
+- Release bump for SRP compliance
 * Tue Sep 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.0-2
 - Remove .la files
 * Tue Aug 30 2022 Susant Sahani <ssahani@vmware.com> 3.7.0-1

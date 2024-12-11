@@ -60,23 +60,23 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/libevent_extra.pc
 
 %changelog
-*       Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.12-2
--       Release bump for SRP compliance
-*       Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.12-1
--       Automatic Version Bump
-*       Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.12-2
--       Bump up release for openssl
-*       Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 2.1.12-1
--       Automatic Version Bump
-*       Thu Sep 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.8-2
--       Openssl 1.1.1 compatibility
-*	Mon Apr 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.1.8-1
--	Upgraded to version 2.1.8. (fixes CVE-2016-10195)
-*	Tue Jul 26 2016 Divya Thaluru <dthaluru@vmware.com> 2.0.22-4
--	Removed packaging of debug files
-*	Wed Jul 13 2016 Alexey Makhalov <amakhalov@vmware.com> 2.0.22-3
--	Added openssl runtime requirement
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.22-2
--	GA - Bump release of all rpms
-*       Thu Apr 28 2016 Kumar Kaushik <kaushikk@vmware.com> 2.0.22-1
--       Initial Version.
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.12-2
+- Release bump for SRP compliance
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.1.12-1
+- Automatic Version Bump
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.12-2
+- Bump up release for openssl
+* Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 2.1.12-1
+- Automatic Version Bump
+* Thu Sep 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.8-2
+- Openssl 1.1.1 compatibility
+* Mon Apr 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.1.8-1
+- Upgraded to version 2.1.8. (fixes CVE-2016-10195)
+* Tue Jul 26 2016 Divya Thaluru <dthaluru@vmware.com> 2.0.22-4
+- Removed packaging of debug files
+* Wed Jul 13 2016 Alexey Makhalov <amakhalov@vmware.com> 2.0.22-3
+- Added openssl runtime requirement
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.22-2
+- GA - Bump release of all rpms
+* Thu Apr 28 2016 Kumar Kaushik <kaushikk@vmware.com> 2.0.22-1
+- Initial Version.

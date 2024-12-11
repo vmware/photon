@@ -1,14 +1,16 @@
 Summary:        X11 ICE runtime library.
 Name:           libICE
 Version:        1.1.1
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.xz
 %define sha512  libICE=2f7833a25f31cc743ca95cb88f9a8403b50e19ffb5bf43bfef87ba405857d359789daaa9ec2391351237d958f16d35dbf082adb76d301e46d3a54162a6b452d3
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  xtrans
 BuildRequires:  proto
 
@@ -51,6 +53,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.1-2
+-   Release bump for SRP compliance
 *   Sun Feb 12 2023 Shivani Agarwal <shivania2@vmware.com> 1.1.1-1
 -   upgrade version to 1.1.1
 *   Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.9-1

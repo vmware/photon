@@ -3,43 +3,44 @@ Name:       libfastjson
 Version:    0.99.9
 Release:    2%{?dist}
 URL:        https://github.com/rsyslog/libfastjson
-Source0:    %{name}-%{version}.tar.gz
-%define sha1 libfastjson=b932e7b9645d256d140af5fc7a23012799906138
-
-Source1: license.txt
-%include %{SOURCE1}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libtool
 
+Source0:    %{name}-%{version}.tar.gz
+%define sha512 %{name}=d32d949465dcc94d04be6cd0e1cf78e5653bbbef7e2bd148079a5f4d69102febabd1fe8af668e344b82c62a918d1cc6c9f39a203d65cb1d81409a6d400a63d6a
+
+Source1: license.txt
+%include %{SOURCE1}
+
 %description
 LIBFASTJSON is fast json library for C
 It offers a small library with essential json handling functions, suffieciently good json support and very fast in processing.
 
-%package	devel
-Summary:	Development files for libfastjson
-Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+%package        devel
+Summary:        Development files for libfastjson
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
 
-
-%description	devel
+%description    devel
 This package contains libraries and header files for
 developing applications that use libfastjson.
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
 sh autogen.sh
 %configure --enable-shared --disable-static
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete -print
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 
@@ -53,13 +54,12 @@ make check
 %{_libdir}/libfastjson.so
 %{_libdir}/pkgconfig/libfastjson.pc
 
-
 %changelog
-*       Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.99.9-2
--       Release bump for SRP compliance
-*       Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.99.9-1
--       Automatic Version Bump
-*       Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 0.99.8-1
--       Updated to version 0.99.8
-*       Mon Apr 17 2017 Siju Maliakkal <smaliakkal@vmware.com>  0.99.4-1
--       Initial version
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.99.9-2
+- Release bump for SRP compliance
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.99.9-1
+- Automatic Version Bump
+* Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 0.99.8-1
+- Updated to version 0.99.8
+* Mon Apr 17 2017 Siju Maliakkal <smaliakkal@vmware.com>  0.99.4-1
+- Initial version

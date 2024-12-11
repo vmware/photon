@@ -1,7 +1,7 @@
 Summary:        It provides common functions for password quality checking
 Name:           libpwquality
 Version:        1.4.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/libpwquality/libpwquality
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -89,6 +89,8 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
 %{python3_sitearch}/pwquality-*.egg/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.4-5
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.4-4
 - Release bump for SRP compliance
 * Mon Jan 02 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.4.4-3

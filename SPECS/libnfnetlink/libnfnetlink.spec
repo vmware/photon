@@ -1,14 +1,16 @@
 Summary:       Library for netfilter related kernel/userspace communication
 Name:          libnfnetlink
 Version:       1.0.2
-Release:       1%{?dist}
-License:       GPLv2+
+Release:       2%{?dist}
 URL:           http://www.netfilter.org/projects/libnfnetlink/index.html
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
 %define sha512 libnfnetlink=a5e9ae22831f1d17703f83953f3b0ef898e8b3fa7f0f771b038db51816ddae3158574380ac4d45c09fb8fbb8677e2ccdcc5c4736e3b09de06eac99f899130854
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: linux-api-headers
 
@@ -52,6 +54,8 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %{_libdir}/*.so
 
 %changelog
+*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.2-2
+-   Release bump for SRP compliance
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.2-1
 -   Automatic Version Bump
 *   Wed Aug 04 2021 Susant Sahani <ssahani@vmware.com> 1.0.1-2

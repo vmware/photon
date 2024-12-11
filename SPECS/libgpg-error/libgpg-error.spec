@@ -1,7 +1,7 @@
 Summary:        libgpg-error
 Name:           libgpg-error
 Version:        1.46
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.gnupg.org/software/libgpg-error/index.html
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -77,6 +77,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.46-3
+-   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.46-2
 -   Release bump for SRP compliance
 *   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.46-1

@@ -1,15 +1,17 @@
 Summary:        Library for talking to WWAN modems and devices
 Name:           libqmi
 Version:        1.30.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://www.freedesktop.org
-License:        GPLv2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.freedesktop.org/software/libqmi/libqmi-%{version}.tar.xz
 %define sha512  %{name}=969c3e3fc8086c38e9192070eca155f5309947cdd1cfc9b883c27d80c6af2d069098a59e193bf1786260ab4fe4d05375555b5081dd173a88b33d84d409fa4a59
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libmbim-devel
 BuildRequires:  libgudev-devel
@@ -71,6 +73,8 @@ make %{?_smp_mflags} check
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.30.4-5
+- Release bump for SRP compliance
 * Tue Jan 03 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.30.4-4
 - Bump release as a part of libgudev upgrade to 237-1
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.30.4-3

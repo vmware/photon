@@ -1,14 +1,16 @@
 Summary:        This library exports a gssapi interface
 Name:           libgssglue
 Version:        0.4
-Release:        3%{?dist}
-License:        BSD
+Release:        4%{?dist}
 URL:            http://www.citi.umich.edu/projects/nfsv4/linux/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.citi.umich.edu/projects/nfsv4/linux/libgssglue/%{name}-%{version}.tar.gz
-%define sha1    libgssglue=a8edc4f6a1d4dcd80ad52d18226fc65fa8850af1
+%define sha512    libgssglue=25d514c08320e42851ff153d7691267a8454f205492faf942f566aa30c1ac1c83bd095732a1a0fcc010ba3a5d48b4c95a196ad05bc821598cc1fc3a2c4960d29
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 This library exports a gssapi interface, but doesn't implement any gssapi mechanisms itself; instead it calls gssapi routines in other libraries, depending on the mechanism.
@@ -20,14 +22,15 @@ Requires:       %{name} = %{version}
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
-%configure --prefix=/usr --disable-static
+%configure --disable-static
 
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 
 %post
@@ -43,6 +46,8 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.4-4
+-   Release bump for SRP compliance
 *   Thu Oct 25 2018 Ajay Kaher <akaher@vmware.com> 0.4-3
 -   Corrected spec file name
 *   Thu Jul 26 2018 Ajay Kaher <akaher@vmware.com> 0.4-2

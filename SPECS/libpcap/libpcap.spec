@@ -1,11 +1,13 @@
 Summary:       C/C++ library for network traffic capture
 Name:          libpcap
 Version:       1.10.1
-Release:       1%{?dist}
-License:       BSD
+Release:       2%{?dist}
 URL:           http://www.tcpdump.org
 Source0:       http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
 %define sha512 libpcap=56c314f19c2b857742bf8abcb1e78066986aaa95cec339b75a3c8b70a9fa2b5167da98708352f9ec97a1cea2700cfb4e040bda108d58ac46cec9b7deab88d171
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:         Networking/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -67,6 +69,8 @@ make DESTDIR=%{buildroot} %{?_smp_mflags} install
 %{_mandir}/man7/*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.1-2
+- Release bump for SRP compliance
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.10.1-1
 - Automatic Version Bump
 * Fri Feb 05 2021 Susant Sahani <ssahani@vmware.com> 1.10.0-1

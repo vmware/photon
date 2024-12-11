@@ -4,8 +4,7 @@
 Summary:        libnss-ato
 Name:           libnss-ato
 Version:        20240514
-Release:        3%{?dist}
-License:        GNU General Public License
+Release:        4%{?dist}
 URL:            https://github.com/donapieppo/libnss-ato
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -16,6 +15,9 @@ Source0: %{name}-%{version}.tar.gz
 
 Source1: %{name}.conf
 Source2: %{name}-allowed-progs.conf
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Patch0: 0001-allow-only-desired-programs.patch
 
@@ -60,6 +62,8 @@ rm -rf %{buildroot}
 %{_libdir}/libnss_ato*.so*
 
 %changelog
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 20240514-4
+- Release bump for SRP compliance
 * Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20240514-3
 - Remove an error log which was intervening with bash completion
 * Tue Jul 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20240514-2
