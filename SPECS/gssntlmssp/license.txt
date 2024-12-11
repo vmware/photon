@@ -1,0 +1,1 @@
+License: GPL-2.0-or-later WITH Autoconf-exception-generic AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-macro AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-macro

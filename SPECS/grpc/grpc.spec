@@ -7,8 +7,7 @@
 Summary:        Google RPC
 Name:           grpc
 Version:        1.59.5
-Release:        1%{?dist}
-License:        Apache License, Version 2.0
+Release:        2%{?dist}
 URL:            https://grpc.io
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -28,6 +27,9 @@ Source3: https://github.com/census-instrumentation/opencensus-proto/archive/v%{o
 
 Source4: https://github.com/cncf/xds/archive/%{xds_commit}/xds-%{xds_commit}.tar.gz
 %define sha512 xds=eb5878764503872c18b8750b20e2c2e2224e73d9601197752cea7e1e4171899474ad4f39aacc80d6c1b57a50b2161d39f219df64ffb250d045af482dae01ea79
+
+Source5: license.txt
+%include %{SOURCE5}
 
 BuildRequires:  build-essential
 BuildRequires:  which
@@ -114,6 +116,8 @@ rm -rf %{buildroot}%{_lib64dir}
 %{_libdir}/*.so
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.59.5-2
+- Release bump for SRP compliance
 * Mon Aug 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.59.5-1
 - Upgrade to v1.59.5
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.59.3-1

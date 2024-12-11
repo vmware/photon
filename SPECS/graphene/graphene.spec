@@ -1,8 +1,7 @@
 Summary:        Thin layer of types for graphic libraries.
 Name:           graphene
 Version:        1.10.8
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 URL:            https://github.com/ebassi/graphene
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/ebassi/graphene/archive/refs/tags//%{name}-%{version}.tar.gz
 %define sha512 %{name}=526b0c17049459b687ceb7f6c26c9d982535e4048e74a0b6282704f9811d3c2e7e0e6cfef166aa953306b6cf77add6677bc600ae0c66cc052dc04c3d0345bd68
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  meson >= 0.50
 BuildRequires:  ninja-build
@@ -68,5 +70,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.10.8-2
+- Release bump for SRP compliance
 * Mon Sep 5 2022 Shivani Agarwal <shivania2@vmware.com> 1.10.8-1
 - Initial version

@@ -1,8 +1,7 @@
 Summary:        C++ interface to the glib
 Name:           glibmm
 Version:        2.74.0
-Release:        1%{?dist}
-License:        LGPLv2+
+Release:        2%{?dist}
 URL:            http://ftp.gnome.org/pub/GNOME/sources/glibmm
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.74/%{name}-%{version}.tar.xz
 %define sha512 %{name}=29c16a6c921fb135721c39b5328e0b45e09c500c65175199c1ec5ee75bdd5fb907072389c6980da3bf8fac0846235af5580f692706eb00d26947804daa1c99c9
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  libsigc++-devel >= 3.2.0
@@ -76,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.74.0-2
+- Release bump for SRP compliance
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.74.0-1
 - Upgrade to v2.74.0
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.65.3-2

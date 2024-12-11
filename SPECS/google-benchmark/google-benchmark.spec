@@ -2,8 +2,7 @@
 
 Name:       google-benchmark
 Version:    1.7.1
-Release:    1%{?dist}
-License:    Apache-2.0
+Release:    2%{?dist}
 Summary:    A microbenchmark support library
 URL:        https://github.com/google/%{srcname}
 Group:      Applications/System
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://github.com/google/benchmark/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=396af1c1d3eaa2b78c6d23b1472f6088db85a294056ae1c2366dc5c0becdc8f141ba8fc3a235033324ab0a41c2298f5d242ef09b9b6f69d9877de6bcb2062efd
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: gtest-devel
 BuildRequires: gmock-devel
@@ -73,5 +75,7 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{srcname}.pc
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.7.1-2
+- Release bump for SRP compliance
 * Thu Jan 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.1-1
 - Intial version. Needed by snappy.

@@ -1,8 +1,7 @@
 Summary:      Glib networking modules
 Name:         glib-networking
 Version:      2.74.0
-Release:      3%{?dist}
-License:      GPLv2
+Release:      4%{?dist}
 URL:          http://wiki.gnome.org/glib-networking
 Group:        System Environment/Development
 Vendor:       VMware, Inc.
@@ -10,6 +9,9 @@ Distribution: Photon
 
 Source0: http://ftp.gnome.org/pub/GNOME/sources/glib-networking/%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=f266c106f2c9379b95773a852c1b5c62ae1d6a758d25c436c3558f620d8e0a211201b3c4dfd89cdbe28b88430bba0cca621e62c01ea23d473983e203919bb1e6
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: disable-pkcs-related-tests.patch
 
@@ -80,6 +82,8 @@ CONFIGURE_OPTS=(
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.74.0-4
+- Release bump for SRP compliance
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.74.0-3
 - Bump version as a part of gnutls upgrade
 * Wed May 31 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.74.0-2

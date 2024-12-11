@@ -1,7 +1,7 @@
 Summary:    Gperf-3.0.4
 Name:       gperf
 Version:    3.1
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        https://www.gnu.org/software/gperf
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -45,6 +45,8 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 
 %changelog
+*   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.1-4
+-   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1-3
 -   Release bump for SRP compliance
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 3.1-2

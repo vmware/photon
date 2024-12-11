@@ -1,8 +1,7 @@
 Summary:    High-Level Crypto API
 Name:       gpgme
 Version:    1.18.0
-Release:    3%{?dist}
-License:    GPLv2+
+Release:    4%{?dist}
 URL:        https://www.gnupg.org/(it)/related_software/gpgme/index.html
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    https://www.gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
 %define sha512  %{name}=c0cb0b337d017793a15dd477a7f5eaef24587fcda3d67676bf746bb342398d04792c51abe3c26ae496e799c769ce667d4196d91d86e8a690d02c6718c8f6b4ac
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:   libassuan
 Requires:   libgpg-error >= 1.32
@@ -74,6 +76,8 @@ cd tests && make check-TESTS %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.18.0-4
+- Release bump for SRP compliance
 * Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 1.18.0-3
 - Bump up version to compile with new gnupg
 * Thu Dec 22 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.18.0-2

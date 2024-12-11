@@ -3,14 +3,16 @@
 Summary:        Package for Google Compute Engine Linux images
 Name:           google-compute-engine
 Version:        20191210
-Release:        3%{?dist}
-License:        Apache License 2.0
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/GoogleCloudPlatform/compute-image-packages/
 Source0:        https://github.com/GoogleCloudPlatform/compute-image-packages/archive/compute-image-packages-%{version}.tar.gz
 %define sha512  compute-image-packages=107f4076cecf1d6501dd37d752fdae5836f8b843351ffdf1832e445f9b35a1cc653fceffcb21fb33788629a3c53ae280939dbc559bbee0d5987270ee19ac5fd4
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
@@ -88,6 +90,8 @@ systemctl --no-reload disable google-startup-scripts.service
 %{_libdir}/systemd/system/*.service
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 20191210-4
+- Release bump for SRP compliance
 * Mon Nov 28 2022 Prashant S Chauhan <psinghchauha@vmware.com> 20191210-3
 - Update release to compile with python 3.11
 * Mon Nov 02 2020 Prashant S Chauhan <psinghchauhau@vmware.com> 20191210-2

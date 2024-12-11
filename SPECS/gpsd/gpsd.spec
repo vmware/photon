@@ -1,15 +1,17 @@
 Name:           gpsd
 Version:        3.25
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Service daemon for mediating access to a GPS
 Group:          System Environment
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        BSD-2-Clause
 URL:            https://gpsd.gitlab.io/gpsd
 
 Source0:        https://download-mirror.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=0684cbd30defa1a328898589e1d61b2431462a774aff56c588bd00c1fbd92ac94cf6fc1f2b981debac78c34ab09fa24f48ed6334f3ecd09e6b8f5faa92ae1085
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  dbus-devel
 BuildRequires:  dbus-glib-devel
@@ -228,6 +230,8 @@ rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man
 %exclude %{_datadir}/%{name}/gpsd-logo.png
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.25-3
+- Release bump for SRP compliance
 * Tue Apr 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.25-2
 - Version Bump up to consume bluez v5.71
 * Tue Jun 06 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 3.25-1

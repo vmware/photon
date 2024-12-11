@@ -14,8 +14,7 @@
 Summary:        Go
 Name:           go
 Version:        1.21.13
-Release:        1%{?dist}
-License:        BSD
+Release:        2%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -23,6 +22,9 @@ Distribution:   Photon
 
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
 %define sha512  %{name}=f316984154ead8256d9ec0613e3cfef5699553387d87c24bb2a96265f986bf4450838e6451841def3713d65ebaa9bf55e36ff39c5690d79522e1c1ba7655be2f
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       glibc
 Requires:       gcc
@@ -120,6 +122,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.21.13-2
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <msikka@vmware.com> 1.21.13-1
 - Upgrade to 1.21.13
 - Fix CVE-2024-34156 and CVE-2024-34158

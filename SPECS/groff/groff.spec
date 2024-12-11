@@ -1,18 +1,20 @@
-Summary:	Programs for processing and formatting text
-Name:		groff
-Version:	1.22.4
-Release:	1%{?dist}
-License:	GPLv3+
-URL:		http://www.gnu.org/software/groff
-Group:		Applications/Text
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/groff/%{name}-%{version}.tar.gz
-%define sha1 groff=2ce4ab107e3fab1414fef2c5b5312f562a4e4d35
-Provides:	perl(oop_fh.pl)
-Provides:	perl(main_subs.pl)
-Provides:   perl(man.pl)
-Provides:   perl(subs.pl)
+Summary:    Programs for processing and formatting text
+Name:       groff
+Version:    1.22.4
+Release:    2%{?dist}
+URL:        http://www.gnu.org/software/groff
+Group:      Applications/Text
+Vendor:     VMware, Inc.
+Distribution:  Photon
+Source0:       http://ftp.gnu.org/gnu/groff/%{name}-%{version}.tar.gz
+%define sha512 groff=1c42d3cd71efaf067b5850945d9097fa1f0fadd5e2b6ba7446bd9d4f439fe1ad058e4ddb0d4e0f503682137dfc7c822944ce1e3e5cf981673f8ba197ea77126d
+
+Source1: license.txt
+%include %{SOURCE1}
+Provides: perl(oop_fh.pl)
+Provides: perl(main_subs.pl)
+Provides: perl(man.pl)
+Provides: perl(subs.pl)
 Requires: perl
 Requires: perl-DBI
 Requires: perl-DBIx-Simple
@@ -23,19 +25,20 @@ Requires: perl-File-HomeDir
 The Groff package contains programs for processing
 and formatting text.
 %prep
-%setup -q
+%autosetup -p1
 %build
 export PAGE=letter
 %configure \
-	--with-grofferdir=%{_datadir}/%{name}/%{version}/groffer
-# package does not support parallel make
+  --with-grofferdir=%{_datadir}/%{name}/%{version}/groffer
+# make doesn't support _smp_mflags
 make $(test %{_host} != %{_build} && echo "GROFFBIN=groff") \
 %install
 install -vdm 755 %{_defaultdocdir}/%{name}-1.22/pdf
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -44,6 +47,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_datarootdir}/%{name}/*
 %{_mandir}/*/*
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.22.4-2
+- Release bump for SRP compliance
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.22.4-1
 - Automatic Version Bump
 * Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.22.3-3

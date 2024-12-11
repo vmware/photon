@@ -1,15 +1,17 @@
 Summary:        GSSAPI NTLMSSP Mechanism
 Name:           gssntlmssp
 Version:        1.1.0
-Release:        15%{?dist}
+Release:        16%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        LGPLv3+
 URL:            https://github.com/gssapi/gss-ntlmssp
 Group:          Applications/System
 
 Source0: https://github.com/gssapi/gss-ntlmssp/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=6cd20542aa18dba6f2b777cea8f481e7d73eb1034e14c8aba4ce8984f138ba445a82547b10297ee99f7042920bd910ca10dd67692f3b242696fcc27dfcab123f
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: krb5
 Requires: libtasn1
@@ -51,7 +53,6 @@ A GSSAPI Mechanism that implements NTLMSSP
 
 %package devel
 Summary: Development header for GSSAPI NTLMSSP
-License: LGPLv3+
 Requires: %{name} = %{version}-%{release}
 
 %description devel
@@ -94,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/gssapi/gssapi_ntlmssp.h
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.1.0-16
+- Release bump for SRP compliance
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-15
 - Bump version as a part of gnutls upgrade
 * Mon Nov 27 2023 Harinadh D <hdommaraju@vmware.com> 1.1.0-14

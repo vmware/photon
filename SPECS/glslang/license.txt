@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND GPL-3.0-only AND MIT AND BSD-3-Clause AND Apache-2.0 AND AML-glslang AND GPL-3.0-or-later WITH Bison-exception-2.2 AND MIT-Khronos-old AND GPL-1.0-or-later AND JSON

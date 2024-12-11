@@ -5,8 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    16%{?dist}
-License:    GPLv3+
+Release:    17%{?dist}
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -17,6 +16,9 @@ Source0: https://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
 
 Source1: fedora.patches
 Source2: grub-sbat.csv.in
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Patch0: Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
 
@@ -250,6 +252,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.06-17
+- Release bump for SRP compliance
 * Wed Mar 06 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-16
 - Sync fedora grub patches to latest
 - Update grub sbat to gen 4 since the NFTS CVEs are in place.
