@@ -1,8 +1,7 @@
 Summary:        International Components for Unicode
 Name:           icu
 Version:        72.1
-Release:        1%{?dist}
-License:        MIT and UCD and Public Domain
+Release:        2%{?dist}
 URL:            http://www.icu-project.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/unicode-org/icu/archive/refs/tags/%{name}4c-72_1-src.tgz
 %define sha512 %{name}=848c341b37c0ff077e34a95d92c6200d5aaddd0ee5e06134101a74e04deb08256a5e817c8aefab020986abe810b7827dd7b2169a60dacd250c298870518dcae8
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 The International Components for Unicode (ICU) package is a mature,
@@ -47,6 +49,8 @@ It contains the libraries and header files to create applications.
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 72.1-2
+- Release bump for SRP compliance
 * Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 72.1-1
 - Upgrade to v72.1
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 71.1-1

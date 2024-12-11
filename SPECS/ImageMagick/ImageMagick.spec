@@ -4,16 +4,18 @@
 
 Name:           ImageMagick
 Version:        7.1.1.38
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        ImageMagick
 Url:            http://www.imagemagick.org
 
 Source0:        https://imagemagick.org/archive/releases/%{name}-%{VER}-%{Patchlevel}.tar.xz
 %define sha512  %{name}=636e2061c11c012e2607a53a893eb227569f3a4e04e331499722f2c84dc0db3eedae63525bd530972a639e3a262ab4f61383a21ca8603f8f81e5629a29f54b89
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libgomp
@@ -172,6 +174,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 7.1.1.38-2
+- Release bump for SRP compliance
 * Mon Sep 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.1.38-1
 - Upgrade to v7.1.1.38, fixes CVE-2024-41817
 * Tue Dec 05 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.1.1.11-3

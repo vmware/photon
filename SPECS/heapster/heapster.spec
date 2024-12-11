@@ -3,8 +3,7 @@
 Summary:        Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:           heapster
 Version:        1.5.4
-Release:        21%{?dist}
-License:        Apache 2.0
+Release:        22%{?dist}
 URL:            https://github.com/wavefrontHQ/cadvisor
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: https://github.com/kubernetes/heapster/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9c5f1e11b224efe6aaa42aad0daecede2c22d86d692a9d008643d9731d78becce98c8332ebe8d17568a93abe1f56dabf868dcd7ebc1e7b48e1f6f6f8f3878152
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: go-27704.patch
 Patch1: go-27842.patch
@@ -68,6 +70,8 @@ make test-unit %{?_smp_mflags}
 %{_bindir}/eventer
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.5.4-22
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.4-21
 - Bump version as a part of go upgrade
 * Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.5.4-20

@@ -1,7 +1,7 @@
 Summary:        Itstool-2.0.6
 Name:           itstool
 Version:        2.0.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://itstool.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -47,6 +47,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_mandir}/man1/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.7-5
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.7-4
 - Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.7-3

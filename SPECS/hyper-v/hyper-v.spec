@@ -1,8 +1,7 @@
 Summary:        Hyper-V tools
 Name:           hyper-v
 Version:        6.1
-Release:        1%{?dist}
-License:        GPLv2+
+Release:        2%{?dist}
 URL:            https://elixir.bootlin.com/linux/v6.1/source/tools/hv
 Group:          System/Kernel
 Vendor:         VMware, Inc.
@@ -14,6 +13,9 @@ Source2:        hv_get_dns_info.sh
 Source3:        hv_get_dhcp_info.sh
 Source4:        hv_set_ifconfig.sh
 Source5:        lsvmbus
+
+Source6: license.txt
+%include %{SOURCE6}
 BuildRequires:  systemd
 Requires:       systemd
 %description
@@ -111,6 +113,8 @@ EOF
 %{_libdir}/systemd/system/hv_vss_daemon.service
 
 %changelog
+*   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 6.1-2
+-   Release bump for SRP compliance
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 6.1-1
 -   Upgrade to v6.1
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 5.9-1

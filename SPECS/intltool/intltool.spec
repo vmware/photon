@@ -1,7 +1,7 @@
 Summary:    Intltool
 Name:       intltool
 Version:    0.51.0
-Release:    7%{?dist}
+Release:    8%{?dist}
 URL:        https://freedesktop.org/wiki/Software/intltool
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -48,6 +48,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 0.51.0-8
+- Release bump for SRP compliance
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.51.0-7
 - Remove standalone license exceptions
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.51.0-6

@@ -1,8 +1,7 @@
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
 Version:        1.9.18
-Release:        2%{?dist}
-License:        GPLv3+
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/Daemons
@@ -12,6 +11,9 @@ Source0: http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
 %define sha512 %{name}=ef2e0ae3be68a8fba16371c3347d52ecf9748269ae30eef2e5c26aad6cfb516f87295e1e56be902df1064e7d4ace04863dd094d62b69e584608f779d63b42d8e
 
 Source1:        %{name}.service
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Requires:       systemd
 
@@ -95,6 +97,8 @@ rm -rf %{buildroot}
 %{_libdir}/*.so
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.9.18-3
+- Release bump for SRP compliance
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.9.18-2
 - Fix build requires
 * Sun May 29 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.18-1

@@ -1,8 +1,7 @@
 Summary:        Apache Tomcat Connector
 Name:           httpd-mod_jk
 Version:        1.2.48
-Release:        14%{?dist}
-License:        Apache
+Release:        15%{?dist}
 URL:            http://tomcat.apache.org/connectors-doc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://www.apache.org/dist/tomcat/tomcat-connectors/jk/tomcat-connectors-%{version}-src.tar.gz
 %define sha512 tomcat-connectors=955a830724a3902e29032a5d2e7603d3170334e8a383d314f6bf8539d53d9f7ee4cfa0b31cfc954acb0a13d9975ed2229de085d08de3885f8679b509924fde47
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: httpd
 
@@ -47,6 +49,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %config(noreplace) %{_sysconfdir}/httpd/conf/workers.properties
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.48-15
+- Release bump for SRP compliance
 * Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.2.48-14
 - Bump version as a part of apr upgrade
 * Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.2.48-13

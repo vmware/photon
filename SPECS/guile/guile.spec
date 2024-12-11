@@ -3,7 +3,7 @@
 Summary:        GNU Ubiquitous Intelligent Language for Extensions
 Name:           guile
 Version:        2.2.7
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.gnu.org/software/guile
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -86,6 +86,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.2.7-7
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2.7-6
 - Release bump for SRP compliance
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-5

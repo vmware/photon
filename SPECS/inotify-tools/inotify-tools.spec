@@ -1,15 +1,17 @@
 Summary:        Command line utility for i-node notifications and management.
 Name:           inotify-tools
 Version:        3.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://sourceforge.net/projects/inotify-tools
-License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Applications/Systems
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://sourceforge.net/projects/inotify-tools/files/latest/download/%{name}-%{version}.tar.gz
 %define sha512  %{name}=e757ca5d3bac2b6b84e9435671107d6d695ff7d04cefd139590ab538d1be8f9a295eb9b0042406bdbfa60bb2b2545a428ec861e60f1cbf172050d47d0350bdb9
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Provides:       libinotifytools0
 
@@ -63,6 +65,8 @@ rm -rf %{buildroot}
 %exclude %{_libdir}/libinotifytools.la
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.13-4
+- Release bump for SRP compliance
 * Wed Jun 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.13-3
 - Spec improvements
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.13-2

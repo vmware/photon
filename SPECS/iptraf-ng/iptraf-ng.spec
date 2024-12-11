@@ -1,15 +1,17 @@
 Summary:       IPTraf-ng is a console-based network statistics utility
 Name:          iptraf-ng
 Version:       1.2.1
-Release:       2%{?dist}
-License:       GPLv2
+Release:       3%{?dist}
 URL:           https://github.com/iptraf-ng/iptraf-ng
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source: https://github.com/iptraf-ng/iptraf-ng/archive/%{name}-v%{version}.tar.gz
+Source0: https://github.com/iptraf-ng/iptraf-ng/archive/%{name}-v%{version}.tar.gz
 %define sha512 %{name}=44d36fc92cdbf379f62cb63638663c3ee610225b9c28d60ee55e62e358f398a6b0db281129327b3472e45fb553ee3dd605af09c129f2233f8839ae3dbd799384
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: ncurses-devel
 
@@ -48,6 +50,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/iptraf-ng.8.gz
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.1-3
+- Release bump for SRP compliance
 * Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.1-2
 - Add provies & obsoletes iptraf
 * Mon Oct 19 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.2.1-1

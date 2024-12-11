@@ -1,8 +1,7 @@
 Name:          htop
 Version:       3.2.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Interactive process viewer
-License:       GPLv2+
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -10,6 +9,9 @@ URL:           http://hisham.hm/htop/
 
 Source0: https://github.com/htop-dev/htop/archive/%{name}-%{version}.tar.gz
 %define sha512 htop=d7b76e28ee870ac572ba1d9606dec6f9475346a00e599ca15838017c97683f1fc1be40417b9c1e76128cacc8a60ff9ba88c6b237be1835d309f98329b25644fc
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: ncurses-devel
 
@@ -48,6 +50,8 @@ autoreconf -vfi
 %{_mandir}/man1/htop.1*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.2.1-3
+- Release bump for SRP compliance
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 3.2.1-2
 - Bump version as a part of ncurses upgrade to v6.4
 * Tue Sep 27 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.1-1

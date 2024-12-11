@@ -1,8 +1,7 @@
 Summary:       Simple INI file parser library
 Name:          inih
 Version:       56
-Release:       1%{?dist}
-License:       GPLv2 and LGPLv2
+Release:       2%{?dist}
 URL:           https://github.com/benhoyt/inih
 Group:         System Environment/Development
 Vendor:        VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:  Photon
 
 Source0:        https://github.com/benhoyt/inih/archive/refs/tags/libinih-%{version}.tar.gz
 %define sha512 libinih=ff3e0910990f73e5b21fddc84737ab346279f201c86c7ad864c6cad9de5bde57c3e0a433b9b8f3585b7d86feaae2ea074185f92891dcadc98c274c1c0745d2d2
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: meson
 
@@ -54,6 +56,8 @@ cd tests && bash -x ./unittest.sh
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 56-2
+- Release bump for SRP compliance
 * Mon Jul 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 56-1
 - Initial build. First Version.
 - Needed for xfsprogs-5.18.0

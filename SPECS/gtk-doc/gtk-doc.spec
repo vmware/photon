@@ -1,7 +1,7 @@
 Summary:    Program to generate documenation
 Name:       gtk-doc
 Version:    1.33.2
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        http://www.gnu.org/software/%{name}
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -55,6 +55,8 @@ cd tests && make check-TESTS %{?_smp_mflags}
 %{_datadir}/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.33.2-5
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.33.2-4
 - Release bump for SRP compliance
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.33.2-3

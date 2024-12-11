@@ -3,14 +3,16 @@
 
 Name:           influxdb
 Version:        1.8.10
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        InfluxDB is an open source time series database
-License:        MIT
 URL:            https://influxdata.com
 Source0:        https://github.com/influxdata/influxdb/archive/%{name}-%{version}.tar.gz
 %define sha512  %{name}=4f5d20c190288d6397f0e87abd9b9136340b17f091c361cbc111ba661a3e63626edf5c74ddeeda164d82102dd06026e0037f50da546cda25e6c8647f4c739fae
 
 Source2:        %{name}.sysusers
+
+Source3: license.txt
+%include %{SOURCE3}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Applications/Database
@@ -111,6 +113,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.8.10-13
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.10-12
 - Bump version as a part of go upgrade
 * Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.8.10-11

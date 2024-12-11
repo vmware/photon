@@ -1,8 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.62
-Release:        2%{?dist}
-License:        Apache License 2.0
+Release:        3%{?dist}
 URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,6 +10,9 @@ Distribution:   Photon
 Source0: https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=7db1876805d5c0f60f49bcb51f75cdf567120f2ff6349e68f084e9a86ae38265d9f1c67e7fca0082c9db136f3c408a88501ee11f26b1b68724ba240867171d77
 Source1: %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
@@ -198,6 +200,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.4.62-3
+- Release bump for SRP compliance
 * Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 2.4.62-2
 - Bump version as a part of apr upgrade
 * Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.4.62-1

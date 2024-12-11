@@ -1,8 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.8.2
-Release:        1%{?dist}
-License:        GPL
+Release:        2%{?dist}
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://www.haproxy.org/download/2.7/src/%{name}-%{version}.tar.gz
 %define sha512 %{name}=717bbdd626d3c03c06ad237fe2cb46c71b7cddcf0ba40b6bedb66293a9db9655204f83848ada32dc28dd782b98c8ee32516f90203ac0273759f171e955b4527d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: openssl-devel
 BuildRequires: pcre-devel
@@ -62,6 +64,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.8.2-2
+- Release bump for SRP compliance
 * Fri Dec 08 2023 Nitesh Kumar <kunitesh@vmware.com> 2.8.2-1
 - Version upgrade to v2.8.2 to fix CVE-2023-45539
 * Mon Aug 21 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.10-1

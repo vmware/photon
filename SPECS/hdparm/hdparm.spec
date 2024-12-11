@@ -1,15 +1,17 @@
-Summary:	command line utility to set and view hardware parameters
-Name:		hdparm
-Version:	9.65
-Release:	1%{?dist}
-License:	BSD
-URL:		http://sourceforge.net/projects/%{name}/
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:        command line utility to set and view hardware parameters
+Name:           hdparm
+Version:        9.65
+Release:        2%{?dist}
+URL:            http://sourceforge.net/projects/%{name}/
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
-Source0:	http://downloads.sourceforge.net/hdparm/%{name}-%{version}.tar.gz
+Source0: http://downloads.sourceforge.net/hdparm/%{name}-%{version}.tar.gz
 %define sha512 hdparm=4ffc8902b90cee10d68af8ddb9f3b9454d523ecd49cdaaed254b4d7a999462a8ad5ec1bb5d7684b09fefa41b5941ab533b167dad290003b51c795a633ca88913
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 The Hdparm package contains a utility that is useful for controlling ATA/IDE
@@ -35,6 +37,8 @@ make DESTDIR=%{buildroot} binprefix=%{_prefix} install %{?_smp_mflags}
 %{_mandir}/man8/hdparm.8*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 9.65-2
+- Release bump for SRP compliance
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 9.65-1
 - Automatic Version Bump
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 9.64-1

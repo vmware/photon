@@ -1,8 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.9
-Release:        3%{?dist}
-License:        GPLv2+
+Release:        4%{?dist}
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -16,6 +15,9 @@ Source2:        %{name}
 Source3:        %{name}.stop
 Source4:        ip4save
 Source5:        ip6save
+
+Source6: license.txt
+%include %{SOURCE6}
 
 Requires(post):   systemd
 Requires(preun):  systemd
@@ -153,6 +155,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.8.9-4
+- Release bump for SRP compliance
 * Tue Mar 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.9-3
 - Add libs sub-package
 * Fri Oct 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.9-2

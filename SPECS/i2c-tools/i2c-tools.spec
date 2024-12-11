@@ -1,14 +1,16 @@
 Summary:        A set of I2C tools for Linux Kernel
 Name:           i2c-tools
 Version:        4.3
-Release:        1%{?dist}
-License:        LGPL-2.1+
+Release:        2%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://i2c.wiki.kernel.org/index.php/I2C_Tools
 Source0:        https://www.kernel.org/pub/software/utils/i2c-tools/%{name}-%{version}.tar.xz
 %define sha512 %{name}-%{version}=8a6cc12d927d6291b9baf407bc15807280539a7048ec5c2edf77414432eab43b28353c42bc0e45b7b481502aa4c5588def08f130d97fc275f635d1f77488f501
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 This package contains a heterogeneous set of I2C tools for Linux Kernelas well as an I2C library.
@@ -50,6 +52,8 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} %{?_smp_mflags} install
 %{_libdir}/libi2c.so
 
 %changelog
+*   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 4.3-2
+-   Release bump for SRP compliance
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.3-1
 -   Automatic Version Bump
 *   Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
