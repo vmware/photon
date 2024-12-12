@@ -2,12 +2,14 @@
 Summary:       Provide the stuff missing in List::Util
 Name:          perl-List-MoreUtils
 Version:       0.430
-Release:       1%{?dist}
-License:       GPL+ or Artistic
+Release:       2%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/List-MoreUtils/
 Source0:       https://cpan.metacpan.org/authors/id/R/RE/REHSACK/List-MoreUtils-%{version}.tar.gz
 %define sha512 List-MoreUtils=bc9ff033c12251a6f0899a96da0ec8fc314ddb8d6cdf18c37fe1fdcfc38a4c95ed6f8e006bb124e77d07241ae6754f429bc2041f7772b4acfce9378a21283469
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:        VMware, Inc.
 Distribution:  Photon
 BuildArch:     noarch
@@ -46,6 +48,8 @@ make  %{?_smp_mflags} test
 %{_mandir}/man3/List::MoreUtils::Contributing.3.gz
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.430-2
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 0.430-1
 - Automatic Version Bump
 * Mon Aug 31 2020 Dweep Advani <dadvani@vmware.com> 0.428-3

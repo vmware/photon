@@ -5,12 +5,14 @@
 Summary:        Standalone, extensible Perl module installer
 Name:           perl-Module-Install
 Version:        1.19
-Release:        3%{?dist}
-License:        GPL+ or Artistic
+Release:        4%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Install/
 Source0:        https://cpan.metacpan.org/authors/id/E/ET/ETHER/Module-Install-%{version}.tar.gz
 %define sha512  Module-Install=68a255402c98955cfcb5a8a99555fe511b89d5fccf96ee1c498cab347c8945f3abe53485ea936f7419420d9c7beb52c861516f4cfd299812cebf80eab50fa5ba
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -49,6 +51,8 @@ make %{?_smp_mflags} test AUTOMATED_TESTING=1
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.19-4
+-   Release bump for SRP compliance
 *   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.19-3
 -   Perl version upgrade to 5.36.0
 *   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 1.19-2

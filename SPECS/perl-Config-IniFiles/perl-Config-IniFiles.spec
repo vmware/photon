@@ -2,12 +2,14 @@
 Summary:        A module for reading .ini-style configuration files
 Name:           perl-Config-IniFiles
 Version:        3.000003
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
-License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/Config-IniFiles/
 Source0:        https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-%{version}.tar.gz
 %define sha512  Config-IniFiles=29278b7f6aaf9ffcc0cd8b48ca0e1f1084b10278e50764b2b93e3e9b156ef13d6e54f779f41d0a6cbf6e0b23da1b73a3bb83fbf873add0a604693a41312b91f5
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -50,6 +52,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 3.000003-3
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 3.000003-2
 - Perl version upgrade to 5.36.0
 * Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 3.000003-1

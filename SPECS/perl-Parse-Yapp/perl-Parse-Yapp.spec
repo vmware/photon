@@ -1,8 +1,7 @@
 Summary:        Perl extension for generating and using LALR parsers
 Name:           perl-Parse-Yapp
 Version:        1.21
-Release:        3%{?dist}
-License:        GPL+ or Artistic
+Release:        4%{?dist}
 URL:            https://metacpan.org/release/Parse-Yapp
 Group:          Development/Libraries/Perl
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://www.cpan.org/authors/id/W/WB/WBRASWELL/Parse-Yapp-%{version}.tar.gz
 %define sha512 Parse-Yapp=dbf6182d4813ff7e355ea1713c748bfdf8290040a93f123acec645c7a1733fe457ab6e0ab51c4ec83cf82bc43d7fb35cbf89875df7b5c2ffc9635e85458cfeee
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 
@@ -49,6 +51,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man3/*.3*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.21-4
+- Release bump for SRP compliance
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.21-3
 - Fix build requires
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.21-2

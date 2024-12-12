@@ -7,12 +7,14 @@
 Summary:        Perl extension interface for libcurl
 Name:           perl-WWW-Curl
 Version:        4.17
-Release:        9%{?dist}
-License:        MIT
+Release:        10%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/WWW-Curl/
 Source0:        http://search.cpan.org/CPAN/authors/id/S/SZ/SZBALINT/WWW-Curl-%{version}.tar.gz
 %define sha512  WWW-Curl=bc7a75d0e23f5a77578fd7244b56a1e1b81d814993b90ac7132926f0d571232c4c95875bc615cb6239e424ae1d5481d27796efc5376bb0845d1da0ff1137c0d6
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 # Fix Build issue with curl-7.72 version
@@ -65,6 +67,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.17-10
+- Release bump for SRP compliance
 * Thu Apr 13 2023 Harinadh D <hdommaraju@vmware.com> 4.17-9
 - version bump to use curl 8.0.1
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 4.17-8

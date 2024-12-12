@@ -1,12 +1,14 @@
 Summary:        A Perl module implementing URI parsing and manipulation
 Name:           perl-URI
 Version:        5.17
-Release:        1%{?dist}
-License:        GPL+ or Artistic
+Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/URI
 Source0:        https://cpan.metacpan.org/modules/by-module/URI/perl-URI-%{version}.tar.gz
 %define sha512  perl-URI=52171e16137bfaa77ab31007245a561614c5c42336473022ebbe370b395d3052d3de80da0b42754ca2e0b09f47520ef96afdbdb72fe5c25cab87441eda03ec12
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -42,6 +44,8 @@ make %{?_smp_mflags} pure_install DESTDIR=%{buildroot}
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 5.17-2
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 5.17-1
 - Version upgrade to 5.17
 * Fri Apr 30 2021 Susant Sahani <ssahani@vmware.com> 5.09-1

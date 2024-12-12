@@ -3,12 +3,14 @@
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
 Version:        1.72
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
-License:        (GPL+ or Artistic) and Public Domain
 URL:            http://search.cpan.org/dist/DBD-SQLite/
 Source0:        https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/DBD-SQLite-%{version}.tar.gz
 %define sha512  DBD-SQLite=67a90c618a3626b3ae0b333b5eb4d4d0c8c13712bbcd50c135bf74e83dc252301664089803597c1bcbebf7f1eda040673d4438e70e2dae0aef3b8ebeeecd2f79
+
+Source1: license.txt
+%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Patch0:         use-system-sqlite.patch
@@ -54,6 +56,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.72-4
+- Release bump for SRP compliance
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.72-3
 - Bump version as a part of sqlite upgrade to v3.43.2
 * Wed Jan 11 2023 Oliver Kurth <okurth@vmware.com> 1.72-2

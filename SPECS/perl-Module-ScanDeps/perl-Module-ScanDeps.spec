@@ -2,11 +2,13 @@
 Summary:        Recursively scan Perl code for dependencies
 Name:           perl-Module-ScanDeps
 Version:        1.31
-Release:        1%{?dist}
-License:        GPL+ or Artistic
+Release:        2%{?dist}
 Group:          Development/Libraries
 Source0:        https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/Module-ScanDeps-%{version}.tar.gz
 %define sha512  Module-ScanDeps=c7164d768b6401a0d01516f5a09ddf2a0399355738ff17d04757aeb235b47f8d973083d0425ca53757588916c7fb2959d8c042361055a0e8eab7bf6d4c31d6fd
+
+Source1: license.txt
+%include %{SOURCE1}
 URL:            http://search.cpan.org/dist/Module-ScanDeps/
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -44,6 +46,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.31-2
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.31-1
 - Automatic Version Bump
 * Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.28-1

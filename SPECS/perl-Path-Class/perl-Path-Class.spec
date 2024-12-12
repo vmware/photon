@@ -1,14 +1,16 @@
 Summary:        Cross-platform path specification manipulation for Perl
 Name:           perl-Path-Class
 Version:        0.37
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://search.cpan.org/~kwilliams/Path-Class-0.37/
-License:        The Perl 5 License (Artistic 1 & GPL 1)
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source:         http://search.cpan.org/CPAN/authors/id/K/KW/KWILLIAMS/Path-Class-%{version}.tar.gz
+Source0:        http://search.cpan.org/CPAN/authors/id/K/KW/KWILLIAMS/Path-Class-%{version}.tar.gz
 %define sha512  Path-Class=044d86f85eebff96bdff8fc11e97884eb4e06d56ecd2d3bfdc045135da6f08c40e644e0e5c1a779a8ef5d6c7c04e159e47721b4e637a92fed7d298b5f798ef83
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:      noarch
 Requires:       perl
@@ -38,6 +40,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man?/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.37-6
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 0.37-5
 - Perl version upgrade to 5.36.0
 * Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 0.37-4

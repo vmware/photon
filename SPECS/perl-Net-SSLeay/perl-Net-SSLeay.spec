@@ -1,8 +1,7 @@
 Summary:        Perl extension for using OpenSSL
 Name:           perl-Net-SSLeay
 Version:        1.92
-Release:        1%{?dist}
-License:        Perl Artistic License 2.0
+Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/pod/Net::SSLeay
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://cpan.metacpan.org/authors/id/C/CH/CHRISN/Net-SSLeay-%{version}.tar.gz
 %define sha512  Net-SSLeay=e9d9161ebeb7be90f4c7a0ea98f1034892ce6d33aa72872683177b19daa1f4c5819f85ea9a052a076ec8d7c21705f6c344aef64680bc881bf3218d38e8b7b173
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       perl
 Requires:       openssl
@@ -53,6 +55,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man?/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.92-2
+- Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.92-1
 - Automatic Version Bump
 * Fri Jan 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.90-1
