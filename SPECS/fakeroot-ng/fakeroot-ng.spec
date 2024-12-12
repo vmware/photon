@@ -1,8 +1,7 @@
 Summary:       Fools programs into thinking they are running with root permission
 Name:          fakeroot-ng
 Version:       0.18
-Release:       4%{?dist}
-License:       GPLv2+
+Release:       5%{?dist}
 URL:           http://fakeroot-ng.lingnu.com
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:  Photon
 
 Source0: http://downloads.sourceforge.net/project/fakerootng/fakeroot-ng/%{version}/fakeroot-ng-%{version}.tar.gz
 %define sha512 %{name}=8ece6830d229b92537d9c0a2eb42cb9ec4ae6b83453303004dded5eab0707b9ae8eaa2c71aac6ea68226c43cf08db6b0939a9422aab32948f5ecb185ee01d854
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:        Add-sched-h-to-process-cpp.patch
 
@@ -50,6 +52,8 @@ rm -rf %{buildroot}/*
 %doc %{_mandir}/man1/%{name}.1.gz
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.18-5
+- Release bump for SRP compliance
 * Mon Sep 19 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.18-4
 - Fix build with latest tool chain
 * Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 0.18-3

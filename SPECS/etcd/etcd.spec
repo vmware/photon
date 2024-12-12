@@ -2,8 +2,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.5.12
-Release:        5%{?dist}
-License:        Apache License
+Release:        6%{?dist}
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -15,6 +14,9 @@ Source1:        etcd.service
 Source2:        etcd.sysconfig
 %endif
 Source3:        etcd.sysusers
+
+Source4: license.txt
+%include %{SOURCE4}
 BuildRequires:  go
 BuildRequires:  git
 BuildRequires:  systemd-devel
@@ -86,6 +88,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.5.12-6
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.5.12-5
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.5.12-4

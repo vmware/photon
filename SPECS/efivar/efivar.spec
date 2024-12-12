@@ -1,8 +1,7 @@
 Summary:       Tools and libraries to manipulate EFI variables
 Name:          efivar
 Version:       38
-Release:       1%{?dist}
-License:       GPLv2
+Release:       2%{?dist}
 URL:           https://github.com/rhboot/efivar
 Group:         System Environment/System Utilities
 Vendor:        VMware, Inc.
@@ -13,6 +12,9 @@ Source0:       https://github.com/rhboot/efivar/releases/download/%{version}/%{n
 # Generated using mandoc
 # mandoc -mdoc -Tman -Ios=Linux efisecdb.1.mdoc > efisecdb.1
 Source1:       efisecdb.1
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: popt-devel
 
@@ -61,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 38-2
+- Release bump for SRP compliance
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 38-1
 - Automatic Version Bump
 - Use pre generated man page for efisecdb.

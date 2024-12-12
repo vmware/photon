@@ -1,8 +1,7 @@
 Name:       duktape
 Version:    2.7.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Embeddable Javascript engine
-License:    MIT
 Vendor:     VMware, Inc.
 Group:      Development/Tools
 URL:        http://duktape.org
@@ -12,6 +11,9 @@ Source0:        http://duktape.org/%{name}-%{version}.tar.xz
 %define sha512 %{name}=8ff5465c9c335ea08ebb0d4a06569c991b9dc4661b63e10da6b123b882e7375e82291d6b883c2644902d68071a29ccc880dae8229447cebe710c910b54496c1d
 
 Source1:        duktape.pc.in
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  gcc
 BuildRequires:  make
@@ -76,5 +78,7 @@ install -Dm0644 %{name}.pc.in %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 %{_libdir}/pkgconfig/duktape.pc
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.7.0-2
+- Release bump for SRP compliance
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7.0-1
 - First build. Needed by polkit.

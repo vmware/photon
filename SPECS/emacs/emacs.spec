@@ -1,8 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
 Version:        28.2
-Release:        5%{?dist}
-License:        GPLv3+ and CC0-1.0
+Release:        6%{?dist}
 URL:            http://www.gnu.org/software/emacs
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/emacs/%{name}-%{version}.tar.xz
 %define sha512 %{name}=a7cec7e3e82367815a1442f69af54102dbfc434069810a9dec5938a6660cb8b076e6f1fb0bfff9695b15603dbbe05eb9c7dfd92e90cf40fc4d1e5746bce83bd8
+
+Source1: license.txt
+%include %{SOURCE1}
 Patch0:         CVE-2022-45939.patch
 Patch1:         CVE-2022-48337.patch
 Patch2:         CVE-2022-48338.patch
@@ -80,6 +82,8 @@ rm -rf %{buildroot}%{_infodir} \
 %{_datadir}/metainfo/%{name}.metainfo.xml
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 28.2-6
+- Release bump for SRP compliance
 * Mon Jul 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 28.2-5
 - Fix CVE-2024-39331
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 28.2-4

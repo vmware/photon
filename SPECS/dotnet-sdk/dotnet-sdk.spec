@@ -3,10 +3,9 @@
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
 Version:        8.0.206
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 Url:            https://github.com/dotnet/core
 Group:          Development/Tools
 
@@ -18,6 +17,9 @@ Group:          Development/Tools
 # https://download.visualstudio.microsoft.com/download/pr/17b6759f-1af0-41bc-ab12-209ba0377779/e8d02195dbf1434b940e0f05ae086453/dotnet-sdk-6.0.100-linux-x64.tar.gz
 Source0: %{name}-%{version}-linux-x64.tar.gz
 %define sha512 %{name}=d03cbb5ea44a6f4957d7c1fa0f7c19e3df2efcbf569b071082e37ac86776af0729540c3bbddc44668ae2eedcfcb4b098883bb560d26418f1583a558d60c99ef5
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch: x86_64
 
@@ -46,6 +48,8 @@ echo "%{_libdir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 %{_sysconfdir}/dotnet/install_location
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.0.206-2
+- Release bump for SRP compliance
 * Thu Jul 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.206-1
 - Upgrade to v8.0.206
 * Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 8.0.101-2

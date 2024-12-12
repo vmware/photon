@@ -1,15 +1,17 @@
 Summary:        Dos Filesystem tools
 Name:           dosfstools
 Version:        4.2
-Release:        1%{?dist}
-License:        GPLv3+
+Release:        2%{?dist}
 URL:            http://github.com/dosfstools/dosfstools
 Group:          Filesystem Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://github.com/%{name}/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=1aa7eef62a57339d0a275daf5c31f96d23429c11
+%define sha512    %{name}=f4511e18c370ef55439babd71f2d7f62db0ee8ba667a54b91a312cbfef8ebc2f53788435e9b4689d9404726c4cd2388be2dae6227d431b9fc13415735a219c10
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 dosfstools contains utilities for making and checking MS-DOS FAT filesystems.
@@ -36,6 +38,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/dosfstools/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.2-2
+- Release bump for SRP compliance
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
 - Automatic Version Bump
 * Thu May 04 2017 Chang Lee <changlee@vmware.com> 4.1-2

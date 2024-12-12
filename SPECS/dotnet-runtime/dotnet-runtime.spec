@@ -3,10 +3,9 @@
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
 Version:        8.0.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 Url:            https://github.com/dotnet/core
 Group:          Development/Tools
 
@@ -18,6 +17,9 @@ Group:          Development/Tools
 # https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
 Source0: %{name}-%{version}-linux-x64.tar.gz
 %define sha512 %{name}=88e9ac34ad5ac76eec5499f2eb8d1aa35076518c842854ec1053953d34969c7bf1c5b2dbce245dbace3a18c3b8a4c79d2ef2d2ff105ce9d17cbbdbe813d8b16f
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch: x86_64
 
@@ -59,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.0.7-2
+- Release bump for SRP compliance
 * Thu Jul 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.7-1
 - Upgrade to v8.0.7
 * Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 8.0.1-1

@@ -4,16 +4,18 @@
 #3.tar the folder enchant-%{verson} to enchant-vendor-%{verson}.tar.gz
 Name:           enchant
 Version:        2.5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A spellchecking library
 Group:          Development/Languages
 Vendor:         VMware, Inc.
-License:        LGPLv2+
 URL:            https://github.com/AbiWord/%{name}/tree/v%{version}
 Distribution:   Photon
 
 Source0: https://github.com/AbiWord/%{name}/archive/refs/tags/%{name}-vendor-%{version}.tar.gz
 %define sha512 %{name}=0e5ecc1fa158b3778425139a86e603ed187b089b7cab2832715f205fb776b43e80536720a780ca6b73d05771aaee6364141e632d989206c40d09e8bb6c13119c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: automake
 BuildRequires: autoconf
@@ -74,6 +76,8 @@ Libraries, headers, and support files necessary to compile applications using li
 %{_includedir}/%{name}-2
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.5.0-3
+- Release bump for SRP compliance
 * Wed Jul 24 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 2.5.0-2
 - Support for offline build
 * Mon Feb 12 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.5.0-1

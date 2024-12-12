@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND GFDL-1.1-or-later AND GFDL-1.3-only

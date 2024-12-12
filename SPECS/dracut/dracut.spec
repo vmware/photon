@@ -4,16 +4,18 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        9%{?dist}
+Release:        10%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
-License:        GPLv2+ and LGPLv2+
 URL:            https://github.com/dracutdevs/dracut/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/dracutdevs/dracut/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=196bc8bf18703c72bffb51a7e0493719c58173ad2da7d121eb42f9a8de47e953af36d109214dc4a10b2dc2d3bd19e844f7f51c2bdec087e064ea11f75124032d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: 0001-Add-mkinitrd-support-to-dracut.patch
 Patch1: 0002-disable-xattr.patch
@@ -158,6 +160,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 059-10
+- Release bump for SRP compliance
 * Tue Oct 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-9
 - Add gzip, procps-ng, xz to requires
 * Thu Jul 27 2023 Piyush Gupta <gpiyush@vmware.com> 059-8

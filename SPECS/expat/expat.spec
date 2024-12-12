@@ -1,7 +1,7 @@
 Summary:        An XML parser library
 Name:           expat
 Version:        2.6.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://expat.sourceforge.net/
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %exclude %{_mandir}/man1/xmlwf.1.gz
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.6.0-5
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.6.0-4
 - Release bump for SRP compliance
 * Tue Sep 03 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 2.6.0-3

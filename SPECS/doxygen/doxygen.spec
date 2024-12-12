@@ -1,8 +1,7 @@
 Summary:        C++ tool
 Name:           doxygen
 Version:        1.9.5
-Release:        2%{?dist}
-License:        GPLv2+
+Release:        3%{?dist}
 URL:            https://www.doxygen.nl/download.html
 Group:          Build/Tool
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://doxygen.nl/files/doxygen-%{version}.src.tar.gz
 %define sha512  %{name}=4ad4c1ecd4a12220442f354b90aa56f80e78fcaf288d5e36da421437d59811ed3d429ee13717692886a55b9628ae565d40ce13c51792ccc8bba15b1e018cb651
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 BuildRequires:  python3
@@ -50,6 +52,8 @@ make %{?_smp_mflags} check
 %{_bindir}/%{name}
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.9.5-3
+- Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.9.5-2
 - Update release to compile with python 3.11
 * Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 1.9.5-1

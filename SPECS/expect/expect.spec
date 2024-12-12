@@ -1,7 +1,7 @@
 Summary:        Expect is a tool for automating interactive applications
 Name:           expect
 Version:        5.45.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://sourceforge.net/projects/expect
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -59,6 +59,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.45.4-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.45.4-3
 - Release bump for SRP compliance
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.45.4-2

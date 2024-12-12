@@ -6,8 +6,7 @@
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
 Version:        2.2.0
-Release:        16%{?dist}
-License:        Apache-2.0
+Release:        17%{?dist}
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -17,6 +16,9 @@ Source0: https://github.com/edgexfoundry/edgex-go/archive/refs/tags/%{name}-%{ve
 %define sha512 %{name}=446f34753fe095049095f3525d77b0b1b1cc3b04f22c9955c6a5262908526547e84ba48581dc3ca67c47a65d029291a204c9ca88cc791a136245915e5623fece
 
 Source1: %{name}-template.service
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: go
 BuildRequires: make
@@ -103,6 +105,8 @@ sed -i "s/SIGINT/SIGKILL/" %{buildroot}%{_unitdir}/%{name}-core-data.service
 %{_var}/log/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.2.0-17
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.2.0-16
 - Bump version as a part of go upgrade
 * Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 2.2.0-15

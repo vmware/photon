@@ -1,14 +1,16 @@
 Name:          dwarves
 Summary:       Debugging Information Manipulation Tools (pahole & friends)
 Version:       1.24
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
-License:       GPLv2
 URL:           https://github.com/acmel/dwarves
 Source0:       http://fedorapeople.org/~acme/dwarves/%{name}-%{version}.tar.xz
 %define sha512 %{name}-%{version}=3cdca183cf68ec46fd9a0301ae4a8a30b23a8139c65ffba64ae11f85f9e942f7341dca6f88a4a3b49f32bfd880927193a80fa011726e4a33d3e5a1a146326c06
+
+Source1: license.txt
+%include %{SOURCE1}
 Patch0: 0001-pahole-Support-lang-lang_exclude-asm.patch
 Patch1: 0001-btf_encoder-Add-extra-debug-info-for-unsupported-DWA.patch
 Patch2: 0001-btf_encoder-Store-the-CU-being-processed-to-avoid-ch.patch
@@ -103,6 +105,8 @@ rm -rf %{buildroot}
 %{_datadir}/*
 
 %changelog
+*  Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.24-3
+-  Release bump for SRP compliance
 *  Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.24-2
 -  Bump version as a part of zlib upgrade
 *  Fri Apr 07 2023 Srish Srinivasan <ssrish@vmware.com> 1.24-1

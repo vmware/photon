@@ -1,15 +1,17 @@
 Summary:        Library providing binary-decimal and decimal-binary routines for IEEE doubles
 Name:           double-conversion
 Version:        3.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
-License:        BSD
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/double-conversion
 
 Source0:        https://github.com/google/double-conversion/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  double-conversion=d2feb3098a1d4d6baab5f89bcc29ac2e06d314d552b8c747c6eb6dba5dd165a15dc71200191edb7f05d521c349e12d59cddba3c5db101e1623e0e76e19f21a49
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  cmake
 
@@ -69,5 +71,7 @@ rm -rf %{buildroot}
 %{_includedir}/%{name}
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.2.1-2
+- Release bump for SRP compliance
 * Wed Oct 12 2022 Nitesh Kumar <kunitesh@vmware.com> 3.2.1-1
 - Initial version,Needed by python3-ujson

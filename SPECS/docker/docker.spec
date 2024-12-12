@@ -14,8 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        27.3.1
-Release:        1%{?dist}
-License:        ASL 2.0
+Release:        2%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -36,6 +35,9 @@ Source3: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.t
 Source4:       docker-post19.service
 Source5:       docker-post19.socket
 Source6:       default-disable.preset
+
+Source7: license.txt
+%include %{SOURCE7}
 
 Patch0:        tini-disable-git.patch
 Patch1:        bridge-networking.patch
@@ -326,6 +328,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 27.3.1-2
+- Release bump for SRP compliance
 * Mon Nov 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 27.3.1-1
 - Upgrade to v27.3.1
 * Thu Nov 21 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 27.2.0-1
