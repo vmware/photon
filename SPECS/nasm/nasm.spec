@@ -1,8 +1,7 @@
 Summary:        Netwide Assembler.
 Name:           nasm
 Version:        2.16.01
-Release:        1%{?dist}
-License:        BSD
+Release:        2%{?dist}
 URL:            http://www.nasm.us
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -13,6 +12,9 @@ Source0: http://www.nasm.us/pub/nasm/releasebuilds/%{version}/nasm-%{version}.ta
 %define sha512  %{name}=51fccb5639ce019d9c423c0f279750ffbd74c64cd41dd3b185d1aa1a1aaed79c5d3cd8d4bebbc13ee249a375ed27457ea2abde1a4dbb24d354598fffd1254833
 Source1: http://www.nasm.us/pub/nasm/releasebuilds/%{version}/nasm-%{version}-xdoc.tar.xz
 %define sha512  %{name}-%{version}-xdoc=ec260c0a537b0172e6f2ac17118c744db8743886388a112e99bab1b8c8fee91547dade69dcfe9a15289b2b1a428e8c009048a468f7982b03dd4506abcafc0787
+
+Source2: license.txt
+%include %{SOURCE2}
 
 %description
 NASM (Netwide Assembler) is an 80x86 assembler designed for portability and modularity.
@@ -71,6 +73,8 @@ make %{?_smp_mflags} -k test
 %{_docdir}/*.ps
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.16.01-2
+- Release bump for SRP compliance
 * Mon Apr 17 2023 Nitesh Kumar <kunitesh@vmware.com> 2.16.01-1
 - Upgrade to v2.16.01 to fix CVE-2021-45257
 * Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.15.05-1

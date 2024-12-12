@@ -1,8 +1,7 @@
 Summary:        Text editor
 Name:           nano
 Version:        8.2
-Release:        1%{?dist}
-License:        GPLv3+
+Release:        2%{?dist}
 URL:            http://www.nano-editor.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://www.nano-editor.org/dist/v3/%{name}-%{version}.tar.xz
 %define sha512 %{name}=07c69d6894f87cb386afa89e984ded7e11fe7575cf3af1c18237e3b2c00de371015c9ea126e505c7c0e7200f7359d5ae7c3779198e188fbbc617154d09c4ba14
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: ncurses-devel
 
@@ -60,6 +62,8 @@ make %{?_smp_mflags} check
 %exclude %{_infodir}/dir
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 8.2-2
+- Release bump for SRP compliance
 * Tue Oct 01 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 8.2-1
 - Upgrade package version
 * Wed Jul 17 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 7.0-4

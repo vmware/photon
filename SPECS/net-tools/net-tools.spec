@@ -1,8 +1,7 @@
 Summary:    Networking Tools
 Name:       net-tools
 Version:    2.10
-Release:    1%{?dist}
-License:    GPLv2+
+Release:    2%{?dist}
 URL:        https://github.com/ecki/net-tools
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -13,6 +12,9 @@ Source0: https://github.com/ecki/net-tools/archive/refs/tags/%{name}-%{version}.
 
 Source1: net-tools-config.h
 Source2: net-tools-config.make
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Conflicts: toybox < 0.8.2-2
 
@@ -53,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.10-2
+- Release bump for SRP compliance
 * Mon Sep 26 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.10-1
 - Upgrade to v2.10
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.60-13

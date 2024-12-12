@@ -1,11 +1,10 @@
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        1.0.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        GPLv2
 URL:            https://netfilter.org/projects/nftables
 
 Source0: %{url}/files/%{name}-%{version}.tar.xz
@@ -14,6 +13,9 @@ Source0: %{url}/files/%{name}-%{version}.tar.xz
 Source1: %{name}.service
 Source2: %{name}.conf
 Source3: nft_ruleset_photon.nft
+
+Source4: license.txt
+%include %{SOURCE4}
 
 BuildRequires: flex
 BuildRequires: bison
@@ -139,6 +141,8 @@ chmod 700 %{buildroot}%{_sysconfdir}/%{name}
 %{python3_sitelib}/%{name}/
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.0.6-4
+- Release bump for SRP compliance
 * Tue Mar 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.6-3
 - Require iptables-libs
 - nftables.service should conflict with iptables.service

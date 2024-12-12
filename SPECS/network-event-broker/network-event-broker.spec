@@ -3,12 +3,14 @@
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.3
-Release:        14%{?dist}
-License:        Apache-2.0
+Release:        15%{?dist}
 URL:            https://github.com/vmware/%{name}
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=3560c1e25b0df04071b43492d9b043140d95c05fe96a1216ae19992965b99c0bef23141771c1f1d36b7af8ea1772d2d222011705c2321ac42ee408ee19647b2d
 Source1:        %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -77,6 +79,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/network-broker.service
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.3-15
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.3-14
 - Bump version as a part of go upgrade
 * Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 0.3-13

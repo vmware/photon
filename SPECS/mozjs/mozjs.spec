@@ -3,15 +3,17 @@
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
 Version:       102.12.0
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
-License:       GPLv2+ or LGPLv2+ or MPL-2.0
 URL:           https://spidermonkey.dev
 Distribution:  Photon
 
 Source0: https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
 %define sha512 firefox-%{version}=2a85cf1e1c83a862c2886a63dcf3e3e8bca9dd3ed72c5d0223db52387fff3796bc0dcbb508adb8c10a30729f20554c5aac37f8ad045b0088a593d28e39d77fe5
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:        emitter.patch
 
@@ -137,6 +139,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 102.12.0-5
+- Release bump for SRP compliance
 * Tue Dec 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 102.12.0-4
 - Add provides & obsoletes for mozjs60
 * Wed Sep 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 102.12.0-3

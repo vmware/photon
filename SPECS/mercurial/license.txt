@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND MIT AND MPL-2.0 AND BSD-3-Clause AND Apache-2.0 AND (BSD-3-Clause OR GPL-2.0-only) AND GPL-1.0-or-later AND GPL-2.0-or-later AND GPL-2.0-only AND Apache-2.0 WITH LLVM-exception AND Python-2.0 AND LGPL-2.1-or-later AND ZPL-2.1

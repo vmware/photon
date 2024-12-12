@@ -1,8 +1,7 @@
 Summary:    Netcat is a featured networking utility which reads and writes data across network connections, using the TCP/IP protocol.
 Name:       netcat
 Version:    0.7.1
-Release:    5%{?dist}
-License:    GPLv2
+Release:    6%{?dist}
 URL:        http://netcat.sourceforge.net
 Group:      Productivity/Networking/Other
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:    http://downloads.sourceforge.net/project/%{name}/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=b5a39284bf490c5d581f1d3e9e1fd74df63eae79f280a66b75347c4707320f48c5da32cea96c7c7e60bffe8e044eb50c6dc0d791e1812747457efc5ea3bb441c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 Netcat is a featured networking utility which reads and writes data across network connections, using the TCP/IP protocol.
@@ -35,6 +37,8 @@ rm -rf %{buildroot}
 %{_datadir}
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.7.1-6
+- Release bump for SRP compliance
 * Thu Oct 19 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.1-5
 - Remove infodir
 - Use standard build macros

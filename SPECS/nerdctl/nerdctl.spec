@@ -7,8 +7,7 @@
 Summary:        Docker-compatible CLI for containerd
 Name:           nerdctl
 Version:        1.4.0
-Release:        9%{?dist}
-License:        Apache 2.0
+Release:        10%{?dist}
 URL:            https://github.com/containerd/nerdctl
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -16,6 +15,9 @@ Distribution:   Photon
 
 Source0: https://github.com/containerd/nerdctl/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=b14cd92b76d9699b4042fcd7a6906b1c714221b30cff1074a1d59ea038cf74ea6437d4a4d9a265e7b0f4c96397c82d53856f9e43d08aa8abcb98af5e9fb6e8dc
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  go
 BuildRequires:  build-essential
@@ -58,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/containerd-rootless-setuptool.sh
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.4.0-10
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.0-9
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.0-8

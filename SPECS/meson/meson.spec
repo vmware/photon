@@ -2,7 +2,7 @@ Name:           meson
 Summary:        Extremely fast and user friendly build system
 Group:          Development/Tools
 Version:        1.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://mesonbuild.com
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -62,6 +62,8 @@ python3 ./run_tests.py
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.0.0-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.0-3
 - Release bump for SRP compliance
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.0.0-2

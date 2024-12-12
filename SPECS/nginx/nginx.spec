@@ -6,8 +6,7 @@ Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
 Version:        1.26.2
-Release:        2%{?dist}
-License:        BSD-2-Clause
+Release:        3%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -24,6 +23,9 @@ Source2: https://github.com/openresty/headers-more-nginx-module/archive/refs/tag
 
 Source3: %{name}.service
 Source4: %{name}.sysusers
+
+Source5: license.txt
+%include %{SOURCE5}
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -124,6 +126,8 @@ rm -rf %{buildroot}
 %{_var}/log/%{name}
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.26.2-3
+- Release bump for SRP compliance
 * Fri Oct 4 2024 Etienne Le Sueur <etienne.le-sueur@broadcom.com> 1.26.2-2
 - Include WebDAV module
 * Tue Aug 13 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.26.2-1

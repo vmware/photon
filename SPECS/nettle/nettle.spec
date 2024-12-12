@@ -1,7 +1,7 @@
 Summary:    Low level cryptographic libraries
 Name:       nettle
 Version:    3.8.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        http://www.lysator.liu.se/~nisse/nettle
 Group:      Development/Libraries
 Vendor:     VMware, Inc.
@@ -68,6 +68,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 3.8.1-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.8.1-2
 - Release bump for SRP compliance
 * Wed Aug 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.8.1-1

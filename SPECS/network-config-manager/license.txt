@@ -1,0 +1,1 @@
+License: NTP-0 AND Apache-2.0

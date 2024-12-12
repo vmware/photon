@@ -1,8 +1,7 @@
 Summary:       Modular initramfs image creation utility
 Name:          mkinitcpio
 Version:       34
-Release:       2%{?dist}
-License:       GPLv2
+Release:       3%{?dist}
 URL:           https://projects.archlinux.org/mkinitcpio.git/
 Group:         System Environment/Development
 Vendor:        VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:  Photon
 
 Source0: https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
 %define sha512 %{name}=38a80bb9e769b9fbf143c91fc52af1b29dfed81f05a3a9c4bb52d15a5e8a37fe55185ecc2218bcf6d13ac77e510803ee27314430e7b161a565b0e698e275f690
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:        mkinitcpio-shutdown-ramfs.service.patch
 
@@ -53,6 +55,8 @@ sed -i "s/a2x/a2x3 --verbose --no-xmllint/" Makefile
 %{_datadir}/*
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 34-3
+- Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 34-2
 - Bump version as a part of libxml2 upgrade
 * Fri Dec 23 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 34-1

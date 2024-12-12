@@ -1,17 +1,19 @@
-Summary:	A library for text mode user interfaces
-Name:		newt
-Version:	0.52.21
-Release:	1%{?dist}
-License:	GNU Library General Public License
-URL:		https://admin.fedoraproject.org/pkgdb/package/newt/
-Group:		Development/Languages
-Source0:	https://fedorahosted.org/releases/n/e/newt/%{name}-%{version}.tar.gz
-%define sha1 newt=b21152ad289bb0e363357ba3325a0b9c493d5ed1
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Requires: slang
-BuildRequires: slang-devel
-BuildRequires: popt-devel
+Summary:        A library for text mode user interfaces
+Name:           newt
+Version:        0.52.21
+Release:        2%{?dist}
+URL:            https://admin.fedoraproject.org/pkgdb/package/newt/
+Group:          Development/Languages
+Source0:        https://fedorahosted.org/releases/n/e/newt/%{name}-%{version}.tar.gz
+%define sha512 newt=d53d927996d17223e688bf54dccfabb2a3dc02bfe38ffc455964e86feaca3cd9f9ab5b19774433be430fa4d761cd9b6680b558f297acb86f80daeb6942f7d23c
+
+Source1: license.txt
+%include %{SOURCE1}
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Requires:       slang
+BuildRequires:  slang-devel
+BuildRequires:  popt-devel
 
 %description
 
@@ -23,25 +25,26 @@ shared library needed by programs built with newt, as well as a
 /usr/bin/dialog replacement called whiptail.  Newt is based on the
 slang library.
 
-%package	devel
-Summary:	Header and development files for newt
-Requires:	%{name} = %{version}
+%package        devel
+Summary:        Header and development files for newt
+Requires:       %{name} = %{version}
 
-%description	devel
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
-./configure --prefix=/usr \
+%configure \
             --with-gpm-support \
             --without-python \
             --disable-static
 
-make
+make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
 
@@ -54,20 +57,21 @@ make %{?_smp_mflags} test
 %{_bindir}/*
 %{_datadir}/*
 
-
 %files devel
 %{_includedir}/*
 %{_libdir}/libnewt.so
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.52.21-1
--Automatic Version Bump
-*	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.52.20-1
--	Update to 0.52.20
-*       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 0.52.18-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.52.18-2
--	GA - Bump release of all rpms
-*	Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
--	Initial build.	First version
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.52.21-2
+- Release bump for SRP compliance
+* Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.52.21-1
+- Automatic Version Bump
+* Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.52.20-1
+- Update to 0.52.20
+* Tue Oct 04 2016 ChangLee <changLee@vmware.com> 0.52.18-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.52.18-2
+- GA - Bump release of all rpms
+* Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+- Initial build. First version

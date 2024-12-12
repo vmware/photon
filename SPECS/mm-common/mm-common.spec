@@ -4,8 +4,7 @@
 Summary:        Build Tools
 Name:           mm-common
 Version:        1.0.5
-Release:        2%{?dist}
-License:        GPLv2+
+Release:        3%{?dist}
 URL:            https://gitlab.gnome.org/GNOME/mm-common
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -16,6 +15,9 @@ Source0: https://gitlab.gnome.org/GNOME/mm-common/-/archive/%{version}/%{name}-%
 
 Source1: https://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++-%{version}.ph5.tar.xz
 %define sha512 libstdc++=c5073c558252ef1238fd310d428033f58252649a3ae5ba5a780047fb62727cf3335b22742f363155957bc94dfba58727bdbecf13ac94fb124fed71512bd494b7
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  ca-certificates
 
@@ -54,6 +56,8 @@ cp libstdc++.tag doctags/
 %{_datadir}/%{name}/doctool/*.*
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.0.5-3
+- Release bump for SRP compliance
 * Thu Jul 18 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 1.0.5-2
 - Build the package in offline
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1

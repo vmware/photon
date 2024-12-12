@@ -1,20 +1,22 @@
 Summary: Network traffic statics utility for Solaris and Linux
 Name:    nicstat
 Version: 1.95
-Release: 3%{?dist}
-License:	Artistic License 2.0
-URL:		http://sourceforge.net/projects/%{name}
-Source0:	http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%define sha1 nicstat=e6cfe836e674de9acd73bfd1ec82d28092ccf7cd
+Release: 4%{?dist}
+URL:            http://sourceforge.net/projects/%{name}
+Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+%define sha512 nicstat=54f9136200412d41e2c21137a246221ff624f84374db67f6617296a1c3aa73a25125fab09e4ff230f64545ba026fce4806ccece196ac770c8dcf380c0571d505
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:  Photon
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 Nicstat is a Solaris and Linux command-line that prints out network statistics for all network interface cards (NICs), including packets, kilobytes per second, average packet sizes and more.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 gcc  -o3 $([ $(uname -m) = x86_64 ] && echo -m64) %{name}.c -o %{name}
@@ -28,9 +30,11 @@ install -p -m644 -D  %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %{_mandir}/man1/*
 
 %changelog
+*   Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.95-4
+-   Release bump for SRP compliance
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.95-3
 -   Aarch64 support
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.95-2
--	GA - Bump release of all rpms
-*	Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 1.95-1
--       Initial build.  First version
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.95-2
+-   GA - Bump release of all rpms
+*   Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 1.95-1
+-   Initial build.  First version

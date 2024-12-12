@@ -1,12 +1,14 @@
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        5.0
-Release:        3%{?dist}
-License:        Apache 2.0
+Release:        4%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: license.txt
+%include %{SOURCE0}
 
 # Keep this list alphabetically sorted
 Requires: bc
@@ -61,6 +63,8 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.0-4
+- Release bump for SRP compliance
 * Sat Mar 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-3
 - Require a specific version of grub2-efi-image to prevent auto removal
 * Fri Mar 01 2024 Ankit Jain <ankit-ja.jain@broadcom.com> 5.0-2

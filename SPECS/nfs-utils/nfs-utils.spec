@@ -1,8 +1,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.6.2
-Release:          9%{?dist}
-License:          GPLv2+
+Release:          10%{?dist}
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
 Vendor:           VMware, Inc.
@@ -19,6 +18,9 @@ Source5:          %{name}.defaults
 Source6:          nfs-server.service
 Source7:          nfs-mountd.service
 Source8:          %{name}.sysusers
+
+Source9: license.txt
+%include %{SOURCE9}
 
 BuildRequires:    libtool
 BuildRequires:    krb5-devel
@@ -45,7 +47,6 @@ Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 %package -n libnfsidmap
 Summary: NFSv4 User and Group ID Mapping Library
 Provides:  libnfsidmap
-License:   BSD
 Conflicts: %{name} < 2.6.2-6
 
 %description -n libnfsidmap
@@ -176,6 +177,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libnfsidmap.so
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.6.2-10
+- Release bump for SRP compliance
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.6.2-9
 - Bump version as a part of sqlite upgrade to v3.43.2
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 2.6.2-8
