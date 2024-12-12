@@ -1,7 +1,7 @@
 Summary:        cpio archive utility
 Name:           cpio
 Version:        2.13
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.gnu.org/software/cpio
 Group:          System Environment/System utilities
 Vendor:         VMware, Inc.
@@ -74,6 +74,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.13-10
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13-9
 - Release bump for SRP compliance
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.13-8

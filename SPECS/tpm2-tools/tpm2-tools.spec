@@ -1,8 +1,7 @@
 Summary:        The source repository for the TPM (Trusted Platform Module) 2 tools
 Name:           tpm2-tools
 Version:        5.3
-Release:        3%{?dist}
-License:        BSD 2-Clause
+Release:        4%{?dist}
 URL:            https://github.com/tpm2-software/tpm2-tools
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/tpm2-software/tpm2-tools/releases/download/%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=224a5ea3448a877362abb35ac06b115c559c09b44b30d74c8326211be66d24e0e130c285b1e285be1842e7203ab488629b0f4e451cbd782c83ed72023d146675
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:        CVE-2024-29039.patch
 Patch1:        CVE-2024-29038.patch
@@ -58,6 +60,8 @@ make %{?_smp_mflags} check
 %{_datadir}/bash-completion/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.3-4
+- Release bump for SRP compliance
 * Thu Aug 01 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.3-3
 - Fixes CVE-2024-29039 and CVE-2024-29038
 * Sun Oct 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.3-2

@@ -5,8 +5,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.13
-Release:    1%{?dist}
-License:    GNU General Public License V2
+Release:    2%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -14,6 +13,9 @@ Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
 %define sha512 jdk-17=6f2220b3b0b9ab4441968d487858449f0e58400bfbbf8cc322b6c9393ab44869ea27285bed1022ac531f0a9eec5b7d6a07db4f7e78b094bb5ca8cedd5f40711a
+
+Source1: license-openjdk17.txt
+%include %{SOURCE1}
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -240,6 +242,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 17.0.13-2
+- Release bump for SRP compliance
 * Tue Oct 29 2024 Tapas Kundu <tapas.kundu@broadcom.com> 17.0.13-1
 - Update to version 17.0.13
 * Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.0.8-7

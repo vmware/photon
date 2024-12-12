@@ -5,8 +5,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.21
-Release:        12%{?dist}
-License:        ASL 2.0
+Release:        13%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -20,6 +19,9 @@ Source0: https://github.com/containerd/containerd/archive/%{name}-%{version}.tar
 
 Source1: %{name}-config.toml
 Source2: disable-%{name}-by-default.preset
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Patch0: %{name}-service.patch
 Patch1: build-bin-gen-manpages-instead-of-using-go-run.patch
@@ -135,6 +137,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.6.21-13
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.21-12
 - Bump version as a part of go upgrade
 * Tue Sep 10 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.6.21-11

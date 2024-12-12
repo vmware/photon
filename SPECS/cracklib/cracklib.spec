@@ -1,7 +1,7 @@
 Summary:          A password strength-checking library.
 Name:             cracklib
 Version:          2.9.8
-Release:          2%{?dist}
+Release:          3%{?dist}
 Group:            System Environment/Libraries
 URL:              https://github.com/cracklib/cracklib
 Vendor:           VMware, Inc.
@@ -206,6 +206,8 @@ rm -f %{_datadir}/%{name}/pw_dict.hwm \
 %{_datadir}/locale/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.9.8-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.8-2
 - Release bump for SRP compliance
 * Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 2.9.8-1

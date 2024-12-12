@@ -5,8 +5,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.20
-Release:        7%{?dist}
-License:        GNU General Public License V2
+Release:        8%{?dist}
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -14,6 +13,9 @@ Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}.tar.gz
 %define sha512 jdk-11.0=59dd536c613d58d5cd333ed680a8d51b88fc41e8cf2ec11c9996890b0ad704132b2f0f086a6ba280da84565853cb4e21a030e04280ea3d888ecb156c21e8ca29
+
+Source1: license-openjdk11.txt
+%include %{SOURCE1}
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -249,6 +251,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 11.0.20-8
+- Release bump for SRP compliance
 * Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 11.0.20-7
 - Cleanup Extra BuildRequires
 * Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 11.0.20-6

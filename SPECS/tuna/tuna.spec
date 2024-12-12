@@ -1,14 +1,17 @@
 Name:           tuna
 Version:        0.18
-Release:        3%{?dist}
-License:        GPLv2
+Release:        4%{?dist}
 Summary:        Application tuning command line utility
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rt.wiki.kernel.org/index.php/Tuna
-Source:         https://www.kernel.org/pub/software/utils/%{name}/%{name}-%{version}.tar.xz
+Source0:         https://www.kernel.org/pub/software/utils/%{name}/%{name}-%{version}.tar.xz
 %define sha512  tuna=f05774a030f6b41a262fbe28fba2516763bddfdd1bd4ae1ed925cf3852397231af94571b857952466e87f73a33c4111afb53009faa8ed0fde12db4be1788ada7
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildArch:      noarch
 BuildRequires:  python3-devel, gettext
 Requires:       python3-ethtool
@@ -62,6 +65,8 @@ done
 %{_datadir}/polkit-1/actions/org.tuna.policy
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.18-4
+- Release bump for SRP compliance
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.18-3
 - Bump version as a part of gettext upgrade
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.18-2

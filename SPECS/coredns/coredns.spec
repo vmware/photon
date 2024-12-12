@@ -8,8 +8,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        7%{?dist}
-License:        Apache License 2.0
+Release:        8%{?dist}
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -17,6 +16,9 @@ Distribution:   Photon
 
 Source0: https://github.com/coredns/coredns/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=f8752811e9e7913311f47ae13f35c755ac86ea240572be1c1dabc1712b6c42380c60ac385fa9573c77d6fcf4c144df2bc00574f18e8d7b70da21ed8ae4fb87cd
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: go
 BuildRequires: git
@@ -52,6 +54,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.11.1-8
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-7
 - Bump version as a part of go upgrade
 * Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.11.1-6

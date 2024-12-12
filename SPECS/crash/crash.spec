@@ -3,13 +3,12 @@
 
 Name:          crash
 Version:       8.0.2
-Release:       5%{?dist}
+Release:       6%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           http://people.redhat.com/anderson
-License:       GPL
 
 Source0: http://people.redhat.com/anderson/crash-%{version}.tar.gz
 %define sha512 %{name}=9ff24d1206e9376e83690f76c817a48a68ff6adce677fad70335a73550a59c9af6e4753c1199f22eafa60c137156313244bbf98ed01bc2b066f41d324738ef6b
@@ -19,6 +18,9 @@ Source1: http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCOR
 
 Source2: https://ftp.gnu.org/gnu/gdb/gdb-%{GDB_VERSION}.tar.gz
 %define sha512 gdb=aa89caf47c1c84366020377d47e7c51ddbc48e5b7686f244e38797c8eb88411cf57fcdc37eb669961efb41ceeac4181747f429625fd1acce7712cb9a1fea9c41
+
+Source3: license.txt
+%include %{SOURCE3}
 
 %ifarch aarch64
 Patch0: gcore_defs.patch
@@ -105,6 +107,8 @@ rm -rf "%{buildroot}"
 %{_includedir}/crash/*.h
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 8.0.2-6
+- Release bump for SRP compliance
 * Wed Jul 17 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.2-5
 - Add zlib-devel to devl package requires
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 8.0.2-4

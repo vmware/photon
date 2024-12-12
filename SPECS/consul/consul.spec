@@ -3,9 +3,8 @@
 
 Name:           consul
 Version:        1.14.8
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
-License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,6 +14,9 @@ Source0: https://github.com/hashicorp/consul/archive/refs/tags/%{name}-%{version
 %define sha512 %{name}-%{version}=d13c7291774a9884d04ace7d731f64c3efe0970fba18debe8fc30792342c267104b0e4a6ddfb1636270213fa7ff8189cdbeb2e4f2655192b341ec281da0dc804
 Source1: %{name}.service
 Source2: %{name}.sysusers
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires: systemd-devel
 BuildRequires: go
@@ -83,6 +85,8 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.14.8-11
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.14.8-10
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.14.8-9
