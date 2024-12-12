@@ -28,8 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.118
-Release:        6%{?dist}
-License:        GPLv2
+Release:        7%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -88,6 +87,9 @@ Source42: fips_canister_wrapper_internal.c
 
 # CVE
 Source43: CVE-2023-39191.patches
+
+Source44: license.txt
+%include %{SOURCE44}
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
 Patch1: net-Double-tcp_mem-limits.patch
@@ -536,6 +538,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-7
+- Release bump for SRP compliance
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.118-6
 - Fix UDF directory traversal regression
 * Fri Dec 06 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-5

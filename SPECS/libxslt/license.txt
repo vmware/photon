@@ -1,1 +1,1 @@
-License: W3C-19980720 AND GFDL-1.2-or-later AND MIT AND GPL-2.0-or-later AND X11 AND ISC-Veillard AND GPL-1.0-or-later AND Latex2e-translated-notice AND GFDL-1.1-or-later
+License: MIT AND X11 AND W3C-19980720 AND ISC-Veillard AND GPL-1.0-or-later AND GPL-2.0-or-later AND GFDL-1.2-or-later AND Latex2e-translated-notice AND GFDL-1.1-or-later

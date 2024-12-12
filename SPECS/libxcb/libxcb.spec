@@ -1,8 +1,7 @@
 Summary:        Interface to the X Window System protocol.
 Name:           libxcb
 Version:        1.15
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://xcb.freedesktop.org/dist/%{name}-%{version}.tar.gz
 %define sha512  libxcb=4099899c37fdda62a9a0883863ee9e50b5072e8f396ba6f4594965d9f1743fb6ea991974a99974c6f39bac14ce9aad5669fa633ac1ad2390280d613cc66eb00e
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -74,6 +76,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.15-2
+- Release bump for SRP compliance
 * Tue Jul 12 2022 Shivani Agarwal <shivania2@vmware.com> 1.15-1
 - Upgrade to 1.15
 * Mon May 18 2015 Alexey Makhalov <amakhalov@vmware.com> 1.11-1

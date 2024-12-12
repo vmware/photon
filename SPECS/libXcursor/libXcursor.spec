@@ -1,8 +1,7 @@
 Summary:        X11 Cursor management library.
 Name:           libXcursor
 Version:        1.2.1
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 URL:            http://www.x.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.gz
 %define sha512 %{name}=381c8762b5aa0dedb610e563bc595f901ec06eac0da832be4829f413869ce5092b47b33c2059d816e29dc525e5615358add98c305b9bda63c5ffac8b52b2e287
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libXfixes-devel
 BuildRequires:  libXrender-devel
@@ -58,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.2.1-3
+- Release bump for SRP compliance
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.1-2
 - Bump version as a part of libX11 upgrade
 * Thu Aug 18 2022 Shivani Agarwal <shivania2@vmware.com> 1.2.1-1

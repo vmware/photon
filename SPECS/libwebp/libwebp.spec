@@ -1,14 +1,16 @@
 Summary:        Library to encode and decode webP format images
 Name:           libwebp
 Version:        1.3.2
-Release:        2%{?dist}
-License:        BSD
+Release:        3%{?dist}
 URL:            http://webmproject.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/webmproject/%{name}/archive/%{name}-%{version}.tar.gz
 %define sha512  libwebp=2b624d2ecfbff6b4db2719e38f146722638ae262acd96327073a04451dd05fb27ef70c5681187821d251df728a6be7e89209c861c561a13bfb786495a830bc20
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: libwebp-Fix-invalid-incremental-decoding-check.patch
 
@@ -65,6 +67,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.3.2-3
+- Release bump for SRP compliance
 * Thu Sep 21 2023 Kuntal Nayak <nkuntal@vmware.com> 1.3.2-2
 - Patch fix a follow-up vulnerability of CVE-2023-4863
 * Wed Sep 20 2023 Kuntal Nayak <nkuntal@vmware.com> 1.3.2-1

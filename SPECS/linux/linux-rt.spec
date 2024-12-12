@@ -21,8 +21,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.118
-Release:        4%{?dist}
-License:        GPLv2
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -93,6 +92,9 @@ Source42: fips_canister_wrapper_internal.c
 
 # CVE
 Source43: CVE-2023-39191.patches
+
+Source44: license.txt
+%include %{SOURCE44}
 # common
 Patch0: net-Double-tcp_mem-limits.patch
 Patch1: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
@@ -536,6 +538,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-5
+- Release bump for SRP compliance
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.118-4
 - Fix UDF directory traversal regression
 * Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-3

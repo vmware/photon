@@ -1,8 +1,7 @@
 Summary:        library for common extensions to the X11 protocol.
 Name:           libXext
 Version:        1.3.4
-Release:        3%{?dist}
-License:        MIT
+Release:        4%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 %define sha512  libXext=09146397d95f80c04701be1cc0a9c580ab5a085842ac31d17dfb6d4c2e42b4253b89cba695e54444e520be359883a76ffd02f42484c9e2ba2c33a5a40c29df4a
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libX11-devel
 Requires:       libX11
@@ -55,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.3.4-4
+- Release bump for SRP compliance
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.3.4-3
 - Bump version as a part of libX11 upgrade
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.4-2

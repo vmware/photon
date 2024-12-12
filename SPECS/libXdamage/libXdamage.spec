@@ -1,8 +1,7 @@
 Summary:        X11 Damage extension.
 Name:           libXdamage
 Version:        1.1.5
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 URL:            http://www.x.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=a3ca6cc33b1727f717a3e2aa5593f660508a81a47918a0aa949e9e8fba105e303fe5071983b48caac92feea0fe6e8e01620805e4d19b41f21f20d837b191c124
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libXfixes-devel
 BuildRequires:  proto
@@ -55,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.1.5-2
+- Release bump for SRP compliance
 * Thu Aug 18 2022 Shivani Agarwal <shivania2@vmware.com> 1.1.5-1
 - Upgrade to version 1.1.5
 * Tue May 19 2015 Alexey Makhalov <amakhalov@vmware.com> 1.1.4-1

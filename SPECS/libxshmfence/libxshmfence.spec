@@ -1,14 +1,16 @@
 Summary:        X11 libxshmfence runtime library.
 Name:           libxshmfence
 Version:        1.3.2
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.gz
 %define sha512  libxshmfence=1c5d2d183c7a1c5c79efd6da21d3884325209a10f75809584fe2b5e9ab244c0a09bb8b0d5ffad72781665bd3141232343c567ccb58ad74c71883d6d996997a76
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  pkg-config
 BuildRequires:  util-macros
 BuildRequires:  proto
@@ -56,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.3.2-3
+- Release bump for SRP compliance
 * Wed Jan 03 2024 Anmol Jain <anmol.jain@broadcom.com> 1.3.2-2
 - Fix for test failure
 * Thu Feb 23 2023 Shivani Agarwal <shivania2@vmware.com> 1.3.2-1

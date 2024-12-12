@@ -1,8 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        9.3.0
-Release:        9%{?dist}
-License:        LGPL
+Release:        10%{?dist}
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://libvirt.org/sources/%{name}-%{version}.tar.xz
 %define sha512 %{name}=b9349dcd7798c76d75bb20afad67d6e676758cb201acaf7aed5109f0e91422b2bcca964a2f19aa8dc4fd0eca2923902474e16e3839bf8b15aca827028e88ddb7
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:         CVE-2023-3750.patch
 Patch1:         CVE-2024-2494.patch
@@ -209,6 +211,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/polkit-1/*
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 9.3.0-10
+- Release bump for SRP compliance
 * Tue Sep 03 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 9.3.0-9
 - Version bump up to consume wireshark v4.2.7
 * Thu Jun 06 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.3.0-8

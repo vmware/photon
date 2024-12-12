@@ -1,14 +1,16 @@
 Summary:         X11 libXt runtime library.
 Name:            libXt
 Version:         1.2.1
-Release:         2%{?dist}
-License:         MIT
+Release:         3%{?dist}
 URL:             http://www.x.org/
 Group:           System Environment/Libraries
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Source0:         http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 %define sha512   libXt=6877af61ba91eeed6b6f80471b84f354ad0ec0827249c7ee0a00c13508063fe8d2696dd400a4bdbc6ca2ff67cbe1317ad5ac24522fd96099dc56535e33ca052c
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:   libX11-devel
 BuildRequires:   libSM-devel
 BuildRequires:   proto
@@ -59,6 +61,8 @@ make %{?_smp_mflags} check
 %{_datadir}/*
 
 %changelog
+*   Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.2.1-3
+-   Release bump for SRP compliance
 *   Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.1-2
 -   Bump version as a part of libX11 upgrade
 *   Sun Feb 12 2023 Shivani Agarwal <shivania2@vmware.com> 1.2.1-1

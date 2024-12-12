@@ -2,8 +2,7 @@
 Summary:        A secure, fast, compliant, and very flexible web server
 Name:           lighttpd
 Version:        1.4.76
-Release:        1%{?dist}
-License:        BSD-3-Clause
+Release:        2%{?dist}
 URL:            https://www.lighttpd.net/
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -15,6 +14,9 @@ Source1: %{name}.sysusers
 Source2: %{name}.logrotate
 Source3: %{name}.service
 Source4: start-server.sh
+
+Source5: license.txt
+%include %{SOURCE5}
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -116,5 +118,7 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/%{name}*8*
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.4.76-2
+- Release bump for SRP compliance
 * Mon May 20 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.76-1
 - Initial Build.

@@ -1,8 +1,7 @@
 Summary:        X Display Manager Control Protocol library.
 Name:           libXdmcp
 Version:        1.1.3
-Release:        1%{?dist}
-License:        MIT
+Release:        2%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 %define sha512  libXdmcp=cb1d4650f97d66e73acd2465ec7d757b9b797cce2f85e301860a44997a461837eea845ec9bd5b639ec5ca34c804f8bdd870697a5ce3f4e270b687c9ef74f25ec
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  proto
 
@@ -53,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.1.3-2
+- Release bump for SRP compliance
 * Tue Jul 12 2022 Shivani Agarwal <shivania2@vmware.com> 1.1.3-1
 - Upgrade to 1.1.3
 * Fri May 15 2015 Alexey Makhalov <amakhalov@vmware.com> 1.1.2-1

@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -142,6 +142,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.5.3-6
+- Release bump for SRP compliance
 * Wed Nov 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-5
 - Bump version to use yescrypt
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-4
