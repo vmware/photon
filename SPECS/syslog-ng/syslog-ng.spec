@@ -2,8 +2,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        6%{?dist}
-License:        GPL + LGPL
+Release:        7%{?dist}
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -14,6 +13,9 @@ Source0: https://github.com/balabit/%{name}/releases/download/%{name}-%{version}
 
 Source1:        60-%{name}-journald.conf
 Source2:        %{name}.service
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Requires:       glib
 Requires:       openssl
@@ -214,6 +216,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.3.1-7
+- Release bump for SRP compliance
 * Fri Aug 09 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.1-6
 - Bump up as part of python3-urllib3 update
 * Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-5

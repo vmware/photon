@@ -1,8 +1,7 @@
 Summary:        Linux SyncE implementation
 Name:           synce4l
 Version:        1.0.0
-Release:        1%{?dist}
-License:        GPL v2
+Release:        2%{?dist}
 Group:          Productivity/Networking/Other
 URL:            https://github.com/intel/synce4l
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Source0: https://github.com/intel/synce4l/archive/refs/tags/%{name}-%{version}.t
 %define sha512 %{name}=b97656a50ee4cabdaddde166c2b74b16ebca339defb69e265c5222198c6d469af4e30328c3af47dcbe916f8474f04369e49f5fe98feb509cf7bb41e69e5d429b
 
 Source1: %{name}.service
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  ethtool
 BuildRequires:  systemd-devel
@@ -69,6 +71,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}.8.gz
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0.0-2
+- Release bump for SRP compliance
 * Wed Jan 24 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 1.0.0-1
 - Update to 1.0.0
 * Mon Mar 06 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.8.0-1

@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND EFL-2.0 AND MIT AND MPL-2.0 AND Unlicense AND BSD-3-Clause AND ISC AND Zlib AND Apache-2.0 AND BSD-2-Clause-Views AND BSD-3-Clause-Clear AND EPL-2.0 AND JSON

@@ -1,8 +1,7 @@
 Summary:        Terminal multiplexer
 Name:           tmux
 Version:        3.5
-Release:        1%{?dist}
-License:        GPLv3+
+Release:        2%{?dist}
 URL:            https://tmux.github.io
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/tmux/tmux/releases/download/%{version}/%{name}-%{version}.tar.gz
 %define sha512 %{name}=bb3ca1ae8b330c3efc8fcbe8a65a40f78beadaf08c79265f6377c4187d26028e485e5404b832bbea16b170fd9bbdf2f1554d67dd3b1289e183fca19df460b695
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: libevent
 Requires: ncurses
@@ -44,6 +46,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_usrsrc}
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 3.5-2
+- Release bump for SRP compliance
 * Wed Oct 02 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 3.5-1
 - Upgrade version
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 3.3-3

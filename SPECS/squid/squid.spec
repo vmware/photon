@@ -4,8 +4,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        6.6
-Release:        3%{?dist}
-License:        GPL-2.0-or-later
+Release:        4%{?dist}
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
@@ -19,6 +18,9 @@ Source3: %{name}.service
 Source4: cache_swap.sh
 Source5: %{name}.logrotate
 Source6: %{name}.sysusers
+
+Source7: license.txt
+%include %{SOURCE7}
 
 Patch0: CVE-2024-25111.patch
 Patch1: CVE-2024-37894.patch
@@ -238,6 +240,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 6.6-4
+- Release bump for SRP compliance
 * Mon Jul 01 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 6.6-3
 - Patched for CVE-2024-37894
 * Mon Apr 15 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.6-2

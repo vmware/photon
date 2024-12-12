@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -702,6 +702,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 253.19-8
+- Release bump for SRP compliance
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 253.19-7
 - Remove standalone license exceptions
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-6

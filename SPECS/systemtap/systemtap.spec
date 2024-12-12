@@ -8,19 +8,21 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       13%{?dist}
+Release:       14%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap
-License:       GPLv2+
 
 Source0: http://sourceware.org/systemtap/ftp/releases/%{name}-%{version}.tar.gz
 %define sha512 %{name}=a72f39a24c3eb4a7703a033c435ab8ad75e9d7fedf8d8580db705bac529ffd0f8aabd4b510becc68547d2178d47bb918dd090aced957f94faa62f847d8341af8
 Source1: systemtap-runtime.sysusers
 Source2: systemtap-server.sysusers
 Source3: systemtap.sysusers
+
+Source4: license.txt
+%include %{SOURCE4}
 
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
@@ -119,7 +121,6 @@ to remote requesters on demand.
 
 %package runtime-python3
 Summary: Systemtap Python 3 Runtime Support
-License: GPLv2+
 Requires: %{name}-runtime = %{version}-%{release}
 
 %description runtime-python3
@@ -391,6 +392,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.8-14
+- Release bump for SRP compliance
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.8-13
 - Bump version as a part of sqlite upgrade to v3.43.2
 * Tue Nov 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-12

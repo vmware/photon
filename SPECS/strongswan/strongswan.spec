@@ -1,8 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.9.8
-Release:          4%{?dist}
-License:          GPLv2+
+Release:          5%{?dist}
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:     Photon
 
 Source0: https://download.strongswan.org/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=16d3afc80704f896f3f97addf452b4bb29fc1911c54e980f76ac48bdbe2340ce3bd4e79024848cb7961bbe9ad5458d93389343878ca042af658d51b11219666b
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %if 0%{?with_check}
 Patch0: strongswan-fix-make-check.patch
@@ -92,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 5.9.8-5
+- Release bump for SRP compliance
 * Mon Nov 27 2023 Keerthana K <keerthanak@vmware.com> 5.9.8-4
 - Fix CVE-2023-41913
 * Fri May 19 2023 Keerthana K <keerthanak@vmware.com> 5.9.8-3

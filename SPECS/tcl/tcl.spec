@@ -3,7 +3,7 @@
 Summary:         Tool Command Language - the language and library.
 Name:            tcl
 Version:         8.6.12
-Release:         2%{?dist}
+Release:         3%{?dist}
 URL:             http://tcl.sourceforge.net/
 Group:           System Environment/Libraries
 Vendor:          VMware, Inc.
@@ -101,6 +101,8 @@ cd unix && make test %{?_smp_mflags}
 %exclude %{_mandir}/man3/Thread.3.gz
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 8.6.12-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.6.12-2
 - Release bump for SRP compliance
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 8.6.12-1

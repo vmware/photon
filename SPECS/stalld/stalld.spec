@@ -1,8 +1,7 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.19.1
-Release:        4%{?dist}
-License:        GPLv2
+Release:        5%{?dist}
 Group:          System/Tools
 URL:            https://gitlab.com/rt-linux-tools/stalld
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Source0: https://gitlab.com/rt-linux-tools/stalld/-/archive/v%{version}/%{name}-
 %define sha512 %{name}=f92fd5996482600c6a73324f43eed8a4a1f5e8f092e4a167306804e4230abbb89c37a8bfbb78ffe997310b8bfbb45d4903dd0c51292770dcf5b1d3cd56a78bde
 
 Source1: %{name}-tca.conf
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -84,6 +86,8 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.19.1-5
+- Release bump for SRP compliance
 * Thu Apr 04 2024 Him Kalyan Bordoloi <him-kalyan.bordoloi@broadcom.com> 1.19.1-4
 - Fix ARM build failure
 * Mon Mar 04 2024 Him Kalyan Bordoloi <him-kalyan.bordoloi@broadcom.com> 1.19.1-3

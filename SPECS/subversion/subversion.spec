@@ -1,8 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.2
-Release:        10%{?dist}
-License:        Apache License 2.0
+Release:        11%{?dist}
 URL:            http://subversion.apache.org
 Group:          Utilities/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=20ada4688ca07d9fb8da4b7d53b5084568652a3b9418c65e688886bae950a16a3ff37710fcfc9c29ef14a89e75b2ceec4e9cf35d5876a7896ebc2b512cfb9ecc
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires: apr
 Requires: apr-util
@@ -101,6 +103,8 @@ userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.14.2-11
+- Release bump for SRP compliance
 * Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.14.2-10
 - Bump version as a part of apr upgrade
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.14.2-9

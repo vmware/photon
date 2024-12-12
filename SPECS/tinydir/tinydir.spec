@@ -2,9 +2,8 @@
 
 Name:           tinydir
 Version:        1.2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Portable and easy to integrate C directory and file reader
-License:        BSD
 URL:            https://github.com/cxong/%{name}
 Vendor:         VMware, Inc.
 Group:          Development/Tools
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0: %{url}/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=d86a8709b92c9b6847bd85b4b307a411edf30156a06557641a051f74a7c19898451616772ee53ad2d8fc6c2ea2285c4c4edf2197f36cf48ede6d539d24ebb2cf
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: cmake
 
@@ -70,5 +72,7 @@ popd
 %{_datadir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.2.5-2
+- Release bump for SRP compliance
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.5-1
 - Initial version. Needed by sysdig.

@@ -1,8 +1,7 @@
 Summary:    TCP/IP daemon wrapper package
 Name:       tcp_wrappers
 Version:    7.6
-Release:    8%{?dist}
-License:    BSD
+Release:    9%{?dist}
 Group:      System Environment/Networking
 Vendor:     VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            http://ftp.porcupine.org/pub/security/index.html
 
 Source0:    http://ftp.porcupine.org/pub/security/%{name}_%{version}.tar.gz
 %define sha512 %{name}=2d9d003791f8d00912a36ae00579e2b8dd7ad8a7bf8eae259659bcaf5365b150540ff6c93c91765872c76041579b7a02b6e3c64528fb7f8235680399ba1d9dac
+
+Source1: license.txt
+%include %{SOURCE1}
 
 # Patch0 is taken from:
 # http://www.linuxfromscratch.org/patches/blfs/6.3/tcp_wrappers-7.6-shared_lib_plus_plus-1.patch
@@ -65,6 +67,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_includedir}/*.h
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 7.6-9
+- Release bump for SRP compliance
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.6-8
 - Bump version as a part of libnsl upgrade
 * Tue Aug 25 2020 Keerthana K <keerthanak@vmware.com> 7.6-7

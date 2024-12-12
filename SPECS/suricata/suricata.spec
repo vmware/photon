@@ -1,8 +1,7 @@
 Summary:        Intrusion Detection System
 Name:           suricata
 Version:        7.0.6
-Release:        1%{?dist}
-License:        GPLv2
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://suricata.io
@@ -13,6 +12,9 @@ Source0:        https://www.openinfosecfoundation.org/download/%{name}-%{version
 Source1: suricata.sysconfig
 Source2: photon.notes
 Source3: suricata-tmpfiles.conf
+
+Source4: license.txt
+%include %{SOURCE4}
 
 # Patches from https://github.com/jasonish/suricata-rpms.git
 # Irrelevant docs are getting installed, drop them
@@ -169,6 +171,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/rules
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 7.0.6-2
+- Release bump for SRP compliance
 * Mon Jul 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 7.0.6-1
 - Update to v7.0.6 to fix multiple CVEs
 * Fri May 10 2024 Mukul Sikka <mukul.sikka@broadcom.com> 7.0.5-1

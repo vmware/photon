@@ -1,7 +1,7 @@
 Summary:        Connects C/C++/Objective C to some high-level programming languages
 Name:           swig
 Version:        4.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://swig.sourceforge.net/
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -53,6 +53,8 @@ make %{?_smp_mflags} check
 %{_libdir}/ccache
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.1.1-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.1.1-2
 - Release bump for SRP compliance
 * Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 4.1.1-1

@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND BSD-Source-Code AND GPL-3.0-only AND MIT AND OpenSSL AND BSD-3-Clause AND snprintf AND GPL-3.0-or-later AND BSD-2-Clause-Patent AND LGPL-2.1-or-later AND GPL-2.0-or-later AND OpenSSL-standalone AND Nokia AND SSLeay-standalone

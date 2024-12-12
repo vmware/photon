@@ -13,8 +13,7 @@
 Summary:       UEFI shim loader
 Name:          shim
 Version:       15.8
-Release:       1%{?dist}
-License:       BSD-2-Clause
+Release:       2%{?dist}
 Group:         System/Boot
 URL:           https://github.com/rhboot/shim
 Vendor:        VMware, Inc.
@@ -25,6 +24,9 @@ Source0: https://github.com/rhboot/%{name}/releases/download/%{version}/%{name}-
 
 Source1:       photon_sb2020.der
 Source2:       sbat.photon.csv.in
+
+Source3: license.txt
+%include %{SOURCE3}
 
 # No need to bump up generation of 'shim.photon' as our previous shim
 # has already been revoked by upstream 'shim' generation bump 1 -> 4
@@ -78,6 +80,8 @@ make %{?_smp_mflags} test
 %{_datadir}/%{name}/revocations.efi
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 15.8-2
+- Release bump for SRP compliance
 * Sat Jan 27 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 15.8-1
 - Update to 15.8
 - Added DISABLE_REMOTE_BOOT capability which disables httpboot and netboot in shim

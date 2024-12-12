@@ -1,8 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.15p5
-Release:        1%{?dist}
-License:        ISC
+Release:        2%{?dist}
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
 %define sha512  %{name}=ebac69719de2fe7bd587924701bdd24149bf376a68b17ec02f69b2b96d4bb6fa5eb8260a073ec5ea046d3ac69bb5b1c0b9d61709fe6a56f1f66e40817a70b15a
 Source1:        %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
@@ -100,6 +102,8 @@ rm -rf %{buildroot}/*
 %exclude %{_prefix}/libexec/sudo/*.la
 
 %changelog
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.9.15p5-2
+- Release bump for SRP compliance
 * Fri Jan 05 2024 Mukul Sikka <msikka@vmware.com> 1.9.15p5-1
 - Upgrade sudo to v1.9.15p5
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.9.14p3-2

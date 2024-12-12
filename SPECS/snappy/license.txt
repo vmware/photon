@@ -1,0 +1,1 @@
+License: MIT AND BSD-3-Clause AND CC-BY-3.0 AND Apache-2.0 AND CC-BY-4.0

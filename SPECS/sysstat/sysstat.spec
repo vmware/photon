@@ -1,14 +1,16 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
 Version:        12.7.2
-Release:        3%{?dist}
-License:        GPLv2
+Release:        4%{?dist}
 URL:            http://sebastien.godard.pagesperso-orange.fr/
 Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://perso.wanadoo.fr/sebastien.godard/%{name}-%{version}.tar.xz
 %define sha512  sysstat=3dd2fceb89faf2a0b20f4215a5a64298c62277f1c06175ca224fe2c897e86bf94bcf7b4b66f36536848b31743d4d38f765b06923052466cdcde0768990e9e769
+
+Source1: license.txt
+%include %{SOURCE1}
 Patch0:         sysstat.sysconfig.in.patch
 Patch1:         0001-Fix-an-overflow-which-is-still-possible-for-some-val.patch
 BuildRequires:  cronie
@@ -79,6 +81,8 @@ fi
 %{_var}/log/sa
 
 %changelog
+*   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 12.7.2-4
+-   Release bump for SRP compliance
 *   Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> - 12.7.2-3
 -   Check for path existence before checking if it is directory in %pre
 *   Mon Oct 07 2024 Tapas Kundu <tapas.kundu@broadcom.com> 12.7.2-2
