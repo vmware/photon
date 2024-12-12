@@ -127,14 +127,16 @@ create_container_img_archive()
   mv -f "${tar_name}.gz" "${dest_path}"
 }
 
-get_spec_ver()
+get_spec_ver() 
 {
   local spec_fn="$1"
-  rpmspec -q --qf "%{version}\n" "${spec_fn}" | head -n1
+  local sourcedir=$(dirname "$spec_fn")  # Get the parent directory of the spec file
+  rpmspec -q --qf "%{version}\n" --define "_sourcedir $sourcedir" "$spec_fn" | head -n1
 }
 
 get_spec_rel()
 {
   local spec_fn="$1"
-  rpmspec -q --qf "%{release}\n" "${spec_fn}" | head -n1
+  local sourcedir=$(dirname "$spec_fn")  # Get the parent directory of the spec file
+  rpmspec -q --qf "%{release}\n" --define "_sourcedir $sourcedir" "$spec_fn" | head -n1
 }
