@@ -1,14 +1,16 @@
 Summary:        The lm_sensors package provides user-space support for the hardware monitoring drivers in the Linux kernel.
 Name:           lm-sensors
 Version:        3.6.0
-Release:        1%{?dist}
-License:        GPLv2
+Release:        2%{?dist}
 URL:            https://github.com/lm-sensors/lm-sensors/releases
 Group:          System Drivers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/lm-sensors/lm-sensors/archive/%{name}-%{version}.tar.gz
-%define sha1    lm-sensors=2ef03242b62d70523919d06859503f12feb9f7d4
+%define sha512  lm-sensors=4e80361913aff5403f1f0737fd4f42cffe43cc170ef48fff3914c9952f71990739d723f7b0b8120d9a01bcbbc829e964cfbd0a5cf18508af8f8dc825b49860bf
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:  gcc
 BuildRequires:  bison
 BuildRequires:  flex
@@ -41,7 +43,7 @@ Requires:  lm-sensors = %{version}-%{release}
 Documentation for lm-sensors.
 
 %prep
-%setup -qn %{name}-3-6-0
+%autosetup -n %{name}-3-6-0
 
 %build
 make all %{?_smp_mflags}
@@ -52,7 +54,7 @@ mkdir -p %{buildroot}/usr/lib
 mkdir -p %{buildroot}/usr/share
 make PREFIX=%{buildroot}/usr        \
      BUILD_STATIC_LIB=0 \
-     MANDIR=%{buildroot}/usr/share/man install &&
+     MANDIR=%{buildroot}/usr/share/man install %{?_smp_mflags} &&
 
 install -v -m755 -d %{buildroot}/usr/share/doc/%{name}-%{version} &&
 cp -rv              README INSTALL doc/* \
@@ -86,6 +88,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 3.6.0-2
+- Release bump for SRP compliance
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.6.0-1
 - Automatic Version Bump
 * Thu Jun 20 2019 Tapas Kundu <tkundu@vmware.com> 3.5.0-1

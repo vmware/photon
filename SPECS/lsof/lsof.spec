@@ -1,8 +1,7 @@
 Summary:    List Open Files
 Name:       lsof
 Version:    4.96.4
-Release:    1%{?dist}
-License:    BSD
+Release:    2%{?dist}
 URL:        https://people.freebsd.org/~abe
 Group:      System Environment/Tools
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/lsof-org/lsof/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=06f8005e1eb72324c1fd603d8b8287a61ad6fdec182e9da833991a8915aaa69c416af1564d3b1087cb08b3504ef9b15cdffec7051605e89d945d6750ec8da985
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libtirpc-devel
 
@@ -41,6 +43,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.96.4-2
+- Release bump for SRP compliance
 * Mon Dec 19 2022 Susant Sahani <ssahani@vmware.com> 4.96.4-1
 - Bump version
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.95.0-2

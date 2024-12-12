@@ -1,7 +1,7 @@
 Summary:        Extremely fast compression.
 Name:           lz4
 Version:        1.9.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://lz4.github.io/lz4
 Group:          Applications
 Vendor:         VMware, Inc.
@@ -56,6 +56,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.9.4-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.4-2
 - Release bump for SRP compliance
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.9.4-1

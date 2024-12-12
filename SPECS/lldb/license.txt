@@ -1,0 +1,1 @@
+License: MIT AND BSD-3-Clause AND ISC AND Apache-2.0 AND APSL-2.0 AND NCSA AND Python-2.0 AND Apache-2.0 WITH LLVM-exception AND FSFAP-no-warranty-disclaimer

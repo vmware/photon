@@ -1,8 +1,7 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
 Version:        4.2
-Release:        1%{?dist}
-License:        GPL v2
+Release:        2%{?dist}
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
 Source0:        %{name}-%{version}.tgz
@@ -13,6 +12,9 @@ Source3:        ts2phc.service
 Source4:        phc2sys
 Source5:        ptp4l
 Source6:        ts2phc
+
+Source7: license.txt
+%include %{SOURCE7}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  ethtool
@@ -105,6 +107,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/tz2alt.8.gz
 
 %changelog
+*   Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.2-2
+-   Release bump for SRP compliance
 *   Thu Mar 21 2024 Roye Eshed <roye.eshed@broadcom.com> 4.2-1
 -   Upgrade linuxptp to version 4.2
 *   Wed Aug 16 2023 Roye Eshed <eshedr@vmware.com> 4.0-1

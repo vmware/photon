@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-3-Clause AND Spencer-94 AND ISC AND Apache-2.0 AND Unicode-3.0 AND NCSA AND GPL-1.0-or-later AND CC0-1.0 AND Apache-2.0 WITH LLVM-exception

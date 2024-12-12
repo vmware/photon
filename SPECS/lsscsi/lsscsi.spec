@@ -1,11 +1,13 @@
 Summary:        List SCSI devices information.
 Name:           lsscsi
 Version:        0.32
-Release:        1%{?dist}
-License:        GPLv2
+Release:        2%{?dist}
 URL:            http://sg.danny.cz/scsi/lsscsi.html
 Source0:        http://sg.danny.cz/scsi/%{name}-%{version}.tar.xz
 %define sha512  lsscsi=fb2214390756d8820661ac1a56da5fa69f80415b2bd94c4b68f7daeb675e5a015a017132874975538934b7d65c2ff0bb8abcee087023b1f62dc6762a09a26452
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          Hardware/Others.
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -31,6 +33,8 @@ make %{?_smp_mflags} -k check
 %{_mandir}/*
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.32-2
+- Release bump for SRP compliance
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.32-1
 - Automatic Version Bump
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.31-1

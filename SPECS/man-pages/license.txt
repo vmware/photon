@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND (BSD-3-Clause OR GPL-1.0-or-later) AND Linux-man-pages-copyleft AND MIT AND Spencer-94 AND BSD-3-Clause AND Linux-man-pages-1-para AND BSD-4-Clause-UC AND Latex2e AND Linux-man-pages-copyleft-var AND GPL-3.0-or-later AND BSD-4-Clause AND GPL-1.0-or-later AND BSD-4.3TAHOE AND GPL-2.0-only AND GPL-2.0-or-later AND (GPL-2.0-only OR LGPL-2.0-only)

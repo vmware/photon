@@ -3,8 +3,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.9.4
-Release:          8%{?dist}
-License:          GPLv2
+Release:          9%{?dist}
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -17,6 +16,9 @@ Source1: https://github.com/fmtlib/fmt/archive/refs/tags/libfmt-%{libfmt_ver}.zi
 %define sha512 libfmt-%{libfmt_ver}.zip=53f781e33ffb3bc38d743b81c5755a7d71dce95dcf5cdf23d5b4cf880a8f29189ca1b790272ee8586cbcd552648bae040247e572b2a97cd8b3631c284873f57d
 
 Source2: %{name}.sysusers
+
+Source3: license.txt
+%include %{SOURCE3}
 Patch0:        libfmt-nodownload.patch
 
 BuildRequires: cmake
@@ -468,6 +470,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 10.9.4-9
+- Release bump for SRP compliance
 * Fri Jul 19 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 10.9.4-8
 - Add changes to build offline
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.9.4-7

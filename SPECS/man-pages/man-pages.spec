@@ -1,8 +1,7 @@
 Summary:    Man pages
 Name:       man-pages
 Version:    5.13
-Release:    2%{?dist}
-License:    GPLv2+ and BSD
+Release:    3%{?dist}
 URL:        http://www.kernel.org/doc/man-pages
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://www.kernel.org/pub/linux/docs/man-pages/%{name}-%{version}.tar.gz
 %define sha512 %{name}=494522bd1572111bcf23bbdd12965d2b80a892a759b8c25722b5fa1d41166f8befd753d2c4f7162cc077964120144b5f516e7820aa493234a77cd79e42a64d04
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch:  noarch
 
@@ -46,6 +48,8 @@ rm -vf %{buildroot}%{_mandir}/man2/move_pages.2
 %{_mandir}/man8/*
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.13-3
+- Release bump for SRP compliance
 * Sun Dec 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.13-2
 - Remove man pages deprecated by libxcrypt
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.13-1

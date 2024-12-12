@@ -5,8 +5,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        15.0.7
-Release:        3%{?dist}
-License:        NCSA
+Release:        4%{?dist}
 URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -17,6 +16,9 @@ Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.sr
 
 Source1: https://github.com/llvm/llvm-project/releases/download/cmake-%{version}.src.tar.xz
 %define sha512 cmake=a87c3c0976c7295e5d51f7a3dbd4129c4b5ff0dc95bac494a5011641743a5950a0aa7d9c44fae570284573b9f673a395fc3160b45b6b4ba54ced9ed5f21dd717
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
@@ -124,6 +126,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 15.0.7-4
+- Release bump for SRP compliance
 * Mon Oct 30 2023 Harinadh D <hdommaraju@vmware.com> 15.0.7-3
 - remove llvm dependency for libllvm
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 15.0.7-2

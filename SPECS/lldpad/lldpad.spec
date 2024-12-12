@@ -1,14 +1,16 @@
 Summary:       Intel LLDP Agent
 Name:          lldpad
 Version:       1.1
-Release:       3%{?dist}
-License:       GPLv2
+Release:       4%{?dist}
 URL:           http://open-lldp.org/
-Source:        %{name}-%{version}.tar.gz
+Source0:        %{name}-%{version}.tar.gz
 %define sha512   lldpad=794bd2d43e7b6e76a1aa9d1e650f24a52b4cb66166058ce4ec3f0c6567bcdff149ca86ab9108e82be14f7e7bf43c7486479edc23d851e739a2a22de7038ecb35
 Group:         System Environment/Daemons
 Vendor:        VMware, Inc.
 Distribution:  Photon
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: libconfig
 BuildRequires: libnl-devel
@@ -74,6 +76,8 @@ mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 %{_libdir}/liblldp_clif.so
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.1-4
+- Release bump for SRP compliance
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.1-3
 - Bump release as a part of readline upgrade
 * Wed Aug 25 2021 Susant Sahani <ssahani@vmware.com> 1.1-2

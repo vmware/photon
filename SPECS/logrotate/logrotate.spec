@@ -1,11 +1,13 @@
 Summary:        Logrotate
 Name:           logrotate
 Version:        3.22.0
-Release:        1%{?dist}
-License:        GPLv2
+Release:        2%{?dist}
 URL:            https://github.com/logrotate/logrotate/
 Source0:        https://github.com/logrotate/logrotate/archive/%{name}-%{version}.tar.gz
 %define sha512  logrotate=fde02ee4e4849fd85c9e72c15c9d7bb6b17b8dc62b2244bba7904dc8367c215210807d38bf2310465d3a1aa00d69df7123f8a93436449a661ca7299e723a1aef
+
+Source1: license.txt
+%include %{SOURCE1}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -65,6 +67,8 @@ touch %{buildroot}%{_localstatedir}/lib/logrotate/logrotate.status
 %{_localstatedir}/lib/logrotate/logrotate.status
 
 %changelog
+*       Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 3.22.0-2
+-       Release bump for SRP compliance
 *       Fri Nov 08 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.22.0-1
 -       Update to 3.22.0
 *       Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 3.20.1-1

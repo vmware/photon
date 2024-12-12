@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-2.0-or-later AND LGPL-2.0-or-later WITH Linux-syscall-note AND FSFAP AND GPL-1.0-or-later AND FSFUL AND GPL-2.0-only AND FSFULLR AND FSFULLRWD AND GPL-2.0-or-later AND LGPL-2.1-only

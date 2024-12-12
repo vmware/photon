@@ -1,21 +1,24 @@
 Summary:       Linux Containers File System
 Name:          lxcfs
 Version:       5.0.3
-Release:       1%{?dist}
+Release:       2%{?dist}
 URL:           https://linuxcontainers.org/lxcfs/downloads/
 Source0:       %{name}-%{version}.tar.gz
-License:       LGPL 2.1+
 Group:         System Environment/Libraries
 %define sha512 %{name}=967e60bd7ea545f1fcdd805adc0083e39684013c18f42a51753b5be8cdabfb86a652d02471a1f71c7b4fa756da09b72d324b724d68091d539edd10ea63add1fd
 Vendor:        VMware, Inc.
 Distribution:  Photon
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires: gcc meson python3-jinja2
 BuildRequires: libtool
 BuildRequires: fuse-devel
 BuildRequires: systemd-devel
 BuildRequires: help2man
 Requires:      fuse
-Requires(post):	  systemd
+Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
 
@@ -58,6 +61,8 @@ rm -rf %{buildroot}
 %dir %{_sharedstatedir}/%{name}
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.0.3-2
+- Release bump for SRP compliance
 * Tue Jan 24 2023 Ankit Jain <ankitja@vmware.com> 5.0.3-1
 - Update to 5.0.3 and fixes services failure
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.0.0-1

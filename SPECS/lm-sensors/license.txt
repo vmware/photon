@@ -1,0 +1,1 @@
+License: Linux-man-pages-copyleft AND LGPL-2.0-or-later AND Linux-man-pages-copyleft-var AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-2.1-only AND GPL-1.0-or-later

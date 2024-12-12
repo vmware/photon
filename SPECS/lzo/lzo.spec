@@ -1,15 +1,17 @@
 Name:           lzo
 Version:        2.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Data compression library with very fast (de)compression
 Group:          System Environment/Libraries
-License:        GPLv2+
 URL:            http://www.oberhumer.com/opensource/lzo/
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.oberhumer.com/opensource/lzo/download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=a3dae5e4a6b93b1f5bf7435e8ab114a9be57252e9efc5dd444947d7a2d031b0819f34bcaeb35f60b5629a01b1238d738735a64db8f672be9690d3c80094511a4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  zlib-devel
 
@@ -88,6 +90,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/lzo2.pc
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.10-3
+- Release bump for SRP compliance
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.10-2
 - Bump version as a part of zlib upgrade
 * Tue Apr 4 2017 Michelle Wang <michellew@vmware.com> 2.10-1

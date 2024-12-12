@@ -1,8 +1,7 @@
 Summary:         Programs for finding and viewing man pages
 Name:            man-db
 Version:         2.11.1
-Release:         2%{?dist}
-License:         GPLv2+
+Release:         3%{?dist}
 URL:             http://www.nongnu.org/man-db
 Group:           Applications/System
 Vendor:          VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:    Photon
 Source0:         http://download.savannah.nongnu.org/releases/man-db/%{name}-%{version}.tar.xz
 %define sha512   man-db=249d65d01d83feac2503bfc1fba6d018ea0f7485c1112f1bfb4849ef7fbc3c1a50b97ab0844a7792d83bb1084a89abb4fa309ce1bc2bdf1183fe35b9e4f06263
 Source1:         %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Requires:        libpipeline
 Requires:        gdbm
@@ -79,6 +81,8 @@ make %{?_smp_mflags} check
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+*   Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.11.1-3
+-   Release bump for SRP compliance
 *   Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 2.11.1-2
 -   Use systemd-rpm-macros for user creation
 *   Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 2.11.1-1
