@@ -2,8 +2,7 @@
 Summary:        Boost
 Name:           boost
 Version:        1.80.0
-Release:        1%{?dist}
-License:        Boost Software License V1
+Release:        2%{?dist}
 URL:            http://www.boost.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -11,7 +10,10 @@ Distribution:   Photon
 Source0:        https://boostorg.jfrog.io/artifactory/main/release/%{version}/source/boost_%{main_version}.tar.bz2
 %define sha512  boost=829a95b463473d69ff79ea41799c68429bb79d3b2321fbdb71df079af237ab01de9ad7e9612d8783d925730acada010068d2d1aa856c34244ee5c0ece16f208f
 
-BuildRequires:	bzip2-devel
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires:  bzip2-devel
 
 %description
 Boost provides a set of free peer-reviewed portable C++ source libraries.
@@ -66,6 +68,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libboost_*.a
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.80.0-2
+- Release bump for SRP compliance
 * Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 1.80.0-1
 - Version update
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.76.0-1

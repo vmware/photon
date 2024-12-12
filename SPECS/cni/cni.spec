@@ -1,8 +1,7 @@
 Summary:        Container Network Interface (CNI) plugins
 Name:           cni
 Version:        1.1.1
-Release:        12%{?dist}
-License:        ASL 2.0
+Release:        13%{?dist}
 URL:            https://github.com/containernetworking/plugins
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/containernetworking/plugins/archive/%{name}-v%{version}.tar.gz
 %define sha512 %{name}=03da31caee5f9595abf65d4a551984b995bc18c5e97409549f08997c5a6a2b41a8950144f8a5b4f810cb401ddbe312232d2be76ec977acf8108eb490786b1817
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  go
 
@@ -40,6 +42,8 @@ make -k check %{?_smp_mflags}
 %{_default_cni_plugins_dir}/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.1.1-13
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.1-12
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.1-11

@@ -1,14 +1,16 @@
 Summary:        setuid implementation of a subset of user namespaces.
 Name:           bubblewrap
 Version:        0.7.0
-Release:        1%{?dist}
-License:        LGPLv2+
+Release:        2%{?dist}
 URL:            https://github.com/projectatomic/bubblewrap
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/projectatomic/bubblewrap/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha512  bubblewrap=01ec30b01f70ff896b407d4979df0bc1a75d0b441a388f7be7aa9a4c9f56e6a1e2ae2ae4dbe4d6262a0218f577a8ad317db4217d5663ea9bd8c1d5c4293c39a7
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -48,6 +50,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/zsh/site-functions/_bwrap
 
 %changelog
+*   Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.7.0-2
+-   Release bump for SRP compliance
 *   Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 0.7.0-1
 -   Automatic Version Bump
 *   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 0.6.2-1

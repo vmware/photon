@@ -1,14 +1,16 @@
 Summary:        A library that performs asynchronous DNS operations
 Name:           c-ares
 Version:        1.19.1
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://c-ares.haxx.se/
 Source0:        http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
 %define sha512  c-ares=466a94efda626e815a6ef7a890637056339f883d549ea6055e289fd8cd2391130e5682c905c0fb3bd7e955af7f6deb793562c170eb0ee066a4a62085a82ba470
+
+Source1: license.txt
+%include %{SOURCE1}
 Patch0:         CVE-2024-25629.patch
 
 BuildRequires:  autoconf
@@ -77,6 +79,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/ares_*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.19.1-3
+- Release bump for SRP compliance
 * Wed Feb 28 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.19.1-2
 - Fix CVE-2024-25629
 * Tue May 23 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.1-1

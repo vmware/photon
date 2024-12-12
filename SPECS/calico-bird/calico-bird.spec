@@ -1,15 +1,17 @@
 Summary:       Project Calico fork of the BIRD Internet Routing Daemon
 Name:          calico-bird
 Version:       0.3.3
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
-License:       GPL
 URL:           https://github.com/projectcalico/bird
 Distribution:  Photon
 
 Source0:       %{name}-%{version}.tar.gz
 %define sha512 calico-bird=eeb0d839521f6f66c64bc752c92703a5ade7743967674b322a676b8f1fe702555815a4b16b270dc2d66292409e05e5303c993c96f82a76e55fd2abec5f173623
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0:        calico-bird-gcc-10.patch
 
@@ -67,6 +69,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/birdcl
 %{_bindir}/birdcl
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.3.3-4
+- Release bump for SRP compliance
 * Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 0.3.3-3
 - Bump up version to compile with new glibc
 * Fri Jan 15 2021 Alexey Makhalov <amakhalov@vmware.com> 0.3.3-2

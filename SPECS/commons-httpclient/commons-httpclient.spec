@@ -3,8 +3,7 @@
 Summary:    Apache commons-httpclient
 Name:       commons-httpclient
 Version:    3.1
-Release:    5%{?dist}
-License:    Apache
+Release:    6%{?dist}
 URL:        http://ant.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -21,6 +20,9 @@ Source0: https://archive.apache.org/dist/httpcomponents/%{name}/source/%{name}-%
 # https://repo.maven.apache.org/maven2/junit/junit/3.8.1/junit-3.8.1.jar
 Source1: %{name}-buildrequires-jars-%{version}.tar.gz
 %define sha512 %{name}-buildrequires-jars=0d1e4afda7dcb3b261c97a345a67ce9ec9e5e20ddd501637b8edd4a2ba6b02e848e3dbfb2ec3457c8347d46e0ac1343313afaa8841d7308fb070b382f085ec19
+
+Source2: license.txt
+%include %{SOURCE2}
 
 Patch0: jakarta-commons-httpclient-encoding.patch
 Patch1: 06_fix_CVE-2012-5783.patch
@@ -86,6 +88,8 @@ ant -Ddist.dir="." -Dbuild.sysclasspath=first -Dtest.failonerror=false \
 %{_datadir}/java/%{name}/*.jar
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.1-6
+- Release bump for SRP compliance
 * Mon May 20 2024 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1-5
 - Fix directory permissions
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1-4

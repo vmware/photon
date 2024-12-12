@@ -3,8 +3,7 @@
 Summary:       Berkeley Yacc, a parser generator
 Name:          byacc
 Version:       2.0.20221106
-Release:       1%{?dist}
-License:       Public Domain
+Release:       2%{?dist}
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 URL:           https://byaccj.sourceforge.net
@@ -12,6 +11,9 @@ Distribution:  Photon
 
 Source0:       https://invisible-island.net/archives/%{name}/%{name}-%{byaccdate}.tgz
 %define sha512 %{name}=866933b4eb2296565ce70b4ade565e4679f3b652715f0066072bbcc42b95389fa47a2f96cd03de577807dcc49bf453b1d4f7e22b96c80fef1aa66898d3de5d5c
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: gcc
 BuildRequires: make
@@ -53,6 +55,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.0.20221106-2
+- Release bump for SRP compliance
 * Tue Oct 25 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.20221106-1
 - Automatic Version Bump
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.20220128-2

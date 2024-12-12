@@ -1,8 +1,7 @@
 Summary:  A 2D graphics library.
 Name:     cairo
 Version:  1.17.6
-Release:  9%{?dist}
-License:  LGPLv2 or MPLv1.1
+Release:  10%{?dist}
 URL:      https://cairographics.org
 Group:    System Environment/Libraries
 Vendor:   VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://cairographics.org/releases/%{name}-%{version}.tar.xz
 %define sha512 %{name}=15d9a82097b9c5a43071ff9fbfe90d7aaee5fddb84f519cdddfe312c5fc7248a50b73a5351922de2aaafa4b2e86f911b3147609538346f8a7635f34d631c9146
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  pkg-config
 BuildRequires:  libpng-devel
@@ -91,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/html/%{name}/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.17.6-10
+- Release bump for SRP compliance
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.17.6-9
 - Bump version as a part of libX11 upgrade
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.17.6-8

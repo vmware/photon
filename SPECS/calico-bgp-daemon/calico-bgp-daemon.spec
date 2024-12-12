@@ -3,10 +3,9 @@
 Summary:        GoBGP based Calico BGP Daemon
 Name:           calico-bgp-daemon
 Version:        0.2.2
-Release:        21%{?dist}
+Release:        22%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
-License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico-bgp-daemon
 Distribution:   Photon
 
@@ -16,6 +15,9 @@ Source0:        https://github.com/projectcalico/calico-bgp-daemon/archive/refs/
 # Created by `glide install --strip-vendor && tar --owner=root --group=root --mtime='2000-01-01 00:00Z' --transform "s,^,${name}-${version}/," -c vendor | gzip -9`
 Source1:        glide-vendor-for-%{name}-%{version}.tar.gz
 %define sha512  glide-vendor-for-%{name}=090a834f2b709e0e5b0d634a5aade2afb0142daacf95c5e05c57e02c8d019583950a6249d550eab311b0f708270c109df9e0af9b1e022e6c8c72f0b350afe1e4
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: git
 BuildRequires: glide
@@ -56,6 +58,8 @@ popd
 %{_bindir}/calico-bgp-daemon
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.2.2-22
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.2.2-21
 - Bump version as a part of go upgrade
 * Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 0.2.2-20

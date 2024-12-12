@@ -7,10 +7,9 @@
 Summary:       Docker libnetwork plugin for Calico
 Name:          calico-libnetwork
 Version:       1.1.3
-Release:       22%{?dist}
+Release:       23%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
-License:       Apache-2.0
 Distribution:  Photon
 URL:           https://github.com/projectcalico/libnetwork-plugin
 
@@ -21,6 +20,9 @@ Source0: https://github.com/projectcalico/libnetwork-plugin/archive/refs/tags/%{
 # Created by `glide install --strip-vendor && tar --owner=root --group=root --mtime='2000-01-01 00:00Z' --transform "s,^,libnetwork-plugin-${version}/," -c vendor | gzip -9`
 Source1: glide-vendor-for-%{name}-%{version}.tar.gz
 %define sha512 glide-vendor-for-%{name}=164866f261519403a420bf2746e5d34fbdf5be61c0141ddf9e9959e86ba93dc1b941210f4e8d9769f453da0dee8de082770e93bc05b2778dae80965eef8cee46
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: git
 BuildRequires: glide
@@ -71,6 +73,8 @@ rm -rf %{buildroot}
 %{_datadir}/calico/docker/libnetwork-plugin
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.1.3-23
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.3-22
 - Bump version as a part of go upgrade
 * Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.1.3-21

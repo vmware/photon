@@ -1,8 +1,7 @@
 Summary:    A system tool for maintaining the /etc/rc*.d hierarchy
 Name:       chkconfig
 Version:    1.21
-Release:    2%{?dist}
-License:    GPLv2
+Release:    3%{?dist}
 Group:      System Environment/Base
 URL:        https://git.fedorahosted.org/git/chkconfig.git
 Vendor:     VMware, Inc.
@@ -10,6 +9,9 @@ Distribution: Photon
 
 Source0: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.gz
 %define sha512 %{name}=92cb420ec0247d48a672705c87417a3955e603de267e123aa1aa8c26c73707283a21b82a8321288498312b6612a723b7d557e85ce8ca9cfabae268f16bfe9ce6
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: chkconfig-shortopt.patch
 Patch1: ignore-priorities.patch
@@ -100,6 +102,8 @@ rm -rf %{buildroot}
 %{_mandir}/*/ntsysv.8*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.21-3
+- Release bump for SRP compliance
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.21-2
 - Bump version as a part of gettext upgrade
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.21-1

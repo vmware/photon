@@ -1,8 +1,7 @@
 Summary:        Apache Commons Daemon
 Name:           commons-daemon
 Version:        1.3.3
-Release:        3%{?dist}
-License:        Apache
+Release:        4%{?dist}
 URL:            https://commons.apache.org/proper/commons-daemon/download_daemon.cgi
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -13,6 +12,9 @@ Source0: https://mirrors.ocf.berkeley.edu/apache//commons/daemon/source/%{name}-
 
 Source1: https://mirrors.ocf.berkeley.edu/apache//commons/daemon/binaries/%{name}-%{version}-bin.tar.gz
 %define sha512 %{name}-%{version}-bin=6600f3c182a46005928a77ade2a7f7e32ba29ebdfdc2255275cbd07445c4d278a96de4d8555031fa90eef29c4f50325b3b79eec0e4e09308d152583807189578
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  apache-ant
 BuildRequires:  openjdk11
@@ -64,6 +66,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.3.3-4
+- Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.3-3
 - Require jdk11 or jdk17
 * Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.3-2

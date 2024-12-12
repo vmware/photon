@@ -7,8 +7,7 @@ Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
 Version:        125.0.6422.65
-Release:        1%{?dist}
-License:        BSD 3
+Release:        2%{?dist}
 URL:            https://chromium.googlesource.com/chromium/src
 Group:          System Utility
 Vendor:         VMware, Inc.
@@ -22,6 +21,9 @@ Source1: depot_tools-274689c.tar.xz
 %define sha512 depot_tools=4f40a936e414740e98584f62829120f658bfb49f495bf83ef3084adce8671a96181cafe2b4857c88270cbc6d165c300bd6e2e0094cde742a9a0b7c08e7fd6835
 
 Source2: headless.gn
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires: git
 BuildRequires: nss-devel
@@ -83,6 +85,8 @@ cp -pr %{builddir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 125.0.6422.65-2
+- Release bump for SRP compliance
 * Thu May 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 125.0.6422.65-1
 - Upgrade to v125.0.6422.65
 * Tue Feb 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 123.0.6283.1-1

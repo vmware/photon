@@ -5,9 +5,8 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://cassandra.apache.org/
-License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,6 +18,9 @@ Source1:        %{name}.service
 Source2:        %{name}.sysusers
 Source3:        %{name}-%{version}-dependencies.tar.gz
 %define sha512  %{name}-%{version}-dependencies.tar.gz=3532aea87265980716d0f920376b135f65e1729bc8a101ad7aa4088d1477948c4897e8b1a0687bacbb5af50315069245da7bafa8ec2b2da7ae637d5e07f8057a
+
+Source4: license.txt
+%include %{SOURCE4}
 
 BuildRequires:  apache-ant
 BuildRequires:  unzip
@@ -133,6 +135,8 @@ source %{_sysconfdir}/profile.d/%{name}.sh
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 4.0.10-6
+- Release bump for SRP compliance
 * Wed Jul 24 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.10-5
 - Add changes to build offline cassandra
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.0.10-4

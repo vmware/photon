@@ -2,11 +2,13 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.26.4
-Release:        4%{?dist}
-License:        Apache-2.0
+Release:        5%{?dist}
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  calico=85a051cf938f771e9bf3173cc1806697b73b36d221053ad53ecf69afae0bfe8f9c0c6fac24de4b5f3e747b095ebf11e79d6358bd0e7a797a5144054010bb15b4
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch1:         0001-CVE-2024-33522.patch
 Patch2:         0002-CVE-2024-33522.patch
@@ -139,6 +141,8 @@ cp -r confd/etc/ %{buildroot}%{_sysconfdir}
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.26.4-5
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.26.4-4
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.26.4-3

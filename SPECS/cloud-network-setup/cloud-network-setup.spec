@@ -5,8 +5,7 @@
 Summary:        Configures network interfaces in cloud enviroment
 Name:           cloud-network-setup
 Version:        0.2.2
-Release:        12%{?dist}
-License:        Apache-2.0
+Release:        13%{?dist}
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,6 +14,9 @@ URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=bf1e917dc016e46dbb3012dc3603f8e24696ce26e9a671bcc98d8d248312bcbb7f5711c4344f230bda374b3c00c8f63121e420ea75110f032acdd43b4ff47882
 Source1:        %{name}.sysusers
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  go
 BuildRequires:  systemd-devel
@@ -83,6 +85,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/cloud-network.service
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.2.2-13
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.2.2-12
 - Bump version as a part of go upgrade
 * Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 0.2.2-11

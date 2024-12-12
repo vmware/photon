@@ -1,8 +1,7 @@
 Summary:        Bluetooth utilities
 Name:           bluez
 Version:        5.71
-Release:        1%{?dist}
-License:        GPLv2+
+Release:        2%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ URL:            http://www.bluez.org
 
 Source0: http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
 %define sha512 %{name}=648394bbe470405aa0e2d3914474e95c122f567deaaac20a5dd74bac29fa430dfb64cdb7bdb4fb7510e62fa73e96112a97197fc212b421bf480b8d1bb24cfb5d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  libical-devel
 BuildRequires:  glib-devel
@@ -84,6 +86,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.71-2
+- Release bump for SRP compliance
 * Tue Apr 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 5.71-1
 - Version upgrade to v5.71 to fix following CVE's:
 - CVE-2023-44431, CVE-2023-51580, CVE-2023-51589,

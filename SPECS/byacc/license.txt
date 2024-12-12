@@ -1,0 +1,1 @@
+License: GPL-3.0-only AND X11 AND SMLNJ AND GPL-3.0-or-later AND X11-distribute-modifications-variant AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
