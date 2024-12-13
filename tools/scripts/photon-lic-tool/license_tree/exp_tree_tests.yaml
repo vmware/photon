@@ -1,0 +1,120 @@
+# Test cases
+# INPUT EXP : EXPECTED OUTPUT EXP
+0:
+    input:
+    expected:
+1:
+    input: A
+    expected: A
+2:
+    input: Bison-exception-1.24
+    expected:
+3:
+    input: A AND B
+    expected: A AND B
+4:
+    input: (A AND B)
+    expected: A AND B
+5:
+    input: ((A AND B) AND C)
+    expected: A AND B AND C
+6:
+    input: A AND B WITH TEST_EXC AND ((C AND Bison-exception-1.24) AND Bootloader-exception AND T)
+    expected: A AND B WITH TEST_EXC AND C AND T
+7:
+    input: A AND B AND AND AND C
+    expected: A AND B AND C
+8:
+    input: A AND B AND AND AND Bison-exception-1.24
+    expected: A AND B
+9:
+    input: AND OR AND A OR B
+    expected: A OR B
+10:
+    input: AND A AND B AND AND AND
+    expected: A AND B
+11:
+    input: (A AND B) OR (C AND D)
+    expected: (A AND B) OR (C AND D)
+12:
+    input: (A AND B WITH TEST_EXC) AND (Q OR R) AND T WITH TEST_EXC AND Z
+    expected: A AND B WITH TEST_EXC AND (Q OR R) AND T WITH TEST_EXC AND Z
+13:
+    # Bash license - before and after removing standalone licenses
+    input: FSFUL AND GPL-2.0-or-later AND CC-BY-SA-4.0 AND BSD-3-Clause AND GPL-3.0-only AND GFDL-1.1-or-later AND FSFULLR AND GPL-1.0-or-later AND OFL-1.1 AND Latex2e AND FSFAP AND BSD-4-Clause-UC AND NTP AND GFDL-1.3-only AND LGPL-2.1-or-later AND HPND AND GFDL-1.3-or-later AND (GPL-3.0-or-later WITH Texinfo-exception) AND GPL-3.0-or-later AND Bison-exception-1.24 AND (GPL-3.0-or-later WITH Bison-exception-2.2) AND (GPL-3.0-or-later WITH Autoconf-exception-generic-3.0)
+    expected: FSFUL AND GPL-2.0-or-later AND CC-BY-SA-4.0 AND BSD-3-Clause AND GPL-3.0-only AND GFDL-1.1-or-later AND FSFULLR AND GPL-1.0-or-later AND OFL-1.1 AND Latex2e AND FSFAP AND BSD-4-Clause-UC AND NTP AND GFDL-1.3-only AND LGPL-2.1-or-later AND HPND AND GFDL-1.3-or-later AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+14:
+    # crun license
+    input: FSFUL AND GPL-2.0-or-later AND FSFULLRWD AND X11 AND GPL-3.0-only AND FSFULLR AND (GPL-2.0-or-later WITH Libtool-exception) AND (Apache-2.0 OR LGPL-2.1-or-later) AND Apache-2.0 AND GPL-1.0-or-later AND LGPL-2.0-only AND LGPL-2.1-or-later AND (GPL-3.0-or-later WITH Libtool-exception) AND LGPL-2.1-only AND ISC AND Bison-exception-2.2 AND GPL-3.0-or-later AND (GPL-2.0-or-later WITH Autoconf-exception-generic) AND GPL-2.0-only AND (GPL-3.0-or-later WITH Autoconf-exception-generic-3.0)
+    expected: FSFUL AND GPL-2.0-or-later AND FSFULLRWD AND X11 AND GPL-3.0-only AND FSFULLR AND GPL-2.0-or-later WITH Libtool-exception AND (Apache-2.0 OR LGPL-2.1-or-later) AND Apache-2.0 AND GPL-1.0-or-later AND LGPL-2.0-only AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Libtool-exception AND LGPL-2.1-only AND ISC AND GPL-3.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+15:
+    #glslang
+    input: Apache-2.0 AND JSON AND MIT AND Bison-exception-2.2 AND BSD-2-Clause AND BSD-3-Clause AND GPL-3.0-only AND GPL-1.0-or-later AND MIT-Khronos-old AND (GPL-3.0-or-later WITH Bison-exception-2.2) AND AML-glslang
+    expected: Apache-2.0 AND JSON AND MIT AND BSD-2-Clause AND BSD-3-Clause AND GPL-3.0-only AND GPL-1.0-or-later AND MIT-Khronos-old AND GPL-3.0-or-later WITH Bison-exception-2.2 AND AML-glslang
+16:
+    #mariadb
+    input: (GPL-2.0-only WITH Universal-FOSS-exception-1.0) AND GPL-2.0-or-later AND BSD-2-Clause AND CC-BY-SA-4.0 AND BSD-3-Clause AND BSD-2-Clause-first-lines AND Zlib AND GPL-3.0-only AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND Unicode-TOU AND (MIT OR GPL-2.0-only) AND X11-distribute-modifications-variant AND FSFULLR AND (GPL-2.0-or-later WITH Libtool-exception) AND OpenSSL-standalone AND dtoa AND CC0-1.0 AND Apache-2.0 AND SSLeay-standalone AND PHP-3.01 AND RSA-MD AND GPL-1.0-or-later AND OFL-1.1 AND PHP-3.0 AND (GPL-2.0-only OR Apache-2.0) AND FSFAP AND BSD-4-Clause-UC AND LGPL-2.0-only AND (MIT OR BSD-3-Clause OR GPL-2.0-only) AND GPL-1.0-only AND LGPL-2.1-or-later AND HPND-sell-variant-MIT-disclaimer AND MIT AND LPD-document AND BSD-Source-Code AND Artistic-2.0 AND BSL-1.0 AND CC-BY-4.0 AND LGPL-2.1-only AND blessing AND (GPL-3.0-or-later WITH Autoconf-exception-macro) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-2.0-only OR Artistic-1.0-Perl) AND LGPL-2.0-or-later AND ((GPL-2.0-only OR Apache-2.0)) AND ISC AND BSD-2-Clause-Views AND OpenSSL AND Artistic-1.0 AND Bison-exception-1.24 AND (GPL-3.0-or-later WITH Autoconf-exception-2.0) AND ISC-Veillard AND GPL-2.0-only AND (GPL-3.0-or-later WITH Bison-exception-2.2) AND NGPL
+    expected: GPL-2.0-only WITH Universal-FOSS-exception-1.0 AND GPL-2.0-or-later AND BSD-2-Clause AND CC-BY-SA-4.0 AND BSD-3-Clause AND BSD-2-Clause-first-lines AND Zlib AND GPL-3.0-only AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND Unicode-TOU AND (MIT OR GPL-2.0-only) AND X11-distribute-modifications-variant AND FSFULLR AND GPL-2.0-or-later WITH Libtool-exception AND OpenSSL-standalone AND dtoa AND CC0-1.0 AND Apache-2.0 AND SSLeay-standalone AND PHP-3.01 AND RSA-MD AND GPL-1.0-or-later AND OFL-1.1 AND PHP-3.0 AND (GPL-2.0-only OR Apache-2.0) AND FSFAP AND BSD-4-Clause-UC AND LGPL-2.0-only AND (MIT OR BSD-3-Clause OR GPL-2.0-only) AND GPL-1.0-only AND LGPL-2.1-or-later AND HPND-sell-variant-MIT-disclaimer AND MIT AND LPD-document AND BSD-Source-Code AND Artistic-2.0 AND BSL-1.0 AND CC-BY-4.0 AND LGPL-2.1-only AND blessing AND GPL-3.0-or-later WITH Autoconf-exception-macro AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-2.0-only OR Artistic-1.0-Perl) AND LGPL-2.0-or-later AND (GPL-2.0-only OR Apache-2.0) AND ISC AND BSD-2-Clause-Views AND OpenSSL AND Artistic-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND ISC-Veillard AND GPL-2.0-only AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NGPL
+
+17:
+    #perl
+    input: MPL-1.0 AND JSON AND ((GPL-1.0-or-later OR Artistic-1.0)) AND Artistic-1.0-Perl AND GPL-2.0-or-later AND bzip2-1.0.6 AND BSD-3-Clause AND ((GPL-1.0-or-later OR Artistic-1.0-Perl)) AND X11 AND GPL-3.0-only AND Zlib AND MPL-1.1 AND ((MIT OR GPL-1.0-or-later OR Artistic-1.0-Perl)) AND CC0-1.0 AND (Artistic-1.0-Perl OR GPL-2.0-or-later) AND Apache-2.0 AND LGPL-3.0-only AND RSA-MD AND (GPL-1.0-or-later OR Artistic-1.0-Perl) AND GPL-1.0-or-later AND FSFAP AND GPL-1.0-only AND AGPL-3.0-only AND SISSL AND (GPL-1.0-or-later OR Artistic-2.0) AND metamail AND MIT AND TTWL AND MPL-2.0 AND Artistic-2.0 AND (GPL-1.0-or-later OR Artistic-1.0) AND LGPL-2.1-only AND Martin-Birgmeier AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND LGPL-2.0-or-later AND BSD-2-Clause-Views AND OpenSSL AND Apache-1.1 AND Artistic-1.0 AND Bison-exception-1.24 AND ((Artistic-1.0-Perl OR GPL-1.0-or-later)) AND GPL-2.0-only AND (GPL-3.0-or-later WITH Bison-exception-2.2) AND Spencer-86
+    expected: MPL-1.0 AND JSON AND (GPL-1.0-or-later OR Artistic-1.0) AND Artistic-1.0-Perl AND GPL-2.0-or-later AND bzip2-1.0.6 AND BSD-3-Clause AND (GPL-1.0-or-later OR Artistic-1.0-Perl) AND X11 AND GPL-3.0-only AND Zlib AND MPL-1.1 AND (MIT OR GPL-1.0-or-later OR Artistic-1.0-Perl) AND CC0-1.0 AND (Artistic-1.0-Perl OR GPL-2.0-or-later) AND Apache-2.0 AND LGPL-3.0-only AND RSA-MD AND (GPL-1.0-or-later OR Artistic-1.0-Perl) AND GPL-1.0-or-later AND FSFAP AND GPL-1.0-only AND AGPL-3.0-only AND SISSL AND (GPL-1.0-or-later OR Artistic-2.0) AND metamail AND MIT AND TTWL AND MPL-2.0 AND Artistic-2.0 AND (GPL-1.0-or-later OR Artistic-1.0) AND LGPL-2.1-only AND Martin-Birgmeier AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND LGPL-2.0-or-later AND BSD-2-Clause-Views AND OpenSSL AND Apache-1.1 AND Artistic-1.0 AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-2.0-only AND GPL-3.0-or-later WITH Bison-exception-2.2 AND Spencer-86
+
+# Test with unknown spdx
+18:
+    input: A AND B AND (LicenseRef-unknown-spdx OR G)
+    expected: A AND B AND G
+
+19:
+    input: LicenseRef-unknown-spdx AND A
+    expected: A
+
+20:
+    input: ((((LicenseRef-unknown-spdx OR A) AND B) AND C) OR G) AND Z
+    expected: ((A AND B AND C) OR G) AND Z
+
+21:
+    input: LicenseRef-unknown-spdx AND LicenseRef-unknown-spdx
+    expected:
+
+22:
+    input: (LicenseRef-unknown-spdx AND LicenseRef-unknown-spdx) AND (A AND B)
+    expected: A AND B
+23:
+    input: (LicenseRef-unknown-spdx AND LicenseRef-unknown-spdx) OR (LicenseRef-unknown-spdx AND LicenseRef-unknown-spdx WITH Bison-exception-1.24)
+    expected:
+# Exception can't be main license - ignore if so
+24:
+    input: (Bison-exception-1.24 WITH A) AND B
+    expected: B
+25:
+    input: (LicenseRef-unknown-spdx AND LicenseRef-unknown-spdx) OR (LicenseRef-unknown-spdx OR Bison-exception-1.24 WITH LicenseRef-unknown-spdx)
+    expected:
+26:
+    input: (LicenseRef-scancode-unknown-spdx OR LicenseRef-scancode-unknown-spdx OR LicenseRef-scancode-unknown-spdx OR LicenseRef-scancode-unknown-spdx OR LicenseRef-scancode-unknown-spdx OR LicenseRef-scancode-unknown-spdx OR LicenseRef-scancode-unknown-spdx OR LicenseRef-scancode-unknown-spdx OR LicenseRef-scancode-unknown-spdx)
+    expected:
+
+# Test OR flattening
+27:
+    input: ((GPL-2.0-only OR Linux-OpenIB) OR BSD-2-Clause)
+    expected: GPL-2.0-only OR Linux-OpenIB OR BSD-2-Clause
+28:
+    input: (GPL-2.0-only OR Linux-OpenIB) AND BSD-2-Clause
+    expected: (GPL-2.0-only OR Linux-OpenIB) AND BSD-2-Clause
+29:
+    input: BSD-2-Clause AND (GPL-2.0-only OR Linux-OpenIB)
+    expected: BSD-2-Clause AND (GPL-2.0-only OR Linux-OpenIB)
+30:
+    input: (A OR B) AND (C OR D)
+    expected: (A OR B) AND (C OR D)
+31:
+    input: (A OR B) OR (C OR D)
+    expected: A OR B OR C OR D
+32:
+    input: (A OR B) AND (((C OR D) OR E) OR G)
+    expected: (A OR B) AND (C OR D OR E OR G)
+33:
+    input: (A OR B) AND (((C OR D) AND E) OR G)
+    expected: (A OR B) AND (((C OR D) AND E) OR G)
+
