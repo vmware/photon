@@ -9,7 +9,7 @@
 Summary:        Programming language
 Name:           lua
 Version:        5.4.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.lua.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -164,6 +164,8 @@ rm -rf %{buildroot}
 %{_mandir}/*
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.4.6-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.4.6-2
 - Release bump for SRP compliance
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.4.6-1

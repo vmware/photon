@@ -1,7 +1,7 @@
 Name:           ninja-build
 Summary:        Small build system with focus on speed
 Version:        1.11.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://ninja-build.org
 Vendor:         VMware, Inc.
 Group:          Development/Tools
@@ -51,6 +51,8 @@ install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.ninja
 %{_libdir}/rpm/macros.d/macros.ninja
 
 %changelog
+* Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.11.1-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.1-2
 - Release bump for SRP compliance
 * Wed Jan 04 2023 Susant Sahani <ssahani@vmware.com> 1.11.1-1
