@@ -1,0 +1,51 @@
+# Scancode/SPDX license IDs which should be ignored if found
+license_ignore_list:
+    - LicenseRef-scancode-unknown-spdx
+
+# Illegal licenses - packages cannot be licensed under any of these.
+# Taken from https://github-vcf.devops.broadcom.net/vcf/srp-policy-controls
+# from data/legal/osc/license_family_to_license_map/data.json other_non_permissive
+disallowed_licenses:
+    - Abstyles License
+    - AFL-2.0
+    - Aladdin
+    - CC-BY-NC-1.0
+    - CC-BY-NC-2.0
+    - CC-BY-NC-2.5
+    - CC-BY-NC-3.0
+    - CC-BY-NC-4.0
+    - CC-BY-NC-ND-1.0
+    - CC-BY-NC-ND-2.0
+    - CC-BY-NC-ND-2.5
+    - CC-BY-NC-ND-3.0
+    - CC-BY-NC-ND-4.0
+    - CC-BY-NC-SA-1.0
+    - CC-BY-NC-SA-2.0
+    - CC-BY-NC-SA-2.5
+    - CC-BY-NC-SA-3.0
+    - CC-BY-NC-SA-4.0
+    - CC-BY-ND-1.0
+    - CC-BY-ND-2.0
+    - CC-BY-ND-2.5
+    - CC-BY-ND-3.0
+    - CC-BY-ND-4.0
+    - CPOL-1.02
+    - Elastic License
+    - Facebook BSD License with Patent Provision
+    - H2 License
+    - Ms-LPL
+    - Oracle Binary Code License Agreement
+    - Oracle Technology License for Oracle Java SE
+    - Other Non-Permissive License
+    - PolyForm-Free-Trial-1.0.0
+    - PolyForm-Noncommercial-1.0.0
+    - PolyForm-Shield-1.0.0
+    - PolyForm-Small-Business-1.0.0
+    - Sleepycat
+    - SSPL
+    - Sun Binary Code License Agreement
+    - Frameworx-1.0
+    - gnuplot
+    - MS-LPL
+    - ODbL-1.0
+    - OGDL-Taiwan-1.0
