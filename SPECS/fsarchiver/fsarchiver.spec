@@ -1,8 +1,7 @@
 Summary:        FSArchiver - Filesystem Archiver for Linux
 Name:           fsarchiver
 Version:        0.8.6
-Release:        2%{?dist}
-License:        GPL-2.0
+Release:        3%{?dist}
 URL:            http://www.fsarchiver.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/fdupoux/fsarchiver/releases/download/%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=26a2d7a68d162aabb778b14f29c52cf8fbadb8147cf5eae592352a36fbf93cc45c08c241253bd8dfe8cd0b77d0f156afcc8d89e8d24a238fd4427cb479827f14
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  xz-devel
 BuildRequires:  lzo-devel
@@ -55,6 +57,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/man8/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.8.6-3
+- Release bump for SRP compliance
 * Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 0.8.6-2
 - bump version as part of xz upgrade
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.8.6-1

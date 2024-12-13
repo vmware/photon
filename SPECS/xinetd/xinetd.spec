@@ -1,8 +1,7 @@
 Summary:        xinetd - A better inetd.
 Name:           xinetd
 Version:        2.3.15
-Release:        11%{?dist}
-License:        BSD
+Release:        12%{?dist}
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,6 +11,9 @@ Source0: https://github.com/xinetd-org/xinetd/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9d6fee1fbc90329629d84086ae7de5cd51c25af7b68e52aa704d6f74bee5f0e3d54ca1bcf780f90f74ddc8d336ae0abb5e5e368d43c426a26b8dd2c4676d26aa
 
 Source1: %{name}.service
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: systemd-devel
 BuildRequires: libtirpc-devel
@@ -75,6 +77,8 @@ rm -rf %{buildroot}
 %{_presetdir}/50-%{name}.preset
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.15-12
+- Release bump for SRP compliance
 * Thu Jun 29 2023 Roye Eshed <eshedr@vmware.com> 2.3.15-11
 - Fix for CVE-2013-4342
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.3.15-10

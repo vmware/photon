@@ -1,8 +1,7 @@
 Summary:        configuration database system used by many GNOME applications
 Name:           GConf
 Version:        3.2.6
-Release:        2%{?dist}
-License:        LGPLv2+
+Release:        3%{?dist}
 URL:            http://gnome.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: http://ftp.gnome.org/pub/gnome/sources/%{name}/3.2/%{name}-%{version}.tar.xz
 %define sha512 %{name}=35f5f659f9d03f7531a7102adacbda0eb310d8a55a831c768c91a82e07dae21247726e00e0e411f63b1de9ade0f042ded572a3ea4a4b2ad3135231f344540b58
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  intltool
 BuildRequires:  shadow
@@ -89,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_datadir}
 
 %changelog
+*   Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.2.6-3
+-   Release bump for SRP compliance
 *   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.6-2
 -   Bump version as a part of libxml2 upgrade
 *   Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.6-1

@@ -3,8 +3,7 @@
 Summary:        C++ xml parser.
 Name:           xerces-c
 Version:        3.2.4
-Release:        1%{?dist}
-License:        Apache License
+Release:        2%{?dist}
 URL:            http://xerces.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -12,6 +11,9 @@ Distribution:   Photon
 
 Source0:        http://mirror.jax.hugeserver.com/apache//xerces/c/3/sources/%{name}-%{version}.tar.xz
 %define sha512 %{name}=4d58d25b59b4528ad1f2d60681ddd6d2a4dba945613cee9ce978605f006da03703ea85a1bd89f781eeb3ad4dbdadf485a310f29d4c07036b0322f0755f87fddf
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Requires:       libstdc++
 
@@ -57,6 +59,8 @@ make %{?_smp_mflags} check
 %{_libdir}/lib%{name}.so
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.2.4-2
+- Release bump for SRP compliance
 * Tue Oct 25 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.4-1
 - Updated to version 3.2.4
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.3-2

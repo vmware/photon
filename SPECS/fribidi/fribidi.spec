@@ -1,8 +1,7 @@
 Summary:        GNU FriBidi is an implementation of the Unicode Bidirectional Algorithm (bidi).
 Name:           fribidi
 Version:        1.0.12
-Release:        1%{?dist}
-License:        LGPLv2 or MPLv1.1
+Release:        2%{?dist}
 URL:            http://fribidi.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:   Photon
 
 Source0: https://github.com/fribidi/fribidi/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=cd624f519b270303e89139ced4020115abe3b6a0d774ba57f17fa69c6036edebd76c635a42c468786e76c6ffb0c7d63b435cd2663bc2fba08dec405840dd8e49
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  meson
 BuildRequires:  ninja-build
@@ -61,5 +63,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.0.12-2
+- Release bump for SRP compliance
 * Tue Nov 8 2022 Michelle Wang <michellew@vmware.com> 1.0.12-1
 - Initial version. Required by pango-1.50.11.

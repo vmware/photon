@@ -1,8 +1,7 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
 Version:        1.2.37
-Release:        2%{?dist}
-License:        MIT
+Release:        3%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ Url:            http://www.aleksey.com/xmlsec
 
 Source0: http://www.aleksey.com/xmlsec/download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=99220cb28a346ffac0023f9f177d6a7be3ddcea04bea434b7dc926c1f0aaa5564d75f74f92896ac100179c04d77e001f688ddf46fed4e0a0b4f20b7b87c24900
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: libxml2-devel
 BuildRequires: libltdl-devel
@@ -76,6 +78,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.2.37-3
+- Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.2.37-2
 - Bump version as a part of libxml2 upgrade
 * Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.2.37-1

@@ -1,8 +1,7 @@
 Summary:       ODBC driver manager
 Name:          freetds
 Version:       1.3.10
-Release:       5%{?dist}
-License:       GPLv2
+Release:       6%{?dist}
 URL:           http://www.unixodbc.org
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
@@ -10,6 +9,9 @@ Distribution:  Photon
 
 Source0: https://www.freetds.org/files/stable/%{name}-%{version}.tar.gz
 %define sha512 %{name}=3d656833dd3e0150bf1c343699aeb89f6cb30b357a86a2baf94ac9f53016a793c78b5dcabfdb357106a7736ceb8d1fd25d817fa0861a4209b8093e6a5065dcf1
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: unixODBC-devel
 BuildRequires: gnutls-devel
@@ -105,6 +107,8 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 %{_docdir}/%{name}/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.3.10-6
+- Release bump for SRP compliance
 * Mon Apr 22 2024 Roye Eshed <roye.eshed@broadcom.com> 1.3.10-5
 - Bump version as a part of unixODBC upgrade
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.10-4

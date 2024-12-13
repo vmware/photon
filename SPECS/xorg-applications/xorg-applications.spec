@@ -1,8 +1,7 @@
 Summary:        The Xorg applications.
 Name:           xorg-applications
 Version:        7.7
-Release:        5%{?dist}
-License:        MIT
+Release:        6%{?dist}
 URL:            http://www.x.org
 Group:          Development/System
 Vendor:         VMware, Inc.
@@ -16,6 +15,9 @@ Source1: http://ftp.x.org/pub/individual/app/mkfontdir-1.0.7.tar.bz2
 
 Source2: http://ftp.x.org/pub/individual/app/mkfontscale-1.2.2.tar.gz
 %define sha512 mkfontscale=3cb40a6c04f817157507f05cf8641d5cc8cf7b858b87c13cc7fdd7cb15627f3cfb7bf5b344107baeea2348705cbf718e2bf9cd7d19a0978d9ffd5867edc5ee17
+
+Source3: license.txt
+%include %{SOURCE3}
 
 BuildRequires:  libX11-devel
 BuildRequires:  libXfont2-devel
@@ -65,6 +67,8 @@ done
 %{_datadir}/*
 
 %changelog
+* Fri Dec 13 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 7.7-6
+- Release bump for SRP compliance
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 7.7-5
 - Bump version as a part of libX11 upgrade
 * Wed Jan 11 2023 Shivani Agarwal <shivania2@vmware.com> 7.7-4

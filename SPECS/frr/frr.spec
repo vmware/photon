@@ -3,8 +3,7 @@
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        9.1
-Release:        1%{?dist}
-License:        GPLv2+
+Release:        2%{?dist}
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -15,6 +14,9 @@ Source0: https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.t
 
 Source1: %{name}-tmpfiles.conf
 Source2: %{name}-sysusers.conf
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Patch0: 0000-remove-babeld-and-ldpd.patch
 Patch1: 0002-enable-openssl.patch
@@ -217,6 +219,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 9.1-2
+- Release bump for SRP compliance
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-1
 - Upgrade to v9.1
 * Wed Aug 23 2023 Mukul Sikka <msikka@vmware.com> 8.5.2-2

@@ -1,7 +1,7 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse
 Version:        2.9.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -71,6 +71,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/fuse.pc
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.9.9-4
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.9-3
 - Release bump for SRP compliance
 * Mon Aug 22 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.9.9-2

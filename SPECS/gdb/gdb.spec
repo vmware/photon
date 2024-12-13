@@ -3,7 +3,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        13.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -180,6 +180,8 @@ sed -i 's/hex in)/hex in )/g' %{name}/testsuite/%{name}.arch/i386-signal.exp
 %endif
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 13.2-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.2-2
 - Release bump for SRP compliance
 * Fri Jul 28 2023 Anmol Jain <anmolja@vmware.com> 13.2-1

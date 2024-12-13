@@ -1,14 +1,16 @@
 Summary:         Multithreaded IO generation tool
 Name:            fio
 Version:         3.33
-Release:         4%{?dist}
-License:         GPLv2
+Release:         5%{?dist}
 Group:           Applications/System
 Vendor:          VMware, Inc.
 Distribution:    Photon
 URL:             http://git.kernel.dk/?p=fio.git;a=summary
 Source0:         https://git.kernel.org/pub/scm/linux/kernel/git/axboe/fio.git/snapshot/%{name}-%{version}.tar.gz
 %define sha512   %{name}=d75b0d4ad7bc7c3885d0a41065a80b82b5b3f0eb41e10e02cba9d527eba1ae6573548345f795954ffc6a45375161191a741290cbaf4fda05ab601b49a6aceb32
+
+Source1: license.txt
+%include %{SOURCE1}
 BuildRequires:   gcc
 BuildRequires:   gnupg
 BuildRequires:   zlib-devel
@@ -84,6 +86,8 @@ sh ./configure --disable-optimizations --dynamic-libengines
 %{_mandir}/man1/*
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.33-5
+- Release bump for SRP compliance
 * Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 3.33-4
 - Bump up version to compile with new gnupg
 * Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 3.33-3

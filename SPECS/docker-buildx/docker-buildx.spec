@@ -4,15 +4,17 @@
 Name:       docker-buildx
 Summary:    Docker CLI plugin for extended build capabilities with BuildKit
 Version:    0.17.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        https://github.com/docker/buildx
-License:    Apache-2.0
 Group:      Applications
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/docker/buildx/archive/refs/tags/%{srcname}-%{version}.tar.gz
 %define sha512 %{srcname}=16840bdfc79d4931253d2193ea43d9c47bc65e7f3049cecc27260ae98bc994637634fe7fa7333c01cd540205cd5c8aa73e65bee09f315098c15030bb799d172d
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: go
 
@@ -43,6 +45,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.17.1-3
+- Release bump for SRP compliance
 * Fri Nov 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.17.1-2
 - Bump up as part of docker upgrade
 * Sat Oct 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.17.1-1

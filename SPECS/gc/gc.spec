@@ -1,7 +1,7 @@
 Summary:    A garbage collector for C and C++
 Name:       gc
 Version:    8.2.2
-Release:    2%{?dist}
+Release:    3%{?dist}
 Url:        http://www.hboehm.info/gc
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -64,6 +64,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.2.2-3
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.2.2-2
 - Release bump for SRP compliance
 * Thu Sep 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.2.2-1
