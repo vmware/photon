@@ -28,7 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.118
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -538,6 +538,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Dec 17 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.118-8
+- newca: fix panic when sealing hardlinks.
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-7
 - Release bump for SRP compliance
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.118-6

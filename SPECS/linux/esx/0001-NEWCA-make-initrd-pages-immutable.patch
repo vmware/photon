@@ -1,4 +1,4 @@
-From 713128d438de8a1f69be70d89666cf3f02678aa2 Mon Sep 17 00:00:00 2001
+From 89e7c9e3274ced484bf18acda81800d941e2a100 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Thu, 24 Oct 2024 08:48:23 +0000
 Subject: [PATCH] NEWCA: make initrd pages immutable
@@ -8,14 +8,16 @@ cases where initrd files can be modified. From other side, accidental
 modifications can lead to expensive COWs from the hypervisor side.
 Seal these files to make corresponding NEWCA initrd pages immutable.
 
+Ignore hardlinks.
+
 Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 ---
- init/initramfs.c | 6 ++++++
- mm/shmem.c       | 4 +++-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+ init/initramfs.c | 11 +++++++++++
+ mm/shmem.c       |  4 +++-
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 06e251747..ded0ea74f 100644
+index 06e251747..a559697b5 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
 @@ -12,6 +12,7 @@
@@ -26,15 +28,20 @@ index 06e251747..ded0ea74f 100644
  #include <linux/mm.h>
  #include <linux/namei.h>
  #include <linux/init_syscalls.h>
-@@ -505,6 +506,11 @@ static int __init do_name(void)
+@@ -505,6 +506,16 @@ static int __init do_name(void)
  			vfs_fchmod(wfile, mode);
  			if (body_len)
  				vfs_truncate(&wfile->f_path, body_len);
 +			/* Disallow modifications of NEWCA pages. */
-+			if (page_aligned_fmt)
-+				BUG_ON(memfd_fcntl(wfile, F_ADD_SEALS,
-+					F_SEAL_SEAL | F_SEAL_SHRINK |
-+					F_SEAL_GROW | F_SEAL_WRITE));
++			if (page_aligned_fmt && !ml) {
++				long err;
++				err = memfd_fcntl(wfile, F_ADD_SEALS,
++						  F_SEAL_SEAL | F_SEAL_SHRINK |
++						  F_SEAL_GROW | F_SEAL_WRITE);
++				if (err)
++					panic("Sealing failed: %s (%ld)",
++					      collected, err);
++			}
  			state = CopyFile;
  		}
  	} else if (S_ISDIR(mode)) {
