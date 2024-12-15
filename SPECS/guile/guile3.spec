@@ -3,7 +3,7 @@
 Summary:        GNU Ubiquitous Intelligent Language for Extensions
 Name:           guile3
 Version:        3.0.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.gnu.org/software/guile
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -89,6 +89,8 @@ make %{?_smp_mflags} check
 %{_datadir}/guile/*
 
 %changelog
+* Sun Dec 15 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.8-5
+- Bump up for generating provenance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.8-4
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.8-3
