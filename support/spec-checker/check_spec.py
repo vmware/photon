@@ -5,6 +5,7 @@ import re
 import sys
 import calendar
 import json
+import license_expression
 
 from datetime import datetime
 
@@ -47,6 +48,7 @@ class ErrorDict:
             "setup": ["Setup errors"],
             "_smp_mflags": ["_smp_mflags errors"],
             "unused_files": ["List of unused files"],
+            "license": ["License errors"],
             "others": ["Other errors"],
         }
 
@@ -582,6 +584,30 @@ def check_for_sha1_usage(spec, err_dict):
         return True
     return False
 
+def check_proper_spdx_license(spec, err_dict):
+    sec = "license"
+    bad_ids = [ "unknown-spdx", "LicenseRef", "scancode" ]
+    spdx_licensing = license_expression.get_spdx_licensing()
+
+    # for some reason, the license_expression package, which is used by the official spdx-tools
+    # package, returns/uses the same database for both spdx and scancode licenses. So let's
+    # do our own filtering here.
+    for lic_sym in spdx_licensing.license_symbols(spec.license):
+        for bad_id in bad_ids:
+            if bad_id in lic_sym.key:
+                err_dict.update_err_dict(sec,
+                                         f"Bad SPDX identifier {bad_id} in license expression!")
+                return True
+
+    try:
+        # create license expression object - throws an exception for any validation errors
+        spdx_licensing.parse(spec.license, validate=True, strict=True)
+    except Exception as e:
+        err_dict.update_err_dict(sec,
+                                 f"Caught exception while attempting to validate license: {e}")
+        return True
+
+    return False
 
 def find_file_in_dir(fn, path):
     for root_d, dirs, files in os.walk(path):
@@ -676,6 +702,7 @@ def check_specs(files_list):
                     altered_spec, err_dict, os.path.dirname(spec_fn)
                 ),
                 check_for_sha1_usage(spec, err_dict),
+                check_proper_spdx_license(spec, err_dict),
             ]
         ):
             err = True
