@@ -68,6 +68,9 @@ class constants(object):
     CopyToSandboxDict = {}
     SandboxEnv = {}
     adjustGCCSpecScript = None
+    srpSigningScript = {}
+    srpSigningParams = {}
+    srpSigningAuth = {}
 
     # Update to below constants lists will be provided by release branch as pkgPreq data
     noDepsPackageList = []
@@ -309,6 +312,13 @@ class constants(object):
             constants.listMakeCheckPkgToSkip.extend(pkgPreq["listMakeCheckPkgToSkip"])
             constants.providedBy = pkgPreq["providedBy"]
 
+        if constants.srpSigningScript:
+            constants.addMacro("signing_script", constants.srpSigningScript["dest"])
+        if constants.srpSigningParams:
+            constants.addMacro("signing_params", constants.srpSigningParams["dest"])
+        if constants.srpSigningAuth:
+            constants.addMacro("signing_auth", constants.srpSigningAuth["dest"])
+
     @staticmethod
     def setTestForceRPMS(listsPackages):
         constants.testForceRPMS = listsPackages
@@ -340,6 +350,15 @@ class constants(object):
         constants.CopyToSandboxDict[key] = deepcopy(val)
         if key == "adjust-gcc-specs":
             constants.adjustGCCSpecScript = val["dest"]
+        if key == "srp-signing-script":
+            constants.srpSigningScript["src"] = val["src"]
+            constants.srpSigningScript["dest"] = val["dest"]
+        if key == "srp-signing-params":
+            constants.srpSigningParams["src"] = val["src"]
+            constants.srpSigningParams["dest"] = val["dest"]
+        if key == "srp-signing-auth":
+            constants.srpSigningAuth["src"] = val["src"]
+            constants.srpSigningAuth["dest"] = val["dest"]
 
     @staticmethod
     def addSandboxEnv(key, val):

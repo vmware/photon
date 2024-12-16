@@ -178,6 +178,13 @@ class PackageUtils(object):
             self.logger.error(f"Failed while building rpm: {package}")
             raise e
         self.logger.debug("RPM build is successful")
+
+        if (constants.srpSigningScript and constants.srpSigningAuth
+                        and constants.srpSigningParams):
+            self.logger.debug("Initiate signing RPMs")
+            self.srpSigner(listRPMFiles, SRPM = False)
+            self.srpSigner(listSRPMFiles, SRPM = True)
+
         return listRPMFiles, listSRPMFiles
 
     """
@@ -260,6 +267,24 @@ class PackageUtils(object):
             cmd += ["--root", f"/target-{constants.targetArch}"]
         out, _, _ = sandbox.runCmd(cmd, capture=True)
         return CommandUtils.splitlines(out)
+
+    def srpSigner(self, RpmsToSign, SRPM):
+        for rpm in RpmsToSign:
+            if SRPM:
+                path = constants.sourceRpmPath
+                arch = ""
+            else:
+                path = constants.rpmPath
+                arch = rpm.split(".")[-2]
+            rpm = os.path.basename(rpm)
+            rpm_full_path = os.path.join(path, arch, rpm)
+            cmd = ["python3", constants.srpSigningScript["src"],
+                "--config_file", constants.srpSigningParams["src"],
+                "--auth_file", constants.srpSigningAuth["src"],
+                "--artifact", rpm_full_path, "--file_type", "rpm"]
+
+            CommandUtils.runCmd(cmd, logfn=self.logger.debug)
+            self.logger.debug(f"Signed RPM: {rpm_full_path}")
 
     def adjustGCCSpecs(self, sandbox, package, version):
         if constants.adjustGCCSpecScript is None:
