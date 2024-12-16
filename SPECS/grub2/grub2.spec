@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    17%{?dist}
+Release:    18%{?dist}
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -41,6 +41,14 @@ BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
 BuildRequires:  systemd-devel
 BuildRequires:  bison
+
+# Requirements for signing artifacts
+%if "%{?signing_script}" != ""
+%ifarch x86_64
+BuildRequires:  sbsigntools
+BuildRequires:  python3-requests
+%endif
+%endif
 
 Requires:   xz-libs
 Requires:   device-mapper-libs
@@ -179,6 +187,13 @@ sed -e "s,@@VERSION@@,%{version},g" \
 
 %ifarch x86_64
 ./install-for-efi/%{_bindir}/grub2-mkimage -d ./install-for-efi/%{_libdir}/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
+
+%if "%{?signing_script}" != ""
+python3 %{signing_script} --file_type pe \
+      --config_file %{signing_params} \
+      --auth_file %{signing_auth} \
+      --artifact %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi
+%endif
 %endif
 
 %ifarch aarch64
@@ -252,6 +267,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Mon Dec 16 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 2.06-18
+- Sign PE image inplace with SRP signer
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.06-17
 - Release bump for SRP compliance
 * Wed Mar 06 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-16

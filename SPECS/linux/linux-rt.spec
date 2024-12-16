@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.118
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -290,6 +290,9 @@ BuildRequires:  dwarves-devel
 # stalld plugin requires libbpf-devel and clang-devel
 BuildRequires:  libbpf-devel
 BuildRequires:  clang-devel
+# Requirements for signing artifacts
+BuildRequires:  sbsigntools
+BuildRequires:  python3-requests
 
 %if 0%{?fips}
 BuildRequires: gdb
@@ -480,6 +483,12 @@ if [ "$ID1" != "$ID2" ] ; then
   exit 1
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
+%if "%{?signing_script}" != ""
+python3 %{signing_script} --file_type pe \
+      --config_file %{signing_params} \
+      --auth_file %{signing_auth} \
+      --artifact %{buildroot}/boot/vmlinuz-%{uname_r}
+%endif
 %endif
 
 # Restrict the permission on System.map-X file
@@ -560,6 +569,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Jan 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.118-7
+- Sign PE image inplace with SRP signer
 * Mon Dec 30 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-6
 - Improve fips canister struct definition check
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-5

@@ -44,7 +44,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.118
-Release:        12%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        13%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -450,6 +450,11 @@ BuildRequires:  mpfr-devel
 %ifarch x86_64
 BuildRequires:  pciutils-devel
 BuildRequires:  libcap-devel
+# Requirements for signing artifacts
+%if "%{?signing_script}" != ""
+BuildRequires:  sbsigntools
+BuildRequires:  python3-requests
+%endif
 %endif
 
 %if 0%{?fips}
@@ -806,6 +811,12 @@ if [ "$ID1" != "$ID2" ] ; then
 fi
 
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
+%if "%{?signing_script}" != ""
+python3 %{signing_script} --file_type pe \
+      --config_file %{signing_params} \
+      --auth_file %{signing_auth} \
+      --artifact %{buildroot}/boot/vmlinuz-%{uname_r}
+%endif
 %endif
 
 %ifarch aarch64
@@ -968,6 +979,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jan 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.118-13
+- Sign PE image inplace with SRP signer
 * Mon Dec 30 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-12
 - Improve fips canister struct definition check
 * Mon Dec 23 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.118-11

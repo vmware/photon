@@ -28,7 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.118
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -330,6 +330,14 @@ BuildRequires: bison
 BuildRequires: which
 BuildRequires: dwarves-devel
 
+# Requirements for signing artifacts
+%if "%{?signing_script}" != ""
+%ifarch x86_64
+BuildRequires:  sbsigntools
+BuildRequires:  python3-requests
+%endif
+%endif
+
 %if 0%{?fips}
 BuildRequires: gdb
 %endif
@@ -489,6 +497,12 @@ install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 
 %ifarch x86_64
 install -vm 644 arch/%{archdir}/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
+%if "%{?signing_script}" != ""
+python3 %{signing_script} --file_type pe \
+      --config_file %{signing_params} \
+      --auth_file %{signing_auth} \
+      --artifact %{buildroot}/boot/vmlinuz-%{uname_r}
+%endif
 %endif
 
 %ifarch aarch64
@@ -565,6 +579,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jan 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.118-11
+- Sign PE image inplace with SRP signer
 * Mon Jan 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-10
 - Fix aarch64 build
 * Mon Dec 30 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-9
