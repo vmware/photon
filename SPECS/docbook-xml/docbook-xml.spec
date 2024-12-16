@@ -1,7 +1,7 @@
 Summary:        Docbook-xml-4.5
 Name:           docbook-xml
 Version:        4.5
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            http://www.docbook.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -168,6 +168,8 @@ fi
 /etc/xml
 
 %changelog
+*   Mon Dec 16 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.5-13
+-   Release bump for SRP compliance
 *   Tue Nov 12 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.5-12
 -   Update license field
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5-11

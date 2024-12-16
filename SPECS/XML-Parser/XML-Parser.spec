@@ -1,7 +1,7 @@
 Summary:       XML-Parser perl module
 Name:          XML-Parser
 Version:       2.46
-Release:       4%{?dist}
+Release:       5%{?dist}
 URL:           http://search.cpan.org/~toddr/%{name}-%{version}/
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -55,6 +55,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Mon Dec 16 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.46-5
+- Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.46-4
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 2.46-3
