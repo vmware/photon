@@ -1,5 +1,3 @@
-%global build_for none
-
 %global security_hardening none
 %global __cmake_in_source_build 0
 
@@ -22,9 +20,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.6.28
-Release:        2%{?dist}
-License:        GPLv2
+Version:        6.12.1
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -75,6 +72,9 @@ Source40: fips_canister_wrapper_internal.h
 Source41: fips_canister_wrapper_internal.c
 %endif
 
+Source42: license-esx.txt
+%include %{SOURCE42}
+
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
 Patch1: net-Double-tcp_mem-limits.patch
@@ -93,7 +93,6 @@ Patch13: 0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 # Out-of-tree patches from AppArmor:
 Patch14: 0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch15: 0002-apparmor-af_unix-mediation.patch
-Patch16: 0001-Control-MEMCG_KMEM-config.patch
 Patch17: Performance-over-security-model.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch18: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
@@ -117,7 +116,6 @@ Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
 
 %ifarch x86_64
 # VMW: [50..59]
-Patch50: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch51: x86-vmware-Log-kmsg-dump-on-panic.patch
 Patch52: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch53: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
@@ -126,7 +124,7 @@ Patch55: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 # Secure Boot and Kernel Lockdown
 Patch56: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
-#Patch57: 0002-Add-.sbat-section.patch
+Patch57: 0002-Add-.sbat-section.patch
 # NOTE: linux-esx does not support kexec, omitting SBAT verify logic.
 # CONFIG_SECURITY_SBAT_VERIFY=y
 # Patch58: 0003-Verify-SBAT-on-kexec.patch
@@ -162,11 +160,14 @@ Patch82: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
 # SBX driver
 Patch85: 0001-Adding-SBX-kernel-driver.patch
 
+# Backward compatibility
+%if "%{dist}" == ".ph5"
+Patch91: 0001-block-Fix-validation-of-ioprio-level.patch
+%endif
+
 # CVE: [100..199]
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-# Fix CVE-2023-52585
-Patch131: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -193,15 +194,20 @@ Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
-%ifarch x86_64
-Patch505: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
-%endif
-
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: 0001-crypto-Export-symbol-crypto_shash_alg_has_setkey.patch
+%endif
+
+%ifarch x86_64
+# SEV on VMware: [600..609]
+Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
+Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
+Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
+# TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
+Patch603: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
 %endif
 
 BuildRequires: bc
@@ -282,6 +288,11 @@ The Linux package contains the Linux kernel doc files
 # linux-esx
 %autopatch -p1 -m60 -M89
 
+# Backward compatibility
+%if "%{dist}" == ".ph5"
+%autopatch -p1 -m91 -M91
+%endif
+
 # CVE
 %autopatch -p1 -m100 -M133
 
@@ -295,10 +306,6 @@ The Linux package contains the Linux kernel doc files
 
 # crypto
 %autopatch -p1 -m500 -M504
-
-%ifarch x86_64
-%autopatch -p1 -m505 -M505
-%endif
 
 %if 0%{?fips}
 %autopatch -p1 -m508 -M510
@@ -438,6 +445,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Dec 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.1-1
+- Upgrade to version 6.12.x.
 * Wed Oct 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-2
 - Fix ptp_vmw for ptp_vmw_adjfine
 * Thu Sep 05 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.6.28-1

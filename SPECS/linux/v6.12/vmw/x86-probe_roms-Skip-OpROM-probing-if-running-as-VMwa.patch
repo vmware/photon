@@ -1,6 +1,6 @@
-From 9f150b82606ef498c40c2e2eb7660c25825ce5a6 Mon Sep 17 00:00:00 2001
-From: Bo Gan <ganb@vmware.com>
-Date: Fri, 8 Jan 2021 05:30:45 -0800
+From 5731d56dd926dbbe88b79717a9b6f39913714a3c Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Thu, 23 Jan 2025 10:31:37 +0000
 Subject: [PATCH] x86/probe_roms: Skip OpROM probing if running as VMware
  Guests
 
@@ -9,6 +9,7 @@ performance degradation. Such MMIO VMEXITs also lead to unexpected #VC,
 if SEV-ES was enabled.
 
 Signed-off-by: Bo Gan <ganb@vmware.com>
+
 ---
  arch/x86/kernel/probe_roms.c | 8 ++++++++
  1 file changed, 8 insertions(+)
@@ -40,5 +41,5 @@ index cc2c34ba7..eb9b72a87 100644
  	upper = adapter_rom_resources[0].start;
  	for (start = video_rom_resource.start; start < upper; start += 2048) {
 -- 
-2.23.1
+2.39.4
 

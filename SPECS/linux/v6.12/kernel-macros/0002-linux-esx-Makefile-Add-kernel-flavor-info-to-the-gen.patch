@@ -1,6 +1,6 @@
-From 5e8f79ff571398876892118885e6ed5f1a9b19fe Mon Sep 17 00:00:00 2001
+From 13476d4c2222b853184d230bb43cef143ba03d29 Mon Sep 17 00:00:00 2001
 From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
-Date: Fri, 31 Mar 2023 14:17:34 -0700
+Date: Wed, 6 Nov 2024 10:22:41 +0000
 Subject: [PATCH 2/2] linux-esx, Makefile: Add kernel flavor info to the
  generated version.h file
 
@@ -14,10 +14,10 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 55f1c4f1c8c1..eb780e12975d 100644
+index 9893280cf..f859c155f 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1349,7 +1349,7 @@ define filechk_version.h
+@@ -1270,7 +1270,7 @@ define filechk_version.h
  	echo '#define PHOTON_KERNEL';                                                   \
  	echo '#define PHOTON_KERNEL_RELEASE                                             \
  	$(shell echo -n "$(KERNELRELEASE)" | cut -d'-' -f2 | cut -d'.' -f1)';           \
@@ -25,7 +25,7 @@ index 55f1c4f1c8c1..eb780e12975d 100644
 +	echo '#define PHOTON_KERNEL_FLAVOR_ESX'
  endef
  
- $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
+ $(version_h): private PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 -- 
-2.25.1
+2.39.4
 

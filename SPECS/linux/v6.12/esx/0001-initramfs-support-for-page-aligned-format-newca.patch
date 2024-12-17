@@ -1,6 +1,6 @@
-From 614047c99d7a22a58fdb2ac5b2522eb36bccfe40 Mon Sep 17 00:00:00 2001
+From 32f90ed75b2fcec94f457bb448f928159c27db60 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Tue, 19 May 2020 11:04:52 -0700
+Date: Wed, 13 Nov 2024 11:54:05 +0000
 Subject: [PATCH] initramfs: support for page aligned format "newca"
 
    NEWCA format
@@ -66,17 +66,17 @@ Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Bo Gan <ganb@vmware.com>
 Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
 ---
- init/initramfs.c | 195 ++++++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 185 insertions(+), 10 deletions(-)
+ init/initramfs.c | 193 ++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 183 insertions(+), 10 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 2f5bfb7d7..5fa32eee1 100644
+index bc911e466..600228d6d 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
-@@ -17,6 +17,79 @@
- #include <linux/init_syscalls.h>
- #include <linux/task_work.h>
- #include <linux/umh.h>
+@@ -20,6 +20,79 @@
+ #include <linux/security.h>
+ 
+ #include "do_mounts.h"
 +#include <linux/initrd.h>
 +#include <linux/pagemap.h>
 +
@@ -153,7 +153,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  
  static __initdata bool csum_present;
  static __initdata u32 io_csum;
-@@ -26,6 +99,15 @@ static ssize_t __init xwrite(struct file *file, const unsigned char *p,
+@@ -29,6 +102,15 @@ static ssize_t __init xwrite(struct file *file, const unsigned char *p,
  {
  	ssize_t out = 0;
  
@@ -169,7 +169,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  	/* sys_write only can write MAX_RW_COUNT aka 2G-4K bytes at most */
  	while (count) {
  		ssize_t rv = kernel_write(file, p, count, pos);
-@@ -212,6 +294,8 @@ static void __init parse_header(char *s)
+@@ -208,6 +290,8 @@ static void __init parse_header(char *s)
  	rdev = new_encode_dev(MKDEV(parsed[9], parsed[10]));
  	name_len = parsed[11];
  	hdr_csum = parsed[12];
@@ -178,7 +178,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  }
  
  /* FSM */
-@@ -231,7 +315,7 @@ static __initdata char *victim;
+@@ -227,7 +311,7 @@ static __initdata char *victim;
  static unsigned long byte_count __initdata;
  static __initdata loff_t this_header, next_header;
  
@@ -187,7 +187,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  {
  	victim += n;
  	this_header += n;
-@@ -280,10 +364,20 @@ static int __init do_collect(void)
+@@ -276,10 +360,20 @@ static int __init do_collect(void)
  
  static int __init do_header(void)
  {
@@ -208,7 +208,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  	} else {
  		if (memcmp(collected, "070707", 6) == 0)
  			error("incorrect cpio method used: use -H newc option");
-@@ -292,7 +386,17 @@ static int __init do_header(void)
+@@ -288,7 +382,17 @@ static int __init do_header(void)
  		return 1;
  	}
  	parse_header(collected);
@@ -227,7 +227,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  	next_header = (next_header + 3) & ~3;
  	state = SkipIt;
  	if (name_len <= 0 || name_len > PATH_MAX)
-@@ -357,6 +461,16 @@ static int __init maybe_link(void)
+@@ -353,6 +457,16 @@ static int __init maybe_link(void)
  	return 0;
  }
  
@@ -244,7 +244,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  static __initdata struct file *wfile;
  static __initdata loff_t wfile_pos;
  
-@@ -365,6 +479,7 @@ static int __init do_name(void)
+@@ -361,6 +475,7 @@ static int __init do_name(void)
  	state = SkipIt;
  	next_state = Reset;
  	if (strcmp(collected, "TRAILER!!!") == 0) {
@@ -252,10 +252,10 @@ index 2f5bfb7d7..5fa32eee1 100644
  		free_hash();
  		return 0;
  	}
-@@ -373,8 +488,13 @@ static int __init do_name(void)
+@@ -369,8 +484,13 @@ static int __init do_name(void)
  		int ml = maybe_link();
  		if (ml >= 0) {
- 			int openflags = O_WRONLY|O_CREAT;
+ 			int openflags = O_WRONLY|O_CREAT|O_LARGEFILE;
 -			if (ml != 1)
 +			if (ml != 1) {
 +				if (panic_on_initramfs_error &&
@@ -267,7 +267,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  			wfile = filp_open(collected, openflags, mode);
  			if (IS_ERR(wfile))
  				return 0;
-@@ -406,6 +526,10 @@ static int __init do_name(void)
+@@ -402,6 +522,10 @@ static int __init do_name(void)
  
  static int __init do_copy(void)
  {
@@ -278,7 +278,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  	if (byte_count >= body_len) {
  		if (xwrite(wfile, victim, body_len, &wfile_pos) != body_len)
  			error("write error");
-@@ -492,6 +616,8 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -488,6 +612,8 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	decompress_fn decompress;
  	const char *compress_name;
  	static __initdata char msg_buf[64];
@@ -287,7 +287,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  
  	header_buf = kmalloc(110, GFP_KERNEL);
  	symlink_buf = kmalloc(PATH_MAX + N_ALIGN(PATH_MAX) + 1, GFP_KERNEL);
-@@ -504,19 +630,20 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -500,19 +626,20 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	this_header = 0;
  	message = NULL;
  	while (!message && len) {
@@ -310,7 +310,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  		}
  		this_header = 0;
  		decompress = decompress_method(buf, len, &compress_name);
-@@ -540,6 +667,46 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -536,6 +663,46 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  		this_header = saved_offset + my_inptr;
  		buf += my_inptr;
  		len -= my_inptr;
@@ -357,7 +357,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  	}
  	dir_utime();
  	kfree(name_buf);
-@@ -548,8 +715,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -544,8 +711,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	return message;
  }
  
@@ -366,15 +366,15 @@ index 2f5bfb7d7..5fa32eee1 100644
  static int __init retain_initrd_param(char *str)
  {
  	if (*str)
-@@ -578,7 +743,6 @@ __setup("initramfs_async=", initramfs_async_setup);
+@@ -573,7 +738,6 @@ __setup("initramfs_async=", initramfs_async_setup);
  
  extern char __initramfs_start[];
  extern unsigned long __initramfs_size;
 -#include <linux/initrd.h>
  #include <linux/kexec.h>
  
- void __init reserve_initrd_mem(void)
-@@ -713,6 +877,8 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
+ static BIN_ATTR(initrd, 0440, sysfs_bin_attr_simple_read, NULL, 0);
+@@ -708,6 +872,8 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
  #ifdef CONFIG_BLK_DEV_RAM
  		populate_initrd_image(err);
  #else
@@ -383,26 +383,24 @@ index 2f5bfb7d7..5fa32eee1 100644
  		printk(KERN_EMERG "Initramfs unpacking failed: %s\n", err);
  #endif
  	}
-@@ -722,8 +888,17 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
- 	 * If the initrd region is overlapped with crashkernel reserved region,
+@@ -720,8 +886,15 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
  	 * free only memory that is not part of crashkernel region.
  	 */
--	if (!do_retain_initrd && initrd_start && !kexec_free_initrd())
+ 	if (!do_retain_initrd && initrd_start && !kexec_free_initrd()) {
 -		free_initrd_mem(initrd_start, initrd_end);
-+	if (!do_retain_initrd && initrd_start && !kexec_free_initrd()) {
-+                struct initramfs_image *image, *tmp;
-+                list_for_each_entry_safe(image, tmp, &initramfs_image_list,
+-	} else if (do_retain_initrd && initrd_start) {
++		struct initramfs_image *image, *tmp;
++		list_for_each_entry_safe(image, tmp, &initramfs_image_list,
 +					 list) {
-+                        free_initrd_mem(initrd_start + image->start_offset,
-+					initrd_start + image->end_offset);
-+                        list_del(&image->list);
-+                        kfree(image);
-+                }
-+
-+        }
- 	initrd_start = 0;
- 	initrd_end = 0;
- 
++			 free_initrd_mem(initrd_start + image->start_offset,
++					 initrd_start + image->end_offset);
++			 list_del(&image->list);
++			 kfree(image);
++		}	
++        } else if (do_retain_initrd && initrd_start) {
+ 		bin_attr_initrd.size = initrd_end - initrd_start;
+ 		bin_attr_initrd.private = (void *)initrd_start;
+ 		if (sysfs_create_bin_file(firmware_kobj, &bin_attr_initrd))
 -- 
-2.34.1
+2.39.4
 

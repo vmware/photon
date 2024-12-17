@@ -1,6 +1,6 @@
-From 1b93d728cdb28635e5fcfee724c8aca669193729 Mon Sep 17 00:00:00 2001
+From f110796754f315586314ab811d8b4da056e79c4c Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhir@vmware.com>
-Date: Tue, 2 Jan 2024 08:52:12 +0000
+Date: Wed, 13 Nov 2024 12:36:26 +0000
 Subject: [PATCH] external_entropy: Enable External Entropy support
 
   -  VMWare ESXi hypervisor can provide true random numbers
@@ -36,12 +36,12 @@ Signed-off-by: srinidhira0 <srinidhir@vmware.com>
  create mode 100644 drivers/char/hw_random/external_entropy/external_entropy_threaded_work.h
 
 diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
-index 8de74dcfa18c..50a244f334f5 100644
+index b6259033e..5062a98c6 100644
 --- a/drivers/char/hw_random/Kconfig
 +++ b/drivers/char/hw_random/Kconfig
-@@ -573,6 +573,18 @@ config HW_RANDOM_JH7110
- 	  To compile this driver as a module, choose M here.
- 	  The module will be called jh7110-trng.
+@@ -601,6 +601,18 @@ config HW_RANDOM_ROCKCHIP
+ 
+ 	  If unsure, say Y.
  
 +config HW_EXTERNAL_ENTROPY
 +	tristate "VMWare ESXi based True Random Number Generator support"
@@ -59,17 +59,17 @@ index 8de74dcfa18c..50a244f334f5 100644
  
  config UML_RANDOM
 diff --git a/drivers/char/hw_random/Makefile b/drivers/char/hw_random/Makefile
-index 32549a1186dc..dd98897f1210 100644
+index ef65b5876..2bbebacb6 100644
 --- a/drivers/char/hw_random/Makefile
 +++ b/drivers/char/hw_random/Makefile
-@@ -49,3 +49,4 @@ obj-$(CONFIG_HW_RANDOM_ARM_SMCCC_TRNG) += arm_smccc_trng.o
- obj-$(CONFIG_HW_RANDOM_CN10K) += cn10k-rng.o
+@@ -51,3 +51,4 @@ obj-$(CONFIG_HW_RANDOM_CN10K) += cn10k-rng.o
  obj-$(CONFIG_HW_RANDOM_POLARFIRE_SOC) += mpfs-rng.o
+ obj-$(CONFIG_HW_RANDOM_ROCKCHIP) += rockchip-rng.o
  obj-$(CONFIG_HW_RANDOM_JH7110) += jh7110-trng.o
 +obj-$(CONFIG_HW_EXTERNAL_ENTROPY) += external_entropy/
 diff --git a/drivers/char/hw_random/external_entropy/Makefile b/drivers/char/hw_random/external_entropy/Makefile
 new file mode 100644
-index 000000000000..cb37dff9a0ad
+index 000000000..cb37dff9a
 --- /dev/null
 +++ b/drivers/char/hw_random/external_entropy/Makefile
 @@ -0,0 +1,11 @@
@@ -86,7 +86,7 @@ index 000000000000..cb37dff9a0ad
 +					external_entropy.o
 diff --git a/drivers/char/hw_random/external_entropy/external-rng-io.c b/drivers/char/hw_random/external_entropy/external-rng-io.c
 new file mode 100644
-index 000000000000..284b8459a341
+index 000000000..284b8459a
 --- /dev/null
 +++ b/drivers/char/hw_random/external_entropy/external-rng-io.c
 @@ -0,0 +1,81 @@
@@ -173,7 +173,7 @@ index 000000000000..284b8459a341
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/char/hw_random/external_entropy/external_ent_config_params.c b/drivers/char/hw_random/external_entropy/external_ent_config_params.c
 new file mode 100644
-index 000000000000..0503bc0df2d9
+index 000000000..6c5d8b91e
 --- /dev/null
 +++ b/drivers/char/hw_random/external_entropy/external_ent_config_params.c
 @@ -0,0 +1,204 @@
@@ -383,7 +383,7 @@ index 000000000000..0503bc0df2d9
 +}
 diff --git a/drivers/char/hw_random/external_entropy/external_ent_config_params.h b/drivers/char/hw_random/external_entropy/external_ent_config_params.h
 new file mode 100644
-index 000000000000..e0f2733e89cd
+index 000000000..e0f2733e8
 --- /dev/null
 +++ b/drivers/char/hw_random/external_entropy/external_ent_config_params.h
 @@ -0,0 +1,36 @@
@@ -425,7 +425,7 @@ index 000000000000..e0f2733e89cd
 +#endif
 diff --git a/drivers/char/hw_random/external_entropy/external_ent_sysfs.c b/drivers/char/hw_random/external_entropy/external_ent_sysfs.c
 new file mode 100644
-index 000000000000..609f805bccce
+index 000000000..609f805bc
 --- /dev/null
 +++ b/drivers/char/hw_random/external_entropy/external_ent_sysfs.c
 @@ -0,0 +1,420 @@
@@ -851,7 +851,7 @@ index 000000000000..609f805bccce
 +}
 diff --git a/drivers/char/hw_random/external_entropy/external_ent_sysfs.h b/drivers/char/hw_random/external_entropy/external_ent_sysfs.h
 new file mode 100644
-index 000000000000..404ca53d95db
+index 000000000..404ca53d9
 --- /dev/null
 +++ b/drivers/char/hw_random/external_entropy/external_ent_sysfs.h
 @@ -0,0 +1,28 @@
@@ -885,7 +885,7 @@ index 000000000000..404ca53d95db
 +#endif
 diff --git a/drivers/char/hw_random/external_entropy/external_entropy.c b/drivers/char/hw_random/external_entropy/external_entropy.c
 new file mode 100644
-index 000000000000..bb8d6905c663
+index 000000000..0928a9820
 --- /dev/null
 +++ b/drivers/char/hw_random/external_entropy/external_entropy.c
 @@ -0,0 +1,618 @@
@@ -1509,7 +1509,7 @@ index 000000000000..bb8d6905c663
 +MODULE_AUTHOR("VMware Photon OS : Srinidhi Rao<srinidhir@vmware.com>");
 diff --git a/drivers/char/hw_random/external_entropy/external_entropy.h b/drivers/char/hw_random/external_entropy/external_entropy.h
 new file mode 100644
-index 000000000000..ca76045237b6
+index 000000000..ca7604523
 --- /dev/null
 +++ b/drivers/char/hw_random/external_entropy/external_entropy.h
 @@ -0,0 +1,211 @@
@@ -1726,7 +1726,7 @@ index 000000000000..ca76045237b6
 +#endif
 diff --git a/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.c b/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.c
 new file mode 100644
-index 000000000000..d5bbe0c928ec
+index 000000000..d5bbe0c92
 --- /dev/null
 +++ b/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.c
 @@ -0,0 +1,443 @@
@@ -2175,7 +2175,7 @@ index 000000000000..d5bbe0c928ec
 +}
 diff --git a/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.h b/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.h
 new file mode 100644
-index 000000000000..1b84f2387cbe
+index 000000000..1b84f2387
 --- /dev/null
 +++ b/drivers/char/hw_random/external_entropy/external_entropy_threaded_work.h
 @@ -0,0 +1,22 @@
@@ -2202,5 +2202,5 @@ index 000000000000..1b84f2387cbe
 +
 +#endif
 -- 
-2.35.6
+2.39.4
 

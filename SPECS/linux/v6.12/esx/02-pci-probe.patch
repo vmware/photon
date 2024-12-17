@@ -1,6 +1,6 @@
-From 1441e406fabe396aab8355cef50a9c834ecb7688 Mon Sep 17 00:00:00 2001
+From f3d9399aa4400e0765bf995b23e728d1c1f6711f Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Tue, 29 Sep 2015 15:55:49 -0700
+Date: Wed, 13 Nov 2024 12:48:50 +0000
 Subject: [PATCH] pci/probe.c: Hardcodded pci probe.
 
 PCI probing takes a long time to scan resources for all devices
@@ -21,14 +21,14 @@ Signed-off-by: Bo Gan <ganb@vmware.com>
  drivers/pci/iov.c   |   3 +-
  drivers/pci/pci.c   |   2 +
  drivers/pci/pci.h   |   4 +-
- drivers/pci/probe.c | 269 +++++++++++++++++++++++++++++++++++++++++++-
- 4 files changed, 270 insertions(+), 8 deletions(-)
+ drivers/pci/probe.c | 275 ++++++++++++++++++++++++++++++++++++++++++--
+ 4 files changed, 275 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-index 952217572113..19dbb064e05a 100644
+index aaa33e8dc..24677ccf7 100644
 --- a/drivers/pci/iov.c
 +++ b/drivers/pci/iov.c
-@@ -794,7 +794,8 @@ static int sriov_init(struct pci_dev *dev, int pos)
+@@ -796,7 +796,8 @@ static int sriov_init(struct pci_dev *dev, int pos)
  			bar64 = (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
  		else
  			bar64 = __pci_read_base(dev, pci_bar_unknown, res,
@@ -39,23 +39,23 @@ index 952217572113..19dbb064e05a 100644
  			continue;
  		if (resource_size(res) & (PAGE_SIZE - 1)) {
 diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 95bc329e74c0..7132e08d28a2 100644
+index 225a6cd2e..8e02b7154 100644
 --- a/drivers/pci/pci.c
 +++ b/drivers/pci/pci.c
-@@ -6896,6 +6896,8 @@ static int __init pci_setup(char *str)
+@@ -6934,6 +6934,8 @@ static int __init pci_setup(char *str)
  				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
  			} else if (!strncmp(str, "disable_acs_redir=", 18)) {
  				disable_acs_redir_param = str + 18;
 +			} else if (!strncmp(str, "scan_all", 8)) {
 +				pci_scan_all();
+ 			} else if (!strncmp(str, "config_acs=", 11)) {
+ 				config_acs_param = str + 11;
  			} else {
- 				pr_err("PCI: Unknown option `%s'\n", str);
- 			}
 diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index 785f31086313..95f154404c0f 100644
+index 14d00ce45..df1d9ebae 100644
 --- a/drivers/pci/pci.h
 +++ b/drivers/pci/pci.h
-@@ -162,6 +162,7 @@ void pci_no_msi(void);
+@@ -231,6 +231,7 @@ void pci_no_msi(void);
  static inline void pci_no_msi(void) { }
  #endif
  
@@ -63,7 +63,7 @@ index 785f31086313..95f154404c0f 100644
  void pci_realloc_get_opt(char *);
  
  static inline int pci_no_d1d2(struct pci_dev *dev)
-@@ -234,7 +235,8 @@ int pci_idt_bus_quirk(struct pci_bus *bus, int devfn, u32 *pl, int crs_timeout);
+@@ -315,7 +316,8 @@ int pci_idt_bus_quirk(struct pci_bus *bus, int devfn, u32 *pl, int rrs_timeout);
  
  int pci_setup_device(struct pci_dev *dev);
  int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
@@ -74,10 +74,10 @@ index 785f31086313..95f154404c0f 100644
  void __pci_bus_size_bridges(struct pci_bus *bus,
  			struct list_head *realloc_head);
 diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index bdcad5e0f057..9360bf51a914 100644
+index f1615805f..124675f9d 100644
 --- a/drivers/pci/probe.c
 +++ b/drivers/pci/probe.c
-@@ -32,6 +32,159 @@ static struct resource busn_resource = {
+@@ -31,6 +31,159 @@ static struct resource busn_resource = {
  	.flags	= IORESOURCE_BUS,
  };
  
@@ -237,7 +237,7 @@ index bdcad5e0f057..9360bf51a914 100644
  /* Ugh.  Need to stop exporting this to modules. */
  LIST_HEAD(pci_root_buses);
  EXPORT_SYMBOL(pci_root_buses);
-@@ -163,6 +316,79 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -162,6 +315,79 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  	return flags;
  }
  
@@ -317,7 +317,7 @@ index bdcad5e0f057..9360bf51a914 100644
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
  /**
-@@ -175,17 +396,26 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -174,18 +400,27 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
   * Returns 1 if the BAR is 64-bit, or 0 if 32-bit.
   */
  int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
@@ -329,6 +329,7 @@ index bdcad5e0f057..9360bf51a914 100644
  	u64 l64, sz64, mask64;
  	u16 orig_cmd;
  	struct pci_bus_region region, inverted_region;
+ 	const char *res_name = pci_resource_name(dev, res - dev->resource);
 +	const bool known = !PCI_POSSIBLE_ERROR(sz_known);
 +	const bool noprobe = known && !pci_scan_and_verify;
 +	const bool validate = known && pci_scan_and_verify;
@@ -346,7 +347,7 @@ index bdcad5e0f057..9360bf51a914 100644
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
  		if (orig_cmd & PCI_COMMAND_DECODE_ENABLE) {
  			pci_write_config_word(dev, PCI_COMMAND,
-@@ -196,9 +426,17 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -196,9 +431,17 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  	res->name = pci_name(dev);
  
  	pci_read_config_dword(dev, pos, &l);
@@ -364,7 +365,7 @@ index bdcad5e0f057..9360bf51a914 100644
  
  	/*
  	 * All bits set in sz means the device isn't working properly.
-@@ -238,16 +476,24 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -238,16 +481,24 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  
  	if (res->flags & IORESOURCE_MEM_64) {
  		pci_read_config_dword(dev, pos + 4, &l);
@@ -390,20 +391,21 @@ index bdcad5e0f057..9360bf51a914 100644
  		pci_write_config_word(dev, PCI_COMMAND, orig_cmd);
  
  	if (!sz64)
-@@ -313,8 +559,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -312,9 +563,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  fail:
  	res->flags = 0;
  out:
 -	if (res->flags)
 +	if (res->flags) {
- 		pci_info(dev, "reg 0x%x: %pR\n", pos, res);
+ 		pci_info(dev, "%s %pR\n", res_name, res);
+-
 +		if (validate && !sz_known)
 +			dev_err(&dev->dev, "reg 0x%x: Not in known BAR list\n", pos);
 +	}
- 
  	return (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
  }
-@@ -332,16 +581,24 @@ static void pci_read_bases(struct pci_dev *dev, unsigned int howmany, int rom)
+ 
+@@ -331,16 +584,24 @@ static void pci_read_bases(struct pci_dev *dev, unsigned int howmany, int rom)
  
  	for (pos = 0; pos < howmany; pos++) {
  		struct resource *res = &dev->resource[pos];
@@ -431,5 +433,5 @@ index bdcad5e0f057..9360bf51a914 100644
  }
  
 -- 
-2.25.1
+2.39.4
 

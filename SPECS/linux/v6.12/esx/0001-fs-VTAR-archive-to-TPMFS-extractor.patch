@@ -1,6 +1,6 @@
-From 77862fd1e1b5bff383f52e0ffd0ea99c12a5e471 Mon Sep 17 00:00:00 2001
+From 3440e3fbd8d1e83c59338864ed56d24aa77e9c5d Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
-Date: Wed, 7 Oct 2020 12:50:40 +0000
+Date: Wed, 13 Nov 2024 08:19:20 +0000
 Subject: [PATCH] fs: VTAR archive to TPMFS extractor
 
 - GNU TAR Archieve consists of header with information of the
@@ -29,8 +29,8 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  fs/vtar/Makefile  |   7 +
  fs/vtar/README.md |  33 +++
  fs/vtar/vtar.h    |  80 +++++++
- fs/vtar/vtarfs.c  | 538 ++++++++++++++++++++++++++++++++++++++++++++++
- 7 files changed, 681 insertions(+)
+ fs/vtar/vtarfs.c  | 536 ++++++++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 679 insertions(+)
  create mode 100644 fs/vtar/Kconfig
  create mode 100644 fs/vtar/Makefile
  create mode 100644 fs/vtar/README.md
@@ -38,10 +38,10 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  create mode 100644 fs/vtar/vtarfs.c
 
 diff --git a/fs/Kconfig b/fs/Kconfig
-index aa7e03cc1..4edde5bd6 100644
+index aae170fc2..570f8f00c 100644
 --- a/fs/Kconfig
 +++ b/fs/Kconfig
-@@ -331,6 +331,7 @@ source "fs/sysv/Kconfig"
+@@ -341,6 +341,7 @@ source "fs/sysv/Kconfig"
  source "fs/ufs/Kconfig"
  source "fs/erofs/Kconfig"
  source "fs/vboxsf/Kconfig"
@@ -50,14 +50,15 @@ index aa7e03cc1..4edde5bd6 100644
  endif # MISC_FILESYSTEMS
  
 diff --git a/fs/Makefile b/fs/Makefile
-index f9541f40b..4113a2321 100644
+index 61679fd58..a0f4c8544 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
-@@ -129,3 +129,4 @@ obj-$(CONFIG_EFIVAR_FS)		+= efivarfs/
+@@ -129,4 +129,5 @@ obj-$(CONFIG_EFIVAR_FS)		+= efivarfs/
  obj-$(CONFIG_EROFS_FS)		+= erofs/
  obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
  obj-$(CONFIG_ZONEFS_FS)		+= zonefs/
 +obj-$(CONFIG_VTAR)		+= vtar/
+ obj-$(CONFIG_BPF_LSM)		+= bpf_fs_kfuncs.o
 diff --git a/fs/vtar/Kconfig b/fs/vtar/Kconfig
 new file mode 100644
 index 000000000..e9628c8c8
@@ -225,10 +226,10 @@ index 000000000..c7d06b56b
 +#endif
 diff --git a/fs/vtar/vtarfs.c b/fs/vtar/vtarfs.c
 new file mode 100644
-index 000000000..ec67d3138
+index 000000000..40b27bf25
 --- /dev/null
 +++ b/fs/vtar/vtarfs.c
-@@ -0,0 +1,538 @@
+@@ -0,0 +1,536 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -429,11 +430,6 @@ index 000000000..ec67d3138
 +			pr_err("%s: read_mapping_page failed  ret=%lu", __func__, PTR_ERR(page));
 +			return PTR_ERR(page);
 +		}
-+		if (PageError(page)) {
-+			pr_err("%s: read_mapping_page failed  pn=%d", __func__, pn);
-+			put_page(page);
-+			continue;
-+		}
 +		ret = add_to_page_cache_lru(page, mapping, pn, gfp_mask);
 +		if (ret) {
 +			pr_err("%s: failed add_to_page_cache_lru ret=%lu", __func__, ret);
@@ -572,7 +568,7 @@ index 000000000..ec67d3138
 +
 +struct inode *vtar_create_inode(struct super_block *sb, umode_t mode)
 +{
-+
++	struct timespec64 ts;
 +	struct inode * inode = new_inode(sb);
 +
 +	if ( !inode ) {
@@ -580,11 +576,14 @@ index 000000000..ec67d3138
 +		return NULL;
 +	}
 +
++	ts = current_time(inode);
 +	inode->i_ino = get_next_ino();
 +	inode->i_mode = mode;
 +	inode->i_uid = current_fsuid();
 +	inode->i_gid = current_fsgid();
-+	inode->i_atime = inode->i_mtime = inode->__i_ctime = current_time(inode);
++	inode_set_atime_to_ts(inode, ts);
++	inode_set_mtime_to_ts(inode, ts);
++	inode_set_ctime_to_ts(inode, ts);
 +	inode->i_sb = sb;
 +	inode->i_fop = &simple_dir_operations;
 +
@@ -768,5 +767,5 @@ index 000000000..ec67d3138
 +MODULE_AUTHOR("VMware Photon OS : Srinidhi Rao <srinidhir@vmware.com>");
 +MODULE_AUTHOR("VMware Photon OS : Ankit Jain <ankitja@vmware.com>");
 -- 
-2.35.6
+2.39.4
 

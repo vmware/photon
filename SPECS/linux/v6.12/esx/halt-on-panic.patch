@@ -1,6 +1,6 @@
-From d2320eb284dd81affc4d2d6ad45e09e1f6332b5e Mon Sep 17 00:00:00 2001
+From ee01cf21f18f0bfd41842a7cbeead88a726389cf Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Thu, 22 Oct 2020 18:54:49 -0700
+Date: Wed, 13 Nov 2024 12:50:55 +0000
 Subject: [PATCH] kernel/panic: halt on panic implementation
 
 Can be used by CRX to collect guest dump on panic.
@@ -12,10 +12,10 @@ booted VM (debug and release builds).
  1 file changed, 4 insertions(+)
 
 diff --git a/kernel/panic.c b/kernel/panic.c
-index ef9f9a4e9..36ccbc50e 100644
+index fbc59b3b6..b2f39d7ae 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -58,6 +58,7 @@ static int pause_on_oops;
+@@ -59,6 +59,7 @@ static int pause_on_oops;
  static int pause_on_oops_flag;
  static DEFINE_SPINLOCK(pause_on_oops_lock);
  bool crash_kexec_post_notifiers;
@@ -23,8 +23,8 @@ index ef9f9a4e9..36ccbc50e 100644
  int panic_on_warn __read_mostly;
  unsigned long panic_on_taint;
  bool panic_on_taint_nousertaint = false;
-@@ -451,6 +452,8 @@ void panic(const char *fmt, ...)
- 	console_flush_on_panic(CONSOLE_FLUSH_PENDING);
+@@ -468,6 +469,8 @@ void panic(const char *fmt, ...)
+ 	nbcon_atomic_flush_unsafe();
  
  	local_irq_enable();
 +	if (halt_on_panic)
@@ -32,7 +32,7 @@ index ef9f9a4e9..36ccbc50e 100644
  	for (i = 0; ; i += PANIC_TIMER_STEP) {
  		touch_softlockup_watchdog();
  		if (i >= i_next) {
-@@ -777,6 +780,7 @@ core_param(panic_print, panic_print, ulong, 0644);
+@@ -846,6 +849,7 @@ core_param(panic_print, panic_print, ulong, 0644);
  core_param(pause_on_oops, pause_on_oops, int, 0644);
  core_param(panic_on_warn, panic_on_warn, int, 0644);
  core_param(crash_kexec_post_notifiers, crash_kexec_post_notifiers, bool, 0644);
@@ -41,5 +41,5 @@ index ef9f9a4e9..36ccbc50e 100644
  static int __init oops_setup(char *s)
  {
 -- 
-2.35.6
+2.39.4
 

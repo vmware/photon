@@ -1,6 +1,6 @@
-From b2476d9be165707fc939c008b448861517b60667 Mon Sep 17 00:00:00 2001
-From: Thomas Gleixner <tglx@linutronix.de>
-Date: Wed, 30 Aug 2023 11:38:29 +0530
+From f0e4fa5978a571c9eb1ac346b18ecd9c6bb2aa9e Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Thu, 23 Jan 2025 10:45:40 +0000
 Subject: [PATCH] x86/entry: Align entry text section to PMD boundary
 
 The (irq)entry text must be visible in the user space page tables. To allow
@@ -48,10 +48,10 @@ Signed-off-by: Ingo Molnar <mingo@kernel.org>
  1 file changed, 3 deletions(-)
 
 diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index 54a5596ad..661b0ebc3 100644
+index feb8102a9..cc461c48a 100644
 --- a/arch/x86/kernel/vmlinux.lds.S
 +++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -67,7 +67,6 @@ jiffies = jiffies_64;
+@@ -64,7 +64,6 @@ const_pcpu_hot = pcpu_hot;
  		__end_rodata_aligned = .;
  
  #define ALIGN_ENTRY_TEXT_BEGIN	. = ALIGN(PMD_SIZE);
@@ -59,7 +59,7 @@ index 54a5596ad..661b0ebc3 100644
  
  /*
   * This section contains data which will be mapped as decrypted. Memory
-@@ -94,7 +93,6 @@ jiffies = jiffies_64;
+@@ -91,7 +90,6 @@ const_pcpu_hot = pcpu_hot;
  		__end_rodata_aligned = .;
  
  #define ALIGN_ENTRY_TEXT_BEGIN
@@ -67,7 +67,7 @@ index 54a5596ad..661b0ebc3 100644
  #define BSS_DECRYPTED
  
  #endif
-@@ -150,7 +148,6 @@ SECTIONS
+@@ -146,7 +144,6 @@ SECTIONS
  		. = srso_alias_untrain_ret | (1 << 2) | (1 << 8) | (1 << 14) | (1 << 20);
  		*(.text..__x86.rethunk_safe)
  #endif
@@ -76,5 +76,5 @@ index 54a5596ad..661b0ebc3 100644
  
  	} :text = 0xcccccccc
 -- 
-2.35.6
+2.39.4
 

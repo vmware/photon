@@ -1,6 +1,6 @@
-From d0196e01e76746a41a923631837cb087fa9c81a9 Mon Sep 17 00:00:00 2001
+From e62081b2b3cc15a52d114b4c85c1affaabbb46ad Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
-Date: Sun, 14 Nov 2021 19:38:28 +0000
+Date: Thu, 21 Nov 2024 09:21:20 +0000
 Subject: [PATCH] fs: TARFS file system to mount TAR archive
 
 - GNU/POSIX TAR Archive consists of header with information of the
@@ -23,6 +23,9 @@ Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
 Signed-off-by: Bo Gan <ganb@vmware.com>
 Signed-off-by: Ankit Jain <ankitja@vmware.com>
+[Ajay: - fix inode count
+       - fix -EBUSY issue whiling mounting tarfs]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
 ---
  fs/Kconfig                    |   1 +
  fs/Makefile                   |   1 +
@@ -30,9 +33,9 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  fs/tarfs/Makefile             |  15 +
  fs/tarfs/README.md            |  64 +++
  fs/tarfs/tarfs.h              | 183 +++++++++
- fs/tarfs/tarfs_file_dir_ops.c | 588 ++++++++++++++++++++++++++++
- fs/tarfs/tarfs_inode.c        | 714 ++++++++++++++++++++++++++++++++++
- 8 files changed, 1584 insertions(+)
+ fs/tarfs/tarfs_file_dir_ops.c | 588 +++++++++++++++++++++++++++
+ fs/tarfs/tarfs_inode.c        | 720 ++++++++++++++++++++++++++++++++++
+ 8 files changed, 1590 insertions(+)
  create mode 100644 fs/tarfs/Kconfig
  create mode 100644 fs/tarfs/Makefile
  create mode 100644 fs/tarfs/README.md
@@ -41,10 +44,10 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  create mode 100644 fs/tarfs/tarfs_inode.c
 
 diff --git a/fs/Kconfig b/fs/Kconfig
-index 055c4d5f1..4450042f0 100644
+index 4dadee4..72c4272 100644
 --- a/fs/Kconfig
 +++ b/fs/Kconfig
-@@ -321,6 +321,7 @@ source "fs/erofs/Kconfig"
+@@ -343,6 +343,7 @@ source "fs/erofs/Kconfig"
  source "fs/vboxsf/Kconfig"
  source "fs/vtar/Kconfig"
  source "fs/vtarfs/Kconfig"
@@ -53,17 +56,18 @@ index 055c4d5f1..4450042f0 100644
  endif # MISC_FILESYSTEMS
  
 diff --git a/fs/Makefile b/fs/Makefile
-index b675a2067..75aed184b 100644
+index 032d95a..1437f9b 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
-@@ -139,3 +139,4 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
+@@ -131,4 +131,5 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
  obj-$(CONFIG_ZONEFS_FS)		+= zonefs/
  obj-$(CONFIG_VTAR)		+= vtar/
  obj-$(CONFIG_VTARFS)		+= vtarfs/
 +obj-$(CONFIG_TARFS)		+= tarfs/
+ obj-$(CONFIG_BPF_LSM)		+= bpf_fs_kfuncs.o
 diff --git a/fs/tarfs/Kconfig b/fs/tarfs/Kconfig
 new file mode 100644
-index 000000000..ff60b7e09
+index 0000000..ff60b7e
 --- /dev/null
 +++ b/fs/tarfs/Kconfig
 @@ -0,0 +1,18 @@
@@ -87,7 +91,7 @@ index 000000000..ff60b7e09
 +       module will be called tarfs. If unsure, say N.
 diff --git a/fs/tarfs/Makefile b/fs/tarfs/Makefile
 new file mode 100644
-index 000000000..592e207bb
+index 0000000..592e207
 --- /dev/null
 +++ b/fs/tarfs/Makefile
 @@ -0,0 +1,15 @@
@@ -108,7 +112,7 @@ index 000000000..592e207bb
 +	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 diff --git a/fs/tarfs/README.md b/fs/tarfs/README.md
 new file mode 100644
-index 000000000..2a816e9ff
+index 0000000..2a816e9
 --- /dev/null
 +++ b/fs/tarfs/README.md
 @@ -0,0 +1,64 @@
@@ -178,7 +182,7 @@ index 000000000..2a816e9ff
 +
 diff --git a/fs/tarfs/tarfs.h b/fs/tarfs/tarfs.h
 new file mode 100644
-index 000000000..911bd20fb
+index 0000000..ca739c9
 --- /dev/null
 +++ b/fs/tarfs/tarfs.h
 @@ -0,0 +1,183 @@
@@ -367,7 +371,7 @@ index 000000000..911bd20fb
 +#endif
 diff --git a/fs/tarfs/tarfs_file_dir_ops.c b/fs/tarfs/tarfs_file_dir_ops.c
 new file mode 100644
-index 000000000..41fa448a0
+index 0000000..8846bb1
 --- /dev/null
 +++ b/fs/tarfs/tarfs_file_dir_ops.c
 @@ -0,0 +1,588 @@
@@ -961,10 +965,10 @@ index 000000000..41fa448a0
 +EXPORT_SYMBOL_GPL(tarfs_bmap);
 diff --git a/fs/tarfs/tarfs_inode.c b/fs/tarfs/tarfs_inode.c
 new file mode 100644
-index 000000000..4231476f3
+index 0000000..bc5d110
 --- /dev/null
 +++ b/fs/tarfs/tarfs_inode.c
-@@ -0,0 +1,714 @@
+@@ -0,0 +1,720 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Filesystem to directly mount tar archive.
@@ -1066,9 +1070,9 @@ index 000000000..4231476f3
 +	inode->i_size = entry->data_size;
 +	inode->i_blocks =
 +		(inode->i_size + sb->s_blocksize - 1) >> sb->s_blocksize_bits;
-+	inode->i_atime = entry->atime;
-+	inode->i_mtime = entry->mtime;
-+	inode->__i_ctime = entry->ctime;
++	inode_set_atime_to_ts(inode, entry->atime);
++	inode_set_mtime_to_ts(inode, entry->mtime);
++	inode_set_ctime_to_ts(inode, entry->ctime);
 +	__insert_inode_hash(inode, dentry_inode->i_ino);
 +	entry->inode = inode->i_ino;
 +	entry->ptr_inode = inode;
@@ -1516,6 +1520,7 @@ index 000000000..4231476f3
 +	struct tarfs_mount_opts mount_opts;
 +	int err = -EINVAL;
 +	struct tarfs_sbi *sb_info;
++	struct timespec64 ts;
 +
 +	sb_info = kzalloc(sizeof(struct tarfs_sbi), GFP_KERNEL);
 +	if (IS_ERR_OR_NULL(sb_info)) {
@@ -1547,7 +1552,10 @@ index 000000000..4231476f3
 +	}
 +	inode->i_uid = current_fsuid();
 +	inode->i_gid = current_fsgid();
-+	inode->i_atime = inode->i_mtime = inode->__i_ctime = current_time(inode);
++	ts = current_time(inode);
++	inode_set_atime_to_ts(inode, ts);
++	inode_set_mtime_to_ts(inode, ts);
++	inode_set_ctime_to_ts(inode, ts);
 +	inode->i_size = sb->s_blocksize;
 +	inode->i_blocks = (inode->i_size + sb->s_blocksize - 1) >> sb->s_blocksize_bits;
 +	inode->i_op = &tarfs_dir_inode_operations;
@@ -1615,6 +1623,9 @@ index 000000000..4231476f3
 +		next = entry->next;
 +		tarfs_debug("basename=%s dirn=%s", entry->base_name, entry->dir_name);
 +
++		if(entry->ptr_inode)
++			iput(entry->ptr_inode);
++
 +		if (entry->dir_name < entry->base_name)
 +			kfree(entry->dir_name);
 +		else
@@ -1628,8 +1639,7 @@ index 000000000..4231476f3
 +		kfree(sb->s_root->d_fsdata);
 +
 +	kfree(sb_info);
-+
-+	generic_shutdown_super(sb);
++	kill_block_super(sb);
 +}
 +
 +static struct file_system_type tarfs_type = {
@@ -1680,5 +1690,5 @@ index 000000000..4231476f3
 +MODULE_AUTHOR("VMware Photon OS : Ankit Jain <ankitja@vmware.com>");
 +MODULE_AUTHOR("VMware Photon OS : Ashwin Dayanand Kamat <kashwindayan@vmware.com>");
 -- 
-2.23.1
+2.39.4
 

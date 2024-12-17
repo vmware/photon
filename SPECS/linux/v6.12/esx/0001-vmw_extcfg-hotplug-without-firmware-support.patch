@@ -1,6 +1,6 @@
-From 28187f6f63463aa192d386f510eacd5d8d04107c Mon Sep 17 00:00:00 2001
+From dc2368611461038e31393341ab9a2d1a19056044 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
-Date: Wed, 23 Feb 2022 09:25:56 +0530
+Date: Wed, 13 Nov 2024 16:25:39 +0000
 Subject: [PATCH] 0001-vmw_extcfg: Prepare for Non-ACPI Hotplug support
 
 Provide a way to receive hotplug events when ACPI is disabled.
@@ -43,10 +43,10 @@ Signed-off-by: Alex Upshaw <upshawa@vmware.com>
  create mode 100644 drivers/misc/vmw_extcfg/extcfg_driver.h
 
 diff --git a/arch/x86/include/asm/io_apic.h b/arch/x86/include/asm/io_apic.h
-index 51c782600e02..ebdad0ceb03c 100644
+index 0d806513c..8ba13899d 100644
 --- a/arch/x86/include/asm/io_apic.h
 +++ b/arch/x86/include/asm/io_apic.h
-@@ -149,6 +149,8 @@ extern int mp_map_gsi_to_irq(u32 gsi, unsigned int flags,
+@@ -148,6 +148,8 @@ extern int mp_map_gsi_to_irq(u32 gsi, unsigned int flags,
  extern void mp_unmap_irq(int irq);
  extern int mp_register_ioapic(int id, u32 address, u32 gsi_base,
  			      struct ioapic_domain_cfg *cfg);
@@ -56,10 +56,10 @@ index 51c782600e02..ebdad0ceb03c 100644
  extern int mp_ioapic_registered(u32 gsi_base);
  
 diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
-index c55c0ef47a18..8000fb7fce20 100644
+index 4efecac49..7c98c6265 100644
 --- a/arch/x86/kernel/acpi/boot.c
 +++ b/arch/x86/kernel/acpi/boot.c
-@@ -516,6 +516,12 @@ static int __init mp_register_ioapic_irq(u8 bus_irq, u8 polarity,
+@@ -436,6 +436,12 @@ static int __init mp_register_ioapic_irq(u8 bus_irq, u8 polarity,
  	return 0;
  }
  
@@ -73,27 +73,30 @@ index c55c0ef47a18..8000fb7fce20 100644
  acpi_parse_ioapic(union acpi_subtable_headers * header, const unsigned long end)
  {
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index cadd4a820c03..de06d3301fb4 100644
+index 3fe7e2a9b..db96ceeb7 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
-@@ -579,4 +579,5 @@ source "drivers/misc/cardreader/Kconfig"
- source "drivers/misc/uacce/Kconfig"
+@@ -628,4 +628,5 @@ source "drivers/misc/uacce/Kconfig"
  source "drivers/misc/pvpanic/Kconfig"
  source "drivers/misc/mchp_pci1xxxx/Kconfig"
+ source "drivers/misc/keba/Kconfig"
 +source "drivers/misc/vmw_extcfg/Kconfig"
  endmenu
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index f2a4d1ff65d4..ed4f6d2ab23c 100644
+index a9f94525e..bcdb52acb 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
-@@ -67,3 +67,4 @@ obj-$(CONFIG_TMR_MANAGER)      += xilinx_tmr_manager.o
+@@ -69,6 +69,7 @@ obj-$(CONFIG_TMR_MANAGER)      += xilinx_tmr_manager.o
  obj-$(CONFIG_TMR_INJECT)	+= xilinx_tmr_inject.o
  obj-$(CONFIG_TPS6594_ESM)	+= tps6594-esm.o
  obj-$(CONFIG_TPS6594_PFSM)	+= tps6594-pfsm.o
-+obj-$(CONFIG_VMWARE_EXTCFG)    += vmw_extcfg/
++obj-$(CONFIG_VMWARE_EXTCFG)	+= vmw_extcfg/
+ obj-$(CONFIG_NSM)		+= nsm.o
+ obj-$(CONFIG_MARVELL_CN10K_DPI)	+= mrvl_cn10k_dpi.o
+ obj-y				+= keba/
 diff --git a/drivers/misc/vmw_extcfg/Kconfig b/drivers/misc/vmw_extcfg/Kconfig
 new file mode 100644
-index 000000000000..ab063665e244
+index 000000000..ab063665e
 --- /dev/null
 +++ b/drivers/misc/vmw_extcfg/Kconfig
 @@ -0,0 +1,15 @@
@@ -114,7 +117,7 @@ index 000000000000..ab063665e244
 +
 diff --git a/drivers/misc/vmw_extcfg/Makefile b/drivers/misc/vmw_extcfg/Makefile
 new file mode 100644
-index 000000000000..909b413390be
+index 000000000..909b41339
 --- /dev/null
 +++ b/drivers/misc/vmw_extcfg/Makefile
 @@ -0,0 +1,3 @@
@@ -124,7 +127,7 @@ index 000000000000..909b413390be
 \ No newline at end of file
 diff --git a/drivers/misc/vmw_extcfg/extcfg_device.c b/drivers/misc/vmw_extcfg/extcfg_device.c
 new file mode 100644
-index 000000000000..af13d6fd7b99
+index 000000000..af13d6fd7
 --- /dev/null
 +++ b/drivers/misc/vmw_extcfg/extcfg_device.c
 @@ -0,0 +1,67 @@
@@ -197,7 +200,7 @@ index 000000000000..af13d6fd7b99
 +}
 diff --git a/drivers/misc/vmw_extcfg/extcfg_device.h b/drivers/misc/vmw_extcfg/extcfg_device.h
 new file mode 100644
-index 000000000000..936d773fe9c6
+index 000000000..936d773fe
 --- /dev/null
 +++ b/drivers/misc/vmw_extcfg/extcfg_device.h
 @@ -0,0 +1,74 @@
@@ -277,7 +280,7 @@ index 000000000000..936d773fe9c6
 +#endif /* _EXTCFG_DEVICE_H_ */
 diff --git a/drivers/misc/vmw_extcfg/extcfg_driver.c b/drivers/misc/vmw_extcfg/extcfg_driver.c
 new file mode 100644
-index 000000000000..881cd1fcd8f6
+index 000000000..881cd1fcd
 --- /dev/null
 +++ b/drivers/misc/vmw_extcfg/extcfg_driver.c
 @@ -0,0 +1,170 @@
@@ -453,7 +456,7 @@ index 000000000000..881cd1fcd8f6
 +MODULE_LICENSE("Dual BSD/GPL");
 diff --git a/drivers/misc/vmw_extcfg/extcfg_driver.h b/drivers/misc/vmw_extcfg/extcfg_driver.h
 new file mode 100644
-index 000000000000..ca20e97d3d84
+index 000000000..ca20e97d3
 --- /dev/null
 +++ b/drivers/misc/vmw_extcfg/extcfg_driver.h
 @@ -0,0 +1,26 @@
@@ -484,5 +487,5 @@ index 000000000000..ca20e97d3d84
 +
 +#endif /* _EXTCFG_DRIVER_H_ */
 -- 
-2.35.6
+2.39.4
 

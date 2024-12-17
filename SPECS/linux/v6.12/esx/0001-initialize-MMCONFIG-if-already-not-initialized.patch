@@ -1,6 +1,6 @@
-From dc3b95ed280bfae1791fe8841e5be60f1c6512db Mon Sep 17 00:00:00 2001
-From: Ajay Kaher <akaher@vmware.com>
-Date: Thu, 14 Apr 2022 15:38:33 +0530
+From c774b5b0a28147771ed7a24d5cc0d38d7cf6ec9a Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Wed, 13 Nov 2024 16:18:22 +0000
 Subject: [PATCH] initialize MMCONFIG, if already not initialized
 
 For CRX, guest needs to initialize MMCONFIG.
@@ -8,38 +8,32 @@ For CRX, guest needs to initialize MMCONFIG.
 Signed-off-by: Ajay Kaher <akaher@vmware.com>
 Signed-off-by: Bo Gan <ganb@vmware.com>
 ---
- arch/x86/pci/mmconfig-shared.c | 47 +++++++++++++++++++++++++++++++---
- 1 file changed, 44 insertions(+), 3 deletions(-)
+ arch/x86/pci/mmconfig-shared.c | 41 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
 diff --git a/arch/x86/pci/mmconfig-shared.c b/arch/x86/pci/mmconfig-shared.c
-index e9497ee0f..f670f583d 100644
+index 39255f0..5c2f7df 100644
 --- a/arch/x86/pci/mmconfig-shared.c
 +++ b/arch/x86/pci/mmconfig-shared.c
-@@ -23,6 +23,7 @@
+@@ -25,6 +25,7 @@
  #include <asm/e820/api.h>
  #include <asm/pci_x86.h>
  #include <asm/acpi.h>
 +#include <asm/hypervisor.h>
  
- #define PREFIX "PCI: "
+ /* Indicate if the ECAM resources have been placed into the resource table */
+ static bool pci_mmcfg_running_state;
+@@ -572,6 +573,9 @@ static bool __ref pci_mmcfg_reserved(struct device *dev,
+ 		}
+ 	}
  
-@@ -568,9 +569,12 @@ pci_mmcfg_check_reserved(struct device *dev, struct pci_mmcfg_region *cfg, int e
- 
- 	/* Don't try to do this check unless configuration
- 	   type 1 is available. how about type 2 ?*/
--	if (raw_pci_ops)
--		return is_mmconf_reserved(e820__mapped_all, cfg, dev,
--					  "E820 entry");
-+	if (raw_pci_ops && is_mmconf_reserved(e820__mapped_all, cfg, dev,
-+					"E820 entry"))
-+		return true;
-+
 +	if(cfg->res.flags & IORESOURCE_BUSY)
 +		return true;
- 
- 	return false;
- }
-@@ -702,6 +706,43 @@ static void __init __pci_mmcfg_init(int early)
++
+ 	/*
+ 	 * e820__mapped_all() is marked as __init.
+ 	 * All entries from ACPI MCFG table have been checked at boot time.
+@@ -711,6 +715,43 @@ static void __init __pci_mmcfg_init(int early)
  
  static int __initdata known_bridge;
  
@@ -82,7 +76,7 @@ index e9497ee0f..f670f583d 100644
 +
  void __init pci_mmcfg_early_init(void)
  {
- 	if (pci_probe & PCI_PROBE_MMCONF) {
+ 	pr_debug("%s() pci_probe %#x\n", __func__, pci_probe);
 -- 
-2.35.6
+2.39.0
 
