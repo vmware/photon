@@ -1,7 +1,7 @@
 Summary:        The Swiss Army knife of Python web development
 Name:           python3-werkzeug
 Version:        2.2.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,6 +12,8 @@ Source0:        https://pypi.python.org/packages/ab/65/d3f1edd1109cb1beb6b82f413
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2024-34069.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -51,6 +53,8 @@ LANG=en_US.UTF-8 PYTHONPATH=./  python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.2-3
+- Fix CVE-2024-34069
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.2-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.2-1

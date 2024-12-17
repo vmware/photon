@@ -2,15 +2,15 @@
 
 Summary:        Coroutine-based network library
 Name:           python3-gevent
-Version:        23.7.0
-Release:        2%{?dist}
+Version:        23.9.1
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/gevent
 
 Source0: https://pypi.org/project/%{srcname}/%{version}/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=d452e58e96ba5b7f995b9a762fe378cef24a728a5291b3df069ff50815b336c6ad7bdbe0341c6c9c821dea6fc1a6601aec9d8c9c18aea8045bbcddb2f9240198
+%define sha512 %{srcname}=c0600a5f9e50040009c3467ad802dda8a48422dca4e781acc9ca3428446399932da2f07d7345936ef634783611cf664d219f614980ed6b936f4a510e56ea753c
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -18,17 +18,17 @@ Source1: license.txt
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
+BuildRequires: python3-pip
 BuildRequires: python3-zope.interface
+BuildRequires: python3-wheel
 
 %if 0%{?with_check}
 BuildRequires: lsof
 BuildRequires: curl-devel
 BuildRequires: openssl-devel
 BuildRequires: python3-test
-BuildRequires: python3-pip
 BuildRequires: python3-greenlet
 BuildRequires: python3-zope.event
-BuildRequires: python3-zope.interface
 %endif
 
 Requires: python3
@@ -50,10 +50,10 @@ Features include:
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%{pyproject_wheel}
 
 %install
-%py3_install
+%{pyproject_install}
 
 %if 0%{?with_check}
 %check
@@ -66,6 +66,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Mon Dec 16 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.9.1-1
+- Update to v23.9.1, fixes CVE-2023-41419
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.7.0-2
 - Release bump for SRP compliance
 * Thu Aug 24 2023 Nitesh Kumar <kunitesh@vmware.com> 23.7.0-1

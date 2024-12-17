@@ -1,7 +1,7 @@
 Summary:        WebOb provides objects for HTTP requests and responses..
 Name:           python3-webob
 Version:        1.8.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,6 +11,8 @@ Source0:        https://pypi.python.org/packages/1a/2b/322d6e01ba19c1e28349efe46
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2024-42353.patch
 
 BuildArch:      noarch
 
@@ -31,7 +33,7 @@ WebOb provides objects for HTTP requests and responses. Specifically it does thi
 The request and response objects provide many conveniences for parsing HTTP request and forming HTTP responses. Both objects are read/write: as a result, WebOb is also a nice way to create HTTP requests and parse HTTP responses.
 
 %prep
-%autosetup -n WebOb-%{version}
+%autosetup -p1 -n WebOb-%{version}
 %{__rm} -f tests/performance_test.py
 
 %build
@@ -48,6 +50,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8.7-3
+- Fix CVE-2024-42353
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8.7-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.8.7-1
