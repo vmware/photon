@@ -1,44 +1,34 @@
-From 6637240219cef7e19aaa8087d10395aacceddc75 Mon Sep 17 00:00:00 2001
-From: Vivek Thampi <vithampi@vmware.com>
-Date: Thu, 6 May 2021 10:41:52 -0700
-Subject: [PATCH] ptp/ptp_vmw: Add module param to probe device using
- hypervisor command
+From a95c6122ac989794e330fb81b1698ea5c3074a80 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Sat, 21 Sep 2024 06:35:11 +0000
+Subject: [PATCH 2/2] ptp/ptp_vmw: load ptp_vmw driver by directly probing the
+ device
 
-Add a module parameter probe_hv_port that allows ptp_vmw driver to be
-loaded even when ACPI is disabled, by directly probing for the device
-using VMware hypervisor port commands.
+For scenerios when ACPI is disabled, allow ptp_vmw driver to be
+loaded by directly probing for the device using VMware hypercalls.
 
 VMware precision clock virtual device is exposed as a platform ACPI
 device in its virtual chipset hardware. Its driver - ptp_vmw - is
-registered with the ACPI bus for discovery and binding. On systems where
-ACPI is disabled, such as virtual machines optimized for fast boot
-times, this means that the device is not discoverable and cannot be
-loaded. Since the device operations are performed via VMware hypervisor
-port commands, the ACPI sub-system can be by-passed and manually loaded
-with the added module parameter, provided that the device is attached to
-the virtual machine.
+registered with the ACPI bus for discovery and binding. On systems
+where ACPI is disabled, such as virtual machines optimized for fast
+boot times, this means that the device is not discoverable and cannot
+be loaded. Since the device operations are performed via VMware
+hypercalls, the ACPI sub-system can be by-passed and manually loaded.
 
-Reviewed-by: Deep Shah <sdeep@vmware.com>
+Cc: Shubham Gupta <shubham-sg.gupta@broadcom.com>
+Cc: Nick Shi <nick.shi@broadcom.com>
+Tested-by: Karen Wang <karen.wang@broadcom.com>
 Signed-off-by: Vivek Thampi <vithampi@vmware.com>
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
 ---
- drivers/ptp/ptp_vmw.c | 57 +++++++++++++++++++++++++++++++++++--------
- 1 file changed, 47 insertions(+), 10 deletions(-)
+ drivers/ptp/ptp_vmw.c | 71 +++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 59 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/ptp/ptp_vmw.c b/drivers/ptp/ptp_vmw.c
-index cdf35dbcc155..d9911afdff0c 100644
+index a18ba72..ce44b12 100644
 --- a/drivers/ptp/ptp_vmw.c
 +++ b/drivers/ptp/ptp_vmw.c
-@@ -21,6 +21,9 @@
- #define VMWARE_CMD_PCLK_ADJTIME VMWARE_CMD_PCLK(2)
- #define VMWARE_CMD_PCLK_ADJFREQ VMWARE_CMD_PCLK(3)
- 
-+int probe_hv_port = 0;
-+module_param(probe_hv_port, int, S_IRUGO);
-+
- static struct acpi_device *ptp_vmw_acpi_device;
- static struct ptp_clock *ptp_vmw_clock;
- 
-@@ -113,25 +116,41 @@ static struct ptp_clock_info ptp_vmw_clock_info = {
+@@ -98,25 +98,41 @@ static struct ptp_clock_info ptp_vmw_clock_info = {
  	.enable		= ptp_vmw_enable,
  };
  
@@ -49,7 +39,7 @@ index cdf35dbcc155..d9911afdff0c 100644
 +		pr_err("ptp_vmw: Failed to register ptp clock\n");
 +		return PTR_ERR(ptp_vmw_clock);
 +	}
-+	printk(KERN_DEBUG "ptp_vmw: ptp clock registered\n");
++	pr_debug("ptp_vmw: ptp clock registered\n");
 +	return 0;
 +}
 +
@@ -57,7 +47,7 @@ index cdf35dbcc155..d9911afdff0c 100644
 +{
 +	ptp_clock_unregister(ptp_vmw_clock);
 +	ptp_vmw_clock = NULL;
-+	printk(KERN_DEBUG "ptp_vmw: ptp clock unregistered\n");
++	pr_debug("ptp_vmw: ptp clock unregistered\n");
 +}
 +
  /*
@@ -88,43 +78,58 @@ index cdf35dbcc155..d9911afdff0c 100644
  }
  
  static const struct acpi_device_id ptp_vmw_acpi_device_ids[] = {
-@@ -151,16 +170,34 @@ static struct acpi_driver ptp_vmw_acpi_driver = {
- 	.owner	= THIS_MODULE
+@@ -135,16 +151,47 @@ static struct acpi_driver ptp_vmw_acpi_driver = {
+ 	},
  };
  
 +/*
 + * Probe existence of device by poking at a command. If successful,
 + * register as a PTP clock. This is a fallback option for when ACPI
-+ * is not available and probe_hv_port is enabled.
++ * is not available.
 + */
 +static int ptp_vmw_probe(void)
 +{
-+	u32 ns_hi, ns_lo;
-+	return ptp_vmw_pclk_read(VMWARE_CMD_PCLK_GETTIME, &ns_hi, &ns_lo);
++	u64 ns;
++
++	return ptp_vmw_pclk_read(VMWARE_CMD_PCLK_GETTIME, &ns);
 +}
 +
  static int __init ptp_vmw_init(void)
  {
- 	if (x86_hyper_type != X86_HYPER_VMWARE)
- 		return -1;
+-	if (x86_hyper_type != X86_HYPER_VMWARE)
+-		return -1;
 -	return acpi_bus_register_driver(&ptp_vmw_acpi_driver);
-+	if (!acpi_disabled)
-+		return acpi_bus_register_driver(&ptp_vmw_acpi_driver);
-+	if (probe_hv_port && ptp_vmw_probe() == 0)
-+		return ptp_vmw_clock_register();
-+	return -ENODEV;
++
++	int error = -ENODEV;
++
++	if (x86_hyper_type != X86_HYPER_VMWARE) {
++		error = -EINVAL;
++		goto out;
++	}
++
++	if (!acpi_disabled) {
++		error = acpi_bus_register_driver(&ptp_vmw_acpi_driver);
++		if (!error)
++			goto out;
++	}
++
++	if (!ptp_vmw_probe())
++		error = ptp_vmw_clock_register();
++
++out:
++	return error;
  }
  
  static void __exit ptp_vmw_exit(void)
  {
 -	acpi_bus_unregister_driver(&ptp_vmw_acpi_driver);
-+	if (!acpi_disabled)
++	if (!acpi_disabled && ptp_vmw_acpi_device)
 +		acpi_bus_unregister_driver(&ptp_vmw_acpi_driver);
-+	else if (probe_hv_port)
++	else if (ptp_vmw_clock)
 +		ptp_vmw_clock_unregister();
  }
  
  module_init(ptp_vmw_init);
 -- 
-2.35.6
+2.39.4
 

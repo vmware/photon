@@ -1,6 +1,6 @@
-From eed73320e59e527b4d97bd698635f064aafd5a2e Mon Sep 17 00:00:00 2001
+From c0867266d6e2b19fed25e621efdcd9819bbc531b Mon Sep 17 00:00:00 2001
 From: gobleg <gobleg@vmware.com>
-Date: Wed, 5 Jul 2023 15:28:39 -0500
+Date: Wed, 13 Nov 2024 16:29:29 +0000
 Subject: [PATCH] Adding SBX kernel driver
 
 This patch adds a kernel driver for the SBX Virtual Device on ESXi.
@@ -21,24 +21,27 @@ only be used for the graphics DriverVM project.
  create mode 100644 drivers/misc/vmw_sbx/sbx_reg.h
 
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index de06d3301..0037d7796 100644
+index db96ceeb7..83b2a4b18 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
-@@ -580,4 +580,5 @@ source "drivers/misc/uacce/Kconfig"
- source "drivers/misc/pvpanic/Kconfig"
+@@ -629,4 +629,5 @@ source "drivers/misc/pvpanic/Kconfig"
  source "drivers/misc/mchp_pci1xxxx/Kconfig"
+ source "drivers/misc/keba/Kconfig"
  source "drivers/misc/vmw_extcfg/Kconfig"
 +source "drivers/misc/vmw_sbx/Kconfig"
  endmenu
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index ed4f6d2ab..c4740f109 100644
+index bcdb52acb..9ed76f7fa 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
-@@ -68,3 +68,4 @@ obj-$(CONFIG_TMR_INJECT)	+= xilinx_tmr_inject.o
+@@ -70,6 +70,7 @@ obj-$(CONFIG_TMR_INJECT)	+= xilinx_tmr_inject.o
  obj-$(CONFIG_TPS6594_ESM)	+= tps6594-esm.o
  obj-$(CONFIG_TPS6594_PFSM)	+= tps6594-pfsm.o
- obj-$(CONFIG_VMWARE_EXTCFG)    += vmw_extcfg/
-+obj-$(CONFIG_SBX)              += vmw_sbx/
+ obj-$(CONFIG_VMWARE_EXTCFG)	+= vmw_extcfg/
++obj-$(CONFIG_SBX)		+= vmw_sbx/
+ obj-$(CONFIG_NSM)		+= nsm.o
+ obj-$(CONFIG_MARVELL_CN10K_DPI)	+= mrvl_cn10k_dpi.o
+ obj-y				+= keba/
 diff --git a/drivers/misc/vmw_sbx/Kconfig b/drivers/misc/vmw_sbx/Kconfig
 new file mode 100644
 index 000000000..1a4e70964
@@ -70,7 +73,7 @@ index 000000000..ce1e01f1b
 +obj-$(CONFIG_SBX)		+= sbx.o
 diff --git a/drivers/misc/vmw_sbx/sbx.c b/drivers/misc/vmw_sbx/sbx.c
 new file mode 100644
-index 000000000..ffd126046
+index 000000000..ad655bc47
 --- /dev/null
 +++ b/drivers/misc/vmw_sbx/sbx.c
 @@ -0,0 +1,1065 @@
@@ -1203,5 +1206,5 @@ index 000000000..eab41615a
 +
 +#endif
 -- 
-2.35.6
+2.39.4
 

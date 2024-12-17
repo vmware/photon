@@ -1,7 +1,8 @@
-From b2aa18053c2651e0e99c1671c3a86b4bf2b70631
+From 2e728d95d3ba90c364db3b2cbc594fb5700068ba Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
-Date: Mon Feb 28 22:48:48 2022 +0530
-Subject: [PATCH] 0002-vmw_extcfg: Introduce Memory hotplug via Ext Config
+Date: Mon, 28 Feb 2022 22:48:48 +0530
+Subject: [PATCH] 0002-vmw_extcfg: Introduce Memory hotplug via Ext
+ Config
 
 Detects available memory regions during device init.
 Add a handler to detect IRQ 9 which can handle memory
@@ -17,11 +18,11 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
 Signed-off-by: Alex Upshaw <upshawa@vmware.com>
 ---
- drivers/misc/vmw_extcfg/Makefile                |   2 +-
- drivers/misc/vmw_extcfg/extcfg_device.h         |  40 +++++
- drivers/misc/vmw_extcfg/extcfg_driver.c         |   6 +
- drivers/misc/vmw_extcfg/extcfg_hotplug.c        | 189 ++++++++++++++++++++++++
- drivers/misc/vmw_extcfg/extcfg_memory_hotplug.c |  90 +++++++++++
+ drivers/misc/vmw_extcfg/Makefile              |   2 +-
+ drivers/misc/vmw_extcfg/extcfg_device.h       |  40 ++++
+ drivers/misc/vmw_extcfg/extcfg_driver.c       |   6 +
+ drivers/misc/vmw_extcfg/extcfg_hotplug.c      | 189 ++++++++++++++++++
+ .../misc/vmw_extcfg/extcfg_memory_hotplug.c   |  90 +++++++++
  5 files changed, 326 insertions(+), 1 deletion(-)
  create mode 100644 drivers/misc/vmw_extcfg/extcfg_hotplug.c
  create mode 100644 drivers/misc/vmw_extcfg/extcfg_memory_hotplug.c
@@ -329,7 +330,7 @@ index 000000000..2c2dea365
 +}
 diff --git a/drivers/misc/vmw_extcfg/extcfg_memory_hotplug.c b/drivers/misc/vmw_extcfg/extcfg_memory_hotplug.c
 new file mode 100644
-index 000000000..bab4f24e6
+index 000000000..380450aec
 --- /dev/null
 +++ b/drivers/misc/vmw_extcfg/extcfg_memory_hotplug.c
 @@ -0,0 +1,90 @@
@@ -424,5 +425,5 @@ index 000000000..bab4f24e6
 +	return ret;
 +}
 -- 
-2.7.4
+2.39.4
 

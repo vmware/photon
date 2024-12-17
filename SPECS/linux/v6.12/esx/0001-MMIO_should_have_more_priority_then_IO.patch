@@ -1,45 +1,45 @@
-From d17cd30963342f20755bfd9eb20b11adbda1287b Mon Sep 17 00:00:00 2001
+From e35239d8e8b64f64f6874c250d346afad99939a8 Mon Sep 17 00:00:00 2001
 From: Ajay Kaher <akaher@vmware.com>
 Date: Fri, 29 Apr 2022 10:23:29 +0000
-Subject: [PATCH] MMIO should have more priority then IO 
+Subject: [PATCH] MMIO should have more priority then IO
 
 If MMIO region is accessible then more priority should be given to
-MMIO over IO. 
+MMIO over IO.
 
 Signed-off-by: Ajay Kaher <akaher@vmware.com>
 ---
- arch/x86/pci/common.c          |  8 ++++----
- 1 files changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/pci/common.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
-index 3507f456f..0b3383d9c 100644
+index ddb798603..c408059d5 100644
 --- a/arch/x86/pci/common.c
 +++ b/arch/x86/pci/common.c
 @@ -40,20 +40,20 @@ const struct pci_raw_ops *__read_mostly raw_pci_ext_ops;
  int raw_pci_read(unsigned int domain, unsigned int bus, unsigned int devfn,
  						int reg, int len, u32 *val)
  {
-+	if (raw_pci_ext_ops)
-+		return raw_pci_ext_ops->read(domain, bus, devfn, reg, len, val);
- 	if (domain == 0 && reg < 256 && raw_pci_ops)
- 		return raw_pci_ops->read(domain, bus, devfn, reg, len, val);
--	if (raw_pci_ext_ops)
--		return raw_pci_ext_ops->read(domain, bus, devfn, reg, len, val);
+-	if (domain == 0 && reg < 256 && raw_pci_ops)
+-		return raw_pci_ops->read(domain, bus, devfn, reg, len, val);
+ 	if (raw_pci_ext_ops)
+ 		return raw_pci_ext_ops->read(domain, bus, devfn, reg, len, val);
++	if (domain == 0 && reg < 256 && raw_pci_ops)
++		return raw_pci_ops->read(domain, bus, devfn, reg, len, val);
  	return -EINVAL;
  }
  
  int raw_pci_write(unsigned int domain, unsigned int bus, unsigned int devfn,
  						int reg, int len, u32 val)
  {
-+	if (raw_pci_ext_ops)
-+		return raw_pci_ext_ops->write(domain, bus, devfn, reg, len, val);
- 	if (domain == 0 && reg < 256 && raw_pci_ops)
- 		return raw_pci_ops->write(domain, bus, devfn, reg, len, val);
--	if (raw_pci_ext_ops)
--		return raw_pci_ext_ops->write(domain, bus, devfn, reg, len, val);
+-	if (domain == 0 && reg < 256 && raw_pci_ops)
+-		return raw_pci_ops->write(domain, bus, devfn, reg, len, val);
+ 	if (raw_pci_ext_ops)
+ 		return raw_pci_ext_ops->write(domain, bus, devfn, reg, len, val);
++	if (domain == 0 && reg < 256 && raw_pci_ops)
++		return raw_pci_ops->write(domain, bus, devfn, reg, len, val);
  	return -EINVAL;
  }
  
 -- 
-2.30.0
+2.39.4
 

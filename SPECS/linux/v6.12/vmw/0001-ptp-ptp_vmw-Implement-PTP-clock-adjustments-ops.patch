@@ -1,35 +1,40 @@
-From 36f2b4caaf9b7f6a60e473530183f272193569b0 Mon Sep 17 00:00:00 2001
-From: Vivek Thampi <vithampi@vmware.com>
-Date: Wed, 16 Oct 2024 17:22:23 +0000
-Subject: [PATCH] ptp/ptp_vmw: Implement PTP clock adjustments ops
+From d8d533c9a8b2bc69dd690e003227f959679c2a57 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Sat, 21 Sep 2024 06:20:22 +0000
+Subject: [PATCH 1/2] ptp/ptp_vmw: Implement PTP clock adjustments ops
 
 Implement PTP clock ops that set time and frequency of the underlying
-clock. On supported versions of VMware precision clock virtual device
-(hardware version 19 onwards), new commands can adjust its time and
-frequency, allowing time transfer from a virtual machine to the
-underlying hypervisor.
+clock. On supported versions of VMware precision clock virtual device,
+new commands can adjust its time and frequency, allowing time transfer
+from a virtual machine to the underlying hypervisor.
 
-Reviewed-by: Deep Shah <sdeep@vmware.com>
+In case of error, vmware_hypercall doesn't return Linux defined errno,
+converting it to -EIO.
+
+Cc: Shubham Gupta <shubham-sg.gupta@broadcom.com>
+Cc: Nick Shi <nick.shi@broadcom.com>
+Tested-by: Karen Wang <karen.wang@broadcom.com>
 Signed-off-by: Vivek Thampi <vithampi@vmware.com>
 Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
 ---
- drivers/ptp/ptp_vmw.c | 66 ++++++++++++++++++++++++++++---------------
- 1 file changed, 43 insertions(+), 23 deletions(-)
+ drivers/ptp/ptp_vmw.c | 39 +++++++++++++++++++++++++++++----------
+ 1 file changed, 29 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/ptp/ptp_vmw.c b/drivers/ptp/ptp_vmw.c
-index 27c5547..cb3ddb2 100644
+index 20ab05c..a18ba72 100644
 --- a/drivers/ptp/ptp_vmw.c
 +++ b/drivers/ptp/ptp_vmw.c
-@@ -1,6 +1,6 @@
+@@ -1,6 +1,7 @@
  // SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
  /*
 - * Copyright (C) 2020 VMware, Inc., Palo Alto, CA., USA
-+ * Copyright (C) 2020-2021 VMware, Inc., Palo Alto, CA., USA
++ * Copyright (C) 2020-2023 VMware, Inc., Palo Alto, CA., USA
++ * Copyright (C) 2024 Broadcom Ltd.
   *
   * PTP clock driver for VMware precision clock virtual device.
   */
-@@ -17,55 +17,75 @@
- #define VMWARE_MAGIC 0x564D5868
+@@ -16,20 +17,36 @@
+ 
  #define VMWARE_CMD_PCLK(nr) ((nr << 16) | 97)
  #define VMWARE_CMD_PCLK_GETTIME VMWARE_CMD_PCLK(0)
 +#define VMWARE_CMD_PCLK_SETTIME VMWARE_CMD_PCLK(1)
@@ -44,93 +49,71 @@ index 27c5547..cb3ddb2 100644
 + */
  
 -static int ptp_vmw_pclk_read(u64 *ns)
-+static int ptp_vmw_pclk_read(int cmd, u32 *out0, u32 *out1)
++static int ptp_vmw_pclk_read(int cmd, u64 *ns)
  {
--	u32 ret, nsec_hi, nsec_lo, unused1, unused2, unused3;
-+	u32 ret, unused;
+ 	u32 ret, nsec_hi, nsec_lo;
  
- 	asm volatile (VMWARE_HYPERCALL :
--		"=a"(ret), "=b"(nsec_hi), "=c"(nsec_lo), "=d"(unused1),
--		"=S"(unused2), "=D"(unused3) :
--		"a"(VMWARE_MAGIC), "b"(0),
--		"c"(VMWARE_CMD_PCLK_GETTIME), "d"(0) :
-+		"=a"(ret), "=b"(*out0), "=c"(*out1), "=d"(unused) :
-+		"a"(VMWARE_MAGIC), "b"(0), "c"(cmd), "d"(0) :
- 		"memory");
- 
--	if (ret == 0)
--		*ns = ((u64)nsec_hi << 32) | nsec_lo;
+-	ret = vmware_hypercall3(VMWARE_CMD_PCLK_GETTIME, 0,
+-				&nsec_hi, &nsec_lo);
++	ret = vmware_hypercall3(cmd, 0, &nsec_hi, &nsec_lo);
+ 	if (ret == 0)
+ 		*ns = ((u64)nsec_hi << 32) | nsec_lo;
 -	return ret;
++
 +	return ret != 0 ? -EIO : 0;
 +}
 +
-+static int ptp_vmw_pclk_write(int cmd, u32 in0, u32 in1)
++static int ptp_vmw_pclk_write(int cmd, u64 in)
 +{
-+	u32 ret;
++	u32 ret, unused;
 +
-+	asm volatile (VMWARE_HYPERCALL :
-+		"=a"(ret) :
-+		"a"(VMWARE_MAGIC), "b"(0), "c"(cmd), "d"(0),
-+		"S"(in0), "D"(in1) :
-+		"memory");
++	ret = vmware_hypercall5(cmd, 0, 0, in >> 32, in & 0xffffffff,
++				&unused);
 +
 +	return ret != 0 ? -EIO : 0;
  }
  
  /*
-  * PTP clock ops.
-  */
+@@ -38,19 +55,19 @@ static int ptp_vmw_pclk_read(u64 *ns)
  
--static int ptp_vmw_adjtime(struct ptp_clock_info *info, s64 delta)
-+static int ptp_vmw_gettime(struct ptp_clock_info *info, struct timespec64 *ts)
+ static int ptp_vmw_adjtime(struct ptp_clock_info *info, s64 delta)
  {
 -	return -EOPNOTSUPP;
-+	int ret;
-+	u32 ns_hi, ns_lo;
-+
-+	ret = ptp_vmw_pclk_read(VMWARE_CMD_PCLK_GETTIME, &ns_hi, &ns_lo);
-+	if (ret == 0)
-+		*ts = ns_to_timespec64(((u64)ns_hi << 32) | ns_lo);
-+	return ret;
++	return ptp_vmw_pclk_write(VMWARE_CMD_PCLK_ADJTIME, (u64)delta);
  }
  
--static int ptp_vmw_adjfine(struct ptp_clock_info *info, long delta)
-+static int ptp_vmw_adjtime(struct ptp_clock_info *info, s64 delta)
+ static int ptp_vmw_adjfine(struct ptp_clock_info *info, long delta)
  {
 -	return -EOPNOTSUPP;
-+	return ptp_vmw_pclk_write(VMWARE_CMD_PCLK_ADJTIME, (u64)delta >> 32,
-+					(u64)delta & 0xffffffff);
++	return ptp_vmw_pclk_write(VMWARE_CMD_PCLK_ADJFREQ, (u64)delta);
  }
  
--static int ptp_vmw_gettime(struct ptp_clock_info *info, struct timespec64 *ts)
-+static int ptp_vmw_adjfine(struct ptp_clock_info *info, long delta)
+ static int ptp_vmw_gettime(struct ptp_clock_info *info, struct timespec64 *ts)
  {
--	u64 ns;
--
+ 	u64 ns;
+ 
 -	if (ptp_vmw_pclk_read(&ns) != 0)
--		return -EIO;
--	*ts = ns_to_timespec64(ns);
--	return 0;
-+	return ptp_vmw_pclk_write(VMWARE_CMD_PCLK_ADJFREQ, delta >> 32,
-+				  delta & 0xffffffff);
- }
- 
++	if (ptp_vmw_pclk_read(VMWARE_CMD_PCLK_GETTIME, &ns) != 0)
+ 		return -EIO;
+ 	*ts = ns_to_timespec64(ns);
+ 	return 0;
+@@ -59,7 +76,9 @@ static int ptp_vmw_gettime(struct ptp_clock_info *info, struct timespec64 *ts)
  static int ptp_vmw_settime(struct ptp_clock_info *info,
  			  const struct timespec64 *ts)
  {
 -	return -EOPNOTSUPP;
 +	u64 ns = timespec64_to_ns(ts);
-+	return ptp_vmw_pclk_write(VMWARE_CMD_PCLK_SETTIME, ns >> 32,
-+				ns & 0xffffffff);
++
++	return ptp_vmw_pclk_write(VMWARE_CMD_PCLK_SETTIME, ns);
  }
  
  static int ptp_vmw_enable(struct ptp_clock_info *info,
-@@ -77,7 +97,7 @@ static int ptp_vmw_enable(struct ptp_clock_info *info,
+@@ -71,7 +90,7 @@ static int ptp_vmw_enable(struct ptp_clock_info *info,
  static struct ptp_clock_info ptp_vmw_clock_info = {
  	.owner		= THIS_MODULE,
  	.name		= "ptp_vmw",
 -	.max_adj	= 0,
-+	.max_adj	= 500000,
++	.max_adj	= 999999999,
  	.adjtime	= ptp_vmw_adjtime,
  	.adjfine	= ptp_vmw_adjfine,
  	.gettime64	= ptp_vmw_gettime,

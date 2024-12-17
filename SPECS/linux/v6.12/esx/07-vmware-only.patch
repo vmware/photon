@@ -1,7 +1,9 @@
-From 490a263ffd01a7e830e8c795b72e5052e34fe486 Mon Sep 17 00:00:00 2001
-From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Tue, 9 May 2017 12:41:17 -0700
+From ecfcabd03d5510315d562855d9df078d30c93dff Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Thu, 23 Jan 2025 10:37:56 +0000
 Subject: [PATCH] vmware only
+
+skip rdrand if CONFIG_HYPERVISOR_GUEST enabled.
 
 Signed-off-by: Bo Gan <ganb@vmware.com>
 ---
@@ -11,12 +13,12 @@ Signed-off-by: Bo Gan <ganb@vmware.com>
  3 files changed, 13 insertions(+)
 
 diff --git a/arch/x86/kernel/cpu/Makefile b/arch/x86/kernel/cpu/Makefile
-index 82149a98a..bcf3dadce 100644
+index 5857a0f5d..0541a2be7 100644
 --- a/arch/x86/kernel/cpu/Makefile
 +++ b/arch/x86/kernel/cpu/Makefile
-@@ -19,7 +19,12 @@ KCSAN_SANITIZE_common.o := n
- 
- obj-y			:= cacheinfo.o scattered.o topology.o
+@@ -20,7 +20,12 @@ KCSAN_SANITIZE_common.o := n
+ obj-y			:= cacheinfo.o scattered.o
+ obj-y			+= topology_common.o topology_ext.o topology_amd.o
  obj-y			+= common.o
 +
 +# Trust rdrand on VMware platform
@@ -28,12 +30,12 @@ index 82149a98a..bcf3dadce 100644
  obj-y			+= bugs.o
  obj-y			+= aperfmperf.o
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 340dd6cc1..228e48ddb 100644
+index f43bb974f..31993b128 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1956,7 +1956,10 @@ static void identify_cpu(struct cpuinfo_x86 *c)
- 	detect_ht(c);
- #endif
+@@ -1875,7 +1875,10 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+ 				c->x86, c->x86_model);
+ 	}
  
 +	/* Trust rdrand on VMware platform */
 +#ifndef CONFIG_HYPERVISOR_GUEST
@@ -43,7 +45,7 @@ index 340dd6cc1..228e48ddb 100644
  	setup_cet(c);
  
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index cd1068e2a..95ea20eb5 100644
+index da937aad2..5197ce66b 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -30,6 +30,7 @@
@@ -54,7 +56,7 @@ index cd1068e2a..95ea20eb5 100644
  #include <asm/div64.h>
  #include <asm/x86_init.h>
  #include <asm/hypervisor.h>
-@@ -453,6 +454,10 @@ static void __init vmware_platform_setup(void)
+@@ -462,6 +463,10 @@ static void __init vmware_platform_setup(void)
  	vmware_set_capabilities();
  
  	kmsg_dump_register(&kmsg_dumper);
@@ -63,8 +65,8 @@ index cd1068e2a..95ea20eb5 100644
 +	pci_probe &= ~PCI_PROBE_BIOS;
 +#endif
  }
- 
- static u8 __init vmware_select_hypercall(void)
+ #define RETRIES_MAX		3
+ #define MESSAGE_STATUS_SUCCESS  0x0001
 -- 
-2.35.6
+2.39.4
 

@@ -16,10 +16,10 @@ Can be enabled by "local_lock" mount options.
  4 files changed, 22 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/filesystems/9p.rst b/Documentation/filesystems/9p.rst
-index 1e0e0bb6fdf9..bb4a71704351 100644
+index 2bbf68b56..523e036da 100644
 --- a/Documentation/filesystems/9p.rst
 +++ b/Documentation/filesystems/9p.rst
-@@ -182,6 +182,10 @@ Options
+@@ -238,6 +238,10 @@ Options
    cachetag	cache tag to use the specified persistent cache.
  		cache tags for existing cache sessions can be listed at
  		/sys/fs/9p/caches. (applies only to cache=fscache)
@@ -31,7 +31,7 @@ index 1e0e0bb6fdf9..bb4a71704351 100644
  
  Behavior
 diff --git a/fs/9p/v9fs.c b/fs/9p/v9fs.c
-index d525957594b6..5b57f2fcea62 100644
+index 281a1ed03..45fe8f39f 100644
 --- a/fs/9p/v9fs.c
 +++ b/fs/9p/v9fs.c
 @@ -43,6 +43,8 @@ enum {
@@ -63,7 +63,7 @@ index d525957594b6..5b57f2fcea62 100644
  			continue;
  		}
 diff --git a/fs/9p/v9fs.h b/fs/9p/v9fs.h
-index 698c43dd5dc8..9dd33721d27f 100644
+index 698c43dd5..9dd33721d 100644
 --- a/fs/9p/v9fs.h
 +++ b/fs/9p/v9fs.h
 @@ -40,7 +40,8 @@ enum p9_session_flags {
@@ -77,10 +77,10 @@ index 698c43dd5dc8..9dd33721d27f 100644
  
  /**
 diff --git a/fs/9p/vfs_file.c b/fs/9p/vfs_file.c
-index 11cd8d23f6f2..7e361c3391db 100644
+index 348cc90bf..afd5aecde 100644
 --- a/fs/9p/vfs_file.c
 +++ b/fs/9p/vfs_file.c
-@@ -133,6 +133,10 @@ static int v9fs_file_do_lock(struct file *filp, int cmd, struct file_lock *fl)
+@@ -132,6 +132,10 @@ static int v9fs_file_do_lock(struct file *filp, int cmd, struct file_lock *fl)
  	if (res < 0)
  		goto out;
  
@@ -91,7 +91,7 @@ index 11cd8d23f6f2..7e361c3391db 100644
  	/* convert posix lock to p9 tlock args */
  	memset(&flock, 0, sizeof(flock));
  	/* map the lock type */
-@@ -157,8 +161,6 @@ static int v9fs_file_do_lock(struct file *filp, int cmd, struct file_lock *fl)
+@@ -156,8 +160,6 @@ static int v9fs_file_do_lock(struct file *filp, int cmd, struct file_lock *fl)
  	if (IS_SETLKW(cmd))
  		flock.flags = P9_LOCK_FLAGS_BLOCK;
  
@@ -109,7 +109,7 @@ index 11cd8d23f6f2..7e361c3391db 100644
  
  	fid = filp->private_data;
 @@ -237,6 +240,10 @@ static int v9fs_file_getlock(struct file *filp, struct file_lock *fl)
- 	if (fl->fl_type != F_UNLCK)
+ 	if (fl->c.flc_type != F_UNLCK)
  		return res;
  
 +	v9ses = v9fs_inode2v9ses(file_inode(filp));
@@ -120,5 +120,5 @@ index 11cd8d23f6f2..7e361c3391db 100644
  	memset(&glock, 0, sizeof(glock));
  	glock.type  = P9_LOCK_TYPE_UNLCK;
 -- 
-2.35.6
+2.39.4
 

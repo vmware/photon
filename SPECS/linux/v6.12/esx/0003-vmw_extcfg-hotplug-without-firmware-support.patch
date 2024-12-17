@@ -1,6 +1,6 @@
-From ddadbf89752e21262fd2d17db38ea3a3fd16a14e
-From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
-Date: Mon Feb 28 22:51:52 2022 +0530
+From 1374c5ede53d70564276c68e79c567ec8f6d5b8f Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Mon, 17 Mar 2025 06:31:04 +0000
 Subject: [PATCH] 0003-vmw_extcfg: Introduce CPU hotplug via Ext Config
 
 When the interrupt handler is invoked
@@ -13,14 +13,42 @@ When the interrupt handler is invoked
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
 Signed-off-by: Alex Upshaw <upshawa@vmware.com>
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
 ---
+ arch/x86/include/asm/apic.h                  |  1 +
+ arch/x86/kernel/cpu/topology.c               |  2 +-
  drivers/misc/vmw_extcfg/Makefile             |  2 +-
- drivers/misc/vmw_extcfg/extcfg_cpu_hotplug.c | 95 ++++++++++++++++++++++++++++
- drivers/misc/vmw_extcfg/extcfg_device.h      | 18 ++++++
- drivers/misc/vmw_extcfg/extcfg_hotplug.c     |  4 ++
- 4 files changed, 118 insertions(+), 1 deletion(-)
+ drivers/misc/vmw_extcfg/extcfg_cpu_hotplug.c | 93 ++++++++++++++++++++
+ drivers/misc/vmw_extcfg/extcfg_device.h      | 18 ++++
+ drivers/misc/vmw_extcfg/extcfg_hotplug.c     |  4 +
+ 6 files changed, 118 insertions(+), 2 deletions(-)
  create mode 100644 drivers/misc/vmw_extcfg/extcfg_cpu_hotplug.c
 
+diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
+index f21ff1932..492481b9a 100644
+--- a/arch/x86/include/asm/apic.h
++++ b/arch/x86/include/asm/apic.h
+@@ -183,6 +183,7 @@ extern void topology_hotunplug_apic(unsigned int cpu);
+ extern void topology_apply_cmdline_limits_early(void);
+ extern void topology_init_possible_cpus(void);
+ extern void topology_reset_possible_cpus_up(void);
++extern int topo_lookup_cpuid(u32 apic_id);
+ 
+ #else /* !CONFIG_X86_LOCAL_APIC */
+ static inline void lapic_shutdown(void) { }
+diff --git a/arch/x86/kernel/cpu/topology.c b/arch/x86/kernel/cpu/topology.c
+index 621a151cc..054d1b430 100644
+--- a/arch/x86/kernel/cpu/topology.c
++++ b/arch/x86/kernel/cpu/topology.c
+@@ -95,7 +95,7 @@ static inline u32 topo_apicid(u32 apicid, enum x86_topology_domains dom)
+ 	return apicid & (UINT_MAX << x86_topo_system.dom_shifts[dom - 1]);
+ }
+ 
+-static int topo_lookup_cpuid(u32 apic_id)
++int topo_lookup_cpuid(u32 apic_id)
+ {
+ 	int i;
+ 
 diff --git a/drivers/misc/vmw_extcfg/Makefile b/drivers/misc/vmw_extcfg/Makefile
 index 8f86fbd4d..3f69112a1 100644
 --- a/drivers/misc/vmw_extcfg/Makefile
@@ -34,10 +62,10 @@ index 8f86fbd4d..3f69112a1 100644
 \ No newline at end of file
 diff --git a/drivers/misc/vmw_extcfg/extcfg_cpu_hotplug.c b/drivers/misc/vmw_extcfg/extcfg_cpu_hotplug.c
 new file mode 100644
-index 000000000..130de43ba
+index 000000000..05c6b97ff
 --- /dev/null
 +++ b/drivers/misc/vmw_extcfg/extcfg_cpu_hotplug.c
-@@ -0,0 +1,95 @@
+@@ -0,0 +1,93 @@
 +// SPDX-License-Identifier: Dual BSD/GPL
 +/*
 + * VMware Virtual Chipset Extended Configuration Driver
@@ -55,7 +83,7 @@ index 000000000..130de43ba
 +#include <asm/apic.h>
 +#include "extcfg_device.h"
 +
-+int process_cpu_hotadd(u32 processor_id)
++int process_cpu_hotadd(u32 processor_id, u32 apicid)
 +{
 +	int ret;
 +
@@ -63,15 +91,16 @@ index 000000000..130de43ba
 +	if (ret)
 +		return ret;
 +
-+	set_cpu_present(processor_id, true);
++	ret = topology_hotplug_apic(apicid, processor_id);
 +
 +	pr_info("CPU%d added successfully", processor_id);
 +
-+	return 0;
++	return ret;
 +}
 +
-+int process_cpu_hotremove(u32 processor_id)
++int process_cpu_hotremove(u32 processor_id, u32 apicid)
 +{
++	int cpu;
 +	unsigned long offset;
 +
 +	if (cpu_online(processor_id)) {
@@ -82,9 +111,10 @@ index 000000000..130de43ba
 +	}
 +
 +	offset = ANQ_CPUHP_BASE;
-+	set_cpu_present(processor_id, false);
 +
 +	/* Remove the CPU. */
++	cpu = topo_lookup_cpuid(apicid);
++	topology_hotunplug_apic(cpu);
 +	arch_unregister_cpu(processor_id);
 +
 +	/* Notify eject is complete */
@@ -122,14 +152,10 @@ index 000000000..130de43ba
 +
 +	apicid = extconf_read_8(CPU_APICID_BASE + processor_id);
 +
-+	ret = generic_processor_info(apicid);
-+	if (ret < 0)
-+		return ret;
-+
 +	if (subcode == ANQ_CPUHP_SUBCODE_ADD)
-+		ret = process_cpu_hotadd(processor_id);
++		ret = process_cpu_hotadd(processor_id, apicid);
 +	else
-+		ret = process_cpu_hotremove(processor_id);
++		ret = process_cpu_hotremove(processor_id, apicid);
 +
 +	return ret;
 +}
@@ -189,5 +215,5 @@ index 2c2dea365..dc5a9b8d7 100644
  	default:
  		pr_err("Unknown/Unsupported Hotplug request %d", command);
 -- 
-2.7.4
+2.39.4
 

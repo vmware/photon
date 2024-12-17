@@ -1,6 +1,6 @@
-From 21f658eb343139868051ec7db33ff6b412ec1f46 Mon Sep 17 00:00:00 2001
+From 2e319f74f185adbaf048ff09b6872929f8082dbe Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhir@vmware.com>
-Date: Wed, 16 Sep 2020 18:07:58 +0000
+Date: Wed, 13 Nov 2024 11:29:35 +0000
 Subject: [PATCH] fs: A new VTARFS file system to mount VTAR archive
 
 - GNU TAR Archieve consists of header with information of the
@@ -35,8 +35,8 @@ Signed-off-by: Bo Gan <ganb@vmware.com>
  fs/vtarfs/README.md             |   3 +
  fs/vtarfs/vtarfs.h              | 171 +++++++
  fs/vtarfs/vtarfs_file_dir_ops.c | 472 +++++++++++++++++++
- fs/vtarfs/vtarfs_inode.c        | 780 ++++++++++++++++++++++++++++++++
- 8 files changed, 1458 insertions(+)
+ fs/vtarfs/vtarfs_inode.c        | 773 ++++++++++++++++++++++++++++++++
+ 8 files changed, 1451 insertions(+)
  create mode 100644 fs/vtarfs/Kconfig
  create mode 100644 fs/vtarfs/Makefile
  create mode 100644 fs/vtarfs/README.md
@@ -45,10 +45,10 @@ Signed-off-by: Bo Gan <ganb@vmware.com>
  create mode 100644 fs/vtarfs/vtarfs_inode.c
 
 diff --git a/fs/Kconfig b/fs/Kconfig
-index 5a9d887930d4..2b819273bca2 100644
+index 570f8f00c..4dadee4bf 100644
 --- a/fs/Kconfig
 +++ b/fs/Kconfig
-@@ -319,6 +319,7 @@ source "fs/ufs/Kconfig"
+@@ -342,6 +342,7 @@ source "fs/ufs/Kconfig"
  source "fs/erofs/Kconfig"
  source "fs/vboxsf/Kconfig"
  source "fs/vtar/Kconfig"
@@ -57,17 +57,18 @@ index 5a9d887930d4..2b819273bca2 100644
  endif # MISC_FILESYSTEMS
  
 diff --git a/fs/Makefile b/fs/Makefile
-index 4d69ce624da2..91ba9d65aceb 100644
+index a0f4c8544..032d95a78 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
-@@ -139,3 +139,4 @@ obj-$(CONFIG_EROFS_FS)		+= erofs/
+@@ -130,4 +130,5 @@ obj-$(CONFIG_EROFS_FS)		+= erofs/
  obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
  obj-$(CONFIG_ZONEFS_FS)		+= zonefs/
  obj-$(CONFIG_VTAR)		+= vtar/
 +obj-$(CONFIG_VTARFS)		+= vtarfs/
+ obj-$(CONFIG_BPF_LSM)		+= bpf_fs_kfuncs.o
 diff --git a/fs/vtarfs/Kconfig b/fs/vtarfs/Kconfig
 new file mode 100644
-index 000000000000..872a3a8dfb29
+index 000000000..872a3a8df
 --- /dev/null
 +++ b/fs/vtarfs/Kconfig
 @@ -0,0 +1,21 @@
@@ -94,7 +95,7 @@ index 000000000000..872a3a8dfb29
 +	  module will be called vtarfs.  If unsure, say N.
 diff --git a/fs/vtarfs/Makefile b/fs/vtarfs/Makefile
 new file mode 100644
-index 000000000000..988edc7d7012
+index 000000000..988edc7d7
 --- /dev/null
 +++ b/fs/vtarfs/Makefile
 @@ -0,0 +1,9 @@
@@ -109,7 +110,7 @@ index 000000000000..988edc7d7012
 +vtarfs-objs := vtarfs_file_dir_ops.o vtarfs_inode.o
 diff --git a/fs/vtarfs/README.md b/fs/vtarfs/README.md
 new file mode 100644
-index 000000000000..fe38b05c5320
+index 000000000..fe38b05c5
 --- /dev/null
 +++ b/fs/vtarfs/README.md
 @@ -0,0 +1,3 @@
@@ -119,7 +120,7 @@ index 000000000000..fe38b05c5320
 \ No newline at end of file
 diff --git a/fs/vtarfs/vtarfs.h b/fs/vtarfs/vtarfs.h
 new file mode 100644
-index 000000000000..7a91b3c54030
+index 000000000..1bcfce0ee
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs.h
 @@ -0,0 +1,171 @@
@@ -296,7 +297,7 @@ index 000000000000..7a91b3c54030
 +#endif
 diff --git a/fs/vtarfs/vtarfs_file_dir_ops.c b/fs/vtarfs/vtarfs_file_dir_ops.c
 new file mode 100644
-index 000000000000..8703b53b8699
+index 000000000..191b5b84d
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs_file_dir_ops.c
 @@ -0,0 +1,472 @@
@@ -774,10 +775,10 @@ index 000000000000..8703b53b8699
 +EXPORT_SYMBOL(vtarfs_file_release);
 diff --git a/fs/vtarfs/vtarfs_inode.c b/fs/vtarfs/vtarfs_inode.c
 new file mode 100644
-index 000000000000..253b5ba18c86
+index 000000000..206d12ed7
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs_inode.c
-@@ -0,0 +1,780 @@
+@@ -0,0 +1,773 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Filesystem to directly mount vtar archive.
@@ -834,6 +835,7 @@ index 000000000000..253b5ba18c86
 +
 +	struct inode *inode = new_inode(sb);
 +	struct vtarfs_fs_info *info = VTARFS_SB(sb);
++	struct timespec64 ts;
 +
 +	if (inode) {
 +		INIT_HLIST_NODE(&inode->i_hash);
@@ -843,7 +845,10 @@ index 000000000000..253b5ba18c86
 +		inode->i_mode = mode;
 +		inode->i_uid = current_fsuid();
 +		inode->i_gid = current_fsgid();
-+		inode->i_atime = inode->i_mtime = inode->__i_ctime = current_time(inode);
++		ts = current_time(inode);
++		inode_set_atime_to_ts(inode, ts);
++		inode_set_mtime_to_ts(inode, ts);
++		inode_set_ctime_to_ts(inode, ts);
 +		inode->i_mapping->a_ops = &ram_aops;
 +		mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
 +		mapping_set_unevictable(inode->i_mapping);
@@ -917,9 +922,9 @@ index 000000000000..253b5ba18c86
 +	i_uid_write(inode, entry->uid);
 +	i_gid_write(inode, entry->gid);
 +	inode->i_size = entry->data_size;
-+	inode->i_atime = entry->atime;
-+	inode->i_mtime = entry->mtime;
-+	inode->__i_ctime = entry->ctime;
++	inode_set_atime_to_ts(inode, entry->atime);
++	inode_set_mtime_to_ts(inode, entry->mtime);
++	inode_set_ctime_to_ts(inode, entry->ctime);
 +	inode->i_sb = sb;
 +	inode->i_mapping->a_ops = &ram_aops;
 +	mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
@@ -1054,11 +1059,6 @@ index 000000000000..253b5ba18c86
 +	if (IS_ERR(page)) {
 +		pr_err("%s: page map failure %ld", __func__, PTR_ERR(page));
 +		return 1;
-+	}
-+
-+	if (PageError(page)) {
-+		pr_err("%s: page error", __func__);
-+		goto error;
 +	}
 +
 +	k_mapped_page = kmap(page);
@@ -1239,12 +1239,6 @@ index 000000000000..253b5ba18c86
 +		if (IS_ERR(entry->pages[i])) {
 +			pr_err("%s: page map failure %ld",
 +				__func__, PTR_ERR(entry->pages[i]));
-+			goto err_lvl3;
-+		}
-+		if (PageError(entry->pages[i])) {
-+			pr_err("%s: page err while mapping %d page",
-+				__func__, i);
-+			put_page(entry->pages[i]);
 +			goto err_lvl3;
 +		}
 +	}
@@ -1559,5 +1553,5 @@ index 000000000000..253b5ba18c86
 +MODULE_AUTHOR("VMware Photon OS : Srinidhi Rao <srinidhir@vmware.com>");
 +MODULE_AUTHOR("VMware Photon OS : Ankit Jain <ankitja@vmware.com>");
 -- 
-2.25.1
+2.39.4
 
