@@ -35,6 +35,8 @@ aarch64/libXtst-devel-1.2.2-1.ph3.aarch64.rpm
 aarch64/openjdk8-1.8.0.151-1.ph2.aarch64.rpm
 aarch64/openjdk11-11.0.12-2.ph3.aarch64.rpm
 aarch64/openjdk17-17.0.6-3.ph4.aarch64.rpm
+aarch64/openjdk21-21.0.5-1.ph4.aarch64.rpm
+aarch64/openjdk21-jre-21.0.5-1.ph4.aarch64.rpm
 aarch64/openjre8-1.8.0.151-1.ph2.aarch64.rpm
 aarch64/xcb-proto-1.11-1.aarch64.rpm
 aarch64/xtrans-1.3.5-2.aarch64.rpm

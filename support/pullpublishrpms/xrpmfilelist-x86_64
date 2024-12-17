@@ -12,6 +12,8 @@ x86_64/libXtst-devel-1.2.2-1.x86_64.rpm
 x86_64/openjdk-1.8.0.112-1.x86_64.rpm
 x86_64/openjre-1.8.0.112-1.x86_64.rpm
 x86_64/openjdk17-17.0.6-2.ph4.x86_64.rpm
+x86_64/openjdk21-21.0.5-1.ph4.x86_64.rpm
+x86_64/openjdk21-jre-21.0.5-1.ph4.x86_64.rpm
 x86_64/alsa-lib-1.0.29-1.x86_64.rpm
 x86_64/alsa-lib-devel-1.0.29-1.x86_64.rpm
 x86_64/fontconfig-2.11.1-1.x86_64.rpm
