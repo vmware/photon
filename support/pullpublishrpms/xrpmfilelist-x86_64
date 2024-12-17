@@ -39,4 +39,6 @@ x86_64/libXtst-1.2.3-1.ph5.x86_64.rpm
 x86_64/libXtst-devel-1.2.3-1.ph5.x86_64.rpm
 x86_64/openjdk11-11.0.12-6.ph5.x86_64.rpm
 x86_64/openjdk17-17.0.5-3.ph5.x86_64.rpm
+x86_64/openjdk21-21.0.5-1.ph5.x86_64.rpm
+x86_64/openjdk21-jre-21.0.5-1.ph5.x86_64.rpm
 x86_64/xcb-proto-1.15.2-1.ph5.x86_64.rpm
