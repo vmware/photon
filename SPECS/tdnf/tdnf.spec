@@ -1,17 +1,18 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.9
-Release:        2%{?dist}
+Version:        3.5.10
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=75d5b35763f06c6258ee8585c850547b4e55bde8c538936895a247d4ea04aa65ef70e4eff31d4f33ab58bfcb0b4deb8a131a2c947b1f07e6f19f62ab9a5e78fa
+%define sha512  %{name}=d565af6a880b265c5fb030b6b90d429694af0d0466e2f22fc936185b672b10c7ced085bf19f66bbcc82ecd57eb6d8f256c3833afc02720222f06b6a105639b25
 
 Source1: license.txt
 %include %{SOURCE1}
+
 Patch0:         0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 
 Requires:       rpm-libs
@@ -296,6 +297,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Wed Dec 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.10-1
+- Upgrade to v3.5.10
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 3.5.9-2
 - Release bump for SRP compliance
 * Tue Oct 15 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.9-1
