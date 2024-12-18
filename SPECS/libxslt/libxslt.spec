@@ -1,8 +1,8 @@
 Summary:        Libxslt
 Name:           libxslt
 Version:        1.1.37
-Release:        5%{?dist}
-URL:            http://http://xmlsoft.org/libxslt
+Release:        6%{?dist}
+URL:            http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -82,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Wed Dec 18 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 1.1.37-6
+- url correction
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.1.37-5
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.37-4
