@@ -150,7 +150,7 @@ class SRP(object):
         filename = os.path.basename(file)
         self.schematic["input_templates"]["source-comps"][
             f"uid.obj.comp.fileset(org='photon.source',name='{filename}',build_id='{checksum}')"
-        ] = {"incorporated": True, "is_components_source": True, "usages": ["functionality", "building", "testing"]}
+        ] = {"incorporated": True, "is_components_source": True, "modified": False ,"usages": ["functionality", "building", "testing"]}
 
     def addInputRPMS(self, files):
         if not self.srpcli:
@@ -161,7 +161,8 @@ class SRP(object):
             try:
                 self.schematic["input_templates"]["rpm-comps"][
                     self.rpmFileNameToUid(filename)
-                ] = {"incorporated": False, "usages": ["building"]}
+                ] = {"incorporated": False, "usages": ["building"],
+                     "modified": False, "interaction_type": "separate_work"}
             except Exception as e:
                 self.logger.exception(e)
 
@@ -197,8 +198,13 @@ class SRP(object):
                         "is_components_source": True,
                         "incorporated": True,
                         "usages": ["functionality", "building", "testing"],
+                        "modified": False, "interaction_type": "separate_work"
                     }
                 },
+                "product": {
+                    "distribution_type": "external",
+                    "embedded_in_hardware": False
+                }
             }
 
     def addCommand(self, cmd, env):

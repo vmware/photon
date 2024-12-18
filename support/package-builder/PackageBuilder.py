@@ -87,7 +87,6 @@ class PackageBuilder(object):
                 inputRPMS = tUtils.installToolchainRPMS(
                     self.sandbox, self.package, self.version, availablePackages=doneList
                 )
-            self.srp.addInputRPMS(inputRPMS)
 
             if (self.package not in constants.listCoreToolChainPackages) or (
                 constants.rpmCheck and self.package in constants.testForceRPMS
@@ -103,6 +102,13 @@ class PackageBuilder(object):
             listRPMFiles, listSRPMFiles = pkgUtils.buildRPMSForGivenPackage(
                 self.sandbox, self.package, self.version, self.logPath
             )
+
+            # SRP: Remove the names of generated RPMs from the list of inputRPMs.
+            # There are some RPMs in outputs which by current design
+            # end up as inputs causing infinite loops during report generation.
+            inputRPMS = list(set(inputRPMS) - set(listRPMFiles))
+            self.srp.addInputRPMS(inputRPMS)
+
             # SRP: Add input sources only after pkgUtils.buildRPMSForGivenPackage() as it
             # also fetches any missing ones.
             if self.srp.isEnabled():
