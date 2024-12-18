@@ -1,1 +1,0 @@
-License: MPL-2.0 AND Apache-2.0 AND BSD-3-Clause AND EPL-1.0
