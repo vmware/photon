@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.3.11
-Release:        2%{?dist}
+Version:        3.3.12
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=0c240a4e86264dcc6f47c3c3e9c99f5378ee18f937c03da17014a6617818655091f0865d22b78a24d697c2ef943d050d33157f764f478ecc3d96b5b770cb2ac8
+%define sha512  %{name}=35107bfeeb4c0184579279113a2673a0b788e2c2b61a37f7c31e2e7b9baa8d406c7ad4312a1a00307b1740d6c6b5629246b9141237f2133c103561bed8993f4e
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 Patch1:         add-a-command-line-option-to-set-RPM-macros.patch
@@ -228,6 +228,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Wed Dec 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.12-1
+- Upgrade to v3.3.12
 * Mon Jul 01 2024 Bo Gan <bo.gan@broadcom.com> 3.3.11-2
 - Backport patch for --rpmdefine option
 * Tue Apr 30 2024 Oliver Kurth <oliver.kurth@broadcom.com> 3.3.11-1
