@@ -41,7 +41,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.118
-Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        10%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -120,10 +120,10 @@ Source50: check_kernel_struct_in_canister.inc
 %endif
 
 Source51: jitterentropy_rng_proxy.c
+%endif
 
 Source52: license.txt
 %include %{SOURCE52}
-%endif
 
 # CVE
 Source42: CVE-2023-39191.patches
@@ -954,6 +954,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Dec 20 2024 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.118-10
+- Fix license for aarch64
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-9
 - Release bump for SRP compliance
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.118-8
