@@ -1,6 +1,6 @@
-From f5305072a7c45071853301c61caacc7d94239c93 Mon Sep 17 00:00:00 2001
+From f17e47b6c621079a3b9e1b0eb70f4eacf31946b9 Mon Sep 17 00:00:00 2001
 From: Todd Sabin <tsabin@vmware.com>
-Date: Thu, 22 Jul 2021 18:20:09 -0400
+Date: Fri, 20 Dec 2024 07:36:49 -0600
 Subject: [PATCH] Add PCI quirk for VMware PCIe Root Port
 
 Add a PCI quirk entry for the VMware virtual PCIe Root Port,
@@ -15,10 +15,10 @@ Signed-off-by: Roye Eshed <eshedr@vmware.com>
  1 file changed, 15 insertions(+)
 
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 5d2acebc3e96..4bce6c163f12 100644
+index 37cc08d70..f38e53e1f 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4781,6 +4781,19 @@ static int pci_quirk_brcm_acs(struct pci_dev *dev, u16 acs_flags)
+@@ -4828,6 +4828,19 @@ static int pci_quirk_brcm_acs(struct pci_dev *dev, u16 acs_flags)
  		PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF);
  }
  
@@ -36,9 +36,9 @@ index 5d2acebc3e96..4bce6c163f12 100644
 +}
 +
  /*
-  * Wangxun 10G/1G NICs have no ACS capability, and on multi-function
-  * devices, peer-to-peer transactions are not be used between the functions.
-@@ -4923,8 +4936,10 @@ static const struct pci_dev_acs_enabled {
+  * Wangxun 40G/25G/10G/1G NICs have no ACS capability, but on
+  * multi-function devices, the hardware isolates the functions by
+@@ -4998,6 +5011,8 @@ static const struct pci_dev_acs_enabled {
  	{ PCI_VENDOR_ID_NXP, 0x8d9b, pci_quirk_nxp_rp_acs },
  	/* Zhaoxin Root/Downstream Ports */
  	{ PCI_VENDOR_ID_ZHAOXIN, PCI_ANY_ID, pci_quirk_zhaoxin_pcie_ports_acs },
@@ -47,8 +47,6 @@ index 5d2acebc3e96..4bce6c163f12 100644
  	/* Wangxun nics */
  	{ PCI_VENDOR_ID_WANGXUN, PCI_ANY_ID, pci_quirk_wangxun_nic_acs },
  	{ 0 }
- };
- 
 -- 
-2.25.1
+2.47.1
 

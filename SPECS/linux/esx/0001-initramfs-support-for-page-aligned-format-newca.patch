@@ -3,7 +3,7 @@ From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 19 May 2020 11:04:52 -0700
 Subject: [PATCH] initramfs: support for page aligned format "newca"
 
-   NEWCA format
+    NEWCA format
 
 "newca" archive format (header 0707ca) is similar to "newc"
 format (header 070701) but with page aligned regular files
@@ -71,7 +71,7 @@ Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
  1 file changed, 187 insertions(+), 13 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 55b74d7e5..30190a3df 100644
+index a56fc491c..044efbdd6 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
 @@ -13,12 +13,93 @@
@@ -257,15 +257,15 @@ index 55b74d7e5..30190a3df 100644
  static __initdata struct file *wfile;
  static __initdata loff_t wfile_pos;
  
-@@ -326,6 +439,7 @@ static int __init do_name(void)
- 	state = SkipIt;
- 	next_state = Reset;
+@@ -335,6 +448,7 @@ static int __init do_name(void)
+ 	}
+ 
  	if (strcmp(collected, "TRAILER!!!") == 0) {
 +		end_of_image = true;
  		free_hash();
  		return 0;
  	}
-@@ -334,8 +448,13 @@ static int __init do_name(void)
+@@ -343,8 +457,13 @@ static int __init do_name(void)
  		int ml = maybe_link();
  		if (ml >= 0) {
  			int openflags = O_WRONLY|O_CREAT;
@@ -280,7 +280,7 @@ index 55b74d7e5..30190a3df 100644
  			wfile = filp_open(collected, openflags, mode);
  			if (IS_ERR(wfile))
  				return 0;
-@@ -366,6 +485,10 @@ static int __init do_name(void)
+@@ -375,6 +494,10 @@ static int __init do_name(void)
  
  static int __init do_copy(void)
  {
@@ -291,7 +291,7 @@ index 55b74d7e5..30190a3df 100644
  	if (byte_count >= body_len) {
  		struct timespec64 t[2] = { };
  		if (xwrite(wfile, victim, body_len, &wfile_pos) != body_len)
-@@ -454,6 +577,8 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -469,6 +592,8 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	decompress_fn decompress;
  	const char *compress_name;
  	static __initdata char msg_buf[64];
@@ -300,7 +300,7 @@ index 55b74d7e5..30190a3df 100644
  
  	header_buf = kmalloc(110, GFP_KERNEL);
  	symlink_buf = kmalloc(PATH_MAX + N_ALIGN(PATH_MAX) + 1, GFP_KERNEL);
-@@ -466,19 +591,20 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -481,19 +606,20 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	this_header = 0;
  	message = NULL;
  	while (!message && len) {
@@ -323,7 +323,7 @@ index 55b74d7e5..30190a3df 100644
  		}
  		this_header = 0;
  		decompress = decompress_method(buf, len, &compress_name);
-@@ -502,6 +628,46 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -517,6 +643,46 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  		this_header = saved_offset + my_inptr;
  		buf += my_inptr;
  		len -= my_inptr;
@@ -370,7 +370,7 @@ index 55b74d7e5..30190a3df 100644
  	}
  	dir_utime();
  	kfree(name_buf);
-@@ -510,8 +676,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -525,8 +691,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	return message;
  }
  
@@ -379,7 +379,7 @@ index 55b74d7e5..30190a3df 100644
  static int __init retain_initrd_param(char *str)
  {
  	if (*str)
-@@ -532,7 +696,6 @@ __setup("keepinitrd", keepinitrd_setup);
+@@ -547,7 +711,6 @@ __setup("keepinitrd", keepinitrd_setup);
  
  extern char __initramfs_start[];
  extern unsigned long __initramfs_size;
@@ -387,7 +387,7 @@ index 55b74d7e5..30190a3df 100644
  #include <linux/kexec.h>
  
  void __weak __init free_initrd_mem(unsigned long start, unsigned long end)
-@@ -622,6 +785,8 @@ static int __init populate_rootfs(void)
+@@ -637,6 +800,8 @@ static int __init populate_rootfs(void)
  #ifdef CONFIG_BLK_DEV_RAM
  		populate_initrd_image(err);
  #else
@@ -396,7 +396,7 @@ index 55b74d7e5..30190a3df 100644
  		printk(KERN_EMERG "Initramfs unpacking failed: %s\n", err);
  #endif
  	}
-@@ -631,8 +796,17 @@ static int __init populate_rootfs(void)
+@@ -646,8 +811,17 @@ static int __init populate_rootfs(void)
  	 * If the initrd region is overlapped with crashkernel reserved region,
  	 * free only memory that is not part of crashkernel region.
  	 */
@@ -417,5 +417,5 @@ index 55b74d7e5..30190a3df 100644
  	initrd_end = 0;
  
 -- 
-2.23.1
+2.47.1
 

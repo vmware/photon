@@ -21,7 +21,7 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.230
+Version:        5.10.232
 Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=8f22f82a74a99022df3261e246a28d6f0c9a2626fc6547f133d4bd87bc418186d2c1dc234d837391dc5302f7e843c744a01eaaa616f5c71dd6b746ce3c4f047b
+%define sha512 linux=d0f3c2c6f9e47ed8e5de8e99c3e7f3175b6cb015916131ea9f7a9f1ee8aa29c7ae2fa432bcd1283bd0529654874f4f67ace208d2a8d01fc6595e4abe36ff1fd0
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -263,12 +263,6 @@ Patch165: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
 # Fix CVE-2024-38591
 Patch166: 0001-RDMA-hns-Fix-deadlock-on-SRQ-async-events.patch
 
-# Fix CVE-2024-46809
-Patch167: 0001-drm-amd-display-Check-BIOS-images-before-it-is-used.patch
-
-# Fix CVE-2024-46841
-Patch168: 0001-btrfs-don-t-BUG_ON-on-ENOMEM-from-btrfs_lookuip_exte.patch
-
 # Fix CVE-2024-46834
 Patch169: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
 Patch170: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
@@ -301,9 +295,6 @@ Patch180: 0001-udf-fix-uninit-value-use-in-udf_get_fileshortad.patch
 
 # Fix CVE-2024-50154
 Patch181: 0001-tcp-dccp-Don-t-use-timer_pending-in-reqsk_queue_unli.patch
-
-# Fix CVE-2024-50055
-Patch182: 0001-driver-core-bus-Fix-double-free-in-driver-API-bus_re.patch
 
 # Fix CVE-2024-50014
 Patch183: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -587,7 +578,6 @@ manipulation of eBPF programs and maps.
 
 # Allow PCI resets to be disabled from vfio_pci module
 %autopatch -p1 -m305 -M306
-
 %autopatch -p1 -m307 -M307
 
 # crypto
@@ -639,7 +629,6 @@ popd
 
 %make_build mrproper
 cp %{SOURCE1} .config
-
 %if 0%{?acvp_build:1} && 0%{?fips}
 #ACVP test harness changes in kernel configs.
 sed -i 's/# CONFIG_CRYPTO_USER is not set/CONFIG_CRYPTO_USER=y/' .config
@@ -985,6 +974,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Dec 20 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.232-1
+- Update to version 5.10.232
 * Tue Nov 26 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.230-1
 - Update to version 5.10.230
 * Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.229-5

@@ -10,7 +10,7 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.230
+Version:        5.10.232
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=8f22f82a74a99022df3261e246a28d6f0c9a2626fc6547f133d4bd87bc418186d2c1dc234d837391dc5302f7e843c744a01eaaa616f5c71dd6b746ce3c4f047b
+%define sha512 linux=d0f3c2c6f9e47ed8e5de8e99c3e7f3175b6cb015916131ea9f7a9f1ee8aa29c7ae2fa432bcd1283bd0529654874f4f67ace208d2a8d01fc6595e4abe36ff1fd0
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -223,12 +223,6 @@ Patch166: 0001-skbuff-introduce-skb_expand_head.patch
 Patch167: 0002-ipv6-use-skb_expand_head-in-ip6_finish_output2.patch
 Patch168: 0003-ipv6-fix-possible-UAF-in-ip6_finish_output2.patch
 
-# Fix CVE-2024-46809
-Patch170: 0001-drm-amd-display-Check-BIOS-images-before-it-is-used.patch
-
-# Fix CVE-2024-46841
-Patch171: 0001-btrfs-don-t-BUG_ON-on-ENOMEM-from-btrfs_lookuip_exte.patch
-
 # Fix CVE-2024-46834
 Patch172: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
 Patch173: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
@@ -261,9 +255,6 @@ Patch183: 0001-udf-fix-uninit-value-use-in-udf_get_fileshortad.patch
 
 # Fix CVE-2024-50154
 Patch184: 0001-tcp-dccp-Don-t-use-timer_pending-in-reqsk_queue_unli.patch
-
-# Fix CVE-2024-50055
-Patch185: 0001-driver-core-bus-Fix-double-free-in-driver-API-bus_re.patch
 
 # Fix CVE-2024-50014
 Patch186: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -552,6 +543,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Dec 20 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.232-1
+- Update to version 5.10.232
 * Tue Nov 26 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.230-1
 - Update to version 5.10.230
 * Tue Nov 26 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.229-5
