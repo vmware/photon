@@ -10,7 +10,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 0
+%global fips 1
 %endif
 
 %if 0%{?canister_build}
@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.6.30
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -60,9 +60,9 @@ Source7:        check_for_config_applicability.inc
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 
-%define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
+%define fips_canister_version 5.0.0-6.6.30-2%{?dist}
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
+%define sha512 fips-canister=ee7f9aa92069cc5f73e4582d1f50ac899418f9041a0a07a4817b4850dafb52b09f87bd622041c4b31e3404c48849635d847aa29351a857f5f426891cf5cb63f1
 %endif
 
 Source18:       spec_install_post.inc
@@ -866,6 +866,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Mar 18 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.6.30-4
+- Update canister binary v6.6.30-2
 * Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.6.30-3
 - Release bump for SRP compliance
 * Mon Jan 27 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.6.30-2

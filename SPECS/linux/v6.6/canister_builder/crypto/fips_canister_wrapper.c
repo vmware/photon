@@ -84,6 +84,15 @@ void __used __no_caller_saved_registers noinstr stackleak_track_stack(void)
 }
 #endif
 
+/* Replicate a no-op __fentry__() function for other linux flavours
+ * where function tracer is disabled.
+ */
+#ifndef CONFIG_FUNCTION_TRACER
+void __fentry__(void)
+{
+}
+#endif
+
 extern void fcw_sg_set_buf(struct scatterlist *sg, const void *buf, unsigned int buflen);
 extern int fcw_warn_on(int cond);
 extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);

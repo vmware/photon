@@ -27,6 +27,10 @@
 #include <crypto/sha1_base.h>
 #include <crypto/sha512_base.h>
 
+#ifndef CONFIG_FUNCTION_TRACER
+void __fentry__(void);
+#endif
+
 #ifndef CONFIG_GCC_PLUGIN_STACKLEAK
 void __used __no_caller_saved_registers noinstr stackleak_track_stack(void);
 #endif
