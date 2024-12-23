@@ -108,18 +108,16 @@ get_kernel_compatible_drivers() {
   local kernel_flavour="linux$4"
   local kd_map_key="v$(echo "$kernel_version" | cut -d '.' -f1,2):${driver_name}:${kernel_flavour}"
   local valid_driver_versions=(${kernel_driver_map["$kd_map_key"]})
+  local temp=()
   for (( i=0; i<${#driver_versions[@]}; i++ )); do
-    local flag=0
     for t in "${valid_driver_versions[@]}"; do
       if [[ "$t" == "${driver_versions[$i]}" ]]; then
-        flag=1
+        temp+=("$t")
         break
       fi
     done
-    if [[ "$flag" == "0" ]]; then
-      unset driver_versions[$i]
-    fi
   done
+  driver_versions=("${temp[@]}")
 }
 
 create_specs() {
