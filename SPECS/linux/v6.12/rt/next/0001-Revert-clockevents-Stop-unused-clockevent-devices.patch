@@ -1,4 +1,4 @@
-From 2a03938c85b9d60390f476522c4f2016a31a5e18 Mon Sep 17 00:00:00 2001
+From b4a48fd8f37c45afd3e529a57168af8859b4637e Mon Sep 17 00:00:00 2001
 From: Bo Gan <ganb@vmware.com>
 Date: Thu, 27 Aug 2020 05:00:45 -0700
 Subject: [PATCH] Revert clockevents: Stop unused clockevent devices
@@ -26,11 +26,11 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  2 files changed, 5 insertions(+), 18 deletions(-)
 
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index 23af5eca11b1..24b353cf31d3 100644
+index cddcd08ea..edabb0b01 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -678,7 +678,8 @@ static void __hrtimer_reprogram(struct hrtimer_cpu_base *cpu_base,
- 	if (!__hrtimer_hres_active(cpu_base) || cpu_base->hang_detected)
+@@ -676,7 +676,8 @@ static void __hrtimer_reprogram(struct hrtimer_cpu_base *cpu_base,
+ 	if (!hrtimer_hres_active(cpu_base) || cpu_base->hang_detected)
  		return;
  
 -	tick_program_event(expires_next, 1);
@@ -39,7 +39,7 @@ index 23af5eca11b1..24b353cf31d3 100644
  }
  
  /*
-@@ -1821,7 +1822,8 @@ void hrtimer_interrupt(struct clock_event_device *dev)
+@@ -1827,7 +1828,8 @@ void hrtimer_interrupt(struct clock_event_device *dev)
  	raw_spin_unlock_irqrestore(&cpu_base->lock, flags);
  
  	/* Reprogramming necessary ? */
@@ -50,7 +50,7 @@ index 23af5eca11b1..24b353cf31d3 100644
  		return;
  	}
 diff --git a/kernel/time/tick-oneshot.c b/kernel/time/tick-oneshot.c
-index 475ecceda768..fd2f981c14cf 100644
+index 5e2c2c26b..9c182c7a0 100644
 --- a/kernel/time/tick-oneshot.c
 +++ b/kernel/time/tick-oneshot.c
 @@ -24,22 +24,7 @@ int tick_program_event(ktime_t expires, int force)
@@ -78,5 +78,5 @@ index 475ecceda768..fd2f981c14cf 100644
  	return clockevents_program_event(dev, expires, force);
  }
 -- 
-2.25.1
+2.39.4
 

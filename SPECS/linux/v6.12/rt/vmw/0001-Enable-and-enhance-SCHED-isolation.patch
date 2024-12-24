@@ -1,4 +1,4 @@
-From 50968927a1645b068c8e3aecb3b286f768376e67 Mon Sep 17 00:00:00 2001
+From b01d5db9a2a6bbf7a15d0019742b52d38ce8aed1 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Mon, 7 Aug 2023 16:48:33 +0000
 Subject: [PATCH] Enable and enhance SCHED isolation
@@ -36,26 +36,29 @@ To activate sched isolation "sched" flag must be passed to the isolcpus=
 kernel parameter. Example: "isolcpus=domain,sched,managed_irq,2-3"
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Ported this patch to v6.12.x]
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
  kernel/sched/core.c      | 11 +++++++++++
- kernel/sched/fair.c      | 19 ++++++++++++++++++-
+ kernel/sched/fair.c      |  3 +++
  kernel/sched/isolation.c |  6 ++++++
- 3 files changed, 35 insertions(+), 1 deletion(-)
+ 3 files changed, 20 insertions(+)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 9d6dd14cf..7ed516b1a 100644
+index 232706d90..164408a6e 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -1886,6 +1886,8 @@ static int __set_cpus_allowed_ptr_locked(struct task_struct *p,
+@@ -3018,6 +3018,8 @@ static int __set_cpus_allowed_ptr_locked(struct task_struct *p,
  {
  	const struct cpumask *cpu_allowed_mask = task_cpu_possible_mask(p);
  	const struct cpumask *cpu_valid_mask = cpu_active_mask;
 +	struct cpumask cpu_valid_submask;
 +	const struct cpumask *hk_mask = housekeeping_cpumask(HK_TYPE_SCHED);
  	bool kthread = p->flags & PF_KTHREAD;
- 	struct cpumask *user_mask = NULL;
  	unsigned int dest_cpu;
-@@ -1913,6 +1915,15 @@ static int __set_cpus_allowed_ptr_locked(struct task_struct *p,
+ 	int ret = 0;
+@@ -3067,6 +3069,15 @@ static int __set_cpus_allowed_ptr_locked(struct task_struct *p,
  		}
  	}
  
@@ -63,7 +66,7 @@ index 9d6dd14cf..7ed516b1a 100644
 +	 * dest_cpu should not use isolcpus if housekeeping cpus are present in
 +	 * new_mask. Reduce cpu_valid_mask to housekeeping subset.
 +	 */
-+	if (cpumask_intersects(new_mask, hk_mask)) {
++	if (cpumask_intersects(ctx->new_mask, hk_mask)) {
 +		cpumask_and(&cpu_valid_submask, cpu_valid_mask, hk_mask);
 +		cpu_valid_mask = &cpu_valid_submask;
 +	}
@@ -72,12 +75,12 @@ index 9d6dd14cf..7ed516b1a 100644
  	 * Picking a ~random cpu helps in cases where we are changing affinity
  	 * for groups of tasks (ie. cpuset), so that load balancing is not
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 45c1d03af..5a30d51bb 100644
+index 2d16c8545..94a94604f 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -5707,6 +5707,9 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
- 	int idle_h_nr_running = task_has_idle_policy(p);
- 	int task_new = !(flags & ENQUEUE_WAKEUP);
+@@ -6961,6 +6961,9 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+ 	int rq_h_nr_running = rq->cfs.h_nr_running;
+ 	u64 slice = 0;
  
 +	WARN(!housekeeping_test_cpu(cpu_of(rq), HK_TYPE_SCHED) &&
 +		!(p->flags & PF_KTHREAD),
@@ -85,45 +88,11 @@ index 45c1d03af..5a30d51bb 100644
  	/*
  	 * The code below (indirectly) updates schedutil which looks at
  	 * the cfs_rq utilization to select a frequency.
-@@ -7084,6 +7087,24 @@ static void task_dead_fair(struct task_struct *p)
- {
- 	remove_entity_load_avg(&p->se);
- }
-+
-+static void
-+set_cpus_allowed_fair(struct task_struct *p, const struct cpumask *new_mask, u32 flags)
-+{
-+	if (housekeeping_enabled(HK_TYPE_SCHED) &&
-+	    !(p->flags & PF_KTHREAD) &&
-+	    !(flags & (SCA_MIGRATE_ENABLE | SCA_MIGRATE_DISABLE))) {
-+		const struct cpumask *hk_mask = housekeeping_cpumask(HK_TYPE_SCHED);
-+
-+		if (cpumask_intersects(new_mask, hk_mask)) {
-+			cpumask_and(&p->cpus_mask, new_mask, hk_mask);
-+			p->nr_cpus_allowed = cpumask_weight(&p->cpus_mask);
-+			return;
-+		}
-+	}
-+
-+	set_cpus_allowed_common(p, new_mask, flags);
-+}
- 
- static int
- balance_fair(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
-@@ -11546,7 +11563,7 @@ const struct sched_class fair_sched_class
- 	.rq_offline		= rq_offline_fair,
- 
- 	.task_dead		= task_dead_fair,
--	.set_cpus_allowed	= set_cpus_allowed_common,
-+	.set_cpus_allowed	= set_cpus_allowed_fair,
- #endif
- 
- 	.task_tick		= task_tick_fair,
 diff --git a/kernel/sched/isolation.c b/kernel/sched/isolation.c
-index 5a6ea03f9..d82107b15 100644
+index 5891e715f..acd8ca224 100644
 --- a/kernel/sched/isolation.c
 +++ b/kernel/sched/isolation.c
-@@ -167,6 +167,12 @@ static int __init housekeeping_isolcpus_setup(char *str)
+@@ -216,6 +216,12 @@ static int __init housekeeping_isolcpus_setup(char *str)
  			continue;
  		}
  
@@ -137,5 +106,5 @@ index 5a6ea03f9..d82107b15 100644
  			str += 7;
  			flags |= HK_FLAG_DOMAIN;
 -- 
-2.30.3
+2.39.4
 

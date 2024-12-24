@@ -1,0 +1,28 @@
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 2 Oct 2023 15:30:43 +0000
+Subject: [PATCH 54/54] serial: 8250: Revert "drop lockdep annotation from
+ serial8250_clear_IER()"
+
+The 8250 driver no longer depends on @oops_in_progress and
+will no longer violate the port->lock locking constraints.
+
+This reverts commit 3d9e6f556e235ddcdc9f73600fdd46fe1736b090.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/8250/8250_port.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -712,6 +712,9 @@ static void __serial8250_clear_IER(struc
+ 
+ static inline void serial8250_clear_IER(struct uart_8250_port *up)
+ {
++	/* Port locked to synchronize UART_IER access against the console. */
++	lockdep_assert_held_once(&up->port.lock);
++
+ 	__serial8250_clear_IER(up);
+ }
+ 

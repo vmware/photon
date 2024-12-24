@@ -1,9 +1,11 @@
-%global build_for none
-
 %global security_hardening none
 
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1
+
+# __debug_install_post extracts debug-info from modules. We need to
+# specify option for any customizations.
+%define _find_debuginfo_opts --keep-section '.BTF'
 
 %ifarch x86_64
 %define arch x86_64
@@ -15,16 +17,15 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.83
-Release:        2%{?dist}
-License:        GPLv2
+Version:        6.12.1
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt28
+%define rt_version rt6
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
@@ -39,16 +40,18 @@ Source2: initramfs.trigger
 Source4: scriptlets.inc
 Source5: check_for_config_applicability.inc
 # Real-Time kernel (PREEMPT_RT patches)
-# Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
+# Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.12/
 Source6: preempt_rt.patches
 
 %define stalld_version 1.19.1
 Source7: https://gitlab.com/rt-linux-tools/stalld/-/archive/v%{stalld_version}/stalld-v%{stalld_version}.tar.gz
 
 %if 0%{?fips}
-Source10: check_fips_canister_struct_compatibility.inc
+%define struct_comparator struct-comparator
+%define struct_comp_dir struct-comp-dir
+Source9: struct-comparator.c
 
-%define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
+%define fips_canister_version 6.0.0-6.12.1-4%{?dist}
 Source16: fips-canister-%{fips_canister_version}.tar.bz2
 
 %endif
@@ -77,11 +80,29 @@ Source36: fips_canister_wrapper.c
 Source37: fips_canister_wrapper.h
 Source38: fips_canister_wrapper_asm.S
 Source39: fips_canister_wrapper_common.h
+%endif
+# fips_canister_wrapper_internal{.c,.h} is the latest released
+# wrapper files. These files may differ between 2 canister versions.
+# During canister binary update, rename
+# %%{fips_canister_version}-fips_canister_wrapper_internal{.c,.h}
+# files to fips_canister_wrapper_internal{.c,.h}
+%if 0%{?fips}
 Source40: fips_canister_wrapper_internal.h
 Source41: fips_canister_wrapper_internal.c
 %endif
-# CVE
-Source42: CVE-2023-39191.patches
+
+Source42: license-rt.txt
+%include %{SOURCE42}
+
+%if 0%{?fips}
+ # known vmlinux struct definitions
+%define vmlinux_definition_loc canister_known_struct_def_vmlinux
+Source75: crypto_alg.txt
+Source76: crypto_template.txt
+Source77: skcipher_walk.txt
+Source78: swait_queue_head.txt
+Source79: aead_geniv_ctx.txt
+%endif
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -89,12 +110,12 @@ Patch1: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch2: 9p-transport-for-9p.patch
 Patch3: 9p-trans_fd-extend-port-variable-to-u32.patch
 Patch4: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
-Patch5: Discard-.note.gnu.property-sections-in-generic-NOTES.patch
 # Expose Photon kernel macros to identify kernel flavor and version
 Patch6: 0001-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch7: 0002-linux-rt-Makefile-Add-kernel-flavor-info-to-the-gene.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch8: 0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Enable CGROUP Stat show for V1
 Patch9: 0001-cgroup-v1-cgroup_stat-support.patch
 
 # ttyXRUSB support
@@ -122,7 +143,6 @@ Patch23: vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 # VMW: [55..60]
-Patch55: x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: x86-vmware-Log-kmsg-dump-on-panic.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
@@ -130,39 +150,22 @@ Patch57: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Secure Boot and Kernel Lockdown
 Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
+%if 0
 Patch59: 0002-Add-.sbat-section.patch
 Patch60: 0003-Verify-SBAT-on-kexec.patch
+%endif
 
 # SEV-ES, TDX
 %ifarch x86_64
 Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 %endif
 
+# Backward compatibility
+%if "%{dist}" == ".ph5"
+Patch62: 0001-block-Fix-validation-of-ioprio-level.patch
+%endif
+
 # CVE:
-Patch100: 0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
-# Fix CVE-2023-0597
-Patch102: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
-Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
-# Fix CVE-2023-39191
-%include %{SOURCE42}
-# Fix CVE-2024-23307
-Patch107: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
-# Fix CVE-2024-26584
-Patch109: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
-# Fix CVE-2024-26585
-Patch129: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
-# Fix CVE-2023-52585
-Patch130: 0001-drm-amdgpu-Fix-possible-NULL-dereference-in-amdgpu_r.patch
-
-# Fix CVE-2023-52452
-Patch131: 0001-bpf-Allow-reads-from-uninit-stack.patch
-Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
-
-# Fix CVE-2024-26642
-Patch133: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
-
-# Fix CVE-2024-26643
-Patch134: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -174,9 +177,6 @@ Patch699: 0001-setlocalversion-Skip-reading-localversion-rt-file.patch
 # Photon Specific Changes
 Patch700: 0001-Revert-clockevents-Stop-unused-clockevent-devices.patch
 
-# RT Runtime Greed
-Patch701: sched-rt-RT_RUNTIME_GREED-sched-feature.patch
-
 #Patch to enable nohz with idle=poll
 Patch714: 0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
 
@@ -185,6 +185,7 @@ Patch716: Guest-timer-Advancement-Feature.patch
 
 # Provide mixed cpusets guarantees for processes placement
 Patch717: 0001-Enable-and-enhance-SCHED-isolation.patch
+
 # Kernel cmdline param to disable task distribution within cpumask
 Patch718: 0001-sched_core-Disable-tasks-distribution-within-cpumask.patch
 # Crypto:
@@ -198,14 +199,10 @@ Patch1003: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch1004: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
-%ifarch x86_64
-Patch1005: 0001-changes-to-build-with-jitterentropy-v3.4.1.patch
-%endif
-
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch1008: 0001-FIPS-canister-binary-usage.patch
-Patch1009: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch1009: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %endif
 
 # stalld eBPF plugin patches
@@ -230,6 +227,7 @@ BuildRequires:  bison
 BuildRequires:  dwarves-devel
 # stalld plugin requires libbpf-devel and clang-devel
 BuildRequires:  libbpf-devel
+BuildRequires:  libtraceevent-devel
 BuildRequires:  clang-devel
 
 %if 0%{?fips}
@@ -295,20 +293,33 @@ stalld to use eBPF based backend.
 %autopatch -p1 -m0 -M24
 
 #VMW
+%autopatch -p1 -m55 -M58
+# Disabling sbat patches
+%if 0
 %autopatch -p1 -m55 -M60
+%endif
 
 #SEV-ES, TDX
 %ifarch x86_64
 %autopatch -p1 -m61 -M61
 %endif
 
-%autopatch -p1 -m62 -M63
+# Backward compatibility
+%if "%{dist}" == ".ph5"
+%autopatch -p1 -m62 -M62
+%endif
 
 # CVE
 %autopatch -p1 -m100 -M134
 
 # RT
-%autopatch -p1 -m301 -M718
+%autopatch -p1 -m301 -M716
+# Disabling Patch717, due to following reasons:
+# - Usecase only for Telco RT where mixed cpuset is used.
+# - Patch need to be upstream first
+# - keeping line commented just for TODO list
+# %autopatch -p1 -m717 -M717
+%autopatch -p1 -m718 -M718
 
 %autopatch -p1 -m1000 -M1004
 
@@ -349,6 +360,13 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
+mkdir -p %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE9}  %{struct_comp_dir}
+cp %{SOURCE75} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE76} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE77} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE78} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE79} %{struct_comp_dir}/%{vmlinux_definition_loc}
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .config
@@ -365,15 +383,23 @@ sed -e "s,@@NAME@@,%{name},g" \
 %build
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{?arch} %{?_smp_mflags}
 
+bldroot="${PWD}"
 %if 0%{?fips}
-%include %{SOURCE10}
+# compare struct definitions between fips canister and vmlinux
+# fails out if there is a mismatch, and the offending definition
+# has not been documented in %{vmlinux_definition_loc}
+pushd %{struct_comp_dir}
+gcc -o %{struct_comparator} %{SOURCE9} -ldwarves
+./%{struct_comparator} ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
+popd
+
+rm -rf %{struct_comp_dir}
 %endif
 
 # build bpftool
 make %{?_smp_mflags} -C tools/bpf/bpftool
 
 # build stalld eBPF plugin
-bldroot="${PWD}"
 pushd ../stalld-v%{stalld_version}/bpf
 make %{?_smp_mflags} VMLINUX_BTF="${bldroot}/vmlinux" BPFTOOL="${bldroot}/tools/bpf/bpftool/bpftool"
 popd
@@ -486,6 +512,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri Feb 21 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-1
+- Upgrade linux-rt to version 6.12.x.
+- Update fips canister to version 6.0.0-6.12.1-4
+- Improve fips canister struct definition check
 * Mon Apr 29 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2
 - Patched CVE-2024-26643
 * Mon Apr 29 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-1

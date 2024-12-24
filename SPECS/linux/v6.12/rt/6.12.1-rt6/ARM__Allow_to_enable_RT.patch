@@ -1,0 +1,34 @@
+Subject: ARM: Allow to enable RT
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri Oct 11 13:14:29 2019 +0200
+
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+
+Allow to select RT.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+
+---
+ arch/arm/Kconfig |    2 ++
+ 1 file changed, 2 insertions(+)
+---
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -39,6 +39,7 @@ config ARM
+ 	select ARCH_SUPPORTS_CFI_CLANG
+ 	select ARCH_SUPPORTS_HUGETLBFS if ARM_LPAE
+ 	select ARCH_SUPPORTS_PER_VMA_LOCK
++	select ARCH_SUPPORTS_RT if HAVE_POSIX_CPU_TIMERS_TASK_WORK
+ 	select ARCH_USE_BUILTIN_BSWAP
+ 	select ARCH_USE_CMPXCHG_LOCKREF
+ 	select ARCH_USE_MEMTEST
+@@ -126,6 +127,7 @@ config ARM
+ 	select HAVE_PERF_EVENTS
+ 	select HAVE_PERF_REGS
+ 	select HAVE_PERF_USER_STACK_DUMP
++	select HAVE_POSIX_CPU_TIMERS_TASK_WORK if !KVM
+ 	select MMU_GATHER_RCU_TABLE_FREE if SMP && ARM_LPAE
+ 	select HAVE_REGS_AND_STACK_ACCESS_API
+ 	select HAVE_RSEQ
