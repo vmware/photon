@@ -1,4 +1,4 @@
-From 4e6182c55e7195a1efc4a0106e7ed2fd53dbc7ba Mon Sep 17 00:00:00 2001
+From caf3ef86cb6100ba8d2c0b60b7c7429c62a2bad2 Mon Sep 17 00:00:00 2001
 From: Him Kalyan Bordoloi <bordoloih@vmware.com>
 Date: Fri, 14 Apr 2023 05:48:32 +0000
 Subject: [PATCH] Guest timer Advancement Feature
@@ -56,18 +56,18 @@ systems if a CPU is unavailable for that much time.
  5 files changed, 156 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 20d9a604da7c..b4e11cf87992 100644
+index c5fb28e64..9109edbef 100644
 --- a/arch/x86/kernel/apic/apic.c
 +++ b/arch/x86/kernel/apic/apic.c
-@@ -35,6 +35,7 @@
+@@ -36,6 +36,7 @@
  #include <linux/dmi.h>
  #include <linux/smp.h>
  #include <linux/mm.h>
 +#include <linux/hrtimer.h>
  
- #include <asm/trace/irq_vectors.h>
- #include <asm/irq_remapping.h>
-@@ -470,6 +471,20 @@ int setup_APIC_eilvt(u8 offset, u8 vector, u8 msg_type, u8 mask)
+ #include <xen/xen.h>
+ 
+@@ -406,6 +407,20 @@ int setup_APIC_eilvt(u8 offset, u8 vector, u8 msg_type, u8 mask)
  }
  EXPORT_SYMBOL_GPL(setup_APIC_eilvt);
  
@@ -88,7 +88,7 @@ index 20d9a604da7c..b4e11cf87992 100644
  /*
   * Program the next event, relative to now
   */
-@@ -484,12 +499,18 @@ static int lapic_next_deadline(unsigned long delta,
+@@ -420,12 +435,18 @@ static int lapic_next_deadline(unsigned long delta,
  			       struct clock_event_device *evt)
  {
  	u64 tsc;
@@ -108,7 +108,7 @@ index 20d9a604da7c..b4e11cf87992 100644
  	return 0;
  }
  
-@@ -641,8 +662,10 @@ static void setup_APIC_timer(void)
+@@ -589,8 +610,10 @@ static void setup_APIC_timer(void)
  		clockevents_config_and_register(levt,
  						tsc_khz * (1000 / TSC_DIVISOR),
  						0xF, ~0UL);
@@ -121,7 +121,7 @@ index 20d9a604da7c..b4e11cf87992 100644
  
  /*
 diff --git a/include/linux/clockchips.h b/include/linux/clockchips.h
-index 8ae9a95ebf5b..2bffa549ed55 100644
+index b0df28ddd..e7ac7cf6b 100644
 --- a/include/linux/clockchips.h
 +++ b/include/linux/clockchips.h
 @@ -179,7 +179,10 @@ div_sc(unsigned long ticks, unsigned long nsec, int shift)
@@ -136,10 +136,10 @@ index 8ae9a95ebf5b..2bffa549ed55 100644
  extern int clockevents_unbind_device(struct clock_event_device *ced, int cpu);
  
 diff --git a/include/linux/hrtimer.h b/include/linux/hrtimer.h
-index 0ee140176f10..7d5eff8fd605 100644
+index aa1e65ccb..db94eeeb2 100644
 --- a/include/linux/hrtimer.h
 +++ b/include/linux/hrtimer.h
-@@ -316,6 +316,9 @@ static inline int hrtimer_is_hres_active(struct hrtimer *timer)
+@@ -173,6 +173,9 @@ static inline int hrtimer_is_hres_active(struct hrtimer *timer)
  #ifdef CONFIG_HIGH_RES_TIMERS
  struct clock_event_device;
  
@@ -150,7 +150,7 @@ index 0ee140176f10..7d5eff8fd605 100644
  
  extern unsigned int hrtimer_resolution;
 diff --git a/kernel/time/clockevents.c b/kernel/time/clockevents.c
-index 5d85014d59b5..c58e3f064517 100644
+index 78c7bd64d..f33dc7a95 100644
 --- a/kernel/time/clockevents.c
 +++ b/kernel/time/clockevents.c
 @@ -13,6 +13,7 @@
@@ -235,7 +235,7 @@ index 5d85014d59b5..c58e3f064517 100644
  	delta = min(delta, (int64_t) dev->max_delta_ns);
  	delta = max(delta, (int64_t) dev->min_delta_ns);
  
-@@ -667,6 +718,32 @@ static struct bus_type clockevents_subsys = {
+@@ -667,6 +718,32 @@ static const struct bus_type clockevents_subsys = {
  static DEFINE_PER_CPU(struct device, tick_percpu_dev);
  static struct tick_device *tick_get_tick_dev(struct device *dev);
  
@@ -282,10 +282,10 @@ index 5d85014d59b5..c58e3f064517 100644
  			return err;
  	}
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index 29860eefd452..49bec11d5b36 100644
+index edabb0b01..74a2cf4ff 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -41,6 +41,7 @@
+@@ -42,6 +42,7 @@
  #include <linux/timer.h>
  #include <linux/freezer.h>
  #include <linux/compat.h>
@@ -293,7 +293,7 @@ index 29860eefd452..49bec11d5b36 100644
  
  #include <linux/uaccess.h>
  
-@@ -1775,6 +1776,9 @@ static __latent_entropy void hrtimer_run_softirq(struct softirq_action *h)
+@@ -1781,6 +1782,9 @@ static __latent_entropy void hrtimer_run_softirq(void)
  
  #ifdef CONFIG_HIGH_RES_TIMERS
  
@@ -303,7 +303,7 @@ index 29860eefd452..49bec11d5b36 100644
  /*
   * High resolution timer interrupt
   * Called with interrupts disabled
-@@ -1785,6 +1789,10 @@ void hrtimer_interrupt(struct clock_event_device *dev)
+@@ -1791,6 +1795,10 @@ void hrtimer_interrupt(struct clock_event_device *dev)
  	ktime_t expires_next, now, entry_time, delta;
  	unsigned long flags;
  	int retries = 0;
@@ -314,7 +314,7 @@ index 29860eefd452..49bec11d5b36 100644
  
  	BUG_ON(!cpu_base->hres_active);
  	cpu_base->nr_events++;
-@@ -1794,6 +1802,36 @@ void hrtimer_interrupt(struct clock_event_device *dev)
+@@ -1800,6 +1808,36 @@ void hrtimer_interrupt(struct clock_event_device *dev)
  	entry_time = now = hrtimer_update_base(cpu_base);
  retry:
  	cpu_base->in_hrtirq = 1;
@@ -351,7 +351,7 @@ index 29860eefd452..49bec11d5b36 100644
  	/*
  	 * We set expires_next to KTIME_MAX here with cpu_base->lock
  	 * held to prevent that a timer is enqueued in our queue via
-@@ -1825,6 +1863,8 @@ void hrtimer_interrupt(struct clock_event_device *dev)
+@@ -1831,6 +1869,8 @@ void hrtimer_interrupt(struct clock_event_device *dev)
  	if (expires_next == KTIME_MAX ||
  	    !tick_program_event(expires_next, 0)) {
  		cpu_base->hang_detected = 0;
@@ -360,7 +360,7 @@ index 29860eefd452..49bec11d5b36 100644
  		return;
  	}
  
-@@ -1868,6 +1908,8 @@ void hrtimer_interrupt(struct clock_event_device *dev)
+@@ -1874,6 +1914,8 @@ void hrtimer_interrupt(struct clock_event_device *dev)
  	else
  		expires_next = ktime_add(now, delta);
  	tick_program_event(expires_next, 1);
@@ -368,7 +368,7 @@ index 29860eefd452..49bec11d5b36 100644
 +		pr_warn_once("hrtimer: timer padding spent %llu ns spinning\n", ktime_to_ns(timer_padding_spin));
  	pr_warn_once("hrtimer: interrupt took %llu ns\n", ktime_to_ns(delta));
  }
- 
+ #endif /* !CONFIG_HIGH_RES_TIMERS */
 -- 
-2.23.3
+2.39.4
 
