@@ -5,8 +5,8 @@
 %global _find_debuginfo_opts    -g
 
 Name:           bpftrace
-Version:        0.18.0
-Release:        2%{?dist}
+Version:        0.21.2
+Release:        1%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,7 +14,7 @@ Group:          System Environment/Security
 URL:            https://github.com/iovisor/bpftrace
 
 Source0: https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b7da273d251f03a81b3a7097407352e7ad1d023972852bdb883176e97bab7046f9f327bd03bca51fe853ecaab5f60adc6994e75cb450a033a5b91118f719c36d
+%define sha512 %{name}=8c64de94da29030dcde0680be90e3c16a5cd965a0066b1abe3c0740f11a78d70f383bf2e0bbe2fce639eddc7d45cb44508cc8a78743c205d7efa45734151e743
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -94,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/tools/doc/*.txt
 
 %changelog
+* Mon Dec 23 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.21.2-1
+- Upgrade to v0.21.2, fixes CVE-2024-2313
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.18.0-2
 - Release bump for SRP compliance
 * Mon Aug 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.18.0-1

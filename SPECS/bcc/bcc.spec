@@ -3,7 +3,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.28.0
-Release:         2%{?dist}
+Release:         3%{?dist}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
@@ -14,6 +14,9 @@ Source0: https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0:        CVE-2024-2314-1.patch
+Patch1:        CVE-2024-2314-2.patch
 
 BuildRequires: cmake
 BuildRequires: build-essential
@@ -124,6 +127,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Mon Dec 23 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.28.0-3
+- CVE-2024-2314 fix
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.28.0-2
 - Release bump for SRP compliance
 * Sun Aug 27 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.28.0-1
