@@ -1,6 +1,6 @@
 Name:           bpftrace
 Version:        0.16.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 License:        ASL 2.0
 Vendor:         VMware, Inc.
@@ -10,6 +10,9 @@ URL:            https://github.com/iovisor/bpftrace
 
 Source0: https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=52ca4fea4e2f8d2cbf0f9f1bc69af0ee3408201f019006dd2e838b9458cfc01761eba3df24c39e05cf93220d85d0cecc69bb44ec72f9f44cec0eb94479bff734
+
+Patch0:         CVE-2024-2313-1.patch
+Patch1:         CVE-2024-2313-2.patch
 
 BuildRequires:  bison
 BuildRequires:  flex
@@ -76,6 +79,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/tools/doc/*.txt
 
 %changelog
+* Wed Dec 25 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.16.0-3
+- CVE-2024-2313 fix
 * Fri Apr 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.16.0-2
 - Bump version as a part of libbpf upgrade
 * Tue Sep 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-1

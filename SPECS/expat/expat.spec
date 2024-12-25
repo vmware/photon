@@ -1,7 +1,7 @@
 Summary:        An XML parser library
 Name:           expat
 Version:        2.4.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://expat.sourceforge.net/
 Group:          System Environment/GeneralLibraries
@@ -16,6 +16,8 @@ Patch3:         CVE-2024-28757.patch
 Patch4:         CVE-2024-45490.patch
 Patch5:         CVE-2024-45491.patch
 Patch6:         CVE-2024-45492.patch
+Patch7:         CVE-2024-50602-1.patch
+Patch8:         CVE-2024-50602-2.patch
 Requires:       expat-libs = %{version}-%{release}
 
 %description
@@ -92,6 +94,8 @@ rm -rf %{buildroot}/*
 %doc AUTHORS Changes
 
 %changelog
+* Wed Dec 25 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.9-4
+- CVE-2024-50602 fix
 * Tue Sep 03 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 2.4.9-3
 - Fix for CVE-2024-45490
 * Mon Mar 18 2024 Anmol Jain <anmol.jain@broadcom.com> 2.4.9-2

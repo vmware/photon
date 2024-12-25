@@ -3,7 +3,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.25.0
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         ASL 2.0
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -12,9 +12,11 @@ URL:             https://github.com/iovisor/bcc
 
 Source0: https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
 %define sha512 %{name}=9f71f6c21d1f66054985562168d5848352f5029383e9c65c907a6f044258bc23df842cc65db20bfaaf33789e69c9b8e7b606a32dc882cbdf093b71768c8b521d
-
 Source1: https://github.com/iovisor/bcc/releases/download/v%{version}/bcc-src-with-submodule-%{version}.tar.gz
 %define sha512 %{name}-src-with-submodule=842e0957dd3a7cbb60e8aba497ae0841bfa564306ba27effca5348466dae6735557dc0a871d63a2519e3bba105632bcb279af7cfacf378dff9de2638484dac63
+
+Patch0:          CVE-2024-2314-1.patch
+Patch1:          CVE-2024-2314-2.patch
 
 BuildRequires:   cmake
 BuildRequires:   build-essential
@@ -79,6 +81,9 @@ Command line tools for BPF Compiler Collection (BCC)
 cp -rf %{name}/* .
 rm -r %{name}
 
+%patch0 -p1
+%patch1 -p1
+
 %build
 %cmake -DREVISION_LAST=%{version} \
        -DREVISION=%{version} \
@@ -130,6 +135,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Mon Dec 23 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.25.0-2
+- CVE-2024-2314 fix
 * Tue Nov 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.25.0-1
 - Upgrade to v0.25.0
 * Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-3
