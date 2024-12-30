@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.118
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -52,9 +52,9 @@ Source7: https://gitlab.com/rt-linux-tools/stalld/-/archive/v%{stalld_version}/s
 %define sha512 stalld=f92fd5996482600c6a73324f43eed8a4a1f5e8f092e4a167306804e4230abbb89c37a8bfbb78ffe997310b8bfbb45d4903dd0c51292770dcf5b1d3cd56a78bde
 
 %if 0%{?fips}
-Source10: check_fips_canister_struct_compatibility.inc
-Source11:       canister_known_struct_diff_list
-Source12:       canister_known_struct_def_vmlinux
+%define struct_comparator struct-comparator
+%define struct_comp_dir struct-comp-dir
+Source8: struct-comparator.c
 
 %define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
 Source16: fips-canister-%{fips_canister_version}.tar.bz2
@@ -88,13 +88,21 @@ Source39: fips_canister_wrapper_asm.S
 Source40: fips_canister_wrapper_common.h
 Source41: fips_canister_wrapper_internal.h
 Source42: fips_canister_wrapper_internal.c
+
+# known vmlinux struct definitions
+%define vmlinux_definition_loc canister_known_struct_def_vmlinux
+Source43: crypto_alg.txt
+Source44: crypto_template.txt
+Source45: skcipher_walk.txt
+Source46: swait_queue_head.txt
+Source47: x86_cpu_id.txt
 %endif
 
 # CVE
-Source43: CVE-2023-39191.patches
+Source48: CVE-2023-39191.patches
 
-Source44: license.txt
-%include %{SOURCE44}
+Source49: license.txt
+%include %{SOURCE49}
 # common
 Patch0: net-Double-tcp_mem-limits.patch
 Patch1: SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
@@ -159,7 +167,7 @@ Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch102: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2023-39191 [110..128]
-%include %{SOURCE43}
+%include %{SOURCE48}
 
 # Fix CVE-2023-52452
 Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
@@ -399,8 +407,13 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
-cp %{SOURCE11} ${PWD}/
-cp %{SOURCE12} ${PWD}/
+mkdir -p %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE8}  %{struct_comp_dir}
+cp %{SOURCE43} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE44} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE45} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE46} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE47} %{struct_comp_dir}/%{vmlinux_definition_loc}
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .config
@@ -417,15 +430,24 @@ sed -e "s,@@NAME@@,%{name},g" \
 %build
 %make_build KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{?arch}
 
+bldroot="${PWD}"
+
 %if 0%{?fips}
-%include %{SOURCE10}
+# compare struct definitions between fips canister and vmlinux
+# fails out if there is a mismatch, and the offending definition
+# has not been documented in %{vmlinux_definition_loc}
+pushd %{struct_comp_dir}
+gcc -o %{struct_comparator} %{SOURCE8} -ldwarves
+./%{struct_comparator} ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
+popd
+
+rm -rf %{struct_comp_dir}
 %endif
 
 # build bpftool
 %make_build -C tools/bpf/bpftool
 
 # build stalld eBPF plugin
-bldroot="${PWD}"
 pushd ../stalld-v%{stalld_version}/bpf
 %make_build VMLINUX_BTF="${bldroot}/vmlinux" BPFTOOL="${bldroot}/tools/bpf/bpftool/bpftool"
 popd
@@ -538,6 +560,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Dec 30 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-6
+- Improve fips canister struct definition check
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.118-5
 - Release bump for SRP compliance
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.118-4

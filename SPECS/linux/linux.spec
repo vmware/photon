@@ -44,7 +44,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.118
-Release:        11%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        12%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -72,9 +72,9 @@ Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
 
 %if 0%{?fips}
-Source9:        check_fips_canister_struct_compatibility.inc
-Source10:       canister_known_struct_diff_list
-Source11:       canister_known_struct_def_vmlinux
+%define struct_comparator struct-comparator
+%define struct_comp_dir struct-comp-dir
+Source9:        struct-comparator.c
 
 %define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
@@ -127,6 +127,16 @@ Source51: jitterentropy_rng_proxy.c
 
 Source52: license.txt
 %include %{SOURCE52}
+
+%if 0%{?fips}
+# known vmlinux struct definitions
+%define vmlinux_definition_loc canister_known_struct_def_vmlinux
+Source75: crypto_alg.txt
+Source76: crypto_template.txt
+Source77: skcipher_walk.txt
+Source78: swait_queue_head.txt
+Source79: x86_cpu_id.txt
+%endif
 
 # CVE
 Source42: CVE-2023-39191.patches
@@ -646,9 +656,14 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
-cp %{SOURCE10} ${PWD}/
-cp %{SOURCE11} ${PWD}/
 cp %{SOURCE51} crypto/
+mkdir -p %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE9}  %{struct_comp_dir}
+cp %{SOURCE75} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE76} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE77} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE78} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE79} %{struct_comp_dir}/%{vmlinux_definition_loc}
 %endif
 
 %if 0%{?canister_build}
@@ -699,8 +714,18 @@ fi
 %make_build KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH=%{arch}
 
+bldroot="${PWD}"
+
 %if 0%{?fips}
-%include %{SOURCE9}
+# compare struct definitions between fips canister and vmlinux
+# fails out if there is a mismatch, and the offending definition
+# has not been documented in %{vmlinux_definition_loc}
+pushd %{struct_comp_dir}
+gcc -o %{struct_comparator} %{SOURCE9} -ldwarves
+./%{struct_comparator} ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
+popd
+
+rm -rf %{struct_comp_dir}
 %endif
 
 %ifarch aarch64
@@ -718,13 +743,11 @@ tools/perf/perf -vv | grep dwarf | grep on
 %endif
 
 # build ENA module
-bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 %make_build -C ${bldroot} M="${PWD}" V=1 modules
 popd
 
 # build EFA module
-bldroot="${PWD}"
 pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa
 mkdir -p build
 cd build
@@ -945,6 +968,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Dec 30 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-12
+- Improve fips canister struct definition check
 * Mon Dec 23 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.118-11
 - Fix build error in acvp build and some spec refinement
 * Fri Dec 20 2024 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.118-10
