@@ -3,7 +3,7 @@
 Summary:        Coroutine-based network library
 Name:           python3-gevent
 Version:        21.8.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -12,6 +12,8 @@ Url:            https://pypi.python.org/pypi/gevent
 
 Source0: gevent-%{version}.tar.gz
 %define sha512 %{srcname}=dae95f986530e79b07a0006f6fb4cbd3911ac0bf2e58c4896ee5fa6d2e2a9ed5785c346958ee23cd57c2dcafb0a34c585b1f6375a29fd653e061a382482fc9fb
+
+Patch0: CVE-2023-41419.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -60,6 +62,8 @@ nosetests
 %{python3_sitelib}/*
 
 %changelog
+* Mon Dec 16 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.8.0-3
+- Fix CVE-2023-41419
 * Thu Aug 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 21.8.0-2
 - Add zope.interface to requires
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 21.8.0-1

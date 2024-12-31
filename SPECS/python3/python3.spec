@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.11
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -33,6 +33,7 @@ Patch8:         CVE-2023-6597.patch
 Patch11:        CVE-2024-6923.patch
 patch12:        CVE-2024-7592.patch
 Patch13:        CVE-2024-6232.patch
+Patch14:        CVE-2024-9287.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -308,6 +309,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Tue Dec 31 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.11-12
+- Fix CVE-2024-9287
 * Mon Oct 07 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.11-11
 - Fix CVE-2024-7592, CVE-2024-6232 & CVE-2023-27043
 * Mon Aug 19 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.11-10

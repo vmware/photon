@@ -1,7 +1,7 @@
 Summary:        A fast and easy to use template engine written in pure Python
 Name:           python3-jinja2
 Version:        3.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -10,6 +10,9 @@ URL:            https://github.com/pallets/jinja
 
 Source0: https://github.com/pallets/jinja/archive/refs/tags/jinja-%{version}.tar.gz
 %define sha512 jinja=50feebc7eed4c8b5bb0c2951784c1c115e3ee1c0e0c91bbf1884551b1312ef8fce24804a2ca1dfd8c543406529afe4817567c39e7cfd15028b54049853623144
+
+Patch0: CVE-2024-22195.patch
+Patch1: CVE-2024-34064.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -49,6 +52,8 @@ expressions and an optional sandboxed environment.
 %{python3_sitelib}/Jinja2-%{version}-py%{python3_version}.egg-info
 
 %changelog
+* Wed Dec 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.2-2
+- Fix CVE-2024-22195, CVE-2024-34064
 * Thu Jan 04 2024 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-1
 - Version upgrade to v3.1.2 as required by ansible v2.14.12
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.11.2-2

@@ -1,15 +1,17 @@
 Summary:        The Swiss Army knife of Python web development
 Name:           python3-werkzeug
-Version:        1.0.1
-Release:        3%{?dist}
+Version:        2.2.2
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Werkzeug
 
-Source0:        https://pypi.python.org/packages/ab/65/d3f1edd1109cb1beb6b82f4139addad482df5b5ea113bdc98242383bf402/Werkzeug-%{version}.tar.gz
-%define sha1    Werkzeug=07b0f2dcd460076d437d1481c556584db88df199
+Source0: https://pypi.python.org/packages/ab/65/d3f1edd1109cb1beb6b82f4139addad482df5b5ea113bdc98242383bf402/Werkzeug-%{version}.tar.gz
+%define sha512  Werkzeug=b37a63ba1d6970b10ba17b87575c2d030ad6c4c00ab50669d678297b9801e319f4f81f98bfc2d89fc2e645c5e192dd81ed2d653c03dbaef06565de0bdac2bcf7
+
+Patch0: CVE-2024-34069.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -19,7 +21,6 @@ BuildRequires:  python3-xml
 %if 0%{?with_check}
 BuildRequires:  python3-requests
 BuildRequires:  curl-devel
-BuildRequires:  openssl-devel
 BuildRequires:  python3-pip
 %endif
 
@@ -51,6 +52,8 @@ LANG=en_US.UTF-8 PYTHONPATH=./ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.2-1
+- Update to 2.2.2 & Fix CVE-2024-34069
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.1-3
 - Update release to compile with python 3.10
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.1-2
