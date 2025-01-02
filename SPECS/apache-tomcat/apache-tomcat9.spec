@@ -11,8 +11,8 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.97
-Release:        2%{?dist}
+Version:        9.0.98
+Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -21,7 +21,7 @@ Obsoletes:      apache-tomcat-9 < 9.0.82-1%{?dist}
 Provides:       apache-tomcat-9 = %{version}-%{release}
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=e0500e0c7e4af40f0a6db845b73f41423a7b7746e110053c36744fc376a0db96d141069035171f5b6efdf6011c155cbc29815cd286a0508cefaddb776909a00a
+%define sha512 %{_origname}=eb380dae515a259d23d5311d0b96b8ef5068c0d8d72da215410e5475582d2ff82182b7331e0d197eb993d8014a99ea40290154a343e961a07ed02be6894759cc
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
 # base-for-apache-tomcat is a cached -Dbase.path folder
@@ -31,8 +31,14 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 3. generated code will be exist to default location $HOME/tomcat-build-libs
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
+# Note: Please remove Line 72,73,74 in next version upgrade
+# These lines were added to fix issue in base-for-apache-tomcat v9.0.98 source tar ball.
+# Lines to be removed -
+# "pushd %{_builddir}/base-for-%{_origname}-%{version} , mv tomcat-build-libs/* . ,popd"
+# Contact Harinadh.Dommaraju@broadcom.com for more information
+
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=306d9bff21d90654ae889de327620790f65ebaca8dba366c41f91559429a0f9e1733c227d2bb2e79f22062f77caa3ad779f1c3a4ca7bcb951440a9b9d4691d74
+%define sha512 base=c6e718f37fc71247459e3932313931ef53ec1c8276a70b791ac9982702dcfae17c2670ab235c9b2cb905e6b9c71c6c3b6653f8bc827f8aaae1a8f9603eed2b07
 
 Source2: license-apache-tomcat9.txt
 %include %{SOURCE2}
@@ -67,6 +73,9 @@ The web application for Apache Tomcat.
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
+pushd %{_builddir}/base-for-%{_origname}-%{version}
+mv tomcat-build-libs/* .
+popd
 
 %build
 ant -Dant.build.javac.source=1.8 -Dant.build.javac.target=1.8 \
@@ -151,6 +160,9 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed Jan 08 2025 HarinadhD <harinadh.dommaraju@broadcom.com> 9.0.98-1
+- Version upgrade to v9.0.98
+- Fix for CVE-2024-50379,CVE-2024-54677,CVE-2024-56337
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 9.0.97-2
 - Release bump for SRP compliance
 * Wed Nov 13 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.0.97-1
