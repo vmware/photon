@@ -1,19 +1,19 @@
-From 1216f535bb8c385e2ec10ed7e892695cef673438 Mon Sep 17 00:00:00 2001
+From 33ecb53662124014d31b47e49eec8d97a3e6cccb Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Sun, 15 Oct 2023 03:25:33 +0000
-Subject: [PATCH] ecc: Add pairwise consistency test for every generated ECC
- keypairs
+Subject: [PATCH 09/11] ecc: Add pairwise consistency test for every generated
+ ECC keypairs
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
- crypto/ecc.c | 116 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 116 insertions(+)
+ crypto/ecc.c | 122 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 122 insertions(+)
 
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index fe3792c41..095d2032c 100644
+index 8dd7fe10d..e456517a2 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
-@@ -1492,6 +1492,119 @@ int ecc_gen_privkey(unsigned int curve_id, unsigned int ndigits, u64 *privkey)
+@@ -1548,6 +1548,125 @@ int ecc_gen_privkey(unsigned int curve_id, unsigned int ndigits,
  	return 0;
  }
  
@@ -84,6 +84,7 @@ index fe3792c41..095d2032c 100644
 +	unsigned short ss_size = 0;
 +	const u64* static_priv_key = NULL;
 +	const u64* static_pub_key = NULL;
++	u64 priv[ECC_MAX_DIGITS];
 +
 +	if (curve_id == 2) {
 +		ss_size = ECC_P256_SS_SZ;
@@ -97,6 +98,11 @@ index fe3792c41..095d2032c 100644
 +		return ret;
 +	}
 +
++	/* crypto_shared_secret() expects private keys to be in proper
++	 * byte order, so swap the static private keys before calling
++	 * the function.
++	 */
++	ecc_swap_digits(static_priv_key, priv, ndigits);
 +	shared_secret_a = fcw_kmalloc(ss_size, GFP_KERNEL);
 +	if (!shared_secret_a) {
 +		ret = -ENOMEM;
@@ -109,7 +115,7 @@ index fe3792c41..095d2032c 100644
 +	}
 +
 +	ret = crypto_ecdh_shared_secret(curve_id, ndigits,
-+					static_priv_key, public_key, shared_secret_a);
++					priv, public_key, shared_secret_a);
 +	if (ret < 0)
 +		goto out;
 +	ret = crypto_ecdh_shared_secret(curve_id, ndigits,
@@ -133,7 +139,7 @@ index fe3792c41..095d2032c 100644
  int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
  		     const u64 *private_key, u64 *public_key)
  {
-@@ -1524,6 +1637,9 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
+@@ -1577,6 +1696,9 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
  	ecc_swap_digits(pk->x, public_key, ndigits);
  	ecc_swap_digits(pk->y, &public_key[ndigits], ndigits);
  
@@ -144,5 +150,5 @@ index fe3792c41..095d2032c 100644
  	ecc_free_point(pk);
  out:
 -- 
-2.19.0
+2.39.4
 

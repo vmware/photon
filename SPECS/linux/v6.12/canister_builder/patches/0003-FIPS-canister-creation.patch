@@ -1,7 +1,7 @@
-From d863587511e25b09e941d7743d3b6112b2600aed Mon Sep 17 00:00:00 2001
-From: Keerthana K <keerthanak@vmware.com>
-Date: Wed, 20 Sep 2023 07:43:34 +0000
-Subject: [PATCH 2/8] FIPS canister creation
+From 6c1439ecbe5bbd97953f881bc71fad894e3d14b9 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Thu, 28 Nov 2024 11:42:35 +0000
+Subject: [PATCH 03/11] FIPS canister creation
 
 Canister creation patch.
  - Makefile changes to generate canister binary (fips_canister.o)
@@ -19,17 +19,18 @@ Canister creation patch.
  - Do not check indirect call destination signatures from canister
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
-Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---
- arch/x86/crypto/aesni-intel_glue.c |  73 ++++++++++---------
- crypto/Makefile                    |  87 +++++++++++++++++++++++
+ arch/x86/crypto/aesni-intel_glue.c |  77 ++++++++++----------
+ crypto/Makefile                    |  91 ++++++++++++++++++++++++
  crypto/algboss.c                   |   5 +-
  crypto/ccm.c                       |   7 +-
  crypto/cmac.c                      |   3 +-
  crypto/ctr.c                       |   3 +-
  crypto/cts.c                       |   3 +-
  crypto/drbg.c                      |  50 ++++++++-----
+ crypto/ecb.c                       |   2 +-
  crypto/ecc.c                       |   5 +-
  crypto/ecdh.c                      |   5 +-
  crypto/ecdsa.c                     |   3 +-
@@ -41,13 +42,13 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
  crypto/testmgr.c                   | 108 ++++++++++++++++-------------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 19 files changed, 261 insertions(+), 134 deletions(-)
+ 20 files changed, 267 insertions(+), 138 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index a5b0cb3ef..10420b2aa 100644
+index b0dd83555..55ed01a67 100644
 --- a/arch/x86/crypto/aesni-intel_glue.c
 +++ b/arch/x86/crypto/aesni-intel_glue.c
-@@ -35,7 +35,10 @@
+@@ -37,7 +37,10 @@
  #include <linux/workqueue.h>
  #include <linux/spinlock.h>
  #include <linux/static_call.h>
@@ -58,19 +59,19 @@ index a5b0cb3ef..10420b2aa 100644
  
  #define AESNI_ALIGN	16
  #define AESNI_ALIGN_ATTR __attribute__ ((__aligned__(AESNI_ALIGN)))
-@@ -242,9 +245,9 @@ static int aes_set_key_common(struct crypto_tfm *tfm, void *raw_ctx,
- 	if (!crypto_simd_usable())
- 		err = aes_expandkey(ctx, in_key, key_len);
- 	else {
--		kernel_fpu_begin();
-+		fcw_kernel_fpu_begin();
- 		err = aesni_set_key(ctx, in_key, key_len);
--		kernel_fpu_end();
-+		fcw_kernel_fpu_end();
- 	}
+@@ -130,9 +133,9 @@ static int aes_set_key_common(struct crypto_aes_ctx *ctx,
+ 	if (err)
+ 		return err;
  
- 	return err;
-@@ -263,9 +266,9 @@ static void aesni_encrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
+-	kernel_fpu_begin();
++	fcw_kernel_fpu_begin();
+ 	aesni_set_key(ctx, in_key, key_len);
+-	kernel_fpu_end();
++	fcw_kernel_fpu_end();
+ 	return 0;
+ }
+ 
+@@ -150,9 +153,9 @@ static void aesni_encrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
  	if (!crypto_simd_usable()) {
  		aes_encrypt(ctx, dst, src);
  	} else {
@@ -82,7 +83,7 @@ index a5b0cb3ef..10420b2aa 100644
  	}
  }
  
-@@ -276,9 +279,9 @@ static void aesni_decrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
+@@ -163,9 +166,9 @@ static void aesni_decrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
  	if (!crypto_simd_usable()) {
  		aes_decrypt(ctx, dst, src);
  	} else {
@@ -94,7 +95,7 @@ index a5b0cb3ef..10420b2aa 100644
  	}
  }
  
-@@ -300,10 +303,10 @@ static int ecb_encrypt(struct skcipher_request *req)
+@@ -186,10 +189,10 @@ static int ecb_encrypt(struct skcipher_request *req)
  	err = skcipher_walk_virt(&walk, req, false);
  
  	while ((nbytes = walk.nbytes)) {
@@ -107,7 +108,7 @@ index a5b0cb3ef..10420b2aa 100644
  		nbytes &= AES_BLOCK_SIZE - 1;
  		err = skcipher_walk_done(&walk, nbytes);
  	}
-@@ -322,10 +325,10 @@ static int ecb_decrypt(struct skcipher_request *req)
+@@ -208,10 +211,10 @@ static int ecb_decrypt(struct skcipher_request *req)
  	err = skcipher_walk_virt(&walk, req, false);
  
  	while ((nbytes = walk.nbytes)) {
@@ -120,7 +121,7 @@ index a5b0cb3ef..10420b2aa 100644
  		nbytes &= AES_BLOCK_SIZE - 1;
  		err = skcipher_walk_done(&walk, nbytes);
  	}
-@@ -344,10 +347,10 @@ static int cbc_encrypt(struct skcipher_request *req)
+@@ -230,10 +233,10 @@ static int cbc_encrypt(struct skcipher_request *req)
  	err = skcipher_walk_virt(&walk, req, false);
  
  	while ((nbytes = walk.nbytes)) {
@@ -133,7 +134,7 @@ index a5b0cb3ef..10420b2aa 100644
  		nbytes &= AES_BLOCK_SIZE - 1;
  		err = skcipher_walk_done(&walk, nbytes);
  	}
-@@ -366,10 +369,10 @@ static int cbc_decrypt(struct skcipher_request *req)
+@@ -252,10 +255,10 @@ static int cbc_decrypt(struct skcipher_request *req)
  	err = skcipher_walk_virt(&walk, req, false);
  
  	while ((nbytes = walk.nbytes)) {
@@ -146,7 +147,7 @@ index a5b0cb3ef..10420b2aa 100644
  		nbytes &= AES_BLOCK_SIZE - 1;
  		err = skcipher_walk_done(&walk, nbytes);
  	}
-@@ -425,10 +428,10 @@ static int cts_cbc_encrypt(struct skcipher_request *req)
+@@ -311,10 +314,10 @@ static int cts_cbc_encrypt(struct skcipher_request *req)
  	if (err)
  		return err;
  
@@ -159,7 +160,7 @@ index a5b0cb3ef..10420b2aa 100644
  
  	return skcipher_walk_done(&walk, 0);
  }
-@@ -481,10 +484,10 @@ static int cts_cbc_decrypt(struct skcipher_request *req)
+@@ -367,10 +370,10 @@ static int cts_cbc_decrypt(struct skcipher_request *req)
  	if (err)
  		return err;
  
@@ -172,7 +173,7 @@ index a5b0cb3ef..10420b2aa 100644
  
  	return skcipher_walk_done(&walk, 0);
  }
-@@ -519,7 +522,7 @@ static int ctr_crypt(struct skcipher_request *req)
+@@ -405,7 +408,7 @@ static int ctr_crypt(struct skcipher_request *req)
  	err = skcipher_walk_virt(&walk, req, false);
  
  	while ((nbytes = walk.nbytes) > 0) {
@@ -181,7 +182,7 @@ index a5b0cb3ef..10420b2aa 100644
  		if (nbytes & AES_BLOCK_MASK)
  			static_call(aesni_ctr_enc_tfm)(ctx, walk.dst.virt.addr,
  						       walk.src.virt.addr,
-@@ -535,7 +538,7 @@ static int ctr_crypt(struct skcipher_request *req)
+@@ -421,7 +424,7 @@ static int ctr_crypt(struct skcipher_request *req)
  			crypto_inc(walk.iv, AES_BLOCK_SIZE);
  			nbytes = 0;
  		}
@@ -190,7 +191,7 @@ index a5b0cb3ef..10420b2aa 100644
  		err = skcipher_walk_done(&walk, nbytes);
  	}
  	return err;
-@@ -570,7 +573,7 @@ static int xctr_crypt(struct skcipher_request *req)
+@@ -456,7 +459,7 @@ static int xctr_crypt(struct skcipher_request *req)
  	err = skcipher_walk_virt(&walk, req, false);
  
  	while ((nbytes = walk.nbytes) > 0) {
@@ -199,7 +200,7 @@ index a5b0cb3ef..10420b2aa 100644
  		if (nbytes & AES_BLOCK_MASK)
  			aesni_xctr_enc_avx_tfm(ctx, walk.dst.virt.addr,
  				walk.src.virt.addr, nbytes & AES_BLOCK_MASK,
-@@ -588,7 +591,7 @@ static int xctr_crypt(struct skcipher_request *req)
+@@ -474,7 +477,7 @@ static int xctr_crypt(struct skcipher_request *req)
  			byte_ctr += nbytes;
  			nbytes = 0;
  		}
@@ -208,144 +209,135 @@ index a5b0cb3ef..10420b2aa 100644
  		err = skcipher_walk_done(&walk, nbytes);
  	}
  	return err;
-@@ -668,6 +671,8 @@ static int generic_gcmaes_set_authsize(struct crypto_aead *tfm,
- 	return 0;
- }
+@@ -541,11 +544,11 @@ xts_crypt_slowpath(struct skcipher_request *req, xts_crypt_func crypt_func)
+ 	err = skcipher_walk_virt(&walk, req, false);
  
-+extern void *fcw_kmalloc(size_t size, gfp_t flags);
-+
- static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
- 			      unsigned int assoclen, u8 *hash_subkey,
- 			      u8 *iv, void *aes_ctx, u8 *auth_tag,
-@@ -698,7 +703,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
- 			      GFP_KERNEL : GFP_ATOMIC;
- 
- 		/* assoc can be any length, so must be on heap */
--		assocmem = kmalloc(assoclen, flags);
-+		assocmem = fcw_kmalloc(assoclen, flags);
- 		if (unlikely(!assocmem))
- 			return -ENOMEM;
- 		assoc = assocmem;
-@@ -706,7 +711,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
- 		scatterwalk_map_and_copy(assoc, req->src, 0, assoclen, 0);
- 	}
- 
--	kernel_fpu_begin();
-+	fcw_kernel_fpu_begin();
- 	if (static_branch_likely(&gcm_use_avx2) && do_avx2)
- 		aesni_gcm_init_avx_gen4(aes_ctx, data, iv, hash_subkey, assoc,
- 					assoclen);
-@@ -715,7 +720,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
- 					assoclen);
- 	else
- 		aesni_gcm_init(aes_ctx, data, iv, hash_subkey, assoc, assoclen);
--	kernel_fpu_end();
-+	fcw_kernel_fpu_end();
- 
- 	if (!assocmem)
- 		scatterwalk_unmap(assoc);
-@@ -726,7 +731,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
- 		  : skcipher_walk_aead_decrypt(&walk, req, false);
- 
- 	while (walk.nbytes > 0) {
+ 	while (walk.nbytes) {
 -		kernel_fpu_begin();
 +		fcw_kernel_fpu_begin();
- 		if (static_branch_likely(&gcm_use_avx2) && do_avx2) {
- 			if (enc)
- 				aesni_gcm_enc_update_avx_gen4(aes_ctx, data,
-@@ -756,7 +761,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
- 			aesni_gcm_dec_update(aes_ctx, data, walk.dst.virt.addr,
- 					     walk.src.virt.addr, walk.nbytes);
- 		}
+ 		(*crypt_func)(&ctx->crypt_ctx,
+ 			      walk.src.virt.addr, walk.dst.virt.addr,
+ 			      walk.nbytes & ~(AES_BLOCK_SIZE - 1), req->iv);
 -		kernel_fpu_end();
 +		fcw_kernel_fpu_end();
- 
- 		err = skcipher_walk_done(&walk, 0);
+ 		err = skcipher_walk_done(&walk,
+ 					 walk.nbytes & (AES_BLOCK_SIZE - 1));
  	}
-@@ -764,7 +769,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
+@@ -566,10 +569,10 @@ xts_crypt_slowpath(struct skcipher_request *req, xts_crypt_func crypt_func)
  	if (err)
  		return err;
  
 -	kernel_fpu_begin();
 +	fcw_kernel_fpu_begin();
- 	if (static_branch_likely(&gcm_use_avx2) && do_avx2)
- 		aesni_gcm_finalize_avx_gen4(aes_ctx, data, auth_tag,
- 					    auth_tag_len);
-@@ -773,7 +778,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
- 					    auth_tag_len);
- 	else
- 		aesni_gcm_finalize(aes_ctx, data, auth_tag, auth_tag_len);
+ 	(*crypt_func)(&ctx->crypt_ctx, walk.src.virt.addr, walk.dst.virt.addr,
+ 		      walk.nbytes, req->iv);
 -	kernel_fpu_end();
 +	fcw_kernel_fpu_end();
  
- 	return 0;
+ 	return skcipher_walk_done(&walk, 0);
  }
-@@ -939,7 +944,7 @@ static int xts_crypt(struct skcipher_request *req, bool encrypt)
- 		tail = 0;
- 	}
+@@ -588,7 +591,7 @@ xts_crypt(struct skcipher_request *req, xts_encrypt_iv_func encrypt_iv,
+ 	if (unlikely(cryptlen < AES_BLOCK_SIZE))
+ 		return -EINVAL;
  
 -	kernel_fpu_begin();
 +	fcw_kernel_fpu_begin();
+ 	(*encrypt_iv)(&ctx->tweak_ctx, req->iv);
  
- 	/* calculate first value of T */
- 	aesni_enc(aes_ctx(ctx->raw_tweak_ctx), walk.iv, walk.iv);
-@@ -958,12 +963,12 @@ static int xts_crypt(struct skcipher_request *req, bool encrypt)
- 			aesni_xts_decrypt(aes_ctx(ctx->raw_crypt_ctx),
- 					  walk.dst.virt.addr, walk.src.virt.addr,
- 					  nbytes, walk.iv);
+ 	/*
+@@ -610,10 +613,10 @@ xts_crypt(struct skcipher_request *req, xts_encrypt_iv_func encrypt_iv,
+ 			      req->iv);
+ 		kunmap_local(dst_virt);
+ 		kunmap_local(src_virt);
 -		kernel_fpu_end();
 +		fcw_kernel_fpu_end();
- 
- 		err = skcipher_walk_done(&walk, walk.nbytes - nbytes);
- 
- 		if (walk.nbytes > 0)
--			kernel_fpu_begin();
-+			fcw_kernel_fpu_begin();
+ 		return 0;
  	}
+-	kernel_fpu_end();
++	fcw_kernel_fpu_end();
+ 	return xts_crypt_slowpath(req, crypt_func);
+ }
  
- 	if (unlikely(tail > 0 && !err)) {
-@@ -981,7 +986,7 @@ static int xts_crypt(struct skcipher_request *req, bool encrypt)
+@@ -1215,10 +1218,10 @@ static int gcm_setkey(struct crypto_aead *tfm, const u8 *raw_key,
+ 		err = aes_check_keylen(keylen);
  		if (err)
  			return err;
- 
 -		kernel_fpu_begin();
 +		fcw_kernel_fpu_begin();
- 		if (encrypt)
- 			aesni_xts_encrypt(aes_ctx(ctx->raw_crypt_ctx),
- 					  walk.dst.virt.addr, walk.src.virt.addr,
-@@ -990,7 +995,7 @@ static int xts_crypt(struct skcipher_request *req, bool encrypt)
- 			aesni_xts_decrypt(aes_ctx(ctx->raw_crypt_ctx),
- 					  walk.dst.virt.addr, walk.src.virt.addr,
- 					  walk.nbytes, walk.iv);
+ 		aesni_set_key(&key->aes_key, raw_key, keylen);
+ 		aes_gcm_precompute(key, flags);
 -		kernel_fpu_end();
 +		fcw_kernel_fpu_end();
- 
- 		err = skcipher_walk_done(&walk, 0);
+ 	} else {
+ 		static const u8 x_to_the_minus1[16] __aligned(__alignof__(be128)) = {
+ 			[0] = 0xc2, [15] = 1
+@@ -1323,8 +1326,8 @@ static void gcm_process_assoc(const struct aes_gcm_key *key, u8 ghash_acc[16],
+ 		scatterwalk_unmap(mapped);
+ 		scatterwalk_pagedone(&walk, 0, assoclen);
+ 		if (need_resched()) {
+-			kernel_fpu_end();
+-			kernel_fpu_begin();
++			fcw_kernel_fpu_end();
++			fcw_kernel_fpu_begin();
+ 		}
  	}
+ 	if (unlikely(pos))
+@@ -1377,7 +1380,7 @@ gcm_crypt(struct aead_request *req, int flags)
+ 	 * section and start a new one if there are multiple data segments or if
+ 	 * rescheduling is needed while processing the associated data.
+ 	 */
+-	kernel_fpu_begin();
++	fcw_kernel_fpu_begin();
+ 
+ 	/* Pass the associated data through GHASH. */
+ 	gcm_process_assoc(key, ghash_acc, req->src, assoclen, flags);
+@@ -1395,11 +1398,11 @@ gcm_crypt(struct aead_request *req, int flags)
+ 		aes_gcm_update(key, le_ctr, ghash_acc, walk.src.virt.addr,
+ 			       walk.dst.virt.addr, nbytes, flags);
+ 		le_ctr[0] += nbytes / AES_BLOCK_SIZE;
+-		kernel_fpu_end();
++		fcw_kernel_fpu_end();
+ 		err = skcipher_walk_done(&walk, walk.nbytes - nbytes);
+ 		if (err)
+ 			return err;
+-		kernel_fpu_begin();
++		fcw_kernel_fpu_begin();
+ 	}
+ 	/* Last segment: process all remaining data. */
+ 	aes_gcm_update(key, le_ctr, ghash_acc, walk.src.virt.addr,
+@@ -1435,7 +1438,7 @@ gcm_crypt(struct aead_request *req, int flags)
+ 				       datalen, tag, taglen, flags))
+ 			err = -EBADMSG;
+ 	}
+-	kernel_fpu_end();
++	fcw_kernel_fpu_end();
+ 	if (nbytes)
+ 		skcipher_walk_done(&walk, 0);
+ 	return err;
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 851fbc4fb..15d75b62c 100644
+index dc3b331ca..7b39d8dde 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -18,8 +18,10 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
+@@ -14,9 +14,11 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
  obj-$(CONFIG_CRYPTO_ALGAPI2) += crypto_algapi.o
  
  obj-$(CONFIG_CRYPTO_AEAD2) += aead.o
 +canister += geniv.o
  
- obj-$(CONFIG_CRYPTO_SKCIPHER2) += skcipher.o
+ crypto_skcipher-y += lskcipher.o
+ crypto_skcipher-y += skcipher.o
 +canister += seqiv.o
- obj-$(CONFIG_CRYPTO_ECHAINIV) += echainiv.o
  
- crypto_hash-y += ahash.o
-@@ -42,6 +44,7 @@ rsa_generic-y += rsaprivkey.asn1.o
+ obj-$(CONFIG_CRYPTO_SKCIPHER2) += crypto_skcipher.o
+ ifeq ($(CONFIG_BPF_SYSCALL),y)
+@@ -46,26 +48,35 @@ rsa_generic-y += rsaprivkey.asn1.o
  rsa_generic-y += rsa.o
  rsa_generic-y += rsa_helper.o
  rsa_generic-y += rsa-pkcs1pad.o
 +canister += $(rsa_generic-y)
  
- $(obj)/sm2signature.asn1.o: $(obj)/sm2signature.asn1.c $(obj)/sm2signature.asn1.h
- $(obj)/sm2.o: $(obj)/sm2signature.asn1.h
-@@ -55,22 +58,30 @@ $(obj)/ecdsasignature.asn1.o: $(obj)/ecdsasignature.asn1.c $(obj)/ecdsasignature
+ 
+ $(obj)/ecdsasignature.asn1.o: $(obj)/ecdsasignature.asn1.c $(obj)/ecdsasignature.asn1.h
  $(obj)/ecdsa.o: $(obj)/ecdsasignature.asn1.h
  ecdsa_generic-y += ecdsa.o
  ecdsa_generic-y += ecdsasignature.asn1.o
@@ -359,8 +351,6 @@ index 851fbc4fb..15d75b62c 100644
 +canister += $(cryptomgr-y)
  
  obj-$(CONFIG_CRYPTO_USER) += crypto_user.o
- crypto_user-y := crypto_user_base.o
- crypto_user-$(CONFIG_CRYPTO_STATS) += crypto_user_stat.o
 +canister += hmac.o
 +canister += cmac.o
  obj-$(CONFIG_CRYPTO_VMAC) += vmac.o
@@ -376,13 +366,12 @@ index 851fbc4fb..15d75b62c 100644
  obj-$(CONFIG_CRYPTO_SM3) += sm3.o
  obj-$(CONFIG_CRYPTO_SM3_GENERIC) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -79,13 +90,21 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
+@@ -73,13 +84,20 @@ obj-$(CONFIG_CRYPTO_WP512) += wp512.o
+ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105930
- obj-$(CONFIG_CRYPTO_GF128MUL) += gf128mul.o
 +canister += ecb.o
 +canister += cbc.o
-+canister += cfb.o
  obj-$(CONFIG_CRYPTO_PCBC) += pcbc.o
 +canister += cts.o
  obj-$(CONFIG_CRYPTO_LRW) += lrw.o
@@ -398,7 +387,7 @@ index 851fbc4fb..15d75b62c 100644
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -120,6 +139,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -114,6 +132,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -406,18 +395,18 @@ index 851fbc4fb..15d75b62c 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -154,6 +174,7 @@ CFLAGS_jitterentropy.o = -O0
- KASAN_SANITIZE_jitterentropy.o = n
- UBSAN_SANITIZE_jitterentropy.o = n
+@@ -151,6 +170,7 @@ UBSAN_SANITIZE_jitterentropy.o = n
+ jitterentropy_rng-y := jitterentropy.o jitterentropy-kcapi.o
+ obj-$(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE) += jitterentropy-testing.o
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
 +canister += ghash-generic.o
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
  obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-@@ -162,11 +183,14 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -158,11 +178,14 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
+ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
- obj-$(CONFIG_CRYPTO_OFB) += ofb.o
 +canister += ecc.o
  obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
  obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
@@ -429,20 +418,25 @@ index 851fbc4fb..15d75b62c 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -190,6 +214,69 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -186,6 +209,74 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
 +
 +aesni-intel-y := aesni-intel_asm.o aesni-intel_glue.o
-+aesni-intel-$(CONFIG_64BIT) += aesni-intel_avx-x86_64.o aes_ctrby8_avx-x86_64.o
-+OBJECT_FILES_NON_STANDARD_x86-aesni-intel_avx-x86_64.o := y
++aesni-intel-$(CONFIG_64BIT) += aes_ctrby8_avx-x86_64.o aes-gcm-aesni-x86_64.o aes-xts-avx-x86_64.o
++ifeq ($(CONFIG_AS_VAES)$(CONFIG_AS_VPCLMULQDQ),yy)
++aesni-intel-$(CONFIG_64BIT) += aes-gcm-avx10-x86_64.o
++OBJECT_FILES_NON_STANDARD_x86-aes-gcm-avx10-x86_64.o := y
++endif
++OBJECT_FILES_NON_STANDARD_x86-aes-gcm-aesni-x86_64.o := y
++OBJECT_FILES_NON_STANDARD_x86-aes-xts-avx-x86_64.o := y
 +
 +crypto/x86-%.o: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
 +	$(call cmd,force_checksrc)
 +	$(call if_changed_rule,cc_o_c)
 +
-+crypto/x86-%.o: arch/x86/crypto/%.S $(objtool_dep)
++crypto/x86-%.o: arch/x86/crypto/%.S $(objtool_dep) FORCE
 +	$(call if_changed_rule,as_o_S)
 +
 +lib-crypto-y := aes.o sha256.o sha1.o
@@ -500,7 +494,7 @@ index 851fbc4fb..15d75b62c 100644
  obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_internal.o
  
 diff --git a/crypto/algboss.c b/crypto/algboss.c
-index eb5fe84ef..62bb3eb18 100644
+index a20926bfd..1159e51da 100644
 --- a/crypto/algboss.c
 +++ b/crypto/algboss.c
 @@ -19,6 +19,7 @@
@@ -511,7 +505,7 @@ index eb5fe84ef..62bb3eb18 100644
  
  struct cryptomgr_param {
  	struct rtattr *tb[CRYPTO_MAX_ATTRS + 2];
-@@ -82,7 +83,7 @@ static int cryptomgr_schedule_probe(struct crypto_larval *larval)
+@@ -84,7 +85,7 @@ static int cryptomgr_schedule_probe(struct crypto_larval *larval)
  	if (!try_module_get(THIS_MODULE))
  		goto err;
  
@@ -520,7 +514,7 @@ index eb5fe84ef..62bb3eb18 100644
  	if (!param)
  		goto err_put_module;
  
-@@ -202,7 +203,7 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
+@@ -195,7 +196,7 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
  	if (!try_module_get(THIS_MODULE))
  		goto err;
  
@@ -530,7 +524,7 @@ index eb5fe84ef..62bb3eb18 100644
  		goto err_put_module;
  
 diff --git a/crypto/ccm.c b/crypto/ccm.c
-index 6b815ece5..a22f6ec26 100644
+index 36f0acec3..d9172bab5 100644
 --- a/crypto/ccm.c
 +++ b/crypto/ccm.c
 @@ -15,6 +15,7 @@
@@ -550,7 +544,7 @@ index 6b815ece5..a22f6ec26 100644
  	if (!inst)
  		return -ENOMEM;
  	ictx = aead_instance_ctx(inst);
-@@ -716,7 +717,7 @@ static int crypto_rfc4309_create(struct crypto_template *tmpl,
+@@ -714,7 +715,7 @@ static int crypto_rfc4309_create(struct crypto_template *tmpl,
  	if (err)
  		return err;
  
@@ -559,7 +553,7 @@ index 6b815ece5..a22f6ec26 100644
  	if (!inst)
  		return -ENOMEM;
  
-@@ -872,7 +873,7 @@ static int cbcmac_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -867,7 +868,7 @@ static int cbcmac_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err)
  		return err;
  
@@ -569,7 +563,7 @@ index 6b815ece5..a22f6ec26 100644
  		return -ENOMEM;
  	spawn = shash_instance_ctx(inst);
 diff --git a/crypto/cmac.c b/crypto/cmac.c
-index f4a5d3bfb..4ec1c1cc8 100644
+index c7aa3665b..9e95294aa 100644
 --- a/crypto/cmac.c
 +++ b/crypto/cmac.c
 @@ -16,6 +16,7 @@
@@ -580,7 +574,7 @@ index f4a5d3bfb..4ec1c1cc8 100644
  
  /*
   * +------------------------
-@@ -233,7 +234,7 @@ static int cmac_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -241,7 +242,7 @@ static int cmac_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err)
  		return err;
  
@@ -590,7 +584,7 @@ index f4a5d3bfb..4ec1c1cc8 100644
  		return -ENOMEM;
  	spawn = shash_instance_ctx(inst);
 diff --git a/crypto/ctr.c b/crypto/ctr.c
-index 23c698b22..1906d0f8c 100644
+index 142049606..6fa3831e1 100644
 --- a/crypto/ctr.c
 +++ b/crypto/ctr.c
 @@ -14,6 +14,7 @@
@@ -611,7 +605,7 @@ index 23c698b22..1906d0f8c 100644
  		return -ENOMEM;
  
 diff --git a/crypto/cts.c b/crypto/cts.c
-index 3766d47eb..06706abef 100644
+index f5b42156b..7df35e8c7 100644
 --- a/crypto/cts.c
 +++ b/crypto/cts.c
 @@ -51,6 +51,7 @@
@@ -632,7 +626,7 @@ index 3766d47eb..06706abef 100644
  		return -ENOMEM;
  
 diff --git a/crypto/drbg.c b/crypto/drbg.c
-index 965b1c8b2..d51275071 100644
+index 1ff3052d4..c0a8e4f66 100644
 --- a/crypto/drbg.c
 +++ b/crypto/drbg.c
 @@ -101,6 +101,7 @@
@@ -643,7 +637,7 @@ index 965b1c8b2..d51275071 100644
  
  /***************************************************************
   * Backend cipher definitions available to DRBG
-@@ -1341,13 +1342,13 @@ static inline int drbg_alloc_state(struct drbg_state *drbg)
+@@ -1325,13 +1326,13 @@ static inline int drbg_alloc_state(struct drbg_state *drbg)
  	if (ret < 0)
  		goto err;
  
@@ -659,7 +653,7 @@ index 965b1c8b2..d51275071 100644
  	if (!drbg->Cbuf) {
  		ret = -ENOMEM;
  		goto fini;
-@@ -1366,7 +1367,7 @@ static inline int drbg_alloc_state(struct drbg_state *drbg)
+@@ -1350,7 +1351,7 @@ static inline int drbg_alloc_state(struct drbg_state *drbg)
  		sb_size = drbg_statelen(drbg) + drbg_blocklen(drbg);
  
  	if (0 < sb_size) {
@@ -668,7 +662,7 @@ index 965b1c8b2..d51275071 100644
  		if (!drbg->scratchpadbuf) {
  			ret = -ENOMEM;
  			goto fini;
-@@ -1375,7 +1376,7 @@ static inline int drbg_alloc_state(struct drbg_state *drbg)
+@@ -1359,7 +1360,7 @@ static inline int drbg_alloc_state(struct drbg_state *drbg)
  	}
  
  	if (IS_ENABLED(CONFIG_CRYPTO_FIPS)) {
@@ -677,7 +671,7 @@ index 965b1c8b2..d51275071 100644
  				     GFP_KERNEL);
  		if (!drbg->prev) {
  			ret = -ENOMEM;
-@@ -1572,9 +1573,9 @@ static int drbg_generate_long(struct drbg_state *drbg,
+@@ -1556,9 +1557,9 @@ static int drbg_generate_long(struct drbg_state *drbg,
  		unsigned int chunk = 0;
  		slice = ((buflen - len) / drbg_max_request_bytes(drbg));
  		chunk = slice ? drbg_max_request_bytes(drbg) : (buflen - len);
@@ -689,7 +683,7 @@ index 965b1c8b2..d51275071 100644
  		if (0 > err)
  			return err;
  		len += chunk;
-@@ -1626,7 +1627,7 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
+@@ -1610,7 +1611,7 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
  
  	pr_devel("DRBG: Initializing DRBG core %d with prediction resistance "
  		 "%s\n", coreref, pr ? "enabled" : "disabled");
@@ -698,7 +692,7 @@ index 965b1c8b2..d51275071 100644
  
  	/* 9.1 step 1 is implicit with the selected DRBG type */
  
-@@ -1661,15 +1662,15 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
+@@ -1645,15 +1646,15 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
  	if (ret && !reseed)
  		goto free_everything;
  
@@ -717,7 +711,7 @@ index 965b1c8b2..d51275071 100644
  	drbg_uninstantiate(drbg);
  	return ret;
  }
-@@ -1708,9 +1709,9 @@ static void drbg_kcapi_set_entropy(struct crypto_rng *tfm,
+@@ -1692,9 +1693,9 @@ static void drbg_kcapi_set_entropy(struct crypto_rng *tfm,
  {
  	struct drbg_state *drbg = crypto_rng_ctx(tfm);
  
@@ -729,7 +723,7 @@ index 965b1c8b2..d51275071 100644
  }
  
  /***************************************************************
-@@ -1735,7 +1736,7 @@ static int drbg_init_hash_kernel(struct drbg_state *drbg)
+@@ -1719,7 +1720,7 @@ static int drbg_init_hash_kernel(struct drbg_state *drbg)
  		return PTR_ERR(tfm);
  	}
  	BUG_ON(drbg_blocklen(drbg) != crypto_shash_digestsize(tfm));
@@ -738,7 +732,7 @@ index 965b1c8b2..d51275071 100644
  			GFP_KERNEL);
  	if (!sdesc) {
  		crypto_free_shash(tfm);
-@@ -1835,7 +1836,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
+@@ -1819,7 +1820,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
  	drbg->ctr_handle = sk_tfm;
  	crypto_init_wait(&drbg->ctr_wait);
  
@@ -747,7 +741,7 @@ index 965b1c8b2..d51275071 100644
  	if (!req) {
  		pr_info("DRBG: could not allocate request queue\n");
  		drbg_fini_sym_kernel(drbg);
-@@ -1847,7 +1848,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
+@@ -1831,7 +1832,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
  					crypto_req_done, &drbg->ctr_wait);
  
  	alignmask = crypto_skcipher_alignmask(sk_tfm);
@@ -756,7 +750,7 @@ index 965b1c8b2..d51275071 100644
  					 GFP_KERNEL);
  	if (!drbg->outscratchpadbuf) {
  		drbg_fini_sym_kernel(drbg);
-@@ -1973,14 +1974,19 @@ static int drbg_kcapi_init(struct crypto_tfm *tfm)
+@@ -1957,14 +1958,19 @@ static int drbg_kcapi_init(struct crypto_tfm *tfm)
  {
  	struct drbg_state *drbg = crypto_tfm_ctx(tfm);
  
@@ -778,8 +772,8 @@ index 965b1c8b2..d51275071 100644
  }
  
  /*
-@@ -2071,11 +2077,16 @@ static inline int __init drbg_healthcheck_sanity(void)
- 	drbg_convert_tfm_core("drbg_nopr_hmac_sha256", &coreref, &pr);
+@@ -2057,11 +2063,16 @@ static inline int __init drbg_healthcheck_sanity(void)
+ 	drbg_convert_tfm_core("drbg_nopr_hmac_sha512", &coreref, &pr);
  #endif
  
 -	drbg = kzalloc(sizeof(struct drbg_state), GFP_KERNEL);
@@ -797,7 +791,7 @@ index 965b1c8b2..d51275071 100644
  	drbg->core = &drbg_cores[coreref];
  	drbg->reseed_threshold = drbg_max_requests(drbg);
  
-@@ -2106,6 +2117,7 @@ static inline int __init drbg_healthcheck_sanity(void)
+@@ -2092,6 +2103,7 @@ static inline int __init drbg_healthcheck_sanity(void)
  	pr_devel("DRBG: Sanity tests for failure code paths successfully "
  		 "completed\n");
  
@@ -805,8 +799,21 @@ index 965b1c8b2..d51275071 100644
  	kfree(drbg);
  	return rc;
  }
+diff --git a/crypto/ecb.c b/crypto/ecb.c
+index e3a677890..c8047736c 100644
+--- a/crypto/ecb.c
++++ b/crypto/ecb.c
+@@ -107,7 +107,7 @@ static struct lskcipher_instance *lskcipher_alloc_instance_simple2(
+ 	if (err)
+ 		return ERR_PTR(err);
+ 
+-	inst = kzalloc(sizeof(*inst) + sizeof(*spawn), GFP_KERNEL);
++	inst = fcw_kzalloc(sizeof(*inst) + sizeof(*spawn), GFP_KERNEL);
+ 	if (!inst)
+ 		return ERR_PTR(-ENOMEM);
+ 	spawn = lskcipher_instance_ctx(inst);
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index b2a412d94..016f785b8 100644
+index 234eb2b89..1bb19b7f0 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -38,6 +38,7 @@
@@ -817,7 +824,7 @@ index b2a412d94..016f785b8 100644
  
  typedef struct {
  	u64 m_low;
-@@ -74,7 +75,7 @@ static u64 *ecc_alloc_digits_space(unsigned int ndigits)
+@@ -98,7 +99,7 @@ static u64 *ecc_alloc_digits_space(unsigned int ndigits)
  	if (!len)
  		return NULL;
  
@@ -826,7 +833,7 @@ index b2a412d94..016f785b8 100644
  }
  
  static void ecc_free_digits_space(u64 *space)
-@@ -84,7 +85,7 @@ static void ecc_free_digits_space(u64 *space)
+@@ -108,7 +109,7 @@ static void ecc_free_digits_space(u64 *space)
  
  struct ecc_point *ecc_alloc_point(unsigned int ndigits)
  {
@@ -836,7 +843,7 @@ index b2a412d94..016f785b8 100644
  	if (!p)
  		return NULL;
 diff --git a/crypto/ecdh.c b/crypto/ecdh.c
-index 80afee323..75ae30323 100644
+index 72cfd1590..93996076c 100644
 --- a/crypto/ecdh.c
 +++ b/crypto/ecdh.c
 @@ -11,6 +11,7 @@
@@ -847,7 +854,7 @@ index 80afee323..75ae30323 100644
  
  struct ecdh_ctx {
  	unsigned int curve_id;
-@@ -61,12 +62,12 @@ static int ecdh_compute_value(struct kpp_request *req)
+@@ -66,12 +67,12 @@ static int ecdh_compute_value(struct kpp_request *req)
  	/* Public part is a point thus it has both coordinates */
  	public_key_sz = 2 * nbytes;
  
@@ -863,7 +870,7 @@ index 80afee323..75ae30323 100644
  			goto free_pubkey;
  
 diff --git a/crypto/ecdsa.c b/crypto/ecdsa.c
-index fbd76498a..13eb687bf 100644
+index d5a10959e..e097ba178 100644
 --- a/crypto/ecdsa.c
 +++ b/crypto/ecdsa.c
 @@ -12,6 +12,7 @@
@@ -874,7 +881,7 @@ index fbd76498a..13eb687bf 100644
  
  struct ecc_ctx {
  	unsigned int curve_id;
-@@ -151,7 +152,7 @@ static int ecdsa_verify(struct akcipher_request *req)
+@@ -141,7 +142,7 @@ static int ecdsa_verify(struct akcipher_request *req)
  	if (unlikely(!ctx->pub_key_set))
  		return -EINVAL;
  
@@ -884,7 +891,7 @@ index fbd76498a..13eb687bf 100644
  		return -ENOMEM;
  
 diff --git a/crypto/gcm.c b/crypto/gcm.c
-index 338ee0769..ae81153a3 100644
+index 84f7c23d1..bc8b75e36 100644
 --- a/crypto/gcm.c
 +++ b/crypto/gcm.c
 @@ -18,6 +18,7 @@
@@ -904,7 +911,7 @@ index 338ee0769..ae81153a3 100644
  		       GFP_KERNEL);
  	if (!data)
  		return -ENOMEM;
-@@ -589,7 +590,7 @@ static int crypto_gcm_create_common(struct crypto_template *tmpl,
+@@ -587,7 +588,7 @@ static int crypto_gcm_create_common(struct crypto_template *tmpl,
  	if (err)
  		return err;
  
@@ -913,7 +920,7 @@ index 338ee0769..ae81153a3 100644
  	if (!inst)
  		return -ENOMEM;
  	ctx = aead_instance_ctx(inst);
-@@ -837,7 +838,7 @@ static int crypto_rfc4106_create(struct crypto_template *tmpl,
+@@ -833,7 +834,7 @@ static int crypto_rfc4106_create(struct crypto_template *tmpl,
  	if (err)
  		return err;
  
@@ -922,7 +929,7 @@ index 338ee0769..ae81153a3 100644
  	if (!inst)
  		return -ENOMEM;
  
-@@ -1052,7 +1053,7 @@ static int crypto_rfc4543_create(struct crypto_template *tmpl,
+@@ -1048,7 +1049,7 @@ static int crypto_rfc4543_create(struct crypto_template *tmpl,
  	if (err)
  		return err;
  
@@ -931,7 +938,7 @@ index 338ee0769..ae81153a3 100644
  	if (!inst)
  		return -ENOMEM;
  
-@@ -1135,7 +1136,7 @@ static int __init crypto_gcm_module_init(void)
+@@ -1131,7 +1132,7 @@ static int __init crypto_gcm_module_init(void)
  {
  	int err;
  
@@ -971,7 +978,7 @@ index c70d163c1..81ae2cc2c 100644
  	return 0;
  }
 diff --git a/crypto/hmac.c b/crypto/hmac.c
-index 3610ff0b6..7c289df3b 100644
+index 7cec25ff9..54a5321ea 100644
 --- a/crypto/hmac.c
 +++ b/crypto/hmac.c
 @@ -21,6 +21,7 @@
@@ -982,7 +989,7 @@ index 3610ff0b6..7c289df3b 100644
  
  struct hmac_ctx {
  	struct crypto_shash *hash;
-@@ -181,7 +182,7 @@ static int hmac_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -189,7 +190,7 @@ static int hmac_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err)
  		return err;
  
@@ -992,7 +999,7 @@ index 3610ff0b6..7c289df3b 100644
  		return -ENOMEM;
  	spawn = shash_instance_ctx(inst);
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index 1cf267bc6..e3a77b398 100644
+index cd501195f..11805ebd2 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
 @@ -15,6 +15,7 @@
@@ -1003,16 +1010,16 @@ index 1cf267bc6..e3a77b398 100644
  
  /*
   * Hash algorithm OIDs plus ASN.1 DER wrappings [RFC4880 sec 5.2.2].
-@@ -190,7 +191,7 @@ static int pkcs1pad_encrypt_sign_complete(struct akcipher_request *req, int err)
+@@ -213,7 +214,7 @@ static int pkcs1pad_encrypt_sign_complete(struct akcipher_request *req, int err)
  	if (likely(!pad_len))
  		goto out;
  
--	out_buf = kzalloc(ctx->key_size, GFP_KERNEL);
-+	out_buf = fcw_kzalloc(ctx->key_size, GFP_KERNEL);
+-	out_buf = kzalloc(ctx->key_size, GFP_ATOMIC);
++	out_buf = fcw_kzalloc(ctx->key_size, GFP_ATOMIC);
  	err = -ENOMEM;
  	if (!out_buf)
  		goto out;
-@@ -243,7 +244,7 @@ static int pkcs1pad_encrypt(struct akcipher_request *req)
+@@ -265,7 +266,7 @@ static int pkcs1pad_encrypt(struct akcipher_request *req)
  		return -EOVERFLOW;
  	}
  
@@ -1021,7 +1028,7 @@ index 1cf267bc6..e3a77b398 100644
  				  GFP_KERNEL);
  	if (!req_ctx->in_buf)
  		return -ENOMEM;
-@@ -350,7 +351,7 @@ static int pkcs1pad_decrypt(struct akcipher_request *req)
+@@ -371,7 +372,7 @@ static int pkcs1pad_decrypt(struct akcipher_request *req)
  	if (!ctx->key_size || req->src_len != ctx->key_size)
  		return -EINVAL;
  
@@ -1030,7 +1037,7 @@ index 1cf267bc6..e3a77b398 100644
  	if (!req_ctx->out_buf)
  		return -ENOMEM;
  
-@@ -398,7 +399,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
+@@ -419,7 +420,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
  		return -EOVERFLOW;
  	}
  
@@ -1039,7 +1046,7 @@ index 1cf267bc6..e3a77b398 100644
  				  GFP_KERNEL);
  	if (!req_ctx->in_buf)
  		return -ENOMEM;
-@@ -541,7 +542,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
+@@ -561,7 +562,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
  	    !ctx->key_size || sig_size != ctx->key_size)
  		return -EINVAL;
  
@@ -1048,7 +1055,7 @@ index 1cf267bc6..e3a77b398 100644
  	if (!req_ctx->out_buf)
  		return -ENOMEM;
  
-@@ -611,7 +612,7 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -631,7 +632,7 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err)
  		return err;
  
@@ -1056,15 +1063,15 @@ index 1cf267bc6..e3a77b398 100644
 +	inst = fcw_kzalloc(sizeof(*inst) + sizeof(*ctx), GFP_KERNEL);
  	if (!inst)
  		return -ENOMEM;
-
+ 
 diff --git a/crypto/sha3_generic.c b/crypto/sha3_generic.c
-index 3e4069935..7d107460b 100644
+index b103642b5..0e36ce003 100644
 --- a/crypto/sha3_generic.c
 +++ b/crypto/sha3_generic.c
 @@ -14,6 +14,7 @@
  #include <linux/types.h>
  #include <crypto/sha3.h>
- #include <asm/unaligned.h>
+ #include <linux/unaligned.h>
 +#include "fips_canister_wrapper.h"
  
  /*
@@ -1088,7 +1095,7 @@ index 3e4069935..7d107460b 100644
  
  	return 0;
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 38aaa6aaf..832bdbcde 100644
+index f3d7cd846..846b5323e 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -37,6 +37,7 @@
@@ -1099,7 +1106,7 @@ index 38aaa6aaf..832bdbcde 100644
  
  MODULE_IMPORT_NS(CRYPTO_INTERNAL);
  
-@@ -727,7 +728,7 @@ static struct cipher_test_sglists *alloc_cipher_test_sglists(void)
+@@ -739,7 +740,7 @@ static struct cipher_test_sglists *alloc_cipher_test_sglists(void)
  {
  	struct cipher_test_sglists *tsgls;
  
@@ -1108,7 +1115,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!tsgls)
  		return NULL;
  
-@@ -824,7 +825,7 @@ static int prepare_keybuf(const u8 *key, unsigned int ksize,
+@@ -836,7 +837,7 @@ static int prepare_keybuf(const u8 *key, unsigned int ksize,
  	if (key_offset != 0) {
  		if (cfg->key_offset_relative_to_alignmask)
  			key_offset += alignmask;
@@ -1117,7 +1124,7 @@ index 38aaa6aaf..832bdbcde 100644
  		if (!keybuf)
  			return -ENOMEM;
  		keyptr = keybuf + key_offset;
-@@ -1668,7 +1669,7 @@ static int test_hash_vec(const struct hash_testvec *vec, unsigned int vec_num,
+@@ -1699,7 +1700,7 @@ static int test_hash_vec(const struct hash_testvec *vec, unsigned int vec_num,
  						req, desc, tsgl, hashstate);
  			if (err)
  				return err;
@@ -1126,7 +1133,7 @@ index 38aaa6aaf..832bdbcde 100644
  		}
  	}
  #endif
-@@ -1774,13 +1775,13 @@ static int test_hash_vs_generic_impl(const char *generic_driver,
+@@ -1805,13 +1806,13 @@ static int test_hash_vs_generic_impl(const char *generic_driver,
  		return err;
  	}
  
@@ -1142,7 +1149,7 @@ index 38aaa6aaf..832bdbcde 100644
  			       crypto_shash_descsize(generic_tfm), GFP_KERNEL);
  	if (!generic_desc) {
  		err = -ENOMEM;
-@@ -1810,9 +1811,9 @@ static int test_hash_vs_generic_impl(const char *generic_driver,
+@@ -1841,9 +1842,9 @@ static int test_hash_vs_generic_impl(const char *generic_driver,
  	 * the other implementation against them.
  	 */
  
@@ -1155,7 +1162,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!vec.key || !vec.plaintext || !vec.digest) {
  		err = -ENOMEM;
  		goto out;
-@@ -1829,7 +1830,7 @@ static int test_hash_vs_generic_impl(const char *generic_driver,
+@@ -1860,7 +1861,7 @@ static int test_hash_vs_generic_impl(const char *generic_driver,
  					req, desc, tsgl, hashstate);
  		if (err)
  			goto out;
@@ -1164,7 +1171,7 @@ index 38aaa6aaf..832bdbcde 100644
  	}
  	err = 0;
  out:
-@@ -1874,7 +1875,7 @@ static int alloc_shash(const char *driver, u32 type, u32 mask,
+@@ -1905,7 +1906,7 @@ static int alloc_shash(const char *driver, u32 type, u32 mask,
  		return PTR_ERR(tfm);
  	}
  
@@ -1173,7 +1180,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!desc) {
  		crypto_free_shash(tfm);
  		return -ENOMEM;
-@@ -1914,7 +1915,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+@@ -1947,7 +1948,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
  	}
  	driver = crypto_ahash_driver_name(atfm);
  
@@ -1182,7 +1189,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!req) {
  		pr_err("alg: hash: failed to allocate request for %s\n",
  		       driver);
-@@ -1930,7 +1931,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+@@ -1963,7 +1964,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
  	if (err)
  		goto out;
  
@@ -1191,7 +1198,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!tsgl || init_test_sglist(tsgl) != 0) {
  		pr_err("alg: hash: failed to allocate test buffers for %s\n",
  		       driver);
-@@ -1943,7 +1944,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+@@ -1976,7 +1977,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
  	statesize = crypto_ahash_statesize(atfm);
  	if (stfm)
  		statesize = max(statesize, crypto_shash_statesize(stfm));
@@ -1200,7 +1207,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!hashstate) {
  		pr_err("alg: hash: failed to allocate hash state buffer for %s\n",
  		       driver);
-@@ -1958,7 +1959,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+@@ -1991,7 +1992,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
  		err = test_hash_vec(&vecs[i], i, req, desc, tsgl, hashstate);
  		if (err)
  			goto out;
@@ -1209,7 +1216,7 @@ index 38aaa6aaf..832bdbcde 100644
  	}
  	err = test_hash_vs_generic_impl(generic_driver, maxkeysize, req,
  					desc, tsgl, hashstate);
-@@ -2238,7 +2239,7 @@ static int test_aead_vec(int enc, const struct aead_testvec *vec,
+@@ -2271,7 +2272,7 @@ static int test_aead_vec(int enc, const struct aead_testvec *vec,
  						&cfg, req, tsgls);
  			if (err)
  				return err;
@@ -1218,7 +1225,7 @@ index 38aaa6aaf..832bdbcde 100644
  		}
  	}
  #endif
-@@ -2468,7 +2469,7 @@ static int test_aead_inauthentic_inputs(struct aead_extra_tests_ctx *ctx)
+@@ -2501,7 +2502,7 @@ static int test_aead_inauthentic_inputs(struct aead_extra_tests_ctx *ctx)
  			if (err)
  				return err;
  		}
@@ -1227,7 +1234,7 @@ index 38aaa6aaf..832bdbcde 100644
  	}
  	return 0;
  }
-@@ -2512,7 +2513,7 @@ static int test_aead_vs_generic_impl(struct aead_extra_tests_ctx *ctx)
+@@ -2545,7 +2546,7 @@ static int test_aead_vs_generic_impl(struct aead_extra_tests_ctx *ctx)
  		return err;
  	}
  
@@ -1236,7 +1243,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!generic_req) {
  		err = -ENOMEM;
  		goto out;
-@@ -2572,7 +2573,7 @@ static int test_aead_vs_generic_impl(struct aead_extra_tests_ctx *ctx)
+@@ -2605,7 +2606,7 @@ static int test_aead_vs_generic_impl(struct aead_extra_tests_ctx *ctx)
  			if (err)
  				goto out;
  		}
@@ -1245,7 +1252,7 @@ index 38aaa6aaf..832bdbcde 100644
  	}
  	err = 0;
  out:
-@@ -2592,7 +2593,7 @@ static int test_aead_extra(const struct alg_test_desc *test_desc,
+@@ -2625,7 +2626,7 @@ static int test_aead_extra(const struct alg_test_desc *test_desc,
  	if (noextratests)
  		return 0;
  
@@ -1254,7 +1261,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!ctx)
  		return -ENOMEM;
  	init_rnd_state(&ctx->rng);
-@@ -2606,11 +2607,11 @@ static int test_aead_extra(const struct alg_test_desc *test_desc,
+@@ -2639,11 +2640,11 @@ static int test_aead_extra(const struct alg_test_desc *test_desc,
  		ctx->maxkeysize = max_t(unsigned int, ctx->maxkeysize,
  					test_desc->suite.aead.vecs[i].klen);
  
@@ -1271,7 +1278,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!ctx->vec.key || !ctx->vec.iv || !ctx->vec.assoc ||
  	    !ctx->vec.ptext || !ctx->vec.ctext) {
  		err = -ENOMEM;
-@@ -2651,7 +2652,7 @@ static int test_aead(int enc, const struct aead_test_suite *suite,
+@@ -2684,7 +2685,7 @@ static int test_aead(int enc, const struct aead_test_suite *suite,
  		err = test_aead_vec(enc, &suite->vecs[i], i, req, tsgls);
  		if (err)
  			return err;
@@ -1280,7 +1287,7 @@ index 38aaa6aaf..832bdbcde 100644
  	}
  	return 0;
  }
-@@ -2678,7 +2679,7 @@ static int alg_test_aead(const struct alg_test_desc *desc, const char *driver,
+@@ -2713,7 +2714,7 @@ static int alg_test_aead(const struct alg_test_desc *desc, const char *driver,
  	}
  	driver = crypto_aead_driver_name(tfm);
  
@@ -1289,7 +1296,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!req) {
  		pr_err("alg: aead: failed to allocate request for %s\n",
  		       driver);
-@@ -2998,7 +2999,7 @@ static int test_skcipher_vec(int enc, const struct cipher_testvec *vec,
+@@ -3033,7 +3034,7 @@ static int test_skcipher_vec(int enc, const struct cipher_testvec *vec,
  						    &cfg, req, tsgls);
  			if (err)
  				return err;
@@ -1298,7 +1305,7 @@ index 38aaa6aaf..832bdbcde 100644
  		}
  	}
  #endif
-@@ -3120,13 +3121,13 @@ static int test_skcipher_vs_generic_impl(const char *generic_driver,
+@@ -3155,13 +3156,13 @@ static int test_skcipher_vs_generic_impl(const char *generic_driver,
  		return err;
  	}
  
@@ -1314,7 +1321,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!generic_req) {
  		err = -ENOMEM;
  		goto out;
-@@ -3171,10 +3172,10 @@ static int test_skcipher_vs_generic_impl(const char *generic_driver,
+@@ -3206,10 +3207,10 @@ static int test_skcipher_vs_generic_impl(const char *generic_driver,
  	 * the other implementation against them.
  	 */
  
@@ -1329,7 +1336,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!vec.key || !vec.iv || !vec.ptext || !vec.ctext) {
  		err = -ENOMEM;
  		goto out;
-@@ -3195,7 +3196,7 @@ static int test_skcipher_vs_generic_impl(const char *generic_driver,
+@@ -3230,7 +3231,7 @@ static int test_skcipher_vs_generic_impl(const char *generic_driver,
  					    cfg, req, tsgls);
  		if (err)
  			goto out;
@@ -1338,7 +1345,7 @@ index 38aaa6aaf..832bdbcde 100644
  	}
  	err = 0;
  out:
-@@ -3228,7 +3229,7 @@ static int test_skcipher(int enc, const struct cipher_test_suite *suite,
+@@ -3263,7 +3264,7 @@ static int test_skcipher(int enc, const struct cipher_test_suite *suite,
  		err = test_skcipher_vec(enc, &suite->vecs[i], i, req, tsgls);
  		if (err)
  			return err;
@@ -1347,7 +1354,7 @@ index 38aaa6aaf..832bdbcde 100644
  	}
  	return 0;
  }
-@@ -3255,7 +3256,7 @@ static int alg_test_skcipher(const struct alg_test_desc *desc,
+@@ -3292,7 +3293,7 @@ static int alg_test_skcipher(const struct alg_test_desc *desc,
  	}
  	driver = crypto_skcipher_driver_name(tfm);
  
@@ -1356,7 +1363,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!req) {
  		pr_err("alg: skcipher: failed to allocate request for %s\n",
  		       driver);
-@@ -3297,11 +3298,11 @@ static int test_comp(struct crypto_comp *tfm,
+@@ -3334,11 +3335,11 @@ static int test_comp(struct crypto_comp *tfm,
  	unsigned int i;
  	int ret;
  
@@ -1370,7 +1377,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!decomp_output) {
  		kfree(output);
  		return -ENOMEM;
-@@ -3406,11 +3407,11 @@ static int test_acomp(struct crypto_acomp *tfm,
+@@ -3443,11 +3444,11 @@ static int test_acomp(struct crypto_acomp *tfm,
  	struct acomp_req *req;
  	struct crypto_wait wait;
  
@@ -1384,7 +1391,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!decomp_out) {
  		kfree(output);
  		return -ENOMEM;
-@@ -3602,7 +3603,7 @@ static int test_cprng(struct crypto_rng *tfm,
+@@ -3639,7 +3640,7 @@ static int test_cprng(struct crypto_rng *tfm,
  
  	seedsize = crypto_rng_seedsize(tfm);
  
@@ -1393,7 +1400,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!seed) {
  		printk(KERN_ERR "alg: cprng: Failed to allocate seed space "
  		       "for %s\n", algo);
-@@ -3794,7 +3795,7 @@ static int drbg_cavs_test(const struct drbg_testvec *test, int pr,
+@@ -3839,7 +3840,7 @@ static int drbg_cavs_test(const struct drbg_testvec *test, int pr,
  	struct crypto_rng *drng;
  	struct drbg_test_data test_data;
  	struct drbg_string addtl, pers, testentropy;
@@ -1402,7 +1409,7 @@ index 38aaa6aaf..832bdbcde 100644
  
  	if (!buf)
  		return -ENOMEM;
-@@ -3894,7 +3895,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3941,7 +3942,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  	int err = -ENOMEM;
  	struct scatterlist src, dst;
  
@@ -1411,7 +1418,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!req)
  		return err;
  
-@@ -3905,7 +3906,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3952,7 +3953,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  		goto free_req;
  
  	out_len_max = crypto_kpp_maxsize(tfm);
@@ -1420,7 +1427,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!output_buf) {
  		err = -ENOMEM;
  		goto free_req;
-@@ -4085,13 +4086,13 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4134,13 +4135,13 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  	if (testmgr_alloc_buf(xbuf))
  		return err;
  
@@ -1436,7 +1443,7 @@ index 38aaa6aaf..832bdbcde 100644
  		      GFP_KERNEL);
  	if (!key)
  		goto free_req;
-@@ -4114,7 +4115,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4163,7 +4164,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  	 */
  	err = -ENOMEM;
  	out_len_max = crypto_akcipher_maxsize(tfm);
@@ -1445,7 +1452,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!outbuf_enc)
  		goto free_key;
  
-@@ -4191,7 +4192,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4240,7 +4241,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  		err = 0;
  		goto free_all;
  	}
@@ -1454,7 +1461,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if (!outbuf_dec) {
  		err = -ENOMEM;
  		goto free_all;
-@@ -5878,13 +5879,22 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5913,13 +5914,22 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  	int i;
  	int j;
  	int rc;
@@ -1479,7 +1486,7 @@ index 38aaa6aaf..832bdbcde 100644
  	if ((type & CRYPTO_ALG_TYPE_MASK) == CRYPTO_ALG_TYPE_CIPHER) {
  		char nalg[CRYPTO_MAX_ALG_NAME];
 diff --git a/crypto/xts.c b/crypto/xts.c
-index b05020657..7c926f7bb 100644
+index 672e1a3f0..54259a7f6 100644
 --- a/crypto/xts.c
 +++ b/crypto/xts.c
 @@ -20,6 +20,7 @@
@@ -1490,7 +1497,7 @@ index b05020657..7c926f7bb 100644
  
  struct xts_tfm_ctx {
  	struct crypto_skcipher *child;
-@@ -353,7 +354,7 @@ static int xts_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -355,7 +356,7 @@ static int xts_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (IS_ERR(cipher_name))
  		return PTR_ERR(cipher_name);
  
@@ -1521,4 +1528,5 @@ index af5ad51d3..f3e132d6f 100644
  	unsigned char *Vbuf;
  	/* hash: static value 10.1.1.1 1b) hmac / ctr: key */
 -- 
-2.43.0
+2.39.4
+

@@ -1,0 +1,60 @@
+From e62dfd2ff34b1e09a11efa3f0b423f159697cc13 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Fri, 29 Nov 2024 06:14:48 +0000
+Subject: [PATCH 04/11] aesni_intel: Remove static call
+
+Static calls are removed from canister because static call
+sites (function pointers) are updated during kernel bootup
+based on the value of the key. This will fail the FIPS integrity
+test.
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ arch/x86/crypto/aesni-intel_glue.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
+index 55ed01a67..9c4cb927d 100644
+--- a/arch/x86/crypto/aesni-intel_glue.c
++++ b/arch/x86/crypto/aesni-intel_glue.c
+@@ -36,7 +36,6 @@
+ #include <linux/jump_label.h>
+ #include <linux/workqueue.h>
+ #include <linux/spinlock.h>
+-#include <linux/static_call.h>
+ #include <crypto/gf128mul.h>
+ 
+ void fcw_kernel_fpu_begin(void);
+@@ -86,9 +85,11 @@ asmlinkage void aesni_xts_dec(const struct crypto_aes_ctx *ctx, u8 *out,
+ 
+ #ifdef CONFIG_X86_64
+ 
++static void (*aesni_ctr_enc_tfm)(struct crypto_aes_ctx *ctx, u8 *out,
++				const u8 *in, unsigned int len, u8 *iv);
++
+ asmlinkage void aesni_ctr_enc(struct crypto_aes_ctx *ctx, u8 *out,
+ 			      const u8 *in, unsigned int len, u8 *iv);
+-DEFINE_STATIC_CALL(aesni_ctr_enc_tfm, aesni_ctr_enc);
+ 
+ asmlinkage void aes_ctr_enc_128_avx_by8(const u8 *in, u8 *iv,
+ 		void *keys, u8 *out, unsigned int num_bytes);
+@@ -410,7 +411,7 @@ static int ctr_crypt(struct skcipher_request *req)
+ 	while ((nbytes = walk.nbytes) > 0) {
+ 		fcw_kernel_fpu_begin();
+ 		if (nbytes & AES_BLOCK_MASK)
+-			static_call(aesni_ctr_enc_tfm)(ctx, walk.dst.virt.addr,
++			aesni_ctr_enc_tfm(ctx, walk.dst.virt.addr,
+ 						       walk.src.virt.addr,
+ 						       nbytes & AES_BLOCK_MASK,
+ 						       walk.iv);
+@@ -1682,7 +1683,7 @@ static int __init aesni_init(void)
+ #ifdef CONFIG_X86_64
+ 	if (boot_cpu_has(X86_FEATURE_AVX)) {
+ 		/* optimize performance of ctr mode encryption transform */
+-		static_call_update(aesni_ctr_enc_tfm, aesni_ctr_enc_avx_tfm);
++		aesni_ctr_enc_tfm = aesni_ctr_enc_avx_tfm;
+ 		pr_info("AES CTR mode by8 optimization enabled\n");
+ 	}
+ #endif /* CONFIG_X86_64 */
+-- 
+2.39.4
+

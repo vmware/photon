@@ -1,13 +1,14 @@
-From 45555b8e8ae2d97bf2e7f9425491e6bb83aa8b57 Mon Sep 17 00:00:00 2001
-From: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
-Date: Mon, 22 May 2023 13:27:58 +0530
-Subject: [PATCH 7/8] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from
+From cb6955ea9fb97ccfa85f9758e366eade9675a8e7 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Mon, 2 Dec 2024 06:58:48 +0000
+Subject: [PATCH 07/11] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from
  canister
 
-Signed-off-by: Keerthana K <keerthanak@vmware.com
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---
  crypto/aes_generic.c    |  5 -----
- crypto/ecc.c            | 20 --------------------
+ crypto/ecc.c            | 21 ---------------------
  crypto/ecdh_helper.c    |  5 +----
  crypto/geniv.c          |  3 ---
  crypto/rsa_helper.c     |  2 --
@@ -18,11 +19,11 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com
  crypto/testmgr.c        |  2 --
  lib/crypto/aes.c        |  6 ------
  lib/crypto/sha1.c       |  2 --
- lib/crypto/sha256.c     |  5 -----
+ lib/crypto/sha256.c     |  4 ----
  13 files changed, 1 insertion(+), 63 deletions(-)
 
 diff --git a/crypto/aes_generic.c b/crypto/aes_generic.c
-index 27ab27931..f73022bed 100644
+index 3c66d425c..c5bf42c63 100644
 --- a/crypto/aes_generic.c
 +++ b/crypto/aes_generic.c
 @@ -1118,9 +1118,6 @@ static const u32 crypto_il_tab[4][256] ____cacheline_aligned = {
@@ -45,7 +46,7 @@ index 27ab27931..f73022bed 100644
  
  #define f_rn(bo, bi, n, k)	do {				\
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index ff9a0f156..f220aaac0 100644
+index 7aa54bb27..e0cc81ec9 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -50,7 +50,6 @@ const struct ecc_curve *ecc_get_curve25519(void)
@@ -56,15 +57,23 @@ index ff9a0f156..f220aaac0 100644
  
  const struct ecc_curve *ecc_get_curve(unsigned int curve_id)
  {
-@@ -66,7 +65,6 @@ const struct ecc_curve *ecc_get_curve(unsigned int curve_id)
+@@ -68,7 +67,6 @@ const struct ecc_curve *ecc_get_curve(unsigned int curve_id)
  		return NULL;
  	}
  }
 -EXPORT_SYMBOL(ecc_get_curve);
  
+ void ecc_digits_from_bytes(const u8 *in, unsigned int nbytes,
+ 			   u64 *out, unsigned int ndigits)
+@@ -90,7 +88,6 @@ void ecc_digits_from_bytes(const u8 *in, unsigned int nbytes,
+ 	}
+ 	ecc_swap_digits(in, out, ndigits);
+ }
+-EXPORT_SYMBOL(ecc_digits_from_bytes);
+ 
  static u64 *ecc_alloc_digits_space(unsigned int ndigits)
  {
-@@ -108,7 +106,6 @@ struct ecc_point *ecc_alloc_point(unsigned int ndigits)
+@@ -132,7 +129,6 @@ struct ecc_point *ecc_alloc_point(unsigned int ndigits)
  	kfree(p);
  	return NULL;
  }
@@ -72,7 +81,7 @@ index ff9a0f156..f220aaac0 100644
  
  void ecc_free_point(struct ecc_point *p)
  {
-@@ -119,7 +116,6 @@ void ecc_free_point(struct ecc_point *p)
+@@ -143,7 +139,6 @@ void ecc_free_point(struct ecc_point *p)
  	kfree_sensitive(p->y);
  	kfree_sensitive(p);
  }
@@ -80,7 +89,7 @@ index ff9a0f156..f220aaac0 100644
  
  static void vli_clear(u64 *vli, unsigned int ndigits)
  {
-@@ -141,7 +137,6 @@ bool vli_is_zero(const u64 *vli, unsigned int ndigits)
+@@ -165,7 +160,6 @@ bool vli_is_zero(const u64 *vli, unsigned int ndigits)
  
  	return true;
  }
@@ -88,7 +97,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* Returns nonzero if bit of vli is set. */
  static u64 vli_test_bit(const u64 *vli, unsigned int bit)
-@@ -184,7 +179,6 @@ unsigned int vli_num_bits(const u64 *vli, unsigned int ndigits)
+@@ -208,7 +202,6 @@ unsigned int vli_num_bits(const u64 *vli, unsigned int ndigits)
  
  	return ((num_digits - 1) * 64 + i);
  }
@@ -96,7 +105,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* Set dest from unaligned bit string src. */
  void vli_from_be64(u64 *dest, const void *src, unsigned int ndigits)
-@@ -195,7 +189,6 @@ void vli_from_be64(u64 *dest, const void *src, unsigned int ndigits)
+@@ -219,7 +212,6 @@ void vli_from_be64(u64 *dest, const void *src, unsigned int ndigits)
  	for (i = 0; i < ndigits; i++)
  		dest[i] = get_unaligned_be64(&from[ndigits - 1 - i]);
  }
@@ -104,7 +113,7 @@ index ff9a0f156..f220aaac0 100644
  
  void vli_from_le64(u64 *dest, const void *src, unsigned int ndigits)
  {
-@@ -205,7 +198,6 @@ void vli_from_le64(u64 *dest, const void *src, unsigned int ndigits)
+@@ -229,7 +221,6 @@ void vli_from_le64(u64 *dest, const void *src, unsigned int ndigits)
  	for (i = 0; i < ndigits; i++)
  		dest[i] = get_unaligned_le64(&from[i]);
  }
@@ -112,7 +121,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* Sets dest = src. */
  static void vli_set(u64 *dest, const u64 *src, unsigned int ndigits)
-@@ -227,7 +219,6 @@ int vli_cmp(const u64 *left, const u64 *right, unsigned int ndigits)
+@@ -251,7 +242,6 @@ int vli_cmp(const u64 *left, const u64 *right, unsigned int ndigits)
  
  	return 0;
  }
@@ -120,7 +129,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* Computes result = in << c, returning carry. Can modify in place
   * (if result == in). 0 < shift < 64.
-@@ -324,7 +315,6 @@ u64 vli_sub(u64 *result, const u64 *left, const u64 *right,
+@@ -348,7 +338,6 @@ u64 vli_sub(u64 *result, const u64 *left, const u64 *right,
  
  	return borrow;
  }
@@ -128,7 +137,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* Computes result = left - right, returning borrow. Can modify in place. */
  static u64 vli_usub(u64 *result, const u64 *left, u64 right,
-@@ -959,7 +949,6 @@ void vli_mod_mult_slow(u64 *result, const u64 *left, const u64 *right,
+@@ -1008,7 +997,6 @@ void vli_mod_mult_slow(u64 *result, const u64 *left, const u64 *right,
  	vli_mult(product, left, right, ndigits);
  	vli_mmod_slow(result, product, mod, ndigits);
  }
@@ -136,7 +145,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* Computes result = (left * right) % curve_prime. */
  static void vli_mod_mult_fast(u64 *result, const u64 *left, const u64 *right,
-@@ -1059,7 +1048,6 @@ void vli_mod_inv(u64 *result, const u64 *input, const u64 *mod,
+@@ -1108,7 +1096,6 @@ void vli_mod_inv(u64 *result, const u64 *input, const u64 *mod,
  
  	vli_set(result, u, ndigits);
  }
@@ -144,7 +153,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* ------ Point operations ------ */
  
-@@ -1069,7 +1057,6 @@ bool ecc_point_is_zero(const struct ecc_point *point)
+@@ -1118,7 +1105,6 @@ bool ecc_point_is_zero(const struct ecc_point *point)
  	return (vli_is_zero(point->x, point->ndigits) &&
  		vli_is_zero(point->y, point->ndigits));
  }
@@ -152,23 +161,23 @@ index ff9a0f156..f220aaac0 100644
  
  /* Point multiplication algorithm using Montgomery's ladder with co-Z
   * coordinates. From https://eprint.iacr.org/2011/338.pdf
-@@ -1411,7 +1398,6 @@ void ecc_point_mult_shamir(const struct ecc_point *result,
+@@ -1465,7 +1451,6 @@ void ecc_point_mult_shamir(const struct ecc_point *result,
  	vli_mod_inv(z, z, curve->p, ndigits);
  	apply_z(rx, ry, z, curve);
  }
 -EXPORT_SYMBOL(ecc_point_mult_shamir);
  
- static int __ecc_is_key_valid(const struct ecc_curve *curve,
- 			      const u64 *private_key, unsigned int ndigits)
-@@ -1449,7 +1435,6 @@ int ecc_is_key_valid(unsigned int curve_id, unsigned int ndigits,
+ /*
+  * This function performs checks equivalent to Appendix A.4.2 of FIPS 186-5.
+@@ -1509,7 +1494,6 @@ int ecc_is_key_valid(unsigned int curve_id, unsigned int ndigits,
  
  	return __ecc_is_key_valid(curve, private_key, ndigits);
  }
 -EXPORT_SYMBOL(ecc_is_key_valid);
  
  /*
-  * ECC private keys are generated using the method of extra random bits,
-@@ -1502,7 +1487,6 @@ int ecc_gen_privkey(unsigned int curve_id, unsigned int ndigits, u64 *privkey)
+  * ECC private keys are generated using the method of rejection sampling,
+@@ -1560,7 +1544,6 @@ int ecc_gen_privkey(unsigned int curve_id, unsigned int ndigits,
  
  	return 0;
  }
@@ -176,7 +185,7 @@ index ff9a0f156..f220aaac0 100644
  
  int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
  		     const u64 *private_key, u64 *public_key)
-@@ -1541,7 +1525,6 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
+@@ -1596,7 +1579,6 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
  out:
  	return ret;
  }
@@ -184,7 +193,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* SP800-56A section 5.6.2.3.4 partial verification: ephemeral keys only */
  int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
-@@ -1574,7 +1557,6 @@ int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
+@@ -1629,7 +1611,6 @@ int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
  
  	return 0;
  }
@@ -192,7 +201,7 @@ index ff9a0f156..f220aaac0 100644
  
  /* SP800-56A section 5.6.2.3.3 full verification */
  int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
-@@ -1601,7 +1583,6 @@ int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
+@@ -1656,7 +1637,6 @@ int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
  
  	return ret;
  }
@@ -200,12 +209,13 @@ index ff9a0f156..f220aaac0 100644
  
  static int get_jitter_ent_random_bytes(u64 *buf, unsigned int len)
  {
-@@ -1685,6 +1666,5 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
+@@ -1735,7 +1715,6 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
  out:
  	return ret;
  }
 -EXPORT_SYMBOL(crypto_ecdh_shared_secret);
  
+ MODULE_DESCRIPTION("core elliptic curve module");
  MODULE_LICENSE("Dual BSD/GPL");
 diff --git a/crypto/ecdh_helper.c b/crypto/ecdh_helper.c
 index 5dac6b348..78cd5252f 100644
@@ -309,7 +319,7 @@ index 193345133..c5efc0a3a 100644
  static struct shash_alg alg = {
  	.digestsize	=	SHA1_DIGEST_SIZE,
 diff --git a/crypto/sha256_generic.c b/crypto/sha256_generic.c
-index bf147b01e..c1147386d 100644
+index b00521f1a..c5c12378b 100644
 --- a/crypto/sha256_generic.c
 +++ b/crypto/sha256_generic.c
 @@ -23,7 +23,6 @@ const u8 sha224_zero_message_hash[SHA224_DIGEST_SIZE] = {
@@ -345,7 +355,7 @@ index bf147b01e..c1147386d 100644
  static struct shash_alg sha256_algs[2] = { {
  	.digestsize	=	SHA256_DIGEST_SIZE,
 diff --git a/crypto/sha3_generic.c b/crypto/sha3_generic.c
-index 3e4069935..7d107460b 100644
+index 0e36ce003..3aee57c30 100644
 --- a/crypto/sha3_generic.c
 +++ b/crypto/sha3_generic.c
 @@ -171,7 +171,6 @@ int crypto_sha3_init(struct shash_desc *desc)
@@ -373,7 +383,7 @@ index 3e4069935..7d107460b 100644
  static struct shash_alg algs[] = { {
  	.digestsize		= SHA3_224_DIGEST_SIZE,
 diff --git a/crypto/sha512_generic.c b/crypto/sha512_generic.c
-index 07e27910c..32ff5a0b1 100644
+index dbdabde87..7920da6f9 100644
 --- a/crypto/sha512_generic.c
 +++ b/crypto/sha512_generic.c
 @@ -27,7 +27,6 @@ const u8 sha384_zero_message_hash[SHA384_DIGEST_SIZE] = {
@@ -409,17 +419,17 @@ index 07e27910c..32ff5a0b1 100644
  static struct shash_alg sha512_algs[2] = { {
  	.digestsize	=	SHA512_DIGEST_SIZE,
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index cef1e92a4..866d7ed86 100644
+index 510ef0138..b5e29b2ad 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -5970,5 +5970,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -6024,5 +6024,3 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  }
  
  #endif /* CONFIG_CRYPTO_MANAGER_DISABLE_TESTS */
 -
 -EXPORT_SYMBOL_GPL(alg_test);
 diff --git a/lib/crypto/aes.c b/lib/crypto/aes.c
-index 827fe8992..30a61e0d4 100644
+index eafe14d02..d6876f690 100644
 --- a/lib/crypto/aes.c
 +++ b/lib/crypto/aes.c
 @@ -85,9 +85,6 @@ static volatile const u8 __cacheline_aligned aes_inv_sbox[] = {
@@ -457,7 +467,7 @@ index 827fe8992..30a61e0d4 100644
  MODULE_DESCRIPTION("Generic AES library");
  MODULE_AUTHOR("Ard Biesheuvel <ard.biesheuvel@linaro.org>");
 diff --git a/lib/crypto/sha1.c b/lib/crypto/sha1.c
-index 1aebe7be9..9b2f423f0 100644
+index ebb60519a..3c3b03b81 100644
 --- a/lib/crypto/sha1.c
 +++ b/lib/crypto/sha1.c
 @@ -121,7 +121,6 @@ void sha1_transform(__u32 *digest, const char *data, __u32 *array)
@@ -468,51 +478,48 @@ index 1aebe7be9..9b2f423f0 100644
  
  /**
   * sha1_init - initialize the vectors for a SHA1 digest
-@@ -135,6 +134,5 @@ void sha1_init(__u32 *buf)
+@@ -135,7 +134,6 @@ void sha1_init(__u32 *buf)
  	buf[3] = 0x10325476;
  	buf[4] = 0xc3d2e1f0;
  }
 -EXPORT_SYMBOL(sha1_init);
  
+ MODULE_DESCRIPTION("SHA-1 Algorithm");
  MODULE_LICENSE("GPL");
 diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
-index 555ba2070..c0656c6f3 100644
+index ca5cd6492..285384817 100644
 --- a/lib/crypto/sha256.c
 +++ b/lib/crypto/sha256.c
-@@ -159,13 +159,11 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
- 	memcpy(sctx->buf + partial, src, len - done);
+@@ -146,7 +146,6 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
+ 	lib_sha256_base_do_update(sctx, data, len, sha256_transform_blocks);
  #endif
  }
 -EXPORT_SYMBOL(sha256_update);
  
- void sha224_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
+ static void __sha256_final(struct sha256_state *sctx, u8 *out, int digest_size)
  {
- 	sha256_update(sctx, data, len);
- }
--EXPORT_SYMBOL(sha224_update);
- 
- static void __sha256_final(struct sha256_state *sctx, u8 *out, int digest_words)
+@@ -158,13 +157,11 @@ void sha256_final(struct sha256_state *sctx, u8 *out)
  {
-@@ -198,13 +196,11 @@ void sha256_final(struct sha256_state *sctx, u8 *out)
- {
- 	__sha256_final(sctx, out, 8);
+ 	__sha256_final(sctx, out, 32);
  }
 -EXPORT_SYMBOL(sha256_final);
  
  void sha224_final(struct sha256_state *sctx, u8 *out)
  {
- 	__sha256_final(sctx, out, 7);
+ 	__sha256_final(sctx, out, 28);
  }
 -EXPORT_SYMBOL(sha224_final);
  
  void sha256(const u8 *data, unsigned int len, u8 *out)
  {
-@@ -214,6 +210,5 @@ void sha256(const u8 *data, unsigned int len, u8 *out)
+@@ -174,7 +171,6 @@ void sha256(const u8 *data, unsigned int len, u8 *out)
  	sha256_update(&sctx, data, len);
  	sha256_final(&sctx, out);
  }
 -EXPORT_SYMBOL(sha256);
  
+ MODULE_DESCRIPTION("SHA-256 Algorithm");
  MODULE_LICENSE("GPL");
 -- 
-2.43.0
+2.39.4
+

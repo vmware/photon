@@ -1,24 +1,22 @@
-From 32957298010e50c83e355aba5980d60d3ab6805a Mon Sep 17 00:00:00 2001
-From: Keerthana K <keerthanak@vmware.com>
-Date: Fri, 17 Jun 2022 14:32:26 +0000
-Subject: [PATCH] scripts-kallsyms: Extra kallsyms parsing
-
-From: Keerthana K <keerthanak@vmware.com>
+From a4a414818a3126ac579165e544e6444f46c242e6 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Thu, 28 Nov 2024 07:22:49 +0000
+Subject: [PATCH 02/11] scripts-kallsyms: Extra kallsyms parsing
 
 Adding new option "--extra-symbols=<kallsyms-file>" to scripts/kallsyms.c
 This helps in adding required symbols to vmlinux when CONFIG_KALLSYMS_ALL
 is disabled.
 
-Signed-off-by: Keerthana K <keerthanak@vmware.com>
 [Ajay: Regenerated the patch for v6.1.45]
 Signed-off-by: Ajay Kaher <akaher@vmware.com>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---
- scripts/kallsyms.c      | 111 +++++++++++++++++++++++++++++++++++-----
+ scripts/kallsyms.c      | 105 +++++++++++++++++++++++++++++++++++-----
  scripts/link-vmlinux.sh |   2 +
- 2 files changed, 101 insertions(+), 12 deletions(-)
+ 2 files changed, 96 insertions(+), 11 deletions(-)
 
 diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index ff8cce175..cf37d2351 100644
+index 03852da3d..ae1ade371 100644
 --- a/scripts/kallsyms.c
 +++ b/scripts/kallsyms.c
 @@ -26,6 +26,8 @@
@@ -28,9 +26,9 @@ index ff8cce175..cf37d2351 100644
 +#include <getopt.h>
 +#include <errno.h>
  
- #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+ #include <xalloc.h>
  
-@@ -63,10 +65,15 @@ struct addr_range {
+@@ -48,10 +50,15 @@ struct addr_range {
  
  static unsigned long long _text;
  static unsigned long long relative_base;
@@ -46,24 +44,24 @@ index ff8cce175..cf37d2351 100644
  #define text_range_text     (&text_ranges[0])
  #define text_range_inittext (&text_ranges[1])
  
-@@ -77,6 +84,7 @@ static struct addr_range percpu_range = {
+@@ -62,6 +69,7 @@ static struct addr_range percpu_range = {
  static struct sym_entry **table;
  static unsigned int table_size, table_cnt;
  static int all_symbols;
 +static int extra_symbols;
  static int absolute_percpu;
- static int base_relative;
- static int lto_clang;
-@@ -90,7 +98,7 @@ static unsigned char best_table_len[256];
+ 
+ static int token_profit[0x10000];
+@@ -73,7 +81,7 @@ static unsigned char best_table_len[256];
  
  static void usage(void)
  {
--	fprintf(stderr, "Usage: kallsyms [--all-symbols] [--absolute-percpu] "
-+	fprintf(stderr, "Usage: kallsyms --extra-symbols=<kallsyms-file> [--all-symbols] [--absolute-percpu] "
- 			"[--base-relative] [--lto-clang] in.map > out.S\n");
+-	fprintf(stderr, "Usage: kallsyms [--all-symbols] [--absolute-percpu] in.map > out.S\n");
++	fprintf(stderr, "Usage: kallsyms --extra-symbols=<kallsyms-file> [--all-symbols] [--absolute-percpu] in.map > out.S\n");
  	exit(1);
  }
-@@ -215,6 +223,55 @@ static void check_symbol_range(const char *sym, unsigned long long addr,
+ 
+@@ -118,6 +126,55 @@ static void check_symbol_range(const char *sym, unsigned long long addr,
  	}
  }
  
@@ -116,10 +114,10 @@ index ff8cce175..cf37d2351 100644
 +	free(extra_sym_tbl);
 +}
 +
- static struct sym_entry *read_symbol(FILE *in)
+ static struct sym_entry *read_symbol(FILE *in, char **buf, size_t *buf_len)
  {
- 	char name[KSYM_NAME_LEN_BUFFER+1], type;
-@@ -285,10 +342,17 @@ static int symbol_in_range(const struct sym_entry *s,
+ 	char *name, type, *p;
+@@ -204,10 +261,18 @@ static bool string_starts_with(const char *s, const char *prefix)
  static int symbol_valid(const struct sym_entry *s)
  {
  	const char *name = sym_name(s);
@@ -134,35 +132,33 @@ index ff8cce175..cf37d2351 100644
 +					return 1;
 +			}
 +		}
- 		if (symbol_in_range(s, text_ranges,
- 				    ARRAY_SIZE(text_ranges)) == 0)
- 			return 0;
-@@ -886,26 +950,48 @@ static void record_relative_base(void)
++
+ 		/*
+ 		 * Symbols starting with __start and __stop are used to denote
+ 		 * section boundaries, and should always be included:
+@@ -759,24 +824,41 @@ static void record_relative_base(void)
  
  int main(int argc, char **argv)
  {
 -	while (1) {
--		static struct option long_options[] = {
+-		static const struct option long_options[] = {
 -			{"all-symbols",     no_argument, &all_symbols,     1},
 -			{"absolute-percpu", no_argument, &absolute_percpu, 1},
--			{"base-relative",   no_argument, &base_relative,   1},
--			{"lto-clang",       no_argument, &lto_clang,       1},
 -			{},
 -		};
+-
+-		int c = getopt_long(argc, argv, "", long_options, NULL);
+ 
+-		if (c == -1)
 +	char *sym_file = NULL;
 +	int opt = 0, index = 0;
- 
--		int c = getopt_long(argc, argv, "", long_options, NULL);
-+	static struct option long_options[] = {
-+		{"all-symbols",     no_argument,       NULL, 'l'},
-+		{"absolute-percpu", no_argument,       NULL, 'a'},
-+		{"base-relative",   no_argument,       NULL, 'b'},
-+		{"lto-clang",       no_argument,       NULL, 'c'},
++
++	static const struct option long_options[] = {
++		{"all-symbols",     no_argument, NULL, 'l'},
++		{"absolute-percpu", no_argument, NULL, 'a'},
 +		{"extra-symbols",   required_argument, NULL, 's'},
 +		{},
 +	};
- 
--		if (c == -1)
 +	while ((opt = getopt_long_only(argc, argv, "",
 +			long_options, &index)) != -1) {
 +		switch (opt) {
@@ -172,17 +168,11 @@ index ff8cce175..cf37d2351 100644
 +		case 'a':
 +			absolute_percpu = 1;
 +			break;
-+		case 'b':
-+			base_relative = 1;
-+			break;
-+		case 'c':
-+			lto_clang = 1;
- 			break;
--		if (c != 0)
 +		case 's':
 +			extra_symbols = 1;
 +			sym_file = optarg;
-+			break;
+ 			break;
+-		if (c != 0)
 +		default:
  			usage();
 +		}
@@ -194,10 +184,11 @@ index ff8cce175..cf37d2351 100644
 +	if (extra_symbols) {
 +		populate_extra_symbol_table(sym_file);
 +	}
++
  	read_map(argv[optind]);
  	shrink_table();
  	if (absolute_percpu)
-@@ -916,5 +1002,6 @@ int main(int argc, char **argv)
+@@ -786,5 +868,6 @@ int main(int argc, char **argv)
  	optimize_token_table();
  	write_src();
  
@@ -205,17 +196,18 @@ index ff8cce175..cf37d2351 100644
  	return 0;
  }
 diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 32e573943..85d9115ad 100755
+index a9b3f34a7..e248617e6 100755
 --- a/scripts/link-vmlinux.sh
 +++ b/scripts/link-vmlinux.sh
-@@ -160,6 +160,8 @@ kallsyms()
- 		kallsymopt="${kallsymopt} --lto-clang"
+@@ -144,6 +144,8 @@ kallsyms()
+ 		kallsymopt="${kallsymopt} --absolute-percpu"
  	fi
  
 +	kallsymopt="${kallsymopt} --extra-symbols=crypto/fips_canister-kallsyms"
 +
- 	info KSYMS ${2}
- 	scripts/kallsyms ${kallsymopt} ${1} > ${2}
- }
+ 	info KSYMS "${2}.S"
+ 	scripts/kallsyms ${kallsymopt} "${1}" > "${2}.S"
+ 
 -- 
-2.43.0
+2.39.4
+

@@ -20,6 +20,7 @@ module_init(fcw_module_init);
 static int __init fcw_arch_initcall(void)
 {
 	cryptomgr_init();
+	sha3_generic_mod_init();
 	return true;
 }
 arch_initcall(fcw_arch_initcall);
@@ -32,7 +33,6 @@ static int __init fcw_subsys_initcall(void)
 	sha1_generic_mod_init();
 	sha256_generic_mod_init();
 	sha512_generic_mod_init();
-	sha3_generic_mod_init();
 	aes_init();
 	crypto_ctr_module_init();
 	hmac_module_init();
@@ -41,7 +41,6 @@ static int __init fcw_subsys_initcall(void)
 	ghash_mod_init();
 	crypto_cbc_module_init();
 	xts_module_init();
-	crypto_cfb_module_init();
 	crypto_ccm_module_init();
 	crypto_gcm_module_init();
 	ecdsa_init();
@@ -64,7 +63,6 @@ static void __exit fcw_module_exit(void)
 	seqiv_module_exit();
 	crypto_cbc_module_exit();
 	crypto_ccm_module_exit();
-	crypto_cfb_module_exit();
 	crypto_cmac_module_exit();
 	crypto_ctr_module_exit();
 	crypto_cts_module_exit();
