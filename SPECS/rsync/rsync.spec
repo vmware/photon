@@ -1,7 +1,7 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
 Version:        3.2.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org
 Group:          Appication/Internet
@@ -11,7 +11,17 @@ Distribution:   Photon
 Source0: https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
 %define sha512 %{name}=c2afba11a352fd88133f9e96e19d6df80eb864450c83eced13a7faa23df947bccf2ef093f2101df6ee30abff4cbbd39ac802e9aa5f726e42c9caff274fad8377
 
-Patch0:         checksum_buffer_fix.patch
+Patch0:         0001-Some-checksum-buffer-fixes.patch
+Patch1:         0002-Another-cast-when-multiplying-integers.patch
+Patch2:         0001-prevent-information-leak-off-the-stack.patch
+Patch3:         0001-refuse-fuzzy-options-when-fuzzy-not-selected.patch
+Patch4:         0002-added-secure_relative_open.patch
+Patch5:         0003-receiver-use-secure_relative_open-for-basis-file.patch
+Patch6:         0004-disallow-elements-in-relpath-for-secure_relative_o.patch
+Patch7:         0001-Refuse-a-duplicate-dirlist.patch
+Patch8:         0002-range-check-dir_ndx-before-use.patch
+Patch9:         0001-make-safe-links-stricter.patch
+Patch10:        0001-fixed-symlink-race-condition-in-sender.patch
 
 BuildRequires:  zlib-devel
 BuildRequires:  lz4-devel
@@ -87,6 +97,9 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/rsyncd.conf
 
 %changelog
+* Thu Jan 02 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.2.7-3
+- Fixed CVE-2024-12084,CVE-2024-12085,CVE-2024-12086,CVE-2024-12087,
+- CVE-2024-12088,CVE-2024-12747
 * Tue Dec 10 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.2.7-2
 - Some checksum buffer fixes
 * Tue Mar 19 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.7-1
