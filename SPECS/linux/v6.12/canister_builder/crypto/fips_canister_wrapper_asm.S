@@ -9,7 +9,6 @@
 
 #include <linux/linkage.h>
 #include <linux/version.h>
-#include <asm/export.h>
 
 SYM_FUNC_START(fcw_printk)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)

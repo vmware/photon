@@ -1,0 +1,98 @@
+From dda58545040bdd9e4c9991cacff1cbfcb4a45bb8 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Fri, 29 Nov 2024 06:33:52 +0000
+Subject: [PATCH 05/11] Disable retpoline_sites and return_sites sections in
+ canister
+
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ arch/x86/crypto/aes-gcm-aesni-x86_64.S  | 5 +++++
+ arch/x86/crypto/aes-gcm-avx10-x86_64.S  | 5 +++++
+ arch/x86/crypto/aes-xts-avx-x86_64.S    | 5 +++++
+ arch/x86/crypto/aes_ctrby8_avx-x86_64.S | 5 +++++
+ arch/x86/crypto/aesni-intel_asm.S       | 5 +++++
+ 5 files changed, 25 insertions(+)
+
+diff --git a/arch/x86/crypto/aes-gcm-aesni-x86_64.S b/arch/x86/crypto/aes-gcm-aesni-x86_64.S
+index 45940e288..61cf71b93 100644
+--- a/arch/x86/crypto/aes-gcm-aesni-x86_64.S
++++ b/arch/x86/crypto/aes-gcm-aesni-x86_64.S
+@@ -126,6 +126,11 @@
+ 
+ #include <linux/linkage.h>
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ .section .rodata
+ .p2align 4
+ .Lbswap_mask:
+diff --git a/arch/x86/crypto/aes-gcm-avx10-x86_64.S b/arch/x86/crypto/aes-gcm-avx10-x86_64.S
+index 97e0ee515..529cf2a35 100644
+--- a/arch/x86/crypto/aes-gcm-avx10-x86_64.S
++++ b/arch/x86/crypto/aes-gcm-avx10-x86_64.S
+@@ -83,6 +83,11 @@
+ 
+ #include <linux/linkage.h>
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ .section .rodata
+ .p2align 6
+ 
+diff --git a/arch/x86/crypto/aes-xts-avx-x86_64.S b/arch/x86/crypto/aes-xts-avx-x86_64.S
+index 48f97b79f..090c9aa29 100644
+--- a/arch/x86/crypto/aes-xts-avx-x86_64.S
++++ b/arch/x86/crypto/aes-xts-avx-x86_64.S
+@@ -57,6 +57,11 @@
+ #include <linux/linkage.h>
+ #include <linux/cfi_types.h>
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ .section .rodata
+ .p2align 4
+ .Lgf_poly:
+diff --git a/arch/x86/crypto/aes_ctrby8_avx-x86_64.S b/arch/x86/crypto/aes_ctrby8_avx-x86_64.S
+index 2402b9418..9855930f2 100644
+--- a/arch/x86/crypto/aes_ctrby8_avx-x86_64.S
++++ b/arch/x86/crypto/aes_ctrby8_avx-x86_64.S
+@@ -23,6 +23,11 @@
+ 
+ #define VMOVDQ		vmovdqu
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ /*
+  * Note: the "x" prefix in these aliases means "this is an xmm register".  The
+  * alias prefixes have no relation to XCTR where the "X" prefix means "XOR
+diff --git a/arch/x86/crypto/aesni-intel_asm.S b/arch/x86/crypto/aesni-intel_asm.S
+index eb153eff9..ff17e987e 100644
+--- a/arch/x86/crypto/aesni-intel_asm.S
++++ b/arch/x86/crypto/aesni-intel_asm.S
+@@ -38,6 +38,11 @@
+ 
+ #define GF128MUL_MASK %xmm7
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ #ifdef __x86_64__
+ #define AREG	%rax
+ #define KEYP	%rdi
+-- 
+2.39.4
+

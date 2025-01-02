@@ -1,6 +1,6 @@
 %global security_hardening none
 %global __cmake_in_source_build 0
-%global lkcm_version 5.0.0
+%global lkcm_version 6.0.0
 
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1
@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -99,6 +99,10 @@ Source41: fips_canister_wrapper_internal.c
 %endif
 
 %if 0%{?canister_build}
+Source36: fips_canister_wrapper.c
+Source37: fips_canister_wrapper.h
+Source38: fips_canister_wrapper_asm.S
+Source39: fips_canister_wrapper_common.h
 Source42: fips_canister_wrapper_internal.h
 Source43: fips_canister_wrapper_internal.c
 Source44: fips_integrity.c
@@ -286,20 +290,17 @@ Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
 Patch10000: 0001-FIPS-canister-binary-usage.patch
-Patch10001: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch10001: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
-Patch10003: 0002-FIPS-canister-creation.patch
-Patch10004: 0003-aesni_intel-Remove-static-call.patch
-Patch10005: 0004-Disable-retpoline_sites-and-return_sites-section-in-.patch
-Patch10006: 0005-Move-__bug_table-section-to-fips_canister_wrapper.patch
-Patch10007: 0006-crypto-Add-prandom-module_kthread_exit-to-canister-w.patch
-Patch10008: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
-Patch10009: 0008-Move-kernel-structures-usage.patch
-Patch10010: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
-Patch10011: 0001-List-canister-objs-in-a-file.patch
-# Patch for RSA FIPS 186-5 compliance
-Patch10012: 0001-crypto-rsa-allow-only-odd-e-and-restrict-value-in-FI.patch
-Patch10013: 0001-Handle-approved-and-non-approved-services.patch
+Patch10003: 0003-FIPS-canister-creation.patch
+Patch10004: 0004-aesni_intel-Remove-static-call.patch
+Patch10005: 0005-Disable-retpoline_sites-and-return_sites-sections-in.patch
+Patch10006: 0006-Move-__bug_table-section-to-fips_canister_wrapper.patch
+Patch10007: 0007-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
+Patch10008: 0008-Move-kernel-structures-usage-from-canister-to-wrappe.patch
+Patch10009: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
+Patch10010: 0010-List-canister-objs-in-a-file.patch
+Patch10011: 0011-Handle-approved-and-non-approved-services.patch
 
 %if 0%{?kat_build}
 Patch10014: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
@@ -330,9 +331,7 @@ BuildRequires:  pciutils-devel
 BuildRequires:  libcap-devel
 %endif
 
-%if 0%{?fips}
 BuildRequires:  gdb
-%endif
 
 Requires: kmod
 Requires: filesystem
@@ -570,7 +569,7 @@ cp %{SOURCE42} crypto/fips_canister_wrapper_internal.h
 cp %{SOURCE43} crypto/fips_canister_wrapper_internal.c
 cp %{SOURCE44} crypto/
 cp %{SOURCE45} crypto/
-cp %{SOURCE46} crypto/
+install -m 755 %{SOURCE46} crypto/
 cp %{SOURCE47} crypto/
 cp %{SOURCE48} crypto/
 %endif
@@ -580,7 +579,7 @@ sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
 %if 0%{?canister_build}
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
-sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}-secure\"/" crypto/fips_integrity.c
+sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}\"/" crypto/fips_integrity.c
 
 %if 0%{?kat_build}
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_TAMPER_TEST=y' .config
@@ -653,14 +652,14 @@ popd
 %if 0%{?canister_build}
 install -vdm 755 %{buildroot}%{_libdir}/fips-canister/
 pushd crypto/
-mkdir fips-canister-%{lkcm_version}-%{version}-%{release}-secure
+mkdir fips-canister-%{lkcm_version}-%{version}-%{release}
 cp fips_canister.o \
    fips_canister-kallsyms \
    .fips_canister.o.cmd \
-   fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
-tar -cvjf fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 fips-canister-%{lkcm_version}-%{version}-%{release}-secure/
+   fips-canister-%{lkcm_version}-%{version}-%{release}/
+tar -cvjf fips-canister-%{lkcm_version}-%{version}-%{release}.tar.bz2 fips-canister-%{lkcm_version}-%{version}-%{release}/
 popd
-cp crypto/fips-canister-%{lkcm_version}-%{version}-%{release}-secure.tar.bz2 %{buildroot}%{_libdir}/fips-canister/
+cp crypto/fips-canister-%{lkcm_version}-%{version}-%{release}.tar.bz2 %{buildroot}%{_libdir}/fips-canister/
 %endif
 
 install -vdm 755 %{buildroot}%{_sysconfdir}
@@ -857,6 +856,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Feb 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.1-3
+- Canister build for v6.12.x
 * Thu Feb 20 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-2
 - Enable cgroup_v1 support for mem & cpuset control groups.
 * Tue Feb 04 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-1

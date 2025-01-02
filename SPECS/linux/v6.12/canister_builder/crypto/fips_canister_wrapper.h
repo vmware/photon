@@ -27,6 +27,12 @@
 #include <crypto/sha1_base.h>
 #include <crypto/sha512_base.h>
 
+#undef DEFINE_LOCK_GUARD_1_COND
+
+#ifndef CONFIG_FUNCTION_TRACER
+void __fentry__(void);
+#endif
+
 #ifndef CONFIG_GCC_PLUGIN_STACKLEAK
 void __used __no_caller_saved_registers noinstr stackleak_track_stack(void);
 #endif
@@ -34,8 +40,6 @@ void __used __no_caller_saved_registers noinstr stackleak_track_stack(void);
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
 int _printk(const char *fmt, ...);
 #endif
-
-extern u32 fcw_prandom_u32_max(u32 ep_ro);
 
 extern void __noreturn __fcw_module_put_and_kthread_exit(struct module *mod,
 			long code);
@@ -56,6 +60,7 @@ extern void *fcw_mutex_init(void);
 extern void fcw_mutex_lock(void *m);
 extern void fcw_mutex_unlock(void *m);
 extern void *fcw_spin_lock_init(void);
+extern void fcw_spin_lock_free(void *lock);
 
 extern bool fcw_schedule_work(struct work_struct *work);
 extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
@@ -70,7 +75,7 @@ extern int fcw_sha512_base_do_update(struct shash_desc *desc,
 					sha512_block_fn *block_fn);
 extern void fcw_bug(void);
 extern void fcw_bug_on(int cond);
-extern int fcw_warn_on(int cond);
+extern int fcw_warn_on(bool cond);
 extern int fcw_warn_on_once(int cond);
 extern void fcw_warn(void);
 extern int fcw_is_warn_true(int cond);
@@ -96,5 +101,59 @@ extern struct skcipher_request *fcw_skcipher_request_alloc(
 	struct crypto_skcipher *tfm, gfp_t gfp);
 extern struct kpp_request *fcw_kpp_request_alloc(
 	struct crypto_kpp *tfm, gfp_t gfp);
+
+extern void fcw_scatterwalk_pagedone(struct scatter_walk *walk, int out,
+				     unsigned int more);
+extern bool fcw_need_resched(void);
+extern void *fcw_kmap_local_page(void *page);
+extern void fcw_kunmap_local(const void *addr);
+
+int __init rsa_init(void);
+void __exit rsa_exit(void);
+int __init crypto_cbc_module_init(void);
+void __exit crypto_cbc_module_exit(void);
+int __init crypto_cmac_module_init(void);
+void __exit crypto_cmac_module_exit(void);
+int __init sha3_generic_mod_init(void);
+void __exit sha3_generic_mod_fini(void);
+int __init crypto_ecb_module_init(void);
+void __exit crypto_ecb_module_exit(void);
+int __init crypto_ctr_module_init(void);
+void __exit crypto_ctr_module_exit(void);
+int __init ghash_mod_init(void);
+void __exit ghash_mod_exit(void);
+int __init aes_init(void);
+void __exit aes_fini(void);
+int __init crypto_self_test_init(void);
+int __init ecdsa_init(void);
+void __exit ecdsa_exit(void);
+int __init sha1_generic_mod_init(void);
+void __exit sha1_generic_mod_fini(void);
+int __init cryptomgr_init(void);
+void __exit cryptomgr_exit(void);
+int __init sha512_generic_mod_init(void);
+void __exit sha512_generic_mod_fini(void);
+int __init crypto_gcm_module_init(void);
+void __exit crypto_gcm_module_exit(void);
+int __init crypto_ccm_module_init(void);
+void __exit crypto_ccm_module_exit(void);
+int __init hmac_module_init(void);
+void __exit hmac_module_exit(void);
+int __init sha256_generic_mod_init(void);
+void __exit sha256_generic_mod_fini(void);
+int __init xts_module_init(void);
+void __exit xts_module_exit(void);
+int __init ecdh_init(void);
+void __exit ecdh_exit(void);
+int __init drbg_init(void);
+void __exit drbg_exit(void);
+int __init crypto_cts_module_init(void);
+void __exit crypto_cts_module_exit(void);
+int __init aesni_init(void);
+void __exit aesni_exit(void);
+int __init fips_integrity_init(void);
+int __init fips_integrity_check (void);
+int seqiv_module_init(void);
+void seqiv_module_exit(void);
 #endif
 

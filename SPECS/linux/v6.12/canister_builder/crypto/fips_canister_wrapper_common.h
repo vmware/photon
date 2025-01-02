@@ -122,6 +122,7 @@ struct testvec_config {
 	bool key_offset_relative_to_alignmask;
 	enum finalization_type finalization_type;
 	bool nosimd;
+	bool nosimd_setkey;
 };
 
 /*

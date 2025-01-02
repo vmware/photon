@@ -64,29 +64,108 @@
 #include <linux/scatterlist.h>
 #include <crypto/scatterwalk.h>
 #include <crypto/sha1_base.h>
+#include <crypto/sha256_base.h>
 #include <crypto/sha512_base.h>
 #include <crypto/sha3.h>
+#include <linux/highmem-internal.h>
 #include <crypto/internal/geniv.h>
 #include "fips_canister_wrapper_common.h"
 
 static __ro_after_init bool alg_request_report = false;
 
-/*
- * Replicate a no-op stackleak_track_stack() function for other linux flavours
- * where CONFIG_GCC_PLUGIN_STACKLEAK is disabled to overcome missing symbols.
- * stackleak_track_stack() is inserted for the functions with a stack frame size
- * greater than or equal to CONFIG_STACKLEAK_TRACK_MIN_SIZE.
- */
-#ifndef CONFIG_GCC_PLUGIN_STACKLEAK
-void __used __no_caller_saved_registers noinstr stackleak_track_stack(void)
-{
-}
-#endif
-
 extern void fcw_sg_set_buf(struct scatterlist *sg, const void *buf, unsigned int buflen);
-extern int fcw_warn_on(int cond);
+extern int fcw_warn_on(bool cond);
 extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
 extern void *fcw_memcpy(void *dst, const void *src, size_t len);
+
+void *fcw_sg_page(struct scatterlist *sg);
+int fcw_lib_sha256_base_do_update(struct sha256_state *sctx,
+					    const u8 *data,
+					    unsigned int len,
+					    sha256_block_fn *block_fn);
+int fcw_signal_pending(void);
+void *fcw_kthread_run(int (*threadfn)(void *data), void *data, const char namefmt[]);
+int fcw_cond_resched(void);
+void *fcw_kmalloc(size_t size, gfp_t flags);
+void *fcw_kzalloc(size_t size, gfp_t flags);
+bool fcw_boot_cpu_has(unsigned long bit);
+void * __init fcw_mem_alloc(size_t size);
+void __init fcw_mem_free(void *p);
+void *fcw_mutex_init(void);
+void fcw_mutex_lock(void *m);
+void *fcw_spin_lock_init(void);
+void fcw_spin_lock_free(void *lock);
+void fcw_mutex_unlock(void *m);
+bool fcw_schedule_work(struct work_struct *work);
+struct aead_request *fcw_aead_request_alloc(struct crypto_aead *tfm,
+					    gfp_t gfp);
+struct ahash_request *fcw_ahash_request_alloc(struct crypto_ahash *tfm,
+					    gfp_t gfp);
+struct akcipher_request *fcw_akcipher_request_alloc(
+		struct crypto_akcipher *tfm, gfp_t gfp);
+struct skcipher_request *fcw_skcipher_request_alloc(
+		struct crypto_skcipher *tfm, gfp_t gfp);
+struct kpp_request *fcw_kpp_request_alloc(
+		struct crypto_kpp *tfm, gfp_t gfp);
+void __noreturn __fcw_module_put_and_kthread_exit(struct module *mod, long code);
+void fcw_kernel_fpu_begin(void);
+void fcw_kernel_fpu_end(void);
+void fcw_bug(void);
+void *fcw_init_ratelimit_state(void *rs);
+bool fcw_ratelimit(void *rs, const char *name);
+void fcw_bug_on(int cond);
+int fcw_warn_on_once(int cond);
+int fcw_is_warn_true(int cond);
+void fcw_warn(void);
+int fcw_sha1_base_do_update(struct shash_desc *desc,
+				      const u8 *data,
+				      unsigned int len,
+				      sha1_block_fn *block_fn);
+int fcw_sha512_base_do_update(struct shash_desc *desc,
+					const u8 *data,
+					unsigned int len,
+					sha512_block_fn *block_fn);
+void *fcw_sg_page_address(struct scatterlist *sg);
+int fcw_build_hash_sglist(struct test_sglist *tsgl,
+			     const struct hash_testvec *vec,
+			     const struct testvec_config *cfg,
+			     unsigned int alignmask,
+			     const struct test_sg_division *divs[XBUFSIZE]);
+int fcw_build_cipher_test_sglists(struct cipher_test_sglists *tsgls,
+				  const struct testvec_config *cfg,
+				  unsigned int alignmask,
+				  unsigned int src_total_len,
+				  unsigned int dst_total_len,
+				  const struct kvec *inputs,
+				  unsigned int nr_inputs);
+struct scatterlist *fcw_scatterwalk_ffwd(struct scatterlist dst[2],
+				     struct scatterlist *src,
+				     unsigned int len);
+void fcw_scatterwalk_unmap(void *vaddr);
+void fcw_sg_assign_page(struct scatterlist *sg, struct page *page);
+void *fcw_sg_virt(struct scatterlist *sg);
+void *fcw_scatterwalk_map(struct scatter_walk *walk);
+int fcw_fips_not_allowed_alg(char *name);
+bool fcw_need_resched(void);
+void fcw_scatterwalk_pagedone(struct scatter_walk *walk, int out,
+				     unsigned int more);
+void *fcw_kmap_local_page(void *page);
+void fcw_kunmap_local(const void *addr);
+
+bool fcw_need_resched(void)
+{
+	return need_resched();
+}
+
+void *fcw_kmap_local_page(void *page)
+{
+	return kmap_local_page((struct page *)page);
+}
+
+void fcw_kunmap_local(const void *addr)
+{
+	kunmap_local(addr);
+}
 
 int fcw_signal_pending(void)
 {
@@ -155,6 +234,12 @@ void *fcw_spin_lock_init(void)
 		spin_lock_init(lock);
 	return (void *)lock;
 }
+
+void fcw_spin_lock_free(void *lock)
+{
+	kfree((spinlock_t *)lock);
+}
+
 void fcw_mutex_unlock(void *m)
 {
 	mutex_unlock((struct mutex *)m);
@@ -180,6 +265,22 @@ void fips_fail_notify(void)
 {
 }
 #endif
+
+/* Replicate a no-op __fentry__() function for other linux flavours
+ * where function tracer is disabled.
+ */
+#ifndef CONFIG_FUNCTION_TRACER
+void __fentry__(void)
+{
+}
+#endif
+
+
+void fcw_scatterwalk_pagedone(struct scatter_walk *walk, int out,
+				     unsigned int more)
+{
+	scatterwalk_pagedone(walk, out, more);
+}
 
 struct aead_request *fcw_aead_request_alloc(struct crypto_aead *tfm,
 					    gfp_t gfp)
@@ -209,15 +310,6 @@ struct kpp_request *fcw_kpp_request_alloc(
 		struct crypto_kpp *tfm, gfp_t gfp)
 {
 	return kpp_request_alloc(tfm, gfp);
-}
-
-u32 fcw_prandom_u32_max(u32 ep_ro)
-{
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
-	return prandom_u32_max(ep_ro);
-#else
-	return get_random_u32_below(ep_ro);
-#endif
 }
 
 void __noreturn __fcw_module_put_and_kthread_exit(struct module *mod, long code)
@@ -273,7 +365,7 @@ void fcw_bug_on(int cond)
 	} while(0);
 }
 
-int fcw_warn_on(int cond)
+int fcw_warn_on(bool cond)
 {
 	int __ret_warn_on = !!(cond);
 	if(unlikely(__ret_warn_on))
@@ -312,6 +404,14 @@ int fcw_sha1_base_do_update(struct shash_desc *desc,
 	return sha1_base_do_update(desc, data, len, block_fn);
 }
 
+int fcw_lib_sha256_base_do_update(struct sha256_state *sctx,
+					    const u8 *data,
+					    unsigned int len,
+					    sha256_block_fn *block_fn)
+{
+	return lib_sha256_base_do_update(sctx, data, len, block_fn);
+}
+
 int fcw_sha512_base_do_update(struct shash_desc *desc,
 					const u8 *data,
 					unsigned int len,
@@ -324,6 +424,11 @@ size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i)
 	return copy_from_iter(addr, bytes, i);
 }
 
+void *fcw_sg_page(struct scatterlist *sg)
+{
+	struct page *page = sg_page(sg);
+	return page;
+}
 void *fcw_sg_page_address(struct scatterlist *sg)
 {
 	struct page *page = sg_page(sg);
@@ -588,9 +693,11 @@ static char *canister_algs[] = {
 	"cbc(aes-generic)",
 	"cbc(aes-aesni)",
 	"ecb(aes-generic)",
+	"cbc(ecb(aes-generic))",
 	"hmac(sha224-generic)",
 	"pkcs1pad(rsa-generic,sha256)",
 	"pkcs1pad(rsa-generic,sha512)",
+	"pkcs1pad(rsa-generic,sha3-512)",
 	"xts(ecb(aes-generic))",
 	"aes-aesni",
 	"__ecb-aes-aesni",
@@ -605,6 +712,7 @@ static char *canister_algs[] = {
 	"ctr-aes-aesni",
 	"cryptd(__xts-aes-aesni)",
 	"xts-aes-aesni",
+	"xts-aes-aesni-avx",
 	"ccm_base(ctr(aes-generic),cbcmac(aes-generic))",
 	"ccm_base(ctr-aes-aesni,cbcmac(aes-aesni))",
 	"cfb(aes-generic)",
@@ -624,6 +732,7 @@ static char *canister_algs[] = {
 	"pkcs1pad(rsa-generic,sha384)",
 	"ecdsa-nist-p384-generic",
 	"ecdsa-nist-p256-generic",
+	"ecdsa-nist-p521-generic",
 	"ecdh-nist-p384-generic",
 	"ecdh-nist-p256-generic",
 	"jitterentropy_rng",
@@ -635,14 +744,17 @@ static char *canister_algs[] = {
 	"ghash-generic",
 	"cts(cbc(aes-generic))",
 	"cts(cbc(aes-generic))",
+	"cts(cbc(ecb(aes-generic)))",
 	"cryptd(__cbc-aes-aesni)",
 	"cbc-aes-aesni",
 	"gcm_base(ctr(aes-generic),ghash-generic)",
 	"generic-gcm-aesni",
+	"generic-gcm-aesni-avx",
 	"__generic-gcm-aesni",
 	"cryptd(__generic-gcm-aesni)",
 	"rfc4106(gcm_base(ctr(aes-generic),ghash-generic))",
 	"rfc4106-gcm-aesni",
+	"rfc4106-gcm-aesni-avx",
 	"__rfc4106-gcm-aesni",
 	"cryptd(__rfc4106-gcm-aesni)",
 	// no certification require
@@ -762,7 +874,6 @@ EXPORT_SYMBOL(aes_decrypt);
 EXPORT_SYMBOL(sha1_transform);
 EXPORT_SYMBOL(sha1_init);
 EXPORT_SYMBOL(sha256_update);
-EXPORT_SYMBOL(sha224_update);
 EXPORT_SYMBOL(sha256_final);
 EXPORT_SYMBOL(sha224_final);
 EXPORT_SYMBOL(sha256);

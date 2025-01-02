@@ -105,19 +105,13 @@
 
 /* Short Rel Instructions */
 #define SREL_INSN_OPCODE				0xC000		/* 1100 0000 0000 0000 */
-#define SREL_INSN_TYPE_ADD_1				0x0		/* "0000" = Rel type 0, Addend 0 */
-#define SREL_INSN_TYPE_ADD_2				0x1		/* "0001" = Rel type 1, Addend -1 */
-#define SREL_INSN_TYPE_ADD_3				0x2		/* "0010" = Rel type 1, Addend -2 */
-#define SREL_INSN_TYPE_ADD_4				0x3		/* "0011" = Rel type 1, Addend -3 */
-#define SREL_INSN_TYPE_ADD_5				0x6		/* "0110" = Rel type 1, Addend -4 */
-#define SREL_INSN_TYPE_ADD_6				0x5		/* "0101" = Rel type 1, Addend -5 */
-#define SREL_INSN_TYPE_ADD_7				0x4		/* "0100" = Rel type 1, Addend 0 */
-#define SREL_INSN_TYPE_ADD_8				0x7		/* "0111" = Rel type 1, Addend 5 */
-#define SREL_INSN_TYPE_ADD_9				0xC		/* "1100" = Rel type 2, Addend 0 */
-#define SREL_INSN_TYPE_ADD_10				0xD		/* "1101" = Rel type 1, Addend 7 */
-#define SREL_INSN_TYPE_ADD_11				0xE		/* "1110" = Rel type 2, Addend 4 */
-#define SREL_INSN_TYPE_ADD_12				0xF		/* "1111" = Rel type 1, Addend 6 */
-
+#define SREL_INSN_TYPE_ADD_1				0x0		/* "0000" = Rel type 1, Addend -4 */
+#define SREL_INSN_TYPE_ADD_2				0x1		/* "0001" = Rel type 1, Addend -5 */
+#define SREL_INSN_TYPE_ADD_3				0x2		/* "0010" = Rel type 1, Addend 0 */
+#define SREL_INSN_TYPE_ADD_4				0x3		/* "0011" = Rel type 2, Addend 0 */
+#define SREL_INSN_TYPE_ADD_5				0x6		/* "0110" = Rel type 1, Addend 4 */
+#define SREL_INSN_TYPE_ADD_6				0x5		/* "0101" = Rel type 0, Addend 5 */
+#define SREL_INSN_TYPE_ADD_7				0x7		/* "0111" = Rel type 3, Addend 0 */
 
 /* Long Rel Instructions */
 #define LREL_INSN_OPCODE				0xE0000000	/* 1110 0000 0000 0000 0000 0000 0000 0000 */
@@ -291,11 +285,12 @@ static void process_section(Elf *elf, Elf_Scn *s, int sndx, struct symbol_entry 
 				 */
 				r_type = 1;
 				break;
+			case R_X86_64_32:
 			case R_X86_64_32S:
 				r_type = 2;
 				break;
 			default:
-				error("Unsupported relocation type");
+				error("Unsupported relocation type %d", rels[n].r_info & 0xffffffff);
 		}
 
 		/* First time we've seen this r_sym? look up needed. */
@@ -321,6 +316,10 @@ static void process_section(Elf *elf, Elf_Scn *s, int sndx, struct symbol_entry 
 				/* Get symbol name */
 				symbols[r_sym].name = strdup(elf_strptr(elf, strndx, symtab[r_sym].st_name));
 			}
+		}
+		/* For reloc type R_X86_64_32 with __kcfi_typeid symbols, change reloc type to 3 */
+		if (r_type == 2 && strstr(symbols[r_sym].name, "__kcfi_typeid_")) {
+			r_type = 3;
 		}
 		if (rels[n].r_addend > INT_MAX || rels[n].r_addend < INT_MIN)
 			error("r_addend overflow");
@@ -424,7 +423,8 @@ static void parse_sections(Elf *elf, size_t shstrndx, int *n_syms, size_t *strnd
 		    !strcmp(name, "__ex_table") ||
 		    !strcmp(name, "__jump_table") ||
 		    !strcmp(name, "__mcount_loc") ||
-		    !strcmp(name, ".note.gnu.property"))
+		    !strcmp(name, ".note.gnu.property") ||
+		    !strcmp(name, "__patchable_function_entries"))
 			continue;
 
 		/*
@@ -706,30 +706,20 @@ static void print_srel_insn(int nfd, unsigned short type, unsigned short symbol,
 	unsigned int srel;
 
 	srel = SREL_INSN_OPCODE | (symbol << 4);
-	if (type == 0 && addend == 0) {
+	if (type == 1 && addend == -4) {
 		srel = srel | SREL_INSN_TYPE_ADD_1;
-	} else if (type == 1 && addend == -1) {
-		srel = srel | SREL_INSN_TYPE_ADD_2;
-	} else if (type == 1 && addend == -2) {
-		srel = srel | SREL_INSN_TYPE_ADD_3;
-	} else if (type == 1 && addend == -3) {
-		srel = srel | SREL_INSN_TYPE_ADD_4;
-	} else if (type == 1 && addend == -4) {
-		srel = srel | SREL_INSN_TYPE_ADD_5;
 	} else if (type == 1 && addend == -5) {
-		srel = srel | SREL_INSN_TYPE_ADD_6;
+		srel = srel | SREL_INSN_TYPE_ADD_2;
 	} else if (type == 1 && addend == 0) {
-		srel = srel | SREL_INSN_TYPE_ADD_7;
-	} else if (type == 1 && addend == 5) {
-		srel = srel | SREL_INSN_TYPE_ADD_8;
+		srel = srel | SREL_INSN_TYPE_ADD_3;
 	} else if (type == 2 && addend == 0) {
-		srel = srel | SREL_INSN_TYPE_ADD_9;
-	} else if (type == 1 && addend == 7) {
-		srel = srel | SREL_INSN_TYPE_ADD_10;
-	} else if (type == 2 && addend == 4) {
-		srel = srel | SREL_INSN_TYPE_ADD_11;
-	} else if (type == 1 && addend == 6) {
-		srel = srel | SREL_INSN_TYPE_ADD_12;
+		srel = srel | SREL_INSN_TYPE_ADD_4;
+	} else if (type == 1 && addend == 4) {
+		srel = srel | SREL_INSN_TYPE_ADD_5;
+	} else if (type == 0 && addend == 5) {
+		srel = srel | SREL_INSN_TYPE_ADD_6;
+	} else if (type == 3 && addend == 0) {
+		srel = srel | SREL_INSN_TYPE_ADD_7;
 	} else {
 		error("Unknown rel type and addend combination!!! %d %d\n", type, addend);
 	}
