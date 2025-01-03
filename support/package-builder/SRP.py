@@ -141,7 +141,9 @@ class SRP(object):
         filename = os.path.basename(file)
         self.schematic["input_templates"]["source-comps"][
             f"uid.obj.comp.fileset(org='photon.source',name='{filename}',build_id='{checksum}')"
-        ] = {"incorporated": True, "is_components_source": True, "modified": False ,"usages": ["functionality", "building", "testing"]}
+        ] = {"incorporated": True, "is_components_source": True, "modified": False,
+             "interaction_type": "separate_work","usages": ["functionality", "building",
+                                                            "testing"]}
 
     def addInputRPMS(self, files):
         if not self.srpcli:
