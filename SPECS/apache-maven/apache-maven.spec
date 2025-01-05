@@ -4,7 +4,7 @@
 Summary:    Apache Maven
 Name:       apache-maven
 Version:    3.9.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        http://maven.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -80,6 +80,8 @@ rm -rf %{buildroot}
 %exclude %{maven_libdir}/jansi-native
 
 %changelog
+* Tue Jan 07 2025 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.9.0-5
+- Include additional inputs for SRP
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.9.0-4
 - Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.9.0-3

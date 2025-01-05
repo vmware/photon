@@ -11,6 +11,8 @@ from CommandUtils import CommandUtils
 from SpecData import SPECS
 from StringUtils import StringUtils
 
+GO_REMOTE_PREFIX="/artifactory/proxy-golang-remote/"
+MAVEN_REMOTE_PREFIX="/artifactory/maven/"
 
 class SRP(object):
 
@@ -42,7 +44,7 @@ class SRP(object):
                     "path": f"{constants.gitSourcePath}",
                 }
             },
-            "input_templates": {"rpm-comps": {}, "source-comps": {}},
+            "input_templates": {"rpm-comps": {}, "source-comps": {}, "maven-comps": {}, "go-comps": {}},
             "outputs": {},
         }
         # SPDX template for output RPMs.
@@ -143,6 +145,44 @@ class SRP(object):
         repo = f"https://packages-prod.broadcom.com/photon/{branch}/{reponame}_{branch}_{constants.targetArch}"
         return f"uid.obj.comp.package.rpm(name='{n}',version='{v}',release='{r}.{t}',arch='{a}',original_repository='{repo}')"
 
+    def goDepPathToUid(self, path):
+        # example:
+        # /artifactory/proxy-golang-remote/sigs.k8s.io/yaml/@v/v1.3.0.mod ->
+        # uid.obj.comp.package.go(name='sigs.k8s.io/yaml',version='v1.3.0')
+        path = path.removeprefix(GO_REMOTE_PREFIX)
+        name, version = path.split("@v")
+        name = name.removesuffix("/")
+        version = version.removeprefix("/")
+        version = version.removesuffix(".mod")
+        return f"uid.obj.comp.package.go(name='{name}',version='{version}')"
+
+    def mavenPathToUid(self, path):
+        # example:
+        # /artifactory/maven/org/apache/maven/doxia/doxia-sink-api/1.11.1/doxia-sink-api-1.11.1.jar ->
+        # uid.obj.comp.package.maven(name='org.apache.maven.doxia:doxia-sink-api',version='1.11.1')
+        path = path.removeprefix(MAVEN_REMOTE_PREFIX)
+        tokenstr, _ = os.path.split(path)
+        mod_str, version = os.path.split(tokenstr)
+        package_path, module_name = os.path.split(mod_str)
+        package_path = package_path.replace("/", ".")
+        name = f"{package_path}:{module_name}"
+        return f"uid.obj.comp.package.maven(name='{name}',version='{version}')"
+
+    def extractPathsFromObservations(self, observationFile) -> list[str]:
+        observations = json.load(observationFile)
+        additional_paths = []
+        items = observations["items"]
+        for item in items:
+            if item['typename'] != 'local_observation.https':
+                continue
+            groups = item['groups']
+            for group in groups:
+                if group['method'] != 'GET':
+                    continue
+                paths = group['paths']
+                additional_paths.extend(paths)
+        return additional_paths
+
     def addInputSource(self, file, checksum):
         if not self.srpcli:
             return
@@ -167,6 +207,22 @@ class SRP(object):
                      "modified": False, "interaction_type": "dev_tools/excluded"}
             except Exception as e:
                 self.logger.exception(e)
+
+    def addAdditionalDeps(self, observationsFile):
+        if not self.srpcli:
+            return
+        try:
+            with open(observationsFile) as observationsfp:
+                additional_paths = self.extractPathsFromObservations(observationsfp)
+                for path in additional_paths:
+                    if path.startswith(GO_REMOTE_PREFIX) and path.endswith(".mod"):
+                        self.schematic["input_templates"]["go-comps"][self.goDepPathToUid(path)] = {
+                            "incorporated": True, "usages": ["functionality", "building"], "modified": False, "interaction_type": "static_linking"}
+                    elif path.startswith(MAVEN_REMOTE_PREFIX) and path.endswith(".jar"):
+                        self.schematic["input_templates"]["maven-comps"][self.mavenPathToUid(path)] = {
+                            "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
+        except Exception as e:
+            self.logger.exception(e)
 
     def addOutputRPMS(self, files):
         if not self.srpcli:
@@ -193,7 +249,7 @@ class SRP(object):
             spdx_info["package"]["detailed_description"] = description
 
             self.schematic["outputs"][self.rpmFileNameToUid(filename)] = {
-                "merge_input_templates": ["rpm-comps", "source-comps"],
+                "merge_input_templates": ["rpm-comps", "source-comps", "maven-comps", "go-comps"],
                 "spdx_info": spdx_info,
                 "inputs": {
                     "$(sources:source_uid)": {
@@ -237,6 +293,7 @@ class SRP(object):
         with tempfile.NamedTemporaryFile() as temp:
             shutil.copyfileobj(observation, temp)
             temp.flush()
+            self.addAdditionalDeps(temp.name)
             self.srpcli_run(
                 [
                     "provenance",
