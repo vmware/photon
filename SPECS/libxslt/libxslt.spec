@@ -1,14 +1,14 @@
 Summary:        Libxslt
 Name:           libxslt
-Version:        1.1.37
-Release:        6%{?dist}
+Version:        1.1.39
+Release:        1%{?dist}
 URL:            http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4e7a57cbe02ceea34404213a88bdbb63a756edfab63063ce3979b670816ae3f6fb3637a49508204e6e46b936628e0a3b8b77e9201530a1184225bd68da403b25
+Source0: https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.xz
+%define sha512 %{name}=c0c99dc63f8b2acb6cc3ad7ad684ffa2a427ee8d1740495cbf8a7c9b9c8679f96351b4b676c73ccc191014db4cb4ab42b9a0070f6295565f39dbc665c5c16f89
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -82,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Mon Jan 06 2025 Harinadh D <harinadh.dommaraju@broadcom.com> 1.1.39-1
+- Version upgrade
 * Wed Dec 18 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 1.1.37-6
 - url correction
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.1.37-5
