@@ -1,4 +1,4 @@
-From 614047c99d7a22a58fdb2ac5b2522eb36bccfe40 Mon Sep 17 00:00:00 2001
+From 3bb85ded5fab051ea0e8a6632b5f5d9c2f1fa68d Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 19 May 2020 11:04:52 -0700
 Subject: [PATCH] initramfs: support for page aligned format "newca"
@@ -70,7 +70,7 @@ Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
  1 file changed, 185 insertions(+), 10 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 2f5bfb7d7..5fa32eee1 100644
+index 3eab7fccb..fd6250259 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
 @@ -17,6 +17,79 @@
@@ -244,15 +244,15 @@ index 2f5bfb7d7..5fa32eee1 100644
  static __initdata struct file *wfile;
  static __initdata loff_t wfile_pos;
  
-@@ -365,6 +479,7 @@ static int __init do_name(void)
- 	state = SkipIt;
- 	next_state = Reset;
+@@ -374,6 +488,7 @@ static int __init do_name(void)
+ 	}
+ 
  	if (strcmp(collected, "TRAILER!!!") == 0) {
 +		end_of_image = true;
  		free_hash();
  		return 0;
  	}
-@@ -373,8 +488,13 @@ static int __init do_name(void)
+@@ -382,8 +497,13 @@ static int __init do_name(void)
  		int ml = maybe_link();
  		if (ml >= 0) {
  			int openflags = O_WRONLY|O_CREAT;
@@ -267,7 +267,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  			wfile = filp_open(collected, openflags, mode);
  			if (IS_ERR(wfile))
  				return 0;
-@@ -406,6 +526,10 @@ static int __init do_name(void)
+@@ -415,6 +535,10 @@ static int __init do_name(void)
  
  static int __init do_copy(void)
  {
@@ -278,7 +278,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  	if (byte_count >= body_len) {
  		if (xwrite(wfile, victim, body_len, &wfile_pos) != body_len)
  			error("write error");
-@@ -492,6 +616,8 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -507,6 +631,8 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	decompress_fn decompress;
  	const char *compress_name;
  	static __initdata char msg_buf[64];
@@ -287,7 +287,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  
  	header_buf = kmalloc(110, GFP_KERNEL);
  	symlink_buf = kmalloc(PATH_MAX + N_ALIGN(PATH_MAX) + 1, GFP_KERNEL);
-@@ -504,19 +630,20 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -519,19 +645,20 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	this_header = 0;
  	message = NULL;
  	while (!message && len) {
@@ -310,7 +310,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  		}
  		this_header = 0;
  		decompress = decompress_method(buf, len, &compress_name);
-@@ -540,6 +667,46 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -555,6 +682,46 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  		this_header = saved_offset + my_inptr;
  		buf += my_inptr;
  		len -= my_inptr;
@@ -357,7 +357,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  	}
  	dir_utime();
  	kfree(name_buf);
-@@ -548,8 +715,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+@@ -563,8 +730,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	return message;
  }
  
@@ -366,7 +366,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  static int __init retain_initrd_param(char *str)
  {
  	if (*str)
-@@ -578,7 +743,6 @@ __setup("initramfs_async=", initramfs_async_setup);
+@@ -593,7 +758,6 @@ __setup("initramfs_async=", initramfs_async_setup);
  
  extern char __initramfs_start[];
  extern unsigned long __initramfs_size;
@@ -374,7 +374,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  #include <linux/kexec.h>
  
  void __init reserve_initrd_mem(void)
-@@ -713,6 +877,8 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
+@@ -728,6 +892,8 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
  #ifdef CONFIG_BLK_DEV_RAM
  		populate_initrd_image(err);
  #else
@@ -383,7 +383,7 @@ index 2f5bfb7d7..5fa32eee1 100644
  		printk(KERN_EMERG "Initramfs unpacking failed: %s\n", err);
  #endif
  	}
-@@ -722,8 +888,17 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
+@@ -737,8 +903,17 @@ static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
  	 * If the initrd region is overlapped with crashkernel reserved region,
  	 * free only memory that is not part of crashkernel region.
  	 */
@@ -404,5 +404,5 @@ index 2f5bfb7d7..5fa32eee1 100644
  	initrd_end = 0;
  
 -- 
-2.34.1
+2.39.4
 

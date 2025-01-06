@@ -43,8 +43,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.118
-Release:        13%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.124
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -54,7 +54,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=f2c6f9735e551099538eae410212c10244eac765a5769d7ec4d6b8727137dad09b295a002bdd95afa3da92090374239a502ddfda09feff76c93ff69a0c7bb5ff
+%define sha512 linux=0adeebd2f6d90aee2e04783d8b7c674a755b0eec4a762a3722399f23066f53818315657b531a316bef8f1f4f60e1a1aff1fb6d7464a3bbd9ceed07a64095aea6
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -190,9 +190,6 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 #VMCI/VSOCK
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
-# UDF directory traversal regression fix
-Patch32: 0001-udf-Fix-directory-iteration-for-longer-tail-extents.patch
-
 %ifarch x86_64
 # VMW: [50..59]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -223,9 +220,6 @@ Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2023-52452
 Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
-# Fix CVE-2024-42322
-Patch133: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
-
 # Fix CVE-2024-50047
 Patch134: 0001-smb-client-fix-UAF-in-async-decryption.patch
 
@@ -235,14 +229,8 @@ Patch135: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
 # Fix CVE-2024-24855
 Patch137: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
 
-# Fix CVE-2024-46809
-Patch138: 0001-drm-amd-display-Check-BIOS-images-before-it-is-used.patch
-
 # Fix CVE-2024-46811
 Patch139: 0001-drm-amd-display-Fix-index-may-exceed-array-range-wit.patch
-
-# Fix CVE-2024-46841
-Patch140: 0001-btrfs-don-t-BUG_ON-on-ENOMEM-from-btrfs_lookuip_exte.patch
 
 # Fix CVE-2024-46834
 Patch141: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
@@ -254,15 +242,9 @@ Patch143: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
 # Fix CVE-2024-41013
 Patch144: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
 
-# Fix CVE-2024-41014
-Patch145: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
-
 # Fix CVE-2024-46816
 Patch146: 0001-drm-amd-display-handle-invalid-connector-indices.patch
 Patch147: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
-
-# Fix CVE-2024-50055
-Patch148: 0001-driver-core-bus-Fix-double-free-in-driver-API-bus_re.patch
 
 # Fix CVE-2024-50014
 Patch149: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -343,25 +325,30 @@ Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: 0001-LKCM-5.0-binary-patching-to-fix-struct-aesni_cpu_id-.patch
 Patch511: 0001-canister-Change-spinlock_t-lock-to-void-reserved.patch
+# commit e470d42 (crypto: api - Add crypto_tfm_get) introduced an api
+# which adds a new member in struct crypto_tfm, causing build issues
+# with fips canister, since, crypto_tfm_get() api is not being used
+# in v6.1.x so reverting upstream commit.
+Patch512: 0001-Revert-crypto-api-Add-crypto_tfm_get.patch
 %endif
 
 %if 0%{?acvp_build:1}
 #ACVP test harness patches.
 #Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
-Patch512: 0001-crypto-AF_ALG-add-sign-verify-API.patch
-Patch513: 0002-crypto-AF_ALG-add-setpubkey-setsockopt-call.patch
-Patch514: 0003-crypto-AF_ALG-add-asymmetric-cipher.patch
-Patch515: 0004-crypto-AF_ALG-add-DH-keygen-ssgen-API.patch
-Patch516: 0005-crypto-AF_ALG-add-DH-param-ECDH-curve-setsockopt.patch
-Patch517: 0006-crypto-AF_ALG-eliminate-code-duplication.patch
-Patch518: 0007-crypto-AF_ALG-add-KPP-support.patch
-Patch519: 0008-crypto-AF_ALG-add-ECC-support.patch
-Patch520: 0009-kernels-net-Export-sock_getsockopt.patch
-Patch521: 0010-DRBG-Fix-issues-with-DRBG.patch
-Patch522: 0011-Added-jitterentropy-implementation-of-SHA3-256.patch
-Patch523: 0012-jitterentropy-Support-for-sample-collection.patch
+Patch513: 0001-crypto-AF_ALG-add-sign-verify-API.patch
+Patch514: 0002-crypto-AF_ALG-add-setpubkey-setsockopt-call.patch
+Patch515: 0003-crypto-AF_ALG-add-asymmetric-cipher.patch
+Patch516: 0004-crypto-AF_ALG-add-DH-keygen-ssgen-API.patch
+Patch517: 0005-crypto-AF_ALG-add-DH-param-ECDH-curve-setsockopt.patch
+Patch518: 0006-crypto-AF_ALG-eliminate-code-duplication.patch
+Patch519: 0007-crypto-AF_ALG-add-KPP-support.patch
+Patch520: 0008-crypto-AF_ALG-add-ECC-support.patch
+Patch521: 0009-kernels-net-Export-sock_getsockopt.patch
+Patch522: 0010-DRBG-Fix-issues-with-DRBG.patch
+Patch523: 0011-Added-jitterentropy-implementation-of-SHA3-256.patch
+Patch524: 0012-jitterentropy-Support-for-sample-collection.patch
 %if 0%{?kat_build:1}
-Patch524: 0013-crypto-api-return-status-prints-for-LKCM5-demo.patch
+Patch525: 0013-crypto-api-return-status-prints-for-LKCM5-demo.patch
 %endif
 %endif
 
@@ -374,8 +361,6 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 
 # SEV-SNP:
 Patch605: 0001-sev-snp-parse-MP-tables.patch
-Patch606: 0001-drm-ttm-Make-sure-the-mapped-tt-pages-are-decrypted-.patch
-Patch607: 0002-drm-ttm-Print-the-memory-decryption-status-just-once.patch
 %endif
 
 #HCX-Patches
@@ -604,15 +589,15 @@ The kernel fips-canister
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M511
+%autopatch -p1 -m508 -M512
 %endif
 
 %if 0%{?acvp_build:1}
 #ACVP test harness patches.
 #Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
-%autopatch -p1 -m512 -M523
+%autopatch -p1 -m513 -M524
 %if 0%{?kat_build:1}
-%autopatch -p1 -m524 -M524
+%autopatch -p1 -m525 -M525
 %endif
 %endif
 
@@ -979,6 +964,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.124-1
+- Update to version 6.1.124
 * Mon Jan 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.118-13
 - Sign PE image inplace with SRP signer
 * Mon Dec 30 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-12

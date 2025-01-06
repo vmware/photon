@@ -1,4 +1,4 @@
-From a887c6c18d54ec736b9f3c9bb3391e7f830a3295 Mon Sep 17 00:00:00 2001
+From 7f2ad47fae262a8f59ed74a8da8702c557abb7c2 Mon Sep 17 00:00:00 2001
 From: Jonathan Shao <sjonathan@vmware.com>
 Date: Tue, 14 Jun 2022 15:28:25 -0700
 Subject: [PATCH 14/16] iptunnel mark xfrm multi parts
@@ -148,10 +148,10 @@ index 0ccfd5fa5..b82d8145e 100644
  void dst_cache_set_ip6(struct dst_cache *dst_cache, struct dst_entry *dst,
  		       const struct in6_addr *saddr)
 diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
-index 390472c41..4c064665a 100644
+index 09eaa28f0..6b2444ef3 100644
 --- a/net/ipv4/ip_tunnel.c
 +++ b/net/ipv4/ip_tunnel.c
-@@ -57,9 +57,11 @@
+@@ -58,9 +58,11 @@
  struct ctl_table_header *ipip_sysctl_header = NULL;
  int ipip_tunnel_skip_encap_decap __read_mostly = 0;
  int fou_key_multi_port __read_mostly = 0;
@@ -163,7 +163,7 @@ index 390472c41..4c064665a 100644
  
  struct ctl_table ipip_sysctl_table[] = {
  	{
-@@ -76,6 +78,14 @@ struct ctl_table ipip_sysctl_table[] = {
+@@ -77,6 +79,14 @@ struct ctl_table ipip_sysctl_table[] = {
  		.mode           = 0644,
  		.proc_handler   = proc_dointvec,
  	},
@@ -178,7 +178,7 @@ index 390472c41..4c064665a 100644
  	{}
  };
  EXPORT_SYMBOL_GPL(ipip_sysctl_table);
-@@ -94,6 +104,7 @@ EXPORT_SYMBOL_GPL(ipip_sysctl_init);
+@@ -95,6 +105,7 @@ EXPORT_SYMBOL_GPL(ipip_sysctl_init);
  #else
  #define ipip_tunnel_skip_encap_decap 0
  #define fou_key_multi_port 0
@@ -186,29 +186,29 @@ index 390472c41..4c064665a 100644
  #endif
  
  static unsigned int ip_tunnel_hash(__be32 key, __be32 remote)
-@@ -782,10 +793,17 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+@@ -827,10 +838,17 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
  		}
  	}
  
 -	ip_tunnel_init_flow(&fl4, protocol, dst, tnl_params->saddr,
--			    tunnel->parms.o_key, RT_TOS(tos),
--			    dev_net(dev), tunnel->parms.link,
+-			    tunnel->parms.o_key, tos & INET_DSCP_MASK,
+-			    tunnel->net, READ_ONCE(tunnel->parms.link),
 -			    tunnel->fwmark, skb_get_hash(skb), 0);
 +	if(ipip_dst_cache_use_mark) {
 +		ip_tunnel_init_flow(&fl4, protocol, dst, tnl_params->saddr,
-+			    	tunnel->parms.o_key, RT_TOS(tos),
-+			    	dev_net(dev), tunnel->parms.link,
-+			    	skb->mark, skb_get_hash(skb), 0);
++				tunnel->parms.o_key, tos & INET_DSCP_MASK,
++				tunnel->net, READ_ONCE(tunnel->parms.link),
++				skb->mark, skb_get_hash(skb), 0);
 +	} else {
 +		ip_tunnel_init_flow(&fl4, protocol, dst, tnl_params->saddr,
-+			    	tunnel->parms.o_key, RT_TOS(tos),
-+			    	dev_net(dev), tunnel->parms.link,
-+			    	tunnel->fwmark, skb_get_hash(skb), 0);		
-+	} 
++				tunnel->parms.o_key, tos & INET_DSCP_MASK,
++				tunnel->net, READ_ONCE(tunnel->parms.link),
++				tunnel->fwmark, skb_get_hash(skb), 0);
++	}
  
- 	if (ip_tunnel_encap(skb, tunnel, &protocol, &fl4) < 0)
+ 	if (ip_tunnel_encap(skb, &tunnel->encap, &protocol, &fl4) < 0)
  		goto tx_error;
-@@ -796,8 +814,14 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+@@ -841,8 +859,14 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
  			rt = dst_cache_get_ip4(&tun_info->dst_cache,
  					       &fl4.saddr);
  	} else {
@@ -225,7 +225,7 @@ index 390472c41..4c064665a 100644
  	}
  
  	if (!rt) {
-@@ -810,9 +834,15 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+@@ -855,9 +879,15 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
  		if (use_cache)
  			dst_cache_set_ip4(&tun_info->dst_cache, &rt->dst,
  					  fl4.saddr);
@@ -244,4 +244,5 @@ index 390472c41..4c064665a 100644
  
  	if (rt->dst.dev == dev) {
 -- 
-2.39.0
+2.39.4
+

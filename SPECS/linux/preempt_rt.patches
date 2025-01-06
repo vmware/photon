@@ -62,4 +62,10 @@ Patch359: 0059-bpf-Remove-in_atomic-from-bpf_link_put.patch
 Patch360: 0060-drm-i915-Do-not-disable-preemption-for-resets.patch
 Patch361: 0061-Linux-6.1.79-rt25-REBASE.patch
 Patch362: 0062-arm-Disable-FAST_GUP-on-PREEMPT_RT-if-HIGHPTE-is-als.patch
-Patch363: 0063-Linux-6.1.112-rt43-REBASE.patch
+Patch363: 0063-Linux-6.1.114-rt44-REBASE.patch
+Patch364: 0064-sign-file-extract-cert-move-common-SSL-helper-functi.patch
+Patch365: 0065-sign-file-extract-cert-avoid-using-deprecated-ERR_ge.patch
+Patch366: 0066-sign-file-extract-cert-use-pkcs11-provider-for-OPENS.patch
+Patch367: 0067-Linux-6.1.120-rt46-REBASE.patch
+Patch368: 0068-net-fix-mis-merge-from-stable-in-drivers-net-vrf.c.patch
+Patch369: 0069-Linux-6.1.120-rt47-REBASE.patch

@@ -20,20 +20,20 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.118
-Release:        7%{?dist}
+Version:        6.1.124
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt43
+%define rt_version rt47
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=f2c6f9735e551099538eae410212c10244eac765a5769d7ec4d6b8727137dad09b295a002bdd95afa3da92090374239a502ddfda09feff76c93ff69a0c7bb5ff
+%define sha512 linux=0adeebd2f6d90aee2e04783d8b7c674a755b0eec4a762a3722399f23066f53818315657b531a316bef8f1f4f60e1a1aff1fb6d7464a3bbd9ceed07a64095aea6
 
 %ifarch x86_64
 Source1: config-rt
@@ -141,9 +141,6 @@ Patch23: 6.0-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
 #VMCI/VSOCK
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
-# UDF directory traversal regression fix
-Patch32: 0001-udf-Fix-directory-iteration-for-longer-tail-extents.patch
-
 # VMW: [55..60]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
@@ -172,9 +169,6 @@ Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 # Fix CVE-2023-52452
 Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
-# Fix CVE-2024-42322
-Patch133: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
-
 # Fix CVE-2024-50047
 Patch134: 0001-smb-client-fix-UAF-in-async-decryption.patch
 
@@ -184,14 +178,8 @@ Patch135: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
 # Fix CVE-2024-24855
 Patch137: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
 
-# Fix CVE-2024-46809
-Patch138: 0001-drm-amd-display-Check-BIOS-images-before-it-is-used.patch
-
 # Fix CVE-2024-46811
 Patch139: 0001-drm-amd-display-Fix-index-may-exceed-array-range-wit.patch
-
-# Fix CVE-2024-46841
-Patch140: 0001-btrfs-don-t-BUG_ON-on-ENOMEM-from-btrfs_lookuip_exte.patch
 
 # Fix CVE-2024-46834
 Patch141: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
@@ -203,15 +191,9 @@ Patch143: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
 # Fix CVE-2024-41013
 Patch144: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
 
-# Fix CVE-2024-41014
-Patch145: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
-
 # Fix CVE-2024-46816
 Patch146: 0001-drm-amd-display-handle-invalid-connector-indices.patch
 Patch147: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
-
-# Fix CVE-2024-50055
-Patch148: 0001-driver-core-bus-Fix-double-free-in-driver-API-bus_re.patch
 
 # Fix CVE-2024-50014
 Patch149: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -265,6 +247,11 @@ Patch1008: 0001-FIPS-canister-binary-usage.patch
 Patch1009: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch1010: 0001-LKCM-5.0-binary-patching-to-fix-struct-aesni_cpu_id-.patch
 Patch1011: 0001-canister-Change-spinlock_t-lock-to-void-reserved.patch
+# commit e470d42 (crypto: api - Add crypto_tfm_get) introduced an api
+# which adds a new member in struct crypto_tfm, causing build issues
+# with fips canister, since, crypto_tfm_get() api is not being used
+# in v6.1.x so reverting upstream commit.
+Patch1012: 0001-Revert-crypto-api-Add-crypto_tfm_get.patch
 %endif
 
 # stalld eBPF plugin patches
@@ -377,7 +364,7 @@ stalld to use eBPF based backend.
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m1008 -M1011
+%autopatch -p1 -m1008 -M1012
 %endif
 
 pushd ../stalld-v%{stalld_version}/
@@ -569,6 +556,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.124-1
+- Update to version 6.1.124
 * Mon Jan 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.118-7
 - Sign PE image inplace with SRP signer
 * Mon Dec 30 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-6

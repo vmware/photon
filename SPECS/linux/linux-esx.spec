@@ -27,8 +27,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.118
-Release:        11%{?dist}
+Version:        6.1.124
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -38,7 +38,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=f2c6f9735e551099538eae410212c10244eac765a5769d7ec4d6b8727137dad09b295a002bdd95afa3da92090374239a502ddfda09feff76c93ff69a0c7bb5ff
+%define sha512 linux=0adeebd2f6d90aee2e04783d8b7c674a755b0eec4a762a3722399f23066f53818315657b531a316bef8f1f4f60e1a1aff1fb6d7464a3bbd9ceed07a64095aea6
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -142,9 +142,6 @@ Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
 
-# UDF directory traversal regression fix
-Patch32: 0001-udf-Fix-directory-iteration-for-longer-tail-extents.patch
-
 %ifarch x86_64
 # VMW: [50..59]
 Patch50: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -211,17 +208,8 @@ Patch132: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
 # Fix CVE-2023-52452
 Patch133: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
-# Fix CVE-2024-42322
-Patch134: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
-
-# Fix CVE-2024-46809
-Patch135: 0001-drm-amd-display-Check-BIOS-images-before-it-is-used.patch
-
 # Fix CVE-2024-46811
 Patch136: 0001-drm-amd-display-Fix-index-may-exceed-array-range-wit.patch
-
-# Fix CVE-2024-46841
-Patch137: 0001-btrfs-don-t-BUG_ON-on-ENOMEM-from-btrfs_lookuip_exte.patch
 
 # Fix CVE-2024-46834
 Patch138: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
@@ -233,15 +221,9 @@ Patch140: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
 # Fix CVE-2024-41013
 Patch141: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
 
-# Fix CVE-2024-41014
-Patch142: 0002-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
-
 # Fix CVE-2024-46816
 Patch143: 0001-drm-amd-display-handle-invalid-connector-indices.patch
 Patch144: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
-
-# Fix CVE-2024-50055
-Patch145: 0001-driver-core-bus-Fix-double-free-in-driver-API-bus_re.patch
 
 # Fix CVE-2024-50014
 Patch146: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -297,6 +279,11 @@ Patch509: 0001-FIPS-canister-binary-usage.patch
 Patch510: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch511: 0001-LKCM-5.0-binary-patching-to-fix-struct-aesni_cpu_id-.patch
 Patch512: 0001-canister-Change-spinlock_t-lock-to-void-reserved.patch
+# commit e470d42 (crypto: api - Add crypto_tfm_get) introduced an api
+# which adds a new member in struct crypto_tfm, causing build issues
+# with fips canister, since, crypto_tfm_get() api is not being used
+# in v6.1.x so reverting upstream commit.
+Patch513: 0001-Revert-crypto-api-Add-crypto_tfm_get.patch
 %endif
 
 %ifarch x86_64
@@ -308,8 +295,6 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 
 # SEV-SNP:
 Patch605: 0001-sev-snp-parse-MP-tables.patch
-Patch606: 0001-drm-ttm-Make-sure-the-mapped-tt-pages-are-decrypted-.patch
-Patch607: 0002-drm-ttm-Print-the-memory-decryption-status-just-once.patch
 %endif
 
 BuildRequires: bc
@@ -418,7 +403,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m509 -M512
+%autopatch -p1 -m509 -M513
 %endif
 
 %ifarch x86_64
@@ -579,6 +564,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.124-1
+- Update to version 6.1.124
 * Mon Jan 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.118-11
 - Sign PE image inplace with SRP signer
 * Mon Jan 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-10
