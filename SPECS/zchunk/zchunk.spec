@@ -1,7 +1,7 @@
 Summary:        Compressed file format
 Name:           zchunk
 Version:        1.1.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-2-Clause AND MIT
 URL:            https://github.com/zchunk/zchunk
 Group:          Applications/System
@@ -86,6 +86,8 @@ DESTDIR=%{buildroot}/ ninja install
 %{_mandir}/man1/*.gz
 
 %changelog
+*   Tue Jan 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.1.7-4
+-   Release bump for SRP
 *   Tue Oct 31 2023 Ankit Jain <ankitja@vmware.com> 1.1.7-3
 -   Fix for CVE-2023-46228
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.7-2

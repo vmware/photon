@@ -1,7 +1,7 @@
 Name:            drpm
 Summary:         A library for making, reading and applying deltarpm packages
 Version:         0.5.0
-Release:         6%{?dist}
+Release:         7%{?dist}
 License:         LGPLv2+ and BSD
 URL:             https://github.com/rpm-software-management/%{name}
 Vendor:          VMware, Inc.
@@ -72,6 +72,8 @@ cd %{__cmake_builddir}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Jan 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.5.0-7
+- Release bump for SRP
 * Tue Aug 16 2022 Harinadh D <hdommaraju@vmware.com> 0.5.0-6
 - Version bump to use latest zstd
 * Mon Aug 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.5.0-5

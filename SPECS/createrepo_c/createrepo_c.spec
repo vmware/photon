@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.16.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -95,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Jan 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.16.0-10
+- Release bump for SRP
 * Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 0.16.0-9
 - Bump version as a part of expat upgrade & Fix devel package requires
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.16.0-8

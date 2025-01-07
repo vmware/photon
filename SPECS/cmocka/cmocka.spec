@@ -1,7 +1,7 @@
 Summary:       unit testing framework for C
 Name:          cmocka
 Version:       1.1.5
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Tue Jan 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.1.5-4
+- Release bump for SRP
 * Mon Aug 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.5-3
 - Add devel sub package
 * Thu Jun 25 2020 Ajay Kaher <akaher@vmware.com> 1.1.5-2
