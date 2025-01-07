@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.11.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/rpm-software-management/createrepo_c
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=89040f2c34200ae08876a645b4a160beb03a9298
+%define sha512  %{name}=b07b656a625c4637f521b6bcff1d4eb22df930b9033824dd7ccbd6e7eea66aa4df4c52cc84bc32391d20013bb3c06c02afcb8801c676af5ad860992197681e7a
 
 BuildRequires:  cmake
 BuildRequires:  curl-devel
@@ -22,10 +22,6 @@ BuildRequires:  rpm-devel
 BuildRequires:  xz-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  python3-devel
-
-%if %{with_check}
-Requires:       libxml2
-%endif
 
 Obsoletes:      createrepo
 Provides:       createrepo
@@ -80,6 +76,8 @@ ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Tue Jan 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.11.1-6
+-   Release bump for SRP
 *   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 0.11.1-5
 -   Version Bump to build with new version of cmake
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 0.11.1-4
