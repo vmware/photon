@@ -1,7 +1,7 @@
 Summary:        GUI library.
 Name:           gtk3
 Version:        3.23.3
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            http://www.gtk.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -9,6 +9,7 @@ Distribution:   Photon
 
 Source0: http://ftp.gnome.org/pub/gnome/sources/gtk/3.23/gtk+-%{version}.tar.xz
 %define sha512 gtk+-3=c4d519735d0292e1e503e2dfdf764f9a5b039a77d055ba4d8b98e9acd0451a2f9f4b92ec4051722f234e652f895a2712a5e56d1387a52ea583c4bf6ef346403c
+Patch0:         CVE-2024-6655.patch
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -162,6 +163,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/gtk-3.0/
 
 %changelog
+* Tue Jan 07 2025 Oliver Kurth <oliver.kurth@@broadcom.com> 3.23.3-12
+- add patch for CVE-2024-6655
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.23.3-11
 - Bump version as part of cups upgrade
 * Thu Dec 12 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.23.3-10
