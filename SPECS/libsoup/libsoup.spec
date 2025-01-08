@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         3.2.1
-Release:         16%{?dist}
+Release:         17%{?dist}
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
@@ -12,6 +12,12 @@ Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/3.2/%{name}-%{version}.t
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0:        CVE-2024-52530.patch
+Patch1:        CVE-2024-52531-1.patch
+Patch2:        CVE-2024-52531-2.patch
+Patch3:        CVE-2024-52532-1.patch
+Patch4:        CVE-2024-52532-2.patch
 
 BuildRequires: glib-devel
 BuildRequires: libxml2-devel
@@ -97,6 +103,8 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
+* Wed Jan 08 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.1-17
+- Fix CVE-2024-52530, CVE-2024-52531, CVE-2024-52532
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.1-16
 - Release bump for SRP compliance
 * Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.2.1-15
