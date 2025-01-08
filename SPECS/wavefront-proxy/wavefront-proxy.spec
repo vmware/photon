@@ -2,7 +2,7 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
 Version:          13.4
-Release:          2%{?dist}
+Release:          3%{?dist}
 URL:              https://github.com/wavefrontHQ/java
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -126,6 +126,8 @@ rm -rf %{buildroot}/*
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.4-3
+- Release bump for network_required packages
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 13.4-2
 - Release bump for SRP compliance
 * Fri Nov 10 2023 Prashant S Chauhan <psinghchauha@vmware.com> 13.4-1

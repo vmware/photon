@@ -14,7 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        27.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -328,6 +328,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 27.3.1-3
+- Release bump for network_required packages
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 27.3.1-2
 - Release bump for SRP compliance
 * Mon Nov 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 27.3.1-1

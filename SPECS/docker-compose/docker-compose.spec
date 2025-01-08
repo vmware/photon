@@ -4,7 +4,7 @@
 
 Name:           docker-compose
 Version:        2.20.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
 Vendor:         VMware, Inc.
@@ -58,6 +58,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.20.2-11
+- Release bump for network_required packages
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.20.2-10
 - Release bump for SRP compliance
 * Fri Oct 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.20.2-9

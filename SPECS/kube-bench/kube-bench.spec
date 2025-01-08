@@ -2,7 +2,7 @@
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
 Version:        0.6.12
-Release:        12%{?dist}
+Release:        13%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/aquasecurity/%{name}
@@ -44,6 +44,8 @@ make tests %{?_smp_mflags}
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.6.12-13
+- Release bump for network_required packages
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.6.12-12
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.6.12-11

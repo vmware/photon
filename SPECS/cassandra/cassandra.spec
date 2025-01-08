@@ -5,7 +5,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.10
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://cassandra.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -135,6 +135,8 @@ source %{_sysconfdir}/profile.d/%{name}.sh
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
+* Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.10-7
+- Release bump for network_required packages
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 4.0.10-6
 - Release bump for SRP compliance
 * Wed Jul 24 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.10-5

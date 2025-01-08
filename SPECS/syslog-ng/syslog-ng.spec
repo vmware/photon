@@ -2,7 +2,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -216,6 +216,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.3.1-8
+- Release bump for network_required packages
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.3.1-7
 - Release bump for SRP compliance
 * Fri Aug 09 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.1-6

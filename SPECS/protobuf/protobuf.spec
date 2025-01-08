@@ -4,7 +4,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.23.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -154,6 +154,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.23.3-3
+- Release bump for network_required packages
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.23.3-2
 - Release bump for SRP compliance
 * Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.23.3-1
