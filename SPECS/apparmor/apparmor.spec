@@ -1,8 +1,7 @@
 Name:           apparmor
 Version:        3.1.2
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
-License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,6 +9,9 @@ Group:          Productivity/Security
 
 Source0: https://launchpad.net/%{name}/3.1/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha512 %{name}=e4fa8e0985472c00d3b68044f4150659787cf15b384b901af32b5aba3f0b2839f33bfe0b0675bf8ea7a1f5727152756a276c75b1dec383a33b92b0a1b8615a11
+
+Source1: license.txt
+%include %{SOURCE1}
 
 Patch0: 0001-apparmor-profile-fix-for-sbin.syslog-ng.patch
 
@@ -337,6 +339,8 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Wed jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-15
+- Release bump for SRP compliance
 * Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 3.1.2-14
 - Bump version as a part of apr upgrade
 * Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.1.2-13

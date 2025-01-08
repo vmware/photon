@@ -7,8 +7,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.36.2
-Release:        9%{?kernelsubrelease}%{?dist}
-License:        GPLv2
+Release:        10%{?kernelsubrelease}%{?dist}
 URL:            https://falco.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -22,6 +21,9 @@ Source1: %{name}-%{version}-dependencies.tar.gz
 
 #https://raw.githubusercontent.com/troydhanson/uthash/v1.9.8/src/uthash.h
 Source2: uthash.h
+
+Source3: license.txt
+%include %{SOURCE3}
 
 Patch0: build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 Patch1: 0001-build-plugins-locally.patch
@@ -131,6 +133,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-10
+- Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-9
 - Bump version as a part of go upgrade
 * Wed Sep 04 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-8
