@@ -339,7 +339,7 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
-* Wed jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-15
+* Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-15
 - Release bump for SRP compliance
 * Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 3.1.2-14
 - Bump version as a part of apr upgrade
