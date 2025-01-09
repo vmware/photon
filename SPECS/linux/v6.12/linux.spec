@@ -10,7 +10,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 0
+%global fips 1
 %endif
 
 %if 0%{?canister_build}
@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -59,11 +59,13 @@ Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
 
 %if 0%{?fips}
-Source9:        check_fips_canister_struct_compatibility.inc
+%define struct_comparator struct-comparator
+%define struct_comp_dir struct-comp-dir
+Source9:        struct-comparator.c
 
-%define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
+%define fips_canister_version 6.0.0-6.12.1-4%{?dist}
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
+%define sha512 fips-canister=0eb41b9511252616d2ae6de9773389197306a37b8024fc943521f9a97182ae090d3784a1c766ec955cb6615f0655f06ba40e6c26762ff99dbb7fc31b1876414b
 %endif
 
 Source18:       spec_install_post.inc
@@ -112,6 +114,16 @@ Source47: canister_combine.lds
 Source48: gen_canister_relocs.c
 Source49: check_kernel_struct_in_canister.inc
 %endif
+%endif
+
+%if 0%{?fips}
+# known vmlinux struct definitions
+%define vmlinux_definition_loc canister_known_struct_def_vmlinux
+Source75: crypto_alg.txt
+Source76: crypto_template.txt
+Source77: skcipher_walk.txt
+Source78: swait_queue_head.txt
+Source79: aead_geniv_ctx.txt
 %endif
 
 # common [0..49]
@@ -243,7 +255,7 @@ Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
-Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch509: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 #Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
 %endif
 
@@ -559,6 +571,13 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
+mkdir -p %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE9}  %{struct_comp_dir}
+cp %{SOURCE75} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE76} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE77} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE78} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE79} %{struct_comp_dir}/%{vmlinux_definition_loc}
 %endif
 
 %if 0%{?canister_build}
@@ -606,8 +625,17 @@ fi
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
+bldroot="${PWD}"
 %if 0%{?fips}
-%include %{SOURCE9}
+# compare struct definitions between fips canister and vmlinux
+# fails out if there is a mismatch, and the offending definition
+# has not been documented in %{vmlinux_definition_loc}
+pushd %{struct_comp_dir}
+gcc -o %{struct_comparator} %{SOURCE9} -ldwarves
+./%{struct_comparator} ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
+popd
+
+rm -rf %{struct_comp_dir}
 %endif
 
 %ifarch aarch64
@@ -629,7 +657,6 @@ make %{?_smp_mflags} ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
 %endif
 
 # build ENA module
-bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 cp configure.sh ena-conf.sh
 ./ena-conf.sh --kernel-dir ${bldroot}
@@ -637,7 +664,6 @@ make %{?_smp_mflags} -C ${bldroot} M="${PWD}" V=1 modules %{?_smp_mflags}
 popd
 
 # build EFA module
-bldroot="${PWD}"
 pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa
 mkdir build
 cd build
@@ -857,6 +883,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Feb 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.1-5
+- Update fips canister to version 6.0.0-6.12.1-4
+- Improve fips canister struct definition check
 * Mon Feb 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.1-4
 - Add Support for essiv echainiv in canister
 * Mon Feb 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.1-3
