@@ -6,7 +6,7 @@ Summary:        chromium
 Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
-Version:        125.0.6422.65
+Version:        131.0.6778.268
 Release:        1%{?dist}
 License:        BSD 3
 URL:            https://chromium.googlesource.com/chromium/src
@@ -16,10 +16,10 @@ Distribution:   Photon
 
 # generated using tools/scripts/fetch-chromium-source.sh
 Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=3b9e0c7a30f15cd5766c17ac678cdd9c2e4f2778971dafcb85092a66e89c96fc5ff544b49db3f06d01731c9a9cbff0296f789674d7a9f935ffa1828ee15d5df9
+%define sha512 %{name}=f7f4c1533481bc318cc73314a1676af07c5be4193ba75c5480b0b50c1c99a9826b353f8e6ef7f08a72d96ab462188873def695d05edae5e469eb6857e860d187
 
-Source1: depot_tools-274689c.tar.xz
-%define sha512 depot_tools=4f40a936e414740e98584f62829120f658bfb49f495bf83ef3084adce8671a96181cafe2b4857c88270cbc6d165c300bd6e2e0094cde742a9a0b7c08e7fd6835
+Source1: depot_tools-d6c2e1b.tar.xz
+%define sha512 depot_tools=508cd88f42309aacdf74492d0602f91eec85d0d829ecde839c72dc5bb718d61d79e20948fc2206b521a8cf55f48ac61fb62d465cbdbe6f7b2005d3e661835338
 
 Source2: headless.gn
 
@@ -83,6 +83,8 @@ cp -pr %{builddir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Wed Jan 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 131.0.6778.268-1
+- Upgrade to v131.0.6778.268
 * Thu May 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 125.0.6422.65-1
 - Upgrade to v125.0.6422.65
 * Tue Feb 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 123.0.6283.1-1
