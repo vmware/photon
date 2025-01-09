@@ -1,7 +1,7 @@
 Summary:        Log for C++
 Name:           log4cpp
 Version:        1.1.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %_prefix/share/aclocal/*.m4
 
 %changelog
+*   Thu Jan 09 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.1.3-4
+-   Release bump for SRP compliance
 *   Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.1.3-3
 -   Release bump for SRP compliance
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.1.3-2

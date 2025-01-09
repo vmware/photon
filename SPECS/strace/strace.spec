@@ -1,7 +1,7 @@
 Summary:       Tracks system calls that are made by a running process
 Name:          strace
 Version:       6.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 URL:           https://strace.io/
 Group:         Development/Debuggers
 Vendor:        VMware, Inc.
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/strace-graph
 
 %changelog
+* Thu Jan 09 2025 Tapas Kundu <tapas.kundu@broadcom.com> 6.1-3
+- Release bump for SRP compliance
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 6.1-2
 - Release bump for SRP compliance
 * Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 6.1-1

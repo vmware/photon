@@ -4,7 +4,7 @@
 
 Name:           rubygem-zip
 Version:        2.0.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Ruby library for reading and writing Zip files
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -40,6 +40,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Thu Jan 09 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.2-8
+- Update License
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.0.2-7
 - Release bump for SRP compliance
 * Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 2.0.2-6
