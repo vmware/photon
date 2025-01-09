@@ -7,7 +7,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.4.0
-Release:       8%{?dist}
+Release:       9%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -133,6 +133,8 @@ rm -rf %{buildroot}
 %doc LICENSE
 
 %changelog
+* Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4.0-9
+- Add support for reporting gradle plugin inputs to SRP.
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4.0-8
 - Release bump for network_required packages
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.4.0-7

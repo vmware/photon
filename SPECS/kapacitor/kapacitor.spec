@@ -3,7 +3,7 @@
 %define network_required 1
 Name:           kapacitor
 Version:        1.6.6
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
@@ -109,6 +109,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.6-14
+- Fix go input dependencies which have Capital letters in name.
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.6-13
 - Release bump for network_required packages
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.6-12
