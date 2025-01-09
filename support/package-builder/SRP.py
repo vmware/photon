@@ -10,6 +10,7 @@ from constants import constants
 from CommandUtils import CommandUtils
 from SpecData import SPECS
 from StringUtils import StringUtils
+from datetime import datetime, timezone
 
 GO_REMOTE_PREFIX="/artifactory/proxy-golang-remote/"
 MAVEN_REMOTE_PREFIX="/artifactory/maven/"
@@ -70,7 +71,7 @@ class SRP(object):
     def initialize(self):
         if not self.srpcli:
             return
-        self.srpcli_run(["provenance", "init"])
+        self.srpcli_run(["provenance", "init", f"--revision={datetime.now(timezone.utc).isoformat(timespec='seconds')}"])
         self.srpcli_run(
             [
                 "provenance",
