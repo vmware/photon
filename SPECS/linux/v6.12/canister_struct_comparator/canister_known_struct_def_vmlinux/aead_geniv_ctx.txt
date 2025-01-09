@@ -1,0 +1,15 @@
+struct aead_geniv_ctx {
+	spinlock_t                 lock;                 /*     0     4 */
+
+	/* XXX 4 bytes hole, try to pack */
+
+	struct crypto_aead *       child;                /*     8     8 */
+	struct crypto_sync_skcipher * sknull;            /*    16     8 */
+	u8                         salt[] __attribute__((__aligned__(4))); /*    24     0 */
+
+	/* size: 24, cachelines: 1, members: 4 */
+	/* sum members: 20, holes: 1, sum holes: 4 */
+	/* forced alignments: 1 */
+	/* last cacheline: 24 bytes */
+} __attribute__((__aligned__(8))); /* size: 24 */
+
