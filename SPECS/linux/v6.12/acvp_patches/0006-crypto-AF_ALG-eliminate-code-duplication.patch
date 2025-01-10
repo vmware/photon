@@ -8,15 +8,16 @@ cleaned up with this patch. This patch does not change the functionality.
 
 Signed-off-by: Stephan Mueller <smueller@chronox.de>
 Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
- crypto/af_alg.c | 17 +++--------------
- 1 file changed, 3 insertions(+), 14 deletions(-)
+ crypto/af_alg.c | 19 +++----------------
+ 1 file changed, 3 insertions(+), 16 deletions(-)
 
 diff --git a/crypto/af_alg.c b/crypto/af_alg.c
-index b854c72da..4178ebac8 100755
+index 6ea2e3a48..9c7653dd3 100644
 --- a/crypto/af_alg.c
 +++ b/crypto/af_alg.c
-@@ -247,34 +247,23 @@ static int alg_setsockopt(struct socket *sock, int level, int optname,
+@@ -376,45 +376,32 @@ static int alg_setsockopt(struct socket *sock, int level, int optname,
  	if (level != SOL_ALG || !type)
  		goto unlock;
  
@@ -25,14 +26,18 @@ index b854c72da..4178ebac8 100755
 +
  	switch (optname) {
  	case ALG_SET_KEY:
+ 	case ALG_SET_KEY_BY_KEY_SERIAL:
 -		if (sock->state == SS_CONNECTED)
 -			goto unlock;
 -
- 		err = alg_setkey(sk, optval, optlen, type->setkey);
+ 		if (optname == ALG_SET_KEY_BY_KEY_SERIAL)
+ 			err = alg_setkey_by_key_serial(ask, optval, optlen);
+ 		else
+ 			err = alg_setkey(sk, optval, optlen, type->setkey);
  		break;
  	case ALG_SET_PUBKEY:
 -		if (sock->state == SS_CONNECTED)
--			goto unlock;
+-                        goto unlock;
 -
  		err = alg_setkey(sk, optval, optlen, type->setpubkey);
  		break;
@@ -54,7 +59,13 @@ index b854c72da..4178ebac8 100755
  		if (!type->setauthsize)
  			goto unlock;
  		err = type->setauthsize(ask->private, optlen);
+ 		break;
+ 	case ALG_SET_DRBG_ENTROPY:
+-		if (sock->state == SS_CONNECTED)
+-			goto unlock;
+ 		if (!type->setentropy)
+ 			goto unlock;
+ 
 -- 
-2.17.1
-
+2.39.4
 

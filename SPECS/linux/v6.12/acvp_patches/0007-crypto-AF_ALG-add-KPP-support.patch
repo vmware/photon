@@ -41,20 +41,21 @@ Added support for LKCM 5.0:
 Signed-off-by: Stephan Mueller <smueller@chronox.de>
 Signed-off-by: Vikash Bansal <bvikas@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  crypto/Kconfig          |  10 +
  crypto/Makefile         |   1 +
  crypto/af_alg.c         |   2 +
- crypto/algif_kpp.c      | 582 ++++++++++++++++++++++++++++++++++++++++
+ crypto/algif_kpp.c      | 578 ++++++++++++++++++++++++++++++++++++++++
  include/crypto/if_alg.h |   2 +
- 5 files changed, 597 insertions(+)
+ 5 files changed, 593 insertions(+)
  create mode 100644 crypto/algif_kpp.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
-index c2aa90b98..13556bd15 100644
+index 26de7a94f..56bf05e9d 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -1412,6 +1412,16 @@ config CRYPTO_USER_API_AKCIPHER
+@@ -1470,6 +1470,16 @@ config CRYPTO_USER_API_AKCIPHER
  	  This option enables the user-space interface for asymmetric
  	  key cipher algorithms.
  
@@ -72,22 +73,22 @@ index c2aa90b98..13556bd15 100644
  	bool
  
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 4a06f5659..3ea05f3b9 100644
+index 777865005..54e34b93e 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -164,6 +164,7 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
- obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
- obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
+@@ -172,6 +172,7 @@ ecrdsa_generic-y += ecrdsa_params.asn1.o
+ ecrdsa_generic-y += ecrdsa_pub_key.asn1.o
+ obj-$(CONFIG_CRYPTO_ECRDSA) += ecrdsa_generic.o
  obj-$(CONFIG_CRYPTO_USER_API_AKCIPHER) += algif_akcipher.o
 +obj-$(CONFIG_CRYPTO_USER_API_KPP) += algif_kpp.o
- obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
- obj-$(CONFIG_CRYPTO_OFB) += ofb.o
- obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
+ 
+ #
+ # generic algorithms and the async_tx api
 diff --git a/crypto/af_alg.c b/crypto/af_alg.c
-index 4178ebac8..e6ef93a28 100644
+index 812e32f4b..f339d1da0 100644
 --- a/crypto/af_alg.c
 +++ b/crypto/af_alg.c
-@@ -857,6 +857,8 @@ int af_alg_sendmsg(struct socket *sock, struct msghdr *msg, size_t size,
+@@ -966,6 +966,8 @@ int af_alg_sendmsg(struct socket *sock, struct msghdr *msg, size_t size,
  		case ALG_OP_SIGN:
  		case ALG_OP_ENCRYPT:
  		case ALG_OP_DECRYPT:
@@ -98,10 +99,10 @@ index 4178ebac8..e6ef93a28 100644
  		default:
 diff --git a/crypto/algif_kpp.c b/crypto/algif_kpp.c
 new file mode 100644
-index 000000000..d30136020
+index 000000000..8e198245a
 --- /dev/null
 +++ b/crypto/algif_kpp.c
-@@ -0,0 +1,582 @@
+@@ -0,0 +1,578 @@
 +/*
 + * algif_kpp: User-space interface for key protocol primitives algorithms
 + *
@@ -239,7 +240,7 @@ index 000000000..d30136020
 +
 +	/* Initialize the crypto operation */
 +	kpp_request_set_input(&areq->cra_u.kpp_req, areq->tsgl, used);
-+	kpp_request_set_output(&areq->cra_u.kpp_req, areq->first_rsgl.sgl.sg,
++	kpp_request_set_output(&areq->cra_u.kpp_req, areq->first_rsgl.sgl.sgl,
 +			       len);
 +	kpp_request_set_tfm(&areq->cra_u.kpp_req, tfm);
 +
@@ -333,11 +334,9 @@ index 000000000..d30136020
 +	.ioctl		=	sock_no_ioctl,
 +	.listen		=	sock_no_listen,
 +	.shutdown	=	sock_no_shutdown,
-+	.getsockopt	=	sock_getsockopt,
 +	.mmap		=	sock_no_mmap,
 +	.bind		=	sock_no_bind,
 +	.accept		=	sock_no_accept,
-+	.setsockopt	=	sock_setsockopt,
 +
 +	.release	=	af_alg_release,
 +	.sendmsg	=	kpp_sendmsg,
@@ -427,11 +426,9 @@ index 000000000..d30136020
 +	.ioctl		=	sock_no_ioctl,
 +	.listen		=	sock_no_listen,
 +	.shutdown	=	sock_no_shutdown,
-+	.getsockopt	=	sock_getsockopt,
 +	.mmap		=	sock_no_mmap,
 +	.bind		=	sock_no_bind,
 +	.accept		=	sock_no_accept,
-+	.setsockopt	=	sock_setsockopt,
 +
 +	.release	=	af_alg_release,
 +	.sendmsg	=	kpp_sendmsg_nokey,
@@ -530,11 +527,11 @@ index 000000000..d30136020
 +	return ret;
 +}
 +
-+static int kpp_ecdh_set_privkey(struct crypto_kpp *tfm, const u8 *key,
++static int kpp_ecdh_set_privkey(struct crypto_kpp *tfm, const void *key,
 +				unsigned int keylen)
 +{
 +	struct ecdh params = {
-+		.key = key,
++		.key = (u8*)key,
 +		.key_size = keylen,
 +	};
 +
@@ -685,7 +682,7 @@ index 000000000..d30136020
 +MODULE_AUTHOR("Stephan Mueller <smueller@chronox.de>");
 +MODULE_DESCRIPTION("Key protocol primitives kernel crypto API user space interface");
 diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
-index 1412672e1..85a67f635 100644
+index baad12ad4..a0af7305f 100644
 --- a/include/crypto/if_alg.h
 +++ b/include/crypto/if_alg.h
 @@ -19,6 +19,7 @@
@@ -696,7 +693,7 @@ index 1412672e1..85a67f635 100644
  
  #define ALG_MAX_PAGES			16
  
-@@ -115,6 +116,7 @@ struct af_alg_async_req {
+@@ -113,6 +114,7 @@ struct af_alg_async_req {
  		struct aead_request aead_req;
  		struct skcipher_request skcipher_req;
  		struct akcipher_request akcipher_req;
@@ -705,4 +702,5 @@ index 1412672e1..85a67f635 100644
  
  	/* req ctx trails this struct */
 -- 
-2.17.1
+2.39.4
+

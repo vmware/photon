@@ -19,6 +19,9 @@
 
 %if 0%{?acvp_build}
 %global fips 1
+%if 0%{?canister_build}
+%global fips 0
+%endif
 %endif
 
 %ifarch aarch64
@@ -30,7 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -114,6 +117,11 @@ Source47: canister_combine.lds
 Source48: gen_canister_relocs.c
 Source49: check_kernel_struct_in_canister.inc
 %endif
+%endif
+
+%if 0%{?acvp_build}
+Source53: config_%{_arch}_acvp
+Source54: check_for_acvp_config_applicability.inc
 %endif
 
 %if 0%{?fips}
@@ -270,12 +278,10 @@ Patch516:       0005-crypto-AF_ALG-add-DH-param-ECDH-curve-setsockopt.patch
 Patch517:       0006-crypto-AF_ALG-eliminate-code-duplication.patch
 Patch518:       0007-crypto-AF_ALG-add-KPP-support.patch
 Patch519:       0008-crypto-AF_ALG-add-ECC-support.patch
-Patch520:       0009-kernels-net-Export-sock_getsockopt.patch
-Patch521:       0010-DRBG-Fix-issues-with-DRBG.patch
-Patch522:       0011-Added-jitterentropy-implementation-of-SHA3-256.patch
-Patch523:       0012-jitterentropy-Support-for-sample-collection.patch
+Patch520:       0009-DRBG-Fix-issues-with-DRBG.patch
+Patch522:       0011-sock-Remove-sendpage-in-favour-of-sendmsg-MSG_SPLICE.patch
 %if 0%{?kat_build:1}
-Patch524:       0013-crypto-api-return-status-prints-for-LKCM5-demo.patch
+Patch523:       0013-crypto-api-return-status-prints-for-LKCM5-demo.patch
 %endif
 %endif
 
@@ -498,9 +504,9 @@ The kernel fips-canister
 %if 0%{?acvp_build:1}
 #ACVP test harness patches.
 #Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
-%autopatch -p1 -m512 -M523
+%autopatch -p1 -m512 -M522
 %if 0%{?kat_build:1}
-%autopatch -p1 -m524 -M524
+%autopatch -p1 -m523 -M523
 %endif
 %endif
 
@@ -538,35 +544,15 @@ cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 
-%if 0%{?acvp_build:1}
-#ACVP test harness changes in kernel configs.
-sed -i 's/# CONFIG_CRYPTO_USER is not set/CONFIG_CRYPTO_USER=y/' .config
-sed -i 's/# CONFIG_CRYPTO_DH is not set/CONFIG_CRYPTO_DH=y/' .config
-sed -i 's/CONFIG_CRYPTO_USER_API=m/CONFIG_CRYPTO_USER_API=y/' .config
-sed -i 's/CONFIG_CRYPTO_USER_API_HASH=m/CONFIG_CRYPTO_USER_API_HASH=y/' .config
-sed -i 's/CONFIG_CRYPTO_USER_API_SKCIPHER=m/CONFIG_CRYPTO_USER_API_SKCIPHER=y/' .config
-sed -i 's/CONFIG_CRYPTO_USER_API_RNG=m/CONFIG_CRYPTO_USER_API_RNG=y/' .config
-sed -i 's/# CONFIG_CRYPTO_USER_API_RNG_CAVP is not set/CONFIG_CRYPTO_USER_API_RNG_CAVP=y/' .config
-sed -i 's/# CONFIG_CRYPTO_USER_API_AEAD is not set/CONFIG_CRYPTO_USER_API_AEAD=y/' .config
-sed -i '/CONFIG_CRYPTO_USER_API_ENABLE_OBSOLETE/ a # CONFIG_CRYPTO_STATS is not set' .config
-sed -i '/CONFIG_CRYPTO_STATS/ a CONFIG_CRYPTO_USER_API_AKCIPHER=y' .config
-sed -i '/CONFIG_CRYPTO_USER_API_AKCIPHER/ a CONFIG_CRYPTO_USER_API_KPP=y' .config
-sed -i '/CONFIG_CRYPTO_USER_API_KPP=y/ a CONFIG_CRYPTO_USER_API_ECC=y' .config
-sed -i '/CONFIG_CRYPTO_DH=y/ a # CONFIG_CRYPTO_DH_RFC7919_GROUPS is not set' .config
-sed -i '/# end of Userspace interface/ { N; d; }' .config
-sed -i '/# CONFIG_CRYPTO_STATS is not set/ a # end of Userspace interface' .config
-sed -i '/# end of Userspace interface/{G;}' .config
-%endif
-
 cp %{SOURCE20} photon_sb2020.pem
 %ifarch x86_64
 %if 0%{?fips}
-cp %{SOURCE36} crypto/
-cp %{SOURCE37} crypto/
-cp %{SOURCE38} crypto/
-cp %{SOURCE39} crypto/
-cp %{SOURCE40} crypto/
-cp %{SOURCE41} crypto/
+install %{SOURCE36} crypto/
+install %{SOURCE37} crypto/
+install %{SOURCE38} crypto/
+install %{SOURCE39} crypto/
+install %{SOURCE40} crypto/
+install %{SOURCE41} crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
@@ -613,7 +599,12 @@ sed -e "s,@@NAME@@,%{name},g" \
     %{SOURCE25} > linux-sbat.csv
 %endif
 
+%if 0%{?acvp_build}
+cp %{SOURCE53} .config_acvp
+%include %{SOURCE54}
+%else
 %include %{SOURCE7}
+%endif
 
 # Set/add CONFIG_CROSS_COMPILE= if needed
 if [ %{_host} != %{_build} ]; then
@@ -883,6 +874,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Mar 03 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.1-6
+- Fix build error in acvp build and some spec refinement
 * Mon Feb 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.1-5
 - Update fips canister to version 6.0.0-6.12.1-4
 - Improve fips canister struct definition check

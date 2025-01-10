@@ -1,7 +1,7 @@
 From e03916c6171575028537f09ab6d938189baf6308 Mon Sep 17 00:00:00 2001
 From: Vikash Bansal <bvikas@vmware.com>
 Date: Mon, 25 Jan 2021 11:06:25 +0530
-Subject: [PATCH 5/7] crypto: AF_ALG -- add DH param / ECDH curve  setsockopt 
+Subject: [PATCH 5/7] crypto: AF_ALG -- add DH param / ECDH curve  setsockopt
  call
 
 For supporting DH ciphers, user space must be able to set the
@@ -13,6 +13,7 @@ newly added setsockopt call.
 
 Signed-off-by: Stephan Mueller <smueller@chronox.de>
 Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  crypto/af_alg.c             | 12 ++++++++++++
  include/crypto/if_alg.h     |  2 ++
@@ -20,10 +21,10 @@ Signed-off-by: Vikash Bansal <bvikas@vmware.com>
  3 files changed, 16 insertions(+)
 
 diff --git a/crypto/af_alg.c b/crypto/af_alg.c
-index c00271337..b854c72da 100755
+index 4e15a0ab9..6ea2e3a48 100644
 --- a/crypto/af_alg.c
 +++ b/crypto/af_alg.c
-@@ -260,6 +260,18 @@ static int alg_setsockopt(struct socket *sock, int level, int optname,
+@@ -393,6 +393,18 @@ static int alg_setsockopt(struct socket *sock, int level, int optname,
  
  		err = alg_setkey(sk, optval, optlen, type->setpubkey);
  		break;
@@ -43,10 +44,10 @@ index c00271337..b854c72da 100755
  		if (sock->state == SS_CONNECTED)
  			goto unlock;
 diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
-index c4ff208b6..1412672e1 100755
+index 15abd95f3..0a8f4c34a 100644
 --- a/include/crypto/if_alg.h
 +++ b/include/crypto/if_alg.h
-@@ -48,6 +48,8 @@ struct af_alg_type {
+@@ -46,6 +46,8 @@ struct af_alg_type {
  	void (*release)(void *private);
  	int (*setkey)(void *private, const u8 *key, unsigned int keylen);
  	int (*setpubkey)(void *private, const u8 *key, unsigned int keylen);
@@ -56,19 +57,18 @@ index c4ff208b6..1412672e1 100755
  	int (*accept)(void *private, struct sock *sk);
  	int (*accept_nokey)(void *private, struct sock *sk);
 diff --git a/include/uapi/linux/if_alg.h b/include/uapi/linux/if_alg.h
-index b3d296fba..c5fe777a8 100755
+index d979c3e7b..3dd202d87 100644
 --- a/include/uapi/linux/if_alg.h
 +++ b/include/uapi/linux/if_alg.h
-@@ -53,6 +53,8 @@ struct af_alg_iv {
- #define ALG_SET_AEAD_AUTHSIZE		5
+@@ -54,6 +54,8 @@ struct af_alg_iv {
  #define ALG_SET_DRBG_ENTROPY		6
- #define ALG_SET_PUBKEY			7
-+#define ALG_SET_DH_PARAMETERS		8
-+#define ALG_SET_ECDH_CURVE		9
+ #define ALG_SET_KEY_BY_KEY_SERIAL	7
+ #define ALG_SET_PUBKEY                  13
++#define ALG_SET_DH_PARAMETERS           14
++#define ALG_SET_ECDH_CURVE              15
  
  /* Operations */
  #define ALG_OP_DECRYPT			0
 -- 
-2.17.1
-
+2.39.4
 
