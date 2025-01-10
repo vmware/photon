@@ -28,7 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.118
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -565,6 +565,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jan 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-10
+- Fix aarch64 build
 * Mon Dec 30 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.118-9
 - Improve fips canister struct definition check
 * Tue Dec 17 2024 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.118-8

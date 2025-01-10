@@ -49,7 +49,7 @@ int matches_knwn_vmlinux_def(struct struct_def *s_def) {
         if(!known_def)
             tmp = malloc(new_size);
         else
-            tmp = realloc(known_def, new_size);
+            tmp = realloc(known_def, new_size + 1);
 
         if(!tmp) {
             free(known_def);
@@ -59,6 +59,7 @@ int matches_knwn_vmlinux_def(struct struct_def *s_def) {
         known_def = tmp;
 
         strncpy(known_def + (new_size - line_sz), line, line_sz);
+        known_def[new_size] = '\0';
     }
 
     fclose(knwn_fp);
