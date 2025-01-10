@@ -9,7 +9,7 @@ script_dir="$(dirname ${BASH_SOURCE[0]})"
 cd $script_dir
 
 echo "Generate generic kernel dep specs ..."
-if ! ./create-kernel-deps-specs-from-template.sh "$@"; then
+if ! python3 ./create-kernel-deps-specs-from-template.py "$@"; then
   echo "ERROR: failed to generate kernel dep specs ..." 1>&2
   exit 1
 fi
