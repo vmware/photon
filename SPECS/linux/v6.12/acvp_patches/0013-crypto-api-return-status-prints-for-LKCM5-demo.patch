@@ -1,27 +1,22 @@
-From 5dafdcbce3214988d09273cef76c3b44e8b80861 Mon Sep 17 00:00:00 2001
-From: Srish Srinivasan <srish.srinivasan@broadcom.com>
-Date: Tue, 12 Dec 2023 08:42:17 +0000
-Subject: [PATCH] crypto api return status prints for LKCM5 demo
+From 2e3fe0b7a770ebf2bad685fd41e66eee03b56a0c Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivani.agarwal@broadcom.com>
+Date: Mon, 20 Jan 2025 08:14:33 +0000
+Subject: [PATCH] crypto api return status prints for LKCM6 demo
 
-- these prints appear only when both ACVP_BUILD and KAT_BUILD
-  are enabled during build
 ---
- crypto/aead.c             | 35 ++++++++++++++++++++++++++++++++---
- crypto/akcipher.c         | 10 ++++++++--
- crypto/algif_ecc.c        | 39 +++++++++++++++++++++++++++++++++++----
- crypto/cipher.c           |  7 ++++++-
- crypto/kpp.c              | 10 ++++++++--
- crypto/rng.c              |  6 ++++++
- crypto/shash.c            | 26 +++++++++++++++++++++++---
- crypto/skcipher.c         | 30 ++++++++++++++++++++++++++++--
- include/crypto/akcipher.h | 30 ++++++++++++++++++++++++++++--
- include/crypto/hash.h     |  6 ++++++
- include/crypto/kpp.h      | 18 ++++++++++++++++++
- include/crypto/rng.h      |  6 ++++++
- 12 files changed, 204 insertions(+), 19 deletions(-)
+ crypto/aead.c      | 41 ++++++++++++++++++++++++++++++++++++-----
+ crypto/ahash.c     | 10 +++++++++-
+ crypto/akcipher.c  | 10 ++++++++--
+ crypto/algif_ecc.c | 39 +++++++++++++++++++++++++++++++++++----
+ crypto/cipher.c    |  7 ++++++-
+ crypto/kpp.c       | 10 ++++++++--
+ crypto/rng.c       |  6 ++++++
+ crypto/shash.c     | 27 ++++++++++++++++++++++++---
+ crypto/skcipher.c  | 37 +++++++++++++++++++++++++++++++++----
+ 9 files changed, 165 insertions(+), 22 deletions(-)
 
 diff --git a/crypto/aead.c b/crypto/aead.c
-index 169910952..7aaa45dd5 100644
+index cade53241..656e1c0cc 100644
 --- a/crypto/aead.c
 +++ b/crypto/aead.c
 @@ -51,6 +51,11 @@ int crypto_aead_setkey(struct crypto_aead *tfm,
@@ -50,37 +45,51 @@ index 169910952..7aaa45dd5 100644
  
  	tfm->authsize = authsize;
  	return 0;
-@@ -92,7 +100,14 @@ int crypto_aead_encrypt(struct aead_request *req)
- 		ret = -ENOKEY;
- 	else
- 		ret = crypto_aead_alg(aead)->encrypt(req);
+@@ -83,17 +91,26 @@ EXPORT_SYMBOL_GPL(crypto_aead_setauthsize);
+ int crypto_aead_encrypt(struct aead_request *req)
+ {
+ 	struct crypto_aead *aead = crypto_aead_reqtfm(req);
++	int ret;
+ 
+ 	if (crypto_aead_get_flags(aead) & CRYPTO_TFM_NEED_KEY)
+ 		return -ENOKEY;
+ 
+-	return crypto_aead_alg(aead)->encrypt(req);
++	ret = crypto_aead_alg(aead)->encrypt(req);
 +
 +	if(ret < 0)
 +		printk(KERN_ERR "%ps FAILED, returned %d", crypto_aead_alg(aead)->encrypt, ret);
 +	else
 +		printk(KERN_INFO "%ps PASSED, returned %d", crypto_aead_alg(aead)->encrypt, ret);
 +
- 	crypto_stats_aead_encrypt(cryptlen, alg, ret);
-+
- 	return ret;
++	return ret;
  }
  EXPORT_SYMBOL_GPL(crypto_aead_encrypt);
-@@ -111,7 +126,14 @@ int crypto_aead_decrypt(struct aead_request *req)
- 		ret = -EINVAL;
- 	else
- 		ret = crypto_aead_alg(aead)->decrypt(req);
+ 
+ int crypto_aead_decrypt(struct aead_request *req)
+ {
+ 	struct crypto_aead *aead = crypto_aead_reqtfm(req);
++	int ret;
+ 
+ 	if (crypto_aead_get_flags(aead) & CRYPTO_TFM_NEED_KEY)
+ 		return -ENOKEY;
+@@ -101,7 +118,14 @@ int crypto_aead_decrypt(struct aead_request *req)
+ 	if (req->cryptlen < crypto_aead_authsize(aead))
+ 		return -EINVAL;
+ 
+-	return crypto_aead_alg(aead)->decrypt(req);
++	ret = crypto_aead_alg(aead)->decrypt(req);
 +
 +	if(ret < 0)
 +		printk(KERN_ERR "%ps FAILED, returned %d", crypto_aead_alg(aead)->decrypt, ret);
 +	else
 +		printk(KERN_INFO "%ps PASSED, returned %d", crypto_aead_alg(aead)->decrypt, ret);
 +
- 	crypto_stats_aead_decrypt(cryptlen, alg, ret);
-+
- 	return ret;
++	return ret;
  }
  EXPORT_SYMBOL_GPL(crypto_aead_decrypt);
-@@ -136,8 +158,15 @@ static int crypto_aead_init_tfm(struct crypto_tfm *tfm)
+ 
+@@ -125,8 +149,15 @@ static int crypto_aead_init_tfm(struct crypto_tfm *tfm)
  	if (alg->exit)
  		aead->base.exit = crypto_aead_exit_tfm;
  
@@ -98,11 +107,36 @@ index 169910952..7aaa45dd5 100644
  
  	return 0;
  }
+diff --git a/crypto/ahash.c b/crypto/ahash.c
+index bcd9de009..1dbf75c4c 100644
+--- a/crypto/ahash.c
++++ b/crypto/ahash.c
+@@ -328,11 +328,19 @@ static void ahash_restore_req(struct ahash_request *req, int err)
+ int crypto_ahash_update(struct ahash_request *req)
+ {
+ 	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
++	int ret;
+ 
+ 	if (likely(tfm->using_shash))
+ 		return shash_ahash_update(req, ahash_request_ctx(req));
+ 
+-	return crypto_ahash_alg(tfm)->update(req);
++	ret = crypto_ahash_alg(tfm)->update(req);
++
++	if(ret)
++		printk(KERN_ERR "%ps FAILED, returned %d", crypto_ahash_alg(tfm)->update, ret);
++	else
++		printk(KERN_INFO "%ps PASSED, returned %d", crypto_ahash_alg(tfm)->update, ret);
++
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(crypto_ahash_update);
+ 
 diff --git a/crypto/akcipher.c b/crypto/akcipher.c
-index ab975a420..c9ae52210 100644
+index e0ff5f4dd..83db94cbd 100644
 --- a/crypto/akcipher.c
 +++ b/crypto/akcipher.c
-@@ -63,8 +63,14 @@ static int crypto_akcipher_init_tfm(struct crypto_tfm *tfm)
+@@ -57,8 +57,14 @@ static int crypto_akcipher_init_tfm(struct crypto_tfm *tfm)
  	if (alg->exit)
  		akcipher->base.exit = crypto_akcipher_exit_tfm;
  
@@ -120,10 +154,10 @@ index ab975a420..c9ae52210 100644
  	return 0;
  }
 diff --git a/crypto/algif_ecc.c b/crypto/algif_ecc.c
-index f1cb804e4..d9faa7c42 100644
+index b88831187..cb3b10bfa 100644
 --- a/crypto/algif_ecc.c
 +++ b/crypto/algif_ecc.c
-@@ -106,6 +106,10 @@ static int ecc_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+@@ -112,6 +112,10 @@ static int ecc_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
  		ecc_swap_digits((u64 *)y_buf, pk.y, pk.ndigits);
  
  		ret = ecc_is_pubkey_valid_full(curve, &pk);
@@ -134,10 +168,10 @@ index f1cb804e4..d9faa7c42 100644
  
  
  		kfree(pk.x);
-@@ -149,8 +153,27 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
- 	} else if(iov[3].iov_len == 384) {
- 		curve = &nist_p384;
- 		curve_id = 3;
+@@ -161,8 +165,27 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
+ 	} else if(iov[3].iov_len == 521) {
+ 		curve = &nist_p521;
+ 		curve_id = 4;
 -	} else
 -		return -EINVAL;
 +	} else {
@@ -164,7 +198,7 @@ index f1cb804e4..d9faa7c42 100644
  
          if (iov[0].iov_len != curve->g.ndigits * sizeof(u64) ||
              iov[1].iov_len != curve->g.ndigits * sizeof(u64) ||
-@@ -158,12 +181,20 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
+@@ -170,12 +193,20 @@ static int ecc_recvmsg(struct socket *sock, struct msghdr *msg,
                  return -EINVAL;
  
          ret = ecc_gen_privkey(curve_id, curve->g.ndigits, (u64 *)d_buf);
@@ -188,10 +222,10 @@ index f1cb804e4..d9faa7c42 100644
          ret = copy_to_user(iov[0].iov_base, d_buf, iov[0].iov_len);
          if (ret) {
 diff --git a/crypto/cipher.c b/crypto/cipher.c
-index b47141ed4..ae53a91f3 100644
+index 40cae9087..52da91e65 100644
 --- a/crypto/cipher.c
 +++ b/crypto/cipher.c
-@@ -52,7 +52,12 @@ int crypto_cipher_setkey(struct crypto_cipher *tfm,
+@@ -51,7 +51,12 @@ int crypto_cipher_setkey(struct crypto_cipher *tfm,
  	if ((unsigned long)key & alignmask)
  		return setkey_unaligned(tfm, key, keylen);
  
@@ -206,10 +240,10 @@ index b47141ed4..ae53a91f3 100644
  EXPORT_SYMBOL_NS_GPL(crypto_cipher_setkey, CRYPTO_INTERNAL);
  
 diff --git a/crypto/kpp.c b/crypto/kpp.c
-index 678e871ce..681284942 100644
+index ecc63a1a9..90dd05ef8 100644
 --- a/crypto/kpp.c
 +++ b/crypto/kpp.c
-@@ -62,8 +62,14 @@ static int crypto_kpp_init_tfm(struct crypto_tfm *tfm)
+@@ -53,8 +53,14 @@ static int crypto_kpp_init_tfm(struct crypto_tfm *tfm)
  	if (alg->exit)
  		kpp->base.exit = crypto_kpp_exit_tfm;
  
@@ -227,12 +261,12 @@ index 678e871ce..681284942 100644
  	return 0;
  }
 diff --git a/crypto/rng.c b/crypto/rng.c
-index 353026522..c2b1ae96f 100644
+index 9e327c8c0..377a9fbe9 100644
 --- a/crypto/rng.c
 +++ b/crypto/rng.c
-@@ -70,6 +70,12 @@ int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
+@@ -69,6 +69,12 @@ int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
+ 	}
  
- 	crypto_stats_get(alg);
  	err = crypto_rng_alg(tfm)->seed(tfm, seed, slen);
 +
 +	if(err)
@@ -240,17 +274,18 @@ index 353026522..c2b1ae96f 100644
 +	else
 +		printk(KERN_INFO "%ps PASSED, returned %d", crypto_rng_alg(tfm)->seed, err);
 +
- 	crypto_stats_rng_seed(alg, err);
  out:
  	kfree_sensitive(buf);
+ 	return err;
 diff --git a/crypto/shash.c b/crypto/shash.c
-index 4c88e63b3..61816aeca 100644
+index 301ab42bf..a70217cd9 100644
 --- a/crypto/shash.c
 +++ b/crypto/shash.c
-@@ -78,6 +78,11 @@ int crypto_shash_setkey(struct crypto_shash *tfm, const u8 *key,
- 	else
- 		err = shash->setkey(tfm, key, keylen);
+@@ -36,6 +36,12 @@ int crypto_shash_setkey(struct crypto_shash *tfm, const u8 *key,
+ 	int err;
  
+ 	err = shash->setkey(tfm, key, keylen);
++
 +	if(err)
 +		printk(KERN_ERR "%ps FAILED, returned %d", shash->setkey, err);
 +	else
@@ -259,37 +294,35 @@ index 4c88e63b3..61816aeca 100644
  	if (unlikely(err)) {
  		shash_set_needkey(tfm, shash);
  		return err;
-@@ -128,7 +133,14 @@ int crypto_shash_update(struct shash_desc *desc, const u8 *data,
- 	if ((unsigned long)data & alignmask)
- 		return shash_update_unaligned(desc, data, len);
- 
--	return shash->update(desc, data, len);
-+	int err = shash->update(desc, data, len);
+@@ -49,13 +55,25 @@ EXPORT_SYMBOL_GPL(crypto_shash_setkey);
+ int crypto_shash_update(struct shash_desc *desc, const u8 *data,
+ 			unsigned int len)
+ {
+-	return crypto_shash_alg(desc->tfm)->update(desc, data, len);
++	int err = crypto_shash_alg(desc->tfm)->update(desc, data, len);
 +	if(err)
-+		printk(KERN_ERR "%ps FAILED, returned %d", shash->update, err);
++		printk(KERN_ERR "%ps FAILED, returned %d", crypto_shash_alg(desc->tfm)->update, err);
 +	else
-+		if(strcmp(shash->base.cra_name, "crc32c")) {
-+			printk(KERN_INFO "%ps PASSED, returned %d", shash->update, err);
++		if(strcmp(crypto_shash_alg(desc->tfm)->base.cra_name, "crc32c")) {
++			printk(KERN_INFO "%ps PASSED, returned %d", crypto_shash_alg(desc->tfm)->update, err);
 +		}
 +	return err;
  }
  EXPORT_SYMBOL_GPL(crypto_shash_update);
  
-@@ -169,7 +181,12 @@ int crypto_shash_final(struct shash_desc *desc, u8 *out)
- 	if ((unsigned long)out & alignmask)
- 		return shash_final_unaligned(desc, out);
- 
--	return shash->final(desc, out);
-+	int err = shash->final(desc, out);
-+        if(err)
-+                printk(KERN_ERR "%ps FAILED, returned %d", shash->final, err);
-+        else
-+                printk(KERN_INFO "%ps PASSED, returned %d", shash->final, err);
-+        return err;
+ int crypto_shash_final(struct shash_desc *desc, u8 *out)
+ {
+-	return crypto_shash_alg(desc->tfm)->final(desc, out);
++	int err = crypto_shash_alg(desc->tfm)->final(desc, out);
++	if(err)
++		printk(KERN_ERR "%ps FAILED, returned %d", crypto_shash_alg(desc->tfm)->final, err);
++	else
++		printk(KERN_INFO "%ps PASSED, returned %d", crypto_shash_alg(desc->tfm)->final, err);
++	return err;
  }
  EXPORT_SYMBOL_GPL(crypto_shash_final);
  
-@@ -438,8 +455,10 @@ static int crypto_shash_init_tfm(struct crypto_tfm *tfm)
+@@ -166,8 +184,10 @@ static int crypto_shash_init_tfm(struct crypto_tfm *tfm)
  		return 0;
  
  	err = alg->init_tfm(hash);
@@ -301,7 +334,7 @@ index 4c88e63b3..61816aeca 100644
  
  	/* ->init_tfm() may have increased the descsize. */
  	if (WARN_ON_ONCE(hash->descsize > HASH_MAX_DESCSIZE)) {
-@@ -447,6 +466,7 @@ static int crypto_shash_init_tfm(struct crypto_tfm *tfm)
+@@ -175,6 +195,7 @@ static int crypto_shash_init_tfm(struct crypto_tfm *tfm)
  			alg->exit_tfm(hash);
  		return -EINVAL;
  	}
@@ -310,10 +343,10 @@ index 4c88e63b3..61816aeca 100644
  	return 0;
  }
 diff --git a/crypto/skcipher.c b/crypto/skcipher.c
-index 418211180..fcf81c91e 100644
+index ceed7f33a..b23b80399 100644
 --- a/crypto/skcipher.c
 +++ b/crypto/skcipher.c
-@@ -606,6 +606,12 @@ int crypto_skcipher_setkey(struct crypto_skcipher *tfm, const u8 *key,
+@@ -620,6 +620,11 @@ int crypto_skcipher_setkey(struct crypto_skcipher *tfm, const u8 *key,
  	else
  		err = cipher->setkey(tfm, key, keylen);
  
@@ -322,39 +355,56 @@ index 418211180..fcf81c91e 100644
 +	else
 +		printk(KERN_INFO "%ps PASSED, returned %d", cipher->setkey, err);
 +
-+
+ out:
  	if (unlikely(err)) {
  		skcipher_set_needkey(tfm);
- 		return err;
-@@ -628,6 +634,14 @@ int crypto_skcipher_encrypt(struct skcipher_request *req)
- 		ret = -ENOKEY;
- 	else
- 		ret = crypto_skcipher_alg(tfm)->encrypt(req);
+@@ -635,12 +640,22 @@ int crypto_skcipher_encrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct skcipher_alg *alg = crypto_skcipher_alg(tfm);
++	int ret;
+ 
+ 	if (crypto_skcipher_get_flags(tfm) & CRYPTO_TFM_NEED_KEY)
+ 		return -ENOKEY;
+ 	if (alg->co.base.cra_type != &crypto_skcipher_type)
+ 		return crypto_lskcipher_encrypt_sg(req);
+-	return alg->encrypt(req);
++	ret = alg->encrypt(req);
 +
-+	if(!strstr(crypto_skcipher_alg(tfm)->base.cra_driver_name, "ecb-cipher_null")) {
++	if(!strstr(alg->base.cra_driver_name, "ecb-cipher_null")) {
 +		if(ret)
-+			printk(KERN_ERR "%ps FAILED, returned %d", crypto_skcipher_alg(tfm)->encrypt, ret);
++			printk(KERN_ERR "%ps FAILED, returned %d", alg->encrypt, ret);
 +		else
-+			printk(KERN_INFO "%ps PASSED, returned %d", crypto_skcipher_alg(tfm)->encrypt, ret);
++			printk(KERN_INFO "%ps PASSED, returned %d", alg->encrypt, ret);
 +	}
 +
- 	crypto_stats_skcipher_encrypt(cryptlen, ret, alg);
- 	return ret;
++	return ret;
  }
-@@ -645,6 +659,12 @@ int crypto_skcipher_decrypt(struct skcipher_request *req)
- 		ret = -ENOKEY;
- 	else
- 		ret = crypto_skcipher_alg(tfm)->decrypt(req);
+ EXPORT_SYMBOL_GPL(crypto_skcipher_encrypt);
+ 
+@@ -648,12 +663,20 @@ int crypto_skcipher_decrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct skcipher_alg *alg = crypto_skcipher_alg(tfm);
++	int ret;
+ 
+ 	if (crypto_skcipher_get_flags(tfm) & CRYPTO_TFM_NEED_KEY)
+ 		return -ENOKEY;
+ 	if (alg->co.base.cra_type != &crypto_skcipher_type)
+ 		return crypto_lskcipher_decrypt_sg(req);
+-	return alg->decrypt(req);
++	ret = alg->decrypt(req);
 +
 +	if(ret)
-+		printk(KERN_ERR "%ps FAILED, returned %d", crypto_skcipher_alg(tfm)->decrypt, ret);
++		printk(KERN_ERR "%ps FAILED, returned %d", alg->decrypt, ret);
 +	else
-+		printk(KERN_INFO "%ps PASSED, returned %d", crypto_skcipher_alg(tfm)->decrypt, ret);
++		printk(KERN_INFO "%ps PASSED, returned %d", alg->decrypt, ret);
 +
- 	crypto_stats_skcipher_decrypt(cryptlen, ret, alg);
- 	return ret;
++	return ret;
  }
-@@ -668,8 +688,14 @@ static int crypto_skcipher_init_tfm(struct crypto_tfm *tfm)
+ EXPORT_SYMBOL_GPL(crypto_skcipher_decrypt);
+ 
+@@ -745,8 +768,14 @@ static int crypto_skcipher_init_tfm(struct crypto_tfm *tfm)
  	if (alg->exit)
  		skcipher->base.exit = crypto_skcipher_exit_tfm;
  
@@ -371,144 +421,6 @@ index 418211180..fcf81c91e 100644
  
  	return 0;
  }
-diff --git a/include/crypto/akcipher.h b/include/crypto/akcipher.h
-index 5764b46bd..0d4ab1759 100644
---- a/include/crypto/akcipher.h
-+++ b/include/crypto/akcipher.h
-@@ -342,6 +342,12 @@ static inline int crypto_akcipher_sign(struct akcipher_request *req)
- 	crypto_stats_get(calg);
- 	ret = alg->sign(req);
- 	crypto_stats_akcipher_sign(ret, calg);
-+
-+	if(ret)
-+		printk(KERN_ERR "%ps FAILED, returned %d", alg->sign, ret);
-+	else
-+		printk(KERN_INFO "%ps PASSED, returned %d", alg->sign, ret);
-+
- 	return ret;
- }
- 
-@@ -369,6 +375,12 @@ static inline int crypto_akcipher_verify(struct akcipher_request *req)
- 	crypto_stats_get(calg);
- 	ret = alg->verify(req);
- 	crypto_stats_akcipher_verify(ret, calg);
-+
-+	if(ret)
-+		printk(KERN_ERR "%ps FAILED, returned %d", alg->verify, ret);
-+	else
-+		printk(KERN_INFO "%ps PASSED, returned %d", alg->verify, ret);
-+
- 	return ret;
- }
- 
-@@ -391,7 +403,14 @@ static inline int crypto_akcipher_set_pub_key(struct crypto_akcipher *tfm,
- {
- 	struct akcipher_alg *alg = crypto_akcipher_alg(tfm);
- 
--	return alg->set_pub_key(tfm, key, keylen);
-+	int ret = alg->set_pub_key(tfm, key, keylen);
-+
-+	if(ret)
-+		printk(KERN_ERR "%ps FAILED, returned %d", alg->set_pub_key, ret);
-+	else
-+		printk(KERN_INFO "%ps PASSED, returned %d", alg->set_pub_key, ret);
-+
-+	return ret;
- }
- 
- /**
-@@ -413,6 +432,13 @@ static inline int crypto_akcipher_set_priv_key(struct crypto_akcipher *tfm,
- {
- 	struct akcipher_alg *alg = crypto_akcipher_alg(tfm);
- 
--	return alg->set_priv_key(tfm, key, keylen);
-+	int ret = alg->set_priv_key(tfm, key, keylen);
-+
-+	if(ret)
-+		printk(KERN_ERR "%ps FAILED, returned %d", alg->set_priv_key, ret);
-+	else
-+		printk(KERN_INFO "%ps PASSED, returned %d", alg->set_priv_key, ret);
-+
-+	return ret;
- }
- #endif
-diff --git a/include/crypto/hash.h b/include/crypto/hash.h
-index f5841992d..11384f8d7 100644
---- a/include/crypto/hash.h
-+++ b/include/crypto/hash.h
-@@ -556,6 +556,12 @@ static inline int crypto_ahash_update(struct ahash_request *req)
- 	crypto_stats_get(alg);
- 	ret = crypto_ahash_reqtfm(req)->update(req);
- 	crypto_stats_ahash_update(nbytes, ret, alg);
-+
-+	if(ret)
-+		printk(KERN_ERR "%ps FAILED, returned %d", crypto_ahash_reqtfm(req)->update, ret);
-+	else
-+		printk(KERN_INFO "%ps PASSED, returned %d", crypto_ahash_reqtfm(req)->update, ret);
-+
- 	return ret;
- }
- 
-diff --git a/include/crypto/kpp.h b/include/crypto/kpp.h
-index 24d01e987..a8b2bdeb7 100644
---- a/include/crypto/kpp.h
-+++ b/include/crypto/kpp.h
-@@ -292,6 +292,12 @@ static inline int crypto_kpp_set_secret(struct crypto_kpp *tfm,
- 	crypto_stats_get(calg);
- 	ret = alg->set_secret(tfm, buffer, len);
- 	crypto_stats_kpp_set_secret(calg, ret);
-+
-+	if(ret)
-+		printk(KERN_ERR "%ps FAILED, returned %d", alg->set_secret, ret);
-+	else
-+		printk(KERN_INFO "%ps PASSED, returned %d", alg->set_secret, ret);
-+
- 	return ret;
- }
- 
-@@ -318,6 +324,12 @@ static inline int crypto_kpp_generate_public_key(struct kpp_request *req)
- 	crypto_stats_get(calg);
- 	ret = alg->generate_public_key(req);
- 	crypto_stats_kpp_generate_public_key(calg, ret);
-+
-+	if(ret)
-+		printk(KERN_ERR "%ps FAILED, returned %d", alg->generate_public_key, ret);
-+	else
-+		printk(KERN_INFO "%ps PASSED, returned %d", alg->generate_public_key, ret);
-+
- 	return ret;
- }
- 
-@@ -341,6 +353,12 @@ static inline int crypto_kpp_compute_shared_secret(struct kpp_request *req)
- 	crypto_stats_get(calg);
- 	ret = alg->compute_shared_secret(req);
- 	crypto_stats_kpp_compute_shared_secret(calg, ret);
-+
-+	if(ret)
-+		printk(KERN_ERR "%ps FAILED, returned %d", alg->compute_shared_secret, ret);
-+	else
-+		printk(KERN_INFO "%ps PASSED, returned %d", alg->compute_shared_secret, ret);
-+
- 	return ret;
- }
- 
-diff --git a/include/crypto/rng.h b/include/crypto/rng.h
-index 17bb3673d..ced7d2494 100644
---- a/include/crypto/rng.h
-+++ b/include/crypto/rng.h
-@@ -143,6 +143,12 @@ static inline int crypto_rng_generate(struct crypto_rng *tfm,
- 	crypto_stats_get(alg);
- 	ret = crypto_rng_alg(tfm)->generate(tfm, src, slen, dst, dlen);
- 	crypto_stats_rng_generate(alg, dlen, ret);
-+
-+	if(ret)
-+		printk(KERN_ERR "%ps FAILED, returned %d", crypto_rng_alg(tfm)->generate, ret);
-+	else
-+		printk(KERN_INFO "%ps PASSED, returned %d", crypto_rng_alg(tfm)->generate, ret);
-+
- 	return ret;
- }
- 
 -- 
-2.39.0
+2.39.4
 

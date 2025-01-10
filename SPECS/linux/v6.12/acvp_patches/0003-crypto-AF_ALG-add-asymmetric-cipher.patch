@@ -12,19 +12,20 @@ code regarding TX and RX SGL handling.
 Signed-off-by: Stephan Mueller <smueller@chronox.de>
 Signed-off-by: Vikash Bansal <bvikas@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  crypto/Kconfig          |   9 +
  crypto/Makefile         |   1 +
- crypto/algif_akcipher.c | 473 ++++++++++++++++++++++++++++++++++++++++
+ crypto/algif_akcipher.c | 471 ++++++++++++++++++++++++++++++++++++++++
  include/crypto/if_alg.h |   2 +
- 4 files changed, 485 insertions(+)
+ 4 files changed, 483 insertions(+)
  create mode 100644 crypto/algif_akcipher.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
-index b338b5cf6..aeecdbd0d 100644
+index ff8b81340..26de7a94f 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -1403,6 +1403,15 @@ config CRYPTO_STATS
+@@ -1461,6 +1461,15 @@ config CRYPTO_USER_API_ENABLE_OBSOLETE
  
  endmenu
  
@@ -41,23 +42,23 @@ index b338b5cf6..aeecdbd0d 100644
  	bool
  
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 7289ccb84..f68acf932 100644
+index dc3b331ca..777865005 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -166,6 +166,7 @@ obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
- obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
- obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
- obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
+@@ -171,6 +171,7 @@ ecrdsa_generic-y += ecrdsa.o
+ ecrdsa_generic-y += ecrdsa_params.asn1.o
+ ecrdsa_generic-y += ecrdsa_pub_key.asn1.o
+ obj-$(CONFIG_CRYPTO_ECRDSA) += ecrdsa_generic.o
 +obj-$(CONFIG_CRYPTO_USER_API_AKCIPHER) += algif_akcipher.o
- obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
- obj-$(CONFIG_CRYPTO_OFB) += ofb.o
- obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
+ 
+ #
+ # generic algorithms and the async_tx api
 diff --git a/crypto/algif_akcipher.c b/crypto/algif_akcipher.c
 new file mode 100644
-index 000000000..8ed305ecc
+index 000000000..eb4ca7f7d
 --- /dev/null
 +++ b/crypto/algif_akcipher.c
-@@ -0,0 +1,473 @@
+@@ -0,0 +1,471 @@
 +/*
 + * algif_akcipher: User-space interface for asymmetric cipher algorithms
 + *
@@ -191,7 +192,7 @@ index 000000000..8ed305ecc
 +	/* Initialize the crypto operation */
 +	akcipher_request_set_tfm(&areq->cra_u.akcipher_req, tfm);
 +	akcipher_request_set_crypt(&areq->cra_u.akcipher_req, areq->tsgl,
-+				   areq->first_rsgl.sgl.sg, used, len);
++				   areq->first_rsgl.sgl.sgl, used, len);
 +
 +	if (msg->msg_iocb && !is_sync_kiocb(msg->msg_iocb)) {
 +		/* AIO operation */
@@ -284,7 +285,6 @@ index 000000000..8ed305ecc
 +	.ioctl		=	sock_no_ioctl,
 +	.listen		=	sock_no_listen,
 +	.shutdown	=	sock_no_shutdown,
-+	.getsockopt	=	sock_getsockopt,
 +	.mmap		=	sock_no_mmap,
 +	.bind		=	sock_no_bind,
 +	.accept		=	sock_no_accept,
@@ -377,7 +377,6 @@ index 000000000..8ed305ecc
 +	.ioctl		=	sock_no_ioctl,
 +	.listen		=	sock_no_listen,
 +	.shutdown	=	sock_no_shutdown,
-+	.getsockopt	=	sock_getsockopt,
 +	.mmap		=	sock_no_mmap,
 +	.bind		=	sock_no_bind,
 +	.accept		=	sock_no_accept,
@@ -532,7 +531,7 @@ index 000000000..8ed305ecc
 +MODULE_AUTHOR("Stephan Mueller <smueller@chronox.de>");
 +MODULE_DESCRIPTION("Asymmetric kernel crypto API user space interface");
 diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
-index dcacc1021..c4ff208b6 100644
+index c7b009ad5..0a39ff193 100644
 --- a/include/crypto/if_alg.h
 +++ b/include/crypto/if_alg.h
 @@ -18,6 +18,7 @@
@@ -543,7 +542,7 @@ index dcacc1021..c4ff208b6 100644
  
  #define ALG_MAX_PAGES			16
  
-@@ -111,6 +112,7 @@ struct af_alg_async_req {
+@@ -109,6 +110,7 @@ struct af_alg_async_req {
  	union {
  		struct aead_request aead_req;
  		struct skcipher_request skcipher_req;
@@ -552,6 +551,5 @@ index dcacc1021..c4ff208b6 100644
  
  	/* req ctx trails this struct */
 -- 
-2.17.1
-
+2.39.4
 
