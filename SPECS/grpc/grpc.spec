@@ -6,7 +6,7 @@
 Summary:        Google RPC
 Name:           grpc
 Version:        1.59.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
 Group:          Development/Libraries
@@ -45,6 +45,8 @@ Requires:       zlib-devel
 Requires:       openssl-devel
 Requires:       re2
 Requires:       abseil-cpp
+
+Patch0: CVE-2024-11407.patch
 
 %description
 Remote Procedure Calls (RPCs) provide a useful abstraction for building
@@ -113,6 +115,8 @@ rm -rf %{buildroot}%{_lib64dir}
 %{_libdir}/*.so
 
 %changelog
+* Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.59.3-2
+- Fix CVE-2024-11407
 * Tue Nov 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.59.3-1
 - Fix CVE-2023-44487, upgrade version to 1.59.3
 * Thu Jun 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.32.0-6
