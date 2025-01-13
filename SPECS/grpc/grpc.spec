@@ -7,7 +7,7 @@
 Summary:        Google RPC
 Name:           grpc
 Version:        1.59.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://grpc.io
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ Requires:       zlib-devel
 Requires:       openssl-devel
 Requires:       re2
 Requires:       abseil-cpp
+
+Patch0: CVE-2024-11407.patch
 
 %description
 Remote Procedure Calls (RPCs) provide a useful abstraction for building
@@ -116,6 +118,8 @@ rm -rf %{buildroot}%{_lib64dir}
 %{_libdir}/*.so
 
 %changelog
+* Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.59.5-3
+- Fix CVE-2024-11407
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.59.5-2
 - Release bump for SRP compliance
 * Mon Aug 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.59.5-1
