@@ -4,7 +4,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.23.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -33,6 +33,8 @@ BuildRequires: gmock-devel
 BuildRequires: abseil-cpp-devel
 
 Requires: abseil-cpp
+
+Patch0: CVE-2024-7254.patch
 
 %description
 Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data.
@@ -152,6 +154,8 @@ popd
 %{_libdir}/java/%{name}/*.jar
 
 %changelog
+* Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.23.3-2
+- Fix for CVE-2024-7254
 * Tue Nov 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.23.3-1
 - Upgrade protobuf to 3.23.3
 * Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.19.6-5
