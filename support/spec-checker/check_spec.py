@@ -5,7 +5,6 @@ import re
 import sys
 import calendar
 import json
-import tempfile
 
 from datetime import datetime
 
@@ -276,6 +275,13 @@ def check_changelog(spec, err_dict):
         line_str = line
         line = line.split()
 
+        # line[1] is week name, line[2] is month name
+        d, m = line[1], line[2]
+        if not (d.istitle() and m.istitle()):
+            err_msg = f"Day-'{d}' or Month-'{m}' name is improper, use proper case"
+            err_dict.update_err_dict(sec, err_msg)
+            ret = True
+
         date_text = "-".join(line[1:5])
         try:
             cur_date = datetime.strptime(date_text, date_format)
@@ -498,9 +504,9 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
     def populate_list(src_list, dest_list):
         for s in src_list:
             s = replace_macros(s, tmp)
-            if type(s) == str:
+            if isinstance(s, str):
                 dest_list.append(s)
-            if type(s) == list:
+            elif isinstance(s, list):
                 dest_list += s
 
     for r, _, fns in os.walk(dirname):
@@ -623,15 +629,15 @@ def create_altered_spec(spec_fn):
         g_ignore_list.append(included_fn)
         included_fn = find_file_in_dir(included_fn, dirname)
         with open(included_fn, "r") as fp:
-            for l in fp.readlines():
-                l = l.strip()
-                if l:
-                    output.append(f"{l}\n")
+            for ln in fp.readlines():
+                ln = ln.strip()
+                if ln:
+                    output.append(f"{ln}\n")
 
     altered_spec = f"/tmp/{os.path.basename(spec_fn)}"
     with open(f"{altered_spec}", "w") as fp:
-        for l in output:
-            fp.write(l)
+        for ln in output:
+            fp.write(ln)
 
     return altered_spec
 
