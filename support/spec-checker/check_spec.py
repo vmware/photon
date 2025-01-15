@@ -276,6 +276,14 @@ def check_changelog(spec, err_dict):
         line_str = line
         line = line.split()
 
+        # line[1] is week name, line[2] is month name
+        w = line[1]
+        m = line[2]
+        if not (w.istitle() and m.istitle()):
+            err_msg = f"Day-'{w}' or Month-'{m}' name is improper, use proper case"
+            err_dict.update_err_dict(sec, err_msg)
+            ret = True
+
         date_text = "-".join(line[1:5])
         try:
             cur_date = datetime.strptime(date_text, date_format)
