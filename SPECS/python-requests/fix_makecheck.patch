@@ -1,63 +1,28 @@
-From f7f59ba4e3bab6139d79343a345c7ab2000f11e7 Mon Sep 17 00:00:00 2001
-From: Shreenidhi Shedi <sshedi@vmware.com>
-Date: Sat, 18 Dec 2021 03:52:35 +0530
-Subject: [PATCH] https connections won't work during make check
-
-Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
----
- tests/test_requests.py | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
 diff --git a/tests/test_requests.py b/tests/test_requests.py
-index b77cba0..fc3dbe5 100644
+index fcdf2ee..eaba3ac 100644
 --- a/tests/test_requests.py
 +++ b/tests/test_requests.py
-@@ -851,6 +851,7 @@ class TestRequests:
-             headers={str('Content-Type'): 'application/octet-stream'},
-             data='\xff')  # compat.str is unicode.
+@@ -908,6 +908,7 @@ class TestRequests:
+             data="\xff",
+         )  # compat.str is unicode.
  
 +    @pytest.mark.skip("Disable the test")
      def test_pyopenssl_redirect(self, httpbin_secure, httpbin_ca_bundle):
-         requests.get(httpbin_secure('status', '301'), verify=httpbin_ca_bundle)
+         requests.get(httpbin_secure("status", "301"), verify=httpbin_ca_bundle)
  
-@@ -2232,6 +2233,7 @@ class TestTimeout:
-             (0.1, None),
-             Urllib3Timeout(connect=0.1, read=None)
-         ))
+@@ -2428,6 +2429,7 @@ class TestTimeout:
+     @pytest.mark.parametrize(
+         "timeout", ((0.1, None), Urllib3Timeout(connect=0.1, read=None))
+     )
 +    @pytest.mark.skip("Disable the test")
      def test_connect_timeout(self, timeout):
          try:
              requests.get(TARPIT, timeout=timeout)
-@@ -2245,6 +2247,7 @@ class TestTimeout:
-             (0.1, 0.1),
-             Urllib3Timeout(connect=0.1, read=0.1)
-         ))
+@@ -2439,6 +2441,7 @@ class TestTimeout:
+     @pytest.mark.parametrize(
+         "timeout", ((0.1, 0.1), Urllib3Timeout(connect=0.1, read=0.1))
+     )
 +    @pytest.mark.skip("Disable the test")
      def test_total_timeout_connect(self, timeout):
          try:
              requests.get(TARPIT, timeout=timeout)
-@@ -2462,12 +2465,12 @@ class TestPreparingURLs(object):
-     def test_preparing_url(self, url, expected):
- 
-         def normalize_percent_encode(x):
--            # Helper function that normalizes equivalent 
-+            # Helper function that normalizes equivalent
-             # percent-encoded bytes before comparisons
-             for c in re.findall(r'%[a-fA-F0-9]{2}', x):
-                 x = x.replace(c, c.upper())
-             return x
--        
-+
-         r = requests.Request('GET', url=url)
-         p = r.prepare()
-         assert normalize_percent_encode(p.url) == expected
-@@ -2570,4 +2573,4 @@ class TestPreparingURLs(object):
-     def test_post_json_nan(self, httpbin):
-         data = {"foo": float("nan")}
-         with pytest.raises(requests.exceptions.InvalidJSONError):
--          r = requests.post(httpbin('post'), json=data)
-\ No newline at end of file
-+          r = requests.post(httpbin('post'), json=data)
--- 
-2.25.1
-

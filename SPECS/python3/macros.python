@@ -63,7 +63,7 @@
 }
 
 %pyproject_install() %{expand:\\\
-  %{__python3} -m pip install --root %{buildroot} --no-deps --no-index --no-warn-script-location --disable-pip-version-check --progress-bar off --verbose pyproject-wheeldir/*.whl
+  %{__python3} -m pip install --root %{buildroot} --no-deps --no-index --no-warn-script-location --disable-pip-version-check --progress-bar off --verbose pyproject-wheeldir/*.whl %{?*}
   if [ -d %{buildroot}%{_bindir} ]; then
     %py3_shebang_fix %{buildroot}%{_bindir}/*
     rm -rfv %{buildroot}%{_bindir}/__pycache__

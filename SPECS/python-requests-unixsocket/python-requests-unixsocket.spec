@@ -2,7 +2,7 @@
 
 Name:           python3-requests-unixsocket
 Version:        0.3.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Use requests to talk HTTP via a UNIX domain socket
 Url:            https://pypi.org/project/requests-unixsocket
 Group:          Development/Languages/Python
@@ -15,6 +15,8 @@ Source0: https://files.pythonhosted.org/packages/c3/ea/0fb87f844d8a35ff0dcc8b941
 Source1: license.txt
 %include %{SOURCE1}
 
+Patch0: fix-for-requests.patch
+
 BuildRequires: python3-devel
 BuildRequires: python3-pbr
 BuildRequires: python3-setuptools
@@ -26,6 +28,7 @@ BuildRequires: python3-pytest
 %endif
 
 Requires: python3
+Requires: python3-requests >= 2.28.1-7
 
 BuildArch: noarch
 
@@ -56,6 +59,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jan 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.3.0-4
+- Fix functionality break introduced by CVE-2024-35195 in python3-requests
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.3.0-3
 - Release bump for SRP compliance
 * Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.3.0-2

@@ -1,6 +1,6 @@
 Name:           docker-py3
 Version:        6.0.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Python API for docker
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -12,6 +12,8 @@ Source0: https://github.com/docker/docker-py/releases/download/%{version}/docker
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: fix-for-requests.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-ipaddress
@@ -34,7 +36,7 @@ Requires: python3
 Requires: docker-pycreds3
 Requires: python3-backports.ssl_match_hostname
 Requires: python3-ipaddress
-Requires: python3-requests
+Requires: python3-requests >= 2.28.1-7
 Requires: python3-six
 Requires: python3-websocket-client
 
@@ -65,6 +67,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Jan 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-6
+- Fix functionality break introduced by CVE-2024-35195 in python3-requests
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.0.0-5
 - Release bump for SRP compliance
 * Fri Nov 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-4

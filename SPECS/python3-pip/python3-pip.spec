@@ -6,15 +6,15 @@ Summary:        The PyPA recommended tool for installing Python packages.
 Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
-Version:        24.0
-Release:        2%{?dist}
+Version:        24.3.1
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pip/
 
 Source0: https://files.pythonhosted.org/packages/6b/8b/0b16094553ecc680e43ded8f920c3873b01b1da79a54274c98f08cb29fca/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=b687d9e7e2b0348a1c3355610bcf4e194dd157dc6e79638f8a0a383cf1ba7c4253be4b145e9a5029e089807d1feec9e444976f34f77a732f3ef527d9bc6bcebf
+%define sha512 %{srcname}=2fad7072473d67fa0dbfc2c060b1b4752ea1b0d021051ebef44a668e6c9c731a530b1afb38872fdbc2efec0598fae532e61a5ed545524875b51a3fe0a8d11d96
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -25,6 +25,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-wheel
+BuildRequires:  ca-certificates
 
 Requires:       python3
 Requires:       python3-setuptools
@@ -49,26 +50,17 @@ A Python wheel of pip to use with venv.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%{python3} setup.py bdist_wheel
+export PYTHONPATH=./src/
+%{pyproject_wheel}
 
 %install
-%{python3} dist/%{python_wheel_name}/pip install \
-    --root %{buildroot} \
-    --no-deps \
-    --disable-pip-version-check \
-    --progress-bar off \
-    --verbose \
-    --ignore-installed \
-    --no-warn-script-location \
-    --no-index \
-    --no-cache-dir \
-    --find-links dist \
-    'pip==%{version}'
+export PYTHONPATH=./src/
+%pyproject_install -- --ignore-installed --no-cache-dir  --find-links pyproject-wheeldir 'pip==%{version}'
 
 find %{buildroot}%{python3_sitelib} -name '*.exe' | xargs rm -vf
 
 mkdir -p %{buildroot}%{python_wheel_dir}
-install -p dist/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
+install -p pyproject-wheeldir/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
 
 %check
 %{py3_test}
@@ -87,6 +79,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Wed Jan 22 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.3.1-1
+- Update pip to 24.3.1, fixes vendor package requests CVE-2024-35195
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.0-2
 - Release bump for SRP compliance
 * Thu Jul 25 2024 Tapas Kundu <tapas.kundu@broadom.com> 24.0-1

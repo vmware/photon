@@ -246,6 +246,11 @@ Commands
         )
         self._writeYaml(source, args.output)
 
+    def _download_source(self, srcdir, downloadedFile, sourceFileUrl):
+        self._run(
+            srcdir, f"curl -k -L -o {downloadedFile} -f {sourceFileUrl}".split()
+        )
+
     def build(self):
         parser = argparse.ArgumentParser(description="build")
         parser.add_argument("yaml")
@@ -287,6 +292,9 @@ Commands
                     logging.warning(
                         f"source {sourceFile.name} has unknown type {sourceFile.archive_type}"
                     )
+                    downloadedFile = f"{sourcesLocation}/{sourceFile.archive}"
+                    sourceFileUrl = f"{sourcesURLBase}/{sourceFile.archive}"
+                    self._download_source(sourcesLocation,downloadedFile, sourceFileUrl)
                 self._writeSchematic(
                     outdir, sourceFile, sourcesLocation, sourcesURLBase
                 )
@@ -428,9 +436,7 @@ Commands
             os.mkdir(projectDir)
             os.mkdir(extractedDir)
             # Download and extract source
-            self._run(
-                tmpdir, f"curl -k -L -o {downloadedFile} -f {sourceFile.url}".split()
-            )
+            self._download_source(tmpdir, downloadedFile, sourceFile.url)
             # Extract the source
             self._run(extractedDir, f"tar -xf {downloadedFile}".split())
             self._run(projectDir, "git init .".split())

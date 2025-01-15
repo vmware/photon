@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.9
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -17,8 +17,8 @@ Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
-Source2: setuptools-pip-wheels%{?dist}-1.0-1.tar.xz
-%define sha512 setuptools-pip-wheels=be455735f5293b38e1e51a946b9db137b5faa09012518c2f578e2183934aca2fd229c6db342bbd2310c46acdc330006829e83607f6befbb42ab00170aacd05fe
+Source2: setuptools-pip-wheels%{?dist}-1.0-2.tar.xz
+%define sha512 setuptools-pip-wheels=bb98b9975b611d3bb99644803f9579b8d4ee5216a9d057c5191d214dd4d6a6cc0a8d72b4f33c893c85543a78faf7feec002c53648646c19baa0eeba5f9c0ed7e
 
 Source3: license.txt
 %include %{SOURCE3}
@@ -43,6 +43,7 @@ BuildRequires: expat-devel >= 2.6.0
 BuildRequires: libffi-devel >= 3.0.13
 BuildRequires: sqlite-devel
 BuildRequires: util-linux-devel
+BuildRequires: ca-certificates
 
 # cross compilation requires native python3 installed for ensurepip
 %define BuildRequiresNative %{name}-xml
@@ -310,6 +311,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Wed Jan 22 2025 Prashant S Chauhan <Prashant.singh-chauhan@broadcom.com> 3.11.9-8
+- Use updated python3-pip whl file, pyproject_install macro should take argument
 * Wed Dec 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.9-7
 - Fix CVE-2024-9287
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.9-6

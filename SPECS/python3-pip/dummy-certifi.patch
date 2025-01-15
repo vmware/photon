@@ -1,31 +1,32 @@
-From 09c983fdeabe3fa0b90b73f32ddf84a61e498e09 Mon Sep 17 00:00:00 2001
+From 0741e5a665308184ddbd20900f92e4417204092f Mon Sep 17 00:00:00 2001
 From: Karolina Surma <ksurma@redhat.com>
-Date: Tue, 15 Nov 2022 09:22:46 +0100
+Date: Thu, 27 Jun 2024 10:38:53 +0200
 Subject: [PATCH] Dummy certifi patch
-
+ 
 ---
- src/pip/_vendor/certifi/core.py | 105 ++------------------------------
- 1 file changed, 6 insertions(+), 99 deletions(-)
-
+ src/pip/_vendor/certifi/core.py | 110 ++------------------------------
+ 1 file changed, 6 insertions(+), 104 deletions(-)
+ 
 diff --git a/src/pip/_vendor/certifi/core.py b/src/pip/_vendor/certifi/core.py
-index c3e5466..eb297f7 100644
+index 70e0c3b..eaf4210 100644
 --- a/src/pip/_vendor/certifi/core.py
 +++ b/src/pip/_vendor/certifi/core.py
-@@ -4,105 +4,12 @@ certifi.py
-
+@@ -4,111 +4,13 @@ certifi.py
+ 
  This module returns the installation location of cacert.pem or its contents.
  """
 -import sys
-
+-import atexit
+ 
+-def exit_cacert_ctx() -> None:
+-    _CACERT_CTX.__exit__(None, None, None)  # type: ignore[union-attr]
+ 
 +# The RPM-packaged certifi always uses the system certificates
 +def where() -> str:
 +    return '/etc/pki/tls/certs/ca-bundle.crt'
-
+ 
 -if sys.version_info >= (3, 11):
-+def contents() -> str:
-+    with open(where(), encoding='utf=8') as data:
-+        return data.read()
-
+ 
 -    from importlib.resources import as_file, files
 -
 -    _CACERT_CTX = None
@@ -52,6 +53,7 @@ index c3e5466..eb297f7 100644
 -            # we will also store that at the global level as well.
 -            _CACERT_CTX = as_file(files("pip._vendor.certifi").joinpath("cacert.pem"))
 -            _CACERT_PATH = str(_CACERT_CTX.__enter__())
+-            atexit.register(exit_cacert_ctx)
 -
 -        return _CACERT_PATH
 -
@@ -87,6 +89,7 @@ index c3e5466..eb297f7 100644
 -            # we will also store that at the global level as well.
 -            _CACERT_CTX = get_path("pip._vendor.certifi", "cacert.pem")
 -            _CACERT_PATH = str(_CACERT_CTX.__enter__())
+-            atexit.register(exit_cacert_ctx)
 -
 -        return _CACERT_PATH
 -
@@ -123,5 +126,8 @@ index c3e5466..eb297f7 100644
 -
 -    def contents() -> str:
 -        return read_text("pip._vendor.certifi", "cacert.pem", encoding="ascii")
---
-2.37.3
++def contents() -> str:
++    with open(where(), encoding='utf=8') as data:
++        return data.read()
+-- 
+2.45.1

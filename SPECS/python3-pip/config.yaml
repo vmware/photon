@@ -1,6 +1,6 @@
 sources:
-- archive: pip-24.0.tar.gz
-  archive_sha512sum: b687d9e7e2b0348a1c3355610bcf4e194dd157dc6e79638f8a0a383cf1ba7c4253be4b145e9a5029e089807d1feec9e444976f34f77a732f3ef527d9bc6bcebf
+- archive: pip-24.3.1.tar.gz
+  archive_sha512sum: 2fad7072473d67fa0dbfc2c060b1b4752ea1b0d021051ebef44a668e6c9c731a530b1afb38872fdbc2efec0598fae532e61a5ed545524875b51a3fe0a8d11d96
   skip_validation: true
   spdx:
     package:

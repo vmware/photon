@@ -1,7 +1,7 @@
 Summary:        Python binding for libudev
 Name:           python3-pyudev
 Version:        0.23.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 URL:            https://pypi.org/project/pyudev
 Source0:        pyudev-%{version}.tar.gz
@@ -19,7 +19,6 @@ BuildRequires:  python3-xml
 BuildRequires:  systemd-devel
 Requires:       systemd
 Requires:       python3
-Requires:       python3-pip
 Requires:       python3-six
 %if 0%{?with_check}
 BuildRequires:  python3-pip
@@ -60,9 +59,11 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-*   Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.23.2-2
--   Release bump for SRP compliance
-*   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.23.2-1
--   Automatic Version Bump
-*   Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 0.22.0-1
--   Initial release.
+* Tue Feb 04 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.23.2-3
+- Remove pip from Requires
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.23.2-2
+- Release bump for SRP compliance
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.23.2-1
+- Automatic Version Bump
+* Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 0.22.0-1
+- Initial release.
