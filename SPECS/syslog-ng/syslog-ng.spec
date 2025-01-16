@@ -1,8 +1,9 @@
 %define network_required 1
+
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -16,6 +17,10 @@ Source2:        %{name}.service
 
 Source3: license.txt
 %include %{SOURCE3}
+
+# can be removed after v >= 4.5.0
+# https://github.com/syslog-ng/syslog-ng/commit/dc64f0b6a7e79dd6fb27cf1f26b168e6a5a3f1db.patch
+Patch0: disable-example-modules.patch
 
 Requires:       glib
 Requires:       openssl
@@ -141,6 +146,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
    --disable-static \
    --enable-dynamic-linking \
    --disable-cpp \
+   --disable-example-modules \
    --with-python=3 \
    --with-python-packages=system \
    PYTHON=%{python3} \
@@ -216,6 +222,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Thu Jan 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-9
+- Disable example module building
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.3.1-8
 - Release bump for network_required packages
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.3.1-7
