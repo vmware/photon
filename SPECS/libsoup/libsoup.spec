@@ -3,7 +3,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         13%{?dist}
+Release:         14%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -17,6 +17,11 @@ Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/%{maj_ver}/%{name}-%{ver
 Patch0: libsoup-fix-make-check.patch
 Patch1: libsoup-issue-120.patch
 %endif
+
+Patch2:        CVE-2024-52530.patch
+Patch3:        CVE-2024-52531.patch
+Patch4:        CVE-2024-52532-1.patch
+Patch5:        CVE-2024-52532-2.patch
 
 BuildRequires: glib-devel >= 2.68.4
 BuildRequires: gobject-introspection
@@ -112,6 +117,8 @@ These are the additional language files of libsoup.
 %defattr(-,root,root)
 
 %changelog
+* Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.72.0-14
+- Fix CVE-2024-52530, CVE-2024-52531, CVE-2024-52532
 * Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.72.0-13
 - Version Bump up to consume httpd v2.4.62
 * Tue Jul 09 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.72.0-12
