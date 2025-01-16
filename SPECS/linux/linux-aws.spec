@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.232
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -207,6 +207,9 @@ Patch164: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
 Patch165: 0001-skbuff-introduce-skb_expand_head.patch
 Patch166: 0002-ipv6-use-skb_expand_head-in-ip6_finish_output2.patch
 Patch167: 0003-ipv6-fix-possible-UAF-in-ip6_finish_output2.patch
+
+# Fix CVE-2024-35966
+Patch168: 0001-Bluetooth-RFCOMM-Fix-not-validating-setsockopt-user-.patch
 
 # Fix CVE-2024-46834
 Patch171: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
@@ -597,6 +600,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Jan 16 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.232-2
+- Fix CVE-2024-35966
 * Fri Dec 20 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.232-1
 - Update to version 5.10.232
 * Tue Nov 26 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.230-1

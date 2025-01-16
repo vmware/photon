@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.232
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -262,6 +262,9 @@ Patch165: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
 
 # Fix CVE-2024-38591
 Patch166: 0001-RDMA-hns-Fix-deadlock-on-SRQ-async-events.patch
+
+# Fix CVE-2024-35966
+Patch167: 0001-Bluetooth-RFCOMM-Fix-not-validating-setsockopt-user-.patch
 
 # Fix CVE-2024-46834
 Patch169: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
@@ -974,6 +977,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Jan 16 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.232-2
+- Fix CVE-2024-35966
 * Fri Dec 20 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.232-1
 - Update to version 5.10.232
 * Tue Nov 26 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.230-1
