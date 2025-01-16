@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org
 Group:          System Environment/Daemons
@@ -13,6 +13,10 @@ Source0: https://github.com/balabit/%{name}/releases/download/%{name}-%{version}
 
 Source1:        60-%{name}-journald.conf
 Source2:        %{name}.service
+
+# can be removed after v >= 4.5.0
+# https://github.com/syslog-ng/syslog-ng/commit/dc64f0b6a7e79dd6fb27cf1f26b168e6a5a3f1db.patch
+Patch0: disable-example-modules.patch
 
 Requires:       glib >= 2.68.4
 Requires:       openssl
@@ -102,6 +106,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
   --enable-mqtt \
   --disable-static \
   --disable-cpp \
+  --disable-example-modules \
   --enable-dynamic-linking \
   PYTHON=%{python3} \
   PKG_CONFIG_PATH=%{_libdir}/pkgconfig/
@@ -177,6 +182,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Thu Jan 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-7
+- Disable example module building
 * Thu Apr 11 2024 Nitesh Kumar <nitesh-nk.kumar@brodcom.com> 4.3.1-6
 - Fixing localstatedir path
 * Thu Apr 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-5

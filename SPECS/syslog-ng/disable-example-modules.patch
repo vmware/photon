@@ -1,0 +1,98 @@
+From ced2de1f395e5e12aa82491a08f643b77fdac80d Mon Sep 17 00:00:00 2001
+From: Hofi <hofione@gmail.com>
+Date: Wed, 11 Oct 2023 12:03:12 +0200
+Subject: [PATCH] examples: Added example modules wide common option
+ ENABLE_EXAMPLE_MODULES both to autotools and cmake builds
+
+Signed-off-by: Hofi <hofione@gmail.com>
+---
+ configure.ac                    | 5 +++++
+ modules/examples/CMakeLists.txt | 9 +++++++--
+ modules/examples/Makefile.am    | 6 +++++-
+ 3 files changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index bd72f4e..ab9ecd2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -199,6 +199,9 @@ AC_ARG_ENABLE(forced_server_mode,
+ AC_ARG_ENABLE(debug,
+               [  --enable-debug      Enable debugging code.],, enable_debug="no")
+ 
++AC_ARG_ENABLE(example-modules,
++              [  --enable-example-modules Enable example modules.],, enable_example_modules="yes")
++
+ AC_ARG_ENABLE(force_gnu99,
+               [  --enable-force-gnu99      Enforce C99 with gnu extensions.],, force_gnu99="no")
+ 
+@@ -2177,6 +2180,7 @@ AM_CONDITIONAL(ENABLE_MANPAGES_INSTALL, [test "$enable_manpages_install" != "no"
+ AM_CONDITIONAL(ENABLE_NATIVE, [test "$enable_native" != "no"])
+ AM_CONDITIONAL(ENABLE_EXTRA_WARNINGS, [test "$enable_extra_warnings" = "yes"])
+ AM_CONDITIONAL(ENABLE_TESTING, [test "$enable_tests" != "no"])
++AM_CONDITIONAL(ENABLE_EXAMPLE_MODULES, [test "$enable_example_modules" = "yes"])
+ AM_CONDITIONAL(ENABLE_SANITIZER, [test "$with_sanitizer" != "no"])
+ AM_CONDITIONAL(ENABLE_DEBUG, [test "$enable_debug" != "no"])
+ AM_CONDITIONAL([HAVE_INOTIFY], [test x$ac_cv_func_inotify_init = xyes])
+@@ -2326,3 +2330,4 @@ echo "  Java modules                : ${enable_java_modules:=no}"
+ echo "  afsnmp module               : ${enable_afsnmp:=no}"
+ echo "  eBPF module                 : ${enable_ebpf:=no}"
+ echo "  native bindings             : ${enable_native:=no}"
++echo "  Example modules             : ${enable_example_modules:=yes}"
+diff --git a/modules/examples/CMakeLists.txt b/modules/examples/CMakeLists.txt
+index bd03f22..93b2df7 100644
+--- a/modules/examples/CMakeLists.txt
++++ b/modules/examples/CMakeLists.txt
+@@ -1,5 +1,10 @@
+-add_library(examples SHARED example-plugins.c)
++module_switch(ENABLE_EXAMPLE_MODULES "Enable example modules" ON)
++
++if(NOT ENABLE_EXAMPLE_MODULES)
++  return()
++endif()
+ 
++add_library(examples SHARED example-plugins.c)
+ 
+ add_subdirectory(sources/msg-generator)
+ add_subdirectory(sources/threaded-random-generator)
+@@ -10,10 +15,10 @@ add_subdirectory(inner-destinations/http-test-slots)
+ add_subdirectory(inner-destinations/tls-test-validation)
+ add_subdirectory(destinations/example_destination)
+ 
+-
+ target_link_libraries(examples PRIVATE msg-generator)
+ target_link_libraries(examples PRIVATE threaded-random-generator)
+ target_link_libraries(examples PRIVATE threaded-diskq-source)
++
+ if(ENABLE_CPP)
+   target_link_libraries(examples PRIVATE random-choice-generator)
+ endif()
+diff --git a/modules/examples/Makefile.am b/modules/examples/Makefile.am
+index 774b7e7..270df7a 100644
+--- a/modules/examples/Makefile.am
++++ b/modules/examples/Makefile.am
+@@ -1,3 +1,5 @@
++if ENABLE_EXAMPLE_MODULES
++
+ include modules/examples/sources/msg-generator/Makefile.am
+ include modules/examples/sources/threaded-diskq-source/Makefile.am
+ include modules/examples/sources/threaded-random-generator/Makefile.am
+@@ -5,7 +7,6 @@ include modules/examples/inner-destinations/http-test-slots/Makefile.am
+ include modules/examples/inner-destinations/tls-test-validation/Makefile.am
+ include modules/examples/destinations/example_destination/Makefile.am
+ 
+-
+ EXAMPLE_PLUGINS = \
+   $(top_builddir)/modules/examples/sources/libmsg-generator.la \
+   $(top_builddir)/modules/examples/sources/libthreaded-diskq-source.la \
+@@ -38,5 +39,8 @@ endif
+ EXTRA_DIST += modules/examples/CMakeLists.txt
+ 
+ modules/examples modules/examples/ mod-examples: modules/examples/libexamples.la
++else
++modules/examples modules/examples/ mod-examples:
++endif
+ 
+ .PHONY: modules/examples/ mod-examples
+-- 
+2.48.0
+
