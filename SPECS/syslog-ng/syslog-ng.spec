@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -13,6 +13,10 @@ Source0: https://github.com/balabit/%{name}/releases/download/%{name}-%{version}
 
 Source1:        60-%{name}-journald.conf
 Source2:        %{name}.service
+
+# can be removed after v >= 4.5.0
+# https://github.com/syslog-ng/syslog-ng/commit/dc64f0b6a7e79dd6fb27cf1f26b168e6a5a3f1db.patch
+Patch0: disable-example-modules.patch
 
 Requires:       glib
 Requires:       openssl
@@ -137,6 +141,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
    --disable-static \
    --enable-dynamic-linking \
    --disable-cpp \
+   --disable-example-modules \
    --with-python=3 \
    --with-python-packages=system \
    PYTHON=%{python3} \
@@ -212,6 +217,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Thu Jan 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-8
+- Disable example module building
 * Fri Aug 09 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.1-7
 - Bump up as part of python3-urllib3 update
 * Thu Jul 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-6
