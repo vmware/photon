@@ -5,12 +5,16 @@
 
 # check the release bundle & use the right version, example:
 # https://github.com/draios/sysdig/blob/0.30.2/cmake/modules/falcosecurity-libs.cmake#L35
-%define falcosecurity_libs_ver  0.13.4
+%define falcosecurity_libs_ver  0.19.0
+%define nlohman_json_ver  3.3.0
+%define uthash_ver  1.9.8
+%define tbb_ver  2022.0.0
+%define valijson_ver  1.0.2
 
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
-Version:        0.34.1
-Release:        4%{?kernelsubrelease}%{?dist}
+Version:        0.39.0
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org
 Group:          Applications/System
@@ -18,24 +22,40 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=2d7c6369eb6ae85cb7fca50da049470830eb8a88002414f257e5ccf1eb438fe36890d51107ffd782b2cd3b7358094de0795641a1cb6b086a4e29b9a5b6edad4f
+%define sha512 %{name}=d43c816d4c29cc283d3247ac0ac3591b8adea7a08194a80b4e530f0c45730a824d16eda7b07bb70e4658cbae0f851fbb67ec880eedf33477bf5bfc911d8a7936
 
 Source1: https://github.com/falcosecurity/libs/archive/falconsecurity-libs-%{falcosecurity_libs_ver}.tar.gz
-%define sha512 falconsecurity-libs=e4c9ab4cd8bbe544f13403573df7751b21c977ecefe4ea7c0b71c576a77c308d2f64f5a3d933a2493f23aacbc63148f24be0e897ca779a73879a48c63cbbad33
+%define sha512 falconsecurity-libs=5b011c804b07bf2f3eb6a6d7e8c9ef4e54bcc8d74116020e887465aba3dec737bdf8fc854778a8230f7e23e87da29423c6320a8054873eb5c9c957ce40ef3825
 
-Source2: %{name}-%{version}-dependencies.tar.gz
-%define sha512 %{name}-%{version}-dependencies.tar.gz=27192269e2c8578e0440ad4a1e1ad7fde98a7f00f064f3b1b0d395bc7c24f9b1ce9354430e25c6f51ac74067c37f9cbcb7eb55e1c8f6e5a3912beb91193212b9
+Source3: https://github.com/nlohmann/json/archive/nlohman-json-%{nlohman_json_ver}.tar.gz
+%define sha512 nlohman-json=cb81e89797a9b8b322a7b421422f919cf1dadc939d83688196664aefc365fa52ec3601ca5419782c99e09e594b56301ac9ea909ac0f5231b70cfa3ff1257a964
 
-Source3: uthash.h
+Source4: https://github.com/troydhanson/uthash/archive/refs/tags/uthash-%{uthash_ver}.tar.gz
+%define sha512 uthash=2ea7f35d662f711e216b1d2d26a1fae698b5f0a71f7151c4747161046de9d8c632dc756cb5948863394694dde47fa6f9383f46ca572c83bb6803383da0f2f740
+
+Source5: https://github.com/oneapi-src/oneTBB/archive/refs/tags/tbb-%{tbb_ver}.tar.gz
+%define sha512 tbb=c87b84964b2c323f61895a532968dfa6413a774c177cffbf6e798a07e74e8da5d449144875771df0a1b02657eeb2a7ae4d41c6c432dbf7ea50e3d5a9ea9f8cd3
+
+Source6: https://github.com/tristanpenman/valijson/archive/refs/tags/valijson-%{valijson_ver}.tar.gz
+%define sha512 valijson=c1141e533d6a791a01883c5b7ab9501eebc39057a850d784670a4bcf99bff3fee4c3120107128dcaa9db0505adf2ae794700620c02163b3e636f0b635031df80
 
 Patch0: get-googletest-sources-from-photonstage.patch
 Patch1: falcosecurity-libs-nodownload.patch
 Patch2: bashcomp-location.patch
+Patch3: 0001-sysdig-Modify-path-for-local-falco-lib.patch
+Patch4: 0001-sysdig-deps-Set-Lohman-src-to-local.patch
+Patch5: 0001-falcolib-Add-prototype-for-nsec_to_clock.patch
+
+Patch6: falco_sec_src_patches/0001-Set-local-path-for-troy.patch
+Patch7: falco_sec_src_patches/0002-Modify-local-path.patch
+Patch8: falco_sec_src_patches/0003-oneAPI-Threading-Building-Block.patch
+Patch9: falco_sec_src_patches/0004-Local-path-for-Validation-libJSON.patch
 
 BuildArch: x86_64
 
 BuildRequires: cmake
 BuildRequires: linux-devel = %{uname_r}
+BuildRequires: clang-devel
 BuildRequires: openssl-devel
 BuildRequires: curl-devel
 BuildRequires: zlib-devel
@@ -53,6 +73,13 @@ BuildRequires: re2-devel
 BuildRequires: tinydir-devel
 BuildRequires: elfutils-devel
 BuildRequires: abseil-cpp-devel
+BuildRequires: docker
+BuildRequires: lua-devel
+BuildRequires: zlib-devel
+BuildRequires: ncurses-devel
+BuildRequires: yaml-cpp-devel
+BuildRequires: re2-devel
+
 
 Requires: linux = %{uname_r}
 Requires: zlib
@@ -66,7 +93,12 @@ Requires: protobuf
 Requires: jsoncpp
 Requires: re2
 Requires: elfutils-libelf
+Requires: docker-engine
 Requires: abseil-cpp
+Requires: lua
+Requires: zlib
+Requires: ncurses
+Requires: yaml-cpp
 
 %description
 Sysdig is open source, system-level exploration, capture system state and activity from a running Linux instance.
@@ -75,12 +107,16 @@ Sysdig is scriptable in Lua and includes a command line interface and a powerful
 that runs in your terminal
 
 %prep
-%autosetup -a0 -a1 -p1
-mkdir -p %{_arch}-vmware-linux
-tar xf %{SOURCE2} --strip-components=1 -C %{_arch}-vmware-linux
+%autosetup -a0 -a1 -N
+pushd %{_builddir}/%{name}-%{version}
+%autopatch -p1 -m0 -M4
+popd
+
+pushd %{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}
+%autopatch -p1 -m5 -M9
+popd
 
 %build
-cp %{SOURCE3} libs-%{falcosecurity_libs_ver}/userspace/libscap/
 export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
 
 %{cmake} \
@@ -93,12 +129,19 @@ export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
     -DUSE_BUNDLED_GRPC=OFF \
     -DUSE_BUNDLED_JQ=OFF \
     -DUSE_BUNDLED_JSONCPP=OFF \
+    -DUSE_BUNDLED_LUAJIT=OFF \
     -DUSE_BUNDLED_NJSON=OFF \
     -DUSE_BUNDLED_NCURSES=OFF \
+    -DUSE_BUNDLED_YAMLCPP=OFF \
+    -DUSE_BUNDLED_RE2=OFF \
     -DUSE_BUNDLED_LIBELF=OFF \
     -DLIBELF_LIB=%{_libdir}/libelf.so \
+    -DNJSON_SRC=%{_builddir}/%{name}-%{version}/json-%{nlohman-json-ver} \
     -DBUILD_DRIVER=ON \
+    -DDRIVER_SOURCE_DIR=%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}/driver \
+    -DBUILD_BPF=OFF \
     -DBUILD_LIBSCAP_EXAMPLES=OFF \
+    -DBUILD_LIBSCAP_MODERN_BPF=OFF \
     -DBUILD_LIBSINSP_EXAMPLES=OFF \
     -DFALCOSECURITY_LIBS_SOURCE_DIR=%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver} \
     -DFALCOSECURITY_LIBS_VERSION=%{falcosecurity_libs_ver} \
@@ -115,6 +158,7 @@ export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
     -DCMAKE_BUILD_TYPE=Release
 
 export KERNELDIR="%{_modulesdir}/build"
+
 %{cmake_build}
 
 %install
@@ -148,6 +192,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko.xz
 
 %changelog
+* Mon Jan 20 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 0.39.0-1
+- Upgrade to version 0.39.0
 * Fri Aug 16 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.34.1-4
 - Bump version as a part of grpc upgrade
 * Fri Jul 05 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.34.1-3

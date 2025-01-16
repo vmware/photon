@@ -1,0 +1,28 @@
+From 3eb7bf91f3b99e5056bc2d2ce5acc2d1c52bbfed Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Thu, 16 Jan 2025 06:15:18 +0000
+Subject: [PATCH] Set local path for oneAPI Threading Building Block
+
+  -  Set local path for oneAPI Threading Building Block
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ cmake/modules/tbb.cmake | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/cmake/modules/tbb.cmake b/cmake/modules/tbb.cmake
+index 6e8fa0a..2795162 100644
+--- a/cmake/modules/tbb.cmake
++++ b/cmake/modules/tbb.cmake
+@@ -58,7 +58,7 @@ else()
+ 
+ 	if(NOT TARGET tbb)
+ 		message(STATUS "Using bundled tbb in '${TBB_SRC}'")
+-		set(TBB_SRC_URL "https://github.com/oneapi-src/oneTBB/archive/refs/tags/v2022.0.0.tar.gz")
++		set(TBB_SRC_URL "${CMAKE_CURRENT_SOURCE_DIR}/../../SOURCES/tbb-2022.0.0.tar.gz")
+ 		set(TBB_SRC_URL_HASH
+ 			"SHA256=e8e89c9c345415b17b30a2db3095ba9d47647611662073f7fbf54ad48b7f3c2a"
+ 		)
+-- 
+2.39.4
+

@@ -1,0 +1,38 @@
+From 909e74d37187f010cf592a9b0ca48c7e94022748 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Thu, 16 Jan 2025 05:26:14 +0000
+Subject: [PATCH] Set local path for UT-Hashing
+
+  -  Set local path of UT Hash
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ cmake/modules/uthash.cmake | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/cmake/modules/uthash.cmake b/cmake/modules/uthash.cmake
+index 4bdff11..b89a9ee 100644
+--- a/cmake/modules/uthash.cmake
++++ b/cmake/modules/uthash.cmake
+@@ -14,7 +14,7 @@
+ #
+ 
+ option(USE_BUNDLED_UTHASH "Enable downloading of the bundled uthash library" ${USE_BUNDLED_DEPS})
+-set(UTHASH_DOWNLOAD_URL "https://raw.githubusercontent.com/troydhanson/uthash/v1.9.8/src/uthash.h")
++set(UTHASH_DOWNLOAD_URL "${CMAKE_CURRENT_SOURCE_DIR}/../../../../uthash-1.9.8")
+ set(UTHASH_DOWNLOAD_DIR "${LIBS_DIR}/userspace/libscap")
+ 
+ if(UTHASH_INCLUDE)
+@@ -35,8 +35,7 @@ else()
+ 	ExternalProject_Add(
+ 		uthash
+ 		PREFIX "${PROJECT_BINARY_DIR}/uthash-prefix"
+-		URL "https://github.com/troydhanson/uthash/archive/refs/tags/v1.9.8.tar.gz"
+-		URL_HASH "SHA256=d9d123ce81c5d127442876fc3b12fab3ad632bee6aca685be7d461c08e24c046"
++		URL "${CMAKE_CURRENT_SOURCE_DIR}/../../SOURCES/uthash-1.9.8.tar.gz"
+ 		CONFIGURE_COMMAND ""
+ 		BUILD_COMMAND ""
+ 		INSTALL_COMMAND ""
+-- 
+2.39.4
+

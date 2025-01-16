@@ -1,0 +1,28 @@
+From 4de5abd12c76a51f9d405ff5d33c3cd4510fa5af Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Mon, 13 Jan 2025 10:15:42 +0000
+Subject: [PATCH] falconlib: Add prototype for nsec_to_clock
+
+  -  Add prototype for nsec_to_clock_t so that missing
+     prototype error during compilation can be resolved.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ driver/ppm_cputime.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/driver/ppm_cputime.c b/driver/ppm_cputime.c
+index bfea5fe..04d4715 100644
+--- a/driver/ppm_cputime.c
++++ b/driver/ppm_cputime.c
+@@ -336,6 +336,7 @@ void ppm_task_cputime_adjusted(struct task_struct *p, cputime_t *ut, cputime_t *
+ #include <linux/jiffies.h>
+ #include <linux/param.h>
+ 
++uint64_t nsec_to_clock_t(uint64_t x);
+ /*
+  * Implementation copied from kernel/time/time.c in 4.11.0
+  */
+-- 
+2.39.4
+

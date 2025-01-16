@@ -1,0 +1,31 @@
+From 5d00735591837127a64184eb855ec6ee1e6ca3ab Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Fri, 17 Jan 2025 05:42:11 +0000
+Subject: [PATCH] sysdig-deps: Set local path to nlohman-json
+
+  -  Set the path of nlohman-json to local source
+     directory so that the compilation happens
+     locally to be SRP compliant.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ cmake/modules/nlohmann-json.cmake | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/cmake/modules/nlohmann-json.cmake b/cmake/modules/nlohmann-json.cmake
+index feb0f071..0bbe4856 100644
+--- a/cmake/modules/nlohmann-json.cmake
++++ b/cmake/modules/nlohmann-json.cmake
+@@ -29,8 +29,7 @@ else()
+   set(NJSON_INCLUDE_DIR "${NJSON_SRC}/single_include")
+   ExternalProject_Add(
+     njson
+-    URL "https://github.com/nlohmann/json/archive/v3.3.0.tar.gz"
+-    URL_HASH "SHA256=2fd1d207b4669a7843296c41d3b6ac5b23d00dec48dba507ba051d14564aa801"
++    URL "${CMAKE_CURRENT_SOURCE_DIR}/../../SOURCES/nlohman-json-3.3.0.tar.gz"
+     CONFIGURE_COMMAND ""
+     BUILD_COMMAND ""
+     INSTALL_COMMAND "")
+-- 
+2.39.4
+

@@ -1,0 +1,29 @@
+From cdf98c21145480adbcc9cead2abd50177fe43386 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Thu, 16 Jan 2025 05:37:53 +0000
+Subject: [PATCH] Modify local path for regular exp2
+
+  -  Modify local path for regular exp2
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ cmake/modules/re2.cmake | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/cmake/modules/re2.cmake b/cmake/modules/re2.cmake
+index 5724e72..5e55a9d 100644
+--- a/cmake/modules/re2.cmake
++++ b/cmake/modules/re2.cmake
+@@ -29,8 +29,7 @@ else()
+ 	set(RE2_SRC "${PROJECT_BINARY_DIR}/re2-prefix/src/re2")
+ 	set(RE2_INCLUDE "${RE2_SRC}/include")
+ 	set(RE2_DIR "${RE2_SRC}/lib/cmake/re2")
+-	set(RE2_URL "https://github.com/google/re2/archive/refs/tags/2022-06-01.tar.gz")
+-	set(RE2_URL_HASH "SHA256=f89c61410a072e5cbcf8c27e3a778da7d6fd2f2b5b1445cd4f4508bee946ab0f")
++	set(RE2_URL "${CMAKE_CURRENT_SOURCE_DIR}/../../SOURCES/re2-2022-06-01.tar.xz")
+ 	if(BUILD_SHARED_LIBS)
+ 		set(RE2_LIB_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX})
+ 	else()
+-- 
+2.39.4
+

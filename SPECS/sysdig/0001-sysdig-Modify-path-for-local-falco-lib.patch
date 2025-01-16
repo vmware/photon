@@ -1,0 +1,31 @@
+From 4fe6f8966150b9309ca5698e316e587aa6861ecc Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Fri, 3 Jan 2025 10:43:37 +0000
+Subject: [PATCH] sysdig: Modify path for local falco lib
+
+  -  Modify the patch to falconsecurity-libs source so that
+     compilation happens from local directory.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ cmake/modules/falcosecurity-libs.cmake | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/cmake/modules/falcosecurity-libs.cmake b/cmake/modules/falcosecurity-libs.cmake
+index 1cfe37a8..94655350 100644
+--- a/cmake/modules/falcosecurity-libs.cmake
++++ b/cmake/modules/falcosecurity-libs.cmake
+@@ -16,8 +16,8 @@
+ # limitations under the License.
+ #
+ 
+-set(FALCOSECURITY_LIBS_CMAKE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/falcosecurity-libs-repo")
+-set(FALCOSECURITY_LIBS_CMAKE_WORKING_DIR "${CMAKE_BINARY_DIR}/falcosecurity-libs-repo")
++set(FALCOSECURITY_LIBS_CMAKE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../libs-${FALCOSECURITY_LIBS_VERSION}")
++set(FALCOSECURITY_LIBS_CMAKE_WORKING_DIR "${CMAKE_BINARY_DIR}/libs-${FALCOSECURITY_LIBS_VERSION}")
+ 
+ file(MAKE_DIRECTORY ${FALCOSECURITY_LIBS_CMAKE_WORKING_DIR})
+ 
+-- 
+2.39.4
+
