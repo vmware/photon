@@ -7,7 +7,7 @@ Name:           python3-setuptools
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        69.0.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -28,6 +28,7 @@ BuildRequires: python3-xml
 
 Requires:       python3
 Requires:       python3-xml
+Requires(post): findutils
 
 BuildArch:      noarch
 
@@ -53,7 +54,7 @@ A Python wheel of setuptools to use with venv.
 
 %install
 %{py3_install}
-find %{buildroot}%{python3_sitelib} -name '*.exe' | xargs rm -f
+find %{buildroot}%{python3_sitelib} -name '*.exe' -delete
 mkdir -p %{buildroot}%{python_wheel_dir}
 install -p dist/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
 
@@ -76,6 +77,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Fri Jan 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 69.0.3-7
+- Add findutils to post requires
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 69.0.3-6
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 69.0.3-5
