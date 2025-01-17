@@ -7,7 +7,7 @@ Name:           python3-setuptools
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        65.5.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -26,6 +26,7 @@ BuildRequires: python3-xml
 
 Requires:       python3
 Requires:       python3-xml
+Requires(post): findutils
 
 BuildArch:      noarch
 
@@ -51,7 +52,7 @@ A Python wheel of setuptools to use with venv.
 
 %install
 %{py3_install}
-find %{buildroot}%{python3_sitelib} -name '*.exe' | xargs rm -f
+find %{buildroot}%{python3_sitelib} -name '*.exe' -delete
 mkdir -p %{buildroot}%{python_wheel_dir}
 install -p dist/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
 
@@ -74,6 +75,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Fri Jan 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 65.5.1-6
+- Add findutils to post requires
 * Tue Jul 23 2024 Prashant S Chauhan <prashant.singhj-chauhan@broadcom.com> 65.5.1-5
 - Fix CVE-2024-6345
 * Thu May 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 65.5.1-4
