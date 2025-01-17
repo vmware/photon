@@ -7,7 +7,7 @@ Group:      System Environment/Base
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source:         https://ftp.gnu.org/gnu/help2man/%{name}-%{version}.tar.xz
+Source0:         https://ftp.gnu.org/gnu/help2man/%{name}-%{version}.tar.xz
 %define sha512 %{name}=800eb0daa9daef8e423d52ede55eee2960122ea0269865295afada4cf4fcc1c6791da8429c3a57c0fc1bf0a14c8a77953952325413a8faa5dd07b1bc5bc0edd1
 
 Source1: license.txt
@@ -28,7 +28,7 @@ way to generate a placeholder man page pointing to that resource while
 still providing some useful information.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
 %configure
