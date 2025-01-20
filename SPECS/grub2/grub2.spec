@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    18%{?dist}
+Release:    19%{?dist}
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -45,6 +45,8 @@ BuildRequires:  bison
 # Requirements for signing artifacts
 %if "%{?signing_script}" != ""
 %ifarch x86_64
+%define network_required 1
+BuildRequires:  ca-certificates-pki
 BuildRequires:  sbsigntools
 BuildRequires:  python3-requests
 %endif
@@ -267,6 +269,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Mon Jan 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 2.06-19
+- Add network required option with PE image signing
 * Mon Dec 16 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 2.06-18
 - Sign PE image inplace with SRP signer
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.06-17

@@ -44,7 +44,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.126
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -437,6 +437,8 @@ BuildRequires:  pciutils-devel
 BuildRequires:  libcap-devel
 # Requirements for signing artifacts
 %if "%{?signing_script}" != ""
+%define network_required 1
+BuildRequires:  ca-certificates-pki
 BuildRequires:  sbsigntools
 BuildRequires:  python3-requests
 %endif
@@ -964,6 +966,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Jan 23 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.126-2
+- Add network required option for PE image signing
 * Tue Jan 21 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.126-1
 - Update to version 6.1.126
 * Wed Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.124-1

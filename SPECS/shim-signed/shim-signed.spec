@@ -2,7 +2,7 @@
 Summary:    Photon shim
 Name:       shim-signed
 Version:    15.8
-Release:    4%{?dist}
+Release:    5%{?dist}
 Group:      System Environment/Base
 URL:        https://vmware.github.io/photon/
 Vendor:     VMware, Inc.
@@ -16,6 +16,8 @@ BuildArch:  x86_64
 
 # Requirements for signing artifacts
 %if "%{?signing_script}" != ""
+%define network_required 1
+BuildRequires:  ca-certificates-pki
 BuildRequires:  sbsigntools
 BuildRequires:  python3-requests
 %endif
@@ -44,6 +46,8 @@ python3 %{signing_script} --file_type pe \
 /boot/efi/EFI/BOOT/revocations.efi
 
 %changelog
+* Mon Jan 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 15.8-5
+- Add network required option with PE image signing
 * Mon Dec 16 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 15.8-4
 - Sign PE image inplace with SRP signer
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.8-3
