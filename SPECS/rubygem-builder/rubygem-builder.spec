@@ -5,17 +5,22 @@
 Summary:        Builders for MarkUp
 Name:           rubygem-builder
 Version:        3.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://onestepback.org
+
 Source0:        http://rubygems.org/gems/builder-%{version}.gem
-%define sha1    builder=3581f146308130f5b23b4f0348e68333288267f8
-Source1:        https://get.rvm.io/rvm-installer
-%define sha1    rvm-installer=cf0184a1fc3c0854da5acc1134fac150461d7360
+%define sha512  builder=730317ec0a4af33e183283e309e38d47deb08db0ab6bd6dfebdedcebb7470bd383c6c1d32ad674adc43298e0f86930b97c652fff9827ca8890db2d1d68e792f1
+
+# Taken from https://github.com/rvm/rvm/blob/master/binscripts/rvm-installer
+Source1:        rvm-installer
+%define sha512 rvm-installer=a48915efe196c0ff8f101c4a71c7720a0bde8511bdedf72559b12c5f447dd4e3a3dec7b002daa4949a94988a6d4b1d7f45f6a3027ada8dff1ba2b26f911cc12d
+
 BuildRequires:  ruby
+
 Requires: ruby
 
 %description
@@ -23,9 +28,10 @@ Builder provides a number of builder objects that make creating structured
 data simple to do. Currently the following builder objects are supported:
 
 %prep
-%setup -q -c -T
+%autosetup -p1 -c -T
 chmod +x  %{SOURCE1}
 cp %{SOURCE1} .
+
 %build
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
@@ -42,6 +48,8 @@ popd
 %{gemdir}
 
 %changelog
+*   Mon Jan 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.4-2
+-   Bring rvm-installer to spec dir
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.4-1
 -   Automatic Version Bump
 *   Wed Mar 22 2017 Chang Lee <changlee@vmware.com> 3.2.3-2
