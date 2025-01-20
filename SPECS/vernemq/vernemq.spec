@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          2.0.1
-Release:          3%{?dist}
+Release:          4%{?dist}
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
 Vendor:           VMware, Inc.
@@ -18,11 +18,10 @@ Source0: https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
 # This will bring all dependencies into _build/default/lib/
 # mkdir -p vernemq_vendor-<version>/_checkouts
 # mv _build/default/lib/* vernemq_vendor-<version>/_checkouts
-# mv _build/default/plugins vernemq_vendor-<version>/
+# mv -n _build/default/plugins/* vernemq_vendor-<version>/_checkouts
 #
 # Now do, rm -rf _build
 # mkdir -p _build/default/
-# cp -a vernemq_vendor-<version>/plugins _build/default/
 # cp -a vernemq_vendor-<version>/_checkouts .
 #
 # Ensure that no sources are fetched from web during build
@@ -31,11 +30,16 @@ Source0: https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
 # Clear all built files
 # find . \( -name "*.so" -or -name "*.so.*" -or -name "*.o" -or -name "*.a" -or -name "*.beam" \) -delete
 #
+# Clear all git dir
+# find . -type d -name ".git"  -exec rm -rv {} \;
+#
+# Ensure no usage of git command in any of the Makefile, rebar config code
+#
 # Once all done, create vendor tarball
 #
 # XZ_OPT=-9 tar cJf vernemq_vendor-version>.tar.xz
-Source1: %{name}_vendor-%{version}.tar.xz
-%define sha512 %{name}_vendor=f0a57b95ad487544717004c0af449d9fd589be37d9a66e03c6e51bdc7ff5e444a224c6a88c219a08fcd6f08c6bfa4c60ae8d6e8e8733a1d6d54b83608bc73b26
+Source1: %{name}_vendor-%{version}-rev1.tar.xz
+%define sha512 %{name}_vendor=feaa699595d500de1fab4617539838f1f52ad2b4e590323eed3a4c378afae75b43695e09f6c6ecabf621a188dcbf663e53fb6b6036e642a79c708148e17424a4
 
 Source2: vars.config
 Source3: %{name}.service
@@ -76,14 +80,9 @@ A high-performance, distributed MQTT message broker.
 export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 mv ../%{name}_vendor-%{version}/_checkouts _checkouts
 
-mkdir -p _build/default
-mv ../%{name}_vendor-%{version}/plugins _build/default/
-
 cp %{SOURCE2} ./vars.config
 
 find . \( -name "*.so" -or -name "*.so.*" -or -name "*.o" -or -name "*.a" -or -name "*.beam" \) -delete
-
-cp -a _build/default/plugins/* _checkouts/
 
 # make doesn't support _smp_mflags
 REBAR_OFFLINE=1 make rel
@@ -172,6 +171,8 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Mon Jan 20 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.1-4
+- Fix vendor sources
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.0.1-3
 - Release bump for SRP compliance
 * Wed Sep 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.1-2
