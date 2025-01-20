@@ -2,7 +2,7 @@
 Summary:        Boost
 Name:           boost
 Version:        1.80.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Boost Software License V1
 URL:            http://www.boost.org
 Group:          System Environment/Security
@@ -66,6 +66,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libboost_*.a
 
 %changelog
+* Tue Jan 21 2024 Tom Plant <tom@tplant.com.au> 1.80.0-1
+- Update download URL
 * Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 1.80.0-1
 - Version update
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.76.0-1
