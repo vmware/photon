@@ -1,0 +1,45 @@
+From 7ad4e0a4f61c57c3ca291ee010a9d677d0199fba Mon Sep 17 00:00:00 2001
+From: Juntong Deng <juntong.deng@outlook.com>
+Date: Mon, 30 Oct 2023 05:10:06 +0800
+Subject: [PATCH 2/2] gfs2: Fix slab-use-after-free in gfs2_qd_dealloc
+
+commit bdcb8aa434c6d36b5c215d02a9ef07551be25a37 upstream.
+
+In gfs2_put_super(), whether withdrawn or not, the quota should
+be cleaned up by gfs2_quota_cleanup().
+
+Otherwise, struct gfs2_sbd will be freed before gfs2_qd_dealloc (rcu
+callback) has run for all gfs2_quota_data objects, resulting in
+use-after-free.
+
+Also, gfs2_destroy_threads() and gfs2_quota_cleanup() is already called
+by gfs2_make_fs_ro(), so in gfs2_put_super(), after calling
+gfs2_make_fs_ro(), there is no need to call them again.
+
+Reported-by: syzbot+29c47e9e51895928698c@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=29c47e9e51895928698c
+Signed-off-by: Juntong Deng <juntong.deng@outlook.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Clayton Casciato <majortomtosourcecontrol@gmail.com>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ fs/gfs2/super.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/fs/gfs2/super.c b/fs/gfs2/super.c
+index a9e3956a5..d4399bec7 100644
+--- a/fs/gfs2/super.c
++++ b/fs/gfs2/super.c
+@@ -623,6 +623,8 @@ static void gfs2_put_super(struct super_block *sb)
+ 
+ 	if (!sb_rdonly(sb)) {
+ 		gfs2_make_fs_ro(sdp);
++	} else {
++		gfs2_quota_cleanup(sdp);
+ 	}
+ 	WARN_ON(gfs2_withdrawing(sdp));
+ 
+-- 
+2.39.4
+

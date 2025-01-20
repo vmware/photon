@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.232
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -225,6 +225,10 @@ Patch168: 0003-ipv6-fix-possible-UAF-in-ip6_finish_output2.patch
 
 # Fix CVE-2024-35966
 Patch169: 0001-Bluetooth-RFCOMM-Fix-not-validating-setsockopt-user-.patch
+
+# Fix CVE-2023-52760
+Patch170: 0001-gfs2-make-function-gfs2_make_fs_ro-to-void-type.patch
+Patch171: 0002-gfs2-Fix-slab-use-after-free-in-gfs2_qd_dealloc.patch
 
 # Fix CVE-2024-46834
 Patch172: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
@@ -546,6 +550,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jan 20 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.232-3
+- Fix CVE-2023-52760
 * Thu Jan 16 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.232-2
 - Fix CVE-2024-35966
 * Fri Dec 20 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.232-1
