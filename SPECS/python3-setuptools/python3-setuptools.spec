@@ -24,6 +24,7 @@ BuildRequires: python3-xml
 
 Requires:       python3
 Requires:       python3-xml
+Requires(post): findutils
 
 BuildArch:      noarch
 
@@ -49,7 +50,7 @@ A Python wheel of setuptools to use with venv.
 
 %install
 %{py3_install}
-find %{buildroot}%{python3_sitelib} -name '*.exe' | xargs rm -f
+find %{buildroot}%{python3_sitelib} -name '*.exe' -delete
 mkdir -p %{buildroot}%{python_wheel_dir}
 install -p dist/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
 
