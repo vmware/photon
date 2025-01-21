@@ -28,7 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.126
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -224,6 +224,9 @@ Patch141: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
 # Fix CVE-2024-46816
 Patch143: 0001-drm-amd-display-handle-invalid-connector-indices.patch
 Patch144: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
+
+# Fix CVE-2024-56631
+Patch145: 0001-scsi-sg-Fix-slab-use-after-free-read-in-sg_release.patch
 
 # Fix CVE-2024-50014
 Patch146: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -566,6 +569,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jan 24 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.126-4
+- Fixes CVE-2024-56631
 * Fri Jan 24 2025 Srinidhi Rao <srnidhi.rao@broadcom.com> 6.1.126-3
 - Increase max_jent_insts of jent_proxy to 32
 * Thu Jan 23 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.126-2

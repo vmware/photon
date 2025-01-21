@@ -44,7 +44,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.126
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -225,6 +225,9 @@ Patch134: 0001-smb-client-fix-UAF-in-async-decryption.patch
 
 # Fix CVE-2024-50029
 Patch135: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
+
+# Fix CVE-2024-56631
+Patch136: 0001-scsi-sg-Fix-slab-use-after-free-read-in-sg_release.patch
 
 # Fix CVE-2024-24855
 Patch137: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
@@ -966,6 +969,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jan 24 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.126-4
+- Fixes CVE-2024-56631
 * Fri Jan 24 2025 Srinidhi Rao <srnidhi.rao@broadcom.com> 6.1.126-3
 - Increase max_jent_insts of jent_proxy to 32
 * Thu Jan 23 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.126-2
