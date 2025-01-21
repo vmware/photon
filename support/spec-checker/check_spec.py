@@ -5,7 +5,6 @@ import re
 import sys
 import calendar
 import json
-import tempfile
 
 from datetime import datetime
 
@@ -277,10 +276,9 @@ def check_changelog(spec, err_dict):
         line = line.split()
 
         # line[1] is week name, line[2] is month name
-        w = line[1]
-        m = line[2]
-        if not (w.istitle() and m.istitle()):
-            err_msg = f"Day-'{w}' or Month-'{m}' name is improper, use proper case"
+        d, m = line[1], line[2]
+        if not (d.istitle() and m.istitle()):
+            err_msg = f"Day-'{d}' or Month-'{m}' name is improper, use proper case"
             err_dict.update_err_dict(sec, err_msg)
             ret = True
 
@@ -506,9 +504,9 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
     def populate_list(src_list, dest_list):
         for s in src_list:
             s = replace_macros(s, tmp)
-            if type(s) == str:
+            if isinstance(s, str):
                 dest_list.append(s)
-            if type(s) == list:
+            elif isinstance(s, list):
                 dest_list += s
 
     for r, _, fns in os.walk(dirname):
@@ -540,9 +538,9 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
 
     if mentioned_but_unused:
         msg = ("\nSome mentioned but unused files found in the spec.\n"
-                "If you think it's a false positive, try the following methods:\n"
-                "- If you are using Photon OS, update rpm version to latest using tdnf and retry\n"
-                "- If you are using any other distro, contact - 'shreenidhi.shedi@broadcom.com'\n")
+               "If you think it's a false positive, try the following methods:\n"
+               "- If you are using Photon OS, update rpm version to latest using tdnf and retry\n"
+               "- If you are using any other distro, contact - 'shreenidhi.shedi@broadcom.com'\n")
         print(msg)
 
     fns = list(set(other_files) - set(source_patch_list))
@@ -631,15 +629,15 @@ def create_altered_spec(spec_fn):
         g_ignore_list.append(included_fn)
         included_fn = find_file_in_dir(included_fn, dirname)
         with open(included_fn, "r") as fp:
-            for l in fp.readlines():
-                l = l.strip()
-                if l:
-                    output.append(f"{l}\n")
+            for ln in fp.readlines():
+                ln = ln.strip()
+                if ln:
+                    output.append(f"{ln}\n")
 
     altered_spec = f"/tmp/{os.path.basename(spec_fn)}"
     with open(f"{altered_spec}", "w") as fp:
-        for l in output:
-            fp.write(l)
+        for ln in output:
+            fp.write(ln)
 
     return altered_spec
 
