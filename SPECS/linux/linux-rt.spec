@@ -20,7 +20,7 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.124
+Version:        6.1.126
 Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=0adeebd2f6d90aee2e04783d8b7c674a755b0eec4a762a3722399f23066f53818315657b531a316bef8f1f4f60e1a1aff1fb6d7464a3bbd9ceed07a64095aea6
+%define sha512 linux=690e8320c83c7839f6d4f8fe6ce84cda2ae2b5166d6383a29e7659073348fd87dc5602630ab0e831804ed3f2cdd3c703f75fd46796d57c1ac477cfb4bf1bab50
 
 %ifarch x86_64
 Source1: config-rt
@@ -556,6 +556,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue Jan 21 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.126-1
+- Update to version 6.1.126
 * Wed Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.124-1
 - Update to version 6.1.124
 * Mon Jan 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.118-7
