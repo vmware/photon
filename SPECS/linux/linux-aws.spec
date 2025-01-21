@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.232
-Release:        3%{?dist}
+Version:        5.10.233
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:    http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=d0f3c2c6f9e47ed8e5de8e99c3e7f3175b6cb015916131ea9f7a9f1ee8aa29c7ae2fa432bcd1283bd0529654874f4f67ace208d2a8d01fc6595e4abe36ff1fd0
+%define sha512 linux=af558e039d7abd587ef7f3f6001d991b4c63a209e9ef0a8d21d3fc9bfaf253f0a48ab29da3a9f074de41849fe440c299885680e887620826b5609804b369b270
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -137,9 +137,6 @@ Patch109: 0003-mm_hugetlb_use_hugetlb_pte_stable_in_migration_race_check.patch
 # Fix for CVE-2024-50256
 Patch110:  0001-netfilter-nf_reject_ipv6-fix-potential-crash-in-nf_s.patch
 
-# Fix for CVE-2024-50121
-Patch111: 0001-nfsd-cancel-nfsd_shrinker_work-using-sync-mode-in-nf.patch
-
 # Fix for CVE-2022-0500
 Patch115: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
 Patch116: 0002-bpf-Replace-ARG_XXX_OR_NULL-with-ARG_XXX-PTR_MAYBE_N.patch
@@ -202,11 +199,6 @@ Patch163: 0001-RDMA-restrack-Fix-potential-invalid-address-access.patch
 
 # Fix CVE-2024-44934
 Patch164: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
-
-# Fix CVE-2024-44986
-Patch165: 0001-skbuff-introduce-skb_expand_head.patch
-Patch166: 0002-ipv6-use-skb_expand_head-in-ip6_finish_output2.patch
-Patch167: 0003-ipv6-fix-possible-UAF-in-ip6_finish_output2.patch
 
 # Fix CVE-2024-35966
 Patch168: 0001-Bluetooth-RFCOMM-Fix-not-validating-setsockopt-user-.patch
@@ -604,6 +596,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jan 21 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.233-1
+- Update to version 5.10.233
 * Mon Jan 20 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.232-3
 - Fix CVE-2023-52760
 * Thu Jan 16 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.232-2
