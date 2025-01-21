@@ -3,7 +3,7 @@
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        9.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -26,6 +26,8 @@ Patch3: 0004-fips-mode.patch
 %if 0%{?with_check}
 Patch4: 0005-remove-grpc-test.patch
 %endif
+
+Patch5: CVE-2024-55553.patch
 
 BuildRequires: build-essential
 BuildRequires: c-ares-devel
@@ -219,6 +221,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Tue Jan 21 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.1-3
+- Fix for CVE-2024-55553
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 9.1-2
 - Release bump for SRP compliance
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 9.1-1
