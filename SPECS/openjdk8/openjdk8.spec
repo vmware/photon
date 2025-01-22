@@ -1,12 +1,13 @@
 %global security_hardening  none
 %define jdk_major_version   1.8.0
-%define subversion          402
+%define subversion          442
 %define bootstrapjdkversion 1.8.0.112
 %define _use_internal_dependency_generator 0
+%define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 
 Summary:    OpenJDK
 Name:       openjdk8
-Version:    1.8.0.402
+Version:    1.8.0.442
 Release:    1%{?dist}
 License:    GNU GPL
 URL:        https://wiki.openjdk.org/display/jdk8u
@@ -14,9 +15,8 @@ Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-# download the tag from github and rename the tarball to openjdk-%{version}.tar.gz
-Source0: https://github.com/openjdk/jdk8u/archive/refs/tags/openjdk-%{version}.tar.gz
-%define sha512 openjdk=476d195ef500d8dd2013b17de0669a77ef8076b55c2753eb88b1a13f7a48526b1be7a1befabd284eb9ee8411df19ab1f39c81287ab659984d2d67e8aa7192d79
+Source0: https://github.com/openjdk/jdk8u/archive/refs/tags/jdk8u%{subversion}-ga.tar.gz
+%define sha512 jdk8u=6c0fe0b7aaf5ff887c720cced4203231c7ea6490817a5cb10196dabe0f3941833ddcc8024d2fe04f3a84502b6fe08277a6ff2f84ce605f4209a3494b9f0a80b7
 
 Patch0: Awt_build_headless_only.patch
 Patch1: check-system-ca-certs-x86.patch
@@ -110,7 +110,6 @@ unset JAVA_HOME
     --disable-zip-debug-info \
     --with-libjpeg=system
 
-export NUM_PROC=$(nproc)
 # make doesn't support _smp_mflags
 make \
     DEBUG_BINARIES=true \
@@ -122,15 +121,13 @@ make \
     CLASSPATH=%{_var}/opt/OpenJDK-%{bootstrapjdkversion}-bin/jre \
     POST_STRIP_CMD="" \
     LOG=trace \
-    JOBS=${NUM_PROC} \
+    JOBS=%{_jobs} \
     SCTP_WERROR=
 
 %install
-export NUM_PROC=$(nproc)
-# using NUM_PROC instead of smp_mflags as -jN is not supported.
 # make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install \
-        JOBS=${NUM_PROC} \
+        JOBS=%{_jobs} \
         BUILD_HEADLESS_ONLY=yes \
         OPENJDK_TARGET_OS=linux \
         DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
@@ -282,6 +279,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+* Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.442-1
+- Upgrade to v 1.8.0.442
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.0.402-1
 - Upgrade to v1.8.0.402
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.8.0.382-4

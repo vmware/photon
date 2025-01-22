@@ -1,10 +1,11 @@
 %global security_hardening  none
 %define jdk_major_version   21
 %define _use_internal_dependency_generator 0
+%define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 
 Summary:    OpenJDK
 Name:       openjdk21
-Version:    21.0.5
+Version:    21.0.6
 Release:    1%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk21u
@@ -13,7 +14,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk21u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-21=2fdfdb7e21fcaf97590fa54317f87169d5fdabf38027f4f6570942b2af637fc9ace3d35c3bbb0df29720e7a0f6d6a4087253a713389743ed7947e433d7b8103b
+%define sha512 jdk-21=fb03362608a35b0f6e131eaa974a52e6ff8a96f90d3bdaeccd2e1268f46db65c72387ed7bba1c8b0d9457c56950eae607fba29e102a338b009259262e1024726
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -107,12 +108,12 @@ make \
     STRIP_POLICY=no_strip \
     POST_STRIP_CMD="" \
     LOG=trace \
-    JOBS=$(nproc/2)
+    JOBS=%{_jobs}
 
 %install
 unset JAVA_HOME
 # make doesn't support _smp_mflags
-make install JOBS=$(nproc/2)
+make install JOBS=%{_jobs}
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
@@ -228,5 +229,7 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.6-1
+- Upgrade to v21.0.6
 * Sun Dec 15 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 21.0.5-1
 - Initial build. First version of openjdk21.

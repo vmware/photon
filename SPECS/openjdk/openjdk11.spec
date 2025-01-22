@@ -1,11 +1,12 @@
 %global security_hardening  none
 %define jdk_major_version   1.11.0
 %define _use_internal_dependency_generator 0
+%define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 
 Summary:        OpenJDK
 Name:           openjdk11
-Version:        11.0.22
-Release:        2%{?dist}
+Version:        11.0.26
+Release:        1%{?dist}
 License:        GNU General Public License V2
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
@@ -13,7 +14,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-11.0=b88d0db9750d8201dfb4b027045de4023be766e42cca7a3ff5e0cb28db4c6da3f146a57819a6b81cb33e5837726986bcc3780ecf88bf525f445c2cd35a3993d8
+%define sha512 jdk-11.0=b5375de7c39aafa4fe1ef6556e17bf5c8ace577953ea8e666c4e8adc3e8b0f6fdbf20b7c426a156420acb99787363e0e4c9d36df20cefcef5e74a48bb75eeb24
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -111,12 +112,12 @@ make \
     STRIP_POLICY=no_strip \
     POST_STRIP_CMD="" \
     LOG=trace \
-    JOBS=$(nproc)
+    JOBS=%{_jobs}
 
 %install
 unset JAVA_HOME
 # make doesn't support _smp_mflags
-make install JOBS=$(nproc)
+make install JOBS=%{_jobs}
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
@@ -245,6 +246,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.26-1
+- Upgrade to v11.0.26
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 11.0.22-2
 - Version bump as a part of cups upgrade
 * Mon Mar 11 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 11.0.22-1
