@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.233
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -294,6 +294,9 @@ Patch180: 0001-udf-fix-uninit-value-use-in-udf_get_fileshortad.patch
 
 # Fix CVE-2024-50154
 Patch181: 0001-tcp-dccp-Don-t-use-timer_pending-in-reqsk_queue_unli.patch
+
+# Fix CVE-2024-56631
+Patch182: 0001-scsi-sg-Fix-slab-use-after-free-read-in-sg_release.patch
 
 # Fix CVE-2024-50014
 Patch183: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -973,6 +976,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Jan 21 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.233-2
+- Fixes CVE-2024-56631
 * Tue Jan 21 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.233-1
 - Update to version 5.10.233
 * Mon Jan 20 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.232-3
