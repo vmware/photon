@@ -1,0 +1,1 @@
+License: CC0-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-macro AND X11 AND GFDL-1.1-only AND FSFAP AND Apache-2.0 AND FSFULLRWD AND FSFUL AND MIT AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLR AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later

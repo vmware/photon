@@ -1,19 +1,22 @@
 %global security_hardening  none
 %define jdk_major_version   17
 %define _use_internal_dependency_generator 0
+%define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 
 Summary:    OpenJDK
 Name:       openjdk17
-Version:    17.0.8
-Release:    3%{?dist}
-License:    GNU General Public License V2
+Version:    17.0.14
+Release:    1%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-5.tar.gz
-%define sha512 jdk-17=af6ae3759dda8e7612b8860ccc9c69df260ffa18c80fd73ca71737854aa926442c02e1f56d7bd39dc6ec7f24095a47fc1e448bdcf6f0531ad8bbf403056c0dec
+Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
+%define sha512 jdk-17=0643ac52b68e5884734289ab13592feef7273db96f7b5c0fd77d801e4d4e44a84abcc439fd1b138119c5583986f1d0b058aa74f55b00e0dfd31333cbb536744d
+
+Source1: license-openjdk17.txt
+%include %{SOURCE1}
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -28,21 +31,26 @@ BuildRequires: freetype2-devel
 BuildRequires: glib-devel
 BuildRequires: harfbuzz-devel
 BuildRequires: elfutils-libelf-devel
+BuildRequires: icu icu-devel
+BuildRequires: cups cups-devel
+BuildRequires: libXtst libXtst-devel libXi libXi-devel
+BuildRequires: alsa-lib alsa-lib-devel util-macros
+BuildRequires: xcb-proto libXdmcp libXdmcp-devel libXau-devel
+BuildRequires: xtrans libxcb-devel proto libxcb libXau
+BuildRequires: libX11 libX11-devel libXext libXext-devel
+BuildRequires: libXt libXt-devel libXrender libXrender-devel
+BuildRequires: libXrandr libXrandr-devel
 
 Requires: chkconfig
 Requires(postun): chkconfig
 
 Requires: %{name}-jre = %{version}-%{release}
 
+Obsoletes: openjdk <= %{version}
+
 AutoReqProv: no
 
-%ifarch x86_64
-%define ExtraBuildRequires icu-devel, cups, cups-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, libX11, libX11-devel, libXext, libXext-devel, libXt, libXt-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel, openjdk17
-%endif
-
-%ifarch aarch64
-%define ExtraBuildRequires icu-devel, cups, cups-devel, openjdk17, libXtst, libXtst-devel, libXi, libXi-devel, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, libX11, libX11-devel, libXext, libXext-devel, libXt, libXt-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel
-%endif
+%define ExtraBuildRequires openjdk17
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
@@ -57,7 +65,7 @@ Requires:       libstdc++
 Requires:       libgcc
 Requires:       zlib
 
-Conflicts:      %{name} < 17.0.8-1%{?dist}
+Conflicts:      %{name} < 17.0.8-4%{?dist}
 
 %description    jre
 %{summary}
@@ -65,6 +73,7 @@ Conflicts:      %{name} < 17.0.8-1%{?dist}
 %package        doc
 Summary:        Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
+Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
 
 %description    doc
@@ -73,13 +82,16 @@ It contains the documentation and demo applications for openjdk
 %package        src
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
+Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
+
+Provides:       jre = %{version}
 
 %description    src
 This package provides the runtime library class sources.
 
 %prep
-%autosetup -p1 -n jdk17u-jdk-%{version}-5
+%autosetup -p1 -n jdk17u-jdk-%{version}-ga
 
 %build
 chmod a+x ./configur*
@@ -106,12 +118,12 @@ make \
     STRIP_POLICY=no_strip \
     POST_STRIP_CMD="" \
     LOG=trace \
-    JOBS=$(nproc)
+    JOBS=%{_jobs}
 
 %install
 unset JAVA_HOME
 # make doesn't support _smp_mflags
-make install JOBS=$(nproc)
+make install JOBS=%{_jobs}
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
@@ -231,6 +243,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.14-1
+- Upgrade to v17.0.14
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.8-3
 - Version bump as a part of cups upgrade
 * Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 17.0.8-2
