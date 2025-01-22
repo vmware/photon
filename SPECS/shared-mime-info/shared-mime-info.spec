@@ -1,7 +1,7 @@
 Summary:        MIME database
 Name:           shared-mime-info
 Version:        2.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://freedesktop.org
 Group:          Applications/Internet
@@ -49,6 +49,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.2-3
+- Bump version as a part of meson upgrade
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.2-2
 - Bump version as part of glib upgrade
 * Mon Aug 22 2022 Shivani Agarwal <shivania2@vmware.com> 2.2-1

@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        7.10.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        LGPL
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
@@ -208,6 +208,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/polkit-1/*
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 7.10.0-12
+- Bump version as a part of meson upgrade
 * Thu Jun 06 2024 Mukul Sikka <mukul.sikka@broadcom.com> 7.10.0-11
 - Fix CVE-2024-1441
 * Mon May 13 2024 Mukul Sikka <mukul.sikka@broadcom.com> 7.10.0-10

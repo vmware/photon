@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
 Version:        0.6.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -78,6 +78,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.6.4-3
+- Bump version as a part of meson upgrade
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.6.4-2
 - Bump version as part of glib upgrade
 * Thu Sep 14 2023 Susant Sahani <ssahani@vmware.com> 0.6.4-1

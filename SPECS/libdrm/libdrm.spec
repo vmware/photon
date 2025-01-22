@@ -1,7 +1,7 @@
 Summary:        user space library for accessing the DRM.
 Name:           libdrm
 Version:        2.4.110
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://dri.freedesktop.org/
 Group:          System Environment/Libraries
@@ -66,6 +66,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig*
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.4.110-3
+- Bump version as a part of meson upgrade
 * Sun Nov 6 2022 Shivani Agarwal <shivania2@vmware.com> 2.4.110-2
 - Enable support for intel and nvidia driver
 * Thu Jun 9 2022 Shivani Agarwal <shivania2@vmware.com> 2.4.110-1

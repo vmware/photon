@@ -1,7 +1,7 @@
 Summary:        Wayland protocols that adds functionality not available in the core protocol
 Name:           wayland-protocols
 Version:        1.25
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -64,5 +64,7 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/
 
 %changelog
+*       Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.25-2
+-       Bump version as a part of meson upgrade
 *       Wed Jun 15 2022 Shivani Agarwal <shivania2@vmware.com> 1.25-1
 -       Initial Version

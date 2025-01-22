@@ -1,7 +1,7 @@
 Summary:        A general purpose TCP-IP emulator
 Name:           libslirp
 Version:        4.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD and MIT
 URL:            https://gitlab.freedesktop.org/slirp/%{name}
 Group:          Development/Libraries
@@ -62,6 +62,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/slirp.pc
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.7.0-3
+- Bump version as a part of meson upgrade
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.7.0-2
 - Bump version as part of glib upgrade
 * Tue May 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.7.0-1

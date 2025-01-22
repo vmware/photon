@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -686,6 +686,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 247.13-13
+- Bump version as a part of meson upgrade
 * Tue Jan 09 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 247.13-12
 - Removed 60-ioschedulers.rules file
 * Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 247.13-11

@@ -1,22 +1,22 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.9.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPL+
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libfuse/libfuse/archive/%{name}-%{version}.tar.gz
-%define sha1    fuse3=412f063f1aafc4d409271810f40b0f31e07239bb
+%define sha512  fuse3=580143e4f2ecf043414947360c07dd768154b593e25fe14546ad037bcb93e738e92e3db5d447631639d4d8b3ea1f84351e4b149b179a50f6ee6d20d029edb688
 
 BuildRequires:  meson >= 0.38.0
 BuildRequires:  systemd-devel
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-devel
 BuildRequires:  python3
 BuildRequires:  python3-libs
-BuildRequires:	python3-setuptools
+BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
@@ -36,7 +36,7 @@ userspace program.
 Summary:        Header and development files
 Group:          Development/Libraries
 Requires:       %{name} = %{version}
-Requires:	systemd-devel
+Requires:       systemd-devel
 
 %description    devel
 It contains the libraries and header files to create fuse applications.
@@ -91,6 +91,8 @@ python3 -m pytest test/
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.9.4-5
+-   Bump version as a part of meson upgrade
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.9.4-4
 -   Update release to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9.4-3

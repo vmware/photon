@@ -3,7 +3,7 @@
 Name:           p11-kit
 Summary:        Library for loading and sharing PKCS11 modules
 Version:        0.24.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Development/Libraries
@@ -160,6 +160,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/update-ca-trust
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.24.1-3
+- Bump version as a part of meson upgrade
 * Thu May 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.24.1-2
 - Add update-ca-trust sub package
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.24.1-1

@@ -3,7 +3,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         14%{?dist}
+Release:         15%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -117,6 +117,8 @@ These are the additional language files of libsoup.
 %defattr(-,root,root)
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.72.0-15
+- Bump version as a part of meson upgrade
 * Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.72.0-14
 - Fix CVE-2024-52530, CVE-2024-52531, CVE-2024-52532
 * Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.72.0-13

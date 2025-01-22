@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20200821
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
@@ -74,6 +74,8 @@ mv -f RELNOTES.tmp RELNOTES.old
 %caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping6
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 20200821-4
+- Bump version as a part of meson upgrade
 * Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 20200821-3
 - Use relative path for ping6 symlink
 * Tue Nov 01 2022 Piyush Gupta <gpiyush@vmware.com> 20200821-2

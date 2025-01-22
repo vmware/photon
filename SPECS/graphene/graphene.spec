@@ -1,7 +1,7 @@
 Summary:        Thin layer of types for graphic libraries.
 Name:           graphene
 Version:        1.10.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/ebassi/graphene
 Group:          System Environment/Libraries
@@ -68,5 +68,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.10.8-2
+- Bump version as a part of meson upgrade
 * Mon Sep 5 2022 Shivani Agarwal <shivania2@vmware.com> 1.10.8-1
 - Initial version

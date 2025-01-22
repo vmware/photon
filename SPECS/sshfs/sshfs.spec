@@ -1,7 +1,7 @@
 Summary:    fuse filesystem to access remote ssh servers
 Name:       sshfs
 Version:    3.7.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv2
 Url:        https://github.com/libfuse/sshfs
 Group:      Filesystemd tools
@@ -45,6 +45,8 @@ DESTDIR=%{buildroot} ninja install
 %exclude %dir %{_prefix}/src
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.7.0-5
+- Bump version as a part of meson upgrade
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.7.0-4
 - Bump version as part of glib upgrade
 * Thu Mar 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.0-3

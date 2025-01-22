@@ -1,7 +1,7 @@
 Summary:        The FriBidi package is an implementation of the Unicode Bidirectional Algorithm (BIDI)
 Name:           fribidi
 Version:        1.0.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/fribidi
 Group:          System Environment/Libraries
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.9-3
+- Bump version as a part of meson upgrade
 * Thu Mar 23 2023 Shivani Agarwal <shivania2@vmware.com> 1.0.9-2
 - Fix CVE-2022-25308, CVE-2022-25309 and CVE-2022-25310
 * Fri Aug 06 2021 Alexey Makhalov <amakhalov@vmware.com> 1.0.9-1

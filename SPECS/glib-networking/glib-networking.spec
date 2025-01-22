@@ -1,7 +1,7 @@
 Summary:        Glib networking modules
 Name:           glib-networking
 Version:        2.66.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2
 URL:            http://wiki.gnome.org/glib-networking
 Group:          System Environment/Development
@@ -74,6 +74,8 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.66.0-8
+- Bump version as a part of meson upgrade
 * Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.66.0-7
 - Bump version as a part of gnutls upgrade
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.66.0-6
