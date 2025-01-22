@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
 Version:        0.7.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -82,6 +82,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.7.4-3
+- Bump version as a part of meson upgrade
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.7.4-2
 - Release bump for SRP compliance
 * Mon Nov 18 2024 Tapas Kundu <tapas.kundu@broadcom.com> 0.7.4-1

@@ -1,7 +1,7 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.12.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -92,6 +92,8 @@ python3 -m pytest test/
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.12.0-4
+-   Bump version as a part of meson upgrade
 *   Mon Dec 16 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.12.0-3
 -   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.12.0-2

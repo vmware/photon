@@ -1,7 +1,7 @@
 Summary:        GNU FriBidi is an implementation of the Unicode Bidirectional Algorithm (bidi).
 Name:           fribidi
 Version:        1.0.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://fribidi.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.12-3
+- Bump version as a part of meson upgrade
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.0.12-2
 - Release bump for SRP compliance
 * Tue Nov 8 2022 Michelle Wang <michellew@vmware.com> 1.0.12-1

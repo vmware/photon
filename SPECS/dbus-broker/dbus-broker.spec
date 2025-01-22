@@ -1,6 +1,6 @@
 Name:           dbus-broker
 Version:        33
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Linux D-Bus Message Broker
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -83,6 +83,8 @@ fi
 %{_userunitdir}/dbus-broker.service
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 33-3
+- Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 33-2
 - Release bump for SRP compliance
 * Thu Feb 16 2023 Susant Sahani <ssahani@vmware.com> 33-1

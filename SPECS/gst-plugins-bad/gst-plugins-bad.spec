@@ -1,19 +1,17 @@
 Summary:        The GStreamer Bad Plug-ins package contains a set a set of plug-ins that aren't up to par compared to the rest
 Name:           gst-plugins-bad
-Version:        1.22.7
-Release:        4%{?dist}
+Version:        1.25.1
+Release:        1%{?dist}
 URL:            http://gstreamer.freedesktop.org/
 Group:          Applications/Multimedia
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
-%define sha512  %{name}=0854ae604014278958d4f5d149ddd1a5d3004e2c3b9386d7711312f4993002ae18ddf82d152c78092f23d15dd9b5c83d2798ea5ae80626599df0bf61d05a0b6e
+%define sha512  %{name}=51a11258d3c3c58ba3860da3f1a85138fa60f5094259cd874fd4ca8bc17bb5df066e7e3cbebdcd1fbf384d13df4aaf168fe5503d302016936a2ac54d029d2063
 
 Source1: license.txt
 %include %{SOURCE1}
-Patch0:         CVE-2024-0444.patch
-Patch1:         CVE-2023-50186.patch
 
 BuildRequires:  meson
 BuildRequires:  cmake
@@ -72,6 +70,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.25.1-1
+- Update to 1.25.1
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.22.7-4
 - Release bump for SRP compliance
 * Mon May 13 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.22.7-3

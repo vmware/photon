@@ -1,7 +1,7 @@
 Summary:       Linux Containers File System
 Name:          lxcfs
 Version:       5.0.3
-Release:       2%{?dist}
+Release:       3%{?dist}
 URL:           https://linuxcontainers.org/lxcfs/downloads/
 Source0:       %{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
@@ -61,6 +61,8 @@ rm -rf %{buildroot}
 %dir %{_sharedstatedir}/%{name}
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 5.0.3-3
+- Bump version as a part of meson upgrade
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.0.3-2
 - Release bump for SRP compliance
 * Tue Jan 24 2023 Ankit Jain <ankitja@vmware.com> 5.0.3-1

@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20221126
-Release:          3%{?dist}
+Release:          4%{?dist}
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
@@ -56,6 +56,8 @@ ln -sf tracepath %{buildroot}%{_bindir}/tracepath6
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/ping
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 20221126-4
+- Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 20221126-3
 - Release bump for SRP compliance
 * Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 20221126-2

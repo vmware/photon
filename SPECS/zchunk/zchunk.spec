@@ -1,7 +1,7 @@
 Summary:        Compressed file format
 Name:           zchunk
 Version:        1.2.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/zchunk/zchunk
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -107,6 +107,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*.gz
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.3-4
+- Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.3-3
 - Release bump for SRP compliance
 * Tue Oct 31 2023 Ankit Jain <ankitja@vmware.com> 1.2.3-2

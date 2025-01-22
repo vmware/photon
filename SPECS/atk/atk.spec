@@ -1,7 +1,7 @@
 Summary:        Accessibility interfaces to have full access to view and control running applications.
 Name:           atk
 Version:        2.38.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.gnome.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -61,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig
 
 %changelog
+*   Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.38.0-3
+-   Bump version as a part of meson upgrade
 *   Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.38.0-2
 -   Release bump for SRP compliance
 *   Fri Aug 19 2022 Shivani Agarwal <shivania2@vmware.com> 2.38.0-1

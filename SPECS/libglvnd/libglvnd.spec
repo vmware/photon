@@ -1,7 +1,7 @@
 Summary:        The GL Vendor-Neutral Dispatch library
 Name:           libglvnd
 Version:        1.4.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/NVIDIA/libglvnd
 Group:          Development/Libraries/C and C++
 Vendor:         VMware, Inc.
@@ -133,6 +133,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libglvnd.pc
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.4.0-5
+- Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.0-4
 - Release bump for SRP compliance
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.4.0-3

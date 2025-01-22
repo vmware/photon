@@ -1,13 +1,13 @@
 Summary:        A streaming media framework
 Name:           gstreamer
-Version:        1.22.7
-Release:        2%{?dist}
+Version:        1.25.1
+Release:        1%{?dist}
 URL:            http://gstreamer.freedesktop.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
-%define sha512  gstreamer=50799014b976644334e1d7880ed38e2e34286c80a27dd4c6f1580990beefd28a9cf67ee3aac1d8f52d611b86271204cb5f43cb7a14fccc23a7bd7e95ec4c7790
+%define sha512  gstreamer=8432f8ccdf84883d2e7764319429514d655248c1c6c7cc710bc76ffa0254b9bab98111281acf6233cc703f47c20a768c92d97839c3816df834bf6c35953febd7
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -81,6 +81,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.25.1-1
+-   update to 1.25.1
 *   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.22.7-2
 -   Release bump for SRP compliance
 *   Fri Dec 08 2023 Shivani Agarwal <shivania2@vmware.com> 1.22.7-1

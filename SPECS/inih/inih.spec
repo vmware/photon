@@ -1,7 +1,7 @@
 Summary:       Simple INI file parser library
 Name:          inih
 Version:       56
-Release:       2%{?dist}
+Release:       3%{?dist}
 URL:           https://github.com/benhoyt/inih
 Group:         System Environment/Development
 Vendor:        VMware, Inc.
@@ -56,6 +56,8 @@ cd tests && bash -x ./unittest.sh
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 56-3
+- Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 56-2
 - Release bump for SRP compliance
 * Mon Jul 25 2022 Shreenidhi Shedi <sshedi@vmware.com> 56-1

@@ -1,7 +1,7 @@
 Summary:        library for handling OpenGL function pointer management.
 Name:           libepoxy
 Version:        1.5.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/anholt/libepoxy
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -74,6 +74,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.5.10-4
+- Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.10-3
 - Release bump for SRP compliance
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.5.10-2

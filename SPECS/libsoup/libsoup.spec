@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         3.2.1
-Release:         17%{?dist}
+Release:         18%{?dist}
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
@@ -103,6 +103,8 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.2.1-18
+- Bump version as a part of meson upgrade
 * Wed Jan 08 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.1-17
 - Fix CVE-2024-52530, CVE-2024-52531, CVE-2024-52532
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.1-16

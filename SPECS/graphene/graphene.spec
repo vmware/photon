@@ -1,7 +1,7 @@
 Summary:        Thin layer of types for graphic libraries.
 Name:           graphene
 Version:        1.10.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/ebassi/graphene
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -70,6 +70,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/
 
 %changelog
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.10.8-3
+- Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.10.8-2
 - Release bump for SRP compliance
 * Mon Sep 5 2022 Shivani Agarwal <shivania2@vmware.com> 1.10.8-1
