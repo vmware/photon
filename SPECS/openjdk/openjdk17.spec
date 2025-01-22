@@ -1,18 +1,19 @@
 %global security_hardening  none
 %define jdk_major_version   17
 %define _use_internal_dependency_generator 0
+%define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 
 Summary:    OpenJDK
 Name:       openjdk17
-Version:    17.0.13
-Release:    3%{?dist}
+Version:    17.0.14
+Release:    1%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-17=6f2220b3b0b9ab4441968d487858449f0e58400bfbbf8cc322b6c9393ab44869ea27285bed1022ac531f0a9eec5b7d6a07db4f7e78b094bb5ca8cedd5f40711a
+%define sha512 jdk-17=0643ac52b68e5884734289ab13592feef7273db96f7b5c0fd77d801e4d4e44a84abcc439fd1b138119c5583986f1d0b058aa74f55b00e0dfd31333cbb536744d
 
 Source1: license-openjdk17.txt
 %include %{SOURCE1}
@@ -117,12 +118,12 @@ make \
     STRIP_POLICY=no_strip \
     POST_STRIP_CMD="" \
     LOG=trace \
-    JOBS=$(nproc)
+    JOBS=%{_jobs}
 
 %install
 unset JAVA_HOME
 # make doesn't support _smp_mflags
-make install JOBS=$(nproc)
+make install JOBS=%{_jobs}
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
@@ -242,6 +243,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.14-1
+- Upgrade to v17.0.14
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.13-3
 - Version bump as a part of cups upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 17.0.13-2

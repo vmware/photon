@@ -1,6 +1,6 @@
 sources:
-- archive: jdk-11.0.20.tar.gz
-  archive_sha512sum: 59dd536c613d58d5cd333ed680a8d51b88fc41e8cf2ec11c9996890b0ad704132b2f0f086a6ba280da84565853cb4e21a030e04280ea3d888ecb156c21e8ca29
+- archive: jdk-11.0.26.tar.gz
+  archive_sha512sum: b5375de7c39aafa4fe1ef6556e17bf5c8ace577953ea8e666c4e8adc3e8b0f6fdbf20b7c426a156420acb99787363e0e4c9d36df20cefcef5e74a48bb75eeb24
   skip_validation: true
   spdx:
     package:
@@ -31,8 +31,8 @@ sources:
         AND W3C-19980720 AND GPL-2.0-only
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'
-- archive: jdk-17.0.13-ga.tar.gz
-  archive_sha512sum: 6f2220b3b0b9ab4441968d487858449f0e58400bfbbf8cc322b6c9393ab44869ea27285bed1022ac531f0a9eec5b7d6a07db4f7e78b094bb5ca8cedd5f40711a
+- archive: jdk-17.0.14-ga.tar.gz
+  archive_sha512sum: 0643ac52b68e5884734289ab13592feef7273db96f7b5c0fd77d801e4d4e44a84abcc439fd1b138119c5583986f1d0b058aa74f55b00e0dfd31333cbb536744d
   skip_validation: true
   spdx:
     package:
@@ -57,8 +57,8 @@ sources:
         WITH Autoconf-exception-generic AND SAX-PD AND Apache-1.1 AND Zlib
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'
-- archive: jdk-21.0.5-ga.tar.gz
-  archive_sha512sum: 2fdfdb7e21fcaf97590fa54317f87169d5fdabf38027f4f6570942b2af637fc9ace3d35c3bbb0df29720e7a0f6d6a4087253a713389743ed7947e433d7b8103b
+- archive: jdk-21.0.6-ga.tar.gz
+  archive_sha512sum: fb03362608a35b0f6e131eaa974a52e6ff8a96f90d3bdaeccd2e1268f46db65c72387ed7bba1c8b0d9457c56950eae607fba29e102a338b009259262e1024726
   skip_validation: true
   spdx:
     package:

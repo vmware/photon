@@ -1,18 +1,19 @@
 %global security_hardening  none
 %define jdk_major_version   1.11.0
 %define _use_internal_dependency_generator 0
+%define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 
 Summary:        OpenJDK
 Name:           openjdk11
-Version:        11.0.20
-Release:        9%{?dist}
+Version:        11.0.26
+Release:        1%{?dist}
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}.tar.gz
-%define sha512 jdk-11.0=59dd536c613d58d5cd333ed680a8d51b88fc41e8cf2ec11c9996890b0ad704132b2f0f086a6ba280da84565853cb4e21a030e04280ea3d888ecb156c21e8ca29
+Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}-ga.tar.gz
+%define sha512 jdk-11.0=b5375de7c39aafa4fe1ef6556e17bf5c8ace577953ea8e666c4e8adc3e8b0f6fdbf20b7c426a156420acb99787363e0e4c9d36df20cefcef5e74a48bb75eeb24
 
 Source1: license-openjdk11.txt
 %include %{SOURCE1}
@@ -90,7 +91,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep
-%autosetup -p1 -n jdk11u-jdk-%{version}-6
+%autosetup -p1 -n jdk11u-jdk-%{version}-ga
 
 %build
 chmod a+x ./configur*
@@ -117,12 +118,12 @@ make \
     STRIP_POLICY=no_strip \
     POST_STRIP_CMD="" \
     LOG=trace \
-    JOBS=$(nproc)
+    JOBS=%{_jobs}
 
 %install
 unset JAVA_HOME
 # make doesn't support _smp_mflags
-make install JOBS=$(nproc)
+make install JOBS=%{_jobs}
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
@@ -251,6 +252,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.26-1
+- Upgrade to v11.0.26
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 11.0.20-9
 - Version bump as a part of cups upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 11.0.20-8
