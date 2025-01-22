@@ -5,7 +5,7 @@
 Summary:        Builders for MarkUp
 Name:           rubygem-builder
 Version:        3.2.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,7 +15,6 @@ Source0: http://rubygems.org/gems/builder-%{version}.gem
 
 # Taken from https://github.com/rvm/rvm/blob/master/binscripts/rvm-installer
 Source1: rvm-installer
-%define sha512 rvm-installer=a48915efe196c0ff8f101c4a71c7720a0bde8511bdedf72559b12c5f447dd4e3a3dec7b002daa4949a94988a6d4b1d7f45f6a3027ada8dff1ba2b26f911cc12d
 
 Source2: license.txt
 %include %{SOURCE2}
@@ -48,6 +47,8 @@ popd
 %{gemdir}
 
 %changelog
+*   Wed Jan 22 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.4-4
+-   Remove shasum for local file rvm-installer
 *   Fri Jan 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.4-3
 -   Bring rvm-installer to spec dir
 *   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.4-2
