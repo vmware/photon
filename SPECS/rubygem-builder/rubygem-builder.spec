@@ -17,7 +17,6 @@ Source0:        http://rubygems.org/gems/builder-%{version}.gem
 
 # Taken from https://github.com/rvm/rvm/blob/master/binscripts/rvm-installer
 Source1:        rvm-installer
-%define sha512 rvm-installer=a48915efe196c0ff8f101c4a71c7720a0bde8511bdedf72559b12c5f447dd4e3a3dec7b002daa4949a94988a6d4b1d7f45f6a3027ada8dff1ba2b26f911cc12d
 
 BuildRequires:  ruby
 
