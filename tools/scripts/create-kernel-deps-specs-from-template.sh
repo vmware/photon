@@ -132,9 +132,9 @@ rm -f $spec_dir/kernels-drivers-intel/*.spec
 
 declare -A d_info=()
 
-d_info["ice"]="1.13.7 %{ICE_VERSION}"
-d_info["iavf"]="4.9.5 %{IAVF_VERSION}"
-d_info["i40e"]="2.22.18 %{I40E_VERSION}"
+d_info["ice"]="1.13.7 %{PKG_VERSION}"
+d_info["iavf"]="4.9.5 %{PKG_VERSION}"
+d_info["i40e"]="2.22.18 %{PKG_VERSION}"
 
 echo "Creating kernel drivers for linux ..."
 create_specs "linux"
@@ -142,9 +142,9 @@ create_specs "linux"
 echo "Creating kernel drivers for linux-esx ..."
 create_specs "linux-esx"
 
-d_info["iavf"]="4.11.1 4.9.5 4.8.2 4.5.3 %{IAVF_VERSION}"
-d_info["i40e"]="2.22.18 2.23.17 2.25.7 %{I40E_VERSION}"
-d_info["ice"]="1.14.9 1.13.7 1.12.7 1.11.14 1.9.11 %{ICE_VERSION}"
+d_info["iavf"]="4.11.1 4.9.5 4.8.2 4.5.3 %{PKG_VERSION}"
+d_info["i40e"]="2.22.18 2.23.17 2.25.7 %{PKG_VERSION}"
+d_info["ice"]="1.14.9 1.13.7 1.12.7 1.11.14 1.9.11 %{PKG_VERSION}"
 
 echo "Creating kernel drivers for linux-rt ..."
 create_specs "linux-rt"
