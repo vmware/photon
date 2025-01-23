@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
@@ -10,6 +10,17 @@ Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
 %define sha512 %{name}=5647636223ba336bf33e0c65e516d8ebcf6932de8b44f37bc468eedb87579c628ad44213f78534beb10f47aebb9c6fa670cb0bed3b4e7717e5faf7e9a1ef81ae
+
+Source1: dircolors.sh
+Source2: extrapaths.sh
+Source3: readline.sh
+Source4: i18n.sh
+Source5: bash.bashrc
+Source6: bash_profile
+Source7: bashrc
+Source8: bash_logout
+Source9: post.inc
+Source10: postun.inc
 
 Patch0: enable-SYS_BASHRC-SSH_SOURCE_BASHRC.patch
 
@@ -48,7 +59,7 @@ Requires:   %{name} = %{version}-%{release}
 The package contains bash doc files.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %build
 %configure \
@@ -67,232 +78,42 @@ install -vdm 755 %{buildroot}%{_sysconfdir}/profile.d
 install -vdm 755 %{buildroot}%{_sysconfdir}/skel
 rm %{buildroot}%{_libdir}/bash/Makefile.inc
 
-# Create dircolors
-cat > %{buildroot}%{_sysconfdir}/profile.d/dircolors.sh << "EOF"
-# Setup for /bin/ls and /bin/grep to support color, the alias is in /etc/bashrc.
-if [ -f "%{_sysconfdir}/dircolors" ]; then
-  eval $(dircolors -b %{_sysconfdir}/dircolors)
+# dircolors.sh
+install -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/profile.d/dircolors.sh
 
-  if [ -f "$HOME/.dircolors" ]; then
-    eval $(dircolors -b $HOME/.dircolors)
-  fi
-fi
-alias ls='ls --color=auto'
-grep --help | grep color  >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-  alias grep='grep --color=auto'
-fi
-EOF
+# extrapaths.sh
+install -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/profile.d/extrapaths.sh
 
-cat > %{buildroot}%{_sysconfdir}/profile.d/extrapaths.sh << "EOF"
-if [ -d /usr/local/lib/pkgconfig ]; then
-  pathappend /usr/local/lib/pkgconfig PKG_CONFIG_PATH
-fi
-if [ -d /usr/local/bin ]; then
-  pathprepend /usr/local/bin
-fi
-if [ -d /usr/local/sbin -a $EUID -eq 0 ]; then
-  pathprepend /usr/local/sbin
-fi
-EOF
+# readline.sh
+install -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/profile.d/readline.sh
 
-cat > %{buildroot}%{_sysconfdir}/profile.d/readline.sh << "EOF"
-# Setup the INPUTRC environment variable.
-if [ -z "$INPUTRC" -a ! -f "$HOME/.inputrc" ]; then
-  INPUTRC=%{_sysconfdir}/inputrc
-fi
-export INPUTRC
-EOF
+# i18n.sh
+install -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/profile.d/i18n.sh
 
-cat > %{buildroot}%{_sysconfdir}/profile.d/i18n.sh << "EOF"
-# Begin /etc/profile.d/i18n.sh
+# bash.bashrc
+install -D -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/bash.bashrc
 
-unset LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES \
-      LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION
+# .bash_profile
+install -D -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/skel/.bash_profile
 
-if [ -n "$XDG_CONFIG_HOME" ] && [ -r "$XDG_CONFIG_HOME/locale.conf" ]; then
-  . "$XDG_CONFIG_HOME/locale.conf"
-elif [ -r %{_sysconfdir}/locale.conf ]; then
-  . %{_sysconfdir}/locale.conf
-fi
+# .bashrc
+install -D -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/skel/.bashrc
 
-export LANG="${LANG:-C}"
-[ -n "$LC_CTYPE" ]          && export LC_CTYPE
-[ -n "$LC_NUMERIC" ]        && export LC_NUMERIC
-[ -n "$LC_TIME" ]           && export LC_TIME
-[ -n "$LC_COLLATE" ]        && export LC_COLLATE
-[ -n "$LC_MONETARY" ]       && export LC_MONETARY
-[ -n "$LC_MESSAGES" ]       && export LC_MESSAGES
-[ -n "$LC_PAPER" ]          && export LC_PAPER
-[ -n "$LC_NAME" ]           && export LC_NAME
-[ -n "$LC_ADDRESS" ]        && export LC_ADDRESS
-[ -n "$LC_TELEPHONE" ]      && export LC_TELEPHONE
-[ -n "$LC_MEASUREMENT" ]    && export LC_MEASUREMENT
-[ -n "$LC_IDENTIFICATION" ] && export LC_IDENTIFICATION
-
-# End /etc/profile.d/i18n.sh
-EOF
-
-cat > %{buildroot}%{_sysconfdir}/bash.bashrc << "EOF"
-# Begin /etc/bash.bashrc
-# Written for Beyond Linux From Scratch
-# by James Robertson <jameswrobertson@earthlink.net>
-# updated by Bruce Dubbs <bdubbs@linuxfromscratch.org>
-
-# System wide aliases and functions.
-
-# System wide environment variables and startup programs should go into
-# /etc/profile.  Personal environment variables and startup programs
-# should go into ~/.bash_profile.  Personal aliases and functions should
-# go into ~/.bashrc
-
-# Provides colored /bin/ls and /bin/grep commands.  Used in conjunction
-# with code in /etc/profile.
-
-alias ls='ls --color=auto'
-grep --help | grep color  >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-  alias grep='grep --color=auto'
-fi
-
-# Provides prompt for non-login shells, specifically shells started
-# in the X environment. [Review the LFS archive thread titled
-# PS1 Environment Variable for a great case study behind this script
-# addendum.]
-
-NORMAL="\[\e[0m\]"
-RED="\[\e[1;31m\]"
-GREEN="\[\e[1;32m\]"
-if [[ $EUID = 0 ]]; then
-  PS1="$RED\u [ $NORMAL\w$RED ]# $NORMAL"
-else
-  PS1="$GREEN\u [ $NORMAL\w$GREEN ]\$ $NORMAL"
-fi
-
-unset RED GREEN NORMAL
-
-if test -n "$SSH_CONNECTION" -a -z "$PROFILEREAD"; then
-  . %{_sysconfdir}/profile > /dev/null 2>&1
-fi
-
-# End /etc/bash.bashrc
-EOF
-
-cat > %{buildroot}%{_sysconfdir}/skel/.bash_profile << "EOF"
-# Begin ~/.bash_profile
-# Written for Beyond Linux From Scratch
-# by James Robertson <jameswrobertson@earthlink.net>
-# updated by Bruce Dubbs <bdubbs@linuxfromscratch.org>
-
-# Personal environment variables and startup programs.
-
-# Personal aliases and functions should go in ~/.bashrc.  System wide
-# environment variables and startup programs are in /etc/profile.
-# System wide aliases and functions are in /etc/bashrc.
-
-if [ -f "$HOME/.bashrc" ]; then
-  source $HOME/.bashrc
-fi
-
-if [ -d "$HOME/bin" ]; then
-  pathprepend $HOME/bin
-fi
-
-# Having . in the PATH is dangerous
-#if [ $EUID -gt 99 ]; then
-#  pathappend .
-#fi
-
-# End ~/.bash_profile
-EOF
-
-cat > %{buildroot}%{_sysconfdir}/skel/.bashrc << "EOF"
-# Begin ~/.bashrc
-# Written for Beyond Linux From Scratch
-# by James Robertson <jameswrobertson@earthlink.net>
-
-# Personal aliases and functions.
-
-# Personal environment variables and startup programs should go in
-# ~/.bash_profile.  System wide environment variables and startup
-# programs are in /etc/profile.  System wide aliases and functions are
-# in /etc/bashrc.
-
-if [ -f "%{_sysconfdir}/bash.bashrc" ]; then
-  source %{_sysconfdir}/bash.bashrc
-fi
-
-# End ~/.bashrc
-EOF
-
-cat > %{buildroot}%{_sysconfdir}/skel/.bash_logout << "EOF"
-# Begin ~/.bash_logout
-# Written for Beyond Linux From Scratch
-# by James Robertson <jameswrobertson@earthlink.net>
-
-# Personal items to perform on logout.
-
-# End ~/.bash_logout
-EOF
+# .bash_logout
+install -D -m 644 %{SOURCE8} %{buildroot}%{_sysconfdir}/skel/.bash_logout
 
 dircolors -p > %{buildroot}%{_sysconfdir}/dircolors
 %find_lang %{name}
 rm -rf %{buildroot}%{_infodir}
 
-%if 0%{?with_check}
 %check
-make NON_ROOT_USERNAME=nobody %{?_smp_mflags} check
-%endif
+%make_build NON_ROOT_USERNAME=nobody %{?_smp_mflags}
 
 %post
-if [ $1 -eq 1 ]; then
-  if [ ! -f "/root/.bash_logout" ]; then
-    cp %{_sysconfdir}/skel/.bash_logout /root/.bash_logout
-  fi
-
-  if [ ! -f %{_sysconfdir}/shells ]; then
-    echo "/bin/sh" >> %{_sysconfdir}/shells
-    echo "/bin/bash" >> %{_sysconfdir}/shells
-    echo "%{_bindir}/sh" >> %{_sysconfdir}/shells
-    echo "%{_bindir}/bash" >> %{_sysconfdir}/shells
-  else
-    grep -q '^/bin/sh$' %{_sysconfdir}/shells || \
-        echo "/bin/sh" >> %{_sysconfdir}/shells
-    grep -q '^/bin/bash$' %{_sysconfdir}/shells || \
-        echo "/bin/bash" >> %{_sysconfdir}/shells
-    grep -q '^%{_bindir}/sh$' %{_sysconfdir}/shells || \
-        echo "%{_bindir}/sh" >> %{_sysconfdir}/shells
-    grep -q '^%{_bindir}/bash$' %{_sysconfdir}/shells || \
-        echo "%{_bindir}/bash" >> %{_sysconfdir}/shells
-  fi
-fi
+%include %{SOURCE9}
 
 %postun
-if [ $1 -eq 0 ]; then
-  if [ -f "/root/.bash_logout" ]; then
-    rm -f /root/.bash_logout
-  fi
-  if [ ! -x /bin/sh ]; then
-    grep -v '^/bin/sh$'  %{_sysconfdir}/shells | \
-        grep -v '^/bin/sh$' > %{_sysconfdir}/shells.rpm && \
-        mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
-  fi
-  if [ ! -x /bin/bash ]; then
-    grep -v '^/bin/bash$'  %{_sysconfdir}/shells | \
-        grep -v '^/bin/bash$' > %{_sysconfdir}/shells.rpm && \
-        mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
-  fi
-  if [ ! -x %{_bindir}/sh ]; then
-    grep -v '^%{_bindir}/sh$'  %{_sysconfdir}/shells | \
-        grep -v '^%{_bindir}/sh$' > %{_sysconfdir}/shells.rpm && \
-        mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
-  fi
-  if [ ! -x %{_bindir}/bash ]; then
-    grep -v '^%{_bindir}/bash$'  %{_sysconfdir}/shells | \
-        grep -v '^%{_bindir}/bash$' > %{_sysconfdir}/shells.rpm && \
-        mv %{_sysconfdir}/shells.rpm %{_sysconfdir}/shells
-  fi
-fi
+%include %{SOURCE10}
 
 %files
 %defattr(-,root,root)
@@ -315,6 +136,8 @@ fi
 %{_mandir}/*/*
 
 %changelog
+* Thu Jan 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2-4
+- Spec cleanups
 * Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.2-3
 - Remove umask.sh, have systemd wide common umask value
 * Mon May 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.2-2
