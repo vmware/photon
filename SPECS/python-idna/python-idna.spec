@@ -1,13 +1,16 @@
+%define srcname idna
+
 Summary:        Internationalized Domain Names in Applications (IDNA).
 Name:           python3-idna
 Version:        3.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/idna
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        idna-%{version}.tar.gz
-%define sha512  idna=70b7cc8718e7d7899c75cfe476f044eae5a2fa03801fc9c12e3a092627ca943ffc4a578f9b8a55e181a11564835e125cfaaa577c02a6461dbb97366e620e53ad
+Source0:        %{srcname}-%{version}.tar.gz
+Patch0:         CVE-2024-3651.patch
+%define sha512  %{srcname}=70b7cc8718e7d7899c75cfe476f044eae5a2fa03801fc9c12e3a092627ca943ffc4a578f9b8a55e181a11564835e125cfaaa577c02a6461dbb97366e620e53ad
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -30,7 +33,7 @@ This library also provides support for Unicode Technical Standard 46, Unicode ID
 This acts as a suitable replacement for the “encodings.idna” module that comes with the Python standard library, but only supports the old, deprecated IDNA specification (RFC 3490).
 
 %prep
-%autosetup -n idna-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
 %py3_build
@@ -46,6 +49,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Thu Jan 23 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3-4
+- Fix CVE-2024-3651
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.3-2
