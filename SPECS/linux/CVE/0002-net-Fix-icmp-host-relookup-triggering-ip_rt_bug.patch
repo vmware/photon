@@ -1,0 +1,78 @@
+From d4020c1890dacfe74c6476d89e139da9d4bafa58 Mon Sep 17 00:00:00 2001
+From: Dong Chenchen <dongchenchen2@huawei.com>
+Date: Wed, 22 Jan 2025 12:49:18 +0000
+Subject: [PATCH 2/5] net: Fix icmp host relookup triggering ip_rt_bug
+
+[ Upstream commit c44daa7e3c73229f7ac74985acb8c7fb909c4e0a ]
+
+arp link failure may trigger ip_rt_bug while xfrm enabled, call trace is:
+
+WARNING: CPU: 0 PID: 0 at net/ipv4/route.c:1241 ip_rt_bug+0x14/0x20
+Modules linked in:
+CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.12.0-rc6-00077-g2e1b3cc9d7f7
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+RIP: 0010:ip_rt_bug+0x14/0x20
+Call Trace:
+<IRQ>
+ip_send_skb+0x14/0x40
+__icmp_send+0x42d/0x6a0
+ipv4_link_failure+0xe2/0x1d0
+arp_error_report+0x3c/0x50
+neigh_invalidate+0x8d/0x100
+neigh_timer_handler+0x2e1/0x330
+call_timer_fn+0x21/0x120
+__run_timer_base.part.0+0x1c9/0x270
+run_timer_softirq+0x4c/0x80
+handle_softirqs+0xac/0x280
+irq_exit_rcu+0x62/0x80
+sysvec_apic_timer_interrupt+0x77/0x90
+
+The script below reproduces this scenario:
+ip xfrm policy add src 0.0.0.0/0 dst 0.0.0.0/0 \
+    dir out priority 0 ptype main flag localok icmp
+ip l a veth1 type veth
+ip a a 192.168.141.111/24 dev veth0
+ip l s veth0 up
+ping 192.168.141.155 -c 1
+
+icmp_route_lookup() create input routes for locally generated packets
+while xfrm relookup ICMP traffic.Then it will set input route
+(dst->out = ip_rt_bug) to skb for DESTUNREACH.
+
+For ICMP err triggered by locally generated packets, dst->dev of output
+route is loopback. Generally, xfrm relookup verification is not required
+on loopback interfaces (net.ipv4.conf.lo.disable_xfrm = 1).
+
+Skip icmp relookup for locally generated packets to fix it.
+
+Fixes: 8b7817f3a959 ("[IPSEC]: Add ICMP host relookup support")
+Signed-off-by: Dong Chenchen <dongchenchen2@huawei.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://patch.msgid.link/20241127040850.1513135-1-dongchenchen2@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Guru: Ported patch to 6.1.y branch]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ net/ipv4/icmp.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 9dffdd876fef..b40c1fc39125 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -521,6 +521,9 @@ static struct rtable *icmp_route_lookup(struct net *net,
+ 	if (!IS_ERR(rt)) {
+ 		if (rt != rt2)
+ 			return rt;
++		if (inet_addr_type_dev_table(net, route_lookup_dev,
++					     fl4->daddr) == RTN_LOCAL)
++			return rt;
+ 	} else if (PTR_ERR(rt) == -EPERM) {
+ 		rt = NULL;
+ 	} else
+-- 
+2.39.4
+

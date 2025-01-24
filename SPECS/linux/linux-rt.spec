@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.126
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -163,6 +163,19 @@ Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2023-0597
 Patch102: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch103: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
+
+#Fix CVE-2024-56703
+Patch105: 0001-ipv6-Fix-soft-lockups-in-fib6_select_path-under-high.patch
+
+#Fix CVE-2024-56647
+Patch106: 0002-net-Fix-icmp-host-relookup-triggering-ip_rt_bug.patch
+
+#Fix CVE-2024-38557
+Patch107: 0003-net-mlx5-Reload-only-IB-representors-upon-lag-disabl.patch
+
+#Fix CVE-2024-56729
+Patch108: 0004-smb-Initialize-cfid-tcon-before-performing-network-o.patch
+
 # Fix CVE-2023-39191 [110..128]
 %include %{SOURCE48}
 
@@ -563,6 +576,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri Jan 24 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.126-5
+- Fixes CVE-2024-56729, CVE-2024-38557
+- CVE-2024-56647 and CVE-2024-56703
 * Fri Jan 24 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.126-4
 - Fixes CVE-2024-56631
 * Fri Jan 24 2025 Srinidhi Rao <srnidhi.rao@broadcom.com> 6.1.126-3
