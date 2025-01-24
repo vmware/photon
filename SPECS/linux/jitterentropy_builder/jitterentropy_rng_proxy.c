@@ -14,7 +14,7 @@
 #include <linux/mutex.h>
 #include <linux/list.h>
 
-static int max_jent_insts = 1;
+static int max_jent_insts = 32;
 
 struct jent_instance {
     struct crypto_rng *jent_inst;
