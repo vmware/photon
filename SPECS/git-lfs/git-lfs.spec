@@ -4,7 +4,7 @@
 Summary:      Git extension for versioning large files
 Name:         git-lfs
 Version:      3.2.0
-Release:      8%{?dist}
+Release:      9%{?dist}
 License:      MIT
 URL:          https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
 Group:        System Environment/Programming
@@ -22,11 +22,13 @@ BuildRequires: git
 
 Requires: git
 
+Patch0: CVE-2024-53263.patch
+
 %description
 Git LFS is a command line extension and specification for managing large files with Git
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 make %{?_smp_mflags}
@@ -58,6 +60,8 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+* Mon Jan 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-9
+- Fix CVE-2024-53263
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-8
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-7
