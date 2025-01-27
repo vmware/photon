@@ -1,0 +1,31 @@
+sources:
+- archive: cryptography-41.0.7.tar.gz
+  archive_sha512sum: 9a870d45296de6af1331e73b102226b8269892216cd7bc0adfb2f63ce1ca7021d338effd09182128253d8d8df154bbd19d46c47f10ddac86e739fcbf6df78307
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cryptography is a Python library which exposes cryptographic
+        recipes and primitives. '
+      home_page: https://pypi.python.org/pypi/cryptography
+      license_concluded: Apache-2.0 AND BSD-3-Clause AND (BSD-3-Clause OR Apache-2.0)
+      license_declared: Apache-2.0 AND BSD-3-Clause AND (BSD-3-Clause OR Apache-2.0)
+      short_summary: Python cryptography library
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: python3-cryptography-registry.ph5-41.0.7.tar.gz
+  archive_sha512sum: 903d3aea41799d6e889194c50464ce651d283c977706104b1d30a803882d7e5faa427b4aa0c0fcd655d2c9b39e3a716b945648b774e5613db4ec2d75741b7d34
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Contains vendor rust file sources which were needed to
+        do offline build
+      home_page: https://github.com/vmware/photon
+      license_concluded: BSD-3-Clause AND BSD-2-Clause AND (Apache-2.0 OR MIT) AND
+        GPL-2.0-only AND bzip2-1.0.6 AND (MIT OR Apache-2.0) AND OpenSSL-standalone
+        AND Apache-2.0 AND Python-2.0 AND (MIT OR Apache-2.0) AND SSLeay-standalone
+        AND TCL AND MIT AND Apache-2.0 WITH LLVM-exception
+      license_declared: BSD-3-Clause AND BSD-2-Clause AND (Apache-2.0 OR MIT) AND
+        GPL-2.0-only AND bzip2-1.0.6 AND (MIT OR Apache-2.0) AND OpenSSL-standalone
+        AND Apache-2.0 AND Python-2.0 AND (MIT OR Apache-2.0) AND SSLeay-standalone
+        AND TCL AND MIT AND Apache-2.0 WITH LLVM-exception
+      short_summary: Contains vendor rust file sources
+      supplier: 'Organization: Broadcom, Inc.'

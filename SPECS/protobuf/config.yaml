@@ -1,0 +1,14 @@
+sources:
+- archive: protobuf-3.23.3.tar.gz
+  archive_sha512sum: d6f360c3d0a205b012c2db6d5c32fc7cde075941e12dd7cb9da8c03ab1f6cb81044acac34b39bb699dde5bea4558159a5e47beafd87e47d6b91d06b37ea6e886
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Protocol Buffers (a.k.a., %{name}) are Google''s language-neutral,
+        platform-neutral, extensible mechanism for serializing structured data. You
+        can find %{name}''s documentation on the Google Developers site. '
+      home_page: https://github.com/google/protobuf
+      license_concluded: Apache-2.0 AND MIT AND BSD-3-Clause AND Python-2.0
+      license_declared: Apache-2.0 AND MIT AND BSD-3-Clause AND Python-2.0
+      short_summary: Google's data interchange format
+      supplier: 'Organization: Broadcom, Inc.'

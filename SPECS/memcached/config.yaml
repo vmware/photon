@@ -1,0 +1,18 @@
+sources:
+- archive: memcached-1.6.22.tar.gz
+  archive_sha512sum: a30adc4f14c32051d2fc112eaa71de96f7ba614bd7f940ab5dd86365fe5e4df1399fa6fe6591cee903c8b914f2156050edef3139bafe38cd4a2b6424ba973e8e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: '%{name} is a high-performance, distributed memory object
+        caching system, generic in nature, but intended for use in speeding up dynamic
+        web applications by alleviating database load. '
+      home_page: https://www.memcached.org/
+      license_concluded: FSFULLRWD AND FSFULLR AND MIT AND FSFUL AND BSD-2-Clause
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause AND Zlib AND X11
+      license_declared: FSFULLRWD AND FSFULLR AND MIT AND FSFUL AND BSD-2-Clause AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND BSD-3-Clause AND Zlib AND X11
+      short_summary: High Performance, Distributed Memory Object Cache
+      supplier: 'Organization: Broadcom, Inc.'

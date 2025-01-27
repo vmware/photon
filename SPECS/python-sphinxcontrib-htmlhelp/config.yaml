@@ -1,0 +1,13 @@
+sources:
+- archive: sphinxcontrib-htmlhelp-2.0.0.tar.gz
+  archive_sha512sum: 6ed673966615f3e818e00de4b7e59c27f0a0d7b494294f804540777c580480870c36002c08d8ad626b7b41a676fe40edc0b0b5ffc6ad8080f38f59c24e157636
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'sphinxcontrib-htmlhelp is a sphinx extension which renders
+        HTML help files. '
+      home_page: https://pypi.org/project/sphinxcontrib-htmlhelp
+      license_concluded: BSD-3-Clause AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND BSD-2-Clause
+      short_summary: Sphinx extension for HTML help files
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,21 @@
+sources:
+- archive: userspace-rcu-0.13.2.tar.gz
+  archive_sha512sum: a59daf9908acad3bd21e36d90c831ec2df8259d29743fb86066a82433a4a228ae79ca3b66e12120c0e6cad651a1007e77d6ac23ab083c55ab9b283b7d36a3ddc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This data synchronization library provides read-side
+        access which scales linearly with the number of cores. '
+      home_page: https://github.com/urcu/userspace-rcu/releases
+      license_concluded: GPL-3.0-or-later AND BSD-2-Clause AND FSFAP AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND LGPL-2.1-or-later AND MIT AND LGPL-2.1-only
+        AND GPL-2.0-or-later AND (LGPL-2.0-or-later OR GPL-1.0-or-later) AND LGPL-2.0-or-later
+        AND BSD-3-Clause AND Boehm-GC AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND GPL-2.0-only
+      license_declared: GPL-3.0-or-later AND BSD-2-Clause AND FSFAP AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND LGPL-2.1-or-later AND MIT AND LGPL-2.1-only
+        AND GPL-2.0-or-later AND (LGPL-2.0-or-later OR GPL-1.0-or-later) AND LGPL-2.0-or-later
+        AND BSD-3-Clause AND Boehm-GC AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND GPL-2.0-only
+      short_summary: user space RCU (read-copy-update)
+      supplier: 'Organization: Broadcom, Inc.'

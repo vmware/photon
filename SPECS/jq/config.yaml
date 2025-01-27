@@ -1,0 +1,22 @@
+sources:
+- archive: jq-1.6.tar.gz
+  archive_sha512sum: 5da71f53c325257f1f546a2520fe47828b495c953270df25ea0e37741463fdda72f0ba4d5b05b25114ec30f27a559344c2b024bacabf610759f4e3e9efadb480
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'jq is a lightweight and flexible command-line JSON processor. '
+      home_page: https://github.com/stedolan/jq
+      license_concluded: GPL-3.0-or-later WITH Libtool-exception AND FSFULLR AND FSFULLRWD
+        AND MIT AND X11 AND BSD-2-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND dtoa AND CC0-1.0 AND FSFUL AND FSFAP AND GPL-2.0-or-later WITH Libtool-exception
+        AND CC-BY-3.0
+      license_declared: GPL-3.0-or-later WITH Libtool-exception AND FSFULLR AND FSFULLRWD
+        AND MIT AND X11 AND BSD-2-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND dtoa AND CC0-1.0 AND FSFUL AND FSFAP AND GPL-2.0-or-later WITH Libtool-exception
+        AND CC-BY-3.0
+      short_summary: jq is a lightweight and flexible command-line JSON processor.
+      supplier: 'Organization: Broadcom, Inc.'

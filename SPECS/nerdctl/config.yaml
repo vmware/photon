@@ -1,0 +1,14 @@
+sources:
+- archive: nerdctl-1.4.0.tar.gz
+  archive_sha512sum: b14cd92b76d9699b4042fcd7a6906b1c714221b30cff1074a1d59ea038cf74ea6437d4a4d9a265e7b0f4c96397c82d53856f9e43d08aa8abcb98af5e9fb6e8dc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: '%{summary} contaiNERD CTL - Docker-compatible CLI for
+        containerd, with support for Compose, Rootless, eStargz, OCIcrypt, IPFS, ...
+        This package also provides containerd-rootless scripts. '
+      home_page: https://github.com/containerd/nerdctl
+      license_concluded: MIT AND LGPL-2.1-only AND Apache-2.0 AND GPL-2.0-only
+      license_declared: MIT AND LGPL-2.1-only AND Apache-2.0 AND GPL-2.0-only
+      short_summary: Docker-compatible CLI for containerd
+      supplier: 'Organization: Broadcom, Inc.'

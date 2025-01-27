@@ -1,0 +1,15 @@
+sources:
+- archive: govmomi-0.29.0.tar.gz
+  archive_sha512sum: f43cdb8333775689ede39bc2f488433de1a8c6be9cffd534f50023557f5fde3bddc6f2ead88d9f23d0de3a7ed16191bc4daa1e7f31dceb80055feb202c94ab7e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A Go library for interacting with VMware vSphere APIs
+        (ESXi and/or vCenter). The code in the govmomi package is a wrapper for the
+        code that is generated from the vSphere API description. It primarily provides
+        convenience functions for working with the vSphere API. '
+      home_page: https://github.com/vmware/govmomi
+      license_concluded: Apache-2.0 AND BSD-3-Clause AND NTP-0 AND MIT
+      license_declared: Apache-2.0 AND BSD-3-Clause AND NTP-0 AND MIT
+      short_summary: GO interface to the VMware vSphere API.
+      supplier: 'Organization: Broadcom, Inc.'

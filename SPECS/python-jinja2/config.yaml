@@ -1,0 +1,14 @@
+sources:
+- archive: jinja-3.1.2.tar.gz
+  archive_sha512sum: 50feebc7eed4c8b5bb0c2951784c1c115e3ee1c0e0c91bbf1884551b1312ef8fce24804a2ca1dfd8c543406529afe4817567c39e7cfd15028b54049853623144
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Jinja2 is a template engine written in pure Python. It
+        provides a Django inspired non-XML syntax but supports inline expressions
+        and an optional sandboxed environment. '
+      home_page: https://github.com/pallets/jinja
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: A fast and easy to use template engine written in pure Python
+      supplier: 'Organization: Broadcom, Inc.'

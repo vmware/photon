@@ -1,0 +1,23 @@
+sources:
+- archive: libxcb-1.15.tar.gz
+  archive_sha512sum: 4099899c37fdda62a9a0883863ee9e50b5072e8f396ba6f4594965d9f1743fb6ea991974a99974c6f39bac14ce9aad5669fa633ac1ad2390280d613cc66eb00e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libxcb package provides an interface to the X Window
+        System protocol, which replaces the current Xlib interface. Xlib can also
+        use XCB as a transport layer, allowing software to make requests and receive
+        responses with both. '
+      home_page: http://www.x.org/
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Libtool-exception AND FSFAP AND FSFULLRWD AND GPL-3.0-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFUL AND MIT-open-group AND MIT AND X11
+        AND GPL-2.0-or-later WITH Libtool-exception
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Libtool-exception AND FSFAP AND FSFULLRWD AND GPL-3.0-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFUL AND MIT-open-group AND MIT AND X11
+        AND GPL-2.0-or-later WITH Libtool-exception
+      short_summary: Interface to the X Window System protocol.
+      supplier: 'Organization: Broadcom, Inc.'

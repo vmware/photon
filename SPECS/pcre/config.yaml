@@ -1,0 +1,22 @@
+sources:
+- archive: pcre-8.45.tar.bz2
+  archive_sha512sum: 91bff52eed4a2dfc3f3bfdc9c672b88e7e2ffcf3c4b121540af8a4ae8c1ce05178430aa6b8000658b9bb7b4252239357250890e20ceb84b79cdfcde05154061a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The PCRE package contains Perl Compatible Regular Expression
+        libraries. These are useful for implementing regular expression pattern matching
+        using the same syntax and semantics as Perl 5. '
+      home_page: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.45.tar.bz2
+      license_concluded: GPL-2.0-only AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLR AND X11 AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND FSFUL AND BSD-3-Clause AND FSFULLRWD AND GPL-1.0-or-later AND GPL-3.0-or-later
+        AND BSD-2-Clause
+      license_declared: GPL-2.0-only AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLR AND X11 AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND FSFUL AND BSD-3-Clause AND FSFULLRWD AND GPL-1.0-or-later AND GPL-3.0-or-later
+        AND BSD-2-Clause
+      short_summary: Grep for perl compatible regular expressions
+      supplier: 'Organization: Broadcom, Inc.'

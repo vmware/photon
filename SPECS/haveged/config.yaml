@@ -1,0 +1,30 @@
+sources:
+- archive: haveged-1.9.18.tar.gz
+  archive_sha512sum: ef2e0ae3be68a8fba16371c3347d52ecf9748269ae30eef2e5c26aad6cfb516f87295e1e56be902df1064e7d4ace04863dd094d62b69e584608f779d63b42d8e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A Linux entropy source using the HAVEGE algorithm  Haveged
+        is a user space entropy daemon which is not dependent upon the standard mechanisms
+        for harvesting randomness for the system entropy pool. This is important in
+        systems with high entropy needs or limited user interaction (e.g. headless
+        servers).  Haveged uses HAVEGE (HArdware Volatile Entropy Gathering and Expansion)
+        to maintain a 1M pool of random bytes used to fill /dev/random whenever the
+        supply of random bits in /dev/random falls below the low water mark of the
+        device. The principle inputs to haveged are the sizes of the processor instruction
+        and data caches used to setup the HAVEGE collector. The haveged default is
+        a 4kb data cache and a 16kb instruction cache. On machines with a cpuid instruction,
+        haveged will attempt to select appropriate values from internal tables. '
+      home_page: http://www.irisa.fr/caps/projects/hipsor
+      license_concluded: GPL-3.0-or-later WITH GCC-exception-3.1 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFAP AND GPL-3.0-or-later AND X11 AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-only AND FSFULLR AND FSFUL AND GPL-2.0-or-later
+        WITH Libtool-exception AND FSFULLRWD AND GPL-3.0-only
+      license_declared: GPL-3.0-or-later WITH GCC-exception-3.1 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFAP AND GPL-3.0-or-later AND X11 AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-only AND FSFULLR AND FSFUL AND GPL-2.0-or-later
+        WITH Libtool-exception AND FSFULLRWD AND GPL-3.0-only
+      short_summary: A Linux entropy source using the HAVEGE algorithm
+      supplier: 'Organization: Broadcom, Inc.'

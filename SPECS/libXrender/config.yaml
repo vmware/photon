@@ -1,0 +1,18 @@
+sources:
+- archive: libXrender-0.9.10.tar.bz2
+  archive_sha512sum: 16ea0cf638b32d7df54b270457ef8c9d9a80da27fa845b105b560cb31027b4c7fe799cf23d6b6bac492be5961264e96d7845d316a9af4de9ff38bf40885ea6fe
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 Renderer library. '
+      home_page: http://www.x.org/
+      license_concluded: MIT AND X11 AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND MIT-open-group AND GPL-3.0-or-later WITH Autoconf-exception-macro AND
+        HPND-sell-variant
+      license_declared: MIT AND X11 AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND MIT-open-group AND GPL-3.0-or-later WITH Autoconf-exception-macro AND
+        HPND-sell-variant
+      short_summary: X11 Xrender runtime library.
+      supplier: 'Organization: Broadcom, Inc.'

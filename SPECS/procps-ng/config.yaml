@@ -1,0 +1,20 @@
+sources:
+- archive: procps-ng-4.0.4.tar.xz
+  archive_sha512sum: 94375544e2422fefc23d7634063c49ef1be62394c46039444f85e6d2e87e45cfadc33accba5ca43c96897b4295bfb0f88d55a30204598ddb26ef66f0420cefb4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Procps package contains programs for monitoring processes. '
+      home_page: https://sourceforge.net/projects/procps-ng
+      license_concluded: FSFULLRWD AND LGPL-2.0-or-later AND GPL-2.0-or-later AND
+        MIT AND GPL-2.0-only AND X11 AND GPL-1.0-or-later AND GPL-2.0-or-later WITH
+        Libtool-exception AND LGPL-2.1-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND FSFUL AND GPL-3.0-or-later AND LGPL-2.0-only
+      license_declared: FSFULLRWD AND LGPL-2.0-or-later AND GPL-2.0-or-later AND MIT
+        AND GPL-2.0-only AND X11 AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+        AND LGPL-2.1-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND FSFUL AND GPL-3.0-or-later AND LGPL-2.0-only
+      short_summary: Programs for monitoring processes
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,27 @@
+sources:
+- archive: calico-3.26.4.tar.gz
+  archive_sha512sum: 85a051cf938f771e9bf3173cc1806697b73b36d221053ad53ecf69afae0bfe8f9c0c6fac24de4b5f3e747b095ebf11e79d6358bd0e7a797a5144054010bb15b4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Calico node is a container that bundles together various
+        components reqiured for networking containers using project calico. This includes
+        key components such as felix agent for programming routes and ACLs, BIRD routing
+        daemon, and confd datastore monitor engine. '
+      home_page: https://github.com/projectcalico/calico
+      license_concluded: GPL-1.0-or-later AND Apache-2.0 AND BSD-2-Clause AND GPL-2.0-or-later
+        AND GPL-2.0-only WITH Linux-syscall-note AND MIT AND (BSD-2-Clause OR LGPL-2.1-only)
+        AND BSD-3-Clause AND LGPL-2.1-or-later AND (Apache-2.0 OR GPL-2.0-or-later)
+        AND (Apache-2.0 OR GPL-2.0-or-later) AND LGPL-3.0-only AND (BSD-3-Clause OR
+        GPL-1.0-or-later) AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-3-Clause)
+        AND GPL-2.0-only AND MPL-2.0 AND LGPL-2.0-or-later AND LGPL-2.1-only AND MPL-1.0
+        AND GPL-3.0-only AND ISC AND Unlicense AND (LGPL-2.1-only OR BSD-2-Clause)
+      license_declared: GPL-1.0-or-later AND Apache-2.0 AND BSD-2-Clause AND GPL-2.0-or-later
+        AND GPL-2.0-only WITH Linux-syscall-note AND MIT AND (BSD-2-Clause OR LGPL-2.1-only)
+        AND BSD-3-Clause AND LGPL-2.1-or-later AND (Apache-2.0 OR GPL-2.0-or-later)
+        AND (Apache-2.0 OR GPL-2.0-or-later) AND LGPL-3.0-only AND (BSD-3-Clause OR
+        GPL-1.0-or-later) AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-3-Clause)
+        AND GPL-2.0-only AND MPL-2.0 AND LGPL-2.0-or-later AND LGPL-2.1-only AND MPL-1.0
+        AND GPL-3.0-only AND ISC AND Unlicense AND (LGPL-2.1-only OR BSD-2-Clause)
+      short_summary: Calico node and documentation for project calico.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: semantic_version-2.10.0.tar.gz
+  archive_sha512sum: 869a3901d4fc12acb285c94175011ed03dc00b35ab687c67dda458cffab5666cea21bc1b4bf75ef4edeb83b8080452a1c1470248eee54bbd269614a8cab132dc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This small python library provides a few tools to handle
+        SemVer in Python. It follows strictly the 2.0.0 version of the SemVer scheme. '
+      home_page: https://github.com/rbarrois/python-semanticversion
+      license_concluded: BSD-3-Clause AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND BSD-2-Clause
+      short_summary: Library implementing the 'SemVer' scheme
+      supplier: 'Organization: Broadcom, Inc.'

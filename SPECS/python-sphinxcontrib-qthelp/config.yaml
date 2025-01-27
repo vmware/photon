@@ -1,0 +1,13 @@
+sources:
+- archive: sphinxcontrib-qthelp-1.0.3.tar.gz
+  archive_sha512sum: 29f77e4b3f1a4868c2a34dbd853415e5d813f482cd23b982aeed42d53acba09b896d77ba930c34cce8af043bb7d64a19acff610430e942038d95a410b6e0b5fa
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'sphinxcontrib-qthelp is a sphinx extension which outputs
+        QtHelp document. '
+      home_page: https://pypi.org/project/sphinxcontrib-qthelp
+      license_concluded: BSD-3-Clause AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND BSD-2-Clause
+      short_summary: Sphinx extension for QtHelp documents
+      supplier: 'Organization: Broadcom, Inc.'

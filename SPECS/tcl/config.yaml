@@ -1,0 +1,23 @@
+sources:
+- archive: tcl-core8.6.12-src.tar.gz
+  archive_sha512sum: 7144a50d19d3855edbda14b538cc94fe26c0dd357b979676c3fe02d599dab61ba777bf14f6aaebb63e238aeff1d0bad25ea7b0ff31b2398468f67fc0a305b9f3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Tcl provides a powerful platform for creating integration
+        applications that tie together diverse applications, protocols, devices, and
+        frameworks. When paired with the Tk toolkit, Tcl provides the fastest and
+        most powerful way to create GUI applications that run on PCs, Unix, and Mac
+        OS X. Tcl can also be used for a variety of web-related tasks and for creating
+        powerful command languages for applications. '
+      home_page: http://tcl.sourceforge.net/
+      license_concluded: BSD-4-Clause-UC AND BSD-2-Clause AND BSD-3-Clause AND HPND-UC
+        AND GPL-1.0-or-later AND FSFUL AND TCL AND Zlib AND MIT-Modern-Variant AND
+        BSL-1.0 AND Unlicense AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-2.0-or-later WITH GNAT-exception AND Spencer-99
+      license_declared: BSD-4-Clause-UC AND BSD-2-Clause AND BSD-3-Clause AND HPND-UC
+        AND GPL-1.0-or-later AND FSFUL AND TCL AND Zlib AND MIT-Modern-Variant AND
+        BSL-1.0 AND Unlicense AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-2.0-or-later WITH GNAT-exception AND Spencer-99
+      short_summary: Tool Command Language - the language and library.
+      supplier: 'Organization: Broadcom, Inc.'

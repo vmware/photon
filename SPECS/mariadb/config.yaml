@@ -1,0 +1,52 @@
+sources:
+- archive: libfmt-8.0.1.zip
+  archive_sha512sum: 53f781e33ffb3bc38d743b81c5755a7d71dce95dcf5cdf23d5b4cf880a8f29189ca1b790272ee8586cbcd552648bae040247e572b2a97cd8b3631c284873f57d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: The fmt package is an open-source formatting library providing
+        a fast and safe alternative to C stdio and C++ iostreams.
+      home_page: https://github.com/fmtlib/fmt
+      license_concluded: MIT AND (MIT OR CC0-1.0) AND BSD-3-Clause AND Python-2.0
+      license_declared: MIT AND (MIT OR CC0-1.0) AND BSD-3-Clause AND Python-2.0
+      short_summary: fmt is an open-source formatting library.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: mariadb-10.9.4.tar.gz
+  archive_sha512sum: 9fc5d71c08cb07efc777ef3ebd97dc4953de8aa46750f52c2dabea5af63b52938ca4b54221184f1b4fbb71b94dade27c90756123ddef51959a7b5d43c3b8d986
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'MariaDB is a community developed fork from MySQL - a
+        multi-user, multi-threaded SQL database server. It is a client/server implementation
+        consisting of a server daemon (mariadbd) and many different client programs
+        and libraries. The base package contains the standard MariaDB/MySQL client
+        programs and utilities. '
+      home_page: https://mariadb.org
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-only
+        AND OpenSSL AND ISC-Veillard AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later)
+        AND SSLeay-standalone AND dtoa AND blessing AND (GPL-2.0-only OR Apache-2.0)
+        AND (MIT OR BSD-3-Clause OR GPL-2.0-only) AND GPL-2.0-only AND MIT AND OFL-1.1
+        AND (MIT OR GPL-2.0-only) AND FSFAP AND BSD-2-Clause-first-lines AND X11-distribute-modifications-variant
+        AND Apache-2.0 AND LGPL-2.0-only AND RSA-MD AND BSD-4-Clause-UC AND GPL-2.0-or-later
+        WITH Libtool-exception AND (GPL-2.0-only OR Apache-2.0) AND Zlib AND GPL-1.0-or-later
+        AND ISC AND GPL-2.0-or-later AND BSL-1.0 AND LPD-document AND LGPL-2.1-only
+        AND CC-BY-SA-4.0 AND BSD-2-Clause-Views AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND PostgreSQL AND BSD-Source-Code AND CC-BY-4.0
+        AND Artistic-2.0 AND BSD-3-Clause AND FSFULLR AND GPL-2.0-only WITH Universal-FOSS-exception-1.0
+        AND NGPL AND OpenSSL-standalone AND BSD-2-Clause AND GPL-1.0-only AND LGPL-2.0-or-later
+        AND CC0-1.0
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-only
+        AND OpenSSL AND ISC-Veillard AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later)
+        AND SSLeay-standalone AND dtoa AND blessing AND (GPL-2.0-only OR Apache-2.0)
+        AND (MIT OR BSD-3-Clause OR GPL-2.0-only) AND GPL-2.0-only AND MIT AND OFL-1.1
+        AND (MIT OR GPL-2.0-only) AND FSFAP AND BSD-2-Clause-first-lines AND X11-distribute-modifications-variant
+        AND Apache-2.0 AND LGPL-2.0-only AND RSA-MD AND BSD-4-Clause-UC AND GPL-2.0-or-later
+        WITH Libtool-exception AND (GPL-2.0-only OR Apache-2.0) AND Zlib AND GPL-1.0-or-later
+        AND ISC AND GPL-2.0-or-later AND BSL-1.0 AND LPD-document AND LGPL-2.1-only
+        AND CC-BY-SA-4.0 AND BSD-2-Clause-Views AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND PostgreSQL AND BSD-Source-Code AND CC-BY-4.0
+        AND Artistic-2.0 AND BSD-3-Clause AND FSFULLR AND GPL-2.0-only WITH Universal-FOSS-exception-1.0
+        AND NGPL AND OpenSSL-standalone AND BSD-2-Clause AND GPL-1.0-only AND LGPL-2.0-or-later
+        AND CC0-1.0
+      short_summary: Database servers made by the original developers of MySQL.
+      supplier: 'Organization: Broadcom, Inc.'

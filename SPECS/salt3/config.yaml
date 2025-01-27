@@ -1,0 +1,36 @@
+sources:
+- archive: salt-3006.7.tar.gz
+  archive_sha512sum: 9d1759a7c0dfc9ad4fdc94460f0f3799483737207bfdc8ddd1424e5c6083ea74ef520f13c323d5cbd7f65c1d9bb13bbbeb5f2cafe6dcacbc2689e733794aef2d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Salt is a distributed remote execution system used to
+        execute commands and query data. It was developed in order to bring the best
+        solutions found in the world of remote execution together and make them better,
+        faster and more malleable. Salt accomplishes this via its ability to handle
+        larger loads of information, and not just dozens, but hundreds or even thousands
+        of individual servers, handle them quickly and through a simple and manageable
+        interface. '
+      home_page: http://saltstack.org/
+      license_concluded: (MIT OR BSD-3-Clause) AND (MIT OR GPL-2.0-only) AND LGPL-2.1-only
+        AND GPL-3.0-only AND LGPL-2.0-only AND BSD-3-Clause AND GFDL-1.2-only AND
+        GFDL-1.2-or-later AND BSD-2-Clause AND CC-BY-3.0 AND GFDL-1.3-invariants-only
+        AND LGPL-2.1-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND LGPL-3.0-only AND Python-2.0 AND GPL-2.0-or-later AND BSD-4-Clause-UC
+        AND GPL-2.0-only AND HPND AND GFDL-1.3-or-later AND GPL-1.0-or-later WITH
+        Autoconf-exception-generic AND GPL-3.0-or-later AND GPL-1.0-or-later AND Apache-2.0
+        AND GPL-2.0-or-later WITH Bison-exception-1.24 AND GFDL-1.1-or-later AND Latex2e
+        AND BSD-4-Clause AND Latex2e-translated-notice AND FSFUL AND FSFAP-no-warranty-disclaimer
+        AND CC-BY-2.5 AND LGPL-2.0-or-later AND JSON AND MIT AND GFDL-1.3-only
+      license_declared: (MIT OR BSD-3-Clause) AND (MIT OR GPL-2.0-only) AND LGPL-2.1-only
+        AND GPL-3.0-only AND LGPL-2.0-only AND BSD-3-Clause AND GFDL-1.2-only AND
+        GFDL-1.2-or-later AND BSD-2-Clause AND CC-BY-3.0 AND GFDL-1.3-invariants-only
+        AND LGPL-2.1-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND LGPL-3.0-only AND Python-2.0 AND GPL-2.0-or-later AND BSD-4-Clause-UC
+        AND GPL-2.0-only AND HPND AND GFDL-1.3-or-later AND GPL-1.0-or-later WITH
+        Autoconf-exception-generic AND GPL-3.0-or-later AND GPL-1.0-or-later AND Apache-2.0
+        AND GPL-2.0-or-later WITH Bison-exception-1.24 AND GFDL-1.1-or-later AND Latex2e
+        AND BSD-4-Clause AND Latex2e-translated-notice AND FSFUL AND FSFAP-no-warranty-disclaimer
+        AND CC-BY-2.5 AND LGPL-2.0-or-later AND JSON AND MIT AND GFDL-1.3-only
+      short_summary: A parallel remote execution system with python3
+      supplier: 'Organization: Broadcom, Inc.'

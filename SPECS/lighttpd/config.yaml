@@ -1,0 +1,19 @@
+sources:
+- archive: lighttpd-1.4.76.tar.gz
+  archive_sha512sum: e8dcc1e113aeaec33e3b329f12ed3bf3ee67c8d056db0a1646f20ae1bc59dae0e439c388976367e4124ee1f90ae06375748e7f8ee891b5423ed282e0ccb532cc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'lighttpd a secure, fast, compliant and very flexible
+        web-server which has been optimized for high-performance environments. It
+        has a very low memory footprint compared to other webservers and takes care
+        of cpu-load. Its advanced feature-set (FastCGI, CGI, Auth, Output-Compression,
+        URL-Rewriting and many more) make lighttpd the perfect webserver-software
+        for every server that is suffering load problems. '
+      home_page: https://www.lighttpd.net/
+      license_concluded: MIT AND RSA-MD AND Beerware AND Apache-2.0 AND FSFAP AND
+        OML AND BSD-2-Clause AND blessing AND BSD-3-Clause
+      license_declared: MIT AND RSA-MD AND Beerware AND Apache-2.0 AND FSFAP AND OML
+        AND BSD-2-Clause AND blessing AND BSD-3-Clause
+      short_summary: A secure, fast, compliant, and very flexible web server
+      supplier: 'Organization: Broadcom, Inc.'

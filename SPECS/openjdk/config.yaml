@@ -1,0 +1,87 @@
+sources:
+- archive: jdk-11.0.20.tar.gz
+  archive_sha512sum: 59dd536c613d58d5cd333ed680a8d51b88fc41e8cf2ec11c9996890b0ad704132b2f0f086a6ba280da84565853cb4e21a030e04280ea3d888ecb156c21e8ca29
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The OpenJDK package installs java class library and javac
+        java compiler. '
+      home_page: https://github.com/openjdk/jdk11u
+      license_concluded: Unicode-DFS-2016 AND MIT-Modern-Variant AND Apache-2.0 AND
+        (BSD-3-Clause OR Apache-2.0) AND BSD-3-Clause AND LGPL-2.1-only AND MIT-open-group
+        AND Zlib AND Libpng AND SAX-PD AND GPL-3.0-only AND W3C AND HPND-export2-US
+        AND MPL-2.0 AND Unicode-3.0 AND softSurfer AND (MIT OR GPL-3.0-only) AND CC0-1.0
+        AND (MIT OR GPL-3.0-only) AND SMLNJ AND UPL-1.0 AND FTL AND Unicode-DFS-2015
+        AND Apache-1.1 AND ISC AND IJG AND (FTL OR GPL-2.0-only) AND SunPro AND GPL-2.0-only
+        WITH Classpath-exception-2.0 AND NGPL AND BSD-2-Clause AND BSD-3-Clause-No-Nuclear-License
+        AND LGPL-2.1-or-later AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
+        AND GPL-3.0-or-later AND (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0)
+        AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic AND (MIT OR GPL-1.0-or-later)
+        AND W3C-19980720 AND GPL-2.0-only
+      license_declared: Unicode-DFS-2016 AND MIT-Modern-Variant AND Apache-2.0 AND
+        (BSD-3-Clause OR Apache-2.0) AND BSD-3-Clause AND LGPL-2.1-only AND MIT-open-group
+        AND Zlib AND Libpng AND SAX-PD AND GPL-3.0-only AND W3C AND HPND-export2-US
+        AND MPL-2.0 AND Unicode-3.0 AND softSurfer AND (MIT OR GPL-3.0-only) AND CC0-1.0
+        AND (MIT OR GPL-3.0-only) AND SMLNJ AND UPL-1.0 AND FTL AND Unicode-DFS-2015
+        AND Apache-1.1 AND ISC AND IJG AND (FTL OR GPL-2.0-only) AND SunPro AND GPL-2.0-only
+        WITH Classpath-exception-2.0 AND NGPL AND BSD-2-Clause AND BSD-3-Clause-No-Nuclear-License
+        AND LGPL-2.1-or-later AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
+        AND GPL-3.0-or-later AND (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0)
+        AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic AND (MIT OR GPL-1.0-or-later)
+        AND W3C-19980720 AND GPL-2.0-only
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: jdk-17.0.13-ga.tar.gz
+  archive_sha512sum: 6f2220b3b0b9ab4441968d487858449f0e58400bfbbf8cc322b6c9393ab44869ea27285bed1022ac531f0a9eec5b7d6a07db4f7e78b094bb5ca8cedd5f40711a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The OpenJDK package installs java class library and javac
+        java compiler. '
+      home_page: https://github.com/openjdk/jdk17u
+      license_concluded: MIT-Modern-Variant AND IJG AND (CDDL-1.0 OR GPL-2.0-only
+        WITH Classpath-exception-2.0) AND BSD-3-Clause AND (BSD-3-Clause OR Apache-2.0)
+        AND MPL-2.0 AND SMLNJ AND ICU AND UPL-1.0 AND NGPL AND (MIT OR GPL-1.0-or-later)
+        AND Unicode-3.0 AND HPND-export2-US AND W3C AND FTL AND MIT-open-group AND
+        MIT AND W3C-19980720 AND BSD-2-Clause AND CC0-1.0 AND Libpng AND GPL-2.0-only
+        WITH Classpath-exception-2.0 AND (FTL OR GPL-2.0-only) AND GPL-3.0-only AND
+        softSurfer AND SunPro AND ISC AND Apache-2.0 AND GPL-2.0-only AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND SAX-PD AND Apache-1.1 AND Zlib
+      license_declared: MIT-Modern-Variant AND IJG AND (CDDL-1.0 OR GPL-2.0-only WITH
+        Classpath-exception-2.0) AND BSD-3-Clause AND (BSD-3-Clause OR Apache-2.0)
+        AND MPL-2.0 AND SMLNJ AND ICU AND UPL-1.0 AND NGPL AND (MIT OR GPL-1.0-or-later)
+        AND Unicode-3.0 AND HPND-export2-US AND W3C AND FTL AND MIT-open-group AND
+        MIT AND W3C-19980720 AND BSD-2-Clause AND CC0-1.0 AND Libpng AND GPL-2.0-only
+        WITH Classpath-exception-2.0 AND (FTL OR GPL-2.0-only) AND GPL-3.0-only AND
+        softSurfer AND SunPro AND ISC AND Apache-2.0 AND GPL-2.0-only AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND SAX-PD AND Apache-1.1 AND Zlib
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: jdk-21.0.5-ga.tar.gz
+  archive_sha512sum: 2fdfdb7e21fcaf97590fa54317f87169d5fdabf38027f4f6570942b2af637fc9ace3d35c3bbb0df29720e7a0f6d6a4087253a713389743ed7947e433d7b8103b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The OpenJDK package installs java class library and javac
+        java compiler. '
+      home_page: https://github.com/openjdk/jdk21u
+      license_concluded: Unicode-3.0 AND MIT-Modern-Variant AND (BSD-3-Clause OR Apache-2.0)
+        AND HPND-export2-US AND SMLNJ AND Apache-1.1 AND CC0-1.0 AND ISC AND MIT AND
+        IJG AND Zlib AND FTL AND SAX-PD AND softSurfer AND BSD-3-Clause AND GPL-3.0-only
+        AND MPL-2.0 AND NAIST-2003 AND GPL-2.0-only WITH Classpath-exception-2.0 AND
+        NGPL AND SunPro AND Libpng AND BSD-2-Clause AND UPL-1.0 AND MIT-open-group
+        AND GPL-2.0-only AND W3C AND (MIT OR GPL-1.0-or-later) AND (FTL OR GPL-2.0-only)
+        AND Unicode-DFS-2016 AND (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0)
+        AND W3C-19980720 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND ICU AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_declared: Unicode-3.0 AND MIT-Modern-Variant AND (BSD-3-Clause OR Apache-2.0)
+        AND HPND-export2-US AND SMLNJ AND Apache-1.1 AND CC0-1.0 AND ISC AND MIT AND
+        IJG AND Zlib AND FTL AND SAX-PD AND softSurfer AND BSD-3-Clause AND GPL-3.0-only
+        AND MPL-2.0 AND NAIST-2003 AND GPL-2.0-only WITH Classpath-exception-2.0 AND
+        NGPL AND SunPro AND Libpng AND BSD-2-Clause AND UPL-1.0 AND MIT-open-group
+        AND GPL-2.0-only AND W3C AND (MIT OR GPL-1.0-or-later) AND (FTL OR GPL-2.0-only)
+        AND Unicode-DFS-2016 AND (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0)
+        AND W3C-19980720 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND ICU AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'

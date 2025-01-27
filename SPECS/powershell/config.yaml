@@ -1,0 +1,123 @@
+sources:
+- archive: omi-1.9.0-0.tar.gz
+  archive_sha512sum: 73b60237173079707de8dbab29c3225643a8bf262348911724d542409b674f0a6593b046b87801e6998b0aad50b8dfe14748a2a6de115564e129bbb035b76759
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Open Management Infrastructure (OMI) provides production
+        quality implementation of the DMTF CIM/WBEM standards. he OMI CIMOM is also
+        designed to be portable and highly modular.
+      home_page: https://github.com/microsoft/omi
+      license_concluded: HPND-export-US-modify AND Apache-2.0 AND MIT
+      license_declared: HPND-export-US-modify AND Apache-2.0 AND MIT
+      short_summary: OMI provides production quality implementation of the DMTF CIM/WBEM
+        standards.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: powershell-7.4.3-linux-x64.tar.gz
+  archive_sha512sum: 4bab6bce57db764c90fe4c614e1627bd4618b50ce5049ae9b4815cb989599147d5be4c7d39dbae6134d8df3bc5f1316bea527d8ab0824f4331518d6b00743f8e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Powershell is a cross-platform automation and configuration
+        tool/framework that works well with your existing tools and is optimized for
+        dealing with structured data (e.g. JSON, CSV, XML, etc.), REST APIs, and object
+        models. It includes a command-line shell, an associated scripting language
+        and a framework for processing cmdlets.
+      home_page: https://github.com/PowerShell/PowerShell
+      license_concluded: APSL-1.0 AND MIT AND PSF-2.0 AND Linux-man-pages-copyleft
+        AND GPL-1.0-only AND TU-Berlin-1.0 AND GFDL-1.2-invariants-only AND Parity-6.0.0
+        AND OGL-UK-1.0 AND PolyForm-Noncommercial-1.0.0 AND GFDL-1.3-invariants-only
+        AND GFDL-1.1-only AND AGPL-3.0-or-later AND GFDL-1.1-no-invariants-only AND
+        GFDL-1.2-no-invariants-only AND BSD-2-Clause-Views AND GFDL-1.3-no-invariants-only
+        AND SSPL-1.0 AND LGPL-3.0-or-later AND EFL-2.0 AND BSD-2-Clause AND GFDL-1.2-no-invariants-or-later
+        AND CC-BY-SA-2.0 AND BSD-3-Clause-Modification AND CC0-1.0 AND GFDL-1.1-invariants-only
+        AND NTP-0 AND CC-BY-SA-4.0 AND BSD-2-Clause-Patent AND GPL-2.0-or-later WITH
+        eCos-exception-2.0 AND CERN-OHL-1.1 AND CERN-OHL-S-2.0 AND Zimbra-1.3 AND
+        BSD-4-Clause-UC AND CDDL-1.1 AND APSL-1.1 AND CERN-OHL-1.2 AND copyleft-next-0.3.1
+        AND libselinux-1.0 AND AGPL-3.0-only AND NIST-PD-fallback AND NCGL-UK-2.0
+        AND GFDL-1.3-no-invariants-or-later AND AFL-3.0 AND CDDL-1.0 AND BSD-3-Clause-No-Military-License
+        AND UCL-1.0 AND TAPR-OHL-1.0 AND TU-Berlin-2.0 AND CAL-1.0-Combined-Work-Exception
+        AND GFDL-1.2-invariants-or-later AND NAIST-2003 AND BSD-4-Clause AND EPL-1.0
+        AND OGL-UK-2.0 AND OGDL-Taiwan-1.0 AND etalab-2.0 AND LAL-1.3 AND CERN-OHL-W-2.0
+        AND CERN-OHL-P-2.0 AND LiLiQ-P-1.1 AND OFL-1.1-no-RFN AND GPL-3.0-only AND
+        Apache-2.0 AND copyleft-next-0.3.0 AND LGPL-3.0-only AND Frameworx-1.0 AND
+        LiLiQ-R-1.1 AND AGPL-1.0-only AND LiLiQ-Rplus-1.1 AND LGPL-2.1-or-later AND
+        LGPL-2.1-only AND BSD-3-Clause AND Zimbra-1.4 AND OGL-UK-3.0 AND OGL-Canada-2.0
+        AND GFDL-1.1-no-invariants-or-later AND TMate AND GFDL-1.3-invariants-or-later
+        AND CAL-1.0 AND NIST-PD AND CECILL-2.0 AND PolyForm-Small-Business-1.0.0 AND
+        CECILL-2.1 AND NGPL AND BSD-4-Clause-Shortened AND Parity-7.0.0 AND Apache-1.1
+        AND Spencer-86 AND GFDL-1.1-invariants-or-later
+      license_declared: APSL-1.0 AND MIT AND PSF-2.0 AND Linux-man-pages-copyleft
+        AND GPL-1.0-only AND TU-Berlin-1.0 AND GFDL-1.2-invariants-only AND Parity-6.0.0
+        AND OGL-UK-1.0 AND PolyForm-Noncommercial-1.0.0 AND GFDL-1.3-invariants-only
+        AND GFDL-1.1-only AND AGPL-3.0-or-later AND GFDL-1.1-no-invariants-only AND
+        GFDL-1.2-no-invariants-only AND BSD-2-Clause-Views AND GFDL-1.3-no-invariants-only
+        AND SSPL-1.0 AND LGPL-3.0-or-later AND EFL-2.0 AND BSD-2-Clause AND GFDL-1.2-no-invariants-or-later
+        AND CC-BY-SA-2.0 AND BSD-3-Clause-Modification AND CC0-1.0 AND GFDL-1.1-invariants-only
+        AND NTP-0 AND CC-BY-SA-4.0 AND BSD-2-Clause-Patent AND GPL-2.0-or-later WITH
+        eCos-exception-2.0 AND CERN-OHL-1.1 AND CERN-OHL-S-2.0 AND Zimbra-1.3 AND
+        BSD-4-Clause-UC AND CDDL-1.1 AND APSL-1.1 AND CERN-OHL-1.2 AND copyleft-next-0.3.1
+        AND libselinux-1.0 AND AGPL-3.0-only AND NIST-PD-fallback AND NCGL-UK-2.0
+        AND GFDL-1.3-no-invariants-or-later AND AFL-3.0 AND CDDL-1.0 AND BSD-3-Clause-No-Military-License
+        AND UCL-1.0 AND TAPR-OHL-1.0 AND TU-Berlin-2.0 AND CAL-1.0-Combined-Work-Exception
+        AND GFDL-1.2-invariants-or-later AND NAIST-2003 AND BSD-4-Clause AND EPL-1.0
+        AND OGL-UK-2.0 AND OGDL-Taiwan-1.0 AND etalab-2.0 AND LAL-1.3 AND CERN-OHL-W-2.0
+        AND CERN-OHL-P-2.0 AND LiLiQ-P-1.1 AND OFL-1.1-no-RFN AND GPL-3.0-only AND
+        Apache-2.0 AND copyleft-next-0.3.0 AND LGPL-3.0-only AND Frameworx-1.0 AND
+        LiLiQ-R-1.1 AND AGPL-1.0-only AND LiLiQ-Rplus-1.1 AND LGPL-2.1-or-later AND
+        LGPL-2.1-only AND BSD-3-Clause AND Zimbra-1.4 AND OGL-UK-3.0 AND OGL-Canada-2.0
+        AND GFDL-1.1-no-invariants-or-later AND TMate AND GFDL-1.3-invariants-or-later
+        AND CAL-1.0 AND NIST-PD AND CECILL-2.0 AND PolyForm-Small-Business-1.0.0 AND
+        CECILL-2.1 AND NGPL AND BSD-4-Clause-Shortened AND Parity-7.0.0 AND Apache-1.1
+        AND Spencer-86 AND GFDL-1.1-invariants-or-later
+      short_summary: A cross-platform automation tool/framework.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: powershell-7.4.3-nuget-deps.tar.xz
+  archive_sha512sum: 85fc3a9607a164cc851fc6bc5f91ca45983e1f2ad73ecbbc4755ed874c0632ab203fb859e1dc0854e36aa47c03d04612de0099f764aa3d3c78abd2d5dbdf49c2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Powershell extension for NuGet which is a package manager
+        for .NET.
+      home_page: https://github.com/PowerShell/PowerShell
+      license_concluded: BSD-2-Clause AND MIT AND Zlib AND bzip2-1.0.6 AND CC-BY-3.0
+        AND CC0-1.0 AND BSD-3-Clause AND Apache-2.0 AND CC-BY-SA-3.0 AND W3C-20150513
+        AND BSD-4-Clause-UC AND MS-PL AND NCSA AND HP-1989 AND Unicode-3.0
+      license_declared: BSD-2-Clause AND MIT AND Zlib AND bzip2-1.0.6 AND CC-BY-3.0
+        AND CC0-1.0 AND BSD-3-Clause AND Apache-2.0 AND CC-BY-SA-3.0 AND W3C-20150513
+        AND BSD-4-Clause-UC AND MS-PL AND NCSA AND HP-1989 AND Unicode-3.0
+      short_summary: Powershell extension for NuGet which is a package manager for
+        .NET.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: powershell-7.4.3.tar.gz
+  archive_sha512sum: df5de64ebf25cc45bc48f31482023ba10c04d8bb1a8e9849e2ac4911621074e084b56b0a5832320d3c7f3acf14434f0c8cdbc8d1987eff2465619a92a0ee3784
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'PowerShell is an automation and configuration management
+        platform. It consists of a cross-platform command-line shell and associated
+        scripting language. '
+      home_page: https://microsoft.com/powershell
+      license_concluded: MIT AND BSD-3-Clause AND GPL-2.0-or-later AND GPL-3.0-or-later
+        AND BSD-2-Clause AND GPL-3.0-only AND Apache-2.0 AND NAIST-2003 AND LGPL-2.1-only
+        AND GPL-2.0-only AND ICU AND JSON AND Unicode-3.0 AND MS-PL AND LGPL-2.1-or-later
+      license_declared: MIT AND BSD-3-Clause AND GPL-2.0-or-later AND GPL-3.0-or-later
+        AND BSD-2-Clause AND GPL-3.0-only AND Apache-2.0 AND NAIST-2003 AND LGPL-2.1-only
+        AND GPL-2.0-only AND ICU AND JSON AND Unicode-3.0 AND MS-PL AND LGPL-2.1-or-later
+      short_summary: PowerShell is an automation and configuration management platform.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: powershell-native-7.4.0.tar.gz
+  archive_sha512sum: 6f00c3b7bc45307530bd04065138c4d0f613dcae3cca6bfbca3544c1cf4012b195f230a1b3d1968c1cf7f62fa1850ca6325ab81c668932886fc22fb7284e4370
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This library provides functionality missing from .NET
+        Core via system calls, that are called from from the CorePsPlatform.cs file
+        of PowerShell. The method to do this is a Platform Invoke, which is C#'s Foreign
+        Function Interface to C code (and C++ by way of extern C).
+      home_page: https://github.com/PowerShell/PowerShell-Native
+      license_concluded: MIT AND BSD-3-Clause AND Apache-2.0
+      license_declared: MIT AND BSD-3-Clause AND Apache-2.0
+      short_summary: This library provides functionality missing from .NET Core via
+        system calls.
+      supplier: 'Organization: Broadcom, Inc.'

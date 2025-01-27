@@ -1,0 +1,54 @@
+sources:
+- archive: bdftopcf-1.1.tar.bz2
+  archive_sha512sum: 7b790e8d512ca2812ac889c156ef91c48798b4744a6857e5b17e0128764b5afa8c5426fe5de05a9819d64745116718db4221b3e657e3c2633465e87179c44bec
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Xorg applications provide the expected applications
+        available in previous X Window implementations. '
+      home_page: http://www.x.org
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-macro AND MIT AND
+        X11 AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        HPND AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic AND HPND-sell-variant
+        AND FSFULLRWD AND MIT-open-group AND FSFULLR
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-macro AND MIT AND
+        X11 AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        HPND AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic AND HPND-sell-variant
+        AND FSFULLRWD AND MIT-open-group AND FSFULLR
+      short_summary: The Xorg applications.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: mkfontdir-1.0.7.tar.bz2
+  archive_sha512sum: 96d1920565514f90621e18a87fb5a2db9e052d1bffc6552d9659e065a21e252ab98b4e62013755032b98ed6d8c3381eb75c3c8e02651766ee4791ca622dcef1f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "mkfontdir \u2212 create an index of X font files in a\
+        \ directory"
+      home_page: https://www.x.org/archive/X11R7.7/doc/man/man1/mkfontdir.1.xhtml
+      license_concluded: MIT AND FSFULLR AND MIT-open-group AND FSFULLRWD AND FSFUL
+        AND X11 AND HPND-sell-variant AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro
+      license_declared: MIT AND FSFULLR AND MIT-open-group AND FSFULLRWD AND FSFUL
+        AND X11 AND HPND-sell-variant AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro
+      short_summary: "mkfontdir \u2212 create an index of X font files in a directory"
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: mkfontscale-1.2.2.tar.gz
+  archive_sha512sum: 3cb40a6c04f817157507f05cf8641d5cc8cf7b858b87c13cc7fdd7cb15627f3cfb7bf5b344107baeea2348705cbf718e2bf9cd7d19a0978d9ffd5867edc5ee17
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "mkfontscale \u2212 create an index of scalable font files\
+        \ for X"
+      home_page: https://www.x.org/archive/X11R7.6/doc/man/man1/mkfontscale.1.xhtml
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFULLR AND MIT-open-group AND FSFULLRWD
+        AND MIT AND HPND-sell-variant AND X11 AND FSFUL AND FSFAP AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFULLR AND MIT-open-group AND FSFULLRWD
+        AND MIT AND HPND-sell-variant AND X11 AND FSFUL AND FSFAP AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      short_summary: "mkfontscale \u2212 create an index of scalable font files for\
+        \ X"
+      supplier: 'Organization: Broadcom, Inc.'

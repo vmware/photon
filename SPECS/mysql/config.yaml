@@ -1,0 +1,43 @@
+sources:
+- archive: mysql-8.4.2.tar.gz
+  archive_sha512sum: 4274b78bf4e99e090adbb3ea58c3cffa84bd85aa0de7ded4567c6ad9a1994fbe6a4829b84c06b212b44d6c23530cb8080a92a8ec484f51d5d5edb2d5f15c5890
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'MySQL is a free, widely used SQL engine. It can be used
+        as a fast database as well as a rock-solid DBMS using a modular engine architecture. '
+      home_page: http://www.mysql.com
+      license_concluded: GPL-3.0-only AND MIT-CMU AND BSD-4-Clause-UC AND Python-2.0
+        AND LGPL-2.1-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND (BSD-2-Clause
+        OR GPL-2.0-or-later) AND (curl AND ISC) AND GPL-1.0-only AND Zlib AND NAIST-2003
+        AND FSFULLRWD AND GPL-2.0-or-later AND dtoa AND curl AND RSA-MD AND Apache-2.0
+        AND BSD-2-Clause-Views AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-only AND OpenVision AND Artistic-2.0 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND BSD-Attribution-HPND-disclaimer AND FSFULLR
+        AND LGPL-2.1-only AND GPL-2.0-or-later WITH Libtool-exception AND BSD-2-Clause-first-lines
+        AND FSFUL AND HPND-export-US-modify AND CC-BY-SA-3.0 AND GPL-2.0-only WITH
+        Universal-FOSS-exception-1.0 AND MIT AND FSFAP AND GPL-1.0-or-later AND HPND-export2-US
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND ICU AND Artistic-1.0-Perl
+        AND BSD-3-Clause AND X11 AND Beerware AND BSD-4-Clause AND HPND-export-US-acknowledgement
+        AND (MIT OR CC0-1.0) AND BSL-1.0 AND BSD-2-Clause AND ISC AND CC0-1.0 AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND JSON AND (BSD-2-Clause OR GPL-2.0-only)
+        AND GPL-3.0-or-later AND CMU-Mach-nodoc AND OLDAP-2.8 AND (BSD-3-Clause OR
+        GPL-2.0-only)
+      license_declared: GPL-3.0-only AND MIT-CMU AND BSD-4-Clause-UC AND Python-2.0
+        AND LGPL-2.1-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND (BSD-2-Clause
+        OR GPL-2.0-or-later) AND (curl AND ISC) AND GPL-1.0-only AND Zlib AND NAIST-2003
+        AND FSFULLRWD AND GPL-2.0-or-later AND dtoa AND curl AND RSA-MD AND Apache-2.0
+        AND BSD-2-Clause-Views AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-only AND OpenVision AND Artistic-2.0 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND BSD-Attribution-HPND-disclaimer AND FSFULLR
+        AND LGPL-2.1-only AND GPL-2.0-or-later WITH Libtool-exception AND BSD-2-Clause-first-lines
+        AND FSFUL AND HPND-export-US-modify AND CC-BY-SA-3.0 AND GPL-2.0-only WITH
+        Universal-FOSS-exception-1.0 AND MIT AND FSFAP AND GPL-1.0-or-later AND HPND-export2-US
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND ICU AND Artistic-1.0-Perl
+        AND BSD-3-Clause AND X11 AND Beerware AND BSD-4-Clause AND HPND-export-US-acknowledgement
+        AND (MIT OR CC0-1.0) AND BSL-1.0 AND BSD-2-Clause AND ISC AND CC0-1.0 AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND JSON AND (BSD-2-Clause OR GPL-2.0-only)
+        AND GPL-3.0-or-later AND CMU-Mach-nodoc AND OLDAP-2.8 AND (BSD-3-Clause OR
+        GPL-2.0-only)
+      short_summary: MySQL.
+      supplier: 'Organization: Broadcom, Inc.'

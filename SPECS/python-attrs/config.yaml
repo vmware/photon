@@ -1,0 +1,12 @@
+sources:
+- archive: attrs-22.1.0.tar.gz
+  archive_sha512sum: 447637bc82b31d565479e364869b996eaf7b67e526ad97f79ba1c27f287bbb25a2c40663e35437bc19037f605fac9322bd35f303f2769f0eb2ee673900551885
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Attributes without boilerplate. '
+      home_page: https://pypi.python.org/pypi/attrs
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Attributes without boilerplate.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,16 @@
+sources:
+- archive: rt-tests-2.4.tar.gz
+  archive_sha512sum: 34c157cc0ad049146560812ea61be073730610081723c5d1ab93c8d0c83017991a6c5b06eac7bb6dc974b35a57591f0056a1e0ab912906e2c6d31ba8a1ced497
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'rt-tests includes various programs that test different
+        real-time features of the linux kernel. Refer to documentation on each test
+        for detailed descriptions. '
+      home_page: https://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git/
+      license_concluded: GPL-3.0-only AND FSFAP AND GPL-2.0-or-later AND LGPL-2.1-or-later
+        AND GPL-2.0-only
+      license_declared: GPL-3.0-only AND FSFAP AND GPL-2.0-or-later AND LGPL-2.1-or-later
+        AND GPL-2.0-only
+      short_summary: rt-tests tests various real-time features of linux
+      supplier: 'Organization: Broadcom, Inc.'

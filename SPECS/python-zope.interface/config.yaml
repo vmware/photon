@@ -1,0 +1,18 @@
+sources:
+- archive: zope.interface-5.4.0.tar.gz
+  archive_sha512sum: ef15d63397e05ad9fc44b2d5d786b0399b6973bb5f4866fab839ff612756f3157f2099d0f5c0469b574a5c8b5920a7c2a5c6eab8e8f84c24d5c43e816669bffe
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "This package is intended to be independently reusable\
+        \ in any Python project. It is maintained by the Zope Toolkit project.  This\
+        \ package provides an implementation of \u201Cobject interfaces\u201D for\
+        \ Python. Interfaces are a mechanism for labeling objects as conforming to\
+        \ a given API or contract. So, this package can be considered as implementation\
+        \ of the Design By Contract methodology support in Python.  For detailed documentation,\
+        \ please visit http://docs.zope.org/zope.interface "
+      home_page: https://github.com/zopefoundation/zope.interface
+      license_concluded: ZPL-2.1
+      license_declared: ZPL-2.1
+      short_summary: Interfaces for Python
+      supplier: 'Organization: Broadcom, Inc.'

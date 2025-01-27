@@ -1,0 +1,18 @@
+sources:
+- archive: font-util-1.3.3.tar.gz
+  archive_sha512sum: 332a53facd1c37ed8b72195e6fac016f656484583a4bb9dc8a0e7109a30342f2bfd3b756343737982ae65abd60f5272e2b6b4af72ab8a23b14817ae0d6649776
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Xorg font utilities. '
+      home_page: http://www.x.org/
+      license_concluded: FSFAP AND FSFULLR AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND X11 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND BSD-Source-Code AND MIT-open-group AND
+        FSFULLRWD AND BSD-2-Clause AND MIT AND HPND-sell-variant
+      license_declared: FSFAP AND FSFULLR AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND X11 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND BSD-Source-Code AND MIT-open-group AND
+        FSFULLRWD AND BSD-2-Clause AND MIT AND HPND-sell-variant
+      short_summary: X11 font utilities.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,23 @@
+sources:
+- archive: attr-2.5.1.tar.gz
+  archive_sha512sum: 8b4c043d61f8f3e0cd098e701181069f51117b85fd6ba18bfe9af77d894ea671232377d4793ffc822e9259ceee6ac71d75732eb93b2830c6cb5d0d918ba2d21b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The attr package contains utilities to administer the
+        extended attributes on filesystem objects. '
+      home_page: https://savannah.nongnu.org/projects/attr
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-only AND X11 AND GPL-2.0-or-later
+        AND FSFUL AND FSFULLRWD AND LGPL-2.1-only AND GPL-2.0-or-later WITH Libtool-exception
+        AND FSFULLR AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND (LGPL-2.1-only AND GPL-2.0-only) AND LGPL-2.0-or-later AND GPL-3.0-or-later
+        AND (BSD-Source-beginning-file OR GPL-2.0-or-later) AND LGPL-2.1-or-later
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Libtool-exception AND GPL-2.0-only AND X11 AND GPL-2.0-or-later AND FSFUL
+        AND FSFULLRWD AND LGPL-2.1-only AND GPL-2.0-or-later WITH Libtool-exception
+        AND FSFULLR AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND (LGPL-2.1-only AND GPL-2.0-only) AND LGPL-2.0-or-later AND GPL-3.0-or-later
+        AND (BSD-Source-beginning-file OR GPL-2.0-or-later) AND LGPL-2.1-or-later
+      short_summary: Attr-2.5.1
+      supplier: 'Organization: Broadcom, Inc.'

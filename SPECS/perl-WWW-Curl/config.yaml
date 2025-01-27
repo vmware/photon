@@ -1,0 +1,18 @@
+sources:
+- archive: WWW-Curl-4.17.tar.gz
+  archive_sha512sum: bc7a75d0e23f5a77578fd7244b56a1e1b81d814993b90ac7132926f0d571232c4c95875bc615cb6239e424ae1d5481d27796efc5376bb0845d1da0ff1137c0d6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'WWW::Curl is a Perl extension interface for libcurl. '
+      home_page: http://search.cpan.org/dist/WWW-Curl/
+      license_concluded: GPL-1.0-only AND Artistic-2.0 AND LGPL-2.1-or-later AND LGPL-2.0-only
+        AND LGPL-2.1-only AND GPL-2.0-only AND LGPL-2.0-or-later AND Apache-2.0 AND
+        BSD-3-Clause AND MIT AND MPL-1.1 AND GPL-1.0-or-later AND LGPL-3.0-only AND
+        GPL-3.0-only
+      license_declared: GPL-1.0-only AND Artistic-2.0 AND LGPL-2.1-or-later AND LGPL-2.0-only
+        AND LGPL-2.1-only AND GPL-2.0-only AND LGPL-2.0-or-later AND Apache-2.0 AND
+        BSD-3-Clause AND MIT AND MPL-1.1 AND GPL-1.0-or-later AND LGPL-3.0-only AND
+        GPL-3.0-only
+      short_summary: Perl extension interface for libcurl
+      supplier: 'Organization: Broadcom, Inc.'

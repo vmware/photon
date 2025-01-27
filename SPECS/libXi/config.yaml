@@ -1,0 +1,20 @@
+sources:
+- archive: libXi-1.7.10.tar.bz2
+  archive_sha512sum: 591f0860bf5904897587c4990d6c852f3729a212d1ef390362d41242440e078221877c31db2232d5cc81727fe97f4e194b077f7de917e251e60641bbd06ee218
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 libXi runtime library. '
+      home_page: http://www.x.org
+      license_concluded: GPL-3.0-or-later AND HPND-doc AND GPL-3.0-or-later WITH Libtool-exception
+        AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT-open-group
+        AND HPND AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro AND
+        X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND MIT-CMU
+        AND FSFULLR AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLRWD
+      license_declared: GPL-3.0-or-later AND HPND-doc AND GPL-3.0-or-later WITH Libtool-exception
+        AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT-open-group
+        AND HPND AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro AND
+        X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND MIT-CMU
+        AND FSFULLR AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLRWD
+      short_summary: X11 libXi runtime library.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,14 @@
+sources:
+- archive: libsolv-0.7.22.tar.gz
+  archive_sha512sum: be375e9cd60728683d08587abd5405eb9b8522dff092c76eabec8d5f1608225335639b2b247429619df1b5c493d1edbd5ad4f14755cb6e2eb120f0ba162e3bb5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Libsolv is a free package management library, using SAT
+        technology to solve requests. It supports debian, rpm, archlinux and haiku
+        style distributions. '
+      home_page: https://github.com/openSUSE/libsolv
+      license_concluded: BSD-3-Clause AND MIT AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND MIT AND BSD-2-Clause
+      short_summary: A free package dependency solver
+      supplier: 'Organization: Broadcom, Inc.'

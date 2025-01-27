@@ -1,0 +1,16 @@
+sources:
+- archive: autofs-5.1.8.tar.xz
+  archive_sha512sum: 6ee6283c0977c82848a654dc24745ee687f6916de441c3688fa91f67ca7295e632ee3808cc2358984a4b9f19841e6e1a91ab48aad6341ac8e63827fe8c32d223
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Automounting is the process of automatically mounting
+        and unmounting of file systems by a daemon. Autofs includes both a user-space
+        daemon and code in the kernel that assists the daemon. '
+      home_page: http://www.kernel.org/pub/linux/daemons/autofs
+      license_concluded: FSFUL AND FSFULLR AND GPL-1.0-or-later AND GPL-3.0-only AND
+        BSD-3-Clause AND GPL-2.0-or-later AND GPL-2.0-only
+      license_declared: FSFUL AND FSFULLR AND GPL-1.0-or-later AND GPL-3.0-only AND
+        BSD-3-Clause AND GPL-2.0-or-later AND GPL-2.0-only
+      short_summary: A kernel-based automounter for Linux
+      supplier: 'Organization: Broadcom, Inc.'

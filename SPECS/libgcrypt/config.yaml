@@ -1,0 +1,31 @@
+sources:
+- archive: libgcrypt-1.10.1.tar.bz2
+  archive_sha512sum: e5ca7966624fff16c3013795836a2c4377f0193dbb4ac5ad2b79654b1fa8992e17d83816569a402212dc8367a7980d4141f5d6ac282bae6b9f02186365b61f13
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libgcrypt package contains a general purpose crypto
+        library based on the code used in GnuPG. The library provides a high level
+        interface to cryptographic building blocks using an extendable and flexible
+        API. '
+      home_page: http://www.gnu.org/software/libgcrypt
+      license_concluded: X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND GPL-3.0-or-later
+        WITH Texinfo-exception AND CC0-1.0 AND FSFULLR AND (BSD-3-Clause OR GPL-1.0-or-later)
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND LGPL-2.0-only AND GPL-2.0-only AND LGPL-2.1-only
+        WITH Qwt-exception-1.0 AND FSFUL AND LGPL-2.0-or-later AND FSFULLRWD AND GPL-2.0-or-later
+        AND BSD-3-Clause AND (BSD-3-Clause OR GPL-1.0-or-later) AND GPL-3.0-or-later
+        AND LGPL-2.1-only AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-or-later
+        AND (BSD-3-Clause OR GPL-2.0-only)
+      license_declared: X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-1.0-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND GPL-3.0-or-later WITH
+        Texinfo-exception AND CC0-1.0 AND FSFULLR AND (BSD-3-Clause OR GPL-1.0-or-later)
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND LGPL-2.0-only AND GPL-2.0-only AND LGPL-2.1-only
+        WITH Qwt-exception-1.0 AND FSFUL AND LGPL-2.0-or-later AND FSFULLRWD AND GPL-2.0-or-later
+        AND BSD-3-Clause AND (BSD-3-Clause OR GPL-1.0-or-later) AND GPL-3.0-or-later
+        AND LGPL-2.1-only AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-or-later
+        AND (BSD-3-Clause OR GPL-2.0-only)
+      short_summary: Crypto Libraries
+      supplier: 'Organization: Broadcom, Inc.'

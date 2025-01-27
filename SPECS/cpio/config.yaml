@@ -1,0 +1,22 @@
+sources:
+- archive: cpio-2.13.tar.bz2
+  archive_sha512sum: 459398e69f7f48201c04d1080218c50f75edcf114ffcbb236644ff6fcade5fcc566929bdab2ebe9be5314828d6902e43b348a8adf28351df978c8989590e93a3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The cpio package contains tools for archiving. '
+      home_page: http://www.gnu.org/software/cpio
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND GPL-1.0-or-later
+        AND LGPL-3.0-or-later AND GPL-2.0-only AND GPL-3.0-only AND X11 AND FSFULLR
+        AND FSFUL AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-2.0-or-later AND FSFULLRWD
+        AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND GPL-1.0-or-later
+        AND LGPL-3.0-or-later AND GPL-2.0-only AND GPL-3.0-only AND X11 AND FSFULLR
+        AND FSFUL AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-2.0-or-later AND FSFULLRWD
+        AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      short_summary: cpio archive utility
+      supplier: 'Organization: Broadcom, Inc.'

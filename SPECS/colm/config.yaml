@@ -1,0 +1,14 @@
+sources:
+- archive: colm-0.14.7.tar.gz
+  archive_sha512sum: 9328689be147ec5310a45e5a1adf8e420c01cc5c1a10def22229721698fabb320d99f4ecd3a599b1d92abc75e579d46a73a6a1fc16f9c6c46f1f5da9c39cbdf4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Colm is a programming language designed for the analysis
+        and transformation of computer languages. Colm is influenced primarily by
+        TXL. It is in the family of program transformation languages. '
+      home_page: https://github.com/adrian-thurston/colm
+      license_concluded: GPL-2.0-or-later AND MIT AND LGPL-2.1-or-later AND GPL-1.0-or-later
+      license_declared: GPL-2.0-or-later AND MIT AND LGPL-2.1-or-later AND GPL-1.0-or-later
+      short_summary: Programming language designed for the analysis of computer languages
+      supplier: 'Organization: Broadcom, Inc.'

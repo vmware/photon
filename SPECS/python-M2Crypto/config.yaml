@@ -1,0 +1,17 @@
+sources:
+- archive: M2Crypto-0.38.0.tar.gz
+  archive_sha512sum: b1e24e3101ce0dd9f17be4cabeddc2ec0f1228b270d74ef2fb38bae8807c5025b031d0743185f06370786a3dd5c3f42129720534dcff07ea4de3c727613f8d20
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'M2Crypto is a crypto and SSL toolkit for Python featuring
+        the following:  RSA, DSA, DH, HMACs, message digests, symmetric ciphers (including
+        AES). SSL functionality to implement clients and servers. HTTPS extensions
+        to Python''s httplib, urllib, and xmlrpclib. Unforgeable HMAC''ing AuthCookies
+        for web session management. FTP/TLS client and server. S/MIME. ZServerSSL:
+        A HTTPS server for Zope. ZSmime: An S/MIME messenger for Zope. '
+      home_page: https://pypi.python.org/pypi/M2Crypto/0.26.0
+      license_concluded: MIT AND BSD-3-Clause
+      license_declared: MIT AND BSD-3-Clause
+      short_summary: Crypto and SSL toolkit for Python
+      supplier: 'Organization: Broadcom, Inc.'

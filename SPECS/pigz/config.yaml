@@ -1,0 +1,13 @@
+sources:
+- archive: pigz-2.7.tar.gz
+  archive_sha512sum: 9f9f61de4a0307fc057dc4e31a98bd8d706d9e709ecde0be02a871534fddf6a1fe1321158aa72708603aaaece43f83d2423b127f7689b6219b23aea4f989e8f5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fully functional replacement for gzip that exploits multiple
+        processors and multiple cores to the hilt when compressing data. '
+      home_page: https://zlib.net/pigz
+      license_concluded: Apache-2.0 AND Zlib
+      license_declared: Apache-2.0 AND Zlib
+      short_summary: Parallel Implementation of GZip
+      supplier: 'Organization: Broadcom, Inc.'

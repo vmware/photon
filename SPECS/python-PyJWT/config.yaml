@@ -1,0 +1,15 @@
+sources:
+- archive: PyJWT-2.8.0.tar.gz
+  archive_sha512sum: 9d631c20c5207d5ab3137c9d56825f9e197688181abae4f3d6aac766530a35e07a2dfd5e3ba6e530dd5a29a27f54e961cb01075f3bc831b73816aa7c357eb0d4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A Python implementation of JSON Web Token draft 01. This
+        library provides a means of representing signed content using JSON data structures,
+        including claims to be transferred between two parties encoded as digitally
+        signed and encrypted JSON objects. '
+      home_page: https://github.com/jpadilla/pyjwt
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: JSON Web Token implementation in Python
+      supplier: 'Organization: Broadcom, Inc.'

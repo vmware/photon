@@ -1,0 +1,13 @@
+sources:
+- archive: docopt-0.6.2.tar.gz
+  archive_sha512sum: af138feccf8c37b374ee44fcda4938a88107d434df13c173214021b1a3348b152a595095a86982b66ac03a11db8e0f1e9e6a3a65c98deea92330311daeb831a3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'docopt helps easily create most beautiful command-line
+        interfaces. '
+      home_page: https://pypi.python.org/pypi/docopt
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Pythonic argument parser to create command line interfaces.
+      supplier: 'Organization: Broadcom, Inc.'

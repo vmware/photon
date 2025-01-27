@@ -1,0 +1,12 @@
+sources:
+- archive: protocol-http1-0.15.1.gem
+  archive_sha512sum: 7ecebe21b9d1177f1d0c232ce2d1eab17be0498eaeeab27e9083bea46038378d72cf9f55d8f2bb603ec93545ba7fd36cb9b5ecd54371ef3a9a9f07adeab77c55
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides a low-level implementation of the HTTP/1 protocol. '
+      home_page: https://rubygems.org/gems/protocol-http1/versions/0.15.1
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A low level implementation of the HTTP/1 protocol.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,19 @@
+sources:
+- archive: libev-4.33.tar.gz
+  archive_sha512sum: c662a65360115e0b2598e3e8824cf7b33360c43a96ac9233f6b6ea2873a10102551773cad0e89e738541e75af9fd4f3e3c11cd2f251c5703aa24f193128b896b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A full-featured and high-performance event loop that
+        is loosely modelled after libevent, but without its limitations and bugs. '
+      home_page: http://software.schmorp.de/pkg/libev.html
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLR AND FSFUL
+        AND X11 AND (BSD-2-Clause OR GPL-2.0-or-later) AND GPL-3.0-or-later AND FSFULLRWD
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLR AND FSFUL AND X11 AND (BSD-2-Clause
+        OR GPL-2.0-or-later) AND GPL-3.0-or-later AND FSFULLRWD
+      short_summary: A full-featured and high-performance event loop
+      supplier: 'Organization: Broadcom, Inc.'

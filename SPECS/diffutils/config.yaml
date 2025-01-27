@@ -1,0 +1,25 @@
+sources:
+- archive: diffutils-3.8.tar.xz
+  archive_sha512sum: 279441270987e70d5ecfaf84b6285a4866929c43ec877e50f154a788858d548a8a316f2fc26ad62f7348c8d289cb29a09d06dfadce1806e3d8b4ea88c8b1aa7c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Diffutils package contains programs that show the
+        differences between files or directories. '
+      home_page: http://www.gnu.org/software/diffutils
+      license_concluded: FSFAP AND GFDL-1.3-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-2.0-or-later
+        AND ISC AND FSFULLRWD AND LGPL-2.0-or-later AND X11 AND GFDL-1.3-only AND
+        FSFULLR AND LGPL-2.1-or-later AND GPL-3.0-only AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND GFDL-1.3-invariants-only AND GPL-3.0-or-later AND FSFUL AND GFDL-1.1-only
+        AND GPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-3.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_declared: FSFAP AND GFDL-1.3-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-2.0-or-later
+        AND ISC AND FSFULLRWD AND LGPL-2.0-or-later AND X11 AND GFDL-1.3-only AND
+        FSFULLR AND LGPL-2.1-or-later AND GPL-3.0-only AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND GFDL-1.3-invariants-only AND GPL-3.0-or-later AND FSFUL AND GFDL-1.1-only
+        AND GPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-3.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      short_summary: Programs that show the differences between files or directories
+      supplier: 'Organization: Broadcom, Inc.'

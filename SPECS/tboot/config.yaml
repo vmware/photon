@@ -1,0 +1,16 @@
+sources:
+- archive: tboot-1.10.5.tar.gz
+  archive_sha512sum: 01a039e5612b6cca6f7558e93673ba50edfcfbf3f65e390ac64f4aa6ae0859a314676b20d722dcd41a7a3c940473fe7982e823c800a75bd26a5e8f956528f223
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Trusted Boot (tboot) is an open source, pre- kernel/VMM
+        module that uses Intel(R) Trusted Execution Technology (Intel(R) TXT) to perform
+        a measured and verified launch of an OS kernel/VMM. '
+      home_page: https://sourceforge.net/projects/tboot/
+      license_concluded: Zlib AND BSD-2-Clause AND GPL-3.0-or-later AND ICU AND BSD-3-Clause
+        AND ISC AND BSD-Source-Code AND MIT
+      license_declared: Zlib AND BSD-2-Clause AND GPL-3.0-or-later AND ICU AND BSD-3-Clause
+        AND ISC AND BSD-Source-Code AND MIT
+      short_summary: Trusted pre-kernel module and tools.
+      supplier: 'Organization: Broadcom, Inc.'

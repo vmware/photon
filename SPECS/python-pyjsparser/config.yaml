@@ -1,0 +1,12 @@
+sources:
+- archive: pyjsparser-2.7.1.tar.gz
+  archive_sha512sum: 811faf1d1fcae363417931e095bf108b27ec8762a12048b658215ecdecc1fd1bbb183f2ec35199ce67e7837aeda6ccf27b6f4bbd62b19fe6a5c9ba6fa7615031
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fast javascript parser (based on esprima.js). '
+      home_page: https://pypi.python.org/pypi/pyjsparser/2.5.2
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Fast javascript parser (based on esprima.js).
+      supplier: 'Organization: Broadcom, Inc.'

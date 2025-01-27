@@ -1,0 +1,17 @@
+sources:
+- archive: ansible-community-general-6.3.0.tar.gz
+  archive_sha512sum: 33881ae519e6378152cf5ef9d9dcc209bc7e5e218190ba48b61a7635890c6abf5089b8d199e78518d1a06a3e8e0e8c25b5da1d03fc6cbb8929c3bd07cd0798f4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This repository contains the community.general Ansible
+        Collection. The collection is a part of the Ansible package and includes many
+        modules and plugins supported by Ansible community which are not part of more
+        specialized community collections. '
+      home_page: https://github.com/ansible-collections/community.general
+      license_concluded: BSD-2-Clause AND Apache-2.0 AND GPL-3.0-only AND GPL-3.0-or-later
+        AND MIT AND Python-2.0 AND PSF-2.0 AND BSD-3-Clause
+      license_declared: BSD-2-Clause AND Apache-2.0 AND GPL-3.0-only AND GPL-3.0-or-later
+        AND MIT AND Python-2.0 AND PSF-2.0 AND BSD-3-Clause
+      short_summary: Modules and plugins supported by Ansible community
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,27 @@
+sources:
+- archive: libconfig-1.7.3.tar.gz
+  archive_sha512sum: 3749bf9eb29bab0f6b14f4fc759f0c419ed27a843842aaabed1ec1fbe0faa8c93322ff875ca1291d69cb28a39ece86d512aec42c2140d566c38c56dc616734f4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Libconfig is a simple library for processing structured
+        configuration files, like this one: test.cfg. This file format is more compact
+        and more readable than XML. And unlike XML, it is type-aware, so it is not
+        necessary to do string parsing in application code. '
+      home_page: http://www.hyperrealm.com/libconfig
+      license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-2.0-or-later
+        AND BSD-3-Clause AND Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-1.0-or-later AND FSFULLR AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-3.0-or-later WITH Texinfo-exception AND FSFUL AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND GPL-2.0-or-later AND
+        Linux-man-pages-copyleft-2-para AND X11
+      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-2.0-or-later
+        AND BSD-3-Clause AND Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-1.0-or-later AND FSFULLR AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-3.0-or-later WITH Texinfo-exception AND FSFUL AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND GPL-2.0-or-later AND
+        Linux-man-pages-copyleft-2-para AND X11
+      short_summary: C/C++ configuration file library
+      supplier: 'Organization: Broadcom, Inc.'

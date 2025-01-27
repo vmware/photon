@@ -1,0 +1,14 @@
+sources:
+- archive: aws-sdk-sqs-1.52.0.gem
+  archive_sha512sum: db747e42102a383d37c07a7d77f7ea600ec33e86c99cf817bff85a9271a1329385ae8f9f23ce9768f3712196b6d16184d2922f4d25bd7f8f319882011b54b657
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Official AWS Ruby gem for Amazon Simple Queue Service
+        (Amazon SQS). This gem is part of the AWS SDK for Ruby. '
+      home_page: https://rubygems.org/gems/aws-sdk-sqs/versions/1.52.0
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Official AWS Ruby gem for Amazon Simple Queue Service (Amazon
+        SQS).
+      supplier: 'Organization: Broadcom, Inc.'

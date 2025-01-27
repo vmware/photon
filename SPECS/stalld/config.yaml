@@ -1,0 +1,17 @@
+sources:
+- archive: stalld-v1.19.1.tar.gz
+  archive_sha512sum: f92fd5996482600c6a73324f43eed8a4a1f5e8f092e4a167306804e4230abbb89c37a8bfbb78ffe997310b8bfbb45d4903dd0c51292770dcf5b1d3cd56a78bde
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: The stalld program monitors the set of system threads,
+        looking for threads that are ready-to-run but have not been given CPU time
+        for some threshold period. When a starved thread is found, it is given a temporary
+        boost using the SCHED_DEADLINE policy. The runtime given to such stalled threads
+        is configurable by the user.
+      home_page: https://gitlab.com/rt-linux-tools/stalld
+      license_concluded: GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later
+      license_declared: GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later
+      short_summary: Daemon that finds starving tasks in the system and gives them
+        a temporary boost
+      supplier: 'Organization: Broadcom, Inc.'

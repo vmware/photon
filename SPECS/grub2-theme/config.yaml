@@ -1,0 +1,13 @@
+sources:
+- archive: grub2-theme-5.0.tar.xz
+  archive_sha512sum: de7a527723f7cacd18582d1c2c6b8ef15b2ae4cc82465f90b4ecf2af2de4fe743c44685b08dce81dfd8a595e672f6510351f28f9d9f54a062721a09c3dcc1a74
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'grub2-theme provides content of /boot/grub2/themes/photon
+        plus ascii font. '
+      home_page: https://vmware.github.io/photon/
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Photon theme for grub2
+      supplier: 'Organization: Broadcom, Inc.'

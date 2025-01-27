@@ -1,0 +1,22 @@
+sources:
+- archive: libssh-0.10.6.tar.xz
+  archive_sha512sum: 40c62d63c44e882999b71552c237d73fc7364313bd00b15a211a34aeff1b73693da441d2c8d4e40108d00fb7480ec7c5b6d472f9c0784b2359a179632ab0d6c1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The ssh library was designed to be used by programmers
+        needing a working SSH implementation by the mean of a library. The complete
+        control of the client is made by the programmer. With %{name}, you can remotely
+        execute programs, transfer files, use a secure and transparent tunnel for
+        your remote programs. With its Secure FTP implementation, you can play with
+        remote files easily, without third-party programs others than libcrypto (from
+        openssl). '
+      home_page: https://www.libssh.org
+      license_concluded: LGPL-2.1-only AND BSD-2-Clause AND LGPL-2.0-or-later AND
+        GPL-1.0-or-later AND ISC AND MIT AND BSD-3-Clause AND BSD-4-Clause AND LGPL-2.1-or-later
+        AND GPL-2.0-only AND Apache-2.0 AND GPL-2.0-or-later AND SSH-short
+      license_declared: LGPL-2.1-only AND BSD-2-Clause AND LGPL-2.0-or-later AND GPL-1.0-or-later
+        AND ISC AND MIT AND BSD-3-Clause AND BSD-4-Clause AND LGPL-2.1-or-later AND
+        GPL-2.0-only AND Apache-2.0 AND GPL-2.0-or-later AND SSH-short
+      short_summary: A library implementing the SSH protocol
+      supplier: 'Organization: Broadcom, Inc.'

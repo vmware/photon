@@ -1,0 +1,17 @@
+sources:
+- archive: at-spi2-core-2.46.0.tar.xz
+  archive_sha512sum: 633af2c02fab3b8cb02e37f929ce80dd5ce28ca5641046ef5e25cb29299530b90028e6c6f318a0c098a4270bed3eab48fb55d6967a76bfadd2520f49de47c770
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The At-Spi2 Core package is a part of the GNOME Accessibility
+        Project. It provides a Service Provider Interface for the Assistive Technologies
+        available on the GNOME platform and a library against which applications can
+        be linked. '
+      home_page: http://www.linuxfoundation.org/en/AT-SPI_on_D-Bus
+      license_concluded: GPL-2.0-or-later AND AFL-2.1 AND LGPL-2.1-only AND FSFAP-no-warranty-disclaimer
+        AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+      license_declared: GPL-2.0-or-later AND AFL-2.1 AND LGPL-2.1-only AND FSFAP-no-warranty-disclaimer
+        AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+      short_summary: Service Provider Interface for the Assistive Technologies.
+      supplier: 'Organization: Broadcom, Inc.'

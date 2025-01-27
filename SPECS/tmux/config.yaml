@@ -1,0 +1,16 @@
+sources:
+- archive: tmux-3.5.tar.gz
+  archive_sha512sum: bb3ca1ae8b330c3efc8fcbe8a65a40f78beadaf08c79265f6377c4187d26028e485e5404b832bbea16b170fd9bbdf2f1554d67dd3b1289e183fca19df460b695
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Terminal multiplexer '
+      home_page: https://tmux.github.io
+      license_concluded: FSFULLRWD AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-2-Clause AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND SSH-short AND X11 AND ISC AND BSD-3-Clause
+      license_declared: FSFULLRWD AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-2-Clause AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND SSH-short AND X11 AND ISC AND BSD-3-Clause
+      short_summary: Terminal multiplexer
+      supplier: 'Organization: Broadcom, Inc.'

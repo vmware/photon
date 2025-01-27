@@ -1,0 +1,21 @@
+sources:
+- archive: ipvsadm-1.31.tar.xz
+  archive_sha512sum: 1c7187405771e702eff0009d688fa697375b833a486ff88b41a4a0dcfaa3e9884c7e3bc34375efea5f6a2d025847c9fac9fd6ba694ec3bf2fc9d357eef2cb631
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'ipvsadm is used to setup, maintain, and inspect the virtual
+        server table in the Linux kernel. The Linux Virtual Server can be used to
+        build scalable network services based on a cluster of two or more nodes. The
+        active node of the cluster redirects service requests to a collection of server
+        hosts that will actually perform the services.  Supported Features include:
+        two protocols (TCP and UDP), three packet-forwarding methods (NAT, tunneling,
+        and direct routing), and eight load balancing algorithms (round robin  weighted
+        round robin, least-connection, weighted least-connection, locality-based least-connection,
+        locality-based least-connection with replication, destination-hashing, and
+        source-hashing). '
+      home_page: http://www.kernel.org/
+      license_concluded: GPL-1.0-or-later AND GPL-2.0-or-later
+      license_declared: GPL-1.0-or-later AND GPL-2.0-or-later
+      short_summary: Linux Virtual Server administration
+      supplier: 'Organization: Broadcom, Inc.'

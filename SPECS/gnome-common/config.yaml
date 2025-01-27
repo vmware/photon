@@ -1,0 +1,16 @@
+sources:
+- archive: gnome-common-3.18.0.tar.xz
+  archive_sha512sum: b931c9a6668d996560549738bb2d95f86f56fa68ce930c077275bdc8fddbc2d28d215c1190099db1df851417902fca87ec81f1c0e644c5b9630a175e1cde0719
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This provides Common development macros for GNOME. '
+      home_page: https://www.gnome.org/
+      license_concluded: FSFUL AND LGPL-2.1-only AND X11 AND GPL-3.0-only AND FSFAP-no-warranty-disclaimer
+        AND LGPL-2.1-or-later AND GPL-2.0-only AND GPL-3.0-or-later AND GPL-2.0-or-later
+        AND FSFULLR AND LGPL-2.0-only AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_declared: FSFUL AND LGPL-2.1-only AND X11 AND GPL-3.0-only AND FSFAP-no-warranty-disclaimer
+        AND LGPL-2.1-or-later AND GPL-2.0-only AND GPL-3.0-or-later AND GPL-2.0-or-later
+        AND FSFULLR AND LGPL-2.0-only AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      short_summary: Common development macros for GNOME
+      supplier: 'Organization: Broadcom, Inc.'

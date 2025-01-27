@@ -1,0 +1,25 @@
+sources:
+- archive: LVM2.2.03.16.tgz
+  archive_sha512sum: 084ba4080537359458db936637fc7f83bb9bfcf2de9f3660882551b5c31c7e9900c7d381b238ce1bb7629942c740c121f0dea5e404c302d31ed028b5c65efaa5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'LVM2 includes all of the support for handling read/write
+        operations on physical volumes (hard disks, RAID-Systems, magneto optical,
+        etc., multiple devices (MD), see mdadd(8) or even loop devices, see losetup(8)),
+        creating volume groups (kind of virtual disks) from one or more physical volumes
+        and creating one or more logical volumes (kind of logical partitions) in volume
+        groups. '
+      home_page: http://sources.redhat.com/dm
+      license_concluded: X11 AND LGPL-2.1-only AND GPL-2.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND FSFUL AND LGPL-2.0-or-later WITH Linux-syscall-note
+        AND BSD-2-Clause AND LGPL-2.0-or-later AND GPL-2.0-or-later AND FSFULLR AND
+        FSFULLRWD AND FSFAP
+      license_declared: X11 AND LGPL-2.1-only AND GPL-2.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND FSFUL AND LGPL-2.0-or-later WITH Linux-syscall-note
+        AND BSD-2-Clause AND LGPL-2.0-or-later AND GPL-2.0-or-later AND FSFULLR AND
+        FSFULLRWD AND FSFAP
+      short_summary: Userland logical volume management tools
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,15 @@
+sources:
+- archive: json-c-0.16.tar.gz
+  archive_sha512sum: eb16e3186a8d204a0ebd0a97d2a1a4b2ffbaf0f840fd8a8b6fb15af54293a4fd82740469f81e8ba12f03607654a8da6568e9ab80f9848bb66b17714ddcf0a0da
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'JSON-C implements a reference counting object model that
+        allows you to easily construct JSON objects in C, output them as JSON formatted
+        strings and parse JSON formatted strings back into the C representation of
+        JSON objects. '
+      home_page: https://github.com/json-c/json-c/wiki
+      license_concluded: Apache-2.0 AND MIT
+      license_declared: Apache-2.0 AND MIT
+      short_summary: A JSON implementation in C
+      supplier: 'Organization: Broadcom, Inc.'

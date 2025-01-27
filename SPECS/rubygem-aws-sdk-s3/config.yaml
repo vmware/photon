@@ -1,0 +1,14 @@
+sources:
+- archive: aws-sdk-s3-1.117.1.gem
+  archive_sha512sum: 0a1225b94b0520c7d9c99af16d1fa18aaf24bc9811a1fa21457c5e510e3345efe78948dbe5d5725226645715572c9e167d8fee2f7fea24a5a3394271e4980fb1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Official AWS Ruby gem for Amazon Simple Storage Service
+        (Amazon S3). This gem is part of the AWS SDK for Ruby. '
+      home_page: https://rubygems.org/gems/aws-sdk-s3/versions/1.117.1
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Official AWS Ruby gem for Amazon Simple Storage Service (Amazon
+        S3).
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,11 @@
+sources:
+- archive: backports_abc-0.5.tar.gz
+  archive_sha512sum: 7c8a30857a1199e2539279d8fe82456db53fc2c8f0be2c696e029406756f6b7ad3628f4fc5203b58e6a89cb3a0bffdf85feb5af9e7d0bcd4ce0641ac469c9a1a
+  skip_validation: true
+  spdx:
+    package:
+      home_page: https://github.com/cython/backports_abc
+      license_concluded: Python-2.0
+      license_declared: Python-2.0
+      short_summary: A backport of recent additions to the 'collections.abc' module.
+      supplier: 'Organization: Broadcom, Inc.'

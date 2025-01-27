@@ -1,0 +1,14 @@
+sources:
+- archive: maven-3.9.0.tar.gz
+  archive_sha512sum: 488a47b9f04889b12c2c62ea1ffec3aa071dbdd6def384b77dce259249ca49e92d7cc211a0711ff69f3b54ac7c5171bff22809089807cdaa96fc9d337fbd150c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Maven package contains binaries for a build system '
+      home_page: http://maven.apache.org
+      license_concluded: MIT AND EPL-1.0 AND Apache-1.1 AND (GPL-2.0-only WITH Classpath-exception-2.0
+        OR CDDL-1.1) AND Apache-2.0 AND BSD-2-Clause AND CPL-1.0 AND BSD-3-Clause
+      license_declared: MIT AND EPL-1.0 AND Apache-1.1 AND (GPL-2.0-only WITH Classpath-exception-2.0
+        OR CDDL-1.1) AND Apache-2.0 AND BSD-2-Clause AND CPL-1.0 AND BSD-3-Clause
+      short_summary: Apache Maven
+      supplier: 'Organization: Broadcom, Inc.'

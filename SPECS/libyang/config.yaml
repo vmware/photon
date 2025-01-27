@@ -1,0 +1,13 @@
+sources:
+- archive: libyang-2.1.55.tar.gz
+  archive_sha512sum: dd0b58aec7e2d84f62636c62c9e7f67f0b4819e8d5ce9236874a3531607aa6fb58ccdcf537534eae8bfa700c37b8e3524be659929f4e7e03f8f67968bc352cb4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Libyang is YANG data modeling language parser and toolkit
+        written (and providing API) in C. '
+      home_page: https://github.com/CESNET/libyang
+      license_concluded: MIT AND BSD-3-Clause AND BSD-2-Clause
+      license_declared: MIT AND BSD-3-Clause AND BSD-2-Clause
+      short_summary: YANG data modeling language library
+      supplier: 'Organization: Broadcom, Inc.'

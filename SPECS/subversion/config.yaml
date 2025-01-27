@@ -1,0 +1,20 @@
+sources:
+- archive: subversion-1.14.2.tar.bz2
+  archive_sha512sum: 20ada4688ca07d9fb8da4b7d53b5084568652a3b9418c65e688886bae950a16a3ff37710fcfc9c29ef14a89e75b2ceec4e9cf35d5876a7896ebc2b512cfb9ecc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Apache version control system. '
+      home_page: http://subversion.apache.org
+      license_concluded: GPL-3.0-or-later WITH Libtool-exception AND MIT AND FSFULLR
+        AND HPND-Markus-Kuhn AND Unlicense AND Unicode-3.0 AND FSFUL AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND Apache-2.0 AND FSFAP AND AGPL-3.0-only
+        AND BSD-3-Clause AND X11 AND BSD-2-Clause AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later AND ICU
+      license_declared: GPL-3.0-or-later WITH Libtool-exception AND MIT AND FSFULLR
+        AND HPND-Markus-Kuhn AND Unlicense AND Unicode-3.0 AND FSFUL AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND Apache-2.0 AND FSFAP AND AGPL-3.0-only
+        AND BSD-3-Clause AND X11 AND BSD-2-Clause AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later AND ICU
+      short_summary: The Apache Subversion control system
+      supplier: 'Organization: Broadcom, Inc.'

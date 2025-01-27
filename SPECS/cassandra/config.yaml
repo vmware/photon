@@ -1,0 +1,29 @@
+sources:
+- archive: apache-cassandra-4.0.10-src.tar.gz
+  archive_sha512sum: 986b79556e5d375ee6f385919509555bb79a6ae3c3dd338003ca8bb2145d2311a170eee17e98025f08b61b0ea0bc3712da696207644c6db05f15d0ec54c1022a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cassandra is a highly scalable, eventually consistent,
+        distributed, structured key-value store. Cassandra brings together the distributed
+        systems technologies from Dynamo and the log-structured storage engine from
+        Google''s BigTable. '
+      home_page: http://cassandra.apache.org/
+      license_concluded: HPND-Markus-Kuhn AND CC0-1.0 AND MIT AND Apache-2.0 AND BSD-3-Clause
+      license_declared: HPND-Markus-Kuhn AND CC0-1.0 AND MIT AND Apache-2.0 AND BSD-3-Clause
+      short_summary: Cassandra is a highly scalable, eventually consistent, distributed,
+        structured key-value store
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: cassandra-4.0.10-dependencies.tar.gz
+  archive_sha512sum: 3532aea87265980716d0f920376b135f65e1729bc8a101ad7aa4088d1477948c4897e8b1a0687bacbb5af50315069245da7bafa8ec2b2da7ae637d5e07f8057a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Cassandra dependencies to build Cassandra offline
+      home_page: https://github.com/vmware/photon
+      license_concluded: Apache-1.1 AND EPL-1.0 AND Python-2.0 AND MPL-2.0 AND BSD-2-Clause
+        AND Apache-2.0 AND BSD-3-Clause AND CC-PDDC AND Plexus AND MIT
+      license_declared: Apache-1.1 AND EPL-1.0 AND Python-2.0 AND MPL-2.0 AND BSD-2-Clause
+        AND Apache-2.0 AND BSD-3-Clause AND CC-PDDC AND Plexus AND MIT
+      short_summary: Cassandra dependencies to build Cassandra offline
+      supplier: 'Organization: Broadcom, Inc.'

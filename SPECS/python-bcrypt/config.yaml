@@ -1,0 +1,12 @@
+sources:
+- archive: bcrypt-3.2.2.tar.gz
+  archive_sha512sum: 2f3b88bffaa9ff820aba6fb3143253b7936a1440ae93caff13cbdff58c1f8427f132cce60299cda523659b7026751a954b476857f2b9841cdd2a1a50c430a626
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Good password hashing for your software and your servers. '
+      home_page: https://github.com/pyca/bcrypt
+      license_concluded: Apache-2.0 AND BSD-3-Clause AND ISC
+      license_declared: Apache-2.0 AND BSD-3-Clause AND ISC
+      short_summary: Good password hashing for your software and your servers.
+      supplier: 'Organization: Broadcom, Inc.'

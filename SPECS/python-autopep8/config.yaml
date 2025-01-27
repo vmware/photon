@@ -1,0 +1,14 @@
+sources:
+- archive: autopep8-2.0.0.tar.gz
+  archive_sha512sum: 883b79f7011a374a2ef88073a45748268a20449a3bc8da519c036c71700352dd8c4accc60fcb592f1a53ceac06984fcbe6ede8a272bc718c2b79873be5f35dd8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'autopep8 automatically formats Python code to conform
+        to the PEP 8 style guide. It uses the pycodestyle utility to determine what
+        parts of the code needs to be formatted. '
+      home_page: https://pypi.python.org/pypi/python-autopep8/
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: autopep8 automatically formats Python code
+      supplier: 'Organization: Broadcom, Inc.'

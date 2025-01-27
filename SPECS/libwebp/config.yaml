@@ -1,0 +1,21 @@
+sources:
+- archive: libwebp-1.3.2.tar.gz
+  archive_sha512sum: 2b624d2ecfbff6b4db2719e38f146722638ae262acd96327073a04451dd05fb27ef70c5681187821d251df728a6be7e89209c861c561a13bfb786495a830bc20
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libwebp package contains a library and support programs
+        to encode and decode images in WebP format. '
+      home_page: http://webmproject.org/
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND
+        GPL-2.0-or-later AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND GPL-2.0-only AND X11 AND FSFUL AND BSD-3-Clause AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Libtool-exception
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Apache-2.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND GPL-2.0-or-later
+        AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-only
+        AND X11 AND FSFUL AND BSD-3-Clause AND FSFULLRWD AND GPL-2.0-or-later WITH
+        Libtool-exception
+      short_summary: Library to encode and decode webP format images
+      supplier: 'Organization: Broadcom, Inc.'

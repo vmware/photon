@@ -1,0 +1,12 @@
+sources:
+- archive: python-etcd-0.4.5.tar.gz
+  archive_sha512sum: c59d7a67492a2e4e72b1ae3ea73ac85a073b9d4516d1ebc48601ba67ac9609fbc45574d97e8dfae3ed4f511f090343ff980160043676252125ce2e2edc7bd154
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python API for etcd '
+      home_page: https://github.com/jplana/python-etcd
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Python API for etcd
+      supplier: 'Organization: Broadcom, Inc.'

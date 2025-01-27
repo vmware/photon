@@ -1,0 +1,12 @@
+sources:
+- archive: docker-6.0.0.tar.gz
+  archive_sha512sum: 09edf7b058d38d34d0fe0432b336d6fc494648c0e41cf4ae7f7bbf3db158143ca8fbea87e51d3b354c5f40bd7f1481e003e4b55f879ef562e91f19b62143c271
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python API for docker '
+      home_page: https://github.com/docker/docker-py
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Python API for docker
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,41 @@
+sources:
+- archive: gradle-wrapper-7.6.0-jar.tar.gz
+  archive_sha512sum: 70a4bd98e9c220b1a06ffc416a7345bda8ae5abaa57c7bd3f392516e46e211b1934086bcfb4a58e8e613c105a012e80e2da1de53b4ab900e85e74f467018f4c1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: The Wrapper JAR file containing code for downloading the
+        Gradle distribution
+      home_page: https://github.com/gradle/gradle
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Contains Gradle jar file
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: kafka-3.4.0-src.tgz
+  archive_sha512sum: 84e368c6d5e6487ab7a9892a4f7859fa1f7a4c90880706d0b6a855affdf165fd1aa1ae25e098d5ef11f452a71f76e5edab083db98d6eec5ff5e61c69cb65d302
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Kafka is designed to allow a single cluster to serve
+        as the central data backbone for a large organization. It can be elastically
+        and transparently expanded without downtime. Data streams are partitioned
+        and spread over a cluster of machines to allow data streams larger than the
+        capability of any single machine and to allow clusters of co-ordinated consumers.
+        Messages are persisted on disk and replicated within the cluster to prevent
+        data loss. '
+      home_page: http://kafka.apache.org/
+      license_concluded: Apache-2.0 AND EPL-2.0 AND (CDDL-1.0 OR GPL-2.0-only WITH
+        Classpath-exception-2.0) AND CDDL-1.0 AND CPL-1.0 AND (EPL-2.0 OR GPL-2.0-only
+        WITH Classpath-exception-2.0) AND (MIT AND BSD-2-Clause) AND MIT AND WTFPL
+        AND BSD-3-Clause AND CC0-1.0 AND (GPL-2.0-only WITH Classpath-exception-2.0
+        OR CDDL-1.1) AND GPL-2.0-only AND BSD-2-Clause AND W3C AND APSL-2.0 AND (MIT
+        OR GPL-2.0-or-later) AND GPL-2.0-only WITH Classpath-exception-2.0
+      license_declared: Apache-2.0 AND EPL-2.0 AND (CDDL-1.0 OR GPL-2.0-only WITH
+        Classpath-exception-2.0) AND CDDL-1.0 AND CPL-1.0 AND (EPL-2.0 OR GPL-2.0-only
+        WITH Classpath-exception-2.0) AND (MIT AND BSD-2-Clause) AND MIT AND WTFPL
+        AND BSD-3-Clause AND CC0-1.0 AND (GPL-2.0-only WITH Classpath-exception-2.0
+        OR CDDL-1.1) AND GPL-2.0-only AND BSD-2-Clause AND W3C AND APSL-2.0 AND (MIT
+        OR GPL-2.0-or-later) AND GPL-2.0-only WITH Classpath-exception-2.0
+      short_summary: Apache Kafka is publish-subscribe messaging rethought as a distributed
+        commit log.
+      supplier: 'Organization: Broadcom, Inc.'

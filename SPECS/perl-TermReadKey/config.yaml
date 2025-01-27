@@ -1,0 +1,15 @@
+sources:
+- archive: TermReadKey-2.38.tar.gz
+  archive_sha512sum: fb09f013f9f0d8a4397e39f6f3db7a6d023259219af8f76744094e396437a01b19141b3cdb39a158d3b518903fb010088bc37406763bfbeb3fcab810bb0bb157
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'TermReadKey module provides ioctl control for terminals
+        so the input modes can be changed, and also provides non-blocking reads of
+        stdin, as well as several other terminal related features, including retrieval/modification
+        of the screen size, and retrieval/modification of the control characters '
+      home_page: https://metacpan.org/release/TermReadKey
+      license_concluded: TermReadKey AND Artistic-2.0
+      license_declared: TermReadKey AND Artistic-2.0
+      short_summary: TermReadKey Perl module
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,21 @@
+sources:
+- archive: aws-sdk-cpp-1.11.117.tar.gz
+  archive_sha512sum: c398d2e5176d7369ea571aaa58ac240876929d5f97226de17282baeaadc0d7e20a3f2e8d4d348fbd3eaa365e09ad55631c0f6bb0d52b8a38c3ac935def5165c6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The AWS SDK for C++ provides a modern C++ (version C++
+        11 or later) interface for Amazon Web Services (AWS). '
+      home_page: https://github.com/aws/aws-sdk-cpp
+      license_concluded: Nokia AND MIT-0 AND APSL-2.0 AND JSON AND Apache-2.0 AND
+        ISC AND OpenSSL-standalone AND SSLeay-standalone AND BSD-3-Clause AND (Apache-2.0
+        OR ISC) AND CC0-1.0 AND MIT AND (BSD-3-Clause OR GPL-2.0-only) AND PostgreSQL
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND GPL-1.0-or-later AND Brian-Gladman-2-Clause
+        AND BSD-2-Clause AND Zlib AND EPL-1.0 AND GPL-2.0-only
+      license_declared: Nokia AND MIT-0 AND APSL-2.0 AND JSON AND Apache-2.0 AND ISC
+        AND OpenSSL-standalone AND SSLeay-standalone AND BSD-3-Clause AND (Apache-2.0
+        OR ISC) AND CC0-1.0 AND MIT AND (BSD-3-Clause OR GPL-2.0-only) AND PostgreSQL
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND GPL-1.0-or-later AND Brian-Gladman-2-Clause
+        AND BSD-2-Clause AND Zlib AND EPL-1.0 AND GPL-2.0-only
+      short_summary: aws sdk for c++
+      supplier: 'Organization: Broadcom, Inc.'

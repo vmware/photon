@@ -1,0 +1,31 @@
+sources:
+- archive: zookeeper-3.8.0.tar.gz
+  archive_sha512sum: d66e3a40451f840406901b2cd940992b001f92049a372ae48d8b420891605871cd1ae5f6cceb3b10665491e7abef36a4078dace158bd1e0938fcd3567b5234ca
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'ZooKeeper is a centralized service for maintaining configuration
+        information, naming, providing distributed synchronization, and providing
+        group services. All of these kinds of services are used in some form or another
+        by distributed applications. Each time they are implemented there is a lot
+        of work that goes into fixing the bugs and race conditions that are inevitable.
+        Because of the difficulty of implementing these kinds of services, applications
+        initially usually skimp on them, which make them brittle in the presence of
+        change and difficult to manage. Even when done correctly, different implementations
+        of these services lead to management complexity when the applications are
+        deployed. '
+      home_page: http://zookeeper.apache.org/
+      license_concluded: CDDL-1.0 AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0)
+        AND BSD-3-Clause AND GPL-2.0-only WITH Classpath-exception-2.0 AND Apache-2.0
+        AND MIT AND (GPL-2.0-only WITH Classpath-exception-2.0 OR CDDL-1.0) AND (CDDL-1.1
+        OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.0 OR GPL-2.0-only
+        WITH Classpath-exception-2.0) AND GPL-2.0-only AND EPL-1.0 AND (EPL-1.0 OR
+        Apache-2.0) AND BSD-2-Clause AND EPL-2.0
+      license_declared: CDDL-1.0 AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0)
+        AND BSD-3-Clause AND GPL-2.0-only WITH Classpath-exception-2.0 AND Apache-2.0
+        AND MIT AND (GPL-2.0-only WITH Classpath-exception-2.0 OR CDDL-1.0) AND (CDDL-1.1
+        OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.0 OR GPL-2.0-only
+        WITH Classpath-exception-2.0) AND GPL-2.0-only AND EPL-1.0 AND (EPL-1.0 OR
+        Apache-2.0) AND BSD-2-Clause AND EPL-2.0
+      short_summary: Highly reliable distributed coordination
+      supplier: 'Organization: Broadcom, Inc.'

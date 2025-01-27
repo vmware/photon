@@ -1,0 +1,16 @@
+sources:
+- archive: libdnet-1.11.tar.gz
+  archive_sha512sum: 62d6aee6836f8e56fa7d941866416baae71916318a94e4adc3305a4d9634596845b112a500368763c813f7da32557ca85a4942fe7d245d34069137e6516b10af
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libdnet provides a simplified, portable interface to
+        several low-level networking routines. '
+      home_page: http://prdownloads.sourceforge.net/libdnet/libdnet-1.11.tar.gz
+      license_concluded: BSD-3-Clause AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND GPL-2.0-or-later AND BSD-4-Clause-UC
+      license_declared: BSD-3-Clause AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND GPL-2.0-or-later AND BSD-4-Clause-UC
+      short_summary: A simplified, portable interface to several low-level networking
+        routines
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,25 @@
+sources:
+- archive: libcap-ng-0.8.3.tar.gz
+  archive_sha512sum: 0ef9bc7bc6b7b59991f43b79aa6cde3e8d2c22c4b9ced2af8deae501e01d51e893033d109cb8aa0fdcba190140110993089245346334d7b114d18f1bb1b55b97
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libcap-ng library is intended to make programming
+        with posix capabilities much easier than the traditional libcap library. It
+        includes utilities that can analyse all currently running applications and
+        print out any capabilities and whether or not it has an open ended bounding
+        set. An open bounding set without the securebits "NOROOT" flag will allow
+        full capabilities escalation for apps retaining uid 0 simply by calling execve. '
+      home_page: http://people.redhat.com/sgrubb/libcap-ng
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        X11 AND GPL-3.0-or-later WITH Libtool-exception AND LGPL-2.1-only AND MIT
+        AND GPL-2.0-or-later AND FSFUL AND FSFAP AND GPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-2.1-or-later AND FSFULLR AND FSFULLRWD
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only AND LGPL-2.0-or-later
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND X11
+        AND GPL-3.0-or-later WITH Libtool-exception AND LGPL-2.1-only AND MIT AND
+        GPL-2.0-or-later AND FSFUL AND FSFAP AND GPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-2.1-or-later AND FSFULLR AND FSFULLRWD
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only AND LGPL-2.0-or-later
+      short_summary: POSIX capability Library
+      supplier: 'Organization: Broadcom, Inc.'

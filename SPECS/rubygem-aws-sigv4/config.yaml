@@ -1,0 +1,13 @@
+sources:
+- archive: aws-sigv4-1.5.2.gem
+  archive_sha512sum: 7a756e3faafaa31046b1a17a825e8e1b88899914435cd1d7811089105f4d31020d24b81c1e8e86efa9a7446a768399323389e14462f1117a9f74f0dbbe2fbc62
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Amazon Web Services Signature Version 4 signing library.
+        Generates sigv4 signature for HTTP requests. '
+      home_page: https://rubygems.org/gems/aws-sigv4/versions/1.5.2
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Amazon Web Services Signature Version 4 signing library.
+      supplier: 'Organization: Broadcom, Inc.'

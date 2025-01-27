@@ -1,0 +1,26 @@
+sources:
+- archive: btrfs-progs-v6.1.3.tar.xz
+  archive_sha512sum: a266316d38cc34a07d73e9fa40840bc058e235fb0d1b4fdfe7aea26f613d14fc62acb731329371386e22c68d770e151ec803ee2a6a82bf185f4c3254555d60bc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The btrfs-progs package provides all the userspace programs
+        needed to create, check, modify and correct any inconsistencies in the btrfs
+        filesystem. '
+      home_page: http://btrfs.wiki.kernel.org/index.php/Main_Page
+      license_concluded: LGPL-2.1-or-later AND Apache-2.0 AND FSFUL AND GPL-2.0-or-later
+        AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-2.0-or-later AND CC0-1.0 AND LGPL-2.1-only AND GPL-3.0-or-later WITH
+        Autoconf-exception-macro AND GPL-2.0-only WITH Linux-syscall-note AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND GPL-2.0-only AND LGPL-2.0-only AND GPL-3.0-or-later
+        AND (GPL-2.0-only OR MIT) AND X11 AND LGPL-3.0-or-later AND BSD-3-Clause AND
+        BSD-2-Clause AND FSFAP
+      license_declared: LGPL-2.1-or-later AND Apache-2.0 AND FSFUL AND GPL-2.0-or-later
+        AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-2.0-or-later AND CC0-1.0 AND LGPL-2.1-only AND GPL-3.0-or-later WITH
+        Autoconf-exception-macro AND GPL-2.0-only WITH Linux-syscall-note AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND GPL-2.0-only AND LGPL-2.0-only AND GPL-3.0-or-later
+        AND (GPL-2.0-only OR MIT) AND X11 AND LGPL-3.0-or-later AND BSD-3-Clause AND
+        BSD-2-Clause AND FSFAP
+      short_summary: Userspace programs for btrfs
+      supplier: 'Organization: Broadcom, Inc.'

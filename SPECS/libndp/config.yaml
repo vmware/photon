@@ -1,0 +1,14 @@
+sources:
+- archive: libndp-1.8.tar.gz
+  archive_sha512sum: 93cb4629a748aa8c3569c8748657489b263046c8245aa640478c86323f44bd7e66c135bf956fe5d7990226f52d5dd9ffe9452c505d6c3ad3da0860a28e2dbe6a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package contains a library which provides a wrapper
+        for IPv6 Neighbor Discovery Protocol.  It also provides a tool named ndptool
+        for sending and receiving NDP messages. '
+      home_page: http://www.libndp.org/
+      license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later
+      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later
+      short_summary: Library for Neighbor Discovery Protocol
+      supplier: 'Organization: Broadcom, Inc.'

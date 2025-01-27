@@ -1,0 +1,23 @@
+sources:
+- archive: strongswan-5.9.8.tar.bz2
+  archive_sha512sum: 16d3afc80704f896f3f97addf452b4bb29fc1911c54e980f76ac48bdbe2340ce3bd4e79024848cb7961bbe9ad5458d93389343878ca042af658d51b11219666b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'strongSwan is a complete IPsec implementation for Linux
+        2.6, 3.x, and 4.x kernels. '
+      home_page: https://www.strongswan.org
+      license_concluded: BSD-3-Clause AND GPL-2.0-or-later AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND GPL-3.0-or-later AND FSFUL AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND FSFULLR AND GPL-3.0-or-later WITH Libtool-exception
+        AND (MIT OR GPL-2.0-only) AND CC0-1.0 AND GPL-1.0-or-later AND FSFULLRWD AND
+        X11 AND SSLeay-standalone AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception AND MIT AND LGPL-2.0-or-later
+      license_declared: BSD-3-Clause AND GPL-2.0-or-later AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND GPL-3.0-or-later AND FSFUL AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND FSFULLR AND GPL-3.0-or-later WITH Libtool-exception
+        AND (MIT OR GPL-2.0-only) AND CC0-1.0 AND GPL-1.0-or-later AND FSFULLRWD AND
+        X11 AND SSLeay-standalone AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception AND MIT AND LGPL-2.0-or-later
+      short_summary: The OpenSource IPsec-based VPN Solution
+      supplier: 'Organization: Broadcom, Inc.'

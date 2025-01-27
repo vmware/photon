@@ -1,0 +1,13 @@
+sources:
+- archive: google-benchmark-1.7.1.tar.gz
+  archive_sha512sum: 396af1c1d3eaa2b78c6d23b1472f6088db85a294056ae1c2366dc5c0becdc8f141ba8fc3a235033324ab0a41c2298f5d242ef09b9b6f69d9877de6bcb2062efd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A library to support the benchmarking of functions, similar
+        to unit-tests. '
+      home_page: https://github.com/google/benchmark
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: A microbenchmark support library
+      supplier: 'Organization: Broadcom, Inc.'

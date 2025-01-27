@@ -1,0 +1,20 @@
+sources:
+- archive: libXcursor-1.2.1.tar.gz
+  archive_sha512sum: 381c8762b5aa0dedb610e563bc595f901ec06eac0da832be4829f413869ce5092b47b33c2059d816e29dc525e5615358add98c305b9bda63c5ffac8b52b2e287
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 Cursor management library. '
+      home_page: http://www.x.org
+      license_concluded: HPND-sell-variant AND GPL-3.0-or-later WITH Libtool-exception
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND MIT AND MIT-open-group AND FSFAP AND
+        GPL-3.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND FSFUL AND
+        GPL-3.0-or-later WITH Autoconf-exception-macro AND FSFULLR AND X11 AND FSFULLRWD
+      license_declared: HPND-sell-variant AND GPL-3.0-or-later WITH Libtool-exception
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND MIT AND MIT-open-group AND FSFAP AND
+        GPL-3.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND FSFUL AND
+        GPL-3.0-or-later WITH Autoconf-exception-macro AND FSFULLR AND X11 AND FSFULLRWD
+      short_summary: X11 Cursor management library.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: oauthlib-3.2.2.tar.gz
+  archive_sha512sum: c147b96e0ab0d1a8845f525e80831cfd04495134dd1f17fd95eac62f3a95c91e6dca9d38e34206537d77f3c12dd5b553252239318ba39546979c350e96536b8b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'OAuthLib is a generic utility which implements the logic
+        of OAuth without assuming a specific HTTP request object or web framework '
+      home_page: https://pypi.python.org/pypi/python-oauthlib/
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: An implementation of the OAuth request-signing logic
+      supplier: 'Organization: Broadcom, Inc.'

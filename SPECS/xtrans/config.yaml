@@ -1,0 +1,19 @@
+sources:
+- archive: xtrans-1.4.0.tar.bz2
+  archive_sha512sum: 4fea89a3455c0e13321cbefa43340016dbb59bdd0dbdb5b796c1a6d2a6b1fd63cf1327b769ab426286b9c54b32ec764a50cd2b46228e4e43b841bda6b94de214
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is a dev package. it contains header and development
+        files '
+      home_page: http://www.x.org/
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-macro AND FSFULLR
+        AND FSFAP AND MIT-open-group AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND HPND-sell-variant AND FSFUL AND HPND AND MIT
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-macro AND FSFULLR
+        AND FSFAP AND MIT-open-group AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND HPND-sell-variant AND FSFUL AND HPND AND MIT
+      short_summary: Abstract network code for X.
+      supplier: 'Organization: Broadcom, Inc.'

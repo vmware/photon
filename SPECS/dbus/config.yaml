@@ -1,0 +1,28 @@
+sources:
+- archive: dbus-1.15.4.tar.xz
+  archive_sha512sum: 53a5b7161940c5d4432b902c3c0ac1f1965978e3791a640d1a71f2d819474b727497f7a13c95d7c5850baef659062f1434296a3f5e56701383cc573dfbf187ee
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The dbus package contains dbus. '
+      home_page: http://www.freedesktop.org/wiki/Software/dbus
+      license_concluded: GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-or-later
+        AND TCL AND (GPL-2.0-or-later AND LGPL-2.0-or-later) AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND BSD-3-Clause AND TCL AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only AND MIT AND AFL-2.0 AND
+        GPL-2.0-or-later AND Apache-2.0 AND GPL-1.0-or-later AND LGPL-2.1-only AND
+        AFL-2.1 AND (AFL-2.0 OR GPL-2.0-or-later) AND (AFL-2.1 OR GPL-2.0-or-later)
+        AND FSFAP AND FSFUL AND (AFL-2.1 AND GPL-2.0-or-later) AND FSFAP-no-warranty-disclaimer
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND (AFL-2.1
+        OR GPL-2.0-or-later) AND FSFULLR
+      license_declared: GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-or-later
+        AND TCL AND (GPL-2.0-or-later AND LGPL-2.0-or-later) AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND BSD-3-Clause AND TCL AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only AND MIT AND AFL-2.0 AND
+        GPL-2.0-or-later AND Apache-2.0 AND GPL-1.0-or-later AND LGPL-2.1-only AND
+        AFL-2.1 AND (AFL-2.0 OR GPL-2.0-or-later) AND (AFL-2.1 OR GPL-2.0-or-later)
+        AND FSFAP AND FSFUL AND (AFL-2.1 AND GPL-2.0-or-later) AND FSFAP-no-warranty-disclaimer
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND (AFL-2.1
+        OR GPL-2.0-or-later) AND FSFULLR
+      short_summary: DBus message bus
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,25 @@
+sources:
+- archive: readline-8.2.tar.gz
+  archive_sha512sum: 0a451d459146bfdeecc9cdd94bda6a6416d3e93abd80885a40b334312f16eb890f8618a27ca26868cebbddf1224983e631b1cbc002c1a4d1cd0d65fba9fea49a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Readline package is a set of libraries that offers
+        command-line editing and history capabilities. '
+      home_page: http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
+      license_concluded: GFDL-1.3-only AND GPL-3.0-only AND GFDL-1.3-or-later AND
+        FSFULLR AND GPL-2.0-only AND GPL-3.0-or-later AND OFL-1.1 AND GFDL-1.3-invariants-only
+        AND LGPL-2.1-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GFDL-1.1-or-later AND GPL-3.0-or-later WITH Texinfo-exception AND Latex2e
+        AND CC-BY-SA-4.0 AND GPL-1.0-or-later AND HPND-Markus-Kuhn AND Latex2e-translated-notice
+        AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL AND FSFULLRWD
+      license_declared: GFDL-1.3-only AND GPL-3.0-only AND GFDL-1.3-or-later AND FSFULLR
+        AND GPL-2.0-only AND GPL-3.0-or-later AND OFL-1.1 AND GFDL-1.3-invariants-only
+        AND LGPL-2.1-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GFDL-1.1-or-later AND GPL-3.0-or-later WITH Texinfo-exception AND Latex2e
+        AND CC-BY-SA-4.0 AND GPL-1.0-or-later AND HPND-Markus-Kuhn AND Latex2e-translated-notice
+        AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL AND FSFULLRWD
+      short_summary: Command-line editing and history capabilities
+      supplier: 'Organization: Broadcom, Inc.'

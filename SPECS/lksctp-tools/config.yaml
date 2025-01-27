@@ -1,0 +1,16 @@
+sources:
+- archive: lksctp-tools-1.0.19.tar.gz
+  archive_sha512sum: e56a4b00206acfb88cab1b8fc7424a1a4996f67ef925c29a97395c44c57f2cbcb3fc36ec2648f5e5a5ce29d8d61ee1f7a5e7869e6bbd68bff85590b6ec521883
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is the lksctp-tools package for Linux Kernel SCTP
+        Reference Implementation. This package contains the base run-time library
+        & command-line tools. '
+      home_page: http://lksctp.sourceforge.net
+      license_concluded: LGPL-2.0-or-later AND BSD-3-Clause AND GPL-2.0-or-later AND
+        LGPL-2.1-only AND BSD-2-Clause AND GPL-2.0-only AND GPL-1.0-or-later AND Linux-man-pages-1-para
+      license_declared: LGPL-2.0-or-later AND BSD-3-Clause AND GPL-2.0-or-later AND
+        LGPL-2.1-only AND BSD-2-Clause AND GPL-2.0-only AND GPL-1.0-or-later AND Linux-man-pages-1-para
+      short_summary: User-space access to Linux Kernel SCTP
+      supplier: 'Organization: Broadcom, Inc.'

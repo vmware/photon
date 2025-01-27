@@ -1,0 +1,14 @@
+sources:
+- archive: pycparser-2.21.tar.gz
+  archive_sha512sum: e61fbdde484d1cf74d4b27bdde40cf2da4b7028ca8ecd37c83d77473dab707d457321aecaf97da3b114c1d58a4eb200290b76f9c958044b57e5fed949895b5f0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'pycparser is a complete parser of the C language, written
+        in pure Python using the PLY parsing library. It parses C code into an AST
+        and can serve as a front-end for C compilers or analysis tools. '
+      home_page: https://pypi.python.org/pypi/pycparser
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Python C parser
+      supplier: 'Organization: Broadcom, Inc.'

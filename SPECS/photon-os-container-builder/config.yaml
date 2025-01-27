@@ -1,0 +1,19 @@
+sources:
+- archive: photon-os-container-builder-0.1.1.tar.gz
+  archive_sha512sum: 309ec46806fe33e70dcaff4076fee4e748d3889b3122f72771621ecc514b70740fef2352afa8bfe2b0201470cb09ae30b60ecc31d0d31d1d421953f16754b847
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'photon-os-container-builder spawns Photon OS image as
+        a light-weight container. It uses systemd-nspawn to start Photon OS containers.
+        The primary use case for cntrctl is to run Photon OS test cases in a isolated
+        environment. Photon OS package manager tdnf integrated with cntrctl. Hence
+        it allows to prepare a root fs consisting packages depending on the user choice.
+        It automatically prepares the root fs and boots into the container quickly.
+        VMDK images can be automatically deployed via cntrctl and tested. '
+      home_page: https://github.com/vmware-samples/photon-os-container-builder/archive/refs/tags/v0.1.1.tar.gz
+      license_concluded: MPL-2.0 AND MIT AND BSD-2-Clause AND Apache-2.0 AND BSD-3-Clause
+      license_declared: MPL-2.0 AND MIT AND BSD-2-Clause AND Apache-2.0 AND BSD-3-Clause
+      short_summary: photon-os-container-builder is an open source project to compose
+        and deploy photon OS containers
+      supplier: 'Organization: Broadcom, Inc.'

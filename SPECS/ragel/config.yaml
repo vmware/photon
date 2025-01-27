@@ -1,0 +1,17 @@
+sources:
+- archive: ragel-7.0.4.tar.gz
+  archive_sha512sum: 234efc74300877f2bff1e84ffe50bd926c372dee1bab0b734e748e3fc61a6a86d1cfbfb1002e05d4adb70119f9f964ef555fb79f5aab8a12f3e0fc7ae2b23bcc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Ragel compiles finite state machines from regular languages
+        into executable C, C++, Objective-C, or D code. Ragel state machines can not
+        only recognize byte sequences as regular expression machines do, but can also
+        execute code at arbitrary points in the recognition of a regular language.
+        Code embedding is done using inline operators that do not disrupt the regular
+        language syntax. '
+      home_page: https://github.com/adrian-thurston/ragel
+      license_concluded: GPL-1.0-or-later AND MIT AND GPL-2.0-or-later
+      license_declared: GPL-1.0-or-later AND MIT AND GPL-2.0-or-later
+      short_summary: Finite state machine compiler
+      supplier: 'Organization: Broadcom, Inc.'

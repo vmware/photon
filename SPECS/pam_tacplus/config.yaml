@@ -1,0 +1,15 @@
+sources:
+- archive: pam_tacplus-1.6.1.tar.gz
+  archive_sha512sum: c994c21b2ce0febea4510ce6d301c80dcc20b10512bfaae634d82ec717b684d8de9d192e7b8f174eb9811ef405616dd63d095f640804fb2d5065d69b9cc7a3a4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'PAM Tacacs+ module based on code produced by Pawel Krawczyk
+        <pawel.krawczyk@hush.com> and Jeroen Nijhof <jeroen@jeroennijhof.nl> '
+      home_page: http://tacplus.sourceforge.net/
+      license_concluded: LGPL-3.0-only AND FSFAP AND GPL-2.0-or-later AND GPL-2.0-only
+        AND GPL-1.0-or-later
+      license_declared: LGPL-3.0-only AND FSFAP AND GPL-2.0-or-later AND GPL-2.0-only
+        AND GPL-1.0-or-later
+      short_summary: PAM Tacacs+ module
+      supplier: 'Organization: Broadcom, Inc.'

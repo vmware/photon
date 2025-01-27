@@ -1,0 +1,12 @@
+sources:
+- archive: jsonpointer-2.3.tar.gz
+  archive_sha512sum: e04da474a5ec376d1cd2c764c2d7a11ac296450df199449994cb1dedf02a49df3ae3a4e75b2963370dba1da166464602b849a79609f7a98d8246dab0b342c819
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Library to apply JSON Patches according to RFC 6902. '
+      home_page: https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-2.3.tar.gz
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Applying JSON Patches in Python
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,18 @@
+sources:
+- archive: idna-3.3.tar.gz
+  archive_sha512sum: 70b7cc8718e7d7899c75cfe476f044eae5a2fa03801fc9c12e3a092627ca943ffc4a578f9b8a55e181a11564835e125cfaaa577c02a6461dbb97366e620e53ad
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "Support for the Internationalised Domain Names in Applications\
+        \ (IDNA) protocol as specified in RFC 5891. This is the latest version of\
+        \ the protocol and is sometimes referred to as \u201CIDNA 2008\u201D.  This\
+        \ library also provides support for Unicode Technical Standard 46, Unicode\
+        \ IDNA Compatibility Processing.  This acts as a suitable replacement for\
+        \ the \u201Cencodings.idna\u201D module that comes with the Python standard\
+        \ library, but only supports the old, deprecated IDNA specification (RFC 3490). "
+      home_page: https://pypi.python.org/pypi/idna
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Internationalized Domain Names in Applications (IDNA).
+      supplier: 'Organization: Broadcom, Inc.'

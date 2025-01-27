@@ -1,0 +1,29 @@
+sources:
+- archive: findutils-4.9.0.tar.xz
+  archive_sha512sum: ba4844f4403de0148ad14b46a3dbefd5a721f6257c864bf41a6789b11705408524751c627420b15a52af95564d8e5b52f0978474f640a62ab86a41d20cf14be9
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'These programs are provided to recursively search through
+        a directory tree and to create, maintain, and search a database (often faster
+        than the recursive find, but unreliable if the database has not been recently
+        updated). '
+      home_page: http://www.gnu.org/software/findutils
+      license_concluded: ISC AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later AND FSFULLRWD AND BSD-3-Clause AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND LGPL-2.0-or-later AND GFDL-1.3-or-later AND GFDL-1.1-or-later AND LGPL-3.0-or-later
+        AND GPL-2.0-or-later AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND X11 AND GPL-3.0-only AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-1.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-2.1-or-later
+        AND GFDL-1.3-only AND GFDL-1.3-invariants-only AND GFDL-1.1-only AND FSFULLR
+      license_declared: ISC AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later AND FSFULLRWD AND BSD-3-Clause AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND LGPL-2.0-or-later AND GFDL-1.3-or-later AND GFDL-1.1-or-later AND LGPL-3.0-or-later
+        AND GPL-2.0-or-later AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND X11 AND GPL-3.0-only AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-1.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-2.1-or-later
+        AND GFDL-1.3-only AND GFDL-1.3-invariants-only AND GFDL-1.1-only AND FSFULLR
+      short_summary: This package contains programs to find files
+      supplier: 'Organization: Broadcom, Inc.'

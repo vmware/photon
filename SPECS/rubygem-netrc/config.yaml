@@ -1,0 +1,14 @@
+sources:
+- archive: netrc-0.11.0.gem
+  archive_sha512sum: 7f0df3f79d92b891d40a49e9b893ca7131077195cf15453b155e37e68e29f8cd3810ba791a06338058262c8cb8fed56c87c295e450c133b428b3398eb99e683a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This library can read and update netrc files, preserving
+        formatting including comments and whitespace. '
+      home_page: https://rubygems.org/gems/netrc/versions/0.11.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: This library can read and update netrc files, preserving formatting
+        including comments and whitespace.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,21 @@
+sources:
+- archive: distlib-0.3.6.tar.gz
+  archive_sha512sum: 27f3a59f9175a92befb9a65a66cd0b8eb65185dab6fa13ef94e85ca69c2bc1b7281ce1522601034007cb98677ba9237a46224df4adc70ed966db7e131e073636
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Distlib contains the implementations of the packaging
+        PEPs and other low-level features which relate to packaging, distribution
+        and deployment of Python software. If Distlib can be made genuinely useful,
+        then it is possible for third-party packaging tools to transition to using
+        it. Their developers and users then benefit from standardised implementation
+        of low-level functions, time saved by not having to reinvent wheels, and improved
+        interoperability between tools. '
+      home_page: https://pypi.org/project/distlib
+      license_concluded: MIT AND BSD-2-Clause AND HPND AND Python-2.0 AND BSD-3-Clause
+        AND ZPL-2.1
+      license_declared: MIT AND BSD-2-Clause AND HPND AND Python-2.0 AND BSD-3-Clause
+        AND ZPL-2.1
+      short_summary: Low-level components of distutils2/packaging, augmented with
+        higher-level APIs
+      supplier: 'Organization: Broadcom, Inc.'

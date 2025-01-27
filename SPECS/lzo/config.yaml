@@ -1,0 +1,24 @@
+sources:
+- archive: lzo-2.10.tar.gz
+  archive_sha512sum: a3dae5e4a6b93b1f5bf7435e8ab114a9be57252e9efc5dd444947d7a2d031b0819f34bcaeb35f60b5629a01b1238d738735a64db8f672be9690d3c80094511a4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'LZO is a portable lossless data compression library written
+        in ANSI C. It offers pretty fast compression and very fast decompression.
+        Decompression requires no memory. In addition there are slower compression
+        levels achieving a quite competitive compression ratio while still decompressing
+        at this very high speed. '
+      home_page: http://www.oberhumer.com/opensource/lzo/
+      license_concluded: GPL-2.0-or-later WITH Libtool-exception AND FSFULLR AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND GPL-2.0-or-later AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only AND LGPL-2.0-or-later
+        AND GPL-3.0-or-later AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception
+        AND X11 AND GPL-1.0-or-later
+      license_declared: GPL-2.0-or-later WITH Libtool-exception AND FSFULLR AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND GPL-2.0-or-later AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only AND LGPL-2.0-or-later
+        AND GPL-3.0-or-later AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception
+        AND X11 AND GPL-1.0-or-later
+      short_summary: Data compression library with very fast (de)compression
+      supplier: 'Organization: Broadcom, Inc.'

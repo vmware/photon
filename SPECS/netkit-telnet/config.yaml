@@ -1,0 +1,15 @@
+sources:
+- archive: netkit-telnet-0.17.tar.gz
+  archive_sha512sum: e2cfabed12326af5e288def1821353eacffb4586008263dcd1bed1a9dd9d8548e51e68d7ede58ea75927783ba534ea8807ec722271843a77146f064f3d826dd3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Telnet is an protocal that allows you to connect to remote
+        comuters over internet. This package provides a telnet client. '
+      home_page: http://rpm5.org/files/popt
+      license_concluded: BSD-3-Clause-flex AND BSD-4-Clause AND BSD-4-Clause-UC AND
+        BSD-3-Clause
+      license_declared: BSD-3-Clause-flex AND BSD-4-Clause AND BSD-4-Clause-UC AND
+        BSD-3-Clause
+      short_summary: Programs to parse command-line options
+      supplier: 'Organization: Broadcom, Inc.'

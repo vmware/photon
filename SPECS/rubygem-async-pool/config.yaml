@@ -1,0 +1,13 @@
+sources:
+- archive: async-pool-0.4.0.gem
+  archive_sha512sum: 6eb66c940a42364a0d2b57aea9131697e18b982de63bbd87955bf12c0dd778508a6e836cc77ebacf36c644b429e630fc66f76710208370c5a0923697a659855c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides low level cross-platform primitives for constructing
+        event loops, with support for select, kqueue, epoll and io_uring. '
+      home_page: https://rubygems.org/gems/async-pool/versions/0.4.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: An event loop.
+      supplier: 'Organization: Broadcom, Inc.'

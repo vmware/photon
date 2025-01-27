@@ -1,0 +1,16 @@
+sources:
+- archive: IPC-Run-20220807.0.tar.gz
+  archive_sha512sum: ddfd0ceb78bd56c8c95a0a293a59d605959ba8d1b161a2c5959ac185c18fffa5cf047c3448d3b83a2733aa1372550f93d74d86eb05d49748f789fa46282694aa
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'IPC::Run allows you to run and interact with child processes
+        using files, pipes, and pseudo-ttys. Both system()-style and scripted usages
+        are supported and may be mixed. Likewise, functional and OO API styles are
+        both supported and may be mixed. '
+      home_page: https://metacpan.org/pod/IPC::Run
+      license_concluded: GPL-1.0-or-later AND Artistic-2.0 AND GPL-2.0-only
+      license_declared: GPL-1.0-or-later AND Artistic-2.0 AND GPL-2.0-only
+      short_summary: system() and background procs w/ piping, redirs, ptys (Unix,
+        Win32)
+      supplier: 'Organization: Broadcom, Inc.'

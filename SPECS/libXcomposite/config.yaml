@@ -1,0 +1,20 @@
+sources:
+- archive: libXcomposite-0.4.5.tar.bz2
+  archive_sha512sum: 502fd51fd9097bb3ca72174ac5b25b9d3b1ff240d32c4765199df03d89337d94b4ddea49e90b177b370862430089d966ce9c38988337156352cfeae911c2d3d5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 Composite Extension library. '
+      home_page: http://www.x.org/
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLR AND FSFULLRWD AND
+        HPND-sell-variant AND MIT-open-group AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MIT AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND
+        FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLR AND FSFULLRWD AND
+        HPND-sell-variant AND MIT-open-group AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MIT AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND
+        FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      short_summary: X11 Composite Extension library.
+      supplier: 'Organization: Broadcom, Inc.'

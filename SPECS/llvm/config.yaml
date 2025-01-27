@@ -1,0 +1,35 @@
+sources:
+- archive: cmake-15.0.7.src.tar.xz
+  archive_sha512sum: a87c3c0976c7295e5d51f7a3dbd4129c4b5ff0dc95bac494a5011641743a5950a0aa7d9c44fae570284573b9f673a395fc3160b45b6b4ba54ced9ed5f21dd717
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: These are CMake modules to be shared between LLVM projects
+        strictly at build time.
+      home_page: https://github.com/llvm/llvm-project/releases/
+      license_concluded: Apache-2.0 WITH LLVM-exception
+      license_declared: Apache-2.0 WITH LLVM-exception"
+      short_summary: These are CMake modules to be shared between LLVM projects strictly
+        at build time.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: llvm-15.0.7.src.tar.xz
+  archive_sha512sum: ed8d565515b1bc6164e4ff06d3388ba92e332850305496fd65db9adf1ec87bd9dd1bfde49dd41be5d5216289efc72bfd287cd7392f2bba80b740d4c314c749e5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The LLVM Project is a collection of modular and reusable
+        compiler and toolchain technologies. Despite its name, LLVM has little to
+        do with traditional virtual machines, though it does provide helpful libraries
+        that can be used to build them. The name "LLVM" itself is not an acronym;
+        it is the full name of the project. '
+      home_page: https://llvm.org
+      license_concluded: Apache-2.0 WITH LLVM-exception AND CC0-1.0 AND GPL-3.0-only
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-2-Clause AND
+        Apache-2.0 AND Spencer-94 AND GPL-1.0-or-later AND GPL-2.0-only AND MIT AND
+        NCSA AND BSD-3-Clause AND ISC
+      license_declared: Apache-2.0 WITH LLVM-exception AND CC0-1.0 AND GPL-3.0-only
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-2-Clause AND
+        Apache-2.0 AND Spencer-94 AND GPL-1.0-or-later AND GPL-2.0-only AND MIT AND
+        NCSA AND BSD-3-Clause AND ISC
+      short_summary: A collection of modular and reusable compiler and toolchain technologies.
+      supplier: 'Organization: Broadcom, Inc.'

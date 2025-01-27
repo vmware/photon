@@ -1,0 +1,25 @@
+sources:
+- archive: libevent-2.1.12-stable.tar.gz
+  archive_sha512sum: 88d8944cd75cbe78bc4e56a6741ca67c017a3686d5349100f1c74f8a68ac0b6410ce64dff160be4a4ba0696ee29540dfed59aaf3c9a02f0c164b00307fcfe84f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libevent API provides a mechanism to execute a callback
+        function when a specific event occurs on a file descriptor or after a timeout
+        has been reached. Furthermore, libevent also support callbacks due to signals
+        or regular timeouts. '
+      home_page: http://libevent.org
+      license_concluded: BSD-2-Clause AND CC-PDDC AND GPL-3.0-or-later AND BSL-1.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFAP AND curl AND ISC AND BSD-3-Clause AND FSFUL AND FSFULLRWD AND MIT
+        AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-only
+        AND FSFULLR
+      license_declared: BSD-2-Clause AND CC-PDDC AND GPL-3.0-or-later AND BSL-1.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFAP AND curl AND ISC AND BSD-3-Clause AND FSFUL AND FSFULLRWD AND MIT
+        AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-only
+        AND FSFULLR
+      short_summary: An Event notification library.
+      supplier: 'Organization: Broadcom, Inc.'

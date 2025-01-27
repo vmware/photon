@@ -1,0 +1,13 @@
+sources:
+- archive: List-MoreUtils-0.430.tar.gz
+  archive_sha512sum: bc9ff033c12251a6f0899a96da0ec8fc314ddb8d6cdf18c37fe1fdcfc38a4c95ed6f8e006bb124e77d07241ae6754f429bc2041f7772b4acfce9378a21283469
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'List::MoreUtils provides some trivial but commonly needed
+        functionality on lists that is not going to go into List::Util. '
+      home_page: http://search.cpan.org/dist/List-MoreUtils/
+      license_concluded: Artistic-1.0-Perl AND GPL-1.0-only AND Apache-2.0
+      license_declared: Artistic-1.0-Perl AND GPL-1.0-only AND Apache-2.0
+      short_summary: Provide the stuff missing in List::Util
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,30 @@
+sources:
+- archive: valgrind-3.20.0.tar.bz2
+  archive_sha512sum: d6bfb9284d0410134ee7e2a5975b13c01508dd5587b562947d8197b3c113b76fdfac88c4072948be68bbf0dbeb17b4d1acb1412ce898adaa83c30ae2c6a1c12b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Valgrind is a GPL''d system for debugging and profiling
+        Linux programs. With Valgrind''s tool suite you can automatically detect many
+        memory management and threading bugs, avoiding hours of frustrating bug-hunting,
+        making your programs more stable. You can also perform detailed profiling
+        to help speed up your programs. '
+      home_page: http://valgrind.org
+      license_concluded: GPL-1.0-or-later AND GPL-2.0-or-later WITH GCC-exception-2.0
+        AND LGPL-2.0-or-later WITH GCC-exception-2.0 AND GPL-2.0-or-later AND X11
+        AND LGPL-2.0-or-later AND GPL-2.0-only AND FSFULLR AND ISC AND LGPL-2.1-only
+        AND BSD-3-Clause AND MIT AND GFDL-1.2-only AND GFDL-1.2-or-later AND FSFULLRWD
+        AND (NCSA OR MIT) AND LGPL-2.1-or-later AND bzip2-1.0.6 AND CMU-Mach AND FSFAP-no-warranty-disclaimer
+        AND FSFUL AND MPL-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Zlib AND GPL-1.0-only
+        AND GFDL-1.1-or-later
+      license_declared: GPL-1.0-or-later AND GPL-2.0-or-later WITH GCC-exception-2.0
+        AND LGPL-2.0-or-later WITH GCC-exception-2.0 AND GPL-2.0-or-later AND X11
+        AND LGPL-2.0-or-later AND GPL-2.0-only AND FSFULLR AND ISC AND LGPL-2.1-only
+        AND BSD-3-Clause AND MIT AND GFDL-1.2-only AND GFDL-1.2-or-later AND FSFULLRWD
+        AND (NCSA OR MIT) AND LGPL-2.1-or-later AND bzip2-1.0.6 AND CMU-Mach AND FSFAP-no-warranty-disclaimer
+        AND FSFUL AND MPL-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Zlib AND GPL-1.0-only
+        AND GFDL-1.1-or-later
+      short_summary: Memory Management Debugger.
+      supplier: 'Organization: Broadcom, Inc.'

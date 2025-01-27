@@ -1,0 +1,15 @@
+sources:
+- archive: gflags-2.2.2.tar.gz
+  archive_sha512sum: 98c4703aab24e81fe551f7831ab797fb73d0f7dfc516addb34b9ff6d0914e5fd398207889b1ae555bac039537b1d4677067dae403b64903577078d99c1bdb447
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The gflags package contains a C++ library that implements
+        commandline flags processing. It includes built-in support for standard types
+        such as string and the ability to define flags in the source file in which
+        they are used. '
+      home_page: https://gflags.github.io/gflags
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Library for commandline flag processing
+      supplier: 'Organization: Broadcom, Inc.'

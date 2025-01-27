@@ -1,0 +1,13 @@
+sources:
+- archive: libnsl-2.0.0.tar.gz
+  archive_sha512sum: 86a7738707a3e4e56b60c8de0445fb576e66148bc12fa2a6aab422ea81eb4b42be3287a12f78384acd2b8bfb3885e9a0ce4f7328f078da3a5099acb66a35a935
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libnsl package contains the public client interface
+        for NIS(YP) and NIS+. It replaces the NIS library that used to be in glibc. '
+      home_page: https://github.com/thkukuk/libnsl
+      license_concluded: FSFAP AND LGPL-2.1-only AND BSD-3-Clause AND LGPL-2.1-or-later
+      license_declared: FSFAP AND LGPL-2.1-only AND BSD-3-Clause AND LGPL-2.1-or-later
+      short_summary: Libraries for the public client interface for NIS(YP) and NIS+.
+      supplier: 'Organization: Broadcom, Inc.'

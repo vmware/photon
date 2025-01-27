@@ -1,0 +1,22 @@
+sources:
+- archive: setuptools-rust-1.5.2.tar.gz
+  archive_sha512sum: 79b1de5581b9558cdf227320c421aa2445b2e6b8583ed9c118ee8d7acdfde9d947e7d11fa6a9697c475d4ca387c86ca6846429099ec30d2eb6e40f8849fcecc0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'setuptools-rust is a plugin for setuptools to build Rust
+        Python extensions implemented with PyO3 or rust-cpython. Compile and distribute
+        Python extensions written in Rust as easily as if they were written in C. '
+      home_page: https://github.com/PyO3/setuptools-rust
+      license_concluded: Unlicense AND CDDL-1.0 AND Zlib AND Sleepycat AND Apache-2.0
+        AND Python-2.0 AND LGPL-2.1-or-later AND APSL-1.0 AND ISC AND AFL-3.0 AND
+        GPL-1.0-or-later AND CDDL-1.1 AND EPL-2.0 AND CC-BY-SA-3.0 AND MPL-2.0 AND
+        BSL-1.0 AND Beerware AND MIT AND CC0-1.0 AND EPL-1.0 AND LGPL-2.0-or-later
+        AND BSD-3-Clause AND Artistic-2.0 AND CC-BY-SA-4.0 AND AFL-2.1 AND MPL-1.0
+      license_declared: Unlicense AND CDDL-1.0 AND Zlib AND Sleepycat AND Apache-2.0
+        AND Python-2.0 AND LGPL-2.1-or-later AND APSL-1.0 AND ISC AND AFL-3.0 AND
+        GPL-1.0-or-later AND CDDL-1.1 AND EPL-2.0 AND CC-BY-SA-3.0 AND MPL-2.0 AND
+        BSL-1.0 AND Beerware AND MIT AND CC0-1.0 AND EPL-1.0 AND LGPL-2.0-or-later
+        AND BSD-3-Clause AND Artistic-2.0 AND CC-BY-SA-4.0 AND AFL-2.1 AND MPL-1.0
+      short_summary: Setuptools plugin for Rust support
+      supplier: 'Organization: Broadcom, Inc.'

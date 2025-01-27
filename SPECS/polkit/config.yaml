@@ -1,0 +1,19 @@
+sources:
+- archive: polkit-121.tar.gz
+  archive_sha512sum: f565027b80f32833c558900b612e089ab25027da5bf9a90c421a292467d4db9a291f6dc9850c4bca8f9ee890d476fd064a643a5f7e28497661ba1e31d4227624
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "polkit provides an authorization API intended to be used\
+        \ by privileged programs (\u201CMECHANISMS\u201D) offering service to unprivileged\
+        \ programs (\u201CSUBJECTS\u201D) often through some form of inter-process\
+        \ communication mechanism "
+      home_page: https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
+      license_concluded: LGPL-2.0-only AND X11 AND MIT AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later AND FSFULLR AND Apache-2.0
+        AND FSFUL AND FSFAP AND LGPL-2.0-or-later AND LGPL-3.0-or-later
+      license_declared: LGPL-2.0-only AND X11 AND MIT AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later AND FSFULLR AND Apache-2.0
+        AND FSFUL AND FSFAP AND LGPL-2.0-or-later AND LGPL-3.0-or-later
+      short_summary: A toolkit for defining and handling authorizations.
+      supplier: 'Organization: Broadcom, Inc.'

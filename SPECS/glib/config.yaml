@@ -1,0 +1,26 @@
+sources:
+- archive: glib-2.75.2.tar.xz
+  archive_sha512sum: f8e34d112c720e17fbc2325e5091f55d120cc82aa2a9012c6e9e3b81a969af97e501910f3f986fa305ab1abfbd77e69ee9c71bcdda33c6795c3b087e684272f6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The GLib package contains a low-level libraries useful
+        for providing data structure handling for C, portability wrappers and interfaces
+        for such runtime functionality as an event loop, threads, dynamic loading
+        and an object system. Development libs and headers are in glib-devel. '
+      home_page: https://developer.gnome.org/glib/
+      license_concluded: LGPL-3.0-or-later AND LGPL-2.0-only AND GPL-2.0-or-later
+        WITH Autoconf-exception-2.0 AND GPL-2.0-or-later AND FSFULLR AND Apache-2.0
+        AND bzip2-1.0.6 AND GPL-2.0-only AND BSD-3-Clause AND GCR-docs AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later AND CC0-1.0 AND LGPL-2.1-or-later AND (AFL-2.0 OR LGPL-2.0-or-later)
+        AND LGPL-2.1-only AND CC-BY-SA-3.0 AND CC-BY-3.0 AND MIT AND Apache-2.0 WITH
+        LLVM-exception AND GPL-1.0-or-later WITH Autoconf-exception-generic
+      license_declared: LGPL-3.0-or-later AND LGPL-2.0-only AND GPL-2.0-or-later WITH
+        Autoconf-exception-2.0 AND GPL-2.0-or-later AND FSFULLR AND Apache-2.0 AND
+        bzip2-1.0.6 AND GPL-2.0-only AND BSD-3-Clause AND GCR-docs AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later AND CC0-1.0 AND LGPL-2.1-or-later AND (AFL-2.0 OR LGPL-2.0-or-later)
+        AND LGPL-2.1-only AND CC-BY-SA-3.0 AND CC-BY-3.0 AND MIT AND Apache-2.0 WITH
+        LLVM-exception AND GPL-1.0-or-later WITH Autoconf-exception-generic
+      short_summary: Low-level libraries useful for providing data structure handling
+        for C.
+      supplier: 'Organization: Broadcom, Inc.'

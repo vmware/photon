@@ -1,0 +1,14 @@
+sources:
+- archive: fluent-plugin-systemd-1.0.5.gem
+  archive_sha512sum: 85856ad3c823302615b6f1af9b1c29b01e85657bdf21cfe6983d02c25306f21e61745a811f3bcd82d22155f839134750f77997db8430565cc53bf8145f38b717
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is a fluentd input plugin. It reads logs from the
+        systemd journal. '
+      home_page: https://rubygems.org/gems/fluent-plugin-systemd/versions/1.0.5
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: This is a fluentd input plugin. It reads logs from the systemd
+        journal.
+      supplier: 'Organization: Broadcom, Inc.'

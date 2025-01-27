@@ -1,0 +1,15 @@
+sources:
+- archive: runit-2.1.2.tar.gz
+  archive_sha512sum: a18773ebf1aa22305dd89ed67363165b9fcf86c192b2be4e268d08005dd82d51265160c637abe072f2f2e378c4b315a75bd3d3e602c3e75bdd451a3b0190f8cf
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'runit is a cross-platform Unix init scheme with service
+        supervision; a replacement for sysvinit and other init schemes. It runs on
+        GNU/Linux, *BSD, Mac OS X, and Solaris, and can easily be adapted to other
+        Unix operating systems. '
+      home_page: http://smarden.org/runit/
+      license_concluded: BSD-3-Clause AND Apache-2.0
+      license_declared: BSD-3-Clause AND Apache-2.0
+      short_summary: A UNIX init scheme with service supervision
+      supplier: 'Organization: Broadcom, Inc.'

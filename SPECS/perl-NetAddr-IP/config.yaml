@@ -1,0 +1,15 @@
+sources:
+- archive: NetAddr-IP-4.079.tar.gz
+  archive_sha512sum: 8ebc8ffb914cf72c041441f96de0e9c982eebdb8c26dbf15f885d0113b3634e4851d81f13f555c14d1fdf0ab95ae2ce880ed124e6c200e391adae3b1d6d3eb65
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module provides an object-oriented abstraction on
+        top of IP addresses or IP subnets, that allows for easy manipulations. '
+      home_page: https://metacpan.org/release/NetAddr-IP
+      license_concluded: Artistic-1.0-Perl AND GPL-2.0-only AND Artistic-2.0 AND FSFUL
+        AND GPL-2.0-or-later AND GPL-1.0-or-later
+      license_declared: Artistic-1.0-Perl AND GPL-2.0-only AND Artistic-2.0 AND FSFUL
+        AND GPL-2.0-or-later AND GPL-1.0-or-later
+      short_summary: Manages IPv4 and IPv6 addresses and subnets
+      supplier: 'Organization: Broadcom, Inc.'

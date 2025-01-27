@@ -1,0 +1,19 @@
+sources:
+- archive: libbpf-1.2.2.tar.gz
+  archive_sha512sum: bc7620207e6f521b9b5baab00bd81346084b8eabf81bff3ec24e5367d389f2a331a0b082798f8bb5d4fea836c3c0cc961fc881abc3a4e05d91152150bdfe47be
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Library for loading eBPF programs and reading and manipulating
+        eBPF objects from user-space '
+      home_page: https://github.com/libbpf/libbpf
+      license_concluded: GPL-2.0-only WITH Linux-syscall-note AND (BSD-2-Clause OR
+        LGPL-2.1-only) AND (LGPL-2.1-only OR BSD-2-Clause) AND LGPL-2.1-only AND GPL-2.0-only
+        AND BSD-2-Clause AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-3-Clause)
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND LGPL-2.1-or-later
+      license_declared: GPL-2.0-only WITH Linux-syscall-note AND (BSD-2-Clause OR
+        LGPL-2.1-only) AND (LGPL-2.1-only OR BSD-2-Clause) AND LGPL-2.1-only AND GPL-2.0-only
+        AND BSD-2-Clause AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-3-Clause)
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND LGPL-2.1-or-later
+      short_summary: Libbpf library
+      supplier: 'Organization: Broadcom, Inc.'

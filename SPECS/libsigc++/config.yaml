@@ -1,0 +1,21 @@
+sources:
+- archive: libsigc++-3.2.0.tar.xz
+  archive_sha512sum: 91315cecc79a1ad6ea165b66a13a5afd4e5bc101842f9d4c58811ea78536c07fc8821c51aa5110a032ed71c09f85790b3a02f2ad7fe8cc3aed6e03b2bafcd70c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'It allows to define signals and to connect those signals
+        to any callback function, either global or a member function, regardless of
+        whether it is static or virtual. It also contains adaptor classes for connection
+        of dissimilar callbacks, and has an ease of use unmatched by other C++ callback
+        libraries. '
+      home_page: http://libsigc.sourceforge.net
+      license_concluded: GPL-2.0-or-later AND (GPL-2.0-only OR MIT) AND MIT AND LGPL-3.0-or-later
+        AND LGPL-2.1-or-later AND AGPL-3.0-only AND LGPL-2.0-or-later AND GPL-3.0-or-later
+        AND LGPL-3.0-only AND FSFAP
+      license_declared: GPL-2.0-or-later AND (GPL-2.0-only OR MIT) AND MIT AND LGPL-3.0-or-later
+        AND LGPL-2.1-or-later AND AGPL-3.0-only AND LGPL-2.0-or-later AND GPL-3.0-or-later
+        AND LGPL-3.0-only AND FSFAP
+      short_summary: Library that Implements a typesafe callback system for standard
+        C++.
+      supplier: 'Organization: Broadcom, Inc.'

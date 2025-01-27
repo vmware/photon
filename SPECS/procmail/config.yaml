@@ -1,0 +1,16 @@
+sources:
+- archive: procmail-3.22.tar.gz
+  archive_sha512sum: 3d0658329a55957a8d5741e03b0853b030c4524acef30641663213aa9eefc8264f8cc2b68a00a89e5f9f0f7c916c41a42e1b6c8df562c545ba97d8ab9049a936
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Procmail is a program for filtering, sorting and storing
+        email. It can be used both on mail clients and mail servers. It can be used
+        to filter out spam, checking for viruses, to send automatic replies, etc.
+      home_page: http://www.procmail.org
+      license_concluded: Artistic-2.0 AND Artistic-1.0-Perl AND GPL-1.0-or-later AND
+        GPL-2.0-only
+      license_declared: Artistic-2.0 AND Artistic-1.0-Perl AND GPL-1.0-or-later AND
+        GPL-2.0-only
+      short_summary: Autonomous Mail Processor
+      supplier: 'Organization: Broadcom, Inc.'

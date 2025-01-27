@@ -1,0 +1,13 @@
+sources:
+- archive: backward-cpp-v1.6.tar.gz
+  archive_sha512sum: db0256a54819952ff1d92e05d6ab81fe979d4826ebb6651b6b08c30e7a0091879dfeff33d81f9599462152ce68e61e2c8c42bf039129bc6b28d1e68b1eab039b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Backward is a beautiful stack trace pretty printer for
+        C++. '
+      home_page: https://github.com/bombela/backward-cpp
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Pretty stack trace printer for C++.
+      supplier: 'Organization: Broadcom, Inc.'

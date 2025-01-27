@@ -1,0 +1,38 @@
+sources:
+- archive: openssl-3.0.15.tar.gz
+  archive_sha512sum: acd80f2f7924d90c1416946a5c61eff461926ad60f4821bb6b08845ea18f8452fd5e88a2c2c5bd0d7590a792cb8341a3f3be042fd0a5b6c9c1b84a497c347bbf
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The OpenSSL package contains management tools and libraries
+        relating to cryptography. These are useful for providing cryptography functions
+        to other packages, such as OpenSSH, email applications and web browsers (for
+        accessing HTTPS sites). '
+      home_page: http://www.openssl.org
+      license_concluded: GPL-1.0-only AND BSD-3-Clause AND Artistic-2.0 AND BSD-Source-Code
+        AND Artistic-1.0 AND snprintf AND Apache-2.0 AND CC0-1.0 AND (GPL-2.0-or-later
+        OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause) AND BSD-2-Clause AND GPL-1.0-or-later
+        AND GPL-2.0-only
+      license_declared: GPL-1.0-only AND BSD-3-Clause AND Artistic-2.0 AND BSD-Source-Code
+        AND Artistic-1.0 AND snprintf AND Apache-2.0 AND CC0-1.0 AND (GPL-2.0-or-later
+        OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause) AND BSD-2-Clause AND GPL-1.0-or-later
+        AND GPL-2.0-only
+      short_summary: Management tools and libraries relating to cryptography
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: openssl-3.0.8.tar.gz
+  archive_sha512sum: 8ce10be000d7d4092c8efc5b96b1d2f7da04c1c3a624d3a7923899c6b1de06f369016be957e36e8ab6d4c9102eaeec5d1973295d547f7893a7f11f132ae42b0d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fips library for enabling fips. '
+      home_page: http://www.openssl.org
+      license_concluded: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause)
+        AND BSD-2-Clause AND Artistic-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-2.0-only
+        AND BSD-Source-Code AND Apache-2.0 AND BSD-3-Clause AND snprintf AND GPL-1.0-or-later
+        AND Artistic-2.0
+      license_declared: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause)
+        AND BSD-2-Clause AND Artistic-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-2.0-only
+        AND BSD-Source-Code AND Apache-2.0 AND BSD-3-Clause AND snprintf AND GPL-1.0-or-later
+        AND Artistic-2.0
+      short_summary: FIPS Libraries for openssl
+      supplier: 'Organization: Broadcom, Inc.'

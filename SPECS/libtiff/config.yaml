@@ -1,0 +1,24 @@
+sources:
+- archive: tiff-4.5.1.tar.xz
+  archive_sha512sum: fc6af93d36598527480c517ddc4f19fe72e9f07ef4997e5731604253c8db0b9bae816ba7a56985bf22fbbb48db1fab5ed4c2b32a5145bc9477ef24b221a61179
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The LibTIFF package contains the TIFF libraries and associated
+        utilities. The libraries are used by many programs for reading and writing
+        TIFF files and the utilities are used for general work with TIFF files. '
+      home_page: http://www.libtiff.org
+      license_concluded: MIT AND FSFAP AND xlock AND BSD-2-Clause AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Libtool-exception AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND BSD-4.3TAHOE AND FSFULLR AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND libtiff AND HPND AND GPL-2.0-or-later WITH
+        Libtool-exception AND X11 AND FSFUL AND GPL-3.0-or-later
+      license_declared: MIT AND FSFAP AND xlock AND BSD-2-Clause AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Libtool-exception AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND BSD-4.3TAHOE AND FSFULLR AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND libtiff AND HPND AND GPL-2.0-or-later WITH
+        Libtool-exception AND X11 AND FSFUL AND GPL-3.0-or-later
+      short_summary: TIFF libraries and associated utilities.
+      supplier: 'Organization: Broadcom, Inc.'

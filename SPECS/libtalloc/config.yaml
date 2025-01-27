@@ -1,0 +1,16 @@
+sources:
+- archive: talloc-2.4.0.tar.gz
+  archive_sha512sum: 810d92a614d0b9e0ac6fe403c1643c4dda435f79c4627d3c3be228f94b4b2ee8e528efbbed07f7d1a16043d6e55bdf4f10826f31fb8ca1c649c4126ea09a3aff
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Libtalloc alloc is a hierarchical, reference counted
+        memory pool system with destructors. It is the core memory allocator used
+        in Samba. '
+      home_page: https://talloc.samba.org
+      license_concluded: PostgreSQL AND AGPL-3.0-or-later AND snprintf AND GPL-3.0-or-later
+        AND BSD-3-Clause AND LGPL-2.1-or-later AND LGPL-3.0-or-later AND ISC
+      license_declared: PostgreSQL AND AGPL-3.0-or-later AND snprintf AND GPL-3.0-or-later
+        AND BSD-3-Clause AND LGPL-2.1-or-later AND LGPL-3.0-or-later AND ISC
+      short_summary: Talloc is a hierarchical, reference counted memory pool system
+      supplier: 'Organization: Broadcom, Inc.'

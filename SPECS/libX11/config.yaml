@@ -1,0 +1,21 @@
+sources:
+- archive: libX11-1.8.5.tar.gz
+  archive_sha512sum: 967f7746b08650c4238630b007137e89085c88d89b256d5d9b37faa6a50b1df2a3ec749281677f1c64570a3eafd310872e6842cbb5aecaba1cdf7c0c4140ea56
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Core X11 protocol client library. '
+      home_page: http://www.x.org/
+      license_concluded: HPND AND FSFUL AND ISC AND X11 AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND FSFULLRWD AND MIT-open-group AND BSD-1-Clause
+        AND LGPL-2.0-or-later AND GPL-2.0-only AND FSFAP AND FSFULLR AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND HPND-doc AND MIT AND ICU AND HPND-sell-variant AND GPL-2.0-or-later AND
+        GPL-2.0-or-later WITH Libtool-exception
+      license_declared: HPND AND FSFUL AND ISC AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLRWD AND MIT-open-group AND BSD-1-Clause AND LGPL-2.0-or-later AND
+        GPL-2.0-only AND FSFAP AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND HPND-doc AND MIT AND
+        ICU AND HPND-sell-variant AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+      short_summary: Core X11 protocol client library.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,19 @@
+sources:
+- archive: Path-Class-0.37.tar.gz
+  archive_sha512sum: 044d86f85eebff96bdff8fc11e97884eb4e06d56ecd2d3bfdc045135da6f08c40e644e0e5c1a779a8ef5d6c7c04e159e47721b4e637a92fed7d298b5f798ef83
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Path::Class is a module for manipulation of file and
+        directory specifications (strings describing their locations, like ''/home/ken/foo.txt''
+        or ''C:\Windows\Foo.txt'') in a cross-platform manner. It supports pretty
+        much every platform Perl runs on, including Unix, Windows, Mac, VMS, Epoc,
+        Cygwin, OS/2, and NetWare.  The well-known module File::Spec also provides
+        this service, but it''s sort of awkward to use well, so people sometimes avoid
+        it, or use it in a way that won''t actually work properly on platforms significantly
+        different than the ones they''ve tested their code on. '
+      home_page: http://search.cpan.org/~kwilliams/Path-Class-0.37/
+      license_concluded: Artistic-2.0 AND Artistic-1.0 AND GPL-1.0-or-later AND GPL-1.0-only
+      license_declared: Artistic-2.0 AND Artistic-1.0 AND GPL-1.0-or-later AND GPL-1.0-only
+      short_summary: Cross-platform path specification manipulation for Perl
+      supplier: 'Organization: Broadcom, Inc.'

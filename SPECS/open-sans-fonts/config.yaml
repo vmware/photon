@@ -1,0 +1,19 @@
+sources:
+- archive: open-sans-fonts-1.10.tar.xz
+  archive_sha512sum: 7e49f5ec6eeb6f7c95ca28ec9ebf170b126e1d1e07bc42a15029374ecb594756a7cf130d1da435f28df37e1385e183ccc07f08dd0f0dd468b830cdccd33c0b71
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Open Sans is a humanist sans serif typeface designed
+        by Steve Matteson, Type Director of Ascender Corp. This version contains the
+        complete 897 character set, which includes the standard ISO Latin 1, Latin
+        CE, Greek and Cyrillic character sets. Open Sans was designed with an upright
+        stress, open forms and a neutral, yet friendly appearance. It was optimized
+        for print, web, and mobile interfaces, and has excellent legibility characteristics
+        in its letter forms. '
+      home_page: http://www.google.com/fonts/specimen/Open+Sans
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Open Sans is a humanist sans-serif typeface designed by Steve
+        Matteson
+      supplier: 'Organization: Broadcom, Inc.'

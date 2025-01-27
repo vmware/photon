@@ -1,0 +1,18 @@
+sources:
+- archive: libuv-1.44.2.tar.gz
+  archive_sha512sum: d21c890787b0b364fafa5fc0cbbff296bc2ca269e1991d2f7f35fcb37b8634da377466f5af5a4245425fcf876ae6870d100ab32b12bce64f8e0b01fd25a1bc83
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: libuv is a multi-platform support library with a focus
+        on asynchronous I/O. It was primarily developed for use by Node.js, but it's
+        also used by Luvit, Julia, pyuv, and others.
+      home_page: https://codeload.github.com/libuv/libuv
+      license_concluded: CC-BY-4.0 AND MIT AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later WITH
+        Autoconf-exception-2.0 AND ISC
+      license_declared: CC-BY-4.0 AND MIT AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later WITH
+        Autoconf-exception-2.0 AND ISC
+      short_summary: multi-platform support library with a focus on asynchronous I/O
+      supplier: 'Organization: Broadcom, Inc.'

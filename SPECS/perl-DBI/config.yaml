@@ -1,0 +1,17 @@
+sources:
+- archive: DBI-1.643.tar.gz
+  archive_sha512sum: 03812f3eb1e43c8290dadb8cb14bbced9ec6e237228ea2a2ba91f22e52143906a91a7e82945dab30b1d1b9fc925073721111adafd9a09fac070808ab88f908b8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'DBI is a database access Application Programming Interface
+        (API) for the Perl Language. The DBI API Specification defines a set of functions,
+        variables and conventions that provide a consistent database interface independent
+        of the actual database being used. '
+      home_page: http://dbi.perl.org/
+      license_concluded: Artistic-1.0-Perl AND (GPL-3.0-or-later OR BSD-2-Clause)
+        AND GPL-1.0-or-later AND Artistic-2.0 AND GPL-1.0-only
+      license_declared: Artistic-1.0-Perl AND (GPL-3.0-or-later OR BSD-2-Clause) AND
+        GPL-1.0-or-later AND Artistic-2.0 AND GPL-1.0-only
+      short_summary: A database access API for perl
+      supplier: 'Organization: Broadcom, Inc.'

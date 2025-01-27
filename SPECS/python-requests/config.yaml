@@ -1,0 +1,22 @@
+sources:
+- archive: requests-2.28.1.tar.gz
+  archive_sha512sum: c123ec07171c2c7c34e4173b97750adfa313b4312d91c0d58e4eb8750361604017e5b370c23ec886d2cbf704f9074ec5ad0fa9c2cd8e6f9521532adafff39d41
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Requests is an Apache2 Licensed HTTP library, written
+        in Python, for human beings.  Most existing Python modules for sending HTTP
+        requests are extremely verbose and cumbersome. Python''s builtin urllib2 module
+        provides most of the HTTP capabilities you should need, but the api is thoroughly
+        broken. It requires an enormous amount of work (even method overrides) to
+        perform the simplest of tasks.  Features:  - Extremely simple GET, HEAD, POST,
+        PUT, DELETE Requests + Simple HTTP Header Request Attachment + Simple Data/Params
+        Request Attachment + Simple Multipart File Uploads + CookieJar Support + Redirection
+        History + Redirection Recursion Urllib Fix + Auto Decompression of GZipped
+        Content + Unicode URL Support - Simple Authentication + Simple URL + HTTP
+        Auth Registry '
+      home_page: http://python-requests.org
+      license_concluded: MIT AND Apache-2.0
+      license_declared: MIT AND Apache-2.0
+      short_summary: Awesome Python HTTP Library That's Actually Usable
+      supplier: 'Organization: Broadcom, Inc.'

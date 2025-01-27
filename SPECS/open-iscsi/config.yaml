@@ -1,0 +1,16 @@
+sources:
+- archive: open-iscsi-2.1.6.tar.gz
+  archive_sha512sum: 4a32a76c1c32d7d1a01fe3a0f88ce9616a54323ec043757be73051eb41ebae8de90ce057acce72fb6fe07aa47e814c9bc6ee88b13fa7d7769ca10c5175974f1d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'iSCSI tools for Linux '
+      home_page: https://github.com/open-iscsi/open-iscsi
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND
+        GPL-3.0-only AND GPL-1.0-or-later AND BSD-3-Clause AND BSD-4-Clause AND FSFUL
+        AND GPL-3.0-or-later WITH Bison-exception-2.2
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND
+        GPL-3.0-only AND GPL-1.0-or-later AND BSD-3-Clause AND BSD-4-Clause AND FSFUL
+        AND GPL-3.0-or-later WITH Bison-exception-2.2
+      short_summary: iSCSI tools for Linux
+      supplier: 'Organization: Broadcom, Inc.'

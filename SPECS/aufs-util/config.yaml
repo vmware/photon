@@ -1,0 +1,25 @@
+sources:
+- archive: aufs-standalone-aufs6.0.tar.gz
+  archive_sha512sum: 7028ad5671a4d0b473e6c7613bad18a6fcf0b01d9e908b4d5851bba4f686c01da157ab55a9f15448ac9575e63fa5fe6d0ebee4a4f9d2f7a93d6902462d1b6612
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Utilities for aufs.
+      home_page: https://sourceforge.net/p/aufs/aufs-util/ci/aufs6.0/tree/
+      license_concluded: GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-only AND
+        GPL-2.0-or-later
+      license_declared: GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-only AND
+        GPL-2.0-or-later
+      short_summary: Utilities for aufs
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: aufs-util-6.0.tar.gz
+  archive_sha512sum: 550f66d837fc840af1dfb3e518cbb6e6faff51ef46a1328719e6d04ac8aa8256c0fa75c878cb627d80ceb3caa2cc88198c09ed4bc0ea936824bfea87046467e6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'These utilities are always necessary for aufs. '
+      home_page: https://sourceforge.net/p/aufs/aufs-util/ref/master/branches/
+      license_concluded: GPL-2.0-or-later AND GPL-1.0-or-later AND GPL-2.0-only
+      license_declared: GPL-2.0-or-later AND GPL-1.0-or-later AND GPL-2.0-only
+      short_summary: Utilities for aufs
+      supplier: 'Organization: Broadcom, Inc.'

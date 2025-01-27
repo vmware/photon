@@ -1,0 +1,16 @@
+sources:
+- archive: which-2.21.tar.gz
+  archive_sha512sum: d2f04a5c5291f2d7d1226982da7cf999d36cfe24d3f7bda145508efcfb359511251d3c68b860c0ddcedd66b15a0587b648a35ab6d1f173707565305c506dfc61
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Program for showing the full the path of (shell) commands. '
+      home_page: http://savannah.gnu.org/projects/which
+      license_concluded: LGPL-2.0-or-later AND GPL-3.0-or-later AND GPL-1.0-or-later
+        AND X11 AND GPL-3.0-only AND FSFULLRWD AND FSFUL AND GPL-2.0-or-later AND
+        Latex2e AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLR
+      license_declared: LGPL-2.0-or-later AND GPL-3.0-or-later AND GPL-1.0-or-later
+        AND X11 AND GPL-3.0-only AND FSFULLRWD AND FSFUL AND GPL-2.0-or-later AND
+        Latex2e AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLR
+      short_summary: Program shows full path of (shell) commands
+      supplier: 'Organization: Broadcom, Inc.'

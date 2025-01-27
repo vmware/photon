@@ -1,0 +1,24 @@
+sources:
+- archive: libqmi-1.30.4.tar.xz
+  archive_sha512sum: 969c3e3fc8086c38e9192070eca155f5309947cdd1cfc9b883c27d80c6af2d069098a59e193bf1786260ab4fe4d05375555b5081dd173a88b33d84d409fa4a59
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libqmi package contains a GLib-based library for
+        talking to WWAN modems and devices which speak the Qualcomm MSM Interface
+        (QMI) protocol. '
+      home_page: https://www.freedesktop.org
+      license_concluded: GPL-3.0-or-later AND X11 AND BSD-3-Clause AND MIT AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND FSFAP-no-warranty-disclaimer AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only AND LGPL-2.1-or-later
+        AND FSFULLRWD AND FSFULLR AND GPL-2.0-or-later AND FSFUL AND LGPL-2.1-only
+        AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic
+      license_declared: GPL-3.0-or-later AND X11 AND BSD-3-Clause AND MIT AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND FSFAP-no-warranty-disclaimer AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only AND LGPL-2.1-or-later
+        AND FSFULLRWD AND FSFULLR AND GPL-2.0-or-later AND FSFUL AND LGPL-2.1-only
+        AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic
+      short_summary: Library for talking to WWAN modems and devices
+      supplier: 'Organization: Broadcom, Inc.'

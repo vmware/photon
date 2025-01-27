@@ -1,0 +1,17 @@
+sources:
+- archive: shared-mime-info-2.2.tar.gz
+  archive_sha512sum: 490d96daf4214ab6ac537761b67f3ff4716b95d7ea3fedd2e2ab7b0b02d946acad49790a25efcb5e949551dc4c39ba08911e59f06b198b61dcb1bc44799a2b2e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Shared Mime Info package contains a MIME database.
+        This allows central updates of MIME information for all supporting applications. '
+      home_page: http://freedesktop.org
+      license_concluded: CC0-1.0 AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND
+        MPL-2.0 AND CC-BY-SA-4.0 AND AGPL-3.0-only AND GPL-2.0-or-later AND GPL-1.0-or-later
+        AND BSD-2-Clause AND GPL-2.0-only
+      license_declared: CC0-1.0 AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND
+        MPL-2.0 AND CC-BY-SA-4.0 AND AGPL-3.0-only AND GPL-2.0-or-later AND GPL-1.0-or-later
+        AND BSD-2-Clause AND GPL-2.0-only
+      short_summary: MIME database
+      supplier: 'Organization: Broadcom, Inc.'

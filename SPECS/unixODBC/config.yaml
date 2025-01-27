@@ -1,0 +1,27 @@
+sources:
+- archive: unixODBC-2.3.12.tar.gz
+  archive_sha512sum: ca9d8db943195679a44db1fc09391dc6662ab1721112c93d448f04011e98502462ffe14b8364eb03707d851db456eced20eb61a22370392ca88d917038d45b56
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The unixODBC package is an Open Source ODBC (Open DataBase
+        Connectivity) sub-system and an ODBC SDK for Linux, Mac OSX, and UNIX. ODBC
+        is an open specification for providing application developers with a predictable
+        API with which to access data sources. '
+      home_page: http://www.unixodbc.org/
+      license_concluded: GPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-2.1-or-later AND GPL-3.0-or-later AND LGPL-2.0-or-later AND FSFULLR
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-1.0-or-later AND FSFUL
+        AND LGPL-2.1-only AND FSFAP AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND snprintf AND GPL-3.0-or-later WITH Libtool-exception AND FSFAP-no-warranty-disclaimer
+        AND LGPL-2.0-or-later WITH Libtool-exception AND FSFULLRWD AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Bison-exception-2.2
+      license_declared: GPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-2.1-or-later AND GPL-3.0-or-later AND LGPL-2.0-or-later AND FSFULLR
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-1.0-or-later AND FSFUL
+        AND LGPL-2.1-only AND FSFAP AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND snprintf AND GPL-3.0-or-later WITH Libtool-exception AND FSFAP-no-warranty-disclaimer
+        AND LGPL-2.0-or-later WITH Libtool-exception AND FSFULLRWD AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Bison-exception-2.2
+      short_summary: ODBC driver manager
+      supplier: 'Organization: Broadcom, Inc.'

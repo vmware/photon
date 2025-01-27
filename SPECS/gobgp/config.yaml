@@ -1,0 +1,14 @@
+sources:
+- archive: gobgp-3.1.0.tar.gz
+  archive_sha512sum: 7f2d3c2f8e267450bc9fc318e87c3740dab1b1ed11a458d5f4468e0fe902f9bd92697ffdd237b6722968a02f098839ddd8c95ebfce2d5b6a5c7c6426e3136e91
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'GoBGP is an open source BGP implementation designed from
+        scratch for modern environment, and implemented in a modern programming language,
+        the Go Programming Language. '
+      home_page: https://github.com/osrg/gobgp
+      license_concluded: MIT AND Apache-2.0 AND radvd
+      license_declared: MIT AND Apache-2.0 AND radvd
+      short_summary: BGP implementation in Go
+      supplier: 'Organization: Broadcom, Inc.'

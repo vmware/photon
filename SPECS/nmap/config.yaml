@@ -1,0 +1,50 @@
+sources:
+- archive: nmap-7.93.tar.bz2
+  archive_sha512sum: 4ec9295e25bd7a215e718c3dbbf09bfe6339b60850f4a8d09b5ad0cbf41a0da8ece0168efc5ca91ba1ecbd83b1d31735d77dacd5f1ec1a9fd212454dd1f0f0fd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'nmap is a utility for network exploration or security
+        auditing. It supports ping scanning (determine which hosts are up), many port
+        scanning techniques (determine what services the hosts are offering), and
+        TCP/IP fingerprinting (remote host operating system identification). Nmap
+        also offers flexible target and port specification, decoy scanning, determination
+        of TCP sequence predictability characteristics, reverse-identd scanning, and
+        more. In addition to the classic command-line nmap executable, the Nmap suite
+        includes a flexible data transfer, redirection, and debugging tool (netcat
+        utility ncat), a utility for comparing scan results (ndiff), and a packet
+        generation and response analysis tool (nping) '
+      home_page: http://nmap.org
+      license_concluded: OpenSSL AND LGPL-2.0-or-later AND PSF-2.0 AND CC-BY-2.5 AND
+        BSD-4-Clause-Shortened AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND blessing AND BSD-2-Clause-Views AND Apache-2.0 AND FSFULLRWD AND FSFULLR
+        AND GPL-3.0-or-later AND LGPL-2.0-only AND MIT AND LPD-document AND GPL-3.0-or-later
+        WITH Libtool-exception AND BSD-2-Clause AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND BSD-3-Clause AND OpenSSL-standalone AND BSD-4-Clause-UC AND GPL-2.0-only
+        AND BSD-4.3RENO AND (BSD-3-Clause OR GPL-2.0-only) AND IJG AND FSFUL AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later AND HPND-Fenneberg-Livingston
+        AND X11 AND MPL-1.1 AND (LGPL-2.1-only OR MPL-1.1) AND Zlib AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND CC-BY-3.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND HPND AND DOC AND GPL-1.0-or-later AND BSL-1.0 AND LGPL-2.1-only AND CC-BY-4.0
+        AND GPL-2.0-or-later WITH GNAT-exception AND FSFAP AND MPL-1.0 AND BSD-4-Clause
+        AND SSLeay-standalone AND FTL AND bzip2-1.0.6 AND LGPL-2.1-or-later AND BSD-4.3TAHOE
+        AND SSH-short AND libtiff AND ISC AND GPL-2.0-or-later WITH eCos-exception-2.0
+        AND Libpng
+      license_declared: OpenSSL AND LGPL-2.0-or-later AND PSF-2.0 AND CC-BY-2.5 AND
+        BSD-4-Clause-Shortened AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND blessing AND BSD-2-Clause-Views AND Apache-2.0 AND FSFULLRWD AND FSFULLR
+        AND GPL-3.0-or-later AND LGPL-2.0-only AND MIT AND LPD-document AND GPL-3.0-or-later
+        WITH Libtool-exception AND BSD-2-Clause AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND BSD-3-Clause AND OpenSSL-standalone AND BSD-4-Clause-UC AND GPL-2.0-only
+        AND BSD-4.3RENO AND (BSD-3-Clause OR GPL-2.0-only) AND IJG AND FSFUL AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later AND HPND-Fenneberg-Livingston
+        AND X11 AND MPL-1.1 AND (LGPL-2.1-only OR MPL-1.1) AND Zlib AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND CC-BY-3.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND HPND AND DOC AND GPL-1.0-or-later AND BSL-1.0 AND LGPL-2.1-only AND CC-BY-4.0
+        AND GPL-2.0-or-later WITH GNAT-exception AND FSFAP AND MPL-1.0 AND BSD-4-Clause
+        AND SSLeay-standalone AND FTL AND bzip2-1.0.6 AND LGPL-2.1-or-later AND BSD-4.3TAHOE
+        AND SSH-short AND libtiff AND ISC AND GPL-2.0-or-later WITH eCos-exception-2.0
+        AND Libpng
+      short_summary: "Nmap (\u201CNetwork Mapper\u201D) is a utility for network discovery\
+        \ and security auditing"
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,19 @@
+sources:
+- archive: icu4c-72_1-src.tgz
+  archive_sha512sum: 848c341b37c0ff077e34a95d92c6200d5aaddd0ee5e06134101a74e04deb08256a5e817c8aefab020986abe810b7827dd7b2169a60dacd250c298870518dcae8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The International Components for Unicode (ICU) package
+        is a mature, widely used set of C/C++ libraries providing Unicode and Globalization
+        support for software applications. '
+      home_page: http://www.icu-project.org
+      license_concluded: NGPL AND FSFULLRWD AND FSFUL AND ICU AND Unicode-3.0 AND
+        NAIST-2003 AND BSD-3-Clause AND BSD-2-Clause AND FSFAP AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND Unicode-DFS-2016
+      license_declared: NGPL AND FSFULLRWD AND FSFUL AND ICU AND Unicode-3.0 AND NAIST-2003
+        AND BSD-3-Clause AND BSD-2-Clause AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Unicode-DFS-2016
+      short_summary: International Components for Unicode
+      supplier: 'Organization: Broadcom, Inc.'

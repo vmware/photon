@@ -1,0 +1,30 @@
+sources:
+- archive: nasm-2.16.01-xdoc.tar.xz
+  archive_sha512sum: ec260c0a537b0172e6f2ac17118c744db8743886388a112e99bab1b8c8fee91547dade69dcfe9a15289b2b1a428e8c009048a468f7982b03dd4506abcafc0787
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Docs for package nasm
+      home_page: http://www.nasm.us
+      license_concluded: BSD-2-Clause
+      license_declared: BSD-2-Clause
+      short_summary: Netwide Assembler docs
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: nasm-2.16.01.tar.xz
+  archive_sha512sum: 51fccb5639ce019d9c423c0f279750ffbd74c64cd41dd3b185d1aa1a1aaed79c5d3cd8d4bebbc13ee249a375ed27457ea2abde1a4dbb24d354598fffd1254833
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'NASM (Netwide Assembler) is an 80x86 assembler designed
+        for portability and modularity. It includes a disassembler as well. '
+      home_page: http://www.nasm.us
+      license_concluded: BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later AND Artistic-2.0 AND X11 AND GPL-1.0-or-later AND AGPL-3.0-or-later
+        AND FSFUL AND FSFULLRWD AND BSD-2-Clause AND ISC AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND LGPL-2.0-or-later
+      license_declared: BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later AND Artistic-2.0 AND X11 AND GPL-1.0-or-later AND AGPL-3.0-or-later
+        AND FSFUL AND FSFULLRWD AND BSD-2-Clause AND ISC AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND LGPL-2.0-or-later
+      short_summary: Netwide Assembler.
+      supplier: 'Organization: Broadcom, Inc.'

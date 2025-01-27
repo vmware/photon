@@ -1,0 +1,15 @@
+sources:
+- archive: librdkafka-1.8.2.tar.gz
+  archive_sha512sum: 8c8ae291129b78e3b8367307ad1b1715af1438cd76d7160d64d13a58adf84c7c9f51efeba4656f55e101c25e4cb744db0d8bb5c01a2decb229e4567d16bdcb22
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'librdkafka is a C library implementation of the Apache
+        Kafka protocol, providing Producer, Consumer and Admin clients. '
+      home_page: https://github.com/edenhill/librdkafka
+      license_concluded: BSD-3-Clause AND BSD-2-Clause AND Apache-2.0 AND Zlib AND
+        MIT AND ISC
+      license_declared: BSD-3-Clause AND BSD-2-Clause AND Apache-2.0 AND Zlib AND
+        MIT AND ISC
+      short_summary: C library implementation of the Apache Kafka protocol
+      supplier: 'Organization: Broadcom, Inc.'

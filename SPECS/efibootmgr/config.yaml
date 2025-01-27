@@ -1,0 +1,17 @@
+sources:
+- archive: efibootmgr-18.tar.gz
+  archive_sha512sum: 04e40a705cb82440fd823043b598ef9fd1acc2ceda3e8d043a93e49d43ea9481b7386cad0f46de9862beff19b8a5480d79e7d6522ae584aff6655472f967764d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'efibootmgr is a userspace application used to modify
+        the Intel Extensible Firmware Interface (EFI) Boot Manager. This application
+        can create and destroy boot entries, change the boot order, change the next
+        running boot option, and more. '
+      home_page: https://github.com/rhinstaller/efibootmgr/
+      license_concluded: GPL-1.0-or-later AND DOC AND GPL-3.0-only AND GPL-2.0-or-later
+        AND GPL-2.0-only
+      license_declared: GPL-1.0-or-later AND DOC AND GPL-3.0-only AND GPL-2.0-or-later
+        AND GPL-2.0-only
+      short_summary: Tools and libraries to manipulate EFI variables
+      supplier: 'Organization: Broadcom, Inc.'

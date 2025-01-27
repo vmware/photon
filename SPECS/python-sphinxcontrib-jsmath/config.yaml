@@ -1,0 +1,13 @@
+sources:
+- archive: sphinxcontrib-jsmath-1.0.1.tar.gz
+  archive_sha512sum: c1e6488f5c0ca4567c27ec7c597c9db321ac32ce354c4ad62fea534b2ae1c0acb183a921f46216bbc3891f14acfaac05ddf324b8fdaf99828df07bc91aa7e5c7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'sphinxcontrib-jsmath is a sphinx extension which renders
+        display math in HTML via JavaScript. '
+      home_page: https://pypi.org/project/sphinxcontrib-jsmath
+      license_concluded: BSD-2-Clause AND BSD-3-Clause
+      license_declared: BSD-2-Clause AND BSD-3-Clause
+      short_summary: Sphinx extension for math in HTML via JavaScript
+      supplier: 'Organization: Broadcom, Inc.'

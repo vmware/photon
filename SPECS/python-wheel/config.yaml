@@ -1,0 +1,15 @@
+sources:
+- archive: wheel-0.37.1.tar.gz
+  archive_sha512sum: c977a740c17abd1fa4b4c2382a33f3ff887baa4231c36990d988cb8531496074e39744786ef6ac0da9c9af4977bce5b2da145377a3ac15eea918f8125bff66ec
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This library is the reference implementation of the Python
+        wheel packaging standard, as defined in PEP 427. It has two different roles.
+        Firstly a setuptools extension for building wheels that provides the bdist_wheel
+        setuptools command Secondly, a command line tool for working with wheel files '
+      home_page: https://pypi.org/project/wheel
+      license_concluded: MIT AND (BSD-3-Clause OR Apache-2.0)
+      license_declared: MIT AND (BSD-3-Clause OR Apache-2.0)
+      short_summary: A built-package format for Python
+      supplier: 'Organization: Broadcom, Inc.'

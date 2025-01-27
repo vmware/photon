@@ -1,0 +1,14 @@
+sources:
+- archive: File-HomeDir-1.006.tar.gz
+  archive_sha512sum: 1ea90d68ed059ef5e890f6afb1280673dd5a597956f282c4ae8b4471c1751aa3cb2fcbe9caa6b2976937d11fd7233aa85a2dea611f87c79e0ddd1a501ceb890d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'File::HomeDir is a module for locating the directories
+        that are "owned" by a user (typicaly your user) and to solve the various issues
+        that arise trying to find them consistently across a wide variety of platforms. '
+      home_page: http://search.cpan.org/dist/File-HomeDir/
+      license_concluded: GPL-2.0-only AND Artistic-2.0 AND Artistic-1.0 AND GPL-1.0-or-later
+      license_declared: GPL-2.0-only AND Artistic-2.0 AND Artistic-1.0 AND GPL-1.0-or-later
+      short_summary: File-HomeDir
+      supplier: 'Organization: Broadcom, Inc.'

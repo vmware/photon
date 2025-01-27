@@ -1,0 +1,14 @@
+sources:
+- archive: setools-4.4.0.tar.bz2
+  archive_sha512sum: 2ec92d7a6e30261549b6a8d2f17175d4a7d8313ef0cd81f4a19a91c53fe0107bac9a89c19dd67a4c534ee51ec520590795b4312f9e03e69fdf1763b0c35291f8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Policy analysis tools for SELinux '
+      home_page: https://github.com/SELinuxProject/selinux/wiki
+      license_concluded: GPL-2.0-only AND LGPL-2.1-only AND LGPL-2.0-or-later AND
+        GPL-1.0-or-later AND LGPL-2.1-or-later AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only AND LGPL-2.1-only AND LGPL-2.0-or-later AND GPL-1.0-or-later
+        AND LGPL-2.1-or-later AND GPL-2.0-or-later
+      short_summary: Policy analysis tools for SELinux
+      supplier: 'Organization: Broadcom, Inc.'

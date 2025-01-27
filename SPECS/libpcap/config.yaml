@@ -1,0 +1,26 @@
+sources:
+- archive: libpcap-1.10.1.tar.gz
+  archive_sha512sum: 56c314f19c2b857742bf8abcb1e78066986aaa95cec339b75a3c8b70a9fa2b5167da98708352f9ec97a1cea2700cfb4e040bda108d58ac46cec9b7deab88d171
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Libpcap provides a portable framework for low-level network
+        monitoring.  Libpcap can provide network statistics collection, security monitoring
+        and network debugging.  Since almost every system vendor provides a different
+        interface for packet capture, the libpcap authors created this system-independent
+        API to ease in porting and to alleviate the need for several system-dependent
+        packet capture modules in each application.  Install libpcap if you need to
+        do low-level network traffic monitoring on your network. '
+      home_page: http://www.tcpdump.org
+      license_concluded: BSD-4-Clause-UC AND FSFUL AND ISC AND BSD-3-Clause AND MIT
+        AND BSD-4.3RENO AND BSD-2-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND BSD-4-Clause AND BSD-4-Clause-Shortened
+        AND HPND-Fenneberg-Livingston
+      license_declared: BSD-4-Clause-UC AND FSFUL AND ISC AND BSD-3-Clause AND MIT
+        AND BSD-4.3RENO AND BSD-2-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND BSD-4-Clause AND BSD-4-Clause-Shortened
+        AND HPND-Fenneberg-Livingston
+      short_summary: C/C++ library for network traffic capture
+      supplier: 'Organization: Broadcom, Inc.'

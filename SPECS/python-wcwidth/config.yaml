@@ -1,0 +1,13 @@
+sources:
+- archive: wcwidth-0.2.5.tar.gz
+  archive_sha512sum: 567604186fc6810cc794828f656aebda380a85d9a0dadde7743fadcd43cf29b022016055ee2a5c077399ac7c07f48d6d4ee4fa91a44e6efed96b7a8659280a97
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Library is mainly for those implementing a Terminal
+        Emulator, or programs that carefully produce output to be interpreted by one. '
+      home_page: https://pypi.python.org/pypi/wcwidth
+      license_concluded: JSON AND HPND-Markus-Kuhn AND MIT
+      license_declared: JSON AND HPND-Markus-Kuhn AND MIT
+      short_summary: Measures number of Terminal column cells of wide-character codes.
+      supplier: 'Organization: Broadcom, Inc.'

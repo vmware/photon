@@ -1,0 +1,17 @@
+sources:
+- archive: clang-15.0.7.src.tar.xz
+  archive_sha512sum: 9fd2736a9f5993ddbb5b3c507fe497234a6def64f6f418f379d1ca56c9c361ad1ae9a5445ab938230fbc1671ec00b4f802a412b048569023863c20dc6bb46a1f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The goal of the Clang project is to create a new C based
+        language front-end: C, C++, Objective C/C++, OpenCL C and others for the LLVM
+        compiler. You can get and build the source today. '
+      home_page: http://clang.llvm.org
+      license_concluded: MIT-0 AND GPL-3.0-only AND Apache-2.0 AND Apache-2.0 WITH
+        LLVM-exception AND NCSA AND MIT
+      license_declared: MIT-0 AND GPL-3.0-only AND Apache-2.0 AND Apache-2.0 WITH
+        LLVM-exception AND NCSA AND MIT
+      short_summary: C, C++, Objective C and Objective C++ front-end for the LLVM
+        compiler.
+      supplier: 'Organization: Broadcom, Inc.'

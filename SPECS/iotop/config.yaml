@@ -1,0 +1,16 @@
+sources:
+- archive: iotop-0.6.tar.gz
+  archive_sha512sum: 8ba9edcff5106534b5267fbbd8e2fc1ba79583d66e00b5271ac764ab5a0b3c48294465671b6c919d97f72db615e151b4f09b5776058731332cbb6219d97a9818
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Iotop is a Python program with a top like UI used to
+        show the processes and their corresponding IO activity. '
+      home_page: http://guichaz.free.fr/iotop/
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later AND
+        LGPL-2.0-or-later
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later AND
+        LGPL-2.0-or-later
+      short_summary: Iotop is a Python program with a top like UI used to show the
+        processes and their corresponding IO activity.
+      supplier: 'Organization: Broadcom, Inc.'

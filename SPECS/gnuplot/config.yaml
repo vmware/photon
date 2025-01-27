@@ -1,0 +1,27 @@
+sources:
+- archive: gnuplot-5.4.5.tar.gz
+  archive_sha512sum: dbd0b338c5662304566fc0d790c8f53db071d7c486e7422f6ba4b7a9e0d8e50db756ab37dade9bdc01ed1a1ca6fe4e63749038c0ceec95b78bf8b92a0ae2dd20
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Gnuplot is a portable command-line driven graphing utility
+        for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms. The source
+        code is copyrighted but freely distributed (i.e., you don''t have to pay for
+        it). It was originally created to allow scientists and students to visualize
+        mathematical functions and data interactively, but has grown to support many
+        non-interactive uses such as web scripting. It is also used as a plotting
+        engine by third-party applications like Octave. Gnuplot has been supported
+        and under active development since 1986. '
+      home_page: http://www.gnuplot.info
+      license_concluded: GPL-2.0-only AND FSFUL AND BSD-3-Clause AND BSL-1.0 AND X11
+        AND Xfig AND gnuplot AND HPND-Kevlin-Henney AND GPL-1.0-or-later AND FSFULLR
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLRWD AND HPND-Pbmplus AND Adobe-Glyph AND GPL-1.0-only AND BSD-2-Clause
+        AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
+      license_declared: GPL-2.0-only AND FSFUL AND BSD-3-Clause AND BSL-1.0 AND X11
+        AND Xfig AND gnuplot AND HPND-Kevlin-Henney AND GPL-1.0-or-later AND FSFULLR
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLRWD AND HPND-Pbmplus AND Adobe-Glyph AND GPL-1.0-only AND BSD-2-Clause
+        AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
+      short_summary: Gnuplot is a portable command-line driven graphing utility.
+      supplier: 'Organization: Broadcom, Inc.'

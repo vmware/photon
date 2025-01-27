@@ -1,0 +1,13 @@
+sources:
+- archive: yaml-cpp-0.7.0.tar.gz
+  archive_sha512sum: 2de0f0ec8f003cd3c498d571cda7a796bf220517bad2dc02cba70c522dddde398f33cf1ad20da251adaacb2a07b77844111f297e99d45a7c46ebc01706bbafb5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A YAML parser and emitter in C++ matching the YAML 1.2
+        spec. '
+      home_page: https://github.com/jbeder/yaml-cpp
+      license_concluded: MIT AND Apache-2.0 AND BSD-3-Clause
+      license_declared: MIT AND Apache-2.0 AND BSD-3-Clause
+      short_summary: YAML parser and emitter in C++
+      supplier: 'Organization: Broadcom, Inc.'

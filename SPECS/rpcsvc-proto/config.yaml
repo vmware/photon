@@ -1,0 +1,18 @@
+sources:
+- archive: rpcsvc-proto-1.4.3.tar.xz
+  archive_sha512sum: e46ba9ccdd6c520128bf3a154db90742f288a4d593b094a630141cdc5aeb834ffebf9b0eb6d5d0aad9faef3c445c75e2355cbc3e1382b50d29f4d2799441c6e9
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The rpcsvc-proto package contains the rcpsvc protocol.x
+        files and headers, formerly included with glibc, that are not included in
+        replacement libtirpc-1.1.4, along with the rpcgen program. '
+      home_page: https://github.com/thkukuk/rpcsvc-proto
+      license_concluded: FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-3-Clause AND FSFUL AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLRWD AND FSFAP
+      license_declared: FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-3-Clause AND FSFUL AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLRWD AND FSFAP
+      short_summary: rcpsvc protocol.x files and headers
+      supplier: 'Organization: Broadcom, Inc.'

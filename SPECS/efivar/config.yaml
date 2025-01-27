@@ -1,0 +1,12 @@
+sources:
+- archive: efivar-38.tar.bz2
+  archive_sha512sum: c2f17297c863ece134a9dd758d237fd2df8c8d072f87af1d0bf2bcf9acfc7a53c25597f03fd4fb8cc664b205743d4ffa0ef1b068d0f73c58fa573d40993f3155
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'efivar provides a simle CLI to the UEFI variable facility '
+      home_page: https://github.com/rhboot/efivar
+      license_concluded: LGPL-2.1-only AND DOC AND LGPL-2.1-or-later
+      license_declared: LGPL-2.1-only AND DOC AND LGPL-2.1-or-later
+      short_summary: Tools and libraries to manipulate EFI variables
+      supplier: 'Organization: Broadcom, Inc.'

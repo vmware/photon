@@ -1,0 +1,15 @@
+sources:
+- archive: SPIRV-Headers-1.3.231.1.tar.gz
+  archive_sha512sum: d2c47127fd81430383e8656917f76933b713ca6cb93b2a9c16c9e0b125e2f62f8c497cab3a4fcc2a711decd911ec5d15f1eb0270add05442aff6672e08c890d7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Header files from the SPIR-V registry  This includes:  *
+        Header files for various languages. * JSON files describing the grammar for
+        the SPIR-V core instruction set, and for the GLSL.std.450 extended instruction
+        set. * The XML registry file '
+      home_page: https://github.com/KhronosGroup/SPIRV-Headers/
+      license_concluded: MIT-Khronos-old AND MIT
+      license_declared: MIT-Khronos-old AND MIT
+      short_summary: Header files from the SPIR-V registry
+      supplier: 'Organization: Broadcom, Inc.'

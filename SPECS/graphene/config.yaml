@@ -1,0 +1,14 @@
+sources:
+- archive: graphene-1.10.8.tar.gz
+  archive_sha512sum: 526b0c17049459b687ceb7f6c26c9d982535e4048e74a0b6282704f9811d3c2e7e0e6cfef166aa953306b6cf77add6677bc600ae0c66cc052dc04c3d0345bd68
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Graphene provides a small set of mathematical types needed
+        to implement graphic libraries that deal with 2D and 3D transformations and
+        projections. '
+      home_page: https://github.com/ebassi/graphene
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Thin layer of types for graphic libraries.
+      supplier: 'Organization: Broadcom, Inc.'

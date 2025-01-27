@@ -1,0 +1,22 @@
+sources:
+- archive: p11-kit-0.24.1.tar.xz
+  archive_sha512sum: 8cf170c714bb9e0cf3df93e8ec55b8e3c55cabf2c6a27f177ac6de8b8028985df2ca0216d3215d6828dc2ae3095c4e1a4febe8cb26b88ec321defc66bb011e81
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: '%{name} provides a way to load and enumerate PKCS11 modules,
+        as well as a standard configuration setup for installing PKCS11 modules in
+        such a way that they''re discoverable. '
+      home_page: http://p11-glue.freedesktop.org/p11-kit.html
+      license_concluded: GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        AND BSD-2-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        FSFUL AND X11 AND LGPL-2.1-or-later AND BSD-3-Clause AND Apache-2.0 AND GPL-2.0-or-later
+        WITH Libtool-exception AND FSFULLR AND FSFULLRWD AND ISC AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFAP
+      license_declared: GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        AND BSD-2-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        FSFUL AND X11 AND LGPL-2.1-or-later AND BSD-3-Clause AND Apache-2.0 AND GPL-2.0-or-later
+        WITH Libtool-exception AND FSFULLR AND FSFULLRWD AND ISC AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFAP
+      short_summary: Library for loading and sharing PKCS11 modules
+      supplier: 'Organization: Broadcom, Inc.'

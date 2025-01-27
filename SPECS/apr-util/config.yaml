@@ -1,0 +1,16 @@
+sources:
+- archive: apr-util-1.6.3.tar.gz
+  archive_sha512sum: 25f078413dc552b3391845b3dc1da72773efe181634deb2f88a9c72a1a49c82883113704bf97db8327012ccafb84a68370267925e3c7cc092ed82fc33fd7954e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Apache Portable Runtime Utility Library. '
+      home_page: https://apr.apache.org
+      license_concluded: Beerware AND Apache-2.0 AND MIT AND Sleepycat AND FSFUL AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND RSA-MD AND CC0-1.0
+        AND OLDAP-2.8 AND BSD-4.3RENO
+      license_declared: Beerware AND Apache-2.0 AND MIT AND Sleepycat AND FSFUL AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND RSA-MD AND CC0-1.0
+        AND OLDAP-2.8 AND BSD-4.3RENO
+      short_summary: The Apache Portable Runtime Utility Library
+      supplier: 'Organization: Broadcom, Inc.'

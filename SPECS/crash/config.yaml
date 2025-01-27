@@ -1,0 +1,76 @@
+sources:
+- archive: crash-8.0.2.tar.gz
+  archive_sha512sum: 9ff24d1206e9376e83690f76c817a48a68ff6adce677fad70335a73550a59c9af6e4753c1199f22eafa60c137156313244bbf98ed01bc2b066f41d324738ef6b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The core analysis suite is a self-contained tool that
+        can be used to investigate either live systems, kernel core dumps created
+        from the netdump, diskdump and kdump packages from Red Hat Linux, the mcore
+        kernel patch offered by Mission Critical Linux, or the LKCD kernel patch. '
+      home_page: http://people.redhat.com/anderson
+      license_concluded: GPL-2.0-only AND CMU-Mach AND GPL-3.0-or-later AND GPL-2.0-or-later
+        AND GPL-3.0-only AND GPL-2.0-only WITH Linux-syscall-note AND GPL-1.0-or-later
+      license_declared: GPL-2.0-only AND CMU-Mach AND GPL-3.0-or-later AND GPL-2.0-or-later
+        AND GPL-3.0-only AND GPL-2.0-only WITH Linux-syscall-note AND GPL-1.0-or-later
+      short_summary: kernel crash analysis utility for live systems, netdump, diskdump,
+        kdump, LKCD or mcore dumpfiles
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: crash-gcore-command-1.6.3.tar.gz
+  archive_sha512sum: 697952b7c55af5e4a7528cdd6fe616411d5147979fc90da55c0a3cee44510f39846e99bff3ac701c1ed98ee2c5d125e77c332b1f5b0be6e0ea1d98cf5d547a15
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: gcore extension module provides a means to create ELF
+        core dump for user-mode process that is contained within crash kernel dump,
+        designed to behave as kernel's ELF core dumper.
+      home_page: https://github.com/fujitsu/crash-gcore
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only
+      short_summary: gcore extension module provides a means to create ELF core dump
+        for user-mode process that is contained within crash kernel dump, designed
+        to behave as kernel's ELF core dumper.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: gdb-10.2.tar.gz
+  archive_sha512sum: aa89caf47c1c84366020377d47e7c51ddbc48e5b7686f244e38797c8eb88411cf57fcdc37eb669961efb41ceeac4181747f429625fd1acce7712cb9a1fea9c41
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: GDB, the GNU Project debugger
+      home_page: https://www.sourceware.org/gdb
+      license_concluded: GFDL-1.1-only AND GPL-3.0-only AND GPL-3.0-or-later WITH
+        GCC-exception-3.1 AND GPL-2.0-or-later WITH Bison-exception-1.24 AND GPL-1.0-only
+        AND GPL-1.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND FSFUL AND GPL-3.0-or-later WITH Texinfo-exception
+        AND GPL-2.0-or-later WITH GNAT-exception AND GPL-1.0-or-later AND BSD-4.3TAHOE
+        AND GPL-3.0-or-later AND Latex2e AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLRWD AND CMU-Mach AND FSFAP AND ISC AND GPL-2.0-only AND LGPL-2.0-or-later
+        WITH GCC-exception-2.0 AND LPD-document AND BSD-4.3RENO AND X11 AND GFDL-1.3-invariants-only
+        AND SunPro AND (BSD-3-Clause OR GPL-2.0-only) AND Latex2e-translated-notice
+        AND Zlib AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND LGPL-3.0-only
+        AND FSFAP-no-warranty-disclaimer AND LGPL-2.0-only AND LGPL-2.1-or-later AND
+        GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND GFDL-1.3-only AND LGPL-3.0-or-later AND HPND-Markus-Kuhn AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND LGPL-2.1-only AND BSL-1.0 AND GFDL-1.1-or-later
+        AND GPL-2.0-or-later AND BSD-4-Clause-UC AND GPL-2.0-or-later WITH GNU-compiler-exception
+        AND LGPL-2.0-or-later AND GFDL-1.3-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH GCC-exception-2.0 AND BSD-3-Clause AND FSFULLR
+      license_declared: GFDL-1.1-only AND GPL-3.0-only AND GPL-3.0-or-later WITH GCC-exception-3.1
+        AND GPL-2.0-or-later WITH Bison-exception-1.24 AND GPL-1.0-only AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND FSFUL AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-2.0-or-later
+        WITH GNAT-exception AND GPL-1.0-or-later AND BSD-4.3TAHOE AND GPL-3.0-or-later
+        AND Latex2e AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLRWD
+        AND CMU-Mach AND FSFAP AND ISC AND GPL-2.0-only AND LGPL-2.0-or-later WITH
+        GCC-exception-2.0 AND LPD-document AND BSD-4.3RENO AND X11 AND GFDL-1.3-invariants-only
+        AND SunPro AND (BSD-3-Clause OR GPL-2.0-only) AND Latex2e-translated-notice
+        AND Zlib AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND LGPL-3.0-only
+        AND FSFAP-no-warranty-disclaimer AND LGPL-2.0-only AND LGPL-2.1-or-later AND
+        GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND GFDL-1.3-only AND LGPL-3.0-or-later AND HPND-Markus-Kuhn AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND LGPL-2.1-only AND BSL-1.0 AND GFDL-1.1-or-later
+        AND GPL-2.0-or-later AND BSD-4-Clause-UC AND GPL-2.0-or-later WITH GNU-compiler-exception
+        AND LGPL-2.0-or-later AND GFDL-1.3-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH GCC-exception-2.0 AND BSD-3-Clause AND FSFULLR
+      short_summary: C debugger
+      supplier: 'Organization: Broadcom, Inc.'

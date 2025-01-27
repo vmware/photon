@@ -1,0 +1,17 @@
+sources:
+- archive: Cython-0.29.32.tar.gz
+  archive_sha512sum: 55462792fa70d8edf60aa470627ab494918d7297fd7d282a7a54da76ee5a180233108404a1c8f3d79f6408f19b6e4f46b36e59fd47c38ede24f061f374437b6f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cython is an optimising static compiler for both the
+        Python programming language, and the extended Cython programming language
+        (based on Pyrex). It makes writing C extensions for Python as easy as Python
+        itself. '
+      home_page: http://cython.org/
+      license_concluded: Apache-2.0 AND MIT AND LGPL-2.0-or-later AND LGPL-2.0-only
+        AND Python-2.0 AND BSD-3-Clause
+      license_declared: Apache-2.0 AND MIT AND LGPL-2.0-or-later AND LGPL-2.0-only
+        AND Python-2.0 AND BSD-3-Clause
+      short_summary: C extensions for Python3
+      supplier: 'Organization: Broadcom, Inc.'

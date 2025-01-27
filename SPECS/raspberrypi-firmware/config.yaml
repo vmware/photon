@@ -1,0 +1,18 @@
+sources:
+- archive: raspberrypi-firmware-1.20230106.tar.gz
+  archive_sha512sum: 7ac48195062e57b0afe660d7ff31a1841565384accd487c8b9b7bbf32b88aff126b1d5e859d1b350b73e568d78ac58e58e447729387fb069aaf31c59006c72b5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Firmware files for Raspberry Pi '
+      home_page: https://github.com/raspberrypi/firmware
+      license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND MIT AND (MIT OR GPL-2.0-only)
+        AND SGI-B-2.0 AND Zlib AND (MIT OR GPL-2.0-only) AND GPL-2.0-only AND GPL-2.0-or-later
+        AND Bitstream-Vera AND GPL-1.0-or-later AND BSD-3-Clause AND (MPL-1.1 OR GPL-2.0-only)
+        AND (BSD-3-Clause OR GPL-2.0-only) AND GPL-2.0-only WITH Linux-syscall-note
+      license_declared: (BSD-3-Clause OR GPL-2.0-only) AND MIT AND (MIT OR GPL-2.0-only)
+        AND SGI-B-2.0 AND Zlib AND (MIT OR GPL-2.0-only) AND GPL-2.0-only AND GPL-2.0-or-later
+        AND Bitstream-Vera AND GPL-1.0-or-later AND BSD-3-Clause AND (MPL-1.1 OR GPL-2.0-only)
+        AND (BSD-3-Clause OR GPL-2.0-only) AND GPL-2.0-only WITH Linux-syscall-note
+      short_summary: Raspberry Pi firmware
+      supplier: 'Organization: Broadcom, Inc.'

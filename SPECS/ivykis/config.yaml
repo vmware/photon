@@ -1,0 +1,20 @@
+sources:
+- archive: ivykis-0.42.4.tar.gz
+  archive_sha512sum: 4a9fc973e97b054e365cb5028024e1d988227d3a871ab2983569b99d29201d9cdbf9e05e87d2f880281a72a6e6dad10212585e7d276c107bb667ab94644efdbd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'ivykis is a library for asynchronous I/O readiness notification.
+        It is a thin, portable wrapper around OS-provided mechanisms such as epoll_create(2),
+        kqueue(2), poll(2), poll(7d) (/dev/poll) and port_create(3C). '
+      home_page: http://libivykis.sourceforge.net
+      license_concluded: FSFULLR AND LGPL-2.1-only AND Linux-man-pages-1-para AND
+        FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception AND FSFUL AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND GPL-3.0-or-later
+      license_declared: FSFULLR AND LGPL-2.1-only AND Linux-man-pages-1-para AND FSFULLRWD
+        AND GPL-2.0-or-later WITH Libtool-exception AND FSFUL AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND GPL-3.0-or-later
+      short_summary: libivykis async I/O-assisting library
+      supplier: 'Organization: Broadcom, Inc.'

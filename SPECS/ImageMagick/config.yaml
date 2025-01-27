@@ -1,0 +1,14 @@
+sources:
+- archive: ImageMagick-7.1.1-38.tar.xz
+  archive_sha512sum: 636e2061c11c012e2607a53a893eb227569f3a4e04e331499722f2c84dc0db3eedae63525bd530972a639e3a262ab4f61383a21ca8603f8f81e5629a29f54b89
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: software suite, used for editing and manipulating digital
+        images
+      home_page: https://imagemagick.org/
+      license_concluded: ImageMagick
+      license_declared: ImageMagick
+      originator: 'Organization: ImageMagick Studio LLC.'
+      short_summary: software suite, used for editing and manipulating digital images
+      supplier: 'Organization: Broadcom, Inc.'

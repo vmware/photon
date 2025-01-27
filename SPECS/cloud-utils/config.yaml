@@ -1,0 +1,14 @@
+sources:
+- archive: cloud-utils-0.32.tar.gz
+  archive_sha512sum: e501ac4503c1d4086a89c966a263bc3a9d25c5454a7dcedd854baa17885247f85db720fd124c2a6e47c27d17a1fa33d914073ff05d0d3da1ea7befe35056ab9c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cloud-utils brings in growpart script. This script is
+        very useful for detecting available disk size and grow the partition. This
+        is generally used by cloud-init for disk space manangement on cloud images. '
+      home_page: https://launchpad.net/cloud-utils
+      license_concluded: GPL-3.0-only AND GPL-2.0-or-later
+      license_declared: GPL-3.0-only AND GPL-2.0-or-later
+      short_summary: Shell script to auto detect free size on disk and grow partition.
+      supplier: 'Organization: Broadcom, Inc.'

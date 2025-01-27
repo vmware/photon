@@ -1,0 +1,24 @@
+sources:
+- archive: pytz-deprecation-shim-0.1.0.post0.tar.gz
+  archive_sha512sum: e71f34cd8e931fffb3d118726cffab3820268678ab32e0f314a11aed8dabba99292c5abfdd99b8ba4120da5d45d2fa5437e048c48d991921d62984e22088d31f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "pytz has served the Python community well for many years,\
+        \ but it is no longer the best option for providing time zones. pytz has a\
+        \ non-standard interface that is very easy to misuse; this interface was necessary\
+        \ when pytz was created, because datetime had no way to represent ambiguous\
+        \ datetimes, but this was solved in Python 3.6, which added a fold attribute\
+        \ to datetimes in PEP 495. With the addition of the zoneinfo module in Python\
+        \ 3.9 (PEP 615), there has never been a better time to migrate away from pytz.\
+        \  However, since pytz time zones are used very differently from a standard\
+        \ tzinfo, and many libraries have built pytz zones into their standard time\
+        \ zone interface (and thus may have users relying on the existence of the\
+        \ localize and normalize methods); this library provides shim classes that\
+        \ are compatible with both PEP 495 and pytz\u2019s interface, to make it easier\
+        \ for libraries to deprecate pytz. "
+      home_page: https://github.com/pganssle/pytz-deprecation-shim
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Shims to help you safely remove pytz
+      supplier: 'Organization: Broadcom, Inc.'

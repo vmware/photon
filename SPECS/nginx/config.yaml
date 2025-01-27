@@ -1,0 +1,36 @@
+sources:
+- archive: headers-more-nginx-module-0.37.tar.gz
+  archive_sha512sum: 0cc2fffe506194d439e3669644d41b7943e2c3cffa3483eb70b92067930b358d506a14646eff8362b191a11c624db29f6b53d830876929dcb4ce1c9d7b2bc40d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Set, add, and clear arbitrary output headers in NGINX
+        http servers.
+      home_page: https://github.com/openresty/headers-more-nginx-module
+      license_concluded: BSD-3-Clause AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND BSD-2-Clause
+      short_summary: Set, add, and clear arbitrary output headers in NGINX http servers.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: nginx-1.26.2.tar.gz
+  archive_sha512sum: 470efe9ae5d6150ecbf133979c6c36415679a2156499a3b6820a85eb8f3038a8aa06f7b28ddd834cffb0e982f3ddc89e4b1649d536eba4f84019a72d4cfa3539
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'NGINX is a free, open-source, high-performance HTTP server
+        and reverse proxy, as well as an IMAP/POP3 proxy server. '
+      home_page: http://nginx.org
+      license_concluded: GPL-1.0-or-later AND BSD-2-Clause AND BSD-3-Clause
+      license_declared: GPL-1.0-or-later AND BSD-2-Clause AND BSD-3-Clause
+      short_summary: High-performance HTTP server and reverse proxy
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: nginx-njs-0.8.4.tar.gz
+  archive_sha512sum: 450f6866141f6f370767149c8749e84c4373f401d6d2237ca85365a851ebe7bdbd8a3c25e85a55747673e8bef2238a979dd237d5fc5c641b2f3f2cf7f26dffc8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: A subset of JavaScript language to use in nginx.
+      home_page: https://github.com/nginx/njs
+      license_concluded: BSD-3-Clause AND MIT AND GPL-2.0-or-later AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND MIT AND GPL-2.0-or-later AND BSD-2-Clause
+      short_summary: A subset of JavaScript language to use in nginx.
+      supplier: 'Organization: Broadcom, Inc.'

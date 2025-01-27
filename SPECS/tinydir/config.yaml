@@ -1,0 +1,13 @@
+sources:
+- archive: tinydir-1.2.5.tar.gz
+  archive_sha512sum: d86a8709b92c9b6847bd85b4b307a411edf30156a06557641a051f74a7c19898451616772ee53ad2d8fc6c2ea2285c4c4edf2197f36cf48ede6d539d24ebb2cf
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Lightweight, portable and easy to integrate C directory
+        and file reader. TinyDir wraps dirent for POSIX and FindFirstFile for Windows. '
+      home_page: https://github.com/cxong/tinydir
+      license_concluded: BSD-2-Clause AND Apache-2.0
+      license_declared: BSD-2-Clause AND Apache-2.0
+      short_summary: Portable and easy to integrate C directory and file reader
+      supplier: 'Organization: Broadcom, Inc.'

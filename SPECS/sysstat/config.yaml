@@ -1,0 +1,18 @@
+sources:
+- archive: sysstat-12.7.2.tar.xz
+  archive_sha512sum: 3dd2fceb89faf2a0b20f4215a5a64298c62277f1c06175ca224fe2c897e86bf94bcf7b4b66f36536848b31743d4d38f765b06923052466cdcde0768990e9e769
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Sysstat package contains utilities to monitor system
+        performance and usage activity. Sysstat contains the sar utility, common to
+        many commercial Unixes, and tools you can schedule via cron to collect and
+        historize performance and activity data. '
+      home_page: http://sebastien.godard.pagesperso-orange.fr/
+      license_concluded: GPL-2.0-or-later AND MIT AND FSFUL AND GPL-1.0-or-later AND
+        GPL-2.0-only
+      license_declared: GPL-2.0-or-later AND MIT AND FSFUL AND GPL-1.0-or-later AND
+        GPL-2.0-only
+      short_summary: The Sysstat package contains utilities to monitor system performance
+        and usage activity
+      supplier: 'Organization: Broadcom, Inc.'

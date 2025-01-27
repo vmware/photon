@@ -1,0 +1,21 @@
+sources:
+- archive: libssh2-1.11.0.tar.gz
+  archive_sha512sum: ef85e152dc252bd9b1c05276972b9c22313f5d492743dde090235742746d67f634f2a419eff9162132e2274c8582113b75279b074e0c7b34b2526b92fd1a1e8e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libssh2 is a client-side C library implementing the SSH2
+        protocol. '
+      home_page: https://www.libssh2.org
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+        AND BSD-3-Clause AND BSD-2-Clause AND FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND ISC AND FSFUL AND SSH-short AND FSFULLRWD
+        AND GPL-2.0-only AND MIT
+      license_declared: GPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+        AND BSD-3-Clause AND BSD-2-Clause AND FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND ISC AND FSFUL AND SSH-short AND FSFULLRWD
+        AND GPL-2.0-only AND MIT
+      short_summary: libssh2 is a library implementing the SSH2 protocol.
+      supplier: 'Organization: Broadcom, Inc.'

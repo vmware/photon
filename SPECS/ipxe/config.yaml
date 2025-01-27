@@ -1,0 +1,23 @@
+sources:
+- archive: ipxe-1.21.1.tar.gz
+  archive_sha512sum: 47400975110ed4ab95835aa1b7c8d5a6917c19c5713c6ab88bc0741a3adcd62245a9c4251d1f46fffc45289c6b18bf893f86dbc3b67d3189c41b7f198367ecaa
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'iPXE is the leading open source network boot firmware.
+        It provides a full PXE implementation enhanced with additional features. '
+      home_page: http://ipxe.org
+      license_concluded: (GPL-2.0-only OR BSD-2-Clause) AND GPL-1.0-or-later AND BSD-2-Clause
+        AND bzip2-1.0.6 AND (GPL-2.0-only OR Linux-OpenIB) AND ISC AND GPL-2.0-only
+        AND (MIT OR GPL-1.0-or-later) AND NTP-0 AND (GPL-2.0-only OR Linux-OpenIB)
+        AND GPL-2.0-or-later AND GPL-2.0-or-later WITH UBDL-exception AND MIT AND
+        BSD-3-Clause-acpica AND BSD-Source-Code AND (MPL-1.1 OR GPL-2.0-only) AND
+        BSD-3-Clause
+      license_declared: (GPL-2.0-only OR BSD-2-Clause) AND GPL-1.0-or-later AND BSD-2-Clause
+        AND bzip2-1.0.6 AND (GPL-2.0-only OR Linux-OpenIB) AND ISC AND GPL-2.0-only
+        AND (MIT OR GPL-1.0-or-later) AND NTP-0 AND (GPL-2.0-only OR Linux-OpenIB)
+        AND GPL-2.0-or-later AND GPL-2.0-or-later WITH UBDL-exception AND MIT AND
+        BSD-3-Clause-acpica AND BSD-Source-Code AND (MPL-1.1 OR GPL-2.0-only) AND
+        BSD-3-Clause
+      short_summary: iPXE open source boot firmware
+      supplier: 'Organization: Broadcom, Inc.'

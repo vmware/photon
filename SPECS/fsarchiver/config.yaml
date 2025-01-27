@@ -1,0 +1,24 @@
+sources:
+- archive: fsarchiver-0.8.6.tar.gz
+  archive_sha512sum: 26a2d7a68d162aabb778b14f29c52cf8fbadb8147cf5eae592352a36fbf93cc45c08c241253bd8dfe8cd0b77d0f156afcc8d89e8d24a238fd4427cb479827f14
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'FSArchiver is a system tool that allows you to save the
+        contents of a file-system to a compressed archive file. The file-system can
+        be restored on a partition which has a different size and it can be restored
+        on a different file-system. Unlike tar/dar, FSArchiver also creates the file-system
+        when it extracts the data to partitions. Everything is checksummed in the
+        archive in order to protect the data. If the archive is corrupt, you just
+        loose the current file, not the whole archive. Fsarchiver is released under
+        the GPL-v2 license. You should read the Quick start guide if you are using
+        FSArchiver for the first time. '
+      home_page: http://www.fsarchiver.org
+      license_concluded: X11 AND GPL-2.0-only AND FSFULLRWD AND FSFUL AND FSFULLR
+        AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      license_declared: X11 AND GPL-2.0-only AND FSFULLRWD AND FSFUL AND FSFULLR AND
+        FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      short_summary: FSArchiver - Filesystem Archiver for Linux
+      supplier: 'Organization: Broadcom, Inc.'

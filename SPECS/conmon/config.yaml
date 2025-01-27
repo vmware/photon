@@ -1,0 +1,14 @@
+sources:
+- archive: conmon-2.1.7.tar.gz
+  archive_sha512sum: 95d394b399a19a62b894cdd03937ab79b81051eea1db461b1bf957ddd7626d6ca4aa108b8319ed8c08adbdf99fd960c5ba29146e8b0673b5c920708912a72973
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: '%{name} is a command-line program for monitoring and
+        managing the lifecycle of Linux containers that follow the Open Container
+        Initiative (OCI) format. '
+      home_page: https://github.com/containers/conmon/archive/refs/tags/v2.1.7.tar.gz
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND MIT
+      license_declared: Apache-2.0 AND BSD-2-Clause AND MIT
+      short_summary: A container monitor utility
+      supplier: 'Organization: Broadcom, Inc.'

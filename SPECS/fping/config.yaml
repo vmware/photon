@@ -1,0 +1,16 @@
+sources:
+- archive: fping-5.1.tar.gz
+  archive_sha512sum: 1a208da8dcd99093d0512af5d85ba5e7b5743ec97993d24c1fe612bb58d93090ac1ba0952f648aa075f16d390a77c4be65e394ae56dbede2a6914e0e8c68e2bd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'fping is a ping like program which uses the Internet
+        Control Message Protocol (ICMP) echo request to determine if a target host
+        is responding. '
+      home_page: http://www.fping.org/
+      license_concluded: FSFULLRWD AND X11 AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR AND BSD-4.3TAHOE
+      license_declared: FSFULLRWD AND X11 AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR AND BSD-4.3TAHOE
+      short_summary: Utility to send ICMP echo probes to network hosts
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,36 @@
+sources:
+- archive: gnupg-2.2.41.tar.bz2
+  archive_sha512sum: f472e5058ea9881355f0c754a47acd0b5360c36e8976b8563dbc763a7cef792bf88227cc15fe5172d3e9bb9fc34d8448dd5c183949031e91a1997cc7f0f83b55
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'GnuPG is a complete and free implementation of the OpenPGP
+        standard as defined by RFC4880 (also known as PGP). GnuPG allows to encrypt
+        and sign your data and communication, features a versatile key management
+        system as well as access modules for all kinds of public key directories.
+        GnuPG, also known as GPG, is a command line tool with features for easy integration
+        with other applications. '
+      home_page: https://gnupg.org/index.html
+      license_concluded: (LGPL-3.0-or-later OR GPL-2.0-or-later) AND LGPL-2.0-or-later
+        AND Furuseth AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND Apache-2.0 AND
+        GPL-1.0-or-later WITH Autoconf-exception-generic AND blessing AND LGPL-3.0-or-later
+        AND FSFUL AND BSD-3-Clause AND CC0-1.0 AND LGPL-2.1-only AND GPL-3.0-only
+        AND OLDAP-2.8 AND Zlib AND X11 AND MIT AND BSD-4.3RENO AND LGPL-2.1-or-later
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-2-Clause-Views
+        AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-or-later AND GPL-3.0-or-later
+        AND GPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Texinfo-exception AND CC-BY-SA-4.0 AND Spencer-86
+        AND LGPL-3.0-only AND FSFULLR AND bzip2-1.0.6
+      license_declared: (LGPL-3.0-or-later OR GPL-2.0-or-later) AND LGPL-2.0-or-later
+        AND Furuseth AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND Apache-2.0 AND
+        GPL-1.0-or-later WITH Autoconf-exception-generic AND blessing AND LGPL-3.0-or-later
+        AND FSFUL AND BSD-3-Clause AND CC0-1.0 AND LGPL-2.1-only AND GPL-3.0-only
+        AND OLDAP-2.8 AND Zlib AND X11 AND MIT AND BSD-4.3RENO AND LGPL-2.1-or-later
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-2-Clause-Views
+        AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-or-later AND GPL-3.0-or-later
+        AND GPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Texinfo-exception AND CC-BY-SA-4.0 AND Spencer-86
+        AND LGPL-3.0-only AND FSFULLR AND bzip2-1.0.6
+      short_summary: OpenPGP standard implementation used for encrypted communication
+        and data storage.
+      supplier: 'Organization: Broadcom, Inc.'

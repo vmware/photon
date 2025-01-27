@@ -1,0 +1,20 @@
+sources:
+- archive: libpciaccess-0.16.tar.bz2
+  archive_sha512sum: 2f250048a270dfc0823d4bdd613aa272c58a80eaafd922850f56c4b6f7a45a263ed4cf521b52b49f04484ea44ebefb7407d079aa058318a5751ffb181e38fed1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The PCI access library. '
+      home_page: http://www.x.org/
+      license_concluded: GPL-3.0-or-later AND ISC AND MIT-open-group AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFAP AND GPL-2.0-or-later WITH Libtool-exception
+        AND X11 AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLRWD AND MIT
+      license_declared: GPL-3.0-or-later AND ISC AND MIT-open-group AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFAP AND GPL-2.0-or-later WITH Libtool-exception
+        AND X11 AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLRWD AND MIT
+      short_summary: PCI access library.
+      supplier: 'Organization: Broadcom, Inc.'

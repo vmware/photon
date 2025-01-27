@@ -1,0 +1,27 @@
+sources:
+- archive: cyrus-sasl-2.1.28.tar.gz
+  archive_sha512sum: dbf908f3d08d97741e7bbee1943f7ed6cce14b30b23a255b41e1a44c317926d1e17394f9a11f2ed4c453f76e2c690eb5adcad3cb04c4ca573c6092da05e1e567
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Cyrus SASL package contains a Simple Authentication
+        and Security Layer, a method for adding authentication support to connection-based
+        protocols. To use SASL, a protocol includes a command for identifying and
+        authenticating a user to a server and for optionally negotiating protection
+        of subsequent protocol interactions. If its use is negotiated, a security
+        layer is inserted between the protocol and the connection. '
+      home_page: https://github.com/cyrusimap/cyrus-sasl
+      license_concluded: BSD-2-Clause AND FSFAP AND HPND-sell-variant AND OLDAP-2.8
+        AND SSLeay-standalone AND ISC AND MIT AND BSD-4-Clause-UC AND Apache-2.0 AND
+        BSD-Systemics AND APSL-1.0 AND BSD-4-Clause AND APSL-1.1 AND APSL-2.0 AND
+        BSD-3-Clause AND RSA-MD AND HPND-export-US-modify AND OFL-1.1 AND MIT-CMU
+        AND Beerware AND BSD-3-Clause-Attribution AND BSD-Attribution-HPND-disclaimer
+        AND Rdisc AND HPND-export2-US AND APSL-1.2 AND GPL-1.0-or-later
+      license_declared: BSD-2-Clause AND FSFAP AND HPND-sell-variant AND OLDAP-2.8
+        AND SSLeay-standalone AND ISC AND MIT AND BSD-4-Clause-UC AND Apache-2.0 AND
+        BSD-Systemics AND APSL-1.0 AND BSD-4-Clause AND APSL-1.1 AND APSL-2.0 AND
+        BSD-3-Clause AND RSA-MD AND HPND-export-US-modify AND OFL-1.1 AND MIT-CMU
+        AND Beerware AND BSD-3-Clause-Attribution AND BSD-Attribution-HPND-disclaimer
+        AND Rdisc AND HPND-export2-US AND APSL-1.2 AND GPL-1.0-or-later
+      short_summary: Cyrus Simple Authentication Service Layer (SASL) library
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: net-tools-2.10.tar.gz
+  archive_sha512sum: d35bc3e233fa1aae007222516ce04a0c882632d6b3c55ca0ce33123225a6ccd7144b39059b96690b613a31164f7bab536ac85458d2d94596b672b018c5762821
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Net-tools package is a collection of programs for
+        controlling the network subsystem of the Linux kernel. '
+      home_page: https://github.com/ecki/net-tools
+      license_concluded: GPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later
+      short_summary: Networking Tools
+      supplier: 'Organization: Broadcom, Inc.'

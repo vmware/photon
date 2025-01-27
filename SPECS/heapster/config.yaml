@@ -1,0 +1,19 @@
+sources:
+- archive: heapster-1.5.4.tar.gz
+  archive_sha512sum: 9c5f1e11b224efe6aaa42aad0daecede2c22d86d692a9d008643d9731d78becce98c8332ebe8d17568a93abe1f56dabf868dcd7ebc1e7b48e1f6f6f8f3878152
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Heapster collects and interprets various signals like
+        compute resource usage, lifecycle events, etc, and exports cluster metrics
+        via REST endpoints. '
+      home_page: https://github.com/wavefrontHQ/cadvisor
+      license_concluded: CDDL-1.0 AND MIT AND ISC AND MPL-1.0 AND (MIT OR GPL-2.0-only)
+        AND Apache-2.0 AND LGPL-3.0-only AND JSON AND BSD-3-Clause AND BSD-2-Clause
+        AND LGPL-3.0-or-later WITH LGPL-3.0-linking-exception
+      license_declared: CDDL-1.0 AND MIT AND ISC AND MPL-1.0 AND (MIT OR GPL-2.0-only)
+        AND Apache-2.0 AND LGPL-3.0-only AND JSON AND BSD-3-Clause AND BSD-2-Clause
+        AND LGPL-3.0-or-later WITH LGPL-3.0-linking-exception
+      short_summary: Heapster enables Container Cluster Monitoring and Performance
+        Analysis.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,14 @@
+sources:
+- archive: mini_portile2-2.8.0.gem
+  archive_sha512sum: 74eb55b15329d31b65d363ce2fda26b849d708bf77481acdf851bdf6c97a8c3f9676d5bebf46e9e3eeb55e0e243c8e995eda6952f51f54b846762ab0f65aa7df
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Simplistic port-like solution for developers. It provides
+        a standard and simplified way to compile against dependency libraries without
+        messing up your system. '
+      home_page: https://rubygems.org/gems/mini_portile2/
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Simplistic port-like solution for developers
+      supplier: 'Organization: Broadcom, Inc.'

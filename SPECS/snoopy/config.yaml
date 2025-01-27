@@ -1,0 +1,15 @@
+sources:
+- archive: snoopy-2.5.1.tar.gz
+  archive_sha512sum: 2c0cde306ff58fe7f19c4df9aecab2c6936d71b77471bbb363ca660254b780a6874163988ebc6882b75d18319891bd1d5b5ef524f158f7645466c93e4dbe987f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Snoopy is a tiny library that logs all executed commands
+        (+ arguments) on your system. '
+      home_page: https://github.com/a2o/snoopy/archive/snoopy-2.5.1.tar.gz
+      license_concluded: GPL-2.0-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND
+        BSD-3-Clause
+      license_declared: GPL-2.0-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND
+        BSD-3-Clause
+      short_summary: snoopy is a tiny library that logs all executed commands
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,20 @@
+sources:
+- archive: libSM-1.2.4.tar.xz
+  archive_sha512sum: 7f1d41b7b6c5dd456c49ccad7740c3ba9791a2793fa50fd94814a4164ce2e20c4a0a0ad42a87708e494ed5c23f611be6d3ccd9ef1e9add6d46ac545e2b0f6f86
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 Session Management runtime library. '
+      home_page: http://www.x.org/
+      license_concluded: GPL-2.0-only AND FSFAP AND GPL-2.0-or-later AND MIT AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND MIT-open-group AND X11 AND FSFULLR AND FSFUL AND GPL-2.0-or-later WITH
+        Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLRWD
+      license_declared: GPL-2.0-only AND FSFAP AND GPL-2.0-or-later AND MIT AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND MIT-open-group AND X11 AND FSFULLR AND FSFUL AND GPL-2.0-or-later WITH
+        Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLRWD
+      short_summary: X11 SM runtime library.
+      supplier: 'Organization: Broadcom, Inc.'

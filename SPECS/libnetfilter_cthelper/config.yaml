@@ -1,0 +1,21 @@
+sources:
+- archive: libnetfilter_cthelper-1.0.1.tar.bz2
+  archive_sha512sum: f0591edd579aee92b62446e2b8fef6af9c404848c42c8da76850bb01aec3567442612f53cf8d3af6ba4d6d920487bff310a4e547bccf595478b1f96b4280eada
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libnetfilter_cthelper is the userspace library that provides
+        the programming interface to the user-space helper infrastructure available
+        since Linux kernel 3.6. With this library, you register, configure, enable
+        and deactivate user-space helpers. '
+      home_page: http://www.netfilter.org/projects/libnetfilter_cthelper/index.html
+      license_concluded: FSFULLR AND GPL-3.0-or-later AND X11 AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND GPL-2.0-only AND FSFULLRWD
+      license_declared: FSFULLR AND GPL-3.0-or-later AND X11 AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND GPL-2.0-only AND FSFULLRWD
+      short_summary: User-space infrastructure for connection tracking helpers
+      supplier: 'Organization: Broadcom, Inc.'

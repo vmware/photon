@@ -1,0 +1,17 @@
+sources:
+- archive: watchdog-5.16.tar.gz
+  archive_sha512sum: 1c9c921570ec7ddc3e4ff88b2029f1c3865277e547fb8970575df4b61fdf1f06f443f49ad09f11c29d913ca7d6ab05c5b19ec049ac218a8bcebd20b1bf5f0bbd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The watchdog program can be used as a powerful software
+        watchdog daemon or may be alternately used with a hardware watchdog device
+        such as the IPMI hardware watchdog driver interface to a resident Baseboard
+        Management Controller (BMC) '
+      home_page: http://sourceforge.net/projects/watchdog/
+      license_concluded: GPL-1.0-or-later AND GPL-2.0-only AND FSFULLR AND FSFUL AND
+        FSFULLRWD AND GPL-2.0-or-later AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_declared: GPL-1.0-or-later AND GPL-2.0-only AND FSFULLR AND FSFUL AND
+        FSFULLRWD AND GPL-2.0-or-later AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      short_summary: Software and/or Hardware watchdog daemon
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: jsonschema-4.16.0.tar.gz
+  archive_sha512sum: c84abc992f410e9d558e2ce06c7172e9e2d298cff469baf8a23b1ea5b4777e6addfa757c5cc62b2e28e257721ee55e04bec0852e5f525adfa87392cbf712828f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'jsonschema is JSON Schema validator currently based on
+        http://tools.ietf.org/html/draft-zyp-json-schema-03 '
+      home_page: https://python-jsonschema.readthedocs.io/en/stable
+      license_concluded: MIT AND Apache-2.0
+      license_declared: MIT AND Apache-2.0
+      short_summary: An implementation of JSON Schema validation for Python
+      supplier: 'Organization: Broadcom, Inc.'

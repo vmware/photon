@@ -1,0 +1,16 @@
+sources:
+- archive: hatch_fancy_pypi_readme-22.8.0.tar.gz
+  archive_sha512sum: e8f28a9020fc38bb03187e85688531c0fa895fcc56f3deb241bf19a71b2e88f2a354526eabe1a8e0bf7736f97883208eec2a7eac4199e08ddc40988643491632
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "hatch-fancy-pypi-readme is a Hatch metadata plugin for\
+        \ everyone who cares about the first impression of their project\u2019s PyPI\
+        \ landing page. It allows you to define your PyPI project description in terms\
+        \ of concatenated fragments that are based on static strings, files, and most\
+        \ importantly: parts of files defined using cut-off points or regular expressions. "
+      home_page: https://github.com/hynek/hatch-fancy-pypi-readme
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Fancy PyPI READMEs with Hatch
+      supplier: 'Organization: Broadcom, Inc.'

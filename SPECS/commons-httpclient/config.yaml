@@ -1,0 +1,29 @@
+sources:
+- archive: commons-httpclient-3.1-src.tar.gz
+  archive_sha512sum: e73ceeba3f34a35c30b24a3c6cb8dfc2102ff21079a5ff9270935908cb2f707d366c2f31a53fbdafa99673cc2b82e05470a2bf40d96767c72b2ab037c0f55490
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Hyper-Text Transfer Protocol (HTTP) is perhaps the
+        most significant protocol used on the Internet today. Web services, network-enabled
+        appliances and the growth of network computing continue to expand the role
+        of the HTTP protocol beyond user-driven web browsers, while increasing the
+        number of applications that require HTTP support. '
+      home_page: http://ant.apache.org
+      license_concluded: LGPL-2.1-or-later AND LGPL-2.0-or-later AND Apache-2.0
+      license_declared: LGPL-2.1-or-later AND LGPL-2.0-or-later AND Apache-2.0
+      short_summary: Apache commons-httpclient
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: commons-httpclient-buildrequires-jars-3.1.tar.gz
+  archive_sha512sum: 0d1e4afda7dcb3b261c97a345a67ce9ec9e5e20ddd501637b8edd4a2ba6b02e848e3dbfb2ec3457c8347d46e0ac1343313afaa8841d7308fb070b382f085ec19
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Contains three different jar files that are commons-logging-1.0.4.jar,
+        commons-codec-1.2.jar, junit-3.8.1.jar to build httpclient
+      home_page: https://repo.maven.apache.org/maven2/
+      license_concluded: Apache-1.1 AND Apache-2.0
+      license_declared: Apache-1.1 AND Apache-2.0
+      short_summary: Contains commons-logging, commons-codec, junit jar files to build
+        httpclient
+      supplier: 'Organization: Broadcom, Inc.'

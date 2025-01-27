@@ -1,0 +1,24 @@
+sources:
+- archive: rpm-4.18.2.tar.bz2
+  archive_sha512sum: 1544efef04190299ac988f52c4f6e58ba9ff8943fe1f3e1353fb2bf4d73248935dac65a8a73b32c5d2d96f6875ce25c5196a78ed645d9504465cf1e89e0a268a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'RPM package manager '
+      home_page: http://rpm.org
+      license_concluded: LGPL-2.1-or-later AND DOC AND GPL-2.0-only AND FSFULLRWD
+        AND (GPL-1.0-or-later OR LGPL-2.0-or-later) AND BSD-3-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND MIT AND GPL-3.0-only AND X11 AND LGPL-2.0-only
+        AND LGPL-2.0-or-later AND CC-BY-2.5 AND Apache-1.0 AND (GPL-2.0-only OR LGPL-2.0-only)
+        AND CC0-1.0 AND GPL-2.0-or-later AND FSFAP AND GPL-1.0-or-later AND (GPL-2.0-only
+        OR MIT) AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        FSFULLR AND GPL-2.0-or-later WITH Libtool-exception
+      license_declared: LGPL-2.1-or-later AND DOC AND GPL-2.0-only AND FSFULLRWD AND
+        (GPL-1.0-or-later OR LGPL-2.0-or-later) AND BSD-3-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND MIT AND GPL-3.0-only AND X11 AND LGPL-2.0-only
+        AND LGPL-2.0-or-later AND CC-BY-2.5 AND Apache-1.0 AND (GPL-2.0-only OR LGPL-2.0-only)
+        AND CC0-1.0 AND GPL-2.0-or-later AND FSFAP AND GPL-1.0-or-later AND (GPL-2.0-only
+        OR MIT) AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        FSFULLR AND GPL-2.0-or-later WITH Libtool-exception
+      short_summary: Package manager
+      supplier: 'Organization: Broadcom, Inc.'

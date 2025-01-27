@@ -1,0 +1,22 @@
+sources:
+- archive: libXfont2-2.0.3.tar.bz2
+  archive_sha512sum: 648b664e2aa58cbc7366a1b05873aa06bd4a38060f64085783043388244af8ceced77b29a22c3ac8b6d34cd226e093bbbcc785ea1748ea65720fe7ea05b4b44b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 Xfont runtime library. '
+      home_page: http://www.x.org
+      license_concluded: GPL-3.0-or-later AND HPND AND MIT-open-group AND HPND-sell-variant
+        AND FSFULLRWD AND X11 AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND GPL-2.0-or-later WITH Libtool-exception AND MIT AND GPL-3.0-or-later WITH
+        Libtool-exception AND FSFULLR AND BSD-4.3TAHOE AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-4-Clause-UC AND
+        BSD-2-Clause AND FSFAP
+      license_declared: GPL-3.0-or-later AND HPND AND MIT-open-group AND HPND-sell-variant
+        AND FSFULLRWD AND X11 AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND GPL-2.0-or-later WITH Libtool-exception AND MIT AND GPL-3.0-or-later WITH
+        Libtool-exception AND FSFULLR AND BSD-4.3TAHOE AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-4-Clause-UC AND
+        BSD-2-Clause AND FSFAP
+      short_summary: X11 Xfont2 runtime library.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,20 @@
+sources:
+- archive: man-pages-5.13.tar.gz
+  archive_sha512sum: 494522bd1572111bcf23bbdd12965d2b80a892a759b8c25722b5fa1d41166f8befd753d2c4f7162cc077964120144b5f516e7820aa493234a77cd79e42a64d04
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Man-pages package contains over 1,900 man pages. '
+      home_page: http://www.kernel.org/doc/man-pages
+      license_concluded: GPL-1.0-or-later AND Linux-man-pages-1-para AND (GPL-2.0-only
+        OR LGPL-2.0-only) AND Linux-man-pages-copyleft-var AND Spencer-94 AND (BSD-3-Clause
+        OR GPL-1.0-or-later) AND GPL-3.0-or-later AND BSD-2-Clause AND Latex2e AND
+        BSD-3-Clause AND BSD-4-Clause AND BSD-4.3TAHOE AND Linux-man-pages-copyleft
+        AND BSD-4-Clause-UC AND GPL-2.0-only AND GPL-2.0-or-later AND MIT
+      license_declared: GPL-1.0-or-later AND Linux-man-pages-1-para AND (GPL-2.0-only
+        OR LGPL-2.0-only) AND Linux-man-pages-copyleft-var AND Spencer-94 AND (BSD-3-Clause
+        OR GPL-1.0-or-later) AND GPL-3.0-or-later AND BSD-2-Clause AND Latex2e AND
+        BSD-3-Clause AND BSD-4-Clause AND BSD-4.3TAHOE AND Linux-man-pages-copyleft
+        AND BSD-4-Clause-UC AND GPL-2.0-only AND GPL-2.0-or-later AND MIT
+      short_summary: Man pages
+      supplier: 'Organization: Broadcom, Inc.'

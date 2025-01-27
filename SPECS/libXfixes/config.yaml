@@ -1,0 +1,17 @@
+sources:
+- archive: libXfixes-5.0.3.tar.bz2
+  archive_sha512sum: 72d5ee496e5c0520c95ef6bbb52deff1ee4c29792f11aa17aeb25c8ec5eb992ca502de040c77ad95835d1b1432f315b6cb7a3308b434847c28b9c2c6f9d1ac10
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 Xfixes extension. '
+      home_page: http://www.x.org
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        HPND-sell-variant AND GPL-3.0-or-later WITH Autoconf-exception-macro AND FSFULLRWD
+        AND FSFUL AND MIT-open-group AND FSFULLR AND X11 AND MIT AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND HPND-sell-variant
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND FSFULLRWD AND FSFUL
+        AND MIT-open-group AND FSFULLR AND X11 AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      short_summary: X11 XFIXES extension.
+      supplier: 'Organization: Broadcom, Inc.'

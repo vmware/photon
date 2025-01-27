@@ -1,0 +1,11 @@
+sources:
+- archive: yajl-2.1.0.tar.gz
+  archive_sha512sum: 9e786d080803df80ec03a9c2f447501e6e8e433a6baf636824bc1d50ecf4f5f80d7dfb1d47958aeb0a30fe459bd0ef033d41bc6a79e1dc6e6b5eade930b19b02
+  skip_validation: true
+  spdx:
+    package:
+      home_page: http://lloyd.github.com/yajl/
+      license_concluded: ISC
+      license_declared: ISC
+      short_summary: Yet Another JSON Library
+      supplier: 'Organization: Broadcom, Inc.'

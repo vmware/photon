@@ -1,0 +1,14 @@
+sources:
+- archive: pycryptodomex-3.20.0.tar.gz
+  archive_sha512sum: dd0f05338a209de26d93321d0709bdc9240c74768683c7decc572ee3a9a075bda95f527ae0d433e02a1674b6e12c4e7d35cc0ef721fb5e98fdb12878e047ebcd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cryptographic library for Python '
+      home_page: https://pypi.org/project/pycryptodomex
+      license_concluded: BSD-2-Clause AND DOC AND CC0-1.0 AND OFL-1.1 AND Python-2.0
+        AND MIT AND Unlicense AND Apache-2.0 AND BSD-3-Clause
+      license_declared: BSD-2-Clause AND DOC AND CC0-1.0 AND OFL-1.1 AND Python-2.0
+        AND MIT AND Unlicense AND Apache-2.0 AND BSD-3-Clause
+      short_summary: Cryptographic library for Python
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,25 @@
+sources:
+- archive: apparmor-3.1.2.tar.gz
+  archive_sha512sum: e4fa8e0985472c00d3b68044f4150659787cf15b384b901af32b5aba3f0b2839f33bfe0b0675bf8ea7a1f5727152756a276c75b1dec383a33b92b0a1b8615a11
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'AppArmor is a file and network mandatory access control
+        mechanism. AppArmor confines processes to the resources allowed by the systems
+        administrator and can constrain the scope of potential security vulnerabilities. '
+      home_page: https://launchpad.net/apparmor
+      license_concluded: (BSD-3-Clause OR GPL-1.0-or-later) AND MIT AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-only AND LGPL-2.0-only AND FSFULLRWD AND
+        GPL-1.0-or-later AND LGPL-2.1-or-later AND FSFULLR AND LGPL-2.1-only AND X11
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later AND FSFUL AND Apache-2.0 AND GPL-3.0-or-later WITH Libtool-exception
+      license_declared: (BSD-3-Clause OR GPL-1.0-or-later) AND MIT AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-only AND LGPL-2.0-only AND FSFULLRWD AND
+        GPL-1.0-or-later AND LGPL-2.1-or-later AND FSFULLR AND LGPL-2.1-only AND X11
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later AND FSFUL AND Apache-2.0 AND GPL-3.0-or-later WITH Libtool-exception
+      short_summary: AppArmor is an effective and easy-to-use Linux application security
+        system.
+      supplier: 'Organization: Broadcom, Inc.'

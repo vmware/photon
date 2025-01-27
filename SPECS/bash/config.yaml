@@ -1,0 +1,24 @@
+sources:
+- archive: bash-5.2.tar.gz
+  archive_sha512sum: 5647636223ba336bf33e0c65e516d8ebcf6932de8b44f37bc468eedb87579c628ad44213f78534beb10f47aebb9c6fa670cb0bed3b4e7717e5faf7e9a1ef81ae
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The package contains the Bourne-Again SHell '
+      home_page: http://www.gnu.org/software/bash
+      license_concluded: HPND AND BSD-4-Clause-UC AND GFDL-1.3-invariants-only AND
+        GFDL-1.3-or-later AND GPL-2.0-only AND Latex2e AND LGPL-2.1-or-later AND GPL-1.0-or-later
+        AND GPL-3.0-or-later AND GPL-3.0-only AND FSFUL AND GPL-3.0-or-later WITH
+        Texinfo-exception AND OFL-1.1 AND FSFULLRWD AND CC-BY-SA-4.0 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GFDL-1.3-only AND GPL-2.0-or-later AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND FSFAP AND GFDL-1.1-or-later
+        AND X11 AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_declared: HPND AND BSD-4-Clause-UC AND GFDL-1.3-invariants-only AND
+        GFDL-1.3-or-later AND GPL-2.0-only AND Latex2e AND LGPL-2.1-or-later AND GPL-1.0-or-later
+        AND GPL-3.0-or-later AND GPL-3.0-only AND FSFUL AND GPL-3.0-or-later WITH
+        Texinfo-exception AND OFL-1.1 AND FSFULLRWD AND CC-BY-SA-4.0 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GFDL-1.3-only AND GPL-2.0-or-later AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND FSFAP AND GFDL-1.1-or-later
+        AND X11 AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      short_summary: Bourne-Again SHell
+      supplier: 'Organization: Broadcom, Inc.'

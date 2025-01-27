@@ -1,0 +1,19 @@
+sources:
+- archive: popt-1.16.tar.gz
+  archive_sha512sum: bae2dd4e5d682ef023fdc77ae60c4aad01a3a576d45af9d78d22490c11e410e60edda37ede171920746d4ae0d5de3c060d15cecfd41ba75b727a811be828d694
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The popt package contains the popt libraries which are
+        used by some programs to parse command-line options. '
+      home_page: http://rpm5.org/files/popt
+      license_concluded: FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND GPL-1.0-or-later AND (GPL-1.0-or-later AND LGPL-2.0-or-later)
+        AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.0-or-later
+        AND FSFULLR
+      license_declared: FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND GPL-1.0-or-later AND (GPL-1.0-or-later AND LGPL-2.0-or-later)
+        AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.0-or-later
+        AND FSFULLR
+      short_summary: Programs to parse command-line options
+      supplier: 'Organization: Broadcom, Inc.'

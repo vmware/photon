@@ -1,0 +1,17 @@
+sources:
+- archive: snappy-1.1.9.tar.gz
+  archive_sha512sum: f1f8a90f5f7f23310423574b1d8c9acb84c66ea620f3999d1060395205e5760883476837aba02f0aa913af60819e34c625d8308c18a5d7a9c4e190f35968b024
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Snappy is a compression/decompression library. It does
+        not aim for maximum compression, or compatibility with any other compression
+        library; instead, it aims for very high speeds and reasonable compression.
+        For instance, compared to the fastest mode of zlib, Snappy is an order of
+        magnitude faster for most inputs, but the resulting compressed files are anywhere
+        from 20% to 100% bigger. '
+      home_page: http://code.google.com/p/snappy
+      license_concluded: BSD-3-Clause AND CC-BY-4.0 AND Apache-2.0 AND MIT AND CC-BY-3.0
+      license_declared: BSD-3-Clause AND CC-BY-4.0 AND Apache-2.0 AND MIT AND CC-BY-3.0
+      short_summary: Fast compression and decompression library
+      supplier: 'Organization: Broadcom, Inc.'

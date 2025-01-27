@@ -1,0 +1,15 @@
+sources:
+- archive: zope.event-4.5.0.tar.gz
+  archive_sha512sum: 1d82ae316fc75eebc03aadeb78890a19add35490720cd7bd073faeb9dc9ed97511ca4fdafc2228530798384d667c0aa88e3ef47b0be668128556a78bf82c42e5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'An event publishing system and a very simple event-dispatching
+        system on which more sophisticated event dispatching systems can be built.
+        For example, a type-based event dispatching system that builds on zope.event
+        can be found in zope.component. '
+      home_page: http://pypi.python.org/pypi/zope.event
+      license_concluded: ZPL-2.1
+      license_declared: ZPL-2.1
+      short_summary: Very basic event publishing system
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,27 @@
+sources:
+- archive: libtirpc-1.3.3.tar.bz2
+  archive_sha512sum: df0781a74ff9ded2d3c4f5eb7e05496b9f58eac8060c02c68331dc14c4a00304dcd19f46836f5756fe0d9d27095fd463d42dd696fcdff891516711b7d63deabe
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package contains SunLib''s implementation of transport-independent
+        RPC (TI-RPC) documentation.  This library forms a piece of the base of Open
+        Network Computing (ONC), and is derived directly from the Solaris 2.3 source.  TI-RPC
+        is an enhanced version of TS-RPC that requires the UNIX System V Transport
+        Layer Interface (TLI) or an equivalent X/Open Transport Interface (XTI).  TI-RPC
+        is on-the-wire compatible with the TS-RPC, which is supported by almost 70
+        vendors on all major operating systems.  TS-RPC source code (RPCSRC 4.0) remains
+        available from several internet sites. '
+      home_page: http://nfsv4.bullopensource.org/
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND X11 AND
+        FSFULLR AND BSD-3-Clause AND GPL-2.0-only AND BSD-2-Clause AND FSFUL AND GPL-2.0-or-later
+        AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND LGPL-2.1-or-later
+        AND BSD-4-Clause AND GPL-2.0-or-later WITH Libtool-exception
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND X11 AND FSFULLR
+        AND BSD-3-Clause AND GPL-2.0-only AND BSD-2-Clause AND FSFUL AND GPL-2.0-or-later
+        AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND LGPL-2.1-or-later
+        AND BSD-4-Clause AND GPL-2.0-or-later WITH Libtool-exception
+      short_summary: Libraries for Transport Independent RPC
+      supplier: 'Organization: Broadcom, Inc.'

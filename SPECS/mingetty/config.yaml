@@ -1,0 +1,13 @@
+sources:
+- archive: mingetty-1.08.tar.gz
+  archive_sha512sum: d2c050a412af81d4635cbaa5610dfa2cf2addce0d3116fa53f73eb15cd6b53d476165a0509ae630a151de07a5bdc82cba1b5da0ab78d0313b200adece3c8872b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The mingetty program is a lightweight, minimalist getty
+        program for use only on virtual terminals '
+      home_page: http://sourceforge.net/projects/mingetty
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only
+      short_summary: A minimal getty program for virtual terminals
+      supplier: 'Organization: Broadcom, Inc.'

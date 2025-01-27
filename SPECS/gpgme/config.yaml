@@ -1,0 +1,32 @@
+sources:
+- archive: gpgme-1.18.0.tar.bz2
+  archive_sha512sum: c0cb0b337d017793a15dd477a7f5eaef24587fcda3d67676bf746bb342398d04792c51abe3c26ae496e799c769ce667d4196d91d86e8a690d02c6718c8f6b4ac
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The GPGME package is a C language library that allows
+        to add support for cryptography to a program. It is designed to make access
+        to public key crypto engines like GnuPG or GpgSM easier for applications.
+        GPGME provides a high-level crypto API for encryption, decryption, signing,
+        signature verification and key management. '
+      home_page: https://www.gnupg.org/(it)/related_software/gpgme/index.html
+      license_concluded: GPL-2.0-or-later AND FSFAP AND GPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND GPL-1.0-or-later AND LGPL-2.1-only AND X11
+        AND FSFUL AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND LGPL-2.0-only AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND LGPL-3.0-or-later
+        AND GPL-3.0-only AND FSFULLR AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND FSFULLRWD AND LGPL-2.1-only
+        WITH Qwt-exception-1.0 AND MIT AND GPL-3.0-or-later WITH Texinfo-exception
+        AND GPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_declared: GPL-2.0-or-later AND FSFAP AND GPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND GPL-1.0-or-later AND LGPL-2.1-only AND X11
+        AND FSFUL AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND LGPL-2.0-only AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND LGPL-3.0-or-later
+        AND GPL-3.0-only AND FSFULLR AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND FSFULLRWD AND LGPL-2.1-only
+        WITH Qwt-exception-1.0 AND MIT AND GPL-3.0-or-later WITH Texinfo-exception
+        AND GPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      short_summary: High-Level Crypto API
+      supplier: 'Organization: Broadcom, Inc.'

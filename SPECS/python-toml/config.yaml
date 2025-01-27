@@ -1,0 +1,12 @@
+sources:
+- archive: toml-0.10.2.tar.gz
+  archive_sha512sum: ede2c8fed610a3827dba828f6e7ab7a8dbd5745e8ef7c0cd955219afdc83b9caea714deee09e853627f05ad1c525dc60426a6e9e16f58758aa028cb4d3db4b39
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python Library for Tom''s Obvious, Minimal Language '
+      home_page: https://pypi.python.org/pypi/
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Python Library for Tom's Obvious, Minimal Language
+      supplier: 'Organization: Broadcom, Inc.'

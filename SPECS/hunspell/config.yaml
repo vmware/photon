@@ -1,0 +1,32 @@
+sources:
+- archive: dictionaries-1.0.tar.gz
+  archive_sha512sum: c91251de5be9c9673fe54649ef431051f38c60b21549af9f343e895cc1275ab2c4e3c3f56943b5a26c18a6c65d2c483ca24fb620908eb6443ba6890a06939aea
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Collection of normalized and installable hunspell dictionaries.
+      home_page: https://github.com/wooorm/dictionaries.git
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Collection of normalized and installable hunspell dictionaries.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: hunspell-1.7.2.tar.gz
+  archive_sha512sum: d007edc8cb7ff95048361418b088bb062962973247c940aa826c9859a5ef90a9734100bffe7c7ac9a774f2e233605e814efb9e7fd3fc8c4ef4b978e9ec990cba
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Hunspell is a free spell checker and morphological analyzer
+        library and command-line tool, licensed under LGPL/GPL/MPL tri-license. '
+      home_page: https://github.com/hunspell/hunspell
+      license_concluded: (MPL-1.0 OR GPL-2.0-or-later OR LGPL-2.0-or-later) AND LGPL-2.1-only
+        AND BSD-3-Clause AND GPL-1.0-or-later AND CC-BY-SA-3.0 AND GPL-2.0-or-later
+        AND LGPL-2.0-or-later AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
+        AND (MPL-2.0 OR GPL-2.0-only) AND BSD-2-Clause AND (MPL-2.0 OR GPL-2.0-only)
+        AND FSFULLR AND FSFAP AND MPL-1.1 AND GPL-2.0-only
+      license_declared: (MPL-1.0 OR GPL-2.0-or-later OR LGPL-2.0-or-later) AND LGPL-2.1-only
+        AND BSD-3-Clause AND GPL-1.0-or-later AND CC-BY-SA-3.0 AND GPL-2.0-or-later
+        AND LGPL-2.0-or-later AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
+        AND (MPL-2.0 OR GPL-2.0-only) AND BSD-2-Clause AND (MPL-2.0 OR GPL-2.0-only)
+        AND FSFULLR AND FSFAP AND MPL-1.1 AND GPL-2.0-only
+      short_summary: A spell checker and morphological analyzer library
+      supplier: 'Organization: Broadcom, Inc.'

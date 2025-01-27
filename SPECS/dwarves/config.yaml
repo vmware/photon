@@ -1,0 +1,38 @@
+sources:
+- archive: dwarves-1.24.tar.xz
+  archive_sha512sum: 3cdca183cf68ec46fd9a0301ae4a8a30b23a8139c65ffba64ae11f85f9e942f7341dca6f88a4a3b49f32bfd880927193a80fa011726e4a33d3e5a1a146326c06
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'dwarves is a set of tools that use the debugging information
+        inserted in ELF binaries by compilers such as GCC, used by well known debuggers
+        such as GDB, and more recent ones such as systemtap.  Utilities in the dwarves
+        suite include pahole, that can be used to find alignment holes in structs
+        and classes in languages such as C, C++, but not limited to these.  It also
+        extracts other information such as CPU cacheline alignment, helping pack those
+        structures to achieve more cache hits.  These tools can also be used to encode
+        and read the BTF type information format used with the Linux kernel bpf syscall,
+        using ''pahole -J'' and ''pahole -F btf''.  A diff like tool, codiff can be
+        used to compare the effects changes in source code generate on the resulting
+        binaries.  Another tool is pfunct, that can be used to find all sorts of information
+        about functions, inlines, decisions made by the compiler about inlining, etc.  One
+        example of pfunct usage is in the fullcircle tool, a shell that drivers pfunct
+        to generate compileable code out of a .o file and then build it using gcc,
+        with the same compiler flags, and then use codiff to make sure the original
+        .o file and the new one generated from debug info produces the same debug
+        info.  Pahole also can be used to use all this type information to pretty
+        print raw data according to command line directions.  Headers can have its
+        data format described from debugging info and offsets from it can be used
+        to further format a number of records.  The btfdiff utility compares the output
+        of pahole from BTF and DWARF to make sure they produce the same results. '
+      home_page: https://github.com/acmel/dwarves
+      license_concluded: (BSD-2-Clause OR LGPL-2.1-only) AND (LGPL-2.1-only OR BSD-2-Clause)
+        AND LGPL-2.1-or-later AND GPL-2.0-or-later AND GPL-2.0-only AND (BSD-3-Clause
+        OR GPL-1.0-or-later) AND LGPL-2.1-only AND BSD-2-Clause AND GPL-2.0-only WITH
+        Linux-syscall-note
+      license_declared: (BSD-2-Clause OR LGPL-2.1-only) AND (LGPL-2.1-only OR BSD-2-Clause)
+        AND LGPL-2.1-or-later AND GPL-2.0-or-later AND GPL-2.0-only AND (BSD-3-Clause
+        OR GPL-1.0-or-later) AND LGPL-2.1-only AND BSD-2-Clause AND GPL-2.0-only WITH
+        Linux-syscall-note
+      short_summary: Debugging Information Manipulation Tools (pahole & friends)
+      supplier: 'Organization: Broadcom, Inc.'

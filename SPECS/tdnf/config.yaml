@@ -1,0 +1,12 @@
+sources:
+- archive: tdnf-3.5.10.tar.gz
+  archive_sha512sum: d565af6a880b265c5fb030b6b90d429694af0d0466e2f22fc936185b672b10c7ced085bf19f66bbcc82ecd57eb6d8f256c3833afc02720222f06b6a105639b25
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: tdnf - tiny dandified yum
+      home_page: https://github.com/vmware/tdnf
+      license_concluded: GPL-2.0-only AND BSD-3-Clause AND LGPL-2.1-or-later AND LGPL-2.1-only
+      license_declared: GPL-2.0-only AND BSD-3-Clause AND LGPL-2.1-or-later AND LGPL-2.1-only
+      short_summary: tdnf - tiny dandified yum
+      supplier: 'Organization: Broadcom, Inc.'

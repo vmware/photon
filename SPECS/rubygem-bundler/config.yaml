@@ -1,0 +1,13 @@
+sources:
+- archive: bundler-2.3.24.gem
+  archive_sha512sum: 1d59bfa0bb8b748c8f4a7c30eb1603f05033bd59ca66496442224c563a95d8d8d2173e2f005a090a6b22e1a25664f20a3cf45b3d12ff7791712e327f194f242c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Bundler manages an application''s dependencies through
+        its entire life across many machines, systematically and repeatably. '
+      home_page: https://rubygems.org/gems/bundler/versions/2.3.24
+      license_concluded: Ruby AND MIT AND BSD-2-Clause
+      license_declared: Ruby AND MIT AND BSD-2-Clause
+      short_summary: manages an application's dependencies
+      supplier: 'Organization: Broadcom, Inc.'

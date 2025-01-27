@@ -1,0 +1,13 @@
+sources:
+- archive: haproxy-dataplaneapi-2.7.1.tar.gz
+  archive_sha512sum: f534e6a6622e09cfe505201317f9a6237df6bf347758b844c92266fb9606d493fc43bdb11f6bd16e63372caf1fb3642c6c944805a5c1e7e5791433b64a73dacc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'HAProxy Data Plane API is a sidecar process that runs
+        next to HAProxy and provides API endpoints for managing HAProxy. '
+      home_page: https://github.com/haproxytech/dataplaneapi
+      license_concluded: CC0-1.0 AND Apache-2.0
+      license_declared: CC0-1.0 AND Apache-2.0
+      short_summary: A sidecar process for managing HAProxy.
+      supplier: 'Organization: Broadcom, Inc.'

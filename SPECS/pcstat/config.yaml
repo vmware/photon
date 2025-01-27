@@ -1,0 +1,27 @@
+sources:
+- archive: golang-sys-08-02-2017.zip
+  archive_sha512sum: 0c40f2acd0466637b5b01f75eed593939075fc742c8991b4ff884076852a5c02eb6ed0a162be8539ff73eba665ae04fb011efe739c4bda999f5365241945015a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: supplemental Go packages for low-level interactions with
+        the operating system
+      home_page: https://pkg.go.dev/golang.org/x/sys
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: supplemental Go packages for low-level interactions with the
+        operating system
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: pcstat-1.zip
+  archive_sha512sum: 7f62d16447fe5f8e9c126fb4f0e00df697bb253ea0213ece2be2ce0b919ccaa175e009987a4f01252225c35b05c55685da4db684d68b7bd4501fe781163d01d3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A tool that inspect which pages of a file or files are
+        being cached by the Linux kernel '
+      home_page: https://github.com/tobert/pcstat
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: A tool that inspect which pages of a file or files are being
+        cached by the Linux kernel
+      supplier: 'Organization: Broadcom, Inc.'

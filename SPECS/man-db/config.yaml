@@ -1,0 +1,25 @@
+sources:
+- archive: man-db-2.11.1.tar.xz
+  archive_sha512sum: 249d65d01d83feac2503bfc1fba6d018ea0f7485c1112f1bfb4849ef7fbc3c1a50b97ab0844a7792d83bb1084a89abb4fa309ce1bc2bdf1183fe35b9e4f06263
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Man-DB package contains programs for finding and
+        viewing man pages. '
+      home_page: http://www.nongnu.org/man-db
+      license_concluded: GPL-3.0-or-later AND FSFAP AND GPL-1.0-or-later AND GPL-2.0-or-later
+        WITH Libtool-exception AND LGPL-2.0-only AND BSD-3-Clause AND X11 AND GPL-2.0-only
+        AND LGPL-2.1-only AND GPL-2.0-or-later AND FSFULLRWD AND LGPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND FSFULLR AND LGPL-2.1-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-3.0-or-later AND Latex2e-translated-notice
+        AND FSFUL AND GPL-3.0-only AND MIT
+      license_declared: GPL-3.0-or-later AND FSFAP AND GPL-1.0-or-later AND GPL-2.0-or-later
+        WITH Libtool-exception AND LGPL-2.0-only AND BSD-3-Clause AND X11 AND GPL-2.0-only
+        AND LGPL-2.1-only AND GPL-2.0-or-later AND FSFULLRWD AND LGPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND FSFULLR AND LGPL-2.1-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-3.0-or-later AND Latex2e-translated-notice
+        AND FSFUL AND GPL-3.0-only AND MIT
+      short_summary: Programs for finding and viewing man pages
+      supplier: 'Organization: Broadcom, Inc.'

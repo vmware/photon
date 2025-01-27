@@ -1,0 +1,13 @@
+sources:
+- archive: bsd-finger-0.17.tar.gz
+  archive_sha512sum: 07570a9a5797579273938ef728f222f483c733e78eb6acb00e2bce9ff9df29aa85ed715872032701c8f67fcbc7cf5501f12dc2b8234c30df7d25f50cc38359b0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Finger is a utility that allows users to see information
+        about system users (login name, home directory, name, and more) on local and
+        remote systems. '
+      license_concluded: BSD-4-Clause-UC
+      license_declared: BSD-4-Clause-UC
+      short_summary: The finger client
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,44 @@
+sources:
+- archive: dnsname-1.3.1.tar.gz
+  archive_sha512sum: ebebbe62394b981e86cd21fa8b92639a6d67e007a18c576ffdbac8067084a4cffdc9d077213bf7c9ee1e2731c7d69e4d4c02465f2340556c8723b6e302238aad
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: name resolution for containers.
+      home_page: https://github.com/containers/dnsname
+      license_concluded: MIT AND BSD-3-Clause AND BSD-2-Clause AND Apache-2.0
+      license_declared: MIT AND BSD-3-Clause AND BSD-2-Clause AND Apache-2.0
+      short_summary: name resolution for containers.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: gvisor-tap-vsock-0.7.3.tar.gz
+  archive_sha512sum: cf49a555192c869751009bfc14ef192067851ef79197307c84bf3c96a3abc3a8954fdb5d1c2490942920cc663b200fd09cf2330d976e50376c39d5da588cf471
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: A new network stack based on gVisor.
+      home_page: https://github.com/containers/gvisor-tap-vsock
+      license_concluded: Unlicense AND CC-BY-3.0 AND Apache-2.0 AND CC-BY-SA-4.0 AND
+        GPL-1.0-or-later AND GPL-3.0-or-later AND MPL-2.0 AND GPL-3.0-only AND ISC
+        AND (MIT OR Unlicense) AND MIT AND BSD-2-Clause AND BSD-3-Clause
+      license_declared: Unlicense AND CC-BY-3.0 AND Apache-2.0 AND CC-BY-SA-4.0 AND
+        GPL-1.0-or-later AND GPL-3.0-or-later AND MPL-2.0 AND GPL-3.0-only AND ISC
+        AND (MIT OR Unlicense) AND MIT AND BSD-2-Clause AND BSD-3-Clause
+      short_summary: A new network stack based on gVisor.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: podman-4.5.1.tar.gz
+  archive_sha512sum: c09af81063dba7125d06bb982ae6db5c1933bb32273f194f90875b5c63b916f94d0daacf09212139ae8dc5f8cfa224e7fd1d83e1a22df19be2adde84583ee049
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: '%{name} is a daemonless, open source, Linux native tool
+        designed to make it easy to find, run, build, share and deploy applications
+        using OCI Containers and Container Images. '
+      home_page: https://github.com/containers/podman
+      license_concluded: MIT AND MPL-2.0 AND Unlicense AND BSD-2-Clause AND LGPL-2.1-or-later
+        AND blessing AND CC-BY-SA-4.0 AND Apache-2.0 AND GPL-1.0-or-later AND ISC
+        AND BSD-3-Clause AND MS-RL
+      license_declared: MIT AND MPL-2.0 AND Unlicense AND BSD-2-Clause AND LGPL-2.1-or-later
+        AND blessing AND CC-BY-SA-4.0 AND Apache-2.0 AND GPL-1.0-or-later AND ISC
+        AND BSD-3-Clause AND MS-RL
+      short_summary: A tool to manage Pods, Containers and Container Images
+      supplier: 'Organization: Broadcom, Inc.'

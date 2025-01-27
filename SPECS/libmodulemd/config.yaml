@@ -1,0 +1,12 @@
+sources:
+- archive: libmodulemd-2.14.0.tar.gz
+  archive_sha512sum: 8c48995aa6a9c6370a07a6887c7237614c502e335173dcba004037ffa41c8fbca8bdf36dfd59ba7d1d125dff6c8722ddc924e14173e3995e147c01a39c6f0ed1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'C Library for manipulating module metadata files '
+      home_page: https://github.com/fedora-modularity/libmodulemd
+      license_concluded: GPL-3.0-only AND GPL-2.0-or-later AND MIT AND Apache-2.0
+      license_declared: GPL-3.0-only AND GPL-2.0-or-later AND MIT AND Apache-2.0
+      short_summary: Module manipulating metadata files
+      supplier: 'Organization: Broadcom, Inc.'

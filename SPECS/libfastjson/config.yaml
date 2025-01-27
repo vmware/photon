@@ -1,0 +1,16 @@
+sources:
+- archive: libfastjson-0.99.9.tar.gz
+  archive_sha512sum: d32d949465dcc94d04be6cd0e1cf78e5653bbbef7e2bd148079a5f4d69102febabd1fe8af668e344b82c62a918d1cc6c9f39a203d65cb1d81409a6d400a63d6a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'LIBFASTJSON is fast json library for C It offers a small
+        library with essential json handling functions, suffieciently good json support
+        and very fast in processing. '
+      home_page: https://github.com/rsyslog/libfastjson
+      license_concluded: FSFAP AND Apache-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND MIT
+      license_declared: FSFAP AND Apache-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND MIT
+      short_summary: A fast json library for C
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,14 @@
+sources:
+- archive: perl-URI-5.17.tar.gz
+  archive_sha512sum: 52171e16137bfaa77ab31007245a561614c5c42336473022ebbe370b395d3052d3de80da0b42754ca2e0b09f47520ef96afdbdb72fe5c25cab87441eda03ec12
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module implements the URI class. Objects of this
+        class represent "Uniform Resource Identifier references" as specified in RFC
+        2396 (andupdated by RFC 2732). '
+      home_page: https://metacpan.org/release/URI
+      license_concluded: GPL-1.0-only AND Apache-2.0 AND Artistic-2.0 AND Artistic-1.0
+      license_declared: GPL-1.0-only AND Apache-2.0 AND Artistic-2.0 AND Artistic-1.0
+      short_summary: A Perl module implementing URI parsing and manipulation
+      supplier: 'Organization: Broadcom, Inc.'

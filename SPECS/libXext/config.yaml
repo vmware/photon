@@ -1,0 +1,22 @@
+sources:
+- archive: libXext-1.3.4.tar.bz2
+  archive_sha512sum: 09146397d95f80c04701be1cc0a9c580ab5a085842ac31d17dfb6d4c2e42b4253b89cba695e54444e520be359883a76ffd02f42484c9e2ba2c33a5a40c29df4a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Core X11 protocol client library. '
+      home_page: http://www.x.org/
+      license_concluded: X11 AND HPND AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND MIT AND SGI-B-2.0 AND GPL-3.0-or-later WITH Libtool-exception AND HPND-sell-variant
+        AND HPND-doc-sell AND HPND-doc AND MIT-open-group AND GPL-3.0-or-later AND
+        FSFULLRWD AND FSFUL AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLR AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic
+      license_declared: X11 AND HPND AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND MIT AND SGI-B-2.0 AND GPL-3.0-or-later WITH Libtool-exception AND HPND-sell-variant
+        AND HPND-doc-sell AND HPND-doc AND MIT-open-group AND GPL-3.0-or-later AND
+        FSFULLRWD AND FSFUL AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLR AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic
+      short_summary: library for common extensions to the X11 protocol.
+      supplier: 'Organization: Broadcom, Inc.'

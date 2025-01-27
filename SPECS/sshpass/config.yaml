@@ -1,0 +1,18 @@
+sources:
+- archive: sshpass-1.10.tar.gz
+  archive_sha512sum: d0fbceb956baee79803fec8bd9a2e0d1e342cbc90fb8bb4baa5a01914f870393f43bd07b62aa1da208318b4971005b9bbccf0e926c590124de11a272169db81d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'sshpass is a utility designed for running ssh using the
+        mode referred to as "keyboard-interactive" password authentication, but in
+        non-interactive mode. '
+      home_page: http://sourceforge.net/projects/sshpass/
+      license_concluded: FSFULLRWD AND GPL-3.0-only AND X11 AND FSFUL AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFULLR AND FSFAP AND GPL-2.0-only
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_declared: FSFULLRWD AND GPL-3.0-only AND X11 AND FSFUL AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFULLR AND FSFAP AND GPL-2.0-only
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      short_summary: Noninteractive ssh password provider
+      supplier: 'Organization: Broadcom, Inc.'

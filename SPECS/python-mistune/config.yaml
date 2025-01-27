@@ -1,0 +1,13 @@
+sources:
+- archive: mistune-2.0.5.tar.gz
+  archive_sha512sum: 109447977a441ebbedfca2abbe62415139d94c48ae56c3d8cae04df3f93ccd1e8333b3dbb8bf61a2096b903df6c3aab2fadd0893fb82815416f17555465e98c7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The fastest markdown parser in pure Python with renderer
+        features, inspired by marked. '
+      home_page: https://pypi.python.org/pypi/mistune
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: The fastest markdown parser in pure Python.
+      supplier: 'Organization: Broadcom, Inc.'

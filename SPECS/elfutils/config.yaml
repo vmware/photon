@@ -1,0 +1,27 @@
+sources:
+- archive: elfutils-0.189.tar.bz2
+  archive_sha512sum: 93a877e34db93e5498581d0ab2d702b08c0d87e4cafd9cec9d6636dfa85a168095c305c11583a5b0fb79374dd93bc8d0e9ce6016e6c172764bcea12861605b71
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Elfutils is a collection of utilities, including ld (a
+        linker), nm (for listing symbols from object files), size (for listing the
+        section sizes of an object or archive file), strip (for discarding symbols),
+        readelf (to see the raw ELF file structures), and elflint (to check for well-formed
+        ELF files).  Also included are numerous helper libraries which implement DWARF,
+        ELF, and machine-specific ELF handling. '
+      home_page: https://sourceware.org/elfutils
+      license_concluded: (LGPL-3.0-or-later OR GPL-2.0-or-later) AND X11 AND GPL-1.0-or-later
+        AND GPL-2.0-or-later AND GPL-3.0-or-later AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND LGPL-2.1-or-later AND FSFUL AND GPL-2.0-only
+        AND FSFULLR AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GFDL-1.3-only
+        AND BSD-2-Clause AND LGPL-3.0-only AND GPL-3.0-only AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND FSFAP AND LGPL-3.0-or-later
+      license_declared: (LGPL-3.0-or-later OR GPL-2.0-or-later) AND X11 AND GPL-1.0-or-later
+        AND GPL-2.0-or-later AND GPL-3.0-or-later AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND LGPL-2.1-or-later AND FSFUL AND GPL-2.0-only
+        AND FSFULLR AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GFDL-1.3-only
+        AND BSD-2-Clause AND LGPL-3.0-only AND GPL-3.0-only AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND FSFAP AND LGPL-3.0-or-later
+      short_summary: A collection of utilities and DSOs to handle compiled objects
+      supplier: 'Organization: Broadcom, Inc.'

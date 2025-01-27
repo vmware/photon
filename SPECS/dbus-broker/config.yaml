@@ -1,0 +1,16 @@
+sources:
+- archive: dbus-broker-33.tar.xz
+  archive_sha512sum: 776684a5d19a6c25fc46dff19821014a32d967f8132385b86c5281f2d69192dce64b3ad92ae6a158d1d64753e89d918385a1a31f32811f54060504113f065baa
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'dbus-broker is an implementation of a message bus as
+        defined by the D-Bus specification. Its aim is to provide high performance
+        and reliability, while keeping compatibility to the D-Bus reference implementation.
+        It is exclusively written for Linux systems, and makes use of many modern
+        features provided by recent Linux kernel releases. '
+      home_page: https://github.com/bus1/dbus-broker
+      license_concluded: LGPL-2.0-or-later AND Apache-2.0 AND LGPL-2.0-only AND LGPL-2.1-or-later
+      license_declared: LGPL-2.0-or-later AND Apache-2.0 AND LGPL-2.0-only AND LGPL-2.1-or-later
+      short_summary: Linux D-Bus Message Broker
+      supplier: 'Organization: Broadcom, Inc.'

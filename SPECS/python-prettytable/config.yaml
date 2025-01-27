@@ -1,0 +1,18 @@
+sources:
+- archive: prettytable-3.3.0.tar.gz
+  archive_sha512sum: e190717e2ea89e8faddc7015fd5118e0d93ac5f5318641ce5960b22b4ea3740ff12c4d15812b33655252f258c96f9e848f554d1e678d39761c28025ba7772609
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'PrettyTable is a simple Python library designed to make
+        it quick and easy to represent tabular data in visually appealing ASCII tables.
+        It was inspired by the ASCII tables used in the PostgreSQL shell psql. PrettyTable
+        allows for selection of which columns are to be printed, independent alignment
+        of columns (left or right justified or centred) and printing of "sub-tables"
+        by specifying a row range. '
+      home_page: http://code.google.com/p/prettytable
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Library for displaying tabular data in a visually appealing ASCII
+        format
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: googletest-1.12.1.tar.gz
+  archive_sha512sum: a9104dc6c53747e36e7dd7bb93dfce51a558bd31b487a9ef08def095518e1296da140e0db263e0644d9055dbd903c0cb69380cb2322941dbfb04780ef247df9c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Google''s C++ test framework that combines the GoogleTest
+        and GoogleMock projects. This package provides gtest shared libraries. '
+      home_page: https://github.com/google/googletest
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Google's C++ gtest framework
+      supplier: 'Organization: Broadcom, Inc.'

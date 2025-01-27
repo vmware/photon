@@ -1,0 +1,13 @@
+sources:
+- archive: LMDB_0.9.29.tar.gz
+  archive_sha512sum: a29e40b1a2f2ed542fb59b6dd92cf7f5f9ac603f74b1d2a66d143b65edf0324a03dc4a0a35657ba0992b00a3e9764e33af0dcc5ae8ae91c40c90c3b0581dade3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'An ultra-fast, ultra-compact, crash-proof key-value embedded
+        data store. '
+      home_page: https://symas.com/lmdb
+      license_concluded: OLDAP-2.8 AND ISC
+      license_declared: OLDAP-2.8 AND ISC
+      short_summary: Lightning memory-mapped database
+      supplier: 'Organization: Broadcom, Inc.'

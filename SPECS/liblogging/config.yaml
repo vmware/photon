@@ -1,0 +1,23 @@
+sources:
+- archive: liblogging-1.0.6.tar.gz
+  archive_sha512sum: 09c90a93b2d32afa44be5a800705a64690810a56d21bed1455cb70680b01fecd4efef3881a43f98ebcafa996b6046ed8e5af935eacc12014f330a7fd23674964
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'liblogging (the upstream project) is a collection of
+        several components. Namely: stdlog, journalemu, rfc3195. The stdlog component
+        of liblogging can be viewed as an enhanced version of the syslog(3) API. It
+        retains the easy semantics, but makes the API more sophisticated "behind the
+        scenes" with better support for multiple threads and flexibility for different
+        log destinations (e.g. syslog and systemd journal). '
+      home_page: http://www.liblogging.org
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND X11 AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Libtool-exception AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFAP AND FSFULLR AND BSD-2-Clause AND FSFULLRWD
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND X11 AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Libtool-exception AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFAP AND FSFULLR AND BSD-2-Clause AND FSFULLRWD
+      short_summary: Logging Libraries
+      supplier: 'Organization: Broadcom, Inc.'

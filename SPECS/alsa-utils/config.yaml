@@ -1,0 +1,21 @@
+sources:
+- archive: alsa-utils-1.2.8.tar.bz2
+  archive_sha512sum: 882e6f67467596ed273bf554fcce87d8ef287806bbdabd6c103de4980981f9e2102fb3800c6e8628ee8e86ffb165c1c92f9370c8145f28a6cb7cca563942330b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The ALSA Utilities package contains various utilities
+        which are useful for controlling your sound card. '
+      home_page: http://alsa-project.org
+      license_concluded: ISC AND LGPL-2.1-or-later AND GPL-2.0-or-later AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-only AND
+        FSFULLRWD AND BSD-3-Clause AND FSFAP AND GPL-3.0-or-later AND FSFULLR
+      license_declared: ISC AND LGPL-2.1-or-later AND GPL-2.0-or-later AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-only AND
+        FSFULLRWD AND BSD-3-Clause AND FSFAP AND GPL-3.0-or-later AND FSFULLR
+      short_summary: ALSA Utilities
+      supplier: 'Organization: Broadcom, Inc.'

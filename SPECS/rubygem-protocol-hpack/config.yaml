@@ -1,0 +1,13 @@
+sources:
+- archive: protocol-hpack-1.4.2.gem
+  archive_sha512sum: bbe3c70503214aea46d48113e225c5995128944201ee6cc567dab348aa2bed5da5b4faccf7b3114f8142ae1a9b73a31bdc2bde2947761c7366bf0357dac1282e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides a compressor and decompressor for HTTP 2.0 headers,
+        HPACK, as defined by RFC7541. '
+      home_page: https://rubygems.org/gems/protocol-hpack/versions/1.4.2
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A compresssor and decompressor for HTTP 2.0 HPACK.
+      supplier: 'Organization: Broadcom, Inc.'

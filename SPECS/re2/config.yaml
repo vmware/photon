@@ -1,0 +1,21 @@
+sources:
+- archive: re2-2022-06-01.tar.gz
+  archive_sha512sum: f3d5f2a3aa5eda74bc8f434d7b000eed8e107c894307a889466a4cb16a15b352a0332e10d80ed603c9e2e38bbcbdf11f15b6953cbdf461cc9fb0560e89a8ceb8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'RE2 is a C++ library providing a fast, safe, thread-friendly
+        alternative to backtracking regular expression engines like those used in
+        PCRE, Perl, and Python.  Backtracking engines are typically full of features
+        and convenient syntactic sugar but can be forced into taking exponential amounts
+        of time on even small inputs.  In contrast, RE2 uses automata theory to guarantee
+        that regular expression searches run in time linear in the size of the input,
+        at the expense of some missing features (e.g back references and generalized
+        assertions). '
+      home_page: http://github.com/google/re2
+      license_concluded: Apache-2.0 WITH LLVM-exception AND Apache-2.0 AND BSD-3-Clause
+        AND dtoa
+      license_declared: Apache-2.0 WITH LLVM-exception AND Apache-2.0 AND BSD-3-Clause
+        AND dtoa
+      short_summary: Google RPC
+      supplier: 'Organization: Broadcom, Inc.'

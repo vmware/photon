@@ -1,0 +1,13 @@
+sources:
+- archive: etcd-3.5.12.tar.gz
+  archive_sha512sum: 6fc8bd64ad63cff71c7645253273418fb3fa262c2da1742dc345576caa733af7cd75acad2f57610c5883e6bf16cffd36bc5a0c89cbbb0793c00c2a4db1c6d14b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A highly-available key value store for shared configuration
+        and service discovery. '
+      home_page: https://github.com/etcd-io/etcd
+      license_concluded: MIT AND BSD-3-Clause AND ISC AND Apache-2.0 AND BSD-2-Clause
+      license_declared: MIT AND BSD-3-Clause AND ISC AND Apache-2.0 AND BSD-2-Clause
+      short_summary: Distributed reliable key-value store
+      supplier: 'Organization: Broadcom, Inc.'

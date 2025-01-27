@@ -1,0 +1,12 @@
+sources:
+- archive: kubeclient-4.10.1.gem
+  archive_sha512sum: 71b5dcaeb238802ac096282d031c05c89dd7c950a2cc863fb1fa4aef596909c0834b2c53c5a759085e47e2f3929838fe8473ca6debee4e2b74e31095745a8190
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A client for Kubernetes REST api. '
+      home_page: https://rubygems.org/gems/kubeclient/versions/4.10.1
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A client for Kubernetes REST api.
+      supplier: 'Organization: Broadcom, Inc.'

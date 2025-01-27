@@ -1,0 +1,19 @@
+sources:
+- archive: kexec-tools-2.0.25.tar.xz
+  archive_sha512sum: 6fd3fe11d428c5bb2ce318744146e03ddf752cc77632064bdd7418ef3ad355ad2e2db212d68a5bc73554d78f786901beb42d72bd62e2a4dae34fb224b667ec6b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'kexec-tools allows booting of a linux kernel from the
+        context of a running kernel using kernel''s kexec feature '
+      home_page: https://www.kernel.org/doc/Documentation/kdump/kdump.txt
+      license_concluded: FSFUL AND (GPL-2.0-or-later OR BSD-2-Clause) AND GPL-2.0-or-later
+        AND GPL-2.0-or-later WITH GCC-exception-2.0 AND GPL-1.0-or-later AND X11 AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only AND
+        MIT AND LGPL-2.0-or-later
+      license_declared: FSFUL AND (GPL-2.0-or-later OR BSD-2-Clause) AND GPL-2.0-or-later
+        AND GPL-2.0-or-later WITH GCC-exception-2.0 AND GPL-1.0-or-later AND X11 AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only AND
+        MIT AND LGPL-2.0-or-later
+      short_summary: The kexec kdump tools
+      supplier: 'Organization: Broadcom, Inc.'

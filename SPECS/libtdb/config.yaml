@@ -1,0 +1,15 @@
+sources:
+- archive: tdb-1.4.8.tar.gz
+  archive_sha512sum: 763beebe923aa04303cbb91ce5970e6bbd13546888cff75ea9ab025afff3ef88fee539ae173fc2fb7ec661b6c337b0c2da361ce3d318f51ef6627bdb3fe6ca63
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A library that implements a trivial database. '
+      home_page: https://tdb.samba.org
+      license_concluded: GPL-3.0-or-later AND PostgreSQL AND BSD-3-Clause AND ISC
+        AND LGPL-3.0-only AND LGPL-2.1-or-later AND BSD-2-Clause AND snprintf AND
+        LGPL-3.0-or-later
+      license_declared: GPL-3.0-or-later AND PostgreSQL AND BSD-3-Clause AND ISC AND
+        LGPL-3.0-only AND LGPL-2.1-or-later AND BSD-2-Clause AND snprintf AND LGPL-3.0-or-later
+      short_summary: Trivial database library
+      supplier: 'Organization: Broadcom, Inc.'

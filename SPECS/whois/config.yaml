@@ -1,0 +1,15 @@
+sources:
+- archive: whois_5.5.15.tar.xz
+  archive_sha512sum: e173927fd3428d27bc8ab34b1a66b82d6a2cfc107245755868bdd33cb7eb1b8159e87774c3a751d9694e65b3d870b9904dc9a3c657dca385950c8a19be1fa61c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Searches for an object in a RFC 3912 database.  This
+        version of the WHOIS client tries to guess the right server to ask for the
+        specified object. If no guess can be made it will connect to whois.networksolutions.com
+        for NIC handles or whois.arin.net for IPv4 addresses and network names. '
+      home_page: https://github.com/rfc1036/whois
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later
+      short_summary: Improved WHOIS client
+      supplier: 'Organization: Broadcom, Inc.'

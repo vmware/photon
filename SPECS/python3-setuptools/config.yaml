@@ -1,0 +1,18 @@
+sources:
+- archive: setuptools-69.0.3.tar.gz
+  archive_sha512sum: 11df934931f4b73f7e07ea5713479593c6baa134d423556b2ae7aff0f1e5bdbdee1f5b516131adb169c838231ceb0293441fbf275ef7030dabecf74122565b6d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Setuptools is a fully-featured, actively-maintained,
+        and stable library designed to facilitate packaging Python projects. It helps
+        developers to easily share reusable code (in the form of a library) and programs
+        (e.g., CLI/GUI tools implemented in Python), that can be installed with pip
+        and uploaded to PyPI. '
+      home_page: https://pypi.org/project/setuptools
+      license_concluded: Apache-2.0 AND GPL-3.0-only AND (BSD-2-Clause OR Apache-2.0)
+        AND MIT AND (BSD-3-Clause OR Apache-2.0) AND Python-2.0 AND BSD-3-Clause
+      license_declared: Apache-2.0 AND GPL-3.0-only AND (BSD-2-Clause OR Apache-2.0)
+        AND MIT AND (BSD-3-Clause OR Apache-2.0) AND Python-2.0 AND BSD-3-Clause
+      short_summary: Extensions to the standard Python datetime module
+      supplier: 'Organization: Broadcom, Inc.'

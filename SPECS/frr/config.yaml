@@ -1,0 +1,28 @@
+sources:
+- archive: frr-9.1.tar.gz
+  archive_sha512sum: 77b278a3ea87da9dfd7b87e4f9ae67f08ed0f24809f6dd228d2ab2e2c29e2b3191d59d50fc474e53e159ac6c79c302481b462125d0657889516f07b8e05e8562
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'FRRouting is free software that manages TCP/IP based
+        routing protocols. It takes a multi-server and multi-threaded approach to
+        resolve the current complexity of the Internet.  FRRouting supports BGP4,
+        OSPFv2, OSPFv3, ISIS, RIP, RIPng, PIM, NHRP, PBR, EIGRP and BFD.  FRRouting
+        is a fork of Quagga. '
+      home_page: https://frrouting.org
+      license_concluded: Latex2e-translated-notice AND Unlicense AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND LGPL-2.1-only AND GPL-2.0-or-later WITH Linux-syscall-note
+        AND Latex2e AND GPL-2.0-only AND LGPL-2.1-or-later AND (ISC OR GPL-2.0-or-later)
+        AND ISC AND GPL-3.0-only AND GPL-2.0-only WITH Linux-syscall-note AND BSD-3-Clause-Clear
+        AND GPL-2.0-or-later AND BSD-2-Clause AND Apache-2.0 AND BSD-3-Clause AND
+        MIT AND GPL-3.0-or-later
+      license_declared: Latex2e-translated-notice AND Unlicense AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND LGPL-2.1-only AND GPL-2.0-or-later WITH Linux-syscall-note
+        AND Latex2e AND GPL-2.0-only AND LGPL-2.1-or-later AND (ISC OR GPL-2.0-or-later)
+        AND ISC AND GPL-3.0-only AND GPL-2.0-only WITH Linux-syscall-note AND BSD-3-Clause-Clear
+        AND GPL-2.0-or-later AND BSD-2-Clause AND Apache-2.0 AND BSD-3-Clause AND
+        MIT AND GPL-3.0-or-later
+      short_summary: Internet Routing Protocol
+      supplier: 'Organization: Broadcom, Inc.'

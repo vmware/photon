@@ -1,0 +1,25 @@
+sources:
+- archive: conntrack-tools-1.4.7.tar.bz2
+  archive_sha512sum: 3d37a6b8cd13fd3c149ab80009d686d2184920ba2d0d5c1b57abed6e92e0dd92cba868bfe22f1a155479fe5ab2e291b8bb8a7e72123a73788032202ac142653b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The conntrack-tools are a set of free software userspace
+        tools for Linux that allow system administrators interact with the Connection
+        Tracking System, which is the module that provides stateful packet inspection
+        for iptables. '
+      home_page: http://conntrack-tools.netfilter.org
+      license_concluded: GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-only
+        WITH Linux-syscall-note AND GPL-3.0-or-later WITH Libtool-exception AND FSFULLRWD
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GFDL-1.2-or-later AND
+        GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later AND GPL-2.0-only
+        AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-1.0-or-later
+        AND X11 AND GPL-3.0-or-later AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_declared: GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-only
+        WITH Linux-syscall-note AND GPL-3.0-or-later WITH Libtool-exception AND FSFULLRWD
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GFDL-1.2-or-later AND
+        GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later AND GPL-2.0-only
+        AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-1.0-or-later
+        AND X11 AND GPL-3.0-or-later AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      short_summary: Connection tracking userspace tools for Linux.
+      supplier: 'Organization: Broadcom, Inc.'

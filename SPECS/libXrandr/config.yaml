@@ -1,0 +1,20 @@
+sources:
+- archive: libXrandr-1.5.2.tar.bz2
+  archive_sha512sum: fcd005f9839e7ef980607128a5d76d7b671cc2f5755949e03c569c500d7e987cb3f6932750ab8bf6e2c1086ec69dde09d5831f0c2098b9f9ad46be4f56db0d87
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 libXrandr library. '
+      home_page: http://www.x.org/
+      license_concluded: GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND FSFUL AND MIT AND MIT-open-group AND HPND-sell-variant AND FSFULLRWD AND
+        GPL-3.0-or-later WITH Libtool-exception AND X11 AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND FSFAP AND FSFULLR AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Libtool-exception
+      license_declared: GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND FSFUL AND MIT AND MIT-open-group AND HPND-sell-variant AND FSFULLRWD AND
+        GPL-3.0-or-later WITH Libtool-exception AND X11 AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND FSFAP AND FSFULLR AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Libtool-exception
+      short_summary: X11 Xrandr runtime library.
+      supplier: 'Organization: Broadcom, Inc.'

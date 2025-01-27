@@ -1,0 +1,13 @@
+sources:
+- archive: multi_json-1.15.0.gem
+  archive_sha512sum: 5021b66bd607bde8679899ff48fbf596cdf6a4f6c026472b20f25bd1933d105bef597c143ab529804d7b5a4a244476be24555f13a7fbe9fef30bbe1fb92978eb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'MultiJson is a library that provides a common interface
+        to several JSON implementation libraries in Ruby. '
+      home_page: https://rubygems.org/gems/multi_json
+      license_concluded: MIT AND JSON
+      license_declared: MIT AND JSON
+      short_summary: Ruby Gem for JSON parsing and encoding
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,23 @@
+sources:
+- archive: stunnel-5.72.tar.gz
+  archive_sha512sum: 2607bed1159412dc36ed0455ed158ab3141782f05ddaf3605076f1a0e371bc1ada1606cab65a6bc52d69a8c685345617578cb79d521330f2e1d12af3dcbd37ca
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Stunnel is a socket wrapper which can provide TLS/SSL
+        (Transport Layer Security/Secure Sockets Layer) support to ordinary applications.
+        For example, it can be used in conjunction with imapd to create a TLS secure
+        IMAP server. '
+      home_page: https://www.stunnel.org
+      license_concluded: X11 AND GPL-2.0-or-later AND FSFULLR AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFUL AND FSFAP AND GPL-1.0-or-later
+        AND MIT AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH
+        Autoconf-exception-2.0 AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later AND GPL-2.0-only
+      license_declared: X11 AND GPL-2.0-or-later AND FSFULLR AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFUL AND FSFAP AND GPL-1.0-or-later
+        AND MIT AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH
+        Autoconf-exception-2.0 AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later AND GPL-2.0-only
+      short_summary: A TLS-encrypting socket wrapper
+      supplier: 'Organization: Broadcom, Inc.'

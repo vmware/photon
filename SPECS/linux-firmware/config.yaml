@@ -1,0 +1,17 @@
+sources:
+- archive: linux-firmware-20230207.tar.gz
+  archive_sha512sum: f8862c6a58a8a2d79da14fe4d64265407bd1a4062beb821494d1a2b738bae526feb61755f133317458aa1dcadf84275d49d8916d9cae13d291fbb69aa11c2e6b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package includes firmware files required for some
+        devices to operate. '
+      home_page: http://www.kernel.org/
+      license_concluded: (GPL-2.0-only OR Linux-OpenIB) AND GPL-3.0-only AND (BSD-3-Clause
+        OR GPL-2.0-only) AND GPL-2.0-or-later AND ISC AND BSD-3-Clause AND MIT AND
+        GPL-2.0-only AND GPL-1.0-or-later
+      license_declared: (GPL-2.0-only OR Linux-OpenIB) AND GPL-3.0-only AND (BSD-3-Clause
+        OR GPL-2.0-only) AND GPL-2.0-or-later AND ISC AND BSD-3-Clause AND MIT AND
+        GPL-2.0-only AND GPL-1.0-or-later
+      short_summary: Linux Firmware
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,48 @@
+sources:
+- archive: gdb-13.2.tar.xz
+  archive_sha512sum: 8185d3e11ab60dafff5860a5016577bfe7dd7547ef01ebc867bc247603d82b74ff74c4f29492c7d2aee57076f52be33e289f4c6b414a4b870d4b3004909f4c34
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'GDB, the GNU Project debugger, allows you to see what
+        is going on `inside'' another program while it executes -- or what another
+        program was doing at the moment it crashed. '
+      home_page: http://www.gnu.org/software/gdb
+      license_concluded: LGPL-3.0-only AND HPND-Markus-Kuhn AND GFDL-1.1-only AND
+        LGPL-2.0-or-later AND FSFULLRWD AND GPL-2.0-or-later WITH GNU-compiler-exception
+        AND GPL-1.0-or-later AND CC-BY-ND-3.0 AND GPL-2.0-or-later WITH GNAT-exception
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND Latex2e AND LGPL-2.0-only
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-2.0-or-later
+        AND Latex2e-translated-notice AND LGPL-2.1-only AND (BSD-3-Clause OR GPL-2.0-only)
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GFDL-1.3-invariants-only
+        AND GPL-2.0-or-later WITH Libtool-exception AND FSFUL AND BSL-1.0 AND LGPL-2.1-or-later
+        AND SunPro AND GPL-2.0-or-later WITH GCC-exception-2.0 AND GPL-1.0-only AND
+        BSD-4-Clause-UC AND CMU-Mach AND GPL-2.0-or-later WITH Bison-exception-1.24
+        AND ISC AND BSD-4.3TAHOE AND BSD-4.3RENO AND LPD-document AND Zlib AND FSFAP
+        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GFDL-1.3-or-later AND GPL-3.0-or-later
+        WITH GCC-exception-3.1 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later AND GPL-2.0-only AND LGPL-2.0-or-later WITH GCC-exception-2.0
+        AND GFDL-1.1-or-later AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND BSD-3-Clause AND FSFULLR AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-only AND FSFAP-no-warranty-disclaimer
+        AND LGPL-3.0-or-later AND GFDL-1.3-only
+      license_declared: LGPL-3.0-only AND HPND-Markus-Kuhn AND GFDL-1.1-only AND LGPL-2.0-or-later
+        AND FSFULLRWD AND GPL-2.0-or-later WITH GNU-compiler-exception AND GPL-1.0-or-later
+        AND CC-BY-ND-3.0 AND GPL-2.0-or-later WITH GNAT-exception AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND Latex2e AND LGPL-2.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic AND X11 AND GPL-2.0-or-later AND Latex2e-translated-notice
+        AND LGPL-2.1-only AND (BSD-3-Clause OR GPL-2.0-only) AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GFDL-1.3-invariants-only AND GPL-2.0-or-later
+        WITH Libtool-exception AND FSFUL AND BSL-1.0 AND LGPL-2.1-or-later AND SunPro
+        AND GPL-2.0-or-later WITH GCC-exception-2.0 AND GPL-1.0-only AND BSD-4-Clause-UC
+        AND CMU-Mach AND GPL-2.0-or-later WITH Bison-exception-1.24 AND ISC AND BSD-4.3TAHOE
+        AND BSD-4.3RENO AND LPD-document AND Zlib AND FSFAP AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND GFDL-1.3-or-later AND GPL-3.0-or-later WITH GCC-exception-3.1
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND GPL-2.0-only AND LGPL-2.0-or-later WITH GCC-exception-2.0 AND GFDL-1.1-or-later
+        AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND BSD-3-Clause AND FSFULLR AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-only AND FSFAP-no-warranty-disclaimer AND LGPL-3.0-or-later AND
+        GFDL-1.3-only
+      short_summary: C debugger
+      supplier: 'Organization: Broadcom, Inc.'

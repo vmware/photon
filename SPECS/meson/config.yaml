@@ -1,0 +1,18 @@
+sources:
+- archive: meson-1.0.0.tar.gz
+  archive_sha512sum: 9b1195cfe856c1aa51bc79f6eb4d0f94925bb02d0a9fbd68a6a6ced6e5c252b09b22d9aac812640687e49b8d64a313ce48d0a69a3bf83ea8ffb8c9dab559fc23
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Meson is an open source build system meant to be both
+        extremely fast, and, even more importantly, as user friendly as possible.
+        The main design point of Meson is that every moment a developer spends writing
+        or debugging build definitions is a second wasted. So is every second spent
+        waiting for the build system to actually start compiling code. '
+      home_page: https://mesonbuild.com
+      license_concluded: Apache-2.0 AND Vim AND BSD-3-Clause AND FSFAP AND MIT AND
+        BSL-1.0 AND GPL-1.0-or-later
+      license_declared: Apache-2.0 AND Vim AND BSD-3-Clause AND FSFAP AND MIT AND
+        BSL-1.0 AND GPL-1.0-or-later
+      short_summary: Extremely fast and user friendly build system
+      supplier: 'Organization: Broadcom, Inc.'

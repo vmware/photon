@@ -1,0 +1,13 @@
+sources:
+- archive: dos2unix-7.4.3.tar.gz
+  archive_sha512sum: 1c6d81348de8aca451174794141d0802685487cf6847fa91f7de745d89bcf2af864fc2ec549b9af72031891d4efcb9731fe823ce05da36d1f9e9890ff2cb60fb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Convert text files with DOS or Mac line endings to Unix
+        line endings and vice versa. '
+      home_page: https://waterlan.home.xs4all.nl/dos2unix.html
+      license_concluded: BSD-2-Clause-Views AND BSD-2-Clause AND GPL-1.0-or-later
+      license_declared: BSD-2-Clause-Views AND BSD-2-Clause AND GPL-1.0-or-later
+      short_summary: Text file format converters
+      supplier: 'Organization: Broadcom, Inc.'

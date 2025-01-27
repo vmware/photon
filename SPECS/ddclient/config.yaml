@@ -1,0 +1,17 @@
+sources:
+- archive: ddclient-3.9.1.tar.gz
+  archive_sha512sum: a8a4d6cb94e4239a7b7b4fc7d9ebef703cbd6c45fc3394b644694a053b5b8aa8d109410b5b8b3676a5f30b18474d24c7feb16c65c30b28bd7d941d8a214b1346
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'DDclient is a Perl client used to update dynamic DNS
+        entries for accounts on Dynamic DNS Network Service Provider. It was originally
+        written by Paul Burry and is now mostly by wimpunk. It has the capability
+        to update more than just dyndns and it can fetch your WAN-ipaddress in a few
+        different ways. '
+      home_page: https://sourceforge.net/p/ddclient/wiki/Home/
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later
+      short_summary: Perl client used to update dynamic DNS entries for accounts on
+        Dynamic DNS Network Service Provider
+      supplier: 'Organization: Broadcom, Inc.'

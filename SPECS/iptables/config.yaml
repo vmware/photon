@@ -1,0 +1,24 @@
+sources:
+- archive: iptables-1.8.9.tar.xz
+  archive_sha512sum: e367bf286135e39b7401e852de25c1ed06d44befdffd92ed1566eb2ae9704b48ac9196cb971f43c6c83c6ad4d910443d32064bcdf618cfcef6bcab113e31ff70
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The next part of this chapter deals with firewalls. The
+        principal firewall tool for Linux is Iptables. You will need to install Iptables
+        if you intend on using any form of a firewall. '
+      home_page: http://www.netfilter.org/projects/iptables
+      license_concluded: GPL-2.0-or-later AND GPL-3.0-or-later AND GPL-2.0-only AND
+        GPL-2.0-or-later WITH Libtool-exception AND FSFUL AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND ISC AND GPL-1.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Libtool-exception
+        AND Artistic-2.0 AND FSFULLR AND GPL-2.0-only WITH Linux-syscall-note AND
+        X11 AND (GPL-2.0-only OR GPL-3.0-only)
+      license_declared: GPL-2.0-or-later AND GPL-3.0-or-later AND GPL-2.0-only AND
+        GPL-2.0-or-later WITH Libtool-exception AND FSFUL AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND ISC AND GPL-1.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Libtool-exception
+        AND Artistic-2.0 AND FSFULLR AND GPL-2.0-only WITH Linux-syscall-note AND
+        X11 AND (GPL-2.0-only OR GPL-3.0-only)
+      short_summary: Linux kernel packet control tool
+      supplier: 'Organization: Broadcom, Inc.'

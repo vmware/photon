@@ -1,0 +1,31 @@
+sources:
+- archive: libksba-1.6.3.tar.bz2
+  archive_sha512sum: 188f6d27b4904c10cd54ba949c1132dd6c167f53dd1b77eae39c5b8e3ac8b15e87b2a54cdfddac95ac4ed41ee83c3d4e1b17d95126f245b6c204fade6739a2ce
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Libksba is a library to make the tasks of working with
+        X.509 certificates, CMS data and related objects more easy. It provides a
+        highlevel interface to the implemented protocols and presents the data in
+        a consistent way. '
+      home_page: https://www.gnupg.org/(fr)/download/index.html#libksba
+      license_concluded: FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLR AND GPL-2.0-only AND GPL-3.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND LGPL-3.0-only AND GPL-2.0-or-later
+        AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND LGPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND GPL-1.0-or-later AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND GPL-3.0-or-later
+        WITH Texinfo-exception AND FSFUL AND X11 AND LGPL-2.1-or-later
+      license_declared: FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLR AND GPL-2.0-only AND GPL-3.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND LGPL-3.0-only AND GPL-2.0-or-later
+        AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND LGPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND GPL-1.0-or-later AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND GPL-3.0-or-later
+        WITH Texinfo-exception AND FSFUL AND X11 AND LGPL-2.1-or-later
+      short_summary: Library for accessing X.509 and CMS data structure.
+      supplier: 'Organization: Broadcom, Inc.'

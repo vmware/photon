@@ -1,0 +1,23 @@
+sources:
+- archive: crun-1.8.tar.xz
+  archive_sha512sum: 373d4fa69085b1ffecff32b4f2da0ab7dd0ec80d68e24ab262127e71cdfcbee50b932aa109980ad683444fdfe288a6495fc40cd81beb8b56af5c244218c7157c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A fast and low-memory footprint OCI Container Runtime
+        fully written in C '
+      home_page: https://github.com/containers/crun
+      license_concluded: GPL-2.0-only AND GPL-3.0-or-later WITH Libtool-exception
+        AND Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-only
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-2.0-only
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-2.0-or-later
+        AND FSFUL AND ISC AND FSFULLRWD AND (Apache-2.0 OR LGPL-2.1-or-later) AND
+        GPL-3.0-only AND LGPL-2.1-or-later AND GPL-3.0-or-later AND FSFULLR AND GPL-1.0-or-later
+      license_declared: GPL-2.0-only AND GPL-3.0-or-later WITH Libtool-exception AND
+        Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-only AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-2.0-only AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-2.0-or-later
+        AND FSFUL AND ISC AND FSFULLRWD AND (Apache-2.0 OR LGPL-2.1-or-later) AND
+        GPL-3.0-only AND LGPL-2.1-or-later AND GPL-3.0-or-later AND FSFULLR AND GPL-1.0-or-later
+      short_summary: OCI runtime in C
+      supplier: 'Organization: Broadcom, Inc.'

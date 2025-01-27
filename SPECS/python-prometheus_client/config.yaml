@@ -1,0 +1,12 @@
+sources:
+- archive: prometheus_client-0.14.1.tar.gz
+  archive_sha512sum: 3ba1389f23566ecab1371452ec717e06c4e444d1ac8a37cb27429493e64f3931e6876734c0947cb43ba086ed51ca47a0c7764d488ea6e7f2d0864447f49b09e4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python client for the Prometheus monitoring system. '
+      home_page: https://pypi.python.org/pypi/prometheus_client
+      license_concluded: BSD-2-Clause AND Apache-2.0
+      license_declared: BSD-2-Clause AND Apache-2.0
+      short_summary: Python client for the Prometheus monitoring system.
+      supplier: 'Organization: Broadcom, Inc.'

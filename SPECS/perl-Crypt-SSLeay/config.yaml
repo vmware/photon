@@ -1,0 +1,19 @@
+sources:
+- archive: Crypt-SSLeay-0.72.tar.gz
+  archive_sha512sum: af7a2878df94e116e9aad9a0f028f2e4f89074aaf31672915162f86e55211632d65c1cb00f3ebd25644d77adf8eecdd244dba6a004d93ab90289ab34fe4caaf4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Perl module provides support for the HTTPS protocol
+        under LWP, to allow an LWP::UserAgent object to perform GET, HEAD and POST
+        requests. Please see LWP for more information on POST requests.  The Crypt::SSLeay
+        package provides Net::SSL, which is loaded by LWP::Protocol::https for https
+        requests and provides the necessary SSL glue.  This distribution also makes
+        following deprecated modules available:  Crypt::SSLeay::CTX Crypt::SSLeay::Conn
+        Crypt::SSLeay::X509 Work on Crypt::SSLeay has been continued only to provide
+        https support for the LWP (libwww-perl) libraries. '
+      home_page: http://search.cpan.org/dist/Crypt-SSLeay/
+      license_concluded: Artistic-2.0
+      license_declared: Artistic-2.0
+      short_summary: Crypt::SSLeay - OpenSSL support for LWP
+      supplier: 'Organization: Broadcom, Inc.'

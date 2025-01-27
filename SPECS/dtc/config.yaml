@@ -1,0 +1,21 @@
+sources:
+- archive: dtc-1.6.1.tar.gz
+  archive_sha512sum: 34b64f356070710fd78f34ed624a06cec02915c98ab53eddbb0843f2a4c62dc95a78aa8583d7f433db60d1233eb1a2babecd85cd8179e74f27fe46ca412cb2b3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Devicetree is a data structure for describing hardware.
+        Rather than hard coding every detail of a device into an operating system,
+        many aspects of the hardware can be described in a data structure that is
+        passed to the operating system at boot time. The devicetree is used by OpenFirmware,
+        OpenPOWER Abstraction Layer (OPAL), Power Architecture Platform Requirements
+        (PAPR) and in the standalone Flattened Device Tree (FDT) form. '
+      home_page: https://devicetree.org
+      license_concluded: GPL-1.0-or-later AND ISC AND BSD-3-Clause AND LGPL-2.1-or-later
+        AND GPL-2.0-only AND BSD-2-Clause AND GPL-2.0-or-later AND (GPL-2.0-or-later
+        OR BSD-2-Clause)
+      license_declared: GPL-1.0-or-later AND ISC AND BSD-3-Clause AND LGPL-2.1-or-later
+        AND GPL-2.0-only AND BSD-2-Clause AND GPL-2.0-or-later AND (GPL-2.0-or-later
+        OR BSD-2-Clause)
+      short_summary: Device Tree Compiler
+      supplier: 'Organization: Broadcom, Inc.'

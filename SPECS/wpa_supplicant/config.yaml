@@ -1,0 +1,15 @@
+sources:
+- archive: wpa_supplicant-2.10.tar.gz
+  archive_sha512sum: 021c2a48f45d39c1dc6557730be5debaee071bc0ff82a271638beee6e32314e353e49d39e2f0dc8dff6e094dcc7008cfe1c32d0c7a34a1a345a12a3f1c1e11a1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'WPA Supplicant is a Wi-Fi Protected Access (WPA) client
+        and IEEE 802.1X supplicant '
+      home_page: https://w1.fi
+      license_concluded: CC-PDDC AND (GPL-2.0-only OR BSD-3-Clause) AND GPL-2.0-only
+        AND GPL-1.0-or-later AND BSD-3-Clause AND ISC AND (BSD-3-Clause OR GPL-2.0-only)
+      license_declared: CC-PDDC AND (GPL-2.0-only OR BSD-3-Clause) AND GPL-2.0-only
+        AND GPL-1.0-or-later AND BSD-3-Clause AND ISC AND (BSD-3-Clause OR GPL-2.0-only)
+      short_summary: WPA client
+      supplier: 'Organization: Broadcom, Inc.'

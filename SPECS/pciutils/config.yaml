@@ -1,0 +1,15 @@
+sources:
+- archive: pciutils-3.9.0.tar.gz
+  archive_sha512sum: 27751eb2c9ea35047f62d6025c8dab6036cb3d18850bfd6e4ab906f7c9eb6cff059ed655155f6400bb16f953d7b520e72bdd8c1fce7a587a756902cc562af87d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The pciutils package contains a set of programs for listing
+        PCI devices, inspecting their status and setting their configuration registers. '
+      home_page: https://www.kernel.org/pub/software/utils/pciutils/
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later AND GPL-1.0-or-later AND
+        (GPL-2.0-or-later OR BSD-3-Clause)
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later AND GPL-1.0-or-later AND
+        (GPL-2.0-or-later OR BSD-3-Clause)
+      short_summary: System utilities to list pci devices
+      supplier: 'Organization: Broadcom, Inc.'

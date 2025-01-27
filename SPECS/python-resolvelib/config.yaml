@@ -1,0 +1,15 @@
+sources:
+- archive: resolvelib-0.8.1.tar.gz
+  archive_sha512sum: 4e1a7d84ee3fb86433701562aff71d0c867428f2bcb58ce998aee13896945b54a0915540dea7dcc3fd1e2544b43ef276df8a1804cbbc9330936169bef98a1c5d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Resolve abstract dependencies into concrete ones ResolveLib
+        at the highest level provides a Resolver class that includes dependency resolution
+        logic. You give it some things, and a little information on how it should
+        interact with them, and it will spit out a resolution result. '
+      home_page: https://github.com/sarugaku/resolvelib
+      license_concluded: ISC
+      license_declared: ISC
+      short_summary: Resolve abstract dependencies into concrete ones
+      supplier: 'Organization: Broadcom, Inc.'

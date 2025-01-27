@@ -1,0 +1,27 @@
+sources:
+- archive: util-linux-2.38.tar.xz
+  archive_sha512sum: d0f7888f457592067938e216695871ce6475a45d83a092cc3fd72b8cf8fca145ca5f3a99122f1744ef60b4f773055cf4e178dc6c59cd30837172aee0b5597e8c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Utilities for handling file systems, consoles, partitions,
+        and messages. '
+      home_page: http://www.kernel.org/pub/linux/utils/util-linux
+      license_concluded: ISC AND GPL-3.0-only AND Linux-man-pages-copyleft-2-para
+        AND LGPL-2.1-or-later AND FSFULLR AND FSFAP AND GPL-2.0-only AND BSD-4.3TAHOE
+        AND FSFUL AND BSD-3-Clause AND X11 AND LGPL-3.0-or-later AND LGPL-2.1-only
+        AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Libtool-exception
+        AND LGPL-2.0-or-later AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-1.0-or-later AND BSD-4-Clause-UC AND MIT AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Libtool-exception
+      license_declared: ISC AND GPL-3.0-only AND Linux-man-pages-copyleft-2-para AND
+        LGPL-2.1-or-later AND FSFULLR AND FSFAP AND GPL-2.0-only AND BSD-4.3TAHOE
+        AND FSFUL AND BSD-3-Clause AND X11 AND LGPL-3.0-or-later AND LGPL-2.1-only
+        AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Libtool-exception
+        AND LGPL-2.0-or-later AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-1.0-or-later AND BSD-4-Clause-UC AND MIT AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Libtool-exception
+      short_summary: Utilities for file systems, consoles, partitions, and messages
+      supplier: 'Organization: Broadcom, Inc.'

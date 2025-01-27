@@ -1,0 +1,19 @@
+sources:
+- archive: bluez-5.71.tar.xz
+  archive_sha512sum: 648394bbe470405aa0e2d3914474e95c122f567deaaac20a5dd74bac29fa430dfb64cdb7bdb4fb7510e62fa73e96112a97197fc212b421bf480b8d1bb24cfb5d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Utilities for use in Bluetooth applications. The BLUETOOTH
+        trademarks are owned by Bluetooth SIG, Inc., U.S.A. '
+      home_page: http://www.bluez.org
+      license_concluded: GPL-2.0-or-later AND LGPL-2.1-only AND BSD-2-Clause AND LGPL-2.1-or-later
+        AND FSFULLR AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND MIT AND GPL-2.0-only AND Apache-2.0 AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND X11 AND FSFULLRWD
+      license_declared: GPL-2.0-or-later AND LGPL-2.1-only AND BSD-2-Clause AND LGPL-2.1-or-later
+        AND FSFULLR AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND MIT AND GPL-2.0-only AND Apache-2.0 AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND X11 AND FSFULLRWD
+      short_summary: Bluetooth utilities
+      supplier: 'Organization: Broadcom, Inc.'

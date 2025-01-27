@@ -1,0 +1,15 @@
+sources:
+- archive: unicode-display_width-2.3.0.gem
+  archive_sha512sum: 5c8b5cad378baee9a449d1f06edccbea12f26f8d269ba39ef500dfc6bd5c0b478aa9e0a7262ac07ad3f3e75ee66bbcd4b2d450eae78ac67a3c912804ae9ae1ec
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Determines the monospace display width of a string in
+        Ruby. Implementation based on EastAsianWidth.txt and other data, 100% in Ruby.
+        Other than wcwidth(), which fulfills a similar purpose, it does not rely on
+        the OS vendor to provide an up-to-date method for measuring string width. '
+      home_page: https://github.com/janlelis/unicode-display_width
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Unicode::DisplayWidth.
+      supplier: 'Organization: Broadcom, Inc.'

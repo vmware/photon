@@ -1,0 +1,16 @@
+sources:
+- archive: gssntlmssp-1.1.0.tar.gz
+  archive_sha512sum: 6cd20542aa18dba6f2b777cea8f481e7d73eb1034e14c8aba4ce8984f138ba445a82547b10297ee99f7042920bd910ca10dd67692f3b242696fcc27dfcab123f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A GSSAPI Mechanism that implements NTLMSSP '
+      home_page: https://github.com/gssapi/gss-ntlmssp
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND ISC
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND ISC
+      short_summary: GSSAPI NTLMSSP Mechanism
+      supplier: 'Organization: Broadcom, Inc.'

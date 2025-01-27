@@ -1,0 +1,15 @@
+sources:
+- archive: libtar-1.2.20.tar.gz
+  archive_sha512sum: 11a12695abf4f9668801d24b7b552daed1219b2f395c09818d15e16721f7136d63aa0c09e442401e4fedbf7335748f0dc46f8da21b94b36595910b2fe44d4aea
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libtar is a library for manipulating tar files from within
+        C programs. '
+      home_page: https://github.com/tklauser/libtar
+      license_concluded: NCSA AND BSD-4-Clause-UC AND BSD-3-Clause AND HPND-sell-variant-MIT-disclaimer
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro
+      license_declared: NCSA AND BSD-4-Clause-UC AND BSD-3-Clause AND HPND-sell-variant-MIT-disclaimer
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro
+      short_summary: C library for manipulating tar files
+      supplier: 'Organization: Broadcom, Inc.'

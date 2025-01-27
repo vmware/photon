@@ -1,0 +1,18 @@
+sources:
+- archive: boto-2.49.0.tar.gz
+  archive_sha512sum: 2175cf30cd25bbc05812e83e5ade7668c3e21b1bb09aa1b43f0f0ac7d6967a646394fb52c9be673ebb65618c5b33a52d6f31f6da702f5cd1d6c9a18169476dd4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Boto is a Python package that provides interfaces to
+        Amazon Web Services. Currently, all features work with Python 2.6 and 2.7.
+        Work is under way to support Python 3.3+ in the same codebase. Modules are
+        being ported one at a time with the help of the open source community, so
+        please check below for compatibility with Python 3.3+. '
+      home_page: https://github.com/boto/boto
+      license_concluded: MIT AND BSD-3-Clause AND (MPL-1.1 OR GPL-2.0-or-later OR
+        LGPL-2.1-or-later) AND ADSL AND Apache-2.0 AND GPL-1.0-or-later AND LGPL-2.1-or-later
+      license_declared: MIT AND BSD-3-Clause AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
+        AND ADSL AND Apache-2.0 AND GPL-1.0-or-later AND LGPL-2.1-or-later
+      short_summary: Amazon Web Services Library.
+      supplier: 'Organization: Broadcom, Inc.'

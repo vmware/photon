@@ -1,0 +1,18 @@
+sources:
+- archive: Net-SSLeay-1.92.tar.gz
+  archive_sha512sum: e9d9161ebeb7be90f4c7a0ea98f1034892ce6d33aa72872683177b19daa1f4c5819f85ea9a052a076ec8d7c21705f6c344aef64680bc881bf3218d38e8b7b173
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Net::SSLeay module contains perl bindings to openssl
+        (http://www.openssl.org) library.  Net::SSLeay module basically comprise of:
+        * High level functions for accessing web servers (by using HTTP/HTTPS) * Low
+        level API (mostly mapped 1:1 to openssl''s C functions) * Convenience functions
+        (related to low level API but with more perl friendly interface) * There is
+        also a related module called Net::SSLeay::Handle included in this distribution
+        that you might want to use instead. It has its own pod documentation. '
+      home_page: https://metacpan.org/pod/Net::SSLeay
+      license_concluded: Artistic-2.0
+      license_declared: Artistic-2.0
+      short_summary: Perl extension for using OpenSSL
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,17 @@
+sources:
+- archive: gcovr-5.2.tar.gz
+  archive_sha512sum: d1a4dd63129ac1d2b9a892ced9b4a0644dc49dc3a115d81ddf348e43fea0e7809c6533104106da8f89a666a4af9ff5a62429b4270ff2272ca61bbebecb7fb921
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The gcovr command provides a utility for managing the
+        use of the GNU gcov utility and generating summarized code coverage results.
+        This command is inspired by the Python coverage.py package, which provides
+        a similar utility in Python. Gcovr produces either compact human-readable
+        summary reports, machine readable XML reports or a simple HTML summary. '
+      home_page: http://gcovr.com
+      license_concluded: BSD-3-Clause AND GPL-1.0-or-later
+      license_declared: BSD-3-Clause AND GPL-1.0-or-later
+      short_summary: The gcovr command provides a utility for managing the use of
+        the GNU gcov utility
+      supplier: 'Organization: Broadcom, Inc.'

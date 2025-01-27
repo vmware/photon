@@ -1,0 +1,16 @@
+sources:
+- archive: keyutils-1.6.1.tar.bz2
+  archive_sha512sum: ea6e20b2594234c7f51581eef2b8fd19c109fa9eacaaef8dfbb4f237bd1d6fdf071ec23b4ff334cb22a46461d09d17cf499987fd1f00e66f27506888876961e1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Utilities to control the kernel key management facility
+        and to provide a mechanism by which the kernel call back to user space to
+        get a key instantiated. '
+      home_page: http://people.redhat.com/~dhowells/keyutils
+      license_concluded: LGPL-2.1-only AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later
+      license_declared: LGPL-2.1-only AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later
+      short_summary: Linux Key Management Utilities
+      supplier: 'Organization: Broadcom, Inc.'

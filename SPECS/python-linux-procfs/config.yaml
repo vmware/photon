@@ -1,0 +1,13 @@
+sources:
+- archive: python-linux-procfs-0.7.0.tar.xz
+  archive_sha512sum: 9b2489b47949560245fb23eefa1600869618921173a94534af4db88938fbc855ce37e24100286bdee9fd18a3f140fb86bef06fa7a473ed55e5cdde721f54113c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Abstractions to extract information from the Linux kernel
+        /proc files. '
+      home_page: https://git.kernel.org/pub/scm/libs/python/python-linux-procfs/python-linux-procfs.git/
+      license_concluded: GPL-2.0-only
+      license_declared: GPL-2.0-only
+      short_summary: Linux /proc abstraction classes
+      supplier: 'Organization: Broadcom, Inc.'

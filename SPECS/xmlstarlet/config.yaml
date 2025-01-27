@@ -1,0 +1,19 @@
+sources:
+- archive: xmlstarlet-1.6.1.tar.gz
+  archive_sha512sum: 4228df812caec7059d7a76986c4d9a4262bd861cc53dca05f341ae6c062be05f1c39fc637918ab00f60f40587c6c556e3c9bfaf8a18b149e3c321a92214dbe8b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'XMLStarlet is a set of command line utilities which can
+        be used to transform, query, validate, and edit XML documents and files using
+        simple set of shell commands in similar way it is done for plain text files
+        using UNIX grep, sed, awk, diff, patch, join, etc commands. '
+      home_page: http://xmlstar.sourceforge.net/
+      license_concluded: FSFUL AND MIT AND FSFULLRWD AND X11 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLR AND AGPL-3.0-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      license_declared: FSFUL AND MIT AND FSFULLRWD AND X11 AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND FSFULLR AND AGPL-3.0-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      short_summary: Command Line XML Toolkit
+      supplier: 'Organization: Broadcom, Inc.'

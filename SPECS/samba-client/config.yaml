@@ -1,0 +1,32 @@
+sources:
+- archive: samba-4.18.8.tar.gz
+  archive_sha512sum: 2924c360f6299129527457547b13c1b282e2907a0ecde1036dbca894c752935d693914b4846a9eab436b33798c53c9974692e51fd071301b1174598be944a246
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Samba is the standard Windows interoperability suite
+        of programs for Linux and Unix. The samba-client package provides file and
+        print services to SMB/CIFS clients and Windows networking to Linux clients.
+        For a more detailed description of Samba, check the Web page https://www.Samba.org/  #
+        Samba Client Libaries'
+      home_page: https://www.samba.org
+      license_concluded: LGPL-3.0-or-later AND FSFUL AND MIT AND snprintf AND Apache-2.0
+        AND GPL-1.0-or-later AND Unlicense AND GPL-2.0-only AND (Apache-2.0 OR BSD-3-Clause)
+        AND HPND-export-US AND HPND-export2-US AND GPL-2.0-or-later AND PostgreSQL
+        AND BSD-2-Clause-first-lines AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND CC-BY-4.0 AND BSD-2-Clause AND CC-BY-SA-4.0 AND LGPL-2.1-or-later AND
+        X11 AND ISC AND blessing AND TMate AND HP-1986 AND FSFULLRWD AND AGPL-3.0-or-later
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND FSFAP AND GPL-3.0-only AND HPND-export-US-modify AND LGPL-2.0-or-later
+        AND GPL-3.0-or-later AND Spencer-94 AND LGPL-3.0-only
+      license_declared: LGPL-3.0-or-later AND FSFUL AND MIT AND snprintf AND Apache-2.0
+        AND GPL-1.0-or-later AND Unlicense AND GPL-2.0-only AND (Apache-2.0 OR BSD-3-Clause)
+        AND HPND-export-US AND HPND-export2-US AND GPL-2.0-or-later AND PostgreSQL
+        AND BSD-2-Clause-first-lines AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND CC-BY-4.0 AND BSD-2-Clause AND CC-BY-SA-4.0 AND LGPL-2.1-or-later AND
+        X11 AND ISC AND blessing AND TMate AND HP-1986 AND FSFULLRWD AND AGPL-3.0-or-later
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND FSFAP AND GPL-3.0-only AND HPND-export-US-modify AND LGPL-2.0-or-later
+        AND GPL-3.0-or-later AND Spencer-94 AND LGPL-3.0-only
+      short_summary: Samba Client Programs
+      supplier: 'Organization: Broadcom, Inc.'

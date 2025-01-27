@@ -1,0 +1,17 @@
+sources:
+- archive: util-macros-1.19.3.tar.bz2
+  archive_sha512sum: b9c7398a912c688a782eab5b1e0f6da2df11a430775c5c98fc3269f73a665de6eeb60d300a849e38d345714a6e51f74e9334cb6039767304cca4b93d823a53a2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The util-macros package contains the m4 macros used by
+        all of the Xorg packages. '
+      home_page: http://www.x.org
+      license_concluded: FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND X11 AND FSFULLR AND MIT AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND HPND-sell-variant AND MIT-open-group AND FSFAP
+      license_declared: FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro AND
+        X11 AND FSFULLR AND MIT AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND HPND-sell-variant AND MIT-open-group AND FSFAP
+      short_summary: m4 macros used by all of the Xorg packages.
+      supplier: 'Organization: Broadcom, Inc.'

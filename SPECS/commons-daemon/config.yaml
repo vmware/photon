@@ -1,0 +1,16 @@
+sources:
+- archive: commons-daemon-1.3.3-src.tar.gz
+  archive_sha512sum: ec246e2c05d66408374ba56b3715b13f8f24f89af11fa00c2381dc19c188f1b6228f19351c97d5774808a804b83fdbdfb8f537d099db062c39ffd281c142ee77
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Daemon Component contains a set of Java and native
+        code, including a set of Java interfaces applications must implement and Unix
+        native code to control a Java daemon from a Unix operating system. '
+      home_page: https://commons.apache.org/proper/commons-daemon/download_daemon.cgi
+      license_concluded: Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL
+      license_declared: Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL
+      short_summary: Apache Commons Daemon
+      supplier: 'Organization: Broadcom, Inc.'

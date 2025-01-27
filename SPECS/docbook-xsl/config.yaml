@@ -1,0 +1,25 @@
+sources:
+- archive: docbook-xsl-1.79.1.tar.bz2
+  archive_sha512sum: 83325cbaf1545da6b9b8b77f5f0e6fdece26e3c455164b300a1aa3d19e3bd29ae71fd563553a714a5394968d1a65684c6c7987c77524469358d18b8c227025c7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The DocBook XML DTD-4.5 package contains document type
+        definitions for verification of XML data files against the DocBook rule set.
+        These are useful for structuring books and software documentation to a standard
+        allowing you to utilize transformations already written for that standard. '
+      home_page: http://www.docbook.org
+      license_concluded: BSD-2-Clause AND HPND AND Apache-2.0 AND MPL-1.0 AND MIT-CMU
+        AND Zlib AND ICU AND BSD-3-Clause AND (Python-2.0 OR GPL-2.0-only) AND (CPL-1.0
+        OR GPL-2.0-only OR LGPL-2.1-only) AND CNRI-Python AND (MIT OR GPL-1.0-or-later)
+        AND (MIT OR GPL-2.0-only) AND Python-2.0 AND DocBook-XML AND BSL-1.0 AND LGPL-3.0-only
+        AND MIT AND (MIT OR Apache-2.0) AND DocBook-Schema AND EPL-1.0 AND W3C-19980720
+        AND W3C AND Unicode-3.0 AND SAX-PD
+      license_declared: BSD-2-Clause AND HPND AND Apache-2.0 AND MPL-1.0 AND MIT-CMU
+        AND Zlib AND ICU AND BSD-3-Clause AND (Python-2.0 OR GPL-2.0-only) AND (CPL-1.0
+        OR GPL-2.0-only OR LGPL-2.1-only) AND CNRI-Python AND (MIT OR GPL-1.0-or-later)
+        AND (MIT OR GPL-2.0-only) AND Python-2.0 AND DocBook-XML AND BSL-1.0 AND LGPL-3.0-only
+        AND MIT AND (MIT OR Apache-2.0) AND DocBook-Schema AND EPL-1.0 AND W3C-19980720
+        AND W3C AND Unicode-3.0 AND SAX-PD
+      short_summary: Docbook-xsl-1.79.1
+      supplier: 'Organization: Broadcom, Inc.'

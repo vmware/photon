@@ -1,0 +1,16 @@
+sources:
+- archive: snowballstemmer-2.2.0.tar.gz
+  archive_sha512sum: f1dee83e06fc79ffb250892fe62c75e3393b9af07fbf7cde413e6391870aa74934302771239dea5c9bc89806684f95059b00c9ffbcf7340375c9dd8f1216cd37
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package provides 16 stemmer algorithms (15 + Poerter
+        English stemmer) generated from Snowball algorithms. It includes following
+        language algorithms:  * Danish * Dutch * English (Standard, Porter) * Finnish
+        * French * German * Hungarian * Italian * Norwegian * Portuguese * Romanian
+        * Russian * Spanish * Swedish * Turkish '
+      home_page: https://github.com/shibukawa/snowball_py
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Python stemming library
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,20 @@
+sources:
+- archive: wireguard-tools-1.0.20210914.tar.xz
+  archive_sha512sum: 6727ea65551dbb064457449b93a943bd6534ca93bc7fa5704c2f6826266c98688ee9ea28731fda57a5245d5f63c05f3899fcca54e40c0b6251b7c4796e957445
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'WireGuard is a novel VPN that runs inside the Linux Kernel
+        and uses state-of-the-art cryptography (the "Noise" protocol). It aims to
+        be faster, simpler, leaner, and more useful than IPSec, while avoiding the
+        massive headache. It intends to be considerably more performant than OpenVPN.
+        WireGuard is designed as a general purpose VPN for running on embedded interfaces
+        and super computers alike, fit for many different circumstances. It runs over
+        UDP.  This package provides the wg binary for controlling WireGuard. '
+      home_page: https://www.wireguard.com/
+      license_concluded: (GPL-2.0-only OR MIT) AND LGPL-2.1-or-later AND (GPL-2.0-only
+        WITH Linux-syscall-note OR MIT) AND MIT AND ISC AND GPL-2.0-only
+      license_declared: (GPL-2.0-only OR MIT) AND LGPL-2.1-or-later AND (GPL-2.0-only
+        WITH Linux-syscall-note OR MIT) AND MIT AND ISC AND GPL-2.0-only
+      short_summary: Fast, modern, secure VPN tunnel
+      supplier: 'Organization: Broadcom, Inc.'

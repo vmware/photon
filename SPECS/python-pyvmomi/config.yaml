@@ -1,0 +1,14 @@
+sources:
+- archive: pyvmomi-8.0.2.0.1.tar.gz
+  archive_sha512sum: ed9a8115e70141805ef88d4b854d82f14b22c73bdcd701b9c2ad3e2da536505ecb3e20aff43cc8a9f3d4585daed27120e45636c0cd7af0afc70ae78c814aba64
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'pyVmomi is the Python SDK for the VMware vSphere API
+        that allows you to manage ESX, ESXi, and vCenter. '
+      home_page: https://pypi.python.org/pypi/pyvmomi
+      license_concluded: Apache-2.0 AND Vim
+      license_declared: Apache-2.0 AND Vim
+      short_summary: pyVmomi is the Python SDK for the VMware vSphere API that allows
+        you to manage ESX, ESXi, and vCenter.
+      supplier: 'Organization: Broadcom, Inc.'

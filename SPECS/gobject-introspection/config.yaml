@@ -1,0 +1,19 @@
+sources:
+- archive: gobject-introspection-1.74.0.tar.xz
+  archive_sha512sum: decff5dda0ec5ec0afda4d6bcd3bdadcbf34289002c0d9c0c77ecf8c5d3f15d196b24d8035041545031006acbdfe76af47c42da061c40e200c87f2c74cd301f0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'GObject Introspection can scan C header and source files
+        in order to generate introspection "typelib" files.  It also provides an API
+        to examine typelib files, useful for creating language bindings among other
+        things. '
+      home_page: http://live.gnome.org/GObjectIntrospection
+      license_concluded: FSFAP-no-warranty-disclaimer AND LGPL-2.0-or-later AND CC-BY-SA-3.0
+        AND BSD-2-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND
+        LGPL-2.1-or-later AND FSFULLR
+      license_declared: FSFAP-no-warranty-disclaimer AND LGPL-2.0-or-later AND CC-BY-SA-3.0
+        AND BSD-2-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND
+        LGPL-2.1-or-later AND FSFULLR
+      short_summary: Introspection system for GObject-based libraries
+      supplier: 'Organization: Broadcom, Inc.'

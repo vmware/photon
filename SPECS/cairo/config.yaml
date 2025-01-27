@@ -1,0 +1,25 @@
+sources:
+- archive: cairo-1.17.6.tar.xz
+  archive_sha512sum: 15d9a82097b9c5a43071ff9fbfe90d7aaee5fddb84f519cdddfe312c5fc7248a50b73a5351922de2aaafa4b2e86f911b3147609538346f8a7635f34d631c9146
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cairo is a 2D graphics library with support for multiple
+        output devices. '
+      home_page: https://cairographics.org
+      license_concluded: FSFULLR AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND AGPL-3.0-or-later AND BSD-3-Clause AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-only AND GPL-2.0-only AND GPL-2.0-or-later
+        AND GPL-1.0-or-later AND GPL-3.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MPL-1.1 AND LGPL-2.0-or-later AND GPL-3.0-or-later AND MIT AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND X11 AND HPND-sell-variant AND MPL-1.0
+        AND (LGPL-2.1-only OR MPL-1.1)
+      license_declared: FSFULLR AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND AGPL-3.0-or-later AND BSD-3-Clause AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-only AND GPL-2.0-only AND GPL-2.0-or-later
+        AND GPL-1.0-or-later AND GPL-3.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MPL-1.1 AND LGPL-2.0-or-later AND GPL-3.0-or-later AND MIT AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND X11 AND HPND-sell-variant AND MPL-1.0
+        AND (LGPL-2.1-only OR MPL-1.1)
+      short_summary: A 2D graphics library.
+      supplier: 'Organization: Broadcom, Inc.'

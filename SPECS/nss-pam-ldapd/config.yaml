@@ -1,0 +1,20 @@
+sources:
+- archive: nss-pam-ldapd-0.9.12.tar.gz
+  archive_sha512sum: da154303ba2f86b8653d978acfbba4633d0190afd353b6a57386391078c531bf7b11195fbabbe53cf6f36545c6f1c71b9567fd042892a73251bf0016c5f018ee
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The nss-pam-ldapd daemon, nslcd, uses a directory server
+        to look up name service information (users, groups, etc.) on behalf of a lightweight
+        nsswitch module. '
+      home_page: https://github.com/arthurdejong/nss-pam-ldapd
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        GPL-3.0-or-later WITH Autoconf-exception-macro AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-1.0-or-later
+        AND LGPL-2.1-only AND FSFAP
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-1.0-or-later
+        AND LGPL-2.1-only AND FSFAP
+      short_summary: nsswitch module which uses directory servers
+      supplier: 'Organization: Broadcom, Inc.'

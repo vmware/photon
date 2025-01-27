@@ -1,0 +1,26 @@
+sources:
+- archive: ebtables-2.0.11.tar.gz
+  archive_sha512sum: 43a04c6174c8028c501591ef260526297e0f018016f226e2a3bcf80766fddf53d4605c347554d6da7c4ab5e2131584a18da20916ffddcbf2d26ac93b00c5777f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Ethernet bridge tables is a firewalling tool to transparently
+        filter network traffic passing a bridge. The filtering possibilities are limited
+        to link layer filtering and some basic filtering on higher network layers.  This
+        tool is the userspace control for the bridge and %{name} kernel components
+        (built by default in Fedora kernels).  The %{name} tool can be used together
+        with the other Linux filtering tools, like iptables. There are no known incompatibility
+        issues. '
+      home_page: http://ebtables.netfilter.org
+      license_concluded: GPL-1.0-or-later AND X11 AND FSFULLRWD AND FSFUL AND GPL-2.0-only
+        WITH Linux-syscall-note AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-only
+        AND FSFULLR AND GPL-2.0-or-later AND GPL-3.0-or-later
+      license_declared: GPL-1.0-or-later AND X11 AND FSFULLRWD AND FSFUL AND GPL-2.0-only
+        WITH Linux-syscall-note AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-only
+        AND FSFULLR AND GPL-2.0-or-later AND GPL-3.0-or-later
+      short_summary: A filtering tool for a Linux-based bridging firewall.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: thread_safe-0.3.6.gem
+  archive_sha512sum: a11808576392c068e1cb31faad706be2b1bbfa4837c655c2ab1d5a235b62b25ece62065de6b65bd25496fa827ed89eb0796b90467107df255825e01316ff1805
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A collection of data structures and utilities to make
+        thread-safe programming in Ruby easier '
+      home_page: https://rubygems.org/gems/activesupport/thread_safe/0.3.6
+      license_concluded: CC0-1.0 AND MIT AND Apache-2.0
+      license_declared: CC0-1.0 AND MIT AND Apache-2.0
+      short_summary: Thread safe programming support for Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: dosfstools-4.2.tar.gz
+  archive_sha512sum: f4511e18c370ef55439babd71f2d7f62db0ee8ba667a54b91a312cbfef8ebc2f53788435e9b4689d9404726c4cd2388be2dae6227d431b9fc13415735a219c10
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'dosfstools contains utilities for making and checking
+        MS-DOS FAT filesystems. '
+      home_page: http://github.com/dosfstools/dosfstools
+      license_concluded: GPL-3.0-only AND GPL-1.0-or-later AND GPL-3.0-or-later
+      license_declared: GPL-3.0-only AND GPL-1.0-or-later AND GPL-3.0-or-later
+      short_summary: Dos Filesystem tools
+      supplier: 'Organization: Broadcom, Inc.'

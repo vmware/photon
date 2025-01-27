@@ -1,0 +1,23 @@
+sources:
+- archive: libcgroup-3.0.0.tar.gz
+  archive_sha512sum: 1e8a7c9a71d928ab0e354254b007b30fc159a30e441bd52a03ded142420c94e130594bb512680c62fc22f5193934fb78afc31453342b032d1db3197fd4c3e606
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Control groups infrastructure. The library helps manipulate,
+        control, administrate and monitor control groups and the associated controllers. '
+      home_page: http://libcg.sourceforge.net
+      license_concluded: GPL-3.0-or-later WITH Libtool-exception AND FSFULLR AND LGPL-2.1-only
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND X11 AND (Ruby OR LGPL-3.0-or-later) AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFUL AND BSD-3-Clause
+        AND FSFULLRWD AND GPL-3.0-or-later AND (BSD-3-Clause OR GPL-1.0-or-later)
+        AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-or-later
+      license_declared: GPL-3.0-or-later WITH Libtool-exception AND FSFULLR AND LGPL-2.1-only
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND X11 AND (Ruby OR LGPL-3.0-or-later) AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFUL AND BSD-3-Clause
+        AND FSFULLRWD AND GPL-3.0-or-later AND (BSD-3-Clause OR GPL-1.0-or-later)
+        AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-or-later
+      short_summary: Library to control and monitor control groups
+      supplier: 'Organization: Broadcom, Inc.'

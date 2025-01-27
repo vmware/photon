@@ -1,0 +1,13 @@
+sources:
+- archive: semodule-utils-3.4.tar.gz
+  archive_sha512sum: 3a102eb83e1feff9796c4da572500be1e3a8a8bc8a7eed762ef4144761280f0513050c714aa287b1e4e67d2938f9f9a0ee5036762472d732eae0288b437cb7a9
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'semodule-utils is set of tools for SELinux policy module
+        manipulations. '
+      home_page: https://github.com/SELinuxProject/selinux/wiki
+      license_concluded: GPL-2.0-only
+      license_declared: GPL-2.0-only
+      short_summary: SELinux policy module utils
+      supplier: 'Organization: Broadcom, Inc.'

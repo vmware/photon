@@ -1,0 +1,15 @@
+sources:
+- archive: authbind_2.1.3.tar.gz
+  archive_sha512sum: 357c8f5c5ad446e75a597d5bc5bb5af7db17de771643a39976b5ac1425f03bf44f322c8dd07b0e1b04a0bf78d5000841b4866e0d0945584689e99291156dfac1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The authbind software allows a program that would normally
+        require superuser privileges to access privileged network services to run
+        as a non-privileged user. '
+      home_page: http://www.chiark.greenend.org.uk/ucgi/~ian/git/authbind.git
+      license_concluded: GPL-2.0-or-later AND GPL-1.0-or-later
+      license_declared: GPL-2.0-or-later AND GPL-1.0-or-later
+      short_summary: Operating system utility that allows programs to run as non-previleged
+        user.
+      supplier: 'Organization: Broadcom, Inc.'

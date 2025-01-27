@@ -1,0 +1,15 @@
+sources:
+- archive: rdiscount-2.2.7.gem
+  archive_sha512sum: 4f60dc0dbfb6b8f95f80d577c872c2a747d7d15e9fc1f1bd3640f1207a5d262068754dcb6d7b53348fd69de20b85534a390aace35d1eff31112bfbe0f77569d1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "RDiscount converts documents in Markdown syntax to HTML.\
+        \ It uses the excellent Discount processor by David Loren Parsons for this\
+        \ purpose, and thereby inherits Discount\u2019s numerous useful extensions\
+        \ to the Markdown language. "
+      home_page: https://rubygems.org/gems/rdiscount/versions/2.2.7
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Fast Implementation of Gruber's Markdown in C
+      supplier: 'Organization: Broadcom, Inc.'

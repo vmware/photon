@@ -1,0 +1,18 @@
+sources:
+- archive: synce4l-1.0.0.tar.gz
+  archive_sha512sum: b97656a50ee4cabdaddde166c2b74b16ebca339defb69e265c5222198c6d469af4e30328c3af47dcbe916f8474f04369e49f5fe98feb509cf7bb41e69e5d429b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This software is an implementation of  Synchronous Ethernet
+        (SyncE) according to ITU-T Recommendation G.8264(PTP). The design goal is
+        to provide logic to supported hardware by processing Ethernet Synchronization
+        Messaging Channel (ESMC) and control Ethernet Equipment Clock (EEC) on Network
+        Card Interface (NIC). '
+      home_page: https://github.com/intel/synce4l
+      license_concluded: (GPL-2.0-only WITH Linux-syscall-note OR BSD-3-Clause) AND
+        GPL-2.0-or-later AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-only
+      license_declared: (GPL-2.0-only WITH Linux-syscall-note OR BSD-3-Clause) AND
+        GPL-2.0-or-later AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-only
+      short_summary: Linux SyncE implementation
+      supplier: 'Organization: Broadcom, Inc.'

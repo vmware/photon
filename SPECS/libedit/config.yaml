@@ -1,0 +1,20 @@
+sources:
+- archive: libedit-20221030-3.1.tar.gz
+  archive_sha512sum: 41eb46feaffa909e8790b9a9e304d5246e82ab366721196126a923d68b4d4964d0a433fe238f9d5e0a00aefb5c8cb66132150792929a793785ad091d91016f97
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Libedit is an autotool- and libtoolized port of the NetBSD
+        Editline library. It provides generic line editing, history, and tokenization
+        functions, similar to those found in GNU Readline. '
+      home_page: http://www.thrysoee.dk/editline
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND FSFULLRWD AND
+        X11 AND FSFULLR AND BSD-2-Clause AND GPL-2.0-or-later WITH Libtool-exception
+        AND BSD-3-Clause AND GPL-2.0-only AND ISC AND GPL-2.0-or-later AND FSFUL
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND MIT AND FSFULLRWD AND X11 AND FSFULLR
+        AND BSD-2-Clause AND GPL-2.0-or-later WITH Libtool-exception AND BSD-3-Clause
+        AND GPL-2.0-only AND ISC AND GPL-2.0-or-later AND FSFUL
+      short_summary: The NetBSD Editline library
+      supplier: 'Organization: Broadcom, Inc.'

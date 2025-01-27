@@ -1,0 +1,13 @@
+sources:
+- archive: irqbalance-1.9.2.tar.gz
+  archive_sha512sum: d0fb157fbfc096fa9cfb4562e51fd4c3f4fa8788f72377c58b27df67c70073b787bba05e39809dcbe17532bb5b8e74b6d27c5e5b3d9af09bc9ce1a9b6aab9378
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Irqbalance is a daemon to help balance the cpu load generated
+        by interrupts across all of a systems cpus. '
+      home_page: https://github.com/Irqbalance/irqbalance
+      license_concluded: LGPL-2.1-or-later AND GPL-2.0-only
+      license_declared: LGPL-2.1-or-later AND GPL-2.0-only
+      short_summary: Irqbalance daemon
+      supplier: 'Organization: Broadcom, Inc.'

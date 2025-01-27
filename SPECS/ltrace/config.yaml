@@ -1,0 +1,18 @@
+sources:
+- archive: ltrace_0.7.3.orig.tar.bz2
+  archive_sha512sum: a842b16dcb81da869afa0bddc755fdff0d57b35672505bf2c7164fd983b1938d28b126714128930994cc1230ced69d779456d0cfc16f4008c9b6d19f0852285d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'ltrace intercepts and records dynamic library calls which
+        are called by an executed process and the signals received by that process.
+        It can also intercept and print the system calls executed by the program. '
+      home_page: http://www.ltrace.org/
+      license_concluded: FSFUL AND FSFULLRWD AND FSFULLR AND GPL-2.0-only AND GPL-2.0-or-later
+        AND X11 AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFAP AND GPL-2.0-or-later WITH Libtool-exception
+      license_declared: FSFUL AND FSFULLRWD AND FSFULLR AND GPL-2.0-only AND GPL-2.0-or-later
+        AND X11 AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFAP AND GPL-2.0-or-later WITH Libtool-exception
+      short_summary: ltrace intercepts and records dynamic library calls.
+      supplier: 'Organization: Broadcom, Inc.'

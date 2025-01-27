@@ -1,0 +1,12 @@
+sources:
+- archive: s3transfer-0.6.0.tar.gz
+  archive_sha512sum: 0c1c3306015cab4a4436b1d2fec6708e17f4c5111f8a265fbfe134defebda33a43bd985e559be993b6175af9eee142e9f27da123f8d14f77cfc59e48ca1b905f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A transfer manager for Amazon Web Services S3 '
+      home_page: https://files.pythonhosted.org/packages/66/f5/5ca537483fa5e96fbd455f52a69fc70c5f659f7e8c9189a1dbc211e1ccf9/s3transfer-0.3.7.tar.gz
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Amazon S3 Transfer Manager for Python
+      supplier: 'Organization: Broadcom, Inc.'

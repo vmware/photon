@@ -1,0 +1,15 @@
+sources:
+- archive: rng-tools-5.tar.gz
+  archive_sha512sum: 58047c37cad4f5f1210b696e4dba122878f78e57d05d9cb822f79234240ecce31efd2d39061fea1eb5b2e81d48d8c3bf6b92d06451f1ce5d5db7117704e89c50
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The rng-tools is a set of utilities related to random
+        number generation in kernel. '
+      home_page: https://sourceforge.net/projects/gkernel/
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLR AND FSFAP AND GPL-2.0-or-later AND FSFUL AND FSFULLRWD AND X11
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLR AND FSFAP AND GPL-2.0-or-later AND FSFUL AND FSFULLRWD AND X11
+      short_summary: RNG deamon and tools
+      supplier: 'Organization: Broadcom, Inc.'

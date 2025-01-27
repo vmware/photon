@@ -1,0 +1,16 @@
+sources:
+- archive: cachetools-5.4.0.tar.gz
+  archive_sha512sum: ee45747725bed2e3f06b493cf052896af48485907792f1a8331b1dcfca8a52942d2a49eb8c2bf4942ef749f4266d239e95d4165fb681a74fa57d0fe126fc4397
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module provides various memoizing collections and
+        decorators, including a variant of the Python 3 Standard Library @lru_cache
+        function decorator.  This module provides multiple cache implementations based
+        on different cache algorithms, as well as decorators for easily memoizing
+        function and method calls. '
+      home_page: https://pypi.python.org/pypi/cachetools
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Extensible memoizing collections and decorators
+      supplier: 'Organization: Broadcom, Inc.'

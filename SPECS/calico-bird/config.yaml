@@ -1,0 +1,14 @@
+sources:
+- archive: calico-bird-0.3.3.tar.gz
+  archive_sha512sum: eeb0d839521f6f66c64bc752c92703a5ade7743967674b322a676b8f1fe702555815a4b16b270dc2d66292409e05e5303c993c96f82a76e55fd2abec5f173623
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Project Calico fork of the BIRD Internet Routing Daemon. '
+      home_page: https://github.com/projectcalico/bird
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        GPL-1.0-or-later AND GPL-2.0-or-later
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-1.0-or-later
+        AND GPL-2.0-or-later
+      short_summary: Project Calico fork of the BIRD Internet Routing Daemon
+      supplier: 'Organization: Broadcom, Inc.'

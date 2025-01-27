@@ -1,0 +1,13 @@
+sources:
+- archive: io-event-1.1.0.gem
+  archive_sha512sum: b95e0a9c7e38e4116af1cdd3a00d3f5c59b676e11393789f3859d8b03310ccb177c0d240f00e6a0c184548f9316322a416ad4a4960da645e1c787d96b0495a11
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides low level cross-platform primitives for constructing
+        event loops, with support for select, kqueue, epoll and io_uring. '
+      home_page: https://rubygems.org/gems/io-event/versions/1.1.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: An event loop.
+      supplier: 'Organization: Broadcom, Inc.'

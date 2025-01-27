@@ -1,0 +1,20 @@
+sources:
+- archive: gpsd-3.25.tar.gz
+  archive_sha512sum: 0684cbd30defa1a328898589e1d61b2431462a774aff56c588bd00c1fbd92ac94cf6fc1f2b981debac78c34ab09fa24f48ed6334f3ecd09e6b8f5faa92ae1085
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'gpsd is a service daemon that mediates access to a GPS
+        sensor connected to the host computer by serial or USB interface, making its
+        data on the location/course/velocity of the sensor available to be queried
+        on TCP port 2947 of the host computer.  With gpsd, multiple GPS client applications
+        (such as navigational and wardriving software) can share access to a GPS without
+        contention or loss of data.  Also, gpsd responds to queries with a format
+        that is substantially easier to parse than NMEA 0183. '
+      home_page: https://gpsd.gitlab.io/gpsd
+      license_concluded: BSD-3-Clause AND BSD-2-Clause AND GPL-2.0-only AND NTP-0
+        AND ISC
+      license_declared: BSD-3-Clause AND BSD-2-Clause AND GPL-2.0-only AND NTP-0 AND
+        ISC
+      short_summary: Service daemon for mediating access to a GPS
+      supplier: 'Organization: Broadcom, Inc.'

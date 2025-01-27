@@ -1,0 +1,24 @@
+sources:
+- archive: unbound-1.21.0.tar.gz
+  archive_sha512sum: 481534271f443d72635025c79b83bb71bb77b96ae81ec74c7f82f1e958160f5d75489931bdbdf460a72c871268d33628be990d6acf3c5303f04f7ff347ad83c1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Unbound is a validating, recursive, and caching DNS resolver. '
+      home_page: http://www.unbound.net
+      license_concluded: CC0-1.0 AND FSFULLR AND ISC AND HPND AND MIT AND GPL-3.0-or-later
+        AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        DOC AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND FSFULLRWD AND BSD-2-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL AND Apache-2.0 AND X11
+      license_declared: CC0-1.0 AND FSFULLR AND ISC AND HPND AND MIT AND GPL-3.0-or-later
+        AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        DOC AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND FSFULLRWD AND BSD-2-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL AND Apache-2.0 AND X11
+      short_summary: unbound dns server
+      supplier: 'Organization: Broadcom, Inc.'

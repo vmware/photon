@@ -1,0 +1,13 @@
+sources:
+- archive: pydantic-1.10.1.tar.gz
+  archive_sha512sum: e0394b90c39fd5294b7f4f280548d07113d771737943c390405d5bdbaf05216dc20c6adb7860cbbe1f8ee9698909447e72a8a5245009c710fe9b172d53bb2260
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Data validation and settings management using python
+        type hinting. '
+      home_page: https://pypi.org/project/pydantic
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Data validation using Python type hinting
+      supplier: 'Organization: Broadcom, Inc.'

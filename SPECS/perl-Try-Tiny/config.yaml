@@ -1,0 +1,19 @@
+sources:
+- archive: Try-Tiny-0.31.tar.gz
+  archive_sha512sum: 1a3c852e56797d81da60a4f4887cb70fc575eca83d10b8cd12fe5d5d0008a967801218f3a5277a2f1347ade95b9515c1f237333e491742d06614c0beecf44768
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module provides bare bones try/catch/finally statements
+        that are designed to minimize common mistakes with eval blocks, and NOTHING
+        else.  This is unlike TryCatch which provides a nice syntax and avoids adding
+        another call stack layer, and supports calling return from the try block to
+        return from the parent subroutine. These extra features come at a cost of
+        a few dependencies, namely Devel::Declare and Scope::Upper which are occasionally
+        problematic, and the additional catch filtering uses Moose type constraints
+        which may not be desirable either. '
+      home_page: http://search.cpan.org/~ether/Try-Tiny-0.28/
+      license_concluded: MIT AND MIT-0
+      license_declared: MIT AND MIT-0
+      short_summary: Minimal try/catch with proper preservation of $@
+      supplier: 'Organization: Broadcom, Inc.'

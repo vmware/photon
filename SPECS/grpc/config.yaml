@@ -1,0 +1,65 @@
+sources:
+- archive: data-plane-api-9c42588c956220b48eb3099d186487c2f04d32ec.tar.gz
+  archive_sha512sum: 9b1ceff5d018e70b36e02aa1b583f5495b0eb92506055bf6913d2e7ef401d3602cba8723efbc178ee31fdef9aba510fc2284612ebe22a24b5b4a703f07099897
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Envoy REST/proto API definitions and documentation.
+      home_page: https://github.com/envoyproxy/data-plane-api
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Envoy REST/proto API definitions and documentation.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: googleapis-2f9af297c84c55c8b871ba4495e01ade42476c92.tar.gz
+  archive_sha512sum: cdeefae807df7097174b4bb28c0900b06a68d424c00ebba4ff5add260c9c651351d5e429bfc5de42f95ebb75dadec313f7bd3991c2fa476c9104f9ea656acad4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Public interface definitions of Google APIs.
+      home_page: https://github.com/googleapis/googleapis
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Public interface definitions of Google APIs.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: grpc-1.59.5.tar.gz
+  archive_sha512sum: 9f35ee3185c4cbb4140b86380e97d62dc6ecd886df3ec3aa3e917dc3f1e3acf518e2a28ed143f430869508f3c853b3f3f21226d74bab42f70b99a7096e0e18af
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Remote Procedure Calls (RPCs) provide a useful abstraction
+        for building distributed applications and services. The libraries in this
+        repository provide a concrete implementation of the gRPC protocol, layered
+        over HTTP/2. These libraries enable communication between clients and servers
+        using and combination of the supported languages. '
+      home_page: https://grpc.io
+      license_concluded: BSD-3-Clause AND Apache-2.0 AND BSD-2-Clause AND MPL-2.0
+        AND MIT AND ISC
+      license_declared: BSD-3-Clause AND Apache-2.0 AND BSD-2-Clause AND MPL-2.0 AND
+        MIT AND ISC
+      short_summary: Google RPC
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: opencensus-proto-0.3.0.tar.gz
+  archive_sha512sum: 39231a495dfdccfc8267d1e6af2ac624feea611a8691c10ec570de2194b352e4a9c3b0ce1606414fb98e5d77c66873bed4a9e56512efa12b267b8a91e0c5851e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Language Independent Interface Types For OpenCensus
+      home_page: https://github.com/census-instrumentation/opencensus-proto
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Language Independent Interface Types For OpenCensus
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: xds-cb28da3451f158a947dfc45090fe92b07b243bc1.tar.gz
+  archive_sha512sum: eb5878764503872c18b8750b20e2c2e2224e73d9601197752cea7e1e4171899474ad4f39aacc80d6c1b57a50b2161d39f219df64ffb250d045af482dae01ea79
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: The objective of the xDS API Working Group (xDS-WG) is
+        to bring together parties across the industry interested in a common control
+        and configuration API for data plane proxies and load balancers, based on
+        the xDS APIs.
+      home_page: https://github.com/cncf/xds
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: xDS API Working Group
+      supplier: 'Organization: Broadcom, Inc.'

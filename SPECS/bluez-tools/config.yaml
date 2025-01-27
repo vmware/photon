@@ -1,0 +1,12 @@
+sources:
+- archive: bluez-tools-0.2.0.20140808.tar.gz
+  archive_sha512sum: d0634e24b9c9748e442971edbdbb9be0533f9ba4da3e3e6ba8db266b87f0c60e15a79fb77c2bd633014862d2dbb34f457cdb0888578d3f64d5bec2bf82633839
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A set of tools to manage bluetooth devices for linux. '
+      home_page: https://code.google.com/p/bluez-tools
+      license_concluded: GPL-2.0-or-later AND GPL-3.0-or-later AND FSFAP AND GPL-2.0-only
+      license_declared: GPL-2.0-or-later AND GPL-3.0-or-later AND FSFAP AND GPL-2.0-only
+      short_summary: A set of tools to manage bluetooth devices for linux
+      supplier: 'Organization: Broadcom, Inc.'

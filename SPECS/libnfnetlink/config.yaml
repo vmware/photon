@@ -1,0 +1,22 @@
+sources:
+- archive: libnfnetlink-1.0.2.tar.bz2
+  archive_sha512sum: a5e9ae22831f1d17703f83953f3b0ef898e8b3fa7f0f771b038db51816ddae3158574380ac4d45c09fb8fbb8677e2ccdcc5c4736e3b09de06eac99f899130854
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libnfnetlink is the low-level library for netfilter related
+        kernel/userspace communication. It provides a generic messaging infrastructure
+        for in-kernel netfilter subsystems (such as nfnetlink_log, nfnetlink_queue,
+        nfnetlink_conntrack) and their respective users and/or management tools in
+        userspace. '
+      home_page: http://www.netfilter.org/projects/libnfnetlink/index.html
+      license_concluded: FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLR AND GPL-3.0-or-later AND GPL-2.0-or-later AND FSFUL AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND X11 AND GPL-3.0-or-later WITH Libtool-exception
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception
+      license_declared: FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLR AND GPL-3.0-or-later AND GPL-2.0-or-later AND FSFUL AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND X11 AND GPL-3.0-or-later WITH Libtool-exception
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception
+      short_summary: Library for netfilter related kernel/userspace communication
+      supplier: 'Organization: Broadcom, Inc.'

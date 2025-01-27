@@ -1,0 +1,13 @@
+sources:
+- archive: binary-1.0.0.tar.gz
+  archive_sha512sum: 474ba683ecd8864fa50fdf4e2533947460449241abf34b15199a1b478e6e9a4ad56c888b6bf54c05be2936c32f7fa8d783004fc0466c3458433e0dc3e8ee711f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Binary provides a bug-free and easy way to convert between
+        and within binary (IEC) and decimal (SI) units. '
+      home_page: https://github.com/ofek/binary
+      license_concluded: (Apache-2.0 OR MIT) AND MIT AND Apache-2.0
+      license_declared: (Apache-2.0 OR MIT) AND MIT AND Apache-2.0
+      short_summary: Library to convert between binary and SI units
+      supplier: 'Organization: Broadcom, Inc.'

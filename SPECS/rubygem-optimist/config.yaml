@@ -1,0 +1,16 @@
+sources:
+- archive: optimist-3.1.0.gem
+  archive_sha512sum: adadc1722d970cc4c002a0983d0ab2dbb3683777310c7085950e07fa18c94e4ab788bd10bca9e1d076cf77637d09e2d6bb969f5d5b35f0b648881e744f42c785
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Optimist is a commandline option parser for Ruby that
+        just gets out of your way. One line of code per option is all you need to
+        write. For that, you get a nice automatically-generated help page, robust
+        option parsing, and sensible defaults for everything you don''t specify. '
+      home_page: https://github.com/vmware/optimist
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Optimist is a commandline option parser for Ruby that just gets
+        out of your way.
+      supplier: 'Organization: Broadcom, Inc.'

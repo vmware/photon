@@ -1,0 +1,20 @@
+sources:
+- archive: tclap-1.2.5.tar.gz
+  archive_sha512sum: 3b5b3d76e8ff21133001f5f9589fa6ec143729909bf0b9cc9934377bce178360c161fb5c1f4c4d9e9c74b09cff3d65f1d5100e61d4a732283524a78b6f236b10
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'TCLAP is a small, flexible library that provides a simple
+        interface for defining and accessing command line arguments. It was intially
+        inspired by the user friendly CLAP libary. The difference is that this library
+        is templatized, so the argument class is type independent. Type independence
+        avoids identical-except-for-type objects, such as IntArg, FloatArg, and StringArg.
+        While the library is not strictly compliant with the GNU or POSIX standards,
+        it is close. '
+      home_page: http://tclap.sourceforge.net
+      license_concluded: FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later AND MIT AND (GPL-2.0-only OR MIT) AND FSFULLR AND FSFULLRWD
+      license_declared: FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later AND MIT AND (GPL-2.0-only OR MIT) AND FSFULLR AND FSFULLRWD
+      short_summary: simple interface for defining and acessing commandline arguments
+      supplier: 'Organization: Broadcom, Inc.'

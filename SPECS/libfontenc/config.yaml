@@ -1,0 +1,16 @@
+sources:
+- archive: libfontenc-1.1.2.tar.bz2
+  archive_sha512sum: e0905592b7ef65acb8298b9807f90e68d18eddf3112c6232c1c774603c95ca7ec7f6db161e133dadc00d8791c5f76d4c3d65aa95544a1500c0767b88fdb52f45
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 Fontenc runtime library. '
+      home_page: http://www.x.org
+      license_concluded: FSFULLRWD AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLR AND HPND-sell-variant AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND MIT-open-group AND MIT AND FSFUL
+      license_declared: FSFULLRWD AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLR AND HPND-sell-variant AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND MIT-open-group AND MIT AND FSFUL
+      short_summary: X11 Fontenc runtime library.
+      supplier: 'Organization: Broadcom, Inc.'

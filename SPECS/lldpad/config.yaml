@@ -1,0 +1,19 @@
+sources:
+- archive: lldpad-1.1.tar.gz
+  archive_sha512sum: 794bd2d43e7b6e76a1aa9d1e650f24a52b4cb66166058ce4ec3f0c6567bcdff149ca86ab9108e82be14f7e7bf43c7486479edc23d851e739a2a22de7038ecb35
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The lldpad package comes with utilities to manage an
+        LLDP interface with support for reading and configuring TLVs. TLVs and interfaces
+        are individual controlled allowing flexible configuration for TX only, RX
+        only, or TX/RX modes per TLV. '
+      home_page: http://open-lldp.org/
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-3-Clause AND GPL-2.0-or-later AND GPL-1.0-or-later AND (GPL-2.0-only
+        OR BSD-3-Clause)
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-3-Clause AND GPL-2.0-or-later AND GPL-1.0-or-later AND (GPL-2.0-only
+        OR BSD-3-Clause)
+      short_summary: Intel LLDP Agent
+      supplier: 'Organization: Broadcom, Inc.'

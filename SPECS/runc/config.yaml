@@ -1,0 +1,17 @@
+sources:
+- archive: runc-1.1.14.tar.gz
+  archive_sha512sum: bdefbf34cf57485c6b961babc8294d0e6b2e003eb836b8e99c49ef4d00acf11f30a46ad0bcd399ee9346610419591daf1eecb3b6b127962357d629bf5f252e22
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'runC is a CLI tool for spawning and running containers
+        according to the OCI specification. Containers are started as a child process
+        of runC and can be embedded into various other systems without having to run
+        a daemon. '
+      home_page: https://runc.io
+      license_concluded: BSD-3-Clause AND (Apache-2.0 OR LGPL-2.1-or-later) AND LGPL-2.1-or-later
+        AND CC-BY-4.0 AND GPL-1.0-or-later AND Apache-2.0 AND MIT AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND (Apache-2.0 OR LGPL-2.1-or-later) AND LGPL-2.1-or-later
+        AND CC-BY-4.0 AND GPL-1.0-or-later AND Apache-2.0 AND MIT AND BSD-2-Clause
+      short_summary: CLI tool for spawning and running containers per OCI spec.
+      supplier: 'Organization: Broadcom, Inc.'

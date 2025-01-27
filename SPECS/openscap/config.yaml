@@ -1,0 +1,19 @@
+sources:
+- archive: openscap-1.3.6.tar.gz
+  archive_sha512sum: 5e4d6c4addc15b2a0245b5caef80fda3020f1cac83ed4aa436ef3f1703d1d761060c931c2536fa68de7ad5bab002b79c8b2d1e5f7695d46249f4562f5a1569a0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'SCAP is a multi-purpose framework of specifications that
+        supports automated configuration, vulnerability and patch checking, technical
+        control compliance activities, and security measurement. OpenSCAP has received
+        a NIST certification for its support of SCAP 1.2. '
+      home_page: https://www.open-scap.org
+      license_concluded: W3C-19980720 AND GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later
+        AND BSD-3-Clause AND LGPL-2.0-or-later AND MIT AND LGPL-2.0-only AND GPL-1.0-or-later
+        AND Apache-2.0 AND BSD-2-Clause AND (GPL-2.0-only OR MIT)
+      license_declared: W3C-19980720 AND GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later
+        AND BSD-3-Clause AND LGPL-2.0-or-later AND MIT AND LGPL-2.0-only AND GPL-1.0-or-later
+        AND Apache-2.0 AND BSD-2-Clause AND (GPL-2.0-only OR MIT)
+      short_summary: Open Source Security Compliance Solution
+      supplier: 'Organization: Broadcom, Inc.'

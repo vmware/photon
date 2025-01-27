@@ -1,0 +1,23 @@
+sources:
+- archive: libxml2-2.12.6.tar.xz
+  archive_sha512sum: 19d6901c0f189813e8bd20ffdfbb29d8545ca30154d1f3cc82624d64e4db3cfbe8eef7e8ccc1e195289f1bf94bb50fefcf11a95badb0ddeb845b4e4ea5a819ac
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libxml2 package contains libraries and utilities
+        used for parsing XML files. '
+      home_page: http://xmlsoft.org
+      license_concluded: GPL-3.0-or-later AND GPL-3.0-or-later WITH Libtool-exception
+        AND Latex2e-translated-notice AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MIT AND CC-BY-SA-2.0 AND FSFAP AND FSFULLR AND GPL-1.0-or-later AND GPL-2.0-only
+        AND GPL-2.0-or-later AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND
+        GFDL-1.1-or-later AND ISC-Veillard AND FSFULLRWD AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0
+      license_declared: GPL-3.0-or-later AND GPL-3.0-or-later WITH Libtool-exception
+        AND Latex2e-translated-notice AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MIT AND CC-BY-SA-2.0 AND FSFAP AND FSFULLR AND GPL-1.0-or-later AND GPL-2.0-only
+        AND GPL-2.0-or-later AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND
+        GFDL-1.1-or-later AND ISC-Veillard AND FSFULLRWD AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0
+      short_summary: Libxml2
+      supplier: 'Organization: Broadcom, Inc.'

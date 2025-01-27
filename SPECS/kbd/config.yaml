@@ -1,0 +1,27 @@
+sources:
+- archive: kbd-2.2.0.tar.xz
+  archive_sha512sum: 5f407c20739487e423e8390e429d30838a1a69a0a50db083803ce56da919e25ce480b63fd1bcfac9eb362095f17e575783b09eaa55e26b442bfa3ed838e04f13
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Kbd package contains key-table files, console fonts,
+        and keyboard utilities. '
+      home_page: http://ftp.altlinux.org/pub/people/legion/kbd
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-2.0 AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-2.1-or-later AND X11 AND GPL-3.0-or-later
+        AND MIT AND GPL-2.0-only AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND
+        LGPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND (MIT OR BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only
+        OR MIT) AND FSFULLR AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFAP AND GPL-1.0-or-later
+        AND BSD-3-Clause AND FSFULLRWD AND FSFUL AND (MIT OR GPL-2.0-only)
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-2.0 AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-2.1-or-later AND X11 AND GPL-3.0-or-later
+        AND MIT AND GPL-2.0-only AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND
+        LGPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND (MIT OR BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only
+        OR MIT) AND FSFULLR AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFAP AND GPL-1.0-or-later
+        AND BSD-3-Clause AND FSFULLRWD AND FSFUL AND (MIT OR GPL-2.0-only)
+      short_summary: Key table files, console fonts, and keyboard utilities
+      supplier: 'Organization: Broadcom, Inc.'

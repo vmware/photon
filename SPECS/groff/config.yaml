@@ -1,0 +1,27 @@
+sources:
+- archive: groff-1.22.4.tar.gz
+  archive_sha512sum: 1c42d3cd71efaf067b5850945d9097fa1f0fadd5e2b6ba7446bd9d4f439fe1ad058e4ddb0d4e0f503682137dfc7c822944ce1e3e5cf981673f8ba197ea77126d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: The Groff package contains programs for processing and
+        formatting text.
+      home_page: http://www.gnu.org/software/groff
+      license_concluded: FSFULLRWD AND FSFUL AND GPL-2.0-or-later AND MIT AND GPL-2.0-only
+        AND HPND-sell-variant AND BSD-4.3TAHOE AND GFDL-1.3-invariants-only AND BSD-3-Clause
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic AND GFDL-1.1-or-later AND GFDL-1.3-only AND
+        X11 AND GPL-3.0-only AND FSFAP AND Latex2e AND GPL-3.0-or-later AND LGPL-2.0-or-later
+        AND FSFAP-no-warranty-disclaimer AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-4.3RENO AND
+        FSFULLR AND GFDL-1.3-or-later AND GPL-1.0-or-later AND Multics
+      license_declared: FSFULLRWD AND FSFUL AND GPL-2.0-or-later AND MIT AND GPL-2.0-only
+        AND HPND-sell-variant AND BSD-4.3TAHOE AND GFDL-1.3-invariants-only AND BSD-3-Clause
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic AND GFDL-1.1-or-later AND GFDL-1.3-only AND
+        X11 AND GPL-3.0-only AND FSFAP AND Latex2e AND GPL-3.0-or-later AND LGPL-2.0-or-later
+        AND FSFAP-no-warranty-disclaimer AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-4.3RENO AND
+        FSFULLR AND GFDL-1.3-or-later AND GPL-1.0-or-later AND Multics
+      short_summary: Programs for processing and formatting text
+      supplier: 'Organization: Broadcom, Inc.'

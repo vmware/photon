@@ -1,0 +1,20 @@
+sources:
+- archive: cups-2.4.11-source.tar.gz
+  archive_sha512sum: 5868f069cb5eaa5c74e703ed7773914376fb819ebabd7881df8726092eab390c8a1db75c4d08377a836a87807765ad2c16a15b406ab0580fdda2b176e2da3162
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: The Common Unix Printing System (CUPS) is a print spooler
+        and associated utilities. It is based on the Internet Printing Protocol and
+        provides printing services to most PostScript and raster printers.
+      home_page: https://openprinting.github.io/cups
+      license_concluded: BSD-2-Clause AND Spencer-94 AND AML AND Zlib AND LGPL-2.0-or-later
+        AND MIT AND CC0-1.0 AND GPL-1.0-or-later AND LGPL-2.0-only AND FSFUL AND Apache-2.0
+        WITH LLVM-exception AND GPL-2.0-or-later AND EPL-1.0 AND Apache-2.0 AND BSD-3-Clause
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only
+      license_declared: BSD-2-Clause AND Spencer-94 AND AML AND Zlib AND LGPL-2.0-or-later
+        AND MIT AND CC0-1.0 AND GPL-1.0-or-later AND LGPL-2.0-only AND FSFUL AND Apache-2.0
+        WITH LLVM-exception AND GPL-2.0-or-later AND EPL-1.0 AND Apache-2.0 AND BSD-3-Clause
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only
+      short_summary: The Common UNIX Printing System
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,16 @@
+sources:
+- archive: Js2Py-0.74.tar.gz
+  archive_sha512sum: cb2f42c2bec0c15dadc301ee0a7ac452cc8c4bba4669e95f1155863590d6d00781883b54d4dab755a0f66eb6e30990fedca732494b1f8b6c07dc29f5203a8c8c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Pure Python JavaScript Translator/Interpreter. Everything
+        is done in 100% pure Python so it''s extremely easy to install and use. Supports
+        Python 2 & 3. Full support for ECMAScript 5.1, ECMA 6 support is still experimental. '
+      home_page: https://pypi.python.org/pypi/Js2Py
+      license_concluded: GPL-1.0-or-later AND BSD-3-Clause AND MIT AND (MIT OR GPL-2.0-only)
+        AND BSD-2-Clause AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later)
+      license_declared: GPL-1.0-or-later AND BSD-3-Clause AND MIT AND (MIT OR GPL-2.0-only)
+        AND BSD-2-Clause AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later)
+      short_summary: Pure Python JavaScript Translator/Interpreter.
+      supplier: 'Organization: Broadcom, Inc.'

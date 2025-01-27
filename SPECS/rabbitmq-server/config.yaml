@@ -1,0 +1,16 @@
+sources:
+- archive: rabbitmq-server-3.13.3.tar.xz
+  archive_sha512sum: 3d06926e4068ef8d0a832e6d32267a6fc3d098a59583266e5c419e421cdf3c5dd60b77859778232289b80e1e3ff3e35ce9959ea53fefa269d7b1afe5f686c068
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'rabbitmq messaging server '
+      home_page: https://github.com/rabbitmq/rabbitmq-server
+      license_concluded: MIT AND ISC AND Apache-2.0 AND ErlPL-1.1 AND MPL-1.0 AND
+        CC0-1.0 AND (BSD-3-Clause OR EPL-2.0) AND BSD-2-Clause AND (Apache-2.0 OR
+        MPL-2.0) AND BSD-3-Clause AND MPL-2.0 AND MPL-1.1
+      license_declared: MIT AND ISC AND Apache-2.0 AND ErlPL-1.1 AND MPL-1.0 AND CC0-1.0
+        AND (BSD-3-Clause OR EPL-2.0) AND BSD-2-Clause AND (Apache-2.0 OR MPL-2.0)
+        AND BSD-3-Clause AND MPL-2.0 AND MPL-1.1
+      short_summary: RabbitMQ messaging server
+      supplier: 'Organization: Broadcom, Inc.'

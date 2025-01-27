@@ -1,0 +1,19 @@
+sources:
+- archive: dmidecode-3.5.tar.xz
+  archive_sha512sum: 690c9bea391f6bbfc8cd48e8db408a61d5b551a07a2823c29d03a09607fc2043cc1bea44ee9fd27fd0e7bc0b287bf9de9f22a1a66053f5b1e63d77c03d93e1ae
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Dmidecode reports information about your system''s hardware
+        as described in your system BIOS according to the SMBIOS/DMI standard. This
+        information typically includes system manufacturer, model name, serial number,
+        BIOS version, asset tag as well as a lot of other details of varying level
+        of interest and reliability depending on the manufacturer.  This will often
+        include usage status for the CPU sockets, expansion slots (e.g. AGP, PCI,
+        ISA) and memory module slots, and the list of I/O ports (e.g. serial, parallel,
+        USB). '
+      home_page: http://www.nongnu.org/dmidecode
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later
+      short_summary: Tool to analyze BIOS DMI data
+      supplier: 'Organization: Broadcom, Inc.'

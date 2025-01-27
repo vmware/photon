@@ -1,0 +1,15 @@
+sources:
+- archive: configobj-5.0.6.tar.gz
+  archive_sha512sum: f253fdd0bc3fcd37f56c9ceb28f5c8c739b0861e099b07a3929645907c97b2261f0529850a95c1a42507846f72d88a0992fcd1e1d6fa8654dc713d120f769963
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "ConfigObj is a simple but powerful config file reader\
+        \ and writer: an ini file round tripper. Its main feature is that it is very\
+        \ easy to use, with a straightforward programmer\u2019s interface and a simple\
+        \ syntax for config files. "
+      home_page: https://configobj.readthedocs.io/en/latest
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Config file reading, writing and validation
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,92 @@
+sources:
+- archive: firefox-102.12.0esr.source.tar.xz
+  archive_sha512sum: 2a85cf1e1c83a862c2886a63dcf3e3e8bca9dd3ed72c5d0223db52387fff3796bc0dcbb508adb8c10a30729f20554c5aac37f8ad045b0088a593d28e39d77fe5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'SpiderMonkey is the code-name for Mozilla Firefox''s
+        C++ implementation of JavaScript. It is intended to be embedded in other applications
+        that provide host environments for JavaScript. '
+      home_page: https://spidermonkey.dev
+      license_concluded: GPL-2.0-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND APSL-2.0
+        AND CC-BY-3.0 AND W3C AND CC-BY-4.0 AND CMU-Mach AND GPL-3.0-or-later WITH
+        Font-exception-2.0 AND GPL-3.0-or-later WITH Texinfo-exception AND Vim AND
+        Bitstream-Vera AND GPL-2.0-or-later WITH Autoconf-exception-generic AND CC-BY-NC-ND-3.0
+        AND Unlicense AND (BSD-3-Clause OR Apache-2.0) AND GPL-2.0-or-later WITH Libtool-exception
+        AND (FTL OR GPL-3.0-only) AND BSL-1.0 AND MIT-testregex AND BSD-2-Clause AND
+        FTL AND mplus AND LGPL-3.0-or-later AND Libpng AND curl AND BSD-4-Clause-UC
+        AND MPL-2.0 AND BSD-Protection AND FSFAP-no-warranty-disclaimer AND W3C-19980720
+        AND (Apache-2.0 OR MIT) AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND
+        CC-BY-SA-4.0 AND dtoa AND TU-Berlin-1.0 AND BSD-2-Clause-Views AND LGPL-2.1-or-later
+        AND (BSD-2-Clause OR Apache-2.0) AND (MIT OR BSD-3-Clause OR GPL-2.0-only)
+        AND FSFULLR AND LGPL-2.0-or-later WITH WxWindows-exception-3.1 AND GPL-2.0-only
+        AND (BSD-3-Clause OR MIT) AND CPL-1.0 AND Unicode-DFS-2016 AND CC0-1.0 AND
+        (MIT OR Apache-2.0) AND ICU AND NGPL AND (BSD-3-Clause OR MIT) AND BSD-4-Clause
+        AND MPL-1.1 AND (MIT OR GPL-2.0-or-later) AND (MIT OR Unlicense) AND GPL-3.0-or-later
+        WITH Libtool-exception AND SunPro AND MIT-Wu AND NCL AND W3C-20150513 AND
+        OFL-1.0 AND GPL-1.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND GFDL-1.1-or-later AND (GPL-2.0-or-later
+        OR MIT) AND (GPL-2.0-only OR LGPL-2.1-only OR MPL-1.1) AND (GPL-2.0-only OR
+        LGPL-2.1-only OR MPL-1.1) AND (Apache-2.0 OR MIT) AND CC-PDDC AND OLDAP-2.8
+        AND blessing AND ISC AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND BSD-4-Clause-Shortened
+        AND bzip2-1.0.6 AND LGPL-3.0-only AND IJG AND CC-BY-NC-4.0 AND CC-BY-SA-3.0
+        AND CC-BY-NC-SA-2.0 AND PSF-2.0 AND FSFULLRWD AND DOC AND (BSD-3-Clause OR
+        GPL-1.0-or-later) AND 0BSD AND (MPL-1.1 OR LGPL-2.1-only) AND GPL-3.0-only
+        AND (MIT OR GPL-3.0-only) AND FSFUL AND (Apache-2.0 WITH LLVM-exception OR
+        Apache-2.0 OR MIT) AND (BSD-2-Clause OR Apache-2.0) AND BSD-3-Clause-Clear
+        AND FSFAP AND TMate AND LGPL-2.0-or-later AND CC-BY-ND-3.0 AND Python-2.0
+        AND CC-BY-NC-ND-2.5 AND NCSA AND Zlib AND MPL-1.0 AND Apache-2.0 AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND GPL-3.0-or-later AND (AFL-2.1 OR BSD-3-Clause)
+        AND NAIST-2003 AND AFL-2.1 AND MIT AND ClArtistic AND JPNIC AND Apache-2.0
+        WITH LLVM-exception AND Beerware AND FTL WITH Autoconf-exception-generic AND
+        OFL-1.1 AND MIT-CMU AND LPPL-1.3c AND CC-BY-NC-SA-4.0 AND LPPL-1.3a AND HPND
+        AND (NCSA OR MIT) AND GPL-2.0-or-later WITH Autoconf-exception-2.0 AND Spencer-94
+        AND BSD-3-Clause-No-Nuclear-Warranty AND BSD-3-Clause AND MIT-Modern-Variant
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT-Khronos-old
+        AND (LGPL-2.1-only OR MPL-1.1) AND LZMA-SDK-9.22 AND HPND-sell-variant AND
+        MIT-open-group AND GPL-1.0-or-later AND (MIT OR Apache-2.0) AND BSD-Source-Code
+        AND (MIT OR GPL-2.0-only) AND LGPL-2.1-only AND X11 AND NTP-0 AND (MPL-1.1
+        OR GPL-2.0-or-later OR LGPL-2.1-or-later) AND (MPL-2.0 OR GPL-2.0-only) AND
+        (LGPL-2.1-or-later OR MPL-1.1 OR GPL-2.0-or-later)
+      license_declared: GPL-2.0-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND APSL-2.0
+        AND CC-BY-3.0 AND W3C AND CC-BY-4.0 AND CMU-Mach AND GPL-3.0-or-later WITH
+        Font-exception-2.0 AND GPL-3.0-or-later WITH Texinfo-exception AND Vim AND
+        Bitstream-Vera AND GPL-2.0-or-later WITH Autoconf-exception-generic AND CC-BY-NC-ND-3.0
+        AND Unlicense AND (BSD-3-Clause OR Apache-2.0) AND GPL-2.0-or-later WITH Libtool-exception
+        AND (FTL OR GPL-3.0-only) AND BSL-1.0 AND MIT-testregex AND BSD-2-Clause AND
+        FTL AND mplus AND LGPL-3.0-or-later AND Libpng AND curl AND BSD-4-Clause-UC
+        AND MPL-2.0 AND BSD-Protection AND FSFAP-no-warranty-disclaimer AND W3C-19980720
+        AND (Apache-2.0 OR MIT) AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND
+        CC-BY-SA-4.0 AND dtoa AND TU-Berlin-1.0 AND BSD-2-Clause-Views AND LGPL-2.1-or-later
+        AND (BSD-2-Clause OR Apache-2.0) AND (MIT OR BSD-3-Clause OR GPL-2.0-only)
+        AND FSFULLR AND LGPL-2.0-or-later WITH WxWindows-exception-3.1 AND GPL-2.0-only
+        AND (BSD-3-Clause OR MIT) AND CPL-1.0 AND Unicode-DFS-2016 AND CC0-1.0 AND
+        (MIT OR Apache-2.0) AND ICU AND NGPL AND (BSD-3-Clause OR MIT) AND BSD-4-Clause
+        AND MPL-1.1 AND (MIT OR GPL-2.0-or-later) AND (MIT OR Unlicense) AND GPL-3.0-or-later
+        WITH Libtool-exception AND SunPro AND MIT-Wu AND NCL AND W3C-20150513 AND
+        OFL-1.0 AND GPL-1.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND GFDL-1.1-or-later AND (GPL-2.0-or-later
+        OR MIT) AND (GPL-2.0-only OR LGPL-2.1-only OR MPL-1.1) AND (GPL-2.0-only OR
+        LGPL-2.1-only OR MPL-1.1) AND (Apache-2.0 OR MIT) AND CC-PDDC AND OLDAP-2.8
+        AND blessing AND ISC AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND BSD-4-Clause-Shortened
+        AND bzip2-1.0.6 AND LGPL-3.0-only AND IJG AND CC-BY-NC-4.0 AND CC-BY-SA-3.0
+        AND CC-BY-NC-SA-2.0 AND PSF-2.0 AND FSFULLRWD AND DOC AND (BSD-3-Clause OR
+        GPL-1.0-or-later) AND 0BSD AND (MPL-1.1 OR LGPL-2.1-only) AND GPL-3.0-only
+        AND (MIT OR GPL-3.0-only) AND FSFUL AND (Apache-2.0 WITH LLVM-exception OR
+        Apache-2.0 OR MIT) AND (BSD-2-Clause OR Apache-2.0) AND BSD-3-Clause-Clear
+        AND FSFAP AND TMate AND LGPL-2.0-or-later AND CC-BY-ND-3.0 AND Python-2.0
+        AND CC-BY-NC-ND-2.5 AND NCSA AND Zlib AND MPL-1.0 AND Apache-2.0 AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND GPL-3.0-or-later AND (AFL-2.1 OR BSD-3-Clause)
+        AND NAIST-2003 AND AFL-2.1 AND MIT AND ClArtistic AND JPNIC AND Apache-2.0
+        WITH LLVM-exception AND Beerware AND FTL WITH Autoconf-exception-generic AND
+        OFL-1.1 AND MIT-CMU AND LPPL-1.3c AND CC-BY-NC-SA-4.0 AND LPPL-1.3a AND HPND
+        AND (NCSA OR MIT) AND GPL-2.0-or-later WITH Autoconf-exception-2.0 AND Spencer-94
+        AND BSD-3-Clause-No-Nuclear-Warranty AND BSD-3-Clause AND MIT-Modern-Variant
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT-Khronos-old
+        AND (LGPL-2.1-only OR MPL-1.1) AND LZMA-SDK-9.22 AND HPND-sell-variant AND
+        MIT-open-group AND GPL-1.0-or-later AND (MIT OR Apache-2.0) AND BSD-Source-Code
+        AND (MIT OR GPL-2.0-only) AND LGPL-2.1-only AND X11 AND NTP-0 AND (MPL-1.1
+        OR GPL-2.0-or-later OR LGPL-2.1-or-later) AND (MPL-2.0 OR GPL-2.0-only) AND
+        (LGPL-2.1-or-later OR MPL-1.1 OR GPL-2.0-or-later)
+      short_summary: SpiderMonkey JavaScript library
+      supplier: 'Organization: Broadcom, Inc.'

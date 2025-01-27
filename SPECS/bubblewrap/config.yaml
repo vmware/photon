@@ -1,0 +1,18 @@
+sources:
+- archive: bubblewrap-0.7.0.tar.gz
+  archive_sha512sum: 01ec30b01f70ff896b407d4979df0bc1a75d0b441a388f7be7aa9a4c9f56e6a1e2ae2ae4dbe4d6262a0218f577a8ad317db4217d5663ea9bd8c1d5c4293c39a7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Bubblewrap could be viewed as setuid implementation of
+        a subset of user namespaces. Emphasis on subset - specifically relevant to
+        the above CVE, bubblewrap does not allow control over iptables. The original
+        bubblewrap code existed before user namespaces - it inherits code from xdg-app
+        helper which in turn distantly derives from linux-user-chroot. '
+      home_page: https://github.com/projectatomic/bubblewrap
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-2.0 AND LGPL-2.0-or-later
+        AND FSFAP-no-warranty-disclaimer AND LGPL-2.0-only
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-2.0 AND LGPL-2.0-or-later
+        AND FSFAP-no-warranty-disclaimer AND LGPL-2.0-only
+      short_summary: setuid implementation of a subset of user namespaces.
+      supplier: 'Organization: Broadcom, Inc.'

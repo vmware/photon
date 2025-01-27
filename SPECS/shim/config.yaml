@@ -1,0 +1,20 @@
+sources:
+- archive: shim-15.8.tar.bz2
+  archive_sha512sum: 30b3390ae935121ea6fe728d8f59d37ded7b918ad81bea06e213464298b4bdabbca881b30817965bd397facc596db1ad0b8462a84c87896ce6c1204b19371cd1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'First stage UEFI bootloader that attempts to open, validate,
+        and execute another application. It also installs a protocol which permits
+        the second-stage bootloader to perform similar binary validation. '
+      home_page: https://github.com/rhboot/shim
+      license_concluded: MIT AND OpenSSL-standalone AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        AND OpenSSL AND GPL-1.0-or-later AND snprintf AND GPL-2.0-or-later AND BSD-2-Clause
+        AND GPL-3.0-only AND Nokia AND BSD-2-Clause-Patent AND BSD-3-Clause AND SSLeay-standalone
+        AND BSD-Source-Code
+      license_declared: MIT AND OpenSSL-standalone AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        AND OpenSSL AND GPL-1.0-or-later AND snprintf AND GPL-2.0-or-later AND BSD-2-Clause
+        AND GPL-3.0-only AND Nokia AND BSD-2-Clause-Patent AND BSD-3-Clause AND SSLeay-standalone
+        AND BSD-Source-Code
+      short_summary: UEFI shim loader
+      supplier: 'Organization: Broadcom, Inc.'

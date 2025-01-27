@@ -1,0 +1,33 @@
+sources:
+- archive: openresty-1.21.4.3.tar.gz
+  archive_sha512sum: dd0f36a367177a2d03378abf7995bad466965705fb549fa1f2a3bfc1cf5ba153de2849f789a718e1a4abb85996fde90f79f7f7571677ec32ee596aa076261c52
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package contains the core server for OpenResty.
+        Built for production uses.  OpenResty is a full-fledged web platform by integrating
+        the standard Nginx core, LuaJIT, many carefully written Lua libraries, lots
+        of high quality 3rd-party Nginx modules, and most of their external dependencies.
+        It is designed to help developers easily build scalable web applications,
+        web services, and dynamic web gateways.  By taking advantage of various well-designed
+        Nginx modules (most of which are developed by the OpenResty team themselves),
+        OpenResty effectively turns the nginx server into a powerful web app server,
+        in which the web developers can use the Lua programming language to script
+        various existing nginx C modules and Lua modules and construct extremely high-performance
+        web applications that are capable to handle 10K ~ 1000K+ connections in a
+        single box. '
+      home_page: https://openresty.org/en
+      license_concluded: CC-BY-NC-SA-4.0 AND dtoa AND SSLeay-standalone AND BSD-1-Clause
+        AND LGPL-2.0-or-later AND CDDL-1.0 AND GPL-1.0-or-later AND GPL-3.0-only AND
+        GPL-2.0-only AND CC-BY-SA-4.0 AND Artistic-2.0 AND CC-BY-NC-ND-4.0 AND Zlib
+        AND BSD-3-Clause AND CC-BY-4.0 AND CC-BY-NC-4.0 AND (GPL-2.0-only OR BSD-2-Clause)
+        AND MIT AND OpenSSL-standalone AND BSD-2-Clause-Views AND CC-BY-ND-4.0 AND
+        EPL-1.0 AND BSD-2-Clause AND MPL-2.0
+      license_declared: CC-BY-NC-SA-4.0 AND dtoa AND SSLeay-standalone AND BSD-1-Clause
+        AND LGPL-2.0-or-later AND CDDL-1.0 AND GPL-1.0-or-later AND GPL-3.0-only AND
+        GPL-2.0-only AND CC-BY-SA-4.0 AND Artistic-2.0 AND CC-BY-NC-ND-4.0 AND Zlib
+        AND BSD-3-Clause AND CC-BY-4.0 AND CC-BY-NC-4.0 AND (GPL-2.0-only OR BSD-2-Clause)
+        AND MIT AND OpenSSL-standalone AND BSD-2-Clause-Views AND CC-BY-ND-4.0 AND
+        EPL-1.0 AND BSD-2-Clause AND MPL-2.0
+      short_summary: A Fast and Scalable Web Platform by Extending NGINX with Lua
+      supplier: 'Organization: Broadcom, Inc.'

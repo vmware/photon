@@ -1,0 +1,20 @@
+sources:
+- archive: dwz-0.15.tar.xz
+  archive_sha512sum: 43eb4b08c1f529859dc3466697d5ad7e172d6efbf21409530a67a2492ae4acc3734d5134bbd6e07c089ecc358d915871b13e22f6e4f1dd4c3af19ef804f8fcc5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The dwz package contains a program that attempts to optimize
+        DWARF debugging information contained in ELF shared libraries and ELF executables
+        for size, by replacing DWARF information representation with equivalent smaller
+        representation where possible and by reducing the amount of duplication using
+        techniques from DWARF standard appendix E - creating DW_TAG_partial_unit compilation
+        units (CUs) for duplicated information and using DW_TAG_imported_unit to import
+        it into each CU that needs it. '
+      home_page: https://sourceware.org/dwz
+      license_concluded: GPL-1.0-or-later AND GPL-3.0-only AND GPL-2.0-or-later AND
+        LGPL-2.0-or-later AND GPL-3.0-or-later AND GPL-2.0-only
+      license_declared: GPL-1.0-or-later AND GPL-3.0-only AND GPL-2.0-or-later AND
+        LGPL-2.0-or-later AND GPL-3.0-or-later AND GPL-2.0-only
+      short_summary: DWARF optimization and duplicate removal tool
+      supplier: 'Organization: Broadcom, Inc.'

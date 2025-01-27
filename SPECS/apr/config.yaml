@@ -1,0 +1,18 @@
+sources:
+- archive: apr-1.7.5.tar.gz
+  archive_sha512sum: 8a4ad426614378918053a1f67727ab8aee5d9a49f0f9b12edea69cb5c4bc5b436f4834d76b13c16a50be0ef1cdaf7db93abc1d2eef3d38e9b3e53ae232b4bc90
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Apache Portable Runtime. '
+      home_page: https://apr.apache.org
+      license_concluded: FSFULLR AND FSFAP AND Apache-2.0 AND FSFUL AND Zlib AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND GPL-2.0-only
+        AND MIT AND BSD-4-Clause-UC AND BSD-3-Clause AND Caldera-no-preamble AND GPL-2.0-or-later
+        WITH Libtool-exception
+      license_declared: FSFULLR AND FSFAP AND Apache-2.0 AND FSFUL AND Zlib AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND GPL-2.0-only
+        AND MIT AND BSD-4-Clause-UC AND BSD-3-Clause AND Caldera-no-preamble AND GPL-2.0-or-later
+        WITH Libtool-exception
+      short_summary: The Apache Portable Runtime
+      supplier: 'Organization: Broadcom, Inc.'

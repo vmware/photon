@@ -1,0 +1,41 @@
+sources:
+- archive: gnutls-3.7.10.tar.xz
+  archive_sha512sum: 23e0890abd00c433f11c2d4ceb328fe4ac0a0b765de89dff52f16e7d20694a7c61a6acb084d9f58f15c1a9609d70efdac489ac4759963c0ff1d1b8bb7183269e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'GnuTLS is a secure communications library implementing
+        the SSL, TLS and DTLS protocols and technologies around them. It provides
+        a simple C language application programming interface (API) to access the
+        secure communications protocols as well as APIs to parse and write X.509,
+        PKCS #12, OpenPGP and other required structures. It is aimed to be portable
+        and efficient with focus on security and interoperability. '
+      home_page: http://www.gnutls.org
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-3-Clause
+        AND BSD-2-Clause AND AGPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-3.0-or-later AND (GPL-2.0-or-later OR BSD-3-Clause) AND (BSD-3-Clause
+        OR GPL-1.0-or-later) AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Texinfo-exception AND LGPL-2.1-only AND FSFULLR AND GPL-1.0-or-later
+        AND ISC AND GPL-2.0-only AND MIT AND GPL-3.0-or-later AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND GPL-2.0-or-later AND FSFAP AND GFDL-1.3-invariants-only AND GFDL-1.3-only
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND GFDL-1.1-or-later
+        AND GPL-3.0-only AND CC0-1.0 AND FSFULLRWD AND (LGPL-3.0-or-later OR GPL-2.0-or-later)
+        AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND FSFAP-no-warranty-disclaimer
+        AND LGPL-2.1-or-later AND Apache-2.0 AND LGPL-2.0-only AND X11 AND FSFUL AND
+        LGPL-3.0-only AND LGPL-2.0-or-later AND GFDL-1.3-or-later
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-3-Clause
+        AND BSD-2-Clause AND AGPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-3.0-or-later AND (GPL-2.0-or-later OR BSD-3-Clause) AND (BSD-3-Clause
+        OR GPL-1.0-or-later) AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Texinfo-exception AND LGPL-2.1-only AND FSFULLR AND GPL-1.0-or-later
+        AND ISC AND GPL-2.0-only AND MIT AND GPL-3.0-or-later AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND GPL-2.0-or-later AND FSFAP AND GFDL-1.3-invariants-only AND GFDL-1.3-only
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND GFDL-1.1-or-later
+        AND GPL-3.0-only AND CC0-1.0 AND FSFULLRWD AND (LGPL-3.0-or-later OR GPL-2.0-or-later)
+        AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND FSFAP-no-warranty-disclaimer
+        AND LGPL-2.1-or-later AND Apache-2.0 AND LGPL-2.0-only AND X11 AND FSFUL AND
+        LGPL-3.0-only AND LGPL-2.0-or-later AND GFDL-1.3-or-later
+      short_summary: The GnuTLS Transport Layer Security Library
+      supplier: 'Organization: Broadcom, Inc.'

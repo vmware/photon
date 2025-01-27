@@ -1,0 +1,16 @@
+sources:
+- archive: ndctl-74.tar.gz
+  archive_sha512sum: b8c4f8ee39aeb85679a97c46cb1ec345041ad91074be35f04de3a688957164374f92b3efc4f745c3b28098086689db861fd22799b056230267b3327406749473
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Utility library for managing the "libnvdimm" subsystem.  The
+        "libnvdimm" subsystem defines a kernel device model and control message interface
+        for platform NVDIMM resources. '
+      home_page: https://github.com/pmem/ndctl
+      license_concluded: LGPL-2.1-or-later AND LGPL-2.0-only AND CC0-1.0 AND MIT AND
+        LGPL-2.1-only AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note
+      license_declared: LGPL-2.1-or-later AND LGPL-2.0-only AND CC0-1.0 AND MIT AND
+        LGPL-2.1-only AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note
+      short_summary: Manage "libnvdimm" subsystem devices (Non-volatile Memory)
+      supplier: 'Organization: Broadcom, Inc.'

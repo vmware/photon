@@ -1,0 +1,21 @@
+sources:
+- archive: libestr-0.1.11.tar.gz
+  archive_sha512sum: 0ab98c2fa4b58cf6fee89c88602725b8b5e8e5a171a6976cdd8cff4dfc1cd3e5b747868da74fccd1bca66b9fa524ceae1c4f1ad5ee653a44ff81df6916ab5328
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package compiles the string handling essentials
+        library used by the Rsyslog daemon. '
+      home_page: http://libestr.adiscon.com/
+      license_concluded: GPL-3.0-or-later WITH Libtool-exception AND LGPL-2.0-or-later
+        AND LGPL-2.1-only AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND
+        FSFAP AND FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLRWD AND FSFUL AND LGPL-2.1-or-later
+      license_declared: GPL-3.0-or-later WITH Libtool-exception AND LGPL-2.0-or-later
+        AND LGPL-2.1-only AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND
+        FSFAP AND FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLRWD AND FSFUL AND LGPL-2.1-or-later
+      short_summary: String handling essentials library
+      supplier: 'Organization: Broadcom, Inc.'

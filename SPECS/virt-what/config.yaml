@@ -1,0 +1,17 @@
+sources:
+- archive: virt-what-1.25.tar.gz
+  archive_sha512sum: 0147b4b44ae0ee685977aa34dfa9bf30ae8e0eb31b7a6d5c0097d16f830fa6fb6afd7156964fc79f3fd5e82b2f68d921fd5306245cc63a2140f6dddc7fdd0e98
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'virt-what is a shell script which can be used to detect
+        if the program is running in a virtual machine '
+      home_page: https://people.redhat.com/~rjones/virt-what/files/
+      license_concluded: FSFUL AND GPL-2.0-or-later AND X11 AND FSFULLR AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLRWD AND GPL-2.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      license_declared: FSFUL AND GPL-2.0-or-later AND X11 AND FSFULLR AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLRWD AND GPL-2.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      short_summary: Application to detect if running in virtual machine
+      supplier: 'Organization: Broadcom, Inc.'

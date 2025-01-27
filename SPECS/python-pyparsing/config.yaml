@@ -1,0 +1,14 @@
+sources:
+- archive: pyparsing-3.0.9.tar.gz
+  archive_sha512sum: 8877f8733196c757e36e062ddc216153f9cdc51bf43795855a607340bab73fdf4d44745c9f410d151cc4a4d6d0db06133945a4d7d0fee52f3aee521b8095e6b0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python parsing module. '
+      home_page: https://pypi.python.org/pypi/pyparsing/3.0.9
+      license_concluded: MIT-CMU AND BSD-2-Clause AND GPL-1.0-or-later AND MIT AND
+        GPL-2.0-or-later AND GPL-3.0-or-later AND GPL-3.0-only AND BSD-3-Clause
+      license_declared: MIT-CMU AND BSD-2-Clause AND GPL-1.0-or-later AND MIT AND
+        GPL-2.0-or-later AND GPL-3.0-or-later AND GPL-3.0-only AND BSD-3-Clause
+      short_summary: Python parsing module.
+      supplier: 'Organization: Broadcom, Inc.'

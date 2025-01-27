@@ -1,0 +1,15 @@
+sources:
+- archive: pexpect-4.8.0.tar.gz
+  archive_sha512sum: 7447ae2d1e13be422c894a8fd51c5aaa788e37ea7f0c798c88b77afd401fb3631400a637077ccbb83c2e3876b0d0c5e1dbd5fdc9d3739d785b4d5ad7c0192580
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Pexpect is a pure Python module for spawning child applications;
+        controlling them; and responding to expected patterns in their output. Pexpect
+        works like Don Libes Expect. Pexpect allows your script to spawn a child application
+        and control it as if a human were typing commands. '
+      home_page: https://github.com/pexpect/pexpect
+      license_concluded: ISC
+      license_declared: ISC
+      short_summary: Pexpect is a Pure Python Expect-like module
+      supplier: 'Organization: Broadcom, Inc.'

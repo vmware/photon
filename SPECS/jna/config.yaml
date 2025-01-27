@@ -1,0 +1,33 @@
+sources:
+- archive: jna-5.12.1.tar.gz
+  archive_sha512sum: 6cabccc27792ac7779932c38b163d7d77465ebca3eff3eb7f8104fe739be1934b7b69d766dcf178bb98bb782ddbb68e89f390d6d0de1dc41ed095b5a24b33840
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The JNA package contains libraries for interop from Java
+        to native libraries. '
+      home_page: https://github.com/java-native-access/jna
+      license_concluded: BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND APAFML AND Artistic-1.0 AND MIT AND GPL-2.0-or-later AND LGPL-2.1-or-later
+        AND SAX-PD AND MIT-open-group AND Plexus AND (MPL-1.1 OR LGPL-2.0-or-later)
+        AND Apache-1.1 AND BSD-2-Clause AND W3C AND Apache-2.0 AND (Apache-2.0 OR
+        LGPL-2.1-only) AND (LGPL-2.1-or-later OR Apache-2.0) AND LGPL-3.0-only AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-2.0-or-later
+        AND BSD-3-Clause-No-Nuclear-License AND GPL-1.0-or-later AND GPL-2.0-only
+        AND BSD-Source-Code AND ANTLR-PD AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND LGPL-2.1-only AND HPND AND W3C-19980720 AND GPL-3.0-only AND (MPL-1.1
+        OR LGPL-2.1-or-later) AND LGPL-2.0-only AND JSON AND GPL-3.0-or-later AND
+        CC-PDDC AND MPL-1.1
+      license_declared: BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND APAFML AND Artistic-1.0 AND MIT AND GPL-2.0-or-later AND LGPL-2.1-or-later
+        AND SAX-PD AND MIT-open-group AND Plexus AND (MPL-1.1 OR LGPL-2.0-or-later)
+        AND Apache-1.1 AND BSD-2-Clause AND W3C AND Apache-2.0 AND (Apache-2.0 OR
+        LGPL-2.1-only) AND (LGPL-2.1-or-later OR Apache-2.0) AND LGPL-3.0-only AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-2.0-or-later
+        AND BSD-3-Clause-No-Nuclear-License AND GPL-1.0-or-later AND GPL-2.0-only
+        AND BSD-Source-Code AND ANTLR-PD AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND LGPL-2.1-only AND HPND AND W3C-19980720 AND GPL-3.0-only AND (MPL-1.1
+        OR LGPL-2.1-or-later) AND LGPL-2.0-only AND JSON AND GPL-3.0-or-later AND
+        CC-PDDC AND MPL-1.1
+      short_summary: Java Native Access
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,29 @@
+sources:
+- archive: gst-plugins-base-1.22.7.tar.xz
+  archive_sha512sum: a33d332aebf5e209380c2740e0fc6762e49b78a9921822adfc07efdd4780cbe038867d9924a2df334c8a624e8be49b5d46e276538d6d77ff8ac9f002ced052e3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'GStreamer is a streaming media framework, based on graphs
+        of filters which operate on media data. Applications using this library can
+        do anything from real-time sound processing to playing videos, and just about
+        anything else media-related.  Its plugin-based architecture means that new
+        data types or processing capabilities can be added simply by installing new
+        plug-ins. '
+      home_page: http://gstreamer.freedesktop.org
+      license_concluded: CC-BY-ND-3.0 AND CC-BY-NC-SA-3.0 AND CC-BY-NC-ND-1.0 AND
+        CC-BY-SA-4.0 AND CC-BY-3.0 AND GPL-2.0-only AND CC-BY-NC-ND-4.0 AND CC-BY-NC-3.0
+        AND MIT AND CC-BY-NC-2.5 AND CC-BY-ND-2.0 AND CC-BY-1.0 AND CC-BY-2.0 AND
+        CC-BY-NC-SA-2.5 AND GPL-1.0-or-later AND CC-BY-NC-2.0 AND CC-BY-2.5 AND LGPL-2.0-or-later
+        AND LGPL-2.1-only AND LGPL-2.1-or-later AND CC-BY-SA-1.0 AND CC-BY-SA-3.0
+        AND CC-BY-SA-2.5 AND CC-BY-NC-4.0 AND CC-BY-NC-ND-2.0 AND CC-BY-ND-2.5 AND
+        BSD-3-Clause AND CC-BY-ND-1.0 AND CC-BY-SA-2.0 AND CC-BY-NC-1.0 AND CC-PDDC
+      license_declared: CC-BY-ND-3.0 AND CC-BY-NC-SA-3.0 AND CC-BY-NC-ND-1.0 AND CC-BY-SA-4.0
+        AND CC-BY-3.0 AND GPL-2.0-only AND CC-BY-NC-ND-4.0 AND CC-BY-NC-3.0 AND MIT
+        AND CC-BY-NC-2.5 AND CC-BY-ND-2.0 AND CC-BY-1.0 AND CC-BY-2.0 AND CC-BY-NC-SA-2.5
+        AND GPL-1.0-or-later AND CC-BY-NC-2.0 AND CC-BY-2.5 AND LGPL-2.0-or-later
+        AND LGPL-2.1-only AND LGPL-2.1-or-later AND CC-BY-SA-1.0 AND CC-BY-SA-3.0
+        AND CC-BY-SA-2.5 AND CC-BY-NC-4.0 AND CC-BY-NC-ND-2.0 AND CC-BY-ND-2.5 AND
+        BSD-3-Clause AND CC-BY-ND-1.0 AND CC-BY-SA-2.0 AND CC-BY-NC-1.0 AND CC-PDDC
+      short_summary: GStreamer streaming media framework plug-ins
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,31 @@
+sources:
+- archive: autoconf-archive-2022.09.03.tar.xz
+  archive_sha512sum: 157b5b6a979d5ec5bfab6ddf34422da620fec1e95f4c901821abbb7361544af77747b4a449029b84750d75679d6130a591e98da8772de2c121ecdea163f0340b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The package contains programs for producing shell scripts
+        that can automatically configure source code. '
+      home_page: http://www.gnu.org/software/autoconf-archive
+      license_concluded: FSFUL AND FSFAP-no-warranty-disclaimer AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND AGPL-3.0-or-later AND FSFULLRWD AND GPL-2.0-only
+        AND LGPL-2.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-3.0-only
+        WITH Autoconf-exception-3.0 AND MPL-1.0 AND (LGPL-2.0-or-later OR GPL-1.0-or-later)
+        AND GPL-1.0-or-later AND FSFULLR AND FSFAP AND GFDL-1.3-invariants-only AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND GFDL-1.3-only AND LGPL-3.0-or-later AND
+        GPL-3.0-or-later AND BSD-3-Clause AND GFDL-1.1-or-later AND Artistic-2.0 AND
+        GPL-3.0-only AND LGPL-2.1-or-later AND BSD-2-Clause AND GFDL-1.3-or-later
+        AND LGPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-macro AND LGPL-3.0-only
+      license_declared: FSFUL AND FSFAP-no-warranty-disclaimer AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND AGPL-3.0-or-later AND FSFULLRWD AND GPL-2.0-only
+        AND LGPL-2.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-3.0-only
+        WITH Autoconf-exception-3.0 AND MPL-1.0 AND (LGPL-2.0-or-later OR GPL-1.0-or-later)
+        AND GPL-1.0-or-later AND FSFULLR AND FSFAP AND GFDL-1.3-invariants-only AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND GFDL-1.3-only AND LGPL-3.0-or-later AND
+        GPL-3.0-or-later AND BSD-3-Clause AND GFDL-1.1-or-later AND Artistic-2.0 AND
+        GPL-3.0-only AND LGPL-2.1-or-later AND BSD-2-Clause AND GFDL-1.3-or-later
+        AND LGPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-macro AND LGPL-3.0-only
+      short_summary: Autoconf macro archive
+      supplier: 'Organization: Broadcom, Inc.'

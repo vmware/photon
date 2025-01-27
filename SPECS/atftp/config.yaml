@@ -1,0 +1,18 @@
+sources:
+- archive: atftp-0.8.0.tar.gz
+  archive_sha512sum: b700b3e4182970fb494ffabd49e39d3622b1aff5f69882549eff0b52a01c8c47babe51b451c4829f9b833ea2ea7c590a2f3819f8e3508176fa7d1b5c0e152b68
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Multithreaded TFTP server implementing all options (option
+        extension and multicast) as specified in RFC1350, RFC2090, RFC2347, RFC2348
+        and RFC2349. Atftpd also support multicast protocol knowed as mtftp, defined
+        in the PXE specification. The server supports being started from inetd(8)
+        as well as a deamon using init scripts. '
+      home_page: http://sourceforge.net/projects/atftp
+      license_concluded: LGPL-2.1-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND
+        GPL-2.0-or-later
+      license_declared: LGPL-2.1-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND
+        GPL-2.0-or-later
+      short_summary: Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
+      supplier: 'Organization: Broadcom, Inc.'

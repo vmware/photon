@@ -1,0 +1,20 @@
+sources:
+- archive: asciidoc3-3.2.3.tar.gz
+  archive_sha512sum: 926f367b1740a40a03beb9c45a05de855e69d8c2ac9b9a66c19dd21f65f8250b3fad02b283f7f8b2fb7ea131d4836d5aa623647e1931b682a9a9e91f62863f6c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'AsciiDoc3 is a text document format for writing notes,
+        documentation, articles, books, ebooks, slideshows, web pages, man pages and
+        blogs. AsciiDoc3 files can be translated to many formats including HTML, PDF,
+        EPUB, man page, and DocBook markup. AsciiDoc3 is highly configurable: both
+        the AsciiDoc3 source file syntax and the backend output markups (which can
+        be almost any type of SGML/XML markup) can be customized and extended by the
+        user. '
+      home_page: https://gitlab.com/asciidoc3/asciidoc3
+      license_concluded: GPL-3.0-only AND GPL-1.0-or-later AND GPL-3.0-or-later AND
+        GPL-2.0-or-later AND GPL-2.0-only AND AGPL-3.0-only AND MIT AND GFDL-1.1-or-later
+      license_declared: GPL-3.0-only AND GPL-1.0-or-later AND GPL-3.0-or-later AND
+        GPL-2.0-or-later AND GPL-2.0-only AND AGPL-3.0-only AND MIT AND GFDL-1.1-or-later
+      short_summary: AsciiDoc is a human readable text document format
+      supplier: 'Organization: Broadcom, Inc.'

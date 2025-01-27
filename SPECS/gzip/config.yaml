@@ -1,0 +1,23 @@
+sources:
+- archive: gzip-1.12.tar.xz
+  archive_sha512sum: 116326fe991828227de150336a0c016f4fe932dfbb728a16b4a84965256d9929574a4f5cfaf3cf6bb4154972ef0d110f26ab472c93e62ec9a5fd7a5d65abea24
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Gzip package contains programs for compressing and
+        decompressing files. '
+      home_page: http://www.gnu.org/software
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-1.0-or-later AND LGPL-2.0-or-later
+        AND FSFUL AND GFDL-1.3-invariants-only AND GFDL-1.3-only AND X11 AND GFDL-1.3-or-later
+        AND FSFULLRWD AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-2.0-or-later
+        AND GPL-3.0-or-later AND GPL-3.0-only AND Zlib AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLR AND GFDL-1.1-or-later AND LGPL-2.1-or-later AND FSFAP
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-1.0-or-later AND LGPL-2.0-or-later
+        AND FSFUL AND GFDL-1.3-invariants-only AND GFDL-1.3-only AND X11 AND GFDL-1.3-or-later
+        AND FSFULLRWD AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-2.0-or-later
+        AND GPL-3.0-or-later AND GPL-3.0-only AND Zlib AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLR AND GFDL-1.1-or-later AND LGPL-2.1-or-later AND FSFAP
+      short_summary: Programs for compressing and decompressing files
+      supplier: 'Organization: Broadcom, Inc.'

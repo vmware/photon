@@ -1,0 +1,13 @@
+sources:
+- archive: hatch_vcs-0.2.0.tar.gz
+  archive_sha512sum: 3eb0b04022d4801a982d90a3a0e34e59fcf7dd04c0c2db91c0306b4187ba466ac85ecbb80943a35f4a6a4912bc2ddf2633fab897e8820f5e1ee9d200147b5faf
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This provides a plugin for Hatch that uses your preferred
+        version control system (like Git) to determine project versions. '
+      home_page: https://github.com/ofek/hatch-vcs
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Hatch plugin for versioning with your preferred VCS
+      supplier: 'Organization: Broadcom, Inc.'

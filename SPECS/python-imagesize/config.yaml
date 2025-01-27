@@ -1,0 +1,14 @@
+sources:
+- archive: imagesize-1.4.1.tar.gz
+  archive_sha512sum: f191d7fe34a01ab21b0f4f6519df8ab2a53c1ca54956f4d825d9cec5bd5f4c569491bdc26cb36fcaad2c453c35e51f69379f091362e206453aaefbda4802daa4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'python module to analyze jpeg/jpeg2000/png/gif image
+        header and return image size. '
+      home_page: https://github.com/shibukawa/imagesize_py
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: python module to analyze jpeg/jpeg2000/png/gif image header and
+        return image size.
+      supplier: 'Organization: Broadcom, Inc.'

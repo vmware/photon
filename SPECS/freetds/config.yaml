@@ -1,0 +1,27 @@
+sources:
+- archive: freetds-1.3.10.tar.gz
+  archive_sha512sum: 3d656833dd3e0150bf1c343699aeb89f6cb30b357a86a2baf94ac9f53016a793c78b5dcabfdb357106a7736ceb8d1fd25d817fa0861a4209b8093e6a5065dcf1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'FreeTDS is a project to document and implement the TDS
+        (Tabular DataStream) protocol. TDS is used by Sybase and Microsoft for client
+        to database server communications. FreeTDS includes call level interfaces
+        for DB-Lib, CT-Lib, and ODBC. '
+      home_page: http://www.unixodbc.org
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND
+        GFDL-1.3-invariants-only AND FSFULLRWD AND (GPL-2.0-only OR MIT) AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-1.0-or-later AND GFDL-1.3-no-invariants-only AND ISC AND MIT AND GPL-3.0-or-later
+        WITH Libtool-exception AND FSFUL AND GPL-3.0-or-later AND FSFULLR AND LGPL-2.0-only
+        AND GFDL-1.1-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-3-Clause AND LGPL-2.0-or-later AND GFDL-1.1-or-later
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND
+        GFDL-1.3-invariants-only AND FSFULLRWD AND (GPL-2.0-only OR MIT) AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-1.0-or-later AND GFDL-1.3-no-invariants-only AND ISC AND MIT AND GPL-3.0-or-later
+        WITH Libtool-exception AND FSFUL AND GPL-3.0-or-later AND FSFULLR AND LGPL-2.0-only
+        AND GFDL-1.1-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-3-Clause AND LGPL-2.0-or-later AND GFDL-1.1-or-later
+      short_summary: ODBC driver manager
+      supplier: 'Organization: Broadcom, Inc.'

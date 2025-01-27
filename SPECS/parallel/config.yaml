@@ -1,0 +1,22 @@
+sources:
+- archive: parallel-20221122.tar.bz2
+  archive_sha512sum: cdae4ec3a5aaf1ae6c0d9dc35bad930c2b34ad4f91209de80d55258f1945e2df345708000a2facef3b647b6e0d4c275c909faf073961ae0b80b89efa8831211f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'GNU parallel is a shell tool for executing jobs concurrently
+        locally or using remote computers. A job is typically a single command or
+        a small script that has to be run for each of the lines in the input. The
+        typical input is a list of files, a list of hosts, a list of users, a list
+        of URLs, or a list of tables. '
+      home_page: https://www.gnu.org/software/parallel/
+      license_concluded: GFDL-1.3-only AND CC-BY-SA-4.0 AND LGPL-2.1-or-later AND
+        FSFUL AND GFDL-1.1-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND FSFULLR
+        AND GPL-2.0-or-later AND GFDL-1.3-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND X11 AND GFDL-1.3-no-invariants-only AND FSFULLRWD
+      license_declared: GFDL-1.3-only AND CC-BY-SA-4.0 AND LGPL-2.1-or-later AND FSFUL
+        AND GFDL-1.1-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND FSFULLR AND
+        GPL-2.0-or-later AND GFDL-1.3-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND X11 AND GFDL-1.3-no-invariants-only AND FSFULLRWD
+      short_summary: Shell tool for executing jobs in parallel
+      supplier: 'Organization: Broadcom, Inc.'

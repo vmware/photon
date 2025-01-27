@@ -1,0 +1,18 @@
+sources:
+- archive: cloud-network-setup-0.2.2.tar.gz
+  archive_sha512sum: bf1e917dc016e46dbb3012dc3603f8e24696ce26e9a671bcc98d8d248312bcbb7f5711c4344f230bda374b3c00c8f63121e420ea75110f032acdd43b4ff47882
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'cloud-network configures network in cloud environment.
+        In cloud environment instances are set public IPs and private IPs. If more
+        than one private IP is configured then except the IP which is provided by
+        DHCP others can''t be fetched and configured. This project is adopting towards
+        cloud network environment such as Azure, GCP and Amazon EC2. '
+      home_page: https://github.com/vmware/cloud-network-setup/archive/refs/tags/v0.2.2.tar.gz
+      license_concluded: BSD-3-Clause AND MPL-2.0 AND Apache-2.0 AND BSD-2-Clause
+        AND MIT
+      license_declared: BSD-3-Clause AND MPL-2.0 AND Apache-2.0 AND BSD-2-Clause AND
+        MIT
+      short_summary: Configures network interfaces in cloud enviroment
+      supplier: 'Organization: Broadcom, Inc.'

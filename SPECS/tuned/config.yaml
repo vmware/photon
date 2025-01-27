@@ -1,0 +1,18 @@
+sources:
+- archive: tuned-2.21.0.tar.gz
+  archive_sha512sum: f1f58d582997db7789af990895c63c1fd4f6329b95cda7fa0fb314f95f05be120b90228e347d0239e4a4bed13baad66a42f006880e369f46741ecf8705bb92d0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The tuned package contains a daemon that tunes system
+        settings dynamically. It does so by monitoring the usage of several system
+        components periodically. Based on that information components will then be
+        put into lower or higher power saving modes to adapt to the current usage.
+        Currently only ethernet network and ATA harddisk devices are implemented. '
+      home_page: https://github.com/redhat-performance/tuned
+      license_concluded: GPL-2.0-or-later WITH GPL-CC-1.0 AND GPL-2.0-only AND CC-BY-SA-3.0
+        AND GPL-1.0-or-later AND GPL-2.0-or-later
+      license_declared: GPL-2.0-or-later WITH GPL-CC-1.0 AND GPL-2.0-only AND CC-BY-SA-3.0
+        AND GPL-1.0-or-later AND GPL-2.0-or-later
+      short_summary: A dynamic adaptive system tuning daemon
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,19 @@
+sources:
+- archive: password-store-1.7.4.tar.xz
+  archive_sha512sum: 1fe108895b224451b54e545d399b6a97040e094049448509f92ae33164a5cf9044a91f52edfc705fcf333f6526df1a478deeebc4df109764d58100f9e3e22681
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Password management should be simple and follow Unix
+        philosophy. With pass, each password lives inside of a gpg encrypted file
+        whose filename is the title of the website or resource that requires the password.
+        These encrypted files may be organized into meaningful folder hierarchies,
+        copied from computer to computer, and, in general, manipulated using standard
+        command line file management utilities. '
+      home_page: https://www.passwordstore.org/
+      license_concluded: BSD-2-Clause AND GPL-2.0-only AND MIT AND GPL-3.0-or-later
+        AND Vim AND GPL-2.0-or-later
+      license_declared: BSD-2-Clause AND GPL-2.0-only AND MIT AND GPL-3.0-or-later
+        AND Vim AND GPL-2.0-or-later
+      short_summary: A secure password manager for unix systems.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,15 @@
+sources:
+- archive: kubernetes-dns-1.22.20.tar.gz
+  archive_sha512sum: d62ea9ed6eae29e023530777896732bff4964d06f09bf1b80575af9ecb76b82ea6e7fc0ac04be41e92609cb6d5bb87de68488d57ef923c77d38cd60930e9f6cf
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Kubernetes DNS is a name lookup service for kubernetes
+        pods. '
+      home_page: https://github.com/kubernetes/dns/archive/1.22.20.tar.gz
+      license_concluded: JSON AND (Apache-2.0 OR BSD-3-Clause) AND MIT AND Apache-2.0
+        AND BSD-3-Clause AND ISC AND BSD-2-Clause
+      license_declared: JSON AND (Apache-2.0 OR BSD-3-Clause) AND MIT AND Apache-2.0
+        AND BSD-3-Clause AND ISC AND BSD-2-Clause
+      short_summary: Kubernetes DNS
+      supplier: 'Organization: Broadcom, Inc.'

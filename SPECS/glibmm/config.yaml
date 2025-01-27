@@ -1,0 +1,19 @@
+sources:
+- archive: glibmm-2.74.0.tar.xz
+  archive_sha512sum: 29c16a6c921fb135721c39b5328e0b45e09c500c65175199c1ec5ee75bdd5fb907072389c6980da3bf8fac0846235af5580f692706eb00d26947804daa1c99c9
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'gtkmm provides a C++ interface to the GTK+ GUI library.
+        gtkmm2 wraps GTK+ 2. Highlights include typesafe callbacks, widgets extensible
+        via inheritance and a comprehensive set of widget classes that can be freely
+        combined to quickly create complex user interfaces. '
+      home_page: http://ftp.gnome.org/pub/GNOME/sources/glibmm
+      license_concluded: LGPL-2.1-only AND AGPL-3.0-only AND GPL-1.0-or-later AND
+        GPL-2.0-only AND LGPL-2.0-or-later AND GPL-2.0-or-later AND MIT AND LGPL-3.0-or-later
+        AND (GPL-2.0-only OR MIT) AND GPL-3.0-or-later AND LGPL-2.1-or-later
+      license_declared: LGPL-2.1-only AND AGPL-3.0-only AND GPL-1.0-or-later AND GPL-2.0-only
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later AND MIT AND LGPL-3.0-or-later AND
+        (GPL-2.0-only OR MIT) AND GPL-3.0-or-later AND LGPL-2.1-or-later
+      short_summary: C++ interface to the glib
+      supplier: 'Organization: Broadcom, Inc.'

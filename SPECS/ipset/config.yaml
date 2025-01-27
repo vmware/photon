@@ -1,0 +1,31 @@
+sources:
+- archive: ipset-7.15.tar.bz2
+  archive_sha512sum: 0fc936d971c30a0925c585d506c8840e782fdaeec09bc8fd249e874fe838fa55a4dbb697f6e1423a6769abf07a1ce2195abc37cb641e8e4ad70f1b4c7130916a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'IP sets are a framework inside the Linux kernel, which
+        can be administered by the ipset utility. Depending on the type, an IP set
+        may store IP addresses, networks, (TCP/UDP) port numbers, MAC addresses, interface
+        names or combinations of them in a way, which ensures lightning speed when
+        matching an entry against a set.  If you want to store multiple IP addresses
+        or port numbers and match against the collection by iptables at one swoop;
+        dynamically update iptables rules against IP addresses or ports without performance
+        penalty; express complex IP address and ports based rulesets with one single
+        iptables rule and benefit from the speed of IP sets then ipset may be the
+        proper tool for you. '
+      home_page: http://ipset.netfilter.org/
+      license_concluded: LGPL-2.1-only AND FSFULLR AND GPL-3.0-or-later AND LGPL-2.0-or-later
+        WITH Libtool-exception AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-only AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later AND X11 AND GPL-2.0-only WITH Linux-syscall-note AND
+        GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_declared: LGPL-2.1-only AND FSFULLR AND GPL-3.0-or-later AND LGPL-2.0-or-later
+        WITH Libtool-exception AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-only AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later AND X11 AND GPL-2.0-only WITH Linux-syscall-note AND
+        GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      short_summary: administration tool for IP sets
+      supplier: 'Organization: Broadcom, Inc.'

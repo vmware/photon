@@ -1,0 +1,20 @@
+sources:
+- archive: xerces-c-3.2.4.tar.xz
+  archive_sha512sum: 4d58d25b59b4528ad1f2d60681ddd6d2a4dba945613cee9ce978605f006da03703ea85a1bd89f781eeb3ad4dbdadf485a310f29d4c07036b0322f0755f87fddf
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Xerces-C++ is a validating XML parser written in a portable
+        subset of C++ '
+      home_page: http://xerces.apache.org
+      license_concluded: MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND FSFULLR AND libtiff AND FSFULLRWD AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND X11 AND GPL-2.0-or-later AND Apache-2.0
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only AND (GPL-2.0-only
+        OR MIT) AND BSD-3-Clause AND FSFAP
+      license_declared: MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        FSFUL AND FSFULLR AND libtiff AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND GPL-2.0-or-later AND Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-only AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND FSFAP
+      short_summary: C++ xml parser.
+      supplier: 'Organization: Broadcom, Inc.'

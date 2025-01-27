@@ -1,0 +1,13 @@
+sources:
+- archive: libxml-ruby-5.0.2.gem
+  archive_sha512sum: 449464107c1b533c25ec3ba4e722f5805f1e487609939306ee4535ba9b8197e47d79d50fa69571f0dff9d7ab974ee848ce95679a6f64da84aaf109c367ef6829
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides Ruby language bindings for the GNOME Libxml2
+        XML toolkit '
+      home_page: https://rubygems.org/gems/libxml-ruby
+      license_concluded: Ruby AND MIT
+      license_declared: Ruby AND MIT
+      short_summary: Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
+      supplier: 'Organization: Broadcom, Inc.'

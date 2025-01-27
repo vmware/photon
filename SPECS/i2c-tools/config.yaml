@@ -1,0 +1,17 @@
+sources:
+- archive: i2c-tools-4.3.tar.xz
+  archive_sha512sum: 8a6cc12d927d6291b9baf407bc15807280539a7048ec5c2edf77414432eab43b28353c42bc0e45b7b481502aa4c5588def08f130d97fc275f635d1f77488f501
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package contains a heterogeneous set of I2C tools
+        for Linux Kernelas well as an I2C library. Various tools are included in this
+        package with different catagories: eeprom, eeprog, eepromer, py-smbus, tools
+        that rely on "i2c-dev" kernel driver. '
+      home_page: https://i2c.wiki.kernel.org/index.php/I2C_Tools
+      license_concluded: LGPL-2.1-or-later AND GPL-2.0-only AND LGPL-2.0-or-later
+        AND LGPL-2.1-only AND GPL-2.0-or-later
+      license_declared: LGPL-2.1-or-later AND GPL-2.0-only AND LGPL-2.0-or-later AND
+        LGPL-2.1-only AND GPL-2.0-or-later
+      short_summary: A set of I2C tools for Linux Kernel
+      supplier: 'Organization: Broadcom, Inc.'

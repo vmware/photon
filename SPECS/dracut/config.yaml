@@ -1,0 +1,20 @@
+sources:
+- archive: dracut-059.tar.gz
+  archive_sha512sum: 196bc8bf18703c72bffb51a7e0493719c58173ad2da7d121eb42f9a8de47e953af36d109214dc4a10b2dc2d3bd19e844f7f51c2bdec087e064ea11f75124032d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'dracut contains tools to create a bootable initramfs
+        for 2.6 Linux kernels. Unlike existing implementations, dracut does hard-code
+        as little as possible into the initramfs. dracut contains various modules
+        which are driven by the event-based udev. Having root on MD, DM, LVM2, LUKS
+        is supported as well as NFS, iSCSI, NBD, FCoE with the dracut-network package. '
+      home_page: https://github.com/dracutdevs/dracut/wiki
+      license_concluded: GPL-1.0-or-later AND LGPL-2.1-or-later AND DOC AND GPL-2.0-only
+        AND (LGPL-2.0-or-later AND GPL-2.0-or-later) AND GPL-3.0-or-later AND BSD-3-Clause
+        AND LGPL-2.0-or-later AND LGPL-2.1-only AND GPL-2.0-or-later
+      license_declared: GPL-1.0-or-later AND LGPL-2.1-or-later AND DOC AND GPL-2.0-only
+        AND (LGPL-2.0-or-later AND GPL-2.0-or-later) AND GPL-3.0-or-later AND BSD-3-Clause
+        AND LGPL-2.0-or-later AND LGPL-2.1-only AND GPL-2.0-or-later
+      short_summary: dracut to create initramfs
+      supplier: 'Organization: Broadcom, Inc.'

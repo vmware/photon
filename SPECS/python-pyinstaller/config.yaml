@@ -1,0 +1,26 @@
+sources:
+- archive: pyinstaller-5.5.tar.gz
+  archive_sha512sum: aaff7fe272d70b597691d398344289333b11343f9ef37cd797a264310db140e8ec391c8aef7a0661f18487222fb945a5f797f31e21c932585277335f5c30ace6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "PyInstaller bundles a Python application and all its\
+        \ dependencies into a single package. The user can run the packaged app without\
+        \ installing a Python interpreter or any modules. PyInstaller reads a Python\
+        \ script written by you. It analyzes your code to discover every other module\
+        \ and library your script needs in order to execute. Then it collects copies\
+        \ of all those files \u2013 including the active Python interpreter! \u2013\
+        \ and puts them with your script in a single folder, or optionally in a single\
+        \ executable file. PyInstaller is tested against Windows, Mac OS X, and Linux.\
+        \ However, it is not a cross-compiler: to make a Windows app you run PyInstaller\
+        \ in Windows; to make a Linux app you run it in Linux, etc. PyInstaller has\
+        \ been used successfully with AIX, Solaris, and FreeBSD, but is not tested\
+        \ against them. "
+      home_page: https://pypi.python.org/pypi/PyInstaller
+      license_concluded: Zlib AND GPL-2.0-or-later AND BSD-3-Clause AND Apache-2.0
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Bootloader-exception
+      license_declared: Zlib AND GPL-2.0-or-later AND BSD-3-Clause AND Apache-2.0
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Bootloader-exception
+      short_summary: PyInstaller bundles a Python application and all its dependencies
+        into a single package.
+      supplier: 'Organization: Broadcom, Inc.'

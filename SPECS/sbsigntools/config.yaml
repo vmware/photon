@@ -1,0 +1,14 @@
+sources:
+- archive: sbsigntools-0.9.5.tar.xz
+  archive_sha512sum: 9c89def6e2cf248237507cc04346eb2201a047677365c7ae4f4140a405bfc243bb958f9af80a4802c0cba1bdc2c98aa5632d934c22bdadd66dcb45cd5654e8e8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Tools to add signatures to EFI binaries and Drivers. '
+      home_page: https://git.kernel.org/pub/scm/linux/kernel/git/jejb/sbsigntools.git
+      license_concluded: LGPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.1-only AND
+        MIT AND GPL-3.0-only AND LGPL-2.1-or-later AND LGPL-2.0-or-later AND FSFAP-no-warranty-disclaimer
+      license_declared: LGPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.1-only AND MIT
+        AND GPL-3.0-only AND LGPL-2.1-or-later AND LGPL-2.0-or-later AND FSFAP-no-warranty-disclaimer
+      short_summary: Signing utility for UEFI secure boot
+      supplier: 'Organization: Broadcom, Inc.'

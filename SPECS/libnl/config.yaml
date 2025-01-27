@@ -1,0 +1,24 @@
+sources:
+- archive: libnl-3.7.0.tar.gz
+  archive_sha512sum: 80fbbc079299c90afd2a5eda62e4d4f98bf4ef23958c3ce5101f4ed4d81d783af733213bb3bab15f218555d8460bc2394898f909f4ac024fc27281faec86a041
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libnl suite is a collection of libraries providing
+        APIs to netlink protocol based Linux kernel interfaces. Netlink is a IPC mechanism
+        primarly between the kernel and user space processes. It was designed to be
+        a more flexible successor to ioctl to provide mainly networking related kernel
+        configuration and monitoring interfaces. '
+      home_page: https://github.com/thom311/libnl
+      license_concluded: GPL-2.0-or-later AND LGPL-2.0-only AND MIT AND FSFULLR AND
+        GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-2.1-only
+        AND GPL-2.0-or-later WITH Linux-syscall-note AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Libtool-exception AND X11 AND FSFUL AND GPL-2.0-only WITH Linux-syscall-note
+        AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_declared: GPL-2.0-or-later AND LGPL-2.0-only AND MIT AND FSFULLR AND
+        GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-2.1-only
+        AND GPL-2.0-or-later WITH Linux-syscall-note AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Libtool-exception AND X11 AND FSFUL AND GPL-2.0-only WITH Linux-syscall-note
+        AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      short_summary: Netlink Protocol Library Suite
+      supplier: 'Organization: Broadcom, Inc.'

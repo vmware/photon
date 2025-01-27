@@ -1,0 +1,15 @@
+sources:
+- archive: fuse-overlayfs-1.12.tar.gz
+  archive_sha512sum: f113ac20b389d2f1c5e5ff160a60c308017e74c9c85d74a7200bab81a4cfa30335a64740c173f17c91ab4feddffb138ca4378e92894645a67eea5ac73d42890f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'fuse-overlayfs provides an overlayfs FUSE implementation
+        so that it can be used since Linux 4.18 by unprivileged users in an user namespace. '
+      home_page: https://github.com/containers/fuse-overlayfs
+      license_concluded: LGPL-2.1-or-later AND GPL-3.0-or-later AND FSFULLR AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only
+      license_declared: LGPL-2.1-or-later AND GPL-3.0-or-later AND FSFULLR AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only
+      short_summary: FUSE overlay+shiftfs implementation for rootless containers
+      supplier: 'Organization: Broadcom, Inc.'

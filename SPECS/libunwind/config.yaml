@@ -1,0 +1,24 @@
+sources:
+- archive: libunwind-1.6.2.tar.gz
+  archive_sha512sum: 1d17dfb14f99a894a6cda256caf9ec481c14068aaf8f3a85fa3befa7c7cca7fca0f544a91a3a7c2f2fc55bab19b06a67ca79f55ac9081151d94478c7f611f8f7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Portable and efficient C programming interface (API)
+        to determine the call-chain of a program. The API additionally provides the
+        means to manipulate the preserved (callee-saved) state of each call-frame,
+        and to resume execution at any point in the call-chain (non-local goto). The
+        API supports both local (same-process) and remote (across-process) operation.
+        As such, the API is useful in a number of applications. '
+      home_page: http://www.nongnu.org/libunwind/
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT
+        AND X11 AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFAP AND FSFULLR
+        AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND
+        X11 AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFAP AND FSFULLR
+        AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
+      short_summary: Portable and efficient C programming interface (API) to determine
+        the call-chain of a program.
+      supplier: 'Organization: Broadcom, Inc.'

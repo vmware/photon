@@ -1,0 +1,15 @@
+sources:
+- archive: Types-Serialiser-1.01.tar.gz
+  archive_sha512sum: 419b24cae85fba045de2f4593e1d17784f2016d5f9cd9ea96d23bbeaa86c1c6b866875871a787cacba1299616d371cc8806760e4c53e4f635deec4bc28fa81b5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module provides some extra data types that are used
+        by common serialization formats such as JSON or CBOR. The idea is to have
+        a repository of simple/small constants and containers that can be shared by
+        different implementations so they become interoperable between each other. '
+      home_page: http://search.cpan.org/dist/Types-Serialiser/
+      license_concluded: Artistic-1.0-Perl OR GPL-1.0-or-later
+      license_declared: Artistic-1.0-Perl OR GPL-1.0-or-later
+      short_summary: Simple data types for common serialization formats
+      supplier: 'Organization: Broadcom, Inc.'

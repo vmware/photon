@@ -1,0 +1,24 @@
+sources:
+- archive: curl-8.7.1.tar.xz
+  archive_sha512sum: 5bbde9d5648e9226f5490fa951690aaf159149345f3a315df2ba58b2468f3e59ca32e8a49734338afc861803a4f81caac6d642a4699b72c6310ebfb1f618aad2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The cURL package contains an utility and a library used
+        for transferring files with URL syntax to any of the following protocols:
+        FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET, DICT, LDAP, LDAPS and FILE.
+        Its ability to both download and upload files can be incorporated into other
+        programs to support functions like streaming media. '
+      home_page: http://curl.haxx.se
+      license_concluded: curl AND GPL-2.0-or-later WITH Libtool-exception AND BSD-3-Clause
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-4-Clause-UC AND
+        FSFUL AND GPL-1.0-or-later AND ISC AND GPL-2.0-only AND LGPL-2.0-or-later
+        AND (curl AND ISC) AND X11 AND FSFULLRWD AND MIT AND FSFULLR AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+      license_declared: curl AND GPL-2.0-or-later WITH Libtool-exception AND BSD-3-Clause
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-4-Clause-UC AND
+        FSFUL AND GPL-1.0-or-later AND ISC AND GPL-2.0-only AND LGPL-2.0-or-later
+        AND (curl AND ISC) AND X11 AND FSFULLRWD AND MIT AND FSFULLR AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+      short_summary: An URL retrieval utility and library
+      supplier: 'Organization: Broadcom, Inc.'

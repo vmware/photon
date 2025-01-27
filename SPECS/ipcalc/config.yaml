@@ -1,0 +1,17 @@
+sources:
+- archive: ipcalc-1.0.2.tar.gz
+  archive_sha512sum: af0bf4679c09b43853a4254889f733a68ef5e390d1ed390e5f5da5859e818d9a3a95ec7faba42926c5eb1e510aa3c69807f6927047161ca9e7e9f928ec0ffc66
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'ipcalc is a modern tool to assist in network address
+        calculations for IPv4 and IPv6. It acts both as a tool to output human readable
+        information about a network or address, as well as a tool suitable to be used
+        by scripts or other programs. '
+      home_page: https://gitlab.com/ipcalc/ipcalc
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND
+        BSD-3-Clause
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND
+        BSD-3-Clause
+      short_summary: A modern IPv4/IPv6 ipcalc tool.
+      supplier: 'Organization: Broadcom, Inc.'

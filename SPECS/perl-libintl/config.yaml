@@ -1,0 +1,14 @@
+sources:
+- archive: libintl-perl-1.32.tar.gz
+  archive_sha512sum: fca6c8863dfd36c7604bc80a401e825eb707bc75016521c09006c34c170a41b009d30ec93d7e2a7f61caa1dbdf0333511c3d515d4fdc0fea32242eca68a7e35d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The package libintl-perl is an internationalization library
+        for Perl that aims to be compatible with the Uniforum message translations
+        system as implemented for example in GNU gettext. '
+      home_page: http://search.cpan.org/dist/libintl-perl/
+      license_concluded: GPL-3.0-or-later AND LGPL-2.0-or-later AND GPL-3.0-only
+      license_declared: GPL-3.0-or-later AND LGPL-2.0-or-later AND GPL-3.0-only
+      short_summary: Internationalization library for Perl, compatible with gettext
+      supplier: 'Organization: Broadcom, Inc.'

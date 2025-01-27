@@ -1,0 +1,16 @@
+sources:
+- archive: capstone-4.0.2.tar.gz
+  archive_sha512sum: 7f93534517307b737422a8825b66b2a1f3e1cca2049465d60ab12595940154aaf843ba40ed348fce58de58b990c19a0caef289060eb72898cb008a88c470970e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Capstone is a disassembly framework with the target of
+        becoming the ultimate disasm engine for binary analysis and reversing in the
+        security community. '
+      home_page: https://github.com/aquynh/capstone
+      license_concluded: NCSA AND BSD-4-Clause-UC AND BSD-3-Clause AND Apache-2.0
+        AND APSL-2.0 AND MIT
+      license_declared: NCSA AND BSD-4-Clause-UC AND BSD-3-Clause AND Apache-2.0 AND
+        APSL-2.0 AND MIT
+      short_summary: Disassembly framework
+      supplier: 'Organization: Broadcom, Inc.'

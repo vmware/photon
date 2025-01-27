@@ -1,0 +1,108 @@
+sources:
+- archive: postgresql-10.23.tar.bz2
+  archive_sha512sum: 9fd031cad0c3caacae105215167abd5dc4fdd15dea77a12cb0a977fab6e245e3fda163f202cc7786e50c69e5c3f180d32676a3b18ea30a9a14f0bcab56aa19dd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'PostgreSQL is an object-relational database management
+        system. '
+      home_page: www.postgresql.org
+      license_concluded: BSD-2-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND Spencer-99 AND GPL-1.0-or-later AND FSFUL AND TCL AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND ISC AND Martin-Birgmeier AND PostgreSQL AND X11 AND BSD-3-Clause AND MIT
+        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND BSD-2-Clause-Views
+      license_declared: BSD-2-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND Spencer-99 AND GPL-1.0-or-later AND FSFUL AND TCL AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND ISC AND Martin-Birgmeier AND PostgreSQL AND X11 AND BSD-3-Clause AND MIT
+        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND BSD-2-Clause-Views
+      short_summary: PostgreSQL database engine
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: postgresql-13.18.tar.bz2
+  archive_sha512sum: 2694ff9402683c90ccfbb53a465f6b6a09702b9b5b44e2db84a3a41175427d889d1b823897fd361b04a53dd3596289822e36a77215cb45dd972d79850fbdb97b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'PostgreSQL is an advanced Object-Relational database
+        management system (DBMS). The base postgresql package contains the client
+        programs that you''ll need to access a PostgreSQL DBMS server. These client
+        programs can be located on the same machine as the PostgreSQL server, or on
+        a remote machine that accesses a PostgreSQL server over a network connection.
+        The PostgreSQL server can be found in the postgresql13-server sub-package.  If
+        you want to manipulate a PostgreSQL database on a local or remote PostgreSQL
+        server, you need this package. You also need to install this package if you''re
+        installing the postgresql13-server package. '
+      home_page: www.postgresql.org
+      license_concluded: NCSA AND BSD-2-Clause AND BSL-1.0 AND MIT AND PostgreSQL
+        AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND GPL-1.0-or-later AND ISC AND BSD-3-Clause AND
+        Martin-Birgmeier AND Apache-2.0 AND TCL AND X11 AND Apache-2.0 WITH LLVM-exception
+        AND Spencer-99 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        BSD-2-Clause-Views AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_declared: NCSA AND BSD-2-Clause AND BSL-1.0 AND MIT AND PostgreSQL AND
+        FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND GPL-1.0-or-later AND ISC AND BSD-3-Clause AND
+        Martin-Birgmeier AND Apache-2.0 AND TCL AND X11 AND Apache-2.0 WITH LLVM-exception
+        AND Spencer-99 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        BSD-2-Clause-Views AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      short_summary: PostgreSQL database engine
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: postgresql-14.15.tar.bz2
+  archive_sha512sum: 227f9551167ee62e5185d6f6777e100ecc09f497b9ee1b5a8e659de8d4c237b0f9a97005706bbf64c3e839271e2630f6a417ba98dfce47bcb4c27e8641a7c6ef
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'PostgreSQL is an advanced Object-Relational database
+        management system (DBMS). The base postgresql package contains the client
+        programs that you''ll need to access a PostgreSQL DBMS server. These client
+        programs can be located on the same machine as the PostgreSQL server, or on
+        a remote machine that accesses a PostgreSQL server over a network connection.
+        The PostgreSQL server can be found in the postgresql-server sub-package.  If
+        you want to manipulate a PostgreSQL database on a local or remote PostgreSQL
+        server, you need this package. You also need to install this package if you''re
+        installing the postgresql-server package. '
+      home_page: www.postgresql.org
+      license_concluded: PostgreSQL AND BSD-3-Clause AND BSD-2-Clause-Views AND Martin-Birgmeier
+        AND X11 AND BSD-2-Clause AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND GPL-1.0-or-later AND FSFUL AND Apache-2.0 AND
+        BSL-1.0 AND MIT AND Spencer-99 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND ISC AND TCL AND NCSA AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+      license_declared: PostgreSQL AND BSD-3-Clause AND BSD-2-Clause-Views AND Martin-Birgmeier
+        AND X11 AND BSD-2-Clause AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND GPL-1.0-or-later AND FSFUL AND Apache-2.0 AND
+        BSL-1.0 AND MIT AND Spencer-99 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND ISC AND TCL AND NCSA AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+      short_summary: PostgreSQL database engine
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: postgresql-15.10.tar.bz2
+  archive_sha512sum: 73513f5f688f470aadd95dddef3b39b5d140d539bdf3171e053a89b3eed4c769f7951280468e9f11102f2de9fe8742bb38676c8d5d43418544b9482d83957ef4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'PostgreSQL is an advanced Object-Relational database
+        management system (DBMS). The base postgresql package contains the client
+        programs that you''ll need to access a PostgreSQL DBMS server. These client
+        programs can be located on the same machine as the PostgreSQL server, or on
+        a remote machine that accesses a PostgreSQL server over a network connection.
+        The PostgreSQL server can be found in the postgresql-server sub-package.  If
+        you want to manipulate a PostgreSQL database on a local or remote PostgreSQL
+        server, you need this package. You also need to install this package if you''re
+        installing the postgresql-server package. '
+      home_page: www.postgresql.org
+      license_concluded: GPL-1.0-or-later AND Spencer-99 AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND ISC AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND Apache-2.0 AND MIT AND FSFUL AND PostgreSQL AND BSD-2-Clause AND BSL-1.0
+        AND Apache-2.0 WITH LLVM-exception AND NCSA AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-2-Clause-Views AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND TCL
+      license_declared: GPL-1.0-or-later AND Spencer-99 AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND ISC AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND Apache-2.0 AND MIT AND FSFUL AND PostgreSQL AND BSD-2-Clause AND BSL-1.0
+        AND Apache-2.0 WITH LLVM-exception AND NCSA AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-2-Clause-Views AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND TCL
+      short_summary: PostgreSQL database engine
+      supplier: 'Organization: Broadcom, Inc.'

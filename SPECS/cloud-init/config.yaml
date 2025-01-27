@@ -1,0 +1,16 @@
+sources:
+- archive: cloud-init-24.4.tar.gz
+  archive_sha512sum: df42fb0c97aba37599e3c9431e1dfffc0a3c0ce6d639fd9a980fe0da190c998da3130ab65e3288eecd193967dbaad41aac3c0040244cf6036db9584a3c87538d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cloud-init is a set of init scripts for cloud instances.  Cloud
+        instances need special scripts to run during initialization to retrieve and
+        install ssh keys and to let the user run various scripts. '
+      home_page: http://launchpad.net/cloud-init
+      license_concluded: (GPL-3.0-only OR Apache-2.0) AND CC-BY-4.0 AND BSD-3-Clause
+        AND MIT AND Apache-2.0 AND GPL-3.0-only
+      license_declared: (GPL-3.0-only OR Apache-2.0) AND CC-BY-4.0 AND BSD-3-Clause
+        AND MIT AND Apache-2.0 AND GPL-3.0-only
+      short_summary: Cloud instance init scripts
+      supplier: 'Organization: Broadcom, Inc.'

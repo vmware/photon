@@ -1,0 +1,14 @@
+sources:
+- archive: botocore-1.27.56.tar.gz
+  archive_sha512sum: cbbb95ee5ba0381e6c12c6ee72224976c6618fd7a645a0fa8de60308e1682e5fe37d4bbc49b8c61dffa7482479596ad24df350554eb6a46e63ec8ac8957bfb47
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A low-level interface to a growing number of Amazon Web
+        Services. The botocore package is the foundation for the AWS CLI as well as
+        boto3. '
+      home_page: https://github.com/boto/botocore
+      license_concluded: MIT AND MPL-2.0 AND GPL-1.0-or-later AND Apache-2.0
+      license_declared: MIT AND MPL-2.0 AND GPL-1.0-or-later AND Apache-2.0
+      short_summary: Amazon Web Services Library.
+      supplier: 'Organization: Broadcom, Inc.'

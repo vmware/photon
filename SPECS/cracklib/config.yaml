@@ -1,0 +1,36 @@
+sources:
+- archive: cracklib-2.9.8.tar.gz
+  archive_sha512sum: 03b97e3ab3bd73e4a5673254622d542e5ad5cae642183afe1c84f17b174284a0d618de71aa09e858b924018665bc5107cedaaa73ae2e289c0b0d1d89eed618e7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'CrackLib tests passwords to determine whether they match
+        certain security-oriented characteristics. You can use CrackLib to stop users
+        from choosing passwords which would be easy to guess. CrackLib performs certain
+        tests:  * It tries to generate words from a username and gecos entry and checks
+        those words against the password; * It checks for simplistic patterns in passwords;
+        * It checks for the password in a dictionary.  CrackLib is actually a library
+        containing a particular C function which is used to check the password, as
+        well as other C functions. CrackLib is not a replacement for a passwd program;
+        it must be used in conjunction with an existing passwd program.  Install the
+        cracklib package if you need a program to check users'' passwords to see if
+        they are at least minimally secure. If you install CrackLib, you''ll also
+        want to install the cracklib-dicts package. '
+      home_page: https://github.com/cracklib/cracklib
+      license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later AND Artistic-2.0 AND
+        GPL-2.0-only AND GPL-2.0-or-later AND GPL-1.0-or-later AND LGPL-2.0-or-later
+      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later AND Artistic-2.0 AND GPL-2.0-only
+        AND GPL-2.0-or-later AND GPL-1.0-or-later AND LGPL-2.0-or-later
+      short_summary: A password strength-checking library.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: cracklib-words-2.9.8.gz
+  archive_sha512sum: 1700c56b9776b7ae4684b9ab1e784dd7707550bce2149301f662618a4f00a2eb0ba2d1a206c09aac22f7d95bc561544d412d2fdac5008fc3aabc4872e8a74afc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: scripts and content to build a full size password dictionary.
+      home_page: https://github.com/cracklib/cracklib
+      license_concluded: GPL-1.0-or-later
+      license_declared: GPL-1.0-or-later
+      short_summary: scripts and content to build a full size password dictionary
+      supplier: 'Organization: Broadcom, Inc.'

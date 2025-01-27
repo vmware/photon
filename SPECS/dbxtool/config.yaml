@@ -1,0 +1,12 @@
+sources:
+- archive: dbxtool-8.tar.bz2
+  archive_sha512sum: 28918c05d3a2a55238f4267e969116bdd3c9fc9f308b1e0249fe22cc06e95a6388e54406273c3b3d076a619a6ac0723b05cacb84bd84f797c954d60f22a86b85
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Tool for managing dbx updates installed on a machine. '
+      home_page: https://github.com/rhboot/dbxtool
+      license_concluded: DOC AND GPL-2.0-only AND GPL-3.0-only AND GPL-2.0-or-later
+      license_declared: DOC AND GPL-2.0-only AND GPL-3.0-only AND GPL-2.0-or-later
+      short_summary: Tool for managing dbx updates installed on a machine.
+      supplier: 'Organization: Broadcom, Inc.'

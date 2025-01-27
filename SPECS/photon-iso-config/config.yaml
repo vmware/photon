@@ -1,0 +1,13 @@
+sources:
+- archive: photon-iso-config-5.0.tar.gz
+  archive_sha512sum: e199a1bda8b715a96107dd8ed8ca4ac0372d2b8dadbec19b7d97e96747b20bf0c3c96ba59eb637a6b3001123a528cbdb84ebae351e9da7402fe7e8eef96fb1f3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Boot menu cfg files and splash screen image to create
+        Photon iso images. '
+      home_page: https://github.com/vmware/photon/tree/4.0/support/image-builder/iso/BUILD_DVD/isolinux
+      license_concluded: Apache-2.0 AND GPL-2.0-only
+      license_declared: Apache-2.0 AND GPL-2.0-only
+      short_summary: Photon iso config
+      supplier: 'Organization: Broadcom, Inc.'

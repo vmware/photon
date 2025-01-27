@@ -1,0 +1,23 @@
+sources:
+- archive: nettle-3.8.1.tar.gz
+  archive_sha512sum: a405da3438d185d96917b03b00abb9ab43e04f58f770f657f716c25d64bb258ee170a71328e74736caa7121f50c0c89d3cc840c1201d2a92cfaf1357d24bdc6a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'GNettle is a cryptographic library that is designed to
+        fit easily in more or less any context: In crypto toolkits for object-oriented
+        languages (C++, Python, Pike, ...), in applications like LSH or GNUPG, or
+        even in kernel space. '
+      home_page: http://www.lysator.liu.se/~nisse/nettle
+      license_concluded: LGPL-2.1-or-later AND MIT AND FSFUL AND LGPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only
+        AND FSFULLR AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-2.0-only
+        AND LGPL-3.0-only AND X11 AND GPL-1.0-or-later AND (LGPL-3.0-or-later OR GPL-2.0-or-later)
+        AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-3.0-or-later
+      license_declared: LGPL-2.1-or-later AND MIT AND FSFUL AND LGPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only
+        AND FSFULLR AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-2.0-only
+        AND LGPL-3.0-only AND X11 AND GPL-1.0-or-later AND (LGPL-3.0-or-later OR GPL-2.0-or-later)
+        AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-3.0-or-later
+      short_summary: Low level cryptographic libraries
+      supplier: 'Organization: Broadcom, Inc.'

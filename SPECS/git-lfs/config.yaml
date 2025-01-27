@@ -1,0 +1,15 @@
+sources:
+- archive: git-lfs-3.2.0.tar.gz
+  archive_sha512sum: c2ba8cecd5b3519a032f446b0c3043352f37f3c67ff3c2304a38beb176f0ae8efd1deaeb8bd54a35d7dd7dcd988da67249c896dffd83fc293b165a3e6bb02d66
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Git LFS is a command line extension and specification
+        for managing large files with Git '
+      home_page: https://github.com/git-lfs/git-lfs/archive/v3.2.0.tar.gz
+      license_concluded: ISC AND BSD-2-Clause AND Apache-2.0 AND MPL-2.0 AND BSD-3-Clause
+        AND MIT
+      license_declared: ISC AND BSD-2-Clause AND Apache-2.0 AND MPL-2.0 AND BSD-3-Clause
+        AND MIT
+      short_summary: Git extension for versioning large files
+      supplier: 'Organization: Broadcom, Inc.'

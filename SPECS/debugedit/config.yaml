@@ -1,0 +1,21 @@
+sources:
+- archive: debugedit-5.0.tar.xz
+  archive_sha512sum: 7e7f529eafe41b53f0b5bfc58282fdbfa0dfa93ed7908b70e81942d6d2b6f80fc9c6bff2ed9674fd98947e5750b615f4c8b222544989e2900c5f8ff5ae0efb92
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The debugedit project provides programs and scripts for
+        creating debuginfo and source file distributions, collect build-ids and rewrite
+        source paths in DWARF data for debugging, tracing and profiling.  It is based
+        on code originally from the rpm project plus libiberty and binutils.  It depends
+        on the elfutils libelf and libdw libraries to read and write ELF files, DWARF
+        data and build-ids. '
+      home_page: https://sourceware.org/debugedit
+      license_concluded: FSFUL AND FSFULLRWD AND FSFULLR AND GPL-2.0-only AND LGPL-2.0-or-later
+        AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND GPL-3.0-only AND GPL-2.0-or-later AND LGPL-2.1-only
+      license_declared: FSFUL AND FSFULLRWD AND FSFULLR AND GPL-2.0-only AND LGPL-2.0-or-later
+        AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND GPL-3.0-only AND GPL-2.0-or-later AND LGPL-2.1-only
+      short_summary: Tools for debuginfo creation
+      supplier: 'Organization: Broadcom, Inc.'

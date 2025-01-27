@@ -1,0 +1,14 @@
+sources:
+- archive: activesupport-7.0.4.gem
+  archive_sha512sum: 54859a1cccda0940a91be3be8a68087a4cb8ae6f5850dc3ae92bb79a722b04f34a5d9a61456146c2d7c994e95cd5f1b40c16766e0ef54828acc91edb5aba1d2b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A toolkit of support libraries and Ruby core extensions
+        extracted from the Rails framework. Rich support for multibyte strings, internationalization,
+        time zones, and testing. '
+      home_page: https://rubygems.org/gems/activesupport/versions/7.0.4
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Support libaries for Rails framework.
+      supplier: 'Organization: Broadcom, Inc.'

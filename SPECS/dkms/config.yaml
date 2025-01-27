@@ -1,0 +1,15 @@
+sources:
+- archive: dkms-3.0.10.tar.gz
+  archive_sha512sum: b271453497a004177137e972cb45cacb2dd3ac124a1fd2526218cf690f5ce77250195e73b6f9c75de4661a718d928e546bd85770ab98c2fd9af44fe777492ad7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Dynamic Kernel Module Support (DKMS) is a program/framework
+        that enables generating Linux kernel modules whose sources generally reside
+        outside the kernel source tree. The concept is to have DKMS modules automatically
+        rebuilt when a new kernel is installed. '
+      home_page: http://linux.dell.com/dkms
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later
+      short_summary: Dynamic Kernel Module Support
+      supplier: 'Organization: Broadcom, Inc.'

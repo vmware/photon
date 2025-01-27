@@ -1,0 +1,12 @@
+sources:
+- archive: vsftpd-3.0.5.tar.gz
+  archive_sha512sum: 9e9f9bde8c460fbc6b1d29ca531327fb2e40e336358f1cc19e1da205ef81b553719a148ad4613ceead25499d1ac3f03301a0ecd3776e5c228acccb7f9461a7ee
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Very secure and very small FTP daemon. '
+      home_page: https://security.appspot.com/vsftpd.html
+      license_concluded: GPL-2.0-only
+      license_declared: GPL-2.0-only
+      short_summary: Very secure and very small FTP daemon.
+      supplier: 'Organization: Broadcom, Inc.'

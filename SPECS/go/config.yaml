@@ -1,0 +1,19 @@
+sources:
+- archive: go1.21.13.src.tar.gz
+  archive_sha512sum: f316984154ead8256d9ec0613e3cfef5699553387d87c24bb2a96265f986bf4450838e6451841def3713d65ebaa9bf55e36ff39c5690d79522e1c1ba7655be2f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Go is an open source programming language that makes
+        it easy to build simple, reliable, and efficient software. '
+      home_page: https://golang.org
+      license_concluded: IJG AND OpenSSL-standalone AND MIT-testregex AND BSD-1-Clause
+        AND GPL-2.0-only AND SSLeay-standalone AND MIT AND BSD-3-Clause AND Apache-2.0
+        AND ISC AND BSD-2-Clause AND GPL-1.0-or-later AND MPEG-SSG AND SunPro AND
+        CC-BY-4.0
+      license_declared: IJG AND OpenSSL-standalone AND MIT-testregex AND BSD-1-Clause
+        AND GPL-2.0-only AND SSLeay-standalone AND MIT AND BSD-3-Clause AND Apache-2.0
+        AND ISC AND BSD-2-Clause AND GPL-1.0-or-later AND MPEG-SSG AND SunPro AND
+        CC-BY-4.0
+      short_summary: Go
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: htop-3.2.1.tar.gz
+  archive_sha512sum: d7b76e28ee870ac572ba1d9606dec6f9475346a00e599ca15838017c97683f1fc1be40417b9c1e76128cacc8a60ff9ba88c6b237be1835d309f98329b25644fc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'htop is an interactive text-mode process viewer for Linux,
+        similar to top. '
+      home_page: http://hisham.hm/htop/
+      license_concluded: BSD-3-Clause AND GPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later
+      license_declared: BSD-3-Clause AND GPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later
+      short_summary: Interactive process viewer
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,14 @@
+sources:
+- archive: nicstat-1.95.tar.gz
+  archive_sha512sum: 54f9136200412d41e2c21137a246221ff624f84374db67f6617296a1c3aa73a25125fab09e4ff230f64545ba026fce4806ccece196ac770c8dcf380c0571d505
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Nicstat is a Solaris and Linux command-line that prints
+        out network statistics for all network interface cards (NICs), including packets,
+        kilobytes per second, average packet sizes and more. '
+      home_page: http://sourceforge.net/projects/nicstat
+      license_concluded: Artistic-2.0
+      license_declared: Artistic-2.0
+      short_summary: Network traffic statics utility for Solaris and Linux
+      supplier: 'Organization: Broadcom, Inc.'

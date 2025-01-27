@@ -1,0 +1,14 @@
+sources:
+- archive: Module-ScanDeps-1.31.tar.gz
+  archive_sha512sum: c7164d768b6401a0d01516f5a09ddf2a0399355738ff17d04757aeb235b47f8d973083d0425ca53757588916c7fb2959d8c042361055a0e8eab7bf6d4c31d6fd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module scans potential modules used by perl programs
+        and returns a hash reference.  Its keys are the module names as they appear
+        in %%INC (e.g. Test/More.pm).  The values are hash references. '
+      home_page: http://search.cpan.org/dist/Module-ScanDeps/
+      license_concluded: Artistic-1.0 AND Artistic-2.0 AND GPL-1.0-only
+      license_declared: Artistic-1.0 AND Artistic-2.0 AND GPL-1.0-only
+      short_summary: Recursively scan Perl code for dependencies
+      supplier: 'Organization: Broadcom, Inc.'

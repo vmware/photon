@@ -1,0 +1,20 @@
+sources:
+- archive: cppcheck-2.9.3.tar.gz
+  archive_sha512sum: c75162b988415ee2ed255f7c648bdea1903c6a2471923f8430ab52f4e7c1ab8d2d1249585ac9db81f7c02fa90e8c0cf59d2bc0402d286c63344def5a171d9967
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cppcheck is a static analysis tool for C/C++ code. Cppcheck
+        detects the types of bugs that the compilers normally do not detect. The goal
+        is to detect only real errors in the code (i.e. have zero false positives). '
+      home_page: https://cppcheck.sourceforge.io
+      license_concluded: GPL-1.0-or-later AND GPL-3.0-or-later AND Zlib AND (GPL-2.0-only
+        OR BSD-2-Clause) AND BSD-2-Clause AND GPL-2.0-or-later AND blessing AND LGPL-3.0-only
+        AND GPL-2.0-only AND LGPL-2.0-or-later AND GPL-3.0-only AND ImageMagick AND
+        LGPL-2.1-or-later AND LGPL-3.0-or-later AND BSD-3-Clause
+      license_declared: GPL-1.0-or-later AND GPL-3.0-or-later AND Zlib AND (GPL-2.0-only
+        OR BSD-2-Clause) AND BSD-2-Clause AND GPL-2.0-or-later AND blessing AND LGPL-3.0-only
+        AND GPL-2.0-only AND LGPL-2.0-or-later AND GPL-3.0-only AND ImageMagick AND
+        LGPL-2.1-or-later AND LGPL-3.0-or-later AND BSD-3-Clause
+      short_summary: Tool for static C/C++ code analysis
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: erlang-sd_notify-1.1.tar.gz
+  archive_sha512sum: 2c21e3e904b8b7d6c39b2ee81524537421994c80fe5a019bb37e8401da337ddf7e92c56deef757c505d9bdf9d16e8ab7de1e43fa93e4d0c129c36ee7fc4bfba9
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Erlang module for native access to the systemd-notify
+        facilities. '
+      home_page: https://github.com/systemd/erlang-sd_notify
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Erlang Bindings for sd_notify()
+      supplier: 'Organization: Broadcom, Inc.'

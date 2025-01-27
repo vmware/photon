@@ -1,0 +1,20 @@
+sources:
+- archive: libICE-1.1.1.tar.xz
+  archive_sha512sum: 2f7833a25f31cc743ca95cb88f9a8403b50e19ffb5bf43bfef87ba405857d359789daaa9ec2391351237d958f16d35dbf082adb76d301e46d3a54162a6b452d3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 Inter-Client Exchange runtime library. '
+      home_page: http://www.x.org/
+      license_concluded: FSFULLR AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later AND HPND-sell-variant
+        AND X11 AND FSFULLRWD AND FSFAP AND GPL-2.0-only AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND MIT-open-group AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND MIT
+      license_declared: FSFULLR AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later AND HPND-sell-variant
+        AND X11 AND FSFULLRWD AND FSFAP AND GPL-2.0-only AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND MIT-open-group AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND MIT
+      short_summary: X11 ICE runtime library.
+      supplier: 'Organization: Broadcom, Inc.'

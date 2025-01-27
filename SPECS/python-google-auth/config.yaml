@@ -1,0 +1,12 @@
+sources:
+- archive: google_auth-2.32.0.tar.gz
+  archive_sha512sum: d72d9c367a47b3496dcaae9deec29315c65e43ddf9b3ee2838232ed2ac8aabdf5c91978a6d66700b5e9e77a0de8820ecf12b798fb65383600e08d47b732d1981
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Google Auth Python Library '
+      home_page: https://github.com/googleapis/google-auth-library-python
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Google Auth Python Library
+      supplier: 'Organization: Broadcom, Inc.'

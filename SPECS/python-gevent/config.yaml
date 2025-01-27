@@ -1,0 +1,24 @@
+sources:
+- archive: gevent-23.9.1.tar.gz
+  archive_sha512sum: c0600a5f9e50040009c3467ad802dda8a48422dca4e781acc9ca3428446399932da2f07d7345936ef634783611cf664d219f614980ed6b936f4a510e56ea753c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: gevent is a coroutine-based Python networking library.
+      home_page: https://pypi.python.org/pypi/gevent
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        BSD-3-Clause AND FSFULLR AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND CC-BY-4.0 AND MIT
+        AND FSFULLRWD AND Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception AND
+        FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic AND (BSD-2-Clause
+        OR GPL-2.0-or-later) AND BSD-2-Clause AND GPL-2.0-or-later AND GPL-2.0-only
+        AND GPL-3.0-or-later AND ISC AND Python-2.0 AND FSFAP
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause
+        AND FSFULLR AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND CC-BY-4.0 AND MIT
+        AND FSFULLRWD AND Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception AND
+        FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic AND (BSD-2-Clause
+        OR GPL-2.0-or-later) AND BSD-2-Clause AND GPL-2.0-or-later AND GPL-2.0-only
+        AND GPL-3.0-or-later AND ISC AND Python-2.0 AND FSFAP
+      short_summary: Coroutine-based network library
+      supplier: 'Organization: Broadcom, Inc.'

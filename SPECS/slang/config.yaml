@@ -1,0 +1,33 @@
+sources:
+- archive: slang-2.3.2.tar.bz2
+  archive_sha512sum: 35cdfe8af66dac62ee89cca60fa87ddbd02cae63b30d5c0e3786e77b1893c45697ace4ac7e82d9832b8a9ac342560bc35997674846c5022341481013e76f74b5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'S-Lang is a multi-platform programmer''s library designed
+        to allow a developer to create robust multi-platform software. It provides
+        facilities required by interactive applications such as display/screen management,
+        keyboard input, keymaps, and so on. The most exciting feature of the library
+        is the slang interpreter that may be easily embedded into a program to make
+        it extensible. While the emphasis has always been on the embedded nature of
+        the interpreter, it may also be used in a stand-alone fashion through the
+        use of slsh, which is part of the S-Lang distribution.  Unlike many interpreters,
+        the S-Lang interpreter supports all of the native C integer types (signed
+        and unsigned versions of char, short, int, long, and long long), and both
+        single and double precision types, as well as a double precision complex type.
+        Other data types supported by the interpreter include strings, lists, associative
+        arrays (hashes), user-defined structures, and multi-dimensional arrays of
+        any data-type.  The S-Lang interpreter has very strong support for array-based
+        operations making it ideal for numerical applications. '
+      home_page: http://www.jedsoft.org/slang/index.html
+      license_concluded: GPL-2.0-only AND BSD-3-Clause AND GPL-1.0-or-later AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later AND X11-distribute-modifications-variant AND FSFUL AND
+        GPL-3.0-only AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND HPND-sell-variant AND Artistic-2.0
+      license_declared: GPL-2.0-only AND BSD-3-Clause AND GPL-1.0-or-later AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later AND X11-distribute-modifications-variant AND FSFUL AND
+        GPL-3.0-only AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND HPND-sell-variant AND Artistic-2.0
+      short_summary: An interpreted language that may be embedded into an application
+        to make the application extensible.
+      supplier: 'Organization: Broadcom, Inc.'

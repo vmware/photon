@@ -1,0 +1,14 @@
+sources:
+- archive: elixir-1.16.3.tar.gz
+  archive_sha512sum: 1511fb78bdcc50850cbf91007ed11c6a89e947d0a743c1e9ed30e1c93c1b47b5377fced17eeb66ac511d4f151d2e00ef2ecc6fb425d0d4afe2451be41a6ba6ee
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Elixir is a programming language built on top of the
+        Erlang VM. As Erlang, it is a functional language built to support distributed,
+        fault-tolerant, non-stop applications with hot code swapping. '
+      home_page: http://elixir-lang.org
+      license_concluded: MIT AND Apache-2.0
+      license_declared: MIT AND Apache-2.0
+      short_summary: A modern approach to programming for the Erlang VM
+      supplier: 'Organization: Broadcom, Inc.'

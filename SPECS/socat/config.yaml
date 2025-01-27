@@ -1,0 +1,18 @@
+sources:
+- archive: socat-1.7.4.4.tar.bz2
+  archive_sha512sum: 3eedfbf599ecf1d6fd391d03d710044bc5e18a762395bc4cb151b96fe673d405a6630da3070ecddd5ac558126b56aa65feaa74d528eeb755a04aa0ec61690651
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Socat is a command line based utility that establishes
+        two bidirectional byte streams and transfers data between them. Because the
+        streams can be constructed from a large set of different types of data sinks
+        and sources (see address types), and because lots of address options may be
+        applied to the streams, socat can be used for many different purposes. '
+      home_page: http://www.dest-unreach.org/socat
+      license_concluded: MIT AND FSFUL AND LGPL-2.1-or-later AND GPL-1.0-or-later
+        AND GFDL-1.1-or-later AND OpenSSL AND GPL-2.0-only
+      license_declared: MIT AND FSFUL AND LGPL-2.1-or-later AND GPL-1.0-or-later AND
+        GFDL-1.1-or-later AND OpenSSL AND GPL-2.0-only
+      short_summary: Multipurpose relay (SOcket CAT)
+      supplier: 'Organization: Broadcom, Inc.'

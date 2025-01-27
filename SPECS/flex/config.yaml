@@ -1,0 +1,24 @@
+sources:
+- archive: flex-2.6.4.tar.gz
+  archive_sha512sum: e9785f3d620a204b7d20222888917dc065c2036cae28667065bf7862dfa1b25235095a12fd04efdbd09bfd17d3452e6b9ef953a8c1137862ff671c97132a082e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Flex package contains a utility for generating programs
+        that recognize patterns in text. '
+      home_page: https://github.com/westes/flex/releases
+      license_concluded: GPL-3.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLR AND FSFAP
+        AND FSFULLRWD AND GPL-2.0-or-later AND LGPL-2.0-or-later AND GPL-3.0-or-later
+        WITH Libtool-exception AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND BSD-3-Clause-flex AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2
+      license_declared: GPL-3.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLR AND FSFAP
+        AND FSFULLRWD AND GPL-2.0-or-later AND LGPL-2.0-or-later AND GPL-3.0-or-later
+        WITH Libtool-exception AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND BSD-3-Clause-flex AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2
+      short_summary: A utility for generating programs that recognize patterns in
+        text
+      supplier: 'Organization: Broadcom, Inc.'

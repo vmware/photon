@@ -1,0 +1,16 @@
+sources:
+- archive: DBD-SQLite-1.72.tar.gz
+  archive_sha512sum: 67a90c618a3626b3ae0b333b5eb4d4d0c8c13712bbcd50c135bf74e83dc252301664089803597c1bcbebf7f1eda040673d4438e70e2dae0aef3b8ebeeecd2f79
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'SQLite is a public domain RDBMS database engine that
+        you can find at http://www.hwaci.com/sw/sqlite/.  This module provides a SQLite
+        RDBMS module that uses the system SQLite libraries. '
+      home_page: http://search.cpan.org/dist/DBD-SQLite/
+      license_concluded: Artistic-2.0 AND Apache-2.0 AND GPL-1.0-or-later AND Artistic-1.0
+        AND GPL-2.0-only AND blessing
+      license_declared: Artistic-2.0 AND Apache-2.0 AND GPL-1.0-or-later AND Artistic-1.0
+        AND GPL-2.0-only AND blessing
+      short_summary: SQLite DBI Driver
+      supplier: 'Organization: Broadcom, Inc.'

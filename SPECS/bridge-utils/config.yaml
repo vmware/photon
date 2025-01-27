@@ -1,0 +1,14 @@
+sources:
+- archive: bridge-utils-1.7.1.tar.xz
+  archive_sha512sum: 6a3824853bdaa1733c552973e6a5082280facdddc52c3feeb2c8c9375ba9469a5930b559092c9de1a73b464f388f019e147b45ac1e2d10ce8968057779fcd12c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The bridge-utils package contains a utility needed to
+        create and manage bridge devices. This is useful in setting up networks for
+        a hosted virtual machine (VM). '
+      home_page: http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later
+      short_summary: Utilities for configuring and managing bridge devices
+      supplier: 'Organization: Broadcom, Inc.'

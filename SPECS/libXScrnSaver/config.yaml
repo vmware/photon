@@ -1,0 +1,20 @@
+sources:
+- archive: libXScrnSaver-1.2.3.tar.bz2
+  archive_sha512sum: 7ea628324a11b25ee82c7b11c6bf98f37de219354de51c1e29467b5de422669ba1ab121f3b9dc674093c8f3960e93c5d5428122f5539092f79bc8451c768354a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 Screen Saver runtime library. '
+      home_page: http://www.x.org/
+      license_concluded: FSFULLRWD AND GPL-3.0-or-later AND HPND-sell-variant AND
+        GPL-2.0-or-later WITH Libtool-exception AND MIT-open-group AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFAP AND MIT AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND X11 AND GPL-3.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND FSFUL AND FSFULLR
+      license_declared: FSFULLRWD AND GPL-3.0-or-later AND HPND-sell-variant AND GPL-2.0-or-later
+        WITH Libtool-exception AND MIT-open-group AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFAP AND MIT AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH
+        Autoconf-exception-macro AND FSFUL AND FSFULLR
+      short_summary: X11 Screen Saver runtime library.
+      supplier: 'Organization: Broadcom, Inc.'

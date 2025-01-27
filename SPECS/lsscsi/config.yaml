@@ -1,0 +1,18 @@
+sources:
+- archive: lsscsi-0.32.tar.xz
+  archive_sha512sum: fb2214390756d8820661ac1a56da5fa69f80415b2bd94c4b68f7daeb675e5a015a017132874975538934b7d65c2ff0bb8abcee087023b1f62dc6762a09a26452
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This lists the information about SCSI devices. '
+      home_page: http://sg.danny.cz/scsi/lsscsi.html
+      license_concluded: BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLRWD AND GPL-2.0-only
+        AND GPL-1.0-or-later AND BSD-2-Clause AND GPL-2.0-or-later AND FSFUL AND FSFULLR
+        AND X11
+      license_declared: BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLRWD AND GPL-2.0-only
+        AND GPL-1.0-or-later AND BSD-2-Clause AND GPL-2.0-or-later AND FSFUL AND FSFULLR
+        AND X11
+      short_summary: List SCSI devices information.
+      supplier: 'Organization: Broadcom, Inc.'

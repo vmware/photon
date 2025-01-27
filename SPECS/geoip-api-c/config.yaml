@@ -1,0 +1,23 @@
+sources:
+- archive: GeoIP-1.6.12.tar.gz
+  archive_sha512sum: a1c8120692a7ba6de5836550917f86f4797dd236a8b7d71b6f92b5389e4b071d89e57036654f5de1d4b762730a2a5c331c31414eab0c889c9befaa097941fee7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The GeoIP Legacy C library enables the user to find geographical
+        and network information of an IP address using Geolite Legacy country or city
+        databases. '
+      home_page: https://github.com/maxmind/geoip-api-c
+      license_concluded: FSFAP AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND GPL-3.0-or-later WITH Libtool-exception AND FSFUL AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLR AND ISC AND CC-BY-SA-3.0 AND LGPL-2.1-or-later
+        AND LGPL-2.1-only AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
+        AND LGPL-2.0-or-later
+      license_declared: FSFAP AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND GPL-3.0-or-later WITH Libtool-exception AND FSFUL AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLR AND ISC AND CC-BY-SA-3.0 AND LGPL-2.1-or-later
+        AND LGPL-2.1-only AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
+        AND LGPL-2.0-or-later
+      short_summary: Library to find geographical and network information of an IP
+        address
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,27 @@
+sources:
+- archive: nss-3.78.tar.gz
+  archive_sha512sum: ab54d838f41f963fdd4b87477b1e769186ae1f138f7c5d764cd6873be4791146d14dcc85697a2ca92e08f3bfcbeb61d64e26e7b5398095272c18a8196d43ac6c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Network Security Services (NSS) package is a set
+        of libraries designed to support cross-platform development of security-enabled
+        client and server applications. Applications built with NSS can support SSL
+        v2 and v3, TLS, PKCS #5, PKCS #7, PKCS #11, PKCS #12, S/MIME, X.509 v3 certificates,
+        and other security standards. This is useful for implementing SSL and S/MIME
+        or other Internet security standards into an application. '
+      home_page: https://firefox-source-docs.mozilla.org/security/nss/index.html
+      license_concluded: GPL-2.0-only AND blessing AND GPL-1.0-or-later AND Apache-2.0
+        AND MPL-1.0 AND LGPL-2.1-or-later AND CC0-1.0 AND BSD-3-Clause-No-Nuclear-Warranty
+        AND MPL-2.0 AND Zlib AND (BSD-3-Clause OR GPL-1.0-or-later) AND MIT AND BSD-3-Clause
+        AND (MPL-2.0 OR GPL-2.0-only) AND (GPL-2.0-only OR LGPL-2.1-only OR MPL-1.1)
+        AND Vim AND GPL-2.0-or-later AND LGPL-2.1-only AND (MPL-1.1 OR GPL-2.0-or-later
+        OR LGPL-2.1-or-later)
+      license_declared: GPL-2.0-only AND blessing AND GPL-1.0-or-later AND Apache-2.0
+        AND MPL-1.0 AND LGPL-2.1-or-later AND CC0-1.0 AND BSD-3-Clause-No-Nuclear-Warranty
+        AND MPL-2.0 AND Zlib AND (BSD-3-Clause OR GPL-1.0-or-later) AND MIT AND BSD-3-Clause
+        AND (MPL-2.0 OR GPL-2.0-only) AND (GPL-2.0-only OR LGPL-2.1-only OR MPL-1.1)
+        AND Vim AND GPL-2.0-or-later AND LGPL-2.1-only AND (MPL-1.1 OR GPL-2.0-or-later
+        OR LGPL-2.1-or-later)
+      short_summary: Security client
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,21 @@
+sources:
+- archive: GConf-3.2.6.tar.xz
+  archive_sha512sum: 35f5f659f9d03f7531a7102adacbda0eb310d8a55a831c768c91a82e07dae21247726e00e0e411f63b1de9ade0f042ded572a3ea4a4b2ad3135231f344540b58
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The GConf package contains a configuration database system
+        used by many GNOME applications. '
+      home_page: http://gnome.org
+      license_concluded: FSFUL AND FSFULLRWD AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND (GPL-1.0-or-later AND LGPL-2.0-or-later)
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFAP AND LGPL-2.0-only
+        AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-1.0-or-later
+        AND GPL-2.0-or-later AND FSFULLR
+      license_declared: FSFUL AND FSFULLRWD AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND (GPL-1.0-or-later AND LGPL-2.0-or-later)
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFAP AND LGPL-2.0-only
+        AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-1.0-or-later
+        AND GPL-2.0-or-later AND FSFULLR
+      short_summary: configuration database system used by many GNOME applications
+      supplier: 'Organization: Broadcom, Inc.'

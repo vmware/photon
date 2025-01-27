@@ -1,0 +1,23 @@
+sources:
+- archive: ipmitool-1.8.19.tar.gz
+  archive_sha512sum: 2d91706e9feba4b2ce4808eca087b81b842c4292a5840830001919c06ec8babd8f8761b74bb9dcf8fbc7765f028a5b1a192a3c1b643f2adaa157fed6fb0d1ee3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package contains a utility for interfacing with
+        devices that support the Intelligent Platform Management Interface specification.  IPMI
+        is an open standard for machine health, inventory, and remote power control.  This
+        utility can communicate with IPMI-enabled devices through either a kernel
+        driver such as OpenIPMI or over the RMCP LAN protocol defined in the IPMI
+        specification.  IPMIv2 adds support for encrypted LAN communications and remote
+        Serial-over-LAN functionality.  It provides commands for reading the Sensor
+        Data Repository (SDR) and displaying sensor values, displaying the contents
+        of the System Event Log (SEL), printing Field Replaceable Unit (FRU) information,
+        reading and setting LAN configuration, and chassis power control. '
+      home_page: https://github.com/ipmitool/ipmitool
+      license_concluded: LGPL-2.1-or-later AND FSFAP AND BSD-3-Clause AND Zlib AND
+        BSD-3-Clause-Sun AND BSD-3-Clause-No-Nuclear-Warranty
+      license_declared: LGPL-2.1-or-later AND FSFAP AND BSD-3-Clause AND Zlib AND
+        BSD-3-Clause-Sun AND BSD-3-Clause-No-Nuclear-Warranty
+      short_summary: ipmitool - Utility for IPMI control
+      supplier: 'Organization: Broadcom, Inc.'

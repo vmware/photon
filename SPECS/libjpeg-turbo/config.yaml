@@ -1,0 +1,16 @@
+sources:
+- archive: libjpeg-turbo-2.1.4.tar.gz
+  archive_sha512sum: 511f065767c022da06b6c36299686fa44f83441646f7e33b766c6cfab03f91b0e6bfa456962184071dadaed4057ba9a29cba685383f3eb86a4370a1a53731a70
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libjpeg-turbo is a fork of the original IJG libjpeg which
+        uses SIMD to accelerate baseline JPEG compression and decompression. libjpeg
+        is a library that implements JPEG image encoding, decoding and transcoding. '
+      home_page: http://sourceforge.net/projects/libjpeg-turbo
+      license_concluded: MIT AND Zlib AND BSD-3-Clause AND GPL-2.0-or-later AND IJG
+        AND HPND-Pbmplus AND (GPL-2.0-only OR MIT) AND Beerware
+      license_declared: MIT AND Zlib AND BSD-3-Clause AND GPL-2.0-or-later AND IJG
+        AND HPND-Pbmplus AND (GPL-2.0-only OR MIT) AND Beerware
+      short_summary: fork of the original IJG libjpeg which uses SIMD.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,16 @@
+sources:
+- archive: pyzmq-23.2.1.tar.gz
+  archive_sha512sum: c8f2dc858076641a219ea37af91ad4a15ee811e8d2095b0337d414cc702eaf90ee4d6280bda7800667828dffaedcdb026553262d5473f9fb70bbd17c17b248f4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'python bindings for zeromq '
+      home_page: https://pypi.org/project/pyzmq
+      license_concluded: LGPL-2.0-or-later AND Apache-2.0 AND GPL-3.0-only AND LGPL-2.1-only
+        AND LGPL-3.0-or-later AND LGPL-3.0-only AND GPL-1.0-or-later AND CC-BY-SA-3.0
+        AND BSD-3-Clause AND BSD-2-Clause
+      license_declared: LGPL-2.0-or-later AND Apache-2.0 AND GPL-3.0-only AND LGPL-2.1-only
+        AND LGPL-3.0-or-later AND LGPL-3.0-only AND GPL-1.0-or-later AND CC-BY-SA-3.0
+        AND BSD-3-Clause AND BSD-2-Clause
+      short_summary: Software library for fast, message-based applications
+      supplier: 'Organization: Broadcom, Inc.'

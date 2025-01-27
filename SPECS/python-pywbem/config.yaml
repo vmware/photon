@@ -1,0 +1,15 @@
+sources:
+- archive: pywbem-1.4.1.tar.gz
+  archive_sha512sum: a39a2200ec9c831b5d21768d91cab7f16e8d4b351881c27bdcf195ac3704b1ebea0355c259a7c9a9ba055999df50025a03d787a1033130de764d183af512c3c8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'PyWBEM is a Python library for making CIM operations
+        over HTTP using the WBEM CIM-XML protocol.  WBEM is a manageability protocol,
+        like SNMP, standardised by the Distributed Management Task Force (DMTF) available
+        at http://www.dmtf.org/standards/wbem. '
+      home_page: http://pywbem.sourceforge.net
+      license_concluded: LGPL-2.1-only AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+      license_declared: LGPL-2.1-only AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+      short_summary: Python WBEM Client
+      supplier: 'Organization: Broadcom, Inc.'

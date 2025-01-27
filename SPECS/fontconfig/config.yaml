@@ -1,0 +1,23 @@
+sources:
+- archive: fontconfig-2.14.1.tar.gz
+  archive_sha512sum: 5ad0b2ba0ffe9d50fa995543f5560360505d846f758696b8be8c01965e0f8ca17b53baee145d7fae861a1e1052935111b9879736f9dc6805cc98eae2ecf867c9
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fontconfig can discover new fonts when installed automatically,
+        removing a common source of configuration problems, perform font name substitution,
+        so that appropriate alternative fonts can be selected if fonts are missing,
+        identify the set of fonts required to completely cover a set of languages. '
+      home_page: https://www.freedesktop.org/wiki/Software/fontconfig/
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        FSFULLR AND HPND-sell-variant AND LGPL-2.1-or-later AND MIT-Modern-Variant
+        AND FSFAP AND MIT AND FSFULLRWD AND X11 AND FSFUL AND GPL-2.0-or-later WITH
+        Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        FSFULLR AND HPND-sell-variant AND LGPL-2.1-or-later AND MIT-Modern-Variant
+        AND FSFAP AND MIT AND FSFULLRWD AND X11 AND FSFUL AND GPL-2.0-or-later WITH
+        Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      short_summary: library for configuring and customizing font access.
+      supplier: 'Organization: Broadcom, Inc.'

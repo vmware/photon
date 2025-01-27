@@ -1,0 +1,15 @@
+sources:
+- archive: dnsmasq-2.90.tar.xz
+  archive_sha512sum: e169de1892f935e219b0f49d90107f95cba42b40bca20bd3c973313c2cd4df58b929af6628cd988419051d81c3b4ccf8e9f816274df7d0840e79f5bf49602442
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Dnsmasq a lightweight, caching DNS proxy with integrated
+        DHCP server. '
+      home_page: https://thekelleys.org.uk/dnsmasq/doc.html
+      license_concluded: (GPL-2.0-only OR GPL-3.0-only) AND GPL-2.0-or-later AND GPL-3.0-only
+        AND GPL-1.0-or-later AND GPL-2.0-only
+      license_declared: (GPL-2.0-only OR GPL-3.0-only) AND GPL-2.0-or-later AND GPL-3.0-only
+        AND GPL-1.0-or-later AND GPL-2.0-only
+      short_summary: DNS proxy with integrated DHCP server
+      supplier: 'Organization: Broadcom, Inc.'

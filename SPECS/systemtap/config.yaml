@@ -1,0 +1,25 @@
+sources:
+- archive: systemtap-4.8.tar.gz
+  archive_sha512sum: a72f39a24c3eb4a7703a033c435ab8ad75e9d7fedf8d8580db705bac529ffd0f8aabd4b510becc68547d2178d47bb918dd090aced957f94faa62f847d8341af8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'SystemTap is an instrumentation system for systems running
+        Linux. Developers can write instrumentation scripts to collect data on the
+        operation of the system.  The base %{name} package contains/requires the components
+        needed to locally develop and execute %{name} scripts. '
+      home_page: http://sourceware.org/systemtap
+      license_concluded: GFDL-1.2-or-later AND FSFAP AND GFDL-1.1-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFUL AND MIT AND DOC AND FSFULLRWD
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND LGPL-2.1-only
+        AND EPL-1.0 AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later) AND GPL-2.0-only
+        AND LGPL-2.0-or-later AND BSD-3-Clause AND FSFULLR AND GPL-3.0-or-later WITH
+        Autoconf-exception-macro AND GPL-3.0-or-later AND GPL-2.0-or-later AND GPL-1.0-or-later
+      license_declared: GFDL-1.2-or-later AND FSFAP AND GFDL-1.1-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFUL AND MIT AND DOC AND FSFULLRWD
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND LGPL-2.1-only
+        AND EPL-1.0 AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later) AND GPL-2.0-only
+        AND LGPL-2.0-or-later AND BSD-3-Clause AND FSFULLR AND GPL-3.0-or-later WITH
+        Autoconf-exception-macro AND GPL-3.0-or-later AND GPL-2.0-or-later AND GPL-1.0-or-later
+      short_summary: Programmable system-wide instrumentation system
+      supplier: 'Organization: Broadcom, Inc.'

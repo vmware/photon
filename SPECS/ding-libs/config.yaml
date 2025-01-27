@@ -1,0 +1,21 @@
+sources:
+- archive: ding-libs-0.6.2.tar.gz
+  archive_sha512sum: 566172e0addb0ee6e0ebd12874d3b72f2fa6bcb1ecc628c0c529984193290fae554efc40f52d2cec675bffab32a36183e47ec629db25e83ed2995f1049c64703
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A meta-package that pulls in libcollection, libdhash,
+        libini-config, librefarray and libpath-utils. '
+      home_page: https://github.com/SSSD/ding-libs
+      license_concluded: GPL-3.0-or-later AND LGPL-3.0-only AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND FSFULLR AND LGPL-3.0-or-later AND GPL-3.0-only
+        AND X11 AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND LGPL-2.0-or-later
+      license_declared: GPL-3.0-or-later AND LGPL-3.0-only AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND FSFULLR AND LGPL-3.0-or-later AND GPL-3.0-only
+        AND X11 AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND LGPL-2.0-or-later
+      short_summary: '"Ding is not GLib" assorted utility libraries'
+      supplier: 'Organization: Broadcom, Inc.'

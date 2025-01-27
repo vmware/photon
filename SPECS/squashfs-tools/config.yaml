@@ -1,0 +1,13 @@
+sources:
+- archive: squashfs-tools-4.5.1.tar.gz
+  archive_sha512sum: b3934ea1e26c7508110312711465644a6d9674b6b5332a7d011e191fa3c1d4b8be694214794a0f6005263d0f4e18bab96af2f7ed66a178f8e3bb3a781cd44896
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The squashfs-tools package contains tools for creation
+        and extraction SQUASHFS file system. '
+      home_page: https://github.com/plougher/squashfs-tools/
+      license_concluded: GPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later
+      short_summary: Utilities for managing the SQUASHFS filesystem
+      supplier: 'Organization: Broadcom, Inc.'

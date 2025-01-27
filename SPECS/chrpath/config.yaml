@@ -1,0 +1,17 @@
+sources:
+- archive: chrpath-0.16.tar.gz
+  archive_sha512sum: aa04d490f78bff20a56fe20539cec10218c0772a668909eda8324ca825f51e8ef92001e95d9c316e79a145a043c9c327ec94d1a82e104ab408ca1021832745aa
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Command line tool to adjust the RPATH or RUNPATH of ELF
+        binaries. '
+      home_page: https://chrpath.alioth.debian.org/
+      license_concluded: GPL-2.0-only AND X11 AND FSFULLRWD AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND FSFUL AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLR
+      license_declared: GPL-2.0-only AND X11 AND FSFULLRWD AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND FSFUL AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLR
+      short_summary: Change rpath of binaries
+      supplier: 'Organization: Broadcom, Inc.'

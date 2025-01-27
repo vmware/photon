@@ -1,0 +1,29 @@
+sources:
+- archive: OTP-26.2.5.tar.gz
+  archive_sha512sum: f06d34290c0d93609aa3efbdc97206e8d3ce17aa2c3f62b6c566c7631ee3a3d45a89b61ce0ace81604b5a94610d03ad98558f27ee888ca90ecdeeeb2759c0184
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Erlang is a general-purpose programming language and
+        runtime environment. Erlang has built-in support for concurrency, distribution
+        and fault tolerance. Erlang is used in several large telecommunication systems
+        from Ericsson. '
+      home_page: https://www.erlang.org
+      license_concluded: BSD-2-Clause AND LGPL-2.1-or-later AND GPL-1.0-or-later AND
+        (Apache-2.0 OR BSL-1.0) AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND OpenSSL-standalone AND (Apache-2.0 OR LGPL-2.1-or-later) AND (Apache-2.0
+        WITH LLVM-exception AND BSL-1.0) AND LGPL-2.0-or-later WITH WxWindows-exception-3.1
+        AND Apache-2.0 AND BSL-1.0 AND GPL-3.0-or-later AND Zlib AND MPL-1.0 AND MIT
+        AND TCL AND SSLeay-standalone AND Unlicense AND FSFUL AND BSD-3-Clause AND
+        (MIT OR GPL-2.0-only) AND EPL-1.0 AND X11 AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later)
+        AND Apache-2.0 WITH LLVM-exception
+      license_declared: BSD-2-Clause AND LGPL-2.1-or-later AND GPL-1.0-or-later AND
+        (Apache-2.0 OR BSL-1.0) AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND OpenSSL-standalone AND (Apache-2.0 OR LGPL-2.1-or-later) AND (Apache-2.0
+        WITH LLVM-exception AND BSL-1.0) AND LGPL-2.0-or-later WITH WxWindows-exception-3.1
+        AND Apache-2.0 AND BSL-1.0 AND GPL-3.0-or-later AND Zlib AND MPL-1.0 AND MIT
+        AND TCL AND SSLeay-standalone AND Unlicense AND FSFUL AND BSD-3-Clause AND
+        (MIT OR GPL-2.0-only) AND EPL-1.0 AND X11 AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later)
+        AND Apache-2.0 WITH LLVM-exception
+      short_summary: erlang
+      supplier: 'Organization: Broadcom, Inc.'

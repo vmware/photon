@@ -1,0 +1,13 @@
+sources:
+- archive: requests-oauthlib-1.3.1.tar.gz
+  archive_sha512sum: fb4b52edf5f3e4f82f9bedc13b4bc4032e629fd17fef62e72c9eeb734d1963c08c081c9a96db464539637c678e1f5b7f4bf9bb618a8bc1b6aa2024c7b5c620ea
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This project provides first-class OAuth library support
+        for python-request. '
+      home_page: http://pypi.python.org/pypi/requests-oauthlib
+      license_concluded: BSD-3-Clause AND ISC
+      license_declared: BSD-3-Clause AND ISC
+      short_summary: OAuthlib authentication support for Requests.
+      supplier: 'Organization: Broadcom, Inc.'

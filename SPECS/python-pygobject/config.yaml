@@ -1,0 +1,14 @@
+sources:
+- archive: PyGObject-3.42.2.tar.gz
+  archive_sha512sum: ba48ba470c78d76f4090460df286d926e15c4063374a1d3afa89dd374230a042aca53d864fc0efaf67efdba5723fe15440d34888a0b45c97d73c5c4cfe17559c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python bindings for GLib and GObject. '
+      home_page: https://pypi.org/project/PyGObject
+      license_concluded: LGPL-2.1-or-later AND LGPL-2.1-only AND MIT AND LGPL-2.0-or-later
+        AND CC-BY-4.0
+      license_declared: LGPL-2.1-or-later AND LGPL-2.1-only AND MIT AND LGPL-2.0-or-later
+        AND CC-BY-4.0
+      short_summary: Python Bindings for GObject
+      supplier: 'Organization: Broadcom, Inc.'

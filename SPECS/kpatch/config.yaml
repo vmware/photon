@@ -1,0 +1,18 @@
+sources:
+- archive: kpatch-v0.9.8.tar.gz
+  archive_sha512sum: ab3a771dfcde92a9eee768afcf7fddb6f1ad5ba9e8c7f44d579d258ce9b6ee1722869b1b70c4597ae951b0faf71413efa26a5b135f50308c996b284a9dcee5b7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Contains the kpatch utility, which allows loading of
+        kernel livepatches. kpatch is a Linux dynamic kernel patching tool which allows
+        you to patch a running kernel without rebooting or restarting any processes.  It
+        enables sysadmins to apply critical security patches to the kernel immediately,
+        without having to wait for long-running tasks to complete, users to log off,
+        or for scheduled reboot windows.  It gives more control over up-time without
+        sacrificing security or stability. '
+      home_page: http://github.com/dynup/kpatch
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later
+      short_summary: Dynamic kernel patching
+      supplier: 'Organization: Broadcom, Inc.'

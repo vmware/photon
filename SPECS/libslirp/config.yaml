@@ -1,0 +1,13 @@
+sources:
+- archive: libslirp-v4.7.0.tar.gz
+  archive_sha512sum: 387f4a6dad240ce633df2640bb49c6cb0041c8b3afc8d0ef38186d385f00dd9e4ef4443e93e1b71dbf05e22892b6f2771a87a202e815d8ec899ab5c147a1f09f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A general purpose TCP-IP emulator used by virtual machine
+        hypervisors to provide virtual networking services. '
+      home_page: https://gitlab.freedesktop.org/slirp/libslirp
+      license_concluded: BSD-3-Clause AND GPL-3.0-or-later AND MIT
+      license_declared: BSD-3-Clause AND GPL-3.0-or-later AND MIT
+      short_summary: A general purpose TCP-IP emulator
+      supplier: 'Organization: Broadcom, Inc.'

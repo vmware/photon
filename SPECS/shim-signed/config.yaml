@@ -1,0 +1,18 @@
+sources:
+- archive: shim-signed-15.8.tar.xz
+  archive_sha512sum: c97bda7d637951c62a346d7d814d9c896b63308161fa3fa6dcf28e49e9aa0bc898ea8a61bf163bde159437f397a5b34a2b7e0238819bef71b1438d30fd4e84ad
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Shim efi image signed by UEFI CA. '
+      home_page: https://vmware.github.io/photon/
+      license_concluded: BSD-2-Clause AND BSD-Source-Code AND GPL-3.0-only AND MIT
+        AND OpenSSL AND BSD-3-Clause AND snprintf AND GPL-3.0-or-later AND BSD-2-Clause-Patent
+        AND LGPL-2.1-or-later AND GPL-2.0-or-later AND OpenSSL-standalone AND Nokia
+        AND SSLeay-standalone
+      license_declared: BSD-2-Clause AND BSD-Source-Code AND GPL-3.0-only AND MIT
+        AND OpenSSL AND BSD-3-Clause AND snprintf AND GPL-3.0-or-later AND BSD-2-Clause-Patent
+        AND LGPL-2.1-or-later AND GPL-2.0-or-later AND OpenSSL-standalone AND Nokia
+        AND SSLeay-standalone
+      short_summary: Photon shim
+      supplier: 'Organization: Broadcom, Inc.'

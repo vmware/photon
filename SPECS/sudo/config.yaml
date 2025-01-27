@@ -1,0 +1,22 @@
+sources:
+- archive: sudo-1.9.15p5.tar.gz
+  archive_sha512sum: ebac69719de2fe7bd587924701bdd24149bf376a68b17ec02f69b2b96d4bb6fa5eb8260a073ec5ea046d3ac69bb5b1c0b9d61709fe6a56f1f66e40817a70b15a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Sudo package allows a system administrator to give
+        certain users (or groups of users) the ability to run some (or all) commands
+        as root or another user while logging the commands and arguments. '
+      home_page: https://www.sudo.ws/
+      license_concluded: FSFULLR AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND ISC AND FSFAP AND Zlib AND Apache-2.0 AND GPL-2.0-only AND BSD-2-Clause
+        AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND FSFULLRWD AND BSD-3-Clause AND DOC AND MIT AND FSFUL
+      license_declared: FSFULLR AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND ISC AND FSFAP AND Zlib AND Apache-2.0 AND GPL-2.0-only AND BSD-2-Clause
+        AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND FSFULLRWD AND BSD-3-Clause AND DOC AND MIT AND FSFUL
+      short_summary: Sudo
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: duktape-2.7.0.tar.xz
+  archive_sha512sum: 8ff5465c9c335ea08ebb0d4a06569c991b9dc4661b63e10da6b123b882e7375e82291d6b883c2644902d68071a29ccc880dae8229447cebe710c910b54496c1d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Duktape is an embeddable Javascript engine, with a focus
+        on portability and compact footprint. '
+      home_page: http://duktape.org
+      license_concluded: MIT AND CC0-1.0
+      license_declared: MIT AND CC0-1.0
+      short_summary: Embeddable Javascript engine
+      supplier: 'Organization: Broadcom, Inc.'

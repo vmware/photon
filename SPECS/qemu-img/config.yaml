@@ -1,0 +1,77 @@
+sources:
+- archive: qemu-7.2.0.tar.xz
+  archive_sha512sum: f3cfa00da739ba819a218d7e6e95c77fb79a8e0f487b024ddd281602e785249b81144595e3f8c746c32a4f5c4d1a88c6aebae3c162603edfbb50ae3722d7ed13
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Qemu-img is the tool used to create, manage, convert
+        shrink etc. the disk images of virtual machines. '
+      home_page: https://www.qemu.org
+      license_concluded: BSD-Source-Code AND (MIT OR BSD-3-Clause) AND FSFAP-no-warranty-disclaimer
+        AND HPND AND (GPL-2.0-only AND GPL-2.0-or-later) AND GPL-2.0-only AND CC-BY-SA-4.0
+        AND (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause) AND
+        Unicode-DFS-2016 AND GPL-2.0-only WITH eCos-exception-2.0 AND Apache-2.0 AND
+        (LGPL-2.1-only OR BSD-2-Clause) AND LGPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND BSD-4.3TAHOE AND BSD-1-Clause AND (GPL-2.0-or-later
+        OR BSD-3-Clause) AND (GPL-2.0-or-later OR BSD-2-Clause) AND GPL-3.0-or-later
+        WITH Font-exception-2.0 AND (GPL-2.0-only OR MIT) AND CC-BY-3.0 AND (GPL-2.0-or-later
+        OR BSD-3-Clause) AND GPL-2.0-only WITH mif-exception AND GPL-2.0-only WITH
+        Linux-syscall-note AND (GPL-2.0-only OR BSD-2-Clause) AND Parity-7.0.0 AND
+        (GPL-2.0-or-later OR BSD-2-Clause) AND GPL-2.0-or-later AND Artistic-2.0 AND
+        (GPL-2.0-only OR BSD-3-Clause) AND (BSD-2-Clause-Patent AND MIT) AND (BSD-3-Clause
+        OR GPL-2.0-only) AND GPL-2.0-or-later WITH UBDL-exception AND bzip2-1.0.6
+        AND (MIT OR GPL-2.0-only) AND AGPL-3.0-only AND GPL-1.0-or-later AND (LGPL-2.1-only
+        OR CPL-1.0) AND BSL-1.0 AND Zlib AND LGPL-3.0-only AND GPL-2.0-or-later WITH
+        mif-exception AND snprintf AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only
+        OR Linux-OpenIB) AND HPND-sell-variant AND (GPL-2.0-only OR X11) AND LZMA-SDK-9.22
+        AND Python-2.0 AND FSFAP AND FreeBSD-DOC AND MIT AND (MIT OR GPL-1.0-or-later)
+        AND (GPL-2.0-or-later OR X11) AND GPL-2.0-only WITH u-boot-exception-2.0 AND
+        (GPL-2.0-only OR BSD-2-Clause) AND OFL-1.1 AND BSD-3-Clause-acpica AND Vim
+        AND Intel AND GPL-2.0-or-later WITH Linux-syscall-note AND OpenSSL-standalone
+        AND (GPL-2.0-or-later OR MIT) AND BSD-3-Clause AND (GPL-2.0-only WITH Linux-syscall-note
+        OR BSD-3-Clause) AND LGPL-2.0-only AND (RHeCos-1.1 OR GPL-2.0-only) AND GPL-3.0-only
+        AND ISC AND X11 AND LGPL-2.1-or-later AND Artistic-1.0-Perl AND (GPL-2.0-only
+        OR BSD-3-Clause) AND CC0-1.0 AND (MPL-1.1 OR GPL-2.0-only) AND CMU-Mach AND
+        (GPL-2.0-only OR GPL-3.0-only) AND (MIT OR CC0-1.0) AND (GPL-2.0-only OR IBM-pibs)
+        AND (GPL-2.0-only OR IBM-pibs) AND (GPL-2.0-only OR MIT) AND BSD-2-Clause-Patent
+        AND SSLeay-standalone AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-2-Clause)
+        AND (Apache-2.0 OR GPL-2.0-or-later) AND BSD-2-Clause AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND OpenSSL AND GPL-2.0-or-later
+        WITH eCos-exception-2.0 AND NGPL AND NTP-0 AND LGPL-2.1-only AND (GPL-2.0-only
+        WITH Linux-syscall-note OR BSD-2-Clause) AND GPL-2.0-or-later WITH GCC-exception-2.0
+        AND GPL-2.0-or-later WITH Font-exception-2.0 AND (GPL-2.0-only OR BSD-3-Clause-Clear)
+      license_declared: BSD-Source-Code AND (MIT OR BSD-3-Clause) AND FSFAP-no-warranty-disclaimer
+        AND HPND AND (GPL-2.0-only AND GPL-2.0-or-later) AND GPL-2.0-only AND CC-BY-SA-4.0
+        AND (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause) AND
+        Unicode-DFS-2016 AND GPL-2.0-only WITH eCos-exception-2.0 AND Apache-2.0 AND
+        (LGPL-2.1-only OR BSD-2-Clause) AND LGPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND BSD-4.3TAHOE AND BSD-1-Clause AND (GPL-2.0-or-later
+        OR BSD-3-Clause) AND (GPL-2.0-or-later OR BSD-2-Clause) AND GPL-3.0-or-later
+        WITH Font-exception-2.0 AND (GPL-2.0-only OR MIT) AND CC-BY-3.0 AND (GPL-2.0-or-later
+        OR BSD-3-Clause) AND GPL-2.0-only WITH mif-exception AND GPL-2.0-only WITH
+        Linux-syscall-note AND (GPL-2.0-only OR BSD-2-Clause) AND Parity-7.0.0 AND
+        (GPL-2.0-or-later OR BSD-2-Clause) AND GPL-2.0-or-later AND Artistic-2.0 AND
+        (GPL-2.0-only OR BSD-3-Clause) AND (BSD-2-Clause-Patent AND MIT) AND (BSD-3-Clause
+        OR GPL-2.0-only) AND GPL-2.0-or-later WITH UBDL-exception AND bzip2-1.0.6
+        AND (MIT OR GPL-2.0-only) AND AGPL-3.0-only AND GPL-1.0-or-later AND (LGPL-2.1-only
+        OR CPL-1.0) AND BSL-1.0 AND Zlib AND LGPL-3.0-only AND GPL-2.0-or-later WITH
+        mif-exception AND snprintf AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only
+        OR Linux-OpenIB) AND HPND-sell-variant AND (GPL-2.0-only OR X11) AND LZMA-SDK-9.22
+        AND Python-2.0 AND FSFAP AND FreeBSD-DOC AND MIT AND (MIT OR GPL-1.0-or-later)
+        AND (GPL-2.0-or-later OR X11) AND GPL-2.0-only WITH u-boot-exception-2.0 AND
+        (GPL-2.0-only OR BSD-2-Clause) AND OFL-1.1 AND BSD-3-Clause-acpica AND Vim
+        AND Intel AND GPL-2.0-or-later WITH Linux-syscall-note AND OpenSSL-standalone
+        AND (GPL-2.0-or-later OR MIT) AND BSD-3-Clause AND (GPL-2.0-only WITH Linux-syscall-note
+        OR BSD-3-Clause) AND LGPL-2.0-only AND (RHeCos-1.1 OR GPL-2.0-only) AND GPL-3.0-only
+        AND ISC AND X11 AND LGPL-2.1-or-later AND Artistic-1.0-Perl AND (GPL-2.0-only
+        OR BSD-3-Clause) AND CC0-1.0 AND (MPL-1.1 OR GPL-2.0-only) AND CMU-Mach AND
+        (GPL-2.0-only OR GPL-3.0-only) AND (MIT OR CC0-1.0) AND (GPL-2.0-only OR IBM-pibs)
+        AND (GPL-2.0-only OR IBM-pibs) AND (GPL-2.0-only OR MIT) AND BSD-2-Clause-Patent
+        AND SSLeay-standalone AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-2-Clause)
+        AND (Apache-2.0 OR GPL-2.0-or-later) AND BSD-2-Clause AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND OpenSSL AND GPL-2.0-or-later
+        WITH eCos-exception-2.0 AND NGPL AND NTP-0 AND LGPL-2.1-only AND (GPL-2.0-only
+        WITH Linux-syscall-note OR BSD-2-Clause) AND GPL-2.0-or-later WITH GCC-exception-2.0
+        AND GPL-2.0-or-later WITH Font-exception-2.0 AND (GPL-2.0-only OR BSD-3-Clause-Clear)
+      short_summary: QEMU disk image utility
+      supplier: 'Organization: Broadcom, Inc.'

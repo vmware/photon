@@ -1,0 +1,12 @@
+sources:
+- archive: pyOpenSSL-23.3.0.tar.gz
+  archive_sha512sum: bc1ccfa4fc5d7f48ba23ee2cdfbad2636ecab8e3989e8ab88136cba92fa08bb21920c0ce7198591837597a14f392dcd21de05697fd5abd7c31f6dcbed398dd47
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'High-level wrapper around a subset of the OpenSSL library. '
+      home_page: https://github.com/pyca/pyopenssl
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Python wrapper module around the OpenSSL library
+      supplier: 'Organization: Broadcom, Inc.'

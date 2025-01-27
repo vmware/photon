@@ -1,0 +1,13 @@
+sources:
+- archive: flit_core-3.7.1.tar.gz
+  archive_sha512sum: 8c477bcd2924a93b51e6f3d8bbc3599929663c8d5addf16062e8e1b6c5acd740a4e4905b144092efb6e38e9700479525013831a53e055438f94c1e53ff5c6f8d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is the extensible, standards compliant build backend
+        used by Hatch. '
+      home_page: https://pypi.org/project/flit_core/
+      license_concluded: BSD-3-Clause AND BSD-2-Clause AND MIT
+      license_declared: BSD-3-Clause AND BSD-2-Clause AND MIT
+      short_summary: The build backend used by Hatch
+      supplier: 'Organization: Broadcom, Inc.'

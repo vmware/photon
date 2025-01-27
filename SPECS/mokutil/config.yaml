@@ -1,0 +1,13 @@
+sources:
+- archive: mokutil-0.7.1.tar.gz
+  archive_sha512sum: 2689207dbc8cbe17d4db25848acbea93403ac5ef20735f277de80cac3b8673c4ad9b42b2d7cf6190556cea185cbd5a5a4d812ae7657c20959c5d4d9101ac300d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The utility to manipulate Machines Owner Keys that are
+        managed in shim '
+      home_page: https://github.com/lcp/mokutil
+      license_concluded: GPL-3.0-or-later WITH cryptsetup-OpenSSL-exception AND GPL-3.0-only
+      license_declared: GPL-3.0-or-later WITH cryptsetup-OpenSSL-exception AND GPL-3.0-only
+      short_summary: Tool to manage UEFI Secure Boot MoK Keys
+      supplier: 'Organization: Broadcom, Inc.'

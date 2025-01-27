@@ -1,0 +1,14 @@
+sources:
+- archive: ed-1.19.tar.gz
+  archive_sha512sum: 5d515db9710ec485e5f4b727052a5237bdf7efcfd2efaee0ce8ff4f0b970dbfa444820d39fb86b3393cc342fab64f0ecc9c2e5572f63dc84adf17dca33a8fa1b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Ed - A line-oriented text editor '
+      home_page: https://www.gnu.org/software/ed/
+      license_concluded: GFDL-1.3-only AND GPL-2.0-or-later AND BSD-2-Clause AND GPL-2.0-only
+        AND GFDL-1.1-or-later AND GFDL-1.3-invariants-only
+      license_declared: GFDL-1.3-only AND GPL-2.0-or-later AND BSD-2-Clause AND GPL-2.0-only
+        AND GFDL-1.1-or-later AND GFDL-1.3-invariants-only
+      short_summary: Ed - A line-oriented text editor
+      supplier: 'Organization: Broadcom, Inc.'

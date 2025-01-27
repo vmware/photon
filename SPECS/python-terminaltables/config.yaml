@@ -1,0 +1,14 @@
+sources:
+- archive: terminaltables-3.1.0.tar.gz
+  archive_sha512sum: dc49458652fff8bc6094d316d84c9b8e9fca1a26e3230c0b668bc03ec8528793f4ef024e8032d4a56fbfabfdfd4a1142870f550f0b373ba6a42dd2e3ead3f501
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Easily draw tables in terminal/console applications from
+        a list of lists of strings. Supports multi-line rows. '
+      home_page: https://robpol86.github.io/terminaltables/
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Draw tables in terminal/console applications from a list of lists
+        of strings
+      supplier: 'Organization: Broadcom, Inc.'

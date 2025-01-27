@@ -1,0 +1,15 @@
+sources:
+- archive: bats-1.8.2.tar.gz
+  archive_sha512sum: 7eace32f19789e081112af1ce8ab33ff210d52bd3ea84962bbec226349b3b8d8912b6a495f5524f9cc7cfe692f1d23d684c93c24e182752e2b30731670d6eeea
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Bats is a TAP-compliant testing framework for Bash. It
+        provides a simple way to verify that the UNIX programs you write behave as
+        expected. Bats is most useful when testing software written in Bash, but you
+        can use it to test any UNIX program. '
+      home_page: https://github.com/bats-core/bats-core
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Bash Automated Testing System
+      supplier: 'Organization: Broadcom, Inc.'

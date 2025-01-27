@@ -1,0 +1,24 @@
+sources:
+- archive: netcat-0.7.1.tar.gz
+  archive_sha512sum: b5a39284bf490c5d581f1d3e9e1fd74df63eae79f280a66b75347c4707320f48c5da32cea96c7c7e60bffe8e044eb50c6dc0d791e1812747457efc5ea3bb441c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Netcat is a featured networking utility which reads and
+        writes data across network connections, using the TCP/IP protocol. It is designed
+        to be a reliable "back-end" tool that can be used directly or easily driven
+        by other programs and scripts. At the same time, it is a feature-rich network
+        debugging and exploration tool, since it can create almost any kind of connection
+        you would need and has several interesting built-in capabilities. '
+      home_page: http://netcat.sourceforge.net
+      license_concluded: FSFULLRWD AND LGPL-2.1-or-later AND X11 AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later AND GFDL-1.1-or-later AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL AND GPL-2.0-or-later
+        AND GPL-2.0-only
+      license_declared: FSFULLRWD AND LGPL-2.1-or-later AND X11 AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later AND GFDL-1.1-or-later AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL AND GPL-2.0-or-later
+        AND GPL-2.0-only
+      short_summary: Netcat is a featured networking utility which reads and writes
+        data across network connections, using the TCP/IP protocol.
+      supplier: 'Organization: Broadcom, Inc.'

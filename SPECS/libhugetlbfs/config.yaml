@@ -1,0 +1,16 @@
+sources:
+- archive: libhugetlbfs-2.23.tar.gz
+  archive_sha512sum: b509ff60179e3dc52532bc16b1a414b4993bb79019733a30a7bfa69311f627606b196aced4457bdb88edccdbe7070df755aaab37c6599f4cecdfcb0015aee212
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Preload library to back text, data, malloc() or shared
+        memory with hugepages. '
+      home_page: https://github.com/libhugetlbfs/libhugetlbfs
+      license_concluded: GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-2.1-only
+        AND LGPL-2.0-or-later AND LGPL-2.0-only
+      license_declared: GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-2.1-only AND
+        LGPL-2.0-or-later AND LGPL-2.0-only
+      short_summary: Preload library to back text, data, malloc() or shared memory
+        with hugepages
+      supplier: 'Organization: Broadcom, Inc.'

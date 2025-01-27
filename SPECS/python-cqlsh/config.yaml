@@ -1,0 +1,16 @@
+sources:
+- archive: cqlsh-6.1.2.tar.gz
+  archive_sha512sum: 53bf77ec845798583f7fe7e6a8e060df7758ea9d55cbe1a8d451d20acacaff440fa597d5e43a217e3d3a6408c1bbe74e7cb1ffce6f2a73831ebfa7d254a9ffdc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'cqlsh is a Python-based command-line tool, and the most
+        direct way to run simple CQL commonds on a Cassandra cluster. This is a simple
+        re-bundling of the open source tool that comes bundled with Cassandra to allow
+        for cqlsh to be installed and run inside of virtual environments.. '
+      home_page: https://pypi.python.org/pypi/cqlsh
+      license_concluded: Apache-2.0 AND HPND-Markus-Kuhn
+      license_declared: Apache-2.0 AND HPND-Markus-Kuhn
+      short_summary: A Python-based command-line client for running simple CQL commands
+        on a Cassandra cluster.
+      supplier: 'Organization: Broadcom, Inc.'

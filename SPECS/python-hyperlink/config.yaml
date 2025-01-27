@@ -1,0 +1,14 @@
+sources:
+- archive: hyperlink-21.0.0.tar.gz
+  archive_sha512sum: 9e0e9273dde1b0a41329a74fbb26c4f327b87f387ee64b9a2ab641ca5cc8b9ea0516884415e9adf1d4880ae9c053a5cba2c550fc508bb56fddb44a543d5da860
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Hyperlink provides a pure-Python implementation of immutable
+        URLs. Based on RFC 3986 and 3987, the Hyperlink URL makes working with both
+        URIs and IRIs easy. '
+      home_page: https://github.com/python-hyper/hyperlink
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: provides a pure-Python implementation of immutable URLs
+      supplier: 'Organization: Broadcom, Inc.'

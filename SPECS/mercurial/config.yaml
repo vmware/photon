@@ -1,0 +1,20 @@
+sources:
+- archive: mercurial-6.3.1.tar.gz
+  archive_sha512sum: 99cd77c25e6c7f064ea9b631a8632b6020cb012c2f5a8c1da371ed413a4f984d04f8c293f551f890bbf084f840d7406aa25956f016ff2596173cd2f1f834873b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Mercurial is a distributed source control management
+        tool similar to Git and Bazaar. Mercurial is written in Python and is used
+        by projects such as Mozilla and Vim. '
+      home_page: https://www.mercurial-scm.org
+      license_concluded: GPL-2.0-or-later AND MPL-2.0 AND BSD-3-Clause AND BSD-2-Clause
+        AND GPL-2.0-only AND (BSD-3-Clause OR GPL-2.0-only) AND Python-2.0 AND Apache-2.0
+        WITH LLVM-exception AND Apache-2.0 AND MIT AND GPL-1.0-or-later AND LGPL-2.1-or-later
+        AND ZPL-2.1
+      license_declared: GPL-2.0-or-later AND MPL-2.0 AND BSD-3-Clause AND BSD-2-Clause
+        AND GPL-2.0-only AND (BSD-3-Clause OR GPL-2.0-only) AND Python-2.0 AND Apache-2.0
+        WITH LLVM-exception AND Apache-2.0 AND MIT AND GPL-1.0-or-later AND LGPL-2.1-or-later
+        AND ZPL-2.1
+      short_summary: A free, distributed source control management tool.
+      supplier: 'Organization: Broadcom, Inc.'

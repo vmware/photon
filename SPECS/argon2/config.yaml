@@ -1,0 +1,16 @@
+sources:
+- archive: argon2-20190702.tar.gz
+  archive_sha512sum: 0a4cb89e8e63399f7df069e2862ccd05308b7652bf4ab74372842f66bcc60776399e0eaf979a7b7e31436b5e6913fe5b0a6949549d8c82ebd06e0629b106e85f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Argon2 is a password-hashing function that summarizes
+        the state of the art in the design of memory-hard functions and can be used
+        to hash passwords for credential storage, key derivation, or other applications. '
+      home_page: https://github.com/P-H-C/phc-winner-argon2
+      license_concluded: (CC0-1.0 OR Apache-2.0) AND (CC0-1.0 OR Apache-2.0) AND Apache-2.0
+        AND CC0-1.0
+      license_declared: (CC0-1.0 OR Apache-2.0) AND (CC0-1.0 OR Apache-2.0) AND Apache-2.0
+        AND CC0-1.0
+      short_summary: Tools for password hashing
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,14 @@
+sources:
+- archive: systemd-journal-1.4.2.gem
+  archive_sha512sum: 3eb2ef8b6ea4cf4f5f5e39d8aa9f1b5f6849a5037ab60b5b0a86a183be8d7b2354d61fe613194a6b695c44765771310830efa072fdc1834a9c20235ccb05f40c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides the ability to navigate and read entries from
+        the systemd journal in ruby, as well as write events to the journal. '
+      home_page: https://rubygems.org/gems/systemd-journal/versions/1.4.2
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Provides the ability to navigate and read entries from the systemd
+        journal in ruby
+      supplier: 'Organization: Broadcom, Inc.'

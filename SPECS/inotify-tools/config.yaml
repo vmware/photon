@@ -1,0 +1,16 @@
+sources:
+- archive: inotify-tools-3.13.tar.gz
+  archive_sha512sum: e757ca5d3bac2b6b84e9435671107d6d695ff7d04cefd139590ab538d1be8f9a295eb9b0042406bdbfa60bb2b2545a428ec861e60f1cbf172050d47d0350bdb9
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'inotify-tools is simple command line interface program
+        for linux distributions which is used to monitor inode specific filesystem
+        events. '
+      home_page: http://sourceforge.net/projects/inotify-tools
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL
+        AND X11 AND LGPL-2.1-or-later AND FSFULLRWD AND GPL-2.0-only AND FSFULLR
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL
+        AND X11 AND LGPL-2.1-or-later AND FSFULLRWD AND GPL-2.0-only AND FSFULLR
+      short_summary: Command line utility for i-node notifications and management.
+      supplier: 'Organization: Broadcom, Inc.'

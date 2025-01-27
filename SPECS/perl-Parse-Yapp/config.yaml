@@ -1,0 +1,16 @@
+sources:
+- archive: Parse-Yapp-1.21.tar.gz
+  archive_sha512sum: dbf6182d4813ff7e355ea1713c748bfdf8290040a93f123acec645c7a1733fe457ab6e0ab51c4ec83cf82bc43d7fb35cbf89875df7b5c2ffc9635e85458cfeee
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Parse::Yapp (Yet Another Perl Parser compiler) is a collection
+        of modules that let you generate and use yacc like thread safe (reentrant)
+        parsers with perl object oriented interface.  The script yapp is a front-end
+        to the Parse::Yapp module and let you easily create a Perl OO parser from
+        an input grammar file. '
+      home_page: https://metacpan.org/release/Parse-Yapp
+      license_concluded: Artistic-2.0 AND GPL-2.0-or-later
+      license_declared: Artistic-2.0 AND GPL-2.0-or-later
+      short_summary: Perl extension for generating and using LALR parsers
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,26 @@
+sources:
+- archive: zsh-5.9.tar.xz
+  archive_sha512sum: d9138b7f379ad942a5f46819d2dd52d31f3a1129f2a0d1b53d4c5cd43c318b60396da6d37c57c477b8e958fb750209aca0ae93f8c9dd42ac958de006a0ff067e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The %{name} shell is a command interpreter usable as
+        an interactive login shell and as a shell script command processor.  Zsh resembles
+        the ksh shell (the Korn shell), but includes many enhancements.  Zsh supports
+        command line editing, built-in spelling correction, programmable command completion,
+        shell functions (with autoloading), a history mechanism, and more. '
+      home_page: http://zsh.org
+      license_concluded: MIT AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND LGPL-2.1-or-later AND GPL-1.0-or-later
+        AND LGPL-3.0-or-later AND LGPL-3.0-only AND Spencer-86 AND BSD-2-Clause AND
+        (MIT OR GPL-1.0-or-later) AND LGPL-2.1-only AND BSD-3-Clause AND X11 AND ISC
+        AND Apache-2.0 AND BSD-4-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND
+        FSFUL
+      license_declared: MIT AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND LGPL-2.1-or-later AND GPL-1.0-or-later
+        AND LGPL-3.0-or-later AND LGPL-3.0-only AND Spencer-86 AND BSD-2-Clause AND
+        (MIT OR GPL-1.0-or-later) AND LGPL-2.1-only AND BSD-3-Clause AND X11 AND ISC
+        AND Apache-2.0 AND BSD-4-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND
+        FSFUL
+      short_summary: Z shell
+      supplier: 'Organization: Broadcom, Inc.'

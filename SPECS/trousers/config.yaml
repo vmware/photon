@@ -1,0 +1,14 @@
+sources:
+- archive: trousers-0.3.15.tar.gz
+  archive_sha512sum: 769c7d891c6306c1b3252448f86e3043ee837e566c9431f5b4353512113e2907f6ce29c91e8044c420025b79c5f3ff2396ddce93f73b1eb2a15ea1de89ac0fdb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Trousers is an open-source TCG Software Stack (TSS),
+        released under the BSD License. Trousers aims to be compliant with the 1.1b
+        and 1.2 TSS specifications available from the Trusted Computing '
+      home_page: https://sourceforge.net/projects/trousers
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: TCG Software Stack (TSS)
+      supplier: 'Organization: Broadcom, Inc.'

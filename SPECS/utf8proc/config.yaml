@@ -1,0 +1,13 @@
+sources:
+- archive: utf8proc-2.8.0.tar.gz
+  archive_sha512sum: 4b9853fc95db38bee1d7435bef219907e25b249e0c2ec26f7096b8506ab2a139a8d4b71f7133b7550bff59d8f997fe01c2957d362cad18d890ad82bcf158aa06
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'utf8proc is a small, clean C library that provides Unicode
+        normalization, case-folding, and other operations for data in the UTF-8 encoding. '
+      home_page: https://github.com/JuliaStrings/utf8proc
+      license_concluded: ICU AND MIT AND Unicode-3.0
+      license_declared: ICU AND MIT AND Unicode-3.0
+      short_summary: C library that provide processing for data in the UTF-8 encoding
+      supplier: 'Organization: Broadcom, Inc.'

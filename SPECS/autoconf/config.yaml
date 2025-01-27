@@ -1,0 +1,29 @@
+sources:
+- archive: autoconf-2.71.tar.xz
+  archive_sha512sum: 73d32b4adcbe24e3bafa9f43f59ed3b6efbd3de0f194e5ec90375f35da1199c583f5d3e89139b7edbad35171403709270e339ffa56a2ecb9b3123e9285021ff0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The package contains programs for producing shell scripts
+        that can automatically configure source code. '
+      home_page: http://www.gnu.org/software/autoconf
+      license_concluded: GPL-1.0-or-later WITH Autoconf-exception-2.0 AND FSFAP-no-warranty-disclaimer
+        AND GFDL-1.3-only AND FSFULLR AND GPL-3.0-or-later AND Apache-2.0 AND Zlib
+        AND FSFUL AND LGPL-2.0-or-later AND GFDL-1.3-or-later AND GPL-3.0-only AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND GFDL-1.1-or-later AND
+        GPL-2.0-only AND BSD-3-Clause AND GPL-1.0-or-later AND X11 AND FSFAP AND MPL-1.0
+        AND GPL-3.0-only WITH Autoconf-exception-3.0 AND FSFULLRWD AND BSD-4-Clause
+        AND MPL-2.0 AND GFDL-1.3-invariants-only AND GPL-3.0-or-later WITH Texinfo-exception
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT AND Artistic-2.0
+        AND GFDL-1.3-no-invariants-only AND GPL-2.0-or-later AND CC-BY-ND-3.0
+      license_declared: GPL-1.0-or-later WITH Autoconf-exception-2.0 AND FSFAP-no-warranty-disclaimer
+        AND GFDL-1.3-only AND FSFULLR AND GPL-3.0-or-later AND Apache-2.0 AND Zlib
+        AND FSFUL AND LGPL-2.0-or-later AND GFDL-1.3-or-later AND GPL-3.0-only AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND GFDL-1.1-or-later AND
+        GPL-2.0-only AND BSD-3-Clause AND GPL-1.0-or-later AND X11 AND FSFAP AND MPL-1.0
+        AND GPL-3.0-only WITH Autoconf-exception-3.0 AND FSFULLRWD AND BSD-4-Clause
+        AND MPL-2.0 AND GFDL-1.3-invariants-only AND GPL-3.0-or-later WITH Texinfo-exception
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT AND Artistic-2.0
+        AND GFDL-1.3-no-invariants-only AND GPL-2.0-or-later AND CC-BY-ND-3.0
+      short_summary: The package automatically configure source code
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,33 @@
+sources:
+- archive: autogen-5.18.16.tar.xz
+  archive_sha512sum: 5f12c982dbe27873f5649a96049bf019ff183c90cc0c8a9196556b0ca02e72940cd422f6d6601f68cc7d8763b1124f2765c3b1a6335fc92ba07f84b03d2a53a1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'AutoGen is a tool designed to simplify the creation and
+        maintenance of programs that contain large amounts of repetitious text. It
+        is especially valuable in programs that have several blocks of text that must
+        be kept synchronized. '
+      home_page: http://www.gnu.org/software/autogen
+      license_concluded: GPL-1.0-or-later AND FSFULLRWD AND GPL-2.0-only AND GPL-3.0-or-later
+        WITH Libtool-exception AND FSFULLR AND GPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Libtool-exception AND AGPL-3.0-or-later AND (LGPL-2.0-or-later OR BSD-3-Clause)
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GFDL-1.3-invariants-only
+        AND FSFUL AND GFDL-1.1-or-later AND LGPL-3.0-only AND X11 AND BSD-3-Clause
+        AND GFDL-1.3-only AND LGPL-2.0-only AND GFDL-1.2-or-later AND CC-BY-ND-3.0
+        AND GPL-3.0-only AND LGPL-2.0-or-later AND GPL-2.0-or-later AND BSD-2-Clause
+        AND LGPL-3.0-or-later AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Texinfo-exception AND (LGPL-3.0-or-later OR BSD-3-Clause)
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_declared: GPL-1.0-or-later AND FSFULLRWD AND GPL-2.0-only AND GPL-3.0-or-later
+        WITH Libtool-exception AND FSFULLR AND GPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Libtool-exception AND AGPL-3.0-or-later AND (LGPL-2.0-or-later OR BSD-3-Clause)
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GFDL-1.3-invariants-only
+        AND FSFUL AND GFDL-1.1-or-later AND LGPL-3.0-only AND X11 AND BSD-3-Clause
+        AND GFDL-1.3-only AND LGPL-2.0-only AND GFDL-1.2-or-later AND CC-BY-ND-3.0
+        AND GPL-3.0-only AND LGPL-2.0-or-later AND GPL-2.0-or-later AND BSD-2-Clause
+        AND LGPL-3.0-or-later AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Texinfo-exception AND (LGPL-3.0-or-later OR BSD-3-Clause)
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      short_summary: The Automated Text and Program Generation Tool
+      supplier: 'Organization: Broadcom, Inc.'

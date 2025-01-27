@@ -1,0 +1,24 @@
+sources:
+- archive: git-2.39.4.tar.xz
+  archive_sha512sum: 4d79b22eda772283d79bf8bad5260f139ff66bf942c9fa0e7b2be0888c1f2f941fd7dbb301ab5ee0e6f92444c0e8d3b1b0fdb4d3a41b9d8d242c866c9593f87f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Git is a free and open source, distributed version control
+        system designed to handle everything from small to very large projects with
+        speed and efficiency. Every Git clone is a full-fledged repository with complete
+        history and full revision tracking capabilities, not dependent on network
+        access or a central server. Branching and merging are fast and easy to do.
+        Git is used for version control of files, much like tools such as Mercurial,
+        Bazaar, Subversion-1.7.8, CVS-1.11.23, Perforce, and Team Foundation Server. '
+      home_page: http://git-scm.com
+      license_concluded: GPL-2.0-only AND Apache-2.0 AND CC-PDDC AND GPL-3.0-only
+        AND LGPL-2.1-only AND ISC AND LGPL-2.1-or-later AND BSL-1.0 AND (MIT OR GPL-2.0-only)
+        AND BSD-3-Clause AND Zlib AND GPL-1.0-or-later AND MIT AND FSFUL AND GPL-2.0-or-later
+        AND Artistic-2.0
+      license_declared: GPL-2.0-only AND Apache-2.0 AND CC-PDDC AND GPL-3.0-only AND
+        LGPL-2.1-only AND ISC AND LGPL-2.1-or-later AND BSL-1.0 AND (MIT OR GPL-2.0-only)
+        AND BSD-3-Clause AND Zlib AND GPL-1.0-or-later AND MIT AND FSFUL AND GPL-2.0-or-later
+        AND Artistic-2.0
+      short_summary: Fast distributed version control system
+      supplier: 'Organization: Broadcom, Inc.'

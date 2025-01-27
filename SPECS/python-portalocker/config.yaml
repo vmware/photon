@@ -1,0 +1,15 @@
+sources:
+- archive: portalocker-2.8.2.tar.gz
+  archive_sha512sum: 9ebd6fdbc597615c5f76bf5741556d84bc95c925e931ee708b4fccbf0908e4dc4e758be659928340675675f5ca09764f5d2621fdef9195e21c1359f7764ae1dc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Portalocker is a library to provide an easy API to file
+        locking. On Linux and Unix systems the locks are advisory by default. By specifying
+        the -o mand option to the mount command it is possible to enable mandatory
+        file locking on Linux '
+      home_page: https://pypi.org/project/portalocker
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Library to provide an easy API to file locking.
+      supplier: 'Organization: Broadcom, Inc.'

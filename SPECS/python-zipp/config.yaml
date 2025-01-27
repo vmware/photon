@@ -1,0 +1,13 @@
+sources:
+- archive: zipp-3.19.1.tar.gz
+  archive_sha512sum: c0a4b4055f6652852526b7749d738cedda6534ea21945933ec727b5364a5558697fce6757e4045d30df55a1dce57509c92046f25d6914707fcc97e07f3088c3a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A pathlib-compatible Zipfile object wrapper. Official
+        backport of the standard library Path object. '
+      home_page: https://pypi.org/project/zipp/
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A pathlib-compatible Zipfile object wrapper.
+      supplier: 'Organization: Broadcom, Inc.'

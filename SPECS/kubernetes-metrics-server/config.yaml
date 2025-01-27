@@ -1,0 +1,20 @@
+sources:
+- archive: kubernetes-metrics-server-0.3.7.tar.gz
+  archive_sha512sum: bb405974322a7c249ad40deb1ae1acaf9f73dee992a895173452181b4d5dc31b3538829cf478ab090e5e170985c21baf0162b98aed10f6ea035de4c112d8fb14
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'In Kubernetes, resource usage metrics, such as container
+        CPU and memory usage, are available through the Metrics API. These metrics
+        can be either accessed directly by user, for example by using kubectl top
+        command, or used by a controller in the cluster, e.g. Horizontal Pod Autoscaler,
+        to make decisions. '
+      home_page: https://github.com/kubernetes-incubator/metrics-server
+      license_concluded: BSD-3-Clause AND ISC AND BSD-2-Clause AND Apache-2.0 AND
+        MIT AND MPL-2.0 AND JSON AND CC-BY-4.0 AND BSD-2-Clause-Views AND LGPL-3.0-or-later
+        AND GPL-2.0-only AND CC0-1.0
+      license_declared: BSD-3-Clause AND ISC AND BSD-2-Clause AND Apache-2.0 AND MIT
+        AND MPL-2.0 AND JSON AND CC-BY-4.0 AND BSD-2-Clause-Views AND LGPL-3.0-or-later
+        AND GPL-2.0-only AND CC0-1.0
+      short_summary: Kubernetes Metrics Server
+      supplier: 'Organization: Broadcom, Inc.'

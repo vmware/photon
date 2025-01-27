@@ -1,0 +1,14 @@
+sources:
+- archive: graphviz-0.20.1.zip
+  archive_sha512sum: 79be98b0b8efff8d865661dca2260ce9e2ba0a855acb112aa922ec7b91f87397a3c5e4134df9a75c62dc3c8add2942ab4dac321cce068a355bf2819cdeb806bf
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package facilitates the creation and rendering of
+        graph descriptions in the DOT language of the Graphviz graph drawing software
+        (repo) from Python. '
+      home_page: https://pypi.python.org/pypi/graphviz
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Graph visualization dot render
+      supplier: 'Organization: Broadcom, Inc.'

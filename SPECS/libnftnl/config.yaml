@@ -1,0 +1,22 @@
+sources:
+- archive: libnftnl-1.2.4.tar.bz2
+  archive_sha512sum: 5375d1d15627aabf25129433630395f53009b22a255fcd113b302af7f2f0a234fd54c827b0ef1c8fd3a13e272a1696f780560672d4af6abad0e19805f9d56326
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libnftnl is a userspace library providing a low-level
+        netlink programming interface (API) to the in-kernel nf_tables subsystem. '
+      home_page: http://netfilter.org/projects/libnftnl/
+      license_concluded: GPL-3.0-or-later WITH Libtool-exception AND X11 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later AND FSFULLRWD AND GPL-3.0-or-later
+        AND FSFULLR AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFUL AND GPL-2.0-or-later
+        WITH Libtool-exception
+      license_declared: GPL-3.0-or-later WITH Libtool-exception AND X11 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later AND FSFULLRWD AND GPL-3.0-or-later
+        AND FSFULLR AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFUL AND GPL-2.0-or-later
+        WITH Libtool-exception
+      short_summary: Library for low-level netlink programming interface to the in-kernel
+        nf_tables subsystem
+      supplier: 'Organization: Broadcom, Inc.'

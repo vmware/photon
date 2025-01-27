@@ -1,0 +1,13 @@
+sources:
+- archive: iniparser-4.1.tar.gz
+  archive_sha512sum: a8125aaaead1f9dfde380fa1e45bae31ca2312be029f2c53b4072cb3b127d16578a95c7c0aee1e3dda5e7b8db7a865ba6dfe8a1d80eb673061b3babef744e968
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'iniParser is an ANSI C library to parse "INI-style" files,
+        often used to hold application configuration information. '
+      home_page: https://github.com/ndevilla/iniparser
+      license_concluded: MIT AND Zlib
+      license_declared: MIT AND Zlib
+      short_summary: C library for parsing "INI-style" files
+      supplier: 'Organization: Broadcom, Inc.'

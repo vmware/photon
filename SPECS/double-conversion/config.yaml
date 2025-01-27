@@ -1,0 +1,17 @@
+sources:
+- archive: double-conversion-3.2.1.tar.gz
+  archive_sha512sum: d2feb3098a1d4d6baab5f89bcc29ac2e06d314d552b8c747c6eb6dba5dd165a15dc71200191edb7f05d521c349e12d59cddba3c5db101e1623e0e76e19f21a49
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This project (double-conversion) provides binary-decimal
+        and decimal-binary routines for IEEE doubles. The library consists of efficient
+        conversion routines that have been extracted from the V8 JavaScript engine.The
+        code has been refactored and improved so that it can be used more easily in
+        other projects. '
+      home_page: https://github.com/google/double-conversion
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Library providing binary-decimal and decimal-binary routines
+        for IEEE doubles
+      supplier: 'Organization: Broadcom, Inc.'

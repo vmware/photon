@@ -1,0 +1,15 @@
+sources:
+- archive: tinycdb-0.78.tar.gz
+  archive_sha512sum: 8930086b8e7fddcd4dbd3354c5f5ee05171df68fde1cc222b6c402430042b6e761efbad7e5fa8de18e1d36390f1526cc3e605c5086fe1c363ba1df6c03201553
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'tinycdb is a small, fast and reliable utility and subroutine
+        library for creating and reading constant databases. The database structure
+        is tuned for fast reading.  This package contains tinycdb utility and shared
+        library. '
+      home_page: http://www.corpit.ru/mjt/tinycdb.html
+      license_concluded: Unlicense
+      license_declared: Unlicense
+      short_summary: Utility and library for manipulating constant databases
+      supplier: 'Organization: Broadcom, Inc.'

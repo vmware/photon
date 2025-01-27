@@ -1,0 +1,21 @@
+sources:
+- archive: eventlog_0.2.12.tar.gz
+  archive_sha512sum: a681ab2961f5bf38e106a5b0b4492e74098808e2bf1a100f545736902649c705db124c0847796a47485faa8b0befe691a789d752f313c5b65ad50ed2763d2cce
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The EventLog library aims to be a replacement of the
+        simple syslog() API provided on UNIX systems. The major difference between
+        EventLog and syslog is that EventLog tries to add structure to messages.  EventLog
+        provides an interface to build, format and output an event record. The exact
+        format and output method can be customized by the administrator via a configuration
+        file.  This package is the runtime part of the library. '
+      home_page: https://www.balabit.com
+      license_concluded: GPL-1.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+        AND BSD-3-Clause AND FSFULLRWD AND FSFUL AND FSFULLR AND X11 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic
+      license_declared: GPL-1.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+        AND BSD-3-Clause AND FSFULLRWD AND FSFUL AND FSFULLR AND X11 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic
+      short_summary: Syslog event logger library
+      supplier: 'Organization: Broadcom, Inc.'

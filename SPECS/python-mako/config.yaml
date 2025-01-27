@@ -1,0 +1,17 @@
+sources:
+- archive: Mako-1.2.1.tar.gz
+  archive_sha512sum: 02393054c9e3857ee412f494b01d702b5f367165d2f57a5ff9df34ba1a042b60c7b6c059ce2c53bcb91e3a4a21179eca884ee051bf5f5f3522c05253088d38a5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "A super-fast templating language that borrows the best\
+        \ ideas from the existing templating languages. Mako is a template library\
+        \ written in Python. It provides a familiar, non-XML syntax which compiles\
+        \ into Python modules for maximum performance. Mako\u2019s syntax and API\
+        \ borrows from the best ideas of many others, including Django templates,\
+        \ Cheetah, Myghty, and Genshi. "
+      home_page: https://www.makotemplates.org
+      license_concluded: BSD-3-Clause AND Python-2.0 AND MIT
+      license_declared: BSD-3-Clause AND Python-2.0 AND MIT
+      short_summary: Python templating language
+      supplier: 'Organization: Broadcom, Inc.'

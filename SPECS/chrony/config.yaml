@@ -1,0 +1,18 @@
+sources:
+- archive: chrony-4.3.tar.gz
+  archive_sha512sum: 1394bac3ed684352fe89b7fef7da50e61f9f522abee807627ae1fc4c2dde891017bc8e5b13759fced028f3a1e875d5e4e5a4f85de65c63b5f83d0ca03bb4c5df
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'chrony is a versatile implementation of the Network Time
+        Protocol (NTP). It can synchronise the system clock with NTP servers, reference
+        clocks (e.g. GPS receiver), and manual input using wristwatch and keyboard.
+        It can also operate as an NTPv4 (RFC 5905) server and peer to provide a time
+        service to other computers in the network. '
+      home_page: https://chrony.tuxfamily.org
+      license_concluded: GPL-2.0-or-later AND NTP-0 AND RSA-MD AND GPL-2.0-only AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND (LGPL-3.0-or-later OR GPL-2.0-or-later)
+      license_declared: GPL-2.0-or-later AND NTP-0 AND RSA-MD AND GPL-2.0-only AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND (LGPL-3.0-or-later OR GPL-2.0-or-later)
+      short_summary: An NTP client/server
+      supplier: 'Organization: Broadcom, Inc.'

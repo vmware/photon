@@ -1,0 +1,21 @@
+sources:
+- archive: pth-2.0.7.tar.gz
+  archive_sha512sum: f79d74047c50e06f3198356f88647c5c1c8a04ebdd94641fc31d5ab0fd2750d86615fcb81da2f98d7ea73d012a501195d3fa09060571d18dcfdaec5d7a0ecb12
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Pth is a very portable POSIX/ANSI-C based library for
+        Unix platforms which provides non-preemptive priority-based scheduling for
+        multiple threads of execution (aka ``multithreading'''') inside event-driven
+        applications. All threads run in the same address space of the server application,
+        but each thread has it''s own individual program-counter, run-time stack,
+        signal mask and errno variable. '
+      home_page: http://www.gnu.org/software/pth/
+      license_concluded: FSFUL AND LGPL-2.1-only AND BSD-3-Clause AND snprintf AND
+        LGPL-2.1-or-later AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND GPL-2.0-or-later AND FSFULLR AND Apache-2.0
+      license_declared: FSFUL AND LGPL-2.1-only AND BSD-3-Clause AND snprintf AND
+        LGPL-2.1-or-later AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later AND GPL-2.0-or-later AND FSFULLR AND Apache-2.0
+      short_summary: The GNU portable thread library.
+      supplier: 'Organization: Broadcom, Inc.'

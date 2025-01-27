@@ -1,0 +1,32 @@
+sources:
+- archive: krb5-1.20.2.tar.gz
+  archive_sha512sum: 69e263ef74116a3332c632a2a243499bcc47b01b1e57d02fe35aa6c2ff655674b6cf2b815457145f788bceac4d466d3f55f8c20ec9ee4a6051128417e1e7e99e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Kerberos V5 is a trusted-third-party network authentication
+        system, which can improve your network''s security by eliminating the insecure
+        practice of clear text passwords. '
+      home_page: http://web.mit.edu/kerberos
+      license_concluded: BSD-2-Clause AND BSD-4.3TAHOE AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND BSD-2-Clause-first-lines AND MIT-CMU AND OLDAP-2.8 AND HPND-export-US-modify
+        AND RSA-MD AND HPND-sell-variant AND OpenVision AND FSFULLRWD AND CMU-Mach-nodoc
+        AND BSD-3-Clause-flex AND HPND-export-US AND (BSD-2-Clause OR GPL-2.0-or-later)
+        AND ISC AND HPND-export2-US AND HPND AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND Brian-Gladman-2-Clause AND HPND-export-US-acknowledgement
+        AND MIT AND BSD-4-Clause AND BSD-3-Clause AND GPL-1.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFUL AND BSD-4-Clause-UC AND X11 AND
+        CC-BY-SA-3.0
+      license_declared: BSD-2-Clause AND BSD-4.3TAHOE AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND BSD-2-Clause-first-lines AND MIT-CMU AND OLDAP-2.8 AND HPND-export-US-modify
+        AND RSA-MD AND HPND-sell-variant AND OpenVision AND FSFULLRWD AND CMU-Mach-nodoc
+        AND BSD-3-Clause-flex AND HPND-export-US AND (BSD-2-Clause OR GPL-2.0-or-later)
+        AND ISC AND HPND-export2-US AND HPND AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND Brian-Gladman-2-Clause AND HPND-export-US-acknowledgement
+        AND MIT AND BSD-4-Clause AND BSD-3-Clause AND GPL-1.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFUL AND BSD-4-Clause-UC AND X11 AND
+        CC-BY-SA-3.0
+      short_summary: The Kerberos newtork authentication system
+      supplier: 'Organization: Broadcom, Inc.'

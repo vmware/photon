@@ -1,0 +1,12 @@
+sources:
+- archive: tzdata2024b.tar.gz
+  archive_sha512sum: 0d86686e215672343debb3471b7e7ccb8a27f063f085c9b532d5e0470377843daa0dfb6aee0db4fb9068dd52810c69aeee914a1a7c7e603fdecda7e855020193
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Sources for time zone and daylight saving time data '
+      home_page: http://www.iana.org/time-zones
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Time zone data
+      supplier: 'Organization: Broadcom, Inc.'

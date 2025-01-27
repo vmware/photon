@@ -1,0 +1,14 @@
+sources:
+- archive: bzip2-1.0.8.tar.gz
+  archive_sha512sum: 083f5e675d73f3233c7930ebe20425a533feedeaaa9d8cc86831312a6581cefbe6ed0d08d2fa89be81082f2a5abdabca8b3c080bf97218a1bd59dc118a30b9f3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Bzip2 package contains programs for compressing and
+        decompressing files.  Compressing text files with %{name} yields a much better
+        compression percentage than with the traditional gzip. '
+      home_page: https://www.sourceware.org/bzip2
+      license_concluded: OFL-1.1 AND bzip2-1.0.6 AND GPL-1.0-or-later WITH PS-or-PDF-font-exception-20170817
+      license_declared: OFL-1.1 AND bzip2-1.0.6 AND GPL-1.0-or-later WITH PS-or-PDF-font-exception-20170817
+      short_summary: Contains programs for compressing and decompressing files
+      supplier: 'Organization: Broadcom, Inc.'

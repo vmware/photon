@@ -1,0 +1,14 @@
+sources:
+- archive: distrib-compat-0.1.tar.bz2
+  archive_sha512sum: 9e63e33d0dd1506b4395da98c7adb66213ddb8074a4a3d45524904288cab3c70d2abe91a78bfdb8ccce259995f07c4d393a5a4e109553236c957a639074cb463
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Set of scripts and tools to get compatbility with other
+        distributions. It includes: rc.status, startproc, killproc, checkproc, ifup
+        and ifdown. '
+      home_page: http://photon.org
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only
+      short_summary: Set of scripts and tools to get compatbility with other distributions.
+      supplier: 'Organization: Broadcom, Inc.'

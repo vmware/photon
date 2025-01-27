@@ -1,0 +1,26 @@
+sources:
+- archive: libgpg-error-1.46.tar.bz2
+  archive_sha512sum: b06223bb2b0f67d3db5d0d9ab116361a0eda175d4667352b5c0941408d37f2b0ba8e507297e480ccebb88cbba9d0a133820b896914b07d264fb3edaac7b8c99d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is a library that defines common error values for
+        all GnuPG components.  Among these are GPG, GPGSM, GPGME, GPG-Agent, libgcrypt,
+        pinentry, SmartCard Daemon and possibly more in the future. '
+      home_page: https://www.gnupg.org/software/libgpg-error/index.html
+      license_concluded: GPL-1.0-or-later WITH Autoconf-exception-generic AND LGPL-2.0-or-later
+        AND FSFULLRWD AND LGPL-2.1-only AND GPL-1.0-or-later AND FSFAP AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND LGPL-2.1-only WITH Qwt-exception-1.0 AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-2.0-or-later AND
+        FSFULLR AND GPL-3.0-or-later AND GPL-2.0-only AND (LGPL-2.1-or-later OR BSD-3-Clause)
+      license_declared: GPL-1.0-or-later WITH Autoconf-exception-generic AND LGPL-2.0-or-later
+        AND FSFULLRWD AND LGPL-2.1-only AND GPL-1.0-or-later AND FSFAP AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND LGPL-2.1-only WITH Qwt-exception-1.0 AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-2.0-or-later AND
+        FSFULLR AND GPL-3.0-or-later AND GPL-2.0-only AND (LGPL-2.1-or-later OR BSD-3-Clause)
+      short_summary: libgpg-error
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,22 @@
+sources:
+- archive: libical-3.0.14.tar.gz
+  archive_sha512sum: 36da5516672976c71b049a12af36164d91f9b655f81f1884766558149f25e80c30e64d15da848842f8a629295d708f39ce6fa63a3b0da39b5cbeb91911a4e6d8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Libical is an Open Source implementation of the iCalendar
+        protocols and protocol data units. The iCalendar specification describes how
+        calendar clients can communicate with calendar servers so users can store
+        their calendar data and arrange meetings with other users. '
+      home_page: https://github.com/libical/libical
+      license_concluded: (MPL-1.0 OR LGPL-2.0-or-later) AND LGPL-2.0-or-later AND
+        MPL-2.0 AND GPL-1.0-or-later AND Unlicense AND LGPL-3.0-only AND BSD-2-Clause
+        AND MPL-1.0 AND (LGPL-2.1-only OR MPL-1.0) AND GPL-2.0-or-later WITH Bison-exception-2.2
+        AND LGPL-2.1-only AND BSD-3-Clause
+      license_declared: (MPL-1.0 OR LGPL-2.0-or-later) AND LGPL-2.0-or-later AND MPL-2.0
+        AND GPL-1.0-or-later AND Unlicense AND LGPL-3.0-only AND BSD-2-Clause AND
+        MPL-1.0 AND (LGPL-2.1-only OR MPL-1.0) AND GPL-2.0-or-later WITH Bison-exception-2.2
+        AND LGPL-2.1-only AND BSD-3-Clause
+      short_summary: "Libical \u2014 an implementation of iCalendar protocols and\
+        \ data formats"
+      supplier: 'Organization: Broadcom, Inc.'

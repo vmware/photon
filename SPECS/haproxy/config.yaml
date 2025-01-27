@@ -1,0 +1,20 @@
+sources:
+- archive: haproxy-2.8.2.tar.gz
+  archive_sha512sum: 717bbdd626d3c03c06ad237fe2cb46c71b7cddcf0ba40b6bedb66293a9db9655204f83848ada32dc28dd782b98c8ee32516f90203ac0273759f171e955b4527d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'HAProxy is a fast and reliable solution offering high
+        availability, load balancing, and proxying for TCP and HTTP-based applications.
+        It is suitable for very high traffic web-sites. '
+      home_page: http://www.haproxy.org
+      license_concluded: EUPL-1.2 AND LGPL-2.1-only WITH x11vnc-openssl-exception
+        AND GPL-3.0-or-later AND BSD-2-Clause AND MIT AND LGPL-2.1-only AND GPL-2.0-only
+        WITH x11vnc-openssl-exception AND LGPL-2.1-or-later AND GPL-2.0-only AND GPL-3.0-only
+        AND GPL-2.0-or-later
+      license_declared: EUPL-1.2 AND LGPL-2.1-only WITH x11vnc-openssl-exception AND
+        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND LGPL-2.1-only AND GPL-2.0-only
+        WITH x11vnc-openssl-exception AND LGPL-2.1-or-later AND GPL-2.0-only AND GPL-3.0-only
+        AND GPL-2.0-or-later
+      short_summary: A fast, reliable HA, load balancing, and proxy solution.
+      supplier: 'Organization: Broadcom, Inc.'

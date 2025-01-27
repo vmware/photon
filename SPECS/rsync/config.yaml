@@ -1,0 +1,20 @@
+sources:
+- archive: rsync-3.4.1.tar.gz
+  archive_sha512sum: a3ecde4843ddb795308dca88581b868ac0221eb6f88a1477d7a9a2ecb4e4686042966bdddbab40866f90a4715d3104daa7b83222ddf0f3387b796a86bde8e5c2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Rsync is a fast and extraordinarily versatile file copying
+        tool. It can copy locally, to/from another host over any remote shell, or
+        to/from a remote rsync daemon.
+      home_page: https://rsync.samba.org
+      license_concluded: Zlib AND GPL-3.0-only AND FSFUL AND GPL-1.0-or-later AND
+        ISC AND GPL-2.0-or-later AND PostgreSQL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-only AND snprintf AND AGPL-3.0-or-later AND GPL-3.0-or-later AND
+        FSFULLRWD AND X11
+      license_declared: Zlib AND GPL-3.0-only AND FSFUL AND GPL-1.0-or-later AND ISC
+        AND GPL-2.0-or-later AND PostgreSQL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-only AND snprintf AND AGPL-3.0-or-later AND GPL-3.0-or-later AND
+        FSFULLRWD AND X11
+      short_summary: Fast incremental file transfer.
+      supplier: 'Organization: Broadcom, Inc.'

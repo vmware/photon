@@ -1,0 +1,14 @@
+sources:
+- archive: boto3-1.24.56.tar.gz
+  archive_sha512sum: 7da4c3ba2bb3a75ef4e95ae5c6c90b6064f30064ee4db9a9b102b741a153372b460d86ad2e7098691ee9faf3fd9acd80dd6852e723b99278d8b26c42981333e1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Boto3 is the Amazon Web Services (AWS) Software Development
+        Kit (SDK) for Python, which allows Python developers to write software that
+        makes use of services like Amazon S3 and Amazon EC2 '
+      home_page: https://github.com/boto/boto3
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: The AWS SDK for Python
+      supplier: 'Organization: Broadcom, Inc.'

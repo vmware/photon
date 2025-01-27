@@ -1,0 +1,22 @@
+sources:
+- archive: tpm2-tools-5.3.tar.gz
+  archive_sha512sum: 224a5ea3448a877362abb35ac06b115c559c09b44b30d74c8326211be66d24e0e130c285b1e285be1842e7203ab488629b0f4e451cbd782c83ed72023d146675
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The source repository for the TPM (Trusted Platform Module)
+        2 tools '
+      home_page: https://github.com/tpm2-software/tpm2-tools
+      license_concluded: FSFAP-no-warranty-disclaimer AND FSFAP AND GPL-3.0-or-later
+        WITH Libtool-exception AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFUL AND LGPL-2.1-or-later
+        AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND BSD-3-Clause AND FSFULLR
+      license_declared: FSFAP-no-warranty-disclaimer AND FSFAP AND GPL-3.0-or-later
+        WITH Libtool-exception AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFUL AND LGPL-2.1-or-later
+        AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND BSD-3-Clause AND FSFULLR
+      short_summary: The source repository for the TPM (Trusted Platform Module) 2
+        tools
+      supplier: 'Organization: Broadcom, Inc.'

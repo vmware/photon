@@ -1,0 +1,19 @@
+sources:
+- archive: Babel-2.10.3.tar.gz
+  archive_sha512sum: 72a5759d2cfa239df56f3d2809b23367b9691e21de92535b30f9b3455d253682f6c18ca919f3fb039deed2663db9276307f6343cbbab56fca96ff1ac9c214fa7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Babel is an integrated collection of utilities that assist
+        in internationalizing and localizing Python applications, with an emphasis
+        on web-based applications.  The functionality Babel provides for internationalization
+        (I18n) and localization (L10N) can be separated into two different aspects:
+        1.Tools to build and work with gettext message catalogs. 2.A Python interface
+        to the CLDR (Common Locale Data Repository), providing access to various locale
+        display names, localized number and date formatting, etc. '
+      home_page: http://babel.pocoo.org
+      license_concluded: CC0-1.0 AND BSD-3-Clause
+      license_declared: CC0-1.0 AND BSD-3-Clause
+      short_summary: An integrated collection of utilities that assist in internationalizing
+        and localizing Python applications
+      supplier: 'Organization: Broadcom, Inc.'

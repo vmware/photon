@@ -1,0 +1,14 @@
+sources:
+- archive: perftest-4.5.0.20.tar.gz
+  archive_sha512sum: ae9c722516909b63ac00b3fe19750ed603651c875ad73702ab39e558c4b9da910deba891a27c82d02c9cd20b27c9ccadd8f463a153e7a634e91ee399c89d6c37
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is a collection of tests written over uverbs intended
+        for use as a performance micro-benchmark. The tests may be used for HW or
+        SW tuning as well as for functional testing. '
+      home_page: https://github.com/linux-rdma/perftest
+      license_concluded: GPL-2.0-only OR Linux-OpenIB
+      license_declared: GPL-2.0-only OR Linux-OpenIB
+      short_summary: IB Performance tests
+      supplier: 'Organization: Broadcom, Inc.'

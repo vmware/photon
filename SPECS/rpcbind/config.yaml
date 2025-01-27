@@ -1,0 +1,17 @@
+sources:
+- archive: rpcbind-1.2.6.tar.bz2
+  archive_sha512sum: fb89c61be4c533fe2e6057749d97079a2d1c9fac0d35d6be1a159a0edbf86092b3fc121f19fa920e75aac5ecdd3f59f5978e6401d5cad16cd438c977736206a7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The rpcbind program is a replacement for portmap. It
+        is required for import or export of Network File System (NFS) shared directories.
+        The rpcbind utility is a server that converts RPC program numbers into universal
+        addresses. '
+      home_page: http://nfsv4.bullopensource.org
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND X11
+        AND FSFUL AND BSD-3-Clause AND FSFULLRWD AND BSD-4-Clause AND FSFAP AND FSFULLR
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND
+        FSFUL AND BSD-3-Clause AND FSFULLRWD AND BSD-4-Clause AND FSFAP AND FSFULLR
+      short_summary: RPC program number mapper
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,17 @@
+sources:
+- archive: usbutils-015.tar.xz
+  archive_sha512sum: cda0070138400703d7429d39dee49130aedaa704292531e6af57b347cc62422ca609540650926e74335f71d67d7d4655418be4824e1eb8a2b065c7b395feaa87
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The USB Utils package contains an utility used to display
+        information about USB buses in the system and the devices connected to them. '
+      home_page: http://linux-usb.sourceforge.net
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only AND FSFULLRWD AND X11 AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND (GPL-2.0-only OR GPL-3.0-only)
+        AND GPL-3.0-or-later AND FSFUL AND GPL-3.0-only AND FSFULLR
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only AND FSFULLRWD AND X11 AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND (GPL-2.0-only OR GPL-3.0-only)
+        AND GPL-3.0-or-later AND FSFUL AND GPL-3.0-only AND FSFULLR
+      short_summary: USB Utils
+      supplier: 'Organization: Broadcom, Inc.'

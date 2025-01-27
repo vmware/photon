@@ -1,0 +1,14 @@
+sources:
+- archive: nss-altfiles-2.23.0.tar.gz
+  archive_sha512sum: d4d6ff4eb416f63640119e678ec130476b7398d023f25ec18dc1992c4157b8d4c65a99be5d212532c30079f277ccb157567e86ca7347f05ebf317603631d5bca
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'NSS module to read passwd/group files from alternate
+        locations. '
+      home_page: https://github.com/aperezdc/nss-altfiles
+      license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND HPND AND
+        BSD-3-Clause
+      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND HPND AND BSD-3-Clause
+      short_summary: NSS module to read passwd/group files from alternate locations
+      supplier: 'Organization: Broadcom, Inc.'

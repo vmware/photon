@@ -1,0 +1,14 @@
+sources:
+- archive: cmocka-1.1.5.tar.xz
+  archive_sha512sum: cad7f04757183d004f6eaad39036fc0e24c5e0e987f80e85bc43bc66dba22389cb02b08e25531cc28a541d0a24a86b29be134a2d6fc339128e87d66952f502bd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'an elegant unit testing framework for C with support
+        for mock objects. It only requires the standard C library, works on a range
+        of computing platforms (including embedded) and with different compilers. '
+      home_page: https://cmocka.org
+      license_concluded: Apache-2.0 AND BSD-3-Clause AND MIT
+      license_declared: Apache-2.0 AND BSD-3-Clause AND MIT
+      short_summary: unit testing framework for C
+      supplier: 'Organization: Broadcom, Inc.'

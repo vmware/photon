@@ -1,0 +1,18 @@
+sources:
+- archive: ply-3.11.tar.gz
+  archive_sha512sum: 37e39a4f930874933223be58a3da7f259e155b75135f1edd47069b3b40e5e96af883ebf1c8a1bbd32f914a9e92cfc12e29fec05cf61b518f46c1d37421b20008
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'PLY is yet another implementation of lex and yacc for
+        Python. Some notable features include the fact that its implemented entirely
+        in Python and it uses LALR(1) parsing which is efficient and well suited for
+        larger grammars.  PLY provides most of the standard lex/yacc features including
+        support for empty productions, precedence rules, error recovery, and support
+        for ambiguous grammars.  PLY is extremely easy to use and provides very extensive
+        error checking. It is compatible with both Python 2 and Python 3. '
+      home_page: http://www.dabeaz.com/ply/
+      license_concluded: BSD-3-Clause AND CC-PDDC
+      license_declared: BSD-3-Clause AND CC-PDDC
+      short_summary: Python Lex & Yacc
+      supplier: 'Organization: Broadcom, Inc.'

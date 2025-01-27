@@ -1,0 +1,20 @@
+sources:
+- archive: httpd-2.4.62.tar.bz2
+  archive_sha512sum: 7db1876805d5c0f60f49bcb51f75cdf567120f2ff6349e68f084e9a86ae38265d9f1c67e7fca0082c9db136f3c408a88501ee11f26b1b68724ba240867171d77
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Apache HTTP Server. '
+      home_page: http://httpd.apache.org
+      license_concluded: metamail AND BSD-2-Clause AND MIT AND HPND-sell-variant AND
+        Spencer-94 AND Apache-2.0 AND GPL-2.0-or-later AND Apache-1.1 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND RSA-MD AND BSD-3-Clause AND FSFUL AND GPL-2.0-only AND Beerware AND GPL-2.0-or-later
+        WITH Libtool-exception
+      license_declared: metamail AND BSD-2-Clause AND MIT AND HPND-sell-variant AND
+        Spencer-94 AND Apache-2.0 AND GPL-2.0-or-later AND Apache-1.1 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND RSA-MD AND BSD-3-Clause AND FSFUL AND GPL-2.0-only AND Beerware AND GPL-2.0-or-later
+        WITH Libtool-exception
+      short_summary: The Apache HTTP Server
+      supplier: 'Organization: Broadcom, Inc.'

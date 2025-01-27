@@ -1,0 +1,57 @@
+sources:
+- archive: libpng-1.6.39.tar.xz
+  archive_sha512sum: ce233bb58d70b391b7dc858a132a8f9f66a9e30f5b387426317fdd5e76e8395e00ec36324e5e2caec8fda49a3f2b13fe27594a3466fdf2020ec7520e79a608c9
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: The libpng package contains libraries used by other programs
+        for reading and writing PNG files. The PNG format was designed as a replacement
+        for GIF and, to a lesser extent, TIFF, with many improvements and extensions
+        and lack of patent problems.
+      home_page: http://www.libpng.org
+      license_concluded: Libpng AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-3-Clause AND
+        GPL-2.0-or-later AND MIT AND GPL-2.0-only AND GPL-1.0-or-later AND CC0-1.0
+        AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND Apache-2.0 AND Zlib
+        AND FSFULLR AND FSFUL
+      license_declared: Libpng AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-3-Clause AND
+        GPL-2.0-or-later AND MIT AND GPL-2.0-only AND GPL-1.0-or-later AND CC0-1.0
+        AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND Apache-2.0 AND Zlib
+        AND FSFULLR AND FSFUL
+      short_summary: contains libraries for reading and writing PNG files
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: syslinux-6.04-pre1.tar.xz
+  archive_sha512sum: 7927dd39be8e2dcf4138a6fea33def67d19d938379d694f15b48fdd2f5924c028b7a9e7bd71d0c7c6630c203e9e2a54296628e530632ad5e6f55b1ebefe8fc98
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'SYSLINUX is a suite of bootloaders, currently supporting
+        DOS FAT filesystems, Linux ext2/ext3 filesystems (EXTLINUX), PXE network boots
+        (PXELINUX), or ISO 9660 CD-ROMs (ISOLINUX).  It also includes a tool, MEMDISK,
+        which loads legacy operating systems from these media. '
+      home_page: http://www.syslinux.org
+      license_concluded: (LGPL-2.0-or-later OR GPL-1.0-or-later) AND GPL-2.0-only
+        AND BSD-4-Clause AND MIT AND CMU-Mach AND GPL-1.0-or-later AND CC-BY-SA-3.0
+        AND BSD-4.3TAHOE AND GPL-2.0-or-later AND Zlib AND BSD-3-Clause AND BSD-2-Clause
+        AND Libpng AND LGPL-2.1-only AND RSA-MD
+      license_declared: (LGPL-2.0-or-later OR GPL-1.0-or-later) AND GPL-2.0-only AND
+        BSD-4-Clause AND MIT AND CMU-Mach AND GPL-1.0-or-later AND CC-BY-SA-3.0 AND
+        BSD-4.3TAHOE AND GPL-2.0-or-later AND Zlib AND BSD-3-Clause AND BSD-2-Clause
+        AND Libpng AND LGPL-2.1-only AND RSA-MD
+      short_summary: Simple kernel loader which boots from a FAT filesystem
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: zlib-1.2.13.tar.gz
+  archive_sha512sum: 99f0e843f52290e6950cc328820c0f322a4d934a504f66c7caa76bd0cc17ece4bf0546424fc95135de85a2656fed5115abb835fd8d8a390d60ffaf946c8887ad
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: It contains the libraries and header files to create applications
+        for handling compiled objects.
+      home_page: http://www.zlib.net
+      license_concluded: Zlib AND LPD-document AND BSL-1.0 AND GPL-2.0-or-later WITH
+        GNAT-exception AND GPL-1.0-or-later
+      license_declared: Zlib AND LPD-document AND BSL-1.0 AND GPL-2.0-or-later WITH
+        GNAT-exception AND GPL-1.0-or-later
+      short_summary: Compression and decompression routines
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,15 @@
+sources:
+- archive: termshark-2.4.0.tar.gz
+  archive_sha512sum: 378bb67ff50a8dfa80f614540371f326627e73bdf63bceb183ed73afbbf9dead4e0597fb969ba49c4ee3d3de00ac7bb91166421c19c788df47ff8d9fcbc5b9fc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Termshark is the terminal user-interface tor Tshark,
+        a source network protocol analyzer. TShark doesn''t have an interactive terminal
+        user interface though, and this is where Termshark comes in. Termshark is
+        basically the futuristic terminal version of Wireshark. '
+      home_page: https://github.com/gcla/termshark/releases/tag/v2.4.0.tar.gz
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A terminal user-interface for tshark, inspired by Wireshark
+      supplier: 'Organization: Broadcom, Inc.'

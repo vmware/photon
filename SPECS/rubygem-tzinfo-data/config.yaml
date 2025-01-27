@@ -1,0 +1,13 @@
+sources:
+- archive: tzinfo-data-1.2022.6.gem
+  archive_sha512sum: fd3929465df1c6ee88133743c932f559995d6c6ac9317b5d044d1f24ab5b618f936ba4d6c9689198adffb8b8fea8f38faf85f644d4617d38665b95b6cc3129ed
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'TZInfo::Data contains data from the IANA Time Zone database
+        packaged as Ruby modules for use with TZInfo. '
+      home_page: https://rubygems.org/gems/tzinfo-data/versions/1.2022.6
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: data from the IANA Time Zone database packaged as Ruby modules
+      supplier: 'Organization: Broadcom, Inc.'

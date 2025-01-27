@@ -1,0 +1,34 @@
+sources:
+- archive: wireshark-4.2.9.tar.xz
+  archive_sha512sum: 6ad9318549ab60794c967a071a267e9642e97bb52289570e36c8221e6e160bafb346f789ad879ae1a87c0789ce3352b6a795a5a2ccf723891615a0b8c62eb668
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Wireshark is a network protocol analyzer. It allows examining
+        data from a live network or from a capture file on disk. You can interactively
+        browse the capture data, viewing summary and detailed information for each
+        packet. Wireshark has several features, including a rich display filter language
+        and the ability to view the reconstructed stream of a TCP session. '
+      home_page: http://www.wireshark.org
+      license_concluded: GPL-3.0-only AND NCSA AND GPL-3.0-or-later AND AGPL-3.0-only
+        AND BSD-4-Clause AND GPL-2.0-only AND MPL-1.0 AND LGPL-2.0-or-later AND blessing
+        AND GPL-2.0-or-later AND ODbL-1.0 AND MS-PL AND EPL-1.0 AND Kazlib AND LGPL-2.0-only
+        AND AGPL-3.0-or-later AND AML AND CC-PDDC AND CC0-1.0 AND Python-2.0 AND MIT-open-group
+        AND BSD-2-Clause-Views AND HPND AND BSD-3-Clause AND MIT AND Zlib AND (ISC
+        OR GPL-2.0-only) AND ISC AND CDDL-1.0 AND MS-RL AND Libpng AND GPL-1.0-or-later
+        AND (BSD-3-Clause OR GPL-2.0-only) AND Apache-2.0 AND Artistic-2.0 AND BSL-1.0
+        AND LGPL-3.0-only AND LLGPL AND BSD-2-Clause AND BSD-1-Clause AND X11 AND
+        Beerware AND (NCSA OR MIT) AND AFL-3.0 AND CC-BY-4.0 AND LGPL-2.1-or-later
+        AND GFDL-1.2-or-later
+      license_declared: GPL-3.0-only AND NCSA AND GPL-3.0-or-later AND AGPL-3.0-only
+        AND BSD-4-Clause AND GPL-2.0-only AND MPL-1.0 AND LGPL-2.0-or-later AND blessing
+        AND GPL-2.0-or-later AND ODbL-1.0 AND MS-PL AND EPL-1.0 AND Kazlib AND LGPL-2.0-only
+        AND AGPL-3.0-or-later AND AML AND CC-PDDC AND CC0-1.0 AND Python-2.0 AND MIT-open-group
+        AND BSD-2-Clause-Views AND HPND AND BSD-3-Clause AND MIT AND Zlib AND (ISC
+        OR GPL-2.0-only) AND ISC AND CDDL-1.0 AND MS-RL AND Libpng AND GPL-1.0-or-later
+        AND (BSD-3-Clause OR GPL-2.0-only) AND Apache-2.0 AND Artistic-2.0 AND BSL-1.0
+        AND LGPL-3.0-only AND LLGPL AND BSD-2-Clause AND BSD-1-Clause AND X11 AND
+        Beerware AND (NCSA OR MIT) AND AFL-3.0 AND CC-BY-4.0 AND LGPL-2.1-or-later
+        AND GFDL-1.2-or-later
+      short_summary: Wireshark is the world's foremost protocol analyzer
+      supplier: 'Organization: Broadcom, Inc.'

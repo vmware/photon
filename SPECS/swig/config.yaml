@@ -1,0 +1,25 @@
+sources:
+- archive: swig-4.1.1.tar.gz
+  archive_sha512sum: 1cea1918455a75ebc9b2653dd1715bd5dcd974554955f324295c6a6f14c0a715651b221b85fad4a8af5197e0c75bfe7b590bc6ba7178c26245fbbd9a7e110100
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Simplified Wrapper and Interface Generator (SWIG) is
+        a software development tool for connecting C, C++ and Objective C programs
+        with a variety of high-level programming languages.  SWIG is primarily used
+        with Perl, Python and Tcl/TK, but it has also been extended to Java, Eiffel
+        and Guile. SWIG is normally used to create high-level interpreted programming
+        environments, systems integration, and as a tool for building user interfaces '
+      home_page: http://swig.sourceforge.net/
+      license_concluded: MIT AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-only AND FSFUL AND GPL-3.0-or-later WITH Bison-exception-2.2 AND
+        FSFULLR AND snprintf AND GPL-2.0-or-later AND GPL-1.0-or-later AND TMate AND
+        FSFULLRWD AND GPL-3.0-only AND GPL-3.0-or-later AND X11 AND FSFAP AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic
+      license_declared: MIT AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-only AND FSFUL AND GPL-3.0-or-later WITH Bison-exception-2.2 AND
+        FSFULLR AND snprintf AND GPL-2.0-or-later AND GPL-1.0-or-later AND TMate AND
+        FSFULLRWD AND GPL-3.0-only AND GPL-3.0-or-later AND X11 AND FSFAP AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic
+      short_summary: Connects C/C++/Objective C to some high-level programming languages
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,15 @@
+sources:
+- archive: Data-Validate-IP-0.30.tar.gz
+  archive_sha512sum: ac556445f1eec0440be17263bcffce46d0c3b719d3c64022bcb3fc6d1191ed9de94c0e4d6b2c3c5c1704dc7945b14a5c87abfcf2b7dc43ec4f10a4cc6629b761
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module provides a number IP address validation subs
+        that both validate and untaint their input. This includes both basic validation
+        (is_ipv4() and is_ipv6()) and special cases like checking whether an address
+        belongs to a specific network or whether an address is public or private (reserved). '
+      home_page: https://metacpan.org/release/Data-Validate-IP
+      license_concluded: Artistic-1.0 AND GPL-1.0-only AND Artistic-2.0
+      license_declared: Artistic-1.0 AND GPL-1.0-only AND Artistic-2.0
+      short_summary: IPv4 and IPv6 validation methods
+      supplier: 'Organization: Broadcom, Inc.'

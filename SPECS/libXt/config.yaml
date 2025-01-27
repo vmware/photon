@@ -1,0 +1,20 @@
+sources:
+- archive: libXt-1.2.1.tar.bz2
+  archive_sha512sum: 6877af61ba91eeed6b6f80471b84f354ad0ec0827249c7ee0a00c13508063fe8d2696dd400a4bdbc6ca2ff67cbe1317ad5ac24522fd96099dc56535e33ca052c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 Toolkit Intrinsics library. '
+      home_page: http://www.x.org/
+      license_concluded: FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND HPND-sell-variant AND FSFAP AND GPL-3.0-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND HPND AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND MIT-open-group
+        AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLRWD AND MIT AND FSFULLR
+      license_declared: FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND HPND-sell-variant AND FSFAP AND GPL-3.0-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND HPND AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND MIT-open-group
+        AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLRWD AND MIT AND FSFULLR
+      short_summary: X11 libXt runtime library.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,15 @@
+sources:
+- archive: pycryptodome-3.20.0.tar.gz
+  archive_sha512sum: 9fed02190db9ae71b6895af2525d7670858817acf213c494969104da81138dacb11bc00be83b308e070a2c90766cd763e25a611ada402b32f6160a8ac9283f85
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'PyCryptodome is a self-contained Python package of low-level
+        cryptographic primitives. '
+      home_page: http://www.pycryptodome.org/
+      license_concluded: DOC AND OFL-1.1 AND CC0-1.0 AND MIT AND Unlicense AND BSD-2-Clause
+        AND Apache-2.0 AND BSD-3-Clause AND Python-2.0
+      license_declared: DOC AND OFL-1.1 AND CC0-1.0 AND MIT AND Unlicense AND BSD-2-Clause
+        AND Apache-2.0 AND BSD-3-Clause AND Python-2.0
+      short_summary: Cryptographic library for Python
+      supplier: 'Organization: Broadcom, Inc.'

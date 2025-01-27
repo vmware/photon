@@ -1,0 +1,17 @@
+sources:
+- archive: pgbouncer-1.17.0.tar.gz
+  archive_sha512sum: 5913ce542f0f694f114db8a2f339e536fb2b5887efb160b7ce3c708ae3d638bee95943104eafb9fbc4fc225649bd5625da2ccf1b56489afe33ebf8aacac48863
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Pgbouncer is a light-weight, robust connection pooler
+        for PostgreSQL. '
+      home_page: https://wiki.postgresql.org/wiki/PgBouncer
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND X11 AND FSFUL AND ISC AND CC0-1.0
+        AND BSD-2-Clause
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND X11 AND FSFUL AND ISC AND CC0-1.0
+        AND BSD-2-Clause
+      short_summary: Connection pooler for PostgreSQL.
+      supplier: 'Organization: Broadcom, Inc.'

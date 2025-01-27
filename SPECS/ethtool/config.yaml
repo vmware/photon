@@ -1,0 +1,19 @@
+sources:
+- archive: ethtool-6.1.tar.xz
+  archive_sha512sum: 6ca478ec75dae7cc347b859802e1965e6c78310ec4b276dec29bdf76d3464e4186c6e5ed0cb8f013171d6c0562c1156cb0442419f5b947c314e8b91ad9fd2d93
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'ethtool is the standard Linux utility for controlling
+        network drivers and hardware, particularly for wired Ethernet devices '
+      home_page: https://www.kernel.org/pub/software/network/ethtool
+      license_concluded: FSFULLRWD AND FSFUL AND GPL-1.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND X11 AND FSFAP AND GPL-2.0-or-later AND
+        GPL-2.0-only WITH Linux-syscall-note AND FSFULLR AND (GPL-2.0-only OR BSD-2-Clause)
+        AND GPL-2.0-only AND GPL-3.0-only
+      license_declared: FSFULLRWD AND FSFUL AND GPL-1.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND X11 AND FSFAP AND GPL-2.0-or-later AND
+        GPL-2.0-only WITH Linux-syscall-note AND FSFULLR AND (GPL-2.0-only OR BSD-2-Clause)
+        AND GPL-2.0-only AND GPL-3.0-only
+      short_summary: Standard Linux utility for controlling network drivers and hardware
+      supplier: 'Organization: Broadcom, Inc.'

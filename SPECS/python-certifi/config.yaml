@@ -1,0 +1,14 @@
+sources:
+- archive: certifi-2023.11.17.tar.gz
+  archive_sha512sum: 873eb3a34c5061f164484eec5bc659d4869882c96477395eec7d9d52242a033f9d82d293b07bcb094d04e62dc9af8a65caf2385a1a2a78c7058252af1b3d715b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Certifi is a carefully curated collection of Root Certificates
+        for validating the trustworthiness of SSL certificates while verifying the
+        identity of TLS hosts '
+      home_page: https://github.com/certifi
+      license_concluded: MPL-2.0
+      license_declared: MPL-2.0
+      short_summary: Python package for providing Mozilla's CA Bundle
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,17 @@
+sources:
+- archive: buildx-0.17.1.tar.gz
+  archive_sha512sum: 16840bdfc79d4931253d2193ea43d9c47bc65e7f3049cecc27260ae98bc994637634fe7fa7333c01cd540205cd5c8aa73e65bee09f315098c15030bb799d172d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Docker CLI plugin for extended build capabilities with
+        BuildKit. '
+      home_page: https://github.com/docker/buildx
+      license_concluded: Unicode-DFS-2016 AND GPL-1.0-or-later AND MIT AND MPL-2.0
+        AND JSON AND BSD-2-Clause AND ISC AND BSD-3-Clause AND CC0-1.0 AND CC-BY-SA-4.0
+        AND Apache-2.0
+      license_declared: Unicode-DFS-2016 AND GPL-1.0-or-later AND MIT AND MPL-2.0
+        AND JSON AND BSD-2-Clause AND ISC AND BSD-3-Clause AND CC0-1.0 AND CC-BY-SA-4.0
+        AND Apache-2.0
+      short_summary: Docker CLI plugin for extended build capabilities with BuildKit
+      supplier: 'Organization: Broadcom, Inc.'

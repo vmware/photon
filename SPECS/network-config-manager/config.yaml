@@ -1,0 +1,15 @@
+sources:
+- archive: network-config-manager-0.7.4.tar.gz
+  archive_sha512sum: 0053b0a0649b2f9d238b9e3cc782924e34a70f18909d2bb90ca17dc3cfa1f80e0ea2e71ee431ed70dd40879ba1d1c889f9de526a622f91ba4256ef57472b4fa0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The network-config-manager nmctl allows to configure
+        and introspect the state of the network links as seen by systemd-networkd.
+        nmctl can be used to query and configure links for Address, Routes, Gateways
+        and also hostname, DNS, NTP or Domain. '
+      home_page: https://github.com/vmware/network-config-manager
+      license_concluded: Apache-2.0 AND NTP-0
+      license_declared: Apache-2.0 AND NTP-0
+      short_summary: Configure and introspect the state of the network
+      supplier: 'Organization: Broadcom, Inc.'

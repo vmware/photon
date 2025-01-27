@@ -1,0 +1,22 @@
+sources:
+- archive: libselinux-3.4.tar.gz
+  archive_sha512sum: 7ffa6d2159d2333d836bde3f75dfc78a278283b66ae1e441c178371adb6f463aa6f2d62439079e2068d1135c39dd2b367b001d917c0bdc6871a73630919ef81e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "Security-enhanced Linux is a feature of the Linux\xAE\
+        \ kernel and a number of utilities with enhanced security functionality designed\
+        \ to add mandatory access controls to Linux.  The Security-enhanced Linux\
+        \ kernel contains new architectural components originally developed to improve\
+        \ the security of the Flask operating system. These architectural components\
+        \ provide general support for the enforcement of many kinds of mandatory access\
+        \ control policies, including those based on the concepts of Type Enforcement\xAE\
+        , Role-based Access Control, and Multi-level Security.  libselinux provides\
+        \ an API for SELinux applications to get and set process and file security\
+        \ contexts and to obtain security policy decisions.  Required for any applications\
+        \ that use the SELinux API. "
+      home_page: https://github.com/SELinuxProject/selinux/wiki
+      license_concluded: libselinux-1.0 AND GPL-2.0-only
+      license_declared: libselinux-1.0 AND GPL-2.0-only
+      short_summary: SELinux library and simple utilities
+      supplier: 'Organization: Broadcom, Inc.'

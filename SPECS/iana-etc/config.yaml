@@ -1,0 +1,13 @@
+sources:
+- archive: iana-etc-2.30.tar.bz2
+  archive_sha512sum: d841b9c177fb0675bab10c9b0ebc4d3c2b743754c615e3fabcaebb29ffefaf2491278d0e672b99af3cbc9b300138700f56c1026f6d41659783150aea97583936
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: The Iana-Etc package provides data for network services
+        and protocols.
+      home_page: http://freshmeat.net/projects/iana-etc
+      license_concluded: OSL-3.0
+      license_declared: OSL-3.0
+      short_summary: Data for network services and protocols
+      supplier: 'Organization: Broadcom, Inc.'

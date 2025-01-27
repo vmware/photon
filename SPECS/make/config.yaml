@@ -1,0 +1,22 @@
+sources:
+- archive: make-4.3.tar.gz
+  archive_sha512sum: 9a1185cc468368f4ec06478b1cfa343bf90b5cd7c92c0536567db0315b0ee909af53ecce3d44cfd93dd137dbca1ed13af5713e8663590c4fdd21ea635d78496b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Make package contains a program for compiling packages. '
+      home_page: http://www.gnu.org/software/make
+      license_concluded: LGPL-2.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception
+        AND X11 AND FSFUL AND GPL-3.0-only AND GPL-3.0-or-later AND GFDL-1.3-only
+        AND FSFULLR AND GFDL-1.3-invariants-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND
+        GFDL-1.3-no-invariants-only AND GFDL-1.1-or-later AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic AND GFDL-1.3-or-later AND GPL-1.0-or-later
+      license_declared: LGPL-2.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception
+        AND X11 AND FSFUL AND GPL-3.0-only AND GPL-3.0-or-later AND GFDL-1.3-only
+        AND FSFULLR AND GFDL-1.3-invariants-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND
+        GFDL-1.3-no-invariants-only AND GFDL-1.1-or-later AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic AND GFDL-1.3-or-later AND GPL-1.0-or-later
+      short_summary: Program for compiling packages
+      supplier: 'Organization: Broadcom, Inc.'

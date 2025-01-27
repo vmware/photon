@@ -1,0 +1,25 @@
+sources:
+- archive: sssd-2.8.2.tar.gz
+  archive_sha512sum: 10b7a641823aefb43e30bff9e5f309a1f48446ffff421a06f86496db24ba1fbd384733b5690864507ef9b2f04c91e563fe9820536031f83f1bd6e93edfedee55
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides a set of daemons to manage access to remote
+        directories and authentication mechanisms. It provides an NSS and PAM interface
+        toward the system and a pluggable back end system to connect to multiple different
+        account sources. It is also the basis to provide client auditing and policy
+        services for projects like FreeIPA.  The sssd subpackage is a meta-package
+        that contains the daemon as well as all the existing back ends. '
+      home_page: http://github.com/SSSD/sssd
+      license_concluded: BSD-3-Clause AND GPL-2.0-only AND LGPL-3.0-or-later AND GPL-3.0-or-later
+        AND FSFULLR AND FSFAP AND MIT AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-2.1-or-later
+        AND GPL-1.0-or-later AND FSFUL AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
+        AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-3.0-only
+      license_declared: BSD-3-Clause AND GPL-2.0-only AND LGPL-3.0-or-later AND GPL-3.0-or-later
+        AND FSFULLR AND FSFAP AND MIT AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-2.1-or-later
+        AND GPL-1.0-or-later AND FSFUL AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
+        AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-3.0-only
+      short_summary: System Security Services Daemon
+      supplier: 'Organization: Broadcom, Inc.'

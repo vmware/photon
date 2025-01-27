@@ -1,0 +1,17 @@
+sources:
+- archive: Perl4-CoreLibs-0.004.tar.gz
+  archive_sha512sum: 71083f1640e95559ee4bc5a7f1bbe6beacec048a073e211ab7f6ee4de26463f6ae3d87e99e00a41ea8f2f93a5e96367bafe907ef3367e400de35123c22eb7b88
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is a collection of ''.pl'' files that were bundled
+        with the Perl core until core version 5.15.1. Relying on their presence in
+        the core distribution is deprecated; they should be acquired from this CPAN
+        distribution instead. From core version 5.13.3 until their removal, the core
+        versions of these libraries emit a deprecation warning when loaded. The CPAN
+        version does not emit such a warning. '
+      home_page: http://search.cpan.org/dist/Perl4-CoreLibs/
+      license_concluded: Artistic-1.0-Perl OR GPL-1.0-or-later
+      license_declared: Artistic-1.0-Perl OR GPL-1.0-or-later
+      short_summary: Core Perl4 Libs
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,19 @@
+sources:
+- archive: pyudev-0.23.2.tar.gz
+  archive_sha512sum: 40b947d363dca73789f5ab77cbda4b48349e28fe04f2f5cafb93d20799d842ebeb2b7d78d1f16dcbcaac5c20aff1b931b372c75852706e731337e6e1d30b8538
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'pyudev is a LGPL licensed, pure Python binding for libudev,
+        the device and hardware management and information library for Linux. It supports
+        almost all libudev functionality. You can enumerate devices, query device
+        properties and attributes or monitor devices, including asynchronous monitoring
+        with threads, or within the event loops of Qt, Glib or wxPython.  The binding
+        supports CPython 2 (2.6 or newer) and 3 (3.1 or newer), and PyPy 1.5 or newer.
+        It is tested against udev 151 or newer, earlier versions of udev as found
+        on dated Linux systems may work, but are not officially supported. '
+      home_page: https://pypi.org/project/pyudev
+      license_concluded: LGPL-2.1-or-later AND LGPL-2.1-only AND LGPL-2.0-or-later
+      license_declared: LGPL-2.1-or-later AND LGPL-2.1-only AND LGPL-2.0-or-later
+      short_summary: Python binding for libudev
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: ndg_httpsclient-0.5.1.tar.gz
+  archive_sha512sum: b2b4c1b1df87ea1a94811b9ae831e7bf32af27258f487fd5ec319e0e6e0d79dfdb1f7bfadaf397d0693a8a7f0720df170a7fc946aaf10c82e3957ac5464f672e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Enhanced HTTPS support for httplib and urllib2 using
+        PyOpenSSL. '
+      home_page: https://pypi.python.org/pypi/ndg-httpsclient
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Enhanced HTTPS support for httplib and urllib2 using PyOpenSSL.
+      supplier: 'Organization: Broadcom, Inc.'

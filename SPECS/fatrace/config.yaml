@@ -1,0 +1,14 @@
+sources:
+- archive: fatrace-0.15.tar.bz2
+  archive_sha512sum: f4c4c4054537c3ce6d99be7baa8a269c6aae74cd71ad5f43cc82dba6572979d4fd11c423254f661b7b83d958de4c50210820af865d16fd5c1ca0d5d8213b59ba
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'fatrace reports file access events from all running processes.
+        Its main purpose is to find processes which keep waking up the disk unnecessarily
+        and thus prevent some power saving. '
+      home_page: https://launchpad.net/fatrace
+      license_concluded: GPL-3.0-only AND GPL-3.0-or-later
+      license_declared: GPL-3.0-only AND GPL-3.0-or-later
+      short_summary: fatrace reports file access events from all running processes.
+      supplier: 'Organization: Broadcom, Inc.'

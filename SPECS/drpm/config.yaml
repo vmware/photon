@@ -1,0 +1,17 @@
+sources:
+- archive: drpm-0.5.1.tar.bz2
+  archive_sha512sum: 8c87165fa43bcc5e518a6d60eaadbc43b12643233eb0cb29633f0fdf8a516c24581f5f5bad06779f8c851d6200aec41b50998ab8040e8145391b686ae6be8c48
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The drpm package provides a library for making, reading
+        and applying deltarpms, compatible with the original deltarpm packages. '
+      home_page: https://github.com/rpm-software-management/drpm
+      license_concluded: LGPL-3.0-only AND BSD-3-Clause AND GPL-3.0-only AND LGPL-3.0-or-later
+        AND Apache-2.0 AND BSD-2-Clause AND LGPL-2.1-only AND LGPL-2.1-or-later AND
+        LGPL-2.0-or-later
+      license_declared: LGPL-3.0-only AND BSD-3-Clause AND GPL-3.0-only AND LGPL-3.0-or-later
+        AND Apache-2.0 AND BSD-2-Clause AND LGPL-2.1-only AND LGPL-2.1-or-later AND
+        LGPL-2.0-or-later
+      short_summary: A library for making, reading and applying deltarpm packages
+      supplier: 'Organization: Broadcom, Inc.'

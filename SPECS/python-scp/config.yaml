@@ -1,0 +1,14 @@
+sources:
+- archive: scp-0.14.4.tar.gz
+  archive_sha512sum: af85c67ab8230a44d5a0ec213ed5ad1d4b58f9a0aff774991804a454bcf1728c33b58168ac0fbd7d0537927234db3ba277c8a2ae3b8037ffde3ffb8324fa9abb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The scp.py module uses a paramiko transport to send and
+        recieve files via the scp1 protocol. This is the protocol as referenced from
+        the openssh scp program, and has only been tested with this implementation. '
+      home_page: https://pypi.python.org/pypi/scp
+      license_concluded: LGPL-2.0-or-later AND LGPL-2.1-or-later
+      license_declared: LGPL-2.0-or-later AND LGPL-2.1-or-later
+      short_summary: scp module for paramiko
+      supplier: 'Organization: Broadcom, Inc.'

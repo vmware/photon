@@ -1,0 +1,15 @@
+sources:
+- archive: pyserial-3.5.tar.gz
+  archive_sha512sum: c2a700f5e08905bdab070c95cec41d6d423c20d2a9648c8c2f048db86de72f39fe2b8df560172d5b9d480be44c35ff0799df8f1d684d3f41f8fc61174105256e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module encapsulates the access for the serial port.
+        It provides backends for standard Python running on Windows, Linux, BSD (possibly
+        any POSIX compliant system) and Jython. The module named "serial" automatically
+        selects the appropriate backend. '
+      home_page: http://pypi.python.org/pypi/pyserial
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Python serial port access library
+      supplier: 'Organization: Broadcom, Inc.'

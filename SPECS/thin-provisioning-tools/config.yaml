@@ -1,0 +1,41 @@
+sources:
+- archive: thin-provisioning-tools-1.0.2.tar.gz
+  archive_sha512sum: f5401631f0d10cb0fbd8e4b2979b38d2dc42621de558ffb23b2bcc12f1b7fead49ffa8b143af61227917edce9abc7b5a48c94036ae74c035a181661f82e80ed1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'thin-provisioning-tools contains check,dump, restore,
+        repair, rmap and metadata_size tools to manage device-mapper thin provisioning
+        target metadata devices; cache check, dump, metadata_size, restore and repair
+        tools to manage device-mapper cache metadata devices are included and era
+        check, dump, restore and invalidate to manage snapshot eras. '
+      home_page: https://github.com/jthornber/thin-provisioning-tools
+      license_concluded: GPL-2.0-or-later AND GPL-3.0-only
+      license_declared: GPL-2.0-or-later AND GPL-3.0-only
+      short_summary: Thin provisioning tools
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: thin-provisioning-tools-deps-1.0.2p1.tar.xz
+  archive_sha512sum: f9219cca4bfcb3ace17417fc4de8581c306d7c19013e0d5b9273ebcd96cea3a90945b4abe2df36e73a44a1054c3a49fa40661b1af2880350de7717860981e50c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Thin provisioning tools dependencies stored as cargo registry
+      home_page: https://packages.vmware.com/photon/photon_sources/1.0/
+      license_concluded: MIT AND Unlicense AND Apache-2.0 WITH LLVM-exception AND
+        (MIT OR Unlicense) AND BSD-3-Clause AND 0BSD AND (MIT OR Apache-2.0) AND BSD-2-Clause
+        AND (BSD-3-Clause OR GPL-2.0-only) AND Unicode-DFS-2016 AND GPL-2.0-only AND
+        (MIT OR Apache-2.0) AND MIT-testregex AND (BSD-3-Clause OR GPL-2.0-only) AND
+        JSON AND SunPro AND CC0-1.0 AND Zlib AND GPL-3.0-or-later AND (Apache-2.0
+        OR MIT) AND (Apache-2.0 OR MIT) AND (Apache-2.0 WITH LLVM-exception OR Apache-2.0
+        OR MIT) AND BSD-2-Clause-Views AND (MIT OR GPL-2.0-only) AND (GPL-2.0-or-later
+        OR MIT) AND Apache-2.0 AND GPL-3.0-only
+      license_declared: MIT AND Unlicense AND Apache-2.0 WITH LLVM-exception AND (MIT
+        OR Unlicense) AND BSD-3-Clause AND 0BSD AND (MIT OR Apache-2.0) AND BSD-2-Clause
+        AND (BSD-3-Clause OR GPL-2.0-only) AND Unicode-DFS-2016 AND GPL-2.0-only AND
+        (MIT OR Apache-2.0) AND MIT-testregex AND (BSD-3-Clause OR GPL-2.0-only) AND
+        JSON AND SunPro AND CC0-1.0 AND Zlib AND GPL-3.0-or-later AND (Apache-2.0
+        OR MIT) AND (Apache-2.0 OR MIT) AND (Apache-2.0 WITH LLVM-exception OR Apache-2.0
+        OR MIT) AND BSD-2-Clause-Views AND (MIT OR GPL-2.0-only) AND (GPL-2.0-or-later
+        OR MIT) AND Apache-2.0 AND GPL-3.0-only
+      short_summary: Thin provisioning tools dependencies stored as cargo registry
+      supplier: 'Organization: Broadcom, Inc.'

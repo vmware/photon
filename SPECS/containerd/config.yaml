@@ -1,0 +1,16 @@
+sources:
+- archive: containerd-1.6.21.tar.gz
+  archive_sha512sum: a94ed8b8b9e153c9dc370228b659fcba1b03b3c47c8b5fcb001bb1b4b158ea048159f5d8d8c5294e7da3444edd76fbd903d7b7faa84e3382807a583d757325e1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Containerd is an open source project. It is available
+        as a daemon for Linux, which manages the complete container lifecycle of its
+        host system. '
+      home_page: https://containerd.io/docs
+      license_concluded: MIT AND GPL-1.0-or-later AND BSD-2-Clause AND CC-BY-SA-4.0
+        AND MPL-2.0 AND Apache-2.0 AND ISC AND BSD-3-Clause
+      license_declared: MIT AND GPL-1.0-or-later AND BSD-2-Clause AND CC-BY-SA-4.0
+        AND MPL-2.0 AND Apache-2.0 AND ISC AND BSD-3-Clause
+      short_summary: Containerd
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,18 @@
+sources:
+- archive: pgbackrest-2.48.tar.gz
+  archive_sha512sum: 63b3803adbeeea5362e42d9d437d6d5426261c42d725d044e6ee5ef460bcaf5101a511f7395c3c83858caab11e5cad5ffb43cfa7242a801abdfb3b8361c36362
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'pgBackRest aims to be a reliable, easy-to-use backup
+        and restore solution that can seamlessly scale up to the largest databases
+        and workloads by utilizing algorithms that are optimized for database-specific
+        requirements. '
+      home_page: https://pgbackrest.org
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        FSFAP AND X11 AND FSFULLRWD AND FSFUL AND BSD-2-Clause AND BSD-3-Clause AND
+        MIT
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFAP
+        AND X11 AND FSFULLRWD AND FSFUL AND BSD-2-Clause AND BSD-3-Clause AND MIT
+      short_summary: Reliable PostgreSQL Backup & Restore
+      supplier: 'Organization: Broadcom, Inc.'

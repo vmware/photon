@@ -1,0 +1,14 @@
+sources:
+- archive: unzip60.tar.gz
+  archive_sha512sum: 0694e403ebc57b37218e00ec1a406cae5cc9c5b52b6798e0d4590840b6cdbf9ddc0d9471f67af783e960f8fa2e620394d51384257dca23d06bcd90224a80ce5d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The UnZip package contains ZIP extraction utilities.
+        These are useful for extracting files from ZIP archives. ZIP archives are
+        created with PKZIP or Info-ZIP utilities, primarily in a DOS environment. '
+      home_page: http://www.gnu.org/software/unzip
+      license_concluded: BSD-3-Clause AND Info-ZIP AND Zlib
+      license_declared: BSD-3-Clause AND Info-ZIP AND Zlib
+      short_summary: Unzip-6.0
+      supplier: 'Organization: Broadcom, Inc.'

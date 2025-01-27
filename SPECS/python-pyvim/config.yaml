@@ -1,0 +1,12 @@
+sources:
+- archive: pyvim-3.0.3.tar.gz
+  archive_sha512sum: 913c1785e9ce8a8db3c89207f924cccffeac120eb917c4d601917e2bbf2be658b8eec6c91fd16b3b3efb8479ee5d0da02891eca8e3652694e22a34a008ee4e47
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'An implementation of Vim in Python. '
+      home_page: https://pypi.python.org/pypi/service_identity
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Pure Python Vi Implementation.
+      supplier: 'Organization: Broadcom, Inc.'

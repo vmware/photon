@@ -1,0 +1,14 @@
+sources:
+- archive: open-isns-0.101.tar.gz
+  archive_sha512sum: e5a392127b0d85f36e9e4aa963c0c502af8c5aea0aba6d12abb4425649969dcc20ba6e87a99083626d981438439b17b71a86320f816042d82ed5dbe7e7a63e77
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'iSNS server and client for Linux '
+      home_page: https://github.com/open-iscsi/open-isns
+      license_concluded: GPL-1.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND LGPL-2.1-only AND LGPL-2.1-or-later AND FSFUL AND MIT
+      license_declared: GPL-1.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND LGPL-2.1-only AND LGPL-2.1-or-later AND FSFUL AND MIT
+      short_summary: iSNS server and client for Linux
+      supplier: 'Organization: Broadcom, Inc.'

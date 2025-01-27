@@ -1,0 +1,13 @@
+sources:
+- archive: networkx-3.2.tar.gz
+  archive_sha512sum: f9fdfbe0c716c5cc6cf3f47b44e02bbd8a166724c2ef7044497b01baf468f354123aeac3c032e31293c7eedd762a29f89628cbe2ecfea280cf6012d7b0d9bdfe
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'NetworkX is a Python package for the creation, manipulation,
+        and study of the structure, dynamics, and functions of complex networks. '
+      home_page: https://networkx.org
+      license_concluded: CC-BY-SA-3.0 AND BSD-3-Clause-Clear AND BSD-3-Clause
+      license_declared: CC-BY-SA-3.0 AND BSD-3-Clause-Clear AND BSD-3-Clause
+      short_summary: Creates and Manipulates Graphs and Networks
+      supplier: 'Organization: Broadcom, Inc.'

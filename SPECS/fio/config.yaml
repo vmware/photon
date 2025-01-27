@@ -1,0 +1,20 @@
+sources:
+- archive: fio-3.33.tar.gz
+  archive_sha512sum: d75b0d4ad7bc7c3885d0a41065a80b82b5b3f0eb41e10e02cba9d527eba1ae6573548345f795954ffc6a45375161191a741290cbaf4fda05ab601b49a6aceb32
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fio spawns a number of threads or processes doing a particular
+        type of I/O action as specified by the user. fio takes a number of global
+        parameters, each inherited by the thread unless otherwise parameters given
+        to them overriding that setting is given. The typical use of fio is to write
+        a job file matching the I/O load one wants to simulate. '
+      home_page: http://git.kernel.dk/?p=fio.git;a=summary
+      license_concluded: BSD-2-Clause AND GPL-1.0-or-later AND MS-RL AND (GPL-2.0-only
+        WITH Linux-syscall-note OR MIT) AND GPL-2.0-only AND ISC AND MIT AND Apache-2.0
+        AND GPL-2.0-or-later
+      license_declared: BSD-2-Clause AND GPL-1.0-or-later AND MS-RL AND (GPL-2.0-only
+        WITH Linux-syscall-note OR MIT) AND GPL-2.0-only AND ISC AND MIT AND Apache-2.0
+        AND GPL-2.0-or-later
+      short_summary: Multithreaded IO generation tool
+      supplier: 'Organization: Broadcom, Inc.'

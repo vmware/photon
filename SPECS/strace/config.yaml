@@ -1,0 +1,37 @@
+sources:
+- archive: strace-6.1.tar.xz
+  archive_sha512sum: 3f0678d74c5c3e6b30c4dc4ed7ee4cb0829d3b7142dc014fcd887db3a68133bf7fedc623bae381dfe4305bd6cd15d4ca6776c6491009c2a053bb8c6ca1ae8e12
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'strace is a diagnostic, debugging and instructional userspace
+        utility for Linux. It is used to monitor and tamper with interactions between
+        processes and the Linux kernel, which include system calls, signal deliveries,
+        and changes of process state. '
+      home_page: https://strace.io/
+      license_concluded: FSFULLRWD AND FSFULLR AND GPL-2.0-or-later WITH Linux-syscall-note
+        AND BSD-3-Clause AND LGPL-2.1-or-later WITH Linux-syscall-note AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-only WITH Linux-syscall-note AND
+        GPL-3.0-or-later AND BSD-2-Clause AND ISC AND LGPL-2.1-or-later AND GPL-2.0-or-later
+        AND GPL-1.0-or-later AND LGPL-2.0-or-later AND GPL-2.0-only AND LGPL-2.0-or-later
+        WITH Linux-syscall-note AND MIT AND GPL-1.0-or-later WITH Linux-syscall-note
+        AND (GPL-2.0-only OR Linux-OpenIB) AND FSFAP AND (GPL-2.0-only OR Linux-OpenIB)
+        AND (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND LGPL-2.1-only AND X11
+        AND (GPL-2.0-or-later WITH Linux-syscall-note OR BSD-3-Clause) AND Linux-syscall-note
+        AND (GPL-2.0-only WITH Linux-syscall-note OR Linux-OpenIB) AND (GPL-2.0-or-later
+        OR BSD-3-Clause) AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND (GPL-2.0-only WITH Linux-syscall-note OR Linux-OpenIB) AND FSFUL
+      license_declared: FSFULLRWD AND FSFULLR AND GPL-2.0-or-later WITH Linux-syscall-note
+        AND BSD-3-Clause AND LGPL-2.1-or-later WITH Linux-syscall-note AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-only WITH Linux-syscall-note AND
+        GPL-3.0-or-later AND BSD-2-Clause AND ISC AND LGPL-2.1-or-later AND GPL-2.0-or-later
+        AND GPL-1.0-or-later AND LGPL-2.0-or-later AND GPL-2.0-only AND LGPL-2.0-or-later
+        WITH Linux-syscall-note AND MIT AND GPL-1.0-or-later WITH Linux-syscall-note
+        AND (GPL-2.0-only OR Linux-OpenIB) AND FSFAP AND (GPL-2.0-only OR Linux-OpenIB)
+        AND (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND LGPL-2.1-only AND X11
+        AND (GPL-2.0-or-later WITH Linux-syscall-note OR BSD-3-Clause) AND Linux-syscall-note
+        AND (GPL-2.0-only WITH Linux-syscall-note OR Linux-OpenIB) AND (GPL-2.0-or-later
+        OR BSD-3-Clause) AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND (GPL-2.0-only WITH Linux-syscall-note OR Linux-OpenIB) AND FSFUL
+      short_summary: Tracks system calls that are made by a running process
+      supplier: 'Organization: Broadcom, Inc.'

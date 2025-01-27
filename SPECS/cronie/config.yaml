@@ -1,0 +1,17 @@
+sources:
+- archive: cronie-1.6.1.tar.gz
+  archive_sha512sum: 1e095df9670ec25d6629f4cf2cacd82c6c1cb1487a859815a7881a1d130e4f18f9976396f773abae24dadc232166bb6467bbaeac1cb0254209fcadf3530d5e6f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cronie contains the standard UNIX daemon crond that runs
+        specified programs at scheduled times and related tools. It is based on the
+        original cron and has security and configuration enhancements like the ability
+        to use pam and SELinux. '
+      home_page: https://github.com/cronie-crond/cronie
+      license_concluded: MIT AND BSD-3-Clause AND GPL-2.0-only AND LGPL-2.1-only AND
+        DOC AND LGPL-2.1-or-later AND ISC AND GPL-2.0-or-later AND BSD-2-Clause
+      license_declared: MIT AND BSD-3-Clause AND GPL-2.0-only AND LGPL-2.1-only AND
+        DOC AND LGPL-2.1-or-later AND ISC AND GPL-2.0-or-later AND BSD-2-Clause
+      short_summary: Cron Daemon
+      supplier: 'Organization: Broadcom, Inc.'

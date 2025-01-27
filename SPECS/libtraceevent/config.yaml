@@ -1,0 +1,16 @@
+sources:
+- archive: libtraceevent-1.6.3.tar.gz
+  archive_sha512sum: 8064eb18dda6fdbff020759ed92e785b87d34be9ebc30cb6085785edeb8d7252cabf8d33d8738a3ec407672a3d891884d0f0b4c551fce26c76fa8eaf61b9e2f5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libtraceevent(3) library provides APIs to access
+        kernel tracepoint events, located in the tracefs file system under the events
+        directory. '
+      home_page: https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND
+        LGPL-2.0-or-later AND LGPL-2.1-only
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND
+        LGPL-2.0-or-later AND LGPL-2.1-only
+      short_summary: Linux kernel trace event library
+      supplier: 'Organization: Broadcom, Inc.'

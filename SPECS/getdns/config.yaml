@@ -1,0 +1,18 @@
+sources:
+- archive: getdns-1.7.2.tar.gz
+  archive_sha512sum: 6c4a75a4696c46ec8bd9e9659a93fd81f3490b43da28a4c95f99a766027c7588fc493a8ac51563afb8f975c0e5b77d5ea67014d80e78ee2bb17fba1d1073d19f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'getdns is a modern asynchronous DNS API. It implements
+        DNS entry points from a design developed and vetted by application developers,
+        in an API specification edited by Paul Hoffman. With the development of this
+        API, we intend to offer application developers a modernized and flexible way
+        to access DNS security (DNSSEC) and other powerful new DNS features; a particular
+        hope is to inspire application developers towards innovative security solutions
+        in their applications. '
+      home_page: http://www.getdnsapi.net
+      license_concluded: BSD-3-Clause AND BSD-4-Clause-UC AND ISC AND MIT
+      license_declared: BSD-3-Clause AND BSD-4-Clause-UC AND ISC AND MIT
+      short_summary: Modern asynchronous API to the DNS
+      supplier: 'Organization: Broadcom, Inc.'

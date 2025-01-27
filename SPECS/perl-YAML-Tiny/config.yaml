@@ -1,0 +1,14 @@
+sources:
+- archive: YAML-Tiny-1.73.tar.gz
+  archive_sha512sum: 5999e220025aa8076e5e0e9e73e80c2da21660e77f6744d73e8e29962221d02d33a36e9829c44abf7d4f45abae069d8e121c8019bd1600b7e64db5e54efd9987
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'YAML::Tiny is a Perl class for reading and writing YAML-style
+        files, written with as little code as possible, reducing load time and memory
+        overhead. '
+      home_page: http://search.cpan.org/dist/YAML-Tiny/
+      license_concluded: Artistic-1.0 AND GPL-1.0-only AND Artistic-2.0
+      license_declared: Artistic-1.0 AND GPL-1.0-only AND Artistic-2.0
+      short_summary: Read/Write YAML files with as little code as possible
+      supplier: 'Organization: Broadcom, Inc.'

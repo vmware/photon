@@ -1,0 +1,29 @@
+sources:
+- archive: libgd-2.3.3.tar.xz
+  archive_sha512sum: aa49d4381d604a4360d556419d603df2ffd689a6dcc10f8e5e1d158ddaa3ab89912f6077ca77da4e370055074007971cf6d356ec9bf26dcf39bcff3208bc7e6c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'GD is an open source code library for the dynamic creation
+        of images by programmers. GD is written in C, and "wrappers" are available
+        for Perl, PHP and other languages. GD can read and write many different image
+        formats. GD is commonly used to generate charts, graphics, thumbnails, and
+        most anything else, on the fly. '
+      home_page: https://libgd.github.io
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND FSFULLRWD AND FSFULLR AND GPL-1.0-or-later
+        AND BSD-3-Clause AND GPL-3.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception AND GD AND FSFUL
+        AND FSFAP AND AGPL-3.0-only AND X11 AND GPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND Apache-2.0 AND IJG AND Xfig AND AGPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Libtool-exception AND Bitstream-Vera AND HPND-Pbmplus
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND FSFULLRWD AND FSFULLR AND GPL-1.0-or-later
+        AND BSD-3-Clause AND GPL-3.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception AND GD AND FSFUL
+        AND FSFAP AND AGPL-3.0-only AND X11 AND GPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND Apache-2.0 AND IJG AND Xfig AND AGPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Libtool-exception AND Bitstream-Vera AND HPND-Pbmplus
+      short_summary: GD is an open source code library for the dynamic creation of
+        images by programmers.
+      supplier: 'Organization: Broadcom, Inc.'

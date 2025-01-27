@@ -1,0 +1,17 @@
+sources:
+- archive: libdrm-2.4.113.tar.xz
+  archive_sha512sum: fca9834ce090f63ce6dc6d04491a2c5e86162fdddfc8ea70d55a6cdeb401be656388aae1577e58f463a78d8dc502be0a641908784819874e20bbec9a39a057e0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libdrm provides a user space library for accessing the
+        DRM, direct rendering manager, on operating systems that support the ioctl
+        interface. libdrm is a low-level library, typically used by graphics drivers
+        such as the Mesa DRI drivers, the X drivers, libva and similar projects. '
+      home_page: http://dri.freedesktop.org/
+      license_concluded: MIT AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note
+        AND BSD-1-Clause
+      license_declared: MIT AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note
+        AND BSD-1-Clause
+      short_summary: user space library for accessing the DRM.
+      supplier: 'Organization: Broadcom, Inc.'

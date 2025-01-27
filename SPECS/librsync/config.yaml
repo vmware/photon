@@ -1,0 +1,20 @@
+sources:
+- archive: librsync-2.3.2.tar.gz
+  archive_sha512sum: 77d826dbaf02061b759d876a6b537238bad40379a08e4494ebfd3e380b2eb921b7b060bc570330aeac9424ef1a9d521f449d559c9ffa3be24acdef4ad530fe90
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'librsync implements the "rsync" algorithm, which allows
+        remote differencing of binary files.  librsync computes a delta relative to
+        a file''s checksum, so the two files need not both be present to generate
+        a delta.  This library was previously known as libhsync up to version 0.9.0.  The
+        current version of this package does not implement the rsync network protocol
+        and uses a delta format slightly more efficient than and incompatible with
+        rsync 2.4.6. '
+      home_page: http://librsync.sourcefrog.net/
+      license_concluded: LGPL-2.1-only AND BSD-2-Clause AND CC0-1.0 AND GPL-2.0-or-later
+        AND LGPL-2.1-or-later AND GPL-1.0-or-later AND LGPL-2.0-or-later
+      license_declared: LGPL-2.1-only AND BSD-2-Clause AND CC0-1.0 AND GPL-2.0-or-later
+        AND LGPL-2.1-or-later AND GPL-1.0-or-later AND LGPL-2.0-or-later
+      short_summary: Rsync libraries
+      supplier: 'Organization: Broadcom, Inc.'

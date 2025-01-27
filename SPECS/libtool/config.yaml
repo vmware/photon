@@ -1,0 +1,27 @@
+sources:
+- archive: libtool-2.4.7.tar.xz
+  archive_sha512sum: 47f4c6de40927254ff9ba452612c0702aea6f4edc7e797f0966c8c6bf0340d533598976cdba17f0bdc64545572e71cd319bbb587aa5f47cd2e7c1d96f873a3da
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'It wraps the complexity of using shared libraries in
+        a consistent, portable interface. '
+      home_page: http://www.gnu.org/software/libtool
+      license_concluded: X11 AND GFDL-1.3-only AND GPL-3.0-or-later WITH Texinfo-exception
+        AND FSFULLR AND FSFULLRWD AND LGPL-2.1-only AND MIT AND GPL-2.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND CC-BY-ND-3.0 AND GPL-3.0-or-later AND GFDL-1.1-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GFDL-1.3-or-later AND GFDL-1.3-invariants-only
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND FSFAP
+        AND GPL-3.0-only AND GPL-1.0-or-later AND LGPL-2.0-only AND FSFUL AND LGPL-2.1-or-later
+        AND GPL-2.0-or-later AND LGPL-2.0-or-later WITH Libtool-exception
+      license_declared: X11 AND GFDL-1.3-only AND GPL-3.0-or-later WITH Texinfo-exception
+        AND FSFULLR AND FSFULLRWD AND LGPL-2.1-only AND MIT AND GPL-2.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND CC-BY-ND-3.0 AND GPL-3.0-or-later AND GFDL-1.1-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GFDL-1.3-or-later AND GFDL-1.3-invariants-only
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND FSFAP
+        AND GPL-3.0-only AND GPL-1.0-or-later AND LGPL-2.0-only AND FSFUL AND LGPL-2.1-or-later
+        AND GPL-2.0-or-later AND LGPL-2.0-or-later WITH Libtool-exception
+      short_summary: Shared libraries, portable interface
+      supplier: 'Organization: Broadcom, Inc.'

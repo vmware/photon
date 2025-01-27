@@ -1,0 +1,18 @@
+sources:
+- archive: tree-2.0.4.tgz
+  archive_sha512sum: 9939c8f891f74576cff5afb27975ac40c402c07182a110a1d28d2e1e9bf93ce8da27fbc593d0aaee45eb68878c52f625154e728b12fd76c8b2c82431c803e861
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Tree is a recursive directory listing command that produces
+        a depth indented listing of files, which is colorized ala dircolors if the
+        LS_COLORS environment variable is set and output is to tty. Tree has been
+        ported and reported to work under the following operating systems: Linux,
+        FreeBSD, OS X, Solaris, HP/UX, Cygwin, HP Nonstop and OS/2. '
+      home_page: http://mama.indstate.edu/users/ice/tree/
+      license_concluded: LGPL-2.1-or-later AND GPL-2.0-or-later AND GPL-2.0-only AND
+        Artistic-2.0
+      license_declared: LGPL-2.1-or-later AND GPL-2.0-or-later AND GPL-2.0-only AND
+        Artistic-2.0
+      short_summary: Recursive directory listing command.
+      supplier: 'Organization: Broadcom, Inc.'

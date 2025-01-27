@@ -1,0 +1,14 @@
+sources:
+- archive: libfido2-1.12.0.tar.gz
+  archive_sha512sum: ae8c716fe9b2fa52f191c4b3fe61442ba0b7a364a23c6c3a29afdba4f47c5eff89cb1d6c9fcacaefd7d4ebce641d35600527ee33934786c2096ac97f78e9418f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A library provide the functionality and CLI tools to
+        communicate with a FIDO device over USB, and to verify attestation and assertion
+        signatures. '
+      home_page: https://github.com/Yubico/libfido2
+      license_concluded: ISC AND BSD-3-Clause AND MIT AND BSD-2-Clause
+      license_declared: ISC AND BSD-3-Clause AND MIT AND BSD-2-Clause
+      short_summary: Command-line tools to communicate with a FIDO device over USB
+      supplier: 'Organization: Broadcom, Inc.'

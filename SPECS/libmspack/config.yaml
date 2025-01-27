@@ -1,0 +1,26 @@
+sources:
+- archive: libmspack-0.10.1alpha.tar.gz
+  archive_sha512sum: a7b5f7caa49190c5021f3e768b92f2e51cc0ce685c9ab6ed6fb36de885c73231b58d47a8a3b5c5aa5c9ac56c25c500eb683d84dbf11f09f97f6cb4fff5adc245
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A library that provides compression and decompression
+        of file formats used by Microsoft '
+      home_page: http://www.cabextract.org.uk/libmspack
+      license_concluded: (MIT OR GPL-2.0-only) AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later AND LGPL-2.1-only AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+        AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND FSFULLRWD AND LGPL-2.0-or-later
+        AND (GPL-2.0-only OR MIT) AND (MIT OR BSD-3-Clause OR GPL-2.0-only) AND FSFUL
+        AND LGPL-2.1-or-later AND FSFULLR AND FSFAP AND X11
+      license_declared: (MIT OR GPL-2.0-only) AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later AND LGPL-2.1-only AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+        AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND FSFULLRWD AND LGPL-2.0-or-later
+        AND (GPL-2.0-only OR MIT) AND (MIT OR BSD-3-Clause OR GPL-2.0-only) AND FSFUL
+        AND LGPL-2.1-or-later AND FSFULLR AND FSFAP AND X11
+      short_summary: A library that provides compression and decompression of file
+        formats used by Microsoft
+      supplier: 'Organization: Broadcom, Inc.'

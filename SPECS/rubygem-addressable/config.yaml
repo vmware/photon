@@ -1,0 +1,14 @@
+sources:
+- archive: addressable-2.8.1.gem
+  archive_sha512sum: ae0b7cb5fdc0b5b8717637e9589ab9167aa3924253f4c9102134b1e5aee07c7f5e3e92e2e32ca872b4a72a3a70c8086c7073cbbddf7cbb6e1948ed97de2c9108
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Addressable is a replacement for the URI implementation
+        that is part of Ruby''s standard library. It more closely conforms to the
+        relevant RFCs and adds support for IRIs and URI templates. '
+      home_page: https://rubygems.org/gems/addressable/versions/2.8.1
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: An easy-to-use client library for making requests from Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

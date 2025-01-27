@@ -1,0 +1,25 @@
+sources:
+- archive: pinentry-1.2.0.tar.bz2
+  archive_sha512sum: 19cea79aa3982d1f0d75220c8e24ca38d6c49475c6f4c5aa7101151b4690db23ed316096a4a411136e716ba4eb471f48f9b09556e5c9837533c2356b9b384b63
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'pinentry is a small collection of dialog programs that
+        allow GnuPG to read passphrases and PIN numbers in a secure manner. There
+        are versions for the common GTK and Qt toolkits as well as for the text terminal
+        (Curses). They utilize the Assuan protocol as specified in the Libassuan manual. '
+      home_page: https://gnupg.org/software/pinentry/index.html
+      license_concluded: FSFUL AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND (GPL-2.0-or-later OR LGPL-3.0-or-later)
+        AND GPL-3.0-only AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later AND FSFULLR AND (LGPL-3.0-or-later OR GPL-2.0-or-later)
+        AND GPL-3.0-or-later AND (GPL-2.0-only OR QPL-1.0) AND X11 AND GPL-3.0-or-later
+        WITH Texinfo-exception
+      license_declared: FSFUL AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND (GPL-2.0-or-later OR LGPL-3.0-or-later)
+        AND GPL-3.0-only AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later AND FSFULLR AND (LGPL-3.0-or-later OR GPL-2.0-or-later)
+        AND GPL-3.0-or-later AND (GPL-2.0-only OR QPL-1.0) AND X11 AND GPL-3.0-or-later
+        WITH Texinfo-exception
+      short_summary: A collection of PIN or passphrase entry dialogs
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,15 @@
+sources:
+- archive: libnetconf2-2.1.18.tar.gz
+  archive_sha512sum: 01ca262c3e530f3d89e61838f08bf3abeae5c9c3c1cf9570416183a2060b850c18bdf661154ec31f7b57b13067c956fe01453ebc461d0d3935e841073a39fb20
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libnetconf2 is a NETCONF library in C intended for building
+        NETCONF clients and servers. NETCONF is the NETwork CONFiguration protocol
+        introduced by IETF. '
+      home_page: https://github.com/CESNET/libnetconf2
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: NETCONF library in C intended for building NETCONF clients and
+        servers.
+      supplier: 'Organization: Broadcom, Inc.'

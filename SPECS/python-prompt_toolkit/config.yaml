@@ -1,0 +1,13 @@
+sources:
+- archive: prompt_toolkit-3.0.30.tar.gz
+  archive_sha512sum: cb0b9d71b09c353f2674052d75ec16a1803e0868ff5dd5625eefae767d45699b1b6bb99e4d98d3bca7ced7b60f52806ec10ed7ccab8a830c62d51baeeace23f7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'prompt_toolkit is a library for building powerful interactive
+        command lines and terminal applications in Python. '
+      home_page: https://pypi.python.org/pypi/prompt_toolkit
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Library for building powerful interactive command lines in Python.
+      supplier: 'Organization: Broadcom, Inc.'

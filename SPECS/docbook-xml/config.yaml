@@ -1,0 +1,15 @@
+sources:
+- archive: docbook-xml-4.5.zip
+  archive_sha512sum: 1ee282fe86c9282610ee72c0e1d1acfc03f1afb9dc67166f438f2703109046479edb6329313ecb2949db27993077e077d111501c10b8769ebb20719eb6213d27
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: The DocBook XML DTD-4.5 package contains document type
+        definitions for verification of XML data files against the DocBook rule set.
+        These are useful for structuring books and software documentation to a standard
+        allowing you to utilize transformations already written for that standard.
+      home_page: http://www.docbook.org
+      license_concluded: DocBook-Schema
+      license_declared: DocBook-Schema
+      short_summary: Docbook-xml-4.5
+      supplier: 'Organization: Broadcom, Inc.'

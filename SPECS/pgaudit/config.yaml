@@ -1,0 +1,58 @@
+sources:
+- archive: pgaudit-1.5.2.tar.gz
+  archive_sha512sum: 744d3211edf0b9e3e19caeea89e2d9cd7edb869cbb3f080d48d71696636d9ac64c1c1134d992d0cdd699987f06ddf27cd8719d45653e0dd49a0b604f30da7c31
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The PostgreSQL Audit extension (pgaudit) provides detailed
+        session and/or object audit logging via the standard PostgreSQL logging facility.  The
+        goal of the PostgreSQL Audit extension (pgaudit) is to provide PostgreSQL
+        users with capability to produce audit logs often required to comply with
+        government, financial, or ISO certifications.  An audit is an official inspection
+        of an individual''s or organization''s accounts, typically by an independent
+        body. The information gathered by the PostgreSQL Audit extension (pgaudit)
+        is properly called an audit trail or audit log. The term audit log is used
+        in this documentation. '
+      home_page: http://pgaudit.org
+      license_concluded: PostgreSQL
+      license_declared: PostgreSQL
+      short_summary: PostgreSQL Audit Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: pgaudit-1.6.2.tar.gz
+  archive_sha512sum: ab05432c06c61ef8b3b6bedf6789a57cfc71a8f263a4905e1400f18a58716aa981791d30629a03bb725fc7ac66ef12248abfa7bcbe9b6579fe9a03a58c9995c0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The PostgreSQL Audit extension (pgaudit) provides detailed
+        session and/or object audit logging via the standard PostgreSQL logging facility.  The
+        goal of the PostgreSQL Audit extension (pgaudit) is to provide PostgreSQL
+        users with capability to produce audit logs often required to comply with
+        government, financial, or ISO certifications.  An audit is an official inspection
+        of an individual''s or organization''s accounts, typically by an independent
+        body. The information gathered by the PostgreSQL Audit extension (pgaudit)
+        is properly called an audit trail or audit log. The term audit log is used
+        in this documentation. '
+      home_page: http://pgaudit.org
+      license_concluded: PostgreSQL
+      license_declared: PostgreSQL
+      short_summary: PostgreSQL Audit Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: pgaudit-1.7.0.tar.gz
+  archive_sha512sum: 34a8b6e448a99add4c5d659095632aa0ec421b27289a0c220d198b9352e9225617b5904a23a30da45a4918823847d2fb995470e3b66060754436f9cf2dcb65f4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The PostgreSQL Audit extension (pgaudit) provides detailed
+        session and/or object audit logging via the standard PostgreSQL logging facility.  The
+        goal of the PostgreSQL Audit extension (pgaudit) is to provide PostgreSQL
+        users with capability to produce audit logs often required to comply with
+        government, financial, or ISO certifications.  An audit is an official inspection
+        of an individual''s or organization''s accounts, typically by an independent
+        body. The information gathered by the PostgreSQL Audit extension (pgaudit)
+        is properly called an audit trail or audit log. The term audit log is used
+        in this documentation. '
+      home_page: http://pgaudit.org
+      license_concluded: PostgreSQL
+      license_declared: PostgreSQL
+      short_summary: PostgreSQL Audit Extension
+      supplier: 'Organization: Broadcom, Inc.'

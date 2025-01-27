@@ -1,0 +1,19 @@
+sources:
+- archive: cifs-utils-7.0.tar.bz2
+  archive_sha512sum: 4c57741af0c4567a78f352c73caca998881666a5ed36536275cfa775efd66ff1a44ebe539a8ed96c409c5b08a1378266964ce667a27e9fc7f2d43999c63dd0eb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cifs-utils, a package of utilities for doing and managing
+        mounts of the Linux CIFS filesystem. '
+      home_page: http://wiki.samba.org/index.php/LinuxCIFS_utils
+      license_concluded: GPL-2.0-or-later AND FSFULLRWD AND LGPL-2.1-or-later AND
+        FSFUL AND X11 AND GPL-3.0-only AND LGPL-3.0-or-later AND GPL-1.0-or-later
+        AND FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_declared: GPL-2.0-or-later AND FSFULLRWD AND LGPL-2.1-or-later AND FSFUL
+        AND X11 AND GPL-3.0-only AND LGPL-3.0-or-later AND GPL-1.0-or-later AND FSFULLR
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      short_summary: cifs client utils
+      supplier: 'Organization: Broadcom, Inc.'

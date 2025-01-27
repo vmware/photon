@@ -1,0 +1,19 @@
+sources:
+- archive: lldb-15.0.7.src.tar.xz
+  archive_sha512sum: 27f94fd87827d08959a572038c22fd558e1776f94e1678e900d6e28517ae6fe2d89cbc719d9c65cd2879fc6bd97d291f90c4b8e6fe283f02fdf210ed138c80fa
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'LLDB is a next generation, high-performance debugger.
+        It is built as a set of reusable components which highly leverage existing
+        libraries in the larger LLVM Project, such as the Clang expression parser
+        and LLVM disassembler. '
+      home_page: http://lldb.llvm.org
+      license_concluded: APSL-2.0 AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception
+        AND MIT AND ISC AND Apache-1.0 AND FSFAP-no-warranty-disclaimer AND NCSA AND
+        Python-2.0
+      license_declared: APSL-2.0 AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception
+        AND MIT AND ISC AND Apache-1.0 AND FSFAP-no-warranty-disclaimer AND NCSA AND
+        Python-2.0
+      short_summary: A next generation, high-performance debugger.
+      supplier: 'Organization: Broadcom, Inc.'

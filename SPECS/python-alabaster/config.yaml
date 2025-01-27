@@ -1,0 +1,13 @@
+sources:
+- archive: alabaster-0.7.12.tar.gz
+  archive_sha512sum: e3bfd0c92ce01f08d5e6d9dc1ef0967ca1f54827e08756f4a0ba7be8d3b8bec7f2e53a169b831ff5ce2d2548f7f52c6e518bcc513e49bb3e4c38274293aebbac
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Alabaster is a visually (c)lean, responsive, configurable
+        theme for the Sphinx documentation system. It is Python 2+3 compatible. '
+      home_page: https://github.com/bitprophet/alabaster
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: A configurable sidebar-enabled Sphinx theme
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: ant-contrib-1.0b3-src.tar.gz
+  archive_sha512sum: fe59ad4867a00429719a7401701a433a90ed9c6ddb49a37072f8486ae0ca9c3da685a49d9376c8bb7b38f114a5293e1698b7fb314e71198bbb80f729547402eb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Ant Contrib project is a collection of tasks for
+        Apache Ant. '
+      home_page: http://ant-contrib.sourceforget.net
+      license_concluded: Apache-2.0 AND Apache-1.1 AND SAX-PD AND W3C
+      license_declared: Apache-2.0 AND Apache-1.1 AND SAX-PD AND W3C
+      short_summary: Ant contrib
+      supplier: 'Organization: Broadcom, Inc.'

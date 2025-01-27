@@ -1,0 +1,254 @@
+sources:
+- archive: compositeproto-0.4.2.tar.bz2
+  archive_sha512sum: ad5e4d87b77a8447c228ca85ac8d010d93b5c64929dc866e99a25700b9905f7c3f22e48f8c7fdc54e87879ddcc90e5d4adc338aeea393d7057b19b5ccae31f11
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This package contains header files and documentation for
+        the composite extension.  Library and server implementations are separate.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/compositeproto
+      license_concluded: X11 AND MIT-open-group AND MIT AND FSFULLRWD AND FSFUL AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLR AND HPND-sell-variant
+      license_declared: X11 AND MIT-open-group AND MIT AND FSFULLRWD AND FSFUL AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLR AND HPND-sell-variant
+      short_summary: Composite Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: damageproto-1.2.1.tar.bz2
+  archive_sha512sum: f124e85fb3cc70ed3536cb9db57ac93461bbb5df1a713bc6b67a5ea49122556c321781ca150df681502f6ccfb7305f290e131ad25ce9ccbff5af268df11c86fc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This package contains header files and documentation for
+        the X Damage extension. Library and server implementations are separate.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/damageproto
+      license_concluded: FSFULLR AND X11 AND MIT AND MIT-open-group AND FSFUL AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND HPND-sell-variant AND
+        FSFULLRWD
+      license_declared: FSFULLR AND X11 AND MIT AND MIT-open-group AND FSFUL AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND HPND-sell-variant AND FSFULLRWD
+      short_summary: ' X Damage Extension'
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: dri2proto-2.8.tar.bz2
+  archive_sha512sum: 1602f58cd8a3371dacf894cde4889b9147fc08e83f98d8e0d1c748abe43ecb74cf4e0e3d5eb2f33568ba5e6d9f310303b98ba43ae3bc956ae693824b1ae0745a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This extension defines a protocol to securely allow user
+        applications to access the video hardware without requiring data to be passed
+        through the X server.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/dri2proto
+      license_concluded: MIT-open-group AND X11 AND ICU AND FSFUL AND MIT AND FSFULLR
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFULLRWD
+      license_declared: MIT-open-group AND X11 AND ICU AND FSFUL AND MIT AND FSFULLR
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFULLRWD
+      short_summary: Direct Rendering Infrastructure 2 Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: fixesproto-5.0.tar.bz2
+  archive_sha512sum: 93c6a8b6e4345c3049c08f2f3960f5eb5f92c487f26d227430964361bf82041b49e61f873fbbb8ee0e111556f90532b852c20e6082ee8008be641373251fa78c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: The extension makes changes to many areas of the protocol
+        to resolve issues raised by application interaction with core protocol mechanisms
+        that cannot be adequately worked around on the client side of the wire.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/fixesproto
+      license_concluded: FSFULLRWD AND X11 AND HPND-sell-variant AND FSFULLR AND FSFUL
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND MIT-open-group
+      license_declared: FSFULLRWD AND X11 AND HPND-sell-variant AND FSFULLR AND FSFUL
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND MIT-open-group
+      short_summary: X Fixes Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: fontsproto-2.1.3.tar.bz2
+  archive_sha512sum: f46d5b733aa48644aa3aa75d4ed47231ef78cb60f747f7200d82331a1ba566190bf37b5b9926c690dec6356043ce7c85a5b59fc1b4b11667ef432518b5d4cc87
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This package provides the wire protocol for the X Font
+        rasterisation extensions. These extensions are used to control server-side
+        font configurations.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/fontsproto
+      license_concluded: X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND
+        FSFULLR AND HPND AND HPND-sell-variant AND MIT AND FSFUL AND HPND-doc-sell
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND MIT-open-group
+      license_declared: X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND FSFULLR
+        AND HPND AND HPND-sell-variant AND MIT AND FSFUL AND HPND-doc-sell AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND MIT-open-group
+      short_summary: X Fonts Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: glproto-1.4.17.tar.bz2
+  archive_sha512sum: 3e5bb1949ab9993e07d2ed7e829b9e0a8803eab476e9f4082fc01087c3dce01f3bcb9d55261eaf60e55977a689b326ed1dcf40f74d5e1fc660c83bea094b6754
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This extension defines a protocol for the client to send
+        3D rendering commands to the X server.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/glproto
+      license_concluded: X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLR AND FSFULLRWD AND MIT AND MIT-open-group
+        AND SGI-B-2.0
+      license_declared: X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLR AND FSFULLRWD AND MIT AND MIT-open-group
+        AND SGI-B-2.0
+      short_summary: OpenGL Extension to the X Window System
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: inputproto-2.3.1.tar.bz2
+  archive_sha512sum: 84f8acff3d54e929af6da088624adcd8dffe2eba0d9ef672e136f76d12f3814fbf6a7962de27becfaa0aa5e70d874eb5297d9eed8809576d7b0d96f8c29d9d72
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This extension defines a protocol to provide additional
+        input devices management such as graphic tablets.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/inputproto
+      license_concluded: FSFULLR AND HPND-doc AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MIT AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND HPND
+        AND MIT-open-group AND GPL-3.0-or-later WITH Autoconf-exception-macro AND
+        MIT-CMU AND FSFUL AND FSFULLRWD AND X11
+      license_declared: FSFULLR AND HPND-doc AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MIT AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND HPND
+        AND MIT-open-group AND GPL-3.0-or-later WITH Autoconf-exception-macro AND
+        MIT-CMU AND FSFUL AND FSFULLRWD AND X11
+      short_summary: X Input Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: kbproto-1.0.7.tar.bz2
+  archive_sha512sum: 49f24bfd11ee4ef0de658a1f55bcfb4b3a1f7057d90137b899ea3d4ecc40cebde97926a3f4315ddca4ae28d32b2d15f16fda993296acffdb4c007d2f84a39a22
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This extension defines a protcol to provide a number of
+        new capabilities and controls for text keyboards.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/kbproto
+      license_concluded: MIT-open-group AND FSFUL AND FSFAP AND FSFULLR AND X11 AND
+        GPL-3.0-or-later WITH Autoconf-exception-macro AND MIT AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND HPND AND FSFULLRWD
+      license_declared: MIT-open-group AND FSFUL AND FSFAP AND FSFULLR AND X11 AND
+        GPL-3.0-or-later WITH Autoconf-exception-macro AND MIT AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND HPND AND FSFULLRWD
+      short_summary: X Keyboard Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: randrproto-1.5.0.tar.bz2
+  archive_sha512sum: 5c56f6acfe3a9da5ffda45e4af2da5081a5116d53f4d2dafe399eae168656727927ca0fb4c29fc6583e87709ac83b025ae206fba9356ebf9e26d3ff545da57f4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This extension defines a protocol for clients to dynamically
+        change X screens, so as to resize, rotate and reflect the root window of a
+        screen. '
+      home_page: https://gitlab.freedesktop.org/xorg/proto/randrproto
+      license_concluded: MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MIT-open-group AND HPND-sell-variant AND X11 AND FSFULLRWD AND FSFAP AND
+        GPL-3.0-or-later WITH Autoconf-exception-macro AND FSFULLR AND FSFUL AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      license_declared: MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        MIT-open-group AND HPND-sell-variant AND X11 AND FSFULLRWD AND FSFAP AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFULLR AND FSFUL AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0
+      short_summary: X Resize and Rotate Extension (RandR)
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: recordproto-1.14.2.tar.bz2
+  archive_sha512sum: ab82d966ffacb46c001df15b272ca58f996826dc6f6835d3dc4d385b31c682acacb073a380d61938e2f242bffdabdd9b8f7107cd5ac67cb7aa3a28cc14a8ea02
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This extension defines a protocol for the recording and
+        playback of user actions in the X Window System.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/recordproto
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLRWD
+        AND MIT-open-group AND MIT AND X11 AND FSFULLR AND HPND-doc-sell AND HPND-sell-variant
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND FSFUL
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLRWD
+        AND MIT-open-group AND MIT AND X11 AND FSFULLR AND HPND-doc-sell AND HPND-sell-variant
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND FSFUL
+      short_summary: X Record Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: renderproto-0.11.1.tar.bz2
+  archive_sha512sum: c38bc7247fd7b89732c892ee41c061b20397f4e79195601b7015dd55054b966f0797ac3990b147f80234596ba2c201ce90e292ecefed2e133167955bca70acc5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This extension defines the protcol for a digital image
+        composition as the foundation of a new rendering model within the X Window
+        System.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/renderproto
+      license_concluded: FSFULLR AND X11 AND HPND-sell-variant AND FSFULLRWD AND FSFUL
+        AND MIT-open-group AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        MIT
+      license_declared: FSFULLR AND X11 AND HPND-sell-variant AND FSFULLRWD AND FSFUL
+        AND MIT-open-group AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        MIT
+      short_summary: X Rendering Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: scrnsaverproto-1.2.2.tar.bz2
+  archive_sha512sum: e74a512a6101967983a1d713d22a1f456f77519998116ef0f0a9e4b44ae4730ecd41eb9c0f7fa53e9f5c94967541daf10693d701af832597f5347461c5990ebc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This extension defines a protocol to control screensaver
+        features and also to query screensaver info on specific windows.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/scrnsaverproto
+      license_concluded: MIT-open-group AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND FSFULLRWD AND X11 AND FSFULLR AND HPND-doc AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND MIT
+      license_declared: MIT-open-group AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND FSFULLRWD AND X11 AND FSFULLR AND HPND-doc AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND MIT
+      short_summary: MIT Screen Saver Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: xextproto-7.3.0.tar.bz2
+  archive_sha512sum: 238beed85fcf6fe5b0809e52814dd44fa45fe6868239990086cb8dd2c446292dd4794698abd07ed10bd146a7096c1679f7160da226f9e861dfaf6c8e22315d61
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: This package provides the wire protocol for several X
+        extensions. These protocol extensions include DOUBLE-BUFFER, DPMS, Extended-Visual-Information,
+        LBX, MIT_SHM, MIT_SUNDRY-NONSTANDARD, Multi-Buffering, SECURITY, SHAPE, SYNC,
+        TOG-CUP, XC-APPGROUP, XC-MISC, XTEST. In addition a small set of utility functions
+        are also available.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/xextproto
+      license_concluded: HPND-doc-sell AND HPND-sell-variant AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND HPND AND MIT AND X11 AND FSFULLR AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND HPND-doc AND FSFUL AND FSFULLRWD AND MIT-open-group
+      license_declared: HPND-doc-sell AND HPND-sell-variant AND GPL-3.0-or-later WITH
+        Autoconf-exception-macro AND HPND AND MIT AND X11 AND FSFULLR AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND HPND-doc AND FSFUL AND FSFULLRWD AND MIT-open-group
+      short_summary: X Protocol Extensions
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: xineramaproto-1.2.1.tar.bz2
+  archive_sha512sum: ec2194c9bcad3f0f3eb3e9298792272213aa032ae9d6c00dcad567f31d7278a8c676fc67f47aae1a6deef5bade0b204346ed16da4a4c4d5a507c04d109d3dbb3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Xinerama is an X extension that allows clients to query
+        information about multiple physical screens controlled by a single X server
+        that appear as a single screen to core X11 protocol operations.
+      home_page: https://gitlab.freedesktop.org/xorg/proto/xineramaproto
+      license_concluded: FSFUL AND MIT-open-group AND FSFULLRWD AND X11 AND MIT AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLR
+      license_declared: FSFUL AND MIT-open-group AND FSFULLRWD AND X11 AND MIT AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLR
+      short_summary: X Xinerama Extension
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: xproto-7.0.31.tar.bz2
+  archive_sha512sum: bba6141525c21fd9a3cf210853658cc7af69f82e1ac15bacfffb9280efc3fe3c6fa708095b541b6f33f114c11e808bde8c8839ae63ff88e30963abdfac12702b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Xorg protocol headers provide the header files required
+        to build the system, and to allow other applications to build against the
+        installed X Window system. '
+      home_page: http://www.x.org
+      license_concluded: FSFULLRWD AND MIT-open-group AND X11 AND FSFAP AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND MIT AND HPND-sell-variant AND HPND AND
+        FSFUL AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-macro
+      license_declared: FSFULLRWD AND MIT-open-group AND X11 AND FSFAP AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND MIT AND HPND-sell-variant AND HPND AND
+        FSFUL AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-macro
+      short_summary: The Xorg protocol headers.
+      supplier: 'Organization: Broadcom, Inc.'

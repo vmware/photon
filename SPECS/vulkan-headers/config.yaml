@@ -1,0 +1,12 @@
+sources:
+- archive: Vulkan-Headers-1.3.237.tar.gz
+  archive_sha512sum: 6c259fc0ea02a8e2f6b1f5597559f6dfc0f5b5c8553a9c8aa81ac73414a1e672dc45e5e3499bcad70ac27a4802a98cfeb6eada5497a980832fdd7f947da508f8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Vulkan Header files and API registry '
+      home_page: https://github.com/KhronosGroup/Vulkan-Headers
+      license_concluded: Apache-2.0 AND (Apache-2.0 OR MIT) AND BSD-3-Clause
+      license_declared: Apache-2.0 AND (Apache-2.0 OR MIT) AND BSD-3-Clause
+      short_summary: Vulkan Header files and API registry
+      supplier: 'Organization: Broadcom, Inc.'

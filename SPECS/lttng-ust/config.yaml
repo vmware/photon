@@ -1,0 +1,27 @@
+sources:
+- archive: lttng-ust-2.13.5.tar.bz2
+  archive_sha512sum: 3bf969e9deb6ce05a1ae30ad48676ae8ff63a73198583e98ce083d52b78e9fc2d171a6e3890c201abfa364600d4471d1ee8b1ee23de3faeec1f0ca84e0f0acd4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This library may be used by user-space applications to
+        generate trace-points using LTTng. '
+      home_page: https://lttng.org/download/
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND (GPL-2.0-only
+        OR LGPL-2.1-only) AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-2.0-or-later WITH Autoconf-exception-macro AND FSFULLR AND LGPL-2.1-or-later
+        AND BSD-2-Clause AND X11 AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-3-Clause AND GPL-2.0-only AND MIT AND LGPL-2.0-only AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later AND FSFUL AND GPL-3.0-or-later
+        AND GPL-3.0-only AND GPL-3.0-or-later WITH Libtool-exception AND LGPL-2.1-only
+        AND (LGPL-2.1-only OR GPL-2.0-only) AND FSFULLRWD AND FSFAP
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND (GPL-2.0-only
+        OR LGPL-2.1-only) AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-2.0-or-later WITH Autoconf-exception-macro AND FSFULLR AND LGPL-2.1-or-later
+        AND BSD-2-Clause AND X11 AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-3-Clause AND GPL-2.0-only AND MIT AND LGPL-2.0-only AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later AND FSFUL AND GPL-3.0-or-later
+        AND GPL-3.0-only AND GPL-3.0-or-later WITH Libtool-exception AND LGPL-2.1-only
+        AND (LGPL-2.1-only OR GPL-2.0-only) AND FSFULLRWD AND FSFAP
+      short_summary: LTTng-UST is an Userspace Tracer library
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,12 @@
+sources:
+- archive: iputils-s20221126.tar.gz
+  archive_sha512sum: 7fdfd76e6f2977039bc0930a1a5451f17319bf17beefc429751d99ffe143a83344d5b4cdbf008627bd70caafeadaf906a8b7c00393fa819e50d6c02b512c367f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Iputils package contains programs for basic networking. '
+      home_page: https://github.com/iputils/iputils
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later AND BSD-3-Clause
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later AND BSD-3-Clause
+      short_summary: Programs for basic networking
+      supplier: 'Organization: Broadcom, Inc.'

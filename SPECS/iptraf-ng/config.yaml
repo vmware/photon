@@ -1,0 +1,20 @@
+sources:
+- archive: iptraf-ng-v1.2.1.tar.gz
+  archive_sha512sum: 44d36fc92cdbf379f62cb63638663c3ee610225b9c28d60ee55e62e358f398a6b0db281129327b3472e45fb553ee3dd605af09c129f2233f8839ae3dbd799384
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'IPTraf-ng is a console-based network monitoring program
+        for Linux that displays information about IP traffic. It returns information
+        such as: - Current TCP connections - UDP, ICMP, OSPF, and other types of IP
+        packets - Packet and byte counts on TCP connections - IP, TCP, UDP, ICMP,
+        non-IP, and other packet and byte counts - TCP/UDP counts by ports - Packet
+        counts by packet sizes - Packet and byte counts by IP address - Interface
+        activity - Flag statuses on TCP packets - LAN station statistics '
+      home_page: https://github.com/iptraf-ng/iptraf-ng
+      license_concluded: GPL-2.0-only AND GFDL-1.1-only AND GFDL-1.1-or-later AND
+        GPL-2.0-or-later AND LGPL-2.0-only
+      license_declared: GPL-2.0-only AND GFDL-1.1-only AND GFDL-1.1-or-later AND GPL-2.0-or-later
+        AND LGPL-2.0-only
+      short_summary: IPTraf-ng is a console-based network statistics utility
+      supplier: 'Organization: Broadcom, Inc.'

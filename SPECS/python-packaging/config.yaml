@@ -1,0 +1,15 @@
+sources:
+- archive: packaging-21.3.tar.gz
+  archive_sha512sum: 2e3aa276a4229ac7dc0654d586799473ced9761a83aa4159660d37ae1a2a8f30e987248dd0e260e2834106b589f259a57ce9936eef0dcc3c430a99ac6b663e05
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cryptography is a Python library which exposes cryptographic
+        recipes and primitives. '
+      home_page: https://pypi.python.org/pypi/packaging
+      license_concluded: Apache-2.0 AND BSD-3-Clause AND (BSD-2-Clause OR Apache-2.0)
+        AND (BSD-3-Clause OR Apache-2.0) AND (BSD-2-Clause OR Apache-2.0) AND BSD-2-Clause
+      license_declared: Apache-2.0 AND BSD-3-Clause AND (BSD-2-Clause OR Apache-2.0)
+        AND (BSD-3-Clause OR Apache-2.0) AND (BSD-2-Clause OR Apache-2.0) AND BSD-2-Clause
+      short_summary: Core utilities for Python packages
+      supplier: 'Organization: Broadcom, Inc.'

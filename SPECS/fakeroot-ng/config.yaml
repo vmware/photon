@@ -1,0 +1,21 @@
+sources:
+- archive: fakeroot-ng-0.18.tar.gz
+  archive_sha512sum: 8ece6830d229b92537d9c0a2eb42cb9ec4ae6b83453303004dded5eab0707b9ae8eaa2c71aac6ea68226c43cf08db6b0939a9422aab32948f5ecb185ee01d854
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fakeroot-ng is a clean re-implementation of fakeroot.
+        The core idea is to run a program, but wrap all system calls that program
+        performs so that it thinks it is running as root, while it is, in practice,
+        running as an unprivileged user. When the program is trying to perform a privileged
+        operation (such as modifying a file''s owner or creating a block device),
+        this operation is emulated, so that an unprivileged operation is actually
+        carried out, but the result of the privileged operation is reported to the
+        program whenever it attempts to query the result. '
+      home_page: http://fakeroot-ng.lingnu.com
+      license_concluded: FSFULLRWD AND GPL-2.0-or-later AND FSFAP AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLR AND X11 AND GPL-2.0-only AND FSFUL
+      license_declared: FSFULLRWD AND GPL-2.0-or-later AND FSFAP AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND FSFULLR AND X11 AND GPL-2.0-only AND FSFUL
+      short_summary: Fools programs into thinking they are running with root permission
+      supplier: 'Organization: Broadcom, Inc.'

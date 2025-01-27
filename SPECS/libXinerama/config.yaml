@@ -1,0 +1,20 @@
+sources:
+- archive: libXinerama-1.1.5.tar.xz
+  archive_sha512sum: 735b5320de4782005b379e409bf2f976131c17d496b297d33a0e127ca1443034778586b6b25c077b2ad73a4ab34d440d7510475e0041f38202bb40f15fb08ff7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 libXi runtime library. '
+      home_page: http://www.x.org
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND HPND-sell-variant
+        AND FSFULLRWD AND GPL-2.0-or-later AND MIT AND FSFAP AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-only AND MIT-open-group AND FSFULLR AND
+        GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL AND X11
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND HPND-sell-variant
+        AND FSFULLRWD AND GPL-2.0-or-later AND MIT AND FSFAP AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-only AND MIT-open-group AND FSFULLR AND
+        GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL AND X11
+      short_summary: X11 libXinerama runtime library.
+      supplier: 'Organization: Broadcom, Inc.'

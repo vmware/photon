@@ -1,0 +1,20 @@
+sources:
+- archive: libXdamage-1.1.5.tar.bz2
+  archive_sha512sum: a3ca6cc33b1727f717a3e2aa5593f660508a81a47918a0aa949e9e8fba105e303fe5071983b48caac92feea0fe6e8e01620805e4d19b41f21f20d837b191c124
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 Damage extension. '
+      home_page: http://www.x.org
+      license_concluded: FSFAP AND FSFUL AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH
+        Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND MIT AND GPL-2.0-or-later WITH Libtool-exception AND X11 AND GPL-3.0-or-later
+        AND HPND-sell-variant AND FSFULLR AND MIT-open-group
+      license_declared: FSFAP AND FSFUL AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH
+        Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND MIT AND GPL-2.0-or-later WITH Libtool-exception AND X11 AND GPL-3.0-or-later
+        AND HPND-sell-variant AND FSFULLR AND MIT-open-group
+      short_summary: X11 Damage extension.
+      supplier: 'Organization: Broadcom, Inc.'

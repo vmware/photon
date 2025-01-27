@@ -1,0 +1,21 @@
+sources:
+- archive: patch-2.7.6.tar.gz
+  archive_sha512sum: 75d4e1544484da12185418cd4a1571994398140a91ac606fa08dd067004187dad77d1413f0eb3319b3fe4df076714615c98b29df06af052bb65960fa8b0c86bf
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Program for modifying or creating files by applying a
+        patch file typically created by the diff program. '
+      home_page: http://www.gnu.org/software/patch
+      license_concluded: GPL-3.0-only AND GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Texinfo-exception
+        AND FSFULLR AND FSFUL AND GPL-1.0-or-later AND GPL-3.0-or-later AND X11 AND
+        FSFAP AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_declared: GPL-3.0-only AND GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Texinfo-exception
+        AND FSFULLR AND FSFUL AND GPL-1.0-or-later AND GPL-3.0-or-later AND X11 AND
+        FSFAP AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      short_summary: Program for modifying or creating files
+      supplier: 'Organization: Broadcom, Inc.'

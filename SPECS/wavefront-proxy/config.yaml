@@ -1,0 +1,28 @@
+sources:
+- archive: proxy-13.4.tar.gz
+  archive_sha512sum: 66f3fc224d6fc199de1a3928e84c21323c2a9ef38d3dac1e4b6b7148d64dabd6ccae870ac4d1c9effb9a0d1c47c35f9d154418e277893a2f0d15e8ed9845f41f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Wavefront proxy is a light-weight Java application
+        that you send your metrics to. It handles authentication and the transmission
+        of your metrics to your Wavefront instance. '
+      home_page: https://github.com/wavefrontHQ/java
+      license_concluded: CDDL-1.1 AND CC0-1.0 AND EPL-2.0 AND (EPL-2.0 OR GPL-2.0-only
+        WITH Classpath-exception-2.0) AND LGPL-3.0-only AND (GPL-2.0-only WITH Classpath-exception-2.0
+        OR CDDL-1.1) AND Apache-1.1 AND GPL-1.0-or-later AND MIT AND SunPro AND LGPL-2.1-or-later
+        AND (EPL-1.0 OR LGPL-2.1-or-later OR GPL-2.0-or-later OR Apache-2.0 OR BSD-3-Clause)
+        AND Apache-2.0 AND LGPL-3.0-or-later AND CC-PDDC AND LGPL-2.0-or-later AND
+        (EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND bzip2-1.0.6 AND
+        BSD-3-Clause AND (LGPL-2.1-or-later OR Apache-2.0) AND CC-BY-2.5 AND EPL-1.0
+        AND BSD-2-Clause
+      license_declared: CDDL-1.1 AND CC0-1.0 AND EPL-2.0 AND (EPL-2.0 OR GPL-2.0-only
+        WITH Classpath-exception-2.0) AND LGPL-3.0-only AND (GPL-2.0-only WITH Classpath-exception-2.0
+        OR CDDL-1.1) AND Apache-1.1 AND GPL-1.0-or-later AND MIT AND SunPro AND LGPL-2.1-or-later
+        AND (EPL-1.0 OR LGPL-2.1-or-later OR GPL-2.0-or-later OR Apache-2.0 OR BSD-3-Clause)
+        AND Apache-2.0 AND LGPL-3.0-or-later AND CC-PDDC AND LGPL-2.0-or-later AND
+        (EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND bzip2-1.0.6 AND
+        BSD-3-Clause AND (LGPL-2.1-or-later OR Apache-2.0) AND CC-BY-2.5 AND EPL-1.0
+        AND BSD-2-Clause
+      short_summary: lightweight java application to send metrics to.
+      supplier: 'Organization: Broadcom, Inc.'

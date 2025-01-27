@@ -1,0 +1,23 @@
+sources:
+- archive: openssh-9.3p2.tar.gz
+  archive_sha512sum: 15b8c57aa120186f1d1c3c2b8dc6ffd26733e12f755a6b0a4255d9ec1815a61506275ff5723b4ac029e44bc2ad22852ac36e1101f292348fbfa79aa1a4cd3f35
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The OpenSSH package contains ssh clients and the sshd
+        daemon. This is useful for encrypting authentication and subsequent traffic
+        over a network. The ssh and scp commands are secure implementions of telnet
+        and rcp respectively. '
+      home_page: https://www.openssh.com
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        BSD-3-Clause AND FSFUL AND snprintf AND GPL-1.0-or-later AND SSLeay-standalone
+        AND SSH-OpenSSH AND SSH-short AND ISC AND ssh-keyscan AND X11-distribute-modifications-variant
+        AND HPND AND FSFULLRWD AND MIT AND BSD-2-Clause AND X11 AND OpenSSL-standalone
+        AND BSD-4.3TAHOE
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause
+        AND FSFUL AND snprintf AND GPL-1.0-or-later AND SSLeay-standalone AND SSH-OpenSSH
+        AND SSH-short AND ISC AND ssh-keyscan AND X11-distribute-modifications-variant
+        AND HPND AND FSFULLRWD AND MIT AND BSD-2-Clause AND X11 AND OpenSSL-standalone
+        AND BSD-4.3TAHOE
+      short_summary: Free version of the SSH connectivity tools
+      supplier: 'Organization: Broadcom, Inc.'

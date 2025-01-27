@@ -1,0 +1,28 @@
+sources:
+- archive: gst-plugins-bad-1.22.7.tar.xz
+  archive_sha512sum: 0854ae604014278958d4f5d149ddd1a5d3004e2c3b9386d7711312f4993002ae18ddf82d152c78092f23d15dd9b5c83d2798ea5ae80626599df0bf61d05a0b6e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The GStreamer Good Plug-ins is a set of plug-ins considered
+        by the GStreamer developers to have good quality code, correct functionality,
+        and the preferred license (LGPL). A wide range of video and audio decoders,
+        encoders, and filters are included. '
+      home_page: http://gstreamer.freedesktop.org/
+      license_concluded: GPL-2.0-only WITH Linux-syscall-note AND BSD-2-Clause-Views
+        AND DOC AND GPL-2.0-only AND ISC AND Apache-2.0 AND MIT-Festival AND LGPL-2.1-only
+        AND BSD-2-Clause AND BSL-1.0 AND HPND-Pbmplus AND MIT AND CC-BY-SA-4.0 AND
+        (GPL-2.0-or-later WITH Linux-syscall-note OR BSD-3-Clause) AND LGPL-2.0-or-later
+        AND LGPL-2.1-or-later AND (MPL-1.1 OR MIT OR LGPL-2.0-or-later) AND BSD-3-Clause
+        AND AGPL-3.0-or-later AND GPL-2.0-or-later AND MPL-1.1 AND GPL-1.0-or-later
+        AND (GPL-2.0-or-later OR BSD-3-Clause)
+      license_declared: GPL-2.0-only WITH Linux-syscall-note AND BSD-2-Clause-Views
+        AND DOC AND GPL-2.0-only AND ISC AND Apache-2.0 AND MIT-Festival AND LGPL-2.1-only
+        AND BSD-2-Clause AND BSL-1.0 AND HPND-Pbmplus AND MIT AND CC-BY-SA-4.0 AND
+        (GPL-2.0-or-later WITH Linux-syscall-note OR BSD-3-Clause) AND LGPL-2.0-or-later
+        AND LGPL-2.1-or-later AND (MPL-1.1 OR MIT OR LGPL-2.0-or-later) AND BSD-3-Clause
+        AND AGPL-3.0-or-later AND GPL-2.0-or-later AND MPL-1.1 AND GPL-1.0-or-later
+        AND (GPL-2.0-or-later OR BSD-3-Clause)
+      short_summary: The GStreamer Bad Plug-ins package contains a set a set of plug-ins
+        that aren't up to par compared to the rest
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,22 @@
+sources:
+- archive: abseil-cpp-20230125.3.tar.gz
+  archive_sha512sum: 50509acfc4128fd31435631f71ac8cd0350acd9e290f78502723149016e7f07c9d84182ba99e0938b1873fecda09393d3fd7af8dabfb0d89cdcdd8a69a917e70
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Abseil is an open-source collection of C++ library code
+        designed to augment the C++ standard library. The Abseil library code is collected
+        from Google''s own C++ code base, has been extensively tested and used in
+        production, and is the same code we depend on in our daily coding lives.  In
+        some cases, Abseil provides pieces missing from the C++ standard; in others,
+        Abseil provides alternatives to the standard for special needs we''ve found
+        through usage in the Google code base. We denote those cases clearly within
+        the library code we provide you.  Abseil is not meant to be a competitor to
+        the standard library; we''ve just found that many of these utilities serve
+        a purpose within our code base, and we now want to provide those resources
+        to the C++ community as a whole. '
+      home_page: https://abseil.io
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: C++ Common Libraries
+      supplier: 'Organization: Broadcom, Inc.'

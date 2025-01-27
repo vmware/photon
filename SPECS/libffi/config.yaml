@@ -1,0 +1,27 @@
+sources:
+- archive: libffi-3.4.2.tar.gz
+  archive_sha512sum: 31bad35251bf5c0adb998c88ff065085ca6105cf22071b9bd4b5d5d69db4fadf16cadeec9baca944c4bb97b619b035bb8279de8794b922531fddeb0779eb7fb1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libffi library provides a portable, high level programming
+        interface to various calling conventions. This allows a programmer to call
+        any function specified by a call interface description at run time. '
+      home_page: http://sourceware.org/libffi
+      license_concluded: GPL-2.0-or-later AND GPL-3.0-or-later AND GPL-2.0-only AND
+        FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH
+        Autoconf-exception-2.0 AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND CC-PDDC AND X11
+        AND GPL-3.0-only AND FSFULLRWD AND FSFAP AND (MPL-1.1 OR GPL-2.0-or-later
+        OR LGPL-2.1-or-later) AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception
+        AND FSFULLR AND GPL-3.0-or-later WITH Libtool-exception
+      license_declared: GPL-2.0-or-later AND GPL-3.0-or-later AND GPL-2.0-only AND
+        FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH
+        Autoconf-exception-2.0 AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND CC-PDDC AND X11
+        AND GPL-3.0-only AND FSFULLRWD AND FSFAP AND (MPL-1.1 OR GPL-2.0-or-later
+        OR LGPL-2.1-or-later) AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception
+        AND FSFULLR AND GPL-3.0-or-later WITH Libtool-exception
+      short_summary: A portable, high level programming interface to various calling
+        conventions
+      supplier: 'Organization: Broadcom, Inc.'

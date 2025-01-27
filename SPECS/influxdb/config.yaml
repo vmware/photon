@@ -1,0 +1,14 @@
+sources:
+- archive: influxdb-1.8.10.tar.gz
+  archive_sha512sum: 4f5d20c190288d6397f0e87abd9b9136340b17f091c361cbc111ba661a3e63626edf5c74ddeeda164d82102dd06026e0037f50da546cda25e6c8647f4c739fae
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'InfluxDB is an open source time series database with
+        no external dependencies. It''s useful for recording metrics, events, and
+        performing analytics. '
+      home_page: https://influxdata.com
+      license_concluded: ISC AND Apache-2.0 AND BSD-3-Clause AND MIT
+      license_declared: ISC AND Apache-2.0 AND BSD-3-Clause AND MIT
+      short_summary: InfluxDB is an open source time series database
+      supplier: 'Organization: Broadcom, Inc.'

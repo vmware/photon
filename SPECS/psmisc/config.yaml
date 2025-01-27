@@ -1,0 +1,19 @@
+sources:
+- archive: psmisc-23.6.tar.xz
+  archive_sha512sum: 4daffbd1726e50d9344f8578dd4c10f0b8f7971929ec667490de31122e5f3828747e1bafb3ed3c37ed7e1758ab9ec43b8f4556b676a416a8efbc7c6c88b6985d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Psmisc package contains programs for displaying information
+        about running processes. '
+      home_page: https://gitlab.com/psmisc/psmisc
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        FSFUL AND GPL-2.0-or-later AND FSFULLR AND GPL-3.0-or-later AND LGPL-2.0-or-later
+        AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only
+        AND GPL-1.0-or-later AND X11
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFUL
+        AND GPL-2.0-or-later AND FSFULLR AND GPL-3.0-or-later AND LGPL-2.0-or-later
+        AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only
+        AND GPL-1.0-or-later AND X11
+      short_summary: Displays information about running processes
+      supplier: 'Organization: Broadcom, Inc.'

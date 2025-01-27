@@ -1,0 +1,31 @@
+sources:
+- archive: syslog-ng-4.3.1.tar.gz
+  archive_sha512sum: 571f6080765983326ee912f2a7e87cdc8527296ef555a0b16589c04ed332c0db58e24c70251dc39b1c79151ca7d463e6409835df99aa45c19734d7003a69ce61
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The syslog-ng application is a flexible and highly scalable
+        system logging tool. It is often used to manage log messages and implement
+        centralized logging, where the aim is to collect the log messages of several
+        devices to a single, central log server. '
+      home_page: https://syslog-ng.org/
+      license_concluded: BSD-4-Clause-UC AND LGPL-2.1-or-later AND GPL-1.0-or-later
+        AND GPL-2.0-or-later WITH x11vnc-openssl-exception AND LGPL-2.1-only AND Linux-man-pages-1-para
+        AND FSFAP AND JSON AND LGPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND FSFULLR AND BSD-3-Clause
+        AND GPL-2.0-only AND LGPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND FSFULLRWD AND Apache-2.0 AND MPL-1.1 AND BSD-2-Clause AND GPL-2.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-or-later WITH cryptsetup-OpenSSL-exception
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND X11 AND MPL-1.0 AND FSFUL
+      license_declared: BSD-4-Clause-UC AND LGPL-2.1-or-later AND GPL-1.0-or-later
+        AND GPL-2.0-or-later WITH x11vnc-openssl-exception AND LGPL-2.1-only AND Linux-man-pages-1-para
+        AND FSFAP AND JSON AND LGPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND FSFULLR AND BSD-3-Clause
+        AND GPL-2.0-only AND LGPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND FSFULLRWD AND Apache-2.0 AND MPL-1.1 AND BSD-2-Clause AND GPL-2.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-or-later WITH cryptsetup-OpenSSL-exception
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND X11 AND MPL-1.0 AND FSFUL
+      short_summary: Next generation system logger facilty
+      supplier: 'Organization: Broadcom, Inc.'

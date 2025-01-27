@@ -1,0 +1,22 @@
+sources:
+- archive: npth-1.6.tar.gz
+  archive_sha512sum: 408d99acfc4770d5f779802415b20ab14a6fb5e60cf5b368664913e80de6946419f8bbe483ecb04694e7d67a0320c5ac31e06eab3cfff5eb499356ac1ba77ced
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is a library to provide the GNU Pth API and thus
+        a non-preemptive threads implementation. In contrast to GNU Pth, it is based
+        on the system''s standard threads implementation. This allows the use of libraries
+        which are not compatible to GNU Pth. Experience with a Windows Pth emulation
+        showed that this is a solid way to provide a co-routine based framework. '
+      home_page: https://github.com/gpg/npth
+      license_concluded: FSFAP AND LGPL-2.1-only AND FSFUL AND X11 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-3.0-or-later AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR AND LGPL-2.0-or-later
+        AND LGPL-2.1-or-later AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
+      license_declared: FSFAP AND LGPL-2.1-only AND FSFUL AND X11 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-3.0-or-later AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR AND LGPL-2.0-or-later
+        AND LGPL-2.1-or-later AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
+      short_summary: The New GNU Portable Threads Library.
+      supplier: 'Organization: Broadcom, Inc.'

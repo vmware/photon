@@ -1,0 +1,19 @@
+sources:
+- archive: pip-24.0.tar.gz
+  archive_sha512sum: b687d9e7e2b0348a1c3355610bcf4e194dd157dc6e79638f8a0a383cf1ba7c4253be4b145e9a5029e089807d1feec9e444976f34f77a732f3ef527d9bc6bcebf
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Pip is the package installer for Python. You can use
+        pip to install packages from the Python Package Index and other indexes. '
+      home_page: https://pypi.org/project/pip/
+      license_concluded: BSD-3-Clause AND (BSD-2-Clause OR Apache-2.0) AND MIT AND
+        Apache-2.0 AND (BSD-3-Clause OR Apache-2.0) AND ISC AND (BSD-2-Clause OR Apache-2.0)
+        AND LGPL-2.1-only AND 0BSD AND LGPL-2.1-or-later AND Python-2.0 AND MPL-2.0
+        AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND (BSD-2-Clause OR Apache-2.0) AND MIT AND
+        Apache-2.0 AND (BSD-3-Clause OR Apache-2.0) AND ISC AND (BSD-2-Clause OR Apache-2.0)
+        AND LGPL-2.1-only AND 0BSD AND LGPL-2.1-or-later AND Python-2.0 AND MPL-2.0
+        AND BSD-2-Clause
+      short_summary: The PyPA recommended tool for installing Python packages.
+      supplier: 'Organization: Broadcom, Inc.'

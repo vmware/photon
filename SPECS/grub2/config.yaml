@@ -1,0 +1,28 @@
+sources:
+- archive: grub-2.06.tar.xz
+  archive_sha512sum: 4f11c648f3078567e53fc0c74d5026fdc6da4be27d188975e79d9a4df817ade0fe5ad2ddd694238a07edc45adfa02943d83c57767dd51548102b375e529e8efe
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The GRUB package contains the GRand Unified Bootloader. '
+      home_page: http://www.gnu.org/software/grub
+      license_concluded: LGPL-2.1-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Texinfo-exception AND BSD-3-Clause AND GPL-3.0-or-later
+        WITH GCC-exception-3.1 AND LGPL-2.0-or-later AND (GPL-2.0-or-later OR BSD-2-Clause)
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND MIT AND GFDL-1.2-only AND GPL-2.0-or-later AND FSFULLRWD AND GPL-2.0-only
+        AND GPL-3.0-only AND Unicode-3.0 AND GPL-1.0-or-later AND LGPL-2.1-or-later
+        AND CC-BY-SA-3.0 AND FSFULLR AND LGPL-2.0-only AND BSD-2-Clause AND FSFUL
+        AND X11 AND GFDL-1.3-invariants-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GFDL-1.2-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND GFDL-1.1-or-later
+      license_declared: LGPL-2.1-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Texinfo-exception AND BSD-3-Clause AND GPL-3.0-or-later
+        WITH GCC-exception-3.1 AND LGPL-2.0-or-later AND (GPL-2.0-or-later OR BSD-2-Clause)
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND MIT AND GFDL-1.2-only AND GPL-2.0-or-later AND FSFULLRWD AND GPL-2.0-only
+        AND GPL-3.0-only AND Unicode-3.0 AND GPL-1.0-or-later AND LGPL-2.1-or-later
+        AND CC-BY-SA-3.0 AND FSFULLR AND LGPL-2.0-only AND BSD-2-Clause AND FSFUL
+        AND X11 AND GFDL-1.3-invariants-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GFDL-1.2-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND GFDL-1.1-or-later
+      short_summary: GRand Unified Bootloader
+      supplier: 'Organization: Broadcom, Inc.'

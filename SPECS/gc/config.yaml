@@ -1,0 +1,19 @@
+sources:
+- archive: gc-8.2.2.tar.gz
+  archive_sha512sum: 4a7b26789ce22ab72bfaadf3029362c5fe26737df1e856e43db7d9b24ee8acf625e35d596bb3f698f91d6a5ddfb6c45a952a1dbd18d47359569696a544c9c248
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Boehm-Demers-Weiser conservative garbage collector
+        can be used as a garbage collecting replacement for C malloc or C++ new. '
+      home_page: http://www.hboehm.info/gc
+      license_concluded: GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND Boehm-GC AND GPL-3.0-or-later WITH Libtool-exception AND FSFULLRWD AND
+        FSFULLR AND GPL-3.0-or-later AND GPL-1.0-or-later AND X11 AND MIT AND FSFUL
+      license_declared: GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND Boehm-GC AND GPL-3.0-or-later WITH Libtool-exception AND FSFULLRWD AND
+        FSFULLR AND GPL-3.0-or-later AND GPL-1.0-or-later AND X11 AND MIT AND FSFUL
+      short_summary: A garbage collector for C and C++
+      supplier: 'Organization: Broadcom, Inc.'

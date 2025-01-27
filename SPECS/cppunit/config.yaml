@@ -1,0 +1,16 @@
+sources:
+- archive: cppunit-1.12.1.tar.gz
+  archive_sha512sum: 7af3569d028d5fa49106ece281f478cc2757cc5deca8c2512406796a7dbd6473928a1e730f28880467d19c6e59b31e55bf4f92f5cf2498a3a875ab32c5b2a081
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'CppUnit is the C++ port of the famous JUnit framework
+        for unit testing. Test output is in XML or text format for automatic testing
+        and GUI based for supervised tests '
+      home_page: https://sourceforge.net/projects/cppunit
+      license_concluded: FSFULLRWD AND X11 AND LGPL-2.0-or-later AND FSFULLR AND LGPL-2.1-only
+        AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later
+      license_declared: FSFULLRWD AND X11 AND LGPL-2.0-or-later AND FSFULLR AND LGPL-2.1-only
+        AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later
+      short_summary: C++ port of Junit test framework
+      supplier: 'Organization: Broadcom, Inc.'

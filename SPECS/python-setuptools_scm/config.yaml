@@ -1,0 +1,15 @@
+sources:
+- archive: setuptools_scm-7.0.5.tar.gz
+  archive_sha512sum: 5b3420f0aaa0dd1655afb0fdcedc3738b75dbb9d8205e0ad67555c251d330a0d3620a7297cfdcfabbc7386a8acf43fe73fa7f3b17e2d156495fd8b2ab7d1c985
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "setuptools_scm handles managing your python package versions\
+        \ in scm metadata instead of declaring them as the version argument or in\
+        \ a scm managed file.  It also handles file finders for the supported scm\u2019\
+        s. "
+      home_page: https://pypi.python.org/pypi/setuptools_scm
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: the blessed package to manage your versions by scm tags.
+      supplier: 'Organization: Broadcom, Inc.'

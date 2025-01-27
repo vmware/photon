@@ -1,0 +1,26 @@
+sources:
+- archive: nano-8.2.tar.xz
+  archive_sha512sum: 07c69d6894f87cb386afa89e984ded7e11fe7575cf3af1c18237e3b2c00de371015c9ea126e505c7c0e7200f7359d5ae7c3779198e188fbbc617154d09c4ba14
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Nano package contains a small, simple text editor '
+      home_page: http://www.nano-editor.org
+      license_concluded: FSFULLRWD AND CC0-1.0 AND GPL-1.0-or-later AND LGPL-2.0-or-later
+        AND GPL-2.0-only AND GPL-3.0-only AND BSD-3-Clause AND Apache-2.0 AND GFDL-1.1-or-later
+        AND FSFAP AND GPL-3.0-or-later WITH Texinfo-exception AND FSFULLR AND GFDL-1.2-only
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND (BSD-3-Clause OR
+        GPL-1.0-or-later) AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND LGPL-2.1-or-later AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND LGPL-3.0-or-later AND FSFUL
+      license_declared: FSFULLRWD AND CC0-1.0 AND GPL-1.0-or-later AND LGPL-2.0-or-later
+        AND GPL-2.0-only AND GPL-3.0-only AND BSD-3-Clause AND Apache-2.0 AND GFDL-1.1-or-later
+        AND FSFAP AND GPL-3.0-or-later WITH Texinfo-exception AND FSFULLR AND GFDL-1.2-only
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND (BSD-3-Clause OR
+        GPL-1.0-or-later) AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND LGPL-2.1-or-later AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND LGPL-3.0-or-later AND FSFUL
+      short_summary: Text editor
+      supplier: 'Organization: Broadcom, Inc.'

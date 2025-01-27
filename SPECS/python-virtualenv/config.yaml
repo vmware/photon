@@ -1,0 +1,16 @@
+sources:
+- archive: virtualenv-20.16.3.tar.gz
+  archive_sha512sum: d3a90bab9862ea2a70e1dc429dff98a729425858a2153281cba4ecaf13107e6c3a43781e8c96b1f2a6c1ddd797de86bcfee8129a698e45d20eed76432efba5a6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'virtualenv is a tool to create isolated Python environment. '
+      home_page: https://pypi.python.org/pypi/virtualenv
+      license_concluded: LGPL-2.1-or-later AND ISC AND Apache-2.0 AND Python-2.0 AND
+        MIT AND (BSD-3-Clause OR Apache-2.0) AND (BSD-2-Clause OR Apache-2.0) AND
+        BSD-3-Clause
+      license_declared: LGPL-2.1-or-later AND ISC AND Apache-2.0 AND Python-2.0 AND
+        MIT AND (BSD-3-Clause OR Apache-2.0) AND (BSD-2-Clause OR Apache-2.0) AND
+        BSD-3-Clause
+      short_summary: Virtual Python Environment builder
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,19 @@
+sources:
+- archive: byacc-20221106.tgz
+  archive_sha512sum: 866933b4eb2296565ce70b4ade565e4679f3b652715f0066072bbcc42b95389fa47a2f96cd03de577807dcc49bf453b1d4f7e22b96c80fef1aa66898d3de5d5c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package provides a parser generator utility that
+        reads a grammar specification from a file and generates an LR(1) parser for
+        it.  The parsers consist of a set of LALR(1) parsing tables and a driver routine
+        written in the C programming language.  It has a public domain license which
+        includes the generated C.  If you are going to do development on your system,
+        you will want to install this package. '
+      home_page: https://byaccj.sourceforge.net
+      license_concluded: GPL-3.0-only AND SMLNJ AND GPL-3.0-or-later AND FSFUL AND
+        X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND X11-distribute-modifications-variant
+      license_declared: GPL-3.0-only AND SMLNJ AND GPL-3.0-or-later AND FSFUL AND
+        X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND X11-distribute-modifications-variant
+      short_summary: Berkeley Yacc, a parser generator
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,49 @@
+sources:
+- archive: contrib-0.7.0.tar.gz
+  archive_sha512sum: 88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Various components in the Kubernetes ecosystem that aren't
+        part of the Kubernetes core.
+      home_page: https://github.com/kubernetes-retired/contrib
+      license_concluded: BSD-2-Clause-Views AND JSON AND GPL-1.0-or-later AND CC-BY-SA-4.0
+        AND OFL-1.1 AND BSD-2-Clause AND Zlib AND LGPL-3.0-only AND Apache-2.0 AND
+        LGPL-3.0-or-later WITH LGPL-3.0-linking-exception AND CC0-1.0 AND MIT AND
+        ISC AND MPL-2.0 AND CC-BY-3.0 AND LGPL-3.0-or-later AND dtoa AND GPL-3.0-only
+        AND BSD-3-Clause AND WTFPL
+      license_declared: BSD-2-Clause-Views AND JSON AND GPL-1.0-or-later AND CC-BY-SA-4.0
+        AND OFL-1.1 AND BSD-2-Clause AND Zlib AND LGPL-3.0-only AND Apache-2.0 AND
+        LGPL-3.0-or-later WITH LGPL-3.0-linking-exception AND CC0-1.0 AND MIT AND
+        ISC AND MPL-2.0 AND CC-BY-3.0 AND LGPL-3.0-or-later AND dtoa AND GPL-3.0-only
+        AND BSD-3-Clause AND WTFPL
+      short_summary: Various components in the Kubernetes ecosystem that aren't part
+        of the Kubernetes core.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: isolcpu-plugin-c15e3e1a3a.tar.bz2
+  archive_sha512sum: 9b7f8f45b4b27d9507f37b41547cd0e3204ca6b6b4101c33b17d7272235d56a36f47d33d403377a193af3806ca1ea82eba73e4afa2e0d8f9d1ceeab0a13c0950
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Kubernetes device plugin. The plugin detects all CPUs
+        specified via isolcpus=X in the kernel boot args, and exports them to Kubernetes
+        as custom devices using the deviceplugin API.
+      home_page: https://github.com/kubernetes/kubernetes
+      license_concluded: BSD-2-Clause AND BSD-3-Clause AND Apache-2.0
+      license_declared: BSD-2-Clause AND BSD-3-Clause AND Apache-2.0
+      short_summary: Isolated CPUs Device Plugin for Kubernetes
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: kubernetes-1.27.13.tar.gz
+  archive_sha512sum: cffb7b0b29ef65bbf234a2743afac284ab119976eb12a0ea3b26582ae65d58b2b584781f72a252ea8dd1b950aa27622839eaafb3b561447bedd8edde09003b1f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Kubernetes is an open source implementation of container
+        cluster management. '
+      home_page: https://github.com/kubernetes/kubernetes/archive/v1.27.13.tar.gz
+      license_concluded: GPL-1.0-or-later AND BSD-3-Clause AND JSON AND MIT AND Apache-2.0
+        AND CC-BY-SA-4.0 AND BSD-2-Clause AND ISC AND CC-BY-4.0
+      license_declared: GPL-1.0-or-later AND BSD-3-Clause AND JSON AND MIT AND Apache-2.0
+        AND CC-BY-SA-4.0 AND BSD-2-Clause AND ISC AND CC-BY-4.0
+      short_summary: Kubernetes cluster management
+      supplier: 'Organization: Broadcom, Inc.'

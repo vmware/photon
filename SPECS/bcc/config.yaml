@@ -1,0 +1,26 @@
+sources:
+- archive: bcc-0.28.0.tar.gz
+  archive_sha512sum: 792ce93dba64b1f87390b2602dcaeba04ac8b2863652b06eb9a907b93bc6137a944b856cc6fa9c7a38671c89814740967561ca4f3b29c267babca7dc5e78aa02
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'BCC is a toolkit for creating efficient kernel tracing
+        and manipulation programs, and includes several useful tools and examples.
+        It makes use of extended BPF (Berkeley Packet Filters), formally known as
+        eBPF, a new feature that was first added to Linux 3.15. Much of what BCC uses
+        requires Linux 4.1 and above. '
+      home_page: https://github.com/iovisor/bcc
+      license_concluded: GPL-1.0-or-later AND (LGPL-2.1-only OR BSD-2-Clause) AND
+        BSL-1.0 AND (MPL-2.0 OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) AND
+        Apache-2.0 AND MIT AND GPL-2.0-or-later AND Apache-2.0 WITH LLVM-exception
+        AND GPL-2.0-only WITH Linux-syscall-note AND (GPL-2.0-or-later OR BSD-2-Clause)
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND GPL-2.0-only AND (BSD-3-Clause
+        OR GPL-2.0-only) AND GPL-3.0-only AND TMate AND BSD-3-Clause AND (MIT OR GPL-2.0-only)
+      license_declared: GPL-1.0-or-later AND (LGPL-2.1-only OR BSD-2-Clause) AND BSL-1.0
+        AND (MPL-2.0 OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) AND Apache-2.0
+        AND MIT AND GPL-2.0-or-later AND Apache-2.0 WITH LLVM-exception AND GPL-2.0-only
+        WITH Linux-syscall-note AND (GPL-2.0-or-later OR BSD-2-Clause) AND (BSD-3-Clause
+        OR GPL-1.0-or-later) AND GPL-2.0-only AND (BSD-3-Clause OR GPL-2.0-only) AND
+        GPL-3.0-only AND TMate AND BSD-3-Clause AND (MIT OR GPL-2.0-only)
+      short_summary: BPF Compiler Collection (BCC)
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,15 @@
+sources:
+- archive: tuna-0.18.tar.xz
+  archive_sha512sum: f05774a030f6b41a262fbe28fba2516763bddfdd1bd4ae1ed925cf3852397231af94571b857952466e87f73a33c4111afb53009faa8ed0fde12db4be1788ada7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides command line interface for changing scheduler
+        and IRQ tunables, at whole CPU and at per thread/IRQ level. Allows isolating
+        CPUs for use by a specific application and moving threads and interrupts to
+        a CPU. Operations can be done on CPU sockets, understanding CPU topology. '
+      home_page: https://rt.wiki.kernel.org/index.php/Tuna
+      license_concluded: GPL-2.0-only AND GPL-1.0-or-later AND LGPL-2.1-only
+      license_declared: GPL-2.0-only AND GPL-1.0-or-later AND LGPL-2.1-only
+      short_summary: Application tuning command line utility
+      supplier: 'Organization: Broadcom, Inc.'

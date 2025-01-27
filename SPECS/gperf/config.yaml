@@ -1,0 +1,18 @@
+sources:
+- archive: gperf-3.1.tar.gz
+  archive_sha512sum: 855ebce5ff36753238a44f14c95be7afdc3990b085960345ca2caf1a2db884f7db74d406ce9eec2f4a52abb8a063d4ed000a36b317c9a353ef4e25e2cca9a3f4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Gperf generates a perfect hash function from a key set. '
+      home_page: https://www.gnu.org/software/gperf
+      license_concluded: OFL-1.1 AND GPL-3.0-or-later AND FSFUL AND GPL-2.0-or-later
+        AND GPL-2.0-only AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-only AND Latex2e AND GPL-1.0-or-later AND GPL-3.0-or-later WITH
+        Texinfo-exception
+      license_declared: OFL-1.1 AND GPL-3.0-or-later AND FSFUL AND GPL-2.0-or-later
+        AND GPL-2.0-only AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-only AND Latex2e AND GPL-1.0-or-later AND GPL-3.0-or-later WITH
+        Texinfo-exception
+      short_summary: Gperf-3.0.4
+      supplier: 'Organization: Broadcom, Inc.'

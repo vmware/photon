@@ -1,0 +1,15 @@
+sources:
+- archive: nginx-ingress-2.4.2.tar.gz
+  archive_sha512sum: 1d2415b73afab9c3338e2cfa717bae6e12f7bbd98f8a20606e274b09c3e4724e56fff0acdc261215ca95107e175489fef4aba9df6e3f9cb5b72d9f98859ae7d9
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is an implementation of kubernetes ingress controller
+        for NGINX. '
+      home_page: https://github.com/nginxinc/kubernetes-ingress
+      license_concluded: MIT AND (CC-BY-4.0 AND OFL-1.1 AND MIT) AND Apache-2.0 AND
+        0BSD AND CC0-1.0 AND BSD-3-Clause AND CC-BY-3.0 AND MPL-2.0
+      license_declared: MIT AND (CC-BY-4.0 AND OFL-1.1 AND MIT) AND Apache-2.0 AND
+        0BSD AND CC0-1.0 AND BSD-3-Clause AND CC-BY-3.0 AND MPL-2.0
+      short_summary: NGINX Ingress Controller for Kubernetes
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,26 @@
+sources:
+- archive: amdvlk-2023.Q1.3.tar.xz
+  archive_sha512sum: 118c960c1a737f48095667283278d901284bdd5d6e9853759026781600decb59a81436683545063316661a11300dbc1be2b6e71cecf9968be91a31d83d09ae34
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'AMD Open Source Driver for Vulkan '
+      home_page: https://github.com/GPUOpen-Drivers/AMDVLK
+      license_concluded: Zlib AND GPL-2.0-only AND Apache-1.0 AND APSL-2.0 AND (NCSA
+        OR MIT) AND FSFAP-no-warranty-disclaimer AND MIT-0 AND Apache-2.0 WITH LLVM-exception
+        AND (NCSA OR MIT) AND Apache-2.0 AND CC0-1.0 AND GPL-1.0-or-later AND (MIT
+        OR Unlicense) AND MIT AND LGPL-2.1-only AND SunPro AND (BSD-3-Clause OR GPL-2.0-only)
+        AND BSL-1.0 AND JSON AND ISC AND BSD-2-Clause-Views AND NCSA AND Python-2.0
+        AND Spencer-94 AND GPL-3.0-only AND Unicode-3.0 AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND LGPL-3.0-or-later AND MIT-Khronos-old AND BSD-2-Clause
+        AND BSD-3-Clause AND HPND-sell-variant
+      license_declared: Zlib AND GPL-2.0-only AND Apache-1.0 AND APSL-2.0 AND (NCSA
+        OR MIT) AND FSFAP-no-warranty-disclaimer AND MIT-0 AND Apache-2.0 WITH LLVM-exception
+        AND (NCSA OR MIT) AND Apache-2.0 AND CC0-1.0 AND GPL-1.0-or-later AND (MIT
+        OR Unlicense) AND MIT AND LGPL-2.1-only AND SunPro AND (BSD-3-Clause OR GPL-2.0-only)
+        AND BSL-1.0 AND JSON AND ISC AND BSD-2-Clause-Views AND NCSA AND Python-2.0
+        AND Spencer-94 AND GPL-3.0-only AND Unicode-3.0 AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND LGPL-3.0-or-later AND MIT-Khronos-old AND BSD-2-Clause
+        AND BSD-3-Clause AND HPND-sell-variant
+      short_summary: AMD Open Source Driver for Vulkan
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,16 @@
+sources:
+- archive: IO-Socket-SSL-2.075.tar.gz
+  archive_sha512sum: ed693aa360e669401d5d2b81d988d6d2bd39f042452d7194cc8a7ec2dccf1dfa213ecb29572178a3abfdd20af999217d19a3d9a4c7978207a2edaac5148c9853
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'IO::Socket::SSL makes using SSL/TLS much easier by wrapping
+        the necessary functionality into the familiar IO::Socket interface and providing
+        secure defaults whenever possible. This way, existing applications can be
+        made SSL-aware without much effort, at least if you do blocking I/O and don''t
+        use select or poll. '
+      home_page: http://search.cpan.org/~sullr/IO-Socket-SSL-2.024/lib/IO/Socket/SSL.pod
+      license_concluded: MPL-2.0
+      license_declared: MPL-2.0
+      short_summary: SSL sockets with IO::Socket interface
+      supplier: 'Organization: Broadcom, Inc.'

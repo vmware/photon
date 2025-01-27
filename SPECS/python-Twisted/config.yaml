@@ -1,0 +1,16 @@
+sources:
+- archive: Twisted-22.10.0.tar.gz
+  archive_sha512sum: 36adac424f6776c7db870d2291713da41054e974dfac0dbc1cbd55f76915a92073bcb25d4593b82e229d154d5297c67e7ba82d808921d206c97c8024bd5431a8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "Twisted is an event-driven networking engine written\
+        \ in Python and licensed under the open source \u200BMIT license. Twisted\
+        \ runs on Python 2 and an ever growing subset also works with Python 3. Twisted\
+        \ also supports many common network protocols, including SMTP, POP3, IMAP,\
+        \ SSHv2, and DNS. "
+      home_page: https://twistedmatrix.com
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: An asynchronous networking framework written in Python
+      supplier: 'Organization: Broadcom, Inc.'

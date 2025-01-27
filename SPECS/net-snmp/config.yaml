@@ -1,0 +1,24 @@
+sources:
+- archive: net-snmp-5.9.3.tar.gz
+  archive_sha512sum: a476df4967029a2eb03d27b0e250170785d0a8c143d49b900ee958c3cbdfaccd415b70af40f6fbed9cb8819d522c35a6073a431091d908ccc7c018fa0aaa2abc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Net-SNMP is a suite of applications used to implement
+        SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6. '
+      home_page: http://net-snmp.sourceforge.net
+      license_concluded: FSFUL AND snprintf AND ISC AND FSFULLRWD AND BSD-3-Clause
+        AND MIT AND MIT-CMU AND GPL-3.0-or-later AND OpenSSL-standalone AND GPL-3.0-or-later
+        WITH Libtool-exception AND OpenSSL AND APSL-1.1 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND FSFULLR AND SSLeay-standalone AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-4-Clause-Shortened AND X11
+      license_declared: FSFUL AND snprintf AND ISC AND FSFULLRWD AND BSD-3-Clause
+        AND MIT AND MIT-CMU AND GPL-3.0-or-later AND OpenSSL-standalone AND GPL-3.0-or-later
+        WITH Libtool-exception AND OpenSSL AND APSL-1.1 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND FSFULLR AND SSLeay-standalone AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-4-Clause-Shortened AND X11
+      short_summary: Net-SNMP is a suite of applications used to implement SNMP v1,
+        SNMP v2c and SNMP v3 using both IPv4 and IPv6.
+      supplier: 'Organization: Broadcom, Inc.'

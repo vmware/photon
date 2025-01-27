@@ -1,0 +1,12 @@
+sources:
+- archive: python-pam-2.0.2.tar.gz
+  archive_sha512sum: a33279d47de07b32c5c5cadb0f666ea18b407de061cb80e0b1d6cd7370fd70ff14af8d2802a2e4dbdaaf102efd6cac83c4f2c5673615b3d174edca20a4f8b00a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python PAM module using ctypes, py3/py2. '
+      home_page: https://pypi.python.org/pypi/python-pam/
+      license_concluded: MIT AND Python-2.0
+      license_declared: MIT AND Python-2.0
+      short_summary: Python PAM module using ctypes, py3/py2
+      supplier: 'Organization: Broadcom, Inc.'

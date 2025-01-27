@@ -1,0 +1,23 @@
+sources:
+- archive: fribidi-1.0.12.tar.xz
+  archive_sha512sum: cd624f519b270303e89139ced4020115abe3b6a0d774ba57f17fa69c6036edebd76c635a42c468786e76c6ffb0c7d63b435cd2663bc2fba08dec405840dd8e49
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A library to handle bidirectional scripts (for example
+        Hebrew, Arabic), so that the display is done in the proper way; while the
+        text data itself is always written in logical order. '
+      home_page: http://fribidi.org
+      license_concluded: LGPL-2.1-or-later AND GPL-2.0-or-later AND X11 AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND LGPL-2.1-only AND FSFULLRWD AND GPL-3.0-or-later WITH Libtool-exception
+        AND FSFULLR AND GPL-3.0-or-later AND FSFUL AND FSFAP AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      license_declared: LGPL-2.1-or-later AND GPL-2.0-or-later AND X11 AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND LGPL-2.1-only AND FSFULLRWD AND GPL-3.0-or-later WITH Libtool-exception
+        AND FSFULLR AND GPL-3.0-or-later AND FSFUL AND FSFAP AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      short_summary: GNU FriBidi is an implementation of the Unicode Bidirectional
+        Algorithm (bidi).
+      supplier: 'Organization: Broadcom, Inc.'

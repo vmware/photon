@@ -1,0 +1,17 @@
+sources:
+- archive: cdrkit-1.1.11.tar.gz
+  archive_sha512sum: e5afcd2cb68d39aeff680a0d5b0a7877f94cf6de111b3cb7388261c665fbd3209ce98a20a01911875af7d6b832a156801b1fa46a4481f7c8ba60b22eac0a5b05
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Cdrtools package contains CD recording utilities.
+        These are useful for reading, creating or writing (burning) Compact Discs. '
+      home_page: http://gd.tuwien.ac.at/utils/schilling/cdrtools/
+      license_concluded: GPL-2.0-only WITH Linux-syscall-note AND GPL-1.0-or-later
+        AND BSD-3-Clause AND LGPL-2.1-or-later AND FSFUL AND CDDL-1.0 AND BSD-2-Clause
+        AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.0-or-later
+      license_declared: GPL-2.0-only WITH Linux-syscall-note AND GPL-1.0-or-later
+        AND BSD-3-Clause AND LGPL-2.1-or-later AND FSFUL AND CDDL-1.0 AND BSD-2-Clause
+        AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.0-or-later
+      short_summary: Utilities for writing cds.
+      supplier: 'Organization: Broadcom, Inc.'

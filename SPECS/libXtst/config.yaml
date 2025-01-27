@@ -1,0 +1,18 @@
+sources:
+- archive: libXtst-1.2.3.tar.bz2
+  archive_sha512sum: 6f6741fd3596775eaa056465319f78c29c91b3893a851a4899df651a2023a4d762497b112a33d7d3e8865fe85d173d03e4b49daef76a66af1ae1eaab82a12765
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The X11 libXtst runtime library. '
+      home_page: http://www.x.org
+      license_concluded: MIT-open-group AND HPND-doc-sell AND GPL-3.0-or-later WITH
+        Autoconf-exception-macro AND X11 AND MIT AND FSFULLR AND HPND-doc AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLRWD AND FSFUL AND HPND-sell-variant
+      license_declared: MIT-open-group AND HPND-doc-sell AND GPL-3.0-or-later WITH
+        Autoconf-exception-macro AND X11 AND MIT AND FSFULLR AND HPND-doc AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFULLRWD AND FSFUL AND HPND-sell-variant
+      short_summary: X11 libXtst runtime library.
+      supplier: 'Organization: Broadcom, Inc.'

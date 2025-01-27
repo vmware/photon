@@ -1,0 +1,18 @@
+sources:
+- archive: xxhash-0.8.1.tar.gz
+  archive_sha512sum: 12feedd6a1859ef55e27218dbd6dcceccbb5a4da34cd80240d2f7d44cd246c7afdeb59830c2d5b90189bb5159293532208bf5bb622250102e12d6e1bad14a193
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'xxHash is an Extremely fast Hash algorithm, running at
+        RAM speed limits. It successfully completes the SMHasher test suite which
+        evaluates collision, dispersion and randomness qualities of hash functions.
+        Code is highly portable, and hashes are identical on all platforms (little
+        / big endian). '
+      home_page: http://www.xxhash.com
+      license_concluded: CC0-1.0 AND BSD-3-Clause AND GPL-1.0-or-later AND GPL-2.0-or-later
+        AND LPD-document AND BSD-2-Clause AND GPL-2.0-only
+      license_declared: CC0-1.0 AND BSD-3-Clause AND GPL-1.0-or-later AND GPL-2.0-or-later
+        AND LPD-document AND BSD-2-Clause AND GPL-2.0-only
+      short_summary: Extremely fast hash algorithm
+      supplier: 'Organization: Broadcom, Inc.'

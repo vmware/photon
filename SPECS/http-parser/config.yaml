@@ -1,0 +1,15 @@
+sources:
+- archive: http-parser-v2.9.4.tar.gz
+  archive_sha512sum: b45df7b94d1c51079d44687d0a7f901f44faae51df4e84c7e3fe38f130c2d809d0e7c2a146c57b3723e60732aededc246bf44eadb10a95b710963d641f9fe7cd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is a parser for HTTP messages written in C. It parses
+        both requests and responses. The parser is designed to be used in performance
+        HTTP applications. It does not make any syscalls nor allocations, it does
+        not buffer data, it can be interrupted at anytime. '
+      home_page: https://github.com/nodejs/http-parser
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: C based http parser for high performance applications.
+      supplier: 'Organization: Broadcom, Inc.'

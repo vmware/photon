@@ -1,0 +1,32 @@
+sources:
+- archive: zchunk-1.2.3.tar.gz
+  archive_sha512sum: 5e46d8c3e36034de8424937cdfac59acdfaf332203e6e5d8b290614cbbe0340998d53b0583b0ef93189f41dc89219a75f50572757ebcea9abd83bd9aad861a73
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'zchunk is a compressed file format that splits the file
+        into independent chunks.  This allows you to only download the differences
+        when downloading a new version of the file, and also makes zchunk files efficient
+        over rsync. zchunk files are protected with strong checksums to verify that
+        the file you downloaded is in fact the file you wanted. '
+      home_page: https://github.com/zchunk/zchunk
+      license_concluded: ISC AND GPL-2.0-or-later AND OLDAP-2.8 AND IJG AND PostgreSQL
+        AND LGPL-2.1-or-later AND (MPL-2.0 OR GPL-2.0-only) AND Libpng AND GPL-3.0-or-later
+        AND LPPL-1.3c AND CC-BY-3.0 AND OFL-1.0 AND FTL AND LGPL-3.0-only AND GPL-1.0-or-later
+        AND Apache-2.0 AND GPL-2.0-only AND Python-2.0 AND Bitstream-Vera AND CC-BY-SA-1.0
+        AND MPL-2.0 AND AGPL-3.0-only AND BSD-1-Clause AND LGPL-3.0-or-later AND LGPL-2.0-or-later
+        AND OpenSSL AND OFL-1.1 AND MPL-1.1 AND ICU AND BSL-1.0 AND BSD-2-Clause AND
+        MIT AND CC-BY-SA-3.0 AND W3C-19980720 AND (MPL-1.0 OR GPL-2.0-or-later OR
+        LGPL-2.0-or-later) AND LGPL-2.0-only AND GPL-3.0-only AND MPL-1.0 AND BSD-3-Clause
+        AND Python-2.0.1 AND LGPL-2.1-only
+      license_declared: ISC AND GPL-2.0-or-later AND OLDAP-2.8 AND IJG AND PostgreSQL
+        AND LGPL-2.1-or-later AND (MPL-2.0 OR GPL-2.0-only) AND Libpng AND GPL-3.0-or-later
+        AND LPPL-1.3c AND CC-BY-3.0 AND OFL-1.0 AND FTL AND LGPL-3.0-only AND GPL-1.0-or-later
+        AND Apache-2.0 AND GPL-2.0-only AND Python-2.0 AND Bitstream-Vera AND CC-BY-SA-1.0
+        AND MPL-2.0 AND AGPL-3.0-only AND BSD-1-Clause AND LGPL-3.0-or-later AND LGPL-2.0-or-later
+        AND OpenSSL AND OFL-1.1 AND MPL-1.1 AND ICU AND BSL-1.0 AND BSD-2-Clause AND
+        MIT AND CC-BY-SA-3.0 AND W3C-19980720 AND (MPL-1.0 OR GPL-2.0-or-later OR
+        LGPL-2.0-or-later) AND LGPL-2.0-only AND GPL-3.0-only AND MPL-1.0 AND BSD-3-Clause
+        AND Python-2.0.1 AND LGPL-2.1-only
+      short_summary: Compressed file format
+      supplier: 'Organization: Broadcom, Inc.'

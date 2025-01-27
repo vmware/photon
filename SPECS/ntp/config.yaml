@@ -1,0 +1,43 @@
+sources:
+- archive: ntp-4.2.8p18.tar.gz
+  archive_sha512sum: c314f645d7d85e1028327657f30557cdfd86d417565b6c9fcbb40fca8a4c22a97b70908e8b73c6b31e14915b5b910ae0055fd42e819dd3cb48583b2a826c3fc4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The ntp package contains a client and server to keep
+        the time synchronized between various computers over a network. This package
+        is the official reference implementation of the NTP protocol. '
+      home_page: http://www.ntp.org
+      license_concluded: BSD-4.3TAHOE AND BSD-2-Clause AND FSFAP AND GPL-3.0-or-later
+        AND BSD-3-Clause AND FSFULLR AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND HPND AND Beerware AND FSFUL AND CC-PDDC AND BSD-4-Clause-UC AND LGPL-3.0-only
+        AND LGPL-2.0-or-later AND snprintf AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSL-1.0 AND GPL-3.0-only AND (LGPL-3.0-or-later OR BSD-3-Clause) AND FSFULLRWD
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH
+        Libtool-exception AND (LGPL-2.0-or-later OR BSD-3-Clause) AND GPL-1.0-or-later
+        AND MIT AND curl AND LGPL-2.1-or-later AND BSD-4-Clause AND X11 AND MIT-CMU
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND NTP-0 AND GPL-2.0-or-later
+        WITH Libtool-exception AND OLDAP-2.8 AND ISC AND GPL-2.0-or-later
+      license_declared: BSD-4.3TAHOE AND BSD-2-Clause AND FSFAP AND GPL-3.0-or-later
+        AND BSD-3-Clause AND FSFULLR AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND HPND AND Beerware AND FSFUL AND CC-PDDC AND BSD-4-Clause-UC AND LGPL-3.0-only
+        AND LGPL-2.0-or-later AND snprintf AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSL-1.0 AND GPL-3.0-only AND (LGPL-3.0-or-later OR BSD-3-Clause) AND FSFULLRWD
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH
+        Libtool-exception AND (LGPL-2.0-or-later OR BSD-3-Clause) AND GPL-1.0-or-later
+        AND MIT AND curl AND LGPL-2.1-or-later AND BSD-4-Clause AND X11 AND MIT-CMU
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND NTP-0 AND GPL-2.0-or-later
+        WITH Libtool-exception AND OLDAP-2.8 AND ISC AND GPL-2.0-or-later
+      short_summary: Network Time Protocol reference implementation
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: ntpstat-master.zip
+  archive_sha512sum: 79e348e93683f61eb97371f62bcb3b74cedfe6fd248a86d294d65ce4dc3649ce923bdf683cb18604fe47c4e854a6970c4ae1577e20b1febc87c3009888025ed0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: ntpstat source with Fedora patches
+      home_page: https://github.com/darkhelmet/ntpstat
+      license_concluded: GPL-2.0-only
+      license_declared: GPL-2.0-only
+      short_summary: ntpstat source with Fedora patches
+      supplier: 'Organization: Broadcom, Inc.'

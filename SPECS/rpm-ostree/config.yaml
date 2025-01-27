@@ -1,0 +1,15 @@
+sources:
+- archive: rpm-ostree-2022.19.tar.xz
+  archive_sha512sum: 0afec5019ab3d2e94578acadcf62b698b3f5880b8755575bf12300368d9e3b0e9e94492d4a311af282d0535dc6df30dd4e3fa58e2f671c30dbfdc788c96a3d7e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This tool takes a set of packages, and commits them to
+        an OSTree repository.  At the moment, it is intended for use on build servers. '
+      home_page: https://github.com/projectatomic/rpm-ostree
+      license_concluded: GPL-2.0-or-later AND LGPL-2.1-or-later AND (Apache-2.0 OR
+        MIT)
+      license_declared: GPL-2.0-or-later AND LGPL-2.1-or-later AND (Apache-2.0 OR
+        MIT)
+      short_summary: Commit RPMs to an OSTree repository
+      supplier: 'Organization: Broadcom, Inc.'

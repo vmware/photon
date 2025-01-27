@@ -1,0 +1,16 @@
+sources:
+- archive: cassandra-driver-3.25.0.tar.gz
+  archive_sha512sum: 82a2bace177d74551ea349bf30141785e1e7b750e612c8aa64a51520a082d43b0828b68a4c8e82b21b17a4d955fe9f82118cdf0b2a259f86eacfd3994bd45a56
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A modern, feature-rich and highly-tunable Python client
+        library for Apache Cassandra (2.1+) using exclusively Cassandra''s binary
+        protocol and Cassandra Query Language v3. The driver supports Python 3.3,
+        3.4, 3.5, and 3.6. '
+      home_page: https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
+      license_concluded: MIT AND Apache-2.0
+      license_declared: MIT AND Apache-2.0
+      short_summary: A modern, feature-rich and highly-tunable Python client library
+        for Apache Cassandra (2.1+)
+      supplier: 'Organization: Broadcom, Inc.'

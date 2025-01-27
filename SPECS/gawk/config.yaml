@@ -1,0 +1,31 @@
+sources:
+- archive: gawk-5.1.1.tar.xz
+  archive_sha512sum: 794538fff03fdb9a8527a6898b26383d01988e8f8456f8d48131676387669a8bb3e706fa1a17f6b6316ddba0ebe653c24ad5dd769f357de509d6ec25f3ff1a43
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Gawk package contains programs for manipulating text
+        files. '
+      home_page: http://www.gnu.org/software/gawk
+      license_concluded: FSFAP AND GPL-3.0-or-later WITH Texinfo-exception AND FSFAP-no-warranty-disclaimer
+        AND GFDL-1.3-invariants-only AND GFDL-1.3-or-later AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND GPL-3.0-or-later AND GPL-2.0-only AND Latex2e-translated-notice
+        AND FSFUL AND AGPL-3.0-or-later AND LGPL-2.1-or-later AND FSFULLR AND GFDL-1.3-only
+        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND CC-BY-SA-3.0 AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND BSD-3-Clause AND GPL-3.0-only AND LGPL-2.0-or-later
+        AND GFDL-1.1-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND GPL-1.0-or-later AND
+        LGPL-2.0-only AND LGPL-2.1-only AND X11 AND GPL-3.0-or-later WITH Libtool-exception
+        AND GPL-2.0-or-later
+      license_declared: FSFAP AND GPL-3.0-or-later WITH Texinfo-exception AND FSFAP-no-warranty-disclaimer
+        AND GFDL-1.3-invariants-only AND GFDL-1.3-or-later AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND GPL-3.0-or-later AND GPL-2.0-only AND Latex2e-translated-notice
+        AND FSFUL AND AGPL-3.0-or-later AND LGPL-2.1-or-later AND FSFULLR AND GFDL-1.3-only
+        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND CC-BY-SA-3.0 AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND BSD-3-Clause AND GPL-3.0-only AND LGPL-2.0-or-later
+        AND GFDL-1.1-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND GPL-1.0-or-later AND
+        LGPL-2.0-only AND LGPL-2.1-only AND X11 AND GPL-3.0-or-later WITH Libtool-exception
+        AND GPL-2.0-or-later
+      short_summary: Contains programs for manipulating text files
+      supplier: 'Organization: Broadcom, Inc.'

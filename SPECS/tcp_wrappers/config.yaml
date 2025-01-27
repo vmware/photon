@@ -1,0 +1,14 @@
+sources:
+- archive: tcp_wrappers_7.6.tar.gz
+  archive_sha512sum: 2d9d003791f8d00912a36ae00579e2b8dd7ad8a7bf8eae259659bcaf5365b150540ff6c93c91765872c76041579b7a02b6e3c64528fb7f8235680399ba1d9dac
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The TCP Wrapper package provides daemon wrapper programs
+        that report the name of the client requesting network services and the requested
+        service. '
+      home_page: http://ftp.porcupine.org/pub/security/index.html
+      license_concluded: BSD-4.3TAHOE AND TCP-wrappers
+      license_declared: BSD-4.3TAHOE AND TCP-wrappers
+      short_summary: TCP/IP daemon wrapper package
+      supplier: 'Organization: Broadcom, Inc.'

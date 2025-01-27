@@ -1,0 +1,13 @@
+sources:
+- archive: ansible-posix-1.5.1.tar.gz
+  archive_sha512sum: 5132d792b75c2b6d3779e95c28c1141807286b6f77370a5fa95325a74f723409393eb2d2585aa1b99f92b390925b6b76e208f0b25367397db7ccb5de869c252f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'An Ansible Collection of modules and plugins that target
+        POSIX UNIX/Linux and derivative Operating Systems. '
+      home_page: https://github.com/ansible-collections/ansible.posix
+      license_concluded: GPL-3.0-only AND GPL-3.0-or-later AND Python-2.0 AND GPL-1.0-or-later
+      license_declared: GPL-3.0-only AND GPL-3.0-or-later AND Python-2.0 AND GPL-1.0-or-later
+      short_summary: Ansible Collection targeting POSIX and POSIX-ish platforms
+      supplier: 'Organization: Broadcom, Inc.'

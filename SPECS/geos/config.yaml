@@ -1,0 +1,17 @@
+sources:
+- archive: geos-3.11.1.tar.bz2
+  archive_sha512sum: 708500aba9b04208ee46a531d55ddf63a213dfaa2922dae937b524300b2b46c95143ed6cd3ff1414e9099f2be95e5df5a2e0b49df43acf93a9478215259f20d3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'GEOS (Geometry Engine - Open Source) is a C++ port of
+        the JTS Topology Suite (JTS). It aims to contain the complete functionality
+        of JTS in C++. '
+      home_page: https://trac.osgeo.org/geos
+      license_concluded: CC0-1.0 AND LGPL-2.1-only AND BSL-1.0 AND MIT AND Zlib AND
+        LGPL-2.0-or-later AND Apache-2.0
+      license_declared: CC0-1.0 AND LGPL-2.1-only AND BSL-1.0 AND MIT AND Zlib AND
+        LGPL-2.0-or-later AND Apache-2.0
+      short_summary: A C++11 library for performing operations on two-dimensional
+        vector geometries
+      supplier: 'Organization: Broadcom, Inc.'

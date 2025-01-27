@@ -1,0 +1,13 @@
+sources:
+- archive: DBIx-Simple-1.37.tar.gz
+  archive_sha512sum: f79b26bf52db33629950bc95f6c17dd13a2af135deeaf6ff5b0570ad852911fd0d27196636e605a93e9b3d740699110f2ece7abc24fcbbfd08a2f3ddce5d65b0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'DBIx::Simple provides a simplified interface to DBI,
+        Perl''s powerful database module. '
+      home_page: http://search.cpan.org/dist/DBIx-Simple/
+      license_concluded: any-OSI
+      license_declared: any-OSI
+      short_summary: Easy-to-use OO interface to DBI
+      supplier: 'Organization: Broadcom, Inc.'

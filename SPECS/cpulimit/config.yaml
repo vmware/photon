@@ -1,0 +1,17 @@
+sources:
+- archive: cpulimit-2.8.tar.gz
+  archive_sha512sum: aeb121739a5dc9f94c6ddb0905ed05eb7d146c9d0e71c34ba46aad798bda2c30b7ccc548338b4c468f9885f09d97a4565c00199c8df6af74dc9b6f23940c540e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'cpulimit is a simple program which attempts to limit
+        the CPU usage of a process (expressed in percentage, not in CPU time). This
+        is useful to control batch jobs, when you don''t want them to eat too much
+        CPU. It does not act on the nice value or other scheduling priority stuff,
+        but on the real CPU usage. Also, it is able to adapt itself to the overall
+        system load, dynamically and quickly. '
+      home_page: https://sourceforge.net/projects/limitcpu
+      license_concluded: GPL-2.0-only
+      license_declared: GPL-2.0-only
+      short_summary: CPU Usage Limiter for Linux
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,36 @@
+sources:
+- archive: systemd-stable-253.19.tar.gz
+  archive_sha512sum: 42798768a5859ded6bb5f65bed2d0ced81c86eca06ebed275967352435e4bac93df8c95a4a3f841f43e1450457629c92e9e1a5f51159607055484dc53ffa1699
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'systemd is a system and service manager that runs as
+        PID 1 and starts the rest of the system. It provides aggressive parallelization
+        capabilities, uses socket and D-Bus activation for starting services, offers
+        on-demand starting of daemons, keeps track of processes using Linux control
+        groups, maintains mount and automount points, and implements an elaborate
+        transactional dependency-based service control logic. systemd supports SysV
+        and LSB init scripts and works as a replacement for sysvinit. Other parts
+        of this package are a logging daemon, utilities to control basic system configuration
+        like the hostname, date, locale, maintain a list of logged-in users, system
+        accounts, runtime directories and settings, and daemons to manage simple network
+        configuration, network time synchronization, log forwarding, and name resolution. '
+      home_page: http://www.freedesktop.org/wiki/Software/systemd
+      license_concluded: (GPL-2.0-only OR BSD-2-Clause) AND GPL-2.0-or-later WITH
+        Linux-syscall-note AND MIT-0 AND GPL-1.0-or-later AND (GPL-2.0-only WITH Linux-syscall-note
+        OR MIT) AND (GPL-2.0-or-later OR BSD-3-Clause) AND MIT AND GPL-1.0-or-later
+        WITH Linux-syscall-note AND GPL-2.0-only AND ISC AND LGPL-2.0-only AND CC0-1.0
+        AND BSD-3-Clause AND LGPL-2.1-only AND NTP-0 AND LGPL-2.0-or-later AND BSD-2-Clause
+        AND OFL-1.1 AND Unlicense AND GPL-2.0-or-later AND GPL-2.0-only WITH Linux-syscall-note
+        AND LGPL-2.1-or-later AND LGPL-2.0-or-later WITH Linux-syscall-note AND (MIT
+        OR GPL-1.0-or-later)
+      license_declared: (GPL-2.0-only OR BSD-2-Clause) AND GPL-2.0-or-later WITH Linux-syscall-note
+        AND MIT-0 AND GPL-1.0-or-later AND (GPL-2.0-only WITH Linux-syscall-note OR
+        MIT) AND (GPL-2.0-or-later OR BSD-3-Clause) AND MIT AND GPL-1.0-or-later WITH
+        Linux-syscall-note AND GPL-2.0-only AND ISC AND LGPL-2.0-only AND CC0-1.0
+        AND BSD-3-Clause AND LGPL-2.1-only AND NTP-0 AND LGPL-2.0-or-later AND BSD-2-Clause
+        AND OFL-1.1 AND Unlicense AND GPL-2.0-or-later AND GPL-2.0-only WITH Linux-syscall-note
+        AND LGPL-2.1-or-later AND LGPL-2.0-or-later WITH Linux-syscall-note AND (MIT
+        OR GPL-1.0-or-later)
+      short_summary: System and Service Manager
+      supplier: 'Organization: Broadcom, Inc.'

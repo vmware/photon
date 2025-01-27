@@ -1,0 +1,21 @@
+sources:
+- archive: libusb-1.0.26.tar.bz2
+  archive_sha512sum: fcdb85c98f21639668693c2fd522814d440972d65883984c4ae53d0555bdbdb7e8c7a32199cd4b01113556a1eb5be7841b750cc73c9f6bda79bfe1af80914e71
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package provides a way for applications to access
+        USB devices. '
+      home_page: http://sourceforge.net/projects/libusb
+      license_concluded: FSFULLR AND FSFAP AND X11 AND FSFUL AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND MIT AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-only AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later AND LGPL-2.1-or-later
+      license_declared: FSFULLR AND FSFAP AND X11 AND FSFUL AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND MIT AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-only AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later AND LGPL-2.1-or-later
+      short_summary: A library which allows userspace access to USB devices
+      supplier: 'Organization: Broadcom, Inc.'

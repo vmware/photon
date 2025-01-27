@@ -1,0 +1,21 @@
+sources:
+- archive: sqlite-autoconf-3430200.tar.gz
+  archive_sha512sum: 2cb69335aad278c175e680783081bdf48110c31ed31abb6b44b9a012f92ec67cca49c3bf3ec8212c3c9d72a3ec5d5a48ae556d04262bfa23882b6b05140d5901
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package contains most of the static files that comprise
+        the www.sqlite.org website including all of the SQL Syntax and the C/C++ interface
+        specs and other miscellaneous documentation. '
+      home_page: http://www.sqlite.org
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFAP
+        AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND FSFULLRWD
+        AND blessing AND GPL-2.0-or-later WITH Libtool-exception
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFAP
+        AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND FSFULLRWD
+        AND blessing AND GPL-2.0-or-later WITH Libtool-exception
+      short_summary: A portable, high level programming interface to various calling
+        conventions
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,23 @@
+sources:
+- archive: libnetfilter_conntrack-1.0.9.tar.bz2
+  archive_sha512sum: e8b03425aaba3b72e6034c215656c34176d0550c08e0455aaeb1365d9141505d0c4feaa8978c8ccf2b7af9db6c9e874ceb866347e533b41cb03a189884f4004c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libnetfilter_conntrack is a userspace library providing
+        a programming interface (API) to the in-kernel connection tracking state table.
+        The library libnetfilter_conntrack has been previously known as libnfnetlink_conntrack
+        and libctnetlink. '
+      home_page: http://www.netfilter.org/projects/libnetfilter_conntrack/index.html
+      license_concluded: GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND FSFULLR AND GPL-2.0-only
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later AND FSFULLRWD AND
+        FSFUL AND GPL-2.0-only WITH Linux-syscall-note
+      license_declared: GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND FSFULLR AND GPL-2.0-only
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later AND FSFULLRWD AND
+        FSFUL AND GPL-2.0-only WITH Linux-syscall-note
+      short_summary: Netfilter conntrack userspace library
+      supplier: 'Organization: Broadcom, Inc.'

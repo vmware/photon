@@ -1,0 +1,12 @@
+sources:
+- archive: kubernetes-30.1.0.tar.gz
+  archive_sha512sum: 26c07633529ebaf514900cca9e32b85cd87e59aa7eb458c75c281645a5564dca10baf5d84be3dd12192f119d37c6c72a2dd8563c497bc7ab549602c0cff08bda
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python client for the kubernetes API. '
+      home_page: https://pypi.python.org/pypi/kubernetes
+      license_concluded: LGPL-2.0-or-later AND Apache-2.0
+      license_declared: LGPL-2.0-or-later AND Apache-2.0
+      short_summary: Python client for the kubernetes API.
+      supplier: 'Organization: Broadcom, Inc.'

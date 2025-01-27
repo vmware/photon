@@ -1,0 +1,53 @@
+sources:
+- archive: gcc-12.2.0.tar.xz
+  archive_sha512sum: e9e857bd81bf7a370307d6848c81b2f5403db8c7b5207f54bce3f3faac3bde63445684092c2bc1a2427cddb6f7746496d9fbbef05fbbd77f2810b2998f1f9173
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The GCC package contains the GNU compiler collection,
+        which includes the C and C++ compilers. '
+      home_page: http://gcc.gnu.org
+      license_concluded: BSD-4-Clause-UC AND GFDL-1.1-or-later AND GPL-2.0-or-later
+        AND GPL-3.0-or-later AND X11 AND BSD-4.3TAHOE AND CC-BY-SA-3.0 AND LGPL-3.0-or-later
+        AND Zlib AND GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND FSFULLR AND MIT AND CC-BY-SA-4.0
+        AND LGPL-2.1-only AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-only WITH
+        GCC-exception-3.1 AND LGPL-2.0-or-later AND FSFULLRWD AND SunPro AND GFDL-1.3-no-invariants-only
+        AND MPEG-SSG AND BSD-4.3RENO AND FSFAP-no-warranty-disclaimer AND (BSD-3-Clause
+        OR GPL-2.0-only) AND LGPL-2.1-or-later AND AGPL-3.0-or-later AND BSD-3-Clause
+        AND (NCSA OR MIT) AND BSL-1.0 AND GPL-3.0-or-later WITH GCC-exception-2.0
+        AND GPL-2.0-or-later WITH Libtool-exception AND ISC AND GPL-2.0-or-later WITH
+        Bison-exception-1.24 AND GPL-1.0-only AND GPL-3.0-only AND GPL-2.0-or-later
+        WITH GNU-compiler-exception AND FSFAP AND GFDL-1.3-invariants-only AND curl
+        AND GPL-1.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND Unicode-DFS-2015 AND GFDL-1.2-or-later AND
+        MIT-testregex AND MPL-2.0 AND GPL-2.0-or-later WITH GNAT-exception AND GPL-2.0-or-later
+        WITH GCC-exception-2.0 AND LPD-document AND LGPL-2.0-or-later WITH GCC-exception-2.0
+        AND BSD-2-Clause AND GPL-1.0-or-later AND FSFUL AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND NCSA AND CC-PDDC AND LGPL-3.0-only AND
+        Spencer-86 AND GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later
+        AND GPL-3.0-or-later WITH Texinfo-exception AND bzip2-1.0.6 AND IJG AND Apache-2.0
+        AND GFDL-1.3-only
+      license_declared: BSD-4-Clause-UC AND GFDL-1.1-or-later AND GPL-2.0-or-later
+        AND GPL-3.0-or-later AND X11 AND BSD-4.3TAHOE AND CC-BY-SA-3.0 AND LGPL-3.0-or-later
+        AND Zlib AND GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND FSFULLR AND MIT AND CC-BY-SA-4.0
+        AND LGPL-2.1-only AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-only WITH
+        GCC-exception-3.1 AND LGPL-2.0-or-later AND FSFULLRWD AND SunPro AND GFDL-1.3-no-invariants-only
+        AND MPEG-SSG AND BSD-4.3RENO AND FSFAP-no-warranty-disclaimer AND (BSD-3-Clause
+        OR GPL-2.0-only) AND LGPL-2.1-or-later AND AGPL-3.0-or-later AND BSD-3-Clause
+        AND (NCSA OR MIT) AND BSL-1.0 AND GPL-3.0-or-later WITH GCC-exception-2.0
+        AND GPL-2.0-or-later WITH Libtool-exception AND ISC AND GPL-2.0-or-later WITH
+        Bison-exception-1.24 AND GPL-1.0-only AND GPL-3.0-only AND GPL-2.0-or-later
+        WITH GNU-compiler-exception AND FSFAP AND GFDL-1.3-invariants-only AND curl
+        AND GPL-1.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND Unicode-DFS-2015 AND GFDL-1.2-or-later AND
+        MIT-testregex AND MPL-2.0 AND GPL-2.0-or-later WITH GNAT-exception AND GPL-2.0-or-later
+        WITH GCC-exception-2.0 AND LPD-document AND LGPL-2.0-or-later WITH GCC-exception-2.0
+        AND BSD-2-Clause AND GPL-1.0-or-later AND FSFUL AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND NCSA AND CC-PDDC AND LGPL-3.0-only AND
+        Spencer-86 AND GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later
+        AND GPL-3.0-or-later WITH Texinfo-exception AND bzip2-1.0.6 AND IJG AND Apache-2.0
+        AND GFDL-1.3-only
+      short_summary: Contains the GNU compiler collection
+      supplier: 'Organization: Broadcom, Inc.'

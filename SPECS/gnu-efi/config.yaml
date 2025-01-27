@@ -1,0 +1,15 @@
+sources:
+- archive: gnu-efi-3.0.15.tar.bz2
+  archive_sha512sum: 64d408b6d115bdc6eebae12fbd6cd907ed5f847f54e506c1e8f8ea5de38a95cf6fac66ab1009bd1d0bd2d54ad45ad598d29bcc303926a5899bf5cc25448cbb2f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package contains development headers and libraries
+        for developing applications that run under EFI (Extensible Firmware Interface). '
+      home_page: https://sourceforge.net/projects/gnu-efi
+      license_concluded: BSD-3-Clause AND BSD-2-Clause-Patent AND BSD-4-Clause AND
+        MIT AND GPL-1.0-or-later AND BSD-2-Clause AND GPL-2.0-or-later
+      license_declared: BSD-3-Clause AND BSD-2-Clause-Patent AND BSD-4-Clause AND
+        MIT AND GPL-1.0-or-later AND BSD-2-Clause AND GPL-2.0-or-later
+      short_summary: Development Libraries and headers for EFI
+      supplier: 'Organization: Broadcom, Inc.'

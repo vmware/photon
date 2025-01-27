@@ -1,0 +1,90 @@
+sources:
+- archive: node-v22.12.0.tar.gz
+  archive_sha512sum: 438c80d1d1dde96c3a39b94ffd5ca0cdc636526c3d8e50ec69270fcadcb4dfaa9025d36b359f24db8c1b30f888fe825375ced0cf8b5bb5f79df5e69403f5fec7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Node.js is a JavaScript runtime built on Chrome''s V8
+        JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that
+        makes it lightweight and efficient. The Node.js package ecosystem, npm, is
+        the largest ecosystem of open source libraries in the world. '
+      home_page: https://github.com/nodejs/node
+      license_concluded: OGL-UK-3.0 AND blessing AND GFDL-1.1-invariants-only AND
+        Artistic-2.0 AND (MIT OR GPL-1.0-or-later) AND PSF-2.0 AND Interbase-1.0 AND
+        Parity-6.0.0 AND Frameworx-1.0 AND LiLiQ-P-1.1 AND MPL-2.0 AND IBM-pibs AND
+        PolyForm-Noncommercial-1.0.0 AND TU-Berlin-2.0 AND FSFUL AND GFDL-1.2-invariants-or-later
+        AND MIT-0 AND Artistic-1.0 AND BSD-3-Clause-Modification AND Python-2.0 AND
+        GPL-3.0-or-later WITH Autoconf-exception-macro AND BlueOak-1.0.0 AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND
+        GFDL-1.3-no-invariants-only AND (MIT OR Apache-2.0) AND Spencer-86 AND AFL-3.0
+        AND ISC AND UCL-1.0 AND CC0-1.0 AND AGPL-1.0-only AND CERN-OHL-W-2.0 AND BSD-3-Clause-Clear
+        AND PolyForm-Small-Business-1.0.0 AND BSD-2-Clause-Patent AND (ISC OR MIT)
+        AND LGPL-2.1-or-later AND HaskellReport AND (BSD-3-Clause OR GPL-2.0-only)
+        AND GFDL-1.1-no-invariants-only AND EPL-1.0 AND TAPR-OHL-1.0 AND BSD-3-Clause-No-Military-License
+        AND GFDL-1.1-invariants-or-later AND (GPL-2.0-only OR BSD-3-Clause) AND X11
+        AND CC-BY-SA-2.0 AND EFL-2.0 AND GPL-2.0-or-later WITH eCos-exception-2.0
+        AND BSD-2-Clause AND APSL-1.1 AND copyleft-next-0.3.0 AND GPL-1.0-or-later
+        AND (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause) AND
+        FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-2.0 AND LGPL-2.1-only AND
+        libselinux-1.0 AND CDDL-1.1 AND CAL-1.0-Combined-Work-Exception AND GFDL-1.3-no-invariants-or-later
+        AND Apache-2.0 AND CAL-1.0 AND APSL-1.0 AND GPL-1.0-only AND (GPL-2.0-only
+        OR BSD-3-Clause) AND 0BSD AND MIT-Wu AND OFL-1.1-no-RFN AND GFDL-1.3-invariants-or-later
+        AND LiLiQ-Rplus-1.1 AND Apache-2.0 WITH LLVM-exception AND CC-BY-SA-4.0 AND
+        NGPL AND CDDL-1.0 AND BSD-3-Clause AND NAIST-2003 AND NCGL-UK-2.0 AND JSON
+        AND ICU AND bzip2-1.0.6 AND curl AND FSFULLRWD AND GFDL-1.2-no-invariants-or-later
+        AND CC-BY-3.0 AND OGL-Canada-2.0 AND OGL-UK-2.0 AND LAL-1.3 AND SunPro AND
+        CECILL-2.1 AND Zimbra-1.3 AND NIST-PD-fallback AND BSD-Source-Code AND GFDL-1.2-invariants-only
+        AND BSD-2-Clause-Views AND LGPL-3.0-or-later AND LGPL-2.0-or-later AND Unicode-3.0
+        AND GFDL-1.3-invariants-only AND copyleft-next-0.3.1 AND AGPL-3.0-or-later
+        AND (BSD-3-Clause OR Apache-2.0) AND CERN-OHL-S-2.0 AND CC-BY-4.0 AND (BSD-2-Clause
+        OR Apache-2.0) AND GPL-2.0-or-later WITH Autoconf-exception-generic AND CERN-OHL-1.2
+        AND BSD-4-Clause AND (CC0-1.0 OR BSD-2-Clause) AND OGDL-Taiwan-1.0 AND MPL-1.0
+        AND GPL-2.0-or-later AND GPL-3.0-only AND HPND AND CECILL-2.0 AND SSPL-1.0
+        AND CERN-OHL-P-2.0 AND etalab-2.0 AND BSD-4-Clause-UC AND GPL-3.0-or-later
+        AND NTP-0 AND OGL-UK-1.0 AND GFDL-1.2-no-invariants-only AND BSL-1.0 AND GFDL-1.1-only
+        AND (MIT OR Apache-2.0) AND OpenSSL-standalone AND TMate AND LiLiQ-R-1.1 AND
+        HPND-sell-variant AND NIST-PD AND (BSD-3-Clause OR GPL-2.0-only) AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND MIT AND TU-Berlin-1.0 AND Zimbra-1.4
+        AND Parity-7.0.0 AND Zlib AND Linux-man-pages-copyleft AND BSD-4-Clause-Shortened
+        AND GPL-2.0-only AND LGPL-3.0-only AND FSFULLR AND snprintf AND APSL-2.0 AND
+        CERN-OHL-1.1 AND GFDL-1.1-no-invariants-or-later
+      license_declared: OGL-UK-3.0 AND blessing AND GFDL-1.1-invariants-only AND Artistic-2.0
+        AND (MIT OR GPL-1.0-or-later) AND PSF-2.0 AND Interbase-1.0 AND Parity-6.0.0
+        AND Frameworx-1.0 AND LiLiQ-P-1.1 AND MPL-2.0 AND IBM-pibs AND PolyForm-Noncommercial-1.0.0
+        AND TU-Berlin-2.0 AND FSFUL AND GFDL-1.2-invariants-or-later AND MIT-0 AND
+        Artistic-1.0 AND BSD-3-Clause-Modification AND Python-2.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND BlueOak-1.0.0 AND GPL-2.0-or-later WITH
+        Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GFDL-1.3-no-invariants-only
+        AND (MIT OR Apache-2.0) AND Spencer-86 AND AFL-3.0 AND ISC AND UCL-1.0 AND
+        CC0-1.0 AND AGPL-1.0-only AND CERN-OHL-W-2.0 AND BSD-3-Clause-Clear AND PolyForm-Small-Business-1.0.0
+        AND BSD-2-Clause-Patent AND (ISC OR MIT) AND LGPL-2.1-or-later AND HaskellReport
+        AND (BSD-3-Clause OR GPL-2.0-only) AND GFDL-1.1-no-invariants-only AND EPL-1.0
+        AND TAPR-OHL-1.0 AND BSD-3-Clause-No-Military-License AND GFDL-1.1-invariants-or-later
+        AND (GPL-2.0-only OR BSD-3-Clause) AND X11 AND CC-BY-SA-2.0 AND EFL-2.0 AND
+        GPL-2.0-or-later WITH eCos-exception-2.0 AND BSD-2-Clause AND APSL-1.1 AND
+        copyleft-next-0.3.0 AND GPL-1.0-or-later AND (GPL-2.0-or-later OR LGPL-2.1-or-later
+        OR MPL-1.1 OR BSD-3-Clause) AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-2.0
+        AND LGPL-2.1-only AND libselinux-1.0 AND CDDL-1.1 AND CAL-1.0-Combined-Work-Exception
+        AND GFDL-1.3-no-invariants-or-later AND Apache-2.0 AND CAL-1.0 AND APSL-1.0
+        AND GPL-1.0-only AND (GPL-2.0-only OR BSD-3-Clause) AND 0BSD AND MIT-Wu AND
+        OFL-1.1-no-RFN AND GFDL-1.3-invariants-or-later AND LiLiQ-Rplus-1.1 AND Apache-2.0
+        WITH LLVM-exception AND CC-BY-SA-4.0 AND NGPL AND CDDL-1.0 AND BSD-3-Clause
+        AND NAIST-2003 AND NCGL-UK-2.0 AND JSON AND ICU AND bzip2-1.0.6 AND curl AND
+        FSFULLRWD AND GFDL-1.2-no-invariants-or-later AND CC-BY-3.0 AND OGL-Canada-2.0
+        AND OGL-UK-2.0 AND LAL-1.3 AND SunPro AND CECILL-2.1 AND Zimbra-1.3 AND NIST-PD-fallback
+        AND BSD-Source-Code AND GFDL-1.2-invariants-only AND BSD-2-Clause-Views AND
+        LGPL-3.0-or-later AND LGPL-2.0-or-later AND Unicode-3.0 AND GFDL-1.3-invariants-only
+        AND copyleft-next-0.3.1 AND AGPL-3.0-or-later AND (BSD-3-Clause OR Apache-2.0)
+        AND CERN-OHL-S-2.0 AND CC-BY-4.0 AND (BSD-2-Clause OR Apache-2.0) AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND CERN-OHL-1.2 AND BSD-4-Clause AND (CC0-1.0
+        OR BSD-2-Clause) AND OGDL-Taiwan-1.0 AND MPL-1.0 AND GPL-2.0-or-later AND
+        GPL-3.0-only AND HPND AND CECILL-2.0 AND SSPL-1.0 AND CERN-OHL-P-2.0 AND etalab-2.0
+        AND BSD-4-Clause-UC AND GPL-3.0-or-later AND NTP-0 AND OGL-UK-1.0 AND GFDL-1.2-no-invariants-only
+        AND BSL-1.0 AND GFDL-1.1-only AND (MIT OR Apache-2.0) AND OpenSSL-standalone
+        AND TMate AND LiLiQ-R-1.1 AND HPND-sell-variant AND NIST-PD AND (BSD-3-Clause
+        OR GPL-2.0-only) AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND MIT AND TU-Berlin-1.0 AND Zimbra-1.4 AND Parity-7.0.0 AND Zlib AND Linux-man-pages-copyleft
+        AND BSD-4-Clause-Shortened AND GPL-2.0-only AND LGPL-3.0-only AND FSFULLR
+        AND snprintf AND APSL-2.0 AND CERN-OHL-1.1 AND GFDL-1.1-no-invariants-or-later
+      short_summary: A JavaScript runtime built on Chrome's V8 JavaScript engine.
+      supplier: 'Organization: Broadcom, Inc.'

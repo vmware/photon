@@ -1,0 +1,25 @@
+sources:
+- archive: harfbuzz-7.0.1.tar.xz
+  archive_sha512sum: 2f2fe4604c062549bf5975cde4022bb137fc04f05ef99fcb566411408cfd136371eae2139b943f70bd17eb758690cbd5183acd552bc901d13c634da11eea404c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'HarfBuzz is an implementation of the OpenType Layout
+        engine. '
+      home_page: https://github.com/harfbuzz/harfbuzz
+      license_concluded: FSFULLRWD AND OFL-1.1 AND MIT AND FTL AND GPL-3.0-or-later
+        WITH Libtool-exception AND GPL-3.0-or-later AND Apache-2.0 AND FSFAP AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Libtool-exception
+        AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND MIT-Modern-Variant
+        AND FSFUL AND GPL-1.0-or-later AND FSFULLR AND LGPL-2.1-or-later AND ICU AND
+        LGPL-2.0-or-later AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFAP-no-warranty-disclaimer
+      license_declared: FSFULLRWD AND OFL-1.1 AND MIT AND FTL AND GPL-3.0-or-later
+        WITH Libtool-exception AND GPL-3.0-or-later AND Apache-2.0 AND FSFAP AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Libtool-exception
+        AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND MIT-Modern-Variant
+        AND FSFUL AND GPL-1.0-or-later AND FSFULLR AND LGPL-2.1-or-later AND ICU AND
+        LGPL-2.0-or-later AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFAP-no-warranty-disclaimer
+      short_summary: opentype text shaping engine
+      supplier: 'Organization: Broadcom, Inc.'

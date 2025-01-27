@@ -1,0 +1,15 @@
+sources:
+- archive: chkconfig-1.21.tar.gz
+  archive_sha512sum: 92cb420ec0247d48a672705c87417a3955e603de267e123aa1aa8c26c73707283a21b82a8321288498312b6612a723b7d557e85ce8ca9cfabae268f16bfe9ce6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Chkconfig is a basic system utility.  It updates and
+        queries runlevel information for system services.  Chkconfig manipulates the
+        numerous symbolic links in /etc/rc.d, to relieve system administrators of
+        some of the drudgery of manually editing the symbolic links. '
+      home_page: https://git.fedorahosted.org/git/chkconfig.git
+      license_concluded: DOC AND GPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later
+      license_declared: DOC AND GPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later
+      short_summary: A system tool for maintaining the /etc/rc*.d hierarchy
+      supplier: 'Organization: Broadcom, Inc.'

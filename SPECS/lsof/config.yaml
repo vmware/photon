@@ -1,0 +1,15 @@
+sources:
+- archive: lsof-4.96.4.tar.gz
+  archive_sha512sum: 06f8005e1eb72324c1fd603d8b8287a61ad6fdec182e9da833991a8915aaa69c416af1564d3b1087cb08b3504ef9b15cdffec7051605e89d945d6750ec8da985
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Contains programs for generating Makefiles for use with
+        Autoconf. '
+      home_page: https://people.freebsd.org/~abe
+      license_concluded: Sendmail AND lsof AND LGPL-2.0-or-later AND GPL-2.0-or-later
+        AND BSD-4-Clause AND BSD-4-Clause-UC
+      license_declared: Sendmail AND lsof AND LGPL-2.0-or-later AND GPL-2.0-or-later
+        AND BSD-4-Clause AND BSD-4-Clause-UC
+      short_summary: List Open Files
+      supplier: 'Organization: Broadcom, Inc.'

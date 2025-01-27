@@ -1,0 +1,30 @@
+sources:
+- archive: monitoring-plugins-2.3.1
+  archive_sha512sum: 6cf51c86d72e49b6ff5e7de65ecf20fff546870ee24469c37a08bfc2f5461ebcfb69af2d84ff7e15d5590ae107ebba3ee2d32c5bab9895033bba3f1689209f0c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Monitoring plugins maintains a bundle of more than 50
+        standard plugins. Typically, the monitoring software runs these plugins to
+        determine the current status of hosts and services on your network. Each plugin
+        is a stand alone command line tool that provides a specific type to check. '
+      home_page: https://github.com/monitoring-plugins
+      license_concluded: GPL-3.0-or-later AND curl AND GPL-2.0-only WITH Linux-syscall-note
+        AND Apache-2.0 AND LGPL-2.1-only AND Artistic-1.0 AND MPL-1.0 AND Apache-1.1
+        AND LGPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic AND
+        Zlib AND MIT AND GFDL-1.1-or-later AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND ISC AND FSFULLR AND LGPL-2.0-or-later AND MPL-1.1 AND GPL-3.0-only AND
+        BSD-2-Clause AND GPL-1.0-only AND BSD-3-Clause AND GPL-2.0-only AND GPL-1.0-or-later
+        AND AGPL-3.0-or-later AND GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-3.0-only
+        AND Artistic-2.0
+      license_declared: GPL-3.0-or-later AND curl AND GPL-2.0-only WITH Linux-syscall-note
+        AND Apache-2.0 AND LGPL-2.1-only AND Artistic-1.0 AND MPL-1.0 AND Apache-1.1
+        AND LGPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic AND
+        Zlib AND MIT AND GFDL-1.1-or-later AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND ISC AND FSFULLR AND LGPL-2.0-or-later AND MPL-1.1 AND GPL-3.0-only AND
+        BSD-2-Clause AND GPL-1.0-only AND BSD-3-Clause AND GPL-2.0-only AND GPL-1.0-or-later
+        AND AGPL-3.0-or-later AND GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-3.0-only
+        AND Artistic-2.0
+      short_summary: Monitoring plugins are used to monitor status of hosts and services
+        on the network
+      supplier: 'Organization: Broadcom, Inc.'

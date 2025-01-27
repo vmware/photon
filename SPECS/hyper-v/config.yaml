@@ -1,0 +1,12 @@
+sources:
+- archive: hyper-v-6.1.tar.gz
+  archive_sha512sum: 3df7f1aab4be5c899257a8597acce48b0bd8c06a673ea5006b41dc9705476b944ec52a552bcf15fab93786e338e6288810feb644766ad1ab8e06dfa9ce712e35
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Hyper-V tools. '
+      home_page: https://elixir.bootlin.com/linux/v6.1/source/tools/hv
+      license_concluded: GPL-2.0-only
+      license_declared: GPL-2.0-only
+      short_summary: Hyper-V tools
+      supplier: 'Organization: Broadcom, Inc.'

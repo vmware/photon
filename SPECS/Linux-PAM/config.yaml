@@ -1,0 +1,26 @@
+sources:
+- archive: Linux-PAM-1.5.3.tar.xz
+  archive_sha512sum: af88e8c1b6a9b737ffaffff7dd9ed8eec996d1fbb5804fb76f590bed66d8a1c2c6024a534d7a7b6d18496b300f3d6571a08874cf406cd2e8cea1d5eff49c136a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Linux PAM package contains Pluggable Authentication
+        Modules used to enable the local system administrator to choose how applications
+        authenticate users. '
+      home_page: https://github.com/linux-pam/linux-pam
+      license_concluded: FSFULLR AND MIT AND GPL-2.0-or-later WITH Libtool-exception
+        AND TCP-wrappers AND Beerware AND FSFUL AND X11 AND (BSD-3-Clause OR LGPL-2.0-or-later)
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND (BSD-3-Clause OR GPL-1.0-or-later)
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND LGPL-2.0-or-later AND GPL-2.0-only
+        AND GPL-1.0-or-later AND GPL-2.0-or-later AND FSFAP AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND ISC AND FSFULLRWD
+      license_declared: FSFULLR AND MIT AND GPL-2.0-or-later WITH Libtool-exception
+        AND TCP-wrappers AND Beerware AND FSFUL AND X11 AND (BSD-3-Clause OR LGPL-2.0-or-later)
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND (BSD-3-Clause OR GPL-1.0-or-later)
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND LGPL-2.0-or-later AND GPL-2.0-only
+        AND GPL-1.0-or-later AND GPL-2.0-or-later AND FSFAP AND GPL-3.0-or-later WITH
+        Bison-exception-2.2 AND ISC AND FSFULLRWD
+      short_summary: Linux Pluggable Authentication Modules
+      supplier: 'Organization: Broadcom, Inc.'

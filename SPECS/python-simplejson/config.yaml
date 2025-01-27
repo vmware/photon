@@ -1,0 +1,17 @@
+sources:
+- archive: simplejson-3.17.6.tar.gz
+  archive_sha512sum: 4a25032fcc78025d82db571716deef8769f036a330560f92e14563687db4a42dbe60866b8afb57baf24104ef94fcbe938cdbddfc169542664957eef2d00d04e3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'simplejson is a simple, fast, complete, correct and extensible
+        JSON <http://json.org> encoder and decoder for Python 2.5+ and Python 3.3+.
+        It is pure Python code with no dependencies, but includes an optional C extension
+        for a serious speed boost. '
+      home_page: https://pypi.python.org/pypi/simplejson
+      license_concluded: AFL-2.1 AND (MIT OR AFL-2.1 OR Python-2.0) AND AFL-3.0 AND
+        MIT
+      license_declared: AFL-2.1 AND (MIT OR AFL-2.1 OR Python-2.0) AND AFL-3.0 AND
+        MIT
+      short_summary: Simple, fast, extensible JSON encoder/decoder for Python.
+      supplier: 'Organization: Broadcom, Inc.'

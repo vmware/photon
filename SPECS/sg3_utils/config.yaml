@@ -1,0 +1,22 @@
+sources:
+- archive: sg3_utils-1.47.tar.xz
+  archive_sha512sum: ef072b8f0012d0944e21d2134aff7125e24ea24d1cbbb1aa79160e844f9a60236f1e244437a3bc08a22a7e99f613adad4a05ae5cc3916ded5a72d162cd3aa163
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Linux tools and utilities to send commands to SCSI devices. '
+      home_page: https://github.com/doug-gilbert/sg3_utils
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND GPL-2.0-only WITH Linux-syscall-note AND X11 AND MIT AND FSFUL AND BSD-3-Clause
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND FSFULLR AND GPL-3.0-only AND GPL-2.0-only
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-4-Clause AND GPL-1.0-or-later AND GPL-2.0-or-later AND BSD-2-Clause
+        AND FSFULLRWD AND BSD-2-Clause-Views AND GPL-3.0-or-later WITH Libtool-exception
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        AND GPL-2.0-only WITH Linux-syscall-note AND X11 AND MIT AND FSFUL AND BSD-3-Clause
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND FSFULLR AND GPL-3.0-only AND GPL-2.0-only
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-4-Clause AND GPL-1.0-or-later AND GPL-2.0-or-later AND BSD-2-Clause
+        AND FSFULLRWD AND BSD-2-Clause-Views AND GPL-3.0-or-later WITH Libtool-exception
+      short_summary: Tools and Utilities for interaction with SCSI devices.
+      supplier: 'Organization: Broadcom, Inc.'

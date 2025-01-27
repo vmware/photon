@@ -1,0 +1,17 @@
+sources:
+- archive: lshw-B.02.19.tar.gz
+  archive_sha512sum: 168e7cf053d270f695da09dbdd4ee5207d447a13de3601f3861ab194f09c7358fe618551caf03adb628e0293f187d8fd5a842d1516b0dd16c4128ccc2126027b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'lshw is a small tool to provide detailed informaton on
+        the hardware configuration of the machine. It can report exact memory configuration,
+        firmware version, mainboard configuration, CPU version and speed, cache configuration,
+        bus speed, etc. Information can be displayed in plain text, XML or HTML. '
+      home_page: https://github.com/lyonel/lshw/releases
+      license_concluded: GPL-1.0-or-later AND CC0-1.0 AND LGPL-2.1-or-later AND CC-BY-SA-3.0
+        AND (GPL-2.0-or-later OR BSD-3-Clause) AND GPL-2.0-or-later AND GPL-2.0-only
+      license_declared: GPL-1.0-or-later AND CC0-1.0 AND LGPL-2.1-or-later AND CC-BY-SA-3.0
+        AND (GPL-2.0-or-later OR BSD-3-Clause) AND GPL-2.0-or-later AND GPL-2.0-only
+      short_summary: Hardware lister
+      supplier: 'Organization: Broadcom, Inc.'

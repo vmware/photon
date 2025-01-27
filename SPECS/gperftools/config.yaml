@@ -1,0 +1,19 @@
+sources:
+- archive: gperftools-2.10.tar.gz
+  archive_sha512sum: 81f3b913e76641c6e51cdfe741fd0028bf9237e3e0f3937ea692ff420c8d006ee01be220417833e55809514fb88eeb0b695fa0a2cac614e60234b8c019a6e92a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'gperftools is a collection of a high-performance multi-threaded
+        malloc() implementation, plus some pretty nifty performance analysis tools. '
+      home_page: https://github.com/gperftools/gperftools
+      license_concluded: FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-only AND FSFAP AND MIT AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND BSD-3-Clause AND FSFULLR AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-or-later AND FSFUL AND BSD-2-Clause-Views
+      license_declared: FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-only AND FSFAP AND MIT AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND X11 AND BSD-3-Clause AND FSFULLR AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-or-later AND FSFUL AND BSD-2-Clause-Views
+      short_summary: A fast malloc tool for threads
+      supplier: 'Organization: Broadcom, Inc.'

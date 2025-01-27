@@ -1,0 +1,24 @@
+sources:
+- archive: tpm2-abrmd-2.4.1.tar.gz
+  archive_sha512sum: 0335285678cfceca4f185981ded90d213ff796cadddc9b5d6dbf2db533f81023a0f1089bbd8a8017bccb95190889be23b24d38a176d3368d221479aff4ff7d6c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'TPM2 Access Broker & Resource Management Daemon implementing
+        the TCG spec '
+      home_page: https://github.com/tpm2-software/tpm2-abrmd
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLRWD
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND FSFAP-no-warranty-disclaimer
+        AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND BSD-2-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Libtool-exception
+        AND LGPL-2.1-or-later AND FSFULLR AND FSFUL AND GPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND FSFAP
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLRWD
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND FSFAP-no-warranty-disclaimer
+        AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND BSD-2-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Libtool-exception
+        AND LGPL-2.1-or-later AND FSFULLR AND FSFUL AND GPL-3.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-macro AND FSFAP
+      short_summary: TPM2 Access Broker & Resource Management Daemon implementing
+        the TCG spec
+      supplier: 'Organization: Broadcom, Inc.'

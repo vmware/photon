@@ -1,0 +1,21 @@
+sources:
+- archive: bc-1.07.1.tar.gz
+  archive_sha512sum: 02126d0db6b6ed06d56cfc292d6f5475ff1e574779d7e69c7809bbb1e13f946f57ea07da2a7666baa092507a951a822044b0970075f75eefe65a5c1999b75d34
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Bc package contains an arbitrary precision numeric
+        processing language. '
+      home_page: https://ftp.gnu.org/gnu/bc/
+      license_concluded: FSFULLRWD AND GPL-3.0-only AND GFDL-1.1-or-later AND GPL-2.0-or-later
+        AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-2.0-or-later AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-3.0-only
+        AND FSFULLR AND FSFUL
+      license_declared: FSFULLRWD AND GPL-3.0-only AND GFDL-1.1-or-later AND GPL-2.0-or-later
+        AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-2.0-or-later AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-3.0-only
+        AND FSFULLR AND FSFUL
+      short_summary: precision numeric processing language
+      supplier: 'Organization: Broadcom, Inc.'

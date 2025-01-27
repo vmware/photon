@@ -1,0 +1,22 @@
+sources:
+- archive: libteam-1.31.tar.gz
+  archive_sha512sum: f18cbe7316f6ac8ddf019d2e4b52e19fbdbc75d637f8cacda15b29d679508919230e1af3eb656febe7aafdf8a94c4334f2ae95ecd60bc89ac379622b99d3b615
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libteam package contains the user-space components
+        of the Team driver. It provides a mechanism to team multiple NICs into one
+        logical port at the L2 layer. '
+      home_page: http://www.libteam.org
+      license_concluded: FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-2.1-only AND LGPL-2.1-or-later AND
+        FSFULLRWD AND X11 AND GPL-2.0-only AND (BSD-3-Clause OR GPL-2.0-only) AND
+        FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Libtool-exception
+      license_declared: FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND LGPL-2.1-only AND LGPL-2.1-or-later AND
+        FSFULLRWD AND X11 AND GPL-2.0-only AND (BSD-3-Clause OR GPL-2.0-only) AND
+        FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Libtool-exception
+      short_summary: Team driver
+      supplier: 'Organization: Broadcom, Inc.'

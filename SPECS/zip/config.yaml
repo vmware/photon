@@ -1,0 +1,12 @@
+sources:
+- archive: zip30.tar.gz
+  archive_sha512sum: c1c3d62bf1426476c0f9919b568013d6d7b03514912035f09ee283226d94c978791ad2af5310021e96c4c2bf320bfc9d0b8f4045c48e4667e034d98197e1a9b3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Zip package contains Zip utilities. '
+      home_page: http://downloads.sourceforge.net/infozip
+      license_concluded: bzip2-1.0.6 AND Info-ZIP AND GPL-1.0-or-later AND Zlib
+      license_declared: bzip2-1.0.6 AND Info-ZIP AND GPL-1.0-or-later AND Zlib
+      short_summary: zip-3.0
+      supplier: 'Organization: Broadcom, Inc.'

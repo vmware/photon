@@ -1,0 +1,16 @@
+sources:
+- archive: less-654.tar.gz
+  archive_sha512sum: b8fa6688fb2aac4b015dbc000429db45f94c7484f388d1af60ff8fee7f72fec35614e0a3f6eb811583cd899f647b2e01fe47533ab6a7633dac04c155dd415678
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Less package contains a text file viewer '
+      home_page: http://www.greenwoodsoftware.com/less
+      license_concluded: (GPL-3.0-or-later OR BSD-2-Clause) AND GPL-3.0-or-later AND
+        BSD-2-Clause AND (GPL-3.0-or-later OR BSD-2-Clause) AND Spencer-86 AND X11
+        AND FSFUL AND (BSD-2-Clause OR GPL-3.0-or-later) AND GPL-3.0-only
+      license_declared: (GPL-3.0-or-later OR BSD-2-Clause) AND GPL-3.0-or-later AND
+        BSD-2-Clause AND (GPL-3.0-or-later OR BSD-2-Clause) AND Spencer-86 AND X11
+        AND FSFUL AND (BSD-2-Clause OR GPL-3.0-or-later) AND GPL-3.0-only
+      short_summary: Text file viewer
+      supplier: 'Organization: Broadcom, Inc.'

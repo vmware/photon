@@ -1,0 +1,36 @@
+sources:
+- archive: gettext-0.21.1.tar.xz
+  archive_sha512sum: 61e93bc9876effd3ca1c4e64ff6ba5bd84b24951ec2cc6f40a0e3248410e60f887552f29ca1f70541fb5524f6a4e8191fed288713c3e280e18922dd5bff1a2c9
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'These allow programs to be compiled with NLS (Native
+        Language Support), enabling them to output messages in the user''s native
+        language. '
+      home_page: http://www.gnu.org/software/gettext
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND ISC
+        AND GPL-2.0-or-later WITH Bison-exception-1.24 AND FSFULLRWD AND FSFUL AND
+        GPL-2.0-or-later WITH Libtool-exception AND X11 AND LGPL-2.1-or-later AND
+        BSD-3-Clause AND GPL-2.0-or-later WITH Bison-exception-2.2 AND LGPL-2.0-only
+        AND GPL-2.0-only AND GFDL-1.3-invariants-only AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND Apache-2.0 AND LGPL-2.0-or-later AND LGPL-2.1-only AND GFDL-1.3-only AND
+        GPL-3.0-or-later WITH Texinfo-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND ISC-Veillard AND (GFDL-1.2-or-later OR GPL-2.0-or-later) AND GFDL-1.2-only
+        AND GFDL-1.1-or-later AND LGPL-3.0-or-later AND FSFULLR AND GFDL-1.2-or-later
+        AND GPL-3.0-or-later AND CC0-1.0 AND GPL-1.0-or-later AND MIT AND GPL-2.0-or-later
+        AND (GFDL-1.2-or-later OR GPL-2.0-or-later) AND GPL-3.0-only AND FSFAP AND
+        GPL-1.0-or-later WITH Autoconf-exception-generic
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND ISC AND
+        GPL-2.0-or-later WITH Bison-exception-1.24 AND FSFULLRWD AND FSFUL AND GPL-2.0-or-later
+        WITH Libtool-exception AND X11 AND LGPL-2.1-or-later AND BSD-3-Clause AND
+        GPL-2.0-or-later WITH Bison-exception-2.2 AND LGPL-2.0-only AND GPL-2.0-only
+        AND GFDL-1.3-invariants-only AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND Apache-2.0 AND LGPL-2.0-or-later AND LGPL-2.1-only AND GFDL-1.3-only AND
+        GPL-3.0-or-later WITH Texinfo-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND ISC-Veillard AND (GFDL-1.2-or-later OR GPL-2.0-or-later) AND GFDL-1.2-only
+        AND GFDL-1.1-or-later AND LGPL-3.0-or-later AND FSFULLR AND GFDL-1.2-or-later
+        AND GPL-3.0-or-later AND CC0-1.0 AND GPL-1.0-or-later AND MIT AND GPL-2.0-or-later
+        AND (GFDL-1.2-or-later OR GPL-2.0-or-later) AND GPL-3.0-only AND FSFAP AND
+        GPL-1.0-or-later WITH Autoconf-exception-generic
+      short_summary: Utilities for internationalization and localization
+      supplier: 'Organization: Broadcom, Inc.'

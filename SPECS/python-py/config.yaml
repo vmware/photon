@@ -1,0 +1,15 @@
+sources:
+- archive: py-1.11.0.tar.gz
+  archive_sha512sum: ce8dd791f9f6dd7e60a6caad32ff5cb816389a0840436efdedf4e0d4b0bfa09f7aea9e7c31d89903c72fe6ef17170a85af480525ba92c458ed73501a0420f2c4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The py lib is a Python development support library featuring
+        the following tools and modules:  py.path: uniform local and svn path objects
+        py.apipkg: explicit API control and lazy-importing py.iniconfig: easy parsing
+        of .ini files py.code: dynamic code generation and introspection '
+      home_page: https://github.com/pytest-dev/py
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Python development support library
+      supplier: 'Organization: Broadcom, Inc.'

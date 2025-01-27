@@ -1,0 +1,24 @@
+sources:
+- archive: File-Which-1.27.tar.gz
+  archive_sha512sum: 8a6164c4af915e93924b1d62864e492b1c5067856e505c50b9a5cce0600d73bdcda5f7e35a9f37134d9e89949b45bbd0a5426cb56121604aea1a3cfe48d55e5c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: File::Which finds the full or relative paths to executable
+        programs on the system. This is normally the function of which utility. which
+        is typically implemented as either a program or a built in shell command.
+        On some platforms, such as Microsoft Windows it is not provided as part of
+        the core operating system. This module provides a consistent API to this functionality
+        regardless of the underlying platform.  The focus of this module is correctness
+        and portability. As a consequence platforms where the current directory is
+        implicitly part of the search path such as Microsoft Windows will find executables
+        in the current directory, whereas on platforms such as UNIX where this is
+        not the case executables in the current directory will only be found if the
+        current directory is explicitly added to the path.  If you need a portable
+        which on the command line in an environment that does not provide it, install
+        App::pwhich which provides a command line interface to this API.
+      home_page: http://search.cpan.org/dist/File-Which/
+      license_concluded: Artistic-1.0 AND Artistic-2.0 AND GPL-1.0-only
+      license_declared: Artistic-1.0 AND Artistic-2.0 AND GPL-1.0-only
+      short_summary: File-Which
+      supplier: 'Organization: Broadcom, Inc.'

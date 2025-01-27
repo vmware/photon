@@ -1,0 +1,21 @@
+sources:
+- archive: mlocate-0.26.tar.xz
+  archive_sha512sum: b1207047e30a551cba39e70812439b554def567ebe9b8b81fed6f26435bb575beafe4875a21cd72876eadd85da4e7bfc942eb28b17c430b537c351690364837f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'mlocate is a locate/updatedb implementation.  The ''m''
+        stands for "merging": updatedb reuses the existing database to avoid rereading
+        most of the file system, which makes updatedb faster and does not trash the
+        system caches as much. '
+      home_page: https://pagure.io/mlocate
+      license_concluded: FSFULLR AND FSFULLRWD AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-2.1-or-later
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later AND GPL-1.0-or-later AND X11 AND
+        FSFUL AND GPL-2.0-only
+      license_declared: FSFULLR AND FSFULLRWD AND GPL-1.0-or-later WITH Autoconf-exception-generic
+        AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-2.1-or-later
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later AND GPL-1.0-or-later AND X11 AND
+        FSFUL AND GPL-2.0-only
+      short_summary: An utility for finding files by name.
+      supplier: 'Organization: Broadcom, Inc.'

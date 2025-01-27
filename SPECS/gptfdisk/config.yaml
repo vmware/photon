@@ -1,0 +1,16 @@
+sources:
+- archive: gptfdisk-1.0.9.tar.gz
+  archive_sha512sum: c2489ac7e196cb53b9fdb18d0e421571eca43c366de8922c5c7f550aadf192558e7af69b181c30747d6cf607c1670126223465eaa5e231cc589402d94a4e97a2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The gptfdisk package is a set of programs for creation
+        and maintenance of GUID Partition Table (GPT) disk drives. A GPT partitioned
+        disk is required for drives greater than 2 TB and is a modern replacement
+        for legacy PC-BIOS partitioned disk drives that use a Master Boot Record (MBR).
+        The main program, gdisk, has an interface similar to the classic fdisk program. '
+      home_page: http://sourceforge.net/projects/gptfdisk
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later
+      short_summary: gptfdisk-1.0.4
+      supplier: 'Organization: Broadcom, Inc.'

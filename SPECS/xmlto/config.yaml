@@ -1,0 +1,16 @@
+sources:
+- archive: xmlto-0.0.28.tar.gz
+  archive_sha512sum: b4de619c840ed9329aed15e6a2bcd830864c250cd134474aeb157571019fa443835e17f68851d35971f775ba5e5c65c61429cf0616c7839cdc51e83f80916a80
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The  purpose  of  xmlto is to convert an XML file to
+        the desired format '
+      home_page: https://pagure.io/xmlto
+      license_concluded: X11 AND FSFUL AND GPL-2.0-or-later AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-only AND FSFULLR
+      license_declared: X11 AND FSFUL AND GPL-2.0-or-later AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-only AND FSFULLR
+      short_summary: The  purpose  of  xmlto is to convert an XML file to the desired
+        format
+      supplier: 'Organization: Broadcom, Inc.'

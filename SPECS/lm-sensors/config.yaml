@@ -1,0 +1,20 @@
+sources:
+- archive: lm-sensors-3.6.0.tar.gz
+  archive_sha512sum: 4e80361913aff5403f1f0737fd4f42cffe43cc170ef48fff3914c9952f71990739d723f7b0b8120d9a01bcbbc829e964cfbd0a5cf18508af8f8dc825b49860bf
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The lm_sensors package provides user-space support for
+        the hardware monitoring drivers in the Linux kernel. This is useful for monitoring
+        the temperature of the CPU and adjusting the performance of some hardware
+        (such as cooling fans). '
+      home_page: https://github.com/lm-sensors/lm-sensors/releases
+      license_concluded: GPL-2.0-or-later AND LGPL-2.0-or-later AND Linux-man-pages-copyleft
+        AND GPL-1.0-or-later AND LGPL-2.1-or-later AND Linux-man-pages-copyleft-var
+        AND LGPL-2.1-only AND GPL-2.0-only
+      license_declared: GPL-2.0-or-later AND LGPL-2.0-or-later AND Linux-man-pages-copyleft
+        AND GPL-1.0-or-later AND LGPL-2.1-or-later AND Linux-man-pages-copyleft-var
+        AND LGPL-2.1-only AND GPL-2.0-only
+      short_summary: The lm_sensors package provides user-space support for the hardware
+        monitoring drivers in the Linux kernel.
+      supplier: 'Organization: Broadcom, Inc.'

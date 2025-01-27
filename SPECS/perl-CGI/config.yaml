@@ -1,0 +1,18 @@
+sources:
+- archive: CGI-4.54.tar.gz
+  archive_sha512sum: be7ecdd9eab81ad95d527aac2f10ef7a15322675fe002558c6ab4951f496a8964025b7d0426241fb3f61aba103964a40f99acc05a39c84a2434f70d90ac47be6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'CGI.pm is a stable, complete and mature solution for
+        processing and preparing HTTP requests and responses. Major features including
+        processing form submissions, file uploads, reading and writing cookies, query
+        string generation and manipulation, and processing and preparing HTTP headers.
+        Some HTML generation utilities are included as well.  CGI.pm performs very
+        well in in a vanilla CGI.pm environment and also comes with built-in support
+        for mod_perl and mod_perl2 as well as FastCGI. '
+      home_page: http://search.cpan.org/dist/CGI
+      license_concluded: Apache-2.0 AND Artistic-2.0
+      license_declared: Apache-2.0 AND Artistic-2.0
+      short_summary: Handle Common Gateway Interface requests and responses
+      supplier: 'Organization: Broadcom, Inc.'

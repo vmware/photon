@@ -1,0 +1,13 @@
+sources:
+- archive: Canary-Stability-2013.tar.gz
+  archive_sha512sum: 9dfb0e6d136048050aac7c29e1fc79dc2a7703c8800582aa837c5d9b9934c48bfcb0a9ef1c6b5bb7e71a10a709e7f7431b3c79ea12b8d9f374b33bfd4a3e468d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module is used by Schmorp''s modules during configuration
+        stage to test the installed perl for compatibility with his modules. '
+      home_page: http://search.cpan.org/dist/Canary-Stability/
+      license_concluded: Artistic-1.0-Perl OR GPL-1.0-or-later
+      license_declared: Artistic-1.0-Perl OR GPL-1.0-or-later
+      short_summary: Canary to check perl compatibility for Schmorp's modules
+      supplier: 'Organization: Broadcom, Inc.'

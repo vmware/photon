@@ -1,0 +1,17 @@
+sources:
+- archive: Werkzeug-2.2.2.tar.gz
+  archive_sha512sum: b37a63ba1d6970b10ba17b87575c2d030ad6c4c00ab50669d678297b9801e319f4f81f98bfc2d89fc2e645c5e192dd81ed2d653c03dbaef06565de0bdac2bcf7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Werkzeug started as simple collection of various utilities
+        for WSGI applications and has become one of the most advanced WSGI utility
+        modules. It includes a powerful debugger, full featured request and response
+        objects, HTTP utilities to handle entity tags, cache control headers, HTTP
+        dates, cookie handling, file uploads, a powerful URL routing system and a
+        bunch of community contributed addon modules. '
+      home_page: https://pypi.python.org/pypi/Werkzeug
+      license_concluded: CC-BY-3.0 AND BSD-3-Clause AND CC-BY-2.5
+      license_declared: CC-BY-3.0 AND BSD-3-Clause AND CC-BY-2.5
+      short_summary: The Swiss Army knife of Python web development
+      supplier: 'Organization: Broadcom, Inc.'

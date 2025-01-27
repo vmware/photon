@@ -1,0 +1,25 @@
+sources:
+- archive: jemalloc-5.3.0.tar.bz2
+  archive_sha512sum: 22907bb052096e2caffb6e4e23548aecc5cc9283dce476896a2b1127eee64170e3562fa2e7db9571298814a7a2c7df6e8d1fbe152bd3f3b0c1abec22a2de34b1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'jemalloc is a general purpose malloc(3) implementation
+        that emphasizes fragmentation avoidance and scalable concurrency support.
+        jemalloc first came into use as the FreeBSD libc allocator in 2005, and since
+        then it has found its way into numerous applications that rely on its predictable
+        behavior. In 2010 jemalloc development efforts broadened to include developer
+        support features such as heap profiling and extensive monitoring/tuning hooks.
+        Modern jemalloc releases continue to be integrated back into FreeBSD, and
+        therefore versatility remains critical. Ongoing development efforts trend
+        toward making jemalloc among the best allocators for a broad range of demanding
+        applications, and eliminating/mitigating weaknesses that have practical repercussions
+        for real world applications. '
+      home_page: https://github.com/jemalloc/jemalloc/
+      license_concluded: BSD-3-Clause AND FSFAP AND BSD-2-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFUL AND BSD-2-Clause-Views AND MIT
+      license_declared: BSD-3-Clause AND FSFAP AND BSD-2-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND FSFUL AND BSD-2-Clause-Views AND MIT
+      short_summary: A general purpose malloc implementation that emphasizes fragmentation
+        avoidance and scalable concurrency support.
+      supplier: 'Organization: Broadcom, Inc.'

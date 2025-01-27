@@ -1,0 +1,14 @@
+sources:
+- archive: libsoup-3.2.1.tar.xz
+  archive_sha512sum: e5f60fd700f4cda041d869eec50e787b2fbe9323949b90710405cff296e108bab6d1323ab96e89855c5396ce73c7b7574b424dbe957ae10b48740b272889be51
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libsoup is HTTP client/server library for GNOME '
+      home_page: http://wiki.gnome.org/LibSoup
+      license_concluded: MIT AND MPL-2.0 AND BSD-3-Clause AND Apache-2.0 AND LGPL-2.0-only
+        AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+      license_declared: MIT AND MPL-2.0 AND BSD-3-Clause AND Apache-2.0 AND LGPL-2.0-only
+        AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+      short_summary: libsoup HTTP client/server library
+      supplier: 'Organization: Broadcom, Inc.'

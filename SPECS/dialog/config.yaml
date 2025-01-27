@@ -1,0 +1,22 @@
+sources:
+- archive: dialog-1.3-20220728.tgz
+  archive_sha512sum: dddceaf00bfec4b53f2cf67e51d4c54841d9db337536657c21bc8f324a0eb9c6d621f00e09bfb741bd263f171dde38cfea87568f86daf04a9e88575a0ed61218
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Dialog is a utility that allows you to show dialog boxes
+        (containing questions or messages) in TTY (text mode) interfaces.  Dialog
+        is called from within a shell script.  The following dialog boxes are implemented:
+        yes/no, menu, input, message, text, info, checklist, radiolist, and gauge.  Install
+        dialog if you would like to create TTY dialog boxes. '
+      home_page: http://invisible-island.net/dialog/dialog.html
+      license_concluded: LGPL-2.0-or-later AND X11-distribute-modifications-variant
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND SMLNJ AND LGPL-2.1-or-later
+        AND GPL-3.0-only AND FSFUL AND GPL-2.0-or-later AND GPL-1.0-or-later AND GPL-3.0-or-later
+        AND LGPL-2.1-only AND X11
+      license_declared: LGPL-2.0-or-later AND X11-distribute-modifications-variant
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND SMLNJ AND LGPL-2.1-or-later
+        AND GPL-3.0-only AND FSFUL AND GPL-2.0-or-later AND GPL-1.0-or-later AND GPL-3.0-or-later
+        AND LGPL-2.1-only AND X11
+      short_summary: A utility for creating TTY dialog boxes
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,22 @@
+sources:
+- archive: tpm2-tss-3.2.0.tar.gz
+  archive_sha512sum: cabb411f074dfa94919ba914849aac77a0ac2f50622e28a1406cf575369148774748e0e2b7a7c566ec83561a96d4b883bac5a3b1763f4cf48668a0c5d68c0a23
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'OSS implementation of the TCG TPM2 Software Stack (TSS2) '
+      home_page: https://github.com/tpm2-software/tpm2-tss
+      license_concluded: BSD-2-Clause AND BSD-3-Clause AND FSFULLR AND FSFULLRWD AND
+        FSFAP-no-warranty-disclaimer AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-or-later AND FSFAP AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      license_declared: BSD-2-Clause AND BSD-3-Clause AND FSFULLR AND FSFULLRWD AND
+        FSFAP-no-warranty-disclaimer AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
+        AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-or-later AND FSFAP AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      short_summary: OSS implementation of the TCG TPM2 Software Stack (TSS2)
+      supplier: 'Organization: Broadcom, Inc.'

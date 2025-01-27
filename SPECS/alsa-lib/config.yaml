@@ -1,0 +1,26 @@
+sources:
+- archive: alsa-lib-1.2.8.tar.bz2
+  archive_sha512sum: 865ff05a8f589996f8d63d43a91c961f1b64144f3e1d17c7074b7ac16f25b3fd1c371d46ed63a8cc20fa01e63c76b75f1a9802b56889ae1073854dd050d27688
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The ALSA Library package contains the ALSA library used
+        by programs (including ALSA Utilities) requiring access to the ALSA sound
+        interface. '
+      home_page: http://alsa-project.org
+      license_concluded: GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND X11 AND GPL-3.0-or-later WITH Libtool-exception
+        AND LGPL-2.1-or-later AND GPL-3.0-or-later AND FSFULLRWD AND LGPL-2.0-or-later
+        AND FSFUL AND GPL-2.0-or-later WITH Linux-syscall-note AND FSFULLR AND GPL-2.0-only
+        AND LGPL-2.1-only
+      license_declared: GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND X11 AND GPL-3.0-or-later WITH Libtool-exception
+        AND LGPL-2.1-or-later AND GPL-3.0-or-later AND FSFULLRWD AND LGPL-2.0-or-later
+        AND FSFUL AND GPL-2.0-or-later WITH Linux-syscall-note AND FSFULLR AND GPL-2.0-only
+        AND LGPL-2.1-only
+      short_summary: ALSA library
+      supplier: 'Organization: Broadcom, Inc.'

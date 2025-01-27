@@ -1,0 +1,25 @@
+sources:
+- archive: dashboard-dist-2.7.0.v1.tar.gz
+  archive_sha512sum: 1ade7bdbdce573027f3e94f1ef0614e04cc72762671d225bb67f22c3b3f0ecbfc83f6744aba179d153c1800611a07348a6cd901d31981f6951f038f806b1cf1d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Shows the Kubernetes Dashboard UI.
+      home_page: https://github.com/kubernetes/dashboard
+      license_concluded: MIT AND 0BSD AND Apache-2.0 AND JSON AND BSD-3-Clause AND
+        CC0-1.0
+      license_declared: MIT AND 0BSD AND Apache-2.0 AND JSON AND BSD-3-Clause AND
+        CC0-1.0
+      short_summary: Shows the Kubernetes Dashboard UI.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: kubernetes-dashboard-2.7.0.tar.gz
+  archive_sha512sum: bd5567bd5a8163cf13de5b935ce90aafb4acba58acc07740eb1ed22ae761c68a7d160a22cfe3d49a9e700a4139c3cc1bef6a76a1bebd88caabef909cd85607b3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Kubernetes Dashboard UI. '
+      home_page: https://github.com/kubernetes/dashboard
+      license_concluded: JSON AND Apache-2.0
+      license_declared: JSON AND Apache-2.0
+      short_summary: Kubernetes Dashboard UI
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,19 @@
+sources:
+- archive: libcap-2.66.tar.xz
+  archive_sha512sum: ac005b622f6e065f30ce282a5c87240e7b9da75366ee537aa4835bc501b44bc242c10a4ba4dc070e2415fc7f635d1c3c4e45fbeeaf962cf7973dda82bf6377f0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libcap package implements the user-space interfaces
+        to the POSIX 1003.1e capabilities available in Linux kernels. These capabilities
+        are a partitioning of the all powerful root privilege into a set of distinct
+        privileges. '
+      home_page: https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
+      license_concluded: Apache-2.0 AND (BSD-3-Clause OR GPL-2.0-only) AND BSD-3-Clause
+        AND (BSD-3-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR LGPL-2.0-or-later)
+        AND (BSD-3-Clause OR GPL-2.0-or-later) AND GPL-1.0-or-later AND GPL-2.0-only
+      license_declared: Apache-2.0 AND (BSD-3-Clause OR GPL-2.0-only) AND BSD-3-Clause
+        AND (BSD-3-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR LGPL-2.0-or-later)
+        AND (BSD-3-Clause OR GPL-2.0-or-later) AND GPL-1.0-or-later AND GPL-2.0-only
+      short_summary: Libcap
+      supplier: 'Organization: Broadcom, Inc.'

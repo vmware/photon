@@ -1,0 +1,23 @@
+sources:
+- archive: iperf-3.17.1.tar.gz
+  archive_sha512sum: 54789c5a63081aa803575ce1df3cb251a3b0bb16313f049f2479ae3a5af39944ace1222d4a086bed0ab34821da73371b2499f8b8283791a953d861da4cfc56f0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'ipref is a network performance measurement tool that
+        can measure the maximum achievable network bandwidth on IP networks. It supports
+        tuning of various parameters related to timing, protocols, and buffers.  For
+        each test it reports the bandwidth, loss, and other parameters. '
+      home_page: https://github.com/esnet/iperf
+      license_concluded: FSFUL AND FSFAP AND MIT AND BSD-3-Clause AND GPL-2.0-only
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-2-Clause AND
+        NCSA AND X11 AND FSFULLRWD AND FSFULLR AND BSD-3-Clause-LBNL
+      license_declared: FSFUL AND FSFAP AND MIT AND BSD-3-Clause AND GPL-2.0-only
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-2-Clause AND
+        NCSA AND X11 AND FSFULLRWD AND FSFULLR AND BSD-3-Clause-LBNL
+      short_summary: A network performance benchmark tool.
+      supplier: 'Organization: Broadcom, Inc.'

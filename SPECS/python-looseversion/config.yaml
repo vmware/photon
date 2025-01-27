@@ -1,0 +1,12 @@
+sources:
+- archive: looseversion-1.3.0.tar.gz
+  archive_sha512sum: a54c788ba698b07308cfc75b5afba2cda59451d72d178be92b43c433deac9b24bffafa26f121af79a3d42eca8f83e7f50477498e1a17aec47cc213d39aa47eb2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Version numbering for anarchists and software realists '
+      home_page: https://github.com/effigies/looseversion
+      license_concluded: Python-2.0
+      license_declared: Python-2.0
+      short_summary: Version numbering for anarchists and software realists
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,24 @@
+sources:
+- archive: tomcat-connectors-1.2.48-src.tar.gz
+  archive_sha512sum: 955a830724a3902e29032a5d2e7603d3170334e8a383d314f6bf8539d53d9f7ee4cfa0b31cfc954acb0a13d9975ed2229de085d08de3885f8679b509924fde47
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Apache Tomcat Connectors project is part of the Tomcat
+        project and provides web server plugins to connect web servers with Tomcat
+        and other backends. mod_jk is a module connecting Tomcat and Apache '
+      home_page: http://tomcat.apache.org/connectors-doc
+      license_concluded: FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND FSFAP
+        AND GPL-3.0-or-later AND MIT AND X11 AND BSD-3-Clause AND RSA-MD AND GPL-2.0-only
+        AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLR
+        AND GPL-3.0-or-later WITH Libtool-exception AND FSFULLRWD AND Caldera-no-preamble
+        AND BSD-2-Clause AND GPL-3.0-or-later WITH Autoconf-exception-macro AND Beerware
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-1.0-or-later
+      license_declared: FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND FSFAP
+        AND GPL-3.0-or-later AND MIT AND X11 AND BSD-3-Clause AND RSA-MD AND GPL-2.0-only
+        AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFULLR
+        AND GPL-3.0-or-later WITH Libtool-exception AND FSFULLRWD AND Caldera-no-preamble
+        AND BSD-2-Clause AND GPL-3.0-or-later WITH Autoconf-exception-macro AND Beerware
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-1.0-or-later
+      short_summary: Apache Tomcat Connector
+      supplier: 'Organization: Broadcom, Inc.'

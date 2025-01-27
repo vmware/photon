@@ -1,0 +1,12 @@
+sources:
+- archive: leveldb-1.23.tar.gz
+  archive_sha512sum: ac15eac29387b9f702a901b6567d47a9f8c17cf5c7d8700a77ec771da25158c83b04959c33f3d4de7a3f033ef08f545d14ba823a8d527e21889c4b78065b0f84
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A fast and lightweight key/value database library. '
+      home_page: https://github.com/google/leveldb
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: A fast and lightweight key/value database library by Google
+      supplier: 'Organization: Broadcom, Inc.'

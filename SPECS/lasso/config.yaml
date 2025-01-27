@@ -1,0 +1,25 @@
+sources:
+- archive: lasso-2.8.0.tar.gz
+  archive_sha512sum: d1b26608ea7cd08e4e2c40cec0ddc41e3235fd5c2cee64d989ae752bbbc276fe056455e3943a778abcc7f8e8596c85beada75df4290579e6af15e82d0e2fb5ca
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Lasso is a library that implements the Liberty Alliance
+        Single Sign On standards, including the SAML and SAML2 specifications. It
+        allows to handle the whole life-cycle of SAML based Federations, and provides
+        bindings for multiple languages. '
+      home_page: https://lasso.entrouvert.org/
+      license_concluded: FSFAP-no-warranty-disclaimer AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND Apache-2.0 AND FSFULLRWD
+        AND MIT AND GPL-1.0-or-later AND FSFUL AND LGPL-2.0-only AND MPL-1.0 AND GPL-2.0-or-later
+        AND FSFULLR AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND GPL-3.0-only
+      license_declared: FSFAP-no-warranty-disclaimer AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND Apache-2.0 AND FSFULLRWD
+        AND MIT AND GPL-1.0-or-later AND FSFUL AND LGPL-2.0-only AND MPL-1.0 AND GPL-2.0-or-later
+        AND FSFULLR AND GPL-3.0-or-later WITH Libtool-exception AND X11 AND GPL-3.0-only
+      short_summary: Liberty Alliance Single Sign On
+      supplier: 'Organization: Broadcom, Inc.'

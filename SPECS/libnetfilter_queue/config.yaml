@@ -1,0 +1,21 @@
+sources:
+- archive: libnetfilter_queue-1.0.5.tar.bz2
+  archive_sha512sum: 732a44b602e5efaa4f5582ea25ff8f5ec8f4dca5c0e725cd93fe2d441db80416b25c6018147be90acb262d7428eb5b21b3f7b5920e612d115061ec6a19d67f85
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libnetfilter_queue is a userspace library providing an
+        API to packets that have been queued by the kernel packet filter. It is is
+        part of a system that deprecates the old ip_queue / libipq mechanism. libnetfilter_queue
+        has been previously known as libnfnetlink_queue. '
+      home_page: http://www.netfilter.org/projects/libnetfilter_queue/index.html
+      license_concluded: FSFUL AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-only AND GPL-1.0-or-later AND FSFULLR AND X11 AND GPL-3.0-or-later
+      license_declared: FSFUL AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-only AND GPL-1.0-or-later AND FSFULLR AND X11 AND GPL-3.0-or-later
+      short_summary: Provides API to packets queued by kernel packet filter
+      supplier: 'Organization: Broadcom, Inc.'
