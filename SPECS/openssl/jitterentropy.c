@@ -88,7 +88,7 @@
 	} while (0)
 
 #define PROVIDER_NAME "OpenSSL Jitter Entropy Provider"
-#define PROVIDER_VERSION "0.2"
+#define PROVIDER_VERSION "0.3"
 
 #define JENT_ALG_NAME "jitterentropy_rng"
 
@@ -161,15 +161,25 @@ static void algif_rng_close(int socket)
 	close(socket);
 }
 
+#define RETRY_COUNT 7
+/*
+ * This function is a direct return value from rand_generate().
+ * It must follow OSSL_FUNC_RAND_GENERATE API:
+ *   0 means error.
+ *   Any non-zero number including negative ones - success, meaning entire
+ *   request (`len` bytes) was fulfilled. No partial returns.
+ *
+ */
 static ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len)
 {
 	ssize_t out = 0;
 	struct iovec iov;
 	struct msghdr msg;
+	size_t retry = RETRY_COUNT;
 
 	pr_dbg("len: %ld\n", len);
 
-	while (len) {
+	while (len > 0) {
 		ssize_t r = 0;
 
 		iov.iov_base = (void *)(uintptr_t)buffer;
@@ -183,16 +193,43 @@ static ssize_t algif_rng_get(int socket, uint8_t *buffer, size_t len)
 		msg.msg_iovlen = 1;
 
 		r = recvmsg(socket, &msg, 0);
-		pr_dbg("recvmsg: (r: %ld) (len: %lu) (out: %ld)\n", r, len, out);
-		if (r <= 0) {
-			if (r < 0 || len > 0) {
-				pr_err("ERROR: recvmsg(...) failed ...('%s')\n", strerror(errno));
-			}
+		pr_dbg("recvmsg: (r: %ld) (len: %lu) (out: %ld)\n", r, len,
+			out);
+
+		if (r > 0) {
+			len -= (size_t)r;
+			out += r;
+			buffer += r;
+			retry = RETRY_COUNT;
+			continue;
+		}
+
+		/*
+		 * Socket closed from other side? It should not happen with
+		 * ALG_IF API, but just in case, let's handle it and report an
+		 * error. If it ever happened need to add additional logic
+		 * with socket reinitialization.
+		 */
+		if (r == 0) {
+			pr_err("ERROR: recvmsg(...) returned 0\n");
+			out = 0;
 			break;
 		}
-		len -= (size_t)r;
-		out += r;
-		buffer += r;
+
+		/* Retry on non critical errors. */
+		if ((errno == -EINTR || errno == -EAGAIN) && retry) {
+			retry--;
+			continue;
+		}
+
+		/*
+		 * Non-recoverable error, report it. OpenSSL caller
+		 * must do a recovery or a fallback.
+		 */
+		pr_err("ERROR: recvmsg(...) failed ...('%s')\n",
+				strerror(errno));
+		out = 0;
+		break;
 	}
 
 	pr_dbg("out: %ld\n", out);
