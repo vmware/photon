@@ -1,7 +1,7 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.5.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        libtiff
 URL:            http://www.libtiff.org
 Group:          System Environment/Libraries
@@ -11,12 +11,13 @@ Distribution:   Photon
 Source0: https://download.osgeo.org/%{name}/tiff-%{version}.tar.xz
 %define sha512 tiff=fc6af93d36598527480c517ddc4f19fe72e9f07ef4997e5731604253c8db0b9bae816ba7a56985bf22fbbb48db1fab5ed4c2b32a5145bc9477ef24b221a61179
 
-Patch0:         CVE-2023-40745.patch
-Patch1:         CVE-2023-41175.patch
-Patch2:         CVE-2023-6277.patch
-Patch3:         CVE-2023-52355.patch
-Patch4:         CVE-2023-52356.patch
-Patch5:         CVE-2024-7006.patch
+Patch0: CVE-2023-40745.patch
+Patch1: CVE-2023-41175.patch
+Patch2: CVE-2023-6277.patch
+Patch3: CVE-2023-52355.patch
+Patch4: CVE-2023-52356.patch
+Patch5: CVE-2024-7006.patch
+Patch6: CVE-2023-6228.patch
 
 BuildRequires:  libjpeg-turbo-devel
 
@@ -69,6 +70,8 @@ It contains the libraries and header files to create applications
 %{_mandir}/man*/*
 
 %changelog
+* Tue Jan 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5.1-3
+- Fix CVE-2023-6228
 * Mon Sep 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5.1-2
 - Fix build regression due to random download failures at build time
 - CVE fixes
