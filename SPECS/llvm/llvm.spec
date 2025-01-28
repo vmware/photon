@@ -5,7 +5,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        15.0.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -78,6 +78,8 @@ mv cmake-%{version}.src/Modules/*.cmake cmake/modules
       -DLLVM_INCLUDE_GO_TESTS=No \
       -DLLVM_ENABLE_RTTI:BOOL=ON \
       -DLLVM_INCLUDE_BENCHMARKS=OFF \
+      -DCMAKE_C_FLAGS=-pipe \
+      -DCMAKE_CXX_FLAGS=-pipe \
       -Wno-dev
 
 %cmake_build
@@ -126,6 +128,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+* Tue Jan 28 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 15.0.7-5
+- Use compiler -pipe option to reduce storage pressure
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 15.0.7-4
 - Release bump for SRP compliance
 * Mon Oct 30 2023 Harinadh D <hdommaraju@vmware.com> 15.0.7-3
