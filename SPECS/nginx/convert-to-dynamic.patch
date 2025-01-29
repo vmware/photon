@@ -1,0 +1,60 @@
+From 40bbb02ba5531f839bc29e5b3f9e165ffb9d2702 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 15 Jan 2025 09:06:53 +0000
+Subject: [PATCH] Convert http_dav and stream_ssl_preread modules to dynamic
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ auto/modules | 4 ++--
+ auto/options | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/auto/modules b/auto/modules
+index 1a5e421..36534d9 100644
+--- a/auto/modules
++++ b/auto/modules
+@@ -488,7 +488,7 @@ if [ $HTTP = YES ]; then
+         . auto/module
+     fi
+ 
+-    if [ $HTTP_DAV = YES ]; then
++    if [ $HTTP_DAV != NO ]; then
+         have=NGX_HTTP_DAV . auto/have
+ 
+         ngx_module_name=ngx_http_dav_module
+@@ -1228,7 +1228,7 @@ if [ $STREAM != NO ]; then
+         . auto/module
+     fi
+ 
+-    if [ $STREAM_SSL_PREREAD = YES ]; then
++    if [ $STREAM_SSL_PREREAD != NO ]; then
+         ngx_module_name=ngx_stream_ssl_preread_module
+         ngx_module_deps=
+         ngx_module_srcs=src/stream/ngx_stream_ssl_preread_module.c
+diff --git a/auto/options b/auto/options
+index 6a6e990..f33fc72 100644
+--- a/auto/options
++++ b/auto/options
+@@ -249,7 +249,7 @@ $0: warning: the \"--with-ipv6\" option is deprecated"
+         --with-http_geoip_module=dynamic)
+                                          HTTP_GEOIP=DYNAMIC         ;;
+         --with-http_sub_module)          HTTP_SUB=YES               ;;
+-        --with-http_dav_module)          HTTP_DAV=YES               ;;
++        --with-http_dav_module=dynamic)          HTTP_DAV=DYNAMIC;;
+         --with-http_flv_module)          HTTP_FLV=YES               ;;
+         --with-http_mp4_module)          HTTP_MP4=YES               ;;
+         --with-http_gunzip_module)       HTTP_GUNZIP=YES            ;;
+@@ -328,8 +328,8 @@ use the \"--with-mail_ssl_module\" option instead"
+         --with-stream_geoip_module)      STREAM_GEOIP=YES           ;;
+         --with-stream_geoip_module=dynamic)
+                                          STREAM_GEOIP=DYNAMIC       ;;
+-        --with-stream_ssl_preread_module)
+-                                         STREAM_SSL_PREREAD=YES     ;;
++        --with-stream_ssl_preread_module=dynamic)
++                                         STREAM_SSL_PREREAD=DYNAMIC ;;
+         --without-stream_limit_conn_module)
+                                          STREAM_LIMIT_CONN=NO       ;;
+         --without-stream_access_module)  STREAM_ACCESS=NO           ;;
+-- 
+2.45.1
+
