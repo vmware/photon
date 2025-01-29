@@ -1,12 +1,12 @@
 %define njs_ver     0.8.4
 %define nginx_user  %{name}
 %define headers_more_nginx_module_ver 0.37
+%define dyn_modules_dir     %{_sysconfdir}/%{name}/modules
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.27.1
-Release:        2%{?dist}
-License:        BSD-2-Clause
+Release:        3%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -23,6 +23,11 @@ Source2: https://github.com/openresty/headers-more-nginx-module/archive/refs/tag
 
 Source3: %{name}.service
 Source4: %{name}.sysusers
+
+Source5: license.txt
+%include %{SOURCE5}
+
+Patch0: convert-to-dynamic.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -41,9 +46,61 @@ Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 %description
 NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server.
 
+%package mod-njs
+Summary: nginx javascript module
+
+%description mod-njs
+njs is an nginx module that extends the server's functionality through JavaScript scripting,
+enabling the creation of custom server-side logic and more.
+
+%package mod-headers-more
+Summary: Set, add, and clear arbitrary output headers in NGINX http servers
+Requires: %{name} = %{version}-%{release}
+Conflicts: %{name} < 1.27.1-3%{?dist}
+
+%description mod-headers-more
+%{summary}.
+
+%package mod-stream
+Summary: Nginx stream modules
+Requires: %{name} = %{version}-%{release}
+
+%description mod-stream
+%{summary}.
+
+%package mod-http-dav
+Summary: File management automation via the WebDAV protocol.
+Requires: %{name} = %{version}-%{release}
+
+%description mod-http-dav
+%{summary}.
+
+%package mod-stream-ssl-preread
+Summary: Allows extracting information from the ClientHello message without terminating SSL/TLS
+Requires: %{name} = %{version}-%{release}
+
+%description mod-stream-ssl-preread
+%{summary}.
+
+%package all-modules
+Summary: A meta package that installs all available Nginx modules
+Requires: %{name} = %{version}-%{release}
+
+BuildArch: noarch
+
+Requires: %{name}-mod-njs = %{version}-%{release}
+Requires: %{name}-mod-stream = %{version}-%{release}
+Requires: %{name}-mod-http-dav = %{version}-%{release}
+Requires: %{name}-mod-headers-more = %{version}-%{release}
+Requires: %{name}-mod-stream-ssl-preread = %{version}-%{release}
+
+%description all-modules
+%{summary}.
+
 %prep
 # Using autosetup is not feasible
 %setup -q -a1 -a2
+%autopatch -p1
 
 %build
 export CFLAGS="-O2 -g -Wno-discarded-qualifiers"
@@ -55,21 +112,22 @@ sh ./configure \
     --lock-path=%{_var}/run/%{name}.lock \
     --error-log-path=%{_var}/log/%{name}/error.log \
     --http-log-path=%{_var}/log/%{name}/access.log \
-    --add-module=njs-%{njs_ver}/%{name} \
+    --user=%{nginx_user} \
+    --group=%{nginx_user} \
+    --add-dynamic-module=njs-%{njs_ver}/%{name} \
     --add-dynamic-module=./headers-more-nginx-module-%{headers_more_nginx_module_ver} \
-    --with-http_dav_module \
-    --with-http_ssl_module \
     --with-pcre \
-    --with-ipv6 \
-    --with-stream \
+    --with-compat \
+    --with-http_ssl_module \
+    --modules-path=%{dyn_modules_dir} \
     --with-http_auth_request_module \
     --with-http_sub_module \
     --with-http_stub_status_module \
     --with-http_v2_module \
     --with-http_realip_module \
-    --with-stream_ssl_preread_module \
-    --user=%{nginx_user} \
-    --group=%{nginx_user}
+    --with-http_dav_module=dynamic \
+    --with-stream=dynamic \
+    --with-stream_ssl_preread_module=dynamic
 
 %make_build
 
@@ -113,7 +171,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}/scgi_params.default
 %config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params
 %config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params.default
-%{_sysconfdir}/%{name}/modules/ngx_http_headers_more_filter_module.so
 %{_sysconfdir}/%{name}/win-utf
 %{_sysconfdir}/%{name}/html/*
 %{_sysusersdir}/%{name}.sysusers
@@ -122,7 +179,34 @@ rm -rf %{buildroot}
 %dir %{_var}/opt/%{name}/log
 %{_var}/log/%{name}
 
+%files all-modules
+%defattr(-,root,root)
+
+%files mod-njs
+%defattr(-,root,root)
+%{dyn_modules_dir}/ngx_http_js_module.so
+%{dyn_modules_dir}/ngx_stream_js_module.so
+
+%files mod-headers-more
+%defattr(-,root,root)
+%{dyn_modules_dir}/ngx_http_headers_more_filter_module.so
+
+%files mod-stream
+%defattr(-,root,root)
+%{dyn_modules_dir}/ngx_stream_module.so
+
+%files mod-http-dav
+%defattr(-,root,root)
+%{dyn_modules_dir}/ngx_http_dav_module.so
+
+%files mod-stream-ssl-preread
+%defattr(-,root,root)
+%{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
+
 %changelog
+* Wed Jan 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.27.1-3
+- Convert modulee like http-dav and stream-ssl-preread to dynamic
+- Package dynamic modules as a sub package
 * Fri Oct 4 2024 Etienne Le Sueur <etienne.le-sueur@broadcom.com> 1.27.1-2
 - Include WebDAV module
 * Mon Aug 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.27.1-1
