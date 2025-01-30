@@ -1,6 +1,6 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.39.4
+Version:        2.40.4
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512 %{name}=4d79b22eda772283d79bf8bad5260f139ff66bf942c9fa0e7b2be0888c1f2f941fd7dbb301ab5ee0e6f92444c0e8d3b1b0fdb4d3a41b9d8d242c866c9593f87f
+%define sha512 %{name}=0491d759d9bc44edb705acc30058ba24bf03dc9336ee825680d00c4690a825bdd36b2b2911e7f12889bca9a6a72644ce9b299cc16fe74fd033e74f7f114a4c2f
 
 BuildRequires: curl-devel
 BuildRequires: python3-devel
@@ -118,7 +118,6 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/git-core/git-instaweb
 %{_libexecdir}/git-core/git-filter-branch
 %{_libexecdir}/git-core/git-archimport
-%{_libexecdir}/git-core/git-add--interactive
 %{_libexecdir}/git-core/git-gui--askpass
 %{_libexecdir}/git-core/git-gui
 %{_libexecdir}/git-core/git-citool
@@ -135,6 +134,10 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Thu Jan 30 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.40.4-1
+- Version upgrade to v2.40.4
+- Fix CVE-2024-52006, CVE-2024-50349
+- git-add-interactive got removed
 * Wed May 15 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.39.4-1
 - Version upgrade to v2.39.4 to remove last commit patches
 * Tue May 14 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.39.3-1
