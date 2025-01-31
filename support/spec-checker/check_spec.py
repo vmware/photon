@@ -483,6 +483,7 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
     global g_ignore_list
 
     g_ignore_list += cfg_dict["ignore_unused_files"].get(dirname, [])
+    g_ignore_list += cfg_dict["global_ignore_list"]
 
     ret = False
     sec = "unused_files"

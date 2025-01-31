@@ -1,3 +1,4 @@
 {
-    "ignore_unused_files": {}
+    "ignore_unused_files": {},
+    "global_ignore_list": ["config.yaml"]
 }
