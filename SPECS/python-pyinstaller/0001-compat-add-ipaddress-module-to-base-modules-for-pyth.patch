@@ -1,0 +1,41 @@
+From dfbf84c5b844805ced02180bcbf984bbdf2f71b2 Mon Sep 17 00:00:00 2001
+From: Rok Mandeljc <rok.mandeljc@gmail.com>
+Date: Sun, 4 Jun 2023 00:29:33 +0200
+Subject: [PATCH 3/3] compat: add ipaddress module to base modules for python
+ >= 3.11.4
+
+Under python 3.12, `pathlib` (which we use in our bootstrap
+`pymod02_importers` module) imports `urllib`, and that in turn requires
+`ipaddress`. This change was cherry picked to Python 3.11.
+---
+ PyInstaller/compat.py | 4 ++++
+ news/7692.bugfix.rst  | 2 ++
+ 2 files changed, 6 insertions(+)
+ create mode 100644 news/7692.bugfix.rst
+
+diff --git a/PyInstaller/compat.py b/PyInstaller/compat.py
+index 85ec787db..782c9359e 100644
+--- a/PyInstaller/compat.py
++++ b/PyInstaller/compat.py
+@@ -654,6 +654,10 @@ def importlib_load_source(name: str, pathname: str):
+ if not is_py310:
+     PY3_BASE_MODULES.add('_bootlocale')
+ 
++if sys.version_info >= (3, 11, 4):
++    # required by loader/pymod02_importers.py -> pathlib -> urllib
++    PY3_BASE_MODULES.add('ipaddress')
++
+ # Object types of Pure Python modules in modulegraph dependency graph.
+ # Pure Python modules have code object (attribute co_code).
+ PURE_PYTHON_MODULE_TYPES = {
+diff --git a/news/7692.bugfix.rst b/news/7692.bugfix.rst
+new file mode 100644
+index 000000000..76dcd8e46
+--- /dev/null
++++ b/news/7692.bugfix.rst
+@@ -0,0 +1,2 @@
++Fix ``ModuleNotFoundError: No module named 'ipaddress'`` for any application
++built with Python >=3.11.4.
+-- 
+2.39.4
+

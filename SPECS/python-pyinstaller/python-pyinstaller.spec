@@ -2,7 +2,7 @@
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python3-pyinstaller
 Version:        5.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -20,6 +20,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-wheel
 BuildRequires:  python3-xml
 BuildRequires:  zlib-devel
+BuildRequires:  dos2unix
 %if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -32,6 +33,8 @@ Requires:       python3-xml
 Requires:       python3-pyinstaller-hooks-contrib
 Requires:       python3-altgraph
 
+Patch0:         0001-compat-add-ipaddress-module-to-base-modules-for-pyth.patch
+
 %description
 PyInstaller bundles a Python application and all its dependencies into a single package. The user can run the packaged app without installing a Python interpreter or any modules.
 PyInstaller reads a Python script written by you. It analyzes your code to discover every other module and library your script needs in order to execute.
@@ -40,7 +43,17 @@ PyInstaller is tested against Windows, Mac OS X, and Linux. However, it is not a
 to make a Linux app you run it in Linux, etc. PyInstaller has been used successfully with AIX, Solaris, and FreeBSD, but is not tested against them.
 
 %prep
-%autosetup -n pyinstaller-%{version}
+# Using autosetup is not feasible
+%setup -n pyinstaller-%{version}
+
+# Convert all files to Unix line endings
+# otherwise patches created on Linux
+# will not apply
+for file in $(find . -type f); do
+    dos2unix $file
+done
+
+%autopatch -p1 -m0 -M2
 
 %build
 pushd bootloader
@@ -72,6 +85,8 @@ python3 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+* Thu Jan 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.5-4
+- Fix PyInstaller for Python >= 3.11.4
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.5-3
 - Release bump for SRP compliance
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.5-2
