@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -171,10 +171,6 @@ cp -v %{SOURCE1} %{buildroot}/sbin
 rm -rf %{buildroot}%{_infodir}
 #       Install configuration files
 
-# Spaces should not be used in nsswitch.conf in the begining of new line
-# Only tab should be used as it expects the same in source code.
-# Otherwise "altfiles" will not be added. which may cause dbus.service failure.
-# 'file' and 'files' are valid syntax. However using file for shadow breaks PAM.
 cp -pv %{SOURCE3} %{buildroot}%{_sysconfdir}
 
 cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
@@ -331,6 +327,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Nov 27 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.32-20
+- Adjust nsswitch.conf formatting
 * Sun Jun 30 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.32-19
 - Fix locale generation issue by packaging files properly
 * Tue May 28 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.32-18
