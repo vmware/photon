@@ -1,21 +1,61 @@
 sources:
-- archive: file-5.43.tar.gz
-  archive_sha512sum: 9d02f4e7a69d90468d6bd35df5ec240ddee8c2408b7df3e73427d7f18736baf77db0638a1fe8283f4e6abd1d5ad653890ed3a5a0d48bb52d4023ca4070ecdf06
-  skip_validation: true
-  spdx:
-    package:
-      detailed_description: 'The package contains a utility for determining the type
-        of a given file or files '
-      home_page: http://www.darwinsys.com/file
-      license_concluded: BSD-3-Clause AND FSFULLR AND GPL-3.0-or-later AND ISC AND
-        GPL-3.0-or-later WITH Libtool-exception AND BSD-2-Clause AND BSD-2-Clause-Darwin
-        AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
-        GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFAP AND GPL-2.0-or-later
-        WITH Libtool-exception AND FSFUL AND BSD-4-Clause AND (BSD-3-Clause OR GPL-1.0-or-later)
-      license_declared: BSD-3-Clause AND FSFULLR AND GPL-3.0-or-later AND ISC AND
-        GPL-3.0-or-later WITH Libtool-exception AND BSD-2-Clause AND BSD-2-Clause-Darwin
-        AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
-        GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFAP AND GPL-2.0-or-later
-        WITH Libtool-exception AND FSFUL AND BSD-4-Clause AND (BSD-3-Clause OR GPL-1.0-or-later)
-      short_summary: Contains a utility for determining file types
-      supplier: 'Organization: Broadcom, Inc.'
+    - archive: file-5.43.tar.gz
+      archive_type: upstream
+      archive_sha512sum: 9d02f4e7a69d90468d6bd35df5ec240ddee8c2408b7df3e73427d7f18736baf77db0638a1fe8283f4e6abd1d5ad653890ed3a5a0d48bb52d4023ca4070ecdf06
+      version: "5.43"
+      name: file-5.43
+      url: http://ftp.astron.com/pub/file/file-5.43.tar.gz
+      repo_url: https://github.com/file/file.git
+      commit_id: 011778a2877f75597ed83c1a2716d917770920ee
+      skip_list: []
+      missing:
+          [
+              ltoptions.m4,
+              compile,
+              .gitignore,
+              config.h.in,
+              install-sh,
+              fuzz,
+              missing,
+              magic.pyi,
+              aclocal.m4,
+              HOWTO,
+              etf,
+              .git,
+              pgp-binary-key-v4-rsa-no-userid-rev.result,
+              Makefile.in,
+              depcomp,
+              ltversion.m4,
+              pgp-binary-key-v4-ecc-rev.result,
+              .cvsignore,
+              configure,
+              libtool.m4,
+              ltmain.sh,
+              threads.py,
+              config.sub,
+              ltsugar.m4,
+              config.guess,
+              .travis.yml,
+              pyproject.toml,
+              lt~obsolete.m4,
+          ]
+      spdx:
+          package:
+              detailed_description:
+                  "The package contains a utility for determining the type
+                  of a given file or files "
+              home_page: http://www.darwinsys.com/file
+              license_concluded:
+                  BSD-3-Clause AND FSFULLR AND GPL-3.0-or-later AND ISC AND
+                  GPL-3.0-or-later WITH Libtool-exception AND BSD-2-Clause AND BSD-2-Clause-Darwin
+                  AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+                  GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFAP AND GPL-2.0-or-later
+                  WITH Libtool-exception AND FSFUL AND BSD-4-Clause AND (BSD-3-Clause OR GPL-1.0-or-later)
+              license_declared:
+                  BSD-3-Clause AND FSFULLR AND GPL-3.0-or-later AND ISC AND
+                  GPL-3.0-or-later WITH Libtool-exception AND BSD-2-Clause AND BSD-2-Clause-Darwin
+                  AND FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+                  GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFAP AND GPL-2.0-or-later
+                  WITH Libtool-exception AND FSFUL AND BSD-4-Clause AND (BSD-3-Clause OR GPL-1.0-or-later)
+              short_summary: Contains a utility for determining file types
+              supplier: "Organization: Broadcom, Inc."
