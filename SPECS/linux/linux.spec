@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.233
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -208,6 +208,9 @@ Patch138: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
 
 #Fix CVE-2023-22995
 Patch139: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
+
+#Fix CVE-2024-56604
+Patch140: 0001-Bluetooth-RFCOMM-avoid-leaving-dangling-sk-pointer-i.patch
 
 # Fix CVE-2024-23307
 Patch141: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
@@ -976,6 +979,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Feb 04 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.233-3
+- Fixes CVE-2024-56604
 * Tue Jan 21 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.233-2
 - Fixes CVE-2024-56631
 * Tue Jan 21 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.233-1

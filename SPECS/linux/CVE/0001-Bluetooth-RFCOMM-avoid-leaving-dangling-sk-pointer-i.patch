@@ -1,0 +1,59 @@
+From d4dda43bc63ba35a680cedb6a6cf7c01269fd122 Mon Sep 17 00:00:00 2001
+From: Ignat Korchagin <ignat@cloudflare.com>
+Date: Mon, 14 Oct 2024 16:38:02 +0100
+Subject: [PATCH] Bluetooth: RFCOMM: avoid leaving dangling sk pointer in
+ rfcomm_sock_alloc()
+
+[ Upstream commit 3945c799f12b8d1f49a3b48369ca494d981ac465 ]
+
+bt_sock_alloc() attaches allocated sk object to the provided sock object.
+If rfcomm_dlc_alloc() fails, we release the sk object, but leave the
+dangling pointer in the sock object, which may cause use-after-free.
+
+Fix this by swapping calls to bt_sock_alloc() and rfcomm_dlc_alloc().
+
+Signed-off-by: Ignat Korchagin <ignat@cloudflare.com>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://patch.msgid.link/20241014153808.51894-4-ignat@cloudflare.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Guru: Back ported to kernel branch 5.10.y]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ net/bluetooth/rfcomm/sock.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/net/bluetooth/rfcomm/sock.c b/net/bluetooth/rfcomm/sock.c
+index 2dcb70f49a68..c3b4d41da8e6 100644
+--- a/net/bluetooth/rfcomm/sock.c
++++ b/net/bluetooth/rfcomm/sock.c
+@@ -273,18 +273,19 @@ static struct sock *rfcomm_sock_alloc(struct net *net, struct socket *sock, int
+ 	struct rfcomm_dlc *d;
+ 	struct sock *sk;
+ 
++	d = rfcomm_dlc_alloc(prio);
++	if (!d)
++		return NULL;
++
+ 	sk = sk_alloc(net, PF_BLUETOOTH, prio, &rfcomm_proto, kern);
+-	if (!sk)
++	if (!sk) {
++		rfcomm_dlc_free(d);
+ 		return NULL;
++	}
+ 
+ 	sock_init_data(sock, sk);
+ 	INIT_LIST_HEAD(&bt_sk(sk)->accept_q);
+ 
+-	d = rfcomm_dlc_alloc(prio);
+-	if (!d) {
+-		sk_free(sk);
+-		return NULL;
+-	}
+ 
+ 	d->data_ready   = rfcomm_sk_data_ready;
+ 	d->state_change = rfcomm_sk_state_change;
+-- 
+2.39.4
+
