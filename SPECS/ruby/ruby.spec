@@ -3,7 +3,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.4
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -36,6 +36,10 @@ BuildRequires:  tzdata
 Requires:       ca-certificates
 Requires:       openssl
 Requires:       gmp
+
+# CVE-2025-0306 requires "rsa: add implicit rejection in PKCS#1 v1.5 patch in openssl".
+# This patch is present in openssl from 3.0.15-7 version
+Requires:       openssl >= 3.0.15-7
 
 Obsoletes:      rubygem-base64
 Obsoletes:      rubygem-connection_pool
@@ -126,6 +130,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Mon Feb 03 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-8
+- Fix CVE-2025-0306
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-7
 - Release bump for SRP compliance
 * Tue Dec 10 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-6
