@@ -1,14 +1,14 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.4.2
-Release:        2%{?dist}
+Version:        8.4.4
+Release:        1%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://cdn.mysql.com/Downloads/MySQL-8.4/mysql-%{version}.tar.gz
-%define sha512 %{name}=4274b78bf4e99e090adbb3ea58c3cffa84bd85aa0de7ded4567c6ad9a1994fbe6a4829b84c06b212b44d6c23530cb8080a92a8ec484f51d5d5edb2d5f15c5890
+%define sha512 %{name}=21f4d8162f57f63a589e3e5e140f89a8cc61f4c55a77dce4601e76192eb3d3fbeaf3bfb78f91345c517ad36bf4267f33202693cfc24812841c517a24fffcfd12
 
 Source1: %{name}.sysusers
 
@@ -182,6 +182,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Feb 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.4-1
+- Upgrade to v8.4.4
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 8.4.2-2
 - Release bump for SRP compliance
 * Tue Jul 23 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.2-1

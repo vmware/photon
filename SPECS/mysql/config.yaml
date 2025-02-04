@@ -1,6 +1,6 @@
 sources:
-- archive: mysql-8.4.2.tar.gz
-  archive_sha512sum: 4274b78bf4e99e090adbb3ea58c3cffa84bd85aa0de7ded4567c6ad9a1994fbe6a4829b84c06b212b44d6c23530cb8080a92a8ec484f51d5d5edb2d5f15c5890
+- archive: mysql-8.4.4.tar.gz
+  archive_sha512sum: 21f4d8162f57f63a589e3e5e140f89a8cc61f4c55a77dce4601e76192eb3d3fbeaf3bfb78f91345c517ad36bf4267f33202693cfc24812841c517a24fffcfd12
   skip_validation: true
   spdx:
     package:
