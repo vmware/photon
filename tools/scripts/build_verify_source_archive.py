@@ -9,7 +9,6 @@ import os
 import yaml
 import os.path
 import shutil
-from string import Template
 from pathlib import Path
 
 from filecmp import dircmp, DEFAULT_IGNORES
@@ -17,30 +16,6 @@ from filecmp import dircmp, DEFAULT_IGNORES
 yaml.emitter.Emitter.prepare_tag = lambda self, tag: ""
 
 SOURCE_SUPPLIER = "Organization: Broadcom, Inc."
-
-SRP_SCHEMATICS_TEMPLATE = """schema_id: '1.1'
-
-spdx_templates:
-  spdx:
-    package:
-      supplier: "Organization: Broadcom, Inc."
-      license_declared: "$SOURCE_LICENSE_DECLARED"
-      license_concluded: "$SOURCE_LICENSE_CONCLUDED"
-      home_page: "$SOURCE_HOME"
-      short_summary: "$SOURCE_SUMMARY"
-      detailed_description: "$SOURCE_DESCRIPTION"
-
-outputs:
-  $SOURCE_UID:
-    url_base: "$SOURCES_URL_BASE"
-    manifest:
-    - "$SOURCES_PATH":
-       include:
-       - "$SOURCE_ARCHIVE_NAME"
-    manifest_root: "./"
-
-    merge_spdx_template: spdx
-"""
 
 
 class SpdxInfo(object):
@@ -60,6 +35,19 @@ class SpdxInfo(object):
             "home_page": home_page,
             "short_summary": short_summary,
             "detailed_description": detailed_description,
+        }
+
+
+class SourceSchematic(object):
+    def __init__(self, source_uid, sources_url, archive_name, archive_spdx: SpdxInfo):
+        self.schema_id = "1.1"
+        self.spdx_templates = {"spdx": archive_spdx}
+        self.outputs = {}
+        self.outputs[source_uid] = {
+            "url_base": sources_url,
+            "manifest": [{"$(env:PHOTON_SOURCES_PATH)": {"include": [archive_name]}}],
+            "manifest_root": "./",
+            "merge_spdx_template": "spdx",
         }
 
 
@@ -180,7 +168,13 @@ Commands
             sources_list = conf["sources"]
             if isinstance(sources_list, list):
                 sources_list.append(sourceInfo)
-                yaml.dump(conf, f, sort_keys=False)
+                yaml.dump(
+                    conf,
+                    f,
+                    sort_keys=False,
+                    default_flow_style=False,
+                    width=float("inf"),
+                )
                 print(f"Written to file {outputFilePath} successfully")
 
     def _add_source_args(self, parser):
@@ -201,6 +195,7 @@ Commands
         parser.add_argument("--url", required=True)
         parser.add_argument("--repo-url", required=True)
         parser.add_argument("--commit-id", required=True)
+        parser.add_argument("--sources", required=True)
 
         args = parser.parse_args(self.argv[1:])
 
@@ -224,7 +219,7 @@ Commands
             missing=[],
             spdx=spdxInfo,
         )
-        diff_list, missing_list = self._verifySingleSource(source)
+        archive, diff_list, missing_list = self._verifySingleSource(source, args.sources)
         source.skip_list = diff_list
         source.missing = missing_list
         self._writeYaml(source, args.output)
@@ -254,11 +249,13 @@ Commands
     def build(self):
         parser = argparse.ArgumentParser(description="build")
         parser.add_argument("yaml")
-        parser.add_argument("--sources", required=True)
         parser.add_argument("--sources-url", required=True)
+        parser.add_argument("--outdir", required=True)
+        parser.add_argument("--sources", required=True)
         args = parser.parse_args(self.argv[2:])
         sourcesLocation = args.sources
         sourcesURLBase = args.sources_url
+        outdir = args.outdir
         if args.yaml:
             files = self._load(args.yaml)
             for sourceFile in files:
@@ -268,25 +265,31 @@ Commands
                     sourceFile.archive_type == "upstream"
                     and not sourceFile.skip_validation
                 ):
-                    diff_list, missing_list = self._verifySingleSource(sourceFile)
+                    archive, diff_list, missing_list = self._verifySingleSource(sourceFile, sourcesLocation)
                     if diff_list or missing_list:
                         logging.error(
                             f"source {sourceFile.name} files do not match with provided commit id."
                         )
                         logging.info(
-                            f"diff_list: {diff_list}"
+                            f"diff_list: {diff_list}, hint: add them to skip_list to stop comparing."
                         )
                         logging.info(
-                            f"missing: {missing_list}"
+                            f"missing: {missing_list}, hint: add them to missing list if appropriate."
                         )
-                        continue
+                        # clean downloaded source
+                        shutil.rmtree(
+                            archive, ignore_errors=False
+                        )
+                        sys.exit(1)
                     else:
                         logging.info(f"source {sourceFile.name} validated succesfuly.")
                 else:
                     logging.warning(
                         f"source {sourceFile.name} has unknown type {sourceFile.archive_type}"
                     )
-                self._writeSchematic(sourceFile, sourcesLocation, sourcesURLBase)
+                self._writeSchematic(
+                    outdir, sourceFile, sourcesLocation, sourcesURLBase
+                )
 
     def _generateArchive(self, sourceFile, sourcesLocation):
         tmpdir = tempfile.mkdtemp()
@@ -306,25 +309,39 @@ Commands
             logging.error(f"Archive {sourceFile.archive} not generated in {tmpdir}.")
 
     def _writeSchematic(
-        self, sourceFile: Source, sourcesLocation="./stage/SOURCES", sourcesURLBase=""
+        self,
+        outdir,
+        sourceFile: Source,
+        sourcesLocation,
+        sourcesURLBase,
     ):
-        schematicTemplate = Template(SRP_SCHEMATICS_TEMPLATE)
-        spdx = sourceFile.spdx.package
-        data = {
-            "SOURCE_LICENSE_DECLARED": spdx["license_declared"],
-            "SOURCE_LICENSE_CONCLUDED": spdx["license_concluded"],
-            "SOURCE_HOME": spdx["home_page"],
-            "SOURCE_SUMMARY": spdx["short_summary"],
-            "SOURCE_DESCRIPTION": spdx["detailed_description"],
-            "SOURCE_ARCHIVE_NAME": sourceFile.archive,
-            "SOURCES_URL_BASE": sourcesURLBase,
-            "SOURCES_PATH": sourcesLocation,
-            "SOURCE_UID": self._source_uid(
+        source_schematic = SourceSchematic(
+            source_uid=self._source_uid(
                 sourceFile.archive, sourceFile.archive_sha512sum
             ),
-        }
-        schematicString = schematicTemplate.substitute(data)
-        print(schematicString)
+            sources_url=sourcesURLBase,
+            archive_name=sourceFile.archive,
+            archive_spdx=sourceFile.spdx,
+        )
+        source_dir = sourceFile.name
+        source_dir_path = os.path.join(outdir, source_dir)
+        if not os.path.exists(source_dir_path):
+            os.makedirs(source_dir_path)
+        schematic_file_path = os.path.join(
+            source_dir_path, f"{sourceFile.archive}.schematic.yaml"
+        )
+        with open(
+            schematic_file_path,
+            "w",
+        ) as f:
+            yaml.dump(
+                source_schematic,
+                f,
+                sort_keys=False,
+                default_flow_style=False,
+                width=float("inf"),
+            )
+            print(f"Written to file {schematic_file_path} successfully")
 
     def _load(self, configPath):
         files = []
@@ -400,12 +417,12 @@ Commands
                     files.append(source)
         return files
 
-    def _verifySingleSource(self, sourceFile):
+    def _verifySingleSource(self, sourceFile, sourcesLocation):
         with tempfile.TemporaryDirectory() as tmpdir:
             extractedDir = f"{tmpdir}/extracted"
             repoDir = f"{tmpdir}/repo"
             projectDir = f"{repoDir}/{sourceFile.name}"
-            downloadedFile = f"{tmpdir}/{sourceFile.archive}"
+            downloadedFile = f"{sourcesLocation}/{sourceFile.archive}"
             extractedProject = f"{tmpdir}/extracted/{sourceFile.name}"
             os.mkdir(repoDir)
             os.mkdir(projectDir)
@@ -436,7 +453,7 @@ Commands
                 ignore=sourceFile.skip_list + sourceFile.missing,
             )
             fileDiff, missing = self._detectTreeDiff(treediff)
-            return fileDiff, missing
+            return downloadedFile, fileDiff, missing
 
     def _detectTreeDiff(self, treediff):
         fileDiff = set()
