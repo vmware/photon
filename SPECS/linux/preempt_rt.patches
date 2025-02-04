@@ -68,4 +68,4 @@ Patch365: 0065-sign-file-extract-cert-avoid-using-deprecated-ERR_ge.patch
 Patch366: 0066-sign-file-extract-cert-use-pkcs11-provider-for-OPENS.patch
 Patch367: 0067-Linux-6.1.120-rt46-REBASE.patch
 Patch368: 0068-net-fix-mis-merge-from-stable-in-drivers-net-vrf.c.patch
-Patch369: 0069-Linux-6.1.120-rt47-REBASE.patch
+Patch369: 0069-Linux-6.1.127-rt48-REBASE.patch

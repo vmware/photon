@@ -1,0 +1,31 @@
+From db5f5f7cb4986838c0102e7dfe2dbf38b6830885 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clark.williams@gmail.com>
+Date: Mon, 30 Dec 2024 15:17:13 -0600
+Subject: [PATCH 68/69] net: fix mis-merge from stable in drivers/net/vrf.c
+
+I picked the wrong hunk in resolving a conflict in driver/net/vrf.c
+when merging the 6.1.122 and preceeding stable releases for the
+6.1-rt release. Fix this.
+
+Reported-by: Dutta, Ranjan <ranjan.dutta@intel.com>
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ drivers/net/vrf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index c3e5fb98cf7f..164ffe1919de 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -154,7 +154,7 @@ static void vrf_get_stats64(struct net_device *dev,
+ 			tpkts = dstats->tx_packets;
+ 			tdrops = dstats->tx_drops;
+ 			rbytes = dstats->rx_bytes;
+-			rpkts = dstats->rx_pkts;
++			rpkts = dstats->rx_packets;
+ 		} while (u64_stats_fetch_retry(&dstats->syncp, start));
+ 		stats->tx_bytes += tbytes;
+ 		stats->tx_packets += tpkts;
+-- 
+2.48.1
+

@@ -43,8 +43,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.126
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.128
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -54,7 +54,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=690e8320c83c7839f6d4f8fe6ce84cda2ae2b5166d6383a29e7659073348fd87dc5602630ab0e831804ed3f2cdd3c703f75fd46796d57c1ac477cfb4bf1bab50
+%define sha512 linux=8ab950f34bfba3fd8c8190e09f10535ef4cf5028e34a5c9401dbf24af9b5cf27b9093792e12433a7e0918651023dc96ea17046186f5efc8fb34c0bf0c385f5b1
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -215,9 +215,6 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
 
-#Fix CVE-2024-56703
-Patch105: 0001-ipv6-Fix-soft-lockups-in-fib6_select_path-under-high.patch
-
 #Fix CVE-2024-56647
 Patch106: 0002-net-Fix-icmp-host-relookup-triggering-ip_rt_bug.patch
 
@@ -233,14 +230,8 @@ Patch108: 0004-smb-Initialize-cfid-tcon-before-performing-network-o.patch
 # Fix CVE-2023-52452
 Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
-# Fix CVE-2024-50047
-Patch134: 0001-smb-client-fix-UAF-in-async-decryption.patch
-
 # Fix CVE-2024-50029
 Patch135: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
-
-# Fix CVE-2024-56631
-Patch136: 0001-scsi-sg-Fix-slab-use-after-free-read-in-sg_release.patch
 
 # Fix CVE-2024-24855
 Patch137: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
@@ -261,9 +252,6 @@ Patch144: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
 # Fix CVE-2024-46816
 Patch146: 0001-drm-amd-display-handle-invalid-connector-indices.patch
 Patch147: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
-
-# Fix CVE-2024-50014
-Patch149: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
 
 # Fix CVE-2024-50018
 Patch150: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
@@ -982,6 +970,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Feb 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.128-1
+- Update to version 6.1.128
 * Fri Jan 24 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.126-5
 - Fixes CVE-2024-56729, CVE-2024-38557
 - CVE-2024-56647 and CVE-2024-56703
