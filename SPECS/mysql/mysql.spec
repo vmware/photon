@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.40
+Version:        8.0.41
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=fcece6e3c09dc4733767effb5c22a55e4add1c9f6b6b911e1eccdd0444f08dc5714b3c8b2a40c85a75a63ff117b6c9881904b6b4732b5ca9bef96de1cb2e284a
+%define sha512 %{name}-boost=e5bb314082be6bf037808ea7a2130c8e2b44491a6c54bc3f611d823be5285021d05093afca71c3d33da6dece2bac3a8e24da5198080060407d8c4dbfeeea8a99
 
 BuildRequires: cmake
 BuildRequires: rpcsvc-proto-devel
@@ -184,6 +184,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Feb 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.41-1
+- Upgrade to v8.0.41
 * Fri Nov 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.40-1
 - Upgrade to v8.0.40
 * Tue Jul 23 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.39-1
