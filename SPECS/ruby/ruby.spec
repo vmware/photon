@@ -3,7 +3,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -45,8 +45,8 @@ Requires:       openssl
 Requires:       gmp
 
 # CVE-2025-0306 requires "rsa: add implicit rejection in PKCS#1 v1.5 patch in openssl".
-# This patch is present in openssl from 3.0.15-1 version
-Requires:       openssl >= 3.0.15-1
+# This patch is present in openssl from 3.0.13-3 version
+Requires:       openssl >= 3.0.13-3
 
 %description
 The Ruby package contains the Ruby development environment.
@@ -127,6 +127,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Tue Feb 04 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-16
+- Fix required openssl version
 * Mon Feb 03 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-15
 - Fix CVE-2025-0306
 * Tue Dec 10 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-14
