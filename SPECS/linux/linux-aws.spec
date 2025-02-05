@@ -15,8 +15,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.233
-Release:        3%{?dist}
+Version:        5.10.234
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:    http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=af558e039d7abd587ef7f3f6001d991b4c63a209e9ef0a8d21d3fc9bfaf253f0a48ab29da3a9f074de41849fe440c299885680e887620826b5609804b369b270
+%define sha512 linux=ddd8114230af1a270e39ac8dd41a1d09a3f70ab0eb65109b2de41e3e01103fa0e7531960fbd84698f29c12531ab1fec51da6a07ea88a1309438e90e896f78c0b
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -160,9 +160,6 @@ Patch140: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
 #Fix CVE-2024-56604
 Patch141: 0001-Bluetooth-RFCOMM-avoid-leaving-dangling-sk-pointer-i.patch
 
-# Fix CVE-2024-23307
-Patch142: 0001-md-raid5-fix-atomicity-violation-in-raid5_cache_coun.patch
-
 # Fix CVE-2024-26584
 Patch144: 0001-tls-rx-simplify-async-wait.patch
 Patch145: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
@@ -191,9 +188,6 @@ Patch156: 0001-nvme-avoid-double-free-special-payload.patch
 # Fix CVE-2024-42322
 Patch157: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
 
-# Fix CVE-2024-38591
-Patch158: 0001-RDMA-hns-Fix-deadlock-on-SRQ-async-events.patch
-
 # Fix CVE-2024-24855
 Patch162: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
 
@@ -202,9 +196,6 @@ Patch163: 0001-RDMA-restrack-Fix-potential-invalid-address-access.patch
 
 # Fix CVE-2024-44934
 Patch164: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
-
-# Fix CVE-2024-35966
-Patch168: 0001-Bluetooth-RFCOMM-Fix-not-validating-setsockopt-user-.patch
 
 # Fix CVE-2023-52760
 Patch169: 0001-gfs2-make-function-gfs2_make_fs_ro-to-void-type.patch
@@ -242,9 +233,6 @@ Patch182: 0001-udf-fix-uninit-value-use-in-udf_get_fileshortad.patch
 
 # Fix CVE-2024-50154
 Patch183: 0001-tcp-dccp-Don-t-use-timer_pending-in-reqsk_queue_unli.patch
-
-# Fix CVE-2024-56631
-Patch184: 0001-scsi-sg-Fix-slab-use-after-free-read-in-sg_release.patch
 
 # Fix CVE-2024-50014
 Patch185: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -602,6 +590,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Feb 05 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-1
+- Update to v5.10.234
 * Tue Feb 04 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.233-3
 - Fixes CVE-2024-56604
 * Tue Jan 21 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.233-2
