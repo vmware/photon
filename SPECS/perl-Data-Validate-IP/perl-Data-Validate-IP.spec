@@ -1,12 +1,12 @@
 Summary:        IPv4 and IPv6 validation methods
 Name:           perl-Data-Validate-IP
-Version:        0.27
-Release:        3%{?dist}
+Version:        0.30
+Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/Data-Validate-IP
 Source0:        https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Data-Validate-IP-%{version}.tar.gz
-%define sha1    Data-Validate-IP=da24fd6404359e475f65d35cb4341db74c48f48a
+%define sha512    Data-Validate-IP=ac556445f1eec0440be17263bcffce46d0c3b719d3c64022bcb3fc6d1191ed9de94c0e4d6b2c3c5c1704dc7945b14a5c87abfcf2b7dc43ec4f10a4cc6629b761
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -23,14 +23,14 @@ address belongs to a specific network or whether an address is public
 or private (reserved).
 
 %prep
-%setup -q -n Data-Validate-IP-%{version}
+%autosetup -n Data-Validate-IP-%{version}
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1 OPTIMIZE="%{optflags}"
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make %{?_smp_mflags} install DESTDIR=%{buildroot}
 find %{buildroot} -name 'perllocal.pod' -delete
 
 %check
@@ -38,13 +38,15 @@ find %{buildroot} -name 'perllocal.pod' -delete
 export PERL_MM_USE_DEFAULT=1
 echo "yes" | cpan -a
 cpan -i Test::Requires
-make test
+make %{?_smp_mflags} test
 
 %files
 %{perl_vendorlib}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Feb 06 2025 Dweep Advani <dweep.advani@broadcom.com> 0.30-1
+-   Version upgrade to 0.30 to address CVE-2021-29662
 *   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 0.27-3
 -   Rebuilding for perl version 5.30.1
 *   Mon Dec 03 2018 Dweep Advani <dadvani@vmware.com> 0.27-2
