@@ -1,0 +1,66 @@
+From 969826bfb3b5ac16a1505b847757d52ade224c2a Mon Sep 17 00:00:00 2001
+From: Dan Carpenter <dan.carpenter@linaro.org>
+Date: Fri, 9 Feb 2024 16:02:42 +0300
+Subject: [PATCH 3/3] drm/amd/display: Fix && vs || typos
+
+[ Upstream commit 17ba9cde11c2bfebbd70867b0a2ac4a22e573379 ]
+
+These ANDs should be ORs or it will lead to a NULL dereference.
+
+Fixes: fb5a3d037082 ("drm/amd/display: Add NULL test for 'timing generator' in 'dcn21_set_pipe()'")
+Fixes: 886571d217d7 ("drm/amd/display: Fix 'panel_cntl' could be null in 'dcn21_set_backlight_level()'")
+Reviewed-by: Anthony Koo <anthony.koo@amd.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+Signed-off-by: Hamza Mahfooz <hamza.mahfooz@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+[Ankit: Backported for v5.10.x]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
+index 2e9c2ab76..04a2283bc 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
+@@ -184,7 +184,7 @@ void dcn21_set_pipe(struct pipe_ctx *pipe_ctx)
+ 	struct dmcu *dmcu = pipe_ctx->stream->ctx->dc->res_pool->dmcu;
+ 	uint32_t otg_inst;
+ 
+-	if (!abm && !tg && !panel_cntl)
++	if (!abm || !tg || !panel_cntl)
+ 		return;
+ 
+ 	otg_inst = tg->inst;
+@@ -194,8 +194,7 @@ void dcn21_set_pipe(struct pipe_ctx *pipe_ctx)
+ 		return;
+ 	}
+ 
+-	if (abm && panel_cntl)
+-		dmub_abm_set_pipe(abm, otg_inst, SET_ABM_PIPE_NORMAL, panel_cntl->inst);
++	dmub_abm_set_pipe(abm, otg_inst, SET_ABM_PIPE_NORMAL, panel_cntl->inst);
+ }
+ 
+ bool dcn21_set_backlight_level(struct pipe_ctx *pipe_ctx,
+@@ -209,7 +208,7 @@ bool dcn21_set_backlight_level(struct pipe_ctx *pipe_ctx,
+ 	struct panel_cntl *panel_cntl = pipe_ctx->stream->link->panel_cntl;
+ 	uint32_t otg_inst;
+ 
+-	if (!abm && !tg && !panel_cntl)
++	if (!abm || !tg || !panel_cntl)
+ 		return false;
+ 
+ 	otg_inst = tg->inst;
+@@ -219,8 +218,7 @@ bool dcn21_set_backlight_level(struct pipe_ctx *pipe_ctx,
+ 		return true;
+ 	}
+ 
+-	if (abm && panel_cntl)
+-		dmub_abm_set_pipe(abm, otg_inst, SET_ABM_PIPE_NORMAL, panel_cntl->inst);
++	dmub_abm_set_pipe(abm, otg_inst, SET_ABM_PIPE_NORMAL, panel_cntl->inst);
+ 
+ 	cmd.abm_set_backlight.header.type = DMUB_CMD__ABM;
+ 	cmd.abm_set_backlight.header.sub_type = DMUB_CMD__ABM_SET_BACKLIGHT;
+-- 
+2.39.4
+

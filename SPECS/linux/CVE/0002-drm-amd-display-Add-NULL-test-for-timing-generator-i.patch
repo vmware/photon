@@ -1,0 +1,53 @@
+From d68e2085a9f11cb4320fb28e4a938711b3caddc4 Mon Sep 17 00:00:00 2001
+From: Srinivasan Shanmugam <srinivasan.shanmugam@amd.com>
+Date: Wed, 31 Jan 2024 08:49:41 +0530
+Subject: [PATCH 2/3] drm/amd/display: Add NULL test for 'timing generator' in
+ 'dcn21_set_pipe()'
+
+[ Upstream commit 66951d98d9bf45ba25acf37fe0747253fafdf298 ]
+
+In "u32 otg_inst = pipe_ctx->stream_res.tg->inst;"
+pipe_ctx->stream_res.tg could be NULL, it is relying on the caller to
+ensure the tg is not NULL.
+
+Fixes: 474ac4a875ca ("drm/amd/display: Implement some asic specific abm call backs.")
+Cc: Yongqiang Sun <yongqiang.sun@amd.com>
+Cc: Anthony Koo <Anthony.Koo@amd.com>
+Cc: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Cc: Aurabindo Pillai <aurabindo.pillai@amd.com>
+Signed-off-by: Srinivasan Shanmugam <srinivasan.shanmugam@amd.com>
+Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+[Ankit: Backported for v5.10.x,
+added timing_generator null check in dcn21_set_pipe()
+There is follow-up patch to fix this patch.
+]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
+index 2e997b2ee..2e9c2ab76 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
+@@ -179,9 +179,15 @@ void dcn21_set_abm_immediate_disable(struct pipe_ctx *pipe_ctx)
+ void dcn21_set_pipe(struct pipe_ctx *pipe_ctx)
+ {
+ 	struct abm *abm = pipe_ctx->stream_res.abm;
+-	uint32_t otg_inst = pipe_ctx->stream_res.tg->inst;
++	struct timing_generator *tg = pipe_ctx->stream_res.tg;
+ 	struct panel_cntl *panel_cntl = pipe_ctx->stream->link->panel_cntl;
+ 	struct dmcu *dmcu = pipe_ctx->stream->ctx->dc->res_pool->dmcu;
++	uint32_t otg_inst;
++
++	if (!abm && !tg && !panel_cntl)
++		return;
++
++	otg_inst = tg->inst;
+ 
+ 	if (dmcu) {
+ 		dce110_set_pipe(pipe_ctx);
+-- 
+2.39.4
+

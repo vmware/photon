@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.234
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -299,6 +299,17 @@ Patch184: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
 Patch185: 0001-netfilter-xtables-avoid-NFPROTO_UNSPEC-where-needed.patch
 Patch186: 0002-netfilter-xtables-fix-typo-causing-some-targets-not-.patch
 
+# Fixes CVE-2024-26661 and CVE-2024-26662
+Patch187: 0001-drm-amd-display-Fix-panel_cntl-could-be-null-in-dcn2.patch
+Patch188: 0002-drm-amd-display-Add-NULL-test-for-timing-generator-i.patch
+Patch189: 0003-drm-amd-display-Fix-vs-typos.patch
+
+# Fix CVE-2024-26656
+Patch190: 0001-drm-amdgpu-fix-use-after-free-bug.patch
+
+# Fix CVE-2024-26828
+Patch191: 0001-cifs-fix-underflow-in-parse_server_interfaces.patch
+
 %ifarch aarch64
 # Rpi of_configfs patches
 Patch301: 0001-OF-DT-Overlay-configfs-interface.patch
@@ -561,7 +572,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M186
+%autopatch -p1 -m100 -M191
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -967,6 +978,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Feb 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.234-2
+- Fix for CVE-2024-26828, CVE-2024-26661, CVE-2024-26662, CVE-2024-26656
 * Wed Feb 05 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-1
 - Update to v5.10.234
 * Tue Feb 04 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.233-3

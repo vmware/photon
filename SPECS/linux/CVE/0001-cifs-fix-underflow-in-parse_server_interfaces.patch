@@ -1,0 +1,53 @@
+From a19d9ac81323dbf51c0bd667d79b0857cef6f1e8 Mon Sep 17 00:00:00 2001
+From: Dan Carpenter <dan.carpenter@linaro.org>
+Date: Thu, 8 Feb 2024 13:18:46 +0300
+Subject: [PATCH] cifs: fix underflow in parse_server_interfaces()
+
+[ Upstream commit cffe487026be13eaf37ea28b783d9638ab147204 ]
+
+In this loop, we step through the buffer and after each item we check
+if the size_left is greater than the minimum size we need.  However,
+the problem is that "bytes_left" is type ssize_t while sizeof() is type
+size_t.  That means that because of type promotion, the comparison is
+done as an unsigned and if we have negative bytes left the loop
+continues instead of ending.
+
+Fixes: fe856be475f7 ("CIFS: parse and store info on iface queries")
+Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+[Ankit: Backported for v5.10.x,
+commit: https://github.com/torvalds/linux/commit/38c8a9a52082579090e34c033d439ed2cd1a462d,
+moved
+fs/cifs --> fs/smb/client
+]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ fs/cifs/smb2ops.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 68f93de2b..3e3dd4579 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -461,7 +461,7 @@ parse_server_interfaces(struct network_interface_info_ioctl_rsp *buf,
+ 
+ 	bytes_left = buf_len;
+ 	p = buf;
+-	while (bytes_left >= sizeof(*p)) {
++	while (bytes_left >= (ssize_t)sizeof(*p)) {
+ 		nb_iface++;
+ 		next = le32_to_cpu(p->Next);
+ 		if (!next) {
+@@ -496,7 +496,7 @@ parse_server_interfaces(struct network_interface_info_ioctl_rsp *buf,
+ 	info = *iface_list;
+ 	bytes_left = buf_len;
+ 	p = buf;
+-	while (bytes_left >= sizeof(*p)) {
++	while (bytes_left >= (ssize_t)sizeof(*p)) {
+ 		info->speed = le64_to_cpu(p->LinkSpeed);
+ 		info->rdma_capable = le32_to_cpu(p->Capability & RDMA_CAPABLE) ? 1 : 0;
+ 		info->rss_capable = le32_to_cpu(p->Capability & RSS_CAPABLE) ? 1 : 0;
+-- 
+2.39.4
+

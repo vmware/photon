@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.234
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -299,6 +299,17 @@ Patch185: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
 Patch186: 0001-netfilter-xtables-avoid-NFPROTO_UNSPEC-where-needed.patch
 Patch187: 0002-netfilter-xtables-fix-typo-causing-some-targets-not-.patch
 
+# Fixes CVE-2024-26661 and CVE-2024-26662
+Patch188: 0001-drm-amd-display-Fix-panel_cntl-could-be-null-in-dcn2.patch
+Patch189: 0002-drm-amd-display-Add-NULL-test-for-timing-generator-i.patch
+Patch190: 0003-drm-amd-display-Fix-vs-typos.patch
+
+# Fix CVE-2024-26656
+Patch191: 0001-drm-amdgpu-fix-use-after-free-bug.patch
+
+# Fix CVE-2024-26828
+Patch192: 0001-cifs-fix-underflow-in-parse_server_interfaces.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -461,7 +472,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M97
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M187
+%autopatch -p1 -m100 -M192
 
 #Patches for ptp_vmw
 %autopatch -p1 -m301 -M302
@@ -681,6 +692,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.234-2
+- Fix for CVE-2024-26828, CVE-2024-26661, CVE-2024-26662, CVE-2024-26656
 * Wed Feb 05 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-1
 - Update to v5.10.234
 * Tue Feb 04 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.233-3
