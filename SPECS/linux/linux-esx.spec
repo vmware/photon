@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.234
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -331,6 +331,24 @@ Patch195: 0001-Squashfs-check-the-inode-number-is-not-the-invalid-v.patch
 # Fix CVE-2024-26915
 Patch196: 0001-drm-amdgpu-Reset-IH-OVERFLOW_CLEAR-bit.patch
 
+# Fix CVE-2024-26928
+Patch197: smb-client-fix-potential-UAF-in-cifs_debug_files_pro.patch
+
+# Fix CVE-2024-35863
+Patch198: smb-client-fix-potential-UAF-in-is_valid_oplock_brea.patch
+
+# Fix CVE-2024-35864
+Patch199: smb-client-fix-potential-UAF-in-smb2_is_valid_lease_.patch
+
+# Fix CVE-2024-35865
+Patch200: smb-client-fix-potential-UAF-in-smb2_is_valid_oplock.patch
+
+# Fix CVE-2024-35867
+Patch201: smb-client-fix-potential-UAF-in-cifs_stats_proc_show.patch
+
+# Fix CVE-2024-35868
+Patch202: smb-client-fix-potential-UAF-in-cifs_stats_proc_writ.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -493,7 +511,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M97
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M196
+%autopatch -p1 -m100 -M202
 
 #Patches for ptp_vmw
 %autopatch -p1 -m301 -M302
@@ -713,6 +731,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Feb 18 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.234-6
+- Fix CVE-2024-35863, CVE-2024-35864, CVE-2024-35865,  CVE-2024-35867, CVE-2024-35868,
+- CVE-2024-26928
 * Thu Feb 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-5
 - Fixes CVE-2024-27415 and CVE-2024-27018
 * Mon Feb 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-4

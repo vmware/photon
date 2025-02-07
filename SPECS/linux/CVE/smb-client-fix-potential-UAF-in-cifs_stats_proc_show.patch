@@ -1,0 +1,36 @@
+From 275468336fa6294b4adedcb2bd6dcfa0363f14a6 Mon Sep 17 00:00:00 2001
+From: Paulo Alcantara <pc@manguebit.com>
+Date: Tue, 2 Apr 2024 16:33:56 -0300
+Subject: [PATCH 06/10] smb: client: fix potential UAF in
+ cifs_stats_proc_show()
+
+commit 0865ffefea197b437ba78b5dd8d8e256253efd65 upstream.
+
+Skip sessions that are being teared down (status == SES_EXITING) to
+avoid UAF.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Paulo Alcantara (Red Hat) <pc@manguebit.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ fs/cifs/cifs_debug.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/fs/cifs/cifs_debug.c b/fs/cifs/cifs_debug.c
+index 8b88b0705481..257eae4673d2 100644
+--- a/fs/cifs/cifs_debug.c
++++ b/fs/cifs/cifs_debug.c
+@@ -593,6 +593,8 @@ static int cifs_stats_proc_show(struct seq_file *m, void *v)
+ 		list_for_each(tmp2, &server->smb_ses_list) {
+ 			ses = list_entry(tmp2, struct cifs_ses,
+ 					 smb_ses_list);
++			if (cifs_ses_exiting(ses))
++				continue;
+ 			list_for_each(tmp3, &ses->tcon_list) {
+ 				tcon = list_entry(tmp3,
+ 						  struct cifs_tcon,
+-- 
+2.39.4
+

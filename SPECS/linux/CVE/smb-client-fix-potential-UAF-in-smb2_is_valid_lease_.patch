@@ -1,0 +1,38 @@
+From 2996bc56a22e3b846984313354f8a333a534d9a5 Mon Sep 17 00:00:00 2001
+From: Paulo Alcantara <pc@manguebit.com>
+Date: Tue, 2 Apr 2024 16:33:58 -0300
+Subject: [PATCH 04/10] smb: client: fix potential UAF in
+ smb2_is_valid_lease_break()
+
+commit 705c76fbf726c7a2f6ff9143d4013b18daaaebf1 upstream
+
+Skip sessions that are being teared down (status == SES_EXITING) to
+avoid UAF.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Paulo Alcantara (Red Hat) <pc@manguebit.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ fs/cifs/smb2misc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/fs/cifs/smb2misc.c b/fs/cifs/smb2misc.c
+index 660e00eb4206..24700b6c8975 100644
+--- a/fs/cifs/smb2misc.c
++++ b/fs/cifs/smb2misc.c
+@@ -615,9 +615,10 @@ smb2_is_valid_lease_break(char *buffer)
+ 	spin_lock(&cifs_tcp_ses_lock);
+ 	list_for_each(tmp, &cifs_tcp_ses_list) {
+ 		server = list_entry(tmp, struct TCP_Server_Info, tcp_ses_list);
+-
+ 		list_for_each(tmp1, &server->smb_ses_list) {
+ 			ses = list_entry(tmp1, struct cifs_ses, smb_ses_list);
++			if (cifs_ses_exiting(ses))
++				continue;
+ 
+ 			list_for_each(tmp2, &ses->tcon_list) {
+ 				tcon = list_entry(tmp2, struct cifs_tcon,
+-- 
+2.39.4
+

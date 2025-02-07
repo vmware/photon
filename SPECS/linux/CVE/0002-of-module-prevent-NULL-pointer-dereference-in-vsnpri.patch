@@ -1,0 +1,52 @@
+From 294dd603a7040bb40e780dac5c4f36c9f8606cbe Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Wed, 5 Feb 2025 22:11:51 +0000
+Subject: [PATCH 8/8] of: module: prevent NULL pointer dereference in
+ vsnprintf()
+
+commit a1aa5390cc912934fee76ce80af5f940452fa987 upstream.
+
+In of_modalias(), we can get passed the str and len parameters which would
+cause a kernel oops in vsnprintf() since it only allows passing a NULL ptr
+when the length is also 0. Also, we need to filter out the negative values
+of the len parameter as these will result in a really huge buffer since
+snprintf() takes size_t parameter while ours is ssize_t...
+
+Found by Linux Verification Center (linuxtesting.org) with the Svace static
+analysis tool.
+
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/1d211023-3923-685b-20f0-f3f90ea56e1f@omp.ru
+Signed-off-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ Brennan: Applied to drivers/of/device.c instead of drivers/of/module.c,
+           to match location of of_modalias(). of_modalias() is moved in
+           bd7a7ed77 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/of/device.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index 426e065691d4..a99e06da5962 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -223,6 +223,14 @@ static ssize_t of_modalias(const struct device_node *np, char *str, ssize_t len)
+ 	ssize_t csize;
+ 	ssize_t tsize;
+ 
++	/*
++	 * Prevent a kernel oops in vsnprintf() -- it only allows passing a
++	 * NULL ptr when the length is also 0. Also filter out the negative
++	 * lengths...
++	 */
++	if ((len > 0 && !str) || len < 0)
++		return -EINVAL;
++
+ 	/* Name & Type */
+ 	/* %p eats all alphanum characters, so %c must be used here */
+ 	csize = snprintf(str, len, "of:N%pOFn%c%s", np, 'T',
+-- 
+2.39.4
+

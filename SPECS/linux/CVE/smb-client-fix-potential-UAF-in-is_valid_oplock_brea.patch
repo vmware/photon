@@ -1,0 +1,36 @@
+From fb7fd550144a3e3206cbfcd144aafb0e2622e0b3 Mon Sep 17 00:00:00 2001
+From: Paulo Alcantara <pc@manguebit.com>
+Date: Tue, 2 Apr 2024 16:34:00 -0300
+Subject: [PATCH 03/10] smb: client: fix potential UAF in
+ is_valid_oplock_break()
+
+commit 69ccf040acddf33a3a85ec0f6b45ef84b0f7ec29 upstream.
+
+Skip sessions that are being teared down (status == SES_EXITING) to
+avoid UAF.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Paulo Alcantara (Red Hat) <pc@manguebit.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ fs/cifs/misc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/fs/cifs/misc.c b/fs/cifs/misc.c
+index 2d46018b0283..c739db6dd556 100644
+--- a/fs/cifs/misc.c
++++ b/fs/cifs/misc.c
+@@ -477,6 +477,8 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
+ 	spin_lock(&cifs_tcp_ses_lock);
+ 	list_for_each(tmp, &srv->smb_ses_list) {
+ 		ses = list_entry(tmp, struct cifs_ses, smb_ses_list);
++		if (cifs_ses_exiting(ses))
++			continue;
+ 		list_for_each(tmp1, &ses->tcon_list) {
+ 			tcon = list_entry(tmp1, struct cifs_tcon, tcon_list);
+ 			if (tcon->tid != buf->Tid)
+-- 
+2.39.4
+

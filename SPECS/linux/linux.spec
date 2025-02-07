@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.234
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -331,6 +331,28 @@ Patch194: 0001-Squashfs-check-the-inode-number-is-not-the-invalid-v.patch
 # Fix CVE-2024-26915
 Patch195: 0001-drm-amdgpu-Reset-IH-OVERFLOW_CLEAR-bit.patch
 
+# Fix CVE-2024-26928
+Patch196: smb-client-fix-potential-UAF-in-cifs_debug_files_pro.patch
+
+# Fix CVE-2024-35863
+Patch197: smb-client-fix-potential-UAF-in-is_valid_oplock_brea.patch
+
+# Fix CVE-2024-35864
+Patch198: smb-client-fix-potential-UAF-in-smb2_is_valid_lease_.patch
+
+# Fix CVE-2024-35865
+Patch199: smb-client-fix-potential-UAF-in-smb2_is_valid_oplock.patch
+
+# Fix CVE-2024-35867
+Patch200: smb-client-fix-potential-UAF-in-cifs_stats_proc_show.patch
+
+# Fix CVE-2024-35868
+Patch201: smb-client-fix-potential-UAF-in-cifs_stats_proc_writ.patch
+
+# Fix CVE-2024-35878
+Patch202: 0001-of-Update-of_device_get_modalias.patch
+Patch203: 0002-of-module-prevent-NULL-pointer-dereference-in-vsnpri.patch
+
 %ifarch aarch64
 # Rpi of_configfs patches
 Patch301: 0001-OF-DT-Overlay-configfs-interface.patch
@@ -593,7 +615,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M195
+%autopatch -p1 -m100 -M203
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -999,6 +1021,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Feb 18 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.234-6
+- Fix CVE-2024-35863, CVE-2024-35864, CVE-2024-35865,  CVE-2024-35867, CVE-2024-35868,
+- CVE-2024-35878, CVE-2024-26928
 * Thu Feb 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-5
 - Fixes CVE-2024-27415 and CVE-2024-27018
 * Mon Feb 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-4

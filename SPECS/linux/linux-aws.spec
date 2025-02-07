@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.234
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -276,6 +276,24 @@ Patch196: 0001-Squashfs-check-the-inode-number-is-not-the-invalid-v.patch
 # Fix CVE-2024-26915
 Patch197: 0001-drm-amdgpu-Reset-IH-OVERFLOW_CLEAR-bit.patch
 
+# Fix CVE-2024-26928
+Patch198: smb-client-fix-potential-UAF-in-cifs_debug_files_pro.patch
+
+# Fix CVE-2024-35863
+Patch199: smb-client-fix-potential-UAF-in-is_valid_oplock_brea.patch
+
+# Fix CVE-2024-35864
+Patch200: smb-client-fix-potential-UAF-in-smb2_is_valid_lease_.patch
+
+# Fix CVE-2024-35865
+Patch201: smb-client-fix-potential-UAF-in-smb2_is_valid_oplock.patch
+
+# Fix CVE-2024-35867
+Patch202: smb-client-fix-potential-UAF-in-cifs_stats_proc_show.patch
+
+# Fix CVE-2024-35868
+Patch203: smb-client-fix-potential-UAF-in-cifs_stats_proc_writ.patch
+
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
 Patch302: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
@@ -441,7 +459,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M197
+%autopatch -p1 -m100 -M203
 
 #Amazon AWS
 %autopatch -p1 -m301 -M340
@@ -622,6 +640,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Feb 18 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.234-6
+- Fix CVE-2024-35863, CVE-2024-35864, CVE-2024-35865,  CVE-2024-35867, CVE-2024-35868,
+- CVE-2024-26928
 * Thu Feb 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-5
 - Fixes CVE-2024-27415 and CVE-2024-27018
 * Mon Feb 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-4
