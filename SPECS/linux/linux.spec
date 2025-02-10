@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.234
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -288,6 +288,9 @@ Patch180: 0001-udf-fix-uninit-value-use-in-udf_get_fileshortad.patch
 
 # Fix CVE-2024-50154
 Patch181: 0001-tcp-dccp-Don-t-use-timer_pending-in-reqsk_queue_unli.patch
+
+# Fix CVE-2024-8805
+Patch182: 0001-Bluetooth-hci_event-Align-BR-EDR-JUST_WORKS-paring-w.patch
 
 # Fix CVE-2024-50014
 Patch183: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -990,6 +993,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Feb 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-4
+- Fixes CVE-2024-8805
 * Fri Feb 07 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-3
 - Fix CVE-2024-26915, CVE-2024-26982, CVE-2024-27062, CVE-2024-35817
 * Fri Feb 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.234-2

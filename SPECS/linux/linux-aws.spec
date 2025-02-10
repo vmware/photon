@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.234
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -233,6 +233,9 @@ Patch182: 0001-udf-fix-uninit-value-use-in-udf_get_fileshortad.patch
 
 # Fix CVE-2024-50154
 Patch183: 0001-tcp-dccp-Don-t-use-timer_pending-in-reqsk_queue_unli.patch
+
+# Fix CVE-2024-8805
+Patch184: 0001-Bluetooth-hci_event-Align-BR-EDR-JUST_WORKS-paring-w.patch
 
 # Fix CVE-2024-50014
 Patch185: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -613,6 +616,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Feb 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-4
+- Fixes CVE-2024-8805
 * Fri Feb 07 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-3
 - Fix CVE-2024-26915, CVE-2024-26982, CVE-2024-27062, CVE-2024-35817
 * Fri Feb 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.234-2

@@ -1,0 +1,56 @@
+From 4c708e1b41a181526228a5cd752a8ff3d1fbc83e Mon Sep 17 00:00:00 2001
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Date: Thu, 12 Sep 2024 12:17:00 -0400
+Subject: [PATCH] Bluetooth: hci_event: Align BR/EDR JUST_WORKS paring with LE
+
+commit b25e11f978b63cb7857890edb3a698599cddb10e upstream.
+
+This aligned BR/EDR JUST_WORKS method with LE which since 92516cd97fd4
+("Bluetooth: Always request for user confirmation for Just Works")
+always request user confirmation with confirm_hint set since the
+likes of bluetoothd have dedicated policy around JUST_WORKS method
+(e.g. main.conf:JustWorksRepairing).
+
+CVE: CVE-2024-8805
+Cc: stable@vger.kernel.org
+Fixes: ba15a58b179e ("Bluetooth: Fix SSP acceptor just-works confirmation without MITM")
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Tested-by: Kiran K <kiran.k@intel.com>
+[Guru: Backported to 5.10.y branch]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ net/bluetooth/hci_event.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 58c029958759..546795425119 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4751,19 +4751,16 @@ static void hci_user_confirm_request_evt(struct hci_dev *hdev,
+ 		goto unlock;
+ 	}
+ 
+-	/* If no side requires MITM protection; auto-accept */
++	/* If no side requires MITM protection; use JUST_CFM method */
+ 	if ((!loc_mitm || conn->remote_cap == HCI_IO_NO_INPUT_OUTPUT) &&
+ 	    (!rem_mitm || conn->io_capability == HCI_IO_NO_INPUT_OUTPUT)) {
+ 
+-		/* If we're not the initiators request authorization to
+-		 * proceed from user space (mgmt_user_confirm with
+-		 * confirm_hint set to 1). The exception is if neither
+-		 * side had MITM or if the local IO capability is
+-		 * NoInputNoOutput, in which case we do auto-accept
++		/* If we're not the initiator of request authorization and the
++		 * local IO capability is not NoInputNoOutput, use JUST_WORKS
++		 * method (mgmt_user_confirm with confirm_hint set to 1).
+ 		 */
+ 		if (!test_bit(HCI_CONN_AUTH_PEND, &conn->flags) &&
+-		    conn->io_capability != HCI_IO_NO_INPUT_OUTPUT &&
+-		    (loc_mitm || rem_mitm)) {
++		    conn->io_capability != HCI_IO_NO_INPUT_OUTPUT) {
+ 			BT_DBG("Confirming auto-accept as acceptor");
+ 			confirm_hint = 1;
+ 			goto confirm;
+-- 
+2.39.4
+
