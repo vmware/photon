@@ -54,52 +54,56 @@ The libllvm package contains shared libraries for llvm
 
 %build
 mv cmake-%{version}.src/Modules/*.cmake cmake/modules
-# LLVM_PARALLEL_LINK_JOBS=4 is chosen as a middle ground number
+
 # if we use a bigger value, we will hit OOM, so don't increase it
 # unless you are absolutely sure
+build_jobs="$(( ($(nproc)+1) / 2 ))"
+link_jobs="$(( (build_jobs + 1) / 2 ))"
 
 %ifarch aarch64
-%define build_concurrency 4
-%define link_concurrency 2
-%else
-%define build_concurrency $(nproc)
-%define link_concurrency 4
+[ "${build_jobs}" -gt 4 ] && build_jobs=4 || :
 %endif
 
-%cmake -G Ninja \
-      -DCMAKE_INSTALL_PREFIX=%{_usr} \
-      -DBUILD_SHARED_LIBS:BOOL=OFF \
-      -DLLVM_PARALLEL_LINK_JOBS=%{link_concurrency} \
-      -DLLVM_PARALLEL_COMPILE_JOBS=%{build_concurrency} \
-      -DLLVM_ENABLE_FFI:BOOL=ON \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON \
-      -DLLVM_TARGETS_TO_BUILD="host;AMDGPU;BPF" \
-      -DLLVM_INCLUDE_GO_TESTS=No \
-      -DLLVM_ENABLE_RTTI:BOOL=ON \
-      -DLLVM_INCLUDE_BENCHMARKS=OFF \
-      -DCMAKE_C_FLAGS=-pipe \
-      -DCMAKE_CXX_FLAGS=-pipe \
-      -Wno-dev
+[ "${link_jobs}" -gt 2 ] && link_jobs=2 || :
 
-%cmake_build
+%{cmake} -G Ninja \
+  -DCMAKE_INSTALL_PREFIX=%{_usr} \
+  -DBUILD_SHARED_LIBS:BOOL=OFF \
+  -DLLVM_PARALLEL_LINK_JOBS=${link_jobs} \
+  -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs} \
+  -DLLVM_ENABLE_FFI:BOOL=ON \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON \
+  -DLLVM_TARGETS_TO_BUILD="host;AMDGPU;BPF" \
+  -DLLVM_INCLUDE_GO_TESTS=No \
+  -DLLVM_ENABLE_RTTI:BOOL=ON \
+  -DLLVM_INCLUDE_BENCHMARKS=OFF \
+  -DCMAKE_C_FLAGS=-pipe \
+  -DCMAKE_CXX_FLAGS=-pipe \
+  -Wno-dev
+
+# Build libLLVM.so first. This ensures that when libLLVM.so is linking, there
+# are no other compile jobs running. This will help reduce OOM errors on the
+# builders without having to artificially limit the number of concurrent jobs.
+%{cmake_build} --target LLVM
+
+%{cmake_build}
 
 %install
-%cmake_install
-
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%{cmake_install}
 
 %if 0%{?with_check}
 %check
 # deactivate security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
-cd %{__cmake_builddir}
-make %{?_smp_mflags} check-llvm
+%{make_build} -C %{__cmake_builddir} check-llvm
 %endif
 
 %clean
 rm -rf %{buildroot}/*
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
