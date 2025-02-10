@@ -3,7 +3,7 @@
 Summary:        AsciiDoc is a human readable text document format
 Name:           asciidoc3
 Version:        3.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            https://gitlab.com/asciidoc3/asciidoc3
 Group:          System Environment/Development
@@ -50,6 +50,8 @@ mv %{buildroot}/asciidoc3 %{buildroot}%{python3_sitelib}
 %{_bindir}/*
 
 %changelog
+* Thu Feb 06 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.0-4
+- Bump up release as part of python3-pip upgrade
 * Tue Jan 09 2024 Prashant S Chauhan <psinghchauha@vmware.com> 3.2.0-3
 - Add python3-pip as runtime Requires
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.2.0-2

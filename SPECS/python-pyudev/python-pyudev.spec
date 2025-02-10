@@ -1,12 +1,12 @@
 Summary:        Python binding for libudev
 Name:           python3-pyudev
 Version:        0.22.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GNU Library or Lesser General Public License (LGPL) (LGPL 2.1+)
 Group:          Development/Languages/Python
 URL:            https://pypi.org/project/pyudev
 Source0:        pyudev-%{version}.tar.gz
-%define         sha1 pyudev=1826db6e768153548df20bfd0a3149f5db9f80e7
+%define         sha512 pyudev=a09ed479a54a1772a6af68cb975fef792068c2de3655e20223905bc3f574fd32bd3dbe6b97062eee3ab5f08a8b041ad3ea86dfb68c839ea44e29d65ec1686670
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
@@ -17,9 +17,8 @@ BuildRequires:  python3-xml
 BuildRequires:  systemd-devel
 Requires:       systemd
 Requires:       python3
-Requires:       python3-pip
 Requires:       python3-six
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  python3-pip
 BuildRequires:  curl-devel
 BuildRequires:  python3-six
@@ -58,7 +57,9 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.22.0-2
--   Bump up to compile with python 3.10
-*   Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 0.22.0-1
--   Initial release.
+* Tue Feb 04 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.22.0-3
+- Remove pip from Requires
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.22.0-2
+- Bump up to compile with python 3.10
+* Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 0.22.0-1
+- Initial release.
