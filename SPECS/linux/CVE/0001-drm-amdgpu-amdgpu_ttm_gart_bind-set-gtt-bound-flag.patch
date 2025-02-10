@@ -1,0 +1,40 @@
+From 6c6064cbe58b43533e3451ad6a8ba9736c109ac3 Mon Sep 17 00:00:00 2001
+From: Philip Yang <Philip.Yang@amd.com>
+Date: Mon, 11 Mar 2024 18:07:34 -0400
+Subject: [PATCH] drm/amdgpu: amdgpu_ttm_gart_bind set gtt bound flag
+
+[ Upstream commit 6c6064cbe58b43533e3451ad6a8ba9736c109ac3 ]
+
+Otherwise after the GTT bo is released, the GTT and gart space is freed
+but amdgpu_ttm_backend_unbind will not clear the gart page table entry
+and leave valid mapping entry pointing to the stale system page. Then
+if GPU access the gart address mistakely, it will read undefined value
+instead page fault, harder to debug and reproduce the real issue.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/stable/20240408125403.546212853@linuxfoundation.org
+[KN: ported to v5.10; referred aforementioned v5.15 backport]
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+index 02fdee782..351a91018 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+@@ -1094,6 +1094,7 @@ static int amdgpu_ttm_gart_bind(struct amdgpu_device *adev,
+ 		r = amdgpu_gart_bind(adev, gtt->offset, ttm->num_pages,
+ 				     ttm->pages, gtt->ttm.dma_address, flags);
+ 	}
++	gtt->bound = true;
+ 
+ gart_bind_fail:
+ 	if (r)
+-- 
+2.39.4
+

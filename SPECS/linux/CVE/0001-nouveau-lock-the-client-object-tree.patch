@@ -1,0 +1,171 @@
+From b7cc4ff787a572edf2c55caeffaa88cd801eb135 Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Wed, 28 Feb 2024 16:19:47 +1000
+Subject: [PATCH] nouveau: lock the client object tree.
+
+[ Upstream commit b7cc4ff787a572edf2c55caeffaa88cd801eb135 ]
+
+It appears the client object tree has no locking unless I've missed
+something else. Fix races around adding/removing client objects,
+mostly vram bar mappings.
+
+ 4562.099306] general protection fault, probably for non-canonical address 0x6677ed422bceb80c: 0000 [#1] PREEMPT SMP PTI
+[ 4562.099314] CPU: 2 PID: 23171 Comm: deqp-vk Not tainted 6.8.0-rc6+ #27
+[ 4562.099324] Hardware name: Gigabyte Technology Co., Ltd. Z390 I AORUS PRO WIFI/Z390 I AORUS PRO WIFI-CF, BIOS F8 11/05/2021
+[ 4562.099330] RIP: 0010:nvkm_object_search+0x1d/0x70 [nouveau]
+[ 4562.099503] Code: 90 90 90 90 90 90 90 90 90 90 90 90 90 66 0f 1f 00 0f 1f 44 00 00 48 89 f8 48 85 f6 74 39 48 8b 87 a0 00 00 00 48 85 c0 74 12 <48> 8b 48 f8 48 39 ce 73 15 48 8b 40 10 48 85 c0 75 ee 48 c7 c0 fe
+[ 4562.099506] RSP: 0000:ffffa94cc420bbf8 EFLAGS: 00010206
+[ 4562.099512] RAX: 6677ed422bceb814 RBX: ffff98108791f400 RCX: ffff9810f26b8f58
+[ 4562.099517] RDX: 0000000000000000 RSI: ffff9810f26b9158 RDI: ffff98108791f400
+[ 4562.099519] RBP: ffff9810f26b9158 R08: 0000000000000000 R09: 0000000000000000
+[ 4562.099521] R10: ffffa94cc420bc48 R11: 0000000000000001 R12: ffff9810f02a7cc0
+[ 4562.099526] R13: 0000000000000000 R14: 00000000000000ff R15: 0000000000000007
+[ 4562.099528] FS:  00007f629c5017c0(0000) GS:ffff98142c700000(0000) knlGS:0000000000000000
+[ 4562.099534] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 4562.099536] CR2: 00007f629a882000 CR3: 000000017019e004 CR4: 00000000003706f0
+[ 4562.099541] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 4562.099542] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[ 4562.099544] Call Trace:
+[ 4562.099555]  <TASK>
+[ 4562.099573]  ? die_addr+0x36/0x90
+[ 4562.099583]  ? exc_general_protection+0x246/0x4a0
+[ 4562.099593]  ? asm_exc_general_protection+0x26/0x30
+[ 4562.099600]  ? nvkm_object_search+0x1d/0x70 [nouveau]
+[ 4562.099730]  nvkm_ioctl+0xa1/0x250 [nouveau]
+[ 4562.099861]  nvif_object_map_handle+0xc8/0x180 [nouveau]
+[ 4562.099986]  nouveau_ttm_io_mem_reserve+0x122/0x270 [nouveau]
+[ 4562.100156]  ? dma_resv_test_signaled+0x26/0xb0
+[ 4562.100163]  ttm_bo_vm_fault_reserved+0x97/0x3c0 [ttm]
+[ 4562.100182]  ? __mutex_unlock_slowpath+0x2a/0x270
+[ 4562.100189]  nouveau_ttm_fault+0x69/0xb0 [nouveau]
+[ 4562.100356]  __do_fault+0x32/0x150
+[ 4562.100362]  do_fault+0x7c/0x560
+[ 4562.100369]  __handle_mm_fault+0x800/0xc10
+[ 4562.100382]  handle_mm_fault+0x17c/0x3e0
+[ 4562.100388]  do_user_addr_fault+0x208/0x860
+[ 4562.100395]  exc_page_fault+0x7f/0x200
+[ 4562.100402]  asm_exc_page_fault+0x26/0x30
+[ 4562.100412] RIP: 0033:0x9b9870
+[ 4562.100419] Code: 85 a8 f7 ff ff 8b 8d 80 f7 ff ff 89 08 e9 18 f2 ff ff 0f 1f 84 00 00 00 00 00 44 89 32 e9 90 fa ff ff 0f 1f 84 00 00 00 00 00 <44> 89 32 e9 f8 f1 ff ff 0f 1f 84 00 00 00 00 00 66 44 89 32 e9 e7
+[ 4562.100422] RSP: 002b:00007fff9ba2dc70 EFLAGS: 00010246
+[ 4562.100426] RAX: 0000000000000004 RBX: 000000000dd65e10 RCX: 000000fff0000000
+[ 4562.100428] RDX: 00007f629a882000 RSI: 00007f629a882000 RDI: 0000000000000066
+[ 4562.100432] RBP: 00007fff9ba2e570 R08: 0000000000000000 R09: 0000000123ddf000
+[ 4562.100434] R10: 0000000000000001 R11: 0000000000000246 R12: 000000007fffffff
+[ 4562.100436] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[ 4562.100446]  </TASK>
+[ 4562.100448] Modules linked in: nf_conntrack_netbios_ns nf_conntrack_broadcast nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ip_set nf_tables libcrc32c nfnetlink cmac bnep sunrpc iwlmvm intel_rapl_msr intel_rapl_common snd_sof_pci_intel_cnl x86_pkg_temp_thermal intel_powerclamp snd_sof_intel_hda_common mac80211 coretemp snd_soc_acpi_intel_match kvm_intel snd_soc_acpi snd_soc_hdac_hda snd_sof_pci snd_sof_xtensa_dsp snd_sof_intel_hda_mlink snd_sof_intel_hda snd_sof kvm snd_sof_utils snd_soc_core snd_hda_codec_realtek libarc4 snd_hda_codec_generic snd_compress snd_hda_ext_core vfat fat snd_hda_intel snd_intel_dspcfg irqbypass iwlwifi snd_hda_codec snd_hwdep snd_hda_core btusb btrtl mei_hdcp iTCO_wdt rapl mei_pxp btintel snd_seq iTCO_vendor_support btbcm snd_seq_device intel_cstate bluetooth snd_pcm cfg80211 intel_wmi_thunderbolt wmi_bmof intel_uncore snd_timer mei_me snd ecdh_generic i2c_i801
+[ 4562.100541]  ecc mei i2c_smbus soundcore rfkill intel_pch_thermal acpi_pad zram nouveau drm_ttm_helper ttm gpu_sched i2c_algo_bit drm_gpuvm drm_exec mxm_wmi drm_display_helper drm_kms_helper drm crct10dif_pclmul crc32_pclmul nvme e1000e crc32c_intel nvme_core ghash_clmulni_intel video wmi pinctrl_cannonlake ip6_tables ip_tables fuse
+[ 4562.100616] ---[ end trace 0000000000000000 ]---
+
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Cc: stable@vger.kernel.org
+[KN: port to v5.10]
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ .../drm/nouveau/include/nvkm/core/client.h    |  1 +
+ drivers/gpu/drm/nouveau/nvkm/core/client.c    |  1 +
+ drivers/gpu/drm/nouveau/nvkm/core/object.c    | 26 ++++++++++++++-----
+ 3 files changed, 22 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/nouveau/include/nvkm/core/client.h b/drivers/gpu/drm/nouveau/include/nvkm/core/client.h
+index 5d7017fe5..5861eaccc 100644
+--- a/drivers/gpu/drm/nouveau/include/nvkm/core/client.h
++++ b/drivers/gpu/drm/nouveau/include/nvkm/core/client.h
+@@ -12,6 +12,7 @@ struct nvkm_client {
+ 
+ 	struct nvkm_client_notify *notify[32];
+ 	struct rb_root objroot;
++	spinlock_t obj_lock;
+ 
+ 	bool super;
+ 	void *data;
+diff --git a/drivers/gpu/drm/nouveau/nvkm/core/client.c b/drivers/gpu/drm/nouveau/nvkm/core/client.c
+index ac6712029..5d745d22b 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/core/client.c
++++ b/drivers/gpu/drm/nouveau/nvkm/core/client.c
+@@ -300,6 +300,7 @@ nvkm_client_new(const char *name, u64 device, const char *cfg,
+ 	client->device = device;
+ 	client->debug = nvkm_dbgopt(dbg, "CLIENT");
+ 	client->objroot = RB_ROOT;
++	spin_lock_init(&client->obj_lock);
+ 	client->ntfy = ntfy;
+ 	INIT_LIST_HEAD(&client->umem);
+ 	spin_lock_init(&client->lock);
+diff --git a/drivers/gpu/drm/nouveau/nvkm/core/object.c b/drivers/gpu/drm/nouveau/nvkm/core/object.c
+index 301a5e5b5..4c038d571 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/core/object.c
++++ b/drivers/gpu/drm/nouveau/nvkm/core/object.c
+@@ -30,8 +30,10 @@ nvkm_object_search(struct nvkm_client *client, u64 handle,
+ 		   const struct nvkm_object_func *func)
+ {
+ 	struct nvkm_object *object;
++	unsigned long flags;
+ 
+ 	if (handle) {
++		spin_lock_irqsave(&client->obj_lock, flags);
+ 		struct rb_node *node = client->objroot.rb_node;
+ 		while (node) {
+ 			object = rb_entry(node, typeof(*object), node);
+@@ -40,9 +42,12 @@ nvkm_object_search(struct nvkm_client *client, u64 handle,
+ 			else
+ 			if (handle > object->object)
+ 				node = node->rb_right;
+-			else
++			else {
++				spin_unlock_irqrestore(&client->obj_lock, flags);
+ 				goto done;
++			}
+ 		}
++		spin_unlock_irqrestore(&client->obj_lock, flags);
+ 		return ERR_PTR(-ENOENT);
+ 	} else {
+ 		object = &client->object;
+@@ -57,30 +62,39 @@ nvkm_object_search(struct nvkm_client *client, u64 handle,
+ void
+ nvkm_object_remove(struct nvkm_object *object)
+ {
++	unsigned long flags;
++
++	spin_lock_irqsave(&object->client->obj_lock, flags);
+ 	if (!RB_EMPTY_NODE(&object->node))
+ 		rb_erase(&object->node, &object->client->objroot);
++	spin_unlock_irqrestore(&object->client->obj_lock, flags);
+ }
+ 
+ bool
+ nvkm_object_insert(struct nvkm_object *object)
+ {
+-	struct rb_node **ptr = &object->client->objroot.rb_node;
++	struct rb_node **ptr;
+ 	struct rb_node *parent = NULL;
++	unsigned long flags;
+ 
++	spin_lock_irqsave(&object->client->obj_lock, flags);
++	ptr = &object->client->objroot.rb_node;
+ 	while (*ptr) {
+ 		struct nvkm_object *this = rb_entry(*ptr, typeof(*this), node);
+ 		parent = *ptr;
+-		if (object->object < this->object)
++		if (object->object < this->object) {
+ 			ptr = &parent->rb_left;
+-		else
+-		if (object->object > this->object)
++		} else if (object->object > this->object) {
+ 			ptr = &parent->rb_right;
+-		else
++		} else {
++			spin_unlock_irqrestore(&object->client->obj_lock, flags);
+ 			return false;
++		}
+ 	}
+ 
+ 	rb_link_node(&object->node, parent, ptr);
+ 	rb_insert_color(&object->node, &object->client->objroot);
++	spin_unlock_irqrestore(&object->client->obj_lock, flags);
+ 	return true;
+ }
+ 
+-- 
+2.39.4
+

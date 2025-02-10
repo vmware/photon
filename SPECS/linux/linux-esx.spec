@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.234
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -310,6 +310,18 @@ Patch191: 0001-drm-amdgpu-fix-use-after-free-bug.patch
 # Fix CVE-2024-26828
 Patch192: 0001-cifs-fix-underflow-in-parse_server_interfaces.patch
 
+# Fix CVE-2024-35817
+Patch193: 0001-drm-amdgpu-amdgpu_ttm_gart_bind-set-gtt-bound-flag.patch
+
+# Fix CVE-2024-27062
+Patch194: 0001-nouveau-lock-the-client-object-tree.patch
+
+# Fix CVE-2024-26982
+Patch195: 0001-Squashfs-check-the-inode-number-is-not-the-invalid-v.patch
+
+# Fix CVE-2024-26915
+Patch196: 0001-drm-amdgpu-Reset-IH-OVERFLOW_CLEAR-bit.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -472,7 +484,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M97
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M192
+%autopatch -p1 -m100 -M196
 
 #Patches for ptp_vmw
 %autopatch -p1 -m301 -M302
@@ -692,6 +704,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 07 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-3
+- Fix CVE-2024-26915, CVE-2024-26982, CVE-2024-27062, CVE-2024-35817
 * Fri Feb 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.234-2
 - Fix for CVE-2024-26828, CVE-2024-26661, CVE-2024-26662, CVE-2024-26656
 * Wed Feb 05 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-1

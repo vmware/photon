@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.234
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -255,6 +255,18 @@ Patch192: 0001-drm-amdgpu-fix-use-after-free-bug.patch
 # Fix CVE-2024-26828
 Patch193: 0001-cifs-fix-underflow-in-parse_server_interfaces.patch
 
+# Fix CVE-2024-35817
+Patch194: 0001-drm-amdgpu-amdgpu_ttm_gart_bind-set-gtt-bound-flag.patch
+
+# Fix CVE-2024-27062
+Patch195: 0001-nouveau-lock-the-client-object-tree.patch
+
+# Fix CVE-2024-26982
+Patch196: 0001-Squashfs-check-the-inode-number-is-not-the-invalid-v.patch
+
+# Fix CVE-2024-26915
+Patch197: 0001-drm-amdgpu-Reset-IH-OVERFLOW_CLEAR-bit.patch
+
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
 Patch302: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
@@ -420,7 +432,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M193
+%autopatch -p1 -m100 -M197
 
 #Amazon AWS
 %autopatch -p1 -m301 -M340
@@ -601,6 +613,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Feb 07 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-3
+- Fix CVE-2024-26915, CVE-2024-26982, CVE-2024-27062, CVE-2024-35817
 * Fri Feb 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.234-2
 - Fix for CVE-2024-26828, CVE-2024-26661, CVE-2024-26662, CVE-2024-26656
 * Wed Feb 05 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-1
