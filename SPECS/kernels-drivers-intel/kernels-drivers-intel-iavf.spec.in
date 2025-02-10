@@ -1,15 +1,15 @@
 %global build_for %{BUILD_FOR}
 %global security_hardening  none
-%define src_ver             %{IAVF_VERSION}
+%define src_ver             %{PKG_VERSION}
 %define kernel_ver          %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %define uname_r             %{kernel_ver}%{KERNEL_FLAVOUR}
 %define kern_pkg_name       linux%{KERNEL_FLAVOUR}
 %define _modulesdir         /lib/modules/%{uname_r}
 %define conflicts_ver       6.1.62-9%{?dist}
 
-Summary:        Intel iavf driver v%{IAVF_VERSION}
+Summary:        Intel iavf driver v%{PKG_VERSION}
 Name:           linux%{KERNEL_FLAVOUR}-drivers-intel-iavf
-Version:        %{IAVF_VERSION}
+Version:        %{PKG_VERSION}
 License:        GPLv2
 URL:            https://sourceforge.net/projects/e1000
 Group:          System Environment/Kernel
@@ -110,19 +110,19 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 
 %changelog
 %if "%{src_ver}" == "4.11.1"
-* Wed Jun 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{IAVF_VERSION}-2
+* Wed Jun 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{PKG_VERSION}-2
 - Package debug info in seperate pkg
-* Tue May 14 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> %{IAVF_VERSION}-1
+* Tue May 14 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> %{PKG_VERSION}-1
 - Initial addition of iavf v4.11.1
 %endif
 
 %if "%{src_ver}" != "4.11.1"
-* Wed Jun 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{IAVF_VERSION}-4
+* Wed Jun 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{PKG_VERSION}-4
 - Package debug info in seperate pkg
-* Tue Apr 02 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{IAVF_VERSION}-3
+* Tue Apr 02 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{PKG_VERSION}-3
 - Fix subrelease naming convention
-* Thu Feb 22 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{IAVF_VERSION}-2
+* Thu Feb 22 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{PKG_VERSION}-2
 - Adding generic template for iavf driver
-* Thu Jan 04 2024 Roye Eshed <roye.eshed@broadcom.com> %{IAVF_VERSION}-1
-- Package Intel driver iavf v%{IAVF_VERSION} for %{KERNEL_FLAVOUR}.
+* Thu Jan 04 2024 Roye Eshed <roye.eshed@broadcom.com> %{PKG_VERSION}-1
+- Package Intel driver iavf v%{PKG_VERSION} for %{KERNEL_FLAVOUR}.
 %endif
