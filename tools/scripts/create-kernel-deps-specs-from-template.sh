@@ -227,9 +227,9 @@ find -L $@ -type f -path "*/kernels-drivers-intel/*.spec" -delete
 
 declare -A d_info=()
 
-d_info["ice"]="${ice[@]: 0: 2} %{ICE_VERSION}"
-d_info["iavf"]="${iavf[@]: 0: 2} %{IAVF_VERSION}"
-d_info["i40e"]="${i40e[0]} ${i40e[2]} %{I40E_VERSION}"
+d_info["ice"]="${ice[@]: 0: 2} %{PKG_VERSION}"
+d_info["iavf"]="${iavf[@]: 0: 2} %{PKG_VERSION}"
+d_info["i40e"]="${i40e[0]} ${i40e[2]} %{PKG_VERSION}"
 
 echo "Creating kernel drivers for linux ..."
 create_specs "linux"
@@ -237,9 +237,9 @@ create_specs "linux"
 echo "Creating kernel drivers for linux-esx ..."
 create_specs "linux-esx"
 
-d_info["iavf"]="${iavf[@]} %{IAVF_VERSION}"
-d_info["i40e"]="${i40e[@]} %{I40E_VERSION}"
-d_info["ice"]="${ice[@]} %{ICE_VERSION}"
+d_info["iavf"]="${iavf[@]} %{PKG_VERSION}"
+d_info["i40e"]="${i40e[@]} %{PKG_VERSION}"
+d_info["ice"]="${ice[@]} %{PKG_VERSION}"
 
 echo "Creating kernel drivers for linux-rt ..."
 create_specs "linux-rt"
