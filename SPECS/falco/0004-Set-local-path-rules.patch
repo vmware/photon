@@ -1,0 +1,21 @@
+diff --git a/cmake/modules/rules.cmake b/cmake/modules/rules.cmake
+index 566cf2a..7365ba0 100644
+--- a/cmake/modules/rules.cmake
++++ b/cmake/modules/rules.cmake
+@@ -20,14 +20,14 @@ if(NOT DEFINED FALCOSECURITY_RULES_FALCO_PATH)
+ 	# falco_rules.yaml
+ 	set(FALCOSECURITY_RULES_FALCO_VERSION "falco-rules-3.2.0")
+ 	set(FALCOSECURITY_RULES_FALCO_CHECKSUM
+-		"SHA256=b3990bf0209cfbf6a903b361e458a1f5851a9a5aeee808ad26a5ddbe1377157d"
++		"SHA256=a0cbf8aec65959bdd4661c549bdbdcd8acae6ca70e3545c4102fc4c50592d5bf"
+ 	)
+ 	set(FALCOSECURITY_RULES_FALCO_PATH
+ 		"${PROJECT_BINARY_DIR}/falcosecurity-rules-falco-prefix/src/falcosecurity-rules-falco/falco_rules.yaml"
+ 	)
+ 	ExternalProject_Add(
+ 		falcosecurity-rules-falco
+-		URL "https://download.falco.org/rules/${FALCOSECURITY_RULES_FALCO_VERSION}.tar.gz"
++		URL "${CMAKE_CURRENT_SOURCE_DIR}/../../SOURCES/falco-rules-3.2.0.tar.gz"
+ 		URL_HASH "${FALCOSECURITY_RULES_FALCO_CHECKSUM}"
+ 		CONFIGURE_COMMAND ""
+ 		BUILD_COMMAND ""

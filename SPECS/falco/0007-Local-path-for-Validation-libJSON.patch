@@ -1,0 +1,29 @@
+From 69e4a9c4f2e45ce8b94c46e27ffda1e15b8c6c37 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Thu, 16 Jan 2025 06:28:36 +0000
+Subject: [PATCH] Set Local path for Validation libJSON
+
+  -  Set Local path for Validation libJSON
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ cmake/modules/valijson.cmake | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/cmake/modules/valijson.cmake b/cmake/modules/valijson.cmake
+index e2a26fc..e4d5d27 100644
+--- a/cmake/modules/valijson.cmake
++++ b/cmake/modules/valijson.cmake
+@@ -32,8 +32,7 @@ else()
+ 	ExternalProject_Add(
+ 		valijson
+ 		PREFIX "${PROJECT_BINARY_DIR}/valijson-prefix"
+-		URL "https://github.com/tristanpenman/valijson/archive/refs/tags/v1.0.2.tar.gz"
+-		URL_HASH "SHA256=35d86e54fc727f1265226434dc996e33000a570f833537a25c8b702b0b824431"
++		URL "${CMAKE_CURRENT_SOURCE_DIR}/../../SOURCES/valijson-1.0.2.tar.gz"
+ 		CONFIGURE_COMMAND ""
+ 		BUILD_COMMAND ""
+ 		INSTALL_COMMAND ""
+-- 
+2.39.4
+

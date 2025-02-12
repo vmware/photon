@@ -4,10 +4,22 @@
 %define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %define _modulesdir /lib/modules/%{uname_r}
 
+# check the release bundle & use the right version, example:
+# https://https://github.com/falcosecurity/falco/archive/refs/tags/0.39.2/cmake/modules/falcosecurity-libs.cmake
+%define falcosecurity_libs_ver  0.19.0
+%define nlohman_json_ver  3.3.0
+%define uthash_ver  1.9.8
+%define tbb_ver  2022.0.0
+%define valijson_ver  1.0.2
+%define cpp_httplib_ver  0.15.3
+%define cxxopts_ver  3.0.0
+%define falcoctl_ver  0.10.1
+%define falco_rules_ver  3.2.0
+
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.36.2
-Release:        9%{?kernelsubrelease}%{?dist}
+Version:        0.39.2
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://falco.org
 Group:          Applications/System
@@ -15,16 +27,46 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a3fef235ab4f3121bd0400827712652530ec417498c44ada8b6bf565f7631d035673b53dad94ea6ae9c854d45202ed71b2771f19e0c92eea3fc3503e5b75b02e
+%define sha512 %{name}=198405e9383625ca4d78822de7674c62863d15b3108ba5b06d4cf6ff20850f7eec9123fe7d98d049acc2931b98e4b09d7ef0d66136a31363ce59a64ad9e8eda0
 
-Source1: %{name}-%{version}-dependencies.tar.gz
-%define sha512 %{name}-%{version}-dependencies.tar.gz=f3fb2ebc4d1e46ad5db81921480d4d8e1a55b5482957b64332637ad20b30b788763f54ee78089ab7c143b0359168f365357af806a7e4f67624da520fd3ef56d3
+Source1: https://github.com/falcosecurity/libs/archive/falconsecurity-libs-%{falcosecurity_libs_ver}.tar.gz
+%define sha512 falconsecurity-libs=5b011c804b07bf2f3eb6a6d7e8c9ef4e54bcc8d74116020e887465aba3dec737bdf8fc854778a8230f7e23e87da29423c6320a8054873eb5c9c957ce40ef3825
+
+Source3: https://github.com/nlohmann/json/archive/nlohman-json-%{nlohman_json_ver}.tar.gz
+%define sha512 nlohman-json=cb81e89797a9b8b322a7b421422f919cf1dadc939d83688196664aefc365fa52ec3601ca5419782c99e09e594b56301ac9ea909ac0f5231b70cfa3ff1257a964
+
+Source4: https://github.com/troydhanson/uthash/archive/refs/tags/uthash-%{uthash_ver}.tar.gz
+%define sha512 uthash=2ea7f35d662f711e216b1d2d26a1fae698b5f0a71f7151c4747161046de9d8c632dc756cb5948863394694dde47fa6f9383f46ca572c83bb6803383da0f2f740
+
+Source5: https://github.com/oneapi-src/oneTBB/archive/refs/tags/tbb-%{tbb_ver}.tar.gz
+%define sha512 tbb=c87b84964b2c323f61895a532968dfa6413a774c177cffbf6e798a07e74e8da5d449144875771df0a1b02657eeb2a7ae4d41c6c432dbf7ea50e3d5a9ea9f8cd3
+
+Source6: https://github.com/tristanpenman/valijson/archive/refs/tags/valijson-%{valijson_ver}.tar.gz
+%define sha512 valijson=c1141e533d6a791a01883c5b7ab9501eebc39057a850d784670a4bcf99bff3fee4c3120107128dcaa9db0505adf2ae794700620c02163b3e636f0b635031df80
+
+Source7: https://github.com/yhirose/cpp-httplib/archive/refs/tags/cpp-httplib-%{cpp_httplib_ver}.tar.gz
+%define sha512 cpp-httplib=f7fc9c9eb71f091b82958e023a7b417b30d2590fd5d1a920d1c98361f34bcaca796dbeda7f9fdb8b2c722a8968977b77463c6cbb252cba9823a79c22471fa439
+
+Source8: https://github.com/jarro2783/cxxopts/archive/refs/tags/cxxopts-%{cxxopts_ver}.tar.gz
+%define sha512 cxxopts=239479a3b35ddef6fc380ac9371e1cf7e3aea066f03e1ea538151fa2fff4296838daa976d55e988d8f87f40c0ae027767bcb214754177499413af1081315565c
+
+Source9: https://github.com/falcosecurity/falcoctl/archive/refs/tags/falcoctl-%{falcoctl_ver}.tar.gz
+%define sha512 falcoctl=b55dc0bd53e24897934c72f7f4c524d956c517ec3e754d27664964eaf69b6015f7001214603b0474fc82e7388094c143ad2570f4eed4a8ccbbb30619deba5595
+
+Source10: https://github.com/falcosecurity/rules/archive/refs/tags/falco-rules-%{falco_rules_ver}.tar.gz
+%define sha512 falco-rules=b0c02e8bfb4c17b1197fc17adef0eb22557d70eebbb81efb61aaf06f87be3f00d3c517a72c1070d40dbb2f3713c99d8f98afbabf776fb259a6f3be1587da7279
 
 #https://raw.githubusercontent.com/troydhanson/uthash/v1.9.8/src/uthash.h
-Source2: uthash.h
+Source11: uthash.h
 
-Patch0: build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
-Patch1: 0001-build-plugins-locally.patch
+Patch1: 0001-Set-local-path-njson.patch
+Patch2: 0002-Set-local-path-cpp-httplib.patch
+Patch3: 0003-Set-local-path-cxxopts.patch
+Patch4: 0004-Set-local-path-rules.patch
+Patch5: 0005-Set-local-path-falcoctl.patch
+
+Patch6: 0006-oneAPI-Threading-Building-Block.patch
+Patch7: 0007-Local-path-for-Validation-libJSON.patch
 
 BuildArch: x86_64
 
@@ -34,7 +76,9 @@ BuildRequires: curl-devel
 BuildRequires: zlib-devel
 BuildRequires: ncurses-devel
 BuildRequires: linux-devel = %{uname_r}
+BuildRequires: elfutils-devel
 BuildRequires: jq-devel
+BuildRequires: jsoncpp-devel
 BuildRequires: git
 BuildRequires: lua-devel
 BuildRequires: libyaml-devel
@@ -57,6 +101,7 @@ Requires: libyaml
 Requires: lua
 Requires: sysdig
 Requires: dkms
+Requires: jsoncpp
 Requires: grpc
 Requires: jq
 Requires: protobuf
@@ -77,11 +122,21 @@ Sysdig %{name} is an open source, behavioral activity monitor designed to detect
 Falco lets you continuously monitor and detect container, application, host, and network activity; all in one place, from one source of data, with one set of customizable rules.
 
 %prep
-%autosetup -p1
-mkdir -p %{_arch}-vmware-linux
-tar xf %{SOURCE1} --strip-components=1 -C %{_arch}-vmware-linux
+%autosetup -a0 -a1 -N
+
+pushd %{_builddir}/%{name}-%{version}
+%autopatch -p1 -m1 -M5
+popd
+
+pushd %{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}
+%autopatch -p1 -m6 -M7
+popd
 
 %build
+sed -i 's/ dns$//g' /etc/nsswitch.conf
+
+export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
+
 %{cmake} \
     -DCMAKE_BUILD_TYPE=Debug \
     -DUSE_BUNDLED_DEPS:BOOL=OFF \
@@ -92,11 +147,29 @@ tar xf %{SOURCE1} --strip-components=1 -C %{_arch}-vmware-linux
     -DUSE_BUNDLED_LIBELF=OFF \
     -DLIBELF_LIB=%{_libdir}/libelf.so \
     -DCMAKE_INSTALL_LIBDIR=%{_lib} \
-    -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir}
+    -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir} \
+    -DUSE_BUNDLED_UTHASH=OFF \
+    -DUTHASH_INCLUDE=%{_builddir}/%libs-%{falcosecurity_libs_ver}/userspace/libscap \
+    -DBUILD_DRIVER:BOOL=ON \
+    -DDRIVER_SOURCE_DIR="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}/driver" \
+    -DFALCOSECURITY_LIBS_SOURCE_DIR="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}" \
+    -DBUILD_BPF=OFF \
+    -DUSE_BUNDLED_JSONCPP=OFF \
+    -DUSE_BUNDLED_CXXOPTS=TRUE \
+    -DUSE_BUNDLED_NLOHMANN_JSON=TRUE \
+    -DUSE_BUNDLED_CPPHTTPLIB=TRUE \
+    -DBUILD_LIBSCAP_EXAMPLES=OFF \
+    -DBUILD_LIBSCAP_MODERN_BPF=OFF \
+    -DBUILD_LIBSINSP_EXAMPLES=OFF  \
+    -DUSE_BUNDLED_RE2=OFF \
+    -DBUILD_TESTING=OFF
 
-cp %{SOURCE2} %{_arch}-vmware-linux/falcosecurity-libs-repo/falcosecurity-libs-prefix/src/falcosecurity-libs/userspace/libscap/
+cp %{SOURCE11} libs-%{falcosecurity_libs_ver}/userspace/libscap/
+cp %{SOURCE11} %{_arch}-vmware-linux/libscap/
 export KERNELDIR="%{_modulesdir}/build"
 %{cmake_build}
+cp %{_arch}-vmware-linux/falcosecurity-rules-falco-prefix/src/falcosecurity-rules-falco/rules/falco_rules.yaml %{_arch}-vmware-linux/falcosecurity-rules-falco-prefix/src/falcosecurity-rules-falco/
+cp -r %{_arch}-vmware-linux/scripts/falcoctl/ %{_arch}-vmware-linux/falcoctl-prefix/src/falcoctl/
 
 %install
 export KERNELDIR="%{_modulesdir}/build"
@@ -118,7 +191,11 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %exclude %{_usrsrc}/debug
+%exclude %{_libdir}/cmake/
+%exclude %{_includedir}/nlohmann/json.hpp
+%exclude %{_libdir}/*.a
 %{_usrsrc}/%{name}*
+%{_includedir}/httplib.h
 %{_sysconfdir}/%{name}
 %{_datadir}/%{name}
 %{_modulesdir}/extra/%{name}.ko.xz
@@ -131,6 +208,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Tue Feb 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 0.39.2-1
+- Upgrade to version 0.39.2
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-9
 - Bump version as a part of go upgrade
 * Wed Sep 04 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-8

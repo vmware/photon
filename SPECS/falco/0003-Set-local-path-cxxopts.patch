@@ -1,0 +1,13 @@
+diff --git a/cmake/modules/cxxopts.cmake b/cmake/modules/cxxopts.cmake
+index 4515a72..a0673d2 100644
+--- a/cmake/modules/cxxopts.cmake
++++ b/cmake/modules/cxxopts.cmake
+@@ -32,7 +32,7 @@ else()
+ 
+ 	ExternalProject_Add(
+ 		cxxopts
+-		URL "https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.0.0.tar.gz"
++		URL "${CMAKE_CURRENT_SOURCE_DIR}/../../SOURCES/cxxopts-3.0.0.tar.gz"
+ 		URL_HASH "SHA256=36f41fa2a46b3c1466613b63f3fa73dc24d912bc90d667147f1e43215a8c6d00"
+ 		CONFIGURE_COMMAND ""
+ 		BUILD_COMMAND ""
