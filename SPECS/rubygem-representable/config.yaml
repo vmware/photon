@@ -1,0 +1,12 @@
+sources:
+- archive: representable-3.2.0.gem
+  archive_sha512sum: a28fa81501e54dc3fc432133126c8ef7868f2ca8038d992c01a0516ed2329721dcab035b6533cf7453c14576299f0266f4603ee62a6ebb935f496be21b6f67ef
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Renders and parses JSON/XML/YAML documents from and to Ruby objects.'
+      home_page: https://rubygems.org/gems/representable
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Renders and parses JSON/XML/YAML documents from and to Ruby objects.
+      supplier: 'Organization: Broadcom, Inc.'

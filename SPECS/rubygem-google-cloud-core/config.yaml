@@ -1,0 +1,12 @@
+sources:
+- archive: google-cloud-core-1.7.1.gem
+  archive_sha512sum: 308545210f816438d6d7abdbf61bac72084bb6c9f2c7b870fd3dde748c742f6da7011ec18a9425a092b89c917d7f2468a2c326b9e66ec55176676878ed4c2385
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'google-cloud-core is the internal shared library for google-cloud-ruby.'
+      home_page: https://rubygems.org/gems/google-cloud-core
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: google-cloud-core is the internal shared library for google-cloud-ruby.
+      supplier: 'Organization: Broadcom, Inc.'

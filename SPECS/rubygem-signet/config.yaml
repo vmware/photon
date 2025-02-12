@@ -1,0 +1,12 @@
+sources:
+- archive: signet-0.19.0.gem
+  archive_sha512sum: b2dfdee6001957f6dec3e3f3578ba71809a69b42905857e386131189795a902a51d42d3b9176f02b213c8bf025cc3a55ef1d148e12bfac4773339e6169def557
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Signet is an OAuth 1.0 / OAuth 2.0 implementation.'
+      home_page: https://rubygems.org/gems/signet
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Signet is an OAuth 1.0 / OAuth 2.0 implementation.
+      supplier: 'Organization: Broadcom, Inc.'

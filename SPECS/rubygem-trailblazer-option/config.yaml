@@ -1,0 +1,12 @@
+sources:
+- archive: trailblazer-option-0.1.2.gem
+  archive_sha512sum: 427cfdceafcecdb2d746320b8bb3f185f230be47a52dde2358b85de3674c8280e8d92fd5a75ac6421e010ec3b4f401bd0e8e71ebd66c2fcf6d4ca043daede0a3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A powerful set of gems that simplifies the implementation of clean Ruby applications.'
+      home_page: https://rubygems.org/gems/trailblazer-option
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A powerful set of gems that simplifies the implementation of clean Ruby applications.
+      supplier: 'Organization: Broadcom, Inc.'

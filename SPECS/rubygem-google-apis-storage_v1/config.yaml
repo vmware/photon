@@ -1,0 +1,12 @@
+sources:
+- archive: google-apis-storage_v1-0.49.0.gem
+  archive_sha512sum: 9892d06fe4f6f652c4bf95a5885ee975fbdc4565f52ef635ab3dc43cf24a03ecba3fad8811a7c77f5783a54d09c26e0b8938476567ac8b9bdcdaa8cf3a79351f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is a simple REST client for Cloud Storage JSON API V1'
+      home_page: https://rubygems.org/gems/google-apis-storage_v1
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: This is a simple REST client for Cloud Storage JSON API V1
+      supplier: 'Organization: Broadcom, Inc.'
