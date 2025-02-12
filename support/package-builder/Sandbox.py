@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
 
-import sys
-import shutil
 import os.path
 import shutil
-import docker
-import time
 import tempfile
 import tarfile
 import subprocess
 
-from datetime import datetime
 from contextlib import suppress, ExitStack
 from constants import constants
 from CommandUtils import CommandUtils
@@ -61,9 +56,9 @@ def copy_file_from_container(container, path):
             )
             # Go back to the beginning of the file
             f.seek(0, 0)
-    except:
+    except Exception as e:
         f.close()
-        raise
+        raise Exception(f"ERROR: {e}")
     return f
 
 
@@ -76,9 +71,9 @@ def tar_chroot(rootPath, fmt):
     tarf = tempfile.TemporaryFile(mode="w+b")
     try:
         subprocess.run(cmd, stdout=tarf, check=True)
-    except:
+    except Exception as e:
         tarf.close()
-        raise
+        raise Exception(f"ERROR: {e}")
     tarf.seek(0, 0)
     return tarf
 
@@ -258,8 +253,6 @@ class Chroot(Sandbox):
 
 class SystemdNspawn(Sandbox):
     def __init__(self, name, logger, cmdAudit=lambda cmd, env: None):
-        import docker
-
         Sandbox.__init__(self, name, logger, cmdAudit)
         self.nspawnRootPath = os.path.join(constants.buildRootPath, self.name)
         self.observationFile = None
@@ -276,6 +269,12 @@ class SystemdNspawn(Sandbox):
 
     def destroy(self):
         self.logger.debug(f"Deleting nspawn chroot: {self.nspawnRootPath}")
+
+        container_name = os.path.basename(self.nspawnRootPath)
+        if container_name in subprocess.run(["machinectl", "list"], capture_output=True, text=True).stdout:
+            self.logger.debug(f"Removing nspawn container: {container_name} ...")
+            self._cmd(f"machinectl terminate {container_name}".split(), ignore_rc=True)
+
         self._cmd(["rm", "--one-file-system", "-rf", self.nspawnRootPath])
 
     def runCmd(
@@ -403,8 +402,8 @@ class Container(Sandbox):
             if existing is not None:
                 existing.remove(force=True)
 
-        #  TODO: Is init=True equivalent of --sig-proxy?
-        #  privilegedDocker = False
+        # TODO: Is init=True equivalent of --sig-proxy?
+        # privilegedDocker = False
         cap_list = ["SYS_PTRACE"]
         #  if packageName in constants.listReqPrivilegedDockerForTest:
         #  privilegedDocker = True
