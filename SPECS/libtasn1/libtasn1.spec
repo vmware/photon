@@ -1,7 +1,7 @@
 Summary:        ASN.1 library
 Name:           libtasn1
 Version:        4.19.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.gnu.org/software/libtasn1/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -12,6 +12,9 @@ Source0:        http://ftp.gnu.org/gnu/libtasn1/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2024-12133.patch
+Patch1: CVE-2024-12133_2.patch
 
 %description
 Libtasn1 library provides Abstract Syntax Notation One (ASN.1, as specified by
@@ -29,7 +32,7 @@ The package contains libraries and header files for
 developing applications that use libtasn1.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure
@@ -61,35 +64,37 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
-*   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.19.0-3
--   Release bump for SRP compliance
-*   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-2
--   Release bump for SRP compliance
-*   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 4.19.0-1
--   Automatic Version Bump
-*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.18.0-1
--   Automatic Version Bump
-*   Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 4.16.0-1
--   Automatic Version Bump
-*   Mon Apr 13 2020 Siddharth Chandrasekran <csiddhath@vmware.com> 4.14-1
--   Update to version 4.14 to fix CVE-2018-1000654
-*   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 4.13-1
--   Update to version 4.13 fix CVE-2018-6003.
-*   Tue Oct 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.12-1
--   update to 4.12 and apply patch for CVE-2017-10790
-*   Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com> 4.10-1
--   Upgrading version to 4.10
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.7-4
--   Moved man3 to devel subpackage.
-*   Wed Nov 30 2016 Dheeraj Shetty <dheerajs@vmware.com> 4.7-3
--   Added patch for CVE-2016-4008
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.7-2
--   GA - Bump release of all rpms
-*   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.7-1
--   Updated to version 4.7
-*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 4.5-3
--   Moving static lib files to devel package.
-*   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 4.5-2
--   Removing la files from packages.
-*   Fri Jun 19 2015 Divya Thaluru <dthaluru@vmware.com> 4.5-1
--   Initial build. First version
+* Wed Feb 12 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.0-4
+- Fix for CVE-2024-12133
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.19.0-3
+- Release bump for SRP compliance
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.0-2
+- Release bump for SRP compliance
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 4.19.0-1
+- Automatic Version Bump
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 4.18.0-1
+- Automatic Version Bump
+* Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 4.16.0-1
+- Automatic Version Bump
+* Mon Apr 13 2020 Siddharth Chandrasekran <csiddhath@vmware.com> 4.14-1
+- Update to version 4.14 to fix CVE-2018-1000654
+* Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 4.13-1
+- Update to version 4.13 fix CVE-2018-6003.
+* Tue Oct 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.12-1
+- update to 4.12 and apply patch for CVE-2017-10790
+* Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com> 4.10-1
+- Upgrading version to 4.10
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.7-4
+- Moved man3 to devel subpackage.
+* Wed Nov 30 2016 Dheeraj Shetty <dheerajs@vmware.com> 4.7-3
+- Added patch for CVE-2016-4008
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.7-2
+- GA - Bump release of all rpms
+* Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.7-1
+- Updated to version 4.7
+* Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 4.5-3
+- Moving static lib files to devel package.
+* Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 4.5-2
+- Removing la files from packages.
+* Fri Jun 19 2015 Divya Thaluru <dthaluru@vmware.com> 4.5-1
+- Initial build. First version
