@@ -1,0 +1,12 @@
+sources:
+- archive: google-cloud-storage-1.54.0.gem
+  archive_sha512sum: f452fa61f23a0da1aaed1bbf718cff7dc296315290b60b0db63db55dc8bfc2c3e8a55163d5e2b9f76ea2faeed1b639d666e476bb6927c3aba676bb440aabaf2e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'google-cloud-storage is the official library for Google Cloud Storage.'
+      home_page: https://rubygems.org/gems/google-cloud-storage
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: google-cloud-storage is the official library for Google Cloud Storage.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,12 @@
+sources:
+- archive: uber-0.1.0.gem
+  archive_sha512sum: 92b374b265ac4fac861db3aa07ca1f2c688f74e55434ebf2088b60e6220a46c0a9405792d6d483015677fe0c4430dfdd8809b2620b430afb667fc0a5a499502b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A gem-authoring framework.'
+      home_page: https://rubygems.org/gems/uber
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A gem-authoring framework.
+      supplier: 'Organization: Broadcom, Inc.'

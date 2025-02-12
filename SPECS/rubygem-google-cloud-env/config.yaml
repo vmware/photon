@@ -1,0 +1,12 @@
+sources:
+- archive: google-cloud-env-2.2.1.gem
+  archive_sha512sum: 2f9151b0a633e2ccb721056b152db647c731752264ac641e0e0103a264c686c2ef4ec3b6dfbe0521e47d051a370c8fbb90472492aa7ddc15eaedd0d1e59a4f99
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'google-cloud-env provides information on the Google Cloud Platform hosting environment.'
+      home_page: https://rubygems.org/gems/google-cloud-env
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: google-cloud-env provides information on the Google Cloud Platform hosting environment.
+      supplier: 'Organization: Broadcom, Inc.'

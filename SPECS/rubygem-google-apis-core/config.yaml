@@ -1,0 +1,12 @@
+sources:
+- archive: google-apis-core-0.16.0.gem
+  archive_sha512sum: 9cd658a8e5fb40485de18a588a72643e3258a9b0b9cff8e96060e431faefd6df34aae9b6c473b59765d07d953385e2914c9048801909523a38bf8c91da975c92
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Common utility and base classes for legacy Google REST clients'
+      home_page: https://rubygems.org/gems/google-apis-core
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Common utility and base classes for legacy Google REST clients
+      supplier: 'Organization: Broadcom, Inc.'
