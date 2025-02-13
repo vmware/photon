@@ -1,7 +1,7 @@
-From 5c7cd0a28bf6af5dc0ae257771bcce11954f5dd1 Mon Sep 17 00:00:00 2001
+From 2789c6ea333a626e6effe9e3e595bb0095394a94 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Thu, 28 Nov 2024 06:08:34 +0000
-Subject: [PATCH 01/11] FIPS canister binary usage
+Subject: [PATCH 01/12] FIPS canister binary usage
 
 Build with fips canister and skip building crypto algorithms.
 Invoke fips canister integrity check during kernel startup.
@@ -15,10 +15,10 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---
  arch/x86/crypto/Makefile |   9 ---
- crypto/Makefile          | 119 +++++++++++++++++++++++++++++++--------
+ crypto/Makefile          | 122 ++++++++++++++++++++++++++++++---------
  init/main.c              |   3 +
  lib/crypto/Makefile      |   9 ---
- 4 files changed, 98 insertions(+), 42 deletions(-)
+ 4 files changed, 98 insertions(+), 45 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
 index 53b4a2778..18671653a 100644
@@ -41,7 +41,7 @@ index 53b4a2778..18671653a 100644
  sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
  sha1-ssse3-$(CONFIG_AS_SHA1_NI) += sha1_ni_asm.o
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 3b1c1218f..dc3b331ca 100644
+index 3b1c1218f..0effd6592 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -14,7 +14,6 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -52,15 +52,17 @@ index 3b1c1218f..dc3b331ca 100644
  
  crypto_skcipher-y += lskcipher.o
  crypto_skcipher-y += skcipher.o
-@@ -24,7 +23,6 @@ ifeq ($(CONFIG_BPF_SYSCALL),y)
+@@ -24,9 +23,6 @@ ifeq ($(CONFIG_BPF_SYSCALL),y)
  obj-$(CONFIG_CRYPTO_SKCIPHER2) += bpf_crypto_skcipher.o
  endif
  
 -obj-$(CONFIG_CRYPTO_SEQIV) += seqiv.o
- obj-$(CONFIG_CRYPTO_ECHAINIV) += echainiv.o
- 
+-obj-$(CONFIG_CRYPTO_ECHAINIV) += echainiv.o
+-
  crypto_hash-y += ahash.o
-@@ -48,15 +46,12 @@ rsa_generic-y += rsaprivkey.asn1.o
+ crypto_hash-y += shash.o
+ obj-$(CONFIG_CRYPTO_HASH2) += crypto_hash.o
+@@ -48,15 +44,12 @@ rsa_generic-y += rsaprivkey.asn1.o
  rsa_generic-y += rsa.o
  rsa_generic-y += rsa_helper.o
  rsa_generic-y += rsa-pkcs1pad.o
@@ -76,7 +78,7 @@ index 3b1c1218f..dc3b331ca 100644
  
  crypto_acompress-y := acompress.o
  crypto_acompress-y += scompress.o
-@@ -64,20 +59,13 @@ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
+@@ -64,20 +57,13 @@ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
  
  cryptomgr-y := algboss.o testmgr.o
  
@@ -97,7 +99,7 @@ index 3b1c1218f..dc3b331ca 100644
  obj-$(CONFIG_CRYPTO_SM3) += sm3.o
  obj-$(CONFIG_CRYPTO_SM3_GENERIC) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -85,20 +73,13 @@ obj-$(CONFIG_CRYPTO_WP512) += wp512.o
+@@ -85,20 +71,13 @@ obj-$(CONFIG_CRYPTO_WP512) += wp512.o
  CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105930
@@ -118,7 +120,7 @@ index 3b1c1218f..dc3b331ca 100644
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -133,7 +114,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -133,7 +112,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -126,7 +128,7 @@ index 3b1c1218f..dc3b331ca 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -164,7 +144,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+@@ -164,7 +142,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
  obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
@@ -134,7 +136,7 @@ index 3b1c1218f..dc3b331ca 100644
  obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
-@@ -172,7 +151,6 @@ UBSAN_SANITIZE_jitterentropy.o = n
+@@ -172,7 +149,6 @@ UBSAN_SANITIZE_jitterentropy.o = n
  jitterentropy_rng-y := jitterentropy.o jitterentropy-kcapi.o
  obj-$(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE) += jitterentropy-testing.o
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
@@ -142,12 +144,12 @@ index 3b1c1218f..dc3b331ca 100644
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
  obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-@@ -180,13 +158,11 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
+@@ -180,13 +156,10 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
  obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
 -obj-$(CONFIG_CRYPTO_ECC) += ecc.o
- obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
+-obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
  obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
  
  ecdh_generic-y += ecdh.o
@@ -156,7 +158,7 @@ index 3b1c1218f..dc3b331ca 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -210,3 +186,98 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -210,3 +183,98 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o

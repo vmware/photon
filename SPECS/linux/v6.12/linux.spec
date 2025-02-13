@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -301,6 +301,7 @@ Patch10008: 0008-Move-kernel-structures-usage-from-canister-to-wrappe.patch
 Patch10009: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
 Patch10010: 0010-List-canister-objs-in-a-file.patch
 Patch10011: 0011-Handle-approved-and-non-approved-services.patch
+Patch10012: 0012-Add-support-for-essiv-and-echaniniv.patch
 
 %if 0%{?kat_build}
 Patch10014: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
@@ -856,6 +857,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Feb 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.1-4
+- Add Support for essiv echainiv in canister
 * Mon Feb 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.1-3
 - Canister build for v6.12.x
 * Thu Feb 20 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-2

@@ -89,7 +89,9 @@ extern int fcw_printk(const char *fmt, ...);
 
 extern bool fcw_ratelimit(void *rs, const char *name);
 extern void *fcw_init_ratelimit_state(void *rs);
-
+extern void *fcw_sg_page(struct scatterlist *sg);
+extern void fcw_sg_set_page(struct scatterlist *sg, void *page,
+			    unsigned int len, unsigned int offset);
 /* testmgr alloc helpers */
 extern struct aead_request *fcw_aead_request_alloc(
 	struct crypto_aead *tfm, gfp_t gfp);
@@ -155,5 +157,9 @@ int __init fips_integrity_init(void);
 int __init fips_integrity_check (void);
 int seqiv_module_init(void);
 void seqiv_module_exit(void);
+int __init echainiv_module_init(void);
+void __exit echainiv_module_exit(void);
+int __init essiv_module_init(void);
+void __exit essiv_module_exit(void);
 #endif
 

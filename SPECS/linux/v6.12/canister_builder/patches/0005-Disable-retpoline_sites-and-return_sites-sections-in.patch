@@ -1,7 +1,7 @@
-From dda58545040bdd9e4c9991cacff1cbfcb4a45bb8 Mon Sep 17 00:00:00 2001
+From 5fad6d9fbb28aaef5cb95ece77b7f52403aa5b78 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Fri, 29 Nov 2024 06:33:52 +0000
-Subject: [PATCH 05/11] Disable retpoline_sites and return_sites sections in
+Subject: [PATCH 05/12] Disable retpoline_sites and return_sites sections in
  canister
 
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>

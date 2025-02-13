@@ -79,6 +79,8 @@ extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
 extern void *fcw_memcpy(void *dst, const void *src, size_t len);
 
 void *fcw_sg_page(struct scatterlist *sg);
+void fcw_sg_set_page(struct scatterlist *sg, void *page,
+			    unsigned int len, unsigned int offset);
 int fcw_lib_sha256_base_do_update(struct sha256_state *sctx,
 					    const u8 *data,
 					    unsigned int len,
@@ -139,8 +141,8 @@ int fcw_build_cipher_test_sglists(struct cipher_test_sglists *tsgls,
 				  const struct kvec *inputs,
 				  unsigned int nr_inputs);
 struct scatterlist *fcw_scatterwalk_ffwd(struct scatterlist dst[2],
-				     struct scatterlist *src,
-				     unsigned int len);
+					struct scatterlist *src,
+					unsigned int len);
 void fcw_scatterwalk_unmap(void *vaddr);
 void fcw_sg_assign_page(struct scatterlist *sg, struct page *page);
 void *fcw_sg_virt(struct scatterlist *sg);
@@ -429,6 +431,13 @@ void *fcw_sg_page(struct scatterlist *sg)
 	struct page *page = sg_page(sg);
 	return page;
 }
+
+void fcw_sg_set_page(struct scatterlist *sg, void *page,
+		     unsigned int len, unsigned int offset)
+{
+	return sg_set_page(sg, (struct page *)page, len, offset);
+}
+
 void *fcw_sg_page_address(struct scatterlist *sg)
 {
 	struct page *page = sg_page(sg);
@@ -620,8 +629,8 @@ int fcw_build_cipher_test_sglists(struct cipher_test_sglists *tsgls,
 }
 
 struct scatterlist *fcw_scatterwalk_ffwd(struct scatterlist dst[2],
-				     struct scatterlist *src,
-				     unsigned int len)
+					struct scatterlist *src,
+					unsigned int len)
 {
 	return scatterwalk_ffwd(dst, src, len);
 }
@@ -757,6 +766,7 @@ static char *canister_algs[] = {
 	"rfc4106-gcm-aesni-avx",
 	"__rfc4106-gcm-aesni",
 	"cryptd(__rfc4106-gcm-aesni)",
+	"essiv(cbc(ecb(aes-generic)),sha256-generic)",
 	// no certification require
 	"crc32c-generic",
 	"crct10dif-generic",
