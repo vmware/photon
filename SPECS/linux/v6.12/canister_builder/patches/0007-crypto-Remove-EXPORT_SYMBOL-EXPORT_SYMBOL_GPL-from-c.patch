@@ -1,7 +1,7 @@
-From cb6955ea9fb97ccfa85f9758e366eade9675a8e7 Mon Sep 17 00:00:00 2001
+From 5b11e5961b3bf0e0e79c22c8899425a06e7d5e62 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 2 Dec 2024 06:58:48 +0000
-Subject: [PATCH 07/11] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from
+Subject: [PATCH 07/12] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from
  canister
 
 Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>

@@ -1,0 +1,235 @@
+From 23f888bd7429a0cfff9701c6951e7c2b0c82f17b Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Tue, 4 Feb 2025 08:52:58 +0000
+Subject: [PATCH 12/12] Add support for essiv and echaniniv
+
+- Algorithms echainiv and essiv is added to canister
+- Moved some of the APIs to wrapper to skip usage of structures
+  like task_struct and spinlock in canister
+
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ crypto/Makefile           |  9 +++++++++
+ crypto/crypto_self_test.c |  4 ++++
+ crypto/echainiv.c         | 12 +++---------
+ crypto/essiv.c            | 41 +++++++++++++++++----------------------
+ 4 files changed, 34 insertions(+), 32 deletions(-)
+
+diff --git a/crypto/Makefile b/crypto/Makefile
+index b059d5519..82eba8fc1 100644
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -25,6 +25,8 @@ ifeq ($(CONFIG_BPF_SYSCALL),y)
+ obj-$(CONFIG_CRYPTO_SKCIPHER2) += bpf_crypto_skcipher.o
+ endif
+ 
++canister += echainiv.o
++
+ crypto_hash-y += ahash.o
+ crypto_hash-y += shash.o
+ obj-$(CONFIG_CRYPTO_HASH2) += crypto_hash.o
+@@ -177,6 +179,7 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+ obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
+ obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
+ canister += ecc.o
++canister += essiv.o
+ obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
+ canister += drbg.o
+ 
+@@ -372,4 +375,10 @@ endif
+ ifneq ($(subst Y,y,$(CONFIG_CRYPTO_GHASH)),y)
+   $(error FIPS canister requires CONFIG_CRYPTO_GHASH=y)
+ endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_ECHAINIV)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_ECHAINIV=y)
++endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_ESSIV)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_ESSIV=y)
++endif
+ endif
+diff --git a/crypto/crypto_self_test.c b/crypto/crypto_self_test.c
+index d1f48da4e..1dd312f07 100644
+--- a/crypto/crypto_self_test.c
++++ b/crypto/crypto_self_test.c
+@@ -20,6 +20,10 @@ struct alg_self_test {
+ 
+ static struct alg_self_test __initdata alg_self_test_tbl[]  =
+ {
++	{
++		.driver_name = "essiv(cbc(aes),sha256)",
++		.alg_name = "essiv(cbc(aes),sha256)",
++	},
+ 	{
+ 		.driver_name = "cts(cbc(aes))",
+ 		.alg_name = "cts(cbc(aes))",
+diff --git a/crypto/echainiv.c b/crypto/echainiv.c
+index 696866686..3783e9192 100644
+--- a/crypto/echainiv.c
++++ b/crypto/echainiv.c
+@@ -19,9 +19,9 @@
+ #include <linux/err.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+-#include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
++#include "fips_canister_wrapper.h"
+ 
+ static int echainiv_encrypt(struct aead_request *req)
+ {
+@@ -147,19 +147,13 @@ static struct crypto_template echainiv_tmpl = {
+ 	.module = THIS_MODULE,
+ };
+ 
+-static int __init echainiv_module_init(void)
++int __init echainiv_module_init(void)
+ {
+ 	return crypto_register_template(&echainiv_tmpl);
+ }
+ 
+-static void __exit echainiv_module_exit(void)
++void __exit echainiv_module_exit(void)
+ {
+ 	crypto_unregister_template(&echainiv_tmpl);
+ }
+ 
+-subsys_initcall(echainiv_module_init);
+-module_exit(echainiv_module_exit);
+-
+-MODULE_LICENSE("GPL");
+-MODULE_DESCRIPTION("Encrypted Chain IV Generator");
+-MODULE_ALIAS_CRYPTO("echainiv");
+diff --git a/crypto/essiv.c b/crypto/essiv.c
+index e63fc6442..7a22eecf1 100644
+--- a/crypto/essiv.c
++++ b/crypto/essiv.c
+@@ -34,10 +34,13 @@
+ #include <crypto/internal/hash.h>
+ #include <crypto/internal/skcipher.h>
+ #include <crypto/scatterwalk.h>
+-#include <linux/module.h>
++#include "fips_canister_wrapper.h"
+ 
+ #include "internal.h"
+ 
++extern struct scatterlist *fcw_scatterwalk_ffwd(struct scatterlist dst[2],
++					struct scatterlist *src,
++					unsigned int len);
+ struct essiv_instance_ctx {
+ 	union {
+ 		struct crypto_skcipher_spawn	skcipher_spawn;
+@@ -215,7 +218,7 @@ static int essiv_aead_crypt(struct aead_request *req, bool enc)
+ 		if (nents < 0)
+ 			return -EINVAL;
+ 
+-		memcpy(iv, req->iv, ivsize);
++		fcw_memcpy(iv, req->iv, ivsize);
+ 		sg_init_table(rctx->sg, 4);
+ 
+ 		if (unlikely(nents > 1)) {
+@@ -223,20 +226,20 @@ static int essiv_aead_crypt(struct aead_request *req, bool enc)
+ 			 * This is a case that rarely occurs in practice, but
+ 			 * for correctness, we have to deal with it nonetheless.
+ 			 */
+-			rctx->assoc = kmalloc(ssize, GFP_ATOMIC);
++			rctx->assoc = fcw_kmalloc(ssize, GFP_ATOMIC);
+ 			if (!rctx->assoc)
+ 				return -ENOMEM;
+ 
+ 			scatterwalk_map_and_copy(rctx->assoc, req->src, 0,
+ 						 ssize, 0);
+-			sg_set_buf(rctx->sg, rctx->assoc, ssize);
++			fcw_sg_set_buf(rctx->sg, rctx->assoc, ssize);
+ 		} else {
+-			sg_set_page(rctx->sg, sg_page(req->src), ssize,
++			fcw_sg_set_page(rctx->sg, fcw_sg_page(req->src), ssize,
+ 				    req->src->offset);
+ 		}
+ 
+-		sg_set_buf(rctx->sg + 1, iv, ivsize);
+-		sg = scatterwalk_ffwd(rctx->sg + 2, req->src, req->assoclen);
++		fcw_sg_set_buf(rctx->sg + 1, iv, ivsize);
++		sg = fcw_scatterwalk_ffwd(rctx->sg + 2, req->src, req->assoclen);
+ 		if (sg != rctx->sg + 2)
+ 			sg_chain(rctx->sg, 3, sg);
+ 
+@@ -405,7 +408,7 @@ static bool parse_cipher_name(char *essiv_cipher_name, const char *cra_name)
+ 	if (len >= CRYPTO_MAX_ALG_NAME)
+ 		return false;
+ 
+-	memcpy(essiv_cipher_name, p, len);
++	fcw_memcpy(essiv_cipher_name, p, len);
+ 	essiv_cipher_name[len] = '\0';
+ 	return true;
+ }
+@@ -476,7 +479,7 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
+ 
+ 	switch (type) {
+ 	case CRYPTO_ALG_TYPE_LSKCIPHER:
+-		skcipher_inst = kzalloc(sizeof(*skcipher_inst) +
++		skcipher_inst = fcw_kzalloc(sizeof(*skcipher_inst) +
+ 					sizeof(*ictx), GFP_KERNEL);
+ 		if (!skcipher_inst)
+ 			return -ENOMEM;
+@@ -496,7 +499,7 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
+ 		break;
+ 
+ 	case CRYPTO_ALG_TYPE_AEAD:
+-		aead_inst = kzalloc(sizeof(*aead_inst) +
++		aead_inst = fcw_kzalloc(sizeof(*aead_inst) +
+ 				    sizeof(*ictx), GFP_KERNEL);
+ 		if (!aead_inst)
+ 			return -ENOMEM;
+@@ -512,7 +515,7 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
+ 		aead_alg = crypto_spawn_aead_alg(&ictx->u.aead_spawn);
+ 		block_base = &aead_alg->base;
+ 		if (!strstarts(block_base->cra_name, "authenc(")) {
+-			pr_warn("Only authenc() type AEADs are supported by ESSIV\n");
++			fcw_printk(KERN_WARNING pr_fmt() "Only authenc() type AEADs are supported by ESSIV\n");
+ 			err = -EINVAL;
+ 			goto out_drop_skcipher;
+ 		}
+@@ -524,7 +527,7 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
+ 	}
+ 
+ 	if (!parse_cipher_name(ictx->essiv_cipher_name, block_base->cra_name)) {
+-		pr_warn("Failed to parse ESSIV cipher name from skcipher cra_name\n");
++		fcw_printk(KERN_WARNING pr_fmt() "Failed to parse ESSIV cipher name from skcipher cra_name\n");
+ 		err = -EINVAL;
+ 		goto out_drop_skcipher;
+ 	}
+@@ -542,7 +545,7 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
+ 	/* Check the set of algorithms */
+ 	if (!essiv_supported_algorithms(ictx->essiv_cipher_name, hash_alg,
+ 					ivsize)) {
+-		pr_warn("Unsupported essiv instantiation: essiv(%s,%s)\n",
++		fcw_printk(KERN_WARNING pr_fmt() "Unsupported essiv instantiation: essiv(%s,%s)\n",
+ 			block_base->cra_name, hash_alg->base.cra_name);
+ 		err = -EINVAL;
+ 		goto out_free_hash;
+@@ -633,20 +636,12 @@ static struct crypto_template essiv_tmpl = {
+ 	.module	= THIS_MODULE,
+ };
+ 
+-static int __init essiv_module_init(void)
++int __init essiv_module_init(void)
+ {
+ 	return crypto_register_template(&essiv_tmpl);
+ }
+ 
+-static void __exit essiv_module_exit(void)
++void __exit essiv_module_exit(void)
+ {
+ 	crypto_unregister_template(&essiv_tmpl);
+ }
+-
+-subsys_initcall(essiv_module_init);
+-module_exit(essiv_module_exit);
+-
+-MODULE_DESCRIPTION("ESSIV skcipher/aead wrapper for block encryption");
+-MODULE_LICENSE("GPL v2");
+-MODULE_ALIAS_CRYPTO("essiv");
+-MODULE_IMPORT_NS(CRYPTO_INTERNAL);
+-- 
+2.39.4
+

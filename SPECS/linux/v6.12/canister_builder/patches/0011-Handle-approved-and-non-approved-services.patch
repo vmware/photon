@@ -1,7 +1,7 @@
-From f893c6e6dbc22250c3879957588f8d01b761ee9d Mon Sep 17 00:00:00 2001
+From 98cefa4c712ad47073d90353fa9fb6b15010e399 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Wed, 11 Dec 2024 06:28:45 +0000
-Subject: [PATCH 11/11] Handle approved and non-approved services
+Subject: [PATCH 11/12] Handle approved and non-approved services
 
 - Add log indicator prints in algorithm initialization path
 - Add XTS error log when XTS duplicate test fails

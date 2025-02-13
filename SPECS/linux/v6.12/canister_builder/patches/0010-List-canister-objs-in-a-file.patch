@@ -1,7 +1,7 @@
-From 9da5485c9cb994af8f5ad79e0c72cbfd17bc0efe Mon Sep 17 00:00:00 2001
+From d7067ec44a20ba36a23c1509e90575a32c5ec3c0 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 2 Dec 2024 08:02:22 +0000
-Subject: [PATCH 10/11] List canister objs in a file
+Subject: [PATCH 10/12] List canister objs in a file
 
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---
@@ -9,10 +9,10 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  1 file changed, 4 insertions(+)
 
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 7b39d8dde..63a51cd50 100644
+index 7babcc5d1..b059d5519 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -222,14 +222,17 @@ OBJECT_FILES_NON_STANDARD_x86-aes-xts-avx-x86_64.o := y
+@@ -219,14 +219,17 @@ OBJECT_FILES_NON_STANDARD_x86-aes-xts-avx-x86_64.o := y
  crypto/x86-%.o: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
  	$(call cmd,force_checksrc)
  	$(call if_changed_rule,cc_o_c)
@@ -30,7 +30,7 @@ index 7b39d8dde..63a51cd50 100644
  
  canister += crypto_self_test.o
  
-@@ -238,6 +241,7 @@ canister += fips_integrity.o
+@@ -235,6 +238,7 @@ canister += fips_integrity.o
  extra-y += $(canister)
  $(obj)/canister.o: $(addprefix crypto/x86-,$(aesni-intel-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
  	$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $^ -o $@

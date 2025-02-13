@@ -1,7 +1,7 @@
-From e62dfd2ff34b1e09a11efa3f0b423f159697cc13 Mon Sep 17 00:00:00 2001
+From 1b1b20bc74fb659e840bf33d4fc081c99a2899e7 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Fri, 29 Nov 2024 06:14:48 +0000
-Subject: [PATCH 04/11] aesni_intel: Remove static call
+Subject: [PATCH 04/12] aesni_intel: Remove static call
 
 Static calls are removed from canister because static call
 sites (function pointers) are updated during kernel bootup

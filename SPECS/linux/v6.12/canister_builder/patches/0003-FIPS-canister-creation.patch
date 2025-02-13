@@ -1,7 +1,7 @@
-From 6c1439ecbe5bbd97953f881bc71fad894e3d14b9 Mon Sep 17 00:00:00 2001
+From c722a44978975bdfe949e79e8c58fb3da0adc507 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
-Date: Thu, 28 Nov 2024 11:42:35 +0000
-Subject: [PATCH 03/11] FIPS canister creation
+Date: Wed, 26 Feb 2025 06:14:54 +0000
+Subject: [PATCH 03/12] FIPS canister creation
 
 Canister creation patch.
  - Makefile changes to generate canister binary (fips_canister.o)
@@ -315,7 +315,7 @@ index b0dd83555..55ed01a67 100644
  		skcipher_walk_done(&walk, 0);
  	return err;
 diff --git a/crypto/Makefile b/crypto/Makefile
-index dc3b331ca..7b39d8dde 100644
+index 0effd6592..7babcc5d1 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -14,9 +14,11 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -330,7 +330,7 @@ index dc3b331ca..7b39d8dde 100644
  
  obj-$(CONFIG_CRYPTO_SKCIPHER2) += crypto_skcipher.o
  ifeq ($(CONFIG_BPF_SYSCALL),y)
-@@ -46,26 +48,35 @@ rsa_generic-y += rsaprivkey.asn1.o
+@@ -44,26 +46,35 @@ rsa_generic-y += rsaprivkey.asn1.o
  rsa_generic-y += rsa.o
  rsa_generic-y += rsa_helper.o
  rsa_generic-y += rsa-pkcs1pad.o
@@ -366,7 +366,7 @@ index dc3b331ca..7b39d8dde 100644
  obj-$(CONFIG_CRYPTO_SM3) += sm3.o
  obj-$(CONFIG_CRYPTO_SM3_GENERIC) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -73,13 +84,20 @@ obj-$(CONFIG_CRYPTO_WP512) += wp512.o
+@@ -71,13 +82,20 @@ obj-$(CONFIG_CRYPTO_WP512) += wp512.o
  CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105930
@@ -387,7 +387,7 @@ index dc3b331ca..7b39d8dde 100644
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -114,6 +132,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -112,6 +130,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -395,7 +395,7 @@ index dc3b331ca..7b39d8dde 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -151,6 +170,7 @@ UBSAN_SANITIZE_jitterentropy.o = n
+@@ -149,6 +168,7 @@ UBSAN_SANITIZE_jitterentropy.o = n
  jitterentropy_rng-y := jitterentropy.o jitterentropy-kcapi.o
  obj-$(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE) += jitterentropy-testing.o
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
@@ -403,12 +403,11 @@ index dc3b331ca..7b39d8dde 100644
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
  obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-@@ -158,11 +178,14 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
+@@ -156,10 +176,13 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
  obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
 +canister += ecc.o
- obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
  obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
 +canister += drbg.o
  
@@ -418,7 +417,7 @@ index dc3b331ca..7b39d8dde 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -186,6 +209,74 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -183,6 +206,74 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o

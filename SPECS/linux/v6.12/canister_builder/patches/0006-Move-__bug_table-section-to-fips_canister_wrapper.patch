@@ -1,7 +1,7 @@
-From 73ee01bd2a9f6647358060f95bb09d87b44e72d4 Mon Sep 17 00:00:00 2001
+From 368017448ca41207d655a5b48c2588e3e04cc4f8 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Fri, 29 Nov 2024 11:39:30 +0000
-Subject: [PATCH 06/11] Move __bug_table section to fips_canister_wrapper
+Subject: [PATCH 06/12] Move __bug_table section to fips_canister_wrapper
 
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---
