@@ -54,7 +54,7 @@ class SpecData(object):
             else:
                 self.mapSpecObjects[name].append(specObj)
 
-            self.mapSpecFileNameToSpecObj[os.path.basename(specFile)] = specObj
+            self.mapSpecFileNameToSpecObj[specFile] = specObj
 
         # Sort the multiversion list to make getHighestVersion happy
         for key, value in self.mapSpecObjects.items():

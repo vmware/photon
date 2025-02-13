@@ -676,10 +676,10 @@ class CleanUp:
         if not basecommit:
             return
 
-        cmd = f"git diff --name-only {basecommit} | grep '^SPECS/.*\\.spec$' | xargs -r -n1 basename"
+        cmd = f"git diff --name-only {basecommit} | grep '^SPECS/.*\\.spec$'"
         out, _, _ = runCmd(cmd, shell=True, capture=True, cwd=ph_path)
 
-        spec_fns = [fn for fn in out.split("\n") if fn]
+        spec_fns = [os.path.abspath(os.path.join(ph_path, fn)) for fn in out.split("\n") if fn]
         if not spec_fns:
             print("No spec files were changed in this incremental build")
             return
