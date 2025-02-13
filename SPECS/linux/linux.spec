@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.234
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -251,6 +251,12 @@ Patch160: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
 
 # Fix CVE-2024-42322
 Patch164: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
+
+# Fix CVE-2024-27415
+Patch165: 0001-netfilter-bridge-confirm-multicast-packets-before-pa.patch
+
+# Fix CVE-2024-27018
+Patch166: 0001-netfilter-br_netfilter-skip-conntrack-input-hook-for.patch
 
 # Fix CVE-2023-52760
 Patch167: 0001-gfs2-make-function-gfs2_make_fs_ro-to-void-type.patch
@@ -993,6 +999,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Feb 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-5
+- Fixes CVE-2024-27415 and CVE-2024-27018
 * Mon Feb 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-4
 - Fixes CVE-2024-8805
 * Fri Feb 07 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-3

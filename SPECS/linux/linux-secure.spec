@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.234
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -211,6 +211,12 @@ Patch164: 0001-scsi-ufs-core-Improve-SCSI-abort-handling.patch
 
 # Fix CVE-2024-44934
 Patch165: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
+
+# Fix CVE-2024-27415
+Patch166: 0001-netfilter-bridge-confirm-multicast-packets-before-pa.patch
+
+# Fix CVE-2024-27018
+Patch167: 0001-netfilter-br_netfilter-skip-conntrack-input-hook-for.patch
 
 # Fix CVE-2023-52760
 Patch170: 0001-gfs2-make-function-gfs2_make_fs_ro-to-void-type.patch
@@ -562,6 +568,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Feb 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-5
+- Fixes CVE-2024-27415 and CVE-2024-27018
 * Mon Feb 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-4
 - Fixes CVE-2024-8805
 * Fri Feb 07 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-3
