@@ -3,22 +3,20 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        9.1.0724
-Release:        3%{?dist}
+Version:        9.1.1113
+Release:        1%{?dist}
 URL:            http://www.vim.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=47d49ce7f7c93eee38512c86c8071d6d72eca3e0284ecc53f1d9f22caf1ede3da1ebb5e60c11b213485b41eaf7784785216225316ddf1f92dd7b0ca32abb3e47
+%define sha512 %{name}=4ed1b21b8acfb2a71ef37f012e17b61d9161819c03e4474abe345ad0861b8cb346cee459ff17f895a4abe0b6710b756bac0468b42b7ebb87af181fafab213c47
 
 Source1: vimrc
 
 Source2: license.txt
 %include %{SOURCE2}
-
-Patch0:         CVE-2024-47814.patch
 
 BuildRequires:  ncurses-devel
 
@@ -86,6 +84,8 @@ fi
 %{_datadir}/vim/vim*/pack/dist/opt/*
 %exclude %{_datadir}/vim/vim*/colors/desert.vim
 %exclude %{_datadir}/vim/vim*/colors/lists/default.vim
+%exclude %{_datadir}/vim/vim*/LICENSE
+%exclude %{_datadir}/vim/vim*/README.txt
 %{_datadir}/vim/vim*/compiler/*
 %{_datadir}/vim/vim*/delmenu.vim
 %{_datadir}/vim/vim*/evim.vim
@@ -119,6 +119,7 @@ fi
 %{_datadir}/vim/vim*/lang/*.vim
 %doc %{_datadir}/vim/vim*/lang/*.txt
 %lang(af) %{_datadir}/vim/vim*/lang/af/LC_MESSAGES/vim.mo
+%lang(am) %{_datadir}/vim/vim*/lang/am/LC_MESSAGES/vim.mo
 %lang(ca) %{_datadir}/vim/vim*/lang/ca/LC_MESSAGES/vim.mo
 %lang(cs) %{_datadir}/vim/vim*/lang/cs/LC_MESSAGES/vim.mo
 %lang(de) %{_datadir}/vim/vim*/lang/de/LC_MESSAGES/vim.mo
@@ -181,6 +182,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Fri Feb 14 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.1.1113-1
+- Upgrade to 9.1.1113
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 9.1.0724-3
 - Release bump for SRP compliance
 * Mon Oct 14 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1.0724-2
