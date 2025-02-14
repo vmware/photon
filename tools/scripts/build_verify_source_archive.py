@@ -266,10 +266,7 @@ Commands
             for sourceFile in files:
                 if sourceFile.archive_type == "custom":
                     self._generateArchive(sourceFile, sourcesLocation)
-                elif (
-                    sourceFile.archive_type == "upstream"
-                    and not sourceFile.skip_validation
-                ):
+                elif sourceFile.archive_type == "upstream":
                     archive, diff_list, missing_list = self._verifySingleSource(sourceFile, sourcesLocation)
                     if diff_list or missing_list:
                         logging.error(
@@ -281,11 +278,10 @@ Commands
                         logging.info(
                             f"missing: {missing_list}, hint: add them to missing list if appropriate."
                         )
-                        # clean downloaded source
-                        shutil.rmtree(
-                            archive, ignore_errors=False
-                        )
-                        sys.exit(1)
+                        if not sourceFile.skip_validation:
+                            # clean downloaded source
+                            Path(archive).unlink(missing_ok=True)
+                            sys.exit(1)
                     else:
                         logging.info(f"source {sourceFile.name} validated succesfuly.")
                 else:
@@ -365,8 +361,9 @@ Commands
                 # processing one source entry
                 if source and type(source) is dict:
                     archive = source.get("archive")
-                    archive_sha512sum = source.get("archive_sha512sum")
+                    archive_sha512sum = source.get("archive_sha512sum", "")
                     archive_type = source.get("archive_type", "unknown")
+                    skip_validation = source.get("skip_validation", False)
 
                     name = source.get("name")
                     version = source.get("version", "")
@@ -392,6 +389,7 @@ Commands
                             script=script,
                             env=env,
                             spdx=spdxInfo,
+                            skip_validation=skip_validation,
                         )
                     elif archive_type == "upstream":
                         url = source.get("url")
@@ -411,6 +409,7 @@ Commands
                             skip_list=skip_list,
                             missing=missing,
                             spdx=spdxInfo,
+                            skip_validation=skip_validation,
                         )
                     else:
                         source = Source(
@@ -420,6 +419,7 @@ Commands
                             archive_sha512sum=archive_sha512sum,
                             archive_type=archive_type,
                             spdx=spdxInfo,
+                            skip_validation=skip_validation,
                         )
 
                     files.append(source)
