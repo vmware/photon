@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.62
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -13,6 +13,10 @@ Source1: %{name}.sysusers
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Source3: %{name}.preset
+Source4: %{name}.conf
+Source5: %{name}.service
 
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
@@ -35,6 +39,8 @@ Requires: apr-util
 Requires: openssl
 Requires: openldap
 Requires: lua
+Requires: systemd
+Requires(post): systemd
 Requires(pre): systemd-rpm-macros
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
@@ -103,36 +109,20 @@ $(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
 %install
 %make_install %{?_smp_mflags}
 
-install -vdm755 %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}%{_sysconfdir}/%{name}/logs
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
-cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
-[Unit]
-Description=The Apache HTTP Server
-After=network.target remote-fs.target nss-lookup.target
-
-[Service]
-Type=forking
-PIDFile=/run/%{name}/%{name}.pid
-ExecStart=%{_sbindir}/%{name} -k start
-ExecStop=%{_sbindir}/%{name} -k stop
-ExecReload=%{_sbindir}/%{name} -k graceful
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-install -vdm755 %{buildroot}%{_presetdir}
-echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
+install -D -m 644 %{SOURCE3} %{buildroot}%{_presetdir}/50-%{name}.preset
+install -D -m 644 %{SOURCE4} %{buildroot}%{_tmpfilesdir}/%{name}.conf
+install -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/%{name}.service
 
 ln -sfrv %{buildroot}%{_sbindir}/%{name} %{buildroot}%{_sbindir}/apache2
-ln -sfrv %{buildroot}%{_sysconfdir}/%{name}/conf/%{name}.conf %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
 
-mkdir -p %{buildroot}%{_tmpfilesdir}
-cat >> %{buildroot}%{_tmpfilesdir}/%{name}.conf << EOF
-d /run/%{name} 0755 root root -
-EOF
+ln -sfrv %{buildroot}%{_sysconfdir}/%{name}/conf/%{name}.conf \
+            %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+
+%clean
+rm -rf %{buildroot}
 
 %post
 /sbin/ldconfig
@@ -155,19 +145,11 @@ systemd-tmpfiles --create %{name}.conf
 %postun
 /sbin/ldconfig
 if [ $1 -eq 0 ]; then
-  if [ -f %{_sysconfdir}/mime.types.orig ]; then
+  if [ -h %{_sysconfdir}/mime.types.orig ]; then
     mv %{_sysconfdir}/mime.types.orig %{_sysconfdir}/mime.types
   fi
 fi
 %systemd_postun_with_restart %{name}.service
-
-%files devel
-%defattr(-,root,root)
-%{_includedir}/*
-
-%files docs
-%defattr(-,root,root)
-%{_sysconfdir}/%{name}/manual/*
 
 %files
 %defattr(-,root,root)
@@ -193,6 +175,15 @@ fi
 %{_tmpfilesdir}/%{name}.conf
 %{_localstatedir}/log/%{name}
 %{_sysusersdir}/%{name}.sysusers
+%ghost %{_sysconfdir}/mime.types
+
+%files devel
+%defattr(-,root,root)
+%{_includedir}/*
+
+%files docs
+%defattr(-,root,root)
+%{_sysconfdir}/%{name}/manual/*
 
 %files tools
 %defattr(-,root,root)
@@ -200,6 +191,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Mon Feb 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.62-4
+- Spec cleanups
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.4.62-3
 - Release bump for SRP compliance
 * Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 2.4.62-2
