@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -19,6 +19,7 @@ Patch2: CVE-2024-0553.patch
 Patch3: CVE-2024-0567.patch
 Patch4: CVE-2024-28835.patch
 Patch5: CVE-2024-28834.patch
+Patch6: CVE-2024-12243.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -108,6 +109,8 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man3/*
 
 %changelog
+* Mon Feb 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.7.10-6
+- Fix CVE-2024-12243
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.7.10-5
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.7.10-4
