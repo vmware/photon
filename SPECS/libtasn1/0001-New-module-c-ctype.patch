@@ -1,0 +1,710 @@
+From e0690651f6797812020d106dfabd64a0d7099fbc Mon Sep 17 00:00:00 2001
+From: Bruno Haible <bruno@clisp.org>
+Date: Tue, 28 Jan 2003 13:47:46 +0000
+Subject: [PATCH] New module c-ctype.
+
+---
+ lib/c-ctype.c   | 409 ++++++++++++++++++++++++++++++++++++++++++++++++
+ lib/c-ctype.h   | 245 +++++++++++++++++++++++++++++
+ modules/c-ctype |  21 +++
+ 3 files changed, 675 insertions(+)
+ create mode 100644 lib/c-ctype.c
+ create mode 100644 lib/c-ctype.h
+ create mode 100644 modules/c-ctype
+
+diff --git a/lib/c-ctype.c b/lib/c-ctype.c
+new file mode 100644
+index 0000000..eea7102
+--- /dev/null
++++ b/lib/c-ctype.c
+@@ -0,0 +1,409 @@
++/* Character handling in C locale.
++
++   Copyright 2000-2003 Free Software Foundation, Inc.
++
++This program is free software; you can redistribute it and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation; either version 2 of the License, or
++(at your option) any later version.
++
++This program is distributed in the hope that it will be useful,
++but WITHOUT ANY WARRANTY; without even the implied warranty of
++MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++GNU General Public License for more details.
++
++You should have received a copy of the GNU General Public License
++along with this program; if not, write to the Free Software
++Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
++
++/* Specification.  */
++#include "c-ctype.h"
++
++#undef c_isalnum
++#undef c_isalpha
++#undef c_isascii
++#undef c_isblank
++#undef c_iscntrl
++#undef c_isdigit
++#undef c_islower
++#undef c_isgraph
++#undef c_isprint
++#undef c_ispunct
++#undef c_isspace
++#undef c_isupper
++#undef c_isxdigit
++#undef c_tolower
++#undef c_toupper
++
++/* The function isascii is not locale dependent. Its use in EBCDIC is
++   questionable. */
++bool
++c_isascii (int c)
++{
++  return ((c & ~0x7f) == 0);
++}
++
++bool
++c_isalnum (int c)
++{
++#if C_CTYPE_CONSECUTIVE_DIGITS \
++    && C_CTYPE_CONSECUTIVE_UPPERCASE && C_CTYPE_CONSECUTIVE_LOWERCASE
++#if C_CTYPE_ASCII
++  return ((c >= '0' && c <= '9')
++          || ((c & ~0x20) >= 'A' && (c & ~0x20) <= 'Z'));
++#else
++  return ((c >= '0' && c <= '9')
++          || (c >= 'A' && c <= 'Z')
++          || (c >= 'a' && c <= 'z'));
++#endif
++#else
++  switch (c)
++    {
++    case '0': case '1': case '2': case '3': case '4': case '5':
++    case '6': case '7': case '8': case '9':
++    case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
++    case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
++    case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
++    case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
++    case 'Y': case 'Z':
++    case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
++    case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
++    case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':
++    case 's': case 't': case 'u': case 'v': case 'w': case 'x':
++    case 'y': case 'z':
++      return 1;
++    default:
++      return 0;
++    }
++#endif
++}
++
++bool
++c_isalpha (int c)
++{
++#if C_CTYPE_CONSECUTIVE_UPPERCASE && C_CTYPE_CONSECUTIVE_LOWERCASE
++#if C_CTYPE_ASCII
++  return ((c & ~0x20) >= 'A' && (c & ~0x20) <= 'Z');
++#else
++  return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
++#endif
++#else
++  switch (c)
++    {
++    case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
++    case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
++    case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
++    case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
++    case 'Y': case 'Z':
++    case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
++    case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
++    case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':
++    case 's': case 't': case 'u': case 'v': case 'w': case 'x':
++    case 'y': case 'z':
++      return 1;
++    default:
++      return 0;
++    }
++#endif
++}
++
++bool
++c_isblank (int c)
++{
++  return (c == ' ' || c == '\t');
++}
++
++bool
++c_iscntrl (int c)
++{
++#if C_CTYPE_ASCII
++  return ((c & ~0x1f) == 0 || c == 0x7f);
++#else
++  switch (c)
++    {
++    case ' ': case '!': case '"': case '#': case '$': case '%':
++    case '&': case '\'': case '(': case ')': case '*': case '+':
++    case ',': case '-': case '.': case '/':
++    case '0': case '1': case '2': case '3': case '4': case '5':
++    case '6': case '7': case '8': case '9':
++    case ':': case ';': case '<': case '=': case '>': case '?':
++    case '@':
++    case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
++    case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
++    case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
++    case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
++    case 'Y': case 'Z':
++    case '[': case '\\': case ']': case '^': case '_': case '`':
++    case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
++    case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
++    case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':
++    case 's': case 't': case 'u': case 'v': case 'w': case 'x':
++    case 'y': case 'z':
++    case '{': case '|': case '}': case '~':
++      return 0;
++    default:
++      return 1;
++    }
++#endif
++}
++
++bool
++c_isdigit (int c)
++{
++#if C_CTYPE_CONSECUTIVE_DIGITS
++  return (c >= '0' && c <= '9');
++#else
++  switch (c)
++    {
++    case '0': case '1': case '2': case '3': case '4': case '5':
++    case '6': case '7': case '8': case '9':
++      return 1;
++    default:
++      return 0;
++    }
++#endif
++}
++
++bool
++c_islower (int c)
++{
++#if C_CTYPE_CONSECUTIVE_LOWERCASE
++  return (c >= 'a' && c <= 'z');
++#else
++  switch (c)
++    {
++    case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
++    case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
++    case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':
++    case 's': case 't': case 'u': case 'v': case 'w': case 'x':
++    case 'y': case 'z':
++      return 1;
++    default:
++      return 0;
++    }
++#endif
++}
++
++bool
++c_isgraph (int c)
++{
++#if C_CTYPE_ASCII
++  return (c >= '!' && c <= '~');
++#else
++  switch (c)
++    {
++    case '!': case '"': case '#': case '$': case '%': case '&':
++    case '\'': case '(': case ')': case '*': case '+': case ',':
++    case '-': case '.': case '/':
++    case '0': case '1': case '2': case '3': case '4': case '5':
++    case '6': case '7': case '8': case '9':
++    case ':': case ';': case '<': case '=': case '>': case '?':
++    case '@':
++    case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
++    case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
++    case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
++    case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
++    case 'Y': case 'Z':
++    case '[': case '\\': case ']': case '^': case '_': case '`':
++    case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
++    case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
++    case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':
++    case 's': case 't': case 'u': case 'v': case 'w': case 'x':
++    case 'y': case 'z':
++    case '{': case '|': case '}': case '~':
++      return 1;
++    default:
++      return 0;
++    }
++#endif
++}
++
++bool
++c_isprint (int c)
++{
++#if C_CTYPE_ASCII
++  return (c >= ' ' && c <= '~');
++#else
++  switch (c)
++    {
++    case ' ': case '!': case '"': case '#': case '$': case '%':
++    case '&': case '\'': case '(': case ')': case '*': case '+':
++    case ',': case '-': case '.': case '/':
++    case '0': case '1': case '2': case '3': case '4': case '5':
++    case '6': case '7': case '8': case '9':
++    case ':': case ';': case '<': case '=': case '>': case '?':
++    case '@':
++    case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
++    case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
++    case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
++    case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
++    case 'Y': case 'Z':
++    case '[': case '\\': case ']': case '^': case '_': case '`':
++    case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
++    case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
++    case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':
++    case 's': case 't': case 'u': case 'v': case 'w': case 'x':
++    case 'y': case 'z':
++    case '{': case '|': case '}': case '~':
++      return 1;
++    default:
++      return 0;
++    }
++#endif
++}
++
++bool
++c_ispunct (int c)
++{
++#if C_CTYPE_ASCII
++  return ((c >= '!' && c <= '~')
++          && !((c >= '0' && c <= '9')
++               || ((c & ~0x20) >= 'A' && (c & ~0x20) <= 'Z')));
++#else
++  switch (c)
++    {
++    case '!': case '"': case '#': case '$': case '%': case '&':
++    case '\'': case '(': case ')': case '*': case '+': case ',':
++    case '-': case '.': case '/':
++    case ':': case ';': case '<': case '=': case '>': case '?':
++    case '@':
++    case '[': case '\\': case ']': case '^': case '_': case '`':
++    case '{': case '|': case '}': case '~':
++      return 1;
++    default:
++      return 0;
++    }
++#endif
++}
++
++bool
++c_isspace (int c)
++{
++  return (c == ' ' || c == '\t'
++          || c == '\n' || c == '\v' || c == '\f' || c == '\r');
++}
++
++bool
++c_isupper (int c)
++{
++#if C_CTYPE_CONSECUTIVE_UPPERCASE
++  return (c >= 'A' && c <= 'Z');
++#else
++  switch (c)
++    {
++    case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
++    case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
++    case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
++    case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
++    case 'Y': case 'Z':
++      return 1;
++    default:
++      return 0;
++    }
++#endif
++}
++
++bool
++c_isxdigit (int c)
++{
++#if C_CTYPE_CONSECUTIVE_DIGITS \
++    && C_CTYPE_CONSECUTIVE_UPPERCASE && C_CTYPE_CONSECUTIVE_LOWERCASE
++#if C_CTYPE_ASCII
++  return ((c >= '0' && c <= '9')
++          || ((c & ~0x20) >= 'A' && (c & ~0x20) <= 'F'));
++#else
++  return ((c >= '0' && c <= '9')
++          || (c >= 'A' && c <= 'F')
++          || (c >= 'a' && c <= 'f'));
++#endif
++#else
++  switch (c)
++    {
++    case '0': case '1': case '2': case '3': case '4': case '5':
++    case '6': case '7': case '8': case '9':
++    case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
++    case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
++      return 1;
++    default:
++      return 0;
++    }
++#endif
++}
++
++int
++c_tolower (int c)
++{
++#if C_CTYPE_CONSECUTIVE_UPPERCASE && C_CTYPE_CONSECUTIVE_LOWERCASE
++  return (c >= 'A' && c <= 'Z' ? c - 'A' + 'a' : c);
++#else
++  switch (c)
++    {
++    case 'A': return 'a';
++    case 'B': return 'b';
++    case 'C': return 'c';
++    case 'D': return 'd';
++    case 'E': return 'e';
++    case 'F': return 'f';
++    case 'G': return 'g';
++    case 'H': return 'h';
++    case 'I': return 'i';
++    case 'J': return 'j';
++    case 'K': return 'k';
++    case 'L': return 'l';
++    case 'M': return 'm';
++    case 'N': return 'n';
++    case 'O': return 'o';
++    case 'P': return 'p';
++    case 'Q': return 'q';
++    case 'R': return 'r';
++    case 'S': return 's';
++    case 'T': return 't';
++    case 'U': return 'u';
++    case 'V': return 'v';
++    case 'W': return 'w';
++    case 'X': return 'x';
++    case 'Y': return 'y';
++    case 'Z': return 'z';
++    default: return c;
++    }
++#endif
++}
++
++int
++c_toupper (int c)
++{
++#if C_CTYPE_CONSECUTIVE_UPPERCASE && C_CTYPE_CONSECUTIVE_LOWERCASE
++  return (c >= 'a' && c <= 'z' ? c - 'a' + 'A' : c);
++#else
++  switch (c)
++    {
++    case 'a': return 'A';
++    case 'b': return 'B';
++    case 'c': return 'C';
++    case 'd': return 'D';
++    case 'e': return 'E';
++    case 'f': return 'F';
++    case 'g': return 'G';
++    case 'h': return 'H';
++    case 'i': return 'I';
++    case 'j': return 'J';
++    case 'k': return 'K';
++    case 'l': return 'L';
++    case 'm': return 'M';
++    case 'n': return 'N';
++    case 'o': return 'O';
++    case 'p': return 'P';
++    case 'q': return 'Q';
++    case 'r': return 'R';
++    case 's': return 'S';
++    case 't': return 'T';
++    case 'u': return 'U';
++    case 'v': return 'V';
++    case 'w': return 'W';
++    case 'x': return 'X';
++    case 'y': return 'Y';
++    case 'z': return 'Z';
++    default: return c;
++    }
++#endif
++}
+diff --git a/lib/c-ctype.h b/lib/c-ctype.h
+new file mode 100644
+index 0000000..0f69e10
+--- /dev/null
++++ b/lib/c-ctype.h
+@@ -0,0 +1,245 @@
++/* Character handling in C locale.
++
++   These functions work like the corresponding functions in <ctype.h>,
++   except that they have the C (POSIX) locale hardwired, whereas the
++   <ctype.h> functions' behaviour depends on the current locale set via
++   setlocale.
++
++   Copyright (C) 2000-2003 Free Software Foundation, Inc.
++
++This program is free software; you can redistribute it and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation; either version 2 of the License, or
++(at your option) any later version.
++
++This program is distributed in the hope that it will be useful,
++but WITHOUT ANY WARRANTY; without even the implied warranty of
++MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++GNU General Public License for more details.
++
++You should have received a copy of the GNU General Public License
++along with this program; if not, write to the Free Software
++Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
++
++#ifndef C_CTYPE_H
++#define C_CTYPE_H
++
++#include <stdbool.h>
++
++
++/* Check whether the ASCII optimizations apply. */
++
++/* ANSI C89 (and ISO C99 5.2.1.3 too) already guarantees that
++   '0', '1', ..., '9' have consecutive integer values.  */
++#define C_CTYPE_CONSECUTIVE_DIGITS 1
++
++#if ('A' <= 'Z') \
++    && ('A' + 1 == 'B') && ('B' + 1 == 'C') && ('C' + 1 == 'D') \
++    && ('D' + 1 == 'E') && ('E' + 1 == 'F') && ('F' + 1 == 'G') \
++    && ('G' + 1 == 'H') && ('H' + 1 == 'I') && ('I' + 1 == 'J') \
++    && ('J' + 1 == 'K') && ('K' + 1 == 'L') && ('L' + 1 == 'M') \
++    && ('M' + 1 == 'N') && ('N' + 1 == 'O') && ('O' + 1 == 'P') \
++    && ('P' + 1 == 'Q') && ('Q' + 1 == 'R') && ('R' + 1 == 'S') \
++    && ('S' + 1 == 'T') && ('T' + 1 == 'U') && ('U' + 1 == 'V') \
++    && ('V' + 1 == 'W') && ('W' + 1 == 'X') && ('X' + 1 == 'Y') \
++    && ('Y' + 1 == 'Z')
++#define C_CTYPE_CONSECUTIVE_UPPERCASE 1
++#endif
++
++#if ('a' <= 'z') \
++    && ('a' + 1 == 'b') && ('b' + 1 == 'c') && ('c' + 1 == 'd') \
++    && ('d' + 1 == 'e') && ('e' + 1 == 'f') && ('f' + 1 == 'g') \
++    && ('g' + 1 == 'h') && ('h' + 1 == 'i') && ('i' + 1 == 'j') \
++    && ('j' + 1 == 'k') && ('k' + 1 == 'l') && ('l' + 1 == 'm') \
++    && ('m' + 1 == 'n') && ('n' + 1 == 'o') && ('o' + 1 == 'p') \
++    && ('p' + 1 == 'q') && ('q' + 1 == 'r') && ('r' + 1 == 's') \
++    && ('s' + 1 == 't') && ('t' + 1 == 'u') && ('u' + 1 == 'v') \
++    && ('v' + 1 == 'w') && ('w' + 1 == 'x') && ('x' + 1 == 'y') \
++    && ('y' + 1 == 'z')
++#define C_CTYPE_CONSECUTIVE_LOWERCASE 1
++#endif
++
++#if (' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
++    && ('%' == 37) && ('&' == 38) && ('\'' == 39) && ('(' == 40) \
++    && (')' == 41) && ('*' == 42) && ('+' == 43) && (',' == 44) \
++    && ('-' == 45) && ('.' == 46) && ('/' == 47) && ('0' == 48) \
++    && ('1' == 49) && ('2' == 50) && ('3' == 51) && ('4' == 52) \
++    && ('5' == 53) && ('6' == 54) && ('7' == 55) && ('8' == 56) \
++    && ('9' == 57) && (':' == 58) && (';' == 59) && ('<' == 60) \
++    && ('=' == 61) && ('>' == 62) && ('?' == 63) && ('A' == 65) \
++    && ('B' == 66) && ('C' == 67) && ('D' == 68) && ('E' == 69) \
++    && ('F' == 70) && ('G' == 71) && ('H' == 72) && ('I' == 73) \
++    && ('J' == 74) && ('K' == 75) && ('L' == 76) && ('M' == 77) \
++    && ('N' == 78) && ('O' == 79) && ('P' == 80) && ('Q' == 81) \
++    && ('R' == 82) && ('S' == 83) && ('T' == 84) && ('U' == 85) \
++    && ('V' == 86) && ('W' == 87) && ('X' == 88) && ('Y' == 89) \
++    && ('Z' == 90) && ('[' == 91) && ('\\' == 92) && (']' == 93) \
++    && ('^' == 94) && ('_' == 95) && ('a' == 97) && ('b' == 98) \
++    && ('c' == 99) && ('d' == 100) && ('e' == 101) && ('f' == 102) \
++    && ('g' == 103) && ('h' == 104) && ('i' == 105) && ('j' == 106) \
++    && ('k' == 107) && ('l' == 108) && ('m' == 109) && ('n' == 110) \
++    && ('o' == 111) && ('p' == 112) && ('q' == 113) && ('r' == 114) \
++    && ('s' == 115) && ('t' == 116) && ('u' == 117) && ('v' == 118) \
++    && ('w' == 119) && ('x' == 120) && ('y' == 121) && ('z' == 122) \
++    && ('{' == 123) && ('|' == 124) && ('}' == 125) && ('~' == 126)
++/* The character set is ISO646-US, not EBCDIC.
++   The test of '$' is important to distinguish it from other ISO646 variants.
++   Testing the value of '\n' and '\r' is not relevant.  */
++#define C_CTYPE_ASCII 1
++#endif
++
++
++/* Function declarations. */
++
++extern bool c_isascii (int c); /* not locale dependent */
++
++extern bool c_isalnum (int c);
++extern bool c_isalpha (int c);
++extern bool c_isblank (int c);
++extern bool c_iscntrl (int c);
++extern bool c_isdigit (int c);
++extern bool c_islower (int c);
++extern bool c_isgraph (int c);
++extern bool c_isprint (int c);
++extern bool c_ispunct (int c);
++extern bool c_isspace (int c);
++extern bool c_isupper (int c);
++extern bool c_isxdigit (int c);
++
++extern int c_tolower (int c);
++extern int c_toupper (int c);
++
++
++#if defined __GNUC__ && defined __OPTIMIZE__ && !defined __OPTIMIZE_SIZE__
++
++/* ASCII optimizations. */
++
++#define c_isascii(c) \
++  ({ int __c = (c); \
++     ((__c & ~0x7f) == 0); \
++   })
++
++#if C_CTYPE_CONSECUTIVE_DIGITS \
++    && C_CTYPE_CONSECUTIVE_UPPERCASE && C_CTYPE_CONSECUTIVE_LOWERCASE
++#if C_CTYPE_ASCII
++#define c_isalnum(c) \
++  ({ int __c = (c); \
++     ((__c >= '0' && __c <= '9') \
++      || ((__c & ~0x20) >= 'A' && (__c & ~0x20) <= 'Z')); \
++   })
++#else
++#define c_isalnum(c) \
++  ({ int __c = (c); \
++     ((__c >= '0' && __c <= '9') \
++      || (__c >= 'A' && __c <= 'Z') \
++      || (__c >= 'a' && __c <= 'z')); \
++   })
++#endif
++#endif
++
++#if C_CTYPE_CONSECUTIVE_UPPERCASE && C_CTYPE_CONSECUTIVE_LOWERCASE
++#if C_CTYPE_ASCII
++#define c_isalpha(c) \
++  ({ int __c = (c); \
++     ((__c & ~0x20) >= 'A' && (__c & ~0x20) <= 'Z'); \
++   })
++#else
++#define c_isalpha(c) \
++  ({ int __c = (c); \
++     ((__c >= 'A' && __c <= 'Z') || (__c >= 'a' && __c <= 'z')); \
++   })
++#endif
++#endif
++
++#define c_isblank(c) \
++  ({ int __c = (c); \
++     (__c == ' ' || __c == '\t'); \
++   })
++
++#if C_CTYPE_ASCII
++#define c_iscntrl(c) \
++  ({ int __c = (c); \
++     ((__c & ~0x1f) == 0 || __c == 0x7f); \
++   })
++#endif
++
++#if C_CTYPE_CONSECUTIVE_DIGITS
++#define c_isdigit(c) \
++  ({ int __c = (c); \
++     (__c >= '0' && __c <= '9'); \
++   })
++#endif
++
++#if C_CTYPE_CONSECUTIVE_LOWERCASE
++#define c_islower(c) \
++  ({ int __c = (c); \
++     (__c >= 'a' && __c <= 'z'); \
++   })
++#endif
++
++#if C_CTYPE_ASCII
++#define c_isgraph(c) \
++  ({ int __c = (c); \
++     (__c >= '!' && __c <= '~'); \
++   })
++#endif
++
++#if C_CTYPE_ASCII
++#define c_isprint(c) \
++  ({ int __c = (c); \
++     (__c >= ' ' && __c <= '~'); \
++   })
++#endif
++
++#if C_CTYPE_ASCII
++#define c_ispunct(c) \
++  ({ int _c = (c); \
++     (c_isgraph (_c) && ! c_isalnum (_c)); \
++   })
++#endif
++
++#define c_isspace(c) \
++  ({ int __c = (c); \
++     (__c == ' ' || __c == '\t' \
++      || __c == '\n' || __c == '\v' || __c == '\f' || __c == '\r'); \
++   })
++
++#if C_CTYPE_CONSECUTIVE_UPPERCASE
++#define c_isupper(c) \
++  ({ int __c = (c); \
++     (__c >= 'A' && __c <= 'Z'); \
++   })
++#endif
++
++#if C_CTYPE_CONSECUTIVE_DIGITS \
++    && C_CTYPE_CONSECUTIVE_UPPERCASE && C_CTYPE_CONSECUTIVE_LOWERCASE
++#if C_CTYPE_ASCII
++#define c_isxdigit(c) \
++  ({ int __c = (c); \
++     ((__c >= '0' && __c <= '9') \
++      || ((__c & ~0x20) >= 'A' && (__c & ~0x20) <= 'F')); \
++   })
++#else
++#define c_isxdigit(c) \
++  ({ int __c = (c); \
++     ((__c >= '0' && __c <= '9') \
++      || (__c >= 'A' && __c <= 'F') \
++      || (__c >= 'a' && __c <= 'f')); \
++   })
++#endif
++#endif
++
++#if C_CTYPE_CONSECUTIVE_UPPERCASE && C_CTYPE_CONSECUTIVE_LOWERCASE
++#define c_tolower(c) \
++  ({ int __c = (c); \
++     (__c >= 'A' && __c <= 'Z' ? __c - 'A' + 'a' : __c); \
++   })
++#define c_toupper(c) \
++  ({ int __c = (c); \
++     (__c >= 'a' && __c <= 'z' ? __c - 'a' + 'A' : __c); \
++   })
++#endif
++
++#endif /* optimizing for speed */
++
++#endif /* C_CTYPE_H */
+diff --git a/modules/c-ctype b/modules/c-ctype
+new file mode 100644
+index 0000000..f17a435
+--- /dev/null
++++ b/modules/c-ctype
+@@ -0,0 +1,21 @@
++Description:
++Character handling in C locale.
++
++Files:
++lib/c-ctype.h
++lib/c-ctype.c
++
++Depends-on:
++stdbool
++
++configure.ac:
++
++Makefile.am:
++lib_SOURCES += c-ctype.h c-ctype.c
++
++Include:
++"c-ctype.h"
++
++Maintainer:
++Bruno Haible
++
+-- 
+2.39.4
+

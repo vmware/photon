@@ -1,0 +1,39 @@
+From 4082ca2220b5ba910b546afddf7780fc4a51f75a Mon Sep 17 00:00:00 2001
+From: Daiki Ueno <ueno@gnu.org>
+Date: Sat, 19 Oct 2024 02:47:04 +0900
+Subject: [PATCH] asn1_der_decoding2: optimize _asn1_find_up call with node
+ cache
+
+If we are parsing a sequence or set and the current node is a direct
+child of it, there is no need to traverse the list back to the
+leftmost one as we have a node cache.
+
+Signed-off-by: Daiki Ueno <ueno@gnu.org>
+Signed-off-by: Simon Josefsson <simon@josefsson.org>
+---
+ lib/decoding.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/lib/decoding.c b/lib/decoding.c
+index d2f6dea..1e0fcb3 100644
+--- a/lib/decoding.c
++++ b/lib/decoding.c
+@@ -1570,7 +1570,14 @@ asn1_der_decoding2 (asn1_node *element, const void *ider, int *max_ider_len,
+ 	    move = UP;
+ 	}
+       if (move == UP)
+-	p = _asn1_find_up (p);
++	{
++	  /* If we are parsing a sequence or set and p is a direct
++	     child of it, no need to traverse the list back to the leftmost node. */
++	  if (tcache.tail == p)
++	    p = tcache.head;
++	  else
++	    p = _asn1_find_up (p);
++	}
+     }
+ 
+   _asn1_delete_not_used (*element);
+-- 
+GitLab
+
