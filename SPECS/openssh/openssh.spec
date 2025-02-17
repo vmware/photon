@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -31,6 +31,7 @@ Patch2: CVE-2023-51385.patch
 Patch3: openssh-CVE-2023-48795.patch
 Patch4: CVE-2023-51384.patch
 Patch5: 0003-disable-async-signal-unsafe-code.patch
+Patch6: CVE-2025-26465.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires: openssl-devel
@@ -213,6 +214,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Mon Feb 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 9.3p2-12
+- Fix CVE-2025-26465
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-11
 - Release bump for SRP compliance
 * Tue Jul 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-10
