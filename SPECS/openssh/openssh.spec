@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.9p1
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -32,6 +32,7 @@ Patch6: 0001-Support-for-overriding-algorithms-for-ssh-keyscan.patch
 Patch7: CVE-2023-51385.patch
 Patch8: CVE-2023-51384.patch
 Patch9: 0002-disable-async-signal-unsafe-code.patch
+Patch10: CVE-2025-26465.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -214,6 +215,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Mon Feb 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.9p1-9
+- Fix CVE-2025-26465
 * Sat Jun 29 2024 Tapas Kundu <tapas.kundu@broadcom.com> 8.9p1-8
 - commenting out the async-signal-unsafe code from the
 - sshsigdie() function
