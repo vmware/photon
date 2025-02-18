@@ -1,0 +1,248 @@
+From 9ecfc21b951406138ae549ddbbbdd2926b389a0b Mon Sep 17 00:00:00 2001
+From: B Horn <b@horn.uk>
+Date: Tue, 14 May 2024 12:39:56 +0100
+Subject: [PATCH 19/72] fs/ntfs: Implement attribute verification
+
+It was possible to read OOB when an attribute had a size that exceeded
+the allocated buffer. This resolves that by making sure all attributes
+that get read are fully in the allocated space by implementing
+a function to validate them.
+
+Defining the offsets in include/grub/ntfs.h but they are only used in
+the validation function and not across the rest of the NTFS code.
+
+Signed-off-by: B Horn <b@horn.uk>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ grub-core/fs/ntfs.c | 153 ++++++++++++++++++++++++++++++++++++++++++++
+ include/grub/ntfs.h |  22 +++++++
+ 2 files changed, 175 insertions(+)
+
+diff --git a/grub-core/fs/ntfs.c b/grub-core/fs/ntfs.c
+index 8300d84..f61125b 100644
+--- a/grub-core/fs/ntfs.c
++++ b/grub-core/fs/ntfs.c
+@@ -71,6 +71,149 @@ res_attr_data_len (void *res_attr_ptr)
+   return u32at (res_attr_ptr, 0x10);
+ }
+ 
++/*
++ * Check if the attribute is valid and doesn't exceed the allocated region.
++ * This accounts for resident and non-resident data.
++ *
++ * This is based off the documentation from the linux-ntfs project:
++ * https://flatcap.github.io/linux-ntfs/ntfs/concepts/attribute_header.html
++ */
++static bool
++validate_attribute (grub_uint8_t *attr, void *end)
++{
++  grub_size_t attr_size = 0;
++  grub_size_t min_size = 0;
++  grub_size_t spare = (grub_uint8_t *) end - attr;
++  /*
++   * Just used as a temporary variable to try and deal with cases where someone
++   * tries to overlap fields.
++   */
++  grub_size_t curr = 0;
++
++  /* Need verify we can entirely read the attributes header. */
++  if (attr + GRUB_NTFS_ATTRIBUTE_HEADER_SIZE >= (grub_uint8_t *) end)
++    goto fail;
++
++  /*
++   * So, the rest of this code uses a 16bit int for the attribute length but
++   * from reading the all the documentation I could find it says this field is
++   * actually 32bit. But let's be consistent with the rest of the code.
++   *
++   * https://elixir.bootlin.com/linux/v6.10.7/source/fs/ntfs3/ntfs.h#L370
++   */
++  attr_size = u16at (attr, GRUB_NTFS_ATTRIBUTE_LENGTH);
++
++  if (attr_size > spare)
++    goto fail;
++
++  /* Not an error case, just reached the end of the attributes. */
++  if (attr_size == 0)
++    return false;
++
++  /*
++   * Extra validation by trying to calculate a minimum possible size for this
++   * attribute. +8 from the size of the resident data struct which is the
++   * minimum that can be added.
++   */
++  min_size = GRUB_NTFS_ATTRIBUTE_HEADER_SIZE + 8;
++
++  if (min_size > attr_size)
++    goto fail;
++
++  /* Is the data is resident (0) or not (1). */
++  if (attr[GRUB_NTFS_ATTRIBUTE_RESIDENT] == 0)
++    {
++      /* Read the offset and size of the attribute. */
++      curr = u16at (attr, GRUB_NTFS_ATTRIBUTE_RES_OFFSET);
++      curr += u32at (attr, GRUB_NTFS_ATTRIBUTE_RES_LENGTH);
++      if (curr > min_size)
++	min_size = curr;
++    }
++  else
++    {
++      /*
++       * If the data is non-resident, the minimum size is 64 which is where
++       * the data runs start. We already have a minimum size of 24. So, just
++       * adding 40 to get to the real value.
++       */
++      min_size += 40;
++      if (min_size > attr_size)
++	goto fail;
++      /* If the compression unit size is > 0, +8 bytes*/
++      if (u16at (attr, GRUB_NTFS_ATTRIBUTE_COMPRESSION_UNIT_SIZE) > 0)
++	min_size += 8;
++
++      /*
++       * Need to consider the data runs now. Each member of the run has byte
++       * that describes the size of the data length and offset. Each being
++       * 4 bits in the byte.
++       */
++      curr = u16at (attr, GRUB_NTFS_ATTRIBUTE_DATA_RUNS);
++
++      if (curr + 1 > min_size)
++	min_size = curr + 1;
++
++      if (min_size > attr_size)
++	goto fail;
++
++      /*
++       * Each attribute can store multiple data runs which are stored
++       * continuously in the attribute. They exist as one header byte
++       * with up to 14 bytes following it depending on the lengths.
++       * We stop when we hit a header that is just a NUL byte.
++       *
++       * https://flatcap.github.io/linux-ntfs/ntfs/concepts/data_runs.html
++       */
++      while (attr[curr] != 0)
++	{
++	  /*
++	   * We stop when we hit a header that is just a NUL byte. The data
++	   * run header is stored as a single byte where the top 4 bits refer
++	   * to the number of bytes used to store the total length of the
++	   * data run, and the number of bytes used to store the offset.
++	   * These directly follow the header byte, so we use them to update
++	   * the minimum size.
++	   */
++	  min_size += (attr[curr] & 0x7) + ((attr[curr] >> 4) & 0x7);
++	  curr += min_size;
++	  min_size++;
++	  if (min_size > attr_size)
++	    goto fail;
++	}
++    }
++
++  /* Name offset, doing this after data residence checks. */
++  if (u16at (attr, GRUB_NTFS_ATTRIBUTE_NAME_OFFSET) != 0)
++    {
++      curr = u16at (attr, GRUB_NTFS_ATTRIBUTE_NAME_OFFSET);
++      /*
++       * Multiple the name length by 2 as its UTF-16. Can be zero if this in an
++       * unamed attribute.
++       */
++      curr += attr[GRUB_NTFS_ATTRIBUTE_NAME_LENGTH] * 2;
++      if (curr > min_size)
++	min_size = curr;
++    }
++
++  /* Padded to 8 bytes. */
++  if (min_size % 8 != 0)
++    min_size += 8 - (min_size % 8);
++
++  /*
++   * At this point min_size should be exactly attr_size but being flexible
++   * here to avoid any issues.
++   */
++  if (min_size > attr_size)
++    goto fail;
++
++  return true;
++
++ fail:
++  grub_dprintf ("ntfs", "spare=%" PRIuGRUB_SIZE " min_size=%" PRIuGRUB_SIZE " attr_size=%" PRIuGRUB_SIZE "\n",
++		spare, min_size, attr_size);
++  return false;
++}
++
+ /* Return the next attribute if it exists, otherwise return NULL. */
+ static grub_uint8_t *
+ next_attribute (grub_uint8_t *curr_attribute, void *end)
+@@ -85,6 +228,8 @@ next_attribute (grub_uint8_t *curr_attribute, void *end)
+     return NULL;
+ 
+   next += u16at (curr_attribute, 4);
++  if (validate_attribute (next, end) == false)
++    return NULL;
+ 
+   return next;
+ }
+@@ -291,6 +436,9 @@ find_attr (struct grub_ntfs_attr *at, grub_uint8_t attr)
+       /* From this point on pa_end is the end of the buffer */
+       at->end = pa_end;
+ 
++      if (validate_attribute (at->attr_nxt, pa_end) == false)
++	return NULL;
++
+       while (at->attr_nxt)
+ 	{
+ 	  if ((*at->attr_nxt == attr) || (attr == 0))
+@@ -320,6 +468,9 @@ find_attr (struct grub_ntfs_attr *at, grub_uint8_t attr)
+ 						  + 1));
+ 	  pa = at->attr_nxt + u16at (pa, 4);
+ 
++	  if (validate_attribute (pa, pa_end) == true)
++	    pa = NULL;
++
+ 	  while (pa)
+ 	    {
+ 	      if (*pa != attr)
+@@ -573,6 +724,8 @@ read_attr (struct grub_ntfs_attr *at, grub_uint8_t *dest, grub_disk_addr_t ofs,
+       else
+ 	vcn = ofs >> (at->mft->data->log_spc + GRUB_NTFS_BLK_SHR);
+       pa = at->attr_nxt + u16at (at->attr_nxt, 4);
++      if (validate_attribute (pa, at->attr_end) == false)
++	pa = NULL;
+ 
+       while (pa)
+ 	{
+diff --git a/include/grub/ntfs.h b/include/grub/ntfs.h
+index 2c80784..77b182a 100644
+--- a/include/grub/ntfs.h
++++ b/include/grub/ntfs.h
+@@ -91,6 +91,28 @@ enum
+ 
+ #define GRUB_NTFS_ATTRIBUTE_HEADER_SIZE 16
+ 
++/*
++ * To make attribute validation clearer the offsets for each value in the
++ * attribute headers are defined as macros.
++ *
++ * These offsets are all from:
++ * https://flatcap.github.io/linux-ntfs/ntfs/concepts/attribute_header.html
++ */
++
++/* These offsets are part of the attribute header. */
++#define GRUB_NTFS_ATTRIBUTE_LENGTH      4
++#define GRUB_NTFS_ATTRIBUTE_RESIDENT    8
++#define GRUB_NTFS_ATTRIBUTE_NAME_LENGTH 9
++#define GRUB_NTFS_ATTRIBUTE_NAME_OFFSET 10
++
++/* Offsets for values needed for resident data. */
++#define GRUB_NTFS_ATTRIBUTE_RES_LENGTH  16
++#define GRUB_NTFS_ATTRIBUTE_RES_OFFSET  20
++
++/* Offsets for values needed for non-resident data. */
++#define GRUB_NTFS_ATTRIBUTE_DATA_RUNS             32
++#define GRUB_NTFS_ATTRIBUTE_COMPRESSION_UNIT_SIZE 34
++
+ enum
+   {
+     GRUB_NTFS_AF_ALST		= 1,
+-- 
+2.39.4
+

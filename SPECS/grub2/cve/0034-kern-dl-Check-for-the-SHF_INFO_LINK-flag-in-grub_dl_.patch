@@ -1,0 +1,47 @@
+From f0c9592a6b93a40005ea0bdf0ea38f087537d495 Mon Sep 17 00:00:00 2001
+From: B Horn <b@horn.uk>
+Date: Mon, 17 Feb 2025 08:33:07 +0000
+Subject: [PATCH 34/72] kern/dl: Check for the SHF_INFO_LINK flag in
+ grub_dl_relocate_symbols()
+
+The grub_dl_relocate_symbols() iterates through the sections in
+an ELF looking for relocation sections. According to the spec [1]
+the SHF_INFO_LINK flag should be set if the sh_info field is meant
+to be a section index.
+
+[1] https://refspecs.linuxbase.org/elf/gabi4+/ch4.sheader.html
+
+Reported-by: B Horn <b@horn.uk>
+Signed-off-by: B Horn <b@horn.uk>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ grub-core/kern/dl.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/grub-core/kern/dl.c b/grub-core/kern/dl.c
+index 75c4b36..7e12e50 100644
+--- a/grub-core/kern/dl.c
++++ b/grub-core/kern/dl.c
+@@ -559,7 +559,7 @@ grub_dl_resolve_name (grub_dl_t mod, Elf_Ehdr *e)
+   s = grub_dl_find_section (e, ".modname");
+   if (!s)
+     return grub_error (GRUB_ERR_BAD_MODULE, "no module name found");
+-  
++
+   mod->name = grub_strdup ((char *) e + s->sh_offset);
+   if (! mod->name)
+     return grub_errno;
+@@ -672,6 +672,9 @@ grub_dl_relocate_symbols (grub_dl_t mod, void *ehdr)
+ 	grub_dl_segment_t seg;
+ 	grub_err_t err;
+ 
++    if (!(s->sh_flags & SHF_INFO_LINK))
++        continue;
++
+ 	seg = grub_dl_find_segment(mod, s->sh_info);
+         if (!seg)
+ 	  continue;
+-- 
+2.39.4
+

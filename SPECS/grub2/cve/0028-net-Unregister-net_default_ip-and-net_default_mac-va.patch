@@ -1,0 +1,33 @@
+From f7399550ac3a04ae581ddf973a40cd6f54a45e2e Mon Sep 17 00:00:00 2001
+From: B Horn <b@horn.uk>
+Date: Mon, 17 Feb 2025 07:56:13 +0000
+Subject: [PATCH 28/72] net: Unregister net_default_ip and net_default_mac
+ variables hooks on unload
+
+The net module is a dependency of normal. So, it shouldn't be possible
+to unload the net. Though unregister variables hooks as a precaution.
+It also gets in line with unregistering the other net module hooks.
+
+Signed-off-by: B Horn <b@horn.uk>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ grub-core/net/net.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/grub-core/net/net.c b/grub-core/net/net.c
+index 1001c61..fd78f09 100644
+--- a/grub-core/net/net.c
++++ b/grub-core/net/net.c
+@@ -2166,6 +2166,8 @@ GRUB_MOD_FINI(net)
+ 
+   grub_register_variable_hook ("net_default_server", 0, 0);
+   grub_register_variable_hook ("pxe_default_server", 0, 0);
++  grub_register_variable_hook ("net_default_ip", 0, 0);
++  grub_register_variable_hook ("net_default_mac", 0, 0);
+ 
+   grub_bootp_fini ();
+   grub_dns_fini ();
+-- 
+2.39.4
+

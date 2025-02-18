@@ -1,0 +1,44 @@
+From 34d661ebd8fdc29db5bc6807174b557036ad4f84 Mon Sep 17 00:00:00 2001
+From: Alec Brown <alec.r.brown@oracle.com>
+Date: Tue, 18 Feb 2025 05:55:51 +0000
+Subject: [PATCH 50/72] disk: Prevent overflows when allocating memory for
+ arrays
+
+Use grub_calloc() when allocating memory for arrays to ensure proper
+overflow checks are in place.
+
+Signed-off-by: Alec Brown <alec.r.brown@oracle.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+[vamsi: skip cryptdisk]
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ grub-core/disk/lvm.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/grub-core/disk/lvm.c b/grub-core/disk/lvm.c
+index 8257159..99f5e7c 100644
+--- a/grub-core/disk/lvm.c
++++ b/grub-core/disk/lvm.c
+@@ -671,8 +671,7 @@ grub_lvm_detect (grub_disk_t disk,
+ 			  goto lvs_segment_fail;
+ 			}
+ 
+-		      seg->nodes = grub_zalloc (sizeof (seg->nodes[0])
+-						* seg->node_count);
++		      seg->nodes = grub_calloc (seg->node_count, sizeof (seg->nodes[0]));
+ 
+ 		      p = grub_strstr (p, "mirrors = [");
+ 		      if (p == NULL)
+@@ -760,8 +759,7 @@ grub_lvm_detect (grub_disk_t disk,
+ 			    }
+ 			}
+ 
+-		      seg->nodes = grub_zalloc (sizeof (seg->nodes[0])
+-						* seg->node_count);
++		      seg->nodes = grub_calloc (seg->node_count, sizeof (seg->nodes[0]));
+ 
+ 		      p = grub_strstr (p, "raids = [");
+ 		      if (p == NULL)
+-- 
+2.39.4
+
