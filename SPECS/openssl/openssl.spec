@@ -1,6 +1,6 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.15
+Version:        3.0.16
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=acd80f2f7924d90c1416946a5c61eff461926ad60f4821bb6b08845ea18f8452fd5e88a2c2c5bd0d7590a792cb8341a3f3be042fd0a5b6c9c1b84a497c347bbf
+%define sha512 %{name}=5eea2b0c60d870549fc2b8755f1220a57f870d95fbc8d5cc5abb9589f212d10945f355c3e88ff48540a7ee1c4db774b936023ca33d7c799ea82d91eef9c1c16d
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
@@ -166,6 +166,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Mon Feb 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.16-1
+- Update to 3.0.16
 * Tue Sep 03 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.15-1
 - Update to 3.0.15
 * Thu Aug 01 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.14-3
