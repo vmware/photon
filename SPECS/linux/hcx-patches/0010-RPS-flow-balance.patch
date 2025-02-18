@@ -632,14 +632,12 @@ index 1ec23bf8b..206ba4785 100644
  
  #ifdef CONFIG_NET_FLOW_LIMIT
  	struct sd_flow_limit *fl;
-@@ -164,20 +165,62 @@ static int softnet_seq_show(struct seq_file *seq, void *v)
+@@ -164,20 +165,58 @@ static int softnet_seq_show(struct seq_file *seq, void *v)
  	rcu_read_unlock();
  #endif
  
 +#ifdef CONFIG_RPS
-+	spin_lock(&sd->input_pkt_queue.lock);
-+	qlen = skb_queue_len(&sd->input_pkt_queue);
-+	spin_unlock(&sd->input_pkt_queue.lock);
++	qlen = skb_queue_len_lockless(&sd->input_pkt_queue);
 +#endif
 +
  	/* the index is the CPU id owing this sd. Since offline CPUs are not
@@ -678,9 +676,7 @@ index 1ec23bf8b..206ba4785 100644
 +#endif
 +
 +#ifdef CONFIG_RPS
-+	spin_lock(&sd->input_pkt_queue.lock);
-+	qlen = skb_queue_len(&sd->input_pkt_queue);
-+	spin_unlock(&sd->input_pkt_queue.lock);
++	qlen = skb_queue_len_lockless(&sd->input_pkt_queue);
 +#endif
 +
 +	seq_printf(seq,
