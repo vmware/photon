@@ -1,0 +1,11 @@
+--- a/src/TpmToOsslMath.h	2025-02-21 08:34:54.696833191 +0000
++++ b/src/TpmToOsslMath.h	2025-02-21 08:35:46.796675228 +0000
+@@ -72,7 +72,7 @@
+ 
+ #define SYMMETRIC_ALIGNMENT RADIX_BYTES
+ 
+-#if OPENSSL_VERSION_NUMBER > 0x300000ffL
++#if OPENSSL_VERSION_NUMBER > 0x30300ff0L
+ // Check the bignum_st definition in crypto/bn/bn_lcl.h or crypto/bn/bn_local.h and either update
+ // the version check or provide the new definition for this version.
+ // Currently safe for all 3.0.n.a

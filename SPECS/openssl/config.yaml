@@ -1,7 +1,13 @@
 sources:
-- archive: openssl-3.0.15.tar.gz
-  archive_sha512sum: acd80f2f7924d90c1416946a5c61eff461926ad60f4821bb6b08845ea18f8452fd5e88a2c2c5bd0d7590a792cb8341a3f3be042fd0a5b6c9c1b84a497c347bbf
-  skip_validation: true
+- archive: openssl-3.0.16.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 5eea2b0c60d870549fc2b8755f1220a57f870d95fbc8d5cc5abb9589f212d10945f355c3e88ff48540a7ee1c4db774b936023ca33d7c799ea82d91eef9c1c16d
+  version: "3.0.16"
+  name: openssl-3.0.16
+  url: https://github.com/openssl/openssl/releases/download/openssl-3.0.16/openssl-3.0.16.tar.gz
+  repo_url: https://github.com/openssl/openssl
+  commit_id: fa1e5dfb142bb1c26c3c38a10aafa7a095df52e5
+  missing: [ '.github', 'gost-engine', '.gitmodules', 'pyca-cryptography', '90-team.norelease.conf', 'mktar.sh', 'krb5', '.gitignore', '.gitattributes', 'corpora', 'dev' ]
   spdx:
     package:
       detailed_description: 'The OpenSSL package contains management tools and libraries
@@ -9,30 +15,24 @@ sources:
         to other packages, such as OpenSSH, email applications and web browsers (for
         accessing HTTPS sites). '
       home_page: http://www.openssl.org
-      license_concluded: GPL-1.0-only AND BSD-3-Clause AND Artistic-2.0 AND BSD-Source-Code
-        AND Artistic-1.0 AND snprintf AND Apache-2.0 AND CC0-1.0 AND (GPL-2.0-or-later
-        OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause) AND BSD-2-Clause AND GPL-1.0-or-later
-        AND GPL-2.0-only
-      license_declared: GPL-1.0-only AND BSD-3-Clause AND Artistic-2.0 AND BSD-Source-Code
-        AND Artistic-1.0 AND snprintf AND Apache-2.0 AND CC0-1.0 AND (GPL-2.0-or-later
-        OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause) AND BSD-2-Clause AND GPL-1.0-or-later
-        AND GPL-2.0-only
+      license_concluded: BSD-Source-Code AND (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause) AND GPL-1.0-only AND snprintf AND Artistic-1.0 AND BSD-3-Clause AND GPL-2.0-or-later AND GPL-1.0-or-later AND Apache-2.0 AND BSD-2-Clause AND CC0-1.0 AND Artistic-2.0 AND GPL-2.0-only 
+      license_declared: BSD-Source-Code AND (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause) AND GPL-1.0-only AND snprintf AND Artistic-1.0 AND BSD-3-Clause AND GPL-2.0-or-later AND GPL-1.0-or-later AND Apache-2.0 AND BSD-2-Clause AND CC0-1.0 AND Artistic-2.0 AND GPL-2.0-only
       short_summary: Management tools and libraries relating to cryptography
       supplier: 'Organization: Broadcom, Inc.'
 - archive: openssl-3.0.8.tar.gz
+  archive_type: upstream
   archive_sha512sum: 8ce10be000d7d4092c8efc5b96b1d2f7da04c1c3a624d3a7923899c6b1de06f369016be957e36e8ab6d4c9102eaeec5d1973295d547f7893a7f11f132ae42b0d
-  skip_validation: true
+  version: "3.0.8"
+  name: openssl-3.0.8
+  url: https://github.com/openssl/openssl/releases/download/openssl-3.0.8/openssl-3.0.8.tar.gz
+  repo_url: https://github.com/openssl/openssl
+  commit_id: 31157bc0b46e04227b8468d3e6915e4d0332777c
+  missing: [ 'pyca-cryptography', 'gost-engine', 'corpora', '.gitattributes', '.gitmodules', 'krb5', '90-team.norelease.conf', 'dev', '.gitignore', 'mktar.sh', '.github' ]
   spdx:
     package:
       detailed_description: 'Fips library for enabling fips. '
       home_page: http://www.openssl.org
-      license_concluded: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause)
-        AND BSD-2-Clause AND Artistic-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-2.0-only
-        AND BSD-Source-Code AND Apache-2.0 AND BSD-3-Clause AND snprintf AND GPL-1.0-or-later
-        AND Artistic-2.0
-      license_declared: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause)
-        AND BSD-2-Clause AND Artistic-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-2.0-only
-        AND BSD-Source-Code AND Apache-2.0 AND BSD-3-Clause AND snprintf AND GPL-1.0-or-later
-        AND Artistic-2.0
+      license_concluded: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause) AND BSD-2-Clause AND Artistic-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-2.0-only AND BSD-Source-Code AND Apache-2.0 AND BSD-3-Clause AND snprintf AND GPL-1.0-or-later AND Artistic-2.0
+      license_declared: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1 OR BSD-3-Clause) AND BSD-2-Clause AND Artistic-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-2.0-only AND BSD-Source-Code AND Apache-2.0 AND BSD-3-Clause AND snprintf AND GPL-1.0-or-later AND Artistic-2.0
       short_summary: FIPS Libraries for openssl
       supplier: 'Organization: Broadcom, Inc.'

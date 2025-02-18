@@ -1,7 +1,7 @@
 Summary:        This project is an implementation of the TCG TPM 2.0 specification.
 Name:           ibmtpm
 Version:        1682
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://sourceforge.net/projects/ibmswtpm2/files
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -12,6 +12,8 @@ Source0: %{name}%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: fix_openssl_version.patch
 
 BuildRequires: openssl-devel
 BuildRequires: systemd-devel
@@ -54,6 +56,8 @@ EOF
 %{_unitdir}/ibmtpm_server.service
 
 %changelog
+* Fri Feb 21 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1682-3
+- Fix openssl version
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1682-2
 - Release bump for SRP compliance
 * Sun Oct 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 1682-1
