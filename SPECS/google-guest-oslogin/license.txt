@@ -1,0 +1,1 @@
+License: ISC AND Apache-2.0 AND MIT

@@ -1,7 +1,7 @@
 Summary:      Dynamic host configuration protocol
 Name:         dhcp
 Version:      4.4.3
-Release:      3%{?dist}
+Release:      4%{?dist}
 Url:          http://isc.org/products/DHCP/
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
@@ -59,67 +59,70 @@ more network interfaces using the Dynamic Host Configuration Protocol,
 BOOTP protocol, or if these protocols fail, by statically assigning an address.
 
 %prep
-%autosetup -p1 %{name}-%{version}
+%autosetup -p1
 
 %build
-autoreconf --verbose --force --install
+autoreconf -vfi
 export CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'  \
         -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
         -D_PATH_DHCLIENT_CONF='\"/etc/dhcp/dhclient.conf\"'"        \
 
 %configure \
-       --with-srv-lease-file=%{_localstatedir}/lib/dhcpd/dhcpd.leases \
-       --with-srv6-lease-file=%{_localstatedir}/lib/dhcpd/dhcpd6.leases \
-       --with-cli-lease-file=%{_localstatedir}/lib/dhclient/dhclient.leases \
-       --with-cli6-lease-file=%{_localstatedir}/lib/dhclient/dhclient6.leases \
-       --with-srv-pid-file=%{_localstatedir}/run/dhcpd.pid \
-       --with-srv6-pid-file=%{_localstatedir}/run/dhcpd6.pid \
-       --with-cli-pid-file=%{_localstatedir}/run/dhclient.pid \
-       --with-cli6-pid-file=%{_localstatedir}/run/dhclient6.pid \
-       --with-relay-pid-file=%{_localstatedir}/run/dhcrelay.pid \
-       --enable-log-pid \
-       --enable-paranoia \
-       --enable-early-chroot \
-       --enable-binary-leases \
-       --with-systemd
+   --with-srv-lease-file=%{_sharedstatedir}/dhcpd/dhcpd.leases \
+   --with-srv6-lease-file=%{_sharedstatedir}/dhcpd/dhcpd6.leases \
+   --with-cli-lease-file=%{_sharedstatedir}/dhclient/dhclient.leases \
+   --with-cli6-lease-file=%{_sharedstatedir}/dhclient/dhclient6.leases \
+   --with-srv-pid-file=%{_rundir}/dhcpd.pid \
+   --with-srv6-pid-file=%{_rundir}/dhcpd6.pid \
+   --with-cli-pid-file=%{_rundir}/dhclient.pid \
+   --with-cli6-pid-file=%{_rundir}/dhclient6.pid \
+   --with-relay-pid-file=%{_rundir}/dhcrelay.pid \
+   --enable-log-pid \
+   --enable-paranoia \
+   --enable-early-chroot \
+   --enable-binary-leases \
+   --with-systemd
 
 # make doesn't support _smp_mflags
-make -j1
+make
 
 %install
 %make_install %{?_smp_mflags}
-install -D -p -m 0755 %{SOURCE1} %{buildroot}%{_sbindir}/dhclient-script
 
-mkdir -p %{buildroot}/%{_sysconfdir}/dhcp
-install -D -p -m 0755 %{SOURCE2} %{buildroot}%{_sysconfdir}/dhcp/
+install -Dpm 0755 %{SOURCE1} %{buildroot}%{_sbindir}/dhclient-script
 
-mkdir -p %{buildroot}/%{_unitdir}
-install -D -p -m 0755 %{SOURCE3} %{buildroot}%{_unitdir}/
-install -D -p -m 0755 %{SOURCE4} %{buildroot}%{_unitdir}/
+mkdir -p %{buildroot}%{_sysconfdir}/dhcp \
+         %{buildroot}%{_unitdir} \
+         %{buildroot}%{_sysconfdir}/dhcp \
+         %{buildroot}%{_sharedstatedir}/{dhcpd,dhclient}
 
-install -v -dm 755 %{buildroot}%{_localstatedir}/lib/dhclient
-install -v -dm 755 %{buildroot}%{_sysconfdir}/default
+install -Dpm 0755 %{SOURCE2} %{buildroot}%{_sysconfdir}/dhcp/
+install -Dpm 0755 %{SOURCE3} %{buildroot}%{_unitdir}/
+install -Dpm 0755 %{SOURCE4} %{buildroot}%{_unitdir}/
+
+install -vdm 755 %{buildroot}%{_sharedstatedir}/dhclient
+install -vdm 755 %{buildroot}%{_sysconfdir}/default
 
 cat > %{buildroot}%{_sysconfdir}/default/dhcpd << "EOF"
 DHCPD_OPTS=
 EOF
 
-mkdir -p %{buildroot}%{_sysconfdir}/dhcp
-touch %{buildroot}%{_sysconfdir}/dhcp/dhcpd.conf
-touch %{buildroot}%{_sysconfdir}/dhcp/dhcpd6.conf
+touch %{buildroot}%{_sysconfdir}/dhcp/{dhcpd.conf,dhcpd6.conf}
+touch %{buildroot}%{_sharedstatedir}/dhcpd/{dhcpd.leases,dhcpd6.leases}
 
-mkdir -p %{buildroot}%{_localstatedir}/lib/dhcpd/
-touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd.leases
-touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd6.leases
-mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
+rm -f %{buildroot}%{_sysconfdir}/dhclient.conf.example \
+      %{buildroot}%{_sysconfdir}/dhcpd.conf.example
 
-rm -f %{buildroot}%{_sysconfdir}/dhclient.conf.example
-rm -f %{buildroot}%{_sysconfdir}/dhcpd.conf.example
+install -vdm 755 %{buildroot}%{_sysconfdir}/dhcp/dhclient.d
 
-#%%check
-#Commented out %check due to missing support of ATF.
+%clean
+rm -rf %{buildroot}/*
 
-%ldconfig_scriptlets
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
+%files
+%defattr(-,root,root)
 
 %files libs
 %defattr(-,root,root)
@@ -135,12 +138,12 @@ rm -f %{buildroot}%{_sysconfdir}/dhcpd.conf.example
 %files server
 %defattr(-,root,root)
 %dir %{_sysconfdir}/dhcp
-%dir %{_localstatedir}/lib/dhcpd
+%dir %{_sharedstatedir}/dhcpd
 %config(noreplace) %{_sysconfdir}/default/dhcpd
 %config(noreplace) %{_sysconfdir}/dhcp/dhcpd.conf
 %config(noreplace) %{_sysconfdir}/dhcp/dhcpd6.conf
-%config(noreplace) %{_localstatedir}/lib/dhcpd/dhcpd.leases
-%config(noreplace) %{_localstatedir}/lib/dhcpd/dhcpd6.leases
+%config(noreplace) %{_sharedstatedir}/dhcpd/dhcpd.leases
+%config(noreplace) %{_sharedstatedir}/dhcpd/dhcpd6.leases
 
 %{_bindir}/omshell
 %{_sbindir}/dhcpd
@@ -159,16 +162,19 @@ rm -f %{buildroot}%{_sysconfdir}/dhcpd.conf.example
 %files client
 %defattr(-,root,root)
 %dir %{_sysconfdir}/dhcp
+%dir %{_sysconfdir}/dhcp/dhclient.d
 %config(noreplace) %{_sysconfdir}/dhcp/dhclient.conf
 %{_sbindir}/dhclient
 %{_sbindir}/dhclient-script
-%dir %{_localstatedir}/lib/dhclient
+%dir %{_sharedstatedir}/dhclient
 %{_mandir}/man5/dhclient.conf.5.gz
 %{_mandir}/man5/dhclient.leases.5.gz
 %{_mandir}/man8/dhclient-script.8.gz
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+* Thu Feb 13 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.4.3-4
+- Include /etc/dhcp/dhclient.d directory as part of dhcp-client
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.4.3-3
 - Release bump for SRP compliance
 * Mon Sep 25 2023 Harinadh D <hdommaraju@vmware.com> 4.4.3-2

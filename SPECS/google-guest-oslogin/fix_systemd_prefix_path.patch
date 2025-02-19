@@ -1,0 +1,16 @@
+Make sure make install, installs the systemd in /usr/lib instead of /lib. I see /lib is not a symlink in chroot causing issue in installation.
+
+
+--- a/src/Makefile	2025-02-10 05:46:29.349717269 +0000
++++ b/src/Makefile	2025-02-10 05:46:48.913617252 +0000
+@@ -18,8 +18,8 @@ BINDIR = $(PREFIX)/bin
+ PAMDIR = $(LIBDIR)/security
+ MANDIR = /usr/share/man
+ CRONDIR = /etc/cron.d
+-SYSTEMDDIR = /lib/systemd/system
+-PRESETDIR = /lib/systemd/system-preset
++SYSTEMDDIR = $(PREFIX)/lib/systemd/system
++PRESETDIR = $(PREFIX)/lib/systemd/system-preset
+ 
+ DEST_LIBDIR = $(LIBDIR)
+ DEST_BINDIR = $(BINDIR)

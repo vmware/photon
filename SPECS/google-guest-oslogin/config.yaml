@@ -1,0 +1,17 @@
+sources:
+- archive: google-guest-oslogin-20250123.00.tar.gz
+  archive_type: upstream
+  archive_sha512sum: cbdc553d6847b61b61c93cb1335fc23d932385ff787a5b2321afb033635bfbee5a37962791cd09f8ccb40f2366a44f03a0d1733609b381e079b528caa6305f89
+  version: "20250123.00"
+  name: guest-oslogin-20250123.00
+  url: https://github.com/GoogleCloudPlatform/guest-oslogin/archive/refs/tags/20250123.00.tar.gz
+  repo_url: https://github.com/GoogleCloudPlatform/guest-oslogin
+  commit_id: 4e69460014aa8a03258cfce07530d9878d85dde9
+  spdx:
+    package:
+      detailed_description: 'OS Login Guest Environment for Google Compute Engine'
+      home_page: https://github.com/GoogleCloudPlatform/guest-oslogin
+      license_concluded: ISC AND Apache-2.0 AND MIT
+      license_declared: ISC AND Apache-2.0 AND MIT
+      short_summary: Google Compute Engine guest is login
+      supplier: 'Organization: Broadcom, Inc.'

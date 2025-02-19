@@ -1,0 +1,17 @@
+sources:
+- archive: google-guest-agent-20250122.00.tar.gz
+  archive_type: upstream
+  archive_sha512sum: f86520161ee3da6b26f190280af9148a75ef590cb93656daaac9fd673f369186a5b8a05ab6d0c79d463ba5c11077f35d5d51e9c52d4e3aa191594d184abe9f65
+  version: "20250122.00"
+  name: guest-agent-20250122.00
+  url: https://github.com/GoogleCloudPlatform/guest-agent/archive/refs/tags/20250122.00.tar.gz
+  repo_url: https://github.com/GoogleCloudPlatform/guest-agent
+  commit_id: 4dbdb5da9cb233c43adcea8affd01bf5d291b9bd
+  spdx:
+    package:
+      detailed_description: 'Google Compute Engine guest environment'
+      home_page: https://github.com/GoogleCloudPlatform/guest-agent
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND MIT AND BSD-3-Clause AND Zlib
+      license_declared: Apache-2.0 AND BSD-2-Clause AND MIT AND BSD-3-Clause AND Zlib
+      short_summary: Google Compute Engine guest environment
+      supplier: 'Organization: Broadcom, Inc.'

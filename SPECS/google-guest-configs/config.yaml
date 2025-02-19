@@ -1,0 +1,17 @@
+sources:
+- archive: google-guest-configs-20250207.00.tar.gz
+  archive_type: upstream
+  archive_sha512sum: ecee30253b2265f79abfa77a5034ad019212ef7097b9befb0e87975b1733245d89c0b59d23165a4e49a4d8598231330c6658f931fe3d1583f025ae2adf6b6fe4
+  version: "20250207.00"
+  name: guest-configs-20250207.00
+  url: https://github.com/GoogleCloudPlatform/guest-configs/archive/refs/tags/20250207.00.tar.gz
+  repo_url: https://github.com/GoogleCloudPlatform/guest-configs
+  commit_id: bf5c741e0994c5847c5c1c92e06b7162bf270fc3
+  spdx:
+    package:
+      detailed_description: 'This repository holds the sources and packaging artifacts for the google-compute-engine package. This package contains configuration files and scripts used to support the Google Compute Engine guest environment, and also depends on the other packages needed to provide all guest functionality.'
+      home_page: https://github.com/GoogleCloudPlatform/guest-configs
+      license_concluded: Apache-2.0 AND GPL-2.0-or-later
+      license_declared: Apache-2.0 AND GPL-2.0-or-later
+      short_summary: Linux Guest Environment for Google Compute Engine
+      supplier: 'Organization: Broadcom, Inc.'
