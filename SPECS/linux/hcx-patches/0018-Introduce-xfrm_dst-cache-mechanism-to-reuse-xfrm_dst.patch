@@ -1,0 +1,551 @@
+From 3331e41afe3771e7c56d0d27262af6964b5cee22 Mon Sep 17 00:00:00 2001
+From: Jonathan Shao <jonathan.shao@broadcom.com>
+Date: Wed, 19 Feb 2025 22:14:34 +0000
+Subject: [PATCH] Introduce xfrm_dst cache mechanism to reuse xfrm_dst in
+ xfrm_bundle_create()
+
+The xfrm policy (xfrm_dst) cache was introduced in 4.14.
+It is removed at 4.19 (e4db5b61c572475bbbcf63e3c8a2606bfccf2c9d),
+because it has negative performance impact when each CPU core must
+handle multiple different policies.
+
+Re-introduce this mechanism back, since the mechanism performs well
+in the case where each CPU core has only one IPsec tunnel. HCX Network
+Extension can be hugely benitfitted from this mechanism. This mechanism
+provides 2 benefits:
+
+1, It can greatly reduce the number of xfrm_dst allocations,
+   such that it avoid the possibility of "out of memory" under
+   high throughput.
+2, It provides about 5%-7% of performance improvement.
+
+This patch ports the cache mechanism from 4.18 kernel and modifies
+the reuse conditions to meet 6.1 kernel xfrm implementation.
+In addition, two enhancements are added:
+
+1, boot parameter: xfrm_dst_cache
+   The presence of presence in the boot commandline parameter enables
+   the xfrm_dst cache mechanism.
+   The default setting is disabled as the parameter is omitted.
+
+2, /proc/net/softnet_xfrm_stat
+   Per-cpu statistics of the cache mechanism behaviors.
+---
+ include/linux/netdevice.h |  12 ++
+ include/net/xfrm.h        |   1 +
+ net/core/net-procfs.c     |  60 +++++++-
+ net/xfrm/xfrm_device.c    |   3 +
+ net/xfrm/xfrm_policy.c    | 284 +++++++++++++++++++++++++++++++++++++-
+ net/xfrm/xfrm_state.c     |   8 +-
+ 6 files changed, 363 insertions(+), 5 deletions(-)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index bb02befda..5f4a52a9c 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3209,6 +3209,15 @@ struct softnet_data {
+ 	unsigned int		user_def_rps_proc;
+ #endif
+ 	unsigned int		dropped;
++#ifdef CONFIG_XFRM
++	/* statistics for xfrm_dst cache mechanism */
++	unsigned int		hit_xfrm_dst;
++	unsigned int		miss_xfrm_dst;
++	unsigned int		xfrm_dst_check_1;  /* check src dev failure */
++	unsigned int		xfrm_dst_check_2;  /* check SA bundles */
++	unsigned int		xfrm_dst_check_3;  /* check destination */
++	unsigned int		xfrm_dst_flush;    /* cache flush counter */
++#endif
+ 	struct sk_buff_head	input_pkt_queue;
+ 	struct napi_struct	backlog;
+ 
+@@ -4912,6 +4921,9 @@ extern int		netdev_mice_trigger;
+ extern int		netdev_better_threshold;
+ extern int		netdev_flowlim_threshold;
+ extern int		netdev_dbg_hash;
++#ifdef CONFIG_XFRM
++extern int		netdev_xfrm_cache;
++#endif
+ 
+ static inline netdev_tx_t __netdev_start_xmit(const struct net_device_ops *ops,
+ 					      struct sk_buff *skb, struct net_device *dev,
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index bf6709296..6d6765d08 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -355,6 +355,7 @@ int xfrm_policy_register_afinfo(const struct xfrm_policy_afinfo *afinfo, int fam
+ void xfrm_policy_unregister_afinfo(const struct xfrm_policy_afinfo *afinfo);
+ void km_policy_notify(struct xfrm_policy *xp, int dir,
+ 		      const struct km_event *c);
++void xfrm_policy_cache_flush(void);
+ void km_state_notify(struct xfrm_state *x, const struct km_event *c);
+ 
+ struct xfrm_tmpl;
+diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
+index 8a29e1b98..d6bd279c3 100644
+--- a/net/core/net-procfs.c
++++ b/net/core/net-procfs.c
+@@ -251,6 +251,51 @@ static const struct proc_ops softnet_rps_seq_proc_ops = {
+ };
+ 
+ 
++#ifdef CONFIG_XFRM
++/* for xfrm_dst cache mechanism */
++extern int netdev_xfrm_cache;
++static int softnet_xfrm_seq_show(struct seq_file *seq, void *v)
++{
++	struct softnet_data *sd = v;
++
++	/*
++	 * cpu: cpu id
++	 * hi: hit counter
++	 * mi: miss counter
++	 * c1: check condition 1 fail counter (see net/xfrm/xfrm_policy.c)
++	 * c2: check condition 2 fail counter (see net/xfrm/xfrm_policy.c)
++	 * c3: check condition 3 fail counter (see net/xfrm/xfrm_policy.c)
++	 * fl: cache flush counter
++	 */
++	if (netdev_xfrm_cache)
++		seq_printf(seq, "cpu:%u hi:%d mi:%d c1:%d c2:%d c3:%d fl:%d\n",
++			   sd->cpu, sd->hit_xfrm_dst, sd->miss_xfrm_dst,
++			   sd->xfrm_dst_check_1, sd->xfrm_dst_check_2,
++			   sd->xfrm_dst_check_3, sd->xfrm_dst_flush);
++	return 0;
++}
++
++static const struct seq_operations softnet_xfrm_seq_ops = {
++	.start = softnet_seq_start,
++	.next  = softnet_seq_next,
++	.stop  = softnet_seq_stop,
++	.show  = softnet_xfrm_seq_show,
++};
++
++static int softnet_xfrm_seq_open(struct inode *inode, struct file *file)
++{
++	return seq_open(file, &softnet_xfrm_seq_ops);
++}
++
++static const struct proc_ops softnet_xfrm_seq_proc_ops = {
++	.proc_open    = softnet_xfrm_seq_open,
++	.proc_read    = seq_read,
++	.proc_lseek   = seq_lseek,
++	.proc_release = seq_release,
++};
++#endif
++
++
+ static void *ptype_get_idx(struct seq_file *seq, loff_t pos)
+ {
+ 	struct list_head *ptype_list = NULL;
+@@ -383,10 +428,15 @@ static int __net_init dev_proc_net_init(struct net *net)
+ 		goto out_dev;
+ 	if (!proc_create("softnet_rps_stat", S_IRUGO, net->proc_net,
+ 			 &softnet_rps_seq_proc_ops))
+-		goto out_dev;
++		goto out_softnet;
++#ifdef CONFIG_XFRM
++	if (!proc_create("softnet_xfrm_stat", S_IRUGO, net->proc_net,
++			 &softnet_xfrm_seq_proc_ops))
++		goto out_softnet_rps;
++#endif
+ 	if (!proc_create_net("ptype", 0444, net->proc_net, &ptype_seq_ops,
+ 			sizeof(struct seq_net_private)))
+-		goto out_softnet;
++		goto out_xfrm_stat;
+ 
+ 	if (wext_proc_init(net))
+ 		goto out_ptype;
+@@ -395,6 +445,12 @@ static int __net_init dev_proc_net_init(struct net *net)
+ 	return rc;
+ out_ptype:
+ 	remove_proc_entry("ptype", net->proc_net);
++out_xfrm_stat:
++#ifdef CONFIG_XFRM
++	remove_proc_entry("softnet_xfrm_stat", net->proc_net);
++#endif
++out_softnet_rps:
++	remove_proc_entry("softnet_rps_stat", net->proc_net);
+ out_softnet:
+ 	remove_proc_entry("softnet_stat", net->proc_net);
+ out_dev:
+diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+index 2535ee034..21c6fb566 100644
+--- a/net/xfrm/xfrm_device.c
++++ b/net/xfrm/xfrm_device.c
+@@ -418,6 +418,9 @@ static int xfrm_dev_down(struct net_device *dev)
+ 	if (dev->features & NETIF_F_HW_ESP)
+ 		xfrm_dev_state_flush(dev_net(dev), dev, true);
+ 
++	if (netdev_xfrm_cache) {
++		xfrm_policy_cache_flush();
++	}
+ 	return NOTIFY_DONE;
+ }
+ 
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index a022f4984..ac4ca9ec5 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -2740,8 +2740,229 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
+ 	}
+ 
+ 	return 0;
++}
++
++/* XFRM_DST caching mechanism (begin) */
++
++/* xfrm_dst cache per-cpu array */
++static struct xfrm_dst * __percpu *xfrm_last_dst;
++
++static struct work_struct __percpu *xfrm_pcpu_work;
++
++/*
++ * The flag indicates if xfrm_dst caching mechanism is enabled.
++ * The default behavior is disabled.
++ */
++int netdev_xfrm_cache __read_mostly = 0;
++EXPORT_SYMBOL(netdev_xfrm_cache);
++
++/*
++ * this function sets the new object, @xdst, as the new cached object,
++ * and releases the old cached object, @old, which fails the reuse checks
++ *
++ * Note: this function only update the cache object of THIS CPU
++ */
++static void xfrm_last_dst_update(struct xfrm_dst *xdst, struct xfrm_dst *old)
++{
++	this_cpu_write(*xfrm_last_dst, xdst);
++	if (old)
++		dst_release(&old->u.dst);
++}
++
++/*
++ * remove cached xfrm_dst object which is stale, on THIS CPU
++ *
++ * Note: this is used in two conditions:
++ *       1, ipsec/xfrm is put down
++ *       2, xfrm policy is changed
++ */
++static void __xfrm_pcpu_work_fn(void)
++{
++	struct xfrm_dst *old;
++
++	old = this_cpu_read(*xfrm_last_dst);
++	if (old && !xfrm_bundle_ok(old))
++		xfrm_last_dst_update(NULL, old);
++}
++
++/*
++ * a safe version of __xfrm_pcpu_work_fn()
++ * this function is used for scheduling per-cpu tasks
++ */
++static void xfrm_pcpu_work_fn(struct work_struct *work)
++{
++	local_bh_disable();
++	__xfrm_pcpu_work_fn();
++	local_bh_enable();
++}
++
++/*
++ * parsing boot commandline parameter "xfrm_dst_chace"
++ * The input string "1" indicates enabling the xfrm_dst caching
++ * Otherwise, xfrm_dst caching mechanism is disabled
++ *
++ * Design Note:
++ *    The reason of choosing the boot commandline to enable the
++ *    xfrm_dst cache mechanism is to allocate cache related memory
++ *    if and only if when the mechanism is activated.
++ *
++ *    The alternative scheme of using sysctl would require the
++ *    extra synchronizations to manage memory when enabling/disabling
++ *    the cache mechansim.
++ *    The known use case does not need such dynamic capability.
++ */
++static int __init xfrm_dst_cache_init(char *str)
++{
++	int cpu;
++	netdev_xfrm_cache = 0;
++
++	if (!str) {
++		pr_notice("Unexpected use of xfrm_dst_chace: %s\n", str);
++		return 0;
++	}
+ 
++	pr_notice("Enable xfrm_dst cache mechanism.\n");
++
++	xfrm_last_dst = alloc_percpu(struct xfrm_dst *);
++	if (!xfrm_last_dst) {
++		pr_err("Failed to allocate the percpu xfrm_dst cache. Disable xfrm_dst cache.\n");
++		return 0;
++	}
++
++	/*
++	 * initialize per-cpu work_struct object
++	 * to be used in xfrm_policy_cache_flush()
++	 */
++	xfrm_pcpu_work = alloc_percpu(struct work_struct);
++	if (!xfrm_pcpu_work) {
++		pr_err("Failed to allocate the percpu xfrm_dst cache. Disable xfrm_dst cache.\n");
++		free_percpu(xfrm_last_dst);
++		xfrm_last_dst = NULL;
++		return 0;
++	}
++
++	for_each_possible_cpu(cpu) {
++		(*per_cpu_ptr(xfrm_last_dst, cpu)) = NULL;
++		INIT_WORK(per_cpu_ptr(xfrm_pcpu_work, cpu), xfrm_pcpu_work_fn);
++	}
++
++	netdev_xfrm_cache = 1;
++	return 1;
+ }
++__setup("xfrm_dst_cache", xfrm_dst_cache_init);
++
++void xfrm_policy_cache_flush(void)
++{
++	struct xfrm_dst *old;
++	bool found = 0;
++	int cpu;
++	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
++
++	sd->xfrm_dst_flush++;
++
++	might_sleep();
++
++	local_bh_disable();
++	for_each_possible_cpu(cpu) {
++		old = *per_cpu_ptr(xfrm_last_dst, cpu);
++		if (old && !xfrm_bundle_ok(old)) {
++			if (smp_processor_id() == cpu) {
++				__xfrm_pcpu_work_fn();
++				continue;
++			}
++			found = true;
++			break;
++		}
++	}
++	local_bh_enable();
++
++	if (!found)
++		return;
++
++	/* lock all cpus from modifying the xfrm_dst caches */
++	cpus_read_lock();
++
++	for_each_possible_cpu(cpu) {
++		bool bundle_release;
++
++		old = *per_cpu_ptr(xfrm_last_dst, cpu);
++		bundle_release = old && !xfrm_bundle_ok(old);
++
++		if (!bundle_release)
++			continue;
++
++		if (cpu_online(cpu)) {
++			schedule_work_on(cpu, per_cpu_ptr(xfrm_pcpu_work, cpu));
++			continue;
++		}
++
++		/* cpu offline, so the cache can be safely clean */
++		old = *per_cpu_ptr(xfrm_last_dst, cpu);
++		if (old && !xfrm_bundle_ok(old)) {
++			(*per_cpu_ptr(xfrm_last_dst, cpu)) = NULL;
++			dst_release(&old->u.dst);
++		}
++	}
++
++	cpus_read_unlock();
++}
++
++static bool xfrm_xdst_can_reuse(struct softnet_data *sd,
++			       const struct flowi *fl,
++                               struct xfrm_dst *xdst,
++                               struct xfrm_state * const xfrm[],
++                               int num)
++{
++	const struct dst_entry *dst = &xdst->u.dst;
++	int i;
++
++	if (xdst->num_xfrms != num)
++		goto sa_failed;
++
++	/*
++	 * verify if the cached object has the same SA bundles
++	 * as defined by xfrm[].
++	 */
++	for (i = 0; i < num; i++) {
++		if (!dst || dst->xfrm != xfrm[i])
++			goto sa_failed;
++		dst = xfrm_dst_child(dst);
++	}
++
++	if (!xfrm_bundle_ok(xdst))
++		goto sa_failed;
++
++	/*
++	 * check if the packet is still routed to the same device after ipsec
++	 * this is the extra check for HCX APR
++	 */
++	if (num && (xfrm[0]->props.mode != XFRM_MODE_TRANSPORT)) {
++		struct xfrm_state *x = xfrm[0];
++		struct dst_entry *dst;
++		xfrm_address_t saddr, daddr;
++		int family = x->props.family;
++		int tos = xfrm_get_tos(fl, family);
++		int oif = fl->flowi_oif ? : fl->flowi_l3mdev;
++		__u32 m = 0;
++
++		xfrm_flowi_addr_get(fl, &saddr, &daddr, family);
++		if (x->props.smark.v || x->props.smark.m) {
++			m = xfrm_smark_get(fl->flowi_mark, x);
++		}
++		dst = xfrm_dst_lookup(x, tos, oif, &saddr, &daddr, family, m);
++		if (IS_ERR(dst) || (dst->dev != xdst->u.dst.dev)) {
++			sd->xfrm_dst_check_3++;
++			return false;
++		}
++	}
++
++	return true;
++
++sa_failed:
++	sd->xfrm_dst_check_2++;
++	return false;
++}
++/* XFRM_DST caching mechanism (end) */
+ 
+ static struct xfrm_dst *
+ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
+@@ -2751,7 +2972,7 @@ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
+ 	struct net *net = xp_net(pols[0]);
+ 	struct xfrm_state *xfrm[XFRM_MAX_DEPTH];
+ 	struct xfrm_dst *bundle[XFRM_MAX_DEPTH];
+-	struct xfrm_dst *xdst;
++	struct xfrm_dst *xdst, *old;
+ 	struct dst_entry *dst;
+ 	int err;
+ 
+@@ -2766,6 +2987,54 @@ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
+ 		return ERR_PTR(err);
+ 	}
+ 
++	if (netdev_xfrm_cache) {
++		struct softnet_data *sd = this_cpu_ptr(&softnet_data);
++		bool cond = false;
++
++		xdst = this_cpu_read(*xfrm_last_dst);
++
++		/*
++		 * verify if the cached object can be reused,
++		 * if not, the cached object is replaced with newly created one.
++		 *
++		 * 1, the cached object is routed from the same origin device
++		 *    false counter: sd->xfrm_dst_check_1 (c1 in statistics)
++		 * 2, the cached object is under the same Security Policies
++		 *    false counter: sd->xfrm_dst_check_2 (c2 in statistics)
++		 * 3, the cached object has the same Security Bundle
++		 * 4, the cached object is routed to the same device
++		 *    false counter: sd->xfrm_dst_check_3 (c3 in statistics)
++		 */
++		if (xdst && xdst->route->dev == dst_orig->dev) {
++			cond = true;
++		} else {
++			sd->xfrm_dst_check_1++;
++		}
++		if (cond &&
++		    xdst->num_pols == num_pols &&
++		    memcmp(xdst->pols, pols,
++			sizeof(struct xfrm_policy *) * num_pols) == 0 &&
++		    xfrm_xdst_can_reuse(sd, fl, xdst, xfrm, err)) {
++			dst_hold(&xdst->u.dst);
++
++			/*
++			 * the cached object has held the policy already
++			 * release the hold which is intended for new object
++			 */
++			xfrm_pols_put(pols, num_pols);
++
++			/* unwind the output from xfrm_tmpl_resolve() */
++			while (err > 0)
++				xfrm_state_put(xfrm[--err]);
++
++			sd->hit_xfrm_dst++;
++			return xdst;
++		}
++
++		sd->miss_xfrm_dst++;
++		old = xdst;
++	}
++
+ 	dst = xfrm_bundle_create(pols[0], xfrm, bundle, err, fl, dst_orig);
+ 	if (IS_ERR(dst)) {
+ 		XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTBUNDLEGENERROR);
+@@ -2778,6 +3047,11 @@ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
+ 	memcpy(xdst->pols, pols, sizeof(struct xfrm_policy *) * num_pols);
+ 	xdst->policy_genid = atomic_read(&pols[0]->genid);
+ 
++	if (netdev_xfrm_cache) {
++		atomic_set(&xdst->u.dst.__refcnt, 2);
++		xfrm_last_dst_update(xdst, old);
++	}
++
+ 	return xdst;
+ }
+ 
+@@ -2991,8 +3265,12 @@ static struct xfrm_dst *xfrm_bundle_lookup(struct net *net,
+ 	if (num_xfrms <= 0)
+ 		goto make_dummy_bundle;
+ 
++	if (netdev_xfrm_cache)
++		local_bh_disable();
+ 	xdst = xfrm_resolve_and_create_bundle(pols, num_pols, fl, family,
+ 					      xflo->dst_orig);
++	if (netdev_xfrm_cache)
++		local_bh_enable();
+ 	if (IS_ERR(xdst)) {
+ 		err = PTR_ERR(xdst);
+ 		if (err == -EREMOTE) {
+@@ -3090,9 +3368,13 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
+ 				goto no_transform;
+ 			}
+ 
++			if (netdev_xfrm_cache)
++				local_bh_disable();
+ 			xdst = xfrm_resolve_and_create_bundle(
+ 					pols, num_pols, fl,
+ 					family, dst_orig);
++			if (netdev_xfrm_cache)
++				local_bh_enable();
+ 
+ 			if (IS_ERR(xdst)) {
+ 				xfrm_pols_put(pols, num_pols);
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 2f4cf976b..79f6e574b 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -780,6 +780,8 @@ xfrm_dev_state_flush_secctx_check(struct net *net, struct net_device *dev, bool
+ }
+ #endif
+ 
++extern int netdev_xfrm_cache;
++
+ int xfrm_state_flush(struct net *net, u8 proto, bool task_valid, bool sync)
+ {
+ 	int i, err = 0, cnt = 0;
+@@ -816,9 +818,11 @@ int xfrm_state_flush(struct net *net, u8 proto, bool task_valid, bool sync)
+ 	}
+ out:
+ 	spin_unlock_bh(&net->xfrm.xfrm_state_lock);
+-	if (cnt)
++	if (cnt) {
+ 		err = 0;
+-
++		if (netdev_xfrm_cache)
++			xfrm_policy_cache_flush();
++	}
+ 	return err;
+ }
+ EXPORT_SYMBOL(xfrm_state_flush);
+-- 
+2.39.4
+

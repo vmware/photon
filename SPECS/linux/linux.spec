@@ -44,7 +44,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.131
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -382,6 +382,7 @@ Patch716: 0016-gre_tap-interface-mss_clamp-support.patch
 Patch717: 0017-rps_cpus-skip-receive-packets-queuing-to-only-housek.patch
 # RCU callbacks invocation max batch limit control for HCX usecase
 Patch718: 0001-rcutree-Adding-rcu_max_blimit-rcutree-param.patch
+Patch719: 0018-Introduce-xfrm_dst-cache-mechanism-to-reuse-xfrm_dst.patch
 
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
@@ -608,7 +609,7 @@ The kernel fips-canister
 %endif
 
 #HCX-Patches
-%autopatch -p1 -m701 -M718
+%autopatch -p1 -m701 -M719
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
@@ -971,6 +972,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Apr 8 2025 Jonathan Shao <jonathan.shao@broadcom.com> 6.1.131-2
+- Port xfrm policy cache mechanism from 4.14 kernel
 * Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.131-1
 - Update to version 6.1.131
 * Mon Mar 24 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.130-4
