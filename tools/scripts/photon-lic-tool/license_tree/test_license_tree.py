@@ -36,7 +36,9 @@ def get_exceptions_list():
                 print("Failed to get exceptions list, retrying after delay...")
                 time.sleep(5)
             else:
-                print("ERROR: Exhausted all retries, couldn't get exceptions list!")
+                print(
+                    "ERROR: Exhausted all retries, couldn't get exceptions list!"
+                )
                 sys.exit(1)
 
     with open(exceptions_json_loc, "r") as spdx_exceptions_json:

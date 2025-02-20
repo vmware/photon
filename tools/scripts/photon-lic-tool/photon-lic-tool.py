@@ -37,7 +37,10 @@ from argparse import ArgumentParser
 try:
     import license_expression
 except ImportError:
-    print("license_expression import failed, " + "do 'pip3 install license_expression'")
+    print(
+        "license_expression import failed, "
+        + "do 'pip3 install license_expression'"
+    )
     raise
 
 try:
@@ -115,7 +118,9 @@ def run_cmd(cmd, ignore_rc=False, quiet=False):
     if not quiet:
         print(f"RUNNING CMD: {cmd}")
 
-    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    result = subprocess.run(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
 
     if not ignore_rc and result.returncode != 0:
         err_exit(f"Failed to run command {cmd}\n: {result.stdout.decode()}")
@@ -132,7 +137,9 @@ def check_scancode_ver():
     lines = result.stdout.decode().split("\n")
     for line in lines:
         if "scancode" in line:
-            print("WARNING: scancode-toolkit may be out of date! Please update")
+            print(
+                "WARNING: scancode-toolkit may be out of date! Please update"
+            )
             print(line)
             return
     print("scancode-toolkit up to date")
@@ -306,14 +313,17 @@ def get_lic_exp_from_rule_file(rule_f_path=None):
 
 def trim_rules_for_key(key, rule_ignore_list, rule_ignore_lock):
     with rule_ignore_lock:
-        if not os.path.exists(tmp_rules_dir) or not os.path.isdir(tmp_rules_dir):
+        if not os.path.exists(tmp_rules_dir) or not os.path.isdir(
+            tmp_rules_dir
+        ):
             os.makedirs(tmp_rules_dir)
 
     for rule_file in os.listdir(rules_dir):
         lic_exp_line = get_lic_exp_from_rule_file(f"{rules_dir}/{rule_file}")
 
         spdx_ids = [
-            exp.strip(" \r\t\n()") for exp in re.split("AND|WITH|OR", lic_exp_line)
+            exp.strip(" \r\t\n()")
+            for exp in re.split("AND|WITH|OR", lic_exp_line)
         ]
         if key in spdx_ids:
             with rule_ignore_lock:
@@ -369,7 +379,9 @@ def extract_src_rpm(rpm_path=None):
 
     if spec_fn.startswith("linux"):
         src_rpm_basename = os.path.basename(rpm_path)
-        dist_tag = re.search("\.ph.*\.src", src_rpm_basename).group().split(".")[1]
+        dist_tag = (
+            re.search(r"\.ph.*\.src", src_rpm_basename).group().split(".")[1]
+        )
 
         rpm_build_cmds += ["--define", f"%dist .{dist_tag}"]
 
@@ -381,7 +393,9 @@ def extract_src_rpm(rpm_path=None):
     )
 
     if result.returncode != 0:
-        print(f"Failed to prep src rpm for {spec_fn}:\n{result.stdout.decode()}")
+        print(
+            f"Failed to prep src rpm for {spec_fn}:\n{result.stdout.decode()}"
+        )
         return None
 
     # extract any nested archives that weren't extracted by
@@ -418,10 +432,14 @@ def get_exceptions_list():
         else:
             retries -= 1
             if retries > 0:
-                pr_err("Failed to get exceptions list, retrying after delay...")
+                pr_err(
+                    "Failed to get exceptions list, retrying after delay..."
+                )
                 time.sleep(5)
             else:
-                err_exit("ERROR: Exhausted all retries, couldn't get exceptions list!")
+                err_exit(
+                    "ERROR: Exhausted all retries, couldn't get exceptions list!"
+                )
 
     with open(exceptions_json_loc, "r") as spdx_exceptions_json:
         exceptions_json = json.load(spdx_exceptions_json)
@@ -436,11 +454,15 @@ def get_exceptions_list():
 
 # cleans any ignorable SPDX IDs from the expression, such as standalone
 # exceptions or other license IDs in the ignore list like "LicenseRef-unknown-spdx"
-def cleanup_license_expression(ignore_list=None, exception_list=None, license_exp=None):
+def cleanup_license_expression(
+    ignore_list=None, exception_list=None, license_exp=None
+):
     if not license_exp:
         return None
 
-    lic_tree = license_tree.create_exp_tree(license_exp, exception_list, ignore_list)
+    lic_tree = license_tree.create_exp_tree(
+        license_exp, exception_list, ignore_list
+    )
     parsed_exp = license_tree.render_exp_tree(lic_tree)
 
     # remove duplicates - this returns a set
@@ -519,7 +541,11 @@ def extract_top_level_expressions(spdx_exp=None):
             paran_str = spdx_exp[start_pos:end_pos]
             if paran_str not in expressions:
                 expressions.append(paran_str)
-            spdx_exp = spdx_exp[:start_pos] + " " * len(paran_str) + spdx_exp[end_pos:]
+            spdx_exp = (
+                spdx_exp[:start_pos]
+                + " " * len(paran_str)
+                + spdx_exp[end_pos:]
+            )
         i += 1
 
     # Handle top level OR - whole expression should be concatenated
@@ -616,7 +642,9 @@ def parse_scan_yaml(yaml_fn=None, ignore_unofficial=True):
 
     # Cleanup extra parantheses, connectors, etc., from the final expression
     lic_str = cleanup_license_expression(
-        ignore_list=ignore_list, exception_list=exceptions_list, license_exp=lic_str
+        ignore_list=ignore_list,
+        exception_list=exceptions_list,
+        license_exp=lic_str,
     )
 
     return lic_str
@@ -716,7 +744,9 @@ def scan(args):
         restore_lic_db()
 
     # Produce full SPDX expression using scancode output results
-    spdx_exp = parse_scan_yaml(yaml_fn=yaml_fn, ignore_unofficial=ignore_unofficial)
+    spdx_exp = parse_scan_yaml(
+        yaml_fn=yaml_fn, ignore_unofficial=ignore_unofficial
+    )
 
     if args.yaml:
         if args.yaml.startswith("/"):
@@ -792,9 +822,9 @@ def read_license_from_file(file_path=None):
         err_exit(f"ERROR: {file_path} is empty!")
     elif len(lines) > 1:
         err_exit(
-                 f"ERROR: More than one line found in {file_path}.  "+
-                 "Tool expects only one line: License: <SPDX Expression>"
-                )
+            f"ERROR: More than one line found in {file_path}.  "
+            + "Tool expects only one line: License: <SPDX Expression>"
+        )
 
     if lines[0].startswith("License:"):
         license_expressions[file_path] = lines[0].split(":")[1].strip()
@@ -810,7 +840,6 @@ def validate(args):
     license_exp = ""
     bad_ids = ["unknown-spdx", "LicenseRef", "scancode"]
     spdx_licensing = license_expression.get_spdx_licensing()
-    spec_license_txt = None
     check_scancode_ver()
     errors = 0
 
@@ -838,7 +867,9 @@ def validate(args):
             # validation errors
             spdx_licensing.parse(license_exp, validate=True, strict=True)
         except Exception as e:
-            err_exit(f"Caught exception while attempting to validate license: {e}")
+            err_exit(
+                f"Caught exception while attempting to validate license: {e}"
+            )
 
         # Check for disallowed licenses
         for key in spdx_licensing.license_keys(license_exp):
