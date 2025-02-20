@@ -90,8 +90,14 @@ def create_exp_tree(exp=None, exception_list=[], ignore_list=[]):
         # Normal license ID, no paranthesis
         if len(exp_spl) > 1 and exp_spl[1] == "WITH":
             # if first field is a valid license ID, then check exception
-            if exp_spl[0] not in exception_list and exp_spl[0] not in ignore_list:
-                if exp_spl[2] in exception_list and exp_spl[2] not in ignore_list:
+            if (
+                exp_spl[0] not in exception_list
+                and exp_spl[0] not in ignore_list
+            ):
+                if (
+                    exp_spl[2] in exception_list
+                    and exp_spl[2] not in ignore_list
+                ):
                     left = LicNode(value=" ".join(exp_spl[0:3]))
                 else:
                     # ignore exception as it's not a proper exception or it's supposed to be ignored
@@ -100,7 +106,10 @@ def create_exp_tree(exp=None, exception_list=[], ignore_list=[]):
             rhs = " ".join(exp_spl[3:])
         else:
             # don't add standalone exceptions. It's ok to have a hole here
-            if exp_spl[0] not in ignore_list and exp_spl[0] not in exception_list:
+            if (
+                exp_spl[0] not in ignore_list
+                and exp_spl[0] not in exception_list
+            ):
                 left = LicNode(value=exp_spl[0])
 
             rhs = " ".join(exp_spl[1:])
