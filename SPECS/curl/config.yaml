@@ -1,7 +1,65 @@
 sources:
-- archive: curl-8.7.1.tar.xz
-  archive_sha512sum: 5bbde9d5648e9226f5490fa951690aaf159149345f3a315df2ba58b2468f3e59ca32e8a49734338afc861803a4f81caac6d642a4699b72c6310ebfb1f618aad2
-  skip_validation: true
+- archive: curl-8.12.0.tar.xz
+  archive_type: upstream
+  archive_sha512sum: ed35f0020541050ce387f4ba80f9e87562ececd99082da1bae85840dee81c49b86a4a55909e15fcbf4eb116106a796c29a9b2678dee11326f80db75992c6edc5
+  name: curl-8.12.0
+  version: "8.12.0"
+  url: https://curl.se/download/curl-8.12.0.tar.xz
+  repo_url: https://github.com/curl/curl
+  commit_id: 34cf9d54a46598c44938aa7598820484d7af7133
+  skip_list:
+    [
+      Makefile.in,
+      .gitignore,
+      tool_version.h,
+      curlver.h,
+      GIT-INFO.md,
+      .circleci,
+      .dir-locals.el,
+      .git-blame-ignore-revs,
+      .gitattributes,
+      .github,
+      .mailmap,
+      LICENSES,
+      README.md,
+      REUSE.toml,
+      SECURITY.md,
+      appveyor.sh,
+      appveyor.yml,
+      buildconf,
+      renovate.json,
+      curl_config.h.in,
+      libtool.m4,
+      ltoptions.m4,
+      ltsugar.m4,
+      ltversion.m4,
+      lt~obsolete.m4,
+      ciconfig.pl,
+      cijobs.pl,
+      contributors.sh,
+      contrithanks.sh,
+      delta,
+      installcheck.sh,
+      release-notes.pl,
+      singleuse.pl,
+      config.guess,
+      missing,
+      THANKS-filter,
+      adddocsref.pl,
+      aclocal.m4,
+      configure,
+      RELEASE-TOOLS.md,
+      tool_hugehelp.c,
+      config.sub,
+      libcurl-symbols.md,
+      Windows,
+      ltmain.sh,
+      install-sh,
+      depcomp,
+      compile,
+      CI.md
+    ]
+  missing: []
   spdx:
     package:
       detailed_description: 'The cURL package contains an utility and a library used

@@ -1,23 +1,17 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.7.1
-Release:        7%{?dist}
+Version:        8.12.0
+Release:        1%{?dist}
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
-%define sha512 %{name}=5bbde9d5648e9226f5490fa951690aaf159149345f3a315df2ba58b2468f3e59ca32e8a49734338afc861803a4f81caac6d642a4699b72c6310ebfb1f618aad2
+%define sha512 %{name}=ed35f0020541050ce387f4ba80f9e87562ececd99082da1bae85840dee81c49b86a4a55909e15fcbf4eb116106a796c29a9b2678dee11326f80db75992c6edc5
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0:        CVE-2024-6197.patch
-Patch1:        0001-CVE-2024-7264.patch
-Patch2:        0002-CVE-2024-7264.patch
-Patch3:        CVE-2024-9681_prep.patch
-Patch4:        CVE-2024-9681.patch
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
@@ -45,6 +39,8 @@ functions like streaming media.
 %package        devel
 Summary:        Libraries and header files for curl
 Requires:       %{name} = %{version}-%{release}
+Requires:       libssh2-devel >= 1.11.0
+Requires:       krb5-devel
 
 %description    devel
 Static libraries and header files for the support library for curl
@@ -72,6 +68,7 @@ This package contains minimal set of shared curl libraries.
     --with-ssl \
     --with-gssapi \
     --with-libssh2 \
+    --without-libpsl \
     --with-ca-bundle=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 %make_build
 
@@ -108,6 +105,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Mon Feb 17 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.12.0-1
+- Version upgrade
+- Fixes CVE-2024-8096,CVE-2024-11053,CVE-2025-0167
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.7.1-7
 - Release bump for SRP compliance
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 8.7.1-6
