@@ -3,7 +3,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        12.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
@@ -43,29 +43,49 @@ The clang-devel package contains libraries, header files and documentation for d
 %autosetup -n %{name}-%{version}.src -p1
 
 %build
-%cmake -G Ninja \
+# if we use a bigger value, we will hit OOM, so don't increase it
+# unless you are absolutely sure
+build_jobs="$(( ($(nproc)+1) / 2 ))"
+link_jobs="$(( (build_jobs + 1) / 2 ))"
+
+%ifarch aarch64
+[ "${build_jobs}" -gt 4 ] && build_jobs=4 || :
+%endif
+
+[ "${link_jobs}" -gt 2 ] && link_jobs=2 || :
+
+%{cmake} -G Ninja \
     -DLLVM_PARALLEL_LINK_JOBS=1 \
     -DCMAKE_INSTALL_PREFIX=%{_usr} \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
     -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS=-pipe \
+    -DCMAKE_CXX_FLAGS=-pipe \
     -Wno-dev
 
-%cmake_build
+# Build libclang-cpp.so first. This ensures that when libLLVM.so is linking, there
+# are no other compile jobs running. This will help reduce OOM errors on the
+# builders without having to artificially limit the number of concurrent jobs.
+%{cmake_build} --target libclang-cpp.so
+
+%{cmake_build}
 
 %install
-%cmake_install
-
-%ldconfig_scriptlets
+%{cmake_install}
 
 %if 0%{?with_check}
 %check
-cd build
-make clang-check %{?_smp_mflags}
+# deactivate security hardening for tests
+rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
+%{make_build} -C %{__cmake_builddir} check-llvm
 %endif
 
 %clean
 rm -rf %{buildroot}/*
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -83,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Thu Feb 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.0.0-2
+- Build instruction improvements to reduce resource consumption
 * Mon Nov 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-1
 - Upgrade to v12.0.0
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 11.0.1-3

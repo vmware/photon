@@ -4,7 +4,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        12.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -49,7 +49,18 @@ The libllvm package contains shared libraries for llvm
 %autosetup -n %{name}-%{version}.src -p1
 
 %build
-%cmake -G Ninja \
+# if we use a bigger value, we will hit OOM, so don't increase it
+# unless you are absolutely sure
+build_jobs="$(( ($(nproc)+1) / 2 ))"
+link_jobs="$(( (build_jobs + 1) / 2 ))"
+
+%ifarch aarch64
+[ "${build_jobs}" -gt 4 ] && build_jobs=4 || :
+%endif
+
+[ "${link_jobs}" -gt 2 ] && link_jobs=2 || :
+
+%{cmake} -G Ninja \
       -DCMAKE_INSTALL_PREFIX=%{_usr} \
       -DBUILD_SHARED_LIBS:BOOL=OFF \
       -DLLVM_PARALLEL_LINK_JOBS=1 \
@@ -59,26 +70,32 @@ The libllvm package contains shared libraries for llvm
       -DLLVM_TARGETS_TO_BUILD="host;AMDGPU;BPF" \
       -DLLVM_INCLUDE_GO_TESTS=No \
       -DLLVM_ENABLE_RTTI:BOOL=ON \
+      -DCMAKE_C_FLAGS=-pipe \
+      -DCMAKE_CXX_FLAGS=-pipe \
       -Wno-dev
 
-%cmake_build
+# Build libLLVM.so first. This ensures that when libLLVM.so is linking, there
+# are no other compile jobs running. This will help reduce OOM errors on the
+# builders without having to artificially limit the number of concurrent jobs.
+%{cmake_build} --target LLVM
+
+%{cmake_build}
 
 %install
-%cmake_install
-
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%{cmake_install}
 
 %if 0%{?with_check}
 %check
 # deactivate security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
-cd build
-make %{?_smp_mflags} check-llvm
+%{make_build} -C %{__cmake_builddir} check-llvm
 %endif
 
 %clean
 rm -rf %{buildroot}/*
+
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -107,6 +124,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+* Thu Feb 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.0.0-3
+- Build instruction improvements to reduce resource consumption
 * Sat Dec 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-2
 - Don't package libLLVM shared libraries
 * Mon Nov 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-1
