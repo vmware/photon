@@ -3,7 +3,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        15.0.7
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
@@ -43,46 +43,50 @@ The clang-devel package contains libraries, header files and documentation for d
 %autosetup -p1 -n %{name}-%{version}.src
 
 %build
-# LLVM_PARALLEL_LINK_JOBS=4 is chosen as a middle ground number
 # if we use a bigger value, we will hit OOM, so don't increase it
 # unless you are absolutely sure
+build_jobs="$(( ($(nproc)+1) / 2 ))"
+link_jobs="$(( (build_jobs + 1) / 2 ))"
 
 %ifarch aarch64
-%define build_concurrency 4
-%define link_concurrency 2
-%else
-%define build_concurrency $(nproc)
-%define link_concurrency 4
+[ "${build_jobs}" -gt 4 ] && build_jobs=4 || :
 %endif
 
-%cmake -G Ninja \
-    -DCMAKE_INSTALL_PREFIX=%{_usr} \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
-    -DLLVM_PARALLEL_LINK_JOBS=%{link_concurrency} \
-    -DLLVM_PARALLEL_COMPILE_JOBS=%{build_concurrency} \
-    -DBUILD_SHARED_LIBS=OFF \
-    -Wno-dev
+[ "${link_jobs}" -gt 2 ] && link_jobs=2 || :
 
-%cmake_build
+%{cmake} -G Ninja \
+  -DCMAKE_INSTALL_PREFIX=%{_usr} \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
+  -DLLVM_PARALLEL_LINK_JOBS=${link_jobs} \
+  -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs} \
+  -DBUILD_SHARED_LIBS=OFF \
+  -DCMAKE_C_FLAGS=-pipe \
+  -DCMAKE_CXX_FLAGS=-pipe \
+  -Wno-dev
+
+# Build libclang-cpp.so separately to avoid OOM errors.
+# This is to fix occasional OOM errors
+%{cmake_build} --target libclang-cpp.so
+
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 
 mkdir -p %{buildroot}%{python3_sitelib}
 mv %{buildroot}%{_libdir}/{libear,libscanbuild} %{buildroot}%{python3_sitelib}
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-
 %if 0%{?with_check}
 %check
-cd %{__cmake_builddir}
-make clang-check %{?_smp_mflags}
+%make_build -C %{__cmake_builddir} clang-check
 %endif
 
 %clean
 rm -rf %{buildroot}/*
+
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -102,6 +106,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/libscanbuild
 
 %changelog
+* Thu Feb 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.0.7-7
+- Build instruction improvements to reduce resource consumption
 * Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-6
 - Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-5

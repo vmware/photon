@@ -3,7 +3,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        15.0.7
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -54,34 +54,44 @@ The package contains the LLDB Python3 module.
 %autosetup -p1 -n %{name}-%{version}.src
 
 %build
-# LLVM_PARALLEL_LINK_JOBS=4 is chosen as a middle ground number
 # if we use a bigger value, we will hit OOM, so don't increase it
 # unless you are absolutely sure
+build_jobs="$(( ($(nproc)+1) / 2 ))"
+link_jobs="$(( (build_jobs + 1) / 2 ))"
 
-%cmake -G Ninja\
-      -DCMAKE_BUILD_TYPE=Release \
-      -DLLDB_PATH_TO_LLVM_BUILD=%{_prefix} \
-      -DLLDB_PATH_TO_CLANG_BUILD=%{_prefix} \
-      -DLLVM_DIR=%{_libdir}/cmake/llvm \
-      -DLLVM_BUILD_LLVM_DYLIB=ON \
-      -DLLDB_DISABLE_LIBEDIT:BOOL=ON \
-      -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-      -DLLDB_PYTHON_EXE_RELATIVE_PATH=%{python3} \
-      -DLLVM_PARALLEL_LINK_JOBS=4 \
-      -DLLVM_PARALLEL_COMPILE_JOBS=$(nproc)
+%ifarch aarch64
+[ "${build_jobs}" -gt 4 ] && build_jobs=4 || :
+%endif
 
-%cmake_build
+[ "${link_jobs}" -gt 2 ] && link_jobs=2 || :
+
+%{cmake} -G Ninja\
+  -DCMAKE_BUILD_TYPE=Release \
+  -DLLDB_PATH_TO_LLVM_BUILD=%{_prefix} \
+  -DLLDB_PATH_TO_CLANG_BUILD=%{_prefix} \
+  -DLLVM_DIR=%{_libdir}/cmake/llvm \
+  -DLLVM_BUILD_LLVM_DYLIB=ON \
+  -DLLDB_DISABLE_LIBEDIT:BOOL=ON \
+  -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+  -DLLDB_PYTHON_EXE_RELATIVE_PATH=%{python3} \
+  -DLLVM_PARALLEL_LINK_JOBS=${link_jobs} \
+  -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs} \
+  -DCMAKE_C_FLAGS=-pipe \
+  -DCMAKE_CXX_FLAGS=-pipe
+
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 
-#Remove bundled python-six files
+# Remove bundled python-six files
 rm -f %{buildroot}%{python3_sitelib}/six.*
-
-%ldconfig_scriptlets
 
 %clean
 rm -rf %{buildroot}/*
+
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -100,6 +110,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Thu Feb 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.0.7-8
+- Build instruction improvements to reduce resource consumption
 * Thu Mar 28 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-7
 - Bump version as a part of libxml2 upgrade
 * Tue Feb 20 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 15.0.7-6
