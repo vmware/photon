@@ -1,0 +1,29 @@
+From e0df6c4c984d564e9e40913727e916a6cd8f466e Mon Sep 17 00:00:00 2001
+From: Xiao Ni <xni@redhat.com>
+Date: Fri, 17 Jan 2025 15:15:40 +0800
+Subject: [PATCH] mdadm/raid6check: add xmalloc.h to raid6check.c
+
+It reports building error:
+raid6check.c:324:26: error: implicit declaration of function xmalloc
+
+Add xmalloc.h to raid6check.c file to fix this.
+
+Signed-off-by: Xiao Ni <xni@redhat.com>
+Link: https://lore.kernel.org/r/20250117071540.4094-1-xni@redhat.com
+Signed-off-by: Song Liu <song@kernel.org>
+---
+ raid6check.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/raid6check.c b/raid6check.c
+index 99477761..95533f7d 100644
+--- a/raid6check.c
++++ b/raid6check.c
+@@ -23,6 +23,7 @@
+  */
+ 
+ #include "mdadm.h"
++#include "xmalloc.h"
+ #include <stdint.h>
+ #include <sys/mman.h>
+ 
