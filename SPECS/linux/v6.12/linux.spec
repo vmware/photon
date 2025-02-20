@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -119,6 +119,8 @@ Patch4: 9p-trans_fd-extend-port-variable-to-u32.patch
 Patch5: vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch6: 0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Enable CGROUP Stat show for V1
+Patch7: 0001-cgroup-v1-cgroup_stat-support.patch
 
 # Expose Photon kernel macros to identify kernel flavor and version
 Patch9:  0001-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
@@ -855,6 +857,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Feb 20 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-2
+- Enable cgroup_v1 support for mem & cpuset control groups.
 * Tue Feb 04 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-1
 - Upgrade to version 6.12.x.
 * Thu Sep 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-2
