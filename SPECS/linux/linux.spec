@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.234
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -208,6 +208,15 @@ Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
 #Fix for CVE-2024-50125
 Patch122: 0001-Bluetooth-call-sock_hold-earlier-in-sco_conn_del.patch
 Patch123: 0002-Bluetooth-SCO-Fix-UAF-on-sco_sock_timeout.patch
+
+# Fix CVE-2024-26718
+Patch131: 0001-dm-crypt-dm-verity-disable-tasklets.patch
+
+# Fix CVE-2024-26669
+Patch132: 0001-net-sched-flower-Fix-chain-template-offload.patch
+
+# Fix CVE-2024-26668
+Patch133: 0001-netfilter-nft_limit-reject-configurations-that-cause.patch
 
 #Fix for CVE-2023-0597
 Patch136: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
@@ -1037,6 +1046,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Mar 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-9
+- Fix CVE-2024-26718, CVE-2024-26668, CVE-2024-26669
 * Fri Feb 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.234-8
 - CVE-2021-47489, CVE-2021-47265, CVE-2024-26830
 * Fri Feb 28 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-7

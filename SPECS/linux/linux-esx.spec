@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.234
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -213,6 +213,15 @@ Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
 Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
+
+# Fix CVE-2024-26718
+Patch131: 0001-dm-crypt-dm-verity-disable-tasklets.patch
+
+# Fix CVE-2024-26669
+Patch132: 0001-net-sched-flower-Fix-chain-template-offload.patch
+
+# Fix CVE-2024-26668
+Patch133: 0001-netfilter-nft_limit-reject-configurations-that-cause.patch
 
 #Fix for CVE-2023-0597
 Patch137: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
@@ -747,6 +756,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-9
+- Fix CVE-2024-26718, CVE-2024-26668, CVE-2024-26669
 * Fri Feb 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.234-8
 - CVE-2021-47489, CVE-2021-47265, CVE-2024-26830
 * Fri Feb 28 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-7
