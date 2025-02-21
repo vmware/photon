@@ -248,7 +248,7 @@ Commands
 
     def _download_source(self, srcdir, downloadedFile, sourceFileUrl):
         self._run(
-            srcdir, f"curl -k -L -o {downloadedFile} -f {sourceFileUrl}".split()
+            srcdir, f"curl -s -k -L -o {downloadedFile} -f {sourceFileUrl}".split()
         )
 
     def build(self):
@@ -425,6 +425,12 @@ Commands
                     files.append(source)
         return files
 
+    def _extractGem(self, downloadedFile, source, extractedDir):
+        self._run(extractedDir, f"tar xf {downloadedFile}")
+        path = f"{extractedDir}/{source.name}"
+        os.mkdir(path)
+        self._run(path, f"tar xf {extractedDir}/data.tar.gz")
+
     def _verifySingleSource(self, sourceFile, sourcesLocation):
         with tempfile.TemporaryDirectory() as tmpdir:
             extractedDir = f"{tmpdir}/extracted"
@@ -438,14 +444,18 @@ Commands
             # Download and extract source
             self._download_source(tmpdir, downloadedFile, sourceFile.url)
             # Extract the source
-            self._run(extractedDir, f"tar -xf {downloadedFile}".split())
-            self._run(projectDir, "git init .".split())
+            ext = os.path.splitext(downloadedFile)[1]
+            if ext != ".gem":
+                self._run(extractedDir, f"tar -xf {downloadedFile}".split())
+            else:
+                self._extractGem(downloadedFile, sourceFile, extractedDir)
+            self._run(projectDir, "git init -q .".split())
             self._run(
                 projectDir, f"git remote add origin {sourceFile.repo_url}".split()
             )
             self._run(
                 projectDir,
-                f"git -c advice.detachedHead=false fetch --depth 1 origin {sourceFile.commit_id}".split(),
+                f"git -c advice.detachedHead=false fetch --depth 1 -q origin {sourceFile.commit_id}".split(),
             )
             self._run(
                 projectDir,
@@ -496,6 +506,8 @@ Commands
         return f"uid.obj.comp.fileset(org='photon.source',name='{archive_name}',build_id='{build_id}')"
 
     def _run(self, cwd, cmd):
+        if isinstance(cmd, str):
+            cmd = cmd.split()
         subprocess.run(
             args=cmd,
             cwd=cwd,
