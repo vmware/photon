@@ -7,7 +7,7 @@ Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        24.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,7 +19,10 @@ Source0: https://files.pythonhosted.org/packages/6b/8b/0b16094553ecc680e43ded8f9
 Source1: license.txt
 %include %{SOURCE1}
 
+Source2: %{srcname}.conf
+
 Patch0: dummy-certifi.patch
+Patch1: exclude-None-versioned-packages.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -62,6 +65,8 @@ find %{buildroot}%{python3_sitelib} -name '*.exe' | xargs rm -vf
 mkdir -p %{buildroot}%{python_wheel_dir}
 install -p pyproject-wheeldir/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
 
+install -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{srcname}.conf
+
 %check
 %{py3_test}
 
@@ -72,6 +77,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,755)
 %{python3_sitelib}/*
 %{_bindir}/pip*
+%config(noreplace) %{_sysconfdir}/%{srcname}.conf
 
 %files wheel
 %defattr(-,root,root,755)
@@ -79,6 +85,9 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Sat Feb 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.3.1-2
+- Handle none versioned packages during pip3 list
+- Disable pip version checking
 * Wed Jan 22 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.3.1-1
 - Update pip to 24.3.1, fixes vendor package requests CVE-2024-35195
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.0-2

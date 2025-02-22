@@ -1,0 +1,44 @@
+From cf6a3a7f69640ab3ff5a08f7f2dfa7f6bdd6ddd4 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sat, 22 Feb 2025 17:04:22 +0530
+Subject: [PATCH] exclude None versioned packages
+
+Python packages upon removal leave out empty dirs at
+/usr/lib/python<vers>/site-packages and pip3 list shows None as version
+
+This has to be solved properly by ensuring proper removal of python
+packages. But for now, this should do it.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ src/pip/_internal/commands/list.py | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/pip/_internal/commands/list.py b/src/pip/_internal/commands/list.py
+index 849437024..85ba434c1 100644
+--- a/src/pip/_internal/commands/list.py
++++ b/src/pip/_internal/commands/list.py
+@@ -176,6 +176,12 @@ class ListCommand(IndexGroupCommand):
+         if options.excludes:
+             skip.update(canonicalize_name(n) for n in options.excludes)
+ 
++        def safe_version(pkg):
++            try:
++                return pkg.version
++            except Exception:
++                return None
++
+         packages: _ProcessedDists = [
+             cast("_DistWithLatestInfo", d)
+             for d in get_environment(options.path).iter_installed_distributions(
+@@ -185,6 +191,7 @@ class ListCommand(IndexGroupCommand):
+                 include_editables=options.include_editable,
+                 skip=skip,
+             )
++            if safe_version(d) is not None
+         ]
+ 
+         # get_not_required must be called firstly in order to find and
+-- 
+2.48.1
+

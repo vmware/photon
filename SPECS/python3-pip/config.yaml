@@ -1,7 +1,13 @@
 sources:
 - archive: pip-24.3.1.tar.gz
+  archive_type: upstream
   archive_sha512sum: 2fad7072473d67fa0dbfc2c060b1b4752ea1b0d021051ebef44a668e6c9c731a530b1afb38872fdbc2efec0598fae532e61a5ed545524875b51a3fe0a8d11d96
-  skip_validation: true
+  name: pip-24.3.1
+  version: "24.3.1"
+  repo_url: https://github.com/pypa/pip.git
+  url: https://files.pythonhosted.org/packages/f4/b1/b422acd212ad7eedddaf7981eee6e5de085154ff726459cf2da7c5a184c1/pip-24.3.1.tar.gz
+  commit_id: 05293b6b55eca86490b7c2944bcc558a56064f0d
+  missing: [urllib3.pyi, setup.cfg, reporters.pyi, .github, pkg_resources.pyi, resolvers.pyi, requests.pyi, news, tests, structs.pyi, .pre-commit-config.yaml, collections_abc.pyi, msgpack.pyi, __init__.pyi, tools, .readthedocs-custom-redirects.yml, pyproject_hooks.pyi, .mailmap, .gitattributes, typing_extensions.pyi, providers.pyi, pygments.pyi, .readthedocs.yml, PKG-INFO, .git-blame-ignore-revs, .gitignore, noxfile.py, distlib.pyi, pip.egg-info]
   spdx:
     package:
       detailed_description: 'Pip is the package installer for Python. You can use
