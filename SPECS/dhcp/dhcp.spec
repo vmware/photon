@@ -1,7 +1,7 @@
 Summary:      Dynamic host configuration protocol
 Name:         dhcp
 Version:      4.4.3
-Release:      4%{?dist}
+Release:      5%{?dist}
 Url:          http://isc.org/products/DHCP/
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
@@ -173,6 +173,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+* Tue Feb 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.4.3-5
+- Fix license
 * Thu Feb 13 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.4.3-4
 - Include /etc/dhcp/dhclient.d directory as part of dhcp-client
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.4.3-3

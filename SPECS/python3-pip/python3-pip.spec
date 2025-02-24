@@ -7,7 +7,7 @@ Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        24.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -85,6 +85,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Tue Feb 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.3.1-3
+- Fix license
 * Sat Feb 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.3.1-2
 - Handle none versioned packages during pip3 list
 - Disable pip version checking
