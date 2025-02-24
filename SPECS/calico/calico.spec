@@ -2,7 +2,7 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.26.4
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  calico=85a051cf938f771e9bf3173cc1806697b73b36d221053ad53ecf69afae0bfe8f9c0c6fac24de4b5f3e747b095ebf11e79d6358bd0e7a797a5144054010bb15b4
@@ -53,7 +53,7 @@ Calico Network Policy enables Calico to enforce network policy on top of Calico 
 %package -n     confd
 Summary:        confd is a lightweight configuration management tool
 Group:          Development/Tools
-Conflicts:      %{name}-confd <= 0.16.0-20
+Obsoletes:      %{name}-confd <= 0.16.0-20
 Provides:       %{name}-confd = %{version}-%{release}
 
 %description -n confd
@@ -141,6 +141,8 @@ cp -r confd/etc/ %{buildroot}%{_sysconfdir}
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
+* Mon Feb 24 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.26.4-8
+- Obsolete instead of Conflict calico-confd package
 * Thu Jan 09 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.26.4-7
 - Report missing go deps for SRP
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.26.4-6
