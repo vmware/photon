@@ -1,7 +1,7 @@
 Summary:        LightStep distributed tracing library for C++
 Name:           lightstep-tracer-cpp
 Version:        0.19
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 URL:            https://github.com/lightstep/lightstep-tracer-cpp
 Group:          Development/Tools
@@ -11,11 +11,8 @@ Distribution:   Photon
 Source0: https://github.com/lightstep/lightstep-tracer-cpp/releases/download/v0_19/%{name}-%{version}.tar.gz
 %define sha512 %{name}=a9f0e86843e5997e8c5d1aa05b58e7df59beea832531c78d1a42ab37087f1de4036762af03a2d3f6f461eea52503000e6822f355abcabdca04608ba99fb9a9db
 
-BuildRequires:  autoconf
-BuildRequires:  automake
 BuildRequires:  clang
 BuildRequires:  c-ares-devel
-BuildRequires:  gcc
 BuildRequires:  protobuf-devel
 
 Requires:       protobuf
@@ -40,14 +37,17 @@ protoc --cpp_out=. envoy_carrier.proto
 mv envoy_carrier.pb.h ../lightstep/
 mv envoy_carrier.pb.cc ../proto/
 popd
+
 pushd lightstep-tracer-common
 protoc --cpp_out=. collector.proto
 mv collector.pb.h ../src/c++11/lightstep/
 mv collector.pb.cc ../src/c++11/proto/
 popd
 
+%make_build
+
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -56,6 +56,8 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %{_libdir}/liblightstep_*
 
 %changelog
+* Mon Feb 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.19-7
+- Bump to fix libprotobuf link issue
 * Thu Jun 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.19-6
 - Bump version as a part of protobuf upgrade
 * Tue Nov 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.19-5
