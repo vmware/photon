@@ -1,17 +1,22 @@
+%define srcname paramiko
+
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        2.12.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.paramiko.org
 
 Source0: https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define sha512 paramiko=1bf325ffd393447cb90009d01dc1104d0d43a6acdd08cc6d28310063a649a333323748800dab119ab5e10833975e68f5f5702044fc247a2e8058122a5327f2c7
+%define sha512 %{srcname}=1bf325ffd393447cb90009d01dc1104d0d43a6acdd08cc6d28310063a649a333323748800dab119ab5e10833975e68f5f5702044fc247a2e8058122a5327f2c7
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2023-48795.patch
+Patch1: support-key-operations-in-openssl-fips-mode.patch
 
 BuildArch:      noarch
 
@@ -21,9 +26,11 @@ BuildRequires:  python3-pycryptodome
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+
 %if 0%{?with_check}
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pip
+BuildRequires:  python3-mock
 %endif
 
 Requires:       python3
@@ -32,13 +39,15 @@ Requires:       python3-cryptography
 Requires:       python3-PyNaCl
 Requires:       python3-bcrypt
 
-Patch0:         CVE-2023-48795.patch
-
 %description
-"Paramiko" is a combination of the esperanto words for "paranoid" and "friend". It's a module for Python 2.6+ that implements the SSH2 protocol for secure (encrypted and authenticated) connections to remote machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates signed by a powerful central authority.
+"Paramiko" is a combination of the esperanto words for "paranoid" and "friend".
+It's a module for Python 2.6+ that implements the SSH2 protocol for secure
+(encrypted and authenticated) connections to remote machines.
+Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates
+signed by a powerful central authority.
 
 %prep
-%autosetup -p1 -n paramiko-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
 %{py3_build}
@@ -47,7 +56,7 @@ Patch0:         CVE-2023-48795.patch
 %py3_install -- --single-version-externally-managed
 
 %check
-pip3 install mock pytest_relaxed PyNaCl bcrypt
+pip3 install pytest_relaxed PyNaCl bcrypt
 %{pytest}
 
 %clean
@@ -58,6 +67,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Mon Feb 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.12.0-8
+- Fix some operations while openssl fips is enabled
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.0-7
 - Release bump for SRP compliance
 * Mon Apr 15 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.0-6
