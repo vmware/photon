@@ -1,23 +1,28 @@
 sources:
-- archive: libxml2-2.12.6.tar.xz
-  archive_sha512sum: 19d6901c0f189813e8bd20ffdfbb29d8545ca30154d1f3cc82624d64e4db3cfbe8eef7e8ccc1e195289f1bf94bb50fefcf11a95badb0ddeb845b4e4ea5a819ac
-  skip_validation: true
+- archive: libxml2-2.12.10.tar.xz
+  archive_type: upstream
+  archive_sha512sum: 7bd04375321a99c9b7a82d6a72d9412ab45f958b923f1e2f75d9dfbb1a053eba3e0fd067a53753f9a343b4dcb2d9ab5cba894d4194a5f9fb7108f7c545224791
+  version: 2.12.10
+  name: libxml2-2.12.10
+  url: https://download.gnome.org/sources/libxml2/2.12/libxml2-2.12.10.tar.xz
+  repo_url: https://github.com/GNOME/libxml2
+  commit_id: 02d577715e1951cf114ca4e9adaf5605156c4f4c
+  skip_list: []
+  missing: ['customhtml.xsl', 'ltsugar.m4', 'xmltutorial.xml', '.gitignore', 'includestory.xml', '.gitattributes', 'missing', 'depcomp', 'genChRanges.py', 'libxml2.doap', 'compile', 'regexp.options', 'aclocal.m4', 'testOOMlib.h', 'fixup-tests.py', 'libxml2-xzlib.html', '.gitlab-ci', 'valid.options', 'ltmain.sh', 'schema.options', 'Makefile.in', 'chvalid.def', '.editorconfig', 'install-sh', 'ltversion.m4', 'xml.options', 'lt~obsolete.m4', 'config.h.in', 'ltoptions.m4', 'testOOMlib.c', 'configure', 'html.options', 'config.sub', 'customfo.xsl', 'py-compile', 'rngparser.c', 'MAINTAINERS.md', 'testOOM.c', 'xpath.options', 'uri.options', 'libtool.m4', 'xinclude.options', '.gitlab-ci.yml', 'config.guess']
   spdx:
     package:
       detailed_description: 'The libxml2 package contains libraries and utilities
         used for parsing XML files. '
       home_page: http://xmlsoft.org
-      license_concluded: GPL-3.0-or-later AND GPL-3.0-or-later WITH Libtool-exception
-        AND Latex2e-translated-notice AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND MIT AND CC-BY-SA-2.0 AND FSFAP AND FSFULLR AND GPL-1.0-or-later AND GPL-2.0-only
-        AND GPL-2.0-or-later AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND
-        GFDL-1.1-or-later AND ISC-Veillard AND FSFULLRWD AND GPL-3.0-or-later WITH
-        Autoconf-exception-generic-3.0
-      license_declared: GPL-3.0-or-later AND GPL-3.0-or-later WITH Libtool-exception
-        AND Latex2e-translated-notice AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND MIT AND CC-BY-SA-2.0 AND FSFAP AND FSFULLR AND GPL-1.0-or-later AND GPL-2.0-only
-        AND GPL-2.0-or-later AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND
-        GFDL-1.1-or-later AND ISC-Veillard AND FSFULLRWD AND GPL-3.0-or-later WITH
-        Autoconf-exception-generic-3.0
+      license_concluded: ISC-Veillard AND GPL-2.0-or-later AND MIT AND FSFULLR
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only AND
+        Latex2e-translated-notice AND FSFUL AND GFDL-1.1-or-later AND CC-BY-SA-2.0 AND X11 AND
+        GPL-2.0-or-later WITH Libtool-exception AND FSFULLRWD AND FSFAP AND GPL-1.0-or-later
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_declared: ISC-Veillard AND GPL-2.0-or-later AND MIT AND FSFULLR
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only AND
+        Latex2e-translated-notice AND FSFUL AND GFDL-1.1-or-later AND CC-BY-SA-2.0 AND X11 AND
+        GPL-2.0-or-later WITH Libtool-exception AND FSFULLRWD AND FSFAP AND GPL-1.0-or-later
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic
       short_summary: Libxml2
       supplier: 'Organization: Broadcom, Inc.'
