@@ -1,6 +1,6 @@
 Summary:        C++ xml parser.
 Name:           xerces-c
-Version:        3.2.4
+Version:        3.2.5
 Release:        1%{?dist}
 License:        Apache License
 URL:            http://xerces.apache.org
@@ -8,10 +8,10 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://mirror.jax.hugeserver.com/apache//xerces/c/3/sources/%{name}-%{version}.tar.xz
-%define sha512 xerces-c=4d58d25b59b4528ad1f2d60681ddd6d2a4dba945613cee9ce978605f006da03703ea85a1bd89f781eeb3ad4dbdadf485a310f29d4c07036b0322f0755f87fddf
+Source0: http://mirror.jax.hugeserver.com/apache//xerces/c/3/sources/%{name}-%{version}.tar.xz
+%define sha512 %{name}=77b80148b0a3dbb61af648e2571855d59040512dd0c739a892e8ac6a6d7ddbb43b49850c87c39fcf374f2c7658a9c795b3e3fcd4785efbc6226f831b938d5300
 
-Requires:       libstdc++
+Requires: libstdc++
 
 %description
 Xerces-C++ is a validating XML parser written in a portable subset of C++
@@ -28,14 +28,16 @@ This package contains development headers and static library for xml parser.
 %autosetup -p1
 
 %build
-%configure
-make %{?_smp_mflags}
+%configure \
+  --disable-static
+
+%make_build
 
 %install
 %make_install %{?_smp_mflags}
 
 %check
-make %{?_smp_mflags} check
+%make_build check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -49,9 +51,10 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/*.a
 
 %changelog
+* Wed Feb 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.5-1
+- Upgrade to v3.2.5 to fix CVE-2024-23807
 * Tue Oct 25 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.4-1
 - Updated to version 3.2.4
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.2.3-2

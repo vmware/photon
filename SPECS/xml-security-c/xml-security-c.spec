@@ -1,7 +1,7 @@
 Summary:    C++ XML Signature and Encryption library.
 Name:       xml-security-c
 Version:    2.0.4
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache Software License
 URL:        https://santuario.apache.org/cindex.html
 Group:      Applications/System
@@ -22,7 +22,7 @@ BuildRequires:  automake
 BuildRequires:  gcc
 BuildRequires:  libtool
 BuildRequires:  openssl-devel
-BuildRequires:  xerces-c-devel >= 3.1
+BuildRequires:  xerces-c-devel
 
 %description
 XML-Security-C is the C++ XML Signature and Encryption library from the Apache Software Foundation.
@@ -32,6 +32,7 @@ It is used for all XML Signature and Encryption processing in OpenSAML and Shibb
 Summary:    XML Security C library headers
 Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
+
 %description devel
 This package contains development headers and static library for xml security.
 
@@ -46,15 +47,16 @@ autoreconf -fiv
     --without-nss \
     --with-openssl
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %check
 ./xsec/xsec-xtest
 
-%ldconfig_scriptlets
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -68,6 +70,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_includedir}/*
 
 %changelog
+* Wed Feb 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.4-3
+- Bump version as part of xerces-c upgrade
 * Tue Oct 25 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.4-2
 - Bump version as part of xerces-c upgrade
 * Wed Jan 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.4-1
