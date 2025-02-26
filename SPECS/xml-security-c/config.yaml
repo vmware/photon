@@ -1,7 +1,14 @@
 sources:
-- archive: xml-security-c-2.0.4.tar.bz2
+- archive: xml-security-c-2.0.4.tar.gz
+  archive_type: upstream
   archive_sha512sum: a27d76686cc97f7ac60101c562b04b1091b026ac71ed557284cfd91f5b722db97bdc04d7cab65f932c4e34022d15911b0a7cbc7e4c7f3ec1a5860c3f298e1c66
-  skip_validation: true
+  version: "2.0.4"
+  name: santuario-cpp-2.0.4
+  url: https://github.com/apache/santuario-cpp/archive/refs/tags/2.0.4.tar.gz
+  repo_url: https://github.com/apache/santuario-cpp.git
+  commit_id: e764babdbdea6342157c2f41551b8a408886da89
+  skip_list: []
+  missing: [lt~obsolete.m4, ltsugar.m4, libtool.m4, config.h.in, Makefile.in, ltversion.m4, configure, aclocal.m4, build-aux, ltoptions.m4]
   spdx:
     package:
       detailed_description: 'XML-Security-C is the C++ XML Signature and Encryption

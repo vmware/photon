@@ -1,21 +1,21 @@
-%define xerces_c_maj_ver 3.2
+%define xerces_c_maj_ver 3.3
 
 Summary:        C++ xml parser.
 Name:           xerces-c
-Version:        3.2.4
-Release:        2%{?dist}
+Version:        3.3.0
+Release:        1%{?dist}
 URL:            http://xerces.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://mirror.jax.hugeserver.com/apache//xerces/c/3/sources/%{name}-%{version}.tar.xz
-%define sha512 %{name}=4d58d25b59b4528ad1f2d60681ddd6d2a4dba945613cee9ce978605f006da03703ea85a1bd89f781eeb3ad4dbdadf485a310f29d4c07036b0322f0755f87fddf
+Source0: https://dlcdn.apache.org/xerces/c/3/sources/%{name}-%{version}.tar.xz
+%define sha512 %{name}=8d4dc27a6c97d04703e60a5473163e2616ae68f0917ce11a621a60221970ab599c5f3085eb07a70e545394022ef5029997028e9b5747d4048c541ff75fe92ec1
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Requires:       libstdc++
+Requires: libstdc++
 
 %description
 Xerces-C++ is a validating XML parser written in a portable subset of C++
@@ -32,7 +32,9 @@ This package contains development headers and static library for xml parser.
 %autosetup -p1
 
 %build
-%configure
+%configure \
+  --disable-static
+
 %make_build
 
 %install
@@ -40,7 +42,7 @@ This package contains development headers and static library for xml parser.
 
 %if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+%make_build check
 %endif
 
 %post   -p /sbin/ldconfig
@@ -55,10 +57,11 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/*.a
 %{_libdir}/lib%{name}.so
 
 %changelog
+* Wed Feb 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-1
+- Upgrade to v3.3.0
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.2.4-2
 - Release bump for SRP compliance
 * Tue Oct 25 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.4-1

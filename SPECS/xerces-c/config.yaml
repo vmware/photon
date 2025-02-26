@@ -1,7 +1,15 @@
 sources:
-- archive: xerces-c-3.2.4.tar.xz
+- archive: xerces-c-3.3.0.tar.xz
+  archive_type: upstream
   archive_sha512sum: 4d58d25b59b4528ad1f2d60681ddd6d2a4dba945613cee9ce978605f006da03703ea85a1bd89f781eeb3ad4dbdadf485a310f29d4c07036b0322f0755f87fddf
   skip_validation: true
+  name: xerces-c-3.3.0
+  version: "3.3.0"
+  url: https://dlcdn.apache.org//xerces/c/3/sources/xerces-c-3.3.0.tar.xz
+  repo_url: https://github.com/apache/xerces-c.git
+  commit_id: 31b4b3a06105dcd607db9fda9d1883ad7e489bfe
+  skip_list: [run.bat]
+  missing: [Makefile.in, faqs-3.html, graphics, XSerializerTest2.trs, senumval-3.html, releases_plan.html, ThreadTest12.trs, sax2count-3.html, ThreadTest11.log, MemHandlerTest.trs, ThreadTest8.trs, InitTermTest3.trs, ThreadTest8.log, migrate-archive-3.html, .gitignore, faq-contributing-3.html, DOMTypeInfoTest.log, XSerializerTest4.log, XSerializerTest5.log, faq-distrib-3.html, feedback.html, releases.html, XSerializerTest4.trs, redirect-3.html, program-dom-3.html, ThreadTest14.log, aclocal.m4, ThreadTest13.trs, ThreadTest11.trs, ThreadTest2.log, ltmain.sh, install-sh, depcomp, Char16Test.trs, domcount-3.html, bug-report.html, DOMTraversalTest.trs, RangeTest.log, download.html, stdinparse-3.html, DOMTypeInfoTest.trs, ThreadTest6.trs, faq-build-3.html, program-3.html, ThreadTest1.trs, InitTermTest1.trs, schema-3.html, UtilTests, lt~obsolete.m4, XSerializerTest2.log, MemHandlerTest1.trs, ThreadTest15.log, sax2print-3.html, ThreadTest10.trs, releases_archive.html, ThreadTest.trs, ltoptions.m4, InitTermTest2.trs, install-3.html, saxcount-3.html, compile, InitTermTest1.log, faq-other-3.html, ThreadTest.log, source-repository.html, psviwriter-3.html, pparse-3.html, MemHandlerTest2.trs, .appveyor.yml, api-3.html, InitTermTest.trs, ParserTest, RangeTest.trs, applications.html, enumval-3.html, resources, XSerializerTest3.log, xinclude-3.html, program-sax2-3.html, XSerializerTest3.trs, missing, scmprint-3.html, ThreadTest15.trs, ThreadTest5.trs, migrate-3.html, config.guess, InitTermTest2.log, XSerializerTest.log, ThreadTest4.log, .gitattributes, configure, XSerializerTest1.log, secadv.html, ltversion.m4, ThreadTest12.log, ThreadTest1.log, DOMTest.trs, ThreadTest7.log, ThreadTest2.trs, InitTermTest3.log, ThreadTest9.trs, XSerializerTest.trs, ThreadTest7.trs, ltsugar.m4, DOMTest.log, ThreadTest6.log, DOMTraversalTest.log, mailing-lists.html, InitTermTest.log, ci-appveyor-setup, MemHandlerTest1.log, config.sub, ThreadTest13.log, XSerializerTest1.trs, createdoc-3.html, MemHandlerTest.log, charter.html, saxprint-3.html, MemHandlerTest2.log, index.html, program-sax-3.html, config.h.in, XSValueTest.trs, ThreadTest3.log, memparse-3.html, DOMMemTest.log, build-3.html, ThreadTest14.trs, Char16Test.log, test-driver, apiDocs-3, DOMMemTest.trs, XSerializerTest5.trs, ThreadTest3.trs, samples-3.html, domprint-3.html, libtool.m4, ThreadTest10.log, XSValueTest.log, CVE-2018-1311.txt.asc, program-others-3.html, ThreadTest9.log, ci-travis, ThreadTest5.log, ThreadTest4.trs, faq-parse-3.html]
   spdx:
     package:
       detailed_description: 'Xerces-C++ is a validating XML parser written in a portable

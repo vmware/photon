@@ -1,14 +1,17 @@
 Summary:        C++ XML Signature and Encryption library.
 Name:           xml-security-c
 Version:        2.0.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://santuario.apache.org/cindex.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://www.apache.org/dyn/closer.lua/santuario/c-library/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=a27d76686cc97f7ac60101c562b04b1091b026ac71ed557284cfd91f5b722db97bdc04d7cab65f932c4e34022d15911b0a7cbc7e4c7f3ec1a5860c3f298e1c66
+# You can download from other mirrors as well
+# https://archive.apache.org/dist/santuario/c-library/%{name}-%{version}.tar.bz2
+# For SRP compliance using git tag tarball here
+Source0: https://github.com/apache/santuario-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=58eadcf8b7472faa3faaef0788fb3815a52f5f537134213f2ff35916957d94982e27dbcd4109d58158c155b11915c6b0daa2f0271d1727113e4592338d499f22
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -24,7 +27,7 @@ BuildRequires:  automake
 BuildRequires:  gcc
 BuildRequires:  libtool
 BuildRequires:  openssl-devel
-BuildRequires:  xerces-c-devel >= 3.1
+BuildRequires:  xerces-c-devel
 
 %description
 XML-Security-C is the C++ XML Signature and Encryption library from the Apache Software Foundation.
@@ -34,29 +37,31 @@ It is used for all XML Signature and Encryption processing in OpenSAML and Shibb
 Summary:    XML Security C library headers
 Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
+
 %description devel
 This package contains development headers and static library for xml security.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n santuario-cpp-%{version}
 
 %build
 autoreconf -fiv
 %configure \
-        --disable-debug \
-        --disable-static \
-        --without-nss \
-        --with-openssl
+    --disable-debug \
+    --disable-static \
+    --without-nss \
+    --with-openssl
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %check
 ./xsec/xsec-xtest
 
-%ldconfig_scriptlets
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -71,6 +76,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{_libdir}/libxml-security-c.la
 
 %changelog
+* Wed Feb 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.4-4
+- Bump version as part of xerces-c upgrade
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.0.4-3
 - Release bump for SRP compliance
 * Tue Oct 25 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.4-2
