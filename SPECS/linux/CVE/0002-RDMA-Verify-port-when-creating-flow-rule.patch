@@ -1,0 +1,89 @@
+From 414e5da44c3864a767a0f6cf7deb14c9751d15cf Mon Sep 17 00:00:00 2001
+From: Maor Gottlieb <maorg@nvidia.com>
+Date: Wed, 26 Feb 2025 08:50:57 +0000
+Subject: [PATCH 2/2] RDMA: Verify port when creating flow rule
+
+commit 2adcb4c5a52a2623cd2b43efa7041e74d19f3a5e upstream.
+
+Validate port value provided by the user and with that remove no longer
+needed validation by the driver.  The missing check in the mlx5_ib driver
+could cause to the below oops.
+
+Call trace:
+  _create_flow_rule+0x2d4/0xf28 [mlx5_ib]
+  mlx5_ib_create_flow+0x2d0/0x5b0 [mlx5_ib]
+  ib_uverbs_ex_create_flow+0x4cc/0x624 [ib_uverbs]
+  ib_uverbs_handler_UVERBS_METHOD_INVOKE_WRITE+0xd4/0x150 [ib_uverbs]
+  ib_uverbs_cmd_verbs.isra.7+0xb28/0xc50 [ib_uverbs]
+  ib_uverbs_ioctl+0x158/0x1d0 [ib_uverbs]
+  do_vfs_ioctl+0xd0/0xaf0
+  ksys_ioctl+0x84/0xb4
+  __arm64_sys_ioctl+0x28/0xc4
+  el0_svc_common.constprop.3+0xa4/0x254
+  el0_svc_handler+0x84/0xa0
+  el0_svc+0x10/0x26c
+ Code: b9401260 f9615681 51000400 8b001c20 (f9403c1a)
+
+Fixes: 436f2ad05a0b ("IB/core: Export ib_create/destroy_flow through uverbs")
+Link: https://lore.kernel.org/r/faad30dc5219a01727f47db3dc2f029d07c82c00.1623309971.git.leonro@nvidia.com
+Reviewed-by: Mark Bloch <markb@mellanox.com>
+Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ drivers/infiniband/core/uverbs_cmd.c | 5 +++++
+ drivers/infiniband/hw/mlx4/main.c    | 3 ---
+ drivers/infiniband/hw/mlx5/fs.c      | 5 ++---
+ 3 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/infiniband/core/uverbs_cmd.c b/drivers/infiniband/core/uverbs_cmd.c
+index 6658de58b..ac7de7760 100644
+--- a/drivers/infiniband/core/uverbs_cmd.c
++++ b/drivers/infiniband/core/uverbs_cmd.c
+@@ -3241,6 +3241,11 @@ static int ib_uverbs_ex_create_flow(struct uverbs_attr_bundle *attrs)
+ 		goto err_free_attr;
+ 	}
+ 
++	if (!rdma_is_port_valid(uobj->context->device, cmd.flow_attr.port)) {
++		err = -EINVAL;
++		goto err_uobj;
++	}
++
+ 	qp = uobj_get_obj_read(qp, UVERBS_OBJECT_QP, cmd.qp_handle, attrs);
+ 	if (!qp) {
+ 		err = -EINVAL;
+diff --git a/drivers/infiniband/hw/mlx4/main.c b/drivers/infiniband/hw/mlx4/main.c
+index 4affbcf8f..a8a988200 100644
+--- a/drivers/infiniband/hw/mlx4/main.c
++++ b/drivers/infiniband/hw/mlx4/main.c
+@@ -1696,9 +1696,6 @@ static struct ib_flow *mlx4_ib_create_flow(struct ib_qp *qp,
+ 	struct mlx4_dev *dev = (to_mdev(qp->device))->dev;
+ 	int is_bonded = mlx4_is_bonded(dev);
+ 
+-	if (!rdma_is_port_valid(qp->device, flow_attr->port))
+-		return ERR_PTR(-EINVAL);
+-
+ 	if (flow_attr->flags & ~IB_FLOW_ATTR_FLAGS_DONT_TRAP)
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 
+diff --git a/drivers/infiniband/hw/mlx5/fs.c b/drivers/infiniband/hw/mlx5/fs.c
+index 0404e6f22..0d5b88b0b 100644
+--- a/drivers/infiniband/hw/mlx5/fs.c
++++ b/drivers/infiniband/hw/mlx5/fs.c
+@@ -1194,9 +1194,8 @@ static struct ib_flow *mlx5_ib_create_flow(struct ib_qp *qp,
+ 		goto free_ucmd;
+ 	}
+ 
+-	if (flow_attr->port > dev->num_ports ||
+-	    (flow_attr->flags &
+-	     ~(IB_FLOW_ATTR_FLAGS_DONT_TRAP | IB_FLOW_ATTR_FLAGS_EGRESS))) {
++	if (flow_attr->flags &
++	    ~(IB_FLOW_ATTR_FLAGS_DONT_TRAP | IB_FLOW_ATTR_FLAGS_EGRESS)) {
+ 		err = -EINVAL;
+ 		goto free_ucmd;
+ 	}
+-- 
+2.39.4
+

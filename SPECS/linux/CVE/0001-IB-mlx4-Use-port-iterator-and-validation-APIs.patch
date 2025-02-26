@@ -1,0 +1,58 @@
+From 158de35deade97d0a05eb397111832dd51277562 Mon Sep 17 00:00:00 2001
+From: Parav Pandit <parav@nvidia.com>
+Date: Wed, 27 Jan 2021 17:00:09 +0200
+Subject: [PATCH 1/2] IB/mlx4: Use port iterator and validation APIs
+
+commit 6504c772551e809b4cc21fa720d6bba703d5c199 upstream.
+
+Use IB core provided routine to check if the port is valid or not and to
+iterate over IB ports.
+
+Link: https://lore.kernel.org/r/20210127150010.1876121-10-leon@kernel.org
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ drivers/infiniband/hw/mlx4/main.c  | 2 +-
+ drivers/infiniband/hw/mlx4/sysfs.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/infiniband/hw/mlx4/main.c b/drivers/infiniband/hw/mlx4/main.c
+index c62cdd645..4affbcf8f 100644
+--- a/drivers/infiniband/hw/mlx4/main.c
++++ b/drivers/infiniband/hw/mlx4/main.c
+@@ -1696,7 +1696,7 @@ static struct ib_flow *mlx4_ib_create_flow(struct ib_qp *qp,
+ 	struct mlx4_dev *dev = (to_mdev(qp->device))->dev;
+ 	int is_bonded = mlx4_is_bonded(dev);
+ 
+-	if (flow_attr->port < 1 || flow_attr->port > qp->device->phys_port_cnt)
++	if (!rdma_is_port_valid(qp->device, flow_attr->port))
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	if (flow_attr->flags & ~IB_FLOW_ATTR_FLAGS_DONT_TRAP)
+diff --git a/drivers/infiniband/hw/mlx4/sysfs.c b/drivers/infiniband/hw/mlx4/sysfs.c
+index 6c3a23ee3..fff1e46f6 100644
+--- a/drivers/infiniband/hw/mlx4/sysfs.c
++++ b/drivers/infiniband/hw/mlx4/sysfs.c
+@@ -808,7 +808,7 @@ static void unregister_pkey_tree(struct mlx4_ib_dev *device)
+ 
+ int mlx4_ib_device_register_sysfs(struct mlx4_ib_dev *dev)
+ {
+-	int i;
++	unsigned int i;
+ 	int ret = 0;
+ 
+ 	if (!mlx4_is_master(dev->dev))
+@@ -827,7 +827,7 @@ int mlx4_ib_device_register_sysfs(struct mlx4_ib_dev *dev)
+ 		goto err_ports;
+ 	}
+ 
+-	for (i = 1; i <= dev->ib_dev.phys_port_cnt; ++i) {
++	rdma_for_each_port(&dev->ib_dev, i) {
+ 		ret = add_port_entries(dev, i);
+ 		if (ret)
+ 			goto err_add_entries;
+-- 
+2.39.4
+

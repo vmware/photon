@@ -1,0 +1,105 @@
+From b4f5cce3be4afda249d84bf06569959a30ec299c Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Wed, 26 Feb 2025 07:54:28 +0000
+Subject: [PATCH] drm/amdgpu: Fix even more out of bound writes from debugfs
+
+From: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
+
+commit 3f4e54bd312d3dafb59daf2b97ffa08abebe60f5 upstream.
+
+CVE-2021-42327 was fixed by:
+
+commit f23750b5b3d98653b31d4469592935ef6364ad67
+Author: Thelford Williams <tdwilliamsiv@gmail.com>
+Date:   Wed Oct 13 16:04:13 2021 -0400
+
+    drm/amdgpu: fix out of bounds write
+
+but amdgpu_dm_debugfs.c contains more of the same issue so fix the
+remaining ones.
+
+v2:
+	* Add missing fix in dp_max_bpc_write (Harry Wentland)
+
+Fixes: 918698d5c2b5 ("drm/amd/display: Return the number of bytes parsed than allocated")
+Signed-off-by: Patrik Jakobsson <pjakobsson@suse.de>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Ajay: Modified to apply on v5.10.y]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ .../drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c  | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
+index 32dbd2a27..6914738f0 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
+@@ -424,7 +424,7 @@ static ssize_t dp_phy_settings_write(struct file *f, const char __user *buf,
+ 	if (!wr_buf)
+ 		return -ENOSPC;
+ 
+-	if (parse_write_buffer_into_params(wr_buf, size,
++	if (parse_write_buffer_into_params(wr_buf, wr_buf_size,
+ 					   (long *)param, buf,
+ 					   max_param_num,
+ 					   &param_nums)) {
+@@ -576,7 +576,7 @@ static ssize_t dp_phy_test_pattern_debugfs_write(struct file *f, const char __us
+ 	if (!wr_buf)
+ 		return -ENOSPC;
+ 
+-	if (parse_write_buffer_into_params(wr_buf, size,
++	if (parse_write_buffer_into_params(wr_buf, wr_buf_size,
+ 					   (long *)param, buf,
+ 					   max_param_num,
+ 					   &param_nums)) {
+@@ -1091,7 +1091,7 @@ static ssize_t dp_trigger_hotplug(struct file *f, const char __user *buf,
+ 		return -ENOSPC;
+ 	}
+ 
+-	if (parse_write_buffer_into_params(wr_buf, size,
++	if (parse_write_buffer_into_params(wr_buf, wr_buf_size,
+ 						(long *)param, buf,
+ 						max_param_num,
+ 						&param_nums)) {
+@@ -1272,7 +1272,7 @@ static ssize_t dp_dsc_clock_en_write(struct file *f, const char __user *buf,
+ 		return -ENOSPC;
+ 	}
+ 
+-	if (parse_write_buffer_into_params(wr_buf, size,
++	if (parse_write_buffer_into_params(wr_buf, wr_buf_size,
+ 					    (long *)param, buf,
+ 					    max_param_num,
+ 					    &param_nums)) {
+@@ -1426,7 +1426,7 @@ static ssize_t dp_dsc_slice_width_write(struct file *f, const char __user *buf,
+ 		return -ENOSPC;
+ 	}
+ 
+-	if (parse_write_buffer_into_params(wr_buf, size,
++	if (parse_write_buffer_into_params(wr_buf, wr_buf_size,
+ 					    (long *)param, buf,
+ 					    max_param_num,
+ 					    &param_nums)) {
+@@ -1580,7 +1580,7 @@ static ssize_t dp_dsc_slice_height_write(struct file *f, const char __user *buf,
+ 		return -ENOSPC;
+ 	}
+ 
+-	if (parse_write_buffer_into_params(wr_buf, size,
++	if (parse_write_buffer_into_params(wr_buf, wr_buf_size,
+ 					    (long *)param, buf,
+ 					    max_param_num,
+ 					    &param_nums)) {
+@@ -1727,7 +1727,7 @@ static ssize_t dp_dsc_bits_per_pixel_write(struct file *f, const char __user *bu
+ 		return -ENOSPC;
+ 	}
+ 
+-	if (parse_write_buffer_into_params(wr_buf, size,
++	if (parse_write_buffer_into_params(wr_buf, wr_buf_size,
+ 					    (long *)param, buf,
+ 					    max_param_num,
+ 					    &param_nums)) {
+-- 
+2.39.4
+

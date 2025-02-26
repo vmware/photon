@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.234
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -136,6 +136,16 @@ Patch109: 0003-mm_hugetlb_use_hugetlb_pte_stable_in_migration_race_check.patch
 
 # Fix for CVE-2024-50256
 Patch110:  0001-netfilter-nf_reject_ipv6-fix-potential-crash-in-nf_s.patch
+
+# Fix for CVE-2021-47489
+Patch111:  0001-drm-amdgpu-Fix-even-more-out-of-bound-writes-from-de.patch
+
+# Fix for CVE-2021-47265
+Patch112:  0001-IB-mlx4-Use-port-iterator-and-validation-APIs.patch
+Patch113:  0002-RDMA-Verify-port-when-creating-flow-rule.patch
+
+# Fix for CVE-2024-26830
+Patch114: 0001-i40e-Do-not-allow-untrusted-VF-to-remove-administrat.patch
 
 # Fix for CVE-2022-0500
 Patch115: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
@@ -646,6 +656,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Feb 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.234-8
+- CVE-2021-47489, CVE-2021-47265, CVE-2024-26830
 * Fri Feb 28 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-7
 - Fixes CVE-2025-21703 and CVE-2025-21690
 * Tue Feb 18 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.234-6

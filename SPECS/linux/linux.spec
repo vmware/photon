@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.234
-Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -184,6 +184,16 @@ Patch108: 0003-mm_hugetlb_use_hugetlb_pte_stable_in_migration_race_check.patch
 
 # Fix for CVE-2024-50256
 Patch109:  0001-netfilter-nf_reject_ipv6-fix-potential-crash-in-nf_s.patch
+
+# Fix for CVE-2021-47489
+Patch110:  0001-drm-amdgpu-Fix-even-more-out-of-bound-writes-from-de.patch
+
+# Fix for CVE-2021-47265
+Patch111:  0001-IB-mlx4-Use-port-iterator-and-validation-APIs.patch
+Patch112:  0002-RDMA-Verify-port-when-creating-flow-rule.patch
+
+# Fix for CVE-2024-26830
+Patch113: 0001-i40e-Do-not-allow-untrusted-VF-to-remove-administrat.patch
 
 # Fix for CVE-2022-0500
 Patch114: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
@@ -1027,6 +1037,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Feb 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.234-8
+- CVE-2021-47489, CVE-2021-47265, CVE-2024-26830
 * Fri Feb 28 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-7
 - Fixes CVE-2025-21703 and CVE-2025-21690
 * Tue Feb 18 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.234-6
