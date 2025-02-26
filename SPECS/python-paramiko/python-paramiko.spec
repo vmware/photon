@@ -1,7 +1,7 @@
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        2.10.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -10,6 +10,9 @@ URL:            http://www.paramiko.org
 
 Source0: https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
 %define sha512 paramiko=e1fce2ad33ee2942b519458d53497671e66d4777c23877954b135cf9bb8ec43357156147c7e012956ccf6198de800835a617b541a4b0faf54df00f936128514b
+
+Patch0: CVE-2023-48795.patch
+Patch1: support-key-operations-in-openssl-fips-mode.patch
 
 BuildArch:      noarch
 
@@ -25,8 +28,6 @@ Requires:       python3-ecdsa > 0.11
 Requires:       python3-cryptography
 Requires:       python3-PyNaCl
 Requires:       python3-bcrypt
-
-Patch0:         CVE-2023-48795.patch
 
 %description
 "Paramiko" is a combination of the esperanto words for "paranoid" and "friend". It's a module for Python 2.6+ that implements the SSH2 protocol for secure (encrypted and authenticated) connections to remote machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates signed by a powerful central authority.
@@ -53,6 +54,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Feb 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.10.3-7
+- Fix some operations while openssl fips is enabled
 * Mon Apr 15 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.10.3-6
 - Bump to compile with python3-pycryptodome v3.20.0
 * Fri Dec 22 2023 Mukul Sikka <msikka@vmware.com> 2.10.3-5
