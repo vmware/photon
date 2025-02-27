@@ -1,4 +1,4 @@
-From 2bbbeddf5aab33dc0c614bfd5ab71bf28525ebb1 Mon Sep 17 00:00:00 2001
+From 5a471f4e7799eb76e0f94f15e5eefdc4ae52bdde Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Wed, 25 Aug 2021 19:48:43 +0530
 Subject: [PATCH 2/9] Change default policy
@@ -12,7 +12,7 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tools/ds-identify b/tools/ds-identify
-index e00b05e..e4abd64 100755
+index ac0f82f5e..cf40fbba6 100755
 --- a/tools/ds-identify
 +++ b/tools/ds-identify
 @@ -100,7 +100,7 @@ DI_MAIN=${DI_MAIN:-main}
@@ -25,5 +25,5 @@ index e00b05e..e4abd64 100755
  DI_DMI_BOARD_NAME=""
  DI_DMI_CHASSIS_ASSET_TAG=""
 -- 
-2.47.1
+2.48.1
 

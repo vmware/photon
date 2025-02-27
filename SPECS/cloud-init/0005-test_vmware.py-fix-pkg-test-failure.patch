@@ -1,4 +1,4 @@
-From 95880b9c5f2d67d5cb5cd5471d0fae8f0709cb63 Mon Sep 17 00:00:00 2001
+From cd73809b3e53414b187ef8b054749a57c2b94995 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Tue, 14 Mar 2023 14:49:58 +0530
 Subject: [PATCH 5/9] test_vmware.py: fix pkg test failure
@@ -9,7 +9,7 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tests/unittests/sources/test_vmware.py b/tests/unittests/sources/test_vmware.py
-index cfeff6d..22754f5 100644
+index cfeff6d53..22754f590 100644
 --- a/tests/unittests/sources/test_vmware.py
 +++ b/tests/unittests/sources/test_vmware.py
 @@ -728,7 +728,7 @@ class TestDataSourceVMwareGuestInfo_InvalidPlatform(FilesystemMockingTestCase):
@@ -22,5 +22,5 @@ index cfeff6d..22754f5 100644
          ret = ds.get_data()
          self.assertFalse(ret)
 -- 
-2.47.1
+2.48.1
 

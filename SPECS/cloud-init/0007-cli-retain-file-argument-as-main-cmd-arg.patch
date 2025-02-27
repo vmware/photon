@@ -1,4 +1,4 @@
-From 58bad6050b26c74be0181c79e6e8a6b2e6dc3513 Mon Sep 17 00:00:00 2001
+From a560812d82baf42525ae8df3b1cc01622d69c525 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Thu, 5 Dec 2024 10:44:48 +0530
 Subject: [PATCH 7/9] cli-retain-file-argument-as-main-cmd-arg
@@ -25,7 +25,7 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  2 files changed, 21 insertions(+), 1 deletion(-)
 
 diff --git a/cloudinit/cmd/main.py b/cloudinit/cmd/main.py
-index d1ff6ba..38c2b9f 100644
+index 207b97cf9..9a5dda9cc 100644
 --- a/cloudinit/cmd/main.py
 +++ b/cloudinit/cmd/main.py
 @@ -127,6 +127,12 @@ def extract_fns(args):
@@ -41,7 +41,7 @@ index d1ff6ba..38c2b9f 100644
      if args.files:
          for fh in args.files:
              # The realpath is more useful in logging
-@@ -1043,6 +1049,17 @@ def main(sysv_args=None):
+@@ -1052,6 +1058,17 @@ def main(sysv_args=None):
          help="Show additional pre-action logging (default: %(default)s).",
          default=False,
      )
@@ -60,7 +60,7 @@ index d1ff6ba..38c2b9f 100644
          "--force",
          action="store_true",
 diff --git a/tests/unittests/cmd/test_main.py b/tests/unittests/cmd/test_main.py
-index aef747e..aa9f4d0 100644
+index ab5a73bd5..160c4a82e 100644
 --- a/tests/unittests/cmd/test_main.py
 +++ b/tests/unittests/cmd/test_main.py
 @@ -14,7 +14,7 @@ from cloudinit.cmd import main
@@ -72,7 +72,7 @@ index aef747e..aa9f4d0 100644
  )
  
  
-@@ -108,6 +108,7 @@ class TestMain:
+@@ -121,6 +121,7 @@ class TestMain:
              files = None
          cmdargs = MyArgs(
              debug=False,
@@ -80,7 +80,7 @@ index aef747e..aa9f4d0 100644
              files=files,
              force=False,
              local=False,
-@@ -144,6 +145,7 @@ class TestMain:
+@@ -157,6 +158,7 @@ class TestMain:
          write_file(cloud_cfg_file, safeyaml.dumps(cfg))
          cmdargs = MyArgs(
              debug=False,
@@ -88,7 +88,7 @@ index aef747e..aa9f4d0 100644
              files=None,
              force=False,
              local=False,
-@@ -340,6 +342,7 @@ class TestMain:
+@@ -355,6 +357,7 @@ class TestMain:
          write_file(cloud_cfg_file, safeyaml.dumps(cfg))
          cmdargs = MyArgs(
              debug=False,
@@ -97,5 +97,5 @@ index aef747e..aa9f4d0 100644
              force=False,
              local=False,
 -- 
-2.47.1
+2.48.1
 

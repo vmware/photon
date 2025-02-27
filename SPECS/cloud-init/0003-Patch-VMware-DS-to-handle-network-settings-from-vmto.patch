@@ -1,4 +1,4 @@
-From 445b50b76e97d54957286dd9262b059966958a10 Mon Sep 17 00:00:00 2001
+From 9ed9768981a22b83d5847f70c2d2eb14cd91c057 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Thu, 17 Feb 2022 11:47:22 +0530
 Subject: [PATCH 3/9] Patch VMware DS to handle network settings from vmtoolsd
@@ -10,7 +10,7 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  1 file changed, 139 insertions(+), 3 deletions(-)
 
 diff --git a/cloudinit/sources/DataSourceVMware.py b/cloudinit/sources/DataSourceVMware.py
-index 0e328cf..9da47c9 100644
+index d69f36731..0e6625233 100644
 --- a/cloudinit/sources/DataSourceVMware.py
 +++ b/cloudinit/sources/DataSourceVMware.py
 @@ -31,6 +31,7 @@ from cloudinit import atomic_helper, dmi, net, netinfo, sources, util
@@ -212,5 +212,5 @@ index 0e328cf..9da47c9 100644
          (stdout, stderr) = rpctool_fn(
              rpctool, "info-get " + get_guestinfo_key_name(key)
 -- 
-2.47.1
+2.48.1
 

@@ -1,4 +1,4 @@
-From ca4ad9508645ade3b68521dd8d3130121a1e63a1 Mon Sep 17 00:00:00 2001
+From d852cc98e6a930886f649b1bac2d2ac54d210f27 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Wed, 25 Aug 2021 19:14:01 +0530
 Subject: [PATCH 4/9] Add default DS list & few other changes to cloud.cfg
@@ -14,7 +14,7 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  1 file changed, 9 insertions(+)
 
 diff --git a/config/cloud.cfg.tmpl b/config/cloud.cfg.tmpl
-index 82a7e0f..7942bc0 100644
+index 82a7e0fe5..7942bc02b 100644
 --- a/config/cloud.cfg.tmpl
 +++ b/config/cloud.cfg.tmpl
 @@ -87,12 +87,21 @@ apt:
@@ -40,5 +40,5 @@ index 82a7e0f..7942bc0 100644
  {% if variant == "amazon" %}
  # Amazon Linux relies on ec2-net-utils for network configuration
 -- 
-2.47.1
+2.48.1
 
