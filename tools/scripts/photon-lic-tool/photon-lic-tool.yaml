@@ -6,7 +6,7 @@ license_ignore_list:
 # Taken from https://github-vcf.devops.broadcom.net/vcf/srp-policy-controls
 # from data/legal/osc/license_family_to_license_map/data.json other_non_permissive
 disallowed_licenses:
-    - Abstyles License
+    - Abstyles
     - AFL-2.0
     - Aladdin
     - CC-BY-NC-1.0
@@ -33,7 +33,6 @@ disallowed_licenses:
     - Elastic License
     - Facebook BSD License with Patent Provision
     - H2 License
-    - Ms-LPL
     - Oracle Binary Code License Agreement
     - Oracle Technology License for Oracle Java SE
     - Other Non-Permissive License
@@ -42,10 +41,29 @@ disallowed_licenses:
     - PolyForm-Shield-1.0.0
     - PolyForm-Small-Business-1.0.0
     - Sleepycat
-    - SSPL
+    - SSPL-1.0
     - Sun Binary Code License Agreement
     - Frameworx-1.0
     - gnuplot
     - MS-LPL
     - ODbL-1.0
     - OGDL-Taiwan-1.0
+    - Netscape Public License v1.1
+
+# Redis cache options (OPTIONAL)
+redis_host:
+redis_port:
+# TTL: One year (seconds)
+redis_ttl: 31536000
+
+# Set if default to no trimming of the license DB before scanning.
+# Basically a default value for the --no_trim option.
+# Useful if license DB is pre-trimmed once, and no trimming is needed
+# for many subsequent scans
+no_trimming: "False"
+
+# MD5 checksums of files which are known to fail the scanner
+# These files will be skipped at scan time
+known_failures:
+    # falco-0.36.2/x86_64-vmware-linux/njson-prefix/src/v3.3.0.tar.gz-extract/json-3.3.0/benchmarks/data/jeopardy/jeopardy.json
+    - 2075398fa049b1c00223b2279ca5281d
