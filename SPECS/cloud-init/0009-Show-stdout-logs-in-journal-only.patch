@@ -1,4 +1,4 @@
-From 9fb4f076cf464d477a4b2373a49cc5cb026bd329 Mon Sep 17 00:00:00 2001
+From 94f51f74f862ce96d9d333c6a980405208d688b4 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Mon, 10 Jun 2024 11:05:50 +0530
 Subject: [PATCH 9/9] Show stdout logs in journal only
@@ -12,7 +12,7 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  4 files changed, 4 insertions(+), 5 deletions(-)
 
 diff --git a/systemd/cloud-config.service b/systemd/cloud-config.service
-index 79ff733..bc798bc 100644
+index 79ff733a4..bc798bcc7 100644
 --- a/systemd/cloud-config.service
 +++ b/systemd/cloud-config.service
 @@ -14,7 +14,7 @@ RemainAfterExit=yes
@@ -25,11 +25,11 @@ index 79ff733..bc798bc 100644
  [Install]
  WantedBy=cloud-init.target
 diff --git a/systemd/cloud-final.service b/systemd/cloud-final.service
-index 1489eb3..5f49079 100644
+index 28dbe1127..760da62fc 100644
 --- a/systemd/cloud-final.service
 +++ b/systemd/cloud-final.service
-@@ -19,7 +19,7 @@ KillMode=process
- TasksMax=infinity
+@@ -18,7 +18,7 @@ TasksMax=infinity
+ KillMode=process
  
  # Output needs to appear in instance console output
 -StandardOutput=journal+console
@@ -38,7 +38,7 @@ index 1489eb3..5f49079 100644
  [Install]
  WantedBy=cloud-init.target
 diff --git a/systemd/cloud-init-local.service.tmpl b/systemd/cloud-init-local.service.tmpl
-index 1f2128a..ad96b66 100644
+index 1f2128afa..ad96b6677 100644
 --- a/systemd/cloud-init-local.service.tmpl
 +++ b/systemd/cloud-init-local.service.tmpl
 @@ -30,8 +30,7 @@ ExecStart=/usr/bin/cloud-init init --local
@@ -52,7 +52,7 @@ index 1f2128a..ad96b66 100644
  [Install]
  WantedBy=cloud-init.target
 diff --git a/systemd/cloud-init.service.tmpl b/systemd/cloud-init.service.tmpl
-index 9395443..35d1a06 100644
+index 939544313..35d1a06fd 100644
 --- a/systemd/cloud-init.service.tmpl
 +++ b/systemd/cloud-init.service.tmpl
 @@ -50,7 +50,7 @@ RemainAfterExit=yes
@@ -65,5 +65,5 @@ index 9395443..35d1a06 100644
  [Install]
  WantedBy=cloud-init.target
 -- 
-2.47.1
+2.48.1
 

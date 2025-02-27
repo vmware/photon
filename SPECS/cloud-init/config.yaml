@@ -1,7 +1,14 @@
 sources:
-- archive: cloud-init-24.4.tar.gz
+- archive: cloud-init-25.1.tar.gz
+  archive_type: upstream
   archive_sha512sum: df42fb0c97aba37599e3c9431e1dfffc0a3c0ce6d639fd9a980fe0da190c998da3130ab65e3288eecd193967dbaad41aac3c0040244cf6036db9584a3c87538d
-  skip_validation: true
+  name: "cloud-init-25.1"
+  version: 25.1
+  url: https://github.com/canonical/cloud-init/archive/refs/tags/25.1.tar.gz
+  repo_url: https://github.com/canonical/cloud-init.git
+  commit_id: 9dfa068353b2d6477276ac675faf4fc5e046b5dc
+  skip: []
+  missing_list: []
   spdx:
     package:
       detailed_description: 'Cloud-init is a set of init scripts for cloud instances.  Cloud
