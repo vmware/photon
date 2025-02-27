@@ -32,6 +32,7 @@ import signal
 import json
 import requests
 import time
+import scancode_config
 from argparse import ArgumentParser
 
 try:
@@ -69,6 +70,7 @@ db_dir = f"{site.getsitepackages()[0]}/licensedcode/data/licenses"
 rules_dir = f"{site.getsitepackages()[0]}/licensedcode/data/rules/"
 rpm_install_root = f"{ph_scan_tool_dir}/rpmbuild"
 rpm_build_root = f"{rpm_install_root}/usr/src/photon"
+sc_toolkit_cicd_ver = "32.2.1"
 
 ignore_list = []
 disallowed_licenses = []
@@ -132,16 +134,13 @@ def run_cmd(cmd, ignore_rc=False, quiet=False):
 # it is important to have an updated license DB
 def check_scancode_ver():
     print("Checking scancode-toolkit version before run...")
-    result = run_cmd("pip list -o")
+    sc_version = scancode_config.__version__
 
-    lines = result.stdout.decode().split("\n")
-    for line in lines:
-        if "scancode" in line:
-            print(
-                "WARNING: scancode-toolkit may be out of date! Please update"
-            )
-            print(line)
-            return
+    if sc_version != sc_toolkit_cicd_ver:
+        err_exit("scancode-toolkit version does not match CI/CD version!\n" +
+                 f"Local version: {sc_version}\n" +
+                 f"CI/CD version: {sc_toolkit_cicd_ver}\n")
+
     print("scancode-toolkit up to date")
 
 
@@ -699,6 +698,10 @@ def scan(args):
         else:
             # if not an archive, just use the whole default scan dir
             scan_dir = ph_scan_dir
+
+        # extract any latent archives which are not yet extracted
+        run_cmd(f"extractcode {scan_dir}", ignore_rc=True)
+
     else:
         scan_dir = input_file
 
@@ -849,6 +852,8 @@ def validate(args):
     # read from stdin
     elif args.i:
         license_expressions["stdin"] = args.i
+    else:
+        err_exit("License expression must be provided!")
 
     for license_exp in license_expressions:
         print(f"Validating license for {license_exp}")
