@@ -1,14 +1,14 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.2.9
-Release:        3%{?dist}
+Version:        4.2.11
+Release:        1%{?dist}
 URL:            http://www.wireshark.org
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512  %{name}=6ad9318549ab60794c967a071a267e9642e97bb52289570e36c8221e6e160bafb346f789ad879ae1a87c0789ce3352b6a795a5a2ccf723891615a0b8c62eb668
+%define sha512  %{name}=de4a067402f8f2e72024f32e5ee1549e3691bf80f092d1b3eb55cdbdc6aace2253cae1938ce52bc4c9eeb2cd9208bc16b4b0cf73edfc87e7cd70c620a74a9ff1
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -101,6 +101,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/lib*.so
 
 %changelog
+* Wed Feb 26 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.11-1
+- Fix CVE-2025-1492
 * Thu Jan 09 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.9-3
 - Release bump for SRP compliance
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.2.9-2
