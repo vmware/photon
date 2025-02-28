@@ -1,7 +1,7 @@
 Summary:        Photon release files
 Name:           photon-release
 Version:        5.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -79,6 +79,8 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(0644,-,-) %{_sysconfdir}/issue.net
 
 %changelog
+* Fri Feb 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-6
+- Add combined short option support to lsb_release
 * Thu Nov 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-5
 - Fix file and directory permissions
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.0-4

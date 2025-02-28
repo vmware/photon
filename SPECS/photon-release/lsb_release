@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Author: Shreenidhi Shedi <sshedi@vmware.com>
 # Brief: lsb_release implementation in bash
 
 EXIT_STATUS=0
@@ -9,9 +8,8 @@ ERROR_PROGRAM=2
 
 MSG_RESULT=""
 
-Usage()
-{
-  cat << EOF
+Usage() {
+  echo -n "
 Distribution information.
 
 Usage: lsb_release [options]
@@ -24,37 +22,61 @@ Options:
   -c, --codename     show code name of this distribution
   -a, --all          show all of the above information
   -s, --short        show requested information in short format
-EOF
+" >&2
 
-exit ${EXIT_STATUS}
+  exit ${EXIT_STATUS}
 }
 
-EnhancedGetopt()
-{
+EnhancedGetopt() {
   NB_ARG=""
+  local i=
+
   while [ $# -gt 0 ]; do
     case "$1" in
-      -a|--all) SHOW_ALL="y"; NB_ARG="y"; shift;;
-      -c|--codename) SHOW_CODENAME="y"; NB_ARG="y"; shift;;
-      -d|--description) SHOW_DESCR="y"; NB_ARG="y"; shift;;
-      -i|--id) SHOW_ID="y"; NB_ARG="y"; shift;;
-      -r|--release) SHOW_REL="y"; NB_ARG="y"; shift;;
-      -s|--short) ARG_S="y"; shift;;
-      -h|--help) Usage;;
-      --) shift; break;;
-      *)  EXIT_STATUS=${ERROR_USER}
-        Usage;;
+      -a|--all) SHOW_ALL="y"; NB_ARG="y"; shift ;;
+      -c|--codename) SHOW_CODENAME="y"; NB_ARG="y"; shift ;;
+      -d|--description) SHOW_DESCR="y"; NB_ARG="y"; shift ;;
+      -i|--id) SHOW_ID="y"; NB_ARG="y"; shift ;;
+      -r|--release) SHOW_REL="y"; NB_ARG="y"; shift ;;
+      -s|--short) ARG_S="y"; shift ;;
+      -h|--help) Usage ;;
+      --) shift; break ;;
+      -[!-]*)
+        for ((i = 1; i < ${#1}; i++)); do
+          case "${1:i:1}" in
+            a) SHOW_ALL="y"; NB_ARG="y" ;;
+            c) SHOW_CODENAME="y"; NB_ARG="y" ;;
+            d) SHOW_DESCR="y"; NB_ARG="y" ;;
+            i) SHOW_ID="y"; NB_ARG="y" ;;
+            r) SHOW_REL="y"; NB_ARG="y" ;;
+            s) ARG_S="y" ;;
+            h) Usage ;;
+            *)
+              echo "Invalid option: -${1:i:1}" >&2
+              EXIT_STATUS=${ERROR_USER}; Usage ;;
+          esac
+        done
+        shift
+        ;;
+      *)
+        echo "Invalid option: $1" >&2
+        EXIT_STATUS=${ERROR_USER}; Usage ;;
     esac
   done
 }
 
-GetLSBInfo()
-{
-  source "/etc/lsb-release" || exit ${ERROR_PROGRAM}
+GetLSBInfo() {
+  local lsb_rel_fn="/etc/lsb-release"
+
+  if [ ! -f "${lsb_rel_fn}" ]; then
+    echo "ERROR: '${lsb_rel_fn}' does not exist ..." >&2
+    exit ${ERROR_PROGRAM}
+  fi
+
+  source "${lsb_rel_fn}" || exit ${ERROR_PROGRAM}
 }
 
-GetDistribInfo()
-{
+GetDistribInfo() {
   local MSG_NA="n/a\n"
 
   [ -n "${SHOW_DESCR}" ] && [ -z "$DISTRIB_DESCRIPTION" ] && DISTRIB_DESCRIPTION="${MSG_NA}"
@@ -63,8 +85,7 @@ GetDistribInfo()
   [ -n "${SHOW_CODENAME}" ] && [ -z "$DISTRIB_CODENAME" ] && DISTRIB_CODENAME="${MSG_NA}"
 }
 
-DisplayID()
-{
+DisplayID() {
   if [ -z "${ARG_S}" ]; then
     MSG_RESULT+="Distributor ID:\t${DISTRIB_ID}\n"
   else
@@ -72,8 +93,7 @@ DisplayID()
   fi
 }
 
-DisplayDescription()
-{
+DisplayDescription() {
   if [ -z "${ARG_S}" ]; then
     MSG_RESULT+="Description:\t${DISTRIB_DESCRIPTION}\n"
   else
@@ -81,8 +101,7 @@ DisplayDescription()
   fi
 }
 
-DisplayRelease()
-{
+DisplayRelease() {
   if [ -z "${ARG_S}" ]; then
     MSG_RESULT+="Release:\t${DISTRIB_RELEASE}\n"
   else
@@ -90,8 +109,7 @@ DisplayRelease()
   fi
 }
 
-DisplayCodename()
-{
+DisplayCodename() {
   if [ -z "${ARG_S}" ]; then
     MSG_RESULT+="Codename:\t${DISTRIB_CODENAME}\n"
   else
@@ -99,8 +117,7 @@ DisplayCodename()
   fi
 }
 
-main()
-{
+main() {
   if [ -z "$1" ]; then
     SHOW_ALL="y"
   else
