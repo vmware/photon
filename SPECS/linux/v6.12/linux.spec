@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -187,8 +187,8 @@ Patch56: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 
 # Secure Boot and Kernel Lockdown
 Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
-#Patch59: 0002-Add-.sbat-section.patch
-#Patch60: 0003-Verify-SBAT-on-kexec.patch
+Patch59: 0002-Add-.sbat-section.patch
+Patch60: 0003-Verify-SBAT-on-kexec.patch
 %endif
 
 #Secure:
@@ -876,6 +876,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Mar 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.12.1-9
+- Include SBAT and kexec patches
 * Wed Mar 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.1-8
 - Enable hmac(sha384) self-test
 * Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.12.1-7
