@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.6.28
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -129,7 +129,7 @@ Patch55: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 # Secure Boot and Kernel Lockdown
 Patch56: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
-#Patch57: 0002-Add-.sbat-section.patch
+Patch57: 0002-Add-.sbat-section.patch
 # NOTE: linux-esx does not support kexec, omitting SBAT verify logic.
 # CONFIG_SECURITY_SBAT_VERIFY=y
 # Patch58: 0003-Verify-SBAT-on-kexec.patch
@@ -451,6 +451,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Mar 19 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.6.28-6
+- Include SBAT section in kernel image
 * Tue Mar 18 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.6.28-5
 - Update canister binary v6.6.30-2
 * Thu Mar 13 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-4

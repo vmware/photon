@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.6.30
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -171,8 +171,8 @@ Patch57: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 
 # Secure Boot and Kernel Lockdown
 Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
-#Patch59: 0002-Add-.sbat-section.patch
-#Patch60: 0003-Verify-SBAT-on-kexec.patch
+Patch59: 0002-Add-.sbat-section.patch
+Patch60: 0003-Verify-SBAT-on-kexec.patch
 %endif
 
 #Secure:
@@ -866,6 +866,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Mar 19 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.6.30-5
+- Include SBAT and kexec patches
 * Tue Mar 18 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.6.30-4
 - Update canister binary v6.6.30-2
 * Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.6.30-3

@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.6.30
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -129,11 +129,8 @@ Patch57: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Secure Boot and Kernel Lockdown
 Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
-# Disabling sbat patches
-%if 0
 Patch59: 0002-Add-.sbat-section.patch
 Patch60: 0003-Verify-SBAT-on-kexec.patch
-%endif
 
 # SEV-ES, TDX
 %ifarch x86_64
@@ -280,11 +277,7 @@ stalld to use eBPF based backend.
 %autopatch -p1 -m0 -M24
 
 #VMW
-%autopatch -p1 -m55 -M58
-# Disabling sbat patches
-%if 0
-%autopatch -p1 -m59 -M60
-%endif
+%autopatch -p1 -m55 -M60
 
 #SEV-ES, TDX
 %ifarch x86_64
@@ -478,6 +471,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Mar 19 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.6.30-4
+- Include SBAT and kexec patches
 * Tue Mar 18 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.6.30-3
 - Update canister binary v6.6.30-2
 * Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.6.30-2
