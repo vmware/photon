@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    20%{?dist}
+Release:    21%{?dist}
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -113,6 +113,7 @@ Patch1679: 0069-kern-partition-Add-sanity-check-after-grub_strtoul-c.patch
 Patch1680: 0070-kern-misc-Add-sanity-check-after-grub_strtoul-call.patch
 Patch1681: 0071-loader-i386-linux-Cast-left-shift-to-grub_uint32_t.patch
 Patch1682: 0072-loader-i386-bsd-Use-safe-math-to-avoid-underflow.patch
+Patch1683: 0073-fs-ext2-Rework-out-of-bounds-read-for-inline-and-ext.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
@@ -346,6 +347,9 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Fri Feb 28 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-21
+- Include a fix to fs/ext2 code to address initramfs unpack failure caused by previous commit
+- https: //bugzilla.redhat.com/show_bug.cgi?id=2346804
 * Sun Feb 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-20
 - Misc CVE fixes
 - CVE-2024-45774 CVE-2024-45775 CVE-2024-45776 CVE-2024-45777 CVE-2024-45778 CVE-2024-45779 CVE-2024-45780
