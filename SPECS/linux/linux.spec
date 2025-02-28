@@ -46,7 +46,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.141
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -410,6 +410,16 @@ Patch717: 0017-rps_cpus-skip-receive-packets-queuing-to-only-housek.patch
 Patch718: 0001-rcutree-Adding-rcu_max_blimit-rcutree-param.patch
 Patch719: 0018-Introduce-xfrm_dst-cache-mechanism-to-reuse-xfrm_dst.patch
 
+# Report guest crash to vmware hypervisor
+%ifarch aarch64
+Patch1000: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
+%endif
+
+%ifarch x86_64
+Patch1000: 0001-x86-vmware-mark-hypercalls-as-volatile.patch
+Patch1001: 0002-x86-report-guest-crash-to-vmware-hypervisor.patch
+%endif
+
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 
@@ -636,6 +646,9 @@ The kernel fips-canister
 
 #HCX-Patches
 %autopatch -p1 -m701 -M719
+
+# Report guest crash to vmware hypervisor
+%autopatch -p1 -m1000 -M1001
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
@@ -998,6 +1011,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jun 23 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-4
+- Report guest crash to vmware hypervisor
 * Mon Jun 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-3
 - Fix CVE-2024-53068, CVE-2024-53168, CVE-2024-53179
 * Wed Jun 18 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.141-2

@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.141
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -322,6 +322,16 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 Patch605: 0001-sev-snp-parse-MP-tables.patch
 %endif
 
+# Report guest crash to vmware hypervisor
+%ifarch aarch64
+Patch1000: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
+%endif
+
+%ifarch x86_64
+Patch1000: 0001-x86-vmware-mark-hypercalls-as-volatile.patch
+Patch1001: 0002-x86-esx-report-guest-crash-to-vmware-hypervisor.patch
+%endif
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -437,6 +447,8 @@ The Linux package contains the Linux kernel doc files
 # SEV on VMware
 %autopatch -p1 -m600 -M609
 %endif
+
+%autopatch -p1 -m1000 -M1001
 
 %ifarch x86_64
 cp -a ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
@@ -600,6 +612,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jun 23 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-4
+- Report guest crash to vmware hypervisor
 * Mon Jun 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-3
 - Fix CVE-2024-53068, CVE-2024-53168, CVE-2024-53179
 * Wed Jun 18 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.141-2

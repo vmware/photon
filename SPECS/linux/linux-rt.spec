@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.141
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -272,6 +272,12 @@ Patch1012: 0001-Revert-crypto-api-Add-crypto_tfm_get.patch
 # stalld eBPF plugin patches
 Patch1500: 0001-Add-eBPF-object-interface-and-build-it.patch
 
+# Report guest crash to vmware hypervisor
+%ifarch x86_64
+Patch2000: 0001-x86-vmware-mark-hypercalls-as-volatile.patch
+Patch2001: 0002-x86-report-guest-crash-to-vmware-hypervisor.patch
+%endif
+
 BuildArch:      x86_64
 
 BuildRequires:  bc
@@ -388,6 +394,8 @@ stalld to use eBPF based backend.
 pushd ../stalld-v%{stalld_version}/
 %autopatch -p1 -m1500 -M1500
 popd
+
+%autopatch -p1 -m2000 -M2001
 
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
@@ -582,6 +590,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Thu Jun 26 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-3
+- Report guest crash to vmware hypervisor
 * Mon Jun 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-2
 - Fix CVE-2024-53168, CVE-2024-53179
 * Mon Jun 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-1
