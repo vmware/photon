@@ -1,0 +1,64 @@
+From 9776515738ad234ffe00af42a70653af98334b28 Mon Sep 17 00:00:00 2001
+From: Easwar Hariharan <eahariha@linux.microsoft.com>
+Date: Tue, 7 Jan 2025 17:28:40 +0000
+Subject: [PATCH] scsi: storvsc: Ratelimit warning logs to prevent VM denial of
+ service
+
+commit d2138eab8cde61e0e6f62d0713e45202e8457d6d upstream.
+
+If there's a persistent error in the hypervisor, the SCSI warning for
+failed I/O can flood the kernel log and max out CPU utilization,
+preventing troubleshooting from the VM side. Ratelimit the warning so
+it doesn't DoS the VM.
+
+Closes: https://github.com/microsoft/WSL/issues/9173
+Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
+Link: https://lore.kernel.org/r/20250107-eahariha-ratelimit-storvsc-v1-1-7fc193d1f2b0@linux.microsoft.com
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Guru: Backported to 5.10.y branch. Replaced one extra storvsc_log to
+ storvsc_log_ratelimited ]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ drivers/scsi/storvsc_drv.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
+index 7dc916ce0c3c..272e6af01762 100644
+--- a/drivers/scsi/storvsc_drv.c
++++ b/drivers/scsi/storvsc_drv.c
+@@ -189,6 +189,12 @@ struct vmscsi_win8_extension {
+ 	u32 queue_sort_ey;
+ } __packed;
+ 
++#define storvsc_log_ratelimited(dev, level, fmt, ...)				\
++do {										\
++	if (do_logging(level))							\
++		dev_warn_ratelimited(&(dev)->device, fmt, ##__VA_ARGS__);	\
++} while (0)
++
+ struct vmscsi_request {
+ 	u16 length;
+ 	u8 srb_status;
+@@ -1184,7 +1190,7 @@ static void storvsc_on_io_completion(struct storvsc_device *stor_device,
+ 
+ 	if (vstor_packet->vm_srb.scsi_status != 0 ||
+ 	    vstor_packet->vm_srb.srb_status != SRB_STATUS_SUCCESS)
+-		storvsc_log(device, STORVSC_LOGGING_WARN,
++		storvsc_log_ratelimited(device, STORVSC_LOGGING_WARN,
+ 			"cmd 0x%x scsi status 0x%x srb status 0x%x\n",
+ 			stor_pkt->vm_srb.cdb[0],
+ 			vstor_packet->vm_srb.scsi_status,
+@@ -1196,7 +1202,7 @@ static void storvsc_on_io_completion(struct storvsc_device *stor_device,
+ 			SRB_STATUS_AUTOSENSE_VALID) {
+ 			/* autosense data available */
+ 
+-			storvsc_log(device, STORVSC_LOGGING_WARN,
++			storvsc_log_ratelimited(device, STORVSC_LOGGING_WARN,
+ 				"stor pkt %p autosense data valid - len %d\n",
+ 				request, vstor_packet->vm_srb.sense_info_length);
+ 
+-- 
+2.39.4
+

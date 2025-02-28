@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.234
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -248,6 +248,12 @@ Patch159: 0001-scsi-ufs-core-Improve-SCSI-abort-handling.patch
 
 # Fix CVE-2024-44934
 Patch160: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
+
+# Fix CVE-2025-21703
+Patch161: 0001-netem-Update-sch-q.qlen-before-qdisc_tree_reduce_bac.patch
+
+# Fix CVE-2025-21690
+Patch162: 0001-scsi-storvsc-Ratelimit-warning-logs-to-prevent-VM-de.patch
 
 # Fix CVE-2024-42322
 Patch164: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
@@ -1021,6 +1027,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Feb 28 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-7
+- Fixes CVE-2025-21703 and CVE-2025-21690
 * Tue Feb 18 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.234-6
 - Fix CVE-2024-35863, CVE-2024-35864, CVE-2024-35865,  CVE-2024-35867, CVE-2024-35868,
 - CVE-2024-35878, CVE-2024-26928

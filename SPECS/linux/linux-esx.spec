@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.234
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -257,6 +257,12 @@ Patch164: 0001-netfilter-bridge-confirm-multicast-packets-before-pa.patch
 
 # Fix CVE-2024-27018
 Patch165: 0001-netfilter-br_netfilter-skip-conntrack-input-hook-for.patch
+
+# Fix CVE-2025-21703
+Patch166: 0001-netem-Update-sch-q.qlen-before-qdisc_tree_reduce_bac.patch
+
+# Fix CVE-2025-21690
+Patch167: 0001-scsi-storvsc-Ratelimit-warning-logs-to-prevent-VM-de.patch
 
 # Fix CVE-2023-52760
 Patch168: 0001-gfs2-make-function-gfs2_make_fs_ro-to-void-type.patch
@@ -731,6 +737,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 28 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.234-7
+- Fixes CVE-2025-21703 and CVE-2025-21690
 * Tue Feb 18 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.234-6
 - Fix CVE-2024-35863, CVE-2024-35864, CVE-2024-35865,  CVE-2024-35867, CVE-2024-35868,
 - CVE-2024-26928
