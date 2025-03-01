@@ -1,0 +1,33 @@
+Patch0: Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
+Patch1: CVE-2022-2601-1.patch
+Patch2: CVE-2022-2601-2.patch
+Patch3: CVE-2022-2601-3.patch
+Patch4: CVE-2022-2601-4.patch
+Patch5: CVE-2022-2601-5.patch
+Patch6: CVE-2022-2601-6.patch
+Patch7: CVE-2022-2601-7.patch
+Patch8: CVE-2022-2601-8-prep.patch
+Patch9: CVE-2022-2601-8.patch
+Patch10: CVE-2022-2601-9.patch
+Patch11: CVE-2022-2601-10.patch
+Patch12: CVE-2022-2601-11.patch
+Patch13: CVE-2022-2601-12.patch
+Patch14: CVE-2022-2601-13.patch
+Patch15: CVE-2022-2601-14.patch
+Patch16: CVE-2022-28733.patch
+Patch17: CVE-2022-28734-1.patch
+Patch18: CVE-2022-28734-2.patch
+Patch19: CVE-2021-3695.patch
+Patch20: CVE-2021-3696.patch
+Patch21: CVE-2021-3697.patch
+Patch22: CVE-2022-28736-prep-1.patch
+Patch23: CVE-2022-28736-prep-2.patch
+Patch24: CVE-2022-28736.patch
+
+# CVE-2023-4692, CVE-2023-4693
+Patch25: 0001-fs-ntfs-Fix-an-OOB-write-when-parsing-the-ATTRIBUTE_.patch
+Patch26: 0002-fs-ntfs-Fix-an-OOB-read-when-reading-data-from-the-r.patch
+Patch27: 0003-fs-ntfs-Fix-an-OOB-read-when-parsing-directory-entri.patch
+Patch28: 0004-fs-ntfs-Fix-an-OOB-read-when-parsing-bitmaps-for-ind.patch
+Patch29: 0005-fs-ntfs-Fix-an-OOB-read-when-parsing-a-volume-label.patch
+Patch30: 0006-fs-ntfs-Make-code-more-readable.patch
