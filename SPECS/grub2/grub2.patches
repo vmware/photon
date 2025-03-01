@@ -1,0 +1,94 @@
+Patch0: Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
+
+# grub2-emu
+Patch1501: 0001-grub2-emu-hide-menu-skip-retry.patch
+Patch1502: 0002-grub2-emu-fix-if-boot-as-partition.patch
+
+# CVE-2023-4692, CVE-2023-4693
+Patch1601: 0001-fs-ntfs-Fix-an-OOB-write-when-parsing-the-ATTRIBUTE_.patch
+Patch1602: 0002-fs-ntfs-Fix-an-OOB-read-when-reading-data-from-the-r.patch
+Patch1603: 0003-fs-ntfs-Fix-an-OOB-read-when-parsing-directory-entri.patch
+Patch1604: 0004-fs-ntfs-Fix-an-OOB-read-when-parsing-bitmaps-for-ind.patch
+Patch1605: 0005-fs-ntfs-Fix-an-OOB-read-when-parsing-a-volume-label.patch
+Patch1606: 0006-fs-ntfs-Make-code-more-readable.patch
+
+# CVEs
+# CVE-2024-45774 CVE-2024-45775 CVE-2024-45776 CVE-2024-45777 CVE-2024-45778
+# CVE-2024-45779 CVE-2024-45780
+# CVE-2024-45781 CVE-2024-45782 CVE-2024-45783 CVE-2025-0622 CVE-2025-0624
+# CVE-2025-0677 CVE-2025-0678
+# CVE-2025-0684 CVE-2025-0685 CVE-2025-0686 CVE-2025-0689 CVE-2025-0690
+# CVE-2025-1118 CVE-2025-1125
+Patch1611: 0001-efi-Add-efitextmode-command-for-getting-setting-the-.patch
+Patch1612: 0002-misc-Implement-grub_strlcpy.patch
+Patch1613: 0003-fs-ufs-Fix-a-heap-OOB-write.patch
+Patch1614: 0004-fs-hfs-Fix-stack-OOB-write-with-grub_strcpy.patch
+Patch1615: 0005-fs-tar-Initialize-name-in-grub_cpio_find_file.patch
+Patch1616: 0006-fs-tar-Integer-overflow-leads-to-heap-OOB-write.patch
+Patch1617: 0007-fs-f2fs-Set-a-grub_errno-if-mount-fails.patch
+Patch1618: 0008-fs-hfsplus-Set-a-grub_errno-if-mount-fails.patch
+Patch1619: 0009-fs-iso9660-Set-a-grub_errno-if-mount-fails.patch
+Patch1620: 0010-fs-iso9660-Fix-invalid-free.patch
+Patch1621: 0011-fs-jfs-Fix-OOB-read-in-jfs_getent.patch
+Patch1622: 0012-fs-jfs-Fix-OOB-read-caused-by-invalid-dir-slot-index.patch
+Patch1623: 0013-fs-jfs-Use-full-40-bits-offset-and-address-for-a-dat.patch
+Patch1624: 0014-fs-jfs-Inconsistent-signed-unsigned-types-usage-in-r.patch
+Patch1625: 0015-fs-ext2-Fix-out-of-bounds-read-for-inline-extents.patch
+Patch1626: 0016-fs-ntfs-Fix-out-of-bounds-read.patch
+Patch1627: 0017-fs-ntfs-Track-the-end-of-the-MFT-attribute-buffer.patch
+Patch1628: 0018-fs-ntfs-Use-a-helper-function-to-access-attributes.patch
+Patch1629: 0019-fs-ntfs-Implement-attribute-verification.patch
+Patch1630: 0020-fs-xfs-Fix-out-of-bounds-read.patch
+Patch1631: 0021-fs-xfs-Ensuring-failing-to-mount-sets-a-grub_errno.patch
+Patch1632: 0022-kern-file-Ensure-file-data-is-set.patch
+Patch1633: 0023-kern-file-Implement-filesystem-reference-counting.patch
+Patch1634: 0024-disk-loopback-Reference-tracking-for-the-loopback.patch
+Patch1635: 0025-kern-disk-Limit-recursion-depth.patch
+Patch1636: 0026-kern-partition-Limit-recursion-in-part_iterate.patch
+Patch1637: 0027-script-execute-Limit-the-recursion-depth.patch
+Patch1638: 0028-net-Unregister-net_default_ip-and-net_default_mac-va.patch
+Patch1639: 0029-net-Remove-variables-hooks-when-interface-is-unregis.patch
+Patch1640: 0030-net-Fix-OOB-write-in-grub_net_search_config_file.patch
+Patch1641: 0031-net-tftp-Fix-stack-buffer-overflow-in-tftp_open.patch
+Patch1642: 0032-video-readers-jpeg-Do-not-permit-duplicate-SOF0-mark.patch
+Patch1643: 0033-kern-dl-Fix-for-an-integer-overflow-in-grub_dl_ref.patch
+Patch1644: 0034-kern-dl-Check-for-the-SHF_INFO_LINK-flag-in-grub_dl_.patch
+Patch1645: 0035-commands-extcmd-Missing-check-for-failed-allocation.patch
+Patch1646: 0036-commands-ls-Fix-NULL-dereference.patch
+Patch1647: 0037-commands-pgp-Unregister-the-check_signatures-hooks-o.patch
+Patch1648: 0038-normal-Remove-variables-hooks-on-module-unload.patch
+Patch1649: 0039-gettext-Remove-variables-hooks-on-module-unload.patch
+Patch1650: 0040-gettext-Integer-overflow-leads-to-heap-OOB-write-or-.patch
+Patch1651: 0041-gettext-Integer-overflow-leads-to-heap-OOB-write.patch
+Patch1652: 0042-commands-read-Fix-an-integer-overflow-when-supplying.patch
+Patch1653: 0043-commands-test-Stack-overflow-due-to-unlimited-recurs.patch
+Patch1654: 0044-commands-minicmd-Block-the-dump-command-in-lockdown-.patch
+Patch1655: 0045-commands-memrw-Disable-memory-reading-in-lockdown-mo.patch
+Patch1656: 0046-commands-hexdump-Disable-memory-reading-in-lockdown-.patch
+Patch1657: 0047-fs-bfs-Disable-under-lockdown.patch
+Patch1658: 0048-fs-Disable-many-filesystems-under-lockdown.patch
+Patch1659: 0049-disk-Use-safe-math-macros-to-prevent-overflows.patch
+Patch1660: 0050-disk-Prevent-overflows-when-allocating-memory-for-ar.patch
+Patch1661: 0051-disk-Check-if-returned-pointer-for-allocated-memory-.patch
+Patch1662: 0052-disk-ieee1275-ofdisk-Call-grub_ieee1275_close-when-g.patch
+Patch1663: 0053-fs-Use-safe-math-macros-to-prevent-overflows.patch
+Patch1664: 0054-fs-Prevent-overflows-when-allocating-memory-for-arra.patch
+Patch1665: 0055-fs-Prevent-overflows-when-assigning-returned-values-.patch
+Patch1666: 0056-fs-zfs-Use-safe-math-macros-to-prevent-overflows.patch
+Patch1667: 0057-fs-zfs-Prevent-overflows-when-allocating-memory-for-.patch
+Patch1668: 0058-fs-zfs-Check-if-returned-pointer-for-allocated-memor.patch
+Patch1669: 0059-fs-zfs-Add-missing-NULL-check-after-grub_strdup-call.patch
+Patch1670: 0060-net-Use-safe-math-macros-to-prevent-overflows.patch
+Patch1671: 0061-net-Prevent-overflows-when-allocating-memory-for-arr.patch
+Patch1672: 0062-net-Check-if-returned-pointer-for-allocated-memory-i.patch
+Patch1673: 0063-fs-sfs-Check-if-allocated-memory-is-NULL.patch
+Patch1674: 0064-script-execute-Fix-potential-underflow-and-NULL-dere.patch
+Patch1675: 0065-osdep-unix-getroot-Fix-potential-underflow.patch
+Patch1676: 0066-misc-Ensure-consistent-overflow-error-messages.patch
+Patch1677: 0067-bus-usb-ehci-Define-GRUB_EHCI_TOGGLE-as-grub_uint32_.patch
+Patch1678: 0068-normal-menu-Use-safe-math-to-avoid-an-integer-overfl.patch
+Patch1679: 0069-kern-partition-Add-sanity-check-after-grub_strtoul-c.patch
+Patch1680: 0070-kern-misc-Add-sanity-check-after-grub_strtoul-call.patch
+Patch1681: 0071-loader-i386-linux-Cast-left-shift-to-grub_uint32_t.patch
+Patch1682: 0072-loader-i386-bsd-Use-safe-math-to-avoid-underflow.patch
+Patch1683: 0073-fs-ext2-Rework-out-of-bounds-read-for-inline-and-ext.patch
