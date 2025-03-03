@@ -5,23 +5,26 @@
 
 Name: rubygem-backports
 Version:        3.23.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Backports of Ruby features for older Ruby
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://github.com/marcandre/backports
+
 Source0:        https://rubygems.org/gems/backports-%{version}.gem
 %define sha512    backports=b6d721a2925a932e451437938e01c6e3f4ac08bafac975063963f7866e17015abfeb6862face89cbd08caf479db75eb085f540263ba251a87c6acc7611ba6d40
 
 Source1: license.txt
 %include %{SOURCE1}
-BuildRequires:  ruby
+
+BuildRequires:  ruby-devel
 BuildRequires:  rubygem-activesupport
 BuildRequires:  rubygem-i18n
 BuildRequires:  rubygem-tzinfo
 BuildRequires:  rubygem-thread_safe
 BuildRequires:  rubygem-concurrent-ruby
+
 Requires:       rubygem-activesupport
 Requires:       rubygem-i18n
 Requires:       rubygem-tzinfo
@@ -33,11 +36,13 @@ Essential backports that enable many of the nice features of Ruby 1.8.7 up to
 2.1.0 for earlier versions.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
+
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %check
 cd %{buildroot}%{gemdir}/gems/backports-%{version}
@@ -53,6 +58,8 @@ rake test
 %{gemdir}
 
 %changelog
+*   Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.23.0-3
+-   Bump version with rubygem-activesupport bump
 *   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.23.0-2
 -   Release bump for SRP compliance
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.23.0-1
