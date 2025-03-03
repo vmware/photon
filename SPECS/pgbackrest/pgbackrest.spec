@@ -1,14 +1,14 @@
 Summary:        Reliable PostgreSQL Backup & Restore
 Name:           pgbackrest
-Version:        2.48
-Release:        3%{?dist}
+Version:        2.54.2
+Release:        1%{?dist}
 Url:            https://pgbackrest.org
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/pgbackrest/pgbackrest/archive/refs/tags/release/%{name}-%{version}.tar.gz
-%define sha512 %{name}=63b3803adbeeea5362e42d9d437d6d5426261c42d725d044e6ee5ef460bcaf5101a511f7395c3c83858caab11e5cad5ffb43cfa7242a801abdfb3b8361c36362
+%define sha512 %{name}=083a99059fd1cbd78e063a7ec816e9f6e4a06688911a6ff71d3e4cfb4ca0795cd83983d49acf0c55ac2d0b0dc77bc928595d7e44e054b6e9bfb69c626678c3d7
 
 Source1: %{name}.conf
 
@@ -63,6 +63,8 @@ cp %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
 %config(noreplace) %attr(0640,root,root) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Mar 03 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.54.2-1
+- Update to 2.54.2
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.48-3
 - Release bump for SRP compliance
 * Thu Dec 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.48-2
