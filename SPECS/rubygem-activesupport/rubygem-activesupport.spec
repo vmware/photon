@@ -3,7 +3,7 @@
 %global gem_name activesupport
 
 Name: rubygem-activesupport
-Version:        7.1.0
+Version:        7.1.3.4
 Release:        1%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
@@ -11,10 +11,18 @@ License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/activesupport/versions/%{version}
-Source0:        https://rubygems.org/downloads/activesupport-%{version}.gem
-%define sha512  activesupport=f27dc7a76741bd5a000b2f141e5d8eae9d46406dce95c44acb9f9b2d8bbbbcaedde9889944163cbe0c3f5342c6c48c3b4383c7f7c28bbe189665ea345109d3df
 
-BuildRequires:  ruby
+Source0:        https://rubygems.org/downloads/activesupport-%{version}.gem
+%define sha512  activesupport=b9cc7cfede2014dcd871b4d2bbec1df14d134111a8b4f51661b9217300b27e6b97fe34db4a541f63b16a51b9b177f4754b83d7cc8bf3acc77106990525b9fc94
+
+BuildRequires: ruby-devel
+BuildRequires: rubygem-i18n
+BuildRequires: rubygem-concurrent-ruby
+BuildRequires: rubygem-tzinfo
+BuildRequires: rubygem-base64
+BuildRequires: rubygem-connection_pool
+BuildRequires: rubygem-drb
+BuildRequires: rubygem-ruby2-keywords
 
 Requires: ruby
 Requires: rubygem-i18n
@@ -31,18 +39,21 @@ Rails framework. Rich support for multibyte strings, internationalization,
 time zones, and testing.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.1.3.4-1
+-   Fix CVE-2024-28103
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 7.1.0-1
 -   Fix requires and upgraded version
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.3.3-1

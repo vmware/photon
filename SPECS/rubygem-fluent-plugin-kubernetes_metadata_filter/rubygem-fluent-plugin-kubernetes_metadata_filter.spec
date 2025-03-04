@@ -3,7 +3,7 @@
 
 Name:           rubygem-fluent-plugin-kubernetes_metadata_filter
 Version:        3.4.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Fluentd Filter plugin to add Kubernetes metadata.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -14,6 +14,15 @@ Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  fluent-plugin-kubernetes_metadata_filter=6383590639aab9a81aa87a191dcd5b7058e360dcf0ee7744e1a91b36e1c8b92f82a2f7de731883e208bb8e49d2dcc45285a714341e3fc226f1dfe4a8916c8bbf
 
 BuildRequires:  ruby-devel
+BuildRequires:  rubygem-ffi-compiler
+BuildRequires:  rubygem-public_suffix
+BuildRequires:  rubygem-fiber-local
+BuildRequires:  rubygem-console
+BuildRequires:  rubygem-fluentd
+BuildRequires:  rubygem-kubeclient
+BuildRequires:  rubygem-http-accept
+BuildRequires:  rubygem-lru_redux
+BuildRequires:  rubygem-http
 BuildRequires:  findutils
 
 Requires:       rubygem-fluentd >= 0.14.0, rubygem-fluentd < 2.0.0
@@ -22,8 +31,6 @@ Requires:       rubygem-http-accept >= 1.7.0, rubygem-http-accept < 2.0
 Requires:       rubygem-http >= 3.0, rubygem-http < 5.0
 Requires:       rubygem-lru_redux
 Requires:       ruby
-
-BuildArch:      noarch
 
 %description
 The Kubernetes metadata plugin filter enriches container log records with pod and namespace metadata.
@@ -37,18 +44,21 @@ metadata. This behaviors supports multi-tenant systems that rely on the authenti
 proper log isolation.
 
 %prep
-%autosetup -n %{gem_name}-%{version}
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gem_base} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gem_base}
 
 %changelog
+*   Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-4
+-   Bump version with rubygem-activesupport bump
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-3
 -   Add gem macros
 *   Thu Apr 25 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-2
