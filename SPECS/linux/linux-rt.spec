@@ -382,9 +382,12 @@ popd
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
       crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE33} crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
+
+cp %{SOURCE33} \
+   %{SOURCE34} \
+   %{SOURCE35} \
+   crypto/jitterentropy-%{jent_major_version}/
+
 cp %{SOURCE36} crypto/
 %endif
 
@@ -395,23 +398,27 @@ cp %{SOURCE21} photon_sb2020.pem
 cp %{SOURCE1} .config
 %endif
 %if 0%{?fips}
-cp %{SOURCE37} crypto/
-cp %{SOURCE38} crypto/
-cp %{SOURCE39} crypto/
-cp %{SOURCE40} crypto/
-cp %{SOURCE41} crypto/
-cp %{SOURCE42} crypto/
+cp %{SOURCE37} \
+   %{SOURCE38} \
+   %{SOURCE39} \
+   %{SOURCE40} \
+   %{SOURCE41} \
+   %{SOURCE42} \
+   crypto/
+
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
+
 mkdir -p %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE8}  %{struct_comp_dir}
-cp %{SOURCE43} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE44} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE45} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE46} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE47} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE8} \
+   %{SOURCE43} \
+   %{SOURCE44} \
+   %{SOURCE45} \
+   %{SOURCE46} \
+   %{SOURCE47} \
+   %{struct_comp_dir}/%{vmlinux_definition_loc}
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .config
@@ -435,8 +442,9 @@ bldroot="${PWD}"
 # fails out if there is a mismatch, and the offending definition
 # has not been documented in %{vmlinux_definition_loc}
 pushd %{struct_comp_dir}
-gcc -o %{struct_comparator} %{SOURCE8} -ldwarves
-./%{struct_comparator} ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
+gcc -Wall -Werror -o %{struct_comparator} %{SOURCE8} -ldwarves
+./%{struct_comparator} \
+  ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
 popd
 
 rm -rf %{struct_comp_dir}

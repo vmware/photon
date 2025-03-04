@@ -54,8 +54,6 @@ Source9:        struct-comparator.c
 %define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha512 fips-canister=ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
-
-Source18:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
 
 Source19:       spec_install_post.inc
@@ -288,6 +286,7 @@ Patch512: 0001-canister-Change-spinlock_t-lock-to-void-reserved.patch
 # with fips canister, since, crypto_tfm_get() api is not being used
 # in v6.1.x so reverting upstream commit.
 Patch513: 0001-Revert-crypto-api-Add-crypto_tfm_get.patch
+Patch514: speedup-algos-registration-in-non-fips-mode.patch
 %endif
 
 %ifarch x86_64
@@ -418,36 +417,44 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %ifarch x86_64
-cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
-      crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE33} crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
+cp -a ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
+       crypto/jitterentropy-%{jent_major_version}/
+
+cp %{SOURCE33} \
+   %{SOURCE34} \
+   %{SOURCE35} \
+   crypto/jitterentropy-%{jent_major_version}/
+
 cp %{SOURCE36} crypto/
 %endif
 
 %make_build mrproper
 cp %{SOURCE1} .config
+
 %if 0%{?fips}
-cp %{SOURCE37} crypto/
-cp %{SOURCE38} crypto/
-cp %{SOURCE39} crypto/
-cp %{SOURCE40} crypto/
-cp %{SOURCE41} crypto/
-cp %{SOURCE42} crypto/
+cp %{SOURCE37} \
+   %{SOURCE38} \
+   %{SOURCE39} \
+   %{SOURCE40} \
+   %{SOURCE41} \
+   %{SOURCE42} \
+   crypto/
+
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
-# Patch canister wrapper
-patch -p1 < %{SOURCE18}
+
+patch -p1 < %{PATCH514}
+
 mkdir -p %{struct_comp_dir}/%{vmlinux_definition_loc}
 cp %{SOURCE9}  %{struct_comp_dir}
-cp %{SOURCE43} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE44} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE45} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE46} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE47} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE43} \
+   %{SOURCE44} \
+   %{SOURCE45} \
+   %{SOURCE46} \
+   %{SOURCE47} \
+   %{struct_comp_dir}/%{vmlinux_definition_loc}
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
@@ -472,8 +479,9 @@ bldroot="${PWD}"
 # fails out if there is a mismatch, and the offending definition
 # has not been documented in %{vmlinux_definition_loc}
 pushd %{struct_comp_dir}
-gcc -o %{struct_comparator} %{SOURCE9} -ldwarves
-./%{struct_comparator} ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
+gcc -Wall -Werror -o %{struct_comparator} %{SOURCE9} -ldwarves
+./%{struct_comparator} \
+  ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
 popd
 
 rm -rf %{struct_comp_dir}

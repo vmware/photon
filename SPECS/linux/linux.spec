@@ -642,36 +642,41 @@ cp %{SOURCE1} .config
 cp %{SOURCE20} photon_sb2020.pem
 %ifarch x86_64
 %if 0%{?fips}
-install %{SOURCE36} crypto/
-install %{SOURCE37} crypto/
-install %{SOURCE38} crypto/
-install %{SOURCE39} crypto/
-install %{SOURCE40} crypto/
-install %{SOURCE41} crypto/
+cp %{SOURCE36} \
+   %{SOURCE37} \
+   %{SOURCE38} \
+   %{SOURCE39} \
+   %{SOURCE40} \
+   %{SOURCE41} \
+   %{SOURCE51} \
+   crypto/
+
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
-cp %{SOURCE51} crypto/
+
 mkdir -p %{struct_comp_dir}/%{vmlinux_definition_loc}
 cp %{SOURCE9}  %{struct_comp_dir}
-cp %{SOURCE75} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE76} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE77} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE78} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE79} %{struct_comp_dir}/%{vmlinux_definition_loc}
+cp %{SOURCE75} \
+   %{SOURCE76} \
+   %{SOURCE77} \
+   %{SOURCE78} \
+   %{SOURCE79} \
+   %{struct_comp_dir}/%{vmlinux_definition_loc}
 %endif
 
 %if 0%{?canister_build}
-install %{SOURCE38} crypto/
-install %{SOURCE39} crypto/
-install %{SOURCE43} crypto/fips_canister_wrapper_internal.h
-install %{SOURCE44} crypto/fips_canister_wrapper_internal.c
-install %{SOURCE45} crypto/
-install %{SOURCE46} crypto/
+cp %{SOURCE38} \
+   %{SOURCE39} \
+   %{SOURCE43} \
+   %{SOURCE44} \
+   %{SOURCE45} \
+   %{SOURCE46} \
+   %{SOURCE48} \
+   %{SOURCE49} \
+   crypto/
 install -m 755 %{SOURCE47} crypto/
-install %{SOURCE48} crypto/
-install %{SOURCE49} crypto/
 %endif
 %endif
 
@@ -717,8 +722,9 @@ bldroot="${PWD}"
 # fails out if there is a mismatch, and the offending definition
 # has not been documented in %{vmlinux_definition_loc}
 pushd %{struct_comp_dir}
-gcc -o %{struct_comparator} %{SOURCE9} -ldwarves
-./%{struct_comparator} ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
+gcc -Wall -Werror -o %{struct_comparator} %{SOURCE9} -ldwarves
+./%{struct_comparator} \
+  ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
 popd
 
 rm -rf %{struct_comp_dir}
