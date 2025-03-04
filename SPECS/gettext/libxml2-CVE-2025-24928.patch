@@ -1,0 +1,57 @@
+From 858ca26c0689161a6b903a6682cc8a1cc10a0ea8 Mon Sep 17 00:00:00 2001
+From: Nick Wellnhofer <wellnhofer@aevum.de>
+Date: Tue, 11 Feb 2025 17:30:40 +0100
+Subject: [PATCH] [CVE-2025-24928] Fix stack-buffer-overflow in
+ xmlSnprintfElements
+
+Fixes #847.
+---
+ valid.c | 25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
+
+diff --git a/valid.c b/valid.c
+index 76d657d62..abefdc50a 100644
+--- a/valid.c
++++ b/valid.c
+@@ -5057,25 +5057,26 @@ xmlSnprintfElements(char *buf, int size, xmlNodePtr node, int glob) {
+ 	    return;
+ 	}
+         switch (cur->type) {
+-            case XML_ELEMENT_NODE:
++            case XML_ELEMENT_NODE: {
++                int qnameLen = xmlStrlen(cur->name);
++
++                if ((cur->ns != NULL) && (cur->ns->prefix != NULL))
++                    qnameLen += xmlStrlen(cur->ns->prefix) + 1;
++                if (size - len < qnameLen + 10) {
++                    if ((size - len > 4) && (buf[len - 1] != '.'))
++                        strcat(buf, " ...");
++                    return;
++                }
+ 		if ((cur->ns != NULL) && (cur->ns->prefix != NULL)) {
+-		    if (size - len < xmlStrlen(cur->ns->prefix) + 10) {
+-			if ((size - len > 4) && (buf[len - 1] != '.'))
+-			    strcat(buf, " ...");
+-			return;
+-		    }
+ 		    strcat(buf, (char *) cur->ns->prefix);
+ 		    strcat(buf, ":");
+ 		}
+-                if (size - len < xmlStrlen(cur->name) + 10) {
+-		    if ((size - len > 4) && (buf[len - 1] != '.'))
+-			strcat(buf, " ...");
+-		    return;
+-		}
+-	        strcat(buf, (char *) cur->name);
++                if (cur->name != NULL)
++	            strcat(buf, (char *) cur->name);
+ 		if (cur->next != NULL)
+ 		    strcat(buf, " ");
+ 		break;
++            }
+             case XML_TEXT_NODE:
+ 		if (xmlIsBlankNode(cur))
+ 		    break;
+-- 
+GitLab
+

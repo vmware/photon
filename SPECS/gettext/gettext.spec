@@ -1,7 +1,7 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
 Version:        0.21.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -22,6 +22,9 @@ Patch5:         libxml2-CVE-2022-23308.patch
 Patch6:         libxml2-CVE-2022-40303.patch
 Patch7:         libxml2-CVE-2022-40304.patch
 Patch8:         libxml2-CVE-2024-25062.patch
+Patch9:         libxml2-CVE-2024-56171.patch
+Patch10:        libxml2-CVE-2025-24928.patch
+Patch11:        libxml2-CVE-2025-27113.patch
 
 %description
 These allow programs to be compiled with NLS
@@ -37,17 +40,17 @@ messages in the user's native language.
 
 # Apply patches to gnulib-local/lib/libxml
 pushd gnulib-local/lib/libxml
-%autopatch -p1 -m0 -M8
+%autopatch -p1 -m0 -M11
 popd
 
 # Apply patches to gettext-tools/gnulib-lib/libxml
 pushd gettext-tools/gnulib-lib/libxml
-%autopatch -p1 -m0 -M8
+%autopatch -p1 -m0 -M11
 popd
 
 # Apply patches to libtextstyle/lib/libxml
 pushd libtextstyle/lib/libxml
-%autopatch -p1 -m0 -M8
+%autopatch -p1 -m0 -M11
 popd
 
 %build
@@ -85,6 +88,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Tue Mar 04 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.21.1-5
+- Fix for CVE-2024-56171, CVE-2025-24928, CVE-2025-27113
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.21.1-4
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.21.1-3
