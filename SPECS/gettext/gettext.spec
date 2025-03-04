@@ -1,7 +1,7 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
 Version:        0.21
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
@@ -17,6 +17,9 @@ Patch5:         libxml2-CVE-2022-23308.patch
 Patch6:         libxml2-CVE-2022-40303.patch
 Patch7:         libxml2-CVE-2022-40304.patch
 Patch8:         libxml2-CVE-2024-25062.patch
+Patch9:         libxml2-CVE-2024-56171.patch
+Patch10:        libxml2-CVE-2025-24928.patch
+Patch11:        libxml2-CVE-2025-27113.patch
 
 %define sha512  gettext=f7e2968651879f8444d43a176a149db9f9411f4a03132a7f3b37c2ed97e3978ae6888169c995c1953cb78943b6e3573811abcbb8661b6631edbbe067b2699ddf
 
@@ -34,17 +37,17 @@ messages in the user's native language.
 
 # Apply patches to gnulib-local/lib/libxml
 pushd gnulib-local/lib/libxml
-%autopatch -p1 -m0 -M8
+%autopatch -p1 -m0 -M11
 popd
 
 # Apply patches to gettext-tools/gnulib-lib/libxml
 pushd gettext-tools/gnulib-lib/libxml
-%autopatch -p1 -m0 -M8
+%autopatch -p1 -m0 -M11
 popd
 
 # Apply patches to libtextstyle/lib/libxml
 pushd libtextstyle/lib/libxml
-%autopatch -p1 -m0 -M8
+%autopatch -p1 -m0 -M11
 popd
 
 %build
@@ -82,6 +85,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Tue Mar 04 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.21-5
+- Fix for CVE-2024-56171, CVE-2025-24928, CVE-2025-27113
 * Fri Jun 14 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 0.21-4
 - Fix CVE-2016-3709/2019-19956/2021-3517/2021-3518/
 - 2021-3541/2022-23308/2022-40303/2022-40304/2024-25062
