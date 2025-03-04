@@ -1,14 +1,21 @@
 sources:
-- archive: docker-compose-2.20.2.tar.gz
-  archive_sha512sum: 8b8ccece806edfaffef497ed8b8b64c6050aa35363e350a14b5a257c9230ed5656a0e5661ce6c314c2911b438780421f71714477a83e2e64db2cf6c921f86af1
-  skip_validation: true
+- archive: docker-compose-2.33.1.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 704e73a3952c086e83c42cb96c658fc65386822e294629794e4e4442c35a9c28dfb77c8e7637b84ebb42b00c98b9829e13b4cb5988afe9e98926ea6403b6d7ce
+  version: 2.33.1
+  name: compose-2.33.1
+  url: https://github.com/docker/compose/archive/refs/tags/v2.33.1.tar.gz
+  repo_url: https://github.com/docker/compose
+  commit_id: da2eff4ba7d95ddae71d6b70323dbe739bbd130b
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Docker Compose (V2) plugin for the Docker CLI.  This
         plugin provides the ''docker compose'' subcommand.  The binary can also be
         run standalone as a direct replacement for Docker Compose V1 (''docker-compose''). '
       home_page: https://github.com/docker/compose
-      license_concluded: TMate AND Apache-2.0
-      license_declared: TMate AND Apache-2.0
+      license_concluded: TMate AND Apache-2.0 AND MIT
+      license_declared: TMate AND Apache-2.0 AND MIT
       short_summary: Multi-container orchestration for Docker
       supplier: 'Organization: Broadcom, Inc.'
