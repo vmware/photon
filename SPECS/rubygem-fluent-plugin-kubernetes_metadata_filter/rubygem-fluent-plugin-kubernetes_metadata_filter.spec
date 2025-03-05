@@ -3,7 +3,7 @@
 
 Name:           rubygem-fluent-plugin-kubernetes_metadata_filter
 Version:        3.4.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Fluentd Filter plugin to add Kubernetes metadata.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,6 +12,8 @@ License:        Apache-2.0
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  fluent-plugin-kubernetes_metadata_filter=6383590639aab9a81aa87a191dcd5b7058e360dcf0ee7744e1a91b36e1c8b92f82a2f7de731883e208bb8e49d2dcc45285a714341e3fc226f1dfe4a8916c8bbf
+
+BuildArch: noarch
 
 BuildRequires:  ruby-devel
 BuildRequires:  rubygem-ffi-compiler
@@ -57,6 +59,8 @@ proper log isolation.
 %{gem_base}
 
 %changelog
+*   Wed Mar 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4.0-5
+-   Set buildarch to noarch
 *   Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-4
 -   Bump version with rubygem-activesupport bump
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-3

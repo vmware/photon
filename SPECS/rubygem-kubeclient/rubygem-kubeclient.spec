@@ -3,7 +3,7 @@
 
 Name:           rubygem-kubeclient
 Version:        4.9.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A client for Kubernetes REST api.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,6 +12,8 @@ License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512  kubeclient=bc4ea2ae7dac142afec5d4de171f58871ea87aa2205c5d96ebbf3966377a4c4d4099b400bc958ee34f7983760fcff8197c73ca18fb1b452cf65f68ea0b0758a0
+
+BuildArch: noarch
 
 BuildRequires:  ruby-devel
 BuildRequires:  rubygem-activesupport
@@ -47,6 +49,8 @@ A client for Kubernetes REST api.
 %{gem_base}
 
 %changelog
+*   Wed Mar 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.9.1-7
+-   Set buildarch to noarch
 *   Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.9.1-6
 -   Bump version with rubygem-activesupport bump
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.9.1-5
