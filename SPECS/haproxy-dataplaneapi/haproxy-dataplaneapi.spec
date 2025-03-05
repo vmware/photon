@@ -1,19 +1,17 @@
-%global commit          68bd22b2219d043e2f4f982ff8aa03262888a277
-%global commitdate      20210115
-%global version         2.2.0
-%global shortcommit     %(c=%{commit}; echo ${c:0:7})
-%global repo            dataplaneapi
-%global cmd             %{repo}
-%global build_date      %(date '+%%Y-%%m-%%dT%%H:%%M:%%S')
-# Required to avoid an error once integrating the Go Build ID.
+%define network_required 1
 %global debug_package   %{nil}
+%global repo            https://github.com/haproxytech/dataplaneapi
+%global srcname         dataplaneapi
+%global commit          891e0ebb8a07fa0babcc31579700021561b4d017
+%global build_date      %(date -u '+%Y-%m-%dT%H:%M:%SZ')
+%global build_id        %(echo %{build_date} | openssl sha1 | cut -d' ' -f2)
 
 Summary:        A sidecar process for managing HAProxy.
-Name:           haproxy-%{repo}
+Name:           haproxy-dataplaneapi
 Version:        2.7.1
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        Apache License 2.0
-URL:            https://github.com/haproxytech/%{repo}
+URL:            %{repo}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -31,32 +29,32 @@ HAProxy Data Plane API is a sidecar process that runs next to HAProxy
 and provides API endpoints for managing HAProxy.
 
 %prep
-%autosetup -n %{repo}-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%define gcflags -N -l
-# The build_id and ldflags_for_build_id are the solution for the issue
-# that the Build ID in Go binaries:
-# - the issue       https://github.com/rpm-software-management/rpm/issues/367
-# - the work-around https://github.com/aws/amazon-ssm-agent/issues/268
-%define build_id %(head -c20 /dev/urandom|od -An -tx1|tr -d '[:space:]')
-%define ldflags_for_build_id -s -w -B 0x%{build_id} -extldflags=-Wl,-z,now,-z,relro,-z,defs
-%define ldflags_for_build_metadata -X main.GitRepo=%{SOURCE0} -X main.GitTag=v%{version} -X main.GitCommit=%{commit} -X main.GitDirty= -X main.BuildTime=%{build_date}
-%define ldflags %{ldflags_for_build_id} %{ldflags_for_build_metadata}
-export CGO_ENABLED=0
-go build -gcflags "%{gcflags}" -ldflags "%{ldflags}" -o %{cmd} ./cmd/%{cmd}/
+CGO_ENABLED=0 \
+  go build -trimpath -ldflags "\
+    -X main.GitRepo=%{SOURCE0} \
+    -X main.GitTag=%{version}-%{release} \
+    -X main.GitCommit=%{commit} \
+    -X main.GitDirty= \
+    -X main.BuildTime=%{build_date} \
+    -s -w -B 0x%{build_id} -extldflags=-Wl,-z,now,-z,relro,-z,defs" \
+    -o %{srcname} ./cmd/%{srcname}/
 
 %install
-install -m 755 -D %{cmd} %{buildroot}%{_libexecdir}/haproxy/%{cmd}
+install -m 755 -D %{srcname} %{buildroot}%{_libexecdir}/haproxy/%{srcname}
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_libexecdir}/haproxy/%{cmd}
+%{_libexecdir}/haproxy/%{srcname}
 
 %changelog
+* Wed Mar 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7.1-13
+- Spec cleanups
 * Thu Dec 14 2023 Piyush Gupta <gpiyush@vmware.com> 2.7.1-12
 - Bump up version to compile with new go
 * Fri Dec 08 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.1-11
