@@ -4,7 +4,7 @@
 Summary:        Linux Guest Environment for Google Compute Engine
 Name:           google-guest-configs
 Version:        20250207.00
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Tools/System Environment
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,13 +19,13 @@ Source1: license.txt
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  dracut
 
-Requires:       google-guest-agent
 Requires:       google-guest-oslogin
 Requires:       dracut
 Requires:       rsyslog
 Requires:       curl
 Requires:       jq
 Requires:       nvme-cli
+Requires:       ethtool
 
 Obsoletes:      google-compute-engine
 Provides:       google-compute-engine = %{version}
@@ -54,7 +54,7 @@ cp -a src/lib/dracut/* %{buildroot}%{dracutdir}/
 %config(noreplace) %{_sysconfdir}/rsyslog.d/90-google.conf
 %config(noreplace) %{_sysconfdir}/sysctl.d/60-gce-network-security.conf
 %config(noreplace) %{_sysconfdir}/systemd/resolved.conf.d/gce-resolved.conf
-%{_sysconfdir}/apt/apt.conf.d/01autoremove-gce
+%exclude %{_sysconfdir}/apt/apt.conf.d/01autoremove-gce
 %{_sysconfdir}/dhcp/dhclient.d/google_hostname.sh
 %{_sysconfdir}/sysconfig/network/scripts/google_up.sh
 %{dracutdir}/modules.d/30gcp-udev-rules/module-setup.sh
@@ -69,5 +69,8 @@ cp -a src/lib/dracut/* %{buildroot}%{dracutdir}/
 %exclude %{_sysconfdir}/NetworkManager/dispatcher.d/google_hostname.sh
 
 %changelog
+* Wed Mar 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20250207.00-2
+- Add ethtool to requires
+- Exclude apt files
 * Thu Feb 13 2025 Tapas Kundu <tapas.kundu@broadcom.com> 20250207.00-1
 - Package https://github.com/GoogleCloudPlatform/guest-configs

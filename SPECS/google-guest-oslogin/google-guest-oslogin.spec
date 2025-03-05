@@ -1,7 +1,7 @@
 Summary:       OS Login Guest Environment for Google Compute Engine
 Name:          google-guest-oslogin
 Version:       20250123.00
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/GoogleCloudPlatform/guest-oslogin
@@ -16,6 +16,7 @@ Source1: license.txt
 BuildRequires: Linux-PAM-devel
 BuildRequires: curl-devel
 BuildRequires: json-c-devel
+BuildRequires: gtest-devel
 BuildRequires: systemd-rpm-macros
 
 Requires:      curl
@@ -27,14 +28,27 @@ Patch0: fix_systemd_prefix_path.patch
 %description
 This repository contains the system components responsible for providing Google Cloud OS Login features on Google Compute Engine instances.
 
+%package test
+Requires:   %{name} = %{version}-%{release}
+Summary:    Test binary for %{name}.
+
+%description test
+%{summary}
+
 %prep
 %autosetup -n guest-oslogin-%{version} -p1
 
 %build
 %make_build
 
+GTEST_DIR=/usr/src/gtest \
+  %make_build -C test test_runner
+
 %install
 %make_install %{?_smp_mflags}
+
+install -vDm 755 test/test_runner \
+  %{buildroot}%{_libexecdir}/%{name}/test_runner
 
 %post
 /sbin/ldconfig
@@ -67,6 +81,13 @@ This repository contains the system components responsible for providing Google 
 %{_mandir}/man8/nss-cache-oslogin.8.gz
 %{_mandir}/man8/nss-oslogin.8.gz
 
+%files test
+%defattr(-,root,root)
+%dir %{_libexecdir}/%{name}
+%{_libexecdir}/%{name}/test_runner
+
 %changelog
+* Wed Mar 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20250123.00-2
+- Introduce test subpackage
 * Mon Feb 03 2025 Tapas Kundu <tapas.kundu@broadcom.com> 20250123.00-1
 - Initial version
