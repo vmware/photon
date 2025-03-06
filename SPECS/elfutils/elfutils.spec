@@ -4,7 +4,7 @@
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
 Version:        0.189
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Tools
 URL:            https://sourceware.org/elfutils
 Vendor:         VMware, Inc.
@@ -15,6 +15,11 @@ Source0: https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.b
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2025-1365.patch
+Patch1: CVE-2025-1372.patch
+Patch2: CVE-2025-1376.patch
+Patch3: CVE-2025-1377.patch
 
 Requires: %{name}-libelf = %{version}-%{release}
 Requires: glibc >= 2.7
@@ -177,7 +182,7 @@ rm -rf %{buildroot}
 %{_libdir}/libdw.so
 %{_libdir}/libdebuginfod.so
 %{_libdir}/pkgconfig/*.pc
-%{_mandir}/man3/elf_*.3*
+%{_mandir}/man3/elf*.3*
 %{_mandir}/man3/debuginfod*.3*
 %{_mandir}/man8/debuginfod*.8*
 %{_mandir}/man7/debuginfod-client-config.7.gz
@@ -206,6 +211,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Wed Mar 5 2025 Oliver Kurth <oliver.kurth@broadcom.com> 0.189-6
+- fixes for CVE-2025-1365, CVE-2025-1372, CVE-2025-1376, CVE-2025-1377
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.189-5
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.189-4
