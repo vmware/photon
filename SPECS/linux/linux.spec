@@ -43,8 +43,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.128
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.130
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -54,7 +54,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=8ab950f34bfba3fd8c8190e09f10535ef4cf5028e34a5c9401dbf24af9b5cf27b9093792e12433a7e0918651023dc96ea17046186f5efc8fb34c0bf0c385f5b1
+%define sha512 linux=546aa361cdda1721509064c8b8a2e05197b4f06d36d84af3c7fd9c165cf72bd2ba6143a902a6c0f6400b38bd0090a67b751b80638c178e56f7f72f87e8a5c538
 
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
@@ -976,6 +976,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Mar 05 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 6.1.130-1
+- Update to version 6.1.130
 * Tue Feb 18 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.128-2
 - HCX patchset: fix deadlock while reading /proc/net/softnet_stat
 * Mon Feb 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.128-1
