@@ -13,15 +13,15 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.27.13
-Release:        8%{?dist}
+Version:        1.27.16
+Release:        1%{?dist}
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}.tar.gz=cffb7b0b29ef65bbf234a2743afac284ab119976eb12a0ea3b26582ae65d58b2b584781f72a252ea8dd1b950aa27622839eaafb3b561447bedd8edde09003b1f
+%define sha512 %{name}-%{version}.tar.gz=a0f7c6be5fccd3a01d3ccb784f66030e3be27a02a974f46297d52ad44eb0a1ceee1ac5d047e58efede9715355d2ce36c920572c28c02951c5958f1e4cc805c0b
 
 Source1: https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.gz
 %define sha512 contrib-%{contrib_ver}=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
@@ -40,6 +40,7 @@ Source6: license.txt
 
 Patch0:         0001-kubelet-cpumanager-introduce-concept-of-isolated-CPU.patch
 Patch1:         0001-Use-vmware.com-isolcpu-property-name.patch
+Patch2:         CVE-2024-10220.patch
 
 BuildRequires:  go
 BuildRequires:  rsync
@@ -86,6 +87,7 @@ A kubelet device plugin for isolcpu resource.
 %prep
 %autosetup -b0 -b5 -N
 %patch0 -p1
+%patch2 -p1
 cd ../isolcpu-plugin-%{isolcpu_ver}
 %patch1 -p1
 
@@ -267,6 +269,8 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
+* Tue Feb 25 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.16-1
+- Update to 1.27.16, Fixes CVE-2024-5321,fix CVE-2024-10220
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.27.13-8
 - Release bump for network_required packages
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-7

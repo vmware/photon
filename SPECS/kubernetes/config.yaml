@@ -34,7 +34,16 @@ sources:
       short_summary: Isolated CPUs Device Plugin for Kubernetes
       supplier: 'Organization: Broadcom, Inc.'
 - archive: kubernetes-1.27.13.tar.gz
+  archive_type: upstream
   archive_sha512sum: cffb7b0b29ef65bbf234a2743afac284ab119976eb12a0ea3b26582ae65d58b2b584781f72a252ea8dd1b950aa27622839eaafb3b561447bedd8edde09003b1f
+  version: "1.27.16"
+  name: kubernetes-1.27.16
+  url: https://github.com/kubernetes/kubernetes/archive/refs/tags/v1.27.16.tar.gz
+  repo_url: https://github.com/kubernetes/kubernetes
+  commit_id: cbb86e0d7f4a049666fac0551e8b02ef3d6c3d9a
+#  skip_list: ['hack/lib/version.sh', 'staging/src/k8s.io/client-go/pkg/version/base.go', 'staging/src/k8s.io/component-base/version/base.go', 'vendor/k8s.io/client-go/pkg/version', 'vendor/k8s.io/component-base/version']
+  skip_list: ['version.sh', 'base.go']
+  missing: []
   skip_validation: true
   spdx:
     package:
