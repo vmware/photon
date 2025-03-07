@@ -109,7 +109,10 @@ class KernelSpecProcessor:
             # Loop through all kernel versions
             for i in range(len(kver_arr)):
                 kver = kver_arr[i]
-                krel = f"{krel_arr[i]}{self.dist}"
+                if linux_flavour == "linux":
+                    krel = f"{krel_arr[i]}%{{?acvp_build:.acvp}}{self.dist}"
+                else:
+                    krel = f"{krel_arr[i]}{self.dist}"
                 build_for_value = build_for_arr[i]
 
                 # Kernel subrelease format
