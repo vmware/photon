@@ -1,6 +1,6 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2zk
+Version:        1.0.2zl
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
@@ -8,8 +8,8 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.openssl.org/source/vmware-OpenSSL_1_0_2zk.tar.gz
-%define sha512 vmware-OpenSSL_1_0_2zk=486e3adbbef1a7b77c8ae360c5ec1ccaa2cd030628c07738a1a6c1d16c0ded3177569633c8b32c4ff5c6b4e19f0ef9185575341ee101c86c7350c4eb40c7a7fd
+Source0: http://www.openssl.org/source/openssl-1.0.2zl.tar.gz
+%define sha512 openssl-1.0.2zl=ea965ec9ec9c973749950836db6b989566d289e91b19da7d7fc86a04943083aac8243f29d6ba93e0d6952ec937ec0784928bc23e64ead083c7f23523249600c5
 
 Source1: rehash_ca_certificates.sh
 
@@ -77,7 +77,7 @@ Perl scripts that convert certificates and keys to various formats.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -n vmware-OpenSSL_1_0_2zk
+%setup -q -n openssl-1.0.2zl
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -165,6 +165,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+* Fri Mar 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.2zl-1
+- Update to openssl-1.0.2zl
 * Wed Sep 04 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.2zk-1
 - Update to openssl-1.0.2zk
 * Thu Feb 01 2024 Mukul Sikka <msikka@vmware.com> 1.0.2zj-1
