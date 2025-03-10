@@ -5,6 +5,29 @@ import sys
 import subprocess
 
 
+logger = None
+
+
+def initLogger():
+    global logger
+
+    if logger:
+        return
+
+    from Logger import Logger
+    from constants import constants
+
+    logPath = constants.logPath
+    if not logPath:
+        return
+
+    logLevel = constants.logLevel
+
+    logger = Logger.getLogger(
+        "CommandUtils", logpath=logPath, loglevel=logLevel
+    )
+
+
 class CommandUtils:
     @staticmethod
     def findFile(filename, sourcePath):
@@ -48,7 +71,13 @@ class CommandUtils:
         clean_env=False,
         shell=False,
     ):
-        print(f"Running {args}", file=sys.stderr)
+        global logger
+        if logger:
+            logger.debug(f"Running {args}")
+        else:
+            initLogger()
+            print(f"Running {args}", file=sys.stderr)
+
         fp = None
         if logfn is not None:
             capture = True
@@ -58,7 +87,9 @@ class CommandUtils:
 
         if logfile is not None:
             if capture:
-                raise Exception("Cannot specify both logfn/capture and logfile")
+                raise Exception(
+                    "Cannot specify both logfn/capture and logfile"
+                )
             fp = logfile
 
         new_env = None

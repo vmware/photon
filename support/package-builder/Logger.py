@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import logging
 
@@ -15,11 +17,11 @@ class Logger(object):
 
     @staticmethod
     def getLogger(mymodule, logpath=None, loglevel="info"):
-        logfile = mymodule + ".log"
+        logfile = f"{mymodule}.log"
         if logpath is not None:
             if not os.path.isdir(logpath):
                 os.makedirs(logpath)
-            logfile = logpath + "/" + logfile
+            logfile = f"{logpath}/{logfile}"
         logger = logging.getLogger(mymodule)
         if not logger.handlers:
             # creating file handler
