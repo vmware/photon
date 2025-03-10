@@ -733,7 +733,7 @@ class RpmBuildTarget:
         CheckTools.check_spec_files()
 
         specPaths = " ".join(constants.specPaths)
-        runCmd(f"{photonDir}/support/spec-generator/generate-specs-from-templates.sh {specPaths} {constants.dist} {Build_Config.dataDir}/kernel-deps.json", shell=True)
+        runCmd(f"{photonDir}/support/spec-generator/generate-specs-from-templates.sh {specPaths} {Build_Config.dataDir}/kernel-deps.json", shell=True)
 
         Utilities(None).generate_dep_lists()
 

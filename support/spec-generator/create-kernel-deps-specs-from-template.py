@@ -7,8 +7,7 @@ from pathlib import Path
 
 
 class KernelSpecProcessor:
-    def __init__(self, driver_info_file, spec_paths, dist):
-        self.dist = dist
+    def __init__(self, driver_info_file, spec_paths):
         self.kvers = defaultdict(list)
         self.krels = defaultdict(list)
         self.build_for = defaultdict(list)
@@ -67,7 +66,6 @@ class KernelSpecProcessor:
                 build_for_match = re.search(r"^\s*%global\s+build_for\s+(.*)",
                                             spec_content, re.MULTILINE)
 
-                release_match = ''.join(re.findall(r'\d+', release_match))
                 if build_for_match:
                     build_for_value = build_for_match.group(1).strip()
                 else:
@@ -109,16 +107,12 @@ class KernelSpecProcessor:
             # Loop through all kernel versions
             for i in range(len(kver_arr)):
                 kver = kver_arr[i]
-                if linux_flavour == "linux":
-                    krel = f"{krel_arr[i]}%{{?acvp_build:.acvp}}{self.dist}"
-                else:
-                    krel = f"{krel_arr[i]}{self.dist}"
                 build_for_value = build_for_arr[i]
 
                 # Kernel subrelease format
                 a, b, *c = map(int, kver.split("."))
                 c = c[0] if c else 0
-                d = int(krel_arr[i])
+                d = int(''.join(re.findall(r'\d+', krel_arr[i])))
                 major_linux_version = f"v{a}.{b}"
                 ksubrel = f".{a:02d}{b:02d}{c:03d}{d:03d}"
                 # Process each spec file
@@ -133,20 +127,19 @@ class KernelSpecProcessor:
                             supported_linux_version = set(value[major_linux_version][linux_flavour])
                             for sp_version in supported_linux_version:
                                 target_fn = f"{spec_name}-{sp_version}-{kver}.spec"
-                                self.__process_spec_file(sp, kver, krel, ksubrel, build_for_value,
+                                self.__process_spec_file(sp, kver, krel_arr[i], ksubrel, build_for_value,
                                                        target_fn, linux_flavour, sp_version)
 
 
 # Main logic for processing specs
-def main(driver_info_file, spec_paths, dist):
+def main(driver_info_file, spec_paths):
     processor = KernelSpecProcessor(driver_info_file,
-                                    spec_paths, dist)
+                                    spec_paths)
     processor.create_specs()
 
 
 if __name__ == "__main__":
     # Provide the path to the JSON file containing kernel driver data
-    spec_paths = sys.argv[1:-2]
-    dist = sys.argv[-2]
+    spec_paths = sys.argv[1:-1]
     driver_info_file = sys.argv[-1]
-    main(driver_info_file, spec_paths, dist)
+    main(driver_info_file, spec_paths)
