@@ -1,7 +1,7 @@
 sources:
 - archive: xml-security-c-2.0.4.tar.gz
   archive_type: upstream
-  archive_sha512sum: a27d76686cc97f7ac60101c562b04b1091b026ac71ed557284cfd91f5b722db97bdc04d7cab65f932c4e34022d15911b0a7cbc7e4c7f3ec1a5860c3f298e1c66
+  archive_sha512sum: 58eadcf8b7472faa3faaef0788fb3815a52f5f537134213f2ff35916957d94982e27dbcd4109d58158c155b11915c6b0daa2f0271d1727113e4592338d499f22
   version: "2.0.4"
   name: santuario-cpp-2.0.4
   url: https://github.com/apache/santuario-cpp/archive/refs/tags/2.0.4.tar.gz

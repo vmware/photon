@@ -9,6 +9,8 @@ import os
 import yaml
 import os.path
 import shutil
+import hashlib
+
 from pathlib import Path
 
 from filecmp import dircmp, DEFAULT_IGNORES
@@ -251,6 +253,16 @@ Commands
             srcdir, f"curl -s -k -L -o {downloadedFile} -f {sourceFileUrl}".split()
         )
 
+    def _verify_shasum(self, downloadedFile, expected_shasum):
+        csum = hashlib.sha512()
+        try:
+            f = open(downloadedFile, "rb")
+            csum.update(f.read())
+        finally:
+            f.close()
+
+        assert csum.hexdigest() == expected_shasum
+
     def build(self):
         parser = argparse.ArgumentParser(description="build")
         parser.add_argument("yaml")
@@ -290,7 +302,8 @@ Commands
                     )
                     downloadedFile = f"{sourcesLocation}/{sourceFile.archive}"
                     sourceFileUrl = f"{sourcesURLBase}/{sourceFile.archive}"
-                    self._download_source(sourcesLocation,downloadedFile, sourceFileUrl)
+                    self._download_source(sourcesLocation, downloadedFile, sourceFileUrl)
+                    self._verify_shasum(downloadedFile, sourceFile.archive_sha512sum)
                 self._writeSchematic(
                     outdir, sourceFile, sourcesLocation, sourcesURLBase
                 )
@@ -443,6 +456,7 @@ Commands
             os.mkdir(extractedDir)
             # Download and extract source
             self._download_source(tmpdir, downloadedFile, sourceFile.url)
+            self._verify_shasum(downloadedFile, sourceFile.archive_sha512sum)
             # Extract the source
             ext = os.path.splitext(downloadedFile)[1]
             if ext != ".gem":

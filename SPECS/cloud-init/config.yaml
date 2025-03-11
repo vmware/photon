@@ -1,7 +1,7 @@
 sources:
 - archive: cloud-init-25.1.tar.gz
   archive_type: upstream
-  archive_sha512sum: df42fb0c97aba37599e3c9431e1dfffc0a3c0ce6d639fd9a980fe0da190c998da3130ab65e3288eecd193967dbaad41aac3c0040244cf6036db9584a3c87538d
+  archive_sha512sum: 5d016bfc4b5c600722b6a8ff460d0e6d896ea5eda9fcde76edc21910f4e2f71d371e019b54e50cb58497b7c0c5c051e12ba88f4c9e7146b3e406f241e7cff039
   name: "cloud-init-25.1"
   version: 25.1
   url: https://github.com/canonical/cloud-init/archive/refs/tags/25.1.tar.gz

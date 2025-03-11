@@ -1,7 +1,7 @@
 sources:
 - archive: xerces-c-3.3.0.tar.xz
   archive_type: upstream
-  archive_sha512sum: 4d58d25b59b4528ad1f2d60681ddd6d2a4dba945613cee9ce978605f006da03703ea85a1bd89f781eeb3ad4dbdadf485a310f29d4c07036b0322f0755f87fddf
+  archive_sha512sum: 8d4dc27a6c97d04703e60a5473163e2616ae68f0917ce11a621a60221970ab599c5f3085eb07a70e545394022ef5029997028e9b5747d4048c541ff75fe92ec1
   skip_validation: true
   name: xerces-c-3.3.0
   version: "3.3.0"
