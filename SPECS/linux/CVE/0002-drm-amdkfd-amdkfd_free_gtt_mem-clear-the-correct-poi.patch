@@ -1,0 +1,121 @@
+From 49e46d2196945cc66d7f9a7a86d23989dce2168a Mon Sep 17 00:00:00 2001
+From: Philip Yang <Philip.Yang@amd.com>
+Date: Mon, 3 Mar 2025 08:29:50 +0000
+Subject: [PATCH] drm/amdkfd: amdkfd_free_gtt_mem clear the correct pointer
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit c86ad39140bbcb9dc75a10046c2221f657e8083b upstream.
+
+Pass pointer reference to amdgpu_bo_unref to clear the correct pointer,
+otherwise amdgpu_bo_unref clear the local variable, the original pointer
+not set to NULL, this could cause use-after-free bug.
+
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reviewed-by: Felix Kuehling <felix.kuehling@amd.com>
+Acked-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[vamsi: Redo the patch for 5.10]
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c         | 14 +++++++-------
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h         |  2 +-
+ drivers/gpu/drm/amd/amdkfd/kfd_device.c            |  4 ++--
+ .../gpu/drm/amd/amdkfd/kfd_device_queue_manager.c  |  2 +-
+ drivers/gpu/drm/amd/amdkfd/kfd_mqd_manager_v9.c    |  2 +-
+ 5 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
+index d3a974d10..7eae06d8c 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
+@@ -310,15 +310,15 @@ int amdgpu_amdkfd_alloc_gtt_mem(struct kgd_dev *kgd, size_t size,
+ 	return r;
+ }
+ 
+-void amdgpu_amdkfd_free_gtt_mem(struct kgd_dev *kgd, void *mem_obj)
++void amdgpu_amdkfd_free_gtt_mem(struct kgd_dev *kgd, void **mem_obj)
+ {
+-	struct amdgpu_bo *bo = (struct amdgpu_bo *) mem_obj;
++	struct amdgpu_bo **bo = (struct amdgpu_bo **) mem_obj;
+ 
+-	amdgpu_bo_reserve(bo, true);
+-	amdgpu_bo_kunmap(bo);
+-	amdgpu_bo_unpin(bo);
+-	amdgpu_bo_unreserve(bo);
+-	amdgpu_bo_unref(&(bo));
++	amdgpu_bo_reserve(*bo, true);
++	amdgpu_bo_kunmap(*bo);
++	amdgpu_bo_unpin(*bo);
++	amdgpu_bo_unreserve(*bo);
++	amdgpu_bo_unref(bo);
+ }
+ 
+ int amdgpu_amdkfd_alloc_gws(struct kgd_dev *kgd, size_t size,
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h
+index 32e385f28..24848048f 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h
+@@ -183,7 +183,7 @@ int amdgpu_amdkfd_evict_userptr(struct kgd_mem *mem, struct mm_struct *mm)
+ int amdgpu_amdkfd_alloc_gtt_mem(struct kgd_dev *kgd, size_t size,
+ 				void **mem_obj, uint64_t *gpu_addr,
+ 				void **cpu_ptr, bool mqd_gfx9);
+-void amdgpu_amdkfd_free_gtt_mem(struct kgd_dev *kgd, void *mem_obj);
++void amdgpu_amdkfd_free_gtt_mem(struct kgd_dev *kgd, void **mem_obj);
+ int amdgpu_amdkfd_alloc_gws(struct kgd_dev *kgd, size_t size, void **mem_obj);
+ void amdgpu_amdkfd_free_gws(struct kgd_dev *kgd, void *mem_obj);
+ int amdgpu_amdkfd_add_gws_to_process(void *info, void *gws, struct kgd_mem **mem);
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device.c b/drivers/gpu/drm/amd/amdkfd/kfd_device.c
+index 148e43dee..230e9b362 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_device.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_device.c
+@@ -782,7 +782,7 @@ bool kgd2kfd_device_init(struct kfd_dev *kfd,
+ kfd_doorbell_error:
+ 	kfd_gtt_sa_fini(kfd);
+ kfd_gtt_sa_init_error:
+-	amdgpu_amdkfd_free_gtt_mem(kfd->kgd, kfd->gtt_mem);
++	amdgpu_amdkfd_free_gtt_mem(kfd->kgd, &kfd->gtt_mem);
+ alloc_gtt_mem_failure:
+ 	if (kfd->gws)
+ 		amdgpu_amdkfd_free_gws(kfd->kgd, kfd->gws);
+@@ -803,7 +803,7 @@ void kgd2kfd_device_exit(struct kfd_dev *kfd)
+ 		kfd_doorbell_fini(kfd);
+ 		ida_destroy(&kfd->doorbell_ida);
+ 		kfd_gtt_sa_fini(kfd);
+-		amdgpu_amdkfd_free_gtt_mem(kfd->kgd, kfd->gtt_mem);
++		amdgpu_amdkfd_free_gtt_mem(kfd->kgd, &kfd->gtt_mem);
+ 		if (kfd->gws)
+ 			amdgpu_amdkfd_free_gws(kfd->kgd, kfd->gws);
+ 	}
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
+index 195b7e02d..62f7aa618 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
+@@ -1971,7 +1971,7 @@ static void deallocate_hiq_sdma_mqd(struct kfd_dev *dev,
+ {
+ 	WARN(!mqd, "No hiq sdma mqd trunk to free");
+ 
+-	amdgpu_amdkfd_free_gtt_mem(dev->kgd, mqd->gtt_mem);
++	amdgpu_amdkfd_free_gtt_mem(dev->kgd, &mqd->gtt_mem);
+ }
+ 
+ void device_queue_manager_uninit(struct device_queue_manager *dqm)
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_mqd_manager_v9.c b/drivers/gpu/drm/amd/amdkfd/kfd_mqd_manager_v9.c
+index dadeb2013..b4727b768 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_mqd_manager_v9.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_mqd_manager_v9.c
+@@ -293,7 +293,7 @@ static void free_mqd(struct mqd_manager *mm, void *mqd,
+ 	struct kfd_dev *kfd = mm->dev;
+ 
+ 	if (mqd_mem_obj->gtt_mem) {
+-		amdgpu_amdkfd_free_gtt_mem(kfd->kgd, mqd_mem_obj->gtt_mem);
++		amdgpu_amdkfd_free_gtt_mem(kfd->kgd, &mqd_mem_obj->gtt_mem);
+ 		kfree(mqd_mem_obj);
+ 	} else {
+ 		kfd_gtt_sa_free(mm->dev, mqd_mem_obj);
+-- 
+2.40.4
+

@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.235
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -387,6 +387,20 @@ Patch204: 0001-drm-prime-Fix-use-after-free-in-mmap-with-drm_gem_tt.patch
 # Fix CVE-2021-47101
 Patch205: 0001-net-asix-fix-uninit-value-bugs.patch
 Patch206: 0002-asix-fix-uninit-value-in-asix_mdio_read.patch
+
+# Fix CVE-2023-52531
+Patch207: 0001-wifi-iwlwifi-mvm-Fix-a-memory-corruption-issue.patch
+
+# Fix CVE-2024-49991
+Patch208: 0002-drm-amdkfd-amdkfd_free_gtt_mem-clear-the-correct-poi.patch
+
+# Fix CVE-2024-50067
+Patch209: 0003-uprobes-encapsulate-preparation-of-uprobe-args-buffe.patch
+Patch210: 0004-uprobe-avoid-out-of-bounds-memory-access-of-fetching.patch
+
+# Fix CVE-2023-52621
+Patch211: 0005-bpf-Allow-RCU-protected-lookups-to-happen-from-bh-co.patch
+Patch212: 0006-bpf-Check-rcu_read_lock_trace_held-before-calling-bp.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1056,6 +1070,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Apr 14 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.235-5
+- Fix CVE-2023-52531, CVE-2024-49991, CVE-2024-50067, CVE-2023-52621
 * Thu Apr 10 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.235-4
 - Fix CVE-2025-21863
 * Thu Apr 03 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.235-3

@@ -1,0 +1,155 @@
+From 0b0c3289100cbc4d9f496ba643b049598e222523 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Date: Tue, 4 Mar 2025 15:21:43 +0000
+Subject: [PATCH] bpf: Allow RCU-protected lookups to happen from bh context
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit 694cea395fded425008e93cd90cfdf7a451674af upstream.
+
+XDP programs are called from a NAPI poll context, which means the RCU
+reference liveness is ensured by local_bh_disable(). Add
+rcu_read_lock_bh_held() as a condition to the RCU checks for map lookups so
+lockdep understands that the dereferences are safe from inside *either* an
+rcu_read_lock() section *or* a local_bh_disable() section. While both
+bh_disabled and rcu_read_lock() provide RCU protection, they are
+semantically distinct, so we need both conditions to prevent lockdep
+complaints.
+
+This change is done in preparation for removing the redundant
+rcu_read_lock()s from drivers.
+
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/bpf/20210624160609.292325-5-toke@redhat.com
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ kernel/bpf/hashtab.c  | 18 ++++++++++++------
+ kernel/bpf/helpers.c  |  6 +++---
+ kernel/bpf/lpm_trie.c |  6 ++++--
+ 3 files changed, 19 insertions(+), 11 deletions(-)
+
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 4c7cab79d..213231b36 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -585,7 +585,8 @@ static void *__htab_map_lookup_elem(struct bpf_map *map, void *key)
+ 	struct htab_elem *l;
+ 	u32 hash, key_size;
+ 
+-	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
++		     !rcu_read_lock_bh_held());
+ 
+ 	key_size = map->key_size;
+ 
+@@ -974,7 +975,8 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
+ 		/* unknown flags */
+ 		return -EINVAL;
+ 
+-	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
++		     !rcu_read_lock_bh_held());
+ 
+ 	key_size = map->key_size;
+ 
+@@ -1065,7 +1067,8 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
+ 		/* unknown flags */
+ 		return -EINVAL;
+ 
+-	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
++		     !rcu_read_lock_bh_held());
+ 
+ 	key_size = map->key_size;
+ 
+@@ -1129,7 +1132,8 @@ static int __htab_percpu_map_update_elem(struct bpf_map *map, void *key,
+ 		/* unknown flags */
+ 		return -EINVAL;
+ 
+-	WARN_ON_ONCE(!rcu_read_lock_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
++			     !rcu_read_lock_bh_held());
+ 
+ 	key_size = map->key_size;
+ 
+@@ -1253,7 +1257,8 @@ static int htab_map_delete_elem(struct bpf_map *map, void *key)
+ 	u32 hash, key_size;
+ 	int ret = -ENOENT;
+ 
+-	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
++		     !rcu_read_lock_bh_held());
+ 
+ 	key_size = map->key_size;
+ 
+@@ -1285,7 +1290,8 @@ static int htab_lru_map_delete_elem(struct bpf_map *map, void *key)
+ 	u32 hash, key_size;
+ 	int ret = -ENOENT;
+ 
+-	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
++		     !rcu_read_lock_bh_held());
+ 
+ 	key_size = map->key_size;
+ 
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index c5b4834a2..f41a96105 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -29,7 +29,7 @@
+  */
+ BPF_CALL_2(bpf_map_lookup_elem, struct bpf_map *, map, void *, key)
+ {
+-	WARN_ON_ONCE(!rcu_read_lock_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_bh_held());
+ 	return (unsigned long) map->ops->map_lookup_elem(map, key);
+ }
+ 
+@@ -45,7 +45,7 @@ const struct bpf_func_proto bpf_map_lookup_elem_proto = {
+ BPF_CALL_4(bpf_map_update_elem, struct bpf_map *, map, void *, key,
+ 	   void *, value, u64, flags)
+ {
+-	WARN_ON_ONCE(!rcu_read_lock_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_bh_held());
+ 	return map->ops->map_update_elem(map, key, value, flags);
+ }
+ 
+@@ -62,7 +62,7 @@ const struct bpf_func_proto bpf_map_update_elem_proto = {
+ 
+ BPF_CALL_2(bpf_map_delete_elem, struct bpf_map *, map, void *, key)
+ {
+-	WARN_ON_ONCE(!rcu_read_lock_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_bh_held());
+ 	return map->ops->map_delete_elem(map, key);
+ }
+ 
+diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
+index d833d74c1..1ddac6dab 100644
+--- a/kernel/bpf/lpm_trie.c
++++ b/kernel/bpf/lpm_trie.c
+@@ -235,7 +235,8 @@ static void *trie_lookup_elem(struct bpf_map *map, void *_key)
+ 
+ 	/* Start walking the trie from the root node ... */
+ 
+-	for (node = rcu_dereference(trie->root); node;) {
++	for (node = rcu_dereference_check(trie->root, rcu_read_lock_bh_held());
++	     node;) {
+ 		unsigned int next_bit;
+ 		size_t matchlen;
+ 
+@@ -267,7 +268,8 @@ static void *trie_lookup_elem(struct bpf_map *map, void *_key)
+ 		 * traverse down.
+ 		 */
+ 		next_bit = extract_bit(key->data, node->prefixlen);
+-		node = rcu_dereference(node->child[next_bit]);
++		node = rcu_dereference_check(node->child[next_bit],
++					     rcu_read_lock_bh_held());
+ 	}
+ 
+ 	if (!found)
+-- 
+2.40.4
+

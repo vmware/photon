@@ -1,0 +1,64 @@
+From 1c73c40b5c95a18496c788817ba2302b6342c37c Mon Sep 17 00:00:00 2001
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Date: Thu, 27 Feb 2025 10:23:47 +0000
+Subject: [PATCH] wifi: iwlwifi: mvm: Fix a memory corruption issue
+
+[ Upstream commit 8ba438ef3cacc4808a63ed0ce24d4f0942cfe55d ]
+
+A few lines above, space is kzalloc()'ed for:
+	sizeof(struct iwl_nvm_data) +
+	sizeof(struct ieee80211_channel) +
+	sizeof(struct ieee80211_rate)
+
+'mvm->nvm_data' is a 'struct iwl_nvm_data', so it is fine.
+
+At the end of this structure, there is the 'channels' flex array.
+Each element is of type 'struct ieee80211_channel'.
+So only 1 element is allocated in this array.
+
+When doing:
+  mvm->nvm_data->bands[0].channels = mvm->nvm_data->channels;
+We point at the first element of the 'channels' flex array.
+So this is fine.
+
+However, when doing:
+  mvm->nvm_data->bands[0].bitrates =
+			(void *)((u8 *)mvm->nvm_data->channels + 1);
+because of the "(u8 *)" cast, we add only 1 to the address of the beginning
+of the flex array.
+
+It is likely that we want point at the 'struct ieee80211_rate' allocated
+just after.
+
+Remove the spurious casting so that the pointer arithmetic works as
+expected.
+
+Fixes: 8ca151b568b6 ("iwlwifi: add the MVM driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Gregory Greenman <gregory.greenman@intel.com>
+Link: https://lore.kernel.org/r/23f0ec986ef1529055f4f93dcb3940a6cf8d9a94.1690143750.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Vamsi: The u8* typecast is not present, fixed the parentheses
+around void *]
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/fw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+index 553117e8f..f19bf56d5 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+@@ -749,7 +749,7 @@ int iwl_run_init_mvm_ucode(struct iwl_mvm *mvm, bool read_nvm)
+ 		mvm->nvm_data->bands[0].n_channels = 1;
+ 		mvm->nvm_data->bands[0].n_bitrates = 1;
+ 		mvm->nvm_data->bands[0].bitrates =
+-			(void *)mvm->nvm_data->channels + 1;
++			(void *)(mvm->nvm_data->channels + 1);
+ 		mvm->nvm_data->bands[0].bitrates->hw_value = 10;
+ 	}
+ 
+-- 
+2.40.4
+
