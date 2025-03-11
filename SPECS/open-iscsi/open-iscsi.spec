@@ -1,7 +1,7 @@
 Summary:        iSCSI tools for Linux
 Name:           open-iscsi
 Version:        2.1.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/open-iscsi/open-iscsi
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -87,6 +87,8 @@ make DESTDIR=%{buildroot} install_systemd %{?_smp_mflags}
 %{_libdir}/pkgconfig/libopeniscsiusr.pc
 
 %changelog
+* Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.1.6-4
+- Bump-up to build with kmod-34.1
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.6-3
 - Release bump for SRP compliance
 * Mon Dec 18 2023 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.1.6-2

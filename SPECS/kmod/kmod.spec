@@ -1,23 +1,22 @@
 Summary:        Utilities for loading kernel modules
 Name:           kmod
-Version:        30
-Release:        6%{?dist}
+Version:        34.1
+Release:        1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.kernel.org/pub/linux/utils/kernel/kmod/%{name}-%{version}.tar.xz
-%define sha512 %{name}-%{version}=e2cd34e600a72e44710760dfda9364b790b8352a99eafbd43e683e4a06f37e6b5c0b5d14e7c28070e30fc5fc6ceddedf7b97f3b6c2c5c2d91204fefd630b9a3e
+%define sha512 %{name}-%{version}=f1f5026f31747270aea8b65df9eca95cc253e48622bfdb87e016e272a79ad1e90c0026cdf83a947fd53d8cbc1be1c546a5116db9617b690ab1b80f9792b6f5b2
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: modinfo-show-signature-info-only-when-openssl.patch
-
 BuildRequires:  xz-devel
 BuildRequires:  zlib-devel
 BuildRequires:  openssl-devel
+BuildRequires:  gtk-doc
 
 Requires: xz-libs
 Requires: zlib
@@ -36,21 +35,18 @@ It contains the libraries and header files to create applications.
 %autosetup -p1
 
 %build
+autoreconf -vfi
 %configure \
     --disable-manpages \
     --with-xz \
     --with-zlib \
+    --with-openssl \
     --disable-silent-rules
 
 %make_build
 
 %install
 %make_install pkgconfigdir=%{_libdir}/pkgconfig %{?_smp_mflags}
-
-install -vdm 755 %{buildroot}%{_sbindir}
-for target in depmod insmod lsmod modinfo modprobe rmmod; do
-  ln -srv %{buildroot}%{_bindir}/kmod %{buildroot}%{_sbindir}/$target
-done
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -61,14 +57,23 @@ done
 %{_sbindir}/*
 %{_libdir}/*.so.*
 %{_datadir}/bash-completion/completions/%{name}
+%{_datadir}/bash-completion/completions/insmod
+%{_datadir}/bash-completion/completions/lsmod
+%{_datadir}/bash-completion/completions/rmmod
+%exclude %{_datadir}/fish
+%exclude %{_datadir}/zsh
 
 %files devel
 %defattr(-,root,root)
+%{_datadir}/pkgconfig/%{name}.pc
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 %{_libdir}/*.so
 
 %changelog
+* Mon Mar 10 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 34.1-1
+- Build with openssl
+- This version fixes problem while fetching hash algo
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 30-6
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 30-5

@@ -1,7 +1,7 @@
 Summary:        Manage "libnvdimm" subsystem devices (Non-volatile Memory)
 Name:           ndctl
 Version:        74
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          System Environment/Base
 Url:            https://github.com/pmem/ndctl
 Vendor:         VMware, Inc.
@@ -148,6 +148,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libcxl.pc
 
 %changelog
+* Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 74-4
+- Bump-up to build with kmod-34.1
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 74-3
 - Bump version as a part of meson upgrade
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 74-2

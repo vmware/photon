@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -702,6 +702,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 253.19-10
+- Bump-up to build with kmod-34.1
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 253.19-9
 - Bump version as a part of meson upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 253.19-8

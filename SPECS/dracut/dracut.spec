@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        10%{?dist}
+Release:        11%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 URL:            https://github.com/dracutdevs/dracut/wiki
@@ -160,6 +160,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 059-11
+- Bump-up to build with kmod-34.1
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 059-10
 - Release bump for SRP compliance
 * Tue Oct 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 059-9

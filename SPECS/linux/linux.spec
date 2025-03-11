@@ -44,7 +44,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.130
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -976,6 +976,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.130-3
+- Bump-up to build with kmod-34.1
 * Mon Mar 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.130-2
 - Enable CONFIG_NFT_FIB_IPV4 and CONFIG_NFT_FIB_IPV6
 * Wed Mar 05 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 6.1.130-1

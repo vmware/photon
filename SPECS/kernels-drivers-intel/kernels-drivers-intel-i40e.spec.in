@@ -18,14 +18,14 @@ Distribution:   Photon
 Source0: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{src_ver}/i40e-%{src_ver}.tar.gz
 
 %if "%{src_ver}" == "2.25.7"
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        4%{?kernelsubrelease}%{?dist}
 %define sha512 i40e-%{src_ver}=d1a206806be1b2481704a9d928c3d77769ef6f1d94798b8a35258e191a091252c75222b04a85049b52fb06ce68b8bd8543ddcc0e938a6ec75320432d75f71530
 
 Patch0:         i40e-v2.25.7-Add-support-for-gettimex64-interface.patch
 %endif
 
 %if "%{src_ver}" == "2.23.17"
-Release:        5%{?kernelsubrelease}%{?dist}
+Release:        6%{?kernelsubrelease}%{?dist}
 %define sha512 i40e-%{src_ver}=5dbe5186f23d14aac185f74283377d9bfc0837ab16b145a107f735d5439a207e27db871e278656cd06ba595f426d7095a294d39110df5ad6b30ea9f6d3a2a3a7
 
 Patch0:         i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
@@ -33,7 +33,7 @@ Patch1:         i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defin
 %endif
 
 %if "%{src_ver}" == "2.22.18"
-Release:        5%{?kernelsubrelease}%{?dist}
+Release:        6%{?kernelsubrelease}%{?dist}
 %define sha512 i40e-%{src_ver}=042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
 
 Patch0:         i40e-v2.22.18-linux-rt-i40e-Fix-build-errors-on-kernel-6.1.y.patch
@@ -98,6 +98,8 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 
 %changelog
 %if "%{src_ver}" == "2.25.7"
+* Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-4
+- Bump-up to build with kmod-34.1
 * Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> %{PKG_VERSION}-3
 - Release bump for SRP compliance
 * Wed Jun 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{PKG_VERSION}-2
@@ -107,6 +109,8 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %endif
 
 %if "%{src_ver}" != "2.25.7"
+* Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-6
+- Bump-up to build with kmod-34.1
 * Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> %{PKG_VERSION}-5
 - Release bump for SRP compliance
 * Wed Jun 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{PKG_VERSION}-4

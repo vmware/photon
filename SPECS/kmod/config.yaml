@@ -1,25 +1,42 @@
 sources:
-- archive: kmod-30.tar.xz
-  archive_sha512sum: e2cd34e600a72e44710760dfda9364b790b8352a99eafbd43e683e4a06f37e6b5c0b5d14e7c28070e30fc5fc6ceddedf7b97f3b6c2c5c2d91204fefd630b9a3e
-  skip_validation: true
+- archive: kmod-34.1.tar.xz
+  archive_type: upstream
+  version: 34.1
+  name: kmod-34.1
+  url: https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-34.1.tar.xz
+  repo_url: https://git.kernel.org/pub/scm/utils/kernel/kmod/kmod.git
+  commit_id: c4f9d944940550b0cb36e071bca995706c1bb6fa
+  skip_list: []
+  missing:
+  - gtk-doc.m4
+  - build-aux
+  - configure
+  - config.h.in
+  - ltversion.m4
+  - ltsugar.m4
+  - autom4te.cache
+  - aclocal.m4
+  - ltoptions.m4
+  - lt~obsolete.m4
+  - libtool.m4
+  - Makefile.in
+  - gtk-doc.make
+  archive_sha512sum: f1f5026f31747270aea8b65df9eca95cc253e48622bfdb87e016e272a79ad1e90c0026cdf83a947fd53d8cbc1be1c546a5116db9617b690ab1b80f9792b6f5b2
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'The Kmod package contains libraries and utilities for
         loading kernel modules '
       home_page: http://www.kernel.org/pub/linux/utils/kernel/kmod
-      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND X11
-        AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later AND
-        GPL-1.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND FSFULLRWD AND
-        GPL-2.0-or-later WITH Autoconf-exception-2.0 AND FSFULLR AND GPL-3.0-or-later
-        WITH Autoconf-exception-2.0 AND LGPL-2.1-or-later AND GPL-2.0-only AND GPL-2.0-or-later
-        WITH Libtool-exception AND MIT
-      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND
-        FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later AND
-        GPL-1.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND FSFULLRWD AND
-        GPL-2.0-or-later WITH Autoconf-exception-2.0 AND FSFULLR AND GPL-3.0-or-later
-        WITH Autoconf-exception-2.0 AND LGPL-2.1-or-later AND GPL-2.0-only AND GPL-2.0-or-later
-        WITH Libtool-exception AND MIT
+      license_concluded: FSFULLRWD AND GPL-2.0-only AND FSFUL AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-3.0-or-later AND LGPL-2.1-only AND GPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Autoconf-exception-macro AND LGPL-2.1-or-later AND
+        LGPL-2.0-or-later AND FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later
+      license_declared: FSFULLRWD AND GPL-2.0-only AND FSFUL AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-3.0-or-later AND LGPL-2.1-only AND GPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Autoconf-exception-macro AND LGPL-2.1-or-later AND
+        LGPL-2.0-or-later AND FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-1.0-or-later
       short_summary: Utilities for loading kernel modules
       supplier: 'Organization: Broadcom, Inc.'

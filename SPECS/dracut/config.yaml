@@ -10,11 +10,9 @@ sources:
         which are driven by the event-based udev. Having root on MD, DM, LVM2, LUKS
         is supported as well as NFS, iSCSI, NBD, FCoE with the dracut-network package. '
       home_page: https://github.com/dracutdevs/dracut/wiki
-      license_concluded: GPL-1.0-or-later AND LGPL-2.1-or-later AND DOC AND GPL-2.0-only
-        AND (LGPL-2.0-or-later AND GPL-2.0-or-later) AND GPL-3.0-or-later AND BSD-3-Clause
-        AND LGPL-2.0-or-later AND LGPL-2.1-only AND GPL-2.0-or-later
-      license_declared: GPL-1.0-or-later AND LGPL-2.1-or-later AND DOC AND GPL-2.0-only
-        AND (LGPL-2.0-or-later AND GPL-2.0-or-later) AND GPL-3.0-or-later AND BSD-3-Clause
-        AND LGPL-2.0-or-later AND LGPL-2.1-only AND GPL-2.0-or-later
+      license_concluded: GPL-3.0-or-later AND LGPL-2.1-only AND BSD-3-Clause AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later AND GPL-2.0-only AND LGPL-2.1-or-later AND DOC AND GPL-1.0-or-later
+      license_declared: GPL-3.0-or-later AND LGPL-2.1-only AND BSD-3-Clause AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later AND GPL-2.0-only AND LGPL-2.1-or-later AND DOC AND GPL-1.0-or-later
       short_summary: dracut to create initramfs
       supplier: 'Organization: Broadcom, Inc.'
