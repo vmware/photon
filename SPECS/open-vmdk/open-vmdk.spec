@@ -1,14 +1,14 @@
 Summary:       Tools to create OVA files from raw disk images
 Name:          open-vmdk
-Version:       0.3.10
-Release:       2%{?dist}
+Version:       0.3.11
+Release:       1%{?dist}
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/open-vmdk
 Group:         Development/Tools
 
 Source0:       https://github.com/vmware/open-vmdk/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a1b79ccf6e9fbbc9f92d58a756843303872d67bf6b0f99cb7bd4377bc3604b8c27b781b0e90598b3fbba552b813d4150672cee3444791e4f322a681dc1aed5e7
+%define sha512 %{name}=e9ece44aed19baa139ad8c58a93c32d62d8121b4660f553688bdd8b77cb30a86905199984e21ba82e4638f3bc0a2c1d612feb91a8adeda8ff486bba951f405ec
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -29,6 +29,19 @@ Tools to create OVA files from raw disk images. This includes 'vmdk-convert'
 to create VMDKs from raw disk images, and 'ova-compose' to create OVA files
 that can be imported by VMware vSphere or Fusion and Workstation.
 
+%package -n ovfenv
+Summary:       Tools to get or set OVF environment variables
+Group:         Development/Tools
+BuildArch:     noarch
+Requires:      open-vm-tools
+Requires:      python3
+Requires:      python3-libxml2
+
+%description -n ovfenv
+Show the value of an OVF property, whether the properties
+were presented to this VM in guestinfo or on a cdrom.
+Optionally, allows a property value to be modified.
+
 %prep
 %autosetup
 
@@ -46,10 +59,19 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/%{name}.conf
-%{_bindir}/*
+%{_bindir}/mkova.sh
+%{_bindir}/ova-compose
+%{_bindir}/vmdk-convert
 %{_datadir}/%{name}/*
 
+%files -n ovfenv
+%defattr(-,root,root)
+%{_bindir}/ovfenv
+
 %changelog
+* Tue Mar 11 2025 Oliver Kurth <oliver.kurth@broadcom.com> 0.3.11-1
+- update to 0.3.11
+- add ovfenv utility
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.3.10-2
 - Release bump for SRP compliance
 * Mon Jul 01 2024 Oliver Kurth <oliver.kurth@broadcom.com> 0.3.10-1

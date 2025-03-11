@@ -1,6 +1,6 @@
 sources:
-- archive: open-vmdk-0.3.10.tar.gz
-  archive_sha512sum: a1b79ccf6e9fbbc9f92d58a756843303872d67bf6b0f99cb7bd4377bc3604b8c27b781b0e90598b3fbba552b813d4150672cee3444791e4f322a681dc1aed5e7
+- archive: open-vmdk-0.3.11.tar.gz
+  archive_sha512sum: e9ece44aed19baa139ad8c58a93c32d62d8121b4660f553688bdd8b77cb30a86905199984e21ba82e4638f3bc0a2c1d612feb91a8adeda8ff486bba951f405ec
   skip_validation: true
   spdx:
     package:
