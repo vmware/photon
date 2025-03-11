@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.39
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -38,6 +38,7 @@ Patch21:        binutils-CVE-2023-25585.patch
 Patch22:        binutils-CVE-2022-48064.patch
 Patch23:        binutils-CVE-2022-48065.patch
 Patch24:        binutils-CVE-2022-48063.patch
+Patch25:        binutils-CVE-2025-0840.patch
 
 Requires:       %{name}-libs = %{version}-%{release}
 
@@ -169,6 +170,8 @@ make %{?_smp_mflags} -k check > tests.sum 2>&1
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Tue Mar 11 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.39-10
+- Fix CVE-2025-0840
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.39-9
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-8
