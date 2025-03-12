@@ -327,7 +327,7 @@ Commands
             archive_name=sourceFile.archive,
             archive_spdx=sourceFile.spdx,
         )
-        source_dir = sourceFile.name
+        source_dir = sourceFile.archive
         source_dir_path = os.path.join(outdir, source_dir)
         if not os.path.exists(source_dir_path):
             os.makedirs(source_dir_path)
