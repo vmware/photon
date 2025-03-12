@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.17
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
@@ -41,6 +41,7 @@ practice of clear text passwords.
 %package devel
 Summary:    Libraries and header files for krb5
 Requires:   %{name} = %{version}-%{release}
+Requires:  e2fsprogs-devel
 %description devel
 Static libraries and header files for the support library for krb5
 
@@ -142,6 +143,9 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+* Fri Aug 30 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 1.17-13
+- Include e2fsprogs-devel as Requires for krb5 devel package
+- This needed to resolve linking issues in elfutils build
 * Fri Aug 30 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 1.17-12
 - patched CVE-2024-37370,CVE-2024-37371
 * Mon Jun 03 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 1.17-11

@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.7.1
-Release:        4%{?dist}
+Version:        8.12.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -9,18 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
-%define sha512 %{name}=5bbde9d5648e9226f5490fa951690aaf159149345f3a315df2ba58b2468f3e59ca32e8a49734338afc861803a4f81caac6d642a4699b72c6310ebfb1f618aad2
-
-Patch0:        CVE-2024-6197.patch
-Patch1:        0001-CVE-2024-7264.patch
-Patch2:        0002-CVE-2024-7264.patch
-Patch3:        CVE-2024-9681_prep.patch
-Patch4:        CVE-2024-9681.patch
+%define sha512 %{name}=ed35f0020541050ce387f4ba80f9e87562ececd99082da1bae85840dee81c49b86a4a55909e15fcbf4eb116106a796c29a9b2678dee11326f80db75992c6edc5
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
 BuildRequires: krb5-devel
-BuildRequires: libssh2-devel
+BuildRequires: libssh2-devel >= 1.11.0
 
 %if 0%{?with_check}
 BuildRequires: python3
@@ -43,6 +37,8 @@ functions like streaming media.
 %package        devel
 Summary:        Libraries and header files for curl
 Requires:       %{name} = %{version}-%{release}
+Requires:       libssh2-devel >= 1.11.0
+Requires:       krb5-devel
 
 %description    devel
 Static libraries and header files for the support library for curl
@@ -70,6 +66,7 @@ This package contains minimal set of shared curl libraries.
     --with-ssl \
     --with-gssapi \
     --with-libssh2 \
+    --without-libpsl \
     --with-ca-bundle=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
 %make_build
@@ -110,6 +107,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Wed Feb 05 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.12.0-1
+- Version upgrade
+- Fixes CVE-2024-8096,CVE-2024-11053,CVE-2025-0167
 * Mon Nov 04 2024 Tapas Kundu <tapas.kundu@broadcom.com> 8.7.1-4
 - Fix CVE-2024-9681
 * Fri Aug 30 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 8.7.1-3
