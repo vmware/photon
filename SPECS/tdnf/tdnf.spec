@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.10
+Version:        3.5.11
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -8,7 +8,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=d565af6a880b265c5fb030b6b90d429694af0d0466e2f22fc936185b672b10c7ced085bf19f66bbcc82ecd57eb6d8f256c3833afc02720222f06b6a105639b25
+%define sha512  %{name}=8e739ccd34be84d78a03bd7e92c139739e8be031cba7bba012f806e8d11655ea8f9edf4416b8abf1b7a7072c5231f18e5995b8c381f0f85a5ac323c721759f1b
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -297,6 +297,9 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Wed Mar 12 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.11-1
+- update to 3.5.11
+- fix for SRPM install when binary package is installed #515
 * Wed Dec 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.10-1
 - Upgrade to v3.5.10
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 3.5.9-2
