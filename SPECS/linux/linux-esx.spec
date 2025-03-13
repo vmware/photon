@@ -464,7 +464,6 @@ BuildRequires: kbd
 BuildRequires: kmod-devel
 BuildRequires: glib-devel
 BuildRequires: xerces-c-devel
-BuildRequires: xml-security-c-devel
 BuildRequires: libdnet-devel
 BuildRequires: libmspack-devel
 BuildRequires: Linux-PAM-devel
