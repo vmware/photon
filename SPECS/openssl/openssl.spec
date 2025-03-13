@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -21,7 +21,8 @@ Source5: dsapub_noparam.der
 %endif
 
 Patch0: openssl-cnf.patch
-Patch1: CVE-2023-50782.patch
+Patch1: add-FIPS_mode-compatibility-macro.patch
+Patch2: CVE-2023-50782.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -113,12 +114,14 @@ cp %{SOURCE5} test/recipes/91-test_pkey_check_data/
 make tests %{?_smp_mflags}
 %endif
 
-%ldconfig_scriptlets
+%postun
+/sbin/ldconfig
 
 %post
 if [ "$1" = 2 ] && [ -s "%{_sysconfdir}/ssl/provider_fips.cnf" ]; then
   sed -i '/^#.include \/etc\/ssl\/provider_fips.cnf/s/^#//g' %{_sysconfdir}/ssl/distro.cnf
 fi
+/sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -166,6 +169,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Mar 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.16-2
+- Add fips mode compatibility macro
 * Mon Feb 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.16-1
 - Update to 3.0.16
 * Tue Sep 03 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.15-1
