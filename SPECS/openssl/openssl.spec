@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -21,7 +21,8 @@ Source6: license.txt
 %include %{SOURCE6}
 
 Patch0: openssl-cnf.patch
-Patch1: CVE-2023-50782.patch
+Patch1: add-FIPS_mode-compatibility-macro.patch
+Patch2: CVE-2023-50782.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -191,6 +192,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Mar 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.16-2
+- Add fips mode compatibility macro
 * Mon Feb 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.16-1
 - Update to 3.0.16
 * Mon Jan 27 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 3.0.15-7
