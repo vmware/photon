@@ -21,8 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.6.28
-Release:        2%{?dist}
-License:        GPLv2
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -75,6 +74,9 @@ Source39: fips_canister_wrapper_common.h
 Source40: fips_canister_wrapper_internal.h
 Source41: fips_canister_wrapper_internal.c
 %endif
+
+Source42: license-esx.txt
+%include %{SOURCE42}
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -439,6 +441,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.6.28-3
+- Release bump for SRP compliance
 * Wed Oct 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-2
 - Fix ptp_vmw for ptp_vmw_adjfine
 * Thu Sep 05 2024 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.6.28-1

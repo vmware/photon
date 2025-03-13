@@ -30,8 +30,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.6.30
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
-License:        GPLv2
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -117,6 +116,9 @@ Source48: gen_canister_relocs.c
 Source49: check_kernel_struct_in_canister.inc
 %endif
 %endif
+
+Source50: license.txt
+%include %{SOURCE50}
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -864,6 +866,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.6.30-3
+- Release bump for SRP compliance
 * Mon Jan 27 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.6.30-2
 - Build canister for 6.6.30 kernel
 * Wed Oct 23 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.6.30-1

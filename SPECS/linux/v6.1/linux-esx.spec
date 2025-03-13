@@ -21,8 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.83
-Release:        2%{?dist}
-License:        GPLv2
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -77,6 +76,9 @@ Source41: fips_canister_wrapper_internal.c
 %endif
 # CVE
 Source42: CVE-2023-39191.patches
+
+Source43: license-esx.txt
+%include %{SOURCE43}
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -469,6 +471,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.83-3
+- Release bump for SRP compliance
 * Mon Apr 29 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2
 - Patched CVE-2024-26643
 * Mon Apr 29 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.83-1

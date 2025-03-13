@@ -14,8 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.6.30
-Release:        1%{?dist}
-License:        GPLv2
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -80,6 +79,9 @@ Source39: fips_canister_wrapper_common.h
 Source40: fips_canister_wrapper_internal.h
 Source41: fips_canister_wrapper_internal.c
 %endif
+
+Source42: license-rt.txt
+%include %{SOURCE42}
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -476,6 +478,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.6.30-2
+- Release bump for SRP compliance
 * Sun Aug 25 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 6.6.30-1
 - Upgrade to version v6.6
 * Mon Apr 29 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.83-2

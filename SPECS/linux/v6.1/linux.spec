@@ -33,8 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.83
-Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
-License:        GPLv2
+Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -118,6 +117,9 @@ Source50: CVE-2023-39191.patches
 Source53: config_%{_arch}_acvp
 Source54: check_for_acvp_config_applicability.inc
 %endif
+
+Source55: license.txt
+%include %{SOURCE55}
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -846,6 +848,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.83-8
+- Release bump for SRP compliance
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.83-7
 - Fix build error in acvp build and some spec refinement
 * Fri May 17 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 6.1.83-6
