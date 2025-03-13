@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.6.28
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -165,6 +165,11 @@ Patch82: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
 # SBX driver
 Patch85: 0001-Adding-SBX-kernel-driver.patch
 
+# Backward compatibility
+%if "%{dist}" == ".ph5"
+Patch91: 0001-block-Fix-validation-of-ioprio-level.patch
+%endif
+
 # CVE: [100..199]
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
@@ -284,6 +289,11 @@ The Linux package contains the Linux kernel doc files
 
 # linux-esx
 %autopatch -p1 -m60 -M89
+
+# Backward compatibility
+%if "%{dist}" == ".ph5"
+%autopatch -p1 -m91 -M91
+%endif
 
 # CVE
 %autopatch -p1 -m100 -M133
@@ -441,6 +451,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Mar 13 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-4
+- Fix backward compatibility issue
 * Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.6.28-3
 - Release bump for SRP compliance
 * Wed Oct 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-2
