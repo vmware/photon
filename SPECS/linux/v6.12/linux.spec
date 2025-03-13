@@ -33,8 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
-License:        GPLv2
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -123,6 +122,9 @@ Source49: check_kernel_struct_in_canister.inc
 Source53: config_%{_arch}_acvp
 Source54: check_for_acvp_config_applicability.inc
 %endif
+
+Source55: license.txt
+%include %{SOURCE55}
 
 %if 0%{?fips}
 # known vmlinux struct definitions
@@ -874,6 +876,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.12.1-7
+- Release bump for SRP compliance
 * Mon Mar 03 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.1-6
 - Fix build error in acvp build and some spec refinement
 * Mon Feb 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.1-5
