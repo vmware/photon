@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.15p5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -48,21 +48,23 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --with-all-insults \
     --with-env-editor \
     --with-pam \
-    --with-passprompt="[sudo] password for %p"
+    --with-passprompt="[sudo] password for %p: "
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 find %{buildroot}/%{_libdir} -name '*.so~' -delete
+
 sed -i '/@includedir.*/i \
 %wheel ALL=(ALL) ALL \
-%sudo   ALL=(ALL) ALL' %{buildroot}/etc/sudoers
-install -vdm755 %{buildroot}/etc/pam.d
-cat > %{buildroot}/etc/pam.d/sudo << EOF
+%sudo   ALL=(ALL) ALL' %{buildroot}%{_sysconfdir}/sudoers
+
+install -vdm755 %{buildroot}%{_sysconfdir}/pam.d
+
+cat > %{buildroot}%{_sysconfdir}/pam.d/sudo << EOF
 #%%PAM-1.0
 auth       include      system-auth
 account    include      system-account
@@ -70,13 +72,15 @@ password   include      system-password
 session    include      system-session
 session    required     pam_env.so
 EOF
+
 mkdir -p %{buildroot}%{_libdir}/tmpfiles.d
 touch %{buildroot}%{_libdir}/tmpfiles.d/sudo.conf
+
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
 
 %check
-make %{?_smp_mflags} check
+%make_build check
 
 %post
 /sbin/ldconfig
@@ -92,8 +96,8 @@ rm -rf %{buildroot}/*
 %files -f %{name}.lang
 %defattr(-,root,root)
 %attr(0440,root,root) %config(noreplace) %{_sysconfdir}/sudoers
-%attr(0640,root,root) %config(noreplace) /etc/sudo.conf
-%attr(0640,root,root) %config(noreplace) /etc/sudo_logsrvd.conf
+%attr(0640,root,root) %config(noreplace) %{_sysconfdir}/sudo.conf
+%attr(0640,root,root) %config(noreplace) %{_sysconfdir}/sudo_logsrvd.conf
 %attr(0750,root,root) %dir %{_sysconfdir}/sudoers.d/
 %config(noreplace) %{_sysconfdir}/pam.d/sudo
 %{_bindir}/*
@@ -107,9 +111,11 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 %{_datarootdir}/locale/*
 %attr(0644,root,root) %{_libdir}/tmpfiles.d/sudo.conf
-%exclude  /etc/sudoers.dist
+%exclude  %{_sysconfdir}/sudoers.dist
 
 %changelog
+* Fri Mar 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.15p5-2
+- Add colon to password prompt
 * Fri Jan 05 2024 Mukul Sikka <msikka@vmware.com> 1.9.15p5-1
 - Upgrade sudo to v1.9.15p5
 * Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 1.9.14p3-1
