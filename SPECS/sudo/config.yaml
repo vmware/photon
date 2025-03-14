@@ -8,15 +8,15 @@ sources:
         certain users (or groups of users) the ability to run some (or all) commands
         as root or another user while logging the commands and arguments. '
       home_page: https://www.sudo.ws/
-      license_concluded: FSFULLR AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND ISC AND FSFAP AND Zlib AND Apache-2.0 AND GPL-2.0-only AND BSD-2-Clause
-        AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-macro
-        AND FSFULLRWD AND BSD-3-Clause AND DOC AND MIT AND FSFUL
-      license_declared: FSFULLR AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND ISC AND FSFAP AND Zlib AND Apache-2.0 AND GPL-2.0-only AND BSD-2-Clause
-        AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-macro
-        AND FSFULLRWD AND BSD-3-Clause AND DOC AND MIT AND FSFUL
+      license_concluded: GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLRWD AND FSFAP AND BSD-2-Clause
+        AND ISC AND MIT AND Zlib AND GPL-2.0-only AND BSD-3-Clause AND GPL-1.0-or-later
+        AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFUL
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro
+      license_declared: GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLRWD AND FSFAP AND BSD-2-Clause
+        AND ISC AND MIT AND Zlib AND GPL-2.0-only AND BSD-3-Clause AND GPL-1.0-or-later
+        AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFUL
+        AND GPL-3.0-or-later WITH Autoconf-exception-macro
       short_summary: Sudo
       supplier: 'Organization: Broadcom, Inc.'

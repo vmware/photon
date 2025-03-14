@@ -1,20 +1,24 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.15p5
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
 %define sha512  %{name}=ebac69719de2fe7bd587924701bdd24149bf376a68b17ec02f69b2b96d4bb6fa5eb8260a073ec5ea046d3ac69bb5b1c0b9d61709fe6a56f1f66e40817a70b15a
+
 Source1:        %{name}.sysusers
 
 Source2: license.txt
 %include %{SOURCE2}
+
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
+
 Requires:       Linux-PAM
 Requires:       shadow
 
@@ -38,20 +42,24 @@ the ability to run some (or all) commands as root or another user while logging 
     --with-all-insults \
     --with-env-editor \
     --with-pam \
-    --with-passprompt="[sudo] password for %p"
-make %{?_smp_mflags}
+    --with-passprompt="[sudo] password for %p: "
+
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
-install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
-find %{buildroot}/%{_libdir} -name '*.la' -delete
+%make_install %{?_smp_mflags}
+install -v -dm755 %{buildroot}%{_docdir}/%{name}-%{version}
+
+find %{buildroot}%{_libdir} -name '*.la' -delete
 find %{buildroot}/%{_libdir} -name '*.so~' -delete
+
 sed -i '/@includedir.*/i \
 %wheel ALL=(ALL) ALL \
-%sudo   ALL=(ALL) ALL' %{buildroot}/etc/sudoers
-install -vdm755 %{buildroot}/etc/pam.d
-cat > %{buildroot}/etc/pam.d/sudo << EOF
+%sudo   ALL=(ALL) ALL' %{buildroot}%{_sysconfdir}/sudoers
+
+install -vdm755 %{buildroot}%{_sysconfdir}/pam.d
+
+cat > %{buildroot}%{_sysconfdir}/pam.d/sudo << EOF
 #%%PAM-1.0
 auth       include      system-auth
 account    include      system-account
@@ -59,14 +67,17 @@ password   include      system-password
 session    include      system-session
 session    required     pam_env.so
 EOF
+
 mkdir -p %{buildroot}%{_libdir}/tmpfiles.d
 touch %{buildroot}%{_libdir}/tmpfiles.d/sudo.conf
+
 %find_lang %{name}
-%{_fixperms} %{buildroot}/*
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
+%{_fixperms} %{buildroot}/*
+
 %check
-make %{?_smp_mflags} check
+%make_build check
 
 %post
 /sbin/ldconfig
@@ -82,8 +93,8 @@ rm -rf %{buildroot}/*
 %files -f %{name}.lang
 %defattr(-,root,root)
 %attr(0440,root,root) %config(noreplace) %{_sysconfdir}/sudoers
-%attr(0640,root,root) %config(noreplace) /etc/sudo.conf
-%attr(0640,root,root) %config(noreplace) /etc/sudo_logsrvd.conf
+%attr(0640,root,root) %config(noreplace) %{_sysconfdir}/sudo.conf
+%attr(0640,root,root) %config(noreplace) %{_sysconfdir}/sudo_logsrvd.conf
 %attr(0750,root,root) %dir %{_sysconfdir}/sudoers.d/
 %config(noreplace) %{_sysconfdir}/pam.d/sudo
 %{_bindir}/*
@@ -98,10 +109,12 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 %{_sysusersdir}/%{name}.sysusers
 %attr(0644,root,root) %{_libdir}/tmpfiles.d/sudo.conf
-%exclude  /etc/sudoers.dist
+%exclude  %{_sysconfdir}/sudoers.dist
 %exclude %{_prefix}/libexec/sudo/*.la
 
 %changelog
+* Fri Mar 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.15p5-3
+- Add colon to password prompt
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.9.15p5-2
 - Release bump for SRP compliance
 * Fri Jan 05 2024 Mukul Sikka <msikka@vmware.com> 1.9.15p5-1
