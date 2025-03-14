@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.14p3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws
 Group:          System Environment/Security
@@ -40,7 +40,7 @@ the ability to run some (or all) commands as root or another user while logging 
     --with-all-insults \
     --with-env-editor \
     --with-pam \
-    --with-passprompt="[sudo] password for %p"
+    --with-passprompt="[sudo] password for %p: "
 
 %make_build
 
@@ -102,6 +102,8 @@ rm -rf %{buildroot}/*
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Fri Mar 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.14p3-3
+- Add colon to password prompt
 * Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.9.14p3-2
 - Resolving systemd-rpm-macros for group creation
 * Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 1.9.14p3-1
