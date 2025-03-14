@@ -16,10 +16,11 @@ Source0: https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.b
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: CVE-2025-1365.patch
-Patch1: CVE-2025-1372.patch
-Patch2: CVE-2025-1376.patch
-Patch3: CVE-2025-1377.patch
+Patch0: CVE-2025-1352.patch
+Patch1: CVE-2025-1365.patch
+Patch2: CVE-2025-1372.patch
+Patch3: CVE-2025-1376.patch
+Patch4: CVE-2025-1377.patch
 
 Requires: %{name}-libelf = %{version}-%{release}
 Requires: glibc >= 2.7
@@ -54,7 +55,6 @@ handling.
 %package devel
 Summary:    Development libraries to handle compiled objects.
 Group:      Development/Tools
-License:    GPLv2+ or LGPLv3+
 Requires:   %{name} = %{version}-%{release}
 Requires:   %{name}-libelf-devel = %{version}-%{release}
 
@@ -68,7 +68,6 @@ assembler interface.
 %package devel-static
 Summary:    Static archives to handle compiled objects.
 Group:      Development/Tools
-License:    GPLv2+ or LGPLv3+
 Requires:   %{name}-devel = %{version}-%{release}
 
 %description devel-static
@@ -78,7 +77,6 @@ with the code the handle compiled objects.
 %package libelf
 Summary:    Library to read and write ELF files.
 Group:      Development/Tools
-License:    GPLv2+ or LGPLv3+
 
 %description libelf
 The %{name}-libelf package provides a DSO which allows reading and
@@ -89,7 +87,6 @@ this package to read internals of ELF files.  The programs of the
 %package libelf-devel
 Summary:    Development support for libelf
 Group:      Development/Tools
-License:    GPLv2+ or LGPLv3+
 Requires:   %{name}-libelf = %{version}-%{release}
 Conflicts:  libelf-devel
 
@@ -102,7 +99,6 @@ different sections of an ELF file.
 %package libelf-devel-static
 Summary:    Static archive of libelf
 Group:      Development/Tools
-License:    GPLv2+ or LGPLv3+
 Requires:   %{name}-libelf-devel = %{version}-%{release}
 Conflicts:  libelf-devel
 
@@ -212,7 +208,7 @@ rm -rf %{buildroot}
 
 %changelog
 * Wed Mar 5 2025 Oliver Kurth <oliver.kurth@broadcom.com> 0.189-6
-- fixes for CVE-2025-1365, CVE-2025-1372, CVE-2025-1376, CVE-2025-1377
+- fixes for CVE-2025-1352, CVE-2025-1365, CVE-2025-1372, CVE-2025-1376, CVE-2025-1377
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.189-5
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.189-4
