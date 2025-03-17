@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/ostreedev/ostree/archive/lib%{name}-%{version}.tar.xz
-%define sha512 lib%{name}-%{version}=0bb19f199344d8db7299cf710f2ba0b2657cdcb5b1fc6d85446cef9538b069e470b47fc0c2c1029e12b8b9adb978f32a6f44f48949ff5c97a01051a425a9f2d5
 
 Source1: 91-%{name}.preset
 

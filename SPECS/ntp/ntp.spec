@@ -8,11 +8,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha512  %{name}=c314f645d7d85e1028327657f30557cdfd86d417565b6c9fcbb40fca8a4c22a97b70908e8b73c6b31e14915b5b910ae0055fd42e819dd3cb48583b2a826c3fc4
 
 # https://github.com/darkhelmet/ntpstat
 Source1:        ntpstat-master.zip
-%define sha512  ntpstat=79e348e93683f61eb97371f62bcb3b74cedfe6fd248a86d294d65ce4dc3649ce923bdf683cb18604fe47c4e854a6970c4ae1577e20b1febc87c3009888025ed0
 
 Source2:        %{name}.sysconfig
 Source3:        %{name}.sysusers

@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://abseil.io
 
 Source0: https://github.com/abseil/abseil-cpp/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=50509acfc4128fd31435631f71ac8cd0350acd9e290f78502723149016e7f07c9d84182ba99e0938b1873fecda09393d3fd7af8dabfb0d89cdcdd8a69a917e70
 
 Source1: license.txt
 %include %{SOURCE1}

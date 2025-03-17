@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.74/%{name}-%{version}.tar.xz
-%define sha512 %{name}=29c16a6c921fb135721c39b5328e0b45e09c500c65175199c1ec5ee75bdd5fb907072389c6980da3bf8fac0846235af5580f692706eb00d26947804daa1c99c9
 
 Source1: license.txt
 %include %{SOURCE1}

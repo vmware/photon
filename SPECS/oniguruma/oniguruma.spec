@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/kkos/oniguruma/
 Source0:        https://github.com/kkos/oniguruma/releases/download/v%{version}/onig-%{version}.tar.gz
-%define sha512    onig=6f541e8cecf73b029e54d4e11a6ddffe058d6c47674086df5a3921323351032819aca2719d35584648c3bffce6779d976a7513eabd4645362b3af701e59c67ca
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -7,7 +7,6 @@ Distribution:   Photon
 URL:            https://suricata.io
 Group:          System Environment/Security
 Source0:        https://www.openinfosecfoundation.org/download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=628f1d4f7307ad5a8f9f7e52b698dcd8cccebfe089f1328fa5bf6f790669aff1a4e19fff921ff7102125b77c45b7671b88bcf7ae8865d06a5836a9e8d030866c
 
 Source1: suricata.sysconfig
 Source2: photon.notes

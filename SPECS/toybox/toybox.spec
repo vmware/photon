@@ -12,7 +12,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
-%define sha512 %{name}=73a3ec2a0d69b1566e1663e94b2bc7764b9f93e53978725f036f066837ab2769033e8bf17d5550e565656781cacf27d93960dd611ffed5425fa006d1d3104351
 
 Patch0: %{name}-change-toys-path.patch
 

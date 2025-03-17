@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/CESNET/libnetconf2/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=01ca262c3e530f3d89e61838f08bf3abeae5c9c3c1cf9570416183a2060b850c18bdf661154ec31f7b57b13067c956fe01453ebc461d0d3935e841073a39fb20
 
 Source1: license.txt
 %include %{SOURCE1}

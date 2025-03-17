@@ -10,7 +10,6 @@ Vendor:          VMware, Inc.
 Distribution:    Photon
 
 Source0: http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
-%define sha512 %{name}=7144a50d19d3855edbda14b538cc94fe26c0dd357b979676c3fe02d599dab61ba777bf14f6aaebb63e238aeff1d0bad25ea7b0ff31b2398468f67fc0a305b9f3
 
 Source1: license.txt
 %include %{SOURCE1}

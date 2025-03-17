@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.alsa-project.org/files/pub/lib/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=865ff05a8f589996f8d63d43a91c961f1b64144f3e1d17c7074b7ac16f25b3fd1c371d46ed63a8cc20fa01e63c76b75f1a9802b56889ae1073854dd050d27688
 
 Source1: license.txt
 %include %{SOURCE1}

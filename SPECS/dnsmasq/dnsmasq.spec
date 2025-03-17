@@ -9,7 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://thekelleys.org.uk/dnsmasq/%{name}-%{version}.tar.xz
-%define sha512 %{name}=e169de1892f935e219b0f49d90107f95cba42b40bca20bd3c973313c2cd4df58b929af6628cd988419051d81c3b4ccf8e9f816274df7d0840e79f5bf49602442
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        pyparsing-%{version}.tar.gz
-%define sha512  pyparsing=8877f8733196c757e36e062ddc216153f9cdc51bf43795855a607340bab73fdf4d44745c9f410d151cc4a4d6d0db06133945a4d7d0fee52f3aee521b8095e6b0
 
 Source1: license.txt
 %include %{SOURCE1}

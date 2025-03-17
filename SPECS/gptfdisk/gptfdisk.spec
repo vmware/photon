@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://downloads.sourceforge.net/project/gptfdisk/%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=c2489ac7e196cb53b9fdb18d0e421571eca43c366de8922c5c7f550aadf192558e7af69b181c30747d6cf607c1670126223465eaa5e231cc589402d94a4e97a2
 
 Source1: license.txt
 %include %{SOURCE1}

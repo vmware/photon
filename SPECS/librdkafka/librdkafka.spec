@@ -7,7 +7,6 @@ Group:          System Environment/Development
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=8c8ae291129b78e3b8367307ad1b1715af1438cd76d7160d64d13a58adf84c7c9f51efeba4656f55e101c25e4cb744db0d8bb5c01a2decb229e4567d16bdcb22
 
 Source1: license.txt
 %include %{SOURCE1}

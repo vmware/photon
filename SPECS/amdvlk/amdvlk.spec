@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/GPUOpen-Drivers/AMDVLK/archive/refs/tags/%{name}-%{version}.tar.xz
-%define sha512  %{name}=118c960c1a737f48095667283278d901284bdd5d6e9853759026781600decb59a81436683545063316661a11300dbc1be2b6e71cecf9968be91a31d83d09ae34
 
 Source1: license.txt
 %include %{SOURCE1}

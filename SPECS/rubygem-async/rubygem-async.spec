@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512  async=5a4654eeec8dbb092b4d3e6b425fe48ef818110710cd442f36e0e939d185d06aa7bf0d82e0eae690e26fa608ce853dab71d28c8f21a8a7dc80b9ebe9b60d26f3
 
 Source1: license.txt
 %include %{SOURCE1}

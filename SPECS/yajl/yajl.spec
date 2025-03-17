@@ -7,7 +7,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           http://lloyd.github.com/yajl/
 Source0:       https://github.com/lloyd/yajl/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 yajl=9e786d080803df80ec03a9c2f447501e6e8e433a6baf636824bc1d50ecf4f5f80d7dfb1d47958aeb0a30fe459bd0ef033d41bc6a79e1dc6e6b5eade930b19b02
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -14,7 +14,6 @@ Group:          System Environment/Security
 URL:            https://github.com/iovisor/bpftrace
 
 Source0: https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8c64de94da29030dcde0680be90e3c16a5cd965a0066b1abe3c0740f11a78d70f383bf2e0bbe2fce639eddc7d45cb44508cc8a78743c205d7efa45734151e743
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    http://download.rsyslog.com/liblogging/liblogging-%{version}.tar.gz
-%define sha512 %{name}=09c90a93b2d32afa44be5a800705a64690810a56d21bed1455cb70680b01fecd4efef3881a43f98ebcafa996b6046ed8e5af935eacc12014f330a7fd23674964
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/graphviz
 #wget https://github.com/xflr6/graphviz/archive/0.8.tar.gz -O graphviz-0.8.tar.gz
 Source0:        graphviz-%{version}.zip
-%define sha512  graphviz=79be98b0b8efff8d865661dca2260ce9e2ba0a855acb112aa922ec7b91f87397a3c5e4134df9a75c62dc3c8add2942ab4dac321cce068a355bf2819cdeb806bf
 
 Source1: license.txt
 %include %{SOURCE1}

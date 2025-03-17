@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/nokogiri/
 Source0:        https://rubygems.org/downloads/nokogiri-%{version}.gem
-%define sha512  nokogiri=207161fcf74aa1d1550841765268746e72d74b7516b34daf61cc5e7dc6af8fec4866f2734cd53afaf17fc546c92c3709a72f9e72da13071f65465855abf89bfa
 
 Source1: license.txt
 %include %{SOURCE1}

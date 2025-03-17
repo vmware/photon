@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/vmware/network-config-manager
 
 Source0: https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=0053b0a0649b2f9d238b9e3cc782924e34a70f18909d2bb90ca17dc3cfa1f80e0ea2e71ee431ed70dd40879ba1d1c889f9de526a622f91ba4256ef57472b4fa0
 
 Source1: license.txt
 %include %{SOURCE1}

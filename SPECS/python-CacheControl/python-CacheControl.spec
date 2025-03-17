@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://github.com/ionrock/cachecontrol
 
 Source0: CacheControl-%{version}.tar.gz
-%define sha512  CacheControl=6a39e8fd2ebcca776cad533a79f107897aaffbe68b561f89301ef824d2400f8c36ec4e52682b7cf14734f9f77ab27e251202c71036b43422d81126f48cc27834
 
 Source1: license.txt
 %include %{SOURCE1}

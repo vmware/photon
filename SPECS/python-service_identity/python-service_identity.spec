@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/service_identity
 Source0:        service_identity-%{version}.tar.gz
-%define sha512  service_identity=36a6f7cb30871bd38da865521503c622a70318f8c5cdc74b0565bdc292bb3b84682bf3afe050d007b21f27d0c54ba0bfe1cd71b63fb13fa42cbaef66cb115c2b
 
 Source1: license.txt
 %include %{SOURCE1}

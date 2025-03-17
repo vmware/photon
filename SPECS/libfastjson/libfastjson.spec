@@ -9,7 +9,6 @@ Distribution:   Photon
 BuildRequires:  libtool
 
 Source0:    %{name}-%{version}.tar.gz
-%define sha512 %{name}=d32d949465dcc94d04be6cd0e1cf78e5653bbbef7e2bd148079a5f4d69102febabd1fe8af668e344b82c62a918d1cc6c9f39a203d65cb1d81409a6d400a63d6a
 
 Source1: license.txt
 %include %{SOURCE1}

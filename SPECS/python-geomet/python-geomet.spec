@@ -10,7 +10,6 @@ Group:          Development/Languages/Python
 URL:            https://github.com/geomet/geomet
 
 Source0: https://github.com/geomet/geomet/archive/refs/tags/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=85380ed30adc027c6a97fa3b6e95034a9452617d26c6fb18d6700d5d4069acfde976a094a1a3f6e7240b9357e69f5dca85fa1c81d78102fa8a49b3186ccb82ac
 
 Source1: license.txt
 %include %{SOURCE1}

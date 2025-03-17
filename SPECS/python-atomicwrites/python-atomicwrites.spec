@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/untitaker/python-atomicwrites
 Source0:        https://pypi.python.org/packages/a1/e1/2d9bc76838e6e6667fde5814aa25d7feb93d6fa471bf6816daac2596e8b2/atomicwrites-%{version}.tar.gz
-%define sha512  atomicwrites=d02f58ba639a3ba677eedd78016d366a6e77c79d31903ad34f0a50202aba9b9616f933e9763c42da197ada124abd3510c54d0b10099159308c186bccc6270f32
 
 Source1: license.txt
 %include %{SOURCE1}

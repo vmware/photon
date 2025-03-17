@@ -7,7 +7,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://code.google.com/p/bluez-tools
 Source0:       https://github.com/khvzak/bluez-tools.git/master/bluez-tools-%{version}.tar.gz
-%define sha512 %{name}=d0634e24b9c9748e442971edbdbb9be0533f9ba4da3e3e6ba8db266b87f0c60e15a79fb77c2bd633014862d2dbb34f457cdb0888578d3f64d5bec2bf82633839
 
 Source1: license.txt
 %include %{SOURCE1}

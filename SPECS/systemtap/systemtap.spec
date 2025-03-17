@@ -16,7 +16,6 @@ Distribution:  Photon
 URL:           http://sourceware.org/systemtap
 
 Source0: http://sourceware.org/systemtap/ftp/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a72f39a24c3eb4a7703a033c435ab8ad75e9d7fedf8d8580db705bac529ffd0f8aabd4b510becc68547d2178d47bb918dd090aced957f94faa62f847d8341af8
 Source1: systemtap-runtime.sysusers
 Source2: systemtap-server.sysusers
 Source3: systemtap.sysusers

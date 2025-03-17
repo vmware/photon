@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://lasso.entrouvert.org/
 Source0:        http://dev.entrouvert.org/lasso/lasso-%{version}.tar.gz
-%define sha512 lasso=d1b26608ea7cd08e4e2c40cec0ddc41e3235fd5c2cee64d989ae752bbbc276fe056455e3943a778abcc7f8e8596c85beada75df4290579e6af15e82d0e2fb5ca
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -11,7 +11,6 @@ Distribution:  Photon
 BuildArch:     noarch
 
 Source0: https://github.com/martinblech/%{pypi_name}/archive/refs/tags/%{pypi_name}-%{version}.tar.gz
-%define sha512 %{pypi_name}=a7c12efa3c8d9b30a36a4b0ed2a8215f9833728d7988e74ef36458790a786c4c7517e536e8a82939623069716cdff258da5aab378a74f884a0fa245e7951f0bf
 
 Source1: license.txt
 %include %{SOURCE1}

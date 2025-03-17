@@ -6,7 +6,6 @@ Group:         System/Libraries
 Vendor:        VMware, Inc.
 URL:           https://symas.com/lmdb
 Source0:       https://github.com/LMDB/lmdb/archive/LMDB_%{version}.tar.gz
-%define sha512 LMDB=a29e40b1a2f2ed542fb59b6dd92cf7f5f9ac603f74b1d2a66d143b65edf0324a03dc4a0a35657ba0992b00a3e9764e33af0dcc5ae8ae91c40c90c3b0581dade3
 Source1:       %{name}.pc
 
 Source2: license.txt

@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=93a877e34db93e5498581d0ab2d702b08c0d87e4cafd9cec9d6636dfa85a168095c305c11583a5b0fb79374dd93bc8d0e9ce6016e6c172764bcea12861605b71
 
 Source1: license.txt
 %include %{SOURCE1}

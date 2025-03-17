@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluentd-%{version}.gem
-%define sha512    fluentd=0e10ccf9ee33def27cc841162f4368f09753c733b4b9cf924b77fcb410b1b79ffb6b3294128575faa7324d1b696596344f202880b6292c437f5b22111056a686
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -21,7 +21,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha512  %{name}=f316984154ead8256d9ec0613e3cfef5699553387d87c24bb2a96265f986bf4450838e6451841def3713d65ebaa9bf55e36ff39c5690d79522e1c1ba7655be2f
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -5,7 +5,6 @@ Version:        3.26.4
 Release:        8%{?dist}
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  calico=85a051cf938f771e9bf3173cc1806697b73b36d221053ad53ecf69afae0bfe8f9c0c6fac24de4b5f3e747b095ebf11e79d6358bd0e7a797a5144054010bb15b4
 
 Source1: license.txt
 %include %{SOURCE1}

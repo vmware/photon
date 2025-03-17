@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL: https://rubygems.org/gems/%{gem_name}
 Source0: https://rubygems.org/downloads/trollop-%{version}.gem
-%define sha512   trollop=21a0db09d480353ff846a1311b118e0b0db4ca13a559dd1749c1478eff7080dd04e5308dbf1807215eadb68e276c991970b23357e9a3497acb9f705f7f77253c
 
 Source1: license.txt
 %include %{SOURCE1}

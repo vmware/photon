@@ -7,7 +7,6 @@ Url:            https://docs.python.org/3/library/typing.html
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/05/d9/6eebe19d46bd05360c9a9aae822e67a80f9242aabbfc58b641b957546607/typing-%{version}.tar.gz
-%define sha512  typing=2ae48da0f409f03f8b9df893d9c53e2fa351b2041b7280eb19e633c708da88a4e8109e60679156e3009cf5d0a713d588de2a4049b46ef58a33df093107bbb8d5
 
 Source1: license.txt
 %include %{SOURCE1}

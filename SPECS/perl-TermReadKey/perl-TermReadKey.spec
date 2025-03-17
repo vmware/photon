@@ -7,7 +7,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 Url:           https://metacpan.org/release/TermReadKey
 Source0:       https://cpan.metacpan.org/authors/id/J/JS/JSTOWE/TermReadKey-%{version}.tar.gz
-%define sha512 TermReadKey=fb09f013f9f0d8a4397e39f6f3db7a6d023259219af8f76744094e396437a01b19141b3cdb39a158d3b518903fb010088bc37406763bfbeb3fcab810bb0bb157
 
 Source1: license.txt
 %include %{SOURCE1}

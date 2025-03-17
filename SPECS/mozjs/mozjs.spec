@@ -10,7 +10,6 @@ URL:           https://spidermonkey.dev
 Distribution:  Photon
 
 Source0: https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
-%define sha512 firefox-%{version}=2a85cf1e1c83a862c2886a63dcf3e3e8bca9dd3ed72c5d0223db52387fff3796bc0dcbb508adb8c10a30729f20554c5aac37f8ad045b0088a593d28e39d77fe5
 
 Source1: license.txt
 %include %{SOURCE1}

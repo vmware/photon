@@ -6,7 +6,6 @@ Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
 Source0:        https://cpan.metacpan.org/authors/id/T/TI/TINITA/YAML-%{version}.tar.gz
-%define sha512 YAML=f73f2d9f3cd96edeb05ec098c859755dd6b80bf1a00049f8de2889ebbf4f41df9fcc1540116afa8648e965a0b780d993f256af2c5ffc03a9f1ba7df1f0cc8941
 
 Source1: license.txt
 %include %{SOURCE1}

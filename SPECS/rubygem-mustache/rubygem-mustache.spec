@@ -9,7 +9,6 @@ Summary:        A framework-agnostic way to render logic-free views
 Group:          Development/Languages
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512  mustache=91a18a374a0348317d0801d6784fedd0782d7a08f128d3ab7050e631b34e45cecd49c4b1e2a9e17204f70bf169c107a92a1e210532bd3faa98edf8b1b5e8e43c
 
 Source1: license.txt
 %include %{SOURCE1}

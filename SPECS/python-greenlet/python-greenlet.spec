@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.python.org/pypi/greenlet
 Source0:        greenlet-%{version}.tar.gz
-%define sha512  greenlet=2c4ae0623e8258a85012fca3c4c419cab3634679dc05a51b9079bcae3afb6f6c3c5052b249dbdb48a8dac3d20b9313343b217862ab34f3ae6dd5cda66e53dc35
 
 Source1: license.txt
 %include %{SOURCE1}

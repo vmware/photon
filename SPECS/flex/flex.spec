@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/westes/flex/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e9785f3d620a204b7d20222888917dc065c2036cae28667065bf7862dfa1b25235095a12fd04efdbd09bfd17d3452e6b9ef953a8c1137862ff671c97132a082e
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{srcname}-%{version}.tar.gz
 Patch0:         CVE-2024-3651.patch
-%define sha512  %{srcname}=70b7cc8718e7d7899c75cfe476f044eae5a2fa03801fc9c12e3a092627ca943ffc4a578f9b8a55e181a11564835e125cfaaa577c02a6461dbb97366e620e53ad
 
 Source1: license.txt
 %include %{SOURCE1}

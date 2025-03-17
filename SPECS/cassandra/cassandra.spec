@@ -12,12 +12,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://archive.apache.org/dist/cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha512 apache-%{name}=986b79556e5d375ee6f385919509555bb79a6ae3c3dd338003ca8bb2145d2311a170eee17e98025f08b61b0ea0bc3712da696207644c6db05f15d0ec54c1022a
 
 Source1:        %{name}.service
 Source2:        %{name}.sysusers
 Source3:        %{name}-%{version}-dependencies.tar.gz
-%define sha512  %{name}-%{version}-dependencies.tar.gz=3532aea87265980716d0f920376b135f65e1729bc8a101ad7aa4088d1477948c4897e8b1a0687bacbb5af50315069245da7bafa8ec2b2da7ae637d5e07f8057a
 
 Source4: license.txt
 %include %{SOURCE4}

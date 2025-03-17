@@ -9,7 +9,6 @@ Distribution:  Photon
 BuildArch:     noarch
 
 Source0: https://github.com/kellyjonbrazil/jc/archive/refs/tags/jc-%{version}.tar.gz
-%define sha512 %{name}=a79a289f9d30dc8827f1276e34dcd80af60800b5b4b4eb8d0c4bfbea4a996e932efe2242adad2e1b58cbfb4f1ff8a0bcc591df5c9d630226201d347d0d8d9c47
 
 Source1: license.txt
 %include %{SOURCE1}

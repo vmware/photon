@@ -7,7 +7,6 @@ Group:          System Environment/System Utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/utils/pciutils/%{name}-%{version}.tar.gz
-%define sha512  pciutils=27751eb2c9ea35047f62d6025c8dab6036cb3d18850bfd6e4ab906f7c9eb6cff059ed655155f6400bb16f953d7b520e72bdd8c1fce7a587a756902cc562af87d
 
 Source1: license.txt
 %include %{SOURCE1}

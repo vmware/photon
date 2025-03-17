@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://netfilter.org/projects/nftables
 
 Source0: %{url}/files/%{name}-%{version}.tar.xz
-%define sha512 %{name}=afe08381acd27d39cc94743190b07c579f8c49c4182c9b8753d5b3a0b7d1fe89ed664fdbc19cef1547c3ca4a0c1e32ca4303dba9ec626272fa08c77e88c11119
 
 Source1: %{name}.service
 Source2: %{name}.conf

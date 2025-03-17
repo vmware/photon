@@ -7,7 +7,6 @@ Group:           System Environment/Libraries
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Source0:         http://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
-%define sha512   libXt=6877af61ba91eeed6b6f80471b84f354ad0ec0827249c7ee0a00c13508063fe8d2696dd400a4bdbc6ca2ff67cbe1317ad5ac24522fd96099dc56535e33ca052c
 
 Source1: license.txt
 %include %{SOURCE1}

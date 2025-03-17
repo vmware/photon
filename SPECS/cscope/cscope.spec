@@ -5,7 +5,6 @@ Release:        2%{?dist}
 Group:          Development/Tools
 URL:            http://cscope.sourceforge.net
 Source0:         http://downloads.sourceforge.net/cscope/%{name}-%{version}.tar.gz
-%define sha512 cscope=f3b95da5eb5c036cd39215785990c7cce7ce7b8eda4b18e60792e70d01ffb63809ce32ace310a9aefd88e6761c1609039ccfab0e8e49f81730bc1630babbcb80
 
 Source1: license.txt
 %include %{SOURCE1}

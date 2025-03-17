@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/prompt_toolkit
 Source0:        https://files.pythonhosted.org/packages/source/p/prompt_toolkit/prompt_toolkit-%{version}.tar.gz
-%define sha512  prompt_toolkit=cb0b9d71b09c353f2674052d75ec16a1803e0868ff5dd5625eefae767d45699b1b6bb99e4d98d3bca7ced7b60f52806ec10ed7ccab8a830c62d51baeeace23f7
 
 Source1: license.txt
 %include %{SOURCE1}

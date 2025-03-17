@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pypi.python.org/packages/source/p/packaging/packaging-%{version}.tar.gz
-%define sha512  packaging=2e3aa276a4229ac7dc0654d586799473ced9761a83aa4159660d37ae1a2a8f30e987248dd0e260e2834106b589f259a57ce9936eef0dcc3c430a99ac6b663e05
 
 Source1: license.txt
 %include %{SOURCE1}

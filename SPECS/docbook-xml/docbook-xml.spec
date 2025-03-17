@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.docbook.org/xml/4.5/%{name}-%{version}.zip
-%define sha512  %{name}=1ee282fe86c9282610ee72c0e1d1acfc03f1afb9dc67166f438f2703109046479edb6329313ecb2949db27993077e077d111501c10b8769ebb20719eb6213d27
 
 Source1: license.txt
 %include %{SOURCE1}

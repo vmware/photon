@@ -7,7 +7,6 @@ Group:         System Environment/Development
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://git.zx2c4.com/password-store/snapshot/%{name}-%{version}.tar.xz
-%define sha512 password-store=1fe108895b224451b54e545d399b6a97040e094049448509f92ae33164a5cf9044a91f52edfc705fcf333f6526df1a478deeebc4df109764d58100f9e3e22681
 
 Source1: license.txt
 %include %{SOURCE1}

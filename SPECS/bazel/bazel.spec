@@ -11,7 +11,6 @@ Distribution:   Photon
 URL:            http://bazel.build/
 
 Source0: https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name}-%{version}-dist.zip
-%define sha512 %{name}=a63895c224d51619cf83e6e55872aa6d55d17c7dcea59eaf467069d2c95259f5964fbf8fa5994df0e3c030234a7adf70a2715edb4edbbe2bf69d21dd698c0833
 
 Source1: license.txt
 %include %{SOURCE1}

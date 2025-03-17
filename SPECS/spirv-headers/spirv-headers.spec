@@ -7,7 +7,6 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/SPIRV-Headers-%{version}.tar.gz
-%define sha512  SPIRV-Headers-%{version}.tar.gz=d2c47127fd81430383e8656917f76933b713ca6cb93b2a9c16c9e0b125e2f62f8c497cab3a4fcc2a711decd911ec5d15f1eb0270add05442aff6672e08c890d7
 
 Source1: license.txt
 %include %{SOURCE1}

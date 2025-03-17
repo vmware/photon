@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0:        https://github.com/benhoyt/inih/archive/refs/tags/libinih-%{version}.tar.gz
-%define sha512 libinih=ff3e0910990f73e5b21fddc84737ab346279f201c86c7ad864c6cad9de5bde57c3e0a433b9b8f3585b7d86feaae2ea074185f92891dcadc98c274c1c0745d2d2
 
 Source1: license.txt
 %include %{SOURCE1}

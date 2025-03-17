@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/coverage
 Source0:        https://files.pythonhosted.org/packages/source/c/coverage/coverage-%{version}.tar.gz
-%define sha512  coverage=f210f2471b170e05d4dac2cc9a91e3f0d4ba6456cdf91dc1c0ef67a02a11f4279c5beca5df8854c42660346995492b1eff020e1ac578d2a0a129627dadd17114
 
 Source1: license.txt
 %include %{SOURCE1}

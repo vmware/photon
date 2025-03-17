@@ -7,7 +7,6 @@ Version:        2.4.2
 Release:        16%{?dist}
 URL:            https://github.com/nginxinc/kubernetes-ingress
 Source0:        https://github.com/nginxinc/kubernetes-ingress/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  nginx-ingress=1d2415b73afab9c3338e2cfa717bae6e12f7bbd98f8a20606e274b09c3e4724e56fff0acdc261215ca95107e175489fef4aba9df6e3f9cb5b72d9f98859ae7d9
 
 Source1: license.txt
 %include %{SOURCE1}

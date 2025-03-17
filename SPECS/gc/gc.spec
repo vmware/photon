@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.hboehm.info/gc/gc_source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4a7b26789ce22ab72bfaadf3029362c5fe26737df1e856e43db7d9b24ee8acf625e35d596bb3f698f91d6a5ddfb6c45a952a1dbd18d47359569696a544c9c248
 
 Source1: license.txt
 %include %{SOURCE1}

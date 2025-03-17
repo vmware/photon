@@ -4,7 +4,6 @@ Version:        0.15
 Release:        2%{?dist}
 URL:            https://launchpad.net/fatrace
 Source0:        https://launchpad.net/fatrace/trunk/%{version}/+download/%{name}-%{version}.tar.bz2
-%define sha512 fatrace=f4c4c4054537c3ce6d99be7baa8a269c6aae74cd71ad5f43cc82dba6572979d4fd11c423254f661b7b83d958de4c50210820af865d16fd5c1ca0d5d8213b59ba
 
 Source1: license.txt
 %include %{SOURCE1}

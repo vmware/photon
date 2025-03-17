@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://files.pythonhosted.org/packages/ab/65/53a41d4788b8cbdd38c1f3404d07ca11c37e59a36170c10077e6ce001a3f/pyinstaller-hooks-contrib-%{version}.tar.gz
-%define sha512  pyinstaller-hooks-contrib=ad918607cf551a5599d8ef71aa83a8b6d851e34912af0ce3fad1fc88e09e113fcbd7304c46173c3f130333ffe2fcd0bc7fd5745b17c3e18e82578a102157832c
 
 Source1: license.txt
 %include %{SOURCE1}

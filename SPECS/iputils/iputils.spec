@@ -8,7 +8,6 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: %{name}-s%{version}.tar.gz
-%define sha512 %{name}=7fdfd76e6f2977039bc0930a1a5451f17319bf17beefc429751d99ffe143a83344d5b4cdbf008627bd70caafeadaf906a8b7c00393fa819e50d6c02b512c367f
 
 Source1: license.txt
 %include %{SOURCE1}

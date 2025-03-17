@@ -7,7 +7,6 @@ Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/JSON-XS/
 Source0:        https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/JSON-XS-%{version}.tar.gz
-%define sha512  JSON-XS=7d2c20302b0f98bd69e692b61d272b58c13a79741f3e2e44ee0530e21dd239526477f8b02e4afbfe41ee83cb69ab1c5247bf0be355f3f09e9cfe31b2ea4a5155
 
 Source1: license.txt
 %include %{SOURCE1}

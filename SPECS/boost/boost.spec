@@ -8,7 +8,6 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://boostorg.jfrog.io/artifactory/main/release/%{version}/source/boost_%{main_version}.tar.bz2
-%define sha512  boost=829a95b463473d69ff79ea41799c68429bb79d3b2321fbdb71df079af237ab01de9ad7e9612d8783d925730acada010068d2d1aa856c34244ee5c0ece16f208f
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5219eb0b41746eca3406008a97731c0083e7be50ec88563a39537de22cb69fe88490f5fe5a11535930f360b11a62538e2ff6cbe39e059cd760038363954ef4d6
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -9,7 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://files.pythonhosted.org/packages/9e/1d/d128169ff58c501059330f1ad96ed62b79114a2eb30b8238af63a2e27f70/typing_extensions-4.3.0.tar.gz
-%define sha512  typing_extensions=69e4a393aaaaa45d20f32027cc35c77a950bf1f9b82f0eb2906a4b466eb319b867b5f53c0afc71ca613817d7e37d305fe73c50e93b1d4b389fdb8f1e4d5f8535
 
 Source1: license.txt
 %include %{SOURCE1}

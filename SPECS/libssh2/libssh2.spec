@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.libssh2.org/download/libssh2-%{version}.tar.gz
-%define sha512  libssh2=ef85e152dc252bd9b1c05276972b9c22313f5d492743dde090235742746d67f634f2a419eff9162132e2274c8582113b75279b074e0c7b34b2526b92fd1a1e8e
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -10,7 +10,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Automat
 
 Source0: https://files.pythonhosted.org/packages/source/A/Automat/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=5819cfe0687bf391949891562f3657f449cf9a8e8ea90c1537e89509dc618da1160856f92ab52dc450e0a7d51d0e4644bfe2db3d4108126a42ee1bea2f06bb7a
 
 Source1: license.txt
 %include %{SOURCE1}

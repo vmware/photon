@@ -10,7 +10,6 @@ Distribution:   Photon
 URL:            https://pypi.org/project/backports.ssl_match_hostname
 
 Source0: https://pypi.python.org/packages/76/21/2dc61178a2038a5cb35d14b61467c6ac632791ed05131dda72c20e7b9e23/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=9048ed093dc8a166a80d16a9aa0e06d36ea43ce7d324818608d25b1ef5057b1c66dd3514f9b35ab13bc60b2e5a3de29e690607e928fac2c9df16506759bd14dd
 
 Source1: license.txt
 %include %{SOURCE1}

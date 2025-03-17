@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://web.mit.edu/kerberos/www/dist/%{name}/%{minor_ver}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=69e263ef74116a3332c632a2a243499bcc47b01b1e57d02fe35aa6c2ff655674b6cf2b815457145f788bceac4d466d3f55f8c20ec9ee4a6051128417e1e7e99e
 
 Source1: license.txt
 %include %{SOURCE1}

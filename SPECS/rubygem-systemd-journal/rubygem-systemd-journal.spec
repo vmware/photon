@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/systemd-journal-%{version}.gem
-%define sha512  systemd-journal=3eb2ef8b6ea4cf4f5f5e39d8aa9f1b5f6849a5037ab60b5b0a86a183be8d7b2354d61fe613194a6b695c44765771310830efa072fdc1834a9c20235ccb05f40c
 
 Source1: license.txt
 %include %{SOURCE1}

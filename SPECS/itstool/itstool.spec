@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
-%define sha512  itstool=710c188e518a7eccbf9d31df59692fd6acc79430589a93ef4333f33f74440c311c340614ca74cc43191830567a98024d0981325ccd83a8fd9b75410d9dd91992
 
 Source1: license.txt
 %include %{SOURCE1}

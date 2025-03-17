@@ -11,13 +11,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/containers/podman/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=c09af81063dba7125d06bb982ae6db5c1933bb32273f194f90875b5c63b916f94d0daacf09212139ae8dc5f8cfa224e7fd1d83e1a22df19be2adde84583ee049
 
 Source1: https://github.com/containers/dnsname/archive/refs/tags/dnsname-%{dnsnamevers}.tar.gz
-%define sha512 dnsname=ebebbe62394b981e86cd21fa8b92639a6d67e007a18c576ffdbac8067084a4cffdc9d077213bf7c9ee1e2731c7d69e4d4c02465f2340556c8723b6e302238aad
 
 Source2: https://github.com/containers/gvisor-tap-vsock/archive/refs/tags/gvisor-tap-vsock-%{gvisorvers}.tar.gz
-%define sha512 gvisor-tap-vsock-%{gvisorvers}=cf49a555192c869751009bfc14ef192067851ef79197307c84bf3c96a3abc3a8954fdb5d1c2490942920cc663b200fd09cf2330d976e50376c39d5da588cf471
 
 Source3: license.txt
 %include %{SOURCE3}

@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a405da3438d185d96917b03b00abb9ab43e04f58f770f657f716c25d64bb258ee170a71328e74736caa7121f50c0c89d3cc840c1201d2a92cfaf1357d24bdc6a
 
 Source1: license.txt
 %include %{SOURCE1}

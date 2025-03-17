@@ -9,7 +9,6 @@ Distribution:   Photon
 BuildArch:      x86_64
 
 Source0: https://dlcdn.apache.org/tomcat/tomcat-connectors/native/%{version}/source/tomcat-native-%{version}-src.tar.gz
-%define sha512 tomcat-native=d80e6b76295bb253eaf6eab4d722f3ba2f683f33a96310838b4c44b99f0b47a49ed9c09bb53ed23698db057ce765e3fcbfcd4ac4b75d2bdbe691f916be3be339
 
 Source1: license.txt
 %include %{SOURCE1}

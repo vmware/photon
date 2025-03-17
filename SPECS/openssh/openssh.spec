@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha512 %{name}=15b8c57aa120186f1d1c3c2b8dc6ffd26733e12f755a6b0a4255d9ec1815a61506275ff5723b4ac029e44bc2ad22852ac36e1101f292348fbfa79aa1a4cd3f35
 
 # These sources are taken from:
 # http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-<version>.tar.xz

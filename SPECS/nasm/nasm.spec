@@ -9,9 +9,7 @@ Distribution:   Photon
 BuildArch:      x86_64
 
 Source0: http://www.nasm.us/pub/nasm/releasebuilds/%{version}/nasm-%{version}.tar.xz
-%define sha512  %{name}=51fccb5639ce019d9c423c0f279750ffbd74c64cd41dd3b185d1aa1a1aaed79c5d3cd8d4bebbc13ee249a375ed27457ea2abde1a4dbb24d354598fffd1254833
 Source1: http://www.nasm.us/pub/nasm/releasebuilds/%{version}/nasm-%{version}-xdoc.tar.xz
-%define sha512  %{name}-%{version}-xdoc=ec260c0a537b0172e6f2ac17118c744db8743886388a112e99bab1b8c8fee91547dade69dcfe9a15289b2b1a428e8c009048a468f7982b03dd4506abcafc0787
 
 Source2: license.txt
 %include %{SOURCE2}

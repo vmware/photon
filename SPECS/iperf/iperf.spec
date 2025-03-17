@@ -9,7 +9,6 @@ Distribution:   Photon
 
 #Source download URL: https://github.com/esnet/iperf/archive/%{version}.tar.gz
 Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
-%define sha512 iperf=54789c5a63081aa803575ce1df3cb251a3b0bb16313f049f2479ae3a5af39944ace1222d4a086bed0ab34821da73371b2499f8b8283791a953d861da4cfc56f0
 
 Source1: license.txt
 %include %{SOURCE1}

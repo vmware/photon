@@ -5,7 +5,6 @@ Summary:        The plugin manager stripped of pytest specific details
 Group:          Development/Libraries
 URL:            https://pypi.org/project/pluggy/
 Source0:        https://files.pythonhosted.org/packages/f8/04/7a8542bed4b16a65c2714bf76cf5a0b026157da7f75e87cc88774aa10b14/pluggy-%{version}.tar.gz
-%define sha512  pluggy=cf0bcbb4330c24ce473614befa19548f33fb39fa0ad094e1eae786202d7adadc28e16499f80ab96b630091765404ca5c5b6f9a55bc605e03514d8ab50cf9ae00
 
 Source1: license.txt
 %include %{SOURCE1}

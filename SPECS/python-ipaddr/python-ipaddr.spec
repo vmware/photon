@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/i/ipaddr/ipaddr-%{version}.tar.gz
-%define sha512  ipaddr=5adb117c44e6e5dbdb9e96543aa7a34f35b4a4ec9baa163a25448058c34091bf4019d24f0250928291e4d4bc97dcdf75865daef739e2d94f98cc584e6e6c50dd
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://downloads.sourceforge.net/project/traceroute/traceroute/traceroute-%{version}/traceroute-%{version}.tar.gz
-%define sha512  %{name}=db96214e6957fffe17c013044fdc20be6cf94fe5249c9adac77e62e20327c4d582b2ddf4b511f93f30be0cba9f67b0f3f61490745f35ff5a32c63ed66cb0c444
 
 Source1: license.txt
 %include %{SOURCE1}

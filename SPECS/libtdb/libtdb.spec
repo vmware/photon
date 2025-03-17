@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://samba.org/ftp/tdb/tdb-%{version}.tar.gz
-%define sha512 tdb=763beebe923aa04303cbb91ce5970e6bbd13546888cff75ea9ab025afff3ef88fee539ae173fc2fb7ec661b6c337b0c2da361ce3d318f51ef6627bdb3fe6ca63
 
 Source1: license.txt
 %include %{SOURCE1}

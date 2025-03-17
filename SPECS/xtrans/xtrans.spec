@@ -9,7 +9,6 @@ Distribution:   Photon
 BuildArch:      noarch
 
 Source0:        https://ftp.x.org/pub/individual/lib/xtrans-1.4.0.tar.bz2
-%define sha512  xtrans=4fea89a3455c0e13321cbefa43340016dbb59bdd0dbdb5b796c1a6d2a6b1fd63cf1327b769ab426286b9c54b32ec764a50cd2b46228e4e43b841bda6b94de214
 
 Source1: license.txt
 %include %{SOURCE1}

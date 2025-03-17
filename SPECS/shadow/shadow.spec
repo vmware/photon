@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/shadow-maint/shadow/releases/download/%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=2949a728c3312bef13d23138d6b79caf402781b1cb179e33b5be546c1790971ec20778d0e9cd3dbe09691d928ffcbe88e60da42fab58c69a90d5ebe5e3e2ab8e
 
 Source1: chage
 Source2: chpasswd

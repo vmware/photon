@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://pypi.python.org/packages/source/p/pycparser/pycparser-%{version}.tar.gz
-%define sha512  pycparser=e61fbdde484d1cf74d4b27bdde40cf2da4b7028ca8ecd37c83d77473dab707d457321aecaf97da3b114c1d58a4eb200290b76f9c958044b57e5fed949895b5f0
 
 Source1: license.txt
 %include %{SOURCE1}

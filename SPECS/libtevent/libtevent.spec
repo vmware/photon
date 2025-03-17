@@ -10,7 +10,6 @@ Distribution:   Photon
 Group:          Development/Libraries
 
 Source0: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
-%define sha512 tevent=0bcc87c10f84e947edad8f8c31f3923253c599b7a69a1db1c21ab292e02937ccb8bad9f0f70e27420ead687aaed1a9b3830b6daa903b8a9bd48cc035a6e5f4ec
 
 Source1: license.txt
 %include %{SOURCE1}

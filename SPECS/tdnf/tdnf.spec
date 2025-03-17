@@ -8,7 +8,6 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=8e739ccd34be84d78a03bd7e92c139739e8be031cba7bba012f806e8d11655ea8f9edf4416b8abf1b7a7072c5231f18e5995b8c381f0f85a5ac323c721759f1b
 
 Source1: license.txt
 %include %{SOURCE1}

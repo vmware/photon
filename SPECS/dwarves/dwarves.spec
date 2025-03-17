@@ -7,7 +7,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/acmel/dwarves
 Source0:       http://fedorapeople.org/~acme/dwarves/%{name}-%{version}.tar.xz
-%define sha512 %{name}-%{version}=3cdca183cf68ec46fd9a0301ae4a8a30b23a8139c65ffba64ae11f85f9e942f7341dca6f88a4a3b49f32bfd880927193a80fa011726e4a33d3e5a1a146326c06
 
 Source1: license.txt
 %include %{SOURCE1}

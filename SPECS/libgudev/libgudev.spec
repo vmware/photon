@@ -4,7 +4,6 @@ Version:        237
 Release:        3%{?dist}
 URL:            https://git.gnome.org/browse/libgudev/
 Source0:        https://git.gnome.org/browse/%{name}/snapshot/%{name}-%{version}.tar.xz
-%define sha512 libgudev=2d68981e3ba5c58ee080b6ed5cd5152c1c352b2bdb3ecb5eaf2b91f6800d3369121222a7fe4f82630aabd164069ee7276c52082b2fc2ff5f318481b85b25abc6
 
 Source1: license.txt
 %include %{SOURCE1}

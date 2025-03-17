@@ -8,7 +8,6 @@ Group:          System Environment/NetworkingLibraries
 URL:            https://www.libssh.org
 
 Source0: https://www.libssh.org/files/0.10/%{name}-%{version}.tar.xz
-%define sha512 %{name}=40c62d63c44e882999b71552c237d73fc7364313bd00b15a211a34aeff1b73693da441d2c8d4e40108d00fb7480ec7c5b6d472f9c0784b2359a179632ab0d6c1
 
 Source1: libssh_client.config
 Source2: libssh_server.config

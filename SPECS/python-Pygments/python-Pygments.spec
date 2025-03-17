@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Pygments
 
 Source0:        https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-%{version}.tar.gz
-%define sha512  Pygments=d492acf112423fa997f35d6d3cae18b89bf11619c696879c6df49697dca933b6d54d7cb22907e06812e0a562f03e8ed5ccefde5247bc1c51cf2d3d69e7d65422
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -9,7 +9,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/photon/tree/4.0/support/image-builder/iso/BUILD_DVD/isolinux
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 %{name}=e199a1bda8b715a96107dd8ed8ca4ac0372d2b8dadbec19b7d97e96747b20bf0c3c96ba59eb637a6b3001123a528cbdb84ebae351e9da7402fe7e8eef96fb1f3
 Source1:       splash.png
 
 Source2: license.txt

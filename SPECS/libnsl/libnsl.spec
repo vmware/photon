@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/thkukuk/libnsl/archive/v%{version}/libnsl-%{version}.tar.gz
-%define sha512 %{name}=86a7738707a3e4e56b60c8de0445fb576e66148bc12fa2a6aab422ea81eb4b42be3287a12f78384acd2b8bfb3885e9a0ce4f7328f078da3a5099acb66a35a935
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -21,10 +21,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}.tar.gz=a0f7c6be5fccd3a01d3ccb784f66030e3be27a02a974f46297d52ad44eb0a1ceee1ac5d047e58efede9715355d2ce36c920572c28c02951c5958f1e4cc805c0b
 
 Source1: https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.gz
-%define sha512 contrib-%{contrib_ver}=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
 
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
@@ -33,7 +31,6 @@ Source4:        %{name}.sysusers
 # Sources for isolcpu device plugin
 # Source tarball of https://opendev.org/starlingx/integ/src/commit/c15e3e1a3af2c797caa1bc408315beb0101ae623/kubernetes/plugins/isolcpus-device-plugin/files
 Source5:        isolcpu-plugin-%{isolcpu_ver}.tar.bz2
-%define sha512 isolcpu=9b7f8f45b4b27d9507f37b41547cd0e3204ca6b6b4101c33b17d7272235d56a36f47d33d403377a193af3806ca1ea82eba73e4afa2e0d8f9d1ceeab0a13c0950
 
 Source6: license.txt
 %include %{SOURCE6}
@@ -86,10 +83,10 @@ A kubelet device plugin for isolcpu resource.
 
 %prep
 %autosetup -b0 -b5 -N
-%patch0 -p1
-%patch2 -p1
+%patch -p1 0
+%patch -p1 2
 cd ../isolcpu-plugin-%{isolcpu_ver}
-%patch1 -p1
+%patch -p1 1
 
 cd ..
 tar xf %{SOURCE1} --no-same-owner

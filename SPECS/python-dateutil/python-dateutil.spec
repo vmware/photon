@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/python-dateutil
 Source0:        https://pypi.python.org/packages/54/bb/f1db86504f7a49e1d9b9301531181b00a1c7325dc85a29160ee3eaa73a54/python-dateutil-%{version}.tar.gz
-%define sha512  python-dateutil=6538858e4a3e2d1de1bf25b6d8b25e3a8d20bf60fb85e32d07ac491c90ce193e268bb5641371b8a79fb0f033a184bac9896b3bc643c1aca9ee9c6478286ac20c
 
 Source1: license.txt
 %include %{SOURCE1}

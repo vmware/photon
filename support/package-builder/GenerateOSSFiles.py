@@ -11,6 +11,7 @@ from Logger import Logger
 from constants import constants
 from CommandUtils import CommandUtils
 from SpecData import SPECS
+from SourceConfigData import SOURCES
 
 
 def main():
@@ -193,7 +194,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
             listSourceNames = SPECS.getData().getSources(package, version)
             if listSourceNames:
                 sourceName = listSourceNames[0]
-                sha512 = SPECS.getData().getChecksum(package, version, sourceName)
+                sha512 = SOURCES.getData().getChecksum(sourceName)
                 if sha512:
                     PullSources.get(
                         package,

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/ansible/ansible/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4a44739bb10743b3bdf11de5d53ec5273f50f805a9f984ad5ddf330d1070205f03e8328d35bc66421b478ee55226e4e9b99b8ccd514c747e1cd688e620f4bd12
 
 Source1: tdnf.py
 Source2: macros.ansible

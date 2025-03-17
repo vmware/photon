@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/jemalloc/jemalloc/
 Source0:        https://github.com/jemalloc/jemalloc/releases/download/%{version}/%{name}-%{version}.tar.bz2
-%define sha512  jemalloc=22907bb052096e2caffb6e4e23548aecc5cc9283dce476896a2b1127eee64170e3562fa2e7db9571298814a7a2c7df6e8d1fbe152bd3f3b0c1abec22a2de34b1
 
 Source1: license.txt
 %include %{SOURCE1}

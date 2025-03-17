@@ -14,7 +14,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/pgaudit/pgaudit/archive/refs/tags/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=ab05432c06c61ef8b3b6bedf6789a57cfc71a8f263a4905e1400f18a58716aa981791d30629a03bb725fc7ac66ef12248abfa7bcbe9b6579fe9a03a58c9995c0
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/ansible-collections/ansible.posix/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=5132d792b75c2b6d3779e95c28c1141807286b6f77370a5fa95325a74f723409393eb2d2585aa1b99f92b390925b6b76e208f0b25367397db7ccb5de869c252f
 
 Source1: license.txt
 %include %{SOURCE1}

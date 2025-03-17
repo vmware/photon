@@ -4,7 +4,6 @@ Version:        2.1.7
 Release:        5%{?dist}
 URL:            https://github.com/containers/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        conmon-%{version}.tar.gz
-%define sha512  %{name}=95d394b399a19a62b894cdd03937ab79b81051eea1db461b1bf957ddd7626d6ca4aa108b8319ed8c08adbdf99fd960c5ba29146e8b0673b5c920708912a72973
 
 Source1: license.txt
 %include %{SOURCE1}

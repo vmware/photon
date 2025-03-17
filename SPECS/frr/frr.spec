@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=77b278a3ea87da9dfd7b87e4f9ae67f08ed0f24809f6dd228d2ab2e2c29e2b3191d59d50fc474e53e159ac6c79c302481b462125d0657889516f07b8e05e8562
 
 Source1: %{name}-tmpfiles.conf
 Source2: %{name}-sysusers.conf

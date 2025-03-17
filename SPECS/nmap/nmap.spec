@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://nmap.org/dist/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=4ec9295e25bd7a215e718c3dbbf09bfe6339b60850f4a8d09b5ad0cbf41a0da8ece0168efc5ca91ba1ecbd83b1d31735d77dacd5f1ec1a9fd212454dd1f0f0fd
 
 Source1: license.txt
 %include %{SOURCE1}

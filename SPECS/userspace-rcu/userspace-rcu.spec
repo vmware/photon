@@ -4,7 +4,6 @@ Version:        0.13.2
 Release:        4%{?dist}
 URL:            https://github.com/urcu/userspace-rcu/releases
 Source0:         %{name}-%{version}.tar.gz
-%define sha512  userspace-rcu=a59daf9908acad3bd21e36d90c831ec2df8259d29743fb86066a82433a4a228ae79ca3b66e12120c0e6cad651a1007e77d6ac23ab083c55ab9b283b7d36a3ddc
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon

@@ -4,7 +4,6 @@ Version: 1.3
 Release: 3%{?dist}
 URL: https://01.org/msr-tools/downloads
 Source0: %{name}-%{version}.zip
-%define sha512 msr-tools=9605eed0b6211d0ecbe48a14d66b5d61965770f249c5c1b15416d4f2e9a37a68ecfde171077c3acc74bb6b951749bcff186acbb4d6d8a3051695d2d97c0e332b
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:  Photon

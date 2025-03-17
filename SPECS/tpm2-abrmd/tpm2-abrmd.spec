@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/tpm2-software/tpm2-abrmd/releases/download/2.4.1/%{name}-%{version}.tar.gz
-%define sha512  tpm2=0335285678cfceca4f185981ded90d213ff796cadddc9b5d6dbf2db533f81023a0f1089bbd8a8017bccb95190889be23b24d38a176d3368d221479aff4ff7d6c
 
 Source1: license.txt
 %include %{SOURCE1}

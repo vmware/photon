@@ -16,18 +16,8 @@ Eventually it will be replaced with sha512 because of enforcement in check_spec.
 
 
 def isFileHashOkay(filepath, checksum):
-    if "md5" in checksum:
-        csum = hashlib.md5()
-        chash = checksum["md5"]
-    elif "sha1" in checksum:
-        csum = hashlib.sha1()
-        chash = checksum["sha1"]
-    elif "sha256" in checksum:
-        csum = hashlib.sha256()
-        chash = checksum["sha256"]
-    else:
-        csum = hashlib.sha512()
-        chash = checksum["sha512"]
+    csum = hashlib.sha512()
+    chash = checksum
 
     try:
         f = open(filepath, "rb")

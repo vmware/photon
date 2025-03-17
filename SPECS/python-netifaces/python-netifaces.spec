@@ -8,7 +8,6 @@ URL:            http://alastairs-place.net/netifaces/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/n/netifaces/netifaces-%{version}.tar.gz
-%define sha512  netifaces=a53110efb78c89c4d72d002104866253a4c085dd27ff9f41d4cfe3811cc5619e7585ceda4e91e83cdd0645c40c745c61d205708ee9a34427b35f437a48f148e5
 
 Source1: license.txt
 %include %{SOURCE1}

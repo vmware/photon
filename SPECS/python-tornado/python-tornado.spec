@@ -5,7 +5,6 @@ Summary:        Tornado is a Python web framework and asynchronous networking li
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/tornado
 Source0:        https://pypi.python.org/packages/fa/14/52e2072197dd0e63589e875ebf5984c91a027121262aa08f71a49b958359/tornado-%{version}.tar.gz
-%define sha512  tornado=157cbeee21bef29ac68b319329e7fc57db4c68dbb5a245e2171b7a28427ebbfe16b745e3bdbdec5912caae5eaa60c3cbbf8830c9c76fec5ffdf025e234468517
 
 Source1: license.txt
 %include %{SOURCE1}

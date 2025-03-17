@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/rtnpro/motdgen/archive/motdgen-a152954.tar.gz
-%define sha512  motdgen-a152954.tar.gz=784d6fa426c48386a584c7d026a585718a8665a249cae9450073f812b5b4935fa20d4127dcb9c937ac4470b4f19e9349974bf0e4c341d95a162a04438ce98276
 
 Source1: license.txt
 %include %{SOURCE1}

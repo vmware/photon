@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/pallets/markupsafe
 
 Source0: https://github.com/pallets/markupsafe/archive/refs/tags/markupsafe-%{version}.tar.gz
-%define sha512 markupsafe=6b06a5f470858409eb186d20edd129be90f31030be91fcc73e989b0a4ee51c3755cce0938edd9a7c73471d307385260f868101b5e11cc4d97c309420b5a573da
 
 Source1: license.txt
 %include %{SOURCE1}

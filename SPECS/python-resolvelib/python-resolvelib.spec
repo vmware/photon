@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/sarugaku/resolvelib
 Source0:        https://github.com/sarugaku/resolvelib/archive/refs/tags/resolvelib-%{version}.tar.gz
-%define sha512  resolvelib=4e1a7d84ee3fb86433701562aff71d0c867428f2bcb58ce998aee13896945b54a0915540dea7dcc3fd1e2544b43ef276df8a1804cbbc9330936169bef98a1c5d
 
 Source1: license.txt
 %include %{SOURCE1}

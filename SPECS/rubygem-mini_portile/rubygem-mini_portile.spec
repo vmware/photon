@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/mini_portile/
 Source0:        https://rubygems.org/downloads/mini_portile-%{version}.gem
-%define sha512  mini_portile=fd6ce49b5db291e8216f001e4a3bd14d69a920d6d457de7566f7526abf616dad3ec86d4951ab4b881ffd185b4d4e02e64eb2ae494cd9a1275e342b78afa4e2bc
 
 Source1: license.txt
 %include %{SOURCE1}

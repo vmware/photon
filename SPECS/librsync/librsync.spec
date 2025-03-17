@@ -9,7 +9,6 @@ Distribution:   Photon
 
 #https://github.com/librsync/librsync/archive/v2.0.0.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=77d826dbaf02061b759d876a6b537238bad40379a08e4494ebfd3e380b2eb921b7b060bc570330aeac9424ef1a9d521f449d559c9ffa3be24acdef4ad530fe90
 
 Source1: license.txt
 %include %{SOURCE1}

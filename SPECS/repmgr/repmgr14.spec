@@ -12,7 +12,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://repmgr.org/download/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=938eabd6a73296e657c199878050a7fac82285da9613d0fff861e969865a4c3725a13b548e84a17ee035ef536a738b67411b9c93fdafd8698bb76844f0834d15
 
 Source1: license.txt
 %include %{SOURCE1}

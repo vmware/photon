@@ -5,7 +5,6 @@ Summary:        More routines for operating on Python iterables, beyond itertool
 Group:          Development/Libraries
 URL:            https://github.com/erikrose/more-itertools
 Source0:        https://files.pythonhosted.org/packages/d6/03/37d7c431c4c1c17507fb7b89240ddb7be70f2027277960d525f1679363c1/more-itertools-%{version}.tar.gz
-%define sha512  more-itertools=a85ad9359ddd65caa81b743ff342c3917420d57ffc53b130eaa2d049fc90b55e0e00f12c878b49eb5f882b62e3a3b2a4ea04677c4e959958eab89aa5dd26eb0d
 
 Source1: license.txt
 %include %{SOURCE1}

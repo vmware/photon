@@ -12,10 +12,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
-%define sha512 %{name}=ed8d565515b1bc6164e4ff06d3388ba92e332850305496fd65db9adf1ec87bd9dd1bfde49dd41be5d5216289efc72bfd287cd7392f2bba80b740d4c314c749e5
 
 Source1: https://github.com/llvm/llvm-project/releases/download/cmake-%{version}.src.tar.xz
-%define sha512 cmake=a87c3c0976c7295e5d51f7a3dbd4129c4b5ff0dc95bac494a5011641743a5950a0aa7d9c44fae570284573b9f673a395fc3160b45b6b4ba54ced9ed5f21dd717
 
 Source2: license.txt
 %include %{SOURCE2}

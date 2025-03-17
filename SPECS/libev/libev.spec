@@ -4,7 +4,6 @@ Version:        4.33
 Release:        3%{?dist}
 URL:            http://software.schmorp.de/pkg/libev.html
 Source0:        http://dist.schmorp.de/libev/%{name}-%{version}.tar.gz
-%define sha512 libev=c662a65360115e0b2598e3e8824cf7b33360c43a96ac9233f6b6ea2873a10102551773cad0e89e738541e75af9fd4f3e3c11cd2f251c5703aa24f193128b896b
 
 Source1: license.txt
 %include %{SOURCE1}

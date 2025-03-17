@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/ofek/hatch-vcs
 Source0:        https://files.pythonhosted.org/packages/source/h/hatch_vcs/hatch_vcs-%{version}.tar.gz
-%define sha512  hatch_vcs=3eb0b04022d4801a982d90a3a0e34e59fcf7dd04c0c2db91c0306b4187ba466ac85ecbb80943a35f4a6a4912bc2ddf2633fab897e8820f5e1ee9d200147b5faf
 
 Source1: license.txt
 %include %{SOURCE1}

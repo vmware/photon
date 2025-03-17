@@ -10,7 +10,6 @@ URL:            https://pypi.org/project/sphinxcontrib-jsmath
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/b2/e8/9ed3830aeed71f17c026a07a5097edcf44b692850ef215b161b8ad875729/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=c1e6488f5c0ca4567c27ec7c597c9db321ac32ce354c4ad62fea534b2ae1c0acb183a921f46216bbc3891f14acfaac05ddf324b8fdaf99828df07bc91aa7e5c7
 
 Source1: license.txt
 %include %{SOURCE1}

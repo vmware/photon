@@ -9,7 +9,6 @@ Summary:        manual authoring tool
 Group:          Development/Languages
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512  ronn=885418c88d5a1073f9457ea11e29d82d3bb40ad12506589ccfab83ad447445e41282c9688aba5646082ae5ecc6a047fa9439ffae14561152fc61a136474f611c
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/e8/c4/ba2f8066cceb6f23394729afe52f3bf7adec04bf9ed2c820b39e19299111/sortedcontainers-%{version}.tar.gz
-%define sha512 sortedcontainers=4c01522bc01367a27bb005f16a487c127459f949f3d9fa7094e559993ceb074b3f84dda167f300778f46bdc15669f05866b6117ff6c369ca9a561ae20ab7c53f
 
 Source1: license.txt
 %include %{SOURCE1}

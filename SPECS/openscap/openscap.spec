@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha512 %{name}=5e4d6c4addc15b2a0245b5caef80fda3020f1cac83ed4aa436ef3f1703d1d761060c931c2536fa68de7ad5bab002b79c8b2d1e5f7695d46249f4562f5a1569a0
 
 Source1: license.txt
 %include %{SOURCE1}

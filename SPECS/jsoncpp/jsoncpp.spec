@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/open-source-parsers/jsoncpp/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=1d06e044759b1e1a4cc4960189dd7e001a0a4389d7239a6d59295af995a553518e4e0337b4b4b817e70da5d9731a4c98655af90791b6287870b5ff8d73ad8873
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,14 +8,12 @@ URL:            https://github.com/hunspell/hunspell
 Distribution:   Photon
 
 Source0: https://github.com/hunspell/hunspell/releases/download/v%{version}/hunspell-%{version}.tar.gz
-%define sha512 %{name}=d007edc8cb7ff95048361418b088bb062962973247c940aa826c9859a5ef90a9734100bffe7c7ac9a774f2e233605e814efb9e7fd3fc8c4ef4b978e9ec990cba
 
 # While upgrading this package, please generate the tarball using the
 # fetch-dictionaries-files.sh script provided in tools/scripts dir.
 # Note: The dictionary files for en_US and en_GB has been taken from
 # URL: https://github.com/wooorm/dictionaries
 Source1: dictionaries-1.0.tar.gz
-%define sha512 dictionaries=c91251de5be9c9673fe54649ef431051f38c60b21549af9f343e895cc1275ab2c4e3c3f56943b5a26c18a6c65d2c483ca24fb620908eb6443ba6890a06939aea
 
 Source2: license.txt
 %include %{SOURCE2}

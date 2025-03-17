@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/USCiLab/cereal/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=98d306d6292789129675f1c5c5aedcb90cfcc1029c4482893a8f9b23f3c9755e5ed4762d7a528f215345cae6392e87cd8d89467115b6f031b41c8673d6b4b109
 
 Source1: license.txt
 %include %{SOURCE1}

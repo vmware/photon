@@ -21,7 +21,6 @@ Obsoletes:      apache-tomcat-9 < 9.0.82-1%{?dist}
 Provides:       apache-tomcat-9 = %{version}-%{release}
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=eb380dae515a259d23d5311d0b96b8ef5068c0d8d72da215410e5475582d2ff82182b7331e0d197eb993d8014a99ea40290154a343e961a07ed02be6894759cc
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
 # base-for-apache-tomcat is a cached -Dbase.path folder
@@ -38,7 +37,6 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # Contact Harinadh.Dommaraju@broadcom.com for more information
 
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=c6e718f37fc71247459e3932313931ef53ec1c8276a70b791ac9982702dcfae17c2670ab235c9b2cb905e6b9c71c6c3b6653f8bc827f8aaae1a8f9603eed2b07
 
 Source2: license-apache-tomcat9.txt
 %include %{SOURCE2}

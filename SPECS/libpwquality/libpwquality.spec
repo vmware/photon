@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/libpwquality/libpwquality/releases/download/%{name}-%{version}/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=2d49b79105361663f009f7183fde9123e6f1e63bd678dfe5418143f611e763af8dd44374b826b3c22a00e721047c539741dc44d99a2289b9ab229791768d6e76
 
 Source1: license.txt
 %include %{SOURCE1}

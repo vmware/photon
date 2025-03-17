@@ -7,7 +7,6 @@ Group:        Applications/File
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      https://github.com/distcc/distcc/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=de09329fdfa25e08a9b9529190ddaa9ceccb34c8655692edb86f367a8db4a71b750c6e928cb8e5a670f51fbbc02fd1c8524f72e01b3ebaacc1106dc676d18eef
 Source1:      hosts.sample
 Source2:      distccd.service
 

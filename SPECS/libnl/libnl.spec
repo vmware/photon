@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name}-%{version}.tar.gz
-%define sha512 %{name}=80fbbc079299c90afd2a5eda62e4d4f98bf4ef23958c3ce5101f4ed4d81d783af733213bb3bab15f218555d8460bc2394898f909f4ac024fc27281faec86a041
 
 Source1: license.txt
 %include %{SOURCE1}

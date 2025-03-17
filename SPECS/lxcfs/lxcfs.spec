@@ -5,7 +5,6 @@ Release:       3%{?dist}
 URL:           https://linuxcontainers.org/lxcfs/downloads/
 Source0:       %{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
-%define sha512 %{name}=967e60bd7ea545f1fcdd805adc0083e39684013c18f42a51753b5be8cdabfb86a652d02471a1f71c7b4fa756da09b72d324b724d68091d539edd10ea63add1fd
 Vendor:        VMware, Inc.
 Distribution:  Photon
 

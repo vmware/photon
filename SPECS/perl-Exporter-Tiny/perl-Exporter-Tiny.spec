@@ -6,7 +6,6 @@ Release:       2%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/Exporter-Tiny/
 Source0:       https://cpan.metacpan.org/authors/id/T/TO/TOBYINK/Exporter-Tiny-%{version}.tar.gz
-%define sha512 Exporter-Tiny=491f7bb86d6a53e8f2553fcff8c612124692562ddacd0cb67774cd28777fbc709961a0ca64fa374a4bc331fd4c1dd60f71010ae0e24bc50b38afb92317a0e221
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -12,7 +12,6 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=f8862c6a58a8a2d79da14fe4d64265407bd1a4062beb821494d1a2b738bae526feb61755f133317458aa1dcadf84275d49d8916d9cae13d291fbb69aa11c2e6b
 
 Source1:        license.txt
 %include        %{SOURCE1}

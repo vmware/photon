@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.cabextract.org.uk/libmspack/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a7b5f7caa49190c5021f3e768b92f2e51cc0ce685c9ab6ed6fb36de885c73231b58d47a8a3b5c5aa5c9ac56c25c500eb683d84dbf11f09f97f6cb4fff5adc245
 
 Source1: license.txt
 %include %{SOURCE1}

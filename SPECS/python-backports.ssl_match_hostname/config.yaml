@@ -9,4 +9,5 @@ sources:
       license_concluded: Python-2.0
       license_declared: Python-2.0
       short_summary: Backported python ssl_match_hostname
+      detailed_description: Backported python ssl_match_hostname
       supplier: 'Organization: Broadcom, Inc.'

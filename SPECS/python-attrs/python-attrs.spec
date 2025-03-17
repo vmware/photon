@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        attrs-%{version}.tar.gz
-%define sha512  attrs=447637bc82b31d565479e364869b996eaf7b67e526ad97f79ba1c27f287bbb25a2c40663e35437bc19037f605fac9322bd35f303f2769f0eb2ee673900551885
 
 Source1: license.txt
 %include %{SOURCE1}

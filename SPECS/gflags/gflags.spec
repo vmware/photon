@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://gflags.github.io/gflags
 
 Source0: https://github.com/%{name}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=98c4703aab24e81fe551f7831ab797fb73d0f7dfc516addb34b9ff6d0914e5fd398207889b1ae555bac039537b1d4677067dae403b64903577078d99c1bdb447
 
 Source1: license.txt
 %include %{SOURCE1}

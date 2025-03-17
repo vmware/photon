@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
-%define sha512  %{name}=1a3496cb6ac575c7a5c523cc4eede39bc77c313a6d1fea2d303fc967792d75d94e42d7821e1a61b7513509320aae4a7170506decf5753ddbd1dda9d304cc392e
 
 Source1: license.txt
 %include %{SOURCE1}

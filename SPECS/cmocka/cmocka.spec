@@ -8,7 +8,6 @@ URL:           https://cmocka.org
 Distribution:  Photon
 
 Source0:       https://cmocka.org/files/1.1/%{name}-%{version}.tar.xz
-%define sha512 %{name}=cad7f04757183d004f6eaad39036fc0e24c5e0e987f80e85bc43bc66dba22389cb02b08e25531cc28a541d0a24a86b29be134a2d6fc339128e87d66952f502bd
 
 Source1: license.txt
 %include %{SOURCE1}

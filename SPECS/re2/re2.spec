@@ -10,7 +10,6 @@ Distribution:   Photon
 URL:            http://github.com/google/%{name}
 
 Source0:        https://github.com/google/re2/archive/%{name}-%{re2_long_ver}.tar.gz
-%define sha512  %{name}=f3d5f2a3aa5eda74bc8f434d7b000eed8e107c894307a889466a4cb16a15b352a0332e10d80ed603c9e2e38bbcbdf11f15b6953cbdf461cc9fb0560e89a8ceb8
 
 Source1: license.txt
 %include %{SOURCE1}

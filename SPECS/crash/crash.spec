@@ -11,13 +11,10 @@ Distribution:  Photon
 URL:           http://people.redhat.com/anderson
 
 Source0: http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha512 %{name}=9ff24d1206e9376e83690f76c817a48a68ff6adce677fad70335a73550a59c9af6e4753c1199f22eafa60c137156313244bbf98ed01bc2b066f41d324738ef6b
 
 Source1: http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCORE_VERSION}.tar.gz
-%define sha512 crash-gcore=697952b7c55af5e4a7528cdd6fe616411d5147979fc90da55c0a3cee44510f39846e99bff3ac701c1ed98ee2c5d125e77c332b1f5b0be6e0ea1d98cf5d547a15
 
 Source2: https://ftp.gnu.org/gnu/gdb/gdb-%{GDB_VERSION}.tar.gz
-%define sha512 gdb=aa89caf47c1c84366020377d47e7c51ddbc48e5b7686f244e38797c8eb88411cf57fcdc37eb669961efb41ceeac4181747f429625fd1acce7712cb9a1fea9c41
 
 Source3: license.txt
 %include %{SOURCE3}
@@ -57,7 +54,7 @@ This package contains libraries and header files need for development.
 %setup -q -a 1
 %ifarch aarch64
 pushd crash-gcore-command-%{GCORE_VERSION}
-%patch0 -p1
+%patch -p1 0
 popd
 %endif
 

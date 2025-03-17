@@ -13,7 +13,6 @@ Distribution:    Photon
 Group:           Development/Languages
 
 Source0: https://github.com/systemd/erlang-%{realname}/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=2c21e3e904b8b7d6c39b2ee81524537421994c80fe5a019bb37e8401da337ddf7e92c56deef757c505d9bdf9d16e8ab7de1e43fa93e4d0c129c36ee7fc4bfba9
 
 Source1: license.txt
 %include %{SOURCE1}

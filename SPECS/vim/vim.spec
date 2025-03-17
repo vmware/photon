@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4ed1b21b8acfb2a71ef37f012e17b61d9161819c03e4474abe345ad0861b8cb346cee459ff17f895a4abe0b6710b756bac0468b42b7ebb87af181fafab213c47
 
 Source1: vimrc
 

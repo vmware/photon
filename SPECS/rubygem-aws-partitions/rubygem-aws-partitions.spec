@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/aws-partitions-%{version}.gem
-%define sha512    aws-partitions=8c6b38c5facfb7dc4c915daba3f160f21e277998aa4887edbc20037b20ca356cd9133057407833c34a08cb76495ea61dd61fb7c24e9e43a8f1626a98cf1c59d3
 
 Source1: license.txt
 %include %{SOURCE1}

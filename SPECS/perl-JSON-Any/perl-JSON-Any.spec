@@ -5,7 +5,6 @@ Release:        7%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~ether/JSON-Any-1.39/lib/JSON/Any.pm
 Source0:        http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/JSON-Any-%{version}.tar.gz
-%define sha512  JSON-Any=a4e9494ef650fe6f0144fddad49962e717470390b5783ab7bed6ef1c34fa7aa3d4f8699b9967ec8ca8813f43ee8c1d594e5af4d4962929791aa95b470104cd9b
 
 Source1: license.txt
 %include %{SOURCE1}

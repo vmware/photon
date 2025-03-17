@@ -10,7 +10,6 @@ Distribution:   Photon
 URL:            https://github.com/adrian-thurston/ragel
 
 Source0: https://github.com/adrian-thurston/ragel/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=234efc74300877f2bff1e84ffe50bd926c372dee1bab0b734e748e3fc61a6a86d1cfbfb1002e05d4adb70119f9f964ef555fb79f5aab8a12f3e0fc7ae2b23bcc
 
 Source1: license.txt
 %include %{SOURCE1}

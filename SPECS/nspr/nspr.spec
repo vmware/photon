@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.mozilla.org/pub/nspr/releases/v%{version}/src/%{name}-%{version}.tar.gz
-%define sha512  nspr=8064f826c977f1302a341ca7a7aaf7977b5d10102062c030b1d42b856638e3408ab262447e8c7cfd5a98879b9b1043d17ceae66fbb1e5ed86d6bc3531f26667e
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/datastax/python-driver/archive/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=82a2bace177d74551ea349bf30141785e1e7b750e612c8aa64a51520a082d43b0828b68a4c8e82b21b17a4d955fe9f82118cdf0b2a259f86eacfd3994bd45a56
 
 Source1: license.txt
 %include %{SOURCE1}

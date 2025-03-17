@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0:    https://launchpad.net/intltool/+download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=4c93cb26592ed0b1622d3b7800b5d6622ffa36f58ac73f2ef0bddfab522565fdfb8fa73d81914b9a202f1d62bc995a08960f8adb9f62c86918e75498e85fbfdf
 
 Source1: license.txt
 %include %{SOURCE1}

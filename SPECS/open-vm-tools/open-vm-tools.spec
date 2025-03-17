@@ -11,10 +11,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=a7c1920c93baa1189e6d40cb14ecdb9dfefcf74a3bef4f09ad5816bf4f9be255b8983f5ebf2c6c42de1d4bb4e405f22ffb00f20b382498b4ab71ee4d7544a694
 
 Source1: https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
-%define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
 
 Source2: vmtoolsd.service
 Source3: vgauthd.service

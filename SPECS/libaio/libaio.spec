@@ -7,7 +7,6 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://fedorahosted.org/releases/l/i/libaio/libaio-0.3.110.tar.gz
-%define sha512 %{name}=664295d330d6e9adc005e2331e77582619625b479ffc2b81728ba6a682487380ee936079c4a69d35144b458bbe35c612f4ed9b32e913bd7e109b824345763eb3
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -39,8 +38,8 @@ for the Linux-native asynchronous I/O facility ("async I/O", or "aio").
 %prep
 # Using autosetup is not feasible
 %setup -q -a 0
-%patch0 -p0 -b .install-to-destdir-slash-usr
-%patch0 -p1 -b .install-to-destdir-slash-usr
+%patch -p0 -b .install-to-destdir-slash-usr 0
+%patch -p1 -b .install-to-destdir-slash-usr 0
 
 %build
 # A library with a soname of 1.0.0 was inadvertantly released.  This

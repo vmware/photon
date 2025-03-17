@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/source/p/python-daemon/python-daemon-%{version}.tar.gz
-%define sha512 %{srcname}=d9f6e6c376a496fae96bd9efed0a56d00a137617a3d1d5ef74802ef176bc813bb1d49bbb9164cdbec03213529f944b32b257bcc64283abfa4a3522ff00826bfd
 
 Source1: license.txt
 %include %{SOURCE1}

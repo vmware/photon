@@ -27,7 +27,6 @@ URL:           https://github.com/rabbitmq/rabbitmq-server
 
 # use only .xz bundle from release page of github
 Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 rabbitmq=3d06926e4068ef8d0a832e6d32267a6fc3d098a59583266e5c419e421cdf3c5dd60b77859778232289b80e1e3ff3e35ce9959ea53fefa269d7b1afe5f686c068
 
 Source1: %{name}.tmpfiles
 Source2: %{name}.logrotate

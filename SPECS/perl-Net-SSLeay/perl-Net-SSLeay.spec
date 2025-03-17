@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://cpan.metacpan.org/authors/id/C/CH/CHRISN/Net-SSLeay-%{version}.tar.gz
-%define sha512  Net-SSLeay=e9d9161ebeb7be90f4c7a0ea98f1034892ce6d33aa72872683177b19daa1f4c5819f85ea9a052a076ec8d7c21705f6c344aef64680bc881bf3218d38e8b7b173
 
 Source1: license.txt
 %include %{SOURCE1}

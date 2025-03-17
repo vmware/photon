@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
-%define sha512  freetype=0d2bfc3980313e1578b69568394666e1721c11dfdb47f21cb46ced48d0afcc674e175391ee0f64ffbcee814cded2d9a8fe6273029253c1adf642078ac8c0dd73
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -5,7 +5,6 @@ Summary:        Python Module for Accessing and Modifying Configuration Data in 
 Group:          Development/Libraries
 URL:            http://code.google.com/p/iniparse/
 Source0:        http://iniparse.googlecode.com/files/iniparse-%{version}.tar.gz
-%define sha512 iniparse=b3f10d1b36497c3c5c71cb0a1ac73d74d8944f4ad3b7acc4a4b0246c2f1a20c184d9af20bbb3cb8ec4f57fddfb5e103b92688847debb4200ef0583353d7f9556
 
 Source1: license.txt
 %include %{SOURCE1}

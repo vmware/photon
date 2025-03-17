@@ -7,7 +7,6 @@ Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=29889ecbf590dff0f39183d9e0621741d731a554d990e5c995a4644725dca62e8e19601d40db0ef7d62ebf54e5457c7409965e4832b6e60e4ccbc9c8caa30718
 
 Source1: license.txt
 %include %{SOURCE1}

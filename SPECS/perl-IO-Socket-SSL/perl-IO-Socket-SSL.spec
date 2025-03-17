@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://cpan.metacpan.org/authors/id/S/SU/SULLR/IO-Socket-SSL-%{version}.tar.gz
-%define sha512 IO-Socket-SSL=ed693aa360e669401d5d2b81d988d6d2bd39f042452d7194cc8a7ec2dccf1dfa213ecb29572178a3abfdd20af999217d19a3d9a4c7978207a2edaac5148c9853
 
 Source1: license.txt
 %include %{SOURCE1}

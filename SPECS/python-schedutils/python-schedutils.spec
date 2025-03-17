@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://git.kernel.org/pub/scm/libs/python/python-schedutils/python-schedutils.git/
 Source0:         https://cdn.kernel.org/pub/software/libs/python/python-schedutils/python-schedutils-%{version}.tar.xz
-%define sha512  python-schedutils=1373eb0ae7594aeaf0ffa75abeb89424208531049f93d4bd068b0cedc603380c374361c87c09bb01acd6346dfe0de654a2112321f0b9110ec103d51549b8f4d2
 
 Source1: license.txt
 %include %{SOURCE1}

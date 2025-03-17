@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://gitlab.com/qemu-project/libslirp/-/archive/v%{version}/%{name}-v%{version}.tar.gz
-%define sha512  %{name}-v%{version}=387f4a6dad240ce633df2640bb49c6cb0041c8b3afc8d0ef38186d385f00dd9e4ef4443e93e1b71dbf05e22892b6f2771a87a202e815d8ec899ab5c147a1f09f
 
 Source1: license.txt
 %include %{SOURCE1}

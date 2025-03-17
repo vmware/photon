@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/tklauser/libtar/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=11a12695abf4f9668801d24b7b552daed1219b2f395c09818d15e16721f7136d63aa0c09e442401e4fedbf7335748f0dc46f8da21b94b36595910b2fe44d4aea
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -35,10 +34,10 @@ developing applications that use libtar.
 %prep
 # Using autosetup is not feasible
 %setup
-%patch0
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%patch 0
+%patch -p1 1
+%patch -p1 2
+%patch -p1 3
 
 autoreconf -iv
 

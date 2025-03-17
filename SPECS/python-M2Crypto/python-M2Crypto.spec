@@ -5,7 +5,6 @@ Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 URL:            https://pypi.python.org/pypi/M2Crypto/0.26.0
 Source0:        https://pypi.python.org/packages/11/29/0b075f51c38df4649a24ecff9ead1ffc57b164710821048e3d997f1363b9/M2Crypto-%{version}.tar.gz
-%define sha512  M2Crypto=b1e24e3101ce0dd9f17be4cabeddc2ec0f1228b270d74ef2fb38bae8807c5025b031d0743185f06370786a3dd5c3f42129720534dcff07ea4de3c727613f8d20
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -42,9 +41,9 @@ messenger for Zope.
 # Using autosetup is not feasible
 %setup -q -n M2Crypto-%{version}
 %if 0%{?with_check}
-%patch0 -p1
+%patch -p1 0
 %endif
-%patch1 -p1
+%patch -p1 1
 
 %build
 CFLAGS="%{optflags}" python3 setup.py build --openssl=/usr/include --bundledlls

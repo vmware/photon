@@ -7,7 +7,6 @@ Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:        https://alioth.debian.org/frs/download.php/file/3979/%{name}-%{version}.tar.gz
-%define sha512  chrpath=aa04d490f78bff20a56fe20539cec10218c0772a668909eda8324ca825f51e8ef92001e95d9c316e79a145a043c9c327ec94d1a82e104ab408ca1021832745aa
 
 Source1: license.txt
 %include %{SOURCE1}

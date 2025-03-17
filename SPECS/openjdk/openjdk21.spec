@@ -13,7 +13,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk21u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-21=fb03362608a35b0f6e131eaa974a52e6ff8a96f90d3bdaeccd2e1268f46db65c72387ed7bba1c8b0d9457c56950eae607fba29e102a338b009259262e1024726
 
 Source1: license-openjdk21.txt
 %include %{SOURCE1}

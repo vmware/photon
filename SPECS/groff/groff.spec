@@ -7,7 +7,6 @@ Group:      Applications/Text
 Vendor:     VMware, Inc.
 Distribution:  Photon
 Source0:       http://ftp.gnu.org/gnu/groff/%{name}-%{version}.tar.gz
-%define sha512 groff=1c42d3cd71efaf067b5850945d9097fa1f0fadd5e2b6ba7446bd9d4f439fe1ad058e4ddb0d4e0f503682137dfc7c822944ce1e3e5cf981673f8ba197ea77126d
 
 Source1: license.txt
 %include %{SOURCE1}

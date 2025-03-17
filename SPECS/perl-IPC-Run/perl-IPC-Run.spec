@@ -7,7 +7,6 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://cpan.metacpan.org/authors/id/T/TO/TODDR/IPC-Run-%{version}.tar.gz
-%define sha512  IPC-Run=ddfd0ceb78bd56c8c95a0a293a59d605959ba8d1b161a2c5959ac185c18fffa5cf047c3448d3b83a2733aa1372550f93d74d86eb05d49748f789fa46282694aa
 
 Source1: license.txt
 %include %{SOURCE1}

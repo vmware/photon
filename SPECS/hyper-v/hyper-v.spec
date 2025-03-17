@@ -7,7 +7,6 @@ Group:          System/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=3df7f1aab4be5c899257a8597acce48b0bd8c06a673ea5006b41dc9705476b944ec52a552bcf15fab93786e338e6288810feb644766ad1ab8e06dfa9ce712e35
 Source1:        bondvf.sh
 Source2:        hv_get_dns_info.sh
 Source3:        hv_get_dhcp_info.sh

@@ -1,6 +1,6 @@
 sources:
-- archive: gst-plugins-base-1.22.7.tar.xz
-  archive_sha512sum: a33d332aebf5e209380c2740e0fc6762e49b78a9921822adfc07efdd4780cbe038867d9924a2df334c8a624e8be49b5d46e276538d6d77ff8ac9f002ced052e3
+- archive: gst-plugins-base-1.25.1.tar.xz
+  archive_sha512sum: 8644542e34499d140c5dcf65a33d1c9df6738a45844d508f1adae03f9023bea1d25541bbb3d89cd919434fff70965f3ab105f26443f6e383a819fb1eedc8b554
   skip_validation: true
   spdx:
     package:
@@ -11,19 +11,19 @@ sources:
         data types or processing capabilities can be added simply by installing new
         plug-ins. '
       home_page: http://gstreamer.freedesktop.org
-      license_concluded: CC-BY-ND-3.0 AND CC-BY-NC-SA-3.0 AND CC-BY-NC-ND-1.0 AND
-        CC-BY-SA-4.0 AND CC-BY-3.0 AND GPL-2.0-only AND CC-BY-NC-ND-4.0 AND CC-BY-NC-3.0
-        AND MIT AND CC-BY-NC-2.5 AND CC-BY-ND-2.0 AND CC-BY-1.0 AND CC-BY-2.0 AND
-        CC-BY-NC-SA-2.5 AND GPL-1.0-or-later AND CC-BY-NC-2.0 AND CC-BY-2.5 AND LGPL-2.0-or-later
-        AND LGPL-2.1-only AND LGPL-2.1-or-later AND CC-BY-SA-1.0 AND CC-BY-SA-3.0
-        AND CC-BY-SA-2.5 AND CC-BY-NC-4.0 AND CC-BY-NC-ND-2.0 AND CC-BY-ND-2.5 AND
-        BSD-3-Clause AND CC-BY-ND-1.0 AND CC-BY-SA-2.0 AND CC-BY-NC-1.0 AND CC-PDDC
-      license_declared: CC-BY-ND-3.0 AND CC-BY-NC-SA-3.0 AND CC-BY-NC-ND-1.0 AND CC-BY-SA-4.0
-        AND CC-BY-3.0 AND GPL-2.0-only AND CC-BY-NC-ND-4.0 AND CC-BY-NC-3.0 AND MIT
-        AND CC-BY-NC-2.5 AND CC-BY-ND-2.0 AND CC-BY-1.0 AND CC-BY-2.0 AND CC-BY-NC-SA-2.5
-        AND GPL-1.0-or-later AND CC-BY-NC-2.0 AND CC-BY-2.5 AND LGPL-2.0-or-later
-        AND LGPL-2.1-only AND LGPL-2.1-or-later AND CC-BY-SA-1.0 AND CC-BY-SA-3.0
-        AND CC-BY-SA-2.5 AND CC-BY-NC-4.0 AND CC-BY-NC-ND-2.0 AND CC-BY-ND-2.5 AND
-        BSD-3-Clause AND CC-BY-ND-1.0 AND CC-BY-SA-2.0 AND CC-BY-NC-1.0 AND CC-PDDC
+      license_concluded: CC-BY-SA-3.0 AND CC-BY-NC-ND-1.0 AND CC-BY-ND-2.5 AND CC-BY-SA-2.0
+        AND LGPL-2.1-only AND CC-BY-ND-1.0 AND CC-BY-SA-1.0 AND CC-BY-NC-ND-4.0 AND
+        CC-BY-SA-4.0 AND LGPL-2.0-or-later AND CC-BY-NC-4.0 AND CC-BY-NC-2.5 AND CC-BY-NC-SA-3.0
+        AND CC-BY-NC-3.0 AND GPL-2.0-only AND CC-BY-2.0 AND CC-BY-ND-2.0 AND CC-BY-NC-SA-2.5
+        AND CC-BY-SA-2.5 AND CC-BY-1.0 AND LGPL-2.1-or-later AND GPL-1.0-or-later
+        AND CC-PDDC AND BSD-3-Clause AND CC-BY-2.5 AND CC-BY-3.0 AND CC-BY-NC-ND-2.0
+        AND CC-BY-NC-1.0 AND CC-BY-NC-2.0 AND MIT AND CC-BY-ND-3.0
+      license_declared: CC-BY-SA-3.0 AND CC-BY-NC-ND-1.0 AND CC-BY-ND-2.5 AND CC-BY-SA-2.0
+        AND LGPL-2.1-only AND CC-BY-ND-1.0 AND CC-BY-SA-1.0 AND CC-BY-NC-ND-4.0 AND
+        CC-BY-SA-4.0 AND LGPL-2.0-or-later AND CC-BY-NC-4.0 AND CC-BY-NC-2.5 AND CC-BY-NC-SA-3.0
+        AND CC-BY-NC-3.0 AND GPL-2.0-only AND CC-BY-2.0 AND CC-BY-ND-2.0 AND CC-BY-NC-SA-2.5
+        AND CC-BY-SA-2.5 AND CC-BY-1.0 AND LGPL-2.1-or-later AND GPL-1.0-or-later
+        AND CC-PDDC AND BSD-3-Clause AND CC-BY-2.5 AND CC-BY-3.0 AND CC-BY-NC-ND-2.0
+        AND CC-BY-NC-1.0 AND CC-BY-NC-2.0 AND MIT AND CC-BY-ND-3.0
       short_summary: GStreamer streaming media framework plug-ins
       supplier: 'Organization: Broadcom, Inc.'

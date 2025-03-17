@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://onestepback.org
 Source0: http://rubygems.org/gems/builder-%{version}.gem
-%define sha512 %{gem_name}=730317ec0a4af33e183283e309e38d47deb08db0ab6bd6dfebdedcebb7470bd383c6c1d32ad674adc43298e0f86930b97c652fff9827ca8890db2d1d68e792f1
 
 # Taken from https://github.com/rvm/rvm/blob/master/binscripts/rvm-installer
 Source1: rvm-installer

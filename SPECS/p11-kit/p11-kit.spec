@@ -10,7 +10,6 @@ Group:          Development/Libraries
 URL:            http://p11-glue.freedesktop.org/p11-kit.html
 
 Source0: https://github.com/p11-glue/p11-kit/releases/download/%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=8cf170c714bb9e0cf3df93e8ec55b8e3c55cabf2c6a27f177ac6de8b8028985df2ca0216d3215d6828dc2ae3095c4e1a4febe8cb26b88ec321defc66bb011e81
 
 Source1: update-ca-trust
 

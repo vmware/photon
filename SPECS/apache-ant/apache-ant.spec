@@ -15,13 +15,10 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://apache.mirrors.lucidnetworks.net/ant/source/%{name}-%{version}-src.tar.gz
-%define sha512 %{name}=1cfd31f9b19475bd94bcf59722cfc7aade58a5bb2a4f0cd6f3b90682ac6ef4cda3596269b4a91e09f2afd1be9123d4ef80db9f3c481dc34d8685b6e020a8ba11
 
 Source1: https://repo1.maven.org/maven2/org/hamcrest/hamcrest/%{hamcrest_ver}/hamcrest-%{hamcrest_ver}.jar
-%define sha512 hamcrest=6b1141329b83224f69f074cb913dbff6921d6b8693ede8d2599acb626481255dae63de42eb123cbd5f59a261ac32faae012be64e8e90406ae9215543fbca5546
 
 Source2: https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-%{maven_tasks_ver}.tar.gz
-%define sha512 maven-ant-tasks=4df5b96a11819f82732c54656db8b0e0f4697079113d644622b4f82dc218ac1829b97aa8dc2427d3903ebdb0eb82e2ee35f9d3160647edb09bb243d8ba266fd8
 
 Source3: license.txt
 %include %{SOURCE3}

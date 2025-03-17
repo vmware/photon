@@ -10,7 +10,6 @@ URL:            https://www.samba.org
 %define samba_ver %{version}-%{release}
 
 Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha512 samba=2924c360f6299129527457547b13c1b282e2907a0ecde1036dbca894c752935d693914b4846a9eab436b33798c53c9974692e51fd071301b1174598be944a246
 Source1: smb.conf.vendor
 
 Source2: license.txt

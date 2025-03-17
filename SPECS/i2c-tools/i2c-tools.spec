@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://i2c.wiki.kernel.org/index.php/I2C_Tools
 Source0:        https://www.kernel.org/pub/software/utils/i2c-tools/%{name}-%{version}.tar.xz
-%define sha512 %{name}-%{version}=8a6cc12d927d6291b9baf407bc15807280539a7048ec5c2edf77414432eab43b28353c42bc0e45b7b481502aa4c5588def08f130d97fc275f635d1f77488f501
 
 Source1: license.txt
 %include %{SOURCE1}

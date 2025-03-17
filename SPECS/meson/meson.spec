@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/mesonbuild/meson/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b44c28bb8d5ca955b74d64c13b845adfeed814afd92d15ecc8cedb0674932063972644b7fba3a1e60aa76ff2ecea8ab40108a8210ff3698900215342096f35d2
 
 Source1: license.txt
 %include %{SOURCE1}

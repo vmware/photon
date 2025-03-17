@@ -11,7 +11,6 @@ Distribution:   Photon
 URL:            https://github.com/ipmitool/ipmitool
 
 Source0: https://github.com/ipmitool/ipmitool/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=2d91706e9feba4b2ce4808eca087b81b842c4292a5840830001919c06ec8babd8f8761b74bb9dcf8fbc7765f028a5b1a192a3c1b643f2adaa157fed6fb0d1ee3
 # https://www.iana.org/assignments/enterprise-numbers.txt
 Source1: enterprise-numbers
 

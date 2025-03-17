@@ -8,7 +8,6 @@ Group:          System Environment/Security
 
 URL:            https://github.com/bus1/dbus-broker
 Source0:        https://github.com/bus1/dbus-broker/releases/download/v%{version}/dbus-broker-%{version}.tar.xz
-%define sha512  dbus-broker=776684a5d19a6c25fc46dff19821014a32d967f8132385b86c5281f2d69192dce64b3ad92ae6a158d1d64753e89d918385a1a31f32811f54060504113f065baa
 
 Source1: license.txt
 %include %{SOURCE1}

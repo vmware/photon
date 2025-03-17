@@ -11,7 +11,6 @@ Url:            http://www.thrysoee.dk/editline
 Group:          Applications/Libraries
 
 Source0: %{name}-%{libedit_release}-%{libedit_version}.tar.gz
-%define sha512 %{name}=41eb46feaffa909e8790b9a9e304d5246e82ab366721196126a923d68b4d4964d0a433fe238f9d5e0a00aefb5c8cb66132150792929a793785ad091d91016f97
 
 Source1: license.txt
 %include %{SOURCE1}

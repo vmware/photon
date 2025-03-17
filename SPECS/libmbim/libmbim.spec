@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.freedesktop.org/software/libmbim/libmbim-%{version}.tar.xz
-%define sha512  %{name}=7cce1fa6ff5630a1cc565a2198544de9f4a1db20b30304fac96de6c698eaf56b17fe6ccb089151623d4484d88fda6abe980bced19dfbf0d3ef425fc954fb5844
 
 Source1: license.txt
 %include %{SOURCE1}

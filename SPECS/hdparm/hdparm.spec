@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://downloads.sourceforge.net/hdparm/%{name}-%{version}.tar.gz
-%define sha512 hdparm=4ffc8902b90cee10d68af8ddb9f3b9454d523ecd49cdaaed254b4d7a999462a8ad5ec1bb5d7684b09fefa41b5941ab533b167dad290003b51c795a633ca88913
 
 Source1: license.txt
 %include %{SOURCE1}

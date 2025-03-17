@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.gnome.org/pub/gnome/sources/gtk/3.23/gtk+-%{version}.tar.xz
-%define sha512 gtk+-3=c4d519735d0292e1e503e2dfdf764f9a5b039a77d055ba4d8b98e9acd0451a2f9f4b92ec4051722f234e652f895a2712a5e56d1387a52ea583c4bf6ef346403c
 Patch0:         CVE-2024-6655.patch
 
 Source1: license.txt

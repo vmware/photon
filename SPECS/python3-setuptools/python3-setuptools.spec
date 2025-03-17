@@ -14,7 +14,6 @@ Distribution:   Photon
 Url:            https://pypi.org/project/setuptools
 
 Source0: https://files.pythonhosted.org/packages/5f/36/7374297692bb9dbd7569a0f84887c7e5e314c41d5d9518cb76fbb130620d/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=11df934931f4b73f7e07ea5713479593c6baa134d423556b2ae7aff0f1e5bdbdee1f5b516131adb169c838231ceb0293441fbf275ef7030dabecf74122565b6d
 
 Source1: license.txt
 %include %{SOURCE1}

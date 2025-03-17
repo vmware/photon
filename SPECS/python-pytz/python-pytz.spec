@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/pytz/pytz-%{version}.tar.gz
-%define sha512  pytz=9c78d9f484e2e0e101ca7e10fba8e6c9870255b2c320b3499a0cc9b480adac64b07f2f124048aa957c6bc9311a4ac43060368e1f0d85d8e8c8f7df598e47912b
 
 Source1: license.txt
 %include %{SOURCE1}

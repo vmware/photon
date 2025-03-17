@@ -7,7 +7,6 @@ Group:          Applications/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.uk.linux.org/pub/linux/Networking/netkit/bsd-finger-%{version}.tar.gz
-%define sha512 bsd-finger=07570a9a5797579273938ef728f222f483c733e78eb6acb00e2bce9ff9df29aa85ed715872032701c8f67fcbc7cf5501f12dc2b8234c30df7d25f50cc38359b0
 Source1:        finger.socket
 Source2:        finger@.service
 Source3:        LICENSE

@@ -7,7 +7,6 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://mirrors.edge.kernel.org/pub/linux/utils/net/bridge-utils/%{name}-%{version}.tar.xz
-%define sha512  %{name}=6a3824853bdaa1733c552973e6a5082280facdddc52c3feeb2c8c9375ba9469a5930b559092c9de1a73b464f388f019e147b45ac1e2d10ce8968057779fcd12c
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Distribution:   Photon
 
 URL:            https://github.com/containers/fuse-overlayfs
 Source0:        https://github.com/containers/fuse-overlayfs/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=f113ac20b389d2f1c5e5ff160a60c308017e74c9c85d74a7200bab81a4cfa30335a64740c173f17c91ab4feddffb138ca4378e92894645a67eea5ac73d42890f
 
 Source1: license.txt
 %include %{SOURCE1}

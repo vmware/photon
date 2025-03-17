@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0:        https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=3bf969e9deb6ce05a1ae30ad48676ae8ff63a73198583e98ce083d52b78e9fc2d171a6e3890c201abfa364600d4471d1ee8b1ee23de3faeec1f0ca84e0f0acd4
 
 Source1: license.txt
 %include %{SOURCE1}

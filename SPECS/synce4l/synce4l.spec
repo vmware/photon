@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/intel/synce4l/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b97656a50ee4cabdaddde166c2b74b16ebca339defb69e265c5222198c6d469af4e30328c3af47dcbe916f8474f04369e49f5fe98feb509cf7bb41e69e5d429b
 
 Source1: %{name}.service
 

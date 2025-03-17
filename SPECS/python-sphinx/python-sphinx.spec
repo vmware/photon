@@ -10,7 +10,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://github.com/sphinx-doc/sphinx/archive/refs/tags/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=82cb4c435b0f6cee6bf80b81028f06e425e3d6fb5614e64b1f5a8c715ece80b697b5b55e04f3afe26236bb4590de9cd41008d6480c4b3d895803d83e914afff3
 
 Source1: license.txt
 %include %{SOURCE1}

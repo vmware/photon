@@ -15,7 +15,6 @@ URL:           https://github.com/GoogleCloudPlatform/guest-agent
 Distribution:  Photon
 
 Source0:       https://github.com/GoogleCloudPlatform/guest-agent/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=f86520161ee3da6b26f190280af9148a75ef590cb93656daaac9fd673f369186a5b8a05ab6d0c79d463ba5c11077f35d5d51e9c52d4e3aa191594d184abe9f65
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/rpm-software-management/createrepo_c
 
 Source0:        https://github.com/rpm-software-management/createrepo_c/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=54a2cc7c7cd3f3b9a0c23cd8c136ae1331e7fa7cc995189088e7e6f2276c78b2b84e21c2a2b93f4528b5e9e4018dd6525262c8aaba3bc8a1412a51dfafd101f7
 
 Source1: license.txt
 %include %{SOURCE1}

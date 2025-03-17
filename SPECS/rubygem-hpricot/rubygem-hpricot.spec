@@ -8,7 +8,6 @@ Summary:        a swift, liberal HTML parser with a fantastic library
 Group:          Development/Library
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512  hpricot=f0ea9168ae79d099cdb751dd5a205e0896dfb229759e499fff833e94209d1497aa97becb285176dcbcc1fee19bc11913ca3ac0d7a467067e5d837c1eb6e310ad
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -9,7 +9,6 @@ URL:            https://github.com/aquasecurity/%{name}
 Group:          Development/Tools
 
 Source0: https://github.com/aquasecurity/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=dc222f6fd1da5d40bdcf1b9bc366361274a00f6c90494df4006bd617aa2b5de8269ceb46b8197c787a3da3964db3b73e18334aed223e86083ea52ea544264a10
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -18,7 +18,6 @@ URL:            https://github.com/aws/aws-sdk-cpp
 # cd aws-sdk-cpp-1.10.20 && ./prefetch_crt_dependency.sh && cd -
 # tar -I 'gzip -9' -cpf aws-sdk-cpp-1.10.20.tar.gz aws-sdk-cpp-1.10.20
 Source0: https://github.com/aws/aws-sdk-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=c398d2e5176d7369ea571aaa58ac240876929d5f97226de17282baeaadc0d7e20a3f2e8d4d348fbd3eaa365e09ad55631c0f6bb0d52b8a38c3ac935def5165c6
 
 Source1: license.txt
 %include %{SOURCE1}

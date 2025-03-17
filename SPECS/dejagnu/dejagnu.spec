@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.gnu.org/pub/gnu/dejagnu/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ae527ce245871d49b84773d0d14b1ea6b2316c88097eeb84091a3aa885ff007eeaa1cd9c5b002d94a956d218451079b5e170561ffa43a291d9d82283aa834042
 
 Source1: license.txt
 %include %{SOURCE1}

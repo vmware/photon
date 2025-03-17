@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/tpm2-software/tpm2-pkcs11/releases/download/1.6.0/%{name}-%{version}.tar.gz
-%define sha512 tpm2=006943b3853dc80e44d2322ea0278d6a9f2139c3b3e2a2c5f33436d479d698c5b9d685fb1166d22562bcf3d52edb1075efe7592c27a8c3a0cd05356cab3c9874
 
 Source1: license.txt
 %include %{SOURCE1}

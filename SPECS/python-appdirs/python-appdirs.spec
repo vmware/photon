@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/appdirs
 
 Source0: https://pypi.python.org/packages/48/69/d87c60746b393309ca30761f8e2b49473d43450b150cb08f3c6df5c11be5/appdirs-%{version}.tar.gz
-%define sha512 appdirs=8b0cdd9fd471d45b186aa47607691cf378dabd3edc7b7026a57bd6d6f57698e86f440818a5e23ba4288b35d6bb8cb6eb0106eae8aab09d8863ee15025d300883
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://git.zx2c4.com/wireguard-tools/snapshot/wireguard-tools-%{version}.tar.xz
-%define sha512 %{name}=6727ea65551dbb064457449b93a943bd6534ca93bc7fa5704c2f6826266c98688ee9ea28731fda57a5245d5f63c05f3899fcca54e40c0b6251b7c4796e957445
 
 Source1: license.txt
 %include %{SOURCE1}

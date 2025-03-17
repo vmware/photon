@@ -5,7 +5,6 @@ Release:        2%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/JuliaStrings/utf8proc
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=4b9853fc95db38bee1d7435bef219907e25b249e0c2ec26f7096b8506ab2a139a8d4b71f7133b7550bff59d8f997fe01c2957d362cad18d890ad82bcf158aa06
 
 Source1: license.txt
 %include %{SOURCE1}

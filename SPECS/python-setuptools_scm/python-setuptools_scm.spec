@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/setuptools_scm
 Source0:        https://files.pythonhosted.org/packages/source/s/setuptools_scm/setuptools_scm-%{version}.tar.gz
-%define sha512  setuptools_scm=5b3420f0aaa0dd1655afb0fdcedc3738b75dbb9d8205e0ad67555c251d330a0d3620a7297cfdcfabbc7386a8acf43fe73fa7f3b17e2d156495fd8b2ab7d1c985
 
 Source1: license.txt
 %include %{SOURCE1}

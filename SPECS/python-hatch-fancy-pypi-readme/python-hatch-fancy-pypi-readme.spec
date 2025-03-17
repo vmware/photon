@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/hynek/hatch-fancy-pypi-readme
 Source0:        https://files.pythonhosted.org/packages/source/h/hatch-fancy-pypi-readme/hatch_fancy_pypi_readme-%{version}.tar.gz
-%define sha512  hatch_fancy_pypi_readme=e8f28a9020fc38bb03187e85688531c0fa895fcc56f3deb241bf19a71b2e88f2a354526eabe1a8e0bf7736f97883208eec2a7eac4199e08ddc40988643491632
 
 Source1: license.txt
 %include %{SOURCE1}

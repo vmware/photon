@@ -5,7 +5,6 @@ Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/Data-Validate-IP
 Source0:        https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Data-Validate-IP-%{version}.tar.gz
-%define sha512  Data-Validate-IP=ac556445f1eec0440be17263bcffce46d0c3b719d3c64022bcb3fc6d1191ed9de94c0e4d6b2c3c5c1704dc7945b14a5c87abfcf2b7dc43ec4f10a4cc6629b761
 
 Source1: license.txt
 %include %{SOURCE1}

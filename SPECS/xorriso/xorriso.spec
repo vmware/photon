@@ -8,7 +8,6 @@ Vendor:          VMware, Inc.
 Distribution:    Photon
 
 Source0: https://mirrors.kernel.org/gnu/xorriso/%{name}-%{version}.tar.gz
-%define sha512 %{name}=d12c7769e5cca74fc0a15d9cba6bbc652976aab45df1291e524e1b0841d6be1fac15c17f2c34bbc3fbdd320f2c74dcdf663968b766f80a2e95d203d9b9d6c581
 
 Source1: license.txt
 %include %{SOURCE1}

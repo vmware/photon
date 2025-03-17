@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            http://www.bluez.org
 
 Source0: http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
-%define sha512 %{name}=648394bbe470405aa0e2d3914474e95c122f567deaaac20a5dd74bac29fa430dfb64cdb7bdb4fb7510e62fa73e96112a97197fc212b421bf480b8d1bb24cfb5d
 
 Source1: license.txt
 %include %{SOURCE1}

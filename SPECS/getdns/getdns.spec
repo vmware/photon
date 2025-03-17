@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.getdnsapi.net/dist/%{name}-%{version}.tar.gz
-%define sha512 %{name}=6c4a75a4696c46ec8bd9e9659a93fd81f3490b43da28a4c95f99a766027c7588fc493a8ac51563afb8f975c0e5b77d5ea67014d80e78ee2bb17fba1d1073d19f
 
 Source1: license.txt
 %include %{SOURCE1}

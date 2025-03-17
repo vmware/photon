@@ -10,7 +10,6 @@ Distribution:    Photon
 Group:           Development/Languages
 
 Source0: https://github.com/elixir-lang/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=1511fb78bdcc50850cbf91007ed11c6a89e947d0a743c1e9ed30e1c93c1b47b5377fced17eeb66ac511d4f151d2e00ef2ecc6fb425d0d4afe2451be41a6ba6ee
 
 Source1: license.txt
 %include %{SOURCE1}

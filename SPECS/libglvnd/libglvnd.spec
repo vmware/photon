@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/NVIDIA/libglvnd/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=2a1cf975a0453c4e3777e4380b1084d9d5ddfaf7fd96d97f7e503c1a3b46b2234245939626d5c816da8ad41b88dbf67ee0a8dbb7cc755852ed0b75a67caea8b0
 
 Source1: license.txt
 %include %{SOURCE1}

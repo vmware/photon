@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://pkgconfig.freedesktop.org/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4861ec6428fead416f5cbbbb0bbad10b9152967e481d4b0ff2eb396a9f297f552984c9bb72f6864a37dcd8fca1d9ccceda3ef18d8f121938dbe4fdf2b870fe75
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -24,8 +23,8 @@ to build tools during the configure and make file execution.
 # Using autosetup is not feasible
 %setup -q
 cd glib  # patches need to apply to internal glib
-%patch0 -p1
-%patch1 -p1
+%patch -p1 0
+%patch -p1 1
 cd ..
 
 %build

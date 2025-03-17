@@ -10,7 +10,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/gevent
 
 Source0: https://pypi.org/project/%{srcname}/%{version}/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=c0600a5f9e50040009c3467ad802dda8a48422dca4e781acc9ca3428446399932da2f07d7345936ef634783611cf664d219f614980ed6b936f4a510e56ea753c
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0:       http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=e8b03425aaba3b72e6034c215656c34176d0550c08e0455aaeb1365d9141505d0c4feaa8978c8ccf2b7af9db6c9e874ceb866347e533b41cb03a189884f4004c
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -17,7 +17,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://openresty.org/download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=dd0f36a367177a2d03378abf7995bad466965705fb549fa1f2a3bfc1cf5ba153de2849f789a718e1a4abb85996fde90f79f7f7571677ec32ee596aa076261c52
 
 Source1:        %{name}.service
 Source2:        %{name}.sh

@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://cache.ruby-lang.org/pub/ruby/3.1/%{name}-%{version}.tar.gz
-%define sha512 %{name}=41cf1561dd7eb249bb2c2f5ea958884880648cc1d11da9315f14158a2d0ff94b2c5c7d75291a67e57e1813d2ec7b618e5372a9f18ee93be6ed306f47b0d3199a
 
 Patch1:         CVE-2024-27281.patch
 Patch2:         CVE-2024-27280.patch
@@ -26,7 +25,6 @@ Patch10:        CVE-2025-27221-2.patch
 Source1:        macros.ruby
 
 Source2:        rexml-%{rexml_version}.tar.gz
-%define sha512  rexml-%{rexml_version}.tar.gz=cc38609e5321f157b0a9ea793386017c8d4f743aabd66fc31a8f450f68c57e89825ec1d549efc4e2459ae952e57bbc87d47f9a0affa457639b89b9374e0bb137
 
 Source3: license.txt
 %include %{SOURCE3}

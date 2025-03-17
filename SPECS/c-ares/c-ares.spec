@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://c-ares.haxx.se/
 Source0:        http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha512  c-ares=466a94efda626e815a6ef7a890637056339f883d549ea6055e289fd8cd2391130e5682c905c0fb3bd7e955af7f6deb793562c170eb0ee066a4a62085a82ba470
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/OpenPrinting/cups/releases/download/v%{version}/cups-%{version}-source.tar.gz
-%define sha512  %{name}=5868f069cb5eaa5c74e703ed7773914376fb819ebabd7881df8726092eab390c8a1db75c4d08377a836a87807765ad2c16a15b406ab0580fdda2b176e2da3162
 
 Source1: license.txt
 %include %{SOURCE1}

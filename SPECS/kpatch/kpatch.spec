@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
-%define sha512 %{name}=ab3a771dfcde92a9eee768afcf7fddb6f1ad5ba9e8c7f44d579d258ce9b6ee1722869b1b70c4597ae951b0faf71413efa26a5b135f50308c996b284a9dcee5b7
 
 Source1:        scripts/auto_livepatch.sh
 Source2:        scripts/gen_livepatch.sh

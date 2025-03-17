@@ -19,7 +19,6 @@ Distribution: Photon
 # Since the font doesn't have clear upstream, the source zip package is
 # downloaded from Google Fonts. It is then converted to tar.gz.
 Source0: %{name}-%{version}.tar.xz
-%define sha512 %{name}=7e49f5ec6eeb6f7c95ca28ec9ebf170b126e1d1e07bc42a15029374ecb594756a7cf130d1da435f28df37e1385e183ccc07f08dd0f0dd468b830cdccd33c0b71
 
 Source1: %{name}-fontconfig.conf
 

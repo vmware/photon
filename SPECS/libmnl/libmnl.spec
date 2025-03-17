@@ -7,7 +7,6 @@ Group:         System Environment/libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://netfilter.org/projects/libmnl/files/%{name}-%{version}.tar.bz2
-%define sha512 libmnl=16fa48e74c9da7724a85c655dfb0abd8369392627934639d65de951543e1447ac3e048d231248f1ce8861443c2ef62654a85a81feeedbbffaf2e5744f6cf4c9f
 
 Source1: license.txt
 %include %{SOURCE1}

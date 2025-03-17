@@ -7,7 +7,6 @@ Url:            https://github.com/shibukawa/snowball_py
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0: https://pypi.python.org/packages/20/6b/d2a7cb176d4d664d94a6debf52cd8dbae1f7203c8e42426daa077051d59c/snowballstemmer-%{version}.tar.gz
-%define sha512 snowballstemmer=f1dee83e06fc79ffb250892fe62c75e3393b9af07fbf7cde413e6391870aa74934302771239dea5c9bc89806684f95059b00c9ffbcf7340375c9dd8f1216cd37
 
 Source1: license.txt
 %include %{SOURCE1}

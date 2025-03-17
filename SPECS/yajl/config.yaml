@@ -7,5 +7,6 @@ sources:
       home_page: http://lloyd.github.com/yajl/
       license_concluded: ISC
       license_declared: ISC
+      detailed_description: Yet Another JSON Library
       short_summary: Yet Another JSON Library
       supplier: 'Organization: Broadcom, Inc.'

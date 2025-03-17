@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
-%define sha512 %{name}=38a80bb9e769b9fbf143c91fc52af1b29dfed81f05a3a9c4bb52d15a5e8a37fe55185ecc2218bcf6d13ac77e510803ee27314430e7b161a565b0e698e275f690
 
 Source1: license.txt
 %include %{SOURCE1}

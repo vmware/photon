@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/CESNET/libyang/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=dd0b58aec7e2d84f62636c62c9e7f67f0b4819e8d5ce9236874a3531607aa6fb58ccdcf537534eae8bfa700c37b8e3524be659929f4e7e03f8f67968bc352cb4
 
 Source1: license.txt
 %include %{SOURCE1}

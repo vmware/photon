@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    http://people.redhat.com/~dhowells/keyutils/keyutils-%{version}.tar.bz2
-%define sha512  %{name}=ea6e20b2594234c7f51581eef2b8fd19c109fa9eacaaef8dfbb4f237bd1d6fdf071ec23b4ff334cb22a46461d09d17cf499987fd1f00e66f27506888876961e1
 
 Source1: license.txt
 %include %{SOURCE1}

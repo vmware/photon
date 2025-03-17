@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://gitlab.gnome.org/GNOME/pango/-/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=695b6d11dcb72918f699ea6441d67f4f9a9fa930131c6079b0aa689ee6910903a79cd308c5054fd3ccdd8efd390b3b56f1d0cbf27eaef7247315db2fe9710b7a
 
 Source1: license.txt
 %include %{SOURCE1}

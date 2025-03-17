@@ -7,7 +7,6 @@ Group:          System/Monitoring
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://guichaz.free.fr/iotop/files/%{name}-%{version}.tar.gz
-%define sha512 iotop=8ba9edcff5106534b5267fbbd8e2fc1ba79583d66e00b5271ac764ab5a0b3c48294465671b6c919d97f72db615e151b4f09b5776058731332cbb6219d97a9818
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://sqlite.org/2022/%{name}-autoconf-%{sourcever}.tar.gz
-%define sha512 %{name}=2cb69335aad278c175e680783081bdf48110c31ed31abb6b44b9a012f92ec67cca49c3bf3ec8212c3c9d72a3ec5d5a48ae556d04262bfa23882b6b05140d5901
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -7,7 +7,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/containers/crun
 Source0:       https://github.com/containers/crun/releases/download/%{version}/%{name}-%{version}.tar.xz
-%define sha512 crun=373d4fa69085b1ffecff32b4f2da0ab7dd0ec80d68e24ab262127e71cdfcbee50b932aa109980ad683444fdfe288a6495fc40cd81beb8b56af5c244218c7157c
 
 Source1: license.txt
 %include %{SOURCE1}

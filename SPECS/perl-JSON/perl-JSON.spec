@@ -9,7 +9,6 @@ Distribution:   Photon
 BuildArch:      noarch
 
 Source0:        https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/JSON-%{version}.tar.gz
-%define sha512 JSON-%{version}=2aa0c40fbff23d3df84cfa729d00a32a69e06ea83d082b25b7223f90cb157fa3c2e72342fadcd2ebe09b5848a0e3a7d2caec6d1753e95952a56e3e9367f343e3
 
 Source1: license.txt
 %include %{SOURCE1}

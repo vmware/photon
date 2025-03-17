@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            http://www.unbound.net
 
 Source0: https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha512 %{name}=481534271f443d72635025c79b83bb71bb77b96ae81ec74c7f82f1e958160f5d75489931bdbdf460a72c871268d33628be990d6acf3c5303f04f7ff347ad83c1
 
 Source1:        %{name}.service
 Source2:        %{name}.sysusers

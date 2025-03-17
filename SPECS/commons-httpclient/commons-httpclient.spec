@@ -12,14 +12,12 @@ Distribution:   Photon
 BuildArch:      noarch
 
 Source0: https://archive.apache.org/dist/httpcomponents/%{name}/source/%{name}-%{version}-src.tar.gz
-%define sha512 %{name}=e73ceeba3f34a35c30b24a3c6cb8dfc2102ff21079a5ff9270935908cb2f707d366c2f31a53fbdafa99673cc2b82e05470a2bf40d96767c72b2ab037c0f55490
 
 # Bundled below jar into tarball
 # https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar
 # https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.2/commons-codec-1.2.jar
 # https://repo.maven.apache.org/maven2/junit/junit/3.8.1/junit-3.8.1.jar
 Source1: %{name}-buildrequires-jars-%{version}.tar.gz
-%define sha512 %{name}-buildrequires-jars=0d1e4afda7dcb3b261c97a345a67ce9ec9e5e20ddd501637b8edd4a2ba6b02e848e3dbfb2ec3457c8347d46e0ac1343313afaa8841d7308fb070b382f085ec19
 
 Source2: license.txt
 %include %{SOURCE2}

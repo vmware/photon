@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://github.com/boto/boto
 
 Source0: https://files.pythonhosted.org/packages/source/b/boto/boto-%{version}.tar.gz
-%define sha512 boto=2175cf30cd25bbc05812e83e5ade7668c3e21b1bb09aa1b43f0f0ac7d6967a646394fb52c9be673ebb65618c5b33a52d6f31f6da702f5cd1d6c9a18169476dd4
 
 Source1: license.txt
 %include %{SOURCE1}

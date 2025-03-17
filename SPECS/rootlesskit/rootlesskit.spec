@@ -9,7 +9,6 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0:    https://github.com/rootless-containers/rootlesskit/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e9ac0211a93806a85943c8a30b3fae07cc3cca69608da50db8ac3da4b5d209f4c1eea00eb12cb21fe59e74e41c70ca6cdd89042711235b3e30c3db282aea8f9e
 
 Source1: license.txt
 %include %{SOURCE1}

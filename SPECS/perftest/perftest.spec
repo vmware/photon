@@ -11,7 +11,6 @@ Distribution:   Photon
 URL:            https://github.com/linux-rdma/perftest
 
 Source0: https://github.com/linux-rdma/perftest/releases/download/v%{version}-%{extra_version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ae9c722516909b63ac00b3fe19750ed603651c875ad73702ab39e558c4b9da910deba891a27c82d02c9cd20b27c9ccadd8f463a153e7a634e91ee399c89d6c37
 
 Source1: license.txt
 %include %{SOURCE1}

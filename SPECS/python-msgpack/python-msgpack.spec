@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://msgpack.org/
 Source0:        https://pypi.io/packages/source/m/msgpack-python/msgpack-%{version}.tar.gz
-%define sha512  msgpack=dcd59bf77408acf7171bdcc46c4d6bf875d36e80b216b7721544855e6c2b20be469415ee768b2195e74fe4650621ee6bfaa7897e709ac0d8d59cdb30772cb90b
 
 Source1: license.txt
 %include %{SOURCE1}

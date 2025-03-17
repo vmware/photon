@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            http://python-requests.org
 
 Source0: http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
-%define sha512 requests=c123ec07171c2c7c34e4173b97750adfa313b4312d91c0d58e4eb8750361604017e5b370c23ec886d2cbf704f9074ec5ad0fa9c2cd8e6f9521532adafff39d41
 
 Source1: license.txt
 %include %{SOURCE1}

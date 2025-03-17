@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
-%define sha512 %{name}=23e0890abd00c433f11c2d4ceb328fe4ac0a0b765de89dff52f16e7d20694a7c61a6acb084d9f58f15c1a9609d70efdac489ac4759963c0ff1d1b8bb7183269e
 
 Source1: license.txt
 %include %{SOURCE1}

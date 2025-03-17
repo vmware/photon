@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/nghttp2/nghttp2/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=d914eb48afd1ea182c1b2a454bf5e7963a7e28165f1d6d29bb83dd61a1b611c8c469e72a7a22daf23b8037f6e5ae9d4e791150b7d135746c1a5ec71ceb777f92
 
 Source1: license.txt
 %include %{SOURCE1}

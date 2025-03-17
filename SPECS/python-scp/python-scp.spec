@@ -9,7 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/scp
 Source0:        https://files.pythonhosted.org/packages/05/e0/ac4169e773e12a08d941ca3c006cb8c91bee9d6d80328a15af850b5e7480/scp-%{version}.tar.gz
-%define sha512  scp=af85c67ab8230a44d5a0ec213ed5ad1d4b58f9a0aff774991804a454bcf1728c33b58168ac0fbd7d0537927234db3ba277c8a2ae3b8037ffde3ffb8324fa9abb
 
 Source1: license.txt
 %include %{SOURCE1}

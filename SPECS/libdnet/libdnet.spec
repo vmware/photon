@@ -7,7 +7,6 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://prdownloads.sourceforge.net/libdnet/%{name}-%{version}.tar.gz
-%define sha512 %{name}=62d6aee6836f8e56fa7d941866416baae71916318a94e4adc3305a4d9634596845b112a500368763c813f7da32557ca85a4942fe7d245d34069137e6516b10af
 
 Source1: license.txt
 %include %{SOURCE1}

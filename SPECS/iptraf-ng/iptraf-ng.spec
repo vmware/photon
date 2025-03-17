@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://github.com/iptraf-ng/iptraf-ng/archive/%{name}-v%{version}.tar.gz
-%define sha512 %{name}=44d36fc92cdbf379f62cb63638663c3ee610225b9c28d60ee55e62e358f398a6b0db281129327b3472e45fb553ee3dd605af09c129f2233f8839ae3dbd799384
 
 Source1: license.txt
 %include %{SOURCE1}

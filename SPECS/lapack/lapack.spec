@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.netlib.org/%{name}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=fc3258b9d91a833149a68a89c5589b5113e90a8f9f41c3a73fbfccb1ecddd92d9462802c0f870f1c3dab392623452de4ef512727f5874ffdcba6a4845f78fc9a
 
 Source1: license.txt
 %include %{SOURCE1}

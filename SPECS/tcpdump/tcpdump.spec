@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha512 tcpdump=cb51e19574707d07c0de90dd4c301955897f2c9f2a69beb7162c08f59189f55625346d1602c8d66ab2b4c626ea4b0df1f08ed8734d2d7f536d0a7840c2d6d8df
 
 Source1: license.txt
 %include %{SOURCE1}

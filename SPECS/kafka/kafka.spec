@@ -14,14 +14,12 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: %{name}-%{version}-src.tgz
-%define sha512 %{name}=84e368c6d5e6487ab7a9892a4f7859fa1f7a4c90880706d0b6a855affdf165fd1aa1ae25e098d5ef11f452a71f76e5edab083db98d6eec5ff5e61c69cb65d302
 
 Source1:       %{name}.service
 Source2:       %{name}.sysusers
 
 #Download https://raw.githubusercontent.com/gradle/gradle/v7.6.0/gradle/wrapper/gradle-wrapper.jar
 Source3:       gradle-wrapper-7.6.0-jar.tar.gz
-%define sha512 gradle-wrapper-7.6.0-jar.tar.gz=70a4bd98e9c220b1a06ffc416a7345bda8ae5abaa57c7bd3f392516e46e211b1934086bcfb4a58e8e613c105a012e80e2da1de53b4ab900e85e74f467018f4c1
 
 Source4: license.txt
 %include %{SOURCE4}

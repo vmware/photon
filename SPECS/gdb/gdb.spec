@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
-%define sha512 %{name}=8185d3e11ab60dafff5860a5016577bfe7dd7547ef01ebc867bc247603d82b74ff74c4f29492c7d2aee57076f52be33e289f4c6b414a4b870d4b3004909f4c34
 
 Source1: gdbinit
 Source2: license.txt

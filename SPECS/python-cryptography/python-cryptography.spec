@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
-%define sha512 cryptography=9a870d45296de6af1331e73b102226b8269892216cd7bc0adfb2f63ce1ca7021d338effd09182128253d8d8df154bbd19d46c47f10ddac86e739fcbf6df78307
 
 # Steps to generate this tarball:
 # Extract cryptography tarball
@@ -17,7 +16,6 @@ Source0: https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.
 # tar czf <tar-name>.tar.gz registry-<version>
 
 Source1: %{name}-registry%{?dist}-%{version}.tar.gz
-%define sha512 %{name}-registry%{?dist}=903d3aea41799d6e889194c50464ce651d283c977706104b1d30a803882d7e5faa427b4aa0c0fcd655d2c9b39e3a716b945648b774e5613db4ec2d75741b7d34
 
 Source2: license.txt
 %include %{SOURCE2}

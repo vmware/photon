@@ -6,7 +6,6 @@ Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 URL:           http://www.digip.org/jansson
 Source0:       http://www.digip.org/jansson/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=e32be6665e41cf1763608c2f1ac4ce0824d4d7ffa5f4a5824cefde279250fdd399d49ba93d8894e16a473731f629b846554654347f027ca9a0a96ed047f10192
 Source1: license.txt
 %include %{SOURCE1}
 Distribution:  Photon

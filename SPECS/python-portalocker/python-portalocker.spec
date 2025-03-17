@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/35/00/0f230921ba852226275762ea3974b87eeca36e941a13cd691ed296d279e5/portalocker-%{version}.tar.gz
-%define sha512 portalocker=9ebd6fdbc597615c5f76bf5741556d84bc95c925e931ee708b4fccbf0908e4dc4e758be659928340675675f5ca09764f5d2621fdef9195e21c1359f7764ae1dc
 
 Source1: license.txt
 %include %{SOURCE1}

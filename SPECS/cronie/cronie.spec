@@ -4,7 +4,6 @@ Version:        1.6.1
 Release:        3%{?dist}
 URL:            https://github.com/cronie-crond/cronie
 Source0:        https://github.com/cronie-crond/cronie/releases/download/cronie-%{version}/cronie-%{version}.tar.gz
-%define sha512  cronie=1e095df9670ec25d6629f4cf2cacd82c6c1cb1487a859815a7881a1d130e4f18f9976396f773abae24dadc232166bb6467bbaeac1cb0254209fcadf3530d5e6f
 Source1:        run-parts.sh
 
 Source2: license.txt

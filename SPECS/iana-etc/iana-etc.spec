@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Source0:        http://anduin.linuxfromscratch.org/sources/LFS/lfs-packages/conglomeration//iana-etc/%{name}-%{version}.tar.bz2
-%define sha512 iana-etc=d841b9c177fb0675bab10c9b0ebc4d3c2b743754c615e3fabcaebb29ffefaf2491278d0e672b99af3cbc9b300138700f56c1026f6d41659783150aea97583936
 
 Source1: license.txt
 %include %{SOURCE1}

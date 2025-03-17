@@ -9,7 +9,6 @@ Distribution:   Photon
 Url:            http://smarden.org/runit/
 
 Source0: http://smarden.org/runit/runit-%{version}.tar.gz
-%define sha512 %{name}=a18773ebf1aa22305dd89ed67363165b9fcf86c192b2be4e268d08005dd82d51265160c637abe072f2f2e378c4b315a75bd3d3e602c3e75bdd451a3b0190f8cf
 
 Source1:    runit.service
 

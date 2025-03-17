@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/cool.io-%{version}.gem
-%define sha512  cool.io=9ab3e6ddd1689b2825f9bd82714b4ef5ac921dc4b2f84786971c3ec448577613cee73084c99090382878b0da43c9228cb2fd3a8627dc8f62ceeeff274dbdc929
 
 Source1: license.txt
 %include %{SOURCE1}

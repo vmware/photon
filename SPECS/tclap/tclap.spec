@@ -7,7 +7,6 @@ Group:        Development/Libraries
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%define sha512  tclap=3b5b3d76e8ff21133001f5f9589fa6ec143729909bf0b9cc9934377bce178360c161fb5c1f4c4d9e9c74b09cff3d65f1d5100e61d4a732283524a78b6f236b10
 
 Source1: license.txt
 %include %{SOURCE1}

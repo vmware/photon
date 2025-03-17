@@ -19,19 +19,16 @@ Group:          shells
 # git checkout -b v7.2.0 tags/v7.2.0
 # cd .. && tar czf powershell-7.2.0.tar.gz PowerShell-7.2.0
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=df5de64ebf25cc45bc48f31482023ba10c04d8bb1a8e9849e2ac4911621074e084b56b0a5832320d3c7f3acf14434f0c8cdbc8d1987eff2465619a92a0ee3784
 
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
 # PowerShell-Native uses googletest submodule in it, we need that as well
 Source1: %{name}-native-%{ps_native_ver}.tar.gz
-%define sha512 %{name}-native=6f00c3b7bc45307530bd04065138c4d0f613dcae3cca6bfbca3544c1cf4012b195f230a1b3d1968c1cf7f62fa1850ca6325ab81c668932886fc22fb7284e4370
 
 # This is downloaded from github release page of PowerShell
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
 Source2: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}-%{version}-linux=4bab6bce57db764c90fe4c614e1627bd4618b50ce5049ae9b4815cb989599147d5be4c7d39dbae6134d8df3bc5f1316bea527d8ab0824f4331518d6b00743f8e
 
 Source3: build.sh
 
@@ -42,7 +39,6 @@ Source4: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 # Hence we need to re-build it.
 # https://github.com/microsoft/omi/archive/refs/tags/v1.6.9-0.tar.gz
 Source5: omi-%{libmi_tag}.tar.gz
-%define sha512 omi-%{libmi_tag}=73b60237173079707de8dbab29c3225643a8bf262348911724d542409b674f0a6593b046b87801e6998b0aad50b8dfe14748a2a6de115564e129bbb035b76759
 
 # After extracting Powershell original archive (Source0 in this spec), run:
 # dotnet restore .
@@ -50,7 +46,6 @@ Source5: omi-%{libmi_tag}.tar.gz
 # mv $HOME/.nuget <NAME>-<VERSION>-nuget-deps
 # tar cJf <NAME>-<VERSION>-nuget-deps.tar.xz <NAME>-<VERSION>-nuget-deps
 Source6: %{name}-%{version}-nuget-deps.tar.xz
-%define sha512 %{name}-%{version}-nuget-deps=85fc3a9607a164cc851fc6bc5f91ca45983e1f2ad73ecbbc4755ed874c0632ab203fb859e1dc0854e36aa47c03d04612de0099f764aa3d3c78abd2d5dbdf49c2
 
 Source7: license.txt
 %include %{SOURCE7}

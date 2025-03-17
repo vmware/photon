@@ -4,7 +4,6 @@ Version:      1.8
 Release:      3%{?dist}
 URL:          http://www.libndp.org/
 Source0:       http://www.libndp.org/files/%{name}-%{version}.tar.gz
-%define sha512 libndp=93cb4629a748aa8c3569c8748657489b263046c8245aa640478c86323f44bd7e66c135bf956fe5d7990226f52d5dd9ffe9452c505d6c3ad3da0860a28e2dbe6a
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
 Distribution: Photon

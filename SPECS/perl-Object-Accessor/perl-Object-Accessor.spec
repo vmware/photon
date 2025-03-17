@@ -7,7 +7,6 @@ Release:        6%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Object-Accessor/
 Source0:        http://www.cpan.org/authors/id/B/BI/BINGOS/Object-Accessor-%{version}.tar.gz
-%define sha512  Object-Accessor=fbce10e8db2cfb360cdc093355a95c9d49909069beb725fca9812ee6e6b77e0648d63d56db9fbdcdf03f885b3954a67c516fa066229280279940704231d48448
 
 Source1: license.txt
 %include %{SOURCE1}

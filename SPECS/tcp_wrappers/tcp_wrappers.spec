@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            http://ftp.porcupine.org/pub/security/index.html
 
 Source0:    http://ftp.porcupine.org/pub/security/%{name}_%{version}.tar.gz
-%define sha512 %{name}=2d9d003791f8d00912a36ae00579e2b8dd7ad8a7bf8eae259659bcaf5365b150540ff6c93c91765872c76041579b7a02b6e3c64528fb7f8235680399ba1d9dac
 
 Source1: license.txt
 %include %{SOURCE1}

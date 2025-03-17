@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            http://fail2ban.sourceforge.net
 
 Source0: https://github.com/%{name}/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=688a84361b5794e1658f53d2d200ce752fe1e3320ddb1742c32c4b4b82a79ace16ae464e7ea3eeb94a0e862bcac73c2d3a0e61dd7b28e179a4c857f950d74dbb
 
 Source1: 00-fail2ban-systemd.conf
 

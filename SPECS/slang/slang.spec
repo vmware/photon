@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    http://www.jedsoft.org/releases/%{name}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=35cdfe8af66dac62ee89cca60fa87ddbd02cae63b30d5c0e3786e77b1893c45697ace4ac7e82d9832b8a9ac342560bc35997674846c5022341481013e76f74b5
 
 Source1: license.txt
 %include %{SOURCE1}

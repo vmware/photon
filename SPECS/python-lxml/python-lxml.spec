@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/lxml/lxml/archive/refs/tags/lxml-%{version}.tar.gz
-%define sha512 lxml=d7ec55c7db2c63a716ca5f4d833706d90fc76c944885e010fcdb96786bcfe796994e438450cf4e8e6e75d702e21fb16971f28f854d7a1f76c34e4ae315414d84
 
 Source1: license.txt
 %include %{SOURCE1}

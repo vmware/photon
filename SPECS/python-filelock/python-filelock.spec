@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/benediktschmitt/py-filelock
 Source0:        https://files.pythonhosted.org/packages/14/ec/6ee2168387ce0154632f856d5cc5592328e9cf93127c5c9aeca92c8c16cb/filelock-%{version}.tar.gz
-%define sha512  filelock=95fb4d420a316199a658e20f385d5eec9db9398a78803cad581f73efb136d2935308a04b1bcf6cebd71a8601f72d006a491937664ec0b70904c305c5796a4bf1
 
 Source1: license.txt
 %include %{SOURCE1}

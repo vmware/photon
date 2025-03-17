@@ -5,7 +5,6 @@ Release:        2%{?dist}
 URL:            http://wiki.samba.org/index.php/LinuxCIFS_utils
 Group:          Applications/Nfs-utils-client
 Source0:        https://ftp.samba.org/pub/linux-cifs/cifs-utils/cifs-utils-%{version}.tar.bz2
-%define sha512  cifs-utils=4c57741af0c4567a78f352c73caca998881666a5ed36536275cfa775efd66ff1a44ebe539a8ed96c409c5b08a1378266964ce667a27e9fc7f2d43999c63dd0eb
 
 Source1: license.txt
 %include %{SOURCE1}

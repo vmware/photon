@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://download.savannah.gnu.org/releases/attr/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8b4c043d61f8f3e0cd098e701181069f51117b85fd6ba18bfe9af77d894ea671232377d4793ffc822e9259ceee6ac71d75732eb93b2830c6cb5d0d918ba2d21b
 
 Source1: license.txt
 %include %{SOURCE1}

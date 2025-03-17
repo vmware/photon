@@ -11,7 +11,6 @@ Distribution:   Photon
 # https://archive.apache.org/dist/santuario/c-library/%{name}-%{version}.tar.bz2
 # For SRP compliance using git tag tarball here
 Source0: https://github.com/apache/santuario-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=58eadcf8b7472faa3faaef0788fb3815a52f5f537134213f2ff35916957d94982e27dbcd4109d58158c155b11915c6b0daa2f0271d1727113e4592338d499f22
 
 Source1: license.txt
 %include %{SOURCE1}

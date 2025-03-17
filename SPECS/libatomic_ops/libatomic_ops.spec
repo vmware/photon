@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-%{version}.tar.gz
-%define sha512 %{name}=da83886b4d766da64b27672eede40bd5787523a4c308ac7bd3f03ac831ae1a141ba21e5f5ada27bfcf811b9fb04d8a519331ea2573af036f8791958668dad851
 
 Source1: license.txt
 %include %{SOURCE1}

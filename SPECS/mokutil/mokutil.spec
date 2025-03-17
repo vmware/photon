@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/lcp/mokutil/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
-%define sha512  %{name}=2689207dbc8cbe17d4db25848acbea93403ac5ef20735f277de80cac3b8673c4ad9b42b2d7cf6190556cea185cbd5a5a4d812ae7657c20959c5d4d9101ac300d
 
 Source1: license.txt
 %include %{SOURCE1}

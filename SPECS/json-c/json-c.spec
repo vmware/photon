@@ -8,7 +8,6 @@ Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://s3.amazonaws.com/json-c_releases/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=eb16e3186a8d204a0ebd0a97d2a1a4b2ffbaf0f840fd8a8b6fb15af54293a4fd82740469f81e8ba12f03607654a8da6568e9ab80f9848bb66b17714ddcf0a0da
 
 Source1: license.txt
 %include %{SOURCE1}

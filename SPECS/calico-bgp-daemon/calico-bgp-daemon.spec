@@ -10,11 +10,9 @@ URL:            https://github.com/projectcalico/calico-bgp-daemon
 Distribution:   Photon
 
 Source0:        https://github.com/projectcalico/calico-bgp-daemon/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  calico-bgp-daemon=d5d68d52797e419f8cf99cf276ae6ffefe4764a3ed321e495b39bf6a8e72ca608a32f6cede08e296b2643a7b648fe9554ea44bd3eade7eb40a1bf0c289464cef
 
 # Created by `glide install --strip-vendor && tar --owner=root --group=root --mtime='2000-01-01 00:00Z' --transform "s,^,${name}-${version}/," -c vendor | gzip -9`
 Source1:        glide-vendor-for-%{name}-%{version}.tar.gz
-%define sha512  glide-vendor-for-%{name}=090a834f2b709e0e5b0d634a5aade2afb0142daacf95c5e05c57e02c8d019583950a6249d550eab311b0f708270c109df9e0af9b1e022e6c8c72f0b350afe1e4
 
 Source2: license.txt
 %include %{SOURCE2}

@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/incremental
 Source0:        incremental-%{version}.tar.gz
-%define sha512  incremental=b8b50151cd2467e552d9268decadbb839b047cf58a450b72e0437ffc5f9af7d78c20a24193c0668cf48dd6264b852d9cee68e59529018e0ca07825e0c185d1e8
 
 Source1: license.txt
 %include %{SOURCE1}

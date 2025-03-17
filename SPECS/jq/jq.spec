@@ -8,7 +8,6 @@ URL:           https://github.com/stedolan/jq
 Distribution:  Photon
 
 Source0: https://github.com/stedolan/jq/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5da71f53c325257f1f546a2520fe47828b495c953270df25ea0e37741463fdda72f0ba4d5b05b25114ec30f27a559344c2b024bacabf610759f4e3e9efadb480
 
 Source1: license.txt
 %include %{SOURCE1}

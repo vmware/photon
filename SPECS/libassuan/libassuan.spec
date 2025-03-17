@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    https://www.gnupg.org/ftp/gcrypt/libassuan/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=70117f77aa43bbbe0ed28da5ef23834c026780a74076a92ec775e30f851badb423e9a2cb9e8d142c94e4f6f8a794988c1b788fd4bd2271e562071adf0ab16403
 
 Source1: license.txt
 %include %{SOURCE1}

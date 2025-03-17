@@ -7,7 +7,6 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://sourceforge.net/projects/gkernel/files/%{name}/%{name}-%{version}.tar.gz
-%define sha512 rng-tools=58047c37cad4f5f1210b696e4dba122878f78e57d05d9cb822f79234240ecce31efd2d39061fea1eb5b2e81d48d8c3bf6b92d06451f1ce5d5db7117704e89c50
 Source1:        rngd.service
 
 Source2: license.txt

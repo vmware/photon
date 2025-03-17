@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://sourceforge.net/projects/%{name}/files/Expect/%{version}/%{name}%{version}.tar.gz
-%define sha512  %{name}=a8dc25e8175f67e029e15cbcfca1705165c1c4cb2dd37eaaaebffb61e3ba132d9519cd73ca5add4c3358a2b0b7a91e878279e8d0b72143ff2c287fce07e4659a
 
 Source1: license.txt
 %include %{SOURCE1}

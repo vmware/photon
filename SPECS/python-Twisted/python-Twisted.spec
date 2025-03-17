@@ -11,7 +11,6 @@ Distribution:   Photon
 Url:            https://twistedmatrix.com
 
 Source0: https://pypi.python.org/packages/source/T/Twisted/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=36adac424f6776c7db870d2291713da41054e974dfac0dbc1cbd55f76915a92073bcb25d4593b82e229d154d5297c67e7ba82d808921d206c97c8024bd5431a8
 
 Source1: license.txt
 %include %{SOURCE1}

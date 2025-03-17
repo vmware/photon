@@ -6,7 +6,6 @@ Release:        4%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML-Tiny/
 Source0:        https://cpan.metacpan.org/authors/id/E/ET/ETHER/YAML-Tiny-%{version}.tar.gz
-%define sha512  YAML-Tiny=5999e220025aa8076e5e0e9e73e80c2da21660e77f6744d73e8e29962221d02d33a36e9829c44abf7d4f45abae069d8e121c8019bd1600b7e64db5e54efd9987
 
 Source1: license.txt
 %include %{SOURCE1}

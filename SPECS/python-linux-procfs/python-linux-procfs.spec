@@ -11,7 +11,6 @@ Distribution:   Photon
 Summary:        Linux /proc abstraction classes
 URL:            https://git.kernel.org/pub/scm/libs/python/python-linux-procfs/python-linux-procfs.git/
 Source0:        https://cdn.kernel.org/pub/software/libs/python/python-linux-procfs/python-linux-procfs-%{version}.tar.xz
-%define sha512  python-linux-procfs=9b2489b47949560245fb23eefa1600869618921173a94534af4db88938fbc855ce37e24100286bdee9fd18a3f140fb86bef06fa7a473ed55e5cdde721f54113c
 
 Source1: license.txt
 %include %{SOURCE1}

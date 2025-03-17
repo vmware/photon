@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    https://sourceforge.net/projects/cppunit/files/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha512 cppunit=7af3569d028d5fa49106ece281f478cc2757cc5deca8c2512406796a7dbd6473928a1e730f28880467d19c6e59b31e55bf4f92f5cf2498a3a875ab32c5b2a081
 
 Source1: license.txt
 %include %{SOURCE1}

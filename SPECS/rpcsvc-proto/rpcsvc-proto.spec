@@ -3,7 +3,6 @@ Name:           rpcsvc-proto
 Version:        1.4.3
 Release:        2%{?dist}
 Source0:        https://github.com/thkukuk/rpcsvc-proto/releases/download/v1.4/%{name}-%{version}.tar.xz
-%define sha512  rpcsvc=e46ba9ccdd6c520128bf3a154db90742f288a4d593b094a630141cdc5aeb834ffebf9b0eb6d5d0aad9faef3c445c75e2355cbc3e1382b50d29f4d2799441c6e9
 
 Source1: license.txt
 %include %{SOURCE1}

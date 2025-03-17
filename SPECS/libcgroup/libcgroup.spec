@@ -8,7 +8,6 @@ Vendor:       VMware, Inc.
 URL:          http://libcg.sourceforge.net
 
 Source0: https://github.com/libcgroup/libcgroup/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=1e8a7c9a71d928ab0e354254b007b30fc159a30e441bd52a03ded142420c94e130594bb512680c62fc22f5193934fb78afc31453342b032d1db3197fd4c3e606
 
 Source1:      cgconfig.service
 

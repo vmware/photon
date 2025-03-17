@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=6c99a7b52b5bc0ced1877a7b2a280b885778bb12e89dc0d606a5b5eda1aa87feecdea6c19803afab01953c9d352c409e59665914832f7107b6b3816d4740594c
 
 Source1: adjtime
 Source2: networks

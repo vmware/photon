@@ -1,17 +1,18 @@
 Summary:        Intrusion detection environment
 Name:           aide
 Version:        0.17.4
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://github.com/aide/aide
-License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/aide/aide/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b6dba54fd204e1899d47b0b4139786cbeaa51c388027e2cfc1bb839297a70ae8ad6f37429594a730fac8007d62b4ba5b61a4aa22edbc55cbe986ccfaf5197f31
 
 Source1: %{name}.conf
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: build-essential
 BuildRequires: pcre-devel
@@ -96,6 +97,8 @@ rm -rf %{buildroot}/*
 %{_var}/log/%{name}
 
 %changelog
+* Wed Mar 19 2025 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@vmware.com> 0.17.4-7
+- Introduce license.txt
 * Thu Aug 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.17.4-6
 - Use database_in inplace of database in aide.conf
 * Fri Apr 14 2023 Harinadh D <hdommaraju@vmware.com> 0.17.4-5

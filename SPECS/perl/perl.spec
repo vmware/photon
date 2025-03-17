@@ -16,10 +16,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.xz
-%define sha512  %{name}=6dd6ac2a77566c173c5ab9c238cf555f2c3e592e89abb5600bc23ce1cbd0c349e0233f6417cbbf1f6d0aefc6a734ba491285af0d3dc68a605b658b65c89f1dab
 
 Source1:    https://github.com/arsv/perl-cross/releases/download/1.2/perl-cross-1.2.tar.gz
-%define sha512  perl-cross=81d86d0ad1dab55da9debcdf705f4937e36f4b3b3c3ce93e7d6eeef4a3b1e1d9498b3db5e2b6abf92525e6767d639da7587d95136c46e50808386767ee7e5b13
 
 Source2: license.txt
 %include %{SOURCE2}
@@ -56,12 +54,12 @@ Report Language.
 %setup -q
 sed -i 's/-fstack-protector/&-all/' Configure
 %if 0%{?with_check}
-%patch0 -p1
-%patch1 -p1
+%patch -p1 0
+%patch -p1 1
 %endif
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
+%patch -p1 2
+%patch -p1 3
+%patch -p1 4
 
 %build
 export BUILD_ZLIB=False

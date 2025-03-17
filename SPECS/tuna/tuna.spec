@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rt.wiki.kernel.org/index.php/Tuna
 Source0:         https://www.kernel.org/pub/software/utils/%{name}/%{name}-%{version}.tar.xz
-%define sha512  tuna=f05774a030f6b41a262fbe28fba2516763bddfdd1bd4ae1ed925cf3852397231af94571b857952466e87f73a33c4111afb53009faa8ed0fde12db4be1788ada7
 
 Source1: license.txt
 %include %{SOURCE1}

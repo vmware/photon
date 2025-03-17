@@ -4,7 +4,6 @@ Version:          1.17.0
 Release:          5%{?dist}
 URL:              https://wiki.postgresql.org/wiki/PgBouncer
 Source0:          https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
-%define sha512    pgbouncer=5913ce542f0f694f114db8a2f339e536fb2b5887efb160b7ce3c708ae3d638bee95943104eafb9fbc4fc225649bd5625da2ccf1b56489afe33ebf8aacac48863
 Source1:          pgbouncer.service
 Source2:          %{name}.sysusers
 

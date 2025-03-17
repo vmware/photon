@@ -4,7 +4,6 @@ Version:       1.1
 Release:       4%{?dist}
 URL:           http://open-lldp.org/
 Source0:        %{name}-%{version}.tar.gz
-%define sha512   lldpad=794bd2d43e7b6e76a1aa9d1e650f24a52b4cb66166058ce4ec3f0c6567bcdff149ca86ab9108e82be14f7e7bf43c7486479edc23d851e739a2a22de7038ecb35
 Group:         System Environment/Daemons
 Vendor:        VMware, Inc.
 Distribution:  Photon

@@ -10,7 +10,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/googleapis/google-auth-library-python/archive/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=d72d9c367a47b3496dcaae9deec29315c65e43ddf9b3ee2838232ed2ac8aabdf5c91978a6d66700b5e9e77a0de8820ecf12b798fb65383600e08d47b732d1981
 
 Source1: license.txt
 %include %{SOURCE1}

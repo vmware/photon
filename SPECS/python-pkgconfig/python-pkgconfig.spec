@@ -12,7 +12,6 @@ Distribution: Photon
 # Using github URL but actually downloaded from:
 # https://pypi.org/project/pkgconfig/
 Source0: https://github.com/matze/pkgconfig/archive/refs/tags/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=ffa838d0146125c4158b747b619cc5eed41da0e2f04664a4db89909a486922120a0e1779f99dfcda0da3e98b8770c57b638a9c7bc5994cd8102aa3cf990905b0
 
 Source1: license.txt
 %include %{SOURCE1}

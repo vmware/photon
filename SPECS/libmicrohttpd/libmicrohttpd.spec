@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://ftp.gnu.org/gnu/libmicrohttpd/%{name}-%{version}.tar.gz
-%define sha512  %{name}=9ff8a837892142376eaeaf50c0b0dba76697d0ff44b908434cba8db4324c57dfb8bbcc1a922b97d825891ac10f50693dee9388531856e0fa81fa2cfeac538581
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -5,7 +5,6 @@ Summary:        A simple program which checks Python source files for errors
 Group:          Development/Languages/Python
 Url:            https://github.com/PyCQA/pyflakes/archive/refs/tags/%{version}.tar.gz
 Source0:        pyflakes-%{version}.tar.gz
-%define sha512  pyflakes=e47303c4b445e0c010dfc96244b6fa991bd1870072c61cc7acd309947af3d81581276b012b56b7db0d8df3f91a4216a5ec502720c149f5707d5d1d28654aeeb4
 
 Source1: license.txt
 %include %{SOURCE1}

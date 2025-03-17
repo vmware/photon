@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/oetiker/rrdtool-1.x/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8ae6f94d119e8d0e1ba7f2d0738f1ba008a4880d1022f1c0c5436f662d961fceec5c42e01c241493ece3d6f55c60fd7d1d264f93e678f3cf1251201dcde027c1
 
 Source1: license.txt
 %include %{SOURCE1}

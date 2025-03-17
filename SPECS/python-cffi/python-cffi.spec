@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
-%define sha512  cffi=e99cafcb029076abc29e435b490fa0573ee2856f4051b7ca8a5b38cd125d56dd9dae8b189f59ceb3d728a675da8ee83239e09e19f8b0feeddea4b186ab5173a5
 
 Source1: license.txt
 %include %{SOURCE1}

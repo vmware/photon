@@ -8,7 +8,6 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: http://www.dest-unreach.org/socat/download/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=3eedfbf599ecf1d6fd391d03d710044bc5e18a762395bc4cb151b96fe673d405a6630da3070ecddd5ac558126b56aa65feaa74d528eeb755a04aa0ec61690651
 
 Source1: license.txt
 %include %{SOURCE1}

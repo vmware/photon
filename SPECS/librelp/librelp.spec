@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a38840231902bec034edb497166deded7577c989e4f735e406c8488384972925de1ca6132b3080472f7919d2439559c8774c02a49c356e90ad791dfbba2a4865
 
 Source1: license.txt
 %include %{SOURCE1}

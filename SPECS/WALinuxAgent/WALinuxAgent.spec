@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/Azure/WALinuxAgent/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=3f44aecc16ac545db4b550586f168dbbdef34289aad6775973517bf645e5a1d486864c01e974f03a71b3e946c14e1ca140673a75c1cd602aac28725eaa68e83d
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -7,7 +7,6 @@ Group:          Development/Tools/Other
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://git.kernel.org/pub/scm/linux/kernel/git/axboe/blktrace.git/snapshot/%{name}-%{version}.tar.gz
-%define sha512  blktrace=ad2bff481c1a2f972c1319f463bfea16fc3cb7d76173ebc2fe38c2c39a6b28c8f6492d65580ad2aa38f8a701f5439aa30c11336eebf62bbfc51c9a71b67748d9
 
 Source1: license.txt
 %include %{SOURCE1}

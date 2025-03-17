@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/openstack/pylockfile
 Source0:        https://pypi.python.org/packages/source/l/lockfile/lockfile-%{version}.tar.gz
-%define sha512  lockfile=67b7d651d7e963a497c2604912c61eed90181cdd09c744a0ceaa26e6bbe09d1a871ce48be3949b7da7ea6b366b15492c8c8de589edeca2641ca5e6cb3804df07
 
 Source1: license.txt
 %include %{SOURCE1}

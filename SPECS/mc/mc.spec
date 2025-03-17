@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.midnight-commander.orgtar/%{name}-%{version}.tar.xz
-%define sha512  %{name}=ca3b3a57281e9387cb52bf1fcfc3f39a4d5f438aafc256dc492c192678824f67c983a852c759664efc5bc6d0de471c9b3929834f8301f6302ca1ebeee513fdfd
 
 Source1: license.txt
 %include %{SOURCE1}

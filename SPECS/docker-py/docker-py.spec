@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/docker/docker-py
 
 Source0: https://github.com/docker/docker-py/releases/download/%{version}/docker-%{version}.tar.gz
-%define sha512 docker=09edf7b058d38d34d0fe0432b336d6fc494648c0e41cf4ae7f7bbf3db158143ca8fbea87e51d3b354c5f40bd7f1481e003e4b55f879ef562e91f19b62143c271
 
 Source1: license.txt
 %include %{SOURCE1}

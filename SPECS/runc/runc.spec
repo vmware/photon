@@ -16,7 +16,6 @@ Vendor:              VMware, Inc.
 Distribution:        Photon
 
 Source0: https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
-%define sha512 %{name}=bdefbf34cf57485c6b961babc8294d0e6b2e003eb836b8e99c49ef4d00acf11f30a46ad0bcd399ee9346610419591daf1eecb3b6b127962357d629bf5f252e22
 
 Source1: license.txt
 %include %{SOURCE1}

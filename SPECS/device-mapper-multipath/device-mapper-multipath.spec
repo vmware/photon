@@ -8,7 +8,6 @@ URL:        http://christophe.varoqui.free.fr
 Distribution: Photon
 
 Source0: https://github.com/opensvc/multipath-tools/archive/refs/tags/multipath-tools-%{version}.tar.gz
-%define sha512 multipath-tools=5e0dcea610fc215e345444c04453a38f39c73e493c2bc53f6b3a90cd701266aabdf7c4693dfc321099af836d0019bf27355e265ad5db5deff48f8bb94ed4719d
 
 Source1: license.txt
 %include %{SOURCE1}

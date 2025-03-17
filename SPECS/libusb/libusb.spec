@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://downloads.sourceforge.net/libusb/libusb-%{version}.tar.bz2
-%define sha512  libusb=fcdb85c98f21639668693c2fd522814d440972d65883984c4ae53d0555bdbdb7e8c7a32199cd4b01113556a1eb5be7841b750cc73c9f6bda79bfe1af80914e71
 
 Source1: license.txt
 %include %{SOURCE1}

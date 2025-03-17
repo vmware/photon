@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=9dda5067142b04e46e8ee344a47df21dae89a9c26e91588fc92bcbaee5291348a38ee79a5e807d7a8cba6cb13af78985e8b2e9b23d7f9eabecd0123459c43935
 
 Source1: license.txt
 %include %{SOURCE1}

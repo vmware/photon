@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: docopt-%{version}.tar.gz
-%define sha512 docopt=af138feccf8c37b374ee44fcda4938a88107d434df13c173214021b1a3348b152a595095a86982b66ac03a11db8e0f1e9e6a3a65c98deea92330311daeb831a3
 
 Source1: license.txt
 %include %{SOURCE1}

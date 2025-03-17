@@ -12,7 +12,6 @@ Distribution:   Photon
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=bf1e917dc016e46dbb3012dc3603f8e24696ce26e9a671bcc98d8d248312bcbb7f5711c4344f230bda374b3c00c8f63121e420ea75110f032acdd43b4ff47882
 Source1:        %{name}.sysusers
 
 Source2: license.txt

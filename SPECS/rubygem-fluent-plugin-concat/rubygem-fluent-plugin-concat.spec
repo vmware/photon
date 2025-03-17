@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluent-plugin-concat-%{version}.gem
-%define sha512  fluent-plugin-concat=828179a0b2596c7ad8bbaeb1d814f4ee41698c2908fdb88e0c33cd1d08159baa44dac655eeffa12fd8e692def0f6bfeeffdf6605a8d769753e8e288be6d5793f
 
 Source1: license.txt
 %include %{SOURCE1}

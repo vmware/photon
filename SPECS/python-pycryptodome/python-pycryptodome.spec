@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/b9/ed/19223a0a0186b8a91ebbdd2852865839237a21c74f1fbc4b8d5b62965239/pycryptodome-%{version}.tar.gz
-%define sha512  pycryptodome=9fed02190db9ae71b6895af2525d7670858817acf213c494969104da81138dacb11bc00be83b308e070a2c90766cd763e25a611ada402b32f6160a8ac9283f85
 
 Source1: license.txt
 %include %{SOURCE1}

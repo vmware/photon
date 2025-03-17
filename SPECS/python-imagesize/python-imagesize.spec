@@ -7,7 +7,6 @@ Url:            https://github.com/shibukawa/imagesize_py
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0: https://github.com/shibukawa/imagesize_py/archive/refs/tags/imagesize-%{version}.tar.gz
-%define sha512  imagesize=f191d7fe34a01ab21b0f4f6519df8ab2a53c1ca54956f4d825d9cec5bd5f4c569491bdc26cb36fcaad2c453c35e51f69379f091362e206453aaefbda4802daa4
 
 Source1: license.txt
 %include %{SOURCE1}

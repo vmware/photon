@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.greenwoodsoftware.com/less/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b8fa6688fb2aac4b015dbc000429db45f94c7484f388d1af60ff8fee7f72fec35614e0a3f6eb811583cd899f647b2e01fe47533ab6a7633dac04c155dd415678
 
 Source1: license.txt
 %include %{SOURCE1}

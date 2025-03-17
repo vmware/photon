@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
-%define sha512 talloc=810d92a614d0b9e0ac6fe403c1643c4dda435f79c4627d3c3be228f94b4b2ee8e528efbbed07f7d1a16043d6e55bdf4f10826f31fb8ca1c649c4126ea09a3aff
 
 Source1: license.txt
 %include %{SOURCE1}

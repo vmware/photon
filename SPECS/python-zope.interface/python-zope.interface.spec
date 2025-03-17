@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://pypi.python.org/packages/source/z/zope.interface/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=ef15d63397e05ad9fc44b2d5d786b0399b6973bb5f4866fab839ff612756f3157f2099d0f5c0469b574a5c8b5920a7c2a5c6eab8e8f84c24d5c43e816669bffe
 
 Source1: license.txt
 %include %{SOURCE1}

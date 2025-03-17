@@ -14,7 +14,6 @@ Distribution:   Photon
 Url:            https://pypi.org/project/pip/
 
 Source0: https://files.pythonhosted.org/packages/6b/8b/0b16094553ecc680e43ded8f920c3873b01b1da79a54274c98f08cb29fca/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=2fad7072473d67fa0dbfc2c060b1b4752ea1b0d021051ebef44a668e6c9c731a530b1afb38872fdbc2efec0598fae532e61a5ed545524875b51a3fe0a8d11d96
 
 Source1: license.txt
 %include %{SOURCE1}

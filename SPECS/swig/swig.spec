@@ -8,7 +8,6 @@ Distribution:   Photon
 Group:          Development/Languages
 
 Source0: http://downloads.sourceforge.net/project/swig/swig/swig-%{version}/swig-%{version}.tar.gz
-%define sha512 %{name}=1cea1918455a75ebc9b2653dd1715bd5dcd974554955f324295c6a6f14c0a715651b221b85fad4a8af5197e0c75bfe7b590bc6ba7178c26245fbbd9a7e110100
 
 Source1: license.txt
 %include %{SOURCE1}

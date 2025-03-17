@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/aws-sigv4-%{version}.gem
-%define sha512    aws-sigv4=7a756e3faafaa31046b1a17a825e8e1b88899914435cd1d7811089105f4d31020d24b81c1e8e86efa9a7446a768399323389e14462f1117a9f74f0dbbe2fbc62
 
 Source1: license.txt
 %include %{SOURCE1}

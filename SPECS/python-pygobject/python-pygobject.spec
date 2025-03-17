@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://pypi.org/project/PyGObject
 
 Source0:        https://pypi.org/project/PyGObject/#files/PyGObject-%{version}.tar.gz
-%define sha512  PyGObject=ba48ba470c78d76f4090460df286d926e15c4063374a1d3afa89dd374230a042aca53d864fc0efaf67efdba5723fe15440d34888a0b45c97d73c5c4cfe17559c
 
 Source1: license.txt
 %include %{SOURCE1}

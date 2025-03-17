@@ -5,7 +5,6 @@ Release:        2%{?dist}
 URL:            https://admin.fedoraproject.org/pkgdb/package/newt/
 Group:          Development/Languages
 Source0:        https://fedorahosted.org/releases/n/e/newt/%{name}-%{version}.tar.gz
-%define sha512 newt=d53d927996d17223e688bf54dccfabb2a3dc02bfe38ffc455964e86feaca3cd9f9ab5b19774433be430fa4d761cd9b6680b558f297acb86f80daeb6942f7d23c
 
 Source1: license.txt
 %include %{SOURCE1}

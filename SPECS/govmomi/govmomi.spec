@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/govmomi
 Source0:        https://github.com/vmware/govmomi/%{name}-%{version}.tar.gz
-%define sha512  govmomi=f43cdb8333775689ede39bc2f488433de1a8c6be9cffd534f50023557f5fde3bddc6f2ead88d9f23d0de3a7ed16191bc4daa1e7f31dceb80055feb202c94ab7e
 
 Source1: license.txt
 %include %{SOURCE1}

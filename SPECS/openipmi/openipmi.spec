@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://sourceforge.net/projects/openipmi/files/latest/download/OpenIPMI-%{version}.tar.gz
-%define sha512 OpenIPMI=615fccd1ffd4af18584c1b0e54667ba2de60b6d42b44e7448f27808114180fa3b31b4834276bdf69c3df1e5210df871fd888deec8186377524838390fe41e641
 
 Source1: openipmi-helper
 Source2: ipmi.service

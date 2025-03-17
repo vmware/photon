@@ -8,7 +8,6 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: http://www.zsh.org/pub/%{name}-%{version}.tar.xz
-%define sha512 %{name}=d9138b7f379ad942a5f46819d2dd52d31f3a1129f2a0d1b53d4c5cd43c318b60396da6d37c57c477b8e958fb750209aca0ae93f8c9dd42ac958de006a0ff067e
 
 Source1: zprofile.rhs
 Source2: zshrc

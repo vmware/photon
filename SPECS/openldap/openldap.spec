@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.openldap.org/software/download/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha512 %{name}=4be49c4866e47e96677d0e1f7caa380791917c9df8d6bb343d032aba45031c87db3bd4f6b953e914a1f40044fa68f4886ae96929a410b7188c0ed9bb75073a30
 
 Source1: %{name}.sysusers
 Source2: slapd.service

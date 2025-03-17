@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/gnu/libtool/%{name}-%{version}.tar.xz
-%define sha512    libtool=47f4c6de40927254ff9ba452612c0702aea6f4edc7e797f0966c8c6bf0340d533598976cdba17f0bdc64545572e71cd319bbb587aa5f47cd2e7c1d96f873a3da
 
 Source1: license.txt
 %include %{SOURCE1}

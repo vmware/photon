@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://www.freedesktop.org/software/libqmi/libqmi-%{version}.tar.xz
-%define sha512  %{name}=969c3e3fc8086c38e9192070eca155f5309947cdd1cfc9b883c27d80c6af2d069098a59e193bf1786260ab4fe4d05375555b5081dd173a88b33d84d409fa4a59
 
 Source1: license.txt
 %include %{SOURCE1}

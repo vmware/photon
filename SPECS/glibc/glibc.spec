@@ -12,7 +12,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha512 %{name}=9ea0bbda32f83a85b7da0c34f169607fb8a102f0a11a914e6bf531be47d1bef4f5307128286cffa1e2dc5879f0e6ccaef527dd353486883fa332a0b44bde8b3e
 
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf

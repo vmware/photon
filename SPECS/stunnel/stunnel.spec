@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:  https://www.stunnel.org/downloads/%{name}-%{version}.tar.gz
-%define sha512  %{name}=2607bed1159412dc36ed0455ed158ab3141782f05ddaf3605076f1a0e371bc1ada1606cab65a6bc52d69a8c685345617578cb79d521330f2e1d12af3dcbd37ca
 
 Source1: license.txt
 %include %{SOURCE1}

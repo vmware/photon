@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pyasn1-modules-%{version}.tar.gz
-%define sha512  pyasn1-modules=fdfcaa065deffdd732deaa1fa30dec2fc4a90ffe15bd12de40636ce0212f447611096d2f4e652ed786b5c47544439e6a93721fabe121f3320f13965692a1ca5b
 
 Source1: license.txt
 %include %{SOURCE1}

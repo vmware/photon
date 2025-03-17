@@ -10,7 +10,6 @@ URL:            https://pypi.org/project/sphinxcontrib-qthelp
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/b1/8e/c4846e59f38a5f2b4a0e3b27af38f2fcf904d4bfd82095bf92de0b114ebd/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=29f77e4b3f1a4868c2a34dbd853415e5d813f482cd23b982aeed42d53acba09b896d77ba930c34cce8af043bb7d64a19acff610430e942038d95a410b6e0b5fa
 
 Source1: license.txt
 %include %{SOURCE1}

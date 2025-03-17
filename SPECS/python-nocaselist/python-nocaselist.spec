@@ -5,7 +5,6 @@ Summary:        A case-insensitive list for Python
 Group:          Development/Languages/Python
 Url:            https://files.pythonhosted.org/packages/fe/5c/bfb5a421027852e577491ebfa6f9e454066bd430b4b7007692776c45da62/nocaselist-1.0.4.tar.gz
 Source0:        nocaselist-%{version}.tar.gz
-%define sha512  nocaselist=1898bfda570450dd843fd07f25eb5abe1eed0e96be317b90b1f4b8dd847eeb6790f5deabf4f12228b932bf069f6fa6a73eeae1d6873aafe67f710a7bb47b6682
 
 Source1: license.txt
 %include %{SOURCE1}

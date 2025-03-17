@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5eea2b0c60d870549fc2b8755f1220a57f870d95fbc8d5cc5abb9589f212d10945f355c3e88ff48540a7ee1c4db774b936023ca33d7c799ea82d91eef9c1c16d
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf

@@ -10,7 +10,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://invisible-mirror.net/archives/dialog/%{name}-%{version}-%{dialogsubversion}.tgz
-%define sha512 %{name}=dddceaf00bfec4b53f2cf67e51d4c54841d9db337536657c21bc8f324a0eb9c6d621f00e09bfb741bd263f171dde38cfea87568f86daf04a9e88575a0ed61218
 
 Source1: license.txt
 %include %{SOURCE1}

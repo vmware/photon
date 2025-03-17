@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.acc.umu.se/pub/gnome/sources/gtk-doc/1.33/gtk-doc-%{version}.tar.xz
-%define sha512 %{name}=f50f68ab6b4bc59f55e84b49c1481f05700171cbf79eca9ba8f3a142a30a4ba88fe096983ebb8d117a9ef8bcea40934674096683d956f5c54cae457d31f651ab
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ URL:            https://github.com/gssapi/gss-ntlmssp
 Group:          Applications/System
 
 Source0: https://github.com/gssapi/gss-ntlmssp/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=6cd20542aa18dba6f2b777cea8f481e7d73eb1034e14c8aba4ce8984f138ba445a82547b10297ee99f7042920bd910ca10dd67692f3b242696fcc27dfcab123f
 
 Source1: license.txt
 %include %{SOURCE1}

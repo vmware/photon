@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.altlinux.org/pub/people/legion/kbd/%{name}-%{version}.tar.xz
-%define sha512 %{name}=5f407c20739487e423e8390e429d30838a1a69a0a50db083803ce56da919e25ce480b63fd1bcfac9eb362095f17e575783b09eaa55e26b442bfa3ed838e04f13
 
 Source1: license.txt
 %include %{SOURCE1}

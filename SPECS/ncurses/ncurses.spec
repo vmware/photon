@@ -12,7 +12,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://invisible-island.net/archives/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
-%define sha512 %{name}=5f62eeeba3a826a9c7e447cfe673d3b1f176dd39c930ddfac2550531588dbe7c73c5cc99ef0b844629c6dcd3676d4a93b5cb78d607fee824bdccfc030bdb6541
 
 Source1: license.txt
 %include %{SOURCE1}

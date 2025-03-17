@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.memcached.org/
 Source0:        https://www.memcached.org/files/%{name}-%{version}.tar.gz
-%define sha512  %{name}=a30adc4f14c32051d2fc112eaa71de96f7ba614bd7f940ab5dd86365fe5e4df1399fa6fe6591cee903c8b914f2156050edef3139bafe38cd4a2b6424ba973e8e
 Source1:        %{name}.sysusers
 
 Source2: license.txt

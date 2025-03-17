@@ -4,7 +4,6 @@ Version:        4.0.2
 Release:        2%{?dist}
 URL:            https://github.com/aquynh/capstone
 Source0:        https://github.com/aquynh/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}=7f93534517307b737422a8825b66b2a1f3e1cca2049465d60ab12595940154aaf843ba40ed348fce58de58b990c19a0caef289060eb72898cb008a88c470970e
 
 Source1: license.txt
 %include %{SOURCE1}

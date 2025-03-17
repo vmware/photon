@@ -7,7 +7,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/linux-nvme/libnvme
 Source0:       https://github.com/linux-nvme/libnvme/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=c874b29b73e55be842f71e74a226a76fcd50dfa72e2be100f0437bc83e740cd146b6d2f2cdaa940c11c3d8c48ff2c065ac0e8a83d4d0dde743edf4179f328670
 
 Source1: license.txt
 %include %{SOURCE1}

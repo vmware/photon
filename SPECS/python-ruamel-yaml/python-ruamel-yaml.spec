@@ -9,7 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/ruamel.yaml
 Source0:        https://files.pythonhosted.org/packages/ruamel.yaml-%{version}.tar.gz
-%define sha512  ruamel.yaml=1ecda5ecacf913a499e40b4df8d5d6112b8c2facf5ce42c36eedad1ea4745884f98919b70a9d51ba8b095463e27371f6b84e314fe8f512c318963ab32f2cbf17
 
 Source1: license.txt
 %include %{SOURCE1}

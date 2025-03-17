@@ -10,7 +10,6 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=1544efef04190299ac988f52c4f6e58ba9ff8943fe1f3e1353fb2bf4d73248935dac65a8a73b32c5d2d96f6875ce25c5196a78ed645d9504465cf1e89e0a268a
 
 Source1:    macros
 Source2:    macros.php

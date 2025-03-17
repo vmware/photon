@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/acassen/keepalived/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=617ea91a8fcf9cabb4a5c92e9131ed3efc40930e823c77359ec0c7e82bae3f899108443afbb214678437caac1b649a710fa5f783d370fd3030ae9319be522623
 
 Source1: %{name}.service
 

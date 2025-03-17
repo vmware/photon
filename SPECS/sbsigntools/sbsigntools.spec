@@ -9,7 +9,6 @@ Distribution:  Photon
 # upstream tarballs don't include bundled ccan
 # run tools/scripts/generate-sbsigntools-tarball.sh
 Source0:       %{name}-%{version}.tar.xz
-%define sha512 %{name}=9c89def6e2cf248237507cc04346eb2201a047677365c7ae4f4140a405bfc243bb958f9af80a4802c0cba1bdc2c98aa5632d934c22bdadd66dcb45cd5654e8e8
 
 Source1: license.txt
 %include %{SOURCE1}

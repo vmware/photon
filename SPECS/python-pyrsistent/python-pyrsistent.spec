@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pyrsistent
 Source0:        https://files.pythonhosted.org/packages/9f/0d/cbca4d0bbc5671822a59f270e4ce3f2195f8a899c97d0d5abb81b191efb5/pyrsistent-%{version}.tar.gz
-%define sha512  pyrsistent=353ad6e9165e1afdde37730a9289cf8dde28491abb688d702a8c8f5279e24f5ce387a5d00ac4a077322299f9c1a535781bcacdcd1cb914ddb317b3ca9641778b
 
 Source1: license.txt
 %include %{SOURCE1}

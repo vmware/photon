@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0:       %{name}-%{version}.tar.bz2
-%define sha512  %{name}=9e63e33d0dd1506b4395da98c7adb66213ddb8074a4a3d45524904288cab3c70d2abe91a78bfdb8ccce259995f07c4d393a5a4e109553236c957a639074cb463
 Source1:       rc.status
 Source2:       90-va-tune-up.conf
 Source3:       ifup

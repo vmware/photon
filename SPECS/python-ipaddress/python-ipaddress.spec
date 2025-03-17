@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: ipaddress-%{version}.tar.gz
-%define sha512 ipaddress=340e2a8698df1868038f55889671442eba17f06ec3f493759d8d0a9bf406eefbe1f67c14ca616f52e5bf2280942dcece7e89fb19de0923bee1ee20e60f48896e
 
 Source1: license.txt
 %include %{SOURCE1}

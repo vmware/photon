@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
-%define sha512  binutils=68e038f339a8c21faa19a57bbc447a51c817f47c2e06d740847c6e9cc3396c025d35d5369fa8c3f8b70414757c89f0e577939ddc0d70f283182504920f53b0a3
 
 Source1: license.txt
 %include %{SOURCE1}

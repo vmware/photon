@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/danmar/cppcheck/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=c75162b988415ee2ed255f7c648bdea1903c6a2471923f8430ab52f4e7c1ab8d2d1249585ac9db81f7c02fa90e8c0cf59d2bc0402d286c63344def5a171d9967
 
 Source1: license.txt
 %include %{SOURCE1}

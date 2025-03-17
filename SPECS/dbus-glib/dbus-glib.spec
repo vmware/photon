@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://dbus.freedesktop.org/releases/dbus-glib/%{name}-%{version}.tar.gz
-%define sha512 %{name}=7c9f393f065dfb3d698f35e6554caf15fe539f5dd52d2b2bb6ed1770e130f5dab8e45379232520301455bae9bb77e25a109faf175153fcd4b9dd11d7de4a546e
 
 Source1: license.txt
 %include %{SOURCE1}

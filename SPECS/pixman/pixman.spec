@@ -7,7 +7,6 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://xorg.freedesktop.org/archive/individual/lib/%{name}-%{version}.tar.gz
-%define sha512  %{name}=0a4e327aef89c25f8cb474fbd01de834fd2a1b13fdf7db11ab72072082e45881cd16060673b59d02054b1711ae69c6e2395f6ae9214225ee7153939efcd2fa5d
 
 Source1: license.txt
 %include %{SOURCE1}

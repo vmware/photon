@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            http://wayland.freedesktop.org/
 
 Source0:        https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/%{version}/downloads/%{name}-%{version}.tar.xz
-%define sha512  %{name}=402ce1915300e29afe554d77965ee0a28a5f22fdb5b901c4c640e59b9f3a9c11094e1edae87eea1e76eea557f6faf0c34a0c28ee7f6babb4dc3719329c4e25bf
 
 Source1: license.txt
 %include %{SOURCE1}

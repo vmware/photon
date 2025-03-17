@@ -9,7 +9,6 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://github.com/wavefrontHQ/wavefront-proxy/archive/refs/tags/proxy-%{version}.tar.gz
-%define sha512 proxy=66f3fc224d6fc199de1a3928e84c21323c2a9ef38d3dac1e4b6b7148d64dabd6ccae870ac4d1c9effb9a0d1c47c35f9d154418e277893a2f0d15e8ed9845f41f
 
 Source1:          %{name}.sysusers
 

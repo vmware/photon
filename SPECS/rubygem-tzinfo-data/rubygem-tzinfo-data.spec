@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/tzinfo-data-%{version}.gem
-%define sha512  tzinfo-data=fd3929465df1c6ee88133743c932f559995d6c6ac9317b5d044d1f24ab5b618f936ba4d6c9689198adffb8b8fea8f38faf85f644d4617d38665b95b6cc3129ed
 
 Source1: license.txt
 %include %{SOURCE1}

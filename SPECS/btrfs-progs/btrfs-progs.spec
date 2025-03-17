@@ -5,7 +5,6 @@ Summary:        Userspace programs for btrfs
 Group:          System Environment/Base
 URL:            http://btrfs.wiki.kernel.org/index.php/Main_Page
 Source0:        https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/%{name}-v%{version}.tar.xz
-%define sha512  %{name}=a266316d38cc34a07d73e9fa40840bc058e235fb0d1b4fdfe7aea26f613d14fc62acb731329371386e22c68d770e151ec803ee2a6a82bf185f4c3254555d60bc
 
 Source1: license.txt
 %include %{SOURCE1}

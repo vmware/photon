@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: ftp://ftp.unixodbc.org/pub/unixODBC/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ca9d8db943195679a44db1fc09391dc6662ab1721112c93d448f04011e98502462ffe14b8364eb03707d851db456eced20eb61a22370392ca88d917038d45b56
 
 Source1: license.txt
 %include %{SOURCE1}

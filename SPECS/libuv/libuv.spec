@@ -7,7 +7,6 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libuv/libuv/archive/%{name}-%{version}.tar.gz
-%define sha512    libuv=d21c890787b0b364fafa5fc0cbbff296bc2ca269e1991d2f7f35fcb37b8634da377466f5af5a4245425fcf876ae6870d100ab32b12bce64f8e0b01fd25a1bc83
 
 Source1: license.txt
 %include %{SOURCE1}

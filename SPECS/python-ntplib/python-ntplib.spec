@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/ntplib/
 
 Source0:        ntplib-%{version}.tar.gz
-%define sha512  ntplib=e17e329ebbac05817a5e41322552b5befbfdeeeff16297d6ecdac5246f42826f14b40cc5f4929d662774a6635dfc624e9338c54eaa52d5b4504125b62708ab53
 
 Source1: license.txt
 %include %{SOURCE1}

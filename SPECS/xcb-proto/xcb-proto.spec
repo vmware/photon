@@ -9,7 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://xcb.freedesktop.org/dist/%{name}-%{version}.tar.gz
-%define sha512  xcb-proto=4aaf4886dbbb465ec9d123beca2db616f4690f76297df7f85a2cb6afeea114e7ee08995268821b090226a55109c93676f134840065b448180a5d61d8d95095b0
 
 Source1: license.txt
 %include %{SOURCE1}

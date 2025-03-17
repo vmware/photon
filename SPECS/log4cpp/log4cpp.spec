@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://log4cpp.sourceforge.net/
 Source0:         ftp://download.sourceforge.net/pub/sourceforge/log4cpp/%{name}-%{version}.tar.gz
-%define sha512  log4cpp=88e5e10bce8d7d6421c3dcf14aa25385159c4ae52becdc1f3666ab86e1ad3f633786d82afe398c517d4faaa57b3e7b7c0b524361d81c6b9040dbded5cecc19de
 BuildArch:      x86_64
 
 Source1: license.txt

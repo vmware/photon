@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.openssl.org/source/openssl-%{version}.tar.gz
-%define sha512 openssl=8ce10be000d7d4092c8efc5b96b1d2f7da04c1c3a624d3a7923899c6b1de06f369016be957e36e8ab6d4c9102eaeec5d1973295d547f7893a7f11f132ae42b0d
 
 Source1: provider_fips.cnf
 

@@ -8,7 +8,6 @@ Group:          Development/Tools
 Distribution:   Photon
 
 Source0: https://github.com/ninja-build/ninja/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=1bca38877c70ee6613f347ffccef5adc02ba0a3947c62ae004ea97f918442b5a3de92378e4f820ae2a7676bc7609d25fbc7d41f6cfb3a61e5e4b26ec3639e403
 
 Source1:        macros.ninja
 Source2: license.txt

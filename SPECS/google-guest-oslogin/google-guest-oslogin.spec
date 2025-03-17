@@ -8,7 +8,6 @@ URL:           https://github.com/GoogleCloudPlatform/guest-oslogin
 Distribution:  Photon
 
 Source0:       https://github.com/GoogleCloudPlatform/guest-oslogin/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=cbdc553d6847b61b61c93cb1335fc23d932385ff787a5b2321afb033635bfbee5a37962791cd09f8ccb40f2366a44f03a0d1733609b381e079b528caa6305f89
 
 Source1: license.txt
 %include %{SOURCE1}

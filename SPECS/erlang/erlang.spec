@@ -8,7 +8,6 @@ Distribution:  Photon
 URL:           https://www.erlang.org
 
 Source0: https://github.com/erlang/otp/archive/refs/tags/OTP-%{version}.tar.gz
-%define sha512 OTP=f06d34290c0d93609aa3efbdc97206e8d3ce17aa2c3f62b6c566c7631ee3a3d45a89b61ce0ace81604b5a94610d03ad98558f27ee888ca90ecdeeeb2759c0184
 
 Source1: license.txt
 %include %{SOURCE1}

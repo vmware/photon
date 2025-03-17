@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pycryptodomex
 Source0: https://files.pythonhosted.org/packages/31/a4/b03a16637574312c1b54c55aedeed8a4cb7d101d44058d46a0e5706c63e1/pycryptodomex-%{version}.tar.gz
-%define sha512 pycryptodomex=dd0f05338a209de26d93321d0709bdc9240c74768683c7decc572ee3a9a075bda95f527ae0d433e02a1674b6e12c4e7d35cc0ef721fb5e98fdb12878e047ebcd
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -12,7 +12,6 @@ Distribution:   Photon
 URL:            https://github.com/docker/compose
 
 Source0:        https://github.com/docker/compose/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-%define sha512  %{name}=704e73a3952c086e83c42cb96c658fc65386822e294629794e4e4442c35a9c28dfb77c8e7637b84ebb42b00c98b9829e13b4cb5988afe9e98926ea6403b6d7ce
 
 Source1: license.txt
 %include %{SOURCE1}

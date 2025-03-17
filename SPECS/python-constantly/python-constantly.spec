@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        constantly-%{version}.tar.gz
-%define sha512  constantly=ccc6f41b0bd552d2bb5346cc9d64cd7b91a59dd30e0cf66b01e82f7e0e079c01c34bc6c66b69c5fee9d2eed35ae5455258d309e66278d708d5f576ddf2e00ac3
 
 Source1: license.txt
 %include %{SOURCE1}

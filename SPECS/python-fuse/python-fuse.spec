@@ -5,7 +5,6 @@ Summary:        Python interface to libfuse
 Group:          Development/Languages/Python
 Url:            https://github.com/libfuse/%{name}/archive/%{version}.tar.gz
 Source0: https://github.com/libfuse/python-fuse/archive/refs/tags/python-fuse-%{version}.tar.gz
-%define sha512  python-fuse=e0d0cc0f3dee9416eefe430119e8f2f5a9bbc88a214d36d1d23c7e1f7ce78cc977a173f6d22c05cb928715d5c657ba29738f60453323b25299dddc08d57595d2
 
 Source1: license.txt
 %include %{SOURCE1}

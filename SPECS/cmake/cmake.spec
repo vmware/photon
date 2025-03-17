@@ -10,7 +10,6 @@ Vendor:       VMware, Inc.
 Distribution: Photon
 
 Source0: https://github.com/Kitware/CMake/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=20146d06a1722c36249192944a58e4780aad334d2bc5ce2a3d8c4f24656630c5b71ca0ae7ed53587e3d46f488bd773452fa60c3fc7045fe54db2dbc6ffd86390
 
 Source1: macros.cmake
 Source2: license.txt

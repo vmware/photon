@@ -7,7 +7,6 @@ Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.ltrace.org/%{name}_%{version}.orig.tar.bz2
-%define sha512 ltrace=a842b16dcb81da869afa0bddc755fdff0d57b35672505bf2c7164fd983b1938d28b126714128930994cc1230ced69d779456d0cfc16f4008c9b6d19f0852285d
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -28,11 +27,11 @@ ltrace intercepts and records dynamic library calls which are called by an execu
 # Using autosetup is not feasible
 %setup -q
 %ifarch aarch64
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
+%patch -p1 0
+%patch -p1 1
+%patch -p1 2
+%patch -p1 3
+%patch -p1 4
 %endif
 
 %build

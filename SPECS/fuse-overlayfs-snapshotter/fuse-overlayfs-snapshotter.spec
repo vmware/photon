@@ -14,7 +14,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/containerd/fuse-overlayfs-snapshotter/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=7ad7f1e433695045ecb09cda6a49b9822779c953105001fa20773b61128e73b1d57d15c05043ff52a2c9415ae899f75ce1ae5ac62843c4d94640c42aee26a7d3
 
 Source1: license.txt
 %include %{SOURCE1}

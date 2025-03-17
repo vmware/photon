@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.openwall.com/passwdqc/%{name}-%{version}.tar.gz
-%define sha512  %{name}=60f91ad7c86314b0d9ad97a2474a1a5bbb8b41491b274e09f7300d8a609cfffb0688bf39d4e715f647f3c87bfee429cb5e01f1a641a14eea3f55b223610ed8ec
 
 Source1: license.txt
 %include %{SOURCE1}

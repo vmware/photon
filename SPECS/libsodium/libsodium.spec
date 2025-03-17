@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://download.libsodium.org/libsodium/releases/%{name}-%{version}-stable.tar.gz
-%define sha512  %{name}=bc11652786ce62feb898a266f3cbeb0d21d3db05c3c88611cbdfe9f3eddff9520c2ba5560cb9d848224ba5ab265c66a35ed7a452775753dc06e1b9355b4ac3fb
 
 Source1: license.txt
 %include %{SOURCE1}

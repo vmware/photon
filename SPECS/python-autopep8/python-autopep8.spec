@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        autopep8-%{version}.tar.gz
-%define sha512 autopep8=883b79f7011a374a2ef88073a45748268a20449a3bc8da519c036c71700352dd8c4accc60fcb592f1a53ceac06984fcbe6ede8a272bc718c2b79873be5f35dd8
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/libfuse/libfuse/archive/%{name}-%{version}.tar.gz
-%define sha512  fuse3=70acaa11ba976f4fb83ce25017725aa486d490ba8f7c1cdf9f98e93e6e0a331b5e3fd78c746d1b4dbb783987397ff30ccc5f6e49e150e34c5b2dfc977fc22d01
 
 Source1: license.txt
 %include %{SOURCE1}

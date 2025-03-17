@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://downloads.sourceforge.net/libjpeg-turbo/%{name}-%{version}.tar.gz
-%define sha512  %{name}=511f065767c022da06b6c36299686fa44f83441646f7e33b766c6cfab03f91b0e6bfa456962184071dadaed4057ba9a29cba685383f3eb86a4370a1a53731a70
 
 Source1: license.txt
 %include %{SOURCE1}

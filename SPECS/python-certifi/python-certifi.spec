@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/certifi/python-certifi/archive/certifi-%{version}.tar.gz
-%define sha512  certifi=873eb3a34c5061f164484eec5bc659d4869882c96477395eec7d9d52242a033f9d82d293b07bcb094d04e62dc9af8a65caf2385a1a2a78c7058252af1b3d715b
 
 Source1: license.txt
 %include %{SOURCE1}

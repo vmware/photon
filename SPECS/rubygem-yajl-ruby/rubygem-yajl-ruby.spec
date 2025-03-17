@@ -11,7 +11,6 @@ Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0:        https://rubygems.org/downloads/yajl-ruby-%{version}.gem
-%define sha512  yajl-ruby=8cfde677f11ad80a468dce7876b97aa87fa35d78fcd727d4542e00c09cc28d1cca3301cf7c4e1f773edf2192262ec8d6ffab93b11d488d2b048d8013f6c7645a
 
 Source1: license.txt
 %include %{SOURCE1}

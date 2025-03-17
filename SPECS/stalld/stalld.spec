@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://gitlab.com/rt-linux-tools/stalld/-/archive/v%{version}/%{name}-v%{version}.tar.gz
-%define sha512 %{name}=f92fd5996482600c6a73324f43eed8a4a1f5e8f092e4a167306804e4230abbb89c37a8bfbb78ffe997310b8bfbb45d4903dd0c51292770dcf5b1d3cd56a78bde
 
 Source1: %{name}-tca.conf
 

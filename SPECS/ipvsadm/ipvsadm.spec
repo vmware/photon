@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0:       https://www.kernel.org/pub/linux/utils/kernel/ipvsadm/%{name}-%{version}.tar.xz
-%define sha512  %{name}=1c7187405771e702eff0009d688fa697375b833a486ff88b41a4a0dcfaa3e9884c7e3bc34375efea5f6a2d025847c9fac9fd6ba694ec3bf2fc9d357eef2cb631
 
 Source1: license.txt
 %include %{SOURCE1}

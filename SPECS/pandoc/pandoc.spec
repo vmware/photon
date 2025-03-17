@@ -20,7 +20,6 @@ Distribution:   Photon
 # tar xf pandoc-2.17.1.1-linux-amd64.tar.gz && mv pandoc-2.17.1.1 amd64
 # cd .. && tar cJf pandoc-2.17.1.1.tar.xz pandoc-2.17.1.1
 Source0:        pandoc-%{version}.tar.xz
-%define sha512  pandoc=067bffafcb8efe217b3fa1b5135115f037e8a524e255f8e4b86409db7c9648aa1b80dde7f0af2b195a79c984fba5f48ad409dc10a12734ec44b3df50b68ad820
 
 Source1: license.txt
 %include %{SOURCE1}

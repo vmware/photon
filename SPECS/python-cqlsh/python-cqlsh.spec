@@ -10,7 +10,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/cqlsh
 
 Source0: https://files.pythonhosted.org/packages/source/c/cqlsh/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=53bf77ec845798583f7fe7e6a8e060df7758ea9d55cbe1a8d451d20acacaff440fa597d5e43a217e3d3a6408c1bbe74e7cb1ffce6f2a73831ebfa7d254a9ffdc
 
 Source1: license.txt
 %include %{SOURCE1}

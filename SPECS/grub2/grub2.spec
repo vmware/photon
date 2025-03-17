@@ -12,7 +12,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
-%define sha512 grub=4f11c648f3078567e53fc0c74d5026fdc6da4be27d188975e79d9a4df817ade0fe5ad2ddd694238a07edc45adfa02943d83c57767dd51548102b375e529e8efe
 
 Source1: fedora.patches
 Source2: grub-sbat.csv.in

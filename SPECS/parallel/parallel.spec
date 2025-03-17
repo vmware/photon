@@ -8,7 +8,6 @@ Distribution:   Photon
 BuildArch:      noarch
 Url:            https://www.gnu.org/software/parallel/
 Source0:        https://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.bz2
-%define sha512  parallel=cdae4ec3a5aaf1ae6c0d9dc35bad930c2b34ad4f91209de80d55258f1945e2df345708000a2facef3b647b6e0d4c275c909faf073961ae0b80b89efa8831211f
 
 Source1: license.txt
 %include %{SOURCE1}

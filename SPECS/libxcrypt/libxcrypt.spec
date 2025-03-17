@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 BuildRequires: perl
 
 Source0: %{url}/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=468560e6f90877540d22e32c867cbcf3786983a6fdae6ef86454f4b7f2bbaae1b6589d1af75cda73078fa8f6e91b1a32f8353f26d433246eef7be3e96d4ae1c7
 
 Source1: license.txt
 %include %{SOURCE1}

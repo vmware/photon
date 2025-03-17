@@ -4,7 +4,6 @@ Version:        3.22.0
 Release:        2%{?dist}
 URL:            https://github.com/logrotate/logrotate/
 Source0:        https://github.com/logrotate/logrotate/archive/%{name}-%{version}.tar.gz
-%define sha512  logrotate=fde02ee4e4849fd85c9e72c15c9d7bb6b17b8dc62b2244bba7904dc8367c215210807d38bf2310465d3a1aa00d69df7123f8a93436449a661ca7299e723a1aef
 
 Source1: license.txt
 %include %{SOURCE1}

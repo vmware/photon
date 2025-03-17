@@ -8,7 +8,6 @@ Distribution:  Photon
 URL:           http://hisham.hm/htop/
 
 Source0: https://github.com/htop-dev/htop/archive/%{name}-%{version}.tar.gz
-%define sha512 htop=d7b76e28ee870ac572ba1d9606dec6f9475346a00e599ca15838017c97683f1fc1be40417b9c1e76128cacc8a60ff9ba88c6b237be1835d309f98329b25644fc
 
 Source1: license.txt
 %include %{SOURCE1}

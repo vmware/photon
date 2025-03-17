@@ -10,7 +10,6 @@ Group:          Development/Tools
 Distribution:   Photon
 
 Source0: %{url}/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=d86a8709b92c9b6847bd85b4b307a411edf30156a06557641a051f74a7c19898451616772ee53ad2d8fc6c2ea2285c4c4edf2197f36cf48ede6d539d24ebb2cf
 
 Source1: license.txt
 %include %{SOURCE1}

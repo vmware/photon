@@ -7,7 +7,6 @@ Url:            https://github.com/rbarrois/python-semanticversion
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/7d/31/f2289ce78b9b473d582568c234e104d2a342fd658cc288a7553d83bb8595/semantic_version-%{version}.tar.gz
-%define sha512  semantic_version=869a3901d4fc12acb285c94175011ed03dc00b35ab687c67dda458cffab5666cea21bc1b4bf75ef4edeb83b8080452a1c1470248eee54bbd269614a8cab132dc
 
 Source1: license.txt
 %include %{SOURCE1}

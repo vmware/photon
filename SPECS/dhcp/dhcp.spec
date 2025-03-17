@@ -8,7 +8,6 @@ Vendor:       VMware, Inc.
 Distribution: Photon
 
 Source0:      ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
-%define sha512 dhcp=4472d6794af80b482560956cee6895889cc1aca39980f851faf56824627e95731f2983cf7c7454bc3decb0a12c874fcbd29bd6c5a9695412def6bc14c6df17e0
 Source1:      dhclient-script
 Source2:      dhclient.conf
 Source3:      dhcp.service

@@ -38,7 +38,6 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=546aa361cdda1721509064c8b8a2e05197b4f06d36d84af3c7fd9c165cf72bd2ba6143a902a6c0f6400b38bd0090a67b751b80638c178e56f7f72f87e8a5c538
 
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
@@ -53,7 +52,6 @@ Source9:        struct-comparator.c
 
 %define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
 %endif
 
 Source19:       spec_install_post.inc
@@ -67,7 +65,6 @@ Source25:       linux-sbat.csv.in
 %define jent_major_version 3.4.1
 %define jent_ph_version 4
 Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
-%define sha512 jitterentropy=37a9380b14d5e56eb3a16b8e46649bc5182813aadb5ec627c31910e4cc622269dfd29359789cb4c13112182f4f8d3c084a6b9c576df06dae9689da44e4735dd2
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S

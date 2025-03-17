@@ -1,79 +1,93 @@
 sources:
-- archive: ruby-3.1.4.tar.gz
-  archive_sha512sum: 41cf1561dd7eb249bb2c2f5ea958884880648cc1d11da9315f14158a2d0ff94b2c5c7d75291a67e57e1813d2ec7b618e5372a9f18ee93be6ed306f47b0d3199a
-  skip_validation: true
-  spdx:
-    package:
-      detailed_description: 'The Ruby package contains the Ruby development environment.
-        This is useful for object-oriented scripting. '
-      home_page: https://www.ruby-lang.org/en
-      license_concluded: (Ruby OR MIT) AND (Ruby OR BSD-2-Clause) AND (MPL-1.1 OR
-        GPL-2.0-or-later OR LGPL-2.1-or-later) AND (GPL-1.0-or-later OR Artistic-1.0-Perl)
-        AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (Artistic-1.0 OR GPL-1.0-or-later)
-        AND (BSD-2-Clause OR Ruby) AND (MIT OR GPL-1.0-or-later) AND Spencer-86 AND
-        Apache-2.0 AND TMate AND GFDL-1.1-invariants-only AND GPL-3.0-or-later WITH
-        Autoconf-exception-generic-3.0 AND CC-BY-2.0 AND GFDL-1.3-no-invariants-only
-        AND ISC AND HPND-Markus-Kuhn AND LiLiQ-P-1.1 AND GFDL-1.3-invariants-only
-        AND BSD-3-Clause-No-Military-License AND CC-BY-SA-2.0 AND OFL-1.1-no-RFN AND
-        EPL-1.0 AND X11 AND BSD-4-Clause-UC AND Zlib AND dtoa AND APSL-1.1 AND GPL-1.0-or-later
-        AND LGPL-3.0-or-later AND OFL-1.1 AND GFDL-1.1-no-invariants-or-later AND
-        PolyForm-Small-Business-1.0.0 AND GFDL-1.2-no-invariants-or-later AND CECILL-2.0
-        AND etalab-2.0 AND copyleft-next-0.3.0 AND CERN-OHL-S-2.0 AND UCL-1.0 AND
-        OGL-UK-1.0 AND GPL-3.0-or-later AND TU-Berlin-1.0 AND LAL-1.3 AND GPL-3.0-or-later
-        WITH Autoconf-exception-macro AND NTP-0 AND BSD-2-Clause-Views AND PolyForm-Noncommercial-1.0.0
-        AND NIST-PD AND CC-BY-4.0 AND OGDL-Taiwan-1.0 AND BSD-3-Clause AND GPL-3.0-or-later
-        WITH Bison-exception-2.2 AND FSFULLRWD AND CC-BY-SA-4.0 AND AGPL-3.0-or-later
-        AND FSFULLR AND CERN-OHL-1.2 AND GFDL-1.3-no-invariants-or-later AND Zimbra-1.3
-        AND OGL-UK-2.0 AND APSL-1.0 AND Ruby AND PSF-2.0 AND GFDL-1.1-only AND SSPL-1.0
-        AND LiLiQ-Rplus-1.1 AND libselinux-1.0 AND FSFUL AND LGPL-3.0-only AND CAL-1.0-Combined-Work-Exception
-        AND EFL-2.0 AND GFDL-1.2-invariants-or-later AND CDDL-1.0 AND GPL-3.0-only
-        AND OGL-Canada-2.0 AND copyleft-next-0.3.1 AND LiLiQ-R-1.1 AND BSD-4-Clause-Shortened
-        AND Zimbra-1.4 AND AFL-3.0 AND GFDL-1.2-no-invariants-only AND OGL-UK-3.0
-        AND Apache-1.1 AND Interbase-1.0 AND GPL-2.0-or-later WITH Libtool-exception
-        AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-2.0-only AND GPL-2.0-or-later
-        AND GPL-1.0-only AND Artistic-1.0 AND GFDL-1.3-invariants-or-later AND GFDL-1.2-invariants-only
-        AND BSD-2-Clause AND CERN-OHL-1.1 AND Parity-7.0.0 AND BSD-3-Clause-Modification
-        AND CAL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND
-        TAPR-OHL-1.0 AND CDDL-1.1 AND CC-PDDC AND BSD-4-Clause AND TU-Berlin-2.0 AND
-        GFDL-1.1-no-invariants-only AND CERN-OHL-W-2.0 AND OGC-1.0 AND LGPL-2.1-or-later
-        AND AGPL-1.0-only AND Frameworx-1.0 AND CECILL-2.1 AND BSD-2-Clause-Patent
-        AND NIST-PD-fallback AND Parity-6.0.0 AND GPL-2.0-or-later WITH eCos-exception-2.0
-        AND LGPL-2.1-only AND Artistic-1.0-Perl AND NGPL AND CERN-OHL-P-2.0 AND NAIST-2003
-        AND CPOL-1.02 AND GFDL-1.1-invariants-or-later AND CC0-1.0 AND Python-2.0
-        AND NCGL-UK-2.0 AND AGPL-3.0-only
-      license_declared: (Ruby OR MIT) AND (Ruby OR BSD-2-Clause) AND (MPL-1.1 OR GPL-2.0-or-later
-        OR LGPL-2.1-or-later) AND (GPL-1.0-or-later OR Artistic-1.0-Perl) AND (Artistic-1.0-Perl
-        OR GPL-1.0-or-later) AND (Artistic-1.0 OR GPL-1.0-or-later) AND (BSD-2-Clause
-        OR Ruby) AND (MIT OR GPL-1.0-or-later) AND Spencer-86 AND Apache-2.0 AND TMate
-        AND GFDL-1.1-invariants-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND CC-BY-2.0 AND GFDL-1.3-no-invariants-only AND ISC AND HPND-Markus-Kuhn
-        AND LiLiQ-P-1.1 AND GFDL-1.3-invariants-only AND BSD-3-Clause-No-Military-License
-        AND CC-BY-SA-2.0 AND OFL-1.1-no-RFN AND EPL-1.0 AND X11 AND BSD-4-Clause-UC
-        AND Zlib AND dtoa AND APSL-1.1 AND GPL-1.0-or-later AND LGPL-3.0-or-later
-        AND OFL-1.1 AND GFDL-1.1-no-invariants-or-later AND PolyForm-Small-Business-1.0.0
-        AND GFDL-1.2-no-invariants-or-later AND CECILL-2.0 AND etalab-2.0 AND copyleft-next-0.3.0
-        AND CERN-OHL-S-2.0 AND UCL-1.0 AND OGL-UK-1.0 AND GPL-3.0-or-later AND TU-Berlin-1.0
-        AND LAL-1.3 AND GPL-3.0-or-later WITH Autoconf-exception-macro AND NTP-0 AND
-        BSD-2-Clause-Views AND PolyForm-Noncommercial-1.0.0 AND NIST-PD AND CC-BY-4.0
-        AND OGDL-Taiwan-1.0 AND BSD-3-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2
-        AND FSFULLRWD AND CC-BY-SA-4.0 AND AGPL-3.0-or-later AND FSFULLR AND CERN-OHL-1.2
-        AND GFDL-1.3-no-invariants-or-later AND Zimbra-1.3 AND OGL-UK-2.0 AND APSL-1.0
-        AND Ruby AND PSF-2.0 AND GFDL-1.1-only AND SSPL-1.0 AND LiLiQ-Rplus-1.1 AND
-        libselinux-1.0 AND FSFUL AND LGPL-3.0-only AND CAL-1.0-Combined-Work-Exception
-        AND EFL-2.0 AND GFDL-1.2-invariants-or-later AND CDDL-1.0 AND GPL-3.0-only
-        AND OGL-Canada-2.0 AND copyleft-next-0.3.1 AND LiLiQ-R-1.1 AND BSD-4-Clause-Shortened
-        AND Zimbra-1.4 AND AFL-3.0 AND GFDL-1.2-no-invariants-only AND OGL-UK-3.0
-        AND Apache-1.1 AND Interbase-1.0 AND GPL-2.0-or-later WITH Libtool-exception
-        AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-2.0-only AND GPL-2.0-or-later
-        AND GPL-1.0-only AND Artistic-1.0 AND GFDL-1.3-invariants-or-later AND GFDL-1.2-invariants-only
-        AND BSD-2-Clause AND CERN-OHL-1.1 AND Parity-7.0.0 AND BSD-3-Clause-Modification
-        AND CAL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND
-        TAPR-OHL-1.0 AND CDDL-1.1 AND CC-PDDC AND BSD-4-Clause AND TU-Berlin-2.0 AND
-        GFDL-1.1-no-invariants-only AND CERN-OHL-W-2.0 AND OGC-1.0 AND LGPL-2.1-or-later
-        AND AGPL-1.0-only AND Frameworx-1.0 AND CECILL-2.1 AND BSD-2-Clause-Patent
-        AND NIST-PD-fallback AND Parity-6.0.0 AND GPL-2.0-or-later WITH eCos-exception-2.0
-        AND LGPL-2.1-only AND Artistic-1.0-Perl AND NGPL AND CERN-OHL-P-2.0 AND NAIST-2003
-        AND CPOL-1.02 AND GFDL-1.1-invariants-or-later AND CC0-1.0 AND Python-2.0
-        AND NCGL-UK-2.0 AND AGPL-3.0-only
-      short_summary: Ruby
-      supplier: 'Organization: Broadcom, Inc.'
+    - archive: ruby-3.1.4.tar.gz
+      archive_sha512sum: 41cf1561dd7eb249bb2c2f5ea958884880648cc1d11da9315f14158a2d0ff94b2c5c7d75291a67e57e1813d2ec7b618e5372a9f18ee93be6ed306f47b0d3199a
+      skip_validation: true
+      spdx:
+          package:
+              detailed_description:
+                  "The Ruby package contains the Ruby development environment.
+                  This is useful for object-oriented scripting. "
+              home_page: https://www.ruby-lang.org/en
+              license_concluded:
+                  (Ruby OR MIT) AND (Ruby OR BSD-2-Clause) AND (MPL-1.1 OR
+                  GPL-2.0-or-later OR LGPL-2.1-or-later) AND (GPL-1.0-or-later OR Artistic-1.0-Perl)
+                  AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (Artistic-1.0 OR GPL-1.0-or-later)
+                  AND (BSD-2-Clause OR Ruby) AND (MIT OR GPL-1.0-or-later) AND Spencer-86 AND
+                  Apache-2.0 AND TMate AND GFDL-1.1-invariants-only AND GPL-3.0-or-later WITH
+                  Autoconf-exception-generic-3.0 AND CC-BY-2.0 AND GFDL-1.3-no-invariants-only
+                  AND ISC AND HPND-Markus-Kuhn AND LiLiQ-P-1.1 AND GFDL-1.3-invariants-only
+                  AND BSD-3-Clause-No-Military-License AND CC-BY-SA-2.0 AND OFL-1.1-no-RFN AND
+                  EPL-1.0 AND X11 AND BSD-4-Clause-UC AND Zlib AND dtoa AND APSL-1.1 AND GPL-1.0-or-later
+                  AND LGPL-3.0-or-later AND OFL-1.1 AND GFDL-1.1-no-invariants-or-later AND
+                  PolyForm-Small-Business-1.0.0 AND GFDL-1.2-no-invariants-or-later AND CECILL-2.0
+                  AND etalab-2.0 AND copyleft-next-0.3.0 AND CERN-OHL-S-2.0 AND UCL-1.0 AND
+                  OGL-UK-1.0 AND GPL-3.0-or-later AND TU-Berlin-1.0 AND LAL-1.3 AND GPL-3.0-or-later
+                  WITH Autoconf-exception-macro AND NTP-0 AND BSD-2-Clause-Views AND PolyForm-Noncommercial-1.0.0
+                  AND NIST-PD AND CC-BY-4.0 AND OGDL-Taiwan-1.0 AND BSD-3-Clause AND GPL-3.0-or-later
+                  WITH Bison-exception-2.2 AND FSFULLRWD AND CC-BY-SA-4.0 AND AGPL-3.0-or-later
+                  AND FSFULLR AND CERN-OHL-1.2 AND GFDL-1.3-no-invariants-or-later AND Zimbra-1.3
+                  AND OGL-UK-2.0 AND APSL-1.0 AND Ruby AND PSF-2.0 AND GFDL-1.1-only AND SSPL-1.0
+                  AND LiLiQ-Rplus-1.1 AND libselinux-1.0 AND FSFUL AND LGPL-3.0-only AND CAL-1.0-Combined-Work-Exception
+                  AND EFL-2.0 AND GFDL-1.2-invariants-or-later AND CDDL-1.0 AND GPL-3.0-only
+                  AND OGL-Canada-2.0 AND copyleft-next-0.3.1 AND LiLiQ-R-1.1 AND BSD-4-Clause-Shortened
+                  AND Zimbra-1.4 AND AFL-3.0 AND GFDL-1.2-no-invariants-only AND OGL-UK-3.0
+                  AND Apache-1.1 AND Interbase-1.0 AND GPL-2.0-or-later WITH Libtool-exception
+                  AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-2.0-only AND GPL-2.0-or-later
+                  AND GPL-1.0-only AND Artistic-1.0 AND GFDL-1.3-invariants-or-later AND GFDL-1.2-invariants-only
+                  AND BSD-2-Clause AND CERN-OHL-1.1 AND Parity-7.0.0 AND BSD-3-Clause-Modification
+                  AND CAL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND
+                  TAPR-OHL-1.0 AND CDDL-1.1 AND CC-PDDC AND BSD-4-Clause AND TU-Berlin-2.0 AND
+                  GFDL-1.1-no-invariants-only AND CERN-OHL-W-2.0 AND OGC-1.0 AND LGPL-2.1-or-later
+                  AND AGPL-1.0-only AND Frameworx-1.0 AND CECILL-2.1 AND BSD-2-Clause-Patent
+                  AND NIST-PD-fallback AND Parity-6.0.0 AND GPL-2.0-or-later WITH eCos-exception-2.0
+                  AND LGPL-2.1-only AND Artistic-1.0-Perl AND NGPL AND CERN-OHL-P-2.0 AND NAIST-2003
+                  AND CPOL-1.02 AND GFDL-1.1-invariants-or-later AND CC0-1.0 AND Python-2.0
+                  AND NCGL-UK-2.0 AND AGPL-3.0-only
+              license_declared:
+                  (Ruby OR MIT) AND (Ruby OR BSD-2-Clause) AND (MPL-1.1 OR GPL-2.0-or-later
+                  OR LGPL-2.1-or-later) AND (GPL-1.0-or-later OR Artistic-1.0-Perl) AND (Artistic-1.0-Perl
+                  OR GPL-1.0-or-later) AND (Artistic-1.0 OR GPL-1.0-or-later) AND (BSD-2-Clause
+                  OR Ruby) AND (MIT OR GPL-1.0-or-later) AND Spencer-86 AND Apache-2.0 AND TMate
+                  AND GFDL-1.1-invariants-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+                  AND CC-BY-2.0 AND GFDL-1.3-no-invariants-only AND ISC AND HPND-Markus-Kuhn
+                  AND LiLiQ-P-1.1 AND GFDL-1.3-invariants-only AND BSD-3-Clause-No-Military-License
+                  AND CC-BY-SA-2.0 AND OFL-1.1-no-RFN AND EPL-1.0 AND X11 AND BSD-4-Clause-UC
+                  AND Zlib AND dtoa AND APSL-1.1 AND GPL-1.0-or-later AND LGPL-3.0-or-later
+                  AND OFL-1.1 AND GFDL-1.1-no-invariants-or-later AND PolyForm-Small-Business-1.0.0
+                  AND GFDL-1.2-no-invariants-or-later AND CECILL-2.0 AND etalab-2.0 AND copyleft-next-0.3.0
+                  AND CERN-OHL-S-2.0 AND UCL-1.0 AND OGL-UK-1.0 AND GPL-3.0-or-later AND TU-Berlin-1.0
+                  AND LAL-1.3 AND GPL-3.0-or-later WITH Autoconf-exception-macro AND NTP-0 AND
+                  BSD-2-Clause-Views AND PolyForm-Noncommercial-1.0.0 AND NIST-PD AND CC-BY-4.0
+                  AND OGDL-Taiwan-1.0 AND BSD-3-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2
+                  AND FSFULLRWD AND CC-BY-SA-4.0 AND AGPL-3.0-or-later AND FSFULLR AND CERN-OHL-1.2
+                  AND GFDL-1.3-no-invariants-or-later AND Zimbra-1.3 AND OGL-UK-2.0 AND APSL-1.0
+                  AND Ruby AND PSF-2.0 AND GFDL-1.1-only AND SSPL-1.0 AND LiLiQ-Rplus-1.1 AND
+                  libselinux-1.0 AND FSFUL AND LGPL-3.0-only AND CAL-1.0-Combined-Work-Exception
+                  AND EFL-2.0 AND GFDL-1.2-invariants-or-later AND CDDL-1.0 AND GPL-3.0-only
+                  AND OGL-Canada-2.0 AND copyleft-next-0.3.1 AND LiLiQ-R-1.1 AND BSD-4-Clause-Shortened
+                  AND Zimbra-1.4 AND AFL-3.0 AND GFDL-1.2-no-invariants-only AND OGL-UK-3.0
+                  AND Apache-1.1 AND Interbase-1.0 AND GPL-2.0-or-later WITH Libtool-exception
+                  AND GPL-3.0-or-later WITH Texinfo-exception AND GPL-2.0-only AND GPL-2.0-or-later
+                  AND GPL-1.0-only AND Artistic-1.0 AND GFDL-1.3-invariants-or-later AND GFDL-1.2-invariants-only
+                  AND BSD-2-Clause AND CERN-OHL-1.1 AND Parity-7.0.0 AND BSD-3-Clause-Modification
+                  AND CAL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND MIT AND
+                  TAPR-OHL-1.0 AND CDDL-1.1 AND CC-PDDC AND BSD-4-Clause AND TU-Berlin-2.0 AND
+                  GFDL-1.1-no-invariants-only AND CERN-OHL-W-2.0 AND OGC-1.0 AND LGPL-2.1-or-later
+                  AND AGPL-1.0-only AND Frameworx-1.0 AND CECILL-2.1 AND BSD-2-Clause-Patent
+                  AND NIST-PD-fallback AND Parity-6.0.0 AND GPL-2.0-or-later WITH eCos-exception-2.0
+                  AND LGPL-2.1-only AND Artistic-1.0-Perl AND NGPL AND CERN-OHL-P-2.0 AND NAIST-2003
+                  AND CPOL-1.02 AND GFDL-1.1-invariants-or-later AND CC0-1.0 AND Python-2.0
+                  AND NCGL-UK-2.0 AND AGPL-3.0-only
+              short_summary: Ruby
+              supplier: "Organization: Broadcom, Inc."
+    - archive: rexml-3.3.9.tar.gz
+      archive_sha512sum: cc38609e5321f157b0a9ea793386017c8d4f743aabd66fc31a8f450f68c57e89825ec1d549efc4e2459ae952e57bbc87d47f9a0affa457639b89b9374e0bb137
+      skip_validation: true
+      spdx:
+          package:
+              detailed_description: REXML supports both tree and stream document parsing
+              home_page: https://github.com/ruby/rexml
+              license_concluded: BSD-2-Clause
+              license_declared: BSD-2-Clause
+              short_summary: REXML supports both tree and stream document parsing
+              supplier: "Organization: Broadcom, Inc."

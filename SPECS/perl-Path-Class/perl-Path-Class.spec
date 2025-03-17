@@ -7,7 +7,6 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://search.cpan.org/CPAN/authors/id/K/KW/KWILLIAMS/Path-Class-%{version}.tar.gz
-%define sha512  Path-Class=044d86f85eebff96bdff8fc11e97884eb4e06d56ecd2d3bfdc045135da6f08c40e644e0e5c1a779a8ef5d6c7c04e159e47721b4e637a92fed7d298b5f798ef83
 
 Source1: license.txt
 %include %{SOURCE1}

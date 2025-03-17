@@ -5,7 +5,6 @@ Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/URI
 Source0:        https://cpan.metacpan.org/modules/by-module/URI/perl-URI-%{version}.tar.gz
-%define sha512  perl-URI=52171e16137bfaa77ab31007245a561614c5c42336473022ebbe370b395d3052d3de80da0b42754ca2e0b09f47520ef96afdbdb72fe5c25cab87441eda03ec12
 
 Source1: license.txt
 %include %{SOURCE1}

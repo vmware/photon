@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://search.cpan.org/dist/Perl4-CoreLibs/
 Source0:        https://cpan.metacpan.org/authors/id/Z/ZE/ZEFRAM/%{cpan_name}-%{version}.tar.gz
-%define sha512  %{cpan_name}=71083f1640e95559ee4bc5a7f1bbe6beacec048a073e211ab7f6ee4de26463f6ae3d87e99e00a41ea8f2f93a5e96367bafe907ef3367e400de35123c22eb7b88
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/etcd-io/etcd/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  etcd=6fc8bd64ad63cff71c7645253273418fb3fa262c2da1742dc345576caa733af7cd75acad2f57610c5883e6bf16cffd36bc5a0c89cbbb0793c00c2a4db1c6d14b
 Source1:        etcd.service
 %ifarch aarch64
 Source2:        etcd.sysconfig

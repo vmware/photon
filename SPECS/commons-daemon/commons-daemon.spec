@@ -9,7 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://mirrors.ocf.berkeley.edu/apache//commons/daemon/source/%{name}-%{version}-src.tar.gz
-%define sha512 %{name}-%{version}-src=ec246e2c05d66408374ba56b3715b13f8f24f89af11fa00c2381dc19c188f1b6228f19351c97d5774808a804b83fdbdfb8f537d099db062c39ffd281c142ee77
 
 Source1: license.txt
 %include %{SOURCE1}

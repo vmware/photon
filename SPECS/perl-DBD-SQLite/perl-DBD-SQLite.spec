@@ -7,7 +7,6 @@ Release:        4%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/DBD-SQLite/
 Source0:        https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/DBD-SQLite-%{version}.tar.gz
-%define sha512  DBD-SQLite=67a90c618a3626b3ae0b333b5eb4d4d0c8c13712bbcd50c135bf74e83dc252301664089803597c1bcbebf7f1eda040673d4438e70e2dae0aef3b8ebeeecd2f79
 
 Source1: license.txt
 %include %{SOURCE1}

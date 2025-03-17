@@ -10,7 +10,6 @@ URL:            https://pypi.org/project/sphinxcontrib-htmlhelp
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/c9/2e/a7a5fef38327b7f643ed13646321d19903a2f54b0a05868e4bc34d729e1f/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=6ed673966615f3e818e00de4b7e59c27f0a0d7b494294f804540777c580480870c36002c08d8ad626b7b41a676fe40edc0b0b5ffc6ad8080f38f59c24e157636
 
 Source1: license.txt
 %include %{SOURCE1}

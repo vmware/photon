@@ -11,7 +11,6 @@ Distribution:   Photon
 Url:            https://github.com/GoogleCloudPlatform/guest-configs
 
 Source0:        https://github.com/GoogleCloudPlatform/guest-configs/archive/refs/tags/google-guest-configs-%{version}.tar.gz
-%define sha512  google-guest-configs=ecee30253b2265f79abfa77a5034ad019212ef7097b9befb0e87975b1733245d89c0b59d23165a4e49a4d8598231330c6658f931fe3d1583f025ae2adf6b6fe4
 
 Source1: license.txt
 %include %{SOURCE1}

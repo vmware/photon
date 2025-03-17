@@ -7,7 +7,6 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/zeromq/libzmq/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e198ef9f82d392754caadd547537666d4fba0afd7d027749b3adae450516bcf284d241d4616cad3cb4ad9af8c10373d456de92dc6d115b037941659f141e7c0e
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -5,7 +5,6 @@ Summary:        Very basic event publishing system
 Group:          Development/Libraries/Python
 Url:            http://pypi.python.org/pypi/zope.event
 Source0:        https://pypi.python.org/packages/source/z/zope.event/zope.event-%{version}.tar.gz
-%define sha512  zope.event=1d82ae316fc75eebc03aadeb78890a19add35490720cd7bd073faeb9dc9ed97511ca4fdafc2228530798384d667c0aa88e3ef47b0be668128556a78bf82c42e5
 
 Source1: license.txt
 %include %{SOURCE1}

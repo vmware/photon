@@ -6,7 +6,6 @@ Release:       3%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/libintl-perl/
 Source0:       https://cpan.metacpan.org/authors/id/G/GU/GUIDO/libintl-perl-%{version}.tar.gz
-%define sha512 libintl-perl=fca6c8863dfd36c7604bc80a401e825eb707bc75016521c09006c34c170a41b009d30ec93d7e2a7f61caa1dbdf0333511c3d515d4fdc0fea32242eca68a7e35d
 
 Source1: license.txt
 %include %{SOURCE1}

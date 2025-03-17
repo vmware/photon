@@ -10,7 +10,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/mistune
 
 Source0: https://files.pythonhosted.org/packages/source/m/mistune/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=109447977a441ebbedfca2abbe62415139d94c48ae56c3d8cae04df3f93ccd1e8333b3dbb8bf61a2096b903df6c3aab2fadd0893fb82815416f17555465e98c7
 
 Source1: license.txt
 %include %{SOURCE1}

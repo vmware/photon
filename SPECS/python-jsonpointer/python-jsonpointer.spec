@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-%{version}.tar.gz
 Source0: https://github.com/stefankoegl/python-json-pointer/archive/refs/tags/jsonpointer-%{version}.tar.gz
-%define sha512 jsonpointer=e04da474a5ec376d1cd2c764c2d7a11ac296450df199449994cb1dedf02a49df3ae3a4e75b2963370dba1da166464602b849a79609f7a98d8246dab0b342c819
 
 Source1: license.txt
 %include %{SOURCE1}

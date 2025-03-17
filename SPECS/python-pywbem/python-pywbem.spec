@@ -5,7 +5,6 @@ Summary:        Python WBEM Client
 Group:          Development/Libraries
 URL:            http://pywbem.sourceforge.net
 Source0:        http://downloads.sourceforge.net/pywbem-%{version}.tar.gz
-%define sha512 pywbem=a39a2200ec9c831b5d21768d91cab7f16e8d4b351881c27bdcf195ac3704b1ebea0355c259a7c9a9ba055999df50025a03d787a1033130de764d183af512c3c8
 
 Source1: license.txt
 %include %{SOURCE1}

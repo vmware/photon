@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/pgbackrest/pgbackrest/archive/refs/tags/release/%{name}-%{version}.tar.gz
-%define sha512 %{name}=083a99059fd1cbd78e063a7ec816e9f6e4a06688911a6ff71d3e4cfb4ca0795cd83983d49acf0c55ac2d0b0dc77bc928595d7e44e054b6e9bfb69c626678c3d7
 
 Source1: %{name}.conf
 

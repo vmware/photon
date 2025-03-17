@@ -5,7 +5,6 @@ Release:        3%{?dist}
 Group:          Development/Languages/Python
 URL:            https://pypi.org/project/pyudev
 Source0:        pyudev-%{version}.tar.gz
-%define sha512  pyudev=40b947d363dca73789f5ab77cbda4b48349e28fe04f2f5cafb93d20799d842ebeb2b7d78d1f16dcbcaac5c20aff1b931b372c75852706e731337e6e1d30b8538
 
 Source1: license.txt
 %include %{SOURCE1}

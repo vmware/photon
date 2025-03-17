@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/aws-sdk-kms-%{version}.gem
-%define sha512    aws-sdk-kms=bf0325df4de504c3a3d59516d3bba2cf908eb3f7f5e451b7a47bb89f80c45c87beae07a8c0b6e8266e6a52bb3954b35c1990a9abd5c963985ccfe6666d1dc261
 
 Source1: license.txt
 %include %{SOURCE1}

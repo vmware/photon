@@ -8,7 +8,6 @@ Vendor:          VMware, Inc.
 Distribution:    Photon
 
 Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/3.2/%{name}-%{version}.tar.xz
-%define sha512 %{name}=e5f60fd700f4cda041d869eec50e787b2fbe9323949b90710405cff296e108bab6d1323ab96e89855c5396ce73c7b7574b424dbe957ae10b48740b272889be51
 
 Source1: license.txt
 %include %{SOURCE1}

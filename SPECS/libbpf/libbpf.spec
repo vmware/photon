@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/libbpf/libbpf
 
 Source0: https://github.com/libbpf/libbpf/archive/refs/tags/libbpf-%{version}.tar.gz
-%define sha512 %{name}=bc7620207e6f521b9b5baab00bd81346084b8eabf81bff3ec24e5367d389f2a331a0b082798f8bb5d4fea836c3c0cc961fc881abc3a4e05d91152150bdfe47be
 
 Source1: license.txt
 %include %{SOURCE1}

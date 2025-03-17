@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/pyOpenSSL/pyOpenSSL-%{version}.tar.gz
-%define sha512  pyOpenSSL=bc1ccfa4fc5d7f48ba23ee2cdfbad2636ecab8e3989e8ab88136cba92fa08bb21920c0ce7198591837597a14f392dcd21de05697fd5abd7c31f6dcbed398dd47
 
 Source1: license.txt
 %include %{SOURCE1}

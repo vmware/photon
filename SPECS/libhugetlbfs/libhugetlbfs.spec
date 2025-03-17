@@ -4,7 +4,6 @@ Version:        2.23
 Release:        4%{?dist}
 URL:            https://github.com/libhugetlbfs/libhugetlbfs
 Source0:        https://github.com/libhugetlbfs/libhugetlbfs/releases/download/%{version}/libhugetlbfs-%{version}.tar.gz
-%define sha512  libhuge=b509ff60179e3dc52532bc16b1a414b4993bb79019733a30a7bfa69311f627606b196aced4457bdb88edccdbe7070df755aaab37c6599f4cecdfcb0015aee212
 
 Source1: license.txt
 %include %{SOURCE1}

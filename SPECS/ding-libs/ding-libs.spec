@@ -8,7 +8,6 @@ Group:          Development/Libraries
 URL:            https://github.com/SSSD/ding-libs
 
 Source0: https://github.com/SSSD/%{name}/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=566172e0addb0ee6e0ebd12874d3b72f2fa6bcb1ecc628c0c529984193290fae554efc40f52d2cec675bffab32a36183e47ec629db25e83ed2995f1049c64703
 
 Source1: license.txt
 %include %{SOURCE1}

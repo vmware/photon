@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://cpan.metacpan.org/authors/id/L/LE/LEEJO/CGI-%{version}.tar.gz
-%define sha512 CGI=be7ecdd9eab81ad95d527aac2f10ef7a15322675fe002558c6ab4951f496a8964025b7d0426241fb3f61aba103964a40f99acc05a39c84a2434f70d90ac47be6
 
 Source1: license.txt
 %include %{SOURCE1}

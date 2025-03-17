@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://files.pythonhosted.org/packages/source/n/netaddr/netaddr-%{version}.tar.gz
 
 Source0: netaddr-%{version}.tar.gz
-%define sha512 netaddr=a158bef87e862330c583f8b6709c4f575ec036dd31d725dad679e583ad4bef1a34f43225453bc93970ab720ae5f9f0fc2a6a3b92cbb922ed6f201414fd1e96d3
 
 Source1: license.txt
 %include %{SOURCE1}

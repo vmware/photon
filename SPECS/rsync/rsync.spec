@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
-%define sha512  %{name}=a3ecde4843ddb795308dca88581b868ac0221eb6f88a1477d7a9a2ecb4e4686042966bdddbab40866f90a4715d3104daa7b83222ddf0f3387b796a86bde8e5c2
 
 Source1: license.txt
 %include %{SOURCE1}

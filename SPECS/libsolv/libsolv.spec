@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=be375e9cd60728683d08587abd5405eb9b8522dff092c76eabec8d5f1608225335639b2b247429619df1b5c493d1edbd5ad4f14755cb6e2eb120f0ba162e3bb5
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=3d37a6b8cd13fd3c149ab80009d686d2184920ba2d0d5c1b57abed6e92e0dd92cba868bfe22f1a155479fe5ab2e291b8bb8a7e72123a73788032202ac142653b
 
 Source1:        conntrackd.conf
 

@@ -12,7 +12,6 @@ Distribution:   Photon
 #.ansible-lint .gitignore .yamllint .gitattributes .gitlab-ci.yml vars-cap.yml
 #Update this URL to github URL once the source code is available in github
 Source0: https://packages.vmware.com/photon/photon_sources/1.0/%{name}-ph5-%{version}.tar.gz
-%define sha512 %{name}-ph5-%{version}=32974725804e64eb8941872af0d1da7e839833e534b0b07f677c78f92e55ae5fcc8860c0d176193019ef28d3f7c63c351ceda50916834dc707f1accc0145ee51
 
 Source1: license.txt
 %include %{SOURCE1}

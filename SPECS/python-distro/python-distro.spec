@@ -9,7 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/distro
 Source0:        https://files.pythonhosted.org/packages/ca/e3/78443d739d7efeea86cbbe0216511d29b2f5ca8dbf51a6f2898432738987/distro-%{version}.tar.gz
-%define sha512  distro=14516ecab33ee8c57c35a8279eb515fd699031fabac7d8886092ea98696797d55503179870aeb513a85e1a66c7e69f2f60bb6ea9fc935be975cb5135e1917ecc
 
 Source1: license.txt
 %include %{SOURCE1}

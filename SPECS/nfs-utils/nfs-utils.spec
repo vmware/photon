@@ -8,7 +8,6 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://sourceforge.net/projects/nfs/files/nfs-utils/%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=60ef0dc1842fe751c142313d41e3494a0d2bd8db4b859e970456b711688a606938273f3b43fe66ba9725e0b4e7dc7301e7358504b2f1d2da60cbd3b9f171c103
 
 Source1:          nfs-client.service
 Source2:          nfs-client.target

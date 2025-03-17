@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/concurrent-ruby/versions/%{version}
 Source0:        https://rubygems.org/downloads/concurrent-ruby-%{version}.gem
-%define sha512    concurrent-ruby=ed01d65d79e6ed2987321f4665cb5f7c3fcd701029a33e68da0feb0cd6cb2682cef619566a3bd0996db207becb0425d77967b66ee66d775a489b1317e78807ab
 
 Source1: license.txt
 %include %{SOURCE1}

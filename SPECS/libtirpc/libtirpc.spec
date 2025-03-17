@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=df0781a74ff9ded2d3c4f5eb7e05496b9f58eac8060c02c68331dc14c4a00304dcd19f46836f5756fe0d9d27095fd463d42dd696fcdff891516711b7d63deabe
 
 Source1: license.txt
 %include %{SOURCE1}

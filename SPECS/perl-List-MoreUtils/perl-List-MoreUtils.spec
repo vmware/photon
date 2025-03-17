@@ -6,7 +6,6 @@ Release:       2%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/List-MoreUtils/
 Source0:       https://cpan.metacpan.org/authors/id/R/RE/REHSACK/List-MoreUtils-%{version}.tar.gz
-%define sha512 List-MoreUtils=bc9ff033c12251a6f0899a96da0ec8fc314ddb8d6cdf18c37fe1fdcfc38a4c95ed6f8e006bb124e77d07241ae6754f429bc2041f7772b4acfce9378a21283469
 
 Source1: license.txt
 %include %{SOURCE1}

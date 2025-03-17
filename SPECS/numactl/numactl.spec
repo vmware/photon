@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/numactl/numactl/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=de89bd9f4a9be0e27b21d096aa17a554c209414b5d08b6a2dbd03f8f4830fe4fc5adc88fa8cb08ae1cf75884835dacbde5b6f5d31386244a2582924d2260fcb6
 
 Source1: license.txt
 %include %{SOURCE1}

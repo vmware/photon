@@ -12,7 +12,6 @@ URL:            https://github.com/AbiWord/%{name}/tree/v%{version}
 Distribution:   Photon
 
 Source0: https://github.com/AbiWord/%{name}/archive/refs/tags/%{name}-vendor-%{version}.tar.gz
-%define sha512 %{name}=0e5ecc1fa158b3778425139a86e603ed187b089b7cab2832715f205fb776b43e80536720a780ca6b73d05771aaee6364141e632d989206c40d09e8bb6c13119c
 
 Source1: license.txt
 %include %{SOURCE1}

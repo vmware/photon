@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://code.google.com/p/prettytable
 Source0:        prettytable-%{version}.tar.gz
-%define sha512  prettytable=e190717e2ea89e8faddc7015fd5118e0d93ac5f5318641ce5960b22b4ea3740ff12c4d15812b33655252f258c96f9e848f554d1e678d39761c28025ba7772609
 
 Source1: license.txt
 %include %{SOURCE1}

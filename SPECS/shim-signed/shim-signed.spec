@@ -8,7 +8,6 @@ URL:        https://vmware.github.io/photon/
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    %{name}-%{version}.tar.xz
-%define sha512 shim-signed=c97bda7d637951c62a346d7d814d9c896b63308161fa3fa6dcf28e49e9aa0bc898ea8a61bf163bde159437f397a5b34a2b7e0238819bef71b1438d30fd4e84ad
 
 Source1: license.txt
 %include %{SOURCE1}

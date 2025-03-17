@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/google/double-conversion
 
 Source0:        https://github.com/google/double-conversion/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  double-conversion=d2feb3098a1d4d6baab5f89bcc29ac2e06d314d552b8c747c6eb6dba5dd165a15dc71200191edb7f05d521c349e12d59cddba3c5db101e1623e0e76e19f21a49
 
 Source1: license.txt
 %include %{SOURCE1}

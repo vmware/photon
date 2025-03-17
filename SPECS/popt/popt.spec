@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.rpm.org/mirror/popt/%{name}-%{version}.tar.gz
-%define sha512 %{name}=bae2dd4e5d682ef023fdc77ae60c4aad01a3a576d45af9d78d22490c11e410e60edda37ede171920746d4ae0d5de3c060d15cecfd41ba75b727a811be828d694
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/libical/libical
 
 Source0:        https://github.com/libical/libical/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=36da5516672976c71b049a12af36164d91f9b655f81f1884766558149f25e80c30e64d15da848842f8a629295d708f39ce6fa63a3b0da39b5cbeb91911a4e6d8
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -9,7 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/anholt/libepoxy/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=6786f31c6e2865e68a90eb912900a86bf56fd3df4d78a477356886ac3b6ef52ac887b9c7a77aa027525f868ae9e88b12e5927ba56069c2e115acd631fca3abee
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/pyvmomi
 Source0:        pyvmomi-%{version}.tar.gz
-%define sha512  pyvmomi=ed9a8115e70141805ef88d4b854d82f14b22c73bdcd701b9c2ad3e2da536505ecb3e20aff43cc8a9f3d4585daed27120e45636c0cd7af0afc70ae78c814aba64
 
 Source1: license.txt
 %include %{SOURCE1}

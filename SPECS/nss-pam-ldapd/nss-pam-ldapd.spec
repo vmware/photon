@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://arthurdejong.org/nss-pam-ldapd/nss-pam-ldapd-%{version}.tar.gz
-%define sha512 %{name}=da154303ba2f86b8653d978acfbba4633d0190afd353b6a57386391078c531bf7b11195fbabbe53cf6f36545c6f1c71b9567fd042892a73251bf0016c5f018ee
 
 Source1: nslcd.tmpfiles
 Source2: nslcd.service

@@ -6,7 +6,6 @@ Version:        1.22.20
 Release:        13%{?dist}
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Source0:        https://github.com/kubernetes/dns/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=d62ea9ed6eae29e023530777896732bff4964d06f09bf1b80575af9ecb76b82ea6e7fc0ac04be41e92609cb6d5bb87de68488d57ef923c77d38cd60930e9f6cf
 
 Source1: license.txt
 %include %{SOURCE1}

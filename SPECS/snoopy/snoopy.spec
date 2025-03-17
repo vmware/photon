@@ -4,7 +4,6 @@ Version:        2.5.1
 Release:        2%{?dist}
 URL:            https://github.com/a2o/snoopy/archive/snoopy-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  snoopy=2c0cde306ff58fe7f19c4df9aecab2c6936d71b77471bbb363ca660254b780a6874163988ebc6882b75d18319891bd1d5b5ef524f158f7645466c93e4dbe987f
 
 Source1: license.txt
 %include %{SOURCE1}

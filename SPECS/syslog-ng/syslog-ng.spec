@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=571f6080765983326ee912f2a7e87cdc8527296ef555a0b16589c04ed332c0db58e24c70251dc39b1c79151ca7d463e6409835df99aa45c19734d7003a69ce61
 
 Source1:        60-%{name}-journald.conf
 Source2:        %{name}.service

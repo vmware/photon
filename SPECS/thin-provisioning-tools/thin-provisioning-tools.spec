@@ -8,9 +8,7 @@ Release:        5%{?dist}
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
 Source0:        thin-provisioning-tools-%{version}.tar.gz
-%define sha512  thin-provisioning-tools=f5401631f0d10cb0fbd8e4b2979b38d2dc42621de558ffb23b2bcc12f1b7fead49ffa8b143af61227917edce9abc7b5a48c94036ae74c035a181661f82e80ed1
 Source1:        thin-provisioning-tools-deps-%{version}p1.tar.xz
-%define sha512  thin-provisioning-tools-deps-%{version}p1=f9219cca4bfcb3ace17417fc4de8581c306d7c19013e0d5b9273ebcd96cea3a90945b4abe2df36e73a44a1054c3a49fa40661b1af2880350de7717860981e50c
 
 Source2: license.txt
 %include %{SOURCE2}

@@ -8,7 +8,6 @@ Distribution:    Photon
 Group:           System Environment/Base
 
 Source0:         https://github.com/rpm-software-management/drpm/releases/download/%{version}/drpm-%{version}.tar.bz2
-%define sha512   %{name}=8c87165fa43bcc5e518a6d60eaadbc43b12643233eb0cb29633f0fdf8a516c24581f5f5bad06779f8c851d6200aec41b50998ab8040e8145391b686ae6be8c48
 
 Source1: license.txt
 %include %{SOURCE1}

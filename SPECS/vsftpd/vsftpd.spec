@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
-%define sha512  %{name}=9e9f9bde8c460fbc6b1d29ca531327fb2e40e336358f1cc19e1da205ef81b553719a148ad4613ceead25499d1ac3f03301a0ecd3776e5c228acccb7f9461a7ee
 Source1: %{name}.sysusers
 
 Source2: license.txt

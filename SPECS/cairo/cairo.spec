@@ -8,7 +8,6 @@ Vendor:   VMware, Inc.
 Distribution:   Photon
 
 Source0: http://cairographics.org/releases/%{name}-%{version}.tar.xz
-%define sha512 %{name}=15d9a82097b9c5a43071ff9fbfe90d7aaee5fddb84f519cdddfe312c5fc7248a50b73a5351922de2aaafa4b2e86f911b3147609538346f8a7635f34d631c9146
 
 Source1: license.txt
 %include %{SOURCE1}

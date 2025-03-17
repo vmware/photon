@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL: https://rubygems.org/gems/%{gem_name}
 Source0: https://rubygems.org/downloads/highline-%{version}.gem
-%define sha512 highline=18426c690125807ccc43af98d395c866752d2aa3a1d59ae2f16b65e3c207eedd76c0756f8acebdf4ceea2d52daf04500030f38e63f7658c39c946c6cb9737bb0
 
 Source1: license.txt
 %include %{SOURCE1}

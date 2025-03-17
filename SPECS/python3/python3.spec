@@ -11,14 +11,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha512 Python=2b0a1d936b4ef8376f9655797aece8ffdff75031ad7bfa840f330cac2aed189aecc80c163edc12ea772851d7a011f3fc1960470a73d9d4290cf3ab8ad6ed7e6a
 
 Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
 Source2: setuptools-pip-wheels%{?dist}-1.0-2.tar.xz
-%define sha512 setuptools-pip-wheels=bb98b9975b611d3bb99644803f9579b8d4ee5216a9d057c5191d214dd4d6a6cc0a8d72b4f33c893c85543a78faf7feec002c53648646c19baa0eeba5f9c0ed7e
 
 Source3: license.txt
 %include %{SOURCE3}

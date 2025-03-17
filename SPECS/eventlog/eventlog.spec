@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    https://www.balabit.com/downloads/files/eventlog/0.2/%{name}_%{version}.tar.gz
-%define sha512 %{name}=a681ab2961f5bf38e106a5b0b4492e74098808e2bf1a100f545736902649c705db124c0847796a47485faa8b0befe691a789d752f313c5b65ad50ed2763d2cce
 
 Source1: license.txt
 %include %{SOURCE1}

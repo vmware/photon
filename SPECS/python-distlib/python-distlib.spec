@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/58/07/815476ae605bcc5f95c87a62b95e74a1bce0878bc7a3119bc2bf4178f175/distlib-%{version}.tar.gz
-%define sha512 %{srcname}=27f3a59f9175a92befb9a65a66cd0b8eb65185dab6fa13ef94e85ca69c2bc1b7281ce1522601034007cb98677ba9237a46224df4adc70ed966db7e131e073636
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/d/dnspython/dnspython-%{version}.tar.gz
-%define sha512  dnspython=0a2950b320e3963b0f76a80575b4387b2a92201a3e0a279900f81e353fbc8810f2b8aab8ad680d01e1a7e079c4e37292e103ab8db860ba646451593541067fbb
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -6,7 +6,6 @@ Release:        2%{?dist}
 URL:            http://valgrind.org
 Group:          Development/Debuggers
 Source0:        http://valgrind.org/downloads/%{name}-%{version}.tar.bz2
-%define sha512    valgrind=d6bfb9284d0410134ee7e2a5975b13c01508dd5587b562947d8197b3c113b76fdfac88c4072948be68bbf0dbeb17b4d1acb1412ce898adaa83c30ae2c6a1c12b
 
 Source1: license.txt
 %include %{SOURCE1}

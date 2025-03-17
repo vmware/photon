@@ -8,7 +8,6 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b700b3e4182970fb494ffabd49e39d3622b1aff5f69882549eff0b52a01c8c47babe51b451c4829f9b833ea2ea7c590a2f3819f8e3508176fa7d1b5c0e152b68
 
 Source1: %{name}.sysusers
 Source2: atftpd.socket

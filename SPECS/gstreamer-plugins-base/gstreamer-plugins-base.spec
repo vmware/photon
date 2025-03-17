@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-%{version}.tar.xz
-%define sha512 gst-plugins-base=8644542e34499d140c5dcf65a33d1c9df6738a45844d508f1adae03f9023bea1d25541bbb3d89cd919434fff70965f3ab105f26443f6e383a819fb1eedc8b554
 
 Source1: license.txt
 %include %{SOURCE1}

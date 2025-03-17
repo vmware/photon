@@ -10,7 +10,6 @@ Distribution:   Photon
 Url:            https://github.com/regebro/tzlocal
 
 Source0: https://files.pythonhosted.org/packages/source/t/tzlocal/tzlocal-%{version}.tar.gz
-%define sha512 %{srcname}=5d1000bd8756ca2678655dbeedcfd6ef8d709503293303c98a48af234aca0d1525913585d679759c6fd7d4c5ef046c98384ee6e7a9eba769f81d05173ff0d77f
 
 Source1: license.txt
 %include %{SOURCE1}

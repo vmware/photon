@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/4b/24/7d1f2d2537de114bdf1e6875115113ca80091520948d370c964b88070af2/pytest-%{version}.tar.gz
-%define sha512 pytest=e61c9b0a8fc053626da307d6bac1f5caab451c4948ef7c7f2e2f991c3433a55f81ec0d9412fca646c02f22e695c71e873ee48fc0ab0aad337ce01b70628df494
 
 Source1: license.txt
 %include %{SOURCE1}

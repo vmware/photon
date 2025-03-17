@@ -10,7 +10,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    https://github.com/kubernetes-client/python/archive/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=26c07633529ebaf514900cca9e32b85cd87e59aa7eb458c75c281645a5564dca10baf5d84be3dd12192f119d37c6c72a2dd8563c497bc7ab549602c0cff08bda
 
 Source1: license.txt
 %include %{SOURCE1}

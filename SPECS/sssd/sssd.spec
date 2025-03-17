@@ -31,7 +31,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/SSSD/sssd/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512 sssd=10b7a641823aefb43e30bff9e5f309a1f48446ffff421a06f86496db24ba1fbd384733b5690864507ef9b2f04c91e563fe9820536031f83f1bd6e93edfedee55
 
 Source1: sssd.conf
 

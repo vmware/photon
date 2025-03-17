@@ -8,7 +8,6 @@ Group:      Development/Tools
 Distribution:   Photon
 
 Source0: https://github.com/gcovr/gcovr/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=d1a4dd63129ac1d2b9a892ced9b4a0644dc49dc3a115d81ddf348e43fea0e7809c6533104106da8f89a666a4af9ff5a62429b4270ff2272ca61bbebecb7fb921
 
 Source1: license.txt
 %include %{SOURCE1}

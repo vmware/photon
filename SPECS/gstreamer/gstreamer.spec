@@ -7,7 +7,6 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
-%define sha512  gstreamer=8432f8ccdf84883d2e7764319429514d655248c1c6c7cc710bc76ffa0254b9bab98111281acf6233cc703f47c20a768c92d97839c3816df834bf6c35953febd7
 
 Source1: license.txt
 %include %{SOURCE1}

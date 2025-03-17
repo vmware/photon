@@ -8,7 +8,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/1e/d7/214b25c912d5f7d9c31d266821a8be6a35df80535056fe83997688721927/pyinstaller-%{version}.tar.gz
-%define sha512  pyinstaller=aaff7fe272d70b597691d398344289333b11343f9ef37cd797a264310db140e8ec391c8aef7a0661f18487222fb945a5f797f31e21c932585277335f5c30ace6
 
 Source1: license.txt
 %include %{SOURCE1}

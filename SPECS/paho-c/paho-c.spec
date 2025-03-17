@@ -8,7 +8,6 @@ Group:         Applications/Database
 URL:           https://eclipse.org/paho/clients/c
 
 Source0:       https://github.com/eclipse/paho.mqtt.c/archive/v%{version}/paho.mqtt.c-%{version}.tar.gz
-%define sha512 paho.mqtt.c-%{version}=0946681137e72b850c6e341996fcc1f8d85b9f96c5eb19a026fe85c3a7b26dfa62349a048b3d02a216f299feb67629c9b61ce5c17bc565f66e61c3541566c1b5
 
 Source1: license.txt
 %include %{SOURCE1}

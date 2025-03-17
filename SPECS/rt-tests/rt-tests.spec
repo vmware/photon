@@ -5,7 +5,6 @@ Release:        3%{?dist}
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git/
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  rt-tests=34c157cc0ad049146560812ea61be073730610081723c5d1ab93c8d0c83017991a6c5b06eac7bb6dc974b35a57591f0056a1e0ab912906e2c6d31ba8a1ced497
 
 Source1: license.txt
 %include %{SOURCE1}

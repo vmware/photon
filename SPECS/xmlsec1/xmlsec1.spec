@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            http://www.aleksey.com/xmlsec
 
 Source0: http://www.aleksey.com/xmlsec/download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=99220cb28a346ffac0023f9f177d6a7be3ddcea04bea434b7dc926c1f0aaa5564d75f74f92896ac100179c04d77e001f688ddf46fed4e0a0b4f20b7b87c24900
 
 Source1: license.txt
 %include %{SOURCE1}

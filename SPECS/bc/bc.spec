@@ -7,7 +7,6 @@ Group:          System Environment/base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.gnu.org/gnu/bc/%{name}-%{version}.tar.gz
-%define sha512  bc=02126d0db6b6ed06d56cfc292d6f5475ff1e574779d7e69c7809bbb1e13f946f57ea07da2a7666baa092507a951a822044b0970075f75eefe65a5c1999b75d34
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -27,11 +26,11 @@ if [ %{_host} != %{_build} ]; then
 # it generates libmath.h using built in tree ./fdc tool
 # which can't be run
 # Use pre-generated libmath.h
-%patch0 -p1
-%patch1 -p1
+%patch -p1 0
+%patch -p1 1
 else
 # put pregenerated libmath.h to the src root
-%patch1 -p2
+%patch -p2 1
 fi
 
 %build

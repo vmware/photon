@@ -5,7 +5,6 @@ Version:        2.0.2
 Release:        13%{?dist}
 URL:            https://github.com/cpuguy83/go-md2man
 Source0:        https://github.com/cpuguy83/go-md2man/archive/%{name}-%{version}.tar.gz
-%define sha512  go-md2man=c81edfdc0b6647ef699cc908a1a7038d98da34df6d48b223b83a0699de91a7e322e70d67645acf1fc848918f4c1ea310160c7ccb75e6f97b53af7103c7aa18b3
 
 Source1: license.txt
 %include %{SOURCE1}

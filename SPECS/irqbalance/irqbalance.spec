@@ -9,7 +9,6 @@ Distribution:   Photon
 
 #%%https://github.com/Irqbalance/%{name}/archive/v%{version}.tar.gz
 Source0:    %{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=d0fb157fbfc096fa9cfb4562e51fd4c3f4fa8788f72377c58b27df67c70073b787bba05e39809dcbe17532bb5b8e74b6d27c5e5b3d9af09bc9ce1a9b6aab9378
 
 Source1: license.txt
 %include %{SOURCE1}

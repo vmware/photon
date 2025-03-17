@@ -24,7 +24,7 @@
 # example:
 #   %prep
 #   %gem_unpack %{SOURCE0}
-#   %patch1 -p1
+#   %patch -p1 1
 #
 %gem_unpack(s:) \
   source=%{-s:%{-s*}}%{!-s:%{SOURCE0}} \

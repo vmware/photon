@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
-%define sha512 pycurl=05639d484aac6d6688677589e391975158c5ef778456a47df575ad13fb8bd0db67ff8f5a39bdd99d82a67926aca421c01e687eec9d4fd87f32822b492b429635
 
 Source1: license.txt
 %include %{SOURCE1}

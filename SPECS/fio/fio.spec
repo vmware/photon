@@ -7,7 +7,6 @@ Vendor:          VMware, Inc.
 Distribution:    Photon
 URL:             http://git.kernel.dk/?p=fio.git;a=summary
 Source0:         https://git.kernel.org/pub/scm/linux/kernel/git/axboe/fio.git/snapshot/%{name}-%{version}.tar.gz
-%define sha512   %{name}=d75b0d4ad7bc7c3885d0a41065a80b82b5b3f0eb41e10e02cba9d527eba1ae6573548345f795954ffc6a45375161191a741290cbaf4fda05ab601b49a6aceb32
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5647636223ba336bf33e0c65e516d8ebcf6932de8b44f37bc468eedb87579c628ad44213f78534beb10f47aebb9c6fa670cb0bed3b4e7717e5faf7e9a1ef81ae
 
 # Source1 and Source3 are taken from https://github.com/scop/bash-completion
 # At commit 79fd051

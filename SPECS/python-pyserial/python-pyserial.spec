@@ -8,7 +8,6 @@ Distribution: Photon
 URL:        http://pypi.python.org/pypi/pyserial
 
 Source0: https://github.com/pyserial/pyserial/archive/refs/tags/pyserial-%{version}.tar.gz
-%define sha512 pyserial=c2a700f5e08905bdab070c95cec41d6d423c20d2a9648c8c2f048db86de72f39fe2b8df560172d5b9d480be44c35ff0799df8f1d684d3f41f8fc61174105256e
 
 Source1: license.txt
 %include %{SOURCE1}

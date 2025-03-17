@@ -8,7 +8,6 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://w1.fi/releases/%{name}-%{version}.tar.gz
-%define sha512 wpa=021c2a48f45d39c1dc6557730be5debaee071bc0ff82a271638beee6e32314e353e49d39e2f0dc8dff6e094dcc7008cfe1c32d0c7a34a1a345a12a3f1c1e11a1
 
 Source1: license.txt
 %include %{SOURCE1}

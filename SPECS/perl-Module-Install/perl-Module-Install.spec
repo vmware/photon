@@ -9,7 +9,6 @@ Release:        4%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Install/
 Source0:        https://cpan.metacpan.org/authors/id/E/ET/ETHER/Module-Install-%{version}.tar.gz
-%define sha512  Module-Install=68a255402c98955cfcb5a8a99555fe511b89d5fccf96ee1c498cab347c8945f3abe53485ea936f7419420d9c7beb52c861516f4cfd299812cebf80eab50fa5ba
 
 Source1: license.txt
 %include %{SOURCE1}

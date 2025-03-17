@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512  %{name}=de4a067402f8f2e72024f32e5ee1549e3691bf80f092d1b3eb55cdbdc6aace2253cae1938ce52bc4c9eeb2cd9208bc16b4b0cf73edfc87e7cd70c620a74a9ff1
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pyzmq
 Source0:        https://pypi.python.org/packages/af/37/8e0bf3800823bc247c36715a52e924e8f8fd5d1432f04b44b8cd7a5d7e55/pyzmq-%{version}.tar.gz
-%define sha512  pyzmq=c8f2dc858076641a219ea37af91ad4a15ee811e8d2095b0337d414cc702eaf90ee4d6280bda7800667828dffaedcdb026553262d5473f9fb70bbd17c17b248f4
 
 Source1: license.txt
 %include %{SOURCE1}

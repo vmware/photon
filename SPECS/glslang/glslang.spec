@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/KhronosGroup/glslang/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=20c2a6543b002648f459f26bd36b5c445afd6d8eae175e400dbe45632f11ca8de1f9e6f6e98fd6f910aa75d90063e174c095e7df26d9d4982192b84d08b0dc8b
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://xkbcommon.org/download/%{name}-%{version}.tar.xz
-%define sha512 %{name}=757b340aeab6d187917807a88015b5113475ab2172aaaa8e530b40ea60619b3fbdfa668fd62707d66ed8fb763e68fee19394fcbd519af7c01d8975c59fdf0d89
 
 Source1: license.txt
 %include %{SOURCE1}

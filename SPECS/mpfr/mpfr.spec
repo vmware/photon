@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.mpfr.org/%{name}-%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=1bd1c349741a6529dfa53af4f0da8d49254b164ece8a46928cdb13a99460285622d57fe6f68cef19c6727b3f9daa25ddb3d7d65c201c8f387e421c7f7bee6273
 
 Source1: license.txt
 %include %{SOURCE1}

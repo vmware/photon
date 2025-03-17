@@ -37,7 +37,6 @@ Version:        4
 Release:        2%{?dist}
 URL:            https://github.com/containers
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=de6484566b3115a278bcbd1959ba31cd8ae58aed711cce90824bce50465d9553316651f6d5c883d681f0bc7b4aed7f2d608db5008c6b07fb128288353fff98e4
 
 Source1: license.txt
 %include %{SOURCE1}

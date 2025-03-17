@@ -11,7 +11,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/apache/maven/archive/refs/tags/maven-%{version}.tar.gz
-%define sha512 maven=488a47b9f04889b12c2c62ea1ffec3aa071dbdd6def384b77dce259249ca49e92d7cc211a0711ff69f3b54ac7c5171bff22809089807cdaa96fc9d337fbd150c
 
 Source1: license.txt
 %include %{SOURCE1}

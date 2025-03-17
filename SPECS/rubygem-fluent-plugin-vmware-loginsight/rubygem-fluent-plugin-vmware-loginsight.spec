@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512    fluent-plugin-vmware-loginsight=e076332f0905e73614186e218f86e8df592d9b0aad2c4f09cf825c3c1383ad402b64580642e89ed86a95d76cbfabe8cec6236ed57a2823bbae986ee51e050fa3
 
 Source1: license.txt
 %include %{SOURCE1}

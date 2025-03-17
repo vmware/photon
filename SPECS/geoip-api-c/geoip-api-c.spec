@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/maxmind/geoip-api-c/releases/download/v%{version}/GeoIP-%{version}.tar.gz
-%define sha512 GeoIP=a1c8120692a7ba6de5836550917f86f4797dd236a8b7d71b6f92b5389e4b071d89e57036654f5de1d4b762730a2a5c331c31414eab0c889c9befaa097941fee7
 
 Source1: license.txt
 %include %{SOURCE1}

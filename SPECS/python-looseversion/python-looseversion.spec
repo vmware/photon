@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://github.com/effigies/looseversion
 
 Source0:        https://files.pythonhosted.org/packages/64/7e/f13dc08e0712cc2eac8e56c7909ce2ac280dbffef2ffd87bd5277ce9d58b/looseversion-%{version}.tar.gz
-%define sha512  looseversion=a54c788ba698b07308cfc75b5afba2cda59451d72d178be92b43c433deac9b24bffafa26f121af79a3d42eca8f83e7f50477498e1a17aec47cc213d39aa47eb2
 
 Source1: license.txt
 %include %{SOURCE1}

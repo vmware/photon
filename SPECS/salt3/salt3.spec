@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/saltstack/salt/releases/download/v%{version}/salt-%{version}.tar.gz
-%define sha512  salt=9d1759a7c0dfc9ad4fdc94460f0f3799483737207bfdc8ddd1424e5c6083ea74ef520f13c323d5cbd7f65c1d9bb13bbbeb5f2cafe6dcacbc2689e733794aef2d
 Source2:        salt-master.service
 Source3:        salt-syndic.service
 Source4:        salt-minion.service

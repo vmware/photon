@@ -10,10 +10,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=550f66d837fc840af1dfb3e518cbb6e6faff51ef46a1328719e6d04ac8aa8256c0fa75c878cb627d80ceb3caa2cc88198c09ed4bc0ea936824bfea87046467e6
 
 Source1: aufs-standalone-aufs%{version}.tar.gz
-%define sha512 aufs-standalone-aufs%{version}=7028ad5671a4d0b473e6c7613bad18a6fcf0b01d9e908b4d5851bba4f686c01da157ab55a9f15448ac9575e63fa5fe6d0ebee4a4f9d2f7a93d6902462d1b6612
 
 Source2: license.txt
 %include %{SOURCE2}

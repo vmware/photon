@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/prometheus_client
 Source0: prometheus_client-%{version}.tar.gz
-%define sha512  prometheus_client=3ba1389f23566ecab1371452ec717e06c4e444d1ac8a37cb27429493e64f3931e6876734c0947cb43ba086ed51ca47a0c7764d488ea6e7f2d0864447f49b09e4
 
 Source1: license.txt
 %include %{SOURCE1}

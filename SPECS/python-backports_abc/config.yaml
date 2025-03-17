@@ -7,5 +7,6 @@ sources:
       home_page: https://github.com/cython/backports_abc
       license_concluded: Python-2.0
       license_declared: Python-2.0
+      detailed_description: A backport of recent additions to the 'collections.abc' module.
       short_summary: A backport of recent additions to the 'collections.abc' module.
       supplier: 'Organization: Broadcom, Inc.'

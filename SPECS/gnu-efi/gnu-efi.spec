@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://download.sourceforge.net/gnu-efi/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=64d408b6d115bdc6eebae12fbd6cd907ed5f847f54e506c1e8f8ea5de38a95cf6fac66ab1009bd1d0bd2d54ad45ad598d29bcc303926a5899bf5cc25448cbb2f
 
 Source1: license.txt
 %include %{SOURCE1}

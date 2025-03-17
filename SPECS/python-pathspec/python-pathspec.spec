@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pathspec
 Source0:        https://files.pythonhosted.org/packages/source/p/pathspec/pathspec-%{version}.tar.gz
-%define sha512  pathspec=886c16ba9a221720a9fbac6a2aead5a16de62988afbf0ed976f28c312fe524f41ccfb139e0b9699942ca32aa90f183e20656986ed631cf2435818c082d58115d
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://download.osgeo.org/geos/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=708500aba9b04208ee46a531d55ddf63a213dfaa2922dae937b524300b2b46c95143ed6cd3ff1414e9099f2be95e5df5a2e0b49df43acf93a9478215259f20d3
 
 Source1: license.txt
 %include %{SOURCE1}

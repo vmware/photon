@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://doxygen.nl/files/doxygen-%{version}.src.tar.gz
-%define sha512  %{name}=4ad4c1ecd4a12220442f354b90aa56f80e78fcaf288d5e36da421437d59811ed3d429ee13717692886a55b9628ae565d40ce13c51792ccc8bba15b1e018cb651
 
 Source1: license.txt
 %include %{SOURCE1}

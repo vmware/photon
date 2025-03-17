@@ -12,7 +12,6 @@ Distribution:   Photon
 URL:            https://rubygems.org/gems/activesupport/versions/%{version}
 
 Source0:        https://rubygems.org/downloads/activesupport-%{version}.gem
-%define sha512  activesupport=d9a3bcb2b06c8015eb47047d63282929d212a34c23205159be7a7e328d3e2f1639635a6e268ff0dd43c9b9a310208eac0a66e7ed57eb97e58bf41bdb90e55859
 
 Source1: license.txt
 %include %{SOURCE1}

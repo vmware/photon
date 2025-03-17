@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-utils/trunk/%{version}/+download/cloud-utils-%{version}.tar.gz
-%define sha512 %{name}=e501ac4503c1d4086a89c966a263bc3a9d25c5454a7dcedd854baa17885247f85db720fd124c2a6e47c27d17a1fa33d914073ff05d0d3da1ea7befe35056ab9c
 
 Source1: license.txt
 %include %{SOURCE1}

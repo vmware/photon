@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/libfuse/libfuse/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha512  fuse=1acd51a647ec3dbf9eaafb80cec92bd8542bcbb2cf4510fc8b079b4f8aaa8f4b301e469ddefe4f1cc4ae2bf941e028077601c20d97f187cc618cea8710cbe331
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -34,10 +33,10 @@ It contains the libraries and header files to create fuse applications.
 # Using autosetup is not feasible
 %setup -qn libfuse-%{name}-%{version}
 %ifarch aarch64
-%patch0 -p1
+%patch -p1 0
 %endif
-%patch1 -p1
-%patch2 -p1
+%patch -p1 1
+%patch -p1 2
 
 %build
 ./makeconf.sh

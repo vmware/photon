@@ -9,7 +9,6 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/kubernetes-incubator/%{name}/releases/tag/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}.tar.gz=4a2751ebe0b1ed7cb739a71230272ace0cbddc516abba39c6bf07d5e2648bd60e2139935b77a5388028887915162c957f652ea05434ff7865256721d10f863df
 
 Source1: license.txt
 %include %{SOURCE1}

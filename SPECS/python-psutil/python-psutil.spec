@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/psutil/psutil-%{version}.tar.gz
-%define sha512  psutil=1ddb119a10243d17d808417817ec8659d22447f12a4bbc0366c13f6587a4b0b59f4e74f6ac5d1e1a908bb5fd287be630466d32beabcb5008f6a19c24a1557c27
 
 Source1: license.txt
 %include %{SOURCE1}

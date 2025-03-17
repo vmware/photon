@@ -7,7 +7,6 @@ Group:           Applications/System
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Source0:         http://download.savannah.nongnu.org/releases/man-db/%{name}-%{version}.tar.xz
-%define sha512   man-db=249d65d01d83feac2503bfc1fba6d018ea0f7485c1112f1bfb4849ef7fbc3c1a50b97ab0844a7792d83bb1084a89abb4fa309ce1bc2bdf1183fe35b9e4f06263
 Source1:         %{name}.sysusers
 
 Source2: license.txt

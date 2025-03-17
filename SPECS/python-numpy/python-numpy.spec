@@ -10,7 +10,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/numpy
 
 Source0: https://files.pythonhosted.org/packages/64/8e/9929b64e146d240507edaac2185cd5516f00b133be5b39250d253be25a64/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=727ca8950b0fbd5670e939b1c9c5cea852781ec4254d56a1659a91dc0430fc10b01ffdd16e1bb28a62319f91029e087024f4c6298bfc859a6050bfb507edcff8
 
 Source1: license.txt
 %include %{SOURCE1}

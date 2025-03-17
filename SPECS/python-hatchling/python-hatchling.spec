@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/hatchling/
 Source0:        https://files.pythonhosted.org/packages/source/h/hatchling/hatchling-%{version}.tar.gz
-%define sha512  hatchling=3ff9d41517eb2ebb8a3fab2d57e7430800650209e3253171cc96f83c4dc62441b82f3a69626566c795932df857d1c31dbb32b5a447324f83136aa9163fde540e
 
 Source1: license.txt
 %include %{SOURCE1}

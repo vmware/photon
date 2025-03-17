@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0:       https://github.com/seccomp/libseccomp/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=6b07e25e63fed380bfe1dc89b9336b68cc1828c8413b6574f191450b92503a9f0a904bb0d1b7c129de976cc421b4d3f28e19d953e2591fdcbf126f4755ec7aad
 
 Source1: license.txt
 %include %{SOURCE1}

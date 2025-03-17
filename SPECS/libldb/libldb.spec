@@ -13,7 +13,6 @@ Group:          Development/Libraries
 URL:            http://ldb.samba.org/
 
 Source0: https://www.samba.org/ftp/ldb/ldb-%{version}.tar.gz
-%define sha512 ldb=beb2cd83a8f128713e0b43ec6e80d0f87ab0883c6c8f0cefbbf5bf49e29dfa327b245b78467d1906917cb5f3f11e01cb76cc6bcca58a47c5deac4f05c2e9dfbd
 
 Source1: license.txt
 %include %{SOURCE1}

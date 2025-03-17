@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/kubernetes/heapster/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9c5f1e11b224efe6aaa42aad0daecede2c22d86d692a9d008643d9731d78becce98c8332ebe8d17568a93abe1f56dabf868dcd7ebc1e7b48e1f6f6f8f3878152
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -41,7 +40,7 @@ pushd vendor/golang.org/x/net
 popd
 
 %if 0%{?with_check}
-%patch2 -p1
+%patch -p1 2
 %endif
 
 %build

@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/python-hyper/hyperlink
 Source0:        https://github.com/python-hyper/hyperlink/archive/hyperlink-%{version}.tar.gz
-%define sha512  hyperlink=9e0e9273dde1b0a41329a74fbb26c4f327b87f387ee64b9a2ab641ca5cc8b9ea0516884415e9adf1d4880ae9c053a5cba2c550fc508bb56fddb44a543d5da860
 
 Source1: license.txt
 %include %{SOURCE1}

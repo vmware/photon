@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            http://www.xinetd.org
 
 Source0: https://github.com/xinetd-org/xinetd/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9d6fee1fbc90329629d84086ae7de5cd51c25af7b68e52aa704d6f74bee5f0e3d54ca1bcf780f90f74ddc8d336ae0abb5e5e368d43c426a26b8dd2c4676d26aa
 
 Source1: %{name}.service
 

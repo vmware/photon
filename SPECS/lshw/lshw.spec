@@ -4,7 +4,6 @@ Version:        B.02.19
 Release:        2%{?dist}
 URL:            https://github.com/lyonel/lshw/releases
 Source0:        http://www.ezix.org/software/files/%{name}-%{version}.tar.gz
-%define sha512 lshw=168e7cf053d270f695da09dbdd4ee5207d447a13de3601f3861ab194f09c7358fe618551caf03adb628e0293f187d8fd5a842d1516b0dd16c4128ccc2126027b
 
 Source1: license.txt
 %include %{SOURCE1}

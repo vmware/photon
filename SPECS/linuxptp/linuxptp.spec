@@ -5,7 +5,6 @@ Release:        2%{?dist}
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
 Source0:        %{name}-%{version}.tgz
-%define sha512  linuxptp=479e512efd0573602379a9e1d8ef5c0ec9e033944cee5aed11c68cea5e8a3f7d4b6f2d11f6d6d4718282010da52c2c8629d675d9b388cc0c3d574845a913cdbb
 Source1:        ptp4l.service
 Source2:        phc2sys.service
 Source3:        ts2phc.service

@@ -7,7 +7,6 @@ Group:          System Drivers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/lm-sensors/lm-sensors/archive/%{name}-%{version}.tar.gz
-%define sha512  lm-sensors=4e80361913aff5403f1f0737fd4f42cffe43cc170ef48fff3914c9952f71990739d723f7b0b8120d9a01bcbbc829e964cfbd0a5cf18508af8f8dc825b49860bf
 
 Source1: license.txt
 %include %{SOURCE1}

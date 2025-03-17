@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha512  %{name}=4012ea18d49efa75438aa225fec1daafcaadc216cd5c0ecceccdc34688940bbdca9eb19bd9c401e834b023d9b9a5a0870529f7b855bb64c796a55538639dadfc
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf

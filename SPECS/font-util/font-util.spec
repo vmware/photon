@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.x.org/pub/individual/font/%{name}-%{version}.tar.gz
-%define sha512  font-util=332a53facd1c37ed8b72195e6fac016f656484583a4bb9dc8a0e7109a30342f2bfd3b756343737982ae65abd60f5272e2b6b4af72ab8a23b14817ae0d6649776
 
 Source1: license.txt
 %include %{SOURCE1}

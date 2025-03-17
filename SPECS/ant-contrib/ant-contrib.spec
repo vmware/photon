@@ -12,7 +12,6 @@ Distribution:   Photon
 BuildArch:      noarch
 
 Source0: https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
-%define sha512 %{name}=fe59ad4867a00429719a7401701a433a90ed9c6ddb49a37072f8486ae0ca9c3da685a49d9376c8bb7b38f114a5293e1698b7fb314e71198bbb80f729547402eb
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -4,7 +4,6 @@ Version: 1.95
 Release: 4%{?dist}
 URL:            http://sourceforge.net/projects/%{name}
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%define sha512 nicstat=54f9136200412d41e2c21137a246221ff624f84374db67f6617296a1c3aa73a25125fab09e4ff230f64545ba026fce4806ccece196ac770c8dcf380c0571d505
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:  Photon

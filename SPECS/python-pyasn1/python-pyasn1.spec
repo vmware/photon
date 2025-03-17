@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/etingof/pyasn1
 
 Source0: https://github.com/etingof/pyasn1/archive/refs/tags/pyasn1-%{version}.tar.gz
-%define sha512 pyasn1=e64e70b325c8067f87ace7c0673149e82fe564aa4b0fa146d29b43cb588ecd6e81b1b82803b8cfa7a17d3d0489b6d88b4af5afb3aa0052bf92e8a1769fe8f7b0
 
 Source1: license.txt
 %include %{SOURCE1}

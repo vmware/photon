@@ -5,7 +5,6 @@ Version:        1.31
 Release:        2%{?dist}
 Group:          Development/Libraries
 Source0:        https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/Module-ScanDeps-%{version}.tar.gz
-%define sha512  Module-ScanDeps=c7164d768b6401a0d01516f5a09ddf2a0399355738ff17d04757aeb235b47f8d973083d0425ca53757588916c7fb2959d8c042361055a0e8eab7bf6d4c31d6fd
 
 Source1: license.txt
 %include %{SOURCE1}

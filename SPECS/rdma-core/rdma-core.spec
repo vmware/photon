@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/linux-rdma/rdma-core/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  rdma=9e497d3a23bcd72828a717b59016fe25c88b4ec389e166936410c53dac0c6d6d2f45a76eaec18383ab3ca1a11d1b978b19247a3b7cfb121047d3891288a8c38e
 
 Source1: license.txt
 %include %{SOURCE1}

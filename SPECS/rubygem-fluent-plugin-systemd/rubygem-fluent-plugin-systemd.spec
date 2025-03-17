@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluent-plugin-systemd-%{version}.gem
-%define sha512    fluent-plugin-systemd=85856ad3c823302615b6f1af9b1c29b01e85657bdf21cfe6983d02c25306f21e61745a811f3bcd82d22155f839134750f77997db8430565cc53bf8145f38b717
 
 Source1: license.txt
 %include %{SOURCE1}

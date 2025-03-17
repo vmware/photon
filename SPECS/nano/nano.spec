@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.nano-editor.org/dist/v3/%{name}-%{version}.tar.xz
-%define sha512 %{name}=07c69d6894f87cb386afa89e984ded7e11fe7575cf3af1c18237e3b2c00de371015c9ea126e505c7c0e7200f7359d5ae7c3779198e188fbbc617154d09c4ba14
 
 Source1: license.txt
 %include %{SOURCE1}

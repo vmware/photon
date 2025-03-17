@@ -20,7 +20,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=884ee8327b803c66679238525e7d51320ea537b41138d7fe8fd7e725631f734a61e53646d9cec78154f3f05a3b50e90508793a56a8f0f76699a53773930cb1d0
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service

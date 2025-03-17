@@ -8,7 +8,6 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e4f1cd4c74d2cb67ab1524a76bdc6071e7b1e38ede574bc11e5ffe861bff99321647be0730f5f17d724dd792aa0fb86d0e9a92417f45bc43fef1461f1f64ae52
 
 # Building this tarball is not a straight forward process
 #
@@ -39,7 +38,6 @@ Source0: https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
 #
 # XZ_OPT=-9 tar cJf vernemq_vendor-version>.tar.xz
 Source1: %{name}_vendor-%{version}-rev1.tar.xz
-%define sha512 %{name}_vendor=feaa699595d500de1fab4617539838f1f52ad2b4e590323eed3a4c378afae75b43695e09f6c6ecabf621a188dcbf663e53fb6b6036e642a79c708148e17424a4
 
 Source2: vars.config
 Source3: %{name}.service

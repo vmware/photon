@@ -5,7 +5,6 @@ Summary:        A case-insensitive ordered dictionary for Python
 Group:          Development/Languages/Python
 Url:            https://files.pythonhosted.org/packages/ad/80/40b0bfddbea87c6e7d400171b42ee1a82b954114d706a8871e0eb4225c60/nocasedict-1.0.2.tar.gz
 Source0:        nocasedict-%{version}.tar.gz
-%define sha512  nocasedict=cd72c206cfe0b892630b75f78e2393c5e81c67a265e8ec64f0e6a54866061527aa9a5a62b0bc38f9fa57a04a3aca4aa41aa0e1ee45eb7745c04dc3a7a1fdff45
 
 Source1: license.txt
 %include %{SOURCE1}

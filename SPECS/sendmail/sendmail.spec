@@ -8,7 +8,6 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://ftp.sendmail.org/snapshots/sendmail.%{version}.tar.gz
-%define sha512 %{name}.%{version}=b2ee60595285bf79e5216fcc039c3b321f4719311f6ab3fbd6ad787254b17997639ca9f709036d6a5b552ffc573d22efbc392fafba5952bf77b8b9c1f55edc70
 Source1: %{name}.sysusers
 
 Source2: license.txt

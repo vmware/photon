@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/jsonpatch
 Source0: https://pypi.python.org/packages/be/c1/947048a839120acefc13a614280be3289db404901d1a2d49b6310c6d5757/jsonpatch-%{version}.tar.gz
-%define sha512  jsonpatch=edd5d7433b1bd0513b9998c989778ae3ede47251aab2e19b7111fe5f6ae7fda75202df473f258cd13e73aae1f5908d85ec046c59d99ad8264a454a84a00bf75f
 
 Source1: license.txt
 %include %{SOURCE1}

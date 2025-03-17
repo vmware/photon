@@ -7,7 +7,6 @@ Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://www.kernel.org/pub/linux/utils/usb/usbutils/%{name}-%{version}.tar.xz
-%define sha512   usbutils=cda0070138400703d7429d39dee49130aedaa704292531e6af57b347cc62422ca609540650926e74335f71d67d7d4655418be4824e1eb8a2b065c7b395feaa87
 Source1:       usb.ids
 
 Source2: license.txt

@@ -12,7 +12,6 @@ Distribution:   Photon
 Url:            http://www.imagemagick.org
 
 Source0:        https://imagemagick.org/archive/releases/%{name}-%{VER}-%{Patchlevel}.tar.xz
-%define sha512  %{name}=636e2061c11c012e2607a53a893eb227569f3a4e04e331499722f2c84dc0db3eedae63525bd530972a639e3a262ab4f61383a21ca8603f8f81e5629a29f54b89
 
 Source1: license.txt
 %include %{SOURCE1}

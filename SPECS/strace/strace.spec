@@ -7,7 +7,6 @@ Group:         Development/Debuggers
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://strace.io/files/%{version}/%{name}-%{version}.tar.xz
-%define sha512 strace=3f0678d74c5c3e6b30c4dc4ed7ee4cb0829d3b7142dc014fcd887db3a68133bf7fedc623bae381dfe4305bd6cd15d4ca6776c6491009c2a053bb8c6ca1ae8e12
 
 Source1: license.txt
 %include %{SOURCE1}

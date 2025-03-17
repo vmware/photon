@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/packages/67/14/5d66588868c4304f804ebaff9397255f6ec5559e46724c2496e0f26e68d6/asn1crypto-0.22.0.tar.gz
 
 Source0:        asn1crypto-%{version}.tar.gz
-%define sha512  asn1crypto=6b75e77c29c90577e0a7fc85972a60d324c3450e4257918caa4307a997a5ce7abc5c7cefa0bbf693592f4dceb8bc5c87f8fe6df1185d0f2dca18511d9d747859
 
 Source1: license.txt
 %include %{SOURCE1}

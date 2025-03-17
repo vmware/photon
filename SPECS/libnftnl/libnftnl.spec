@@ -6,7 +6,6 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 URL:            http://netfilter.org/projects/libnftnl/
 Source0:        https://netfilter.org/projects/libnftnl/files/%{name}-%{version}.tar.bz2
-%define sha512 %{name}-%{version}=5375d1d15627aabf25129433630395f53009b22a255fcd113b302af7f2f0a234fd54c827b0ef1c8fd3a13e272a1696f780560672d4af6abad0e19805f9d56326
 
 Source1: license.txt
 %include %{SOURCE1}

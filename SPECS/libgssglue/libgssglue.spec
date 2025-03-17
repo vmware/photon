@@ -7,7 +7,6 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.citi.umich.edu/projects/nfsv4/linux/libgssglue/%{name}-%{version}.tar.gz
-%define sha512    libgssglue=25d514c08320e42851ff153d7691267a8454f205492faf942f566aa30c1ac1c83bd095732a1a0fcc010ba3a5d48b4c95a196ad05bc821598cc1fc3a2c4960d29
 
 Source1: license.txt
 %include %{SOURCE1}

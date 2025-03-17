@@ -7,7 +7,6 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gitlab.com/%{name}/%{name}/-/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha512  ipcalc=af0bf4679c09b43853a4254889f733a68ef5e390d1ed390e5f5da5859e818d9a3a95ec7faba42926c5eb1e510aa3c69807f6927047161ca9e7e9f928ec0ffc66
 
 Source1: license.txt
 %include %{SOURCE1}

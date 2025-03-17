@@ -12,7 +12,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=6cabccc27792ac7779932c38b163d7d77465ebca3eff3eb7f8104fe739be1934b7b69d766dcf178bb98bb782ddbb68e89f390d6d0de1dc41ed095b5a24b33840
 
 Source1: license.txt
 %include %{SOURCE1}

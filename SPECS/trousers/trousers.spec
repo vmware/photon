@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://sourceforge.net/projects/trousers/files/trousers/0.3.15/%{name}-%{version}.tar.gz
-%define sha512  %{name}=769c7d891c6306c1b3252448f86e3043ee837e566c9431f5b4353512113e2907f6ce29c91e8044c420025b79c5f3ff2396ddce93f73b1eb2a15ea1de89ac0fdb
 Source1:        %{name}.sysusers
 
 Source2: license.txt

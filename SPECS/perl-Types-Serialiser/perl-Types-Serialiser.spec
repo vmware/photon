@@ -6,7 +6,6 @@ Release:       2%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/Types-Serialiser/
 Source0:       http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/Types-Serialiser-%{version}.tar.gz
-%define sha512 Types-Serialiser=419b24cae85fba045de2f4593e1d17784f2016d5f9cd9ea96d23bbeaa86c1c6b866875871a787cacba1299616d371cc8806760e4c53e4f635deec4bc28fa81b5
 
 Source1: license.txt
 %include %{SOURCE1}

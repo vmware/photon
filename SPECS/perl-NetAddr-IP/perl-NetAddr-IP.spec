@@ -5,7 +5,6 @@ Release:        4%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/NetAddr-IP
 Source0:        https://cpan.metacpan.org/authors/id/M/MI/MIKER/NetAddr-IP-%{version}.tar.gz
-%define sha512  NetAddr-IP=8ebc8ffb914cf72c041441f96de0e9c982eebdb8c26dbf15f885d0113b3634e4851d81f13f555c14d1fdf0ab95ae2ce880ed124e6c200e391adae3b1d6d3eb65
 
 Source1: license.txt
 %include %{SOURCE1}

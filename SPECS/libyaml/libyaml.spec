@@ -8,7 +8,6 @@ Vendor:      VMware, Inc.
 Distribution:   Photon
 
 Source0: http://pyyaml.org/download/libyaml/yaml-%{version}.tar.gz
-%define sha512 yaml=dadd7d8e0d88b5ebab005e5d521d56d541580198aa497370966b98c904586e642a1cd4f3881094eb57624f218d50db77417bbfd0ffdce50340f011e35e8c4c02
 
 Source1: license.txt
 %include %{SOURCE1}

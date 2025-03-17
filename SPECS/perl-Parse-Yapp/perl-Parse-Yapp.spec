@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.cpan.org/authors/id/W/WB/WBRASWELL/Parse-Yapp-%{version}.tar.gz
-%define sha512 Parse-Yapp=dbf6182d4813ff7e355ea1713c748bfdf8290040a93f123acec645c7a1733fe457ab6e0ab51c4ec83cf82bc43d7fb35cbf89875df7b5c2ffc9635e85458cfeee
 
 Source1: license.txt
 %include %{SOURCE1}

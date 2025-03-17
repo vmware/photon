@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/jmespath
 Source0:        https://pypi.python.org/packages/e5/21/795b7549397735e911b032f255cff5fb0de58f96da794274660bca4f58ef/jmespath-%{version}.tar.gz
-%define sha512  jmespath=a1c2424d859f732ba854fabf5e3e47cef88f782d6e9707e5f49f29ddef2fab391aa69866f2e70a58a5f4373a43ab098a787a9a03c15025acf46e5a25243513fb
 
 Source1: license.txt
 %include %{SOURCE1}

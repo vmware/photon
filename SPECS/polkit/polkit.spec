@@ -8,7 +8,6 @@ URL:               https://www.freedesktop.org/software/polkit/docs/latest/polki
 Distribution:      Photon
 
 Source0: https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}=f565027b80f32833c558900b612e089ab25027da5bf9a90c421a292467d4db9a291f6dc9850c4bca8f9ee890d476fd064a643a5f7e28497661ba1e31d4227624
 Source1:           %{name}.sysusers
 
 Source2: license.txt

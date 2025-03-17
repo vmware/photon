@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/activesupport/thread_safe/%{version}
 Source0:        https://rubygems.org/downloads/thread_safe-%{version}.gem
-%define sha512  thread_safe=a11808576392c068e1cb31faad706be2b1bbfa4837c655c2ab1d5a235b62b25ece62065de6b65bd25496fa827ed89eb0796b90467107df255825e01316ff1805
 
 Source1: license.txt
 %include %{SOURCE1}

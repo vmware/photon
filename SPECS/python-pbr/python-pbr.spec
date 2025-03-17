@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://docs.openstack.org/developer/pbr/
 Source0:        https://pypi.io/packages/source/p/pbr/pbr-%{version}.tar.gz
-%define sha512  pbr=a5f4393407a17f4de5977483f3c7fa651780b9b9069a0a1898a5b511742262dfb06f891cfcb632c5b64ecfd041188095ceb880c6e71c99c81f0eace59e4e1976
 
 Source1: license.txt
 %include %{SOURCE1}

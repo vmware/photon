@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0:    https://github.com/aperezdc/nss-altfiles/archive/%{name}-%{version}.tar.gz
-%define sha512 nss-altfiles=d4d6ff4eb416f63640119e678ec130476b7398d023f25ec18dc1992c4157b8d4c65a99be5d212532c30079f277ccb157567e86ca7347f05ebf317603631d5bca
 
 Source1: license.txt
 %include %{SOURCE1}

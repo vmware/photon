@@ -13,7 +13,6 @@ Distribution:   Photon
 URL:            http://github.com/marcandre/backports
 
 Source0:        https://rubygems.org/gems/backports-%{version}.gem
-%define sha512    backports=b6d721a2925a932e451437938e01c6e3f4ac08bafac975063963f7866e17015abfeb6862face89cbd08caf479db75eb085f540263ba251a87c6acc7611ba6d40
 
 Source1: license.txt
 %include %{SOURCE1}

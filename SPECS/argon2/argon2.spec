@@ -8,7 +8,6 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/P-H-C/phc-winner-argon2/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=0a4cb89e8e63399f7df069e2862ccd05308b7652bf4ab74372842f66bcc60776399e0eaf979a7b7e31436b5e6913fe5b0a6949549d8c82ebd06e0629b106e85f
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -5,7 +5,6 @@ Release:        4%{?dist}
 Group:          Applications/System
 Url:            https://www.kernel.org/doc/Documentation/kdump/kdump.txt
 Source0:        https://www.kernel.org/pub/linux/utils/kernel/kexec/%{name}-%{version}.tar.xz
-%define sha512  kexec-tools=6fd3fe11d428c5bb2ce318744146e03ddf752cc77632064bdd7418ef3ad355ad2e2db212d68a5bc73554d78f786901beb42d72bd62e2a4dae34fb224b667ec6b
 
 Source1: license.txt
 %include %{SOURCE1}

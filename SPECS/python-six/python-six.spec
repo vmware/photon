@@ -7,7 +7,6 @@ Distribution:   Photon
 Group:          Development/Languages/Python
 Url:            https://pypi.org/project/six
 Source0:        https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
-%define sha512  six=076fe31c8f03b0b52ff44346759c7dc8317da0972403b84dfe5898179f55acdba6c78827e0f8a53ff20afe8b76432c6fe0d655a75c24259d9acbaa4d9e8015c0
 
 Source1: license.txt
 %include %{SOURCE1}

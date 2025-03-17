@@ -7,7 +7,6 @@ Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    %{name}-%{version}.tar.gz
-%define sha512 tboot=01a039e5612b6cca6f7558e93673ba50edfcfbf3f65e390ac64f4aa6ae0859a314676b20d722dcd41a7a3c940473fe7982e823c800a75bd26a5e8f956528f223
 
 Source1: license.txt
 %include %{SOURCE1}

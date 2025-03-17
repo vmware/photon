@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.gnu.org/gnu/libtasn1/%{name}-%{version}.tar.gz
-%define sha512  libtasn1=287f5eddfb5e21762d9f14d11997e56b953b980b2b03a97ed4cd6d37909bda1ed7d2cdff9da5d270a21d863ab7e54be6b85c05f1075ac5d8f0198997cf335ef4
 
 Source1: license.txt
 %include %{SOURCE1}

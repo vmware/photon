@@ -7,7 +7,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/linux-nvme/nvme-cli
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 nvme-cli=9ef654e782ba737d3858fb11f24caf27aea820480179d07d32599731be204e52693062cdb86786ab5cdd1d94fe32ae9028baa0a58693d2eaee5a2b71155e3db2
 
 Source1: license.txt
 %include %{SOURCE1}

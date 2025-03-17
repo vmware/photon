@@ -10,7 +10,6 @@ Distribution:   Photon
 URL:            http://www.paramiko.org
 
 Source0: https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define sha512 %{srcname}=1bf325ffd393447cb90009d01dc1104d0d43a6acdd08cc6d28310063a649a333323748800dab119ab5e10833975e68f5f5702044fc247a2e8058122a5327f2c7
 
 Source1: license.txt
 %include %{SOURCE1}

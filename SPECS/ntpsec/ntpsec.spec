@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://www.ntpsec.org/
 Source0:        https://ftp.ntpsec.org/pub/releases/%{name}-%{version}.tar.gz
-%define sha512  ntpsec=cec0c6ddff81c3da48157f3437945c11832b29577482c86c9d6df997d0194fea9df43ad05189c63efbf5a491a9a7f98eaae78065445d5e31499b1f1d78e217fb
 Source1:        %{name}.sysusers
 
 Source2: license.txt

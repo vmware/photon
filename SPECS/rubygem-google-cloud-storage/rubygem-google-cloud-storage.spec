@@ -12,7 +12,6 @@ Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512 %{gem_name}=f452fa61f23a0da1aaed1bbf718cff7dc296315290b60b0db63db55dc8bfc2c3e8a55163d5e2b9f76ea2faeed1b639d666e476bb6927c3aba676bb440aabaf2e
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -9,7 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://download.lighttpd.net/lighttpd/releases-1.4.x/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e8dcc1e113aeaec33e3b329f12ed3bf3ee67c8d056db0a1646f20ae1bc59dae0e439c388976367e4124ee1f90ae06375748e7f8ee891b5423ed282e0ccb532cc
 Source1: %{name}.sysusers
 Source2: %{name}.logrotate
 Source3: %{name}.service

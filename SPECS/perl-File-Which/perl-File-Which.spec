@@ -5,7 +5,6 @@ Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-Which/
 Source0:        https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/File-Which-%{version}.tar.gz
-%define sha512  File-Which=8a6164c4af915e93924b1d62864e492b1c5067856e505c50b9a5cce0600d73bdcda5f7e35a9f37134d9e89949b45bbd0a5426cb56121604aea1a3cfe48d55e5c
 
 Source1: license.txt
 %include %{SOURCE1}

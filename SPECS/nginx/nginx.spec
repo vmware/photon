@@ -14,13 +14,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://nginx.org/download/nginx-%{version}.tar.gz
-%define sha512 %{name}=470efe9ae5d6150ecbf133979c6c36415679a2156499a3b6820a85eb8f3038a8aa06f7b28ddd834cffb0e982f3ddc89e4b1649d536eba4f84019a72d4cfa3539
 
 Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
-%define sha512 %{name}-njs=450f6866141f6f370767149c8749e84c4373f401d6d2237ca85365a851ebe7bdbd8a3c25e85a55747673e8bef2238a979dd237d5fc5c641b2f3f2cf7f26dffc8
 
 Source2: https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/headers-more-nginx-module-%{headers_more_nginx_module_ver}.tar.gz
-%define sha512 headers-more-nginx-module=0cc2fffe506194d439e3669644d41b7943e2c3cffa3483eb70b92067930b358d506a14646eff8362b191a11c624db29f6b53d830876929dcb4ce1c9d7b2bc40d
 
 Source3: %{name}.service
 Source4: %{name}.sysusers

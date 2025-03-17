@@ -12,7 +12,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.org/project/ethtool/
 Source0:        python-ethtool-%{version}.tar.gz
-%define sha512  python-ethtool=82a9c08d1794f8f44e2a797d4631bacef3d492c8274d161f74d789e299f3de4830e03e863e428a14dea9713c43f10a1c743a30a504bb4c8eac03bded5c708670
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: http://downloads.sourceforge.net/project/fakerootng/fakeroot-ng/%{version}/fakeroot-ng-%{version}.tar.gz
-%define sha512 %{name}=8ece6830d229b92537d9c0a2eb42cb9ec4ae6b83453303004dded5eab0707b9ae8eaa2c71aac6ea68226c43cf08db6b0939a9422aab32948f5ecb185ee01d854
 
 Source1: license.txt
 %include %{SOURCE1}

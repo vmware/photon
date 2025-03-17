@@ -6,7 +6,6 @@ Version:        0.13.3
 Release:        21%{?dist}
 URL:            https://github.com/Masterminds/glide
 Source0:        https://github.com/Masterminds/glide/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=bb0cf1308a9ac0768db647552131867eaccbd8c449e10fb8c8f0fa41f0cca67983b15689ad307c5299a9a125a6a7bfea19fae39525eaf407c92d893918577945
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/snapshot/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8064eb18dda6fdbff020759ed92e785b87d34be9ebc30cb6085785edeb8d7252cabf8d33d8738a3ec407672a3d891884d0f0b4c551fce26c76fa8eaf61b9e2f5
 
 Source1: license.txt
 %include %{SOURCE1}

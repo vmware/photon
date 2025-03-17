@@ -7,7 +7,6 @@ Release:        15%{?dist}
 Summary:        InfluxDB is an open source time series database
 URL:            https://influxdata.com
 Source0:        https://github.com/influxdata/influxdb/archive/%{name}-%{version}.tar.gz
-%define sha512  %{name}=4f5d20c190288d6397f0e87abd9b9136340b17f091c361cbc111ba661a3e63626edf5c74ddeeda164d82102dd06026e0037f50da546cda25e6c8647f4c739fae
 
 Source2:        %{name}.sysusers
 

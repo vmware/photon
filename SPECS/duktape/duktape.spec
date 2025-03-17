@@ -8,7 +8,6 @@ URL:        http://duktape.org
 Distribution: Photon
 
 Source0:        http://duktape.org/%{name}-%{version}.tar.xz
-%define sha512 %{name}=8ff5465c9c335ea08ebb0d4a06569c991b9dc4661b63e10da6b123b882e7375e82291d6b883c2644902d68071a29ccc880dae8229447cebe710c910b54496c1d
 
 Source1:        duktape.pc.in
 

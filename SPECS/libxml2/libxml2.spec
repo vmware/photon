@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://download.gnome.org/sources/libxml2/2.12/%{name}-%{version}.tar.xz
-%define sha512 %{name}=7bd04375321a99c9b7a82d6a72d9412ab45f958b923f1e2f75d9dfbb1a053eba3e0fd067a53753f9a343b4dcb2d9ab5cba894d4194a5f9fb7108f7c545224791
 
 Source1: license.txt
 %include %{SOURCE1}

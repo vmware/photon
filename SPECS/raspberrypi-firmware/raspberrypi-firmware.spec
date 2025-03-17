@@ -12,7 +12,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=7ac48195062e57b0afe660d7ff31a1841565384accd487c8b9b7bbf32b88aff126b1d5e859d1b350b73e568d78ac58e58e447729387fb069aaf31c59006c72b5
 
 Source1:    rpi-config-txt.txt
 

@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/simplejson
 Source0:        simplejson-%{version}.tar.gz
-%define sha512  simplejson=4a25032fcc78025d82db571716deef8769f036a330560f92e14563687db4a42dbe60866b8afb57baf24104ef94fcbe938cdbddfc169542664957eef2d00d04e3
 
 Source1: license.txt
 %include %{SOURCE1}

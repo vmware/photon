@@ -8,7 +8,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/22/5a/ac50b52581bbf0d8f6fd50ad77d20faac19a2263b43c60e7f3af8d1ec880/altgraph-%{version}.tar.gz
-%define sha512  altgraph=b452353b03a8d5588822fd250d37dac72529b22a1f7ce4c797fb6d24d9625b946059995722ef33d035743d5cac97cbbcb47d8eda8df172878bf3631059c3e9bb
 
 Source1: license.txt
 %include %{SOURCE1}

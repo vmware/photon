@@ -6,7 +6,6 @@ Release:        5%{?dist}
 Group:          Development/Libraries
 
 Source0:        https://cpan.metacpan.org/authors/id/J/JU/JUERD/DBIx-Simple-%{version}.tar.gz
-%define sha512 DBIx-Simple=f79b26bf52db33629950bc95f6c17dd13a2af135deeaf6ff5b0570ad852911fd0d27196636e605a93e9b3d740699110f2ece7abc24fcbbfd08a2f3ddce5d65b0
 
 Source1: license.txt
 %include %{SOURCE1}

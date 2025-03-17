@@ -5,7 +5,6 @@ Release:        2%{?dist}
 Group:          Development/Languages/Python
 URL:            https://pypi.org/project/decorator
 Source0:        decorator-%{version}.tar.gz
-%define sha512  decorator=584857ffb0c3e52344b473ceb9e28adfd7d789d480a528471f8ab37be055ebe5feb170f41077010e25350e1c311189d45b90773cf12f0043de98ea8ebcde20ab
 
 Source1: license.txt
 %include %{SOURCE1}

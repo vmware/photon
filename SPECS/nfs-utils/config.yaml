@@ -16,4 +16,5 @@ sources:
         AND GPL-3.0-or-later AND LGPL-2.1-or-later AND FSFULLR AND FSFUL AND FSFULLRWD
         AND GPL-2.0-or-later WITH Autoconf-exception-generic
       short_summary: NFS client utils
+      detailed_description: NFS client utils
       supplier: 'Organization: Broadcom, Inc.'

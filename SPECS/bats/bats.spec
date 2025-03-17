@@ -8,7 +8,6 @@ Distribution:   Photon
 
 URL:            https://github.com/bats-core/bats-core
 Source0:        https://github.com/bats-core/bats-core/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=7eace32f19789e081112af1ce8ab33ff210d52bd3ea84962bbec226349b3b8d8912b6a495f5524f9cc7cfe692f1d23d684c93c24e182752e2b30731670d6eeea
 
 Source1: license.txt
 %include %{SOURCE1}

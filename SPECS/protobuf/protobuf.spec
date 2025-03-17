@@ -11,7 +11,6 @@ Distribution:   Photon
 URL:            https://github.com/google/protobuf
 
 Source0: https://github.com/protocolbuffers/protobuf/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=d6f360c3d0a205b012c2db6d5c32fc7cde075941e12dd7cb9da8c03ab1f6cb81044acac34b39bb699dde5bea4558159a5e47beafd87e47d6b91d06b37ea6e886
 
 Source1: license.txt
 %include %{SOURCE1}

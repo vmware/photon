@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.ring.gr.jp/archives/net/mail/procmail/%{name}-%{version}.tar.gz
-%define sha512 %{name}=3d0658329a55957a8d5741e03b0853b030c4524acef30641663213aa9eefc8264f8cc2b68a00a89e5f9f0f7c916c41a42e1b6c8df562c545ba97d8ab9049a936
 
 Source1: license.txt
 %include %{SOURCE1}

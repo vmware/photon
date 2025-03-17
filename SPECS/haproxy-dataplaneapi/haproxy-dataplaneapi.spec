@@ -16,7 +16,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/haproxytech/%{name}-%{version}.tar.gz
-%define sha512 %{name}=f534e6a6622e09cfe505201317f9a6237df6bf347758b844c92266fb9606d493fc43bdb11f6bd16e63372caf1fb3642c6c944805a5c1e7e5791433b64a73dacc
 
 Source1: license.txt
 %include %{SOURCE1}

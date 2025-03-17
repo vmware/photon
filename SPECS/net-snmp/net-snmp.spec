@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=a476df4967029a2eb03d27b0e250170785d0a8c143d49b900ee958c3cbdfaccd415b70af40f6fbed9cb8819d522c35a6073a431091d908ccc7c018fa0aaa2abc
 Source1:        snmpd.service
 Source2:        snmptrapd.service
 

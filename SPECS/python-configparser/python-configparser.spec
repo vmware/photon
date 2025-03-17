@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/configparser
 Source0:        configparser-%{version}.tar.gz
-%define sha512  configparser=d93998978062dfb9c6a1462bf943be856c7420df29b458faba13d00ccb8238b3a1017f1ee719f1f830dee5d99f46151837b132374e092d75bfabbf4afec0b722
 
 Source1: license.txt
 %include %{SOURCE1}

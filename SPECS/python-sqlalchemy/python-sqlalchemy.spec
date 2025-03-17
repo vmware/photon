@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/29/18/a78469bc449d9f92f6269cc62d0d6fbe6bf394d1031b447ad5e54463c3a0/SQLAlchemy-%{version}.tar.gz
-%define sha512  SQLAlchemy=49b8ad8becd6fb2c43615890ef05554ce151f44cda20971a585ff5b325a6a91bb356a3c4320f4b1ac877a9eccdca9bec65cc9942bc5948d4143495b5c884f458
 
 Source1: license.txt
 %include %{SOURCE1}

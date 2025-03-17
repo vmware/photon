@@ -8,7 +8,6 @@ Vendor:          VMware, Inc.
 Distribution:    Photon
 
 Source0: http://downloads.sourceforge.net/rpcbind/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=fb89c61be4c533fe2e6057749d97079a2d1c9fac0d35d6be1a159a0edbf86092b3fc121f19fa920e75aac5ecdd3f59f5978e6401d5cad16cd438c977736206a7
 
 Source1:         %{name}.service
 Source2:         %{name}.socket

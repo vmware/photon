@@ -5,7 +5,6 @@ Summary:        Ordered YAML loader and dumper for PyYAML.
 Group:          Development/Languages/Python
 Url:            https://files.pythonhosted.org/packages/9e/10/fbb1fb0d600f167b4ddeb83a5e66307c5c0d56860595e02c9387861b686d/yamlloader-1.1.0.tar.gz
 Source0:        yamlloader-%{version}.tar.gz
-%define sha512  yamlloader=dfd85de2a3488f312edbe1ebe3594612d76034221fe1e06ee036229060ddccb8a36b83ca46f0adca58e4581c345f2c57dac2bbdebb59b0fd9bc13ce80162ce46
 
 Source1: license.txt
 %include %{SOURCE1}

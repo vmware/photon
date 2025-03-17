@@ -12,13 +12,10 @@ Vendor:       VMware, Inc.
 Distribution: Photon
 
 Source0:    https://www.kernel.org/pub/linux/utils/boot/%{name}/Testing/%{version}/%{name}-%{version}-pre1.tar.xz
-%define sha512  %{name}=7927dd39be8e2dcf4138a6fea33def67d19d938379d694f15b48fdd2f5924c028b7a9e7bd71d0c7c6630c203e9e2a54296628e530632ad5e6f55b1ebefe8fc98
 
 Source1:        https://sourceforge.net/projects/libpng/files/libpng16/%{libpngver}/libpng-%{libpngver}.tar.xz
-%define sha512  libpng=ce233bb58d70b391b7dc858a132a8f9f66a9e30f5b387426317fdd5e76e8395e00ec36324e5e2caec8fda49a3f2b13fe27594a3466fdf2020ec7520e79a608c9
 
 Source2:        https://www.zlib.net/zlib-%{zlibver}.tar.gz
-%define sha512  zlib=99f0e843f52290e6950cc328820c0f322a4d934a504f66c7caa76bd0cc17ece4bf0546424fc95135de85a2656fed5115abb835fd8d8a390d60ffaf946c8887ad
 
 Source3: license.txt
 %include %{SOURCE3}

@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/websocket-client/websocket-client
 Source0:        https://files.pythonhosted.org/packages/99/11/01fe7ebcb7545a1990c53c11f31230afe1388b0b34256e3fd20e49482245/websocket-client-%{version}.tar.gz
-%define sha512  websocket-client=a2804421e97ccbfb61cb2e8a2be6ecd5d5d60210971e27ca4e00a4854fb49df2e3c87ec87c0ec11565d7ce03f419dc3cbd8c2402843a8fced49d75d65d07b502
 
 Source1: license.txt
 %include %{SOURCE1}

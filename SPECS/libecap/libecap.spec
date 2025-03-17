@@ -4,7 +4,6 @@ Version:      1.0.1
 Release:      2%{?dist}
 URL:          http://www.e-cap.org/
 Source0:      http://www.e-cap.org/archive/%{name}-%{version}.tar.gz
-%define sha512 libecap=0054ad11b3f558d7c623060a69207a1b8e679803cabdf1a2bce4b04335d71c016eec770fc9d2cbf3d0a93502c255cb528305f9f8e6df4e095fcb980667045919
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://gpsd.gitlab.io/gpsd
 
 Source0:        https://download-mirror.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=0684cbd30defa1a328898589e1d61b2431462a774aff56c588bd00c1fbd92ac94cf6fc1f2b981debac78c34ab09fa24f48ed6334f3ecd09e6b8f5faa92ae1085
 
 Source1: license.txt
 %include %{SOURCE1}

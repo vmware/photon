@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://pypi.python.org/packages/source/n/deepmerge/deepmerge-%{version}.tar.gz
-%define sha512 deepmerge=9facde604ee02271ad49d9a14e88fa23690c41728c3c350594533725c2e38803cc75f9345ff19bb63ceb318ea7c58a46ed0d6091682560509401206c8b4e8537
 
 Source1: license.txt
 %include %{SOURCE1}

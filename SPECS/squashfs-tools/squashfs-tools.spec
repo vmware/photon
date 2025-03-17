@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/plougher/squashfs-tools/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=b3934ea1e26c7508110312711465644a6d9674b6b5332a7d011e191fa3c1d4b8be694214794a0f6005263d0f4e18bab96af2f7ed66a178f8e3bb3a781cd44896
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/KhronosGroup/Vulkan-Headers
 
 Source0:        https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/Vulkan-Headers-%{version}.tar.gz
-%define sha512  Vulkan-Headers=6c259fc0ea02a8e2f6b1f5597559f6dfc0f5b5c8553a9c8aa81ac73414a1e672dc45e5e3499bcad70ac27a4802a98cfeb6eada5497a980832fdd7f947da508f8
 
 Source1: license.txt
 %include %{SOURCE1}

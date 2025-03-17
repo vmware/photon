@@ -13,7 +13,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/coreutils/%{srcname}-%{version}.tar.xz
-%define sha512 %{srcname}=a6ee2c549140b189e8c1b35e119d4289ec27244ec0ed9da0ac55202f365a7e33778b1dc7c4e64d1669599ff81a8297fe4f5adbcc8a3a2f75c919a43cd4b9bdfa
 # make this package to own serial console profile since it utilizes stty tool
 Source1:        serial-console.sh
 

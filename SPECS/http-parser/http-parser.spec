@@ -4,7 +4,6 @@ Version:        2.9.4
 Release:        2%{?dist}
 URL:            https://github.com/nodejs/http-parser
 Source0:        %{name}-v%{version}.tar.gz
-%define sha512  http-parser=b45df7b94d1c51079d44687d0a7f901f44faae51df4e84c7e3fe38f130c2d809d0e7c2a146c57b3723e60732aededc246bf44eadb10a95b710963d641f9fe7cd
 
 Source1: license.txt
 %include %{SOURCE1}

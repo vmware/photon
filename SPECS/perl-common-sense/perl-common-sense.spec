@@ -9,7 +9,6 @@ Release:       3%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/common-sense
 Source0:       http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/common-sense-%{version}.tar.gz
-%define sha512 common-sense=cb6034d9ff721a4122e0215db8ad5279ec4b189c3364593d427d70a1e84a1583a0e1447e276aa9a4fcaeb2f9d47a465a5bc4c0f842c803d3ddf91755311f4af4
 
 Source1: license.txt
 %include %{SOURCE1}

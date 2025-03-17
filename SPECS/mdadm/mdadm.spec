@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.kernel.org/pub/linux/utils/raid/mdadm/%{name}-%{version}.tar.gz
-%define sha512 %{name}=08682b27f41a230f188d3b61e22e95ff8808b36c8fc2cba1dff443d39a72b35ba2eaf29ed64c7e5583c177fe6b71df983ec9a80a4128d8f07d58b7435d4700f6
 
 Source1: license.txt
 %include %{SOURCE1}

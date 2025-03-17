@@ -7,7 +7,6 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/projectatomic/bubblewrap/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  bubblewrap=01ec30b01f70ff896b407d4979df0bc1a75d0b441a388f7be7aa9a4c9f56e6a1e2ae2ae4dbe4d6262a0218f577a8ad317db4217d5663ea9bd8c1d5c4293c39a7
 
 Source1: license.txt
 %include %{SOURCE1}

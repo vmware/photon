@@ -5,7 +5,6 @@ Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-HomeDir/
 Source0:        https://cpan.metacpan.org/authors/id/R/RE/REHSACK/File-HomeDir-%{version}.tar.gz
-%define sha512  File-HomeDir=1ea90d68ed059ef5e890f6afb1280673dd5a597956f282c4ae8b4471c1751aa3cb2fcbe9caa6b2976937d11fd7233aa85a2dea611f87c79e0ddd1a501ceb890d
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -1,36 +1,38 @@
 sources:
-- archive: apache-ant-1.10.12-src.tar.gz
-  archive_sha512sum: 1cfd31f9b19475bd94bcf59722cfc7aade58a5bb2a4f0cd6f3b90682ac6ef4cda3596269b4a91e09f2afd1be9123d4ef80db9f3c481dc34d8685b6e020a8ba11
-  skip_validation: true
-  spdx:
-    package:
-      detailed_description: 'The Ant package contains binaries for a build system '
-      home_page: http://ant.apache.org
-      license_concluded: W3C AND SAX-PD AND BSD-3-Clause AND Apache-2.0
-      license_declared: W3C AND SAX-PD AND BSD-3-Clause AND Apache-2.0
-      short_summary: Apache Ant
-      supplier: 'Organization: Broadcom, Inc.'
-- archive: hamcrest-2.2.jar
-  archive_sha512sum: 6b1141329b83224f69f074cb913dbff6921d6b8693ede8d2599acb626481255dae63de42eb123cbd5f59a261ac32faae012be64e8e90406ae9215543fbca5546
-  skip_validation: true
-  spdx:
-    package:
-      detailed_description: 'Jar file of Hamcrest package '
-      home_page: https://github.com/hamcrest/JavaHamcrest
-      license_concluded: BSD-3-Clause
-      license_declared: BSD-3-Clause
-      short_summary: Contains jar file of Hamrest package
-      supplier: 'Organization: Broadcom, Inc.'
-- archive: maven-ant-tasks-2.1.3.tar.gz
-  archive_sha512sum: 4df5b96a11819f82732c54656db8b0e0f4697079113d644622b4f82dc218ac1829b97aa8dc2427d3903ebdb0eb82e2ee35f9d3160647edb09bb243d8ba266fd8
-  skip_validation: true
-  spdx:
-    package:
-      detailed_description: Jar file of Maven Ant Tasks package
-      home_page: https://maven.apache.org/ant-tasks/
-      license_concluded: CC-PDDC AND Plexus AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause
-        AND BSD-3-Clause
-      license_declared: CC-PDDC AND Plexus AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause
-        AND BSD-3-Clause
-      short_summary: Contains jar file of maven-ant-tasks package
-      supplier: 'Organization: Broadcom, Inc.'
+    - archive: apache-ant-1.10.12-src.tar.gz
+      archive_sha512sum: 1cfd31f9b19475bd94bcf59722cfc7aade58a5bb2a4f0cd6f3b90682ac6ef4cda3596269b4a91e09f2afd1be9123d4ef80db9f3c481dc34d8685b6e020a8ba11
+      skip_validation: true
+      spdx:
+          package:
+              detailed_description: "The Ant package contains binaries for a build system "
+              home_page: http://ant.apache.org
+              license_concluded: EPL-1.0 AND SAX-PD AND Apache-1.1 AND BSD-3-Clause AND Apache-2.0 AND W3C
+              license_declared: EPL-1.0 AND SAX-PD AND Apache-1.1 AND BSD-3-Clause AND Apache-2.0 AND W3C
+              short_summary: Apache Ant
+              supplier: "Organization: Broadcom, Inc."
+    - archive: hamcrest-2.2.jar
+      archive_sha512sum: 6b1141329b83224f69f074cb913dbff6921d6b8693ede8d2599acb626481255dae63de42eb123cbd5f59a261ac32faae012be64e8e90406ae9215543fbca5546
+      skip_validation: true
+      spdx:
+          package:
+              detailed_description: "Jar file of Hamcrest package "
+              home_page: https://github.com/hamcrest/JavaHamcrest
+              license_concluded: BSD-3-Clause
+              license_declared: BSD-3-Clause
+              short_summary: Contains jar file of Hamrest package
+              supplier: "Organization: Broadcom, Inc."
+    - archive: maven-ant-tasks-2.1.3.tar.gz
+      archive_sha512sum: 4df5b96a11819f82732c54656db8b0e0f4697079113d644622b4f82dc218ac1829b97aa8dc2427d3903ebdb0eb82e2ee35f9d3160647edb09bb243d8ba266fd8
+      skip_validation: true
+      spdx:
+          package:
+              detailed_description: Jar file of Maven Ant Tasks package
+              home_page: https://maven.apache.org/ant-tasks/
+              license_concluded:
+                  CC-PDDC AND Plexus AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause
+                  AND BSD-3-Clause
+              license_declared:
+                  CC-PDDC AND Plexus AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause
+                  AND BSD-3-Clause
+              short_summary: Contains jar file of maven-ant-tasks package
+              supplier: "Organization: Broadcom, Inc."

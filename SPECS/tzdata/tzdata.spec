@@ -7,7 +7,6 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha512  tzdata=0d86686e215672343debb3471b7e7ccb8a27f063f085c9b532d5e0470377843daa0dfb6aee0db4fb9068dd52810c69aeee914a1a7c7e603fdecda7e855020193
 
 Source1: license.txt
 %include %{SOURCE1}

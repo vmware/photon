@@ -7,7 +7,6 @@ Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://perso.wanadoo.fr/sebastien.godard/%{name}-%{version}.tar.xz
-%define sha512  sysstat=3dd2fceb89faf2a0b20f4215a5a64298c62277f1c06175ca224fe2c897e86bf94bcf7b4b66f36536848b31743d4d38f765b06923052466cdcde0768990e9e769
 
 Source1: license.txt
 %include %{SOURCE1}

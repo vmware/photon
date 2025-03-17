@@ -10,7 +10,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/docutils
 
 Source0: https://files.pythonhosted.org/packages/source/d/docutils/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=fb904a899f2b6f3c07c5079577bd7c52a3182cb85f6a4149391e523498df15bfa317f0c04095b890beeb3f89c2b444875a2a609d880ac4d7fbc3125e46b37ea5
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/pallets/jinja
 
 Source0: https://github.com/pallets/jinja/archive/refs/tags/jinja-%{version}.tar.gz
-%define sha512 jinja=50feebc7eed4c8b5bb0c2951784c1c115e3ee1c0e0c91bbf1884551b1312ef8fce24804a2ca1dfd8c543406529afe4817567c39e7cfd15028b54049853623144
 
 Source1: license.txt
 %include %{SOURCE1}

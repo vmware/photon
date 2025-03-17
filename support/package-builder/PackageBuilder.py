@@ -10,6 +10,7 @@ from ToolChainUtils import ToolChainUtils
 from CommandUtils import CommandUtils
 from constants import constants
 from SpecData import SPECS
+from SourceConfigData import SOURCES
 from StringUtils import StringUtils
 from Sandbox import Chroot, SystemdNspawn, Container
 from SRP import SRP
@@ -113,19 +114,10 @@ class PackageBuilder(object):
             # also fetches any missing ones.
             if self.srp.isEnabled():
                 for source in SPECS.getData().getSources(self.package, self.version):
-                    checksum = SPECS.getData().getChecksum(self.package, self.version, source)
+                    checksum = SOURCES.getData().getChecksum(source)
                     # If checksum present - report this source tarball.
                     if checksum:
-                        # Use sha512 as a unique identifier.
-                        sha512 = checksum.get("sha512", None)
-                        # if specfile does not have sha512, calculate it.
-                        if not sha512:
-                            csum = hashlib.sha512()
-                            sourcePath = os.path.join(constants.sourcePath, source)
-                            with open(sourcePath, "rb") as f:
-                                csum.update(f.read())
-                            sha512 = csum.hexdigest()
-                        self.srp.addInputSource(source, sha512)
+                        self.srp.addInputSource(source, checksum)
 
             self.srp.addObservation(self.sandbox.getObservation())
             self.srp.addOutputRPMS(listRPMFiles + listSRPMFiles)

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://sourceforge.net/projects/inotify-tools/files/latest/download/%{name}-%{version}.tar.gz
-%define sha512  %{name}=e757ca5d3bac2b6b84e9435671107d6d695ff7d04cefd139590ab538d1be8f9a295eb9b0042406bdbfa60bb2b2545a428ec861e60f1cbf172050d47d0350bdb9
 
 Source1: license.txt
 %include %{SOURCE1}

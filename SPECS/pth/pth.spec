@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://open-source-box.org/%{name}/%{name}-%{version}.tar.gz
-%define sha512 pth=f79d74047c50e06f3198356f88647c5c1c8a04ebdd94641fc31d5ab0fd2750d86615fcb81da2f98d7ea73d012a501195d3fa09060571d18dcfdaec5d7a0ecb12
 
 Source1: license.txt
 %include %{SOURCE1}

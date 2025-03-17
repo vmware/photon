@@ -5,7 +5,6 @@ Url:            https://sourceforge.net/p/ddclient/wiki/Home/
 Summary:        Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider
 Group:          Applications
 Source0:        http://downloads.sourceforge.net/project/ddclient/ddclient/ddclient-%{version}.tar.gz
-%define sha512 ddclient=a8a4d6cb94e4239a7b7b4fc7d9ebef703cbd6c45fc3394b644694a053b5b8aa8d109410b5b8b3676a5f30b18474d24c7feb16c65c30b28bd7d941d8a214b1346
 
 Source1: license.txt
 %include %{SOURCE1}

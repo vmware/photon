@@ -8,7 +8,6 @@ Url:            http://www.denx.de/wiki/U-Boot
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.denx.de/pub/u-boot/u-boot-%{version}.tar.gz
-%define sha512  u-boot=bdbdf7eb3fe05981d1030d194b90889e71630ae27aef2d8f5660535ac0d8b8ab2af580cd1ab7e12ead08c9a45cfb20d6c1510aed941becb32057795f7f99e846
 Source1:        rpi_3_photon_defconfig
 Source2:        rpi_4_photon_defconfig
 Source3:        rpi_photon_defconfig

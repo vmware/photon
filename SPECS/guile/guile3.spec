@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/guile/guile-%{version}.tar.xz
-%define sha512 guile=5d1d93e3e22c524ea3c2fe28cf3c343ab8ba99bf5c7b8750c4ebcaf556ae21485fb99e5ccc50c4b07037cdc678552557753d67ef2c93d8c1b62603e1809418f6
 
 Source1: license.txt
 %include %{SOURCE1}

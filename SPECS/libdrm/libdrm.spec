@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://dri.freedesktop.org/libdrm/%{name}-%{version}.tar.xz
-%define sha512  libdrm=fca9834ce090f63ce6dc6d04491a2c5e86162fdddfc8ea70d55a6cdeb401be656388aae1577e58f463a78d8dc502be0a641908784819874e20bbec9a39a057e0
 
 Source1: license.txt
 %include %{SOURCE1}

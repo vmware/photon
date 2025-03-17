@@ -9,7 +9,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/photon-os-installer
 Source0:       %{name}-%{version}.tar.gz
-%define sha512 %{name}=9c2b6df1e9136e94db1451064b51a286b2894849b309dde9539cb9df4fc82e807c74ccb0f7795d7d1d5b2c1ea856dfb38623e1c08e94c567696a637ca6f75fe8
 
 Source1: license.txt
 %include %{SOURCE1}

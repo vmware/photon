@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://www.freetds.org/files/stable/%{name}-%{version}.tar.gz
-%define sha512 %{name}=3d656833dd3e0150bf1c343699aeb89f6cb30b357a86a2baf94ac9f53016a793c78b5dcabfdb357106a7736ceb8d1fd25d817fa0861a4209b8093e6a5065dcf1
 
 Source1: license.txt
 %include %{SOURCE1}

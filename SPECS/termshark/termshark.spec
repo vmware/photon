@@ -7,7 +7,6 @@ Version:        2.4.0
 Release:        19%{?dist}
 URL:            https://github.com/gcla/%{name}/releases/tag/v%{version}.tar.gz
 Source0:        https://github.com/gcla/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=378bb67ff50a8dfa80f614540371f326627e73bdf63bceb183ed73afbbf9dead4e0597fb969ba49c4ee3d3de00ac7bb91166421c19c788df47ff8d9fcbc5b9fc
 
 Source1: license.txt
 %include %{SOURCE1}

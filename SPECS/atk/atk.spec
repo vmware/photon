@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.gnome.org/pub/gnome/sources/%{name}/2.16/%{name}-%{version}.tar.xz
-%define sha512  atk=dffd0a0814a9183027c38a985d86cb6544858e9e7d655843e153440467957d6bc1abd9c9479a57078aea018053410438a30a9befb7414dc79020b223cd2c774b
 
 Source1: license.txt
 %include %{SOURCE1}

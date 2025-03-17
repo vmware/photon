@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.gz
-%define sha512 %{name}=92cb420ec0247d48a672705c87417a3955e603de267e123aa1aa8c26c73707283a21b82a8321288498312b6612a723b7d557e85ce8ca9cfabae268f16bfe9ce6
 
 Source1: license.txt
 %include %{SOURCE1}

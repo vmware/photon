@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://people.redhat.com/sgrubb/libcap-ng
 Source0:        http://people.redhat.com/sgrubb/libcap-ng/%{name}-%{version}.tar.gz
-%define sha512  libcap-ng=0ef9bc7bc6b7b59991f43b79aa6cde3e8d2c22c4b9ced2af8deae501e01d51e893033d109cb8aa0fdcba190140110993089245346334d7b114d18f1bb1b55b97
 
 Source1: license.txt
 %include %{SOURCE1}

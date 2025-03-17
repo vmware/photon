@@ -4,7 +4,6 @@ Version:        1.6.2
 Release:        2%{?dist}
 URL:            http://www.nongnu.org/libunwind/
 Source0:        http://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
-%define sha512    libunwind=1d17dfb14f99a894a6cda256caf9ec481c14068aaf8f3a85fa3befa7c7cca7fca0f544a91a3a7c2f2fc55bab19b06a67ca79f55ac9081151d94478c7f611f8f7
 
 Source1: license.txt
 %include %{SOURCE1}

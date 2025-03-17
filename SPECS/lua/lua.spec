@@ -16,11 +16,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.lua.org/ftp/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=d90c6903355ee1309cb0d92a8a024522ff049091a117ea21efb585b5de35776191cd67d17a65b18c2f9d374795b7c944f047576f0e3fe818d094b26f0e4845c5
 
 %if 0%{?bootstrap}
 Source1: http://www.lua.org/ftp/%{name}-%{bootstrap_version}.tar.gz
-%define sha512 %{name}-%{bootstrap_version}=ccc380d5e114d54504de0bfb0321ca25ec325d6ff1bfee44b11870b660762d1a9bf120490c027a0088128b58bb6b5271bbc648400cab84d2dc22b512c4841681
 %endif
 
 Source2: license.txt

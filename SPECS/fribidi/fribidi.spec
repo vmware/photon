@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/fribidi/fribidi/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=cd624f519b270303e89139ced4020115abe3b6a0d774ba57f17fa69c6036edebd76c635a42c468786e76c6ffb0c7d63b435cd2663bc2fba08dec405840dd8e49
 
 Source1: license.txt
 %include %{SOURCE1}

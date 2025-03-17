@@ -7,7 +7,6 @@ Url:            https://github.com/pyca/bcrypt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0: https://github.com/pyca/bcrypt/archive/refs/tags/bcrypt-%{version}.tar.gz
-%define sha512  bcrypt=2f3b88bffaa9ff820aba6fb3143253b7936a1440ae93caff13cbdff58c1f8427f132cce60299cda523659b7026751a954b476857f2b9841cdd2a1a50c430a626
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://github.com/redis/redis/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=4635a3c5b23f3985ae7dbec9655eacedfdb16356014b30f864232467094f85fbc1c6af35837b05040f6d2a3b5fd1413c8716b541c8b2c4b24d8d4fbdc7884136
 
 Source1: %{name}.sysusers
 

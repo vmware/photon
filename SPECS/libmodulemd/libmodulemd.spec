@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/fedora-modularity/libmodulemd/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}-%{version}=8c48995aa6a9c6370a07a6887c7237614c502e335173dcba004037ffa41c8fbca8bdf36dfd59ba7d1d125dff6c8722ddc924e14173e3995e147c01a39c6f0ed1
 
 Source1: license.txt
 %include %{SOURCE1}

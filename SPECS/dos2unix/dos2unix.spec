@@ -8,7 +8,6 @@ Distribution:   Photon
 Group:          System/Tools
 
 Source0:        https://waterlan.home.xs4all.nl/dos2unix/%{name}-%{version}.tar.gz
-%define sha512    %{name}=1c6d81348de8aca451174794141d0802685487cf6847fa91f7de745d89bcf2af864fc2ec549b9af72031891d4efcb9731fe823ce05da36d1f9e9890ff2cb60fb
 
 Source1: license.txt
 %include %{SOURCE1}

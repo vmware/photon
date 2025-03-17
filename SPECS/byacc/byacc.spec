@@ -10,7 +10,6 @@ URL:           https://byaccj.sourceforge.net
 Distribution:  Photon
 
 Source0:       https://invisible-island.net/archives/%{name}/%{name}-%{byaccdate}.tgz
-%define sha512 %{name}=866933b4eb2296565ce70b4ade565e4679f3b652715f0066072bbcc42b95389fa47a2f96cd03de577807dcc49bf453b1d4f7e22b96c80fef1aa66898d3de5d5c
 
 Source1: license.txt
 %include %{SOURCE1}

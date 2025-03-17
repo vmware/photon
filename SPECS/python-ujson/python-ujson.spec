@@ -10,7 +10,6 @@ Distribution:   Photon
 URL:            https://pypi.org/project/ujson
 
 Source0:        https://files.pythonhosted.org/packages/fb/94/44fbbb059fe5d295f1f73e731a0b9c2e1b5073c2c6b58bb9c068715e9b72/ujson-%{version}.tar.gz
-%define sha512  ujson=9622e872391d5467455b32e324d7b680487664ca486bfc56ba8c3969853e5db94725cd45e81b535dca80af4a3c718af171ce7adb6dcb9b98a37a8068824f89c6
 
 Source1: license.txt
 %include %{SOURCE1}

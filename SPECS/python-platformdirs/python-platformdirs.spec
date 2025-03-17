@@ -10,7 +10,6 @@ Group:          Development/Languages/Python
 Distribution:   Photon
 
 Source0: https://github.com/platformdirs/platformdirs/archive/refs/tags/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=39c068dad3fe6ec85247a8957c0fcfb27207e78041686a0231d836eeb431bba82583e2fcb609903bb0f479cd04e4c7866b6126e52a708e7e71eed7631bd121b0
 
 Source1: license.txt
 %include %{SOURCE1}

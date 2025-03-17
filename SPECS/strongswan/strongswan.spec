@@ -8,7 +8,6 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://download.strongswan.org/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=16d3afc80704f896f3f97addf452b4bb29fc1911c54e980f76ac48bdbe2340ce3bd4e79024848cb7961bbe9ad5458d93389343878ca042af658d51b11219666b
 
 Source1: license.txt
 %include %{SOURCE1}

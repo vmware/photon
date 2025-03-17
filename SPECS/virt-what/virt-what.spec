@@ -4,7 +4,6 @@ Version:       1.25
 Release:       2%{?dist}
 URL:           https://people.redhat.com/~rjones/virt-what/files/
 Source0:       https://people.redhat.com/~rjones/virt-what/files/%{name}-%{version}.tar.gz
-%define sha512 %{name}=0147b4b44ae0ee685977aa34dfa9bf30ae8e0eb31b7a6d5c0097d16f830fa6fb6afd7156964fc79f3fd5e82b2f68d921fd5306245cc63a2140f6dddc7fdd0e98
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/freedesktop/xorg-libX11/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=967f7746b08650c4238630b007137e89085c88d89b256d5d9b37faa6a50b1df2a3ec749281677f1c64570a3eafd310872e6842cbb5aecaba1cdf7c0c4140ea56
 
 Source1: license.txt
 %include %{SOURCE1}

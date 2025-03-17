@@ -10,7 +10,6 @@ Group:           Development/Languages
 URL:             https://github.com/iovisor/bcc
 
 Source0: https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=792ce93dba64b1f87390b2602dcaeba04ac8b2863652b06eb9a907b93bc6137a944b856cc6fa9c7a38671c89814740967561ca4f3b29c267babca7dc5e78aa02
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -12,7 +12,6 @@ Distribution:   Photon
 BuildArch: noarch
 
 Source0: https://files.pythonhosted.org/packages/98/33/dc28393f16385f722c893cb55539c641c9aaec8d1bc1c15b69ce0ac2dbb3/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=83b46eaf26df3932ea2136cfda1c0fca4fc08ce8bca564845b3efe5bb00d6c8c93991f4edd4913d4ec796e2d85bd2c7265adf28e98f42e8094daeb5ac11a0eb1
 
 Source1: license.txt
 %include %{SOURCE1}

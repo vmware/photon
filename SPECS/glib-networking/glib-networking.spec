@@ -8,7 +8,6 @@ Vendor:       VMware, Inc.
 Distribution: Photon
 
 Source0: http://ftp.gnome.org/pub/GNOME/sources/glib-networking/%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=f266c106f2c9379b95773a852c1b5c62ae1d6a758d25c436c3558f620d8e0a211201b3c4dfd89cdbe28b88430bba0cca621e62c01ea23d473983e203919bb1e6
 
 Source1: license.txt
 %include %{SOURCE1}

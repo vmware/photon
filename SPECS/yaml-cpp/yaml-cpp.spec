@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://github.com/jbeder/yaml-cpp
 
 Source0:        https://github.com/jbeder/yaml-cpp/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=2de0f0ec8f003cd3c498d571cda7a796bf220517bad2dc02cba70c522dddde398f33cf1ad20da251adaacb2a07b77844111f297e99d45a7c46ebc01706bbafb5
 
 Source1: license.txt
 %include %{SOURCE1}

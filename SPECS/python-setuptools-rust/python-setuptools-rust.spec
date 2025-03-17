@@ -7,7 +7,6 @@ Url:            https://github.com/PyO3/setuptools-rust
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/s/setuptools-rust/setuptools-rust-%{version}.tar.gz
-%define sha512  setuptools-rust=79b1de5581b9558cdf227320c421aa2445b2e6b8583ed9c118ee8d7acdfde9d947e7d11fa6a9697c475d4ca387c86ca6846429099ec30d2eb6e40f8849fcecc0
 
 Source1: license.txt
 %include %{SOURCE1}

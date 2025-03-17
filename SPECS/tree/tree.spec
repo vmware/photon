@@ -10,7 +10,6 @@ Group:          Applications
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://mama.indstate.edu/users/ice/tree/src/tree-%{version}.tgz
-%define sha512  %{name}=9939c8f891f74576cff5afb27975ac40c402c07182a110a1d28d2e1e9bf93ce8da27fbc593d0aaee45eb68878c52f625154e728b12fd76c8b2c82431c803e861
 
 Source1: license.txt
 %include %{SOURCE1}

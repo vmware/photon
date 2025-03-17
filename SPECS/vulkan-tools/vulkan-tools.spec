@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/KhronosGroup/Vulkan-Tools
 
 Source0:        https://github.com/KhronosGroup/Vulkan-Tools/archive/refs/tags/Vulkan-Tools-%{version}.tar.gz
-%define sha512  Vulkan-Tools-%{version}.tar.gz=48b87ac2d45496d031eff492ed562df08ec34b40fc94bc6eaf122c4203949b0db5fceccf2718eef1d90b891ef0681db1c9d945f1dd710fb0c99020e4e3efa025
 
 Source1: license.txt
 %include %{SOURCE1}

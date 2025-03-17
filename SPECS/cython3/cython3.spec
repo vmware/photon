@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            http://cython.org/
 
 Source0:        https://github.com/cython/cython/archive/Cython-%{version}.tar.gz
-%define sha512  Cython=55462792fa70d8edf60aa470627ab494918d7297fd7d282a7a54da76ee5a180233108404a1c8f3d79f6408f19b6e4f46b36e59fd47c38ede24f061f374437b6f
 
 Source1: license.txt
 %include %{SOURCE1}

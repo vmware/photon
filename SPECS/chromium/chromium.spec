@@ -15,10 +15,8 @@ Distribution:   Photon
 
 # generated using tools/scripts/fetch-chromium-source.sh
 Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=f7f4c1533481bc318cc73314a1676af07c5be4193ba75c5480b0b50c1c99a9826b353f8e6ef7f08a72d96ab462188873def695d05edae5e469eb6857e860d187
 
 Source1: depot_tools-d6c2e1b.tar.xz
-%define sha512 depot_tools=508cd88f42309aacdf74492d0602f91eec85d0d829ecde839c72dc5bb718d61d79e20948fc2206b521a8cf55f48ac61fb62d465cbdbe6f7b2005d3e661835338
 
 Source2: headless.gn
 

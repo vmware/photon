@@ -7,7 +7,6 @@ Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/23/a2/97899f6bd0e873fed3a7e67ae8d3a08b21799430fb4da15cfedf10d6e2c2/iniconfig-%{version}.tar.gz
-%define sha512  iniconfig=c9341db7e3ec2204b6a674fca7824cbeb492e3576d5ac3f084b234c82842b28f2f6acbfdb812e183f4334a95b990551f942a4caf548f5ce7ef14885f931535ee
 
 Source1: license.txt
 %include %{SOURCE1}

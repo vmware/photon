@@ -8,10 +8,8 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}-%{version}=03b97e3ab3bd73e4a5673254622d542e5ad5cae642183afe1c84f17b174284a0d618de71aa09e858b924018665bc5107cedaaa73ae2e289c0b0d1d89eed618e7
 
 Source1: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-words-%{version}.gz
-%define sha512  %{name}-words-%{version}=1700c56b9776b7ae4684b9ab1e784dd7707550bce2149301f662618a4f00a2eb0ba2d1a206c09aac22f7d95bc561544d412d2fdac5008fc3aabc4872e8a74afc
 
 Source2: license.txt
 %include %{SOURCE2}

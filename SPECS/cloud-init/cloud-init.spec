@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5d016bfc4b5c600722b6a8ff460d0e6d896ea5eda9fcde76edc21910f4e2f71d371e019b54e50cb58497b7c0c5c051e12ba88f4c9e7146b3e406f241e7cff039
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://zlib.net/pigz/pigz-%{version}.tar.gz
-%define sha512 %{name}=9f9f61de4a0307fc057dc4e31a98bd8d706d9e709ecde0be02a871534fddf6a1fe1321158aa72708603aaaece43f83d2423b127f7689b6219b23aea4f989e8f5
 
 Source1: license.txt
 %include %{SOURCE1}

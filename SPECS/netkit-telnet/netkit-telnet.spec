@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.linux.org.uk/pub/linux/Networking/netkit/%{name}-%{version}.tar.gz
-%define sha512  netkit-telnet=e2cfabed12326af5e288def1821353eacffb4586008263dcd1bed1a9dd9d8548e51e68d7ede58ea75927783ba534ea8807ec722271843a77146f064f3d826dd3
 
 Source1: license.txt
 %include %{SOURCE1}

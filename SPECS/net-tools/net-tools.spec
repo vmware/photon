@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/ecki/net-tools/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=d35bc3e233fa1aae007222516ce04a0c882632d6b3c55ca0ce33123225a6ccd7144b39059b96690b613a31164f7bab536ac85458d2d94596b672b018c5762821
 
 Source1: net-tools-config.h
 Source2: net-tools-config.make

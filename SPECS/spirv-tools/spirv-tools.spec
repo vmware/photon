@@ -7,7 +7,6 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags/SPIRV-Tools-%{version}.tar.gz
-%define sha512  SPIRV-Tools-%{version}.tar.gz=e999bcd7002fd821b2aa5e53de37d501113735059ca61cb7df4c6383fb2566a5371adbe82faff52461c8791f76cd30b13e22e2b39954f7ec1942d80dd8f50636
 
 Source1: license.txt
 %include %{SOURCE1}

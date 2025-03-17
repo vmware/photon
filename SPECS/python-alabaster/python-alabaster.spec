@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://pypi.python.org/packages/d0/a5/e3a9ad3ee86aceeff71908ae562580643b955ea1b1d4f08ed6f7e8396bd7/alabaster-%{version}.tar.gz
-%define sha512 alabaster=e3bfd0c92ce01f08d5e6d9dc1ef0967ca1f54827e08756f4a0ba7be8d3b8bec7f2e53a169b831ff5ce2d2548f7f52c6e518bcc513e49bb3e4c38274293aebbac
 
 Source1: license.txt
 %include %{SOURCE1}

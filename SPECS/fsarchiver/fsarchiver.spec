@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/fdupoux/fsarchiver/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512  %{name}=26a2d7a68d162aabb778b14f29c52cf8fbadb8147cf5eae592352a36fbf93cc45c08c241253bd8dfe8cd0b77d0f156afcc8d89e8d24a238fd4427cb479827f14
 
 Source1: license.txt
 %include %{SOURCE1}

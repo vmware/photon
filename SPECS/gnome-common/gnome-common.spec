@@ -4,7 +4,6 @@ Version:        3.18.0
 Release:        5%{?dist}
 URL:            https://www.gnome.org/
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/%{name}/%{version}/%{name}-%{version}.tar.xz
-%define sha512 gnome-common=b931c9a6668d996560549738bb2d95f86f56fa68ce930c077275bdc8fddbc2d28d215c1190099db1df851417902fca87ec81f1c0e644c5b9630a175e1cde0719
 
 Source1: license.txt
 %include %{SOURCE1}

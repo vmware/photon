@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/pexpect/pexpect/archive/pexpect-%{version}.tar.gz
-%define sha512  pexpect=7447ae2d1e13be422c894a8fd51c5aaa788e37ea7f0c798c88b77afd401fb3631400a637077ccbb83c2e3876b0d0c5e1dbd5fdc9d3739d785b4d5ad7c0192580
 
 Source1: license.txt
 %include %{SOURCE1}

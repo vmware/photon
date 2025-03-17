@@ -8,7 +8,6 @@ URL:           https://github.com/vmware/open-vmdk
 Group:         Development/Tools
 
 Source0:       https://github.com/vmware/open-vmdk/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e9ece44aed19baa139ad8c58a93c32d62d8121b4660f553688bdd8b77cb30a86905199984e21ba82e4638f3bc0a2c1d612feb91a8adeda8ff486bba951f405ec
 
 Source1: license.txt
 %include %{SOURCE1}

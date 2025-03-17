@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/service_identity
 
 Source0:        pyvim-%{version}.tar.gz
-%define sha512  pyvim=913c1785e9ce8a8db3c89207f924cccffeac120eb917c4d601917e2bbf2be658b8eec6c91fd16b3b3efb8479ee5d0da02891eca8e3652694e22a34a008ee4e47
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -17,7 +16,6 @@ Source1: license.txt
 # git clone https://github.com/jonathanslenders/pyvim.git && cd pyvim
 # git checkout 6860c413 && tar -czvf ../pyvim-tests-0.0.20.tar.gz tests/
 #Source1:        pyvim-tests-%{version}.tar.gz
-#%%define sha1 pyvim-tests=2aa4465890b9c6687a7419722949fce20b521766
 #do not see test updated after 2.0.24, hence not packaging tests
 
 BuildRequires:  python3-devel

@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 
 Source0: https://wayland.freedesktop.org/releases/%{name}-%{version}.tar.xz
-%define sha512 wayland=5575216d30fdf5c63caa6bcad071e15f2a4f3acb12df776806073f65db37a50b5b5b3cc7957c5497636f4ac01893e2eaab26e453ded44b287acde01762f5fdc3
 
 Source1: license.txt
 %include %{SOURCE1}

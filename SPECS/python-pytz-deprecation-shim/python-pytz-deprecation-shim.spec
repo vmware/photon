@@ -10,7 +10,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/pganssle/pytz-deprecation-shim/archive/refs/tags/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=e71f34cd8e931fffb3d118726cffab3820268678ab32e0f314a11aed8dabba99292c5abfdd99b8ba4120da5d45d2fa5437e048c48d991921d62984e22088d31f
 
 Source1: license.txt
 %include %{SOURCE1}

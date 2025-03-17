@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: ndg_httpsclient-%{version}.tar.gz
-%define sha512 ndg_httpsclient=b2b4c1b1df87ea1a94811b9ae831e7bf32af27258f487fd5ec319e0e6e0d79dfdb1f7bfadaf397d0693a8a7f0720df170a7fc946aaf10c82e3957ac5464f672e
 
 Source1: license.txt
 %include %{SOURCE1}

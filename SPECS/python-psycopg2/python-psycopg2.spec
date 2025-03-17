@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://files.pythonhosted.org/packages/source/p/psycopg2/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=048184d1d162a371fc0fba711448a6fa8a6aac193421f4484c7f7b91c39065d5b632fa34fc15a901eca055d597302b1f9e38330b248ed0e4653dcdc544b0d660
 
 Source1: license.txt
 %include %{SOURCE1}

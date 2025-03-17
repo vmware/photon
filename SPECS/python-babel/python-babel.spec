@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://files.pythonhosted.org/packages/17/e6/ec9aa6ac3d00c383a5731cc97ed7c619d3996232c977bb8326bcbb6c687e/Babel-%{version}.tar.gz
-%define sha512  Babel=72a5759d2cfa239df56f3d2809b23367b9691e21de92535b30f9b3455d253682f6c18ca919f3fb039deed2663db9276307f6343cbbab56fca96ff1ac9c214fa7
 
 Source1: license.txt
 %include %{SOURCE1}

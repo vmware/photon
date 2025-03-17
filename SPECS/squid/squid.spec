@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.squid-cache.org/Versions/v6/%{name}-%{version}.tar.xz
-%define sha512 %{name}=7ab61f19416426fb8284de7bddc1ea9a5a7b3148fc54c018a243071ba5854610ef38a248f6a22634a2acb7d3ea408b582af1f48818dfe698ade0b7b8c00fd183
 Source1: %{name}.sysconfig
 Source2: %{name}.pam
 Source3: %{name}.service

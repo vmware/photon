@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/svinota/pyroute2
 Source0:        https://pypi.io/packages/source/p/pyroute2/pyroute2-%{version}.tar.gz
-%define sha512  pyroute2=c8aeddaeaa014bcf8c4b831cb5b4080db5c99b582f3999fdbdd840b9448e032fbbf64ce5707ebc0795765138d8e89cde830efb2469c827ed8d4e63dd1beafe62
 
 Source1: license.txt
 %include %{SOURCE1}

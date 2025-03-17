@@ -7,7 +7,6 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://search.cpan.org/CPAN/authors/id/N/NA/NANIS/Crypt-SSLeay-%{version}.tar.gz
-%define sha512  Crypt-SSLeay=af7a2878df94e116e9aad9a0f028f2e4f89074aaf31672915162f86e55211632d65c1cb00f3ebd25644d77adf8eecdd244dba6a004d93ab90289ab34fe4caaf4
 
 Source1: license.txt
 %include %{SOURCE1}

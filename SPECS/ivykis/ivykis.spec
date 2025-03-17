@@ -7,7 +7,6 @@ Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://downloads.sourceforge.net/project/libivykis/%{version}/%{name}-%{version}.tar.gz
-%define sha512 ivykis=4a9fc973e97b054e365cb5028024e1d988227d3a871ab2983569b99d29201d9cdbf9e05e87d2f880281a72a6e6dad10212585e7d276c107bb667ab94644efdbd
 
 Source1: license.txt
 %include %{SOURCE1}

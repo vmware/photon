@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.debian.org/debian/pool/main/a/%{name}/%{name}_%{version}.tar.gz
-%define sha512 %{name}=357c8f5c5ad446e75a597d5bc5bb5af7db17de771643a39976b5ac1425f03bf44f322c8dd07b0e1b04a0bf78d5000841b4866e0d0945584689e99291156dfac1
 
 Source1: license.txt
 %include %{SOURCE1}

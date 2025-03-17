@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.sourceware.org/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha512 LVM2=084ba4080537359458db936637fc7f83bb9bfcf2de9f3660882551b5c31c7e9900c7d381b238ce1bb7629942c740c121f0dea5e404c302d31ed028b5c65efaa5
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://cdn.mysql.com/Downloads/MySQL-8.4/mysql-%{version}.tar.gz
-%define sha512 %{name}=21f4d8162f57f63a589e3e5e140f89a8cc61f4c55a77dce4601e76192eb3d3fbeaf3bfb78f91345c517ad36bf4267f33202693cfc24812841c517a24fffcfd12
 
 Source1: %{name}.sysusers
 

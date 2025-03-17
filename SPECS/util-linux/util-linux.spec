@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v%{version}/%{name}-%{version}.tar.xz
-%define sha512  %{name}=d0f7888f457592067938e216695871ce6475a45d83a092cc3fd72b8cf8fca145ca5f3a99122f1744ef60b4f773055cf4e178dc6c59cd30837172aee0b5597e8c
 
 Source1: license.txt
 %include %{SOURCE1}

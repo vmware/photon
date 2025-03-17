@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://configobj.readthedocs.io/en/latest
 
 Source0: https://github.com/DiffSK/configobj/archive/refs/tags/configobj-%{version}.tar.gz
-%define sha512 configobj=f253fdd0bc3fcd37f56c9ceb28f5c8c739b0861e099b07a3929645907c97b2261f0529850a95c1a42507846f72d88a0992fcd1e1d6fa8654dc713d120f769963
 
 Source1: license.txt
 %include %{SOURCE1}

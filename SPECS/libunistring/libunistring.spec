@@ -8,7 +8,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    http://ftp.gnu.org/gnu/libunistring/%{name}-%{version}.tar.xz
-%define sha512 %{name}=70d5ad82722844dbeacdfcb4d7593358e4a00a9222a98537add4b7f0bf4a2bb503dfb3cd627e52e2a5ca1d3da9e5daf38a6bd521197f92002e11e715fb1662d1
 
 Source1: license.txt
 %include %{SOURCE1}

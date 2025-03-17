@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/janlelis/unicode-display_width
 Source0:        http://rubygems.org/gems/unicode-display_width-%{version}.gem
-%define sha512  unicode-display_width=5c8b5cad378baee9a449d1f06edccbea12f26f8d269ba39ef500dfc6bd5c0b478aa9e0a7262ac07ad3f3e75ee66bbcd4b2d450eae78ac67a3c912804ae9ae1ec
 
 Source1: license.txt
 %include %{SOURCE1}

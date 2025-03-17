@@ -10,7 +10,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Js2Py
 
 Source0: https://files.pythonhosted.org/packages/source/J/Js2Py/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=cb2f42c2bec0c15dadc301ee0a7ac452cc8c4bba4669e95f1155863590d6d00781883b54d4dab755a0f66eb6e30990fedca732494b1f8b6c07dc29f5203a8c8c
 
 Source1: license.txt
 %include %{SOURCE1}

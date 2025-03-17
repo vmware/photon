@@ -10,10 +10,8 @@ Distribution:     Photon
 Url:              https://mariadb.org
 
 Source0: https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9fc5d71c08cb07efc777ef3ebd97dc4953de8aa46750f52c2dabea5af63b52938ca4b54221184f1b4fbb71b94dade27c90756123ddef51959a7b5d43c3b8d986
 
 Source1: https://github.com/fmtlib/fmt/archive/refs/tags/libfmt-%{libfmt_ver}.zip
-%define sha512 libfmt-%{libfmt_ver}.zip=53f781e33ffb3bc38d743b81c5755a7d71dce95dcf5cdf23d5b4cf880a8f29189ca1b790272ee8586cbcd552648bae040247e572b2a97cd8b3631c284873f57d
 
 Source2: %{name}.sysusers
 

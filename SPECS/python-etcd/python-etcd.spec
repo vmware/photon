@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/jplana/python-etcd/archive/refs/tags/%{srcname}-%{version}.tar.gz
-%define sha512 %{srcname}=c59d7a67492a2e4e72b1ae3ea73ac85a073b9d4516d1ebc48601ba67ac9609fbc45574d97e8dfae3ed4f511f090343ff980160043676252125ce2e2edc7bd154
 
 Source1: license.txt
 %include %{SOURCE1}

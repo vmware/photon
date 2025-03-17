@@ -7,7 +7,6 @@ URL:            https://pypi.org/project/PyHamcrest
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/n/deepmerge/PyHamcrest-%{version}.tar.gz
-%define sha512  PyHamcrest=f66d9119b93bdc29d2120cc58c1ba25f9777be7ec82fa888bfcbcc38f03bb0cbc59267d858f6a279bab5576061fe77618f5db320febf6f62d55b67b68be7c06a
 
 Source1: license.txt
 %include %{SOURCE1}

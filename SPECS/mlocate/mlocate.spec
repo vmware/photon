@@ -8,7 +8,6 @@ Distribution:   Photon
 Group:          Applications/File
 
 Source0: http://releases.pagure.org/mlocate/%{name}-%{version}.tar.xz
-%define sha512 %{name}=b1207047e30a551cba39e70812439b554def567ebe9b8b81fed6f26435bb575beafe4875a21cd72876eadd85da4e7bfc942eb28b17c430b537c351690364837f
 
 Source1: %{name}.sysusers
 

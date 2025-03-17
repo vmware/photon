@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define sha512  node=438c80d1d1dde96c3a39b94ffd5ca0cdc636526c3d8e50ec69270fcadcb4dfaa9025d36b359f24db8c1b30f888fe825375ced0cf8b5bb5f79df5e69403f5fec7
 
 Source1: license.txt
 %include %{SOURCE1}

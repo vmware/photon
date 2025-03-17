@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/chardet/chardet/archive/chardet-%{version}.tar.gz
-%define sha512 chardet=3853248584d53d977abe0e6ab856e1526fd7360d9b94b4f08d03895da80ba9efac8882dbd3f919f0d52b0699c0d7fd68edb223c37512685976c6f2b212fbe0ff
 
 Source1: license.txt
 %include %{SOURCE1}

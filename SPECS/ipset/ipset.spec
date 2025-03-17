@@ -7,7 +7,6 @@ Group:         System Environment/tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       ipset.netfilter.org/%{name}-%{version}.tar.bz2
-%define sha512 ipset=0fc936d971c30a0925c585d506c8840e782fdaeec09bc8fd249e874fe838fa55a4dbb697f6e1423a6769abf07a1ce2195abc37cb641e8e4ad70f1b4c7130916a
 
 Source1: license.txt
 %include %{SOURCE1}

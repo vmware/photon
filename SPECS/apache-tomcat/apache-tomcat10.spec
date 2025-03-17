@@ -21,7 +21,6 @@ Obsoletes:      %{_origname} < 10.1.15-1%{?dist}
 Provides:       %{_origname} = %{version}-%{release}
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=0124d92eb1d184bdce1a50d5934958a0c796460a7157a8622aeee2b21060f5377198939a0260285bcdaa25cea42b880cb97575469a63f7b33ec22d532927e6ca
 
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
@@ -34,7 +33,6 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-10/v%{version}/src/%{_ori
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=c764124c351e8b22a7bd65026d1039a27027adfe651b97757ea4e07c3f81779557cfbaab741866dbf37942be5b302c92216f905e31c2aae27594aa590fc9f446
 
 Source2: license-apache-tomcat10.txt
 %include %{SOURCE2}

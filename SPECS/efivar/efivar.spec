@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0:       https://github.com/rhboot/efivar/releases/download/%{version}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=c2f17297c863ece134a9dd758d237fd2df8c8d072f87af1d0bf2bcf9acfc7a53c25597f03fd4fb8cc664b205743d4ffa0ef1b068d0f73c58fa573d40993f3155
 # Generated using mandoc
 # mandoc -mdoc -Tman -Ios=Linux efisecdb.1.mdoc > efisecdb.1
 Source1:       efisecdb.1

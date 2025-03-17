@@ -7,7 +7,6 @@ URL:            https://github.com/jpadilla/pyjwt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/jpadilla/pyjwt/archive/refs/tags/PyJWT-2.8.0.tar.gz
-%define sha512  PyJWT=9d631c20c5207d5ab3137c9d56825f9e197688181abae4f3d6aac766530a35e07a2dfd5e3ba6e530dd5a29a27f54e961cb01075f3bc831b73816aa7c357eb0d4
 
 Source1: license.txt
 %include %{SOURCE1}

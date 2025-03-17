@@ -5,7 +5,6 @@ Summary:        An Open Source software construction tool
 Group:          Development/Tools
 URL:            https://sourceforge.net/projects/scons
 Source0:        https://sourceforge.net/projects/scons/files/scons/%{version}/%{name}-%{version}.tar.gz
-%define sha512  scons=f79b86bb09783767b3872cfb8efb665372714a604af2aaf3adc66eee63d3afe27bc6b2aab83813743c83f71c81c800d42842e916501787ba402ce2726dda9b44
 
 Source1: license.txt
 %include %{SOURCE1}

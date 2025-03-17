@@ -11,30 +11,23 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://static.rust-lang.org/dist/%{name}c-%{version}-src.tar.xz
-%define sha512 %{name}c-%{version}-src=fd0e5a16bdbeb539184513583089e55f681cb772810df357b6b1464853f7022ac02edab3dd155b2262ed0047e2a25dea3808dd078dcdfce9d399384465009db4
 
 Source1: https://static.rust-lang.org/dist/%{toolchain_prefix}/cargo-%{bootstrap_toolchain_ver}-%{_arch}-unknown-linux-gnu.tar.xz
 %ifarch x86_64
-%define sha512 cargo-%{bootstrap_toolchain_ver}-x86_64-unknown-linux-gnu=9e7a61ff6bb5a67a0ea4138259e0289c285ef7a5b3fbcad5ddcf780d2d5ec36000a5a3757b9a182b020abf646a25de3509789cf7df0fd4236231d5b92157c4e5
 %endif
 %ifarch aarch64
-%define sha512 cargo-%{bootstrap_toolchain_ver}-aarch64-unknown-linux-gnu=70e2078a77752e51ac8bc6affcb2f81be082791ff35ef03dd5480cad9da9654234c298d8f19b418b39984a3cf885d238fe0e16d3a7b9b71b006aebf925107475
 %endif
 
 Source2: https://static.rust-lang.org/dist/%{toolchain_prefix}/rustc-%{bootstrap_toolchain_ver}-%{_arch}-unknown-linux-gnu.tar.xz
 %ifarch x86_64
-%define sha512 rustc-%{bootstrap_toolchain_ver}-x86_64-unknown-linux-gnu=790ff039749654fa3ff2f481e5fe8012e3b5fe75d075c2210e49cd4093d3d3ddcdb6690e4d9b3012e7d6361a9629ab909723f1dee8171de1f87b6b418c99aaf9
 %endif
 %ifarch aarch64
-%define sha512 rustc-%{bootstrap_toolchain_ver}-aarch64-unknown-linux-gnu=786baefc4e4f4bda540bba9fa6fac668b8c166336a6494f1fa4057980f1ee95e34f4105409717cc61e034f98382cf8d5b59be6304d4b85de23651a2d15ed2ce2
 %endif
 
 Source3: https://static.rust-lang.org/dist/%{toolchain_prefix}/rust-std-%{bootstrap_toolchain_ver}-%{_arch}-unknown-linux-gnu.tar.xz
 %ifarch x86_64
-%define sha512 rust-std-%{bootstrap_toolchain_ver}-x86_64-unknown-linux-gnu=81ff6c73da530a5a0397ad777de2a33f7773eb58c38ba04410a3751a744c68631b0b02840170f5507c44cb4e9d2be882860e2ce663a406333ab6c57d73596956
 %endif
 %ifarch aarch64
-%define sha512 rust-std-%{bootstrap_toolchain_ver}-aarch64-unknown-linux-gnu=8c472c23c4911c96ceea8c67c8a29aa7c99501df09ae078d6506860f5613e96039a08684ecb488b95a941550fceafec58726ea99139542cd0e27f6e126fa1b05
 %endif
 
 Source4: license.txt

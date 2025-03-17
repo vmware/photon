@@ -13,7 +13,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-17=0643ac52b68e5884734289ab13592feef7273db96f7b5c0fd77d801e4d4e44a84abcc439fd1b138119c5583986f1d0b058aa74f55b00e0dfd31333cbb536744d
 
 Source1: license-openjdk17.txt
 %include %{SOURCE1}

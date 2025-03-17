@@ -14,12 +14,10 @@ Distribution:  Photon
 URL:           https://github.com/projectcalico/libnetwork-plugin
 
 Source0: https://github.com/projectcalico/libnetwork-plugin/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=40b7b0962e58fced7a02fa743b0f92aae2c6d1e43046cd0d59153f4022ad22ca0b29ac3a9cbc6e67218a35dce3306a1a88194d22248a2f589ee385d0c1ce3852
 
 # Be aware that the source tarball has a different prefix as the package name: libnetwork-plugin vs. calico-libnetwork, thus use libnetwork-plugin-%{version} as prefix
 # Created by `glide install --strip-vendor && tar --owner=root --group=root --mtime='2000-01-01 00:00Z' --transform "s,^,libnetwork-plugin-${version}/," -c vendor | gzip -9`
 Source1: glide-vendor-for-%{name}-%{version}.tar.gz
-%define sha512 glide-vendor-for-%{name}=164866f261519403a420bf2746e5d34fbdf5be61c0141ddf9e9959e86ba93dc1b941210f4e8d9769f453da0dee8de082770e93bc05b2778dae80965eef8cee46
 
 Source2: license.txt
 %include %{SOURCE2}

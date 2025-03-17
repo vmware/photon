@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/cyrusimap/cyrus-sasl/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=dbf908f3d08d97741e7bbee1943f7ed6cce14b30b23a255b41e1a44c317926d1e17394f9a11f2ed4c453f76e2c690eb5adcad3cb04c4ca573c6092da05e1e567
 
 Source1: license.txt
 %include %{SOURCE1}

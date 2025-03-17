@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://pypi.org/project/pydantic
 
 Source0:        https://files.pythonhosted.org/packages/d5/eb/d5ee9e58b2a4608c320fc72e5d471ba0cd949e8ef6f2689d30d1bd782d9f/pydantic-1.10.1.tar.gz
-%define sha512  pydantic=e0394b90c39fd5294b7f4f280548d07113d771737943c390405d5bdbaf05216dc20c6adb7860cbbe1f8ee9698909447e72a8a5245009c710fe9b172d53bb2260
 
 Source1: license.txt
 %include %{SOURCE1}

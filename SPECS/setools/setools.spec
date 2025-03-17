@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/setools/releases/download/%{version}/%{name}-%{version}.tar.bz2
-%define sha512  %{name}=2ec92d7a6e30261549b6a8d2f17175d4a7d8313ef0cd81f4a19a91c53fe0107bac9a89c19dd67a4c534ee51ec520590795b4312f9e03e69fdf1763b0c35291f8
 
 Source1: license.txt
 %include %{SOURCE1}

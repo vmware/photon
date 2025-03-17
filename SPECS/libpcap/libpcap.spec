@@ -4,7 +4,6 @@ Version:       1.10.1
 Release:       2%{?dist}
 URL:           http://www.tcpdump.org
 Source0:       http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha512 libpcap=56c314f19c2b857742bf8abcb1e78066986aaa95cec339b75a3c8b70a9fa2b5167da98708352f9ec97a1cea2700cfb4e040bda108d58ac46cec9b7deab88d171
 
 Source1: license.txt
 %include %{SOURCE1}

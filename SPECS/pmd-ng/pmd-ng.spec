@@ -16,7 +16,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: pmd-ng-%{version}.tar.gz
-%define sha512 %{name}=44a2813c8e454515a0a161203ce6a5f2d5ff72fb14b0456a5b19ca386ea9d2e1c002a34faced1fb883cc60ba53a9ebcb7c86da00e19aba5ab1630866a6b153ba
 
 Source1: %{name}.sysusers
 

@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
-%define sha512  %{name}=51a11258d3c3c58ba3860da3f1a85138fa60f5094259cd874fd4ca8bc17bb5df066e7e3cbebdcd1fbf384d13df4aaf168fe5503d302016936a2ac54d029d2063
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://robpol86.github.io/terminaltables/
 Source0:        terminaltables-%{version}.tar.gz
-%define sha512  terminaltables=dc49458652fff8bc6094d316d84c9b8e9fca1a26e3230c0b668bc03ec8528793f4ef024e8032d4a56fbfabfdfd4a1142870f550f0b373ba6a42dd2e3ead3f501
 
 Source1: license.txt
 %include %{SOURCE1}

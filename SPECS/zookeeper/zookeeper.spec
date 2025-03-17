@@ -8,7 +8,6 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=d66e3a40451f840406901b2cd940992b001f92049a372ae48d8b420891605871cd1ae5f6cceb3b10665491e7abef36a4078dace158bd1e0938fcd3567b5234ca
 
 Source1: zookeeper.service
 Source2: zkEnv.sh

@@ -7,9 +7,7 @@ Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/tobert/%{name}/archive/%{name}-1.zip
-%define sha512  %{name}=7f62d16447fe5f8e9c126fb4f0e00df697bb253ea0213ece2be2ce0b919ccaa175e009987a4f01252225c35b05c55685da4db684d68b7bd4501fe781163d01d3
 Source1:        https://github.com/golang/sys/golang-sys-08-02-2017.zip
-%define sha512  golang-sys=0c40f2acd0466637b5b01f75eed593939075fc742c8991b4ff884076852a5c02eb6ed0a162be8539ff73eba665ae04fb011efe739c4bda999f5365241945015a
 
 Source2: license.txt
 %include %{SOURCE2}

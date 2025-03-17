@@ -10,4 +10,5 @@ sources:
       license_concluded: BSD-4-Clause-UC
       license_declared: BSD-4-Clause-UC
       short_summary: The finger client
+      home_page: https://github.com/Distrotech/bsd-finger
       supplier: 'Organization: Broadcom, Inc.'

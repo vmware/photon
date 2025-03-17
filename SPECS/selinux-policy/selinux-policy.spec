@@ -10,10 +10,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/fedora-selinux/selinux-policy/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=85bf6c98b1d226019122226ca4761821c6d8b46c7c40b00b67a9279f3d1fc847ea4bdde2fddcdaa161aa577b86a495f5ad80f8736acd813ad74a366b9aeaaa89
 
 Source1: https://github.com/containers/container-selinux/archive/container-selinux-%{container_selinux_ver}.tar.gz
-%define sha512 container-selinux=8d85263599cf66b2d83e510ab75056d425ae5cd9b330c820d053e328575129ccca5320c92f29c8e0310d49b90261755567a28b93ae684f21f49698789ea6bf1b
 
 Source2:        build.conf
 Source3:        modules.conf

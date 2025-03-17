@@ -8,13 +8,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.x.org/pub/individual/app/bdftopcf-1.1.tar.bz2
-%define sha512 bdftopcf=7b790e8d512ca2812ac889c156ef91c48798b4744a6857e5b17e0128764b5afa8c5426fe5de05a9819d64745116718db4221b3e657e3c2633465e87179c44bec
 
 Source1: http://ftp.x.org/pub/individual/app/mkfontdir-1.0.7.tar.bz2
-%define sha512 mkfontdir=96d1920565514f90621e18a87fb5a2db9e052d1bffc6552d9659e065a21e252ab98b4e62013755032b98ed6d8c3381eb75c3c8e02651766ee4791ca622dcef1f
 
 Source2: http://ftp.x.org/pub/individual/app/mkfontscale-1.2.2.tar.gz
-%define sha512 mkfontscale=3cb40a6c04f817157507f05cf8641d5cc8cf7b858b87c13cc7fdd7cb15627f3cfb7bf5b344107baeea2348705cbf718e2bf9cd7d19a0978d9ffd5867edc5ee17
 
 Source3: license.txt
 %include %{SOURCE3}

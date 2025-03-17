@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/harfbuzz/harfbuzz/releases/download/%{version}/%{name}-%{version}.tar.xz
-%define sha512  %{name}=2f2fe4604c062549bf5975cde4022bb137fc04f05ef99fcb566411408cfd136371eae2139b943f70bd17eb758690cbd5183acd552bc901d13c634da11eea404c
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -8,7 +8,6 @@ Group:      System Environment/Security
 Distribution: Photon
 
 Source0: https://github.com/tpm2-software/tpm2-pytss/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9f317b2144e27ac0e6b876d1987cd5c64f4c1f70d1689cea3d926749d9778b2ad813335269cff70c8335f15b72b1233fffe062f4cb5791c5480c58119cf42db7
 
 Source1: license.txt
 %include %{SOURCE1}

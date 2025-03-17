@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://github.com/aws/aws-sdk-ruby/tree/master/gems/aws-sdk-s3-%{version}.gem
-%define sha512    aws-sdk-s3=0a1225b94b0520c7d9c99af16d1fa18aaf24bc9811a1fa21457c5e510e3345efe78948dbe5d5725226645715572c9e167d8fee2f7fea24a5a3394271e4980fb1
 
 Source1: license.txt
 %include %{SOURCE1}

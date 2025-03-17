@@ -12,7 +12,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512 bind=38dcb5d401b357127f11af521594daf2a7df1fbf444f80a823d10d1077903a59faac4299f925ad77283610c54c816ac0f53edb6d1cdb664abc36368457840e55
 
 Source1:        %{name}.sysusers
 

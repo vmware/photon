@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{version}.tar.xz
-%define sha512 %{name}=be30362b0df6906aa786f935d5f555b8b86c747fe05314066f4180ab2f7c952ae227b7cf04c15e75d8f99ca17bafb7c8dc0fb1c18f3a9e3222d98716bb449f7a
 
 Source1: license.txt
 %include %{SOURCE1}

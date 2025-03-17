@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://github.com/unbit/uwsgi
 
 Source0: http://projects.unbit.it/downloads/%{name}-%{version}.tar.gz
-%define sha512 %{name}=36a9c1b87a4c3d08482b9045d2227f56b006acb53f38ddf1b510880ae5fc24c0177a077338ec8af3ef0b8f8e220bc4fc7f8311dab8066e13cbcbb616f736c795
 Source1: photon.ini
 Source2: %{name}.service
 Source3: %{name}.ini

@@ -6,7 +6,6 @@ Version:        6.0
 Release:        3%{?dist}
 URL:            https://ctags.io/
 Source0:         https://github.com/universal-ctags/ctags/archive/%{name}-%{version}.%{upstreamversion}.tar.gz
-%define sha512 ctags=976aaf8c87ab35019ea621ed67781f652ac43250a042708a80e063faa827fa9ecf69ad751a28a09ecb56a9f767a3c79d3a91fbb6cf9625daf3426f8c7f4eb871
 
 Source1: license.txt
 %include %{SOURCE1}

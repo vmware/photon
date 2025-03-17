@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/pypa/wheel/archive/%{version}.tar.gz#/wheel-%{version}.tar.gz
-%define sha512 %{srcname}=c977a740c17abd1fa4b4c2382a33f3ff887baa4231c36990d988cb8531496074e39744786ef6ac0da9c9af4977bce5b2da145377a3ac15eea918f8125bff66ec
 
 Source1: license.txt
 %include %{SOURCE1}

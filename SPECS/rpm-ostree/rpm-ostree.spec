@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha512 %{name}=0afec5019ab3d2e94578acadcf62b698b3f5880b8755575bf12300368d9e3b0e9e94492d4a311af282d0535dc6df30dd4e3fa58e2f671c30dbfdc788c96a3d7e
 Source1:        mk-ostree-host.sh
 Source2:        function.inc
 Source3:        mkostreerepo

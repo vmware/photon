@@ -13,7 +13,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-11.0=b5375de7c39aafa4fe1ef6556e17bf5c8ace577953ea8e666c4e8adc3e8b0f6fdbf20b7c426a156420acb99787363e0e4c9d36df20cefcef5e74a48bb75eeb24
 
 Source1: license-openjdk11.txt
 %include %{SOURCE1}

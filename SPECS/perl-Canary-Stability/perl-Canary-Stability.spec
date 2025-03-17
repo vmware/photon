@@ -5,7 +5,6 @@ Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Canary-Stability/
 Source0:        http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/Canary-Stability-%{version}.tar.gz
-%define sha512  Canary-Stability=9dfb0e6d136048050aac7c29e1fc79dc2a7703c8800582aa837c5d9b9934c48bfcb0a9ef1c6b5bb7e71a10a709e7f7431b3c79ea12b8d9f374b33bfd4a3e468d
 
 Source1: license.txt
 %include %{SOURCE1}

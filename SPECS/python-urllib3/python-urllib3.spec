@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/shazow/urllib3/archive/urllib3-%{version}.tar.gz
-%define sha512 urllib3=6b72012dbd85434b2441229cbdea2a94583693f904dde349780e1290d581c8a5e10fe00a287a032ed1276349d0078b530f16a133e0f164dcea18105fa3dec79a
 
 Source1: license.txt
 %include %{SOURCE1}

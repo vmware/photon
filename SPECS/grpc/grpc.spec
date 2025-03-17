@@ -14,19 +14,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/grpc/grpc/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=9f35ee3185c4cbb4140b86380e97d62dc6ecd886df3ec3aa3e917dc3f1e3acf518e2a28ed143f430869508f3c853b3f3f21226d74bab42f70b99a7096e0e18af
 
 Source1: https://github.com/envoyproxy/data-plane-api/archive/%{envoy_api_commit}/data-plane-api-%{envoy_api_commit}.tar.gz
-%define sha512 data-plane-api=9b1ceff5d018e70b36e02aa1b583f5495b0eb92506055bf6913d2e7ef401d3602cba8723efbc178ee31fdef9aba510fc2284612ebe22a24b5b4a703f07099897
 
 Source2: https://github.com/googleapis/googleapis/archive/%{googleapis_commit}/googleapis-%{googleapis_commit}.tar.gz
-%define sha512 googleapis=cdeefae807df7097174b4bb28c0900b06a68d424c00ebba4ff5add260c9c651351d5e429bfc5de42f95ebb75dadec313f7bd3991c2fa476c9104f9ea656acad4
 
 Source3: https://github.com/census-instrumentation/opencensus-proto/archive/v%{opencensus_proto_version}/opencensus-proto-%{opencensus_proto_version}.tar.gz
-%define sha512 opencensus-proto=39231a495dfdccfc8267d1e6af2ac624feea611a8691c10ec570de2194b352e4a9c3b0ce1606414fb98e5d77c66873bed4a9e56512efa12b267b8a91e0c5851e
 
 Source4: https://github.com/cncf/xds/archive/%{xds_commit}/xds-%{xds_commit}.tar.gz
-%define sha512 xds=eb5878764503872c18b8750b20e2c2e2224e73d9601197752cea7e1e4171899474ad4f39aacc80d6c1b57a50b2161d39f219df64ffb250d045af482dae01ea79
 
 Source5: license.txt
 %include %{SOURCE5}

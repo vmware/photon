@@ -7,7 +7,6 @@ Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha512  openvswitch=875f043fcd80dabdba5d7a35e950c804926ef307977d8bec10c9f2f225d4cc7c851f1b65f6c9af838950344c0b103531c266738e61da16900966ff8da0ba76aa
 
 Source1: license.txt
 %include %{SOURCE1}

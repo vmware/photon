@@ -7,7 +7,6 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://cpan.metacpan.org/authors/id/E/ET/ETHER/Try-Tiny-%{version}.tar.gz
-%define sha512  Try-Tiny=1a3c852e56797d81da60a4f4887cb70fc575eca83d10b8cd12fe5d5d0008a967801218f3a5277a2f1347ade95b9515c1f237333e491742d06614c0beecf44768
 
 Source1: license.txt
 %include %{SOURCE1}

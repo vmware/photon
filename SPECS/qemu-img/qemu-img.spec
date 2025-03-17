@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://download.qemu.org/qemu-%{version}.tar.xz
-%define sha512  qemu=f3cfa00da739ba819a218d7e6e95c77fb79a8e0f487b024ddd281602e785249b81144595e3f8c746c32a4f5c4d1a88c6aebae3c162603edfbb50ae3722d7ed13
 
 Source1: license.txt
 %include %{SOURCE1}

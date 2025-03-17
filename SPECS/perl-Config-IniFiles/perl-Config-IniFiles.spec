@@ -6,7 +6,6 @@ Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Config-IniFiles/
 Source0:        https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-%{version}.tar.gz
-%define sha512  Config-IniFiles=29278b7f6aaf9ffcc0cd8b48ca0e1f1084b10278e50764b2b93e3e9b156ef13d6e54f779f41d0a6cbf6e0b23da1b73a3bb83fbf873add0a604693a41312b91f5
 
 Source1: license.txt
 %include %{SOURCE1}

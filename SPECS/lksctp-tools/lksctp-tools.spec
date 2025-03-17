@@ -8,7 +8,6 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: https://github.com/sctp/lksctp-tools/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e56a4b00206acfb88cab1b8fc7424a1a4996f67ef925c29a97395c44c57f2cbcb3fc36ec2648f5e5a5ce29d8d61ee1f7a5e7869e6bbd68bff85590b6ec521883
 
 Source1: license.txt
 %include %{SOURCE1}

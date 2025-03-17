@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/KhronosGroup/Vulkan-Loader
 Source0:        https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/Vulkan-Loader-%{version}.tar.gz
-%define sha512  Vulkan-Loader=54d9503ec575380d49ccf20dcedefa38baf29483c1fa125059cf2535021ed4c618781317dfca659cdbadb40331da4ffb61d88849504d6cfb688ea24cc92254e8
 
 Source1: license.txt
 %include %{SOURCE1}

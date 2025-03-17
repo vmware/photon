@@ -7,7 +7,6 @@ URL:           https://vmware.github.io/photon/
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       %{name}-%{version}.tar.xz
-%define sha512 grub2-theme=de7a527723f7cacd18582d1c2c6b8ef15b2ae4cc82465f90b4ecf2af2de4fe743c44685b08dce81dfd8a595e672f6510351f28f9d9f54a062721a09c3dcc1a74
 
 Source1: license.txt
 %include %{SOURCE1}

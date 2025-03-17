@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluent-plugin-s3-%{version}.gem
-%define sha512    fluent-plugin-s3=3983c451a805e42e0b8329ee4b66ab65eb2bde41cc373de1e3f47e4908d0dc2b92b43901436ccc4174fff1b216461d6afdfb6e04dfa8e38036bb977ce5726e74
 
 Source1: license.txt
 %include %{SOURCE1}

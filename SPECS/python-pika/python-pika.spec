@@ -7,7 +7,6 @@ URL:            https://github.com/pika/pika
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/pika/pika/archive/refs/tags/pika-1.2.1.tar.gz
-%define sha512  pika=2688f8f04990c25a5cb6f6bea4f3407bbf35fca9060e24ab4dc181f829bf4fe7d76d46f35947c8cb1f040ec880effc6e62d7303ec418eb703d51dc7a1a96d72d
 
 Source1: license.txt
 %include %{SOURCE1}

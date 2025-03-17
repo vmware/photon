@@ -8,7 +8,6 @@ Group:          System Environment/Daemons
 URL:            http://www.irisa.fr/caps/projects/hipsor
 
 Source0: http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ef2e0ae3be68a8fba16371c3347d52ecf9748269ae30eef2e5c26aad6cfb516f87295e1e56be902df1064e7d4ace04863dd094d62b69e584608f779d63b42d8e
 
 Source1:        %{name}.service
 

@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/ptyprocess/ptyprocess-%{version}.tar.gz
-%define sha512  ptyprocess=791d8f2e79900627215ce80ce67ee9c79173dbc08297c6219d5058f9b80c5e323b93049e6836a70c4073f43548d22e3cf310f2e9948ef12f96bcaa15b0ddb2f3
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -12,10 +12,8 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ab5d84ed665c16e90fa0a5c97cc4e34580f6f2079007328cba9c0b579245e0dbdae712e5d4079221d7b1bbaf674ae2994b68a37567ea5f9a6600787a31ab0082
 
 Source1: https://github.com/wavefrontHQ/telegraf/archive/%{name}-plugin-%{plugin_ver}.zip
-%define sha512 %{name}-plugin=3f49e403a92da5e45eaab7e9683c2f36e1143036db59e167568bec348499af6b7cc2b37135a37f6ebaf4be63bee25cf7859b6f164c6ed3064ad786a55111bfcc
 
 Source2: %{name}.conf
 Source3: %{name}.sysusers

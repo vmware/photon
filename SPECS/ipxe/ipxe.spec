@@ -13,7 +13,6 @@ Distribution:   Photon
 
 #Download URL:  https://github.com/ipxe/ipxe/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha512  %{name}=47400975110ed4ab95835aa1b7c8d5a6917c19c5713c6ab88bc0741a3adcd62245a9c4251d1f46fffc45289c6b18bf893f86dbc3b67d3189c41b7f198367ecaa
 
 Source1: license.txt
 %include %{SOURCE1}

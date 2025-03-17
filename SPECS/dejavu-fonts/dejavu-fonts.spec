@@ -10,7 +10,6 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sourceforge.net/projects/dejavu/files/dejavu/%{version}/dejavu-fonts-ttf-%{version}.tar.bz2
-%define sha512 dejavu-fonts-ttf=bafa39321021097432777f0825d700190c23f917d754a4504722cd8946716c22c083836294dab7f3ae7cf20af63c4d0944f3423bf4aa25dbca562d1f30e00654
 
 Source1: license.txt
 %include %{SOURCE1}

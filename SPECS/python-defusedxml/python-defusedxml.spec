@@ -8,7 +8,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        defusedxml-%{version}.tar.gz
-%define sha512  defusedxml=93c1e077b22a278011497f3b3f4409b5259e0077768caa121e0f078f80f39c082f3870eaaf4bad5166fe8c3b2d169ccdea62c2840ba6969240a8371cef34c4d5
 
 Source1: license.txt
 %include %{SOURCE1}

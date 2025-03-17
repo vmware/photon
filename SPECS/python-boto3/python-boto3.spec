@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/boto/boto3
 Source0:        https://github.com/boto/boto3/archive/boto3-%{version}.tar.gz
-%define sha512  boto3=7da4c3ba2bb3a75ef4e95ae5c6c90b6064f30064ee4db9a9b102b741a153372b460d86ad2e7098691ee9faf3fd9acd80dd6852e723b99278d8b26c42981333e1
 
 Source1: license.txt
 %include %{SOURCE1}

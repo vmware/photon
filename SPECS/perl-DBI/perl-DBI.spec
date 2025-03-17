@@ -19,7 +19,6 @@ URL:            http://dbi.perl.org/
 # The source tarball must be repackaged to remove the DBI/FAQ.pm, since the
 # license is not a FSF free license.
 Source0:        https://cpan.metacpan.org/authors/id/T/TI/TIMB/DBI-%{version}.tar.gz
-%define sha512  DBI=03812f3eb1e43c8290dadb8cb14bbced9ec6e237228ea2a2ba91f22e52143906a91a7e82945dab30b1d1b9fc925073721111adafd9a09fac070808ab88f908b8
 
 Source1: license.txt
 %include %{SOURCE1}

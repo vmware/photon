@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/rbvmomi
 Source0:        http://rubygems.org/gems/rbvmomi-%{version}.gem
-%define sha512  rbvmomi=255a7517939a3d369244b7c66b39baa6903e489f8fd0057b4414850c5c90cf0a8931d507d8b5a7f806afba3c565a8cc5bba3b3cc614587d644f4060a165878ef
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -10,7 +10,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=42798768a5859ded6bb5f65bed2d0ced81c86eca06ebed275967352435e4bac93df8c95a4a3f841f43e1450457629c92e9e1a5f51159607055484dc53ffa1699
 
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf

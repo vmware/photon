@@ -12,7 +12,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/dracutdevs/dracut/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=196bc8bf18703c72bffb51a7e0493719c58173ad2da7d121eb42f9a8de47e953af36d109214dc4a10b2dc2d3bd19e844f7f51c2bdec087e064ea11f75124032d
 
 Source1: license.txt
 %include %{SOURCE1}

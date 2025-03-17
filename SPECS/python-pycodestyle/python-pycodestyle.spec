@@ -7,7 +7,6 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pycodestyle-%{version}.tar.gz
-%define sha512  pycodestyle=da1c67815b50d13c8eb70cebcc12c761a6407518a4ed4a8780ee7064089c9e89a5c3246d05f19916c0ec293fc1a372d3b2adb72e11f775b1cfbd1fbbe07a1a83
 
 Source1: license.txt
 %include %{SOURCE1}

@@ -7,7 +7,6 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%define sha512  watchdog=1c9c921570ec7ddc3e4ff88b2029f1c3865277e547fb8970575df4b61fdf1f06f443f49ad09f11c29d913ca7d6ab05c5b19ec049ac218a8bcebd20b1bf5f0bbd
 Source1:        watchdog.service
 
 Source2: license.txt

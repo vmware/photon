@@ -7,7 +7,6 @@ Url:            https://github.com/ofek/binary
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/b/binary/binary-%{version}.tar.gz
-%define sha512  binary=474ba683ecd8864fa50fdf4e2533947460449241abf34b15199a1b478e6e9a4ad56c888b6bf54c05be2936c32f7fa8d783004fc0466c3458433e0dc3e8ee711f
 
 Source1: license.txt
 %include %{SOURCE1}

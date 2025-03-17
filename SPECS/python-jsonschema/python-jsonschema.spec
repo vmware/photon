@@ -8,7 +8,6 @@ Distribution:   Photon
 URL:            https://python-jsonschema.readthedocs.io/en/stable
 
 Source0: https://github.com/python-jsonschema/jsonschema/archive/refs/tags/jsonschema-%{version}.tar.gz
-%define sha512 jsonschema=c84abc992f410e9d558e2ce06c7172e9e2d298cff469baf8a23b1ea5b4777e6addfa757c5cc62b2e28e257721ee55e04bec0852e5f525adfa87392cbf712828f
 
 Source1: license.txt
 %include %{SOURCE1}

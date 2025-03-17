@@ -7,7 +7,6 @@ Group:        System Environment/System Utilities
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      https://github.com/rhboot/dbxtool/releases/download/%{name}-%{version}/%{name}-%{version}.tar.bz2
-%define sha512 dbxtool=28918c05d3a2a55238f4267e969116bdd3c9fc9f308b1e0249fe22cc06e95a6388e54406273c3b3d076a619a6ac0723b05cacb84bd84f797c954d60f22a86b85
 
 Source1: license.txt
 %include %{SOURCE1}

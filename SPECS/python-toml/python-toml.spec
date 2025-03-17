@@ -5,7 +5,6 @@ Summary:        Python Library for Tom's Obvious, Minimal Language
 Group:          Development/Libraries
 URL:            https://pypi.python.org/pypi/
 Source0:        https://files.pythonhosted.org/packages/da/24/84d5c108e818ca294efe7c1ce237b42118643ce58a14d2462b3b2e3800d5/toml-%{version}.tar.gz
-%define sha512  toml=ede2c8fed610a3827dba828f6e7ab7a8dbd5745e8ef7c0cd955219afdc83b9caea714deee09e853627f05ad1c525dc60426a6e9e16f58758aa028cb4d3db4b39
 
 Source1: license.txt
 %include %{SOURCE1}
