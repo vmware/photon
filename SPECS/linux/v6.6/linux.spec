@@ -40,18 +40,14 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=1c1cb9449686fc334385e9997073503ac6312d6855e8ef26bb1e73267447cce14f1f0a22b5c585a0a3c6c8dd1ed0e3c246671773ab8990fdf3c2f081219a9212
-
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
 %define ena_version 2.8.3
 Source3:        https://github.com/amzn/amzn-drivers/archive/refs/tags/ena_linux_%{ena_version}.tar.gz
-%define sha512 ena_linux=173435137b6fe47d110db376c4c3eff8da7a10803dde5f41f694d04e74319861c16398f257a1c917a4fc05477c86e6e7b42e6a63e2f42de7ea9166f77ba9b01d
 
 %define efa_version 2.1.1
 Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux_%{efa_version}.tar.gz
-%define sha512 efa_linux=2ceb5a4011a6b5f69d0a389e3d6f188d29cb87373202b42fe6c1f29ac2a310d1180a9ffad3e362680b675edc8007850b541e477b918781ef406afc55ca0d1c6e
 
 # contains pre, postun, filetriggerun tasks
 Source6:        scriptlets.inc
@@ -62,7 +58,7 @@ Source9:        check_fips_canister_struct_compatibility.inc
 
 %define fips_canister_version 5.0.0-6.6.30-2%{?dist}
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=ee7f9aa92069cc5f73e4582d1f50ac899418f9041a0a07a4817b4850dafb52b09f87bd622041c4b31e3404c48849635d847aa29351a857f5f426891cf5cb63f1
+
 %endif
 
 Source18:       spec_install_post.inc
@@ -76,7 +72,7 @@ Source25:       linux-sbat.csv.in
 %define jent_major_version 3.4.1
 %define jent_ph_version 4
 Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
-%define sha512 jitterentropy=37a9380b14d5e56eb3a16b8e46649bc5182813aadb5ec627c31910e4cc622269dfd29359789cb4c13112182f4f8d3c084a6b9c576df06dae9689da44e4735dd2
+
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S

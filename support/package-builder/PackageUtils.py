@@ -7,6 +7,7 @@ from CommandUtils import CommandUtils
 from Logger import Logger
 from constants import constants
 from SpecData import SPECS
+from SourceConfigData import SOURCES
 
 
 class PackageUtils(object):
@@ -326,7 +327,7 @@ class PackageUtils(object):
 
     def _verifyShaAndGetSourcePath(self, source, package, version):
         # Fetch/verify sources if checksum not None.
-        checksum = SPECS.getData().getChecksum(package, version, source)
+        checksum = SOURCES.getData().getChecksum(source)
         if checksum is not None:
             PullSources.get(
                 package,

@@ -26,8 +26,6 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar.xz
-%define sha512 linux=51d3b7d1dbfe0ecba1bd1265723a8e7c1553d99ade785bb91fe39979108c38f5e933b018406bfdc303a96d50eccb88d629c8dc0fecc94b975efffe8e79b43fc5
-
 %ifarch x86_64
 Source1: config-rt
 %endif
@@ -42,14 +40,12 @@ Source6: preempt_rt.patches
 
 %define stalld_version 1.19.1
 Source7: https://gitlab.com/rt-linux-tools/stalld/-/archive/v%{stalld_version}/stalld-v%{stalld_version}.tar.gz
-%define sha512 stalld=f92fd5996482600c6a73324f43eed8a4a1f5e8f092e4a167306804e4230abbb89c37a8bfbb78ffe997310b8bfbb45d4903dd0c51292770dcf5b1d3cd56a78bde
 
 %if 0%{?fips}
 Source10: check_fips_canister_struct_compatibility.inc
 
 %define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
 Source16: fips-canister-%{fips_canister_version}.tar.bz2
-%define sha512 fips-canister=ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
 %endif
 
 Source19: spec_install_post.inc
@@ -65,7 +61,6 @@ Source25: linux-sbat.csv.in
 %define jent_major_version 3.4.1
 %define jent_ph_version 4
 Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
-%define sha512 jitterentropy=37a9380b14d5e56eb3a16b8e46649bc5182813aadb5ec627c31910e4cc622269dfd29359789cb4c13112182f4f8d3c084a6b9c576df06dae9689da44e4735dd2
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
 Source35: jitterentropy_canister_wrapper_asm.S
