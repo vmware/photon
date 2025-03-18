@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.234
-Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.235
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=ddd8114230af1a270e39ac8dd41a1d09a3f70ab0eb65109b2de41e3e01103fa0e7531960fbd84698f29c12531ab1fec51da6a07ea88a1309438e90e896f78c0b
+%define sha512 linux=2f9e7b7689f19b7fd16a577f0f51cb4dd7ecc52b7b7c39f3e518e2760d3f639940c5a212976b92531298ff534d49a7ae667137540d30f7f25e5f7db6dce2abb6
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -268,9 +268,6 @@ Patch159: 0001-scsi-ufs-core-Improve-SCSI-abort-handling.patch
 # Fix CVE-2024-44934
 Patch160: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
 
-# Fix CVE-2025-21703
-Patch161: 0001-netem-Update-sch-q.qlen-before-qdisc_tree_reduce_bac.patch
-
 # Fix CVE-2025-21690
 Patch162: 0001-scsi-storvsc-Ratelimit-warning-logs-to-prevent-VM-de.patch
 
@@ -349,9 +346,6 @@ Patch192: 0001-drm-amdgpu-amdgpu_ttm_gart_bind-set-gtt-bound-flag.patch
 
 # Fix CVE-2024-27062
 Patch193: 0001-nouveau-lock-the-client-object-tree.patch
-
-# Fix CVE-2024-26982
-Patch194: 0001-Squashfs-check-the-inode-number-is-not-the-invalid-v.patch
 
 # Fix CVE-2024-26915
 Patch195: 0001-drm-amdgpu-Reset-IH-OVERFLOW_CLEAR-bit.patch
@@ -1046,6 +1040,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Mar 17 2025 Harinadh Dommaraju  <Harinadh.Dommaraju@broadcom.com> 5.10.235-1
+- Update to version 5.10.235
 * Mon Mar 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-9
 - Fix CVE-2024-26718, CVE-2024-26668, CVE-2024-26669
 * Fri Feb 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.234-8
