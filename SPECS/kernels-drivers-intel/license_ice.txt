@@ -1,1 +1,1 @@
-License: BSD-3-Clause AND (GPL-2.0-only OR Linux-OpenIB) AND GPL-2.0-only AND (GPL-2.0-only OR MIT)
+License: (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR Linux-OpenIB) AND BSD-3-Clause AND Intel AND GPL-2.0-only AND GPL-2.0-or-later
