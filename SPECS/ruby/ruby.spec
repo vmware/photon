@@ -3,7 +3,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.4
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -18,6 +18,10 @@ Patch3:         CVE-2023-36617-1.patch
 Patch4:         CVE-2023-36617-2.patch
 Patch5:         CVE-2024-27282.patch
 Patch6:         0001-Modify-code-to-upgrade-rexml-3.2.5-to-rexml-3.3.9.patch
+Patch7:         CVE-2025-27219.patch
+Patch8:         CVE-2025-27220.patch
+Patch9:         CVE-2025-27221-1.patch
+Patch10:        CVE-2025-27221-2.patch
 
 Source1:        macros.ruby
 
@@ -130,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Wed Mar 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-10
+- Fix CVE-2025-27219, CVE-2025-27220 and CVE-2025-27221
 * Tue Feb 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.4-9
 - Fix requireed openssl version
 * Mon Feb 03 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-8
