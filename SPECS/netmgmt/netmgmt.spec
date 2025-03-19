@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.2.0
-Release:       7%{?dist}
+Release:       8%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -85,6 +85,8 @@ export CFLAGS
 %{_libdir}/libnetmgrcli.so
 
 %changelog
+* Wed Mar 19 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.0-8
+- Fix memory allocation
 * Mon Oct 21 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.0-7
 - Patched strstr issue in nm_space_delimited_string_append
 * Fri Feb 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.2.0-6
