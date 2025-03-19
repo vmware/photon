@@ -16,17 +16,20 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 
 [Srinidhi Rao<srinidhi.rao@broadcom.com> Ported this patch to v6.12.y]
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+
+[Shivani Agarwal <shivani.agarwal@broadcom.com> Enable hmac(sha384) self-test]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  crypto/Kconfig            |   21 +
  crypto/Makefile           |    2 +
- crypto/crypto_self_test.c |  119 ++
+ crypto/crypto_self_test.c |  123 ++
  crypto/testmgr.c          |   69 +-
  crypto/testmgr.h          | 2315 ++++++++++++++++++++++++++++++++++++-
- 5 files changed, 2513 insertions(+), 13 deletions(-)
+ 5 files changed, 2517 insertions(+), 13 deletions(-)
  create mode 100644 crypto/crypto_self_test.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
-index 72e2decb8c6a..f525dcdf63d8 100644
+index a779cab66..ff8b81340 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
 @@ -235,6 +235,27 @@ config CRYPTO_TEST
@@ -58,7 +61,7 @@ index 72e2decb8c6a..f525dcdf63d8 100644
  	tristate
  	select CRYPTO_CRYPTD
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 4c99e5d376f6..3b1c1218fef8 100644
+index 4c99e5d37..3b1c1218f 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -50,6 +50,8 @@ rsa_generic-y += rsa_helper.o
@@ -72,10 +75,10 @@ index 4c99e5d376f6..3b1c1218fef8 100644
  ecdsa_generic-y += ecdsa.o
 diff --git a/crypto/crypto_self_test.c b/crypto/crypto_self_test.c
 new file mode 100644
-index 000000000000..385a56479396
+index 000000000..efa26cccd
 --- /dev/null
 +++ b/crypto/crypto_self_test.c
-@@ -0,0 +1,119 @@
+@@ -0,0 +1,123 @@
 +/*
 + * Self test for Crypto Algorithms
 + *
@@ -126,6 +129,10 @@ index 000000000000..385a56479396
 +	{
 +		.driver_name = "hmac(sha224)",
 +		.alg_name = "hmac(sha224)",
++	},
++	{
++		.driver_name = "hmac(sha384)",
++		.alg_name = "hmac(sha384)",
 +	},
 +	{
 +		.driver_name = "hmac(sha3-224)",
@@ -196,10 +203,10 @@ index 000000000000..385a56479396
 +}
 +module_init(crypto_self_test_init);
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index f02cb075bd68..9baa2ee75fa8 100644
+index 2f5f6b52b..f3d7cd846 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -3956,6 +3956,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3972,6 +3972,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  		       alg, err);
  		goto free_output;
  	}
@@ -207,7 +214,7 @@ index f02cb075bd68..9baa2ee75fa8 100644
  
  	if (vec->genkey) {
  		/* Save party A's public key */
-@@ -3973,6 +3974,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3989,6 +3990,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  			err = -EINVAL;
  			goto free_output;
  		}
@@ -215,7 +222,7 @@ index f02cb075bd68..9baa2ee75fa8 100644
  	}
  
  	/* Calculate shared secret key by using counter part (b) public key. */
-@@ -4876,7 +4878,10 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4896,7 +4898,10 @@ static const struct alg_test_desc alg_test_descs[] = {
  		 * backend cipher -- covered by drbg_nopr_hmac_sha512 test
  		 */
  		.alg = "drbg_nopr_hmac_sha384",
@@ -227,7 +234,7 @@ index f02cb075bd68..9baa2ee75fa8 100644
  	}, {
  		.alg = "drbg_nopr_hmac_sha512",
  		.test = alg_test_drbg,
-@@ -4894,11 +4899,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4914,11 +4919,17 @@ static const struct alg_test_desc alg_test_descs[] = {
  	}, {
  		/* covered by drbg_nopr_sha256 test */
  		.alg = "drbg_nopr_sha384",
@@ -247,7 +254,7 @@ index f02cb075bd68..9baa2ee75fa8 100644
  	}, {
  		.alg = "drbg_pr_ctr_aes128",
  		.test = alg_test_drbg,
-@@ -4910,11 +4921,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4930,11 +4941,17 @@ static const struct alg_test_desc alg_test_descs[] = {
  		/* covered by drbg_pr_ctr_aes128 test */
  		.alg = "drbg_pr_ctr_aes192",
  		.fips_allowed = 1,
@@ -267,7 +274,7 @@ index f02cb075bd68..9baa2ee75fa8 100644
  	}, {
  		.alg = "drbg_pr_hmac_sha256",
  		.test = alg_test_drbg,
-@@ -4925,11 +4942,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4945,11 +4962,17 @@ static const struct alg_test_desc alg_test_descs[] = {
  	}, {
  		/* covered by drbg_pr_hmac_sha256 test */
  		.alg = "drbg_pr_hmac_sha384",
@@ -287,7 +294,7 @@ index f02cb075bd68..9baa2ee75fa8 100644
  	}, {
  		.alg = "drbg_pr_sha256",
  		.test = alg_test_drbg,
-@@ -4940,11 +4963,17 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -4960,11 +4983,17 @@ static const struct alg_test_desc alg_test_descs[] = {
  	}, {
  		/* covered by drbg_pr_sha256 test */
  		.alg = "drbg_pr_sha384",
@@ -307,7 +314,7 @@ index f02cb075bd68..9baa2ee75fa8 100644
  	}, {
  		.alg = "ecb(aes)",
  		.test = alg_test_skcipher,
-@@ -5433,10 +5462,20 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -5453,10 +5482,20 @@ static const struct alg_test_desc alg_test_descs[] = {
  		.suite = {
  			.cipher = __VECS(fcrypt_pcbc_tv_template)
  		}
@@ -329,7 +336,7 @@ index f02cb075bd68..9baa2ee75fa8 100644
  	}, {
  		.alg = "pkcs1pad(rsa,sha256)",
  		.test = alg_test_akcipher,
-@@ -5458,12 +5497,18 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -5478,12 +5517,18 @@ static const struct alg_test_desc alg_test_descs[] = {
  		.fips_allowed = 1,
  	}, {
  		.alg = "pkcs1pad(rsa,sha384)",
@@ -351,7 +358,7 @@ index f02cb075bd68..9baa2ee75fa8 100644
  		.alg = "poly1305",
  		.test = alg_test_hash,
 diff --git a/crypto/testmgr.h b/crypto/testmgr.h
-index 9b38501a17b2..712b4fde0a08 100644
+index 9b38501a1..347bc0c41 100644
 --- a/crypto/testmgr.h
 +++ b/crypto/testmgr.h
 @@ -1374,6 +1374,726 @@ static const struct akcipher_testvec ecrdsa_tv_template[] = {
