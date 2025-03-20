@@ -3,7 +3,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -28,6 +28,10 @@ Patch11:        CVE-2023-36617-2.patch
 Patch12:        CVE-2023-28755.patch
 Patch13:        CVE-2024-27282.patch
 Patch14:        CVE-2021-43809.patch
+Patch15:        CVE-2025-27219.patch
+Patch16:        CVE-2025-27220.patch
+Patch17:        CVE-2025-27221-1.patch
+Patch18:        CVE-2025-27221-2.patch
 
 Source1: macros.ruby
 
@@ -127,6 +131,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Wed Mar 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-17
+- Fix CVE-2025-27219, CVE-2025-27220 and CVE-2025-27221
 * Tue Feb 04 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-16
 - Fix required openssl version
 * Mon Feb 03 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-15
