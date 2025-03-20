@@ -105,3 +105,19 @@ index f1bc1fa..e2f2684 100644
      *ppszNewString = pszNewString;
  
  cleanup:
+--- a/src/netmgr.c	2025-03-19 08:53:17.211391406 +0000
++++ b/src/netmgr.c	2025-03-19 09:04:06.214609632 +0000
+@@ -4324,10 +4324,13 @@ nm_space_delimited_string_append(
+             bytes += strlen(ppszStrings[i]) + 1;
+         }
+ 
++        bytes = bytes + 1; //this is for extra space which would be later removed
++
+         if (!IS_NULL_OR_EMPTY(pszCurrentString))
+         {
+             bytes += strlen(pszCurrentString) + 1;
+         }
++
+         err = netmgr_alloc(bytes, (void **)&pszNewString);
+         bail_on_error(err);
+ 
