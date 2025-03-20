@@ -1,0 +1,17 @@
+sources:
+- archive: isa-l-2.31.1.tar.gz
+  name: "isa-l-2.31.1"
+  version: 2.31.1
+  archive_type: upstream
+  archive_sha512sum: 65199d054af1edc26d477883f7878f25fd4db65622aa98247069f1296c5f07b75da24f0361a6c3889ddb3168d940b508cd2f6340548a62ff3157977179fd002d
+  url: https://github.com/intel/isa-l/archive/refs/tags/v2.31.1.tar.gz
+  repo_url: https://github.com/intel/isa-l.git
+  commit_id: c387163fcbca62701d646149564c550c78a4f985
+  spdx:
+    package:
+      detailed_description: 'ISA-L is a collection of optimized low-level functions targeting storage applications.'
+      home_page: https://github.com/intel/isa-l
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Intelligent Storage Acceleration Library
+      supplier: 'Organization: Broadcom, Inc.'
