@@ -1,26 +1,74 @@
 sources:
 - archive: libxslt-1.1.39.tar.xz
+  archive_type: upstream
   archive_sha512sum: c0c99dc63f8b2acb6cc3ad7ad684ffa2a427ee8d1740495cbf8a7c9b9c8679f96351b4b676c73ccc191014db4cb4ab42b9a0070f6295565f39dbc665c5c16f89
-  skip_validation: true
+  name: libxslt-1.1.39
+  version: 1.1.39
+  url: https://download.gnome.org/sources/libxslt/1.1/libxslt-1.1.39.tar.xz
+  repo_url: https://gitlab.gnome.org/GNOME/libxslt.git
+  commit_id: 743ab691bed98ed11ac99bbd9d903d59fb814ab8
+  skip_list:
+  - dbsql250.xsl
+  - lt~obsolete.m4
+  - Makefile.in
+  - dbsql750.ref
+  - dbsql50.xsl
+  - dbsql250.ref
+  - install-sh
+  - HACKING
+  - dbsql2000.xsl
+  - py-compile
+  - libtool.m4
+  - dbsql500.ref
+  - COPYING
+  - dbsql1000.xsl
+  - ltversion.m4
+  - WhatsNew
+  - ltsugar.m4
+  - dbsql50.ref
+  - config.sub
+  - NOTES
+  - config.h.in
+  - aclocal.m4
+  - dbsql2000.ref
+  - dbsql10.ref
+  - dbsql750.xsl
+  - .gitlab-ci
+  - dbsql100.ref
+  - autogen.sh
+  - .gitlab-ci.yml
+  - BUGS
+  - libxslt.doap
+  - depcomp
+  - dbsql10.xsl
+  - .gitignore
+  - dbsql1000.ref
+  - config.guess
+  - dbsql500.xsl
+  - dbhtml.xsl
+  - compile
+  - configure
+  - missing
+  - ltmain.sh
+  - ltoptions.m4
+  - dbsql100.xsl
   spdx:
     package:
       detailed_description: The libxslt package contains XSLT libraries used for extending
         libxml2 libraries to support XSLT files
       home_page: https://gitlab.gnome.org/GNOME/libxslt
-      license_concluded: GPL-2.0-or-later AND GPL-1.0-or-later AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND GPL-3.0-or-later AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND FSFULLR AND ISC-Veillard AND GPL-2.0-or-later
-        WITH Libtool-exception AND FSFULLRWD AND Latex2e-translated-notice AND MIT
-        AND X11 AND DocBook-XML AND FSFUL AND GFDL-1.2-or-later AND FSFAP AND GFDL-1.1-or-later
-        AND GFDL-1.3-no-invariants-only AND GPL-3.0-or-later WITH Libtool-exception
-        AND W3C-19980720
-      license_declared: GPL-2.0-or-later AND GPL-1.0-or-later AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND GPL-3.0-or-later AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND FSFULLR AND ISC-Veillard AND GPL-2.0-or-later
-        WITH Libtool-exception AND FSFULLRWD AND Latex2e-translated-notice AND MIT
-        AND X11 AND DocBook-XML AND FSFUL AND GFDL-1.2-or-later AND FSFAP AND GFDL-1.1-or-later
-        AND GFDL-1.3-no-invariants-only AND GPL-3.0-or-later WITH Libtool-exception
-        AND W3C-19980720
+      license_concluded: FSFAP AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later AND MIT AND X11 AND FSFULLR AND ISC-Veillard AND GPL-2.0-or-later
+        WITH Libtool-exception AND Latex2e-translated-notice AND GFDL-1.1-or-later
+        AND GFDL-1.2-or-later AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later AND FSFULLRWD AND W3C-19980720 AND GPL-3.0-or-later WITH
+        Libtool-exception
+      license_declared: FSFAP AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later AND MIT AND X11 AND FSFULLR AND ISC-Veillard AND GPL-2.0-or-later
+        WITH Libtool-exception AND Latex2e-translated-notice AND GFDL-1.1-or-later
+        AND GFDL-1.2-or-later AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later AND FSFULLRWD AND W3C-19980720 AND GPL-3.0-or-later WITH
+        Libtool-exception
       short_summary: The libxslt package contains XSLT libraries used for extending
         libxml2 libraries to support XSLT files
       supplier: 'Organization: Broadcom, Inc.'

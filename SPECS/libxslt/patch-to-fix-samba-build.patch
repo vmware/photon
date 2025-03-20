@@ -1,0 +1,26 @@
+From abe5d58aa4ebf86d5f06024fe12c7e48ad2348a3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Mon, 17 Mar 2025 15:44:06 +0530
+Subject: [PATCH] patch to fix samba build
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ libxslt/transform.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libxslt/transform.c b/libxslt/transform.c
+index 54ef821..ddd0a6a 100644
+--- a/libxslt/transform.c
++++ b/libxslt/transform.c
+@@ -68,7 +68,7 @@ static int xsltGetHTMLIDs(const xmlChar *version, const xmlChar **publicID,
+ 			  const xmlChar **systemID);
+ #endif
+ 
+-int xsltMaxDepth = 3000;
++int xsltMaxDepth = 5000;
+ int xsltMaxVars = 15000;
+ 
+ /*
+-- 
+2.40.4
+
