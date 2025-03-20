@@ -75,9 +75,7 @@ link_jobs="$(( (build_jobs + 1) / 2 ))"
   -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
   -DLLDB_PYTHON_EXE_RELATIVE_PATH=%{python3} \
   -DLLVM_PARALLEL_LINK_JOBS=${link_jobs} \
-  -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs} \
-  -DCMAKE_C_FLAGS=-pipe \
-  -DCMAKE_CXX_FLAGS=-pipe
+  -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs}
 
 %{cmake_build}
 

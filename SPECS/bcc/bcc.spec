@@ -75,14 +75,15 @@ Command line tools for BPF Compiler Collection (BCC)
        -DPYTHON_CMD=%{python3} \
        -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-       -DCMAKE_USE_LIBBPF_PACKAGE=TRUE
+       -DCMAKE_USE_LIBBPF_PACKAGE=TRUE \
+       -DENABLE_EXAMPLES=OFF
 
 %cmake_build
 
 %install
 %cmake_install
 # mangle shebangs
-find %{buildroot}%{_datadir}/%{name}/{tools,examples} -type f -exec \
+find %{buildroot}%{_datadir}/%{name}/tools -type f -exec \
     sed -i -e '1 s|^#!/usr/bin/python$|#!'%{python3}'|' \
            -e '1 s|^#!/usr/bin/env python$|#!'%{python3}'|' {} \;
 
@@ -113,7 +114,6 @@ rm -rf %{buildroot}/*
 
 %files examples
 %defattr(-,root,root)
-%{_datadir}/%{name}/examples/*
 
 %files tools
 %defattr(-,root,root)
