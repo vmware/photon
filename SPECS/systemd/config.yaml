@@ -1,7 +1,14 @@
 sources:
 - archive: systemd-stable-253.19.tar.gz
+  archive_type: upstream
   archive_sha512sum: 42798768a5859ded6bb5f65bed2d0ced81c86eca06ebed275967352435e4bac93df8c95a4a3f841f43e1450457629c92e9e1a5f51159607055484dc53ffa1699
-  skip_validation: true
+  name: "systemd-stable-253.19"
+  version: 253.19
+  url: https://github.com/systemd/systemd-stable/archive/refs/tags/v253.19.tar.gz
+  repo_url: https://github.com/systemd/systemd-stable.git
+  commit_id: 81acbdbc7986dc3426aa077f493d03c66d99bc5d
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'systemd is a system and service manager that runs as
@@ -14,7 +21,7 @@ sources:
         of this package are a logging daemon, utilities to control basic system configuration
         like the hostname, date, locale, maintain a list of logged-in users, system
         accounts, runtime directories and settings, and daemons to manage simple network
-        configuration, network time synchronization, log forwarding, and name resolution. '
+        configuration, network time synchronization, log forwarding, and name resolution.'
       home_page: http://www.freedesktop.org/wiki/Software/systemd
       license_concluded: (GPL-2.0-only OR BSD-2-Clause) AND GPL-2.0-or-later WITH
         Linux-syscall-note AND MIT-0 AND GPL-1.0-or-later AND (GPL-2.0-only WITH Linux-syscall-note
