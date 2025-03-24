@@ -1,6 +1,6 @@
 Summary:        YANG data modeling language library
 Name:           libyang
-Version:        2.1.55
+Version:        3.7.8
 Release:        1%{?dist}
 Url:            https://github.com/CESNET/libyang
 License:        BSD-3-Clause
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/CESNET/libyang/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=dd0b58aec7e2d84f62636c62c9e7f67f0b4819e8d5ce9236874a3531607aa6fb58ccdcf537534eae8bfa700c37b8e3524be659929f4e7e03f8f67968bc352cb4
+%define sha512 %{name}=399e67c91a0d18cf65ef9bb4c7fb2fae26000daa664495563f9de9ab6861cbadc294a7d214d957af54fe5a7fe8c67bdd5cf46800c7683c0dc582708bf1f2345e
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -66,8 +66,7 @@ YANG validator tools.
 %files
 %defattr(-, root, root)
 %license LICENSE
-%{_libdir}/%{name}.so.2
-%{_libdir}/%{name}.so.2.*
+%{_libdir}/%{name}.so.*
 %exclude %dir %{_libdir}/debug
 %{_datadir}/yang/modules/%{name}/*
 
@@ -85,6 +84,8 @@ YANG validator tools.
 %{_includedir}/%{name}/*.h
 
 %changelog
+* Mon Mar 24 2025 Harinadh Dommaraju <Harinadh.Dommaraju@vmware.com> 3.7.8-1
+- Version upgrade to satisfy frr version upgrade
 * Tue Apr 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.55-1
 - Update to latest version to resolve CVE-2023-26917 and
 - CVE-2023-26916

@@ -2,7 +2,7 @@
 
 Summary:        Internet Routing Protocol
 Name:           frr
-Version:        9.1
+Version:        10.2.1
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=77b278a3ea87da9dfd7b87e4f9ae67f08ed0f24809f6dd228d2ab2e2c29e2b3191d59d50fc474e53e159ac6c79c302481b462125d0657889516f07b8e05e8562
+%define sha512 %{name}=8544280a0c536e8688cbf2811d96cdc2fa3413f662013bb1b58cb02d4d56a08d98e870b39e477f6b0294e6aceb5dcc99c5facdeee165ce7597c2150ebb79101e
 
 Source1: %{name}-tmpfiles.conf
 Source2: %{name}-sysusers.conf
@@ -225,6 +225,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Mon Mar 24 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 10.2.1-1
+- Version upgrade to fix CVE-2024-44070 and CVE-2024-34088
 * Tue Nov 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.1-1
 - Upgrade to v9.1
 * Thu Jan 04 2024 Nitesh Kumar <kunitesh@vmware.com> 8.2.2-5

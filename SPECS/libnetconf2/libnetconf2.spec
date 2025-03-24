@@ -1,7 +1,7 @@
 Summary:        NETCONF library in C intended for building NETCONF clients and servers.
 Name:           libnetconf2
-Version:        2.1.18
-Release:        3%{?dist}
+Version:        3.5.5
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Tools
 URL:            https://github.com/CESNET/libnetconf2
@@ -9,11 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/CESNET/libnetconf2/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=01ca262c3e530f3d89e61838f08bf3abeae5c9c3c1cf9570416183a2060b850c18bdf661154ec31f7b57b13067c956fe01453ebc461d0d3935e841073a39fb20
+%define sha512 %{name}=8de6ef5ca31581bdc17f3711175392bc328dbc7560dc491bbdf8d1742b390b01781e750ac40cff504b32a610b9eff978334bd0e0b02b0622439fed34af119398
 
 BuildRequires: cmake
 BuildRequires: make
 BuildRequires: gcc
+BuildRequires: curl-devel
 BuildRequires: libssh-devel
 BuildRequires: openssl-devel
 BuildRequires: libyang-devel
@@ -96,9 +97,12 @@ popd
 %{_libdir}/%{name}.so
 %{_includedir}/*.h
 %{_includedir}/%{name}/*.h
+%{_datadir}/yang/modules/%{name}/*.yang
 %dir %{_includedir}/%{name}
 
 %changelog
+* Mon Mar 24 2025 Harinadh Dommraju <Harinadh.Dommaraju@broadcom.com> 3.5.5-1
+- Version update
 * Tue Dec 26 2023 Mukul Sikka <msikka@vmware.com> 2.1.18-3
 - Version bump up to use libssh v0.10.5
 * Tue Sep 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.1.18-2
