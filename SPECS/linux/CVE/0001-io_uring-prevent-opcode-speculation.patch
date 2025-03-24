@@ -1,0 +1,39 @@
+From b6fdc956d6fdd7e3e991f2eaa9e1df8f9e7b05bb Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Sun, 23 Mar 2025 14:52:00 +0000
+Subject: [PATCH] io_uring: prevent opcode speculation
+
+commit 1e988c3fe1264708f4f92109203ac5b1d65de50b upstream.
+
+sqe->opcode is used for different tables, make sure we santitise it
+against speculations.
+
+Cc: stable@vger.kernel.org
+Fixes: d3656344fea03 ("io_uring: add lookup table for various opcode needs")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Reviewed-by: Li Zetao <lizetao1@huawei.com>
+Link: https://lore.kernel.org/r/7eddbf31c8ca0a3947f8ed98271acc2b4349c016.1739568408.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Ajay: - Modified to apply on v5.10.y]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ io_uring/io_uring.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
+index 33597284e..82ad7085b 100644
+--- a/io_uring/io_uring.c
++++ b/io_uring/io_uring.c
+@@ -2047,6 +2047,8 @@ static int io_init_req(struct io_ring_ctx *ctx, struct io_kiocb *req,
+ 		req->opcode = 0;
+ 		return io_init_fail_req(req, -EINVAL);
+ 	}
++	opcode = array_index_nospec(opcode, IORING_OP_LAST);
++
+ 	def = &io_op_defs[opcode];
+ 	if (unlikely(sqe_flags & ~SQE_COMMON_FLAGS)) {
+ 		/* enforce forwards compatibility on users */
+-- 
+2.39.4
+

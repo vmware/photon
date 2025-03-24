@@ -44,7 +44,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.130
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -209,6 +209,9 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix CVE-2023-0597
 Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
+
+#Fix CVE-2025-21863
+Patch105: 0001-io_uring-prevent-opcode-speculation.patch
 
 #Fix CVE-2024-56647
 Patch106: 0002-net-Fix-icmp-host-relookup-triggering-ip_rt_bug.patch
@@ -971,6 +974,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Mar 24 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.130-4
+- Fix CVE-2025-21863
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.130-3
 - Bump-up to build with kmod-34.1
 * Mon Mar 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.130-2

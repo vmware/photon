@@ -28,7 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.130
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -191,6 +191,9 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix CVE-2023-0597
 Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
+
+#Fix CVE-2025-21863
+Patch105: 0001-io_uring-prevent-opcode-speculation.patch
 
 #Fix CVE-2024-56647
 Patch106: 0002-net-Fix-icmp-host-relookup-triggering-ip_rt_bug.patch
@@ -574,6 +577,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 24 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.130-3
+- Fix CVE-2025-21863
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.130-2
 - Bump-up to build with kmod-34.1
 * Wed Mar 05 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.130-1
