@@ -1,7 +1,7 @@
 Summary:        Libxslt
 Name:           libxslt
 Version:        1.1.34
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        MIT
 URL:            http://http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
@@ -11,7 +11,10 @@ Distribution:   Photon
 Source0: http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
 %define sha512 %{name}=1516a11ad608b04740674060d2c5d733b88889de5e413b9a4e8bf8d1a90d712149df6d2b1345b615f529d7c7d3fa6dae12e544da828b39c7d415e54c0ee0776b
 
-Patch0:         libxslt-CVE-2021-30560.patch
+Patch0: patch-to-fix-samba-build.patch
+Patch1: CVE-2021-30560.patch
+Patch2: CVE-2024-55549.patch
+Patch3: CVE-2025-24855.patch
 
 Requires:       libxml2
 Requires:       libgcrypt
@@ -27,15 +30,16 @@ Summary:        Development Libraries for libxslt
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Requires:       libgpg-error-devel
+Requires:       libxml2-devel
 
 %description devel
 Header files for doing development with libxslt.
 
 %prep
 %autosetup -p1
-sed -i 's/int xsltMaxDepth = 3000/int xsltMaxDepth = 5000/g' %{name}/transform.c
 
 %build
+autoreconf -vif
 %configure \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --disable-static \
@@ -78,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Tue Mar 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.34-8
+- Fix CVE-2024-55549, CVE-2025-24855
 * Thu May 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.34-7
 - Fix requires
 * Tue Jun 14 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.1.34-6
