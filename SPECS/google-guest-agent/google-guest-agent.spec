@@ -1,13 +1,14 @@
 %define network_required 1
 %define commit          4dbdb5da9cb233c43adcea8affd01bf5d291b9bd
+%global build_id        %(dd if=/dev/urandom bs=8 count=1 2>/dev/null | od -An -tx1 | tr -d ' ')
 
-%global services        google-guest-agent google-startup-scripts  google-shutdown-scripts gce-workload-cert-refresh.timer
+%global services        google-guest-agent google-startup-scripts google-shutdown-scripts gce-workload-cert-refresh.timer
 %global goipath         github.com/GoogleCloudPlatform/guest-agent
 
 Summary:       Google Compute Engine guest environment
 Name:          google-guest-agent
 Version:       20250122.00
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/GoogleCloudPlatform/guest-agent
@@ -41,7 +42,7 @@ for bin in google_guest_agent google_metadata_script_runner gce_workload_cert_re
   pushd ${bin}
   CGO_ENABLED=0 \
     go build \
-    -ldflags="-s -w -X main.version=%{version}-%{release}-%{commit}" \
+    -ldflags="-s -w -B 0x%{build_id} -X main.version=%{version}-%{release}-%{commit}" \
     -mod=readonly
   popd
 done
@@ -89,6 +90,8 @@ install -p -m 0644 90-%{name}.preset %{buildroot}%{_presetdir}/90-%{name}.preset
 %{_presetdir}/90-%{name}.preset
 
 %changelog
+* Tue Mar 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20250122.00-3
+- Fix build id build failure issue during debuginfo rpm generation
 * Wed Mar 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20250122.00-2
 - Fix version string in binary
 * Mon Feb 03 2025 Tapas Kundu <tapas.kundu@broadcom.com> 20250122.00-1
