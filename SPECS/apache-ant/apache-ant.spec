@@ -1,4 +1,3 @@
-%define hamcrest_ver 2.2
 %define maven_tasks_ver 2.1.3
 
 %define ant_prefix %{_var}/opt/%{name}
@@ -8,7 +7,7 @@
 Summary:    Apache Ant
 Name:       apache-ant
 Version:    1.10.12
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        http://ant.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -16,12 +15,10 @@ Distribution:   Photon
 
 Source0: http://apache.mirrors.lucidnetworks.net/ant/source/%{name}-%{version}-src.tar.gz
 
-Source1: https://repo1.maven.org/maven2/org/hamcrest/hamcrest/%{hamcrest_ver}/hamcrest-%{hamcrest_ver}.jar
+Source1: https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-%{maven_tasks_ver}.tar.gz
 
-Source2: https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-%{maven_tasks_ver}.tar.gz
-
-Source3: license.txt
-%include %{SOURCE3}
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: openjdk11
 
@@ -43,13 +40,12 @@ This package contains additional perl and python scripts for Apache Ant.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -T -D -b0 -a2
+%setup -q -T -D -b0 -a1
 
 %build
 
 %install
 ANT_DIST_DIR=%{buildroot}%{ant_prefix}
-cp %{SOURCE1} ./lib/optional
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
 mkdir -p -m 700 ${ANT_DIST_DIR}
 ./bootstrap.sh && ./build.sh -Ddist.dir=${ANT_DIST_DIR}
@@ -133,6 +129,8 @@ rm -rf %{buildroot}
 %{ant_bindir}/runant.pl
 
 %changelog
+* Wed Mar 26 2025 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.10.12-5
+- Remove unused source hamcrest
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.10.12-4
 - Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.12-3
