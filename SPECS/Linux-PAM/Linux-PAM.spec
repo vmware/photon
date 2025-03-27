@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
@@ -15,6 +15,7 @@ Source1: pamtmp.conf
 Source2: default-faillock.conf
 
 Patch0: 0001-faillock-add-support-to-print-login-failures.patch
+Patch1: 0002-faillock-open-tally-file-in-O_CLOEXEC-mode.patch
 
 BuildRequires:  libselinux-devel
 BuildRequires:  gdbm-devel
@@ -137,6 +138,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Mar 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.1-3
+- faillock: open tally file in O_CLOEXEC mode
 * Tue Oct 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.1-2
 - Bump version to use yescrypt
 * Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.1-1
