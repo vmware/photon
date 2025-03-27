@@ -1,0 +1,33 @@
+From f1c037aa5efeb45b63adb7fe6abef131a7485d1a Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Thu, 27 Mar 2025 01:37:18 -0500
+Subject: [PATCH] Revert "Actually build check_mssql too"
+
+This reverts commit c668f5303522b39466da3e86fecc255474276ac2.
+---
+ plugins-scripts/Makefile.am | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/plugins-scripts/Makefile.am b/plugins-scripts/Makefile.am
+index 7879791f..088a4459 100644
+--- a/plugins-scripts/Makefile.am
++++ b/plugins-scripts/Makefile.am
+@@ -16,13 +16,13 @@ VPATH=$(top_srcdir) $(top_srcdir)/plugins-scripts $(top_srcdir)/plugins-scripts/
+ libexec_SCRIPTS = check_breeze check_disk_smb check_flexlm check_ircd \
+ 	check_log check_oracle check_rpc check_sensors check_wave \
+ 	check_ifstatus check_ifoperstatus check_mailq check_file_age \
+-	check_uptime check_mssql \
++	check_uptime \
+ 	utils.sh utils.pm
+ 
+ EXTRA_DIST=check_breeze.pl check_disk_smb.pl check_flexlm.pl check_ircd.pl \
+ 	check_log.sh check_oracle.sh check_rpc.pl check_sensors.sh \
+ 	check_ifstatus.pl check_ifoperstatus.pl check_wave.pl check_mailq.pl check_file_age.pl \
+-	check_uptime.pl check_mssql.pl \
++	check_uptime.pl \
+ 	utils.sh.in utils.pm.in t
+ 
+ EDIT = sed \
+-- 
+2.49.0
+
