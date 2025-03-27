@@ -1,0 +1,29 @@
+From 9cfad1768ef930dffd8611c6c30a26d0852ea866 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 27 Mar 2025 12:16:22 +0530
+Subject: [PATCH] faillock: open tally file in O_CLOEXEC mode
+
+If faillock binary and an api from faillock.so are invoked from a fork,
+exec modeled program, it could lead to deadlocks.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ modules/pam_faillock/faillock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/pam_faillock/faillock.c b/modules/pam_faillock/faillock.c
+index 091f253..c43caca 100644
+--- a/modules/pam_faillock/faillock.c
++++ b/modules/pam_faillock/faillock.c
+@@ -54,7 +54,7 @@ int
+ open_tally (const char *dir, const char *user, uid_t uid, int create)
+ {
+ 	char *path;
+-	int flags = O_RDWR;
++	int flags = O_RDWR | O_CLOEXEC;
+ 	int fd;
+ 
+ 	if (dir == NULL || strstr(user, "../") != NULL)
+-- 
+2.40.4
+
