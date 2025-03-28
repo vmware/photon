@@ -1,1 +1,1 @@
-License: Apache-2.0 AND W3C AND SAX-PD
+License: BSD-3-Clause AND Apache-1.1 AND SAX-PD AND W3C AND Plexus AND BSD-2-Clause AND CC-PDDC AND Apache-2.0 AND EPL-1.0
