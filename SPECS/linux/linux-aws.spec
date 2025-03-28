@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.235
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -156,6 +156,12 @@ Patch119: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
 Patch120: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch121: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch122: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
+
+# Fix CVE-2024-35937
+Patch124: 0001-wifi-cfg80211-check-A-MSDU-format-more-carefully.patch
+
+# Fix CVE-2024-56658
+Patch125: 0001-net-defer-final-struct-net-free-in-netns-dismantle.patch
 
 # Fix CVE-2024-26718
 Patch131: 0001-dm-crypt-dm-verity-disable-tasklets.patch
@@ -659,6 +665,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.235-2
+- CVE-2024-35937, CVE-2024-56658
 * Mon Mar 17 2025 Harinadh Dommaraju  <Harinadh.Dommaraju@broadcom.com> 5.10.235-1
 - Update to version 5.10.235
 * Mon Mar 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.234-9

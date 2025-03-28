@@ -1,0 +1,62 @@
+From 297721581e6fbedb6bd8af336861fdfe7fdb26df Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Thu, 27 Mar 2025 13:55:42 +0000
+Subject: [PATCH 2/3] wifi: cfg80211: check A-MSDU format more carefully
+
+[ Upstream commit 9ad7974856926129f190ffbe3beea78460b3b7cc ]
+
+If it looks like there's another subframe in the A-MSDU
+but the header isn't fully there, we can end up reading
+data out of bounds, only to discard later. Make this a
+bit more careful and check if the subframe header can
+even be present.
+
+Reported-by: syzbot+d050d437fe47d479d210@syzkaller.appspotmail.com
+Link: https://msgid.link/20240226203405.a731e2c95e38.I82ce7d8c0cc8970ce29d0a39fdc07f1ffc425be4@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Ajay: - dropped changes of ieee80211_is_valid_amsdu(),
+         as v5.10 doesn't have ieee80211_is_valid_amsdu(),
+       - modified to apply on v5.10.y]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ net/wireless/util.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/net/wireless/util.c b/net/wireless/util.c
+index 37719fc39..074cdc4aa 100644
+--- a/net/wireless/util.c
++++ b/net/wireless/util.c
+@@ -751,24 +751,27 @@ void ieee80211_amsdu_to_8023s(struct sk_buff *skb, struct sk_buff_head *list,
+ 	struct sk_buff *frame = NULL;
+ 	u16 ethertype;
+ 	u8 *payload;
+-	int offset = 0, remaining;
++	int offset = 0;
+ 	struct ethhdr eth;
+ 	bool reuse_frag = skb->head_frag && !skb_has_frag_list(skb);
+ 	bool reuse_skb = false;
+ 	bool last = false;
+ 
+ 	while (!last) {
++		int remaining = skb->len - offset;
+ 		unsigned int subframe_len;
+ 		int len;
+ 		u8 padding;
+ 
++		if (sizeof(eth) > remaining)
++			goto purge;
++
+ 		skb_copy_bits(skb, offset, &eth, sizeof(eth));
+ 		len = ntohs(eth.h_proto);
+ 		subframe_len = sizeof(struct ethhdr) + len;
+ 		padding = (4 - subframe_len) & 0x3;
+ 
+ 		/* the last MSDU has no padding */
+-		remaining = skb->len - offset;
+ 		if (subframe_len > remaining)
+ 			goto purge;
+ 		/* mitigate A-MSDU aggregation injection attacks */
+-- 
+2.39.4
+
