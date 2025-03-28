@@ -1,0 +1,124 @@
+From b589819d820a037c3492b2766eabc0c5bc011de7 Mon Sep 17 00:00:00 2001
+From: Petr Vorel <pvorel@suse.cz>
+Date: Tue, 28 May 2024 10:58:59 +0200
+Subject: [PATCH] arping: Fix exit code if receive more replies than sent
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+ARP protocol, unlike ICMP protocol, has no way to link REQUEST and REPLY
+together (detect to which sender belongs the response). E.g. running
+more arping instances currently causes failure due receiving more
+replies than sent probes:
+
+    # ./builddir/arping -c2 -I eth0 192.168.255.1 -w10 &
+    # ./builddir/arping -c2 -I eth0 192.168.255.1 -w10 &
+    ARPING 192.168.255.1 from 192.168.255.133 eth0
+    ARPING 192.168.255.1 from 192.168.255.133 eth0
+    Unicast reply from 192.168.255.1 [50:EB:F6:87:9D:D0]  1.722ms
+    Unicast reply from 192.168.255.1 [50:EB:F6:87:9D:D0]  1.726ms
+    Unicast reply from 192.168.255.1 [50:EB:F6:87:9D:D0]  1.910ms
+    Unicast reply from 192.168.255.1 [50:EB:F6:87:9D:D0]  1.915ms
+    Sent 1 probes (1 broadcast(s))
+    Sent 1 probes (1 broadcast(s))
+    Received 2 response(s)
+    Received 2 response(s)
+    [ ENTER ]
+    [1]-  Exit 1                  ./builddir/arping -c2 -I eth0 192.168.255.1 -w10
+    [2]+  Exit 1                  ./builddir/arping -c2 -I eth0 192.168.255.1 -w10
+
+84ca65c (fix for 67e070d) introduced this regression.
+
+Later e594ca5 introduced more precise timing - before arping sent 2
+probes instead of 1 with -w1.
+
+Then 854873b unified behavior with ping, i.e. using -w (deadline)
+*without* -c (count) exit 0 if at least one reply arrived (backwards
+incompatibility, also now incompatible with busybox). But that still
+kept problematic using -w with -c on multiple instances / replies.
+
+Fixing the problem by adding a special condition.
+
+Also, when at it, move all exit code evaluation into finish() (before
+it was in finish() but also event_loop()). This improves code introduced
+in 67e070d.
+
+Fixes: 84ca65c ("arping: fix sent vs received packages return value")
+Fixes: https://github.com/iputils/iputils/issues/538
+Closes: https://github.com/iputils/iputils/pull/546
+Reported-by: Mingyang Liu <papillon@yeah.net>
+Tested-by: Mingyang Liu <papillon@yeah.net>
+Reviewed-by: Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+Reviewed-by: <Michał Sieroń michalwsieron@gmail.com>
+Tested-by: <Michał Sieroń michalwsieron@gmail.com>
+Signed-off-by: Petr Vorel <pvorel@suse.cz>
+---
+ arping.c | 28 +++++++++++++---------------
+ 1 file changed, 13 insertions(+), 15 deletions(-)
+
+diff --git a/arping.c b/arping.c
+index 0a4c900..4de3e6a 100644
+--- a/arping.c
++++ b/arping.c
+@@ -317,11 +317,18 @@ static int finish(struct run_state *ctl)
+ 		printf("\n");
+ 		fflush(stdout);
+ 	}
++
++	/* arping exit code evaluation */
+ 	if (ctl->dad)
+-		return (!!ctl->received);
++		return !!ctl->received;
++
+ 	if (ctl->unsolicited)
+ 		return 0;
+-	return (!ctl->received);
++
++	if (ctl->timeout && ctl->count > 0 && !ctl->quit_on_reply)
++		return !(ctl->count <= ctl->received);
++
++	return !ctl->received;
+ }
+ 
+ static void print_hex(unsigned char *p, int len)
+@@ -693,7 +700,7 @@ static void find_broadcast_address(struct run_state *ctl)
+ 
+ static int event_loop(struct run_state *ctl)
+ {
+-	int exit_loop = 0, rc = 0;
++	int exit_loop = 0;
+ 	ssize_t s;
+ 	enum {
+ 		POLLFD_SIGNAL = 0,
+@@ -833,7 +840,7 @@ static int event_loop(struct run_state *ctl)
+ 					      (struct sockaddr *)&from, &addr_len)) < 0) {
+ 					error(0, errno, "recvfrom");
+ 					if (errno == ENETDOWN)
+-						rc = 2;
++						return 2;
+ 					continue;
+ 				}
+ 				if (recv_pack
+@@ -849,17 +856,8 @@ static int event_loop(struct run_state *ctl)
+ 	close(sfd);
+ 	close(tfd);
+ 	freeifaddrs(ctl->ifa0);
+-	rc |= finish(ctl);
+-	if (ctl->unsolicited)
+-		/* nothing */;
+-	else if (ctl->dad && ctl->quit_on_reply)
+-		/* Duplicate address detection mode return value */
+-		rc |= !(ctl->brd_sent != ctl->received);
+-	else if (ctl->timeout && !(ctl->count > 0))
+-		rc |= !(ctl->received > 0);
+-	else
+-		rc |= (ctl->sent != ctl->received);
+-	return rc;
++
++	return finish(ctl);
+ }
+ 
+ int main(int argc, char **argv)
+-- 
+2.39.4
+

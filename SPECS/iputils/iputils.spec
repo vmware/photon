@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20221126
-Release:          4%{?dist}
+Release:          5%{?dist}
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
@@ -11,6 +11,8 @@ Source0: %{name}-s%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0:           0001-arping-Fix-exit-code-if-receive-more-replies-than-se.patch
 
 BuildRequires:    libcap-devel
 BuildRequires:    libgcrypt-devel
@@ -55,6 +57,8 @@ ln -sf tracepath %{buildroot}%{_bindir}/tracepath6
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/ping
 
 %changelog
+* Fri Mar 28 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 20221126-5
+- Fix exit code in arping, if received more replies than sent.
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 20221126-4
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 20221126-3
