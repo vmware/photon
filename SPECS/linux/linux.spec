@@ -43,8 +43,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.130
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.131
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -230,9 +230,6 @@ Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 
 # Fix CVE-2024-50029
 Patch135: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
-
-# Fix CVE-2024-24855
-Patch137: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
 
 # Fix CVE-2024-46811
 Patch139: 0001-drm-amd-display-Fix-index-may-exceed-array-range-wit.patch
@@ -974,6 +971,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.131-1
+- Update to version 6.1.131
 * Mon Mar 24 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.130-4
 - Fix CVE-2025-21863
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.130-3

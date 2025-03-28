@@ -27,8 +27,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.130
-Release:        3%{?dist}
+Version:        6.1.131
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -577,6 +577,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.131-1
+- Update to version 6.1.131
 * Mon Mar 24 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.130-3
 - Fix CVE-2025-21863
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.130-2

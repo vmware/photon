@@ -1,0 +1,33 @@
+From 1cd5f643d99cdfa1473ab4f42589746a956c908e Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 11 Mar 2022 17:44:57 +0100
+Subject: [PATCH 18/69] locking/lockdep: Remove lockdep_init_map_crosslock.
+
+The cross-release bits have been removed, lockdep_init_map_crosslock() is
+a leftover.
+
+Remove lockdep_init_map_crosslock.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Waiman Long <longman@redhat.com>
+Link: https://lore.kernel.org/r/20220311164457.46461-1-bigeasy@linutronix.de
+Link: https://lore.kernel.org/r/YqITgY+2aPITu96z@linutronix.de
+---
+ include/linux/lockdep.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+index 43d8734ac0eb..f7702c202bb4 100644
+--- a/include/linux/lockdep.h
++++ b/include/linux/lockdep.h
+@@ -435,7 +435,6 @@ enum xhlock_context_t {
+ 	XHLOCK_CTX_NR,
+ };
+ 
+-#define lockdep_init_map_crosslock(m, n, k, s) do {} while (0)
+ /*
+  * To initialize a lockdep_map statically use this macro.
+  * Note that _name must not be NULL.
+-- 
+2.48.1
+

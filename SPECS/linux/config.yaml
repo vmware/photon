@@ -1,14 +1,14 @@
 sources:
-    - archive: linux-6.1.130.tar.xz
+    - archive: linux-6.1.131.tar.xz
       archive_type: upstream
-      version: 6.1.130
-      name: linux-6.1.130
-      url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.130.tar.xz
+      version: 6.1.131
+      name: linux-6.1.131
+      url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.131.tar.xz
       repo_url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-      commit_id: 6ae7ac5c4251b139da4b672fe4157f2089a9d922
+      commit_id: 344a09659766c83c42cdd4943318deabde89a9c3
       skip_list: []
       missing: []
-      archive_sha512sum: 546aa361cdda1721509064c8b8a2e05197b4f06d36d84af3c7fd9c165cf72bd2ba6143a902a6c0f6400b38bd0090a67b751b80638c178e56f7f72f87e8a5c538
+      archive_sha512sum: 4fc8628e8593e7a713dbaba23f5f46eb94813d3a34791bbfd643d719e572ca4c2afa0b1e2b43dc3a664a9a2dca4d3c4145cd3c457636537022d52003d8b979cf
       skip_validation: false
       spdx:
           package:
@@ -140,8 +140,8 @@ sources:
                   or industry-specific security guidelines. FIPS canisters are engineered to
                   prevent unauthorized access, tampering, and data breaches.
               home_page: https://github.com/vmware/photon
-              license_concluded: None
-              license_declared: None
+              license_concluded: GPL-2.0-only AND GPL-1.0-or-later
+              license_declared: GPL-2.0-only AND GPL-1.0-or-later
               short_summary:
                   A FIPS canister serves as a critical component consists of binary
                   blob of cryptographic algorithms which helps in secure information handling,
@@ -318,3 +318,19 @@ sources:
                   BSD-3-Clause AND GPL-2.0-only AND Intel
               short_summary: Intel ice driver v1.9.11
               supplier: "Organization: Broadcom, Inc."
+    - archive: stalld-v1.19.1.tar.gz
+      archive_sha512sum: f92fd5996482600c6a73324f43eed8a4a1f5e8f092e4a167306804e4230abbb89c37a8bfbb78ffe997310b8bfbb45d4903dd0c51292770dcf5b1d3cd56a78bde
+      skip_validation: true
+      spdx:
+          package:
+              supplier: "Organization: Broadcom, Inc."
+              license_declared: "GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later"
+              license_concluded: "GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later"
+              home_page: "https://gitlab.com/rt-linux-tools/stalld"
+              short_summary:
+                  "Daemon that finds starving tasks in the system and gives them a temporary boost"
+              detailed_description:
+                  "The stalld program monitors the set of system threads, looking for threads that are
+                  ready-to-run but have not been given CPU time for some threshold period. When a
+                  starved thread is found, it is given a temporary boost using the SCHED_DEADLINE policy.
+                  The runtime given to such stalled threads is configurable by the user."
