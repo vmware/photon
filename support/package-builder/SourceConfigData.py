@@ -20,10 +20,10 @@ class Source(object):
 
 class SourceConfigData(object):
 
-    def __init__(self, logPath, specFilesPath):
+    def __init__(self, logPath, specFilePaths):
         self.logger = Logger.getLogger("SourceConfigData", logPath, constants.logLevel)
         self.mapSourceObjects: dict[str, Source] = {}
-        self._readSpecs(specFilesPath)
+        self._readSpecs(specFilePaths)
 
     def getChecksum(self, sourceName):
         sourceDef = self.mapSourceObjects.get(sourceName, None)
@@ -34,20 +34,23 @@ class SourceConfigData(object):
 
     # Read all config.yaml files from the given folder
     # creates corresponding Source Objects and put them in internal mappings.
-    def _readSpecs(self, specFilesPath):
-        for configFile in self._getListConfigFiles(specFilesPath):
+    def _readSpecs(self, specFilePaths):
+        for configFile in self._getListConfigFiles(specFilePaths):
             config = self._parseConfig(configFile)
 
             for sourceEntry in config["sources"]:
                 self.mapSourceObjects[sourceEntry.archive] = sourceEntry
 
-    def _getListConfigFiles(self, path):
-        listConfigYamls = []
-        for dirEntry in os.listdir(path):
-            configFilePath = os.path.join(path, dirEntry, "config.yaml")
-            if os.path.isfile(configFilePath):
-                listConfigYamls.append(configFilePath)
-        return listConfigYamls
+    def _getListConfigFiles(self, paths):
+        listConfigFiles = []
+        for path in paths:
+            for dirEntry in os.listdir(path):
+                dirEntryPath = os.path.join(path, dirEntry)
+                if os.path.isfile(dirEntryPath) and dirEntryPath.endswith("config.yaml"):
+                    listConfigFiles.append(dirEntryPath)
+                elif os.path.isdir(dirEntryPath) and not os.path.islink(dirEntryPath):
+                    listConfigFiles.extend(self._getListConfigFiles([dirEntryPath]))
+        return listConfigFiles
 
     def _parseConfig(self, filepath) -> dict:
         response = {}
@@ -97,4 +100,4 @@ class SOURCES(object):
         SOURCES.__instance = self
 
     def initialize(self):
-        self.sourceData = SourceConfigData(constants.logPath, constants.specPath)
+        self.sourceData = SourceConfigData(constants.logPath, constants.specPaths)
