@@ -1,7 +1,15 @@
 sources:
 - archive: Werkzeug-2.2.2.tar.gz
+  archive_type: upstream
   archive_sha512sum: b37a63ba1d6970b10ba17b87575c2d030ad6c4c00ab50669d678297b9801e319f4f81f98bfc2d89fc2e645c5e192dd81ed2d653c03dbaef06565de0bdac2bcf7
-  skip_validation: true
+  version: "2.2.2"
+  name: Werkzeug-2.2.2
+  url: https://files.pythonhosted.org/packages/f8/c1/1c8e539f040acd80f844c69a5ef8e2fccdf8b442dabb969e497b55d544e1/Werkzeug-2.2.2.tar.gz
+  repo_url: https://github.com/pallets/werkzeug/
+  commit_id: 15fcb87d36f4ed45b127692d2d739266b918503c
+  skip_list: ['setup.cfg']
+  missing: ['.readthedocs.yaml', '.gitignore', '.github', 'CONTRIBUTING.rst', 'PKG-INFO', 'typing.in', 'Werkzeug.egg-info', 'tests.in', 'docs.in', '.gitattributes', 'dev.in', '.editorconfig', '.pre-commit-config.yaml', 'CODE_OF_CONDUCT.md']
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'Werkzeug started as simple collection of various utilities

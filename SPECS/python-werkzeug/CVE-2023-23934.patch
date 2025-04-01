@@ -1,0 +1,83 @@
+Description: CVE-2023-23934: don't strip leading = when parsing cookie
+ Applied-Upstream: 2.2.3
+Author: David Lord <davidism@gmail.com>
+Date: Tue, 31 Jan 2023 14:29:34 -0800
+Origin: upstream, https://github.com/pallets/werkzeug/commit/cf275f42acad1b5950c50ffe8ef58fe62cdce028
+Bug-Debian: https://bugs.debian.org/1031370
+Last-Update: 2023-04-21
+
+diff --git a/src/werkzeug/_internal.py b/src/werkzeug/_internal.py
+index 4636647..f95207a 100644
+--- a/src/werkzeug/_internal.py
++++ b/src/werkzeug/_internal.py
+@@ -34,7 +34,7 @@ _quote_re = re.compile(rb"[\\].")
+ _legal_cookie_chars_re = rb"[\w\d!#%&\'~_`><@,:/\$\*\+\-\.\^\|\)\(\?\}\{\=]"
+ _cookie_re = re.compile(
+     rb"""
+-    (?P<key>[^=;]+)
++    (?P<key>[^=;]*)
+     (?:\s*=\s*
+         (?P<val>
+             "(?:[^\\"]|\\.)*" |
+@@ -382,16 +382,21 @@ def _cookie_parse_impl(b: bytes) -> t.Iterator[t.Tuple[bytes, bytes]]:
+     """Lowlevel cookie parsing facility that operates on bytes."""
+     i = 0
+     n = len(b)
++    b += b";"
+ 
+     while i < n:
+-        match = _cookie_re.search(b + b";", i)
++        match = _cookie_re.match(b, i)
++
+         if not match:
+             break
+ 
+-        key = match.group("key").strip()
+-        value = match.group("val") or b""
+         i = match.end(0)
++        key = match.group("key").strip()
++
++        if not key:
++            continue
+ 
++        value = match.group("val") or b""
+         yield key, _cookie_unquote(value)
+ 
+ 
+diff --git a/src/werkzeug/sansio/http.py b/src/werkzeug/sansio/http.py
+index 8288882..6b22738 100644
+--- a/src/werkzeug/sansio/http.py
++++ b/src/werkzeug/sansio/http.py
+@@ -126,10 +126,6 @@ def parse_cookie(
+     def _parse_pairs() -> t.Iterator[t.Tuple[str, str]]:
+         for key, val in _cookie_parse_impl(cookie):  # type: ignore
+             key_str = _to_str(key, charset, errors, allow_none_charset=True)
+-
+-            if not key_str:
+-                continue
+-
+             val_str = _to_str(val, charset, errors, allow_none_charset=True)
+             yield key_str, val_str
+ 
+diff --git a/tests/test_http.py b/tests/test_http.py
+index 3760dc1..999549e 100644
+--- a/tests/test_http.py
++++ b/tests/test_http.py
+@@ -411,7 +411,8 @@ class TestHTTPUtility:
+     def test_parse_cookie(self):
+         cookies = http.parse_cookie(
+             "dismiss-top=6; CP=null*; PHPSESSID=0a539d42abc001cdc762809248d4beed;"
+-            'a=42; b="\\";"; ; fo234{=bar;blub=Blah; "__Secure-c"=d'
++            'a=42; b="\\";"; ; fo234{=bar;blub=Blah; "__Secure-c"=d;'
++            "==__Host-eq=bad;__Host-eq=good;"
+         )
+         assert cookies.to_dict() == {
+             "CP": "null*",
+@@ -422,6 +423,7 @@ class TestHTTPUtility:
+             "fo234{": "bar",
+             "blub": "Blah",
+             '"__Secure-c"': "d",
++            "__Host-eq": "good",
+         }
+ 
+     def test_dump_cookie(self):
