@@ -1,29 +1,36 @@
+%define srcname Werkzeug
+
 Summary:        The Swiss Army knife of Python web development
 Name:           python3-werkzeug
 Version:        2.2.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Werkzeug
 
-Source0:        https://pypi.python.org/packages/ab/65/d3f1edd1109cb1beb6b82f4139addad482df5b5ea113bdc98242383bf402/Werkzeug-%{version}.tar.gz
+Source0: https://files.pythonhosted.org/packages/f8/c1/1c8e539f040acd80f844c69a5ef8e2fccdf8b442dabb969e497b55d544e1/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: CVE-2024-34069.patch
+Patch1: CVE-2023-25577.patch
+Patch2: CVE-2024-49767.patch
+Patch3: CVE-2023-23934.patch
+Patch4: CVE-2023-46136.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-pip
+BuildRequires:  python3-wheel
 
 %if 0%{?with_check}
 BuildRequires:  python3-requests
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
-BuildRequires:  python3-pip
 %endif
 
 Requires:       python3
@@ -35,13 +42,13 @@ BuildArch:      noarch
 Werkzeug started as simple collection of various utilities for WSGI applications and has become one of the most advanced WSGI utility modules. It includes a powerful debugger, full featured request and response objects, HTTP utilities to handle entity tags, cache control headers, HTTP dates, cookie handling, file uploads, a powerful URL routing system and a bunch of community contributed addon modules.
 
 %prep
-%autosetup -p1 -n Werkzeug-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%{pyproject_wheel}
 
 %install
-%py3_install
+%{pyproject_install}
 
 %check
 pip3 install pytest hypothesis
@@ -52,6 +59,8 @@ LANG=en_US.UTF-8 PYTHONPATH=./  python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Apr 1 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.2-4
+- Fix CVE-2024-49767, CVE-2023-25577, CVE-2023-23934, CVE-2023-46136
 * Wed Dec 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.2-3
 - Fix CVE-2024-34069
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.2-2
