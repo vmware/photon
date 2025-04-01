@@ -8,7 +8,7 @@
     "full-package-list-file": "build_install_options_all.json",
     "pkg-build-options": "pkg_build_options.json",
     "photon-docker-image": "photon:5.0",
-    "ph-docker-img-url": "https://github.com/vmware/photon-docker-image/raw/ARCH/5.0-20230403/docker/photon-rootfs-5.0-4d5974638.tar.gz",
+    "ph-docker-img-url": "https://github.com/vmware/photon-docker-image/raw/ARCH/5.0-20250330/docker/photon-rootfs-5.0-afdc5be10.x86_64.tar.gz",
     "ph-builder-tag": "photon_builder:5.0",
     "build-src-rpm": true,
     "build-dbginfo-rpm": true,
