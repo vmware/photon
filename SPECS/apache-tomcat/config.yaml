@@ -7,14 +7,14 @@ sources:
       detailed_description: 'The Apache Tomcat package contains binaries for the Apache
         Tomcat servlet container. '
       home_page: http://tomcat.apache.org
-      license_concluded: CPL-1.0 AND Apache-2.0 AND (Apache-2.0 AND CDDL-1.0) AND
-        CC0-1.0 AND Zlib AND EPL-2.0 AND bzip2-1.0.6 AND LGPL-2.0-or-later AND (CDDL-1.0
-        OR GPL-2.0-only WITH Classpath-exception-2.0) AND EPL-1.0 AND CDDL-1.0 AND
-        (EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND GPL-2.0-only
-      license_declared: CPL-1.0 AND Apache-2.0 AND (Apache-2.0 AND CDDL-1.0) AND CC0-1.0
-        AND Zlib AND EPL-2.0 AND bzip2-1.0.6 AND LGPL-2.0-or-later AND (CDDL-1.0 OR
-        GPL-2.0-only WITH Classpath-exception-2.0) AND EPL-1.0 AND CDDL-1.0 AND (EPL-2.0
-        OR GPL-2.0-only WITH Classpath-exception-2.0) AND GPL-2.0-only
+      license_concluded: (EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
+        (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND LGPL-2.0-or-later
+        AND GPL-2.0-only AND bzip2-1.0.6 AND Zlib AND CPL-1.0 AND CDDL-1.0 AND EPL-2.0
+        AND EPL-1.0 AND CC0-1.0 AND Apache-2.0
+      license_declared: (EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
+        (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND LGPL-2.0-or-later
+        AND GPL-2.0-only AND bzip2-1.0.6 AND Zlib AND CPL-1.0 AND CDDL-1.0 AND EPL-2.0
+        AND EPL-1.0 AND CC0-1.0 AND Apache-2.0
       short_summary: Apache Tomcat 10.1
       supplier: 'Organization: Broadcom, Inc.'
 - archive: apache-tomcat-9.0.98-src.tar.gz
@@ -25,14 +25,12 @@ sources:
       detailed_description: The Apache Tomcat package provides the Apache Tomcat servlet
         container.
       home_page: http://tomcat.apache.org
-      license_concluded: bzip2-1.0.6 AND EPL-1.0 AND (Apache-2.0 AND CDDL-1.0) AND
-        Apache-2.0 AND (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
-        CPL-1.0 AND LGPL-2.0-or-later AND CDDL-1.0 AND CC0-1.0 AND GPL-2.0-only AND
-        Zlib
-      license_declared: bzip2-1.0.6 AND EPL-1.0 AND (Apache-2.0 AND CDDL-1.0) AND
-        Apache-2.0 AND (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
-        CPL-1.0 AND LGPL-2.0-or-later AND CDDL-1.0 AND CC0-1.0 AND GPL-2.0-only AND
-        Zlib
+      license_concluded: (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
+        Apache-2.0 AND LGPL-2.0-or-later AND CPL-1.0 AND GPL-2.0-only AND bzip2-1.0.6
+        AND EPL-1.0 AND CC0-1.0 AND CDDL-1.0 AND Zlib
+      license_declared: (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
+        Apache-2.0 AND LGPL-2.0-or-later AND CPL-1.0 AND GPL-2.0-only AND bzip2-1.0.6
+        AND EPL-1.0 AND CC0-1.0 AND CDDL-1.0 AND Zlib
       short_summary: Apache Tomcat 9
       supplier: 'Organization: Broadcom, Inc.'
 - archive: base-for-apache-tomcat-10.1.34.tar.gz
@@ -43,22 +41,20 @@ sources:
       detailed_description: base-for-apache-tomcat is a cached -Dbase.path folder
         after apache-tomcat build
       home_page: https://github.com/vmware/photon
-      license_concluded: OpenSSL-standalone AND BSD-3-Clause AND CPL-1.0 AND BSD-2-Clause-Views
-        AND Zlib AND FSFUL AND (Apache-2.0 OR EPL-2.0) AND (Apache-2.0 OR EPL-2.0)
-        AND bzip2-1.0.6 AND GPL-3.0-or-later AND FSFULLRWD AND GPL-2.0-or-later AND
-        EPL-2.0 AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-only AND
-        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-only AND
-        X11 AND MIT AND CDDL-1.0 AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-only
-        AND BSD-2-Clause AND LGPL-2.1-or-later AND FSFULLR AND Apache-2.0 AND EPL-1.0
-        AND SSLeay-standalone AND MPL-2.0
-      license_declared: OpenSSL-standalone AND BSD-3-Clause AND CPL-1.0 AND BSD-2-Clause-Views
-        AND Zlib AND FSFUL AND (Apache-2.0 OR EPL-2.0) AND (Apache-2.0 OR EPL-2.0)
-        AND bzip2-1.0.6 AND GPL-3.0-or-later AND FSFULLRWD AND GPL-2.0-or-later AND
-        EPL-2.0 AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-only AND
-        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-only AND
-        X11 AND MIT AND CDDL-1.0 AND GPL-3.0-or-later WITH Libtool-exception AND GPL-2.0-only
-        AND BSD-2-Clause AND LGPL-2.1-or-later AND FSFULLR AND Apache-2.0 AND EPL-1.0
-        AND SSLeay-standalone AND MPL-2.0
+      license_concluded: (Apache-2.0 OR EPL-2.0) AND X11 AND LGPL-2.1-or-later AND
+        GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-only AND GPL-3.0-only
+        AND FSFUL AND bzip2-1.0.6 AND CPL-1.0 AND BSD-3-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND EPL-2.0 AND FSFULLRWD AND BSD-2-Clause
+        AND BSD-2-Clause-Views AND MIT AND GPL-3.0-or-later AND GPL-3.0-or-later WITH
+        Libtool-exception AND OpenSSL AND CDDL-1.0 AND MPL-2.0 AND GPL-2.0-or-later
+        AND Apache-2.0 AND Zlib AND GPL-2.0-only AND EPL-1.0 AND FSFULLR
+      license_declared: (Apache-2.0 OR EPL-2.0) AND X11 AND LGPL-2.1-or-later AND
+        GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-only AND GPL-3.0-only
+        AND FSFUL AND bzip2-1.0.6 AND CPL-1.0 AND BSD-3-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND EPL-2.0 AND FSFULLRWD AND BSD-2-Clause
+        AND BSD-2-Clause-Views AND MIT AND GPL-3.0-or-later AND GPL-3.0-or-later WITH
+        Libtool-exception AND OpenSSL AND CDDL-1.0 AND MPL-2.0 AND GPL-2.0-or-later
+        AND Apache-2.0 AND Zlib AND GPL-2.0-only AND EPL-1.0 AND FSFULLR
       short_summary: Cached -Dbase.path folder of apache-tomcat build
       supplier: 'Organization: Broadcom, Inc.'
 - archive: base-for-apache-tomcat-9.0.98.tar.gz
@@ -69,17 +65,17 @@ sources:
       detailed_description: base-for-apache-tomcat is a cached -Dbase.path folder
         after apache-tomcat build
       home_page: https://github.com/vmware/photon
-      license_concluded: MPL-2.0 AND OpenSSL-standalone AND GPL-2.0-only AND BSD-3-Clause
-        AND FSFUL AND BSD-2-Clause AND GPL-2.0-or-later AND GPL-3.0-only AND BSD-2-Clause-Views
-        AND (Apache-2.0 OR EPL-2.0) AND Zlib AND CDDL-1.0 AND EPL-2.0 AND MIT AND
-        SSLeay-standalone AND bzip2-1.0.6 AND GPL-3.0-or-later AND (Apache-2.0 OR
-        EPL-2.0) AND LGPL-2.1-or-later AND EPL-1.0 AND CPL-1.0 AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND LGPL-2.1-only AND Apache-2.0
-      license_declared: MPL-2.0 AND OpenSSL-standalone AND GPL-2.0-only AND BSD-3-Clause
-        AND FSFUL AND BSD-2-Clause AND GPL-2.0-or-later AND GPL-3.0-only AND BSD-2-Clause-Views
-        AND (Apache-2.0 OR EPL-2.0) AND Zlib AND CDDL-1.0 AND EPL-2.0 AND MIT AND
-        SSLeay-standalone AND bzip2-1.0.6 AND GPL-3.0-or-later AND (Apache-2.0 OR
-        EPL-2.0) AND LGPL-2.1-or-later AND EPL-1.0 AND CPL-1.0 AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND LGPL-2.1-only AND Apache-2.0
+      license_concluded: (Apache-2.0 OR EPL-2.0) AND MIT AND BSD-3-Clause AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND OpenSSL AND EPL-2.0
+        AND BSD-2-Clause AND LGPL-2.1-only AND BSD-2-Clause-Views AND CPL-1.0 AND
+        CDDL-1.0 AND FSFUL AND GPL-3.0-only AND GPL-2.0-only AND LGPL-2.1-or-later
+        AND MPL-2.0 AND EPL-1.0 AND GPL-3.0-or-later AND bzip2-1.0.6 AND Apache-2.0
+        AND Zlib
+      license_declared: (Apache-2.0 OR EPL-2.0) AND MIT AND BSD-3-Clause AND GPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND OpenSSL AND EPL-2.0
+        AND BSD-2-Clause AND LGPL-2.1-only AND BSD-2-Clause-Views AND CPL-1.0 AND
+        CDDL-1.0 AND FSFUL AND GPL-3.0-only AND GPL-2.0-only AND LGPL-2.1-or-later
+        AND MPL-2.0 AND EPL-1.0 AND GPL-3.0-or-later AND bzip2-1.0.6 AND Apache-2.0
+        AND Zlib
       short_summary: Cached -Dbase.path folder of apache-tomcat build
       supplier: 'Organization: Broadcom, Inc.'
