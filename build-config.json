@@ -9,7 +9,7 @@
             "pkg-build-options" : "pkg_build_options.json",
 
             "photon-docker-image" : "photon:4.0",
-            "ph-docker-img-url" : "https://github.com/vmware/photon-docker-image/raw/ARCH/4.0-20240915/docker/photon-rootfs-4.0-13d01d85f.tar.gz",
+            "ph-docker-img-url" : "https://github.com/vmware/photon-docker-image/raw/ARCH/4.0-20250330/docker/photon-rootfs-4.0-b9264f6ab.tar.gz",
             "ph-builder-tag" : "photon_builder:4.0",
 
             "build-src-rpm" : true,
