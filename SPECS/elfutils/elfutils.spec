@@ -4,7 +4,7 @@
 Summary:    A collection of utilities and DSOs to handle compiled objects
 Name:       elfutils
 Version:    0.181
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:      Development/Tools
 URL:        https://sourceware.org/elfutils
@@ -13,7 +13,11 @@ Distribution:   Photon
 
 Source0:    https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
 %define sha512 %{name}=d565541d5817f409dc89ebb1ee593366f69c371a1531308eeb67ff934b14a0fab0c9009fd7c23240efbaa1b4e04edac5c425e47d80e3e66ba03dcaf000afea36
-Patch0:     0001-readelf-Sanity-check-verneed-and-verdef-offsets-in-h.patch
+Patch0:     CVE-2021-33294.patch
+Patch1:     CVE-2025-1352.patch
+Patch2:     CVE-2025-1372.patch
+Patch3:     CVE-2025-1376.patch
+Patch4:     CVE-2025-1377.patch
 
 Obsoletes:  libelf
 Obsoletes:  libelf-devel
@@ -207,6 +211,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Tue Apr 01 2025 Oliver Kurth <oliver.kurth@broadcom.com> 0.181-8
+- fix CVEs CVE-2025-1352, CVE-2025-1372, CVE-2025-1376, CVE-2025-1377
 * Thu Jul 27 2023 Oliver Kurth <okurth@vmware.com> 0.181-7
 - add CVE-2021-33294.patch
 * Fri Jul 08 2022 Harinadh D <hdommaraju@vmware.com> 0.181-6
