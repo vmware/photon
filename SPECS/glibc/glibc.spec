@@ -4,8 +4,8 @@
 
 Summary:        Main C library
 Name:           glibc
-Version:        2.36
-Release:        7%{?dist}
+Version:        2.38
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -13,15 +13,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha512 %{name}=9ea0bbda32f83a85b7da0c34f169607fb8a102f0a11a914e6bf531be47d1bef4f5307128286cffa1e2dc5879f0e6ccaef527dd353486883fa332a0b44bde8b3e
+%define sha512 %{name}=a6dd5e42dcd63d58e2820c783522c8c895890b6e8c8e6c83b025553de0cc77cdf227e7044e431ead98c89c68a9ce4dd63509b47e647775fb2075f011849c1900
 
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
 
-#Patch taken from http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
-Patch0:         glibc-2.31-fhs-1.patch
-Patch1:         0002-malloc-arena-fix.patch
-Patch2:         Fix-sys-mount.h-usage-with-kernel-headers.patch
+# Patch0 taken from http://www.linuxfromscratch.org/patches/downloads/glibc/
+Patch0:         glibc-%{version}-fhs-1.patch
 
 Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
@@ -352,6 +350,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Apr 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.38-1
+- Upgrade to v2.38
 * Tue Oct 15 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.36-7
 - Disable libcrypt as a part of yescrypt addition
 * Wed Jul 17 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 2.36-6

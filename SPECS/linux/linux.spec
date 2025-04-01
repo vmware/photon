@@ -167,6 +167,8 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 #VMCI/VSOCK
 Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
+Patch26: fix-bpf-build.patch
+
 %ifarch x86_64
 # VMW: [50..59]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch

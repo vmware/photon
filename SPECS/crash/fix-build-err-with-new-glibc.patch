@@ -1,0 +1,65 @@
+From 4ee56105881d7bb1da1e668ac5bb47a4e0846676 Mon Sep 17 00:00:00 2001
+From: Lianbo Jiang <lijiang@redhat.com>
+Date: Wed, 5 Jul 2023 10:02:59 +0800
+Subject: [PATCH] Fix compilation error due to new strlcpy function that glibc
+ added
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The crash-utility has its own strlcpy(), but recently the latest glibc
+has also implemented the strlcpy function, which is derived from
+OpenBSD.  Eventually this caused the following compilation error:
+
+  # make -j8 lzo
+  ...
+  In file included from global_data.c:18:
+  defs.h:5556:8: error: conflicting types for ‘strlcpy’; have ‘size_t(char *, char *, size_t)’ {aka ‘long unsigned int(char *, char *, long unsigned int)’}
+   5556 | size_t strlcpy(char *, char *, size_t);
+        |        ^~~~~~~
+  In file included from memory.c:19:
+  defs.h:5556:8: error: conflicting types for ‘strlcpy’; have ‘size_t(char *, char *, size_t)’ {aka ‘long unsigned int(char *, char *, long unsigned int)’}
+   5556 | size_t strlcpy(char *, char *, size_t);
+        |        ^~~~~~~
+  ...
+
+To fix the issue, let's declare the strlcpy() as a weak function and
+keep the same parameter types as the glibc function has.
+
+Related glibc commits:
+454a20c8756c ("Implement strlcpy and strlcat [BZ #178]")
+d2fda60e7c40 ("manual: Manual update for strlcat, strlcpy, wcslcat, wclscpy")
+388ae538ddcb ("hurd: Add strlcpy, strlcat, wcslcpy, wcslcat to libc.abilist")
+
+Signed-off-by: Lianbo Jiang <lijiang@redhat.com>
+---
+ defs.h  | 2 +-
+ tools.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/defs.h b/defs.h
+index 8f7d1fa0..26afe232 100644
+--- a/defs.h
++++ b/defs.h
+@@ -5553,7 +5553,7 @@ uint32_t swap32(uint32_t, int);
+ uint64_t swap64(uint64_t, int);
+ ulong *get_cpumask_buf(void);
+ int make_cpumask(char *, ulong *, int, int *);
+-size_t strlcpy(char *, char *, size_t);
++size_t strlcpy(char *, const char *, size_t) __attribute__ ((__weak__));
+ struct rb_node *rb_first(struct rb_root *);
+ struct rb_node *rb_parent(struct rb_node *, struct rb_node *);
+ struct rb_node *rb_right(struct rb_node *, struct rb_node *);
+diff --git a/tools.c b/tools.c
+index 392a7970..0f2db108 100644
+--- a/tools.c
++++ b/tools.c
+@@ -6795,7 +6795,7 @@ make_cpumask(char *s, ulong *mask, int flags, int *errptr)
+  * always be NULL-terminated.
+  */
+ size_t 
+-strlcpy(char *dest, char *src, size_t size)
++strlcpy(char *dest, const char *src, size_t size)
+ {
+ 	size_t ret = strlen(src);
+ 

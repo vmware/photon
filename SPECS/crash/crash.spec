@@ -2,7 +2,7 @@
 
 Name:          crash
 Version:       8.0.2
-Release:       5%{?dist}
+Release:       6%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -15,6 +15,8 @@ Source0: http://people.redhat.com/anderson/%{name}-%{version}.tar.gz
 
 Source2: https://ftp.gnu.org/gnu/gdb/gdb-%{GDB_VERSION}.tar.gz
 %define sha512 gdb=aa89caf47c1c84366020377d47e7c51ddbc48e5b7686f244e38797c8eb88411cf57fcdc37eb669961efb41ceeac4181747f429625fd1acce7712cb9a1fea9c41
+
+Patch0: fix-build-err-with-new-glibc.patch
 
 BuildRequires: binutils-devel
 BuildRequires: glibc-devel
@@ -83,6 +85,8 @@ rm -rf "%{buildroot}"
 %{_includedir}/%{name}/*.h
 
 %changelog
+* Fri Apr 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.2-6
+- Fix build error with new glibc
 * Mon Sep 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.0.2-5
 - Fix devel package requires
 * Fri Jun 09 2023 Nitesh Kumar <kunitesh@vmware.com> 8.0.2-4

@@ -11,7 +11,7 @@
         "ossl-fips-in-make-check": true,
 
         "photon-docker-image": "photon:5.0",
-        "ph-docker-img-url": "https://github.com/vmware/photon-docker-image/raw/ARCH/5.0-20230403/docker/photon-rootfs-5.0-4d5974638.tar.gz",
+        "ph-docker-img-url": "https://github.com/vmware/photon-docker-image/raw/ARCH/5.0-20250330/docker/photon-rootfs-5.0-afdc5be10.ARCH.tar.gz",
         "ph-builder-tag": "photon_builder:5.0",
 
         "build-src-rpm": true,
