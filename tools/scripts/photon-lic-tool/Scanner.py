@@ -462,6 +462,7 @@ class Scanner:
                 score=score,
                 yaml=yaml,
                 cpus=cpus,
+                alt_src_url=alt_src_url,
             )
             return
 

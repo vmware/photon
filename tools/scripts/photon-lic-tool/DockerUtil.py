@@ -90,6 +90,7 @@ class DockerUtil:
         score=None,
         yaml=None,
         cpus=None,
+        alt_src_url=None
     ):
         full_cmd = ""
         tool_cmd = ""
@@ -158,6 +159,9 @@ class DockerUtil:
         if build_spec:
             tool_cmd += " --build_spec"
 
+        if alt_src_url:
+            tool_cmd += f" --alt_src_url={alt_src_url}"
+
         if yaml:
             # Mount yaml directory so we can write directly out to the location
             yaml_mnt = "--mount "
@@ -199,6 +203,7 @@ class DockerUtil:
         score=None,
         yaml=None,
         cpus=None,
+        alt_src_url=None,
     ):
         new_cmd = ""
 
@@ -226,6 +231,7 @@ class DockerUtil:
                 score=score,
                 yaml=yaml,
                 cpus=cpus,
+                alt_src_url=alt_src_url
             )
         else:
             err_exit(f'Command "{cmd}" not compatible with docker, not running.')
