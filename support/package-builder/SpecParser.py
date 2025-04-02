@@ -118,8 +118,6 @@ class SpecParser(object):
                 self._readSecurityHardening(line)
             elif self._isNetworkRequired(line):
                 self._readNetworkRequired(line)
-            elif self._isChecksum(line):
-                self._readChecksum(line, self.packages[self.currentPkg])
             elif self._isExtraBuildRequires(line):
                 self._readExtraBuildRequires(line, self.packages[self.currentPkg])
             elif self._isBuildRequiresNative(line):
@@ -401,12 +399,6 @@ class SpecParser(object):
             return True
         return False
 
-    def _isChecksum(self, line):
-        w = line.split()
-        if len(w) != 3 or w[0] != "%define" or w[1] not in {"sha1", "sha512"}:
-            return False
-        return re.match(".*=[a-z0-9]+$", w[2])
-
     def _isDefinition(self, line):
         return line.startswith(("%define", "%global"))
 
@@ -598,36 +590,6 @@ class SpecParser(object):
         pkg.buildrequiresnative.extend(dpkg)
         return True
 
-    def _readChecksum(self, line, pkg):
-        line = self._replaceMacros(line)
-        data = line.strip()
-        words = data.split()
-        nrWords = len(words)
-        if nrWords != 3:
-            print(f"Error: Unable to parse line: {line}")
-            return False
-        value = words[2].split("=")
-        if len(value) != 2:
-            print(f"Error: Unable to parse line: {line}")
-            return False
-        matchedSources = []
-        for source in pkg.sources:
-            sourceName = strUtils.getFileNameFromURL(source)
-            if sourceName.startswith(value[0]):
-                matchedSources.append(sourceName)
-        if not matchedSources:
-            print(f"Error: Can not find match for checksum {value[0]}")
-            return False
-        if len(matchedSources) > 1:
-            print(
-                "Error: Too many matched Sources:"
-                + " ".join(matchedSources)
-                + f" for checksum {value[0]}"
-            )
-            return False
-        pkg.checksums[sourceName] = {words[1]: value[1]}
-        return True
-
     def _isConditionalCheckMacro(self, line):
         data = line.strip()
         words = data.split()
@@ -756,7 +718,6 @@ class SpecParser(object):
         specObj.name = defPkg.name
         specObj.version = f"{defPkg.version}-{defPkg.release}"
         specObj.release = defPkg.release
-        specObj.checksums = defPkg.checksums
         specObj.license = defPkg.license
         specObj.summary = defPkg.summary
         specObj.url = defPkg.URL

@@ -268,11 +268,6 @@ class SpecData(object):
     def getSources(self, package, version):
         return self._getSpecObjField(package, version, field=lambda x: x.listSources)
 
-    def getChecksum(self, package, version, source):
-        return self._getSpecObjField(
-            package, version, field=lambda x: x.checksums.get(source)
-        )
-
     # returns list of package names (no versions)
     def getPackages(self, package, version):
         return self._getSpecObjField(package, version, field=lambda x: x.listPackages)
