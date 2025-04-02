@@ -12,7 +12,7 @@
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
 Version:        9.0.98
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -35,6 +35,7 @@ Source1: base-for-%{_origname}-%{version}.tar.gz
 %define sha512 base=c6e718f37fc71247459e3932313931ef53ec1c8276a70b791ac9982702dcfae17c2670ab235c9b2cb905e6b9c71c6c3b6653f8bc827f8aaae1a8f9603eed2b07
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
+Patch1: apache-tomcat9-CVE-2025-24813.patch
 
 BuildArch: noarch
 
@@ -148,6 +149,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed Apr 02 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 9.0.98-2
+- Fix for CVE-2025-24813
 * Thu Jan 02 2025 Harinadh D <harinadh.dommaraju@broadcom.com> 9.0.98-1
 - Version upgrade to v9.0.98
 - Fix for CVE-2024-50379,CVE-2024-54677,CVE-2024-56337
