@@ -6,10 +6,16 @@ sources:
     package:
       detailed_description: vendor sources to build sysdig
       home_page: https://github.com/vmware/photon
-      license_concluded: BSL-1.0 AND NCSA AND Apache-2.0 AND BSD-3-Clause AND MIT
-        AND GPL-3.0-only
-      license_declared: BSL-1.0 AND NCSA AND Apache-2.0 AND BSD-3-Clause AND MIT AND
-        GPL-3.0-only
+      license_concluded: (MIT OR GPL-1.0-or-later) AND (MIT OR GPL-2.0-only) AND (MIT
+        OR CC0-1.0) AND GPL-2.0-only WITH Linux-syscall-note AND bzip2-1.0.6 AND BSD-2-Clause
+        AND GPL-3.0-or-later WITH GCC-exception-3.1 AND MIT AND GPL-2.0-only AND dtoa
+        AND GPL-3.0-only AND JSON AND Apache-2.0 WITH LLVM-exception AND Zlib AND
+        Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND NCSA AND GPL-1.0-or-later
+      license_declared: (MIT OR GPL-1.0-or-later) AND (MIT OR GPL-2.0-only) AND (MIT
+        OR CC0-1.0) AND GPL-2.0-only WITH Linux-syscall-note AND bzip2-1.0.6 AND BSD-2-Clause
+        AND GPL-3.0-or-later WITH GCC-exception-3.1 AND MIT AND GPL-2.0-only AND dtoa
+        AND GPL-3.0-only AND JSON AND Apache-2.0 WITH LLVM-exception AND Zlib AND
+        Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND NCSA AND GPL-1.0-or-later
       short_summary: vendor sources to build sysdig
       supplier: 'Organization: Broadcom, Inc.'
 - archive: sysdig-0.34.1.tar.gz
@@ -22,10 +28,10 @@ sources:
         and analyze. Sysdig is scriptable in Lua and includes a command line interface
         and a powerful interactive UI, csysdig, that runs in your terminal '
       home_page: http://www.sysdig.org
-      license_concluded: LGPL-2.0-or-later AND GPL-2.0-only AND MIT AND Apache-2.0
-        AND GPL-1.0-or-later
-      license_declared: LGPL-2.0-or-later AND GPL-2.0-only AND MIT AND Apache-2.0
-        AND GPL-1.0-or-later
+      license_concluded: GPL-2.0-only AND Apache-2.0 AND MIT AND GPL-1.0-or-later
+        AND LGPL-2.0-or-later
+      license_declared: GPL-2.0-only AND Apache-2.0 AND MIT AND GPL-1.0-or-later AND
+        LGPL-2.0-or-later
       short_summary: Sysdig is a universal system visibility tool with native support
         for containers.
       supplier: 'Organization: Broadcom, Inc.'
@@ -37,12 +43,10 @@ sources:
       detailed_description: This project contains libsinsp, libscap, the kernel module
         and the eBPF probes sources
       home_page: https://github.com/falcosecurity/libs/
-      license_concluded: (MIT OR GPL-1.0-or-later) AND MIT AND (MIT OR GPL-2.0-only)
-        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note
-        AND Apache-2.0
-      license_declared: (MIT OR GPL-1.0-or-later) AND MIT AND (MIT OR GPL-2.0-only)
-        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note
-        AND Apache-2.0
+      license_concluded: (MIT OR GPL-1.0-or-later) AND (MIT OR GPL-2.0-only) AND GPL-1.0-or-later
+        AND MIT AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND Apache-2.0
+      license_declared: (MIT OR GPL-1.0-or-later) AND (MIT OR GPL-2.0-only) AND GPL-1.0-or-later
+        AND MIT AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND Apache-2.0
       short_summary: This project contains libsinsp, libscap, the kernel module and
         the eBPF probes sources
       supplier: 'Organization: Broadcom, Inc.'

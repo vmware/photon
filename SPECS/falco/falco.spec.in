@@ -14,10 +14,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a3fef235ab4f3121bd0400827712652530ec417498c44ada8b6bf565f7631d035673b53dad94ea6ae9c854d45202ed71b2771f19e0c92eea3fc3503e5b75b02e
 
 Source1: %{name}-%{version}-dependencies.tar.gz
-%define sha512 %{name}-%{version}-dependencies.tar.gz=f3fb2ebc4d1e46ad5db81921480d4d8e1a55b5482957b64332637ad20b30b788763f54ee78089ab7c143b0359168f365357af806a7e4f67624da520fd3ef56d3
 
 #https://raw.githubusercontent.com/troydhanson/uthash/v1.9.8/src/uthash.h
 Source2: uthash.h

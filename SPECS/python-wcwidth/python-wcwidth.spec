@@ -7,7 +7,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/wcwidth
 Source0:        https://files.pythonhosted.org/packages/source/w/wcwidth/wcwidth-%{version}.tar.gz
-%define         sha512 wcwidth=567604186fc6810cc794828f656aebda380a85d9a0dadde7743fadcd43cf29b022016055ee2a5c077399ac7c07f48d6d4ee4fa91a44e6efed96b7a8659280a97
 
 Source1: license.txt
 %include %{SOURCE1}

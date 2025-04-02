@@ -1,27 +1,33 @@
 sources:
-    - archive: falco-0.36.2-dependencies.tar.gz
-      archive_sha512sum: f3fb2ebc4d1e46ad5db81921480d4d8e1a55b5482957b64332637ad20b30b788763f54ee78089ab7c143b0359168f365357af806a7e4f67624da520fd3ef56d3
-      skip_validation: true
-      spdx:
-          package:
-              detailed_description: falco dependencies to build falco offline
-              home_page: https://github.com/vmware/photon
-              license_concluded:
-                  Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND GPL-3.0-only
-                  AND NCSA AND MIT
-              license_declared:
-                  Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND GPL-3.0-only AND
-                  NCSA AND MIT
-              short_summary: falco dependencies to build falco offline
-              supplier: "Organization: Broadcom, Inc."
-    - archive: falco-0.36.2.tar.gz
-      archive_sha512sum: a3fef235ab4f3121bd0400827712652530ec417498c44ada8b6bf565f7631d035673b53dad94ea6ae9c854d45202ed71b2771f19e0c92eea3fc3503e5b75b02e
-      skip_validation: true
-      spdx:
-          package:
-              home_page: https://falco.org
-              license_concluded: Apache-2.0
-              license_declared: Apache-2.0
-              short_summary: The Behavioral Activity Monitor With Container Support
-              detailed_description: The Behavioral Activity Monitor With Container Support
-              supplier: "Organization: Broadcom, Inc."
+- archive: falco-0.36.2-dependencies.tar.gz
+  archive_sha512sum: f3fb2ebc4d1e46ad5db81921480d4d8e1a55b5482957b64332637ad20b30b788763f54ee78089ab7c143b0359168f365357af806a7e4f67624da520fd3ef56d3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: falco dependencies to build falco offline
+      home_page: https://github.com/vmware/photon
+      license_concluded: (MIT OR GPL-2.0-only) AND (MIT OR GPL-1.0-or-later) AND (MIT
+        OR CC0-1.0) AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND
+        Apache-2.0 WITH LLVM-exception AND Zlib AND BSD-3-Clause AND BSD-2-Clause
+        AND bzip2-1.0.6 AND dtoa AND NCSA AND GPL-1.0-or-later AND GPL-3.0-only AND
+        Apache-2.0 AND BSL-1.0 AND GPL-3.0-or-later WITH GCC-exception-3.1 AND JSON
+        AND MIT
+      license_declared: (MIT OR GPL-2.0-only) AND (MIT OR GPL-1.0-or-later) AND (MIT
+        OR CC0-1.0) AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND
+        Apache-2.0 WITH LLVM-exception AND Zlib AND BSD-3-Clause AND BSD-2-Clause
+        AND bzip2-1.0.6 AND dtoa AND NCSA AND GPL-1.0-or-later AND GPL-3.0-only AND
+        Apache-2.0 AND BSL-1.0 AND GPL-3.0-or-later WITH GCC-exception-3.1 AND JSON
+        AND MIT
+      short_summary: falco dependencies to build falco offline
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: falco-0.36.2.tar.gz
+  archive_sha512sum: a3fef235ab4f3121bd0400827712652530ec417498c44ada8b6bf565f7631d035673b53dad94ea6ae9c854d45202ed71b2771f19e0c92eea3fc3503e5b75b02e
+  skip_validation: true
+  spdx:
+    package:
+      home_page: https://falco.org
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: The Behavioral Activity Monitor With Container Support
+      detailed_description: The Behavioral Activity Monitor With Container Support
+      supplier: 'Organization: Broadcom, Inc.'

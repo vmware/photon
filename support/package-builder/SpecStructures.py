@@ -22,7 +22,6 @@ class Package(object):
         self.URL = ""
 
         self.sources = []
-        self.checksums = {}
         self.patches = []
         self.buildrequires = []
         self.buildprovides = []
@@ -77,7 +76,6 @@ class SpecObject(object):
         # full spec file name
         self.specFile = ""
         self.listSources = []
-        self.checksums = {}
         self.listPatches = []
         self.securityHardening = ""
         self.networkRequired = False

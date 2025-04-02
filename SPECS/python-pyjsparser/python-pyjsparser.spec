@@ -8,7 +8,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/pyjsparser/2.5.2
 
 Source0:        https://files.pythonhosted.org/packages/source/p/pyjsparser/pyjsparser-%{version}.tar.gz
-%define         sha512 pyjsparser=811faf1d1fcae363417931e095bf108b27ec8762a12048b658215ecdecc1fd1bbb183f2ec35199ce67e7837aeda6ccf27b6f4bbd62b19fe6a5c9ba6fa7615031
 
 Source1: license.txt
 %include %{SOURCE1}
