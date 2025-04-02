@@ -45,6 +45,7 @@ Source9:        check_fips_canister_struct_compatibility.inc
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %endif
 
+Source18:       speedup-algos-registration-in-non-fips-mode.patch
 Source19:       spec_install_post.inc
 
 Source20:       %{name}-dracut.conf
