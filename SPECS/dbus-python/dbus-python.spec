@@ -4,8 +4,8 @@ Release:        3%{?dist}
 Summary:        Python bindings for D-Bus
 Group:          Development/Libraries/Python
 Url:            http://www.freedesktop.org/wiki/Software/DBusBindings/
+
 Source0:        http://dbus.freedesktop.org/releases/dbus-python/dbus-python-%{version}.tar.gz
-%define         sha512 dbus-python=9b2885c9c2914142c72487f766b1cdd28a255d9f5a87eaf8f4eb420c6e096a77f210ac5a4fac9843c6531974872880cc28b7e45940e198856e984dcc0715519a
 
 Source1: license.txt
 %include %{SOURCE1}
