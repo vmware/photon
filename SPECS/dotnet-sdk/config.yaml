@@ -1,61 +1,19 @@
 sources:
-- archive: dotnet-sdk-8.0.206-linux-x64.tar.gz
-  archive_sha512sum: d03cbb5ea44a6f4957d7c1fa0f7c19e3df2efcbf569b071082e37ac86776af0729540c3bbddc44668ae2eedcfcb4b098883bb560d26418f1583a558d60c99ef5
+- archive: dotnet-sdk-8.0.407-linux-x64.tar.gz
+  archive_sha512sum: eb62153ecc9e53a5422ff44f1c6966a89ee442a91f779e971aaa47ad6a66bb131af9b38e4ca012567547b9357b72b0476b77d2b7399a38a9224a8e6ca02a8155
   skip_validation: true
   spdx:
     package:
       detailed_description: '.NET Core is a development platform that you can use
         to build command-line applications, microservices and modern websites. '
       home_page: https://github.com/dotnet/core
-      license_concluded: bzip2-1.0.6 AND CERN-OHL-S-2.0 AND LGPL-2.1-only AND OGL-UK-3.0
-        AND BSD-3-Clause-Modification AND PolyForm-Noncommercial-1.0.0 AND BSD-3-Clause
-        AND CECILL-2.0 AND Frameworx-1.0 AND BSD-4-Clause AND EPL-1.0 AND BSD-2-Clause-Views
-        AND LiLiQ-R-1.1 AND copyleft-next-0.3.0 AND PolyForm-Small-Business-1.0.0
-        AND CDDL-1.0 AND UCL-1.0 AND AFL-3.0 AND APSL-1.1 AND OGL-Canada-2.0 AND PSF-2.0
-        AND Zimbra-1.4 AND GFDL-1.2-invariants-only AND Zlib AND CERN-OHL-1.1 AND
-        GFDL-1.3-invariants-only AND AGPL-1.0-only AND CAL-1.0-Combined-Work-Exception
-        AND CC-BY-SA-2.0 AND BSD-3-Clause-No-Military-License AND BSD-4-Clause-Shortened
-        AND Parity-6.0.0 AND LGPL-3.0-only AND MS-LPL AND GPL-2.0-or-later WITH eCos-exception-2.0
-        AND Python-2.0 AND Unicode-3.0 AND CECILL-2.1 AND SSPL-1.0 AND LGPL-3.0-or-later
-        AND OFL-1.1-no-RFN AND Parity-7.0.0 AND Zimbra-1.3 AND GFDL-1.1-invariants-or-later
-        AND TU-Berlin-1.0 AND TAPR-OHL-1.0 AND NCGL-UK-2.0 AND CERN-OHL-P-2.0 AND
-        CERN-OHL-W-2.0 AND LiLiQ-Rplus-1.1 AND MIT AND CDDL-1.1 AND GFDL-1.2-no-invariants-only
-        AND copyleft-next-0.3.1 AND CC0-1.0 AND Apache-2.0 AND GFDL-1.3-no-invariants-or-later
-        AND GFDL-1.2-invariants-or-later AND LiLiQ-P-1.1 AND BSD-4-Clause-UC AND NGPL
-        AND NTP-0 AND GFDL-1.3-no-invariants-only AND Spencer-86 AND CERN-OHL-1.2
-        AND ICU AND OGL-UK-1.0 AND CAL-1.0 AND NIST-PD-fallback AND OGL-UK-2.0 AND
-        Linux-man-pages-copyleft AND NAIST-2003 AND Apache-1.1 AND libselinux-1.0
-        AND HP-1989 AND etalab-2.0 AND CC-BY-SA-4.0 AND GFDL-1.1-no-invariants-or-later
-        AND TMate AND BSD-2-Clause-Patent AND GFDL-1.3-invariants-or-later AND GFDL-1.1-invariants-only
-        AND GPL-1.0-only AND LAL-1.3 AND LZMA-SDK-9.22 AND GFDL-1.1-only AND OGDL-Taiwan-1.0
-        AND LGPL-2.1-or-later AND GFDL-1.2-no-invariants-or-later AND BSD-2-Clause
-        AND APSL-1.0 AND EFL-2.0 AND GPL-3.0-only AND W3C-20150513 AND AGPL-3.0-only
-        AND SAX-PD AND NCSA AND TU-Berlin-2.0 AND AGPL-3.0-or-later AND NIST-PD AND
-        GFDL-1.1-no-invariants-only
-      license_declared: bzip2-1.0.6 AND CERN-OHL-S-2.0 AND LGPL-2.1-only AND OGL-UK-3.0
-        AND BSD-3-Clause-Modification AND PolyForm-Noncommercial-1.0.0 AND BSD-3-Clause
-        AND CECILL-2.0 AND Frameworx-1.0 AND BSD-4-Clause AND EPL-1.0 AND BSD-2-Clause-Views
-        AND LiLiQ-R-1.1 AND copyleft-next-0.3.0 AND PolyForm-Small-Business-1.0.0
-        AND CDDL-1.0 AND UCL-1.0 AND AFL-3.0 AND APSL-1.1 AND OGL-Canada-2.0 AND PSF-2.0
-        AND Zimbra-1.4 AND GFDL-1.2-invariants-only AND Zlib AND CERN-OHL-1.1 AND
-        GFDL-1.3-invariants-only AND AGPL-1.0-only AND CAL-1.0-Combined-Work-Exception
-        AND CC-BY-SA-2.0 AND BSD-3-Clause-No-Military-License AND BSD-4-Clause-Shortened
-        AND Parity-6.0.0 AND LGPL-3.0-only AND MS-LPL AND GPL-2.0-or-later WITH eCos-exception-2.0
-        AND Python-2.0 AND Unicode-3.0 AND CECILL-2.1 AND SSPL-1.0 AND LGPL-3.0-or-later
-        AND OFL-1.1-no-RFN AND Parity-7.0.0 AND Zimbra-1.3 AND GFDL-1.1-invariants-or-later
-        AND TU-Berlin-1.0 AND TAPR-OHL-1.0 AND NCGL-UK-2.0 AND CERN-OHL-P-2.0 AND
-        CERN-OHL-W-2.0 AND LiLiQ-Rplus-1.1 AND MIT AND CDDL-1.1 AND GFDL-1.2-no-invariants-only
-        AND copyleft-next-0.3.1 AND CC0-1.0 AND Apache-2.0 AND GFDL-1.3-no-invariants-or-later
-        AND GFDL-1.2-invariants-or-later AND LiLiQ-P-1.1 AND BSD-4-Clause-UC AND NGPL
-        AND NTP-0 AND GFDL-1.3-no-invariants-only AND Spencer-86 AND CERN-OHL-1.2
-        AND ICU AND OGL-UK-1.0 AND CAL-1.0 AND NIST-PD-fallback AND OGL-UK-2.0 AND
-        Linux-man-pages-copyleft AND NAIST-2003 AND Apache-1.1 AND libselinux-1.0
-        AND HP-1989 AND etalab-2.0 AND CC-BY-SA-4.0 AND GFDL-1.1-no-invariants-or-later
-        AND TMate AND BSD-2-Clause-Patent AND GFDL-1.3-invariants-or-later AND GFDL-1.1-invariants-only
-        AND GPL-1.0-only AND LAL-1.3 AND LZMA-SDK-9.22 AND GFDL-1.1-only AND OGDL-Taiwan-1.0
-        AND LGPL-2.1-or-later AND GFDL-1.2-no-invariants-or-later AND BSD-2-Clause
-        AND APSL-1.0 AND EFL-2.0 AND GPL-3.0-only AND W3C-20150513 AND AGPL-3.0-only
-        AND SAX-PD AND NCSA AND TU-Berlin-2.0 AND AGPL-3.0-or-later AND NIST-PD AND
-        GFDL-1.1-no-invariants-only
+      license_concluded: LZMA-SDK-9.22 AND Parity-7.0.0 AND CC0-1.0 AND ICU AND CC-BY-SA-2.0
+        AND BSD-3-Clause AND Python-2.0 AND bzip2-1.0.6 AND BSD-2-Clause AND MS-LPL
+        AND Apache-2.0 AND Zlib AND Parity-6.0.0 AND SAX-PD AND Unicode-3.0 AND BSD-4-Clause-UC
+        AND Apache-1.1 AND NCSA AND HP-1989 AND W3C-20150513 AND MIT
+      license_declared: LZMA-SDK-9.22 AND Parity-7.0.0 AND CC0-1.0 AND ICU AND CC-BY-SA-2.0
+        AND BSD-3-Clause AND Python-2.0 AND bzip2-1.0.6 AND BSD-2-Clause AND MS-LPL
+        AND Apache-2.0 AND Zlib AND Parity-6.0.0 AND SAX-PD AND Unicode-3.0 AND BSD-4-Clause-UC
+        AND Apache-1.1 AND NCSA AND HP-1989 AND W3C-20150513 AND MIT
       short_summary: Microsoft .NET Core SDK
       supplier: 'Organization: Broadcom, Inc.'

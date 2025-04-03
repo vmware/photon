@@ -3,8 +3,8 @@
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.4.3
-Release:        3%{?dist}
+Version:        7.4.7
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://microsoft.com/powershell
@@ -50,6 +50,8 @@ Source6: %{name}-%{version}-nuget-deps.tar.xz
 Source7: license.txt
 %include %{SOURCE7}
 
+Patch0: fix-nuget-url.patch
+
 BuildArch:      x86_64
 
 BuildRequires:  dotnet-sdk
@@ -74,7 +76,7 @@ BuildRequires:  zlib-devel
 
 Requires:       icu >= 70.1
 Requires:       zlib
-Requires:       dotnet-sdk = 8.0.206
+Requires:       dotnet-sdk = 8.0.407
 
 %description
 PowerShell is an automation and configuration management platform.
@@ -89,6 +91,10 @@ It consists of a cross-platform command-line shell and associated scripting lang
 %setup -qcTDa 2 -n %{name}-linux-%{version}
 # Using autosetup is not feasible
 %setup -qcTDa 5 -n omi
+
+pushd %{_builddir}/PowerShell-%{version}
+%patch -p1 0
+popd
 
 tar xf %{SOURCE6}
 rm -rf ${HOME}/.nuget
@@ -117,7 +123,7 @@ popd
 
 %install
 mkdir -p %{buildroot}%{_libdir}/%{name} \
-          %{buildroot}%{_docdir}/%{name} \
+         %{buildroot}%{_docdir}/%{name} \
          %{buildroot}%{_bindir} \
          %{buildroot}%{_libdir}/%{name}/ref
 
@@ -170,6 +176,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Thu Apr 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.7-1
+- Upgrade to v7.4.7
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.3-3
 - Release bump for SRP compliance
 * Wed Sep 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.3-2
