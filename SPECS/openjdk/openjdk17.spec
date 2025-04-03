@@ -6,7 +6,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.14
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -98,6 +98,7 @@ chmod a+x ./configur*
 unset JAVA_HOME
 ENABLE_HEADLESS_ONLY="true"
 
+%ifarch aarch64
 sh ./configur* \
     --with-target-bits=64 \
     --enable-headless-only \
@@ -107,6 +108,18 @@ sh ./configur* \
     --with-freetype-lib=%{_libdir} \
     --with-stdc++lib=dynamic \
     --disable-warnings-as-errors
+%else
+sh ./configur* \
+    --with-target-bits=64 \
+    --enable-headless-only \
+    --with-extra-cxxflags="-Wno-error -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+    --with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
+    --with-freetype-include=%{_includedir}/freetype2 \
+    --with-freetype-lib=%{_libdir} \
+    --with-stdc++lib=dynamic \
+    --build=x86_64-unknown-linux-gnu \
+    --disable-warnings-as-errors
+%endif
 
 mkdir -p %{_datadir}/java
 # make doesn't support _smp_mflags
@@ -243,6 +256,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Sun Feb 09 2025 Daniel Casota <daniel.casota@casota.ch> 17.0.14-2
+- See https://github.com/vmware/photon/issues/1588
 * Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.14-1
 - Upgrade to v17.0.14
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.8-3
