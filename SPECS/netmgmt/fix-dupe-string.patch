@@ -121,3 +121,74 @@ index f1bc1fa..e2f2684 100644
          err = netmgr_alloc(bytes, (void **)&pszNewString);
          bail_on_error(err);
  
+--- a/src/netmgr.c	2025-04-01 02:16:32.227743710 +0000
++++ b/src/netmgr.c	2025-04-01 02:17:30.255632947 +0000
+@@ -4340,10 +4340,11 @@ nm_space_delimited_string_append(
+         }
+         err = nm_store_unique_strings(ppszStrings, count, pszNewString);
+         bail_on_error(err);
++
++    	err = nm_right_trim(pszNewString);
++  	bail_on_error(err);
+     }
+ 
+-    err = nm_right_trim(pszNewString);
+-    bail_on_error(err);
+     *ppszNewString = pszNewString;
+ 
+ cleanup:
+--- a/src/netmgr.c	2025-04-02 04:14:58.208968753 +0000
++++ b/src/netmgr.c	2025-04-02 04:42:00.073765856 +0000
+@@ -4239,7 +4239,7 @@ nm_store_unique_strings(
+ {
+     uint32_t err = 0;
+ 
+-    if (ppszString == NULL)
++    if ((ppszString == NULL) || (pszResultString == NULL))
+     {
+         err = NM_ERR_INVALID_PARAMETER;
+         bail_on_error(err);
+@@ -4312,32 +4312,40 @@ nm_space_delimited_string_append(
+         bail_on_error(err);
+     }
+ 
+-    if (count > 0)
++    if (count == 0)
++    {
++        err = 0; //setting err to 0
++        bail_on_error(err);
++    }
++    else
+     {
+         if (ppszStrings == NULL)
+         {
+             err = NM_ERR_INVALID_PARAMETER;
+             bail_on_error(err);
+         }
++
+         for (i = 0; i < count; i++)
+         {
+             bytes += strlen(ppszStrings[i]) + 1;
+         }
+ 
+-        bytes = bytes + 1; //this is for extra space which would be later removed
+-
+         if (!IS_NULL_OR_EMPTY(pszCurrentString))
+         {
+             bytes += strlen(pszCurrentString) + 1;
+         }
+ 
++        bytes = bytes + 1; //this is for extra space which would be later removed
++
+         err = netmgr_alloc(bytes, (void **)&pszNewString);
+         bail_on_error(err);
+ 
+         if (!IS_NULL_OR_EMPTY(pszCurrentString))
+         {
+             strcpy(pszNewString, pszCurrentString);
++            strcat(pszNewString, " ");
+         }
++
+         err = nm_store_unique_strings(ppszStrings, count, pszNewString);
+         bail_on_error(err);
+ 

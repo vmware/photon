@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.2.0
-Release:       6%{?dist}
+Release:       7%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -82,6 +82,8 @@ find %{buildroot} -name '*.la' -delete
 #%%doc ChangeLog README COPYING
 
 %changelog
+* Tue Apr 01 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.0-7
+- Move nm_right_trim only if we have strings input
 * Wed Mar 19 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.0-6
 - Fix memory allocation
 * Fri Dec 20 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.0-5
