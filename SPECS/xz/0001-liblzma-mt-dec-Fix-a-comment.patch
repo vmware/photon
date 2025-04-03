@@ -1,0 +1,25 @@
+From c8dd6cd9df4b3ab933c97b047c27da7cbcc20a5c Mon Sep 17 00:00:00 2001
+From: Lasse Collin <lasse.collin@tukaani.org>
+Date: Mon, 31 Mar 2025 16:02:51 +0300
+Subject: [PATCH 1/4] liblzma: mt dec: Fix a comment
+
+---
+ src/liblzma/common/stream_decoder_mt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/liblzma/common/stream_decoder_mt.c b/src/liblzma/common/stream_decoder_mt.c
+index 5733c76..117231d 100644
+--- a/src/liblzma/common/stream_decoder_mt.c
++++ b/src/liblzma/common/stream_decoder_mt.c
+@@ -348,7 +348,7 @@ worker_enable_partial_update(void *thr_ptr)
+ 
+ 
+ /// Things do to at THR_STOP or when finishing a Block.
+-/// This is called with thr->mutex locked.
++/// This is called with thr->coder->mutex locked.
+ static void
+ worker_stop(struct worker_thread *thr)
+ {
+-- 
+2.39.4
+
