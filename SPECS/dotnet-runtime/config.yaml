@@ -1,6 +1,6 @@
 sources:
-- archive: dotnet-runtime-8.0.7-linux-x64.tar.gz
-  archive_sha512sum: 88e9ac34ad5ac76eec5499f2eb8d1aa35076518c842854ec1053953d34969c7bf1c5b2dbce245dbace3a18c3b8a4c79d2ef2d2ff105ce9d17cbbdbe813d8b16f
+- archive: dotnet-runtime-8.0.14-linux-x64.tar.gz
+  archive_sha512sum: 5b7c7300dd30084650a2265b6618f366f099dff2b292482e5e05f14f3a0b0850c658ecf383683e1dce4e753a616fd2e3c169c1734a679afcc4c0cad488b9f8a0
   skip_validation: true
   spdx:
     package:
