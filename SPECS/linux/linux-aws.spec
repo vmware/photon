@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.235
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -319,6 +319,13 @@ Patch202: smb-client-fix-potential-UAF-in-cifs_stats_proc_show.patch
 # Fix CVE-2024-35868
 Patch203: smb-client-fix-potential-UAF-in-cifs_stats_proc_writ.patch
 
+# Fix CVE-2021-47200
+Patch204: 0001-drm-prime-Fix-use-after-free-in-mmap-with-drm_gem_tt.patch
+
+# Fix CVE-2021-47101
+Patch205: 0001-net-asix-fix-uninit-value-bugs.patch
+Patch206: 0002-asix-fix-uninit-value-in-asix_mdio_read.patch
+
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
 Patch302: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
@@ -484,7 +491,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M203
+%autopatch -p1 -m100 -M300
 
 #Amazon AWS
 %autopatch -p1 -m301 -M340
@@ -665,6 +672,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Apr 03 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.235-3
+- Fix CVE-2021-47200 and CVE-2021-47101
 * Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.235-2
 - CVE-2024-35937, CVE-2024-56658
 * Mon Mar 17 2025 Harinadh Dommaraju  <Harinadh.Dommaraju@broadcom.com> 5.10.235-1

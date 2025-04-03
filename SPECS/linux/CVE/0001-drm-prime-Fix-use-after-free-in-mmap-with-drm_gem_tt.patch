@@ -1,0 +1,61 @@
+From af430e60c55877d2dca9820558faae8ba713ef18 Mon Sep 17 00:00:00 2001
+From: Anand K Mistry <amistry@google.com>
+Date: Thu, 30 Sep 2021 09:00:07 +1000
+Subject: [PATCH] drm/prime: Fix use after free in mmap with drm_gem_ttm_mmap
+
+commit 8244a3bc27b3efd057da154b8d7e414670d5044f upstream
+
+drm_gem_ttm_mmap() drops a reference to the gem object on success. If
+the gem object's refcount == 1 on entry to drm_gem_prime_mmap(), that
+drop will free the gem object, and the subsequent drm_gem_object_get()
+will be a UAF. Fix by grabbing a reference before calling the mmap
+helper.
+
+This issue was forseen when the reference dropping was adding in
+commit 9786b65bc61ac ("drm/ttm: fix mmap refcounting"):
+  "For that to work properly the drm_gem_object_get() call in
+  drm_gem_ttm_mmap() must be moved so it happens before calling
+  obj->funcs->mmap(), otherwise the gem refcount would go down
+  to zero."
+
+Signed-off-by: Anand K Mistry <amistry@google.com>
+Fixes: 9786b65bc61a ("drm/ttm: fix mmap refcounting")
+Cc: Gerd Hoffmann <kraxel@redhat.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
+Cc: <stable@vger.kernel.org> # v5.5+
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210930085932.1.I8043d61cc238e0168e2f4ca5f4783223434aa587@changeid
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/gpu/drm/drm_prime.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
+index 825499ea3ff5..893421d81e1e 100644
+--- a/drivers/gpu/drm/drm_prime.c
++++ b/drivers/gpu/drm/drm_prime.c
+@@ -724,11 +724,13 @@ int drm_gem_prime_mmap(struct drm_gem_object *obj, struct vm_area_struct *vma)
+ 	vma->vm_pgoff += drm_vma_node_start(&obj->vma_node);
+ 
+ 	if (obj->funcs && obj->funcs->mmap) {
++		drm_gem_object_get(obj);
+ 		ret = obj->funcs->mmap(obj, vma);
+-		if (ret)
++		if (ret) {
++			drm_gem_object_put(obj);
+ 			return ret;
++		}
+ 		vma->vm_private_data = obj;
+-		drm_gem_object_get(obj);
+ 		return 0;
+ 	}
+ 
+-- 
+2.39.4
+

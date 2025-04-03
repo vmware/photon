@@ -1,0 +1,45 @@
+From ce05d783e468108358f3eee9eaccf0a8893cfdaf Mon Sep 17 00:00:00 2001
+From: Pavel Skripkin <paskripkin@gmail.com>
+Date: Tue, 21 Dec 2021 23:10:36 +0300
+Subject: [PATCH 2/2] asix: fix uninit-value in asix_mdio_read()
+
+commit 8035b1a2a37a29d8c717ef84fca8fe7278bc9f03 upstream
+
+asix_read_cmd() may read less than sizeof(smsr) bytes and in this case
+smsr will be uninitialized.
+
+Fail log:
+BUG: KMSAN: uninit-value in asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline]
+BUG: KMSAN: uninit-value in asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline] drivers/net/usb/asix_common.c:497
+BUG: KMSAN: uninit-value in asix_mdio_read+0x3c1/0xb00 drivers/net/usb/asix_common.c:497 drivers/net/usb/asix_common.c:497
+ asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline]
+ asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline] drivers/net/usb/asix_common.c:497
+ asix_mdio_read+0x3c1/0xb00 drivers/net/usb/asix_common.c:497 drivers/net/usb/asix_common.c:497
+
+Fixes: d9fe64e51114 ("net: asix: Add in_pm parameter")
+Reported-and-tested-by: syzbot+f44badb06036334e867a@syzkaller.appspotmail.com
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Link: https://lore.kernel.org/r/8966e3b514edf39857dd93603fc79ec02e000a75.1640117288.git.paskripkin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/net/usb/asix_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+index 12ce52600eaf..11554bce19b0 100644
+--- a/drivers/net/usb/asix_common.c
++++ b/drivers/net/usb/asix_common.c
+@@ -77,7 +77,7 @@ static int asix_check_host_enable(struct usbnet *dev, int in_pm)
+ 				    0, 0, 1, &smsr, in_pm);
+ 		if (ret == -ENODEV)
+ 			break;
+-		else if (ret < 0)
++		else if (ret < sizeof(smsr))
+ 			continue;
+ 		else if (smsr & AX_HOST_EN)
+ 			break;
+-- 
+2.39.4
+

@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.235
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -378,6 +378,13 @@ Patch201: smb-client-fix-potential-UAF-in-cifs_stats_proc_writ.patch
 Patch202: 0001-of-Update-of_device_get_modalias.patch
 Patch203: 0002-of-module-prevent-NULL-pointer-dereference-in-vsnpri.patch
 
+# Fix CVE-2021-47200
+Patch204: 0001-drm-prime-Fix-use-after-free-in-mmap-with-drm_gem_tt.patch
+
+# Fix CVE-2021-47101
+Patch205: 0001-net-asix-fix-uninit-value-bugs.patch
+Patch206: 0002-asix-fix-uninit-value-in-asix_mdio_read.patch
+
 %ifarch aarch64
 # Rpi of_configfs patches
 Patch301: 0001-OF-DT-Overlay-configfs-interface.patch
@@ -640,7 +647,7 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M203
+%autopatch -p1 -m100 -M300
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1046,6 +1053,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Apr 03 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.235-3
+- Fix CVE-2021-47200 and CVE-2021-47101
 * Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.235-2
 - CVE-2024-35937, CVE-2024-56658
 * Mon Mar 17 2025 Harinadh Dommaraju  <Harinadh.Dommaraju@broadcom.com> 5.10.235-1
