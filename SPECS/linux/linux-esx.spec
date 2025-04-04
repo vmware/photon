@@ -28,7 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.131
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -138,6 +138,8 @@ Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
 
 %ifarch x86_64
+Patch49: 0001-x86-pti-Fix-kernel-warnings-for-pti-and-nopti-cmdlin.patch
+
 # VMW: [50..59]
 Patch50: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch51: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
@@ -378,9 +380,10 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 # common
-%autopatch -p1 -m0 -M49
+%autopatch -p1 -m0 -M48
 
 %ifarch x86_64
+%autopatch -p1 -m49 -M49
 # VMW x86
 %autopatch -p1 -m50 -M59
 %endif
@@ -577,6 +580,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Apr 04 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.131-2
+- Fix recognition of kcmdline param 'pti'/'nopti'
 * Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.131-1
 - Update to version 6.1.131
 * Mon Mar 24 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.130-3

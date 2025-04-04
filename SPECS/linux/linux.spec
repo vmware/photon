@@ -44,7 +44,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.131
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -186,6 +186,8 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 %ifarch x86_64
+Patch49: 0001-x86-pti-Fix-kernel-warnings-for-pti-and-nopti-cmdlin.patch
+
 # VMW: [50..59]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
@@ -558,11 +560,12 @@ The kernel fips-canister
 %endif
 
 # common
-%autopatch -p1 -m0 -M49
+%autopatch -p1 -m0 -M48
 
 %ifarch x86_64
+%autopatch -p1 -m49 -M49
 # VMW x86
-%autopatch -p1 -m50 -M60
+%autopatch -p1 -m55 -M60
 %endif
 
 #Secure
@@ -972,7 +975,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
-* Tue Apr 8 2025 Jonathan Shao <jonathan.shao@broadcom.com> 6.1.131-2
+* Mon Apr 14 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.131-3
+- Fix recognition of kcmdline param 'pti'/'nopti'
+* Tue Apr 08 2025 Jonathan Shao <jonathan.shao@broadcom.com> 6.1.131-2
 - Port xfrm policy cache mechanism from 4.14 kernel
 * Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.131-1
 - Update to version 6.1.131

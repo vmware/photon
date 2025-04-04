@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.131
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -135,6 +135,8 @@ Patch23: 6.0-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
 
 #VMCI/VSOCK
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
+
+Patch25: 0001-x86-pti-Fix-kernel-warnings-for-pti-and-nopti-cmdlin.patch
 
 # VMW: [55..60]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -566,6 +568,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri Apr 04 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.131-2
+- Fix recognition of kcmdline param 'pti'/'nopti'
 * Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.131-1
 - Update to version 6.1.131, rt49
 * Mon Mar 24 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.130-3
