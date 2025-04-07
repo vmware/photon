@@ -1,21 +1,21 @@
+%define srcname jinja2
+
 Summary:        A fast and easy to use template engine written in pure Python
 Name:           python3-jinja2
-Version:        3.1.2
-Release:        2%{?dist}
+Version:        3.1.6
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/pallets/jinja
 
-Source0: https://github.com/pallets/jinja/archive/refs/tags/jinja-%{version}.tar.gz
-%define sha512 jinja=50feebc7eed4c8b5bb0c2951784c1c115e3ee1c0e0c91bbf1884551b1312ef8fce24804a2ca1dfd8c543406529afe4817567c39e7cfd15028b54049853623144
-
-Patch0: CVE-2024-22195.patch
-Patch1: CVE-2024-34064.patch
+Source0: https://files.pythonhosted.org/packages/df/bf/f7da0350254c0ed7c72f3e33cef02e048281fec7ecec5f032d4aac52226b/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=bddd5e142f1462426c57b2efafdfafdfc6b66de257668707940896feae71eabdf19e0b6e34ef49b965153baf9b1eb59bb5a97349bb287ea0921dd2a751e967ab
 
 BuildRequires: python3-devel
-BuildRequires: python3-setuptools
+BuildRequires: python3-pip
+BuildRequires: python3-flit-core
 BuildRequires: python3-markupsafe >= 2.1.1
 
 %if 0%{?with_check}
@@ -33,13 +33,13 @@ It provides a Django inspired non-XML syntax but supports inline
 expressions and an optional sandboxed environment.
 
 %prep
-%autosetup -p1 -n jinja-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%{pyproject_wheel}
 
 %install
-%py3_install
+%{pyproject_install}
 
 %if 0%{?with_check}
 %check
@@ -48,10 +48,12 @@ expressions and an optional sandboxed environment.
 
 %files
 %defattr(-,root,root,-)
-%{python3_sitelib}/jinja2
-%{python3_sitelib}/Jinja2-%{version}-py%{python3_version}.egg-info
+%{python3_sitelib}/%{srcname}
+%{python3_sitelib}/%{srcname}-%{version}.dist-info
 
 %changelog
+* Mon Apr 07 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.6-1
+- Update to 3.1.6. Fixes CVE-2024-56326, CVE-2024-56201 & CVE-2025-27516
 * Wed Dec 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.2-2
 - Fix CVE-2024-22195, CVE-2024-34064
 * Thu Jan 04 2024 Nitesh Kumar <kunitesh@vmware.com> 3.1.2-1
