@@ -27,8 +27,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.131
-Release:        3%{?dist}
+Version:        6.1.133
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -235,6 +235,16 @@ Patch144: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
 # Fix CVE-2024-50018
 Patch147: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
 
+# Fix CVE-2025-21759
+Patch148: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
+
+# Fix CVE-2025-21739
+Patch149: 0001-scsi-ufs-core-Fix-use-after-free-in-init-error-and-r.patch
+
+# Fix CVE-2025-21714
+Patch150: 0001-RDMA-mlx5-Fix-implicit-ODP-use-after-free.patch
+Patch151: 0001-RDMA-mlx5-Fix-implicit-ODP-hang-on-parent-deregistra.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -392,7 +402,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M89
 
 # CVE
-%autopatch -p1 -m100 -M147
+%autopatch -p1 -m100 -M151
 
 %ifarch aarch64
 # aarch64 patches
@@ -580,6 +590,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Apr 22 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.133-1
+- Update to version 6.1.133
+- Fixes: CVE-2025-21714, CVE-2025-21739 and CVE-2025-21759
 * Fri Apr 18 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.131-3
 - Fix tarfs for inode count and -EBUSY issue
 * Fri Apr 04 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.131-2

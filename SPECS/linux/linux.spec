@@ -43,8 +43,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.131
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.133
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -252,6 +252,16 @@ Patch147: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
 
 # Fix CVE-2024-50018
 Patch150: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
+
+# Fix CVE-2025-21759
+Patch151: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
+
+# Fix CVE-2025-21739
+Patch152: 0001-scsi-ufs-core-Fix-use-after-free-in-init-error-and-r.patch
+
+# Fix CVE-2025-21714
+Patch153: 0001-RDMA-mlx5-Fix-implicit-ODP-use-after-free.patch
+Patch154: 0001-RDMA-mlx5-Fix-implicit-ODP-hang-on-parent-deregistra.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -572,7 +582,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M150
+%autopatch -p1 -m100 -M154
 
 %ifarch aarch64
 # aarch64 patches
@@ -975,6 +985,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 14 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.133-1
+- Update to version 6.1.133
+- Fixes: CVE-2025-21714, CVE-2025-21739 and CVE-2025-21759
 * Mon Apr 14 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.131-3
 - Fix recognition of kcmdline param 'pti'/'nopti'
 * Tue Apr 08 2025 Jonathan Shao <jonathan.shao@broadcom.com> 6.1.131-2
