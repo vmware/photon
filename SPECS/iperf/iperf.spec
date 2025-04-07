@@ -1,7 +1,7 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
 Version:        3.17.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/esnet/iperf
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -13,7 +13,8 @@ Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch1:         disablepg.patch
+Patch1: disablepg.patch
+Patch2: iperf-CVE-2024-53580.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -58,6 +59,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+* Mon Apr 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 3.17.1-3
+- Fix for CVE-2024-53580
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.17.1-2
 - Release bump for SRP compliance
 * Tue May 14 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 3.17.1-1
