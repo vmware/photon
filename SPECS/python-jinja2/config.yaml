@@ -1,7 +1,15 @@
 sources:
-- archive: jinja-3.1.2.tar.gz
-  archive_sha512sum: 50feebc7eed4c8b5bb0c2951784c1c115e3ee1c0e0c91bbf1884551b1312ef8fce24804a2ca1dfd8c543406529afe4817567c39e7cfd15028b54049853623144
-  skip_validation: true
+- archive: jinja2-3.1.6.tar.gz
+  archive_sha512sum: bddd5e142f1462426c57b2efafdfafdfc6b66de257668707940896feae71eabdf19e0b6e34ef49b965153baf9b1eb59bb5a97349bb287ea0921dd2a751e967ab
+  archive_type: upstream
+  name: jinja2-3.1.6
+  version: "3.1.6"
+  url: https://files.pythonhosted.org/packages/df/bf/f7da0350254c0ed7c72f3e33cef02e048281fec7ecec5f032d4aac52226b/jinja2-3.1.6.tar.gz
+  repo_url: https://github.com/pallets/jinja/
+  commit_id: 15206881c006c79667fe5154fe80c01c65410679
+  missing: ['.devcontainer', '.editorconfig', '.github', '.gitignore', '.pre-commit-config.yaml', '.readthedocs.yaml', 'CHANGES.rst', 'artwork', 'examples', 'scripts', 'PKG-INFO']
+  skip_list: []
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'Jinja2 is a template engine written in pure Python. It
