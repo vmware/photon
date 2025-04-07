@@ -7,6 +7,7 @@ import os
 import shutil
 import json
 import time
+import yaml
 
 try:
     import license_expression
@@ -447,6 +448,19 @@ def read_license_from_file(file_path=None):
             err_exit(f"ERROR: No license expression found in {file_path}")
 
         return license_expressions
+    elif file_path.endswith("config.yaml"):
+        # parse the config.yaml
+        with open(file_path, 'r') as config_yaml_f:
+            config_yaml = yaml.load(config_yaml_f, yaml.SafeLoader)
+
+        for source in config_yaml["sources"]:
+            # use the archive name as not all will have a true "name" field
+            source_name = source["archive"]
+            license_concluded = source["spdx"]["package"]["license_concluded"]
+            license_declared = source["spdx"]["package"]["license_declared"]
+
+            license_expressions[f"{source_name}_concluded"] = license_concluded
+            license_expressions[f"{source_name}_declared"] = license_declared
     else:
         with open(file_path, "r") as input_file:
             # should only be one line...
