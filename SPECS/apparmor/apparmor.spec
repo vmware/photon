@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        3.1.2
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 URL:            https://launchpad.net/apparmor
 Vendor:         VMware, Inc.
@@ -52,7 +52,6 @@ vulnerabilities.
 
 %package -n     libapparmor
 Summary:        Utility library for AppArmor
-License:        GNU LGPL v2.1
 Group:          Development/Libraries/C and C++
 
 %description -n libapparmor
@@ -60,7 +59,6 @@ This package contains the AppArmor library.
 
 %package -n     libapparmor-devel
 Summary:        Development headers and libraries for libapparmor
-License:        GNU LGPL v2.1
 Group:          Development/Libraries/C and C++
 Requires:       libapparmor = %{version}-%{release}
 
@@ -69,7 +67,6 @@ This package contains development files for libapparmor.
 
 %package -n     apache2-mod_apparmor
 Summary:        AppArmor module for apache2
-License:        GNU LGPL v2.1
 Group:          Productivity/Security
 
 %description -n apache2-mod_apparmor
@@ -79,7 +76,6 @@ by using the changehat abilities exposed through libapparmor.
 
 %package        profiles
 Summary:        AppArmor profiles that are loaded into the %{name} kernel module
-License:        GNU LGPL v2.1
 Group:          Productivity/Security
 Requires:       %{name}-abstractions = %{version}-%{release}
 
@@ -88,7 +84,6 @@ This package contains the basic AppArmor profiles.
 
 %package        parser
 Summary:        AppArmor userlevel parser utility
-License:        GNU LGPL v2.1
 Group:          Productivity/Security
 Requires:       libapparmor = %{version}-%{release}
 Requires:       systemd
@@ -102,7 +97,6 @@ SubDomain.
 
 %package        abstractions
 Summary:        AppArmor abstractions and directory structure
-License:        GNU LGPL v2.1
 Group:          Productivity/Security
 Requires:       %{name}-parser = %{version}-%{release}
 
@@ -112,7 +106,6 @@ the /etc/%{name}.d/ directory structure.
 
 %package -n     pam_apparmor
 Summary:        PAM module for AppArmor change_hat
-License:        GNU LGPL v2.1
 Group:          Productivity/Security
 Requires:       Linux-PAM
 
@@ -124,7 +117,6 @@ policy.
 
 %package        utils
 Summary:        AppArmor User-Level Utilities Useful for Creating AppArmor Profiles
-License:        GNU LGPL v2.1
 Group:          Productivity/Security
 Requires:       libapparmor = %{version}-%{release}
 Requires:       audit
@@ -137,7 +129,6 @@ profiles.
 
 %package -n     python3-%{name}
 Summary:        Python 3 interface for libapparmor functions
-License:        GNU LGPL v2.1
 Group:          Development/Libraries/Python
 Requires:       libapparmor = %{version}-%{release}
 Requires:       python3
@@ -148,7 +139,6 @@ applications interfacing with AppArmor.
 
 %package -n     perl-%{name}
 Summary:        AppArmor module for perl.
-License:        GNU LGPL v2.1
 Group:          Development/Libraries/Perl
 Requires:       libapparmor = %{version}-%{release}
 
@@ -338,6 +328,8 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Mon Apr 07 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.1.2-16
+- Remove licenses from subpackages
 * Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-15
 - Release bump for SRP compliance
 * Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 3.1.2-14
