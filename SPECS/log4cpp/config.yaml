@@ -8,15 +8,15 @@ sources:
         to files, syslog, and other destinations. It is modeled after the Log for
         Java library and stays as close to its API as is reasonable. '
       home_page: http://log4cpp.sourceforge.net/
-      license_concluded: FSFUL AND LLGPL AND GPL-2.0-or-later AND FSFULLRWD AND LGPL-2.1-or-later
-        AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND Artistic-2.0 AND GPL-2.0-or-later WITH
-        Libtool-exception AND LGPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later
-        AND LGPL-2.1-only AND X11
-      license_declared: FSFUL AND LLGPL AND GPL-2.0-or-later AND FSFULLRWD AND LGPL-2.1-or-later
-        AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND Artistic-2.0 AND GPL-2.0-or-later WITH
-        Libtool-exception AND LGPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later
-        AND LGPL-2.1-only AND X11
+      license_concluded: Artistic-2.0 AND GPL-1.0-or-later AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND GPL-2.0-only AND FSFUL AND FSFULLR AND FSFULLRWD
+        AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-macro AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND Artistic-1.0 AND GPL-2.0-or-later
+        AND LGPL-2.1-only AND LGPL-2.1-or-later
+      license_declared: Artistic-2.0 AND GPL-1.0-or-later AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND GPL-2.0-only AND FSFUL AND FSFULLR AND FSFULLRWD
+        AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-macro AND LGPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Libtool-exception AND Artistic-1.0 AND GPL-2.0-or-later
+        AND LGPL-2.1-only AND LGPL-2.1-or-later
       short_summary: Log for C++
       supplier: 'Organization: Broadcom, Inc.'
