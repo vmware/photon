@@ -8,7 +8,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/intel/isa-l/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=65199d054af1edc26d477883f7878f25fd4db65622aa98247069f1296c5f07b75da24f0361a6c3889ddb3168d940b508cd2f6340548a62ff3157977179fd002d
 
 Source1: license.txt
 %include %{SOURCE1}
