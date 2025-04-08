@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.235
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -401,6 +401,12 @@ Patch210: 0004-uprobe-avoid-out-of-bounds-memory-access-of-fetching.patch
 # Fix CVE-2023-52621
 Patch211: 0005-bpf-Allow-RCU-protected-lookups-to-happen-from-bh-co.patch
 Patch212: 0006-bpf-Check-rcu_read_lock_trace_held-before-calling-bp.patch
+
+# Fix CVE-2024-35839
+Patch213: 0001-netfilter-nfnetlink_log-use-proper-helper-for-fetchi.patch
+Patch214: 0002-netfilter-nf_queue-remove-excess-nf_bridge-variable.patch
+Patch215: 0003-netfilter-propagate-net-to-nf_bridge_get_physindev.patch
+Patch216: 0004-netfilter-bridge-replace-physindev-with-physinif-in-.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1070,6 +1076,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Apr 14 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.235-6
+- Fix CVE-2024-35839
 * Mon Apr 14 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.235-5
 - Fix CVE-2023-52531, CVE-2024-49991, CVE-2024-50067, CVE-2023-52621
 * Thu Apr 10 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.235-4

@@ -1,0 +1,40 @@
+From 3f1f50527707caff754219296b3735b9fba10495 Mon Sep 17 00:00:00 2001
+From: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Date: Thu, 11 Jan 2024 23:06:38 +0800
+Subject: [PATCH] netfilter: nf_queue: remove excess nf_bridge variable
+
+[ Upstream commit aeaa44075f8e49e2e0ad4507d925e690b7950145 ]
+
+We don't really need nf_bridge variable here. And nf_bridge_info_exists
+is better replacement for nf_bridge_info_get in case we are only
+checking for existence.
+
+Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Stable-dep-of: 9874808878d9 ("netfilter: bridge: replace physindev with physinif in nf_bridge_info")
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ net/netfilter/nf_queue.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/net/netfilter/nf_queue.c b/net/netfilter/nf_queue.c
+index bb8607ff9..99ea52a49 100644
+--- a/net/netfilter/nf_queue.c
++++ b/net/netfilter/nf_queue.c
+@@ -86,10 +86,8 @@ static void __nf_queue_entry_init_physdevs(struct nf_queue_entry *entry)
+ {
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+ 	const struct sk_buff *skb = entry->skb;
+-	struct nf_bridge_info *nf_bridge;
+ 
+-	nf_bridge = nf_bridge_info_get(skb);
+-	if (nf_bridge) {
++	if (nf_bridge_info_exists(skb)) {
+ 		entry->physin = nf_bridge_get_physindev(skb);
+ 		entry->physout = nf_bridge_get_physoutdev(skb);
+ 	} else {
+-- 
+2.39.4
+

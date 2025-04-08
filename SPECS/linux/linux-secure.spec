@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.235
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -358,6 +358,12 @@ Patch211: 0004-uprobe-avoid-out-of-bounds-memory-access-of-fetching.patch
 Patch212: 0005-bpf-Allow-RCU-protected-lookups-to-happen-from-bh-co.patch
 Patch213: 0006-bpf-Check-rcu_read_lock_trace_held-before-calling-bp.patch
 
+# Fix CVE-2024-35839
+Patch214: 0001-netfilter-nfnetlink_log-use-proper-helper-for-fetchi.patch
+Patch215: 0002-netfilter-nf_queue-remove-excess-nf_bridge-variable.patch
+Patch216: 0003-netfilter-propagate-net-to-nf_bridge_get_physindev.patch
+Patch217: 0004-netfilter-bridge-replace-physindev-with-physinif-in-.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -634,6 +640,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 14 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.235-6
+- Fix CVE-2024-35839
 * Mon Apr 14 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.235-5
 - Fix CVE-2023-52531, CVE-2024-49991, CVE-2024-50067, CVE-2023-52621
 * Thu Apr 10 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.235-4
