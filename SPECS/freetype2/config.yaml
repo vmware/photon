@@ -1,7 +1,31 @@
 sources:
-- archive: freetype-2.13.0.tar.gz
-  archive_sha512sum: 0d2bfc3980313e1578b69568394666e1721c11dfdb47f21cb46ced48d0afcc674e175391ee0f64ffbcee814cded2d9a8fe6273029253c1adf642078ac8c0dd73
-  skip_validation: true
+- archive: freetype-2.13.3.tar.gz
+  archive_type: upstream
+  version: 2.13.3
+  name: freetype-2.13.3
+  url: http://download.savannah.gnu.org/releases/freetype/freetype-2.13.3.tar.gz
+  repo_url: https://gitlab.freedesktop.org/freetype/freetype.git
+  commit_id: 42608f77f20749dd6ddc9e0536788eaad70ea4b5
+  skip_list: []
+  missing:
+  - dlg.c
+  - config.sub
+  - configure
+  - .mailmap
+  - config.guess
+  - configure.ac
+  - .gitmodules
+  - ltmain.sh
+  - reference
+  - markdown
+  - aclocal.m4
+  - install-sh
+  - ChangeLog
+  - .gitignore
+  - dlg
+  - .gitlab-ci.yml
+  archive_sha512sum: b7e7e67baed421dbe08c48dcde5d5891c0f7e3c1253be8dc27826c60eaa17ca89f888c3d5a6faf5141b02c154e1cf42d4ed6133b9959ddc359fe6bd41615ae89
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'FreeType is a software font engine that is designed to
@@ -10,17 +34,17 @@ sources:
         display servers, font conversion tools, text image generation tools, and many
         other products as well. '
       home_page: http://www.freetype.org
-      license_concluded: GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
-        AND FSFULLRWD AND FTL AND Zlib AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-2.0-only AND MIT-Modern-Variant AND FSFULLR AND GPL-3.0-or-later WITH
-        Autoconf-exception-2.0 AND 0BSD AND BSD-3-Clause AND MIT AND BSL-1.0 AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND MIT-open-group AND FSFUL AND FTL WITH
-        Autoconf-exception-generic AND X11 AND FSFAP
-      license_declared: GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later
-        AND FSFULLRWD AND FTL AND Zlib AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-2.0-only AND MIT-Modern-Variant AND FSFULLR AND GPL-3.0-or-later WITH
-        Autoconf-exception-2.0 AND 0BSD AND BSD-3-Clause AND MIT AND BSL-1.0 AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND MIT-open-group AND FSFUL AND FTL WITH
-        Autoconf-exception-generic AND X11 AND FSFAP
+      license_concluded: FTL WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND CC-BY-4.0 AND Zlib AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND MIT AND OFL-1.1 AND X11 AND FSFULLRWD AND FSFAP
+        AND GPL-2.0-only AND FSFULLR AND MIT-open-group AND MIT-Modern-Variant AND
+        BSD-3-Clause AND GPL-2.0-or-later AND FTL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception AND 0BSD AND BSL-1.0
+      license_declared: FTL WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH
+        Autoconf-exception-2.0 AND CC-BY-4.0 AND Zlib AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MIT AND OFL-1.1 AND X11 AND FSFULLRWD AND FSFAP AND GPL-2.0-only AND FSFULLR
+        AND MIT-open-group AND MIT-Modern-Variant AND BSD-3-Clause AND GPL-2.0-or-later
+        AND FTL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFUL
+        AND GPL-2.0-or-later WITH Libtool-exception AND 0BSD AND BSL-1.0
       short_summary: software font engine.
       supplier: 'Organization: Broadcom, Inc.'

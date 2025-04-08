@@ -1,7 +1,7 @@
 Summary:        software font engine.
 Name:           freetype2
-Version:        2.13.0
-Release:        2%{?dist}
+Version:        2.13.3
+Release:        1%{?dist}
 URL:            http://www.freetype.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -58,6 +58,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Apr 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.13.3-1
+- upgrade to fix CVE-2025-27363
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.13.0-2
 - Release bump for SRP compliance
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.13.0-1
