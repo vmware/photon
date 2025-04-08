@@ -1,0 +1,35 @@
+From 9e4651d9cfcc0a68b67e6d3b5013e0ff81cfeddd Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sat, 15 Mar 2025 11:59:26 +0530
+Subject: [PATCH] igzip_cli_check.sh: skip read write check for root user
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ programs/igzip_cli_check.sh | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/programs/igzip_cli_check.sh b/programs/igzip_cli_check.sh
+index 9eebcde..f5c4049 100755
+--- a/programs/igzip_cli_check.sh
++++ b/programs/igzip_cli_check.sh
+@@ -156,6 +156,7 @@ $IGZIP -d $dir &> /dev/null && ret=1
+ pass_check $ret "Compress/Decompress Directory without -r"
+ clear_dir
+ 
++if [ $EUID -ne 0 ]; then
+ # Write permissions test
+ cp $TEST_FILE $file1
+ chmod 400 $file1
+@@ -171,6 +172,9 @@ chmod 000 $file1
+ $IGZIP $file1 &> /dev/null
+ fail_check $? "don't have read permissions"
+ clear_dir
++else
++  echo "Skip: read, write permission test for root user"
++fi
+ 
+ # File overwrite test -f
+ ret=0
+-- 
+2.43.0
+
