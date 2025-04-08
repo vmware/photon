@@ -1,7 +1,15 @@
 sources:
-- archive: Mako-1.2.1.tar.gz
-  archive_sha512sum: 02393054c9e3857ee412f494b01d702b5f367165d2f57a5ff9df34ba1a042b60c7b6c059ce2c53bcb91e3a4a21179eca884ee051bf5f5f3522c05253088d38a5
-  skip_validation: true
+- archive: Mako-1.2.4.tar.gz
+  archive_type: upstream
+  version: 1.2.4
+  name: mako-rel_1_2_4
+  url: https://github.com/sqlalchemy/mako/archive/refs/tags/rel_1_2_4.tar.gz
+  repo_url: https://github.com/sqlalchemy/mako.git
+  commit_id: 2fd5daa24a09fc6a52f60bdb9402faaf91f2e7a1
+  skip_list: []
+  missing: []
+  archive_sha512sum: 7d5c6bfe342ce6d7cb7cf78a507df10b764166faac90dc5e22d1f2e95215c5d4117084ac8f0807f74aca4eb357798565eee5efaadcbb3c586a327d53347c87d0
+  skip_validation: false
   spdx:
     package:
       detailed_description: "A super-fast templating language that borrows the best\
