@@ -44,7 +44,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.138
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -185,10 +185,14 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 #VMCI/VSOCK
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
+Patch25: 0001-vmgenid-expose-vmgenid-via-sysfs.patch
+
 %ifarch x86_64
 Patch49: 0001-x86-pti-Fix-kernel-warnings-for-pti-and-nopti-cmdlin.patch
+%endif
 
 # VMW: [50..59]
+%ifarch x86_64
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56: 6.0-x86-vmware-Log-kmsg-dump-on-panic.patch
 Patch57: 6.0-x86-vmware-Fix-steal-time-clock-under-SEV.patch
@@ -566,12 +570,11 @@ The kernel fips-canister
 %endif
 
 # common
-%autopatch -p1 -m0 -M48
+%autopatch -p1 -m0 -M49
 
 %ifarch x86_64
-%autopatch -p1 -m49 -M49
 # VMW x86
-%autopatch -p1 -m55 -M60
+%autopatch -p1 -m50 -M60
 %endif
 
 #Secure
@@ -981,6 +984,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri May 16 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.138-2
+- Introduce /sys/kernel/vmgenid
 * Sun May 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.138-1
 - Update to version 6.1.138
 * Sun Apr 27 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.135-1
@@ -989,7 +994,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 - Update to version 6.1.133
 - Fixes: CVE-2025-21714, CVE-2025-21739 and CVE-2025-21759
 * Mon Apr 14 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.131-3
-- Fix recognition of kcmdline param 'pti'/'nopti'
+- Fix recognition of cmdline param 'pti'/'nopti'
 * Tue Apr 08 2025 Jonathan Shao <jonathan.shao@broadcom.com> 6.1.131-2
 - Port xfrm policy cache mechanism from 4.14 kernel
 * Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.131-1
