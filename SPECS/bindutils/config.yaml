@@ -1,6 +1,14 @@
 sources:
-- archive: bind-9.20.0.tar.xz
-  archive_sha512sum: 38dcb5d401b357127f11af521594daf2a7df1fbf444f80a823d10d1077903a59faac4299f925ad77283610c54c816ac0f53edb6d1cdb664abc36368457840e55
+- archive: bind-9.20.7.tar.xz
+  archive_type: upstream
+  version: 9.20.7
+  name: bind-9.20.7
+  url: https://ftp.isc.org/isc/bind9/9.20.7/bind-9.20.7.tar.xz
+  repo_url: https://github.com/isc-projects/bind9.git
+  commit_id: 305df5897696e30e7b8088beee777b01dc25cc39
+  skip_list: []
+  missing: []
+  archive_sha512sum: b9570c0c6588819108017d30dc7fb5e2f34361f941186d29da3d2830bbe3333c8c16bdb6581f5bec4786d90b74db860a9cad5f66d4f1c65168eae69f401a9df0
   skip_validation: true
   spdx:
     package:
@@ -9,21 +17,17 @@ sources:
         of those protocols, but it is also production-grade software, suitable for
         use in high-volume and high-reliability applications. '
       home_page: http://www.isc.org/downloads/bind
-      license_concluded: HPND AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND MPL-2.0 AND X11 AND CC-BY-3.0
-        AND GPL-2.0-only AND (MPL-2.0 AND BSD-3-Clause) AND BSD-3-Clause AND ISC AND
-        (MPL-2.0 AND ISC) AND GPL-2.0-or-later AND BSD-2-Clause AND FSFUL AND Apache-2.0
-        AND (MPL-2.0 AND MIT) AND MIT AND FSFAP AND (ISC AND MPL-2.0) AND CC0-1.0
-        AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-3.0 AND GPL-2.0-or-later
-        WITH Libtool-exception AND FSFULLRWD AND (MPL-2.0 AND BSD-2-Clause) AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic
-      license_declared: HPND AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND MPL-2.0 AND X11 AND CC-BY-3.0
-        AND GPL-2.0-only AND (MPL-2.0 AND BSD-3-Clause) AND BSD-3-Clause AND ISC AND
-        (MPL-2.0 AND ISC) AND GPL-2.0-or-later AND BSD-2-Clause AND FSFUL AND Apache-2.0
-        AND (MPL-2.0 AND MIT) AND MIT AND FSFAP AND (ISC AND MPL-2.0) AND CC0-1.0
-        AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-3.0 AND GPL-2.0-or-later
-        WITH Libtool-exception AND FSFULLRWD AND (MPL-2.0 AND BSD-2-Clause) AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic
+      license_concluded: FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-3.0 AND
+        GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-2-Clause AND FSFULLR AND GPL-2.0-or-later WITH Libtool-exception AND
+        MIT AND HPND AND FSFULLRWD AND Apache-2.0 AND FSFUL AND ISC AND GPL-2.0-only
+        AND CC-BY-3.0 AND MPL-2.0 AND X11 AND CC0-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later AND OpenSSL AND BSD-3-Clause
+      license_declared: FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-3.0 AND
+        GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-2-Clause AND FSFULLR AND GPL-2.0-or-later WITH Libtool-exception AND
+        MIT AND HPND AND FSFULLRWD AND Apache-2.0 AND FSFUL AND ISC AND GPL-2.0-only
+        AND CC-BY-3.0 AND MPL-2.0 AND X11 AND CC0-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later AND OpenSSL AND BSD-3-Clause
       short_summary: Domain Name System software
       supplier: 'Organization: Broadcom, Inc.'
