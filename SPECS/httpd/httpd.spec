@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.62
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -190,6 +190,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.62-5
+- Version bump for expat upgrade
 * Mon Feb 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.62-4
 - Spec cleanups
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.4.62-3

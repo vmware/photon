@@ -1,1 +1,1 @@
-License: LGPL-2.0-only AND LGPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later AND LGPL-2.1-or-later
+License: (GPL-1.0-or-later OR Artistic-1.0-Perl) AND LGPL-2.1-or-later AND Apache-2.0 AND LGPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later AND LGPL-2.0-or-later AND GPL-2.0-only AND MIT AND MPL-2.0

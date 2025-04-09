@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.9
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -309,6 +309,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.11.9-10
+- Version bump for expat upgrade
 * Tue Feb 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.9-9
 - Fix license
 * Wed Jan 22 2025 Prashant S Chauhan <Prashant.singh-chauhan@broadcom.com> 3.11.9-8

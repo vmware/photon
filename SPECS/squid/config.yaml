@@ -6,23 +6,25 @@ sources:
     package:
       detailed_description: SQUID Web Proxy Cache
       home_page: https://github.com/squid-cache/squid
-      license_concluded: GPL-2.0-or-later AND FSFAP-no-warranty-disclaimer AND FSFUL
-        AND BSD-4-Clause-UC AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND (LGPL-3.0-or-later
-        OR GPL-2.0-or-later) AND X11 AND CC-BY-SA-3.0 AND OLDAP-2.8 AND BSD-2-Clause
-        AND MIT-CMU AND ISC AND libtiff AND CC-BY-2.5 AND BSD-3-Clause AND LGPL-2.1-only
-        AND Beerware AND LGPL-2.1-or-later AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND RSA-MD AND FSFAP AND FSFULLRWD AND CC-BY-3.0 AND LGPL-2.0-or-later WITH
-        Libtool-exception AND HPND-Fenneberg-Livingston AND LGPL-2.0-or-later AND
-        BSD-4-Clause AND MIT AND BSL-1.0 AND GPL-2.0-only
-      license_declared: GPL-2.0-or-later AND FSFAP-no-warranty-disclaimer AND FSFUL
-        AND BSD-4-Clause-UC AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND (LGPL-3.0-or-later
-        OR GPL-2.0-or-later) AND X11 AND CC-BY-SA-3.0 AND OLDAP-2.8 AND BSD-2-Clause
-        AND MIT-CMU AND ISC AND libtiff AND CC-BY-2.5 AND BSD-3-Clause AND LGPL-2.1-only
-        AND Beerware AND LGPL-2.1-or-later AND FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND RSA-MD AND FSFAP AND FSFULLRWD AND CC-BY-3.0 AND LGPL-2.0-or-later WITH
-        Libtool-exception AND HPND-Fenneberg-Livingston AND LGPL-2.0-or-later AND
-        BSD-4-Clause AND MIT AND BSL-1.0 AND GPL-2.0-only
+      license_concluded: (LGPL-3.0-or-later OR GPL-2.0-or-later) AND BSD-3-Clause
+        AND ISC AND LGPL-2.0-or-later WITH Libtool-exception AND MIT AND FSFULLRWD
+        AND LGPL-2.0-or-later AND CC-BY-SA-3.0 AND Artistic-1.0-Perl AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND BSD-4-Clause AND BSL-1.0 AND CC-BY-2.5
+        AND LGPL-2.1-or-later AND CC-BY-3.0 AND FSFULLR AND X11 AND RSA-MD AND OLDAP-2.8
+        AND FSFAP-no-warranty-disclaimer AND FSFAP AND BSD-2-Clause AND GPL-2.0-or-later
+        AND LGPL-2.1-only AND Beerware AND OpenSSL AND GPL-2.0-only AND GPL-1.0-or-later
+        AND HPND-Fenneberg-Livingston AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND libtiff AND MIT-CMU AND BSD-4-Clause-UC AND FSFUL AND GPL-2.0-or-later
+        WITH Libtool-exception
+      license_declared: (LGPL-3.0-or-later OR GPL-2.0-or-later) AND BSD-3-Clause AND
+        ISC AND LGPL-2.0-or-later WITH Libtool-exception AND MIT AND FSFULLRWD AND
+        LGPL-2.0-or-later AND CC-BY-SA-3.0 AND Artistic-1.0-Perl AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND BSD-4-Clause AND BSL-1.0 AND CC-BY-2.5
+        AND LGPL-2.1-or-later AND CC-BY-3.0 AND FSFULLR AND X11 AND RSA-MD AND OLDAP-2.8
+        AND FSFAP-no-warranty-disclaimer AND FSFAP AND BSD-2-Clause AND GPL-2.0-or-later
+        AND LGPL-2.1-only AND Beerware AND OpenSSL AND GPL-2.0-only AND GPL-1.0-or-later
+        AND HPND-Fenneberg-Livingston AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND libtiff AND MIT-CMU AND BSD-4-Clause-UC AND FSFUL AND GPL-2.0-or-later
+        WITH Libtool-exception
       short_summary: SQUID Web Proxy Cache
       supplier: 'Organization: Broadcom, Inc.'

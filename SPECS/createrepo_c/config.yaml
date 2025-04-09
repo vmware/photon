@@ -6,15 +6,11 @@ sources:
     package:
       detailed_description: 'C implementation of the createrepo. '
       home_page: https://github.com/rpm-software-management/createrepo_c
-      license_concluded: CDDL-1.0 AND Apache-1.1 AND MIT AND GPL-2.0-or-later AND
-        GPL-3.0-only AND EPL-1.0 AND GPL-1.0-or-later AND LGPL-2.0-only AND Apache-2.0
-        AND LGPL-3.0-only AND LGPL-2.1-or-later AND (GPL-2.0-or-later OR LGPL-2.0-or-later)
-        AND MPL-2.0 AND LGPL-3.0-or-later AND HaskellReport AND GPL-2.0-only AND LGPL-2.0-or-later
-        AND GPL-3.0-or-later
-      license_declared: CDDL-1.0 AND Apache-1.1 AND MIT AND GPL-2.0-or-later AND GPL-3.0-only
-        AND EPL-1.0 AND GPL-1.0-or-later AND LGPL-2.0-only AND Apache-2.0 AND LGPL-3.0-only
-        AND LGPL-2.1-or-later AND (GPL-2.0-or-later OR LGPL-2.0-or-later) AND MPL-2.0
-        AND LGPL-3.0-or-later AND HaskellReport AND GPL-2.0-only AND LGPL-2.0-or-later
-        AND GPL-3.0-or-later
+      license_concluded: (GPL-1.0-or-later OR Artistic-1.0-Perl) AND Apache-2.0 AND
+        GPL-1.0-or-later AND LGPL-2.1-or-later AND GPL-2.0-only AND MPL-2.0 AND LGPL-2.0-only
+        AND MIT AND GPL-2.0-or-later AND LGPL-2.0-or-later
+      license_declared: (GPL-1.0-or-later OR Artistic-1.0-Perl) AND Apache-2.0 AND
+        GPL-1.0-or-later AND LGPL-2.1-or-later AND GPL-2.0-only AND MPL-2.0 AND LGPL-2.0-only
+        AND MIT AND GPL-2.0-or-later AND LGPL-2.0-or-later
       short_summary: Creates a common metadata repository
       supplier: 'Organization: Broadcom, Inc.'

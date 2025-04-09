@@ -1,7 +1,7 @@
 Summary:           A toolkit for defining and handling authorizations.
 Name:              polkit
 Version:           121
-Release:           5%{?dist}
+Release:           6%{?dist}
 Group:             Applications/System
 Vendor:            VMware, Inc.
 URL:               https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
@@ -118,6 +118,8 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 121-6
+- Version bump for expat upgrade
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 121-5
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 121-4

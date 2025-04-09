@@ -6,11 +6,11 @@ sources:
     package:
       detailed_description: 'The Apache Portable Runtime Utility Library. '
       home_page: https://apr.apache.org
-      license_concluded: Beerware AND Apache-2.0 AND MIT AND Sleepycat AND FSFUL AND
-        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND RSA-MD AND CC0-1.0
-        AND OLDAP-2.8 AND BSD-4.3RENO
-      license_declared: Beerware AND Apache-2.0 AND MIT AND Sleepycat AND FSFUL AND
-        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND RSA-MD AND CC0-1.0
-        AND OLDAP-2.8 AND BSD-4.3RENO
+      license_concluded: OLDAP-2.8 AND RSA-MD AND Sleepycat AND Apache-2.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND BSD-4.3RENO AND MIT AND FSFUL AND
+        NTP AND Beerware AND CC0-1.0
+      license_declared: OLDAP-2.8 AND RSA-MD AND Sleepycat AND Apache-2.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND BSD-4.3RENO AND MIT AND FSFUL AND
+        NTP AND Beerware AND CC0-1.0
       short_summary: The Apache Portable Runtime Utility Library
       supplier: 'Organization: Broadcom, Inc.'

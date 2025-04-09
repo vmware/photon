@@ -9,22 +9,22 @@ sources:
         better unicode strings support, easier and more intuitive syntax, and removes
         the deprecated code. It is incompatible with Python 2.x releases. '
       home_page: http://www.python.org
-      license_concluded: MIT-CMU AND (Python-2.0 OR GPL-2.0-only) AND 0BSD AND Python-2.0
-        AND FSFAP AND (BSD-2-Clause OR Apache-2.0) AND MS-RL AND MIT AND FSFULLRWD
-        AND GPL-1.0-or-later AND FSFULLR AND FSFUL AND PSF-2.0 AND Apache-2.0 AND
-        Python-2.0.1 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
-        CNRI-Python AND BSD-Source-Code AND Zlib AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND X11 AND (MIT OR PSF-2.0) AND LGPL-2.1-or-later AND CC0-1.0 AND BSD-2-Clause
-        AND dtoa AND BSD-3-Clause AND HPND AND (BSD-3-Clause OR Apache-2.0) AND (MIT
-        OR Apache-2.0)
-      license_declared: MIT-CMU AND (Python-2.0 OR GPL-2.0-only) AND 0BSD AND Python-2.0
-        AND FSFAP AND (BSD-2-Clause OR Apache-2.0) AND MS-RL AND MIT AND FSFULLRWD
-        AND GPL-1.0-or-later AND FSFULLR AND FSFUL AND PSF-2.0 AND Apache-2.0 AND
-        Python-2.0.1 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
-        CNRI-Python AND BSD-Source-Code AND Zlib AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND X11 AND (MIT OR PSF-2.0) AND LGPL-2.1-or-later AND CC0-1.0 AND BSD-2-Clause
-        AND dtoa AND BSD-3-Clause AND HPND AND (BSD-3-Clause OR Apache-2.0) AND (MIT
-        OR Apache-2.0)
+      license_concluded: (Python-2.0 OR GPL-2.0-only) AND (BSD-3-Clause OR Apache-2.0)
+        AND (MIT OR Apache-2.0) AND (MIT OR PSF-2.0) AND (BSD-2-Clause OR Apache-2.0)
+        AND GPL-1.0-or-later AND LGPL-2.1-or-later AND FSFULLRWD AND PSF-2.0 AND CNRI-Python
+        AND HPND AND dtoa AND 0BSD AND MIT-CMU AND CC0-1.0 AND FSFAP AND BSD-Source-Code
+        AND FSFUL AND FSFULLR AND BSD-2-Clause AND Apache-2.0 AND Python-2.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND OpenSSL AND X11 AND MIT AND BSD-3-Clause
+        AND Python-2.0.1 AND Zlib AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MS-RL
+      license_declared: (Python-2.0 OR GPL-2.0-only) AND (BSD-3-Clause OR Apache-2.0)
+        AND (MIT OR Apache-2.0) AND (MIT OR PSF-2.0) AND (BSD-2-Clause OR Apache-2.0)
+        AND GPL-1.0-or-later AND LGPL-2.1-or-later AND FSFULLRWD AND PSF-2.0 AND CNRI-Python
+        AND HPND AND dtoa AND 0BSD AND MIT-CMU AND CC0-1.0 AND FSFAP AND BSD-Source-Code
+        AND FSFUL AND FSFULLR AND BSD-2-Clause AND Apache-2.0 AND Python-2.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND OpenSSL AND X11 AND MIT AND BSD-3-Clause
+        AND Python-2.0.1 AND Zlib AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND MS-RL
       short_summary: A high-level scripting language
       supplier: 'Organization: Broadcom, Inc.'
 - archive: setuptools-pip-wheels.ph5-1.0-2.tar.xz
@@ -34,9 +34,9 @@ sources:
     package:
       detailed_description: Installation wheels for setup tools and pip.
       home_page: https://pypi.org/project/pip/
-      license_concluded: BSD-3-Clause AND Python-2.0 AND Apache-2.0 AND (BSD-3-Clause
-        OR Apache-2.0) AND MIT AND LGPL-2.1-or-later AND (BSD-2-Clause OR Apache-2.0)
-      license_declared: BSD-3-Clause AND Python-2.0 AND Apache-2.0 AND (BSD-3-Clause
-        OR Apache-2.0) AND MIT AND LGPL-2.1-or-later AND (BSD-2-Clause OR Apache-2.0)
+      license_concluded: (BSD-3-Clause OR Apache-2.0) AND (BSD-2-Clause OR Apache-2.0)
+        AND Apache-2.0 AND BSD-2-Clause AND Python-2.0 AND BSD-3-Clause AND MIT
+      license_declared: (BSD-3-Clause OR Apache-2.0) AND (BSD-2-Clause OR Apache-2.0)
+        AND Apache-2.0 AND BSD-2-Clause AND Python-2.0 AND BSD-3-Clause AND MIT
       short_summary: Installation wheels for setup tools and pip.
       supplier: 'Organization: Broadcom, Inc.'

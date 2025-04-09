@@ -12,11 +12,13 @@ sources:
         Git is used for version control of files, much like tools such as Mercurial,
         Bazaar, Subversion-1.7.8, CVS-1.11.23, Perforce, and Team Foundation Server. '
       home_page: http://git-scm.com
-      license_concluded: GPL-1.0-or-later AND LGPL-2.1-only AND (MIT OR GPL-2.0-only) AND GPL-2.0-only
-        AND Apache-2.0 AND BSD-3-Clause AND LGPL-2.1-or-later AND MIT AND GPL-3.0-only AND BSL-1.0
-        AND Artistic-2.0 AND ISC AND FSFUL AND Zlib AND GPL-2.0-or-later AND CC-PDDC
-      license_declared: GPL-1.0-or-later AND LGPL-2.1-only AND (MIT OR GPL-2.0-only) AND GPL-2.0-only
-        AND Apache-2.0 AND BSD-3-Clause AND LGPL-2.1-or-later AND MIT AND GPL-3.0-only AND BSL-1.0
-        AND Artistic-2.0 AND ISC AND FSFUL AND Zlib AND GPL-2.0-or-later AND CC-PDDC
+      license_concluded: (MIT OR GPL-2.0-only) AND (Artistic-1.0-Perl OR GPL-1.0-or-later)
+        AND MIT AND ISC AND GPL-2.0-or-later AND Apache-2.0 AND GPL-3.0-only AND BSD-3-Clause
+        AND GPL-1.0-or-later AND BSL-1.0 AND GPL-2.0-only AND FSFUL AND CC-PDDC AND
+        LGPL-2.1-or-later AND LGPL-2.1-only AND Zlib
+      license_declared: (MIT OR GPL-2.0-only) AND (Artistic-1.0-Perl OR GPL-1.0-or-later)
+        AND MIT AND ISC AND GPL-2.0-or-later AND Apache-2.0 AND GPL-3.0-only AND BSD-3-Clause
+        AND GPL-1.0-or-later AND BSL-1.0 AND GPL-2.0-only AND FSFUL AND CC-PDDC AND
+        LGPL-2.1-or-later AND LGPL-2.1-only AND Zlib
       short_summary: Fast distributed version control system
       supplier: 'Organization: Broadcom, Inc.'

@@ -1,7 +1,14 @@
 sources:
-- archive: expat-2.6.0.tar.xz
-  archive_sha512sum: d6f1c4a1a2ec8ffc04c04d6767cc8dd7dea3d132d10b8a2c45c5bfb405893c75db032b87a56cc88300b61c961dd7f9782b93aa74dddc7e66f25acb0c6c82b1fd
-  skip_validation: true
+- archive: expat-2.7.1.tar.xz
+  archive_type: upstream
+  archive_sha512sum: 4c9a6c1c1769d2c4404da083dd3013dbc73883da50e2b7353db2349a420e9b6d27cac7dbcb645991d6c7cdbf79bd88486fc1ac353084ce48e61081fb56e13d46
+  name: "expat-2.7.1"
+  version: 2.7.1
+  url: https://github.com/libexpat/libexpat/releases/download/R_2_7_1/expat-2.7.1.tar.xz
+  repo_url: https://github.com/libexpat/libexpat.git
+  commit_id: f9a3eeb3e09fbea04b1c451ffc422ab2f1e45744
+  skip_list: [AUTHORS, CMake.README, CMakeLists.txt, Changes, ConfigureChecks.cmake, Makefile.am, Makefile.in, acinclude.m4, aclocal.m4, buildconf.sh, cmake, configure, configure.ac, conftools, doc, examples, expat.pc.cmake, expat.pc.in, expat_config.h, expat_config.h.cmake, expat_config.h.in, fix-xmltest-log.sh, fuzz, lib, m4, run.sh.in, test-driver-wrapper.sh, tests, win32, xmlwf]
+  missing: [cmake, test-driver-wrapper.sh, expat_config.h.in, run.sh.in, xmlwf, fuzz, testdata, .ci.sh, AUTHORS, examples, SECURITY.md, expat, buildconf.sh, win32, .mailmap, Changes, expat.pc.cmake, configure.ac, Brewfile, m4, ConfigureChecks.cmake, configure, tests, expat_config.h.cmake, Makefile.in, .github, expat.pc.in, .gitignore, aclocal.m4, CMake.README, CMakeLists.txt, expat_config.h, fix-xmltest-log.sh, conftools, acinclude.m4, lib, Makefile.am, doc]
   spdx:
     package:
       detailed_description: 'The Expat package contains a stream oriented C library

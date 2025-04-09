@@ -4,7 +4,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        6.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
@@ -236,6 +236,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12-2
+- Version bump for expat upgrade
 * Thu Dec 12 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.12-1
 - Disable ESI support to fix CVE-2024-45802
 - Update to v6.12

@@ -10,7 +10,7 @@ sources:
         It is exclusively written for Linux systems, and makes use of many modern
         features provided by recent Linux kernel releases. '
       home_page: https://github.com/bus1/dbus-broker
-      license_concluded: LGPL-2.0-or-later AND Apache-2.0 AND LGPL-2.0-only AND LGPL-2.1-or-later
-      license_declared: LGPL-2.0-or-later AND Apache-2.0 AND LGPL-2.0-only AND LGPL-2.1-or-later
+      license_concluded: Apache-2.0 AND LGPL-2.1-or-later AND LGPL-2.0-or-later
+      license_declared: Apache-2.0 AND LGPL-2.1-or-later AND LGPL-2.0-or-later
       short_summary: Linux D-Bus Message Broker
       supplier: 'Organization: Broadcom, Inc.'

@@ -4,7 +4,7 @@
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
 Version:        1.0.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
 Source0:        thin-provisioning-tools-%{version}.tar.gz
@@ -45,6 +45,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.0.2-6
+- Version bump for expat upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0.2-5
 - Release bump for SRP compliance
 * Thu Aug 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.0.2-4
