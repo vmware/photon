@@ -4,8 +4,8 @@
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.20.0
-Release:        2%{?dist}
+Version:        9.20.7
+Release:        1%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -131,6 +131,8 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
+* Tue Apr 08 2025 Ajay Kaher <ajay.kaher@broadcom.com> 9.20.7-1
+- Update to version 9.20.7 to fix CVE-2024-12705/11187
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 9.20.0-2
 - Release bump for SRP compliance
 * Thu Jul 18 2024 Dweep Advani <dweep.advani@broadcom.com> 9.20.0-1
