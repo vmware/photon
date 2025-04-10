@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.235
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -208,6 +208,9 @@ Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
 #Fix for CVE-2024-50125
 Patch122: 0001-Bluetooth-call-sock_hold-earlier-in-sco_conn_del.patch
 Patch123: 0002-Bluetooth-SCO-Fix-UAF-on-sco_sock_timeout.patch
+
+# Fix CVE-2025-21863
+Patch124: 0001-io_uring-prevent-opcode-speculation.patch
 
 # Fix CVE-2024-35937
 Patch125: 0001-wifi-cfg80211-check-A-MSDU-format-more-carefully.patch
@@ -1053,6 +1056,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Apr 10 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.235-4
+- Fix CVE-2025-21863
 * Thu Apr 03 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.235-3
 - Fix CVE-2021-47200 and CVE-2021-47101
 * Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.235-2

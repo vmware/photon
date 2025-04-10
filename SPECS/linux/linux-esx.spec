@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.235
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -219,6 +219,9 @@ Patch123: 0001-wifi-cfg80211-check-A-MSDU-format-more-carefully.patch
 
 # Fix CVE-2024-56658
 Patch124: 0001-net-defer-final-struct-net-free-in-netns-dismantle.patch
+
+# Fix CVE-2025-21863
+Patch125: 0001-io_uring-prevent-opcode-speculation.patch
 
 # Fix CVE-2024-26718
 Patch131: 0001-dm-crypt-dm-verity-disable-tasklets.patch
@@ -762,6 +765,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Apr 10 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.235-4
+- Fix CVE-2025-21863
 * Thu Apr 03 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.235-3
 - Fix CVE-2021-47200 and CVE-2021-47101
 * Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.235-2

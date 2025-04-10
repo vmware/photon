@@ -1,0 +1,83 @@
+From 4d199de6518963b3413871117a9eafae24499e5b Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Thu, 27 Mar 2025 13:07:11 +0000
+Subject: [PATCH] io_uring: prevent opcode speculation
+
+commit 1e988c3fe1264708f4f92109203ac5b1d65de50b upstream.
+
+sqe->opcode is used for different tables, make sure we santitise it
+against speculations.
+
+Cc: stable@vger.kernel.org
+Fixes: d3656344fea03 ("io_uring: add lookup table for various opcode needs")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Reviewed-by: Li Zetao <lizetao1@huawei.com>
+Link: https://lore.kernel.org/r/7eddbf31c8ca0a3947f8ed98271acc2b4349c016.1739568408.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Ajay: - define 'u8 opcode' from commit 4a04d1d14831
+       - modified to apply on v5.10.y]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ io_uring/io_uring.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
+index 4e86da84f..284b72dcd 100644
+--- a/io_uring/io_uring.c
++++ b/io_uring/io_uring.c
+@@ -7165,9 +7165,10 @@ static int io_init_req(struct io_ring_ctx *ctx, struct io_kiocb *req,
+ 	struct io_submit_state *state;
+ 	unsigned int sqe_flags;
+ 	int personality, ret = 0;
++	u8 opcode;
+ 
+ 	/* req is partially pre-initialised, see io_preinit_req() */
+-	req->opcode = READ_ONCE(sqe->opcode);
++	req->opcode = opcode = READ_ONCE(sqe->opcode);
+ 	/* same numerical values with corresponding REQ_F_*, safe to copy */
+ 	req->flags = sqe_flags = READ_ONCE(sqe->flags);
+ 	req->user_data = READ_ONCE(sqe->user_data);
+@@ -7175,16 +7176,21 @@ static int io_init_req(struct io_ring_ctx *ctx, struct io_kiocb *req,
+ 	req->fixed_rsrc_refs = NULL;
+ 	req->task = current;
+ 
++	opcode = array_index_nospec(opcode, IORING_OP_LAST);
++
+ 	/* enforce forwards compatibility on users */
+-	if (unlikely(sqe_flags & ~SQE_VALID_FLAGS))
++	if (unlikely(sqe_flags & ~SQE_VALID_FLAGS)) {
++		req->opcode = 0;
+ 		return -EINVAL;
+-	if (unlikely(req->opcode >= IORING_OP_LAST))
++	}
++	if (unlikely(opcode >= IORING_OP_LAST)) {
+ 		return -EINVAL;
++	}
+ 	if (!io_check_restriction(ctx, req, sqe_flags))
+ 		return -EACCES;
+ 
+ 	if ((sqe_flags & IOSQE_BUFFER_SELECT) &&
+-	    !io_op_defs[req->opcode].buffer_select)
++	    !io_op_defs[opcode].buffer_select)
+ 		return -EOPNOTSUPP;
+ 	if (unlikely(sqe_flags & IOSQE_IO_DRAIN))
+ 		ctx->drain_active = true;
+@@ -7204,12 +7210,12 @@ static int io_init_req(struct io_ring_ctx *ctx, struct io_kiocb *req,
+ 	 * is potentially a read/write to block based storage.
+ 	 */
+ 	if (!state->plug_started && state->ios_left > 1 &&
+-	    io_op_defs[req->opcode].plug) {
++	    io_op_defs[opcode].plug) {
+ 		blk_start_plug(&state->plug);
+ 		state->plug_started = true;
+ 	}
+ 
+-	if (io_op_defs[req->opcode].needs_file) {
++	if (io_op_defs[opcode].needs_file) {
+ 		req->file = io_file_get(ctx, req, READ_ONCE(sqe->fd),
+ 					(sqe_flags & IOSQE_FIXED_FILE),
+ 					IO_URING_F_NONBLOCK);
+-- 
+2.39.4
+
