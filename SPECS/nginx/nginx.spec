@@ -6,8 +6,8 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
-Version:        1.26.2
-Release:        5%{?dist}
+Version:        1.26.3
+Release:        1%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -26,6 +26,7 @@ Source5: license.txt
 %include %{SOURCE5}
 
 Patch0: convert-to-dynamic.patch
+Patch1: CVE-2025-53859.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -202,6 +203,8 @@ rm -rf %{buildroot}
 %{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
 
 %changelog
+* Thu Jun 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.3-1
+- Upgrade to v1.26.3
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.2-5
 - Renaming sysusers to conf to fix auto user creation
 * Mon Jan 06 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.2-4
