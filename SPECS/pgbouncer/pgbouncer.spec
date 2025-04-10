@@ -1,7 +1,7 @@
 Summary:          Connection pooler for PostgreSQL.
 Name:             pgbouncer
 Version:          1.17.0
-Release:          5%{?dist}
+Release:          6%{?dist}
 License:          BSD
 URL:              https://wiki.postgresql.org/wiki/PgBouncer
 Group:            Application/Databases.
@@ -36,11 +36,11 @@ Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm 744 %{buildroot}%{_var}/log/pgbouncer
-install -vdm 755 %{buildroot}%{_sharedstatedir}/pgbouncer
+install -vdm 744 %{buildroot}%{_var}/log/%{name}
+install -vdm 755 %{buildroot}%{_rundir}/%{name}
 install -p -d %{buildroot}%{_sysconfdir}/
 install -p -d %{buildroot}%{_sysconfdir}/sysconfig
-install -p -m 644 etc/pgbouncer.ini %{buildroot}%{_sysconfdir}/
+install -p -m 644 etc/%{name}.ini %{buildroot}%{_sysconfdir}/
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system/
 install -m 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/system/%{name}.service
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
@@ -53,17 +53,6 @@ popd
 %pre
 %sysusers_create_compat %{SOURCE2}
 
-%post
-if [ $1 -eq 1 ]; then
-  chown %{name}:%{name} %{_var}/log/%{name}
-  chown %{name}:%{name} %{_sharedstatedir}/%{name}
-fi
-
-%postun
-if [ $1 -eq 0 ]; then
-  rm -rf %{_var}/log/%{name} %{_sharedstatedir}/%{name}
-fi
-
 %files
 %defattr(-,root,root,-)
 %{_bindir}/*
@@ -71,10 +60,14 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}.ini
 %{_mandir}/man1/%{name}.*
 %{_mandir}/man5/%{name}.*
-%{_docdir}/pgbouncer/*
+%{_docdir}/%{name}/*
 %{_sysusersdir}/%{name}.sysusers
+%dir %attr(-,%{name},%{name}) %{_rundir}/%{name}
+%dir %attr(-,%{name},%{name}) %{_var}/log/%{name}
 
 %changelog
+* Thu Apr 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.17.0-6
+- Fix some spec mishaps
 * Thu Dec 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.17.0-5
 - Fix spec issues
 * Sun Nov 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.17.0-4
