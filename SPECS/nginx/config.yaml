@@ -1,7 +1,15 @@
 sources:
 - archive: headers-more-nginx-module-0.37.tar.gz
   archive_sha512sum: 0cc2fffe506194d439e3669644d41b7943e2c3cffa3483eb70b92067930b358d506a14646eff8362b191a11c624db29f6b53d830876929dcb4ce1c9d7b2bc40d
-  skip_validation: true
+  skip_validation: false
+  repo_url: https://github.com/openresty/headers-more-nginx-module
+  url: https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v0.37.tar.gz
+  commit_id: 06dc0be56e5ec9f7fd814e881b066b5540a85bec
+  name: "headers-more-nginx-module-0.37"
+  version: 0.37
+  archive_type: upstream
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: Set, add, and clear arbitrary output headers in NGINX
@@ -11,9 +19,17 @@ sources:
       license_declared: BSD-3-Clause AND BSD-2-Clause
       short_summary: Set, add, and clear arbitrary output headers in NGINX http servers.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: nginx-1.26.2.tar.gz
-  archive_sha512sum: 470efe9ae5d6150ecbf133979c6c36415679a2156499a3b6820a85eb8f3038a8aa06f7b28ddd834cffb0e982f3ddc89e4b1649d536eba4f84019a72d4cfa3539
-  skip_validation: true
+- archive: nginx-1.26.3.tar.gz
+  archive_sha512sum: cd780e495796bf7413e54a6730d11d55127b0ca6563acf5c75eb2698f62cddbbf5ba61820c57b2316c0bb789fcfd17f98a27a84b525ed50f304d1b1043ffa05d
+  skip_validation: false
+  archive_type: upstream
+  name: "nginx-1.26.3"
+  version: 1.26.3
+  url: https://nginx.org/download/nginx-1.26.3.tar.gz
+  repo_url: https://github.com/nginx/nginx
+  commit_id: 1be0fb0c9f9bc3489c7b40576efd6afe6b2eccd5
+  skip_list: []
+  missing: [html, docs, CHANGES, misc, man, configure, CHANGES.ru]
   spdx:
     package:
       detailed_description: 'NGINX is a free, open-source, high-performance HTTP server
@@ -25,7 +41,15 @@ sources:
       supplier: 'Organization: Broadcom, Inc.'
 - archive: nginx-njs-0.8.4.tar.gz
   archive_sha512sum: 450f6866141f6f370767149c8749e84c4373f401d6d2237ca85365a851ebe7bdbd8a3c25e85a55747673e8bef2238a979dd237d5fc5c641b2f3f2cf7f26dffc8
-  skip_validation: true
+  archive_type: upstream
+  skip_validation: false
+  commit_id: 3fb0ee5e907c9a4153d92946c1ef1b96202f883b
+  url: https://github.com/nginx/njs/archive/refs/tags/0.8.4.tar.gz
+  repo_url: https://github.com/nginx/njs.git
+  name: "njs-0.8.4"
+  version: 0.8.4
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: A subset of JavaScript language to use in nginx.

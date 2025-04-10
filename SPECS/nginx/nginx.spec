@@ -6,8 +6,8 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
-Version:        1.26.2
-Release:        4%{?dist}
+Version:        1.26.3
+Release:        1%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -202,6 +202,8 @@ rm -rf %{buildroot}
 %{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
 
 %changelog
+* Thu Apr 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.3-1
+- Upgrade to v1.26.3
 * Mon Jan 06 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.2-4
 - Convert modulee like http-dav and stream-ssl-preread to dynamic
 - Package dynamic modules as a sub package
