@@ -1,0 +1,32 @@
+From 01a541bc7978d23ca5e6fd03dbe7e8cce88f8dc8 Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+Date: Thu, 10 Apr 2025 10:36:39 +0000
+Subject: [PATCH] Support multiline MODULE_DESCRIPTION
+
+Support for multiline strings in the MODULE_DESCRIPTION
+macro within kernel livepatch modules.
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+[ Brennan : Replace newlines with spaces, remove trailing whitespace ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ kpatch-build/kpatch-build | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/kpatch-build/kpatch-build b/kpatch-build/kpatch-build
+index 65506b3..460d22e 100755
+--- a/kpatch-build/kpatch-build
++++ b/kpatch-build/kpatch-build
+@@ -1436,7 +1436,9 @@ CROSS_COMPILE="$CROSS_COMPILE"
+ save_env
+
+ if [[ $DESC_FILE ]]; then
+-	echo "MODULE_DESCRIPTION(\"$(cat $DESC_FILE)\");" >> $TEMPDIR/patch/livepatch-patch-hook.c || die
++	MOD_DESC="$(tr '\n' ' ' < $DESC_FILE)"
++	MOD_DESC="${MOD_DESC%%[[:space:]]}"
++	echo "MODULE_DESCRIPTION(\"$MOD_DESC\");" >> $TEMPDIR/patch/livepatch-patch-hook.c || die
+ fi
+
+
+--
+2.40.4
+

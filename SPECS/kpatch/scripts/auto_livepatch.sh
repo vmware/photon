@@ -174,7 +174,7 @@ parse_args() {
             case "$flag" in
                 -p)
                     patch_given=1
-                    cp "$1" $PATCH_DIR &> /dev/null || error "Couldn't find patch file $1"
+                    cp "$1" $PATCH_DIR > /dev/null || error "Couldn't find patch file $1"
                     arg="$DOCKER_BUILDDIR/patches/$(basename "$arg")"
                     ;;
                 -k)
@@ -185,11 +185,11 @@ parse_args() {
                     ;;
                 -d)
                     DESC_GIVEN=1
-                    cp "$1" "$AUTO_LIVEPATCH_DIR/description.txt" &> /dev/null || error "Description file $1 not found"
+                    cp "$1" "$AUTO_LIVEPATCH_DIR/description.txt" > /dev/null || error "Description file $1 not found"
                     ;;
                 --rpm-desc)
                     RPM_DESC_GIVEN=1
-                    cp "$1" "$AUTO_LIVEPATCH_DIR/rpm-description.txt" &> /dev/null || error "RPM description file $1 not found"
+                    cp "$1" "$AUTO_LIVEPATCH_DIR/rpm-description.txt" > /dev/null || error "RPM description file $1 not found"
                     ;;
                 -s)
                     SRC_RPM_LOCAL_PATH=$1
@@ -264,7 +264,7 @@ config_container() {
 
     if [[ -z "$(docker images -q "$DOCKER_IMAGE_NAME" 2> /dev/null)" ]]; then
         # clean up old docker images from alternate versions
-        $DOCKER rmi -f "$(docker images | grep livepatch-$PH_TAG | awk '{print $1}')" &> /dev/null
+        $DOCKER rmi -f "$(docker images | grep livepatch-$PH_TAG | awk '{print $1}')" > /dev/null
 
         echo "No existing docker image found, building..."
         $DOCKER build --network=host -f $DOCKERFILE_DIR/"$DOCKERFILE_NAME" -t "$DOCKER_IMAGE_NAME" . || error
@@ -313,7 +313,7 @@ error() {
 
 save_buildlog() {
     echo "Copying kpatch build log from docker container to $AUTO_LIVEPATCH_DIR"
-    $DOCKER cp "$DOCKER_CONTAINER_NAME":"$DOCKER_KPATCH_BUILDLOG" $AUTO_LIVEPATCH_DIR &> /dev/null || error "Couldn't find kpatch build log"
+    $DOCKER cp "$DOCKER_CONTAINER_NAME":"$DOCKER_KPATCH_BUILDLOG" $AUTO_LIVEPATCH_DIR > /dev/null || error "Couldn't find kpatch build log"
 }
 
 cleanup() {

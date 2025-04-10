@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
@@ -24,6 +24,7 @@ Patch2:         0001-allow-livepatches-to-be-visible-to-modinfo-after-loa.patch
 
 # Bug fix
 Patch3:         kpatch-build-ignore-init-version-timestamp-o.patch
+Patch4:         0001-Support-multiline-MODULE_DESCRIPTION.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -114,6 +115,10 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Thu Apr 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.8-3
+- Limit auto generated livepatch kernel module name to 38 characters
+- Added support for multiline module descriptions
+- Removed redirection of stderr to /dev/null
 * Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 0.9.8-2
 - Fix for requires
 * Mon Apr 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.9.8-1
