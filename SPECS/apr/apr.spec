@@ -4,7 +4,7 @@
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.7.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://apr.apache.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -28,6 +28,7 @@ The Apache Portable Runtime.
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
 Requires:       util-linux-devel
+Requires:       libxcrypt-devel
 
 %description    devel
 It contains the libraries and header files to create applications.
@@ -69,6 +70,8 @@ It contains the libraries and header files to create applications.
 %{_libdir}/pkgconfig
 
 %changelog
+* Fri Apr 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.5-3
+- Fix devel package requires
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.5-2
 - Release bump for SRP compliance
 * Tue Sep 10 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.7.5-1
