@@ -1,0 +1,16 @@
+sources:
+- archive: connect-proxy-1.105.tar.gz
+  archive_type: upstream
+  archive_sha512sum: f49001043a8ffbda3823d0ea3640cc85536ce3d23302fd4d704d8a520f99271a2ed66fda11a5402382edc1dcf874988339ebcaf1d6335249a8dd2a8b4ae965a3
+  name: ssh-connect-1.105
+  version: "1.105"
+  url: https://github.com/gotoh/ssh-connect/archive/refs/tags/1.105.tar.gz
+  repo_url: https://github.com/gotoh/ssh-connect
+  commit_id: da7ff7660fe09cb3fc8c749dd0b10f62fc5ea8cd
+  spdx:
+    package:
+      detailed_description: 'connect.c is a simple relaying command to make network connection via SOCKS and https proxy'
+      home_page: https://github.com/gotoh/ssh-connect
+      license_concluded: GPL-2.0-or-later AND GPL-1.0-or-later
+      license_declared: GPL-2.0-or-later AND GPL-1.0-or-later
+      short_summary: SSH Proxy Command
