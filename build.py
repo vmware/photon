@@ -790,6 +790,11 @@ class RpmBuildTarget:
         )
         check_prerequesite["updated-packages"] = True
 
+    def buildGivenPackages(self, pkgs):
+        pkgs = pkgs.split(",")
+        self.logger.debug(f"Building following packages: {pkgs}")
+        PackageManager()._buildGivenPackages(pkgs, Build_Config.buildThreads)
+
     def check_packages(self):
         if check_prerequesite["check-packages"]:
             return
@@ -1449,6 +1454,7 @@ def main():
     parser.add_argument("-b", "--branch", dest="photonBranch", default=None)
     parser.add_argument("-c", "--config", dest="configPath", default=None)
     parser.add_argument("-t", "--target", dest="targetName", default=None)
+    parser.add_argument("-p", "--pkgs", dest="pkgs", default=None)
     parser.add_argument("args", nargs="*")
 
     options = parser.parse_args()
@@ -1456,6 +1462,8 @@ def main():
     branch = options.photonBranch
     cfgPath = options.configPath
     targetName = options.targetName
+    args = options.args
+    pkgs = options.pkgs
 
     build_cfg = "build-config.json"
 
@@ -1543,6 +1551,9 @@ def main():
     if targetName not in targetDict["cleanup"]:
         CheckTools.check_pre_reqs()
 
+    if pkgs:
+        sys.exit(RpmBuildTarget().buildGivenPackages(pkgs))
+
     try:
         attr = None
         if targetName in targetDict["image"]:
@@ -1564,7 +1575,7 @@ def main():
         elif targetName in targetDict["cleanup"]:
             attr = getattr(CleanUp, configdict["targetName"])
         elif targetName in targetDict["utilities"]:
-            attr = getattr(Utilities(options.args), configdict["targetName"])
+            attr = getattr(Utilities(args), configdict["targetName"])
         elif targetName in targetDict["tool-checkup"]:
             attr = getattr(CheckTools, configdict["targetName"])
         else:
