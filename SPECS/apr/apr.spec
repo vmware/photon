@@ -4,7 +4,7 @@
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.7.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org
 Group:          System Environment/Libraries
@@ -27,6 +27,7 @@ The Apache Portable Runtime.
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
 Requires:       util-linux-devel
+Requires:       libxcrypt-devel
 
 %description    devel
 It contains the libraries and header files to create applications.
@@ -68,6 +69,8 @@ It contains the libraries and header files to create applications.
 %{_libdir}/pkgconfig
 
 %changelog
+* Fri Apr 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.4-3
+- Fix devel package requires
 * Mon Apr 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.4-2
 - Bump version as a part of util-linux upgrade
 * Wed Mar 06 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.7.4-1
