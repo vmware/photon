@@ -9,7 +9,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.99
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -53,7 +53,7 @@ Requires:       apache-tomcat = %{version}-%{release}
 The web application for Apache Tomcat.
 
 %prep
-%autosetup -n %{name}-%{version}-src -p1 -a1
+%autosetup -n %{name}-%{version}-src -p1 -b1
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
@@ -132,6 +132,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Fri Apr 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.5.99-2
+- Fix prep section to solve build regression
 * Tue Mar 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 8.5.99-1
 - Version upgrade to v8.5.99
 * Mon Mar 11 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 8.5.96-2
