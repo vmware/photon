@@ -12,7 +12,7 @@
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
 Version:        9.0.98
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -65,6 +65,10 @@ The web application for Apache Tomcat.
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
+
+pushd %{_builddir}/base-for-%{_origname}-%{version}
+mv tomcat-build-libs/* .
+popd
 
 %build
 ant -Dant.build.javac.source=1.8 -Dant.build.javac.target=1.8 \
@@ -149,6 +153,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Sat Apr 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.98-3
+- Fix build regression
 * Wed Apr 02 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 9.0.98-2
 - Fix for CVE-2025-24813
 * Thu Jan 02 2025 Harinadh D <harinadh.dommaraju@broadcom.com> 9.0.98-1
