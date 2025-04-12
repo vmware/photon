@@ -1,7 +1,7 @@
 Summary:        Intelligent Storage Acceleration Library
 Name:           isa-l
 Version:        2.31.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/intel/isa-l
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -21,6 +21,9 @@ BuildRequires: nasm
 %if 0%{?with_check}
 BuildRequires: diffutils
 %endif
+
+# nasm is not available for aarch64
+BuildArch: x86_64
 
 %description
 ISA-L is a collection of optimized low-level functions targeting storage applications.
@@ -74,5 +77,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libisal.pc
 
 %changelog
+* Sat Apr 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.31.1-2
+- Build for x86_64 only
 * Thu Mar 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.31.1-1
 - Initial version
