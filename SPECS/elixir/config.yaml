@@ -1,7 +1,12 @@
 sources:
 - archive: elixir-1.16.3.tar.gz
+  archive_type: upstream
   archive_sha512sum: 1511fb78bdcc50850cbf91007ed11c6a89e947d0a743c1e9ed30e1c93c1b47b5377fced17eeb66ac511d4f151d2e00ef2ecc6fb425d0d4afe2451be41a6ba6ee
-  skip_validation: true
+  name: "elixir-1.16.3"
+  version: 1.16.3
+  repo_url: https://github.com/elixir-lang/elixir
+  url: https://github.com/elixir-lang/elixir/archive/refs/tags/v1.16.3.tar.gz
+  commit_id: 327063cc8485692f2b902553fb599a2bef5a0f8f
   spdx:
     package:
       detailed_description: 'Elixir is a programming language built on top of the
