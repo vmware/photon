@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.6.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -19,6 +19,9 @@ BuildRequires: zlib-devel
 BuildRequires: systemd-devel
 
 Requires:systemd
+
+Patch0: CVE-2024-53008.patch
+Patch1: CVE-2025-32464.patch
 
 %description
 HAProxy is a fast and reliable solution offering high availability, load
@@ -61,6 +64,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+* Mon Apr 14 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.6.15-2
+- Fix for CVE-2025-32464,CVE-2024-53008
 * Mon Aug 21 2023 Nitesh Kumar <kunitesh@vmware.com> 2.6.15-1
 - Version upgrade to v2.6.15 to fix CVE-2023-40225
 * Wed Apr 05 2023 Nitesh Kumar <kunitesh@vmware.com> 2.6.0-3
