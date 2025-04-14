@@ -46,7 +46,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.147
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -282,6 +282,9 @@ Patch158: 0001-drm-amdgpu-Fix-potential-out-of-bounds-access-in-amd.patch
 
 # Fix CVE-2024-26669
 Patch159: 0001-net-sched-flower-Fix-chain-template-offload.patch
+
+# Fix CVE-2024-57982
+Patch160: 0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -618,7 +621,7 @@ The kernel fips-canister
 %autopatch -p1 -m64 -M64
 
 # CVE
-%autopatch -p1 -m100 -M159
+%autopatch -p1 -m100 -M160
 
 %ifarch aarch64
 # aarch64 patches
@@ -1024,6 +1027,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 19 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.147-5
+- Fix CVE-2024-57982
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.147-4
 - Fix requires on doc sub package
 * Tue Aug 12 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.147-3

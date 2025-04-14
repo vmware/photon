@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.147
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -261,6 +261,9 @@ Patch158: 0001-drm-amdgpu-Fix-potential-out-of-bounds-access-in-amd.patch
 # Fix CVE-2024-26669
 Patch159: 0001-net-sched-flower-Fix-chain-template-offload.patch
 
+# Fix CVE-2024-57982
+Patch160: 0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -434,7 +437,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m86 -M86
 
 # CVE
-%autopatch -p1 -m100 -M159
+%autopatch -p1 -m100 -M160
 
 %ifarch aarch64
 # aarch64 patches
@@ -624,6 +627,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Aug 19 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.147-3
+- Fix CVE-2024-57982
 * Tue Aug 12 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.147-2
 - Override false positive network copyleft license detections
 * Mon Jul 28 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.147-1
