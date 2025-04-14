@@ -1,0 +1,97 @@
+From 166c2c8a6a4dc2e4ceba9e10cfe81c3e469e3210 Mon Sep 17 00:00:00 2001
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Thu, 15 Feb 2024 06:33:46 -0800
+Subject: net/sched: act_mirred: don't override retval if we already lost the skb
+
+From: Jakub Kicinski <kuba@kernel.org>
+
+commit 166c2c8a6a4dc2e4ceba9e10cfe81c3e469e3210 upstream.
+
+If we're redirecting the skb, and haven't called tcf_mirred_forward(),
+yet, we need to tell the core to drop the skb by setting the retcode
+to SHOT. If we have called tcf_mirred_forward(), however, the skb
+is out of our hands and returning SHOT will lead to UaF.
+
+Move the retval override to the error path which actually need it.
+
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Fixes: e5cf1baf92cb ("act_mirred: use TC_ACT_REINSERT when possible")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[Minor conflict resolved due to code context change.]
+Signed-off-by: Jianqi Ren <jianqi.ren.cn@windriver.com>
+Signed-off-by: He Zhe <zhe.he@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ KN - backport to v5.10 ]
+Link: https://lore.kernel.org/lkml/20250428080741.4159918-1-jianqi.ren.cn@windriver.com/
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ net/sched/act_mirred.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+index 91a19460c..07b9f8335 100644
+--- a/net/sched/act_mirred.c
++++ b/net/sched/act_mirred.c
+@@ -256,31 +256,31 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+ 
+ 	m_mac_header_xmit = READ_ONCE(m->tcfm_mac_header_xmit);
+ 	m_eaction = READ_ONCE(m->tcfm_eaction);
++	is_redirect = tcf_mirred_is_act_redirect(m_eaction);
+ 	retval = READ_ONCE(m->tcf_action);
+ 	dev = rcu_dereference_bh(m->tcfm_dev);
+ 	if (unlikely(!dev)) {
+ 		pr_notice_once("tc mirred: target device is gone\n");
+-		goto out;
++		goto err_cant_do;
+ 	}
+ 
+ 	if (unlikely(!(dev->flags & IFF_UP)) || !netif_carrier_ok(dev)) {
+ 		net_notice_ratelimited("tc mirred to Houston: device %s is down\n",
+ 				       dev->name);
+-		goto out;
++		goto err_cant_do;
+ 	}
+ 
+ 	/* we could easily avoid the clone only if called by ingress and clsact;
+ 	 * since we can't easily detect the clsact caller, skip clone only for
+ 	 * ingress - that covers the TC S/W datapath.
+ 	 */
+-	is_redirect = tcf_mirred_is_act_redirect(m_eaction);
+ 	at_ingress = skb_at_tc_ingress(skb);
+ 	use_reinsert = at_ingress && is_redirect &&
+ 		       tcf_mirred_can_reinsert(retval);
+ 	if (!use_reinsert) {
+ 		skb2 = skb_clone(skb, GFP_ATOMIC);
+ 		if (!skb2)
+-			goto out;
++			goto err_cant_do;
+ 	}
+ 
+ 	want_ingress = tcf_mirred_act_wants_ingress(m_eaction);
+@@ -323,12 +323,16 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+ 	}
+ 
+ 	err = tcf_mirred_forward(want_ingress, skb2);
+-	if (err) {
+-out:
++	if (err)
+ 		tcf_action_inc_overlimit_qstats(&m->common);
+-		if (tcf_mirred_is_act_redirect(m_eaction))
+-			retval = TC_ACT_SHOT;
+-	}
++	__this_cpu_dec(mirred_nest_level);
++
++	return retval;
++
++err_cant_do:
++	if (is_redirect)
++		retval = TC_ACT_SHOT;
++	tcf_action_inc_overlimit_qstats(&m->common);
+ 	__this_cpu_dec(mirred_nest_level);
+ 
+ 	return retval;
+-- 
+2.39.4
+

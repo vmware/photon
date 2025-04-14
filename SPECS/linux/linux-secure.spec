@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.236
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -173,6 +173,9 @@ Patch124: 0001-net-defer-final-struct-net-free-in-netns-dismantle.patch
 
 # Fix CVE-2025-21863
 Patch125: 0001-io_uring-prevent-opcode-speculation.patch
+
+# Fix CVE-2024-26739
+Patch130: 0001-net-sched-act_mirred-don-t-override-retval-if-we-alr.patch
 
 # Fix CVE-2024-26718
 Patch131: 0001-dm-crypt-dm-verity-disable-tasklets.patch
@@ -631,6 +634,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Apr 29 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.236-2
+- Fix CVE-2024-26739
 * Mon Apr 28 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.236-1
 - Update to version 5.10.236
 * Mon Apr 14 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.235-6
