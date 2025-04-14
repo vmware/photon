@@ -1,7 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
-Version:        28.2
-Release:        6%{?dist}
+Version:        30.1
+Release:        1%{?dist}
 URL:            http://www.gnu.org/software/emacs
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -11,13 +11,6 @@ Source0: https://ftp.gnu.org/gnu/emacs/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
-Patch0:         CVE-2022-45939.patch
-Patch1:         CVE-2022-48337.patch
-Patch2:         CVE-2022-48338.patch
-Patch3:         CVE-2022-48339.patch
-Patch4:         CVE-2023-27985.patch
-Patch5:         CVE-2023-27986.patch
-Patch6:         CVE-2024-39331.patch
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -70,7 +63,7 @@ rm -rf %{buildroot}%{_infodir} \
 %{_bindir}/etags
 %{_includedir}/%{name}-module.h
 %{_libdir}/systemd/user/%{name}.service
-%{_libexecdir}/%{name}/%{version}/%{_arch}-unknown-linux-gnu/%{name}.pdmp
+%{_libexecdir}/%{name}/%{version}/%{_arch}-unknown-linux-gnu/%{name}-*.pdmp
 %{_libexecdir}/%{name}/%{version}/%{_arch}-unknown-linux-gnu/hexl
 %{_libexecdir}/%{name}/%{version}/%{_arch}-unknown-linux-gnu/movemail
 %{_libexecdir}/%{name}/%{version}/%{_arch}-unknown-linux-gnu/rcs2log
@@ -81,6 +74,8 @@ rm -rf %{buildroot}%{_infodir} \
 %{_datadir}/metainfo/%{name}.metainfo.xml
 
 %changelog
+* Mon Apr 14 2025 Harinadh Dommaraju  <Harinadh.Dommaraju@broadcom.com> 30.1-1
+- Version upgrade to fix multiple CVEs
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 28.2-6
 - Release bump for SRP compliance
 * Mon Jul 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 28.2-5
