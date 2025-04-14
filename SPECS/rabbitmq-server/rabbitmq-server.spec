@@ -19,7 +19,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.13.3
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -155,6 +155,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Thu Apr 10 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.13.3-3
+- Bump release for updating erlang
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.13.3-2
 - Release bump for SRP compliance
 * Tue Jun 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.13.3-1

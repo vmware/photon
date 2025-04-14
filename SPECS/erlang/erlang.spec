@@ -1,7 +1,7 @@
 Name:          erlang
 Summary:       erlang
-Version:       26.2.5
-Release:       2%{?dist}
+Version:       26.2.5.10
+Release:       1%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -13,7 +13,6 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: 0001-erlang-fix-vernemq-build-fail.patch
-Patch1: 0002-lib-crypto-c_src-crypto.c-load-fips-provider-in-fips.patch
 
 Requires: ncurses-libs
 
@@ -50,6 +49,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Thu Apr 10 2025 Tapas Kundu <tapas.kundu@broadcom.com> 26.2.5.10-1
+- Update to 26.2.5.10
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 26.2.5-2
 - Release bump for SRP compliance
 * Tue Jun 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2.5-1
