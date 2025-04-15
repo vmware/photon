@@ -1,7 +1,15 @@
 sources:
-- archive: samba-4.18.8.tar.gz
-  archive_sha512sum: 2924c360f6299129527457547b13c1b282e2907a0ecde1036dbca894c752935d693914b4846a9eab436b33798c53c9974692e51fd071301b1174598be944a246
-  skip_validation: true
+- archive: samba-4.19.3.tar.gz
+  archive_sha512sum: 1eacc6be2866ecc7cbb13c5d17a32ad14cc8148e811db9c730a11065ac3ed84a82e406e750dc97fbc884377346c4538a38d8031e63db6b09acd78fbd2c02d702
+  skip_validation: false
+  archive_type: upstream
+  name: "samba-4.19.3"
+  version: 4.19.3
+  url: https://www.samba.org/ftp/samba/stable/samba-4.19.3.tar.gz
+  repo_url: https://gitlab.com/samba-team/samba.git
+  commit_id: ec5885982af6ad9d2b7330f199ddc29ed1678554
+  skip_list: [vfs_gpfs.c, VERSION, gpo.py, vfs_aixacl2.c, wscript, samba_autoconf.py, WHATSNEW.txt, nfs4_acls.h, pkinit_tests.py, nfs4_acls.c, vfs_zfsacl.c]
+  missing: [ctdb-script.options.5.html, .gitignore, ctdb.sysconfig.5, docs, ctdbd.1, ltdbtool.1, ctdb-script.options.5, ctdb_diagnostics.1.html, ctdb.1.html, ctdb.7.html, ctdb-etcd.7, ctdb_diagnostics.1, ctdb_mutex_ceph_rados_helper.7.html, ctdb.1, ctdb.conf.5.html, ctdb_mutex_ceph_rados_helper.7, onnode.1.html, provisions, ctdb-statistics.7, ctdb-tunables.7.html, .bzrignore, ctdb-statistics.7.html, ctdb-tunables.7, ping_pong.1.html, ctdb.7, ping_pong.1, ltdbtool.1.html, ctdb-etcd.7.html, ctdb.conf.5, ctdbd.1.html, ctdb.sysconfig.5.html, onnode.1]
   spdx:
     package:
       detailed_description: 'Samba is the standard Windows interoperability suite
@@ -10,23 +18,25 @@ sources:
         For a more detailed description of Samba, check the Web page https://www.Samba.org/  #
         Samba Client Libaries'
       home_page: https://www.samba.org
-      license_concluded: LGPL-3.0-or-later AND FSFUL AND MIT AND snprintf AND Apache-2.0
-        AND GPL-1.0-or-later AND Unlicense AND GPL-2.0-only AND (Apache-2.0 OR BSD-3-Clause)
-        AND HPND-export-US AND HPND-export2-US AND GPL-2.0-or-later AND PostgreSQL
-        AND BSD-2-Clause-first-lines AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND CC-BY-4.0 AND BSD-2-Clause AND CC-BY-SA-4.0 AND LGPL-2.1-or-later AND
-        X11 AND ISC AND blessing AND TMate AND HP-1986 AND FSFULLRWD AND AGPL-3.0-or-later
-        AND (BSD-3-Clause OR GPL-1.0-or-later) AND GPL-3.0-or-later WITH Bison-exception-2.2
-        AND FSFAP AND GPL-3.0-only AND HPND-export-US-modify AND LGPL-2.0-or-later
-        AND GPL-3.0-or-later AND Spencer-94 AND LGPL-3.0-only
-      license_declared: LGPL-3.0-or-later AND FSFUL AND MIT AND snprintf AND Apache-2.0
-        AND GPL-1.0-or-later AND Unlicense AND GPL-2.0-only AND (Apache-2.0 OR BSD-3-Clause)
-        AND HPND-export-US AND HPND-export2-US AND GPL-2.0-or-later AND PostgreSQL
-        AND BSD-2-Clause-first-lines AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND CC-BY-4.0 AND BSD-2-Clause AND CC-BY-SA-4.0 AND LGPL-2.1-or-later AND
-        X11 AND ISC AND blessing AND TMate AND HP-1986 AND FSFULLRWD AND AGPL-3.0-or-later
-        AND (BSD-3-Clause OR GPL-1.0-or-later) AND GPL-3.0-or-later WITH Bison-exception-2.2
-        AND FSFAP AND GPL-3.0-only AND HPND-export-US-modify AND LGPL-2.0-or-later
-        AND GPL-3.0-or-later AND Spencer-94 AND LGPL-3.0-only
+      license_concluded: (BSD-3-Clause OR GPL-1.0-or-later) AND (Apache-2.0 OR BSD-3-Clause)
+        AND HPND-export2-US AND CC-BY-4.0 AND blessing AND BSD-2-Clause-first-lines
+        AND Unlicense AND BSD-2-Clause AND HPND-export-US AND HPND-export-US-modify
+        AND GPL-3.0-only AND NTP AND GPL-3.0-or-later AND BSD-3-Clause AND snprintf
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-3.0-only AND
+        LGPL-2.0-or-later AND GPL-2.0-only AND Spencer-94 AND FSFAP AND Apache-2.0
+        AND FSFULLRWD AND FSFUL AND LGPL-3.0-or-later AND AGPL-3.0-or-later AND GPL-2.0-or-later
+        AND GPL-1.0-or-later AND CC-BY-SA-4.0 AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND ISC AND X11 AND MIT AND HP-1986 AND PostgreSQL
+        AND TMate
+      license_declared: (BSD-3-Clause OR GPL-1.0-or-later) AND (Apache-2.0 OR BSD-3-Clause)
+        AND HPND-export2-US AND CC-BY-4.0 AND blessing AND BSD-2-Clause-first-lines
+        AND Unlicense AND BSD-2-Clause AND HPND-export-US AND HPND-export-US-modify
+        AND GPL-3.0-only AND NTP AND GPL-3.0-or-later AND BSD-3-Clause AND snprintf
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-3.0-only AND
+        LGPL-2.0-or-later AND GPL-2.0-only AND Spencer-94 AND FSFAP AND Apache-2.0
+        AND FSFULLRWD AND FSFUL AND LGPL-3.0-or-later AND AGPL-3.0-or-later AND GPL-2.0-or-later
+        AND GPL-1.0-or-later AND CC-BY-SA-4.0 AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND ISC AND X11 AND MIT AND HP-1986 AND PostgreSQL
+        AND TMate
       short_summary: Samba Client Programs
       supplier: 'Organization: Broadcom, Inc.'

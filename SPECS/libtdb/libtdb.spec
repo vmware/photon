@@ -1,7 +1,7 @@
 Name:           libtdb
 Summary:        Trivial database library
-Version:        1.4.8
-Release:        3%{?dist}
+Version:        1.4.13
+Release:        1%{?dist}
 URL:            https://tdb.samba.org
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -92,6 +92,8 @@ Python3 bindings for libtdb
 %{python3_sitearch}/*
 
 %changelog
+* Tue Apr 15 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.13-1
+- Upgrade to v1.4.13, needed by samba-4.19.3
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.8-3
 - Release bump for SRP compliance
 * Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 1.4.8-2

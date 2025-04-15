@@ -1,7 +1,15 @@
 sources:
-- archive: talloc-2.4.0.tar.gz
-  archive_sha512sum: 810d92a614d0b9e0ac6fe403c1643c4dda435f79c4627d3c3be228f94b4b2ee8e528efbbed07f7d1a16043d6e55bdf4f10826f31fb8ca1c649c4126ea09a3aff
+- archive: talloc-2.4.1.tar.gz
+  archive_sha512sum: 4de3b66d7cd1ff3f53e28e86bf9e89528635465c67868e1262aab6946106c228b2c184e988561361c3194fb260d83e016477254c9dbea7abff40c4dc0d31c76c
+  archive_type: None
   skip_validation: true
+  name: "talloc-2.4.1"
+  version: 2.4.1
+  url: https://download.samba.org/pub/talloc/talloc-2.4.1.tar.gz
+  repo_url: https://gitlab.com/samba-team/samba/-/tree/master/lib/talloc
+  commit_id: 2eda24663f8b9d6d03bffe96785518d16d06ae6e
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Libtalloc alloc is a hierarchical, reference counted

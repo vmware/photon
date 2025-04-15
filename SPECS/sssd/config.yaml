@@ -1,7 +1,15 @@
 sources:
 - archive: sssd-2.8.2.tar.gz
   archive_sha512sum: 10b7a641823aefb43e30bff9e5f309a1f48446ffff421a06f86496db24ba1fbd384733b5690864507ef9b2f04c91e563fe9820536031f83f1bd6e93edfedee55
-  skip_validation: true
+  skip_validation: false
+  archive_type: upstream
+  name: "sssd-2.8.2"
+  version: 2.8.2
+  url: https://github.com/SSSD/sssd/releases/download/2.8.2/sssd-2.8.2.tar.gz
+  repo_url: https://github.com/SSSD/sssd.git
+  commit_id: 796b6daee338bc600e5757d4804a17687106a7e1
+  skip_list: []
+  missing: [fi.gmo, admultidomain, wchar_t.m4, pt.gmo, data, ko.gmo, po.m4, uintmax_t.m4, test_sss_cache.py, inttypes_h.m4, hu.gmo, LINGUAS, codeset.m4, config.h.in, setup.cfg, eu.gmo, uk.gmo, .config, ltoptions.m4, test_ldap.py, cwrap-dbus-system.conf, insert-header.sin, ulonglong.m4, ad, cs.gmo, inttypes-pri.m4, intdiv0.m4, pl.po, Rules-quot, aclocal.m4, es, ca, en@quot.header, ru, fr, adsites, git, pl.gmo, zh_TW.gmo, ko.po, build, ru.gmo, eu, run-multihost, gettext.m4, glibc2.m4, ka.gmo, .github, tg, nb.gmo, remove-potcdate.sin, libtool.m4, pubkey.asc, ja.gmo, tr.gmo, bg.gmo, fr.gmo, requirements.txt, test_confdb.py, sssd, nls.m4, signed.m4, gdbinit, sssd-pcsc.rules, tg.gmo, nl, intmax.m4, de, alltests, lib-link.m4, sssd_hosts.py, test-suite, Vagrantfile, inttypes.m4, xsize.m4, zh_CN.gmo, id.gmo, pt_BR, uk, iconv.m4, setup.py, ltversion.m4, scripts, lv, docs, printf-posix.m4, gdb, wint_t.m4, lcmessage.m4, org.freedesktop.sssd.infopipe.service, pt, Makefile.in, size_max.m4, ca.gmo, de.gmo, en@boldquot.header, quot.sed, stamp-po, br, cs, longdouble.m4, __init__.py, es.gmo, .copr, isc-posix.m4, ltsugar.m4, longlong.m4, man.stamp, sssd_nets.py, ja, glibc21.m4, pt_BR.gmo, nl.gmo, vagrant, ssh_schema.ldif, ABOUT-NLS, get-matrix.py, configure, progtest.m4, sv.gmo, Makefile.in.in, fi, sv, .git-commit-template, sbus_codegen_tests.xml, zh_CN, stdint_h.m4, boldquot.sed, .gitignore, conftest.py, sssd.debian.supp, lib-ld.m4, lt~obsolete.m4, it.gmo, ipa, lib-prefix.m4]
   spdx:
     package:
       detailed_description: 'Provides a set of daemons to manage access to remote

@@ -1,7 +1,15 @@
 sources:
-- archive: tdb-1.4.8.tar.gz
-  archive_sha512sum: 763beebe923aa04303cbb91ce5970e6bbd13546888cff75ea9ab025afff3ef88fee539ae173fc2fb7ec661b6c337b0c2da361ce3d318f51ef6627bdb3fe6ca63
+- archive: tdb-1.4.13.tar.gz
+  archive_sha512sum: 23cbabaf272947d65ab6ba22481ecbf2b86889f860b223ae650101fbf3c6a19acd179d8da15013502076172876acbf3ee3695e9cdeeaa721ed30920b1bd4937d
+  archive_type: None
   skip_validation: true
+  name: "tdb-1.4.13"
+  version: 1.4.13
+  url: https://download.samba.org/pub/tdb/tdb-1.4.13.tar.gz
+  repo_url: https://gitlab.com/samba-team/samba/-/tree/master/lib/tdb
+  commit_id: 70a8c7a89a6d62d2ff172d79b5f4e6439300b88d
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'A library that implements a trivial database. '
