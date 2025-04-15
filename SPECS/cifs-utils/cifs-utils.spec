@@ -1,7 +1,7 @@
 Summary:        cifs client utils
 Name:           cifs-utils
 Version:        7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://wiki.samba.org/index.php/LinuxCIFS_utils
 Group:          Applications/Nfs-utils-client
 Source0:        https://ftp.samba.org/pub/linux-cifs/cifs-utils/cifs-utils-%{version}.tar.bz2
@@ -52,25 +52,28 @@ make %{?_smp_mflags} check
 %{_includedir}/cifsidmap.h
 
 %changelog
-*       Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 7.0-2
--       Release bump for SRP compliance
-*       Thu Dec 15 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.0-1
--       Upgrade to version 7.0
-*       Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.14-2
--       Bump version as a part of libtalloc upgrade
-*       Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 6.14-1
--       Automatic Version Bump
-*       Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 6.13-1
--       Automatic Version Bump
-*       Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 6.11-1
--       Automatic Version Bump
-*       Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 6.10-1
--       Automatic Version Bump
-*       Fri Sep 07 2018 Ajay Kaher <akaher@vmware.com> 6.8-1
--       Upgraded to version 6.8
-*       Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 6.7-1
--       Upgraded to version 6.7
-*       Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.4-2
--       GA - Bump release of all rpms
-*       Mon Jan 25 2016 Divya Thaluru <dthaluru@vmware.com> 6.4-1
--       Initial build.First version.
+* Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 7.0-3
+- Update due to libtalloc bump up to 2.4.1 required by samba-client 4.19.3
+- samba-client bump up to 4.19.3 for CVE-2023-5568 and CVE-2018-14628
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 7.0-2
+- Release bump for SRP compliance
+* Thu Dec 15 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.0-1
+- Upgrade to version 7.0
+* Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.14-2
+- Bump version as a part of libtalloc upgrade
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 6.14-1
+- Automatic Version Bump
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 6.13-1
+- Automatic Version Bump
+* Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 6.11-1
+- Automatic Version Bump
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 6.10-1
+- Automatic Version Bump
+* Fri Sep 07 2018 Ajay Kaher <akaher@vmware.com> 6.8-1
+- Upgraded to version 6.8
+* Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 6.7-1
+- Upgraded to version 6.7
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.4-2
+- GA - Bump release of all rpms
+* Mon Jan 25 2016 Divya Thaluru <dthaluru@vmware.com> 6.4-1
+- Initial build.First version.

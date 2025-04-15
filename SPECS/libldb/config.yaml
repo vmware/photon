@@ -1,7 +1,15 @@
 sources:
-- archive: ldb-2.7.2.tar.gz
-  archive_sha512sum: beb2cd83a8f128713e0b43ec6e80d0f87ab0883c6c8f0cefbbf5bf49e29dfa327b245b78467d1906917cb5f3f11e01cb76cc6bcca58a47c5deac4f05c2e9dfbd
+- archive: ldb-2.8.2.tar.gz
+  archive_sha512sum: df1c228307ede75920a927ae3124cd0d507dfcf00f93b6f5c14b79f4e1a23dbe00249bc92b3ee3ed1e5ce06fe363f0be1eb3dab491fbe79e83b1a1b35a6e50e1
+  archive_type: None
   skip_validation: true
+  name: "ldb-2.8.2"
+  version: 2.8.2
+  url: https://download.samba.org/pub/ldb/ldb-2.8.2.tar.gz
+  repo_url: https://gitlab.com/samba-team/samba/-/tree/master/lib/ldb
+  commit_id: 8d4a277d2588acae26ac1aadee422e1aad6f41e6
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'An extensible library that implements an LDAP like API

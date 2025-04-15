@@ -1,7 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.18.8
-Release:        4%{?dist}
+Version:        4.19.3
+Release:        1%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,8 +14,6 @@ Source1: smb.conf.vendor
 
 Source2: license.txt
 %include %{SOURCE2}
-
-Patch1: 0001-rename_dcerpc_to_smbdcerpc-4.18.3.patch
 
 BuildRequires: libtirpc-devel
 BuildRequires: rpcsvc-proto-devel
@@ -38,9 +36,10 @@ BuildRequires: perl-Parse-Yapp
 BuildRequires: dbus-devel
 BuildRequires: sudo
 BuildRequires: libtdb-devel >= 1.4.8
-BuildRequires: libtalloc-devel >= 2.4.0
+BuildRequires: libtalloc-devel >= 2.4.1
 BuildRequires: libldb-devel >= 2.7.2
-BuildRequires: libtevent-devel >= 0.14.1
+BuildRequires: libtevent-devel >= 0.15.0
+BuildRequires: python3-tdb
 BuildRequires: bison
 BuildRequires: perl-JSON
 BuildRequires: zlib-devel
@@ -65,8 +64,8 @@ Requires: popt
 Requires: bindutils
 Requires: libtdb >= 1.4.8
 Requires: libldb >= 2.7.2
-Requires: libtalloc >= 2.4.0
-Requires: libtevent >= 0.14.1
+Requires: libtalloc >= 2.4.1
+Requires: libtevent >= 0.15.0
 Requires: zlib
 Requires: ncurses
 
@@ -396,6 +395,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/smbtar
 %{_bindir}/smbtree
 %{_bindir}/net
+%{_bindir}/samba-log-parser
 %ghost %{_libexecdir}/samba/cups_backend_smb
 %{_tmpfilesdir}/samba.conf
 %attr(0700,root,root) %dir /var/log/samba
@@ -430,8 +430,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsmbconf.so.*
 %{_libdir}/libsmbldap.so.*
 %{_libdir}/libtevent-util.so.*
-%{_libdir}/libsmbdcerpc.so.*
 %{_libdir}/libsmbclient.so.*
+%{_libdir}/libdcerpc.so.*
 %dir %{_libdir}/samba
 %{_libdir}/samba/libasn1-samba4.so
 %{_libdir}/samba/libcom-err-samba4.so
@@ -550,8 +550,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/samba-4.0/charset.h
 %{_includedir}/samba-4.0/gen_ndr/*
 %{_includedir}/samba-4.0/ndr/*
+%{_libdir}/libdcerpc.so
 %{_libdir}/libsmbclient.so
-%{_libdir}/libsmbdcerpc.so
 %{_libdir}/libdcerpc-binding.so
 %{_libdir}/libndr-krb5pac.so
 %{_libdir}/libndr-nbt.so
@@ -586,6 +586,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 4.19.3-1
+- Bump up version to 4.19.3 for CVE-2023-5568 and CVE-2018-14628
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.8-4
 - Release bump for SRP compliance
 * Fri Jan 05 2024 Mukul Sikka <msikka@vmwrae.com> 4.18.8-3

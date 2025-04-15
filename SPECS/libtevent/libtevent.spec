@@ -1,8 +1,8 @@
-%global talloc_version 2.4.0
+%global talloc_version 2.4.1
 
 Name:           libtevent
-Version:        0.14.1
-Release:        2%{?dist}
+Version:        0.15.0
+Release:        1%{?dist}
 Summary:        The tevent library
 URL:            http://tevent.samba.org/
 Vendor:         VMware, Inc.
@@ -89,6 +89,8 @@ Python 3 bindings for libtevent
 %{python3_sitearch}/_tevent.cpython*.so
 
 %changelog
+* Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 0.15.0-1
+- Bump up version to 0.15.0 required by samba-client 4.19.3
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.14.1-2
 - Release bump for SRP compliance
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.14.1-1

@@ -1,11 +1,11 @@
 %global cmocka_version 1.1.5
-%global talloc_version 2.4.0
+%global talloc_version 2.4.1
 %global tdb_version 1.4.8
 %global tevent_version 0.14.1
 
 Name:           libldb
-Version:        2.7.2
-Release:        3%{?dist}
+Version:        2.8.2
+Release:        1%{?dist}
 Summary:        A schema-less, ldap like, API and database
 Distribution:   Photon
 Vendor:         VMware, Inc.
@@ -144,7 +144,7 @@ Development files for the Python bindings for the LDB library
 
 %files -n python3-ldb
 %defattr(-,root,root)
-%{python3_sitearch}/ldb.cpython-*.so
+%{python3_sitearch}/*.cpython-*.so
 %{_libdir}/libpyldb-util.cpython-*.so.2*
 %{python3_sitearch}/_ldb_text.py
 
@@ -155,6 +155,8 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 2.8.2-1
+- Upgrade to v1.4.13, needed by samba-4.19.3
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.2-3
 - Release bump for SRP compliance
 * Tue Sep 19 2023 Nitesh Kumar <kunitesh@vmware.com> 2.7.2-2
