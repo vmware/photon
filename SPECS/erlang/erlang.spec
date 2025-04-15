@@ -1,6 +1,6 @@
 Name:          erlang
 Summary:       erlang
-Version:       26.2.5
+Version:       26.2.5.10
 Release:       1%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
@@ -9,10 +9,9 @@ License:       ASL2.0
 URL:           https://www.erlang.org
 
 Source0: https://github.com/erlang/otp/archive/refs/tags/OTP-%{version}.tar.gz
-%define sha512 OTP=f06d34290c0d93609aa3efbdc97206e8d3ce17aa2c3f62b6c566c7631ee3a3d45a89b61ce0ace81604b5a94610d03ad98558f27ee888ca90ecdeeeb2759c0184
+%define sha512 OTP=d92a26200b28770e6030be1b0703abcd5a7da6ce85656b617f78b75b04afcf5023bee239ad274475f22d8a1ef90d35b123d042723611164497cf09fd587a0b1e
 
 Patch0: 0001-erlang-fix-vernemq-build-fail.patch
-Patch1: 0002-lib-crypto-c_src-crypto.c-load-fips-provider-in-fips.patch
 
 Requires:     ncurses-libs
 
@@ -49,6 +48,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Thu Apr 10 2025 Tapas Kundu <tapas.kundu@broadcom.com> 26.2.5.10-1
+- Update to 26.2.5.10
 * Tue Jun 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2.5-1
 - Upgrade to v26.2.5
 * Wed Nov 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 25.1.2-1
