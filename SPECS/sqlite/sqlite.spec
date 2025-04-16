@@ -3,7 +3,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.43.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
@@ -13,6 +13,8 @@ Source0: http://sqlite.org/2022/%{name}-autoconf-%{sourcever}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2025-29088.patch
 
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
@@ -94,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
+* Wed Apr 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.43.2-4
+- Fix CVE-2025-29088
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.43.2-3
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.43.2-2
