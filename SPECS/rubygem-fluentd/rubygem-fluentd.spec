@@ -3,7 +3,7 @@
 %global gem_name fluentd
 
 Name: rubygem-fluentd
-Version:        1.15.2
+Version:        1.15.3
 Release:        1%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        Apache 2
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluentd-%{version}.gem
-%define sha512  fluentd=0e10ccf9ee33def27cc841162f4368f09753c733b4b9cf924b77fcb410b1b79ffb6b3294128575faa7324d1b696596344f202880b6292c437f5b22111056a686
+%define sha512  fluentd=74fa46527704b5c455831dd5a076bc395e6633eb599afcfcc1fd1a10581c59b020cd6c7405cfbc1c767c3bbbf39c9f126dccbcffd38974e80590d543009dd42a
 BuildRequires:  ruby >= 2.1
 
 Requires(post): systemd
@@ -59,6 +59,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Apr 16 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.15.3-1
+-   upgrade to fix CVE-2022-39379
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 1.15.2-1
 -   Add webrick to requires and upgrade version
 *   Thu Jul 08 2021 Piyush Gupta <gpiyush@vmware.com> 1.11.3-2
