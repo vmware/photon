@@ -3,8 +3,8 @@
 %global gem_name fluentd
 
 Name:           rubygem-fluentd
-Version:        1.15.2
-Release:        5%{?dist}
+Version:        1.15.3
+Release:        1%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -15,8 +15,6 @@ Source0:        https://rubygems.org/downloads/fluentd-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0:         CVE-2022-39379.patch
 
 BuildRequires: ruby-devel
 BuildRequires: rubygem-webrick
@@ -61,7 +59,6 @@ It can collect, process and ship many kinds of data in near real-time.
 
 %prep
 %gem_unpack %{SOURCE0}
-%patch 0 -p2
 
 %build
 %gem_build
@@ -74,6 +71,8 @@ It can collect, process and ship many kinds of data in near real-time.
 %{gemdir}
 
 %changelog
+* Mon Apr 28 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.15.3-1
+- Upgrade to 1.15.3
 * Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.2-5
 - Build gems properly
 * Fri Apr 04 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.2-4

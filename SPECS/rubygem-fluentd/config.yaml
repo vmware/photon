@@ -1,13 +1,13 @@
 sources:
-- archive: fluentd-1.15.2.gem
-  archive_sha512sum: 0e10ccf9ee33def27cc841162f4368f09753c733b4b9cf924b77fcb410b1b79ffb6b3294128575faa7324d1b696596344f202880b6292c437f5b22111056a686
+- archive: fluentd-1.15.3.gem
+  archive_sha512sum: 74fa46527704b5c455831dd5a076bc395e6633eb599afcfcc1fd1a10581c59b020cd6c7405cfbc1c767c3bbbf39c9f126dccbcffd38974e80590d543009dd42a
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Fluentd is an open source data collector designed to
         scale and simplify log management. It can collect, process and ship many kinds
         of data in near real-time. '
-      home_page: https://rubygems.org/gems/fluentd/versions/1.15.2
+      home_page: https://rubygems.org/gems/fluentd/versions/1.15.3
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: An open source data collector designed to scale and simplify
