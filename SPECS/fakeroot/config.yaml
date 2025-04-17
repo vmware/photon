@@ -1,0 +1,24 @@
+sources:
+- archive: fakeroot_1.37.1.1.orig.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 768db08ea9fc6345aeb3604345cb45a6fc588053101fbd5e6f1c43cbf9e5e6fd787f189f0e8b04835ebdcce70935c2b32aa2501ba0079f9cb79c01ad8ad84c97
+  url: https://ftp.debian.org/debian/pool/main/f/fakeroot/fakeroot_1.37.1.1.orig.tar.gz
+  repo_url: https://salsa.debian.org/clint/fakeroot.git
+  name: "fakeroot-1.37.1.1"
+  version: 1.37.1.1
+  commit_id: 7bec1449e477f142102ad9cd112d58e45f25d687
+  skip_list: []
+  missing: [install-sh, debian, fakeroot.1, missing, compile, wrapstruct.h, aclocal.m4, defs, .gitignore, .gitattributes, depcomp, faked.1, configure, config.h.in, config.guess, build-aux, wrapdef.h, config.sub, test-driver, ltmain.sh, Makefile.in]
+  skip_validation: false
+  spdx:
+    package:
+      detailed_description: 'fakeroot runs a command in an environment wherein it appears to have
+        root privileges for file manipulation. fakeroot works by replacing the
+        file manipulation library functions (chmod(2), stat(2) etc.) by ones
+        that simulate the effect the real library functions would have had,
+        had the user really been root.'
+      home_page: https://tracker.debian.org/pkg/fakeroot
+      license_concluded: GPL-3.0-or-later AND LicenseRef-Callaway-LGPLv2+ AND (GPL-1.0-or-later OR Artistic-1.0-Perl)
+      license_declared: GPL-3.0-or-later AND LicenseRef-Callaway-LGPLv2+ AND (GPL-1.0-or-later OR Artistic-1.0-Perl)
+      short_summary: Gives a fake root environment
+      supplier: 'Organization: Broadcom, Inc.'
