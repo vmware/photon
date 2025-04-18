@@ -1,4 +1,4 @@
-From 9763ecab4980bc6422280a736c8ecaa86ebf0575 Mon Sep 17 00:00:00 2001
+From fcbac9bd871d5fd378a1022c42279aa24d28090c Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Sun, 14 Nov 2021 19:38:28 +0000
 Subject: [PATCH] fs: TARFS file system to mount TAR archive
@@ -23,6 +23,9 @@ Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
 Signed-off-by: Bo Gan <ganb@vmware.com>
 Signed-off-by: Ankit Jain <ankitja@vmware.com>
+[Ajay: - fix inode count
+       - fix -EBUSY issue whiling mounting tarfs]
+ Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
 ---
  fs/Kconfig                    |   1 +
  fs/Makefile                   |   1 +
@@ -31,8 +34,8 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  fs/tarfs/README.md            |  64 +++
  fs/tarfs/tarfs.h              | 183 +++++++++
  fs/tarfs/tarfs_file_dir_ops.c | 586 ++++++++++++++++++++++++++++
- fs/tarfs/tarfs_inode.c        | 714 ++++++++++++++++++++++++++++++++++
- 8 files changed, 1582 insertions(+)
+ fs/tarfs/tarfs_inode.c        | 716 ++++++++++++++++++++++++++++++++++
+ 8 files changed, 1584 insertions(+)
  create mode 100644 fs/tarfs/Kconfig
  create mode 100644 fs/tarfs/Makefile
  create mode 100644 fs/tarfs/README.md
@@ -41,7 +44,7 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  create mode 100644 fs/tarfs/tarfs_inode.c
 
 diff --git a/fs/Kconfig b/fs/Kconfig
-index 1b808e4c38dc..a9a8ac42f86b 100644
+index 1b808e4..a9a8ac4 100644
 --- a/fs/Kconfig
 +++ b/fs/Kconfig
 @@ -321,6 +321,7 @@ source "fs/erofs/Kconfig"
@@ -53,7 +56,7 @@ index 1b808e4c38dc..a9a8ac42f86b 100644
  endif # MISC_FILESYSTEMS
  
 diff --git a/fs/Makefile b/fs/Makefile
-index 73f893133f86..7e148a36486d 100644
+index 73f8931..7e148a3 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
 @@ -136,3 +136,4 @@ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
@@ -63,7 +66,7 @@ index 73f893133f86..7e148a36486d 100644
 +obj-$(CONFIG_TARFS)		+= tarfs/
 diff --git a/fs/tarfs/Kconfig b/fs/tarfs/Kconfig
 new file mode 100644
-index 000000000000..ff60b7e091d8
+index 0000000..ff60b7e
 --- /dev/null
 +++ b/fs/tarfs/Kconfig
 @@ -0,0 +1,18 @@
@@ -87,7 +90,7 @@ index 000000000000..ff60b7e091d8
 +       module will be called tarfs. If unsure, say N.
 diff --git a/fs/tarfs/Makefile b/fs/tarfs/Makefile
 new file mode 100644
-index 000000000000..592e207bb3b5
+index 0000000..592e207
 --- /dev/null
 +++ b/fs/tarfs/Makefile
 @@ -0,0 +1,15 @@
@@ -108,7 +111,7 @@ index 000000000000..592e207bb3b5
 +	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 diff --git a/fs/tarfs/README.md b/fs/tarfs/README.md
 new file mode 100644
-index 000000000000..2a816e9ff7e1
+index 0000000..2a816e9
 --- /dev/null
 +++ b/fs/tarfs/README.md
 @@ -0,0 +1,64 @@
@@ -178,7 +181,7 @@ index 000000000000..2a816e9ff7e1
 +
 diff --git a/fs/tarfs/tarfs.h b/fs/tarfs/tarfs.h
 new file mode 100644
-index 000000000000..911bd20fbc21
+index 0000000..911bd20
 --- /dev/null
 +++ b/fs/tarfs/tarfs.h
 @@ -0,0 +1,183 @@
@@ -367,7 +370,7 @@ index 000000000000..911bd20fbc21
 +#endif
 diff --git a/fs/tarfs/tarfs_file_dir_ops.c b/fs/tarfs/tarfs_file_dir_ops.c
 new file mode 100644
-index 000000000000..fd9ff0142144
+index 0000000..fd9ff01
 --- /dev/null
 +++ b/fs/tarfs/tarfs_file_dir_ops.c
 @@ -0,0 +1,586 @@
@@ -959,10 +962,10 @@ index 000000000000..fd9ff0142144
 +EXPORT_SYMBOL_GPL(tarfs_bmap);
 diff --git a/fs/tarfs/tarfs_inode.c b/fs/tarfs/tarfs_inode.c
 new file mode 100644
-index 000000000000..4231476f329b
+index 0000000..a410065
 --- /dev/null
 +++ b/fs/tarfs/tarfs_inode.c
-@@ -0,0 +1,714 @@
+@@ -0,0 +1,716 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Filesystem to directly mount tar archive.
@@ -1613,6 +1616,9 @@ index 000000000000..4231476f329b
 +		next = entry->next;
 +		tarfs_debug("basename=%s dirn=%s", entry->base_name, entry->dir_name);
 +
++		if(entry->ptr_inode)
++			iput(entry->ptr_inode);
++
 +		if (entry->dir_name < entry->base_name)
 +			kfree(entry->dir_name);
 +		else
@@ -1626,8 +1632,7 @@ index 000000000000..4231476f329b
 +		kfree(sb->s_root->d_fsdata);
 +
 +	kfree(sb_info);
-+
-+	generic_shutdown_super(sb);
++	kill_block_super(sb);
 +}
 +
 +static struct file_system_type tarfs_type = {
@@ -1678,5 +1683,5 @@ index 000000000000..4231476f329b
 +MODULE_AUTHOR("VMware Photon OS : Ankit Jain <ankitja@vmware.com>");
 +MODULE_AUTHOR("VMware Photon OS : Ashwin Dayanand Kamat <kashwindayan@vmware.com>");
 -- 
-2.23.1
+2.39.4
 

@@ -28,7 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.131
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -580,6 +580,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Apr 18 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.131-3
+- Fix tarfs for inode count and -EBUSY issue
 * Fri Apr 04 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.131-2
 - Fix recognition of kcmdline param 'pti'/'nopti'
 * Fri Mar 28 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.131-1
