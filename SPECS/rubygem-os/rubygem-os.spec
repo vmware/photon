@@ -5,7 +5,7 @@
 Summary:        The OS gem allows for some easy telling if you're on windows or not.
 Name:           rubygem-os
 Version:        1.1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -48,5 +48,7 @@ cd %{buildroot}%{gemdir}/gems/%{gem_name}-%{version}
 %{gemdir}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.4-2
+- Build gems properly
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.4-1
 - Initial version.

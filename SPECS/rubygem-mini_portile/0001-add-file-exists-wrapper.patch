@@ -1,0 +1,30 @@
+From af54dcb0a6451127c23e9cbcfdd29762dacc4ea1 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 18 Apr 2025 19:56:10 +0530
+Subject: [PATCH] add file exists wrapper
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ lib/mini_portile.rb | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/lib/mini_portile.rb b/lib/mini_portile.rb
+index 6913400..d6271fc 100644
+--- a/lib/mini_portile.rb
++++ b/lib/mini_portile.rb
+@@ -6,6 +6,12 @@ require 'fileutils'
+ require 'tempfile'
+ require 'digest/md5'
+ 
++class File
++  def self.exists?(path)
++    self.exist?(path)
++  end
++end
++
+ class MiniPortile
+   attr_reader :name, :version, :original_host
+   attr_writer :configure_options
+-- 
+2.43.0
+

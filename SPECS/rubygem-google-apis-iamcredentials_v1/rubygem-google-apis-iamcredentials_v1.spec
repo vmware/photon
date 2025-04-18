@@ -5,7 +5,7 @@
 Summary:        This is a simple REST client for IAM Service Account Credentials API V1.
 Name:           rubygem-google-apis-iamcredentials_v1
 Version:        0.22.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -43,5 +43,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.22.0-2
+- Build gems properly
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.22.0-1
 - Initial version.

@@ -1,0 +1,12 @@
+sources:
+- archive: terminal-table-3.0.2.gem
+  archive_sha512sum: 9d625a5903c7511f59f2e083ed2db72d337405019c41461b97590411a5028a061ce4a42eeb75c19b0e6deb2ef81f18ad80bb74d4ebdb9eca9ff6004631ddd994
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Simple, feature rich ascii table generation library '
+      home_page: https://rubygems.org/gems/terminal-table
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Simple, feature rich ascii table generation library
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,14 @@
+sources:
+- archive: llhttp-ffi-0.4.0.gem
+  archive_sha512sum: 66ed073e435853f74fc936d8f90bf913fb5ec36e1db85ac5797248f8c4632a490f3bb3ca4efea7fb90941295bd732bb51c31e717281ce737f192b3a45d8778d5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'An easy-to-use client library for making requests from
+        Ruby. It uses a simple method chaining system for building requests, similar
+        to Python''s Requests. '
+      home_page: https://rubygems.org/gems/llhttp-ffi
+      license_concluded: MIT AND MPL-2.0
+      license_declared: MIT AND MPL-2.0
+      short_summary: An easy-to-use client library for making requests from Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

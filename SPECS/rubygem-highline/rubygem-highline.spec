@@ -3,18 +3,20 @@
 %define gem_name highline
 Name:          rubygem-highline
 Version:       3.0.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       A high-level IO library that provides validation, type conversion, and more for command-line interfaces
 Group:         Applications/Programming
-License:       BSD
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://rubygems.org/gems/%{gem_name}
+
 Source0:       https://rubygems.org/downloads/highline-%{version}.gem
+%define sha512 %{gem_name}=65b39f093cb26fac1cb256e8271ce3de98d010c6ceca55a5a782a768a024d40fee56c6b587ed0057cfe3b5451a6e6edf40c3ce50a02f9357b93a3f443d69dd80
 
-%define sha512 highline=65b39f093cb26fac1cb256e8271ce3de98d010c6ceca55a5a782a768a024d40fee56c6b587ed0057cfe3b5451a6e6edf40c3ce50a02f9357b93a3f443d69dd80
+Source1: license.txt
+%include %{SOURCE1}
 
-BuildRequires: ruby
+BuildRequires: ruby-devel
 
 Requires:      ruby
 
@@ -22,12 +24,13 @@ Requires:      ruby
 A high-level IO library that provides validation, type conversion, and more for command-line interfaces
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %check
 cd %{buildroot}%{gemdir}/gems/highline-%{version}
@@ -39,6 +42,8 @@ LANG=en_US.UTF-8  rake test
 %{gemdir}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.1-2
+- Build gems properly
 * Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.1-1
 - Update to version 3.0.1
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.3-1

@@ -5,21 +5,27 @@
 
 Name: rubygem-backports
 Version:        3.24.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Backports of Ruby features for older Ruby
 Group:          Development/Languages
-License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://github.com/marcandre/backports
+
 Source0:        https://rubygems.org/gems/backports-%{version}.gem
-%define sha512    backports=b2eeb76ebf8ddfc7e349e125c6b9cffcabe3d184533579dbf2abb5f663ce85f4a6f8b01b67be4030c98f4782c63511046a1a1efa4d573a9aeb700dcbb9f9f566
-BuildRequires:  ruby
+%define sha512 %{gem_name}=b2eeb76ebf8ddfc7e349e125c6b9cffcabe3d184533579dbf2abb5f663ce85f4a6f8b01b67be4030c98f4782c63511046a1a1efa4d573a9aeb700dcbb9f9f566
+
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires:  ruby-devel
 BuildRequires:  rubygem-activesupport
 BuildRequires:  rubygem-i18n
 BuildRequires:  rubygem-tzinfo
 BuildRequires:  rubygem-thread_safe
 BuildRequires:  rubygem-concurrent-ruby
+
+Requires:       ruby
 Requires:       rubygem-activesupport
 Requires:       rubygem-i18n
 Requires:       rubygem-tzinfo
@@ -31,11 +37,12 @@ Essential backports that enable many of the nice features of Ruby 1.8.7 up to
 2.1.0 for earlier versions.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %check
 cd %{buildroot}%{gemdir}/gems/backports-%{version}
@@ -51,6 +58,8 @@ rake test
 %{gemdir}
 
 %changelog
+*   Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.24.1-2
+-   Build gems properly
 *   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.24.1-1
 -   Update to version 3.24.1
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.23.0-1

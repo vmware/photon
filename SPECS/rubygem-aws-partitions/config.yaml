@@ -1,0 +1,13 @@
+sources:
+- archive: aws-partitions-1.654.0.gem
+  archive_sha512sum: 8c6b38c5facfb7dc4c915daba3f160f21e277998aa4887edbc20037b20ca356cd9133057407833c34a08cb76495ea61dd61fb7c24e9e43a8f1626a98cf1c59d3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides interfaces to enumerate AWS partitions, regions,
+        and services. '
+      home_page: https://rubygems.org/gems/aws-partitions/versions/1.654.0
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Provides interfaces to enumerate AWS partitions, regions & services.
+      supplier: 'Organization: Broadcom, Inc.'

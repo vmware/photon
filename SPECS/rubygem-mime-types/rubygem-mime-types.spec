@@ -4,19 +4,26 @@
 
 Name: rubygem-mime-types
 Version:        3.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The mime-types library provides a library and registry for information about MIME content type definitions.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
-Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512    mime-types=099e3b984d3637dfeaf00a76e56427c278ce3c48b77aaa45ed63521e73b1877d773d0ebe4fbe1ec21113987f7d39cda0deeefb7c9ded5f2a3024577e3e6ab6ff
-BuildRequires:  ruby >= 2.0
 
-Requires: rubygem-mime-types-data >= 3.2015.0, rubygem-mime-types-data < 4.0.0
+Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
+%define sha512 %{gem_name}=099e3b984d3637dfeaf00a76e56427c278ce3c48b77aaa45ed63521e73b1877d773d0ebe4fbe1ec21113987f7d39cda0deeefb7c9ded5f2a3024577e3e6ab6ff
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildArch: noarch
+
+BuildRequires: ruby-devel
+BuildRequires: rubygem-mime-types-data
+
+Requires: ruby
+Requires: rubygem-mime-types-data >= 3.2015.0, rubygem-mime-types-data < 4.0.0
 
 %description
 The mime-types library provides a library and registry for information about MIME content
@@ -30,18 +37,21 @@ is now licensed exclusively under the MIT licence and there is a code of conduct
 There are a number of other smaller changes described in the History file.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.2-2
+-   Build gems properly
 *   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.5.2-1
 -   Update to version 3.5.2
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4.1-1

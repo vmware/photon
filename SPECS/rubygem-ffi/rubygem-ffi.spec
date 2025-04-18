@@ -3,22 +3,25 @@
 
 Name:           rubygem-ffi
 Version:        1.16.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Ruby FFI library
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        BSD-2-Clause
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0:        https://rubygems.org/downloads/ffi-%{version}.gem
 %define sha512  ffi=b3d823a03055412a85ae3dbc10c3b50615614f0b66830e144ca47610b1f93f588ff693a95d364b4f686968b79bba91f9f9fa60b932479c6bf9ceb10e15575b98
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby-devel
 BuildRequires:  gcc
 BuildRequires:  libffi-devel
 BuildRequires:  gmp-devel
 BuildRequires:  findutils
+
 Requires:       ruby
 
 %description
@@ -38,6 +41,8 @@ Ruby FFI library
 %{gem_base}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.3-3
+- Build gems properly
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.3-2
 - Add gem macros
 * Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.3-1

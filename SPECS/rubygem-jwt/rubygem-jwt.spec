@@ -5,7 +5,7 @@
 Summary:        A pure ruby implementation of the RFC 7519 OAuth JSON Web Token (JWT) standard.
 Name:           rubygem-jwt
 Version:        2.10.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -41,5 +41,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.10.1-2
+- Build gems properly
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.10.1-1
 - Initial version.

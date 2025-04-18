@@ -4,18 +4,29 @@
 
 Name:           rubygem-fluentd
 Version:        1.16.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        Apache 2
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=fb7d5fc9bd020ae4cd5c45d89740ed9a218156e9f64c170c9c6869448d111755a8e225c3539b8b2626a312406a329b5660d5d9ba2aa863eb1ee8ab69fb9c72a0
 
-BuildRequires:  ruby
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires: ruby-devel
+BuildRequires: rubygem-webrick
+BuildRequires: rubygem-strptime
+BuildRequires: rubygem-tzinfo-data
+BuildRequires: rubygem-sigdump
+BuildRequires: rubygem-http_parser.rb
+BuildRequires: rubygem-serverengine
+BuildRequires: rubygem-cool-io
+BuildRequires: rubygem-yajl-ruby
+BuildRequires: rubygem-msgpack
 
 Requires(post): systemd
 Requires(preun): systemd
@@ -36,12 +47,11 @@ Requires: rubygem-tzinfo >= 1.0.0
 Requires: rubygem-tzinfo-data > 1.0.0
 Requires: rubygem-yajl-ruby >= 1.0
 Requires: rubygem-bundler >= 1.14.0
-Requires: rubygem-webrick >= 1.4.2, rubygem-webrick < 1.8.2
+Requires: rubygem-webrick
 Requires: rubygem-concurrent-ruby
 Requires: ruby
 
 BuildArch: noarch
-
 Provides: rubygem(%{gem_name}) = %{version}-%{release}
 
 %description
@@ -49,20 +59,23 @@ Fluentd is an open source data collector designed to scale and simplify log mana
 It can collect, process and ship many kinds of data in near real-time.
 
 %prep
-%autosetup -c
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.3-1
--   Update to version 1.16.3
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.3-2
+- Build gems properly
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.3-1
+- Update to version 1.16.3
 * Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.15.2-2
 - Add webrick to requires
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.2-1

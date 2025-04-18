@@ -1,10 +1,18 @@
 sources:
 - archive: os-1.1.4.gem
+  archive_type: upstream
   archive_sha512sum: 988eccce8c32aafecdaeec6eb09e079699a2da886e5763541e93f3374d82963cc6582eb905e353008e3ac8a2994eff0e7f9e6bf8005dc10eeb7956cfd949dd48
   skip_validation: true
+  version: "1.1.4"
+  name: rubygem-os
+  url: https://rubygems.org/downloads/os-1.1.4.gem
+  repo_url: https://github.com/rdp/os
+  commit_id: f1f4c332048308d14160e33cc97a4214a368c9ee
+  missing: [.gitignore]
+  skip_list: [os.gemspec, Rakefile]
   spdx:
     package:
-      detailed_description: 'The OS gem allows for some easy telling if you're on windows or not.'
+      detailed_description: 'The OS gem allows for some easy telling if you are on windows or not.'
       home_page: https://rubygems.org/gems/os
       license_concluded: MIT
       license_declared: MIT

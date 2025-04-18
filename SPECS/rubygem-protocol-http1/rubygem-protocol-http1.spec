@@ -4,23 +4,27 @@
 
 Name:           rubygem-protocol-http1
 Version:        0.18.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A low level implementation of the HTTP/1 protocol.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=8b557531f0fea005ab4ea0f02f407668ffb95f08f8807200b1e35bc6b0adf18dd6ea73833f78db60df77951f563a2451e71db8be02be1004a31efc88c25eb4d9
 
-BuildRequires: ruby
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires: ruby-devel
+BuildRequires: rubygem-protocol-http
+BuildRequires: rubygem-async-io
+BuildRequires: rubygem-io-event
 
 Requires: rubygem-protocol-http >= 0.5.0, rubygem-protocol-http < 1.0.0
 Requires: rubygem-async-io
 Requires: rubygem-io-event
-Requires: rubygem-fiber-annotation
 Requires: ruby
 
 BuildArch: noarch
@@ -29,20 +33,23 @@ BuildArch: noarch
 Provides a low-level implementation of the HTTP/1 protocol.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.18.0-1
--   Update to version 0.18.0
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.18.0-2
+- Build gems properly
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.18.0-1
+- Update to version 0.18.0
 * Sun Oct 22 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.14.6-2
 - Fix requires
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 0.14.6-1

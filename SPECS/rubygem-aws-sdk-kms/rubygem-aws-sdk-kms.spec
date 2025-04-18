@@ -4,37 +4,47 @@
 
 Name: rubygem-aws-sdk-kms
 Version:        1.77.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Official AWS Ruby gem for AWS Key Management Service (KMS).
 Group:          Development/Languages
-License:        Apache 2.0
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
-Source0:        https://rubygems.org/downloads/aws-sdk-kms-%{version}.gem
-%define sha512    aws-sdk-kms=1057c29c5c489b06f411f4bf3744c0b3088d0d72897cc202600b99efbaffd6058a15aa7cc41ce08f8a767e05277711028401cc0b16eac4b0960bfeacc8929d27
-BuildRequires:  ruby
+
+Source0: https://rubygems.org/downloads/aws-sdk-kms-%{version}.gem
+%define sha512 %{gem_name}=1057c29c5c489b06f411f4bf3744c0b3088d0d72897cc202600b99efbaffd6058a15aa7cc41ce08f8a767e05277711028401cc0b16eac4b0960bfeacc8929d27
+
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires: ruby-devel
+BuildRequires: rubygem-aws-sigv4
+BuildRequires: rubygem-aws-sdk-core
 
 Requires: rubygem-aws-sdk-core >= 3
 Requires: rubygem-aws-sigv4 >= 1.0
+Requires: ruby
 
 %description
 Official AWS Ruby gem for AWS Key Management Service (KMS).
 This gem is part of the AWS SDK for Ruby.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.77.0-2
+-   Build gems properly
 *   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.77.0-1
 -   Update to version 1.77.0
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.59.0-1

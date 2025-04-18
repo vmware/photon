@@ -4,10 +4,9 @@
 
 Name:           rubygem-tzinfo
 Version:        2.0.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Timezone related support for Ruby.
 Group:          Development/Languages
-License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/tzinfo/versions/%{version}
@@ -15,7 +14,11 @@ URL:            https://rubygems.org/gems/tzinfo/versions/%{version}
 Source0: https://rubygems.org/downloads/tzinfo-%{version}.gem
 %define sha512 %{gem_name}=4c1b84060c1ec2aa1e7570330fecf1ee753ef45e3921282216dc27d20454a396f2f02906d0f2409c813f2919b23c2a9a28519d99a2f76dca72d8f94b4b95d3ff
 
-BuildRequires: ruby
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires: ruby-devel
+BuildRequires: rubygem-concurrent-ruby
 
 Requires: ruby
 Requires: rubygem-concurrent-ruby
@@ -24,12 +27,13 @@ Requires: rubygem-concurrent-ruby
 TZInfo provides daylight savings aware transformations between times in different time zones.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %check
 cd %{buildroot}%{gemdir}/gems/tzinfo-%{version}
@@ -41,8 +45,10 @@ rake test
 %{gemdir}
 
 %changelog
-*   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.0.6-1
--   Update to version 2.0.6
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.6-2
+- Build gems properly
+* Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.0.6-1
+- Update to version 2.0.6
 * Tue Oct 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.5-2
 - Fix requires
 * Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 2.0.5-1

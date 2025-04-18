@@ -1,0 +1,13 @@
+sources:
+- archive: serverengine-2.3.0.gem
+  archive_sha512sum: 0887ac556f9f4faa7d8e25743b2f79694153c0e7e39666c8ea02d0313c17835e0e5697da498ad1b23612ec938d8d9f430cfb9699711479ae088011c5a7fee4c4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A framework to implement robust multiprocess servers
+        like Unicorn. '
+      home_page: https://rubygems.org/gems/serverengine/versions/2.3.0
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: A framework to implement robust multiprocess servers like Unicorn
+      supplier: 'Organization: Broadcom, Inc.'

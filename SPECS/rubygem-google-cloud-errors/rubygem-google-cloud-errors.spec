@@ -5,7 +5,7 @@
 Summary:        google-cloud-errors defines error classes for google-cloud-ruby.
 Name:           rubygem-google-cloud-errors
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -41,5 +41,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.0-2
+- Build gems properly
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.0-1
 - Initial version.

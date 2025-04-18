@@ -3,16 +3,18 @@
 
 Name:           rubygem-llhttp-ffi
 Version:        0.5.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=9e10b360d605ce3ffc15c8c9f63e8ff65dba7d6664859e8fd38c5a3a6411cbd1dff38a52f30b9d2fb95f61a70fcabf680ce973da4d0cef7f48b59215845c1beb
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: ruby-devel
 BuildRequires: rubygem-ffi-compiler
@@ -43,6 +45,8 @@ method chaining system for building requests, similar to Python's Requests.
 %{gem_base}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.5.0-4
+- Build gems properly
 * Mon Oct 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.5.0-3
 - Remove noarch
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.5.0-2

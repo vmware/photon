@@ -1,0 +1,15 @@
+sources:
+- archive: async-2.2.1.gem
+  archive_sha512sum: 5a4654eeec8dbb092b4d3e6b425fe48ef818110710cd442f36e0e939d185d06aa7bf0d82e0eae690e26fa608ce853dab71d28c8f21a8a7dc80b9ebe9b60d26f3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Async provides a modern asynchronous I/O framework for
+        Ruby, based on nio4r. It implements the reactor pattern, providing both IO
+        and timer based events. '
+      home_page: https://rubygems.org/gems/async/versions/2.2.1
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Async provides a modern asynchronous I/O framework for Ruby,
+        based on nio4r.
+      supplier: 'Organization: Broadcom, Inc.'

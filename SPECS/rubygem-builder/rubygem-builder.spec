@@ -5,9 +5,8 @@
 Summary:        Builders for MarkUp
 Name:           rubygem-builder
 Version:        3.2.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages
-License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://onestepback.org
@@ -18,7 +17,10 @@ Source0: http://rubygems.org/gems/builder-%{version}.gem
 # Taken from https://github.com/rvm/rvm/blob/master/binscripts/rvm-installer
 Source1: rvm-installer
 
-BuildRequires:  ruby
+Source2: license.txt
+%include %{SOURCE2}
+
+BuildRequires: ruby-devel
 
 Requires: ruby
 
@@ -27,26 +29,32 @@ Builder provides a number of builder objects that make creating structured
 data simple to do. Currently the following builder objects are supported:
 
 %prep
-%autosetup -p1 -n %{gem_name}-%{version}
+%gem_unpack %{SOURCE0}
 chmod +x %{SOURCE1}
 cp %{SOURCE1} .
 
 %build
-%install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_build
 
+%install
+%gem_install
+
+%if 0%{?with_check}
 %check
 ./rvm-installer
 export PATH=$PATH:/usr/local/rvm/bin
 pushd %{buildroot}%{gemdir}/gems/builder-%{version}/
 rake test
 popd
+%endif
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.4-4
+- Build gems properly
 * Fri Jan 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.4-3
 - Bring rvm-installer to spec dir
 * Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.4-2

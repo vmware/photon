@@ -5,7 +5,7 @@
 Summary:        A powerful set of gems that simplifies the implementation of clean Ruby applications.
 Name:           rubygem-trailblazer-option
 Version:        0.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -42,5 +42,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1.2-2
+- Build gems properly
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1.2-1
 - Initial version.

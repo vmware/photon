@@ -4,38 +4,50 @@
 
 Name: rubygem-aws-sdk-core
 Version:        3.191.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides API clients for AWS.
 Group:          Development/Languages
-License:        Apache 2.0
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
+
 Source0:        https://rubygems.org/downloads/aws-sdk-core-%{version}.gem
 %define sha512    aws-sdk-core=e9e1f4d6b76b4df43a2043b9ac9eae69c20f8cf3de03ae56204b553dc38b7fb26ed68daa97e8048599609d57fba69928fa25ecab88e665538d2f636343648036
-BuildRequires:  ruby
+
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires: ruby-devel
+BuildRequires: rubygem-aws-eventstream
+BuildRequires: rubygem-aws-sigv4
+BuildRequires: rubygem-aws-partitions
+BuildRequires: rubygem-jmespath
 
 Requires: rubygem-aws-eventstream >= 1.0
 Requires: rubygem-aws-partitions >= 1.0
 Requires: rubygem-aws-sigv4 >= 1.0
 Requires: rubygem-jmespath >= 1.0
+Requires: ruby
 
 %description
 Provides API clients for AWS. This gem is part of the official AWS SDK for Ruby..
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.191.3-2
+-   Build gems properly
 *   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.191.3-1
 -   Update to version 3.191.3
 *   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.166.0-1

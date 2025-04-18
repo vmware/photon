@@ -1,0 +1,12 @@
+sources:
+- archive: http_parser.rb-0.8.0.gem
+  archive_sha512sum: 228e8a617154411c43a548f10d2d8d2cae2d97970f621b4ef2955de94ed1943611cff22659cd75d63a09a0a02396993ab646ee29303d99856b46a80253a618c8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides ruby bindings to http parser. '
+      home_page: https://rubygems.org/gems/http_parser.rb/versions/0.8.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Provides ruby bindings to http parser
+      supplier: 'Organization: Broadcom, Inc.'

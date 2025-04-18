@@ -1,0 +1,46 @@
+From 6e1a75b73ed11bf276680148b77d7306856f4768 Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivani.agarwal@broadcom.com>
+Date: Tue, 10 Dec 2024 08:08:57 +0000
+Subject: [PATCH] Modify code to upgrade rexml-3.2.6 to rexml 3.3.9
+
+---
+ .../{rexml-3.2.6.gemspec => rexml-3.3.9.gemspec}              | 4 ++--
+ gems/bundled_gems                                             | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+ rename .bundle/specifications/{rexml-3.2.6.gemspec => rexml-3.3.9.gemspec} (98%)
+
+diff --git a/.bundle/specifications/rexml-3.2.6.gemspec b/.bundle/specifications/rexml-3.3.9.gemspec
+similarity index 98%
+rename from .bundle/specifications/rexml-3.2.6.gemspec
+rename to .bundle/specifications/rexml-3.3.9.gemspec
+index 38710d7..c4edd1c 100644
+--- a/.bundle/specifications/rexml-3.2.6.gemspec
++++ b/.bundle/specifications/rexml-3.3.9.gemspec
+@@ -1,9 +1,9 @@
+ # -*- encoding: utf-8 -*-
+-# stub: rexml 3.2.6 ruby lib
++# stub: rexml 3.3.9 ruby lib
+ 
+ Gem::Specification.new do |s|
+   s.name = "rexml".freeze
+-  s.version = "3.2.6"
++  s.version = "3.3.9"
+ 
+   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
+   s.require_paths = ["lib".freeze]
+diff --git a/gems/bundled_gems b/gems/bundled_gems
+index 1977351..b6f382d 100644
+--- a/gems/bundled_gems
++++ b/gems/bundled_gems
+@@ -9,7 +9,7 @@ minitest        5.20.0  https://github.com/minitest/minitest
+ power_assert    2.0.3   https://github.com/ruby/power_assert
+ rake            13.1.0  https://github.com/ruby/rake
+ test-unit       3.6.1   https://github.com/test-unit/test-unit
+-rexml           3.2.6   https://github.com/ruby/rexml
++rexml           3.3.9   https://github.com/ruby/rexml
+ rss             0.3.0   https://github.com/ruby/rss
+ net-ftp         0.3.3   https://github.com/ruby/net-ftp
+ net-imap        0.4.9   https://github.com/ruby/net-imap
+-- 
+2.49.0
+

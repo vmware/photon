@@ -1,0 +1,13 @@
+sources:
+- archive: aws-sdk-core-3.166.0.gem
+  archive_sha512sum: bb06f9e9a06a2e8154485ec560f3b629759c8c144dc1d778d5f0517d9b07756f7cf16c8ce5fd80c2de413e6bdf9ff18c5f8b31ee6cf576cca355656349461dd3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides API clients for AWS. This gem is part of the
+        official AWS SDK for Ruby.. '
+      home_page: https://rubygems.org/gems/aws-sdk-core/versions/3.166.0
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Provides API clients for AWS.
+      supplier: 'Organization: Broadcom, Inc.'

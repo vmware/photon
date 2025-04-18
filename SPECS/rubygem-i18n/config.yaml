@@ -1,0 +1,12 @@
+sources:
+- archive: i18n-1.12.0.gem
+  archive_sha512sum: 7b8af5bb6146c0d2333c7d319276ca45e1c360354636f02f3c64bc113c8877388fbca77a0f49e5d5f6b6eb97e79f74ddba0fff0d689a940dc2879a2741cd9e16
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'New wave Internationalization support for Ruby. '
+      home_page: https://rubygems.org/gems/i18n/versions/1.12.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Support for ruby.
+      supplier: 'Organization: Broadcom, Inc.'

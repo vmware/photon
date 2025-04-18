@@ -8,7 +8,6 @@
 %rb_libdir        %(%{rb_binary} -rrbconfig -e 'puts RbConfig::CONFIG["rubylibdir"]' )
 %rb_archdir       %(%{rb_binary} -rrbconfig -e 'puts RbConfig::CONFIG["archdir"]' )
 
-
 ## Site
 %rb_sitedir       %(%{rb_binary} -rrbconfig -e 'puts RbConfig::CONFIG["sitedir"]' )
 %rb_sitelibdir    %(%{rb_binary} -rrbconfig -e 'puts RbConfig::CONFIG["sitelibdir"]' )
@@ -25,7 +24,6 @@
 #   %prep
 #   %gem_unpack %{SOURCE0}
 #   %patch1 -p1
-#
 %gem_unpack(s:) \
   source=%{-s:%{-s*}}%{!-s:%{SOURCE0}} \
   %{gem_binary} unpack --verbose $source \
@@ -35,7 +33,6 @@
 %{nil}
 
 # %%gem_build macro ...
-#
 %gem_build() \
 GEMSPEC_SOURCE_DIR=`find . -maxdepth 2 -type f -name %{gem_name}.gemspec | xargs dirname` \
 cd $GEMSPEC_SOURCE_DIR && %{gem_binary} build --verbose %{gem_name}.gemspec \
@@ -46,7 +43,6 @@ cd $GEMSPEC_SOURCE_DIR && %{gem_binary} build --verbose %{gem_name}.gemspec \
 # example:
 #   %install
 #   %gem_install my_gem 1.0
-#
 %gem_install() \
   cd %{_builddir}/%{gem_name}-%{version} \
   %{gem_binary} install --bindir %{gem_base}/bin/ --build-root %{buildroot} %{gem_name}-%{version}.gem \

@@ -1,0 +1,14 @@
+sources:
+- archive: async-http-0.60.2.gem
+  archive_sha512sum: 33e6ee63b25f79664cf6c586a2c8a1d8572557c3212921b1a657df7b67424db23cec5e2d09ffb5ebca443c95e11ccbdb8b1d26cdad07ea7f35791517d3ae19b4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'An asynchronous client and server implementation of HTTP/1.0,
+        HTTP/1.1 and HTTP/2 including TLS. Support for streaming requests and responses.
+        Built on top of async and async-io. falcon provides a rack-compatible server. '
+      home_page: https://rubygems.org/gems/async-http/versions/0.60.2
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A HTTP client and server library.
+      supplier: 'Organization: Broadcom, Inc.'

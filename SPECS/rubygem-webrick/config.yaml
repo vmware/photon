@@ -1,0 +1,13 @@
+sources:
+- archive: webrick-1.7.0.gem
+  archive_sha512sum: 5f242b50300046fe7c22ecd1640a73e5815e05a72bedfebe6bc39c24c92bd61abdd180860de0d194c0eebbc640b507b6892de181d3b577c5372ace0ca6faf2a3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'WEBrick is an HTTP server toolkit that can be configured
+        as an HTTPS server, a proxy server, and a virtual-host server. '
+      home_page: https://rubygems.org/gems/webrick/versions/1.7.0
+      license_concluded: MIT AND BSD-2-Clause
+      license_declared: MIT AND BSD-2-Clause
+      short_summary: HTTP server toolkit
+      supplier: 'Organization: Broadcom, Inc.'

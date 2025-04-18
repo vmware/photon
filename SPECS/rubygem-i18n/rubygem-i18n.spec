@@ -4,10 +4,9 @@
 
 Name:           rubygem-i18n
 Version:        1.14.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Support for ruby.
 Group:          Development/Languages
-License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/i18n/versions/%{version}
@@ -15,7 +14,11 @@ URL:            https://rubygems.org/gems/i18n/versions/%{version}
 Source0: https://rubygems.org/downloads/i18n-%{version}.gem
 %define sha512 %{gem_name}=7b94b63c8cc318166e18596689c5b81222834c874d89dd4e076dde2a2aac902d0192d4b4efd84dbe7738420bd40a9b00665da058e7873bbcead307447ce82f41
 
-BuildRequires: ruby
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires: ruby-devel
+BuildRequires: rubygem-concurrent-ruby
 
 Requires: ruby
 Requires: rubygem-concurrent-ruby
@@ -24,18 +27,21 @@ Requires: rubygem-concurrent-ruby
 New wave Internationalization support for Ruby.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.14.1-2
+-   Build gems properly
 *   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.14.1-1
 -   Update to version 1.14.1
 * Sat Oct 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.12.0-2

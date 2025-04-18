@@ -1,0 +1,12 @@
+sources:
+- archive: dig_rb-1.0.1.gem
+  archive_sha512sum: 2c27271b41ffa1a884b2fc836d91efd93eeb9ceead49fd500bb62027f8f17160c2cca76fcabcc6fd3361c353ba4f0b3ddbefbe0a7016732d4e3e57b76c679382
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Array/Hash/Struct#dig backfill for ruby '
+      home_page: https://rubygems.org/gems/dig_rb/versions/1.0.1
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Array/Hash/Struct#dig backfill for ruby
+      supplier: 'Organization: Broadcom, Inc.'

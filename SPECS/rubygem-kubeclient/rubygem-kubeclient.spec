@@ -3,38 +3,47 @@
 
 Name:           rubygem-kubeclient
 Version:        4.11.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A client for Kubernetes REST api.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=f32a9df1a0d56a2b128eb2377191ab61548d3873561eeaf46d6cb271d5b5ba29ca7a9df2dac6ff130c357e41ab2cfe6e307140c9255d2962f5ff5eb89c6ae144
 
-BuildRequires:  ruby-devel
-BuildRequires:  findutils
-
-Requires: rubygem-activesupport
-Requires: rubygem-http >= 3.0, rubygem-http < 5.1.1
-Requires: rubygem-recursive-open-struct > 1.1
-Requires: rubygem-rest-client
-Requires: rubygem-http >= 3.0, rubygem-http < 5.0
-Requires: rubygem-http-accept >= 1.7.0, rubygem-http-accept < 2.0
-Requires: rubygem-jsonpath
-Requires: ruby
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildArch: noarch
+
+BuildRequires:  ruby-devel
+BuildRequires:  rubygem-activesupport
+BuildRequires:  rubygem-http < 5.0
+BuildRequires:  rubygem-recursive-open-struct
+BuildRequires:  rubygem-jsonpath
+BuildRequires:  rubygem-rest-client
+BuildRequires:  rubygem-http-accept < 2.0
+BuildRequires:  findutils
+
+Requires:       rubygem-activesupport
+Requires:       rubygem-recursive-open-struct > 1.1
+Requires:       rubygem-rest-client
+Requires:       rubygem-http < 5.0
+Requires:       rubygem-http-accept < 2.0
+Requires:       rubygem-jsonpath
+Requires:       rubygem-ffi-compiler
+Requires:       ruby
 
 %description
 A client for Kubernetes REST api.
 
 %prep
-%autosetup -n %{gem_name}-%{version}
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gem_base} %{SOURCE0}
@@ -44,6 +53,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gem_base} %{SOURCE0}
 %{gem_base}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.11.0-3
+- Build gems properly
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.11.0-2
 - Add gem macros
 * Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.11.0-1

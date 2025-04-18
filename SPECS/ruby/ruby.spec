@@ -1,30 +1,44 @@
+%define new_rexml_version   3.3.9
+%define old_rexml_version   3.2.6
+
 Summary:        Ruby
 Name:           ruby
 Version:        3.3.0
-Release:        4%{?dist}
-License:        BSDL
+Release:        5%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://cache.ruby-lang.org/pub/ruby/3.3/%{name}-%{version}.tar.gz
+Source0: https://cache.ruby-lang.org/pub/ruby/3.3/%{name}-%{version}.tar.gz
 %define sha512 %{name}=26074009b501fc793d71a74e419f34a6033c9353433919ca74ba2d24a3de432dbb11fd92c2bc285f0e4d951a6d6c74bf5b69a2ab36200c8c26e871746d6e0fc6
 
 Source1: macros.ruby
 
-BuildRequires:  openssl-devel
-BuildRequires:  ca-certificates
-BuildRequires:  readline-devel
-BuildRequires:  readline
-BuildRequires:  tzdata
-BuildRequires:  libffi-devel
-BuildRequires:  libyaml-devel
+Source2: rexml-%{new_rexml_version}.tar.gz
+%define sha512 rexml-%{new_rexml_version}=cc38609e5321f157b0a9ea793386017c8d4f743aabd66fc31a8f450f68c57e89825ec1d549efc4e2459ae952e57bbc87d47f9a0affa457639b89b9374e0bb137
 
-Requires:       ca-certificates
-Requires:       openssl
-Requires:       gmp
-Requires:       libyaml
+Source3: license.txt
+%include %{SOURCE3}
+
+Patch0: 0001-Modify-code-to-upgrade-rexml-%{old_rexml_version}-to-rexml-%{new_rexml_version}.patch
+Patch1: CVE-2025-27219.patch
+Patch2: CVE-2025-27220.patch
+Patch3: CVE-2025-27221-1.patch
+Patch4: CVE-2025-27221-2.patch
+
+BuildRequires: openssl-devel
+BuildRequires: ca-certificates
+BuildRequires: readline-devel
+BuildRequires: readline
+BuildRequires: tzdata
+BuildRequires: libffi-devel
+BuildRequires: libyaml-devel
+
+Requires: ca-certificates
+Requires: openssl
+Requires: gmp
+Requires: libyaml
 
 %description
 The Ruby package contains the Ruby development environment.
@@ -45,6 +59,13 @@ Header files for doing development with ruby.
 %autosetup -p1
 
 %build
+# Modification to upgrade rexml-%{old_rexml_version} to rexml-%{new_rexml_version}
+rm -rf .bundle/gems/rexml-%{old_rexml_version}
+tar -xvpf %{SOURCE2} -C .bundle/gems
+
+rm gems/rexml-%{old_rexml_version}.gem
+cp -a .bundle/gems/rexml-%{new_rexml_version}/rexml-%{new_rexml_version}.gem gems/
+
 # below loop fixes the files in libexec to point correct ruby
 # Only verfied and to be used with ruby version 2.7.1
 # Any future versions needs to be verified
@@ -57,10 +78,9 @@ done
   --docdir=%{_docdir}/%{name}-%{version} \
   --with-compress-debug-sections=no
 
-make %{?_smp_mflags} COPY="cp -p"
+%make_build COPY="cp -p"
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 %make_install %{?_smp_mflags}
 # Move macros file into proper place and replace the %%{name} macro, since it
 # would be wrongly evaluated during build of other packages.
@@ -68,8 +88,8 @@ mkdir -p %{buildroot}%{_rpmmacrodir}
 install -m 644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.ruby
 sed -i "s/%%{name}/%{name}/" %{buildroot}%{_rpmmacrodir}/macros.ruby
 
-%check
 %if 0%{?with_check}
+%check
 chmod g+w . -R
 useradd test -G root -m
 sudo -u test make check TESTS="-v" %{?_smp_mflags}
@@ -85,7 +105,6 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_includedir}/*
-%{_libdir}/*.so
 %{_libdir}/*.so.*
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/ruby/*
@@ -95,9 +114,12 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
+%{_libdir}/*.so
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-5
+- Chore cleanups
 * Wed Oct 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-4
 - Require coreutils only
 * Thu Jun 27 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.3.0-3

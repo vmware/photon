@@ -3,16 +3,18 @@
 
 Name:           rubygem-io-event
 Version:        1.4.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        An event loop.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=8a11aecb9019a2154110b900e99fe19325daa554d15a60261093b56edae9c23ceec4d54616cd11be4a5dede5e73c4bba144d40621e80ad2203a3d2261f06d178
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  ruby-devel
 
@@ -36,6 +38,8 @@ event loops, with support for select, kqueue, epoll and io_uring.
 %{gem_base}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.4-4
+- Build gems properly
 * Mon Oct 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.4-3
 - Remove noarch
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.4-2

@@ -4,18 +4,20 @@
 
 Name:           rubygem-traces
 Version:        0.11.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Application instrumentation and tracing.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
 Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=1be8f690d6074b4f9c4f0df8465e9f1ebf059d89a9ba36579fa5e011d496244350f947d65d980a3b3d9f97b7f8eab069a97d24e6d4d67c6abad8d34c72b65b3c
 
-BuildRequires:  ruby
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires: ruby-devel
 
 Requires: ruby
 
@@ -25,18 +27,21 @@ BuildArch: noarch
 %{summary}
 
 %prep
-%autosetup -p1 -n %{gem_name}-%{version}
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.11.1-3
+- Build gems properly
 * Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.11.1-2
 - Bump Version to build with new ruby
 * Wed Oct 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.11.1-1

@@ -4,10 +4,9 @@
 
 Name:           rubygem-activesupport
 Version:        7.1.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
-License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/activesupport/versions/%{version}
@@ -15,12 +14,19 @@ URL:            https://rubygems.org/gems/activesupport/versions/%{version}
 Source0: https://rubygems.org/downloads/activesupport-%{version}.gem
 %define sha512 %{gem_name}=50b587e9f6d715bc3c0616e3fa8087b24c4dc837246babf39e4b1d42ed98f85877481b3be1f75d669c4da19df8f645ef644fb8afa16578f921a67576122c792d
 
-BuildRequires:  ruby
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires:  ruby-devel
+BuildRequires:  rubygem-concurrent-ruby
+BuildRequires:  rubygem-i18n
+BuildRequires:  rubygem-tzinfo
+BuildRequires:  rubygem-connection_pool
 
 Requires: ruby
+Requires: rubygem-connection_pool
 Requires: rubygem-i18n
 Requires: rubygem-concurrent-ruby
-Requires: rubygem-connection_pool
 Requires: rubygem-tzinfo
 
 %description
@@ -29,18 +35,21 @@ Rails framework. Rich support for multibyte strings, internationalization,
 time zones, and testing.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.3.2-2
+-   Build gems properly
 *   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.1.3.2-1
 -   Update to version 7.1.3.2
 * Wed Oct 18 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.4-2

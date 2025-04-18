@@ -1,0 +1,14 @@
+sources:
+- archive: ffi-compiler-1.0.1.gem
+  archive_sha512sum: 7a13625ab1c5748d05ec93d68708dd9435ec92dcd0c823109c44173fdaf8710aec5f5b4fb11966475f10ae91401c7ca3c620f9d36bb9ca665114e1ed70f4edd0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'An easy-to-use client library for making requests from
+        Ruby. It uses a simple method chaining system for building requests, similar
+        to Python''s Requests. '
+      home_page: https://rubygems.org/gems/ffi-compiler
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: An easy-to-use client library for making requests from Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

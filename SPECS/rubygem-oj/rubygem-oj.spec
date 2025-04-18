@@ -3,17 +3,22 @@
 
 Name: rubygem-oj
 Version:        3.16.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The fastest JSON parser and object serializer.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
+
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512  oj=98d5610b1a71b31cd7c9d5f789f3aa6a751c950ba9003d5b54c823a85aabc7e7a51dd11cf8a9ad1ea74173cc51e221f5896f58642becfd064fd0c2fbc8e35d64
+%define sha512 %{gem_name}=98d5610b1a71b31cd7c9d5f789f3aa6a751c950ba9003d5b54c823a85aabc7e7a51dd11cf8a9ad1ea74173cc51e221f5896f58642becfd064fd0c2fbc8e35d64
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  ruby-devel
 BuildRequires:  gmp-devel
+
 Requires:       ruby
 
 %description
@@ -33,6 +38,8 @@ The fastest JSON parser and object serializer.
 %{gem_base}
 
 %changelog
+*   Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.16.3-3
+-   Build gems properly
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.16.3-2
 -   Add gem macros
 *   Mon Feb 26 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.16.3-1

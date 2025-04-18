@@ -1,0 +1,15 @@
+sources:
+- archive: rbvmomi-3.0.0.gem
+  archive_sha512sum: 255a7517939a3d369244b7c66b39baa6903e489f8fd0057b4414850c5c90cf0a8931d507d8b5a7f806afba3c565a8cc5bba3b3cc614587d644f4060a165878ef
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'RbVmomi is a Ruby interface to the vSphere API. Like
+        the Perl and Java SDKs, you can use it to manage ESX and VirtualCenter servers.
+        The current release supports the vSphere 5.0 API. RbVmomi specific documentation
+        is online and is meant to be used alongside the official documentation. '
+      home_page: https://github.com/vmware/rbvmomi
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Ruby interface to the VMware vSphere API.
+      supplier: 'Organization: Broadcom, Inc.'

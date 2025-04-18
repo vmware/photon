@@ -5,7 +5,7 @@
 Summary:        This is a simple REST client for Cloud Storage JSON API V1
 Name:           rubygem-google-apis-storage_v1
 Version:        0.49.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -57,5 +57,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.49.0-2
+- Build gems properly
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.49.0-1
 - Initial version.

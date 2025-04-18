@@ -1,0 +1,14 @@
+sources:
+- archive: highline-2.0.3.gem
+  archive_sha512sum: 18426c690125807ccc43af98d395c866752d2aa3a1d59ae2f16b65e3c207eedd76c0756f8acebdf4ceea2d52daf04500030f38e63f7658c39c946c6cb9737bb0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A high-level IO library that provides validation, type
+        conversion, and more for command-line interfaces '
+      home_page: https://rubygems.org/gems/highline
+      license_concluded: GPL-2.0-only AND Ruby
+      license_declared: GPL-2.0-only AND Ruby
+      short_summary: A high-level IO library that provides validation, type conversion,
+        and more for command-line interfaces
+      supplier: 'Organization: Broadcom, Inc.'
