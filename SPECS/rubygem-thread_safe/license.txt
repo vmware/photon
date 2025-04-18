@@ -1,1 +1,1 @@
-License: Apache-2.0
+License: MIT AND Apache-2.0 AND CC0-1.0

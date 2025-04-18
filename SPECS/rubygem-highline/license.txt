@@ -1,1 +1,1 @@
-License: Ruby
+License: GPL-2.0-only AND Ruby

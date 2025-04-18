@@ -4,7 +4,7 @@
 
 Name: rubygem-mime-types
 Version:        3.4.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The mime-types library provides a library and registry for information about MIME content type definitions.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -14,10 +14,14 @@ Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
-BuildRequires:  ruby >= 2.0
 
-Requires: rubygem-mime-types-data >= 3.2015.0, rubygem-mime-types-data < 4.0.0
 BuildArch: noarch
+
+BuildRequires: ruby-devel
+BuildRequires: rubygem-mime-types-data
+
+Requires: ruby
+Requires: rubygem-mime-types-data >= 3.2015.0, rubygem-mime-types-data < 4.0.0
 
 %description
 The mime-types library provides a library and registry for information about MIME content
@@ -31,23 +35,26 @@ is now licensed exclusively under the MIT licence and there is a code of conduct
 There are a number of other smaller changes described in the History file.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
-*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.1-2
--   Release bump for SRP compliance
-*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4.1-1
--   Automatic Version Bump
-*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3.1-1
--   Automatic Version Bump
-*   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 3.2.2-1
--   Initial build
+* Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4.1-3
+- Build gems properly
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.1-2
+- Release bump for SRP compliance
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4.1-1
+- Automatic Version Bump
+* Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3.1-1
+- Automatic Version Bump
+* Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 3.2.2-1
+- Initial build

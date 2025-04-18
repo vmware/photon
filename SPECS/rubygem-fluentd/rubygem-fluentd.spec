@@ -4,18 +4,28 @@
 
 Name: rubygem-fluentd
 Version:        1.15.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
+
 Source0:        https://rubygems.org/downloads/fluentd-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  ruby
+BuildRequires: ruby-devel
+BuildRequires: rubygem-webrick
+BuildRequires: rubygem-strptime
+BuildRequires: rubygem-tzinfo-data
+BuildRequires: rubygem-sigdump
+BuildRequires: rubygem-http_parser.rb
+BuildRequires: rubygem-serverengine
+BuildRequires: rubygem-cool-io
+BuildRequires: rubygem-yajl-ruby
+BuildRequires: rubygem-msgpack
 
 Requires(post): systemd
 Requires(preun): systemd
@@ -48,39 +58,42 @@ Fluentd is an open source data collector designed to scale and simplify log mana
 It can collect, process and ship many kinds of data in near real-time.
 
 %prep
-%autosetup -c -p1
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
-*   Wed Apr 16 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.15.3-1
--   Upgrade to 1.15.3
-*   Fri Apr 04 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.2-4
--   Fix CVE-2022-39379
-*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.2-3
--   Release bump for SRP compliance
-*   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 1.15.2-2
--   Add webrick to requires
-*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.2-1
--   Automatic Version Bump
-*   Mon Jul 12 2021 Piyush Gupta <gpiyush@vmware.com> 1.11.3-2
--   Bump up to build with rubygem-bundler upgrade.
-*   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.3-1
--   Automatic Version Bump
-*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.2-1
--   Automatic Version Bump
-*   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.6.3-1
--   Update to version 1.6.3
-*   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.2.5-1
--   Update to version 1.2.5
-*   Thu Aug 16 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-2
--   Added dependency on rubygem-bundler
-*   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-1
--   Initial build
+* Thu Apr 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.3-2
+- Build gems properly
+* Wed Apr 16 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.15.3-1
+- Upgrade to 1.15.3
+* Fri Apr 04 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.2-4
+- Fix CVE-2022-39379
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.2-3
+- Release bump for SRP compliance
+* Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 1.15.2-2
+- Add webrick to requires
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.2-1
+- Automatic Version Bump
+* Mon Jul 12 2021 Piyush Gupta <gpiyush@vmware.com> 1.11.3-2
+- Bump up to build with rubygem-bundler upgrade.
+* Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.3-1
+- Automatic Version Bump
+* Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.2-1
+- Automatic Version Bump
+* Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.6.3-1
+- Update to version 1.6.3
+* Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.2.5-1
+- Update to version 1.2.5
+* Thu Aug 16 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-2
+- Added dependency on rubygem-bundler
+* Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-1
+- Initial build

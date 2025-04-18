@@ -1,7 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.21
-Release:        21%{?dist}
+Release:        22%{?dist}
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -39,7 +39,7 @@ BuildRequires: boost-devel
 BuildRequires: attr-devel
 BuildRequires: libxslt-devel
 BuildRequires: systemd-devel
-BuildRequires: ruby
+BuildRequires: ruby-devel
 
 Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
@@ -234,6 +234,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.21-22
+- Build gems properly
 * Mon Sep 15 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.21-21
 - Build without tcp_wrappers
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.21-20

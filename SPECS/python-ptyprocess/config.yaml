@@ -7,7 +7,7 @@ sources:
       detailed_description: 'Launch a subprocess in a pseudo terminal (pty), and interact
         with both the process and its pty. '
       home_page: https://github.com/pexpect/ptyprocess
-      license_concluded: ISC
-      license_declared: ISC
+      license_concluded: BSD-3-Clause AND ISC
+      license_declared: BSD-3-Clause AND ISC
       short_summary: Run a subprocess in a pseudo terminal.
       supplier: 'Organization: Broadcom, Inc.'

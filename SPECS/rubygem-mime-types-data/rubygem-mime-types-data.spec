@@ -4,7 +4,7 @@
 
 Name: rubygem-mime-types-data
 Version:        3.2022.0105
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Provides a registry for information about MIME media type definitions.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -14,7 +14,10 @@ Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
-BuildRequires:  ruby >= 2.0
+
+BuildRequires: ruby-devel
+
+Requires: ruby
 
 BuildArch: noarch
 
@@ -25,23 +28,26 @@ filename extensions for MIME types, or to use filename extensions to look up the
 MIME type definitions.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
-*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2022.0105-2
--   Release bump for SRP compliance
-*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2022.0105-1
--   Automatic Version Bump
-*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2020.0512-1
--   Automatic Version Bump
-*   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 3.2015.1120-1
--   Initial build
+* Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2022.0105-3
+- Build gems properly
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2022.0105-2
+- Release bump for SRP compliance
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2022.0105-1
+- Automatic Version Bump
+* Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2020.0512-1
+- Automatic Version Bump
+* Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 3.2015.1120-1
+- Initial build

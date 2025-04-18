@@ -10,7 +10,7 @@ sources:
         to the Parse::Yapp module and let you easily create a Perl OO parser from
         an input grammar file. '
       home_page: https://metacpan.org/release/Parse-Yapp
-      license_concluded: Artistic-2.0 AND GPL-2.0-or-later
-      license_declared: Artistic-2.0 AND GPL-2.0-or-later
+      license_concluded: GPL-2.0-or-later
+      license_declared: GPL-2.0-or-later
       short_summary: Perl extension for generating and using LALR parsers
       supplier: 'Organization: Broadcom, Inc.'

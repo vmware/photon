@@ -35,13 +35,13 @@ and thereby inherits Discount’s numerous useful extensions to the Markdown lan
 %{gem_base}
 
 %changelog
-*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7-4
--   Release bump for SRP compliance
-*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7-3
--   Add gem macros
-*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7-2
--   Build from source
-*   Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.7-1
--   Automatic Version Bump
-*   Thu Sep 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.2.0.2-1
--   Initial build
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7-4
+- Release bump for SRP compliance
+* Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7-3
+- Add gem macros
+* Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7-2
+- Build from source
+* Mon Oct 31 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.7-1
+- Automatic Version Bump
+* Thu Sep 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.2.0.2-1
+- Initial build

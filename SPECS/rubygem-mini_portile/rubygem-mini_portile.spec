@@ -4,7 +4,7 @@
 
 Name:           rubygem-mini_portile
 Version:        0.6.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Simplistic port-like solution for developers
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -14,24 +14,27 @@ Source0:        https://rubygems.org/downloads/mini_portile-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
-BuildRequires:  ruby
+BuildRequires: ruby-devel
 Requires:       ruby
 %description
 Simplistic port-like solution for developers. It provides a standard and simplified way to compile against dependency libraries without messing up your system.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+* Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.6.2-6
+- Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.6.2-5
 - Release bump for SRP compliance
 * Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.6.2-4

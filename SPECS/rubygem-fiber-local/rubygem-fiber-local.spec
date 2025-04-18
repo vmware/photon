@@ -4,7 +4,7 @@
 
 Name:           rubygem-fiber-local
 Version:        1.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An event loop.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -16,7 +16,8 @@ Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  ruby
+BuildRequires: ruby-devel
+BuildRequires: rubygem-io-event
 
 Requires: ruby
 Requires: rubygem-io-event
@@ -28,18 +29,21 @@ Provides low level cross-platform primitives for constructing
 event loops, with support for select, kqueue, epoll and io_uring.
 
 %prep
-%autosetup -p1 -n %{gem_name}-%{version}
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+* Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.0-3
+- Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.0-2
 - Release bump for SRP compliance
 * Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 1.0.0-1

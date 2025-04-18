@@ -4,7 +4,7 @@
 
 Name:           rubygem-webrick
 Version:        1.7.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        HTTP server toolkit
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -46,6 +46,8 @@ a proxy server, and a virtual-host server.
 %{gemdir}
 
 %changelog
+* Mon Sep 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.0-4
+- Build gems properly
 * Tue Sep 09 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.0-3
 - Fix CVE-2025-6442 and CVE-2024-47220
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.0-2

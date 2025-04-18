@@ -4,7 +4,7 @@
 
 Name: rubygem-jmespath
 Version:        1.6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Implements JMESPath for Ruby.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -14,29 +14,35 @@ Source0:        https://rubygems.org/downloads/jmespath-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
-BuildRequires:  ruby
+
+BuildRequires: ruby-devel
+
+Requires: ruby
 
 %description
 Implements JMESPath for Ruby.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
-*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.1-2
--   Release bump for SRP compliance
-*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.1-1
--   Automatic Version Bump
-*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.4.0-2
--   rebuilt with ruby-2.7.1
-*   Mon Jul 30 2018 Srinidhi Rao <srinidhir@vmware.com> 1.4.0-1
--   Initial build
+* Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.1-3
+- Build gems properly
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.1-2
+- Release bump for SRP compliance
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.1-1
+- Automatic Version Bump
+* Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.4.0-2
+- rebuilt with ruby-2.7.1
+* Mon Jul 30 2018 Srinidhi Rao <srinidhir@vmware.com> 1.4.0-1
+- Initial build
