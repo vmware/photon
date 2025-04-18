@@ -8,21 +8,19 @@ sources:
         Nokogiri''s many features is the ability to search documents via XPath or
         CSS3 selectors. '
       home_page: https://rubygems.org/gems/nokogiri/
-      license_concluded: GPL-3.0-or-later AND FSFULLR AND FSFULLRWD AND BSD-3-Clause
-        AND Zlib AND DocBook-XML AND ISC-Veillard AND GPL-2.0-or-later WITH Libtool-exception
-        AND GPL-1.0-or-later AND BSD-2-Clause AND GFDL-1.2-or-later AND GPL-2.0-or-later
-        AND GFDL-1.1-or-later AND W3C-19980720 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND LGPL-2.0-only AND MIT AND Apache-2.0 AND Latex2e-translated-notice AND
-        GPL-2.0-only AND CC-BY-SA-2.0 AND X11 AND Apache-1.1 AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Libtool-exception
-        AND FSFUL AND GFDL-1.3-no-invariants-only
-      license_declared: GPL-3.0-or-later AND FSFULLR AND FSFULLRWD AND BSD-3-Clause
-        AND Zlib AND DocBook-XML AND ISC-Veillard AND GPL-2.0-or-later WITH Libtool-exception
-        AND GPL-1.0-or-later AND BSD-2-Clause AND GFDL-1.2-or-later AND GPL-2.0-or-later
-        AND GFDL-1.1-or-later AND W3C-19980720 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND LGPL-2.0-only AND MIT AND Apache-2.0 AND Latex2e-translated-notice AND
-        GPL-2.0-only AND CC-BY-SA-2.0 AND X11 AND Apache-1.1 AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Libtool-exception
-        AND FSFUL AND GFDL-1.3-no-invariants-only
+      license_concluded: Apache-2.0 AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception
+        AND ISC-Veillard AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        CC-BY-SA-2.0 AND FSFULLR AND LGPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception
+        AND Zlib AND Apache-1.1 AND BSD-3-Clause AND GFDL-1.2-or-later AND GFDL-1.1-or-later
+        AND GPL-2.0-only AND FSFULLRWD AND Latex2e-translated-notice AND W3C-19980720
+        AND X11 AND GPL-2.0-or-later AND GPL-1.0-or-later AND MIT AND GPL-3.0-or-later
+        AND BSD-2-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_declared: Apache-2.0 AND FSFUL AND GPL-3.0-or-later WITH Libtool-exception
+        AND ISC-Veillard AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        CC-BY-SA-2.0 AND FSFULLR AND LGPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception
+        AND Zlib AND Apache-1.1 AND BSD-3-Clause AND GFDL-1.2-or-later AND GFDL-1.1-or-later
+        AND GPL-2.0-only AND FSFULLRWD AND Latex2e-translated-notice AND W3C-19980720
+        AND X11 AND GPL-2.0-or-later AND GPL-1.0-or-later AND MIT AND GPL-3.0-or-later
+        AND BSD-2-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
       short_summary: Nokogiri is an HTML, XML, SAX, and Reader parser.
       supplier: 'Organization: Broadcom, Inc.'

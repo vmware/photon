@@ -4,7 +4,7 @@
 
 Name: rubygem-async-http
 Version:        0.60.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A HTTP client and server library.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -14,7 +14,16 @@ Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
-BuildRequires:  ruby
+
+BuildRequires: ruby-devel
+BuildRequires: rubygem-async
+BuildRequires: rubygem-async-io
+BuildRequires: rubygem-protocol-http
+BuildRequires: rubygem-protocol-http1
+BuildRequires: rubygem-protocol-http2
+BuildRequires: rubygem-fiber-local
+BuildRequires: rubygem-traces
+BuildRequires: rubygem-async-pool
 
 Requires: rubygem-async >= 1.19.0, rubygem-async < 2.2.2
 Requires: rubygem-async-io >= 1.25.0, rubygem-async-io < 2.0.4
@@ -34,29 +43,32 @@ including TLS. Support for streaming requests and responses. Built on top of asy
 and async-io. falcon provides a rack-compatible server.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
-*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.60.2-2
--   Release bump for SRP compliance
-*   Fri Nov 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.60.2-1
--   Bump version with the version upgrade of rubygem-protocol-http1
-*   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 0.59.2-2
--   Fix requires
-*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 0.59.2-1
--   Automatic Version Bump
-*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.52.5-1
--   Automatic Version Bump
-*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 0.52.4-1
--   Automatic Version Bump
-*   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.48.2-1
--   Initial build
+* Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.60.2-3
+- Build gems properly
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.60.2-2
+- Release bump for SRP compliance
+* Fri Nov 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.60.2-1
+- Bump version with the version upgrade of rubygem-protocol-http1
+* Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 0.59.2-2
+- Fix requires
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 0.59.2-1
+- Automatic Version Bump
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.52.5-1
+- Automatic Version Bump
+* Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 0.52.4-1
+- Automatic Version Bump
+* Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.48.2-1
+- Initial build

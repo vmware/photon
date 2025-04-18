@@ -1,29 +1,14 @@
 sources:
-    - archive: http-5.1.0.gem
-      archive_sha512sum: b99da5318da54e7b64abd48df0b68cde9a02e1ae92b51fc43302e3dea28ba9672e2b7a25e31c342235835e16b2e1b98c94b6d4efa7916a0aa99258fc8290260f
-      skip_validation: true
-      spdx:
-          package:
-              detailed_description:
-                  "An easy-to-use client library for making requests from
-                  Ruby. It uses a simple method chaining system for building requests, similar
-                  to Python's Requests. "
-              home_page: https://rubygems.org/gems/http/versions/5.1.0
-              license_concluded: MIT
-              license_declared: MIT
-              short_summary: An easy-to-use client library for making requests from Ruby.
-              supplier: "Organization: Broadcom, Inc."
-    - archive: http-4.4.1.gem
-      archive_sha512sum: 6e43a8ae379d7c8a807a9a03c87bfb5ad1719f9838e26ac7a695220ee2bc50344accc2db268d30da175328fd5468b87ec8532d17ce42a5b74d6c2c4c281d1bc9
-      skip_validation: true
-      spdx:
-          package:
-              detailed_description:
-                  "An easy-to-use client library for making requests from
-                  Ruby. It uses a simple method chaining system for building requests, similar
-                  to Python's Requests. "
-              home_page: https://rubygems.org/gems/http/versions/4.4.1
-              license_concluded: MIT
-              license_declared: MIT
-              short_summary: An easy-to-use client library for making requests from Ruby.
-              supplier: "Organization: Broadcom, Inc."
+- archive: http-4.4.1.gem
+  archive_sha512sum: 6e43a8ae379d7c8a807a9a03c87bfb5ad1719f9838e26ac7a695220ee2bc50344accc2db268d30da175328fd5468b87ec8532d17ce42a5b74d6c2c4c281d1bc9
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'An easy-to-use client library for making requests from
+        Ruby. It uses a simple method chaining system for building requests, similar
+        to Python''s Requests.'
+      home_page: https://rubygems.org/gems/http/versions/4.4.1
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: An easy-to-use client library for making requests from Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

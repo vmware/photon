@@ -15,6 +15,7 @@ sources:
         WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
         AND GPL-3.0-or-later AND LGPL-2.1-or-later AND FSFULLR AND FSFUL AND FSFULLRWD
         AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      detailed_description: 'The nfs-utils package contains simple nfs client service.'
       short_summary: NFS client utils
       detailed_description: NFS client utils
       supplier: 'Organization: Broadcom, Inc.'

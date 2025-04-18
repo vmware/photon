@@ -9,7 +9,7 @@ sources:
         works like Don Libes Expect. Pexpect allows your script to spawn a child application
         and control it as if a human were typing commands. '
       home_page: https://github.com/pexpect/pexpect
-      license_concluded: ISC
-      license_declared: ISC
+      license_concluded: ISC AND BSD-3-Clause
+      license_declared: ISC AND BSD-3-Clause
       short_summary: Pexpect is a Pure Python Expect-like module
       supplier: 'Organization: Broadcom, Inc.'

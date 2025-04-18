@@ -1,9 +1,10 @@
-%define rexml_version    3.3.9
+%define new_rexml_version   3.3.9
+%define old_rexml_version   3.2.5
 
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.4
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -16,15 +17,14 @@ Patch2:         CVE-2024-27280.patch
 Patch3:         CVE-2023-36617-1.patch
 Patch4:         CVE-2023-36617-2.patch
 Patch5:         CVE-2024-27282.patch
-Patch6:         0001-Modify-code-to-upgrade-rexml-3.2.5-to-rexml-3.3.9.patch
+Patch6:         0001-Modify-code-to-upgrade-rexml-%{old_rexml_version}-to-rexml-%{new_rexml_version}.patch
 Patch7:         CVE-2025-27219.patch
 Patch8:         CVE-2025-27220.patch
 Patch9:         CVE-2025-27221-1.patch
 Patch10:        CVE-2025-27221-2.patch
 
 Source1:        macros.ruby
-
-Source2:        rexml-%{rexml_version}.tar.gz
+Source2:        rexml-%{new_rexml_version}.tar.gz
 
 Source3: license.txt
 %include %{SOURCE3}
@@ -73,28 +73,29 @@ Header files for doing development with ruby.
 
 %build
 # Modification to upgrade rexml-3.2.5 to rexml-3.3.9
-rm -rf .bundle/gems/rexml-3.2.5
-tar -xvpf %{SOURCE2} -C .bundle/gems
+rexml_dir=".bundle/gems/rexml-%{old_rexml_version}"
+[ -d "${rexml_dir}" ] && rm -rf "${rexml_dir}" || exit 1
+tar -xpf %{SOURCE2} -C .bundle/gems
 
-rm gems/rexml-3.2.5.gem
-cp -p .bundle/gems/rexml-%{rexml_version}/rexml-%{rexml_version}.gem gems/
+rm gems/rexml-%{old_rexml_version}.gem
+cp -p .bundle/gems/rexml-%{new_rexml_version}/rexml-%{new_rexml_version}.gem gems/
 
 # below loop fixes the files in libexec to point correct ruby
 # Only verfied and to be used with ruby version 2.7.1
 # Any future versions needs to be verified
-for f in `grep -ril "\/usr\/local\/bin\/ruby" ./libexec/`; do
+for f in $(grep -ril "\/usr\/local\/bin\/ruby" ./libexec/); do
   sed -i "s|/usr/local/bin/ruby|/usr/bin/ruby|g" $f
   head -1 $f
 done
+
 %configure \
   --enable-shared \
   --docdir=%{_docdir}/%{name}-%{version} \
   --with-compress-debug-sections=no
 
-make %{?_smp_mflags} COPY="cp -p"
+%make_build COPY="cp -p"
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 %make_install %{?_smp_mflags}
 # Move macros file into proper place and replace the %%{name} macro, since it
 # would be wrongly evaluated during build of other packages.
@@ -102,8 +103,8 @@ mkdir -p %{buildroot}%{_rpmmacrodir}
 install -m 644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.ruby
 sed -i "s/%%{name}/%{name}/" %{buildroot}%{_rpmmacrodir}/macros.ruby
 
-%check
 %if 0%{?with_check}
+%check
 chmod g+w . -R
 useradd test -G root -m
 sudo -u test make check TESTS="-v" %{?_smp_mflags}
@@ -119,7 +120,6 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_includedir}/*
-%{_libdir}/*.so
 %{_libdir}/*.so.*
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/ruby/*
@@ -129,9 +129,12 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
+%{_libdir}/*.so
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Mon Mar 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.4-11
+- Chore cleanups
 * Wed Mar 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-10
 - Fix CVE-2025-27219, CVE-2025-27220 and CVE-2025-27221
 * Tue Feb 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.4-9

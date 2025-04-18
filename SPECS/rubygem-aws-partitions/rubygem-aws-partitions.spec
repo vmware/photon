@@ -4,7 +4,7 @@
 
 Name: rubygem-aws-partitions
 Version:        1.654.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Provides interfaces to enumerate AWS partitions, regions & services.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -14,39 +14,45 @@ Source0:        https://rubygems.org/downloads/aws-partitions-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
-BuildRequires:  ruby
+
+BuildRequires: ruby-devel
+
+Requires: ruby
 
 %description
 Provides interfaces to enumerate AWS partitions, regions, and services.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
-*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.654.0-2
--   Release bump for SRP compliance
-*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.654.0-1
--   Automatic Version Bump
-*   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.379.0-1
--   Automatic Version Bump
-*   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.378.0-1
--   Automatic Version Bump
-*   Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.377.0-1
--   Automatic Version Bump
-*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.375.0-1
--   Automatic Version Bump
-*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.363.0-1
--   Automatic Version Bump
-*   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.104.0-1
--   Update to version 1.104.0
-*   Mon Jul 30 2018 Srinidhi Rao <srinidhir@vmware.com> 1.96.0-1
--   Initial build
+* Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.654.0-3
+- Build gems properly
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.654.0-2
+- Release bump for SRP compliance
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.654.0-1
+- Automatic Version Bump
+* Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.379.0-1
+- Automatic Version Bump
+* Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.378.0-1
+- Automatic Version Bump
+* Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.377.0-1
+- Automatic Version Bump
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.375.0-1
+- Automatic Version Bump
+* Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.363.0-1
+- Automatic Version Bump
+* Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.104.0-1
+- Update to version 1.104.0
+* Mon Jul 30 2018 Srinidhi Rao <srinidhir@vmware.com> 1.96.0-1
+- Initial build

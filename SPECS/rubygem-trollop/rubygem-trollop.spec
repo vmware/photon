@@ -3,7 +3,7 @@
 %define gem_name trollop
 Name:           rubygem-trollop
 Version:        2.9.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Commandline option parser for Ruby
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -14,7 +14,7 @@ Source0: https://rubygems.org/downloads/trollop-%{version}.gem
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires: ruby
+BuildRequires: ruby-devel
 
 %if 0%{?with_check}
 BuildRequires: git
@@ -26,12 +26,13 @@ Requires: ruby
 Commandline option parser for Ruby
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %check
 cd %{buildroot}%{gemdir}/gems/trollop-%{version}
@@ -41,7 +42,10 @@ rake test
 %files
 %defattr(-,root,root,-)
 %{gemdir}
+
 %changelog
+* Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.10-3
+- Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.9.10-2
 - Release bump for SRP compliance
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.10-1

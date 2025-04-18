@@ -43,6 +43,9 @@ Requires:         python3-libs
 Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 
+%description
+The %{name} package contains simple nfs client service.
+
 %package -n libnfsidmap
 Summary: NFSv4 User and Group ID Mapping Library
 Provides:  libnfsidmap
@@ -60,9 +63,6 @@ Conflicts: %{name} < 2.6.2-6
 This package includes header files and libraries necessary for
 developing programs which use the libnfsidmap library.
 
-%description
-The %{name} package contains simple nfs client service.
-
 %package devel
 Summary: Development libraries and headers for %{name}
 Requires: %{name} = %{version}-%{release}
@@ -71,7 +71,7 @@ Requires: %{name} = %{version}-%{release}
 Development libraries and headers for %{name}
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 #not prevent statd to start
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
 sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c

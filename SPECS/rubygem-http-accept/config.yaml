@@ -1,23 +1,12 @@
 sources:
-    - archive: http-accept-2.2.0.gem
-      archive_sha512sum: f60a9818e79b90c67da8b5c2a5f357b40049aec1809c0809bbf17e1c3d93734cd1367fd4d7d5afba1ae49f6c9817281b6892d6ef9a027d91fc49c46ec943409b
-      skip_validation: true
-      spdx:
-          package:
-              detailed_description: "Parse Accept and Accept-Language HTTP headers. "
-              home_page: https://rubygems.org/gems/http-accept/versions/2.2.0
-              license_concluded: MIT
-              license_declared: MIT
-              short_summary: Parse Accept and Accept-Language HTTP headers.
-              supplier: "Organization: Broadcom, Inc."
-    - archive: http-accept-1.7.0.gem
-      archive_sha512sum: de263630227768a4cd5c8fa3b84eef54c6273ad207bc6958dd8b27dcee955ba3d6caf2972e9bd07f8aa03235d1ad9f260c1cdb66e83b24d69d0366fde28335b8
-      skip_validation: true
-      spdx:
-          package:
-              detailed_description: "Parse Accept and Accept-Language HTTP headers. "
-              home_page: https://rubygems.org/gems/http-accept/versions/1.7.0
-              license_concluded: MIT
-              license_declared: MIT
-              short_summary: Parse Accept and Accept-Language HTTP headers.
-              supplier: "Organization: Broadcom, Inc."
+- archive: http-accept-1.7.0.gem
+  archive_sha512sum: de263630227768a4cd5c8fa3b84eef54c6273ad207bc6958dd8b27dcee955ba3d6caf2972e9bd07f8aa03235d1ad9f260c1cdb66e83b24d69d0366fde28335b8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Parse Accept and Accept-Language HTTP headers.'
+      home_page: https://rubygems.org/gems/http-accept/versions/1.7.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Parse Accept and Accept-Language HTTP headers.
+      supplier: 'Organization: Broadcom, Inc.'

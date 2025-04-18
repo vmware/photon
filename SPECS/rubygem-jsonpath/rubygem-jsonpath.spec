@@ -4,7 +4,7 @@
 
 Name:           rubygem-jsonpath
 Version:        1.1.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Ruby Gem for JSONPath implementation
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -16,7 +16,8 @@ Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires: ruby
+BuildRequires: ruby-devel
+BuildRequires: rubygem-multi_json
 
 Requires: ruby
 Requires: rubygem-multi_json
@@ -25,16 +26,21 @@ Requires: rubygem-multi_json
 JSONPath is a lightweight library to search and extract data from JSON documents.
 
 %prep
-%autosetup -p1 -n %{gem_name}-%{version}
+%gem_unpack %{SOURCE0}
+
+%build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+* Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.5-3
+- Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.5-2
 - Release bump for SRP compliance
 * Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 1.1.5-1

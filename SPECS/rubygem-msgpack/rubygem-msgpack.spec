@@ -35,15 +35,15 @@ But unlike JSON, it is very fast and small.
 %{gem_base}
 
 %changelog
-*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-4
--   Release bump for SRP compliance
-*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-3
--   Add gem macros
-*   Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-2
--   Build from source
-*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
--   Automatic Version Bump
-*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.3-1
--   Automatic Version Bump
-*   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.4-1
--   Initial build
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-4
+- Release bump for SRP compliance
+* Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-3
+- Add gem macros
+* Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-2
+- Build from source
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
+- Automatic Version Bump
+* Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.3-1
+- Automatic Version Bump
+* Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.4-1
+- Initial build

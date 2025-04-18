@@ -57,23 +57,23 @@ proper log isolation.
 %{gem_base}
 
 %changelog
-*   Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-5
--   Bump version with rubygem-activesupport bump
-*   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-4
--   Release bump for SRP compliance
-*   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-3
--   Add gem macros
+* Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-5
+- Bump version with rubygem-activesupport bump
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-4
+- Release bump for SRP compliance
+* Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-3
+- Add gem macros
 * Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-2
 - Build from source
-*   Fri Dec 15 2023 Shivani Agrwal <shivania2@vmware.com> 3.4.0-1
--   Upgrade to v3.4.0
-*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.1.2-1
--   Automatic Version Bump
-*   Thu Oct 14 2021 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.5.2-3
--   Drop group write permissions for files in /usr/lib to comply with STIG
-*   Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.2-2
--   Update rubygem-kubeclient version
-*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.2-1
--   Automatic Version Bump
-*   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.2.0-1
--   Initial build
+* Fri Dec 15 2023 Shivani Agrwal <shivania2@vmware.com> 3.4.0-1
+- Upgrade to v3.4.0
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 3.1.2-1
+- Automatic Version Bump
+* Thu Oct 14 2021 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.5.2-3
+- Drop group write permissions for files in /usr/lib to comply with STIG
+* Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.2-2
+- Update rubygem-kubeclient version
+* Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.2-1
+- Automatic Version Bump
+* Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.2.0-1
+- Initial build

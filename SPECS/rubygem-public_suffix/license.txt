@@ -1,1 +1,1 @@
-License: MIT
+License: MIT AND CC0-1.0 AND MPL-2.0

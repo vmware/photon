@@ -40,7 +40,7 @@ BuildRequires: attr-devel
 BuildRequires: libxslt-devel
 BuildRequires: systemd-devel
 BuildRequires: tcp_wrappers-devel
-BuildRequires: ruby
+BuildRequires: ruby-devel
 
 Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd

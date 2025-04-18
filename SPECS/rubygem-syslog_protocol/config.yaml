@@ -6,7 +6,7 @@ sources:
     package:
       detailed_description: 'Syslog protocol parser and generator '
       home_page: https://rubygems.org/gems/syslog_protocol/versions/0.9.2
-      license_concluded: MIT
-      license_declared: MIT
+      license_concluded: None
+      license_declared: None
       short_summary: Syslog Protocol
       supplier: 'Organization: Broadcom, Inc.'
