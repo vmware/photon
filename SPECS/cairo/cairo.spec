@@ -1,7 +1,7 @@
 Summary:        A 2D graphics library.
 Name:           cairo
 Version:        1.17.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://www.linuxfromscratch.org/blfs/view/svn/x/cairo.html
 Group:          System Environment/Libraries
@@ -42,6 +42,8 @@ Requires:       freetype2-devel
 Requires:       pixman-devel
 Requires:       libX11-devel
 Requires:       libXext-devel
+Requires:       glib-devel
+Requires:       fontconfig-devel
 
 %description    devel
 It contains the libraries and header files to create applications.
@@ -50,13 +52,13 @@ It contains the libraries and header files to create applications.
 # Using autosetup is not feasible
 %setup -cqn %{name}-%{version}
 mv %{name}-%{version}*/* .
-%patch0 -p1
+%autopatch -p1
 
 %build
 # add this since build failed in not find automake-1.15 in making test for cairo
 # Before running ./configure try running autoreconf -f -i.
 # The autoreconf program automatically runs autoheader, aclocal, automake, autopoint and libtoolize as required.
-autoreconf -f -i
+autoreconf -fiv
 
 %configure \
     --enable-xlib=yes        \
@@ -64,12 +66,11 @@ autoreconf -f -i
     --enable-win32=no       \
     CFLAGS="-O3 -fPIC"      \
     --disable-static
+
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-
-%ldconfig_scriptlets
 
 %post
 /sbin/ldconfig
@@ -91,6 +92,8 @@ autoreconf -f -i
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Apr 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.17.2-8
+- Fix devel package requires
 * Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 1.17.2-7
 - Bump version as a part of expat upgrade
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.17.2-6
