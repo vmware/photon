@@ -1,9 +1,11 @@
-# pylint: disable=invalid-name,missing-docstring
+#!/usr/bin/env python3
 import os
 import re
+
 from StringUtils import StringUtils
 from SpecStructures import dependentPackageData, Package, SpecObject
 from constants import constants
+
 
 class SpecParser(object):
 
@@ -261,7 +263,7 @@ class SpecParser(object):
 
     def _isPackageHeaders(self, line):
         headersPatterns = ['^summary:', '^name:', '^group:',
-                           '^license:', '^version:', '^release:',
+                           '^license:', '^epoch', '^version:', '^release:',
                            '^distribution:', '^requires:',
                            r'^requires\((pre|post|preun|postun)\):',
                            '^provides:', '^obsoletes:', '^conflicts:',
@@ -376,11 +378,13 @@ class SpecParser(object):
         if headerName == 'license':
             pkg.license = headerContent
             return True
-        if headerName == 'version':
-            pkg.version = headerContent
-            if pkg == self.packages["default"]:
-                self.defs["version"] = pkg.version
-            return True
+        if headerName in {'version', 'epoch'}:
+            if headerName == 'epoch':
+                self.defs['epoch'] = headerContent
+            elif headerName == 'version':
+                pkg.version = headerContent
+                if pkg == self.packages["default"]:
+                    self.defs["version"] = pkg.version
         if headerName == 'buildarch':
             pkg.buildarch = headerContent
             return True
@@ -553,11 +557,10 @@ class SpecParser(object):
             elif requiresType == "install":
                 dependentPackages.extend(pkg.requires)
         listDependentPackages = dependentPackages.copy()
-        packageNames = self._getPackageNames()
         for pkg in self.packages.values():
             for objName in listDependentPackages:
                 if objName.package == pkg.name:
-                        dependentPackages.remove(objName)
+                    dependentPackages.remove(objName)
         return dependentPackages
 
     def _getCheckBuildRequiresAllPackages(self):
@@ -624,6 +627,7 @@ class SpecParser(object):
         specObj.specFile = self.specfile
         defPkg = self.packages.get('default')
         specObj.name = defPkg.name
+        specObj.epoch = self.defs.get("epoch", 0)
         specObj.version = defPkg.version
         specObj.release = defPkg.release
         specObj.checksums = defPkg.checksums

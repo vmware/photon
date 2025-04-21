@@ -3,6 +3,7 @@
 import subprocess
 import sys
 
+
 def cleanUpChroot(chrootPath):
     returnVal, listmountpoints = findmountpoints(chrootPath)
 
@@ -21,6 +22,7 @@ def cleanUpChroot(chrootPath):
 
     return True
 
+
 def removeAllFilesFromChroot(chrootPath):
     cmd = f"rm -rf {chrootPath}"
     process = subprocess.Popen(cmd,
@@ -31,6 +33,7 @@ def removeAllFilesFromChroot(chrootPath):
         print("Unable to remove files from chroot " + chrootPath)
         return False
     return True
+
 
 def unmountmountpoints(listmountpoints):
     if listmountpoints is None:
@@ -50,6 +53,7 @@ def unmountmountpoints(listmountpoints):
         print("Unable to unmount all mounts. Unable to clean up the chroot")
         return False
     return True
+
 
 def findmountpoints(chrootPath):
     if not chrootPath.endswith("/"):

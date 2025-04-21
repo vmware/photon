@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import sys
 import os.path
 
 from PackageUtils import PackageUtils
@@ -102,8 +101,8 @@ class PackageBuilder(object):
                     depPackageName, depPackageVersion = StringUtils.splitPackageNameAndVersion(depPkg)
                     if depPackageName == packageName:
                         flag = True
-                        break;
-                if flag == False:
+                        break
+                if not flag:
                     self._installPackage(pkgUtils, packageName,packageVersion, self.sandbox, self.logPath,listInstalledPackages, listInstalledRPMs, arch)
             pkgUtils.installRPMSInOneShot(self.sandbox,arch)
             self.logger.debug("Finished installing the build time dependent packages for " + arch)
@@ -125,7 +124,7 @@ class PackageBuilder(object):
         elif self.sandboxType == "container":
             sandbox = Container(self.logger)
         else:
-            raise Exception("Unknown sandbox type: " + sandboxType)
+            raise Exception("Unknown sandbox type: " + self.sandboxType)
 
         self.sandbox = sandbox
 
@@ -152,7 +151,6 @@ class PackageBuilder(object):
         basePkg = SPECS.getData().getSpecName(package) + "-" + version
         return basePkg in doneList
 
-
     def _findRunTimeRequiredRPMPackages(self, rpmPackage, version, arch):
         return SPECS.getData(arch).getRequiresForPackage(rpmPackage, version)
 
@@ -170,14 +168,14 @@ class PackageBuilder(object):
 
     def _installPackage(self, pkgUtils, package, packageVersion, sandbox, destLogPath,
                         listInstalledPackages, listInstalledRPMs, arch):
-        rpmfile = pkgUtils.findRPMFile(package,packageVersion,arch);
+        rpmfile = pkgUtils.findRPMFile(package, packageVersion, arch)
         if rpmfile is None:
             self.logger.error("No rpm file found for package: " + package + "-" + packageVersion)
             raise Exception("Missing rpm file")
         specificRPM = os.path.basename(rpmfile.replace(".rpm", ""))
         pkg = package+"-"+packageVersion
         if pkg in listInstalledPackages:
-                return
+            return
         # mark it as installed -  to avoid cyclic recursion
         listInstalledPackages.append(pkg)
         listInstalledRPMs.append(specificRPM)

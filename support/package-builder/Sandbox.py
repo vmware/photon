@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-import sys
 import os.path
 import subprocess
 import shutil
 import time
+import docker
 
 from constants import constants
-from Logger import Logger
 from CommandUtils import CommandUtils
 
 
@@ -32,6 +31,7 @@ class Sandbox(object):
 
     def hasToolchain(self):
         return False
+
 
 class Chroot(Sandbox):
     def __init__(self, logger):
@@ -114,7 +114,7 @@ class Chroot(Sandbox):
         shutil.copy2(src, f"{self.chrootID}{dest}")
 
     def put_list_of_files(self, sources, dest):
-        if type(sources) == list:
+        if isinstance(sources, list):
             sources = " ".join(sources)
         cmd = f"cp -p {sources} {self.chrootID}{dest}"
         self.logger.debug(cmd)
@@ -177,7 +177,6 @@ class Chroot(Sandbox):
 
 class Container(Sandbox):
     def __init__(self, logger):
-        import docker
         Sandbox.__init__(self, logger)
         self.containerID = None
         self.dockerClient = docker.from_env(version="auto")
@@ -208,14 +207,11 @@ class Container(Sandbox):
             oldContainerID = self.dockerClient.containers.get(containerName)
             if oldContainerID is not None:
                 oldContainerID.remove(force=True)
-        except docker.errors.NotFound:
-            try:
-                sys.exc_clear()
-            except:
-                pass
+        except Exception:
+            pass
 
         # TODO: Is init=True equivalent of --sig-proxy?
-        privilegedDocker = False
+        #privilegedDocker = False
         cap_list = ['SYS_PTRACE']
         #if packageName in constants.listReqPrivilegedDockerForTest:
             #privilegedDocker = True
@@ -230,7 +226,7 @@ class Container(Sandbox):
                                                        volumes=mountVols,
                                                        command="tail -f /dev/null")
         if not containerID:
-            raise Exception(f"Unable to start Photon build container for task {containerTaskName}")
+            raise Exception(f"Unable to start Photon build container for task {containerName}")
         self.logger.debug(f"Successfully created container: {containerID.short_id}")
         self.containerID = containerID
 

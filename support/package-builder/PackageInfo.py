@@ -1,10 +1,14 @@
+#!/usr/bin/env python3
+
 import json
 import os.path
+
 from Logger import Logger
 from constants import constants
 from CommandUtils import CommandUtils
 from PackageUtils import PackageUtils
 from SpecData import SPECS
+
 
 class PackageInfo(object):
 
@@ -40,7 +44,6 @@ class PackageInfo(object):
 
     def writePkgListToFile(self, fileName):
         self.logger.debug("Writing package list to the json file")
-        cmdUtils = CommandUtils()
         dirPath = os.path.dirname(fileName)
         if dirPath and not os.path.isdir(dirPath):
             self.cmdUtils.runCommandInShell(f"mkdir -p {dirPath}")

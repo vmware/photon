@@ -5,6 +5,7 @@ import hashlib
 import requests
 import string
 import random
+
 from CommandUtils import CommandUtils
 
 
@@ -13,6 +14,8 @@ TODO: need to remove sha1sum support from here in future
 All the spec files are using sha1sum currently
 Eventually it will be replaced with sha512 because of enforcement in check_spec.py
 """
+
+
 def isFileHashOkay(filepath, checksum):
     if "md5" in checksum:
         csum = hashlib.md5()

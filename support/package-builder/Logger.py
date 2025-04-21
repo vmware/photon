@@ -1,5 +1,8 @@
+#!/usr/bin/env python3
+
 import os
 import logging
+
 
 class Logger(object):
     @staticmethod
@@ -49,6 +52,7 @@ class Logger(object):
             logger.debug("Starting Log")
             logger.debug("-" * 75)
         return logger
+
 
 if __name__ == "__main__":
     #Logger.getLogger("my module")

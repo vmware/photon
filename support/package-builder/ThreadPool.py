@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import WorkerThread
+
 
 class ThreadPool(object):
 

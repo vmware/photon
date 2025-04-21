@@ -2,7 +2,6 @@
 
 import os
 import yaml
-import time
 import json
 import subprocess
 import uuid
@@ -35,10 +34,10 @@ class DistributedBuilder:
         self.AppsV1ApiInstance = client.AppsV1Api(self.aApiClient)
 
     def getBuildGuid(self):
-         guid = str(uuid.uuid4()).split("-")[1]
-         guid = guid.lower()
-         self.logger.info(f"guid: {guid}")
-         return guid
+        guid = str(uuid.uuid4()).split("-")[1]
+        guid = guid.lower()
+        self.logger.info(f"guid: {guid}")
+        return guid
 
     def createPersistentVolume(self):
         with open(os.path.join(os.path.dirname(__file__), "yaml/persistentVolume.yaml"), "r") as f:
@@ -80,7 +79,7 @@ class DistributedBuilder:
             nfspodFile["spec"]["volumes"][0]["persistentVolumeClaim"]["claimName"] += f"-{self.buildGuid}"
             try:
                 resp = self.coreV1ApiInstance.create_namespaced_pod(namespace="default", body=nfspodFile)
-                self.logger.info("Created nfspod {resp.metadata.name}")
+                self.logger.info(f"Created nfspod {resp.metadata.name}")
             except client.rest.ApiException as e:
                 self.logger.error(f"Exception when calling CoreV1Api->create_namespaced_pod: {e.reason}\n")
                 self.clean()
@@ -140,7 +139,7 @@ class DistributedBuilder:
         pvNames = ["builder", "logs", "specs", "rpms", "publishrpms", "publishxrpms", "photon", "nfspod"]
         for name in pvNames:
             try:
-                resp = self.coreV1ApiInstance.delete_persistent_volume(name + "-" + self.buildGuid)
+                self.coreV1ApiInstance.delete_persistent_volume(name + "-" + self.buildGuid)
                 self.logger.info("Deleted pvc %s"%name)
             except client.rest.ApiException as e:
                 self.logger.error(f"Exception when calling CoreV1Api->delete_persistent_volume: {e.reason}")
@@ -149,26 +148,26 @@ class DistributedBuilder:
         pvcNames = ["builder", "logs", "specs", "rpms", "publishrpms", "publishxrpms", "photon", "nfspod"]
         for name in pvcNames:
             try:
-                resp = self.coreV1ApiInstance.delete_namespaced_persistent_volume_claim(f"{name}-{self.buildGuid}", namespace="default")
+                self.coreV1ApiInstance.delete_namespaced_persistent_volume_claim(f"{name}-{self.buildGuid}", namespace="default")
                 self.logger.info("Deleted pvc %s"%name)
             except client.rest.ApiException as e:
                 self.logger.error(f"Exception when calling CoreV1Api->delete_namespaced_persistent_volume_claim: {e.reason}\n")
 
     def deleteMasterJob(self):
-       try:
-           job = f"master-{self.buildGuid}"
-           resp = self.batchV1ApiInstance.delete_namespaced_job(name=job, namespace="default", propagation_policy="Foreground", grace_period_seconds=10)
-           self.logger.info("deleted job master")
-       except client.rest.ApiException as e:
-           self.logger.error(f"Exception when calling BatchV1Api->delete_namespaced_job: {e.reason}")
+        try:
+            job= f"master-{self.buildGuid}"
+            self.batchV1ApiInstance.delete_namespaced_job(name=job, namespace="default", propagation_policy="Foreground", grace_period_seconds=10)
+            self.logger.info("deleted job master")
+        except client.rest.ApiException as e:
+            self.logger.error(f"Exception when calling BatchV1Api->delete_namespaced_job: {e.reason}")
 
     def deleteBuild(self):
         self.logger.info("Removing Build folder ...")
         pod = f"nfspod-{self.buildGuid}"
         cmd = ["/bin/bash", "-c", f"rm -rf /root/build-{self.buildGuid}"]
         try:
-            resp = stream.stream(self.coreV1ApiInstance.connect_get_namespaced_pod_exec, pod, "default", command=cmd, \
-                   stderr=True, stdin=False, stdout=True, tty=False, _preload_content=False)
+            resp = stream.stream(self.coreV1ApiInstance.connect_get_namespaced_pod_exec, pod, "default", command=cmd,
+                                 stderr=True, stdin=False, stdout=True, tty=False, _preload_content=False)
             resp.run_forever(timeout=10)
             self.logger.info("Deleted Build folder Successfully...")
         except client.rest.ApiException as e:
@@ -177,23 +176,23 @@ class DistributedBuilder:
     def deleteNfsPod(self):
         try:
             pod = f"nfspod-{self.buildGuid}"
-            resp = self.coreV1ApiInstance.delete_namespaced_pod(name=pod, namespace="default")
+            self.coreV1ApiInstance.delete_namespaced_pod(name=pod, namespace="default")
             self.logger.info("deleted nfs pod")
         except client.rest.ApiException as e:
             self.logger.error(f"Exception when calling CoreV1Api->delete_namespaced_pod: {e.reason}")
 
     def deleteMasterService(self):
-       try:
-           service = f"master-service-{self.buildGuid}"
-           resp = self.coreV1ApiInstance.delete_namespaced_service(name=service, namespace="default")
-           self.logger.info("deleted master service")
-       except client.rest.ApiException as e:
-           self.logger.error(f"Exception when calling BatchV1Api->delete_namespaced_service {e.reason}\n")
+        try:
+            service = f"master-service-{self.buildGuid}"
+            self.coreV1ApiInstance.delete_namespaced_service(name=service, namespace="default")
+            self.logger.info("deleted master service")
+        except client.rest.ApiException as e:
+            self.logger.error(f"Exception when calling BatchV1Api->delete_namespaced_service {e.reason}\n")
 
     def deleteDeployment(self):
         try:
             deploy = f"worker-{self.buildGuid}"
-            resp = self.AppsV1ApiInstance.delete_namespaced_deployment(name = deploy, namespace="default", grace_period_seconds=15)
+            self.AppsV1ApiInstance.delete_namespaced_deployment(name=deploy, namespace="default", grace_period_seconds=15)
             self.logger.info("deleted worker deployment ")
         except client.rest.ApiException as e:
             self.logger.error(f"Exception when calling AppsV1Api->delete_namespaced_deployment: {e.reason}\n")
@@ -257,18 +256,18 @@ class DistributedBuilder:
 
     def getLogs(self):
         label = f"app=master-{self.buildGuid}"
-        resp = self.coreV1ApiInstance.list_namespaced_pod(label_selector = label, namespace="default")
+        resp = self.coreV1ApiInstance.list_namespaced_pod(label_selector=label, namespace="default")
         podName = resp.items[0].metadata.name
         status = ""
         while True:
-            resp = self.coreV1ApiInstance.read_namespaced_pod(name=podName, namespace="default")
+            self.coreV1ApiInstance.read_namespaced_pod(name=podName, namespace="default")
             status = resp.status.phase
             if status == "Running" or status == "Succeeded":
                 break
 
         w = watch.Watch()
         try:
-            for line in w.stream(self.coreV1ApiInstance.read_namespaced_pod_log, name = podName, namespace="default"):
+            for line in w.stream(self.coreV1ApiInstance.read_namespaced_pod_log, name=podName, namespace="default"):
                 self.logger.info(line)
         except Exception as e:
             self.logger.error(e)

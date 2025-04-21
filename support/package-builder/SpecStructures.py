@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 class dependentPackageData(object):
 
@@ -5,6 +6,7 @@ class dependentPackageData(object):
         self.package = ""
         self.version = ""
         self.compare = ""
+
 
 class Package(object):
     def __init__(self, buildarch, basePkg=None):
@@ -58,9 +60,11 @@ class Package(object):
         if macro.macroName == "%description":
             self.descriptionMacro = macro
 
+
 class SpecObject(object):
     def __init__(self):
         self.name = ""
+        self.epoch = 0
         self.version = ""
         self.release = ""
         # map subpackage name to its buildarch

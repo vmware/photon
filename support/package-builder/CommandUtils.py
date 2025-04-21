@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import subprocess
 
 
@@ -43,7 +42,6 @@ class CommandUtils:
             fp = subprocess.PIPE
 
         stdout = fp
-        stderr = fp
 
         sp = subprocess.Popen(cmd,
                               shell=True, executable="/bin/bash",

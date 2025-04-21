@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-# pylint: disable=invalid-name,missing-docstring
+
 import os
 import json
 import sys
 import traceback
+
 from argparse import ArgumentParser
 from Logger import Logger
 from constants import constants
 from CommandUtils import CommandUtils
 from SpecData import SPECS
-
 
 
 def main():
@@ -66,8 +66,8 @@ def main():
             errorFlag = True
 
         if options.dist:
-           dist_tag = options.dist
-           logger.info("release tag is %s" % (dist_tag))
+            dist_tag = options.dist
+            logger.info("release tag is %s" % (dist_tag))
 
         if errorFlag:
             logger.error("Found some errors. Please fix input options and re-run it.")
@@ -107,6 +107,7 @@ def get_baseurl(conf_file):
         config = json.load(jsonFile)
     return config['baseurl']
 
+
 def buildPackagesList(csvFilename):
     with open(csvFilename, "w") as csvFile:
         csvFile.write("Package,Version,License,URL,Sources,Patches\n")
@@ -126,7 +127,8 @@ def buildPackagesList(csvFilename):
                 if listSourceNames is not None:
                     sources = " ".join(listSourceNames)
                 csvFile.write(name + "," + version + "," + packagelicense + "," + url + "," +
-                            sources + "," + patches + "\n")
+                              sources + "," + patches + "\n")
+
 
 def readBlackListPackages(pkgBlackListFile):
     blackListPkgs = []
@@ -233,7 +235,7 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile
                 yamlFile = open(yamlSrpmDir + "/" + ossname + "-" + ossversion + "-"
                                 + curleasever + ".yaml", "w")
 
-            yamlFile.write("baseos:" + ossname + ":" + ossversion + "-" + curleasever +  ":\n")
+            yamlFile.write("baseos:" + ossname + ":" + ossversion + "-" + curleasever + ":\n")
             yamlFile.write("  repository: BaseOS\n")
             yamlFile.write("  name: '" + ossname + "'\n")
             yamlFile.write("  version: '" + ossversion + "-" + curleasever +"'\n")

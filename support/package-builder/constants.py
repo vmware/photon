@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import platform
 
 from Logger import Logger
@@ -50,6 +52,7 @@ class constants(object):
     resume_build = False
     buildDbgInfoRpmList = []
     extraPackagesList = []
+    rebuild = False
 
     noDepsPackageList = [
         "texinfo",
@@ -507,6 +510,7 @@ class constants(object):
                 macros[k] = v
         return macros
 
+    @staticmethod
     def checkIfHostRpmNotUsable():
         if constants.hostRpmIsNotUsable >= 0:
             return constants.hostRpmIsNotUsable
@@ -528,6 +532,12 @@ class constants(object):
 
         return constants.hostRpmIsNotUsable
 
+    @staticmethod
     def set_resume_build(val):
         if val:
             constants.resume_build = True
+
+    @staticmethod
+    def set_rebuild(val):
+        if val:
+            constants.rebuild = True

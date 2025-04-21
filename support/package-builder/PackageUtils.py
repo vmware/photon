@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import shutil
-import re
-import random
-import string
 import PullSources
 
 from CommandUtils import CommandUtils
@@ -90,7 +86,7 @@ class PackageUtils(object):
             cmd = f"{rpmInstallcmd} {self.nodepsRPMPackageOptions} {self.noDepsRPMFilesToInstallInAOneShot}"
             if sandbox.run(cmd, logfn=self.logger.debug):
                 self.logger.debug(f"Command Executed: {cmd}")
-                self.logger.error("Unable to install rpms. Error {}".format(returnVal))
+                self.logger.error("Unable to install rpms.")
                 raise Exception("RPM installation failed")
         if self.rpmFilesToInstallInAOneShot != "":
             self.logger.debug(f"Installing rpms: {self.packagesToInstallInAOneShot}")
@@ -110,8 +106,8 @@ class PackageUtils(object):
         sourcePath = f"{constants.topDirPath}/SOURCES/"
         specPath = f"{constants.topDirPath}/SPECS/"
         if (constants.rpmCheck and
-            package in constants.testForceRPMS and
-            SPECS.getData().isCheckAvailable(package, version)):
+           package in constants.testForceRPMS and
+           SPECS.getData().isCheckAvailable(package, version)):
             logFilePath = f"{destLogPath}/{package}-test.log"
         else:
             logFilePath = f"{destLogPath}/{package}.log"
@@ -215,7 +211,7 @@ class PackageUtils(object):
             raise Exception(f"RPM {filename} not found")
         return None
 
-    def findSourceRPMFile(self, package,version="*"):
+    def findSourceRPMFile(self, package, version="*"):
         if version == "*":
             version = SPECS.getData().getHighestVersion(package)
         release = SPECS.getData().getRelease(package, version)
@@ -242,9 +238,11 @@ class PackageUtils(object):
 
     def findInstalledRPMPackages(self, sandbox, arch):
         rpms = None
+
         def setOutValue(data):
             nonlocal rpms
             rpms = data
+
         cmd = f"{self.rpmBinary} {self.queryRpmPackageOptions}"
         if constants.crossCompiling and arch == constants.targetArch:
             cmd += f" --root /target-{constants.targetArch}"
@@ -319,7 +317,7 @@ class PackageUtils(object):
         rpmBuildcmd = f"{self.rpmbuildBinary} {self.rpmbuildBuildallOption}"
 
         if constants.resume_build:
-            rpmBuildcmd += f" -D \"__spec_prep_cmd /bin/true\" "
+            rpmBuildcmd += " -D \"__spec_prep_cmd /bin/true\" "
 
         if not constants.buildDbgInfoRpm and package not in constants.buildDbgInfoRpmList:
             rpmBuildcmd += " -D \"debug_package %{nil}\" "

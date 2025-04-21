@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import flask
+
 from Scheduler import Scheduler
 from constants import constants
 from Logger import Logger
@@ -13,18 +16,21 @@ mapPackageToCycle = {}
 
 logger = Logger.getLogger('werkzeug', constants.logPath, constants.logLevel)
 
+
 def shutdownServer():
-        logger.disabled = False
-        logger.info("Shutting down server......")
-        stopServer = flask.request.environ.get('werkzeug.server.shutdown')
-        if stopServer is None:
-            raise RuntimeError('Not running with the Werkzeug Server')
-        stopServer()
+    logger.disabled = False
+    logger.info("Shutting down server......")
+    stopServer = flask.request.environ.get('werkzeug.server.shutdown')
+    if stopServer is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    stopServer()
+
 
 def buildCompleted():
     if not Scheduler.isAnyPackagesCurrentlyBuilding():
         return True
     return False
+
 
 @app.route('/package/', methods=['GET'])
 def getNextPkgToBuild():
@@ -43,6 +49,7 @@ def getNextPkgToBuild():
     logger.disabled = True
     return pkg, SUCCESS
 
+
 @app.route('/notifybuild/', methods=['POST'])
 def notifyPackageBuildCompleted():
     logger.disabled = False
@@ -60,6 +67,7 @@ def notifyPackageBuildCompleted():
     logger.disabled = True
     return {'message': 'master notified successfully'}, SUCCESS
 
+
 @app.route('/donelist/', methods=['GET'])
 def getDoneList():
     doneList = Scheduler.getDoneList()
@@ -69,6 +77,7 @@ def getDoneList():
 @app.route('/mappackagetocycle/', methods=['GET'])
 def getMapPackageToCycle():
     return mapPackageToCycle, SUCCESS
+
 
 @app.route('/constants/', methods=['GET'])
 def getConstants():
@@ -102,6 +111,7 @@ def getConstants():
     constant_dict['currentArch'] = constants.currentArch
 
     return constant_dict, SUCCESS
+
 
 def startServer():
     ## if no packages to build then return

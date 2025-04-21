@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -355,6 +355,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Mon Apr 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.16.1.3-20
+- Remove epoch entry from perl macros
 * Fri Jun 07 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.16.1.3-19
 - Fix rich dependency issue
 * Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-18

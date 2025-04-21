@@ -1,6 +1,5 @@
-#! /usr/bin/python3
-#
-#    Author: Harish Udaiya Kumar <hudaiyakumar@vmware.com>
+#!/usr/bin/env python3
+
 import sys
 import os
 import json
@@ -9,11 +8,10 @@ import operator
 from argparse import ArgumentParser
 import shutil
 import traceback
+
 from SpecData import SPECS
-from jsonwrapper import JsonWrapper
 from constants import constants
 from CommandUtils import CommandUtils
-from StringUtils import StringUtils
 from Logger import Logger
 
 DEFAULT_INPUT_TYPE = "pkg"
@@ -57,7 +55,6 @@ class SpecDependencyGenerator(object):
             if basePkg not in listBasePackagesRequired:
                 listBasePackagesRequired.append(basePkg)
         return listBasePackagesRequired
-
 
     def findTotalWhoNeeds(self, depList, whoNeeds):
         while depList:
@@ -130,7 +127,7 @@ class SpecDependencyGenerator(object):
                     self.logger.info(child)
                     self.printTree(children, child, 1)
                 self.logger.info("*" * 18 + " {} ".format(len(sortedList)) +
-                      "packages in total " + "*" * 18)
+                                 "packages in total " + "*" * 18)
             else:
                 if inputType == "pkg" and len(children) > 0:
                     self.logger.info("cyclic dependency detected, mappings: \n", children)
@@ -169,7 +166,6 @@ class SpecDependencyGenerator(object):
     def process(self, inputType, inputValue, displayOption, outputFile=None):
         whoNeedsList = []
         inputPackages = []
-        whatNeedsBuild = []
         mapDependencies = {}
         parent = {}
         if inputType == "pkg" or inputType == "json":
@@ -213,10 +209,11 @@ class SpecDependencyGenerator(object):
             for specFile in inputValue.split(":"):
                 if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
                     specObj = SPECS.getData().mapSpecFileNameToSpecObj[specFile]
-                    if (specObj.name in constants.listCoreToolChainPackages) \
-                        or (specObj.name in constants.listToolChainPackages):
+                    if (specObj.name in constants.listCoreToolChainPackages
+                       or specObj.name in constants.listToolChainPackages):
                         return True
             return False
+
 
 def main():
     usage = "Usage: %prog [options]"

@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import re
+
 
 class StringUtils(object):
 

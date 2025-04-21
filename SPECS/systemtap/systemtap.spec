@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.5
-Release:       6%{?dist}
+Release:       7%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -55,7 +55,7 @@ Requires:         gcc
 Requires:         linux-devel
 Requires:         make
 Requires:         elfutils
-Requires:         %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+Requires:         %{name}-runtime = %{version}-%{release}
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
@@ -70,7 +70,7 @@ the components needed to locally develop and execute %{name} scripts.
 %package initscript
 Group:         System/Tools
 Summary:       Systemtap Initscript
-Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+Requires:      %{name}-runtime = %{version}-%{release}
 Requires:      initscripts
 
 %description initscript
@@ -87,7 +87,7 @@ SystemTap runtime is the runtime component of an instrumentation system for syst
 %package sdt-devel
 Group:         System/Tools
 Summary:       Static probe support tools
-Requires:      %{name} = %{?epoch:%epoch:}%{version}-%{release}
+Requires:      %{name} = %{version}-%{release}
 
 %description sdt-devel
 Support tools to allow applications to use static probes.
@@ -95,8 +95,8 @@ Support tools to allow applications to use static probes.
 %package server
 Group:         System/Tools
 Summary:       Instrumentation System Server
-Requires:      %{name} = %{?epoch:%epoch:}%{version}-%{release}
-Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+Requires:      %{name} = %{version}-%{release}
+Requires:      %{name}-runtime = %{version}-%{release}
 Requires:      (coreutils or coreutils-selinux)
 Requires:      nss
 Requires:      unzip
@@ -352,6 +352,8 @@ fi
 %{_mandir}/man8/%{name}-service.8*
 
 %changelog
+* Mon Apr 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5-7
+- Remove epoch usages
 * Wed Jun 14 2023 Harinadh D <hdommaraju@vmware.com> 4.5-6
 - Version bump as a part of crash upgrade
 * Sat Apr 29 2023 Harinadh D <hdommaraju@vmware.com> 4.5-5

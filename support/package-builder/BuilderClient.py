@@ -1,9 +1,13 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import requests
 import time
+
 from PackageBuilder import PackageBuilder
 from constants import constants
+
 
 class BuilderClient:
 
@@ -31,7 +35,7 @@ class BuilderClient:
         masterConstantsAPI = self.MasterUrl + '/constants/'
         try:
             response = requests.get(masterConstantsAPI)
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException:
             return None
 
         if response.status_code == 200:
@@ -65,7 +69,7 @@ class BuilderClient:
         constants.setAcvpBuild(constant_dict['acvpBuild'])
         constants.extrasourcesURLs = constant_dict['extrasourcesURLs']
         constants.userDefinedMacros = constant_dict['userDefinedMacros']
-        constants.tmpDirPath =  constant_dict['tmpDirPath']
+        constants.tmpDirPath = constant_dict['tmpDirPath']
         constants.buildPatch = constant_dict['buildPatch']
 
     def getDoneList(self):
@@ -100,18 +104,18 @@ class BuilderClient:
     def notifyMaster(self, package, buildStatus):
         masterBuildStatusApi = self.MasterUrl + '/notifybuild/'
         try:
-            response = requests.post(masterBuildStatusApi, json = {'package': package, 'status': buildStatus})
+            response = requests.post(masterBuildStatusApi, json={'package': package, 'status': buildStatus})
         except requests.exceptions.RequestException as e:
             print("Exception in getting response from server: ",e)
             return None
 
         if response.status_code == 200:
-           print("master notified")
-           print("")
-           return True
+            print("master notified")
+            print("")
+            return True
         else:
-           print("Unable to notify master, error code = %s"%response.status_code,",response = %s"%response.json)
-           sys.exit(1)
+            print("Unable to notify master, error code = %s"%response.status_code,",response = %s"%response.json)
+            sys.exit(1)
 
     def doBuild(self, package, doneList, mapPackageToCycle):
         SUCCESS = 0
@@ -126,11 +130,12 @@ class BuilderClient:
 
         return status
 
+
 if __name__ == "__main__":
     print("Getting master details ...")
     try:
         BuildId = os.environ['BUILDID']
-        MasterIP =  os.environ['MASTER_SERVICE_' + BuildId + '_SERVICE_HOST']
+        MasterIP = os.environ['MASTER_SERVICE_' + BuildId + '_SERVICE_HOST']
         PORT = os.environ['MASTER_SERVICE_'+ BuildId + '_SERVICE_PORT']
     except KeyError as e:
         print("%s environment variable does not exist"%e)

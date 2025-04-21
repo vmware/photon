@@ -1,14 +1,13 @@
+#!/usr/bin/env python3
+
 import os
-import queue
-import json
-import operator
 import re
-from Logger import Logger
+
 from constants import constants
 from StringUtils import StringUtils
-from distutilsversion import LooseVersion
-from distutilsversion import StrictVersion
+from rpmversion import LooseVersion
 from SpecParser import SpecParser
+from Logger import Logger
 
 
 class SpecData(object):
@@ -30,7 +29,6 @@ class SpecData(object):
         self.mapSpecFileNameToSpecObj = {}
 
         self._readSpecs(specFilesPath)
-
 
     # Read all .spec files from the given folder including subfolders,
     # creates corresponding SpecObjects and put them in internal mappings.
@@ -58,7 +56,6 @@ class SpecData(object):
 
             self.mapSpecFileNameToSpecObj[os.path.basename(specFile)]=specObj
 
-
         # Sort the multiversion list to make getHighestVersion happy
         for key, value in self.mapSpecObjects.items():
             if len(value) > 1:
@@ -78,12 +75,16 @@ class SpecData(object):
         return listSpecFiles
 
     def _getProperVersion(self,depPkg):
-        if (depPkg.compare == ""):
+        if not depPkg.compare:
             return self.getHighestVersion(depPkg.package)
-        specObjs=self.getSpecObjects(depPkg.package)
+
+        specObjs = self.getSpecObjects(depPkg.package)
         try:
             for obj in specObjs:
-                verrel=obj.version+"-"+obj.release
+                if not obj.epoch:
+                    verrel = f"{obj.version}-{obj.release}"
+                else:
+                    verrel = f"{obj.epoch}:{obj.version}-{obj.release}"
                 if depPkg.compare == ">=":
                     if LooseVersion(verrel) >= LooseVersion(depPkg.version):
                         return obj.version
@@ -102,7 +103,7 @@ class SpecData(object):
                     if LooseVersion(verrel) > LooseVersion(depPkg.version):
                         return obj.version
         except Exception as e:
-            self.logger.error("Exception happened while searching for: " + \
+            self.logger.error("Exception happened while searching for: " +
                               depPkg.package + depPkg.compare + depPkg.version)
             raise e
 
@@ -110,9 +111,9 @@ class SpecData(object):
         availableVersions=""
         for obj in specObjs:
             availableVersions+=" "+obj.name+"-"+obj.version+"-"+obj.release
-        raise Exception("Could not find package: " + depPkg.package + \
-                         depPkg.compare + depPkg.version + \
-                         " available specs:" + availableVersions)
+        raise Exception("Could not find package: " + depPkg.package +
+                        depPkg.compare + depPkg.version +
+                        " available specs:" + availableVersions)
 
     def _getSpecObjField(self, package, version, field):
         for specObj in self.getSpecObjects(package):
@@ -214,7 +215,7 @@ class SpecData(object):
     def getPkgNamesFromObj(self, objlist):
         listPkgName=[]
         for name in objlist:
-                listPkgName.append(name.package)
+            listPkgName.append(name.package)
         return listPkgName
 
     def getRelease(self, package, version):
@@ -260,7 +261,7 @@ class SpecData(object):
 
     @staticmethod
     def compareVersions(p):
-        return (StrictVersion(p.version))
+        return (LooseVersion(p.version))
 
     def getSpecName(self, package):
         if package in self.mapPackageToSpec:
@@ -299,7 +300,6 @@ class SpecData(object):
     def getBasePkg(self, pkg):
         package, version = StringUtils.splitPackageNameAndVersion(pkg)
         return self.getSpecName(package)+"-"+version
-
 
     def printAllObjects(self):
         listSpecs = self.mapSpecObjects.keys()
@@ -358,7 +358,7 @@ class SPECS(object):
 
         # adding kernelrelease rpm macro
         kernelrelease = defPkg.release
-        kernelrelease_comp  = kernelrelease.split('.')
+        kernelrelease_comp = kernelrelease.split('.')
         if re.fullmatch(r'rc\d+', kernelrelease_comp[0]):
             kernelrelease_comp.pop(0)
         constants.addMacro("KERNEL_RELEASE", kernelrelease)

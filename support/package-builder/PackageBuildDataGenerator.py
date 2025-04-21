@@ -1,14 +1,17 @@
-# pylint: disable=invalid-name,missing-docstring
+#!/usr/bin/env python3
+
 import copy
+
 from collections import OrderedDict
 from Logger import Logger
 from constants import constants
 from SpecData import SPECS
-from StringUtils import StringUtils
+
 
 def removeDuplicateEntries(myList):
     myListCopy = list(OrderedDict.fromkeys(myList))
     return myListCopy
+
 
 class PackageBuildDataGenerator(object):
 
@@ -102,7 +105,7 @@ class PackageBuildDataGenerator(object):
             if packageIndexInSortedList > 0:
                 subList = sortedList[:packageIndexInSortedList]
             for p in sortListForPkg:
-                if  p not in subList:
+                if p not in subList:
                     sortedList.insert(index, p)
                     index = index + 1
 

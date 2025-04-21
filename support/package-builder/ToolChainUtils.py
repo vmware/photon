@@ -2,8 +2,6 @@
 
 import os.path
 import re
-import time
-import traceback
 
 from CommandUtils import CommandUtils
 from Logger import Logger
@@ -11,7 +9,7 @@ from PackageUtils import PackageUtils
 from constants import constants
 from SpecData import SPECS
 from StringUtils import StringUtils
-from Sandbox import Chroot, Container
+
 
 class ToolChainUtils(object):
 
@@ -90,8 +88,8 @@ class ToolChainUtils(object):
             for depPkg in listBuildRequiresPackages:
                 depPkgName, depPkgVersion = StringUtils.splitPackageNameAndVersion(depPkg)
                 if depPkgName == package:
-                        version=depPkgVersion
-                        break
+                    version=depPkgVersion
+                    break
 
             if not version:
                 version = SPECS.getData(constants.buildArch).getHighestVersion(package)
@@ -141,7 +139,7 @@ class ToolChainUtils(object):
             # if we are not root, make installed files owned by effective user to
             # support pure non-root package building.
             if os.geteuid():
-                cmd = cmd + "; chown -R {0}:{1} {ChrootID}".format(os.geteuid(), os.getegid())
+                cmd = cmd + "; chown -R {0}:{1} {2}".format(os.geteuid(), os.getegid(), ChrootID)
             cmd = (
                 f"docker run --ulimit nofile=1024:1024 --rm -i"
                 f" -v {constants.prevPublishRPMRepo}:{constants.prevPublishRPMRepo}"
@@ -169,7 +167,6 @@ class ToolChainUtils(object):
         self.logger.debug(f"Installing package specific toolchain RPMs for {packageName}: " + str(listOfToolChainPkgs))
         rpmFiles = ""
         packages = ""
-        pkgUtils = PackageUtils(self.logName, self.logPath)
         for package in listOfToolChainPkgs:
             if re.match("openjre*", packageName) is not None or re.match("openjdk*", packageName):
                 path = constants.prevPublishXRPMRepo

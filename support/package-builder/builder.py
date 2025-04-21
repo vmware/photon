@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser
 import os.path
 import collections
-import traceback
-import sys
 import json
 import copy
-from CommandUtils import CommandUtils
-from Logger import Logger
+
 from constants import constants
 from PackageManager import PackageManager
 from SpecData import SPECS
@@ -43,7 +39,6 @@ class Builder:
             pkgInfo.loadPackagesData()
             pkgInfo.writePkgListToFile(pkgInfoJsonFile)
 
-
     def buildPackagesInJson(pkgJsonInput, buildThreads, pkgBuildType, pkgInfoJsonFile, logger):
         listPackages = []
         with open(pkgJsonInput) as jsonData:
@@ -54,11 +49,9 @@ class Builder:
                 listPackages += pkg_list_json[archSpecificPkgs]
         Builder.buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger)
 
-
     def buildPackagesForAllSpecs(buildThreads, pkgBuildType, pkgInfoJsonFile, logger):
         listPackages = SPECS.getData().getListPackages()
         Builder.buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger)
-
 
     def get_packages_with_build_options(pkg_build_options_file):
         if os.path.exists(pkg_build_options_file):
