@@ -377,7 +377,7 @@ class PackageUtils(object):
         rpmBuildcmd = f"{self.rpmbuildBinary} {self.rpmbuildBuildallOption}"
 
         if constants.resume_build:
-            rpmBuildcmd += f" -D \"__spec_prep_cmd /bin/true\" "
+            rpmBuildcmd += " -D \"__spec_prep_cmd /bin/true\" "
 
         if (
             not constants.buildDbgInfoRpm

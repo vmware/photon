@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.19.1.1
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2+
 URL:        http://rpm.org
 Group:      Applications/System
@@ -369,6 +369,8 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}/*.md
 
 %changelog
+* Mon Apr 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.1.1-4
+- Remove epoch entries from perl macro
 * Mon Oct 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.1.1-3
 - Remove brp-elfperms script
 * Tue Aug 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.1.1-2

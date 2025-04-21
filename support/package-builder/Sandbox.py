@@ -118,7 +118,7 @@ class Chroot(Sandbox):
         shutil.copy2(src, f"{self.chrootID}{dest}")
 
     def put_list_of_files(self, sources, dest):
-        if type(sources) == list:
+        if isinstance(sources, list):
             sources = " ".join(sources)
         cmd = f"cp -p {sources} {self.chrootID}{dest}"
         self.logger.debug(cmd)

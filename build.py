@@ -868,10 +868,15 @@ class RpmBuildTarget:
         )
         check_prerequesite["updated-packages"] = True
 
-    def buildGivenPackages(self, pkgs):
+    def buildGivenPackages(self, pkgs, rebuild=False):
         pkgs = pkgs.split(",")
         self.logger.debug(f"Building following packages: {pkgs}")
-        PackageManager()._buildGivenPackages(pkgs, Build_Config.buildThreads)
+        pkgMgr = PackageManager()
+        pkgMgr._buildGivenPackages(
+            pkgs,
+            Build_Config.buildThreads,
+            rebuild=rebuild
+        )
 
     def check_packages(self):
         if check_prerequesite["check-packages"]:
@@ -1594,6 +1599,7 @@ def process_env_build_params(ph_build_param):
         "BUILD_EXTRA_PKGS": "build-extra-pkgs",
         "RESUME_BUILD": "resume-build",
         "POI_IMAGE": "poi-image",
+        "REBUILD": "rebuild",
     }
 
     os.environ["PHOTON_RELEASE_VER"] = ph_build_param["photon-release-version"]
@@ -1621,6 +1627,7 @@ def process_env_build_params(ph_build_param):
             "ACVP_BUILD",
             "BUILD_EXTRA_PKGS",
             "RESUME_BUILD",
+            "REBUILD",
         }:
             val = cmdUtils.strtobool(val)
         elif k == "RPMCHECK":
@@ -1668,6 +1675,7 @@ def main():
     parser.add_argument("-c", "--config", dest="configPath", default=None)
     parser.add_argument("-t", "--target", dest="targetName", default=None)
     parser.add_argument("-p", "--pkgs", dest="pkgs", default=None)
+    parser.add_argument("-r", "--rebuild", dest="rebuild", default=False)
     parser.add_argument("-h", "--help", dest="help", action="store_true")
     parser.add_argument("args", nargs="*")
 
@@ -1681,6 +1689,7 @@ def main():
     targetName = options.targetName
     args = options.args
     pkgs = options.pkgs
+    rebuild = options.rebuild
 
     build_cfg = "build-config.json"
 
@@ -1726,6 +1735,10 @@ def main():
     ph_build_param = configdict["photon-build-param"]
     process_env_build_params(ph_build_param)
 
+    rebuild = rebuild or ph_build_param.get("rebuild", False)
+    if rebuild:
+        constants.set_rebuild(True)
+
     cfgdict_additional_path = configdict["additional-path"]
     process_additional_cfgs(cfgdict_additional_path)
 
@@ -1770,7 +1783,7 @@ def main():
         CheckTools.check_pre_reqs()
 
     if pkgs:
-        sys.exit(RpmBuildTarget().buildGivenPackages(pkgs))
+        sys.exit(RpmBuildTarget().buildGivenPackages(pkgs, rebuild))
 
     try:
         attr = None

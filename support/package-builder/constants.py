@@ -1,4 +1,4 @@
-#!/usr/bin/env/ python3
+#!/usr/bin/env python3
 
 import platform
 
@@ -55,6 +55,7 @@ class constants(object):
     buildDbgInfoRpmList = []
     extraPackagesList = []
     CopyToSandboxDict = {}
+    rebuild = False
 
     noDepsPackageList = [
         "texinfo",
@@ -388,7 +389,7 @@ class constants(object):
         "/usr/bin/mv": "coreutils",
         "/sbin/ldconfig": "glibc",
         "/usr/bin/containerd-shim-runc-v2": "containerd-extras",
-        "jre":"openjdk11"
+        "jre": "openjdk11"
     }
 
     @staticmethod
@@ -571,6 +572,7 @@ class constants(object):
     def storeScriptsToCopy(key, val):
         constants.CopyToSandboxDict[key] = deepcopy(val)
 
+    @staticmethod
     def checkIfHostRpmNotUsable():
         if constants.hostRpmIsNotUsable >= 0:
             return constants.hostRpmIsNotUsable
@@ -594,9 +596,16 @@ class constants(object):
 
         return constants.hostRpmIsNotUsable
 
+    @staticmethod
     def enable_fips_in_make_check():
         constants.listMakeCheckRPMPkgtoInstall.append("openssl-fips-provider")
 
+    @staticmethod
     def set_resume_build(val):
         if val:
             constants.resume_build = True
+
+    @staticmethod
+    def set_rebuild(val):
+        if val:
+            constants.rebuild = True
