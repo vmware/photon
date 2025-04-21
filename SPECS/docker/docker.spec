@@ -5,7 +5,6 @@
 # Must be in sync with package version
 %define DOCKER_ENGINE_GITCOMMIT 3ab5c7d
 %define DOCKER_CLI_GITCOMMIT 3ab4256
-%define TINI_GITCOMMIT de40ad0
 
 %define gopath_comp_engine github.com/docker/docker
 %define gopath_comp_cli github.com/docker/cli
@@ -14,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        27.3.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -22,21 +21,18 @@ Distribution:   Photon
 
 Source0: https://github.com/moby/moby/archive/moby-%{version}.tar.gz
 
-Source1: https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
+Source1: https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
 
-Source2: https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
+Source2: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
 
-Source3: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
+Source3:       docker-post19.service
+Source4:       docker-post19.socket
+Source5:       default-disable.preset
 
-Source4:       docker-post19.service
-Source5:       docker-post19.socket
-Source6:       default-disable.preset
+Source6: license.txt
+%include %{SOURCE6}
 
-Source7: license.txt
-%include %{SOURCE7}
-
-Patch0:        tini-disable-git.patch
-Patch1:        bridge-networking.patch
+Patch0:        bridge-networking.patch
 
 BuildRequires:  systemd-devel
 BuildRequires:  device-mapper-devel
@@ -58,6 +54,7 @@ Requires:       docker-engine = %{version}-%{release}
 Requires:       docker-cli = %{version}-%{release}
 # bash completion uses awk
 Requires:       gawk
+Requires:       tini
 
 %description
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -110,28 +107,20 @@ Use dockerd-rootless-setuptool.sh to setup systemd for dockerd-rootless.sh.
 # Using autosetup is not feasible
 %setup -q -c -n moby-%{version}
 pushd moby-%{version}
-%autopatch -p1 1
+%autopatch -p1 0
 popd
 
 mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
          "$(dirname "src/%{gopath_comp_cli}")" \
          "src/%{gopath_comp_libnetwork}" \
-         tini \
          bin
 
 mv moby-%{version} src/%{gopath_comp_engine}
 
-tar -xf %{SOURCE3}
+tar -xf %{SOURCE2}
 mv cli-%{version} src/%{gopath_comp_cli}
 
-tar -C tini -xf %{SOURCE1}
-
-tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
-
-# Patch sources
-pushd tini
-%autopatch -p1 0
-popd
+tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE1}
 
 %build
 export GOPATH="${PWD}"
@@ -175,17 +164,6 @@ pushd "src/%{gopath_comp_libnetwork}"
   go build -buildmode=pie -ldflags=-linkmode=external -o "$GOPATH/bin/docker-proxy" %{gopath_comp_libnetwork}/cmd/proxy
 popd
 
-# init
-pushd tini
-%cmake \
-    -Dtini_VERSION_GIT:STRING=%{TINI_GITCOMMIT} \
-    -Dgit_version_check_ret=0
-
-cd %{__cmake_builddir}
-make tini-static %{?_smp_mflags}
-cp tini-static "$GOPATH/bin/docker-init"
-popd
-
 jq -n \
   --arg platform "$PLATFORM" \
   --arg engine_image "$ENGINE_IMGE" \
@@ -212,14 +190,14 @@ install -p -m 755 src/%{gopath_comp_engine}/bundles/dynbinary-daemon/dockerd %{b
 install -p -m 755 bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
 
 # install tini
-install -p -m 755 bin/docker-init %{buildroot}%{_bindir}/docker-init
+ln -srv %{buildroot}%{_bindir}/tini %{buildroot}%{_bindir}/docker-init
 
 # install udev rules
 install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules %{buildroot}%{_udevrulesdir}/80-docker.rules
 
 # add init scripts
-install -p -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/docker.service
-install -p -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/docker.socket
+install -p -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/docker.service
+install -p -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/docker.socket
 
 # add docker-engine metadata
 install -p -m 644 distribution_based_engine.json %{buildroot}%{_sharedstatedir}/docker-engine/distribution_based_engine.json
@@ -242,7 +220,7 @@ for cli_file in AUTHORS LICENSE MAINTAINERS NOTICE README.md; do
   cp "src/%{gopath_comp_cli}/$cli_file" "build-docs/cli-$cli_file"
 done
 
-install -v -D -m 0644 %{SOURCE6} %{buildroot}%{_presetdir}/50-docker.preset
+install -v -D -m 0644 %{SOURCE5} %{buildroot}%{_presetdir}/50-docker.preset
 
 # docker-rootless
 install -D -p -m 0755 %{_builddir}/moby-%{version}/src/github.com/docker/docker/contrib/dockerd-rootless.sh %{buildroot}%{_bindir}/dockerd-rootless.sh
@@ -324,6 +302,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Mon Apr 21 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 27.3.1-5
+- Make tini a separate package
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 27.3.1-4
 - Fix go input dependencies which have Capital letters in name.
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 27.3.1-3

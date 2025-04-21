@@ -1,1 +1,1 @@
-License: BSD-2-Clause AND MIT AND MPL-2.0 AND (OpenSSL OR BSD-3-Clause) AND BSD-3-Clause AND (Apache-2.0 OR GPL-2.0-or-later) AND Apache-2.0 AND (Apache-2.0 OR GPL-2.0-or-later) AND CC-BY-SA-4.0 AND CC-BY-4.0 AND GPL-2.0-only AND GPL-1.0-or-later AND CC0-1.0 AND JSON
+License: (OpenSSL OR BSD-3-Clause) AND (Apache-2.0 OR GPL-2.0-or-later) AND GPL-2.0-only AND GPL-1.0-or-later AND MPL-2.0 AND CC-BY-4.0 AND BSD-3-Clause AND Apache-2.0 AND CC0-1.0 AND CC-BY-SA-4.0 AND BSD-2-Clause AND ISC AND MIT

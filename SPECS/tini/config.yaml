@@ -1,0 +1,23 @@
+sources:
+- archive: tini-0.19.0.tar.gz
+  archive_type: None
+  skip_validation: true
+  archive_sha512sum: 3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
+  name: tini-0.19.0
+  version: "0.19.0"
+  url: https://github.com/krallin/tini/archive/refs/tags/v0.19.0.tar.gz
+  repo_url: https://github.com/krallin/tini.git
+  commit_id: de40ad007797e0dcd8b7126f27bb87401d224240
+  skip_list: []
+  missing: []
+  spdx:
+      package:
+          detailed_description: Tini is a trivial implementation for an "init" program.
+                All Tini does is spawn a single child (Tini is meant to be run in a container),
+                and wait for it to exit, all the while reaping zombies and performing signal forwarding.
+                libc will be needed inside the contain
+          home_page: https://github.com/krallin/tini
+          license_concluded: MIT
+          license_declared: MIT
+          short_summary: A tiny but valid init for containers
+          supplier: 'Organization: Broadcom, Inc.'

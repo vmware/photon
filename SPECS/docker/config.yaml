@@ -6,10 +6,10 @@ sources:
     package:
       detailed_description: Docker CLI
       home_page: https://github.com/docker/cli
-      license_concluded: BSD-3-Clause AND BSD-2-Clause AND (BSD-3-Clause AND Apache-2.0)
-        AND GPL-1.0-or-later AND CC-BY-SA-4.0 AND Apache-2.0 AND MIT
-      license_declared: BSD-3-Clause AND BSD-2-Clause AND (BSD-3-Clause AND Apache-2.0)
-        AND GPL-1.0-or-later AND CC-BY-SA-4.0 AND Apache-2.0 AND MIT
+      license_concluded: BSD-3-Clause AND CC-BY-SA-4.0 AND Apache-2.0 AND BSD-2-Clause
+        AND MIT
+      license_declared: BSD-3-Clause AND CC-BY-SA-4.0 AND Apache-2.0 AND BSD-2-Clause
+        AND MIT
       short_summary: Docker CLI
       supplier: 'Organization: Broadcom, Inc.'
 - archive: libnetwork-64b7a45.tar.gz
@@ -34,24 +34,11 @@ sources:
       detailed_description: 'Docker is an open source project to build, ship and run
         any application as a lightweight container. '
       home_page: http://docs.docker.com
-      license_concluded: BSD-2-Clause AND GPL-1.0-or-later AND MIT AND CC-BY-4.0 AND
-        MPL-2.0 AND GPL-2.0-only AND CC0-1.0 AND ISC AND (Apache-2.0 OR GPL-2.0-or-later)
-        AND BSD-3-Clause AND Apache-2.0 AND (Apache-2.0 OR GPL-2.0-or-later) AND CC-BY-SA-4.0
-        AND (BSD-3-Clause AND Apache-2.0)
-      license_declared: BSD-2-Clause AND GPL-1.0-or-later AND MIT AND CC-BY-4.0 AND
-        MPL-2.0 AND GPL-2.0-only AND CC0-1.0 AND ISC AND (Apache-2.0 OR GPL-2.0-or-later)
-        AND BSD-3-Clause AND Apache-2.0 AND (Apache-2.0 OR GPL-2.0-or-later) AND CC-BY-SA-4.0
-        AND (BSD-3-Clause AND Apache-2.0)
+      license_concluded: (OpenSSL OR BSD-3-Clause) AND (Apache-2.0 OR GPL-2.0-or-later)
+        AND MIT AND ISC AND CC-BY-SA-4.0 AND CC0-1.0 AND GPL-2.0-only AND BSD-2-Clause
+        AND Apache-2.0 AND CC-BY-4.0 AND GPL-1.0-or-later AND BSD-3-Clause AND MPL-2.0
+      license_declared: (OpenSSL OR BSD-3-Clause) AND (Apache-2.0 OR GPL-2.0-or-later)
+        AND MIT AND ISC AND CC-BY-SA-4.0 AND CC0-1.0 AND GPL-2.0-only AND BSD-2-Clause
+        AND Apache-2.0 AND CC-BY-4.0 AND GPL-1.0-or-later AND BSD-3-Clause AND MPL-2.0
       short_summary: Docker
-      supplier: 'Organization: Broadcom, Inc.'
-- archive: tini-0.19.0.tar.gz
-  archive_sha512sum: 3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
-  skip_validation: true
-  spdx:
-    package:
-      detailed_description: A tiny but valid init for containers
-      home_page: https://github.com/krallin/tini
-      license_concluded: MIT
-      license_declared: MIT
-      short_summary: A tiny but valid init for containers
       supplier: 'Organization: Broadcom, Inc.'
