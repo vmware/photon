@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os.path
 import platform
 
 from copy import deepcopy
@@ -66,6 +65,7 @@ class constants(object):
     srpSigningScript = {}
     srpSigningParams = {}
     srpSigningAuth = {}
+    rebuild = False
 
     noDepsPackageList = [
         "texinfo",
@@ -615,3 +615,8 @@ class constants(object):
     def set_resume_build(val):
         if val:
             constants.resume_build = True
+
+    @staticmethod
+    def set_rebuild(val):
+        if val:
+            constants.rebuild = True

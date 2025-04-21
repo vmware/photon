@@ -1,8 +1,12 @@
-# pylint: disable=invalid-name,missing-docstring
+#!/usr/bin/env python3
+
 import os
 import re
+
 from StringUtils import StringUtils
-from SpecStructures import dependentPackageData, Package, SpecObject
+from SpecStructures import dependentPackageData
+from SpecStructures import Package
+from SpecStructures import SpecObject
 from constants import constants
 
 
@@ -200,7 +204,7 @@ class SpecParser(object):
                 return constants.getAdditionalMacros(self.packages["default"].name)[
                     macro
                 ]
-            raise Exception("Unknown macro: " + macro)
+            raise Exception(f"Unknown macro: {macro}")
 
         def _macro_repl(match):
             macro_name = match.group(1)
@@ -226,12 +230,12 @@ class SpecParser(object):
 
         # User macros
         for macroName, value in constants.userDefinedMacros.items():
-            macro = "%" + macroName
+            macro = f"%{macroName}"
             if string.find(macro) != -1:
                 string = string.replace(macro, value)
         # Spec definitions
         for macroName, value in self.defs.items():
-            macro = "%" + macroName
+            macro = f"%{macroName}"
             if string.find(macro) != -1:
                 string = string.replace(macro, value)
         return re.sub(self.macro_pattern, _macro_repl, string)
@@ -307,6 +311,7 @@ class SpecParser(object):
             "^name:",
             "^group:",
             "^license:",
+            "^epoch:",
             "^version:",
             "^release:",
             "^distribution:",
@@ -435,10 +440,13 @@ class SpecParser(object):
         if headerName == "license":
             pkg.license = headerContent
             return True
-        if headerName == "version":
-            pkg.version = headerContent
-            if pkg == self.packages["default"]:
-                self.defs["version"] = pkg.version
+        if headerName in {"version", "epoch"}:
+            if headerName == "epoch":
+                self.defs["epoch"] = headerContent
+            elif headerName == "version":
+                pkg.version = headerContent
+                if pkg == self.packages["default"]:
+                    self.defs["version"] = pkg.version
             return True
         if headerName == "buildarch":
             pkg.buildarch = headerContent
@@ -603,7 +611,6 @@ class SpecParser(object):
             elif requiresType == "install":
                 dependentPackages.extend(pkg.requires)
         listDependentPackages = dependentPackages.copy()
-        packageNames = self._getPackageNames()
         for pkg in self.packages.values():
             for objName in listDependentPackages:
                 if objName.package == pkg.name:
@@ -674,6 +681,7 @@ class SpecParser(object):
         specObj.specFile = self.specfile
         defPkg = self.packages.get("default")
         specObj.name = defPkg.name
+        specObj.epoch = self.defs.get("epoch", 0)
         specObj.version = f"{defPkg.version}-{defPkg.release}"
         specObj.release = defPkg.release
         specObj.license = defPkg.license

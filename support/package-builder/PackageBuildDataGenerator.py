@@ -1,10 +1,11 @@
-# pylint: disable=invalid-name,missing-docstring
+#!/usr/bin/env python3
+
 import copy
+
 from collections import OrderedDict
 from Logger import Logger
 from constants import constants
 from SpecData import SPECS
-from StringUtils import StringUtils
 
 
 def removeDuplicateEntries(myList):

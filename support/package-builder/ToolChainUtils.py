@@ -2,8 +2,6 @@
 
 import os
 import re
-import time
-import traceback
 
 from CommandUtils import CommandUtils
 from Logger import Logger
@@ -11,7 +9,6 @@ from PackageUtils import PackageUtils
 from constants import constants
 from SpecData import SPECS
 from StringUtils import StringUtils
-from Sandbox import Chroot, Container
 
 
 class ToolChainUtils(object):
@@ -242,7 +239,6 @@ class ToolChainUtils(object):
         rpmFiles = []
         packages = []
 
-        pkgUtils = PackageUtils(self.logName, self.logPath)
         for package in listOfToolChainPkgs:
             if re.match("openjre*", packageName) is not None or re.match(
                 "openjdk*", packageName

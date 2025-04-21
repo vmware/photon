@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+
 import threading
-from PackageBuilder import PackageBuilder
 import Scheduler
 import ThreadPool
+
+from PackageBuilder import PackageBuilder
 
 
 class WorkerThread(threading.Thread):
@@ -15,7 +18,6 @@ class WorkerThread(threading.Thread):
         self.pkgBuildType = pkgBuildType
 
     def run(self):
-        buildThreadFailed = False
         ThreadPool.ThreadPool.makeWorkerThreadActive(self.name)
         self.logger.debug("Thread " + self.name + " is starting now")
         while True:
@@ -29,7 +31,6 @@ class WorkerThread(threading.Thread):
                 pkgBuilder.build(doneList)
             except Exception as e:
                 self.logger.exception(e)
-                buildThreadFailed = True
                 Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
                 self.logger.debug(
                     "Thread " + self.name + " stopped building package:" + pkg

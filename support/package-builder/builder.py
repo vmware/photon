@@ -2,13 +2,9 @@
 
 import os.path
 import collections
-import traceback
-import sys
 import json
 import copy
 
-from CommandUtils import CommandUtils
-from Logger import Logger
 from constants import constants
 from PackageManager import PackageManager
 from SpecData import SPECS

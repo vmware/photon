@@ -1,11 +1,13 @@
+#!/usr/bin/env python3
+
 import os
 import json
 import copy
 import csv
 import shutil
 import tempfile
-from urllib.parse import unquote
 
+from urllib.parse import unquote
 from contextlib import suppress
 from constants import constants
 from CommandUtils import CommandUtils
@@ -13,9 +15,10 @@ from SpecData import SPECS
 from StringUtils import StringUtils
 from datetime import datetime, timezone
 
-GO_REMOTE_PREFIX="/artifactory/proxy-golang-remote/"
-MAVEN_REMOTE_PREFIX="/artifactory/maven/"
-GRADLE_REMOTE_PREFIX="/artifactory/plugins-gradle-org-m2/"
+GO_REMOTE_PREFIX = "/artifactory/proxy-golang-remote/"
+MAVEN_REMOTE_PREFIX = "/artifactory/maven/"
+GRADLE_REMOTE_PREFIX = "/artifactory/plugins-gradle-org-m2/"
+
 
 class SRP(object):
 
@@ -209,8 +212,8 @@ class SRP(object):
         self.schematic["input_templates"]["source-comps"][
             f"uid.obj.comp.fileset(org='photon.source',name='{filename}',build_id='{checksum}')"
         ] = {"incorporated": True, "is_components_source": True, "modified": True,
-             "interaction_type": "static_linking","usages": ["functionality", "building",
-                                                            "testing"]}
+             "interaction_type": "static_linking", "usages": ["functionality", "building",
+                                                              "testing"]}
 
     def addInputRPMS(self, files):
         if not self.srpcli:

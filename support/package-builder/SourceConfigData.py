@@ -1,5 +1,8 @@
+#!/usr/bin/env python3
+
 import os
 import yaml
+
 from Logger import Logger
 from constants import constants
 

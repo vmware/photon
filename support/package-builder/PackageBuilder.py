@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import sys
-import hashlib
 
 from PackageUtils import PackageUtils
 from Logger import Logger
@@ -12,7 +10,9 @@ from constants import constants
 from SpecData import SPECS
 from SourceConfigData import SOURCES
 from StringUtils import StringUtils
-from Sandbox import Chroot, SystemdNspawn, Container
+from Sandbox import Chroot
+from Sandbox import SystemdNspawn
+from Sandbox import Container
 from SRP import SRP
 
 
@@ -188,7 +188,7 @@ class PackageBuilder(object):
                     if depPackageName == packageName:
                         flag = True
                         break
-                if flag == False:
+                if not flag:
                     self._installPackage(
                         pkgUtils,
                         packageName,

@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import flask
+
 from Scheduler import Scheduler
 from constants import constants
 from Logger import Logger

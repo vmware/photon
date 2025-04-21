@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import re
 
 
@@ -56,10 +58,27 @@ class StringUtils(object):
 
     @staticmethod
     def splitRPMFilename(filename):
-        """splitRPMFilename splits RPM filename or RPM package name into components: name, version, release, dist tag, arch
+        """
+        splitRPMFilename splits RPM filename or RPM package name into components:
+        name, version, release, dist tag, arch
         Examples:
-        "openssl-libs-3.0.8-2.ph5.x86_64.rpm" -> { "name": "openssl-libs", "version": "3.0.8", "release": "2", "tag": "ph5", "arch": "x86_64")
-        "openssl-libs-3.0.8-2.ph5" -> ("name": "openssl-libs", "version": "3.0.8", "release": "2", "tag": "ph5", "arch": "")
+        "openssl-libs-3.0.8-2.ph5.x86_64.rpm" ->
+        {
+          "name": "openssl-libs",
+          "version": "3.0.8",
+          "release": "2",
+          "tag": "ph5",
+          "arch": "x86_64"
+        }
+
+        "openssl-libs-3.0.8-2.ph5" ->
+        {
+          "name": "openssl-libs",
+          "version": "3.0.8",
+          "release": "2",
+          "tag": "ph5",
+          "arch": ""
+        }
         :param filename: string containing filename or package name
         :return: dictionary of strings values by keys: name, version, release, tag, arch
         """
@@ -82,4 +101,11 @@ class StringUtils(object):
         ver = filename[verIndex + 1 : relIndex]
 
         name = filename[0:verIndex]
-        return {"name": name, "version": ver, "release": rel, "tag": tag, "arch": arch}
+
+        return {
+            "name": name,
+            "version": ver,
+            "release": rel,
+            "tag": tag,
+            "arch": arch,
+        }

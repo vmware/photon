@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import shutil
-import re
-import random
-import string
 import PullSources
 
 from CommandUtils import CommandUtils
@@ -180,10 +176,10 @@ class PackageUtils(object):
         self.logger.debug("RPM build is successful")
 
         if (constants.srpSigningScript and constants.srpSigningAuth
-                        and constants.srpSigningParams):
+           and constants.srpSigningParams):
             self.logger.debug("Initiate signing RPMs")
-            self.srpSigner(listRPMFiles, SRPM = False)
-            self.srpSigner(listSRPMFiles, SRPM = True)
+            self.srpSigner(listRPMFiles, SRPM=False)
+            self.srpSigner(listSRPMFiles, SRPM=True)
 
         return listRPMFiles, listSRPMFiles
 
@@ -278,9 +274,9 @@ class PackageUtils(object):
             rpm = os.path.basename(rpm)
             rpm_full_path = os.path.join(path, arch, rpm)
             cmd = ["python3", constants.srpSigningScript["src"],
-                "--config_file", constants.srpSigningParams["src"],
-                "--auth_file", constants.srpSigningAuth["src"],
-                "--artifact", rpm_full_path, "--file_type", "rpm"]
+                   "--config_file", constants.srpSigningParams["src"],
+                   "--auth_file", constants.srpSigningAuth["src"],
+                   "--artifact", rpm_full_path, "--file_type", "rpm"]
 
             CommandUtils.runCmd(cmd, logfn=self.logger.debug)
             self.logger.debug(f"Signed RPM: {rpm_full_path}")

@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import requests
 import time
+
 from PackageBuilder import PackageBuilder
 from constants import constants
 
@@ -32,7 +35,7 @@ class BuilderClient:
         masterConstantsAPI = self.MasterUrl + "/constants/"
         try:
             response = requests.get(masterConstantsAPI)
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException:
             return None
 
         if response.status_code == 200:
@@ -63,7 +66,7 @@ class BuilderClient:
         constants.setPublishBuildDependencies(constant_dict["publishBuildDependencies"])
         constants.setPackageWeightsPath(constant_dict["packageWeightsPath"])
         constants.setKatBuild(constant_dict["katBuild"])
-        constants.setCanisterBuild(const_dict["canisterBuild"])
+        constants.setCanisterBuild(constant_dict["canisterBuild"])
         constants.setAcvpBuild(constant_dict["acvpBuild"])
         constants.extrasourcesURLs = constant_dict["extrasourcesURLs"]
         constants.userDefinedMacros = constant_dict["userDefinedMacros"]

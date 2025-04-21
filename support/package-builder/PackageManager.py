@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
 
-import os
 import threading
 import copy
 import docker
 import json
 
-from contextlib import suppress
 from Logger import Logger
 from constants import constants
-from CommandUtils import CommandUtils
 from PackageUtils import PackageUtils
 from ToolChainUtils import ToolChainUtils
 from Scheduler import Scheduler
 from ThreadPool import ThreadPool
 from SpecData import SPECS
-from StringUtils import StringUtils
-from Sandbox import Chroot, Container
+from Sandbox import Chroot
 from PackageBuildDataGenerator import PackageBuildDataGenerator
 
 
@@ -100,6 +96,7 @@ class PackageManager(object):
             self._createBuildContainer(False)
 
     def buildPackages(self, listPackages, buildThreads):
+        rebuild = constants.rebuild
         if constants.rpmCheck:
             constants.rpmCheck = False
             constants.addMacro("with_check", "0")
@@ -107,7 +104,7 @@ class PackageManager(object):
             self._buildTestPackages(buildThreads)
             constants.rpmCheck = True
             constants.addMacro("with_check", "1")
-            self._buildGivenPackages(listPackages, buildThreads)
+            self._buildGivenPackages(listPackages, buildThreads, rebuild)
         else:
             self.buildToolChainPackages(buildThreads)
             self.logger.info(
@@ -115,7 +112,7 @@ class PackageManager(object):
             )
             self.logger.info(listPackages)
             self.logger.info("")
-            self._buildGivenPackages(listPackages, buildThreads)
+            self._buildGivenPackages(listPackages, buildThreads, rebuild)
         self.logger.info("Package build has been completed")
         self.logger.info("")
 
@@ -151,16 +148,20 @@ class PackageManager(object):
                         packageIsAlreadyBuilt = False
                         break
                 if packageIsAlreadyBuilt:
-                    listAvailablePackages.add(package + "-" + version)
+                    listAvailablePackages.add(f"{package}-{version}")
 
         return listAvailablePackages
 
-    def _calculateParams(self, listPackages):
+    def _calculateParams(self, listPackages, rebuild=False):
         self.mapCyclesToPackageList.clear()
         self.mapPackageToCycle.clear()
         self.sortedPackageList = []
 
         self.listOfPackagesAlreadyBuilt = self._readAlreadyAvailablePackages()
+
+        if rebuild:
+            self.listOfPackagesAlreadyBuilt = set(self.listOfPackagesAlreadyBuilt) - set(listPackages)
+
         if self.listOfPackagesAlreadyBuilt:
             self.logger.debug("List of already available packages:")
             self.logger.debug(self.listOfPackagesAlreadyBuilt)
@@ -202,15 +203,15 @@ class PackageManager(object):
         Scheduler.setEvent(statusEvent)
         Scheduler.stopScheduling = False
 
-    def _buildGivenPackages(self, listPackages, buildThreads):
+    def _buildGivenPackages(self, listPackages, buildThreads, rebuild=False):
         # Extend listPackages from ["name1", "name2",..] to ["name1-vers1", "name2-vers2",..]
         listPackageNamesAndVersions = set()
         for pkg in listPackages:
             base = SPECS.getData().getSpecName(pkg)
             for version in SPECS.getData().getVersions(base):
-                listPackageNamesAndVersions.add(base + "-" + version)
+                listPackageNamesAndVersions.add(f"{base}-{version}")
 
-        returnVal = self._calculateParams(listPackageNamesAndVersions)
+        returnVal = self._calculateParams(listPackageNamesAndVersions, rebuild=rebuild)
         if not returnVal:
             self.logger.error(
                 "Unable to set parameters. Terminating the package manager."
@@ -270,6 +271,7 @@ class PackageManager(object):
             self.dockerClient.images.remove(constants.buildContainerImage, force=True)
         except Exception as e:
             # TODO - better handling
+            self.logger.error(str(e))
             self.logger.debug("Photon build container image not found.")
 
         # Create toolchain chroot and install toolchain RPMs
@@ -284,7 +286,7 @@ class PackageManager(object):
             if chroot:
                 chroot.destroy()
             raise e
-        self.logger.debug("createBuildContainer: " + chroot.getRootPath())
+        self.logger.debug(f"createBuildContainer: {chroot.getRootPath()}")
 
         # Create photon build container using toolchain chroot
         importRes = self.dockerClient.api.import_image(src=chroot.archive(fmt="tar"))

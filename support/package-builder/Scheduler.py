@@ -1,6 +1,9 @@
+#!/usr/bin/env python3
+
 import threading
-from queue import PriorityQueue
 import json
+
+from queue import PriorityQueue
 from ThreadPool import ThreadPool
 from constants import constants
 from Logger import Logger

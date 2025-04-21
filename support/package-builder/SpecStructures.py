@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 class dependentPackageData(object):
 
     def __init__(self):
@@ -54,6 +56,7 @@ class Package(object):
 class SpecObject(object):
     def __init__(self):
         self.name = ""
+        self.epoch = 0
         self.version = ""
         self.release = ""
         # map subpackage name to its buildarch

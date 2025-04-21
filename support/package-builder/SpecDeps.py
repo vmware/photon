@@ -9,9 +9,7 @@ import shutil
 import traceback
 
 from SpecData import SPECS
-from jsonwrapper import JsonWrapper
 from constants import constants
-from StringUtils import StringUtils
 from Logger import Logger
 from argparse import ArgumentParser
 
@@ -185,7 +183,6 @@ class SpecDependencyGenerator(object):
     def process(self, inputType, inputValue, displayOption, outputFile=None):
         whoNeedsList = []
         inputPackages = []
-        whatNeedsBuild = []
         mapDependencies = {}
         parent = {}
         if inputType == "pkg" or inputType == "json":

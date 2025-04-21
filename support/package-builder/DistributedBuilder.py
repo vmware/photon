@@ -2,7 +2,6 @@
 
 import os
 import yaml
-import time
 import json
 import uuid
 import sys
@@ -13,6 +12,7 @@ from Logger import Logger
 from constants import constants
 from kubernetes import client, config, watch
 from kubernetes import stream
+from CommandUtils import CommandUtils
 
 
 class DistributedBuilder:
@@ -106,7 +106,7 @@ class DistributedBuilder:
                 resp = self.coreV1ApiInstance.create_namespaced_pod(
                     namespace="default", body=nfspodFile
                 )
-                self.logger.info("Created nfspod {resp.metadata.name}")
+                self.logger.info(f"Created nfspod {resp.metadata.name}")
             except client.rest.ApiException as e:
                 self.logger.error(
                     f"Exception when calling CoreV1Api->create_namespaced_pod: {e.reason}\n"
@@ -211,8 +211,8 @@ class DistributedBuilder:
         ]
         for name in pvNames:
             try:
-                resp = self.coreV1ApiInstance.delete_persistent_volume(
-                    name + "-" + self.buildGuid
+                self.coreV1ApiInstance.delete_persistent_volume(
+                    f"{name}-{self.buildGuid}"
                 )
                 self.logger.info(f"Deleted pv {name}")
             except client.rest.ApiException as e:
@@ -233,7 +233,7 @@ class DistributedBuilder:
         ]
         for name in pvcNames:
             try:
-                resp = self.coreV1ApiInstance.delete_namespaced_persistent_volume_claim(
+                self.coreV1ApiInstance.delete_namespaced_persistent_volume_claim(
                     f"{name}-{self.buildGuid}", namespace="default"
                 )
                 self.logger.info(f"Deleted pvc {name}")
@@ -245,7 +245,7 @@ class DistributedBuilder:
     def deleteMasterJob(self):
         try:
             job = f"master-{self.buildGuid}"
-            resp = self.batchV1ApiInstance.delete_namespaced_job(
+            self.batchV1ApiInstance.delete_namespaced_job(
                 name=job,
                 namespace="default",
                 propagation_policy="Foreground",
@@ -283,7 +283,7 @@ class DistributedBuilder:
     def deleteNfsPod(self):
         try:
             pod = f"nfspod-{self.buildGuid}"
-            resp = self.coreV1ApiInstance.delete_namespaced_pod(
+            self.coreV1ApiInstance.delete_namespaced_pod(
                 name=pod, namespace="default"
             )
             self.logger.info("deleted nfs pod")
@@ -295,7 +295,7 @@ class DistributedBuilder:
     def deleteMasterService(self):
         try:
             service = f"master-service-{self.buildGuid}"
-            resp = self.coreV1ApiInstance.delete_namespaced_service(
+            self.coreV1ApiInstance.delete_namespaced_service(
                 name=service, namespace="default"
             )
             self.logger.info("deleted master service")
@@ -307,7 +307,7 @@ class DistributedBuilder:
     def deleteDeployment(self):
         try:
             deploy = f"worker-{self.buildGuid}"
-            resp = self.AppsV1ApiInstance.delete_namespaced_deployment(
+            self.AppsV1ApiInstance.delete_namespaced_deployment(
                 name=deploy, namespace="default", grace_period_seconds=15
             )
             self.logger.info("deleted worker deployment ")
