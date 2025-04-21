@@ -1,7 +1,7 @@
 Summary:    OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:       tpm2-tss
 Version:    3.2.0
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        https://github.com/tpm2-software/tpm2-tss
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
@@ -18,6 +18,9 @@ BuildRequires:  shadow
 
 Requires: openssl
 Requires: systemd-rpm-macros
+
+Patch0: CVE-2023-22745.patch
+Patch1: CVE-2024-29040.patch
 
 %description
 OSS implementation of the TCG TPM2 Software Stack (TSS2)
@@ -66,6 +69,8 @@ chown -R tss:tss /var/lib/tpm
 %{_mandir}/man7
 
 %changelog
+* Mon Apr 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-6
+- Fix CVE-2023-22745, CVE-2024-29040
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.2.0-5
 - Release bump for SRP compliance
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.2.0-4
