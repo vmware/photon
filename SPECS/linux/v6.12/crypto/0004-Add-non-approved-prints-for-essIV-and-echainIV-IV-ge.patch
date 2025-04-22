@@ -1,0 +1,102 @@
+From 67770352810524df2bba7e8dce6f52c14e79b99f Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivani.agarwal@broadcom.com>
+Date: Mon, 21 Apr 2025 09:12:27 +0000
+Subject: [PATCH] Add non-approved prints for essIV and echainIV IV generation
+ method
+
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ crypto/echainiv.c | 14 ++++++++++++++
+ crypto/essiv.c    | 15 ++++++++++++++-
+ 2 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/crypto/echainiv.c b/crypto/echainiv.c
+index 696866686..e38712e2f 100644
+--- a/crypto/echainiv.c
++++ b/crypto/echainiv.c
+@@ -22,6 +22,7 @@
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
++#include <linux/fips.h>
+ 
+ static int echainiv_encrypt(struct aead_request *req)
+ {
+@@ -34,6 +35,11 @@ static int echainiv_encrypt(struct aead_request *req)
+ 	unsigned int ivsize = crypto_aead_ivsize(geniv);
+ 	int err;
+ 
++	if (fips_enabled) {
++		pr_notice("alg: %s (%s) Encryption is registered as a non-approved service in FIPS mode\n",
++			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
++	}
++
+ 	if (req->cryptlen < ivsize)
+ 		return -EINVAL;
+ 
+@@ -91,6 +97,11 @@ static int echainiv_decrypt(struct aead_request *req)
+ 	void *data;
+ 	unsigned int ivsize = crypto_aead_ivsize(geniv);
+ 
++	if (fips_enabled) {
++		pr_notice("alg: %s (%s) Decryption is registered as a non-approved service in FIPS mode\n",
++			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
++	}
++
+ 	if (req->cryptlen < ivsize)
+ 		return -EINVAL;
+ 
+@@ -137,6 +148,9 @@ static int echainiv_aead_create(struct crypto_template *tmpl,
+ 	if (err) {
+ free_inst:
+ 		inst->free(inst);
++	} else if (fips_enabled) {
++		pr_notice("alg: %s (%s) echainIV generation is registered as a non-approved service in FIPS mode\n",
++			   inst->alg.base.cra_driver_name, inst->alg.base.cra_name);
+ 	}
+ 	return err;
+ }
+diff --git a/crypto/essiv.c b/crypto/essiv.c
+index e63fc6442..8f703c789 100644
+--- a/crypto/essiv.c
++++ b/crypto/essiv.c
+@@ -35,6 +35,7 @@
+ #include <crypto/internal/skcipher.h>
+ #include <crypto/scatterwalk.h>
+ #include <linux/module.h>
++#include <linux/fips.h>
+ 
+ #include "internal.h"
+ 
+@@ -144,6 +145,11 @@ static int essiv_skcipher_crypt(struct skcipher_request *req, bool enc)
+ 	const struct essiv_tfm_ctx *tctx = crypto_skcipher_ctx(tfm);
+ 	struct skcipher_request *subreq = skcipher_request_ctx(req);
+ 
++	if (fips_enabled) {
++		pr_notice("alg: %s (%s) Encryption/Decryption is registered as a non-approved service in FIPS mode\n",
++			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
++        }
++
+ 	crypto_cipher_encrypt_one(tctx->essiv_cipher, req->iv, req->iv);
+ 
+ 	skcipher_request_set_tfm(subreq, tctx->u.skcipher);
+@@ -607,8 +613,15 @@ static int essiv_create(struct crypto_template *tmpl, struct rtattr **tb)
+ 		err = aead_register_instance(tmpl, aead_inst);
+ 	}
+ 
+-	if (err)
++	if (err) {
+ 		goto out_free_hash;
++	} else if (fips_enabled && (type == CRYPTO_ALG_TYPE_LSKCIPHER)) {
++		pr_notice("alg: %s (%s) essIV generation is registered as a non-approved service in FIPS mode\n",
++			   skcipher_inst->alg.base.cra_driver_name, skcipher_inst->alg.base.cra_name);
++        } else if (fips_enabled && (type == CRYPTO_ALG_TYPE_AEAD)) {
++		pr_notice("alg: %s (%s) essIV genration is registered as a non-approved service in FIPS mode\n",
++			   aead_inst->alg.base.cra_driver_name, aead_inst->alg.base.cra_name);
++	}
+ 
+ 	crypto_mod_put(_hash_alg);
+ 	return 0;
+-- 
+2.39.4
+

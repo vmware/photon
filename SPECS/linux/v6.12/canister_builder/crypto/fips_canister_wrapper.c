@@ -79,8 +79,6 @@ extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
 extern void *fcw_memcpy(void *dst, const void *src, size_t len);
 
 void *fcw_sg_page(struct scatterlist *sg);
-void fcw_sg_set_page(struct scatterlist *sg, void *page,
-			    unsigned int len, unsigned int offset);
 int fcw_lib_sha256_base_do_update(struct sha256_state *sctx,
 					    const u8 *data,
 					    unsigned int len,
@@ -432,12 +430,6 @@ void *fcw_sg_page(struct scatterlist *sg)
 	return page;
 }
 
-void fcw_sg_set_page(struct scatterlist *sg, void *page,
-		     unsigned int len, unsigned int offset)
-{
-	return sg_set_page(sg, (struct page *)page, len, offset);
-}
-
 void *fcw_sg_page_address(struct scatterlist *sg)
 {
 	struct page *page = sg_page(sg);
@@ -766,7 +758,6 @@ static char *canister_algs[] = {
 	"rfc4106-gcm-aesni-avx",
 	"__rfc4106-gcm-aesni",
 	"cryptd(__rfc4106-gcm-aesni)",
-	"essiv(cbc(ecb(aes-generic)),sha256-generic)",
 	// no certification require
 	"crc32c-generic",
 	"crct10dif-generic",

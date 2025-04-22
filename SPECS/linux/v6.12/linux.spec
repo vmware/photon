@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        10%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        11%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -257,6 +257,8 @@ Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
 Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+# Add non-approved prints for essIV and echainIV IV generation method
+Patch505: 0004-Add-non-approved-prints-for-essIV-and-echainIV-IV-ge.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
@@ -305,7 +307,7 @@ Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.12.1-11.ph5-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0003-FIPS-canister-creation.patch
@@ -317,7 +319,6 @@ Patch10008: 0008-Move-kernel-structures-usage-from-canister-to-wrappe.patch
 Patch10009: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
 Patch10010: 0010-List-canister-objs-in-a-file.patch
 Patch10011: 0011-Handle-approved-and-non-approved-services.patch
-Patch10012: 0012-Add-support-for-essiv-and-echaniniv.patch
 
 %if 0%{?kat_build}
 Patch10014: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
@@ -489,11 +490,7 @@ The kernel fips-canister
 %endif
 
 # crypto
-%autopatch -p1 -m500 -M504
-
-%ifarch x86_64
-%autopatch -p1 -m505 -M505
-%endif
+%autopatch -p1 -m500 -M505
 
 %if 0%{?fips}
 %autopatch -p1 -m508 -M511
@@ -872,6 +869,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Apr 17 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.1-11
+- Remove essIV and echainIV from canister
 * Tue Mar 25 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.1-10
 - Sign kernel module using SHA3-512 hash algo
 * Thu Mar 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.12.1-9
