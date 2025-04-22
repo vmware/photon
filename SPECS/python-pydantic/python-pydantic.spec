@@ -1,7 +1,7 @@
 Summary:        Data validation using Python type hinting
 Name:           python3-pydantic
 Version:        1.10.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,6 +11,7 @@ Source0:        https://files.pythonhosted.org/packages/d5/eb/d5ee9e58b2a4608c32
 
 Source1: license.txt
 %include %{SOURCE1}
+Patch0: CVE-2024-3772.patch
 
 BuildArch:      noarch
 
@@ -30,7 +31,7 @@ Requires:       python3-typing-extensions
 Data validation and settings management using python type hinting.
 
 %prep
-%autosetup -n pydantic-%{version}
+%autosetup -p1 -n pydantic-%{version}
 # Remove bundled egg-info
 rm -rf pydantic.egg-info
 
@@ -57,6 +58,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/pydantic-%{version}-py%{python3_version}.egg-info
 
 %changelog
+* Tue Apr 22 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.10.1-3
+- Fix CVE-2024-3772
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.10.1-2
 - Release bump for SRP compliance
 * Wed Oct 12 2022 Nitesh Kumar <kunitesh@vmware.com> 1.10.1-1
