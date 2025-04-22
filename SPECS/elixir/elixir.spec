@@ -3,7 +3,7 @@
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
 Version:         1.16.3
-Release:         3%{?dist}
+Release:         4%{?dist}
 URL:             http://elixir-lang.org
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -57,6 +57,8 @@ export LANG="en_US.UTF-8"
 %{_datadir}/%{name}
 
 %changelog
+* Tue Apr 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.16.3-4
+- Bump release for updating erlang
 * Thu Apr 10 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.16.3-3
 - Bump release for updating erlang
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.16.3-2
