@@ -13,6 +13,8 @@
 %global fips 1
 %endif
 
+%global canister_build 0
+
 %if 0%{?canister_build}
 %global fips 0
 %endif
