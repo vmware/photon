@@ -1,1 +1,0 @@
-License: GPL-3.0-only AND GPL-2.0-only AND DOC AND GPL-2.0-or-later
