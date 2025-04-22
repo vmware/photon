@@ -1,7 +1,7 @@
 Summary:  A 2D graphics library.
 Name:     cairo
 Version:  1.17.6
-Release:  10%{?dist}
+Release:  11%{?dist}
 URL:      https://cairographics.org
 Group:    System Environment/Libraries
 Vendor:   VMware, Inc.
@@ -41,8 +41,10 @@ Requires:   %{name} = %{version}-%{release}
 Requires:   freetype2-devel
 Requires:   pixman-devel
 Requires:   libpng-devel
-Requires:       libX11-devel
-Requires:       libXext-devel
+Requires:   libX11-devel
+Requires:   libXext-devel
+Requires:   glib-devel
+Requires:   fontconfig-devel
 
 %description    devel
 It contains the libraries and header files to create applications
@@ -92,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/html/%{name}/*
 
 %changelog
+* Tue Apr 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.17.6-11
+- Fix devel package requires
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.17.6-10
 - Release bump for SRP compliance
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.17.6-9
