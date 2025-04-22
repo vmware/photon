@@ -1,12 +1,12 @@
 sources:
-- archive: OTP-26.2.5.10.tar.gz
-  archive_sha512sum: d92a26200b28770e6030be1b0703abcd5a7da6ce85656b617f78b75b04afcf5023bee239ad274475f22d8a1ef90d35b123d042723611164497cf09fd587a0b1e
+- archive: OTP-26.2.5.11.tar.gz
+  archive_sha512sum: 9cc04a9f807b4c0dd36bca93d52ab5ec7f022925b18dbaf3d5ce7184c20ad29c9e538caa622e65402c7e3a0c103a5d7ec025ec67853fee33fc6418ffefe9ddd6
   archive_type: upstream
-  name: otp-OTP-26.2.5.10
-  version: 26.2.5.10
-  url: https://github.com/erlang/otp/archive/refs/tags/OTP-26.2.5.10.tar.gz
+  name: otp-OTP-26.2.5.11
+  version: 26.2.5.11
+  url: https://github.com/erlang/otp/archive/refs/tags/OTP-26.2.5.11.tar.gz
   repo_url: https://github.com/erlang/otp
-  commit_id: f607645b971572b03f9f45551b1804f41fac8fa7
+  commit_id: 9f6c4eb54823324d1e6f8cb95c15feb09f09044e
   skip_list:
   - .gitattributes
   - .gitignore
