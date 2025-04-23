@@ -5,10 +5,8 @@ import copy
 import docker
 import json
 
-from contextlib import suppress
 from Logger import Logger
 from constants import constants
-from CommandUtils import CommandUtils
 from PackageUtils import PackageUtils
 from ToolChainUtils import ToolChainUtils
 from Scheduler import Scheduler
@@ -102,6 +100,7 @@ class PackageManager(object):
             self._createBuildContainer(False)
 
     def buildPackages(self, listPackages, buildThreads):
+        rebuild = constants.rebuild
         if constants.rpmCheck:
             constants.rpmCheck = False
             constants.addMacro("with_check", "0")
@@ -109,7 +108,7 @@ class PackageManager(object):
             self._buildTestPackages(buildThreads)
             constants.rpmCheck = True
             constants.addMacro("with_check", "1")
-            self._buildGivenPackages(listPackages, buildThreads)
+            self._buildGivenPackages(listPackages, buildThreads, rebuild)
         else:
             self.buildToolChainPackages(buildThreads)
             self.logger.info(
@@ -117,7 +116,7 @@ class PackageManager(object):
             )
             self.logger.info(listPackages)
             self.logger.info("")
-            self._buildGivenPackages(listPackages, buildThreads)
+            self._buildGivenPackages(listPackages, buildThreads, rebuild)
         self.logger.info("Package build has been completed")
         self.logger.info("")
 
@@ -161,12 +160,16 @@ class PackageManager(object):
 
         return listAvailablePackages
 
-    def _calculateParams(self, listPackages):
+    def _calculateParams(self, listPackages, rebuild=False):
         self.mapCyclesToPackageList.clear()
         self.mapPackageToCycle.clear()
         self.sortedPackageList = []
 
         self.listOfPackagesAlreadyBuilt = self._readAlreadyAvailablePackages()
+
+        if rebuild:
+            self.listOfPackagesAlreadyBuilt = set(self.listOfPackagesAlreadyBuilt) - set(listPackages)
+
         if self.listOfPackagesAlreadyBuilt:
             self.logger.debug("List of already available packages:")
             self.logger.debug(self.listOfPackagesAlreadyBuilt)
@@ -208,7 +211,7 @@ class PackageManager(object):
         Scheduler.setEvent(statusEvent)
         Scheduler.stopScheduling = False
 
-    def _buildGivenPackages(self, listPackages, buildThreads):
+    def _buildGivenPackages(self, listPackages, buildThreads, rebuild=False):
         # Extend listPackages from ["name1", "name2",..] to
         # ["name1-vers1", "name2-vers2",..]
         listPackageNamesAndVersions = set()
@@ -224,7 +227,7 @@ class PackageManager(object):
                     continue
                 listPackageNamesAndVersions.add(f"{base}-{version}")
 
-        returnVal = self._calculateParams(listPackageNamesAndVersions)
+        returnVal = self._calculateParams(listPackageNamesAndVersions, rebuild=rebuild)
         if not returnVal:
             self.logger.error(
                 "Unable to set parameters. Terminating the package manager."

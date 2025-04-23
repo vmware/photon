@@ -10,7 +10,6 @@ import traceback
 
 from SpecData import SPECS
 from constants import constants
-from StringUtils import StringUtils
 from Logger import Logger
 from argparse import ArgumentParser
 

@@ -56,6 +56,7 @@ class Package(object):
 class SpecObject(object):
     def __init__(self):
         self.name = ""
+        self.epoch = 0
         self.version = ""
         self.release = ""
 

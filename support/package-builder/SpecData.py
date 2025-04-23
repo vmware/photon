@@ -1,13 +1,11 @@
-#!/usr/bion/env python3
+#!/usr/bin/env python3
 
 import os
-import re
 
 from Logger import Logger
 from constants import constants
 from StringUtils import StringUtils
-from distutilsversion import StrictVersion
-from distutilsversion import LooseVersion
+from rpmversion import LooseVersion
 from SpecParser import SpecParser
 
 
@@ -80,7 +78,10 @@ class SpecData(object):
         specObjs = self.getSpecObjects(depPkg.package)
         try:
             for obj in specObjs:
-                verrel = obj.version
+                if not obj.epoch:
+                    verrel = obj.version
+                else:
+                    verrel = f"{obj.epoch}:{obj.version}"
                 if depPkg.compare == ">=":
                     if LooseVersion(verrel) >= LooseVersion(depPkg.version):
                         return obj.version

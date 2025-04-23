@@ -12,6 +12,7 @@ from Logger import Logger
 from constants import constants
 from kubernetes import client, config, watch
 from kubernetes import stream
+from CommandUtils import CommandUtils
 
 
 class DistributedBuilder:

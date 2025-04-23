@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import sys
-import hashlib
 
 from PackageUtils import PackageUtils
 from Logger import Logger

@@ -5,7 +5,9 @@ import re
 
 from StringUtils import StringUtils
 from constants import constants
-from SpecStructures import dependentPackageData, Package, SpecObject
+from SpecStructures import dependentPackageData
+from SpecStructures import Package
+from SpecStructures import SpecObject
 
 strUtils = StringUtils()
 
@@ -368,6 +370,7 @@ class SpecParser(object):
             "^name:",
             "^group:",
             "^license:",
+            "^epoch:",
             "^version:",
             "^release:",
             "^distribution:",
@@ -483,10 +486,13 @@ class SpecParser(object):
         if headerName == "license":
             pkg.license = headerContent
             return True
-        if headerName == "version":
-            pkg.version = headerContent
-            if pkg == self.packages["default"]:
-                self.defs["version"] = pkg.version
+        if headerName in {"version", "epoch"}:
+            if headerName == "epoch":
+                self.defs["epoch"] = headerContent
+            elif headerName == "version":
+                pkg.version = headerContent
+                if pkg == self.packages["default"]:
+                    self.defs["version"] = pkg.version
             return True
         if headerName == "buildarch":
             pkg.buildarch = headerContent
@@ -716,6 +722,7 @@ class SpecParser(object):
         specObj.specFile = self.specfile
         defPkg = self.packages.get("default")
         specObj.name = defPkg.name
+        specObj.epoch = self.defs.get("epoch", 0)
         specObj.version = f"{defPkg.version}-{defPkg.release}"
         specObj.release = defPkg.release
         specObj.license = defPkg.license
