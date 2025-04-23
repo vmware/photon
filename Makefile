@@ -10,28 +10,22 @@ export STAGE_PATH := $(shell realpath $(STAGE_PATH))
 
 .PHONY: all
 
+define with_pushd
+	pushd $(COMMON_BRANCH_PATH) > /dev/null && \
+	{ $(1); } && \
+	popd > /dev/null
+endef
+
 all:
-	@if [ -n "$(pkgs)" ]; then \
-		(pushd $(COMMON_BRANCH_PATH) > /dev/null && \
-		python3 build.py -c $(CONF) --pkgs "$(pkgs)" && \
-		popd > /dev/null); \
-	elif [ -n "$(shell echo $(BUILD_EXTRA_PKGS) | grep -Ew "enable|yes|True|1")" ]; then \
-		(pushd $(COMMON_BRANCH_PATH) > /dev/null && \
-		python3 build.py -c $(CONF) -t extra-packages && \
-		popd > /dev/null); \
+	@$(call with_pushd, \
+	if [ -n "$(pkgs)" ]; then \
+		python3 build.py -c $(CONF) --pkgs "$(pkgs)"; \
+	elif [ "$(BUILD_EXTRA_PKGS)" = "1" ]; then \
+		python3 build.py -c $(CONF) -t extra-packages; \
 	else \
-		(pushd $(COMMON_BRANCH_PATH) > /dev/null && \
-		python3 build.py -c $(CONF) -t packages && \
-		popd > /dev/null); \
-	fi
+		python3 build.py -c $(CONF) -t packages; \
+	fi; \
+	)
 
 %:
-	@if [ -n "$(shell echo $(BUILD_EXTRA_PKGS) | grep -Ew 'enable|yes|True')" ]; then\
-		(pushd $(COMMON_BRANCH_PATH) > /dev/null && \
-		python3 build.py -c $(CONF) -t extra-packages && \
-		popd > /dev/null); \
-	else\
-		(pushd $(COMMON_BRANCH_PATH) > /dev/null && \
-		 python3 build.py -c $(CONF) -t $@ && \
-		popd > /dev/null); \
-	fi
+	@$(call with_pushd, python3 build.py -c $(CONF) -t $@)
