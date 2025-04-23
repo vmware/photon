@@ -1,4 +1,4 @@
-From 169acd5f5f419ec4b49f254117650a8b4d03fc33 Mon Sep 17 00:00:00 2001
+From aacda4630b73a6b12dd0ff33096534db87b6cc54 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 2 Dec 2024 07:59:18 +0000
 Subject: [PATCH 08/12] Move kernel structures usage from canister to wrapper
@@ -32,10 +32,12 @@ Subject: [PATCH 08/12] Move kernel structures usage from canister to wrapper
 			 raw_spin_trylock_irqsave(_T->lock, _T->flags))
 
   typedef class_raw_spinlock_irqsave_t class_raw_spinlock_irqsave_try_t; static inline __attribute__((__gnu_inline__)) __attribute__((__unused__)) __attribute__((no_instrument_function)) void class_raw_spinlock_irqsave_try_destructor(class_raw_spinlock_irqsave_t *p){ class_raw_spinlock_irqsave_destructor(p); } static inline __attribute__((__gnu_inline__)) __attribute__((__unused__)) __attribute__((no_instrument_function)) class_raw_spinlock_irqsave_t class_raw_spinlock_irqsave_try_constructor(typeof(((class_raw_spinlock_irqsave_t*)0)->lock) l) { class_raw_spinlock_irqsave_t t = ({ class_raw_spinlock_irqsave_t _t = { .lock = l }, *_T = &_t; if (_T->lock && !(({ do { do { ({ unsigned long __dummy; typeof(_T->flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); _T->flags = arch_local_irq_save(); } while (0); } while (0); (_raw_spin_trylock(_T->lock)) ? 1 : ({ do { do { ({ unsigned long __dummy; typeof(_T->flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); do { } while (0); arch_local_irq_restore(_T->flags); } while (0); } while (0); 0; }); }))) _T->lock = ((void *)0); _t; }); return t; } static inline __attribute__((__gnu_inline__)) __attribute__((__unused__)) __attribute__((no_instrument_function)) void * class_raw_spinlock_irqsave_try_lock_ptr(class_raw_spinlock_irqsave_t *_T) { return class_raw_spinlock_irqsave_lock_ptr(_T); }
+- Moved struct x86_cpu_id to wrapper
 
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
- arch/x86/crypto/aesni-intel_glue.c  |  80 ++--
+ arch/x86/crypto/aesni-intel_glue.c  | 110 ++---
  crypto/aes_generic.c                |  12 +-
  crypto/algboss.c                    |  40 +-
  crypto/cbc.c                        |  11 +-
@@ -77,12 +79,12 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  include/linux/spinlock.h            |  19 +-
  include/linux/spinlock_cond_guard.h |  16 +
  include/linux/swait.h               |   4 +
- 42 files changed, 424 insertions(+), 877 deletions(-)
+ 42 files changed, 426 insertions(+), 905 deletions(-)
  create mode 100644 include/linux/rtattr.h
  create mode 100644 include/linux/spinlock_cond_guard.h
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index d07b3ff76..2aab5fe59 100644
+index d07b3ff76..ca62f83d1 100644
 --- a/arch/x86/crypto/aesni-intel_glue.c
 +++ b/arch/x86/crypto/aesni-intel_glue.c
 @@ -19,7 +19,6 @@
@@ -93,7 +95,7 @@ index d07b3ff76..2aab5fe59 100644
  #include <linux/err.h>
  #include <crypto/algapi.h>
  #include <crypto/aes.h>
-@@ -43,8 +42,18 @@ void fcw_kernel_fpu_end(void);
+@@ -43,8 +42,20 @@ void fcw_kernel_fpu_end(void);
  extern void *fcw_kmalloc(size_t size, gfp_t flags);
  extern void *fcw_scatterwalk_map(struct scatter_walk *walk);
  extern void *fcw_memcpy(void *dst, const void *src, size_t len);
@@ -111,10 +113,12 @@ index d07b3ff76..2aab5fe59 100644
 +extern void fcw_scatterwalk_unmap(void *vaddr);
 +extern int fcw_printk(const char *fmt, ...);
 +extern bool fcw_boot_cpu_has(unsigned long bit);
++extern bool fcw_x86_match_cpu_zmm_exclusion_list(void);
++extern bool fcw_x86_match_cpu_aesni_cpu_id(void);
  
  #define AESNI_ALIGN	16
  #define AESNI_ALIGN_ATTR __attribute__ ((__aligned__(AESNI_ALIGN)))
-@@ -305,9 +314,9 @@ static int cts_cbc_encrypt(struct skcipher_request *req)
+@@ -305,9 +316,9 @@ static int cts_cbc_encrypt(struct skcipher_request *req)
  		if (req->cryptlen == AES_BLOCK_SIZE)
  			return 0;
  
@@ -126,7 +130,7 @@ index d07b3ff76..2aab5fe59 100644
  					       subreq.cryptlen);
  	}
  
-@@ -361,9 +370,9 @@ static int cts_cbc_decrypt(struct skcipher_request *req)
+@@ -361,9 +372,9 @@ static int cts_cbc_decrypt(struct skcipher_request *req)
  		if (req->cryptlen == AES_BLOCK_SIZE)
  			return 0;
  
@@ -138,7 +142,7 @@ index d07b3ff76..2aab5fe59 100644
  					       subreq.cryptlen);
  	}
  
-@@ -564,9 +573,9 @@ xts_crypt_slowpath(struct skcipher_request *req, xts_crypt_func crypt_func)
+@@ -564,9 +575,9 @@ xts_crypt_slowpath(struct skcipher_request *req, xts_crypt_func crypt_func)
  
  	/* Do ciphertext stealing with the last full block and partial block. */
  
@@ -150,7 +154,7 @@ index d07b3ff76..2aab5fe59 100644
  
  	skcipher_request_set_crypt(req, src, dst, AES_BLOCK_SIZE + tail,
  				   req->iv);
-@@ -610,15 +619,13 @@ xts_crypt(struct skcipher_request *req, xts_encrypt_iv_func encrypt_iv,
+@@ -610,15 +621,13 @@ xts_crypt(struct skcipher_request *req, xts_encrypt_iv_func encrypt_iv,
  	if (likely(src->length >= cryptlen && dst->length >= cryptlen &&
  		   src->offset + cryptlen <= PAGE_SIZE &&
  		   dst->offset + cryptlen <= PAGE_SIZE)) {
@@ -170,7 +174,7 @@ index d07b3ff76..2aab5fe59 100644
  		fcw_kernel_fpu_end();
  		return 0;
  	}
-@@ -1329,9 +1336,9 @@ static void gcm_process_assoc(const struct aes_gcm_key *key, u8 ghash_acc[16],
+@@ -1329,9 +1338,9 @@ static void gcm_process_assoc(const struct aes_gcm_key *key, u8 ghash_acc[16],
  			pos = len_this_page;
  		}
  next:
@@ -183,7 +187,31 @@ index d07b3ff76..2aab5fe59 100644
  			fcw_kernel_fpu_end();
  			fcw_kernel_fpu_begin();
  		}
-@@ -1569,7 +1576,7 @@ static int __init register_avx_algs(void)
+@@ -1545,31 +1554,11 @@ DEFINE_GCM_ALGS(vaes_avx10_512, FLAG_AVX10_512,
+ 		AES_GCM_KEY_AVX10_SIZE, 800);
+ #endif /* CONFIG_AS_VAES && CONFIG_AS_VPCLMULQDQ */
+ 
+-/*
+- * This is a list of CPU models that are known to suffer from downclocking when
+- * zmm registers (512-bit vectors) are used.  On these CPUs, the AES mode
+- * implementations with zmm registers won't be used by default.  Implementations
+- * with ymm registers (256-bit vectors) will be used by default instead.
+- */
+-static const struct x86_cpu_id zmm_exclusion_list[] = {
+-	X86_MATCH_VFM(INTEL_SKYLAKE_X,		0),
+-	X86_MATCH_VFM(INTEL_ICELAKE_X,		0),
+-	X86_MATCH_VFM(INTEL_ICELAKE_D,		0),
+-	X86_MATCH_VFM(INTEL_ICELAKE,		0),
+-	X86_MATCH_VFM(INTEL_ICELAKE_L,		0),
+-	X86_MATCH_VFM(INTEL_ICELAKE_NNPI,	0),
+-	X86_MATCH_VFM(INTEL_TIGERLAKE_L,	0),
+-	X86_MATCH_VFM(INTEL_TIGERLAKE,		0),
+-	/* Allow Rocket Lake and later, and Sapphire Rapids and later. */
+-	/* Also allow AMD CPUs (starting with Zen 4, the first with AVX-512). */
+-	{},
+-};
+-
+ static int __init register_avx_algs(void)
  {
  	int err;
  
@@ -192,7 +220,7 @@ index d07b3ff76..2aab5fe59 100644
  		return 0;
  	err = simd_register_skciphers_compat(&aes_xts_alg_aesni_avx, 1,
  					     &aes_xts_simdalg_aesni_avx);
-@@ -1581,10 +1588,10 @@ static int __init register_avx_algs(void)
+@@ -1581,10 +1570,10 @@ static int __init register_avx_algs(void)
  	if (err)
  		return err;
  #if defined(CONFIG_AS_VAES) && defined(CONFIG_AS_VPCLMULQDQ)
@@ -207,7 +235,7 @@ index d07b3ff76..2aab5fe59 100644
  	    !cpu_has_xfeatures(XFEATURE_MASK_SSE | XFEATURE_MASK_YMM, NULL))
  		return 0;
  	err = simd_register_skciphers_compat(&aes_xts_alg_vaes_avx2, 1,
-@@ -1592,9 +1599,9 @@ static int __init register_avx_algs(void)
+@@ -1592,9 +1581,9 @@ static int __init register_avx_algs(void)
  	if (err)
  		return err;
  
@@ -220,20 +248,32 @@ index d07b3ff76..2aab5fe59 100644
  	    !cpu_has_xfeatures(XFEATURE_MASK_SSE | XFEATURE_MASK_YMM |
  			       XFEATURE_MASK_AVX512, NULL))
  		return 0;
-@@ -1677,19 +1684,21 @@ static const struct x86_cpu_id aesni_cpu_id[] = {
- 	X86_MATCH_FEATURE(X86_FEATURE_AES, NULL),
- 	{}
- };
-+#ifdef MODULE
- MODULE_DEVICE_TABLE(x86cpu, aesni_cpu_id);
-+#endif
+@@ -1609,7 +1598,7 @@ static int __init register_avx_algs(void)
+ 	if (err)
+ 		return err;
  
+-	if (x86_match_cpu(zmm_exclusion_list)) {
++	if (fcw_x86_match_cpu_zmm_exclusion_list()) {
+ 		int i;
+ 
+ 		aes_xts_alg_vaes_avx10_512.base.cra_priority = 1;
+@@ -1673,23 +1662,17 @@ static void unregister_avx_algs(void)
+ }
+ #endif /* !CONFIG_X86_64 */
+ 
+-static const struct x86_cpu_id aesni_cpu_id[] = {
+-	X86_MATCH_FEATURE(X86_FEATURE_AES, NULL),
+-	{}
+-};
+-MODULE_DEVICE_TABLE(x86cpu, aesni_cpu_id);
+-
 -static int __init aesni_init(void)
 +int __init aesni_init(void)
  {
  	int err;
  
- 	if (!x86_match_cpu(aesni_cpu_id))
+-	if (!x86_match_cpu(aesni_cpu_id))
++	if (!fcw_x86_match_cpu_aesni_cpu_id())
  		return -ENODEV;
  #ifdef CONFIG_X86_64
 -	if (boot_cpu_has(X86_FEATURE_AVX)) {
@@ -245,7 +285,7 @@ index d07b3ff76..2aab5fe59 100644
  	}
  #endif /* CONFIG_X86_64 */
  
-@@ -1709,8 +1718,9 @@ static int __init aesni_init(void)
+@@ -1709,8 +1692,9 @@ static int __init aesni_init(void)
  	if (err)
  		goto unregister_skciphers;
  
@@ -256,7 +296,7 @@ index d07b3ff76..2aab5fe59 100644
  		err = simd_register_skciphers_compat(&aesni_xctr, 1,
  						     &aesni_simd_xctr);
  	if (err)
-@@ -1741,7 +1751,7 @@ static int __init aesni_init(void)
+@@ -1741,7 +1725,7 @@ static int __init aesni_init(void)
  	return err;
  }
  
@@ -265,7 +305,7 @@ index d07b3ff76..2aab5fe59 100644
  {
  	simd_unregister_aeads(aes_gcm_algs_aesni,
  			      ARRAY_SIZE(aes_gcm_algs_aesni),
-@@ -1750,15 +1760,9 @@ static void __exit aesni_exit(void)
+@@ -1750,15 +1734,9 @@ static void __exit aesni_exit(void)
  				  aesni_simd_skciphers);
  	crypto_unregister_alg(&aesni_cipher_alg);
  #ifdef CONFIG_X86_64
@@ -3668,5 +3708,5 @@ index d32441948..6456666be 100644
  };
  
 -- 
-2.49.0
+2.39.4
 
