@@ -11,24 +11,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://static.rust-lang.org/dist/%{name}c-%{version}-src.tar.xz
-
 Source1: https://static.rust-lang.org/dist/%{toolchain_prefix}/cargo-%{bootstrap_toolchain_ver}-%{_arch}-unknown-linux-gnu.tar.xz
-%ifarch x86_64
-%endif
-%ifarch aarch64
-%endif
-
 Source2: https://static.rust-lang.org/dist/%{toolchain_prefix}/rustc-%{bootstrap_toolchain_ver}-%{_arch}-unknown-linux-gnu.tar.xz
-%ifarch x86_64
-%endif
-%ifarch aarch64
-%endif
-
 Source3: https://static.rust-lang.org/dist/%{toolchain_prefix}/rust-std-%{bootstrap_toolchain_ver}-%{_arch}-unknown-linux-gnu.tar.xz
-%ifarch x86_64
-%endif
-%ifarch aarch64
-%endif
 
 Source4: license.txt
 %include %{SOURCE4}
