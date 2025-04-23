@@ -69,6 +69,7 @@
 #include <crypto/sha3.h>
 #include <linux/highmem-internal.h>
 #include <crypto/internal/geniv.h>
+#include <asm/cpu_device_id.h>
 #include "fips_canister_wrapper_common.h"
 
 static __ro_after_init bool alg_request_report = false;
@@ -89,6 +90,8 @@ int fcw_cond_resched(void);
 void *fcw_kmalloc(size_t size, gfp_t flags);
 void *fcw_kzalloc(size_t size, gfp_t flags);
 bool fcw_boot_cpu_has(unsigned long bit);
+bool fcw_x86_match_cpu_zmm_exclusion_list(void);
+bool fcw_x86_match_cpu_aesni_cpu_id(void);
 void * __init fcw_mem_alloc(size_t size);
 void __init fcw_mem_free(void *p);
 void *fcw_mutex_init(void);
@@ -196,6 +199,50 @@ void *fcw_kzalloc(size_t size, gfp_t flags)
 bool fcw_boot_cpu_has(unsigned long bit)
 {
 	return boot_cpu_has(bit);
+}
+
+/*
+ * Below arrays has been moved from aesni-intel_glue.c to eliminate
+ * struct x86_cpu_id from canister
+ */
+/*
+ * This is a list of CPU models that are known to suffer from downclocking when
+ * zmm registers (512-bit vectors) are used.  On these CPUs, the AES mode
+ * implementations with zmm registers won't be used by default.  Implementations
+ * with ymm registers (256-bit vectors) will be used by default instead.
+ */
+static const struct x86_cpu_id zmm_exclusion_list[] = {
+	X86_MATCH_VFM(INTEL_SKYLAKE_X,		0),
+	X86_MATCH_VFM(INTEL_ICELAKE_X,		0),
+	X86_MATCH_VFM(INTEL_ICELAKE_D,		0),
+	X86_MATCH_VFM(INTEL_ICELAKE,		0),
+	X86_MATCH_VFM(INTEL_ICELAKE_L,		0),
+	X86_MATCH_VFM(INTEL_ICELAKE_NNPI,	0),
+	X86_MATCH_VFM(INTEL_TIGERLAKE_L,	0),
+	X86_MATCH_VFM(INTEL_TIGERLAKE,		0),
+	/* Allow Rocket Lake and later, and Sapphire Rapids and later. */
+	/* Also allow AMD CPUs (starting with Zen 4, the first with AVX-512). */
+	{},
+};
+
+static const struct x86_cpu_id aesni_cpu_id[] = {
+        X86_MATCH_FEATURE(X86_FEATURE_AES, NULL),
+        {}
+};
+MODULE_DEVICE_TABLE(x86cpu, aesni_cpu_id);
+
+bool fcw_x86_match_cpu_zmm_exclusion_list(void)
+{
+	if (x86_match_cpu(zmm_exclusion_list))
+		return true;
+	return false;
+}
+
+bool fcw_x86_match_cpu_aesni_cpu_id(void)
+{
+	if (x86_match_cpu(aesni_cpu_id))
+		return true;
+	return false;
 }
 
 void * __init fcw_mem_alloc(size_t size)

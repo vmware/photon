@@ -1,0 +1,54 @@
+From e76157bd6e119d1c577cacb2279330b850cb35e0 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Date: Sun, 11 May 2025 17:42:09 +0000
+Subject: [PATCH] linux:canister: Eliminate codetag and other taggings structs
+
+- If CONFIG_MEM_ALLOC_PROFILING is enabled, standard
+  allocation functions like kmalloc() are redefined to
+  include the tagging mechanism, adding overhead for
+  profiling but providing valuable debugging information.
+- However, in photon's kernel, CONFIG_MEM_ALLOC_PROFILING
+  is disabled so it shouldn't include any tagging related
+  structs in canister binary.
+- To ensure this, added an upstream commit from v6.14
+https://github.com/gregkh/linux/commit/07438779313caafe52ac1a1a6958d735a5938988
+  and additionally, since it uses an inline
+  mem_alloc_profiling_enabled() so canister binary still
+  have tagging structs. Thus, added another patch on top
+  to handle alloc_hooks_tag based on FIPS_CANISTER
+
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ include/linux/alloc_tag.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/include/linux/alloc_tag.h b/include/linux/alloc_tag.h
+index 8f099e4da7fd..51258edfd953 100644
+--- a/include/linux/alloc_tag.h
++++ b/include/linux/alloc_tag.h
+@@ -200,6 +200,14 @@ static inline void alloc_tag_sub(union codetag_ref *ref, size_t bytes) {}
+ 
+ #endif /* CONFIG_MEM_ALLOC_PROFILING */
+ 
++#ifdef FIPS_CANISTER
++#define alloc_hooks_tag(_tag, _do_alloc)				\
++({									\
++	typeof(_do_alloc) _res;						\
++	_res = _do_alloc;						\
++	_res;								\
++})
++#else
+ #define alloc_hooks_tag(_tag, _do_alloc)				\
+ ({									\
+ 	typeof(_do_alloc) _res;						\
+@@ -212,6 +220,7 @@ static inline void alloc_tag_sub(union codetag_ref *ref, size_t bytes) {}
+ 		_res = _do_alloc;					\
+ 	_res;								\
+ })
++#endif
+ 
+ #define alloc_hooks(_do_alloc)						\
+ ({									\
+-- 
+2.39.4
+

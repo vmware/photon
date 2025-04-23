@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        14%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        15%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -176,6 +176,8 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 #VMCI/VSOCK
 Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
+Patch26: 0001-alloc_tag-avoid-current-alloc_tag-manipulations-when.patch
+
 %ifarch x86_64
 # VMW: [50..59]
 Patch55: x86-vmware-Log-kmsg-dump-on-panic.patch
@@ -261,6 +263,8 @@ Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 Patch505: 0004-Add-non-approved-prints-for-essIV-and-echainIV-IV-ge.patch
 # Introduce rsa-pkcs1pad_crypt.c to include encrypt and decrypt functions outside canister
 Patch506: 0001-crypto-Introduce-rsa-pkcs1pad_crypt-to-host-encrypt-.patch
+# Disable alloc_hook_tags if MEM_PROFILING is disabled
+Patch507: 0001-linux-canister-Eliminate-codetag-and-other-taggings-.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
@@ -493,7 +497,7 @@ The kernel fips-canister
 %endif
 
 # crypto
-%autopatch -p1 -m500 -M506
+%autopatch -p1 -m500 -M507
 
 %if 0%{?fips}
 %autopatch -p1 -m508 -M511
@@ -872,6 +876,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu May 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.1-15
+- Moved 'x86_cpu_id' struct access to fips canister wrapper
+- Disable alloc_hook_tags if MEM_PROFILING is disabled
 * Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.1-14
 - Require coreutils and remove xml-security-c-devel from build requires
 * Wed Apr 30 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.1-13

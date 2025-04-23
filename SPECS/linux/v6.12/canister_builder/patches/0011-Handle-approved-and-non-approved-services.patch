@@ -1,4 +1,4 @@
-From 7f16fd7c595f793480d19600c66012f91de4bb8c Mon Sep 17 00:00:00 2001
+From a216ef83e25cc5cae3101394d8b8e3de5cb796f9 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Fri, 2 May 2025 03:09:39 -0500
 Subject: [PATCH 11/12] Handle approved and non-approved services
@@ -62,7 +62,7 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom
  24 files changed, 351 insertions(+), 24 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index 2aab5fe59..3edf21fb8 100644
+index ca62f83d1..a123404a9 100644
 --- a/arch/x86/crypto/aesni-intel_glue.c
 +++ b/arch/x86/crypto/aesni-intel_glue.c
 @@ -36,6 +36,7 @@
@@ -73,16 +73,16 @@ index 2aab5fe59..3edf21fb8 100644
  
  void fcw_kernel_fpu_begin(void);
  void fcw_kernel_fpu_end(void);
-@@ -54,6 +55,8 @@ extern struct scatterlist *fcw_scatterwalk_ffwd(struct scatterlist dst[2],
- extern void fcw_scatterwalk_unmap(void *vaddr);
- extern int fcw_printk(const char *fmt, ...);
+@@ -56,6 +57,8 @@ extern int fcw_printk(const char *fmt, ...);
  extern bool fcw_boot_cpu_has(unsigned long bit);
+ extern bool fcw_x86_match_cpu_zmm_exclusion_list(void);
+ extern bool fcw_x86_match_cpu_aesni_cpu_id(void);
 +int __init aesni_init(void);
 +void __exit aesni_exit(void);
  
  #define AESNI_ALIGN	16
  #define AESNI_ALIGN_ATTR __attribute__ ((__aligned__(AESNI_ALIGN)))
-@@ -97,6 +100,26 @@ asmlinkage void aesni_xts_enc(const struct crypto_aes_ctx *ctx, u8 *out,
+@@ -99,6 +102,26 @@ asmlinkage void aesni_xts_enc(const struct crypto_aes_ctx *ctx, u8 *out,
  asmlinkage void aesni_xts_dec(const struct crypto_aes_ctx *ctx, u8 *out,
  			      const u8 *in, unsigned int len, u8 *iv);
  
@@ -109,7 +109,7 @@ index 2aab5fe59..3edf21fb8 100644
  #ifdef CONFIG_X86_64
  
  static void (*aesni_ctr_enc_tfm)(struct crypto_aes_ctx *ctx, u8 *out,
-@@ -506,8 +529,10 @@ static int xts_setkey_aesni(struct crypto_skcipher *tfm, const u8 *key,
+@@ -508,8 +531,10 @@ static int xts_setkey_aesni(struct crypto_skcipher *tfm, const u8 *key,
  	int err;
  
  	err = xts_verify_key(tfm, key, keylen);
@@ -121,7 +121,7 @@ index 2aab5fe59..3edf21fb8 100644
  
  	keylen /= 2;
  
-@@ -1361,6 +1386,7 @@ gcm_crypt(struct aead_request *req, int flags)
+@@ -1363,6 +1388,7 @@ gcm_crypt(struct aead_request *req, int flags)
  	u32 le_ctr[4]; /* Counter in little-endian format */
  	int taglen;
  	int err;
@@ -129,7 +129,7 @@ index 2aab5fe59..3edf21fb8 100644
  
  	/* Initialize the counter and determine the associated data length. */
  	le_ctr[0] = 2;
-@@ -1377,6 +1403,22 @@ gcm_crypt(struct aead_request *req, int flags)
+@@ -1379,6 +1405,22 @@ gcm_crypt(struct aead_request *req, int flags)
  		le_ctr[3] = get_unaligned_be32(req->iv + 0);
  	}
  
@@ -152,7 +152,7 @@ index 2aab5fe59..3edf21fb8 100644
  	/* Begin walking through the plaintext or ciphertext. */
  	if (flags & FLAG_ENC)
  		err = skcipher_walk_aead_encrypt(&walk, req, false);
-@@ -1574,7 +1616,7 @@ static const struct x86_cpu_id zmm_exclusion_list[] = {
+@@ -1556,7 +1598,7 @@ DEFINE_GCM_ALGS(vaes_avx10_512, FLAG_AVX10_512,
  
  static int __init register_avx_algs(void)
  {
@@ -161,7 +161,7 @@ index 2aab5fe59..3edf21fb8 100644
  
  	if (!fcw_boot_cpu_has(X86_FEATURE_AVX))
  		return 0;
-@@ -1587,6 +1629,23 @@ static int __init register_avx_algs(void)
+@@ -1569,6 +1611,23 @@ static int __init register_avx_algs(void)
  					 aes_gcm_simdalgs_aesni_avx);
  	if (err)
  		return err;
@@ -185,7 +185,7 @@ index 2aab5fe59..3edf21fb8 100644
  #if defined(CONFIG_AS_VAES) && defined(CONFIG_AS_VPCLMULQDQ)
  	if (!fcw_boot_cpu_has(X86_FEATURE_AVX2) ||
  	    !fcw_boot_cpu_has(X86_FEATURE_VAES) ||
-@@ -1616,6 +1675,22 @@ static int __init register_avx_algs(void)
+@@ -1598,6 +1657,22 @@ static int __init register_avx_algs(void)
  	if (err)
  		return err;
  
@@ -205,10 +205,10 @@ index 2aab5fe59..3edf21fb8 100644
 +		}
 +	}
 +
- 	if (x86_match_cpu(zmm_exclusion_list)) {
+ 	if (fcw_x86_match_cpu_zmm_exclusion_list()) {
  		int i;
  
-@@ -1633,6 +1708,23 @@ static int __init register_avx_algs(void)
+@@ -1615,6 +1690,23 @@ static int __init register_avx_algs(void)
  					 aes_gcm_simdalgs_vaes_avx10_512);
  	if (err)
  		return err;
@@ -232,16 +232,16 @@ index 2aab5fe59..3edf21fb8 100644
  #endif /* CONFIG_AS_VAES && CONFIG_AS_VPCLMULQDQ */
  	return 0;
  }
-@@ -1690,7 +1782,7 @@ MODULE_DEVICE_TABLE(x86cpu, aesni_cpu_id);
+@@ -1664,7 +1756,7 @@ static void unregister_avx_algs(void)
  
  int __init aesni_init(void)
  {
 -	int err;
 +	int err, i;
  
- 	if (!x86_match_cpu(aesni_cpu_id))
+ 	if (!fcw_x86_match_cpu_aesni_cpu_id())
  		return -ENODEV;
-@@ -1706,18 +1798,45 @@ int __init aesni_init(void)
+@@ -1680,18 +1772,45 @@ int __init aesni_init(void)
  	if (err)
  		return err;
  
@@ -1052,5 +1052,5 @@ index 0e619e399..c3bccc80a 100644
  	return err;
  }
 -- 
-2.49.0
+2.39.4
 

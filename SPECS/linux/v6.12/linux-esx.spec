@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -113,6 +113,8 @@ Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
+
+Patch32: 0001-alloc_tag-avoid-current-alloc_tag-manipulations-when.patch
 
 %ifarch x86_64
 # VMW: [50..59]
@@ -444,6 +446,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sun May 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.1-3
+- Disable alloc_hook_tags if MEM_PROFILING is disabled
 * Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.1-2
 - Require coreutils and remove xml-security-c-devel from build requires
 * Mon Dec 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.1-1
