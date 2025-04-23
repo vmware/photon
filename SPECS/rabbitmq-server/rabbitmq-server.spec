@@ -19,7 +19,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.13.3
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -63,7 +63,10 @@ rabbitmq messaging server
 %build
 export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 export PROJECT_VERSION="%{version}"
-%make_build
+
+# some intermittent build failure
+# retry if first run fails
+%make_build || %make_build
 
 %install
 export PROJECT_VERSION="%{version}"
@@ -150,6 +153,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Tue Apr 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.13.3-3
+- Bump release for updating erlang
 * Thu Apr 10 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.13.3-2
 - Bump release for updating erlang
 * Tue Jun 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.13.3-1

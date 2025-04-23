@@ -6,7 +6,7 @@
 Name:            erlang-%{realname}
 Summary:         Erlang Bindings for sd_notify()
 Version:         1.1
-Release:         4%{?dist}
+Release:         5%{?dist}
 License:         MIT
 URL:             https://github.com/systemd/erlang-%{realname}
 Vendor:          VMware, Inc.
@@ -46,6 +46,8 @@ install -m 644 -p %{output_dir}/%{realname}.beam %{buildroot}%{_libdir}/erlang/l
 %{_libdir}/erlang/lib/%{realname}-%{version}/ebin/%{realname}.beam
 
 %changelog
+* Tue Apr 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.1-5
+- Bump release for upating erlang
 * Thu Apr 10 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.1-4
 - Bump release for upating erlang
 * Tue Jun 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-3
