@@ -2,13 +2,24 @@ SHELL := /bin/bash
 
 CONF := build-config.json
 
-COMMON_BRANCH_PATH ?= $(shell jq -r '.["common-branch-path"]' "$(CONF)")
-STAGE_PATH ?= $(shell jq -r '.["stage-path"]' "$(CONF)")
-
-export RELEASE_BRANCH_PATH := $(shell pwd)
-export STAGE_PATH := $(shell realpath $(STAGE_PATH))
-
 .PHONY: all
+
+.DEFAULT_GOAL := all
+
+TOOLS := jq
+$(foreach tool, $(TOOLS), \
+	$(if $(shell command -v $(tool)), , $(error "$(tool) is not installed. Please install $(tool) to proceed.")) \
+)
+
+COMMON_BRANCH_PATH := $(shell jq -r '.["common-branch-path"]' "$(CONF)")
+RELEASE_BRANCH_PATH := $(shell pwd)
+STAGE_PATH := $(shell realpath $(shell jq -r '.["stage-path"]' "$(CONF)"))
+
+RELEASE_BRANCH_ID = $(shell pwd | sed 's|/|-|g')
+FIRST_PASS_MARKER = /tmp/.first-pass$(RELEASE_BRANCH_ID)
+$(shell rm -f $(FIRST_PASS_MARKER))
+
+export COMMON_BRANCH_PATH RELEASE_BRANCH_PATH STAGE_PATH FIRST_PASS_MARKER
 
 define with_pushd
 	pushd $(COMMON_BRANCH_PATH) > /dev/null && \
@@ -24,8 +35,10 @@ all:
 		python3 build.py -c $(CONF) -t extra-packages; \
 	else \
 		python3 build.py -c $(CONF) -t packages; \
-	fi; \
+	fi \
 	)
 
 %:
-	@$(call with_pushd, python3 build.py -c $(CONF) -t $@)
+	@$(call with_pushd, \
+	python3 build.py -c $(CONF) -t $@; touch $(FIRST_PASS_MARKER) \
+	)
