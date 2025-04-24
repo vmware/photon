@@ -276,7 +276,7 @@ class constants(object):
         ):
             constants.addMacro(
                 "phvcs",
-                f"{PH_COMMIT_URI_PREFIX}{constants.buildNumber}\;{PH_COMMIT_URI_PREFIX}{constants.commonBuildNumber}",
+                f"{PH_COMMIT_URI_PREFIX}{constants.buildNumber};{PH_COMMIT_URI_PREFIX}{constants.commonBuildNumber}",
             )
 
         # adding releasenumber rpm macro

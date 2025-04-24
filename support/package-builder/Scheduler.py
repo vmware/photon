@@ -337,7 +337,8 @@ class Scheduler(object):
                 childPkgNode.parentPkgNodes.add(pkgNode)
 
     def _optimizeGraph():
-        """
+
+        r"""
         GRAPH-BUILD STEP 3: Convert weak (install-requires) dependencies
                              into strong (aux-build-requires) dependencies.
 
@@ -530,7 +531,8 @@ class Scheduler(object):
             )
 
     def _calculateCriticalChainWeights():
-        """
+
+        r"""
         GRAPH-BUILD STEP 5: Calculate critical-chain-weight of packages.
 
         Calculation of critical-chain-weight (the key scheduling
