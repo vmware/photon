@@ -2,6 +2,12 @@ CONF := build-config.json
 
 .PHONY: all
 
+RELEASE_BRANCH_ID = $(shell pwd | sed 's|/|-|g')
+FIRST_PASS_MARKER = /tmp/.first-pass$(RELEASE_BRANCH_ID)
+$(shell rm -f $(FIRST_PASS_MARKER))
+
+export FIRST_PASS_MARKER
+
 all:
 	@if [ -n "$(pkgs)" ]; then \
 		python3 build.py -c $(CONF) --pkgs "$(pkgs)"; \
@@ -12,4 +18,4 @@ all:
 	fi
 
 %:
-	@python3 build.py -c $(CONF) -t $@
+	@python3 build.py -c $(CONF) -t $@; touch $(FIRST_PASS_MARKER)

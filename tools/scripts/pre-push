@@ -2,15 +2,22 @@
 
 # This is triggered by pre-push git hook
 
-SCRIPT_DIR="$(dirname "$(realpath $0)")"
+SCRIPT_DIR_ACTUAL="$(cd "$(dirname "${0}")" && pwd)"
+REPO_DIR_ACTUAL="$(realpath ${SCRIPT_DIR_ACTUAL}/../..)"
 
-SRC_DIR="$(realpath ${SCRIPT_DIR}/../..)"
+SCRIPT_DIR_REAL="$(dirname $(realpath ${0}))"
+COMM_REPO_DIR="$(realpath ${SCRIPT_DIR_REAL}/../..)"
 
-modified_spec_files=$(bash ${SCRIPT_DIR}/get_modified_files.sh | grep '\.spec')
+modified_files=$(bash ${SCRIPT_DIR_REAL}/get_modified_files.sh "${REPO_DIR_ACTUAL}")
+if [ $? -ne 0 ]; then
+  echo "ERROR: get_modified_files.sh '${REPO_DIR_REAL}' failed ..." >&2
+  exit 1
+fi
 
+modified_spec_files=$(echo ${modified_files} | grep '\.spec')
 if [ -z "${modified_spec_files}" ]; then
   exit 0
 fi
 
-python3 ${SRC_DIR}/support/spec-checker/check_spec.py ${modified_spec_files}
+python3 ${COMM_REPO_DIR}/support/spec-checker/check_spec.py ${modified_spec_files}
 exit $?
