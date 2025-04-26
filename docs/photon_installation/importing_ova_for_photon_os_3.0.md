@@ -65,8 +65,8 @@ After you have downloaded the OVA, log in to your vSphere environment and perfor
         
 	**Note**: Because of limitations within OVA support on vSphere, it was necessary to specify a default password for the OVA option. However, all Photon OS instances that are created by importing the OVA require an immediate password change upon login. The default account credentials are:
         
-        - Username: ``root``
-        - Password: ``changeme``
+        - Username: root
+        - Password: changeme
     
 	After you provide these credentials, vSphere prompts you to create a new password and type it a second time to verify it.
         
