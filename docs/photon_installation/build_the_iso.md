@@ -5,7 +5,7 @@ Perform the following steps to install the packages on Ubuntu:
 1. Install the packages: 
 
     ```
-    sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests libfuse-dev libssl-dev uuid-dev libreadline-dev kpartx git bc
+    sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests libfuse-dev libssl-dev uuid-dev libreadline-dev kpartx git bc cdrkit dosfstools
     ```
 
 1. Get Docker:
