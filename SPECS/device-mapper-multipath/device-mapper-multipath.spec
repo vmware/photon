@@ -1,7 +1,7 @@
 Summary:    Provide tools to manage multipath devices
 Name:       device-mapper-multipath
 Version:    0.9.4
-Release:    3%{?dist}
+Release:    4%{?dist}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 URL:        http://christophe.varoqui.free.fr
@@ -100,6 +100,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+* Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.9.4-4
+- Bump for building with updated libaio
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.4-3
 - Release bump for SRP compliance
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 0.9.4-2

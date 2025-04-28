@@ -1,6 +1,6 @@
 sources:
-- archive: libaio-0.3.110.tar.gz
-  archive_sha512sum: 664295d330d6e9adc005e2331e77582619625b479ffc2b81728ba6a682487380ee936079c4a69d35144b458bbe35c612f4ed9b32e913bd7e109b824345763eb3
+- archive: libaio-0.3.113.tar.gz
+  archive_sha512sum: 65c30a102433bf8386581b03fc706d84bd341be249fbdee11a032b237a7b239e8c27413504fef15e2797b1acd67f752526637005889590ecb380e2e120ab0b71
   skip_validation: true
   spdx:
     package:

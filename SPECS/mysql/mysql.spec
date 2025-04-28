@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.4.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -181,6 +181,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.4.4-2
+- Bump for building with updated libaio
 * Tue Feb 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.4-1
 - Upgrade to v8.4.4
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 8.4.2-2
