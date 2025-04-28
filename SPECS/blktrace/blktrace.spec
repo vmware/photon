@@ -1,7 +1,7 @@
 Summary:        Utilities for block layer IO tracing
 Name:           blktrace
 Version:        1.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://git.kernel.org/cgit/linux/kernel/git/axboe/blktrace.git/tree/README
 Group:          Development/Tools/Other
 Vendor:         VMware, Inc.
@@ -35,6 +35,8 @@ rm -rf %{buildroot}/*
 %{_mandir}
 
 %changelog
+*   Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.3.0-3
+-   Bump for building with updated libaio
 *   Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.3.0-2
 -   Release bump for SRP compliance
 *   Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.0-1

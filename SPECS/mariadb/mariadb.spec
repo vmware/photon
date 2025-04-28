@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.11.14
-Release:          1%{?dist}
+Release:          2%{?dist}
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -454,6 +454,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/errmsg-utf8.txt
 
 %changelog
+* Mon Sep 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 10.11.14-2
+- Bump for building with updated libaio
 * Wed Sep 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.11.14-1
 - Upgrade to v10.11.14, newer LTS release
 * Thu Jul 31 2025 Michelle Wang <michelle.wang@broadcom.com> 10.9.4-11

@@ -1,17 +1,15 @@
 Summary:        Linux-native asynchronous I/O access library
 Name:           libaio
-Version:        0.3.110
-Release:        4%{?dist}
-URL:            https://git.fedorahosted.org/git/libaio.git
+Version:        0.3.113
+Release:        1%{?dist}
+URL:            https://github.com/yugabyte/libaio
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://fedorahosted.org/releases/l/i/libaio/libaio-0.3.110.tar.gz
+Source0:        https://releases.pagure.org/libaio/libaio-0.3.113.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0:        libaio-install-to-destdir-slash-usr.patch
 
 %if 0%{?with_check}
 BuildRequires:  e2fsprogs
@@ -38,24 +36,13 @@ for the Linux-native asynchronous I/O facility ("async I/O", or "aio").
 %prep
 # Using autosetup is not feasible
 %setup -q -a 0
-%patch -p0 -b .install-to-destdir-slash-usr 0
-%patch -p1 -b .install-to-destdir-slash-usr 0
 
 %build
-# A library with a soname of 1.0.0 was inadvertantly released.  This
-# build process builds a version of the library with the broken soname in
-# the libaio-0.3.103 directory, and then builds the library again
-# with the correct soname.
 cd %{name}-%{version}
-make soname='libaio.so.1.0.0' libname='libaio.so.1.0.0' %{?_smp_mflags}
-cd ..
 make %{?_smp_mflags}
 
 %install
-cd %{name}-%{version}
-install -D -m 755 src/libaio.so.1.0.0 %{buildroot}/%{_libdir}/libaio.so.1.0.0
-cd ..
-make destdir=%{buildroot} prefix=%{_prefix} libdir=/lib usrlibdir=%{_libdir} includedir=%{_includedir} install %{?_smp_mflags}
+make install DESTDIR=%{buildroot} prefix=%{_usr} libdir=%{_libdir} %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} -k check
@@ -71,9 +58,11 @@ make %{?_smp_mflags} -k check
 %files devel
 %attr(0644,root,root) %{_includedir}/*
 %attr(0755,root,root) %{_libdir}/libaio.so
-%attr(0755,root,root) %{_libdir}/libaio.a
+%exclude %attr(0755,root,root) %{_libdir}/libaio.a
 
 %changelog
+* Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.3.113-1
+- Update to 0.3.113
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.3.110-4
 - Release bump for SRP compliance
 * Mon Aug 19 2019 Shreenidhi Shedi <sshedi@vmware.com> 0.3.110-3

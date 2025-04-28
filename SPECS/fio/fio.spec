@@ -1,7 +1,7 @@
 Summary:         Multithreaded IO generation tool
 Name:            fio
 Version:         3.33
-Release:         5%{?dist}
+Release:         6%{?dist}
 Group:           Applications/System
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -85,6 +85,8 @@ sh ./configure --disable-optimizations --dynamic-libengines
 %{_mandir}/man1/*
 
 %changelog
+* Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.33-6
+- Bump for building with updated libaio
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.33-5
 - Release bump for SRP compliance
 * Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 3.33-4

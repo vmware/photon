@@ -4,7 +4,7 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
 Version:        2.03.16
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
@@ -297,6 +297,8 @@ fi
 %{_libdir}/pkgconfig/devmapper-event.pc
 
 %changelog
+* Mon Sep 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.03.16-7
+- Bump for building with updated libaio
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.03.16-6
 - Bump version as a part of ncurses upgrade
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.03.16-5
