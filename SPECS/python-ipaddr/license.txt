@@ -1,1 +1,0 @@
-License: Apache-2.0 AND Python-2.0
