@@ -1,10 +1,10 @@
 
-%define photon_kpatch_utils_version 1.0
-%define kpatch_utils photon-kpatch-utils-v%{photon_kpatch_utils_version}
+%define photon_kpatch_utils_version 1.1
+%define kpatch_utils photon-kpatch-utils-%{photon_kpatch_utils_version}
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.10
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -123,6 +123,8 @@ cp %{kpatch_utils}/Dockerfile.ph* %{buildroot}%{_datadir}/livepatch/dockerfiles
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph3
 
 %changelog
+* Tue Sep 16 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.9.10-8
+- Do not need xml-security-c for building kernel
 * Wed Sep 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-7
 - Maintain kpatch utils scripts only in photon-kpatch repo in vcf github
 * Wed Aug 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 0.9.10-6
