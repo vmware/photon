@@ -1,1 +1,0 @@
-License: GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-3-Clause AND ISC AND BSD-4-Clause-UC AND xinetd AND NTP AND FSFUL AND HPND
