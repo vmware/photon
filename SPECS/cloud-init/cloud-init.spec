@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        25.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -32,7 +32,6 @@ BuildRequires: photon-release
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
 BuildRequires: dbus
-BuildRequires: python3-ipaddr
 BuildRequires: iproute2
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
@@ -151,6 +150,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 25.1-2
+- cloud init does not need ipaddr any more and its deprecated and superceded by ipaddress
 * Thu Feb 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1-1
 - Upgrade to v25.1
 * Mon Jan 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.4-1
