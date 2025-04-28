@@ -76,6 +76,8 @@ Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 [Guru: Backported to 5.10.y branch]
 Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+[Vamsi: Fix to handle type change of nfct->use]
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
  include/linux/netfilter.h                  |  1 +
  net/bridge/br_netfilter_hooks.c            | 96 ++++++++++++++++++++++
@@ -170,7 +172,7 @@ index 4f867aca6300..ac600f322b2d 100644
 +		return NF_ACCEPT;
 +
 +	WARN_ON_ONCE(skb_shared(skb));
-+	WARN_ON_ONCE(atomic_read(&nfct->use) != 1);
++	WARN_ON_ONCE(refcount_read(&nfct->use) != 1);
 +
 +	/* We can't call nf_confirm here, it would create a dependency
 +	 * on nf_conntrack module.

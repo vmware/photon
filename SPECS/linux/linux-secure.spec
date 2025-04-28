@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.235
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        5.10.236
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=2f9e7b7689f19b7fd16a577f0f51cb4dd7ecc52b7b7c39f3e518e2760d3f639940c5a212976b92531298ff534d49a7ae667137540d30f7f25e5f7db6dce2abb6
+%define sha512 linux=835f10a8d3efb52094ef92aaba403a471143eabbb5da59ec2e26bea66840952bcc7f3f20056f1e1cf1277dcdb33b59e56c70a7aea05861aa9edf62b1508d0840
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -148,9 +148,6 @@ Patch108: 0003-mm_hugetlb_use_hugetlb_pte_stable_in_migration_race_check.patch
 # Fix for CVE-2024-50256
 Patch109:  0001-netfilter-nf_reject_ipv6-fix-potential-crash-in-nf_s.patch
 
-# Fix for CVE-2021-47489
-Patch110:  0001-drm-amdgpu-Fix-even-more-out-of-bound-writes-from-de.patch
-
 # Fix for CVE-2021-47265
 Patch111:  0001-IB-mlx4-Use-port-iterator-and-validation-APIs.patch
 Patch112:  0002-RDMA-Verify-port-when-creating-flow-rule.patch
@@ -264,9 +261,6 @@ Patch175: 0002-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
 # Fix CVE-2024-41014
 Patch176: 0001-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
 
-# Fix CVE-2024-46821
-Patch177: 0001-drm-amd-pm-Fix-negative-array-index-read.patch
-
 # Fix CVE-2024-47673
 Patch178: 0001-wifi-iwlwifi-mvm-pause-TCM-when-the-firmware-is-stop.patch
 
@@ -285,9 +279,6 @@ Patch183: 0001-udf-fix-uninit-value-use-in-udf_get_fileshortad.patch
 
 # Fix CVE-2024-50154
 Patch184: 0001-tcp-dccp-Don-t-use-timer_pending-in-reqsk_queue_unli.patch
-
-# Fix CVE-2024-8805
-Patch185: 0001-Bluetooth-hci_event-Align-BR-EDR-JUST_WORKS-paring-w.patch
 
 # Fix CVE-2024-50014
 Patch186: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -640,6 +631,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 28 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.236-1
+- Update to version 5.10.236
 * Mon Apr 14 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.235-6
 - Fix CVE-2024-35839
 * Mon Apr 14 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.235-5
