@@ -1,0 +1,20 @@
+From e656033b826cccb016ab14cb1831bc0ec8707246 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clrkwllms@kernel.org>
+Date: Tue, 15 Apr 2025 15:31:04 -0500
+Subject: [PATCH 69/69] Linux 6.1.134-rt51 REBASE
+
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 272158183778..75493460c41f 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt46
++-rt51
+-- 
+2.49.0
+

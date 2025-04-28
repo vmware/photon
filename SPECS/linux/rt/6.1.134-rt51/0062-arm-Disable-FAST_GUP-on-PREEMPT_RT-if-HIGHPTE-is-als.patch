@@ -1,0 +1,42 @@
+From 8bd6f272a53651dc6550f9cbf73ec507f6d6b979 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Tue, 23 Jan 2024 12:56:21 +0100
+Subject: [PATCH 62/69] arm: Disable FAST_GUP on PREEMPT_RT if HIGHPTE is also
+ enabled.
+
+gup_pgd_range() is invoked with disabled interrupts and invokes
+__kmap_local_page_prot() via pte_offset_map(), gup_p4d_range().
+With HIGHPTE enabled, __kmap_local_page_prot() invokes kmap_high_get()
+which uses a spinlock_t via lock_kmap_any(). This leads to an
+sleeping-while-atomic error on PREEMPT_RT because spinlock_t becomes a
+sleeping lock and must not be acquired in atomic context.
+
+The loop in map_new_virtual() uses wait_queue_head_t for wake up which
+also is using a spinlock_t.
+
+Limit HAVE_FAST_GUP additionaly to remain disabled on PREEMPT_RT with
+HIGHPTE enabled.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+(cherry picked from commit 02cf5a345530b4d3a94093f0b5c784701c2e7c6a)
+Signed-off-by: Clark Williams <clark.williams@gmail.com>
+---
+ arch/arm/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index d1f2e062ce0b..5d92aef787e3 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -95,7 +95,7 @@ config ARM
+ 	select HAVE_DYNAMIC_FTRACE_WITH_REGS if HAVE_DYNAMIC_FTRACE
+ 	select HAVE_EFFICIENT_UNALIGNED_ACCESS if (CPU_V6 || CPU_V6K || CPU_V7) && MMU
+ 	select HAVE_EXIT_THREAD
+-	select HAVE_FAST_GUP if ARM_LPAE
++	select HAVE_FAST_GUP if ARM_LPAE && !(PREEMPT_RT && HIGHPTE)
+ 	select HAVE_FTRACE_MCOUNT_RECORD if !XIP_KERNEL
+ 	select HAVE_FUNCTION_GRAPH_TRACER
+ 	select HAVE_FUNCTION_TRACER if !XIP_KERNEL
+-- 
+2.49.0
+

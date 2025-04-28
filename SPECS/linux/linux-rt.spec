@@ -20,7 +20,7 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.133
+Version:        6.1.135
 Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -28,7 +28,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt50
+%define rt_version rt51
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
@@ -194,10 +194,6 @@ Patch143: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
 
 # Fix CVE-2024-41013
 Patch144: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
-
-# Fix CVE-2024-46816
-Patch146: 0001-drm-amd-display-handle-invalid-connector-indices.patch
-Patch147: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
 
 # Fix CVE-2024-50018
 Patch150: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
@@ -578,6 +574,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Sun Apr 27 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.135-1
+- Update to version 6.1.135
+- RT version to rt51
 * Mon Apr 14 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.133-1
 - Update to version 6.1.133
 - Fixes: CVE-2025-21714, CVE-2025-21739 and CVE-2025-21759

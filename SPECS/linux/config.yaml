@@ -1,14 +1,14 @@
 sources:
-    - archive: linux-6.1.133.tar.xz
+    - archive: linux-6.1.135.tar.xz
       archive_type: upstream
-      version: 6.1.133
-      name: linux-6.1.133
-      url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.133.tar.xz
+      version: 6.1.135
+      name: linux-6.1.135
+      url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.135.tar.xz
       repo_url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-      commit_id: 3dfebb87d7ebd9db03d6aabb42b8bc1589d13ae2
+      commit_id: ccdaf323de815afe156cb2d103a547aa71e6a171
       skip_list: []
       missing: []
-      archive_sha512sum: 46f5d09736afbb3ddf520dcb5973f71b0678491b3127464b9b433ffac76c1535b8df53ac067638a4b2e51340318b0cfa397fa1ee7d47b028b3694847e4a92ce3
+      archive_sha512sum: 3fb40d438daeb67adb4831998d1bc3c8d02c0876637f4039930d1ab4fe7e37993051f36918e10be9182bfd2d1e172b97e15f376efa3d900e99f9ee3bcaf2c793
       skip_validation: false
       spdx:
           package:
