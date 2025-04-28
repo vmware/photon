@@ -1,7 +1,7 @@
 Summary:    A fast json library for C
 Name:       libfastjson
-Version:    0.99.9
-Release:    2%{?dist}
+Version:    1.2304.0
+Release:    1%{?dist}
 URL:        https://github.com/rsyslog/libfastjson
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -54,6 +54,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/libfastjson.pc
 
 %changelog
+* Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.2304.0-1
+- update to 1.2304.0
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.99.9-2
 - Release bump for SRP compliance
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.99.9-1

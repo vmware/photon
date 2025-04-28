@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2306.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -104,6 +104,8 @@ make %{?_smp_mflags} check
 %dir %{_sharedstatedir}/rsyslog
 
 %changelog
+* Mon Sep 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.2306.0-6
+- Bump for building with updated libfastjson
 * Mon May 05 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.2306.0-5
 - Add imjournal.state file in conf to store the position in the journal
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.2306.0-4
