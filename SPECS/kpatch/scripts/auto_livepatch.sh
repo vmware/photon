@@ -117,7 +117,6 @@ gen_dockerfile() {
                      "libdnet-devel" \
                      "libmspack-devel" \
                      "xerces-c-devel" \
-                     "xml-security-c-devel" \
                      "coreutils" \
                      "util-linux" \
                      "kpatch" \

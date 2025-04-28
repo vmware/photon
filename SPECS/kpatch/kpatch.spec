@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -121,6 +121,8 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.9.8-5
+- Do not need xml-security-c for building kernel
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.9.8-4
 - Release bump for SRP compliance
 * Wed Dec 4 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.9.8-3
