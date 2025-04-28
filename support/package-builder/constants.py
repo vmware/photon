@@ -113,7 +113,7 @@ class constants(object):
     Build system should interpret it as
     Requires: shadow
     """
-    providedBy = ""
+    providedBy = {}
 
     @staticmethod
     def addSpecPath(specPath):
