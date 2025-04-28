@@ -1,6 +1,6 @@
 sources:
-- archive: libfastjson-0.99.9.tar.gz
-  archive_sha512sum: d32d949465dcc94d04be6cd0e1cf78e5653bbbef7e2bd148079a5f4d69102febabd1fe8af668e344b82c62a918d1cc6c9f39a203d65cb1d81409a6d400a63d6a
+- archive: libfastjson-1.2304.0.tar.gz
+  archive_sha512sum: a43dc809c0fc073f8bddaebdf91c996ccfc6275d7dcc312762e8dfb366dc121c7698c316b71bd5b43f2f7e9b3c326c90cfa927ce415824a7d32dd5e6667048ab
   skip_validation: true
   spdx:
     package:
