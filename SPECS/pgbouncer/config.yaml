@@ -7,11 +7,11 @@ sources:
       detailed_description: 'Pgbouncer is a light-weight, robust connection pooler
         for PostgreSQL. '
       home_page: https://wiki.postgresql.org/wiki/PgBouncer
-      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND X11 AND FSFUL AND ISC AND CC0-1.0
-        AND BSD-2-Clause
-      license_declared: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND X11 AND FSFUL AND ISC AND CC0-1.0
-        AND BSD-2-Clause
+      license_concluded: ISC AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND
+        CC0-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND X11 AND
+        FSFUL AND BSD-2-Clause AND BSD-3-Clause
+      license_declared: ISC AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND CC0-1.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND X11 AND FSFUL
+        AND BSD-2-Clause AND BSD-3-Clause
       short_summary: Connection pooler for PostgreSQL.
       supplier: 'Organization: Broadcom, Inc.'

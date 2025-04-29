@@ -1,23 +1,26 @@
 Summary:          Connection pooler for PostgreSQL.
 Name:             pgbouncer
 Version:          1.17.0
-Release:          5%{?dist}
+Release:          6%{?dist}
 URL:              https://wiki.postgresql.org/wiki/PgBouncer
+Group:            Application/Databases.
+Vendor:           VMware, Inc.
+Distribution:     Photon
+
 Source0:          https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
 Source1:          pgbouncer.service
 Source2:          %{name}.sysusers
 
 Source3: license.txt
 %include %{SOURCE3}
-Group:            Application/Databases.
-Vendor:           VMware, Inc.
-Distribution:     Photon
+
 BuildRequires:    libevent-devel
 BuildRequires:    openssl-devel
 BuildRequires:    systemd
 BuildRequires:    systemd-devel
 BuildRequires:    c-ares-devel
 BuildRequires:    pkg-config
+
 Requires:         c-ares
 Requires:         libevent
 Requires:         openssl
@@ -28,27 +31,26 @@ Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure --with-cares
-make %{?_smp_mflags} V=1
+%make_build
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-install -vdm 744 %{buildroot}/var/log/pgbouncer
-install -vdm 755 %{buildroot}/var/run/pgbouncer
+%make_install %{?_smp_mflags}
+install -vdm 744 %{buildroot}%{_var}/log/pgbouncer
+install -vdm 755 %{buildroot}%{_var}/run/pgbouncer
 install -p -d %{buildroot}%{_sysconfdir}/
 install -p -d %{buildroot}%{_sysconfdir}/sysconfig
 install -p -m 644 etc/pgbouncer.ini %{buildroot}%{_sysconfdir}/
-mkdir -p %{buildroot}/etc/systemd/system/
-install -m 0644 %{SOURCE1} %{buildroot}/etc/systemd/system/%{name}.service
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/system/
+install -m 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/system/%{name}.service
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
 %check
 pushd test
-make all %{?_smp_mflags}
+%make_build all
 popd
 
 %pre
@@ -56,14 +58,14 @@ popd
 
 %post
 if [ $1 -eq 1 ] ; then
-    chown %{name}:%{name} /var/log/%{name}
-    chown %{name}:%{name} /var/run/%{name}
+  chown -R %{name}:%{name} \
+           %{_var}/log/%{name}
 fi
 
 %postun
 if [ $1 -eq 0 ] ; then
-    rm -rf /var/log/%{name}
-    rm -rf /var/run/%{name}
+  rm -rf %{_var}/log/%{name} \
+         %{_var}/run/%{name}
 fi
 
 %files
@@ -73,10 +75,14 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}.ini
 %{_mandir}/man1/%{name}.*
 %{_mandir}/man5/%{name}.*
-%{_datadir}/doc/pgbouncer/*
+%{_docdir}/pgbouncer/*
 %{_sysusersdir}/%{name}.sysusers
+%dir %attr(-,%{name},%{name}) %{_var}/run/%{name}
+%dir %attr(-,%{name},%{name}) %{_var}/log/%{name}
 
 %changelog
+* Thu Apr 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.17.0-6
+- Fix spec issues
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.17.0-5
 - Release bump for SRP compliance
 * Wed Oct 18 2023 Anmol Jain <anmolja@vmware.com> 1.17.0-4

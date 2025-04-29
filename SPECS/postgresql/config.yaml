@@ -7,7 +7,7 @@ sources:
   url: http://ftp.postgresql.org/pub/source/v10.23/postgresql-10.23.tar.bz2
   repo_url: https://github.com/postgres/postgres.git
   commit_id: 02991e79f8f58bc208f05dcc8af0c62dbe0a6ea4
-  missing:
+  missing: []
   spdx:
     package:
       detailed_description: PostgreSQL is an object-relational database management
@@ -35,7 +35,7 @@ sources:
   url: http://ftp.postgresql.org/pub/source/v13.20/postgresql-13.20.tar.bz2
   repo_url: https://github.com/postgres/postgres.git
   commit_id: c8f198c3acb59ed858b5b9b88b4fbc55cece544e
-  missing:
+  missing: []
   spdx:
     package:
       detailed_description: PostgreSQL is an advanced Object-Relational database management
@@ -72,7 +72,7 @@ sources:
   url: http://ftp.postgresql.org/pub/source/v14.17/postgresql-14.17.tar.bz2
   repo_url: https://github.com/postgres/postgres.git
   commit_id: e5cabe28006995d90cc9ebc613dad072c44c7f4a
-  missing:
+  missing: []
   spdx:
     package:
       detailed_description: PostgreSQL is an advanced Object-Relational database management
@@ -109,7 +109,7 @@ sources:
   url: http://ftp.postgresql.org/pub/source/v15.12/postgresql-15.12.tar.bz2
   repo_url: https://github.com/postgres/postgres.git
   commit_id: 50d3d22baba63613d1f1406b2ed460dc9b03c3fc
-  missing:
+  missing: []
   spdx:
     package:
       detailed_description: PostgreSQL is an advanced Object-Relational database management
@@ -134,5 +134,40 @@ sources:
         AND PostgreSQL AND TCL AND BSL-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-2.0
         AND GPL-1.0-or-later AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
         AND BSD-2-Clause-Views AND X11 AND Apache-2.0 WITH LLVM-exception
+      short_summary: PostgreSQL database engine
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: postgresql-16.6.tar.bz2
+  skip_validation: true
+  archive_sha512sum: ffd6d39fb7aed87241237d68af4934fba1b4ac1be4d3c2833e308e50c21a693796fe54b73e0905365d7557009c40049a23b966aa86765b969797434a0d4bd5f8
+  name: postgresql-16.6
+  version: 16.6
+  url: http://ftp.postgresql.org/pub/source/v16.6/postgresql-16.6.tar.bz2
+  repo_url: https://github.com/postgres/postgres.git
+  commit_id: 1f47e7b59b92c58eee6840325d1aaa6acee84194
+  missing: []
+  spdx:
+    package:
+      detailed_description: PostgreSQL is an advanced Object-Relational database management
+        system (DBMS). The base postgresql package contains the client programs that
+        you'll need to access a PostgreSQL DBMS server. These client programs can
+        be located on the same machine as the PostgreSQL server, or on a remote machine
+        that accesses a PostgreSQL server over a network connection. The PostgreSQL
+        server can be found in the postgresql-server sub-package.  If you want to
+        manipulate a PostgreSQL database on a local or remote PostgreSQL server, you
+        need this package. You also need to install this package if you're installing
+        the postgresql-server package.
+      home_page: www.postgresql.org
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH
+        LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT
+        AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH
+        LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT
+        AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
