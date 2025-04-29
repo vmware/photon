@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        11%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        12%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -61,8 +61,8 @@ Source7:        check_for_config_applicability.inc
 %define struct_comp_dir struct-comp-dir
 Source9:        struct-comparator.c
 
-%define fips_canister_version 6.0.0-6.12.1-4%{?dist}
-Source16:       fips-canister-%{fips_canister_version}.tar.bz2
+%define fips_canister_version 6.0.0-6.12.1-11%{?dist}
+Source16:       fips-canister-6.0.0-6.12.1-11-1%{?dist}.tar.bz2
 
 %endif
 
@@ -307,7 +307,7 @@ Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 6.12.1-11.ph5-0001-FIPS-canister-binary-usage.patch
+Patch10000: 0001-FIPS-canister-binary-usage.patch
 Patch10001: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0003-FIPS-canister-creation.patch
@@ -869,6 +869,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Apr 22 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.1-12
+- Update canister binary v6.12.1-11
 * Thu Apr 17 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.1-11
 - Remove essIV and echainIV from canister
 * Tue Mar 25 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.1-10
