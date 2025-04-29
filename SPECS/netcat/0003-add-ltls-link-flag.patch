@@ -1,0 +1,26 @@
+From 34fb8e34829bf733f3a7b3a17c50c87e26ae8c5d Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 18 Sep 2024 14:11:44 +0530
+Subject: [PATCH 3/3] add ltls link flag
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 93ca5ee..8ace496 100644
+--- a/Makefile
++++ b/Makefile
+@@ -6,7 +6,7 @@ LDADD+= -ltls -lssl -lcrypto
+ DPADD+=  ${LIBTLS} ${LIBSSL} ${LIBCRYPTO}
+ 
+ PKG_CONFIG ?= pkg-config
+-LIBS=  `$(PKG_CONFIG) --libs libbsd` -lresolv
++LIBS=  `$(PKG_CONFIG) --libs libbsd` -lresolv -ltls
+ OBJS=  $(SRCS:.c=.o)
+ CFLAGS=  -g -O2
+ LDFLAGS=  -Wl,--no-add-needed
+-- 
+2.46.0
+

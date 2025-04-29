@@ -1,0 +1,20 @@
+sources:
+- archive: libmd-1.1.0.tar.xz
+  archive_sha512sum: 5d0da3337038e474fae7377bbc646d17214e72dc848a7aadc157f49333ce7b5ac1456e45d13674bd410ea08477c6115fc4282fed6c8e6a0bf63537a418c0df96
+  skip_validation: false
+  archive_type: upstream
+  name: "libmd-1.1.0"
+  version: 1.1.0
+  url: https://libbsd.freedesktop.org/releases/libmd-1.1.0.tar.xz
+  repo_url: https://gitlab.freedesktop.org/libbsd/libmd
+  commit_id: 16d68ab76eee25bf8ec807aff9a6ea7e0f135019
+  skip_list: []
+  missing: [sha512hl.c, sha256hl.c, sha224hl.c, configure, sha512_256hl.c, config.h.in, .dist-version, ltoptions.m4, md5.3, ltsugar.m4, md4.3, Makefile.in, md4hl.c, sha1hl.c, md2.3, md5hl.c, ChangeLog, aclocal.m4, libtool.m4, .gitlab-ci.yml, md2hl.c, .gitignore, sha384hl.c, build-aux, ltversion.m4, rmd160hl.c, lt~obsolete.m4]
+  spdx:
+    package:
+      detailed_description: 'Library that provides message digest functions from BSD systems'
+      home_page: https://www.hadrons.org/software/libmd/
+      license_concluded: BSD-2-Clause AND BSD-3-Clause AND ISC AND Beerware AND LicenseRef-Fedora-Public-Domain
+      license_declared: BSD-2-Clause AND BSD-3-Clause AND ISC AND Beerware AND LicenseRef-Fedora-Public-Domain
+      short_summary: Library that provides message digest functions from BSD systems
+      supplier: 'Organization: Broadcom, Inc.'

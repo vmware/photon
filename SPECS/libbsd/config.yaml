@@ -1,0 +1,20 @@
+sources:
+- archive: libbsd-0.12.2.tar.xz
+  archive_sha512sum: ce43e4f0486d5f00d4a8119ee863eaaa2f968cae4aa3d622976bb31ad601dfc565afacef7ebade5eba33fff1c329b5296c6387c008d1e1805d878431038f8b21
+  skip_validation: false
+  archive_type: upstream
+  name: "libbsd-0.12.2"
+  version: 0.12.2
+  url: https://libbsd.freedesktop.org/releases/libbsd-0.12.2.tar.xz
+  repo_url: https://gitlab.freedesktop.org/libbsd/libbsd
+  commit_id: 04a24db27ad1572f766bad772cdd9c146e6d9cf0
+  skip_list: []
+  missing: [ltversion.m4, Makefile.in, TIMESPEC_TO_TIMEVAL.3bsd, libtool.m4, ltoptions.m4, .gitlab-ci.yml, TIMEVAL_TO_TIMESPEC.3bsd, build-aux, lt~obsolete.m4, ChangeLog, .dist-version, configure, .gitignore, ltsugar.m4, aclocal.m4, md5.3bsd, config.h.in]
+  spdx:
+    package:
+      detailed_description: 'Library providing BSD-compatible functions for portability'
+      home_page: https://libbsd.freedesktop.org
+      license_concluded: Beerware AND BSD-2-Clause AND BSD-3-Clause AND ISC AND libutil-David-Nugent AND MIT AND LicenseRef-Fedora-Public-Domain
+      license_declared: Beerware AND BSD-2-Clause AND BSD-3-Clause AND ISC AND libutil-David-Nugent AND MIT AND LicenseRef-Fedora-Public-Domain
+      short_summary: Library providing BSD-compatible functions for portability
+      supplier: 'Organization: Broadcom, Inc.'

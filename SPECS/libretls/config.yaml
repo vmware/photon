@@ -1,0 +1,20 @@
+sources:
+- archive: libretls-3.8.1.tar.gz
+  archive_sha512sum: bbf4854622401bfc8662016a73202467714b603425dea2012e72846f0a22412018448fda8befa777d67c5dae44839b81e3b039130cf4970a4026c178d3a43ce2
+  skip_validation: false
+  archive_type: upstream
+  name: "libretls-3.8.1"
+  version: 3.8.1
+  url: https://causal.agency/libretls/libretls-3.8.1.tar.gz
+  repo_url: https://git.causal.agency/libretls
+  commit_id: 198349012002f8d30013eb23c7d6df6a3c9cc65a
+  skip_list: []
+  missing: [config.sub, libtool.m4, Makefile.in, strcasecmp.c, aclocal.m4, ltoptions.m4, lt~obsolete.m4, config.guess, compile, ltmain.sh, ltsugar.m4, depcomp, ltversion.m4, configure, import.sh, install-sh, .gitignore, missing]
+  spdx:
+    package:
+      detailed_description: 'Port of libtls from LibreSSL to OpenSSL'
+      home_page: https://git.causal.agency/libretls/about
+      license_concluded: ISC AND BSD-3-Clause AND MIT AND LicenseRef-Fedora-Public-Domain
+      license_declared: ISC AND BSD-3-Clause AND MIT AND LicenseRef-Fedora-Public-Domain
+      short_summary: Port of libtls from LibreSSL to OpenSSL
+      supplier: 'Organization: Broadcom, Inc.'
