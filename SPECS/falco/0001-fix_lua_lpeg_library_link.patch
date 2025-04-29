@@ -1,0 +1,25 @@
+From ce6aa8a58822038fe5fffc34243391461c22bd2e Mon Sep 17 00:00:00 2001
+From: Mukul Sikka <mukul.sikka@broadcom.com>
+Date: Tue, 29 Apr 2025 08:25:04 +0000
+Subject: [PATCH] Fix lua lpeg library link
+
+---
+ cmake/modules/lpeg.cmake | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/cmake/modules/lpeg.cmake b/cmake/modules/lpeg.cmake
+index 58df982..1d7d6f1 100644
+--- a/cmake/modules/lpeg.cmake
++++ b/cmake/modules/lpeg.cmake
+@@ -19,7 +19,7 @@ list(APPEND LPEG_DEPENDENCIES "luajit")
+ ExternalProject_Add(
+   lpeg
+   DEPENDS ${LPEG_DEPENDENCIES}
+-  URL "http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-1.0.2.tar.gz"
++  URL "https://packages.vmware.com/photon/photon_sources/1.0/lpeg-1.0.2.tar.gz"
+   URL_HASH "SHA256=48d66576051b6c78388faad09b70493093264588fcd0f258ddaab1cdd4a15ffe"
+   BUILD_COMMAND LUA_INCLUDE=${LUAJIT_INCLUDE} "${PROJECT_SOURCE_DIR}/scripts/build-lpeg.sh" "${LPEG_SRC}/build"
+   BUILD_IN_SOURCE 1
+-- 
+2.40.4
+

@@ -3,7 +3,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.31.1
-Release:        9%{?kernelsubrelease}%{?dist}
+Release:        10%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
@@ -16,6 +16,7 @@ Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{vers
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 Patch1:         0001-cmake-force-civetweb-library-into-lib-instead-of-lib.patch
 Patch2:         0001-build-plugins-locally.patch
+Patch3:         0001-fix_lua_lpeg_library_link.patch
 
 BuildArch:      x86_64
 
@@ -103,6 +104,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+* Tue Apr 29 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.31.1-10
+- Fix lua lpeg library link
 * Mon Jun 24 2024 Mukul Sikka <msikka@vmware.com> 0.31.1-9
 - Bump version as a part of go upgrade
 * Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 0.31.1-8
