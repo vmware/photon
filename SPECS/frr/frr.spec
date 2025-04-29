@@ -2,8 +2,8 @@
 
 Summary:        Internet Routing Protocol
 Name:           frr
-Version:        9.1
-Release:        3%{?dist}
+Version:        10.2.1
+Release:        1%{?dist}
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -25,8 +25,6 @@ Patch3: 0004-fips-mode.patch
 %if 0%{?with_check}
 Patch4: 0005-remove-grpc-test.patch
 %endif
-
-Patch5: CVE-2024-55553.patch
 
 BuildRequires: build-essential
 BuildRequires: c-ares-devel
@@ -85,6 +83,7 @@ FRRouting is a fork of Quagga.
 %prep
 %autosetup -p1 -n %{name}-%{name}-%{version}
 
+%build
 autoreconf -ivf
 
 sh ./configure --host=%{_host} --build=%{_build} \
@@ -121,7 +120,6 @@ sh ./configure --host=%{_host} --build=%{_build} \
         --with-crypto=openssl \
         --enable-fpm
 
-%build
 %make_build PYTHON=%{python3}
 
 %install
@@ -220,6 +218,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Mon Mar 24 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 10.2.1-1
+- Version upgrade to fix CVE-2024-44070 and CVE-2024-34088
 * Tue Jan 21 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.1-3
 - Fix for CVE-2024-55553
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 9.1-2

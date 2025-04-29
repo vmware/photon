@@ -1,7 +1,7 @@
 Summary:        NETCONF library in C intended for building NETCONF clients and servers.
 Name:           libnetconf2
-Version:        2.1.18
-Release:        5%{?dist}
+Version:        3.5.5
+Release:        1%{?dist}
 Group:          Development/Tools
 URL:            https://github.com/CESNET/libnetconf2
 Vendor:         VMware, Inc.
@@ -15,6 +15,7 @@ Source1: license.txt
 BuildRequires: cmake
 BuildRequires: make
 BuildRequires: gcc
+BuildRequires: curl-devel
 BuildRequires: libssh-devel
 BuildRequires: openssl-devel
 BuildRequires: libyang-devel
@@ -24,6 +25,7 @@ BuildRequires: Linux-PAM-devel
 Requires: pcre2
 Requires: libyang
 Requires: libssh
+Requires: curl-libs
 
 %if 0%{?with_check}
 BuildRequires:  cmocka-devel
@@ -97,9 +99,12 @@ popd
 %{_libdir}/%{name}.so
 %{_includedir}/*.h
 %{_includedir}/%{name}/*.h
+%{_datadir}/yang/modules/%{name}/*.yang
 %dir %{_includedir}/%{name}
 
 %changelog
+* Mon Mar 24 2025 Harinadh Dommraju <Harinadh.Dommaraju@broadcom.com> 3.5.5-1
+- Version update
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.18-5
 - Release bump for SRP compliance
 * Tue Dec 26 2023 Mukul Sikka <msikka@vmware.com> 2.1.18-4

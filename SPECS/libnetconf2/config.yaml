@@ -1,7 +1,14 @@
 sources:
-- archive: libnetconf2-2.1.18.tar.gz
-  archive_sha512sum: 01ca262c3e530f3d89e61838f08bf3abeae5c9c3c1cf9570416183a2060b850c18bdf661154ec31f7b57b13067c956fe01453ebc461d0d3935e841073a39fb20
-  skip_validation: true
+- archive: libnetconf2-3.5.5.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 8de6ef5ca31581bdc17f3711175392bc328dbc7560dc491bbdf8d1742b390b01781e750ac40cff504b32a610b9eff978334bd0e0b02b0622439fed34af119398
+  name: libnetconf2-3.5.5
+  version: "3.5.5"
+  url: https://github.com/CESNET/libnetconf2/archive/refs/tags/v3.5.5.tar.gz
+  repo_url: https://github.com/CESNET/libnetconf2
+  commit_id: 4c7858c9c41f1ac04d2b15c032291e335fc0f5f5
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'libnetconf2 is a NETCONF library in C intended for building

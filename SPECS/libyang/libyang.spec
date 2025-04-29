@@ -1,7 +1,7 @@
 Summary:        YANG data modeling language library
 Name:           libyang
-Version:        2.1.55
-Release:        2%{?dist}
+Version:        3.7.8
+Release:        1%{?dist}
 Url:            https://github.com/CESNET/libyang
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -85,6 +85,8 @@ YANG validator tools.
 %{_includedir}/%{name}/*.h
 
 %changelog
+* Mon Mar 24 2025 Harinadh Dommaraju <Harinadh.Dommaraju@vmware.com> 3.7.8-1
+- Version upgrade to satisfy frr version upgrade
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.1.55-2
 - Release bump for SRP compliance
 * Tue Apr 11 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.55-1
