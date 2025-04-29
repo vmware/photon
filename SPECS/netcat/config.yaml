@@ -1,24 +1,20 @@
 sources:
-- archive: netcat-0.7.1.tar.gz
-  archive_sha512sum: b5a39284bf490c5d581f1d3e9e1fd74df63eae79f280a66b75347c4707320f48c5da32cea96c7c7e60bffe8e044eb50c6dc0d791e1812747457efc5ea3bb441c
+- archive: nc-1270245.tar.xz
+  archive_sha512sum: e3e4399fd917db2b0704a0f573a0ec81d82e64071461825e2cae939dbbfacc52b5dad448a821b3699217b305a68a265fd8f4a15a185f694f081272460c251469
   skip_validation: true
+  archive_type: None
+  name: "nc-1270245"
+  version: 1.228
+  url: https://packages.vmware.com/photon/photon_sources/1.0/nc-1270245.tar.xz
+  repo_url: https://github.com/openbsd/src.git
+  commit_id: 127024533874d33a814299a400ef47fe8790e00e
+  skip_list: []
+  missing: []
   spdx:
     package:
-      detailed_description: 'Netcat is a featured networking utility which reads and
-        writes data across network connections, using the TCP/IP protocol. It is designed
-        to be a reliable "back-end" tool that can be used directly or easily driven
-        by other programs and scripts. At the same time, it is a feature-rich network
-        debugging and exploration tool, since it can create almost any kind of connection
-        you would need and has several interesting built-in capabilities. '
-      home_page: http://netcat.sourceforge.net
-      license_concluded: FSFULLRWD AND LGPL-2.1-or-later AND X11 AND LGPL-2.0-or-later
-        AND GPL-1.0-or-later AND GFDL-1.1-or-later AND GPL-1.0-or-later WITH Autoconf-exception-generic
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL AND GPL-2.0-or-later
-        AND GPL-2.0-only
-      license_declared: FSFULLRWD AND LGPL-2.1-or-later AND X11 AND LGPL-2.0-or-later
-        AND GPL-1.0-or-later AND GFDL-1.1-or-later AND GPL-1.0-or-later WITH Autoconf-exception-generic
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL AND GPL-2.0-or-later
-        AND GPL-2.0-only
-      short_summary: Netcat is a featured networking utility which reads and writes
-        data across network connections, using the TCP/IP protocol.
+      detailed_description: 'OpenBSD netcat to read and write data across connections using TCP or UDP'
+      home_page: https://man.openbsd.org/nc.1
+      license_concluded: BSD-3-Clause AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND BSD-2-Clause
+      short_summary: OpenBSD netcat to read and write data across connections using TCP or UDP
       supplier: 'Organization: Broadcom, Inc.'
