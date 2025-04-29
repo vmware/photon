@@ -1,6 +1,6 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
-Version:        29.4
+Version:        30.1
 Release:        1%{?dist}
 License:        GPLv3+ and CC0-1.0
 URL:            http://www.gnu.org/software/emacs/
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.xz
-%define sha512  emacs=66b38081cb01d2c46ff7beefb45986cc225b4c922c30712ad0d456c6cae5507176ed99418c8f26948c5375c8afde4e4b2507d23ed997dbb5392d12150a121d80
+%define sha512  emacs=511a6a1d2a170a207913692e1349344b70a0b5202b8d1ae27dc7256e589c77ae9e35da16fc2a098bf9f1b8d0f60233f452ed8d6744b70b907f3484c42f2d7d7f
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -76,6 +76,8 @@ rm %{buildroot}%{_datadir}/applications/emacsclient.desktop
 %{_datadir}/metainfo/%{name}.metainfo.xml
 
 %changelog
+*  Tue Apr 29 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 30.1-1
+-  Version upgrade
 *  Thu Feb 13 2025 Harinadh D <Harinadh.Dommaraju@broadcom.com> 29.4-1
 -  Version upgrade
 -  Fixes CVE-2024-30202,CVE-2024-30203,CVE-2024-30204,CVE-2024-30205
